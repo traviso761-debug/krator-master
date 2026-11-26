@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------- CULTURE SYMBOLS (shared: core/sockets/38-symbols.js)
 // The emblem of every culture as a 2D canvas drawing: (g, cx, cy, R, ink, ink2) draws inside a box of half-size R. Pure canvas, no engine:
 // core/sockets/80-cultures.js draws them on banners, flags and plates; kits/catalog's furniture kit draws the same ones on tapestries,
-// banners, friezes and scrolls (vendored there as kits/catalog/krator-symbols.js, build.py --vendor-check), so a dressed building and the
+// banners, friezes and scrolls (it reads this file in place: kits/catalog/catalog.py resolves krator-symbols.js here), so a dressed building and the
 // furniture in it carry one emblem. A new culture adds one function here. SYMBOL_OF names each pack's symbol for anyone without a pack.
 const SYM_TAU = Math.PI * 2, SYM_PI = Math.PI;
 function drawTriskele(g,cx,cy,R,cols,lw){g.lineCap='round';g.lineWidth=lw;for(let k=0;k<3;k++){g.strokeStyle=cols[k%cols.length];g.beginPath();const a0=k*SYM_TAU/3-SYM_PI/2;
@@ -80,10 +80,16 @@ Object.assign(SYMBOLS, {
   g.fillStyle=c1;g.strokeStyle=c2||'#6e1a32';g.lineWidth=Math.max(1,R*.035);g.lineJoin='round';
   for(const a of [-1.15,1.15])pet(a,R*.95,R*.32);for(const a of [-.68,.68])pet(a,R*1.1,R*.34);for(const a of [-.3,.3])pet(a,R*1.2,R*.34);pet(0,R*1.3,R*.36);
   g.beginPath();g.ellipse(cx,cy+R*.52,R*.72,R*.12,0,0,SYM_TAU);g.fill();g.stroke();},
+ // the God's single eye (Dalab, settlements/span and settlements/dalab; 2026-11-09): an almond, its iris and pupil, a ring of
+ // short rays round it; c1 the eye's white and the rays, c2 the iris
+ eye:(g,cx,cy,R,c1,c2)=>{g.strokeStyle=c1;g.lineCap='round';g.lineWidth=Math.max(1.5,R*.07);g.beginPath();
+   for(let k=0;k<12;k++){const a=k*SYM_TAU/12,ca=Math.cos(a),sa=Math.sin(a),r0=Math.abs(sa)>.5?R*.62:R*.8;g.moveTo(cx+ca*r0,cy+sa*r0);g.lineTo(cx+ca*R*.97,cy+sa*R*.97);}g.stroke();
+  g.fillStyle=c1;g.beginPath();g.moveTo(cx-R*.78,cy);g.quadraticCurveTo(cx,cy-R*.62,cx+R*.78,cy);g.quadraticCurveTo(cx,cy+R*.62,cx-R*.78,cy);g.closePath();g.fill();
+  g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.27,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.11,0,SYM_TAU);g.fill();},
  // a toothed gear (post-apoc salvage and scrap)
  gear:(g,cx,cy,R,c1,c2)=>{g.fillStyle=c1;g.beginPath();for(let k=0;k<32;k++){const a=k*SYM_TAU/32,r=(k%4<2)?R*.95:R*.75;g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);}g.closePath();g.fill();g.fillStyle=c2;g.beginPath();g.arc(cx,cy,R*.45,0,SYM_TAU);g.fill();g.fillStyle=c1;g.beginPath();g.arc(cx,cy,R*.2,0,SYM_TAU);g.fill();},
 });
 // the symbol each culture pack draws (mkCulture's `sym`), for code that has a culture key and no pack
 const SYMBOL_OF = { iziz:'sun', republic:'triskele', voth:'diamond', yuni:'hyperboloid', 'beast-rider':'claw', hykkousoi:'windwave', xanadu:'lotus',
  'ringsea-islander':'moon', lizardmen:'serpent', eastabyss:'star', nomad:'horns', rustic:'fir', painted:'raven', reedlake:'fish', screamer:'skull', 'post-apoc':'gear', scrap:'gear',
- zeijani:'spiralarch', order:'scroll' };
+ zeijani:'spiralarch', order:'scroll', dalab:'eye' };

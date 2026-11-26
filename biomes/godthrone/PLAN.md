@@ -16,7 +16,10 @@ Owner's brief (2026-10-26):
 - **The bloodfalls**: an arctic highland in the Godthrone's ice belt where iron-rich rock meets glacial meltwater, and
   the blood river that flows down from it (section 4; the candidate is Qol Ḍrāi).
 
-**Status: plan, awaiting the owner.** Nothing built.
+**Status (2026-11-04): every planned station built** (the rebuild turn, in the cloud: stations 3-9 on map 5.1, section 7a; the universal
+set and the core adoption, section 9b; GPU verify owed to the coordinator). **Earlier status (2026-10-26): station 1 (the summit vent) built** on `claude/biome-rebuild`'s core, from this plan's proposals as
+written (the owner asked for it: section 9a has the core adoption, `PERF.md` the measurements, `KNOWN_ISSUES.md` what is
+left). Stations 2-6 and the rest of the plan still await the owner; the questions met on the way are added to section 10.
 
 ## 0. What the kit is
 
@@ -35,7 +38,7 @@ It is a new biome, so it goes in the gallery when it first reaches `main`.
 
 ## 1. The ground (scale model 4.22, surveyed 2026-10-26; the summit after 4.23)
 
-**4.23 is built** (2026-10-26, `tools/scale-model/edit_423.py`, `tools/scale-model/README.md` "4.23"; the model page is version 88): `DATA.hi` is 27,000 m;
+**4.23 is built** (2026-10-26, `tools/scale-model/history/edit_423.py`, `tools/scale-model/README.md` "4.23"; the model page is version 88): `DATA.hi` is 27,000 m;
 the **cone is a weathered shield that fills this polygon** (contours from a round summit rim out to the polygon's outline,
 each lower contour parallel to its edges, a slope of ~0.065 over the 210 km from the rim to the 11 km contour), the **rim at 25.0 km**
 (0.07 atm; no cell is higher), a 65-77 km caldera with its floor at ~22 km and a nested pit 900 m deeper, and the summit vent at px 577.85, 932.59.
@@ -208,8 +211,10 @@ from the halos' edges by parties who climb on bottled air or Ancient breathing g
 
 ## 7. Stations
 
-1. **The summit vent** (`dist/godthrone.html`, ~22-25 km, after 4.23): the caldera's floor and terraced walls, the
-   vent fuming, the orange and black halo, the sky nearly black overhead. The sealed portal on the rim.
+1. **The summit vent** (`dist/godthrone.html`, ~21-22 km, after 4.23; built 2026-10-26): the nested pit, the vent fuming
+   and fountaining now and then, the orange and black halo, the sky nearly black overhead, the caldera's wall 23 km off.
+   **1b. The caldera wall** (`dist/godthrone-wall.html`, 22-25 km; the owner split station 1 in two, 2026-10-27): the six
+   collapse terraces, the floor at their foot, the rim and the sealed portal on it.
 2. **The high flank** (`-flank`, ~11-13 km, 0.4-0.33 atm): a black lava plain with levees, a sinuous rille and a
    pit-crater chain, old vents' dark rings, frost in the shadows.
 3. **The orange belt** (`-orange`, ~7.5-8.5 km): the dry-cold line, black flows going ochre downslope, palagonite
@@ -222,6 +227,39 @@ from the halos' edges by parties who climb on bottled air or Ancient breathing g
 6. **The bloodfalls** (`-blood`, ~5.5 km, the ice belt's southern edge, EF): the red cascade out of the ice cliff, the red
    meltwater channels on the glacier above, the rust terraces and the red pool, the blood river leaving down Qol Ḍrāi
    with the first riverweed in its rapids, the Vale of Xanadu far below.
+
+### 7a. The station list on map 5.1 (the rebuild turn, 2026-11-04; pushed before building, for the owner's review)
+
+The owner widened the turn (relayed 2026-11-04): build every planned, not-yet-built Godthrone station as a `--station` page on the
+universal set, the Gills' two Godthrone stations (`biomes/gills/PLAN.md` section 11, items 1-2) and the lava-tube link toward Godstep
+among them. Sites read from map 5.1's rasters (`tools/scale-model/model/data/h.png`, `c.png`, `p.png`; 2 km a px; air 1.6 atm x
+e^(-h/8 km)). **px are on the 5.1 canvas** (the old canvas + (272, 330)). Heights are the raster's cell, not the page's.
+
+| # | Station | Page (`build.py --station`) | 5.1 px | Height | Air | Class | State |
+|---|---|---|---|---|---|---|---|
+| 1 | the summit vent | `godthrone.html` (src/) | 849.9,1262.6 (the 4.23 vent) | 21.2 km (the pit) | 0.11 | O | built 2026-10-26; rebuilt this turn |
+| 1b | the caldera wall | `godthrone-wall.html` (`wall`) | the same frame, the wall 9.2 km off | 22-25 km | 0.07-0.1 | O | built 2026-10-27; rebuilt this turn |
+| 2 | the high flank | `godthrone-flank.html` (`flank`) | 988,1458 (4.22's flank vent; 5.1: 11,080 m) | 11.1 km | 0.40 | O | built 2026-10-27; rebuilt this turn |
+| 3 | the orange belt | `godthrone-orange.html` (`orange`) | 736,1325, 7 km south-west of Pluton (743,1328, 9,650 m) | 8.35 km | 0.56 | HF | **new** |
+| 4 | the basal escarpment | `godthrone-scarp.html` (`scarp`) | 752,1213, mid-scarp on the south-western bay side (9.5 km at 761,1217 to 4.8 km at 739,1206, ~45 km) | 7.07 km | 0.66 | HT | **new** |
+| 5 | the airless rim | `godthrone-rim.html` (`rim`) | 532,1285, the south-western Outer Wall's crest nearest the Godthrone (a crest cell: no higher ground within 8 km) | 10.86 km | 0.41 | O | **new**; see the note below |
+| 6 | the bloodfalls | `godthrone-blood.html` (`blood`) | 866,1442, the ice belt's southern edge at the head of Qol Drai (the closed lake 843,1398, 6,415 m, 23 km north-north-west) | 5.38 km | 0.82 | EF | **new** |
+| 7 | the Red Gill (gills 1) | `godthrone-gills.html` (`gills`) | 862,1438 (`biomes/gills/PLAN.md` section 5) | 5.44 km | 0.81 | EF | **new**; one frame with station 6 (the falls 11.3 km south-east, on the gill's skyline), as 1 and 1b share one |
+| 8 | the Red ladder (gills 2) | `godthrone-gills-ladder.html` (`gills-ladder`) | 900,1450 to 940,1450 (the page stands at 920,1450, 8.54 km) | 7.2-8.7 km | 0.65-0.54 | EF-HF | **new** |
+| 9 | the Ilmenite Pillar Vault (the tube) | `godthrone-tube.html` (`tube`) | 858,1182 (`tube_god_n_12`'s `cav_god_n_ilmenite`: 290 x 175 m, 54 m high, sealed), its West Godstep Rim Cross-Conduit leaving north-east toward Godstep's vent pit (892.8,1145.2, 2,700 m, 85 km) | 12.15 km at the surface, the vault 58 m down | 0.35 | O | **new**: the lava-tube link toward Godstep (`biomes/godstep/PLAN.md` "The tubes and the rilles") |
+
+Notes for the owner:
+- **The rim (5)**: no wall kit has a built or planned station within 200 km of a 10-12 km crest (nwouterwall's station 1 is 248 km
+  from the nearest, riftrim's 222 km), so section 7's "best where it stands over a station of a wall kit" cannot be met. The site is
+  the crest cell on the south-western Outer Wall nearest the Godthrone's airless body. A different crest is a one-line change.
+- **The scarp (4)**: on 5.1 the escarpment falls ~4.7 km over ~45 km (about 6 degrees on the raster's 2 km cells); the page draws its
+  steepest few kilometres as the cliff of stacked flows the plan describes, on the raster's mean slope.
+- **The bloodfalls (6) and the Red Gill (7)** share one frame, so each page shows the other on its skyline at the model's distance.
+- **The tube (9)** is sealed (`skylight_m` 0) and habitable on the record; the page is the vault and the first few hundred metres of
+  the conduit toward Godstep, lit by the explorer's lamps, with the surface over it as the arrival view. The deep link on to
+  Pluton (`tube_god_07`'s branch) stays lore, as Godstep's plan has it.
+- Not stations here: `tube_god_nw_11`'s Vacuum Glass Cathedral (13.8 km, a skylit gallery) and `tube_god_se_13`'s Sub-Glacial
+  Sulfide Dome are candidates for a later turn; the owner's call.
 
 ## 8. Textures
 
@@ -251,6 +289,73 @@ and rift kits too); **titanium basalt** (black with an ilmenite sheen, or a tint
 - **G5.** Stations 2-6; the endoliths, crusts and iron-eaters; the bloodfalls' seep, stained ice and rust terraces.
 - **G6.** `verify.py --assert`, `PORT.md`, the index tools, `tools/check_core_use.py`, the gallery.
 
+## 9a. Core adoption (written before the first fragment, 2026-10-26; station 1)
+
+The owner asked for station 1 (the summit vent) to be built; it was built from this plan's proposals as written, on
+`claude/biome-rebuild`'s core. `build.py` starts from `biomes/nhighlands` (the worked example of a full adoption), with the
+Throne's station mechanism for the later pages. What the build takes, and why not the rest:
+
+| Module | Taken | How |
+|---|---|---|
+| `core/biome` | yes | `10`, `20` (`BIO.INDEX_ITEMS` welded items, `BIO.LOD.merge` + `minTris` + `fade` + per-instance `cull`), `30`, `40`, `42`/`43` (export), `44` (stage). The kit `GODT` on the `BIOME-API.md` contract; its items are the ground's loose stuff (spatter bombs, talus blocks, stones, Pele's hair mats), classed `feature` (glass and rock, not flora) |
+| `core/rand` | yes | every draw `KRAND.hash` of (world, cell, index, salt); the terrain's noise `KRAND.fbm` (no `BIO.fn.fbm`, no `Math.sin` hash) |
+| `core/tags` | yes | `BIO.init({tags:'godthrone'})`; every item set and registered volume a record before it is drawn; hazards and the portal tagged |
+| `core/host` | yes | `khost.FULL` (camera, loop, panel, probe, inspector, marks, pictures, minimap, editor); `99-host-take.js` hands it the page |
+| `core/atmos` | yes | the shared sky with **thin air** (`air.thin`, the plan's section 2: the fog falls to nothing, the zenith nearly black, stars by day), `bindHost`, `bindWeather` (`climate.ash`: ashfall and the ash storm), the air's load (`fx/airload`: the ash's mg/m3 and sight, the fog from it), branched lightning (`fx/lightning`: the ash storm's), the vent's fume on `ATMOS.smoke` (a `fume` kind added to the page's preset), the lava throat on `fx/lava` (`ATMOS.lavaMaterial`), `ATMOS.provideAir` (pressure into core/hazard) |
+| `core/hazard` | yes | `KHAZ.GROUND.lavaLake` (the vent's throat), `gasVent` (the vent and the fissure's fumaroles), `hotGround` (the spatter rampart); the ambient bridge's `pressure` (from the sky) and `temperature` (the kit's field: the held mean, -75 C); the hazards layer and inspector line |
+| `core/terrain` | yes | `KSTRATA` with the **`tibasalt`** recipe on every rock face (the alteration's `below` at the dry-cold line, 8,500 m: nothing here is below it), `KSTRATA.ledgeField` (the ledge pass on the walls: each flow a ledge, the bead beds recessed), `KRELIEF.talus` (aprons at the foot of every scarp), `KFIELD` (the ground baked once; the page and the export read it), `KGROUND` with the layer kinds `sand` (the orange and the black bead sand, ripples and glints) and the library's layers, `KHORIZON` (the caldera wall's shadows), `KFAR` (the caldera and the upper shield to 90 km, with the planet's curvature) |
+| `core/materials` | yes | `materials.json` + `tools/textures/pack.py`: `ground.beads.orange`, `ground.sand.black`, `card.pele.hair`, `rock.basalt.flowbanded` (tinted near-black: the titanium basalt, a stand-in tint as section 8 allows), `ground.scoria`, `ground.obsidian`, `ground.lava.crust`; `check_cells.py` clean |
+| `core/space` | yes | `KSPACE`, the biome core's keep-clear and scatter index |
+| `core/export` | yes | `07`, `09`; the export profile under `verify.py --assert` |
+| `core/water` | per station | `build.py` takes core/water by station (station.json `"water"`); **station 1 lists none**: at 22-25 km and 0.07-0.11 atm there is no liquid water (the plan's section 2; the frost is the ground shader's). The bloodfalls station takes the falls, the brine and the stained ice |
+| `core/biome` impostors (`34`) | no | nothing tall stands at the summit (GRAPHIC-LOAD.md: impostors where anything tall stands) |
+| `core/atmos` height fog, rain cover, rain wall, fog belt, acid | no | thin air: the fog falls to nothing and no rain falls (section 2) |
+| `KSTACKS`, `KRELIEF.stair/rille/tube/pit` | no (station 1) | no stacks, rilles or tubes at the summit; the high flank's station (2) takes `rille` and `tube` (the pit chain) |
+| `core/city`, `hamlet`, `simulation`, `furnish` | no | no one lives here (section 6) |
+| `core/charactermodels`, `kits/fauna` | no | no animals (section 5) |
+
+**Graphics from day one** (`GRAPHIC-LOAD.md`): welded items, the LOD merge, fade and per-instance cull are on; the far
+field is one KFAR lattice; the ground one KFIELD-baked mesh. Measured per view on the Intel GPU in `PERF.md`.
+
+### Station 2, the high flank (built 2026-10-27): core adoption
+
+`dist/godthrone-flank.html`, `build.py --station flank`: the south-east flank at 4.22's flank vent (px 716, 1128, 11,080 m;
+0.39 atm, about -44 C), its own frame and ground model (`stations/flank/45b-host-model.js`; the kit's other fragments are
+shared: the summit's terrain moved into `src/45b-host-model.js` so a station swaps only its ground). Takes, beyond station 1's
+list: `KRELIEF.meander`, `KRELIEF.rille` (the sinuous rille from the main old vent's crater, its walls on the flows),
+`KRELIEF.tube` (the tube's pit chain: 23 collapse pits and 9 skylights on the map), `KRELIEF.volcano` (five old cones),
+`KRELIEF.apply`. The flows: **core/terrain KLAVA.bake** (the lava-flow module, merged from `claude/klava`): four eruptions frozen at build time
+(`stations/flank/bake-flows.js`, committed as `flows.json`, re-baked when its inputs change), levees and central channels
+sculpted from their edges. No hazards of its own (the ambient bridge only: 0.39 atm, about -44 C).
+
+## 9b. The rebuild turn (2026-11-04, in the cloud): core adoption, the universal set, stations 3-9
+
+Written before the fragments, revised as built. Every page (`src/` plus each station's folder) takes:
+
+| Item | Taken | How, or why not |
+|---|---|---|
+| **KGROUND's relief** (`core/README.md`, "Adopting KGROUND's relief"; `core/terrain/GROUND.md`) | yes, every page | `84-host-ground.js`: `relief:{bump:.075, cavity:.8, mesh:1, strata:.45, strataW:<the steep>}` on the MeshStandard ground (HANDOFF-REBUILD.md's adoption list), `KGROUND.cavityMesh` on every ground mesh (base and insets). **`?kgrelief=0`** draws the old ground, byte for byte, for the owner's before-and-after. No `tri`: the faces already take KSTRATA's beds on their own plane |
+| **KSHADOW** (`core/shadow`) | yes, **off at page load** (the owner, 2026-11-03) | `src/89zz-host-shadow.js`: `?shadow=1` attaches it; the far field draws its own light. Not measured here (no GPU): the coordinator's GPU lane measures it |
+| **`rock.basalt.titanium`** (delivered 2026-10-27) | yes | `materials.json` `rockFace` and `rock` (the faces' grain, the talus and stones) in place of the `rock.basalt.flowbanded` stand-in |
+| **The tuff aprons** (`kits/resources/ROCK-PROPOSAL.md`, 3) | yes, downwind | `src/35t-godthrone-strata.js` adds `tibasalt-ash` (ash partings and ignimbrite benches between the flows; the ash altered with the beads under the line): the high flank (2), the Red Gill and the bloodfalls (6, 7), the Red ladder (8). The upwind stations keep `tibasalt` (the tube, 9) |
+| **The crater-wall megabreccia** (ROCK-PROPOSAL.md, 1) | yes, the rim (5) | core's `megabreccia` recipe under the overturned flap; KGROUND's `clast` kind on the regolith-thin ground |
+| **`BIO.flareJoin`** | no | nothing on these pages has a limb leaving a trunk (the Red Gills' rustwood is a trunk and caps) |
+| **`WATER.mirrorSwitch`** | no | the only still is the bloodfalls' pool, ~26 m across (BACKPORT.md: the kit's largest still where it is large) |
+| **The water's plume and foam fix** | no | no river meets a lake or the sea on any page; the blood river leaves the map |
+| **`KHOOK.warp`** | nothing to do | the empty slot rides on every KGROUND/KHOOK material already |
+| **KSTRATA, KFAR, KHORIZON** | yes | as stations 1-2; a new station's far country is **scale model 5.1's own relief** (`tools/region.py` writes `stations/<s>/region.json`, inlined as `REGION_DATA`; `src/45a5-host-region.js` blends the station's model into it past ~5.4 km): the Vale 3.7 km under the bloodfalls, the crater from the rim |
+| **The Gills' core pieces** (HANDOFF-REBUILD.md, "Taking it, the Gills") | yes, stations 7-8 | `biomes/gills/src/44-gills-life.js` read in place; `KSTACKS` chimneys (Red form: one mouth, a flare at the lip, 30-85 m), `KSTRATA.lamina` (the Red country, an eruption's glass band), `BIO.animMat` breath, `ATMOS.smokeGroups` steam, `KHAZ` pull and pool (the throats' in-breath, the sumps). The drawing is ported from xanadu's (`stations/gills/87-host-gills.js`) |
+| **KCAVERN** | yes, the tube (9) | the vault a `C.hall`, the two tubes `C.tube`s, cell 1.5 m; lit by lamps only (a sealed vault) |
+| **core/water ext/54** | yes, the bloodfalls (6) | `WATER.underIceFall` (the bloodfalls kind), `drawBloodFall`, the `bloodriver` look, `WATER.weed` / `drawWeed` |
+
+**Shared fragments changed** (every page): the field cache and `GODT.groundAt` take eight station classes (`palag`, `ice`, `rust`, `breccia`,
+`snow`, `tuff`, `pave`, `crust`; 0 where a model does not set them), the painter draws them and a station adds KGROUND layers on them
+(`STN.layers`); a station names the texture families it takes (`station.json` "tex": the others stay out of its page), its own reads
+(`"reads"`), a shared kit's pack (`"packs"`), its region (`"region"`); `STN.items`, `STN.counts`, `STN.sky`, `STN.viewHour`, `STN.rockFace`;
+`STATION_CHECKS` / `STATION_NEGATIVES` / `STATION_VIEWS` / `STATION_FLOOR` / `stationBuild` hooks in the take and the build. New items:
+split stones and the endolith band (from 9 km down), ventifacts (the rim). Station 1-2's draws are unchanged by them (the new passes are
+gated on fields that are 0 there).
+
 ## 10. Open questions
 
 - The caldera's exact size and depth, and whether the summit vent is active now (fountaining every few years) or only
@@ -258,3 +363,22 @@ and rift kits too); **titanium basalt** (black with an ilmenite sheen, or a tint
 - Whether the airless band is drawn as this kit everywhere, or each wall kit draws it from this kit's fragments (the
   same ground either way; the difference is who owns the pages).
 - The Talovolci's relation to the mountain, and who gathers the orange glass.
+- **Met building station 1** (2026-10-26), **and the owner's answers** (2026-10-27):
+  - **Two pages, not one compressed one** (answered): station 1 is the summit vent (`dist/godthrone.html`: the pit and its
+    vent, the wall 23 km off in the far country) and station 1b the caldera wall (`dist/godthrone-wall.html`, `build.py
+    --station wall`: the terraces, the floor at their foot, the rim and the portal; the vent's fume and fountain 23 km off),
+    on one frame with 4.23's distances (the pit 9.2 km from the caldera's centre).
+  - **The wall's terraces** (answered: keep them, and the next scale-model edit, 4.24, carries them on the raster).
+  - **The sealed portal** (answered: fine as it is): a placeholder on the wall station's rim.
+  - **The vent** (answered: intermittently active): it fumes and every 10 minutes of the page's clock fountains for 2,
+    the record's cycle (core/hazard) driving what is drawn; the period is a page's compression, not a geological one.
+  - **The temperature** (answered: as built), **the frost on the faces turned south and the halo's bands** (answered: as built).
+  - Still open: `rock.basalt.titanium` (optional; `core/materials/PROMPTS-NEEDED.md` 20); the portal's place in the
+    Pluton settlement plan.
+- **A serious eruption** (the owner, 2026-10-27; built on the vent's page, `89c-host-lake.js`): a flood-basalt eruption
+  (20,000 m3/s falling as Kilauea's 2020 one did) fills the pit with a lava lake, 13.7 km3 in 32 days, to 15 m under its lowest
+  lip; the vent drowns in hours; the crust closes over 30 days; the frozen lake re-bakes the pit's floor. A time-lapse
+  (Serious eruption, Play, a slider) and five views. **Overflow** (step 5, 2026-10-27): core/terrain's KLAVA, a Bingham lava
+  flow (`core/terrain/LAVA.md`), wired opt-in behind the page's `?overflow` (`89d-host-overflow.js`): the lake a held pond
+  whose level follows its volume less what has spilled, 0.25 km3 over the lowest lip, the frozen flow written into the field;
+  an `overflow` checkbox beside the time-lapse turns it back to the lake alone. `verify.py --query overflow --assert` checks it.

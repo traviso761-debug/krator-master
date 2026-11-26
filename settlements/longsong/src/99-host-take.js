@@ -67,7 +67,10 @@ function describe(hit){const p=hit.point,o=hit.object;
   words=PEOPLE_DRAWN.ROLE[Pn.role]+' ('+Pn.id+')\nlife · '+Pn.faction+' · '+Pn.sub+' · '+Pn.job+'\nnow: '+now+'\nthe day: '+Pn.schedule.filter((a,h)=>h%3===0).map((a,k)=>(k*3)+'h '+a).join(', ');}
  if(best&&best.note)words+='\n'+best.note;
  if(tg&&tg.harvest)words+='\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'');
- return words+'\n'+Z.name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+ return words+'\n'+Z.name+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): the seals' time fields; and how fast time runs here */
+function hazardWords(p){if(typeof KTAGS==='undefined'||!KTAGS.hazardAt)return '';const w=KTAGS.hazardAt(p.x,p.y,p.z),s=KHAZ.timeScale(p.x,p.z,0,p.y);
+ return (w?'\n'+w:'')+(s!==1?'\n'+'time here runs at '+(s<.01?s.toExponential(1):s.toFixed(2))+' of ours':'');}
 let _hostH=null;const KHOST_CLOCK_H=()=>_hostH&&_hostH.clock?_hostH.clock.hour:12;
 
 // ---------------------------------------------------------------- the camera: above the ground, or inside the Vault
@@ -87,9 +90,10 @@ const HCHK={
  // the land is the scale model's away from what the plan shapes
  model(){const pts=[[-900,-700],[900,-900],[-1300,400],[1200,700],[0,-1100]],d=pts.map(q=>Math.abs(terrainH(q[0],q[1])-landH(q[0],q[1])));
   return{ok:Math.max(...d)<.6,detail:'the page\'s ground '+Math.max(...d).toFixed(2)+' m off the model away from the grounds (cached at 16 m)'};},
- // the stream runs in front of the gate: water within 150 m north of the Great Gate, none inside the walls
+ // the river runs in front of the gate: its line crosses the avenue within 220 m north of the Great Gate (the Bīruk al-Ghaym
+ // is 112 m wide; 2026-11-11), none inside the walls
  stream(){const n=BRIDGE.z,inW=[[0,-150],[-150,-60],[150,-60],[0,100]].filter(q=>waterH(q[0],q[1])>terrainH(q[0],q[1])).length;
-  return{ok:n<-200&&n>-350&&inW===0,detail:'the stream crosses the avenue\'s line at z '+n.toFixed(0)+' (the gate at -200); '+inW+' wet points inside the walls'};},
+  return{ok:n<-200&&n>-420&&inW===0,detail:'the stream crosses the avenue\'s line at z '+n.toFixed(0)+' (the gate at -200); '+inW+' wet points inside the walls'};},
  // the rock: its top TOP over the ward's head, its north face steep, the top level under the White Palace
  rock(top){const t=terrainH(0,60),foot=terrainH(0,-6),face=(terrainH(0,22)-terrainH(0,2))/20;
   return{ok:Math.abs(t-top)<1.5&&foot<2&&face>1,detail:'top '+t.toFixed(1)+' m (plan '+top+'); the north foot '+foot.toFixed(1)+'; the face rises '+face.toFixed(2)+' m per m'};}};
@@ -111,6 +115,9 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
  // depth: the near plane follows the camera's height (core/host 90-host-camera C.depth): with a fixed 0.5 m against 90 km
  // the courts' slabs and the ground fought a kilometre off (2026-10-19)
  scene,camera,renderer,ground:terrainH,clampCam,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,depth:true,
+ // the attach audit (core/biome BIO.guardChecks) measures a card's height over what it stands on: on the river (4 m deep since
+ // the Bīruk al-Ghaym, 2026-11-11) the lily pads stand on its water, not its bed
+ guards:{ground:(x,z)=>{const w=waterH(x,z),t=terrainH(x,z);return w>t?w:t;}},
  // walking (F): the Great Stair's flights and landings and the base's top are floors, their masonry blocks (64 registers
  // them in core/walk as it draws them); elsewhere the walker keeps to the ground (2026-10-20, the owner: it walked through
  // the ramps)
@@ -120,7 +127,7 @@ _hostH=KHOST.take({build:'longsong',title:'Longsong',
   hour:h=>LSNIGHT.apply(h),objects:()=>[sky,giant,giantRing]},
  clock:{hour:12,running:false,scale:1,speeds:[0,1,2,4,8],onSet:h=>{LSNIGHT.apply(h);if(typeof placePeople==='function')placePeople(h);}},
  inspect:describe,stats:()=>'inst '+window._instances+(typeof PEOPLE_DRAWN!=='undefined'?' · people '+PEOPLE_DRAWN.shown:''),
- layers:{'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora':{match:o=>!!(o.userData&&o.userData.biome)},'the monastery':{match:o=>!!(o.userData&&o.userData.arch)},
   'the ground (see the Vault)':{match:o=>!!(o.userData&&(o.userData.ground||o.userData.rockface))},'the far land':{match:o=>!!(o.userData&&o.userData.far)},
   'the people':{match:o=>!!(o.userData&&o.userData.people)},'sky':{objects:()=>[sky,giant,giantRing]}},
  // site: the biome export over the monastery's ground, sampled (45), and the stage (core/biome KSTAGE)

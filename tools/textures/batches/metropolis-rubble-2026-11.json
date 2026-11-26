@@ -1,0 +1,31 @@
+[
+ {
+  "src": "19.webp",
+  "out": "core/materials/library/ground.rubble.demolition",
+  "record": {
+   "id": "ground.rubble.demolition",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    3,
+    3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted in the session, 2026-11-03)",
+    "licence": "generated for this project by its owner",
+    "prompt": "none given: a seen-from-above demolition rubble of broken concrete lumps, brick fragments, bent rebar and rusted flat bar over grey and red-brown gravel",
+    "reuse": "any collapsed building's rubble bed or demolition ground: kits/metropolis's ruins (core/terrain KRUBBLE heaps), any ruined settlement"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "delight": 0.35,
+   "normal_strength": 1.0
+  }
+ }
+]

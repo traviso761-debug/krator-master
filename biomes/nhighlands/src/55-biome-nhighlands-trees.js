@@ -25,19 +25,26 @@ NHL.LOD={tree:1300,floor:650,farFloor:2400,dress:1300,logs:1300,glow:650};
 
 // ---------------------------------------------------------------- zones from the fields
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const cold=BIO.field('cold',x,z),wet=BIO.field('wet',x,z),flow=BIO.field('flow',x,z),mist=BIO.field('mist',x,z),rock=BIO.field('rock',x,z),up=BIO.field('upland',x,z);
- const temperate=smooth(.44,.28,cold),montane=smooth(.24,.40,cold)*smooth(.74,.58,cold),boreal=smooth(.56,.72,cold),alpine=smooth(.88,.985,cold);
- const rip=smooth(.3,.8,flow);
- const glade=smooth(.62,.72,fbm(x*.0042+13,z*.0042-29,4401,2))*(1-rip)*(1-alpine);                 // clearings: bluebells, bracken, disc stalks
- const oldwood=smooth(.32,.6,rock)*smooth(.14,.30,cold)*smooth(.78,.62,cold)*(1-rip);            // the old wood on the boulder fields
- const crag=smooth(.55,.9,rock)*smooth(.3,.5,cold);
- const burn=boreal*(1-alpine)*smooth(.65,.71,fbm(x*.0015+77,z*.0015-31,4402,2));                  // the old burn: snags over fireweed, birch coming back
- const colony=smooth(.52,.64,fbm(x*.0062-3,z*.0062+8,4403,2));                                   // where the understorey trumpets sucker
- const grove=smooth(.54,.64,fbm(x*.0044+5,z*.0044+41,4404,2));                                   // birch stands
- const cane=smooth(.68,.74,fbm(x*.008+2,z*.008-12,4405,2))*temperate*(1-glade);                  // mountain cane patches
- const dark=smooth(.56,.66,fbm(x*.0055-17,z*.0055+3,4406,2))*smooth(.75,.4,cold);                 // where the dark understorey seeps in
- const low=smooth(.34,.12,cold);                                                                  // the foot of the temperate band: broadleaf country
- return{cold,wet,flow,mist,rock,up,temperate,montane,boreal,alpine,rip,glade,oldwood,crag,burn,colony,grove,cane,dark,low};}
+// A ZONE RECORD: the field reads and the cheap bands are filled at once; the six noise-driven zones (glade, burn,
+// colony, grove, cane, dark: an fbm each) are worked out the first time a pass reads them and kept. Most tree passes
+// read none of them, so the placement grids stop paying ~6 fbm a cell for values they never use (2026-10-26). The
+// values are the same expressions as before, so every placement is unchanged.
+function Zone(x,z){this.x=x;this.z=z;
+ const cold=this.cold=BIO.field('cold',x,z);this.wet=BIO.field('wet',x,z);const flow=this.flow=BIO.field('flow',x,z);this.mist=BIO.field('mist',x,z);const rock=this.rock=BIO.field('rock',x,z);this.up=BIO.field('upland',x,z);
+ this.temperate=smooth(.44,.28,cold);this.montane=smooth(.24,.40,cold)*smooth(.74,.58,cold);this.boreal=smooth(.56,.72,cold);this.alpine=smooth(.88,.985,cold);
+ const rip=this.rip=smooth(.3,.8,flow);
+ this.oldwood=smooth(.32,.6,rock)*smooth(.14,.30,cold)*smooth(.78,.62,cold)*(1-rip);            // the old wood on the boulder fields
+ this.crag=smooth(.55,.9,rock)*smooth(.3,.5,cold);
+ this.low=smooth(.34,.12,cold);                                                                  // the foot of the temperate band: broadleaf country
+ this._gl=-1;this._bu=-1;this._co=-1;this._gr=-1;this._ca=-1;this._da=-1;}
+Object.defineProperties(Zone.prototype,{
+ glade:{enumerable:true,get(){return this._gl>=0?this._gl:(this._gl=smooth(.62,.72,fbm(this.x*.0042+13,this.z*.0042-29,4401,2))*(1-this.rip)*(1-this.alpine));}},   // clearings: bluebells, bracken, disc stalks
+ burn:{enumerable:true,get(){return this._bu>=0?this._bu:(this._bu=this.boreal*(1-this.alpine)*smooth(.65,.71,fbm(this.x*.0015+77,this.z*.0015-31,4402,2)));}},   // the old burn: snags over fireweed, birch coming back
+ colony:{enumerable:true,get(){return this._co>=0?this._co:(this._co=smooth(.52,.64,fbm(this.x*.0062-3,this.z*.0062+8,4403,2)));}},   // where the understorey trumpets sucker
+ grove:{enumerable:true,get(){return this._gr>=0?this._gr:(this._gr=smooth(.54,.64,fbm(this.x*.0044+5,this.z*.0044+41,4404,2)));}},   // birch stands
+ cane:{enumerable:true,get(){return this._ca>=0?this._ca:(this._ca=smooth(.68,.74,fbm(this.x*.008+2,this.z*.008-12,4405,2))*this.temperate*(1-this.glade));}},   // mountain cane patches
+ dark:{enumerable:true,get(){return this._da>=0?this._da:(this._da=smooth(.56,.66,fbm(this.x*.0055-17,this.z*.0055+3,4406,2))*smooth(.75,.4,this.cold));}}});   // where the dark understorey seeps in
+function zones(x,z){return new Zone(x,z);}
 NHL.zones=zones;
 
 // ---------------------------------------------------------------- colour
@@ -79,11 +86,23 @@ function blocked(x,z,pad){const L=HASH[Math.floor(x/HC)+','+Math.floor(z/HC)];if
 NHL.blocked=blocked;
 
 // ---------------------------------------------------------------- foliage and epiphyte helpers
-function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
+// LEAVES HELD BY THE STEM (core/biome 31b-core-leafset.js, the owner 2026-10-26): with NHL.LEAFSET the items it names are
+// sprays (BIO.geo.clump({stem})) hung from their twig by BIO.leafOn: the stem at the spot, the blade out along the twig
+// (twig: the bough's direction there; none: out from the crown's centre), drooping, the face to the sky, jittered from
+// KRAND by the spot. The page's random stream draws exactly as before (the old turn is still drawn), so nothing else moves.
+// ?leafset=0 shows the old random tripods. Pilot: the broadleaf crowns (B.broad's maple and broad items).
+// the mid-range tree draws a bough as one straight rod: its points (where the masses hang) move onto that rod, or the masses float
+// beside it (the owner's look pass, 2026-10-26: "floating beech leaves"). In place; no random draw.
+function onRod(pts,n){const A=pts[0],Z=pts[n];for(let i=1;i<n;i++){const t=i/n;pts[i]={x:A.x+(Z.x-A.x)*t,y:A.y+(Z.y-A.y)*t,z:A.z+(Z.z-A.z)*t,r:pts[i].r};}}
+function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,twig){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.78,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
+ const q0=qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3));
+ if(NHL.LEAFSET&&NHL.LEAFSET[item]){const tw=twig||[x-cx,(y-cy)*.5+.3*ey,z-cz],tl=Math.hypot(tw[0],tw[1],tw[2])||1;
+  const r=BIO.leafOn({a:[x-tw[0]/tl,y-tw[1]/tl,z-tw[2]/tl],b:[x,y,z]},1,{seed:KRAND.hash(3171,Math.round(x*50),Math.round(y*50),Math.round(z*50)),angle:.55,droop:.25,roll:.35,pitch:.2});
+  BIO.put(item,[x,y,z],BIO.leafQ(r),[size*.8,size*.8,size*.8],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});return;}
+ BIO.put(item,[x,y,z],q0,[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 // a drooping SPRAY (frond card pinned at the branch, hanging out along a)
 function sprayAt(x,y,z,a,L,pitch,col){BIO.put('spray',[x,y,z],qEuler(rr(-.25,.25),-a,pitch),[L,L*rr(.8,1),L*rr(1.5,2)],col);}   // broad: a narrow spray reads as a fishbone at range
 // HANGING MOSS (temperate) or BEARD LICHEN (boreal) off a point
@@ -117,6 +136,11 @@ function bole(T,S,top,rAt,o){o=o||{};const vs=o.vs||6,ti=T.seed%3,rings=[],ph=rr
  for(let yy=0;yy<top;yy+=vs*.5){const p=at(yy),c=o.col?o.col(yy):barkCol(S,(Math.floor(yy/10)+ti)%3);
   if(mz>0)c.lerp(mcol,clamp(mz*smooth(top*.45,0,yy)*.6+mz*.1,0,.6));
   rings.push({x:p[0],y:T.y0+yy,z:p[1],r:rAt(yy/T.H),yy:yy,col:c});}
+ /* THE FOOT ON A SLOPE: the base ring is level (the ground at the centre, less 0.4 m), so on a hillside the flare's downhill side
+    stood in the air (the owner's look pass, 2026-10-26). A skirt ring goes down as far as the ground falls under the flared foot's
+    rim (eight samples), buried uphill and meeting the ground downhill; its yy stays 0 so the flare keeps its shape */
+ {const rf=rAt(0)*(1+(o.buttress||0))*1.05;let drop=0;for(let k=0;k<8;k++){const a=k/8*TAU;drop=Math.max(drop,T.y0-BIO.terrainH(T.x+Math.cos(a)*rf,T.z+Math.sin(a)*rf));}
+  if(drop>.05)rings.unshift({x:T.x,y:T.y0-drop-.3,z:T.z,r:rAt(0),yy:0,col:rings[0].col});}
  const pe=at(top),re=rAt(top/T.H);rings.push({x:pe[0],y:T.y0+top,z:pe[1],r:re*.8,yy:top,col:barkCol(S,1)},{x:pe[0],y:T.y0+top+re*1.3,z:pe[1],r:.04,yy:top+re,col:barkCol(S,1)});
  const nf=o.flutes||0,fa=o.fluteA||0,tw=o.twist||0,nb=o.nb||5,bt=o.buttress||0,bh=o.bh||2.5;
  const seg=o.seg||(T.lv===2?14:8);
@@ -124,8 +148,12 @@ function bole(T,S,top,rAt,o){o=o||{};const vs=o.vs||6,ti=T.seed%3,rings=[],ph=rr
   (R,ang)=>R.r*(1+fa*Math.cos(nf*ang+R.yy*tw+ph))*(1+bt*Math.exp(-R.yy/bh)*Math.max(0,Math.cos(nb*ang+ph2))),
   (R,ang)=>1-(fa>0?.25*(.5-.5*Math.cos(nf*ang+R.yy*tw+ph)):0));
  return{x:pe[0],y:T.y0+top,z:pe[1]};}
-function limb(S,pts,st,o){o=o||{};const ph=rr(0,TAU),tw=o.twist||0,fa=o.fluteA||0,nf=o.flutes||4;
- st.limb+=BIO.tube(o.fam||fam(S),pts,o.col||barkCol(S,1),{seg:o.seg||(pts[0].r>.5?7:5),cap:true,rfn:fa?(i,ang)=>1+fa*Math.cos(nf*ang+i*tw+ph):null});}
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03, every rebuild turn): the root sunk into the parent and swollen to a
+// collar, so a limb leaves its parent as wood does, not as a pipe pushed into a pipe; 6 sides at least on a limb over .15 m. No random numbers, so every
+// tree keeps its form. A page without the fragment (Roketstad, nwlowlands' reads) draws the plain tube as before; o.join false for a stem from the ground.
+// The flutes' rfn indexes the flared points (one more at the root), so a fluted limb's ridges start at the collar
+function limb(S,pts,st,o){o=o||{};const ph=rr(0,TAU),tw=o.twist||0,fa=o.fluteA||0,nf=o.flutes||4,j=o.join!==false&&BIO.flareJoin&&pts[0].r>.04,P=j?BIO.flareJoin(pts,{parentR:o.parentR}):pts,sg=o.seg||(pts[0].r>.5?7:5);
+ st.limb+=BIO.tube(o.fam||fam(S),P,o.col||barkCol(S,1),{seg:j&&pts[0].r>.15?Math.max(6,sg):sg,cap:true,rfn:fa?(i,ang)=>1+fa*Math.cos(nf*ang+i*tw+ph):null});}
 function limbOk(pts,pad){for(let i=1;i<pts.length;i++)if(!clear3(pts[i].x,pts[i].y,pts[i].z,pts[i].r+(pad||1.5),pts[i].r+(pad||1.5)))return false;return true;}
 
 // ---------------------------------------------------------------- the builders
@@ -153,26 +181,29 @@ B.conifer=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,R=T.crownR,s
  const step=f.step*(lv===2?1:2.2)*Math.max(.8,Math.min(1.25,H/40)),y0c=H*clear,top=H*.96;let spread=0;
  const flat=f.top==='flat'&&H>S.H[0]*1.1,inner=S.item==='spray'?'needle':S.item,hi=S.item==='spray'?shade(hc,-.06):hc;
  for(let y=y0c,t=0;y<top;y+=step*rr(.85,1.15),t++){const v=(y-y0c)/(top-y0c),Rt=Math.max(.5,R*(flat&&v>.8?Math.max(prof(v),.42):prof(v))*rr(.85,1.12)),nB=lv===2?(Rt>3?ri(5,6):ri(4,5)):(Rt>2.4?4:3),a0=t*GOLD+rr(-.3,.3);
-  if(Rt>.9&&!f.sparse){const si=Math.max(1.3,Rt*(lv===2?.8:1.05));clumpAt(inner,T.x,T.y0+y+si*.1,T.z,si,.85,bright(hi,.95),T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;}
+  /* a mass round the bole at every tier of the upper half too, never under 1.5 m there: the crowns thinned toward their tops (the owner's look pass, 2026-10-26) */
+  if((Rt>.9||v>.5)&&!f.sparse){const si=Math.max(v>.5?1.5:1.3,Rt*(lv===2?.8:1.05));clumpAt(inner,T.x,T.y0+y+si*.1,T.z,si,.85,bright(hi,.95),T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;}
   for(let k=0;k<nB;k++){const a=a0+k/nB*TAU+rr(-.2,.2),el=lerp(.18,-.4,f.droop)*(1-v)+v*.45,L=Rt*rr(.85,1.08);
    const sx=T.x,sz=T.z,sy=T.y0+y,d=dirOf(a,el),ex=sx+d[0]*L,ey=sy+d[1]*L-f.droop*L*.18,ez=sz+d[2]*L;
-   if(lv===2&&L>2.6)BIO.beam('rod',[sx,sy,sz],[sx+(ex-sx)*.62,sy+(ey-sy)*.62,sz+(ez-sz)*.62],Math.min(.16,rb*.05+.025),.03,rc);
+   /* the arm's rod (the attach audit, pair 7): to 80% of an arm over 4 m and 62% of a shorter one, and on arms from 1.4 m (it was 2.6): the masses at the arm's
+      outer third hung off nothing. No draw moves */
+   const rk=lv===2&&L>1.4?(L>4?.8:.62):0;if(rk)BIO.beam('rod',[sx,sy,sz],[sx+(ex-sx)*rk,sy+(ey-sy)*rk,sz+(ez-sz)*rk],Math.min(.16,rb*.05+.025),.03,rc);
    if(lv<2&&S.item!=='spray'){const sz2=Math.max(1.6,Rt*1.5)*(f.sparse?.85:1),px=sx+d[0]*Rt*.45,pz=sz+d[2]*Rt*.45;clumpAt(S.item,px,sy+sz2*.08,pz,sz2,f.sparse?.6:.8,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step));st.clumps++;spread=Math.max(spread,L);if(snow>0&&rng()<snow*.8)BIO.put('needle',[px,sy+sz2*.4,pz],qEuler(0,rr(0,TAU),0),[sz2*.8,sz2*.25,sz2*.8],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});continue;}
    if(S.item==='spray'){const n=lv===2?(L>3?4:3):2;for(let c=0;c<n;c++){const fr=.2+.7*(c+1)/n;sprayAt(sx+d[0]*L*fr*.6,sy+d[1]*L*fr*.6-f.droop*L*.06,sz+d[2]*L*fr*.6,a+rr(-.5,.5),L*rr(.7,.95),-f.droop*rr(.4,.9)+.1,bright(hc,rr(.85,1.12)));st.sprays++;}}
    else{const n=lv===2?(L>4?4:L>2.2?3:2):1;for(let c=0;c<n;c++){const fr=n===1?.65:.3+.7*c/(n-1),sz2=Math.max(1.6,L*rr(.74,.94))*(f.sparse?.8:1);
      clumpAt(S.item,sx+(ex-sx)*fr,sy+(ey-sy)*fr+sz2*.05,sz+(ez-sz)*fr,sz2,f.sparse?.5:.72,hc,T.x,T.y0+y,T.z,Rt+1,Math.max(2,step),null);st.clumps++;}
-    if(f.curtain&&lv===2&&L>2)for(let c=0;c<2;c++){const fr=rr(.4,.9);sprayAt(sx+(ex-sx)*fr,sy+(ey-sy)*fr,sz+(ez-sz)*fr,a+rr(-.6,.6),rr(1,1.8),-1.25,bright(hc,.9));st.sprays++;}}
+    if(f.curtain&&lv===2&&L>2)for(let c=0;c<2;c++){const fr=rr(.4,.9)*(rk||.35)/.9;sprayAt(sx+(ex-sx)*fr,sy+(ey-sy)*fr,sz+(ez-sz)*fr,a+rr(-.6,.6),rr(1,1.8),-1.25,bright(hc,.9));st.sprays++;}}   /* on the drawn rod (62% of the arm), or close in where none is drawn (the attach audit, pair 7) */
    // SNOW on the upper side of the high boreal crowns
    if(snow>0&&rng()<snow*.9){const fr=rr(.35,.8);BIO.put('needle',[sx+(ex-sx)*fr,sy+(ey-sy)*fr+.25,sz+(ez-sz)*fr],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[L*.6,L*.18,L*.6],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});st.snow++;}
-   if(lichen>.2&&lv===2&&v<.6&&rng()<lichen*.35)drape(ex,ey,ez,rr(.5,1.4),true);
+   if(lichen>.2&&lv===2&&v<.6&&rng()<lichen*.35){const k=rk||.62;if(!rk)BIO.beam('rod',[sx,sy,sz],[sx+(ex-sx)*k,sy+(ey-sy)*k,sz+(ez-sz)*k],Math.min(.12,rb*.04+.02),.03,rc);drape(sx+(ex-sx)*k,sy+(ey-sy)*k,sz+(ez-sz)*k,rr(.5,1.4),true);}   /* hung from the rod's end, not the arm's tip past it (the attach audit, pair 7: beard 78 of 133 floated) */
    if(moss>.4&&lv===2&&v<.35&&rng()<moss*(f.drape||0)*.6)drape(sx+(ex-sx)*.6,sy+(ey-sy)*.6,sz+(ez-sz)*.6,rr(1.4,4),false);
    spread=Math.max(spread,L);}}
  // the top
  const ty=T.y0+H*.97;
  if(f.top==='candelabra'&&lv===2){for(let k=0,m=ri(2,4);k<m;k++){const a=rr(0,TAU),o=[T.x+Math.cos(a)*rb*.3,T.y0+H*rr(.82,.9),T.z+Math.sin(a)*rb*.3],e=[o[0]+Math.cos(a)*rr(1,3),o[1]+rr(4,9),o[2]+Math.sin(a)*rr(1,3)];
-   BIO.beam('rod',o,e,rb*.12,.08,rc);for(let c=0;c<3;c++)sprayAt(e[0],e[1]-c*1.2,e[2],rr(0,TAU),rr(2,3.2),rr(-.6,-.2),bright(hc,1.05));}}
+   BIO.beam('rod',o,e,rb*.12,.08,rc);for(let c=0;c<3;c++){const t=1-c*.22;sprayAt(o[0]+(e[0]-o[0])*t,o[1]+(e[1]-o[1])*t,o[2]+(e[2]-o[2])*t,rr(0,TAU),rr(2,3.2),rr(-.6,-.2),bright(hc,1.05));}}}   /* down the leader, not hung 1.2-2.4 m under its end (pair 7) */
  else if(f.top==='nod'){sprayAt(T.x,ty,T.z,rr(0,TAU),rr(2,3.4),-.9,bright(hc,1.05));}
- else{const n=flat?3:1;for(let c=0;c<n;c++)clumpAt(S.item,T.x+(flat?rr(-1.5,1.5):0),ty+(flat?-.5:0),T.z+(flat?rr(-1.5,1.5):0),flat?R*.45:Math.max(1,R*.22),flat?.4:1.1,hc,T.x,ty-2,T.z,2,2);
+ else{const n=flat?3:2;for(let c=0;c<n;c++)clumpAt(S.item,T.x+(flat?rr(-1.5,1.5):0),ty+(flat?-.5:-c*Math.max(1,R*.22)*.9),T.z+(flat?rr(-1.5,1.5):0),flat?R*.45:Math.max(1.4,R*.28)*(c?1.15:1),flat?.4:1.1,hc,T.x,ty-2,T.z,2,2);   /* the tip: two masses, the lower a little larger (one small mass read as a bare leader) */
   if(snow>.3)BIO.put('needle',[T.x,ty+.3,T.z],qEuler(0,rr(0,TAU),0),[1,.5,1],bright(C(pick(PAL.snow)),1),{n:[0,1,0]});}
  if(lv===2&&moss>.5&&T.wet>.8&&rng()<.12)glowCluster(T.x+rr(-2,2)+Math.cos(T.seed)*rb*2,T.y0+H*clear*rr(.6,1),T.z+Math.sin(T.seed)*rb*2,ri(3,6),st,.2);
  T.spread=Math.max(R,spread);reg(S,T,T.spread);};
@@ -180,7 +211,7 @@ B.conifer=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,R=T.crownR,s
 // BROAD: the moss maple, the blue beech, the mountain maple, the grey alder, the rowan. One to three stems,
 // boughs that fork once, clumps on the spots; the moss maple hung with curtains of moss and carrying moss
 // on every bough's upper side; bell-bulbs under the boughs now and then.
-B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.stems?ri(f.stems[0],f.stems[1]):1,moss=(f.moss||0)*T.wet*smooth(.6,.3,T.cold),hc=vary(pick(S.leaf),.02,.06,.05),spots=[];
+B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;let tipY=-1e9;const ns=f.stems?ri(f.stems[0],f.stems[1]):1,moss=(f.moss||0)*T.wet*smooth(.6,.3,T.cold),hc=vary(pick(S.leaf),.02,.06,.05),spots=[];
  for(let s=0;s<ns;s++){const la=rr(0,TAU),lk=ns>1?rr(.04,.12):rr(0,.03),rbs=rb*(ns>1?.75:1);
   const rAt=u=>rbs*(1-.6*u)*(1+(f.roots?.6:.35)*Math.exp(-u*H/2.5));
   const T2=ns>1?Object.assign({},T,{x:T.x+Math.cos(la)*rbs*.8,z:T.z+Math.sin(la)*rbs*.8}):T;
@@ -196,10 +227,13 @@ B.broad=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb;const ns=f.ste
     if(f.drape&&moss>.3)for(let i=1;i<5;i++)if(rng()<f.drape*moss*.85){const p=pts[i];drape(p.x+rr(-.4,.4),p.y-p.r,p.z+rr(-.4,.4),rr(1.5,5.5)*(f.drape>.8?1.2:.8),false);st.drapes++;}
     if(f.bulbs&&rng()<f.bulbs){const p=pts[ri(2,4)];glowCluster(p.x,p.y-p.r,p.z,ri(3,8),st);}}
    else BIO.beam('rod',P3(pts[0]),P3(pts[5]),r0,.08,rodCol(S,k));
-   for(let i=2;i<=5;i++)spots.push(pts[i]);}
-  spots.push({x:top.x,y:T.y0+H*.95,z:top.z});}
- const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72;
- spots.forEach(p=>{for(let c=0;c<cnt;c++){const sz=rr(f.clump[0],f.clump[1]);clumpAt(S.item,p.x+rr(-1.2,1.2),p.y+rr(-.3,1.2),p.z+rr(-1.2,1.2),sz,.58,hc,cx,cy,T.z,T.crownR,H*.28);st.clumps++;
+   if(lv!==2)onRod(pts,5);
+   for(let i=2;i<=5;i++){const p=pts[i],q=pts[i-1];p.d=[p.x-q.x,p.y-q.y,p.z-q.z];spots.push(p);tipY=Math.max(tipY,p.y);}}
+  /* the crown's top mass: over the bole, no higher than just above the highest bough (it floated up to 10 m above the boughs) */
+  spots.push({x:top.x,y:tipY>-1e8?Math.min(T.y0+H*.95,tipY+1.5):top.y+2,z:top.z});}
+ /* the mid-range tree (lv 1, 100-500 m): its three boughs carry larger masses, and one spot in two a second one (2026-10-26: the conifers' lv-1 treatment; read sparse at 100-300 m) */
+ const cnt=lv===2?2:1,cx=T.x,cy=T.y0+H*.72,lvK=lv===2?1:1.3,hcM=lv===2?hc:shade(hc,-.16);   /* and a shade darker: lit whole with no inner crown behind them, its masses read lime against the hero trees */
+ spots.forEach(p=>{for(let c=0,m=lv===2?cnt:(rng()<.5?2:1);c<m;c++){const sz=rr(f.clump[0],f.clump[1])*lvK;{const jx=rr(-1.2,1.2),jy=rr(-.3,1.2),jz=rr(-1.2,1.2),ls=NHL.LEAFSET&&NHL.LEAFSET[S.item]?.25:1;clumpAt(S.item,p.x+jx*ls,p.y+jy*ls,p.z+jz*ls,sz,.58,hcM,cx,cy,T.z,T.crownR,H*.28,p.d);}st.clumps++;
   if(f.berries&&lv>=1&&rng()<.6)for(let b=0,m=lv===2?ri(5,10):3;b<m;b++)BIO.put('berry',[p.x+rr(-1,1),p.y+rr(-.6,.4),p.z+rr(-1,1)],null,rr(.06,.09),bright(C(pick(PAL.berry)),1.1));}});
  // SUCKERS: the old lime's skirt of leafy shoots round its foot
  if(f.mast&&lv===2)mastOn(spots,f.mast,st);
@@ -212,7 +246,7 @@ B.gnarl=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,ns=ri(f.stems[
  const laurel=ns>2;
  for(let s=0;s<ns;s++){const la=rr(0,TAU)+s*TAU/ns,lean=laurel?rr(.15,.45):rr(.05,.3),hT=laurel?H*rr(.55,.85):H*rr(.28,.42),n=6,pts=[];const wig=f.wig*hT;
   for(let i=0;i<=n;i++){const t=i/n,w=Math.sin(t*Math.PI*rr(1,2)+s)*wig*.35;pts.push({x:T.x+Math.cos(la)*(lean*hT*t+(laurel?.3:0))+Math.cos(la+1.6)*w,y:T.y0-.3+hT*t,z:T.z+Math.sin(la)*(lean*hT*t+(laurel?.3:0))+Math.sin(la+1.6)*w,r:(laurel?rb:rb*(ns>1?.75:1))*(1-.45*t)*(1+.5*Math.exp(-t*7))});}
-  const sc=mossy(S,T,s,moss*.75);limb(S,pts,st,{seg:lv===2?8:5,flutes:4,fluteA:.14,twist:.9,col:sc});
+  const sc=mossy(S,T,s,moss*.75);limb(S,pts,st,{seg:lv===2?8:5,flutes:4,fluteA:.14,twist:.9,col:sc,join:false});
   if(lv===2)for(let i=1;i<n;i++)if(rng()<moss*.8)mossOn(pts[i],st,pts[i].r*rr(2.5,4));
   const top=pts[n],nl=laurel?ri(f.limbs[0],f.limbs[1]):ri(f.limbs[0],f.limbs[1]);
   for(let k=0;k<nl;k++){const a=la+rr(-1.6,1.6)+k*GOLD,L=T.crownR*rr(.55,1.05)*(laurel?.6:1),o=pts[Math.max(2,n-ri(0,2))];
@@ -220,7 +254,7 @@ B.gnarl=function(T,st,lv){const S=SP[T.sp],f=S.form,H=T.H,rb=T.rb,ns=ri(f.stems[
    if(lv===2){limb(S,lp,st,{seg:5,flutes:3,fluteA:.12,twist:1.1,col:mossy(S,T,k,moss*.7)});
     for(let i=1;i<5;i++){if(rng()<moss*.9)mossOn(lp[i],st,lp[i].r*rr(2.5,4.5));if(rng()<moss*f.drape*.45)drape(lp[i].x,lp[i].y-lp[i].r,lp[i].z,rr(1,3.4),T.cold>.5);}
     if(rng()<f.bulbs){const p=lp[ri(2,4)];glowCluster(p.x,p.y-p.r,p.z,ri(3,7),st);}}
-   else BIO.beam('rod',P3(lp[0]),P3(lp[5]),lp[0].r,.07,rodCol(S,k));
+   else{BIO.beam('rod',P3(lp[0]),P3(lp[5]),lp[0].r,.07,rodCol(S,k));onRod(lp,5);}
    for(let i=2;i<=5;i++)spots.push(lp[i]);}
   spots.push(top);}
  const cnt=lv===2?2:1,cy=T.y0+H*.7;
@@ -235,7 +269,7 @@ B.yew=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb;
  const hB=H*rr(.28,.38),top=bole(T,S,hB,rAt,{flutes:6,fluteA:.24,twist:rr(.3,.7),buttress:.6,bh:1.2,nb:5,vs:1.5,seg:lv===2?18:10,urep:1.5,moss:.5});
  const hc=vary(pick(S.leaf),.02,.05,.04),cy=T.y0+H*.6,nL=lv===2?ri(5,8):3,a0=rr(0,TAU),spots=[];
  for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.3,.3),pts=treeGrow({x:top.x,y:top.y-rr(0,1),z:top.z},dirOf(a,rr(.2,.8)),T.crownR*rr(.6,.95),rAt(hB/H)*.4,.08,4,-.06,.2);
-  if(lv===2)limb(S,pts,st,{seg:6,flutes:3,fluteA:.15,twist:.8});else BIO.beam('rod',P3(pts[0]),P3(pts[4]),pts[0].r,.08,rodCol(S,k));for(let i=1;i<=4;i++)spots.push(pts[i]);}
+  if(lv===2)limb(S,pts,st,{seg:6,flutes:3,fluteA:.15,twist:.8});else{BIO.beam('rod',P3(pts[0]),P3(pts[4]),pts[0].r,.08,rodCol(S,k));onRod(pts,4);}for(let i=1;i<=4;i++)spots.push(pts[i]);}
  spots.push({x:T.x,y:T.y0+H*.92,z:T.z});
  spots.forEach(p=>{for(let c=0,m=lv===2?3:1;c<m;c++){clumpAt('needle',p.x+rr(-1.4,1.4),p.y+rr(-.6,1.2),p.z+rr(-1.4,1.4),rr(2.6,3.8),.6,hc,T.x,cy,T.z,T.crownR,H*.35);st.clumps++;}
   if(lv===2&&rng()<.35)for(let b=0;b<4;b++)BIO.put('berry',[p.x+rr(-1.5,1.5),p.y+rr(-.8,.4),p.z+rr(-1.5,1.5)],null,rr(.05,.07),bright(C(0xd0202a),1.1));});
@@ -248,7 +282,7 @@ B.birch=function(T,st,lv){const S=SP[T.sp],H=T.H,ns=lv===2?ri(2,5):2,hc=vary(pic
   const rAt=u=>rb*(1-.75*u)*(1+.3*Math.exp(-u*Hs/1.2));
   const top=bole(T2,S,Hs*.92,rAt,{lean:[Math.cos(la)*lk,Math.sin(la)*lk],vs:3,seg:lv===2?8:6,col:yy=>{const c=barkCol(S,0);if(yy<1.2)c.lerp(C(0x2a2622),.55*(1-yy/1.2));return c;}});
   const n=lv===2?ri(5,8):3;for(let k=0;k<n;k++){const u=rr(.45,.95),a=rr(0,TAU),y=T2.y0+Hs*u,bx=T2.x+Math.cos(la)*lk*Hs*u,bz=T2.z+Math.sin(la)*lk*Hs*u,L=T.crownR*rr(.5,1)*(1.1-u*.4);
-   const e=[bx+Math.cos(a)*L,y+rr(-.5,1.2),bz+Math.sin(a)*L];if(lv===2)BIO.beam('rod',[bx,y,bz],e,.06,.025,C(0x4a3e3a));
+   const e=[bx+Math.cos(a)*L,y+rr(-.5,1.2),bz+Math.sin(a)*L];if(lv>=1)BIO.beam('rod',[bx,y,bz],e,lv===2?.06:.05,.025,C(0x4a3e3a));   /* at mid range too (pair 7): its masses hung off nothing */
    for(let c=0,m=lv===2?2:1;c<m;c++){const fr=rr(.45,1);clumpAt('birch',bx+(e[0]-bx)*fr,e[1]-rr(0,.6),bz+(e[2]-bz)*fr,rr(1.8,2.8),.6,hc,T.x,T.y0+H*.75,T.z,T.crownR,H*.3);st.clumps++;}
    if(lichen>.2&&lv===2&&rng()<lichen)drape(e[0],e[1],e[2],rr(.4,1.1),true);}
   clumpAt('birch',top.x,top.y+.5,top.z,2.2,.8,hc,top.x,top.y,top.z,2,2);}
@@ -268,7 +302,7 @@ B.pine=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,la=T.lean!=null?T.lean:r
  for(let k=0;k<nL;k++){const i=n-ri(1,3),p=pts[i],a=a0+k/nL*TAU+rr(-.4,.4),L=T.crownR*rr(.5,1),e=[p.x+Math.cos(a)*L,p.y+rr(.5,2.5),p.z+Math.sin(a)*L];
   if(!clear3(e[0],e[1],e[2],1.5,1))continue;
   const lp=arc([p.x,p.y,p.z],[(p.x+e[0])/2,p.y+rr(.5,1.5),(p.z+e[2])/2],e,p.r*.55,.08,3);
-  if(lv===2)st.limb+=BIO.tube(fam(S),lp,barkCol(S,0),{seg:5,cap:true});else BIO.beam('rod',[p.x,p.y,p.z],e,p.r*.5,.08,barkCol(S,0));
+  if(lv===2)limb(S,lp,st,{seg:5,col:barkCol(S,0),parentR:p.r});else BIO.beam('rod',[p.x,p.y,p.z],e,p.r*.5,.08,barkCol(S,0));
   pad(e[0],e[1]+.2,e[2],pR());if(lv===2&&L>3&&rng()<.6)pad(lp[2].x,lp[2].y+.2,lp[2].z,pR()*.7);spread=Math.max(spread,L+2);}
  pad(top.x,top.y+.3,top.z,rr(2.2,3.2)*Math.min(1.3,H/18));
  T.spread=spread;reg(S,T,spread);};
@@ -292,14 +326,28 @@ B.krumm=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,lee=Math.atan2(1,1)+rr(
 // WILLOW (the brook willow): many thin stems arching out of one stool, leaning over the water, lance leaves
 B.willow=function(T,st,lv){const S=SP[T.sp],H=T.H,ns=lv===2?ri(5,9):3,hc=vary(pick(S.leaf),.02,.06,.05),la=rr(0,TAU);
  for(let s=0;s<ns;s++){const a=la+rr(-1.4,1.4),reach=T.crownR*rr(.5,1.1),hh=H*rr(.6,1),o=[T.x+rr(-.3,.3),T.y0-.2,T.z+rr(-.3,.3)],e=[T.x+Math.cos(a)*reach,T.y0+hh*.8,T.z+Math.sin(a)*reach],c=[mix(o[0],e[0],.2),T.y0+hh*1.05,mix(o[2],e[2],.2)];
-  const pts=arc(o,c,e,T.rb*rr(.5,.9),.04,4);if(lv===2)st.limb+=BIO.tube(fam(S),pts,mossy(S,T,s,.25),{seg:4,cap:true});else BIO.beam('rod',o,e,T.rb*.6,.05,rodCol(S,s));
+  const pts=arc(o,c,e,T.rb*rr(.5,.9),.04,4);if(lv===2)st.limb+=BIO.tube(fam(S),pts,mossy(S,T,s,.25),{seg:4,cap:true});else{BIO.beam('rod',o,e,T.rb*.6,.05,rodCol(S,s));onRod(pts,4);}   /* mid range: the leaves on the rod drawn, not on the arc it stands for (pair 7) */
   for(let i=2;i<=4;i++){const p=pts[i];clumpAt('lance',p.x+rr(-.6,.6),p.y+rr(-.4,.4),p.z+rr(-.6,.6),rr(1.4,2.2),.55,hc,T.x,T.y0+H*.6,T.z,T.crownR,H*.35);st.clumps++;}}
  T.spread=T.crownR;reg(S,T);};
 
 // THE TRUMPETS
 // a funnel at p (a point on the arm's tip): a ribbed lathe flaring from the arm's radius r0 to R, the rim
 // turned out, a fringe of fins round it, the floor closed in violet. dead: a broken, rimless ring.
-function funnel(p,r0,R,depth,S,st,lv,dead,o){o=o||{};const nR=lv===2?(S.ribs||12):Math.min(7,S.ribs||12),seg=nR*3,ph=rr(0,TAU),n=lv===2?(R>4?5:4):3;   // three segments a rib (the Rift's lesson); fewer ribs at mid range
+// FUNNELS DO NOT GROW THROUGH EACH OTHER (the owner's look pass, 2026-10-26): every funnel drawn is kept (NHL.FUNNELS, a 16 m hash),
+// and a new one whose height span meets a neighbour's shrinks until its rim (and fins) clears that neighbour's, never under a fifth
+// of its radius (a bud: the great trumpet's heads are on fixed arms); its depth shrinks with it. Colony trees stand 2 m apart at the foot and their funnels are metres across.
+const FUN={};NHL.FUNNELS=FUN;
+function fitFunnel(p,R,depth){const k=(x,z)=>Math.floor(x/16)+','+Math.floor(z/16),R0=R,gap=.35;
+ for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const L=FUN[(Math.floor(p.x/16)+a)+','+(Math.floor(p.z/16)+b)];if(!L)continue;
+  for(const q of L){if(p.y+depth*(R/R0)<q.y-.2||p.y>q.y+q.h+.2)continue;const d=Math.hypot(p.x-q.x,p.z-q.z);
+   if(d<R*1.08+q.R*1.08+gap)R=Math.max(R0*.2,(d-q.R*1.08-gap)/1.08);}}   /* down to a fifth: a closed bud where a head cannot move */
+ const h=depth*(R/R0),c=k(p.x,p.z);(FUN[c]=FUN[c]||[]).push({x:p.x,y:p.y,z:p.z,R,h});return R/R0;}
+// a funnel no shrinking can clear (a neighbour's rim within its smallest radius, at its height): the first such neighbour, or null
+function funnelBlock(x,y,z,R,h){const gap=.35;
+ for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const L=FUN[(Math.floor(x/16)+a)+','+(Math.floor(z/16)+b)];if(!L)continue;
+  for(const q of L){if(y+h<q.y-.2||y>q.y+q.h+.2)continue;if(Math.hypot(x-q.x,z-q.z)<R*.35*1.08+q.R*1.08+gap)return q;}}
+ return null;}
+function funnel(p,r0,R,depth,S,st,lv,dead,o){o=o||{};{const f=fitFunnel(p,R,depth);R*=f;depth*=f;}const nR=lv===2?(S.ribs||12):Math.min(7,S.ribs||12),seg=nR*3,ph=rr(0,TAU),n=lv===2?(R>4?5:4):3;   // three segments a rib (the Rift's lesson); fewer ribs at mid range
  const leaf=vary(pick(o.leaf||S.leaf),.015,.05,.04),rim=C(pick(o.rim||PAL.trumpetRim)),throat=C(pick(PAL.throat)),stalk=barkCol(S,1);
  const rings=[];
  for(let i=0;i<=n;i++){const u=i/n,fl=Math.pow(u,1.9),r=lerp(r0,R,fl),yy=depth*u;let c=stalk.clone().lerp(leaf,smooth(.15,.7,u));if(u>.8)c.lerp(rim,smooth(.8,1,u)*.8);if(dead)c.lerp(C(0x6a5a40),.55);
@@ -312,6 +360,10 @@ function funnel(p,r0,R,depth,S,st,lv,dead,o){o=o||{};const nR=lv===2?(S.ribs||12
   for(let k=0;k<nf;k++){const a=ph2+k/nf*TAU,x=p.x+Math.cos(a)*R*1.04,z=p.z+Math.sin(a)*R*1.04,y=p.y+depth+R*.03,L=R*rr(.18,.3)*(o.finK||1);
    BIO.put('fin',[x,y,z],qEuler(rr(-.1,.1),-a,rr(.15,.55)),[L,L,L*rr(.7,1)],fc,{n:[Math.cos(a),.5,Math.sin(a)],c2});st.fins++;}}
  return{x:p.x,y:p.y+depth,z:p.z};}
+// the height of a funnel's underside at radius d from its axis (funnel()'s rings: r = r0 + (R - r0) u^1.9 at y = depth u, scaled by the fit it returned),
+// a little under it; a radius past the rim takes the rim. h0: the old height over the tip, for a funnel too small to fit
+function funnelUnder(p,fu,R,dep,d,h0){const f=dep>0?(fu.y-p.y)/dep:1,Rf=R*f,df=d*f,r0=p.r||0;if(Rf<=r0+.01)return p.y+h0;
+ const u=Math.pow(clamp((df-r0)/(Rf-r0),0,1),1/1.9);return p.y+(fu.y-p.y)*u-.12;}
 // GREAT TRUMPET: a short, massive, buttressed bole that twists as it climbs, three to seven writhing arms,
 // a funnel four to nine metres across on each (the tallest crowns the bole), moss on the arms, bell-bulbs and
 // lantern pods hung under the rims
@@ -326,21 +378,26 @@ B.greattrumpet=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,sw=rr(.6,1.4),ph
   if(!limbOk(pts,R*.5))continue;
   limb(S,pts,st,{fam:'nbark5',seg:lv===2?9:6,flutes:5,fluteA:.12,twist:.6,col:mossy(S,T,k,.35)});
   if(lv===2)for(let i=1;i<6;i++){if(rng()<.75)mossOn(pts[i],st,pts[i].r*rr(2.5,4));if(rng()<.25)drape(pts[i].x,pts[i].y-pts[i].r,pts[i].z,rr(1,3),false);}
-  const tip=pts[6],dead=rng()<.12;funnel(tip,tip.r,R,R*rr(.55,.75),S,st,lv,dead);
-  if(lv>=1&&!dead){const nc=lv===2?ri(2,5):1;for(let c=0;c<nc;c++){const aa=rr(0,TAU),d=R*rr(.6,1.0);glowCluster(tip.x+Math.cos(aa)*d,tip.y+R*rr(.15,.4),tip.z+Math.sin(aa)*d,lv===2?ri(4,9):3,st,.3);}}
+  const tip=pts[6],dead=rng()<.12,dep=R*rr(.55,.75),fu=funnel(tip,tip.r,R,dep,S,st,lv,dead);
+  /* the bulbs hang from the funnel's underside at their radius (pair 7: at R x .15-.4 over the tip they hung 1-3.5 m below it); the same draws */
+  if(lv>=1&&!dead){const nc=lv===2?ri(2,5):1;for(let c=0;c<nc;c++){const aa=rr(0,TAU),d=R*rr(.6,1.0),h0=R*rr(.15,.4);glowCluster(tip.x+Math.cos(aa)*d,funnelUnder(tip,fu,R,dep,d,h0),tip.z+Math.sin(aa)*d,lv===2?ri(4,9):3,st,.3);}}
   spread=Math.max(spread,reach+R);}
  // the crowning funnel
  const R0=rr(4.5,7)*Math.min(1.25,H/40),cTop={x:top.x,y:top.y,z:top.z,r:rAt(hB/H)*.5};
  const neck=arc([top.x,top.y-1,top.z],[top.x+rr(-2,2),top.y+H*.2,top.z+rr(-2,2)],[top.x+rr(-3,3),T.y0+H*.92-R0*.6,top.z+rr(-3,3)],cTop.r,cTop.r*.6,4);
- limb(S,neck,st,{fam:'nbark5',seg:lv===2?9:6,flutes:5,fluteA:.1,twist:.5,col:mossy(S,T,9,.3)});
- const nt=neck[4];funnel(nt,nt.r,R0,R0*.65,S,st,lv,false);
- if(lv===2)glowCluster(nt.x+R0*.8,nt.y+R0*.3,nt.z,ri(4,8),st,.3);
+ limb(S,neck,st,{fam:'nbark5',seg:lv===2?9:6,flutes:5,fluteA:.1,twist:.5,col:mossy(S,T,9,.3),join:false});
+ const nt=neck[4],fu0=funnel(nt,nt.r,R0,R0*.65,S,st,lv,false);
+ if(lv===2)glowCluster(nt.x+R0*.8,funnelUnder(nt,fu0,R0,R0*.65,R0*.8,R0*.3),nt.z,ri(4,8),st,.3);
  T.spread=spread;reg(S,T,spread);};
 // UNDERSTOREY TRUMPET: the Rift's form made gnarled: a leaning, kinked stalk (two or three from one foot
 // now and then), one funnel each. BOREAL TRUMPET: squat and thick-walled, a narrow deep funnel, a blue-grey
 // bloom on the rim.
 B.trumpet=function(T,st,lv){const S=SP[T.sp],H=T.H,frost=!!S.frost,ns=frost?1:(rng()<.3?ri(2,3):1);let spread=T.crownR;
- for(let s=0;s<ns;s++){const la=rr(0,TAU),lean=frost?rr(0,.08):rr(.05,.3),Hs=H*(s?rr(.55,.85):1),n=frost?3:4,pts=[];const kink=rr(-1,1);
+ for(let s=0;s<ns;s++){const la=rr(0,TAU),lean=frost?rr(0,.08):rr(.05,.3),n=frost?3:4,pts=[];let Hs=H*(s?rr(.55,.85):1);const kink=rr(-1,1);
+  /* where its funnel would meet a neighbour's that no shrinking clears (fitFunnel), the stem is cut down so the funnel nests
+     under that one, or grown so it stands over it (up to 1.3 H); three tries */
+  {const yk=frost?.62:.8,R0=T.crownR,hk=frost?1.05:.6;for(let it=0;it<3;it++){const tx=T.x+Math.cos(la)*lean*Hs,ty=T.y0-.2+Hs*yk,q=funnelBlock(tx,ty,T.z+Math.sin(la)*lean*Hs,R0,R0*hk);if(!q)break;
+   const lo=(q.y-.4-R0*hk-(T.y0-.2))/yk,hi=(q.y+q.h+.4-(T.y0-.2))/yk;Hs=lo>H*.4?lo:hi<H*1.3?hi:Hs;if(Hs!==lo&&Hs!==hi)break;}}
   for(let i=0;i<=n;i++){const t=i/n,kk=Math.sin(t*Math.PI*1.5)*kink*.12*Hs;pts.push({x:T.x+Math.cos(la)*(lean*Hs*t)+Math.cos(la+1.6)*kk,y:T.y0-.2+Hs*t*(frost?.62:.8),z:T.z+Math.sin(la)*(lean*Hs*t)+Math.sin(la+1.6)*kk,r:T.rb*(s?.7:1)*(1-.35*t)*(1+(frost?.5:.35)*Math.exp(-t*5))});}
   st.limb+=BIO.tube('nbark5',pts,mossy(S,T,s,frost?.05:.3),{seg:lv===2?(frost?9:7):5,cap:false,rfn:(i,ang)=>1+.08*Math.cos((S.ribs||12)*ang)});
   const tip=pts[n],R=T.crownR*(s?rr(.5,.8):rr(.75,1.05)),dead=!frost&&rng()<.06;
@@ -393,12 +450,12 @@ B.serpent=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ns=ri(2,5),hc=vary(pi
  for(let s=0;s<ns;s++){const turn=rr(1.2,2.4),pts=[];
   for(let i=0;i<=8;i++){const t=i/8,an=a0+s*TAU/ns+t*turn,off=rb*1.2*(1-.4*t),wv=Math.sin(t*Math.PI*2+s)*H*.08;
    pts.push({x:T.x+Math.cos(an)*off-Math.sin(an)*wv,y:T.y0-.3+H*.75*t,z:T.z+Math.sin(an)*off+Math.cos(an)*wv,r:rb*(1-.5*t)});}
-  limb(S,pts,st,{seg:lv===2?8:5,flutes:3,fluteA:.1,twist:.8,col:mossy(S,T,s,1)});
+  limb(S,pts,st,{seg:lv===2?8:5,flutes:3,fluteA:.1,twist:.8,col:mossy(S,T,s,1),join:false});
   if(lv===2)for(let i=1;i<8;i+=2)mossOn(pts[i],st,pts[i].r*rr(2.5,4));
   const top=pts[8];
   for(let k=0,nl=lv===2?ri(2,4):2;k<nl;k++){const a=rr(0,TAU),lp=treeGrow({x:top.x,y:top.y,z:top.z},dirOf(a,rr(.4,1)),T.crownR*rr(.5,.9),top.r*.7,.05,5,-.05,.5);if(!limbOk(lp,.8))continue;
    if(lv===2){limb(S,lp,st,{seg:5,flutes:3,fluteA:.1,twist:1.1,col:mossy(S,T,k,.8)});if(rng()<.5)drape(lp[2].x,lp[2].y-lp[2].r,lp[2].z,rr(1,3),false);}
-   else BIO.beam('rod',P3(lp[0]),P3(lp[5]),lp[0].r,.05,rodCol(S,k));
+   else{BIO.beam('rod',P3(lp[0]),P3(lp[5]),lp[0].r,.05,rodCol(S,k));onRod(lp,5);}
    for(let i=2;i<=5;i++)spots.push(lp[i]);}
   spots.push(top);}
  const cnt=lv===2?2:1,cy=T.y0+H*.85;
@@ -412,7 +469,7 @@ B.table=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hc=vary(pick(S.leaf),.0
  const nL=ri(3,5),a0=rr(0,TAU);
  for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.3,.3);
   const pts=limbCut(treeGrow({x:top.x,y:top.y-rr(0,1),z:top.z},dirOf(a,rr(.7,1.1)),H*rr(.5,.62),rAt(.3)*.55,.12,5,-.04,.12),1.5,2);if(!pts)continue;
-  const n=pts.length-1;if(lv===2)limb(S,pts,st,{seg:6});else BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.1,rodCol(S,k));
+  const n=pts.length-1;if(lv===2)limb(S,pts,st,{seg:6});else{BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.1,rodCol(S,k));onRod(pts,n);}
   const nt=Math.min(n,lv===2?ri(3,5):2);
   for(let t=0;t<nt;t++){const p=pts[Math.max(1,n-Math.round(t*(n-1)/Math.max(1,nt-1)))],Rp=T.crownR*rr(.35,.6)*(1-.25*t/Math.max(1,nt-1));
    for(let c=0,m=lv===2?ri(6,14):5;c<m;c++){const an=rr(0,TAU),d=Rp*Math.sqrt(rng());clumpAt('needle',p.x+Math.cos(an)*d,p.y+rr(-.15,.15),p.z+Math.sin(an)*d,rr(3,4.5),.24,bright(hc,1.15),T.x,p.y,T.z,T.crownR,2);st.clumps++;}
@@ -426,11 +483,11 @@ B.banyan=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,hc=vary(pick(S.leaf),.
  const top=bole(T,S,hT,rAt,{vs:4,buttress:.3,bh:2,nb:6,moss:.3,seg:lv===2?10:6});
  for(let s=0,nS=lv===2?ri(8,14):5,tw=rr(.4,.9);s<nS;s++){const a=s/nS*TAU+rr(-.15,.15),pts=[];
   for(let i=0;i<=5;i++){const t=i/5,an=a+t*tw,d=rb*(.85-.25*t)*(1+.25*Math.exp(-t*4));pts.push({x:T.x+Math.cos(an)*d,y:T.y0-.3+hT*t,z:T.z+Math.sin(an)*d,r:rb*.3*(1-.35*t)});}
-  limb(S,pts,st,{seg:lv===2?6:4,col:barkCol(S,s)});}
+  limb(S,pts,st,{seg:lv===2?6:4,col:barkCol(S,s),join:false});}
  const nL=lv===2?ri(8,12):5,a0=rr(0,TAU),LIMBS=[];
  for(let k=0;k<nL;k++){const a=a0+k/nL*TAU+rr(-.12,.12),raw=treeGrow({x:top.x,y:top.y-rr(.5,3),z:top.z},dirOf(a,rr(.05,.25)),T.crownR*rr(.7,1),rb*.32,.12,7,-.06,.15);
   raw[6].y+=rr(.5,1.5);raw[7].y+=rr(1,3);const pts=limbCut(raw,1.2,3,LIMBS,T,rb*1.8);if(!pts)continue;LIMBS.push(pts);const n=pts.length-1;
-  if(lv===2)limb(S,pts,st,{seg:7,col:barkCol(S,k)});else BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.12,rodCol(S,k));
+  if(lv===2)limb(S,pts,st,{seg:7,col:barkCol(S,k)});else{BIO.beam('rod',P3(pts[0]),P3(pts[n]),pts[0].r,.12,rodCol(S,k));onRod(pts,n);}
   // prop roots: straight down into pillars, thicker near the trunk
   for(let r=0,m=ri(2,4);r<m;r++){const i=ri(2,n),p=pts[i];if(BIO.depth(p.x,p.z)>-.1)continue;const rr0=lerp(.45,.15,i/7)*rr(.85,1.1);
    const gy=Y(p.x,p.z)-.3,rc=mossy(S,T,k+r,.35*T.wet).multiplyScalar(.8);   /* bark, mossed and darker than the limbs: pillars, not poles */
@@ -477,7 +534,11 @@ function buildFar(T,fi,st,lite){const K=BIO.bucket('nfar');if(!ICO){ICO=new T3.I
  K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
 
 // ---------------------------------------------------------------- the pass
-NHL.buildTrees=function(R,q,box,opt){
+// a tree whose bole would stand in the water the eye sees is not drawn (NHL.SHORE: the host's WATER.fieldAt shore distance, the review's third line; pair 7).
+// It is made and keeps its ground as before (its draws, its keep-clear), so no other tree moves; a page that sets no SHORE (Roketstad, nwlowlands' reads)
+// draws it as before
+const offShore=(x,z)=>!!NHL.SHORE&&NHL.SHORE(x,z)<.7;
+NHL.buildTrees=function(R,q,box,opt){for(const k in FUN)delete FUN[k];
  reseed(550031);q=q==null?1:q;R=R||3300;means();
  const st={trunk:0,limb:0,far:0,clumps:0,sprays:0,snow:0,moss:0,drapes:0,glow:0,fins:0,heroes:0,fars:0,colonies:0,byS:SP.map(()=>0)};
  const TREES=NHL.TREES;TREES.length=0;NHL.COLONIES.length=0;for(const k in HASH)delete HASH[k];
@@ -488,8 +549,13 @@ NHL.buildTrees=function(R,q,box,opt){
    (x,y,z)=>{if(BIO.depth(x,z)>-.25||blocked(x,z,opt.pad==null?4:opt.pad))return;if(!BIO.clearOf(x,z,(opt.pad==null?4:opt.pad)+2))return;
     const T=mk(x,y,z,sp);if(opt.mod)opt.mod(T,zones(x,z));
     T.lv=lvOf(x,z,opt.hero,opt.mid);if(T.lv===0&&!opt.far)return;
-    TREES.push(T);hadd({x,z,r:T.rb*1.4+(opt.own||1)});n++;},{patch:opt.patch==null?.55:opt.patch,patchScale:opt.patchScale||.01,pad:1,box});
+    if(!offShore(x,z))TREES.push(T);hadd({x,z,r:T.rb*1.4+(opt.own||1)});n++;},{patch:opt.patch==null?.55:opt.patch,patchScale:opt.patchScale||.01,pad:1,box});
   return n;}
+ // A STATION (PLAN-STATIONS.md; stations/<name>/) places its own forest: NHL.STATION_PASSES(P) with this pass's tools, in place of the passes below
+ // (station 1, the page as built, sets none and runs them as before: nothing below moves)
+ if(typeof NHL.STATION_PASSES==='function'){NHL.STATION_PASSES({pass,o:(base,more)=>Object.assign({},base,more),BIG:{hero:280,mid:560,far:true,lodK:1},SMALL:{hero:240,mid:460,far:false,lodK:.6},
+  KEY,SP,TREES,mk,lvOf,hadd,blocked,zones,Y,R,q,box,st,COLONIES:NHL.COLONIES});}
+ else{
  // THE TRUMPET COLONIES: five to thirty understorey trumpets round one spot, suckering; the boreal trumpet in small knots
  // (its own small weight in the boreal band: it came only from the band's lower edge, a score of trees in all)
  BIO.grid(110,0,R,(x,z)=>{if(BIO.lodD(x,z)>520)return 0;const Z=zones(x,z);return ((Z.temperate*.8+Z.montane*.5)*(.15+.85*Z.colony)+Z.rip*.35*Z.temperate+Z.boreal*(1-Z.alpine)*.06*(.3+.7*Z.colony))*q;},(x,y,z)=>{
@@ -497,7 +563,7 @@ NHL.buildTrees=function(R,q,box,opt){
   const lvC=lvOf(x,z,300,520),nT=boreal?ri(3,8):(lvC===2?ri(8,28):ri(4,10)),rad=boreal?rr(6,12):rr(10,26),col={x,z,r:rad,n:0,sp,lv:lvC};if(lvC===0)return;
   for(let k=0;k<nT*2&&col.n<nT;k++){const a=rr(0,TAU),d=rad*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;
    if(BIO.mask(px,pz)<.3||BIO.depth(px,pz)>-.25||blocked(px,pz,.8)||!BIO.clearOf(px,pz,2))continue;
-   const T=mk(px,Y(px,pz),pz,sp);T.H*=lerp(1.1,.6,d/rad)*rr(.85,1.1);T.lv=lvC;TREES.push(T);hadd({x:px,z:pz,r:T.rb*1.5+.8});col.n++;}
+   const T=mk(px,Y(px,pz),pz,sp);T.H*=lerp(1.1,.6,d/rad)*rr(.85,1.1);T.lv=lvC;if(!offShore(px,pz))TREES.push(T);hadd({x:px,z:pz,r:T.rb*1.5+.8});col.n++;}
   if(col.n){NHL.COLONIES.push(col);st.colonies++;}},{patch:0,pad:2});
  // the temperate old growth: the giants first (they claim their ground), then the rest of the canopy. Density falls
  // off with distance from the spine (lodK) and the far trees' impostors are drawn larger to close the canopy.
@@ -544,14 +610,28 @@ NHL.buildTrees=function(R,q,box,opt){
   pass('shagmaple',46,Z=>Z.temperate*(.12+.3*Z.mist+.2*Z.rip)*smooth(.5,.8,Z.wet)*(1-Z.oldwood*.5),o(BIG,{pad:4,own:4,patch:.4}));
   pass('tablecedar',90,Z=>(Z.montane*.22+Z.temperate*.06)*(.3+.7*smooth(.2,.5,Z.rock))*(1-Z.rip)*(1-Z.alpine),o(BIG,{pad:7,own:7,patch:.3}));
   pass('banyan',260,Z=>Z.temperate*Z.low*smooth(.5,.75,Z.wet)*(1-Z.oldwood)*(1-Z.rip)*.45,o(BIG,{hero:420,mid:820,pad:16,own:18,patch:0}));}
+ }
  // build
  // runtime LOD: a hero tree is drawn in full while the camera is within NHL.LOD.tree metres of its chunk
  // and as a stand-in impostor past that; a far tree is only ever its impostor. Each tree draws from its own
  // seed, so its form does not change when another tree (or another band's mix) does.
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; GRAPHIC-LOAD.md recommendation 2, the far band's diet, 2026-10-26):
+ // on when the page lists the fragment and NHL.IMPOSTORS is not false. A far tree and a hero's stand-in are one quad showing its
+ // species baked from 8 x 8 directions, in place of the 'nfar' blobs; 31 species on two atlases (a set holds 25), two items.
+ // Each species bakes one of its own heroes (built again in place, its registration muted). Every tree reseeds from its own seed
+ // first, so drawing a quad instead of a blob moves no other tree.
+ const IMPON=NHL.IMPOSTORS==null?typeof BIO.impostor==='function':!!NHL.IMPOSTORS&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const sets=[BIO.impostorSet('nhighlands.treesA',{label:'Far trees'}),BIO.impostorSet('nhighlands.treesB',{label:'Far trees'})];
+  SP.forEach((S,sp)=>{const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;const set=sets[sp<16?0:1];
+   const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+   const rec=BIO.impostor('nhighlands.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;try{reseed(T1.seed*7919+17);B[S.habit](Object.assign({},T1),st1,2);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H,item:sp<16?'impTreesA':'impTreesB'};});
+  sets.forEach((set,k)=>{if(set.recs.length)BIO.impostorItem(k?'impTreesB':'impTreesA',set,{label:'Far trees'});});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut(I.item,I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
  TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const S=SP[T.sp];reseed(T.seed*7919+17);
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st,false);st.fars++;}
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;if(!farImp(T))buildFar(T,i,st,false);st.fars++;}
   else{BIO.range=NHL.LOD.tree;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;
-   if(T.H>7){BIO.range=1e9;BIO.minRange=NHL.LOD.tree;buildFar(T,i,st,true);}}
+   if(T.H>7){BIO.range=1e9;BIO.minRange=NHL.LOD.tree;if(!farImp(T))buildFar(T,i,st,true);}}
   st.byS[T.sp]++;});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,colonies:st.colonies,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
@@ -564,5 +644,8 @@ NHL.treeAt=function(x,y,z,key,opt){opt=opt||{};const sp=KEY[key];const S=SP[sp];
  const T={x,z,y0:y-.4,sp,H:opt.H||rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:opt.wet==null?.85:opt.wet,cold:opt.cold==null?BIO.field('cold',x,z):opt.cold,lv:opt.lv==null?2:opt.lv,lean:opt.lean};
  if(opt.scale){T.H*=opt.scale;T.rb*=Math.pow(opt.scale,.8);T.crownR*=opt.scale;}
  const o0=BIO.owner;BIO.owner=[x,z];B[S.habit](T,st,T.lv);BIO.owner=o0;NHL.TREES.push(T);hadd({x,z,r:T.rb*1.4+1});return T;};
+// one tree alone (biomes/WORLD.md: trees as variants; BIO.kin's make and grow): the pass's own record, then its habit's builder (lv 2 near, 1 mid) or its far form (lv 0). Additive: the kit's own pass does not call them
+NHL.make=function(sp,x,y,z){const S=SP[sp];return{x,z,y0:y-.4,sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z),cold:BIO.field('cold',x,z)};};
+NHL.grow=function(T,lv){means();const st={trunk:0,limb:0,far:0,clumps:0,sprays:0,snow:0,moss:0,drapes:0,glow:0,fins:0,byS:SP.map(()=>0)};T.lv=lv;if(lv===0)buildFar(T,T.seed%7,st,false);else B[SP[T.sp].habit](T,st,lv);return st;};
 NHL._glowCluster=glowCluster;NHL._drape=drape;NHL._mossOn=mossOn;
 })();

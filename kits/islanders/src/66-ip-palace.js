@@ -155,7 +155,7 @@ defBuilding({key:'ip-tower',name:'Wall tower (Kautoa)',seed:6505,w:8,d:8,h:18,bu
  tags:{types:['military'],wealth:'rich',style:'east',role:'wall tower'},
  note:'a corner tower of the palace wall: a coral-stone base, a watch room of bamboo on carved posts, a spire with horns on its ridge',
  build(o){isNoCut(()=>{box('stone',0,0,0,6.8,.6,6.8,P('stoneD'));box('coral',0,.6,0,6.2,4.9,6.2,P('coral'));box('plain',0,4.2,0,6.23,.18,6.23,P('red'));box('stone',0,5.5,0,6.6,.2,6.6,P('stone'));
-  box('planks',0,1,3.12,1.1,2,.1,P('woodD'));door(0,0,3.15,0,1.1);
+  svDoorway(0,1,3.12,0,1.1,2,{hollow:false,mk:'planks',col:P('woodD'),t:.1,style:'plank',name:'tower door'});door(0,0,3.15,0,1.1);   /* the coral base is solid: locked (core/door) */
   box('planks',0,5.7,0,7.2,.2,7.2,P('planks'));
   for(const [x,z] of [[-3.3,-3.3],[3.3,-3.3],[-3.3,3.3],[3.3,3.3]])isPou(x,5.9,z,2.3,.14,{mk:'carved',n:2,ry:isFace(-x,-z)});
   for(const [ry,len] of [[0,6.6],[PI,6.6],[PI/2,6.6],[-PI/2,6.6]])W(0,0,0,ry,()=>{if(ry===0){box('bamboo',-1.1,5.9,3.3,4.4,1.0,.1,P('bamboo'));box('bamboo',2.8,5.9,3.3,1.0,1.0,.1,P('bamboo'));}else box('bamboo',0,5.9,3.3,len,1.0,.1,P('bamboo'));   /* the front parapet is open at the ladder */box('patWeave',0,5.95,3.36,len-.4,.85,.02,WHITE);});
@@ -235,7 +235,7 @@ defBuilding({key:'ip-granary',name:'Palace granary (Kautoa)',seed:6512,w:5,d:5,h
  note:'a raised store of rice and yams: four piles with rat-guard discs, a woven body, a peaked hip of golden thatch',
  build(o){isPiles(isSpan(-1.1,1.1,2),isSpan(-1.1,1.1,2),1.8,{r:.13,beams:false});for(const x of [-1.1,1.1])for(const z of [-1.1,1.1])cyl('wood',x,1.4,z,.34,.06,P('woodD'),10);
   isDeck(2.9,2.9,1.95,{col:P('planks'),beam:false});box('bamboo',0,1.95,0,2.5,1.4,2.5,P('bamboo'));box('patWeave',0,2.1,1.26,1.9,1.0,.02,WHITE);
-  box('planks',0,2.2,1.27,.7,.9,.05,P('woodD'));door(0,1.95,1.3,0,.7);isLogLadder(0,1.35,0,1.95);
+  svDoorway(0,2.2,1.28,0,.7,.9,{hollow:false,mk:'planks',col:P('woodD'),t:.05,style:'plank',name:'granary hatch'});door(0,1.95,1.3,0,.7);   /* the store is solid (no interior): locked */isLogLadder(0,1.35,0,1.95);
   isHip({hw:2.1,hd:2.1,eaveY:3.25,topY:6.6,topS:.18,topS2:.06,mk:'thatchR',col:P('thatchE'),th:.2});isFigure(.25,6.6,0,0,.6,{mk:'carved'});}});
 defBuilding({key:'ip-bale',name:'Garden pavilion (Kautoa)',seed:6513,w:8,d:8,h:11,budget:40000,
  tags:{types:['park'],wealth:'rich',style:'east',role:'garden pavilion'},

@@ -17,4 +17,15 @@
   A.init({THREE:o.THREE,scene:o.scene,camera:o.camera,hour:o.hour||(()=>13),onFrame,ground:o.ground||(()=>0),seed:o.seed==null?1:o.seed,
    err:o.err||(m=>console.warn(m)),viewH:o.viewH||(()=>720),pixelRatio:o.pixelRatio||(()=>o.renderer?o.renderer.getPixelRatio():1)});
   return A;};
+ // THE GUST FIELD for any shader (R8: core/biome's leaf and grass sway, core/water's chop): stable names a shader can read
+ // once the page is bound, the same travelling gust fronts the smoke, the rain and the cloth ride (89-atmos-0-core.js).
+ //   ATMOS.windUniforms(uniforms)  adds atmWindV (the wind now, m/s-ish: A.U.wind, veering, times the weather's windScale),
+ //                                 atmGustAmp (A.U.gustAmp: the weather raises it) and atmTime (the module clock, s): the
+ //                                 shared uniform objects, so one update a frame moves every reader
+ //   ATMOS.windGLSL()              their declarations and atmGust(t, xz, w), atmWind(t, xz, w, amp) (guarded: include it once
+ //                                 or many times), plus atmGustHere(xz) (-1..1) and atmWindHere(xz) (the wind vector at xz now)
+ // Godot: global shader parameters atm_wind, atm_gust_amp, atm_time and the same functions (GODOT.md, "The wind").
+ A.windUniforms=u=>{u.atmWindV=A.U.wind;u.atmGustAmp=A.U.gustAmp;u.atmTime=A.U.time;return u;};
+ A.windGLSL=()=>['#ifndef ATM_WIND_FIELD','#define ATM_WIND_FIELD','uniform vec2 atmWindV;uniform float atmGustAmp;uniform float atmTime;',A.GLSL_WIND,
+  'float atmGustHere(vec2 xz){return atmGust(atmTime,xz,atmWindV);}','vec2 atmWindHere(vec2 xz){return atmWind(atmTime,xz,atmWindV,atmGustAmp);}','#endif'].join('\n');
 })();

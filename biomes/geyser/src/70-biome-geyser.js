@@ -4,10 +4,15 @@
 // the mud, the eruptions, the steam). This file only orders them and reports.
 GEYSER.build=function(opt){opt=opt||{};const R=opt.R||1300,q=opt.quality==null?1:opt.quality;
  const out={R,quality:q};if(!GEYSER.R){BIO.err('GEYSER.build: no layout (call GEYSER.lay first)');return out;}
+ // opt.center [x, z] (2026-10-26): the passes grid round the core's centre (BIO.center()); a world whose vent is off its
+ // centre names the vent's, and the host's centre is put back after. Left out, nothing is moved (the kit's own page)
+ const c0=BIO.host.center,cm=opt.center!=null;if(cm)BIO.host.center=opt.center;
+ try{
  if(GEYSER.buildSinter){BIO.cur='geyser/sinter';Object.assign(out,GEYSER.buildSinter(q));}
  if(GEYSER.buildTrees){BIO.cur='geyser/trees';Object.assign(out,GEYSER.buildTrees(R,q));}
  if(GEYSER.buildFloor){BIO.cur='geyser/floor';Object.assign(out,GEYSER.buildFloor(R,q));}
  if(GEYSER.buildShow&&opt.show!==false){BIO.cur='geyser/show';Object.assign(out,GEYSER.buildShow(opt));}
+ }finally{if(cm)BIO.host.center=c0;}
  BIO.cur=null;return out;};
 GEYSER.canopyH=function(x,z){return GEYSER._canopyH?GEYSER._canopyH(x,z):4;};
 // THE GROUND'S LAYER SAMPLER for a host's ground shader (the Throne's, THRONE.GLSL_LAY, carried here so a world with only

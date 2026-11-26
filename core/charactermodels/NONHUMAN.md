@@ -25,18 +25,65 @@ was built, how it was checked, and what full Lizardmen and therian peoples would
 - Over trousers it comes out through the waistband's back; through a shirt, a robe or a cape it comes through the cloth
   (KNOWN_ISSUES.md).
 
-**An animal head** (`tools/mods.py lizard_head`, kit item `mod_head_lizard`), a procedural reptile snout:
-- The cranium and upper jaw lofted from a profile (`SNOUT`: per station along the head, half width, top, mouth line,
-  jaw bottom; scaled to each body's head), rigid on Head; the lower jaw on `face_jaw`; eyes with a slit pupil under brow
-  ridges, nostrils, a crest of low spines, teeth inside the closed mouth, a dark mouth.
+**An animal head** (`tools/mods.py lizard_head`, `tools/reptile.py`, kit item `mod_head_lizard`): a Komodo dragon's
+head with an iguana's crest (the owner's photographs, 2026-10-27; its first form, a lofted snout with slit-pupilled
+eyes, was replaced):
+- Two signed distance fields meshed as the therian heads are (`tools/heads.py`: surface nets on a 3 mm grid, projected,
+  smoothed). The upper head, rigid on Head: a loft (`UPPER`: per station half width, top and mouth line, scaled to each
+  body's head) with the temples swelling behind the eyes, brow ridges hooding them, the nostrils' bosses near the tip,
+  the skull carried back over the jaw's hinge and down the nape. The lower jaw on `face_jaw`: a loft (`LOWER`) a
+  little narrower, so the upper lip's scales overhang it, heavy jowls, the throat in loose folds.
+- Painted per vertex (the skin tint multiplies it): a dark mottle, paler lip scales, a pale ring round each eye, a
+  lighter throat. The skin is the library's `organic.scale` (its albedo made near-colourless, and its normal map), on
+  the tail too; without the images checked out, the procedural stand-in (`scale_texture`). The body's skin and the
+  nipples (the skin has holes under them) wear the same scales under the head: kit item `skin_detail`, the head's maps
+  repeated across the skin's UVs to the head's scale size (`skin_repeat`; `skinDetail` in `50-figure.js`, the skin
+  shader's `detail_repeat` in Godot), so the collar meets scales, not human skin.
+- Both lips tuck in toward the mouth's line, and near it the jaw is never wider than nine tenths of the upper lip: the
+  lip overhangs, and no ledge stands out at the corner.
+- Eyes: a round black pupil in a dark amber iris. **Lower lids** rise to shut them: a `blink` morph target on the
+  piece's second mesh, which the figures' blinks drive (as the coyote's upper lids).
+- The crest: flat blades down the midline from the crown over the nape and down the back of the neck (`crest`,
+  `blade`), short on the crown, tallest on the neck, standing up and back; the neck's on the nearest base vertex's
+  weights and deltas, on a material of their own (kit item `crest_neck`: the skin triangles under their roots), left
+  out under a worn item that covers that skin. Teeth inside the closed mouth, seen when it opens.
 - It replaces the human head: the item's `hide` is the base skin weighted at least half to Head (the human head's
   skin, as a worn item hides skin), its `hide_parts` the lips, ears, brows, lashes and eyes, and `replaces_head` drops
   hair, beard and headgear (`KCHAR.replacesHead`, `KChar.replaces_head`).
 - A collar from the neck, below the edge of the hidden skin, up into the head covers the seam. Its vertices take the
   nearest neck vertex's weights and morph deltas, fading to the head's above that edge, so it follows the neck under
   every slider. The head's rigid parts move with the Head joint's morph delta (the face sliders do nothing to it).
-- **The jaw** (no clip moves it either): opened about its hinge by up to 9 degrees for a third of every 5 seconds, a
+- **The jaw** (no clip moves it either): opened about its hinge by up to 6 degrees for a third of every 5 seconds, a
   breath with the mouth a little open (`jaw` / `_jaw`; kit item `jaw`). `fig.jawOpen` (`jaw_open` in Godot) holds it.
+
+**A frog's head** (`tools/mods.py frog_head`, `tools/amphibian.py`, kit item `mod_head_frog`; the owner's reference
+paintings, 2026-10-27) for the Frogmen of the south-western highlands, Dalab's martial clients (LORE 6.22),, made as the lizard's is, its collar shared (`_head_collar`):
+- Broad, flat and rounded, sitting low with hardly a neck; the mouth a wide line from the blunt snout back under the
+  eardrum; the jaw meets the upper lip flush; a full throat's pouch under it (on `face_jaw`, opened as the lizard's).
+- Big eyes standing proud of turrets high on the head, a little larger than the first cut (`SIZE`, the whole head 1.12
+  times): an iris texture (`iris_texture`: a horizontal pupil, its dark margin, a lighter collarette, radial fibres, a
+  net of veins, a dark band through the pupil, the limbus) that the record's eye colour tints (role `iris`; the
+  lizard's eyes too, with a round pupil). A wide lower lid lies down in the turret and rises over the front of the eye to blink (`blink`; it turns 95
+  degrees: a morph moves each point straight, so further and the lid passes through the ball halfway).
+- The eardrums dished in behind the eyes under the dorsolateral folds; small nostrils on top of the snout.
+- **Its skin in the record's colours, as a poison dart frog's**: `skin` the ground, `skin2` the marks, `skin3` the pale
+  parts (throat, belly, the lip's stripe, the eardrum's ring), `pattern` one of `spots`, `net` (bands), `marble`
+  (blotches) or `none`, `pattern_amount` how much of the skin the marks take; the kit item's `pattern` holds the
+  defaults (and the eye colour). The pattern is three fields over the body at rest (`pattern_fields`: the distance to
+  the nearest of a scatter of points, to the line between the two nearest, a marbling), the same for the head's
+  vertices (COLOR_0, with the pale share; a shade in TEXCOORD_1) and the body's skin, baked into its UV square from
+  each texel's place at rest (`body_mask`, on a primitive with no area), so the marks run on from head to body and
+  across the UV islands' edges. The figures colour both (`patternMat` in `50-figure.js`; `kchar_pattern.gdshader`,
+  `kchar_skin.gdshader`). The Cosmetic Lab's Pattern section sets them, its eye colours an animal's.
+- **Its colours keep to a palette** (owner, 2026-10-27; `mods.FROG_PALETTE`, kit item `pattern` `palette`): greens,
+  browns, red-browns and creams for the skin and the pale parts, and those or black for the marks. The Cosmetic Lab
+  offers only these (no free colour), and both figures hold any other colour a record carries to the nearest of them
+  (`snap`, `patternColours`; `_snap`, `_pattern_colours` in Godot).
+- **Webbed hands**: a thin web between each pair of fingers from the knuckles up to 0.6 of their length at their sides,
+  scalloped deeper between, on the two fingers' joints by where each point lies across (`hand_webs`); a round pad under
+  each fingertip. Its skin is the library's `skin.smooth`, moist and glossier, which the body wears under the head.
+- A test record as the Lizardman is: the Cosmetic Lab's "Frogman" chip (or `?frog`), the Animation Lab's Body mods menu
+  ("Frogman (test: head, digitigrade legs)"), equipping `mod_head_frog` and `mod_legs_frog`.
 
 **Making them.** `python3 tools/nonhuman.py` puts both on the bodies as they stand, from the published pieces, with no
 Blender (they are made from the base GLB; their deltas from `base.morph.bin` and kit.json's joint rows). A whole rebuild
@@ -82,25 +129,53 @@ whole cast. Godot: `kchar_shot.gd -- --lizard`.
 
 About **8 to 10 sessions** and the five textures, for plantigrade Lizardmen.
 
-**Digitigrade legs** (walking on the toes, the heel high) are the one thing that needs a new skeleton, and the lore does
-not ask for them. Three ways, cheapest first:
-1. **Keep them plantigrade** (a human leg under a reptile's skin, as most games' lizardfolk): no cost.
-2. **A digitigrade stance from the same skeleton**: a pass after the clip that lifts each heel and bends the knee more,
-   keeping the foot planted by a two-bone solve (the figure already rolls the feet onto their balls, `toesFlat`). The
-   leg's mesh stays human; reads as digitigrade from a distance. About 2 sessions, both runtimes.
-3. **A true digitigrade leg**: an extra joint between the shin and the foot (a long metatarsus), a leg mesh of its own
-   (a mod replacing the leg skin), and clips retargeted onto that chain from a digitigrade source (the Meshy library and
-   Quaternius have none: new clips, or made ones). It touches the retarget, the capsules, bodyFix, the grips and every
-   lower-body garment. 6 or more sessions, with risk.
+**Digitigrade legs, paws, saurian feet & webbed amphibian feet** (`tools/digitigrade.py`, kit items `mod_legs_coyote`,
+`mod_legs_lizard` and `mod_legs_frog`, **built 2026-11-17** for the Coyote Men, Lizardmen and Frogmen):
+- Eight joints `LeftDigiThigh`, `LeftDigiShin`, `LeftDigiHock`, `LeftDigiPaw` and `RightDigiThigh`..`RightDigiPaw` appended
+  to `data/mpfb_{male,female,giant}/skeleton.json` after `Tail8` so no existing joint index moves. They are modelled and
+  bound in a standing Z-pose (stifle forward, calcaneus/hock elevated at ~28.5% of hip height, slanted tarso-metatarsus,
+  sole flat on `y = 0`), sampled at two SDF resolutions (8.2 mm on thigh/crus/hock/pastern, 2.8–3.4 mm on ankle/digits) with
+  seamless upper-thigh collar continuity into `Human.body`:
+  - `mod_legs_coyote` (`mpfb_male`, `mpfb_female`): four-toed cushioned oval canid paw with dark plantar pads, blunt horn
+    claws (`Mod.coyote_claws`) and `brush` fur shells (`role: 'coat'`, `furred: true`).
+  - `mod_legs_lizard` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): muscular saurian thigh/crus, lean scuted
+    tarso-metatarsus with no mammal paw pad, three long wide-splayed articulated theropod digits (`±36.7°`) with dorsal
+    transverse scute ridges, a backward-projecting medial hallux (Digit I), and large sickle-curved bone-to-horn talons
+    (`Mod.lizard_claws`), tiled at `0.085 m` in `Mod.head_lizard`'s scale map (`role: 'skin'`) to match `skin_detail`.
+  - `mod_legs_frog` (`mpfb_male`, `mpfb_female`, `mpfb_giant`, `test: true`): rounded jumper thigh and plump gastrocnemius
+    calf tapering into an elongated smooth frog tarsus, four asymmetrically graded wide-splayed smooth digits (`~80°` span,
+    no claws) joined by taut concave-scalloped interdigital webbing membranes and ending in broad cushioned tree-frog /
+    bullfrog digital suction pads; textured in `Mod.head_frog`'s moist `skin.smooth` map with poison-dart `pattern_fields`
+    (`role: 'pattern'`, `COLOR_0` RGBA + `TEXCOORD_1` shade) so spots, net bands and marbling run continuously across the
+    thigh collar and cream `skin3` tints the inner leg, webs and plantar pads.
+- **Bidirectional footwear rule** (`replaces_feet: true`, `KCHAR.replacesFeet` / `KChar.replaces_feet`, `KCHAR.fits` /
+  `KChar.fits`): digitigrade and non-digitigrade characters cannot equip each others' boots/footwear (`slot === 'feet'`
+  requires `!!it.digitigrade === replacesFeet(rec, kit)`), and digitigrade leg mods hide human lower-leg/foot skin and
+  `Human.toenails` while rejecting fitted ankle-length human trousers and keeping loose kilts, skirts and loincloths.
+  `coyote_men` in `data/peoples.json` equips `mod_head_coyote`, `mod_tail_coyote` and `mod_legs_coyote`; the Lizardman
+  test preset (`?lizard`, Cosmetic Lab's "Lizardman" chip, Animation Lab's Body mods menu, `kchar_shot.gd -- --lizard`)
+  equips `mod_tail`, `mod_head_lizard` and `mod_legs_lizard`.
+- **Gait & capsules** (`digitigrade` in `50-figure.js`, `_digitigrade` in `kchar_figure.gd`): at rest (`!action`) the
+  bones keep their binds (`bone * inverseBind == Identity` to `< 1e-6`); while a clip plays, the pass reads the clip's
+  human leg tracks in skeleton space, derives horizontal foot heading from the ankle's bind-delta transverse hinge axis
+  (immune to plantarflexion past vertical at toe-off), applies grounded pelvis settle, drives paw clearance continuously
+  off the floor, compresses the hock in mid-stance and crouch, extends it smoothly on push-off, and solves the forward
+  stifle (`DigiThigh -> DigiShin -> DigiHock`) in closed form. `legCaps`, `clothStep`, `tail` and `cantFor` swap to the
+  six moving digitigrade leg capsules so skirts, kilts, robes and tails drape and collide against the digitigrade leg.
 
 ### Korona's therian tribes (LORE 6.18)
 
 The lore names kinds, not yet tribes: a beaked people, a muzzled people, a throat-sac people. Each tribe is a head, a
 tail (or none) and a skin:
-- **Heads**: the head generator is a profile and its parts; a beak (horn material, no teeth, a nostril on top), a muzzle
+- **Heads**: **built** (2026-11-02, `tools/therian.py`; README "Therian heads"): a bird (beaked), a cat, a lion, a rat and a
+  monkey, each a test mod on both bodies, beside the coyote. Still to do for a tribe: a people entry wearing one, and
+  what the first plan asked for, below.
+  The head generator is a profile and its parts; a beak (horn material, no teeth, a nostril on top), a muzzle
   with animal ears (the ears on Head, or on one or two spring joints like the tail's), a throat sac (a mesh on the neck
   that the figure swells on a call). 1 session each.
-- **Tails**: the same joints and spring chain; a mammal's is shorter, livelier (lower stiffness, more sway) and maybe
+- **Tails**: **built** (2026-11-02, `tools/tails.py`): a tail per head on the same joints, each with its own rest chain
+  (the item's `tail.rest`), the furred ones bushy by the fur shells, the bird's a fan of feathers.
+  The first plan: the same joints and spring chain; a mammal's is shorter, livelier (lower stiffness, more sway) and maybe
   bushy (hair cards along it). Hours each.
 - **Skins**: scales and bare skin are textures (as the Lizardmen's). **Fur and feathers** are the expensive part: over a
   whole body they want a shell or card layer that follows the morphs and the cloth (a new shader in both runtimes), or a

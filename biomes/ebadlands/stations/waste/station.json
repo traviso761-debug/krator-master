@@ -1,0 +1,16 @@
+{
+ "note": "Station 1, the hot waste (PLAN-STATIONS.md). kin: the neighbours' species read in place (EXCHANGES.md, ebadlands as receiver; src/87-host-kin.js grows them): [fragments, the kit's API, the pack families their builders draw with]. sedesert's mesquite is owed: its builder (biomes/sedesert/src/55, the mesquite's clumpAt jitter) sets crowns up to ~2.8 m off their limbs, which the attach audit fails at 9.5% here; read it in place again once sedesert holds them (BIO.holdTo)",
+ "kin": {
+  "eastabyss": [
+   [
+    "src/50-biome-eastabyss-species.js",
+    "src/55-biome-eastabyss-trees.js"
+   ],
+   "EASTABYSS",
+   [
+    "bark2",
+    "rope"
+   ]
+  ]
+ }
+}

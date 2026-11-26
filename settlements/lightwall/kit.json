@@ -1,0 +1,112 @@
+{
+ "targets": {
+  "town": "lightwall.html"
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "settlements/lightwall/gen/69l-kcity-bundle.js",
+  "settlements/lightwall/gen/69t-tungang-bundle.js",
+  "settlements/lightwall/gen/69r-lw-flora-bundle.js",
+  "core/tags/glazier/52g-tags-glazier.js",
+  "core/terrain/37c-core-rubble.js",
+  "core/terrain/39-core-cavern.js",
+  "core/terrain/host/39e-core-cavern-draw.js",
+  "core/terrain/host/39h-core-cavern-cut.js",
+  "core/terrain/43-core-ground.js",
+  "core/walk/box/24-core-walk-box.js"
+ ],
+ "scoped": [
+  "69l-kcity-bundle.js",
+  "69t-tungang-bundle.js",
+  "69r-lw-flora-bundle.js",
+  "52g-tags-glazier.js",
+  "37c-core-rubble.js",
+  "39-core-cavern.js",
+  "39e-core-cavern-draw.js",
+  "39h-core-cavern-cut.js",
+  "43-core-ground.js",
+  "24-core-walk-box.js"
+ ],
+ "pack": "qiblai",
+ "packFrom": "kits/qiblai",
+ "deterministic": [
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "69l-kcity-bundle.js",
+  "69t-tungang-bundle.js",
+  "52g-tags-glazier.js",
+  "39-core-cavern.js",
+  "39e-core-cavern-draw.js",
+  "39h-core-cavern-cut.js",
+  "89zl-lw-site.js",
+  "90l-lw-world.js",
+  "90m-lw-wall.js",
+  "90r-lw-build.js",
+  "43-core-ground.js",
+  "24-core-walk-box.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js",
+  "90lw-lw-lake.js",
+  "69r-lw-flora-bundle.js",
+  "90s-lw-flora.js",
+  "37c-core-rubble.js",
+  "90n-lw-scree.js"
+ ],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
+ "furnitureTex": true,
+ "interiorSets": [
+  "xanadu"
+ ],
+ "files": {
+  "town": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/water/ext",
+    [
+     "56-core-water-breakup.js"
+    ]
+   ]
+  ]
+ },
+ "sidePacks": true
+}

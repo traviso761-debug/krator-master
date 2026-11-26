@@ -31,11 +31,20 @@ What it does (cut down from kits/catalog/verify.py):
        clearance         at full lock both ways (and straight), no steered wheel's vertex falls within 2 cm of the
                          body's surfaces (sampled into 2 cm cells)
        deterministic     two builds with the same seed are identical, vertex for vertex
+       ruin              every vehicle, every variant, in each ruin state (weathered, burnt, wreck; seeds 1..--seeds):
+                         builds with no NaN, its lowest point on y = 0, within the declared box widened for the
+                         settle (0.6 m + 0.13 h across, 0.8 m along, 0.3 m over the larger of h + 0.25 w and
+                         w + 0.2 h up: an overturned body lies on its roof, one on its side on its flank, askew by
+                         up to 0.25 rad), no more meshes or triangles than the intact
+                         budget, a wreck's missing wheel missing, no glass colour left in the body, the lamps dead
+                         (lights() returns false), userData.state and .ruin set, a detail slot per vertex and the
+                         atlas hook on every (double-sided) material, deterministic, and different from the intact build
      plus, in a BLANK page with only three.min.js:
        bundle-alone      dist/krator-vehicles.js loads, adds exactly one global (KratorVehicles), and builds
                          every vehicle with no scene, renderer or other global
   5. --out: screenshots: the sheet, then per instance one per --views (default front34,side), and with
-     --night the first row at night with the lamps on.
+     --night the first row at night with the lamps on; --state <name> takes them with every vehicle built in that
+     ruin state (the sheet's State select).
 
 Exit code is non-zero if the error panel is dirty, the page threw, or an assertion fails.
 
@@ -49,6 +58,8 @@ except Exception:
     pass
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page, local_three
 TOL_M, UNDER_FRAC, GROUND_TOL = 0.02, 0.30, 0.01
 MAX_MESHES, MAX_TRIS = 6, 6000          # the default (a four-wheeler); an entry's budget (vehicleBudget()) can raise it
 BIG_TRIS = 20000                        # the ceiling any declared budget must stay under
@@ -206,6 +217,67 @@ for(const E of KV.list()){
 out.list=KV.list().map(E=>({key:E.key,name:E.name,variants:E.variants,w:E.w,d:E.d,h:E.h}));
 return out;}"""
 
+RUIN_JS = r"""(cfg)=>{
+const KV=KratorVehicles, out=[], W=new THREE.Vector3(), f2=x=>(Math.round(x*1000)/1000).toFixed(3);
+const lin=c=>c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);
+function sig(g){let h=0;g.updateMatrixWorld(true);g.traverse(o=>{if(!o.isMesh)return;const a=o.geometry.attributes.position.array;
+  for(let i=0;i<a.length;i+=7)h=(h*31+Math.round(a[i]*1e4))|0;h=(h*31+a.length)|0;});return h;}
+if(!Array.isArray(KV.STATES)||KV.STATES.join()!=='intact,weathered,burnt,wreck')out.push({key:'*',variant:0,seed:0,state:'*',fail:['ruin: KV.STATES is '+JSON.stringify(KV.STATES)]});
+if(typeof KV.ruinOf!=='function'||KV.ruinOf('burnt',3).state!=='burnt')out.push({key:'*',variant:0,seed:0,state:'*',fail:['ruin: KV.ruinOf missing']});
+for(const E of KV.list()){
+  const pal=KV.palette(E.culture)||{};
+  const glassCols=Object.keys(pal).filter(k=>/glass/i.test(k)).map(k=>{const h=pal[k];return [(h>>16&255)/255,(h>>8&255)/255,(h&255)/255].map(lin);});
+  for(let v=0;v<E.variants;v++){
+    const g0=KV.build(E.key,{variant:v,seed:1}), s0=sig(g0); KV.dispose(g0);
+    for(const st of ['weathered','burnt','wreck'])for(let seed=1;seed<=cfg.seeds;seed++){
+      const r={key:E.key,variant:v,seed,state:st,fail:[]};
+      let g=null;
+      try{g=KV.build(E.key,{variant:v,seed,state:st});}catch(e){r.fail.push('ruin: build threw: '+(e&&e.message||e));out.push(r);continue;}
+      if(!g){r.fail.push('ruin: build returned null');out.push(r);continue;}
+      g.updateMatrixWorld(true);
+      const box=new THREE.Box3(); let meshes=0,tris=0,nan=false,glassHit=false;
+      g.traverse(o=>{if(!o.isMesh)return;meshes++;const p=o.geometry.attributes.position;tris+=p.count/3;
+        for(let i=0;i<p.count;i++){W.fromBufferAttribute(p,i).applyMatrix4(o.matrixWorld);if(!isFinite(W.x)||!isFinite(W.y)||!isFinite(W.z)){nan=true;continue;}box.expandByPoint(W);}
+        const col=o.geometry.attributes.color.array;
+        for(let i=0;i<col.length&&!glassHit;i+=3)for(const gc of glassCols)if(Math.abs(col[i]-gc[0])<1e-5&&Math.abs(col[i+1]-gc[1])<1e-5&&Math.abs(col[i+2]-gc[2])<1e-5)glassHit=true;
+        const a=o.geometry.attributes.aDetS;
+        if(!a||a.count!==p.count)r.fail.push('ruin: '+o.name+' has no aDetS per vertex');
+        if(cfg.tex&&!(o.material.userData&&o.material.userData.detail))r.fail.push('ruin: '+o.name+' material has no detail hook');
+        if(/^body/.test(o.name)&&o.material.side!==THREE.DoubleSide)r.fail.push('ruin: '+o.name+' is not double-sided');});
+      r.tris=Math.round(tris); r.meshes=meshes;
+      if(nan)r.fail.push('ruin: NaN in geometry or transform');
+      if(!meshes)r.fail.push('ruin: no meshes');
+      if(Math.abs(box.min.y)>cfg.ground)r.fail.push('ruin: lowest point y = '+f2(box.min.y));
+      const t=cfg.tol;
+      /* the settled box: the declared one widened for the tilt and the torn halves, and for an overturned body
+         (rolled by pi +- 0.25 rad) a share of its height across and of its width up */
+      const R0=g.userData.ruin||{}, skid=R0.form==='skidded'||R0.form==='piled';
+      /* a skidded airframe's furrow and trail run a vehicle's length behind it */
+      const hx=E.w/2+0.6+0.13*E.h, hz=E.d/2+0.8+(skid?E.d:0), hy=Math.max(E.h+0.25*E.w, E.w+0.2*E.h)+0.3;
+      if(box.min.x<-hx-t||box.max.x>hx+t||box.min.z<-hz-t||box.max.z>hz+t||box.max.y>hy+t)
+        r.fail.push('ruin: outside the settled box ('+f2(2*hx)+' x '+f2(2*hz)+' x '+f2(hy)+'): x '+f2(box.min.x)+'..'+f2(box.max.x)+' y '+f2(box.min.y)+'..'+f2(box.max.y)+' z '+f2(box.min.z)+'..'+f2(box.max.z));
+      const BG=E.budget||{meshes:cfg.maxMeshes,tris:cfg.maxTris};
+      if(meshes>BG.meshes)r.fail.push('ruin: '+meshes+' meshes > '+BG.meshes);
+      if(tris>BG.tris)r.fail.push('ruin: '+Math.round(tris)+' triangles > '+BG.tris);
+      if(glassHit)r.fail.push('ruin: a glass colour is still in the body');
+      const u=g.userData,R=u.ruin||{};
+      if(u.state!==st||R.state!==st)r.fail.push('ruin: userData.state '+u.state+', ruin.state '+R.state);
+      if(KV.lights(g,true)!==false||u.lightsOn)r.fail.push('ruin: the lamps still light');
+      const want=R.gearGone?0:E.data.wheels.length-(st==='wreck'&&R.missing>=0?1:0);
+      if((u.wheels||[]).length!==want)r.fail.push('ruin: '+(u.wheels||[]).length+' wheels listed, '+want+' expected'+(R.missingWheel?' ('+R.missingWheel+' missing)':''));
+      if(st==='wreck'&&(R.missing>=0||R.gearGone)&&!R.missingWheel)r.fail.push('ruin: wreck names no missing wheel');
+      for(const w of u.wheels||[]){const o=g.getObjectByName(w.name);if(!o){r.fail.push('ruin: no mesh '+w.name);continue;}
+        if(R.tyres!=='ok'&&w.tyre!==R.tyres)r.fail.push('ruin: '+w.name+' record does not say tyre '+R.tyres);}
+      const s1=sig(g), g2=KV.build(E.key,{variant:v,seed,state:st}), s2=sig(g2);
+      if(s1!==s2)r.fail.push('ruin: two builds with seed '+seed+' differ');
+      if(seed===1&&s1===s0)r.fail.push('ruin: the '+st+' build is identical to the intact one');
+      KV.dispose(g);KV.dispose(g2);
+      out.push(r);
+    }
+  }
+}
+return out;}"""
+
 ALONE_JS = r"""async ()=>{
   const load=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s);});
   const errs=[]; window.addEventListener('error',e=>errs.push(String(e.message)));
@@ -221,126 +293,118 @@ ALONE_JS = r"""async ()=>{
 
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    path = os.path.abspath(a.html)
-    rel = os.path.relpath(path, HERE).replace(os.sep, '/')
     if a.out:
         os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=HERE, **k)
-    socketserver.TCPServer.allow_reuse_address = True
-    httpd = socketserver.TCPServer(('127.0.0.1', 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    three = os.path.join(HERE, 'three.min.js')
-    try:
-        async with async_playwright() as p:
-            b = await p.chromium.launch(**_exe(), args=['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist'])
-            W, H = [int(t) for t in a.size.split('x')]
-            pg = await b.new_page(viewport={'width': W, 'height': H})
-            pg.set_default_timeout(600000)
-            errs = []
-            pg.on('pageerror', lambda e: errs.append(str(e)))
-            await pg.route('**/three.min.js', lambda route: asyncio.ensure_future(
+    three = local_three(os.path.dirname(os.path.abspath(a.html)), HERE)   # the pinned r128, for the bundle-alone page
+    # serve this folder
+    async with verify_page(a.html, here=HERE, size=a.size, root=HERE, settle_ms=1500) as V:
+        pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
+        if not V.ready:
+            print('timed out waiting for the sheet to build'); fails.append('build timeout')
+        panel = await pg.evaluate("document.getElementById('errs').textContent")
+        print('ERROR PANEL:', repr(panel[:1500]) if panel else 'clean')
+        if panel:
+            fails.append('error panel not clean')
+        if errs:
+            print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
+        info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
+                                 "instances:(window._sheet||{instances:[]}).instances.length})")
+        print('ready:', info['ready'], ' instances:', info['instances'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
+
+        if a.assert_:
+            paint = {'geo_dune_buggy': ['paintBrown', 'paintBlack', 'paintSand'], 'rep_crawler': ['hullCream', 'hullOchre'],
+                     'iz_six_wheeler': ['ochreOrange', 'creamPaint'], 'ab_caravan_truck': ['sandPaint', 'tealPaint'],
+                     'pa_crawler_hab': ['rust', 'fadedTeal'],
+                     'anc_pod': ['white', 'white'], 'anc_saloon': ['white', 'white'], 'anc_police': ['white', 'whiteDark'],
+                     'anc_van': ['white', 'white'], 'anc_utility': ['white', 'white'], 'anc_hauler': ['white'] * 4,
+                     'anc_tram': ['white'], 'anc_tank': ['white', 'whiteDark'], 'anc_heli': ['white', 'white'], 'anc_jet': ['white']}
+            res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
+                                                'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS, 'bigTris': BIG_TRIS, 'paint': paint,
+                                                'tex': await pg.evaluate("()=>KratorVehicles.textures().on")})
+            per = res['per']
+            print('\n--- %d vehicles, %d builds (every variant, seeds 1..%d) ---' % (len(res['list']), len(per), a.seeds))
+            for r in per:
+                if r['seed'] == 1:
+                    print('  %s #%d: %s meshes, %s tris, size %s' % (r['key'], r['variant'] + 1, r.get('meshes'), r.get('tris'), ' x '.join(r.get('size', []))))
+            checks = [('builds', lambda f: f.startswith(('build', 'no meshes'))),
+                      ('no-nan-geometry', lambda f: 'NaN' in f),
+                      ('wheels-on-ground', lambda f: f.startswith('ground:')),
+                      ('declared-size', lambda f: f.startswith('outside declared')),
+                      ('budget', lambda f: f.startswith('budget:')),
+                      ('moving-parts', lambda f: f.startswith('moving:')),
+                      ('tags', lambda f: f.startswith('tags:')),
+                      ('colour', lambda f: f.startswith('colour:')),
+                      ('textures', lambda f: f.startswith('textures:')),
+                      ('clearance', lambda f: f.startswith('clearance:')),
+                      ('deterministic', lambda f: f.startswith('deterministic:'))]
+            print('\n--- invariants ---')
+            for name, sel in checks:
+                bad = [(r, [f for f in r['fail'] if sel(f)]) for r in per]
+                bad = [(r, fs) for r, fs in bad if fs]
+                print(('  PASS  ' if not bad else '  FAIL  ') + name + ' : ' + ('%d builds' % len(per) if not bad else '%d failing' % len(bad)))
+                for r, fs in bad[:30]:
+                    print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(fs)))
+                if bad:
+                    fails.append('assert ' + name)
+            # the ruin states: every vehicle, every variant, weathered / burnt / wreck
+            ruin = await pg.evaluate(RUIN_JS, {'tol': TOL_M, 'ground': GROUND_TOL, 'seeds': a.seeds, 'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS,
+                                               'tex': await pg.evaluate("()=>KratorVehicles.textures().on")})
+            print('\n--- ruin states: %d builds ---' % len(ruin))
+            for r in ruin:
+                if r['seed'] == 1 and r['variant'] == 0 and r.get('tris') is not None:
+                    print('  %s %-9s: %s meshes, %s tris' % (r['key'].ljust(16), r['state'], r.get('meshes'), r.get('tris')))
+            bad = [r for r in ruin if r['fail']]
+            print(('  PASS  ' if not bad else '  FAIL  ') + 'ruin : ' + ('%d builds' % len(ruin) if not bad else '%d failing' % len(bad)))
+            for r in bad[:30]:
+                print('          %s #%d %s seed %d: %s' % (r['key'], r['variant'] + 1, r['state'], r['seed'], '; '.join(r['fail'])))
+            if bad:
+                fails.append('assert ruin')
+            # the bundle alone, in a blank page with only THREE
+            pg2 = await b.new_page()
+            await pg2.route('**/three.min.js', lambda route: asyncio.ensure_future(
                 route.fulfill(path=three, content_type='application/javascript')))
-            await pg.goto('http://127.0.0.1:%d/%s' % (port, rel), timeout=900000)
+            errs2 = []
+            pg2.on('pageerror', lambda e: errs2.append(str(e)))
+            await pg2.route('**/blank.html', lambda route: asyncio.ensure_future(
+                route.fulfill(body='<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>', content_type='text/html')))
+            await pg2.goto('http://127.0.0.1:%d/blank.html' % port)
+            al = await pg2.evaluate(ALONE_JS)
+            ok = al['added'] == ['KratorVehicles'] and al['after'] == ['KratorVehicles'] and not al['errs'] and not errs2 \
+                and al['built'] and all(not s.endswith(':null') and not s.endswith(':0') for s in al['built'])
+            print(('  PASS  ' if ok else '  FAIL  ') + 'bundle-alone : globals added %s; built %s%s' % (
+                al['added'], ', '.join(al['built']), ('; errors ' + '; '.join(al['errs'] + errs2)) if (al['errs'] or errs2) else ''))
+            if not ok:
+                fails.append('assert bundle-alone')
+            await pg2.close()
+            print('\n--- warnings (reported, not failed) ---')
+            under = [r for r in per if r['warn']]
+            print('  WARN  under-size (>%d%% smaller than declared on an axis): %d builds' % (UNDER_FRAC * 100, len(under)))
+            for r in under[:20]:
+                print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(r['warn'])))
+
+        for ev in (a.eval or []):
             try:
-                await pg.wait_for_function("window._ready===true || document.getElementById('errs').textContent.length>0", timeout=580000)
-            except Exception:
-                print('timed out waiting for the sheet to build'); fails.append('build timeout')
-            await pg.wait_for_timeout(1500)
-            panel = await pg.evaluate("document.getElementById('errs').textContent")
-            print('ERROR PANEL:', repr(panel[:1500]) if panel else 'clean')
-            if panel:
-                fails.append('error panel not clean')
-            if errs:
-                print('PAGE ERRORS:', errs[:5]); fails.append('page errors')
-            info = await pg.evaluate("()=>({ready:!!window._ready,calls:renderer.info.render.calls,tris:renderer.info.render.triangles,"
-                                     "instances:(window._sheet||{instances:[]}).instances.length})")
-            print('ready:', info['ready'], ' instances:', info['instances'], ' draw calls:', info['calls'], ' triangles:', info['tris'])
+                print('eval:', json.dumps(await pg.evaluate(ev))[:3000])
+            except Exception as e:
+                print('eval failed:', str(e)[:400])
 
-            if a.assert_:
-                paint = {'geo_dune_buggy': ['paintBrown', 'paintBlack', 'paintSand'], 'rep_crawler': ['hullCream', 'hullOchre'],
-                         'iz_six_wheeler': ['ochreOrange', 'creamPaint'], 'ab_caravan_truck': ['sandPaint', 'tealPaint'],
-                         'pa_crawler_hab': ['rust', 'fadedTeal']}
-                res = await pg.evaluate(ASSERT_JS, {'tol': TOL_M, 'under': UNDER_FRAC, 'ground': GROUND_TOL, 'seeds': a.seeds,
-                                                    'maxMeshes': MAX_MESHES, 'maxTris': MAX_TRIS, 'bigTris': BIG_TRIS, 'paint': paint,
-                                                    'tex': await pg.evaluate("()=>KratorVehicles.textures().on")})
-                per = res['per']
-                print('\n--- %d vehicles, %d builds (every variant, seeds 1..%d) ---' % (len(res['list']), len(per), a.seeds))
-                for r in per:
-                    if r['seed'] == 1:
-                        print('  %s #%d: %s meshes, %s tris, size %s' % (r['key'], r['variant'] + 1, r.get('meshes'), r.get('tris'), ' x '.join(r.get('size', []))))
-                checks = [('builds', lambda f: f.startswith(('build', 'no meshes'))),
-                          ('no-nan-geometry', lambda f: 'NaN' in f),
-                          ('wheels-on-ground', lambda f: f.startswith('ground:')),
-                          ('declared-size', lambda f: f.startswith('outside declared')),
-                          ('budget', lambda f: f.startswith('budget:')),
-                          ('moving-parts', lambda f: f.startswith('moving:')),
-                          ('tags', lambda f: f.startswith('tags:')),
-                          ('colour', lambda f: f.startswith('colour:')),
-                          ('textures', lambda f: f.startswith('textures:')),
-                          ('clearance', lambda f: f.startswith('clearance:')),
-                          ('deterministic', lambda f: f.startswith('deterministic:'))]
-                print('\n--- invariants ---')
-                for name, sel in checks:
-                    bad = [(r, [f for f in r['fail'] if sel(f)]) for r in per]
-                    bad = [(r, fs) for r, fs in bad if fs]
-                    print(('  PASS  ' if not bad else '  FAIL  ') + name + ' : ' + ('%d builds' % len(per) if not bad else '%d failing' % len(bad)))
-                    for r, fs in bad[:30]:
-                        print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(fs)))
-                    if bad:
-                        fails.append('assert ' + name)
-                # the bundle alone, in a blank page with only THREE
-                pg2 = await b.new_page()
-                await pg2.route('**/three.min.js', lambda route: asyncio.ensure_future(
-                    route.fulfill(path=three, content_type='application/javascript')))
-                errs2 = []
-                pg2.on('pageerror', lambda e: errs2.append(str(e)))
-                await pg2.route('**/blank.html', lambda route: asyncio.ensure_future(
-                    route.fulfill(body='<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>', content_type='text/html')))
-                await pg2.goto('http://127.0.0.1:%d/blank.html' % port)
-                al = await pg2.evaluate(ALONE_JS)
-                ok = al['added'] == ['KratorVehicles'] and al['after'] == ['KratorVehicles'] and not al['errs'] and not errs2 \
-                    and al['built'] and all(not s.endswith(':null') and not s.endswith(':0') for s in al['built'])
-                print(('  PASS  ' if ok else '  FAIL  ') + 'bundle-alone : globals added %s; built %s%s' % (
-                    al['added'], ', '.join(al['built']), ('; errors ' + '; '.join(al['errs'] + errs2)) if (al['errs'] or errs2) else ''))
-                if not ok:
-                    fails.append('assert bundle-alone')
-                await pg2.close()
-                print('\n--- warnings (reported, not failed) ---')
-                under = [r for r in per if r['warn']]
-                print('  WARN  under-size (>%d%% smaller than declared on an axis): %d builds' % (UNDER_FRAC * 100, len(under)))
-                for r in under[:20]:
-                    print('          %s #%d seed %d: %s' % (r['key'], r['variant'] + 1, r['seed'], '; '.join(r['warn'])))
-
-            for ev in (a.eval or []):
-                try:
-                    print('eval:', json.dumps(await pg.evaluate(ev))[:3000])
-                except Exception as e:
-                    print('eval failed:', str(e)[:400])
-
-            if a.out:
-                fn = os.path.join(a.out, 'sheet.png'); await pg.screenshot(path=fn); print('shot:', fn)
-                n = info['instances']
-                views = [v.strip() for v in a.views.split(',') if v.strip()]
-                for i in range(n):
-                    for vw in views:
-                        nm = await pg.evaluate("([i,v])=>window._sheet.view(i,v)", [i, vw])
-                        await pg.wait_for_timeout(500)
-                        fn = os.path.join(a.out, '%s_%d_%s.png' % (nm.split(' ')[0], i, vw)); await pg.screenshot(path=fn); print('shot:', fn)
-                if a.night:
-                    await pg.evaluate("()=>{window._sheet.setNight(true);window._sheet.setLights(true);window._sheet.view(0,'front34');ctl.dist=9;ctl.az=0.45;updateCamera();}")
-                    await pg.wait_for_timeout(700)
-                    fn = os.path.join(a.out, 'night_lights.png'); await pg.screenshot(path=fn); print('shot:', fn)
-            await b.close()
-    finally:
-        httpd.shutdown()
-    if fails:
-        print('\nFAILED: ' + '; '.join(fails))
-        return 1
-    print('\nOK')
-    return 0
+        if a.out:
+            if a.state and a.state != 'intact':
+                await pg.evaluate("(s)=>window._sheet.setState(s)", a.state)
+                await pg.wait_for_timeout(800)
+            fn = os.path.join(a.out, 'sheet.png'); await V.shot(fn); print('shot:', fn)
+            n = info['instances']
+            views = [v.strip() for v in a.views.split(',') if v.strip()]
+            for i in range(n):
+                for vw in views:
+                    nm = await pg.evaluate("([i,v])=>window._sheet.view(i,v)", [i, vw])
+                    await pg.wait_for_timeout(500)
+                    fn = os.path.join(a.out, '%s_%d_%s.png' % (nm.split(' ')[0], i, vw)); await V.shot(fn); print('shot:', fn)
+            if a.night:
+                await pg.evaluate("()=>{window._sheet.setNight(true);window._sheet.setLights(true);window._sheet.view(0,'front34');ctl.dist=9;ctl.az=0.45;updateCamera();}")
+                await pg.wait_for_timeout(700)
+                fn = os.path.join(a.out, 'night_lights.png'); await V.shot(fn); print('shot:', fn)
+    return V.exit()
 
 
 if __name__ == '__main__':
@@ -351,6 +415,7 @@ if __name__ == '__main__':
     ap.add_argument('--out', default='')
     ap.add_argument('--views', default='front34,side', help='with --out: views per instance (front34, side, rear34, front, top)')
     ap.add_argument('--night', action='store_true', help='with --out: also the first row at night, lamps on')
+    ap.add_argument('--state', default='', help='with --out: every vehicle built in this ruin state (weathered, burnt, wreck)')
     ap.add_argument('--eval', action='append')
     ap.add_argument('--size', default='1280x800')
     sys.exit(asyncio.run(run(ap.parse_args())))

@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "e31ca99a7a8918a81dd9bbe07b839af2fefb3044",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no atmosphere, no stars, no background, no labels: the surface of a Mimas-like icy moon. Grey-white ice #c8c8cc to #a8a8ae saturated with craters of every size, long narrow grooves and fractures crossing the surface, and one enormous crater a third of the moon's width centred 25% across from the left edge on the middle row, with a raised bright rim #dcdce0, a darker floor #8e8e94 and a central peak. Matte. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}

@@ -87,6 +87,7 @@ IZ.crest = function (F, x, y, z, len, h, dir, col, ridge) {
 /* a bunch of feathers on a cord, hanging from (x, y, z) of parent on a swinging bone `name`.
    o: { n, len, cols:[...], spread, cord } */
 IZ.feathers = function (F, R, name, parent, x, y, z, o) {
+  if (F.bare) return;
   o = o || {};
   const n = o.n || 5, L = o.len || 0.6, cols = o.cols || ['fScarlet', 'fGold', 'fGreen', 'fTeal', 'fBlack'], sp = o.spread == null ? 0.5 : o.spread;
   R.dangle(name, parent, x, y, z, { mode: 'hang', len: L + (o.cord || 0.15), k: o.k || 9, c: o.c || 1.6, wind: o.wind == null ? 0.05 : o.wind, max: 1.1 });
@@ -109,6 +110,7 @@ IZ.feathers = function (F, R, name, parent, x, y, z, o) {
 /* a vexillum: a pole from (x, y, z) of parent, h tall, a crossbar, a banner hanging (and swinging) from it,
    phalerae down the pole, a gilt finial. o: { h, w, bh, paint, finial:'sun'|'orb'|'hand', discs } */
 IZ.vexillum = function (F, R, name, parent, x, y, z, o) {
+  if (F.bare) return;
   const h = o.h || 2.6, w = o.w || 0.8, bh = o.bh || 0.9;
   R.dangle(name, parent, x, y, z, { mode: 'whip', len: h, k: 26, c: 3.2, wind: 0.015, max: 0.25 });
   R.on(name);
@@ -152,6 +154,7 @@ IZ.sashimono = function (F, R, name, parent, x, y, z, o) {
 };
 /* legion numerals in raised bars (I, V, X) on a plate facing +z, centred at (x, y, z), h tall */
 IZ.numeral = function (F, x, y, z, s, h, col) {
+  if (F.bare) return;
   const cw = h * 0.6, bw = h * 0.17, x0 = x - (s.length * cw) / 2 + cw / 2;
   col = col == null ? F.col('cream') : col;
   for (let i = 0; i < s.length; i++) {

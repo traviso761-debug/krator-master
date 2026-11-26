@@ -101,27 +101,27 @@ NWLOW.SPECIES=[
   tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'no'}},
  /*8*/{key:'glowwillow',name:'Glow-willow',habit:'willow',H:[16,24],rb:[1.0,1.5],crownR:[10,15],bk:'bk_silver',bark:[0xd8dcdc,0xccd2d4,0xe2e4e2],leaf:PAL.willow,
   tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'yes'}},
- /*9*/{key:'ginkgo',name:'Column ginkgo',habit:'fastigiate',H:[30,42],rb:[.6,1.0],crownR:[5,8],bk:'bk_smooth',bark:[0x8a948a,0x7e887e,0x96a094],leaf:PAL.ginkgo,item:'ginkgo',
+ /*9*/{key:'ginkgo',name:'Column ginkgo',habit:'fastigiate',H:[30,42],rb:[.6,1.0],crownR:[5,8],bk:'bk_smooth',alt2:0x8e8670,bark:[0x8a948a,0x7e887e,0x96a094],leaf:PAL.ginkgo,item:'ginkgo',
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'no'}},
  /*10*/{key:'paperbark',name:'Pale paperbark',habit:'column',H:[20,30],rb:[.4,.7],crownR:[5,8],bk:'bk_paper',bark:[0xe4e0d0,0xdcd8c8,0xece8da],leaf:PAL.gum,item:'lance',
   crotch:[.45,.6],limbs:[3,5],tags:{climate:'tropic',aridity:'humid',abyssal:false,riparian:'yes'}},
- /*11*/{key:'poplar',name:'Spindle poplar',habit:'fastigiate',H:[35,48],rb:[.6,.9],crownR:[3.5,5.5],bk:'bk_smooth',bark:[0xa8b2a6,0x9ca69a,0xb4bcb0],leaf:PAL.poplar,item:'broad',
+ /*11*/{key:'poplar',name:'Spindle poplar',habit:'fastigiate',H:[35,48],rb:[.6,.9],crownR:[3.5,5.5],bk:'bk_smooth',alt2:0x3e4440,bark:[0xa8b2a6,0x9ca69a,0xb4bcb0],leaf:PAL.poplar,item:'broad',
   tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'yes'}},
  /*12*/{key:'kauri',name:'Column kauri',habit:'column',H:[50,70],rb:[2.0,3.0],crownR:[12,18],bk:'bk_plate',bark:[0x8a989e,0x7e8c94,0x96a2a8],leaf:PAL.kauri,item:'glossy',
   crotch:[.66,.74],limbs:[4,6],tags:{climate:'temperate',aridity:'humid',abyssal:false,riparian:'no'}},
- /*13*/{key:'towerash',name:'Tower ash',habit:'column',H:[80,105],rb:[2.0,3.0],crownR:[12,18],bk:'bk_ghost',bark:[0xd4d8d0,0xcacec6,0xdedfd6],leaf:PAL.gum,item:'lance',
+ /*13*/{key:'towerash',name:'Tower ash',habit:'column',H:[80,105],rb:[2.0,3.0],crownR:[12,18],bk:'bk_ghost',alt2:0x8c9a8c,bark:[0xd4d8d0,0xcacec6,0xdedfd6],leaf:PAL.gum,item:'lance',
   crotch:[.72,.8],limbs:[4,6],ribbons:true,tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'both'}},
- /*14*/{key:'needlecypress',name:'Needle cypress',habit:'spire',H:[24,36],rb:[.5,.8],crownR:[2.2,3.4],bk:'bk_fibre',bark:[0x8a949a,0x7e8890,0x96a0a6],leaf:PAL.cypress,item:'needle',
+ /*14*/{key:'needlecypress',name:'Needle cypress',habit:'spire',H:[24,36],rb:[.5,.8],crownR:[2.2,3.4],bk:'bk_fibre',alt2:0x84583c,bark:[0x8a949a,0x7e8890,0x96a0a6],leaf:PAL.cypress,item:'needle',
   columnar:true,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*15*/{key:'sheoak',name:'Drape she-oak',habit:'column',H:[24,34],rb:[.4,.7],crownR:[5,8],bk:'bk_fibre',bark:[0x6e7c78,0x627070,0x7a8884],leaf:PAL.sheoak,item:'drape',
+ /*15*/{key:'sheoak',name:'Drape she-oak',habit:'column',H:[24,34],rb:[.4,.7],crownR:[5,8],bk:'bk_fibre',alt2:0x4a3e36,bark:[0x6e7c78,0x627070,0x7a8884],leaf:PAL.sheoak,item:'drape',
   crotch:[.4,.55],limbs:[4,6],tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'both'}},
- /*16*/{key:'cragpine',name:'Crag pine',habit:'spire',H:[30,42],rb:[.5,.8],crownR:[6,10],bk:'bk_plate',bark:[0x5a8a88,0x4e7e7c,0x669694],leaf:PAL.pine,item:'needle',
+ /*16*/{key:'cragpine',name:'Crag pine',habit:'spire',H:[30,42],rb:[.5,.8],crownR:[6,10],bk:'bk_plate',alt2:0x8a5a34,bark:[0x5a8a88,0x4e7e7c,0x669694],leaf:PAL.pine,item:'needle',
   flatTop:true,tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
  /*17*/{key:'grasstree',name:'Grass tree',habit:'grasstree',H:[3,6],rb:[.25,.4],crownR:[1.5,2.4],bk:'bk_char',bark:[0x2e3238,0x383c42,0x26292e],leaf:PAL.gum,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*18*/{key:'banksia',name:'Candle banksia',habit:'banksia',H:[6,12],rb:[.25,.4],crownR:[3,5],bk:'bk_smooth',bark:[0x8a9090,0x7e8484,0x969c9a],leaf:PAL.banksia,
+ /*18*/{key:'banksia',name:'Candle banksia',habit:'banksia',H:[6,12],rb:[.25,.4],crownR:[3,5],bk:'bk_smooth',alt2:0x8a6448,bark:[0x8a9090,0x7e8484,0x969c9a],leaf:PAL.banksia,
   tags:{climate:'temperate',aridity:'semiarid',abyssal:false,riparian:'no'}},
- /*19*/{key:'wattle',name:'Tall wattle',habit:'column',H:[16,24],rb:[.35,.55],crownR:[5,8],bk:'bk_smooth',bark:[0x7a8a94,0x6e7e88,0x8694a0],leaf:PAL.wattle,item:'feather',
+ /*19*/{key:'wattle',name:'Tall wattle',habit:'column',H:[16,24],rb:[.35,.55],crownR:[5,8],bk:'bk_smooth',alt2:0x5e7486,bark:[0x7a8a94,0x6e7e88,0x8694a0],leaf:PAL.wattle,item:'feather',
   crotch:[.35,.5],limbs:[4,6],flower:PAL.wattleGold,tags:{climate:'temperate',aridity:'subhumid',abyssal:false,riparian:'no'}},
  // the bamboos: placed by the GROVE pass (their own sub-biome), not the tree passes
  /*20*/{key:'skybamboo',name:'Sky bamboo',habit:'bamboo',H:[26,36],rb:[.08,.14],crownR:[2,3],bark:PAL.culm,leaf:PAL.bamboo,
@@ -429,21 +429,7 @@ function barkTex2(kind){const W=256,H=512,cl=document.createElement('canvas'),cm
  for(let i=0;i<o.length;i+=4){o[i]=Ld[i];o[i+1]=Md[i];o[i+2]=Ld[i];o[i+3]=255;s+=Ld[i];}
  const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').putImageData(out,0,0);
  const t=new T3.CanvasTexture(c);t.wrapS=t.wrapT=T3.RepeatWrapping;t.anisotropy=8;t.encoding=T3.LinearEncoding;t.biomeMean=s/(W*H)/255;return t;}   // r128 textures have no userData
-NWLOW.barkMat2=function(tex,key,o){o=o||{};
- const m=new T3.MeshLambertMaterial({color:0xffffff,map:tex,vertexColors:true,side:T3.DoubleSide});
- const alt=C(o.alt==null?0x808080:o.alt).convertSRGBToLinear();
- m.onBeforeCompile=sh=>{
-  sh.uniforms.uAlt={value:alt};sh.uniforms.uMean={value:tex.biomeMean||.55};sh.uniforms.uGain={value:o.gain==null?.52:o.gain};sh.uniforms.uGloss={value:o.gloss||0};
-  if(!BIO.SUN.value)BIO.setSun([.45,.72,-.52]);sh.uniforms.uSunDir=BIO.SUN;
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vBWP;varying vec3 vBWN;')
-   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvBWP=(modelMatrix*vec4(transformed,1.0)).xyz;vBWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform vec3 uAlt,uSunDir;uniform float uMean,uGain,uGloss;varying vec3 vBWP;varying vec3 vBWN;')
-   .replace('#include <map_fragment>','vec4 _bt=texture2D(map,vUv);float _bl=_bt.r/uMean;float _bm=_bt.g;')
-   .replace('#include <color_fragment>','diffuseColor.rgb*=mix(vColor,uAlt,_bm)*_bl*uGain;')
-   .replace('#include <envmap_fragment>','{vec3 _V=normalize(cameraPosition-vBWP);vec3 _N=normalize(vBWN);if(dot(_N,_V)<0.0)_N=-_N;vec3 _H=normalize(uSunDir+_V);'+
-    'float _sp=pow(max(dot(_N,_H),0.0),26.0)*step(0.0,dot(_N,uSunDir));outgoingLight+=uGloss*_sp*vec3(1.0,0.93,0.8)*(1.0-_bm*0.8)*_bl;}\n#include <envmap_fragment>');};
- m.userData.bio={kind:'gloss',key:BIO.kitKey(key),opts:{alt:[alt.r,alt.g,alt.b],mean:tex.biomeMean||.55,gain:o.gain==null?.52:o.gain,gloss:o.gloss||0}};   // as data (42-core-export)
- const ck='nwlbark|'+BIO.kitKey(key);m.customProgramCacheKey=function(){return ck;};return m;};
+NWLOW.barkMat2=(tex,key,o)=>BIO.glossBarkMat(tex,key,o);   // the two-tone gloss bark: the core's 'gloss' kind (core/biome/30-core-foliage.js)
 const BK={};['smooth','ring','fern','ghost','bluegum','birch','fibre','silver','paper','plate','char'].forEach(k=>BK[k]=barkTex2(k==='ring'?'cane':k==='fibre'?'fibrenw':k));
 NWLOW.BARKTEX=BK;
 // greyscale canvases for the instanced small trunks and the logs/rocks (the kit's usual tint() path)
@@ -518,28 +504,30 @@ G.lantern=function(){const P=[];for(let i=0;i<=5;i++){const t=i/5;P.push(new T3.
 NWLOW.G=G;
 
 // ---------------------------------------------------------------- materials
+/* THE LOOK: what this kit's own host asks (45-host-stage.js, NWLOW_LOOK); a page that reads the kit in place sets none of it, and its materials are as they were */
+const LK=window.NWLOW_LOOK||{},BL=o=>LK.backlit?Object.assign(o,{backlit:.35}):o,GR=o=>LK.rootcol?Object.assign(o,{ground:{k:.6,gain:.42,fade:[550,750]}}):o,SE=(o,v)=>LK.season?Object.assign(o,{season:v}):o;
 const M=NWLOW.MAT={
  bk:{
-  smooth:NWLOW.barkMat2(BK.smooth,'smooth',{alt:0x6a8a70,gloss:.06}),
+  smooth:NWLOW.barkMat2(BK.smooth,'smooth',{c2:true,alt:0x6a8a70,gloss:.06}),
   ring:NWLOW.barkMat2(BK.ring,'ring',{alt:0x5a6660,gloss:.2}),
   fern:NWLOW.barkMat2(BK.fern,'fern',{alt:0x5a4a3a,gloss:0}),
-  ghost:NWLOW.barkMat2(BK.ghost,'ghost',{alt:0xb8bab4,gloss:.08}),
+  ghost:NWLOW.barkMat2(BK.ghost,'ghost',{c2:true,alt:0xb8bab4,gloss:.08}),
   bluegum:NWLOW.barkMat2(BK.bluegum,'bluegum',{alt:0xe0dcc8,gloss:.05}),
   birch:NWLOW.barkMat2(BK.birch,'birch',{alt:0x1e2022,gloss:.05}),
-  fibre:NWLOW.barkMat2(BK.fibre,'fibre',{alt:0x6a5a4e,gloss:0}),
+  fibre:NWLOW.barkMat2(BK.fibre,'fibre',{c2:true,alt:0x6a5a4e,gloss:0}),
   silver:NWLOW.barkMat2(BK.silver,'silver',{alt:0xa8b0b4,gloss:.25}),
   paper:NWLOW.barkMat2(BK.paper,'paper',{alt:0xb4a484,gloss:0}),
-  plate:NWLOW.barkMat2(BK.plate,'plate',{alt:0x6a4a38,gloss:0}),
+  plate:NWLOW.barkMat2(BK.plate,'plate',{c2:true,alt:0x6a4a38,gloss:0}),
   char:NWLOW.barkMat2(BK.char,'char',{alt:0x8a8a86,gloss:0})},
  wood:BIO.barkMat(NWLOW.WOODTEX),
  rock:BIO.barkMat(NWLOW.ROCKTEX),
  oakleaf:BIO.leafMat(TX.oakleaf,'nwl-oakleaf',{aN:true,swayW:'1.0',swayA:.10}),
- glossy:BIO.leafMat(TX.glossy,'nwl-glossy',{aN:true,swayW:'1.0',swayA:.12}),
- broad:BIO.leafMat(TX.broad,'nwl-broad',{aN:true,swayW:'1.0',swayA:.14}),
- lance:BIO.leafMat(TX.lance,'nwl-lance',{aN:true,swayW:'1.0',swayA:.16}),
+ glossy:BIO.leafMat(TX.glossy,'nwl-glossy',BL({aN:true,swayW:'1.0',swayA:.12})),
+ broad:BIO.leafMat(TX.broad,'nwl-broad',SE(BL({aN:true,swayW:'1.0',swayA:.14}),{drop:.7,colour:0xc8a040,k:.6})),
+ lance:BIO.leafMat(TX.lance,'nwl-lance',LK.monsoon?SE(BL({aN:true,swayW:'1.0',swayA:.16}),{drop:.6,colour:0xa88a40,k:.5}):BL({aN:true,swayW:'1.0',swayA:.16})),
  needle:BIO.leafMat(TX.needle,'nwl-needle',{aN:true,swayW:'1.0',swayA:.08}),
  feather:BIO.leafMat(TX.feather,'nwl-feather',{aN:true,swayW:'1.0',swayA:.12}),
- ginkgo:BIO.leafMat(TX.ginkgo,'nwl-ginkgo',{aN:true,swayW:'1.0',swayA:.12}),
+ ginkgo:BIO.leafMat(TX.ginkgo,'nwl-ginkgo',SE(BL({aN:true,swayW:'1.0',swayA:.12}),{drop:.85,colour:0xe0b830,k:.8})),
  bleaf:BIO.leafMat(TX.bleaf,'nwl-bleaf',{aN:true,swayW:'1.0',swayA:.18}),
  blossom:BIO.leafMat(TX.blossom,'nwl-blossom',{aN:true,swayW:'1.0',swayA:.10}),
  veil:BIO.leafMat(TX.willow,'nwl-veil',{swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.36}),
@@ -554,7 +542,7 @@ const M=NWLOW.MAT={
  pen:BIO.leafMat(TX.pen,'nwl-pen',{swayW:'(position.y)',swayA:.05,alphaTest:.42}),
  clubpen:BIO.leafMat(TX.clubpen,'nwl-clubpen',{swayW:'(position.y)',swayA:.03,alphaTest:.42}),
  reed:BIO.leafMat(TX.reed,'nwl-reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'nwl-grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
+ grass:BIO.leafMat(TX.grass,'nwl-grass',SE(GR({swayW:'(position.y)',swayA:.12,alphaTest:.4}),{colour:0xc8a860,k:.7})),
  under:BIO.leafMat(TX.under,'nwl-under',{swayW:'1.0',swayA:.06}),
  beard:BIO.leafMat(TX.beard,'nwl-beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  hang:BIO.leafMat(TX.under,'nwl-hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
@@ -569,13 +557,21 @@ const M=NWLOW.MAT={
  halo:new T3.MeshBasicMaterial({map:TX.glow,color:0xffffff,transparent:true,blending:T3.AdditiveBlending,depthWrite:false,side:T3.DoubleSide,fog:false}),
  solid:BIO.solidMat(null,0xffffff),
 };
+/* the halos fade with range (KNOWN_ISSUES, 2026-10-26): an additive card cannot take the fog (fog would ADD the haze colour), so
+   at range in the haze it read as a bright speck. Its alpha now falls to nothing between NWLOW.HALO.near and .far metres from the
+   eye, times the clear share of a FogExp2 of density NWLOW.HALO.fog (the page's own), so a halo glows only near its lantern. */
+NWLOW.HALO={near:90,far:420,fog:.0002};
+M.halo.onBeforeCompile=sh=>{const H=NWLOW.HALO;sh.uniforms.uHalo={value:new T3.Vector3(H.near,H.far,H.fog)};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying float vHaloD;').replace('#include <project_vertex>','#include <project_vertex>\nvHaloD=-mvPosition.z;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nvarying float vHaloD;uniform vec3 uHalo;').replace('#include <fog_fragment>','gl_FragColor.a*=(1.0-smoothstep(uHalo.x,uHalo.y,vHaloD))*exp(-vHaloD*vHaloD*uHalo.z*uHalo.z);\n#include <fog_fragment>');};
+M.halo.customProgramCacheKey=()=>'nwl-halo-fade';
 // the material library (core/materials/PLAN.md): with a 'nwlowlands' pack on the page (materials.json -> KMAT.pack), the slots it names
 // take library maps in place of the procedural ones painted above (BIO.libSwap, core/biome 20-core-kit.js). No pack: no change.
 NWLOW.LIB=BIO.libSwap('nwlowlands',NWLOW.MAT);
 [['smooth','Smooth bark (meranti, ginkgo, poplar, wattle, banksia)',[3,5]],['ring','Ringed stems (mist palm, pandan)',[1,1.6]],['fern','Tree-fern trunks',[1.2,1.6]],
  ['ghost','Ghost bark (ghost gum, tower ash)',[3,5]],['bluegum','Ribbon bark (blue gum)',[2.4,6]],['birch','Birch bark',[1.2,2.2]],['fibre','Fibrous bark (spire cedar, cypress, she-oak)',[2.4,5]],
  ['silver','Silver bark (glow-willow)',[2.4,4]],['paper','Paperbark',[2,2.4]],['plate','Plated bark (kauri, crag pine)',[2,3.4]],['char','Grass-tree trunks',[1,1.4]]]
- .forEach(b=>BIO.bucket('bk_'+b[0],M.bk[b[0]],{label:b[1],uvScale:b[2]}));
+ .forEach(b=>BIO.bucket('bk_'+b[0],M.bk[b[0]],{label:b[1],uvScale:b[2],c2:!!M.bk[b[0]].userData.bio.opts.c2}));   /* c2: the species' own second colour per vertex (alt2), where the core's buckets carry it */
 BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:[3,4]});
 BIO.bucket('rock',M.rock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
@@ -602,20 +598,20 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Strands and bark ribbons'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss and litter'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Flowers',onLeaf:true});
 BIO.def('staghorn',G.fan(),M.staghorn,{label:'Staghorn ferns'});
 BIO.def('rosette',G.rosette(),M.rosette,{label:'Rosettes'});
-BIO.def('pad',G.pad(),M.pad,{label:'Lotus and lily pads'});
+BIO.def('pad',G.pad(),M.pad,{label:'Lotus and lily pads',free:true});
 BIO.def('cone',G.cone(),M.solid,{label:'Shoots and cones'});
 BIO.def('rod',BIO.geo.rod(6),M.solid,{label:'Stems and stalks'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(NWLOW.FIBRETEX),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(NWLOW.SMOOTHTEX),{label:'Small trunks (smooth)'});
-BIO.def('culm',G.culm(6),M.culm,{label:'Sky bamboo'});
+BIO.def('culm',LK.culm&&BIO.bamboo?BIO.bamboo.culm({n:1,seg:6,fs:[0,1]}):G.culm(6),M.culm,{label:'Sky bamboo'});
 BIO.def('belly',G.belly(),M.culm,{label:'Buddha-belly bamboo'});
 BIO.def('coil',G.coil(),M.solid,{label:'Coil cane'});
 BIO.def('lantern',G.lantern(),M.lantern,{label:'Glow-willow lanterns'});
 BIO.def('halo',BIO.geo.bloom(),M.halo,{label:'Lantern glow'});
 BIO.def('pompom',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Flower heads'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+BIO.def('fungus',LK.fung&&BIO.fung?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.34,droop:.16,wav:5,wavA:.04,lump:.08}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(NWLOW.ROCKTEX),{label:'Boulders'});
 })();

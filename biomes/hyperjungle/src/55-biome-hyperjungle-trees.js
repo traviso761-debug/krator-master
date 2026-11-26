@@ -16,6 +16,10 @@
 (function(){
 const SP=HYPERJUNGLE.SPECIES,PAL=HYPERJUNGLE.PAL,GOLD=2.399963,NSP=SP.length;
 HYPERJUNGLE.TREES=[];HYPERJUNGLE.SAPLINGS=[];
+// the runtime LOD's radii (metres from the camera to a chunk; null: the spine's static LOD only, as before 2026-10-27). The host sets
+// them before build (88-host-build.js: the far band's diet): tree a hero's range (and its bole dress, 60), then its stand-in; sap the
+// young trees'; floor, mid, far the floor's three rings (60)
+HYPERJUNGLE.LOD=HYPERJUNGLE.LOD||{tree:null,sap:null,floor:null,mid:null,far:null};
 
 // ---------------------------------------------------------------- trunk profile
 // Girder's trunkR: bole radius of tree T at world height y. The baobab is a
@@ -23,7 +27,7 @@ HYPERJUNGLE.TREES=[];HYPERJUNGLE.SAPLINGS=[];
 function trunkR(T,y){const yy=Math.max(0,y-T.y0),u=clamp(yy/T.H,0,1);let r;
  if(T.sp===3)r=u<.55?1+.25*Math.sin(u/.55*Math.PI):mix(1,.12,Math.pow((u-.55)/.45,.9));
  else r=u<.62?1-.42*u:mix(.74,.07,smooth(.62,1,u));
- return T.rb*r*(1+.80*Math.exp(-yy/15));}
+ return T.rb*r*(1+.80*(T.butK==null?1:T.butK)*Math.exp(-yy/15));}   /* T.butK: a habit's buttress scale (the lake station's stilt kapok, .12; null: 1) */
 HYPERJUNGLE.trunkR=trunkR;
 
 // ---------------------------------------------------------------- colour
@@ -82,7 +86,14 @@ const clear3=(x,y,z,rad,vr)=>BIO.clearOf3(x,y,z,rad,vr);
 // its measured quantiles for the target shares below (so the shares hold for
 // any seed, radius or species count), with Girder's share of off-pattern
 // trees. Order along the field = which stands border which.
-const SHARE=[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok
+const SHARE=(HYPERJUNGLE.HABIT&&HYPERJUNGLE.HABIT.share)||[.22,.17,.22,.11,.17,.11];   // ironbark, ghostwood, prism gum, baobab, mahogany, kapok (the savage land's own: 50, HABIT)
+// the old-growth habit (50: HYPERJUNGLE.HABIT, the savage land): a tree's height times a factor hashed from its own seed (no draw, so
+// the stream is the one the plain habit draws), its bole and crown by the habit's fixed factors. Without the habit, T as it came
+const HAB=HYPERJUNGLE.HABIT;
+function oldGrowth(T){if(!HAB||!T||T.sapling||(SP[T.sp]&&SP[T.sp].noHabit))return T;   /* a cousin grown by this builder (BIO.kin) may keep its own size */
+ const R=(HAB.H&&HAB.H[T.sp])||[1,1],u=KRAND.unit(KRAND.hash(0x5a7a6e,T.seed,T.sp));
+ const k=R[0]+(R[1]-R[0])*u;T.H*=k;T.rb*=HAB.rb==null?1:HAB.rb;T.crownR*=HAB.crownR==null?1:HAB.crownR;T.oldGrowth=k;return T;}
+HYPERJUNGLE.oldGrowth=oldGrowth;
 let QUANT=null;
 function standQuantiles(R){const v=[],o=BIO.center(),n=64;   // the grids' centre, [x,z] (the core keeps host.origin as a list)
  for(let iz=0;iz<n;iz++)for(let ix=0;ix<n;ix++){const x=o[0]+(ix/(n-1)-.5)*2*R,z=o[1]+(iz/(n-1)-.5)*2*R;if(Math.hypot(x-o[0],z-o[1])>R)continue;v.push(BIO.standAt(x,z,4000)/4000);}
@@ -113,7 +124,7 @@ function buildHero(T,ti,q,st){
  for(k=0;k<nl;k++)lobes.push({a:la+k/nl*TAU+rr(-.22,.22),amp:rr(.55,1.2),p:Hb.butP*rr(.8,1.3)});
  const ph1=rr(0,TAU),ph2=rr(0,TAU),leanA=rr(0,TAU),leanK=sp===3?0:rr(2,5);
  function lobeSum(ang){let sm=0;for(let j=0;j<lobes.length;j++){const c=Math.cos(ang-lobes[j].a);if(c>0)sm+=lobes[j].amp*Math.pow(c,lobes[j].p);}return sm;}
- function butF(yy){return yy<27?Hb.butA*Math.exp(-yy/Hb.butH)*clamp((27-yy)/11,0,1):0;}
+ function butF(yy){return yy<27?Hb.butA*(T.butK==null?1:T.butK)*Math.exp(-yy/Hb.butH)*clamp((27-yy)/11,0,1):0;}
  function trunkMul(yy,ang){let m=1+.010*Math.sin(3*ang+yy*.045+ph1)+.007*Math.sin(7*ang-yy*.10+ph2);if(yy<27)m+=butF(yy)*lobeSum(ang);return m;}
  function trunkPt(yy){const u=yy/T.H;let r=trunkR(T,T.y0+yy),off=0;
   if(sp!==3){r*=1-.72*smooth(.93,.985,u);off=leanK*Math.pow(clamp((u-.88)/.105,0,1),2);}
@@ -126,7 +137,7 @@ function buildHero(T,ti,q,st){
  let i0=0;
  while(i0<rings.length-1){let i1=i0+1;while(i1<rings.length-1&&rings[i1].r/rings[i0].r>.78&&rings[i1].r/rings[i0].r<1.25)i1++;
   const rm=(rings[i0].r+rings[i1].r)*.5,seg=rm>2.2?(farHalf?20:28):12;
-  st.trunk+=BIO.lathe(fam,rings.slice(i0,i1+1),seg,Math.max(1,Math.round(TAU*rm/sc0)),vs,
+  st.trunk+=BIO.lathe(fam,rings.slice(i0,i1+1),seg,R=>TAU*R.r/sc0,vs,   /* the repeat per ring (core B4): no seam where sections meet */
    (R,ang)=>R.r*trunkMul(R.yy,ang),
    (R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.50+.50*clamp(lobeSum(ang)*1.4,0,1),f):1;});
   i0=i1;}
@@ -158,7 +169,8 @@ function buildHero(T,ti,q,st){
  // perches: two points per bough, exported for epiphytes and roosts
  T.perch=[];mine.forEach(Lm=>{[2,4].forEach(i=>{const p=Lm.pts[i];T.perch.push({x:p.x,y:p.y,z:p.z,r:p.r});});});
  // ---- skin the limbs; grow secondaries and twigs; collect foliage spots ----
- const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[];
+ const yMinFol=T.y0+T.H*T.crown0-17,spots=[],hangs=[],twigL=[];   /* twigL: the kapok's drawn spans, its flowers go on them */
+ const logTwig=P=>{if(sp===5)for(let j=1;j<P.length;j++)twigL.push({a:[P[j-1].x,P[j-1].y,P[j-1].z],b:[P[j].x,P[j].y,P[j].z],r0:P[j-1].r,r1:P[j].r,end:j===P.length-1});};
  const terGap=Hb.terGap*(farHalf?1.35:1);
  mine.forEach(Lm=>{const pts=Lm.pts,r0=pts[0].r,n=pts.length;
   const lc=boleCol(sp,(Math.floor(clamp(pts[0].y-T.y0,0,Hend)/22)+ti)%3);   // the trunk's colour band at this height, kept along the limb, its boughs and twigs
@@ -173,7 +185,7 @@ function buildHero(T,ti,q,st){
    const sec=treeGrow(at,d1,len1,rS,.14,4,Hb.secCurve+rr(-.05,.05),.07);let ok=true;
    for(let j=1;j<sec.length;j++)if(!clear3(sec[j].x,sec[j].y,sec[j].z,sec[j].r+2.5,sec[j].r+2.5)){ok=false;break;}
    if(!ok)continue;
-   st.bough+=BIO.tube(lfam,sec,lc,{seg:rS>.9?5:4});st.boughs++;
+   st.bough+=BIO.tube(lfam,sec,lc,{seg:rS>.9?5:4});st.boughs++;logTwig(sec);
    const sprd=clamp(len1*.26,5,12);
    spots.push({p:sec[2],s:sprd,inner:true},{p:sec[3],s:sprd},{p:sec[4],s:sprd*.9,tip:true});
    if(sp===3&&rng()<.8)hangs.push({x:sec[1].x,y:sec[1].y-sec[1].r*.7,z:sec[1].z});
@@ -188,7 +200,7 @@ function buildHero(T,ti,q,st){
     const d2=treeDir(a2.tx,a2.ty,a2.tz,sd2,rr(.5,.9),rr(.6,1),Hb.secUp*.8+rr(-.15,.25));
     const tw=treeGrow(a2,d2,len2,Math.max(.15,a2.r*.6),.08,2,Hb.secCurve,.05);
     if(!clear3(tw[2].x,tw[2].y,tw[2].z,2.5,2.5)||!clear3(tw[1].x,tw[1].y,tw[1].z,2.5,2.5))continue;
-    st.twig+=BIO.tube(lfam,tw,lc,{seg:3});st.twigs++;
+    st.twig+=BIO.tube(lfam,tw,lc,{seg:3});st.twigs++;logTwig(tw);
     spots.push({p:tw[1],s:clamp(len2*.4,3.6,8)},{p:tw[2],s:clamp(len2*.45,3.6,8.5),tip:true});
     if(sp===1&&rng()<.55)hangs.push({x:tw[2].x,y:tw[2].y-.5,z:tw[2].z});
     if(sp===1&&rng()<.30)hangs.push({x:tw[1].x,y:tw[1].y-.5,z:tw[1].z});
@@ -228,8 +240,9 @@ function buildHero(T,ti,q,st){
    for(let k=0,n=ri(1,3);k<n;k++)BIO.put('capsule',[h.x+rr(-1.5,1.5),h.y+rr(-.5,.5),h.z+rr(-1.5,1.5)],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[Lp*.7,Lp,Lp*.7],bright(S.capsule,rr(.8,1.1)));st.capsules++;}
   else if(sp===5){if(!clear3(h.x,h.y,h.z,3,3))return;   // a cluster of scarlet cup flowers on the bare twig ends, the odd burst silk pod
    const fc=bright(pick(S.flower),rr(.9,1.15));
-   for(let k=0,n=ri(3,6);k<n;k++){const sz=rr(1.4,2.6);BIO.put('bloom',[h.x+rr(-2.5,2.5),h.y+rr(-1.5,2),h.z+rr(-2.5,2.5)],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),sz,fc);}
-   if(rng()<.25)BIO.put('bloom',[h.x+rr(-2,2),h.y-rr(1,3),h.z+rr(-2,2)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(2,3.2),bright(S.silk,1.1));st.flowers++;}});
+   /* the cluster's jitter lands on the nearest span drawn: +-2.5 m off a twig's end floated (2026-11-02) */
+   for(let k=0,n=ri(3,6);k<n;k++){const sz=rr(1.4,2.6);BIO.put('bloom',BIO.snapSeg(twigL,[h.x+rr(-2.5,2.5),h.y+rr(-1.5,2),h.z+rr(-2.5,2.5)]).p,qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),sz,fc);}
+   if(rng()<.25)BIO.put('bloom',BIO.snapSeg(twigL,[h.x+rr(-2,2),h.y-rr(1,3),h.z+rr(-2,2)]).p,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(2,3.2),bright(S.silk,1.1));st.flowers++;}});
  if(typeof REGISTER==='function')REGISTER({name:S.name+' hypertree',kind:'tree',label:'Hypertree',x:T.x,z:T.z,y:T.y0,r:T.crownR,h:T.H});
 }
 
@@ -242,7 +255,8 @@ function buildSapling(Sd,si,q,st){
  const d0=BIO.lodD(Sd.x,Sd.z),lodK=clamp(BIO.lod(Sd.x,Sd.z),.5,1)*(Sd.ring?.6:1),beams=Sd.ring?0:(d0<420?2:(d0<760?1:0));
  for(let k=0;k<=7;k++){const u=k/7,r=sp===3?rb*(u<.55?mix(1,1.1,u/.55):mix(1.1,.18,smooth(.55,1,u))):rb*mix(1,.12,Math.pow(u,.85))*(1+.6*Math.exp(-u*H/4));
   pts.push({x:Sd.x+Math.cos(lean)*lk*u*u+Math.sin(u*5+si)*.4,y:Sd.y0+H*u*(sp===3?.9:1),z:Sd.z+Math.sin(lean)*lk*u*u,r:Math.max(.15,r)});}
- const tc=boleCol(sp,si%3),rc=rodCol(sp,si%3);
+ const tc=boleCol(sp,si%3),rc=rodCol(sp,si%3),Ht=H*(sp===3?.9:1),lkH=lk/H*.8;
+ const trunkAt=y=>{const h=clamp(y-Sd.y0,0,Ht);return[Sd.x+Math.cos(lean)*lkH*h,Sd.y0+h,Sd.z+Math.sin(lean)*lkH*h];};   /* the trunk as the item draws it */
  BIO.put('saptrunk'+sp,[Sd.x,Sd.y0,Sd.z],qUp([Math.cos(lean)*lk/H*.8,1,Math.sin(lean)*lk/H*.8]),[rb/.4,H*(sp===3?.9:1),rb/.4],tc);
  st.sapTris+=BIO.defs['saptrunk'+sp].tris;
  const nB=Sd.ring?ri(3,5):ri(5,8),spots=[],band=SAP_BAND[sp];let a=rr(0,TAU);
@@ -251,7 +265,7 @@ function buildSapling(Sd,si,q,st){
   const len=Sd.cr*(sp===0?mix(1,.35,tk):rr(.7,1)),el=rr(SAP_EL[sp][0],SAP_EL[sp][1]);
   const br=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,Math.max(.12,mix(bp.r,bq.r,f)*.5),.06,3,Hb.secCurve,.08);
   if(beams===2){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[1].x,br[1].y,br[1].z],br[0].r,br[1].r,rc);BIO.beam('rod',[br[1].x,br[1].y,br[1].z],[br[3].x,br[3].y,br[3].z],br[1].r,br[3].r,rc);st.sapTris+=2*BIO.defs.rod.tris;}
-  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[2].x,br[2].y,br[2].z],br[0].r,br[2].r,rc);st.sapTris+=BIO.defs.rod.tris;}
+  else if(beams===1){BIO.beam('rod',[br[0].x,br[0].y,br[0].z],[br[3].x,br[3].y,br[3].z],br[0].r,br[3].r,rc);st.sapTris+=BIO.defs.rod.tris;}   /* to the bough's tip: spots stand on br[3] */
   spots.push(br[1],br[2],br[3],br[3]);if(sp!==3&&sp!==1)spots.push(br[2]);}
  const tp=pts[7];spots.push(tp,tp,{x:tp.x,y:tp.y-H*.07,z:tp.z});if(sp===3)spots.push(tp,tp);
  const cy=Sd.y0+H*mix(band[0],1,.5),size0=clamp(H*.15,3.2,8.5)/Math.sqrt(lodK),sapLeaf=[0x3a6a34,0x2e5a2c];
@@ -261,7 +275,9 @@ function buildSapling(Sd,si,q,st){
   const dx=(x-Sd.x)/Sd.cr,dy=(y-cy)/(H*.35),dz=(z-Sd.z)/Sd.cr,qq=Math.hypot(dx,dy,dz);
   const ao=mix(.55,1,smooth(.25,.9,qq))*rr(.88,1.12),nx=dx+rr(-.3,.3),ny=dy*.6+.8,nz=dz+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
   const c1=C(LC[sp===2?ri(0,1):ri(0,LC.length-1)]).lerp(C(sapLeaf[si%2]),sp===1?.2:.4);
-  BIO.put('clump'+sp,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*Hb.flat,size],bright(c1,1.3*ao),
+  /* the far band draws no boughs (its diet: GRAPHIC-LOAD.md): a clump is held to the trunk, within the reach of its own leaves, at no cost in triangles */
+  const P=beams?[x,y,z]:BIO.holdTo(trunkAt(y),[x,y,z],size*.55);
+  BIO.put('clump'+sp,P,qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*Hb.flat,size],bright(c1,1.3*ao),
    {n:[nx/nn,ny/nn,nz/nn],c2:sp===2?bright(LC[2+ri(0,1)],1.3*ao):null});
   st.sapClumps++;});
 }
@@ -306,10 +322,10 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
  const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
  const TREES=HYPERJUNGLE.TREES;TREES.length=0;const SAPS=HYPERJUNGLE.SAPLINGS;SAPS.length=0;
  const mk=(x,y,z,hero)=>{const sp=standSp(x,z),S=SP[sp];
-  return{x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:hero};};
+  return oldGrowth({x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:hero});};
  // 1. HERO hypertrees: area-uniform over the hero disc, Girder's 165 m minimum spacing
- const nHero=Math.round(Math.PI*heroR*heroR/125000*q);
- BIO.scatter(nHero,0,heroR,165,(x,y,z)=>{TREES.push(mk(x,y,z,true));},{pad:34});
+ const SPC=HAB&&HAB.spacing?HAB.spacing:165,nHero=HAB&&HAB.spacing?Math.round(Math.PI*heroR*heroR/125000*q*(165*165)/(SPC*SPC)):Math.round(Math.PI*heroR*heroR/125000*q);   /* the old growth stands wider apart (HAB.spacing) */
+ BIO.scatter(nHero,0,heroR,SPC,(x,y,z)=>{TREES.push(mk(x,y,z,true));},{pad:34});
  const heroes=TREES.slice();
  // 2. FAR impostors from heroR out to R, one per ~150 m cell, no patchiness (the canopy must close)
  BIO.grid(165*Math.sqrt(1/Math.max(.25,q)),heroR+30,R,(x,z,d)=>{for(const T of heroes)if(Math.hypot(x-T.x,z-T.z)<T.crownR+60)return 0;return 1;},
@@ -322,16 +338,35 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
   if(!BIO.clearOf(x,z,cr+4))return;
   SAPS.push({x:x,z:z,y0:y-1,H:H,sp:sp,cr:cr,ring:d>=heroR});},{patch:.5,pad:6});
  // build
- heroes.forEach((T,ti)=>buildHero(T,ti,q,st));
- fars.forEach((T,fi)=>buildFar(T,fi,st));
- SAPS.forEach((Sd,si)=>buildSapling(Sd,si,q,st));
+ // RUNTIME LOD AND OCTAHEDRAL IMPOSTORS (2026-10-27, the final rebuild; GRAPHIC-LOAD.md recommendations 1 and 2, nhighlands and
+ // eastabyss the worked examples). With HYPERJUNGLE.LOD.tree set (88-host-build.js; ?diet=0 leaves it null) a hero is drawn in full
+ // while the camera is within LOD.tree metres of its chunk, and as its stand-in past that; a far tree is only ever its stand-in. The
+ // stand-in is one quad of its species baked from 8 x 8 directions (core/biome 34, one set, one item) where the page lists the
+ // fragment and HYPERJUNGLE.IMPOSTORS is not false; else the blob crowns as before. The bake builds one hero of each species again at
+ // BIO.bakeImpostors (after every placement, its own seed); here nothing draws from the stream but the heroes, the far blobs and the
+ // saplings, in the same order, so every tree keeps its form.
+ const LD=HYPERJUNGLE.LOD,LT=LD.tree,IMPON=HYPERJUNGLE.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ if(IMPON){const set=BIO.impostorSet('hyperjungle.trees',{label:'Far hypertrees',cell:HAB&&HAB.impCell?HAB.impCell:undefined});const c=BIO.center();
+  SP.forEach((S,sp)=>{let T0=null;for(const T of heroes)if(T.sp===sp&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0),st1=Object.assign({},st);
+   const rec=BIO.impostor('hyperjungle.'+S.key,()=>{const R0=typeof window!=='undefined'?window.REGISTER:null;if(R0)window.REGISTER=null;
+     try{reseed(T1.seed*7919+17);buildHero(Object.assign({},T1),0,1,st1);}finally{if(R0)window.REGISTER=R0;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' hypertree (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far hypertrees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ HYPERJUNGLE._farImp=farImp;   /* a station's own heroes take the same stand-ins (HYPERJUNGLE.placeHero) */
+ heroes.forEach((T,ti)=>{if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}buildHero(T,ti,q,st);
+  if(LT){BIO.range=1e9;BIO.minRange=LT;if(!farImp(T))buildFar(T,ti,st);}BIO.owner=null;BIO.range=null;BIO.minRange=0;});
+ fars.forEach((T,fi)=>{if(!farImp(T))buildFar(T,fi,st);});
+ BIO.range=LD.sap||null;SAPS.forEach((Sd,si)=>buildSapling(Sd,si,q,st));BIO.range=null;
  // the inspector's names for what the register leaves out: the young trees and the far hypertrees (BIO.nameAt)
  if(BIO.nameSet){BIO.nameSet('hyperjungle.saplings',SAPS.map(Sd=>({name:'Young '+SP[Sd.sp].name.toLowerCase()+' (immature hypertree)',sp:Sd.sp,x:Sd.x,z:Sd.z,y:Sd.y0,r:Sd.cr,h:Sd.H})));
   BIO.nameSet('hyperjungle.far',fars.map(T=>({name:SP[T.sp].name+' hypertree (far)',sp:T.sp,x:T.x,z:T.z,y:T.y0,r:T.crownR||T.rb*4,h:T.H})));}
  const ct=BIO.defs.clump0.tris,bark=st.trunk+st.limb+st.bough+st.twig+st.root,leaves=st.clumps*ct,hang=st.racemes*BIO.defs.raceme.tris+(st.pods+st.capsules)*BIO.defs.pod.tris;
  const sap=st.sapTris+st.sapClumps*ct;
  const mix6=SP.map(S=>0);heroes.forEach(T=>mix6[T.sp]++);
- return{trees:TREES.length,hyper:heroes.length,far:fars.length,saplings:SAPS.length,heroMix:mix6,
+ /* rings: the hero disc and the far impostor ring (heroR+30 to R), for a host's camera check (99-host-take: preset views) */
+ return{trees:TREES.length,hyper:heroes.length,far:fars.length,saplings:SAPS.length,heroMix:mix6,rings:{hero:heroR,far:[heroR+30,R]},
   boughs:st.topBoughs,secondaries:st.boughs,twigs:st.twigs,roots:st.roots,clumps:st.clumps,racemes:st.racemes,pods:st.pods,capsules:st.capsules,flowers:st.flowers,sapClumps:st.sapClumps,
   tris:{trunk:st.trunk,limbs:st.limb,boughs:st.bough,twigs:st.twig,roots:st.root,bark:bark,leaves:leaves,hang:hang,far:st.far,saplings:sap,total:bark+leaves+hang+st.far+sap}};};
 
@@ -343,9 +378,16 @@ HYPERJUNGLE.buildTrees=function(R,heroR,q){
 // BIO.lod at the tree, so a world wanting a lighter hero grows it far from the host's origin). Nothing else: no TREES
 // record, no keep-clear. An open world grows each species' variants once with these and instances them (openworld/README.md).
 HYPERJUNGLE.make=function(sp,x,y,z,sapling){if(sapling){const H=20+40*Math.pow(rng(),1.4);return{x:x,z:z,y0:y-1,H:H,sp:sp,cr:H*SAP_CR[sp]+2,ring:false,sapling:true,seed:ri(0,999999)};}
- const S=SP[sp];return{x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:true};};
+ const S=SP[sp];return oldGrowth({x:x,z:z,y0:y-.8,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),crown0:S.crown0,seed:ri(0,999999),hero:true});};
 HYPERJUNGLE.grow=function(T,lv){tints();
  const st={trunk:0,limb:0,bough:0,twig:0,root:0,far:0,sapTris:0,roots:0,topBoughs:0,boughs:0,twigs:0,spots:0,clumps:0,racemes:0,pods:0,capsules:0,flowers:0,sapClumps:0};
  T.lv=lv;if(T.sapling)buildSapling(T,T.seed%3,1,st);else if(lv===0)buildFar(T,T.seed%7,st);else buildHero(T,T.seed%97,1,st);return st;};
+// placeHero(T, lv): a station's hero (a record from make, its stream reseeded by the caller) grown as the pass grows its own, with
+// the runtime LOD: drawn within LOD.tree of the camera, then the species' impostor (or the blob crowns) past it. Without LOD.tree
+// (?diet=0, or a world reading the kit in place) it is grow(T, lv) alone. Returns grow's stats
+HYPERJUNGLE.placeHero=function(T,lv){const LT=HYPERJUNGLE.LOD.tree;if(LT){BIO.owner=[T.x,T.z];BIO.range=LT;BIO.minRange=0;}
+ let st;try{st=HYPERJUNGLE.grow(T,lv==null?2:lv);
+  if(LT){BIO.range=1e9;BIO.minRange=LT;if(!(HYPERJUNGLE._farImp&&HYPERJUNGLE._farImp(T)))buildFar(T,T.seed%7,st);}}
+ finally{BIO.owner=null;BIO.range=null;BIO.minRange=0;}return st;};
 HYPERJUNGLE._canopyH=function(x,z){let h=0;for(const T of HYPERJUNGLE.TREES){if(Math.hypot(x-T.x,z-T.z)<200)h=Math.max(h,T.y0+T.H);}return h||60;};
 })();

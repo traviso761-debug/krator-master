@@ -12,14 +12,14 @@
 // DEW GARDENS: anything standing (a boulder here; a hulk or a dock pile in the overlay) condenses dew at night, so the
 // small weird plants gather round the boulders in mixed clumps, as on the owner's reference board.
 // The zones' floors:
-//   DESERT   crawlers, resurrection balls, wormwood, windows, step cones, strider gardens, horn pipes, balloon pods
-//   PAN      salt fingers, windows, step cones, crawlers on its edge, salt-crusted stones
+//   DESERT   crawlers, resurrection balls, wormwood (saltbush on salty ground), windows, step cones, strider gardens, horn pipes, balloon pods
+//   PAN      salt fingers, windows, step cones, crawlers and saltbush on its edge, salt-crusted stones
 //   STEPPE   drill grass (the cover), wormwood, tumblers, tulips, hitchers, censer caps, sail candelabra, mace heads,
 //            bead chains, horn pipes, furlers, roll-eggs, star drifters; basalt and tan stones, dew gardens
 //   MED      grass and drill grass, tulips, furlers, star drifters, hitchers, glider gourds scrambling over shrubs
 //   FOREST   grass, leaf litter, fern, windfall fruit under the trees, lantern seedlings
-//   TUGAI    reeds at the water, grass, cotton drifts, roll-eggs
-//   RIP      reeds, grass, sedge, flowers, cobbles
+//   TUGAI    reeds at the water, grass, cotton drifts, roll-eggs, sea buckthorn thickets
+//   RIP      reeds, grass, sedge, flowers, sea buckthorn, cobbles
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const PAL=NSEMIARID.PAL,zones=NSEMIARID.zones,blocked=NSEMIARID.blocked,C=NSEMIARID.C;
 const {bright,shade,vary,tint,means,leafCol}=NSEMIARID;
@@ -44,6 +44,14 @@ function wormwood(x,y,z,lv,k){const hc=vary(pick(PAL.wormwood),.03,.08,.05),Rs=r
 function stipa(x,y,z,lv){const h=rr(.5,1.1)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):1,.3,1.2,(px,pz)=>tuft('stipa',px,y,pz,h*rr(.8,1.15),h*1.1,leafCol(PAL.stipa,1.05,.02,.06,.05)));}
 function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k==null?1:k)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
 function reed(x,y,z,lv){const h=rr(1.4,2.8)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):lv===1?2:1,.6,2,(hx,hz,k)=>{if(k&&BIO.depth(hx,hz)>.8)return;tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.0),leafCol(PAL.reed,1.3,.025));});}
+// SALTBUSH and SEA BUCKTHORN (2026-10-26, the owner's cards): a whole shrub on one crossed card. With the pack the card
+// carries its own colour (keep 1), so the instance colour is near white; without it the painted twigs take the palette's
+const libCol=(card,set)=>NSEMIARID.LIB.has(card)?leafCol([0xf4f4f0,0xeceee8,0xfaf6ee],1.0,.01,.03,.05):leafCol(set,1.2,.03,.08,.05);
+function saltbush(x,y,z,lv,st){const h=rr(.5,1.1)*(lv===0?1.3:1);tuft('saltbush',x,y,z,h,h*rr(1.1,1.4),libCol('card.saltbush',PAL.saltbush));
+ if(lv===2&&rng()<.4){const a=rr(0,TAU),d=h*rr(.8,1.4),k=rr(.5,.8);tuft('saltbush',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*k,h*k*1.2,libCol('card.saltbush',PAL.saltbush));}
+ if(st)st.saltbush++;}
+function buckthorn(x,y,z,lv,st){const h=rr(1.2,2.6)*(lv===0?1.3:1);around(x,z,lv===2?ri(2,4):1,.5,1.6,(px,pz)=>tuft('buckthorn',px,Y(px,pz),pz,h*rr(.75,1.1),h*rr(.6,.85),libCol('card.seabuckthorn',PAL.buckthorn)));
+ if(st)st.buckthorn++;}
 function sedge(x,y,z,lv){const h=rr(.4,.9)*(lv===0?1.5:1);tuft('reed',x,y,z,h,h*1.2,leafCol(PAL.sedge,1.3,.03));}
 function tulips(x,y,z,lv){blooms(x,y+.25,z,rr(.6,1.6),lv===2?ri(5,12):3,[pick(PAL.tulip)],[.12,.2],'tulip');if(lv===2)around(x,z,ri(2,4),.2,1,(px,pz)=>tuft('grass',px,y,pz,.3,.25,leafCol(PAL.grass,1.2,.03)));}
 function stone(x,y,z,lv,set,st,k){if(BIO.mask(x,z)<=0)return;const s=rr(.18,.5)*(k==null?1:k)*(lv===0?1.6:1);BIO.put('stone',[x,y-s*.3,z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[s*rr(.9,1.5),s*rr(.5,.8),s*rr(.9,1.3)],rockTint(set));if(st)st.stones++;}
@@ -55,7 +63,9 @@ function boulder(x,y,z,lv,set,st){if(!okGround(x,z,1.5))return null;const s=rr(.
 function tumbler(x,y,z,lv,st,rooted){const r=rr(.5,1.5)*(rooted?.8:1);BIO.put('tumbler',[x,y+r*(rooted?.85:.7),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r*rr(.8,1),r],leafCol(rooted?PAL.tumblerGreen:PAL.tumbler,1.2,.03,.08,.06));if(st)st.tumblers++;}
 function drift(ox,oz,orad,lv,st){const w=W(ox,oz),cx=ox-w[0]*(orad+.8),cz=oz-w[1]*(orad+.8),n=lv===2?ri(4,10):ri(2,4);
  for(let i=0;i<n;i++){const side=rr(-1,1)*(orad+1),back=rr(0,1.6),x=cx-w[1]*side-w[0]*back,z=cz+w[0]*side-w[1]*back;if(BIO.mask(x,z)<=0)continue;
-  const y=Y(x,z),r=rr(.5,1.3);BIO.put('tumbler',[x,y+r*.7+(i>n*.6?r*.9:0),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r,r],leafCol(PAL.tumbler,1.15,.03,.08,.06));if(st)st.tumblers++;}
+  /* the drift's back row stands a little higher, never more than half a metre: lifted .9 r it hovered wherever no ball happened to lie under it (the
+     final rebuild, 2026-11-03: the attach audit's floating tumblers); the same draws, so no other plant moves */
+  const y=Y(x,z),r=rr(.5,1.3);BIO.put('tumbler',[x,y+r*.7+(i>n*.6?Math.min(r*.9,.45+.05*r):0),z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),[r,r,r],leafCol(PAL.tumbler,1.15,.03,.08,.06));if(st)st.tumblers++;}
  if(st)st.drifts++;}
 // seed and cotton drifts: a pale mat in the lee (downwind) of an obstacle
 function seedDrift(ox,oz,orad,st){const w=W(ox,oz),x=ox+w[0]*(orad+1.2),z=oz+w[1]*(orad+1.2);if(BIO.mask(x,z)<=0)return;
@@ -113,11 +123,15 @@ function beads(x,y,z,lv,st){const n=ri(2,4),col=leafCol(PAL.bead,1.2,.03,.08,.05
 // a SAIL CANDELABRA: a knobbed ribbed column with arms, its yellow blade leaves; some blades aloft downwind, kiting
 function sail(x,y,z,lv,st){const h=rr(1.6,3.4),r=h*rr(.08,.12),col=leafCol(PAL.sail,1.2,.03,.08,.05),bc=leafCol(PAL.sailBlade,1.3,.02,.06,.05);
  BIO.put('column',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[r*2,h,r*2],col);
- for(let k=0,m=ri(1,3);k<m;k++){const a=rr(0,TAU),ay=y+h*rr(.35,.65),ax=x+Math.cos(a)*r*3,az=z+Math.sin(a)*r*3,ah=h*rr(.3,.5);
-  BIO.put('column',[x+Math.cos(a)*r,ay,z+Math.sin(a)*r],qEuler(Math.cos(a)*.0,0,0),[r*1.4,r*3,r*1.4],col);
-  BIO.put('column',[ax,ay,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah,r*1.4],col);
-  for(let b=0;b<2;b++)BIO.put('blade',[ax,ay+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
- if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);BIO.put('blade',[px,py,pz],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),[.7,.6,.8],bc);}}
+ // (2026-11-09, the succulent columns' quality pass) each arm is an elbow out of the trunk, rising a little, and the arm's
+ // column stands ON its end, its foot sunk a third of the elbow's radius (the elbow was an upright stub beside the trunk and
+ // the arm's column stood three radii out at the same height, its foot in the air). The same draws in the same order.
+ for(let k=0,m=ri(1,3);k<m;k++){const a=rr(0,TAU),ay=y+h*rr(.35,.65),ca=Math.cos(a),sa=Math.sin(a),ax=x+ca*r*3,az=z+sa*r*3,ah=h*rr(.3,.5);
+  const p0=[x+ca*r*.5,ay,z+sa*r*.5],ey=ay+r*.8,dx=ax-p0[0],dy=ey-ay,dz=az-p0[2],L=Math.hypot(dx,dy,dz),er=r*.7*.49;
+  BIO.put('column',p0,qUp([dx/L,dy/L,dz/L]),[r*1.4,L+er*.5,r*1.4],col);
+  BIO.put('column',[ax,ey-er*.35,az],qEuler(0,rr(0,TAU),0),[r*1.4,ah+er*.35,r*1.4],col);
+  for(let b=0;b<2;b++)BIO.put('blade',[ax,ey+ah*rr(.4,.9),az],qEuler(rr(-.2,.2),rr(0,TAU),rr(.1,.5)),[rr(.5,.9),.6,rr(.6,1)],bc);}
+ if(lv===2){const w=W(x,z);for(let k=0,m=ri(0,3);k<m;k++){const t=rr(4,25),px=x+w[0]*t,pz=z+w[1]*t,py=Y(px,pz)+rr(1,6);const e=qEuler(rr(-1,1),rr(0,TAU),rr(-1,1));if(py<BIO.waterH(px,pz)+.6)continue;BIO.put('kite',[px,py,pz],e,[.7,.6,.8],bc);}}   /* never under a lake's surface (the scablands' plunge lake): the same draws */
  if(st)st.sails++;}
 // a STAR DRIFTER: a pale star of fronds on a thin stalk; the whole crown is the parachute: some stalks stand bare, their
 // crowns lying downwind
@@ -198,7 +212,7 @@ function dewGarden(x,z,lv,st,set){const s=boulder(x,Y(x,z),z,lv,set||PAL.rockBas
 function plantDesert(x,y,z,Z,lv,st){const t=rng();
  if(t<.18){crawler(x,y,z,lv,st);}
  else if(t<.3){resurrect(x,y,z,lv,st);if(lv===2)resurrect(x+rr(-2,2),y,z+rr(-2,2),lv,st);}
- else if(t<.46){wormwood(x,y,z,lv,.8);st.shrubs++;}
+ else if(t<.46){if(Z.salt>.15)saltbush(x,y,z,lv,st);else{wormwood(x,y,z,lv,.8);st.shrubs++;}}
  else if(t<.54){windows(x,y,z,lv,st);}
  else if(t<.6){stepcone(x,y,z,lv,st);}
  else if(t<.66){strider(x,y,z,lv,st);}
@@ -213,6 +227,7 @@ function plantPan(x,y,z,Z,lv,st){const t=rng();
  else if(t<.6){stepcone(x,y,z,lv,st);}
  else if(t<.68&&Z.salt<.75){crawler(x,y,z,lv,st);}
  else if(t<.76){resurrect(x,y,z,lv,st);}
+ else if(t<.86&&Z.salt<.7){saltbush(x,y,z,lv,st);}
  else{stone(x,y,z,lv,PAL.rockSalt,st,.7);}}
 function plantSteppe(x,y,z,Z,lv,st){const t=rng();
  if(t<.32){stipa(x,y,z,lv);st.tufts++;}
@@ -255,15 +270,17 @@ function plantTugai(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow+Z.wet
  else if(t<.65){sedge(x,y,z,lv);st.tufts++;}
  else if(t<.72){rollEgg(x,y,z,lv,st);}
  else if(t<.8){BIO.put('litter',[x,y+.04,z],qEuler(0,rr(0,TAU),0),[rr(.8,2),1,rr(.8,2)],leafCol(PAL.silk,1.25,.01,.03,.03));st.seedDrifts++;}
- else if(t<.88){furlers(x,y,z,lv,st);}
+ else if(t<.84){buckthorn(x,y,z,lv,st);}
+ else if(t<.9){furlers(x,y,z,lv,st);}
  else{stone(x,y,z,lv,PAL.rockTan,st,.6);}}
 function plantRip(x,y,z,Z,lv,st){const t=rng(),nearW=smooth(.4,.9,Z.flow);
  if(t<.3*nearW+.05){reed(x,y,z,lv);st.reeds++;}
  else if(t<.5){grass(x,y,z,lv);st.tufts++;}
  else if(t<.6){sedge(x,y,z,lv);st.tufts++;}
  else if(t<.72){blooms(x,y+.2,z,rr(.6,1.4),lv===2?ri(4,9):2,[0xf0c030,0xe8e0f0,0xe8302a]);st.flowers++;}
+ else if(t<.8){buckthorn(x,y,z,lv,st);}
  else{stone(x,y,z,lv,PAL.rockBasalt,st,.7);}}
-NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden};
+NSEMIARID.small={tuft,card,stipa,grass,wormwood,tumbler,drift,crawler,strider,dewGarden,stone,boulder,buckthorn,sedge,tulips,blooms,okGround};
 
 // ---------------------------------------------------------------- the pass
 NSEMIARID.FLOOR_ZONES=['desert','pan','steppe','med','forest','tugai','rip'];
@@ -272,8 +289,9 @@ NSEMIARID.floorWeights=Z=>[Z.desert*.8,Z.pan*.6,Z.steppe*1.0,Z.med*1.1,Z.forest*
 NSEMIARID.buildFloor=function(R,q){
  reseed(800031);q=q==null?1:q;R=R==null?3000:R;means();
  const st={tufts:0,shrubs:0,flowers:0,ferns:0,litter:0,reeds:0,stones:0,boulders:0,tumblers:0,drifts:0,seedDrifts:0,crawlers:0,balls:0,striders:0,maces:0,beads:0,sails:0,stars:0,censers:0,horns:0,eggs:0,
-  furlers:0,furlersShut:0,hitchers:0,stepcones:0,windows:0,fingers:0,balloons:0,gourds:0,gardens:0,vines:0,pods:0,aloft:0,windfall:0,deadSaxaul:0};
+  furlers:0,furlersShut:0,hitchers:0,stepcones:0,windows:0,fingers:0,balloons:0,gourds:0,gardens:0,vines:0,pods:0,aloft:0,windfall:0,deadSaxaul:0,saltbush:0,buckthorn:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
+  if(NSEMIARID.STATION_PLANT&&NSEMIARID.STATION_PLANT(x,y,z,Z,lv,st))return;   /* a station's own floor (stations/high) where it grows one; false: the kit's */
   const w=NSEMIARID.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
   let r=rng()*Math.max(1,tot),k=0;for(;k<w.length;k++){if(r<w[k])break;r-=w[k];}if(k>=w.length)return;
   PLANTERS[k](x,y,z,Z,lv,st);}
@@ -306,5 +324,12 @@ NSEMIARID.buildFloor=function(R,q){
  // reeds standing in the shallows (the host's water window)
  BIO.grid(8,0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=L.mid)return 0;const Z=zones(x,z);return .45*q*Math.max(Z.tugai,Z.rip)*smooth(1.0,.3,BIO.depth(x,z))*(1-Z.salt);},
   (x,y,z,d)=>{const lv=BIO.lodD(x,z)<L.floor[0]*1.2?2:1;reed(x,Math.max(y,BIO.waterH(x,z)-.4),z,lv);st.reeds++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,.9],pad:1,box:BIO.window('water')});
+ // THE POND BLADDERWORT (Korona's sucking pool's cousin, 50; EXCHANGES.md): mats floating at the surface of fresh, warm water (drawn 3 cm over it:
+ // the pools' water is opaque, so a mat under it would not show; no salt: the
+ // salt lake has none; not in the high country's cold tarns), a few small yellow flowers standing over them. Last, so nothing placed before it moves
+ st.bladder=0;
+ BIO.grid(5,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;const Z=zones(x,z);if(Z.salt>.05||Z.cold>.4)return 0;return .8*q*smooth(.15,.4,BIO.depth(x,z))*(1-smooth(.3,.7,Z.flow));},   /* still water only: not the stream */
+  (x,y,z,d)=>{const w=BIO.waterH(x,z),s=rr(.8,1.8);BIO.put('bladder',[x,w+.03,z],qEuler(0,rr(0,TAU),0),[s,1,s*rr(.7,1)],leafCol([0x6a8a3a,0x7a9a44,0x5e7e34],1.15,.02,.06,.05));st.bladder++;
+   if(rng()<.25)blooms(x,w+.12,z,rr(.3,.7),ri(2,5),[0xf0d040,0xe8c838],[.03,.05]);},{patch:.5,patchScale:.04,noMask:true,depth:[.15,1.8],pad:.4,box:BIO.window('water')});
  return{under:st};};
 })();

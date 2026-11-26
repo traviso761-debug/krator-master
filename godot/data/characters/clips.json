@@ -103,8 +103,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -119,8 +123,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -135,8 +143,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -151,8 +163,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -170,7 +186,9 @@
    "hold": {
     "R": [
      "dagger",
-     "sword"
+     "sword",
+     "tz_sword",
+     "tz_scimitar"
     ]
    }
   },
@@ -186,11 +204,15 @@
    "loop": false,
    "hold": {
     "R": [
-     "spear"
+     "spear",
+     "tz_spear",
+     "tz_scepter"
     ]
    },
    "two_hands": [
-    "spear"
+    "spear",
+    "tz_spear",
+    "tz_scepter"
    ]
   },
   {
@@ -202,14 +224,19 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
    },
    "two_hands": [
     "axe",
+    "tz_axe",
     "warhammer"
    ]
   },
@@ -222,8 +249,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -238,16 +269,22 @@
    "hold": {
     "R": [
      "axe",
+     "tz_axe",
      "warhammer",
      "mace",
+     "tz_scepter",
      "pickaxe",
-     "sword"
+     "sword",
+     "tz_sword",
+     "tz_scimitar"
     ]
    },
    "two_hands": [
     "axe",
+    "tz_axe",
     "warhammer",
     "mace",
+    "tz_scepter",
     "pickaxe"
    ]
   },
@@ -260,10 +297,14 @@
    "hold": {
     "R": [
      "axe",
+     "tz_axe",
      "warhammer",
      "mace",
+     "tz_scepter",
      "pickaxe",
-     "sword"
+     "sword",
+     "tz_sword",
+     "tz_scimitar"
     ]
    }
   },
@@ -276,15 +317,19 @@
    "hold": {
     "R": [
      "mace",
+     "tz_scepter",
      "warhammer",
      "axe",
+     "tz_axe",
      "hammer"
     ]
    },
    "two_hands": [
     "mace",
+    "tz_scepter",
     "warhammer",
-    "axe"
+    "axe",
+    "tz_axe"
    ]
   },
   {
@@ -299,11 +344,15 @@
    "loop": true,
    "hold": {
     "R": [
-     "spear"
+     "spear",
+     "tz_spear",
+     "tz_scepter"
     ]
    },
    "two_hands": [
-    "spear"
+    "spear",
+    "tz_spear",
+    "tz_scepter"
    ]
   },
   {
@@ -315,13 +364,18 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ],
     "L": [
-     "shield"
+     "shield",
+     "tz_shield"
     ]
    }
   },
@@ -549,8 +603,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -565,8 +623,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -581,8 +643,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -597,16 +663,24 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
    },
    "two_hands": [
     "sword",
+    "tz_sword",
+    "tz_scimitar",
     "axe",
+    "tz_axe",
     "mace",
+    "tz_scepter",
     "warhammer"
    ],
    "lead_left": true
@@ -945,6 +1019,7 @@
    "hold": {
     "R": [
      "axe",
+     "tz_axe",
      "pickaxe",
      "hoe",
      "hammer"
@@ -952,6 +1027,7 @@
    },
    "two_hands": [
     "axe",
+    "tz_axe",
     "pickaxe",
     "hoe"
    ]
@@ -1101,8 +1177,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1117,8 +1197,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1133,8 +1217,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1149,8 +1237,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1165,8 +1257,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1181,8 +1277,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1197,8 +1297,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1220,13 +1324,18 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ],
     "L": [
-     "shield"
+     "shield",
+     "tz_shield"
     ]
    }
   },
@@ -1239,8 +1348,12 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ]
@@ -1255,13 +1368,18 @@
    "hold": {
     "R": [
      "sword",
+     "tz_sword",
+     "tz_scimitar",
      "axe",
+     "tz_axe",
      "mace",
+     "tz_scepter",
      "dagger",
      "warhammer"
     ],
     "L": [
-     "shield"
+     "shield",
+     "tz_shield"
     ]
    }
   },

@@ -157,8 +157,9 @@ function dnRingBank(x,z,r,h,w,gapRy,gapW,o){const ga=gapW/(2*r);
 function dnPlatform(x,y,z,w,d,h,ry,c){kput('dEarthBat',[x,y,z],ry?qEuler(0,ry,0):null,[w,h,d],c||dCol(DPAL.earth));vB('dEarth',x,y+h-.06,z,w*.88,.12,d*.88,ry,dCol(DPAL.earthDark));}
 // Rectangular rammed-earth compound wall, battered, with a cap, drum buttresses at the corners, a gate in the front
 // (+z) of width `gate` flanked by pylons; o.relief carves a band on the outer front; o.mural paints one instead.
+// o.item, o.capItem, o.capC: another wall and coping (a dressed-stone wall: 'vStone'; settlements/span's watch post).
 function dnEarthWall(x,y,z,w,d,ry,h,gate,o){o=o||{};const c=o.c||dCol(DPAL.earth),t=o.t||1.1;
- const seg=(lx,lz,L,a)=>{const p=loc(x,z,lx,lz,ry);kput('dEarthBat',[p[0],y,p[1]],qEuler(0,ry+a,0),[L,h,t],c);vB('dEarth',p[0],y+h-.05,p[1],L+.1,.25,t*.86+.2,ry+a,dCol(DPAL.earthDark));};
+ const seg=(lx,lz,L,a)=>{const p=loc(x,z,lx,lz,ry);kput(o.item||'dEarthBat',[p[0],y,p[1]],qEuler(0,ry+a,0),[L,h,t],c);vB(o.capItem||'dEarth',p[0],y+h-.05,p[1],L+.1,.25,t*.86+.2,ry+a,o.capC||dCol(DPAL.earthDark));};
  seg(0,-d/2,w,0);seg(-w/2,0,d,Math.PI/2);seg(w/2,0,d,Math.PI/2);
  if(gate){const L=(w-gate)/2-1.2;seg(-(gate/2+1.2+L/2),d/2,L,0);seg(gate/2+1.2+L/2,d/2,L,0);
   for(const s of[-1,1]){const p=loc(x,z,s*(gate/2+.7),d/2,ry);vB(o.stoneGate?'vStone':'dEarth',p[0],y,p[1],1.4,h+1.3,t+.8,ry,o.stoneGate?dCol(DPAL.stone):c);

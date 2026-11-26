@@ -5,9 +5,12 @@
  "atmos": [
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",
+  "89-atmos-4-weather.js",
   "89-atmos-8-export.js",
+  "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
-  "89-atmos-b-skylight.js"
+  "89-atmos-b-skylight.js",
+  "host/89-atmos-e-weatherhost.js"
  ],
  "water": [
   "20-core-water.js",

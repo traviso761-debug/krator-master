@@ -7,7 +7,11 @@ Prints window._doors.stats() after each step and the error panel at the end.
 
   python3 verify_walk.py yuni-assets.html [--asset mid_washed_house] [--variant 1] [--out shots] [--hour 21]
 """
-import argparse, asyncio, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, json, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+from harness import verify_page, Abort
 
 PICK = """([key, v])=>{ const b=FIX.buildings.find(b=>b.asset===key && b.variant===v && _interiors.plan(b.id));
   if(!b) return null; const P=_interiors.plan(b.id); const d=P.doors.find(d=>d.kind==='exterior'); return {bid:b.id, door:d.id, stairs:P.stairs.length,
@@ -18,39 +22,23 @@ async def hold(pg, key, ms):
     await pg.evaluate("([k,s])=>_doors.sim(k,s)", [key, ms/1000.0])
 
 async def run(a):
-    from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=folder, **k)
-    class Q(http.server.SimpleHTTPRequestHandler):
-        def log_message(self, *x): pass
-    httpd = socketserver.TCPServer(("127.0.0.1", 0), lambda *x, **k: Q(*x, directory=folder, **k))
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    port = httpd.server_address[1]
-    async with async_playwright() as p:
-        b = await p.chromium.launch(args=["--use-gl=swiftshader", "--enable-webgl", "--ignore-gpu-blocklist"])
-        pg = await b.new_page(viewport={"width": 1100, "height": 720})
+    async with verify_page(a.html, here=HERE, size="1100x720", query=a.query, settle_ms=0) as V:
+        pg = V.page
         pg.set_default_timeout(300000)
-        errs = []
-        pg.on("pageerror", lambda e: errs.append(str(e)))
-        three = os.path.join(folder, "three.min.js")
-        if os.path.exists(three):
-            await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(route.fulfill(path=three, content_type="application/javascript")))
-        await pg.goto(f"http://127.0.0.1:{port}/{name}{a.query}", timeout=180000)
-        await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=170000)
         if a.hour is not None:
             await pg.evaluate("(h)=>{ _api.skySetHour(h); if(window._sky && _sky.setRate) _sky.setRate(0); }", a.hour)
         info = await pg.evaluate(PICK, [a.asset, a.variant])
         print("target:", json.dumps(info))
         if not info:
-            print("no planned interior for", a.asset, a.variant); return 2
+            print("no planned interior for", a.asset, a.variant); raise Abort(2)
         async def stats(tag):
             s = await pg.evaluate("()=>_doors.stats()")
             print(f"[{tag}]", json.dumps(s))
             return s
         async def shot(tag):
             path = os.path.join(a.out, f"walk-{a.asset}-{a.variant}-{tag}.png")
-            await pg.screenshot(path=path); print("shot", path)
+            await V.shot(path, view=tag); print("shot", path)
         await pg.evaluate("(id)=>_doors.walkTo(id)", info["door"])
         await pg.wait_for_timeout(2500)
         await hold(pg, "w", 700)                       # step up to the door: it opens
@@ -75,16 +63,12 @@ async def run(a):
             await pg.wait_for_timeout(800)
             await stats("after the stair"); await shot("4-upstairs")
         ex = await pg.evaluate("(bid)=>JSON.stringify(KRATOR_EXPORT.building(bid), null, 1)", info["bid"])
-        xp = os.path.join(a.out, f"export-{a.asset}-{a.variant}.json"); open(xp, "w").write(ex); print("export", xp, len(ex), "bytes")
+        xp = os.path.join(a.out, f"export-{a.asset}-{a.variant}.json"); open(xp, "w", encoding="utf-8", newline="\n").write(ex); print("export", xp, len(ex), "bytes")
         await pg.evaluate("()=>{ _doors.walk(false); _doors.cutaway(true); }")
         await pg.evaluate("(bid)=>{ const b=FIX.byId[bid]; _dbg.setView(b.x-b.w*0.6, b.y+Math.max(b.w,b.d)*1.1, b.z-b.d*0.9, b.x, b.y, b.z); }", info["bid"])
         await pg.wait_for_timeout(3500)
         await stats("cutaway"); await shot("5-cutaway")
-        e = await pg.evaluate("document.getElementById('errs').textContent")
-        print("ERROR PANEL:", repr(e) if e else "clean")
-        if errs: print("PAGE ERRORS:", errs[:5])
-        await b.close()
-        return 1 if (e or errs) else 0
+    return V.exit()
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()

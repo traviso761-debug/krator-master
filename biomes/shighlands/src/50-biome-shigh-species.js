@@ -98,13 +98,13 @@ SHIGH.HARVEST={
  trumpet:HV('poles',['trumpet water'],false,'The funnels hold rain and cloud-drip; a ladder up a stacked trumpet is a well.'),
  volute:HV('timber',['young scroll tips (boiled)'],false,'The tips of the scrolls are cut and boiled like fiddleheads; the old scrolls are left: they are a hundred years in the winding.'),
  crozier:HV('none',['croziers (boiled)','trunk starch (famine)'],true,'The croziers are the season\'s first green food; the hairs are a wound packing.'),
- screwpine:HV('thatch, matting',['fruit (roasted)'],false,'The leaves are plaited into mats, always in the plant\'s own sense of turn.'),
+ screwpine:HV('thatch, matting',['fruit (roasted)'],false,'The leaves are plaited into mats, always in the plant\'s own sense of turn.','generic_fruit_pandan_keys'),
  ruffle:HV('fuel',['leaf hearts'],false,'The ruffled leaves hold water like a sponge.'),
  frill:HV('poles',['bud (boiled)'],true,'Kin to the Rift\'s frill tree. The fins are cut for their sap, a bitter tonic; the pale bud is eaten.'),
  groundsel:HV('none',[],true,'The dead-leaf skirts stuff bedding; the pith is a fever bitter.'),
  lobelia:HV('none',['nectar'],true,'The column stands for years before it flowers once and dies.'),
  aloe:HV('none',[],true,'The gel dresses burns and cracked hands; it is never cut against its spiral.'),
- cereus:HV('none',['fruit'],false,'The small red fruits ripen along the ribs\' turn, lowest first.'),
+ cereus:HV('none',['fruit'],false,'The small red fruits ripen along the ribs\' turn, lowest first.','generic_fruit_cereus'),
 };
 SHIGH.SPECIES.forEach(S=>{S.tags.harvest=SHIGH.HARVEST[S.key]||HV('none');});
 
@@ -161,6 +161,12 @@ TX.strap=BIO.alphaTex(256,(g,S)=>{const x0=S/2;
 TX.rush=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';
  for(let k=0;k<26;k++){const x0=S/2+rr(-40,40),H=S*rr(.55,.96),ph=rr(0,TAU),f=rr(.07,.11),lum=lerp(110,230,rng());g.strokeStyle=G2(lum);g.lineWidth=rr(1.8,2.8);g.beginPath();
   for(let y=0;y<=H;y+=2){const t=y/H,A=2+t*t*16;g.lineTo(x0+A*Math.sin(y*f+ph)+(t-.5)*rr(-6,6),S-y);}g.stroke();}},[130,130,130]);
+/* a BUNCHGRASS fountain (a vertical tuft card, 2026-10-26): fine wiry blades fanning up and out from a tight base, the
+   paramo's ichu between the swirl tussocks; the library's card.ichu replaces it. Its own KRAND stream, so the kit's
+   stream (and every texture painted after it) is unchanged */
+TX.bunch=BIO.alphaTex(256,(g,S)=>{g.lineCap='round';const s=KRAND.stream(510091),sr=(a,b)=>a+(b-a)*s.next();
+ for(let k=0;k<60;k++){const ang=sr(-1.05,1.05)*Math.pow(s.next(),.6),H=S*sr(.5,.95)*(1-.25*Math.abs(ang)),x0=S/2+sr(-10,10),lum=lerp(120,240,s.next());g.strokeStyle=G2(lum);g.lineWidth=sr(1.2,2.2);g.beginPath();g.moveTo(x0,S);
+  g.quadraticCurveTo(x0+Math.sin(ang)*H*.45,S-H*.6,x0+Math.sin(ang)*H*.9,S-H*Math.cos(ang)*.95);g.stroke();}},[150,150,150]);
 /* a SPIRAL-EYE DAISY seen from above: a ring of petals round a disc of florets set by Vogel's spiral (the golden
    angle), alternately light and dark so the crossing parastichies show */
 TX.disc=BIO.alphaTex(256,(g,S)=>{const cx=S/2,cy=S/2;
@@ -358,7 +364,7 @@ G.spear=function(){const M=Mesh();
    const p=f(t0),q=f(t1),w0=.07*(1-t0),w1=.07*(1-t1),band=i%3===0?[.75,.85,.6]:[.36,.55,.32];
    M.quad([p[0]-Math.sin(p[3])*w0,p[1],p[2]+Math.cos(p[3])*w0],[q[0]-Math.sin(q[3])*w1,q[1],q[2]+Math.cos(q[3])*w1],[q[0]+Math.sin(q[3])*w1,q[1],q[2]-Math.cos(q[3])*w1],[p[0]+Math.sin(p[3])*w0,p[1],p[2]-Math.cos(p[3])*w0],band,band,band,band);}}
  return M.out(true);};
-// a SWIRL TUSSOCK: eighteen arching blades leaving the clump, each bent sideways the same way, so from above it is a
+// a SWIRL TUSSOCK: arching blades leaving the clump, each bent sideways the same way, so from above it is a
 // small whirlpool; gold at the tips, green at the heart. Unit height, radius ~1.
 G.swirl=function(nb){const M=Mesh();
  for(let k=0;k<nb;k++){const a=k*GOLD,el=.5+.5*((k*5)%nb)/nb,L=.75+.3*((k*11)%nb)/nb,P=[];
@@ -366,6 +372,18 @@ G.swirl=function(nb){const M=Mesh();
   for(let i=0;i<3;i++){const p=P[i],q=P[i+1],w0=.035*(1-i/3),w1=.035*(1-(i+1)/3),c0=[mix(.5,.85,i/3),mix(.62,.72,i/3),mix(.28,.38,i/3)],c1=[mix(.5,.85,(i+1)/3),mix(.62,.72,(i+1)/3),mix(.28,.38,(i+1)/3)];
    if(i<2)M.quad([p[0]-Math.sin(p[3])*w0,p[1],p[2]+Math.cos(p[3])*w0],[q[0]-Math.sin(q[3])*w1,q[1],q[2]+Math.cos(q[3])*w1],[q[0]+Math.sin(q[3])*w1,q[1],q[2]-Math.cos(q[3])*w1],[p[0]+Math.sin(p[3])*w0,p[1],p[2]-Math.cos(p[3])*w0],c0,c1,c1,c0);
    else M.tri([p[0]-Math.sin(p[3])*w0,p[1],p[2]+Math.cos(p[3])*w0],[q[0],q[1],q[2]],[p[0]+Math.sin(p[3])*w0,p[1],p[2]-Math.cos(p[3])*w0],c0,c1,c0);}}
+ /* the BODY (2026-10-26): a paramo tussock is a hummock of its own dead leaves, so the live blades leave a low dome of
+    thatch (dark at the foot, straw at the crown) and a skirt of dead blades hangs from its rim to the ground, leaning
+    the same way round as the live ones. 15 + 12 triangles near, a 12-triangle dome at mid distance; the live blades
+    went from eleven to seven (six at mid distance) to pay for it. The thatch is greyed so the paramo's gold instance
+    colours leave it a dull brown, not orange */
+ const nd=nb>=7?5:4,ns=nb>=7?4:0,cF=[.24,.23,.2],cM=[.33,.31,.26],cC=[.42,.4,.32],top=[0,.32,0];
+ const ring=(r,y,k)=>{const a=k/nd*TAU+.2;return[Math.cos(a)*r,y,Math.sin(a)*r];};
+ for(let k=0;k<nd;k++){const a0=ring(.52,-.04,k),a1=ring(.52,-.04,k+1),b0=ring(.4,.2,k),b1=ring(.4,.2,k+1);
+  M.quad(a0,a1,b1,b0,cF,cF,cM,cM);M.tri(b0,b1,top,cM,cM,cC);}
+ for(let k=0;k<ns;k++){const a=k/ns*TAU+.5,P=[[.2,.3,0],[.48,.24,.35],[.72,.02,.7]].map(q=>[Math.cos(a+q[2])*q[0],q[1],Math.sin(a+q[2])*q[0],a+q[2]]),w=.05;
+  const cs=[[.62,.57,.44],[.74,.68,.54],[.66,.6,.47]],Ls=(p,s)=>[p[0]-Math.sin(p[3])*w*s,p[1],p[2]+Math.cos(p[3])*w*s],Rs=(p,s)=>[p[0]+Math.sin(p[3])*w*s,p[1],p[2]-Math.cos(p[3])*w*s];
+  M.quad(Ls(P[0],1),Ls(P[1],.8),Rs(P[1],.8),Rs(P[0],1),cs[0],cs[1],cs[1],cs[0]);M.tri(Ls(P[1],.8),P[2].slice(0,3),Rs(P[1],.8),cs[1],cs[2],cs[1]);}
  return M.out(true);};
 // CORKSCREW BELLS: a thread wound in a helix hanging from y=0 to y=-1, beaded with seven cream bells (refs/06, 15)
 G.bells=function(){const M=Mesh(),P=[];
@@ -391,6 +409,7 @@ SHIGH.MAT={
  fern:BIO.leafMat(TX.fern,'fern',{swayW:'(position.x)',swayA:.05,alphaTest:.38}),
  strap:BIO.leafMat(TX.strap,'strap',{swayW:'(position.x)',swayA:.06,alphaTest:.4}),
  rush:BIO.leafMat(TX.rush,'rush',{swayW:'(position.y)',swayA:.1,alphaTest:.4}),
+ bunch:BIO.leafMat(TX.bunch,'bunch',{swayW:'(position.y)',swayA:.08,alphaTest:.4}),
  disc:BIO.leafMat(TX.disc,'disc',{swayW:'1.0',swayA:.03,alphaTest:.4}),
  shell:BIO.leafMat(TX.shell,'shell',{swayW:'(position.y)',swayA:.03,alphaTest:.45}),
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
@@ -412,13 +431,16 @@ const M=SHIGH.MAT;
 // without the pack (an open world) keeps the procedural ones; ?mat=proc shows them here.
 const LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('shigh',n):null;
 SHIGH.LIB={has:n=>!!LIBP(n)};
-function libCell(n,box,W,H){const L=LIBP(n);if(!L)return null;const c=document.createElement('canvas');c.width=W;c.height=H;
+/* the cell is the slot's own where materials.json names one (the final rebuild, pair 12: tools/textures/check_cells.py reads the slot, so the cut
+   the code makes is the one it checks); `box` is the cut for a second plant of the same sheet, or a slot without a cell */
+function libCell(n,box,W,H,flip,own){const L=LIBP(n);if(!L)return null;if(L.cell&&own!==false)box=L.cell;const c=document.createElement('canvas');c.width=W;c.height=H;
  const t=new T3.CanvasTexture(c);t.flipY=false;t.encoding=T3.sRGBEncoding;t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;t.anisotropy=4;
  const img=new Image();if(typeof window!=='undefined')window._texPending=(window._texPending||0)+1;
- img.onload=()=>{const w=img.width,h=img.height,g=c.getContext('2d');g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
+ img.onload=()=>{const w=img.width,h=img.height,g=c.getContext('2d');if(flip){g.translate(0,H);g.scale(1,-1);}g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
  img.onerror=()=>{window._texPending--;BIO.err('shigh: a library card failed to decode: '+n);};
  img.src=L.map;return t;}
 const CELL=(i,j)=>[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005];   /* a cell of a 3 x 3 sheet, column i, row j */
+/* flip: the sheets stand their sprites base-down, a strip runs base-up (v 0 at the canvas top) */
 function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;
  t.generateMipmaps=true;t.minFilter=T3.LinearMipmapLinearFilter;t.magFilter=T3.LinearFilter;return t;}
 {const use=(k,t,at)=>{if(t){M[k].map=t;M[k].alphaTest=at==null?.4:at;}};
@@ -426,31 +448,43 @@ function libCard(n){const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{a
  use('small',libCard('leaf.small'));use('moss',libCard('leaf.moss'),.38);
  use('lichen',libCell('lichen',CELL(1,1),256,256),.3);
  /* the giant groundsel's cabbages and the silver rosettes: the owner's nine Dendrosenecio leaves, the green one and the felted silver one, on the whorls' blades (their vertex colours still tint them) */
- use('gleaf',libCell('leaf.groundsel',CELL(0,0),256,256));use('gsilver',libCell('leaf.groundsel',CELL(1,1),256,256));}
+ use('gleaf',libCell('leaf.groundsel',CELL(0,0),256,256));use('gsilver',libCell('leaf.groundsel',[.415,.341,.607,.671],256,256,false,false));   /* the felted silver leaf: the sheet's middle plant (check_cells --plants card.groundsel), the slot's cell is the green one */
+ /* 2026-10-26: the floor's ferns (card.fern.green, the upright frond), the screw palm's straps (card.strap.pandan, the straight
+    strap, cropped so it fills the strip's middle as the canvas's did), the spiral-eye daisies (card.cupflower, the top daisy)
+    and the paramo's bunchgrass (card.ichu): grey detail under the instance colours, as the canvases were */
+ use('fern',libCell('fern',CELL(1,0),256,256,true),.38);use('strap',libCell('strap',[(1+.148)/3,(1+.01)/3,(1+.616)/3,(2-.01)/3],128,256,true));
+ use('disc',libCell('daisy',CELL(1,0),256,256));use('bunch',libCell('tussock',CELL(1,1),256,256));
+ /* 2026-10-26: the escargot begonia's leaf (card.begonia.escargot, the middle leaf, stalk at the top as the canvas had it; full colour, the instance colour stays near white) */
+ use('shell',libCell('escargot',CELL(1,1),256,256),.45);}
 // the barks: bark.wrung keeps half its own colour (its moss), the others are grey detail under the species' vertex colours.
 // The bucket's uvScale becomes the set's tile size (the trunk lathes read it), and means() (55) divides out the pack's
 // brightness instead of the canvas's, so a species' bark colour renders the same on either map
-const LIBBARK=['bark.wrung',null,null,null,'bark.palm',null,'bark.skirt'];
+/* 2026-10-26: the trumpet's ribbing and the frill column on bark.frill.ribbed (fluted culms), the volute's rind on bark.smooth
+   (pale lenticels on a smooth rind), the tree fern's leaf scars on bark.lepido (diamond scars in spiral rows) */
+const LIBBARK=['bark.wrung','bark.ribbed','bark.rind','bark.scars','bark.palm','bark.banded','bark.skirt'],LB=[];
 SHIGH.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;SHIGH.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
 ['Coilbark (wrung, moss-streaked)','Spiral-trumpet ribbing','Volute rind','Tree-fern leaf scars','Screw-palm rings','Banded bark','Dead-leaf skirts'].forEach((lab,i)=>{
- const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L)M.bark[i].map=L.t;
+ const L=LIBBARK[i]&&libMap(LIBBARK[i],'bark'+i);if(L){M.bark[i].map=L.t;LB[i]=L;}
  BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===3?2:3,i===4?2:i===0?5:4]});});
 // the granite (stone.granite): the boulders and stones
 {const L=libMap('stone.granite','rock');if(L)M.rock.map=L.t;}
 // an iridescent bark (BIO.iridBarkMat, the core's 'irid' kind: core/biome/30-core-foliage.js): teal facing the eye,
 // violet at grazing angles; the spiral frill tree's column
-BIO.bucket('barkF',BIO.iridBarkMat(SHIGH.BARKTEX[1],'shigh-frill',[0.80,1.16,1.06],[1.22,0.86,1.30]),{label:'Spiral frill tree column (iridescent)',uvScale:[3,5]});
+BIO.bucket('barkF',BIO.iridBarkMat(LB[1]?LB[1].t:SHIGH.BARKTEX[1],'shigh-frill',[0.80,1.16,1.06],[1.22,0.86,1.30]),{label:'Spiral frill tree column (iridescent)',uvScale:LB[1]?LB[1].scale:[3,5]});
 BIO.bucket('wood',M.wood,{label:'Fallen wood'});
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Crown leaves'});
+/* the crown's card is a sheet of nine sage sprigs (card.sage): with the library on, each quad of the clump takes one sprig (BIO.geo.cells,
+   materials.json "sheet": "geometry"); the procedural leaf keeps the plain clump (the final rebuild, pair 12: it drew the whole grid on every card) */
+BIO.def('small',LIBP('leaf.small')?BIO.geo.cells(BIO.geo.clump(),{n:3}):BIO.geo.clump(),M.small,{attrs:['aN'],label:'Crown leaves'});
 BIO.def('moss',BIO.geo.clump(),M.moss,{attrs:['aN'],label:'Star moss on the limbs'});
 BIO.def('mossmat',BIO.geo.mat(),M.mossmat,{label:'Star moss and sphagnum'});
 BIO.def('fern',G.strip(4,.18,.32),M.fern,{label:'Fern fronds'});
 BIO.def('strap',G.strip(5,.1,.55),M.strap,{label:'Screw-palm straps'});
 BIO.def('rush',G.tuft(),M.rush,{label:'Corkscrew rush'});
+BIO.def('bunch',G.tuft(),M.bunch,{label:'Paramo bunchgrass'});
 BIO.def('daisy',G.disc(),M.disc,{label:'Spiral-eye daisies'});
 BIO.def('begonia',G.leafFan(),M.shell,{label:'Escargot begonias'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Rosette lichen'});
@@ -476,8 +510,8 @@ BIO.def('cereuslo',G.cereus(6,10),M.vcol,{label:'Corkscrew cereus (mid distance)
 BIO.def('albuca',G.albuca(),M.vsway,{label:'Corkscrew albuca'});
 BIO.def('ginger',G.ginger(),M.vsway,{label:'Spiral ginger'});
 BIO.def('spear',G.spear(),M.vcol,{label:'Braid spears'});
-BIO.def('swirl',G.swirl(11),M.vsway,{label:'Swirl tussocks'});
-BIO.def('swirllo',G.swirl(7),M.vsway,{label:'Swirl tussocks (mid distance)'});
+BIO.def('swirl',G.swirl(7),M.vsway,{label:'Swirl tussocks'});
+BIO.def('swirllo',G.swirl(6),M.vsway,{label:'Swirl tussocks (mid distance)'});
 BIO.def('bells',G.bells(),M.vhang,{label:'Corkscrew bells'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Moss cushions and shrub masses'});
 BIO.def('cone',G.cone(),M.solid,{label:'Fruit heads'});

@@ -57,6 +57,20 @@ CASES = {
                  box=[-80, -80, 80, 80], height="(x,z)=>terrainH(x,z)", step=2,
                  hbox=[-440, -620, 620, 450], hstep=4),
     "yuni": dict(page="settlements/yuni/yuni.html", kind="records", building="bld_00005"),
+    # Qiblai's electric light (2026-11-16): a 260 m reach of the south avenue inside the south gate, its poles, wires and
+    # street lamps (krator-lamps from _api.lamps: the bulbs, warm, 24 m), for the lighting test (godot/tests/qiblai)
+    "qiblai": dict(page="settlements/qiblai/dist/qiblai.html", kind="gltf",
+                   box=[-40, 530, 40, 790], height="(x,z)=>terrainH(x,z)", step=2,
+                   lamps="b => _api.lamps(b)", lamp_margin=10,
+                   # the lit houses nearest the reach's middle (up to 14: the region stays near the others' size), their
+                   # interiors placed, so their room bulbs join the lamps (kind "bulb"); the great rooms in the box too
+                   prep="""b => { const S = QC_LIX, cx = (b[0] + b[2]) / 2, cz = (b[1] + b[3]) / 2;
+                     const C = S.lots.filter(L => L.x > b[0] - 15 && L.x < b[2] + 15 && L.z > b[1] - 15 && L.z < b[3] + 15)
+                       .sort((p, q) => Math.hypot(p.x - cx, p.z - cz) - Math.hypot(q.x - cx, q.z - cz));
+                     let n = 0; for (const L of C) { if (n >= 14) break; const T = S.buildType(S.types[L.tk]);
+                       if (T && T.bulbs && T.bulbs.length && !L.G) { S.place(L); n++; } }
+                     for (const R of QC_IX.rooms) if (R.x > b[0] && R.x < b[2] && R.z > b[1] && R.z < b[3]) QC_IX.build(R);
+                     return n + ' lit lots placed, ' + QC_BULBS.length + ' bulbs'; }"""),
 }
 
 
@@ -127,6 +141,8 @@ async def run_case(browser, port, name, c, log):
     if not await pg.evaluate("typeof KSTAGE !== 'undefined'"):
         await pg.add_script_tag(path=STAGE)
     await pg.wait_for_timeout(1500)   # a few frames, so the hook has seen what the page renders
+    if c.get("prep"):   # what the page builds on demand, built now so the region holds it (Qiblai: the interiors in the box)
+        log(f"{name}: prep {await pg.evaluate(c['prep'], c['box'])}")
     files = {}
     if c["kind"] == "biome":
         exp = await pg.evaluate("box => BIO.export({box})", c["box"])   # with the stage (43-core-export-host.js wraps it)

@@ -50,8 +50,18 @@ orange banners, lamp posts), which is the city's repaired side. Their culture ta
 with the fragments it needs at load (`88-plymouth.js` for `plymQuadGeo`, and the four Arcube parts for `krShard`).
 
 **The profiles** (`src/69q-pyl-helpers.js`): `pynTomb`, `pynStadium`, `pynPointed` (and the pointed hexagon), each a slab on
-a face in render, concrete, glass, a dark opening or rust; `pynFrame(shape, ...)` for nested rims round a fill (`cs`
+a face in render, concrete, glass (`G`, `L`: the room card with core/door's pane in front, 2026-11-03), the room's dim back
+(`D`) or rust; `pynFrame(shape, ...)` for nested rims round a fill (`cs`
 alternates their colours); `pynPorthole` and `pynPortCluster` (graded, packed by rejection); `pynCanopy`, `pynVault`,
 `pynHexPod`, `pynTank`, `pynStepArch`; the folk tier's `pynBand`, `pynPanel`, `pynDiamond`, `pynDisc`, `pynStripes`,
 `pynPier`, `pynScallop`, `pynColumn`. New kit items (`src/69p-pyl-mat.js`): `pyConc` (board-formed concrete in world
-units), discs, rings, half-vaults, hex prisms, and glass and dark gable wedges.
+units), discs, rings, half-vaults, hex prisms, and glass and room-card gable wedges.
+
+**Real doors and real glass** (the owner, 2026-11-03; `core/door`). `pynDoorway` cuts the profile's rectangle through a hollow
+body's wall and hangs real leaves in it (the Vernacular's `IZDOOR.leaf`: records in `KDOOR`, stable ids `<def key>@x,z.n`; two,
+mirrored, from 1.5 m wide): they open with E or by an NPC on a hollow body and stand shut and locked on a solid one. Its head is
+a glazed fanlight over a timber transom, and its rims are drawn round the doorway (jambs and head), not across it; a `hex`
+doorway is pointed at the head only. Every glazed profile, porthole and hex pod is the room card with the pane in front
+(`pyPaneB` is `MAT.izGlass`, KGLASS's clear pane, the Vernacular's own; lit panes the warm pane); a round head's pane is a half
+disc (`pyHalfG`, `pyHalfL`). A plate a builder puts on a solid mass (a drum's lancets, a skylight, slot windows) goes through
+`pynPane` (the card inside a pane), or the Vernacular's `vnPlate`.

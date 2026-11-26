@@ -1,0 +1,10 @@
+{
+ "note": "Station 3, the Lip (PLAN.md sections 2, 8a and 9): the upper lake's outlet over the Black Step, its origin on the notch's cell, 5.1 px 1246,531 (the plan's pin, 1247,530, is a lake cell). The sill is this kit's far field's until the map edit (44v). kin: the north-western lowlands' tropical trees, read in place as Korona's fertile basin reads them: the floor's spray forest and rainforest (PLAN.md section 2: the floor is Korona's country). core: core/terrain's landforms are not needed here; the face is KRELIEF.scarp (38).",
+ "kin": {
+  "nwlowlands": [
+   ["src/50-biome-nwlowlands-species.js", "src/55-biome-nwlowlands-trees.js"],
+   "NWLOW",
+   "*"
+  ]
+ }
+}

@@ -8,8 +8,9 @@
  const T=BIO.host.THREE,KIT='hyperjungle',has=n=>!!KMAT.packed(KIT,n),tbl={};
  const ph=()=>new T.DataTexture(new Uint8Array([255,255,255,255]),1,1,T.RGBAFormat);   /* a card the library fills: libSwap takes a DataTexture for a card */
  const mk=(slot,key,opt)=>{if(!has(slot))return null;return tbl[slot]=BIO.leafMat(ph(),''+key,opt);};
- const under=[1,2,3].map(i=>mk('under'+i,'under'+i,{swayW:'1.0',swayA:.06})).filter(Boolean),hang=[1].map(i=>mk('hang'+i,'hang'+i,{swayW:'(-position.y)',swayA:.055,axis:1})).filter(Boolean);
- if(has('fungus')&&BIO.defs.fungus){BIO.defs.fungus.mat=tbl.fungus=BIO.solidMat(null,0xffffff);}
+ const LO=HYPERJUNGLE.LOOKS||{};
+ const under=[1,2,3].map(i=>mk('under'+i,'under'+i,{swayW:'1.0',swayA:.06,backlit:LO.backlit||0,ground:LO.ground||null})).filter(Boolean),hang=[1].map(i=>mk('hang'+i,'hang'+i,{swayW:'(-position.y)',swayA:.055,axis:1})).filter(Boolean);
+ if(has('fungus')&&BIO.defs.fungus){BIO.defs.fungus.mat=tbl.fungus=BIO.solidMat(null,0xffffff);if(BIO.defs.fungcap)BIO.defs.fungcap.mat=tbl.fungus;}
  HYPERJUNGLE.LIB=Object.assign(HYPERJUNGLE.LIB||{},BIO.libSwap(KIT,tbl));
  if(under.length)BIO.variantPool('ucard',under,0x3c01);
  if(hang.length)BIO.variantPool('strand',hang,0x3c02);

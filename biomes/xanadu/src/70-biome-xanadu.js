@@ -1,7 +1,7 @@
 // ================================================================= XANADU — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor) and 65 (dress); this file only orders them and reports.
-XANADU.build=function(opt){opt=opt||{};const R=opt.R||3400,q=opt.quality==null?1:opt.quality;
+XANADU.build=function(opt){opt=opt||{};const R=opt.R==null?3400:opt.R,q=opt.quality==null?1:opt.quality;
  if(opt.lakeHue!=null)XANADU.setLake(opt.lakeHue);
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(XANADU.buildTrees){BIO.cur='xanadu/trees';Object.assign(out,XANADU.buildTrees(R,q));}

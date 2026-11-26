@@ -32,6 +32,11 @@
 //   C.opening({id, c:[x,z], y, r, h, kind:'door'})   where a void meets the open air through a FACE (a doorway in a mass or a
 //                      cliff, the portal): no hole in the ground; the sky check lets the void out there
 //   C.fixture({id, owner, box:[x0,x1,z0,z1,y0,y1], tag})   carved furniture and pillars: a core/walk block
+//   C.pipe({id, owner, pts:[[x,y,z],...] (the centreline, any slope), r (3: outer), r1 (r: at the last point), wall (.3 r), steps (.35 m:
+//           the floor's risers; 0 a ramp), floorK (.6: the floor that share of the bore under the centre), open ([true, true]: the ends),
+//           rock, finish})   A HOLLOW BODY on a 3D centreline (2026-11-03, the Cliff Lungs' section 14 item 2): a solid `pipebody` (rock
+//           standing in the air, as a mass) and a `bore` void inside it, its floor stepped, its open ends doors (C.opening kind 'door')
+//           -> {body, bore, doors}. C.pipebody / C.bore take the parts alone (KCAVERN.load uses them)
 //   C.build()          checks the plan, writes every floor and block to `walk`, sets the chunk list; returns C
 //   C.sdf(x,y,z)       signed distance to the rock: positive in the open (a void, or the sky), negative in rock
 //   C.voidSD(x,y,z)    the voids alone (negative inside one); C.ownerAt(x,y,z) the primitive nearest
@@ -153,8 +158,24 @@
       prep:function(P){P.y0=num(P.y0,'trench y0');P.y1=num(P.y1,'trench y1');var b=bbox2(P.poly);P.box=[b[0]-1,b[1]+1,P.y0-1,P.y1+1,b[2]-1,b[3]+1];P.top=P.y1-P.y0;},
       sd:function(P,x,y,z){S.v=y-P.y0;S.top=P.top;return Math.max(sdPoly(P.poly,x,z),P.y0-y,y-P.y1);}},
     monolith:{hard:true,solid:true,prep:function(P){prepSolid(P,'monolith');},sd:function(P,x,y,z){return sdSolid(P,x,y,z);}},
-    mass:{hard:true,solid:true,prep:function(P){prepSolid(P,'mass');},sd:function(P,x,y,z){return sdSolid(P,x,y,z);}}
+    mass:{hard:true,solid:true,body:true,prep:function(P){prepSolid(P,'mass');},sd:function(P,x,y,z){return sdSolid(P,x,y,z);}},
+    /* the pipe's two parts (C.pipe): a capsule chain of rock standing in the air, and the bore's capsule chain cut flat at a stepped floor */
+    pipebody:{hard:true,solid:true,body:true,prep:function(P){prepChain(P,'pipe');},
+      sd:function(P,x,y,z){var q=nearChain(P,x,y,z);S.v=y-(q.y-q.r);S.top=q.r;return q.d-q.r;}},
+    bore:{hard:false,prep:function(P){prepChain(P,'bore');P.steps=P.steps==null?.35:P.steps;P.floorK=P.floorK==null?.6:P.floorK;P.blend=P.blend==null?1:P.blend;},
+      sd:function(P,x,y,z){var q=nearChain(P,x,y,z),fy=q.y-q.r*P.floorK;if(P.steps>0)fy=Math.floor(fy/P.steps)*P.steps;S.v=y-fy;S.top=q.r;return Math.max(q.d-q.r,fy-y);}}
   };
+  // a chain of 3D segments with a radius from r (the first point) to r1 (the last): its box, its length; nearChain the nearest point's
+  // distance, height and radius
+  function prepChain(P,what){if(!P.pts||P.pts.length<2)throw new Error('KCAVERN.'+what+' '+P.id+': pts needs two or more [x,y,z]');P.r=num(P.r,what+' r');P.r1=P.r1==null?P.r:num(P.r1,what+' r1');
+    if(!(P.r>0)||!(P.r1>0))throw new Error('KCAVERN.'+what+' '+P.id+': r must be above 0');P.segs=[];var L=0,bb=[1e30,-1e30,1e30,-1e30,1e30,-1e30];
+    for(var i=0;i<P.pts.length-1;i++){var A=P.pts[i],B=P.pts[i+1],d=[B[0]-A[0],B[1]-A[1],B[2]-A[2]],l=Math.hypot(d[0],d[1],d[2]);if(l<1e-6)throw new Error('KCAVERN.'+what+' '+P.id+': two points at one place');
+      P.segs.push({A:A,d:d,l:l,s:L});L+=l;}
+    P.len=L;P.pts.forEach(function(p){bb[0]=Math.min(bb[0],p[0]);bb[1]=Math.max(bb[1],p[0]);bb[2]=Math.min(bb[2],p[1]);bb[3]=Math.max(bb[3],p[1]);bb[4]=Math.min(bb[4],p[2]);bb[5]=Math.max(bb[5],p[2]);});
+    var g=Math.max(P.r,P.r1)+1;P.box=[bb[0]-g,bb[1]+g,bb[2]-g,bb[3]+g,bb[4]-g,bb[5]+g];P.top=P.r;}
+  function nearChain(P,x,y,z){var bd=1e30,by=0,bs=0;for(var i=0;i<P.segs.length;i++){var g=P.segs[i],px=x-g.A[0],py=y-g.A[1],pz=z-g.A[2],u=clamp((px*g.d[0]+py*g.d[1]+pz*g.d[2])/(g.l*g.l),0,1);
+      var qx=px-g.d[0]*u,qy=py-g.d[1]*u,qz=pz-g.d[2]*u,dd=Math.sqrt(qx*qx+qy*qy+qz*qz);if(dd<bd){bd=dd;by=g.A[1]+g.d[1]*u;bs=g.s+g.l*u;}}
+    return {d:bd,y:by,r:P.r+(P.r1-P.r)*(P.len>0?bs/P.len:0)};}
   // a solid: a plan extruded from y0 to y1, its sides drawn in by `taper` toward the top, a dome of height `cap` over it
   function prepSolid(P,what){P.y0=num(P.y0,what+' y0');P.y1=num(P.y1,what+' y1');P.taper=P.taper||0;P.cap=P.cap||0;var b=bbox2(P.poly);
     P.box=[b[0]-1,b[1]+1,P.y0-1,P.y1+P.cap+1,b[2]-1,b[3]+1];var I=0;for(var x=b[0];x<=b[1];x+=.25)for(var z=b[2];z<=b[3];z+=.25)I=Math.max(I,-sdPoly(P.poly,x,z));P.inr=Math.max(I,.1);P.top=P.y1-P.y0;}
@@ -182,7 +203,18 @@
       Q.finish=P.finish||(kind==='room'?'hewn':'raw');Q.mat=matOf(Q.rock,Q.finish);KINDS[kind].prep(Q);Q.i=prims.length;
       prims.push(Q);byId[Q.id]=Q;return Q;
     }
-    ['tube','hall','room','shaft','stair','trench','monolith','mass'].forEach(function(k){C[k]=function(P){return add(k,P);};});
+    ['tube','hall','room','shaft','stair','trench','monolith','mass','pipebody','bore'].forEach(function(k){C[k]=function(P){return add(k,P);};});
+    C.pipe=function(P){if(!P||!P.id)throw new Error('KCAVERN.pipe: id required');var r=num(P.r==null?3:P.r,'pipe r'),r1=P.r1==null?r:num(P.r1,'pipe r1'),wall=P.wall==null?.3*r:num(P.wall,'pipe wall');
+      if(!(wall>0)||wall>=Math.min(r,r1))throw new Error('KCAVERN.pipe '+P.id+': wall must be above 0 and under r');if(!P.pts||P.pts.length<2)throw new Error('KCAVERN.pipe '+P.id+': pts needs two or more [x,y,z]');
+      var open=P.open||[true,true],pts=P.pts.map(function(p){return p.slice();}),n=pts.length;
+      var body=add('pipebody',{id:P.id,owner:P.owner,pts:pts,r:r,r1:r1,rock:P.rock,finish:P.finish});
+      /* an open end: the bore runs on past the body's cap by the wall and two cells, so it cuts through */
+      function ext(a,b){var d=[a[0]-b[0],a[1]-b[1],a[2]-b[2]],l=Math.hypot(d[0],d[1],d[2]),e=wall+2*cell+Math.max(r,r1)*.5;return [a[0]+d[0]/l*e,a[1]+d[1]/l*e,a[2]+d[2]/l*e];}
+      var bp=pts.map(function(p){return p.slice();});if(open[0])bp.unshift(ext(pts[0],pts[1]));if(open[1])bp.push(ext(pts[n-1],pts[n-2]));
+      var bore=add('bore',{id:P.id+':bore',owner:P.owner||P.id,pts:bp,r:r-wall,r1:r1-wall,steps:P.steps,floorK:P.floorK,rock:P.rock,finish:P.finish,floor:P.floor}),doors=[];
+      [0,1].forEach(function(e){if(!open[e])return;var q=e?pts[n-1]:pts[0],rb=e?r1-wall:r-wall,fk=bore.floorK,fy=q[1]-rb*fk;if(bore.steps>0)fy=Math.floor(fy/bore.steps)*bore.steps;
+        doors.push(C.opening({id:P.id+':door'+e,kind:'door',c:[q[0],q[2]],y:fy,r:rb+wall,h:rb*(1+fk)+wall}));});
+      return {body:body,bore:bore,doors:doors};};
     C.opening=function(P){if(!P.id||!P.c)throw new Error('KCAVERN.opening: id and c required');
       var Q={id:P.id,kind:P.kind||'well',c:P.c.slice(),r:num(P.r,'opening r'),rim:P.kind==='door'?0:(P.rim==null?3:P.rim),y:P.y==null?null:num(P.y,'door y'),h:P.h==null?Math.max(2.6,num(P.r,'opening r')*1.6):num(P.h,'door h')};
       if(Q.kind==='door'&&Q.y===null)throw new Error('KCAVERN.opening '+P.id+': a door needs y (its sill)');openings.push(Q);return Q;};
@@ -202,7 +234,7 @@
       // among themselves (a braid's junctions), the HARD ones (rooms, stairs, shafts, trenches) by minimum, so a tube's fillet
       // never eats under a stair's floor; a monolith fills both unions as they stand when it is added
       var ds=1e30,dh=1e30,best=1e30,own=null,i,P,v;
-      for(i=0;i<list.length;i++){P=list[i];if(P.kind==='mass')continue;
+      for(i=0;i<list.length;i++){P=list[i];if(KINDS[P.kind].body)continue;
         if(!within(P,x,y,z,P.blend||1))continue;
         v=KINDS[P.kind].sd(P,x,y,z);
         if(P.kind==='monolith'){if(-v>ds)ds=-v;if(-v>dh)dh=-v;if(-v>Math.min(ds,dh)-1e-9&&-v>best){own=P;best=-v;}continue;}
@@ -211,8 +243,8 @@
       OWN=own;return Math.min(ds,dh);
     }
     var OWNM=null;
-    function massOf(list,x,y,z){var s=1e30,own=null;for(var i=0;i<list.length;i++){var P=list[i];if(P.kind!=='mass'||!within(P,x,y,z,1))continue;
-      var v=KINDS.mass.sd(P,x,y,z);if(v<s){s=v;own=P;}}OWNM=own;return s;}
+    function massOf(list,x,y,z){var s=1e30,own=null;for(var i=0;i<list.length;i++){var P=list[i];if(!KINDS[P.kind].body||!within(P,x,y,z,1))continue;
+      var v=KINDS[P.kind].sd(P,x,y,z);if(v<s){s=v;own=P;}}OWNM=own;return s;}
     // the open air: the voids, and the sky over the ground outside every mass, joined by a small smooth minimum (RIM) so an
     // opening's lip is rounded: a worn rim, and no sliver of rock thinner than a cell where a shaft meets the sloping ground
     // Only round a WELL's lip: elsewhere (a doorway whose floor is flush with the ground outside) the same rounding digs a
@@ -255,7 +287,7 @@
           r=Math.min(r,t);}}
       return r;};
     C.skyLeaks=function(step){// points of a void in the open air (above the ground and outside every mass) outside every opening
-      var out=[];prims.forEach(function(P){if(P.kind==='monolith'||P.kind==='mass')return;var b=P.box,s=step||1;
+      var out=[];prims.forEach(function(P){if(P.kind==='monolith'||KINDS[P.kind].body)return;var b=P.box,s=step||1;
         for(var x=b[0];x<=b[1];x+=s)for(var z=b[4];z<=b[5];z+=s)for(var y=b[2];y<=b[3];y+=s){
           if(KINDS[P.kind].sd(P,x,y,z)>=0||openOf(prims,x,y,z)>=0||inOpening(x,y,z))continue;out.push([x,y,z,P.id]);y=1e30;}});
       return out;
@@ -273,6 +305,8 @@
         else if(P.kind==='room'){var ins=insetPoly(P.poly,.3);W.poly({pts:ins.map(function(p){return [p[0],p[1],P.y];}),name:nm,tag:tag});}
         else if(P.kind==='stair')W.strip({a:[P.a[0],P.a[2],P.a[1]],b:[P.b[0],P.b[2],P.b[1]],w:Math.max(.6,P.w-.6),name:nm,tag:tag});
         else if(P.kind==='trench'){var t2=insetPoly(P.poly,.3);W.poly({pts:t2.map(function(p){return [p[0],p[1],P.y0];}),name:nm,tag:tag});}
+        else if(P.kind==='bore'){var hw=Math.max(.3,Math.sqrt(Math.max(0,1-P.floorK*P.floorK))*Math.min(P.r,P.r1)-.3);P.segs.forEach(function(g,i){var A=g.A,B=[A[0]+g.d[0],A[1]+g.d[1],A[2]+g.d[2]];
+          var ya=A[1]-P.r*P.floorK,yb=B[1]-P.r1*P.floorK;if(Math.hypot(g.d[0],g.d[2])>.05)W.strip({a:[A[0],A[2],ya],b:[B[0],B[2],yb],w:2*hw,name:nm+'#'+i,tag:tag});});}
         else if(P.kind==='shaft'&&P.floor){var c=[];for(var j=0;j<16;j++){var b2=j*Math.PI/8;c.push([P.c[0]+Math.cos(b2)*(P.r0-.3),P.c[1]+Math.sin(b2)*(P.r0-.3),P.y0]);}W.poly({pts:c,name:nm,tag:tag});}
       });
       if(walk){prims.forEach(function(P){if(P.kind!=='monolith'||P.block===false)return;var b=bbox2(P.poly);walk.block([b[0],b[1],b[2],b[3],P.y0,P.y1],'cavern:monolith');});
@@ -300,12 +334,12 @@
       // only evaluated inside its box, so a centre outside every box reads no void at all: the box itself is then the bound
       // (a chunk whose top face is a big hall's floor has its centre below the hall's box, and the floor at its edge)
       var cx=x0+CH/2,cy=y0+CH/2+YOFF,cz=z0+CH/2,fc=airOf(list,cx,cy,cz);
-      if(Math.abs(fc)>CH*1.8&&!list.some(function(P){return P.kind!=='mass'&&boxDist(P.box,cx,cy,cz)<=CH*1.8;}))return empty;
+      if(Math.abs(fc)>CH*1.8&&!list.some(function(P){return !KINDS[P.kind].body&&boxDist(P.box,cx,cy,cz)<=CH*1.8;}))return empty;
       var M=N+2,F=new Float64Array(M*M*M),G=new Float64Array(M*M);
       var id=function(i,j,k){return ((k+1)*M+(j+1))*M+(i+1);};
       for(var k=-1;k<=N;k++)for(var i=-1;i<=N;i++)G[(k+1)*M+(i+1)]=ground(x0+i*cell,z0+k*cell);
       var anyIn=false,anyOut=false;
-      var hasMass=list.some(function(P){return P.kind==='mass';});
+      var hasMass=list.some(function(P){return KINDS[P.kind].body;});
       for(k=-1;k<=N;k++)for(var j=-1;j<=N;j++)for(i=-1;i<=N;i++){var X=x0+i*cell,Y=y0+j*cell+YOFF,Z=z0+k*cell,dv=voidOf(list,X,Y,Z),dg=G[(k+1)*M+(i+1)]-Y;
         if(hasMass)dg=Math.max(dg,-massOf(list,X,Y,Z));var f=smin(dv,dg,rimK(X,Z));
         F[id(i,j,k)]=f;if(f<0)anyIn=true;else anyOut=true;}
@@ -365,7 +399,7 @@
           var down=sstep(.3,.6,-ny);lining=(1-sstep(top-.4,top+.4,hv))*(1-down);brk=Math.max(1-lining,down);
           rare=sstep(.6,.78,KR.vnoise(X2/9,Y2/9,Z2/9,seedRare))*brk;hue=KR.vnoise(X2/23,Y2/23,Z2/23,seedHue);
           var dl=Math.abs(KR.vnoise(X2/1.3,Y2/40,Z2/1.3,seedDrip)-.5);crust=(1-sstep(.015,.05,dl))*(1-sstep(.2,.6,ny))*.8;}
-        else if(!gnd[s]&&ny<.7&&P&&P.kind!=='mass'){/* tuff rooms: only the drip lines' faint crust */
+        else if(!gnd[s]&&ny<.7&&P&&!KINDS[P.kind].body){/* tuff rooms: only the drip lines' faint crust */
           var dl2=Math.abs(KR.vnoise(X2/1.3,Y2/40,Z2/1.3,seedDrip)-.5);crust=(1-sstep(.01,.03,dl2))*(1-sstep(.2,.6,ny))*.35;}
         out.w[d2*4]=lining;out.w[d2*4+1]=brk;out.w[d2*4+2]=rare;out.w[d2*4+3]=crust;out.hue[d2]=hue;}
       return out;
@@ -374,7 +408,7 @@
     C.export=function(){
       return {format:'krator-cavern',version:1,convention:{units:'m',up:'+y',x:'east',z:'south',handed:'right'},cell:cell,chunk:CH,seed:seed,mats:MATS.slice(),
         prims:prims.map(function(P){var o={id:P.id,owner:P.owner,kind:P.kind,rock:P.rock,finish:P.finish};
-          ['pts','w','h','spring','ledge','blend','c','rx','rz','belly','throat','poly','y','ceil','rise','r','y0','y1','r0','r1','a','b','taper','cap','block','joins','floor'].forEach(function(k){if(P[k]!==undefined)o[k]=JSON.parse(JSON.stringify(P[k]));});return o;}),
+          ['pts','w','h','spring','ledge','blend','c','rx','rz','belly','throat','poly','y','ceil','rise','r','y0','y1','r0','r1','a','b','taper','cap','block','joins','floor','r1','steps','floorK'].forEach(function(k){if(P[k]!==undefined)o[k]=JSON.parse(JSON.stringify(P[k]));});return o;}),
         openings:openings.map(function(Q){return {id:Q.id,kind:Q.kind,c:Q.c.slice(),r:Q.r,rim:Q.rim,y:Q.y,h:Q.h};}),
         fixtures:fixtures.map(function(F){return {id:F.id,owner:F.owner,box:F.box.slice(),tag:F.tag};})};
     };

@@ -83,6 +83,7 @@ const WEST=ROCK[0];
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it)
 const STAGE={
  name:'Korona: the lee gorge',R:TERR.R,bodies:ROCK,floor:floorH,capY:WEST.y0+400,seed:15,talusH:24,heroR:1600,
+ climate:{dry:true},   /* the weather (89a): the rain shadow between two ring walls, the eastern desert's flora */
  air:{pressure:1.7},stream:null,streamD:()=>1e9,pools:[SPRING],
  bare:(x,z)=>smooth(SPRING.r*1.35,SPRING.r*.95,springD(x,z)),   /* the pool itself: nothing roots in it */
  // the rain shadow: nothing is windward here; the wet is the spring's

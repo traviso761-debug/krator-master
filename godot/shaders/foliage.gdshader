@@ -10,6 +10,8 @@ render_mode cull_disabled, diffuse_lambert, specular_disabled, skip_vertex_trans
 #include "res://shaders/atmos.gdshaderinc"
 #include "res://shaders/kcolour.gdshaderinc"
 #include "res://shaders/lib/foliage.gdshaderinc"
+#include "res://shaders/lib/lod.gdshaderinc"
+#include "res://shaders/lib/season.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform bool has_tex = true;
@@ -25,14 +27,23 @@ uniform int sway_axis = 0;               // o.axis: which basis column sets the 
 uniform bool use_an = false;             // o.aN: the clump's own lighting normal (world space)
 uniform bool irid = false;               // o.irid: the prism gum's two colours
 uniform float back_light = 0.30;
+uniform vec4 sn_k = vec4(0.0);          // o.season: (drop, k, stagger, 0); 0: no season (lib/season.gdshaderinc)
+uniform vec3 sn_c = vec3(1.0);          // the dry colour (linear)
+uniform vec2 fl_k = vec2(0.0);          // o.season.flush: (k, stagger); 0: no flush
+uniform vec3 fl_c = vec3(1.0);          // the flush colour (linear)
 
 varying vec3 v_wp;
 varying vec3 v_c2;
 varying float v_depth;
+varying float v_lod;
+varying vec3 v_sn_p;
+varying float v_sn_h;
 
 void vertex() {
 	// MODEL_MATRIX already holds the instance's transform for a MultiMesh
 	vec3 wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_sn_p = VERTEX;                          // the season: the unswayed card, and the instance's hash at its root
+	v_sn_h = sn_hash(MODEL_MATRIX[3].xyz);
 	float sc = length(MODEL_MATRIX[sway_axis].xyz);
 	float wg = sway_c + dot(sway_w, VERTEX);
 	wp += fol_sway(VERTEX, MODEL_MATRIX[3].xyz, sc, wg, atm_time, atm_wind, sway_a);
@@ -44,12 +55,19 @@ void vertex() {
 		n = fol_card_normal(mat3(MODEL_MATRIX) * NORMAL);
 	}
 	v_c2 = vec3(COLOR.a, INSTANCE_CUSTOM.z, INSTANCE_CUSTOM.w);
+	v_lod = klod(MODEL_MATRIX[3].xyz, CAMERA_POSITION_WORLD, INSTANCE_ID);
+	if (v_lod > 1.5) {
+		wp = MODEL_MATRIX[3].xyz;   // past its range: every vertex at the origin, nothing rasterized (lib/lod.gdshaderinc)
+	}
 	VERTEX = (VIEW_MATRIX * vec4(wp, 1.0)).xyz;
 	NORMAL = normalize((VIEW_MATRIX * vec4(n, 0.0)).xyz);
 	v_depth = -VERTEX.z;
 }
 
 void fragment() {
+	if (klod_drop(v_lod, FRAGCOORD.xy)) {
+		discard;
+	}
 	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec4 tx = has_tex ? texture(albedo_tex, vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y)) : vec4(1.0);
 	vec3 c = COLOR.rgb * colour;
@@ -57,6 +75,16 @@ void fragment() {
 		vec3 V = normalize(CAMERA_POSITION_WORLD - v_wp);
 		vec3 N = normalize((INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
 		c = mix(v_c2 * colour, c, fol_irid(N, V, atm_sun_dir, v_wp, atm_time));
+	}
+	// the season (three: after the ground tint, before the alpha test): the dry colour, the flush colour, the cards gone
+	if (sn_k.y > 0.0) {
+		c = sn_tint(c, COLOR.rgb, sn_c, v_sn_h, sn_dry_k(season_dry, sn_k, v_sn_h));
+	}
+	if (fl_k.x > 0.0) {
+		c = sn_tint(c, COLOR.rgb, fl_c, v_sn_h, sn_flush_k(season_flush, fl_k, v_sn_h));
+	}
+	if (sn_k.x > 0.0 && sn_discard(v_sn_p, v_sn_h, sn_gone(season_dry, sn_k, v_sn_h))) {
+		discard;
 	}
 	ALBEDO = k_albedo(k_tex(tx.rgb) * c);
 	// far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d/650, 0, 1.1))

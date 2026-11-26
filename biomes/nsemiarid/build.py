@@ -50,33 +50,73 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=['40-core-basin.js']   # KBASIN: the old lake bed's marks on the showcase (core/terrain/40-core-basin.js)
+# the final rebuild (2026-11-03, pair 9; PLAN.md "Core adoption"): 43 KGROUND (the library layers, the soda crust's polygons, the desert's pavement),
+# 44 KFAR (the basin past the map), 45 KHORIZON (the ground's and the flora's horizon), with their host halves below
+CORE_TERRAIN=['40-core-basin.js','43-core-ground.js','44-core-farfield.js','45-core-horizon.js']   # 40 KBASIN: the old lake bed's marks on the showcase
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
-# the biome core from core/biome, the same way (core/README.md): one copy for every kit.
-# A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js','42-core-export.js','43-core-export-host.js']
+# the biome core from core/biome, the same way (core/README.md): one copy for every kit. The final rebuild: 31j a limb's joint to its parent
+# (BIO.flareJoin), 34 the octahedral impostors (the variants' far level), 41 the environmental fields (BIO.env)
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','31j-core-joint.js','34-core-impostor.js','40-core-place.js','41-core-env.js','42-core-export.js','43-core-export-host.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
-def build(OUT='nsemiarid.html',overlay=None):
+ROOT=os.path.normpath(os.path.join(HERE,'..','..'))
+# THE STATIONS (PLAN-STATIONS.md; nhighlands' and oidong's form): `python3 build.py --station <name>` builds dist/nsemiarid-<name>.html from src/ with
+# stations/<name>/'s numbered fragments over it (a name in both is the station's: its 45b is its stage, its 99 its views and checks), as an overlay is
+# (build(overlay=...)). Its station.json may name: "core" ({"<fragment name>": "<path from the repo root>"}: more core), "families" (pack families that
+# go into that station's page only: every other page, the scablands' included, leaves them out), "kin" ({"<kit>": [[fragments], "<API>", [pack
+# families]]}: a neighbour kit read in place, its fragments after the stage (47) and before this kit (50), in its own registry closed by a one-line
+# kitEnd, with the named families of its own pack). Station 1, the page as built, is the kit with no --station
+import json as _json
+def station_json(name):
+    p=os.path.join(HERE,'stations',name,'station.json')
+    if not os.path.isfile(p): return {}
+    with open(p,encoding='utf-8') as fh: return _json.load(fh)
+def station_families():
+    """Every family a station names in its station.json: packed into that station's page only."""
+    out=set();d=os.path.join(HERE,'stations')
+    if os.path.isdir(d):
+        for s in sorted(os.listdir(d)): out.update(station_json(s).get('families',[]))
+    return out
+def build(OUT='nsemiarid.html',overlay=None,station=None):
     """Assemble the page. overlay (an overlay build reading this kit in place: biomes/scablands): {'src': its src/
     (shadows the kit's fragments by name, adds its own), 'core': {name: path} more core files, 'dist': where the page
     goes, 'here': its folder (the syntax scratch file and its KNOWN_ISSUES.md), and optionally 'tex' and 'pack': its own
-    library pack, from its tex/ (tools/textures/pack.py on its materials.json), as KMAT.pack(pack, ...)}. Returns the syntax
-    check's code."""
+    library pack, from its tex/ (tools/textures/pack.py on its materials.json), as KMAT.pack(pack, ...)}. station: a
+    station's name (stations/<name>/, built as an overlay of this kit; its station.json's core, families and kin). Returns
+    the syntax check's code."""
+    SJ={}
+    if station:
+        _sd=os.path.join(HERE,'stations',station)
+        if not os.path.isdir(_sd): sys.exit('build.py: no station '+station+' (stations/'+station+'/)')
+        SJ=station_json(station)
+        overlay={'src':_sd,'core':{f:os.path.normpath(os.path.join(ROOT,p)) for f,p in SJ.get('core',{}).items()},'dist':DIST,'here':HERE,
+                 'title':SJ.get('title'),'srcFilter':lambda f:bool(re.match(r'\d',f))}
     PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
     # an OVERLAY (biomes/scablands): its src/ shadows the kit's by name and adds its own; its core files join the lists
     if overlay:
-        for f in os.listdir(overlay['src']):
-            if not f.startswith('.'): PATH[f]=os.path.join(overlay['src'],f)
+        # 'srcs': more folders after 'src', each shadowing the ones before (an overlay's station over the overlay's own src/); 'drop': names left out
+        for _od in [overlay['src']]+list(overlay.get('srcs',[])):
+            for f in os.listdir(_od):
+                if not f.startswith('.') and overlay.get('srcFilter',lambda f:bool(re.match(r'\d',f)) if _od!=overlay['src'] else True)(f): PATH[f]=os.path.join(_od,f)
+        for f in overlay.get('drop',[]): PATH.pop(f,None)
         for f,p in overlay.get('core',{}).items():
             if f not in PATH: PATH[f]=p
     for f in CORE_TERRAIN:
         if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
+    PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))
+    PATH.setdefault('45-core-horizon-shade.js',os.path.join(CORE_T,'host','45-core-horizon-shade.js'))
+    # core/shadow (KSHADOW): the sun's shadows, attached always on core's switch, off at load (88-host-build.js: the button or ?shadow=1; the owner, 2026-11-03)
+    PATH.setdefault('10-core-shadow.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','10-core-shadow.js')))
+    PATH.setdefault('12-core-shadow-host.js',os.path.normpath(os.path.join(HERE,'..','..','core','shadow','host','12-core-shadow-host.js')))
+    # core/hazard (KHAZ): the air's dust reaches the walker through it (89b-host-atmos.js); KTRAPS.cycle, the clock its export reads
+    PATH.setdefault('20-core-hazard.js',os.path.normpath(os.path.join(HERE,'..','..','core','hazard','20-core-hazard.js')))
+    PATH.setdefault('37-core-traps.js',os.path.normpath(os.path.join(HERE,'..','..','core','biome','37-core-traps.js')))
     for f in CORE_BIOME:
         if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
     # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
@@ -96,18 +136,36 @@ def build(OUT='nsemiarid.html',overlay=None):
     CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
     for f in CORE_WATER:
         if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+    # the final rebuild's water ext, by path (tools/fragment_needs.json has their order): the looks (54: the salt lake's brine), breakup (56),
+    # the audit (57), the reflections switch (58), the shore's fields (60)
+    for f in ['54-core-water-kinds-ext.js','54b-core-water-kinds-ext-draw.js','56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js','60-core-water-fields.js']:
+        PATH.setdefault(f,os.path.normpath(os.path.join(HERE,'..','..','core','water','ext',f)))
     # core/atmos (core/atmos/README.md): the clock and the wind every moving thing here rides (the trumpets' spin, the seed
     # weather, the seeds the wind tears loose; the wind setting scales ATMOS.windScale), the wave chunk and the sky's light
     # the water needs, and the export. Bound in 89b-host-atmos.js.
-    CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+    CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-3d-dust.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
     for f in CORE_ATMOS:
         if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+    PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost (src/89b-host-atmos.js)
     # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel and
     # the probe. src/99-host-take.js hands it the page (KHOST.take). A local src/ copy with the same name wins (KNOWN_ISSUES.md).
     sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','core','host')))
     import host as khost
-    CORE_HOST=khost.SHELL+['94-host-polytool.js']   # the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
+    CORE_HOST=khost.FULL+['94-host-polytool.js']   # the whole interface (the final rebuild); the authoring tools (inspect, polygon, path), once the kit's 93-host-polytool.js
     khost.resolve(PATH,CORE_HOST)
+    # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
+    # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
+    for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
+        if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+    for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+        PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+    for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
+        PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+    # the final rebuild's air (89b-host-atmos.js): height fog (R1), the rain occlusion map (R10), lightning, the air's load (the dust's visibility)
+    PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+    PATH['89-atmos-3-particles.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','89-atmos-3-particles.js'))
+    for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js','89-atmos-fx-airload.js']:
+        PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
     # the syntax check cannot see a core fragment that is simply absent
     miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
     if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -119,14 +177,16 @@ def build(OUT='nsemiarid.html',overlay=None):
     for f in CORE_MAT:
         if f not in PATH: PATH[f]=os.path.join(CORE_M,f)
     TEX_DIR=os.path.join(HERE,'tex')
-    def matlib_pack(TEX_DIR=TEX_DIR,KEY='nsemiarid'):
+    def matlib_pack(TEX_DIR=TEX_DIR,KEY='nsemiarid',exclude=()):
         """GENERATED fragment: the library textures materials.json names, as data URLs (KMAT.pack). It reads the committed
-        tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same)."""
+        tex/ files only, never the library or an image encoder, so the build stays deterministic (Girder's, the same).
+        exclude: families left out (another station's own; a kin kit's families this page does not keep)."""
         import base64, json
         pj=os.path.join(TEX_DIR,'pack.json')
         if not os.path.isfile(pj): return "/* no tex/pack.json: the kit runs on its procedural textures */\nKMAT.pack(%s, {});\n"%json.dumps(KEY)
         pack=json.load(open(pj,encoding='utf-8'));out=[]
         for fam in sorted(pack['families']):
+            if fam in exclude: continue
             e=pack['families'][fam]
             f={'lib':e['lib'],'scale':e['scale'],'metal':e['metal'],'normalScale':e['normalScale'],'specular':e.get('specular',.5),
                'breakup':e.get('breakup'),'tint':e['tint']['keep'],'mean':e['tint']['mean'] if e['tint']['mean'] is not None else e['tint'].get('sourceMean')}
@@ -138,21 +198,34 @@ def build(OUT='nsemiarid.html',overlay=None):
                 '   build.py writes this from tex/ (tools/textures/pack.py from materials.json). Do not edit. */\n'
                 "KMAT.pack(%s, {\n"%json.dumps(KEY) + ',\n'.join(out) + '\n});\n')
     # named -host- (the FORBID scan skips it: base64 may spell a forbidden word) and numbered 44: the host stage (45) reads it
-    VIRTUAL={'44-host-matlib-pack.js':matlib_pack()}
+    VIRTUAL={'44-host-matlib-pack.js':matlib_pack(exclude=station_families()-set(SJ.get('families',[]))),   # a station's own families on its page only
+             khost.EDITS_JS:khost.edits_js(overlay['here'] if overlay else HERE,os.path.basename(overlay['here']) if overlay else 'nsemiarid')}   # the host's edit layer (core/host FULL)
     # an overlay's own library pack (its materials.json and tex/: KMAT.packed(overlay['pack'], family)), beside the kit's
-    if overlay and overlay.get('tex'): VIRTUAL['44b-host-matlib-pack.js']=matlib_pack(overlay['tex'],overlay['pack'])
+    if overlay and overlay.get('tex'): VIRTUAL['44b-host-matlib-pack.js']=matlib_pack(overlay['tex'],overlay['pack'],exclude=overlay.get('packExclude',()))   # its other stations' own families left out
+    # THE NEIGHBOURS' KITS, read in place (a station's station.json "kin"; nhighlands' form): each kit's fragments after the stage (45b) and before this
+    # kit (50), in their own registry, closed by a one-line kitEnd; its pack's named families only (KMAT.packed('<kit>', family))
+    for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(SJ.get('kin',{}).items())):
+        _d=os.path.join(ROOT,'biomes',_k);_c='abcdefgh'[_i]
+        for _j,_f in enumerate(_fs): PATH['47%s%d-%s'%(_c,_j,os.path.basename(_f))]=os.path.join(_d,_f)
+        VIRTUAL['47%s-%s-open.js'%(_c,_k)]="\nBIO.kit('%s');   // its own registry\n"%_k
+        VIRTUAL['47%s9-%s-end.js'%(_c,_k)]="\nBIO.kit('%s');BIO.kitEnd(%s);   // its registry closed (its own page does it in a later fragment)\n"%(_k,_api)
+        _pj=os.path.join(_d,'tex','pack.json');_fam=[]
+        if os.path.isfile(_pj):
+            with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{}))
+        VIRTUAL['44%s-host-matlib-pack-%s.js'%(chr(ord(_c)+2),_k)]=matlib_pack(os.path.join(_d,'tex'),_k,exclude=[f for f in _fam if f not in _keep])
     for f in VIRTUAL: PATH[f]=None
     frags=sorted(PATH)
     out=[]; bad=[]
     for f in frags:
         s=VIRTUAL[f] if PATH[f] is None else open(PATH[f],encoding='utf8').read()
         n=int(re.match(r'(\d+)',f).group(1))
-        if 10<=n<80 and '-host-' not in f:
+        if 10<=n<80 and '-host-' not in f and not re.match(r'47[a-h]',f):   # the neighbours' kits are their own builds' to lint
             for w in FORBID:
                 if w in s: bad.append(f'{f}: uses {w}')
         out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
     if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
     dist=overlay['dist'] if overlay else DIST
+    BSRC.report(PATH)   # --list-sources: what the page is made of (an overlay's too), then exit
     os.makedirs(dist,exist_ok=True)
     html=''.join(out)
     if overlay and overlay.get('title'):   # an overlay's own page title (the gallery lists a page by it)
@@ -173,4 +246,6 @@ def build(OUT='nsemiarid.html',overlay=None):
 
 
 if __name__=='__main__':
-    sys.exit(build(sys.argv[1] if len(sys.argv)>1 and not sys.argv[1].startswith("--") else "nsemiarid.html"))
+    _a=sys.argv[1:];_st=_a[_a.index('--station')+1] if '--station' in _a and _a.index('--station')+1<len(_a) else None
+    _pos=[a for i,a in enumerate(_a) if not a.startswith('--') and not (i>0 and _a[i-1]=='--station')]
+    sys.exit(build(_pos[0] if _pos else ('nsemiarid-%s.html'%_st if _st else 'nsemiarid.html'),station=_st))

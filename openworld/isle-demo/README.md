@@ -15,6 +15,23 @@ world's machinery.
 - **Build:** `python3 build.py`.
 - **Verify:** `python3 verify.py dist/isle-demo.html --assert --views 0,1,14`. Use `--list` to print the views.
 
+## The east jungle and the Raptor camp (core/camp, 2026-10-26)
+
+- **The east jungle:** a fourth area of the region (`source/added-areas.json`), the mainland hyperjungle east of the
+  north-east isles in the Beast Riders' country (about 3,000 km2; the union is now 34,792 km2, the box px 616-748 by
+  352-498). It was cut from scale model 4.23 with `tools/scale-model/extract_region.py --keep data`, which keeps the
+  frame's origin (px 674,424), the heights' 16-bit range and every old height cell (all 5,056 agreed with 4.23), so
+  nothing in the old region moved. To cut again: the same command with `--add source/added-areas.json --keep data`.
+- **The camp:** a band of the Beast Riders' Raptor tribe (`core/camp/PLAN.md` section 10, "The first build"):
+  - `src/48k-world-camps.js` (`[G data]`) sites it, pitches it with `KCAMP.pitch` and counts its people with
+    `KCAMP.census` (`ISLE_CAMPS`). `ISLE_CAMPS.simDeclare` puts it on core/simulation: a settlement, a walking layer,
+    its places and its people.
+  - `src/88k-world-camps.js` (`[web]`) registers it in core/tags, clears the jungle inside its hedge, and draws the
+    kit's tents, pens, hedge and rails. CAT carries the kit's tent set on this page (`cat_bundle(tents=True)`). It
+    presents the camp on the sim within 2.5 km and draws its people near the camera.
+- **Go to:** "Raptor band camp (east jungle)".
+- **`window._camps`:** the camp, its census, its sim declaration, the people drawn, and `checks(neg)` for `verify.py`.
+
 ## The hamlets (core/hamlet, 2026-10-19)
 
 Four resource villages stand in the world, sited and laid out at load from `src/48-world-hamlets.js` (`[G data]`: the
@@ -28,6 +45,72 @@ north (`core/hamlet/PLAN.md` section 4).
 - **The world clock:** `core/clock`, the 72-minute day, as every settlement runs (`HOST.clock`; `?hour=`, `?day=`,
   `?time=run`). The lumber village's felling reads it: stumps, saplings and grown trees by the day.
 - **`window._hamlets`** holds the villages, resources, counts and the tag audit. `verify.py` checks them, with a negative.
+- **In the sim (2026-10-26, core/hamlet H5):** `48t-world-towns.js` makes the villages once (`ISLE_HAMLETS.made`, which 88h
+  draws) and declares them with the towns (settlements/isle-demo `47h-isle-hamlets.js`): each its town's settlement at the
+  abstract level, its works producers, its goods carted to its town and its town's food carted back.
+  `ISLE_TOWNS_W.stats.hamlets` is the report; `verify.py` runs them two days on this map (staffed, making, loads landed,
+  fed; with negatives).
+- **The lanes and greens are wound to face up** (2026-10-26): facing down they were culled, so no village showed its
+  lanes or its green (Longsong's square, the same fault). Their colours are converted to linear, as the page's others.
+- **The countryside (2026-11-09; settlements/isle-demo/PLAN.md section 11):** six farming hamlets (four Kautoa's, two
+  Valapo's) and a plantation each, sited by the hinterland survey in `48` (`farmSite`: the best dry, gentle, off-town
+  cell 2 to 14 km out that takes the hamlet's crops, 3 km apart), sized from each town's census (`KHAMLET.farmNeed`),
+  their farmland (`core/hamlet/14-hamlet-farmland.js`, parcels in crop and fallow) painted on the ground and tagged by
+  `88h`, the flora kept off the parcels in crop. In the sim they feed their towns by road; Valapo, its fields gone from
+  the village, eats wholly from them. `verify.py` checks the land in crop against the estimate, every parcel dry, and
+  the sim's countryside checks, each with a negative. A farmhouse stands on every holding with a farm track to it (the
+  tracks a tree from the village's works lane), and every village is named at load from the Sikau list (core/hamlet 16, 18).
+- **The highway network (2026-11-09):** `python3 bake.py roads` routes every village to its town's network in a headless
+  page (`src/48r-world-roads.js` over `core/world/42-world-roads.js`) and writes `data/roads.json`; `build.py` puts it in
+  the page as `WORLD_DATA.roads`, so the ground is shaped to the roads, the terrain draws them and the flora keeps off.
+  Rebake after anything that moves a village (`verify.py` says when a village's lane end is no longer a road's end). The
+  sim takes each road's length to the town as the village's cart time.
+- **The coast (2026-11-09; the owner: "a little port and cargo stop at lumber village, this would make sense for any hamlets
+  near the coast"):** a village within `SHORE_R` of the sea with a navigable route to its town's trade landing gets a
+  LANDING (`48` `shoreOf`: the shore point found by marching across the shallows, the sea route by `ISLE_TOWNS_W.seaPath`;
+  core/hamlet 30 puts the quay at the water's edge with a lane to it) and a SEA LEG in the sim (47h: a lakatoi of its own
+  on `SIM.trade`, its goods landed at the town's canoe stop, drawn by `88c` with the canoe line). A lumber village is sited
+  on the coastal stand nearest its town whose shore has a sea route to the town's landing and forest over two fifths of the crew's near range
+  (Valapo's on the north-west coast, 15 km by sea; its first site faced the open east sea, 35 km of land from the harbour, which no reef
+  passage could join: settlements/isle-demo/KNOWN_ISSUES.md). `verify.py` checks every village within reach of a
+  navigable sea has one.
+- **The villages grow and are founded (2026-11-09; PLAN.md section 11 step 5):** every village lays empty plots (core/hamlet
+  30 `vacant`), lots on core's building in the sim (47h): a house goes up on the first with the village's own hands and the
+  bill its carts bring, and `88h` draws it when it is built. A town whose refugee households have waited for a house sends
+  them out as a FARMING CAMP (settlements/isle-demo 47f), which this page sites, lays out and roads through
+  `src/48f-world-found.js` (`ISLE.hooks`: the hinterland survey of 48 apart from every village and camp, core/hamlet's village
+  and farmland on the camp's site, one more road to the network as it stands by `ISLE_ROADS.join`); after its days the camp
+  becomes a hamlet, named from the Sikau list, whose HIGHWAY its own hands build as a project (`found.road` in the tune);
+  built, `WORLD.addRoad` puts it in the network and `TERRAIN.refresh` redraws the ground over it. `88h` draws the camp's
+  shelters (kits/islanders `70-ie-camp.js`: a ring of huts, lean-tos, A-frames and long shelters round the camp kitchen
+  and store) and its parcels while it stands and the new village when it is founded, which then fills its empty homes
+  and open posts from both towns' waiting refugees (47f `foundSettle`). At the real pace (a month's wait, a season's camp,
+  up to three camps a town one at a time) a founding takes weeks of the sim, so `verify.py` checks only the hooks and the
+  survey; `settlements/isle-demo/tests/test-isle-found.js` runs one through at its fast pace.
+- **Nephtos, the Hykkousoi colony of Tethys (2026-11-09; settlements/isle-demo/PLAN.md section 15):** a placeholder radial
+  town of about 1,075 people on the west coast of the forest island west, north-west of Valapo; once the owner draws it in the
+  site planner (towns.Nephtos), planned and drawn with the towns in the Ys kit's Hykkousoi pieces (settlements/isle-demo bundles.py HYKB)
+  (`src/48p-world-colony.js` sites the placeholder and lays
+  settlements/isle-demo 47k's plan; `src/88p-world-colony.js` draws stand-ins, the streets and the quay with the Ring Sea
+  kit's Hykkousoi corbita and pearl ship), declared on the sim after the two towns with its six villages (48: two farming
+  hamlets, the plantations, a fishing village, a lumber village and the copper mine), its roads baked to its spokes.
+- **Clay villages and Valapo's clove plantation overseas (2026-11-09; settlements/isle-demo/PLAN.md section 14):** a clay
+  village for each town (`src/48` `hamlet-clay-*`: the isles have no rivers, so its pit stands on dry flat ground within
+  300 m of the mangrove flats; the Islanders kit's `ie-claypit`), whose clay the towns' potters take; and Valapo's clove
+  plantation on the forest island west (`hamlet-plant-vw`, `islandSite`): coastal farmland with a sea route to Valapo's
+  landing, no road (the bake leaves it out), both its routes sea legs in the sim, growing its own staples beside the cloves.
+- **Ranches and herding bands (2026-11-09; settlements/isle-demo/PLAN.md section 13):** two more ranch hamlets (Kautoa's
+  south ranch, Valapo's ranch) and a semi-nomadic herding band for each town (`src/48n-world-herders.js` hands the sim its
+  range on the pasture survey's pick; the sim, settlements/isle-demo 47n, moves the band's whole camp with its herd as
+  it grazes the pasture down). `88h` draws the band's shelters and a herd of the Islanders kit's water buffalo.
+- **Camps by boat (2026-11-09; settlements/isle-demo/PLAN.md section 12):** each town sends a crew of twelve by lakatoi to
+  a forest island on the first day: `src/48x-world-expeditions.js` finds the shore (the survey's candidate points tried
+  for a sea route from the town's landing, dry forested ground inland of it, apart from every village: Kautoa's on the
+  forest island east beside its lumber village, Valapo's on the forest island west, 23 to 24 km by sea), the sim (47x)
+  pitches the camp and works the jungle for mahogany, gum and kapok with the lumber village's migrating work camp,
+  the goods boat and the food boat run the line (`88c`), `88h` pitches the kit's shelters when the boat lands and strikes
+  them when the crew sails home after its season. The towns' canoe sheds build canoes of the mahogany and gum.
+  `verify.py` checks each town's shore and the sim's first check (the crews sailed and landed).
 
 ## The towns (M7, 2026-10-20)
 
@@ -92,7 +175,7 @@ boats at sea.
 
 ## How it is made
 
-The world's fragments are **in `src/world/`**: the fields, terrain, water, sky, nursery, flora, floor, places, towns,
+The world's fragments are **in `core/world/`**: the fields, terrain, water, sky, nursery, flora, floor, places, towns,
 camera and probe, and the head (`00-head.html`, whose title and caption `build.py` swaps for this region's). They were
 moved here from `openworld/little-demo/src` in October 2026, when little-demo was deprecated (its `DEPRECATED.md`):
 this build no longer reads anything from it. The region's own fragments, beside them in `src/`:
@@ -140,5 +223,10 @@ python3 tools/scale-model/extract_region.py <page.html> openworld/isle-demo/sour
 - **The highway check is n/a:** the region has no roads.
 - **The isle's four checks pass**, and each negative is caught.
 - **Geyser site 1 builds without an error.**
+- **`verify.py --assert` runs them at Kautoa too (2026-11-03).** The world's start view had been little-demo's (6 km west of
+  Shade, which this region lacks, so at 0,0 over 158 m of sea), so the probe's tile held no flora and four checks failed. The
+  start is now `WORLD_CONFIG.start` (`src/46-world-config.js`: Kautoa, framed as "Go to" frames it). The same pass listed
+  `core/biome` 31b (leaf sets) and 34 (impostors), which the lenders' trees call, and fixed the geyser plume's shader
+  for vents below zero (`core/water/geyser/52b`: it wrote `p.y--1278.37`, a syntax error, and every plume failed to compile).
 
 See `KNOWN_ISSUES.md`.

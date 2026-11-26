@@ -1,0 +1,1513 @@
+{
+ "name": "Chernobyl",
+ "note": "The Chernobyl Exclusion Zone in northern Ukraine from OpenStreetMap on its real ground: the power plant with Reactor 4 under the New Safe Confinement, the abandoned city of Pripyat, the cooling pond, the Red Forest, the Duga radar and the old town of Chernobyl",
+ "origin": [
+  51.385,
+  30.09
+ ],
+ "defaultSeed": 1986,
+ "defaultHour": 11,
+ "bounds": [
+  51.262,
+  30.0,
+  51.43,
+  30.25
+ ],
+ "osm": "data/cities/chernobyl-osm.json",
+ "attribution": "Chernobyl: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles. Built by tools/build-osm-city.py.",
+ "fetch": {
+  "bbox": [
+   51.26,
+   29.997,
+   51.432,
+   30.253
+  ],
+  "tiles": {
+   "buildings": [
+    2,
+    2
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    51.395,
+    30.03,
+    51.42,
+    30.08
+   ],
+   [
+    51.37,
+    30.08,
+    51.4,
+    30.14
+   ],
+   [
+    51.262,
+    30.18,
+    51.29,
+    30.25
+   ]
+  ],
+  "extraLand": "nwr[\"landuse\"~\"^(forest|farmland|meadow|brownfield|industrial)$\"]({b});nwr[\"natural\"~\"^(wetland|heath|scrub|sand)$\"]({b});",
+  "extraRoads": "way[\"highway\"~\"^(track|path)$\"]({b});",
+  "_": "detail zones: Pripyat, the plant with units 5 and 6 and the cooling pond's head, the town of Chernobyl; extraLand: the pine forest and the marshes of Polesia, the abandoned kolkhoz fields"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 20,
+  "filter": {
+   "open": 320,
+   "close": 30,
+   "blur": 40,
+   "_": "the tiles carry the pine forest, the plant's halls, the arch and the Duga's arrays as hills: Polesia is flat, so an opening wider than the plant's main building takes them all out"
+  },
+  "_": "Polesia: flat, sandy and marshy, the Pripyat at about 104 m, the land a few metres over it: elevation from tools/fetch-terrain.py"
+ },
+ "defaultHeights": {
+  "_": "Pripyat's blocks are five, nine and sixteen storeys of concrete panel; the villages' houses one storey of timber",
+  "yes": 6,
+  "house": 5,
+  "detached": 5,
+  "apartments": 28,
+  "residential": 15,
+  "dormitory": 15,
+  "commercial": 8,
+  "retail": 5,
+  "office": 12,
+  "hotel": 21,
+  "school": 12,
+  "kindergarten": 7,
+  "university": 14,
+  "hospital": 14,
+  "public": 10,
+  "civic": 10,
+  "government": 12,
+  "church": 12,
+  "garage": 3,
+  "garages": 3,
+  "ruins": 12,
+  "industrial": 14,
+  "warehouse": 9,
+  "construction": 12,
+  "kiosk": 3,
+  "shed": 3,
+  "roof": 4,
+  "service": 4,
+  "greenhouse": 3,
+  "farm_auxiliary": 5,
+  "barn": 6,
+  "cooling_tower": 8
+ },
+ "heightSpread": 0.1,
+ "palette": {
+  "_": "weathered concrete panel: greys and beiges streaked darker, the odd faded blue and pink; no glass anywhere",
+  "brick": [
+   "#c8c2b4",
+   "#bcb6a8",
+   "#d0c8b6",
+   "#b4b0a6",
+   "#c4baa4",
+   "#d2cab8",
+   "#b8b8b0",
+   "#c0c4c2",
+   "#b8c0c4",
+   "#cbb8ae"
+  ],
+  "stone": [
+   "#c4c0b4",
+   "#b8b4a8",
+   "#ccc6b8",
+   "#aeaaa0"
+  ],
+  "concrete": [
+   "#c0bcb0",
+   "#b4b0a6",
+   "#cac4b6"
+  ],
+  "glass": [
+   "#c0bcb0",
+   "#b8b4aa",
+   "#c8c2b4",
+   "#b0aca2"
+  ]
+ },
+ "roofColours": [
+  "#6e5444",
+  "#7a5a44",
+  "#5e4a3e",
+  "#806048",
+  "#6a6a66"
+ ],
+ "flatRoofColours": [
+  "#4a4846",
+  "#56524c",
+  "#3e3c3a",
+  "#5e5a54"
+ ],
+ "roofPitch": 0.45,
+ "roofMaxArea": 260,
+ "roofMaxHeight": 9,
+ "roofRise": 3.0,
+ "roofFill": 0.6,
+ "rooftops": false,
+ "pitchAll": {
+  "types": [
+   "house",
+   "detached",
+   "yes",
+   "barn",
+   "farm_auxiliary",
+   "shed"
+  ],
+  "share": 0.85,
+  "_": "the villages' wooden houses under rusted tin; Pripyat's blocks all flat, bitumen and gravel"
+ },
+ "facade": {
+  "bay": 3.2,
+  "floor": 2.8,
+  "shutters": false,
+  "_": "Soviet panel blocks: identical windows on a 3.2 m bay, 2.8 m storeys"
+ },
+ "facadeStyles": [
+  {
+   "tex": "balcony",
+   "when": {
+    "types": [
+     "apartments",
+     "residential",
+     "yes",
+     "dormitory",
+     "hotel"
+    ],
+    "minH": 13,
+    "share": 0.85,
+    "where": [
+     [
+      51.395,
+      30.03,
+      51.418,
+      30.08
+     ],
+     [
+      51.262,
+      30.18,
+      51.29,
+      30.25
+     ],
+     [
+      51.298,
+      30.05,
+      51.312,
+      30.08
+     ]
+    ]
+   },
+   "bay": 3.2,
+   "floor": 2.8,
+   "colours": [
+    "#c8c4b8",
+    "#bcb8ac",
+    "#d0c8b8",
+    "#b4b0a6",
+    "#c4bca8",
+    "#cfc6b4",
+    "#b8bcb8"
+   ]
+  },
+  {
+   "tex": "ribbon",
+   "when": {
+    "types": [
+     "office",
+     "commercial",
+     "public",
+     "school",
+     "hospital",
+     "university",
+     "civic",
+     "industrial"
+    ],
+    "minH": 8,
+    "share": 0.6
+   },
+   "bay": 3.6,
+   "floor": 3.6
+  }
+ ],
+ "blocks": {
+  "types": [
+   "apartments",
+   "residential",
+   "yes",
+   "dormitory",
+   "hotel",
+   "office",
+   "public"
+  ],
+  "minH": 13,
+  "share": 0.9,
+  "floor": 2.8,
+  "near": 700,
+  "where": [
+   [
+    51.395,
+    30.03,
+    51.418,
+    30.08
+   ],
+   [
+    51.298,
+    30.05,
+    51.312,
+    30.08
+   ]
+  ],
+  "parapets": [
+   "#a8a49a",
+   "#9a968c",
+   "#b0a890",
+   "#8a8680",
+   "#a09a8a"
+  ],
+  "slab": "#a8a49a",
+  "core": "#7e7a72",
+  "grilles": {
+   "types": [
+    "house",
+    "detached"
+   ],
+   "share": 0.15,
+   "street": 0.1,
+   "maxH": 12,
+   "where": [
+    [
+     51.262,
+     30.18,
+     51.29,
+     30.25
+    ]
+   ]
+  },
+  "_": "src/sarajevo/blocks.js: Pripyat's panel blocks with their loggias, stair cores and roof boxes"
+ },
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "pripyat": [
+   "Pripyat",
+   "#a8a49a",
+   15,
+   52,
+   [
+    51.395,
+    30.03,
+    51.418,
+    30.08
+   ]
+  ],
+  "plant": [
+   "the Chernobyl Nuclear Power Plant",
+   "#9a968e",
+   14,
+   70,
+   [
+    51.37,
+    30.085,
+    51.397,
+    30.14
+   ]
+  ],
+  "chornobyl": [
+   "Chernobyl town",
+   "#b0a690",
+   5,
+   15,
+   [
+    51.262,
+    30.18,
+    51.29,
+    30.25
+   ]
+  ],
+  "chornobyl2": [
+   "Chernobyl-2 (Duga)",
+   "#9a968e",
+   9,
+   15,
+   [
+    51.298,
+    30.05,
+    51.312,
+    30.08
+   ]
+  ],
+  "outer": [
+   "the Exclusion Zone",
+   "#8a8a7a",
+   6,
+   14
+  ]
+ },
+ "focus": [
+  {
+   "name": "Pripyat",
+   "at": [
+    51.4065,
+    30.0555
+   ],
+   "radius": 900,
+   "parked": false,
+   "planters": false
+  },
+  {
+   "name": "the plant",
+   "at": [
+    51.3893,
+    30.1
+   ],
+   "radius": 700,
+   "parked": false,
+   "planters": false
+  },
+  {
+   "name": "Chernobyl town",
+   "at": [
+    51.2735,
+    30.222
+   ],
+   "radius": 900,
+   "parked": false,
+   "planters": false
+  }
+ ],
+ "treeSpecies": [
+  {
+   "name": "Scots pine",
+   "shape": "cedar",
+   "bark": "#8a5a3a",
+   "height": [
+    16,
+    26
+   ],
+   "colours": [
+    "#2a4426",
+    "#30482a",
+    "#263e22",
+    "#34502e"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 10,
+    "wood": 60,
+    "yard": 4
+   }
+  },
+  {
+   "name": "silver birch",
+   "shape": "slender",
+   "bark": "#e2ded4",
+   "height": [
+    12,
+    22
+   ],
+   "colours": [
+    "#5a7a36",
+    "#66843c",
+    "#4e6e30"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 10,
+    "wood": 22,
+    "yard": 10
+   }
+  },
+  {
+   "name": "poplar",
+   "shape": "column",
+   "bark": "#6a6458",
+   "height": [
+    18,
+    28
+   ],
+   "colours": [
+    "#4e6e32",
+    "#567838"
+   ],
+   "weight": {
+    "street": 14,
+    "park": 6,
+    "wood": 2,
+    "yard": 4
+   }
+  },
+  {
+   "name": "white willow",
+   "shape": "round",
+   "bark": "#6a6052",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#7a8e5a",
+    "#6e8450"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 4,
+    "wood": 6,
+    "yard": 2
+   }
+  },
+  {
+   "name": "Norway maple",
+   "shape": "round",
+   "bark": "#5a5046",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#4e7030",
+    "#567a36"
+   ],
+   "weight": {
+    "street": 10,
+    "park": 8,
+    "wood": 4,
+    "yard": 6
+   }
+  },
+  {
+   "name": "apple",
+   "shape": "small",
+   "bark": "#5a4a3a",
+   "height": [
+    4,
+    7
+   ],
+   "colours": [
+    "#4e6e34",
+    "#5a7a3a"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 0,
+    "wood": 0,
+    "yard": 12
+   }
+  }
+ ],
+ "streetTrees": 0.9,
+ "yardTrees": {
+  "types": [
+   "house",
+   "detached",
+   "yes"
+  ],
+  "share": 0.7,
+  "per": [
+   1,
+   3
+  ],
+  "reach": [
+   3,
+   9
+  ],
+  "maxArea": 260,
+  "where": [
+   [
+    51.262,
+    30.0,
+    51.43,
+    30.25
+   ]
+  ],
+  "_": "the villages' orchards gone wild"
+ },
+ "areaColours": {
+  "park": "#4e6634",
+  "grass": "#5a6a3a",
+  "garden": "#56663a",
+  "recreation_ground": "#5a6e3a",
+  "residential": "#5a6a3a",
+  "commercial": "#5e6644",
+  "industrial": "#7e7a6e",
+  "farmland": "#6e7646",
+  "meadow": "#727848",
+  "brownfield": "#6a6a48",
+  "wetland": "#5e6640",
+  "heath": "#6e6a48",
+  "scrub": "#566236",
+  "sand": "#b2a47c",
+  "cemetery": "#4e6232",
+  "plaza": "#8a8880",
+  "parking": "#6e6c66",
+  "pitch": "#5e6a3e",
+  "play": "#62683e",
+  "campus": "#5a6a3c",
+  "stadium": "#5e6a3e",
+  "track": "#7a6e5e",
+  "wood": "#2e4628",
+  "reserve": "#34502c",
+  "railyard": "#6a645a"
+ },
+ "terrainColours": {
+  "low": "#6a6c46",
+  "high": "#2c4628",
+  "steep": "#5e5a44",
+  "far": "#4a5a40"
+ },
+ "groundMottle": 0.12,
+ "waterColour": "#4a5a4e",
+ "lakeColour": "#46584c",
+ "sky": {
+  "day": {
+   "top": "#7a98be",
+   "hor": "#d6dcdc"
+  },
+  "dusk": {
+   "top": "#3a4060",
+   "hor": "#d89068"
+  },
+  "night": {
+   "top": "#070b16",
+   "hor": "#1c2232"
+  }
+ },
+ "fog": 2.2e-05,
+ "weather": {
+  "climate": "continental",
+  "cloudH": 1200,
+  "_": "src/core/weather.js: Polesia's weather, cold winters, warm summers, thunderstorms"
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "flight": true,
+ "litWindows": 0,
+ "traffic": 0,
+ "people": 0,
+ "parkedCars": 0,
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "trunk"
+  ],
+  "colour": "#d8d4c8"
+ },
+ "treeFar": 2200,
+ "lowRiseFar": 4000,
+ "instanceCulling": true,
+ "farLevel": -1.5,
+ "zone": {
+  "towns": [
+   [
+    51.4065,
+    30.0555,
+    1500
+   ],
+   [
+    51.305,
+    30.068,
+    550
+   ],
+   [
+    51.2745,
+    30.218,
+    1500
+   ],
+   [
+    51.3554,
+    30.1256,
+    450
+   ],
+   [
+    51.343,
+    30.11,
+    400
+   ]
+  ],
+  "tints": [
+   [
+    51.3835,
+    30.035,
+    700,
+    "#8a5a36",
+    0.45
+   ],
+   [
+    51.3835,
+    30.055,
+    800,
+    "#8a5a36",
+    0.5
+   ],
+   [
+    51.384,
+    30.077,
+    700,
+    "#8a5a36",
+    0.45
+   ],
+   [
+    51.345,
+    30.165,
+    2600,
+    "#7a7a52",
+    0.35
+   ]
+  ],
+  "bare": [
+   "industrial",
+   "construction"
+  ],
+  "overgrowth": 0.75,
+  "fields": 0.34,
+  "marshH": 1.6,
+  "_": "src/chernobyl/zone.js: the ground and the forest come back. towns: Pripyat, Chernobyl-2, Chernobyl town, Kopachi, the Machine and Tractor Station; tints: the Red Forest, the drained cooling pond's bed",
+  "redForest": [
+   [
+    51.3835,
+    30.035,
+    800
+   ],
+   [
+    51.3835,
+    30.055,
+    900
+   ],
+   [
+    51.384,
+    30.077,
+    700
+   ]
+  ]
+ },
+ "dogs": {
+  "count": 90,
+  "seed": 1986,
+  "box": [
+   51.38,
+   30.04,
+   51.415,
+   30.13
+  ],
+  "asleep": 0.5,
+  "packs": 0.4,
+  "parks": 0.3,
+  "near": 450,
+  "_": "src/sarajevo/dogs.js: the Zone's dogs, the strays the guards and the workers feed, round the plant and in Pripyat"
+ },
+ "chernobylEvents": {
+  "reactor": [
+   51.38955,
+   30.09909
+  ],
+  "route": "Центральний проспект",
+  "from": [
+   51.4055,
+   30.0577
+  ],
+  "buses": 40,
+  "slide": 327,
+  "horses": [
+   51.3475,
+   30.1095
+  ],
+  "duga": [
+   51.30559,
+   30.06618
+  ],
+  "_": "src/chernobyl/events.js",
+  "fireStation": [
+   51.39355,
+   30.10661
+  ],
+  "pripyatFire": [
+   51.40051,
+   30.05157
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "The New Safe Confinement",
+   "aka": [
+    "the arch",
+    "Reactor 4",
+    "the sarcophagus",
+    "the Shelter",
+    "Chernobyl Nuclear Power Plant"
+   ],
+   "at": [
+    51.38931,
+    30.09878
+   ],
+   "model": "arch",
+   "span": 257,
+   "h": 108,
+   "len": 162,
+   "face": 90,
+   "replace": [
+    "New Safe Confinement",
+    "Укриття-2",
+    "Designed Stabilisation Steel"
+   ],
+   "info": "The steel arch over Reactor 4: 257 m across, 108 m high and 162 m long, built 327 m to the west and slid over the reactor in November 2016. The ventilation stack that stood beside it, striped red and white, was taken down in 2013 to make way. Under it stand the ruins of the reactor and the Shelter, the concrete \"sarcophagus\" put up round them in 1986, which its cranes are to take apart. On 14 February 2025 a drone struck its roof and set the cladding smouldering for weeks; the damage is still being repaired.",
+   "clearArea": {
+    "poly": [
+     [
+      51.388,
+      30.0962
+     ],
+     [
+      51.388,
+      30.101
+     ],
+     [
+      51.3906,
+      30.101
+     ],
+     [
+      51.3906,
+      30.0962
+     ]
+    ],
+    "minHeight": 10
+   }
+  },
+  {
+   "name": "Units 1 to 3 and the turbine hall",
+   "aka": [
+    "the power plant",
+    "Reactor 1",
+    "Reactor 2",
+    "Reactor 3",
+    "the turbine hall",
+    "the main building"
+   ],
+   "at": [
+    51.3893,
+    30.1045
+   ],
+   "model": "plant",
+   "hall": [
+    51.38868,
+    30.1001,
+    51.38914,
+    30.1088
+   ],
+   "hallH": 31,
+   "deaeratorH": 47,
+   "deaerators": [
+    [
+     51.38914,
+     30.1001,
+     51.38926,
+     30.1019
+    ],
+    [
+     51.38914,
+     30.1038,
+     51.38926,
+     30.1076
+    ]
+   ],
+   "units": [
+    {
+     "name": "3",
+     "base": [
+      51.38926,
+      30.1,
+      51.39,
+      30.1015
+     ],
+     "hall": [
+      51.38932,
+      30.10068,
+      51.38982,
+      30.10112
+     ],
+     "top": 71,
+     "stack": [
+      51.3893,
+      30.10022
+     ]
+    },
+    {
+     "name": "2",
+     "base": [
+      51.38926,
+      30.104,
+      51.3899,
+      30.1049
+     ],
+     "hall": [
+      51.38935,
+      30.10423,
+      51.38985,
+      30.10467
+     ],
+     "top": 71
+    },
+    {
+     "name": "1",
+     "base": [
+      51.38926,
+      30.10638,
+      51.3899,
+      30.10735
+     ],
+     "hall": [
+      51.38935,
+      30.10665,
+      51.38985,
+      30.10709
+     ],
+     "top": 71
+    }
+   ],
+   "blocks": [
+    {
+     "name": "B",
+     "at": [
+      51.38926,
+      30.1049,
+      51.38975,
+      30.10638
+     ],
+     "h": 30
+    }
+   ],
+   "transformers": [
+    [
+     51.38856,
+     30.1007
+    ],
+    [
+     51.38856,
+     30.10445
+    ],
+    [
+     51.38856,
+     30.10687
+    ]
+   ],
+   "clearArea": {
+    "poly": [
+     [
+      51.3886,
+      30.1
+     ],
+     [
+      51.3886,
+      30.1075
+     ],
+     [
+      51.3904,
+      30.1075
+     ],
+     [
+      51.3904,
+      30.1
+     ]
+    ],
+    "minHeight": 20
+   },
+   "_": "src/chernobyl/landmarks.js plant: laid out from the mapped footprints (the turbine hall's multipolygon, the units' and block B's outlines) in RBMK proportions; the map's own boxes for them are cleared",
+   "info": "The main building of the plant: four RBMK-1000 reactors in a row, units 1 and 2 to the east, 3 and 4 to the west, and the turbine hall, some 770 m long, running along all of them. Unit 4 exploded in 1986 and lies under the arch. The others went on working: unit 2 was shut after a fire in its turbine hall in 1991, unit 1 in 1996, and unit 3, the last, on 15 December 2000. They are being decommissioned; their fuel has been taken out.",
+   "chimneys": [
+    {
+     "at": [
+      51.39024,
+      30.10536
+     ],
+     "h": 50,
+     "r": 4.5
+    }
+   ]
+  },
+  {
+   "name": "Reactor 5's cooling tower",
+   "aka": [
+    "the cooling towers",
+    "units 5 and 6"
+   ],
+   "at": [
+    51.37744,
+    30.13281
+   ],
+   "model": "tower",
+   "r": 54,
+   "h": 150,
+   "built": 0.6,
+   "replace": [
+    "Недобудована градирня"
+   ],
+   "info": "Units 5 and 6 were being built when Reactor 4 exploded, and were never finished. Their two cooling towers stand in the forest south-east of the plant, open to the sky, with the climbing formwork still on one of them.",
+   "legs": 9,
+   "formwork": [
+    200,
+    110
+   ]
+  },
+  {
+   "name": "Reactor 6's cooling tower",
+   "at": [
+    51.37582,
+    30.13174
+   ],
+   "model": "tower",
+   "r": 54,
+   "h": 150,
+   "built": 0.25,
+   "info": "The second of the unfinished cooling towers: a ring of concrete only a few lifts high, left when work on units 5 and 6 was stopped.",
+   "legs": 9
+  },
+  {
+   "name": "The Ferris wheel",
+   "aka": [
+    "the amusement park",
+    "Pripyat's Ferris wheel"
+   ],
+   "at": [
+    51.40838,
+    30.05574
+   ],
+   "model": "wheel",
+   "r": 13,
+   "face": 0,
+   "replace": [
+    "Circular Overview"
+   ],
+   "info": "Pripyat's amusement park was to open on 1 May 1986, for the May Day holiday. The city was evacuated five days before. The yellow Ferris wheel, the dodgems and the swing boats stand where they were left, among the birches."
+  },
+  {
+   "name": "Duga",
+   "aka": [
+    "the Russian Woodpecker",
+    "Duga-3",
+    "Chernobyl-2"
+   ],
+   "at": [
+    51.30559,
+    30.06618
+   ],
+   "model": "duga",
+   "len": 540,
+   "h": 150,
+   "depth": 28,
+   "face": 323,
+   "info": "The receiving array of the Duga over-the-horizon radar, some 150 m high and half a kilometre long, built in the 1970s to see the launches of American missiles over the curve of the Earth. Its tapping on the short wave, ten times a second, was known to radio hams as the Russian Woodpecker. Silent since 1989.",
+   "clearArea": {
+    "poly": [
+     [
+      51.30452,
+      30.06358
+     ],
+     [
+      51.30428,
+      30.06387
+     ],
+     [
+      51.3072,
+      30.07008
+     ],
+     [
+      51.30744,
+      30.06978
+     ]
+    ],
+    "minHeight": 20
+   }
+  },
+  {
+   "name": "Duga's smaller array",
+   "at": [
+    51.30364,
+    30.06211
+   ],
+   "model": "duga",
+   "len": 270,
+   "h": 90,
+   "depth": 20,
+   "mast": 15,
+   "face": 323,
+   "info": "The smaller of Duga's two receiving arrays, for the higher frequencies.",
+   "clearArea": {
+    "poly": [
+     [
+      51.30302,
+      30.06038
+     ],
+     [
+      51.30277,
+      30.06068
+     ],
+     [
+      51.30426,
+      30.06384
+     ],
+     [
+      51.30451,
+      30.06355
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "The house with the coat of arms",
+   "aka": [
+    "the hammer and sickle"
+   ],
+   "at": [
+    51.40449,
+    30.05477
+   ],
+   "model": "emblem",
+   "size": 9,
+   "face": 0,
+   "info": "Two sixteen-storey blocks on Lesya Ukrainka Street carry the Soviet coat of arms in steel on their roofs. From their tops you can see the arch over the plant, 3 km away."
+  },
+  {
+   "name": "The house with the coat of arms (north)",
+   "at": [
+    51.40607,
+    30.05305
+   ],
+   "model": "emblem",
+   "size": 9,
+   "face": 0,
+   "info": "The second of the blocks with the Soviet arms on the roof."
+  },
+  {
+   "name": "The Wormwood Star",
+   "aka": [
+    "the Star of Wormwood",
+    "the angel"
+   ],
+   "at": [
+    51.27356,
+    30.22587
+   ],
+   "model": "angel",
+   "face": 180,
+   "info": "The memorial park in Chernobyl town, made for the 25th year (2011): a bronze angel blowing a trumpet, an avenue of the names of the towns and villages that were emptied, and the Book of Revelation's star called Wormwood (in Ukrainian, chornobyl is mugwort)."
+  },
+  {
+   "name": "The Palace of Culture Energetik",
+   "aka": [
+    "Energetik"
+   ],
+   "at": [
+    51.40685,
+    30.05645
+   ],
+   "info": "The Palace of Culture on Lenin Square, Pripyat's centre: a theatre, a cinema, a library, a gym and a boxing ring under one roof. Beside it the Hotel Polissya, whose roof looked over the plant."
+  },
+  {
+   "name": "Hotel Polissya",
+   "at": [
+    51.407,
+    30.05843
+   ],
+   "info": "The city's hotel on its central square, seven storeys, its rooftop letters still standing over the trees."
+  },
+  {
+   "name": "The Azure swimming pool",
+   "aka": [
+    "Lazurny"
+   ],
+   "at": [
+    51.40684,
+    30.04945
+   ],
+   "info": "The Azure (Lazurny) pool, with its diving tower: it stayed in use for the Zone's workers for years after the city was left."
+  },
+  {
+   "name": "The Avanhard stadium",
+   "at": [
+    51.41064,
+    30.05466
+   ],
+   "info": "Pripyat's stadium, opened shortly before the accident. Its pitch is now a forest of birch."
+  },
+  {
+   "name": "Jupiter factory",
+   "at": [
+    51.40264,
+    30.04121
+   ],
+   "info": "The Jupiter works: officially a maker of tape recorders and household goods, with work for the defence industry. After the evacuation it housed the Zone's research teams into the 1990s."
+  },
+  {
+   "name": "Hospital No. 126",
+   "at": [
+    51.40642,
+    30.06932
+   ],
+   "info": "The city hospital where the first firemen from the plant were brought on the night of the accident, before they were flown to Moscow."
+  },
+  {
+   "name": "The Bridge of Death",
+   "at": [
+    51.39493,
+    30.06948
+   ],
+   "info": "The railway bridge on the road between Pripyat and the plant. The story goes that people stood on it to watch the fire on the night of the accident; how many did, and what came of it, is not known."
+  },
+  {
+   "name": "The Red Forest",
+   "at": [
+    51.3835,
+    30.055
+   ],
+   "info": "The pine forest west of the plant took so much of the fallout that it died within days, turning red-brown. It was bulldozed and buried in trenches, and replanted; it is still among the most contaminated places in the Zone, and burned in the fires of 2020."
+  },
+  {
+   "name": "Kopachi kindergarten",
+   "at": [
+    51.35525,
+    30.12559
+   ],
+   "info": "The village of Kopachi, south of the plant, was so contaminated that its houses were bulldozed and buried. The brick kindergarten was left standing, its beds and dolls still inside."
+  },
+  {
+   "name": "The cooling pond",
+   "at": [
+    51.345,
+    30.165
+   ],
+   "info": "The plant's cooling pond, 11 km long, held above the level of the Pripyat by its dykes. It was let drain from 2014; most of its bed is now marsh, and its catfish are famous."
+  },
+  {
+   "name": "Chernobyl town",
+   "aka": [
+    "Chornobyl"
+   ],
+   "at": [
+    51.2735,
+    30.222
+   ],
+   "info": "The old town that gave the plant its name, some 15 km to the south-east. Its people were evacuated too, but the Zone's administration and the workers on their shifts live here; the church of St Elijah still holds services."
+  }
+ ],
+ "views": {
+  "Pripyat from the air": [
+   [
+    51.398,
+    30.044,
+    267.2
+   ],
+   [
+    51.4068,
+    30.0565,
+    18.7
+   ]
+  ],
+  "The arch over Reactor 4": [
+   [
+    51.3835,
+    30.0905,
+    66.6
+   ],
+   [
+    51.3893,
+    30.0988,
+    60.7
+   ]
+  ],
+  "The main building": [
+   [
+    51.3866,
+    30.1098,
+    50.9
+   ],
+   [
+    51.3893,
+    30.104,
+    35.0
+   ]
+  ],
+  "The Ferris wheel": [
+   [
+    51.4078,
+    30.0548,
+    12.0
+   ],
+   [
+    51.40838,
+    30.05574,
+    17.8
+   ]
+  ],
+  "Lenin Square and the Polissya": [
+   [
+    51.4058,
+    30.0568,
+    15.0
+   ],
+   [
+    51.407,
+    30.058,
+    20.4
+   ]
+  ],
+  "The plant from Pripyat's rooftops": [
+   [
+    51.40432,
+    30.055,
+    72.5
+   ],
+   [
+    51.3893,
+    30.0988,
+    50.7
+   ]
+  ],
+  "The unfinished cooling towers": [
+   [
+    51.373,
+    30.127,
+    36.7
+   ],
+   [
+    51.37744,
+    30.13281,
+    66.9
+   ]
+  ],
+  "Duga": [
+   [
+    51.302,
+    30.06,
+    51.9
+   ],
+   [
+    51.30559,
+    30.06618,
+    95.2
+   ]
+  ],
+  "The Red Forest": [
+   [
+    51.378,
+    30.05,
+    88.0
+   ],
+   [
+    51.386,
+    30.065,
+    6.1
+   ]
+  ],
+  "The Wormwood Star": [
+   [
+    51.2733,
+    30.2256,
+    26.1
+   ],
+   [
+    51.27356,
+    30.22587,
+    25.5
+   ]
+  ],
+  "The Zone from the south": [
+   [
+    51.29,
+    30.13,
+    918.1
+   ],
+   [
+    51.385,
+    30.09,
+    6.6
+   ]
+  ]
+ },
+ "defaultView": "Pripyat from the air",
+ "navmap": {
+  "labels": [
+   "The New Safe Confinement",
+   "Units 1 to 3 and the turbine hall",
+   "The Ferris wheel",
+   "Duga",
+   "The Wormwood Star",
+   "Reactor 5's cooling tower",
+   "The Palace of Culture Energetik",
+   "The Azure swimming pool",
+   "The Red Forest",
+   "Kopachi kindergarten",
+   "The Bridge of Death",
+   "Chernobyl town",
+   "The cooling pond"
+  ]
+ },
+ "commuterLines": 0,
+ "dropAreas": [
+  "parking"
+ ],
+ "treeDense": {
+  "wood": 24,
+  "reserve": 0
+ },
+ "streetFurniture": false,
+ "unit4": {
+  "at": [
+   51.38957,
+   30.09909
+  ],
+  "_": "src/chernobyl/unit4.js: unit 4 before the accident, after the explosion, and cut away to show the RBMK; the Unit 4 button, #unit4=before|explosion|cutaway",
+  "info": {
+   "before": "Unit 4 as it stood on the night of 25 April 1986: an RBMK-1000, started up in December 1983, the newest of the four. Its reactor hall rises to 71 m over the reactor; the turbine hall runs along the south, shared with the other units. On block V between units 3 and 4 stands their ventilation stack, VT-2, 150 m high, its steel lattice banded red and white. The stack survived the explosion, stood over the ruin and the Shelter for 27 years, and was taken down in 2013.",
+   "explosion": "Unit 4 on the morning of 26 April 1986. The explosions threw off the upper biological shield, which fell back almost on edge across the reactor shaft, and destroyed the reactor hall and the north side of the block. Burning graphite and fuel were thrown across the turbine hall's roof and the ground round the unit, and the fires on the roofs were out by about 5 in the morning; the graphite in the core burned for some ten days.",
+   "cutaway": "The RBMK-1000: a water-cooled, graphite-moderated channel reactor. 1,661 fuel channels and 211 control rods run through a cylinder of graphite blocks 11.8 m across and 7 m high. Water boils as it rises through the channels; the steam is separated in four drums and goes to two turbines of 500 MW each, and eight main circulation pumps send the water back. Its positive void coefficient, and the graphite displacers below its control rods, were at the heart of the accident."
+  }
+ },
+ "radiation": {
+  "_": "src/chernobyl/radiation.js: dose rate today in microsieverts an hour, an approximation from published maps (not a survey); sources [lat, lon, peak, sigma along, sigma across (m), bearing of the long axis, name]",
+  "background": 0.12,
+  "centre": [
+   51.38955,
+   30.09909
+  ],
+  "ringLabelAt": 200,
+  "sources": [
+   [
+    51.3895,
+    30.0991,
+    6,
+    220,
+    220,
+    0,
+    "the plant site round unit 4"
+   ],
+   [
+    51.3835,
+    30.045,
+    18,
+    1800,
+    700,
+    90,
+    "the Red Forest"
+   ],
+   [
+    51.383,
+    30.034,
+    40,
+    500,
+    280,
+    90,
+    "the Red Forest's hottest ground"
+   ],
+   [
+    51.388,
+    30.03,
+    2.5,
+    5000,
+    1200,
+    280,
+    "the western trace"
+   ],
+   [
+    51.43,
+    30.07,
+    1.2,
+    4000,
+    1500,
+    345,
+    "the northern trace"
+   ],
+   [
+    51.4065,
+    30.0555,
+    0.6,
+    1300,
+    1300,
+    0,
+    "Pripyat"
+   ],
+   [
+    51.40669,
+    30.06597,
+    30,
+    25,
+    25,
+    0,
+    "hospital MSCh-126, its basement"
+   ],
+   [
+    51.3554,
+    30.1256,
+    2.5,
+    300,
+    300,
+    0,
+    "Kopachi"
+   ],
+   [
+    51.37,
+    30.13,
+    0.8,
+    2500,
+    1500,
+    30,
+    "the drained cooling pond"
+   ]
+  ],
+  "checkpoints": [
+   [
+    51.29792,
+    30.18778,
+    "Leliv checkpoint (10 km zone)"
+   ],
+   [
+    51.40011,
+    30.06371,
+    "Pripyat checkpoint"
+   ]
+  ]
+ },
+ "details": {
+  "_": "src/chernobyl/details.js: the 1986 button; the catfish of the inlet channel; Kopachi's buried houses",
+  "catfish": {
+   "at": [
+    51.38624,
+    30.10565
+   ],
+   "r": 12,
+   "n": 7
+  },
+  "kopachi": {
+   "at": [
+    51.3554,
+    30.1256
+   ],
+   "r": 420,
+   "max": 60
+  },
+  "channels": {
+   "names": [
+    "Подводящий канал 1, 2 и 3 очереди",
+    "Подводящий канал 3 очереди",
+    "Отводящий канал 1 и 2 очереди"
+   ],
+   "over": 0.6
+  }
+ }
+}

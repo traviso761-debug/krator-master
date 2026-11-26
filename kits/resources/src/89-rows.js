@@ -10,5 +10,23 @@ const FAMILIES=[
  {name:'Coal',keys:['node-coal-low','node-coal-medium','node-coal-high']},
  {name:'Sulfur',keys:['node-sulfur-low','node-sulfur-medium','node-sulfur-high']},
  {name:'Saltpeter',keys:['node-saltpeter-low','node-saltpeter-medium','node-saltpeter-high']},
+ {name:'Potash (the Catch)',keys:['node-potash-low','node-potash-medium','node-potash-high']},
+ {name:'Alkali salts (the Catch)',keys:['node-alkali-low','node-alkali-medium','node-alkali-high']},
  {name:'Oil (a derrick works it)',keys:['node-oil-low','node-oil-medium','node-oil-high']}
 ];
+/* the geology bake's evaporite rings (2026-10-26): gypsum at a closed basin's rim, rock salt inside it */
+FAMILIES.push({name:'Gypsum (a salt basin rim)',keys:['node-gypsum-low','node-gypsum-medium','node-gypsum-high']},
+ {name:'Rock salt (halite)',keys:['node-halite-low','node-halite-medium','node-halite-high']});
+/* the new rocks' kinds (2026-11-03, REBAKE-PLAN.md R3) */
+FAMILIES.push({name:'Nickel ore (the melt sheet\'s margin)',keys:['node-nickel-low','node-nickel-medium','node-nickel-high']},
+ {name:'Marble (a quarry)',keys:['node-marble-low','node-marble-medium','node-marble-high']});
+/* zinc (2026-11-12, biomes/galvanic) */
+FAMILIES.push({name:'Zinc ore (sphalerite)',keys:['node-zinc-low','node-zinc-medium','node-zinc-high']});
+/* the gems (2026-11-16: the Coyote Men's exports) */
+FAMILIES.push({name:'Emerald (pegmatite and Muzo shale)',keys:['node-emerald-low','node-emerald-medium','node-emerald-high']},
+ {name:'Turquoise (copper weathered dry)',keys:['node-turquoise-low','node-turquoise-medium','node-turquoise-high']});
+/* the mined goods of Gemini's trade model (2026-11-16, 42s and 44s-44u) */
+for(const [k,n] of [['lodestone','Lodestone (magnetite)'],['peat','Peat (a bog cut)'],['silica','Quartz sand (a sand pit)'],
+ ['quartz','Rock crystal (a quartz reef)'],['alabaster','Alabaster (a quarry)'],['bitumen','Bitumen (a pitch lake)'],['opal','Opal (boulder opal)'],
+ ['diamond','Diamond and garnet (a paleoplacer)'],['jade','Jade (a serpentinite contact)'],['amber','Amber (the blue earth)']])
+ FAMILIES.push({name:n,keys:['low','medium','high'].map(g=>'node-'+k+'-'+g)});

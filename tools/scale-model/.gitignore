@@ -1,0 +1,4 @@
+# the built page (the artifact is the published copy) and saved copies of the live page
+model/dist/
+krator-scale-model-*.html
+__pycache__/

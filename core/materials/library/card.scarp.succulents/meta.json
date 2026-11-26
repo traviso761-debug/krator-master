@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 40,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "none"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.scarp.succulents",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.scarp.succulents.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.scarp.succulents\"",
+  "reuse": "the SW highlands dry east scarp: arrowheads (top row), coral melon (middle), star-fruit caudex (bottom)",
+  "sha1": "65eda11c7007d5ecac0dba54f11af82354c11dbc"
+ }
+}

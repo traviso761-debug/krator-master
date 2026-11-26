@@ -10,7 +10,7 @@ harmless way. Settled the same day: the floor takes **nwlowlands flora adapted t
 abyss's, which is too far away to share it), led by a **hyperbamboo**; the warp's ideas (combed growth, fixed sizes,
 clean bites, straight ranks, echoes, the compass) were approved; a detailed plan was asked for.
 
-**Status: plan, awaiting the owner.** The kit does not decide what the eigenweapon was, who fired it or at what
+**Status: building (2026-10-26, branch `claude/cut-biome-75af1e`); the owner's decisions of that day are in section 11.** The kit does not decide what the eigenweapon was, who fired it or at what
 (`LORE.md` §12 keeps that open).
 
 ## 0. What the kit is
@@ -174,13 +174,13 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
    echoes at dusk, the cutters' camp.
 2. **The wall** (`-wall`, on Dilihan's side of the crater mouth, r 50-60 km): nwlowlands' columns leaning along the
    field, terraces of measure melons, the curve of the bowl seen across, the city below.
-3. **The cut face** (`-face`, about px 427,302: the west lip, ~5,100 m, about -2 °C): the bare curved face, circle
+3. **The cut face** (`-face`, about px 427,302: the west lip, ~5,100 m on 4.21, ~4,940 m on map 5.1, about -2 °C): the bare curved face, circle
    lichen, the warp fading out into nhighlands' normal forest on the mountain above, the whole bowl below.
 
 ## 9. The mouth, the shape, the heat
 
 1. **The north mouth** (settled 2026-10-23): cut on the model in 4.22, on bearings ~345-15°, the bowl's curve continued
-   north to a sill at the lowlands' own level, 700 m, on the lip's line (px 460,262), the pass floor running on at ~670-700
+   north to a sill at the lowlands' own level, 700 m (666 m on map 5.1), on the lip's line (px 460,262), the pass floor running on at ~670-700
    m to the lowland slope at px 460,225, ~30 km wide there; Jimjam's lake does not drain in, and the pass drains north to
    Jimjam's river (with the divide at the lowland end the bowl took the ridge's north flank and its lake spread over the
    floor). The pass road runs from
@@ -212,8 +212,158 @@ atm 2), `walls` (warmth [3, 4], arid [2, 3], atm 1), `lip` (warmth [1, 2], arid 
 - **C5.** Stations 2 and 3, the cut faces (with the strata module if it has landed).
 - **C6.** The crops; `verify.py --assert`; `PORT.md`; the gallery (a new biome); Dilihan's plan switched to read this kit.
 
+**Where it stands (2026-10-26, branch `claude/cut-biome-75af1e`).** C0: the lore settled (section 11), the texture prompt
+for the face written and delivered (`rock.cut.polished`), the four other sets already in the library; the north mouth and the
+4.22 floor are on the model. C1: done (`src/41-cut-field.js`, `tests/test-cut.js`). C2, C3: done (station 1). C4: the echoes
+(the hyperbamboo's), the compass (the page's needle, `CUT.north`), the camp: done. C5: stations 2 and 3: done, without the strata
+module (not landed). C6: the crops (`kits/crops`, a `cut` biome and five records), `verify.py --assert` and `PORT.md` done; the
+gallery and Dilihan's plan switched to read this kit are left (`KNOWN_ISSUES.md`), with what the warp does not yet reach.
+
 ## Textures
 
 Reuse `bark.bamboo.jade` (the hyperbamboo's culms, scaled up), `ground.salt`, `ground.efflorescence` and the NW lowlands'
 sets. To generate: `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `rock.lichen.circles`
 (`core/materials/PROMPTS-NEEDED.md` section 10, 2026-10-23).
+
+## 11. Decisions of 2026-10-26 (the owner, at the build)
+
+- **The lore (C0, section 9): both.** The bowl is the bottom of a sphere some 500-1,300 km across, centred in orbit: an
+  orbital detonation or a deletion projected from orbit. And the second story: the same sphere took a column of air, and
+  the atmosphere falling into the void was heard and felt across the crater. `LORE.md` §6.2's "the sphere's lower half"
+  becomes "the bottom of the sphere"; that edit is made on `main` (the lore file is not this kit's), with this note as
+  its source.
+- **The cutters' camp: props only**, tagged so a future Dilihan kit (an Iziz vassal kit on `settlements/iziz/VASSAL-KITS.md`)
+  can take them over: every prop is a core/tags record with `culture:'iziz'`, `style:'dilihan'`, `role:'placeholder'`,
+  `job:'carpentry'` and its kind in `variant` (culm stack, drying rack, lean-to, hearth), registered before it is drawn.
+- **The cut face: a new set**, `rock.cut.polished`, prompted and delivered the same day (in the library: bedded rock
+  sawn smooth, full colour).
+- **Scope: all three stations** this session (C1-C6, the gallery left to `main`).
+
+## 12. Exchanges with the neighbours (the owner, 2026-10-26: for the final biome rebuild)
+
+Two species each way with the crater drylands and the northern highlands, each where the two biomes meet on the model, each
+showing the warp (or its absence). Every species stays in its home kit; the neighbour reads it in place under its own mask
+(`biomes/WORLD.md`), as the Cut reads nwlowlands and nhighlands today. **Settled:** the measure melon's three sizes and its stuck
+share **breed true outside the bowl** (the owner: that is why Dilihan's measures hold in the crater too). **The crater drylands' half is
+its northern region only** (the owner, 2026-10-26: `rmuqlfgh1u6d8`, north and west of the Throne, the one the crater mouth opens
+into); the southern region (`rmuqlgonah5tp`, south of the volcano) neither sends nor takes these species. Not built yet: they go
+into the final rebuild, after the shared-sky rebuild of both neighbours has merged.
+
+| # | Species (home kit) | Into | Where | What it shows |
+|---|---|---|---|---|
+| 1 | Tree aloe (`crater-drylands`) | the Cut | the salt steppe's edge (station 1) and the wall's BWh patches (station 2) | where s > .5 its spiral rosettes grow as flat two-ranked fans (as *Aloe plicatilis*): the straight ranks on a succulent |
+| 2 | Parasol pine (`crater-drylands`) | the Cut | the dry wall about the crater mouth (station 2) | its long fire-proof column makes the comb plain: whole stands leaning one way, crowns stretched along the field, three height steps |
+| 3 | Rankgrass (`cut`) | the crater drylands (north) | the salt pans and seeps near the mouth | outside the field it seeds as an ordinary salt grass; the ruled rows fade with distance from the mouth |
+| 4 | Measure melon (`cut`) | the crater drylands (north) | feral on the seeps along Dilihan's road | still three sizes and its stuck share (it breeds true); a crop of the northern crater's farms through `kits/crops` (`home` gains `crater-drylands`, its note naming the northern region) |
+| 5 | Rowan (`nhighlands`) | the Cut | the upper walls' gullies, 64-72 km out (Csa to Dsc) | the stuck fruit: clusters set small and green beside the ripe red ones |
+| 6 | Great trumpet (`nhighlands`) | the Cut | the walls' ravines, with the hyperbamboo | where the ranks apply its colonies stand in straight rows of fixed sizes, like organ pipes; its glowing bell-bulbs beside the dusk echoes |
+| 7 | Circle lichen (`cut`) | the northern highlands | the crag pillars and boulder fields | away from the warp an ordinary map lichen: round-ish, irregular, touching and merging; the perfect circles only near the lip |
+| 8 | Ring reeds (`cut`) | the northern highlands | the tarns and stream mouths (*Phragmites* takes the cold) | an ordinary reed bed outside the field, no bands |
+
+The work: 1, 2, 5 and 6 are lists in this kit (the stations' allow lists for read-in kits, with `crater-drylands` read in place
+on the wall station, its pack a sidecar); the warp does the rest. 3, 4, 7 and 8 are additive reads of `src/50-biome-cut-species.js`
+(and 55/57's planners) by those two kits' pages, each under its own mask (on the crater drylands, a mask of its northern region only), with a flag that turns the warp's traits off where
+s is 0 (rankgrass's rows, the lichen's spacing, the reeds' bands), never the melon's sizes. `CROPS` gains the melon's
+`crater-drylands` home. Each exchange gets a host check on the page that receives it (the aloe's fans only where s > .5; the
+melon's three sizes in the crater; no ruled rows past the mouth; the lichen's circles touching away from the lip).
+
+**Done on the northern highlands' side (2026-10-26, the final rebuild's test bed):** exchanges 7 and 8. `biomes/nhighlands/build.py`
+reads this kit's `41`, `50`, `55`, `57` and `70` by path (renamed `71a`-`71e`, after its own kit closes) and the pack's `reed` sheet;
+`biomes/nhighlands/src/87-host-cut.js` draws them with the warp off through two new planners here, `CUT.planLichenPlain` (`57`: the
+pillars by rays at the drawn rock, the crag faces) and `CUT.planReedBed` with `CUT.drawReeds` (`55`: the tarn's margin, the stream's
+slack pools), with host checks both ways (`CUT.checkLichenPlain`: thalli touching, none nested; `CUT.checkReedBed`: no bands). The
+ring reed's climate tag widens to `hypertropic..cold` (Phragmites takes the cold). The crater drylands' two (3, 4) are still to do.
+
+## Core adoption (written before the first fragment, 2026-10-26)
+
+The nearest finished builds: `biomes/korona` (stations, other kits read in place under a mask, core/water) and
+`biomes/swbay` (the shared sky, `ATMOS.cloudShade`). `build.py` starts from Korona's; the sky from swbay's.
+
+| Module | Taken | For |
+|---|---|---|
+| `core/biome` (`CORE_BIOME`) | yes | the kit contract, items, buckets, bake, runtime LOD, export; the nwlowlands and nhighlands kits read in place on it |
+| `core/host` (`CORE_HOST`) | yes | camera, loop, clock, panel, inspector, polygon tool, probe (`99-host-take.js` hands it each station) |
+| `core/rand` (`KRAND`) | yes | every draw of this kit's own: the natives, the camp, the bites, the echoes, the size steps, each seeded by a hash of (world, cell, index, salt). The read-in kits keep their own streams |
+| `core/tags` (`KTAGS`) | yes | every plant and prop registered before it is drawn (`BIO.init({tags:'cut'})`), the camp's placeholder tags |
+| `core/atmos` | yes | `ATMOS.bindHost`; **the shared sky** (`core/atmos/sky`, `89-atmos-h-skyhost.js`) at the Cut's pixel, the bowl's walls as **ridge profiles cast from the kit's own bowl model** (`CUT.horizon`), the dense air; `ATMOS.cloudShade`; the weather binding (`ATMOS.bindWeather`) for the afternoon storms (section 6) |
+| `core/water` | yes | the lakes as `WATER.open` (station 1), the wall's terrace channels none; the face none (a kit-level check: every station page has a core/water record, as Korona's) |
+| `core/terrain` | yes | `38-core-relief.js` (`KRELIEF`) for the face's stamp where the smooth sweep meets the broken mountain (station 3); `36-core-carve.js` for the bitten boulders. **Not** the strata module (`STRATA-PLAN.md`): not landed |
+| `core/space` (`KSPACE`) | yes | the natives' keep-clear (groves, melon terraces, the camp) through the biome core's `BIO.clearOf` and its index |
+| `core/mask` (`KMASK`) | no | nothing reads a canvas: every mask is a function of the bowl model and the fields |
+| `core/materials` | yes | the library through `materials.json` and `tools/textures/pack.py`: `bark.bamboo.jade`, `card.bamboo.giant`, `card.rankgrass`, `card.crop.melon`, `rock.lichen.circles`, `ground.salt`, `ground.efflorescence`, `rock.cut.polished` (the faces); the read-in kits' own packs as sidecars |
+| `core/export` | yes | `BIO.export()` (the export profile in `verify.py --assert`) |
+| `core/clock` | yes (through core/host) | the hour for the echoes (dusk) and the sky |
+| `core/lod`, `core/minimap` | no | the biome core's runtime LOD does the work, as in every biome kit; no minimap on a biome page |
+| `core/city`, `core/hamlet`, `core/simulation`, `core/furnish` | no | a biome kit: no town (the camp is props for Dilihan's kit) |
+
+The kit's own data side (`[G data]`, `src/50-biome-cut-field.js`): the bowl model (the radial profile on the 4.22
+survey, the lip by bearing, the two lakes), `CUT.field`, the warp's transforms (lean, stretch, size steps, bites, echoes,
+ranks) and `CUT.north`. No three.js, no DOM: `tests/test-cut.js` runs it in node.
+
+## Core adoption (pair 10, the final rebuild, 2026-11-04)
+
+Written at the turn (`HANDOFF-REBUILD.md`, "How step 3 runs"; `BACKPORT.md`'s universal set and the Cut's row). A cloud session with no GPU: the pages
+were checked in software GL (`verify.py --assert`, a few views each, below); the coordinator runs `--assert --all-views` on the GPU. nhighlands' pair-7
+rebuild (`claude/rebuild-nhighlands-cloud`) is merged into this branch first (a fast-forward), so the face and the wall read its rebuilt species.
+
+| Module | Taken | How | Switch |
+|---|---|---|---|
+| `core/biome` 31b, 31j, 33, 33b, 34, 41, 44 | yes | what the read-in kits' rebuilt species call for: their leaf sets, **`BIO.flareJoin`** at limb joints (nwlowlands and nhighlands flare where a page lists `31j`), the fungoid parts, the octahedral **impostors** of their far trees, `BIO.env` | none (the read-in kits' own) |
+| `BIO.bamboo` (33b) | yes | the hyperbamboo's culms (three tiers, three bitten, the echo) are `BIO.bamboo.culm`, vertex for vertex the old `G.culm` (`node core/biome/test-bamboo.js`); `G.culm` stays as the test's reference and the fallback for a page without 33b (nhighlands) | none |
+| `KGROUND` (43) | yes | the ground's four library layers per station, hex-tiled, distance-scaled, blended by height; the same weights, strengths and tints as the page's own mix | `?kground=0` the old anti-tiled mix |
+| `KFAR` (44) | yes | the far bowl (the bowl's own heights and paint to 120 km) on core's lattice, 37k vertices, fog thinned to .85 | `?kfar=0` the first build's polar skirt |
+| `KHORIZON` (45) | yes | baked over the page and the whole bowl (rays to 70 km): the walls' shadow crosses the floor at a low sun, the lip's crest shades the face; the face's own ground is kept out (it went near black under it: `KNOWN_ISSUES.md`) | `?horizon=0`, `=ground`, `=scene`, `=all` |
+| `KSTRATA` (35) | yes, the face | the bake puts the west lip in the `impact` province (impactite 255 at px 427,302), so the polished section is the crater wall's **megabreccia** sawn flat (a page recipe at 22 m blocks, 2.6 m nested, no wash or dust), `rock.megabreccia` the grain; `ROCK-PROPOSAL.md` "Where the biomes must change" 1 | `?strata=0` the level beds |
+| `KSHADOW` (core/shadow) | attached **off** | the owner (2026-11-03): toggleable and off by default. core/shadow has no off-at-load switch yet, so the page attaches it only when asked; the texture-unit rule (the Throne's) kept | `?shadow=1` turns it on |
+| `KWARP` (`KHOOK.warp`) | attached **off** | the field felt as a faint travelling ripple along its own axis (spokes or rings), amplitude .45 m x s, gone within metres of the eye; the warp proper stays placement | `?bend=1` turns it on |
+| `core/water` 56, 57, 58, 60, 61 | yes | the lake **without surf or breakers**; the creek's water (a `WATER.flow`; its bed was carved but dry since the first build) and its **plume** into the lake (`tintFlow`); **`WATER.mirrorSwitch`** on the lake or a station's pool, off at load; the trees against the water's own shore (`WATER.fields`, `edgeAudit`, a host check with its negative) | `?plume=0`, `?mirror=probe|live` |
+| `core/atmos` height fog, rain cover, lightning | yes | section 6's first lines: mist pooling on the lake and the floor's hollows at dawn (station 1: below 8 m over the water), a broken cloud band on the walls (3.6-4.6 km); no rain under the crowns; the weather's puddles in the floor's hollows (`WATER.hollows`) | the weather selector |
+| `check_cells` | 0 faults | the Cut's slots; the read-in kits' packs are their turns' | |
+| `KSTACKS`, KCARVE cave mouths, seasons, fog belt | no | the cut is the one smooth thing on Krator (section 5): no stacks or caves on the face; the floor's hothouse has no deciduous season; the height fog's band is the walls' cloud | |
+
+**The exchanges (section 12).** 5 and 6 are built: the **great trumpet** on the wall station, nhighlands read in place there for it alone, its colonies
+down the ravine beside the hyperbamboo (the wall's s is .2, so the plan's organ-pipe ranks, which need s > .5, do not show: nothing on the Cut's three
+stations stands both in a ravine and in the strong warp); the **rowan** on the face station, thinly: the lip there stands at 66 km, inside the plan's
+64-72 km ring, so the rowans nhighlands grows just past it are the exchange's, and they take **the stuck fruit** (`warpKit`'s new `stuck`: a share
+`CUT.STUCK` of the berry clusters of the trees in the ring, by the 2 m cell, small and green). Inside the lip the page is all bare face (its grade is ~.5
+to the page's edge), so none grow there, and at 4.9 km the lip is boreal, where nhighlands places few rowans (four on the page); the plan's Csa-Dsc
+gullies want a station on the upper walls (the owner's call). `warpKit` also gained `allowAt` (a kept species taken back where a station does not want
+it), unused now. Each has a host check and a negative. 1 and 2
+(the tree aloe and the parasol pine, from the crater drylands) wait for the crater drylands' turn (pair 12); 3 and 4 are that turn's. 7 and 8 are on
+nhighlands (pair 7).
+
+**Map 5.1** (`biomes/STATIONS-MAP-5.1.md`, "Small checks"): the north sill is 666 m (it was 700), the west lip at the face 164 m lower (4,936 m); both in
+`41-cut-field.js`'s lip table. The floor and the lakes are within 100 m (no change).
+
+**Fixed on the way.** The hyperbamboo's leaf sprays switched LOD 50 m apart from their culms (the core guard's "one LOD key per tree": 43% of the sprays);
+their tiers now switch at the culms' distances. No read-in tree stands in the creek's water.
+
+**Readers of this kit** (nhighlands, exchanges 7 and 8, reads `41`, `50`, `55`, `57`, `70`): `41`'s lip table (5.1's numbers), `50`'s culm defs (on
+`BIO.bamboo` when the page has it, else `G.culm`: the same vertices) and `55`'s spray tiers changed; nhighlands draws none of the groves, so its pages
+move by source bytes only, and they are rebuilt here.
+
+## Fauna (proposed 2026-11-11, awaiting the owner)
+
+Drawn by `kits/fauna` and tagged by biome (`biomes/README.md`, "A fauna kit"); placed by `FAUNALANDS` (`kits/fauna/fauna-lands.js`).
+The brief (`kits/fauna/BIOME-FAUNA-PLAN.md`): two grazers, a predator, a flyer and a water creature, with **at least one animal
+found nowhere else**. **New** = to be built in the kit; *shared* = an existing key that also gets this biome's tag, because its
+range plausibly runs across the border. Nothing here is built.
+
+| Role | Animal | Status | Where | Why it is here |
+|---|---|---|---|---|
+| grazer | **chamber climber** | **new, unique** | the hyperbamboo groves on the lakes' shores and in the ravines | a six-limbed climber (`faWdHex`, `amb`, `hands`, `climbs`, centaur gait) the size of a large dog that feeds on hyperbamboo shoots and young culms and **nests in the culms the warp bit open** (section 3, clean bites): a bitten culm with its chambers showing is a den. Because the internodes are all one length, its climbing stride is too: a grove's climbers move in step |
+| flyer | **lodestar moth** | **new, unique** | the floor and the walls, at dusk | a moth with a 1 m span that flies **straight along the field's axis** (radial in one ring, round in the next, section 3) and swarms the dusk echoes. A swarm draws the field's spokes and rings in the air. Built as one of the hyperjungle file's moths with a new heading rule |
+| grazer | *lowland-aurochs*, *swift-pronghorn* | shared (nwlowlands) | the walls' Cfa and the floor's forest strips; the pronghorn on the rankgrass flats | the floor and walls already read nwlowlands' flora |
+| grazer | *ridge-ibex* | shared (nhighlands) | the lip | |
+| predator | *red-dire-fox* | shared (nwlowlands) | the floor and the walls | |
+| flyer | *marsh-harrier* | shared (nwlowlands) | the ring reeds round the lakes | |
+| water | *giant-catfish*, *marsh-strider* | shared (nwlowlands) | the hot lakes (+35-39 °C) and their reed margins | the catfish takes warm, still water |
+
+**The warp on animals** (an extension of section 3, mostly harmless like the plants'; a shared hook in `kits/fauna`, which the Ancients'
+Valley's mutant variants also want, `biomes/ancientsvalley/PLAN.md`): where `s` > 0.3 **a group's members snap to one of the three
+size steps** (0.7, 1.0, 1.4: a herd all of one size), where `s` > 0.5 **resting animals face along the axis** (a herd lying down reads as a
+compass rose), and a share of young **stay young** (the stuck fruit's animal twin: adult behaviour at juvenile size). Every rule is a
+transform on `FAUNALANDS.plan`'s records, plain arithmetic on `CUT.field`, no per-frame cost.
+
+## Scale-Model 5.1 Dilihan Contact-Marble Binding (`2026-11-13`)
+- **Inner-Wall Contact Belt at Dilihan (`5.1 px 744, 663`):** Where the northwestern Inner Rim ring-fault and the Cut's deep-seated mafic dikes intersect intracrater limestone benches around **Dilihan** (`744, 663`, between `Tethis` `733, 775` and `Roketstad`), wall scarps and quarry benches expose `KSTRATA` **`contact-marble`** (`core/terrain/35-core-strata.js` — `4–8 m` massive white-to-blue-veined calcite/dolomite marble with dark epidote-garnet-magnetite skarn selvages and crisp `sheen` fracture faces), providing Iron Republic / Dilihan stone-works with high-grade dressed marble and magnetite skarn iron alongside the upper rim's `megabreccia`.

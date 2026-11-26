@@ -62,14 +62,15 @@ function youngCane(x,y,z,lv,st){const S=SWLOW.SPECIES[4],n=ri(2,4);
   frondCrown(px,y+h,pz,rr(1.2,2),ri(3,5),-.8,-.2,leafCol(S.leaf,1.4),'palmfrond');}st.canes++;}
 function iris(x,y,z,lv,st){const h=rr(.7,1.2);tuft('spike',x,y,z,h,h*.6,leafCol(PAL.reed,1.35,.03));if(lv>=1)blooms(x,y+h*.75,z,.35,ri(2,4),PAL.iris,[.14,.24],.25);st.iris++;}
 function reed(x,y,z,lv){const h=rr(1.4,2.8)*(lv===0?1.5:1),n=lv===2?ri(2,4):1;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,2):0;tuft('reed',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(PAL.reed,1.35,.025));}}
+ /* a clump's outer tufts follow the ground under them (2026-11-03: on the hill river's steep 2 m banks one height for the clump buried or floated them) */
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,2):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;tuft('reed',px,d?y+Y(px,pz)-Y(x,z):y,pz,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(PAL.reed,1.35,.025));}}
 function sedge(x,y,z,lv,set){const h=rr(.5,1.1)*(lv===0?1.5:1);tuft('grass',x,y,z,h,h*1.3,leafCol(set||PAL.grassGreen,1.35,.03));}
 function grassTuft(x,y,z,lv,set,hk,k){const h=rr(.5,1.1)*(hk||1)*(lv===0?1.6:1),n=lv===2?(k||ri(2,4)):1;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.5,1.8):0;tuft('grass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.4,leafCol(set,1.3,.03));}}
 function azalea(x,y,z,lv,st){const Rs=shrub(x,y,z,lv,PAL.shrub,.8);if(lv>=1)blooms(x,y+Rs*.6,z,Rs*.9,lv===2?ri(10,18):5,PAL.azalea,[.2,.34],Rs*.6);st.azaleas++;}
 function yucca(x,y,z,lv,st){const h=rr(.8,1.4);tuft('spike',x,y,z,h,h*1.3,leafCol(PAL.agave,1.3,.02));
  if(lv>=1&&rng()<.5){const sh=rr(2.5,4.5),c=C(pick(PAL.cream));BIO.beam('rod',[x,y+h*.4,z],[x,y+sh,z],.05,.035,rodCol(0x7a6a4a));
-  for(let j=0;j<(lv===2?ri(22,34):8);j++){const yy=y+sh*rr(.5,1),a=rr(0,TAU),d=(y+sh-yy)*.28+.12;BIO.put('bloom',[x+Math.cos(a)*d,yy,z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.2,.32),bright(c,1.15));}}st.yuccas++;}
+  for(let j=0;j<(lv===2?ri(22,34):8);j++){const yy=y+sh*rr(.5,1),a=rr(0,TAU),d=(y+sh-yy)*.12+.06;BIO.put('bloom',[x+Math.cos(a)*d,yy,z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.2,.32),bright(c,1.15));}}st.yuccas++;}
 function mullein(x,y,z,lv,st){const h=rr(1.2,2.4),c=C(pick(PAL.mullein));BIO.put('rosette',[x,y,z],qEuler(0,rr(0,TAU),0),[.45,.3,.45],leafCol(PAL.sage,1.1));
  if(lv>=1){BIO.beam('rod',[x,y,z],[x,y+h,z],.04,.03,rodCol(0x8a9a78));for(let j=0;j<(lv===2?12:5);j++){const yy=y+h*rr(.35,1),a=rr(0,TAU);BIO.put('bloom',[x+Math.cos(a)*.08,yy,z+Math.sin(a)*.08],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.1,.16),bright(c,1.1));}}st.spikes++;}
 function aloe(x,y,z,lv,st){const h=rr(.5,.9);tuft('spike',x,y,z,h,h*1.5,leafCol(PAL.agave,1.25,.02));
@@ -88,7 +89,7 @@ function boulder(x,y,z,lv,set,st){const n=lv===2?ri(1,3):1,Rb=rr(.8,2.6);
   BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set));st.boulders++;}}
 function lily(x,z,lv,st,dense){const w=BIO.waterH(x,z),t=rng(),R=rr(.35,1.1);
  BIO.put('pad',[x,w+.04,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[R,1,R],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;
- if(lv===2&&rng()<.18)BIO.put('bloom',[x+rr(-.3,.3)*R,w+.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
+ if(lv===2&&rng()<.18)BIO.put('padbloom',[x+rr(-.3,.3)*R,w+.2,z+rr(-.3,.3)*R],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),rr(.22,.4),bright(rng()<.6?C(0xf6f0e0):C(0xf4c0d0),1.1));
  for(let k=0,m=dense?ri(2,5):(rng()<.3?1:0);k<m;k++){const R2=R*rr(.5,1),a=rr(0,TAU),d=R*rr(1.3,2.6);BIO.put('pad',[x+Math.cos(a)*d,w+.035,z+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[R2,1,R2],bright(vary(pick(PAL.pad),.03,.1,.06),1.05));st.lilies++;}}
 function hyacinth(x,z,lv,st){const w=BIO.waterH(x,z);for(let k=0,m=ri(2,5);k<m;k++){const px=x+rr(-.8,.8),pz=z+rr(-.8,.8),R=rr(.25,.45);BIO.put('pad',[px,w+.08,pz],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[R,1,R],bright(vary(pick(PAL.aroid),.03,.1,.06),1.15));}
  if(lv>=1)blooms(x,w+.1,z,.6,ri(3,7),PAL.hyacinth,[.14,.24],.45);st.lilies++;}
@@ -104,6 +105,35 @@ function log(x,y,z,st,tropical){const a=rr(0,TAU),L=rr(14,40),r0=rr(.6,1.4),hx=M
   else if(tropical)brom(px,py+r*.9,pz,st);
   else BIO.put('fungus',[px,py+r*.3,pz],qEuler(0,rr(0,TAU),0),[rr(.3,.6),rr(.12,.2),rr(.3,.6)],C(pick(PAL.fungus)));}
  return true;}
+// THE SALT MARSH (2026-10-26): the delta's fringe, where a channel meets the sea (the salt and flow fields both), on the
+// tidal mud and the channel banks from a hand under the water to ~1.5 m over it, ground the floor's mask (dry ground only) and the fresh-water
+// pass (salt under .35) leave bare. Low marsh at the water: cordgrass swards, taller toward the channel. High marsh:
+// glasswort, green to crimson, with sea lavender in flower. One item ('marsh', a core/tags set of kind 'saltmarsh'; the
+// lavender is 'bloom'), one range (SWLOW.LOD.floorMid) for both bands. Every cell draws from core/rand (KRAND: seed, band, world cell), never the
+// floor's stream, so nothing else on the page moved. A coarse 40 m pass finds the delta first (the fields cost fbm calls).
+const MARSH={seed:600777,grass:[0x7a8a44,0x8a9a4c,0x96944e,0x6c7c3c,0xa49a5a],wort:[0x6a8a3a,0x7e8a3e,0x9a5a34,0xa8443a,0x8a3a34],lav:[0xa08ad0,0x9a7ac8,0xb4a0e0]};
+const _mh={h:0,s:0,l:0};
+function marshCol(S,set,k){const c=C(S.pick(set));c.getHSL(_mh);c.setHSL(((_mh.h+S.range(-.02,.02))%1+1)%1,clamp(_mh.s+S.range(-.08,.08),0,1),clamp(_mh.l+S.range(-.05,.05),.03,.97));return bright(c,k);}
+function marshK(Z){return smooth(.04,.18,Z.salt)*smooth(.08,.3,Z.flow)*smooth(-.3,-.08,Z.h)*smooth(1.8,1.2,Z.h);}
+function marshPlant(S,x,y,z,Z,lv,st){const n=lv===2?S.int(6,9):S.int(3,4),wort=Z.h>.15&&S.next()<smooth(.15,.7,Z.h);
+ for(let i=0;i<n;i++){const a=S.range(0,TAU),d=i?S.range(.4,1.8):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,q=qEuler(S.range(-.08,.08),S.range(0,TAU),S.range(-.08,.08));
+  if(wort){const h=S.range(.3,.55),w=S.range(.9,1.5);BIO.put('marsh',[px,y-.04,pz],q,[w,h,w],marshCol(S,MARSH.wort,1.2));}
+  else{const h=S.range(.8,1.4)*mix(1.3,1,smooth(-.1,.3,Z.h));BIO.put('marsh',[px,y-.05,pz],q,[h*1.2,h,h*1.2],marshCol(S,MARSH.grass,1.3));}
+  st.marsh++;}
+ if(wort&&lv>=1&&S.next()<.3){const c=marshCol(S,MARSH.lav,1.15);for(let k=0,m=lv===2?S.int(4,8):2;k<m;k++){const a=S.range(0,TAU),d=S.range(0,1.2);
+  BIO.put('padbloom',[x+Math.cos(a)*d,y+S.range(.22,.45),z+Math.sin(a)*d],qEuler(S.range(-.4,.4),S.range(0,TAU),S.range(-.4,.4)),S.range(.07,.12),c);}st.blooms++;}}
+function buildMarsh(R,q,st){const o=BIO.center(),CO=40,NC=Math.ceil(R*2/CO),hot=[];
+ for(let j=0;j<NC;j++)for(let i=0;i<NC;i++){const x=o[0]-R+(i+.5)*CO,z=o[1]-R+(j+.5)*CO;if(Math.hypot(x-o[0],z-o[1])>R+CO)continue;
+  if(BIO.field('salt',x,z)>.02&&BIO.field('flow',x,z)>.05)hot.push([x-CO*.75,z-CO*.75,x+CO*.75,z+CO*.75]);}   /* padded: the fields bend inside a coarse cell */
+ const bands=[[4,0,560,2],[8,560,1400,1]],seen=new Set();
+ for(const b of bands){const cell=b[0],lv=b[3];BIO.range=SWLOW.LOD.floorMid;seen.clear();   /* both bands on one range: one mesh a chunk */
+  for(const H of hot)for(let iz=Math.floor(H[1]/cell);iz<=Math.floor(H[3]/cell);iz++)for(let ix=Math.floor(H[0]/cell);ix<=Math.floor(H[2]/cell);ix++){
+   const key=ix+','+iz;if(seen.has(key))continue;seen.add(key);
+   const S=KRAND.stream(KRAND.hash(MARSH.seed,lv,ix,iz)),x=(ix+S.next())*cell,z=(iz+S.next())*cell,u=S.next();
+   const ld=BIO.lodD(x,z);if(ld<b[1]||ld>=b[2]||Math.hypot(x-o[0],z-o[1])>R)continue;
+   const Z=zones(x,z),k=marshK(Z);if(k<=0)continue;
+   const patch=.55+.6*fbm(x*.021+3,z*.021-8,6011,2);if(u>k*q*clamp(patch,0,1))continue;
+   if(!okGround(x,z,.6))continue;marshPlant(S,x,Y(x,z),z,Z,lv,st);}}}
 
 // ---------------------------------------------------------------- the understorey (under the crowns)
 // A SAPLING: the next generation in the shade -- a thin stem and a few leaf clumps
@@ -234,6 +264,8 @@ SWLOW.buildFloor=function(R,q){
  BIO.range=L.logs;
  BIO.grid(120,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1400)return 0;const Z=zones(x,z);return (Z.rain*.8+Z.swamp*.4+Z.sub*.35)*q;},
   (x,y,z,d)=>{const trop=zones(x,z).rain>.4;for(let t=0;t<4;t++)if(log(x+rr(-25,25),y,z+rr(-25,25),st,trop))break;},{patch:0,pad:3});
+ // the delta's salt marsh (buildMarsh, above): last, on its own core/rand cells
+ st.marsh=0;buildMarsh(R,q,st);
  BIO.range=null;
  return{under:st};};
 // ONE PLANT AT A POINT, by name, for a world's gardens: the same small-plant builders the floor pass

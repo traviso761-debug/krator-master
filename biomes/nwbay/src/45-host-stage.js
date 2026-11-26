@@ -104,9 +104,11 @@ const SHELVES=[{u:700,v:-560,n:4},{u:1000,v:-80,n:5},{u:520,v:640,n:3}].map(S=>{
 function shelfK(x,z){let k=0;for(let i=0;i<SHELVES.length;i++){const S=SHELVES[i],d=Math.hypot(x-S.xz[0],z-S.xz[1]);if(d<42)k=Math.max(k,smooth(40,14,d));}return k;}
 
 // ---------------------------------------------------------------- the karst
-// Limestone stacks (Krabi): a footprint is an ellipse with a noisy edge; the
-// face is vertical, undercut at the waterline, rounding into a domed top
-// that terrainH() returns inside the footprint. u,v are bay coordinates.
+// Limestone stacks (Krabi; since 2026-10-25 drawn as guilin's towers): each a KSTACKS tower (core/terrain/37-core-stacks.js,
+// KSTACKS.tower: a cliff standing almost sheer for half its height or more, then a dome closing in to a small cap; the
+// beds' partings and the notch at the waterline drawn by KSTACKS.mesh). The list keeps each stack's place, its footprint
+// (r, elongation e, strike ra) and its top's height h; the records (ROCK) are made below, once the ground is known.
+// terrainH() is the rock's surface over a stack (KSTACKS.surface: a dome's walls hold its forest). u,v are bay coordinates.
 const STACKS=[
  {u:420,v:-470,r:70,h:108,e:1.4,ra:.7,sd:1},    // the big sea stack SW of the mouth
  {u:470,v:-300,r:34,h:60,e:1.15,ra:2.0,sd:2},   // its small companion
@@ -121,17 +123,13 @@ const STACKS=[
  {u:1300,v:300,r:48,h:64,e:1.3,ra:.9,sd:11},    // up the valley
  {u:560,v:300,r:30,h:50,e:1.1,ra:.4,sd:12},     // a small one off the delta
 ].map(S=>{const p=XZ(S.u,S.v);S.x=p[0];S.z=p[1];S.R=S.r*S.e*1.3+8;return S;});
-function stackRad(S,ang){const a=ang-S.ra,c=Math.cos(a)/S.e,s=Math.sin(a)*S.e;
- return S.r/Math.sqrt(c*c+s*s)*(1+.26*(fbm(Math.cos(ang)*1.7+S.sd*3.1,Math.sin(ang)*1.7+S.sd*5.3,61,2)-.5)*2);}
-// the nearest stack: {S, d (signed distance to its footprint edge, m; negative inside), dist, R, ang}
-function stackAt(x,z){let best=null;
- for(let i=0;i<STACKS.length;i++){const S=STACKS[i],dx=x-S.x,dz=z-S.z;if(Math.abs(dx)>S.R||Math.abs(dz)>S.R)continue;
-  const dist=Math.hypot(dx,dz),ang=Math.atan2(dz,dx),R=stackRad(S,ang),d=dist-R;if(!best||d<best.d)best={S:S,d:d,dist:dist,R:R,ang:ang};}
- return best;}
-// the domed top: rho 0 at the centre, 1 at the footprint edge; the rim ring of the face sits at rho .82
-function domeH(S,rho,x,z){return S.h*(1-.33*rho*rho)+2.5*(fbm(x*.03+S.sd,z*.03,62,2)-.5);}
-function stackTop(K,x,z){return domeH(K.S,K.dist/K.R,x,z);}
-function karstAt(x,z){const K=stackAt(x,z);return K?smooth(6,-5,K.d):0;}
+// the nearest stack's foot: {S (its KSTACKS record), d (signed distance to its lowest bed's footprint, m; negative inside)}
+function stackAt(x,z){return KSTACKS.foot(ROCK,x,z);}
+// the rock over (x,z), walls included: {S, b, top, d, wall, steep} (a dome's bed under steep 2.75 holds soil), or null
+function stackSurf(x,z){return KSTACKS.surface(ROCK,x,z);}
+// the karst field: 1 on a dome or a cap (where the forest roots), .45 on a cliff or a parting's sliver (the rim band:
+// nothing roots there, and the host's mask is zero on it), fading out past the foot
+function karstAt(x,z){const s=stackSurf(x,z);if(s)return s.wall?(s.steep<2.75?1:.45):(s.d>-2.5?.45:1);const K=stackAt(x,z);return K?.45*smooth(6,-5,K.d):0;}
 
 // ---------------------------------------------------------------- the sinkholes
 // Collapse dolines in the limestone under the slope: a TIANKENG (Xiaozhai) at
@@ -193,8 +191,22 @@ const PINS=[],PGRID=new Map();
    if(canyonK(x,z)>.3||canyonK(e0[0],e0[1])>.3||canyonK(e1[0],e1[1])>.3)continue;
    const Q=sinkAt(x,z);if(Q&&Q.d<Lf*.5+6)continue;
    const H=(5+25*Math.pow(tk,1.3))*(.55+.6*hs),w=clamp(2+H*.085,2.4,4.6)*(.85+.3*w1);
-   const P={x:x,z:z,H:H,rb:Lf/2,rz:w/2,ang:j+da,proto:Math.floor(pk*8),tint:tint};PINS.push(P);
+   // a fin on a canyon's edge stands taller (up to 1.9x, Bemaraha's walls: the canyon reads as a cut tens of metres deep
+   // though its floor is the plateau's, terrainH unchanged); measured across the fin both ways and off its ends, no draws
+   let ck=0;for(const o of [3,7,12]){for(const sd of [-1,1]){ck=Math.max(ck,canyonK(x+bx*(w/2+o)*sd,z+bz*(w/2+o)*sd)*(o<10?1:.6),canyonK(x+ax*(Lf/2+o)*sd,z+az*(Lf/2+o)*sd)*(o<10?.7:.4));}}
+   const Hc=H*(1+.9*smooth(.15,.8,ck))+6*smooth(.3,.9,ck);
+   const P={x:x,z:z,H:Hc,rb:Lf/2,rz:w/2,ang:j+da,proto:Math.floor(pk*8),tint:tint,ck};PINS.push(P);
    const rr2=P.rb+.5;for(let gz=Math.floor((z-rr2)/c);gz<=Math.floor((z+rr2)/c);gz++)for(let gx=Math.floor((x-rr2)/c);gx<=Math.floor((x+rr2)/c);gx++){const key=gx+','+gz;let A=PGRID.get(key);if(!A){A=[];PGRID.set(key,A);}A.push(PINS.length-1);}}}})();
+// THE FINS ARE SOLID (2026-10-25): finTop(x,z) is the drawn blade's height over (x,z) (its prototype's saw-toothed crest and
+// the faces narrowing to it, as the mesh below draws them), or -Infinity off every fin. The camera's floor is the higher of
+// terrainH and finTop (99-host-take.js: KHOST.take floor), so the eye cannot fly through a blade; walkers are stopped by the
+// fins' blocks in KWALK (registered with the meshes). terrainH itself is the ground between them, as before.
+const FIN_TOP=[];   // per prototype: its crest height (0..1) at x (-1..1), filled when the prototypes are made
+function finTop(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.floor(z/c));if(!A)return -Infinity;let best=-Infinity;
+ for(let i=0;i<A.length;i++){const P=PINS[A[i]],tp=FIN_TOP[P.proto];if(!tp)continue;const dx=x-P.x,dz=z-P.z,ca=Math.cos(P.ang),sa=Math.sin(P.ang),X=(dx*ca+dz*sa)/P.rb,Z=Math.abs(-dx*sa+dz*ca)/P.rz;
+  if(Math.abs(X)>=1)continue;const cs=Math.pow(Math.abs(X),1/.45),ze=Math.pow(Math.sqrt(Math.max(0,1-cs*cs)),.8);if(Z>=ze)continue;
+  const t=1-Math.pow(Z/ze,1/.85),y=groundBase(P.x,P.z)-2+(P.H+2)*(-.05+t*(tp(X)+.05));if(y>best)best=y;}
+ return best;}
 // signed distance (m, roughly) to the nearest fin's footprint (an ellipse rb x rz along its joint)
 function pinAt(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.floor(z/c));if(!A)return 1e9;let best=1e9;
  for(let i=0;i<A.length;i++){const P=PINS[A[i]],dx=x-P.x,dz=z-P.z,ca=Math.cos(P.ang),sa=Math.sin(P.ang),lx=dx*ca+dz*sa,lz=-dx*sa+dz*ca,d=(Math.hypot(lx/P.rb,lz/P.rz)-1)*P.rz;if(d<best)best=d;}
@@ -205,7 +217,7 @@ function pinAt(x,z){const c=TSINGY.cell,A=PGRID.get(Math.floor(x/c)+','+Math.flo
 // inside their rims (the ground mesh draws groundBase and is cut round each
 // rim); terrainH is what the biome sees: groundH, with a stack's domed top
 // inside its footprint.
-function groundBase(x,z){
+function groundBase0(x,z){
  const lk=bayIn(x,z),rd=riverD(x,z),rise=riseAt(x,z);
  const sw=fbm(x*.0008+3,z*.0008-1,17,3)-.5,ro=fbm(x*.0045-2,z*.0045+5,29,2)-.5;
  let h=1.9+sw*2.4+ro*1.1;
@@ -220,9 +232,19 @@ function groundBase(x,z){
  const bk=basaltK(x,z);h=mix(h,Math.max(h,4.2+bk*2.4),bk);                                // the basalt plinth
  const inL=smooth(25,-15,lk),bed=-.6-2.0*smooth(0,-220,lk)-11*smooth(-220,-900,lk)+1.6*(fbm(x*.0018+5,z*.0018+9,77,2)-.5)*smooth(-40,-220,lk);
  return mix(h,Math.min(bed,-.35),inL);}
+// THE CAVERNS STATION'S HOOK (stations/caverns, PLAN.md "The caverns station"; the catch-up pass, 2026-11-03): a station that defines
+// NWBAY_KARST(o) lays the Hykkousoi karst (KKARST) under this ground and hands back its surface, the dolines and cenotes on KRELIEF;
+// groundBase is then the open ground with them, and everything drawn from it (the ground mesh, terrainH, the plants) follows. On the main
+// page there is no NWBAY_KARST: groundBase is groundBase0 and nothing moves
+var NWBAY_KARST_N=typeof NWBAY_KARST==='function'?NWBAY_KARST({ground:groundBase0,SINKS,STACKS,BAY,XZ,uvOf,bayIn,riverD,tsingyK,lavaK,basaltK,shelfK,sinkAt,sinkRad,smooth}):null;
+function groundBase(x,z){return NWBAY_KARST_N&&NWBAY_KARST_N.surf?NWBAY_KARST_N.surf(x,z):groundBase0(x,z);}
 SINKS.forEach(S=>{S.top=groundBase(S.x,S.z);S.floorY=S.floor!=null?S.floor:S.top-S.depth;});
 function groundH(x,z){const Q=sinkAt(x,z);if(Q&&Q.d<0)return sinkFloorH(Q.S,x,z,Q.d);return groundBase(x,z);}
-function terrainH(x,z){const K=stackAt(x,z);if(K&&K.d<0)return stackTop(K,x,z);return groundH(x,z);}
+// THE STACKS AS RECORDS: a tower's foot under the lowest ground round it, its top at the stack's h (KSTACKS.tower)
+const ROCK=STACKS.map(S=>{let m=1e9;for(let i=0;i<32;i++){const a=i/32*TAU;for(const k of [.4,.8,1.15])m=Math.min(m,groundH(S.x+Math.cos(a)*S.r*S.e*k,S.z+Math.sin(a)*S.r*S.e*k));}
+ const y0=m-3,R=Math.min(S.r,(S.h-y0)/2.7),B=KSTACKS.tower({id:'stack'+S.sd,seed:3100+S.sd,x:S.x,z:S.z,y0,H:S.h-y0,R,e:Math.min(S.e,1.35),ry:S.ra});   /* guilin's proportions: about 2.7 times as tall as it is wide */
+ B.name='Karst stack '+S.sd+(S.u<950&&bayIn(S.x,S.z)<0?' (sea stack)':' (shore)');S.B=B;return B;});
+function terrainH(x,z){const s=stackSurf(x,z);if(s)return s.top;return groundH(x,z);}
 // the climate fields the biome asks for (BIOME-API.md): wet / salt / upland / flow / karst, and
 // tsingy / hollow for the tsingy massif and the sinkholes' floors
 const FIELD={
@@ -251,7 +273,7 @@ const spine=[[650,0],[1200,0],[1750,0],[2350,0],[3000,0],[3700,0],[1150,-620],[1
 BIO.init({tags:'nwbay',THREE:THREE,scene:scene,terrainH:terrainH,
  // nothing rooted under water, nor in the river's channel up the slope, nor
  // on a stack's rim and face, nor on the basalt columns
- mask:(x,z)=>{const h=terrainH(x,z),m=h<.12?0:h<.6?(h-.12)/.48:1;const K=stackAt(x,z),kr=(K&&K.d>-4&&K.d<12)?0:1;
+ mask:(x,z)=>{const h=terrainH(x,z),m=h<.12?0:h<.6?(h-.12)/.48:1;const K=stackAt(x,z),kv=karstAt(x,z),kr=(kv>.03&&kv<.9)||(K&&K.d>-4&&K.d<12)?0:1;
   const lk=bayIn(x,z),chanW=1-.45*smooth(400,1400,lk),rd=riverD(x,z),cm=smooth(22*chanW,36*chanW,rd);
   const Q=sinkAt(x,z),sk=(Q&&Q.d>(Q.S.kind==='tiankeng'?-12:-6)&&Q.d<6)?0:1;              // not on a sinkhole's wall band
   const pk=tsingyK(x,z)>0&&pinAt(x,z)<.8?0:1;                                              // not in a tsingy blade
@@ -259,6 +281,16 @@ BIO.init({tags:'nwbay',THREE:THREE,scene:scene,terrainH:terrainH,
  obstacles:OBSTACLES,ticks:tick,seed:11,
  origin:spine,center:CENTER,
  fields:FIELD,eye:()=>[camera.position.x,camera.position.y,camera.position.z],err:reportErr});
+// THE GRAPHICS SET (the final rebuild, 2026-10-27; nhighlands' lines, GRAPHIC-LOAD.md): the items' geometry welded and drawn by index
+// (BIO.INDEX_ITEMS; ?index=0 for the soup), each chunk's LOD bands merged with a dithered cross-fade (?lodmerge=0, ?lodfade=0) and
+// loose instances culled past their own range (?lodcull=0)
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';
+ // the leaf looks the kit takes on this page only (50-biome-nwbay-species.js, NWBAY_LOOK): the broadleaf back-light (?backlit=0), the
+ // floor cover's root in the ground's colour (?rootcol=0; gain: the ground's tint .6 times its detail's mean .9), the dry season (?season=0)
+ window.NWBAY_LOOK={backlit:q.get('backlit')==='0'?0:.35,ground:q.get('rootcol')==='0'?0:.54,season:q.get('season')!=='0',fung:q.get('fung')!=='0',
+  joints:q.get('joints')!=='0',holds:q.get('holds')!=='0'};}   /* BIO.holdTo on the blooms and the umbrella thorn's crown (55 holdB, holdC) */   /* BIO.flareJoin on the limbs (55 J; the catch-up pass, 2026-11-03) */
 BIO.setSun([-1200,900,-600]);
 // ---------------------------------------------------------------- the ground
 // One mesh (plus a finer strip along the terrace reach of the river). Painted
@@ -278,7 +310,7 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
  const c=new THREE.Color(),t=new THREE.Color();
  const SAND=new THREE.Color(0xe4dcc4),LIT=new THREE.Color(0x3a2a20),LITR=new THREE.Color(0x4e3226),RAIN=new THREE.Color(0x4a3a26),RAIN2=new THREE.Color(0x5a4a30),
   SAV=new THREE.Color(0x9a8450),SAV2=new THREE.Color(0x7a7048),SAVG=new THREE.Color(0x5e6e3a),SILT=new THREE.Color(0x9a8c74),DELTA=new THREE.Color(0x574836),BED=new THREE.Color(0x8a7a66),
-  LAVAC=new THREE.Color(0x2a2624),RUST=new THREE.Color(0x5a3a2a),BLACK=new THREE.Color(0x1c1a18),BAS=new THREE.Color(0x30303a),CRUST=new THREE.Color(0xe6dcc4),POOL=new THREE.Color(0xd4e6dc),RISER=new THREE.Color(0xf2ead8),SCREE=new THREE.Color(0xa8a090),LAG=new THREE.Color(0xd8d4c0),TSG=new THREE.Color(0x8e8a80),TSG2=new THREE.Color(0x6e6a62),RIMS=new THREE.Color(0x5a5448);
+  LAVAC=new THREE.Color(0x3b3129),RUST=new THREE.Color(0x5a3a2a),BLACK=new THREE.Color(0x1c1a18),BAS=new THREE.Color(0x30303a),CRUST=new THREE.Color(0xe6dcc4),POOL=new THREE.Color(0xd4e6dc),RISER=new THREE.Color(0xf2ead8),SCREE=new THREE.Color(0xa8a090),LAG=new THREE.Color(0xd8d4c0),TSG=new THREE.Color(0x8e8a80),TSG2=new THREE.Color(0x6e6a62),RIMS=new THREE.Color(0x5a5448);
  const sandT=SAND.clone().lerp(BAYCOL,.05);
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const wx=CENTER[0]+(x/w-.5)*S,wz=CENTER[1]+(y/h-.5)*S;
   const n=fbm(x/26,y/26,.3,2)-.5,n2=(BIO.fn.h3(x,y,3)-.5);
@@ -299,7 +331,9 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
   c.lerp(CRUST,sh*.9);                                                          // the shelf-pool mounds
   c.lerp(BED,smooth(0,-30,lk));
   // the igneous shore: black lava with rust mottling, black sand on the beach under it, basalt
-  c.lerp(LAVAC,lv*.92);c.lerp(RUST,lv*smooth(.52,.66,fbm(x/14,y/14,8,2))*.55);
+  /* the lava tongues are OLD flows, weathered to a dark soil under the scrub (the owner, 2026-10-27: the bay is too far from the volcano
+     for fresh lava rock); it was black (0x2a2624, .92) with rust mottling (.55) */
+  c.lerp(LAVAC,lv*.78);c.lerp(RUST,lv*smooth(.52,.66,fbm(x/14,y/14,8,2))*.28);
   c.lerp(BLACK,smooth(90,24,lk)*smooth(-20,10,lk)*smooth(.08,.35,lv));
   c.lerp(BAS,bk);
   c.lerp(SCREE,smooth(14,1,kd)*smooth(-6,-1,kd)*.8);                            // scree at a stack's foot
@@ -313,69 +347,174 @@ const TEX_GROUND=BIO.canvasTex(1536,1536,(g,w,h)=>{const id=g.createImageData(w,
 const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*36+(BIO.fn.h3(x,y,9)-.5)*20;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
  g.putImageData(id,0,0);});
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
-MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
- sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
- sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
-  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);}');};
+/* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+   MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+   ?kgrelief=0 drops the relief (the before-and-after) */
+const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+const MAT_GROUND=KG_STD?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0x9a9890,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0x9a9890});
+/* the ground's own hook, kept by name: the sinkholes' lip takes it (not MAT_GROUND.onBeforeCompile, which is KHOOK's composite once a layer is on) */
+const GROUND_HOOK=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
+ sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aGL;varying vec4 vGL;attribute vec2 aGL2;varying vec2 vGL2;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGL=aGL;vGL2=aGL2;');
+ sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vGL;varying vec2 vGL2;')
+  .replace('#include <map_fragment>','#include <map_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.165).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.021+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);\n/*KGROUND*/}');};
+MAT_GROUND.onBeforeCompile=GROUND_HOOK;
+// THE GROUND'S LIBRARY LAYERS (core/terrain KGROUND, 43-core-ground.js; the final rebuild, 2026-10-27; ?kground=0 for the paint and its
+// grain alone): four of the library's ground sets laid over the paint by zone, hex-tiled, scaled with distance and blended by height:
+// leaf mulch on the jungle's and the rainforest's floor (ground.ground072, nhighlands' mulch) and over the old lava tongues' weathered
+// soil, beach sand on the shore, black cinder grit (ground.cinder) on the black beach under the tongues and thinly on the tongues and the
+// basalt (old flows, not fresh rock: the owner, 2026-10-27), the white travertine on the terrace reach's banks and the shelf pools. The
+// zone weights are a vertex attribute of every ground mesh (aGL: litter, sand, cinder, travertine), from the field cache the paint reads
+const GL_ON=new URLSearchParams(location.search).get('kground')!=='0'&&typeof KGROUND!=='undefined';
+function glWeights(x,z){const up=FC.at(FC.a.up,x,z),lk=FC.at(FC.a.lk,x,z),rd=FC.at(FC.a.rd,x,z),rise=FC.at(FC.a.rise,x,z),lv=FC.at(FC.a.lv,x,z),bk=FC.at(FC.a.bk,x,z),
+  sh=FC.at(FC.a.sh,x,z),ts=FC.at(FC.a.ts,x,z),kd=FC.at(FC.a.kd,x,z),chanW=1-.45*smooth(400,1400,lk),onSlope=smooth(8,20,rise);
+ const black=smooth(90,24,lk)*smooth(-20,10,lk)*smooth(.08,.35,lv),lava=clamp(Math.max(black*.9,lv*.3,bk*.45),0,1);
+ const trav=clamp(Math.max(sh*.9,smooth(44*chanW,18*chanW,rd)*onSlope*.85),0,1)*(1-lava);
+ const sand=smooth(90,6,lk)*smooth(-60,-10,lk)*(1-lava)*(1-trav),bare=Math.max(ts,smooth(14,1,kd)*smooth(-6,-1,kd));
+ const litter=(1-smooth(.4,.62,up))*(1-sand)*(1-black)*(1-bk)*(1-trav)*(1-bare)*smooth(-4,8,lk);
+ return[litter,sand,lava,trav];}
+// THE BAY'S ROCK (44n-host-geology.js, NWBAY_GEO: the 5.1 geology read at the page's anchor; the catch-up pass, 2026-11-03): a second pair of
+// weights (aGL2: marble, ash). THE WHITE MARBLE BAND (?marble=0 off) on the limestone at the page's own volcanic contact, the outer margin of
+// each old lava tongue and of the basalt headland (where each one's field falls off: NWBAY_GEO.band), and an outcrop round each marble node
+// the field puts in the page's box (two, medium grade: the Hykkousoi's quarries). The stacks keep their limestone (they are not ground).
+// THE ASH SOILS (?ash=0 off) on the volcanic ground itself, the tongues and the basalt: at this anchor the vents' tuff (93-170) lies on the
+// volcanic side and none reaches the limestone. Drawn in the library's grey ash darkened toward a fertile ash soil: a stand-in, named in
+// PROMPTS-NEEDED.md until a real andosol set is sourced
+const GEO_Q=new URLSearchParams(location.search),GEO_MARBLE=GEO_Q.get('marble')!=='0',GEO_ASH=GEO_Q.get('ash')!=='0';
+const GEO_OUTCROPS=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.nodes:[]).filter(n=>n.kind==='marble');
+function glWeights2(x,z){const lv=FC.at(FC.a.lv,x,z),bk=FC.at(FC.a.bk,x,z),E=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.band.lavaEdge:[0,.1,.45]);
+ let m=0;if(GEO_MARBLE){m=Math.max(smooth(E[0],E[1],lv)*smooth(E[2],E[1],lv),.8*smooth(E[0],E[1],bk)*smooth(E[2],E[1],bk));
+  const R=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.band.outcrop:46);for(const n of GEO_OUTCROPS){const d=Math.hypot(x-n.x,z-n.z);if(d<R*1.4)m=Math.max(m,smooth(R,R*.45,d+8*(fbm(x*.05+3,z*.05,74,2)-.5)));}
+  m*=smooth(-1,4,FC.at(FC.a.lk,x,z));}
+ const ash=GEO_ASH?clamp(Math.max(smooth(.45,.85,lv)*.85,smooth(.4,.9,bk)*.5),0,1):0;
+ return[clamp(m,0,1),ash];}
+function addGL(g){if(!GL_ON)return g;const p=g.attributes.position,a=new Float32Array(p.count*4),a2=new Float32Array(p.count*2);
+ for(let i=0;i<p.count;i++){const w=glWeights(p.getX(i),p.getZ(i));a.set(w,i*4);a2.set(glWeights2(p.getX(i),p.getZ(i)),i*2);}g.setAttribute('aGL',new THREE.BufferAttribute(a,4));g.setAttribute('aGL2',new THREE.BufferAttribute(a2,2));return g;}
+if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('nwbay',slot,{w,amt,gain,tint:'diffuse'});
+ const LY=[L('groundLitter','vGL.x',.6,1.2),L('groundSand','vGL.y',.6,1.0),L('groundLava','vGL.z',.7,1.0),L('groundTrav','vGL.w',.7,1.1)];
+ /* the bay's rock (above): the ash over the cinder on the old flows, the marble last (a band of bare white stone at the contact) */
+ const LA=KGROUND.layer('nwbay','groundAsh',{w:'vGL2.y',amt:.8,gain:1,tint:'vec3(1.0)'}),   /* ground.ash.soil, the delivered andosol: no tint (NWBAY_GEO.ash.tint darkened the stand-in) */
+  LM=KGROUND.layer('nwbay','groundMarble',{w:'vGL2.x',amt:.9,gain:1.05});
+ const LY2=LY.every(Boolean)?LY.concat([GEO_ASH?LA:null,GEO_MARBLE?LM:null].filter(Boolean)):[];
+ KGROUND.hook(MAT_GROUND,{layers:LY2,relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null,key:'nwbay-ground'+(LY2.length>4?'-rock'+(GEO_ASH&&LA?'a':'')+(GEO_MARBLE&&LM?'m':''):'')});}
+// the resource nodes the field puts in the page's box (NWBAY_GEO.nodes, read from the 5.1 data at the anchor, not invented): each a core/tags
+// record (class feature, kind resource) where it stands on dry ground; the marble's two are the outcrops above (registered volumes: they
+// are drawn), the others core/tags records alone (nothing is drawn in them, so no registered volume). No node model is drawn
+// (kits/resources' node defs are not on this page): the records are what a game reads
+const GEO_NODES=(typeof NWBAY_GEO!=='undefined'?NWBAY_GEO.nodes:[]).map(n=>{const h=groundBase(n.x,n.z),dry=h>.5&&bayIn(n.x,n.z)>8;
+ if(dry)(n.kind==='marble'?REGISTER:BIO.record)({name:'A '+n.kind+' node ('+n.grade+' grade; the geology field, map 5.1)',x:n.x,y:h,z:n.z,r:n.kind==='marble'?(NWBAY_GEO.band.outcrop==null?46:NWBAY_GEO.band.outcrop):6,h:4,kind:'resource',
+  tags:{resource:{id:n.id,kind:n.kind,grade:n.grade,src:'kits/resources/data/geology.json',anchor:NWBAY_GEO.anchor}}});return Object.assign({dry},n);});
+// THE RISERS AS DROPS (2026-10-25): the river's treads and risers worked out here exactly as 89w-host-water.js hands them to
+// WATER.terraces (the samples every 5 m, a tread a run of non-ramp samples on one step, kept when 4 m or longer, a step that
+// does not descend joining the one above), so the ground can be drawn to them: downstream of every lip (the top of a riser,
+// where the fall leaves) the channel is drawn down to under the lower pool (RISER_DROP: the strip and the coarse mesh only;
+// terrainH and groundH are untouched, and nothing roots in the channel: the mask is zero there), a rimstone face of crust
+// stands under the lip (the crust mesh, below), and 89w runs the lower pool up to the face, so a riser reads as a drop: a
+// pool brimming at a lip, a curtain down a face, a pool at its foot. Each record: {x, z (the lip on the line), dx, dz (down
+// the line), hw (the pool's half width), yUp, yLo (the two pools' levels), run (lip to the lower tread's first sample, m)}.
+const RISERS=(function(){const SM=[];
+ for(let u=MOUTH_U+380;u<4300;u+=5){const vc=vR(u),P=XZ(u,vc),rise=riseAt(P[0],P[1]),bed=groundH(P[0],P[1]),lk=bayIn(P[0],P[1]);
+  const sf=rise/5,si=Math.floor(sf),f=sf-si,k=smooth(8,20,rise),chanW=1-.45*smooth(400,1400,lk),tread=-1.9+si*5+1.5;
+  SM.push({u,x:P[0],z:P[1],y:mix(bed+1.1,f>.8?Math.max(bed+.35,tread):tread,k),w:13*chanW+3,ramp:f>.8&&k>.5,si,k});}
+ const up=SM.reverse().filter(q=>q.k>.95),acc=[0];for(let i=1;i<up.length;i++)acc.push(acc[i-1]+Math.hypot(up[i].x-up[i-1].x,up[i].z-up[i-1].z));
+ const tr=[];let run=null;
+ up.forEach((q,i)=>{if(q.ramp){run=null;return;}if(run&&run.si===q.si){run.s1=acc[i];run.i1=i;run.ys.push(q.y);run.ws.push(q.w);return;}
+  run={si:q.si,s0:acc[i],s1:acc[i],i0:i,i1:i,ys:[q.y],ws:[q.w]};tr.push(run);});
+ const avg=a=>a.reduce((p,q)=>p+q,0)/a.length,T=tr.filter(t=>t.s1-t.s0>=4).map(t=>({i0:t.i0,i1:t.i1,y:avg(t.ys),w:avg(t.ws)}));
+ for(let i=1;i<T.length;i++)if(T[i].y>=T[i-1].y-.05){T[i-1].i1=T[i].i1;T.splice(i,1);i--;}
+ const out=[];for(let i=0;i+1<T.length;i++){const a=T[i],b=T[i+1],L=up[a.i1],N=up[Math.min(up.length-1,a.i1+1)],F=up[b.i0],dl=Math.hypot(N.x-L.x,N.z-L.z)||1;
+  out.push({x:L.x,z:L.z,u:L.u,dx:(N.x-L.x)/dl,dz:(N.z-L.z)/dl,hw:a.w/2,yUp:a.y,yLo:b.y,run:Math.hypot(F.x-L.x,F.z-L.z),uBot:F.u});}
+ return out;})();
+// how far the drawn channel is let down at (x,z) for a riser: {r, a (m down the line from the lip), c (m across), w (0..1)} or null
+function riserAt(x,z,pad){pad=pad||0;for(let i=0;i<RISERS.length;i++){const R=RISERS[i],ex=x-R.x,ez=z-R.z;if(Math.abs(ex)>R.run+40+pad||Math.abs(ez)>R.run+40+pad)continue;
+  const a=ex*R.dx+ez*R.dz,c=-ex*R.dz+ez*R.dx;if(a<-1-pad||a>R.run+3+pad||Math.abs(c)>R.hw+5+pad)continue;return{R,a,c};}return null;}
+// the drawn channel's height over a riser: the ground, let down under the lower pool from just past the lip
+function riserDrawH(x,z,gh){const q=riserAt(x,z);if(!q)return gh;const w=smooth(-.6,.4,q.a)*smooth(q.R.hw+4.5,q.R.hw+1.5,Math.abs(q.c));return mix(gh,Math.min(gh,q.R.yLo-.9),w);}
 // the terrace reach of the river gets a finer strip (3 x 4 m cells); the coarse
 // mesh is pushed a metre down under it, feathered to meet it at the strip's edge
 const STRIP={u0:1040,u1:3420,hw:72};
 function stripK(u,v){return smooth(STRIP.hw,STRIP.hw*.5,Math.abs(v-vR(u)))*smooth(STRIP.u0,STRIP.u0+40,u)*smooth(STRIP.u1,STRIP.u1-40,u);}
 (function(){const N=480,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
+ const p=g.attributes.position,inS=new Uint8Array(p.count);for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),uv=uvOf(x,z);p.setY(i,groundBase(x,z)-1.2*stripK(uv[0],uv[1]));{const q=riserAt(x,z,14);if(q&&stripK(uv[0],uv[1])>.99)p.setY(i,Math.min(p.getY(i),q.R.yLo-2.5));}const Q=sinkAt(x,z);inS[i]=Q&&Q.d<0?1:0;}
  // cut round each sinkhole: drop every triangle with a corner inside a rim (the lip hides the jagged edge)
  {const I=g.index.array,keep=[];for(let t=0;t<I.length;t+=3){if(inS[I[t]]||inS[I[t+1]]||inS[I[t+2]])continue;keep.push(I[t],I[t+1],I[t+2]);}g.setIndex(keep);}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
+ g.computeVertexNormals();addGL(g);const m=new THREE.Mesh(g,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The bay floor';scene.add(m);
  // the strip: along u, across v, uv matched to the big texture by world position
- const NU=Math.round((STRIP.u1-STRIP.u0)/3),NV=Math.round(STRIP.hw*2/4),pos=[],uvs=[],idx=[];
- for(let i=0;i<=NU;i++){const u=STRIP.u0+(STRIP.u1-STRIP.u0)*i/NU,vc=vR(u);for(let j=0;j<=NV;j++){const v=vc-STRIP.hw+2*STRIP.hw*j/NV,P=XZ(u,v);
-  pos.push(P[0],groundH(P[0],P[1]),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
+ // rows every 3 m along u, and two more at every riser's lip (the drop is drawn within a metre of it); columns 1.5 m apart over
+ // the channel (|v| < 18 m: the pools, the faces' ends), 4 m over the banks, 8 m at the strip's feathered edge
+ const US=[];{const NU=Math.round((STRIP.u1-STRIP.u0)/3);for(let i=0;i<=NU;i++)US.push(STRIP.u0+(STRIP.u1-STRIP.u0)*i/NU);
+  RISERS.forEach(R=>{if(R.u>STRIP.u0+2&&R.u<STRIP.u1-2)US.push(R.u+.4,R.u-.5,R.u-1.4);});US.sort((a,b)=>a-b);}
+ const VS=[];for(let v=-72;v<-40;v+=8)VS.push(v);for(let v=-40;v<-18;v+=4)VS.push(v);for(let v=-18;v<18-1e-6;v+=1.5)VS.push(v);for(let v=18;v<40;v+=4)VS.push(v);for(let v=40;v<=72;v+=8)VS.push(v);
+ const NU=US.length-1,NV=VS.length-1,pos=[],uvs=[],idx=[];
+ for(let i=0;i<=NU;i++){const u=US[i],vc=vR(u);for(let j=0;j<=NV;j++){const v=vc+VS[j],P=XZ(u,v);
+  pos.push(P[0],riserDrawH(P[0],P[1],groundH(P[0],P[1])),P[1]);uvs.push((P[0]-(CENTER[0]-S/2))/S,1-(P[1]-(CENTER[1]-S/2))/S);}}
  for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const a=i*(NV+1)+j,b=a+NV+1;idx.push(a,a+1,b,a+1,b+1,b);}   // CCW seen from above
- const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));sg.setIndex(idx);sg.computeVertexNormals();
- const sm=new THREE.Mesh(sg,MAT_GROUND);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
+ const sg=new THREE.BufferGeometry();sg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));sg.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));sg.setIndex(idx);sg.computeVertexNormals();addGL(sg);
+ const sm=new THREE.Mesh(sg,MAT_GROUND);if(KG_RELIEF)KGROUND.cavityMesh(sm);sm.userData.probeSkip=true;sm.userData.inspectLabel='The travertine terraces';scene.add(sm);})();
 
-// ---------------------------------------------------------------- the karst stacks (meshes)
-// One mesh per stack: rings up the face (dense at the waterline notch and at
-// the rim), then the dome rings in to the centre. Vertex-coloured limestone
-// with dark runnels, a wet black band at the notch, moss toward the rim, a
-// forest-floor cap. The host hands these geometries to NWBAY.dress() so the
-// biome hangs its curtain figs and gardens off the faces (88-host-build).
+// ---------------------------------------------------------------- the karst stacks (meshes: KSTACKS.mesh, guilin's look)
+// Two meshes for all the stacks: the walls (grey limestone streaked black where the rain runs and ochre where iron
+// stains it, moss up the dome, a wet black band at the waterline notch; where a dome's bed leans in enough to hold soil,
+// the soil's dark green-brown under its forest, so a gap between the trees is not bare rock) and the tops (soil and moss
+// under the scrub). The library's karst limestone and moss (materials.json rock.wall, rock.top, as guilin's) when the
+// pack is on the page, else the painted limestone below. The host hands both geometries to NWBAY.dress() so the biome
+// hangs its curtain figs and gardens off the faces (88-host-build). The painted limestone stays the sinkholes' walls.
 const TEX_LIME=BIO.canvasTex(256,512,(g,w,h)=>{g.fillStyle='#cfc8bc';g.fillRect(0,0,w,h);
  for(let i=0;i<70;i++){const x=rng()*w,y0=rng()*h*.6-40,ww=rr(2,9);g.fillStyle='rgba(70,62,52,'+(.08+rng()*.22).toFixed(2)+')';g.beginPath();g.moveTo(x,y0);g.lineTo(x+ww,y0+rr(-3,3));g.lineTo(x+ww+rr(-4,4),h+10);g.lineTo(x+rr(-4,4),h+10);g.closePath();g.fill();}   // runnels
  for(let i=0;i<34;i++){const y=rng()*h;g.strokeStyle='rgba(90,84,74,'+(.1+rng()*.2).toFixed(2)+')';g.lineWidth=rr(1,2.5);g.beginPath();g.moveTo(-4,y);g.bezierCurveTo(w*.3,y+rr(-6,6),w*.7,y+rr(-6,6),w+4,y+rr(-4,4));g.stroke();}   // bedding
  for(let i=0;i<160;i++){const x=rng()*w,y=rng()*h,r=rr(2,7);g.fillStyle='rgba('+(rng()<.5?'60,56,50':'236,232,222')+','+(.2+rng()*.3).toFixed(2)+')';g.beginPath();g.ellipse(x,y,r,r*.6,rr(0,TAU),0,TAU);g.fill();}});   // pits and pale flakes
 const MAT_LIME=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,color:0xffffff});
+// THE LIMESTONE'S BEDS (core/terrain KSTRATA; BACKPORT.md nwbay's row, "strata on the sea cliffs"; the final rebuild, 2026-10-27): a
+// massive grey limestone in thick beds, darker and paler by bed, thin marl partings and iron-stained bands, near level (Krabi's
+// Ratburi limestone dips a few degrees), drawn on the stacks' walls and the sinkholes' walls as a tint about the bed's mean, under
+// the library's karst grain and the rain's streaks. One stack for the map, so a bed runs from stack to stack. ?strata=0 without it
+if(typeof KSTRATA!=='undefined'&&!KSTRATA.RECIPES['nwbay-karst'])KSTRATA.add({name:'nwbay-karst',main:'lime',kinds:{
+ lime:{p:.5,th:[4,16],col:[0xc4bfb5,0xbab5aa,0xcdc8bd],hard:.95,xbed:0,varnish:.2},
+ dark:{p:.24,th:[2,8],col:[0x9a978f,0x8e8b84,0xa39f96],hard:.9,xbed:0,varnish:.2},
+ marl:{p:.14,th:[.3,1.4],col:[0xa69a84,0x9c907a],hard:.3,xbed:0,varnish:0,between:true},
+ iron:{p:.12,th:[.3,1.2],col:[0xb8946c,0xae8a62],hard:.6,xbed:0,varnish:0,between:true}},fx:{xbed:0,varnish:.2}});
+const NWBAY_STRATA=new URLSearchParams(location.search).get('strata')!=='0'&&typeof KSTRATA!=='undefined'?
+ BIO.strata({recipe:'nwbay-karst',seed:8107,range:[-120,260],dip:[.8,-.6,.03],warp:[5,1.6],res:.25,private:true}):null;
+// the stacks' and the sinkholes' walls take it: strataColor is linear; the tint is the bed's colour over the lime's mean (.47)
+function strataOn(m,key){if(!NWBAY_STRATA)return m;const prev=m.onBeforeCompile;
+ m.onBeforeCompile=(sh,r)=>{if(prev)prev.call(m,sh,r);NWBAY_STRATA.inject(sh);
+  sh.fragmentShader=sh.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n{vec3 sc=strataColor(vSWP,vSWN);diffuseColor.rgb*=mix(vec3(1.0),sc/0.47,0.6);}');};
+ m.customProgramCacheKey=()=>key;return m;}
+strataOn(MAT_LIME,'nwbay-lime-strata');
 const STACK_GEOS=[];
-(function(){const LIME=new THREE.Color(0xb4ac9c),LIME2=new THREE.Color(0xd4ccbc),DARK=new THREE.Color(0x4a4238),NOTCH=new THREE.Color(0x2e2a26),WET=new THREE.Color(0x5a5a52),MOSS=new THREE.Color(0x5a6a3c),RUST=new THREE.Color(0x9a6a40),CAP=new THREE.Color(0x4e4a32),CAP2=new THREE.Color(0x6a6a44);
- const c=new THREE.Color();
- // the rim ring of the face sits at rho .92 (the figs root inside it, at d < -4 m), the dome runs in from there
- STACKS.forEach((S,si)=>{const seg=S.r>60?64:S.r>40?48:32,rimRho=.92,faceTop=S.h*(1-.33*rimRho*rimRho);
-  const pos=[],col=[],uv=[],idx=[];let rows=0;
-  const addRow=(fn)=>{for(let s=0;s<=seg;s++){const ang=s/seg*TAU,q=fn(ang,s);pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);col.push(q[5].r,q[5].g,q[5].b);}rows++;};
-  // the face rings: from under the bed to the rim
-  const ys=[];for(let y=-16;y<faceTop;y+=(y<-3?4:y<5?1.1:y<faceTop-14?5.5:2.2))ys.push(y);
-  ys.forEach(y=>addRow((ang,s)=>{const R0=stackRad(S,ang),t=y/faceTop;
-   const notch=1-.13*smooth(-2.6,-.6,y)*smooth(3.9,1.8,y);                                   // the undercut at the waterline
-   const belly=1+.05*Math.sin(y*.09+S.sd)+.04*(fbm(ang*2.1+S.sd,y*.02,63,2)-.5)*2;
-   const ledge=1+.05*(smooth(.08,0,Math.abs(t-.42))+smooth(.06,0,Math.abs(t-.71)));            // two ledges
-   const rim=1-.08*smooth(faceTop-16,faceTop,y);                                             // rounding into the top (to rho .92)
-   const r=R0*notch*belly*ledge*rim;
-   const streak=fbm(ang*7+S.sd*2,y*.012,64,3),bed=fbm(ang*3+S.sd,y*.03,66,2),rust=fbm(ang*4+S.sd*9,y*.02,67,2);
-   c.copy(LIME).lerp(LIME2,clamp(.5+(bed-.5)*2.2,0,1)).lerp(DARK,smooth(.52,.7,streak)*.8);
-   c.lerp(RUST,smooth(.6,.72,rust)*.5);
-   c.lerp(NOTCH,smooth(4.2,1.5,y)*smooth(-3.5,-1.2,y));c.lerp(WET,smooth(-1,-6,y)*.8);
-   c.lerp(MOSS,smooth(faceTop-30,faceTop-2,y)*smooth(.42,.62,fbm(ang*5,y*.05,68,2))*.85);
-   return[S.x+Math.cos(ang)*r,y,S.z+Math.sin(ang)*r,ang*R0/14,y/22,c];}));
-  // the dome: rings in from the rim to the centre, following domeH exactly (terrainH is the same function)
-  [rimRho,.84,.74,.62,.5,.38,.26,.14,.001].forEach((rho,k)=>addRow((ang,s)=>{const R0=stackRad(S,ang),r=R0*rho,x=S.x+Math.cos(ang)*r,z=S.z+Math.sin(ang)*r,y=k===0?faceTop:domeH(S,rho,x,z);
-   const n=fbm(x*.05,z*.05,69,2);c.copy(CAP).lerp(CAP2,clamp(.5+(n-.5)*2,0,1)).lerp(LIME,smooth(.6,rimRho,rho)*.7*smooth(.4,.6,n));
-   return[x,y,z,x/8,z/8,c];}));
-  for(let r2=0;r2<rows-1;r2++)for(let s=0;s<seg;s++){const a=r2*(seg+1)+s,b=a+seg+1;idx.push(a,b,a+1,a+1,b,b+1);}   // CCW from outside: the angle runs clockwise seen from above
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
-  geo.setIndex(idx);geo.computeVertexNormals();
-  const m=new THREE.Mesh(geo,MAT_LIME);m.userData.inspectLabel='Karst stack';m.userData.host=true;scene.add(m);STACK_GEOS.push(geo);
-  REGISTER({name:'Karst stack '+(si+1)+(S.u<950&&bayIn(S.x,S.z)<0?' (sea stack)':' (shore)'),x:S.x,z:S.z,y:-2,r:S.r*S.e*1.3,h:S.h+8});});})();
+// WEATHERED STACKS (core/terrain KSTACKS.weather; the final rebuild, 2026-10-27; ?weather=0 off): the drawn mesh worn natural, two grains
+// of KRAND noise and the feet kept on the ground. The records (ROCK) keep the unweathered body, so terrainH and the cliffs' plants (57,
+// KSTACKS.wall) read the body as before; the dress pass samples the drawn faces (STACK_GEOS). KSTACKS.contour is NOT taken: its
+// profile and joints move a face by metres, and the cliff figs' curtains and the rock figs hang on the record's walls
+const WEATHER=new URLSearchParams(location.search).get('weather')!=='0';
+(function(){const lib=k=>{const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nwbay',k):null;return L?Object.assign({s:L.scale[0],lib:true},KMAT.textures(L,{aniso:8})):null;};
+ const Lw=lib('rock.wall')||{map:TEX_LIME,s:14,lib:false},Lt=lib('rock.top')||{map:TEX_LIME,s:8,lib:false};
+ const GREY=new THREE.Color(0xa6a298),DARK=new THREE.Color(0x3c3c38),OCHRE=new THREE.Color(0xb08a5e),MOSS=new THREE.Color(0x6a7a48),NOTCH=new THREE.Color(0x2e2a26),WET=new THREE.Color(0x5a5a52),
+  TOPC=new THREE.Color(0x5a5a3c),SOIL=new THREE.Color(0x34422a),WHITE=new THREE.Color(0xffffff),c=new THREE.Color();
+ const acc={wall:{pos:[],uv:[],col:[],idx:[]},top:{pos:[],uv:[],col:[],idx:[]}},pts=[];
+ ROCK.forEach(B=>{const m=KSTACKS.mesh(B,{step:5});if(WEATHER)KSTACKS.weather(B,m,{ground:groundH});const nv=m.part.length,span=Math.max(1,B.top-B.y0),remap={wall:new Int32Array(nv).fill(-1),top:new Int32Array(nv).fill(-1)};
+  for(let i=0;i<m.idx.length;i+=3){const isTop=m.part[m.idx[i]]===1,A=isTop?acc.top:acc.wall,Rm=isTop?remap.top:remap.wall;
+   for(let k=0;k<3;k++){const v=m.idx[i+k];if(Rm[v]<0){Rm[v]=A.pos.length/3;const x=m.pos[3*v],y=m.pos[3*v+1],z=m.pos[3*v+2];
+     A.pos.push(x,y,z);const ang=Math.atan2(z-B.z,x-B.x),up=clamp((y-B.y0)/span,0,1);
+     if(isTop){A.uv.push(m.uv[2*v]/Lt.s,m.uv[2*v+1]/Lt.s);c.copy(Lt.lib?WHITE:TOPC).lerp(MOSS,.35*fbm(x*.02,z*.02,43,2)).lerp(SOIL,.7);}   /* a dome's bed tops show only as slivers at its partings: the soil's colour */
+     else{A.uv.push(m.uv[2*v]/Lw.s,m.uv[2*v+1]/Lw.s);
+      const s1=fbm(Math.cos(ang)*B.R*.09+B.seed%61,Math.sin(ang)*B.R*.09+y*.004,47,2),s2=fbm(Math.cos(ang)*B.R*.05-9,Math.sin(ang)*B.R*.05+y*.003,48,2);   /* the rain's runs, the iron's stains */
+      const kk=Lw.lib?.35:1,b=B.beds[m.bed[v]],steep=b.h/Math.max(.01,Math.max(b.rx,b.rz)*(1-(b.tp==null?1:b.tp)));
+      c.copy(Lw.lib?WHITE:GREY).lerp(DARK,kk*.55*smooth(.5,.72,s1)).lerp(OCHRE,kk*.45*smooth(.56,.74,s2)*(1-up*.6));
+      c.lerp(MOSS,.42*smooth(.35,.85,up)*smooth(.4,.62,fbm(Math.cos(ang)*1.7+20,Math.sin(ang)*1.7+20,49,2)));
+      c.lerp(SOIL,.88*smooth(3.4,1.8,steep));
+      c.lerp(NOTCH,smooth(4.2,1.5,y)*smooth(-3.5,-1.2,y));c.lerp(WET,smooth(-1,-6,y)*.8);   /* the waterline: the notch's black band, wet below it */
+      c.multiplyScalar(.66+.34*m.occ[v]);}
+     A.col.push(c.r,c.g,c.b);}
+    A.idx.push(Rm[v]);}}
+  pts.push(B.x,(B.y0+B.top)/2,B.z);
+  REGISTER({name:B.name,x:B.x,z:B.z,y:-2,r:B.R*.8,h:B.top+8});});
+ const mk=(A,L,label)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(A.pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(A.uv,2));
+  const cl=new THREE.Float32BufferAttribute(A.col,3);for(let i=0;i<cl.count;i++){c.setRGB(cl.getX(i),cl.getY(i),cl.getZ(i)).convertSRGBToLinear();cl.setXYZ(i,c.r,c.g,c.b);}
+  g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
+  const me=new THREE.Mesh(g,(A===acc.wall?strataOn:m=>m)(new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap||null,roughnessMap:L.roughnessMap||null,roughness:1,metalness:0,vertexColors:true}),'nwbay-stack-wall'));
+  me.userData.inspectLabel=label;me.userData.host=true;scene.add(me);STACK_GEOS.push(g);return me;};
+ const W=mk(acc.wall,Lw,'Karst stack (limestone: rain-streaked black, iron-stained ochre)');mk(acc.top,Lt,'Karst stack top (soil and moss under the forest)');
+ W.userData.probePoints=pts;})();   /* one sample a stack for the probe: the rock is one merged mesh */
 
 // ---------------------------------------------------------------- the tsingy (meshes)
 // Eight fin prototypes (a serrated knife-edged ridge; the rillenkarren flutes
@@ -388,7 +527,7 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
  // rows up the faces narrowing to the knife edge, whose height along x is a saw of 3-5 teeth
  function proto(sd){reseed(8200+sd);const pos=[],col=[],uv=[],idx=[],NU=28,NV=5;
   const nT=ri(3,5),teeth=[];for(let i=0;i<nT;i++)teeth.push({x:-1+(2*i+1)/nT+rr(-.12,.12),h:rr(.62,1),w:(2/nT)*rr(.75,1.15)});teeth[ri(0,nT-1)].h=1;
-  const top=x=>{let h=.1;for(const t of teeth)h=Math.max(h,t.h*(1-Math.abs(x-t.x)/t.w));return h*smooth(1.02,.75,Math.abs(x));};
+  const top=x=>{let h=.1;for(const t of teeth)h=Math.max(h,t.h*(1-Math.abs(x-t.x)/t.w));return h*smooth(1.02,.75,Math.abs(x));};FIN_TOP[sd]=top;
   const ring=[];for(let k=0;k<=NU;k++){const a=k/NU*TAU,ca=Math.cos(a),sa=Math.sin(a);ring.push([Math.sign(ca)*Math.pow(Math.abs(ca),.45),Math.sign(sa)*Math.pow(Math.abs(sa),.8)]);}
   for(let r=0;r<=NV;r++){const t=r/NV;
    for(let k=0;k<=NU;k++){const x0=ring[k][0],z0=ring[k][1],x=x0*(1-.06*t),ht=top(x),y=-.05+t*(ht+.05),z=z0*Math.pow(1-t,.85)*(1+.05*Math.sin(x*11+sd));
@@ -407,7 +546,12 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
    M4.compose(Pv,Q,Sv);im.setMatrixAt(j,M4);cc.setHSL(.09,.06,.74+.2*P.tint);im.setColorAt(j,cc);});
   im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
   im.userData.inspectLabel='Tsingy blades';im.userData.host=true;im.userData.probeSkip=true;scene.add(im);tris+=L.length*g.index.count/3;});
- window._tsingy={blades:PINS.length,tris:tris};
+ // the fins as KWALK blocks: a box per metre along each blade's core (0.65 of its half-width, so the fissures stay open),
+ // from 2 m under the ground to its crest: a walker slides along a blade, it does not pass through one
+ let nb=0;if(typeof KWALK!=='undefined')PINS.forEach(P=>{const ca=Math.cos(P.ang),sa=Math.sin(P.ang),y0=groundBase(P.x,P.z)-2,n=Math.max(2,Math.round(P.rb*1.8)),hl=P.rb*.9/n,hw=P.rz*.65;
+  for(let i=0;i<n;i++){const m=-P.rb*.9+hl*(2*i+1),cx=P.x+ca*m,cz=P.z+sa*m,ex=Math.abs(ca)*hl+Math.abs(sa)*hw,ez=Math.abs(sa)*hl+Math.abs(ca)*hw;
+   KWALK.block([cx-ex,cx+ex,cz-ez,cz+ez,y0,y0+P.H+2],'tsingy');nb++;}});
+ window._tsingy={blades:PINS.length,tris:tris,blocks:nb,tall:PINS.filter(P=>P.ck>.3).length};
  REGISTER({name:'The tsingy (knife-edged limestone)',x:TSINGY.x,z:TSINGY.z,y:groundBase(TSINGY.x,TSINGY.z),r:TSINGY.ru,h:40});})();
 
 // ---------------------------------------------------------------- the sinkholes (meshes)
@@ -420,29 +564,41 @@ const MAT_TSINGY=new THREE.MeshLambertMaterial({map:TEX_LIME,vertexColors:true,c
 // hanging gardens of a doline.
 const SINK_GEOS=[];
 (function(){const LIME=new THREE.Color(0xb0a898),LIME2=new THREE.Color(0xccc4b4),DARK=new THREE.Color(0x46403a),MOSS=new THREE.Color(0x4e6a34),SLIME=new THREE.Color(0x3e5a46),WETC=new THREE.Color(0x52524a),
-  LITTER=new THREE.Color(0x3e3020),LITTER2=new THREE.Color(0x56462c),BED=new THREE.Color(0xb8b4a0),c=new THREE.Color();
+  LITTER=new THREE.Color(0x3e3020),LITTER2=new THREE.Color(0x56462c),BED=new THREE.Color(0xb8b4a0),BLK_ALC=new THREE.Color(0x1e1c1a),c=new THREE.Color();
  const S0=TERR.R*2.2,gUV=(x,z)=>[(x-(CENTER[0]-S0/2))/S0,1-(z-(CENTER[1]-S0/2))/S0];
  const MAT_FLOOR=new THREE.MeshLambertMaterial({map:TEX_DETAIL,vertexColors:true,color:0xffffff});
- const MAT_LIP=MAT_GROUND.clone();MAT_LIP.onBeforeCompile=MAT_GROUND.onBeforeCompile;MAT_LIP.polygonOffset=true;MAT_LIP.polygonOffsetFactor=-2;MAT_LIP.polygonOffsetUnits=-4;
+ /* the lip is ground: the ground's own hook and a copy of its layers (KHOOK.copy: the KGROUND layers on it now; the sky's cloud shade, the wet and
+    the horizon reach each material on their own). It took MAT_GROUND.onBeforeCompile and its key before (2026-11-03, the catch-up pass): that is
+    KHOOK's composite, so the lip compiled the ground's cloud shade and then its own, which found its anchor gone (the shader-programs failure,
+    'atmos-cloudshade-0.6: #include <lights_fragment_begin>', a dead frame wherever a sinkhole's lip was in view), and shared the ground's key */
+ const MAT_LIP=MAT_GROUND.clone();MAT_LIP.onBeforeCompile=GROUND_HOOK;if(typeof KHOOK!=='undefined'&&KHOOK.copy)KHOOK.copy(MAT_GROUND,MAT_LIP);MAT_LIP.polygonOffset=true;MAT_LIP.polygonOffsetFactor=-2;MAT_LIP.polygonOffsetUnits=-4;
  function mesh(pos,col,uv,idx,mat,label){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
-  if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return g;}
- SINKS.forEach((S,si)=>{const seg=S.r>50?72:40,cen=S.kind==='cenote';
+  if(col)g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();if(mat===MAT_LIP)addGL(g);const m=new THREE.Mesh(g,mat);m.userData.inspectLabel=label;m.userData.host=true;scene.add(m);return g;}
+ SINKS.forEach((S,si)=>{const seg=S.r>50?96:48,cen=S.kind==='cenote';
   const rim=[];for(let s=0;s<=seg;s++){const ang=s/seg*TAU,R0=sinkRad(S,ang),x=S.x+Math.cos(ang)*R0,z=S.z+Math.sin(ang)*R0;rim.push({ang:ang,R0:R0,y:groundBase(x,z)});}
   const footY=S.floorY+S.talus;
+  // ALCOVES (2026-10-25): shallow caves let into the wall, mouths 8-36 m wide and 5-14 m tall, dark inside; a tiankeng's in
+  // its lower wall (the floor's forest reaching in under them), a cenote's above its water, never at the wall's foot (the
+  // floor meets the wall there). Each from a hash of the sinkhole and its index: nothing else draws from it.
+  const tw0=cen?clamp(rim[0].y/(rim[0].y-footY),.1,.95):1,span=Math.max(1,rim[0].y-footY),ALC=[];
+  for(let i=0,n=cen?3:5;i<n;i++){const h=k=>KRAND.unit(KRAND.hash(0xA1C0,S.sd,i,k)),R=S.r*S.e;
+   ALC.push({a:(i+.2+.6*h(1))/n*TAU,t:cen?tw0*mix(.5,.82,h(2)):mix(.5,.74,h(2)),w:(cen?mix(4,7,h(3)):mix(12,20,h(3)))/R,h:(cen?mix(2.5,4.5,h(4)):mix(5,8,h(4)))/span,d:cen?mix(3,5,h(5)):mix(10,17,h(5))});}
+  const alc=(ang,tt)=>{let k=0;for(const A of ALC){const da=Math.atan2(Math.sin(ang-A.a),Math.cos(ang-A.a))/A.w,dt=(tt-A.t)/A.h,q=1-da*da-dt*dt*(dt>0?1.6:1);if(q>0)k=Math.max(k,Math.pow(q,.55)*A.d);}return k;};
   // the wall: t 0 at the rim .. 1 at the floor; a cenote's in two pieces, above and below the water
   function wall(t0,t1,nRow){const pos=[],col=[],uv=[],idx=[];
    for(let r=0;r<=nRow;r++){const tt=mix(t0,t1,Math.pow(r/nRow,1.15));
     for(let s=0;s<=seg;s++){const q=rim[s],y=mix(q.y,footY,tt),bell=1+S.bell*smooth(.04,.55,tt),
-      rough=1+.035*(fbm(q.ang*6+S.sd,y*.08,93,2)-.5)*2+.025*Math.sin(y*.21+q.ang*3+S.sd),ledge=1-.03*smooth(.05,0,Math.abs(tt-.38)),r=q.R0*bell*rough*ledge;
+      rough=1+.035*(fbm(q.ang*6+S.sd,y*.08,93,2)-.5)*2+.025*Math.sin(y*.21+q.ang*3+S.sd),ledge=1-.03*smooth(.05,0,Math.abs(tt-.38)),ak=alc(q.ang,tt),r=q.R0*bell*rough*ledge+ak;
      pos.push(S.x+Math.cos(q.ang)*r,y,S.z+Math.sin(q.ang)*r);uv.push(q.ang*q.R0/14,y/22);
      const streak=fbm(q.ang*7+S.sd*2,y*.012,94,3),bed=fbm(q.ang*3+S.sd,y*.03,95,2);
      c.copy(LIME).lerp(LIME2,clamp(.5+(bed-.5)*2.2,0,1)).lerp(DARK,smooth(.5,.68,streak)*.8);
      c.lerp(MOSS,smooth(.3,0,tt)*smooth(.4,.6,fbm(q.ang*5,y*.05,96,2))*.8);
+     if(ak>0)c.lerp(BLK_ALC,clamp(ak/3.5,0,1)*.92);   /* an alcove's shadowed back */
      if(cen){c.lerp(SLIME,smooth(3,.5,y)*smooth(-2,.2,y)*.85);c.lerp(WETC,smooth(.5,-3,y)*.7);}else c.lerp(MOSS,smooth(.75,1,tt)*.5);   // the damp foot of a tiankeng's wall
      col.push(c.r,c.g,c.b);}}
    for(let r=0;r<nRow;r++)for(let s=0;s<seg;s++){const a=r*(seg+1)+s,b=a+seg+1;idx.push(a,b,a+1,a+1,b,b+1);}   // rows run down: this winding faces the axis
    return{pos,col,uv,idx};}
-  const tw=cen?clamp(rim[0].y/(rim[0].y-footY),.1,.95):1,parts=cen?[[0,tw,10],[tw,1,4]]:[[0,1,22]];
+  const tw=tw0,parts=cen?[[0,tw,14],[tw,1,4]]:[[0,1,30]];
   parts.forEach((pp,k)=>{const W=wall(pp[0],pp[1],pp[2]),g=mesh(W.pos,W.col,W.uv,W.idx,MAT_LIME,'Sinkhole wall');if(k===0)SINK_GEOS.push(g);});
   // the floor: rings in from the wall's foot to the centre
   {const pos=[],col=[],uv=[],idx=[],rhos=[1+S.bell,1.0,.86,.7,.52,.34,.16,.001];
@@ -457,30 +613,19 @@ const SINK_GEOS=[];
    mesh(pos,null,uv,idx,MAT_LIP,'The ground');}
   REGISTER({name:S.name+(cen?' (to the water table)':' (a collapse doline)'),x:S.x,z:S.z,y:S.floorY,r:S.r*S.e,h:S.top-S.floorY});});})();
 
-// ---------------------------------------------------------------- the water
-// One plane at y=0 carries the bay, the lagoons and the lowland reach of the
-// river; its vertex colour is the water's own colour by depth (bay colour in
-// the salt, river colour in the fresh). The river's descent is TERRACED: a
-// ribbon in the same material whose height is snapped to each tread's pool
-// level, so it reads as a staircase of flat turquoise pools with a sheet of
-// water on every riser, and foam cards on those. Rimstone lips (host crust
-// geometry) hold every pool.
+// ---------------------------------------------------------------- the water (its records; core/water draws them in 89w-host-water.js)
+// The bay, the lagoons and the lowland reach of the river are one open surface; its colour is the water's own by depth (the
+// bay's shallow to deep), with pale sand shoals, a pale rim at the beach, a pale lagoon round every stack and the river's
+// colour in the fresh water laid over it as a tint field (waterColorAt's weights). The river's descent is TERRACED (RIVER_SM:
+// the samples every 5 m, each with its tread's pool level): a WATER.terraces chain of still pools joined by a fall down every
+// riser. Rimstone lips (host crust geometry, below) hold every pool; the shelf pools (SHELF_POOLS) and the cenotes' pools are
+// still water too. The page's own plane, ribbon, foam cards and shader are gone (2026-10-25).
 const WATER_SHALLOW=new THREE.Color().setHSL(NWBAY_BAY.hue,.70,.52),WATER_MID=new THREE.Color().setHSL(NWBAY_BAY.hue,.74,.34),WATER_DEEP=new THREE.Color().setHSL(NWBAY_BAY.hue+.03,.70,.14),WATER_PALE=new THREE.Color().setHSL(NWBAY_BAY.hue-.03,.6,.72);
 const RIVER_COL=new THREE.Color().setHSL((NWBAY_BAY.hue+.02)%1,.55,.46),POOL_COL=new THREE.Color().setHSL(NWBAY_BAY.hue+.01,.72,.5),POOL_PALE=new THREE.Color().setHSL(NWBAY_BAY.hue-.02,.62,.7),POOL_DEEP=new THREE.Color().setHSL(NWBAY_BAY.hue+.04,.7,.3);
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,side:THREE.DoubleSide,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(-1200,900,-600).normalize()},uSky:{value:new THREE.Color(0xd8e4e0)}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' float dcam=length(cameraPosition-vWP);float rk=1.0-smoothstep(120.0,420.0,dcam);',   // ripples fade with range or they alias into a moire
-  ' vec3 n=normalize(vec3(rk*(0.035*sin(vWP.x*0.31+uT*1.1)+0.02*sin(vWP.z*0.53-uT*0.7+vWP.x*0.11)),1.0,rk*(0.035*cos(vWP.z*0.27+uT*0.9)+0.02*sin(vWP.x*0.47+uT*1.3))));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(1.0-max(dot(n,V),0.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.62);',
-  ' vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.75*vec3(1.0,0.96,0.86);',
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
+
+function waterTintK(x,z){const h=groundH(x,z),d=Math.max(0,-h),lk=bayIn(x,z),fresh=smooth(160,40,riverD(x,z))*(1-smooth(-60,-300,lk));
+ const shoal=fbm(x*.0031+2,z*.0031-4,505,2),K=stackAt(x,z),near=K?smooth(90,10,K.d):0;
+ return[Math.max(smooth(.47,.66,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.7,near*.45*smooth(3,.5,d)),fresh];}
 function waterColorAt(x,z,out){const h=groundH(x,z),d=Math.max(0,-h),lk=bayIn(x,z),fresh=smooth(160,40,riverD(x,z))*(1-smooth(-60,-300,lk));
  const shoal=fbm(x*.0031+2,z*.0031-4,505,2),K=stackAt(x,z),near=K?smooth(90,10,K.d):0;
  out.copy(WATER_SHALLOW).lerp(WATER_PALE,Math.max(smooth(.47,.66,shoal)*smooth(2.2,.3,d),smooth(.5,.08,d)*.7,near*.45*smooth(3,.5,d))).lerp(WATER_MID,smooth(1.2,3.6,d)).lerp(WATER_DEEP,smooth(4,9,d));   // pale sand shoals, a pale rim at the beach, a pale lagoon round every stack
@@ -496,21 +641,8 @@ function hgTube(pts,col,seg,loop){seg=seg||6;const n=pts.length,rings=[];
   for(let s=0;s<seg;s++){const an=s/seg*TAU,cx=Math.cos(an),sx=Math.sin(an);ring.push([pts[i][0]+(nx*cx+bx*sx)*pts[i][3],pts[i][1]+(ny*cx+by*sx)*pts[i][3],pts[i][2]+(nz*cx+bz*sx)*pts[i][3]]);}rings.push(ring);}
  for(let i=0;i<(loop?n:n-1);i++){const A=rings[i],B=rings[(i+1)%n];for(let s=0;s<seg;s++){const s1=(s+1)%seg;hgTri(A[s],B[s1],B[s],col);hgTri(A[s],A[s1],B[s1],col);}}}
 const CRUST=new THREE.Color(0xe8dec6).convertSRGBToLinear(),CRUST2=new THREE.Color(0xd2c6ac).convertSRGBToLinear();
-const WATER_GEO={pos:[],col:[]};
-function wgTri(a,b,c2,col){[a,b,c2].forEach(p=>{WATER_GEO.pos.push(p[0],p[1],p[2]);WATER_GEO.col.push(col.r,col.g,col.b);});}
-(function(){const N=300,S=TERR.R*2.2,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color();
- for(let i=0;i<p.count;i++){waterColorAt(p.getX(i),p.getZ(i),c);c.convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel='The bay';m.renderOrder=1;scene.add(m);
- // a cenote's pool: its own disc a hair over the plane (the plane's 18 m colour grid is a blocky square in a 20 m shaft),
- // pale turquoise under the walls' overhang, deep at the centre
- SINKS.forEach(S=>{if(S.kind!=='cenote')return;const seg=40,pos=[],col=[],idx=[],c=new THREE.Color(),R=[1+S.bell+.05,.9,.65,.4,.001];
-  R.forEach(rho=>{for(let s=0;s<=seg;s++){const ang=s/seg*TAU,r=sinkRad(S,ang)*rho;pos.push(S.x+Math.cos(ang)*r,.04,S.z+Math.sin(ang)*r);
-   c.copy(WATER_PALE).lerp(WATER_SHALLOW,smooth(1.2,.85,rho)).lerp(WATER_MID,smooth(.85,.4,rho)).lerp(WATER_DEEP,smooth(.45,0,rho)*.8).convertSRGBToLinear();col.push(c.r,c.g,c.b);}});
-  for(let r=0;r<R.length-1;r++)for(let s=0;s<seg;s++){const a=r*(seg+1)+s,b=a+seg+1;idx.push(a,b,a+1,a+1,b,b+1);}
-  const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));cg.setAttribute('color',new THREE.Float32BufferAttribute(col,3));cg.setIndex(idx);
-  const cm=new THREE.Mesh(cg,MAT_WATER);cm.userData.probeSkip=true;cm.userData.inspectLabel='A cenote pool';cm.renderOrder=1;scene.add(cm);});
+const RIVER_SM=[],SHELF_POOLS=[];   // the terraced river's samples, the shelf pools' rims: drawn by core/water (89w-host-water.js)
+(function(){
  // the terraced river: samples every 5 m along u from just above the delta to
  // the NW edge; each sample carries its pool level and the pool's colour
  const SM=[];
@@ -519,38 +651,29 @@ function wgTri(a,b,c2,col){[a,b,c2].forEach(p=>{WATER_GEO.pos.push(p[0],p[1],p[2
   const tread=-1.9+si*5+1.5,lvl=mix(bed+1.1,f>.8?Math.max(bed+.35,tread):tread,k);
   const pc=fbm(si*.37+1,3,606,1);const c2=POOL_COL.clone().lerp(POOL_PALE,smooth(.3,.6,pc)*.7).lerp(POOL_DEEP,smooth(.6,.35,pc)*.6).lerp(RIVER_COL,1-k);
   SM.push({u:u,v:vc,x:P[0],z:P[1],y:lvl,w:13*chanW+3,ramp:f>.8&&k>.5,si:si,k:k,col:c2.convertSRGBToLinear()});}
- const pos=[],cc=[];
- for(let i=0;i<SM.length-1;i++){const A=SM[i],B=SM[i+1];
-  pos.push(A.x-A.w*SQ,A.y,A.z-A.w*SQ, B.x-B.w*SQ,B.y,B.z-B.w*SQ, B.x+B.w*SQ,B.y,B.z+B.w*SQ,  A.x-A.w*SQ,A.y,A.z-A.w*SQ, B.x+B.w*SQ,B.y,B.z+B.w*SQ, A.x+A.w*SQ,A.y,A.z+A.w*SQ);   // across the channel: the v direction is (1,1)/sqrt2 in xz
-  [A,B,B,A,B,A].forEach(q=>cc.push(q.col.r,q.col.g,q.col.b));}
- const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('color',new THREE.Float32BufferAttribute(cc,3));geo.computeVertexNormals();
- const rm=new THREE.Mesh(geo,MAT_WATER);rm.userData.probeSkip=true;rm.userData.inspectLabel='The river (terraced pools)';scene.add(rm);
- // the CASCADES: where the water goes down a riser it goes white -- foam cards
- // laid on the ribbon, a streaky alpha canvas scrolling downstream
- const TEX_FOAM=BIO.canvasTex(128,256,(g,w,h)=>{g.clearRect(0,0,w,h);g.lineCap='round';
-  for(let i=0;i<180;i++){const x=rng()*w,y=rng()*h,L=rr(10,40);g.strokeStyle='rgba(255,255,255,'+(.25+rng()*.6).toFixed(2)+')';g.lineWidth=rr(1.5,4);
-   g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-3,3),y+L);g.stroke();}
-  for(let i=0;i<120;i++){g.fillStyle='rgba(255,255,255,'+(.3+rng()*.5).toFixed(2)+')';g.beginPath();g.arc(rng()*w,rng()*h,rr(1.5,4),0,TAU);g.fill();}});
- TEX_FOAM.wrapS=TEX_FOAM.wrapT=THREE.RepeatWrapping;
- const MAT_FOAM=new THREE.MeshBasicMaterial({map:TEX_FOAM,transparent:true,opacity:.85,depthWrite:false,side:THREE.DoubleSide,fog:true});
- TICKS.push(dt=>{TEX_FOAM.offset.y-=dt*.55;});
- const fp=[],fu=[];let vAcc=0,lips=0;
+ RIVER_SM.push(...SM);
+ let lips=0;
  for(let i=0;i<SM.length-1;i++){const A=SM[i],B=SM[i+1],slope=(B.y-A.y)/5,k=smooth(.1,.3,slope);/* the river comes DOWN toward the bay: upstream is the larger u */
-  if(k>0){const ww=Math.min(A.w,B.w)*.85*k,ya=A.y+.22,yb=B.y+.22;
-   fp.push(A.x-ww*SQ,ya,A.z-ww*SQ, B.x-ww*SQ,yb,B.z-ww*SQ, B.x+ww*SQ,yb,B.z+ww*SQ,  A.x-ww*SQ,ya,A.z-ww*SQ, B.x+ww*SQ,yb,B.z+ww*SQ, A.x+ww*SQ,ya,A.z+ww*SQ);
-   fu.push(0,vAcc, 0,vAcc+.17, 1,vAcc+.17, 0,vAcc, 1,vAcc+.17, 1,vAcc);}
-  vAcc+=.17;
   // a RIMSTONE LIP where a tread's pool spills onto the riser below it: a cream
   // crescent across the channel, bowed downstream, standing just above the pool
-  if(B.k>.5&&!B.ramp&&A.ramp&&B.y>A.y+1.2){const pts=[],w=B.w*1.05,n=11;
+  if(B.k>.5&&B.k<=.95&&!B.ramp&&A.ramp&&B.y>A.y+1.2){const pts=[],w=B.w*1.05,n=11;   /* the lowland lips; the terraces' own (k > .95) are the RISERS' faces below */
    for(let j=0;j<=n;j++){const t=j/n-.5,v=B.v+t*2*w,bow=5.5*(1-4*t*t),P=XZ(B.u-2.2-bow,v);const yy=B.y+.28-Math.abs(t)*.3;pts.push([P[0],yy,P[1],.55+.5*(1-Math.abs(t)*1.6)]);}
    hgTube(pts,CRUST,6);lips++;
    // the crust apron under the lip, draped down the riser: a second, lower, wider lip
    const pts2=[];for(let j=0;j<=n;j++){const t=j/n-.5,v=B.v+t*2*w*1.08,bow=9*(1-4*t*t),P=XZ(B.u-5-bow,v);pts2.push([P[0],B.y-1.3-Math.abs(t)*.4,P[1],.7]);}
    hgTube(pts2,CRUST2,5);}}
- if(fp.length){const fg=new THREE.BufferGeometry();fg.setAttribute('position',new THREE.Float32BufferAttribute(fp,3));fg.setAttribute('uv',new THREE.Float32BufferAttribute(fu,2));
-  const fm=new THREE.Mesh(fg,MAT_FOAM);fm.userData.probeSkip=true;fm.userData.inspectLabel='The cascades';fm.renderOrder=2;scene.add(fm);}
- window._lips=lips;
+ // THE RISERS' FACES (RISERS, above): under every lip of the terraces a rimstone face of crust from the crest (a hand over the
+ // upper pool, just behind where the curtain leaves) down past the lower pool's level, bellied out a little under the curtain
+ // and swept back upstream at its ends into the banks, the crest sinking there to the bed; a lip tube along the crest and a
+ // crust ledge at its foot where the curtain lands. One merged crust mesh with the rest (no call of its own).
+ RISERS.forEach(R=>{const hs=R.hw+3.5,n=14,TS=[0,.1,.3,.55,.8,1],px=-R.dz,pz=R.dx,P=(a,c)=>[R.x+R.dx*a+px*c,R.z+R.dz*a+pz*c],rows=[],crest=[],foot=[];
+  for(let j=0;j<=n;j++){const c=(j/n*2-1)*hs,e=Math.abs(c)/hs,back=-1.6*smooth(.7,1,e),C0=P(back-.1,c),gh=groundH(C0[0],C0[1]),yc=Math.max(gh+.2,mix(R.yUp+.25,gh+.2,smooth(.75,1,e))),yb=R.yLo-1.2;
+   rows.push(TS.map(t=>{const a=back-.1+.3*Math.sin(Math.PI*t)*(1-.6*e),Q=P(a,c);return[Q[0],mix(yc,yb,t),Q[1]];}));
+   const Q=P(back-.2,c);crest.push([Q[0],yc+.05,Q[1],.42*(1-.35*e)]);
+   if(Math.abs(c)<R.hw+1.5){const F=P(.5,c);foot.push([F[0],R.yLo+.06,F[1],.38]);}}
+  for(let j=0;j<n;j++)for(let r=0;r+1<TS.length;r++){const a=rows[j][r],b=rows[j+1][r],c2=rows[j+1][r+1],d=rows[j][r+1],col=r<2?CRUST:CRUST2;hgTri(a,c2,b,col);hgTri(a,d,c2,col);}
+  hgTube(crest,CRUST,6);if(foot.length>2)hgTube(foot,CRUST2,5);lips++;});
+ window._lips=lips;window._risers=RISERS.length;
  // the SHELF POOLS on the shore: each mound carries a stair of rimstone pools
  // stepping down toward the sea -- a lip ring, a crust skirt and a water disc apiece
  SHELVES.forEach((S,si)=>{const c=S.xz,top=groundH(c[0],c[1]);
@@ -563,7 +686,7 @@ function wgTri(a,b,c2,col){[a,b,c2].forEach(p=>{WATER_GEO.pos.push(p[0],p[1],p[2
     const ax=a[0]+(a[0]-cx)/rx*o,az=a[1]+(a[1]-cz)/rx*o,bx=b[0]+(b[0]-cx)/rx*o,bz=b[1]+(b[1]-cz)/rx*o;
     hgTri([a[0],ya,a[1]],[bx,yb,bz],[b[0],ya,b[1]],CRUST2);hgTri([a[0],ya,a[1]],[ax,yb,az],[bx,yb,bz],CRUST2);}
    const wc=POOL_COL.clone().lerp(POOL_PALE,rr(.3,.7)).convertSRGBToLinear();
-   for(let j=0;j<n;j++){const a=skirt[j],b=skirt[(j+1)%n];wgTri([cx,y,cz],[b[0],y,b[1]],[a[0],y,a[1]],wc);}}
+   SHELF_POOLS.push({name:'A shelf pool',pts:skirt.map(q=>[q[0],q[1]]),y,col:wc});}
   REGISTER({name:'Shelf pools (rimstone terraces)',x:c[0],z:c[1],y:top-2,r:44,h:8});});
  // bake the crust and the shelf water
  const TEX_CRUST=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#e6e0d2';g.fillRect(0,0,w,h);
@@ -571,24 +694,46 @@ function wgTri(a,b,c2,col){[a,b,c2].forEach(p=>{WATER_GEO.pos.push(p[0],p[1],p[2
   for(let i=0;i<60;i++){g.fillStyle='rgba(170,160,140,.25)';g.beginPath();g.ellipse(rng()*w,rng()*h,rr(4,14),rr(2,5),0,0,TAU);g.fill();}});
  const hgeo=new THREE.BufferGeometry();hgeo.setAttribute('position',new THREE.Float32BufferAttribute(HG.pos,3));hgeo.setAttribute('normal',new THREE.Float32BufferAttribute(HG.nor,3));hgeo.setAttribute('color',new THREE.Float32BufferAttribute(HG.col,3));hgeo.setAttribute('uv',new THREE.Float32BufferAttribute(HG.uv,2));
  const hm=new THREE.Mesh(hgeo,new THREE.MeshLambertMaterial({map:TEX_CRUST,vertexColors:true,side:THREE.DoubleSide}));hm.userData.probeSkip=true;hm.userData.inspectLabel='Travertine crust (rimstone)';scene.add(hm);window._crustTris=HG.pos.length/9;
- const wgeo=new THREE.BufferGeometry();wgeo.setAttribute('position',new THREE.Float32BufferAttribute(WATER_GEO.pos,3));wgeo.setAttribute('color',new THREE.Float32BufferAttribute(WATER_GEO.col,3));
- const wm=new THREE.Mesh(wgeo,MAT_WATER);wm.userData.probeSkip=true;wm.userData.inspectLabel='Shelf pools';wm.renderOrder=1;scene.add(wm);})();
+})();
 
 // ---------------------------------------------------------------- the columnar basalt
-// A headland of hexagonal columns on a hex grid, their tops stepping with a
-// noise field (the Causeway): one InstancedMesh, dark grey, charged to the host.
-(function(){const B=BASALT,c=XZ(B.u,B.v),pitch=2.3,R=Math.max(B.ru,B.rv)*1.2,list=[];
+// A headland of hexagonal columns on a hex grid, their tops stepping with a noise field (the Causeway): one InstancedMesh, charged to
+// the host. THE EDGE (the owner, 2026-10-27: "a more natural fade into the surrounding terrain"): toward the rim of the outcrop the
+// columns stand lower, down to stubs a hand high, many are gone, the rest lean a little and weather paler and mossy; a few broken
+// pieces lie fallen in the grass past the rim. Each column's top is a paler weathered cap (vertex colour). The page's random stream is
+// drawn exactly as before (two draws a column, two for its colour), so nothing placed after it moves; the new choices are KRAND's.
+// ?basaltedge=0 draws the old outcrop.
+(function(){const B=BASALT,c=XZ(B.u,B.v),pitch=2.3,R=Math.max(B.ru,B.rv)*1.2,list=[],EDGE=new URLSearchParams(location.search).get('basaltedge')!=='0';
+ const U=(i,j,k)=>KRAND.unit(KRAND.hash(8301,i+4096,j+4096,k));
  const nI=Math.ceil(R/pitch),nJ=Math.ceil(R/(pitch*.866));
- for(let j=-nJ;j<=nJ;j++)for(let i=-nI;i<=nI;i++){const x=c[0]+(i+(j&1?.5:0))*pitch,z=c[1]+j*pitch*.866,k=basaltK(x,z);if(k<.45)continue;
-  const g=groundH(x,z);if(g<-1.5)continue;const h=1.0+6.5*smooth(.3,.72,fbm(x*.022,z*.022,74,2))*k+rr(-.25,.25)+smooth(-1,1,g)*0;list.push([x,g-1.5,z,h+1.5]);}
+ for(let j=-nJ;j<=nJ;j++)for(let i=-nI;i<=nI;i++){const x=c[0]+(i+(j&1?.5:0))*pitch,z=c[1]+j*pitch*.866,k=basaltK(x,z);
+  if(k<.45){   /* past the rim: a fallen piece now and then, lying in the grass, half sunk */
+   if(EDGE&&k>.12&&U(i,j,1)<.22*smooth(.12,.45,k)){const g=groundH(x,z);if(g>.2){const L=1.2+2.2*U(i,j,2);list.push({x,z,y:g-.55,h:L,fall:true,a:U(i,j,3)*TAU,e:0,i,j});}}
+   continue;}
+  const g=groundH(x,z);if(g<-1.5)continue;const n=smooth(.3,.72,fbm(x*.022,z*.022,74,2)),h=1.0+6.5*n*k+rr(-.25,.25)+smooth(-1,1,g)*0;
+  if(!EDGE){list.push({x,z,y:g-1.5,h:h+1.5,e:1,i,j});continue;}
+  /* e: 0 at the rim, 1 at the heart: the height above the ground falls to a stub, and the rim thins. Over the outer half of the
+     headland's radius (basaltK rises 0 to 1 within a few metres: on it alone the outcrop ended in a wall), ragged by a noise */
+  const e=smooth(.97,.42,ellK(B,x,z)*(1+.12*(fbm(x*.03,z*.03,75,2)-.5)*2))*smooth(.45,.7,k),top=.18+(h-.18)*Math.pow(e,1.3)+.25*(U(i,j,4)-.5)*(1-e);
+  list.push({x,z,y:g-1.5,h:Math.max(.12,top)+1.5,e,i,j,gone:U(i,j,5)<.55*Math.pow(1-e,1.6)});}
  if(!list.length)return;
  const geo=new THREE.CylinderGeometry(1.22,1.22,1,6,1,false).translate(0,.5,0);
- const mat=new THREE.MeshLambertMaterial({color:0xffffff});
- const im=new THREE.InstancedMesh(geo,mat,list.length),M=new THREE.Matrix4(),P=new THREE.Vector3(),Q=new THREE.Quaternion(),Sc=new THREE.Vector3(),col=new Float32Array(list.length*3),cc=new THREE.Color();
- list.forEach((L,i)=>{P.set(L[0],L[1],L[2]);Q.setFromAxisAngle(new THREE.Vector3(0,1,0),rr(-.06,.06));Sc.set(1,L[3],1);M.compose(P,Q,Sc);im.setMatrixAt(i,M);
-  cc.set(0x3a3a40).offsetHSL(rr(-.02,.02),0,rr(-.05,.06)).convertSRGBToLinear();col[i*3]=cc.r;col[i*3+1]=cc.g;col[i*3+2]=cc.b;});
+ {const P=geo.attributes.position,C=new Float32Array(P.count*3);for(let v=0;v<P.count;v++){const t=P.getY(v)>.99?1.22:1;C[v*3]=C[v*3+1]=C[v*3+2]=t;}geo.setAttribute('color',new THREE.BufferAttribute(C,3));}
+ const mat=new THREE.MeshLambertMaterial({color:0xffffff,vertexColors:EDGE});
+ const keep=list.filter(L=>!L.gone),im=new THREE.InstancedMesh(geo,mat,keep.length),M=new THREE.Matrix4(),P=new THREE.Vector3(),Q=new THREE.Quaternion(),Q2=new THREE.Quaternion(),Sc=new THREE.Vector3(),col=new Float32Array(keep.length*3),cc=new THREE.Color();
+ const WEATHER=new THREE.Color(0x5e5a52),MOSS=new THREE.Color(0x4a5634),Y=new THREE.Vector3(0,1,0),AX=new THREE.Vector3();let n=0;
+ list.forEach(L=>{let yaw=0,hsl=[0,0];if(!L.fall){yaw=rr(-.06,.06);hsl=[rr(-.02,.02),rr(-.05,.06)];}   /* the old stream: every standing column draws its four */
+  if(L.gone)return;
+  Q.setFromAxisAngle(Y,L.fall?L.a:yaw);
+  if(L.fall){AX.set(Math.cos(L.a),0,Math.sin(L.a));Q2.setFromAxisAngle(AX,Math.PI/2-.08);Q.premultiply(Q2);P.set(L.x,L.y+1.0,L.z);Sc.set(.92,L.h,.92);}
+  else{if(EDGE&&L.e<1){const t=(1-L.e)*.11*U(L.i,L.j,6),a=U(L.i,L.j,7)*TAU;AX.set(Math.cos(a),0,Math.sin(a));Q2.setFromAxisAngle(AX,t);Q.premultiply(Q2);}
+   P.set(L.x,L.y,L.z);Sc.set(1,L.h,1);}
+  M.compose(P,Q,Sc);im.setMatrixAt(n,M);
+  cc.set(0x3a3a40).offsetHSL(hsl[0],0,hsl[1]);
+  if(EDGE){const w=L.fall?.75:(1-L.e)*.6;cc.lerp(WEATHER,w);if(U(L.i,L.j,8)<.35+.4*(1-L.e))cc.lerp(MOSS,(L.fall?.5:.45*(1-L.e))*U(L.i,L.j,9));}
+  cc.convertSRGBToLinear();col[n*3]=cc.r;col[n*3+1]=cc.g;col[n*3+2]=cc.b;n++;});
  im.instanceColor=new THREE.InstancedBufferAttribute(col,3);im.userData.inspectLabel='Columnar basalt';im.userData.host=true;scene.add(im);   // not probeSkip: the columns are what fills the headland's registered volume
- window._basaltColumns=list.length;
+ window._basaltColumns=keep.length;
  REGISTER({name:'The basalt headland (columnar)',x:c[0],z:c[1],y:0,r:R,h:16});})();
 
 // ---------------------------------------------------------------- the far country
@@ -612,31 +757,42 @@ function farH(x,z){
  h+=(220+1500*wallK)*smooth(5800,8000,rd)*(.55+.45*fbm(ra*4+3,rd*.0007,303,3));        // the Inner Wall ridge, ringing the N and W
  const u=uvOf(x,z)[0],v=uvOf(x,z)[1];h-=34*smooth(-1300,-2500,u)*smooth(2600,1100,Math.abs(v));   // the water the bay opens into
  return h;}
-(function(){const S=18000,N=260,g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
- const p=g.attributes.position,col=new Float32Array(p.count*3),c=new THREE.Color(),t=new THREE.Color();
+(function(){const c=new THREE.Color(),t=new THREE.Color(),S=18000,N=260;
  const NEAR=TERR.R*1.1,SAV=new THREE.Color(0x8e7a4c),ASH=new THREE.Color(0x5a5452),LAVA2=new THREE.Color(0x36302e),CAP=new THREE.Color(0xc8c0b4),RIM=new THREE.Color(0x6e7878),RIM2=new THREE.Color(0x8a8e86),BED=new THREE.Color(0x6a7a70),FOR=new THREE.Color(0x4e6a3e);
- for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
-  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz));y=groundH(x,z)-2*e;
-   for(const S of SINKS)if(Math.hypot(x-S.x,z-S.z)<S.r*S.e*1.4+100)y=Math.min(y,S.floorY-6);
-   y-=6*tsingyK(x,z);}                                                                   // and further down under the tsingy, whose fins and floor its cells cannot follow   // well under a sinkhole (its 70 m cells would bridge the hole)
-  else y=farH(x,z);p.setY(i,y);
+ // the height and the colour at a far-country point (the same as before 2026-10-27, now functions both drawings call)
+ const farY=(x,z)=>{const dx=Math.abs(x-CENTER[0]),dz=Math.abs(z-CENTER[1]),inside=Math.max(dx,dz)<NEAR;
+  let y;if(inside){const e=smooth(NEAR,NEAR-220,Math.max(dx,dz)),cs=S/N;let lo=groundH(x,z);   /* the lowest ground across this vertex's cell (2026-10-25, swbay's fix 3c47ae0f7): a 69 m cell interpolated over the river's channel, a riser's drop or a lowland pool stood above the water and hid it */
+    for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++)lo=Math.min(lo,groundH(x+a*cs*.5,z+b*cs*.5));y=lo-2*e;
+    for(const S of SINKS)if(Math.hypot(x-S.x,z-S.z)<S.r*S.e*1.4+100)y=Math.min(y,S.floorY-6);
+    y-=6*tsingyK(x,z);}                                                                   // and further down under the tsingy, whose fins and floor its cells cannot follow   // well under a sinkhole (its 70 m cells would bridge the hole)
+   else y=farH(x,z);return y;};
+ const farCol=(x,z,y)=>{
   const d=Math.hypot(x-VOLC.c[0],z-VOLC.c[1]),up=clamp(y/VOLC.H,0,1),n=fbm(x*.0012,z*.0012,305,2)-.5;
   const ang=Math.atan2(z-VOLC.c[1],x-VOLC.c[0]),flow=smooth(.56,.7,fbm(ang*5+2,d*.0016,306,2))*smooth(.1,.3,up)*smooth(.9,.6,up);   // lava flows: dark tongues down from the notch
   const rd=Math.hypot(x-CENTER[0],z-CENTER[1]),volcK=smooth(3600,2600,d);
   c.copy(FOR).lerp(SAV,smooth(.0,.12,up)*.6).lerp(ASH,(smooth(.03,.25,up)+smooth(2400,1400,d)*.5)*volcK).lerp(LAVA2,clamp(.35+n*1.4,0,1)*smooth(.2,.6,up)*volcK).lerp(CAP,smooth(.72,.9,up)*.85).lerp(new THREE.Color(0x241c1a),flow*.9*volcK);
   c.lerp(RIM,smooth(5900,7400,rd)*.9).lerp(RIM2,smooth(800,1500,y)*.6).lerp(BED,smooth(2,-12,y));
-  c.multiplyScalar(1+n*.12).convertSRGBToLinear();col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;}
- g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();
+  c.multiplyScalar(1+n*.12).convertSRGBToLinear();return c;};
+ // THE LATTICE ON KFAR (core/terrain/44-core-farfield.js; the final rebuild, 2026-10-27, nhighlands' and nwlowlands' far field; ?kfar=0
+ // for the old 18 km plane of 69 m cells): 50 m cells out to 3.5 km round the page's origin (the map's square inside it), then each
+ // 6% wider to 13 km, the cells wholly inside the ground's square left out (the ground draws there), the planet's curvature past the
+ // map and a crest pass that keeps the volcano's ridges and the Inner Wall's crest sharp on the coarse cells; the same heights and colours
+ let g;if(new URLSearchParams(location.search).get('kfar')!=='0'&&typeof KFAR!=='undefined'){
+  const HS=TERR.R*1.1-60,X0=CENTER[0]-HS,X1=CENTER[0]+HS,Z0=CENTER[1]-HS,Z1=CENTER[1]+HS,RO=12600;
+  const G=KFAR.grid({lines:KFAR.lines({cell:50,inner:3500,out:13000,grow:1.06}),dense:true,centre:CENTER,h:farY,
+   skip:(x0,z0,x1,z1)=>(x0>=X0&&x1<=X1&&z0>=Z0&&z1<=Z1)||Math.min(Math.hypot(x0-CENTER[0],z0-CENTER[1]),Math.hypot(x1-CENTER[0],z0-CENTER[1]),Math.hypot(x0-CENTER[0],z1-CENTER[1]),Math.hypot(x1-CENTER[0],z1-CENTER[1]))>RO,
+   color:(x,z,y,q)=>{const k=farCol(x,z,q.h);return[k.r,k.g,k.b];},curve:{from:TERR.R*1.2},crest:{k:.5,from:4000,to:9000}});
+  g=KFAR.geometry(G);window.NWBAY_FAR_G=G;}
+ else{g=new THREE.PlaneGeometry(S,S,N,N);g.rotateX(-Math.PI/2);g.translate(CENTER[0],0,CENTER[1]);
+  const p=g.attributes.position,col=new Float32Array(p.count*3);
+  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),y=farY(x,z);p.setY(i,y);const k=farCol(x,z,y);col[i*3]=k.r;col[i*3+1]=k.g;col[i*3+2]=k.b;}
+  g.setAttribute('color',new THREE.BufferAttribute(col,3));g.computeVertexNormals();}
  const fm=new THREE.MeshLambertMaterial({vertexColors:true,color:0xa8a49c});
  fm.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',TEX_DETAIL)};
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;');
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;')
    .replace('#include <color_fragment>','#include <color_fragment>\n{vec3 dt=texture2D(uDetail,vGWP.xz*0.012).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.0017+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.8);}');};
  const m=new THREE.Mesh(g,fm);m.userData.probeSkip=true;m.userData.inspectLabel='The far country (the volcano, the Inner Wall)';m.renderOrder=0;scene.add(m);
- // the far water: one flat plane under it all, the bay's deep colour
- const wg=new THREE.PlaneGeometry(S,S,1,1);wg.rotateX(-Math.PI/2);wg.translate(CENTER[0],-.15,CENTER[1]);
- const wc=WATER_DEEP.clone().convertSRGBToLinear(),wcol=new Float32Array(4*3);for(let i=0;i<4;i++){wcol[i*3]=wc.r;wcol[i*3+1]=wc.g;wcol[i*3+2]=wc.b;}
- wg.setAttribute('color',new THREE.BufferAttribute(wcol,3));const wm=new THREE.Mesh(wg,MAT_WATER);wm.userData.probeSkip=true;wm.userData.inspectLabel='The outer water';wm.renderOrder=0;scene.add(wm);
  // the plume: a chain of soft grey globes off the summit, rising and leaning east, fading as it goes
  const smoke=new THREE.MeshBasicMaterial({color:0xb4b0ac,transparent:true,opacity:.30,depthWrite:false,fog:true});
  const sx=VOLC.c[0],sz=VOLC.c[1],sy=farH(sx,sz)+80;

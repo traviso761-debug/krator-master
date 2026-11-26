@@ -1,6 +1,6 @@
 {
  "build": "hyperjungle",
- "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. The older four species' canvases are painted in colour (55-trees tints() then sets a near-white tint), so their library barks keep their own colour (keep 1, brightness still matched); mahogany and kapok are near-grey, tinted by the species. The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. limb (bark.smooth) and wood (wood.gnarled: the dead wood and logs), 2026-10-06 late: grey at the procedural maps' brightness and colour.",
+ "note": "The hyperjungle kit's adapter onto the material library (core/materials/PLAN.md). Keys are the kit's material slots (50-biome-hyperjungle-species.js, the library block): bark0..5 per species, rock, leaf0..5 per species, the understorey cards, and fauna.* (58's FAUNATEX, used when no host sets it). Grey maps (keep 0) normalised to the measured mean of the canvas each replaces (2026-10-06), so the species tints keep their tone; the prism gum keeps its own colour. limb and wood stay procedural. Hosts that vendor the kit (Iziz, Girder) get these by inlining the biome's pack (tools/textures/matlib_pack.py fragment(biomes/hyperjungle, 'hyperjungle')). Run python3 tools/textures/pack.py biomes/hyperjungle after any change, then python3 build.py. Since 2026-10-26 ironbark, ghostwood and baobab are grey (keep 0) like mahogany and kapok: their canvases are painted in luminance greys (50-species barkTex gc()) bright enough that the SPECIES.bark tints never clip, and the means are the new canvases' measured means (0.549, 0.954, 0.638); the prism gum keeps its own colour (keep 1, white tints). The host's girder tower (2026-10-06, late; 85-host-tower.js hostTowerLib): concrete.ancient and metal.rust.plate at the procedural maps' brightness and colour, worked out from their painters. limb (bark.smooth) and wood (wood.gnarled: the dead wood and logs), 2026-10-06 late: grey at the procedural maps' brightness and colour.",
  "size": 512,
  "families": {
   "bark0": {
@@ -10,8 +10,8 @@
     18
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.169
+    "keep": 0.0,
+    "mean": 0.549
    },
    "roughLift": 0.3,
    "mapOnly": true
@@ -23,8 +23,8 @@
     12
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.804
+    "keep": 0.0,
+    "mean": 0.954
    },
    "roughLift": 0.3,
    "mapOnly": true
@@ -49,8 +49,8 @@
     8
    ],
    "tint": {
-    "keep": 1.0,
-    "mean": 0.423
+    "keep": 0.0,
+    "mean": 0.638
    },
    "roughLift": 0.3,
    "mapOnly": true
@@ -164,7 +164,13 @@
     "keep": 0.0,
     "mean": 0.646
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.671,
+    0.671
+   ]
   },
   "raceme": {
    "lib": "card.ghostwood-flower",
@@ -176,7 +182,14 @@
     "keep": 0.0,
     "mean": 0.502
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.341,
+    0.005,
+    0.661,
+    0.956
+   ],
+   "base": "top"
   },
   "under": {
    "lib": "card.jungle.clump.0",
@@ -188,7 +201,30 @@
     "keep": 0.0,
     "mean": 0.695
    },
-   "size": 512
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.118,
+      0.978,
+      0.997
+     ],
+     "stem": [
+      0.5015,
+      0.9912
+     ],
+     "tip": [
+      0.5015,
+      0.124
+     ],
+     "w": [
+      -0.3853,
+      0.3823
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "hang": {
    "lib": "card.vine.hanging.0",
@@ -200,7 +236,14 @@
     "keep": 0.0,
     "mean": 0.695
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.177,
+    0.005,
+    0.819,
+    0.956
+   ],
+   "base": "top"
   },
   "frond": {
    "lib": "card.fern",
@@ -212,7 +255,14 @@
     "keep": 0.0,
     "mean": 0.662
    },
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
   },
   "moss": {
    "lib": "card.moss",
@@ -236,7 +286,8 @@
     "keep": 0.0,
     "mean": 0.678
    },
-   "size": 512
+   "size": 512,
+   "base": "centre"
   },
   "fauna.wing": {
    "lib": "wing.butterfly",
@@ -357,7 +408,30 @@
     "mean": 0.695
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "stems": [
+    {
+     "cell": [
+      0.028,
+      0.04,
+      0.97,
+      0.997
+     ],
+     "stem": [
+      0.4662,
+      0.9912
+     ],
+     "tip": [
+      0.4662,
+      0.0459
+     ],
+     "w": [
+      -0.3715,
+      0.4312
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "under2": {
    "lib": "card.jungle.clump.8",
@@ -370,7 +444,30 @@
     "mean": 0.695
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "stems": [
+    {
+     "cell": [
+      0.04,
+      0.042,
+      0.96,
+      0.997
+     ],
+     "stem": [
+      0.5377,
+      0.9912
+     ],
+     "tip": [
+      0.5377,
+      0.0479
+     ],
+     "w": [
+      -0.3414,
+      0.3441
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "under3": {
    "lib": "card.jungle.clump.9",
@@ -383,7 +480,30 @@
     "mean": 0.695
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.128,
+      0.978,
+      0.997
+     ],
+     "stem": [
+      0.5098,
+      0.9912
+     ],
+     "tip": [
+      0.5098,
+      0.1338
+     ],
+     "w": [
+      -0.3975,
+      0.3896
+     ]
+    }
+   ],
+   "rise": 1.25
   },
   "hang1": {
    "lib": "card.vine.hanging.3",
@@ -396,7 +516,14 @@
     "mean": 0.695
    },
    "size": 512,
-   "own": true
+   "own": true,
+   "cell": [
+    0.198,
+    0.003,
+    0.802,
+    0.958
+   ],
+   "base": "top"
   },
   "fungus": {
    "lib": "organic.fungus.bracket",
@@ -425,6 +552,83 @@
    "roughLift": 0.35,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "figbark": {
+   "lib": "bark.strangler",
+   "scale": [
+    10,
+    14
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.6
+   },
+   "roughLift": 0.3,
+   "mapOnly": true,
+   "own": true,
+   "note": "the savage land's cathedral fig roots (src/56, J2 2026-11-08): grey, tinted by the bucket's vertex colour"
+  },
+  "comb": {
+   "lib": "organic.pod.honeycomb",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "mapOnly": true,
+   "own": true,
+   "note": "the savage land's giant-bee combs under the comb trees' limbs (src/56, J2 2026-11-08); organic.comb.bee owed (PROMPTS-NEEDED.md section 37)"
+  },
+  "bonewood": {
+   "lib": "wood.silver",
+   "scale": [
+    8,
+    10
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.85
+   },
+   "roughLift": 0.3,
+   "mapOnly": true,
+   "own": true,
+   "note": "the north's bone giants, hypertrees dead standing (src/57, J3 2026-11-08): grey, bleached by the bucket's vertex colour"
+  },
+  "howlculm": {
+   "lib": "bark.bamboo.jade",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0.2,
+   "mapOnly": true,
+   "own": true,
+   "note": "the north's howl bamboo culms (src/57, J3 2026-11-08; BIO.bamboo's uv: a sheet round, half a sheet a node): a stand-in until bark.bamboo.bored (PROMPTS-NEEDED.md section 37)"
+  },
+  "howlleaf": {
+   "lib": "card.bamboo.giant",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0,
+   "specular": 0.3,
+   "size": 1024,
+   "sheet": "geometry",
+   "own": true,
+   "note": "the north's howl bamboo sprays (src/57, J3 2026-11-08): the Cut's sheet, a cell a card (BIO.bamboo.spray); card.bamboo.leaf owed (PROMPTS-NEEDED.md section 37)"
   }
  }
 }

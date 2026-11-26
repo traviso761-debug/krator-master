@@ -1,0 +1,38 @@
+{
+ "build": "gills",
+ "note": "The shared Gills kit's library sets (biomes/gills/PLAN.md section 15; delivered 2026-11-03), packed once here and read as a second pack by each host station that draws the Gills (station.json \"packs\": [\"biomes/gills\"]; xanadu's station gills reads them as KMAT.packed('gills', <family>)), so the host kit's other pages keep their bytes. Tintable sets are grey detail maps (keep 0) the country's dress colours; full-colour sets keep their hue. mineral.crust.ferromanganese (the Red collar) is in the library but not packed: no page draws the Red country yet. Run python3 tools/textures/pack.py biomes/gills after a change, and rebuild every station that lists the pack.",
+ "size": 512,
+ "families": {
+  "pipe.lamina": {
+   "lib": "rock.lamina.pipe",
+   "note": "the pipe wall's daily couplets: a grey detail map (mean 0.5) the lamina shader multiplies into KSTRATA.laminaShade's colour, so the procedural beds and the thin years stay and the couplets show close up; scale is metres of pipe height per tile",
+   "scale": [1.5, 1.5],
+   "tint": {"keep": 0.0, "mean": 0.5},
+   "mapOnly": true
+  },
+  "collar": {
+   "lib": "mineral.crust.brucite",
+   "note": "the White collar (Qolar): the brucite crust in its own colour, under the dress's collar tint that the breath brightens",
+   "scale": [1.5, 1.5],
+   "tint": {"keep": 1.0, "mean": null},
+   "mapOnly": true
+  },
+  "fringe": {
+   "lib": "card.breathfringe",
+   "note": "the breath fringe: one tuft of the six-cell sheet, knob at the mouth, streaming along the card's length; grey (keep 0) so the dress's fringe colour colours it",
+   "scale": [1, 1],
+   "tint": {"keep": 0.0, "mean": 0.78},
+   "size": 512,
+   "cell": [0.02, 0.06, 0.45, 0.33]
+  },
+  "turf": {
+   "lib": "card.turf.limed",
+   "note": "the breath meadow's limed turf round each dew mat (GILLS.life's turf records): one clump of the eight-cell sheet, crossed quads, its own colour",
+   "scale": [1, 1],
+   "tint": {"keep": 1.0, "mean": null},
+   "size": 512,
+   "cell": [0.0, 0.18, 0.235, 0.44],
+   "base": "bottom"
+  }
+ }
+}

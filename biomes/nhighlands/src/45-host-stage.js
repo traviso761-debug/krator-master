@@ -116,7 +116,7 @@ const TARN={x:STREAM.src[0],z:STREAM.src[1],r:78,level:STREAM.TARN_LEVEL};
 const STREAM_FLOW=WATER.flow({name:'The stream',pts:STREAM.P.map((p,i)=>[p[0],p[1],STREAM.level[i]]),width:STREAM.P.map((p,i)=>2*(STREAM.halfW(i)+4.5)),
  speed:STREAM.P.map((p,i)=>1+3*smooth(.1,.9,STREAM.drop[i]))});
 const STREAM_FALLS=WATER.fallsOf(STREAM_FLOW,{steep:.5,minDrop:8,fit:true}).map(f=>WATER.fall(f));
-const TARN_STILL=WATER.still({name:'The tarn',level:TARN.level,poly:Array.from({length:48},(_,k)=>{const a=k/48*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+4),TARN.z+Math.sin(a)*(TARN.r+4)];})});
+const TARN_STILL=WATER.still({name:'The tarn',level:TARN.level,gradient:{centre:0x24343a,rim:0x5a6250,power:1.6},poly:Array.from({length:48},(_,k)=>{const a=k/48*Math.PI*2;return[TARN.x+Math.cos(a)*(TARN.r+4),TARN.z+Math.sin(a)*(TARN.r+4)];})});
 // nearest point on the stream: {d, s (metres downstream), i, f, bed, level, w}
 function streamNear(x,z){const B=STREAM.box;if(x<B[0]||x>B[2]||z<B[1]||z>B[3])return null;
  const P=STREAM.P;let bd=1e18,bi=0,bf=0;
@@ -130,7 +130,11 @@ function streamNear(x,z){const B=STREAM.box;if(x<B[0]||x>B[2]||z<B[1]||z>B[3])re
 function terrainH(x,z){let h=baseH(x,z);
  // the tarn: a bowl in the boreal band, its floor 5 m under the water
  const dt=Math.hypot(x-TARN.x,z-TARN.z);
- if(dt<TARN.r+60){const bowl=TARN.level-5.5*(1-Math.pow(Math.min(1,dt/TARN.r),2))+Math.max(0,dt-TARN.r)*.32+ (dt<TARN.r?0:.6);if(bowl<h)h=bowl;}
+ if(dt<TARN.r+60){const bowl=TARN.level-5.5*(1-Math.pow(Math.min(1,dt/TARN.r),2))+Math.max(0,dt-TARN.r)*.32+ (dt<TARN.r?0:.6);if(bowl<h)h=bowl;
+  /* its MORAINE DAM: on its downhill side the hillside fell 10-21 m below the water within metres of the shore and the tarn hung
+     over it like a disc (the owner's look pass, 2026-10-26); a crest 0.9 m over the water at the rim, ramping down at ~29 degrees
+     to the natural slope. The stream's channel (below) still cuts through it where the outflow leaves */
+  const crest=TARN.level+.9-Math.max(0,dt-TARN.r-4)*.55-Math.max(0,TARN.r+2-dt)*.4;if(dt>TARN.r-2&&crest>h)h=crest;}
  // the stream's channel: a bed, a low bank, then the valley floor
  const r=streamNear(x,z);
  if(r){const w=r.w,t=Math.max(0,r.d-w),bank=Math.max(r.bank,r.level-.35)+.55+t*.2+Math.max(0,t-8)*.9;
@@ -189,4 +193,12 @@ BIO.init({tags:'nhighlands',THREE:THREE,scene:scene,terrainH:terrainH,waterH:wat
   return smooth(1.35,.85,FC.at(FC.a.slope,x,z));},                                                                   // the crag faces stay bare rock
  obstacles:OBSTACLES,ticks:tick,seed:31,register:REGISTER,
  origin:SPINE,center:[0,0],fields:FIELD,err:reportErr});
+// B1/B2 (core/biome README, "Adopting it"): one LOD mesh per chunk, rows sorted by range (lodTick draws the prefix that reaches the
+// camera), small meshes merged up to 1500 triangles, and a dithered cross-fade over the last 15% of each range (no pop at a ring)
+// the items' geometry welded and drawn by index (core/biome BIO.INDEX_ITEMS; ?index=0 for the soup): the leaf and floor cards were
+// vertex-bound on an integrated GPU (the optimization pass, 2026-10-26: a quarter of the pixels saved a tenth of the frame)
+BIO.INDEX_ITEMS=new URLSearchParams(location.search).get('index')!=='0';
+BIO.LOD.merge=new URLSearchParams(location.search).get("lodmerge")!=="0";BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&new URLSearchParams(location.search).get("lodfade")!=="0"?.15:0;
+// per-instance range culling for loose instances (core/biome BIO.LOD.cull; GRAPHIC-LOAD.md recommendation 1; ?lodcull=0 to compare)
+BIO.LOD.cull=BIO.LOD.fade>0&&new URLSearchParams(location.search).get('lodcull')!=='0';
 BIO.setSun(SUN_POS);

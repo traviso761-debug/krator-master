@@ -1,0 +1,32 @@
+{
+ "canvas": "5.1 (1821x1723)",
+ "name": "The Scarp Pass (station 2): the central dividing basalt fault, switchback road carved into hexagonal columns, frost polygons, the fortified waystation, wild Ghaunt-Ox migration trail",
+ "out": "siphon-pits-scarp.html",
+ "site": {
+  "name": "scarp",
+  "title": "The Scarp Pass",
+  "px": 1559,
+  "py": 1457,
+  "base": 3289.0,
+  "atm": 1.06,
+  "mean": 4,
+  "rain": 173,
+  "cls": "Dsc",
+  "lat": -50.4,
+  "warm": 17,
+  "cold": -9,
+  "high": 26,
+  "low": -19,
+  "surveyed": "scale model 5.1, 2026-11-11 (PLAN.md section 0): atm = 1.6 exp(-h/8000); temperatures tm/tw/tc/th/tl",
+  "lat_note": "the shared sky's site frame (ATMOS.siteAt on the old canvas px); the old plan gave -28.9"
+ },
+ "water": [],
+ "frost": {
+  "pattern": "polygons",
+  "scale": 12.0
+ },
+ "wind": {
+  "speed": 7.3,
+  "note": "mean from the model (wd)"
+ }
+}

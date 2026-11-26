@@ -1,25 +1,28 @@
 #!/usr/bin/env python3
 """Concatenate src/* into dist/yeti.html (the Yeti kit: the Khaayken of the High Country, kits/yeti/PLAN.md).
-Forked from kits/scyvoi (2026-10-25, as kits/eternian and kits/islanders were): the engine fragments are VENDORED from
-kits/scyvoi/src (--vendor-check), all but src/10-core.js, which is the engine's on core/rand (KNOWN_ISSUES.md).
+Forked from kits/scyvoi (2026-10-25, as kits/eternian and kits/islanders were): the engine is core/engine, read in place
+(core/engine/README.md), all but src/10-core.js, this kit's own: the engine's on core/rand (KNOWN_ISSUES.md).
 
 Usage: python3 build.py [--no-checks]
-       python3 build.py --vendor-check   (the vendored sky against settlements/iziz/src; a core file shadowed by src/)
+       python3 build.py --vendor-check   (drift from a vendored upstream; a core file shadowed by src/, the placeholder sky among them)
 
 The page is one <script> made of, in filename order:
-  src/*                 the kit (00-head.html ... 99-tail.html)
+  src/*                 the kit (00-head.html ... 89-rows.js)
+  core/engine           the engine (engine.py: 10-core ... 99-host-take, 99-tail.html), read in place
   core/rand             08-core-rand.js (KRAND: core/tags' uid is its hash)
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
   core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; src/37-wk-rec.js)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
+  core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
+                        core/engine/36o-open.js draws them)
   core/city             36-city-covered.js only (KCITY.covered: the tunnels between doors, PLAN.md section 3); the rest of
                         core/city is the capital's page's
   26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
-A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). src/81-sky.js is VENDORED from
-settlements/iziz/src/81-sky.js (KratorSky, the standard Krator sky): --vendor-check reports drift.
+A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). 81-sky.js (KratorSky) is the
+placeholder sky, read from core/atmos/placeholder (its README): a src/ copy is a shadow --vendor-check reports.
 
 Checks (fragments share one JS scope):
   1. no column-0 const/let/var/function/class name is declared in two fragments, or is a generic short name;
@@ -67,24 +70,47 @@ try: sys.stdout.reconfigure(encoding='utf-8')
 except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 ROOT = os.path.dirname(os.path.dirname(HERE))
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 KIT_ID = 'yeti'
 OUT = os.path.join(DIST, KIT_ID + '.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('rand', 'materials/record', 'tags', 'furnish', 'atmos', 'walk', 'walk/box')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]
 # single core files (a module the kit takes one piece of)
-CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js')]
+CORE_FILES = [os.path.join(ROOT, 'core', 'city', '36-city-covered.js'),
+              # kits/eternian's head generator, READ IN PLACE ([G data]: one generator for every build that carries the State's
+              # faces, as kits/ancients' Sanctum reads it): the war loot's faces and masks (src/45-yt-inside.js; PLAN.md section 5)
+              os.path.join(ROOT, 'kits', 'eternian', 'src', '42-et-head.js')]
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
-# and the authoring tools (inspect, polygon, path). src/99-host-take.js (vendored from kits/scyvoi, with 92-world.js) hands it the
+# and the authoring tools (inspect, polygon, path). core/engine's 99-host-take.js (with 92-world.js) hands it the
 # page; it replaced the engine's own 92-camera.js and 91-probe.js (2026-10-18, kits/scyvoi/KNOWN_ISSUES.md "Host port").
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
-VENDORED = {'81-sky.js': os.path.join(ROOT, 'settlements', 'iziz', 'src', '81-sky.js')}
-# the engine, shared with the Scyvoi kit it was forked from: fix it there, then copy it here
-VENDORED.update({f: os.path.join(ROOT, 'kits', 'scyvoi', 'src', f) for f in ('30-geo.js', '36-def.js', '90-scene.js',
-    '27-mat.js', '91f-furnish.js', '91n-night.js', '92-world.js', '99-host-take.js', '93-anim.js', '99-tail.html')})
+sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
+import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
+sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
+# The forest-steppe row's FLORA (PLAN.md section 9, Y6): biomes/nwouterwall's kit with core/space and core/biome, READ IN PLACE (as
+# settlements/highlands' Roketstad reads nhighlands) under slot names in the 93b-bio- band: after the scene (90) and the world's first
+# build (92), round the kit's own host binding (src/93b-bio-45-yt-init.js before the biome's fragments, src/93b-bio-80-yt-flora.js after
+# them). Nothing is copied; the kit's pack is not taken (the flora draws in its procedural colours: KNOWN_ISSUES.md).
+_B = lambda *p: os.path.join(ROOT, *p)
+BIO_BAND = {'93b-bio-05-core-space.js': _B('core', 'space', '20-core-space.js'),
+            '93b-bio-10-core-head.js': _B('core', 'biome', '10-core-head.js'),
+            '93b-bio-20-core-kit.js': _B('core', 'biome', '20-core-kit.js'),
+            '93b-bio-30-core-foliage.js': _B('core', 'biome', '30-core-foliage.js'),
+            '93b-bio-31b-core-leafset.js': _B('core', 'biome', '31b-core-leafset.js'),   # 20-core-kit's leaf option calls it (check_assembly)
+            '93b-bio-31j-core-joint.js': _B('core', 'biome', '31j-core-joint.js'),
+            '93b-bio-34-core-impostor.js': _B('core', 'biome', '34-core-impostor.js'),   # the trees call it; off here (NWOW.IMPOSTORS=false: 93b-bio-80)
+            '93b-bio-40-core-place.js': _B('core', 'biome', '40-core-place.js'),
+            '93b-bio-46-biome-nwow-layout.js': _B('biomes', 'nwouterwall', 'src', '46-biome-nwow-layout.js'),
+            '93b-bio-50-biome-nwow-species.js': _B('biomes', 'nwouterwall', 'src', '50-biome-nwow-species.js'),
+            '93b-bio-55-biome-nwow-trees.js': _B('biomes', 'nwouterwall', 'src', '55-biome-nwow-trees.js'),
+            '93b-bio-60-biome-nwow-floor.js': _B('biomes', 'nwouterwall', 'src', '60-biome-nwow-floor.js'),
+            '93b-bio-70-biome-nwow.js': _B('biomes', 'nwouterwall', 'src', '70-biome-nwow.js')}
+VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['generic', 'generic-goods', 'jobs', 'scrap']   # the shared goods, the trades, scrap (a khaayken culture file comes in Y5)
+FURN_CULTURES = ['khaayken', 'eternian', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Khaayken's own, the Eternians' (the war loot, PLAN.md section 5), the shared goods, the trades, scrap
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
 BUNDLE_GLOBALS = ('KratorFurniture',)
 
@@ -140,7 +166,10 @@ def sources():
     for d in CORE_DIRS:
         paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
     paths.update({f: khost.path(f) for f in CORE_HOST})
+    paths.update(psky.paths(psky.SKY))
+    paths.update(kengine.paths())
     paths.update({os.path.basename(p): p for p in CORE_FILES})
+    paths.update(BIO_BAND)
     core = dict(paths)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a src/ copy overrides the core one
     return paths, core
@@ -152,12 +181,14 @@ def main():
     files = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     bodies.update({f: open(paths[f], encoding='utf-8', newline='').read() for f in files if f not in vb})
+    BSRC.report(paths, vendored=VENDORED.values())   # --list-sources: what the page is made of, then exit
     is_core = lambda f: f in core and paths[f] == core[f]
     errs = []
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
             if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the host's files are IIFEs: each its own scope
+            if f in BIO_BAND: continue   # the biome band: core/biome's head and the kit's fragments are closures (their column-0 names are local)
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for n in BUNDLE_GLOBALS:
             if n in decl: errs.append('top-level name `%s` in %s clashes with the generated furniture bundle' % (n, ', '.join(sorted(decl[n]))))
@@ -206,6 +237,11 @@ def main():
             print('\nOPEN ISSUES (%d) - KNOWN_ISSUES.md:' % len(op)); [print('  ' + l[6:]) for l in op]
 
 
+# src/ files that shadow a core/engine fragment on purpose (tools/check_vendor.py reads the reason): 37-wk-rec.js records a
+# 'feature' placement's boxes as well as a building's, because the winter street's and the networks' tunnels are walked
+ADAPTED = {'37-wk-rec.js': "a feature (the winter street, a tunnel network) records its walk floors and blocks too: its tunnels are walked"}
+
+
 def vendor_check():
     bad = 0
     for f, up in sorted(VENDORED.items()):
@@ -215,6 +251,8 @@ def vendor_check():
     paths, core = sources()
     for f in sorted(core):
         if paths[f] != core[f]:
+            if f in ADAPTED:   # a deliberate copy (KNOWN_ISSUES.md names it): reported, not counted
+                print('  ~  %s drifts (deliberate: %s)' % (f, ADAPTED[f])); continue
             print('  !  src/%-12s shadows %s' % (f, os.path.relpath(core[f], ROOT))); bad += 1
     print('vendor-check: ' + ('OK' if not bad else 'DRIFT'))
     return not bad

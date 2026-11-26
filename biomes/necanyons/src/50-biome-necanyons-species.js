@@ -191,6 +191,12 @@ const M=NECANYONS.MAT={
 // THE LIBRARY (core/materials/PLAN.md): the slots materials.json names take the library's maps; the procedural ones stay
 // without the pack. A sheet's cell is the item's uv (cellUV, below), not the pack's: one texture per sheet, many cells
 NECANYONS.LIB=BIO.libSwap('necanyons',M);
+/* THE CARD FIT (2026-10-27, the final rebuild; tools/textures/check_cells.py --fix): a slot whose pack names its plant's cell and the end
+   it hangs or grows from (the carnivorous moss on its hang, the yellow tube's strap on its frond) is cut and turned by BIO.libSwap and
+   BIO.def, spanning the strand once; the item then keeps its geometry's own uv, or the cut would be taken twice. Without the pack,
+   the procedural 3 x 3 sheet is cut in the uv as before. The crowns' clumps (flametip, ember plum, the lianas) take their sprigs'
+   stems the same way (core/biome 20, cardFit) */
+function packCell(slot){if(!NECANYONS.LIB[slot]||typeof KMAT==='undefined'||!KMAT.packed)return false;const L=KMAT.packed('necanyons',slot);return !!(L&&L.cell);}
 const LIBWHITE=C(0xf4f2ec);
 // a full-colour card carries its own colour: its instances take a near-white, a sixth of the procedural colour kept
 // (a grey card, tint.keep 0, takes the procedural colour as before)
@@ -231,7 +237,7 @@ BIO.def('lobe',cellUV(G.lobe(),CELL(0,0)),M.lobe,{attrs:['aTrap'],label:'Clapjaw
 BIO.def('petiole',cellUV(G.frond(),STRAP),M.petiole,{label:'Clapjaw leaf stalks'});
 BIO.def('sunpit',cellUV(G.tuft(),CELL(0,0)),M.sunpit,{label:'Sun pitchers'});
 BIO.def('sunpitB',cellUV(G.tuft(),CELL(2,1)),M.sunpit,{label:'Sun pitchers (red)'});
-BIO.def('carnmoss',cellUV(BIO.geo.hang(),CELL(1,1)),M.carnmoss,{label:'Carnivorous moss (hanging gardens)'});
+BIO.def('carnmoss',packCell('carnmoss')?BIO.geo.hang():cellUV(BIO.geo.hang(),CELL(1,1)),M.carnmoss,{label:'Carnivorous moss (hanging gardens)'});
 BIO.def('seepfern',cellUV(G.frond(),[.333,0,.667,.333]),M.fern,{label:'Seep curtains (maidenhair)'});
 BIO.def('fan',cellUV(G.fan(),[.34,.34,.66,.66]),M.fan,{label:'Fan-palm leaves'});
 BIO.def('figleaf',BIO.geo.clump(),M.figleaf,{attrs:['aN'],label:'Stack-fig foliage'});
@@ -242,7 +248,7 @@ BIO.def('ringgrass',cellUV(G.tuft(),CELL(1,1)),M.ringgrass,{label:'Ringgrass (sp
 BIO.def('lilytuft',cellUV(G.tuft(),CELL(1,1)),M.lilytuft,{label:'Stilt-lily leaf tufts'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Rock-bottle flowers'});
 BIO.def('lilyflower',BIO.geo.bloom(),M.lilybloom,{label:'Stilt-lily flowers'});
-BIO.def('tube',cellUV(BIO.geo.frond(4),STRAP),M.strap,{label:'Yellow tubes'});
+BIO.def('tube',packCell('strap')?BIO.geo.frond(4):cellUV(BIO.geo.frond(4),STRAP),M.strap,{label:'Yellow tubes'});
 BIO.def('vine',BIO.geo.clump(),M.vine,{attrs:['aN'],label:'Liana leaves (turncoat, monkeycup)'});
 BIO.def('sticky',G.pad(),M.sticky,{label:'Turncoat liana (young: sticky leaves)'});
 BIO.def('wort',BIO.geo.bloom(),M.bloom,{label:'Potholewort flowers'});

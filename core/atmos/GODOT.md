@@ -115,6 +115,41 @@ veer) is about 60 lines in `89-atmos-0-core.js` and `89-atmos-4-weather.js`. It 
 `Atmos`, that sets the global parameters in `_process(delta)`; `test-atmos.js` holds the vectors it is tested against. The host's `weather({apply})` callback becomes the autoload adjusting
 `WorldEnvironment` (fog density, `volumetric_fog_density`, sun energy, ground roughness through a global `atm_wet`).
 
+## The shared sky (SKY-PLAN.md, 2026-10-25)
+
+One `shader_type sky` draws Krator's whole sky in Godot, from the same source as the pages:
+
+| Piece | JavaScript (the pages) | Godot |
+|---|---|---|
+| the shader | `core/atmos/sky/89-atmos-g-sky.js` (`ATMOS.skyGLSL()`, the `atmos_sky` chunk) | `godot/shaders/atmos_sky.gdshaderinc`, **generated** by `node godot/tools/atmos_sky.js`, included by `godot/shaders/sky.gdshader` (the chunk's display colour decoded to linear) |
+| the model and the colour script | `89-atmos-e-skymodel.js`, `89-atmos-f-skypresets.js` | `godot/krator/sky_model.gd`, its constants, presets, bright stars and moon epochs read from `godot/data/sky/sky.json` (generated) |
+| the host | `core/atmos/host/89-atmos-h-skyhost.js` (`ATMOS.sky`) | `godot/krator/sky.gd`: the WorldEnvironment's Sky (incremental, radiance 128), the sun and giantshine DirectionalLight3Ds, fog (`fog_sky_affect` 0) and exposure from the keys |
+| the noise volume | `ATMOS.skyNoiseVolume(64)` | `godot/data/sky/noise64.bin` (generated) as an `ImageTexture3D` |
+| the moon maps | the library's `sky.moon.*`, one atlas | the same files, stacked at load |
+
+Checks: `godot --headless --path godot --script res://tests/sky/sky_test.gd` holds the GDScript model to the JavaScript's
+numbers (`godot/tests/sky/golden.json`: 24 states over four sites, the colour script, dates, the noise volume, the include's
+digest; vectors agree to 1e-6, Godot's `Vector3` being single precision). `godot --path godot --script
+res://tests/sky/sky_shot.gd -- --out=<png> --look=giant|cluster|sun|station|up --hour= --day= --fov=` renders it (needs a GPU; first run
+2026-10-25 on Vulkan, Forward+). Rerun the generator after any change to `core/atmos/sky`, then the test.
+**The clouds' mood** (2026-11-09; `sky/89-atmos-g-sky.js` layer 7, `sky/89-atmos-k-cloudmood.js`). Its lines compile only on a
+page whose preset asks (`ATMOS.skyMoodOn`), so the generated include and its golden digest are unchanged until the generator
+sets `ATMOS.skyMoodOn = true` before `skyGLSL()`: then the include gains `uCloudX` (dark, turbulence, glow, tintK), `uCloudY`
+(the turbulence kind: 0 violent, 1 ordered, 2 glitched: two more sheets on their own winds, `ATMOS.MOOD_SHEETS`; 3 ripple, with the
+epicentre in `.yz` and the pace in `.w`), `uCloudZ` (sheetTint), `uCloudTint`, `uCloudGlow` (`source_color`), `uCloudGlowP` (the glow's locus x, z, radius, spread) and
+`uCloudGlowQ` (a second light x, z, radius, on), `uCloudBeam` and `uCloudBeamP` (a sky event: place, kind, brightness; top, width, the ascending light's height, the ground), with `atmSkyBeam` under the clouds, `atmCloudMood` on both cloud layers and the turbulence inside `atmCloudField` (so the ground
+shade's include takes it too). A world that uses them sets the uniforms on the Sky material from the preset's `clouds`, as
+`sky.gd` sets the rest; a world that never does leaves them at zero and draws the cloud it drew. `ATMOS.moodAt(t, o)` and
+`ATMOS.moodGlow(t, kind, seed, eye)` are arithmetic on the hash and the clock (lowbias32 through `skyHash`, a 1D value noise in
+time), for `sky_model.gd`; the `cloudmood` record carries the seed, period, blend, chances, palette and kinds. The cloud layer's
+JS twin (`skyCloudAt`, on the noise volume by the texture's own trilinear read) is the vector source for a GDScript twin when one
+is wanted; none exists yet. The mood's lightning strikes the same `boltPath` bolt as the weather's (an ImmediateMesh, "Lightning"),
+its brightness the flash's envelope `e` from `moodGlow`.
+
+The broken station (`station` in each golden state) and the shooting stars came on 2026-10-26: `sky.gd` sets `uStaDir`,
+`uStaAx`, `uStaV` and `uStaK` from the model's `station`, `uMeteor` from the preset's `night.meteors`, and `uRealT` from
+`Time.get_ticks_msec()`: the meteors keep wall-clock time, not the game clock.
+
 ## Particles: which Godot tool for which effect
 
 Every particle effect here is **stateless**: a particle's position is a function of its seed attributes and the time.
@@ -156,6 +191,111 @@ the shaders.
 **Renderer choice.** Forward+ gives volumetric fog, `FogVolume`, many lights and particle collisions. If a web export
 (Compatibility) is a target, keep the sprite versions of `mist` and `fogbank` and the halo quads as the fallback.
 Check which `GPUParticles3D` features Compatibility supports in the Godot version the port uses.
+
+## Lava (`fx/89-atmos-fx-lava.js`)
+
+The export's `lava` records carry the surface's name, its pattern's anchor (`centre`), `flow` (m/s), the vents, `swell`, `channel`
+and the preset's name; `PRESETS.lava` carries every number (the plates' and facets' cells, the crack and seam widths, the
+colours, the heat by day, night and eruption). Godot: one `.gdshader` with the chunk `lavaGLSL` writes (`lavaSurface`), its
+hash the same lowbias32 on `uint`, `TIME` for the module clock, `EMISSION` = the colour times `hotK` (the cracks, seams,
+overturned plates and churned patches) so WorldEnvironment glow blooms them, and the swell and vents in `vertex()`. The host
+eases `erupt` per second, as the Throne caldera's `SUMMIT.eruptStep` does.
+
+## Snow that lies (`fx/89-atmos-fx-snowcover.js`)
+
+The `snowcover` record carries `base`, `line` and `frozen`; `PRESETS.snowcover` the rate, the melt (and its night share),
+the normal's band, the noise and the colours. Godot: the depth is a global shader parameter `atm_snow_depth` stepped by the
+autoload exactly as `ATMOS.snowStep` (from the weather's `snow`, `dt` and the hour); `atmSnow(world position, world normal)`
+is a `.gdshaderinc` every ground, rock and foliage shader includes, mixing the snow's albedo (and roughness) after its own.
+`ATMOS.snowBare(M)` (2026-11-02, opt-in) multiplies the snow by a byte mask, recorded as `snowbare`: in Godot the same bytes in an R8 texture (`KTherm.snow_mask`, `core/terrain/ktherm.gd`), a texel on each raster node, 1 off the box.
+
+The `lee` (2026-10-26, WEATHER item 10) is a global `atm_snow_lee` and `atm_snow_wind_dir` (the wind's direction, from
+`atm_wind`); under the rain occlusion map (below) only the base cover lies.
+
+## Height fog, valley mist and the cloud band (R1: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`)
+
+The `heightfog` record carries the falloff, the reference (`ground` or metres), the sun and sky shares, the shape (`exp2`
+or `exp`, with a distance compression), the mist (density, level or `below`, depth, noise, the dawn hours) and the band
+(density, bottom and top, cover, noise). Godot: the air is `Environment.fog_height` (the reference), `fog_height_density`
+(the falloff), `fog_sun_scatter` (sun), `fog_aerial_perspective` (sky), with `fog_density` from the hour as the sky sets
+it; the mist and the band are `atmos_fog.gdshaderinc` (the same three closed-form integrals, `atmFogLayer`, `atmFogPool`,
+`atmFogSlab`, and the lowbias32 patch noise) mixed in `fragment()` of the ground and plant shaders over globals `atm_fog_h`,
+`atm_fog_mist`, `atm_fog_band`, `atm_fog_x`, `atm_fog_drift`; or, for a world with volumetric fog on, `FogVolume` boxes:
+one under the mist level (density from the dawn curve), one slab for the band. The dawn curve and the drift (the wind at the
+eye times the gust factor) are the autoload's, as `F.step` is.
+
+**The fog belt** (C1, `ATMOS.fogBelt`). The `fogbelt` record carries the band (`y0`, `y1`, `edge`), `depth`, `density`,
+`noise`, `steps`, `windward`, `lee`, `slope`, `rise`, `reach`, the `extent` and `res` of its field, and the weather share.
+The field is rebuilt from the Godot ground (`ATMOS.fogBeltMake`'s loop in GDScript: two ground samples `reach` metres either
+side along the wind for the windward rise, then k) into an `Image.FORMAT_RGBAH` texture (R ground - y0, G k), given to the
+fog include as a global `sampler2D atm_fog_belt_tex` with `atm_fog_belt` (density, y0, y1, edge), `atm_fog_belt_k` (1/depth,
+noise, steps, res) and `atm_fog_belt_e` (x0, z0, 1/width, 1/depth); `atm_fog_belt_depth(ro, rd, L)` is `atmFogBeltDepth`
+line for line (`textureLod`, the same texel-centre mapping), added to the band's optical depth. Placement in GDScript reads
+the same field (`fogBeltCover`), not the texture.
+
+**The mist field** (`ATMOS.heightFog({mist:{field}})`, 2026-11-09). The `heightfog` record's `mist.field` carries `extent`
+[x0, z0, x1, z1], `res` and `samples` (the function stays on the page: Godot rebuilds the grid from its own density field, as the
+belt's ground is rebuilt). It is a texture the fog include reads: `res` x `res` `Image.FORMAT_RH` (or RGBAH, R the field 0..1),
+LINEAR filter, CLAMP, given as a global `sampler2D atm_fog_mist_tex` with `atm_fog_mist_e` (x0, z0, 1/width, 1/depth) and
+`atm_fog_mist_k` (res, samples); `atm_fog_mist_at(xz)` is `atmFogMistAt` (the same texel-centre mapping, `textureLod`) and
+`atm_fog_mist_field(ro, rd, L)` is `atmFogMistField` line for line: the ray's crossing of the layer below `level + 3 depth`
+(`atmFogSlab`), `samples` midpoints each weighted by the pool's density, their weighted mean multiplying the mist's pool term.
+With `FogVolume`s instead, the mist box's density texture is this same grid. The GDScript twin for placement and checks is
+`fogMistFieldAt` (bilinear on the halves), never the texture.
+
+**Radiation** (`fx/89-atmos-fx-radiation.js`, 2026-11-10). The `radiation` record carries the zones (x, y, z, r, strength, shimmer)
+and the colour. The chunk (`atmRadChord`, `atmRadShim`, `atmRad`) is a `.gdshaderinc`: in `fragment()` of the ground and plant shaders
+`EMISSION += atm_rad(camera, dir, dist)` over global arrays `atm_rad_z`, `atm_rad_k`, `atm_rad_c` and `atm_time`; the sky's share is the
+same call with no distance limit in the sky shader. With volumetric fog on, a `FogVolume` ellipsoid a zone with emission and near-zero
+density does it instead. `rad_at(zones, p)` is three lines of GDScript for the hazard field.
+
+**Thin air** (`preset.air.thin`). `krator/sky.gd` passes the camera's height to its `sky_look` port as the fourth argument
+and applies the same lines: the pressure by `air_pressure_at`, then (only with `thin`) `hemiI`, `sunC`, `sunI`, `hazeFloor`
+and `fogD`. In the Environment that is `ambient_light_energy` (the sky fill, hence the hard shadows), the sun light's colour
+and energy, and `fog_density`. No shader change: the sky shader reads only the look.
+
+**The rain wall** (`fx/89-atmos-fx-rainwall.js`). The `rainwall` record carries the band, the windward direction, `lee`,
+`slope`, `reach`, `rain`, the curtains' `extent`, `cell`, `min`, `top`, `alpha`, `colour`, `inside` and `seed`. The curtains
+are a `MultiMesh` of quads, one per cell `ATMOS.rainWallCells` keeps (the cell's jitter and phase from `KRAND.hash(seed, ix,
+iz, k, 0x7261)`, which `core/rand/krand.gd` reproduces), turned to the eye about the vertical in `vertex()`, the streaks the
+same lowbias32 columns in `fragment()`. Inside, the Atmos autoload raises `W.rain` to the eased field under the eye after its
+weather step, as the JS hook does, so the rain particles, the wetness and the grey sky follow.
+
+**Acid rain** (`fx/89-atmos-fx-acid.js`). The `acidrain` record (and the weather record's `acid`) carries the pH (a number,
+or `field` when the page gives a function: the port takes the same region map), `mmh`, the tint and the pH it is full at,
+the etch's base and rate. The Atmos autoload steps the etch with `ATMOS.acidStep`'s line and sets a global `vec4 atm_acid`
+(etch, fizz, time, 0) and the rain particles' colour from `acidTint`; `atmos_acid.gdshaderinc` is `ATMOS.acidGLSL()` (the
+same lowbias32 cells: pits, streaks, fizz) applied to ALBEDO in the ruin, rock and puddle shaders, times `atm_rain_open`.
+The dose is core/hazard's: the autoload registers the same `rain` and `ph` fields with its KHAZ port.
+
+**The air's load** (`fx/89-atmos-fx-airload.js`). The `airload` record (and the weather record's `air`) carries every
+number of the load (`clean`, `dust`, `dustH`, `storm`, `stormH`, `stormFloor`, `fetch`, `ash`, `ashH`), the dust module's
+`lift` thresholds, the sight law (`sight` {c, p}) and the `contrast`, the fog `shape`, and which fields were given
+(`alkali` and `ashAt` are page maps: the port takes the same region rasters). The Atmos autoload runs `ATMOS.airAt` line for
+line (the lift from its own wind at the point and the dust mask), eases the storm, and sets `Environment.fog_density` to
+`sqrt(-ln contrast) / sight` (or `-ln contrast / sight` for an exponential fog) when that is thicker than the hour's, the
+fog colour lerped toward the dust's by the share it adds. It registers the same `dust`, `ash`, `alkali` and `visibility`
+fields with its KHAZ port, so the dose, the sight and the drawn fog are one number.
+
+## The rain occlusion map (R10: `fx/89-atmos-fx-raincover.js`)
+
+The `raincover` record carries the size, box, step, lift, depth and the shelter margin. Godot: a
+`GPUParticlesCollisionHeightField3D` (follow-camera, the same box) for the rain, snow and ash particles, and an orthographic
+`SubViewport` depth of the same box, re-rendered when the eye moves `step` metres, as a global `sampler2D` `atm_rain_occ` with
+`atm_rain_occ_box` and `atm_rain_occ_cam`; `atm_rain_cover(world_pos)` (a `.gdshaderinc`, four taps, the margin, the edge
+fade) multiplies the wetness (cloud shade's and core/water's) and the fresh snow.
+
+## The wind for leaf shaders (R8: `ATMOS.windGLSL`, `ATMOS.windUniforms`)
+
+`atm_wind` (vec2), `atm_gust_amp`, `atm_time` are already globals (above); `atmos_wind.gdshaderinc` carries `atm_gust(t, xz, w)`
+and `atm_wind(t, xz, w, amp)` written from `PRESETS.wind` (the same sum of sines on the travelling front), and
+`atm_gust_here(xz)`, `atm_wind_here(xz)`. Foliage and grass sway read them in `vertex()`.
+
+## Lightning (`fx/89-atmos-fx-lightning.js`)
+
+`ATMOS.boltPath(seed, from, to)` is pure data (mulberry32 per strike): the same segments in GDScript, drawn as an
+`ImmediateMesh` of camera-facing quads at the weather's flash, with an `OmniLight3D` pulse at the cloud. Each strike queues a
+thunder event at `t + dist / 343`; the autoload emits `thunder(dist, power)` and an `AudioStreamPlayer3D` plays it.
 
 ## Rules that keep the module portable
 

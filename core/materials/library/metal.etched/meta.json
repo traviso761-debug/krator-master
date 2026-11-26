@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.166,
+    1.123
+   ],
+   "seam_before": [
+    1.164,
+    1.276
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.etched",
+  "metal": 0.6,
+  "roughness": 0.75,
+  "scale": [
+   0.5,
+   0.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "metal.etched.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"metal.etched\"",
+  "reuse": "acid-rain etching on metal (core/atmos acidOn, the Valley of the Ancients); any old corroded metal, a wreck's hull, pickled steel",
+  "sha1": "c28398ef96f65e71c8e9270b3233b58ac45dde22"
+ }
+}

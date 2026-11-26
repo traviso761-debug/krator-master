@@ -11,39 +11,42 @@
 // lite stand-in impostor past that; a far tree is only ever its impostor.
 (function(){const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,h3,vnoise,fbm,qEuler,qFacing,qUp}=BIO.fn;
 const SP=SWBAY.SPECIES,PAL=SWBAY.PAL,GOLD=2.399963;
+/* the canopy species' heights scale with the temple height (50-species TH); their boles keep the ring count they had at 110 m (2026-10-26) */
+const TK=Math.max(1,SWBAY.TEMPLE_H/110);
 const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 SWBAY.TREES=[];
 // the runtime LOD ranges (metres from the camera to a chunk's box; BIO.LOD.scale multiplies them):
 // hero trees in full, the floor's near / mid / far bands, the reeds in the shallows, fallen logs,
 // the dressing on a world's structures. Equal ranges share a mesh per item per chunk (the passes
-// use many of the same items), so they are kept to two values: each distinct one is a draw call
-// per item per chunk in view.
+// use many of the same items), so they are kept to one value (2026-10-26: floor and reeds were 800; the 3x3 chunks round
+// the camera are drawn whatever the range, so 800 bought little and cost a second mesh per item per chunk: 30-66 calls a view).
 SWBAY.LOD={tree:1200,floor:800,floorMid:1200,farFloor:1200,reeds:800,logs:1200,dress:1200};
 
 // ---------------------------------------------------------------- zones from the fields
 // Each weight 0..1. A plant's aridity tag is honoured by which weight it reads:
 // 'semiarid' species read sav (the highlands), 'humid' ones hyper / rain / shore.
 const Y=(x,z)=>BIO.terrainH(x,z);
-function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z),land=smooth(.15,1.2,h);
+// The bands are data (SWBAY.ZONE_BANDS, 2026-10-26): each [a,b] is a smooth(a,b,field) edge (a>b falls off), tuned to this
+// page's fields (upland = rise/240 m, wet 0..1, h in metres). A world whose fields are scaled differently retunes them before
+// SWBAY.build, without editing this file.
+const ZB=SWBAY.ZONE_BANDS=Object.assign({land:[.15,1.2],
+ hyperUp:[.30,.09],hyperWet:[.55,.80],
+ rainUp:[.08,.26],rainTop:[.64,.42],rainWet:[.35,.6],
+ sav:[.42,.62],
+ shoreH:[2.4,.5],shoreUp:[.14,.03],shoreWet:[.5,.8]},SWBAY.ZONE_BANDS||{});   /* a host may set some before this file loads, or edit them after */
+const sb=(b,v)=>smooth(b[0],b[1],v);
+function zones(x,z){const up=BIO.field('upland',x,z),wet=BIO.field('wet',x,z),salt=BIO.field('salt',x,z),flow=BIO.field('flow',x,z),h=Y(x,z),land=sb(ZB.land,h);
  return{up,wet,salt,flow,h,
-  hyper:smooth(.30,.09,up)*smooth(.55,.80,wet)*land,                     // the tall jungle ringing the bay
-  rain:smooth(.08,.26,up)*smooth(.64,.42,up)*smooth(.35,.6,wet)*land,   // the rainforest on the slope
-  sav:smooth(.42,.62,up),                                              // the parasol savannah, quickly, above it
-  shore:smooth(2.4,.5,h)*smooth(.14,.03,up)*smooth(.5,.8,wet)*land};}   // the beach and the delta
+  hyper:sb(ZB.hyperUp,up)*sb(ZB.hyperWet,wet)*land,                     /* the tall jungle ringing the bay */
+  rain:sb(ZB.rainUp,up)*sb(ZB.rainTop,up)*sb(ZB.rainWet,wet)*land,      /* the rainforest on the slope */
+  sav:sb(ZB.sav,up),                                                    /* the parasol savannah, quickly, above it */
+  shore:sb(ZB.shoreH,h)*sb(ZB.shoreUp,up)*sb(ZB.shoreWet,wet)*land};}   /* the beach and the delta */
 SWBAY.zones=zones;
 
 // ---------------------------------------------------------------- colour
-function shade(hex,f){const c=hex.isColor?hex.clone():C(hex);if(f>=0)c.lerp(C(0xffffff),f);else c.lerp(C(0x120f0a),-f);return c;}
-function bright(col,k){const c=col.isColor?col.clone():C(col);c.convertSRGBToLinear();c.r=Math.min(1,c.r*k);c.g=Math.min(1,c.g*k);c.b=Math.min(1,c.b*k);return c.convertLinearToSRGB();}
-const _hsl={h:0,s:0,l:0};
-function vary(hex,dh,ds,dl){const c=hex.isColor?hex.clone():C(hex);c.getHSL(_hsl);c.setHSL(((_hsl.h+rr(-dh,dh))%1+1)%1,clamp(_hsl.s+rr(-ds,ds),0,1),clamp(_hsl.l+rr(-dl,dl),.03,.97));return c;}
-function texMean(tex){const im=tex&&tex.image;if(!im||!im.getContext)return[.25,.25,.25];
- const d=im.getContext('2d').getImageData(0,0,im.width,im.height).data;let r=0,g=0,b=0,n=0;
- for(let i=0;i<d.length;i+=4*13){r+=d[i];g+=d[i+1];b+=d[i+2];n++;}
- const c=C(0).setRGB(r/n/255,g/n/255,b/n/255).convertSRGBToLinear();return[c.r,c.g,c.b];}
-// the sRGB tint that renders `hex` on a texture of linear mean m
-function tint(hex,m,k){const c=hex.isColor?hex.clone():C(hex);c.convertSRGBToLinear();k=k==null?1:k;
- c.setRGB(Math.min(1,c.r*k/Math.max(.02,m[0])),Math.min(1,c.g*k/Math.max(.02,m[1])),Math.min(1,c.b*k/Math.max(.02,m[2])));return c.convertLinearToSRGB();}
+// the core's colour maths (core/biome 30-core-foliage.js BIO.col: the same functions this file used to carry, the same rng
+// draws in vary; 2026-10-26): shade, bright, vary, the linear mean of a canvas texture, and the tint that renders a hex on it
+const {shade,bright,vary,texMean,tint}=BIO.col;
 let MEAN=null;
 function means(){if(MEAN)return MEAN;MEAN={bark:SWBAY.BARKTEX.map(t=>texMean(t)),cap:texMean(SWBAY.CAPTEX),gill:texMean(SWBAY.GILLTEX),wood:texMean(SWBAY.WOODTEX),rock:texMean(SWBAY.ROCKTEX)};return MEAN;}
 SWBAY.means=means;SWBAY.tint=tint;SWBAY.bright=bright;SWBAY.shade=shade;SWBAY.vary=vary;
@@ -78,7 +81,7 @@ function epiBole(T,rAt,st,lv,k,uLo,uHi){const n=Math.round(rr(1.2,5)*k*smooth(.4
  for(let i=0;i<n;i++){const u=rr(uLo==null?.12:uLo,uHi==null?.78:uHi),a=rr(0,TAU),R=rAt(u)+.05,x=T.x+Math.cos(a)*R,y=T.y0+T.H*u,z=T.z+Math.sin(a)*R,s=rr(.6,1.5);
   BIO.put('epi',[x,y,z],qUp([Math.cos(a)*.85,.55,Math.sin(a)*.85]),[s,s*.8,s],epiCol());st.epi++;
   if(rng()<.5){BIO.put('epihang',[x+Math.cos(a)*.3,y-.2,z+Math.sin(a)*.3],qFacing([Math.cos(a),0,Math.sin(a)]),[rr(.9,1.8),rr(2,6),1],bright(vary(pick(rng()<.6?PAL.epiDull:PAL.epi),.02,.1,.06),1.15));st.epi++;}
-  if(rng()<.3){const col=bloomCol();for(let b=0,m=ri(2,5);b<m;b++)BIO.put('bloom',[x+rr(-.6,.6),y+rr(-.3,.9),z+rr(-.6,.6)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.5),col);st.blooms++;}}}
+  if(rng()<.3){const col=bloomCol();for(let b=0,m=ri(2,5);b<m;b++)BIO.put('bloom',BIO.holdTo([x,y,z],[x+rr(-.6,.6),y+rr(-.3,.9),z+rr(-.6,.6)],.35),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.25,.5),col);st.blooms++;}}}
 function epiBough(p,wet,st,lv,k){if(rng()>k*.85*smooth(.40,.9,wet)*(lv===2?1:.4))return;
  const s=rr(.6,1.4);BIO.put('epi',[p.x+rr(-.4,.4),p.y+(p.r||.3)*.75,p.z+rr(-.4,.4)],qUp([rr(-.25,.25),1,rr(-.25,.25)]),[s,s*.8,s],epiCol());st.epi++;
  if(rng()<.6){BIO.put('epihang',[p.x+rr(-.5,.5),p.y-(p.r||.3)*.6,p.z+rr(-.5,.5)],qEuler(0,rr(0,TAU),0),[rr(1,2),rr(2.5,7),1],bright(vary(pick(rng()<.5?PAL.epiDull:PAL.epi),.02,.1,.06),1.15));st.epi++;}}
@@ -86,7 +89,17 @@ function epiBough(p,wet,st,lv,k){if(rng()>k*.85*smooth(.40,.9,wet)*(lv===2?1:.4)
 function beardsAt(p,wet,k,st){const n=Math.round(rr(0,1.6)*k*smooth(.7,.97,wet));
  for(let i=0;i<n;i++)BIO.put('beard',[p.x+rr(-.8,.8),p.y-(p.r||.3)*.5,p.z+rr(-.8,.8)],qEuler(0,rr(0,TAU),0),[rr(1.2,2.4),rr(2.5,8),1.2],bright(vary(pick(PAL.mossPale),.02,.08,.06),1.25));}
 // ---------------------------------------------------------------- foliage helpers
+/* THE CROWN HELD BY ITS TREE (the core attach audit, 2026-11-08; core/biome/README.md "What held means"): a builder runs with its own
+   span log (BIO.segs: every BIO.tube span and BIO.beam it draws, and the bole's top as treeTop gives it), and a clump drawn while one
+   is open is brought to within .55 of its size of the nearest span (BIO.snapSeg, BIO.holdTo): the crowns were jittered round spots up
+   to a bough's length off the wood. No draw moves (the stream is the same); no new triangles. Outside a builder nothing is held */
+const holdClump=(item,x,y,z,size)=>{const L=BIO.segs;if(!L||!L.length)return null;const q=BIO.snapSeg(L,[x,y,z]),d=BIO.defs[item];
+ const stem=!!(d&&(d.fit||d.raw&&d.raw.userData.card&&d.raw.userData.card.kind!=='clump'));   /* as the audit reads it */
+ return q?BIO.holdTo(q.p,[x,y,z],stem?size*.2+.3:size*.55):null;};   /* a library card on its axes is a stem card: its stem on the twig */
+/* the bole's top as a span (a lathe is not logged): the leader's clumps are held by it */
+const treeTop=(T,u0,yTop,r0)=>{if(BIO.segs)BIO.segs.push({a:[T.x,T.y0+T.H*u0,T.z],b:[T.x,yTop,T.z],r0:r0,r1:.05,end:false,top:true});};
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,c2){
+ {const h=holdClump(item,x,y,z,size);if(h){x=h[0];y=h[1];z=h[2];}}
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
@@ -106,12 +119,13 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
  const nl=ri(4,6),lobes=[];for(let k=0;k<nl;k++)lobes.push({a:k/nl*TAU+rr(-.3,.3),amp:rr(.3,.7)});
  const lobeSum=ang=>{let s=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,5);}return s;};
  const band=14,rings=[],vs=9;
- for(let yy=0;yy<H*.9;yy+=(yy<10?2:vs*.5)){const b=yy/band+ti,i=Math.floor(b);
+ for(let yy=0;yy<H*.9;yy+=(yy<10?2:vs*.5*TK)){const b=yy/band+ti,i=Math.floor(b);
   const col=barkCol(S,i).lerp(C(PAL.moss[ti%3]),smooth(12,1,yy)*.45);   // neutral: the rainbow strips are in the canvas
   rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:col});}
  rings.push({x:T.x,y:T.y0+H*.9+rAt(.9)*.8,z:T.z,r:.05,yy:H*.9+1,col:barkCol(S,1)});   // closed: a dome, never an open pipe
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.8*Math.exp(-R.yy/3)*lobeSum(ang)+.02*Math.sin(5*ang+ph)),(R,ang)=>mix(1,.6+.4*clamp(lobeSum(ang),0,1),Math.exp(-R.yy/3.5)));
+ treeTop(T,.8,T.y0+H*.9+rAt(.9)*.8,rAt(.8));
  // the boughs: long, near level, drooping at the tips; two or three secondaries each
  const spots=[],nB=ri(S.boughs[0],S.boughs[1]),a0=rr(0,TAU),boughs=[];
  for(let k=0;k<nB;k++){const u=mix(.55,.88,(k+rr(0,.9))/nB),a=a0+k*GOLD+rr(-.3,.3),el=rr(.15,.45),len=T.crownR*rr(.7,1.05),r0=clamp(rAt(u)*.45,.4,1.8);
@@ -137,11 +151,12 @@ B[0]=function(T,st,lv){const S=SP[T.sp],fam='bark0',H=T.H,rb=T.rb,ti=T.seed%6;
 // 1 the gate baobab: a bottle bole, the crown IS the top -- boughs rising from the shoulder, palmate leaves, hanging pods
 B[1]=function(T,st,lv){const S=SP[T.sp],fam='bark3',H=T.H,rb=T.rb,ti=T.seed%3;
  const rAt=u=>rb*(u<.55?1+.22*Math.sin(u/.55*Math.PI):mix(1,.22,Math.pow((u-.55)/.45,.9)))*(1+.5*Math.exp(-u*H/8));
- const rings=[],vs=10;for(let yy=0;yy<H*.9;yy+=(yy<8?2:vs*.5))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/24)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(8,1,yy)*.35)});
+ const rings=[],vs=10;for(let yy=0;yy<H*.9;yy+=(yy<8?2:vs*.5*TK))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/24)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(8,1,yy)*.35)});
  rings.push({x:T.x,y:T.y0+H*.9+rAt(.9)*.7,z:T.z,r:.05,yy:H*.9+1,col:barkCol(S,1)});
  const ph=rr(0,TAU),nl=ri(6,9),lobes=[];for(let k=0;k<nl;k++)lobes.push({a:k/nl*TAU+rr(-.2,.2),amp:rr(.15,.4)});
  const lobeSum=ang=>{let s=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)s+=L.amp*Math.pow(c,4);}return s;};
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.6*Math.exp(-R.yy/4)*lobeSum(ang)+.015*Math.sin(6*ang+R.yy*.08+ph)),null);
+ treeTop(T,.8,T.y0+H*.9+rAt(.9)*.7,rAt(.8));
  const spots=[],hangs=[],nB=ri(S.boughs[0],S.boughs[1]),a0=rr(0,TAU),boughs=[];
  for(let k=0;k<nB;k++){const u=mix(.74,.9,(k+rr(0,.9))/nB),a=a0+k*GOLD+rr(-.3,.3),el=rr(.15,.6),len=T.crownR*rr(.6,1.0),r0=clamp(rAt(u)*.4,.4,1.8);
   const o={x:T.x+Math.cos(a)*rAt(u)*.75,y:T.y0+H*u,z:T.z+Math.sin(a)*rAt(u)*.75},pts=treeGrow(o,[Math.cos(a)*Math.cos(el),Math.sin(el),Math.sin(a)*Math.cos(el)],len,r0,.18,5,.06,.07);
@@ -168,7 +183,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
  const stipeC=k=>tint(vary(PAL.stipe[(k+ti)%PAL.stipe.length],.01,.05,.04),m.bark[5]);
  const capC=T.capCol||(T.capCol=vary(pick(T.sav>.5?PAL.capSav:PAL.cap),.02,.08,.05));
  const rings=[],vs=8,skirtU=rr(.58,.7);
- for(let yy=0;yy<H*.8;yy+=(yy<6?1.5:vs*.5)){const u=yy/H;let r=rAt(u);
+ for(let yy=0;yy<H*.8;yy+=(yy<6?1.5:vs*.5*TK)){const u=yy/H;let r=rAt(u);
   if(Math.abs(u-skirtU)<.03)r*=1+.5*(1-Math.abs(u-skirtU)/.03);   // the annulus: a skirt of flesh round the stem
   rings.push({x:T.x,y:T.y0+yy,z:T.z,r:r,yy:yy,col:stipeC(Math.floor(yy/9)).lerp(C(PAL.moss[ti%3]),smooth(5,0,yy)*.4)});}
  rings.push({x:T.x,y:T.y0+H*.8,z:T.z,r:rAt(.8)*.9,yy:H*.8,col:stipeC(1)},{x:T.x,y:T.y0+H*.8+1,z:T.z,r:.05,yy:H*.8+1,col:stipeC(1)});
@@ -176,6 +191,9 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
  st.trunk+=BIO.lathe('bark5',rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.04*Math.sin(4*ang+ph)+.02*Math.sin(9*ang+R.yy*.2)),null);
  // the cap: a dome from the rim (u .78, curled a little under) to the crown, lighter toward the top
  const cap=(y0,R,rim,seg,col)=>{const cr=[],n=lv===2?9:6;
+  /* on BIO.fung (SWBAY.FUNG, the final rebuild 2026-10-27; ?fung=0 the lathe below): one gilled dome from the rim up, turned by the cap's
+     own phase; no draw, as the lathe draws none */
+  if(SWBAY.FUNG){BIO.put('capf',[T.x,y0-rim*.35,T.z],qEuler(0,ph,0),[R,R*1.05,R],col);st.cap+=BIO.defs.capf.tris;return y0+R*.42;}
   cr.push({x:T.x,y:y0-rim*.35,z:T.z,r:R*.94,yy:0,col:shade(col,-.12)});
   for(let i=0;i<=n;i++){const t=i/n,r=R*Math.sqrt(Math.max(0,1-t*t))*(1+.02*Math.sin(t*7+ti)),y=y0+R*.42*t*(1+.15*(1-t));
    cr.push({x:T.x,y:y,z:T.z,r:i===n?.05:r,yy:t*R*.6+rim,col:col.clone().lerp(C(PAL.capWart[0]),t*.18)});}
@@ -197,7 +215,7 @@ B[2]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,ti=T.seed%4,capR=T.crownR,
 // 3 the fan-crown: a pale bole, a few thick boughs rising steeply, each opening into a splayed fan of huge paddle fronds
 B[3]=function(T,st,lv){const S=SP[T.sp],fam='bark2',H=T.H,rb=T.rb,ti=T.seed%3;
  const rAt=u=>rb*(1-.5*u)*(1+.8*Math.exp(-u*H/5));
- const rings=[],vs=6;for(let yy=0;yy<H*.62;yy+=vs*.5)rings.push({x:T.x+.3*Math.sin(yy*.09+ti),y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/18)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(9,1,yy)*.5)});
+ const rings=[],vs=6;for(let yy=0;yy<H*.62;yy+=vs*.5*TK)rings.push({x:T.x+.3*Math.sin(yy*.09+ti),y:T.y0+yy,z:T.z,r:rAt(yy/H),yy:yy,col:barkCol(S,(Math.floor(yy/18)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(9,1,yy)*.5)});
  rings.push({x:T.x+.3*Math.sin(H*.62*.09+ti),y:T.y0+H*.62+1,z:T.z,r:.05,yy:H*.62+1,col:barkCol(S,1)});
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?12:8,Math.max(1,Math.round(TAU*rb/4)),vs,(R,ang)=>R.r*(1+.05*Math.sin(4*ang+ph)*smooth(8,0,R.yy)+.02*Math.sin(7*ang+R.yy*.1)),null);
@@ -254,7 +272,7 @@ B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=rodCol(S,T.seed),hc=C(p
  const a0=rr(0,TAU);for(let k=0;k<nF;k++)fork([T.x,T.y0+H*.48,T.z],a0+k/nF*TAU+rr(-.3,.3),rr(.5,.85),H*rr(.22,.3),rb*.55,0);
  const sz=clamp(T.crownR*.42,1.8,4.2);
  heads.forEach(e=>{const y=Math.min(e[1],cy);clumpAt('sword',e[0],y+sz*.15,e[2],sz*rr(.85,1.15),.55,hc,T.x,cy,T.z,T.crownR,H*.3);st.clumps++;
-  if(lv===2&&rng()<.35){const col=bloomCol();for(let b=0;b<4;b++)BIO.put('bloom',[e[0]+rr(-1,1),y+sz*.4+rr(0,.5),e[2]+rr(-1,1)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.2,.4),col);st.blooms++;}});
+  if(lv===2&&rng()<.35){const col=bloomCol();for(let b=0;b<4;b++)BIO.put('bloom',BIO.holdTo(e,[e[0]+rr(-1,1),y+sz*.4+rr(0,.5),e[2]+rr(-1,1)],.3),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),rr(.2,.4),col);st.blooms++;}});
  if(lv===2&&rng()<.4){const a=rr(0,TAU),R=rb*1.3;BIO.put('rosette',[T.x+Math.cos(a)*R,T.y0-.02,T.z+Math.sin(a)*R],qEuler(0,rr(0,TAU),0),[.8,.6,.8],bright(vary(pick(PAL.succulent),.03,.1,.06),1.05));}};
 // 6 the parasol mushroom: a thin stalk and a flat cap on the savannah, the odd ring of young ones round it
 B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,capR=T.crownR,col=T.capCol||(T.capCol=vary(pick(PAL.capSav),.02,.08,.05));
@@ -288,10 +306,11 @@ B[9]=function(T,st,lv){const S=SP[T.sp],fam='bark6',H=T.H,rb=T.rb,ti=T.seed%3;
  const nl=ri(6,8),lobes=[],la=rr(0,TAU);for(let k=0;k<nl;k++)lobes.push({a:la+k/nl*TAU+rr(-.22,.22),amp:rr(.55,1.2),p:9*rr(.8,1.3)});
  const lobeSum=ang=>{let sm=0;for(const L of lobes){const c=Math.cos(ang-L.a);if(c>0)sm+=L.amp*Math.pow(c,L.p);}return sm;};
  const butF=yy=>yy<20?1.25*Math.exp(-yy/7)*clamp((20-yy)/8,0,1):0;
- const rings=[],vs=12;for(let yy=0;yy<H*.96;yy+=(yy<14?1.5:vs*.5))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:Math.max(.3,rAt(yy/H)),yy:yy,col:barkCol(S,(Math.floor(yy/22)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(16,2,yy)*.5)});
+ const rings=[],vs=12;for(let yy=0;yy<H*.96;yy+=(yy<14?1.5:vs*.5*TK))rings.push({x:T.x,y:T.y0+yy,z:T.z,r:Math.max(.3,rAt(yy/H)),yy:yy,col:barkCol(S,(Math.floor(yy/22)+ti)%3).lerp(C(PAL.moss[ti%3]),smooth(16,2,yy)*.5)});
  rings.push({x:T.x,y:T.y0+H*.96+1,z:T.z,r:.05,yy:H*.96+1,col:barkCol(S,1)});
  const ph=rr(0,TAU);
  st.trunk+=BIO.lathe(fam,rings,lv===2?14:9,Math.max(1,Math.round(TAU*rb/5)),vs,(R,ang)=>R.r*(1+.01*Math.sin(3*ang+R.yy*.045+ph)+butF(R.yy)*lobeSum(ang)),(R,ang)=>{const f=clamp(butF(R.yy)*1.6,0,1);return f>0?mix(1,.5+.5*clamp(lobeSum(ang)*1.4,0,1),f):1;});
+ treeTop(T,.8,T.y0+H*.96+1,Math.max(.3,rAt(.8)));
  // surface roots, one off each buttress, running out along the ground
  if(lv===2)lobes.forEach(L=>{if(rng()<.3)return;const ang=L.a,R0=rAt(.03)*(1+.4*L.amp),len=rr(10,26)*(.6+.4*L.amp),rr0=clamp(rb*.16*L.amp,.5,1.6),pts=[],wob=rr(0,TAU);
   for(let j=0;j<=7;j++){const t=j/7,d=R0*.75+len*t,a=ang+.3*Math.sin(wob+t*5.2)*t;const x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d;if(j>1&&(BIO.mask(x,z)<=0||!BIO.clearOf(x,z,2)))break;
@@ -384,6 +403,8 @@ B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,rc=tint(pick(S.bark),mean
  if(lv===2){const pc=bright(vary(pick(S.leaf),.02,.06,.04),1.1);for(let b=0,m=ri(10,22);b<m;b++){const a=rr(0,TAU),d=R*Math.sqrt(rng())*1.1;
   BIO.put('bloom',[T.x+Math.cos(a)*d,Y(T.x+Math.cos(a)*d,T.z+Math.sin(a)*d)+.03,T.z+Math.sin(a)*d],qEuler(rr(-1.3,-1.1),rr(0,TAU),rr(-.2,.2)),rr(.16,.3),pc);}}
  if(typeof REGISTER==='function'&&lv===2)REGISTER({name:S.name,kind:'tree',label:S.name,x:T.x,z:T.z,y:T.y0,r:R,h:T.H});};
+// every builder with its own span log (holdClump above); BIO.owner, the range and the stream are the caller's, as before
+B.forEach((f,i)=>{B[i]=function(T,st,lv){const S0=BIO.segs;BIO.segs=[];try{return f(T,st,lv);}finally{BIO.segs=S0;}};});
 
 // ---------------------------------------------------------------- impostors (the far canopy)
 // lite: the stand-in behind a hero tree (seen only past SWBAY.LOD.tree, 1.2-2.9 km): the cheap
@@ -472,11 +493,25 @@ SWBAY.buildTrees=function(R,q){
  // is only ever its impostor, always drawn. The stand-ins are tris.lite.
  // a world's editor (SWBAY.veto, SWBAY.onFlora): a vetoed tree keeps its place in TREES and the hash (so every other tree,
  // its index and its seed stay as they were) and is marked cut, not built; onFlora(T, 0|1) brackets each tree's writes
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; on when the page lists it, SWBAY.IMPOSTORS false turns them off):
+ // a far tree and a hero's stand-in are one quad showing the species baked from 8 x 8 directions, in place of the blobs; every
+ // species on one atlas (64 px a view), so one item, one call a chunk as the blob bucket was. Each
+ // species bakes one of its own trees (the first hero, built again in place after the bake, its registration muted); the
+ // quad is scaled by height and turned by the tree's seed. The cap colours the blobs drew are still drawn, so no tree moves.
+ const IMPON=SWBAY.IMPOSTORS==null?typeof BIO.impostor==='function':!!SWBAY.IMPOSTORS,IMPS=[],ISET=IMPON?BIO.impostorSet('swbay.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+  const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+  const rec=BIO.impostor('swbay.'+S.key,()=>{const R0=window.REGISTER;window.REGISTER=null;try{B[sp](Object.assign({},T1),st1,2);}finally{window.REGISTER=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(!rec)return;IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ function farImp(T){const I=IMPS[T.sp];if(!I)return false;
+  if((T.sp===2||T.sp===6)&&!T.capCol)T.capCol=vary(pick(T.sp===2?PAL.cap:PAL.capSav),.02,.08,.05);   /* the draw buildFar made */
+  BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;}
  TREES.forEach((T,i)=>{if(SWBAY.veto&&SWBAY.veto('tree',SP[T.sp].key,T.x,T.z)){T.cut=true;return;}
   if(SWBAY.onFlora)SWBAY.onFlora(T,0);BIO.owner=[T.x,T.z];
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;buildFar(T,i,st);st.fars++;}
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;if(!farImp(T))buildFar(T,i,st);st.fars++;}
   else{BIO.range=SWBAY.LOD.tree;BIO.minRange=0;B[T.sp](T,st,T.lv);st.heroes++;
-   BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;buildFar(T,i,st,true);}
+   BIO.range=1e9;BIO.minRange=SWBAY.LOD.tree;if(!farImp(T))buildFar(T,i,st,true);}
   st.byS[T.sp]++;if(SWBAY.onFlora)SWBAY.onFlora(T,1);});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),clumps:st.clumps,blooms:st.blooms,pods:st.pods,fronds:st.fronds,fans:st.fans,epiphytes:st.epi,tiers:st.tiers,roots:st.roots,shelves:st.shelves,corals:st.corals,
@@ -502,5 +537,13 @@ SWBAY.treeAt=function(key,x,y,z,opt){opt=opt||{};const sp=SP.findIndex(S=>S.key=
   else if(lv<2){BIO.range=null;BIO.minRange=0;buildFar(T,fi,st,lv===0);}}
  finally{host.terrainH=keepH;BIO.owner=null;BIO.range=null;BIO.minRange=0;if(SWBAY.onFlora)SWBAY.onFlora(T,1);}
  return T;};
+// ONE TREE BY KEY, FOR A KIN (core/biome BIO.kin, BIO.kitBuilder; the final rebuild, 2026-10-27: swbay vends to the crater drylands, the SW
+// lowlands and the southern highlands, EXCHANGES.md): SWBAY.make(sp, x, y, z, o) is the pass's record (its numbers from the page's stream:
+// the kin reseeds first, as with nwbay's), SWBAY.grow(T, lv) builds it (lv 2 the hero, 1 the light hero, 0 the far blob); the same builders,
+// so a cousin is the bay's own tree with the kin's record. o: {wet, sav}. Nothing here runs unless a page asks
+SWBAY.make=function(sp,x,y,z,o){o=o||{};const S=SP[sp];
+ return{x:x,z:z,y0:y-.5,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:o.wet==null?.6:o.wet,sav:o.sav==null?0:o.sav};};
+SWBAY.grow=function(T,lv){const st={trunk:0,limb:0,cap:0,far:0,lite:0,sapTris:0,clumps:0,blooms:0,pods:0,moss:0,fronds:0,fans:0,epi:0,shrooms:0,parasols:0,tiers:0,roots:0,shelves:0,corals:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ means();T.lv=lv;if(lv===0)buildFar(T,T.seed%7,st);else B[T.sp](T,st,lv);return st;};
 SWBAY._canopyH=function(x,z){let h=0;for(const T of SWBAY.TREES){if(Math.hypot(x-T.x,z-T.z)<160)h=Math.max(h,T.y0+T.H);}return h||12;};
 })();

@@ -31,12 +31,20 @@ Processing, per family:
            then runs on whatever it did before (fauna sheets are wired this way before they are generated)
   cell     `"cell": [x0, y0, x1, y1]` (fractions from the sheet's top left): the host shows one cell of a card sheet (a
            single plant from a nine-plant sheet); passed through to the pack entry
+  base     `"base": "bottom"` (top, left, right, centre): the edge of the cell (or the whole image) where its plant attaches;
+           core/biome's BIO.def turns a geometry that holds a plant by one end (frond, ribbon, hang, clump) so its own end
+           meets it, and spans the plant once down a frond or ribbon. tools/textures/check_cells.py proposes cell and base
   card     (record.kind 'card', from tools/textures/cards.py) an alpha cut-out: RGBA WebP with lossless alpha
            and the colour kept under it; no normal or roughness map; brightness measured over the opaque pixels.
            tint.mean null keeps the set's own brightness (a colour card such as a flower).
   own      `"own": true` marks a family only the kit's own page uses (the variants of a card, a surface a kit-only fragment
            swaps in): tools/textures/matlib_pack.py leaves it out of the pack a host that vendors the kit inlines, unless the
            kit's own build.py asks for it (`fragment(HERE, key, own=True)`), so that host's page keeps its bytes.
+  height   `"height": true` packs the set's height map (its source's `disp` extra, saved in the set as height.png, or the
+           file meta.json 'maps.heightMap' names) into the colour map's ALPHA: an RGBA WebP whose alpha is the height about
+           its mean (0.5, the 1st to 99th percentile spanning one unit, clamped to 0.02..1, as KGROUND's luminance height
+           is). core/terrain's KGROUND reads it with a layer's `h: {from: 'a'}`; the pack entry says `"height": true`.
+           A set without a height map is packed as before, with a note, and the entry has no `height` (keep `h` on lum).
 Requires numpy and Pillow.
 """
 import argparse, base64, hashlib, io, json, os, sys
@@ -44,6 +52,9 @@ import numpy as np
 from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import buildlib  # noqa: E402
+
 LIB = os.path.join(ROOT, 'core', 'materials', 'library')
 MATS = os.path.join(ROOT, 'core', 'materials')
 
@@ -58,6 +69,8 @@ def sha1(path):
 
 
 def load(path, size, mode):
+    if buildlib.is_pointer(path):    # a pack written from a pointer would be black in every page that takes it
+        buildlib.refuse_pointer(path, 'tools/textures/pack.py')
     im = Image.open(path).convert(mode)
     wh = tuple(size) if isinstance(size, (list, tuple)) else (size, size)
     if im.size != wh:
@@ -123,8 +136,17 @@ def process(fam, cfg, size):
         grey = grey * (c / max(float(c @ np.array([0.2126, 0.7152, 0.0722])), 1e-4))
     col = a * k[..., None] / m * target
     rgb = grey * (1 - keep) + col * keep
+    ph = path('heightMap', 'height.png')
+    height = bool(cfg.get('height')) and not card and os.path.isfile(ph)
+    if cfg.get('height') and not height:
+        print('note: %s asks for a height channel but %s has no height map (%s); packed without one' % (fam, lib, os.path.basename(ph)))
     if card:
         out['map'] = webp(np.concatenate([rgb, alpha[..., None]], -1), 85, 'RGBA')
+    elif height:          # the height in the colour map's alpha, for KGROUND's h: {from: 'a'}
+        hm = load(ph, size, 'L')
+        lo, hi = np.percentile(hm, [1, 99])
+        h = np.clip(0.5 + (hm - hm.mean()) / max(float(hi - lo), 1e-4), 0.02, 1.0)
+        out['map'] = webp(np.concatenate([rgb, h[..., None]], -1), 82, 'RGBA')
     else:
         out['map'] = webp(rgb, 82, 'RGB')
     # normal
@@ -152,13 +174,32 @@ def process(fam, cfg, size):
         'tint': dict({'keep': keep, 'mean': target, 'contrast': con, 'sourceMean': round(m, 4)},
                      **({'colour': t['colour']} if t.get('colour') else {})),
         'roughLift': cfg.get('roughLift', 0.0),
-        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) if os.path.isfile(f)},
+        'source': {k: sha1(f) for k, f in (('albedo', pa), ('normal', pn), ('roughness', pr)) + ((('height', ph),) if height else ())
+                   if os.path.isfile(f)},
         'files': {},
     }
+    if height:
+        entry['height'] = True
     if cfg.get('own'):    # the kit's own page only: matlib_pack leaves it out of a host's copy of the pack (see `own` above)
         entry['own'] = True
     if cfg.get('cell'):   # a card shown one cell at a time [x0, y0, x1, y1], fractions of the sheet from its top left
         entry['cell'] = cfg['cell']
+    if cfg.get('base'):   # the edge of the cell its plant attaches at: core/biome turns a frond, strand or clump to meet it
+        entry['base'] = cfg['base']
+    for k in ('stems', 'rise'):   # a crown's sprigs held by their stems (core/biome BIO.geo.stemClump)
+        if cfg.get(k) is not None:
+            entry[k] = cfg[k]
+    if card:   # what the image is (core/biome's card guard reads it): how many plants, where cards.py anchored a lone one
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import check_cells
+        ps = check_cells.plants(cfg['lib'])
+        if ps is not None:
+            entry['plants'] = len(ps)
+        anchor = check_cells.meta_anchor(cfg['lib'])
+        if anchor:
+            entry['anchor'] = anchor
+        if cfg.get('sheet'):
+            entry['sheet'] = cfg['sheet']
     for k, data in out.items():
         name = '%s.%s.webp' % (fam, {'map': 'albedo', 'normalMap': 'normal', 'roughnessMap': 'rough'}[k])
         entry['files'][k] = name
@@ -188,7 +229,7 @@ def main(argv):
         allfiles.update(files)
     pj = json.dumps(pack, indent=1, sort_keys=True) + '\n'
     if a.check:
-        old = open(os.path.join(tdir, 'pack.json')).read() if os.path.isfile(os.path.join(tdir, 'pack.json')) else ''
+        old = open(os.path.join(tdir, 'pack.json'), encoding='utf-8').read() if os.path.isfile(os.path.join(tdir, 'pack.json')) else ''
         strip = lambda s: {f: {k: v for k, v in e.items()} for f, e in json.loads(s)['families'].items()} if s else {}
         same = strip(old) == strip(pj)
         print('tex/ matches materials.json' if same else 'tex/ is stale: rerun tools/textures/pack.py ' + a.build)
@@ -199,7 +240,8 @@ def main(argv):
             os.remove(os.path.join(tdir, f))
     for name, data in allfiles.items():
         open(os.path.join(tdir, name), 'wb').write(data)
-    open(os.path.join(tdir, 'pack.json'), 'w').write(pj)
+    with open(os.path.join(tdir, 'pack.json'), 'w', encoding='utf-8', newline='\n') as f:
+        f.write(pj)
     kb = sum(len(d) for d in allfiles.values()) / 1024
     print('packed %d families into %s (%d files, %.0f KB)' % (len(pack['families']), os.path.relpath(tdir, ROOT), len(allfiles), kb))
     return 0

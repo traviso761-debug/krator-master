@@ -160,7 +160,6 @@ EASTABYSS.buildFauna=function(R,q,keep){
   mW=nF?BIO.dynamic('flamingowing',G.flaWing(),M.body,nF*2,{label:'Salt-lake flamingos (flying)'}):null,
   mZ=nL?BIO.dynamic('frilledlizard',G.lizard(),M.body,nL,{label:'Frilled lizards'}):null,
   mR=nL?BIO.dynamic('frill',G.frill(),M.body,nL,{label:'Frilled lizards'}):null;
- [mB,mN,mH,mL,mF,mW,mZ,mR].forEach(m=>{if(m)m.userData.kit=BIO.kitName||'';});   // BIO.dynamic leaves the kit unset: BIO.export({kit}) would drop them
  const o3=new T3.Vector3(),hip=new T3.Vector3();let first=true;
  const flag=(...ms)=>ms.forEach(m=>{if(!m)return;m.instanceMatrix.needsUpdate=true;if(first&&m.instanceColor)m.instanceColor.needsUpdate=true;});
  // t is the BIO clock (BIO.WIND.t: the host's clock() when it binds one, else the core's own)

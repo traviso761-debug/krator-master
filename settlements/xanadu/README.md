@@ -8,6 +8,10 @@ detailing from **India** (jharokha bay windows on carved brackets, jali screens,
 arches and iwans, tile mosaics, bulbous turquoise domes, the baths and the chahar bagh gardens). Gold is on
 everything wealthy, religious or civic: the valley's mines pay for it.
 
+**The kit's files are `kits/xanadu/src` since 2026-11-03** (`kits/xanadu/README.md`; MODULARITY-PLAN.md step 4), with
+`kit_bundle.py`. This folder is the page that shows them (the `xanadu` target, the kit's sheet) and the city of Erewhon;
+its build reads the kit in place, so everything below holds.
+
 Built on the Ancients kit fragment contract and the Iziz Vernacular helpers (vendored through `../highlands`), so
 the kit drops into a settlement target the same way the Highlands and Iziz sets do.
 
@@ -21,6 +25,16 @@ python jscheck.py .syntax-xanadu.js                         # parse check when n
 * `API.md` — the contract: registry, palette, kit items, helpers, rules for package work.
 * `NOTES.md` — round by round. `KNOWN_ISSUES.md` — what is open.
 
+## Scrap Xanadu (the `scrap` target)
+
+`python3 build.py --target scrap` writes `dist/xanadu-scrap.html`, the sheet of Scrap Xanadu (`kits/xanadu/PLAN-SCRAP.md`):
+the kit's foundation and the opt-in scrap package only (`TARGET_KIT`), every def at its three variants, and its pools on
+core/water through the kit page's `90-xa-still.js`, read in place.
+
+```
+python3 verify.py dist/xanadu-scrap.html --assert --views "Overview,Scrap: civic,Terminus Serai — eye level" --out shots/scrap
+```
+
 ## Erewhon, Pearl of Xanadu (round 9)
 
 The city: `python3 build.py --target erewhon` → `dist/erewhon.html`. Its terrain is Travis's MS-paint map run through
@@ -29,10 +43,26 @@ The city: `python3 build.py --target erewhon` → `dist/erewhon.html`. Its terra
 gardens of the kit page too. The city's budget is 25 M triangles; buildings bake per 480 m chunk and the chunks are
 culled by range and view each frame (the runtime LOD), the biome's own chunk LOD beside them.
 
+**Its place in the open world** (the owner, 2026-11-11, after scale-model edit 5.1-512 moved Erehwon onto its caldera
+lake's south shore): the page faces as the world does, with the lake north. It stands with its centre on the pin 805,1516,
+unturned, and its lake is the world's -520 m (`ER_WORLD`, `targets/erewhon/84-er-geo.js`). Its island (`ISLAND_C`) is
+the scale model's landform `lf_pleasure_dome_isle`, which `openworld/xanadu-oidong-highrift` stamps at 1:1.
+`verify.py --assert` checks that the two stand within 10 m. Its negative turns the page a quarter turn, which puts the
+island 870 m off. The world's own ground there holds none of the page's relief (`openworld/xanadu-oidong-highrift/KNOWN_ISSUES.md`).
+Moving the island or turning the page means moving the record too.
+
 ```
 python3 tools/erewhon-map.py <map.png> [--preview out.png]     # regenerate targets/erewhon/83-er-data.js
 python3 verify.py dist/erewhon.html --assert --views "Overview,The palace precinct" --out shots/er   # ~2 min a shot in SwiftShader
 ```
+
+## Doors and glass (core/door)
+
+The kit's doors are real leaves and its windows real glass (`kits/xanadu/README.md`, "Doors and glass"): the build reads
+core/door's `10`, `20` and `90` and the Vernacular's `69e5-iziz-openings.js` in place (`DOOR_FILES`), `src/90-xa-doors.js` hands
+each bake's leaves to `KDOORHOST` (Erewhon bakes chunk by chunk: `90b-er-build.js` calls `xaDoorsBind()` after each) with the
+frame tick, and `99-start.js` gives E and its tip. Every door is locked (the kit's bodies are solid; the pages have no core/walk
+and no interiors). `window._doors` counts the doors, the panes and the `vDarkB` left (wells, a shaft, ovens and kilns).
 
 ## Level of detail (core/lod)
 

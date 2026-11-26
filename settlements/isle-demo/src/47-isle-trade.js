@@ -28,7 +28,7 @@ ISLE.simTrade = function () {
   var pair = ['kautoa', 'valapo'].filter(function (s) { return out.stops[s]; }); if (pair.length < 2) return out;
   T.lines.forEach(function (L) {
     SIM.trade({ id: L.id, stops: pair.map(function (s) { return { settlement: s, place: out.stops[s] }; }), cap: L.cap, carriers: L.carriers, minutes: L.minutes, mins: L.mins,
-      keep: L.keep, want: L.want, goods: L.goods });
+      keep: L.keep, want: L.want, goods: L.goods, expect: ISLE.simExpect(L) });
     out.routes.push(L.id);
   });
   /* the uses: each town's people counted once, the hourly draw carried in fractions */
@@ -36,6 +36,15 @@ ISLE.simTrade = function () {
   towns.forEach(function (s) { S.uses.pop[s] = SIM.all('actor').filter(function (a) { return !a.driven && SIM.settlementOf(a) === s; }).length; });
   SIM.stepHooks.push(ISLE.simUses);
   SIM.stepHooks.push(ISLE.simBuyers);
+  return out;
+};
+/* a line's planned want (core's `expect`): the other town's foods a town eats (`diet`), its ration times its people, of
+   those the line carries to it, so the canoes bring rice from the first voyage, before anyone has bought any */
+ISLE.simExpect = function (L) {
+  var D = ISLE.TUNE.sim.trade.diet || {}, out = {};
+  Object.keys(D).forEach(function (s) { var X = ISLE.SIM.towns[s]; if (!X) return;
+    Object.keys(D[s]).forEach(function (g) { if (!Object.keys(L.goods).some(function (o) { return o !== s && L.goods[o].indexOf(g) >= 0; })) return;
+      (out[s] || (out[s] = {}))[g] = D[s][g] * X.pop.actors; }); });
   return out;
 };
 ISLE.simUses = function (minute) {
@@ -60,6 +69,7 @@ ISLE.simBuyers = function (minute) {
     var t = tally[sh.id] || (tally[sh.id] = { calls: 0, bought: {} }); t.calls++;
     sh.calls.forEach(function (s) {
       if (!SIM.econ(s)) return;
+      var at = S.shipsAt || (S.shipsAt = {}); at[sh.id + '|' + s] = (at[sh.id + '|' + s] || 0) + 1;   /* the calls by town (47k: the poleis' fleets) */
       SIM.withEcon(s, function () { Object.keys(sh.buys).forEach(function (g) {
         if (!SIM.ECON.goods[g] || !(S.towns[s].econ.goods[g] > 0)) return;   /* only what the town makes, never its imports */
         var n = Math.min(sh.buys[g], Math.floor(SIM.stockOf(g) - (B.floor[g] || 0))); if (n <= 0) return; var got = SIM.economyTake(g, n); if (got <= 0) return;

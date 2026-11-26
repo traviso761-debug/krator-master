@@ -14,7 +14,7 @@
 const NECANYONS={};
 (function(){
 const K=KSTACKS,KR=KRAND,clamp=(v,a,b)=>v<a?a:v>b?b:v,sm=(a,b,v)=>{const t=clamp((v-a)/(b-a),0,1);return t*t*(3-2*t);};
-const SMALL={spire:1,fin:1,balanced:1};
+const SMALL={spire:1,fin:1,balanced:1,arch:1};   /* an arch (the final rebuild's, 2026-10-27) is a stack: no seep lines, its lintel's top no pans */
 let L=null,G=null;
 
 // a body's seep round its walls: patches (noise round the angle) and the north faces (-z) wetter
@@ -89,7 +89,7 @@ function seepLines(){const out=[];
 
 // ---------------------------------------------------------------- potholes: rain pools on the caps and the stacks' tops
 function potholes(){const out=[];
- L.bodies.forEach((B,bi)=>{const b=B.beds[B.beds.length-1];if(!SMALL[B.kind]&&b.y+b.h<L.capY)return;
+ L.bodies.forEach((B,bi)=>{if(B.kind==='arch')return;const b=B.beds[B.beds.length-1];if(!SMALL[B.kind]&&b.y+b.h<L.capY)return;
   const area=Math.PI*b.rx*b.rz,n=Math.min(40,Math.floor(area/(SMALL[B.kind]?900:1600)));
   for(let i=0;i<n;i++){const r=KR.stream(KR.hash(B.seed,i,0xB07)),a=r.range(0,2*Math.PI),rho=.85*Math.sqrt(r.next()),R=K.footR(b,a)*(1-b.ch)*rho;
    const x=b.cx+Math.cos(a)*R,z=b.cz+Math.sin(a)*R,pr=r.range(1.2,SMALL[B.kind]?2.4:4.5),A=K.at(L.bodies,x,z);

@@ -49,7 +49,18 @@
     dormitory: ['barracks', 'bedroom'],
     shop: ['store', 'market', 'tavern', 'hall'],
     smithy: ['workshop', 'kitchen'],
-    stable: ['yard', 'store', 'roost']
+    stable: ['yard', 'store', 'roost'],
+    chamber: ['hall', 'school'],
+    committee: ['hall', 'study'],
+    gallery: ['hall', 'antechamber', 'tavern'],
+    lobby: ['antechamber', 'hall'],
+    guard: ['barracks', 'antechamber', 'hall'],
+    war_room: ['hall', 'study', 'barracks'],
+    armoury: ['barracks', 'store', 'workshop'],
+    magazine: ['store'],
+    audience: ['hall', 'antechamber'],
+    signals: ['study', 'workshop'],
+    cell: ['bedroom', 'barracks']
   };
   IX.roomKinds = function (kind) { return [kind].concat(IX.KIND_ALIAS[kind] || []); };
   /* a catalog piece's role, for the FOOD and ITEM container slots: its own `role` (FK.set() pieces and
@@ -73,7 +84,7 @@
     bedroom:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
                 optional: [{ types: ['storage'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['screen'], max: 1 }, { types: ['chair', 'desk'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
-    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+    kitchen:  { require: [{ need: 'hearth', types: ['stove'], n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack', 'stack'], max: 2 }, { types: ['table'], max: 1 }, SURFACE],
                 extra: 5 },
     /* RESIDENCE kinds (the interiors sets, sets/README.md): every residence must hold a bed, a FOOD
@@ -82,13 +93,14 @@
        sleeping rooms are `bedroom`s (each with a chest). KIND_ALIAS lets catalog pieces listing
        hall / kitchen / bedroom qualify for them. */
     /* the chest before the food: a food slot has compact pieces (jars, a larder) as well as wide ones (bins,
-       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it */
+       a barrel cradle), and a small hut has room for a chest only if the food slot leaves it. The food store stands
+       on the floor or hangs on a wall (anchors): IX.sets.auditResidence does not count a table-top piece (2026-11-09) */
     cottage:  { require: [{ need: 'bed', types: ['bed'], n: 1 }, { need: 'hearth', types: ['stove', 'brazier'], n: 1 },
-                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+                          { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }, { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['table'], max: 1 }, { types: SEATS, max: 2 }, { types: ['shelf', 'rack'], max: 1 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['art', 'banner'], max: 1 }, SURFACE],
                 extra: 5 },
     living:   { require: [{ need: 'hearth', types: ['stove', 'brazier'], n: 1 }, { need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 },
-                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, n: 1 }],
+                          { need: 'food', types: ['storage', 'vessel', 'stack'], roles: FOOD, anchors: ['floor', 'wall'], n: 1 }],
                 optional: [{ types: ['storage', 'shelf', 'rack'], max: 2 }, { types: SEATS, max: 2 }, { types: ['lamp'], max: 1 }, { types: ['rug'], max: 1 }, { types: ['screen', 'statue', 'banner'], max: 1 }, { types: ['art', 'banner'], max: 2 }, SURFACE],
                 extra: 6 },
     dormitory: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'chest', types: ['storage'], roles: ITEM, n: 1 }],
@@ -131,12 +143,37 @@
     barracks: { require: [{ need: 'beds', types: ['bed'], n: 2 }, { need: 'rack', types: ['rack', 'weapon'], n: 1 }],
                 optional: [{ types: ['bed'], max: 4 }, { types: ['storage', 'rack', 'banner'], max: 2 }],
                 extra: 4 },
-    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }, { types: ['art', 'banner', 'statue'], max: 2 }], extra: 6 }
+    antechamber: { require: [], optional: [{ types: ['lamp', 'bench', 'screen'], max: 3 }, { types: ['art', 'banner', 'statue'], max: 2 }], extra: 6 },
+    /* a bath (2026-11-03, the catalog's Ancients' bath fixtures; here since 2026-11-08): a tub or a shower, a toilet and a
+       basin, the big piece first (the placer reorders a slot that finds no fit), then a towel rail, a mirror and a bench
+       while there is room (one optional piece per 1.5 m2 at wealth 0.5) */
+    bath:     { require: [{ need: 'bath or shower', types: ['vessel'], roles: ['bathtub', 'shower'], n: 1 },
+                          { need: 'toilet', types: ['vessel'], roles: ['toilet'], n: 1 },
+                          { need: 'basin', types: ['vessel'], roles: ['washbasin'], n: 1 }],
+                optional: [{ types: ['rack'], max: 1 }, { types: ['art'], max: 1 }, { types: ['bench'], max: 1 }],
+                extra: 1.5 },
+    /* the Republic's great buildings (2026-11-09: the Hall of the Republic and the Fortress; their blueprints are
+       kits/highlands/hall/BLUEPRINT.md and kits/highlands/fortress/BLUEPRINT.md; registered in sets/highlands.js until
+       2026-11-10). Each takes the pieces of the older kinds it aliases; the seating of the Assembly, the Speaker's chair
+       and the war room's map table are the builders' own placements (FURNISH), so a kind here asks only for what the
+       placer can find in the catalog */
+    chamber:  { require: [], optional: [{ types: ['banner', 'art', 'statue'], max: 4 }, { types: ['lamp'], max: 4 }], extra: 40 },
+    committee: { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 4 }], optional: [{ types: ['shelf', 'storage', 'board'], max: 2 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 },
+    gallery:  { require: [{ need: 'benches', types: ['bench', 'seating'], n: 2 }], optional: [{ types: ['bench', 'seating', 'chair'], max: 8 }, { types: ['lamp'], max: 2 }], extra: 3 },
+    lobby:    { require: [], optional: [{ types: ['bench', 'seating'], max: 3 }, { types: ['lamp', 'banner', 'art', 'statue'], max: 3 }, { types: ['rack'], max: 1 }], extra: 8 },
+    guard:    { require: [{ need: 'rack', types: ['rack', 'weapon'], n: 1 }, { need: 'seats', types: SEATS, n: 1 }], optional: [{ types: ['table'], max: 1 }, { types: ['storage', 'bed'], max: 2 }, { types: ['lamp'], max: 1 }], extra: 6 },
+    war_room: { require: [{ need: 'table', types: ['table'], n: 1 }, { need: 'seats', types: SEATS, n: 2 }], optional: [{ types: ['board', 'shelf', 'storage', 'desk'], max: 4 }, { types: ['banner', 'art', 'lamp'], max: 2 }, SURFACE], extra: 5 },
+    armoury:  { require: [{ need: 'racks', types: ['rack', 'weapon'], n: 2 }], optional: [{ types: ['rack', 'weapon', 'storage'], max: 6 }], extra: 3 },
+    magazine: { require: [{ need: 'stores', types: ['storage', 'stack'], n: 2 }], optional: [{ types: ['storage', 'stack', 'rack'], max: 8 }], extra: 2.5 },
+    audience: { require: [{ need: 'seat of state', types: ['seating', 'chair'], n: 1 }], optional: [{ types: ['seating', 'bench', 'chair'], max: 6 }, { types: ['rug', 'banner', 'art', 'statue', 'screen'], max: 4 }, { types: ['lamp'], max: 2 }, { types: ['table'], max: 1 }], extra: 6 },
+    signals:  { require: [{ need: 'desk', types: ['desk', 'table'], n: 1 }], optional: [{ types: ['board', 'shelf', 'storage', 'chair'], max: 4 }, SURFACE], extra: 5 },
+    cell:     { require: [{ need: 'bed', types: ['bed'], n: 1 }], optional: [{ types: ['storage'], max: 1 }], extra: 6 }
   };
   /* how big a room of each kind wants to be, relative to the others (the planner's area split) */
   IX.KIND_WEIGHT = { hall: 1.6, tavern: 2.2, shrine: 1.4, workshop: 1.6, library: 1.5, school: 1.6, barracks: 1.6,
     kitchen: 1.0, bedroom: 1.0, study: 0.9, store: 0.7, antechamber: 0.6,
-    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8 };
+    cottage: 1.4, living: 1.6, dormitory: 1.8, shop: 1.6, smithy: 1.8, stable: 1.8, bath: 0.5,
+    chamber: 4, committee: 1.4, gallery: 1.2, lobby: 0.8, guard: 1, war_room: 1.6, armoury: 1, magazine: 1, audience: 1.6, signals: 1, cell: 0.5 };
   /* what a building of a given type is divided into, per storey (Yuni's ROOM_PROGRAM table,
      64-interiors.js): fn(level, area, shell) -> [kind, ...], the first kind holds the street door
      (ground floor) or the stair's top (upper floors). planBuilding() takes a name from here, an

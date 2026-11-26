@@ -63,7 +63,7 @@ const MAT_GROUND=new THREE.MeshLambertMaterial({color:0xffffff});
   const col=(lib,hex)=>{if(lib)return'vec3(1.0)';const c=new THREE.Color(hex).convertSRGBToLinear();return'vec3('+[c.r,c.g,c.b].map(v=>(v*1.6).toFixed(4)).join(',')+')';};
   sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uG,uL,uS,uM;varying vec4 vW;varying vec3 vGWP;')
    .replace('#include <map_fragment>',['{vec2 p=vGWP.xz;',
-    'vec3 gr=pow(texture2D(uG,p/'+Lg.s.toFixed(2)+').rgb,vec3(2.2))*'+(Lg.lib?'vec3(0.55,0.86,0.4)':col(false,0x58703a))+';',   // the library's grass greened: a wet subtropical plain
+    'vec3 gr=pow(texture2D(uG,p/'+Lg.s.toFixed(2)+').rgb,vec3(2.2))*'+(Lg.lib?'vec3(0.95)':col(false,0x58703a))+';',   // the library's green lawn (ground.moss003) carries its own green: a little lift only
     'vec3 lt=pow(texture2D(uL,p/'+Lt.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lt.lib,0x4a4030)+';',
     'vec3 sd=pow(texture2D(uS,p/'+Ls.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Ls.lib,0xa89c88)+';',
     'vec3 md=pow(texture2D(uM,p/'+Lm.s.toFixed(2)+').rgb,vec3(2.2))*'+col(Lm.lib,0x5a4a38)+';',
@@ -127,11 +127,10 @@ const ROCK_GEOS=[];
   g.setAttribute('color',cl);g.setIndex(A.idx);g.computeVertexNormals();
   const mat=new THREE.MeshStandardMaterial({map:L.map,normalMap:L.normalMap,roughnessMap:L.roughnessMap,roughness:1,metalness:0,vertexColors:true});
   const me=new THREE.Mesh(g,mat);me.userData.inspectLabel=label;me.userData.host=true;me.userData.rock=true;scene.add(me);ROCK_GEOS.push(g);return me;};
- // one anchor per body at its middle (an invisible instance): the rock is merged meshes, so the probe's samples (a mesh's box
- // centre) would leave each body's registered volume to whatever grows on it
- {const A=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),new THREE.MeshBasicMaterial({visible:false}),ROCK.length),M4=new THREE.Matrix4();
-  ROCK.forEach((B,i)=>{M4.makeTranslation(B.x,(B.y0+B.top)/2,B.z);A.setMatrixAt(i,M4);});A.userData.host=true;A.userData.inspectLabel='rock anchors';A.frustumCulled=false;scene.add(A);}
- mk(acc.wall,Lw,'Limestone (a karst tower\'s cliff: rain-streaked black, iron-stained ochre)');mk(acc.top,Lt,'A tower\'s top (soil and moss under the scrub)');
+ // one sample per body at its middle for the probe (userData.probePoints, core/host/95-host-probe.js): the rock is merged
+ // meshes, so the probe's samples (a mesh's box centre) would leave each body's registered volume to whatever grows on it
+ const PP=[];ROCK.forEach(B=>PP.push(B.x,(B.y0+B.top)/2,B.z));
+ mk(acc.wall,Lw,'Limestone (a karst tower\'s cliff: rain-streaked black, iron-stained ochre)').userData.probePoints=PP;mk(acc.top,Lt,'A tower\'s top (soil and moss under the scrub)');
  mk(acc.blade,Lb,'Limestone of the stone forest (grooved by the rain: karren)');mk(acc.btop,Lt,'A blade\'s crest (moss)');})();
 
 // ---------------------------------------------------------------- the horizon: the karst going on into the mist

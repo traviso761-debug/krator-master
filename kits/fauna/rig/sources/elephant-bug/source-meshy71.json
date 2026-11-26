@@ -1,0 +1,12 @@
+{
+ "prompt": "Colossal wading insect on six very long stilt legs, barrel-shaped ribbed chitin body, heavy low head, no wings",
+ "task_ids": [
+  "01a19ef2-8bc8-72a9-be2d-28966279c93c",
+  "01a19ef4-93ec-729d-92d7-05b2c5395232"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, the image step chained",
+ "rights": "generated on the owner's Meshy account"
+}

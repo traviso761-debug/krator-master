@@ -56,8 +56,10 @@ const GL={pg:u=>45*Math.sin(u*.0011+.4)+18*Math.sin(u*.003+1.2),W:u=>mix(290,520
 // THE SPURS (arêtes) either side of the valley, higher up the flank; the east one stands off to leave room for the shelf
 const SPUR={west:400,east:620,A:u=>55+95*smooth(-1800,2500,u)};
 // THE TERMINAL MORAINE: an arc across the bench, its middle farthest down; breached where the river leaves the lake
-const TERM=(function(){const p0=GL.pg(GL.SNOUT),W0=GL.W(GL.SNOUT);return{p0,W0,u0:GL.SNOUT-440,bend:80,breach:p0+70,h:20};})();
-const termU=p=>TERM.u0+TERM.bend*Math.pow((p-TERM.p0)/TERM.W0,2);
+// 2026-11-03: the ice, its trough, moraines and lake basin are core/terrain's (KGLACIER, 44g-core-glacier.js), from these numbers
+const GLC=KGLACIER.create({up:UP,centre:GL.pg,W:GL.W,T:GL.T,snout:GL.SNOUT,edge:.62,trough:{D:GL.Dv},
+ lateral:{h:u=>15+9*smooth(-300,1200,u),end:[1800,1300]},terminal:{back:440,bend:80,breach:70,h:20}});
+const TERM=GLC.TERM,termU=GLC.termU;
 // THE SHELF: a geothermal shelf east of the glacier, between the ice and the east spur
 const SHELF=(function(){const u=650,p=GL.pg(u)+GL.W(u)+290,c=upAt(u,p);return{u,p,x:c[0],z:c[1],r:300,name:'The geothermal shelf (fumaroles, ice towers, ice caves)'};})();
 // the fumaroles on it; the ice towers round them (frozen steam: chimneys of ice, as on Erebus); the caves the steam has

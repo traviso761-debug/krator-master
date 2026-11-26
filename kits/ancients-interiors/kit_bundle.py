@@ -6,6 +6,8 @@
 
 The text is this kit's engine-neutral core (src/10-49): the global KratorAncientsInteriors. Load it AFTER kits/interiors'
 bundle (kits/interiors/kit_bundle.py), then call KratorAncientsInteriors.install(KratorInteriors) once.
+
+The reception hall recipe (src/38-ai-reception.js) is in the core since 2026-11-08 (opt-in, bundle(reception=True), before).
 """
 import os
 
@@ -26,9 +28,12 @@ def files():
     return ['src/' + f for f in sorted(os.listdir(os.path.join(HERE, 'src'))) if f[0].isdigit() and f.endswith('.js') and f < '50']
 
 
-def bundle():
+def bundle(reception=None):
+    """reception: IGNORED, kept so a caller still passing reception=True (biomes/ancientsvalley/build.py) builds; the
+    reception recipe is in the core (src/38-ai-reception.js) since 2026-11-08. Drop the argument at its callers."""
+    fs = files()
     return safe('/* kits/ancients-interiors bundle (kit_bundle.py): KratorAncientsInteriors. GENERATED; edit kits/ancients-interiors. */\n') + \
-        ''.join('/* ---- kits/ancients-interiors/%s ---- */\n%s\n' % (f, read(f)) for f in files())
+        ''.join('/* ---- kits/ancients-interiors/%s ---- */\n%s\n' % (f, read(f)) for f in fs)
 
 
 if __name__ == '__main__':

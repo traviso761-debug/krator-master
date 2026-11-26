@@ -12,25 +12,12 @@ The city plan loads with ?lite=1 (buildings built, not drawn: software GL cannot
 --assert fails on a page error, a kit piece that did not build, overlapping buildings (exact footprints, 0.3 m),
 buildings in water, on the wall or on a highway, and each rule of the owner's the page logs (see CITY_CHECK).
 """
-import argparse, functools, http.server, json, os, socketserver, sys, threading
+import argparse, asyncio, contextlib, functools, http.server, json, os, socketserver, sys, threading
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-
-def launch(p):
-    """chromium for playwright: its own build, else a pinned one under /opt/pw-browsers (a cloud container ships one
-    that need not match the pip playwright's pin), else $KRATOR_CHROME"""
-    args = ['--use-gl=swiftshader', '--enable-webgl', '--ignore-gpu-blocklist']
-    if os.environ.get('KRATOR_CHROME'):
-        return p.chromium.launch(executable_path=os.environ['KRATOR_CHROME'], args=args)
-    try:
-        return p.chromium.launch(args=args)
-    except Exception as e:
-        if "Executable doesn't exist" not in str(e):
-            raise
-        import glob
-        for c in sorted(glob.glob('/opt/pw-browsers/chromium-*/chrome-linux/chrome'), reverse=True):
-            return p.chromium.launch(executable_path=c, args=args)
-        raise
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'tools'))
+import harness
+from harness import verify_page, Abort   # the launcher ($KRATOR_CHROME, else playwright's, else /opt/pw-browsers), the server
 
 
 # the placement hash: FNV-1a over every lot's (key, x, z, ry, w, d) and every way's points, as JSON at full precision
@@ -39,31 +26,30 @@ PLACE_HASH = r"""() => { const P = PLAN, f = (h, s) => { for (let i = 0; i < s.l
     lots: P.lots.length, ways: P.ways.length, index: P.stats.index || null }; }"""
 
 
-def plan_hash(a, port, rel, sync_playwright):
-    with sync_playwright() as p:
-        b = launch(p)
-        page = b.new_page(viewport={'width': 800, 'height': 600})
-        errs = []
-        page.on('pageerror', lambda e: errs.append(str(e)))
-        # stop right after the layout: the drawing (VC.start) is not run
-        page.add_init_script("""(() => { const iv = setInterval(() => { if (window.SL && SL.layout && window.VC && VC.start) { clearInterval(iv);
+async def plan_hash(a, page):
+    """A partial load (the drawing is never run), so not a verify_page: the harness's GPU lock, launcher, server and
+    three.js route, and none of its universal asserts."""
+    from playwright.async_api import async_playwright
+    lk = harness.gpu_lock(what=harness._page_key(page)) if harness.is_gpu() else contextlib.nullcontext()
+    with lk:
+        async with async_playwright() as p:
+            b = await harness.launch_chromium(p)
+            with harness.serve(HERE) as port:
+                pg = await b.new_page(viewport={'width': 800, 'height': 600})
+                errs = []
+                pg.on('pageerror', lambda e: errs.append(str(e)))
+                # stop right after the layout: the drawing (VC.start) is not run
+                await pg.add_init_script("""(() => { const iv = setInterval(() => { if (window.SL && SL.layout && window.VC && VC.start) { clearInterval(iv);
           const lay = SL.layout; SL.layout = function () { const r = lay.apply(this, arguments); window.__laid = true; return r; }; VC.start = function () {}; } }, 1); })();""")
-        page.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel))
-        page.wait_for_function('window.__laid === true || (window._vc && window._vc.error)', timeout=1800000, polling=500)
-        r = page.evaluate(PLACE_HASH)
-        b.close()
+                await harness.route_three(pg, os.path.dirname(os.path.abspath(page)), HERE)
+                rel = os.path.relpath(os.path.abspath(page), HERE).replace(os.sep, '/')
+                await pg.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel), timeout=harness.LOAD_MS)
+                await pg.wait_for_function('window.__laid === true || (window._vc && window._vc.error)', timeout=1800000, polling=500)
+                r = await pg.evaluate(PLACE_HASH)
+            await b.close()
     print('placement hash %s (%d lots, %d ways); index %s%s' % (r['hash'], r['lots'], r['ways'], json.dumps(r['index']), ('; ERRORS ' + '; '.join(errs)) if errs else ''))
     if errs:
         sys.exit(1)
-
-
-def serve():
-    class Quiet(http.server.SimpleHTTPRequestHandler):
-        def log_message(self, *a): pass
-    httpd = socketserver.ThreadingTCPServer(('127.0.0.1', 0), functools.partial(Quiet, directory=HERE))
-    httpd.daemon_threads = True
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    return httpd.server_address[1]
 
 
 def main():
@@ -73,13 +59,11 @@ def main():
     ap.add_argument('--shot')
     ap.add_argument('--hash', action='store_true', help='print the placement hash after the layout and stop')
     a = ap.parse_args()
-    from playwright.sync_api import sync_playwright
-    port, errors = serve(), []
     rel = os.path.relpath(os.path.abspath(a.page), HERE).replace(os.sep, '/')
     if 'voth-site' in rel:
-        return verify_site(a, port, rel, sync_playwright)
+        return asyncio.run(verify_site(a, a.page))
     if 'voth-city' in rel:
-        return (plan_hash if a.hash else verify_city)(a, port, rel, sync_playwright)
+        return asyncio.run((plan_hash if a.hash else verify_city)(a, a.page))
     sys.exit('verify.py: no check for ' + rel + ' (dist/voth-city.html or dist/voth-site.html)')
 
 
@@ -525,21 +509,20 @@ def animals_bad(sc):
     return None
 
 
-def verify_city(a, port, rel, sync_playwright):
-    errors = []
-    with sync_playwright() as p:
-        b = launch(p)
-        page = b.new_page(viewport={'width': 1000, 'height': 760})
-        page.on('pageerror', lambda e: errors.append('PAGEERROR ' + str(e)))
-        page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
-        page.goto('http://127.0.0.1:%d/%s?lite=1' % (port, rel))
-        page.wait_for_function('window._vc && window._vc.ready', timeout=900000)
-        r = page.evaluate(CITY_CHECK)
+async def verify_city(a, page):
+    # the city plan is served from the build folder (the page reads its siblings there), ?lite=1: built, not drawn
+    async with verify_page(page, here=HERE, root=HERE, size='1000x760', query='?lite=1', settle_ms=0) as V:
+        pg = V.page
+        # console errors: the harness has watched the console since before the load; take those, then listen on
+        cerrs = [t for k, t in pg.krator_console if k == 'error']
+        pg.on('console', lambda m: m.type == 'error' and cerrs.append(m.text))
+        await pg.wait_for_function('window._vc && window._vc.ready', timeout=900000)
+        r = await pg.evaluate(CITY_CHECK)
         if a.shot:
-            page.evaluate("() => { document.getElementById('v-map').onclick(); HOST.layers.lots = true; HOST.applyStep(); }")
-            page.wait_for_timeout(3000)
-            page.screenshot(path=a.shot)
-        b.close()
+            await pg.evaluate("() => { document.getElementById('v-map').onclick(); HOST.layers.lots = true; HOST.applyStep(); }")
+            await pg.wait_for_timeout(3000)
+            await V.shot(a.shot, view='map')
+    errors = ['PAGEERROR ' + e for e in V.errs] + cerrs
     print('\n'.join(r['log']))
     print('pass ms', r['ms'])
     print('placement hash', r['place'], '; export', r['exportLen'], 'characters')
@@ -709,25 +692,23 @@ def verify_city(a, port, rel, sync_playwright):
         sm = r['sim']
         if sm['routes'] != r['transit']['lines'] or sm['bad'] or sm['problems'] or not sm['pure'] or not sm['vehicles'] or sm['berthClash']: bad.append('transit routes (core/simulation)')
         if bad:
-            sys.exit('FAIL: ' + ', '.join(bad))
-        print('OK')
+            print('FAIL: ' + ', '.join(bad)); V.fails.extend(bad)
+    sys.exit(V.exit())
 
 
-def verify_site(a, port, rel, sync_playwright):
-    errors = []
-    with sync_playwright() as p:
-        b = launch(p)
-        page = b.new_page(viewport={'width': 1000, 'height': 760})
-        page.on('pageerror', lambda e: errors.append('PAGEERROR ' + str(e)))
-        page.on('console', lambda m: m.type == 'error' and errors.append(m.text))
-        page.goto('http://127.0.0.1:%d/%s' % (port, rel))
-        page.wait_for_function('window._site && window._site.ready', timeout=600000)
-        r = page.evaluate(SITE_CHECK)
+async def verify_site(a, page):
+    async with verify_page(page, here=HERE, root=HERE, size='1000x760', settle_ms=0) as V:
+        pg = V.page
+        # console errors: the harness has watched the console since before the load; take those, then listen on
+        cerrs = [t for k, t in pg.krator_console if k == 'error']
+        pg.on('console', lambda m: m.type == 'error' and cerrs.append(m.text))
+        await pg.wait_for_function('window._site && window._site.ready', timeout=600000)
+        r = await pg.evaluate(SITE_CHECK)
         if a.shot:
-            page.evaluate("() => document.getElementById('v-map').onclick()")
-            page.wait_for_timeout(3000)
-            page.screenshot(path=a.shot)
-        b.close()
+            await pg.evaluate("() => document.getElementById('v-map').onclick()")
+            await pg.wait_for_timeout(3000)
+            await V.shot(a.shot, view='map')
+    errors = ['PAGEERROR ' + e for e in V.errs] + cerrs
     print('site loaded from', r['from'], '; cantons placed %d of %d: %s' % (len(r['cantons']), len(r['all']), ', '.join(r['cantons'])))
     print('tools', json.dumps(r['tools']), '; ground', json.dumps(r['ground']))
     print('bridges', json.dumps(r['bridges']))
@@ -744,9 +725,8 @@ def verify_site(a, port, rel, sync_playwright):
         bb = r['bridges'] or {}
         if not (bb.get('spans') and bb.get('causeways') and bb.get('river') and bb.get('prims')): bad.append('bridges')
         if bad:
-            sys.exit('FAIL: ' + ', '.join(bad))
-        print('OK')
-
+            print('FAIL: ' + ', '.join(bad)); V.fails.extend(bad)
+    sys.exit(V.exit())
 
 if __name__ == '__main__':
     main()

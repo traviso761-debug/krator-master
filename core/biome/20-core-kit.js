@@ -27,6 +27,15 @@ BIO.kitWrap=function(name,api){for(const k of Object.keys(api)){const f=api[k];i
   const w=function(){const prev=BIO.kit(name);try{return f.apply(this,arguments);}finally{BIO.kit(prev);}};w._kit=name;api[k]=w;}
  return api;};
 BIO.kitEnd=function(api){const name=BIO.kitName;if(api){BIO.kitWrap(name,api);BIO.kits[name].api=api;}BIO.kit('');return api;};   // api: what core/tags reads the kit's TAGS, species and plants from
+// ONE SPECIES' BUILDER BY KEY (PLAN-LANDS.md H2, a lookup only): a loaded kit's species record and its builder, without
+// building the kit. The kits already export make(sp, x, y, z) (the pass's own tree record) and grow(T, lv) (that one tree
+// into the kit's buckets) beside SPECIES; a kit may instead name its own per key as api.builders[key] = {make, grow}.
+// Both run in the source kit's registry (kitWrap). null when the kit is not on the page or has no such species or builder.
+BIO.kitBuilder=function(kit,key){const R=BIO.kits[kit],api=R&&R.api;if(!api)return null;
+ const own=api.builders&&api.builders[key],SP=api.SPECIES,sp=SP&&SP.findIndex?SP.findIndex(S=>S&&S.key===key):-1;
+ if(own&&typeof own.make==='function'&&typeof own.grow==='function')return{kit,key,api,sp,species:sp>=0?SP[sp]:own.species||null,make:own.make,grow:own.grow,own:true};
+ if(sp<0||typeof api.make!=='function'||typeof api.grow!=='function')return null;
+ return{kit,key,api,sp,species:SP[sp],make:function(){return api.make.apply(api,[sp].concat([].slice.call(arguments)));},grow:function(T,lv){return api.grow(T,lv);},own:false};};
 // a material cache key in the current kit's name ('' adds nothing)
 BIO.kitKey=function(k){return BIO.kitName?BIO.kitName+'|'+k:k;};
 BIO.kit('');
@@ -41,14 +50,97 @@ Object.defineProperty(F32.prototype,'n',{get:function(){return this.length;}});
 F32.prototype.data=function(){return this.a.slice(0,this.length);};   // a copy: the store can be dropped after bake
 BIO.F32=F32;BIO.Store=F32;
 // x: the extra named vec4 attributes an item asked for (hyperjungle-1: aP0, aP1 for 35-core-anim)
-const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],count:0};
+const newItem=attrs=>{const it={m:new F32(),c:new F32(),n:new F32(),c2:new F32(),x:{},k:[],o:[],count:0};   /* o: 1 where a tree (BIO.owner) owns the instance */
  if(attrs)attrs.forEach(a=>{if(a!=='aN'&&a!=='aC2')it.x[a]=new F32();});return it;};
+BIO._newItem=newItem;   /* an empty store (34-core-impostor's capture empties a kit's stores after its scratch tree) */
 // opt.cls, opt.kind, opt.tags (optional): the item's core/tags class, kind and extra tags, where the core's rule
 // (BIO.tagItem, below) would guess wrong
+// opt.indexed (default BIO.INDEX_ITEMS, false): weld the item's geometry (vertices whose every attribute is equal become one)
+// and draw it by index. The same triangles in the same order, so the same pixels; a 6-triangle card runs its vertex shader for
+// 12 vertices, not 18 (nhighlands' leaf and floor cards were vertex-bound on an integrated GPU: 2026-10-26). Off by default.
+BIO.INDEX_ITEMS=false;
+function weldGeo(g){const T=BIO.host.THREE,names=Object.keys(g.attributes),n=g.attributes.position.count,A=names.map(k=>g.attributes[k]),seen=new Map(),idx=new Uint32Array(n),keep=[];
+ for(let i=0;i<n;i++){let key='';for(const a of A){const s=a.itemSize,o=i*s;for(let c=0;c<s;c++)key+=a.array[o+c]+',';}
+  let j=seen.get(key);if(j==null){j=keep.length;seen.set(key,j);keep.push(i);}idx[i]=j;}
+ if(keep.length===n)return g;
+ const out=new T.BufferGeometry();A.forEach((a,q)=>{const s=a.itemSize,arr=new a.array.constructor(keep.length*s);keep.forEach((i,j)=>{for(let c=0;c<s;c++)arr[j*s+c]=a.array[i*s+c];});
+  out.setAttribute(names[q],new T.BufferAttribute(arr,s,a.normalized));});
+ out.setIndex(new T.BufferAttribute(keep.length>65535?idx:new Uint16Array(idx),1));return out;}
+BIO.weldGeo=weldGeo;
+// A LIBRARY CARD ON ITS GEOMETRY'S AXES (2026-10-27; the owner: "these imposters improperly split the cutout textures. this
+// seems to keep happening": a frond strip draws its texture once a segment, so the Rift's library fern, a whole frond standing
+// in its image, was drawn three or four times end to end down each frond and upside down, small ferns floating loose of any
+// stem). A card geometry that holds its plant by one end says which edge of its uv that is (unflipped: v down the image),
+// geo.userData.card = {base, once}: base 'top' (v 0: BIO.geo.frond, ribbon, hang, and the clump's tripod, whose quads show the
+// image upside down), 'left', 'right', 'bottom'; once (frond, ribbon) the uv that spans the image once down the whole length
+// instead of a copy a segment. A library slot that
+// names the edge its plant attaches at in its image (materials.json "base", with "cell" the plant's tight box; both proposed by
+// tools/textures/check_cells.py) gets the geometry's uv turned so the two edges meet, and spans once. No "base", or a geometry
+// that declares nothing: the geometry is drawn as given, as before.
+const CARD_EDGES=['left','top','right','bottom'];
+BIO.cardTurn=function(geoBase,imgBase){const a=CARD_EDGES.indexOf(geoBase),b=CARD_EDGES.indexOf(imgBase);return a<0||b<0?0:(b-a+4)%4;};
+// A CROWN'S SPRIGS HELD BY THEIR STEMS (2026-10-27, the owner: "the stem on the leaf card does not orient properly to the 3d
+// stem model. Fix the axis and attachment point of each stem, attach it to the 3d stem, and orient leaves away by long axis").
+// A slot's "stems" ([{cell, stem, tip, w}], up to three: the sprig's box in the sheet, its stem point and tip in the image, its
+// half-widths either side of the stem-tip line, back how far the card reaches behind a stem set inside the sprig (a rosette's
+// centre), all image fractions with v down; tools/textures/check_cells.py measures them)
+// turns BIO.geo.clump's tripod of centred quads into three cards that each start at the clump's origin (the twig the kit
+// puts it on) with their sprig's stem, run out and up (o.rise, .65 rad above level, round the clump at the tripod's three
+// azimuths) along the sprig's own long axis, and are cut to the sprig's box (its oriented box clipped to its cell, so no
+// neighbour of the sheet shows): 2 to 6 triangles a card. The texture is the whole sheet (no texture cell). The geometry is
+// BIO.geo.stemClump (30-core-foliage.js).
+function cardFit(raw,mat,indexed){const cb=raw.userData&&raw.userData.card,lc=mat&&mat.userData&&mat.userData.libCard;
+ if(cb&&cb.kind==='clump'&&lc&&lc.stems&&lc.stems.length){const g=BIO.geo.stemClump(lc.stems,{rise:lc.rise});return {geo:indexed?weldGeo(g):g,fit:true};}
+ let g=raw;if(cb&&lc&&lc.base){g=raw.clone();const U=g.attributes.uv,A=U.array,k=BIO.cardTurn(cb.base,lc.base);
+  if(cb.once&&cb.once.length===A.length)A.set(cb.once);
+  for(let i=0;i<A.length;i+=2){let u=A[i],v=A[i+1];for(let r=0;r<k;r++){const t=u;u=1-v;v=t;}A[i]=u;A[i+1]=v;}   /* a quarter turn: left -> top -> right -> bottom */
+  U.needsUpdate=true;}
+ return {geo:indexed?weldGeo(g):g,fit:g!==raw};}
+// THE INSTANCE CAP (CORE-IMPROVEMENTS 3c, 2026-10-27): an item put more than BIO.CAP times (250k, counted across bakes) is a
+// pass planned by density and never counted (Korona's 918,541 cobra lilies from an undefined bias). The first put over it
+// says so once, naming the item, the pass (BIO.cur) and the way out, and the item still draws, so a page's look never
+// changes: a console warning by default (nhighlands' needles, 632k, and fronds, 595k, are over it, and a page waits for its
+// own turn), BIO.err with BIO.CAP_ERR (verify's console check then fails), a throw with BIO.CAP_THROW (or BIO.init({capThrow:
+// true}); a session writing a new pass sets it). An item
+// that means to be that many says so: BIO.def(name, geo, mat, {cap: N or Infinity, capWhy: 'why'}); a cap with no capWhy is
+// reported too. BIO.capReport() -> [{kit, item, count, cap, pass, why}], every item over its cap (verify reads it).
+BIO.CAP=250000;BIO.CAP_THROW=false;BIO.CAP_ERR=false;BIO._capOver=[];
+BIO.capReport=function(){return BIO._capOver.map(e=>Object.assign({},e,{count:e.def.nPut,def:undefined}));};
+function capHit(name,def){const cap=def.cap!=null?def.cap:BIO.CAP;def.capHit=true;
+ const e={kit:BIO.kitName||'',item:name,count:def.nPut,cap,pass:BIO.cur||null,why:def.capWhy||null,def};BIO._capOver.push(e);
+ const msg='BIO.put: '+name+(e.kit?' (kit '+e.kit+')':'')+' passed its instance cap of '+cap+' in pass '+(e.pass||'?')+
+  ': count the pass, coarsen its cell, or BIO.def(..., {cap, capWhy}) if it is meant';
+ if(BIO.CAP_THROW)throw new Error(msg);if(BIO.CAP_ERR)BIO.err(msg);else console.warn(msg);}
+// THE CARD GUARD (2026-10-27, the owner: "this seems to keep happening"): BIO.def refuses, through BIO.err (the error panel,
+// so every verify fails), a library card drawn in a way that cannot be right: a sheet of plants with no cell, no stems and no
+// cut by BIO.geo.cells or "sheet": "geometry" (every card shows the whole grid); a library plant on a frond, ribbon or hang
+// with no "base" (drawn once a segment, or sideways: the floating fronds); a crown of sprigs (a sheet, or a plant standing on
+// its base) on the clump with neither "stems" nor "base" (centred on the twig, the image upside down). It reads what the pack
+// says of the image (plants, anchor: tools/textures/pack.py from check_cells.py); a pack written before that says nothing and
+// is never refused. Each slot is reported once. BIO.cardFaults lists them.
+BIO.cardFaults=[];const _cardSeen=new Set();
+// a geometry whose uv spans less than nine tenths of the image either way is cut by the kit's own code (a cellUV, a bamboo spray)
+function uvCut(raw){const ud=raw.userData||(raw.userData={});if(ud._uvCut!=null)return ud._uvCut;const U=raw.attributes&&raw.attributes.uv;let r=false;
+ if(U){let u0=1e9,u1=-1e9,v0=1e9,v1=-1e9;for(let i=0;i<U.count;i++){const u=U.getX(i),v=U.getY(i);if(u<u0)u0=u;if(u>u1)u1=u;if(v<v0)v0=v;if(v>v1)v1=v;}r=u1-u0<.9||v1-v0<.9;}
+ return ud._uvCut=r;}
+function cardWhy(raw,lc){if(!lc||!lc.lib||lc.plants==null)return null;
+ const cb=raw.userData&&raw.userData.card,cut=!!(raw.userData&&raw.userData.cells)||lc.sheet==='geometry'||uvCut(raw),many=lc.plants>1;
+ if(many&&!lc.cell&&!lc.stems&&!cut)return 'draws its whole sheet of '+lc.plants+' plants on every card: give it a "cell" (or "stems" on a crown)';
+ if(cb&&cb.kind!=='clump'&&cb.base&&!lc.base)return 'is a library plant on a '+(cb.once?'frond or ribbon (the texture once a segment)':'hanging card')+' with no "base": it floats or lies sideways';
+ if(cb&&cb.kind==='clump'&&!cut&&!lc.stems&&!lc.base&&(many||lc.anchor==='bottom'))return 'is a crown on the clump with no "stems": its sprigs sit centred on the twig, the image upside down';
+ return null;}
+BIO._cardWhy=cardWhy;
+function cardCheck(name,raw,mat){const lc=mat&&mat.userData&&mat.userData.libCard,why=cardWhy(raw,lc);if(!why)return;
+ const k=(lc.slot||'')+'|'+name;if(_cardSeen.has(k))return;_cardSeen.add(k);
+ BIO.cardFaults.push({slot:lc.slot,lib:lc.lib,item:name,why});
+ BIO.err('card '+lc.slot+' ('+lc.lib+') on item '+name+' '+why+' (python3 tools/textures/check_cells.py <build>)');}
 BIO.def=function(name,geo,mat,opt){opt=opt||{};
  if(BIO.defs[name])BIO.err('BIO.def: '+name+' defined twice');
- const g=geo.index?geo.toNonIndexed():geo;
- BIO.defs[name]={geo:g,mat,tris:g.attributes.position.count/3,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null};
+ if(opt.cap!=null&&!opt.capWhy)BIO.err('BIO.def: '+name+' sets cap '+opt.cap+' with no capWhy');
+ const cb=geo.userData&&geo.userData.card,g0=geo.index?geo.toNonIndexed():geo,tris=g0.attributes.position.count/3,ix=opt.indexed==null?BIO.INDEX_ITEMS:opt.indexed;
+ if(cb)g0.userData.card=cb;if(geo.userData&&geo.userData.cells)g0.userData.cells=true;const F=cardFit(g0,mat,ix);cardCheck(name,g0,mat);
+ BIO.defs[name]={geo:F.geo,raw:g0,fit:F.fit,indexed:ix,free:!!opt.free,onLeaf:!!opt.onLeaf,mat,tris,attrs:opt.attrs||null,label:opt.label||name,cls:opt.cls||null,kind:opt.kind||null,tags:opt.tags||null,
+  cap:opt.cap==null?null:opt.cap,capWhy:opt.capWhy||null,cliff:!!opt.cliff,nPut:0};   /* cliff: the item grows on faces (BIO.cliffCheck, 40-core-place.js) */
  BIO.items[name]=newItem(opt.attrs);BIO.order.push(name);};
 const _bm=new (function(){return {}})();   // scratch holder, filled after THREE binds
 BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();_bm.q=new T.Quaternion();_bm.e=new T.Euler();_bm.p=new T.Vector3();_bm.s=new T.Vector3();_bm.c=new T.Color();_bm.up=new T.Vector3(0,1,0);_bm.v=new T.Vector3();}return _bm;};
@@ -56,7 +148,10 @@ BIO._scratch=function(){const T=BIO.host.THREE;if(!_bm.m){_bm.m=new T.Matrix4();
 function qEuler(rx,ry,rz){const S=BIO._scratch();S.e.set(rx||0,ry||0,rz||0,'YXZ');return new BIO.host.THREE.Quaternion().setFromEuler(S.e);}
 function qFacing(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),v);}
 function qUp(n){const T=BIO.host.THREE,v=new T.Vector3(n[0],n[1],n[2]).normalize();return new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),v);}
-// put(name, [x,y,z], quat|null, [sx,sy,sz]|s, colour(hex|Color|null), extra{n:[..], c2:hex})
+// put(name, [x,y,z], quat|null, [sx,sy,sz]|s, colour(hex|Color|null), extra{n:[..], c2:hex, label})
+// extra.label (2026-10-26, B5): this instance's own inspector label, where it differs from the item's (two plants that share
+// a geometry and a material are one item, one draw call a chunk, and still named apart). Baked as userData.instLabels
+// {names, idx: a label index per row}; BIO.instLabel(mesh, instanceId) reads it (core/host's inspector does).
 BIO.put=function(name,pos,q,sc,col,extra){
  const it=BIO.items[name];if(!it){BIO.err('BIO.put: no item '+name);return;}
  if(!(isFinite(pos[0])&&isFinite(pos[1])&&isFinite(pos[2]))){BIO.err('BIO.put: NaN position for '+name);return;}
@@ -72,17 +167,66 @@ BIO.put=function(name,pos,q,sc,col,extra){
   if(def.attrs.indexOf('aN')>=0){const n=(extra&&extra.n)||[0,1,0];it.n.push(n[0],n[1],n[2]);}
   if(def.attrs.indexOf('aC2')>=0){const c2=extra&&extra.c2;if(c2==null)it.c2.push(S.c.r,S.c.g,S.c.b);else{if(c2.isColor)S.c.copy(c2);else S.c.set(c2);S.c.convertSRGBToLinear();it.c2.push(S.c.r,S.c.g,S.c.b);}}
   for(const a in it.x){const v=(extra&&extra[a])||[0,0,0,0];it.x[a].push(v[0]||0,v[1]||0,v[2]||0,v[3]||0);}}
- it.k.push(BIO._lodKey(pos[0],pos[2]));it.count++;BIO.tally(def.tris,1,0);
+ const lb=extra&&extra.label;if(lb!=null&&lb!==def.label||it.l){let li=0;   /* a per-instance label: the first one starts the table */
+  if(lb!=null&&lb!==def.label){if(!def.labs)def.labs=[def.label];li=def.labs.indexOf(lb);if(li<0){li=def.labs.length;def.labs.push(lb);}}
+  if(!it.l)it.l=new Array(it.count).fill(0);it.l.push(li);}
+ it.k.push(BIO._lodKey(pos[0],pos[2]));it.o.push(BIO.owner?1:0);it.count++;BIO.tally(def.tris,1,0);
+ if(++def.nPut>(def.cap!=null?def.cap:BIO.CAP)&&!def.capHit)capHit(name,def);
  if(BIO.host.tags&&def.set==null)BIO._tagItem(name,def,BIO.kitName||'');};   /* core/tags: the item's set, at its first put (below) */
-// a beam of instanced item `name` (a unit cylinder along y, centred) from a to b
-BIO.beam=function(name,a,b,r0,r1,col){const T=BIO.host.THREE,S=BIO._scratch();
+// a beam of instanced item `name` (a unit cylinder along y, centred) from a to b; extra as BIO.put's (a per-instance label)
+BIO.beam=function(name,a,b,r0,r1,col,extra){const T=BIO.host.THREE,S=BIO._scratch();
  const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L=Math.hypot(dx,dy,dz);if(L<1e-4)return;
  S.v.set(dx/L,dy/L,dz/L);const q=new T.Quaternion().setFromUnitVectors(S.up,S.v);
- BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col);};
+ BIO.put(name,[(a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2],q,[r0*2,L,(r1==null?r0:r1)*2],col,extra);
+ if(BIO.segs)BIO.segs.push({a:[a[0],a[1],a[2]],b:[b[0],b[1],b[2]],r0,r1:r1==null?r0:r1,end:true});};
+// A TREE'S STRUCTURE, AND A CROWN HELD BY IT (2026-11-01; CORE-IMPROVEMENTS item 1, the attachment audit's floating cards: a
+// crown drawn at points in its volume starts in the air, whatever its stems say). All of it is opt-in: with no BIO.tree scope
+// nothing is recorded and BIO.beam and BIO.tube draw as they did.
+//   BIO.tree(x, z, fn, o) -> segs   one tree's scope. Sets BIO.owner to its foot (one LOD key for all its parts: BIO.guardChecks)
+//         and, for what fn draws, records in segs every BIO.beam and every span of a BIO.tube as {a, b, r0, r1, end} ([x,y,z]
+//         points; end: the last span of its tube, or a beam). Puts back owner, the log, and o's range, minRange and chunk (set
+//         for the scope when given), also on a throw. fn(segs) gets the log as it grows.
+//   BIO.twigEnds(segs, o) -> segs   the spans that end in the air: end set, and nothing else starting where they stop. o.rMax:
+//         only those at most that thick at the tip.
+//   BIO.snapSeg(segs, p, o) -> {p, t, seg, d}   the nearest point of any span to p ([x,y,z]; o.t0, 0: not nearer the span's root
+//         than that). A pass that keeps its own loop, colours and sizes moves each card onto its twig with this. null if no spans.
+//   BIO.holdTo(c, p, reach) -> [x,y,z]   p brought toward c until at most reach from it, on its own line (in reach: p as it is). A card
+//         whose boughs a far tier drops is held to what is drawn: no new triangles, and a pass's own draws stay as they are.
+//   BIO.clumpOn(item, segs, o) -> count   a crown on twig ends: o.n cards (or o.per a span), going round the twigEnds (o.all: every
+//         span) so every twig has its share, each with its origin on the span at t in o.t0 (.6) to o.t1 (1). Draws from KRAND (o.seed,
+//         default from BIO.owner, and o.salt) and never from the page's stream. o: size (a number or [min, max]), flat (y scale,
+//         1), rMax, tilt (.3 rad, the upright card's jitter), leaf (BIO.leafOn's options: the card held by its stem along the
+//         twig, with 31b-core-leafset.js on the page), col (hex, or (r, i) -> hex), extra ((r, i) -> BIO.put's extra), accept ((p, r)
+//         -> false to skip). r: {p, seg, t, size}.
+BIO.segs=null;
+BIO.tree=function(x,z,fn,o){o=o||{};const S={owner:BIO.owner,segs:BIO.segs,range:BIO.range,minRange:BIO.minRange,chunk:BIO.chunk},L=[];
+ BIO.owner=[x,z];BIO.segs=L;if(o.range!==undefined)BIO.range=o.range;if(o.minRange!==undefined)BIO.minRange=o.minRange;if(o.chunk!==undefined)BIO.chunk=o.chunk;
+ try{fn(L);}finally{BIO.owner=S.owner;BIO.segs=S.segs;BIO.range=S.range;BIO.minRange=S.minRange;BIO.chunk=S.chunk;}
+ return L;};
+BIO.twigEnds=function(segs,o){o=o||{};const key=p=>Math.round(p[0]*100)+','+Math.round(p[1]*100)+','+Math.round(p[2]*100),st=new Set();
+ for(const s of segs)st.add(key(s.a));
+ return segs.filter(s=>s.end&&!st.has(key(s.b))&&(o.rMax==null||s.r1<=o.rMax));};
+BIO.snapSeg=function(segs,p,o){o=o||{};const t0=o.t0==null?0:+o.t0;let best=null,bd=1e18;
+ for(const s of segs){const a=s.a,b=s.b,dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],L2=dx*dx+dy*dy+dz*dz;
+  let t=L2>0?((p[0]-a[0])*dx+(p[1]-a[1])*dy+(p[2]-a[2])*dz)/L2:0;t=t<t0?t0:t>1?1:t;
+  const x=a[0]+dx*t,y=a[1]+dy*t,z=a[2]+dz*t,d=(x-p[0])*(x-p[0])+(y-p[1])*(y-p[1])+(z-p[2])*(z-p[2]);
+  if(d<bd){bd=d;best={p:[x,y,z],t,seg:s,d:0};}}
+ if(best)best.d=Math.sqrt(bd);return best;};
+BIO.holdTo=function(c,p,reach){const dx=p[0]-c[0],dy=p[1]-c[1],dz=p[2]-c[2],L=Math.hypot(dx,dy,dz),k=L>reach?reach/L:1;return[c[0]+dx*k,c[1]+dy*k,c[2]+dz*k];};
+BIO.clumpOn=function(item,segs,o){o=o||{};const L=o.all?(o.rMax==null?segs:segs.filter(s=>s.r1<=o.rMax)):BIO.twigEnds(segs,o);if(!L.length)return 0;
+ const own=BIO.owner,seed=o.seed!=null?o.seed:own?KRAND.hash(Math.round(own[0]*10),Math.round(own[1]*10)):1,salt=o.salt|0,H=(i,k)=>KRAND.unit(KRAND.hash(seed>>>0,i,salt+k));
+ const n=o.n!=null?o.n|0:(o.per==null?1:o.per)*L.length,t0=o.t0==null?.6:+o.t0,t1=o.t1==null?1:+o.t1,sz=o.size==null?1:o.size,fl=o.flat==null?1:+o.flat,tilt=o.tilt==null?.3:+o.tilt;
+ let c=0;for(let i=0;i<n;i++){const seg=L[i%L.length],t=t0+(t1-t0)*H(i,1),a=seg.a,b=seg.b,p=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];
+  const size=Array.isArray(sz)?sz[0]+(sz[1]-sz[0])*H(i,2):sz,r={p,seg,t,size};if(o.accept&&o.accept(p,r)===false)continue;
+  const q=o.leaf?BIO.leafQ(BIO.leafOn(seg,t,Object.assign({seed,salt,i},o.leaf))):qEuler((H(i,3)*2-1)*tilt,H(i,4)*TAU,(H(i,5)*2-1)*tilt);
+  BIO.put(item,p,q,[size,size*fl,size],typeof o.col==='function'?o.col(r,i):o.col,o.extra?o.extra(r,i):undefined);c++;}
+ return c;};
 
 // ---------------------------------------------------------------- merged buckets
+BIO.C2_BUCKETS=true;   /* B3: a bucket made with opt.c2 stores BIO.c2 (a builder's current second colour; none: 0,0,0) per vertex, baked as aC2 */
+BIO.c2=null;function _c2now(){if(BIO.c2==null)return[0,0,0];const S=BIO._scratch();if(BIO.c2.isColor)S.c.copy(BIO.c2);else S.c.set(BIO.c2);S.c.convertSRGBToLinear();return[S.c.r,S.c.g,S.c.b];}
 BIO.bucket=function(fam,mat,opt){opt=opt||{};
- if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),k:[],tris:0,label:opt.label||fam,
+ if(!BIO.buckets[fam])BIO.buckets[fam]={mat,pos:new F32(),nor:new F32(),uv:new F32(),col:new F32(),c2:opt.c2?new F32():null,k:[],tris:0,label:opt.label||fam,
   uvScale:(mat&&mat.userData&&mat.userData.libScale)||opt.uvScale||[3,3]};   /* a library map (BIO.libSwap) tiles at its own size */
  return BIO.buckets[fam];};
 // THE MATERIAL LIBRARY (core/materials/PLAN.md). BIO.libSwap(kit, MAT) gives every material of a kit's table whose slot has a
@@ -95,14 +239,22 @@ BIO.bucket=function(fam,mat,opt){opt=opt||{};
 BIO.libSwap=function(kit,MAT){const out={};
  if(typeof KMAT==='undefined'||KMAT.mode!=='lib'||!KMAT.packed||!MAT)return out;const T=BIO.host.THREE;
  const one=(m,slot)=>{if(!m||!m.isMaterial)return;const L=KMAT.packed(kit,slot);if(!L)return;
-  const card=!!(m.map&&m.map.isDataTexture);const t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  const card=!!(m.map&&m.map.isDataTexture);let t=KMAT.textures(L,{aniso:card?4:8,flipY:card?false:undefined}).map;
+  /* KMAT caches one texture per sheet: a slot cut to a cell takes its own clone, or every slot of the sheet would draw the last
+     one's cell (found by biomes/nwouterwall, 2026-10-26); the clone shares the image, given to it when the sheet decodes */
+  if(card&&L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});}
   if(card){t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.magFilter=T.LinearFilter;if(!m.alphaTest)m.alphaTest=.4;
-   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+   if(L.cell){const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}   /* one plant of a nine-plant sheet (unflipped: v runs down the sheet) */
+   m.userData.libCard={slot,lib:L.lib,plants:L.plants==null?null:L.plants,anchor:L.anchor||null,cell:!!L.cell,sheet:L.sheet||null,
+    base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};}   /* what the image is and how the slot cuts it: the fit and the card guard read it */   /* the edge its plant attaches at: BIO.def turns a geometry that holds the plant by one end */
   else m.userData.libScale=L.scale;
   m.map=t;m.needsUpdate=true;out[slot]=L.lib;};
  for(const k in MAT){const v=MAT[k];if(Array.isArray(v))v.forEach((m,i)=>one(m,k+i));
   else if(v&&!v.isMaterial&&typeof v==='object')for(const kk in v)one(v[kk],k+'.'+kk);   /* MAT.bk.smooth -> 'bk.smooth' */
   else one(v,k);}
+ /* an item defined before the swap takes its card's base now */
+ for(const n in BIO.defs){const d=BIO.defs[n];if(d.raw&&!d.fit){const F=cardFit(d.raw,d.mat,d.indexed);if(F.fit){d.geo=F.geo;d.fit=true;}}
+  if(d.raw)cardCheck(n,d.raw,d.mat);}
  return out;};
 const _lc={r:1,g:1,b:1};
 // COLOURS ARE sRGB IN, LINEAR OUT. r128 sends instance and vertex colours to
@@ -115,8 +267,8 @@ function _col3(c){const S=BIO._scratch();if(c==null)return[1,1,1];if(Array.isArr
 BIO.tri=function(fam,a,b,c,col,n){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.tri: no bucket '+fam);return;}
  let nx,ny,nz;if(n){nx=n[0];ny=n[1];nz=n[2];}else{const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
   nx=uy*vz-uz*vy;ny=uz*vx-ux*vz;nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;nx/=l;ny/=l;nz/=l;}
- const cc=_col3(col);
- [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);});
+ const cc=_col3(col),z2=K.c2?_c2now():null;
+ [a,b,c].forEach(p=>{K.pos.push(p[0],p[1],p[2]);K.nor.push(nx,ny,nz);K.uv.push(p[3]||0,p[4]||0);K.col.push(cc[0],cc[1],cc[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);});
  K.k.push(BIO._lodKey(a[0],a[2]));K.tris++;BIO.tally(1,0,0);};
 BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col);};
 // TUBE along pts [{x,y,z,r,col?}], parallel-transport frames, constant texture
@@ -124,6 +276,7 @@ BIO.quad=function(fam,a,b,c,d,col){BIO.tri(fam,a,b,c,col);BIO.tri(fam,a,c,d,col)
 // changes). opt: seg, cap, rfn(i,ang,pt)->radius multiplier, vscale
 BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buckets[fam];if(!K){BIO.err('BIO.tube: no bucket '+fam);return 0;}
  const seg=opt.seg||8,sc=K.uvScale,n=pts.length;if(n<2)return 0;
+ if(BIO.segs)for(let i=0;i<n-1;i++){const p=pts[i],q=pts[i+1];BIO.segs.push({a:[p.x,p.y,p.z],b:[q.x,q.y,q.z],r0:p.r,r1:q.r,end:i===n-2});}
  const Tn=[],N=[],Bn=[];
  for(let i=0;i<n;i++){const a=pts[Math.max(0,i-1)],b=pts[Math.min(n-1,i+1)];Tn.push(new T.Vector3(b.x-a.x,b.y-a.y,b.z-a.z).normalize());}
  const ref=Math.abs(Tn[0].y)>.9?new T.Vector3(1,0,0):new T.Vector3(0,1,0);
@@ -137,7 +290,7 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
    const cx=Math.cos(ang),sx=Math.sin(ang);const nx=N[q].x*cx+Bn[q].x*sx,ny=N[q].y*cx+Bn[q].y*sx,nz=N[q].z*cx+Bn[q].z*sx;
    ring.push({p:[pts[q].x+nx*rad,pts[q].y+ny*rad,pts[q].z+nz*rad],n:[nx,ny,nz],uv:[s/seg*urep,vAcc/(opt.vscale||sc[1])]});}
   rings.push(ring);}
- const pv=(v,c)=>{K.pos.push(v.p[0],v.p[1],v.p[2]);K.nor.push(v.n[0],v.n[1],v.n[2]);K.uv.push(v.uv[0],v.uv[1]);K.col.push(c[0],c[1],c[2]);};
+ const z2=K.c2?_c2now():null,pv=(v,c)=>{K.pos.push(v.p[0],v.p[1],v.p[2]);K.nor.push(v.n[0],v.n[1],v.n[2]);K.uv.push(v.uv[0],v.uv[1]);K.col.push(c[0],c[1],c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  const cc=_col3(col);let tris=0;
  for(let r2=0;r2<n-1;r2++){const c0=pts[r2].col!=null?_col3(pts[r2].col):cc,c1=pts[r2+1].col!=null?_col3(pts[r2+1].col):cc;
   for(let s2=0;s2<seg;s2++){const a0=rings[r2][s2],a1=rings[r2][s2+1],b0=rings[r2+1][s2],b1=rings[r2+1][s2+1];
@@ -146,18 +299,20 @@ BIO.tube=function(fam,pts,col,opt){opt=opt||{};const T=BIO.host.THREE,K=BIO.buck
   for(let s3=0;s3<seg;s3++){if(e[1]>0)BIO.tri(fam,ctr,ri2[s3].p,ri2[s3+1].p,opt.capCol!=null?opt.capCol:col);else BIO.tri(fam,ctr,ri2[s3+1].p,ri2[s3].p,opt.capCol!=null?opt.capCol:col);}});}
  {const kk=BIO._lodKey(pts[0].x,pts[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
 // LATHE from rings [{x,y,z,yy,col}], radius rad(ring,ang), ambient-occlusion aof(ring,ang);
-// true surface normals so fluting and buttress fins shade
+// true surface normals so fluting and buttress fins shade.
+// rep: the texture's repeats round the bole, a number, or a function of the ring (rep(ring) -> repeats, 2026-10-26: a bole
+// whose sections change girth keeps its texel size), rounded to a whole number (at least 1) so the wrap stays seamless
 BIO.lathe=function(fam,rings,seg,rep,vs,rad,aof){const K=BIO.buckets[fam];if(!K){BIO.err('BIO.lathe: no bucket '+fam);return 0;}
- const n=rings.length,P=[];
+ const n=rings.length,P=[],repOf=typeof rep==='function'?(r=>Math.max(1,Math.round(rep(r)))):null;
  for(let i=0;i<n;i++){const row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,r=rad(rings[i],a);row.push([rings[i].x+Math.cos(a)*r,rings[i].y,rings[i].z+Math.sin(a)*r]);}P.push(row);}
  const V=[];
- for(let i=0;i<n;i++){const vr=[],lc=_col3(rings[i].col);
+ for(let i=0;i<n;i++){const vr=[],lc=_col3(rings[i].col),rp=repOf?repOf(rings[i]):rep;
   for(let s=0;s<=seg;s++){const s0=s%seg,pa=P[i][(s0+1)%seg],pb=P[i][(s0+seg-1)%seg],pu=P[Math.min(n-1,i+1)][s0],pd=P[Math.max(0,i-1)][s0];
    const ax=pa[0]-pb[0],ay=pa[1]-pb[1],az=pa[2]-pb[2],ux=pu[0]-pd[0],uy=pu[1]-pd[1],uz=pu[2]-pd[2];
    let nx=uy*az-uz*ay,ny=uz*ax-ux*az,nz=ux*ay-uy*ax;const nl=Math.hypot(nx,ny,nz)||1;const ao=aof?aof(rings[i],s0/seg*TAU):1;
-   vr.push({p:P[i][s0],n:[nx/nl,ny/nl,nz/nl],u:s/seg*rep,v:rings[i].yy/vs,c:[lc[0]*ao,lc[1]*ao,lc[2]*ao]});}
+   vr.push({p:P[i][s0],n:[nx/nl,ny/nl,nz/nl],u:s/seg*rp,v:rings[i].yy/vs,c:[lc[0]*ao,lc[1]*ao,lc[2]*ao]});}
   V.push(vr);}
- const pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);};
+ const z2=K.c2?_c2now():null,pv=q=>{K.pos.push(q.p[0],q.p[1],q.p[2]);K.nor.push(q.n[0],q.n[1],q.n[2]);K.uv.push(q.u,q.v);K.col.push(q.c[0],q.c[1],q.c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  let tris=0;
  for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a0=V[i][s],a1=V[i][s+1],b0=V[i+1][s],b1=V[i+1][s+1];pv(a0);pv(b1);pv(a1);pv(a0);pv(b0);pv(b1);tris+=2;}
  {const kk=BIO._lodKey(rings[0].x,rings[0].z);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
@@ -167,9 +322,9 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
  const nrm=(i,j)=>{const a=P[Math.min(nu,i+1)][j],b=P[Math.max(0,i-1)][j],c=P[i][Math.min(nv,j+1)],d=P[i][Math.max(0,j-1)];
   const ux=a[0]-b[0],uy=a[1]-b[1],uz=a[2]-b[2],vx=c[0]-d[0],vy=c[1]-d[1],vz=c[2]-d[2];
   let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;const l=Math.hypot(nx,ny,nz)||1;return[nx/l,ny/l,nz/l];};
- const cc=_col3(col),uS=opt.uS||1,vS=opt.vS||1;let tris=0;
+ const cc=_col3(col),uS=opt.uS||1,vS=opt.vS||1,z2=K.c2?_c2now():null;let tris=0;
  const pv=(i,j)=>{const p=P[i][j],n=nrm(i,j);const c=opt.colFn?_col3(opt.colFn(i/nu,j/nv,p)):cc;
-  K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);};
+  K.pos.push(p[0],p[1],p[2]);K.nor.push(n[0],n[1],n[2]);K.uv.push(i/nu*uS,j/nv*vS);K.col.push(c[0],c[1],c[2]);if(z2)K.c2.push(z2[0],z2[1],z2[2]);};
  for(let i=0;i<nu;i++)for(let j=0;j<nv;j++){if(opt.hole&&opt.hole((i+.5)/nu,(j+.5)/nv))continue;
   pv(i,j);pv(i+1,j+1);pv(i+1,j);pv(i,j);pv(i,j+1);pv(i+1,j+1);tris+=2;}
  {const kk=BIO._lodKey(P[0][0][0],P[0][0][2]);for(let i=0;i<tris;i++)K.k.push(kk);} K.tris+=tris;BIO.tally(tris,0,0);return tris;};
@@ -186,45 +341,190 @@ BIO.surf=function(fam,fn,nu,nv,col,opt){opt=opt||{};const K=BIO.buckets[fam];if(
 // BIO.LOD holds the runtime LOD's settings (chunk, scale) and, CALLED, returns the detail radii
 // (sedesert-1's BIO.LOD(), the same as BIO.radii()): its fragments, and the worlds that vendored
 // them (Shade), run unchanged.
-BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.lodMeshes=[];
-BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.LOD.chunk;
- return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0);};
-function _lodEntry(mesh,key,y0,y1){const p=key.split('|'),c=p[0].split(','),C=BIO.LOD.chunk,cx=+c[0],cz=+c[1];
- const T=BIO.host.THREE,e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2]};
+// THE DRAW-CALL OPTIONS (2026-10-26, core changes B1/B2; each off by default, so a page that sets none bakes the same meshes):
+//   BIO.LOD.merge   true: one mesh per chunk (and minRange) whatever the number of ranges in it. The instances (a bucket's
+//                   triangles) are sorted by range, longest first, and lodTick draws the prefix whose range reaches the
+//                   camera (im.count while it renders, a bucket's draw range): the same instances shown as with one mesh
+//                   per range, in fewer calls. Each mesh's userData.lod gains `ranges` [[range, count]...].
+//   BIO.LOD.minTris with merge: an item (or bucket) whose chunk meshes would average fewer triangles is keyed on a coarser
+//                   grid (2, 4 or 8 chunks a side) so its few triangles take fewer calls; its box grows with it, so it is
+//                   drawn a little further out. Stand-ins (minRange) keep their chunk: meant for small floor items, which
+//                   have none (a coarsened hero overlaps its stand-in near the switch; it never leaves a hole).
+//   BIO.chunk       a pass's own chunk size (metres; null: BIO.LOD.chunk), set like BIO.range: hero sub-chunks near
+//                   the camera, or big chunks for a sparse layer. Its keys carry the size.
+//   BIO.LOD.fade    a fraction (say .15): every chunk mesh dithers out over the last `fade` of its range, and a stand-in
+//                   (minRange) dithers in over the same band, so a chunk cross-fades instead of popping. Applied at bake to
+//                   the chunk meshes' materials (BIO.lodFade below) and to every baked mesh sharing them.
+//   BIO.LOD.reach   (H6, 2026-10-26; unset: as before) metres an instanced item's drawing reaches above its instances'
+//                   origins (a 480 m crown keyed at its foot): it raises the top of the chunk's box, so the LOD distance
+//                   and the cull sphere see the crown. An item's own BIO.defs[name].reach (BIO.impostorItem's opt.reach) wins.
+BIO.LOD=Object.assign(function(){return BIO.radii();},{chunk:1200,scale:1,merge:false,minTris:0,fade:0,cull:false});BIO.range=null;BIO.minRange=0;BIO.owner=null;BIO.chunk=null;BIO.lodMeshes=[];
+BIO._lodKey=function(x,z){if(BIO.range==null)return null;const o=BIO.owner||[x,z],C=BIO.chunk==null?BIO.LOD.chunk:BIO.chunk;
+ return Math.floor(o[0]/C)+','+Math.floor(o[1]/C)+'|'+BIO.range+'|'+(BIO.minRange||0)+(BIO.chunk==null?'':'|'+C);};
+// a key's parts, {cx, cz, range, minRange, C} (C null: the page's BIO.LOD.chunk at bake); cached, a page has few keys
+const _lodParsed=new Map();
+function _lodParse(key){let p=_lodParsed.get(key);if(p)return p;const a=key.split('|'),c=a[0].split(',');
+ p={cx:+c[0],cz:+c[1],range:+a[1],minRange:+a[2],C:a[3]==null?null:+a[3]};_lodParsed.set(key,p);return p;}
+BIO._lodParse=_lodParse;
+// the mesh group a key bakes into: the key itself (merge off), or its chunk and minRange (merge on), coarsened by f (a
+// stand-in's key, minRange > 0, never is: it must switch on where its hero's chunk switches off)
+function _lodGroup(key,f){if(!key||!BIO.LOD.merge)return key||'';const p=_lodParse(key),C=p.C==null?BIO.LOD.chunk:p.C;if(p.minRange>0)f=1;
+ return Math.floor(p.cx/f)+','+Math.floor(p.cz/f)+'|'+p.minRange+'|'+C*f;}
+// the coarsening factor for one item or bucket: its keys `ks` (one per instance or triangle), `w` triangles each. The first
+// of 2, 4, 8 whose meshes average minTris; failing that the one with the fewest meshes, if it has fewer than 1
+function _lodFactor(ks,w){const M=BIO.LOD.minTris;if(!BIO.LOD.merge||!(M>0))return 1;
+ const count=f=>{const S=new Set();let n=0;for(const k of ks)if(k&&_lodParse(k).minRange===0){S.add(_lodGroup(k,f));n++;}return {g:S.size,n};};
+ const c1=count(1);if(!c1.g||c1.n*w/c1.g>=M)return 1;let best=1,bg=c1.g;
+ for(let f=2;f<=8;f*=2){const c=count(f);if(c.n*w/c.g>=M)return f;if(c.g<bg){bg=c.g;best=f;}}
+ return best;}
+// rows (instance or triangle indices) of one mesh group, sorted by range longest first (stable), with the bounds:
+// {rows, ranges, ends (row counts), chunk, x0..z1, minRange}
+function _lodSort(gkey,rows,keys){if(!BIO.LOD.merge||!gkey)return null;
+ const R=new Map();for(const i of rows){const r=_lodParse(keys[i]).range;let L=R.get(r);if(!L){L=[];R.set(r,L);}L.push(i);}
+ const ranges=[...R.keys()].sort((a,b)=>b-a),out=[],ends=[];for(const r of ranges){for(const i of R.get(r))out.push(i);ends.push(out.length);}
+ const a=gkey.split('|'),c=a[0].split(','),C=+a[2],cx=+c[0],cz=+c[1];
+ return {rows:out,ranges,ends,chunk:a[0],x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,minRange:+a[1]};}
+// e: the mesh's box and its ranges, longest first, with the instance (instanced) or index (bucket) count each ends at
+function _lodEntry(mesh,key,y0,y1,g){const T=BIO.host.THREE;let e;
+ if(g)e={mesh,x0:g.x0,z0:g.z0,x1:g.x1,z1:g.z1,y0,y1,range:g.ranges[0],minRange:g.minRange,ranges:g.ranges,ends:g.ends,tris:g.tris,vEnds:g.vEnds||null,chunk:g.chunk};
+ else{const p=key.split('|'),c=p[0].split(','),C=p[3]==null?BIO.LOD.chunk:+p[3],cx=+c[0],cz=+c[1];
+  e={mesh,x0:cx*C,z0:cz*C,x1:(cx+1)*C,z1:(cz+1)*C,y0,y1,range:+p[1],minRange:+p[2],ranges:null,chunk:p[0]};}
+ const C=e.x1-e.x0;
  e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(y0+y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(y1-y0)/2+60));
- BIO.lodMeshes.push(e);mesh.userData.lodChunk=p[0];mesh.userData.lod={chunk:p[0],range:e.range,minRange:e.minRange};return e;}
+ BIO.lodMeshes.push(e);mesh.userData.lodChunk=e.chunk;
+ mesh.userData.lod={chunk:e.chunk,range:e.range,minRange:e.minRange};
+ if(e.ranges){mesh.userData.lod.ranges=e.ranges.map((r,i)=>[r,e.ends[i]-(i?e.ends[i-1]:0)]);if(C!==BIO.LOD.chunk)mesh.userData.lod.size=C;
+  if(e.ranges.length>1)_lodPrefix(mesh);}
+ return e;}
+// an instanced item's reach above its origins (BIO.LOD.reach; the item's own wins; unset: 0, the box as before)
+function _lodReach(def){const r=def.reach!=null?def.reach:BIO.LOD.reach;return r==null?0:+r||0;}
+// a mesh holding several ranges draws a prefix: an InstancedMesh its first _lodN instances while it renders (its count stays
+// whole for everything that reads it: the export, core/tags, the probe), a bucket its draw range
+function _lodPrefix(mesh){mesh.userData._lodN=null;if(!mesh.isInstancedMesh)return;
+ const b0=mesh.onBeforeRender,a0=mesh.onAfterRender,rc=mesh.raycast;let full=0;
+ mesh.onBeforeRender=function(){full=this.count;if(this.userData._lodN!=null)this.count=this.userData._lodN;return b0.apply(this,arguments);};
+ mesh.onAfterRender=function(){this.count=full||this.count;return a0.apply(this,arguments);};
+ mesh.raycast=function(){const n=this.count;if(this.userData._lodN!=null)this.count=this.userData._lodN;try{return rc.apply(this,arguments);}finally{this.count=n;}};}
 let _frus=null,_pm=null;
 BIO.lodTick=function(camera){const T=BIO.host.THREE;if(!_frus){_frus=new T.Frustum();_pm=new T.Matrix4();}
  _pm.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);_frus.setFromProjectionMatrix(_pm);
- const P=camera.position,s=BIO.LOD.scale;let shown=0,tris=0;
+ const P=camera.position,s=BIO.LOD.scale,F=_lodU.f.value=BIO.LOD.fade>0?Math.min(.9,BIO.LOD.fade):0;_lodU.s.value=s;let shown=0,tris=0;
  for(const e of BIO.lodMeshes){const dx=Math.max(e.x0-P.x,0,P.x-e.x1),dz=Math.max(e.z0-P.z,0,P.z-e.z1),dy=Math.max(e.y0-P.y,0,P.y-e.y1),d=Math.hypot(dx,dy,dz);
-  const v=d<e.range*s&&d>=e.minRange*s&&_frus.intersectsSphere(e.sphere);e.mesh.visible=v;if(v){shown++;tris+=e.mesh.userData.tris||0;}}
+  const m0=e.minRange*s*(F&&e.fade?1-F:1);   /* a cross-faded stand-in shows from the start of the band */
+  const v=d<e.range*s&&d>=m0&&_frus.intersectsSphere(e.sphere);
+  if(v&&e.ranges&&e.ranges.length>1){let k=0;while(k<e.ranges.length&&d<e.ranges[k]*s)k++;   /* longest first: the first k reach */
+   const m=e.mesh;if(m.isInstancedMesh)m.userData._lodN=e.ends[k-1];else m.geometry.setDrawRange(0,e.ends[k-1]);
+   tris+=e.tris[k-1];}
+  else if(v)tris+=e.mesh.userData.tris||0;
+  e.mesh.visible=v;if(v)shown++;}
  BIO.lodShown={meshes:shown,of:BIO.lodMeshes.length,tris};return BIO.lodShown;};
+
+// ---------------------------------------------------------------- the LOD cross-fade (B2, BIO.LOD.fade)
+// BIO.lodFade(material) wraps a material's onBeforeCompile (after the page's own hook, as WATER.wetGround and ATMOS.snowOn
+// do) with the dither below: the vertex shader measures the camera to the mesh's chunk box (the distance lodTick uses),
+// finds the instance's range from its row (gl_InstanceID; a bucket's gl_VertexID) and passes how far it has faded; the
+// fragment discards by an interleaved-gradient dither of the pixel. A hero discards where the dither is under its fade-out,
+// a stand-in where it is over its fade-in: across the band the two fill complementary pixels. The mesh carries its box and
+// ranges as three per-mesh vec4s (one instanced interleaved buffer: the export skips it). A mesh without them (aLodB.w >= 0,
+// which a missing attribute reads) is drawn as before. BIO.LODFADE_GLSL holds the chunks for a material that wants them in
+// its own shader instead. Returns whether the material takes the fade.
+const _lodU={s:{value:1},f:{value:0}};BIO._lodU=_lodU;
+BIO.LODFADE_GLSL={
+ vertexDecl:['attribute vec4 aLodA;','attribute vec4 aLodB;','attribute vec4 aLodC;','uniform float uLodS;','uniform float uLodF;','varying vec2 vLodK;'].join('\n'),
+ vertexMain:['vLodK = vec2(0.0, 1.0);','float _lcull = 0.0;',
+  'if (uLodF > 0.0 && aLodB.w < 0.0) {',
+  ' vec3 _lc = -vec3(dot(viewMatrix[0].xyz, viewMatrix[3].xyz), dot(viewMatrix[1].xyz, viewMatrix[3].xyz), dot(viewMatrix[2].xyz, viewMatrix[3].xyz));',   /* the eye from the view matrix: r128 uploads cameraPosition only to Phong, Toon, Standard, shader and env-mapped materials, so a Lambert leaf read (0,0,0) and every chunk 1.3 km from the origin faded out (nhighlands, 2026-10-26) */
+  ' float _ldx = max(max(aLodA.x - _lc.x, 0.0), _lc.x - aLodA.z), _ldz = max(max(aLodA.y - _lc.z, 0.0), _lc.z - aLodA.w);',
+  ' float _ldy = max(max(aLodB.x - _lc.y, 0.0), _lc.y - aLodB.y), _ld = length(vec3(_ldx, _ldy, _ldz));',
+  '#if __VERSION__ >= 300',
+  '#ifdef USE_INSTANCING',
+  ' float _lid = float(gl_InstanceID);',
+  '#else',
+  ' float _lid = float(gl_VertexID);',
+  '#endif',
+  '#else',
+  ' float _lid = 0.0;',
+  '#endif',
+  ' float _lr = (_lid < aLodC.x ? -aLodB.w : (_lid < aLodC.z ? aLodC.y : aLodC.w)) * uLodS, _lm = aLodB.z * uLodS;',
+  /* a loose mesh (aLodB.z -1: BIO.LOD.cull) fades each instance by its own distance and drops it past its range */
+  '#ifdef USE_INSTANCING',
+  ' if (aLodB.z < -0.5) { _ld = length((modelMatrix * instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0)).xyz - _lc); if (_ld > _lr) _lcull = 1.0; }',
+  '#endif',
+  ' vLodK.x = smoothstep(_lr * (1.0 - uLodF), _lr, _ld);',
+  ' if (_lm > 0.0) vLodK.y = smoothstep(_lm * (1.0 - uLodF), _lm, _ld);',
+  '}'].join('\n'),
+ fragmentDecl:'varying vec2 vLodK;',
+ fragmentMain:'{ float _lh = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(0.06711056, 0.00583715)))); if (_lh < vLodK.x || _lh >= vLodK.y) discard; }'};
+const _MAIN=/void\s+main\s*\(\s*(void)?\s*\)\s*\{/;
+function _lodInject(src,decl,body){const m=src.match(_MAIN);if(!m)return null;const i=m.index,j=i+m[0].length;return src.slice(0,i)+decl+'\n'+src.slice(i,j)+'\n'+body+'\n'+src.slice(j);}
+BIO._lodInject=_lodInject;
+BIO.lodFade=function(m){if(!m||!m.isMaterial)return false;if(m.userData._lodFade)return true;
+ if(m.isRawShaderMaterial||(m.isShaderMaterial&&m.glslVersion)||m.isPointsMaterial||m.isLineBasicMaterial||m.isSpriteMaterial)return false;
+ const G=BIO.LODFADE_GLSL;if(typeof KHOOK==='undefined')throw new Error('core/biome: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');
+ KHOOK.add(m,'lodfade',function(sh){
+  const v=_lodInject(sh.vertexShader,G.vertexDecl,G.vertexMain),f=_lodInject(sh.fragmentShader,G.fragmentDecl,G.fragmentMain);
+  if(v&&f){sh.vertexShader=KHOOK.rep(v,'#include <fog_vertex>','#include <fog_vertex>\nif (_lcull > 0.5) gl_Position = vec4(0.0, 0.0, 2.0, 1.0);','lodfade','vertex');sh.fragmentShader=f;sh.uniforms.uLodS=_lodU.s;sh.uniforms.uLodF=_lodU.f;}});   /* the culled instance's vertices meet off the clip volume: never rasterized */
+ m.userData._lodFade=true;return true;};
+// the per-mesh vec4s: aLodA box x0 z0 x1 z1; aLodB y0 y1 minRange -range0; aLodC end0 range1 end1 range2 (ends in rows:
+// instances, or a bucket's vertices). e null: a mesh sharing a faded material that is not chunked (aLodB.w 1: drawn as before)
+function _lodAttrs(mesh,e,vEnds){const T=BIO.host.THREE,a=new Float32Array(12),big=1e9;
+ if(e){const R=e.ranges||[e.range],E=vEnds||e.ends||[big],r=i=>Math.min(R[Math.min(i,R.length-1)],big);
+  a.set([e.x0,e.z0,e.x1,e.z1, e.y0,e.y1,e.loose&&!(e.minRange>0)?-1:e.minRange,-r(0), R.length>1?E[0]:big,r(1),R.length>2?E[1]:big,r(2)]);}
+ else a.set([0,0,0,0, 0,0,0,1, 0,0,0,0]);
+ const buf=new T.InstancedInterleavedBuffer(a,12,Math.max(1,mesh.isInstancedMesh?mesh.count:1)),g=mesh.geometry;
+ g.setAttribute('aLodA',new T.InterleavedBufferAttribute(buf,4,0));g.setAttribute('aLodB',new T.InterleavedBufferAttribute(buf,4,4));g.setAttribute('aLodC',new T.InterleavedBufferAttribute(buf,4,8));}
+// at bake, with BIO.LOD.fade: every new chunk mesh's material is wrapped (a mesh with over three ranges, or too many attribute
+// slots for three more, keeps its hard switch), and every baked mesh sharing a wrapped material gets the attributes
+function _lodFadeBake(){if(!(BIO.LOD.fade>0))return;
+ for(const e of BIO.lodMeshes){if(e.fade!=null)continue;const m=e.mesh,M=m.material;
+  const slots=Object.values(m.geometry.attributes).reduce((s,a)=>s+Math.ceil(a.itemSize/4),0)+(m.isInstancedMesh?5:0);
+  e.fade=!Array.isArray(M)&&slots+3<=16&&(!e.ranges||e.ranges.length<=3)&&BIO.lodFade(M);if(e.fade)_lodAttrs(m,e,e.vEnds);}
+ for(const m of BIO.baked)if(m.material&&m.material.userData&&m.material.userData._lodFade&&m.geometry&&!m.geometry.attributes.aLodA)_lodAttrs(m,null);}
+BIO._lodFadeBake=_lodFadeBake;
 
 // ---------------------------------------------------------------- indexed buckets
 // The builders write every triangle's three vertices out in full, so a tube or a surface stores each of its
 // grid points up to six times: bark alone was 550 of SW Lowlands' 685 MB of geometry. Bake keeps one copy of each
 // distinct vertex (all eleven floats equal after the float32 rounding the GPU applies anyway) and draws by index:
 // the same triangles in the same order, so the same pixels, in about a third of the memory.
-function indexedGeo(T,P,N,U,C){const n=P.length/3,W=11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
+function indexedGeo(T,P,N,U,C,C2){const n=P.length/3,W=C2?14:11,f=new Float32Array(n*W),w=new Uint32Array(f.buffer);
  for(let i=0;i<n;i++){const o=i*W;f[o]=P[i*3];f[o+1]=P[i*3+1];f[o+2]=P[i*3+2];f[o+3]=N[i*3];f[o+4]=N[i*3+1];f[o+5]=N[i*3+2];
-  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];}
+  f[o+6]=U[i*2];f[o+7]=U[i*2+1];f[o+8]=C[i*3];f[o+9]=C[i*3+1];f[o+10]=C[i*3+2];if(C2){f[o+11]=C2[i*3];f[o+12]=C2[i*3+1];f[o+13]=C2[i*3+2];}}
  let cap=1024;while(cap<n*2)cap*=2;const tab=new Int32Array(cap).fill(-1),idx=new Uint32Array(n);let m=0;
  for(let i=0;i<n;i++){const o=i*W;let h=0x811C9DC5;for(let k=0;k<6;k++)h=Math.imul(h^w[o+k],0x01000193);   // position and normal: enough to spread them; a match still compares all 11
   h^=h>>>16;h=Math.imul(h,0x85EBCA6B);h^=h>>>13;let s=h&(cap-1),j;
   while((j=tab[s])>=0){const q=j*W;let k=0;while(k<W&&w[q+k]===w[o+k])k++;if(k===W)break;s=(s+1)&(cap-1);}
   if(j<0){j=m++;if(j!==i)f.copyWithin(j*W,o,o+W);tab[s]=j;}
   idx[i]=j;}
- const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3);
+ const pos=new Float32Array(m*3),nor=new Float32Array(m*3),uv=new Float32Array(m*2),col=new Float32Array(m*3),c2=C2?new Float32Array(m*3):null;
  for(let j=0;j<m;j++){const o=j*W;pos[j*3]=f[o];pos[j*3+1]=f[o+1];pos[j*3+2]=f[o+2];nor[j*3]=f[o+3];nor[j*3+1]=f[o+4];nor[j*3+2]=f[o+5];
-  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];}
+  uv[j*2]=f[o+6];uv[j*2+1]=f[o+7];col[j*3]=f[o+8];col[j*3+1]=f[o+9];col[j*3+2]=f[o+10];if(c2){c2[j*3]=f[o+11];c2[j*3+1]=f[o+12];c2[j*3+2]=f[o+13];}}
  const g=new T.BufferGeometry();
  g.setAttribute('position',new T.BufferAttribute(pos,3));g.setAttribute('normal',new T.BufferAttribute(nor,3));
- g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));
+ g.setAttribute('uv',new T.BufferAttribute(uv,2));g.setAttribute('color',new T.BufferAttribute(col,3));if(c2)g.setAttribute('aC2',new T.BufferAttribute(c2,3));
  g.setIndex(new T.BufferAttribute(m>65535?idx:Uint16Array.from(idx),1));return g;}
 BIO.indexedGeo=indexedGeo;
+// indexed geometries (indexedGeo's) one after another in one: vertices appended, indices offset
+function concatGeo(T,gs){let nv=0,ni=0;for(const g of gs){nv+=g.attributes.position.count;ni+=g.index.count;}
+ const A={position:new Float32Array(nv*3),normal:new Float32Array(nv*3),uv:new Float32Array(nv*2),color:new Float32Array(nv*3)};if(gs.length&&gs[0].attributes.aC2)A.aC2=new Float32Array(nv*3);const I=nv>65535?new Uint32Array(ni):new Uint16Array(ni);
+ let v=0,i=0;for(const g of gs){for(const k in A)A[k].set(g.attributes[k].array,v*g.attributes[k].itemSize);const X=g.index.array;for(let q=0;q<X.length;q++)I[i+q]=X[q]+v;v+=g.attributes.position.count;i+=X.length;}
+ const g=new T.BufferGeometry();for(const k in A)g.setAttribute(k,new T.BufferAttribute(A[k],k==='uv'?2:3));g.setIndex(new T.BufferAttribute(I,1));return g;}
 
 // ---------------------------------------------------------------- bake
+// PROBE POINTS (CORE-IMPROVEMENTS item 6, 2026-10-27): the probe samples a merged mesh at its box centre, so a tree, a log or a
+// boulder registered as a volume and drawn into a bucket read empty, and kits added invisible discs and hand-made points.
+// Every baked bucket mesh now carries userData.probePoints, a flat Float32Array [x, y, z ...] (world space: the mesh is
+// unmoved), one point for each BIO.PROBE_CELL-metre cell its triangles' centroids fall in, and userData.probeDrawer
+// ('BIO.bucket:kit|family') for the failure message; core/host's probe adds them (95-host-probe.js). Instanced items need
+// none: the probe reads every instance. BIO.PROBE_CELL 0 turns it off. Nothing drawn changes.
+BIO.PROBE_CELL=2;
+function _probePts(P,n,c){const S=new Set(),out=[],O=65536;let last=-1;
+ for(let t=0;t<n;t++){const o=t*9,x=(P[o]+P[o+3]+P[o+6])/3,y=(P[o+1]+P[o+4]+P[o+7])/3,z=(P[o+2]+P[o+5]+P[o+8])/3;
+  const ix=Math.floor(x/c)+O,iy=Math.floor(y/c)+O,iz=Math.floor(z/c)+O;
+  if(ix<0||iy<0||iz<0||ix>=2*O||iy>=2*O||iz>=2*O){out.push(x,y,z);continue;}   /* off the key's range (over 130 km out at 2 m): kept */
+  const k=(ix*131072+iy)*131072+iz;if(k===last||S.has(k))continue;last=k;S.add(k);out.push(x,y,z);}
+ return new Float32Array(out);}
+BIO._probePts=_probePts;
 // Turns the stores into meshes. Call once per host after every biome has
 // built; a second call only emits what arrived since the first.
 BIO.baked=[];
@@ -233,10 +533,10 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
  if(BIO.host.tags)for(const kn in BIO.kits){const R=BIO.kits[kn];for(const name of R.order)if(R.defs[name].set==null&&R.items[name].count)BIO._tagItem(name,R.defs[name],kn);}   // put before core/tags loaded
  for(const kn in BIO.kits){const R=BIO.kits[kn];   // every kit's registry; mesh names stay 'biome:'+name, userData.kit says whose
  for(const name of R.order){const it=R.items[name];if(!it.count)continue;const def=R.defs[name];
-  // group the instances by lod key (null: the always-drawn mesh)
-  const G=new Map();for(let i=0;i<it.count;i++){const k=it.k[i]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
+  // group the instances by lod key (null: the always-drawn mesh; BIO.LOD.merge: by chunk, each group's rows sorted by range)
+  const f=_lodFactor(it.k,def.tris),G=new Map();for(let i=0;i<it.count;i++){const k=_lodGroup(it.k[i],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(i);}
   const base=def.n0||0;   // core/tags: the item set's index of this store's first instance (a second bake continues it)
-  for(const [key,idx] of G){const n=idx.length,geo=def.geo.clone();
+  for(const [key,idx0] of G){const S=_lodSort(key,idx0,it.k),idx=S?S.rows:idx0,n=idx.length,geo=def.geo.clone();
    const mA=new Float32Array(n*16),cA=new Float32Array(n*3),nA=it.n.length?new Float32Array(n*3):null,c2A=it.c2.length?new Float32Array(n*3):null;let y0=1e9,y1=-1e9;
    const IM=it.m.a,IC=it.c.a,INN=it.n.a,IC2=it.c2.a;idx.forEach((i,j)=>{for(let q=0;q<16;q++)mA[j*16+q]=IM[i*16+q];for(let q=0;q<3;q++){cA[j*3+q]=IC[i*3+q];if(nA)nA[j*3+q]=INN[i*3+q];if(c2A)c2A[j*3+q]=IC2[i*3+q];}const y=IM[i*16+13];if(y<y0)y0=y;if(y>y1)y1=y;});
    if(def.attrs&&nA)geo.setAttribute('aN',new T.InstancedBufferAttribute(nA,3));
@@ -246,28 +546,161 @@ BIO.bake=function(){const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw 
    im.instanceMatrix.array.set(mA);im.instanceMatrix.needsUpdate=true;
    im.instanceColor=new T.InstancedBufferAttribute(cA,3);
    im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=def.label;im.userData.tris=n*def.tris;im.name='biome:'+name;im.userData.kit=kn;
+   if(it.l){const L=new Uint16Array(n),IL=it.l;idx.forEach((i,j)=>{L[j]=IL[i]||0;});im.userData.instLabels={names:def.labs,idx:L};}   /* BIO.put's extra.label, by row */
    if(def.set){   // core/tags: the mesh names its item set, and which of the set's instances it draws (idx null: in order from base)
-    const ident=G.size===1;let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
+    const ident=G.size===1&&idx.every((v,j)=>v===j);let sx=null;if(!ident){sx=new Uint32Array(n);for(let j=0;j<n;j++)sx[j]=base+idx[j];}
     im.userData.krator=def.set.id;im.krator={set:def.set.id,idx:sx,base};def.parts.push({im,idx:sx,base,n});}
-   if(key)_lodEntry(im,key,y0,y1);
+   if(key){const e=_lodEntry(im,key,y0,y1+_lodReach(def),S&&Object.assign(S,{tris:S.ends.map(c=>c*def.tris)}));if(e&&BIO.LOD.cull)e.loose=idx.every(i=>!it.o[i]);}   /* loose: no tree owns any of its instances (BIO.LOD.cull) */
    scene.add(im);BIO.baked.push(im);calls++;inst+=n;}
   def.n0=base+it.count;R.items[name]=newItem(def.attrs);}
  for(const fam in R.buckets){const K=R.buckets[fam];if(!K.pos.length)continue;
-  const G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=K.k[t]||'';let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
-  for(const [key,tl] of G){const n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9);let y0=1e9,y1=-1e9;
-   const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
-   const g=indexedGeo(T,P,N,U,Cc);
+  const f=_lodFactor(K.k,1),G=new Map(),nt=K.pos.length/9;for(let t=0;t<nt;t++){const k=_lodGroup(K.k[t],f);let g=G.get(k);if(!g){g=[];G.set(k,g);}g.push(t);}
+  for(const [key,tl0] of G){const S=_lodSort(key,tl0,K.k),tl=S?S.rows:tl0,n=tl.length,P=new Float32Array(n*9),N=new Float32Array(n*9),U=new Float32Array(n*6),Cc=new Float32Array(n*9),C2=K.c2?new Float32Array(n*9):null;let y0=1e9,y1=-1e9;
+   const KP=K.pos.a,KN=K.nor.a,KC=K.col.a,KU=K.uv.a,K2=K.c2?K.c2.a:null;tl.forEach((t,j)=>{for(let q=0;q<9;q++){P[j*9+q]=KP[t*9+q];N[j*9+q]=KN[t*9+q];Cc[j*9+q]=KC[t*9+q];if(C2)C2[j*9+q]=K2[t*9+q];}for(let q=0;q<6;q++)U[j*6+q]=KU[t*6+q];const y=KP[t*9+1];if(y<y0)y0=y;if(y>y1)y1=y;});
+   let g;
+   if(S&&S.ranges.length>1){   /* one vertex list per range, in order, so a draw range (and gl_VertexID, for the fade) splits them */
+    const parts=[];let t0=0;S.vEnds=[];S.tris=S.ends.slice();
+    for(const t1 of S.ends){parts.push(indexedGeo(T,P.subarray(t0*9,t1*9),N.subarray(t0*9,t1*9),U.subarray(t0*6,t1*6),Cc.subarray(t0*9,t1*9),C2?C2.subarray(t0*9,t1*9):null));t0=t1;}
+    g=concatGeo(T,parts);let v=0;parts.forEach(q=>{v+=q.attributes.position.count;S.vEnds.push(v);});S.ends=S.tris.map(c=>c*3);}
+   else{g=indexedGeo(T,P,N,U,Cc,C2);if(S){S.tris=[n];S.ends=[n*3];S.vEnds=[g.attributes.position.count];}}
    g.computeBoundingSphere();
    const m=new T.Mesh(g,K.mat);m.frustumCulled=!key;m.userData.biome=true;m.userData.inspectLabel=K.label;m.userData.tris=n;m.name='biome:'+fam;m.userData.kit=kn;
-   if(key)_lodEntry(m,key,y0,y1);
+   if(BIO.PROBE_CELL>0){m.userData.probePoints=_probePts(P,n,BIO.PROBE_CELL);m.userData.probeDrawer='BIO.bucket:'+(kn?kn+'|':'')+fam;}
+   if(key)_lodEntry(m,key,y0,y1,S);
    scene.add(m);BIO.baked.push(m);calls++;}
-  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();K.k=[];}}
+  K.pos=new F32();K.nor=new F32();K.uv=new F32();K.col=new F32();if(K.c2)K.c2=new F32();K.k=[];}}
+ _lodShareBox();_lodFadeBake();
  BIO.lastBake={calls,inst,lodMeshes:BIO.lodMeshes.length};return BIO.lastBake;};
+// ONE BOX A CHUNK (2026-10-27, the owner: branches not drawn, foliage floating). A tree keyed by its owner puts its bark (a
+// bucket, boxed by its triangles), its rods and its leaf cards (instanced, boxed by their origins) into the same chunk, but
+// each mesh kept its own height range, so the camera stood at different distances from them and the leaves could switch on
+// or off before their boughs. Every chunk mesh now takes the height range (and so the distance and the cull sphere) of all
+// the meshes whose square it shares with the same minRange: a chunk's parts switch at one distance, each at its own range.
+// BIO.LOD.ownBox = true keeps each mesh's own box, as before.
+function _lodShareBox(){if(BIO.LOD.ownBox)return;const T=BIO.host.THREE,G=new Map();
+ for(const e of BIO.lodMeshes){if(e.oy0==null){e.oy0=e.y0;e.oy1=e.y1;}const k=e.x0+','+e.z0+','+e.x1+','+e.z1+'|'+(e.minRange||0);let g=G.get(k);if(!g){g={y0:1e9,y1:-1e9,L:[]};G.set(k,g);}
+  g.y0=Math.min(g.y0,e.oy0);g.y1=Math.max(g.y1,e.oy1);g.L.push(e);}
+ for(const g of G.values())for(const e of g.L){const moved=e.y0!==g.y0||e.y1!==g.y1;e.y0=g.y0;e.y1=g.y1;const C=e.x1-e.x0;
+  if(moved&&e.fade)_lodAttrs(e.mesh,e,e.vEnds);   /* a second bake: the cross-fade's box (written once) follows */
+  e.sphere=new T.Sphere(new T.Vector3((e.x0+e.x1)/2,(g.y0+g.y1)/2,(e.z0+e.z1)/2),Math.hypot(C*.5+60,C*.5+60,(g.y1-g.y0)/2+60));}}
+BIO._lodShareBox=_lodShareBox;
+// THE ATTACHMENT AUDIT (2026-10-27, the owner: floating foliage, branches not drawn), read from the baked scene, as drawn.
+// BIO.attachAudit({ground}) samples the leaf and hanging cards (materials of the 'leaf' and 'hang' kinds; an item defined
+// with {free:true} is skipped: rafts on water, seed fluff; one with {onLeaf:true} may also sit in a leaf card's body) that stand at least o.minUp (2 m) above o.ground(x, z), and finds
+// each one's nearest structure: the instanced non-card items (each instance's long axis, as points o.cell/4 apart, with its
+// radius) and the buckets' and host meshes' triangles, near the samples only, on KSPACE. A card whose origin (its stem, its
+// hung end: o.kStem (.25) of its size; a centred tripod's centre, whose leaves reach out half its size: o.k (.6)) plus o.pad
+// (.5 m) from any structure FLOATS. A card
+// that holds is then checked against what holds it, as the runtime LOD draws them: in one chunk (one box containing the
+// other: one key per tree) and never reaching further than it (its range at most the structure's; a card always drawn on a
+// structure that switches off outlives it). Returns {samples, audited, floating, share, split, outrange, lodShare, worst,
+// byItem, paired (held cards whose card or structure the runtime LOD switches), note}. o.max (20000) caps the samples (evenly strided); o.offset [dx,dy,dz] and o.rangeK (1) are the negative
+// controls' levers. Needs KSPACE (core/space) and a ground function; without them it says so and audits nothing.
+// the distance from (x,y,z) to a triangle's nearest point (a, b, c: {x,y,z})
+BIO.triDist=function(x,y,z,a,b,c){const abx=b.x-a.x,aby=b.y-a.y,abz=b.z-a.z,acx=c.x-a.x,acy=c.y-a.y,acz=c.z-a.z,apx=x-a.x,apy=y-a.y,apz=z-a.z;
+ const to=(qx,qy,qz)=>Math.hypot(x-qx,y-qy,z-qz);
+ const d1=abx*apx+aby*apy+abz*apz,d2=acx*apx+acy*apy+acz*apz;if(d1<=0&&d2<=0)return to(a.x,a.y,a.z);
+ const bpx=x-b.x,bpy=y-b.y,bpz=z-b.z,d3=abx*bpx+aby*bpy+abz*bpz,d4=acx*bpx+acy*bpy+acz*bpz;if(d3>=0&&d4<=d3)return to(b.x,b.y,b.z);
+ const vc=d1*d4-d3*d2;if(vc<=0&&d1>=0&&d3<=0){const v=d1/((d1-d3)||1e-12);return to(a.x+abx*v,a.y+aby*v,a.z+abz*v);}
+ const cpx=x-c.x,cpy=y-c.y,cpz=z-c.z,d5=abx*cpx+aby*cpy+abz*cpz,d6=acx*cpx+acy*cpy+acz*cpz;if(d6>=0&&d5<=d6)return to(c.x,c.y,c.z);
+ const vb=d5*d2-d1*d6;if(vb<=0&&d2>=0&&d6<=0){const w=d2/((d2-d6)||1e-12);return to(a.x+acx*w,a.y+acy*w,a.z+acz*w);}
+ const va=d3*d6-d5*d4;if(va<=0&&d4-d3>=0&&d5-d6>=0){const w=(d4-d3)/(((d4-d3)+(d5-d6))||1e-12);return to(b.x+(c.x-b.x)*w,b.y+(c.y-b.y)*w,b.z+(c.z-b.z)*w);}
+ const dn=1/((va+vb+vc)||1e-12),v=vb*dn,w=vc*dn;return to(a.x+abx*v+acx*w,a.y+aby*v+acy*w,a.z+abz*v+acz*w);};
+BIO.attachAudit=function(o){o=o||{};const T=BIO.host.THREE,scene=BIO.host.scene,KS=typeof KSPACE!=='undefined'?KSPACE:null;
+ const out={samples:0,audited:0,floating:0,share:0,split:0,outrange:0,paired:0,lodShare:0,worst:[],byItem:{},note:null};
+ if(!scene||!KS||!o.ground){out.note=!scene?'no scene':!KS?'no KSPACE (core/space) in the page':'no ground function';return out;}
+ const ground=o.ground,minUp=o.minUp==null?2:+o.minUp,K=o.k==null?.6:+o.k,KS0=o.kStem==null?.25:+o.kStem,PAD=o.pad==null?.5:+o.pad,MAX=o.max==null?20000:o.max|0,
+  CELL=o.cell==null?8:+o.cell,off=o.offset||[0,0,0],RK=o.rangeK==null?1:+o.rangeK;
+ const LE=new Map();for(const e of BIO.lodMeshes)LE.set(e.mesh,e);
+ const lodOf=(m,i,vert)=>{const e=LE.get(m);if(!e)return null;let r=e.range;const E=vert?(e.vEnds||e.ends):e.ends;
+  if(e.ranges&&E){let k=0;while(k<E.length-1&&i>=E[k])k++;r=e.ranges[k];}return {x0:e.x0,z0:e.z0,x1:e.x1,z1:e.z1,mr:e.minRange||0,range:r};};
+ const holds=(a,b)=>a.x0<=b.x0&&a.z0<=b.z0&&a.x1>=b.x1&&a.z1>=b.z1;
+ const kindOf=m=>{const u=m.material&&m.material.userData;return u&&u.bio&&u.bio.kind;};
+ const defOf=m=>{const R=BIO.kits[m.userData.kit||''];return R&&R.defs[(m.name||'').replace(/^biome:/,'')];};
+ const fol=[],str=[];
+ /* the cards: the biome's leaf and hang items; the structure: every other mesh drawn (bark, rods, the rock stacks and walls a
+    plant stands on, the ground, water, buildings), not the far blobs and impostors */
+ scene.traverse(m=>{if(!m.isMesh)return;const u=m.userData||{};if(u.probeSkip)return;const k=kindOf(m);
+  if(u.biome&&m.isInstancedMesh&&(k==='leaf'||k==='hang')){const d=defOf(m);if(!(d&&d.free))fol.push(m);}else if(k!=='far'&&k!=='impostor')str.push(m);});
+ const M4=new T.Matrix4(),P=new T.Vector3(),Q=new T.Quaternion(),S3=new T.Vector3(),V=new T.Vector3(),A=new T.Vector3(),B=new T.Vector3(),smp=[];
+ let N=0;for(const m of fol)N+=m.count;const st=Math.max(1,Math.ceil(N/Math.max(1,MAX)));let g=0;
+ for(const m of fol){m.updateMatrixWorld();const df=defOf(m),stem=!!(df&&df.fit||df&&df.raw&&df.raw.userData.card&&df.raw.userData.card.kind!=='clump');
+  for(let i=0;i<m.count;i++,g++){if(g%st)continue;m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);M4.decompose(P,Q,S3);
+  const x=P.x+off[0],y=P.y+off[1],z=P.z+off[2],s=Math.max(Math.abs(S3.x),Math.abs(S3.y),Math.abs(S3.z)),up=y-ground(x,z);out.samples++;
+  if(!(up>=minUp)||up<=.75*s+PAD)continue;   /* low, or a card that reaches the ground: it stands on the ground */
+  smp.push({x,y,z,tol:(stem?KS0:K)*s+PAD,m,i,onLeaf:!!(df&&df.onLeaf)});}}
+ const cf=v=>Math.floor(v/CELL),key=(a,b)=>a*1048576+b,want=new Set();
+ for(const p of smp){const r=Math.ceil(p.tol/CELL),cx=cf(p.x),cz=cf(p.z);for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)want.add(key(cx+a,cz+b));}
+ /* the samples are the index and each piece of structure updates the samples near it as it is met: a list of the points was 3.5 GB
+    live on swlowlands, and an audit past V8's 4 GB limit killed the renderer at random (HANDOFF-REBUILD.md, core-crashes). The distance
+    is to the surface as drawn (2026-11-02): each triangle's nearest point, and an instanced item's axis less its radius, which also
+    reaches a sample outside the point's own square. Points along the edges missed a card lying on a 3 by 9 m bark quad */
+ /* a tree drawn twice at one spot, near and far (minRange): a card is judged by the structure of its own tier when that holds it, not by
+    whichever tier's bark happens to lie closer */
+ const meet=(p,d,lod)=>{if(d<p.best){p.best=d;p.bl=lod;}if(lod&&lod.mr===p.mr&&d<p.own){p.own=d;p.ol=lod;}};
+ const SP=KS.create({cell:CELL}),near=[],add=(x,y,z,r,lod)=>{if(!r&&!want.has(key(cf(x),cf(z))))return;SP.query(x,z,r,near);
+  for(const p of near)meet(p,Math.hypot(x-p.x,y-p.y,z-p.z)-r,lod);};
+ for(const p of smp){p.best=p.own=1e9;p.bl=p.ol=null;const f=lodOf(p.m,p.i,false);p.mr=f?f.mr:0;SP.insert(p,p.x,p.z,p.tol);}
+ for(const m of str){const geo=m.geometry,pa=geo&&geo.attributes&&geo.attributes.position;if(!pa)continue;m.updateMatrixWorld();
+  if(m.isInstancedMesh){if(!geo.boundingBox)geo.computeBoundingBox();const bb=geo.boundingBox,cx=(bb.min.x+bb.max.x)/2,cz=(bb.min.z+bb.max.z)/2,r0=Math.max(bb.max.x-bb.min.x,bb.max.z-bb.min.z)/2;
+   for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);A.set(cx,bb.min.y,cz).applyMatrix4(M4);B.set(cx,bb.max.y,cz).applyMatrix4(M4);
+    M4.decompose(P,Q,S3);const r=r0*Math.max(Math.abs(S3.x),Math.abs(S3.z));
+    if(r<CELL/4&&!want.has(key(cf(A.x),cf(A.z)))&&!want.has(key(cf(B.x),cf(B.z)))&&A.distanceTo(B)<CELL)continue;
+    const n=Math.max(1,Math.ceil(A.distanceTo(B)/(CELL/4))),lod=lodOf(m,i,false);
+    for(let k=0;k<=n;k++){V.lerpVectors(A,B,k/n);add(V.x,V.y,V.z,r,lod);}}}
+  else{   /* a bucket or a host mesh: every triangle whose box touches a wanted cell */
+   const W=m.matrixWorld,id=W.equals(new T.Matrix4()),ix=geo.index,nt=Math.floor((ix?ix.count:pa.count)/3),Vt=[A,B,new T.Vector3()],vi=[0,0,0];
+   for(let t=0;t<nt;t++){for(let k=0;k<3;k++){vi[k]=ix?ix.getX(t*3+k):t*3+k;Vt[k].fromBufferAttribute(pa,vi[k]);if(!id)Vt[k].applyMatrix4(W);}
+    const x0=Math.min(A.x,B.x,Vt[2].x),x1=Math.max(A.x,B.x,Vt[2].x),z0=Math.min(A.z,B.z,Vt[2].z),z1=Math.max(A.z,B.z,Vt[2].z);
+    let hit=false;for(let a=cf(x0),a1=cf(x1);a<=a1&&!hit;a++)for(let b=cf(z0),b1=cf(z1);b<=b1;b++)if(want.has(key(a,b))){hit=true;break;}
+    if(!hit)continue;SP.query((x0+x1)/2,(z0+z1)/2,Math.max(x1-x0,z1-z0)/2,near);if(!near.length)continue;const lod=lodOf(m,vi[0],true);
+    for(const p of near)meet(p,BIO.triDist(p.x,p.y,p.z,A,B,Vt[2]),lod);}}}
+ /* an item defined {onLeaf:true} (a flower in a bush) is also held inside the body of a leaf card that is not onLeaf itself; that card
+    answers for its own hold. Only the card's body: half its width round it, and a stem card's height up from its stem */
+ if(smp.some(p=>p.onLeaf&&p.best>p.tol))for(const m of fol){const df=defOf(m);if(df&&df.onLeaf)continue;const yLo=df&&df.fit?-.1:-.5,yHi=df&&df.fit?1:.5;
+  for(let i=0;i<m.count;i++){m.getMatrixAt(i,M4);M4.premultiply(m.matrixWorld);M4.decompose(P,Q,S3);const h=.5*Math.max(Math.abs(S3.x),Math.abs(S3.z)),sy=Math.abs(S3.y);SP.query(P.x,P.z,h,near);
+   for(const p of near)if(p.onLeaf&&p.best>p.tol&&Math.hypot(p.x-P.x,p.z-P.z)<=h&&p.y-P.y>=yLo*sy&&p.y-P.y<=yHi*sy){p.best=p.tol;p.bl=lodOf(m,i,false);p.own=1e9;}}}
+ const worst=[];
+ for(const p of smp){const best=p.best,bl=p.own<=p.tol?p.ol:p.bl;
+  out.audited++;const nm=p.m.name||'?',bi=out.byItem[nm]||(out.byItem[nm]={n:0,floating:0,split:0,outrange:0});bi.n++;
+  if(best>p.tol){out.floating++;bi.floating++;worst.push({item:nm,at:[+p.x.toFixed(1),+p.y.toFixed(1),+p.z.toFixed(1)],d:best>1e8?null:+best.toFixed(2),tol:+p.tol.toFixed(2)});continue;}
+  const fl=lodOf(p.m,p.i,false);
+  if(fl||bl)out.paired++;
+  if(fl&&bl){if(fl.mr!==bl.mr||!(holds(fl,bl)||holds(bl,fl))){out.split++;bi.split++;}else if(fl.range*RK>bl.range+1e-6){out.outrange++;bi.outrange++;}}
+  else if(!fl&&bl){out.outrange++;bi.outrange++;}}   /* a card always drawn on a structure that switches off */
+ worst.sort((a,b)=>(b.d==null?1e9:b.d/b.tol)-(a.d==null?1e9:a.d/a.tol));out.worst=worst.slice(0,8);
+ out.share=out.audited?out.floating/out.audited:0;const held=out.audited-out.floating;out.lodShare=held?(out.split+out.outrange)/held:0;
+ return out;};
+// The guards as the host's checks (core/host/95-host-probe.js appends them to every build's hostChecks and hostNegatives):
+// the card guard, the attachment audit and the tree's one LOD key, each with a negative control that must fail.
+// o.maxShare (.01): the share of audited cards that may float, or switch apart from their structure.
+BIO.guardChecks=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=[];
+ R.push({name:'library cards cut and held right (core card guard)',ok:!BIO.cardFaults.length,
+  detail:BIO.cardFaults.length?BIO.cardFaults.slice(0,6).map(f=>f.slot+' ('+f.lib+') on '+f.item+': '+f.why).join('; '):'no card the guard refuses'});
+ const a=BIO.attachAudit(o),fmt=x=>(100*x).toFixed(2)+'%',top=k=>Object.entries(a.byItem).filter(e=>e[1][k]).sort((x,y)=>y[1][k]-x[1][k]).slice(0,4).map(e=>e[0]+' '+e[1][k]+'/'+e[1].n).join(', ');
+ if(a.note)R.push({name:'foliage held by its structure (core attach audit)',ok:true,detail:'not audited: '+a.note});
+ else{R.push({name:'foliage held by its structure (core attach audit)',ok:a.share<=mx,
+   detail:a.floating+' of '+a.audited+' cards above ground float ('+fmt(a.share)+', limit '+fmt(mx)+')'+(a.floating?': '+top('floating')+'; worst '+JSON.stringify(a.worst.slice(0,3)):'')});
+  R.push({name:'a tree\'s cards switch with their structure (one LOD key per tree)',ok:a.lodShare<=mx,
+   detail:(a.paired?'':'no runtime LOD on these cards; ')+a.split+' in another chunk, '+a.outrange+' reaching past their structure, of '+(a.audited-a.floating)+' held ('+fmt(a.lodShare)+')'+(a.split+a.outrange?': '+top('split')+' '+top('outrange'):'')});}
+ return R;};
+BIO.guardNegatives=function(o){o=o||{};const mx=o.maxShare==null?.01:+o.maxShare,R=[];
+ const fake={userData:{card:{base:'top',once:true}}};
+ R.push({name:'a library fern on a frond with no base',failed:!!cardWhy(fake,{lib:'card.fern',plants:1,anchor:'bottom'}),detail:'the card guard on a made-up slot'});
+ const a=BIO.attachAudit(Object.assign({},o,{offset:[0,6,0]}));
+ if(!a.note)R.push({name:'every card lifted 6 m off its branch',failed:a.share>mx,detail:a.floating+' of '+a.audited+' float'});
+ const b=BIO.attachAudit(Object.assign({},o,{rangeK:4}));
+ if(!b.note&&b.paired>0)R.push({name:'every card reaching four times its range',failed:b.lodShare>mx,detail:(b.split+b.outrange)+' of '+(b.audited-b.floating)+' switch apart'});
+ return R;};
+// a baked mesh's label for one instance (its row: a raycast's instanceId): its own (BIO.put's extra.label) or the item's
+BIO.instLabel=function(m,i){const L=m&&m.userData&&m.userData.instLabels;
+ if(L&&i!=null&&i>=0&&i<L.idx.length)return L.names[L.idx[i]];return m&&m.userData?m.userData.inspectLabel||null:null;};
 
 // ---------------------------------------------------------------- dynamic instances (sedesert-1)
 // A biome's moving things (fauna) are InstancedMeshes it updates itself every
 // frame through BIO.tick; the core makes the mesh, charges it, and adds it to
-// the scene at once (it is not a store, so it needs no bake).
+// the scene at once (it is not a store, so it needs no bake). The mesh names the kit current when it is made
+// (userData.kit, which BIO.export({kit}) filters by; B7, 2026-10-26: a kit need not set it itself).
 BIO.dynamic=function(name,geo,mat,count,opt){opt=opt||{};const T=BIO.host.THREE,scene=BIO.host.scene;if(!scene)throw new Error('BIO.dynamic: no scene');
  const g=geo.index?geo.toNonIndexed():geo,im=new T.InstancedMesh(g,mat,count);
  im.frustumCulled=false;im.userData.biome=true;im.userData.inspectLabel=opt.label||name;im.name='biome:'+name;im.instanceMatrix.setUsage(T.DynamicDrawUsage);im.userData.kit=BIO.kitName||'';

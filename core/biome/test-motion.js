@@ -3,6 +3,7 @@
 // sedesert does: an orbit (no period: a loop), a walker that declares its period, a herd that integrates dt (not a
 // function of the clock). The replay must land on the page's own pose at clocks inside the loop's exact window and, for
 // the walker, at any clock; the herd must be refused; the page must be where it was after the export.
+require('../shader/06-core-khook.js');require('../shader/06b-core-kcolor.js');
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..', '..');

@@ -162,7 +162,7 @@ SEDESERT.PLANTS={
  echium:PK('Tower of jewels','tropic','semiarid','no',['spire'],HV('none',['nectar'],false,'Bees work the spires.')),
  barrel:PK('Barrel cactus','tropic','arid','no',['barrel'],HV('none',['flesh (famine water)'],false,'')),
  cholla:PK('Cholla','tropic','arid','no',['cone'],HV('none',['flower buds'],false,'')),
- hoodia:PK('Hoodia','tropic','arid','no',['column'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
+ hoodia:PK('Hoodia','tropic','arid','no',['column','columnLo'],HV('none',['stems'],true,'Chewed against hunger and thirst on a long walk.')),
  lichen:PK('Lichen','tropic','semiarid','both',['lichen'],HV('none',[],true,'A dye.')),
 };
 SEDESERT.plantOfItem=item=>{for(const k in SEDESERT.PLANTS)if(SEDESERT.PLANTS[k].items.indexOf(item)>=0)return SEDESERT.PLANTS[k];return null;};
@@ -307,15 +307,26 @@ G.agave=function(){const pos=[],nor=[],uv=[],col=[];
    push(q[3],.9);push(q[2],.9);push(q[4],1.0);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a ribbed succulent COLUMN: unit height (y 0..1), radius .5, domed top, vertex-coloured (ridges light, grooves dark)
-G.column=function(){const pos=[],nor=[],uv=[],col=[];const seg=8,prof=[[0,.5],[.55,.49],[.86,.42],[1.0,.22]];
- const ring=(i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=s%2?1:.84;r.push([Math.cos(a)*prof[i][1]*rib,prof[i][0],Math.sin(a)*prof[i][1]*rib,s%2?1:.78]);}return r;};
- const R=prof.map((p,i)=>ring(i));
- const push=(p,n)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(0,0);col.push(p[3],p[3],p[3]);};
- for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];
-  const na=[a[0],.15,a[2]],nb=[b[0],.15,b[2]],nc=[c[0],.3,c[2]],nd=[d[0],.3,d[2]];
-  push(a,na);push(d,nd);push(c,nc);push(a,na);push(b,nb);push(d,nd);}
- const top=[0,1.05,0,1];for(let s=0;s<seg;s++){const a=R[prof.length-1][s],b=R[prof.length-1][(s+1)%seg];push(a,[0,1,0]);push(b,[0,1,0]);push(top,[0,1,0]);}
+// (2026-10-25) two profiles: the hero's (8 sides, ribbed, a shaft, a shoulder and a dome cap: 40 triangles, was 56 with a third
+// ring that the cap's fan now rounds off) and a light one (6 plain sides, the shaft and the cap: 18) for the side shoots and the
+// mid trees' columns, where the skin's own ribs carry the fluting
+// (2026-10-26, the owner: the stems' feet read as cut polygons) the profiles start at a NARROW, ROUNDED FOOT: the stem constricts where it
+// joins the arm (as a Euphorbia's segments do) over its first sixth, the foot closed by a small cap; a profile row may give its
+// normal's y (third value: down-out at the foot, so the constriction shades as a curve)
+const columnGeo=(seg,prof,ribbed,top)=>{const pos=[],nor=[],uv=[],col=[];
+ const ring=(i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=ribbed&&!(s%2)?.84:1;r.push([Math.cos(a)*prof[i][1]*rib,prof[i][0],Math.sin(a)*prof[i][1]*rib,ribbed&&!(s%2)?.78:1]);}return r;};
+ const R=prof.map((p,i)=>ring(i)),ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
+ /* uv (2026-10-25, so the library's skin.cactus can dress the columns): u once round (the skin's ribs over the mesh's), v up the height */
+ const push=(p,n,u)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(u,p[1]*1.6);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
+  push(a,na,u0);push(d,nd,u1);push(c,nc,u0);push(a,na,u0);push(b,nb,u1);push(d,nd,u1);}
+ const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];push(a,[a[0],.6,a[2]],s/seg);push(b,[b[0],.6,b[2]],(s+1)/seg);push(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (inside the arm it stands on, but a side shoot's shows) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];push(a,[a[0],-.8,a[2]],s/seg);push(bp,[0,-1,0],(s+.5)/seg);push(b,[b[0],-.8,b[2]],(s+1)/seg);}
  return BIO.geo._make(pos,nor,uv,col);};
+G.column=()=>columnGeo(8,[[0,.2,-.2],[.07,.42,-.18],[.17,.5,.15],[.6,.485],[.9,.38]],true,1.02);   /* 80 triangles (was 40) */
+G.columnLo=()=>columnGeo(6,[[0,.24,-.22],[.12,.47,-.03],[.82,.43]],false,1.04);   /* 36 triangles (was 18) */
 // a TWIST-CANDLE: a tapered, three-lobed column twisting as it rises, unit height, vertex-coloured pale at the base
 G.candle=function(){const pos=[],nor=[],uv=[],col=[];const seg=9,nr=8;const P=[];
  for(let i=0;i<=nr;i++){const t=i/nr,r=.5*Math.pow(1-.72*t,.7)*(i===nr?.2:1),row=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rr2=r*(1+.28*Math.cos(3*a+t*3.6));row.push([Math.cos(a)*rr2,t,Math.sin(a)*rr2,lerp(.66,1,t)]);}P.push(row);}
@@ -360,7 +371,7 @@ SEDESERT.MAT={
  hang:BIO.leafMat(TX.small,'hang',{swayW:'(-position.y)',swayA:.05,axis:1}),
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  agave:BIO.leafMat(null,'agave',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
- column:BIO.leafMat(null,'column',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ column:BIO.barkMat(null),   /* a bark material (2026-10-25): the library's skin.cactus is an opaque skin, which the bark slots normalise; a leaf card's map is its alpha */
  candle:BIO.leafMat(null,'candle',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  solid:BIO.solidMat(null,0xffffff),
 };
@@ -382,12 +393,16 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Scrub foliage'});
 BIO.def('paddle',BIO.geo.clump(),M.paddle,{attrs:['aN'],label:'Prickly-pear pads'});
 BIO.def('palmfrond',BIO.geo.frond(4),M.palmfrond,{label:'Palm fronds'});
 BIO.def('bristle',BIO.geo.frond(3),M.bristle,{label:'Boojum twigs'});
-BIO.def('needle',G.tuft(),M.needle,{label:'Spinifex'});
+/* SHEETS CUT BY THE GEOMETRY (the card fit, 2026-10-27; materials.json "sheet": "geometry"): a library sheet of several plants drawn whole on a
+   card shows them as a boxed grid (the owner caught the spinifex); each quad takes one plant's box (BIO.geo.cells, rects measured by
+   tools/textures/check_cells.py --plants). Without the pack the kit's own procedural maps are single plants and stay whole */
+const SHEETG=(slot,geo,o)=>SEDESERT.LIB&&SEDESERT.LIB[slot]?BIO.geo.cells(geo,o):geo;
+BIO.def('needle',SHEETG('needle',G.tuft(),{rects:[[.341,.024,.671,.339],[.333,.349,.671,.671],[.331,.661,.667,.974]],scale:1}),M.needle,{label:'Spinifex'});
 BIO.def('grass',G.tuft(),M.grass,{label:'Dry grass'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds'});
 BIO.def('spire',G.tuft(),M.spire,{label:'Tower of jewels'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower plumes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',SHEETG('bloom',BIO.geo.bloom(),{rects:[[.02,.02,.49,.33],[.51,.34,.98,.66],[.02,.67,.49,.98],[.51,.02,.98,.33],[.02,.34,.49,.66],[.51,.67,.98,.98]],pick:[0,1],scale:1}),M.bloom,{label:'Blooms'});   /* two of the six flowers a bloom (the sheet's rows touch: its boxes set by eye) */
 BIO.def('pods',BIO.geo.ribbon(3,.7,.08),M.pods,{label:'Mesquite pods'});
 BIO.def('dates',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Wadi dates'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Desert tunas'});
@@ -396,6 +411,7 @@ BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
 BIO.def('agave',G.agave(),M.agave,{label:'Agave rosettes'});
 BIO.def('column',G.column(),M.column,{label:'Succulent columns'});
+BIO.def('columnLo',G.columnLo(),M.column,{label:'Succulent columns'});   /* the light column (2026-10-25): side shoots, mid trees */
 BIO.def('candle',G.candle(),M.candle,{label:'Twist-candles'});
 BIO.def('barrel',G.barrel(),M.solid,{label:'Barrel cacti'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones and joints'});

@@ -1,0 +1,231 @@
+[
+ {
+  "src": "card.turf.native.png",
+  "out": "core/materials/library/card.turf.native",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "all",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.turf.native",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.turf.native\"",
+    "reuse": "the SW highlands' ridge turf (turf slot) on the fold crests and the bald; any native short ground cover on Krator's wet uplands",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.cornlily.png",
+  "out": "core/materials/library/card.cornlily",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cornlily",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cornlily\"",
+    "reuse": "nhighlands 2's corn lilies; any wet mountain meadow's tall herbs (Veratrum)",
+    "note": "a nine-cell sheet: hosts show one cell; rows: flowering, two leafy without flowers, two late-summer yellowing with seed heads"
+   }
+  }
+ },
+ {
+  "src": "card.clubmoss.sprig.png",
+  "out": "core/materials/library/card.clubmoss.sprig",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_hi": 70,
+   "spill": "line",
+   "subject": "#8a9a5a",
+   "choke": 0
+  },
+  "record": {
+   "id": "card.clubmoss.sprig",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.clubmoss\"",
+    "reuse": "eastabyss's club-moss carpet (clubmoss slot; the abyssal-savannah and the hyperjungle read it in place); any lycopod or horsetail ground cover",
+    "note": "a nine-cell sheet. Delivered for the prompt card.clubmoss, installed under a new id because card.clubmoss (2026-10-14, full colour, nodding clubmoss) is wired in geyser and swhighlands. Keyed onto a line (spill line, subject #8a9a5a, the stems' median colour): the generator blended the hair-thin needles with the magenta, so unmix and spill all left them mauve"
+   }
+  }
+ },
+ {
+  "src": "card.lily.victoria.png",
+  "out": "core/materials/library/card.lily.victoria",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.lily.victoria",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.lily.victoria\"",
+    "reuse": "the sky lily pads (hyperjungle lake station, skylily slot); any giant water lily",
+    "note": "one pad filling the frame, seen from above; spill none keeps the red-purple rim"
+   }
+  }
+ },
+ {
+  "src": "card.palm.costa.png",
+  "out": "core/materials/library/card.palm.costa",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.palm.costa",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.palm.fan\"",
+    "reuse": "the moriche palm's crown (hyperjungle lake station, base bottom); the abyss's fan palm; any costapalmate palm",
+    "note": "a 3x1 sheet (2000 x 667) padded to a square on magenta so each leaf keeps its aspect: the three leaves are the MIDDLE ROW of a 3 x 3 grid (v 0.333-0.667). Delivered for the prompt card.palm.fan, installed under a new id because card.palm.fan (2026-10-25, a 3 x 3 sheet) is wired in necanyons"
+   }
+  }
+ },
+ {
+  "src": "eye.reptile.slit.png",
+  "out": "core/materials/library/eye.reptile.slit",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ffffff",
+   "key_lo": 25,
+   "key_hi": 90,
+   "spill": "none"
+  },
+  "record": {
+   "id": "eye.reptile.slit",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"eye.reptile.slit\"",
+    "reuse": "the Lizardmen's eyes (every caste but the Interpreters); any reptile or cat-eyed therian",
+    "note": "not tiling: an iris disc touching the frame's edges. Through cards.py with the white corners keyed out (key #ffffff, no crop), so the alpha is the iris mask the eye mesh wants; full colour"
+   }
+  }
+ },
+ {
+  "src": "eye.reptile.spiral.png",
+  "out": "core/materials/library/eye.reptile.spiral",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ffffff",
+   "key_lo": 25,
+   "key_hi": 90,
+   "spill": "none"
+  },
+  "record": {
+   "id": "eye.reptile.spiral",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"eye.reptile.spiral\"",
+    "reuse": "the Interpreters' eyes (LORE 6.20: spiral pupils mark the highest caste)",
+    "note": "not tiling: an iris disc touching the frame's edges. Through cards.py with the white corners keyed out (key #ffffff, no crop), so the alpha is the iris mask the eye mesh wants; full colour"
+   }
+  }
+ }
+]

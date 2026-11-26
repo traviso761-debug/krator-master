@@ -28,13 +28,16 @@ const SITES=[{key:'nr-arcology',x:0,z:0,ry:0,o:{y:-NR_SEA_H}}];
 const ONLY=qs.get('only');
 let WORLD=null,HULLG=null;
 function buildWorld(){if(WORLD){scene.remove(WORLD);WORLD.traverse(o=>{if(o.geometry)o.geometry.dispose();});}
- WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();if(!SVTAGS)svTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
+ WORLD=new THREE.Group();scene.add(WORLD);GB={};GTARGET=GB;REG.length=0;halosReset();SMOKES=[];GSTAT.tris=0;SBS.length=0;SB=null;resetCM();svOpenReset();if(!SVTAGS)svTagsReset();   /* 91f-furnish.js wraps this and starts the registry */
  /* everything in the hull frame is drawn into HULLG, a group carrying NR_HULL: the geometry engine still writes world
     coordinates (place() composes the matrix), so HULLG itself stays at the identity; it is the cut-away's set */
  HULLG=new THREE.Group();HULLG.name='arcology';WORLD.add(HULLG);
  const t0=performance.now();
  for(const S of SITES)place(S.key,S.x,S.z,S.ry||0,S.o);
  flushBuckets(GB,HULLG,true);
+ /* the door leaves (core/door through core/engine's 36o-open.js: svLeaf): one InstancedMesh per material, posed by KDOORHOST as
+    they swing, cut with the decks (nrCutHook: the leaves' materials are made at the flush, after 27-mat.js hooked the rest) */
+ svOpenFlush(HULLG);for(const k in SV_LEAFMAT)nrCutHook(SV_LEAFMAT[k],true);nrCutHook(MAT.paneClear,false);   /* matHook keeps one hook a key */
  /* the clear glass (balustrades) casts no shadow and draws after the solids, as the window glass does (30-geo.js treats
     only the key 'glass' so; it is vendored) */
  HULLG.traverse(o=>{if(o.isMesh&&o.userData.mk==='glassClear'){o.castShadow=false;o.renderOrder=2;}});

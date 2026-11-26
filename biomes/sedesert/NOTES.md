@@ -160,6 +160,37 @@ river is its own mesh, the pond keeps the old one), the same at the four water v
 carries the river (its ribbon's count and sums, 8 probes with heights and currents), the cataract (its curtain, its plunge
 point) and the pool; Godot draws them (`godot/data/world-sedesert-falls`, `godot/tools/compare_shots.py`).
 
+## Station 2: the Bowl (2026-10-26, PLAN-BOWL.md)
+`python3 build.py --station bowl` builds `stations/bowl/` into `dist/sedesert-bowl.html`: the station's files replace `src/`'s of the
+same name or add to them, `station.json` drops what it has no use for (the painted sky, the tower) and adds core files by path, and
+its own textures are a second pack (`stations/bowl/materials.json`, packed into `stations/bowl/tex/` by `tools/textures/pack.py
+biomes/sedesert/stations/bowl`). The kit's own page is untouched by the station block. The kit's species, builders and fauna carry
+over: `56-biome-sedesert-bowl.js` swaps in the Bowl's tree passes (`SEDESERT.PASSES`) and the dense-air habit (`SEDESERT.ABYSSAL`,
+applied by each pass's size hook to the record the kit's builder draws); `66-biome-sedesert-halo.js` adds the halophytes and replaces
+the floor pass (`SEDESERT.buildFloor`). The terrain is core/terrain's: KBASIN's old lake (its strandlines, silt and the yardangs'
+ground), KRELIEF.river (the delta's water), KFIELD. The frame is the heat pass's (`86-host-shimmer.js`: the shared sky, the world,
+the shimmer and the mirage). Lessons: a ridged noise term `1-|2f-1|` is near 1 wherever the noise is near its mean, so a threshold
+under .95 makes broad plateaus, not crests; a salt lake 0.3 m deep reads as a white sheen from eye height (it is all sky
+reflection at that angle): the shore views stand 9 m up; a far town at its true 50 km is under a pixel high.
+
+## Station 2b: Mantis's pocket (2026-10-26)
+`python3 build.py --station mantis`: `station.json` "base": "bowl" starts from the Bowl's files, and the Bowl's code is split for it
+(45-host-shell, the layout in 45-host-stage, 46-host-land, 83-host-regions, 98-host-checks; STATION carries a station's options:
+its lattice, LOD, air, heat, ground layers, spring pools, channel reach, halophyte counts, budget). The forest's species are pushed
+onto `SEDESERT.SPECIES` and drawn with `SEDESERT.TOOLS` (55), so the kit's pass, impostors, registry and inspector take them. Lessons:
+a fragment shader has 16 texture units (the ground's layers, the strata, the noise and the cloud shade add up); a uniform named in
+two injected chunks must have one type (`uNoise` was the strata's); a host's `BIO.put` after a kit's `BIO.kitEnd` finds none of the
+kit's items (put through a kit function: `SEDESERT.bed`); a channel narrower than two of the ground field's steps sits under its bed.
+
+## The final rebuild's turn (2026-10-27, pair 3)
+Every page and station on the shared core (`PLAN-STATIONS.md`, "Core adoption"). Lessons: a page whose LOD passes set `BIO.range` needs
+`BIO.lodTick` on its view hook or every chunk mesh draws at once (750 calls, 12.6M triangles on the main page until `99-host-take.js` hooked it;
+with it 220-280 calls and 4.7-5.7M); `BIO.kin` is core/biome 32, which a page that reads a neighbour must list; a talus on a heightfield mesa
+is the higher of the mesa and the floor-without-the-mesa plus the apron, never the apron added on top (it lifts the mesa's own top); a
+KGROUND kind with no map and `tint:'diffuseColor.rgb'` shades the page's own colour (the Bowl's dunes take ripples over their layers with no
+new sampler); the Bowl's ground is at 15 of 16 texture units, so anything that adds a map to it (the wet ground) breaks the compile; a
+`clast` pavement wants a wide matrix (.24) in the sand's colour, or it reads as crazy paving.
+
 ## Next
 The Inner Wall's foothills proper (the slope's top is only
 sketched here — it is meant to be its own kit); drop an Ancients kit megastructure onto

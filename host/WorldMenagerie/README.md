@@ -14,7 +14,7 @@ stages, and anything only one of them needs travels with that one.
 The front page at `/` lists whatever the server is serving, and every scene carries a Home button and a menu
 of the others. Both read `/scenes.json`, which the server builds from `site.toml`.
 
-**Site:** `http://<this computer's address>:8000/` (`./sitectl url` prints it for the computer it runs on)
+**Site:** `http://<this computer's address>:8001/`, served by Krator's site (`../sitectl url` prints it)
 
 ## Controls
 
@@ -74,6 +74,8 @@ Page-only keys: the Backrooms' N (noclip), M (sound), R (start again); the City'
 | `/voyager` | `/voyager.html`, `/ncc74656`, `/intrepid` | `voyager.html` | Voyager: Intrepid class (fan work) |
 | `/ds9` | `/ds9.html`, `/deepspace9`, `/terok-nor` | `ds9.html` | Deep Space 9 (fan work) |
 | `/babylon5` | `/babylon5.html`, `/b5`, `/babylon` | `babylon5.html` | Babylon 5 (fan work) |
+| `/rama` | `/rama.html`, `/rendezvous`, `/31-439` | `rama.html` | Rama, after Clarke's *Rendezvous with Rama* (fan work) |
+| `/deepsky` | `/deepsky.html`, `/blackhole`, `/pulsar`, `/supernova`, `/sgra`, `/whitedwarf`, `/kilonova` | `deepsky.html` | Deep Sky: how stars end (two black holes, a pulsar, a supernova, a white dwarf, a merger) |
 | `/homeworld` | `/homeworld.html`, `/kharak`, `/hw` | `homeworld.html` | Homeworld: the Kharak system, missions 1 and 3 (fan work) |
 | `/kyrene` | `/hab.html`, `/habitat`, `/cylinder` | `hab.html` | Kyrene: a rotating habitat |
 | `/krator` | `/krator.html` | `krator.html` | Krator: A Primer |
@@ -418,6 +420,225 @@ Forth: 35,000 buildings on their real ground.
 - A landmark's `height` raises the mapped building under it (Chicago's towers use this), so a model's own heights
   are called `towerH`.
 
+**Sarajevo** (`sarajevo.html`, `src/sarajevo/`, `data/cities/sarajevo.json`). Today's city in the valley of the
+Miljacka between Trebević and the hills of the mahalas: Baščaršija and its mosques at the east end, the
+Austro-Hungarian centre, Marijin Dvor's towers to the west; 19,000 buildings on their real ground. Its history is
+played as events.
+- **The data** came from Geofabrik's Bosnia and Herzegovina extract (`tools/pbf-to-overpass.py`): Overpass was at
+  capacity.
+- **The river** falls about twenty metres through the city over weirs, so it is not one sheet: `terrain.reaches` (a
+  setting of `tools/build-osm-city.py`) cuts the named water areas into reaches along the river, each level just under
+  the lowest ground along it and never below the one downstream, and cuts the ground under each; `bank: 0` keeps the
+  cut inside the mapped water, so the streets keep their level to the edge. `src/sarajevo/river.js` draws the
+  Austrian channel on the same polygons: dressed stone walls from the water up to the street, a pale coping, a strip of
+  quay and the iron railing, and a sheet of white water at every weir. `bridgeFromBanks` (an engine setting) keeps a
+  deck over the water at the level of the streets at its ends, not of the riverbed under it.
+- **Landmarks** (`src/sarajevo/landmarks.js`): the Sebilj; Gazi Husrev-beg's, the Emperor's and Ferhadija mosques
+  (portico of small domes, lead dome on its drum, pencil minaret, şadırvan); the Sahat-kula; the City Hall in Wittek's
+  striped pseudo-Moorish, from its mapped outline; the Latin Bridge's four arches with the eyes in its piers; the
+  Cathedral of the Sacred Heart (its tower clocks, lancets, the rose's tracery and John Paul II in the square); the
+  Yellow Bastion and its cannon; the UNIS towers, Momo and Uzeir (dark glass and metal bands, the fins on the cut
+  corners, the plant floors); the Avaz Twist Tower (a textured curtain wall turning 75 degrees, lit floor by floor at
+  night, the silver bands, the 35th floor's glass deck, the paper's name under the open crown, the mast, and the
+  paper's own glass house at its foot; a map on a landmark material is kept through the merge, `landkit` `setMat`);
+  the Holiday Inn in mustard
+  and brown; the Eternal Flame; the Trebević cable car with its gondolas running; the 1984 bobsleigh track with its
+  banking and graffiti (kept clear of the woodland by `treeKeepOut`); the Koševo stadium and its cauldron. More
+  places are cards only (Schiller's corner, Markale, the Inat House, Morića Han, the churches and the synagogue).
+- **Minarets** (`src/sarajevo/mosques.js`): every other mapped mosque gets its minaret: a stone one and a lead dome
+  when it is big enough, the whitewashed wooden minaret with its dark cone when it is a mahala's mesdžid. Their
+  balconies light at night.
+- **The mountains** (`src/sarajevo/backdrop.js`): past the map's edge, Igman, Bjelašnica, Trebević's summit, Jahorina
+  and the northern hills, from the real ground 80 km across at 400 m (`data/cities/sarajevo-far.json`, sampled from the
+  terrarium tiles at zoom 10): one mesh, coloured by height, sunk under the city inside the map.
+- **The graveyards** (`src/sarajevo/mezarje.js`): the 53 mapped cemeteries filled with their stones, nišani with
+  turbans and pointed tops in the mezarje, crosses and slabs where the name says so (Bare, the Jewish cemetery, the
+  churches'), leaning every way, in rows across the qibla. Each is built the first time the camera comes within
+  650 m, and shown only while it is that close.
+- **On the pavement** (`src/sarajevo/streets.js`): Sarajevo roses, the red resin in the shell scars, on the centre's
+  streets; the Meeting of Cultures line across Ferhadija.
+- **Trees and facades**: Trebević's beech, spruce and black pine, lindens and planes on the streets, plum trees in the
+  yards (`treeSpecies`); glass on the towers, balconies on the socialist blocks of Marijin Dvor and Koševo, ribbon
+  windows on the offices (`facadeStyles`). Walls take the library's stucco and plaster, roofs its clay tile, and the
+  pedestrian lanes cobbles (`surfaces`, `paving.map`).
+- **The concrete and the bars** (`src/sarajevo/blocks.js`, `C.blocks`): the socialist blocks of Grbavica, Marijin
+  Dvor, Koševo and Skenderija (Yugoslav modernism, not Soviet: the grammar is shared, the architects were not) get a
+  loggia slab and a painted parapet at every floor on their long faces, the stair core proud of one end, the machine
+  room and aerials on the roof; and iron grilles on the ground-floor windows of houses and blocks outside the centre's
+  shop streets, more to the yard than to the street. Built in 400 m tiles as the camera nears.
+- **Street dogs** (`src/sarajevo/dogs.js`, `C.dogs`): 170, tan, black, brown and white, asleep on the pavements and in
+  the parks or trotting their stretch of lane in twos and threes; only the ones near the camera move.
+- **Events** (`src/sarajevo/events.js`), with captions: 28 June 1914 (the motorcade on the Appel Quay, the bomb at the
+  Ćumurija bridge, the wrong turn at the Latin Bridge and Princip outside Schiller's), the 1984 Olympics opening at
+  Koševo (twelve thousand in the stands doing the wave, the teams' parade behind their boards and flags, the
+  Olympic flag raised, the torch run round the track and up the stair to the cauldron, doves and fireworks), a bob
+  down the track, the night of 25 August 1992 when the National Library burned (the city blacked out,
+  ash falling, every window, lamp and the Eternal Flame out; told without anyone shown hurt), a Ramadan iftar cannon at sunset, the pigeons of Baščaršija, and a
+  ride up Trebević.
+
+**Lake Atitlán** (`atitlan.html`, `src/atitlan/`, `data/cities/atitlan.json`). The whole lake in the Guatemalan
+highlands, about 18 by 12 km of water, from OpenStreetMap (the Geofabrik extract; 26,278 buildings) on its real ground
+at 30 m. The datum is the lake (1556 m: `terrain.datum`, since the land falls away south to the Pacific), and the
+builder's new `terrain.lakeBed` cuts the ground inside the named water down from the shore at a slope, so the lake has
+a bed and a shore.
+- **Towns**: Panajachel, Sololá, Santiago Atitlán, San Pedro, San Juan, San Pablo, San Marcos, Tzununá, Jaibalito, Santa
+  Cruz, the Palopós, San Lucas, San Andrés, San Jorge and Santa Clara, each a district, an infill zone and a casas zone
+  (Antigua's `infill.js`, `casas.js` and `fincas.js`, imported). Painted block in turquoise, pink, lime and yellow, half
+  under lámina (`lamina.webp`), half flat and waiting for a floor: `obragris.js` puts rebar, tinacos and washing lines
+  on the flat roofs. Window bars from Sarajevo's `blocks.js` (grilles only); the street dogs from its `dogs.js`.
+- **Santa Catarina Palopó** (`painted.js`): its houses painted in four huipil patterns drawn on canvases.
+- **Landmarks**: ten colonial churches on Antigua's `iglesia`, each turned to its mapped face (San Andrés's a ruin),
+  Sololá's Torre Centroamericana (`landmarks.js`), and cards for the volcanoes, the Cerro de Oro, the Rostro Maya,
+  Maximón and Calle Santander. The docks are the map's own piers.
+- **The land** (`cover.js`): the map leaves the caldera walls bare, so the ground is repainted from height, slope and
+  noise as pine-oak forest, milpa plots, coffee, cliff, scrub and Atitlán's bare cone, and pines and broadleaves are
+  planted a tile at a time near the camera. Past the map, `atitlan-far.json` (100 km at 500 m) through Sarajevo's
+  `backdrop.js`.
+- **The lake** (`lake.js`): lanchas in five liveries on eleven routes found through the water between the docks, with
+  wakes and a dwell at each dock; cayucos; tul reeds in the shallows; the drowned trees and roofs of the shore the
+  lake has risen over since 2009 (the trees stand on the bed, however deep it is there); the Xocomil's whitecaps.
+- **Under the water** (`underwater.js`, `underwater` in the config): below the surface the fog is the lake's own, green
+  and about 30 m to where it is whole (the lake has been murkier since the 2009 blooms), dimmer with depth, the surface
+  seen from below; the view "Under the drowned shore" is among Panajachel's dead trees. **Drain the lake** (a button;
+  `#drain` in the address) takes the water and what floats on it away and draws the bed by depth, with a contour every
+  10 m and a white one every 50. The bed is the 2014 echo-sounder survey (Dryad, doi:10.5061/dryad.f7m0cfz0x; an
+  ArcInfo grid of 60.8 m cells in GTM, read without GDAL by `tools/grid-aig.py` into `data/bathy/atitlan-bed.json`,
+  60 m), 320 m at the deepest; the first metres off the shore, which it does not reach, keep the old cut (`scale`,
+  easing from a metre at the shore). Under the water `cover.js` paints sand, silt and rock, not fields.
+- **Samabaj** (`samabaj.js`, a landmark with a card; the view "Samabaj, under the lake"): the Late Preclassic island
+  town found by Roberto Samayoa in 1996. The island is two `knolls` in the bed (477 by 340 m, its top 13.5 to 21 m down,
+  a 39 m channel cutting off a small island to the north, 80 m of water toward the shore); on it, from the dive
+  surveys, Grupo 3's long platform of two levels, Grupo Estela's terrace with the basalt column, its altar and the
+  stelae, the arc of Estela Sisa, Grupo Roca built round its rock, Grupo 2's eight houses and the smaller groups, and
+  three jetties at the old shore 28 m down. The published coordinates fall in mid-lake; it stands on the island the
+  survey shows off the Cerro de Oro's north shore (its top about 20 m down in the 60 m cells), which the knolls
+  sharpen (one place in `atitlan.json`).
+- **The water** (`waves.js`): the engine's water given travelling waves in world space, steeper in the Xocomil and
+  each fading as it nears a pixel's footprint (no lattice far out): nine of them, each 0.66 the length of the last, on
+  bearings a golden angle apart, so no two line up. The volcanoes and towns stand in it (`waves.reflect`, a true
+  mirror), green over the shallows (`waves.shallow`), the sun a tight glitter (`waves.glint`), the lake a deep
+  blue-teal; and surf running in along the shore. Boats' wakes open behind them at the Kelvin angle. On it (`lake.js`) the launches, lanchas tied up at every dock, and kayaks.
+- **The walls** (`walls.js`): the darker zócalo band along the foot of the walls, and upper floors left in bare grey
+  block. The map's heights now come from the config (`defaultHeights`): a house is 5.5 m, not the builder's 9.
+- **La Iguana Perdida** (`landmarks.js`, `iguana`): the hostel by Santa Cruz's dock, not in the map: stone terraces
+  to a jetty and dive platform, the thatched dining palapa, the old house with hammocks, the A-frame dorm, the newer
+  rooms, the sauna, ATI Divers' hut and its board. It turns itself to the water and takes the slope's levels.
+- **Events** (`events.js`): mist at dawn, a ride on a lancha from Panajachel to Santiago, the Xocomil coming up, a
+  procession over alfombras in Santiago, cohetes over the patron saints' churches, and sunset behind San Pedro.
+
+**Crater Lake** (`crater.html`, `src/crater/`, `data/cities/crater.json`). Crater Lake National Park, Oregon, from
+OpenStreetMap on its real ground at 30 m: the caldera Mount Mazama left about 7,700 years ago, the lake at 1883 m (the
+datum), its bed the USGS's 2000 multibeam survey (`data/bathy/crater-bed.json`: `tools/grid-xyz.py` averages the 2 m
+survey to 20 m, and `terrain.lakeBed`'s `grid` lays it under the water, 594 m at the deepest), Wizard Island and the Phantom Ship (the lake's inner rings), the rim
+from the Watchman to Mount Scott, and Rim Village, Munson Valley and Mazama Village. The mapped forest, the park's boundary
+and the mapped rock are left undrawn (`dropAreas`, a new engine option: a list of area kinds) because `ground.js` paints the
+ground itself.
+- **The ground** (`ground.js`): the caldera's inner walls as cliff in grey, tan and rust bands and talus, with hemlock
+  where they ease; the outer slopes as hemlock and red-fir forest with meadows and pumice flats; whitebark pine on the
+  rim; the summer's snow on the high north faces; tints for Wizard Island's cinders, Pumice Castle and Llao Rock;
+  clearings at the villages, and no trees on roads or buildings. `api.ctx.ground.winter(k)` turns the ground and the far
+  backdrop to snow.
+- **The lake**: Atitlán's `lake.js` (with config liveries) runs the tour boats from Cleetwood Cove to Wizard Island
+  and by the Phantom Ship, and the research launch; `oldman.js` the Old Man of the Lake (a bleached, splintered stump
+  with its wet band, leaning, drifting with a ring of calm water round it).
+- **The water**: Atitlán's `waves.js` with two new options. `waves.reflect` is a true mirror: a camera reflected in
+  the lake's plane renders the large meshes (ground, backdrop, buildings, sky; not the instanced trees) at 0.4 of the
+  screen every second frame, and the water takes it by the Fresnel term, rippled by the waves, so the caldera's walls
+  and Wizard Island stand in the lake. `waves.shallow` tints the water toward turquoise where a depth map of the bed
+  says it is a few metres deep. The lake itself is the deep cobalt (`lakeColour` `#0b2a78`). About 58-61 fps.
+- **Landmarks** (`landmarks.js`): Crater Lake Lodge (stone, bark shingle, a roof of dormers, the lake terrace), the
+  Sinnott Memorial set into the wall, the Watchman's and Mount Scott's fire lookouts, the Phantom Ship's spires; cards
+  for Wizard Island, Llao Rock, Cleetwood Cove, Pumice Castle, Hillman Peak, Devils Backbone, Discovery Point, Sun Notch
+  and Mazama. Past the map, `crater-far.json` (150 km at 600 m) through Sarajevo's `backdrop.js`.
+- **Under the water** (Atitlán's `underwater.js`, `underwater` in the config): take the camera below the surface (Q lowers
+  it to the bed) and the fog becomes the water's, deep blue and clear to 180 m, darker with depth; the surface is seen
+  from below and the sky goes. Views: Merriam Cone (152 m down) and Wizard Island's flank. **Drain the lake** (a
+  button; `#drain` in the address) takes the water, the boats and the Old Man away and draws the survey's bed by depth,
+  a contour every 20 m and a white one every 100, from a view across the basin: Wizard Island's platform, Merriam
+  Cone, the central platform, the slides off the walls. Sarajevo's `backdrop.js` now sinks under the map's deepest
+  ground, not a fixed 250 m, or it covered the floor.
+- **Events** (`events.js`): the boat tour, the Old Man, Mount Mazama (the ghost of the mountain, the eruption and the
+  collapse, with the Klamath account of Llao and Skell), winter, sunset from the Watchman, the night sky.
+
+**Chernobyl** (`chernobyl.html`, `src/chernobyl/`, `data/cities/chernobyl.json`). The Chernobyl Exclusion Zone in
+northern Ukraine from OpenStreetMap on its real ground at 20 m, 18 by 19 km: the power plant, Pripyat, the cooling pond,
+the Red Forest, Duga and Chernobyl-2, and the town of Chernobyl. The datum is the Pripyat river (103 m). Polesia is flat,
+so `terrain.filter.open` is 320 m: the elevation tiles carry the plant's halls, the arch and Duga's arrays as hills, and
+the wide opening takes them out. No traffic, no people, no parked cars (`focus` `parked: false`), no street furniture,
+no trains (`commuterLines: 0`, which the engine now reads as none rather than the default 8).
+- **The map builder** (`tools/build-osm-city.py`): an outline whose `building:part`s cover less than half of it keeps
+  its outline as well as its parts. Pripyat's nine-storey blocks map only the lift tower over the roof as a part, and
+  the blocks had been reduced to their towers. Other cities' data is unchanged until it is rebuilt.
+- **The Zone** (`zone.js`): the ground repainted as Scots pine forest, old kolkhoz fields gone to grass and birch, sedge
+  marsh by the water and the odd sand; gravel on the plant's yards (`bare`); tints for the Red Forest and the drained
+  cooling pond's bed. Near the camera it plants pine on the forest ground the map has not drawn as wood, birch and
+  aspen on the old fields, and in the towns (`towns`: Pripyat, Chernobyl-2, Chernobyl, Kopachi) birch, poplar, maple and
+  young pine in every yard and through the small streets, but not on the main roads or in the buildings.
+- **Blocks and dogs**: Sarajevo's `blocks.js` (loggias, stair cores and roof boxes on Pripyat's panel blocks) and
+  `dogs.js` (the Zone's strays round the plant and in Pripyat).
+- **Landmarks** (`landmarks.js`): the New Safe Confinement (257 m across, 108 m high, 162 m long, its banded cladding,
+  end walls and rails; `clearArea` takes away the mapped arch and the ventilation stack, still mapped at 125 m though
+  it was taken down in 2013); the main building of units 1 to 3, which the map has as a few flat boxes, laid out from
+  its mapped footprints in RBMK proportions (`plant`): the turbine hall, some 770 m long and 31 m high, glazed in two
+  bands between pilasters, with a roof lantern; the 47 m deaerator bays behind it; the reactor blocks at 44 m with their
+  windowless, panel-ribbed reactor halls to 71 m and stair towers; block B between units 1 and 2; the plinth on unit 3
+  where the stack stood; the transformers in walled bays along the south wall; and the chimney north of block B, at its
+  mapped 50 m. Then the two unfinished cooling towers of units 5 and 6 (hyperboloid shells stopped part-way,
+  on their raking legs, with scaffold), the Ferris wheel with its yellow gondolas, Duga's two arrays (masts, dipole wall
+  and wire screen, 150 m and 90 m), the Soviet arms on the sixteen-storey blocks, and the Wormwood Star's trumpeting
+  angel. Cards for the Palace of Culture Energetik, the Polissya, the Azure pool, the Avanhard stadium, Jupiter,
+  Hospital 126, the Bridge of Death, the Red Forest, Kopachi's kindergarten, the cooling pond and Chernobyl town.
+- **Unit 4 as it was** (`unit4.js`; the **Unit 4** button cycles it, `#unit4=before|explosion|shelter|cutaway`):
+  unit 4 whole on the night before, beside unit 3, with block V and the ventilation stack VT-2 (150 m, its lattice
+  banded red and white; taken down in 2013); the morning after (the reactor hall roofless and broken, the north side
+  fallen into a slope of rubble, the upper shield on edge in the shaft, graphite over the roofs and the ground, the
+  core's glow and the roof fires); the Shelter, 1986 to 2016 (the stepped cascade wall on the north, the buttressed
+  west wall, the two great beams and the roof of 27 pipes on them, the panels sloping south, built as parts an event
+  raises in turn); and cut away to show the RBMK-1000 inside a ghost of the building, labelled: the graphite stack,
+  the control rods with their graphite displacers, the lower shield and "Elena", the steam-water lines, the four drum
+  separators, the eight main circulation pumps, the reactor hall floor and the refuelling machine. The water and
+  steam in the channels, the rods and Elena move (`api.ctx.unit4.reactor`). The arch's `clearArea` takes the map's
+  buildings under it (from 10 m), which showed through the 1986 unit.
+- **The cooling towers** are hyperbolic shells, thinning as they rise, on a ring beam and a zigzag of diagonal
+  columns over their basins, the lifts in bands of grey, stained under the rim, rusted rebar out of the unfinished
+  edge; on unit 5's tower the climbing formwork, its decks, the panels of the next lift and a jib crane.
+- **1986** (a button; `#year=1986`): the page reloads as Pripyat was on the morning of 26 April, through the
+  engine's new `ctx.configure` hook (a page adjusts its config before anything is built): its people, traffic and
+  parked cars back, no overgrowth, the map's woods inside the town dropped (the engine's new `dropAreasIn`: kinds of
+  mapped area left out inside circles), the Red Forest green and the cooling pond full, unit 4 whole.
+- **Radiation** (`radiation.js`, a button; `#radiation`): the ground painted by dose rate today (green under 0.3
+  µSv/h to purple over 30, a dark line at each step), the 10 km zone's ring, the Leliv and Pripyat checkpoints,
+  and a dosimeter reading the ground at the middle of the screen. The dose is a background and Gaussian sources
+  (`radiation.sources`: the plant site, the Red Forest, the plume's western and northern traces, Pripyat, the basement
+  of hospital MSCh-126, Kopachi, the drained cooling pond): an approximation from published maps, not a survey.
+- **Sound** (`sound.js`, a button; `#sound` turns it on at the first click), all synthesised: the wind, louder
+  higher up; a Geiger counter clicking at random at a rate set by the dose where you are looking; the blasts (heard
+  late by their distance), the rumble before them and the helicopters' rotors.
+- **Smaller things** (`details.js`): the plant's inlet and outlet channels stand some 8 m over the river, as the
+  cooling pond does, and the engine had drawn their water under their ground, so each gets its own surface; the giant
+  catfish turning under it by the plant; Kopachi's houses as the grassed mounds they were buried under in 1986, each
+  with its trefoil sign, round the kindergarten that was left standing.
+- **Events** (`events.js`, `crews.js`), told without anyone shown hurt:
+  - the night of 26 April 1986: unit 4 whole; the surge shaking the ground, then two blasts, each a flash over the
+    screen and the plant, a shock ring and dust along the ground, a fireball rising into smoke, burning graphite and
+    roof slabs thrown out to land on the roofs and the ground and smoulder there, the reactor's lid thrown up and
+    turning before it drops back; then the firefighters: Pravik's crew from the plant's station and Kibenok's from
+    Pripyat's (`fireStation`, `pripyatFire`), driving by the mapped roads (`crews.js` routes them), a ladder raised to
+    the turbine hall's roof and the outside stairs up block V, the men with their hoses on the roofs and the water on
+    the fires until they go out; the core's blue glow and the smoke drifting north-west;
+  - the evacuation on 27 April (a column of buses down Lenin Avenue, `route`);
+  - the liquidators: Mi-8s circling over the core and dropping their loads into it, the men in lead aprons throwing
+    graphite off block V's roof, the Red Forest rust-red (`zone.redForest`, `api.ctx.zone.red`);
+  - the Shelter going up, June to November 1986: the walls rising, the beams and the roof lowered by a crane;
+  - the arch sliding 327 m over the reactor in November 2016; the Zone without people (Przewalski's horses, wolves);
+    Duga, the Russian Woodpecker;
+  - inside the RBMK: the cutaway, how the reactor works and how it failed, then the accident played in it (the
+    coast-down, AZ-5, the rods going in, the steam spreading, the power running away, Elena lifted) with a chart of
+    its power.
+
+  `#event=<name>` fires one; each running event's clock is in the details (`events.t`); `evt=<seconds>` fast-forwards
+  the night, the liquidators, the Shelter and the RBMK for tools/probe.py, whose frames are slow.
+
 **Fort Worth** (`fortworth.html`, `src/fortworth/`, `data/cities/fortworth.json`). Where the West begins: downtown and
 Sundance Square on the bluff over the Trinity, the Stockyards to the north, the Cultural District's museums to the west,
 the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their mapped heights and with their parts
@@ -451,6 +672,19 @@ the Near Southside and TCU. 11 by 11 km, 53,000 buildings, the towers at their m
   back to what it was when the effect ends; the sky dome greys with it, the sun dims, and the colour follows the hour.
   The storms of Fort Worth (rain, about 4 km visibility), Olympic and Yachats, Yachats' marine layer and Edinburgh's haar
   (750 m) are on it. Before, each multiplied the fog's density every frame and never restored it: a whiteout that stayed.
+- **Dynamic weather** (2026-10-28, `src/core/weather.js`, every real place: Antigua, Atitlán, Chicago, Crater Lake,
+  Edinburgh, Fort Worth, Kowloon, New York, Olympic, Portland, Rome, Sarajevo, Tokyo, Venice, Yachats, Yellowstone).
+  A city with a `weather` block gets it; the engine runs it after the page's extras (`06f-extras.js`). Ten states
+  (clear, fair, haze, overcast, drizzle, rain, thunderstorm, fog, mist, snow) are sets of numbers eased between; the
+  `climate` (maritime, continental, subtropical, monsoon, mediterranean, lagoon, basin, highland, alpine; `weights`
+  overrides) says which come and how often, `cloudH` sets the cloud base on the map's heights, `labels` gives local
+  names (Edinburgh's haar, Venice's nebbia, Sarajevo's inversion). The air goes through `api.fogEffect()`; the cloud is
+  one instanced deck of billboards wrapped round the camera (in the water's mirror too); rain and snow fall in a box
+  round the camera, none above the cloud; a thunderstorm puts bolts down a few km off and flickers the light; the wind
+  (`api.ctx.weather.wind`) drives `waves.js` and `lake.js`, and the rain rings the near water. A page opens clear and
+  first changes after 90 s, then every 4 to 10 minutes; the **Weather** button sets a state and holds it, or lets it
+  change on its own; `weather=<state>` in the address holds one. Nothing is in the fingerprint. Snow lies where the
+  ground knows how (Crater Lake's `ground.winter`). Chicago and Portland run at about 20 fps with or without it.
 - **Views**: downtown from the Trinity (the default), Sundance Square, Main Street to the courthouse, the courthouse,
   the Water Gardens, the skyline, Exchange Avenue, the Stockyards, the Kimbell, the Modern, the Cultural District, the
   Will Rogers Center, the Near Southside, TCU, and the whole city.
@@ -1710,20 +1944,209 @@ wireframe and menagerie menu every other page has.
 - **The sections are generated, not typed.** `SECT.lens` and `SECT.slabS` take a resolution and produce the
   profile, because a hand-listed one is only as smooth as the patience of whoever typed it — the original
   had three points across the whole top of a saucer, which is where the plateau came from.
-- **Galaxy class.** Cut to the published figures: 642.5 m long, 463.7 m across the saucer, 195.3 m from the
-  top of the bridge to the bottom of the engineering hull over 42 decks, and nacelles 248 m long, 57 m wide
-  and 32 m tall at their widest against 38 by 19 at the collector end (Rick Sternbach's blueprints). Three
-  of those corrected the model. The nacelles were 40 m too short, and because their caps have to land on
-  the stern, getting the length right pushes their collector ends *under* the saucer's aft quarter — which
-  is why the class looks so compact from above. A nacelle is wider than it is tall, 57 by 32, not the
-  upright tube it had been. And the engineering hull was 10 m too deep, so the ship stood taller than 195.
-  The saucer is a figure of revolution 464 m across, cut off square at x = -197 where the impulse engines
-  are: a disc reads as a flying saucer, this reads as a hull. Its rim carries **two** rows of windows with a
-  recessed sensor groove between them — the upper is deck 9, which is Ten Forward and unusually tall, and
-  the lower is deck 10. Three even rows, which is what was there before, is a Constitution refit's rim. The
-  engineering hull carries a blunt nose around the deflector, a dorsal spine running aft from the foot of
-  the neck with the upper shuttlebay let into it, three rows of windows and two strakes down each flank —
-  without those it is a featureless white egg, which is what it was.
+- **Galaxy class (rebuilt to measurements, 2026-10-30).** The first Galaxy was cut to the published figures
+  alone; this one is cut to numbers read off published orthographic drawings (a plan, a front view, the Fact
+  Files' five views, cross-checked against photographs of the six-foot studio model) by measuring their
+  silhouettes pixel by pixel. The drawings are not shipped: `src/enterprise/dims.js` holds only the numbers.
+  Three things the published figures alone get wrong: the saucer is an **ellipse**, 384 m long and 464
+  across, that pulls in to a tail over the impulse deck, not a circle cut off square; the engineering hull
+  starts under the middle of the saucer's after half and its nose **leans back about thirty degrees**, with
+  the deflector set into it looking forward and down; and the ship is **141 m** tall, not 195 — every drawing
+  and the studio model agree on it, so the drawings win.
+  - **Every part is a surface function** of (u, v) (`hull.js`): the saucer's top and underside in polar form
+    over its plan, its rim, and lofts of smoothed station tables for the engineering hull, the neck (levels
+    of a stadium whose leading edge leans forward as it rises), the nacelles (a superellipse, wider than
+    tall) and the pylons (a NACA section swept along the U of the front view). The tables are joined with a
+    monotone cubic, never straight lines: a loft through straight segments shows every station as a crease.
+  - **The textures are painted from the same functions** (`skin.js`), texel by texel, so the patterns are in
+    metres on the hull: the aztec plates (two or three close greys, each plate split into an L), panel lines
+    as a bump map, roughness, and the windows — on the saucer where each flat deck meets the sloping dish,
+    which gives rings that crowd where the dish is steep and stop where it is flat, as on the ship. Each part
+    has a colour canvas (so the registry is set with `fillText`) and a data texture: red height, green
+    roughness, blue lit windows, the emissive map patched to read blue only.
+    The canvas is the plan seen from below, so the top's registry is set mirrored to read right from above.
+  - **Light.** Physically based materials, the star casting shadows (a 4096 map over the ship), an
+    environment map of the planet's glow, and ACES tone mapping on the hull only: the backdrop is taken out
+    of it so it keeps the colours it has on Voyager's and DS9's pages. The bussards, grilles, deflector and
+    impulse engines are their own surfaces lifted a fraction off the hull, with sprite glows.
+  - **What looked wrong on the way:** a ray from the saucer's centre straight ahead never left the plan
+    (a zero half-width counted as inside), which put a 70 m needle on the bow; the dorsal plate's steep
+    sides read as a sunken rectangle until they were eased over 15 m; and with the panel lines at the
+    strength the drawings show them, the hull looked like brickwork — from a kilometre the aztec should be
+    a mottle, and close in a faint pattern.
+  - **Second pass on the details.** The bridge was a bump in the dish's height field, which shaded as a
+    smudge; it is now a module of its own (`bridgeSurf`): an egg in plan, longer aft where the observation
+    lounge is, a wall of windows round it and a low dome over, standing on the plate, with the two small
+    domes either side. The measured trailing edge had steps in it (the drawing's thrusters and hatches
+    standing proud) that the rim lofted through as corners: it is now a smooth curve through those points,
+    and the thrusters are blocks of their own on the rim. The underside's profile had a knee where the
+    dish meets the outer shelf; the neck now flares into the engineering hull as it does into the saucer,
+    instead of meeting it at a hard line; and the pylons thicken at both ends and run out forward along the
+    nacelle's underside as a fairing.
+  - **Markings, from photographs of a painted model** (Diamond Select's Starship Legends Enterprise-D, in a
+    review on figurefanzero.com): the phaser strips are dark grey and scored across, not copper; the escape
+    pods are tan hatches in twos to fours in rings across the dish; the registry is dark grey edged in red in a
+    wide face, with the name over it in red; a red pinstripe edged in white runs down the neck's back and the
+    engineering hull's spine, and along each nacelle's top behind a gold delta.
+  - **Third pass: more details.** The engineering hull ends in a flat transom with the main shuttlebay's door in
+    it, ribbed and lit round its frame; shuttlebays 2 and 3 are a pair of doors in the neck's back under the
+    impulse deck; the forward torpedo launcher is at the foot of the neck over the deflector and the aft one over
+    the main bay; the ventral phaser strip runs across the engineering hull's belly; the captain's yacht is a
+    seamed oval with its own windows under the saucer; and the neck has a top, seen when the saucer is away.
+  - **Flying it** (`flight.js`, the **Fly** button, or `#fly`). The page is a turntable round one object, so
+    the ship (`ROOT`) flies through a world split three ways: the sky (stars and far nebulae, at infinity, so
+    they ride with the camera and only turn; one sky for the whole chart), the place you are at with the target
+    rock, which stay put, and the effects. Past 20 km out everything is moved back by the ship's position, so a
+    long flight never meets a float's precision. Leaving the helm puts the ship back at the origin, level, by
+    moving and turning the world round it the other way, so every turntable view works again from where you are.
+    **How it handles**, for a ship of four million tonnes: turn rates build up and die away at a limited angular
+    acceleration (and turn harder with way on), with the reaction thrusters round the saucer's rim puffing while
+    they do; speed is a throttle you hold W or S on, the impulse engines pushing at about 26 g and their glow
+    answering the push, not the speed; the velocity does not swing round with the nose, and what is left sideways
+    after a turn is bled off by the dampers over a second or two, so a hard turn at speed slides; the ship
+    (a `BANK` group between `ROOT` and `G`) leans into a turn by itself and, left alone, rolls back level with the
+    galactic plane; the chase camera is pressed back under acceleration, thrown back as warp catches, and widens
+    its view with speed. Planets, stars and rocks are solid (the ship holds off them), and O near one puts the
+    ship in a standard orbit round it at the height it is at. Warp is the Cochrane scale (light speed times the
+    factor to the ten-thirds: warp 6 is 392 c) with time at warp run 20,000 times fast, said in the readout; a
+    thin field of dust shows the speed at impulse, and streaks at warp. On a touch screen a pad stands in for the
+    keys.
+  - **Places and courses** (`places.js`, `nav.js`, the **Course** button or C). Eight places (fourteen since the fifth pass) on a star chart
+    in light-years: home, a ringed gas giant with two moons, an ice world under a red dwarf, a comet near its sun
+    (its ion and dust tails streaming away from the sun in a shader), a binary star (an orange giant with a
+    boiling, limb-darkened surface being stripped by a hot blue companion, the gas curling into a disc round it),
+    an asteroid belt (instanced rock, metres to kilometres across), the inside of an emission nebula round a
+    young cluster, and a black hole (the shadow, a disc hotter inwards and brighter on the side coming towards
+    you, the far side of the disc bent up over the top and down under the bottom, and the photon ring: a picture
+    of what a ray tracer shows, not a ray tracer). Planets and nebulae come from the page's own sky builder
+    (`buildSky`, exported from `src/starship/page.js` for this); each place has its own light. The ship has a
+    position on the chart and moves across it along its heading at warp, so the bearings are real: setting a
+    course turns the ship onto the place's bearing at the helm's own rate, goes to warp at the chosen factor
+    when lined up, steers back to the bearing whenever you let go, and drops out on arrival, with the place
+    drawn ahead of you. Dropping out anywhere else puts you where you are: at a place within a third of a
+    light-year, or in interstellar space. For tests: `#at=giant` starts there, `#course=hole&warpf=9` sets a
+    course, `#keys=a,w` holds keys down.
+  - **Fourth pass: more to it.** V at the helm changes the camera: chase, a **flyby** (a fixed point ahead of the
+    ship and off to one side, which it sweeps past; then a new one) and the **bridge** (on top of the bridge dome,
+    looking ahead over the saucer, banking with the ship). The home world, the gas giant and the ice world have
+    **atmospheres** (`atmosphere` in `places.js`): a haze over the limb and a glow standing off it, lit on the day
+    side only and reddening at the terminator. Where no star is drawn, the **sun** is: a disc, its glare and a
+    thin horizontal streak, drawn at the sky's distance with depth so the ship and the planets pass in front of it.
+    The **engines** have a sound (a rumble rising with the throttle and swelling while they push, a deep beating
+    hum at warp; M mutes everything). G at the helm, or the **Tractor beam** event, pulls the target rock in from
+    up to ten kilometres and holds it under the ship. **Hostile contact** (`hostile.js`): a raider of this
+    project's own design (an arrowhead with flat swept wings, its engine pods riding on the tips, a fin under it)
+    drops out of warp, the ship goes to red alert, and it circles at two or three kilometres firing every few
+    seconds. Hits wear the shields down (they come back slowly, and fail at nothing) or, with them down, the hull.
+    Phasers track it and torpedoes home on it, taking its shields first and then its hull; badly hurt it may break
+    off and go to warp, or it is destroyed. For tests, `#foecam=az,el,d` points the turntable at it.
+  - **Fifth pass: everything else.** **Planets** are drawn in a shader now (`planets.js`): the surface is worked
+    out per pixel from 3D simplex noise on the sphere (Gustavson and McEwan's, MIT), so it holds up from a thousand
+    kilometres to a few. Terran worlds have seas graded by depth with the sun's glint on them, land from shore to
+    forest to desert to rock, snow on peaks and caps, city lights on the night side and a cloud deck warped into
+    weather; ice worlds are cracked into floes; gas giants have sheared bands and a great storm; moons have maria
+    and rayed craters; lava worlds glow through their cracks. Rings have ringlets, gaps and the planet's shadow.
+    **Six more places** (`exotic.js`, fourteen in all): a pulsar (its beams sweep round, and it flares when one
+    crosses you), a lava world beside a huge sun, a ringed water world, a young star in its dust disc (gaps where
+    planets are forming, one glowing, and jets), a planetary nebula round a white dwarf, and a rogue planet with no
+    sun, lit only by its aurora. **Full impulse is 20 km/s** (the throttle is squared on the way, so a third of it is
+    the old 2.5 km/s; the push grows with the gap to the speed asked for; the handling is reckoned from 2.5 km/s, so
+    turning is unchanged). **Other ships** (`factions.js`, all this project's own designs and peoples, not any
+    from a film or series): a Varr cruiser (a warrior people's: a stepped bronze wedge with drooping blade wings) that
+    decloaks close in, circles tight and fires in pairs and never runs; a Lattice ship (a hive's: a dark crusted
+    core inside two cages of violet struts, 1.1 km across) that is slow and heavy-hitting, drags at the ship with a
+    tractor and adapts to whichever weapon it takes most of, so the way to beat it is to change weapons; a Sere
+    survey ship (a quiet, exact people's) that keeps station alongside and fires on whatever is attacking you; a
+    trader convoy that crosses the bow; and a derelict, tumbling. **Battle** is now three waves: two raiders, then
+    two and a Varr cruiser, then a Lattice ship. At home there is a **starbase** (now `starbases.js`, this project's own
+    design: a spindle, a habitat ring on four spokes, a lit docking arm, small craft looping round it): K, or
+    **Dock at the starbase**, hands the helm to approach control, which flies a curve out beyond the arm's end and
+    in along it to the clamps (any touch on the helm cancels; K again casts off). With the shields down, hull hits
+    can **breach** it: air vents from the hole as a plume of crystals over a flickering fire. **Abandon ship** (the
+    escape pods out of their hatches on the saucer), **Self-destruct** (ten seconds, cancelled by pressing again;
+    then a flash, a shock ring across the ship's plane, wreckage, and the ship again), a **torpedo spread**
+    (Shift+T), and a **Grand tour** (every place in turn, the flyby camera at each).
+  - **Sixth pass: finding your way, and company.** **Numbered starbases** (`starbases.js`): Starbase 1 is the yard
+    the page opens beside; Starbase 2 is in a high orbit over the home world, 12 over the gas giant inside its rings,
+    23 over the ice world, 47 over the water world, 74 off the lava world and 9 in the asteroid belt (`STATIONS`:
+    each over a planet, on the side you arrive from, so the planet is behind it as you come in). The same design
+    each time, some with a second ring. **Docking works at all of them**: K, from the turntable or the helm, docks
+    at the nearest one in the place you are at, and from far off the ship flies there first. The **impulse
+    autopilot** (`W.goto` in `cartography.js`) runs up to full impulse and brakes on a steady deceleration it can
+    actually hold (asked to slow in proportion to the distance instead, it came in at 8 km/s with half a kilometre
+    to go), then hands over to approach control, or puts the ship in orbit over a planet. **Markers** round each
+    starbase on screen, with its name and range, and an arrow at the screen's edge when it is off it; L cycles
+    them (the starbases, everything, none), and a marker is a button that takes you there. **Stellar cartography**
+    (P, or the **Cartography** button): a sector chart in light-years (the starbases at each place, rings of range
+    round the ship with the time to them at the warp factor set, labels placed clear of one another) and a system
+    chart of the place you are at from above, to scale (planets, moons, starbases, ships, you, the autopilot's
+    line; scroll to zoom in round the ship). Click anything on either to read about it and go there: a course to a
+    place, docking at a starbase, orbit over a planet, alongside a ship. **Federation traffic** (`traffic.js`, four
+    classes of this project's own design, folded to a few meshes each and cloned: the Kestrel frigate, the
+    Meridian cruiser, the Tamar science vessel, the Halyard transport, all with made-up names and registries):
+    ships patrol round the starbases, lie docked at them, orbit the planets, survey the stranger places, and pass
+    through at impulse and go to warp, coming back later somewhere else. Click one for its card. **F** takes the
+    helm from the turntable. For tests: `#ev=dock`, `#ev=carto`, `#ev=system`, `#ev=marks`, and `#dbg` reports the
+    autopilot, the markers and the traffic.
+  - **Seventh pass: a ship to captain.** **Orders** (`orders.js`, J or the **Orders** button): Starfleet sends missions
+    in turn (a rescue, a survey, an escort, raiders to drive off, a delivery, the far side of the wormhole), each a few
+    steps with a button for the obvious next move, the step's target always marked on screen, and each step ticked off
+    by what the other modules report happening (a small event bus, `W.on`/`W.emit` in `ship.js`). A rescue finds the
+    stricken ship drifting dark and venting, and raiders may follow her distress call; the survivors go to a starbase,
+    whose crews repair the ship while she is docked. A finished mission is a commendation, kept in the browser. The
+    **captain's log** keeps itself by stardate (arrivals, docking, fights, rescues, scans, the wormhole). **Sensors**
+    (`sensors.js`, N, or Scan on a chart's card): a pulse goes out from the ship and the readout comes up: a world's
+    class, gravity, air and life signs, a starbase's stores, a ship's crew, a hostile's real shields and hull (made-up
+    readings, but the same every time, from a hash of the name). **Comms** (`comms.js`, H): Starfleet Command, the
+    starbases here and every ship in range, each answering in its own voice; ask a Federation ship to form up and it
+    becomes an **escort** (up to three: in formation off the quarters, through warp and the wormhole, firing on whatever
+    you fight); a hostile with its hull failing may give up if you demand it. The **transporter** (`transporter.js`, B):
+    a crew off a wreck, an away team down from standard orbit and back (they report what they found), or a courtesy
+    party across; each end is a column of sparkling light with its shimmer of sound. **The wormhole** (`wormhole.js`):
+    a stable one with a mouth 3.9 light-years from home and the other out past the nebula; the mouth is a sphere
+    showing the far side's light wound round the throat, a bright ring at its rim and dust spiralling in, and flying
+    into it brings you out of the other at once, at speed; the far side has an uncharted world. The **director**
+    camera (V, the fourth): it cuts by itself between pacing alongside, low and looking up, a long lens from astern, a
+    slow swing round, and over her shoulder at a hostile or a starbase. And the interface is **dressed as the ship's
+    displays** (`lcars.js`): bands of colour on black with rounded ends, panels framed by an elbow of colour, condensed
+    capitals, going to reds under red alert; this page's own CSS and palette, no font fetched, scoped to
+    `enterprise.html` alone. For tests: `#mission=rescue` (or survey, escort, defend, deliver, wormhole) accepts those
+    orders at once, `#ev=orders,comms,scan,sweep,beam,formup,wormhole,hailhq,accept,next`, and `#dbg` reports them.
+  - **Eighth pass: more of everything, and a fresh run each time.** Every visit is dealt its own run of orders (a seed
+    of its own, the kinds shuffled, each drawing its places, ships, cargo, ambushes and odds from it; `#mseed=` fixes it
+    for tests), from fourteen kinds: the six before, and a **patrol** of three places (raiders may be waiting at one), a
+    **first contact** with the **Ossari** (a people who grow their ships: pearl-white pods on a curved spine, sails of
+    faint light; hail them until they answer properly), **recovering a probe** (beam it aboard; something may have
+    followed its signal), an **evacuation** (orbit, a medical team down, the injured up, then a starbase), a **Kethri
+    swarm** (darts of forty metres in fives and sixes, fast and fragile), **hunting** a named Varr raider-captain, the
+    **ion storm**'s eye, and the **ancient ring**'s hub, which has woken up. Mission objects are put ahead of the ship
+    only once she has stopped coasting out of warp (she runs on about a hundred kilometres). Four new places
+    (`wilds.js` for two): **a colony world**, New Arden, with **Starbase 88** over it; **an ion storm**, violet murk and
+    lightning round a calm eye; **an ancient ring** seventy kilometres across, turning round a glowing hub you can orbit
+    and send a team into; and **a shattered world**, its core glowing through the cracks, its pieces strewn round it.
+    Two new Federation classes (the Corvid scout, the Anvil fleet tender). At the helm, **Z** raises and lowers the
+    shields, and a strip of quick controls down the right (`helm.js`: shields, red alert, phasers, torpedo, scan, hail,
+    energise, dock, lit while on); every panel has a Close of its own, and Escape closes them. For tests:
+    `#ev=swarm`, `#ev=ossari`, `#mission=patrol` (or contact, probe, evacuate, swarm, hunt, storm, relic).
+  - **Performance.** The hull's grids keep only the rows they need (`rows()` in `hull.js`): each part is sampled
+    on its old even grid, and a row is dropped wherever every sample between the rows kept either side lies within
+    2 cm of the straight line between them. The kept rows are still exact (u, v), so the textures land where they
+    did, and the saucer's top, rim and underside share their rows round the edge so it has no gaps. The ship went
+    from 490,000 triangles to 210,000 with no difference you can see from any distance. The **shadow map** is drawn
+    again only when it would come out different (something that casts a shadow in the light's box has moved, or the
+    light has; the light follows the ship, so flying straight changes nothing): it was a fifth of every frame, and
+    orbiting the camera never changes it. On the Adreno X1 at 2049 x 1023 a frame went from 11.6 ms to 6.9 ms
+    (9.4 ms while turning, when the shadow has to follow).
+  - **Events** (`events.js`, the **Events** button): warp (from the turntable the ship stretches, flashes
+    and is gone, and comes back a few seconds later), red alert (the windows go red and pulse, with a
+    klaxon), shields (an ellipsoid with a fresnel rim and a hexagonal weave, seen when raised and wherever it
+    is struck, with a ripple out from the hit), phasers (the emitters run along the saucer's strip, above or
+    below, to the point nearest the target and meet, then the beam), a photon torpedo from the forward
+    launcher that blows the rock apart (it comes back), incoming fire (on the shields if they are up, on the
+    hull with a scorch and a shake if not), saucer separation and docking, and a shuttle out of the main bay.
+    Every sound is synthesised by the page (WebAudio). For tests, `#ev=phasers,torpedo&evt=2&evfreeze=1.2`
+    runs events a second apart from two seconds in and freezes their clock 1.2 s after the first, and
+    `#dbg` puts the ship's and the effects' state in the probe's report.
 - **The drive sequence** is the only mechanism on any of these pages, and it is on the Intrepid. At cruise
   the pylons lie out and down and raked aft; for warp they come up level and swing forward, four seconds
   of travel eased hard at both ends, held either side. The geometry moving on its own does not read as a
@@ -1815,6 +2238,77 @@ vortex), the destroyer, the Minbari cruiser, Epsilon III below, far off. The sta
 dwarf, so the light on the hull is warm. The page also takes a closer
 minimum distance than the ships (`minD`) and moves its near plane out with the camera distance, so the
 panelling does not fight itself in the depth buffer from twenty kilometres off.
+
+### `/rama`: Rama
+
+Fan work, after Arthur C. Clarke's *Rendezvous with Rama* (1973). Nothing from any edition, cover, film design or
+game is used; every shape is this project's own geometry (`src/rama/`), built to the numbers the novel gives. It
+runs on the starship page (`src/starship/page.js`) as Babylon 5 does, with a logarithmic depth buffer (`logDepth`),
+because it is fifty kilometres long and you can stand on its floor. Its numbers are in `data/cities/rama.json`
+under `rama`; `src/rama/shape.js` turns them into the one profile and ground function everything else reads.
+
+**Fifty kilometres long and twenty across, turning once every four minutes,** lying along x with the north pole
+(the hub, the bow) at +x. Outside it is what the novel says it is: a dull grey cylinder, nearly featureless.
+
+- **The hull:** quiet plating, girth bands over the shores, three seams down the length. The north face carries the
+  hub and its three airlocks; the south face's bosses over the horns are this model's guess.
+- **Cutaway** opens the **cross-section**: a plane through the axis cuts away the near half, and since Rama is a
+  solid of revolution the cut face is the same profile whichever way it faces, so it is drawn once, hatched, and
+  turned with the plane. Labels name the hub, the bowls, the plains, the valleys, both cliffs, the Sea, New York
+  and the horns.
+- **Inside** (the panel lists eleven places): the Northern Plain with its six cities (London, Paris, Peking,
+  Tokyo, Rome, Moscow) in threes, its roads and Camp Alpha; the six Straight Valleys, which are the suns; the
+  Cylindrical Sea, with its 50 m northern and 500 m southern cliffs; New York, three identical sectors of towers;
+  the patchwork Southern Plain; the Northern Bowl's terraces and the stairways Alpha, Beta and Gamma; the Big Horn
+  and the six Little Horns on their flying buttresses. One walker covers all of it (`src/core/cylinder.js`): Q and E
+  or the wheel raise you, and high enough you float at the axis. Close to, the plains and New York's streets carry
+  a detail texture in their light map; the buildings have windowless Raman facades, the Sea ripples (or shows its
+  cracked ice), light stands up off each sun into the haze, and between scenes spiders range round Camp Alpha and
+  crabs work the Southern Plain. "Fly the axis" is a two-minute flight from the hub to the horns. At London's
+  northern edge stands the hall of holograms (`#inside=hall`): rows of pillars of light, each with an image of a
+  Raman thing turning in it, and at the end, on a dais, the uniform for a body with three arms and three legs.
+- **Events** plays the novel as twelve scenes with captions: the rendezvous and docking, the dark and the flares,
+  the Dawn, the thaw and the storm, the Dragonfly and the lightning, the crab biot and the jump, the wave, the
+  sharks taking a broken biot apart, the spiders and the one Laura Ernst dissects, the hall of holograms, the
+  Hermian missile, the departure. `#event=<id>` plays one (`rendezvous`, `dark`, `dawn`, `thaw`, `lightning`,
+  `crab`, `wave`, `sharks`, `spiders`, `london`, `missile`, `departure`; and `flyby`, a minute's flight round the
+  outside); `#inside=<place>` and `#cutaway` open there.
+- **Sound** (`src/rama/sound.js`), all synthesised: silence outside, in vacuum; inside, wind that rises with the
+  storm, thunder at the horns, the Sea's rumble in the wave, and a low hum while the suns are lit (an invention:
+  the novel gives the valleys no sound). Off until the button is pressed; `#sound` turns it on at the first click.
+
+What the novel leaves open and this model chooses: the hull's thickness (2 km, from 20 km outside and a 16 km
+plain), the bowls' shape (ellipses), the southern valleys turned sixty degrees from the northern, the city plans,
+and the outside faces beyond the hub.
+
+### `/deepsky`: Deep Sky, how stars end
+
+Original work (`src/deepsky/`), on the starship page (`src/starship/page.js`); `data/cities/deepsky.json` holds the numbers,
+the cards and each object's distance. Six objects, one at a time: the Objects panel (nearest first) flies out over a scale
+of distances from the Earth and in to the next (`#object=<name>` opens at one; `#flyto=<name>` flies there after a second).
+An object's own buttons show only while it is on screen.
+
+- **M87\*** (`blackhole`): a shader follows each pixel's light back through Schwarzschild space: the disk's far side over and
+  under the shadow, the photon ring, Doppler beaming, gravitational redshift, the jet, the lensed stars. **Spin** adds frame
+  dragging in its weak-field form (not a Kerr trace: the card says so) and moves the disk in. **EHT view** is the trace from
+  M87\*'s real angle at about the telescope's resolution, blurred, in its orange scale. The trace is drawn into a target that
+  shrinks to a third of the screen when frames are slow (`#bhq=<0.3-1>` fixes it; `#eht`, `#spin` open in those modes).
+- **Sagittarius A\*** (`sgra`, `sgra.js`): the same tracer, dim disk, no jet, and the S-stars (S2, S38, S55, S1, S12, S14) on
+  Kepler orbits from the published fits, at true scale in its own radii, with a year clock.
+- **The Crab Pulsar** (`pulsar`): the tilted dipole, the beams, the light cylinder, the nebula fading in as you pull back. The
+  chart is the light reaching the camera: pulses only when a beam sweeps over it. **Listen** clicks each pulse (a buzz at the
+  real 29.6 a second; `#pulsar=real` starts there).
+- **A supernova** (`supernova`): the cut-away supergiant (labels follow the camera), collapse, shock, breakout, the ejecta in
+  Rayleigh-Taylor fingers, and a type II-P light curve in days (plateau, then the cobalt-56 tail) that the debris glows by.
+  `#snt=<seconds>` starts the 64-second loop part-way.
+- **A white dwarf** (`whitedwarf`, `whitedwarf.js`): drawn to scale beside the Earth, in the Ring Nebula (as the JWST saw it in
+  2023: the blue-green inside, the ring, the knots, the halo's arcs), the nebula drawn far smaller than it is.
+- **GW170817** (`merger`, `merger.js`): the inspiral in closed form, space as a sheet rippling with the quadrupole wave at the
+  retarded time, the merger, the gamma-ray burst 1.7 s later, the kilonova going blue to red, a black hole; the chart is the
+  strain a detector would record, and **Listen** plays the chirp. `#mgt=<seconds>` starts the 48-second loop part-way.
+
+Sound (`audio.js`) is synthesised, and starts only from a button. The golden's rows are each object's numbers (the page
+adds a model's `fingerprintRows()`), since most of what is drawn is glow and kept out of the mesh fingerprint.
 
 ### `/homeworld`: Homeworld, the Kharak system
 
@@ -2335,7 +2829,9 @@ src/
   minastirith/ main.js landmarks.js life.js war.js events.js decals.js shadow.js   Minas Tirith: the Tower, the Hall, the Court, the Gate, the rock, the banners; war and peace; what happens in the siege; what it has left; the Ephel Duath and the Darkness
   kowloon/  main.js section.js kaitak.js life.js   the Walled City: the section, the approach, the washing
   starship/ page.js parts.js                 the page the ships and Babylon 5 share: renderer, sky, turntable, cards; the hull pieces
+  rama/     main.js shape.js rama.js interior.js events.js sound.js   Rama: the profile and the ground; the hull, the faces, the hub, the cross-section; the plains, the valleys, the Sea, New York, the hall of holograms, the bowls and the horns, the walker; the twelve scenes and the flyby; the sound
   babylon5/ main.js station.js visitors.js   Babylon 5: the sphere, the Cobra bays, the drum and the Garden, the arrays, the defence grid, the traffic, the gate; the destroyer, the Minbari, the raid
+  deepsky/ main.js model.js audio.js blackhole.js sgra.js pulsar.js supernova.js whitedwarf.js merger.js   Deep Sky: the switch, the kit and the flight; sound; the traced black holes and the S-stars; the Crab; the supernova; the Ring Nebula; GW170817
   homeworld/ main.js ships.js kharak.js fleet.js   Homeworld: the Mothership, the Scaffold and the craft; Kharak and the sky; the two missions, the trails, the hyperspace windows, Sensors
   hab/      main.js world.js               Kyrene: its own renderer, and a world in cylinder coordinates
   beachcity/ main.js landmarks.js details.js life.js events.js   Beach City: the temple, the beach house, the lighthouse, the park's cliff, the shops, Funland, the car wash, the old docks; the surf, the boardwalk and the gulls
@@ -2625,27 +3121,20 @@ uses `hash3(x, z, k)` or its own `mkRng(seed)` stream.
 
 ## Managing the server
 
-Use `./sitectl` from this folder. Never run it with `sudo`; it refuses.
+The Menagerie has no server of its own. The one site is Krator's, on port 8001: the `krator` user service, run by
+`../sitectl` (krator-master's `host/`; `host/HOSTING.md`). After a change, `../sitectl sync && ../sitectl reload`.
+This folder's `./sitectl` builds, checks and tests; asked for a service command, it points there.
 
 | Command | What it does |
 |---|---|
-| `./sitectl status` | Service state and the site URLs |
-| `./sitectl reload` | Build, check `site.toml`, then apply it with no downtime (alias `apply`) |
-| `./sitectl restart` | Build, check, restart. Use after editing `server.py`, host or port. |
-| `./sitectl start` / `stop` | Start or stop the server |
-| `./sitectl enable` / `disable` | Start now and at every login / stop and don't start at login |
 | `./sitectl build` | Assemble `src/<city>/build.js` from the stage files |
 | `./sitectl check` | Build, validate `site.toml`, list every URL. Nothing else changes. |
 | `./sitectl test [seconds]` | Module tests under gjs, then a headless build of every golden page/seed |
 | `./sitectl probe …` | `tools/probe.py` with your arguments (metrics, fingerprints, screenshots) |
-| `./sitectl logs [N]` / `follow` | Last N log lines / live log |
-| `./sitectl url` / `health` | Print the URLs / ask the running server if it's up |
-| `./sitectl install` | Rewrite the systemd unit for this folder (after moving the project) |
-| `./sitectl boot` | How to start the site at boot without a login |
 
 Editing HTML, CSS, data files or images needs no command: files are read on every request and the
 server sends `304 Not Modified` when the browser's copy is current. Editing a stage file needs
-`./sitectl build` (or any command that runs it). Editing `server.py` needs `restart`.
+`./sitectl build`, then `../sitectl sync` to reach the site.
 
 ### Testing
 
@@ -2708,24 +3197,20 @@ for text when the client accepts it, `ETag`/`Last-Modified` with `304`, `HEAD`, 
 reload, one log line per request in the journal. No `Range` support, no TLS, no authentication:
 fine on the LAN, never port-forward it to the internet.
 
-The systemd **user** service `menagerie` (`~/.config/systemd/user/menagerie.service`) runs it; the unit
-runs `server.py --check` before starting, so a missing page file stops start-up. Raw commands, without
-`sudo`: `systemctl --user status|start|stop|restart|reload menagerie`, `journalctl --user -fu menagerie`. With
-`sudo` they fail with `Failed to connect to user scope bus`. The service starts at login; for boot
-without a login run `sudo loginctl enable-linger $USER` once.
+Krator's `krator` user service runs it on port 8001 (`host/HOSTING.md`); there is no `menagerie` service.
 
 ## Network notes
 
 - The router assigns this computer's address and may change it (`hostname -I` shows it; reserve it in the router).
-- The firewall is off. If you enable one: `sudo ufw allow 8000/tcp`.
+- The firewall is off. If you enable one: `sudo ufw allow 8001/tcp`.
 - Everything is served locally; no page needs the internet.
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| Page doesn't load | `./sitectl status`, `./sitectl health` |
-| Service won't start | `./sitectl logs 20`: a `problem:` line names the missing file |
+| Page doesn't load | `../sitectl status`, `../sitectl health` |
+| Service won't start | `../sitectl logs 20`: a `problem:` line names the missing file |
 | A stage edit has no effect | `./sitectl build` (the served file is `build.js`) |
 | Red box on the page | that stage failed; the rest still builds. `./sitectl probe --page …` shows the same text |
 | `LAYOUT CHANGED` from `test` | a random draw moved: see Seeds above; if intended, re-save the golden with `--save-golden` |

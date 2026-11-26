@@ -34,7 +34,7 @@ import argparse, asyncio, glob, http.server, json, os, re, socketserver, sys, th
 # the UTF-8 console). A fix there reaches every verify.py that imports it.
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools'))
 import harness as _harness
-from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views
+from harness import GL_ARGS, LOAD_MS, CHROME_ENV, launch_chromium, parse_views, verify_page, Abort
 local_three = lambda folder: _harness.local_three(folder, os.path.dirname(os.path.abspath(__file__)))
 # --------------------------------------------------------------------------
 # --sweep: do the flyers' sample legs (window._legs, 84-flyers.js) pass through
@@ -128,6 +128,12 @@ R.push({name:'nav-connected', ok:A.NAV.reachable===A.NAV.nodes.length, detail:A.
   else { const a=I.audit(12), ok=a.checked>0 && !a.noRooms.length && !a.dropped.length && a.homesOk===a.dwellings;
     R.push({name:'interiors-coherent', ok, detail: ok ? a.checked+' of '+I.units+' units checked ('+JSON.stringify(a.byKind)+'), '+a.homesOk+' homes each with a bed, food and a chest; rooms '+JSON.stringify(a.rooms)+'; '+a.windows+' windows, '+a.lights+' lights; bake '+I.bake+' ('+a.fromBake+' of the checked from it, '+I.stale+' units stale: rerun bake_interiors.py if not 0); '+a.ms+' ms'
       : JSON.stringify({noRooms:a.noRooms.slice(0,6), dropped:a.dropped, residenceFails:a.residenceFails, missing:a.missing})}); } }
+// core/walk under core/door (83-mr-walk.js): the units are in KWALK and the doors block; with the doors open a walker gets from the
+// step outside a unit's doors to every floor of it (KWALK.reach); the negative: with them shut, fewer floors are reached
+{ const M=window.MRWALK; if(!M||!M.on) R.push({name:'walk-and-reach', ok:false, detail:'no core/walk (MRWALK off)'});
+  else { const w=M.ensure(), a=M.reach(), n=M.reach({shut:true}), d=window._doors||{};
+    const ok=w.units>0 && w.doors>=d.doors && a.unreachedN===0 && !a.capped && n.reached<a.reached;
+    R.push({name:'walk-and-reach', ok, detail:w.units+' units in core/walk ('+w.floors+' floors, '+w.blocks+' wall blocks, '+w.strips+' stairs, '+w.ms+' ms), '+w.doors+' doors with walk blocks, '+w.cleared+' blocks cleared from doorways; reach: '+a.reached+' of '+(a.floors-a.noDoorFloors)+' floors from the doors of '+(a.units-a.noDoor)+' units ('+a.noDoor+' with no unlocked door, their '+a.noDoorFloors+' floors kept shut as built)'+(a.unreachedN?', UNREACHED '+a.unreachedN+' '+JSON.stringify(a.unreached.slice(0,8)):'')+(a.capped?', '+a.capped+' floods capped':'')+'; doors shut: '+n.reached+' reached'}); } }
 return R;}"""
 
 # The catalog furniture (53-furnish.js: the 'catalog-furniture' group, meshes tagged userData.furniture) has
@@ -149,151 +155,123 @@ return {budget:B, calls:renderer.info.render.calls, tris:renderer.info.render.tr
 
 async def run(a):
     from playwright.async_api import async_playwright
-    folder, name = os.path.split(os.path.abspath(a.html))
     os.makedirs(a.out, exist_ok=True)
-    handler = lambda *x, **k: http.server.SimpleHTTPRequestHandler(*x, directory=folder, **k)
-    httpd = socketserver.TCPServer(("127.0.0.1", 0), handler)
-    port = httpd.server_address[1]
-    threading.Thread(target=httpd.serve_forever, daemon=True).start()
-    fails = []
-    try:
-        async with async_playwright() as p:
-            b = await launch_chromium(p)
-            W, H = [int(t) for t in a.size.split("x")]
-            pg = await b.new_page(viewport={"width": W, "height": H})
-            pg.set_default_timeout(300000)
-            errs = []
-            pg.on("pageerror", lambda e: errs.append(str(e)))
-            three = local_three(folder)
-            if os.path.exists(three):
-                await pg.route("**/three.min.js", lambda route: asyncio.ensure_future(
-                    route.fulfill(path=three, content_type="application/javascript")))
-            await pg.goto(f"http://127.0.0.1:{port}/{name}", timeout=LOAD_MS)
-            try:
-                await pg.wait_for_function("window._ready===true || (document.getElementById('errs')&&document.getElementById('errs').textContent.length>0)", timeout=580000)   # software GL on a shared box: 170 s timed out mid-build
-            except Exception as e:
-                print("timed out waiting for the world to build")
-            await pg.wait_for_timeout(2500)
-            if a.hour is not None:
-                await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
-                await pg.wait_for_timeout(1200)
-            try:
-                st = await pg.evaluate(STATS_JS)
-            except Exception as e:
-                print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
-                print("error panel:", await pg.evaluate(
-                    "document.getElementById('errs')?document.getElementById('errs').textContent:'(none)'"))
-                await b.close()
-                return 2
-            print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
-            if st["errs"]:
-                fails.append("error panel not clean")
-            if errs:
-                print("PAGE ERRORS:", errs[:5]); fails.append("page errors")
-            print("draw calls:", st["calls"], "triangles:", st["tris"])
-            counters = {k: v for k, v in st["counters"].items() if k not in ('_errBox',)}
-            print("counters:", json.dumps(counters, sort_keys=True))
+    async with verify_page(a.html, here=os.path.dirname(os.path.abspath(__file__)), size=a.size) as V:
+        pg, errs, fails, b, port = V.page, V.errs, V.fails, V.browser, V.port
+        if not V.ready:
+            print("timed out waiting for the kit to build")
+            fails.append("build timeout")
+        if a.hour is not None:
+            await pg.evaluate("(h)=>{ if(window._api) _api.skySetHour(h); const p=document.getElementById('dnPause'); if(p && !/Resume/.test(p.textContent)) p.click(); }", a.hour)
+            await pg.wait_for_timeout(1200)
+        try:
+            st = await pg.evaluate(STATS_JS)
+        except Exception as e:
+            print("PAGE DID NOT INITIALISE:", str(e).splitlines()[0])
+            print("error panel:", await pg.evaluate(
+                "document.getElementById('errs')?document.getElementById('errs').textContent:'(none)'"))
+            raise Abort(2)
+        print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
+        if st["errs"]:
+            fails.append("error panel not clean")
+        if errs:
+            print("PAGE ERRORS:", errs[:5]); fails.append("page errors")
+        print("draw calls:", st["calls"], "triangles:", st["tris"])
+        counters = {k: v for k, v in st["counters"].items() if k not in ('_errBox',)}
+        print("counters:", json.dumps(counters, sort_keys=True))
 
-            if a.assert_:
-                print("\n--- invariants ---")
-                for r in await pg.evaluate(ASSERT_JS):
-                    print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
-                    if not r["ok"]:
-                        fails.append("assert " + r["name"])
-                from check_trades import trades_check
-                tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
-                print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
-                if not tok:
-                    fails.append("assert voth-trades")
-                bg = await pg.evaluate(BUDGET_JS)
-                if bg:
-                    print("\n--- budget ---")
-                    rows = [("drawCalls", bg["calls"]), ("triangles", bg["tris"]), ("instances", bg["instances"])]
-                    if "furnitureTriangles" in bg["budget"]:
-                        rows.append(("furnitureTriangles", bg["furnTris"]))
-                    if "interiorTriangles" in bg["budget"]:
-                        rows.append(("interiorTriangles", bg["interiorTris"]))
-                    print("  (triangles = the world without the catalog furniture and the interiors; drawCalls include their %d + interiors' meshes)" % bg["furnCalls"])
-                    for k, cur in rows:
-                        lim = bg["budget"][k]
-                        ok = cur <= lim
-                        print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
-                        if not ok:
-                            fails.append("budget " + k)
-
-            if a.baseline and os.path.exists(a.baseline):
-                base = json.load(open(a.baseline))
-                print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
-                flat = _flat(counters); fb = _flat(base.get("counters", {}))
-                keys = sorted(set(flat) | set(fb))
-                shown = 0
-                for k in keys:
-                    x, y = fb.get(k), flat.get(k)
-                    if x != y:
-                        print("  %-34s %s -> %s" % (k, x, y)); shown += 1
-                d = st["tris"] - base.get("tris", st["tris"])
-                print("  %-34s %s -> %s (%+d)" % ("triangles", base.get("tris"), st["tris"], d))
-                print("  %-34s %s -> %s" % ("drawCalls", base.get("calls"), st["calls"]))
-                if not shown:
-                    print("  counters identical")
-
-            presets = await pg.evaluate(
-                "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
-            views = parse_views(a.views, presets)
-            if a.all_views:
-                views = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
-            await pg.screenshot(path=os.path.join(a.out, "initial.png"))
-            for v in views:
-                try:
-                    ok = await pg.evaluate(
-                        "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
-                        "if(!b)return false;b.click();return true;}", v)
+        if a.assert_:
+            print("\n--- invariants ---")
+            for r in await pg.evaluate(ASSERT_JS):
+                print(("  PASS  " if r["ok"] else "  FAIL  ") + r["name"] + " : " + r["detail"])
+                if not r["ok"]:
+                    fails.append("assert " + r["name"])
+            from check_trades import trades_check
+            tok, tdetail, _trep = trades_check(os.path.dirname(os.path.abspath(__file__)))
+            print(("  PASS  " if tok else "  FAIL  ") + "voth-trades : " + tdetail)
+            if not tok:
+                fails.append("assert voth-trades")
+            bg = await pg.evaluate(BUDGET_JS)
+            if bg:
+                print("\n--- budget ---")
+                rows = [("drawCalls", bg["calls"]), ("triangles", bg["tris"]), ("instances", bg["instances"])]
+                if "furnitureTriangles" in bg["budget"]:
+                    rows.append(("furnitureTriangles", bg["furnTris"]))
+                if "interiorTriangles" in bg["budget"]:
+                    rows.append(("interiorTriangles", bg["interiorTris"]))
+                print("  (triangles = the world without the catalog furniture and the interiors; drawCalls include their %d + interiors' meshes)" % bg["furnCalls"])
+                for k, cur in rows:
+                    lim = bg["budget"][k]
+                    ok = cur <= lim
+                    print("  %s  %-10s %9d / %9d  (%d%%)" % ("PASS" if ok else "OVER", k, cur, lim, 100 * cur // lim))
                     if not ok:
-                        raise RuntimeError("no such preset button")
-                    await pg.wait_for_timeout(900)
-                    fn = os.path.join(a.out, "view_" + v.replace(" ", "_").replace("/", "-") + ".png")
-                    await pg.screenshot(path=fn)
-                    print("shot:", fn)
-                except Exception as e:
-                    print("view failed:", v, e)
+                        fails.append("budget " + k)
 
-            for i, c in enumerate(a.cam or []):
-                v = [float(t) for t in c.split(",")]
-                await pg.evaluate("(v)=>_dbg.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
+        if a.baseline and os.path.exists(a.baseline):
+            base = json.load(open(a.baseline))
+            print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
+            flat = _flat(counters); fb = _flat(base.get("counters", {}))
+            keys = sorted(set(flat) | set(fb))
+            shown = 0
+            for k in keys:
+                x, y = fb.get(k), flat.get(k)
+                if x != y:
+                    print("  %-34s %s -> %s" % (k, x, y)); shown += 1
+            d = st["tris"] - base.get("tris", st["tris"])
+            print("  %-34s %s -> %s (%+d)" % ("triangles", base.get("tris"), st["tris"], d))
+            print("  %-34s %s -> %s" % ("drawCalls", base.get("calls"), st["calls"]))
+            if not shown:
+                print("  counters identical")
+
+        presets = await pg.evaluate(
+            "()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+        views = parse_views(a.views, presets)
+        if a.all_views:
+            views = await pg.evaluate("()=>[...document.querySelectorAll('#ui button')].map(b=>b.textContent.trim())")
+        await V.shot(os.path.join(a.out, "initial.png"))
+        for v in views:
+            try:
+                ok = await pg.evaluate(
+                    "(v)=>{const b=[...document.querySelectorAll('#ui button')].find(b=>b.textContent.trim()===v);"
+                    "if(!b)return false;b.click();return true;}", v)
+                if not ok:
+                    raise RuntimeError("no such preset button")
                 await pg.wait_for_timeout(900)
-                fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i)); await pg.screenshot(path=fn); print("shot:", fn)
-            for ev in (a.eval or []):
-                try:
-                    print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
-                except Exception as e:
-                    print("eval failed:", str(e)[:400])
-            if a.sweep:
-                sw = await pg.evaluate(SWEEP_JS)
-                print("route sweep:", json.dumps(sw))
-                if "note" not in sw:
-                    if not sw["controlOK"]:
-                        print("  SWEEP BLIND: a control leg through a trunk / a level hit nothing")
-                        fails.append("sweep control")
-                    elif sw["legsHit"]:
-                        print("  %d of %d legs pass through something (first hits above)" % (sw["legsHit"], sw["legs"]))
-                        fails.append("sweep %d legs" % sw["legsHit"])
-                    else:
-                        print("  clear: %d legs, %d samples, none inside a trunk, a registered volume, a bridge or the ground"
-                              % (sw["legs"], sw["samples"]))
+                fn = os.path.join(a.out, "view_" + v.replace(" ", "_").replace("/", "-") + ".png")
+                await V.shot(fn, view=v)
+                print("shot:", fn)
+            except Exception as e:
+                print("view failed:", v, e)
 
-            if a.save_baseline:
-                json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
-                          open(a.save_baseline, "w"), indent=1, sort_keys=True)
-                print("baseline written:", a.save_baseline)
-            await b.close()
-    finally:
-        httpd.shutdown()
+        for i, c in enumerate(a.cam or []):
+            v = [float(t) for t in c.split(",")]
+            await pg.evaluate("(v)=>_dbg.setView(v[0],v[1],v[2],v[3],v[4],v[5])", v)
+            await pg.wait_for_timeout(900)
+            fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i)); await V.shot(fn); print("shot:", fn)
+        for ev in (a.eval or []):
+            try:
+                print("eval:", json.dumps(await pg.evaluate(ev))[:3000])
+            except Exception as e:
+                print("eval failed:", str(e)[:400])
+        if a.sweep:
+            sw = await pg.evaluate(SWEEP_JS)
+            print("route sweep:", json.dumps(sw))
+            if "note" not in sw:
+                if not sw["controlOK"]:
+                    print("  SWEEP BLIND: a control leg through a trunk / a level hit nothing")
+                    fails.append("sweep control")
+                elif sw["legsHit"]:
+                    print("  %d of %d legs pass through something (first hits above)" % (sw["legsHit"], sw["legs"]))
+                    fails.append("sweep %d legs" % sw["legsHit"])
+                else:
+                    print("  clear: %d legs, %d samples, none inside a trunk, a registered volume, a bridge or the ground"
+                          % (sw["legs"], sw["samples"]))
 
-    if fails:
-        print("\nFAILED: " + "; ".join(fails))
-        return 1
-    print("\nOK")
-    return 0
+        if a.save_baseline:
+            json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
+                      open(a.save_baseline, "w"), indent=1, sort_keys=True)
+            print("baseline written:", a.save_baseline)
+    return V.exit()
 
 
 def _flat(d, prefix=""):

@@ -1,0 +1,63 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.231,
+    1.204
+   ],
+   "seam_before": [
+    1.646,
+    1.538
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.coral.rubble",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.coral.rubble.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-ringisles-cloud (ringisles lagoon)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no Subject: a storm ridge of coral rubble on a tropical atoll islet: broken branching-coral sticks, finger and staghorn fragments 2-15 cm long, worn smooth and bleached to bone white, cream and pale grey, with a few rounded brain-coral cobbles and pink-grey pieces of coralline crust, packed loosely so dark gaps show between them, a little coarse white coral sand in the hollows; no shells larger than a thumbnail, no seaweed, no plants, no water. Even scale across the frame (about 1.5 m across the image).",
+  "prompt_note": "the template text on that branch is garbled (the base template breaks off at \"no\" and runs into \"Subject:\"); the image matches the intended prompt: the surface template with this Material",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-ringisles-cloud (ringisles lagoon)",
+  "reuse": "ringisles' lagoon: the motu's storm ridges and the reef flat's back edge; any atoll's coral rubble beach",
+  "sha1": "f48139a9b109c56263e365c007011530f31a6f74"
+ }
+}

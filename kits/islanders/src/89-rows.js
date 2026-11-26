@@ -16,10 +16,11 @@ const FAMILIES=[
  {name:'Kautoa - civic',keys:['ie-hall','ie-square','ie-school']},
  {name:'Kautoa - trade',keys:['ie-farm','ie-farm-poor','ie-granary','ie-granary-great','ie-windmill','ie-warehouse','ie-smithy','ie-market','ie-kava-house','ie-trader','ie-weaver','ie-potter','ie-chandler']},
  {name:'Kautoa - trades II',keys:['ie-temple','ie-bakehouse','ie-butcher','ie-tannery','ie-healer','ie-guesthouse','ie-harbourmaster','ie-beacon','ie-quarry','ie-sulphur','ie-saltworks','ie-pens','ie-byre','ie-envoy']},
- {name:'Kautoa - hamlet works (core/hamlet)',keys:['ie-sawpit','ie-kiln','ie-corral','ie-store-food','ie-bloomery']},
+ {name:'Kautoa - hamlet works (core/hamlet)',keys:['ie-sawpit','ie-kiln','ie-corral','ie-store-food','ie-bloomery','ie-claypit']},
+ {name:'Kautoa - camp shelters (core/camp, 47f)',keys:['ie-shelter-leanto','ie-shelter-hut','ie-shelter-aframe','ie-shelter-long','ie-camp-kitchen','ie-camp-store']},
  {name:'Kautoa - defence',keys:['ie-wall','ie-gate','ie-watchtower','ie-barracks']},
  {name:'Kautoa - palace',keys:['ip-palace']},
- {name:'Mines and resource nodes (kits/resources)',keys:['iw-mine','node-iron-low','node-iron-medium','node-iron-high','node-copper-low','node-copper-medium','node-copper-high','node-gold-low','node-gold-medium','node-gold-high','node-tin-low','node-tin-medium','node-tin-high','node-silver-low','node-silver-medium','node-silver-high','node-rare-earth-low','node-rare-earth-medium','node-rare-earth-high','node-coal-low','node-coal-medium','node-coal-high','node-sulfur-low','node-sulfur-medium','node-sulfur-high','node-saltpeter-low','node-saltpeter-medium','node-saltpeter-high','node-oil-low','node-oil-medium','node-oil-high','ie-mine']},
+ {name:'Mines and resource nodes (kits/resources)',keys:['iw-mine'].concat(Object.keys(RES_ORE.kinds).flatMap(k=>Object.keys(RES_ORE.grades).map(g=>resNodeKey(k,g))),['ie-mine'])},   /* every node kind the resources kit defines, so a new kind needs no edit here (2026-10-26) */
  {name:'Gardens, groves and stock',keys:['fl-paddy','fl-taro','fl-banana','fl-coconut','fl-breadfruit','pig','hen','duck','buffalo']},
  {name:'Harbours',shore:true,keys:['iw-fishdock','iw-dockyard','iw-godown','iw-quay','iw-canoeshed','iw-ferry','ie-fishdock','ie-dockyard','ie-quay','ie-canoeshed','ie-ferry']}
 ];

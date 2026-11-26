@@ -39,6 +39,13 @@ const ATMOS={};
   for(const fn of A.onInit)fn(h);};
  // later fragments that need the bound host (A.T, A.U, A.hook) push a setup function here; init runs them in file order
  A.onInit=[];
+ // core/shader (KHOOK: every shader hook goes through it; KCOLOR: colour space): khost.resolve puts it on the page, a build
+ // without core/host lists core/shader/06-core-khook.js and 06b-core-kcolor.js itself
+ const need=(v,n)=>{if(v)return v;throw new Error('atmos: core/shader is not on this page ('+n+'): list core/shader/06-core-khook.js and 06b-core-kcolor.js (khost.resolve adds them)');};
+ A.KH=()=>need(typeof KHOOK!=='undefined'&&KHOOK,'KHOOK');A.KC=()=>need(typeof KCOLOR!=='undefined'&&KCOLOR,'KCOLOR');
+ // a hook's replace for an anchor only a LIT material has (the light, roughness, emissive chunks): KHOOK.rep (throws) on a lit
+ // material; on an unlit one (Basic) the layer takes the parts it has, as before
+ A.repLit=m=>m&&(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial||m.isMeshToonMaterial)?A.KH().rep:(s,a,b)=>s.replace(a,b);
  A.glf=v=>{const q=String(+v);return/[.e]/.test(q)?q:q+'.0';};   // a number as a GLSL float literal
  A.err=m=>{if(A.h&&A.h.err)A.h.err('atmos: '+m);else console.warn('atmos: '+m);};
  A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds
@@ -47,6 +54,14 @@ const ATMOS={};
  A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
  // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
  A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
+ // core/hazard's ambient bridge: register a field (KHAZ.provide(field, fn(x, y, z, t))) when the page has a KHAZ that takes
+ // it (an older KHAZ, or one whose vocabulary lacks the field, throws: then nothing). true if registered
+ A.khaz=(field,fn)=>{if(typeof KHAZ==='undefined'||!KHAZ||typeof KHAZ.provide!=='function')return false;try{KHAZ.provide(field,fn);return true;}catch(e){return false;}};
+ // WINDWARD: how steeply the ground at (x,z) rises INTO the wind (m a metre, + on a face turned to it, - in the lee), from a
+ // ground(x,z) function, the direction the wind comes from (dir [x,z]) and a baseline (reach, m: the face, not the bumps).
+ // Pure: the fog belt and the rain wall read it, and their Godot twins read the same two ground samples
+ A.windwardAt=(ground,x,z,dir,reach)=>{const l=Math.hypot(dir[0],dir[1])||1,ux=dir[0]/l,uz=dir[1]/l,r=reach==null?250:reach;
+  return(ground(x-ux*r,z-uz*r)-ground(x+ux*r,z+uz*r))/(2*r);};
  A.night=h=>{const C=A.PRESETS.clock;return Math.min(1,Math.max(0,1-A.ss(C.dawn[0],C.dawn[1],h)+A.ss(C.dusk[0],C.dusk[1],h)));};
  A.litAt=(h,on,off)=>{const hh=h<12?h+24:h,r=A.PRESETS.clock.ramp;return A.ss(on,on+r,hh)*(1-A.ss(off-r,off,hh));};
  // GUSTS: a gust factor in -1..1 at time t and place (x,z). Gust fronts travel downwind (wind.frontSpeed m/s), so
@@ -60,7 +75,7 @@ const ATMOS={};
  // a separate stream (same generator) for things added late, so they never shift the placement stream
  A.stream=n=>{let s=(n>>>0)||1;return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};};
  A.rr=(a,b)=>a+(b-a)*A.rnd();A.pick=a=>a[Math.floor(A.rnd()*a.length)];
- A.col=hex=>new A.T.Color(hex).convertSRGBToLinear();
+ A.col=hex=>A.KC().lin(hex,new A.T.Color());   // a display hex, linear (core/shader's KCOLOR: three's own curve)
  // shared geometry (unit sizes; posts and cones stand on y=0) and cached materials
  const G={};A.geo=k=>{if(G[k])return G[k];const T=A.T;
   G[k]=k==='box'?new T.BoxGeometry(1,1,1):k==='post'?new T.CylinderGeometry(1,1,1,8).translate(0,.5,0):k==='post16'?new T.CylinderGeometry(1,1,1,16).translate(0,.5,0):

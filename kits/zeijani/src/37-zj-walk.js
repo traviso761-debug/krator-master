@@ -25,5 +25,5 @@ function zwMinusHoles(poly,holes){let parts=[poly];
 function zwItem(item,rec,o){o=o||{};if(!item)return null;
  const inst=KratorInteriors.sets.instantiate(item,rec.x,rec.z,rec.ry,{baseY:rec.y,register:false,prefix:zwPrefix(rec)}),carvedDef=!!item.carved;
  /* the floors, walls, stairs and entry flights are the interiors kit's (IX.walk, kits/interiors/src/49b-walk.js): a room marked carved (a carved def's, unless it says carved:false) is the cavern's */
- return KratorInteriors.walk.register(inst,KWALK,{tag:'built:'+rec.key,blockStep:ZW_STEP,
+ return KratorInteriors.walk.register(inst,KWALK,{tag:'built:'+rec.key,blockStep:ZW_STEP,step:.45,   /* step: the reach audit's (core/walk reach, 0.45 m): the timber house's 0.5 m floor got no entry step */
   skipRoom:R=>{const src=(item.rooms||[]).find(r=>(r.id||'')===R.setBody)||{};return src.carved===true||(carvedDef&&src.carved!==false);}});}

@@ -13,7 +13,10 @@ the kit's name is `nwouterwall`; the fur theme; **Leng is a Yeti-held ruin**; th
 oxen**; **their capital stands by the frozen lake** (px 143,177, 6,480 m); their speech is **English evolved in a
 Siberian direction** (Chukchi, Koryak, Nenets, Sakha), and in it they call their kingdom **the High Country** (section 10).
 
-**Status: plan, awaiting the owner.** Nothing built.
+**Status (2026-10-26): built through N6** on the branch `claude/nwouterwall-biome-97c462`: the Thule package in `kits/crops`
+(N1), the kit on the biome core with its three stations on the scale model (N2-N4, N6), the landforms as a new core/terrain
+module (`42-core-frost.js`, N5); `NOTES.md` says what each station shows, `KNOWN_ISSUES.md` what is left. Station 3 draws the
+Yeti's capital from `kits/yeti` when that kit is in the tree (its own branch until merged). N7: the gallery is the merge's.
 
 ## 0. What the kit is
 
@@ -29,6 +32,51 @@ Siberian direction** (Chukchi, Koryak, Nenets, Sakha), and in it they call their
 | Out of scope | the Yeti's buildings (pycrete halls, winter forts, Leng's occupation: a **Yeti culture kit**, `kits/yeti/PLAN.md`, which takes this kit's materials and pycrete rule, section 5); the riding caribou, the musk oxen and the cache voles (`kits/fauna`); the wall's foot facing the State (an ecotone the Eternian lowland kits meet) |
 
 It is a new biome, so it goes in the gallery when it first reaches `main`.
+
+### Core adoption (written before the first fragment, 2026-10-26)
+
+| Module | Takes it for |
+|---|---|
+| `core/biome` | the kit contract (`BIO.init`, items, buckets, cards, bark, bake, LOD, export, `44-core-stage` for the export's light and air) |
+| `core/rand` (`KRAND`) | every draw: placement reseeded per cell from a hash of (kit seed, pass, cell); the ground's detail noise (`KRAND.fbm`), no `fbm` of the page's own |
+| `core/tags` | every item set, tree and plant volume is a record (`BIO.init({tags:'nwouterwall'})`) before it is drawn |
+| `core/space` (`KSPACE`) | keep-clear between trees and the obstacle index |
+| `core/host` (`KHOST.FULL`) | camera, loop, panel, inspector, marks (the polygon tool), probe, pictures, minimap, editor |
+| `core/atmos` | `ATMOS.bindHost`; **the shared sky** (`core/atmos/sky`, `89-atmos-h-skyhost.js`) at each station's pixel, with **ridge profiles cast from the scale model's heightfield** (`region/far.py`: SKY-PLAN 3.3's "later" item); `ATMOS.bindWeather` with climate `{cold:true}` (`core/atmos/host/89-atmos-e-weatherhost.js`); **snow that lies** (`core/atmos/fx/89-atmos-fx-snowcover.js`): first snow above a line in autumn, patches in spring; the skylight for the water; cloud shade |
+| `core/water` | the streams (`WATER.flow`), the alas lakes and the frozen high lake (`WATER.still`), drawn on core/atmos |
+| `core/terrain` | the scale model's ground (`region/`: `extract_region.py`'s cut, `far.py`'s per-station grid and ridges), `KSTACKS` for the frost-shattered tors and Leng's ruin, `KFIELD` for the baked ground the export carries; the periglacial landforms (patterned ground, alases, pingos, aufeis, solifluction lobes, rock glaciers) as **a new opt-in core/terrain module** (`42-core-frost.js`, `KFROST`, plain maths on KRAND, with its node test), since core has none |
+| `core/mask` | not taken: placement reads plain functions of (x, z) (the fields, the landforms), never a canvas |
+| `core/materials` | the library through `materials.json` and `tools/textures/pack.py` (section 8) |
+| `kits/crops` | read in place for the inspector's crop words (`CROPS.BY_ID`) and the beds' ids (section 4) |
+| `kits/yeti` | station 3's buildings, read in place (the owner, 2026-10-26: "read kits/yeti now"); the `pyc` field is what the culture kit reads back |
+| `core/city`, `core/hamlet`, `core/simulation` | not taken: no settlement is built here (the Yeti's towns are the culture kit's and the capital's own plans) |
+
+**The final rebuild (pair 11, 2026-11-09; BACKPORT.md section 1 and its row; a cloud session, no GPU):** taken, every change in `src/`:
+
+| Group | Taken | Where |
+|---|---|---|
+| Graphics | **octahedral impostors** for the four species' far trees (one set, item `impTrees`; `?diet=0` the old blobs; gain 2.4, `?impgain=`) | `55`, `89z` |
+| Limb joints | **`BIO.flareJoin`** on the fur larch's and the stone pine's near limbs | `55` `limb()` |
+| Held crowns | a mid larch's branches drawn as one rod each: its sprays hung from branches that were not drawn (the audit's "a far tier drops the parent") | `55` |
+| Cards | `check_cells` reads 0 faults for this kit already: nothing to fix | |
+| Sky and air | height fog (thin and long, a dawn mist over the lowest still), the rain cover, lightning with the storms, `BIO.bindAtmosWind`, A2C | `89a`, `89z` |
+| Water | the ext 56/57/58/60, the water's fields and `BIO.env`; **`WATER.mirrorSwitch` off at load** on the largest open still | `89z`, `99` |
+| Sun shadows | **`KSHADOW` off by default, `?shadow=1`** | `89z` |
+| Ground | **KGROUND** for the six layers over the steppe's base (`?kground=0`), and the row's **`polygon` kind**: sorted circles on the frozen flats where KFROST lays its ice-wedge polygons; **KHORIZON** over the near box and the model's country to 16 km (`?hz=0`) | `47`, `89z` |
+| Order | `88-host-build.js` is `89z-host-build.js` (after the water); the clouds' shade, the weather, the snow on the scene run there after the bake (they were in `89s`) | `89z`, `89s` |
+| Station 3 | `kits/yeti` is merged: `yeti_bundle.py` reads its engine from `core/engine` (36o doors on core/door, 36s stairs) and the capital is drawn | `yeti_bundle.py` |
+
+**Not taken, and why:** KSTRATA (the row's "strata on the wall": the near ground holds no bedded wall; the tors are granite split on its sheet
+joints, which KSTACKS already draws; the Outer Wall's faces are the far land's cast ridges), talus (KFROST's rock glaciers and the gravel layer
+carry the scree), KFAR (the mid ground to 20 km is the model's own country, the sky's ridges past it), thin air on the crest (the Wall's airless rim
+is far land on every station's page), the ice kind on the frozen lake (the lake is drawn as its own ice sheet on the library's `ice.lake`; the
+water ext's ice is for a stream or a pool that freezes in the weather), seasons by `BIO.season` (the season is the page's build input already:
+KNOWN_ISSUES), R9 puddles (a dry country; oidong's finding on a KGROUND floor), KGROUND's relief (`?kgrelief=1`: each build times it on the GPU first).
+
+**Stations on the model (N0, picked 2026-10-26 with the owner's leave; `region/far.py` SITES):** station 1 at px 220,216
+(4,597 m, 0.90 atm, Dsc, mean +2 °C, ~300 mm; Leng 16 km south), station 2 at px 218,190 (5,068 m, 0.85 atm, Dsc, mean
+-1 °C, 188 mm; flat permafrost ground 52 km north of Leng), station 3 at px 138,176 on the frozen lake's north-west shore
+(5,831 m on the floor, the lake's level 5,680 m on 4.22; the range across the lake to 7,300 m).
 
 ## 1. The ground (scale model 4.21, surveyed 2026-10-23)
 
@@ -184,6 +232,10 @@ frozen high lake. The fields and seeds are deterministic from the terrain (`KRAN
 3. **The Yeti Valley** (`-yeti`, after the model's 4.22: the floor ~5.5 km, ~0.80 atm): irrigated fields of the Three
    Gifts and open larch round the frozen lake (~5,700 m), meltwater channels, the capital's pycrete halls; fellfield with
    woolly snowballs and cushions on the slopes, goldroot on the cliffs, glaciers, the airless rim standing over it.
+4. *Planned, for a future session* (the owner, 2026-10-26): **the Wall foot** (`-wallfoot`, ~3.2-3.6 km, Csa/BSk, the dry east
+   above nsemiarid): the ecotone station. It reads the nsemiarid kit in place under a noise-warped mask (Korona's form). Wild
+   apple and apricot groves, wormwood and poplar lie on the low side; this kit's steppe, larch and stone pine on the high side.
+   The crossings and the shared-species aliases are in `ECOTONES.md`.
 
 ## 8. Textures
 
@@ -209,6 +261,15 @@ them): larch bark; a larch needle-tuft card in summer green and autumn gold; a f
 - **N5.** The landforms (patterned ground, alases, pingos, aufeis, rock glaciers).
 - **N6.** Stations 2 and 3.
 - **N7.** `verify.py --assert`, `PORT.md`, the index tools, the gallery.
+
+**Done (2026-10-26):** N0 (the stations picked on the model: `region/far.py`; the lore was already in `LORE.md` 6.19; the texture
+prompts delivered), N1 (`kits/crops`: the Three Gifts, bearroot, bistort, sorrel, pine nuts, the berries, Ivan-chai, qiviut, the
+willow, cottongrass, bog moss, larch beard and the dyes; `nwouterwall` biome entry; `test-crops.js` passes), N2-N4 (the kit:
+`46` the climate, pycrete's rule and the zones; `50-60` the flora and the fields; station 1's ground), N5 (`core/terrain/
+42-core-frost.js`, KFROST, with its test: patterned ground, alases, pingos, aufeis, solifluction lobes, rock glaciers; frost-
+shattered tors on KSTACKS), N6 (stations 2 and 3; station 3 reads `kits/yeti` through `yeti_bundle.py`), N7's `verify.py --assert`
+and `PORT.md`. Left: the gallery (at the merge), the root index (`tools/make_index.py`, `tools/audit_port.py` rewrite every
+build's; left to the merge), the owed cards (`KNOWN_ISSUES.md`).
 
 ## 10. The people's side (settled 2026-10-23 unless marked)
 

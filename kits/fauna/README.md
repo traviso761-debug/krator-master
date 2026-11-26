@@ -16,15 +16,16 @@ herds: the steppe bison, the staghorn beetle, the ash runner and the millipede's
 | `abyss` | flamingo, frilled lizard, marsh emu, pack lizard, riding lizard, dromedary |
 | `desert` | desert kite, wadi swift, sand strider, rock lizard, mule deer, coyote |
 | `bay` | bay soarer, canopy darter, plains grazer, savannah stalker, bay swimmer, savannah glider, cap moth, bloom glint |
-| `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth, and procedural giant insects and jungle fauna (grown large by the ~2 atm lowland air): lattice mantis, stilt walkingstick, horned scarab, harvester ant, leaf katydid, giant caterpillar, gilded orb spider; flyers: atlas moth, emperor hornet, jewel macaw, sparkle hummer, lantern-fly; lantern tree frog, forest tapir, vine boa |
+| `hyperjungle` | sky ray, canopy dart, jungle butterfly, hyperjungle strider, bough sloth, and procedural giant insects and jungle fauna (grown large by the ~2 atm lowland air): lattice mantis, stilt walkingstick, horned scarab, harvester ant, leaf katydid, the Bowl mantis (of the sedesert: it shares the lattice mantis's builder, so it lives in this file), giant caterpillar, gilded orb spider; flyers: atlas moth, emperor hornet, jewel macaw, sparkle hummer, lantern-fly; lantern tree frog, forest tapir, vine boa |
 | `ringsea` | giant sea lion (needs the `hyperjungle` file's helpers) |
 | `wild` | the biome pass (BIOME-FAUNA-PLAN.md), three waves covering every biome of the plan, and ten more domestic animals (donkey, mule, goose, turkey, rabbit, alpaca, reindeer, bactrian camel, homing pigeon, giant honeybee), and sea and lake fauna (ring dolphin, giant sea turtle, manta ray, giant ring squid, glass jellyfish, reef octopus, ring marlin, banner reef fish, ring cormorant, giant pike, lake sturgeon, giant catfish, lake plesiosaur, lake diver), and eight large hexapods of different countries (dune runner, frost trunker, marsh strider, cavern leaper, cinder crawler, plains hopper, tide crawler, badland digger), and five large hexapods after the owner's reference plates (scytheback, hookstalker, reedneck, gapemaw, clubback), and eight more six-limbed beasts after a second set of plates (burden beast, a saddle and draught animal as massive as a hippo; ember bull; horncrest; barbed ravager; capstilt; slabhorn; gapebill; dunewalker, a desert mount): and six arboreal hyperjungle critters on the `centaur` gait (canopy runner, moss sloth, bough panther, bark skulker, fruit gibber, veil glider): and the fang glider (a six-limbed reptilian glider): and four gliders of the lowlands (all climbers on the centaur gait) (meadow skimmer, hedge glider, cypress glider, sail skimmer), the eastern abyss's rim glider, and four gliders of the Rift's spore-forests, from raccoon to quetzalcoatlus size (lamp glider, spore drifter, gloam hanger, Rift sailwing), and the plumelands' ash racer (a raccoon-sized six-limbed runner): 125 animals, with a new `centaur` gait (grazers, predators, flyers, water creatures) from the shared builders `faWdQuad`, `faWdFish`, `faWdSerpent`, `faWdCrab`, `faWdRay`, `faWdSquid`, `faWdJelly`, `faWdOcto`, `faWdHex` (a flipper option on `faWdQuad` draws paddles); needs the `hyperjungle` file's helpers |
 | `flyers` | quetzalcoatlus, giant bat, giant archaeopteryx, giant dragonfly (each with a `'fly'` pose) |
 | `crawlers` | draught millipede (with the Ash Nomads' ash herd), giant riding spider |
 | `riders` | the Beast Rider tribes' mounts that were missing (2026-10-19): riding tiger, riding raptor, threehorn, hardshell, jungle mammoth (needs the `hyperjungle` file's helpers; the section "The Beast Riders' mounts" below) |
-| `voth` | seagull, cliff racer, silt strider, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
+| `voth` | seagull, cliff racer, elephant bug, arena tiger, pit lizard, giant beetle, staghorn beetle (the Ash Nomads' mount) |
 | `ash` | ash runner (the Ash Nomads' six-legged herd beast) |
 | `pets` | dog, cat (baked Meshy models only) |
+| `xeno` | the native hexapods of the late biome plans, vertebrate-grade, not insects (2026-11-11, `biomes/siphon-pits`): the Woolly Ghaunt-Ox (a draught and riding hexapod), the Flenser-Hound (an ambush predator with scythe-arms), the Basalt Pipe-Borer (a burrower); drawn by the `wild` file's `faWdHex`, so a bundle that takes `xeno` takes `wild` and `hyperjungle` too |
 
 ```
 cd kits/fauna && python3 build.py                   # dist/fauna.html (the sheet) and dist/krator-fauna.js (the bundle alone)
@@ -44,11 +45,12 @@ yields and life; **Polygon (P)**.
 Some animals carry a second look: a baked Meshy model (`models/<key>.json`, packed by `models_pack.py` from a GLB that `rig/`
 cut into parts and rigged), listed in the entry as `models: { variant: 'key' }`. `mdl` may also be a list of groups: only
 their models are packed (the Voth city takes the pets' two without the farm's dozen). Today: the four giant flyers, the draught
-millipede, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
+millipede, the harvester ant, the staghorn beetle and the Bowl mantis, and the farm's cow, ox, pig, sheep, goat, hen, horse, water buffalo, yak, bison, duck and Dalab lizard (a sprawl rig: the legs go out, then down), with the dog and cat (group `pets`) as models only. A model plays its
 own clips (`perch` for idle and rest, `graze`, `walk`, `flap` / `glide` for flight) and keeps the kit's part names, so a host
 animates it the same way. They are heavy (7 to 13 thousand triangles, about 1 MB each), so a bundle takes them only when asked:
 `fauna_bundle.bundle(groups, mdl=True)` (the kit's own sheet does); without them a model variant draws the procedural build, and
-a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`.
+a model-only animal draws nothing. See `rig/README.md`, and the first open item in `KNOWN_ISSUES.md`. Every model is held to
+`tests/test-models.js` (`PLAN-MESHY.md` section 4), and a new one must clear it with no waiver.
 
 ## What an animal carries (data first)
 
@@ -84,7 +86,7 @@ chitin `organic.chitin`); `feather` waits on a set, and `glow` is unlit (a glint
 **For tack**, an animal can publish a body profile and anchors (`KratorFauna.profile`: the salamander's centre line and
 half-sizes along its length; saddle, bridle, chest): the Scyvoi kit draws its saddles, barding and collars against it, so the
 animal and the culture that rides it stay in separate kits. The riding lizard, pack lizard, Dalab lizard, spider, giant flyers
-staghorn beetle (with a profile too) and silt strider carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
+staghorn beetle (with a profile too) and elephant bug carry anchors the same way (saddle, bridle, pack, howdah ...); their tack stays with their cultures.
 
 ## The Beast Riders' mounts
 
@@ -138,6 +140,52 @@ The Voth city (`settlements/voth`, `build.py` `fauna_fragment`) takes `['voth', 
 (giant beetles, dairy cows, pigs, ducks) and the Arena's beasts are simulation actors with needs
 (`targets/voth-city/47-vc-sim-animals.js`), each built fresh while near the camera and played by what it does
 (`56c-vc-citizens-host.js`); `lifeOf(key).schedule` gives their resting hours.
+
+## Fauna by land (H8; `fauna-lands.js`, `fauna-lands-host.js`)
+
+`biomes/hyperjungle/PLAN-LANDS.md` section 11: a biome kit places this kit's animals from its biome tags, with a size
+`scale` per land (the savage hyperjungle's beasts are 1.2 to 1.4 times their ridden size).
+
+**What existed (checked 2026-10-26).**
+- `openworld/little-demo` placed none of this kit's animals: its fauna was each biome kit's own instanced animals (the
+  `75-biome-*-fauna.js` fragments), and the folder is deprecated (2026-10-20; its world fragments moved to the isle demo,
+  which places no kit animals either).
+- `biomes/ringisles` (`src/89f-host-fauna.js`) places the Ring Sea's and swbay's animals by hand: a list of keys, each spot
+  found by tries of a draw-order PRNG (`reseed`, `rr`), none registered in core/tags, no scale.
+- Sedesert's editor (core/host 98, fauna mode) puts one animal where the owner clicks, registered as a `life` record.
+- Nothing read `tags.biomes`, nothing scaled an animal by place, and the Beast Riders' beasts are tagged `domestic`
+  (ridden), so a pass by biome tag alone would leave the savage land's herds out.
+
+**What it is.** `fauna-lands.js` is plain data and pure functions (`[G data]`: no THREE, no DOM; it needs `core/rand`,
+and `core/tags` to register). It is not a `krator-fauna-*.js` file, so the bundle, and every page that takes it, is
+unchanged; a build lists it (and the host file) by path.
+
+```
+FAUNALANDS.LANDS                       { 'hyperjungle.savage': {biome, land, scale:[1.2,1.4], include:[keys], weight:{key:w},
+                                          roles:{grazer, predator, flyer, water}}, ... }   a land's record (add with .land)
+FAUNALANDS.land(id, rec)               add or replace a land
+FAUNALANDS.catalog(entries)            [{key, name, biomes, habitat, locomotion, diet, feeding, domestic, herd, size, sizeRange}]
+                                         from KratorFauna.entry(key) records (or plain objects of that shape)
+FAUNALANDS.roleOf(c)                   'water' | 'flyer' | 'predator' | 'grazer' | null (a catalog row's role)
+FAUNALANDS.groupOf(c)                  [min, max] animals in a group, read from its herd text ('troops of twenty', 'alone')
+FAUNALANDS.pool(catalog, landId)       {grazer:[{key, w}], ...}: the wild animals tagged for the land's biome, plus its
+                                         `include` (domestic or other biomes' animals that are wild here), less `exclude`
+FAUNALANDS.plan(o)                     the placement, as records: o = {world, land, catalog, box:[x0,z0,x1,z1], cell (400 m),
+                                         density {role: groups a cell}, ground(x,z) -> y, where(role, x, z, key) -> bool,
+                                         maxGroup (8)} -> {groups:[...], animals:[...], missing:[keys], land}
+FAUNALANDS.register(T, plan, o)        each group a core/tags `life` record (kind 'herd'), each animal its child (kind: the
+                                         animal's key), BEFORE anything is drawn; returns the plan with ids
+```
+
+Every number comes from `KRAND.hash(world, cell x, cell z, index, salt)`: a cell's groups do not depend on any other
+cell, on the box or on the order of calls, so a streamed world and a single page agree. A group's members stand in a
+square round its centre (no trig: the same bits in Godot, so the same uids). An animal's scale is the land's
+range times its own `data.sizeRange` (when it has one); its record's `size` is its box times that scale.
+`fauna-lands-host.js` (`[web]`) draws a registered plan: `FAUNALANDS.draw(KratorFauna, scene, plan)` builds each animal,
+scales and places it, tags the group with its record's id (`userData.krator`), and returns a tick for `animate`.
+A key the land names that the bundle lacks is listed in `missing`, never thrown.
+
+Test: `node kits/fauna/tests/test-lands.js` (the real catalog, read in a vm with three; each check with a negative).
 
 ## Next
 

@@ -34,7 +34,10 @@ function roots(p,len,w){const q=qEuler(0,rng()*TAU,0),c=vcol();
 // BRACKET FUNGUS on the side of something
 function bracket(p,n,s){for(let b=0,nb=2+Math.floor(rng()*3);b<nb;b++){const sb=s*rr(.4,1);
  BIO.put('fungus',[p[0]+n[0]*.2+rr(-.6,.6)*s*(1-Math.abs(n[0])),p[1]+rr(0,2.2)*s,p[2]+n[2]*.2+rr(-.6,.6)*s*(1-Math.abs(n[2]))],
-  qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
+  bq(n,rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[sb,sb*(HYPERJUNGLE.FUNG?.8:.4),sb],C(pick(PAL.fungus)));}}
+// a bracket's turn: BIO.fung's shelf (+z) out along the face's normal where it has one (?fung=0, or no BIO.fung: the drawn yaw as
+// before); the three draws are made either way, so the stream (and every later placement) is as before
+function bq(n,ax,ay,az){const h=Math.hypot(n[0],n[2]);return HYPERJUNGLE.FUNG&&h>.2?qEuler(ax*.3,Math.atan2(n[0],n[2]),az*.3):qEuler(ax,ay,az);}
 // a PLANT on a ledge: fern rosette, tuft or small bush
 function plant(p,s){const k=rng();const y=p[1];
  if(k<.45){const n=5+Math.floor(rng()*3),c=C(pick(PAL.fern));for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.25,.25),L=s*rr(.85,1.4);

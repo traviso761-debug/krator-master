@@ -86,13 +86,21 @@
     Object.keys(r.armour).forEach(function(s){ if(!kit.items.some(function(it){ return it.id === r.armour[s]; })) r.armour[s] = null; });
     if(!kit.items.some(function(it){ return it.id === r.hair; })) r.hair = null;
     var d = DRESS.filter(function(x){ return x.id === dress; })[0], set = d && (d.p.outfits[c.body.replace(/^mpfb_/, '')] || {})[d.tier];
-    if(set) ['head', 'torso', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
+    if(set) ['head', 'torso', 'back', 'legs', 'feet'].forEach(function(sl){ r.armour[sl] = set[sl] && kit.items.some(function(it){ return it.id === set[sl]; }) ? set[sl] : null; });
     r.morph = JSON.parse(JSON.stringify(BUILD[c.build].morph));
     // the cast's own mods, or what the Mods menu puts on everyone (a top made for two arms comes off a four-armed body)
     var pick = $('mods-pick') && $('mods-pick').value;
     r.mods = pick ? pick.split(',') : (c.mods || []).slice();
     // the Lizardman test (tools/nonhuman.py): olive skin and amber eyes with the reptile head; the head leaves out the hair
-    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; }
+    if(r.mods.indexOf('mod_head_lizard') >= 0){ r.skin = '#7d8a45'; r.eye_color = '#c89020'; if(!dress) r.armour.torso = null; }
+    if(r.mods.indexOf('mod_head_frog') >= 0){ r.skin = '#5f8a36'; r.eye_color = '#d6a22a'; if(!dress) r.armour.torso = null; }     // the Frogman test: a frog's green, gold eyes
+    if(r.mods.indexOf('mod_head_coyote') >= 0){ r.coat = 'coyote'; r.skin = '#6e5a4c'; r.hair_color = '#9a7a52'; r.eye_color = '#c08a2a'; }
+    if(KCHAR.replacesFeet(r, kit) && !dress){
+      var kilt = (r.mods.indexOf('mod_legs_lizard') >= 0 || r.mods.indexOf('mod_legs_frog') >= 0) && c.sex !== 'f' ? 'voth_m_peasant_maxtlatl'
+               : c.sex === 'f' ? 'dalab_f_peasant_kilt' : 'dalab_m_peasant_kilt';
+      if(kit.items.some(function(it){ return it.id === kilt; })) r.armour.legs = kilt;
+      r.armour.feet = null;
+    }
     r.ancestry = null;
     return r;
   }
@@ -105,6 +113,7 @@
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
   KCharFigure.postureClipFrames = (D.posture && D.posture.clipFrames) || {};
+  KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   ((D.clips && D.clips.clips) || []).forEach(function(c){ INFO[c.key] = c; });
   KCharFigure.clipData = INFO;
   KCharFigure.faces = (D.clips && D.clips.faces) || {};

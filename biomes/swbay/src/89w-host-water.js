@@ -4,16 +4,19 @@
 // flooded from the bay's middle so the water stops where the beach is and laps a white edge where it is under 1.4 m, the sky in the water from core/atmos's
 // skylight); the far country's water is a second, flat surface under it (OUTER_WATER, a metre-wide step below, masked off over the bay); the river is
 // RIVER's ribbon (ripples carried down the current, white where it steepens, along the banks), the cataracts RIVER_FALLS' curtains with their plunge
-// pools. The page's own plane, ribbon, foam cards and shader are gone (45-host-stage.js). The sky in the water is a capture of this page's dome and
-// giant, given to the water only (WENV: the page's own materials keep their lighting). CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is unchanged.
-{const env=new THREE.Scene(),WENV={environment:null};
- env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
- ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x5a6a4a)});}
+// pools. The page's own plane, ribbon, foam cards and shader are gone (45-host-stage.js). The sky in the water is a capture of the shared sky (its
+// giant, ring and clouds at the hour), given to the water only (WENV: the page's own materials keep their lighting). CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is unchanged.
+{const WENV={environment:null};   /* the shared sky's own scene (89s-host-sky.js), recaptured as the hour moves */
+ ATMOS.skylight({renderer,sky:SKY.scene,scene:WENV,ground:()=>new THREE.Color(...(SKY.look?SKY.look.hemiG:[.35,.42,.29])).convertSRGBToLinear(),
+  key:()=>[SKY_CLOCK.day,Math.round(SKY_CLOCK.hour*4),SKY.look&&SKY.look.cover.toFixed(2)].join()});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 // the old ribbon's foam cards began at a 6% grade and were full at 14%: that is the river's rapids band (the flow's own option, 2026-10-21; it was a page-wide preset)
 const BAY_WATER=WATER.open({name:'The bay',level:0,swell:[[.06,45,225,0,.04],[.035,18,200,1.3,.03]],field:.12,bounds:BAY_BOX,
- bed:terrainH,bedBox:BAY_BOX,bedCell:8,shore:{seeds:[[BAY.c[0],BAY.c[1]]]}});
-const BAY_DRAW=WATER.draw(BAY_WATER,{renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,
+ bed:terrainH,bedBox:BAY_BOX,bedCell:8,shore:{seeds:[[BAY.c[0],BAY.c[1]]]},
+ /* the fresh river water where it meets the bay (the old foam cards' delta tint, lost in phase 3; 2026-10-25): the river's colour over the delta, softest at its edge */
+ /* the water takes the bytes as linear colour, RIVER_COL is in the working (linear) space */
+ tint:{box:[MOUTH_XZ[0]-560,MOUTH_XZ[1]-560,MOUTH_XZ[0]+560,MOUTH_XZ[1]+560],cell:16,at:(x,z)=>{const k=deltaK(x,z);return k>.01?{c:(Math.round(RIVER_COL.r*255)<<16)|(Math.round(RIVER_COL.g*255)<<8)|Math.round(RIVER_COL.b*255),a:.4*k}:null;}}});
+const BAY_DRAW=WATER.draw(BAY_WATER,{rain:true,renderOrder:1,roughness:.16,metalness:.05,envMapIntensity:.22,
  shallow:lin(WATER_SHALLOW.clone().lerp(WATER_MID,.3)),deep:lin(WATER_DEEP.clone().multiplyScalar(.75))});
 BAY_DRAW.mesh.userData.inspectLabel='The bay';
 // the outer water: the far country's sea, flat, 0.15 m under the bay's, drawn only where the bay's surface is not (a mask of 50 m cells, open 60 m inside the bay's box)
@@ -25,9 +28,29 @@ const OUTER_WATER=WATER.open({name:'The outer water',level:-.15,swell:[],field:0
   return{x0:OUTER_BOX[0],z0:OUTER_BOX[1],cell:c,nx,nz,data:d};})()});
 const OUTER_DRAW=WATER.draw(OUTER_WATER,{renderOrder:0,roughness:.2,metalness:.05,envMapIntensity:.5,color:lin(WATER_DEEP)});
 OUTER_DRAW.mesh.userData.inspectLabel='The outer water';
-const RIVER_DRAW=WATER.drawFlow(RIVER,{rapids:[.06,.14],shallow:lin(RIVER_COL),deep:lin(RIVER_COL.clone().lerp(WATER_DEEP,.3)),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.5,step:10,across:6,margin:1.2,renderOrder:2});
+// THE CLEAR-WATER LOOK (core/water ext/54 W.LOOKS.clear; BACKPORT.md swbay's row; the final rebuild, 2026-10-27; ?clearwater=0 for the bay's hue):
+// the karst springs feed the river, so it runs gin-clear green over its bed, the look's shallow and deep stops in place of the hue's
+const WQ=new URLSearchParams(location.search),CLEAR=WQ.get('clearwater')!=='0'&&WATER.LOOKS&&WATER.LOOKS.clear;
+const RIVER_SH=CLEAR?lin(WATER.lookHex('clear',.72)):lin(RIVER_COL),RIVER_DP=CLEAR?lin(WATER.lookHex('clear',.25)):lin(RIVER_COL.clone().lerp(WATER_DEEP,.3));
+const RIVER_DRAW=WATER.drawFlow(RIVER,{rain:true,rapids:[.06,.14],shallow:RIVER_SH,deep:RIVER_DP,color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.5,step:10,across:6,margin:1.2,renderOrder:2,chute:RIVER_FALL_OPT.steep});   /* chute (core/water, 2026-10-26): the ribbon gives way down the chutes, where the curtains draw the water */
 RIVER_DRAW.mesh.userData.inspectLabel='The river';
-const FALL_DRAWS=RIVER_FALLS.map((F,k)=>{const D=WATER.drawFall(F,{color:lin(0xdce8e6),opacity:.9,rows:24,cols:6,spray:false,envMapIntensity:.25,renderOrder:3});
- D.mesh.userData.inspectLabel='The cataracts';D.plunge.userData.inspectLabel='The cataracts';D.mid=[(F.lip[0][0]+F.lip[1][0])/2,F.lip[0][2],(F.lip[0][1]+F.lip[1][1])/2];return D;});
-// the river steps down in 58 terraces: a curtain and its plunge pool are two draw calls each, so only the ones within 900 m of the camera are drawn (the ribbon's white water carries the rest)
-TICKS.push(()=>{const c=camera.position;for(const D of FALL_DRAWS){const v=Math.hypot(D.mid[0]-c.x,D.mid[1]-c.y,D.mid[2]-c.z)<900;D.mesh.visible=v;D.plunge.visible=v;}});
+// the river steps down in 37 terraces: ALL their curtains are one mesh and all their plunge pools another (WATER.drawFalls, core/water/ext: two draw calls in all; it was two per fall with a per-frame
+// tick that showed only those within 900 m). The curtains land on the chute foot fallsOf found (fit: true in 45-host-stage).
+/* 2026-10-26: with spray (ATMOS.smoke's 'spray' kind, three emitters at each plunge: one sprite cloud, one call; core/atmos 3-particles in build.py) */
+/* 2026-10-26 (core/water W1): margin 1.2, the river ribbon's own, so each curtain is as wide as the ribbon at its lip and its sides fade out under the banks
+   as the ribbon's do (KNOWN_ISSUES: the jagged triangles where the curtain was narrower than the ribbon) */
+/* 2026-10-27 (core/water W2, the final rebuild): the spray by each fall's drop (spray:'drop'), so the 1.5 m steps mist less than a tall fall */
+const FALL_DRAW=WATER.drawFalls(RIVER_FALLS,{name:'The cataracts',color:lin(0xdce8e6),opacity:.9,envMapIntensity:.25,renderOrder:3,margin:1.2,spray:'drop'});
+FALL_DRAW.mesh.userData.inspectLabel='The cataracts';if(FALL_DRAW.plunge)FALL_DRAW.plunge.userData.inspectLabel='The cataracts';
+// THE KARST SPRINGS (45 SPRINGS; core/water ext/54 W.karstSpring, BACKPORT.md swbay's row; ?springs=0 without them): each a still pool with the
+// spring look's gradient (deep blue-green over the vent, clear at its rim) and the boil's rings at the vent, and its run, a gin-clear flow
+// (the clear look) from the pool's lip down its own bank to the river's edge, a quarter metre over the ground and never climbing
+const SPRING_DRAW=SPRINGS.map((S,i)=>{if(!WATER.karstSpring)return null;const lvl=S.y0-.1,tx=(BAY.c[0]+(S.u+vR(S.u))*SQ)-S.x,tz=(BAY.c[1]+(vR(S.u)-S.u)*SQ)-S.z,tl=Math.hypot(tx,tz),dir=[tx/tl,tz/tl];
+ const run=Math.max(8,tl-14),line=[];let yc=lvl;for(let k=0;k<=12;k++){const t=k/12,x=S.x+dir[0]*(S.r*.8+t*run),z=S.z+dir[1]*(S.r*.8+t*run);yc=Math.min(yc,terrainH(x,z)+.25);line.push([x,z,yc]);}
+ const K=WATER.karstSpring({name:'Karst spring '+(i+1),at:[S.x,S.z,lvl],r:S.r,dir,line,width:3,speed:.7,seed:8140+i});
+ /* the look's stops are sRGB; this page's water takes linear colour (as the cenotes' gradients in nwbay): the gradient and the colour linearised */
+ const G=K.pool.gradient;if(G)K.pool.gradient=WATER.gradientOf(K.pool,{centre:lin(G.centre).getHex(),rim:lin(G.rim).getHex(),power:G.power});
+ const P=WATER.drawStill(K.pool,WATER.lookDraw('spring','still',{color:lin(WATER.lookHex('spring',.3)),envMapIntensity:.3,renderOrder:1,pick:true,rain:true}));
+ const F=WATER.drawFlow(K.flow,WATER.lookDraw('clear','flow',{shallow:lin(WATER.lookHex('clear',.75)),deep:lin(WATER.lookHex('clear',.3)),color:0xffffff,step:2,across:3,margin:.5,envMapIntensity:.4,renderOrder:2,pick:true,rain:true}));
+ return{K,P,F};}).filter(Boolean);
+window._springs=SPRING_DRAW.length;

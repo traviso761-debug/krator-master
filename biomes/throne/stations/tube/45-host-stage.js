@@ -3,6 +3,9 @@
 // skylights of station 1): renderer, the cave's light, the tube and its layout as DATA; 47 the floor, the fields, BIO.init;
 // 84 the tube's mesh and the surface; 86 the lava, the light, the cave life on the walls and the roof.
 //
+// MAP 5.1 (2026-11-02): this is tube_hot_05 of tools/scale-model/model/data/tubes.json, 'Station 11 SE Plume-Edge Hot Tube' (42 km; 20 m wide, 13 m high,
+// 28 m under the surface; three roof skylights with siphon trees and glow mushrooms upstream, a molten channel and a CO2 sump downstream): the page is
+// its stretch round the skylights (cavern cav_st11_skylights, 1.4 km), the hot reach its downstream end
 // THE MAP (x east, z south; R 1300). An old flow on the south-east shoulder ~1.6 km up, under the plume's edge; under it a
 // lava tube ~1.4 km long, falling gently downstream (east-south-east). The surface is the flow's top (~20 m above the floor).
 //   THE TUBE       an arched passage 13-24 m wide and 8-15 m high: a flat floor of old ropy lava, flow ledges along both

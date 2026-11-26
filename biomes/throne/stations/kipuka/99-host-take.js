@@ -28,7 +28,9 @@ const VIEWS={
  'Frill trees':atTree(nearTree('frilltree',RIM[0],RIM[1],80),90,RIMA+Math.PI*.8,20,.6),
  'A frill tree\'s fins':atTree(nearTree('frilltree',RIM[0],RIM[1],80),26,RIMA+Math.PI*.8,40,.5),
  'Siphon trees breathing':(function(){const cx=SK.x+SK.r*3,cz=SK.z+SK.r*2.2;return[cx,gh(cx,cz,6),cz,SK.x,gh(SK.x,SK.z,16),SK.z];})(),
- 'Lava casts at the forest\'s edge':across(RIM[0]+Math.sin(RIMA)*40,RIM[1]-Math.cos(RIMA)*40,RIMA-.4,90,2.5,4),
+ /* stepped back along its own line until no cast is within 4 m (2026-11-02: the rebuild's placement put one at the old spot) */
+ 'Lava casts at the forest\'s edge':(function(){for(let k=0;k<12;k++){const d=40+k*6,V=across(RIM[0]+Math.sin(RIMA)*d,RIM[1]-Math.cos(RIMA)*d,RIMA-.4,90+k*6,2.5,4);
+   if(!REG.some(r=>r.key==='cast'&&Math.hypot(r.x-V[0],r.z-V[2])<(r.r||0)+4))return V;}return across(RIM[0]+Math.sin(RIMA)*40,RIM[1]-Math.cos(RIMA)*40,RIMA-.4,90,2.5,4);})(),
  'The new flow (three years old)':across(FNp.x-20,FNp.z-30,Math.atan2(FN.path[FN.path.length-1].z-FNp.z,FN.path[FN.path.length-1].x-FNp.x),220,3,2),
  'Lehua on the young lava':atTree(nearTree('lehua',RIM[0],RIM[1],12),22,1.2,3,.55),
  'Tree ferns':atTree(nearTree('treefern',RIM[0],RIM[1],6),9,2.0,2.2,.7),
@@ -136,11 +138,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'throne-kipuka',title:'Krator biome — the Throne: the kipuka',
  hint:"The Throne, station 2: the kipuka on the windward west flank (~0.3 km below the datum, ~4 m of rain). Islands of old hyperjungle the lava went round, in flows from three years to centuries old; great ruffs on the forest's rim, their seedlings on the young lava, lehua and tree ferns, lava casts of swallowed trees, siphon trees breathing the tube's mist (ideal type) · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

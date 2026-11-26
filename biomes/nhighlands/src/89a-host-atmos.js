@@ -4,3 +4,26 @@
 // this biome. The binding alone draws nothing (ATMOS.root is an empty group) and changes no page value: the dome, fog, sun and the
 // page's own water stay as they were. The hour is the page's sun, fixed (13 by day, 0 in the night mode); the module's clock is the host's dt.
 ATMOS.bindHost({THREE,scene,camera,renderer,ticks:TICKS,ground:(x,z)=>terrainH(x,z),hour:()=>LIGHT_MODE==='night'?0:13,seed:8102,viewH:()=>innerHeight});
+// R8: the foliage sways in core/atmos's wind and its travelling gusts (one wind field: BIO.bindAtmosWind); R7: leaf and grass
+// cut-outs by alpha-to-coverage when the canvas has MSAA (BIO.setA2C; the alpha test stays without it). Both before the first frame.
+BIO.bindAtmosWind();BIO.setA2C(renderer);
+// THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js, 2026-10-26): a wet upland (rain, storms, fog); it starts clear, so the
+// page looks as it did until the Weather selector picks one. The shared sky (89-host-sky.js) drives the fog and the light; the
+// binding gives it the weather's look and runs its fog law on the hour's fog (they compose, whichever binds first)
+// WET GROUND AND PUDDLES (R9, core/water 51 WATER.wetGround and WATER.hollows): in the rain the ground darkens and glosses, and the local
+// dips hold puddles ringed by the drops; the mask is baked from terrainH over the map's square (512 x 512 cells of 12.9 m, 256 KB; a 30 m
+// blur finds the hollows, not the valley), none in the stream's bed or the tarn (their own water; the crags are too steep to hold one). Before bindWeather,
+// whose own wetGround call then only fills in its options (it is idempotent)
+const WET_HOLLOWS=WATER.hollows({h:(x,z)=>terrainH(x,z),box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],cell:(TERR.X1-TERR.X0)/512,blur:30,depth:.6,
+ mask:(x,z)=>{if(Math.hypot(x-TARN.x,z-TARN.z)<TARN.r+6)return 0;const r=streamNear(x,z);if(r&&r.d<r.w+3)return 0;return 1;}});
+if(GROUND)WATER.wetGround(GROUND.material,{rain:true,porosity:.8,puddles:WET_HOLLOWS});
+ATMOS.bindWeather({climate:{wet:true},sun,hemi,grounds:GROUND?[GROUND.material]:[]});
+// HEIGHT FOG (R1, core/atmos/sky/89-atmos-j-fog.js + host/89-atmos-j-heightfog.js): the page's fog is the air's up to the ground
+// under the eye and thins above it (the crest and the range's snow stand clear of the valley haze); the dawn mist pools in the
+// lower old growth and the stream's lower valley (below 260 m, the NW corner); a broken band of cloud hangs over the crest (1950-2100 m: the views from the crest stay under it).
+// The page's fog chunk is exponential and compresses past 4 km (82-host-sky.js): the same shape here
+ATMOS.heightFog({falloff:1/850,shape:'exp',compress:[4000,5000],sun:.35,sky:.35,
+ mist:{density:.0009,y:260,depth:45,noise:.7},band:{density:.0012,y:[1950,2100],cover:.38,noise:1}});
+ATMOS.heightFogScene(scene);
+// THE RAIN OCCLUSION MAP (R10, core/atmos/fx/89-atmos-fx-raincover.js): no rain, wet or fresh snow under the old growth's crowns
+ATMOS.rainCover({renderer});

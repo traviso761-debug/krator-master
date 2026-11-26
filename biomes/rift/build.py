@@ -48,24 +48,38 @@ def find_node():
     return None
 
 HERE=os.path.dirname(os.path.abspath(__file__)); SRC=os.path.join(HERE,'src'); DIST=os.path.join(HERE,'dist')
-OUT=sys.argv[1] if len(sys.argv)>1 else "rift.html"
+sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+# THE STATIONS (PLAN-STATIONS.md, 2026-10-27): `python3 build.py --station <name>` builds dist/rift-<name>.html from src/ with the
+# station's own fragments (stations/<name>/*) in place of src/'s of the same name (its map 45m, water 89w, sky 89, views 99...)
+_args=[a for a in sys.argv[1:] if a!='--no-checks']
+STATION=_args[_args.index('--station')+1] if '--station' in _args else None
+if STATION: _args=[a for a in _args if a not in ('--station',STATION)]
+OUT=_args[0] if _args else ('rift-%s.html'%STATION if STATION else 'rift.html')
 FORBID=['kdef(','kput(','kbake(','BUCKET[','MBK[','FAMMAT[','PLATS','BRIDGES','TOWERS','RIVER','PALISADE','KOFF']
 # shared fragments from core/terrain, opt-in by name (core/README.md): '36-core-carve.js' gives
 # BIO.carve, overhangs on the heightfield. A local src/ copy with the same name wins.
-CORE_TERRAIN=[]
+CORE_TERRAIN=['35-core-strata.js','44-core-farfield.js']   # KFAR: a station's far country from the model (stations/<name>/89f-host-far.js)
+# KSTRATA: the `rift` recipe on the ridge's faces (src/45-host-stage.js; core/terrain/STRATA-PLAN.md)
 CORE_T=os.path.normpath(os.path.join(HERE,'..','..','core','terrain'))
 # the biome core from core/biome, the same way (core/README.md): one copy for every kit.
 # A kit that lists nothing keeps its own src/ copies and builds as before.
-CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
+CORE_BIOME=['10-core-head.js','20-core-kit.js','30-core-foliage.js','32-core-variants.js','33-core-fungoid.js','34-core-impostor.js','40-core-place.js','42-core-export.js','43-core-export-host.js','44-core-stage.js']
 CORE_B=os.path.normpath(os.path.join(HERE,'..','..','core','biome'))
 # core/space (KSPACE: the spatial index the core's keep-clear and scatter read; core/README.md), listed the same way
 CORE_SPACE=['20-core-space.js']
 CORE_S=os.path.normpath(os.path.join(HERE,'..','..','core','space'))
 PATH={f:os.path.join(SRC,f) for f in os.listdir(SRC) if not f.startswith('.')}
+if STATION:
+    _sd=os.path.join(HERE,'stations',STATION)
+    if not os.path.isdir(_sd): sys.exit('build.py: no station '+STATION+' (stations/'+STATION+'/)')
+    for f in os.listdir(_sd):
+        if re.match(r'\d',f): PATH[f]=os.path.join(_sd,f)
 for f in CORE_TERRAIN:
     if f not in PATH: PATH[f]=os.path.join(CORE_T,f)
 for f in CORE_BIOME:
     if f not in PATH: PATH[f]=os.path.join(CORE_B,f)
+PATH.setdefault('44-core-farfield-draw.js',os.path.join(CORE_T,'host','44-core-farfield-draw.js'))   # KFAR.mesh
+PATH.setdefault('35b-core-strata-shade.js',os.path.join(CORE_T,'host','35-core-strata-shade.js'))   # the strata's three.js half (KSTRATA.shade, BIO.strata)
 # core/rand and core/tags (core/tags/README.md), the way the core/furnish builds take them: with BIO.init({tags}) every item
 # set, instance and registered volume the kit places is a core/tags record (core/biome/20-core-kit.js). A src/ copy wins.
 CORE_TAGS={'08-core-rand.js':'rand','50-core-tags.js':'tags','52-core-tags-vocab.js':'tags','53-core-tags-host.js':'tags'}
@@ -92,11 +106,22 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'rift',own=True)}
+# a station may read other kits in place (stations/<name>/read.json): {"fragments": {published name: path from this kit},
+# "packs": {published name: [kit dir, pack key, [families taken]]}}: the fragments are slotted by their published names (after this
+# kit's 70, so their BIO.kit / kitEnd pair up), the packs carry only the families named (the rest excluded)
+if STATION and os.path.isfile(os.path.join(HERE,'stations',STATION,'read.json')):
+    import json as _json
+    _rd=_json.load(open(os.path.join(HERE,'stations',STATION,'read.json'),encoding='utf-8'))
+    for _k,_f in _rd.get('fragments',{}).items(): PATH[_k]=os.path.normpath(os.path.join(HERE,_f))
+    for _k,(_d,_key,_take) in _rd.get('packs',{}).items():
+        _dd=os.path.normpath(os.path.join(HERE,_d)); _pj=os.path.join(_dd,'tex','pack.json')
+        _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+        VIRTUAL[_k]=matlib_pack.fragment(_dd,_key,exclude=[f for f in _all if f not in _take])
 for f in VIRTUAL: PATH[f]=None
 # the shared atmosphere (core/atmos/README.md; 2026-10-20, phase 0 of the water migration): its core, presets, export, the open-water
 # wave field and the sky's light, bound once by 89a-host-atmos.js (ATMOS.bindHost). Nothing is drawn by the binding alone: the page's own
 # sky, fog, sun and water are unchanged; core/water draws here in a later phase.
-CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js']
+CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js']
 for f in CORE_ATMOS:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
@@ -105,6 +130,42 @@ PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','cor
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
+# the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
+# presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
+for f in ['89-atmos-0-core.js','89-atmos-0p-presets.js']:
+    if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos',f))
+for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky',f))
+for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']:   # e-weatherhost: ATMOS.bindWeather, with the weather (4) and its selector (9) in CORE_ATMOS (2026-10-26)
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host',f))
+# height fog (R1: the sky's chunk sky/89-atmos-j-fog.js and its host, above), the rain occlusion map (R10) and the branched lightning
+# (core/atmos/fx/), as nhighlands takes them (2026-10-27, the final rebuild)
+PATH['89-atmos-j-fog.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','sky','89-atmos-j-fog.js'))
+for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']:
+    PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','fx',f))
+# a CAVE station (stations/<name>/station.json "page": "cave"; stations/maze, 2026-11-09): a whole underground page, as the Hearths' Cave of
+# Crystals is. None of the above: the station's numbered fragments, the core its station.json names ("core": {name: path from the repo root}),
+# core/host's shell ("host": a list name in core/host/host.py), and the material packs: this kit's own families named in "own", and other kits'
+# read in place ("packs", as read.json's). Every other page is assembled exactly as before.
+_cj=os.path.join(HERE,'stations',STATION,'station.json') if STATION else None
+if _cj and os.path.isfile(_cj):
+    import json as _json
+    with open(_cj,encoding='utf-8') as _fh: _cs=_json.load(_fh)
+    if _cs.get('page')=='cave':
+        _sd=os.path.join(HERE,'stations',STATION)
+        PATH={f:os.path.join(_sd,f) for f in os.listdir(_sd) if re.match(r'\d',f)}
+        for _k,_p in _cs.get('core',{}).items(): PATH.setdefault(_k,os.path.normpath(os.path.join(HERE,'..','..',_p)))
+        khost.resolve(PATH,getattr(khost,_cs.get('host','FULL')))
+        _pj=os.path.join(HERE,'tex','pack.json')
+        _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+        VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'rift',exclude=[f for f in _all if f not in _cs.get('own',[])],own=True),
+                 khost.EDITS_JS:khost.edits_js(HERE,'rift-'+STATION)}
+        for _k,(_d,_key,_take) in _cs.get('packs',{}).items():
+            _dd=os.path.normpath(os.path.join(HERE,_d)); _pj=os.path.join(_dd,'tex','pack.json')
+            _all=sorted(_json.load(open(_pj,encoding='utf-8')).get('families',{})) if os.path.isfile(_pj) else []
+            VIRTUAL[_k]=matlib_pack.fragment(_dd,_key,exclude=[f for f in _all if f not in _take])
+        for f in VIRTUAL: PATH[f]=None
 # the syntax check cannot see a core fragment that is simply absent
 miss=[f for f in ('10-core-head.js','20-core-kit.js','30-core-foliage.js','40-core-place.js') if f not in PATH]
 if miss: print('NO BIOME CORE: '+', '.join(miss)+' (list them in CORE_BIOME or keep a src/ copy)'); sys.exit(1)
@@ -118,8 +179,9 @@ for f in frags:
             if w in s: bad.append(f'{f}: uses {w}')
     out.append(f'\n// ==================== {f}\n' if f.endswith('.js') else ''); out.append(s)
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
+BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

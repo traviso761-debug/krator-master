@@ -126,3 +126,10 @@ A plant is never part of a building: `dress()` places plants ON geometry the hos
 To port: copy 10–70 (and 00-head/99-tail if starting fresh), write `BIO.init({...fields})`,
 set `RIFT_LAKE`, call `RIFT.build`, then `BIO.bake()`, and call `BIO.lodTick(camera)` in the frame
 loop. Read KNOWN_ISSUES.md first.
+
+## One tree alone, the small plants (2026-10-26)
+
+`RIFT.make(sp,x,y,z) -> T`, `RIFT.grow(T,lv) -> stats`: one tree alone (biomes/WORLD.md, "trees as variants"): the pass's own
+record, then its builder at lv 2/1 or its far impostor at 0 (`T.small`: the small species' blob). `RIFT.small.termite(x,y,z,lv,st)`:
+the termite spire, wrapped to this kit's registry. biomes/ringisles plants the acacia and the spires with them; the kit's own
+passes do not call them, so its page draws exactly as before.

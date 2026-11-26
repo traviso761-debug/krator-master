@@ -69,14 +69,17 @@ const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return nu
 const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
-const MAT_GROUND=new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xb0aaa4});
+let KGI=null;   /* the layers' uKG indices once KGROUND.hook has them (THRONE.kgGround, 70): the page then leaves the layers to it */
+const MAT_GROUND=new THREE.MeshStandardMaterial({roughness:.95,metalness:0,map:TEX_GROUND,color:0xb0aaa4});
 MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.uniforms.uNight=GROUNDU.uNight;
- if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}else{sh.uniforms.uRock={value:THRONE.ROCKTEX};sh.uniforms.uVein={value:TEX_VEIN};}
+ if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};if(!KGI)GL_KEYS.forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}else{sh.uniforms.uRock={value:THRONE.ROCKTEX};sh.uniforms.uVein={value:TEX_VEIN};}
  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute float aRock,aGlow;varying float vRock,vGlow;attribute vec4 aL0,aL1,aL2;varying vec4 vL0,vL1,vL2;')
   .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vRock=aRock;vGlow=aGlow;vL0=aL0;vL1=aL1;vL2=aL2;');
  const W={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
  let decl='uniform sampler2D uDetail;uniform float uNight;varying vec3 vGWP;varying float vRock,vGlow;varying vec4 vL0,vL1,vL2;',body,emit;
- if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
+ if(GLAY&&KGI){body='vec3 _E_veins='+THRONE.kgE(KGI,GLAY,'veins')+',_E_glowcarpet='+THRONE.kgE(KGI,GLAY,'glowcarpet')+',_E_mycelium='+THRONE.kgE(KGI,GLAY,'mycelium')+';{vec3 dt=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);}';
+  emit='{totalEmissiveRadiance+=uNight*(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*'+W.veins+'*2.2+_E_glowcarpet*smoothstep(0.05,0.3,_E_glowcarpet.b-_E_glowcarpet.r)*'+W.glowcarpet+'*2.0+_E_mycelium*smoothstep(0.08,0.3,_E_mycelium.r-_E_mycelium.b)*'+W.mycelium+'*0.55*vGlow);}';}
+ else if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
   body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
    'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
    GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');'+(k==='veins'||k==='glowcarpet'||k==='mycelium'?'vec3 _E_'+k+'=L;':'')).join('')+'}';
@@ -88,7 +91,9 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;vec3 rk=pow(texture2D(uRock,vGWP.xz*0.13+vGWP.y*0.04).rgb,vec3(2.2));diffuseColor.rgb*=mix(dt*dt2*1.12,rk*2.2,vRock*0.75);}';
   emit='{float v=max(texture2D(uVein,vGWP.xz*0.11).r,texture2D(uVein,vGWP.xz*0.037+0.41).r*0.7);totalEmissiveRadiance+=vec3(1.0,0.62,0.22)*v*vGlow*uNight*0.32;}';}
  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl)
-  .replace('#include <map_fragment>','#include <map_fragment>\n'+body).replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+emit);};
+  .replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/').replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n'+emit);};
+const GW={shoulder:'vL0.x',ember:'vL0.y',ash:'vL0.z',ripples:'vL0.w',mycelium:'vL1.x',lava:'vL1.y',veins:'vL1.z',scoria:'vL1.w',glowcarpet:'vL2.x',sulphur:'vL2.y',tufa:'vL2.z',obsidian:'vL2.w'};
+KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-src',keys:GL_KEYS,W:GW,GLAY});
 const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),rk=new Float32Array(nx*nx),gw=new Float32Array(nx*nx),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
@@ -107,28 +112,11 @@ const GROUND=(function(){const N=560,S=TERR.R*2.2,cs=S/N,nx=N+1;
  g.setAttribute('aRock',new THREE.BufferAttribute(rk,1));g.setAttribute('aGlow',new THREE.BufferAttribute(gw,1));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s south-east shoulder';scene.add(m);return m;})();
+THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
 
 // ---------------------------------------------------------------- the water: the acid lake, the hot pools
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd8d6ce)},uLight:{value:1}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.02*sin(vWP.x*0.31+uT*0.8)+0.015*sin(vWP.z*0.53-uT*0.5),1.0,0.02*cos(vWP.z*0.27+uT*0.7)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.08+fr*0.55);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),120.0)*0.7*vec3(1.0,0.95,0.85);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
-function pond(X,Z,R,Lv,c0,c1,label){const C0=new THREE.Color(c0).convertSRGBToLinear(),C1=new THREE.Color(c1).convertSRGBToLinear(),PN=48,pos=[X,Lv,Z],col=[C0.r,C0.g,C0.b],idx=[];
- for(let k=0;k<=PN;k++){const a=k/PN*TAU;pos.push(X+Math.cos(a)*R,Lv,Z+Math.sin(a)*R);col.push(C1.r,C1.g,C1.b);}for(let k=0;k<PN;k++)idx.push(0,k+2,k+1);
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
-// the acid lake: milky turquoise, as Ijen's; the hot pools: deep blue-green with an orange rim of mats
-pond(PIT.x,PIT.z,PIT.r*.98,PIT.lake,0x58b8a8,0x8ad0b0,'The acid lake');
-POOLS.forEach((P,i)=>pond(P.x,P.z,P.r*1.5,POOLL[i],0x1e7a90,0xc89a40,'A hot pool'));
-_onLight.push(m=>{MAT_WATER.uniforms.uLight.value=m==='night'?.18:1;GROUNDU.uNight.value=m==='night'?1:0;});
+// 2026-10-26: on core/water (src/89w-host-water.js, after core/atmos is bound in 89a): the lake a WATER.still, the pools WATER.spring.
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 
 // ---------------------------------------------------------------- the steam
 // Each fumarole breathes a column of soft puffs that rise, swell and thin; the lake and the pools steam too. One Points

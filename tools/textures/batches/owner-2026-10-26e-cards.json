@@ -1,0 +1,167 @@
+[
+ {
+  "src": "card.scarp.succulents.png",
+  "out": "core/materials/library/card.scarp.succulents",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.scarp.succulents",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.scarp.succulents\"",
+    "reuse": "the SW highlands dry east scarp: arrowheads (top row), coral melon (middle), star-fruit caudex (bottom)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.outlands.wadi.png",
+  "out": "core/materials/library/card.outlands.wadi",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.outlands.wadi",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.outlands.wadi\"",
+    "reuse": "the Outlands springs and seeps: ribbon mat, bell pool, curtain weed, glow-bell tubes",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.triplets.png",
+  "out": "core/materials/library/card.triplets",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.triplets",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.triplets\"",
+    "reuse": "the SW highlands bearded triplets (rain-wall understorey); any bat-flower-like shade herb",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.bulbheath.png",
+  "out": "core/materials/library/card.bulbheath",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.bulbheath",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.bulbheath\"",
+    "reuse": "the SW highlands bulb heath on the balds; any alien water-storing bulb plant",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ },
+ {
+  "src": "card.wingreed.png",
+  "out": "core/materials/library/card.wingreed",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.wingreed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.wingreed\"",
+    "reuse": "the SW highlands wing reed in the hanging swamps; any alien reed or patterned-leaf herb",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)"
+   }
+  }
+ }
+]

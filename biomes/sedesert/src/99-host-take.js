@@ -33,7 +33,7 @@ const rimN=(x,k)=>zR(x)-Wc(x)*(k==null?1.1:k),rimS=(x,k)=>zR(x)+Wc(x)*(k==null?1
 const VIEWS={
  'The linear oasis':look(400,rimN(400,1.15),10,900,zR(900),4),
  'Dragon trees on the rim':atTree(nearTree(0,-150,rimS(-150,1.1)),42,.6),
- 'Mesquite bosque':atTree(nearTree(6,1100,zR(1100)+10,10),46,2.2,5),
+ 'Mesquite bosque':(T=>atTree(T,46,2.2,T.H*1.1+2))(nearTree(6,1100,zR(1100)+10,10)),   /* over the crowns: at 5 m the eye stood in a neighbour's foliage (GPU --all-views, 2026-11-09) */
  'The wadi gorge':look(-2380,zR(-2380)+26,5,-2650,zR(-2650),12),
  'The rain-shadow pond':[POND.x-230,PL+22,POND.z-190,POND.x+20,PL+.5,POND.z+10],
  'The butte':look(BUTTE.x-1500,BUTTE.z-650,55,BUTTE.x,BUTTE.z,100),
@@ -57,8 +57,18 @@ const VIEWS={
 };
 // the walkers move, so these two presets are getters: each frames the animal where it stands when chosen
 // (one deer of that herd, the nearest coyote loop's leader), from the side at its own height
-const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements;
- return[e[12]-d*.8,e[13]+d*.28,e[14]+d*.6,e[12],e[13]+d*.1,e[14]];};
+/* the animal views follow a moving animal, so the eye lands somewhere new each run: of eight headings at two heights round
+   it, take the first with 1.5 m of room (else the roomiest), the room measured to the static instances' bounding spheres
+   within 40 m and to the ground (2026-11-11: the Mule deer eye stood 0.43 m from a boulder on one GPU run) */
+const eyeRoom=(ex,ey,ez)=>{let c=ey-terrainH(ex,ez);scene.traverse(o=>{if(!o.isInstancedMesh||!o.visible||!o.count||o.instanceMatrix.usage===THREE.DynamicDrawUsage)return;
+ const g=o.geometry;if(!g.boundingSphere)g.computeBoundingSphere();const R=g.boundingSphere.radius,q=g.boundingSphere.center,a=o.instanceMatrix.array;
+ for(let j=0,n=o.count*16;j<n;j+=16){const cx=a[j]*q.x+a[j+4]*q.y+a[j+8]*q.z+a[j+12]-ex,cz=a[j+2]*q.x+a[j+6]*q.y+a[j+10]*q.z+a[j+14]-ez;if(cx>40||cx<-40||cz>40||cz<-40)continue;
+  const cy=a[j+1]*q.x+a[j+5]*q.y+a[j+9]*q.z+a[j+13]-ey,r=R*Math.max(Math.hypot(a[j],a[j+1],a[j+2]),Math.hypot(a[j+4],a[j+5],a[j+6]),Math.hypot(a[j+8],a[j+9],a[j+10]));
+  const k=Math.hypot(cx,cy,cz)-r;if(k<c)c=k;}});return c;};
+const animalView=(mesh,i,d,fb)=>{const m=scene.getObjectByName(mesh);if(!m||i<0)return fb;const M=new THREE.Matrix4();m.getMatrixAt(i,M);const e=M.elements,x=e[12],y=e[13],z=e[14];
+ let best=null,bc=-1e9;for(const h of [.28,.5])for(let s=0;s<8;s++){const t=s*Math.PI/4,ox=-.8*Math.cos(t)-.6*Math.sin(t),oz=.6*Math.cos(t)-.8*Math.sin(t);
+  const v=[x+d*ox,y+d*h,z+d*oz,x,y+d*.1,z],c=eyeRoom(v[0],v[1],v[2]);if(c>=1.5)return v;if(c>bc){bc=c;best=v;}}
+ return best;};
 Object.defineProperty(VIEWS,'Mule deer',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{};
  return animalView('biome:deer',(L.deer||[]).indexOf(HD.deer&&HD.deer[0]),8,look(HD.x-24,HD.z+12,3,HD.x,HD.z,.9));}});
 Object.defineProperty(VIEWS,'Coyotes',{enumerable:true,get(){const L=SEDESERT.FAUNA_LAYOUT||{},C=L.coyotes||[];let b=-1,bd=1e9;
@@ -80,9 +90,9 @@ function describe(hit){const p=hit.point,o=hit.object;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:12800000,calls:120},   // measured at q=1 on this 6.8 km map (baseline.json), not a target (KNOWN_ISSUES)
+ showcase:{tris:12800000,calls:320},   // measured at q=1 on this 6.8 km map (baseline.json), not a target (KNOWN_ISSUES). Calls 120 -> 320 (2026-10-27): the runtime LOD draws a mesh per chunk and range (~220-280 at the default camera) for under half the triangles (5.7M drawn, was 12.6M)
  cls:{pass:7000000,host:900000},
- type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','host':'host'},
+ type:{'desert/trees':'pass','desert/floor':'pass','desert/fauna':'pass','desert/dress':'pass','desert/kin':'pass','host':'host'},
 };
 // The host's own checks (verify.py runs them when present), each with a broken input that must fail.
 // the cataract leaves from rock, its curtain clear of the rock; the cave open under its cap; nothing grows
@@ -93,15 +103,9 @@ const worldV=m=>{const a=m.geometry.attributes.position,o=[];m.updateMatrixWorld
 // the instanced items only (what the biome roots): a mesh's bounding-box centre is not a plant
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z]);}});return o;};
-// the surface as DRAWN: the ground's own triangles (terrainH holds only at their vertices, 17.8 m apart), or the
-// pond's disc at PL where it covers them. Not the river's ribbon: it faces down, so from above it is culled and
-// the river shows its bed (KNOWN_ISSUES); a foot under the ground is under the ribbon too
-const drawnH=(function(){let P=null,X,Z,nx;const at=(A,v)=>{let lo=0,hi=A.length-2;while(lo<hi){const m=(lo+hi+1)>>1;if(A[m]<=v)lo=m;else hi=m-1;}return lo;};
- return (x,z)=>{if(!P){P=GROUND.geometry.attributes.position.array;nx=1;while(P[nx*3+2]===P[2])nx++;X=[];Z=[];
-   for(let i=0;i<nx;i++)X.push(P[i*3]);for(let j=0;j<P.length/3/nx;j++)Z.push(P[j*nx*3+2]);}
-  const i=at(X,x),j=at(Z,z),u=(x-X[i])/(X[i+1]-X[i]),v=(z-Z[j])/(Z[j+1]-Z[j]),h=(a,b)=>P[((j+b)*nx+i+a)*3+1];   // each cell split on its (i,j+1)-(i+1,j) diagonal (45, GROUND)
-  const g=u+v<=1?h(0,0)+u*(h(1,0)-h(0,0))+v*(h(0,1)-h(0,0)):h(1,1)+(1-u)*(h(0,1)-h(1,1))+(1-v)*(h(1,0)-h(1,1));
-  return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};})();
+// the surface as DRAWN: the ground's own triangles (GROUND.userData.hAt, 45: terrainH holds only at their vertices),
+// or the pond's surface at PL where it covers them. Not the river's water: a foot under the ground is under the river too
+const drawnH=(x,z)=>{const g=GROUND.userData.hAt(x,z);return Math.hypot(x-POND.x,z-POND.z)<163?Math.max(g,PL):g;};
 // the twist-candles' far spires, laid out for every clump (SEDESERT.spiresOf: this spine keeps all of them heroes)
 const candleSpires=()=>{const sp=SEDESERT.SPECIES.indexOf(SEDESERT.byKey.candle);return SEDESERT.TREES.filter(T=>T.sp===sp).flatMap(T=>SEDESERT.spiresOf(T));};
 // species that yield something edible the kit does not draw as a catalog fruit (the cardon's fruit, the agave's heart,
@@ -158,11 +162,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 // (KratorFauna.build) and registered as a core/tags life record; they idle and graze by KratorFauna.animate on the host's
 // motion time. Ground brushes: each stroke writes the terrain field (core/terrain/31-core-field-brush.js) and the ground's
 // lattice is lifted where it reached; an undo, a move or a removal replays the strokes left from the field as baked. What
-// stands on the ground (the biome's plants and rocks, the river, the cataract) is not re-seated by a stroke (KNOWN_ISSUES.md).
+// stands on the ground: the biome's plants, rocks and dress are re-seated (2026-10-25: SEDESERT.seat before the field is
+// written, SEDESERT.reseat after, 65-biome-sedesert-dress.js); the river, the cataract and the cave are not (KNOWN_ISSUES.md).
+const sdBox=st=>{const r=st.r*1.1+2;return[st.x-r,st.z-r,st.x+r,st.z+r];};
 const SD_SNAP=KFIELD.snapshot(TFIELD),SD_STROKES=[],SD_LIVE={};
 function sdGround(box){const g=GROUND.geometry,P=g.attributes.position,n=P.count,pad=box?GRID.cs:0;let moved=0;
  for(let k=0;k<n;k++){const x=P.getX(k),z=P.getZ(k);if(box&&(x<box[0]-pad||x>box[2]+pad||z<box[1]-pad||z>box[3]+pad))continue;const y=terrainH(x,z);if(y!==P.getY(k)){P.setY(k,y);moved++;}}
  if(moved){P.needsUpdate=true;g.computeVertexNormals();g.computeBoundingSphere();}
+ SEDESERT.reseat(box);
  for(const id in SD_LIVE){const L=SD_LIVE[id],r=KTAGS.page.get(id);if(!r)continue;if(!box||(r.at[0]>=box[0]-pad&&r.at[0]<=box[2]+pad&&r.at[2]>=box[1]-pad&&r.at[2]<=box[3]+pad)){r.at[1]=terrainH(r.at[0],r.at[2]);L.g.position.y=r.at[1];}}
  return moved;}
 function sdReplay(){KFIELD.replay(TFIELD,SD_SNAP,SD_STROKES.map(r=>r.stroke));sdGround(null);}
@@ -173,7 +180,7 @@ const SD_WORLD={
  find:(t,tol)=>KEDITS.match(t,KTAGS.page.records.filter(r=>!r.removed&&!r.set),tol),
  add(rec){
   if(rec.kind==='ground'){const r=KTAGS.page.add({'class':'feature',kind:'ground',key:rec.key,name:rec.name||'ground: '+rec.key,at:rec.at,r:rec.r,h:.5,note:'strength '+rec.strength,frag:'99-host-take.js (edit)'});
-   r.stroke=KFIELD.strokeOf(rec);SD_STROKES.push(r);const box=KFIELD.stroke(TFIELD,r.stroke);if(box)sdGround(box);return r;}
+   r.stroke=KFIELD.strokeOf(rec);SD_STROKES.push(r);SEDESERT.seat(sdBox(r.stroke));const box=KFIELD.stroke(TFIELD,r.stroke);if(box)sdGround(box);return r;}
   if(rec['class']==='life'){const E=KratorFauna.entry(rec.key);if(!E)return null;const y=terrainH(rec.at[0],rec.at[2]);
    const g=KratorFauna.build(rec.key,{variant:0,seed:1+(Math.abs(Math.round(rec.at[0]*7+rec.at[2]*13))%997)});g.position.set(rec.at[0],y,rec.at[2]);g.rotation.y=rec.ry||0;
    g.traverse(q=>{q.castShadow=true;});g.userData.inspectLabel=E.name;scene.add(g);
@@ -181,20 +188,23 @@ const SD_WORLD={
     tags:{diet:E.tags.diet||null,biome:(E.tags.biomes||[]).indexOf('sedesert')>=0?'sedesert':null},frag:'99-host-take.js (edit)'});
    SD_LIVE[r.id]={g,phase:(r.at[0]*.37+r.at[2]*.11)%6.283};return r;}
   return null;},
- move(h,at,ry){if(h.kind==='ground'&&h.stroke){h.at=at.slice();h.stroke.x=at[0];h.stroke.z=at[2];sdReplay();return;}
+ move(h,at,ry){if(h.kind==='ground'&&h.stroke){h.at=at.slice();h.stroke.x=at[0];h.stroke.z=at[2];SEDESERT.seat(sdBox(h.stroke));sdReplay();return;}
   const L=SD_LIVE[h.id];if(!L)return;const y=terrainH(at[0],at[2]);h.at=[at[0],y,at[2]];L.g.position.set(at[0],y,at[2]);if(ry!=null){h.ry=ry;L.g.rotation.y=ry;}},
  set(h,path,value){h[path]=value;},
  remove(h){const i=SD_STROKES.indexOf(h);if(i>=0){SD_STROKES.splice(i,1);KTAGS.page.remove(h.id);sdReplay();return;}
   const L=SD_LIVE[h.id];if(L){scene.remove(L.g);delete SD_LIVE[h.id];}KTAGS.page.remove(h.id);}};
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88; the final rebuild): each chunk mesh by its range */
 KHOST.take({build:'sedesert',title:'Krator biome — the eastern high desert',
  hint:"The eastern high desert: red desert, the river's linear oasis, the rain-shadow pond, the cataract into the Abyss (ideal type)",
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
  // the eye kept over the ground, and out of the carved cap's rock (on top of it)
  clampCam(cp){const g=terrainH(cp.x,cp.z)+1.8;if(cp.y<g)cp.y=g;
   if(BIO.carve.rockAt(cp.x,cp.y,cp.z))cp.y=(BIO.carve.topAt(cp.x,cp.z)??cp.y)+1.8;},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
+ controls:[AIR_CONTROL],   /* the air: calm or a dust storm (89x-host-air.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing]}},
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  palette:{items:SD_FAUNA,build:key=>KratorFauna.build(key,{variant:0,seed:1})},
  edits:{world:SD_WORLD,log:typeof KHOST_EDITS!=='undefined'?KHOST_EDITS:null,brushes:{modes:['raise','lower','flatten','smooth'],r:[3,120,18]},

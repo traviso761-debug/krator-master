@@ -230,6 +230,17 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
    m.position.set(mx+tx*(i-1)*2.2+dx*.2,yN+HN*.62,mz+tz*(i-1)*2.2+dz*.2);m.lookAt(cx,m.position.y,cz);m.userData.vault=true;m.userData.inspectLabel='A seal of the lattice (the glyph burns while the wheel turns)';scene.add(m);}
   // the field: a pale shell filling the niche, rippling at the keepers' pace (the thing inside does not)
   if(!open){const g=new THREE.CylinderGeometry(nicheW*.46,nicheW*.46,HN-.6,24,1,true),m=new THREE.Mesh(g,field);m.position.set(mx+dx*D*.52,yN+HN/2,mz+dz*D*.52);m.scale.z=D/nicheW*1.0;m.rotation.y=-a;m.renderOrder=4;m.userData.vault=true;m.userData.inspectLabel='The field of the seal (time inside runs at a ten-thousandth)';scene.add(m);}
+  // THE TIME FIELDS (core/hazard, kind time; 2026-10-26): the seal's own, the niche behind the lattice at P.slow; and the
+  // hall's slowing, where the field leaks through the lattice: a quarter of our time by the bars, ours again 8 m out (the
+  // keepers at the wheel, 11 m from its axis, are clear of it). Records only (BIO.record: core/tags, not REG, so the
+  // inspector's names stay the rooms'); the figures and the dust below run at KHAZ.timeScale where they stand
+  if(!open){const fx=mx+dx*D*.55,fz=mz+dz*D*.55,pts=[[-1,.4],[1,.4],[1,D-.2],[-1,D-.2]].map(([s,dd])=>{const u=s*nicheW/2;return [mx+tx*u+dx*dd-fx,mz+tz*u+dz*dd-fz];});
+   BIO.record({name:E.id+': the seal\'s field (time inside runs at a ten-thousandth of ours)',key:'longsong_seal_field_'+E.id,kind:'seal-field',x:fx,y:yN,z:fz,r:D*.6,h:HN,
+    tags:{hazard:{kind:'time',time:{scale:P.slow},falloff:'none',shape:{type:'poly',pts,h:HN},tell:{sign:'the lattice: do not reach through it'}}}});
+   /* centred 2 m out in the hall, r 6: 8 m into the hall, 4 m back through the bars, short of the sealed thing (4.7 m in),
+      which runs at the seal's own P.slow, not a product of the two */
+   BIO.record({name:E.id+': the slowing at the seal (the field through the lattice)',key:'longsong_seal_slowing_'+E.id,kind:'seal-slowing',x:mx-dx*2,y:yN,z:mz-dz*2,r:6,h:HN,
+    tags:{hazard:{kind:'time',time:{scale:.25},falloff:'smooth',danger:.2,shape:{type:'cyl',r:6,h:HN},nav:{avoid:false,travel:2},tell:{sign:'the air thickens by the bars'}}}});}
   // the plaque at the seal's foot
   lsDecal(SIGNS.plaque(E),mx+tx*(nicheW/2+1.3)-dx*.05,yN+1.9,mz+tz*(nicheW/2+1.3)-dz*.05,1.8,1.35,-dx,-dz,{label:E.id+' · '+E.name+' (its plaque)',basic:true});
   // the thing itself, drawn in its frozen moment at the niche's middle
@@ -237,16 +248,20 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
   const G=new THREE.Group();G.position.set(ix,yN,iz);G.rotation.y=face;scene.add(G);
   sealedForm(E.form,G);
   G.traverse(o=>{if(o.isMesh||o.isPoints){o.userData.vault=true;o.userData.host=true;o.userData.cls='prop';o.userData.inspectLabel=E.id+' · '+E.name;}});
-  SLOWED.push({E,G,base:G.rotation.y,a});
+  if(!open)SLOWED.push({E,G,base:G.rotation.y,a});   /* LS-008's empty plinth stands at our time, and still */
   // its light: the niche lit dimly, the Second Sun bright (seen through the blue glass)
   vlight(ix-dx*2,yN+HN-1.2,iz-dz*2,E.form==='sun'?0xffe0a0:E.form==='fire'?0x8a40c0:0x8aa0c8,E.form==='sun'?2.2:.55,E.form==='sun'?20:11);
   REGISTER({name:E.id+' · '+E.name,cls:'prop',kind:'sealed',key:'longsong_sealed_'+E.id,x:ix,z:iz,y:yN,r:4,h:HN,tags:{culture:'order'},sealed:E,note:'held by the Procrastinator'});});
  // motes: dust hanging still in every closed seal, drifting at our pace in the hall and in the open one
+ const MOTES=[];
  const motes=(n,cxm,cym,czm,s,slow)=>{const pos=new Float32Array(n*3),ph=new Float32Array(n);const S=KRAND.stream(KRAND.hash(171,Math.round(cxm),Math.round(czm)));
   for(let i=0;i<n;i++){pos[i*3]=cxm+S.range(-s,s);pos[i*3+1]=cym+S.range(-s,s);pos[i*3+2]=czm+S.range(-s,s);ph[i]=S.range(0,6.28);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('aPh',new THREE.BufferAttribute(ph,1));
-  const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uT:VU.uT,uK:{value:slow}},
-   vertexShader:'uniform float uT,uK;attribute float aPh;void main(){vec3 p=position;float t=uT*uK;p+=vec3(sin(t*.31+aPh)*.6,sin(t*.17+aPh*1.7)*.4-mod(t*.05+aPh,2.0)*.2,cos(t*.23+aPh)*.6);vec4 mv=modelViewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(22.0/-mv.z,1.0,4.0);}',
+  // aK: each mote's own pace, from core/hazard's time fields where it hangs (KHAZ.timeScale, filled on the first tick, when
+  // every field is registered; the fields are steady, so t x aK is its clock); without core/hazard, the cloud's slow
+  const aK=new Float32Array(n).fill(slow);g.setAttribute('aK',new THREE.BufferAttribute(aK,1));MOTES.push(g);
+  const m=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,uniforms:{uT:VU.uT},
+   vertexShader:'uniform float uT;attribute float aPh,aK;void main(){vec3 p=position;float t=uT*aK;p+=vec3(sin(t*.31+aPh)*.6,sin(t*.17+aPh*1.7)*.4-mod(t*.05+aPh,2.0)*.2,cos(t*.23+aPh)*.6);vec4 mv=modelViewMatrix*vec4(p,1.0);gl_Position=projectionMatrix*mv;gl_PointSize=clamp(22.0/-mv.z,1.0,4.0);}',
    fragmentShader:'void main(){vec2 d=gl_PointCoord-0.5;float a=smoothstep(0.5,0.0,length(d));gl_FragColor=vec4(vec3(1.0,0.9,0.7)*a*0.8,a);}'});
   const p=new THREE.Points(g,m);p.userData.vault=true;p.userData.inspectLabel=slow<.01?'dust, hanging still (slowed)':'dust';scene.add(p);return p;};
  LS.SEALED.forEach((E,k)=>{const a=nicheA(k),x=cx+Math.cos(a)*(R+4.5),z=cz+Math.sin(a)*(R+4.5);motes(90,x,y0+5.5,z,3,E.form==='empty'?1:P.slow);});
@@ -259,7 +274,11 @@ const PROC=(function(){const P=LS.PROCRASTINATOR,y0=P.y0,R=P.hallR,H=P.hallH,cx=
  const BURN=KSCHED.timeline({period:7.2,segments:[{dur:2,from:.55,to:1.08,ease:'inOut',name:'flare'},{dur:5.2,from:1.08,to:.55,ease:'out',name:'ebb'}]});
  TICKS.push((dt,t)=>{wheel.rotation.y=t*P.turn;VU.uT.value=t;const pulse=BURN.at(t).value+.08*Math.sin(t*3.7);VU.uPulse.value=pulse;
   WL.forEach(i=>{const c=lights0[i],o=(i*2+1)*4;VLT[o]=c[0]*pulse;VLT[o+1]=c[1]*pulse;VLT[o+2]=c[2]*pulse;});VLTEX.needsUpdate=true;
-  SLOWED.forEach(S=>{const ts=t*P.slow;S.G.rotation.y=S.base+.02*Math.sin(ts);});});
+  // the sealed things' clocks: t x the time scale where each stands (core/hazard; steady fields, so a pure function of t)
+  const TZ=typeof KHAZ!=='undefined'&&KTAGS.page?KHAZ:null;
+  if(TZ&&!MOTES.done){MOTES.done=true;MOTES.forEach(g=>{const p=g.attributes.position.array,k=g.attributes.aK;
+   for(let i=0;i<k.count;i++)k.array[i]=TZ.timeScale(p[i*3],p[i*3+2],0,p[i*3+1]);k.needsUpdate=true;});}
+  SLOWED.forEach(S=>{if(S.k==null)S.k=TZ?TZ.timeScale(S.G.position.x,S.G.position.z,0,S.G.position.y+1):P.slow;S.G.rotation.y=S.base+.02*Math.sin(t*S.k);});});
  return {wheel,SLOWED,lights:VLIGHTS};})();
 
 // the sealed things' forms (each a few primitives; their pose is the moment the seal closed)

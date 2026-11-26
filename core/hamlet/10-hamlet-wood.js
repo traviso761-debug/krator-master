@@ -13,15 +13,15 @@ KHAMLET.WOOD_USES = ['timber', 'fuel', 'poles', 'thatch', 'fibre', 'craft', 'oth
 KHAMLET.WOOD_RULES = [
   ['fuel',   ['fuel', 'firewood', 'charcoal', 'torch resin']],
   ['timber', ['timber', 'beam', 'ship knee', 'knees', 'boat rib', 'canoe', 'dugout', 'trunks', 'hollow', 'piles', 'hull']],
-  ['poles',  ['pole', 'post', 'fenc', 'fence', 'culm', 'cane', 'withies', 'ribs', 'walls']],
+  ['poles',  ['pole', 'post', 'fenc', 'fence', 'culm', 'cane', 'withies', 'ribs', 'walls', 'hedg']],
   ['thatch', ['thatch', 'straw', 'frond', 'roofing', 'bark sheet', 'mats', 'matting', 'reed']],
-  ['fibre',  ['fibre', 'coir', 'cordage', 'cord', 'rope', 'basketry', 'weaving', 'wrapping']],
+  ['fibre',  ['fibre', 'coir', 'awns', 'stuffing', 'the down', 'cordage', 'cord', 'rope', 'basketry', 'weaving', 'wrapping']],
   ['craft',  ['carving', 'turnery', 'tool handle', 'furniture', 'chest', 'cogs', 'pipes', 'whetstone', 'cork', 'incense',
-              'dye', 'gum', 'pitch', 'resin', 'silicified', 'wood', 'paper', 'tanbark', 'tannin']],
-  ['other',  ['shade', 'fodder']]
+              'dye', 'gum', 'pitch', 'resin', 'silicified', 'wood', 'paper', 'tanbark', 'tannin', 'tar', 'sawdust', 'shavings']],
+  ['other',  ['shade', 'fodder', 'hay', 'grazing']]
 ];
 
-/* A tag reads 'use (note), use (note)': the bracketed words are notes on the use before them ('poles (light,
+/* A tag reads 'use (note), use (note)' (a ';' parts uses as a ',' does: 'hay; grazing'): the bracketed words are notes on the use before them ('poles (light,
    ringed)', 'timber (the hardest)'), so the uses come from the text outside the brackets and the notes are only read for
    a tree that must not be felled ('none (too big to fell)', 'none (protected)'). */
 KHAMLET.NO_FELL = ['too big to fell', 'too great to fell', 'protected', 'sacred', 'one tree is a grove'];
@@ -37,7 +37,7 @@ KHAMLET.woodSplit = function (text) {
   return {outside: outside, notes: notes};
 };
 KHAMLET.woodPhrases = function (text) {
-  return KHAMLET.woodSplit(text).outside.split(',').map(function (s) { return s.trim(); })
+  return KHAMLET.woodSplit(text).outside.split(/[,;]/).map(function (s) { return s.trim(); })
     .filter(function (s) { return s && s !== 'none'; });
 };
 

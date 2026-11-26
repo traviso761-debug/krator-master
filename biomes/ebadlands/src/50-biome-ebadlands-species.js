@@ -49,6 +49,8 @@ const PAL=EBADLANDS.PAL={
  sedge:[0x7a8a4a,0x8a9a54,0x6e7e44],reed:[0x6a8a3a,0x7a9a44,0x5a7a30],fern:[0x4e7a34,0x5a8a3a,0x46702e],
  lichen:[0xd88a3a,0xe0a048,0xc0c0a0,0x9aa090,0xb8b088,0xa8c070],
  sulphur:[0xe8d040,0xd8b030,0xf0e060,0xc8a020],ochre:[0xc8862a,0xb87420,0xd89a3a],crust:[0xf0ece0,0xe8e4d4,0xdcd8c8],
+ // the brimstone reeds (the Throne's, biomes/throne src/50 PAL: station 8's sulphur life): rust below, sulphur above, crusted tassels
+ reedLow:[0x8a5a2a,0x7a4a22,0x9a6430],reedHigh:[0xc8c040,0xd4cc4c,0xb8b034],tassel:[0xf0dc50,0xe8d040,0xf4e468],
  rockRed:[0xa86048,0x9a5440,0xb87058,0x8a4a3a],rockGrey:[0x8a8480,0x7a7470,0x9a948e],rockBand:[0xb87888,0xd8c8a8,0xc8a868,0x8a8a90,0x8a4a44],
  basalt:[0x4a4440,0x3e3a38,0x56504a],deadwood:[0xb8b0a4,0xa8a094,0xc8c0b4,0x989084],
  acorn:[0x9a7a3a,0x8a6a34,0xa8843e],tuna:[0xd83a48,0xc82a3a,0xe05040],pitaya:[0xe0206a,0xd01860],grape:[0x3a2a4a,0x4a3458,0x2e2440],grapeLeaf:[0x5a8a3a,0x6a9a44,0x4e7a34],
@@ -146,6 +148,8 @@ EBADLANDS.PLANTS={
  grape:PK('Canyon grape','temperate','subhumid','yes',['Cfa','BSk','Dfb'],['vine','grapes'],HV('none',['grapes','leaves'],false,'Small dark grapes in late summer; climbs cottonwoods and hangs off ledges.','generic_fruit_canyon_grape')),
  moss:PK('Moss and lichen','cold','subhumid','both',['Dfc','ET','Dfb'],['lichen'],HV('none',[],true,'')),
  cushion:PK('Tundra cushion plants','cold','semiarid','no',['ET'],['lobe'],HV('none',[],false,'')),
+ // the Throne's (biomes/throne, station 8: THRONE.buildSulphur), ported for the sulphur pools' shores (KNOWN_ISSUES, From other kits); the stems are the shared 'rod', so the tassel names the plant
+ brimreed:PK('Brimstone reeds','tropic','semiarid','yes',['BSh'],['tassel'],HV('fibre',[],false,'Krator\'s own: stands of hollow stems a man high and more in the acid shallows, banded rust below and sulphur-yellow above, each topped by a tassel of crusted sulphur. They live on the gas bubbling up round their roots.')),
 };
 EBADLANDS.plantOfItem=item=>{for(const k in EBADLANDS.PLANTS)if(EBADLANDS.PLANTS[k].items.indexOf(item)>=0)return EBADLANDS.PLANTS[k];return null;};
 // what the catalog must hold for this kit (biomes/FRUIT.md): every fruit key a species or a plant names
@@ -346,13 +350,21 @@ G.podhead=function(){const pos=[],nor=[],uv=[],col=[];const seg=10,nr=9,P=[];
  for(let i=0;i<nr;i++)for(let s=0;s<seg;s++){const a=P[i][s],b=P[i][(s+1)%seg],c=P[i+1][s],d=P[i+1][(s+1)%seg];push(a);push(d);push(c);push(a);push(b);push(d);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a ribbed succulent COLUMN (the moonflower cactus), unit height, radius .5, domed top
-G.column=function(){const pos=[],nor=[],uv=[],col=[];const seg=8,prof=[[0,.5],[.55,.49],[.86,.42],[1.0,.22]];
- const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=s%2?1:.84;r.push([Math.cos(a)*p[1]*rib,p[0],Math.sin(a)*p[1]*rib,s%2?1:.78]);}return r;});
- const push=(p,n)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(0,0);col.push(p[3],p[3],p[3]);};
- for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg];
-  push(a,[a[0],.15,a[2]]);push(d,[d[0],.3,d[2]]);push(c,[c[0],.3,c[2]]);push(a,[a[0],.15,a[2]]);push(b,[b[0],.15,b[2]]);push(d,[d[0],.3,d[2]]);}
- const top=[0,1.05,0,1];for(let s=0;s<seg;s++){const a=R[prof.length-1][s],b=R[prof.length-1][(s+1)%seg];push(a,[0,1,0]);push(b,[0,1,0]);push(top,[0,1,0]);}
+// the succulent columns' quality pass (TODO.md's ride-along, sedesert's 2026-10-26 work, backported in the final rebuild): a narrow rounded foot
+// closed by a cap, per-row normals; the moonflower's segments (80 triangles, was 40)
+const columnGeo=(seg,prof,ribbed,top)=>{const pos=[],nor=[],uv=[],col=[];
+ const ring=(i)=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,rib=ribbed&&!(s%2)?.84:1;r.push([Math.cos(a)*prof[i][1]*rib,prof[i][0],Math.sin(a)*prof[i][1]*rib,ribbed&&!(s%2)?.78:1]);}return r;};
+ const R=prof.map((p,i)=>ring(i)),ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
+ /* uv (2026-10-25, so the library's skin.cactus can dress the columns): u once round (the skin's ribs over the mesh's), v up the height */
+ const push=(p,n,u)=>{pos.push(p[0],p[1],p[2]);nor.push(n[0],n[1],n[2]);uv.push(u,p[1]*1.6);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
+  push(a,na,u0);push(d,nd,u1);push(c,nc,u0);push(a,na,u0);push(b,nb,u1);push(d,nd,u1);}
+ const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];push(a,[a[0],.6,a[2]],s/seg);push(b,[b[0],.6,b[2]],(s+1)/seg);push(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (inside the arm it stands on, but a side shoot's shows) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];push(a,[a[0],-.8,a[2]],s/seg);push(bp,[0,-1,0],(s+.5)/seg);push(b,[b[0],-.8,b[2]],(s+1)/seg);}
  return BIO.geo._make(pos,nor,uv,col);};
+G.column=()=>columnGeo(8,[[0,.2,-.2],[.07,.42,-.18],[.17,.5,.15],[.6,.485],[.9,.38]],true,1.02);   /* 80 triangles (was 40) */
 // a PARASOL cap: a shallow translucent-looking cone, radial veins in the vertex colour, radius 1, origin at the stem top
 G.parasol=function(){const pos=[],nor=[],uv=[],col=[];const seg=16;
  for(let s=0;s<seg;s++){const a0=s/seg*TAU,a1=(s+1)/seg*TAU,P=a=>[Math.cos(a),-.18,Math.sin(a)];const c=s%2?1:.82;
@@ -467,6 +479,7 @@ EBADLANDS.MAT={
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  litter:BIO.leafMat(TX.litter,'litter',{swayW:'0.0',swayA:0,alphaTest:.35}),
  vcol:BIO.leafMat(null,'vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ column:BIO.barkMat(null),   /* the moonflower cactus (2026-10-25): a bark material, so the library's skin.cactus (materials.json `column`) is normalised as a skin */
  maiden:BIO.leafMat(TX.maiden,'maiden',{swayW:'(-position.y)',swayA:.1,axis:1,alphaTest:.38}),
  vine:BIO.leafMat(TX.vine,'vine',{swayW:'(-position.y)',swayA:.08,axis:1,alphaTest:.4}),
  vhang:BIO.leafMat(null,'vhang',{swayW:'(-position.y)',swayA:.05,axis:1,alphaTest:0,vertexColors:true}),
@@ -505,7 +518,7 @@ BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Ember-crown flames'});
 BIO.def('weep',BIO.geo.ribbon(4,.6,.12),M.weep,{label:'Rose-weeper strands'});
 BIO.def('plume',BIO.geo.clump(),M.plume,{attrs:['aN'],label:'Flower heads'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   // held inside a leaf card's body (core/biome README, "What held means"): a flower in a shrub or a crown has no bark to hold it
 BIO.def('grass',G.tuft(),M.grass,{label:'Grass'});
 BIO.def('bunch',G.tuft(),M.bunch,{label:'Bunchgrass'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds and sedge'});
@@ -514,13 +527,18 @@ BIO.def('spike',G.tuft(),M.spike,{label:'Flower spikes'});
 BIO.def('fern',BIO.geo.frond(3),M.fern,{label:'Ferns and umbel leaves'});
 BIO.def('paddle',BIO.geo.clump(),M.paddle,{attrs:['aN'],label:'Prickly-pear pads'});
 BIO.def('lichen',BIO.geo.mat(),M.lichen,{label:'Lichen and moss'});
+// the dressing's lichen and moss crusts on BIO.fung's crust (TODO.md, "Rebuild the old fungoid flora on BIO.fung"; the final rebuild, BACKPORT.md's row):
+// a flat lobed patch, its centre shaded, where the square mat card was; a page without core/biome 33 (the open world, Yuni) or a host that sets
+// EBADLANDS_NOFUNG (this kit's pages: ?fung=0) keeps the card
+const FUNG=EBADLANDS.FUNG=!!BIO.fung&&!(typeof EBADLANDS_NOFUNG!=='undefined'&&EBADLANDS_NOFUNG);
+if(FUNG){const m=BIO.solidMat(null);m.vertexColors=true;BIO.def('crustf',BIO.fung.crust({lobes:6,lobeA:.32,seg:16,rings:2,seed:71}),m,{label:'Lichen and moss crusts'});}
 BIO.def('litter',BIO.geo.mat(),M.litter,{label:'Needle litter'});
 BIO.def('rosette',G.rosette(),M.vcol,{label:'Yucca rosettes'});
 BIO.def('urchin',G.urchin(),M.vcol,{label:'Spiked heads'});
 BIO.def('gem',G.gem(),M.gemLib||M.vcol,{label:'Ember-crown pods'});
 EBADLANDS.LIB.gem=!!M.gemLib;
 BIO.def('podhead',G.podhead(),M.vsway,{label:'Stilt-pod heads'});
-BIO.def('column',G.column(),M.vcol,{label:'Moonflower cacti'});
+BIO.def('column',G.column(),M.column,{label:'Moonflower cacti'});
 BIO.def('parasol',G.parasol(),M.vsway,{label:'Gold parasols'});
 BIO.def('funnel',G.funnel(),M.vsway,{label:'Fan cups'});
 BIO.def('spiral',M.spiralCard?BIO.geo.mat():G.spiral(),M.spiralCard||M.vcol,{label:'Spiral mats'});
@@ -528,6 +546,12 @@ BIO.def('tendril',BIO.geo.ribbon(3,.4,.2),BIO.leafMat(TX.reed,'tendril',{swayW:'
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Shrub and cushion lobes'});
 BIO.def('cone',G.cone(),M.solid,{label:'Cones'});
 BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
+BIO.def('tassel',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Brimstone-reed tassels'});
+/* the brimstone reeds from the owner's sheet (card.reed.brimstone, 3 x 3, full colour), cut and drawn as the Throne draws them
+   (biomes/throne src/50 sheet('card.reedbrim'), a three-quad tuft swaying by height); without the pack the stems and tassels stand in */
+EBADLANDS.LIB.reedbrim=[];
+if(LIBP('card.reedbrim'))for(let j=0;j<3;j++)for(let i=0;i<3;i++){const t=libCell('card.reedbrim',[i/3+.005,j/3+.005,(i+1)/3-.005,(j+1)/3-.005],256,256);if(!t)continue;
+ const k='reedbrim'+(j*3+i);M[k]=BIO.leafMat(t,k,{swayW:'(position.y)',swayA:.05,alphaTest:.42});BIO.def(k,G.tuft(),M[k],{label:'Brimstone reeds'});EBADLANDS.LIB.reedbrim.push(k);}
 BIO.def('twig',new T3.CylinderGeometry(.5,.5,1,3,1,true),M.solid,{label:'Twigs'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
@@ -536,7 +560,7 @@ BIO.def('chimney',G.chimney(),BIO.leafMat(EBADLANDS.CRUSTTEX,'chimney',{swayW:'0
 BIO.def('mound',G.mound(),M.crust,{label:'Crust mounds'});
 BIO.def('needlehead',G.needlehead(),M.vcol,{label:'Needle-bloom heads'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,0),M.solid,{label:'Fruit (acorns, tunas, moonfruit, seed pods)'});
-BIO.def('grapes',G.grapes(),M.vhang,{label:'Canyon grapes'});
+BIO.def('grapes',G.grapes(),M.vhang,{label:'Canyon grapes',onLeaf:true});   // held in the vine's leaves (its strand's card)
 BIO.def('maiden',BIO.geo.ribbon(4,.75,.1),M.maiden,{label:'Hanging garden (maidenhair fern)'});
 BIO.def('vine',BIO.geo.ribbon(4,.8,.16),M.vine,{label:'Canyon grape vines'});
 })();

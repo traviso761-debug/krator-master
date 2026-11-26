@@ -6,6 +6,16 @@ The owner's polygon `the catch` (2026-10-23; `regions` doc `rmvka7icdn1dq`; the 
 what the model should carry instead (a 4.22 item), and what kit the corrected basin wants. Everything is *proposed*
 unless marked.
 
+> **Updated 2026-11-16 (the owner, by way of `core/simulation/PROPOSAL-CATCH.md`).** Stair is a caravan town of **about
+> 750**, not "a couple of hundred". The other oases are lived in, **~100 or less** each: Kolli, Arfwai, Bitta and Lasso, each
+> kept by a caravan group's hands. **The northern tunnel is dropped** (`LORE.md`, 2026-11-11): the Ancients reached Stair from
+> the north over the surface by the Godsgate highway, so the "sealed tunnel ... Yuni stripped the northern half" passages
+> below are history. **The Theodiga tunnel stays** (the owner, 2026-11-16): the Ancients' dead bore from Theodiga to Stair
+> under the Twins (`openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`), where no trains run. Station 2's portal by
+> Stair's spring is its Stair mouth, sealed inside as settled 2026-10-26, and the divers' camp stays at it. The Catch floor closes in the spring storms. On 5.1 the oases stand where scale-model
+> edit 5 put them (two north of Stair, two south), not at the 100-150 km spacing below. Section 7 and the passages below are
+> otherwise as settled on their dates.
+
 **The owner's brief** (2026-10-23): the Catch is **the biggest barrier to trade between Xanadu and everywhere else**. It
 has oases, but **only just enough to make the crossing doable, not comfortable or safe**. The Ancients' tunnel to Stair
 has been **closed by seismic activity since about the Cataclysm**. **Stair** is the nearest thing to a settlement: a
@@ -115,8 +125,8 @@ fans and sink into them; the last of the water pools in a salt lake at the lowes
   fans' toes, and those few springs and seeps are the **oases**: a pool, a reed bed, a stand of poplar and tamarisk, a
   well. **Five of them** on the crossing [the owner, 2026-10-23], none named yet. The crossing from the notch to the
   southern passes is ~700 km, so they lie *~100-150 km apart*: three to five days with loaded beasts, which carry water
-  between them. A caravan that misses one, or finds it dry, is in trouble. No oasis waters fields, and **none is lived in
-  but Stair's** [the owner].
+  between them. A caravan that misses one, or finds it dry, is in trouble. No oasis waters fields. ~~None is lived in but
+  Stair's~~: **each is kept by ~100 people or less** [the owner, 2026-11-16], one caravan group's hands at its well.
 - **The terminal lake** at the lowest point (px 762,1067, 225 m) is **salt, not drinking water**: a few hundred km² of
   brine and salt crust that moves as its feeders shift, the way Lop Nur did ("the wandering lake").
 - **Groundwater** runs under the fans toward the floor. Wells dug at the fans' toes reach it; whether anyone ever dug
@@ -152,19 +162,23 @@ species fit has not been checked yet.
   lead into the Stalker Peaks, and nobody takes them (section 6c). At 0.64-0.76 atm the passes are breathable but
   bitterly cold, and the floor between them is a furnace. The hazards: **the Stalkers** above all (section 6c), the black
   storms and their caustic dust, an oasis found dry, the beasts' water running out between stages.
-- **The Ancients' road** to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
+- ~~**The Ancients' road** to Stair ran through a tunnel~~ **Dropped (the owner, 2026-11-11):** no Ancient tunnel crosses
+  the north walls; the road came over the surface by the Godsgate highway (`LORE.md`, `openworld/ANCIENT-NETWORK.md` section 8).
+  **The southern bore from Theodiga stays** (the owner, 2026-11-16): its Stair mouth is station 2's portal.
+  The passage as first settled: the Ancients' road to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
   **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
   through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a
   long time ago**; the **southern half**, entered from Stair, is the divers' prospect.
 - **Stair** [the owner, 2026-10-23]: the closest thing to a settlement in the Catch, and more of a **glorified
   campground**. Its ruin is **the Hill arcology** (`kits/ancients/targets/hill`, `src/89e-hill.js`: a city of 111
-  garden terraces climbing ~500 m of hillside, sinuous along the contour), at the biggest of the five oases, and the only one lived in, by **a couple of hundred
-  people**. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
+  garden terraces climbing ~500 m of hillside, sinuous along the contour), at the biggest of the five oases, lived in by **about 750 people** [the owner, 2026-11-16; once "a couple of
+  hundred"]: the caravan groups' factors and pens and the Brotherhood of the Two Horns' guild house, as well as the following. A handful of merchants (who sell water, fodder, repairs and news at the prices the Catch allows), the
   caravans passing through, and now and then **bands of daring or desperate arcology divers** working the ruin.
 - **Who** [the owner, 2026-10-23]: the residents, the traders and the oases' future names are **Yuni, Izani, Dasrī or
   Xanadui**, the four peoples whose roads meet here, with very occasional bold ventures from further off. Each oasis
   carries a name in more than one of their tongues, as Silk Road towns did (Kashgar, Kashi, Shule) [the owner].
-- **Nobody else lives here.** No oasis people, no ruler of the passes.
+- ~~Nobody else lives here. No oasis people~~: the four other oases are kept by the caravan groups' hands, ~100 or less each
+  (the owner, 2026-11-16). Still **no ruler of the passes**.
 
 ## 6a. What the Catch has that nowhere else does
 
@@ -186,7 +200,7 @@ since long before the Ancients, with no outlet at all, its walls the Godthrone's
      noted in its `KNOWN_ISSUES.md`).
 2. **The preservation.** Rust needs water. In air this dry, sealed off for a thousand years, **Ancient metal and Ancient
    machines keep** as they do nowhere else on Krator: the Tarim's mummies and Turpan's silk lasted for the same reason.
-   *Proposed*: that is the divers' trade. Out of Stair's lower levels and the tunnel's southern half they bring **alloys**
+   *Proposed*: that is the divers' trade. Out of Stair's lower levels (the tunnel's southern half, now dropped) they bring **alloys**
    (structural stock and fittings that come out bright, not as rust) and **energy cells**, intact and some still holding
    a charge, which in a wet ruin anywhere else would long since have corroded through. The caustic dust is the one
    enemy of the haul: what lay open to it is etched, what lay sealed is pristine.
@@ -280,12 +294,72 @@ Reuse `rock.yardang.silt` (shared with the Bowl), `card.tamarisk`, `card.reed`, 
 `card.saltbush`. To generate: `ground.sand.dune`, `ground.soda.crust`, `bark.poplar.euphrates`, `card.poplar.euphrates`
 (`core/materials/PROMPTS-NEEDED.md` section 12, 2026-10-23).
 
+Delivered 2026-10-25/26 (`core/materials/PLAN.md`): `ground.sand.dune`, `ground.soda.crust`, `ground.salt.ochre`,
+`ground.lakebed.algal`, `rock.badland.bedded`, `bark.poplar.euphrates`, `card.poplar.euphrates`, `card.brinelamp`. The kit
+takes them all, with `rock.yardang.silt`, `card.tamarisk`, `card.reed`, `card.saltbush`, `bark.saxaul`, `ground.gravel019`,
+`ground.gravel042` and `ground.efflorescence` (`materials.json`).
+
 ## 8. Questions for the owner
 
-1. **The oases' names**, in Yuni, Izani, Dasrī or Xanadui, when they are given.
-2. **The sealed tunnel**: does it ever open fully (a quake, a dig), and what lies at the seal?
-3. **The kit**: `biomes/catch`, four stations as in section 5, on the shared biome core; the potash and alkali-salt
-   nodes in `kits/resources` with it.
+1. **The oases' names** [the owner, 2026-10-26: "you propose names"]: *proposed*, from the tongues' sound rules
+   (`LORE.md`: Yuni clips with *-o*/*-i*; Izani turns *w* to *gu*, ends in *-ar*/*-a*, takes ejectives; Dasrī takes *al-*
+   from *all* and emphatics; Xanadui retroflexes and case suffixes such as *-ṭu*, "to"). North to south along the crossing,
+   ~100-150 km apart (section 4); the px are proposed points at the fans' toes, for the model:
+
+   | # | Meaning | Yuni | Izani | Dasrī | Xanadui | Where (px, proposed) |
+   |---|---|---|---|---|---|---|
+   | 1 | "the cold one": the first water down from the notch, snowmelt seeping at the north fan's toe | *Kolli* | *Kold'a* | *al-Kōl* | *Kholṭu* | 738,944 |
+   | 2 | "halfway" (to Stair) | *Arfwai* | *Afguai* | *al-Ḥafwē* | *Hāphwe* | 792,1030 |
+   | 3 | **Stair**, the Ancients' name, the biggest, the one lived in | *Stairo* | *Istera* | *Ṣṭēr* | *Sṭer* | 834,1112 |
+   | 4 | "bitter water": brackish, drinkable by beasts, not by people unless boiled with ash | *Bitta* | *Bit'ar* | *al-Bitar* | *Biṭṭar* | 806,1180 |
+   | 5 | "the last water" before the southern passes, toward Strongbow | *Lasso* | *Last'a Guat'ar* | *al-Lāst* | *Lāsṭu* | 768,1236 |
+
+   Caravaneers say whichever their master's tongue is; Stair's merchants answer to all four. The records carry every form
+   (`CATCH.OASES`, `src/50-biome-catch-species.js`).
+2. **The sealed tunnel** [the owner, 2026-10-26]: **it stays sealed**. *2026-11-11 dropped the northern tunnel; 2026-11-16
+   (the owner) kept the Theodiga bore, so the portal below is that bore's Stair mouth, sealed deep inside.* The kit shows the southern portal by Stair's
+   spring, open, with the divers' camp at its mouth (fire rings, a few spoil heaps); the seal is a rubble plug deep inside,
+   not drawn. Whether it ever opens is left to the story.
+3. **The kit** [settled 2026-10-26]: `biomes/catch`, the four stations of section 5 on the shared biome core; the potash
+   and alkali-salt nodes in `kits/resources` with it. **The lake station** draws the terminal lake as shallow soda brine
+   at the lowest point and the three pans as dry salt playa (the owner). **Stalkers** as set dressing: a harpooner and a
+   blade half-buried in the sand sea, a stage out from an oasis (the owner: "a pair"), from the `kits/mechs` bundle.
+
+## 9. Core adoption (written before the first fragment, 2026-10-26)
+
+Started from `biomes/nsemiarid` (a heightfield stage with `KBASIN`'s lake-bed marks, `core/water` stills, the painted
+ground over the library's layers) with `biomes/swbay`'s shared sky and `biomes/korona`'s stations (`build.py --station`).
+
+| Module | What it does here |
+|---|---|
+| `core/biome` | the kit `CATCH` (its registry, items, buckets, the bake, the LOD spine, the export) |
+| `core/rand` | `KRAND`: every placement seeded by (world, cell, index, salt) (`CATCH.place`), the terrain's noise (`KRAND.fbm`: portable, not the core's sin-based `fbm`) |
+| `core/tags` | `BIO.init({tags:'catch'})`: every item set, tree, registered volume, oasis, Stalker and the tunnel portal is a record |
+| `core/host` | camera, loop, panel, probe, inspector, polygon tool (`KHOST.take`) |
+| `core/atmos` | `ATMOS.bindHost`; **the shared sky** (`core/atmos/sky`, `ATMOS.sky` with each station's ridges: the walls on every horizon, the Godthrone north-west); **the weather** (`core/atmos/host/89-atmos-e-weatherhost.js`, `ATMOS.bindWeather`, a dry climate: no wet ground, no snow); **the dust** (`89-atmos-3d-dust.js`) off the bare dry ground; the skylight in the water |
+| `core/water` | the terminal soda lake (`WATER.open`, true bed, a tint field for the salinity bands, no lap), the oasis pools and seeps (`WATER.still` with a gradient), the trickle off the north fan (`WATER.flow`) |
+| `core/terrain` | `KBASIN` (`40-core-basin.js`): the old lake's strandlines, silt, salt and the wind's yardangs on the lake beds; `KSTACKS` (`37-core-stacks.js`): the castellated lake-bed mesas (the White Dragon Mounds) |
+| `core/space` | `KSPACE` behind the core's keep-clear (`BIO.clearOf`) |
+| `core/materials` | the library through `materials.json` and `tools/textures/pack.py` (`tex/`), `KMAT` |
+| `core/export` | `BIO.export()` and the stage |
+| `core/clock` | the host clock the shared sky reads (`core/host`) |
+| other kits read in place | `biomes/sedesert` (the wadi palm and the mesquite at the oases, its reeds and sedges: its tree passes cut to those two by the stage); `kits/mechs` (the Stalker bundle, culture `stalker` only) |
+
+Not taken: `core/city`, `core/hamlet`, `core/simulation`, `core/sched` (no settlement: Stair is a settlement build of its
+own, section 6b); `core/furnish` (no interiors); `core/mask` (nothing places from a canvas); `core/lod`, `core/minimap` (the
+host shell's own minimap is used; the core biome LOD spine is enough at a 6.6 km station); `core/walk` (the host's walk keys).
+
+## 10. Stations (the kit, 2026-10-26)
+
+Each station is a 6.6 km piece of the basin at its real height, with the walls painted as the shared sky's ridges from
+the survey's distances (section 1). *Proposed* sites:
+
+| # | Station | Page | Site (px, height) | What |
+|---|---|---|---|---|
+| 1 | The sand sea | `dist/catch.html` | 800,1010, ~350 m | star and linear dunes to ~150 m, gravel reg, a fringe of old lake bed with yardangs, dune shrubs, tamarisk nebkhas, a dead poplar line on a dead channel, the Stalker pair under the sand |
+| 2 | Stair's oasis | `dist/catch-oasis.html` | 834,1112, ~1,000 m | the spring hollow through the interior hills: the pool and its seeps, the reed bed, tugai (Euphrates poplar, tamarisk), the sedesert kit's palms and mesquite, trampled ground and fire rings; the Hill's slope rising east (the site only, empty); the tunnel's southern portal with the divers' camp |
+| 3 | The lake and the lake beds | `dist/catch-lake.html` | 763,1062, ~318 m | the soda lake (pink, teal and ochre bands), its crusts (soda, ochre salt polygons, algal mats at the margin), strandlines, dead channels, a playa pan; the wind-carved lake beds: yardang fields and castellated mesas; saltbush and brine lamps, dead poplars |
+| 4 | The north fan and the walls | `dist/catch-fan.html` | 738,944, ~1,400 m | the gravel fan under the 6.2 km notch, braided dry channels, the gorge mouth, the first oasis (*Kolli*) at the fan's toe, the walls close on the north and west, the Godthrone's mass north-west |
 
 Settled (2026-10-23): the Catch is the biggest barrier to Xanadu's trade; five oases, only just enough, none lived in but
 Stair's, each named in more than one of the four tongues; the Stair tunnel closed by seismic activity since about the
@@ -296,3 +370,6 @@ killers, in pairs or triads, hunting stragglers, ambushing from under the sand; 
 `kits/mechs`; a wise caravan carries explosives or exotic Ancient weapons against them, a foolish one flees; their source Hub 01's mad AI,
 driven mad in the Cataclysm by a cause no one is sure of, unknown in the world); the residents, traders and names Yuni, Izani, Dasrī or Xanadui, with rare ventures from further off; two resources,
 potash and alkali salts, added at the kit's build; the rain correction in 4.22; wind-carved lake beds, not tuff.
+
+## 11. Scale-Model 5.1 Evaporite Strandline Binding (`2026-11-13`)
+- **Station 3 Soda-Lake Benches & White Dragon Yardangs (`763, 1062`, `+318 m`):** The pale wind-fluted yardang mesas (`KSTACKS`) and concentric paleolake recession steps framing The Catch's terminal soda/potash playa bind to `KSTRATA` **`evaporite-strand`** (`core/terrain/35-core-strata.js` — `0.4–1.5 m` crisp horizontal aragonite/trona tufa benches, specular `gypsum` crystal seams, pale green-grey lacustrine `marl` partings, and dazzling white alkali/potash `halite` crusts), grounding the potash and alkali-salt resources harvested by Yuni and Izani caravans.

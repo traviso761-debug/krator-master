@@ -25,9 +25,9 @@ const VIEWS={
  'The upper fall':fallView(F0,28,3),
  'The great fall':fallView(F1,30,3),
  'A plunge pool':(function(){const P=POOLS[1]||POOLS[0];return[P.x-16,P.level+3,P.z+3,P.x+4,P.level+4,P.z];})(),
- 'Tree ferns in the north ravine':(function(){const V=RAVINES[0],x=-600,z=ravC(V,x);return toward(x-40,z+8,x,z,30,4,2);})(),
+ 'Tree ferns in the north ravine':(function(){const V=RAVINES[0],x=-600,z=ravC(V,x);return toward(x-40,z+8,x,z,46,12,3);})(),   /* (2026-11-02) higher and back: the eye check found it under the ravine's patch */
  'The trail in the cloud':(function(){const p=trAt(.6),q=trAt(.66);return[p[0],gh(p[0],p[1],1.7),p[1],q[0],gh(q[0],q[1],2),q[1]];})(),
- 'The saddle and its cairn':toward(SAD.x-30,SAD.z-25,SAD.x,SAD.z,14,2.5,1.5),
+ 'The saddle and its cairn':toward(SAD.x-30,SAD.z-25,SAD.x,SAD.z,24,5,1.5),   /* (2026-11-02) out of the elfin wood's foliage */
  'The cloud over the ridge':(function(){const x=RIDGE.saddle.x+420,z=RIDGE.zc(x)+300;return[x,gh(x,z,25),z,RIDGE.saddle.x+150,ridgeCrest(RIDGE.saddle.x+150)-10,RIDGE.zc(RIDGE.saddle.x+150)];})(),
  'The heath beyond the ridge':(function(){const x=RIDGE.saddle.x+60,z=RIDGE.zc(x)+260;return toward(x+30,z+60,x,z-120,40,3,4);})(),
  'Above the cloud':[-2600,3800,600,600,3050,-300],
@@ -118,11 +118,12 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'throne-cloudforest',title:'Krator biome — the Throne: the cloud forest',
  hint:"The Throne, station 5: the cloud forest, the windward cloud belt ~3 km up the west flank (Cfb, the cloud most days). The elfin woods: gnarled, dwarfed trees cushioned and hung with moss, tree ferns, bromeliads in the forks, a floor of moss and ferns; the veil trees (Krator's own) combing the water from the cloud, their veils glowing at night; the ravine of the falls stepping down in four falls into plunge pools; the old rift ridge with the cloud pouring over its crest onto the drier heath beyond; the natives' trail and its cairns over the saddle (ideal type) · the weather picker: fog, drizzle, a clear spell · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},

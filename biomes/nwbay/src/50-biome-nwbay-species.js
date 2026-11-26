@@ -368,7 +368,20 @@ NWBAY.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
    g.beginPath();g.moveTo(x+rr(-2,2),y+rr(-2,2));g.lineTo(x+dx*.9,y+rr(-3,3));g.lineTo(x+dx*.88,y+dy*.85);g.lineTo(x+rr(-2,2),y+dy*.9);g.closePath();g.fill();}
   for(let i=0;i<40;i++){g.strokeStyle='rgba(25,25,25,.6)';g.lineWidth=rr(1.5,3.5);g.beginPath();const x=rng()*w;g.moveTo(x,-5);g.lineTo(x+rr(-20,20),h+5);g.stroke();}}
 });};
+// BRIGHT ENOUGH NOT TO CLIP (2026-10-26, hyperjungle's 45a48df3d): the builders tint a near-grey canvas by SPECIES.bark over its
+// measured mean (55 tint: colour / mean, clamped at 1), so a canvas darker than its species' brightest channel clipped the tint
+// to white and the bole showed the canvas's grey, not the species' colour (the ironbark's furrowed canvas, linear mean .087,
+// clipped 2.2 times over). Each grey canvas (all but the prism gum's colour strips) is lifted, in linear light, until its
+// mean sits 8 % above the brightest channel of every species that wears it; the library maps follow (materials.json means).
+NWBAY.barkLift=function(tex,kind){if(kind===0)return 1;const cv=tex.image;if(!cv||!cv.getContext)return 1;
+ let need=0;NWBAY.SPECIES.forEach(S=>{if(S.barkK!==kind||!S.bark)return;S.bark.forEach(h=>{const c=new T3.Color(h).convertSRGBToLinear();need=Math.max(need,c.r,c.g,c.b);});});
+ /* the mean from core (BIO.col.texMean, linear); the lift composited 'lighter' onto itself (no pixel read in the kit: check_core_use) */
+ const g=cv.getContext('2d'),M=BIO.col.texMean(tex),m=Math.min(M[0],M[1],M[2]);
+ const F=need*1.08/Math.max(.01,m);if(!(F>1))return 1;let k=Math.pow(F,1/2.2);
+ g.globalCompositeOperation='lighter';while(k>1.001){const a=Math.min(1,k-1);g.globalAlpha=a;g.drawImage(cv,0,0);k/=1+a;}
+ g.globalCompositeOperation='source-over';g.globalAlpha=1;tex.needsUpdate=true;return F;};
 NWBAY.BARKTEX=[0,1,2,3,4,5,6,7].map(k=>NWBAY.barkTex(k));
+NWBAY.BARKLIFT=NWBAY.BARKTEX.map((t,k)=>NWBAY.barkLift(t,k));
 NWBAY.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{g.fillStyle='#5a4634';g.fillRect(0,0,w,h);
  for(let i=0;i<220;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'40,30,22':'120,100,80')+','+(.2+rng()*.4).toFixed(2)+')';g.lineWidth=1+rng()*2;
   g.beginPath();g.moveTo(-4,y);g.lineTo(w+4,y+rr(-5,5));g.stroke();}});
@@ -443,28 +456,34 @@ G.pad=function(){const pos=[],nor=[],uv=[],col=[];const n=12;
 NWBAY.G=G;
 
 // ---------------------------------------------------------------- materials
+// THE FINAL REBUILD'S LEAF LOOKS (2026-10-27; core/biome README "Adopting it"), each on only where the host asks (NWBAY_LOOK, set by
+// nwbay's own page, 45-host-stage.js; a world that reads this kit in place gets none of them): the back-light on the thin broadleaf
+// cards (item 6), the floor cover's root in the ground's colour (R5, with BIO.setGround in the host) and the dry season (H7): the
+// grass yellows and the umbrella thorns' and flame-crowns' acacia leaflets thin (by BIO.SEASON; 0, the wet season, draws as before)
+const LK=typeof NWBAY_LOOK!=='undefined'&&NWBAY_LOOK?NWBAY_LOOK:{},BL=o=>LK.backlit?Object.assign(o,{backlit:LK.backlit}):o,
+ GR=o=>LK.ground?Object.assign(o,{ground:{k:.6,gain:LK.ground}}):o,SE=(o,v)=>LK.season?Object.assign(o,{season:v}):o;
 NWBAY.MAT={
  bark:NWBAY.BARKTEX.map(t=>BIO.barkMat(t)),
  wood:BIO.barkMat(NWBAY.WOODTEX),
  rock:BIO.barkMat(NWBAY.ROCKTEX),
  root:BIO.barkMat(NWBAY.BARKTEX[2]),
- prism:BIO.leafMat(TX.prism,'prism',{aN:true,irid:true,swayW:'1.0',swayA:.14}),
+ prism:BIO.leafMat(TX.prism,'prism',BL({aN:true,irid:true,swayW:'1.0',swayA:.14})),
  needle:BIO.leafMat(TX.needle,'needle',{aN:true,swayW:'1.0',swayA:.10}),
  cneedle:BIO.leafMat(TX.needle,'cneedle',{aN:true,swayW:'1.0',swayA:.07}),
- leaflet:BIO.leafMat(TX.leaflet,'leaflet',{aN:true,swayW:'1.0',swayA:.10}),
- fernleaf:BIO.leafMat(TX.fernleaf,'fernleaf',{aN:true,swayW:'1.0',swayA:.12}),
- palmate:BIO.leafMat(TX.palmate,'palmate',{aN:true,swayW:'1.0',swayA:.12}),
- glossy:BIO.leafMat(TX.glossy,'glossy',{aN:true,swayW:'1.0',swayA:.08}),
+ leaflet:BIO.leafMat(TX.leaflet,'leaflet',SE(BL({aN:true,swayW:'1.0',swayA:.10}),{drop:.55,colour:0xa08a48,k:.45})),
+ fernleaf:BIO.leafMat(TX.fernleaf,'fernleaf',BL({aN:true,swayW:'1.0',swayA:.12})),
+ palmate:BIO.leafMat(TX.palmate,'palmate',BL({aN:true,swayW:'1.0',swayA:.12})),
+ glossy:BIO.leafMat(TX.glossy,'glossy',BL({aN:true,swayW:'1.0',swayA:.08})),
  sword:BIO.leafMat(TX.sword,'sword',{aN:true,swayW:'1.0',swayA:.05,alphaTest:.4}),
  strap:BIO.leafMat(TX.strap,'strap',{aN:true,swayW:'1.0',swayA:.08,alphaTest:.4}),
- paddle:BIO.leafMat(TX.paddle,'paddle',{swayW:'(position.x)',swayA:.10,alphaTest:.4}),
- bigfrond:BIO.leafMat(TX.bigfrond,'bigfrond',{swayW:'(position.x)',swayA:.09}),
- frond:BIO.leafMat(TX.frond,'frond',{swayW:'(position.x)',swayA:.07}),
+ paddle:BIO.leafMat(TX.paddle,'paddle',BL({swayW:'(position.x)',swayA:.10,alphaTest:.4})),
+ bigfrond:BIO.leafMat(TX.bigfrond,'bigfrond',BL({swayW:'(position.x)',swayA:.09})),
+ frond:BIO.leafMat(TX.frond,'frond',BL({swayW:'(position.x)',swayA:.07})),
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
  matreed:BIO.leafMat(TX.matreed,'matreed',{swayW:'(position.y*position.y)',swayA:.10,alphaTest:.4}),
- grass:BIO.leafMat(TX.grass,'grass',{swayW:'(position.y)',swayA:.12,alphaTest:.4}),
- clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',{swayW:'(position.y)',swayA:.04,alphaTest:.42}),
- under:BIO.leafMat(TX.under,'under',{swayW:'1.0',swayA:.06}),
+ grass:BIO.leafMat(TX.grass,'grass',SE(GR({swayW:'(position.y)',swayA:.12,alphaTest:.4}),{colour:0xc8a860,k:.6,stagger:.6})),
+ clubmoss:BIO.leafMat(TX.clubmoss,'clubmoss',GR({swayW:'(position.y)',swayA:.04,alphaTest:.42})),
+ under:BIO.leafMat(TX.under,'under',BL({swayW:'1.0',swayA:.06})),
  beard:BIO.leafMat(TX.beard,'beard',{swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.35}),
  epihang:BIO.leafMat(TX.epihang,'epihang',{swayW:'(-position.y)',swayA:.07,axis:1,alphaTest:.38}),
  liana:BIO.leafMat(TX.liana,'liana',{swayW:'(-position.y)',swayA:.05,axis:1,alphaTest:.38}),
@@ -516,7 +535,7 @@ BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),M.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),M.hang,{label:'Strands and drop roots'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),M.solid,{label:'Bush lobes'});
-BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Blooms',onLeaf:true});   /* onLeaf (core/biome attach audit, 2026-11-02): a flower held inside a leaf card's body counts as held; audit-only, nothing drawn moves */
 BIO.def('lotus',BIO.geo.bloom(),M.lotus,{attrs:['aC2'],label:'Lotus-trumpet fringe'});
 BIO.def('cup',G.cup(),M.cup,{label:'Lotus flowers'});
 BIO.def('lilypad',G.pad(),M.pad,{label:'Lily pads'});
@@ -531,6 +550,9 @@ BIO.def('fig',new T3.OctahedronGeometry(1,0),M.solid,{label:'Fruit: cliff figs'}
 BIO.def('rod',new T3.CylinderGeometry(.5,.5,1,7,1,true),M.solid,{label:'Stems'});
 BIO.def('trunk',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(NWBAY.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',new T3.CylinderGeometry(.16,.4,1,8,1,true).translate(0,.5,0),BIO.solidMat(NWBAY.BARKTEX[2]),{label:'Small trunks (pale)'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+/* the bracket fungus: core/biome's shelf (BIO.fung.bracket: the wall at z 0, the shelf out along +z; the final rebuild, 2026-10-27; the
+   dress pass turns it to face its wall) on nwbay's page; the old half-sphere where the host does not ask (NWBAY_LOOK.fung: ?fung=0) */
+BIO.def('fungus',LK.fung&&BIO.fung?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.34,droop:.16,wav:5,wavA:.04,lump:.08}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+NWBAY.FUNG_SHELF=!!(LK.fung&&BIO.fung);
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(NWBAY.ROCKTEX),{label:'Boulders (small)'});
 })();

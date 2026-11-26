@@ -20,16 +20,22 @@ GEYSER.GRAV=GRAV;
 // the mats' temperatures (degC; Yellowstone's): no photosynthesis over ~73; Synechococcus' yellow-green to ~60, then the
 // orange of Chloroflexus and its partners, brown-green under ~45. Krator's thermophiles keep Earth's bands (NOTES.md)
 GEYSER.BANDS={clear:73,yellow:63,orange:52,brown:42};
-let S=null,R=null,AMB=33;
+// THE BOILING POINT follows the air (the owner, 2026-11-17: "boiling point follows air pressure"): water's saturation curve by Antoine's equation
+// (log10 p[mmHg] = 8.07131 - 1730.63 / (233.426 + T), Earth's water, fitted 1-100 degC and good to ~0.3 degC up to ~130): 100.0 degC at 1 atm, ~119 at
+// 1.93 (the Steampits), ~88 at 0.64 (Xanadu's ice field). A page hands its air's pressure as spec.atm (the same number its sky takes); without it, 1 atm.
+// The record's boiling water (a spring at temp 1, a geyser's vent, a mud pot, a fumarole's mouth, the geysers' run-off) is that hot; the mats keep
+// Earth's bands (life's chemistry, not the pressure), so `heat` stays 0..1 of the air to 100 degC and `boil` is 0..1 of the air to the boiling point.
+GEYSER.boilAt=atm=>{const P=760*(atm==null?1:atm);return 1730.63/(8.07131-Math.log10(P))-233.426;};
+let S=null,R=null,AMB=33,ATM=1,BP=100;
 const H=new Map(),HC=24;
 const hk=(gx,gz)=>(gx+4096)*8192+(gz+4096);
 function hput(o,x0,z0,x1,z1){for(let gz=Math.floor(z0/HC);gz<=Math.floor(z1/HC);gz++)for(let gx=Math.floor(x0/HC);gx<=Math.floor(x1/HC);gx++){const k=hk(gx,gz);let L=H.get(k);if(!L)H.set(k,L=[]);L.push(o);}}
 function hputC(o,x,z,r){hput(o,x-r,z-r,x+r,z+r);}
 
 // ---------------------------------------------------------------- lay out
-GEYSER.lay=function(spec){S=spec;AMB=spec.amb==null?33:spec.amb;H.clear();reseed(spec.seed||631);
+GEYSER.lay=function(spec){S=spec;AMB=spec.amb==null?33:spec.amb;ATM=spec.atm==null?1:spec.atm;BP=GEYSER.boilAt(ATM);H.clear();reseed(spec.seed||631);
  const ground=spec.ground,wind=spec.wind||[0,0];
- R=GEYSER.R={geysers:[],springs:[],mud:[],fumaroles:[],flats:[],dead:[],acid:[],terraces:[],runoff:[],amb:AMB};
+ R=GEYSER.R={geysers:[],springs:[],mud:[],fumaroles:[],flats:[],dead:[],acid:[],terraces:[],runoff:[],amb:AMB,atm:ATM,bp:BP};
  // THE GEYSERS: a vent per geyser (the Twins have two), its mound's top and its cone's
  (spec.geysers||[]).forEach((g0,i)=>{const g=Object.assign({i,period:60,pre:6,dur:8,steam:8,off:0},g0);
   g.vents=[[g.x,g.z]];if(g.twin)g.vents.push([g.x+g.twin[0],g.z+g.twin[1]]);
@@ -38,7 +44,7 @@ GEYSER.lay=function(spec){S=spec;AMB=spec.amb==null?33:spec.amb;H.clear();reseed
   g.sprayR=6+g.H*.45;g.sprayX=g.x+wind[0]*g.H*.22;g.sprayZ=g.z+wind[1]*g.H*.22;
   R.geysers.push(g);hputC({t:'g',g},g.x,g.z,Math.max(g.mound.r*1.3,g.sprayR+g.H*.25));});
  (spec.springs||[]).forEach((s0,i)=>{const s=Object.assign({i,kind:'pool',temp:.8,out:1},s0);R.springs.push(s);
-  s.apron=s.kind==='prismatic'?s.r*.8+10:s.r*.9+3;s.Tc=40+60*s.temp;s.ref=ground(s.x,s.z);hputC({t:'s',s},s.x,s.z,s.r+s.apron*1.8+(s.shield?s.r*1.6:0));});
+  s.apron=s.kind==='prismatic'?s.r*.8+10:s.r*.9+3;s.Tc=40+(BP-40)*s.temp;s.ref=ground(s.x,s.z);hputC({t:'s',s},s.x,s.z,s.r+s.apron*1.8+(s.shield?s.r*1.6:0));});
  (spec.flats||[]).forEach(f0=>{const f=Object.assign({a:0},f0);f.ca=Math.cos(f.a);f.sa=Math.sin(f.a);R.flats.push(f);const r=Math.max(f.rx,f.rz)*1.25;hputC({t:'f',f},f.x,f.z,r);});
  (spec.dead||[]).forEach(d=>{R.dead.push(d);hputC({t:'d',d},d.x,d.z,d.r*1.3);});
  // THE ACID FIELDS: their mud pots and fumaroles placed in them (a pot clear of the others)
@@ -77,7 +83,7 @@ GEYSER.lay=function(spec){S=spec;AMB=spec.amb==null?33:spec.amb;H.clear();reseed
    if(found)trace(found[0],found[1],[d[0],d[1]],48,1.2,8,t.key+'-out',300+ti*17+k,90,(x,z)=>ground(x,z)<.02);}});
  R.geysers.forEach((g,i)=>{if(g.kind==='spouter'&&g.H<4)return;const a0=downhill(g.x,g.z),n=g.H>30?3:g.kind==='spouter'?1:2;
   for(let k=0;k<n;k++){const a=a0+(n>1?(k/(n-1)-.5)*1.1:0)+rr(-.15,.15),r0=g.kind==='cone'?g.cone.r*1.1:(g.pool||3);
-   trace(g.x+Math.cos(a)*r0,g.z+Math.sin(a)*r0,[Math.cos(a),Math.sin(a)],92,.9+g.H*.03,70+g.H*1.6,g.key,100+i*7+k,70+g.H*3);}});
+   trace(g.x+Math.cos(a)*r0,g.z+Math.sin(a)*r0,[Math.cos(a),Math.sin(a)],BP-8,.9+g.H*.03,70+g.H*1.6,g.key,100+i*7+k,70+g.H*3);}});
  // THE LEVELS, measured on the ground with its relief: a spring brims at its rim's lowest point; a pool geyser at its pool's
  const fin=(x,z)=>{const b=ground(x,z);return b+GEYSER.relief(x,z,b);};
  R.springs.forEach(s=>{let lo=1e9;for(let k=0;k<32;k++){const a=k/32*TAU;lo=Math.min(lo,fin(s.x+Math.cos(a)*s.r*1.04,s.z+Math.sin(a)*s.r*1.04));}s.level=lo-.04;});
@@ -145,13 +151,13 @@ GEYSER.relief=function(x,z,b){if(!R)return 0;const L=H.get(hk(Math.floor(x/HC),M
  return r;};
 
 // ---------------------------------------------------------------- the heat and the rest (GEYSER.at)
-const A={T:0,heat:0,sinter:0,film:0,acid:0,dead:0,spray:0,terr:0,pl:-100,dx:0,dz:0,mud:0,vent:0,spring:0,level:-1e9};
+const A={T:0,heat:0,boil:0,sinter:0,film:0,acid:0,dead:0,spray:0,terr:0,pl:-100,dx:0,dz:0,mud:0,vent:0,spring:0,level:-1e9};
 GEYSER.at=function(x,z,b){const o=A;o.T=AMB;o.sinter=0;o.film=0;o.acid=0;o.dead=0;o.spray=0;o.terr=0;o.pl=-100;o.dx=0;o.dz=0;o.mud=0;o.vent=0;o.spring=0;o.level=-1e9;o.tfl=null;
- if(!R){o.heat=0;return o;}const L=H.get(hk(Math.floor(x/HC),Math.floor(z/HC)));if(!L){o.heat=0;return o;}
+ if(!R){o.heat=0;o.boil=0;return o;}const L=H.get(hk(Math.floor(x/HC),Math.floor(z/HC)));if(!L){o.heat=0;o.boil=0;return o;}
  let wsum=0;const heat=(T,w,dx,dz)=>{if(T>o.T)o.T=T;if(w>0&&(dx||dz)){o.dx+=dx*w;o.dz+=dz*w;wsum+=w;}};
  for(let k=0;k<L.length;k++){const q=L[k];
   if(q.t==='g'){const g=q.g;for(const v of g.vents){const d=Math.hypot(x-v[0],z-v[1]),M=g.mound;
-    if(d<M.r*1.4){const u=d/M.r;heat(mix(95,48,smooth(0,1,u)),.5*smooth(1.2,.3,u),(x-v[0])/(d||1),(z-v[1])/(d||1));o.sinter=Math.max(o.sinter,smooth(1.4,.6,u));}}
+    if(d<M.r*1.4){const u=d/M.r;heat(mix(BP-5,48,smooth(0,1,u)),.5*smooth(1.2,.3,u),(x-v[0])/(d||1),(z-v[1])/(d||1));o.sinter=Math.max(o.sinter,smooth(1.4,.6,u));}}
    if(g.H>8){const d=Math.hypot(x-g.sprayX,z-g.sprayZ);o.spray=Math.max(o.spray,smooth(g.sprayR,g.sprayR*.3,d)*Math.min(1,g.H/40));}
    if(g.kind!=='cone'){const d=Math.hypot(x-g.x,z-g.z),pr=g.pool||2;if(d<pr){o.spring=1;o.level=g.level;}}}
   else if(q.t==='s'){const s=q.s,d=Math.hypot(x-s.x,z-s.z);
@@ -167,15 +173,15 @@ GEYSER.at=function(x,z,b){const o=A;o.T=AMB;o.sinter=0;o.film=0;o.acid=0;o.dead=
    const sn=smooth(1.06,.74,e);if(sn>0){o.sinter=Math.max(o.sinter,sn*(.82+.18*fbm(x*.03,z*.03,4623,2)));heat(AMB+8*sn,0,0,0);}}
   else if(q.t==='d'){const d=q.d,u=Math.hypot(x-d.x,z-d.z)/d.r+.25*(fbm(x*.01,z*.01,4624,2)-.5);o.dead=Math.max(o.dead,smooth(1.0,.65,u));}
   else if(q.t==='a'){const a=q.a,u=Math.hypot(x-a.x,z-a.z)/a.r+.18*(fbm(x*.02,z*.02,4625,2)-.5);const ac=smooth(1.05,.7,u);if(ac>0){o.acid=Math.max(o.acid,ac);heat(AMB+(42-AMB)*ac,0,0,0);}}
-  else if(q.t==='m'){const m=q.m,d=Math.hypot(x-m.x,z-m.z);o.mud=Math.max(o.mud,smooth(m.r*1.5,m.r*.9,d));if(d<m.r){o.spring=1;o.level=m.level;}heat(mix(92,50,smooth(m.r,m.r*1.6,d)),0,0,0);}
-  else if(q.t==='u'){const f=q.u,d=Math.hypot(x-f.x,z-f.z),v=Math.exp(-Math.pow(d/(3+3*f.s),2));o.vent=Math.max(o.vent,v);heat(AMB+(88-AMB)*v,0,0,0);}
+  else if(q.t==='m'){const m=q.m,d=Math.hypot(x-m.x,z-m.z);o.mud=Math.max(o.mud,smooth(m.r*1.5,m.r*.9,d));if(d<m.r){o.spring=1;o.level=m.level;}heat(mix(BP-8,50,smooth(m.r,m.r*1.6,d)),0,0,0);}
+  else if(q.t==='u'){const f=q.u,d=Math.hypot(x-f.x,z-f.z),v=Math.exp(-Math.pow(d/(3+3*f.s),2));o.vent=Math.max(o.vent,v);heat(AMB+(BP-12-AMB)*v,0,0,0);}
   else if(q.t==='t'){const t=q.tf,m0=t.mask(x,z);if(m0<=0)continue;const pq=GEYSER.poolAt(t,x,z);let m=m0;
    /* the beach under the last wall is sand, not travertine: only the wall's own foot */
    if(pq.A&&pq.A.sea)m*=pq.B&&!pq.B.sea?1-smooth(clamp(.4+.38*(pq.B.L-pq.A.L),.5,3.2)*.9,clamp(.4+.38*(pq.B.L-pq.A.L),.5,3.2)*1.4,pq.db):0;
    if(m<=0)continue;o.terr=Math.max(o.terr,m);const bb=b==null?S.ground(x,z):b;
    const u=clamp((t.hTop-bb)/Math.max(1,t.hTop-t.hBot),0,1);heat(mix(t.temp[0],t.temp[1],u),0,0,0);if(m0>.98&&pq.A&&!pq.A.sea&&!pq.A.dry){o.pl=pq.A.L+t.lip-.03;o.tfl=t;}o.film=Math.max(o.film,m*.22);}}
  if(wsum>0){const l=Math.hypot(o.dx,o.dz)||1;o.dx/=l;o.dz/=l;}
- o.heat=clamp((o.T-AMB)/(100-AMB),0,1);return o;};
+ o.heat=clamp((o.T-AMB)/(100-AMB),0,1);o.boil=clamp((o.T-AMB)/(BP-AMB),0,1);return o;};
 // the fields a host may bind for its kits (biomes/WORLD.md), each (x,z)->0..1
 GEYSER.fields={heat:(x,z)=>GEYSER.at(x,z).heat,sinter:(x,z)=>GEYSER.at(x,z).sinter,film:(x,z)=>GEYSER.at(x,z).film,acid:(x,z)=>GEYSER.at(x,z).acid,
  dead:(x,z)=>GEYSER.at(x,z).dead,spray:(x,z)=>GEYSER.at(x,z).spray,terr:(x,z)=>GEYSER.at(x,z).terr};
@@ -197,6 +203,28 @@ GEYSER.cycle=function(g,t){const o=g._c||(g._c={phase:'rest',water:0,steam:0,nex
 // set a geyser off now: its clock moved so its column starts at t (the preplay skipped)
 GEYSER.erupt=function(key,t){const g=R&&R.geysers.find(q=>q.key===key);if(!g||g.kind==='spouter')return false;g.off=t-g.pre+.01;return true;};
 GEYSER.byKey=k=>R&&(R.geysers.find(g=>g.key===k)||R.springs.find(s=>s.key===k));
+// ---------------------------------------------------------------- the hazards (core/hazard, 2026-10-26)
+// A geyser is a heat hazard on the one clock (KTRAPS.cycle): its preplay the warning, its column on, its steam after (a
+// quarter), the rest idle, phased by its own authored offset (the record's cycle: period, warn, on, after, offset = -off).
+// GEYSER.state (KHAZ.STATES) reads the geyser's live times (the page's demo speed, an erupt) on the show's clock; a port
+// without the kit reads the record's cycle with the same maths. A spouter plays always; a spring scalds by its heat; an
+// acid flat corrodes.
+GEYSER.hazard={geyser:g=>g.kind==='spouter'?{kind:'heat',danger:.6,dose:1.5,shape:{type:'cyl',r:Math.max(3,g.sprayR*.5),h:g.H+3}}:
+  {kind:'heat',danger:.9,dose:3,shape:{type:'cyl',r:Math.max(4,g.sprayR*.6),h:g.H+4},cycle:{period:g.period,warn:g.pre,on:g.dur,after:g.steam,afterK:.25,offset:-g.off},
+   stateFn:'GEYSER.state',seed:g.key,tell:{sign:'the preplay: surges a few metres high, closer and closer'}},
+ spring:s=>({kind:'heat',danger:Math.round(Math.min(1,.3+.7*s.temp)*100)/100,dose:1+2*s.temp,shape:{type:'cyl',r:s.r,h:6,y0:2}}),
+ acid:a=>({kind:'acid',danger:.5,falloff:'linear',shape:{type:'cyl',r:a.r,h:8,y0:2}}),
+ // the final rebuild (pair 7, 2026-11-03; BACKPORT.md's row, "vents and hot ground"): the thin sinter crust round a spring's rim over its boiling water (KHAZ's
+ // hot ground: walkable at a cost, worse the hotter the spring), a fumarole's gas in a dome over its vent, a mud pot's boiling clay
+ crust:s=>({kind:'heat',danger:Math.round((.25+.35*s.temp)*100)/100,dose:.4+.6*s.temp,falloff:'linear',shape:{type:'cyl',r:s.r*1.25+4,h:2,y0:1},nav:{travel:3,enter:5,avoid:false},
+  tell:{sign:'a hollow ring underfoot, steam from the cracks'}}),
+ fumarole:f=>({kind:'gas',danger:Math.round((.4+.4*f.s)*100)/100,falloff:'smooth',shape:{type:'sphere',r:3+5*f.s},tell:{sign:'the rotten-egg reek of sulphur'}}),
+ mud:m=>({kind:'heat',danger:.7,dose:2,shape:{type:'cyl',r:m.r*1.1,h:2,y0:1}})};
+GEYSER.state=function(rec,h,t){const c=h.cycle,g=GEYSER.byKey(h.seed),T=GEYSER.SHOW&&GEYSER.SHOW.t!=null?GEYSER.SHOW.t:t;
+ const P=g&&g.period?{period:g.period,pre:g.pre,dur:g.dur,steam:g.steam,off:g.off}:{period:c.period,pre:c.warn,dur:c.on,steam:c.after,off:-c.offset};
+ const q=KTRAPS.cycle([['warn',P.pre,0,0],['on',P.dur,1,1],['after',P.steam,c.afterK,c.afterK],['idle',Math.max(0,P.period-P.pre-P.dur-P.steam),0,0]],T,-P.off);
+ const o={state:q.state,k:q.k,on:q.k>0,left:q.left};if(q.state==='warn')o.warn=true;return o;};
+if(typeof KHAZ!=='undefined')KHAZ.STATES['GEYSER.state']=GEYSER.state;
 
 // ---------------------------------------------------------------- a site from a point (the open world; the isles)
 // The scale model marks a geyser field as a point with a radius (DATA.vents, kind 'geyser'): cluster() makes a thermal
@@ -216,11 +244,11 @@ GEYSER.cluster=function(o){reseed(o.seed||1);const x=o.x,z=o.z,r=o.r||300,G=[],S
 
 // the records as plain data (Godot: a port reads these and runs the same cycles; tools/ may write them out)
 GEYSER.records=function(){if(!R)return null;const rd=v=>Math.round(v*100)/100;
- return{amb:AMB,geysers:R.geysers.map(g=>({key:g.key,name:g.name,kind:g.kind,vents:g.vents.map(v=>v.map(rd)),top:rd(g.top),H:g.H,period:g.period||0,pre:g.pre||0,dur:g.dur||0,steam:g.steam||0,off:rd(g.off||0),cone:g.cone||null,mound:g.mound,pool:g.pool||null})),
+ return{amb:AMB,atm:ATM,bp:rd(BP),geysers:R.geysers.map(g=>({key:g.key,name:g.name,kind:g.kind,vents:g.vents.map(v=>v.map(rd)),top:rd(g.top),H:g.H,period:g.period||0,pre:g.pre||0,dur:g.dur||0,steam:g.steam||0,off:rd(g.off||0),cone:g.cone||null,mound:g.mound,pool:g.pool||null})),
   springs:R.springs.map(s=>({key:s.key,name:s.name,kind:s.kind,x:rd(s.x),z:rd(s.z),r:s.r,temp:s.temp,level:rd(s.level)})),
   mud:R.mud.map(m=>({x:rd(m.x),z:rd(m.z),r:rd(m.r),level:rd(m.level)})),fumaroles:R.fumaroles.map(f=>({x:rd(f.x),z:rd(f.z),s:rd(f.s)})),
   runoff:R.runoff.map(c=>({src:c.src,T0:c.T0,w0:rd(c.w0),lam:c.lam,pts:c.P.filter((p,i)=>i%4===0||i===c.P.length-1).map(p=>[rd(p[0]),rd(p[1]),rd(p[2])])})),
   terraces:R.terraces.map(t=>({key:t.key,S2:t.S2,lip:t.lip,depth:t.depth,pools:t.seeds.size,temp:t.temp,hTop:rd(t.hTop),hBot:rd(t.hBot)}))};};
 // none of this touches a registry, and terrainH calls relief and at a million times: BIO.kitEnd (70) leaves them unwrapped
-['lay','poolAt','relief','at','waterAt','cycle','erupt','byKey','cluster','records','chW','chT'].forEach(k=>{GEYSER[k]._kit='-';});
+['lay','poolAt','relief','at','waterAt','cycle','erupt','byKey','cluster','records','chW','chT','state','boilAt'].forEach(k=>{GEYSER[k]._kit='-';});
 })();

@@ -1,0 +1,344 @@
+[
+ {
+  "src": "rock.basalt.titanium.png",
+  "out": "core/materials/library/rock.basalt.titanium",
+  "record": {
+   "id": "rock.basalt.titanium",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.basalt.titanium\"",
+    "reuse": "the Godthrone's caldera walls and talus (stations 1, 4), Godstep's flows; any fresh black basalt face"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.turf.native.png",
+  "out": "core/materials/library/ground.turf.native",
+  "record": {
+   "id": "ground.turf.native",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.turf.native\"",
+    "reuse": "the SW highlands' fold crests and bald under the turf cards; their other stations' open ground"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "skin.reptile.scales.png",
+  "out": "core/materials/library/skin.reptile.scales",
+  "record": {
+   "id": "skin.reptile.scales",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"skin.reptile.scales\"",
+    "reuse": "the Lizardmen's bodies, tails and heads (the main skin); any reptile, the fauna kits' lizards, a scaled therian"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "skin.reptile.scutes.png",
+  "out": "core/materials/library/skin.reptile.scutes",
+  "record": {
+   "id": "skin.reptile.scutes",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"skin.reptile.scutes\"",
+    "reuse": "the Lizardmen's throats, bellies and the tail's underside; crocodilians, turtles' plastrons, a beaked therian's legs"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "skin.reptile.plates.png",
+  "out": "core/materials/library/skin.reptile.plates",
+  "record": {
+   "id": "skin.reptile.plates",
+   "family": "skin",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"skin.reptile.plates\"",
+    "reuse": "the Lizardmen's skulls and snouts (the head's larger plates); armoured reptiles, horned beasts' brows",
+    "note": "the plates came rounded (pebble-like) more than three-to-six sided"
+   }
+  },
+  "options": {
+   "rough": 0.8,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "metal.etched.png",
+  "out": "core/materials/library/metal.etched",
+  "record": {
+   "id": "metal.etched",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0.6,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"metal.etched\"",
+    "reuse": "acid-rain etching on metal (core/atmos acidOn, the Valley of the Ancients); any old corroded metal, a wreck's hull, pickled steel"
+   }
+  },
+  "options": {
+   "rough": 0.75,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "rock.halite.cut.png",
+  "out": "core/materials/library/rock.halite.cut",
+  "record": {
+   "id": "rock.halite.cut",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.halite.cut\"",
+    "reuse": "kits/resources' rock-salt nodes (cut pit walls, stacked blocks); any salt mine face or salt-block wall",
+    "note": "the faint pink bands kept (mute 0.3): RES_EVLOOK.halite is white to faint pink"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.3
+  }
+ },
+ {
+  "src": "stone.acidstreak.png",
+  "out": "core/materials/library/stone.acidstreak",
+  "record": {
+   "id": "stone.acidstreak",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"stone.acidstreak\"",
+    "reuse": "acid-rain etching on steep stone and masonry (core/atmos acidOn); limestone or marble under long weathering, karst solution runnels",
+    "note": "vertical: up is the top of the image"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "ground.terrace.field.png",
+  "out": "core/materials/library/ground.terrace.field",
+  "record": {
+   "id": "ground.terrace.field",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    4,
+    4
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.terrace.field\"",
+    "reuse": "the Lozenge's terrace treads (kits/ancients, MAT.acSoil), the Pile's crop beds; any terraced field or allotment ground",
+    "note": "furrows run across the frame (left to right)"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ },
+ {
+  "src": "ground.gypsum.crust.png",
+  "out": "core/materials/library/ground.gypsum.crust",
+  "record": {
+   "id": "ground.gypsum.crust",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.gypsum.crust\"",
+    "reuse": "kits/resources' gypsum nodes' crust and slabs; any desert gypsum flat or playa rim (the Bowl, the Catch)",
+    "note": "the first of two takes (pasted image 18): curled plates, polygon cracks and selenite in small clusters; the second (19) had more, evenly strewn blades and fainter cracks"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "metal.enamel.scoured.png",
+  "out": "core/materials/library/metal.enamel.scoured",
+  "record": {
+   "id": "metal.enamel.scoured",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.45,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"metal.enamel.scoured\"",
+    "reuse": "the Stalkers' white shells (kits/mechs, a plate map for the stalker culture); any smooth Ancient machine casing, the Ancient ruins' white panels"
+   }
+  },
+  "options": {
+   "rough": 0.45,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.4
+  }
+ },
+ {
+  "src": "earth.termite.png",
+  "out": "core/materials/library/earth.termite",
+  "record": {
+   "id": "earth.termite",
+   "family": "earth",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"earth.termite\"",
+    "reuse": "every savannah's termite cathedrals (core/terrain KSTACKS kind mound: spires and skirt); mud-dauber and swallow nests, a sun-baked earthen wall's crust",
+    "note": "vertical: the rain runnels run top to bottom"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.5
+  }
+ }
+]

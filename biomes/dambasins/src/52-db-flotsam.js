@@ -106,9 +106,8 @@ const DBF=(function(){
    geo.setAttribute('position',new T.Float32BufferAttribute(b.P,3));geo.setAttribute('uv',new T.Float32BufferAttribute(b.U,2));
    geo.setAttribute('color',new T.Float32BufferAttribute(b.C,3));geo.computeVertexNormals();
    const m=new T.Mesh(geo,o.materials[k]);m.userData.inspectLabel='The flood\'s debris ('+(k==='paint'?'containers':k==='dark'?'open containers':'plating and beams')+')';G.add(m);}
-  // a marker a piece for the probe (it samples 3000 vertices of a merged mesh, too few to find a plate among 1,400
-  // pieces, but every instance of an instanced one): no triangles, never drawn (KNOWN_ISSUES.md)
-  const mk=new T.InstancedMesh(new T.BufferGeometry(),o.materials.rust,recs.length),M=new T.Matrix4();
-  recs.forEach((r,i)=>{mk.setMatrixAt(i,M.makeTranslation(r.x,(r.lo+r.hi)/2,r.z));});mk.visible=false;mk.userData.probeMarker=true;G.add(mk);
+  // a point a piece for the probe (it samples 3000 vertices of a merged mesh, too few to find a plate among 1,400
+  // pieces): the group's userData.probePoints, which the Ancient Port kit's probe reads
+  const pp=[];for(const r of recs)pp.push(r.x,(r.lo+r.hi)/2,r.z);G.userData.probePoints=pp;
   return G;}
  return {KINDS,records,draw,WHO};})();

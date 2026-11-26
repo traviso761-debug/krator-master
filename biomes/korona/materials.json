@@ -194,6 +194,7 @@
    "mapOnly": true
   },
   "lace": {
+   "sheet": "geometry",
    "lib": "card.pitcher.lace",
    "scale": [
     1,
@@ -208,6 +209,7 @@
    "size": 1024
   },
   "gsundew": {
+   "sheet": "geometry",
    "lib": "card.sundew.great",
    "scale": [
     1,
@@ -222,6 +224,7 @@
    "size": 1024
   },
   "coin": {
+   "sheet": "geometry",
    "lib": "card.coin.tree",
    "scale": [
     1,
@@ -236,6 +239,7 @@
    "size": 1024
   },
   "rfan": {
+   "sheet": "geometry",
    "lib": "card.fan.rainbow",
    "scale": [
     1,
@@ -250,6 +254,7 @@
    "size": 1024
   },
   "lacefan": {
+   "sheet": "geometry",
    "lib": "card.lacefan.tree",
    "scale": [
     1,
@@ -264,6 +269,7 @@
    "size": 1024
   },
   "stormpod": {
+   "sheet": "geometry",
    "lib": "card.stormpod",
    "scale": [
     1,
@@ -278,6 +284,7 @@
    "size": 1024
   },
   "cobra": {
+   "sheet": "geometry",
    "lib": "card.pitcher.cobra",
    "scale": [
     1,
@@ -292,6 +299,7 @@
    "size": 1024
   },
   "cobrab": {
+   "sheet": "geometry",
    "lib": "card.pitcher.cobra.b",
    "scale": [
     1,
@@ -306,6 +314,7 @@
    "size": 1024
   },
   "trumpet": {
+   "sheet": "geometry",
    "lib": "card.pitcher.trumpet",
    "scale": [
     1,
@@ -320,6 +329,7 @@
    "size": 1024
   },
   "star": {
+   "sheet": "geometry",
    "lib": "card.trap.star",
    "scale": [
     1,
@@ -334,6 +344,7 @@
    "size": 1024
   },
   "lure": {
+   "sheet": "geometry",
    "lib": "card.lure.flower",
    "scale": [
     1,
@@ -348,6 +359,7 @@
    "size": 1024
   },
   "bulb": {
+   "sheet": "geometry",
    "lib": "card.bulb.blood",
    "scale": [
     1,
@@ -390,6 +402,7 @@
    "size": 1024
   },
   "snare": {
+   "sheet": "geometry",
    "lib": "card.flower.carnivorous",
    "scale": [
     1,
@@ -418,6 +431,7 @@
    "size": 1024
   },
   "lid": {
+   "sheet": "geometry",
    "lib": "card.litter",
    "scale": [
     1,
@@ -432,6 +446,7 @@
    "size": 1024
   },
   "petal": {
+   "sheet": "geometry",
    "lib": "card.fan.rainbow",
    "scale": [
     1,

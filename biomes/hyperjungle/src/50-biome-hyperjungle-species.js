@@ -166,20 +166,28 @@ HYPERJUNGLE.MOSSTEX=BIO.alphaTex(128,(g,S)=>{for(let i=0;i<260;i++){const d=Math
 // newer species (5 mahogany: flaky rectangular plates in deep fissures;
 // 6 kapok: smooth bands studded with conical thorn bosses) are painted
 // NEAR-GREY and take their colour from SPECIES.bark alone, as the eastern
-// abyss kit learnt to (KNOWN_ISSUES: the older four are still pre-coloured).
+// abyss kit learnt to. Since 2026-10-26 ironbark, ghostwood and baobab (kinds
+// 0, 1, 3) are greyed the same way: gc() turns each painted colour into its
+// luminance grey, scaled (SC) so the canvas's mean sits above the brightest
+// channel of the species' SPECIES.bark tints (55-trees tints() then never clips
+// and the bole renders SPECIES.bark). Only colours change, not one draw, so the
+// random stream is the old one. The prism gum keeps its colour strips (its
+// tints are white); kind 4, the limb canvas, keeps its browns.
 HYPERJUNGLE.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
- const base=['#5a3424','#d9d4c4','#8c8666','#7a6e5e','#b8a494','#8e8a86','#b0b0aa'][kind];
- g.fillStyle=base;g.fillRect(0,0,w,h);
+ const GR=kind===0||kind===1||kind===3,SC=[3.7,1.2,1,1.5][kind]||1;
+ const gc=(r,gg,b)=>{if(!GR)return r+','+gg+','+b;const v=Math.min(255,Math.round(SC*(.2126*r+.7152*gg+.0722*b)));return v+','+v+','+v;};
+ const base=['#5a3424','#d9d4c4','#8c8666','#7a6e5e','#b8a494','#8e8a86','#b0b0aa'][kind],bh=parseInt(base.slice(1),16);
+ g.fillStyle=GR?'rgb('+gc(bh>>16,bh>>8&255,bh&255)+')':base;g.fillRect(0,0,w,h);
  if(kind===0||kind===4){
   for(let i=0;i<260;i++){const x=rng()*w,d=rng();
-   g.strokeStyle='rgba('+(d<.5?'30,16,10':'140,80,52')+','+(.35+rng()*.5).toFixed(2)+')';
+   g.strokeStyle='rgba('+(d<.5?gc(30,16,10):gc(140,80,52))+','+(.35+rng()*.5).toFixed(2)+')';
    g.lineWidth=d<.5?2+rng()*5:1+rng()*2;g.beginPath();g.moveTo(x,-10);
    g.bezierCurveTo(x+rr(-14,14),h*.33,x+rr(-14,14),h*.66,x+rr(-10,10),h+10);g.stroke();}
-  for(let i=0;i<40;i++){g.fillStyle='rgba(20,10,6,.55)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,5),rr(20,90));}}
+  for(let i=0;i<40;i++){g.fillStyle='rgba('+gc(20,10,6)+',.55)';const x=rng()*w,y=rng()*h;g.fillRect(x,y,rr(2,5),rr(20,90));}}
  else if(kind===1){
-  for(let k=0;k<18;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?'200,196,184':'236,232,222')+',.45)';g.fillRect(0,y,w,rr(6,30));}
-  for(let i=0;i<120;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(50,44,38,'+(.5+rng()*.45).toFixed(2)+')';g.fillRect(x,y,rr(8,36),rr(1.5,4));}
-  for(let i=0;i<30;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(120,110,96,.35)';g.fillRect(x,y,rr(2,6),rr(10,60));}}
+  for(let k=0;k<18;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?gc(200,196,184):gc(236,232,222))+',.45)';g.fillRect(0,y,w,rr(6,30));}
+  for(let i=0;i<120;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba('+gc(50,44,38)+','+(.5+rng()*.45).toFixed(2)+')';g.fillRect(x,y,rr(8,36),rr(1.5,4));}
+  for(let i=0;i<30;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba('+gc(120,110,96)+',.35)';g.fillRect(x,y,rr(2,6),rr(10,60));}}
  else if(kind===2){
   const C=['154,143,106','111,154,106','184,104,62','90,111,160','138,79,120','194,162,78','120,150,120'];
   for(let i=0;i<70;i++){const x=rng()*w,ww=rr(6,26),y0=rng()*h,L=rr(60,260);
@@ -202,9 +210,9 @@ HYPERJUNGLE.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
    g.fillStyle=gl;g.beginPath();g.arc(x,y,r,0,TAU);g.fill();g.fillStyle='rgba(40,36,34,.55)';g.beginPath();g.ellipse(x+r*.25,y+r*.3,r*.45,r*.28,.6,0,TAU);g.fill();}
   for(let i=0;i<90;i++){const x=rng()*w;g.strokeStyle='rgba(90,88,84,'+(.1+rng()*.2).toFixed(2)+')';g.lineWidth=1+rng()*1.5;g.beginPath();g.moveTo(x,-5);g.lineTo(x+rr(-8,8),h+5);g.stroke();}}
  else{
-  for(let i=0;i<160;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?'60,52,44':'150,140,126')+','+(.15+rng()*.3).toFixed(2)+')';
+  for(let i=0;i<160;i++){const y=rng()*h;g.strokeStyle='rgba('+(rng()<.5?gc(60,52,44):gc(150,140,126))+','+(.15+rng()*.3).toFixed(2)+')';
    g.lineWidth=1+rng()*2;g.beginPath();g.moveTo(-5,y);g.bezierCurveTo(w*.3,y+rr(-8,8),w*.7,y+rr(-8,8),w+5,y+rr(-4,4));g.stroke();}
-  for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba(90,80,70,.25)';g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
+  for(let i=0;i<50;i++){const x=rng()*w,y=rng()*h,r=rr(6,20);g.fillStyle='rgba('+gc(90,80,70)+',.25)';g.beginPath();g.ellipse(x,y,r,r*.5,0,0,TAU);g.fill();}}
 });};
 HYPERJUNGLE.BARKTEX=[0,1,2,3,5,6].map(k=>HYPERJUNGLE.barkTex(k));   // one per species, in SPECIES order
 HYPERJUNGLE.LIMBTEX=HYPERJUNGLE.barkTex(4);                           // pale, tinted per species for limbs and small trunks
@@ -217,19 +225,36 @@ HYPERJUNGLE.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w
 
 // ---------------------------------------------------------------- materials
 // Bark buckets (merged, vertex-coloured) and foliage items (instanced).
+// The rebuild's foliage options (2026-10-27; core/biome README, the foliage workstream): BL the back-light on the broadleaf crowns
+// and the understorey's broad cards (not on fronds, moss or strands); GT the floor cover's root colour from the ground's paint (R5:
+// the host's BIO.setGround; faded out over 500-700 m, the floor's near range); FUNG the brackets and caps on core/biome's fungoid
+// parts (BIO.fung, 33). Each has its switch, read here: ?backlit=0, ?groundtint=0, ?fung=0, or HYPERJUNGLE_LOOK = {backlit: false,
+// ...} set before this loads (a world that reads the kit in place and wants the old look; a reader without BIO.fung gets the old
+// half sphere whatever it asks)
+const LQ=typeof location!=='undefined'?new URLSearchParams(location.search):null,LK=HYPERJUNGLE.LOOK||(typeof HYPERJUNGLE_LOOK!=='undefined'?HYPERJUNGLE_LOOK:{}),off=k=>LK[k]===false||(LQ&&LQ.get(k)==='0');
+const BL=off('backlit')?0:.35,GT=off('groundtint')?null:{k:.8,gain:.36,fade:[500,700]};
+// DECIDUOUS: the species whose crowns drop in the dry season where a station says the forest is monsoon forest (HYPERJUNGLE.LOOK =
+// {deciduous: [3, 5]}, the baobab and the kapok, which drop on Earth too); the closed jungle (station 1) is XA, no dry season: none
+const DEC=off('season')?[]:(LK.deciduous||[]);
+// A HABIT (PLAN-LANDS.md sections 2 and 3, H6; the savage and north lands, 2026-11-08): a station sets HYPERJUNGLE_LOOK = {habit: {H: [[lo, hi]
+// per species], rb, crownR, share, spacing, impCell}} and 55 grows every hypertree that much taller (the savage land's canopy to 300-480 m),
+// the stand shares and the heroes' spacing its own (the north's: ironbark and ghostwood leading, wider apart). Unset (station 1, the lake, the savanna) nothing in 55 changes: the same draws in the same order
+HYPERJUNGLE.HABIT=LK.habit||null;
+HYPERJUNGLE.FUNG=!off('fung')&&!!(BIO.fung&&BIO.fung.bracket);
+HYPERJUNGLE.LOOKS={backlit:BL,ground:GT};   /* 52's library cards take the same options */
 HYPERJUNGLE.MAT={
  bark:HYPERJUNGLE.BARKTEX.map(t=>BIO.barkMat(t)),         // bark[sp], one per species
  limb:BIO.barkMat(HYPERJUNGLE.LIMBTEX),
  wood:BIO.barkMat(HYPERJUNGLE.WOODTEX),
  rock:BIO.barkMat(HYPERJUNGLE.ROCKTEX),
- leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20})),
+ leaf:HYPERJUNGLE.SPECIES.map((S,i)=>BIO.leafMat(HYPERJUNGLE.LEAFTEX[i],'leaf'+i,{aN:true,irid:!!S.irid,swayW:'1.0',swayA:.20,backlit:BL,season:DEC.indexOf(i)>=0?{drop:.8,colour:0x9a7a48,k:.5}:undefined})),
  raceme:BIO.leafMat(HYPERJUNGLE.FLOWERTEX,'raceme',{aN:true,swayW:'(-position.y)',swayA:.9,alphaTest:.4}),
  pod:BIO.leafMat(null,'pod',{swayW:'(-position.y)',swayA:.5,alphaTest:0,vertexColors:true}),
- under:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'under',{swayW:'1.0',swayA:.06}),
+ under:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'under',{swayW:'1.0',swayA:.06,backlit:BL,ground:GT}),
  frond:BIO.leafMat(HYPERJUNGLE.FRONDTEX,'frond',{swayW:'(position.x)',swayA:.075}),
  hang:BIO.leafMat(HYPERJUNGLE.UNDERTEX,'hang',{swayW:'(-position.y)',swayA:.055,axis:1}),
  bract:BIO.leafMat(HYPERJUNGLE.BRACTTEX,'bract',{swayW:'(-position.y)',swayA:.09,axis:1,alphaTest:.4}),
- moss:BIO.leafMat(HYPERJUNGLE.MOSSTEX,'moss',{swayW:'1.0',swayA:.012,alphaTest:.3}),
+ moss:BIO.leafMat(HYPERJUNGLE.MOSSTEX,'moss',{swayW:'1.0',swayA:.012,alphaTest:.3,ground:GT}),
  bloom:BIO.leafMat(null,'bloom',{swayW:'1.0',swayA:.05,alphaTest:0}),
  solid:BIO.solidMat(null,0xffffff),
 };
@@ -241,10 +266,16 @@ HYPERJUNGLE.MAT={
 // pack (the open world) keeps the procedural maps. Cards are DataTexture-like (flipY false), as BIO.alphaTex makes them.
 HYPERJUNGLE.LIBP=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('hyperjungle',n):null;
 {const P=HYPERJUNGLE.LIBP,M=HYPERJUNGLE.MAT;
- const card=n=>{const L=P(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4,flipY:false}).map;t.generateMipmaps=true;
-  t.minFilter=BIO.host.THREE.LinearMipmapLinearFilter;t.magFilter=BIO.host.THREE.LinearFilter;return t;};
- M.leaf.forEach((m,i)=>{const t=card('leaf'+i);if(t){m.map=t;m.alphaTest=.4;m.needsUpdate=true;}});
- for(const k of ['raceme','under','hang','frond','moss','bract']){const t=card(k);if(t){M[k].map=t;M[k].alphaTest=.4;M[k].needsUpdate=true;}}
+ /* a card slot's cell (one plant of a sheet, or a plant's tight box) and base (where it attaches: BIO.def turns the geometry that
+    holds it by one end to meet it) as BIO.libSwap applies them (core/biome 20; check_cells.py --fix wrote them, 2026-10-27):
+    this kit binds its own cards here, so it applies them itself. A slot with neither draws as before */
+ const card=(n,m)=>{const L=P(n);if(!L)return null;let t=KMAT.textures(L,{aniso:4,flipY:false}).map;
+  if(L.cell){const src=t;t=src.clone();if(!src.image)(src._onImage=src._onImage||[]).push(img=>{t.image=img;t.needsUpdate=true;});
+   const c=L.cell;t.offset.set(c[0],c[1]);t.repeat.set(c[2]-c[0],c[3]-c[1]);}
+  if(m&&(L.base||L.stems))m.userData.libCard={base:L.base||null,stems:L.stems||null,rise:L.rise==null?null:L.rise};
+  t.generateMipmaps=true;t.minFilter=BIO.host.THREE.LinearMipmapLinearFilter;t.magFilter=BIO.host.THREE.LinearFilter;return t;};
+ M.leaf.forEach((m,i)=>{const t=card('leaf'+i,m);if(t){m.map=t;m.alphaTest=.4;m.needsUpdate=true;}});
+ for(const k of ['raceme','under','hang','frond','moss','bract']){const t=card(k,M[k]);if(t){M[k].map=t;M[k].alphaTest=.4;M[k].needsUpdate=true;}}
  HYPERJUNGLE.LIBSCALE={};
  M.bark.forEach((m,i)=>{const L=P('bark'+i);if(L){m.map=KMAT.textures(L,{aniso:8}).map;m.needsUpdate=true;HYPERJUNGLE.LIBSCALE['bark'+i]=L.scale;}});
  {const L=P('rock');if(L){M.rock.map=KMAT.textures(L,{aniso:8}).map;M.rock.needsUpdate=true;HYPERJUNGLE.LIBSCALE.rock=L.scale;}}
@@ -270,20 +301,25 @@ HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.def('clump'+i,BIO.geo.clump(),HYPERJUNGLE
 BIO.def('raceme',BIO.geo.hang(),HYPERJUNGLE.MAT.raceme,{attrs:['aN'],label:'Ghostwood racemes'});
 BIO.def('pod',BIO.geo.pod(),HYPERJUNGLE.MAT.pod,{label:'Baobab pods'});
 BIO.def('capsule',BIO.geo.pod(),HYPERJUNGLE.MAT.pod,{label:'Mahogany seed capsules'});
-BIO.def('bract',BIO.geo.hang(),HYPERJUNGLE.MAT.bract,{label:'Heliconia bracts'});
+BIO.def('bract',BIO.geo.hang(),HYPERJUNGLE.MAT.bract,{label:'Heliconia bracts',onLeaf:true});
 BIO.def('ucard',BIO.geo.clump(),HYPERJUNGLE.MAT.under,{label:'Understorey foliage'});
 BIO.def('frond',BIO.geo.frond(3),HYPERJUNGLE.MAT.frond,{label:'Fronds'});
 BIO.def('ribbon',BIO.geo.ribbon(4,.55,.18),HYPERJUNGLE.MAT.hang,{label:'Hanging growth'});
 BIO.def('strand',BIO.geo.ribbon(2,.4,.05),HYPERJUNGLE.MAT.hang,{label:'Lianas and strands'});
 BIO.def('mossmat',BIO.geo.mat(),HYPERJUNGLE.MAT.moss,{label:'Moss'});
 BIO.def('lobe',BIO.geo.lobe(),HYPERJUNGLE.MAT.solid,{label:'Bush lobes'});
-BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms'});
+BIO.def('bloom',BIO.geo.bloom(),HYPERJUNGLE.MAT.bloom,{label:'Blooms',onLeaf:true});
 BIO.def('rod',BIO.geo.rod(7),HYPERJUNGLE.MAT.solid,{label:'Stems'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.limb.map||HYPERJUNGLE.LIMBTEX),{label:'Small trunks'});   /* the limbs' map (the library's when bound) */
 /* a young hypertree's trunk wears its species' bole bark (the library's when bound), as the heroes' limbs do: on the shared
    limb map a young ghostwood or baobab grew a red-brown trunk. 'trunk' stays for the floor's palms, tree ferns and sub-canopy trees */
 HYPERJUNGLE.SPECIES.forEach((S,i)=>BIO.def('saptrunk'+i,BIO.geo.trunk(8),BIO.solidMat(HYPERJUNGLE.MAT.bark[i].map),{label:'Young '+S.name.toLowerCase()+' trunk'}));
-BIO.def('fungus',new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
+// the bracket fungus on core/biome's fungoid parts (BIO.fung.bracket, 2026-10-27; TODO.md "Rebuild the old fungoid flora"): a shelf
+// from the wall at z 0 out along +z, its lip waved and drooping, where the kit drew a half sphere (60 and 65 turn it to the face);
+// the floor's mushroom caps (60 fungi) a gilled dome, 'fungcap', where the giant's cap was the same half sphere and the small ones
+// a lathe each. ?fung=0 (or no BIO.fung) draws both as before
+BIO.def('fungus',HYPERJUNGLE.FUNG?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.32,droop:.18,wav:3,wavA:.07,lump:.08,seed:5113}):new THREE.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),HYPERJUNGLE.MAT.solid,{label:'Bracket fungus'});
+if(HYPERJUNGLE.FUNG)BIO.def('fungcap',BIO.fung.cap({form:'dome',h:.75,seg:10,rings:3,wav:5,wavA:.05,lump:.06,under:'gills',seed:5114}),HYPERJUNGLE.MAT.solid,{label:'Mushrooms'});
 BIO.def('boulder',new THREE.IcosahedronGeometry(1,1),BIO.solidMat(HYPERJUNGLE.ROCKTEX),{label:'Boulders (small)'});
 // the PANDAN-KEY HEAD (the screwpine's fruit, biomes/FRUIT.md: generic_fruit_pandan_keys): a head of 42 wedge keys on a
 // short stalk, local y 0 (hung) .. -1.15. Vertex-coloured in linear (the instance colour only shades it): each key's tip

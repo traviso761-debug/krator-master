@@ -93,6 +93,7 @@ function angel(x,y,z,lv,st){const Rs=rr(.8,1.6),L=LC('angel');card('small',x,y+R
 function spiderlily(x,y,z,lv,st){const L=LC('spiderlily');if(!L.length)return;around(x,z,lv===2?ri(2,5):1,.2,.8,(px,pz)=>{const h=rr(.3,.6),py=Y(px,pz);
   if(lv===2)BIO.beam('rod',[px,py-.05,pz],[px,py+h,pz],.02,.02,leafCol([0x3a6a2a,0x4a7a32],1.0));BIO.put(pick(L),[px,py+h,pz],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),rr(.25,.4),null);});st.lilies++;}
 THRONE.small={tuft,card,grass,bunch,fern,creeper,soot,matPatch,glassfern,bromeliad,moss,angel,spiderlily};
+BIO.kitWrap('throne',THRONE.small);   /* 2026-10-26: a world calling these runs in the Throne's registry (BIO.kitEnd wraps only the export's own functions); the kit's own passes call the locals */
 
 // ---------------------------------------------------------------- the zone planters
 // the WINDWARD's mixes (wet ground: the kipuka station). Fresh lava: glassferns and lichen; young: glassferns, ferns,
@@ -381,7 +382,7 @@ THRONE.buildNewFlora=function(R,q){reseed(660047);q=q==null?1:q;R=R==null?2500:R
   reseed(660050);
   BIO.grid(7,0,R,(x,z)=>BIO.lodD(x,z)<L.floor[1]?.5*q:0,(x,y,z)=>{const w=BIO.waterH(x,z),s=rr(1,2.5);
     BIO.put('acidpad',[x,w+.02,z],qEuler(rr(-.02,.02),rr(0,TAU),rr(-.02,.02)),[s,1.5,s],vary(C(pick(PAL.raft)),.02,.06,.05));st.rafts++;
-    for(let k=0,n=ri(2,3);k<n;k++){const h=rr(.3,.6);tuft('feather',x+rr(-.2,.2)*s,w+.05,z+rr(-.2,.2)*s,h,h*.9,leafCol(PAL.raftHair,1.1,.02,.04,.04));}
+    for(let k=0,n=ri(2,3);k<n;k++){const h=rr(.3,.6);tuft('rafthair',x+rr(-.2,.2)*s,w+.05,z+rr(-.2,.2)*s,h,h*.9,leafCol(PAL.raftHair,1.1,.02,.04,.04));}
     if(BIO.lodD(x,z)<L.floor[0])for(let k=0,n=ri(6,12);k<n;k++){const a=k/n*TAU+rr(-.2,.2),L2=s*rr(1.4,2.4),ex=x+Math.cos(a)*L2,ez=z+Math.sin(a)*L2;
      if(BIO.depth(ex,ez)<.2)continue;BIO.beam('rod',[x+Math.cos(a)*s*.8,w+.03,z+Math.sin(a)*s*.8],[ex,w+.03,ez],.035,.02,vary(C(pick(PAL.raftHair)),.02,.04,.05));
      const ds=rr(.18,.32);BIO.put('acidpad',[ex,w+.025,ez],qEuler(0,rr(0,TAU),0),[ds,1.2,ds],vary(C(pick(PAL.raftDisc)),.02,.06,.05));}},

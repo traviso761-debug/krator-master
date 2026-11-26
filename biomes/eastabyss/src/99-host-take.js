@@ -22,6 +22,9 @@ function viewOfFauna(){const L=EASTABYSS.FAUNA_LAYOUT||{},Fs=L.flocks||[],Zs=L.l
 // a skein's leader where it flies now, from below and behind its wing
 function viewOfSkein(){const m=scene.getObjectByName('biome:flamingoflying');if(!m)return[1180,42,-260,-300,0,120];const M=new THREE.Matrix4();m.getMatrixAt(4,M);const e=M.elements;
  const fx=e[8],fz=e[10],l=Math.hypot(fx,fz)||1;return[e[12]-fx/l*14+fz/l*14,e[13]-6,e[14]-fz/l*14-fx/l*14,e[12]+fx/l*6,e[13],e[14]+fz/l*6];}
+/* the land in the lake (core/water/ext/58; the owner, 2026-11-01): off at page load, for the tri counts; the panel's button or ?mirror=probe|live turns it on */
+const MIRROR=WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[LAKE_DRAW.mesh.material,MARSH_DRAW.mesh.material].concat(RIVER_DRAW.concat(FORK_DRAW).map(D=>D.mesh.material)),
+ level:0,center:[900,-100],radius:1500,far:4000,tree:o=>o.name==='biome:impTrees',hour:()=>ATMOS.clock?ATMOS.clock.hour:0});window.MIRROR=MIRROR;
 const VIEWS={
  'The salt lake':[1180,42,-260,-300,0,120],
  'Shore lycopsids':[690,9,-380,900,2,-300],
@@ -66,9 +69,10 @@ function describe(hit){const p=hit.point,o=hit.object;
 // What verify.py --assert measures. Budgets per biome pass come from
 // BIO.stats (charged by BIO.cur inside the biome).
 const BUDGET={
- showcase:{tris:11000000,calls:130},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES)
+ showcase:{tris:11000000,calls:260},  // the ceiling the second pass was given (11M); measured ~7.4M before it (KNOWN_ISSUES). Calls 130 -> 260 (2026-10-27): the runtime LOD draws
+                                       // a mesh per chunk and range (189 at the default camera) for a third of the triangles (3.8M drawn, was ~11M); nhighlands runs 164-293
  cls:{pass:8200000,host:900000},
- type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','abyss/fauna':'pass','host':'host'},
+ type:{'abyss/trees':'pass','abyss/reeds':'pass','abyss/floor':'pass','abyss/water':'pass','abyss/dress':'pass','abyss/fauna':'pass','abyss/kin':'pass','host':'host'},
 };
 // species that yield something edible the kit does not draw as a catalog fruit (pith, palm heart, leaves...): named, not hidden
 const FRUIT_NOT_DRAWN=['treefern','fanpalm','jade','araucaria','matreed'];
@@ -81,23 +85,35 @@ const HCHK={
  fruit(SP,P){const miss=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&!S.tags.harvest.fruit&&FRUIT_NOT_DRAWN.indexOf(S.key)<0).map(S=>S.key);
   const untagged=SP.filter(S=>!S.tags.harvest).map(S=>S.key),n=P.filter(p=>/:pod$/.test(p[3])).length;
   return{ok:!miss.length&&!untagged.length&&n>=100,detail:(miss.length?'edible but no catalog fruit: '+miss.join(', ')+'; ':'')+(untagged.length?'no harvest tag: '+untagged.join(', ')+'; ':'')+n+' pod instances drawn; catalog keys: '+EASTABYSS.FRUIT_KEYS.join(', ')};}};
+// kin: this kit is the BIO.kin source of the hyperjungle's cousins (PLAN-LANDS.md: firescale, monsooncycad, dambotail), so every
+// species but the reed beds resolves to its builder by key (BIO.kitBuilder), and BIO.kin makes a cousin's record (nothing is grown)
+HCHK.kin=function(keys){const bad=keys.filter(k=>{const b=BIO.kitBuilder('eastabyss',k);return !b||typeof b.make!=='function'||typeof b.grow!=='function';});
+ const K=bad.length?null:BIO.kin('eastabyss.sigillaria',{key:'kincheck',name:'Kin check',scale:.8});
+ return{ok:!bad.length&&!!K&&K.record.tags.kin==='eastabyss.sigillaria'&&K.record.key==='kincheck',detail:(bad.length?'no builder: '+bad.join(', '):'every key resolves')+(K?'; BIO.kin record '+K.key:'')};};
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('fruit tagged, catalogued and drawn',HCHK.fruit(EASTABYSS.SPECIES,P));
+ add('a BIO.kin source: every species by key',HCHK.kin(EASTABYSS.SPECIES.filter(S=>S.key!=='matreed').map(S=>S.key)));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
  add('a fruiting species with no catalog fruit',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='seedfern'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:Object.assign({},S.tags.harvest,{fruit:null})})}):S),P));
  add('a species with no harvest tag',HCHK.fruit(EASTABYSS.SPECIES.map(S=>S.key==='skyscale'?Object.assign({},S,{tags:Object.assign({},S.tags,{harvest:undefined})}):S),P));
  add('no fruit drawn',HCHK.fruit(EASTABYSS.SPECIES,P.filter(p=>!/:pod$/.test(p[3]))));
+ add('a kin key the kit does not have',HCHK.kin(['sigillaria','nosuchtree']));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
+KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45, 88): each chunk mesh by its range */
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'eastabyss',title:'Krator biome — the eastern abyss',
  hint:'The eastern abyss: salt flats, salt marsh, abyssal jungle (ideal type)',
  scene,camera,renderer,ground:terrainH,clear:1.8,registry:REG,views:VIEWS,ticks:TICKS,
- sky:{follow(c){sky.position.copy(c.position);if(typeof wallSky!=='undefined')wallSky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}},
+ clock:{hour:ATMOS.SKY.viewHour},draw:()=>{MIRROR.update();SKY.draw();},   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[sky,giant,giantRing,typeof wallSky!=='undefined'?wallSky:null]}},
+ layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'sky':{objects:()=>[SKY.mesh]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
  get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
  biome:()=>window._biome}});
+// THE SEASON (core/clock, BIO.bindSeason; 2026-10-27, BACKPORT.md's row): the savannah's grass and umbrella-trees follow the
+// clock's dry season (the materials that read it: 50, SEAS; ?season=0 draws them as before). The abyss's rains follow the sun.
+if(new URLSearchParams(location.search).get('season')!=='0'&&BIO.bindSeason)BIO.bindSeason(null,{sharp:1.5});

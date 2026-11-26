@@ -28,7 +28,7 @@
    "metal": 0
   },
   "brick": {
-   "lib": "brick",
+   "lib": "brick.buff",
    "scale": [
     1.2,
     1.2

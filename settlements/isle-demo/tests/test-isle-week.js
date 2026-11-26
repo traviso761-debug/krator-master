@@ -1,6 +1,6 @@
 // node settlements/isle-demo/tests/test-isle-week.js [days] — the isle demo's week test (P7d, PLAN.md section 7) without a
 // browser. Plans both towns, declares them (src/40-48), runs a week with Valapo watched (Kautoa abstract), then a week with
-// Kautoa watched (Valapo abstract), and checks src/48-isle-week.js ISLE.weekChecks: each town's books balance over each week
+// Kautoa watched (Valapo abstract), and checks core/region/48-region-week.js ISLE.weekChecks: each town's books balance over each week
 // at either level, every load shipped landed or at sea, the loads to the abstract town landed and booked there, each
 // town's food a worker a day abstract within a band of the same town watched, the ships' buys, the governor's checks (no
 // good short after the second day, each stock steady, each town's food supply line holding or moving toward its target),
@@ -37,5 +37,9 @@ const caught = (what, rs, re) => { const r = rs.filter(c => re.test(c.name))[0];
 { const a = cp(w1); a.b.towns.valapo.needs.mean.eat = 95; caught('a hungry Valapo', ISLE.weekChecks(a, w2), /content enough/); }
 { const a = cp(w1); a.b.towns.valapo.wear.hurtOld = 4; caught('four hurt past their healing days', ISLE.weekChecks(a, w2), /keep their clothes/); }
 { const a = cp(w1); a.decided = 3; caught('three of the abstract town deciding', ISLE.weekChecks(a, w2), /decided/); }
+{ const a = cp(w1); a.b.ledger.towns.valapo.fish.total += 40; caught('40 fish in the ledger from nowhere', ISLE.weekChecks(a, w2), /the ledger: every good/); }
+{ const a = cp(w1); a.b.ledger.towns.kautoa.clove.exported += 25; caught('25 cloves gone abroad no ship bought', ISLE.weekChecks(a, w2), /left the map/); }
+{ const a = cp(w1), b = cp(w2); [a, b].forEach(W => { W.b.towns.valapo.goods.rice.bought = W.a.towns.valapo.goods.rice.bought; }); caught('a Valapo that ate none of the rice', ISLE.weekChecks(a, b), /foods eaten/); }
+{ const a = cp(w1); let add = 0; a.days.forEach((x, j) => { if (j % 3 === 2) add += 9000; x.towns.valapo.goods.fish.bought += add; }); caught('Valapo buying 9000 fish every third day', ISLE.weekChecks(a, w2), /steadily/); }
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);

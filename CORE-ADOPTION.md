@@ -53,6 +53,12 @@ Legend: `[x]` taken, `[ ]` appropriate and missing, `n/a` not appropriate (reaso
 - n/a mask (no canvas placement), furnish (no furnished interiors yet), hamlet (a town of its own)
 - [ ] core/simulation, core/sched, core/charactermodels (P4, the life: "full sim to come later", owner 2026-10-19)
 
+### span (added 2026-10-27; SP3 of its plan: the page on a stand-in ground)
+- [x] rand, space, tags, atmos (the shared sky), host (FULL: clock, edits, minimap), materials (the Ancients kit's pack, read in
+  place); the Ancients kit read in place, not vendored
+- [ ] terrain (the station's carve replaces `SPAN.groundAt`'s stand-in), water (the biome kit's), lod, walk, export, biome
+- n/a mask (no canvas placement); city (one pre-planned complex: SINGLE_COMPLEX, PLAN.md question 5); hamlet; simulation (later)
+
 ## Tier 2: partial
 
 ### ys

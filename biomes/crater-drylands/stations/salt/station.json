@@ -1,0 +1,20 @@
+{
+ "name": "The salt floor (station 4, crater drylands N): salt pans and brine pools by the Steampits, the kiln's scrub on the salt steppe, the abyssal savannah on the fresher islands",
+ "out": "crater-drylands-salt.html",
+ "core": {
+  "33-core-fungoid.js": "core/biome/33-core-fungoid.js",
+  "35-core-anim.js": "core/biome/35-core-anim.js",
+  "39-core-lean.js": "core/biome/39-core-lean.js",
+  "54-core-water-kinds-ext.js": "core/water/ext/54-core-water-kinds-ext.js",
+  "54b-core-water-kinds-ext-draw.js": "core/water/ext/54b-core-water-kinds-ext-draw.js"
+ },
+ "kits": {
+  "49c1-absav-species.js": "../abyssal-savannah/src/50-biome-absav-species.js",
+  "49c2-absav-trees.js": "../abyssal-savannah/src/55-biome-absav-trees.js",
+  "49c3-absav-floor.js": "../abyssal-savannah/src/60-biome-absav-floor.js",
+  "49c4-absav-build.js": "../abyssal-savannah/src/70-biome-absav.js"
+ },
+ "packs": {
+  "abyssal-savannah": "../abyssal-savannah"
+ }
+}

@@ -1,0 +1,8397 @@
+{
+ "dayKm": 30,
+ "kinds": [
+  "iron",
+  "copper",
+  "gold",
+  "tin",
+  "silver",
+  "rare-earth",
+  "coal",
+  "sulfur",
+  "saltpeter",
+  "oil",
+  "gypsum",
+  "halite",
+  "potash",
+  "alkali",
+  "nickel",
+  "marble",
+  "zinc",
+  "emerald",
+  "turquoise"
+ ],
+ "polities": {
+  "Coyote Kingdom": {
+   "area_km2": 124928,
+   "cells": 7808,
+   "settlements": [
+    "Coyote Canyon"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1553,
+     "medium": 1608,
+     "high": 584,
+     "n": 3745,
+     "yield": 3552.5
+    },
+    "copper": {
+     "low": 273,
+     "medium": 229,
+     "high": 62,
+     "n": 564,
+     "yield": 489.5
+    },
+    "gold": {
+     "low": 207,
+     "medium": 208,
+     "high": 61,
+     "n": 476,
+     "yield": 433.5
+    },
+    "tin": {
+     "low": 269,
+     "medium": 415,
+     "high": 134,
+     "n": 818,
+     "yield": 817.5
+    },
+    "silver": {
+     "low": 188,
+     "medium": 194,
+     "high": 77,
+     "n": 459,
+     "yield": 442
+    },
+    "rare-earth": {
+     "low": 128,
+     "medium": 179,
+     "high": 59,
+     "n": 366,
+     "yield": 361
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 2327,
+     "medium": 1904,
+     "high": 758,
+     "n": 4989,
+     "yield": 4583.5
+    },
+    "saltpeter": {
+     "low": 1319,
+     "medium": 2177,
+     "high": 838,
+     "n": 4334,
+     "yield": 4512.5
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 134,
+     "medium": 90,
+     "high": 33,
+     "n": 257,
+     "yield": 223
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "emerald": {
+     "low": 17,
+     "medium": 6,
+     "high": 10,
+     "n": 33,
+     "yield": 34.5
+    },
+    "turquoise": {
+     "low": 64,
+     "medium": 54,
+     "high": 17,
+     "n": 135,
+     "yield": 120
+    }
+   },
+   "imports": [
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "coal",
+    "oil",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "zinc",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [
+    "sulfur"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Coyote Canyon",
+      "lack": [
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 44,
+    "copper": 5,
+    "gold": 0,
+    "tin": 0,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 0,
+    "sulfur": 158,
+    "saltpeter": 69,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 0
+   }
+  },
+  "Dilihan Province": {
+   "area_km2": 25360,
+   "cells": 1585,
+   "settlements": [
+    "Dilihan",
+    "Port Visas"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 437,
+     "medium": 578,
+     "high": 200,
+     "n": 1215,
+     "yield": 1196.5
+    },
+    "copper": {
+     "low": 77,
+     "medium": 62,
+     "high": 19,
+     "n": 158,
+     "yield": 138.5
+    },
+    "gold": {
+     "low": 75,
+     "medium": 92,
+     "high": 25,
+     "n": 192,
+     "yield": 179.5
+    },
+    "tin": {
+     "low": 109,
+     "medium": 164,
+     "high": 68,
+     "n": 341,
+     "yield": 354.5
+    },
+    "silver": {
+     "low": 77,
+     "medium": 87,
+     "high": 28,
+     "n": 192,
+     "yield": 181.5
+    },
+    "rare-earth": {
+     "low": 70,
+     "medium": 55,
+     "high": 20,
+     "n": 145,
+     "yield": 130
+    },
+    "coal": {
+     "low": 113,
+     "medium": 123,
+     "high": 54,
+     "n": 290,
+     "yield": 287.5
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 42,
+     "medium": 40,
+     "high": 13,
+     "n": 95,
+     "yield": 87
+    },
+    "oil": {
+     "low": 26,
+     "medium": 12,
+     "high": 8,
+     "n": 46,
+     "yield": 41
+    },
+    "gypsum": {
+     "low": 21,
+     "medium": 24,
+     "high": 11,
+     "n": 56,
+     "yield": 56.5
+    },
+    "halite": {
+     "low": 60,
+     "medium": 46,
+     "high": 16,
+     "n": 122,
+     "yield": 108
+    },
+    "potash": {
+     "low": 15,
+     "medium": 40,
+     "high": 17,
+     "n": 72,
+     "yield": 81.5
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 19,
+     "medium": 29,
+     "high": 10,
+     "n": 58,
+     "yield": 58.5
+    },
+    "marble": {
+     "low": 15,
+     "medium": 27,
+     "high": 8,
+     "n": 50,
+     "yield": 50.5
+    },
+    "zinc": {
+     "low": 18,
+     "medium": 19,
+     "high": 5,
+     "n": 42,
+     "yield": 38
+    },
+    "emerald": {
+     "low": 9,
+     "medium": 18,
+     "high": 4,
+     "n": 31,
+     "yield": 30.5
+    },
+    "turquoise": {
+     "low": 2,
+     "medium": 2,
+     "high": 0,
+     "n": 4,
+     "yield": 3
+    }
+   },
+   "imports": [
+    "sulfur",
+    "alkali",
+    "nickel",
+    "turquoise"
+   ],
+   "exports": [
+    "gypsum",
+    "potash",
+    "marble",
+    "emerald"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 167,
+    "copper": 26,
+    "gold": 27,
+    "tin": 40,
+    "silver": 17,
+    "rare-earth": 20,
+    "coal": 97,
+    "sulfur": 0,
+    "saltpeter": 9,
+    "oil": 8,
+    "gypsum": 15,
+    "halite": 32,
+    "potash": 13,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 15,
+    "zinc": 24,
+    "emerald": 10,
+    "turquoise": 0
+   }
+  },
+  "Empire of Iziz": {
+   "area_km2": 327072,
+   "cells": 20442,
+   "settlements": [
+    "Arcbeam",
+    "Fort Vaklu",
+    "Fridon",
+    "Hook",
+    "Iziz",
+    "Mantis",
+    "Port  Tobin",
+    "Pylon",
+    "Stump",
+    "Talia",
+    "Verge"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 4251,
+     "medium": 4710,
+     "high": 1739,
+     "n": 10700,
+     "yield": 10313.5
+    },
+    "copper": {
+     "low": 1037,
+     "medium": 1445,
+     "high": 524,
+     "n": 3006,
+     "yield": 3011.5
+    },
+    "gold": {
+     "low": 627,
+     "medium": 669,
+     "high": 253,
+     "n": 1549,
+     "yield": 1488.5
+    },
+    "tin": {
+     "low": 490,
+     "medium": 625,
+     "high": 225,
+     "n": 1340,
+     "yield": 1320
+    },
+    "silver": {
+     "low": 633,
+     "medium": 677,
+     "high": 255,
+     "n": 1565,
+     "yield": 1503.5
+    },
+    "rare-earth": {
+     "low": 248,
+     "medium": 254,
+     "high": 108,
+     "n": 610,
+     "yield": 594
+    },
+    "coal": {
+     "low": 2194,
+     "medium": 2621,
+     "high": 956,
+     "n": 5771,
+     "yield": 5630
+    },
+    "sulfur": {
+     "low": 1101,
+     "medium": 1032,
+     "high": 422,
+     "n": 2555,
+     "yield": 2426.5
+    },
+    "saltpeter": {
+     "low": 2318,
+     "medium": 3122,
+     "high": 1256,
+     "n": 6696,
+     "yield": 6793
+    },
+    "oil": {
+     "low": 605,
+     "medium": 572,
+     "high": 211,
+     "n": 1388,
+     "yield": 1296.5
+    },
+    "gypsum": {
+     "low": 37,
+     "medium": 76,
+     "high": 27,
+     "n": 140,
+     "yield": 148.5
+    },
+    "halite": {
+     "low": 1269,
+     "medium": 1005,
+     "high": 336,
+     "n": 2610,
+     "yield": 2311.5
+    },
+    "potash": {
+     "low": 33,
+     "medium": 58,
+     "high": 21,
+     "n": 112,
+     "yield": 116.5
+    },
+    "alkali": {
+     "low": 13,
+     "medium": 15,
+     "high": 6,
+     "n": 34,
+     "yield": 33.5
+    },
+    "nickel": {
+     "low": 181,
+     "medium": 195,
+     "high": 69,
+     "n": 445,
+     "yield": 423.5
+    },
+    "marble": {
+     "low": 10,
+     "medium": 8,
+     "high": 6,
+     "n": 24,
+     "yield": 25
+    },
+    "zinc": {
+     "low": 518,
+     "medium": 699,
+     "high": 268,
+     "n": 1485,
+     "yield": 1494
+    },
+    "emerald": {
+     "low": 51,
+     "medium": 56,
+     "high": 10,
+     "n": 117,
+     "yield": 101.5
+    },
+    "turquoise": {
+     "low": 169,
+     "medium": 168,
+     "high": 77,
+     "n": 414,
+     "yield": 406.5
+    }
+   },
+   "imports": [
+    "potash",
+    "alkali"
+   ],
+   "exports": [
+    "iron",
+    "coal",
+    "oil",
+    "halite",
+    "nickel",
+    "emerald"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 814,
+    "copper": 111,
+    "gold": 60,
+    "tin": 75,
+    "silver": 46,
+    "rare-earth": 25,
+    "coal": 1094,
+    "sulfur": 25,
+    "saltpeter": 63,
+    "oil": 246,
+    "gypsum": 3,
+    "halite": 132,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 32,
+    "marble": 1,
+    "zinc": 11,
+    "emerald": 14,
+    "turquoise": 4
+   }
+  },
+  "Eternal State": {
+   "area_km2": 209344,
+   "cells": 13084,
+   "settlements": [
+    "Carcosa",
+    "Corpus",
+    "Farport",
+    "Fulcrum",
+    "Henge",
+    "Lux",
+    "Mirabilis",
+    "Veil"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 3097,
+     "medium": 3695,
+     "high": 1397,
+     "n": 8189,
+     "yield": 8037.5
+    },
+    "copper": {
+     "low": 480,
+     "medium": 420,
+     "high": 144,
+     "n": 1044,
+     "yield": 948
+    },
+    "gold": {
+     "low": 466,
+     "medium": 427,
+     "high": 164,
+     "n": 1057,
+     "yield": 988
+    },
+    "tin": {
+     "low": 509,
+     "medium": 720,
+     "high": 306,
+     "n": 1535,
+     "yield": 1586.5
+    },
+    "silver": {
+     "low": 380,
+     "medium": 417,
+     "high": 148,
+     "n": 945,
+     "yield": 903
+    },
+    "rare-earth": {
+     "low": 260,
+     "medium": 298,
+     "high": 120,
+     "n": 678,
+     "yield": 668
+    },
+    "coal": {
+     "low": 1003,
+     "medium": 847,
+     "high": 307,
+     "n": 2157,
+     "yield": 1962.5
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 588,
+     "medium": 662,
+     "high": 253,
+     "n": 1503,
+     "yield": 1462
+    },
+    "oil": {
+     "low": 292,
+     "medium": 212,
+     "high": 83,
+     "n": 587,
+     "yield": 524
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 471,
+     "medium": 343,
+     "high": 104,
+     "n": 918,
+     "yield": 786.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 81,
+     "medium": 68,
+     "high": 23,
+     "n": 172,
+     "yield": 154.5
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "emerald": {
+     "low": 32,
+     "medium": 33,
+     "high": 11,
+     "n": 76,
+     "yield": 71
+    },
+    "turquoise": {
+     "low": 46,
+     "medium": 34,
+     "high": 12,
+     "n": 92,
+     "yield": 81
+    }
+   },
+   "imports": [
+    "sulfur",
+    "gypsum",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "iron",
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "coal",
+    "halite"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 876,
+    "copper": 99,
+    "gold": 118,
+    "tin": 174,
+    "silver": 99,
+    "rare-earth": 80,
+    "coal": 368,
+    "sulfur": 0,
+    "saltpeter": 37,
+    "oil": 86,
+    "gypsum": 0,
+    "halite": 92,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 8,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 9,
+    "turquoise": 0
+   }
+  },
+  "Fellgangs": {
+   "area_km2": 126784,
+   "cells": 7924,
+   "settlements": [
+    "Chimes",
+    "Ledge",
+    "Nulab",
+    "Wildcat"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1652,
+     "medium": 1486,
+     "high": 576,
+     "n": 3714,
+     "yield": 3464
+    },
+    "copper": {
+     "low": 1602,
+     "medium": 2574,
+     "high": 1002,
+     "n": 5178,
+     "yield": 5379
+    },
+    "gold": {
+     "low": 909,
+     "medium": 1034,
+     "high": 439,
+     "n": 2382,
+     "yield": 2366.5
+    },
+    "tin": {
+     "low": 517,
+     "medium": 458,
+     "high": 175,
+     "n": 1150,
+     "yield": 1066.5
+    },
+    "silver": {
+     "low": 881,
+     "medium": 968,
+     "high": 407,
+     "n": 2256,
+     "yield": 2222.5
+    },
+    "rare-earth": {
+     "low": 494,
+     "medium": 711,
+     "high": 288,
+     "n": 1493,
+     "yield": 1534
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 1819,
+     "medium": 1516,
+     "high": 571,
+     "n": 3906,
+     "yield": 3567.5
+    },
+    "saltpeter": {
+     "low": 372,
+     "medium": 394,
+     "high": 132,
+     "n": 898,
+     "yield": 844
+    },
+    "oil": {
+     "low": 24,
+     "medium": 28,
+     "high": 3,
+     "n": 55,
+     "yield": 46
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 1,
+     "high": 0,
+     "n": 1,
+     "yield": 1
+    },
+    "halite": {
+     "low": 3,
+     "medium": 2,
+     "high": 1,
+     "n": 6,
+     "yield": 5.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 1,
+     "high": 0,
+     "n": 1,
+     "yield": 1
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 70,
+     "medium": 61,
+     "high": 16,
+     "n": 147,
+     "yield": 128
+    },
+    "zinc": {
+     "low": 1595,
+     "medium": 2118,
+     "high": 783,
+     "n": 4496,
+     "yield": 4481.5
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "turquoise": {
+     "low": 93,
+     "medium": 95,
+     "high": 39,
+     "n": 227,
+     "yield": 219.5
+    }
+   },
+   "imports": [
+    "coal",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "nickel",
+    "emerald"
+   ],
+   "exports": [
+    "copper",
+    "gold",
+    "silver",
+    "rare-earth",
+    "sulfur",
+    "marble",
+    "zinc"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Chimes",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Ledge",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Nulab",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Wildcat",
+      "lack": [
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 292,
+    "copper": 380,
+    "gold": 176,
+    "tin": 90,
+    "silver": 155,
+    "rare-earth": 125,
+    "coal": 0,
+    "sulfur": 217,
+    "saltpeter": 2,
+    "oil": 32,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 18,
+    "zinc": 314,
+    "emerald": 0,
+    "turquoise": 1
+   }
+  },
+  "Free Clans": {
+   "area_km2": 41184,
+   "cells": 2574,
+   "settlements": [
+    "Ardent"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 692,
+     "medium": 768,
+     "high": 324,
+     "n": 1784,
+     "yield": 1762
+    },
+    "copper": {
+     "low": 103,
+     "medium": 83,
+     "high": 25,
+     "n": 211,
+     "yield": 184.5
+    },
+    "gold": {
+     "low": 81,
+     "medium": 73,
+     "high": 30,
+     "n": 184,
+     "yield": 173.5
+    },
+    "tin": {
+     "low": 54,
+     "medium": 46,
+     "high": 19,
+     "n": 119,
+     "yield": 111
+    },
+    "silver": {
+     "low": 61,
+     "medium": 68,
+     "high": 25,
+     "n": 154,
+     "yield": 148.5
+    },
+    "rare-earth": {
+     "low": 30,
+     "medium": 37,
+     "high": 4,
+     "n": 71,
+     "yield": 60
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 5,
+     "medium": 3,
+     "high": 2,
+     "n": 10,
+     "yield": 9.5
+    },
+    "saltpeter": {
+     "low": 400,
+     "medium": 478,
+     "high": 176,
+     "n": 1054,
+     "yield": 1030
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 164,
+     "medium": 93,
+     "high": 43,
+     "n": 300,
+     "yield": 261
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 61,
+     "medium": 47,
+     "high": 12,
+     "n": 120,
+     "yield": 101.5
+    },
+    "marble": {
+     "low": 1,
+     "medium": 0,
+     "high": 0,
+     "n": 1,
+     "yield": 0.5
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 2,
+     "high": 0,
+     "n": 2,
+     "yield": 2
+    },
+    "emerald": {
+     "low": 3,
+     "medium": 2,
+     "high": 1,
+     "n": 6,
+     "yield": 5.5
+    },
+    "turquoise": {
+     "low": 17,
+     "medium": 14,
+     "high": 2,
+     "n": 33,
+     "yield": 26.5
+    }
+   },
+   "imports": [
+    "tin",
+    "silver",
+    "rare-earth",
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "zinc",
+    "emerald"
+   ],
+   "exports": [],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Ardent",
+      "lack": [
+       "wood"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 71,
+    "copper": 3,
+    "gold": 1,
+    "tin": 0,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 82,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 29,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 3
+   }
+  },
+  "Iron Republic": {
+   "area_km2": 129360,
+   "cells": 8085,
+   "settlements": [
+    "Cascade",
+    "Footfall",
+    "Glaive",
+    "Lipp",
+    "Roketstad"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 2048,
+     "medium": 2578,
+     "high": 956,
+     "n": 5582,
+     "yield": 5514
+    },
+    "copper": {
+     "low": 391,
+     "medium": 330,
+     "high": 120,
+     "n": 841,
+     "yield": 765.5
+    },
+    "gold": {
+     "low": 295,
+     "medium": 271,
+     "high": 88,
+     "n": 654,
+     "yield": 594.5
+    },
+    "tin": {
+     "low": 254,
+     "medium": 253,
+     "high": 77,
+     "n": 584,
+     "yield": 534
+    },
+    "silver": {
+     "low": 266,
+     "medium": 261,
+     "high": 91,
+     "n": 618,
+     "yield": 576
+    },
+    "rare-earth": {
+     "low": 146,
+     "medium": 161,
+     "high": 52,
+     "n": 359,
+     "yield": 338
+    },
+    "coal": {
+     "low": 6,
+     "medium": 6,
+     "high": 2,
+     "n": 14,
+     "yield": 13
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 483,
+     "medium": 491,
+     "high": 172,
+     "n": 1146,
+     "yield": 1076.5
+    },
+    "oil": {
+     "low": 0,
+     "medium": 3,
+     "high": 3,
+     "n": 6,
+     "yield": 9
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 265,
+     "medium": 194,
+     "high": 56,
+     "n": 515,
+     "yield": 438.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 161,
+     "medium": 174,
+     "high": 68,
+     "n": 403,
+     "yield": 390.5
+    },
+    "marble": {
+     "low": 152,
+     "medium": 139,
+     "high": 47,
+     "n": 338,
+     "yield": 309
+    },
+    "zinc": {
+     "low": 31,
+     "medium": 25,
+     "high": 13,
+     "n": 69,
+     "yield": 66.5
+    },
+    "emerald": {
+     "low": 6,
+     "medium": 10,
+     "high": 2,
+     "n": 18,
+     "yield": 17
+    },
+    "turquoise": {
+     "low": 27,
+     "medium": 26,
+     "high": 6,
+     "n": 59,
+     "yield": 51.5
+    }
+   },
+   "imports": [
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "halite",
+    "nickel"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 510,
+    "copper": 57,
+    "gold": 35,
+    "tin": 35,
+    "silver": 20,
+    "rare-earth": 13,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 29,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 76,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 22,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 2,
+    "turquoise": 0
+   }
+  },
+  "Jimjam": {
+   "area_km2": 53664,
+   "cells": 3354,
+   "settlements": [
+    "Jimjam",
+    "Serai"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 489,
+     "medium": 516,
+     "high": 190,
+     "n": 1195,
+     "yield": 1140.5
+    },
+    "copper": {
+     "low": 295,
+     "medium": 310,
+     "high": 109,
+     "n": 714,
+     "yield": 675.5
+    },
+    "gold": {
+     "low": 30,
+     "medium": 30,
+     "high": 5,
+     "n": 65,
+     "yield": 55
+    },
+    "tin": {
+     "low": 24,
+     "medium": 16,
+     "high": 8,
+     "n": 48,
+     "yield": 44
+    },
+    "silver": {
+     "low": 17,
+     "medium": 26,
+     "high": 7,
+     "n": 50,
+     "yield": 48.5
+    },
+    "rare-earth": {
+     "low": 9,
+     "medium": 17,
+     "high": 5,
+     "n": 31,
+     "yield": 31.5
+    },
+    "coal": {
+     "low": 27,
+     "medium": 26,
+     "high": 7,
+     "n": 60,
+     "yield": 53.5
+    },
+    "sulfur": {
+     "low": 3,
+     "medium": 2,
+     "high": 0,
+     "n": 5,
+     "yield": 3.5
+    },
+    "saltpeter": {
+     "low": 289,
+     "medium": 325,
+     "high": 107,
+     "n": 721,
+     "yield": 683.5
+    },
+    "oil": {
+     "low": 6,
+     "medium": 6,
+     "high": 1,
+     "n": 13,
+     "yield": 11
+    },
+    "gypsum": {
+     "low": 302,
+     "medium": 308,
+     "high": 124,
+     "n": 734,
+     "yield": 707
+    },
+    "halite": {
+     "low": 220,
+     "medium": 166,
+     "high": 57,
+     "n": 443,
+     "yield": 390
+    },
+    "potash": {
+     "low": 27,
+     "medium": 25,
+     "high": 10,
+     "n": 62,
+     "yield": 58.5
+    },
+    "alkali": {
+     "low": 25,
+     "medium": 11,
+     "high": 7,
+     "n": 43,
+     "yield": 37.5
+    },
+    "nickel": {
+     "low": 18,
+     "medium": 22,
+     "high": 9,
+     "n": 49,
+     "yield": 49
+    },
+    "marble": {
+     "low": 0,
+     "medium": 1,
+     "high": 0,
+     "n": 1,
+     "yield": 1
+    },
+    "zinc": {
+     "low": 211,
+     "medium": 185,
+     "high": 90,
+     "n": 486,
+     "yield": 470.5
+    },
+    "emerald": {
+     "low": 20,
+     "medium": 35,
+     "high": 11,
+     "n": 66,
+     "yield": 67
+    },
+    "turquoise": {
+     "low": 34,
+     "medium": 35,
+     "high": 7,
+     "n": 76,
+     "yield": 66
+    }
+   },
+   "imports": [
+    "silver",
+    "rare-earth",
+    "sulfur",
+    "nickel",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "gypsum",
+    "halite",
+    "potash",
+    "emerald"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Serai",
+      "lack": [
+       "stone"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 50,
+    "copper": 2,
+    "gold": 2,
+    "tin": 2,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 14,
+    "sulfur": 0,
+    "saltpeter": 54,
+    "oil": 2,
+    "gypsum": 129,
+    "halite": 84,
+    "potash": 14,
+    "alkali": 1,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 15,
+    "turquoise": 0
+   }
+  },
+  "Kautoa": {
+   "area_km2": 11376,
+   "cells": 711,
+   "settlements": [
+    "Bipo",
+    "Kautoa",
+    "Valapo"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 189,
+     "medium": 263,
+     "high": 99,
+     "n": 551,
+     "yield": 555.5
+    },
+    "copper": {
+     "low": 80,
+     "medium": 149,
+     "high": 62,
+     "n": 291,
+     "yield": 313
+    },
+    "gold": {
+     "low": 53,
+     "medium": 69,
+     "high": 24,
+     "n": 146,
+     "yield": 143.5
+    },
+    "tin": {
+     "low": 33,
+     "medium": 42,
+     "high": 12,
+     "n": 87,
+     "yield": 82.5
+    },
+    "silver": {
+     "low": 71,
+     "medium": 71,
+     "high": 22,
+     "n": 164,
+     "yield": 150.5
+    },
+    "rare-earth": {
+     "low": 15,
+     "medium": 14,
+     "high": 4,
+     "n": 33,
+     "yield": 29.5
+    },
+    "coal": {
+     "low": 97,
+     "medium": 83,
+     "high": 29,
+     "n": 209,
+     "yield": 189.5
+    },
+    "sulfur": {
+     "low": 379,
+     "medium": 507,
+     "high": 186,
+     "n": 1072,
+     "yield": 1068.5
+    },
+    "saltpeter": {
+     "low": 1,
+     "medium": 1,
+     "high": 1,
+     "n": 3,
+     "yield": 3.5
+    },
+    "oil": {
+     "low": 17,
+     "medium": 18,
+     "high": 4,
+     "n": 39,
+     "yield": 34.5
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 11,
+     "medium": 5,
+     "high": 2,
+     "n": 18,
+     "yield": 14.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 59,
+     "medium": 103,
+     "high": 31,
+     "n": 193,
+     "yield": 194.5
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 1,
+     "high": 1,
+     "n": 2,
+     "yield": 3
+    },
+    "turquoise": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    }
+   },
+   "imports": [
+    "saltpeter",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "turquoise"
+   ],
+   "exports": [
+    "sulfur"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 238,
+    "copper": 86,
+    "gold": 46,
+    "tin": 32,
+    "silver": 46,
+    "rare-earth": 16,
+    "coal": 136,
+    "sulfur": 333,
+    "saltpeter": 0,
+    "oil": 26,
+    "gypsum": 0,
+    "halite": 11,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 50,
+    "emerald": 1,
+    "turquoise": 0
+   }
+  },
+  "League of Amphitriton": {
+   "area_km2": 47824,
+   "cells": 2989,
+   "settlements": [
+    "Dhelv",
+    "Kierson",
+    "Nereus",
+    "Pontus",
+    "Tethis",
+    "Trigon",
+    "Ys"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 402,
+     "medium": 460,
+     "high": 158,
+     "n": 1020,
+     "yield": 977
+    },
+    "copper": {
+     "low": 300,
+     "medium": 537,
+     "high": 194,
+     "n": 1031,
+     "yield": 1075
+    },
+    "gold": {
+     "low": 163,
+     "medium": 213,
+     "high": 77,
+     "n": 453,
+     "yield": 448.5
+    },
+    "tin": {
+     "low": 51,
+     "medium": 51,
+     "high": 16,
+     "n": 118,
+     "yield": 108.5
+    },
+    "silver": {
+     "low": 194,
+     "medium": 226,
+     "high": 85,
+     "n": 505,
+     "yield": 493
+    },
+    "rare-earth": {
+     "low": 37,
+     "medium": 29,
+     "high": 8,
+     "n": 74,
+     "yield": 63.5
+    },
+    "coal": {
+     "low": 170,
+     "medium": 216,
+     "high": 78,
+     "n": 464,
+     "yield": 457
+    },
+    "sulfur": {
+     "low": 990,
+     "medium": 1228,
+     "high": 452,
+     "n": 2670,
+     "yield": 2627
+    },
+    "saltpeter": {
+     "low": 7,
+     "medium": 1,
+     "high": 0,
+     "n": 8,
+     "yield": 4.5
+    },
+    "oil": {
+     "low": 36,
+     "medium": 30,
+     "high": 10,
+     "n": 76,
+     "yield": 68
+    },
+    "gypsum": {
+     "low": 9,
+     "medium": 14,
+     "high": 3,
+     "n": 26,
+     "yield": 24.5
+    },
+    "halite": {
+     "low": 87,
+     "medium": 63,
+     "high": 24,
+     "n": 174,
+     "yield": 154.5
+    },
+    "potash": {
+     "low": 3,
+     "medium": 4,
+     "high": 1,
+     "n": 8,
+     "yield": 7.5
+    },
+    "alkali": {
+     "low": 4,
+     "medium": 4,
+     "high": 1,
+     "n": 9,
+     "yield": 8
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 38,
+     "medium": 82,
+     "high": 28,
+     "n": 148,
+     "yield": 157
+    },
+    "zinc": {
+     "low": 430,
+     "medium": 595,
+     "high": 217,
+     "n": 1242,
+     "yield": 1244
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 3,
+     "high": 1,
+     "n": 4,
+     "yield": 5
+    },
+    "turquoise": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    }
+   },
+   "imports": [
+    "saltpeter",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [
+    "sulfur",
+    "marble",
+    "zinc"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 199,
+    "copper": 160,
+    "gold": 75,
+    "tin": 26,
+    "silver": 75,
+    "rare-earth": 17,
+    "coal": 125,
+    "sulfur": 427,
+    "saltpeter": 0,
+    "oil": 27,
+    "gypsum": 0,
+    "halite": 45,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 32,
+    "zinc": 287,
+    "emerald": 0,
+    "turquoise": 0
+   }
+  },
+  "Lesser Throne": {
+   "area_km2": 5808,
+   "cells": 363,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 84,
+     "medium": 99,
+     "high": 32,
+     "n": 215,
+     "yield": 205
+    },
+    "copper": {
+     "low": 64,
+     "medium": 123,
+     "high": 40,
+     "n": 227,
+     "yield": 235
+    },
+    "gold": {
+     "low": 31,
+     "medium": 43,
+     "high": 13,
+     "n": 87,
+     "yield": 84.5
+    },
+    "tin": {
+     "low": 6,
+     "medium": 7,
+     "high": 2,
+     "n": 15,
+     "yield": 14
+    },
+    "silver": {
+     "low": 30,
+     "medium": 41,
+     "high": 20,
+     "n": 91,
+     "yield": 96
+    },
+    "rare-earth": {
+     "low": 5,
+     "medium": 6,
+     "high": 2,
+     "n": 13,
+     "yield": 12.5
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 146,
+     "medium": 158,
+     "high": 69,
+     "n": 373,
+     "yield": 369
+    },
+    "saltpeter": {
+     "low": 68,
+     "medium": 88,
+     "high": 38,
+     "n": 194,
+     "yield": 198
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 17,
+     "medium": 10,
+     "high": 2,
+     "n": 29,
+     "yield": 22.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 4,
+     "medium": 3,
+     "high": 0,
+     "n": 7,
+     "yield": 5
+    },
+    "zinc": {
+     "low": 76,
+     "medium": 74,
+     "high": 33,
+     "n": 183,
+     "yield": 178
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "turquoise": {
+     "low": 19,
+     "medium": 25,
+     "high": 3,
+     "n": 47,
+     "yield": 40.5
+    }
+   },
+   "imports": [
+    "coal",
+    "oil",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "emerald"
+   ],
+   "exports": [
+    "sulfur",
+    "saltpeter",
+    "turquoise"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": null,
+      "lack": [
+       "wood"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 100,
+    "copper": 136,
+    "gold": 54,
+    "tin": 5,
+    "silver": 61,
+    "rare-earth": 8,
+    "coal": 0,
+    "sulfur": 269,
+    "saltpeter": 103,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 5,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 5,
+    "zinc": 116,
+    "emerald": 0,
+    "turquoise": 30
+   },
+   "centroid": [
+    1128.5,
+    861.3
+   ]
+  },
+  "Lizardmen": {
+   "area_km2": 140640,
+   "cells": 8790,
+   "settlements": [
+    "Cube",
+    "Gila",
+    "Komodo",
+    "Sauropolis",
+    "The Tubes",
+    "Tuatara"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1918,
+     "medium": 1751,
+     "high": 720,
+     "n": 4389,
+     "yield": 4150
+    },
+    "copper": {
+     "low": 1740,
+     "medium": 2408,
+     "high": 919,
+     "n": 5067,
+     "yield": 5116
+    },
+    "gold": {
+     "low": 941,
+     "medium": 973,
+     "high": 386,
+     "n": 2300,
+     "yield": 2215.5
+    },
+    "tin": {
+     "low": 758,
+     "medium": 586,
+     "high": 221,
+     "n": 1565,
+     "yield": 1407
+    },
+    "silver": {
+     "low": 842,
+     "medium": 904,
+     "high": 325,
+     "n": 2071,
+     "yield": 1975
+    },
+    "rare-earth": {
+     "low": 707,
+     "medium": 1204,
+     "high": 425,
+     "n": 2336,
+     "yield": 2407.5
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 1228,
+     "medium": 1167,
+     "high": 409,
+     "n": 2804,
+     "yield": 2599
+    },
+    "saltpeter": {
+     "low": 217,
+     "medium": 253,
+     "high": 100,
+     "n": 570,
+     "yield": 561.5
+    },
+    "oil": {
+     "low": 653,
+     "medium": 617,
+     "high": 250,
+     "n": 1520,
+     "yield": 1443.5
+    },
+    "gypsum": {
+     "low": 10,
+     "medium": 13,
+     "high": 5,
+     "n": 28,
+     "yield": 28
+    },
+    "halite": {
+     "low": 8,
+     "medium": 12,
+     "high": 4,
+     "n": 24,
+     "yield": 24
+    },
+    "potash": {
+     "low": 9,
+     "medium": 11,
+     "high": 4,
+     "n": 24,
+     "yield": 23.5
+    },
+    "alkali": {
+     "low": 4,
+     "medium": 3,
+     "high": 0,
+     "n": 7,
+     "yield": 5
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 141,
+     "medium": 122,
+     "high": 41,
+     "n": 304,
+     "yield": 274.5
+    },
+    "zinc": {
+     "low": 1668,
+     "medium": 2076,
+     "high": 846,
+     "n": 4590,
+     "yield": 4602
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "turquoise": {
+     "low": 66,
+     "medium": 77,
+     "high": 31,
+     "n": 174,
+     "yield": 172
+    }
+   },
+   "imports": [
+    "coal",
+    "nickel",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [
+    "copper",
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "sulfur",
+    "oil",
+    "alkali",
+    "marble",
+    "zinc"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Cube",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Komodo",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Sauropolis",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "The Tubes",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Tuatara",
+      "lack": [
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 383,
+    "copper": 435,
+    "gold": 204,
+    "tin": 184,
+    "silver": 166,
+    "rare-earth": 260,
+    "coal": 0,
+    "sulfur": 193,
+    "saltpeter": 2,
+    "oil": 200,
+    "gypsum": 10,
+    "halite": 6,
+    "potash": 9,
+    "alkali": 5,
+    "nickel": 0,
+    "marble": 25,
+    "zinc": 391,
+    "emerald": 0,
+    "turquoise": 0
+   }
+  },
+  "Nomad Country": {
+   "area_km2": 309408,
+   "cells": 19338,
+   "settlements": [
+    "Furrow",
+    "Mungo",
+    "Reed",
+    "Shade"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 5055,
+     "medium": 6267,
+     "high": 2319,
+     "n": 13641,
+     "yield": 13432.5
+    },
+    "copper": {
+     "low": 792,
+     "medium": 591,
+     "high": 250,
+     "n": 1633,
+     "yield": 1487
+    },
+    "gold": {
+     "low": 651,
+     "medium": 669,
+     "high": 275,
+     "n": 1595,
+     "yield": 1544.5
+    },
+    "tin": {
+     "low": 808,
+     "medium": 1085,
+     "high": 480,
+     "n": 2373,
+     "yield": 2449
+    },
+    "silver": {
+     "low": 607,
+     "medium": 598,
+     "high": 202,
+     "n": 1407,
+     "yield": 1305.5
+    },
+    "rare-earth": {
+     "low": 412,
+     "medium": 509,
+     "high": 177,
+     "n": 1098,
+     "yield": 1069
+    },
+    "coal": {
+     "low": 829,
+     "medium": 703,
+     "high": 259,
+     "n": 1791,
+     "yield": 1635.5
+    },
+    "sulfur": {
+     "low": 327,
+     "medium": 288,
+     "high": 114,
+     "n": 729,
+     "yield": 679.5
+    },
+    "saltpeter": {
+     "low": 2517,
+     "medium": 3249,
+     "high": 1206,
+     "n": 6972,
+     "yield": 6919.5
+    },
+    "oil": {
+     "low": 236,
+     "medium": 143,
+     "high": 57,
+     "n": 436,
+     "yield": 375
+    },
+    "gypsum": {
+     "low": 4,
+     "medium": 5,
+     "high": 1,
+     "n": 10,
+     "yield": 9
+    },
+    "halite": {
+     "low": 1172,
+     "medium": 803,
+     "high": 289,
+     "n": 2264,
+     "yield": 1967
+    },
+    "potash": {
+     "low": 18,
+     "medium": 26,
+     "high": 3,
+     "n": 47,
+     "yield": 41
+    },
+    "alkali": {
+     "low": 10,
+     "medium": 8,
+     "high": 0,
+     "n": 18,
+     "yield": 13
+    },
+    "nickel": {
+     "low": 58,
+     "medium": 50,
+     "high": 22,
+     "n": 130,
+     "yield": 123
+    },
+    "marble": {
+     "low": 41,
+     "medium": 27,
+     "high": 7,
+     "n": 75,
+     "yield": 61.5
+    },
+    "zinc": {
+     "low": 39,
+     "medium": 26,
+     "high": 15,
+     "n": 80,
+     "yield": 75.5
+    },
+    "emerald": {
+     "low": 49,
+     "medium": 35,
+     "high": 21,
+     "n": 105,
+     "yield": 101.5
+    },
+    "turquoise": {
+     "low": 98,
+     "medium": 63,
+     "high": 28,
+     "n": 189,
+     "yield": 168
+    }
+   },
+   "imports": [
+    "sulfur",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel"
+   ],
+   "exports": [
+    "iron",
+    "tin"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 637,
+    "copper": 68,
+    "gold": 98,
+    "tin": 165,
+    "silver": 92,
+    "rare-earth": 63,
+    "coal": 119,
+    "sulfur": 0,
+    "saltpeter": 69,
+    "oil": 20,
+    "gypsum": 0,
+    "halite": 20,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 3,
+    "zinc": 3,
+    "emerald": 6,
+    "turquoise": 4
+   }
+  },
+  "Painted Men": {
+   "area_km2": 54640,
+   "cells": 3415,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 546,
+     "medium": 496,
+     "high": 184,
+     "n": 1226,
+     "yield": 1137
+    },
+    "copper": {
+     "low": 74,
+     "medium": 56,
+     "high": 25,
+     "n": 155,
+     "yield": 143
+    },
+    "gold": {
+     "low": 12,
+     "medium": 13,
+     "high": 7,
+     "n": 32,
+     "yield": 33
+    },
+    "tin": {
+     "low": 16,
+     "medium": 19,
+     "high": 6,
+     "n": 41,
+     "yield": 39
+    },
+    "silver": {
+     "low": 9,
+     "medium": 11,
+     "high": 5,
+     "n": 25,
+     "yield": 25.5
+    },
+    "rare-earth": {
+     "low": 10,
+     "medium": 4,
+     "high": 2,
+     "n": 16,
+     "yield": 13
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 1474,
+     "medium": 1268,
+     "high": 431,
+     "n": 3173,
+     "yield": 2867
+    },
+    "saltpeter": {
+     "low": 606,
+     "medium": 789,
+     "high": 324,
+     "n": 1719,
+     "yield": 1740
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "emerald": {
+     "low": 3,
+     "medium": 1,
+     "high": 0,
+     "n": 4,
+     "yield": 2.5
+    },
+    "turquoise": {
+     "low": 12,
+     "medium": 7,
+     "high": 2,
+     "n": 21,
+     "yield": 17
+    }
+   },
+   "imports": [
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "coal",
+    "oil",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "zinc",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [
+    "sulfur",
+    "saltpeter"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": null,
+      "lack": [
+       "wood",
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 47,
+    "copper": 4,
+    "gold": 0,
+    "tin": 0,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 0,
+    "sulfur": 192,
+    "saltpeter": 105,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 0
+   },
+   "centroid": [
+    1015.9,
+    622.1
+   ]
+  },
+  "Realm of Dalab": {
+   "area_km2": 240992,
+   "cells": 15062,
+   "settlements": [
+    "Blade",
+    "Dalab",
+    "Daranch",
+    "Loj Twenny",
+    "Shelf",
+    "Span"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 3541,
+     "medium": 4152,
+     "high": 1472,
+     "n": 9165,
+     "yield": 8866.5
+    },
+    "copper": {
+     "low": 1589,
+     "medium": 1525,
+     "high": 591,
+     "n": 3705,
+     "yield": 3501.5
+    },
+    "gold": {
+     "low": 948,
+     "medium": 1038,
+     "high": 413,
+     "n": 2399,
+     "yield": 2338
+    },
+    "tin": {
+     "low": 921,
+     "medium": 980,
+     "high": 386,
+     "n": 2287,
+     "yield": 2212.5
+    },
+    "silver": {
+     "low": 941,
+     "medium": 855,
+     "high": 339,
+     "n": 2135,
+     "yield": 2003.5
+    },
+    "rare-earth": {
+     "low": 765,
+     "medium": 1086,
+     "high": 421,
+     "n": 2272,
+     "yield": 2310.5
+    },
+    "coal": {
+     "low": 773,
+     "medium": 559,
+     "high": 251,
+     "n": 1583,
+     "yield": 1447.5
+    },
+    "sulfur": {
+     "low": 343,
+     "medium": 288,
+     "high": 139,
+     "n": 770,
+     "yield": 737.5
+    },
+    "saltpeter": {
+     "low": 912,
+     "medium": 1363,
+     "high": 492,
+     "n": 2767,
+     "yield": 2803
+    },
+    "oil": {
+     "low": 246,
+     "medium": 211,
+     "high": 82,
+     "n": 539,
+     "yield": 498
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 307,
+     "medium": 204,
+     "high": 74,
+     "n": 585,
+     "yield": 505.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 85,
+     "medium": 53,
+     "high": 25,
+     "n": 163,
+     "yield": 145.5
+    },
+    "marble": {
+     "low": 49,
+     "medium": 40,
+     "high": 12,
+     "n": 101,
+     "yield": 88.5
+    },
+    "zinc": {
+     "low": 989,
+     "medium": 1165,
+     "high": 416,
+     "n": 2570,
+     "yield": 2491.5
+    },
+    "emerald": {
+     "low": 24,
+     "medium": 25,
+     "high": 10,
+     "n": 59,
+     "yield": 57
+    },
+    "turquoise": {
+     "low": 121,
+     "medium": 87,
+     "high": 34,
+     "n": 242,
+     "yield": 215.5
+    }
+   },
+   "imports": [
+    "sulfur",
+    "gypsum",
+    "potash",
+    "alkali"
+   ],
+   "exports": [
+    "iron",
+    "rare-earth",
+    "saltpeter",
+    "nickel",
+    "turquoise"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Loj Twenny",
+      "lack": [
+       "wood",
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 625,
+    "copper": 143,
+    "gold": 98,
+    "tin": 95,
+    "silver": 69,
+    "rare-earth": 83,
+    "coal": 173,
+    "sulfur": 0,
+    "saltpeter": 106,
+    "oil": 59,
+    "gypsum": 0,
+    "halite": 71,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 11,
+    "marble": 6,
+    "zinc": 75,
+    "emerald": 3,
+    "turquoise": 16
+   }
+  },
+  "Region 87": {
+   "area_km2": 87712,
+   "cells": 5482,
+   "settlements": [
+    "Crescent",
+    "Flooded Tower",
+    "Fort Kreia",
+    "Fort Ordo",
+    "Girder",
+    "Mav's Refuge",
+    "Nusidi",
+    "Pinnacle Rock",
+    "Port Goto",
+    "Sleeping City",
+    "Talon"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1194,
+     "medium": 1390,
+     "high": 524,
+     "n": 3108,
+     "yield": 3035
+    },
+    "copper": {
+     "low": 175,
+     "medium": 134,
+     "high": 64,
+     "n": 373,
+     "yield": 349.5
+    },
+    "gold": {
+     "low": 127,
+     "medium": 102,
+     "high": 30,
+     "n": 259,
+     "yield": 225.5
+    },
+    "tin": {
+     "low": 145,
+     "medium": 193,
+     "high": 90,
+     "n": 428,
+     "yield": 445.5
+    },
+    "silver": {
+     "low": 75,
+     "medium": 107,
+     "high": 45,
+     "n": 227,
+     "yield": 234.5
+    },
+    "rare-earth": {
+     "low": 57,
+     "medium": 83,
+     "high": 29,
+     "n": 169,
+     "yield": 169.5
+    },
+    "coal": {
+     "low": 1395,
+     "medium": 1765,
+     "high": 700,
+     "n": 3860,
+     "yield": 3862.5
+    },
+    "sulfur": {
+     "low": 87,
+     "medium": 92,
+     "high": 34,
+     "n": 213,
+     "yield": 203.5
+    },
+    "saltpeter": {
+     "low": 16,
+     "medium": 13,
+     "high": 4,
+     "n": 33,
+     "yield": 29
+    },
+    "oil": {
+     "low": 467,
+     "medium": 443,
+     "high": 164,
+     "n": 1074,
+     "yield": 1004.5
+    },
+    "gypsum": {
+     "low": 2,
+     "medium": 2,
+     "high": 2,
+     "n": 6,
+     "yield": 7
+    },
+    "halite": {
+     "low": 197,
+     "medium": 128,
+     "high": 44,
+     "n": 369,
+     "yield": 314.5
+    },
+    "potash": {
+     "low": 8,
+     "medium": 13,
+     "high": 3,
+     "n": 24,
+     "yield": 23
+    },
+    "alkali": {
+     "low": 2,
+     "medium": 4,
+     "high": 1,
+     "n": 7,
+     "yield": 7
+    },
+    "nickel": {
+     "low": 46,
+     "medium": 69,
+     "high": 17,
+     "n": 132,
+     "yield": 126
+    },
+    "marble": {
+     "low": 8,
+     "medium": 7,
+     "high": 4,
+     "n": 19,
+     "yield": 19
+    },
+    "zinc": {
+     "low": 12,
+     "medium": 25,
+     "high": 9,
+     "n": 46,
+     "yield": 49
+    },
+    "emerald": {
+     "low": 16,
+     "medium": 16,
+     "high": 6,
+     "n": 38,
+     "yield": 36
+    },
+    "turquoise": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    }
+   },
+   "imports": [
+    "turquoise"
+   ],
+   "exports": [
+    "iron",
+    "coal",
+    "oil",
+    "halite",
+    "potash",
+    "alkali",
+    "marble"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 812,
+    "copper": 93,
+    "gold": 31,
+    "tin": 70,
+    "silver": 34,
+    "rare-earth": 20,
+    "coal": 1361,
+    "sulfur": 10,
+    "saltpeter": 17,
+    "oil": 368,
+    "gypsum": 6,
+    "halite": 136,
+    "potash": 19,
+    "alkali": 5,
+    "nickel": 6,
+    "marble": 14,
+    "zinc": 3,
+    "emerald": 6,
+    "turquoise": 0
+   }
+  },
+  "Screamer Country": {
+   "area_km2": 32128,
+   "cells": 2008,
+   "settlements": [
+    "Fort Kalor",
+    "Hexahedron"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 394,
+     "medium": 411,
+     "high": 150,
+     "n": 955,
+     "yield": 908
+    },
+    "copper": {
+     "low": 60,
+     "medium": 63,
+     "high": 23,
+     "n": 146,
+     "yield": 139
+    },
+    "gold": {
+     "low": 42,
+     "medium": 32,
+     "high": 15,
+     "n": 89,
+     "yield": 83
+    },
+    "tin": {
+     "low": 54,
+     "medium": 89,
+     "high": 40,
+     "n": 183,
+     "yield": 196
+    },
+    "silver": {
+     "low": 34,
+     "medium": 45,
+     "high": 20,
+     "n": 99,
+     "yield": 102
+    },
+    "rare-earth": {
+     "low": 21,
+     "medium": 39,
+     "high": 15,
+     "n": 75,
+     "yield": 79.5
+    },
+    "coal": {
+     "low": 344,
+     "medium": 475,
+     "high": 205,
+     "n": 1024,
+     "yield": 1057
+    },
+    "sulfur": {
+     "low": 77,
+     "medium": 67,
+     "high": 20,
+     "n": 164,
+     "yield": 145.5
+    },
+    "saltpeter": {
+     "low": 89,
+     "medium": 99,
+     "high": 40,
+     "n": 228,
+     "yield": 223.5
+    },
+    "oil": {
+     "low": 124,
+     "medium": 89,
+     "high": 30,
+     "n": 243,
+     "yield": 211
+    },
+    "gypsum": {
+     "low": 5,
+     "medium": 16,
+     "high": 8,
+     "n": 29,
+     "yield": 34.5
+    },
+    "halite": {
+     "low": 89,
+     "medium": 67,
+     "high": 25,
+     "n": 181,
+     "yield": 161.5
+    },
+    "potash": {
+     "low": 1,
+     "medium": 5,
+     "high": 3,
+     "n": 9,
+     "yield": 11.5
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 16,
+     "medium": 21,
+     "high": 10,
+     "n": 47,
+     "yield": 49
+    },
+    "marble": {
+     "low": 5,
+     "medium": 2,
+     "high": 0,
+     "n": 7,
+     "yield": 4.5
+    },
+    "zinc": {
+     "low": 24,
+     "medium": 30,
+     "high": 11,
+     "n": 65,
+     "yield": 64
+    },
+    "emerald": {
+     "low": 22,
+     "medium": 21,
+     "high": 5,
+     "n": 48,
+     "yield": 42
+    },
+    "turquoise": {
+     "low": 11,
+     "medium": 7,
+     "high": 1,
+     "n": 19,
+     "yield": 14.5
+    }
+   },
+   "imports": [
+    "saltpeter",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "turquoise"
+   ],
+   "exports": [
+    "emerald"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 128,
+    "copper": 36,
+    "gold": 11,
+    "tin": 2,
+    "silver": 18,
+    "rare-earth": 3,
+    "coal": 259,
+    "sulfur": 131,
+    "saltpeter": 0,
+    "oil": 70,
+    "gypsum": 1,
+    "halite": 28,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 23,
+    "emerald": 21,
+    "turquoise": 0
+   }
+  },
+  "Scyvoi": {
+   "area_km2": 37952,
+   "cells": 2372,
+   "settlements": [
+    "Fort Ebon"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 499,
+     "medium": 637,
+     "high": 224,
+     "n": 1360,
+     "yield": 1334.5
+    },
+    "copper": {
+     "low": 83,
+     "medium": 56,
+     "high": 23,
+     "n": 162,
+     "yield": 143.5
+    },
+    "gold": {
+     "low": 52,
+     "medium": 48,
+     "high": 15,
+     "n": 115,
+     "yield": 104
+    },
+    "tin": {
+     "low": 56,
+     "medium": 65,
+     "high": 25,
+     "n": 146,
+     "yield": 143
+    },
+    "silver": {
+     "low": 44,
+     "medium": 39,
+     "high": 19,
+     "n": 102,
+     "yield": 99
+    },
+    "rare-earth": {
+     "low": 45,
+     "medium": 28,
+     "high": 7,
+     "n": 80,
+     "yield": 64.5
+    },
+    "coal": {
+     "low": 279,
+     "medium": 215,
+     "high": 76,
+     "n": 570,
+     "yield": 506.5
+    },
+    "sulfur": {
+     "low": 27,
+     "medium": 25,
+     "high": 10,
+     "n": 62,
+     "yield": 58.5
+    },
+    "saltpeter": {
+     "low": 148,
+     "medium": 130,
+     "high": 50,
+     "n": 328,
+     "yield": 304
+    },
+    "oil": {
+     "low": 83,
+     "medium": 69,
+     "high": 19,
+     "n": 171,
+     "yield": 148.5
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 118,
+     "medium": 74,
+     "high": 22,
+     "n": 214,
+     "yield": 177
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 55,
+     "medium": 76,
+     "high": 19,
+     "n": 150,
+     "yield": 141.5
+    },
+    "marble": {
+     "low": 17,
+     "medium": 24,
+     "high": 7,
+     "n": 48,
+     "yield": 46.5
+    },
+    "zinc": {
+     "low": 34,
+     "medium": 26,
+     "high": 10,
+     "n": 70,
+     "yield": 63
+    },
+    "emerald": {
+     "low": 3,
+     "medium": 1,
+     "high": 0,
+     "n": 4,
+     "yield": 2.5
+    },
+    "turquoise": {
+     "low": 4,
+     "medium": 2,
+     "high": 2,
+     "n": 8,
+     "yield": 8
+    }
+   },
+   "imports": [
+    "tin",
+    "rare-earth",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [
+    "marble"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 55,
+    "copper": 14,
+    "gold": 5,
+    "tin": 0,
+    "silver": 4,
+    "rare-earth": 0,
+    "coal": 41,
+    "sulfur": 57,
+    "saltpeter": 17,
+    "oil": 13,
+    "gypsum": 0,
+    "halite": 25,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 18,
+    "zinc": 24,
+    "emerald": 0,
+    "turquoise": 0
+   }
+  },
+  "Shell Province": {
+   "area_km2": 22336,
+   "cells": 1396,
+   "settlements": [
+    "Shell"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 274,
+     "medium": 356,
+     "high": 120,
+     "n": 750,
+     "yield": 733
+    },
+    "copper": {
+     "low": 43,
+     "medium": 52,
+     "high": 24,
+     "n": 119,
+     "yield": 121.5
+    },
+    "gold": {
+     "low": 25,
+     "medium": 22,
+     "high": 12,
+     "n": 59,
+     "yield": 58.5
+    },
+    "tin": {
+     "low": 19,
+     "medium": 24,
+     "high": 4,
+     "n": 47,
+     "yield": 41.5
+    },
+    "silver": {
+     "low": 22,
+     "medium": 26,
+     "high": 7,
+     "n": 55,
+     "yield": 51
+    },
+    "rare-earth": {
+     "low": 9,
+     "medium": 13,
+     "high": 5,
+     "n": 27,
+     "yield": 27.5
+    },
+    "coal": {
+     "low": 204,
+     "medium": 210,
+     "high": 66,
+     "n": 480,
+     "yield": 444
+    },
+    "sulfur": {
+     "low": 156,
+     "medium": 165,
+     "high": 54,
+     "n": 375,
+     "yield": 351
+    },
+    "saltpeter": {
+     "low": 37,
+     "medium": 33,
+     "high": 16,
+     "n": 86,
+     "yield": 83.5
+    },
+    "oil": {
+     "low": 76,
+     "medium": 67,
+     "high": 18,
+     "n": 161,
+     "yield": 141
+    },
+    "gypsum": {
+     "low": 10,
+     "medium": 18,
+     "high": 7,
+     "n": 35,
+     "yield": 37
+    },
+    "halite": {
+     "low": 63,
+     "medium": 45,
+     "high": 17,
+     "n": 125,
+     "yield": 110.5
+    },
+    "potash": {
+     "low": 16,
+     "medium": 20,
+     "high": 4,
+     "n": 40,
+     "yield": 36
+    },
+    "alkali": {
+     "low": 7,
+     "medium": 6,
+     "high": 1,
+     "n": 14,
+     "yield": 11.5
+    },
+    "nickel": {
+     "low": 3,
+     "medium": 2,
+     "high": 1,
+     "n": 6,
+     "yield": 5.5
+    },
+    "marble": {
+     "low": 5,
+     "medium": 7,
+     "high": 4,
+     "n": 16,
+     "yield": 17.5
+    },
+    "zinc": {
+     "low": 13,
+     "medium": 29,
+     "high": 14,
+     "n": 56,
+     "yield": 63.5
+    },
+    "emerald": {
+     "low": 23,
+     "medium": 28,
+     "high": 12,
+     "n": 63,
+     "yield": 63.5
+    },
+    "turquoise": {
+     "low": 1,
+     "medium": 2,
+     "high": 0,
+     "n": 3,
+     "yield": 2.5
+    }
+   },
+   "imports": [
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "sulfur",
+    "nickel",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "gypsum",
+    "alkali",
+    "emerald"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 32,
+    "copper": 7,
+    "gold": 0,
+    "tin": 0,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 71,
+    "sulfur": 0,
+    "saltpeter": 4,
+    "oil": 21,
+    "gypsum": 22,
+    "halite": 23,
+    "potash": 8,
+    "alkali": 4,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 18,
+    "turquoise": 0
+   }
+  },
+  "Shumar": {
+   "area_km2": 32592,
+   "cells": 2037,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 431,
+     "medium": 447,
+     "high": 177,
+     "n": 1055,
+     "yield": 1016.5
+    },
+    "copper": {
+     "low": 60,
+     "medium": 55,
+     "high": 26,
+     "n": 141,
+     "yield": 137
+    },
+    "gold": {
+     "low": 25,
+     "medium": 30,
+     "high": 12,
+     "n": 67,
+     "yield": 66.5
+    },
+    "tin": {
+     "low": 20,
+     "medium": 27,
+     "high": 19,
+     "n": 66,
+     "yield": 75
+    },
+    "silver": {
+     "low": 16,
+     "medium": 25,
+     "high": 8,
+     "n": 49,
+     "yield": 49
+    },
+    "rare-earth": {
+     "low": 13,
+     "medium": 15,
+     "high": 5,
+     "n": 33,
+     "yield": 31.5
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 25,
+     "medium": 15,
+     "high": 5,
+     "n": 45,
+     "yield": 37.5
+    },
+    "saltpeter": {
+     "low": 263,
+     "medium": 206,
+     "high": 82,
+     "n": 551,
+     "yield": 501.5
+    },
+    "oil": {
+     "low": 2,
+     "medium": 1,
+     "high": 0,
+     "n": 3,
+     "yield": 2
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 168,
+     "medium": 106,
+     "high": 41,
+     "n": 315,
+     "yield": 272
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 7,
+     "medium": 9,
+     "high": 2,
+     "n": 18,
+     "yield": 16.5
+    },
+    "marble": {
+     "low": 7,
+     "medium": 7,
+     "high": 5,
+     "n": 19,
+     "yield": 20.5
+    },
+    "zinc": {
+     "low": 14,
+     "medium": 19,
+     "high": 11,
+     "n": 44,
+     "yield": 48
+    },
+    "emerald": {
+     "low": 1,
+     "medium": 1,
+     "high": 0,
+     "n": 2,
+     "yield": 1.5
+    },
+    "turquoise": {
+     "low": 11,
+     "medium": 7,
+     "high": 2,
+     "n": 20,
+     "yield": 16.5
+    }
+   },
+   "imports": [
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "emerald"
+   ],
+   "exports": [],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 119,
+    "copper": 5,
+    "gold": 7,
+    "tin": 3,
+    "silver": 6,
+    "rare-earth": 2,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 46,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 27,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 3,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 2
+   },
+   "centroid": [
+    742.5,
+    1174.6
+   ]
+  },
+  "Talovolci Chiefs": {
+   "area_km2": 145328,
+   "cells": 9083,
+   "settlements": [
+    "Spirladunon"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 2485,
+     "medium": 3167,
+     "high": 1105,
+     "n": 6757,
+     "yield": 6619.5
+    },
+    "copper": {
+     "low": 917,
+     "medium": 1480,
+     "high": 545,
+     "n": 2942,
+     "yield": 3028.5
+    },
+    "gold": {
+     "low": 677,
+     "medium": 772,
+     "high": 290,
+     "n": 1739,
+     "yield": 1690.5
+    },
+    "tin": {
+     "low": 433,
+     "medium": 460,
+     "high": 184,
+     "n": 1077,
+     "yield": 1044.5
+    },
+    "silver": {
+     "low": 682,
+     "medium": 741,
+     "high": 271,
+     "n": 1694,
+     "yield": 1624
+    },
+    "rare-earth": {
+     "low": 269,
+     "medium": 234,
+     "high": 100,
+     "n": 603,
+     "yield": 568.5
+    },
+    "coal": {
+     "low": 151,
+     "medium": 161,
+     "high": 60,
+     "n": 372,
+     "yield": 356.5
+    },
+    "sulfur": {
+     "low": 1251,
+     "medium": 996,
+     "high": 403,
+     "n": 2650,
+     "yield": 2427.5
+    },
+    "saltpeter": {
+     "low": 917,
+     "medium": 1266,
+     "high": 483,
+     "n": 2666,
+     "yield": 2690.5
+    },
+    "oil": {
+     "low": 47,
+     "medium": 44,
+     "high": 13,
+     "n": 104,
+     "yield": 93.5
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 185,
+     "medium": 132,
+     "high": 56,
+     "n": 373,
+     "yield": 336.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 273,
+     "medium": 312,
+     "high": 111,
+     "n": 696,
+     "yield": 670.5
+    },
+    "marble": {
+     "low": 10,
+     "medium": 10,
+     "high": 7,
+     "n": 27,
+     "yield": 29
+    },
+    "zinc": {
+     "low": 602,
+     "medium": 843,
+     "high": 328,
+     "n": 1773,
+     "yield": 1800
+    },
+    "emerald": {
+     "low": 10,
+     "medium": 9,
+     "high": 6,
+     "n": 25,
+     "yield": 26
+    },
+    "turquoise": {
+     "low": 183,
+     "medium": 215,
+     "high": 86,
+     "n": 484,
+     "yield": 478.5
+    }
+   },
+   "imports": [
+    "sulfur",
+    "saltpeter",
+    "gypsum",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "nickel"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 173,
+    "copper": 18,
+    "gold": 16,
+    "tin": 25,
+    "silver": 28,
+    "rare-earth": 16,
+    "coal": 27,
+    "sulfur": 0,
+    "saltpeter": 0,
+    "oil": 5,
+    "gypsum": 0,
+    "halite": 8,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 25,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 2,
+    "turquoise": 0
+   }
+  },
+  "Tungang Union": {
+   "area_km2": 67440,
+   "cells": 4215,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 1212,
+     "medium": 1510,
+     "high": 556,
+     "n": 3278,
+     "yield": 3228
+    },
+    "copper": {
+     "low": 610,
+     "medium": 524,
+     "high": 179,
+     "n": 1313,
+     "yield": 1187
+    },
+    "gold": {
+     "low": 439,
+     "medium": 450,
+     "high": 173,
+     "n": 1062,
+     "yield": 1015.5
+    },
+    "tin": {
+     "low": 426,
+     "medium": 440,
+     "high": 171,
+     "n": 1037,
+     "yield": 995
+    },
+    "silver": {
+     "low": 418,
+     "medium": 385,
+     "high": 145,
+     "n": 948,
+     "yield": 884
+    },
+    "rare-earth": {
+     "low": 366,
+     "medium": 475,
+     "high": 186,
+     "n": 1027,
+     "yield": 1030
+    },
+    "coal": {
+     "low": 11,
+     "medium": 3,
+     "high": 0,
+     "n": 14,
+     "yield": 8.5
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 608,
+     "medium": 964,
+     "high": 357,
+     "n": 1929,
+     "yield": 1982
+    },
+    "oil": {
+     "low": 3,
+     "medium": 5,
+     "high": 2,
+     "n": 10,
+     "yield": 10.5
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 17,
+     "medium": 12,
+     "high": 4,
+     "n": 33,
+     "yield": 28.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 18,
+     "medium": 9,
+     "high": 9,
+     "n": 36,
+     "yield": 36
+    },
+    "marble": {
+     "low": 9,
+     "medium": 4,
+     "high": 0,
+     "n": 13,
+     "yield": 8.5
+    },
+    "zinc": {
+     "low": 339,
+     "medium": 393,
+     "high": 150,
+     "n": 882,
+     "yield": 862.5
+    },
+    "emerald": {
+     "low": 11,
+     "medium": 15,
+     "high": 6,
+     "n": 32,
+     "yield": 32.5
+    },
+    "turquoise": {
+     "low": 96,
+     "medium": 73,
+     "high": 26,
+     "n": 195,
+     "yield": 173
+    }
+   },
+   "imports": [
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "zinc"
+   ],
+   "exports": [
+    "saltpeter",
+    "turquoise"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": null,
+      "lack": [
+       "wood",
+       "water",
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 195,
+    "copper": 35,
+    "gold": 52,
+    "tin": 56,
+    "silver": 54,
+    "rare-earth": 35,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 146,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 6,
+    "turquoise": 15
+   },
+   "centroid": [
+    458.4,
+    1239.2
+   ]
+  },
+  "Vothic Kingdom": {
+   "area_km2": 131168,
+   "cells": 8198,
+   "settlements": [
+    "Agropolis",
+    "Almua",
+    "Drum",
+    "Nazar",
+    "Shim",
+    "Temora",
+    "Torus",
+    "Tzunfort",
+    "Voth",
+    "Wing",
+    "Zey'danin"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1760,
+     "medium": 2025,
+     "high": 708,
+     "n": 4493,
+     "yield": 4321
+    },
+    "copper": {
+     "low": 326,
+     "medium": 339,
+     "high": 126,
+     "n": 791,
+     "yield": 754
+    },
+    "gold": {
+     "low": 196,
+     "medium": 215,
+     "high": 84,
+     "n": 495,
+     "yield": 481
+    },
+    "tin": {
+     "low": 207,
+     "medium": 297,
+     "high": 147,
+     "n": 651,
+     "yield": 694.5
+    },
+    "silver": {
+     "low": 191,
+     "medium": 190,
+     "high": 86,
+     "n": 467,
+     "yield": 457.5
+    },
+    "rare-earth": {
+     "low": 107,
+     "medium": 136,
+     "high": 40,
+     "n": 283,
+     "yield": 269.5
+    },
+    "coal": {
+     "low": 1395,
+     "medium": 1520,
+     "high": 570,
+     "n": 3485,
+     "yield": 3357.5
+    },
+    "sulfur": {
+     "low": 264,
+     "medium": 342,
+     "high": 118,
+     "n": 724,
+     "yield": 710
+    },
+    "saltpeter": {
+     "low": 49,
+     "medium": 40,
+     "high": 12,
+     "n": 101,
+     "yield": 88.5
+    },
+    "oil": {
+     "low": 419,
+     "medium": 360,
+     "high": 143,
+     "n": 922,
+     "yield": 855.5
+    },
+    "gypsum": {
+     "low": 1,
+     "medium": 3,
+     "high": 3,
+     "n": 7,
+     "yield": 9.5
+    },
+    "halite": {
+     "low": 301,
+     "medium": 191,
+     "high": 72,
+     "n": 564,
+     "yield": 485.5
+    },
+    "potash": {
+     "low": 2,
+     "medium": 1,
+     "high": 0,
+     "n": 3,
+     "yield": 2
+    },
+    "alkali": {
+     "low": 3,
+     "medium": 2,
+     "high": 0,
+     "n": 5,
+     "yield": 3.5
+    },
+    "nickel": {
+     "low": 16,
+     "medium": 28,
+     "high": 10,
+     "n": 54,
+     "yield": 56
+    },
+    "marble": {
+     "low": 38,
+     "medium": 48,
+     "high": 18,
+     "n": 104,
+     "yield": 103
+    },
+    "zinc": {
+     "low": 93,
+     "medium": 115,
+     "high": 54,
+     "n": 262,
+     "yield": 269.5
+    },
+    "emerald": {
+     "low": 12,
+     "medium": 19,
+     "high": 6,
+     "n": 37,
+     "yield": 37
+    },
+    "turquoise": {
+     "low": 4,
+     "medium": 1,
+     "high": 1,
+     "n": 6,
+     "yield": 5
+    }
+   },
+   "imports": [
+    "nickel",
+    "marble",
+    "turquoise"
+   ],
+   "exports": [
+    "iron",
+    "coal",
+    "oil",
+    "halite",
+    "emerald"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 753,
+    "copper": 172,
+    "gold": 87,
+    "tin": 78,
+    "silver": 73,
+    "rare-earth": 32,
+    "coal": 839,
+    "sulfur": 150,
+    "saltpeter": 1,
+    "oil": 215,
+    "gypsum": 6,
+    "halite": 135,
+    "potash": 1,
+    "alkali": 1,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 75,
+    "emerald": 14,
+    "turquoise": 0
+   }
+  },
+  "Vrivolci": {
+   "area_km2": 39328,
+   "cells": 2458,
+   "settlements": [
+    "Tallwalls"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 572,
+     "medium": 726,
+     "high": 286,
+     "n": 1584,
+     "yield": 1584
+    },
+    "copper": {
+     "low": 124,
+     "medium": 112,
+     "high": 43,
+     "n": 279,
+     "yield": 260
+    },
+    "gold": {
+     "low": 76,
+     "medium": 101,
+     "high": 43,
+     "n": 220,
+     "yield": 225
+    },
+    "tin": {
+     "low": 93,
+     "medium": 150,
+     "high": 60,
+     "n": 303,
+     "yield": 316.5
+    },
+    "silver": {
+     "low": 87,
+     "medium": 66,
+     "high": 41,
+     "n": 194,
+     "yield": 191.5
+    },
+    "rare-earth": {
+     "low": 53,
+     "medium": 71,
+     "high": 26,
+     "n": 150,
+     "yield": 149.5
+    },
+    "coal": {
+     "low": 135,
+     "medium": 75,
+     "high": 37,
+     "n": 247,
+     "yield": 216.5
+    },
+    "sulfur": {
+     "low": 45,
+     "medium": 32,
+     "high": 10,
+     "n": 87,
+     "yield": 74.5
+    },
+    "saltpeter": {
+     "low": 27,
+     "medium": 27,
+     "high": 8,
+     "n": 62,
+     "yield": 56.5
+    },
+    "oil": {
+     "low": 28,
+     "medium": 24,
+     "high": 9,
+     "n": 61,
+     "yield": 56
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 82,
+     "medium": 47,
+     "high": 24,
+     "n": 153,
+     "yield": 136
+    },
+    "potash": {
+     "low": 78,
+     "medium": 49,
+     "high": 20,
+     "n": 147,
+     "yield": 128
+    },
+    "alkali": {
+     "low": 20,
+     "medium": 7,
+     "high": 4,
+     "n": 31,
+     "yield": 25
+    },
+    "nickel": {
+     "low": 11,
+     "medium": 12,
+     "high": 5,
+     "n": 28,
+     "yield": 27.5
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 20,
+     "medium": 34,
+     "high": 15,
+     "n": 69,
+     "yield": 74
+    },
+    "emerald": {
+     "low": 14,
+     "medium": 15,
+     "high": 4,
+     "n": 33,
+     "yield": 30
+    },
+    "turquoise": {
+     "low": 2,
+     "medium": 1,
+     "high": 0,
+     "n": 3,
+     "yield": 2
+    }
+   },
+   "imports": [
+    "gold",
+    "silver",
+    "rare-earth",
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "nickel",
+    "marble",
+    "zinc",
+    "turquoise"
+   ],
+   "exports": [
+    "potash",
+    "alkali"
+   ],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 25,
+    "copper": 2,
+    "gold": 0,
+    "tin": 1,
+    "silver": 0,
+    "rare-earth": 0,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 21,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 2,
+    "potash": 121,
+    "alkali": 29,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 1,
+    "turquoise": 0
+   }
+  },
+  "Xanadu Sultanate": {
+   "area_km2": 132736,
+   "cells": 8296,
+   "settlements": [
+    "Erehwon",
+    "Qiblai",
+    "Strongbow",
+    "Strongwall",
+    "Theodiga"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 1974,
+     "medium": 2086,
+     "high": 800,
+     "n": 4860,
+     "yield": 4673
+    },
+    "copper": {
+     "low": 1424,
+     "medium": 1532,
+     "high": 566,
+     "n": 3522,
+     "yield": 3376
+    },
+    "gold": {
+     "low": 797,
+     "medium": 802,
+     "high": 288,
+     "n": 1887,
+     "yield": 1776.5
+    },
+    "tin": {
+     "low": 809,
+     "medium": 755,
+     "high": 312,
+     "n": 1876,
+     "yield": 1783.5
+    },
+    "silver": {
+     "low": 743,
+     "medium": 716,
+     "high": 267,
+     "n": 1726,
+     "yield": 1621.5
+    },
+    "rare-earth": {
+     "low": 738,
+     "medium": 1242,
+     "high": 452,
+     "n": 2432,
+     "yield": 2515
+    },
+    "coal": {
+     "low": 3,
+     "medium": 4,
+     "high": 0,
+     "n": 7,
+     "yield": 5.5
+    },
+    "sulfur": {
+     "low": 96,
+     "medium": 78,
+     "high": 16,
+     "n": 190,
+     "yield": 158
+    },
+    "saltpeter": {
+     "low": 427,
+     "medium": 455,
+     "high": 183,
+     "n": 1065,
+     "yield": 1034.5
+    },
+    "oil": {
+     "low": 358,
+     "medium": 349,
+     "high": 116,
+     "n": 823,
+     "yield": 760
+    },
+    "gypsum": {
+     "low": 2,
+     "medium": 1,
+     "high": 0,
+     "n": 3,
+     "yield": 2
+    },
+    "halite": {
+     "low": 29,
+     "medium": 11,
+     "high": 9,
+     "n": 49,
+     "yield": 43.5
+    },
+    "potash": {
+     "low": 1,
+     "medium": 2,
+     "high": 1,
+     "n": 4,
+     "yield": 4.5
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 67,
+     "medium": 43,
+     "high": 20,
+     "n": 130,
+     "yield": 116.5
+    },
+    "zinc": {
+     "low": 1298,
+     "medium": 1422,
+     "high": 556,
+     "n": 3276,
+     "yield": 3183
+    },
+    "emerald": {
+     "low": 10,
+     "medium": 8,
+     "high": 6,
+     "n": 24,
+     "yield": 25
+    },
+    "turquoise": {
+     "low": 64,
+     "medium": 56,
+     "high": 16,
+     "n": 136,
+     "yield": 120
+    }
+   },
+   "imports": [
+    "coal",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel"
+   ],
+   "exports": [
+    "copper",
+    "gold",
+    "tin",
+    "silver",
+    "rare-earth",
+    "marble",
+    "zinc"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Erehwon",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Qiblai",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Strongwall",
+      "lack": [
+       "salt"
+      ]
+     },
+     {
+      "settlement": "Theodiga",
+      "lack": [
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 431,
+    "copper": 346,
+    "gold": 174,
+    "tin": 136,
+    "silver": 180,
+    "rare-earth": 233,
+    "coal": 0,
+    "sulfur": 23,
+    "saltpeter": 20,
+    "oil": 86,
+    "gypsum": 0,
+    "halite": 4,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 18,
+    "zinc": 356,
+    "emerald": 3,
+    "turquoise": 4
+   }
+  },
+  "Yeti Kingdom": {
+   "area_km2": 122688,
+   "cells": 7668,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 2441,
+     "medium": 2767,
+     "high": 1061,
+     "n": 6269,
+     "yield": 6109.5
+    },
+    "copper": {
+     "low": 618,
+     "medium": 477,
+     "high": 170,
+     "n": 1265,
+     "yield": 1126
+    },
+    "gold": {
+     "low": 614,
+     "medium": 612,
+     "high": 242,
+     "n": 1468,
+     "yield": 1403
+    },
+    "tin": {
+     "low": 491,
+     "medium": 363,
+     "high": 140,
+     "n": 994,
+     "yield": 888.5
+    },
+    "silver": {
+     "low": 573,
+     "medium": 565,
+     "high": 168,
+     "n": 1306,
+     "yield": 1187.5
+    },
+    "rare-earth": {
+     "low": 308,
+     "medium": 215,
+     "high": 116,
+     "n": 639,
+     "yield": 601
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 1620,
+     "medium": 2738,
+     "high": 1121,
+     "n": 5479,
+     "yield": 5790
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 151,
+     "medium": 106,
+     "high": 44,
+     "n": 301,
+     "yield": 269.5
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 429,
+     "medium": 398,
+     "high": 119,
+     "n": 946,
+     "yield": 850.5
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "emerald": {
+     "low": 2,
+     "medium": 2,
+     "high": 0,
+     "n": 4,
+     "yield": 3
+    },
+    "turquoise": {
+     "low": 194,
+     "medium": 137,
+     "high": 47,
+     "n": 378,
+     "yield": 328
+    }
+   },
+   "imports": [
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "emerald"
+   ],
+   "exports": [
+    "saltpeter",
+    "nickel",
+    "turquoise"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": null,
+      "lack": [
+       "wood",
+       "water",
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 149,
+    "copper": 33,
+    "gold": 40,
+    "tin": 18,
+    "silver": 34,
+    "rare-earth": 15,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 145,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 26,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 13
+   },
+   "centroid": [
+    463,
+    488.9
+   ]
+  },
+  "Yuni Emirate": {
+   "area_km2": 401056,
+   "cells": 25066,
+   "settlements": [
+    "Locus",
+    "Ostrukh-on-Water",
+    "Spindle Fan",
+    "Yuni"
+   ],
+   "nodes": {
+    "iron": {
+     "low": 5969,
+     "medium": 7138,
+     "high": 2669,
+     "n": 15776,
+     "yield": 15460.5
+    },
+    "copper": {
+     "low": 2303,
+     "medium": 2194,
+     "high": 833,
+     "n": 5330,
+     "yield": 5011.5
+    },
+    "gold": {
+     "low": 788,
+     "medium": 741,
+     "high": 349,
+     "n": 1878,
+     "yield": 1833
+    },
+    "tin": {
+     "low": 1011,
+     "medium": 1631,
+     "high": 621,
+     "n": 3263,
+     "yield": 3378.5
+    },
+    "silver": {
+     "low": 798,
+     "medium": 779,
+     "high": 291,
+     "n": 1868,
+     "yield": 1760
+    },
+    "rare-earth": {
+     "low": 556,
+     "medium": 640,
+     "high": 258,
+     "n": 1454,
+     "yield": 1434
+    },
+    "coal": {
+     "low": 243,
+     "medium": 267,
+     "high": 83,
+     "n": 593,
+     "yield": 554.5
+    },
+    "sulfur": {
+     "low": 250,
+     "medium": 266,
+     "high": 98,
+     "n": 614,
+     "yield": 587
+    },
+    "saltpeter": {
+     "low": 4171,
+     "medium": 5329,
+     "high": 2014,
+     "n": 11514,
+     "yield": 11442.5
+    },
+    "oil": {
+     "low": 70,
+     "medium": 53,
+     "high": 20,
+     "n": 143,
+     "yield": 128
+    },
+    "gypsum": {
+     "low": 2,
+     "medium": 2,
+     "high": 0,
+     "n": 4,
+     "yield": 3
+    },
+    "halite": {
+     "low": 1958,
+     "medium": 1386,
+     "high": 511,
+     "n": 3855,
+     "yield": 3387
+    },
+    "potash": {
+     "low": 177,
+     "medium": 165,
+     "high": 63,
+     "n": 405,
+     "yield": 379.5
+    },
+    "alkali": {
+     "low": 47,
+     "medium": 44,
+     "high": 11,
+     "n": 102,
+     "yield": 89.5
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 31,
+     "medium": 24,
+     "high": 7,
+     "n": 62,
+     "yield": 53.5
+    },
+    "zinc": {
+     "low": 1209,
+     "medium": 1212,
+     "high": 473,
+     "n": 2894,
+     "yield": 2762.5
+    },
+    "emerald": {
+     "low": 69,
+     "medium": 57,
+     "high": 19,
+     "n": 145,
+     "yield": 129.5
+    },
+    "turquoise": {
+     "low": 460,
+     "medium": 372,
+     "high": 141,
+     "n": 973,
+     "yield": 884
+    }
+   },
+   "imports": [
+    "sulfur",
+    "gypsum",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble"
+   ],
+   "exports": [
+    "copper",
+    "tin",
+    "saltpeter",
+    "halite",
+    "turquoise"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": "Ostrukh-on-Water",
+      "lack": [
+       "wood"
+      ]
+     },
+     {
+      "settlement": "Spindle Fan",
+      "lack": [
+       "wood"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 406,
+    "copper": 205,
+    "gold": 58,
+    "tin": 114,
+    "silver": 56,
+    "rare-earth": 45,
+    "coal": 26,
+    "sulfur": 0,
+    "saltpeter": 143,
+    "oil": 5,
+    "gypsum": 0,
+    "halite": 84,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 121,
+    "emerald": 4,
+    "turquoise": 23
+   }
+  },
+  "isle demo": {
+   "area_km2": 9632,
+   "cells": 602,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 158,
+     "medium": 233,
+     "high": 89,
+     "n": 480,
+     "yield": 490
+    },
+    "copper": {
+     "low": 50,
+     "medium": 100,
+     "high": 40,
+     "n": 190,
+     "yield": 205
+    },
+    "gold": {
+     "low": 39,
+     "medium": 46,
+     "high": 18,
+     "n": 103,
+     "yield": 101.5
+    },
+    "tin": {
+     "low": 25,
+     "medium": 35,
+     "high": 7,
+     "n": 67,
+     "yield": 61.5
+    },
+    "silver": {
+     "low": 49,
+     "medium": 51,
+     "high": 12,
+     "n": 112,
+     "yield": 99.5
+    },
+    "rare-earth": {
+     "low": 11,
+     "medium": 12,
+     "high": 3,
+     "n": 26,
+     "yield": 23.5
+    },
+    "coal": {
+     "low": 87,
+     "medium": 71,
+     "high": 25,
+     "n": 183,
+     "yield": 164.5
+    },
+    "sulfur": {
+     "low": 253,
+     "medium": 326,
+     "high": 116,
+     "n": 695,
+     "yield": 684.5
+    },
+    "saltpeter": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "oil": {
+     "low": 17,
+     "medium": 16,
+     "high": 3,
+     "n": 36,
+     "yield": 30.5
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 6,
+     "medium": 5,
+     "high": 1,
+     "n": 12,
+     "yield": 10
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "marble": {
+     "low": 0,
+     "medium": 2,
+     "high": 0,
+     "n": 2,
+     "yield": 2
+    },
+    "zinc": {
+     "low": 36,
+     "medium": 68,
+     "high": 21,
+     "n": 125,
+     "yield": 128
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 1,
+     "high": 1,
+     "n": 2,
+     "yield": 3
+    },
+    "turquoise": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    }
+   },
+   "imports": [
+    "saltpeter",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "nickel",
+    "marble",
+    "emerald",
+    "turquoise"
+   ],
+   "exports": [],
+   "basics": {
+    "ok": true,
+    "missing": []
+   },
+   "reach": {
+    "iron": 27,
+    "copper": 17,
+    "gold": 11,
+    "tin": 1,
+    "silver": 8,
+    "rare-earth": 2,
+    "coal": 7,
+    "sulfur": 68,
+    "saltpeter": 0,
+    "oil": 2,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 0,
+    "marble": 0,
+    "zinc": 11,
+    "emerald": 0,
+    "turquoise": 0
+   },
+   "centroid": [
+    945,
+    754
+   ]
+  },
+  "sasquatch tribes": {
+   "area_km2": 131296,
+   "cells": 8206,
+   "settlements": [],
+   "nodes": {
+    "iron": {
+     "low": 2763,
+     "medium": 3011,
+     "high": 1194,
+     "n": 6968,
+     "yield": 6780.5
+    },
+    "copper": {
+     "low": 675,
+     "medium": 552,
+     "high": 204,
+     "n": 1431,
+     "yield": 1297.5
+    },
+    "gold": {
+     "low": 652,
+     "medium": 708,
+     "high": 257,
+     "n": 1617,
+     "yield": 1548
+    },
+    "tin": {
+     "low": 531,
+     "medium": 422,
+     "high": 135,
+     "n": 1088,
+     "yield": 957.5
+    },
+    "silver": {
+     "low": 605,
+     "medium": 551,
+     "high": 208,
+     "n": 1364,
+     "yield": 1269.5
+    },
+    "rare-earth": {
+     "low": 343,
+     "medium": 274,
+     "high": 89,
+     "n": 706,
+     "yield": 623.5
+    },
+    "coal": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "sulfur": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "saltpeter": {
+     "low": 1035,
+     "medium": 1812,
+     "high": 654,
+     "n": 3501,
+     "yield": 3637.5
+    },
+    "oil": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "gypsum": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "halite": {
+     "low": 146,
+     "medium": 70,
+     "high": 39,
+     "n": 255,
+     "yield": 221
+    },
+    "potash": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "alkali": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "nickel": {
+     "low": 477,
+     "medium": 371,
+     "high": 156,
+     "n": 1004,
+     "yield": 921.5
+    },
+    "marble": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "zinc": {
+     "low": 0,
+     "medium": 0,
+     "high": 0,
+     "n": 0,
+     "yield": 0
+    },
+    "emerald": {
+     "low": 0,
+     "medium": 1,
+     "high": 0,
+     "n": 1,
+     "yield": 1
+    },
+    "turquoise": {
+     "low": 96,
+     "medium": 83,
+     "high": 34,
+     "n": 213,
+     "yield": 199
+    }
+   },
+   "imports": [
+    "coal",
+    "sulfur",
+    "oil",
+    "gypsum",
+    "halite",
+    "potash",
+    "alkali",
+    "marble",
+    "zinc",
+    "emerald"
+   ],
+   "exports": [
+    "saltpeter",
+    "nickel"
+   ],
+   "basics": {
+    "ok": false,
+    "missing": [
+     {
+      "settlement": null,
+      "lack": [
+       "wood",
+       "salt"
+      ]
+     }
+    ]
+   },
+   "reach": {
+    "iron": 157,
+    "copper": 41,
+    "gold": 45,
+    "tin": 36,
+    "silver": 36,
+    "rare-earth": 15,
+    "coal": 0,
+    "sulfur": 0,
+    "saltpeter": 121,
+    "oil": 0,
+    "gypsum": 0,
+    "halite": 0,
+    "potash": 0,
+    "alkali": 0,
+    "nickel": 22,
+    "marble": 0,
+    "zinc": 0,
+    "emerald": 0,
+    "turquoise": 6
+   },
+   "centroid": [
+    739.3,
+    336.5
+   ]
+  }
+ },
+ "settlements": {
+  "Agropolis": {
+   "polity": "Vothic Kingdom",
+   "px": 717,
+   "py": 917,
+   "type": "ruin",
+   "catchment": {
+    "iron": 59,
+    "copper": 4,
+    "coal": 127,
+    "oil": 27,
+    "halite": 25
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Almua": {
+   "polity": "Vothic Kingdom",
+   "px": 718,
+   "py": 883,
+   "type": "city",
+   "catchment": {
+    "iron": 30,
+    "copper": 13,
+    "gold": 1,
+    "tin": 1,
+    "silver": 3,
+    "coal": 52,
+    "sulfur": 45,
+    "oil": 12,
+    "halite": 6,
+    "zinc": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Arcbeam": {
+   "polity": "Empire of Iziz",
+   "px": 1016,
+   "py": 1058,
+   "type": "arcology",
+   "catchment": {
+    "iron": 78,
+    "copper": 18,
+    "gold": 8,
+    "tin": 3,
+    "silver": 5,
+    "sulfur": 14,
+    "saltpeter": 25,
+    "halite": 30,
+    "nickel": 13,
+    "marble": 1,
+    "zinc": 9,
+    "turquoise": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Ardent": {
+   "polity": "Free Clans",
+   "px": 851,
+   "py": 572,
+   "type": "city",
+   "catchment": {
+    "iron": 71,
+    "copper": 3,
+    "gold": 1,
+    "saltpeter": 82,
+    "halite": 29,
+    "turquoise": 3
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Babel": {
+   "polity": null,
+   "px": 456,
+   "py": 908,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 18,
+    "copper": 2,
+    "coal": 71,
+    "oil": 16,
+    "halite": 6
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Bastion": {
+   "polity": null,
+   "px": 536,
+   "py": 627,
+   "type": "outpost",
+   "catchment": {
+    "iron": 150,
+    "copper": 12,
+    "gold": 14,
+    "tin": 15,
+    "silver": 6,
+    "rare-earth": 4,
+    "coal": 5,
+    "saltpeter": 6,
+    "halite": 13,
+    "nickel": 7,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Bipo": {
+   "polity": "Kautoa",
+   "px": 1000,
+   "py": 816,
+   "type": "village",
+   "catchment": {
+    "iron": 68,
+    "copper": 26,
+    "gold": 11,
+    "tin": 5,
+    "silver": 15,
+    "rare-earth": 2,
+    "coal": 81,
+    "sulfur": 122,
+    "oil": 16,
+    "halite": 5,
+    "zinc": 16
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Blade": {
+   "polity": "Realm of Dalab",
+   "px": 451,
+   "py": 1022,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 143,
+    "copper": 21,
+    "gold": 17,
+    "tin": 21,
+    "silver": 12,
+    "rare-earth": 12,
+    "coal": 28,
+    "oil": 11,
+    "halite": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Boatmurder": {
+   "polity": null,
+   "px": 766,
+   "py": 404,
+   "type": "outpost",
+   "catchment": {
+    "iron": 55,
+    "copper": 56,
+    "silver": 2,
+    "saltpeter": 32,
+    "gypsum": 48,
+    "halite": 26,
+    "zinc": 44,
+    "turquoise": 3
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Carcosa": {
+   "polity": "Eternal State",
+   "px": 395,
+   "py": 812,
+   "type": "ruin",
+   "catchment": {
+    "iron": 32,
+    "copper": 3,
+    "coal": 74,
+    "oil": 16,
+    "halite": 6
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Cascade": {
+   "polity": "Iron Republic",
+   "px": 568,
+   "py": 841,
+   "type": "arcology",
+   "catchment": {
+    "iron": 102,
+    "copper": 8,
+    "gold": 8,
+    "tin": 6,
+    "rare-earth": 1,
+    "halite": 9,
+    "nickel": 4
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Chimes": {
+   "polity": "Fellgangs",
+   "px": 468,
+   "py": 1392,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 105,
+    "copper": 121,
+    "gold": 48,
+    "tin": 28,
+    "silver": 48,
+    "rare-earth": 34,
+    "sulfur": 85,
+    "saltpeter": 2,
+    "oil": 11,
+    "marble": 14,
+    "zinc": 88,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Corpus": {
+   "polity": "Eternal State",
+   "px": 520,
+   "py": 693,
+   "type": "ruin",
+   "catchment": {
+    "iron": 53,
+    "copper": 10,
+    "coal": 64,
+    "oil": 26,
+    "halite": 23
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Coyote Canyon": {
+   "polity": "Coyote Kingdom",
+   "px": 1265,
+   "py": 500,
+   "type": "village",
+   "catchment": {
+    "iron": 44,
+    "copper": 5,
+    "sulfur": 158,
+    "saltpeter": 69
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Crescent": {
+   "polity": "Region 87",
+   "px": 994,
+   "py": 694,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 39,
+    "copper": 5,
+    "coal": 123,
+    "oil": 41,
+    "halite": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Cthonos": {
+   "polity": null,
+   "px": 526,
+   "py": 1503,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 95,
+    "copper": 100,
+    "gold": 46,
+    "tin": 35,
+    "silver": 39,
+    "rare-earth": 41,
+    "sulfur": 70,
+    "oil": 13,
+    "marble": 9,
+    "zinc": 105
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Cube": {
+   "polity": "Lizardmen",
+   "px": 720,
+   "py": 1567,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 74,
+    "copper": 96,
+    "gold": 41,
+    "tin": 34,
+    "silver": 38,
+    "rare-earth": 58,
+    "sulfur": 7,
+    "oil": 60,
+    "zinc": 88
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Dalab": {
+   "polity": "Realm of Dalab",
+   "px": 464,
+   "py": 1112,
+   "type": "city",
+   "catchment": {
+    "iron": 58,
+    "copper": 6,
+    "coal": 57,
+    "oil": 20,
+    "halite": 24,
+    "gold": 1,
+    "tin": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Daranch": {
+   "polity": "Realm of Dalab",
+   "px": 527,
+   "py": 1149,
+   "type": "village",
+   "catchment": {
+    "iron": 60,
+    "copper": 2,
+    "coal": 82,
+    "oil": 27,
+    "halite": 18
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Dhelv": {
+   "polity": "League of Amphitriton",
+   "px": 840,
+   "py": 776,
+   "type": "cavern",
+   "catchment": {
+    "iron": 49,
+    "copper": 100,
+    "gold": 44,
+    "tin": 7,
+    "silver": 42,
+    "rare-earth": 9,
+    "sulfur": 122,
+    "zinc": 91
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Dilihan": {
+   "polity": "Dilihan Province",
+   "px": 744,
+   "py": 663,
+   "type": "city",
+   "catchment": {
+    "iron": 154,
+    "copper": 24,
+    "gold": 27,
+    "tin": 40,
+    "silver": 17,
+    "rare-earth": 20,
+    "coal": 16,
+    "saltpeter": 9,
+    "oil": 1,
+    "gypsum": 15,
+    "halite": 12,
+    "potash": 13,
+    "marble": 15,
+    "zinc": 4,
+    "emerald": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Dorado": {
+   "polity": null,
+   "px": 483,
+   "py": 964,
+   "type": "ruin",
+   "catchment": {
+    "iron": 48,
+    "copper": 7,
+    "coal": 57,
+    "oil": 16,
+    "halite": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Drum": {
+   "polity": "Vothic Kingdom",
+   "px": 673,
+   "py": 932,
+   "type": "arcology",
+   "catchment": {
+    "iron": 53,
+    "copper": 4,
+    "coal": 122,
+    "oil": 35,
+    "halite": 21,
+    "tin": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Erehwon": {
+   "polity": "Xanadu Sultanate",
+   "px": 800,
+   "py": 1503,
+   "type": "city",
+   "catchment": {
+    "iron": 58,
+    "copper": 53,
+    "gold": 27,
+    "tin": 26,
+    "silver": 28,
+    "rare-earth": 35,
+    "oil": 25,
+    "zinc": 51
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Farport": {
+   "polity": "Eternal State",
+   "px": 294,
+   "py": 588,
+   "type": "city",
+   "catchment": {
+    "iron": 135,
+    "copper": 17,
+    "gold": 36,
+    "tin": 58,
+    "silver": 31,
+    "rare-earth": 27,
+    "coal": 12,
+    "oil": 1,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Flooded Tower": {
+   "polity": "Region 87",
+   "px": 1028,
+   "py": 840,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 25,
+    "copper": 9,
+    "coal": 124,
+    "oil": 23,
+    "halite": 6
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Footfall": {
+   "polity": "Iron Republic",
+   "px": 560,
+   "py": 767,
+   "type": "ruin",
+   "catchment": {
+    "iron": 61,
+    "copper": 5,
+    "halite": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fort Ebon": {
+   "polity": "Scyvoi",
+   "px": 695,
+   "py": 782,
+   "type": "ruin",
+   "catchment": {
+    "iron": 55,
+    "copper": 14,
+    "gold": 5,
+    "silver": 4,
+    "coal": 41,
+    "sulfur": 57,
+    "saltpeter": 17,
+    "oil": 13,
+    "halite": 25,
+    "marble": 18,
+    "zinc": 24
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fort Kalor": {
+   "polity": "Screamer Country",
+   "px": 863,
+   "py": 693,
+   "type": "ruin",
+   "catchment": {
+    "iron": 79,
+    "copper": 31,
+    "gold": 11,
+    "tin": 2,
+    "silver": 18,
+    "rare-earth": 3,
+    "coal": 114,
+    "sulfur": 131,
+    "oil": 31,
+    "gypsum": 1,
+    "halite": 15,
+    "zinc": 23,
+    "emerald": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fort Kreia": {
+   "polity": "Region 87",
+   "px": 1049,
+   "py": 736,
+   "type": "ruin",
+   "catchment": {
+    "iron": 176,
+    "copper": 16,
+    "gold": 10,
+    "tin": 36,
+    "silver": 19,
+    "rare-earth": 11,
+    "coal": 32,
+    "saltpeter": 12,
+    "oil": 9,
+    "halite": 12,
+    "nickel": 6,
+    "marble": 2,
+    "zinc": 3,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fort Ordo": {
+   "polity": "Region 87",
+   "px": 1060,
+   "py": 831,
+   "type": "ruin",
+   "catchment": {
+    "iron": 51,
+    "copper": 7,
+    "coal": 144,
+    "oil": 43,
+    "halite": 9,
+    "gold": 3,
+    "tin": 4
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fort Vaklu": {
+   "polity": "Empire of Iziz",
+   "px": 984,
+   "py": 912,
+   "type": "outpost",
+   "catchment": {
+    "iron": 33,
+    "copper": 3,
+    "gold": 1,
+    "tin": 1,
+    "silver": 1,
+    "coal": 169,
+    "sulfur": 1,
+    "oil": 22,
+    "halite": 7
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fridon": {
+   "polity": "Empire of Iziz",
+   "px": 1027,
+   "py": 931,
+   "type": "city",
+   "catchment": {
+    "iron": 33,
+    "copper": 3,
+    "coal": 137,
+    "oil": 32,
+    "halite": 14
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Fulcrum": {
+   "polity": "Eternal State",
+   "px": 409,
+   "py": 621,
+   "type": "arcology",
+   "catchment": {
+    "iron": 184,
+    "copper": 17,
+    "gold": 15,
+    "tin": 26,
+    "silver": 16,
+    "rare-earth": 13,
+    "coal": 45,
+    "oil": 6,
+    "halite": 12,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Furrow": {
+   "polity": "Nomad Country",
+   "px": 1276,
+   "py": 639,
+   "type": "outpost",
+   "catchment": {
+    "iron": 198,
+    "copper": 16,
+    "gold": 25,
+    "tin": 40,
+    "silver": 27,
+    "rare-earth": 13,
+    "coal": 38,
+    "saltpeter": 6,
+    "oil": 5,
+    "halite": 7,
+    "emerald": 3,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Gila": {
+   "polity": "Lizardmen",
+   "px": 653,
+   "py": 1485,
+   "type": "village",
+   "catchment": {
+    "iron": 33,
+    "copper": 32,
+    "gold": 17,
+    "tin": 22,
+    "silver": 8,
+    "rare-earth": 25,
+    "saltpeter": 2,
+    "oil": 14,
+    "gypsum": 10,
+    "halite": 6,
+    "potash": 9,
+    "alkali": 5,
+    "zinc": 32
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Girder": {
+   "polity": "Region 87",
+   "px": 1039,
+   "py": 869,
+   "type": "village",
+   "catchment": {
+    "iron": 53,
+    "copper": 9,
+    "coal": 225,
+    "oil": 55,
+    "halite": 24,
+    "gold": 1,
+    "tin": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Glaive": {
+   "polity": "Iron Republic",
+   "px": 599,
+   "py": 734,
+   "type": "village",
+   "catchment": {
+    "iron": 108,
+    "copper": 7,
+    "gold": 4,
+    "tin": 2,
+    "silver": 4,
+    "rare-earth": 2,
+    "halite": 14,
+    "nickel": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Henge": {
+   "polity": "Eternal State",
+   "px": 457,
+   "py": 735,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 61,
+    "copper": 8,
+    "coal": 113,
+    "oil": 29,
+    "halite": 19
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Hexahedron": {
+   "polity": "Screamer Country",
+   "px": 827,
+   "py": 668,
+   "type": "arcology",
+   "catchment": {
+    "iron": 49,
+    "copper": 5,
+    "coal": 145,
+    "oil": 39,
+    "halite": 13,
+    "emerald": 8
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Hook": {
+   "polity": "Empire of Iziz",
+   "px": 809,
+   "py": 923,
+   "type": "city",
+   "catchment": {
+    "iron": 96,
+    "copper": 9,
+    "gold": 5,
+    "tin": 6,
+    "silver": 4,
+    "rare-earth": 1,
+    "coal": 60,
+    "sulfur": 10,
+    "oil": 13,
+    "halite": 6,
+    "zinc": 2,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Hub 01": {
+   "polity": null,
+   "px": 1344,
+   "py": 1409,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 159,
+    "copper": 14,
+    "gold": 16,
+    "tin": 28,
+    "silver": 18,
+    "rare-earth": 11,
+    "saltpeter": 135,
+    "halite": 26,
+    "emerald": 1,
+    "turquoise": 7
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Iziz": {
+   "polity": "Empire of Iziz",
+   "px": 963,
+   "py": 985,
+   "type": "city",
+   "catchment": {
+    "iron": 34,
+    "copper": 9,
+    "coal": 144,
+    "oil": 36,
+    "halite": 12
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Jimjam": {
+   "polity": "Jimjam",
+   "px": 746,
+   "py": 550,
+   "type": "city",
+   "catchment": {
+    "iron": 50,
+    "copper": 2,
+    "coal": 14,
+    "saltpeter": 14,
+    "oil": 2,
+    "gypsum": 53,
+    "halite": 16,
+    "emerald": 15,
+    "gold": 2,
+    "tin": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Kautoa": {
+   "polity": "Kautoa",
+   "px": 964,
+   "py": 725,
+   "type": "city",
+   "catchment": {
+    "iron": 63,
+    "copper": 27,
+    "gold": 16,
+    "tin": 3,
+    "silver": 11,
+    "rare-earth": 1,
+    "coal": 24,
+    "sulfur": 116,
+    "oil": 4,
+    "halite": 4,
+    "zinc": 21,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Kierson": {
+   "polity": "League of Amphitriton",
+   "px": 884,
+   "py": 737,
+   "type": "village",
+   "catchment": {
+    "iron": 60,
+    "copper": 30,
+    "gold": 14,
+    "tin": 5,
+    "silver": 14,
+    "rare-earth": 4,
+    "coal": 41,
+    "sulfur": 147,
+    "oil": 6,
+    "halite": 4,
+    "zinc": 28
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Komodo": {
+   "polity": "Lizardmen",
+   "px": 865,
+   "py": 1617,
+   "type": "village",
+   "catchment": {
+    "iron": 46,
+    "copper": 62,
+    "gold": 30,
+    "tin": 34,
+    "silver": 24,
+    "rare-earth": 37,
+    "sulfur": 1,
+    "oil": 34,
+    "zinc": 56
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Ledge": {
+   "polity": "Fellgangs",
+   "px": 437,
+   "py": 1330,
+   "type": "arcology",
+   "catchment": {
+    "iron": 57,
+    "copper": 62,
+    "gold": 35,
+    "tin": 28,
+    "silver": 19,
+    "rare-earth": 43,
+    "oil": 2,
+    "zinc": 53
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Leng": {
+   "polity": null,
+   "px": 490,
+   "py": 554,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 41,
+    "copper": 9,
+    "saltpeter": 78,
+    "halite": 53,
+    "gold": 1,
+    "tin": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Lipp": {
+   "polity": "Iron Republic",
+   "px": 691,
+   "py": 619,
+   "type": "village",
+   "catchment": {
+    "iron": 172,
+    "copper": 22,
+    "gold": 23,
+    "tin": 27,
+    "silver": 16,
+    "rare-earth": 10,
+    "saltpeter": 11,
+    "halite": 5,
+    "nickel": 17,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Locus": {
+   "polity": "Yuni Emirate",
+   "px": 1267,
+   "py": 1043,
+   "type": "village",
+   "catchment": {
+    "iron": 78,
+    "copper": 13,
+    "gold": 23,
+    "tin": 50,
+    "silver": 24,
+    "rare-earth": 20,
+    "coal": 16,
+    "oil": 2,
+    "halite": 1,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Loj Twenny": {
+   "polity": "Realm of Dalab",
+   "px": 457,
+   "py": 1269,
+   "type": "cavern",
+   "catchment": {
+    "iron": 108,
+    "copper": 72,
+    "gold": 43,
+    "tin": 37,
+    "silver": 31,
+    "rare-earth": 51,
+    "saltpeter": 71,
+    "zinc": 74,
+    "emerald": 1,
+    "turquoise": 15
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Longsong": {
+   "polity": null,
+   "px": 1226,
+   "py": 1626,
+   "type": "village",
+   "catchment": {
+    "iron": 180,
+    "copper": 28,
+    "gold": 34,
+    "tin": 57,
+    "silver": 31,
+    "rare-earth": 18,
+    "saltpeter": 15,
+    "halite": 8,
+    "zinc": 2,
+    "emerald": 2,
+    "turquoise": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Lux": {
+   "polity": "Eternal State",
+   "px": 495,
+   "py": 645,
+   "type": "city",
+   "catchment": {
+    "iron": 41,
+    "copper": 6,
+    "coal": 60,
+    "oil": 7,
+    "halite": 13,
+    "gold": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Mantis": {
+   "polity": "Empire of Iziz",
+   "px": 1113,
+   "py": 1164,
+   "type": "village",
+   "catchment": {
+    "iron": 59,
+    "copper": 3,
+    "coal": 88,
+    "saltpeter": 2,
+    "oil": 16,
+    "gypsum": 3,
+    "halite": 15,
+    "emerald": 6
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Mav's Refuge": {
+   "polity": "Region 87",
+   "px": 1024,
+   "py": 807,
+   "type": "city",
+   "catchment": {
+    "iron": 51,
+    "copper": 5,
+    "coal": 191,
+    "sulfur": 9,
+    "oil": 48,
+    "halite": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Mirabilis": {
+   "polity": "Eternal State",
+   "px": 350,
+   "py": 726,
+   "type": "village",
+   "catchment": {
+    "iron": 171,
+    "copper": 17,
+    "gold": 22,
+    "tin": 23,
+    "silver": 15,
+    "rare-earth": 12,
+    "saltpeter": 36,
+    "halite": 11,
+    "nickel": 8,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Mungo": {
+   "polity": "Nomad Country",
+   "px": 1321,
+   "py": 825,
+   "type": "village",
+   "catchment": {
+    "iron": 153,
+    "copper": 14,
+    "gold": 27,
+    "tin": 41,
+    "silver": 18,
+    "rare-earth": 18,
+    "coal": 40,
+    "oil": 8,
+    "halite": 5,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Nazar": {
+   "polity": "Vothic Kingdom",
+   "px": 582,
+   "py": 1079,
+   "type": "ruin",
+   "catchment": {
+    "iron": 43,
+    "copper": 8,
+    "coal": 101,
+    "oil": 21,
+    "halite": 15
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Necropolis": {
+   "polity": null,
+   "px": 406,
+   "py": 944,
+   "type": "ruin",
+   "catchment": {
+    "iron": 31,
+    "copper": 4,
+    "coal": 56,
+    "oil": 11,
+    "halite": 9
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Nereus": {
+   "polity": "League of Amphitriton",
+   "px": 762,
+   "py": 805,
+   "type": "village",
+   "catchment": {
+    "iron": 64,
+    "copper": 24,
+    "gold": 14,
+    "tin": 7,
+    "silver": 14,
+    "rare-earth": 3,
+    "coal": 73,
+    "sulfur": 88,
+    "oil": 18,
+    "halite": 9,
+    "zinc": 21
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Noa's Regret": {
+   "polity": null,
+   "px": 896,
+   "py": 866,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 40,
+    "copper": 80,
+    "gold": 36,
+    "tin": 4,
+    "silver": 35,
+    "rare-earth": 3,
+    "sulfur": 95,
+    "saltpeter": 3,
+    "zinc": 56,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Nulab": {
+   "polity": "Fellgangs",
+   "px": 443,
+   "py": 1359,
+   "type": "city",
+   "catchment": {
+    "iron": 53,
+    "copper": 51,
+    "gold": 28,
+    "tin": 16,
+    "silver": 22,
+    "rare-earth": 40,
+    "oil": 19,
+    "marble": 2,
+    "zinc": 58
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Nusidi": {
+   "polity": "Region 87",
+   "px": 996,
+   "py": 870,
+   "type": "ruin",
+   "catchment": {
+    "iron": 60,
+    "copper": 4,
+    "silver": 1,
+    "coal": 87,
+    "oil": 14,
+    "halite": 8
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Nūru-Šaplu": {
+   "polity": null,
+   "px": 876,
+   "py": 802,
+   "type": "cavern",
+   "catchment": {
+    "iron": 79,
+    "copper": 155,
+    "gold": 62,
+    "tin": 26,
+    "silver": 74,
+    "rare-earth": 11,
+    "sulfur": 160,
+    "saltpeter": 26,
+    "zinc": 118,
+    "turquoise": 5
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Ostrukh-on-Water": {
+   "polity": "Yuni Emirate",
+   "px": 1516,
+   "py": 1471,
+   "type": "village",
+   "catchment": {
+    "iron": 68,
+    "copper": 80,
+    "saltpeter": 76,
+    "halite": 36,
+    "zinc": 60,
+    "turquoise": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Pinnacle Rock": {
+   "polity": "Region 87",
+   "px": 1027,
+   "py": 681,
+   "type": "city",
+   "catchment": {
+    "iron": 161,
+    "copper": 11,
+    "gold": 9,
+    "tin": 15,
+    "silver": 7,
+    "rare-earth": 7,
+    "coal": 103,
+    "saltpeter": 1,
+    "oil": 35,
+    "halite": 16,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Pluton": {
+   "polity": null,
+   "px": 743,
+   "py": 1328,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 70,
+    "copper": 141,
+    "gold": 58,
+    "tin": 10,
+    "silver": 56,
+    "rare-earth": 8,
+    "sulfur": 152,
+    "saltpeter": 137,
+    "zinc": 118,
+    "turquoise": 51
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": false,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Pontus": {
+   "polity": "League of Amphitriton",
+   "px": 702,
+   "py": 839,
+   "type": "village",
+   "catchment": {
+    "iron": 7,
+    "copper": 1,
+    "tin": 1,
+    "coal": 1,
+    "sulfur": 28,
+    "oil": 2,
+    "halite": 5,
+    "marble": 16,
+    "zinc": 37
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Port  Tobin": {
+   "polity": "Empire of Iziz",
+   "px": 932,
+   "py": 973,
+   "type": "village",
+   "catchment": {
+    "iron": 28,
+    "copper": 5,
+    "coal": 124,
+    "oil": 16,
+    "halite": 6
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Port Goto": {
+   "polity": "Region 87",
+   "px": 918,
+   "py": 698,
+   "type": "village",
+   "catchment": {
+    "iron": 84,
+    "copper": 8,
+    "gold": 3,
+    "tin": 6,
+    "silver": 5,
+    "rare-earth": 2,
+    "coal": 55,
+    "sulfur": 1,
+    "saltpeter": 4,
+    "oil": 12,
+    "gypsum": 6,
+    "halite": 14,
+    "potash": 19,
+    "alkali": 5,
+    "marble": 12,
+    "emerald": 4
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Port Visas": {
+   "polity": "Dilihan Province",
+   "px": 800,
+   "py": 712,
+   "type": "village",
+   "catchment": {
+    "iron": 13,
+    "copper": 2,
+    "coal": 81,
+    "oil": 7,
+    "halite": 20,
+    "zinc": 20
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Pylon": {
+   "polity": "Empire of Iziz",
+   "px": 869,
+   "py": 1002,
+   "type": "arcology",
+   "catchment": {
+    "iron": 46,
+    "copper": 5,
+    "coal": 94,
+    "oil": 24,
+    "halite": 19
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Qarnu-Tūbu": {
+   "polity": null,
+   "px": 834,
+   "py": 882,
+   "type": "cavern",
+   "catchment": {
+    "iron": 64,
+    "copper": 146,
+    "gold": 67,
+    "tin": 11,
+    "silver": 64,
+    "rare-earth": 8,
+    "sulfur": 180,
+    "saltpeter": 3,
+    "zinc": 123,
+    "turquoise": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Qiblai": {
+   "polity": "Xanadu Sultanate",
+   "px": 963,
+   "py": 1566,
+   "type": "city",
+   "catchment": {
+    "iron": 74,
+    "copper": 68,
+    "gold": 35,
+    "tin": 32,
+    "silver": 43,
+    "rare-earth": 58,
+    "saltpeter": 1,
+    "oil": 19,
+    "zinc": 79
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Reed": {
+   "polity": "Nomad Country",
+   "px": 1277,
+   "py": 676,
+   "type": "village",
+   "catchment": {
+    "iron": 107,
+    "copper": 14,
+    "gold": 23,
+    "tin": 43,
+    "silver": 17,
+    "rare-earth": 14,
+    "coal": 40,
+    "saltpeter": 4,
+    "oil": 7,
+    "halite": 2,
+    "emerald": 1,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Roketstad": {
+   "polity": "Iron Republic",
+   "px": 609,
+   "py": 684,
+   "type": "city",
+   "catchment": {
+    "iron": 67,
+    "copper": 15,
+    "saltpeter": 18,
+    "halite": 35
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Sauropolis": {
+   "polity": "Lizardmen",
+   "px": 765,
+   "py": 1596,
+   "type": "city",
+   "catchment": {
+    "iron": 59,
+    "copper": 56,
+    "gold": 32,
+    "tin": 23,
+    "silver": 18,
+    "rare-earth": 43,
+    "sulfur": 2,
+    "oil": 22,
+    "zinc": 45
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Serai": {
+   "polity": "Jimjam",
+   "px": 826,
+   "py": 478,
+   "type": "village",
+   "catchment": {
+    "saltpeter": 40,
+    "gypsum": 76,
+    "halite": 68,
+    "potash": 14,
+    "alkali": 1
+   },
+   "basics": {
+    "stone": false,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Shade": {
+   "polity": "Nomad Country",
+   "px": 1229,
+   "py": 885,
+   "type": "outpost",
+   "catchment": {
+    "iron": 179,
+    "copper": 24,
+    "gold": 23,
+    "tin": 41,
+    "silver": 30,
+    "rare-earth": 18,
+    "coal": 1,
+    "saltpeter": 59,
+    "halite": 6,
+    "marble": 3,
+    "zinc": 3,
+    "turquoise": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Shelf": {
+   "polity": "Realm of Dalab",
+   "px": 461,
+   "py": 1161,
+   "type": "arcology",
+   "catchment": {
+    "iron": 169,
+    "copper": 31,
+    "gold": 36,
+    "tin": 35,
+    "silver": 25,
+    "rare-earth": 20,
+    "coal": 6,
+    "saltpeter": 35,
+    "oil": 1,
+    "halite": 6,
+    "nickel": 11,
+    "emerald": 2,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Shell": {
+   "polity": "Shell Province",
+   "px": 902,
+   "py": 659,
+   "type": "arcology",
+   "catchment": {
+    "iron": 32,
+    "copper": 7,
+    "coal": 71,
+    "saltpeter": 4,
+    "oil": 21,
+    "gypsum": 22,
+    "halite": 23,
+    "potash": 8,
+    "alkali": 4,
+    "emerald": 18
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Shim": {
+   "polity": "Vothic Kingdom",
+   "px": 654,
+   "py": 1118,
+   "type": "city",
+   "catchment": {
+    "iron": 37,
+    "copper": 8,
+    "coal": 75,
+    "oil": 21,
+    "halite": 8
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Sleeping City": {
+   "polity": "Region 87",
+   "px": 1044,
+   "py": 776,
+   "type": "ruin",
+   "catchment": {
+    "iron": 45,
+    "copper": 8,
+    "coal": 144,
+    "oil": 51,
+    "halite": 14,
+    "gold": 2,
+    "tin": 5
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Span": {
+   "polity": "Realm of Dalab",
+   "px": 554,
+   "py": 1010,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 87,
+    "copper": 11,
+    "gold": 1,
+    "tin": 1,
+    "silver": 1,
+    "halite": 13,
+    "marble": 6,
+    "zinc": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Spindle Fan": {
+   "polity": "Yuni Emirate",
+   "px": 1561,
+   "py": 1140,
+   "type": "village",
+   "catchment": {
+    "iron": 78,
+    "copper": 85,
+    "saltpeter": 63,
+    "halite": 43,
+    "zinc": 61,
+    "turquoise": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": true,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Spirladunon": {
+   "polity": "Talovolci Chiefs",
+   "px": 800,
+   "py": 1017,
+   "type": "city",
+   "catchment": {
+    "iron": 173,
+    "copper": 18,
+    "gold": 16,
+    "tin": 25,
+    "silver": 28,
+    "rare-earth": 16,
+    "coal": 27,
+    "oil": 5,
+    "halite": 8,
+    "nickel": 25,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Stair": {
+   "polity": null,
+   "px": 1106,
+   "py": 1442,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 189,
+    "copper": 16,
+    "gold": 25,
+    "tin": 56,
+    "silver": 28,
+    "rare-earth": 30,
+    "coal": 4,
+    "saltpeter": 137,
+    "oil": 1,
+    "halite": 11,
+    "marble": 1,
+    "emerald": 4,
+    "turquoise": 3
+   },
+   "basics": {
+    "stone": true,
+    "wood": false,
+    "water": false,
+    "salt": true
+   },
+   "ok": false
+  },
+  "Strongbow": {
+   "polity": "Xanadu Sultanate",
+   "px": 1026,
+   "py": 1594,
+   "type": "arcology",
+   "catchment": {
+    "iron": 131,
+    "copper": 62,
+    "gold": 28,
+    "tin": 22,
+    "silver": 34,
+    "rare-earth": 38,
+    "saltpeter": 17,
+    "oil": 1,
+    "halite": 4,
+    "marble": 7,
+    "zinc": 52,
+    "emerald": 3,
+    "turquoise": 4
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Strongwall": {
+   "polity": "Xanadu Sultanate",
+   "px": 914,
+   "py": 1634,
+   "type": "outpost",
+   "catchment": {
+    "iron": 96,
+    "copper": 95,
+    "gold": 48,
+    "tin": 29,
+    "silver": 46,
+    "rare-earth": 51,
+    "sulfur": 23,
+    "saltpeter": 2,
+    "oil": 23,
+    "marble": 11,
+    "zinc": 95
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Stump": {
+   "polity": "Empire of Iziz",
+   "px": 1044,
+   "py": 952,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 73,
+    "copper": 7,
+    "gold": 3,
+    "tin": 4,
+    "silver": 1,
+    "coal": 177,
+    "oil": 58,
+    "halite": 9
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Talia": {
+   "polity": "Empire of Iziz",
+   "px": 1073,
+   "py": 939,
+   "type": "city",
+   "catchment": {
+    "iron": 149,
+    "copper": 11,
+    "gold": 7,
+    "tin": 9,
+    "silver": 4,
+    "rare-earth": 3,
+    "coal": 82,
+    "saltpeter": 1,
+    "oil": 29,
+    "halite": 7,
+    "nickel": 19,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Tallhouse": {
+   "polity": null,
+   "px": 683,
+   "py": 1184,
+   "type": "outpost",
+   "catchment": {
+    "iron": 158,
+    "copper": 18,
+    "gold": 30,
+    "tin": 60,
+    "silver": 22,
+    "rare-earth": 18,
+    "coal": 22,
+    "saltpeter": 6,
+    "oil": 7,
+    "halite": 8,
+    "nickel": 1,
+    "zinc": 1,
+    "emerald": 1,
+    "turquoise": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Tallwalls": {
+   "polity": "Vrivolci",
+   "px": 650,
+   "py": 1268,
+   "type": "city",
+   "catchment": {
+    "iron": 25,
+    "copper": 2,
+    "tin": 1,
+    "saltpeter": 21,
+    "halite": 2,
+    "potash": 121,
+    "alkali": 29,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Talon": {
+   "polity": "Region 87",
+   "px": 1026,
+   "py": 760,
+   "type": "village",
+   "catchment": {
+    "iron": 67,
+    "copper": 11,
+    "gold": 3,
+    "tin": 2,
+    "silver": 2,
+    "coal": 133,
+    "oil": 37,
+    "halite": 10
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Temora": {
+   "polity": "Vothic Kingdom",
+   "px": 762,
+   "py": 883,
+   "type": "village",
+   "catchment": {
+    "iron": 68,
+    "copper": 17,
+    "gold": 3,
+    "tin": 5,
+    "silver": 2,
+    "rare-earth": 3,
+    "coal": 143,
+    "sulfur": 29,
+    "saltpeter": 1,
+    "oil": 32,
+    "gypsum": 6,
+    "halite": 18,
+    "potash": 1,
+    "alkali": 1,
+    "zinc": 8,
+    "emerald": 11
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Tethis": {
+   "polity": "League of Amphitriton",
+   "px": 733,
+   "py": 775,
+   "type": "arcology",
+   "catchment": {
+    "iron": 16,
+    "copper": 5,
+    "gold": 3,
+    "tin": 6,
+    "silver": 5,
+    "rare-earth": 1,
+    "coal": 3,
+    "sulfur": 36,
+    "oil": 1,
+    "halite": 10,
+    "marble": 16,
+    "zinc": 57
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "The Gate": {
+   "polity": null,
+   "px": 1438,
+   "py": 326,
+   "type": "outpost",
+   "catchment": {
+    "iron": 154,
+    "copper": 13,
+    "gold": 11,
+    "tin": 12,
+    "silver": 12,
+    "rare-earth": 8,
+    "coal": 1,
+    "halite": 9
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "The Tubes": {
+   "polity": "Lizardmen",
+   "px": 608,
+   "py": 1547,
+   "type": "cavern",
+   "catchment": {
+    "iron": 79,
+    "copper": 87,
+    "gold": 37,
+    "tin": 30,
+    "silver": 38,
+    "rare-earth": 41,
+    "sulfur": 84,
+    "oil": 37,
+    "marble": 9,
+    "zinc": 71
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Theodiga": {
+   "polity": "Xanadu Sultanate",
+   "px": 908,
+   "py": 1535,
+   "type": "arcology",
+   "catchment": {
+    "iron": 72,
+    "copper": 68,
+    "gold": 36,
+    "tin": 27,
+    "silver": 29,
+    "rare-earth": 51,
+    "oil": 18,
+    "zinc": 79
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Tilted Tower": {
+   "polity": null,
+   "px": 614,
+   "py": 490,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 75,
+    "copper": 84,
+    "saltpeter": 7,
+    "halite": 4,
+    "zinc": 60
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Torus": {
+   "polity": "Vothic Kingdom",
+   "px": 774,
+   "py": 1007,
+   "type": "arcology",
+   "catchment": {
+    "iron": 122,
+    "copper": 11,
+    "gold": 19,
+    "tin": 31,
+    "silver": 13,
+    "rare-earth": 9,
+    "coal": 44,
+    "oil": 9,
+    "halite": 5,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Trickster's House": {
+   "polity": null,
+   "px": 1512,
+   "py": 660,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 159,
+    "copper": 32,
+    "gold": 39,
+    "tin": 62,
+    "silver": 54,
+    "rare-earth": 43,
+    "saltpeter": 20,
+    "zinc": 1,
+    "emerald": 22,
+    "turquoise": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Trigon": {
+   "polity": "League of Amphitriton",
+   "px": 722,
+   "py": 740,
+   "type": "arcology",
+   "catchment": {
+    "halite": 10,
+    "zinc": 34
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Tuatara": {
+   "polity": "Lizardmen",
+   "px": 818,
+   "py": 1554,
+   "type": "village",
+   "catchment": {
+    "iron": 92,
+    "copper": 102,
+    "gold": 47,
+    "tin": 41,
+    "silver": 40,
+    "rare-earth": 56,
+    "sulfur": 99,
+    "oil": 33,
+    "marble": 16,
+    "zinc": 99
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Tzunfort": {
+   "polity": "Vothic Kingdom",
+   "px": 670,
+   "py": 886,
+   "type": "outpost",
+   "catchment": {
+    "iron": 61,
+    "copper": 2,
+    "coal": 76,
+    "oil": 21,
+    "halite": 19
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Valapo": {
+   "polity": "Kautoa",
+   "px": 942,
+   "py": 782,
+   "type": "village",
+   "catchment": {
+    "iron": 107,
+    "copper": 33,
+    "gold": 19,
+    "tin": 24,
+    "silver": 20,
+    "rare-earth": 13,
+    "coal": 31,
+    "sulfur": 95,
+    "oil": 6,
+    "halite": 2,
+    "zinc": 13
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Veil": {
+   "polity": "Eternal State",
+   "px": 448,
+   "py": 838,
+   "type": "outpost",
+   "catchment": {
+    "iron": 199,
+    "copper": 21,
+    "gold": 44,
+    "tin": 67,
+    "silver": 37,
+    "rare-earth": 28,
+    "saltpeter": 1,
+    "oil": 1,
+    "halite": 8,
+    "emerald": 5
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Veladiga": {
+   "polity": null,
+   "px": 685,
+   "py": 479,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 53,
+    "copper": 66,
+    "saltpeter": 45,
+    "gypsum": 39,
+    "halite": 7,
+    "zinc": 52,
+    "turquoise": 7
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Verge": {
+   "polity": "Empire of Iziz",
+   "px": 1263,
+   "py": 946,
+   "type": "city",
+   "catchment": {
+    "iron": 185,
+    "copper": 38,
+    "gold": 36,
+    "tin": 52,
+    "silver": 31,
+    "rare-earth": 21,
+    "coal": 19,
+    "saltpeter": 35,
+    "halite": 7,
+    "emerald": 6,
+    "turquoise": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Voth": {
+   "polity": "Vothic Kingdom",
+   "px": 742,
+   "py": 1018,
+   "type": "city",
+   "catchment": {
+    "iron": 89,
+    "copper": 15,
+    "gold": 14,
+    "tin": 23,
+    "silver": 15,
+    "rare-earth": 14,
+    "coal": 33,
+    "oil": 12,
+    "halite": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Wildcat": {
+   "polity": "Fellgangs",
+   "px": 427,
+   "py": 1453,
+   "type": "village",
+   "catchment": {
+    "iron": 77,
+    "copper": 146,
+    "gold": 65,
+    "tin": 18,
+    "silver": 66,
+    "rare-earth": 8,
+    "sulfur": 132,
+    "marble": 2,
+    "zinc": 115
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": false
+   },
+   "ok": false
+  },
+  "Wing": {
+   "polity": "Vothic Kingdom",
+   "px": 699,
+   "py": 1042,
+   "type": "ruined arcology",
+   "catchment": {
+    "iron": 149,
+    "copper": 10,
+    "gold": 10,
+    "tin": 12,
+    "silver": 9,
+    "rare-earth": 3,
+    "coal": 66,
+    "oil": 25,
+    "halite": 17,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Yith": {
+   "polity": null,
+   "px": 346,
+   "py": 418,
+   "type": "village",
+   "catchment": {
+    "iron": 201,
+    "copper": 37,
+    "gold": 51,
+    "tin": 43,
+    "silver": 48,
+    "rare-earth": 33,
+    "coal": 7,
+    "oil": 6,
+    "halite": 1,
+    "emerald": 1
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Ys": {
+   "polity": "League of Amphitriton",
+   "px": 789,
+   "py": 738,
+   "type": "city",
+   "catchment": {
+    "iron": 3,
+    "coal": 7,
+    "sulfur": 6,
+    "halite": 7,
+    "zinc": 19
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Yuni": {
+   "polity": "Yuni Emirate",
+   "px": 1263,
+   "py": 1089,
+   "type": "city",
+   "catchment": {
+    "iron": 182,
+    "copper": 27,
+    "gold": 35,
+    "tin": 64,
+    "silver": 32,
+    "rare-earth": 25,
+    "coal": 10,
+    "saltpeter": 4,
+    "oil": 3,
+    "halite": 4,
+    "emerald": 2
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Zey'danin": {
+   "polity": "Vothic Kingdom",
+   "px": 795,
+   "py": 860,
+   "type": "city",
+   "catchment": {
+    "iron": 42,
+    "copper": 80,
+    "gold": 40,
+    "tin": 5,
+    "silver": 31,
+    "rare-earth": 3,
+    "sulfur": 76,
+    "zinc": 57
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  },
+  "Šurpu-Dhelv": {
+   "polity": null,
+   "px": 806,
+   "py": 818,
+   "type": "cavern",
+   "catchment": {
+    "iron": 56,
+    "copper": 139,
+    "gold": 60,
+    "tin": 10,
+    "silver": 72,
+    "rare-earth": 10,
+    "sulfur": 188,
+    "zinc": 121
+   },
+   "basics": {
+    "stone": true,
+    "wood": true,
+    "water": true,
+    "salt": true
+   },
+   "ok": true
+  }
+ },
+ "world": {
+  "iron": 124024,
+  "copper": 41829,
+  "gold": 24629,
+  "tin": 23647,
+  "silver": 22848,
+  "rare-earth": 17299,
+  "coal": 23174,
+  "sulfur": 28875,
+  "saltpeter": 56223,
+  "oil": 8456,
+  "gypsum": 1079,
+  "halite": 15064,
+  "potash": 957,
+  "alkali": 271,
+  "nickel": 4657,
+  "marble": 1643,
+  "zinc": 25000,
+  "emerald": 979,
+  "turquoise": 4151
+ },
+ "audit": {
+  "ok": false,
+  "failures": [
+   "Coyote Kingdom: Coyote Canyon lacks salt within 30 km",
+   "Fellgangs: Chimes lacks salt within 30 km",
+   "Fellgangs: Ledge lacks salt within 30 km",
+   "Fellgangs: Nulab lacks salt within 30 km",
+   "Fellgangs: Wildcat lacks salt within 30 km",
+   "Free Clans: Ardent lacks wood within 30 km",
+   "Jimjam: Serai lacks stone within 30 km",
+   "Lesser Throne: (no settlement; its centroid) lacks wood within 30 km",
+   "Lizardmen: Cube lacks salt within 30 km",
+   "Lizardmen: Komodo lacks salt within 30 km",
+   "Lizardmen: Sauropolis lacks salt within 30 km",
+   "Lizardmen: The Tubes lacks salt within 30 km",
+   "Lizardmen: Tuatara lacks salt within 30 km",
+   "Painted Men: (no settlement; its centroid) lacks wood, salt within 30 km",
+   "Realm of Dalab: Loj Twenny lacks wood, salt within 30 km",
+   "Tungang Union: (no settlement; its centroid) lacks wood, water, salt within 30 km",
+   "Xanadu Sultanate: Erehwon lacks salt within 30 km",
+   "Xanadu Sultanate: Qiblai lacks salt within 30 km",
+   "Xanadu Sultanate: Strongwall lacks salt within 30 km",
+   "Xanadu Sultanate: Theodiga lacks salt within 30 km",
+   "Yeti Kingdom: (no settlement; its centroid) lacks wood, water, salt within 30 km",
+   "Yuni Emirate: Ostrukh-on-Water lacks wood within 30 km",
+   "Yuni Emirate: Spindle Fan lacks wood within 30 km",
+   "sasquatch tribes: (no settlement; its centroid) lacks wood, salt within 30 km"
+  ]
+ }
+}

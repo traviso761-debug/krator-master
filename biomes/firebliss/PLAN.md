@@ -1,0 +1,707 @@
+# The Firebliss Range: the plan (seed, 2026-11-09; the patera and its domes, 2026-11-12: section 11)
+
+The Firebliss Range (`rmw8hj62nmugn`) is a volcanic arc on the Labyrinth's northern rim, in the far south-west of map 5.1,
+between the airless west edge and the Labyrinth. Along its spine stand five ice-capped volcanoes, at 5.4 to 6.7 km. Under them
+lie four warm valleys, each with its own lake, at 1.9 to 2.7 km: temperate (Cfb, with a Cfa pocket) in a country that is
+otherwise tundra and ice. The valleys are 5% of its ground; the other 95% lies at 4 to 6 km.
+
+**Nobody lives here permanently. Fellgang and Kimr bands pass through semi-regularly** (the owner, 2026-11-09). Its dangers are
+the land itself: gas, heat, ash, ice and thin air. A player who reaches one of its oases has found a good place for an outpost
+(section 6).
+
+This is a seed from the owner's brief (2026-11-09) and the map. Two drafts were merged into it on 2026-11-09: the brief's (who
+comes here, the outposts, the Labyrinth as neighbour) and a reading of the model's numbers. The owner's decisions of 2026-11-09
+are applied to the scale model in **5.1 edit 3** (`tools/scale-model/edit_513.py`; section 9). Names marked **TBD** are the
+owner's to give, and *proposed* marks this plan's own suggestions. A neighbour of `biomes/labyrinth/PLAN.md`. Coordinates are 5.1 px
+(1821 x 1723, 2 km a px).
+
+**Built 2026-11-10** (branch `claude/firebliss-80cc25`, on `claude/cloud-kits-verify`'s 5.1 edit 3): the four stations of section 7 on the
+model's own ground (section 7a), with the core adoption of section 8 as built. What is owed is in `KNOWN_ISSUES.md`; how a page is
+made is in `README.md`.
+
+## 1. What the map carves (Gemini, map 5.1)
+
+The carving is `tools/scale-model/build_425_master.py` step 9E (l. 2609-2989); its climate is set in the Labyrinth's pass (l.
+4328-4420). The region is in `smodel/nw_expansion.py` and the page's `51-region-store.js`. The numbers were read from
+`model/data` (`smodel.page`, 2026-11-09), the polygon masked by `matplotlib.path.Path.contains_points`.
+
+- **Size:** 28,007 cells of 2 km, about 112,000 km² (x 38-320, y 1238-1403): 560 km WNW to ESE, 330 km north to south.
+- **How it is cut** (the code):
+  - **The spine.** A cordillera runs WNW to ESE along the Labyrinth's upwind northern border, falling from about 5,250 m in
+    the west to 3,950 m at the east border, with a crest of up to 620 m on its axis.
+  - **The cones.** Five stratocones on the spine, each with a summit crater and radial barranco ribs. Each rim has a notch
+    180 m deep on its **south-west** side (the code's 130-140° is measured with y pointing south).
+  - **The valleys.** Four elliptic basins south of the spine, each with a flat floor, stepped sinter benches (±85 m) and a
+    warm lake at its centre. The code first set the lakes at 1,680-2,180 m, then raised them so that each outflow could run
+    downhill into the Labyrinth's lakes.
+  - **The west edge.** The airless barrier (x under 62, over 8.8 km, class O) is kept.
+- **Heights:** p5/p25/p50/p75/p95 = 2,918 / 4,367 / 4,718 / 5,123 / 6,029 m. The lowest ground is 1,901 m (the East Bliss
+  lake's bed, 284,1318); the highest 10,128 m (38,1259, on the barrier). By band: under 2 km 0.3%, 2-3 km 5.1%, 3-4 km 5.9%,
+  **4-5 km 57.3%**, **5-6 km 26.3%**, 6-8.8 km 3.9%, over 8.8 km 1.3%.
+- **Slopes** on the 2 km grid: median 2.4°, p90 8.9°, steepest 34.8°. At this scale it is a plateau with cones on it; the relief a
+  walker sees (crater walls, barrancos, sinter steps, valley walls) is under the grid, and the kit makes it.
+- **The five volcanoes** (`model/data/vents.json`, kind `stratovolcano`). Base radius 29-42 km, craters 12-18 km across:
+
+  | Volcano | 5.1 px | Peak | Crater floor | Crater floor's climate |
+  |---|---|---|---|---|
+  | Mount Pyre | 104,1304 | 6,650 m | 5,820 m | EF, -13 °C (-3 / -22) |
+  | Cinder-Crown | 148,1292 | 5,940 m | 5,320 m | EF |
+  | **Firebliss Mons** | 206,1284 | 6,380 m | 5,480 m | EF, -11 °C (-1 / -20), 596 mm |
+  | Brimstone Spire | 254,1288 | 5,780 m | 5,180 m | EF |
+  | Copper-Fissure Vent | 298,1286 | 5,360 m | 4,680 m | ET, -6 °C (4 / -16) |
+
+- **The four valleys** (the oases), each a sheltered geothermal basin under the spine with a warm lake (class WH) and sinter
+  steps round its shore:
+
+  | Valley | Lake: centre, area, level | Ground under 3 km | Warmest shore (model) | Outflow |
+  |---|---|---|---|---|
+  | West Bliss Cauldron | 125,1343; 140 km²; 2,640 m | 1,048 km² | 125,1340, 2,695 m: Cfb, 10 °C (19 / 2), 1,082 mm, 1.14 atm | **Yan Warra** (`r_fb_west`), 169 km to the Labyrinth's north-branch head (182,1404) |
+  | **Great Firebliss Vale** | 184,1318; 240 km²; 2,280 m | with the Glen, 3,460 km² | 183,1314, 2,315 m: Cfb, 12 °C (21 / 4), 1,067 mm, 1.20 atm | **Tlahn Warra** (`r_fb_central`), 341 km through Solfatara Glen to the Labyrinth's Lake 3 (1,980 m) |
+  | Solfatara Glen | 238,1322; 140 km²; 2,120 m | (with the Vale) | 235,1319, 2,140 m: Cfb, 13 °C (22 / 5), 1,239 mm, 1.22 atm | Tlahn Warra |
+  | East Bliss Vale | 284,1318; 132 km²; 1,960 m | 1,440 km² | 282,1315, 2,004 m: **Cfa**, 14 °C (23 / 6), 1,271 mm, 1.25 atm | **Weyt Warra** (`r_fb_east`), 218 km to the Labyrinth's Lake 6 (1,720 m) |
+
+  In all 5,970 km² lie under 3 km. The valley walls climb fast: 8 px south of the Vale's lake the ground is at 4.7 km. The
+  rivers are named in the Tungang tongue (`river-names-5.1.md`): Yan, "first"; Tlahn, "iron-clan"; Weyt, "white-water"; Warra,
+  "river". **Their gorges are the only easy ways in** (section 3).
+- **The plume:** the five vents breathe a persistent plume to the south-east (bearing about 142°): vapour 370-640 km
+  downwind, sulphate, and dark basaltic-andesite ash 190-390 km (`w_firebliss_plume`, `w_firebliss_ash` in the build; not saved
+  in `model/data`). The model uses it only to add rain to the Labyrinth (+310 mm, +165 on its NW-facing slopes). **The range
+  makes its neighbour green**; its own valleys lie mostly upwind of it.
+- **Neighbours:**
+  - **the Labyrinth** to the south (`rmw8bqrn3dnx4`, along the edge from 293,1349 to 113,1402), which takes all three rivers;
+  - **Copper Glacier** to the north (`rmvcopperglacier`, built). Its region overlapped 57% of the range until 5.1 edit 3
+    trimmed it to Firebliss's north edge (section 9); its three stations all stand outside the range;
+  - the W rift highland, the Fellgangs' fells and the Tungang Union to the east, past Copper Glacier's pass;
+  - the airless barrier to the west.
+- **Settlements:** none within 100 px. The nearest pins are Ledge (437,1330, Dalab's hold over the great lake), Nulab, Loj Twenny
+  (a Tungang cavern) and Wildcat, 140-175 px (280-350 km) east of East Bliss.
+
+## 2. Geology, air and climate
+
+- **A glaciovolcanic arc.** Basaltic andesite to andesite cones on an older uplifted plateau, ice-capped above about 5.1 km.
+  The barrancos are lahar and meltwater gullies; each rim's SW notch is the side its meltwater leaves by, and where a flank
+  collapse would run.
+- **Degassing calderas** (*proposed*): 0.6-0.9 km deep under their rims, each with a crater glacier and fumarole fields
+  melting holes through it.
+- **The valleys are hydrothermal grabens** (*proposed*): warm groundwater rising under the arc, sinter terraces, acid and
+  steaming ground. The Earth analogue is New Zealand's Taupō Volcanic Zone (Rotorua, Waiotapu) under ice-capped andesite cones
+  (Ruapehu). Solfatara Glen is the sulphur field its name implies.
+- **The resource bake** (`kits/resources/data/geology.json`, rebaked in 5.1 edit 3): the range had been masked airless and
+  crystalline, with no sulphur, because the bake predated the carving. Now 1,432 of its 7,016 four-km cells are volcanic (round
+  the cones: their vent records reach 39-45 km), 2,666 sedimentary, 1,556 crystalline and 1,304 granite (the plateau, by the
+  bake's height and relief rules); sulphur reaches 255 at the vents (105 cells over 150), copper 210 and tuff 200 round the
+  cones. *For the owner:* the bake reads the 4-5 km plateau between the cones as sedimentary and granite, not ash and lava
+  sheets; a `VOLCANIC_REGIONS` entry for the range would make all of it volcanic.
+- **Air** is P = 1.6 e^(-h/8000) atm. Temperatures are the model's `tm`, `tw`, `tc` (mean, warm month, cold month):
+
+  | Site | Height | Air | tm | tw / tc | Rain | Class |
+  |---|---|---|---|---|---|---|
+  | East Bliss shore | 2,004 m | 1.25 atm | 14 °C | 23 / 6 °C | 1,271 mm | Cfa |
+  | Great Vale shore | 2,315 m | 1.20 atm | 12 °C | 21 / 4 °C | 1,067 mm | Cfb |
+  | the plateau (median) | 4,718 m | 0.89 atm | -10 °C | 0 / -21 °C | 565 mm | ET |
+  | Firebliss Mons' crater | 5,481 m | 0.81 atm | -11 °C | -1 / -20 °C | 596 mm | EF |
+  | Mount Pyre's summit | 6,650 m | 0.70 atm | | | | EF / HT |
+
+- **Classes inside** (`c`): ET 66%, EF 19%, then Dfc, Cfb, HF, HT, O, WH, Csb, Cfa. Cfa only at East Bliss (1,965-2,069 m);
+  Cfb 2.1-3.1 km; Dfc (3.2-3.9 km) on the valley walls' shoulders.
+- **Why the valleys are warm:** the build adds a fixed geothermal term over each valley (+6.4 °C to the warm month, +8.2 °C to
+  the cold), +3.5 / +4.5 °C in the craters, and +280 mm of rain (+345 round the lakes). Set terms, not physics: about 7 °C over
+  the plain lapse at 2-2.7 km. The kit draws it as ground heat (`KTHERM`): strongest at the vents, lakes and sinter, weakest on
+  the walls. *Proposed:* steam fogs on the lakes on cold mornings.
+- **The day's extremes** (`th`, `tl`) were missing on 90% of the range; 5.1 edit 3 set them by the model's own rule (section 9).
+  On the valley shores the hottest afternoon is now 27-29 °C and the coldest night about 0 °C; on the plateau 2 / -32 °C.
+- **Wind:** the prevailing north-westerly blows the plume off the cones, over the valleys' south walls into the Labyrinth.
+
+## 3. Who comes here
+
+- **Nobody lives here permanently** (the owner, 2026-11-09). No settlement or polity polygon lies in the range, and the plan
+  keeps it that way.
+- **Fellgang and Kimr bands pass through semi-regularly** (the owner, 2026-11-09):
+  - **Fellgangs** come over the fells from the north and east. The Fellgangs descend in part from the Tungangs who fled the
+    tunnel wars up onto the fells (`LORE.md` 6.1), which is why the range's rivers carry Tungang names. *Proposed:* "Yan Warra",
+    the First river, is where they first came down.
+  - **Kimr** come up the Warras' gorges from the Labyrinth, hunting the megafauna that stray up in summer
+    (`biomes/labyrinth/PLAN.md` sections 4-5).
+- **The ways** (the lowest-highest route on the height grid; see section 1 for the rivers):
+
+  | Route | Highest point | Length | Notes |
+  |---|---|---|---|
+  | the Great Vale to Solfatara Glen | 2,682 m (208,1320) | 114 km | one valley system |
+  | the Glen to East Bliss | 2,526 m | 307 km | round by the Labyrinth: down the Tlahn Warra, up the Weyt |
+  | West Bliss to the Great Vale | 3,253 m (in the Labyrinth) | 528 km | round by the Labyrinth; straight over the spine is higher |
+  | East Bliss to Ledge (Dalab's hold) | 3,520 m (405,1471) | about 1,000 km | through the Labyrinth to the Rift's west head; 302 km straight |
+  | the Great Vale to Copper Tarn (north) | 4,828 m | over 1,500 km | over the ice: nothing under 4.5 km |
+
+  **The valleys open only south**, into the Labyrinth: ice closes the north and air the west. The Kimr's way in is short (up a
+  Warra); a Fellgang band's is long, by the Labyrinth from the east or over the high fells. *Proposed:* the Fellgangs cross the
+  plateau in summer only, at 0.85-0.9 atm, which their highland breeding takes.
+- **What they leave** (drawn by the kit, all temporary; `core/camp`, `KCAMP`, as bands that move):
+  - night and hunting camps in the valleys: hide shelters, drying racks, hearths, cached gear;
+  - cairns and marked trails along the gorges;
+  - butchery sites;
+  - each people's own marks: Kimr Aurochs-horn markers, Fellgang stone signs.
+
+  Two peoples on the same ways avoid each other, so a camp may be abandoned, raided or contested.
+- **What they take:** megafauna that stray up from the Labyrinth (mammoth, woolly rhino, giant elk); the range's own animals
+  (section 4); sulphur, obsidian and pumice; the valleys' hot-spring minerals.
+
+## 4. Life
+
+The valleys are lush pockets in a bleak arc. Most of their life is read in place from kits that already have that country,
+with the Labyrinth's Earth stock straying in along the rivers.
+
+| Zone | Life | From |
+|---|---|---|
+| **Valley floors** (to ~2,700 m; Cfb, Cfa) | warm meadow and fern, conifer groves in the lee of the walls, reeds round the lakes; the veiled rim's fog plants where the steam lies | the geyser and swbay kits; `biomes/riftrim`'s W rift highland (`veilthread`, `mistcup`, `moorsponge`); the Labyrinth's parkland trees along the Warras |
+| **Lake shores and sinter** | thermophile mats banded by temperature (white, yellow, orange, green, brown), sinter steps, hot-spring grasses, silicified dead trees | `biomes/geyser` (its mats and `basin` recipe) |
+| **Fumaroles** (Solfatara Glen) | sulphur crusts, acid-tolerant mosses, almost nothing else | the Throne's vent flora |
+| **The ash slopes and plateau** (2,700-5,100 m; ET, Dfc) | sparse cushions, ash-desert plants, lichen on the lava | the Throne's ash-desert flora; Copper Glacier's cushions; the rift rim's black rim |
+| **The ice** (over ~5,100 m) | snow algae, ice worms, frost coral at the moraines | `biomes/copperglacier` |
+| **Fumarolic ice caves and crater vents** | the cold lineage's mats and glow; the Hearths at the vents (a heat engine against a cold sky, at 0.8 atm and -11 °C mean) | the Throne's glacier station; `biomes/hearths` |
+
+*Proposed, the range's own* (Earth's Taupō geothermal flora as the models; the trick they share is warmth from below, so their
+stands trace the `KTHERM` field): **steam fern** (a tree fern 6-12 m whose crown stands in the steam), **heath tea-tree**
+(thermal kānuka: upright on cool ground, flattened to a mat on hot), **sinter moss** (a crust on warm sinter, green to orange
+with the heat), **ash lily** (a bulb that flowers hot pink through fresh ash downwind of the cones).
+
+**Animals:** the Labyrinth's strays in summer, in the valleys and gorges; the range's own: mountain goats and ibex on the cliffs,
+marmots, raptors on the valleys' thermals, the glowing ice worms on the high ice; *proposed*, waterfowl wintering on the warm
+lakes. The fauna kit owns them all.
+
+**Crops** (`kits/crops`): at 1.25 atm, 14 °C and 1,270 mm, `CROPS.at` should give East Bliss a wide temperate palette, for a
+player outpost (section 6).
+
+## 5. The hazards (environmental)
+
+The range's dangers come from the ground and the air, not from enemies. Each maps to a `KHAZ` kind (`core/hazard/README.md`) or
+to a weather provider.
+
+| Hazard | Where | `KHAZ` |
+|---|---|---|
+| **Gas pooling** (CO₂ and H₂S settling into hollows on still nights) | the valley floors, the craters, the caves | `gas` with `shape.pool` (`21-core-hazard-flow.js`), strongest at night and in still air (an amendment: section 8) |
+| **Scalding water and hot ground** | the lakes' hot margins, springs, geysers, Solfatara Glen | `heat` |
+| **Sinter crust over boiling water** | the sinter terraces and the springs' aprons | `sink`, a crust that breaks underfoot (an amendment: section 8) |
+| **Acid** | crater lakes, fumarole fields, rain under the plume | `acid`; `KHAZ.provide('rain')` and `'ph'` |
+| **Ashfall and whiteout** | the plume's track (the south-east side), whenever the vents puff | ambient `ash` (`ATMOS.airLoad`'s `ashAt`); the weather's `ashfall` mode; `slip` on ash over ice |
+| **Lahars and outburst floods** | the Warras' gorges, the barrancos, the SW notches | `drown` and `crush`, timed: a flood that runs the gorge (an amendment: section 8) |
+| **Phreatic blasts** | geysers and steaming ground | `heat` and `crush`, timed |
+| **Crevasses and cliffs** | the ice and the gorge walls | `fall` |
+| **Cold and thin air** | everywhere over the valleys: the plateau at 0.85-1.0 atm and -10 °C mean, the cones at 0.70-0.85 | `KHAZ.provide('temperature')`, `'pressure'` |
+| **Lava** | the Copper-Fissure Vent's fissure only (the plan's default) | `lava` (`KHAZ.GROUND.lavaFlow`, `KLAVA.bind`) |
+
+Every hazard has a sign before it kills: dead birds and bare ground for gas; colour for heat; a hollow sound and steam at the
+crust; grey sky for ash; a rising roar for a flood.
+
+## 6. The oases as outposts
+
+If the player can reach one of the valleys, it is a good place for an outpost: water and warmth, ground to grow on, sulphur,
+obsidian and the hunt nearby, and safe from everything but the range itself. Each valley is a different bargain:
+
+| Valley | For it | Against it |
+|---|---|---|
+| **East Bliss Vale** (1,960 m) | the lowest and warmest (Cfa); nearest the Labyrinth (Weyt Warra); the bands' usual way in, so trade | the most passed-through, so camps and quarrels; a lahar route |
+| **Great Firebliss Vale** (2,280 m) | the largest valley and lake; the best ground to grow on; sheltered | gas pools on its floor on still nights; the Tlahn Warra's floods |
+| **Solfatara Glen** (2,120 m) | the sulphur, the range's richest resource | acid, fumes and hot ground: a works, not a home |
+| **West Bliss Cauldron** (2,640 m) | the most hidden and defensible: a crater moat under Mount Pyre | the highest, coldest and most remote; a crater, so the worst gas trap |
+
+**No spot is picked for the player** (the owner, 2026-11-09): the player sets up where they like. "Outpost" is the owner's
+shorthand for any **player settlement**, from a camp to a town; NPC outposts stay conceptually and mechanically distinct (the
+world's settlements and camps, `core/hamlet`, `core/camp`). The **outpost registry** belongs to the open world, not to this kit,
+and is being built as core work (the owner, 2026-11-09). This kit only supplies candidates: the oases' benches (water, warmth,
+gas and flood safety) as hints the registry may read, and nothing drawn on the ground for them.
+
+## 7. Stations (proposed, on the 5.1 map)
+
+World km = 5.1 px x 2; a page's site is the old canvas px (5.1 px less 272, 330): negative here, as Copper Glacier's are. Each
+page is the usual 5.2 km square.
+
+| Station | 5.1 px | Ground | What |
+|---|---|---|---|
+| 1 **Great Firebliss Vale** | the north shore, 183,1314 (lake 184,1318) | 2,315 m; lake 2,280 m; Cfb, 12 °C (21 / 4), 1.20 atm | the oasis: the warm lake in steam, sinter benches, meadow and groves under the ash slopes, a band's night camp; gas in the hollows at night; Firebliss Mons 76 km NNE on the skyline with its plume |
+| 2 **Solfatara Glen** | the shore, 235,1319 (lake 238,1322) | 2,140 m; lake 2,120 m; Cfb, 13 °C (22 / 5), 1.22 atm | the fumarole field: sulphur chimneys, acid pools, mud pots, mats in the run-off, the sulphur gatherers' tracks; the Tlahn Warra through it |
+| 3 **East Bliss Vale** | the shore, 282,1315 (lake 284,1318) | 2,004 m; lake 1,960 m; Cfa, 14 °C (23 / 6), 1.25 atm | the way in: the Weyt Warra's gorge up from the Labyrinth, a Kimr camp, strays at the water, lahar marks in the gorge; Copper-Fissure Vent 66 km NNE |
+| 4 **Firebliss Mons** | the crater floor, 205,1282 | 5,481 m, the rim to 6,421 m; EF, -11 °C (-1 / -20), 0.81 atm | fire and ice: the glaciated cone, the steaming crater breached south-west, fumarolic ice caves, the Hearths at the vents, the plume overhead, thin air |
+
+Station 1 comes first: it holds the oasis, the hazards and the bands all at once. A fifth could be West Bliss Cauldron (125,1340,
+2,695 m, the Yan Warra's head under Mount Pyre) or the Copper-Fissure Vent's lava, if the owner wants either.
+
+### 7a. The pages as built (2026-11-10)
+
+Each page stands on the model's own ground: `model_site.py` reads a window of the 5.1 height grid (22 x 22 cells of 2 km) round its
+centre at build time and the page interpolates it with a cubic B-spline (`FB_MODEL`, `45-host-stage.js`), then adds only what 2 km cells
+cannot hold (the shore's coves, the thermal ground, a river's channel or gorge, hollows, a camp's pad). The lakes are 11-17 km across, wider
+than a page, so each valley's page stands on its lake's shore.
+
+| Station | Page | Centre (5.1 px) | Why there | What the model gives there |
+|---|---|---|---|---|
+| 1 Great Firebliss Vale | `dist/firebliss.html` | 183,1315 | the plan's north-shore point, 1 km toward the lake so the shore crosses the page | the lake (2,279.8 m) over the south-east; the floor rising north-west 40 m; Cfb, 12 °C (21 / 4), 1,050 mm |
+| 2 Solfatara Glen | `dist/firebliss-glen.html` | 234,1320.5 | where the Tlahn Warra reaches the lake (234,1321), 2 km from the plan's point | the lake (2,119.9 m) over the east half; the glen's floor 5-8 m over it, rising south-west; Cfb, 12.9 °C, 1,240 mm |
+| 3 East Bliss Vale | `dist/firebliss-east.html` | 285,1320.6 | the Weyt Warra's outlet (285,1320): the station is "the way in", up the gorge; the plan's point (282,1315) is the warmest shore, 12 km north-west | the lake (1,960 m) north-west; edit 3's carved outlet channel south down the middle (2 km wide on the cells); Cfa, 13.9 °C, 1,370 mm |
+| 4 Firebliss Mons | `dist/firebliss-mons.html` | 205,1282 | the plan's point | the crater floor (5,481-5,500 m) south and east, the inner wall north-west to 5,930 m; EF, -12.6 °C, 600 mm |
+| 8 South Glass (section 11.2) | `dist/firebliss-glass.html` | 177.9,1337.0 | 7.05 km from the dome's middle (175,1335) on a bearing of 125 degrees: a page on its middle would be all flat top, so the wall crosses this one | no dome on today's model (edit 2 is not merged): a ridge at ~4,560 m under it falling south-east to a basin at 4,180-4,300 m (the moat); the dome is the kit's, edit 2's record (section 11.3); ET, -7.7 °C (2.4 / -17.9), 584 mm |
+## 8. Core adoption (written first, as the working rules ask)
+
+Start from `biomes/copperglacier` (the newest finished kit and the neighbour: its ice, frost and station frame) and the geyser
+kit's `basin` recipe.
+
+**As built (2026-11-10).** "Branch" means read in place from `origin/claude/core-plan-features-229d2a` by `build.py` (`git show`) until
+that branch is merged: the pieces are not copied into the kit (`KNOWN_ISSUES.md`).
+
+| Need | Module | Taken | How |
+|---|---|---|---|
+| randomness | `core/rand` (`KRAND`) | yes | every placement cell seeded by `KRAND.cell(seed + salt, ix, iz)`; the camps' and hollows' by `KRAND.hash` of (world, key, index) |
+| the ground | the scale model 5.1 (`model_site.py`) | yes | the heights and water levels round each centre, baked into the page; no hand-drawn profile |
+| volcanoes, relief | `KRELIEF` (38) | yes | `KRELIEF.river` grades the Warras; the volcanoes themselves are the model's (2 km cells hold Mons' crater); `volcano`/`range` not called |
+| landforms | `KRELIEF` 38c (`maar`, `stepcut`, `terraces`) | **no** | the sinter steps are the geyser kit's terrace flights (its `GEYSER.lay` terraces); the gas hollows are KRAND-placed dish hollows on the stage |
+| thermal ground | the geyser kit (`biomes/geyser`, read in place as `biomes/ringisles` reads it) | yes | `GEYSER.lay` on each station's authored layout: springs, geysers, sinter flats and terraces, acid fields with mud pots and fumaroles, dead fringes; its relief, heat, flora and show |
+| ground temperature | `KTHERM` (47) | yes | the vents' heat between them, from the geyser layout: the snow's bare ground, the hot-ground hazard, the frost coral's warmth on Mons |
+| lava and tuff | `KLAVA`, `KSTRATA` | **no** | no station is on the Copper-Fissure Vent's flow (section 7); the walls are off the pages (the far field), so no bedded face is drawn |
+| glacier and frost | `KGLACIER` (44g), `KFROST` (42) | **KFROST yes, KGLACIER no** | KFROST's sorted circles on the ash flats over 2,900 m; Mons' crater ice is the ground's ice and snow layers (a crater floor, not a flowing glacier) |
+| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | yes | library layers on documented masks with KGROUND's relief; the far field to 14 km on the model's own heights; the walls' shadows; the plume as far sprites (`KFAR.sprites`) |
+| water | `core/water` (`open`, `flow`, ext 56-61, geyser 52/52b) | yes | the tarns (`WATER.open`, still: no surf, no breakers; the warm springs' tint), the Warras (`WATER.flow` on `KRELIEF.river`), the springs and geysers through the geyser kit's show; the reflections switch off at load |
+| flora | `core/biome` and the kits read in place | yes | the geyser kit's thermal trees and floor; the Throne's ash pine and tree fern as kin (`BIO.kin`); Copper Glacier's cushions, lichen, moss, sedge, boulders and frost coral (`COPPERG.build` on this page's fields); the kit's own meadow, reeds and stones |
+| sky, weather | `core/atmos` | yes | the standard sky at each site; height fog; rain cover; snow that lies (the station's line, bare over warm ground); the plume (`ATMOS.ashPlume`, branch) as fog, ash fall and the hazard's `ash` |
+| hazards | `core/hazard` (20, 21) and 22 (branch) | yes | heat and acid (the geyser kit's records), gas that pools at night (`KHAZ.night`), the sinter crust (`KHAZ.crust` / `under`), the gorge's flood (`KHAZ.front`, station 3), cold and thin air (`KHAZ.provide`), falls on the steep |
+| camps | `core/camp` (`KCAMP.pitch`) | yes | the hunters' camps; the two culture rows (`fellgang-hunt`, `kimr-hunt`) are the kit's data, registered on `KCAMP.CULTURES` (to move to core/camp/10 when settled) |
+| fauna | `kits/fauna` | **no** | owed: the Labyrinth's strays and the range's own animals wait for the fauna kit's Labyrinth and alpine sets (`KNOWN_ISSUES.md`) |
+| resources | `kits/resources` (`KRES`), read in place | yes | the nodes in each square from the rebaked `geology.json` (Copper Glacier's `res_site.js`, read in place), registered and drawn as stained outcrops: four sulphur nodes on Mons' crater floor; the valleys' data holds none (the sulphur is at the vents), so the Glen's sulphur is the fumaroles' crusts |
+| shadows | `core/shadow` | yes | off at load (`?shadow=1`) |
+| tags, space, mask, host, export, materials | as every kit | yes | `KTAGS`, `KSPACE` through the biome core; `KHOST` full with the polygon tool; `core/export`'s profile; `materials.json` and `pack.py` |
+| city, hamlet | `core/city`, `core/hamlet` | no | nobody lives here; the oases are offered to the open world's outpost registry as `outposts.json` (section 6), nothing drawn |
+
+**The plan's table** (2026-11-09, kept for the record):
+
+| Need | Module | How |
+|---|---|---|
+| randomness | `core/rand` (`KRAND`) | every placement seeded by (world, cell, index, salt) |
+| volcanoes | `KRELIEF` (`38`, `38b-core-relief-lava.js`, `38c`) | the cones, the breached craters, the spine; `gully` for the barrancos and the Warras' gorges, `slump` and `scarp` for caldera walls and grabens, `runout` for talus |
+| the valleys | `KRELIEF` landforms (`38c`: `maar`, `stepcut`, `terraces`), `KRELIEF.waters` | the moats, benches and the sinter steps' ground; the lakes |
+| lava and tuff | `KLAVA` (46, 46b), `KSTRATA` (35, 35c: tibasalt, tuff) | flows on the slopes; the walls' bedded ash |
+| heat | `KTHERM` (`47-core-therm.js`) | the ground's temperature from vent records (the crater fumaroles, the valleys' vent lines): what the steam, the snow line, the sinter, the flora, the hazards and a walker all read |
+| glacier and frost | `KGLACIER` (44g), `KFROST` (42), `KCAVERN` (39) | the summit ice and its caves, patterned ground on the slopes |
+| ground | `KGROUND` (43), `KHORIZON` (45), `KFAR` (44) | ash, sinter and mats as documented masks; the far cones, and the plume as far sprites (`KFAR.sprites`) |
+| water | `core/water` (`WATER.open`, `flow`, `spring`, `geyser`, `terraces`) | the warm lakes, the Warras, the springs, the sinter terraces |
+| flora | `core/biome` | read in place (section 4): the geyser, swbay, Throne, Copper Glacier, rift rim and Hearths kits; the Labyrinth's trees along the rivers |
+| sky, weather | `core/atmos` | the standard sky; steam (`ATMOS.smokeGroups`); the plume's fog and ash fall (`weather({ash:true})`, `ATMOS.airLoad`); snow reading `KTHERM` (`fx/89-atmos-fx-snowcover.js`) |
+| hazards | `core/hazard` (`KHAZ`, `21-core-hazard-flow.js`) | section 5, every record in `core/tags` before it is drawn |
+| bands and camps | `core/camp` (`KCAMP`) | the passing bands' temporary camps and the trails they use |
+| fauna | `kits/fauna` | strays and the range's own animals, as `BIO.record` records |
+| resources | `kits/resources` (`KRES`) | the rebaked field: sulphur at the vents, copper and tuff round the cones, obsidian (*proposed*) |
+| shadows | `core/shadow` | off at load |
+| tags, space, mask, host, export, materials | as every kit | |
+| city, hamlet | `core/city`, `core/hamlet` | no: nobody lives here. Outposts go in the open world's registry (section 6) |
+
+**Core amendments the range needs** (no new module; most are shared with the region plans of 2026-11-09):
+1. **Geothermal surfaces:** mud pots, the fumarole kind with steam and run-off, sinter and mat decals. Owed in core/water's
+   README ("Not here (yet)"); wanted by Godshearth, the Twins, the Great Chasm and the SE outer wall. Firebliss needs them most:
+   stations 1-3 are made of them.
+2. **Hazard kinds:** a crust that breaks underfoot; gas that pools at night and in still air; a flood that runs a gorge on a
+   cycle (lahar or outburst).
+3. **A volcanic plume** as a weather source in `core/atmos`: fog, ash fall and shade along an azimuth from the vents. It would
+   serve the Godthrone and the Throne's vents too.
+4. **The outpost registry** (open world, not this kit), with this kit's oases as candidate sites.
+
+**Kit-side, not core:** the caldera dress (crater glacier, fumarole holes), the plume's look over the cones, the range's own
+species.
+
+## 9. The scale model: 5.1 edit 3 (the owner's decisions, 2026-11-09)
+
+`python3 tools/scale-model/edit_513.py` (report: `edit_513.report.json`; `tools/scale-model/README.md`, "5.1 edit 3"):
+- **Copper Glacier trimmed** to Firebliss's north edge (it overlapped 15,868 cells, 57% of the range: three volcanoes, two
+  valleys). The two now share only their edge's 113 cells. A strip of the airless barrier west of Firebliss's west edge (806
+  cells, x 48-73) is cut off from Copper Glacier's body and left to neither. Firebliss has its region note.
+- **The rivers fixed.** The three Warras were notched into the ground at their vertices only (the Labyrinth's pass rebuilt its
+  mesas over the build's gorges): between the vertices the ground rose 390-590 m, so the lakes had no outlet. Each is rerouted
+  by the least-cut route from its lake (the Tlahn through Solfatara Glen) to the build's own target and carved to fall the whole
+  way: outlet gorges cut 130-250 m at the median, 470-655 m at their highest pass, 1,491 cells in all; no lake lowered. The
+  records have the new course, the carved bed, their region and their mouth (Yan Warra joins Fell-Block Beck; the Tlahn and the
+  Weyt end in the Labyrinth's Lakes 3 and 6). The river-names table's "Drains To" now reads the records (it said "sea" for every
+  river that ends in a lake).
+- **The temperatures fixed.** `th` and `tl` (the hottest afternoon and coldest night) set by the model's own rule (`th = tw +
+  d`, `tl = tc - d`, `d` the 5.0 diurnal half-swing, 6.5-8.4 °C) where they were missing (215,770 land cells map-wide), stale
+  (the Firebliss-Labyrinth block) or contradicted their own months (431,710 more, mostly the 5.0 expansion strips). Cells whose
+  `th` and `tl` agreed with their months kept them.
+- **The vent records** given a crater floor, radius and scale: the page had drawn the five at no height.
+- **The resources rebaked** (`kits/resources/data/geology.json`, `ledger.json`, the Godot field test's copies); the Resources
+  page and Copper Glacier's three pages rebuilt.
+
+**Left for the Labyrinth's own edit:** its four rivers (`r_lab_chaos_n`, `r_lab_chaos_s`, `r_lab_cat_nw`, `r_lab_cat_sw`) have
+the same vertex-only fault, climbing 320-535 m; Lakes 3 and 6, where the Tlahn (145 m³/s) and the Weyt (85 m³/s) end, have no
+outlet; the 2,920 m catena tarn at 146,1467 has rim cells 90 m under its level. 128 of the map's 893 rivers climb more than
+150 m somewhere along their course; that is a map-wide hydrology pass, not this one.
+
+## 10. For the owner
+
+Found while building (2026-11-10):
+- **The stations' points.** The Glen's page stands where the Tlahn Warra reaches the lake and East Bliss's on the Weyt Warra's outlet,
+  not on the plan's warmest-shore points (section 7a says why). Move them back if the owner wants the shores.
+- **The gorges under the grid.** Edit 3 carves each outlet as one 2 km cell; station 3 adds a 26-40 m gorge in a tuff bench inside it
+  (sub-cell, the kit's). Should the model's channel be narrower and deeper?
+- **The plume misses the valley pages.** With the plume south-east of the cones the three valley pages get no ash fall (Mons' own does),
+  as section 1 says ("its own valleys lie mostly upwind").
+
+The plan's questions:
+
+- **The volcanoes' activity:** the plan takes all five as degassing and only the Copper-Fissure Vent as flowing lava.
+- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud? Do they pass at different
+  seasons?
+- **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, as an abandoned outpost?
+- **The plateau's rock:** a `VOLCANIC_REGIONS` entry for the range in the bake, so the 4-5 km plateau between the cones reads as
+  ash and lava, not sediment and granite?
+- **Names:** the valleys and volcanoes keep Gemini's English names. Do they want Tungang or Kimr names too?
+- **The range's own flora:** the four proposed in section 4, more, or none?
+- **Order:** after the Labyrinth, since station 3 and its strays lean on the Labyrinth's fauna, and after core amendment 1
+  (geothermal surfaces).
+
+## 11. Amendment 2026-11-12: the Firebliss Patera and its pancake domes (the domes on the model; the patera held)
+
+Written on `claude/firebliss-patera-domes` (2026-11-12, the owner's decisions of that day) against the seed plan, while the
+four stations of section 7a were being built on another branch. Merged into main on 2026-11-16, where it met them: **the
+patera takes over the Great Firebliss Vale, the floor station 1 (`dist/firebliss.html`, site 183,1315) stands on.** The
+owner's call at the merge (2026-11-16): **domes only for now.** Scale model 5.1 edit 8 (`tools/scale-model/edit_518.py`,
+`PATERA_ON = False`) raises the five Firebliss domes and the five Korona domes (`biomes/korona/PLAN.md`, "Amendment
+2026-11-12") and records them under `DATA.domes`; the patera, the Holm, the heat low and the Tlahn Warra's new head are
+written in the same script but not run. **Open (the owner):** re-site the patera to another of the range's valleys, or
+rework station 1 as the patera's shore and run the edit with `PATERA_ON = True`. Until then, sections 11a, 11b and 11d-11h
+are a proposal, and the domes of 11c stand on the model without the lake that would feed them (their notes say so).
+
+### 11a. The Firebliss Patera (the owner, 2026-11-12)
+
+**The model is Io's Loki Patera.** Loki is a volcanic depression about 200 km across, its floor a lava lake under a thin
+black crust. On a regular cycle the crust founders and sinks. A resurfacing wave then sweeps the lake at one to two
+kilometres a day: two fronts start on one side, run round both sides of an island in the middle and meet on the far side
+(de Kleer et al. 2017, *Nature* 545: 199-202, from Europa's occultation of Io on 2015-03-08). From 1988 to 2000 the cycle
+was 540 ± 10 days (Rathbun et al. 2002, *Geophysical Research Letters*). It broke down after 2001. From 2013 it was periodic
+again at about 465-475 days (de Kleer et al. 2019, *Astronomical Journal*; Rathbun et al., EPSC-DPS 2019). Rathbun's team
+proposed a porosity gradient in the crust as the clock: the crust is foam when it forms, loses its gas as it ages, grows
+denser than the melt and sinks. *The brief gave the 470-day figure to de Kleer 2017; that paper is the waves; the shorter
+period is the 2019 work.*
+
+**Why Earth has none.** Earth's lava lakes are hundreds of metres across (Erta Ale, Nyiragongo, Kilauea's Halema'uma'u).
+Earth loses its heat through plates, not through a few long-lived vents, so no vent is fed hard and long enough to keep a
+lake tens of kilometres wide molten.
+
+**Why Krator has one.** Canon (`LORE.md` section 2) makes Krator an Io-like moon flexed by tides, at 2-5x Earth's heat flow,
+losing heat as a heat-pipe world does, through long-lived vents: "focused, not global". A patera is the purest form of such
+a vent. Firebliss is the place for it: an arc of five live volcanoes with the warmest valleys on the map under it.
+
+**Its size, honestly.** The patera has to fit Krator's heat budget.
+
+| Step | Number |
+|---|---|
+| Earth's heat flow | 47 TW over 5.10 x 10^14 m^2: 0.092 W/m^2 |
+| Krator's surface (radius 4,800 km, `LORE.md` section 2) | 4 pi r^2 = 2.90 x 10^14 m^2 |
+| Krator at Earth's flux | 26.7 TW |
+| Krator at 2-5x Earth's flux | **53-133 TW** |
+| The patera's lava as carved | 282 cells of 2 km: **1,128 km^2** (an oval 48 x 32 km, less the island's 88 km^2) |
+| Its crust's mean flux | 1-5 kW/m^2, central 3 (below) |
+| Its output | **1.1-5.6 TW, central 3.4 TW** |
+| Its share of the moon's | **2.5-6.4%** at the central flux (3.4 of 133 to 3.4 of 53) |
+
+Where 3 kW/m^2 comes from: crust a few weeks old has a surface at about 150-250 C, which radiates 1-3 kW/m^2 (sigma T^4).
+In air it also loses heat by convection, and in the rain ring by boiling off rain, so its mean flux is higher than a
+vacuum crust of the same age would give. 1 kW/m^2 is the floor (a year-old crust in a drought), 5 the roof (a lake just
+turned). A Loki-sized patera (about 31,000 km^2) at the same flux would give about 94 TW, 70-180% of Krator's whole budget,
+which is why **Krator's patera is 20-60 km across, not 200**. The carve takes the middle, 48 x 32 km.
+
+**Where:** it takes over the **Great Firebliss Vale** (`edit_512.py`, its numbers in the report):
+
+| | |
+|---|---|
+| Centre | 5.1 px **181,1317.5** (world km 362, 2,635); the Firebliss region is in the 5.1 expansion, so it has no old-canvas px |
+| Shape | an oval, semi-axes 12 x 8 px (**48 x 32 km**), its long axis 6 degrees north of east, down the old vale |
+| Crust | **2,240 m**, flat (the tarn stood at 2,280 m; air 1.21 atm by the model's 1.6 e^(-h/8 km)) |
+| Shore | the vale's walls stand straight out of the crust: lowest 2,740 m, median 3,607 m, up to 4.6 km on the north under Firebliss Mons. Where the vale ran out east (the Tlahn Warra's corridor) and south-west, a lip of 2,740 m is held, 500 m over the crust, eased back into the ground over 3-4 cells (71 cells raised, at most 441 m) |
+| Cut | up to 2,370 m where the oval bites into the vale's walls |
+
+Why the vale: it was the largest basin in the range (60 x 30 km, floor 2.2-2.4 km), it was already the warmest ground
+under the spine (the seed's reading of it as a geothermal basin now has its heat source), and its long axis lies along the
+arc, as a fissure-fed patera's would. It sits 64 km from Firebliss Mons, 92 km from Solfatara Glen and 99 km from West Bliss
+Cauldron, so the other three valleys keep their tarns.
+
+**The cycle (default taken, owner to confirm): once a year.** Three things set it:
+1. *The crust's clock.* The crust thickens as the square root of its age. Hon et al. (1994, *GSA Bulletin* 106: 351-370)
+   measured Kilauea's pahoehoe crust at t = 164.8 C^2 (t in hours, C in metres: C = 0.078 sqrt t). Carried out to a lake
+   (the fit is for hours to days, so this is an estimate): 0.4 m at a day, 2.1 m at a month, 3.8 m at 100 days, 6.8 m at
+   a year.
+2. *Air makes it founder sooner.* On Io, gas comes out of the lava into vacuum, so a new crust is a foam that floats for a
+   long time. Under 1.2 atm the bubbles are smaller and fewer, so the crust starts nearer the melt's density and sinks
+   sooner. The rain ring cools its top and thickens it faster again. Both shorten Io's 470-540 days. The physics allows
+   anything from a few months to a couple of years; it cannot say which.
+3. *The year locks it.* A clock that runs near a year and is cooled hardest in the wet season will be nudged into step
+   with the seasons, as a pendulum is by a small push in time with it. The turn comes **at the end of the rains**.
+
+**The owner's dial:**
+- **Once a year (default).** The turn is the region's calendar (1d).
+- **At the Double Dark** (every 91 days, `LORE.md` 6.14). Four Double Darks are 364 days, so a year-long cycle keeps step
+  with every fourth Double Dark: the people would reckon "the fourth dark" as the turn. A turn at every Double Dark is
+  possible only if the crust founders at about 2.8 m. The Week's and the Thirteen's pull on Krator is far too weak to
+  trigger it, so the link would be custom and calendar, not cause.
+- **Every two years:** a thicker crust (9-10 m) and a longer, safer window, but a rarer, more dreaded turn.
+
+**The turn itself.** The crust founders first at the west shore, beside the island. Two fronts start there and run east,
+one round each side of the Holm, at about a kilometre a day (Loki's 1-2 km a day; Krator's crust is cooler and
+stiffer, so the slow end), and meet on the east shore. Across 48 km that is **six to eight weeks**. Behind the fronts the
+lake is a field of foundering plates, red seams and fountaining spatter for a few days, then a new black skin. Ahead of
+them the old crust, a year old, cracks and tilts as the front reaches it. The lake's age therefore runs **from youngest in
+the west to oldest in the east**. The crust-readers' whole art is reading that gradient.
+
+**The crossing window (default taken, owner to confirm):**
+
+| Days after the turn begins | The crust | Crossing |
+|---|---|---|
+| 0-50 | the turn: fronts, foundering plates, open seams | none |
+| 50-120 | young crust, 2-3 m in the west and less in the east, steaming under rain, hot through a boot | the reckless and the hunted |
+| **120-300** | **the window**: 3.5-6 m, its top 40-70 C after rain, still warm and ringing hollow over gas pockets | caravans, pilgrims, the Holm's supply |
+| 300-365 | the old crust: thickest, but sagging and cracking at the west shore where the next turn will start; skylights open | smugglers only |
+
+### 11b. The Holm, and what the turn makes of the people
+
+**The island** (`edit_512.py`; the name is a working name): an oval **12 x 9 km** round **175.5,1315**, in the lake's
+west half, **88 km^2**, its top flat at **2,700 m** (460 m over the crust), its edge breaking off in one cell to no lower
+than 2,561 m. The turn never reaches it. The crossing to it is shortest from the west shore (about 7 km of crust) and
+longest from the east (about 30 km). The lava runs all the way round it.
+
+**What it is** is the owner's choice (section 9). All three fit the ground:
+- **a holy place:** the one ground the turn spares, where the turn is watched and the calendar kept;
+- **a fortress:** reached only in the window, and its approaches made of crust a garrison can read and an enemy cannot;
+- **a prison:** "left for the turn". A prisoner put on the Holm cannot leave until the window opens. A condemned one is
+  left on the crust itself, in the turn's path.
+
+**The drama the patera brings** (each a proposal for the kit and the open world):
+- **Crust-readers:** guides who judge the crust's age by its colour (glassy black and blue-sheened when young, dull and
+  grey-brown when old, red-rimmed where it is about to founder), by the sound under a staff (a ring over thick crust, a
+  dull knock over a gas pocket or a thin skin) and by the heat through a boot. Their art is the east-west age gradient.
+- **Caravans and pilgrims:** the crust is the short way between the vale's south-west arm (Yan Warra's head, the West
+  Bliss Cauldron) and the Tlahn Warra's corridor east. The long way is round the rim, over ice at 4.5 km or more. So the
+  window is a crossing season, and the shores keep its camps.
+- **Smugglers** cross out of season, on young or old crust, and the crust-readers who take them are the best paid and the
+  shortest lived.
+- **"Left for the turn"**: a punishment and a story.
+- **The turn as the calendar:** the region's year starts when the first seam opens at the west shore, which can be seen
+  from every rim at night.
+
+**Crossing as gameplay** (core/hazard, section 5):
+- **skylights:** holes through the crust onto the moving melt, steam-veiled, where an old plate has sunk at one edge;
+- **gas pockets:** blisters under the crust, a hollow knock, that break and breathe CO2 and SO2 into the hollow;
+- **young crust that looks safe and isn't:** a thin skin over a still-molten channel, glassy and inviting, the classic
+  death;
+- **rain on hot crust:** rain pooling on crust under 100 C, then a steam burst when it reaches a hot crack;
+- **the fronts** for anyone caught in the turn: a slow wall of tilting plates and red seams, outrun on foot, but not
+  across 20 km.
+
+### 11c. The pancake domes (the owner, 2026-11-12)
+
+**The model is Venus's pancake domes:** steep-sided, flat-topped domes of very stiff lava. They are commonly about 25 km
+across (a cluster of seven at the east edge of Alpha Regio), and some are over 30 km (one by Aine Corona is about 35 km).
+Venus's steep-sided domes as a class are commonly put at a few hundred metres to about a kilometre high (sources differ, and
+none found gives a figure for pancakes alone). Venus's 90-bar air keeps gas in the magma, so it oozes instead of exploding.
+**Krator's 1-2 atm does not do that.** The plan does not claim it.
+
+**Krator's route to a dome:** silicic magma that **degassed slowly** on a slow rise. Stiff, gas-poor rhyolite comes out as
+a dome on Earth too (Chaitén 2008, Cordón Caulle 2011-12, Mono Craters), often after a short explosive opening that leaves
+a pumice apron. The silicic magma comes from **bimodal volcanism**: a long-lived basalt heat source melts the crust round
+it into rhyolite, as in Iceland, Yellowstone and Afar. **In Firebliss the patera is that heat source.** Its basalt has
+cooked the arc's older andesitic crust for long enough to melt it, and Firebliss already lists obsidian.
+
+**Size:** 8-14 km across. That is bigger than Earth's biggest silicic lava body (Cerro Chao in Chile: a coulée about 14 km
+long, at least 26 km^3, its flow front 350-500 m; Self et al. 1994, *JGR* 99, read through secondary sources) and smaller than
+Venus's. **Height:** 400-550 m over their own ground. A stiff lava's thickness goes as its yield strength over (density x
+gravity), so at Krator's 0.75 g the same lava stands a third taller than on Earth.
+
+**The five** (`edit_512.py`; the names are working names; each 1-2 cells of wall, flat on top):
+
+| Dome | 5.1 px | Across | Ground | Top | Height | From the shore | What it is |
+|---|---|---|---|---|---|---|---|
+| **North Glass** | 175,1302 | 12 km | 5,133 m | 5,633 m | 500 m | its edge 11 km | on the north shoulder over the Holm: the lookout over the whole lake, the obvious stronghold |
+| **South Glass** | 175,1335 | 14 km | 4,503 m | 5,053 m | 550 m | 13 km | the largest; over the lake's south shore and the Labyrinth side |
+| **West Glass** | 157,1324 | 10 km | 4,819 m | 5,269 m | 450 m | 22 km | over the vale's south-west arm, where the caravans start their crossing |
+| **Ember Glass** | 201,1331 | 8 km | 4,679 m | 5,079 m | 400 m | 24 km | the smallest and youngest-looking (default taken: it still steams) over the Tlahn Warra's corridor |
+| **Gate Glass** | 211,1305 | 10 km | 5,396 m | 5,846 m | 450 m | 37 km | on the high ground north-east, over the corridor's head toward Firebliss Mons |
+
+They ring the lake at 11-37 km from its shore. Each is a natural fortress: glass cliffs 400-550 m high, one or two ways up
+where a flow lobe has slumped, a flat top with snow-melt pools. They are the **obsidian** of the range's trade (blades,
+mirrors, the Kimr's and the Fellgangs' points), with pumice on their aprons. Two of them make small upslope hollows where
+they dam a gully (South Glass 23 to 47 pit cells, Ember Glass 23 to 30: dome-dammed ponds, real on Earth too).
+
+### 11d. The heat low: the lake makes its own weather
+
+A few TW on one spot in 1.2 atm air makes a **heat low**. The crust's 3 kW/m^2 is ten to twenty times what the sun puts
+into the ground on a mean day. So:
+- **Surface wind blows toward the patera at all times,** strongest through the gaps in its walls (the Tlahn Warra's
+  corridor from the east, the vale's south-west arm). It is the range's other wind beside the north-west westerly: on the
+  lake shore it can blow against the westerly.
+- **A permanent storm column** stands over the lake, a pyrocumulus fed by the heat and by the steam boiled off the rain.
+  It is the landmark of the south-west, seen from the Labyrinth and from Copper Glacier. Its anvil drifts south-east with
+  the vents' plume (seed section 1).
+- **A ring of rain and lightning** falls round it, where the column's outflow comes down. On the model (`edit_512.py`):
+  **+900 mm a year at its peak, 8-24 km off the shore, nothing past 56 km**. Over the ring the mean rain goes from 647 to
+  1,191 mm over 3,970 cells. Most of the ring lies on the plateau at 4-5 km, where it falls as snow and feeds the ice. Only
+  on the patera's walls and in the vale's south-west arm does it fall as rain. The classes in the ring stay (ET, EF, Dfc,
+  Cfb: they are set by the cold, not the rain).
+- **Over the crust itself** rain hardly lands: it flashes to steam (the model holds 1,200 mm there, what falls and boils off).
+
+The model's wind raster (`wd`) is not touched: the inflow is the kit's weather, not the map's. If the owner wants the map's
+wind to show it, that is a later model edit.
+
+**The patera floor's own climate** (`edit_512.py`, default taken, owner to confirm): a heat island over the crust, mean 28 C,
+warm month 34, cold month 20, hottest afternoon 50 and coldest night +8. These are air temperatures a few metres over a crust
+whose own surface is at 40-250 C. It takes a new class **`L`, patera (lava-lake crust)**, colour `#5a1a0a`, appended to the
+model's classes so no other class's index moves.
+
+### 11e. Life ringing the shore
+
+From the crust outward:
+1. **The hot margin** (the shore's first few hundred metres, ground over 60 C): bare, the ember mats only.
+2. **The Hearths' heat-eaters** (`biomes/hearths/PLAN.md`, read in place): on ground at 25-60 C they are the forest, and
+   the stokers mark where the heat is moving. The shore is the Hearths' warm disc drawn as a ring 150 km round. A Krator
+   native lineage, not Earth's.
+3. **The rain ring:** native life and Earth life (the seed's valley-floor flora, the geyser kit's mats in the steaming
+   gullies, the Labyrinth's strays up the Tlahn Warra) where the rain falls as rain: on the walls and in the south-west arm.
+   Snow algae and the cold lineage where it falls as snow.
+4. **The domes:** glass, so almost nothing. Lichen on the pumice skin, snow-melt pools on the tops.
+
+The fauna kit owns the animals. New for it: scavengers that work the crust's edge for animals the gas pockets kill (the
+dead-bird sign of section 5, at a larger scale).
+
+### 11f. Ideas set aside
+
+- **A Loki-sized patera (200 km):** about 94 TW, 70-180% of Krator's whole heat budget, in one spot (1a). Too big.
+- **A lake under 20 km:** honest, but then the turn takes two weeks, the island shrinks to a hill, and the heat low is a
+  thunderstorm rather than a landmark. 48 x 32 km keeps every part of the brief.
+- **Lava as water on the map** (the model's lake raster): the page would paint a lava lake blue, give it lake rain and route
+  rivers into it. The crust is land at 2,240 m, its own class `L`, with a vent record for the page's glow and a basin record
+  for the lake.
+- **Venus's reason for the domes** (pressure suppresses explosion): wrong at 1-2 atm (1c). The domes are degassed magma,
+  each with a pumice apron from its explosive start.
+- **Domes on the patera's floor:** rhyolite rising through a basalt lake would mix or founder. The domes stand on the
+  shoulders, where the crust melted.
+- **The turn triggered by the Double Dark's tides:** the Week and the Thirteen pull on Krator far too weakly. The Double Dark
+  can be the turn's calendar (1a), not its cause.
+- **A permanent town on the shore:** the seed keeps the range a frontier, and the heat low's storms and the gas make the
+  shore a camp ground, not a home. The Holm is the one question (1b, section 9).
+
+### 11g. What the seed lost or changed
+
+- **The Great Firebliss Vale is gone.** Its tarn (60 cells at 2,280 m), its sinter, its Cfb floor and the seed's station 1
+  are under the crust. The seed's best outpost valley ("the largest valley and tarn; the best ground to grow on") is now the
+  patera: the largest danger and the largest sight in the range. The outposts (section 6) are the other three valleys and
+  the shore's benches.
+- **The Tlahn Warra** heads on the patera's east lip (199,1323) instead of the tarn, 306 km long instead of 326, fed by the
+  rain ring.
+- **The range's warmth has a cause.** The seed's "geothermal basins" are now the patera's outer warmth (the valleys are 64
+  to 99 km off: their own vents still heat them).
+- **The range is no longer empty of traffic.** Nobody lives here still, but the crossing season brings caravans, pilgrims,
+  crust-readers and smugglers, and the Holm may hold people (section 9).
+- **New hazards:** the crust, the turn, the heat low's storms and lightning (section 5).
+- **New resource:** obsidian and pumice from the domes, in quantity (section 3).
+- **Kept:** the five volcanoes, the plume, Solfatara Glen, East Bliss Vale, West Bliss Cauldron, the Fellgangs and the Kimr,
+  and every hazard of the seed.
+
+### 11h. The stations as the amendment proposed them (not built; main's built stations are section 7a)
+
+World km = 5.1 px x 2. The range lies in the 5.1 expansion (x under 272), where the old canvas has no ground, so each
+station's `station.json` gives its 5.1 px with `"canvas": "5.1 (1821x1723)"` (the model test reads it unshifted). Each page
+is the usual 5.2 km square.
+
+| Station | 5.1 px | Ground | What |
+|---|---|---|---|
+| 1 **The Crossing** | 170,1315 | the west shore at 2,740 m over the crust at 2,240 m; the Holm 7 km out | the patera from its west shore, where the turn starts and the crossing to the Holm is shortest: the crust in its age bands, a crossing camp on the bench, crust-readers' marks, the column overhead, the heat-eaters on the warm shore; skylights, gas pockets and young crust on the way out. The turn on the page's calendar (`?turn=` for its day) |
+| 2 **The Holm** | 175.5,1315 | a flat top at 2,700 m, 460 m over the crust | the island the turn never reaches: its cliffs, the crust all round, the fronts passing on both sides in the turn; what stands on it is the owner's answer (section 9) |
+| 3 **North Glass** | 175,1302 | a dome top at 5,633 m, its walls 500 m | the stronghold over the lake: obsidian cliffs, the pumice apron, a snow-melt pool on the top, the whole patera below, lightning in the storm season |
+| 4 **Solfatara Glen** | 238,1322 | the tarn at 2,119 m in a shallow glen | the fumarole field: sulphur chimneys, acid pools, mud pots, sulphur gatherers' tracks; the Tlahn Warra through it |
+| 5 **East Bliss Vale** | 284,1318 | the tarn at 1,960 m | the way in: the Weyt Warra's gorge up from the Labyrinth, a Kimr camp, strays from the Labyrinth at the water, the lahar marks in the gorge |
+| 6 **Firebliss Mons** | 206,1284 | the crater floor at 5,480 m, the rim at 6,380 m | fire and ice: the glaciated cone, the steaming crater breached south-east, fumarolic ice caves, the plume overhead, the patera's column 64 km south, thin air |
+
+Station 1 comes first: it holds the patera, its crossing, its people and its hazards at once. The seed's station 1 (the
+Great Firebliss Vale's tarn) is gone with the vale. A seventh station could be West Bliss Cauldron, or the Copper-Fissure
+Vent's lava, if the owner wants either.
+
+### 11i. The amendment's questions for the owner
+
+- **An old outpost?** Should one valley hold a ruined hunters' lodge a player could take over, registered as an abandoned
+  outpost?
+- **The volcanoes' activity:** which vents are live (steaming, puffing ash, lava) and which are quiet? The plan takes all
+  five as degassing and only the Copper-Fissure Vent as flowing.
+- **The two peoples:** do the Fellgangs and the Kimr have a truce here, a border, or a feud?
+- **Names:** the valleys and volcanoes keep Gemini's English names. Do they want Tungang or Kimr names too?
+- **Order:** after the Labyrinth, since station 5 and its strays lean on the Labyrinth's fauna. The core amendments can
+  go first: the open world and the other region kits want them too (section 8b).
+
+**The patera and its domes (2026-11-12):**
+- **The Holm:** a holy place, a fortress or a prison? Whose? (The plan settles nobody; the model carries no marker.) If it
+  is held, by whom: the Fellgangs, the Kimr, a third people, or an order that keeps the turn's calendar?
+- **The cycle:** once a year at the end of the rains (default), at every fourth Double Dark (the same year, reckoned by the
+  moons), or every two years?
+- **The crossing window** (days 120-300, default) and **the crust-readers:** which people are they?
+- **The patera floor's climate** (28 C mean, class `L`, default) and **the rain ring** (+900 mm, 8-56 km, default).
+- **Ember Glass still steaming** (the youngest dome, default): or are all five cold?
+- **The names:** Firebliss Patera, the Holm, the turn, and the five Glasses are working names. Tungang ones (the rivers'
+  tongue)? The Hum is Korona's, not this range's.
+- **The heat low on the map's wind:** leave the model's `wd` as it is (default), or a later edit to show the inflow?
+- **LORE.md** (proposed sentences, not written there): *"In the Firebliss Range, under the Great Firebliss Vale's old walls,
+  lies Krator's one lava lake that a caravan crosses: the Firebliss Patera, 48 km long, under a black crust that founders
+  and renews itself once a year, two fronts running round the island in its middle and meeting on the far shore. Its heat
+  makes its own weather, a storm column over the lake and a ring of rain and lightning round it, and the crust-readers who
+  guide the crossing judge the crust's age by its colour, its ring under a staff and its heat through a boot. Round it stand
+  the Glasses, flat-topped tables of obsidian-skinned rhyolite melted out of the range's crust by the lake's heat."*
+
+## Sources
+
+- the owner's brief and decisions, 2026-11-09;
+- `tools/scale-model/build_425_master.py` step 9E (the arc, the volcanoes, the valleys, the rivers, the plume) and l. 4328-4420
+  (the climate pass); `edit_513.py` and its report;
+- `smodel/nw_expansion.py`, `model/src/51-region-store.js`, `model/src/60-settlements.js`;
+- `model/data` (`h`, `wl`, `c`, `p`, `tm`, `tw`, `tc`, `th`, `tl`; `rivers.json`, `vents.json`), read with `smodel.page`; routes by
+  a bottleneck search on the height grid;
+- `river-names-5.1.md` (Yan, Tlahn and Weyt Warra); `kits/resources/data/geology.json`, `tools/scale-model/geology.py`;
+- `LORE.md` 6.1 (the tunnel wars, the Fellgangs, Dalab); `biomes/labyrinth/PLAN.md` (the Kimr, the megafauna);
+  `biomes/riftrim/PLAN.md`; `biomes/copperglacier/PLAN.md`; `biomes/geyser`, `biomes/hearths`;
+- the core READMEs: `core/terrain` (`LAVA.md`, `47-core-therm.js`), `core/water`, `core/atmos`, `core/hazard`.
+
+---
+
+## 11. Scale-Model 5.1 Bimodal Volcanism & Showcase Station #8 (`2026-11-13`)
+
+### 11.1 Plume-Margin Volcanotectonic Origin & Bimodal `tibasalt` / `obsidian-pancake` Suite
+- **Tectonic Driver (Zero Subduction Arc):** Firebliss (`rmvfirebliss`) is **not** an Earth subduction stratovolcano arc (`GEOLOGY-SANITY-CHECK.md` §2); it is an **extensional plume-margin volcanotectonic fissure chain** bridging the western Rift shoulder and the Labyrinth radial dike swarm, producing classic bimodal basalt-rhyolite magmatism:
+  - **Firebliss Patera (`5.1 px 222, 1322`, `+2,240 m`, `1.21 atm`):** Low-shield caldera / boiling-lake patera floored by fractured **`tibasalt`** crust (`105.1 °C` pure-water boiling point at `1.21 atm`), feeding the Tlahn Warra hydrothermal plume and Solfatara Glen's native sulfur chimneys.
+  - **Five Silicic Pancake Domes (`obsidian-pancake`):** Anatexis of impact-fractured crust above ponded mafic sills extrudes **5 flat-topped, steep-sided viscous rhyolite/dacite pancake domes** (Venusian *farrum* / Newberry Big Obsidian Flow analogue, anchored by **`dome_fb_south` at `5.1 px (175, 1335)`**), bound to `KSTRATA` **`obsidian-pancake`** (`core/terrain/35-core-strata.js` — `2–6 m` flow-banded black obsidian carapace ledges with iridescent `irid: 1` sheen, frothy grey pumice partings, and basal perlite/autobreccia talus aprons).
+
+### 11.2 Showcase Station #8 — `Firebliss Obsidian Pancake Dome`
+- **Canonical `5.1` Coordinates:** **`(175, 1335)`** (`dome_fb_south`, southern flank of Great Firebliss Vale SW of lake `(184, 1318)`, paired on the range skyline with **Firebliss Patera** `(222, 1322)` and **Firebliss Mons** `(205, 1282)`).
+- **Elevation & Atmosphere:** **`+2,890 m`** ash-steppe moat floor climbing `400 m` up sheer autobreccia ramparts to the **`+3,290 m`** flat-topped dome carapace (**`1.11–1.16 atm`**, `Dfc` / `Cfb` cold geothermal margin, sub-boiling `95–103 °C` perimeter fumaroles).
+- **`KSTRATA` Binding:** **`obsidian-pancake`** (`2–6 m` foliated vitreous black-and-mahogany obsidian ledges with specular `sheen: 0.92` and subtle `irid: 1` peacock-blue oxidation film, alternating with pale vesicular pumice and `perlitic` crumble seams) over bedded valley-wall **`outland-tuff`** and **`tibasalt`** floor flows.
+- **Camera Framing (`5.2 × 5.2 km` dome-margin cut):** Low-angle golden-hour camera at `+22 m` on the warm `KTHERM` sinter-moss moat looking NNE up the `380 m` circular wall of `dome_fb_south`: glittering black conchoidal `obsidian-pancake` spines and concentric pressure-ridge ogives catching specular rim-light, white steam ribbons curling from basal perlite-breccia radial cracks (snow melted bare along `KTHERM`), a **Kimr / Fellgang** seasonal knapping camp (`KCAMP`, Aurochs-horn cairns and flaked obsidian debitage fans) on a dry pumice bench in the foreground, and Firebliss Mons' ash plume (`KFAR.sprites`) rising on the NNE skyline.
+- **Hydrology & Trade Tie-In:** Snowmelt on the fractured glassy carapace infiltrates instantly and emerges warm (`35–68 °C`) at the basal `obsidian-pancake` / `outland-tuff` contact to feed Great Firebliss Vale (`Yan` / `Tlahn Warra` headwaters); **Kimr** mammoth-hunters from the Labyrinth and **Tungang / Fellgang** toolmakers quarry surgical-grade black and mahogany obsidian cores here — the premier non-metallic cutting commodity of the southwestern highland trade web.
+
+### 11.3 Station 8 as built (2026-11-16; GPU-verified 2026-11-17)
+
+`python3 tools/build.py biomes/firebliss --station glass` (`dist/firebliss-glass.html`, `stations/glass/`; GPU `--assert --all-views` on `arc` passes all 14 views at 29-32 draw calls, 16.30M drawn / 14.11M BIO triangles, 15 samplers across `MAT_GROUND` and `84s`'s `MAT_WALL`). **The record** is the model's `DATA.domes` entry when the
+model carries the domes (scale model 5.1 edit 8, on `main`: `model_site.py` reads it and refills the dome's cells from the land round them, so
+the page draws the dome once), else `station.json`'s copy of the same numbers. The branch it was built on does **not** carry the domes: scale model 5.1 edit 2 (`d6c00c3e0`, the Firebliss Patera and its domes) is only on `origin/claude/firebliss-patera-domes`, not merged
+(its `edit_512.py` clashes by number with this branch's own edit 512, and it turns the Great Firebliss Vale, which stations 1 and 2 stand on, into
+the patera's lava lake). So the page raises **South Glass** itself on today's ground, with edit 2's record for it: its middle 175,1335, 14 km
+across, its top flat at **5,053 m** (`44y-host-glass.js`, `GLASS`). Where the spec and the model disagree the model wins:
+
+- **Heights and air.** The spec's moat at 2,890 m, top at 3,290 m and 1.11-1.16 atm are not this spot's. The ground here is 4,180-4,560 m (ET,
+  -7.7 °C, 584 mm), so the moat lies at ~4,210-4,250 m (0.94 atm) and the top at 5,053 m (0.85 atm). The wall is ~800 m from the moat to the
+  top on the page (edit 2's 550 m is over its median ground of 4,503 m; the moat on the south-east is lower): a ~65° glass wall of 190-420 m
+  (the lobe's) over an autobreccia apron at 36°. The spec's "380 m wall" is the cliff part.
+- **The framing.** The page stands on the south-east margin; the plan's camera "looking NNE up the wall with Mons' plume on the skyline" cannot
+  have both from one spot (a 14 km dome hides a 110° sector of sky from its moat), so it is two views: *South Glass from the moat* (north-west up
+  the wall) and *Mons over the Glass* (north-north-east along its east flank, Mons' plume in the sky past the crest's end). Golden hour is the
+  clock's (the page loads at 11:00, the owner's rule); the views hold at any hour.
+- **What is drawn.** The top with its swell, concentric pressure ridges (ogives) and pumice in their troughs, glass carapace (`stone.obsidian`,
+  low roughness: the sheen); obsidian spines along the crest and broken carapace blocks on the outer top; the wall painted with KSTRATA's
+  `obsidian-pancake` beds (`84s`: black and mahogany obsidian, rhyodacite, perlite, pumice partings; a gentle fold); the apron's glass and perlite
+  blocks; one slumped lobe (bearing 110°) as the way up, cairned, a horn cairn on its lip; four radial cracks through the apron steaming at their
+  feet (the geyser kit's fumaroles, one acid patch of altered perlite and sulphur, two warm pools at the basal contact with their mats and a
+  sinter apron), the ground warm along them (KTHERM; the snow bare in strips); two gas hollows in the moat; Copper Glacier's cold flora on the
+  moat, thicker on the warm ground; a **Kimr knapping camp** on a dry pumice bench (core/camp's `kimr-hunt`), five knapping floors round it
+  (flakes, blades, spent cores, hammerstones), two aurochs-horn cairns, the **quarry** at the apron's foot below the camp, the Kimr trail up from
+  the Labyrinth.
+- **Not drawn.** The spec's *outland-tuff* and *tibasalt* under the dome (the beds under the apron are covered; the moat is ash), the warm
+  springs' 35-68 °C as numbers (the geyser kit's pool temperatures stand for them), an obsidian resource node (`kits/resources` has no obsidian
+  kind yet: section 8, "obsidian (*proposed*)"), the other four Glasses (out of the far field's 14 km reach).
+

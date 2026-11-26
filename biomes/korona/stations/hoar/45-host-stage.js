@@ -69,7 +69,9 @@ const knolls=(x,z)=>{let h=0;[[380,-420,230,38],[-300,600,180,16],[700,500,150,1
 // ---------------------------------------------------------------- the station's say: STAGE (47 reads it)
 const STAGE={
  name:'Korona: the hoar table',R:TERR.R,bodies:ROCK,floor:floorH,capY:TABLE.top-80,seed:16,talusH:0,heroR:1600,
+ climate:{wet:true,cold:true,frozen:true},snowBase:.32,   /* the weather (89a): above 3,500 m in the high cold country, the air never thaws; the old snow (89s) its base */
  air:{pressure:0.8},stream:null,streamD:()=>1e9,pools:POOLS,topExtra:knolls,
+ stackTop:{grid:5},   /* the table's relief top drawn as a 5 m grid clipped to its edge (KSTACKS.mesh opt.top, 2026-10-26), not 150 rings by 1,200 segments */
  // THE ICEFALLS (47): the hanging gardens frozen: a fall of ice down the wall under every strong seep line
  icefalls:{min:.4,every:2,len:s=>20+40*s,w:s=>6+10*s,label:'An icefall (a seep line frozen: the ice tribes\' hanging gardens)'},
  windward:(x,z)=>.55+.45*smooth(400,-400,(x+z)*Math.SQRT1_2),
@@ -93,5 +95,5 @@ const STAGE={
  windows:{mother:[MOTHER.x-MOTHER.r*1.3,MOTHER.z-MOTHER.r*1.3,MOTHER.x+MOTHER.r*1.3,MOTHER.z+MOTHER.r*1.3]},
  bias:{butterwort:1,frosttank:1,lacepitcher:.5,rainbowfan:.25,stormpod:1,cointree:.3,wallfern:0,lacefan:0,greatsundew:0,cobralily:0,bloodbulb:0,bloodtrumpet:0,maneater:0,coiltendril:0,groundstar:0,punjipit:0,beartrap:0,numbthorn:0,snareflower:0},
  carvings:{body:'table',bed:TABLE.beds.length-1,a0:-2.4,a1:-1.4,y0:TABLE.beds[TABLE.beds.length-1].h-9,h:3,name:'Contour carvings: the Hum (an ice tribe\'s road-marks, cut under the rim)'},
- spine:(function(){const S=[[0,0]];for(let k=0;k<8;k++){const a=k/8*TAU;S.push([Math.cos(a)*1000,Math.sin(a)*1000]);}POOLS.forEach(p=>S.push([p.x,p.z]));S.push([MOTHER.x,MOTHER.z]);return S;})(),
+ spine:(function(){const RING_R=1000,S=[[0,0]];for(let k=0;k<8;k++){const a=k/8*TAU;S.push([Math.cos(a)*RING_R,Math.sin(a)*RING_R]);}POOLS.forEach(p=>S.push([p.x,p.z]));S.push([MOTHER.x,MOTHER.z]);return S;})(),
 };

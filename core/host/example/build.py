@@ -9,6 +9,7 @@ editor, the cutaway). The reference for a build adopting core/host (core/host/RE
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); HOST = os.path.dirname(HERE); CORE = os.path.dirname(HOST)
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 sys.path.insert(0, HOST)
 import host as khost
 
@@ -23,6 +24,7 @@ for p in FRAGS:
     out.append(('\n// ==================== %s\n' % os.path.relpath(p, CORE).replace(os.sep, '/') if p.endswith('.js') else '') + s)
     if p.endswith('00-head.html'):
         out.append(khost.edits_js(HERE, 'host-example'))
+BSRC.report(FRAGS)   # --list-sources: what the page is made of, then exit
 html = ''.join(out)
 dst = os.path.join(HERE, 'host-example.html')
 with open(dst, 'w', encoding='utf-8', newline='\n') as f:

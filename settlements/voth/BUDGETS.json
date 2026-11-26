@@ -1,0 +1,10 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "pages": {
+  "voth-city.html": {
+   "bytes": 20971520,
+   "why": "over the gallery's 16 MB file limit before the cap landed (18.6-19.5 MB: the city plan with the citizens and the catalog inlined); the split into a page and texture sidecars is owed (memory: Lizardmen kit, Voth page over the 16 MB cap)",
+   "raised": "2026-10-27"
+  }
+ }
+}

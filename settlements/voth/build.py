@@ -16,16 +16,18 @@ archive/voth-first), which this build runs whole or lifts by name (vothlift.py),
 import base64, json, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 ROOT = os.path.dirname(os.path.dirname(HERE))
 DIST = os.path.join(HERE, 'dist')
 VOTH = HERE   # Voth's own folder: src/ (the source library), catalog/, three.min.js
 CAT = os.path.join(ROOT, 'kits', 'catalog')
+CORECAT = os.path.join(ROOT, 'core', 'catalog')   # the catalog's engine (MODULARITY-PLAN.md step 3)
 
 # the kit, in the order the Voth catalog page loads it (settlements/voth/catalog/index.html)
 VENDOR = [
     os.path.join(VOTH, 'three.min.js'),
-    os.path.join(CAT, 'krator-furniture-core.js'),
-    os.path.join(CAT, 'krator-asset-engine.js'),
+    os.path.join(CORECAT, 'krator-furniture-core.js'),
+    os.path.join(CORECAT, 'krator-asset-engine.js'),
     os.path.join(VOTH, 'catalog', 'lod.js'),
     os.path.join(CAT, 'krator-master-buildings-voth.js'),
     os.path.join(VOTH, 'catalog', 'registry', 'voth-city-captured.data.js'),
@@ -41,7 +43,7 @@ VENDOR = [
 # the city page's interiors (40-vc-interiors.js) furnish from the catalog's parametric kit and these culture sets:
 # Voth's common, court, trade and training pieces and its interiors' own (krator-master-furniture-voth.js), then the
 # chain kits/interiors falls back along (Iziz, generic) and the generic goods (containers, food, supplies)
-CITY_VENDOR = VENDOR + [os.path.join(CAT, f) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
+CITY_VENDOR = VENDOR + [{'krator-furniture-kit.js': os.path.join(CORECAT, f), 'krator-symbols.js': os.path.join(ROOT, 'core', 'sockets', '38-symbols.js')}.get(f, os.path.join(CAT, f)) for f in ('krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture-generic.js',
                                                      'krator-master-furniture-generic-goods.js', 'krator-master-furniture-iziz.js', 'krator-master-furniture-voth.js')]
 
 
@@ -321,7 +323,7 @@ def voth_pathviz_fragment():
 # THREE before the kit's fragment 50 loads (it builds textures and materials at load, BIOME-API.md); the city binds its
 # facts later (37-vc-light's neighbour 38-vc-flora.js, the host's VC.drawFlora). SWBAY_TEMPLE_H, the canopy ceiling,
 # is kept low: small hypertrees in the parks (owner, 2026-10-09).
-BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '36-core-walker.js', '40-core-place.js']
+BIO_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '35-core-anim.js', '36-core-walker.js', '40-core-place.js']   # 35: BIO.animMat, BIO.phaseAnimMat (swbay calls them since the anim move)
 BIO_KIT = ['50-biome-swbay-species.js', '55-biome-swbay-trees.js', '60-biome-swbay-floor.js', '65-biome-swbay-dress.js',
            '70-biome-swbay.js', '75-biome-swbay-fauna.js']
 SWBAY_TEMPLE_H = 40
@@ -333,10 +335,11 @@ SWBAY_TEMPLE_H = 40
 CORE_TIME = ['core/clock/20-core-clock.js'] + ['core/atmos/89-atmos-%s.js' % f for f in ('0-core', '0p-presets', '2-lights', '3-particles', '4-weather', '8-export', '9-host', 'b-skylight')]
 
 
+# core/shader first (KHOOK, KCOLOR: core/atmos, core/water and core/biome, later on the page, call them); then
 # where things stand and what they are, from core (core/rand KRAND, core/tags KTAGS, core/walk KWALK), read from their
 # folders: the cantons' bridges, causeways and stairs (targets/voth-site/20-site-cantons.js) are seeded by KRAND,
 # registered in KTAGS and walked through KWALK
-CORE_PLACE = ['core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
+CORE_PLACE = ['core/shader/06-core-khook.js', 'core/shader/06b-core-kcolor.js', 'core/rand/08-core-rand.js', 'core/tags/50-core-tags.js', 'core/tags/52-core-tags-vocab.js', 'core/walk/20-core-walk.js']
 
 
 def core_place_fragment():
@@ -401,6 +404,8 @@ def page(name, frag_dir, vendor, extra, strict, js_list=None):
     body = ''.join('/* ---- %s ---- */%s%s%s' % (f, NL, read(os.path.join(HERE, f)), NL) for f in js)
     parts.append('<script>' + NL + ('"use strict";' + NL if strict else '') + body + '</script>' + NL)
     parts += [read(os.path.join(frag_dir, f)) for f in tail]
+    if BSRC.LISTING:   # --list-sources: this page's files are read; main() goes on to the next page, then reports
+        return
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, name)
     with open(out, 'w', encoding='utf-8', newline=NL) as f:
@@ -428,3 +433,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report()   # --list-sources: both pages' files, then exit

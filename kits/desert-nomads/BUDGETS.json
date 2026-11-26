@@ -1,0 +1,10 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "pages": {
+  "desert-nomads.html": {
+   "bytes": 17301504,
+   "why": "at the 16 MB limit before the cap landed (16.0 MB, the Scyvoi engine's textures inline); the split into texture sidecars is owed",
+   "raised": "2026-10-27"
+  }
+ }
+}

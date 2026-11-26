@@ -1,24 +1,27 @@
 # kits/zeijani: known issues
 
 - [ ] **One cell size per cavern (0.5 m).** PLAN.md section 7 asked for 1 m cells in the tubes and 0.5 m near the rooms; two
-      sizes meeting at a chunk seam crack it (surface nets has no stitching), so the cavern meshes everything at 0.5 m and Dhelv
-      will draw its chunks near the camera only. About 2M triangles is the estimate for Dhelv.
+      sizes meeting at a chunk seam crack it (surface nets has no stitching), so the cavern meshes everything at 0.5 m. Dhelv
+      meshes and draws its chunks near the camera only (`DH_STREAM`, P5; its KNOWN_ISSUES: about 7 ms a chunk).
 - [ ] **Non-manifold edges where a sliver is thinner than a cell** (a light well's lip on sloping ground: 8 of 56,000 edges in
       the module's test block). Surface nets puts one vertex in a cell that holds two sheets; no hole results. Budgeted in
       `test-cavern.js` (under 0.1%).
 - [ ] **The underground is lit like the surface on the kit sheet.** The cave's own light (the sky faded under rock, a lamp
-      that follows the camera, the wells' shafts and motes) is Dhelv's (P5), after the tube station's.
-- [ ] **`core/walk`'s polygon floor is new.** Godot's walk importer (`godot/`, Verge's) reads `rect` and `strip`; `poly`
-      needs adding there (P7).
-- [ ] **The sockets example sheet does not build from today's sources** (`core/sockets/example`: Post-Apoc's geometry now
+      that follows the camera, the wells' shafts and motes) is Dhelv's (P5c, done: `settlements/dhelv/src/94-dhelv-light.js`);
+      the sheet keeps the surface's light, so its carved interiors read bright. By design: the sheet shows the defs.
+- [x] **`core/walk`'s polygon floor is new.** Godot's walk importer (`godot/`, Verge's) read `rect` and `strip`; `poly`
+      needed adding there (P7). Done in P7: `godot/krator/dhelv_nav.gd` reads `strip`, `poly` and `rect` (checked 2026-11-09).
+- [ ] **The sockets example sheet does not build from today's sources** (`kits/post-apoc/sockets-example`, until 2026-11-03 `core/sockets/example`: Post-Apoc's geometry now
       calls `KMAT`): pre-existing, not this kit's; its committed page predates it.
 - [ ] **The two-storey house's roof terrace is drawn, not planned.** No stair reaches it and it has no walk floor; the
       interiors planner has no roof storey. Its pieces stand on the slab (`46-zj-built.js`).
 - [ ] **Windows are open holes** (no shutters, grilles or jali). The `jali` cut-out is on the page now (the temple's dome);
       windows could take it.
-- [ ] **Metal copper reads black on large surfaces.** `copper` (the library's `f_bronze`, metalness .75) has no environment
-      map to reflect, so a dome or a disc draws near black; small finials and burners read. The scouts' tower takes a stone
-      dome and the light-well mirror a matte bronze colour (`plain`) until the page has an environment (P5's light).
+- [ ] **Metal copper reads black on large surfaces.** `copper` (the library's `f_bronze`, metalness .75) had no environment
+      map to reflect, so a dome or a disc drew near black; small finials and burners read. The scouts' tower takes a stone
+      dome and the light-well mirror a matte bronze colour (`plain`) until the page has an environment. The sheet and Dhelv
+      now have one (core/atmos's skylight sets `scene.environment`, `90-scene.js`); the stand-ins stay until someone checks a
+      copper dome under it by eye (2026-11-09).
 - [ ] **The fields' crops are cards** (two crossed planes of the library's cut-out sheets, `zfCard`): they read from the
       sheet's distance, flat close up. Fine for P5's terraces seen from the wells' rims.
 - [x] **The temple's sky dome was a canvas stand-in.** The owner's painting arrived (2026-10-07): the library's
@@ -46,12 +49,22 @@
 - [x] **The stone door's lintel fought the masonry wall Dhelv adds round it** (their soffits shared a plane): the wall's pieces
       stand clear of the jambs and over the lintel (`53-zj-additions.js`).
 - [x] **The cut-away's boxes had no top**: a box now stops over its site's height when the world gives one (`CV_BOXCUT`, uBoxB.w).
-- [ ] **Stale words in headers and the plan** (found writing API.md, 2026-10-08): `36-def.js` documents a def field `carve`
-      no def uses and leaves out `originFront`, `sunk` and `note`; `verify.py`'s docstring speaks of tents (from Scyvoi) and
-      its footprint check's message says + 0.8 m where the threshold is 1.6 m; `build.py`'s docstring leaves `core/sockets`
-      out; `91f-furnish.js` and `91n-night.js` still say tents. PLAN.md section 4 names a `kit_bundle.py` (`KratorZeijani`)
-      that was never made, and 6.5 an export from the kit sheet (only Dhelv's page exports). `zjLife` and `ZJ_LIFE` are
-      defined but no def calls them, so the `life-records` check has nothing to check.
+- [ ] **The rock cut is a fork of the core layer now** (2026-11-11, the owner's leave: `kits/tungang/PLAN.md` 6.5, question 14). The cut-away's
+  "each void's rock opens 2 m above its own floor" and the cut boxes (`CV_BOXCUT`, `CVU.uBoxA`/`uBoxB`, `CV_OPTS.cutBoxes`) were lifted into
+  `core/terrain/host/39h-core-cavern-cut.js` (`KCAVERN.cutLayer`, `cutWeight`, `KCAVERN.cut.boxes`; `node core/terrain/test-cavern-cut.js`).
+  The kit and Dhelv keep this fork until they adopt it, so their pages do not move. The drift so far: the core layer reads a vertex's
+  floor from its own primitive (`aKCut`, from drawRock's weight), not the kit's `aCut` (centre, floor, on); a box's top is its own field,
+  not `+10000` in `uBoxB.w`; `above` is a uniform (2 m here); and the rule runs in JS too (`KCAVERN.cut.discards`), for picks.
+  `tools/check_core_use.py`'s `rock-cut` rule baselines this file (3 matches). Adopting it means: the rock material takes `cutLayer`,
+  `cvChunkMesh` writes `aKCut`, Dhelv's `dhCutBoxes` calls `KCAVERN.cut.boxes`; then the baseline entry goes.
+- [x] **Stale words in headers and the plan** (found writing API.md, 2026-10-08; fixed 2026-11-09, P8): `36-def.js` documented
+      a def field `carve` no def uses and left out `originFront`, `sunk` and `note` (now documented; a carved def's void plan is
+      its interiors item); `verify.py`'s docstring spoke of tents (from Scyvoi) and its footprint check's message said + 0.8 m
+      where the threshold is 1.6 m; `build.py`'s docstring left `core/sockets` out; `91f-furnish.js`, `91n-night.js` and the
+      page's hint and cut-away button (`99-host-take.js`) said tents. PLAN.md section 1 and 4's `kit_bundle.py` (`KratorZeijani`,
+      never made: Dhelv reads `src/` in place) and 6.5's export from the sheet (only Dhelv's page exports) are annotated there.
+      `zjLife` and `ZJ_LIFE` stay, unused: they are the hook a def placing a creature (the beetle pen, below) will call, and
+      until then `life-records` passes on none (API.md says so).
 
 ## Voth census trades (2026-10-19)
 
@@ -68,3 +81,20 @@
       no pigsty or duck yard).
 - [x] **Not here (na):** shipwrights, coast guard, dockers, river bargemen, fishers, ferrymen (no water to work), chinampa
       growers, power-house stokers, elephant bug handlers (the Voth city's beast), monks (no order), embassy staff (tabled).
+
+## Doors, glass and the reachability audit (core/door, 2026-11-03)
+
+The audit: every unlocked door opened, `KWALK.reach` (core/walk defaults: 0.4 m cells, a 0.45 m step, the ground walkable) flooded from each top-level building's door() records and front, bounded to its box grown 3 m; a floor counts as the building's by its walk tag. "Big" is an unreached floor of 2 m2 or more lying 1 m or more under the building's top.
+- [x] Every timber leaf (29: the houses', the shops', the works', the court's double gate) stands open as drawn and is operable;
+      its walk blocks are off while it stands open (a door drawn ajar), so the kit's walk routes pass as before. Reach unchanged:
+      83 of 102 built floors.
+- [x] **The stairs pass (2026-11-03; `tools/walk_audit/reach_audit.py`, core/walk's reach as fixed that day): 71 reached, 18
+      unreached (6 big) before; 78, 11 (0 big) after, the climbs left out (`reach_dump.js --summary`; raw 83/19/6 -> 226/11/0).** The scouts' tower's two ladders (the planner's, drawn by 46-zj-built.js) were
+      registered as strips too steep for the reach; kits/interiors writes a ladder as rung floors (0.4 m apart at most, closer on a steep one so the probe's route walker steps down them) now, and all three
+      storeys are reached (1/8/5 -> 7/2/0). The wooden house's 0.5 m floor gets its entry step: the interiors' walk takes
+      core/walk's 0.45 m step here (37-zj-walk.js `step: .45`; the kit's default is 0.45 too now) (0/1/1 -> 1/0/0).
+- [ ] 11 unreached, none big, all slivers: the strip of upper floor 0.1 to 0.2 m wide that `IX.walk.minusHoles` leaves between a
+      stairwell and the wall (the row houses', the halls', the inn's), too narrow for a walker. The roof terraces are not walk
+      floors at all (see "The two-storey house's roof terrace is drawn, not planned" above).
+- [ ] The lamp niches and the ancestor niche keep their dark backs (niches, not openings); the shop's dark transom band under
+      its sign too.

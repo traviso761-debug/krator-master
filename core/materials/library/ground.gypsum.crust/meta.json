@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.279,
+    1.146
+   ],
+   "seam_before": [
+    1.78,
+    1.522
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.4,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.gypsum.crust",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground.gypsum.crust.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "the first of two takes (pasted image 18): curled plates, polygon cracks and selenite in small clusters; the second (19) had more, evenly strewn blades and fainter cracks",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.gypsum.crust\"",
+  "reuse": "kits/resources' gypsum nodes' crust and slabs; any desert gypsum flat or playa rim (the Bowl, the Catch)",
+  "sha1": "db36552612a81a3edbc9a320a532dae8ba0a4413"
+ }
+}

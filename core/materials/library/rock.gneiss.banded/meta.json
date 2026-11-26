@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.258,
+    1.247
+   ],
+   "seam_before": [
+    1.534,
+    1.262
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.55,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.gneiss.banded",
+  "metal": 0,
+  "roughness": 0.55,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.gneiss.banded.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a glacier-polished banded gneiss outcrop, its foliation running diagonally across the frame in wavy, folded bands a finger to a hand wide: dark grey-black biotite-rich bands (#3a3836) alternating with pale grey and pinkish-white quartz-feldspar bands (#cfc8bd, #d8c3b4), a few augen of pink feldspar the size of a thumbnail, fine glacial striations scratched across the bands, a dusting of pale rock flour in the hollows. Full colour: not tinted.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/infallible-colden-1316a8 (Copper Glacier)",
+  "reuse": "Copper Glacier's walls, nunataks and boulders; any banded gneiss, glacier-polished crystalline outcrop",
+  "sha1": "7f59eacf37ba26134dfb30d09527e834a57781bd"
+ }
+}

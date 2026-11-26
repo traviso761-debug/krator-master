@@ -1,0 +1,117 @@
+{
+ "name": "Rama",
+ "note": "Fan work, after Arthur C. Clarke's Rendezvous with Rama (1973). Nothing from any edition, cover, film design or game is used; every shape on this page is this project's own geometry, built to the numbers the novel gives. Rama lies along x, its north pole (the hub, the bow) to +x. Built by src/rama/ on the starship page (src/starship/page.js); 'rama' holds its numbers in metres.",
+ "attribution": "Rama is fan work after Arthur C. Clarke's Rendezvous with Rama: original geometry in src/rama/. No assets used.",
+ "view0": {
+  "az": -1.05,
+  "el": 0.26,
+  "d": 80000
+ },
+ "views": {
+  "Three-quarter": {
+   "az": -1.05,
+   "el": 0.26,
+   "d": 80000
+  },
+  "Side on": {
+   "az": -1.35,
+   "el": 0.03,
+   "d": 88000
+  },
+  "The north face": {
+   "az": -0.25,
+   "el": 0.3,
+   "d": 34000,
+   "tx": 25000,
+   "ty": 0,
+   "tz": 0
+  },
+  "The hub and the Endeavour": {
+   "az": -0.5,
+   "el": 0.4,
+   "d": 1400,
+   "tx": 25300,
+   "ty": 0,
+   "tz": 0
+  },
+  "The south face": {
+   "az": 3.4,
+   "el": 0.25,
+   "d": 36000,
+   "tx": -25000,
+   "ty": 0,
+   "tz": 0
+  },
+  "Cross-section (press Cutaway)": {
+   "az": -1.5708,
+   "el": 0.5,
+   "d": 72000
+  },
+  "The sea and New York (Cutaway)": {
+   "az": -1.5708,
+   "el": 1.0,
+   "d": 30000
+  },
+  "The horns (Cutaway)": {
+   "az": -1.9,
+   "el": 0.55,
+   "d": 24000,
+   "tx": -20000,
+   "ty": 0,
+   "tz": 0
+  },
+  "Against the Sun": {
+   "az": 2.6,
+   "el": -0.15,
+   "d": 150000
+  },
+  "Far off": {
+   "az": -1.05,
+   "el": 0.25,
+   "d": 420000
+  }
+ },
+ "rama": {
+  "seed": 2131,
+  "outerR": 10000,
+  "length": 50000,
+  "plainR": 8000,
+  "southPlainR": 7550,
+  "seaSurfaceR": 8050,
+  "seaBedR": 8350,
+  "seaHalf": 5000,
+  "plainEnd": 20000,
+  "bowlDepth": 4500,
+  "period": 240,
+  "valleyWidth": 300,
+  "valleyDepth": 60,
+  "nyHalfArc": 5000,
+  "nyHalfWidth": 1500,
+  "bigHorn": 8000,
+  "littleHorn": 3000,
+  "radius": 27000,
+  "minD": 300,
+  "_": "metres: plainR is the floor of the Northern Plain (gravity 0.6 g at four minutes a turn); the sea's surface lies 50 m below it (the northern cliff) and the Southern Plain 500 m above the sea (the southern cliff); plainEnd is where the plains meet the bowls, bowlDepth how far each bowl reaches toward its pole; period is one turn in seconds"
+ },
+ "space": {
+  "seed": 31439,
+  "stars": 4200,
+  "starSize": 2200,
+  "far": 1600000,
+  "starLight": {
+   "colour": "#fff6e8",
+   "az": -0.55,
+   "el": 0.22,
+   "intensity": 1.35,
+   "ambient": 0.28,
+   "lamp": 0.3
+  },
+  "fill": {
+   "colour": "#4a5a78",
+   "az": 2.4,
+   "el": -0.4,
+   "intensity": 0.18
+  },
+  "bodies": []
+ }
+}

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.214,
+    1.159
+   ],
+   "seam_before": [
+    2.009,
+    2.577
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.halite.cut",
+  "metal": 0,
+  "roughness": 0.6,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock.halite.cut.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "the faint pink bands kept (mute 0.3): RES_EVLOOK.halite is white to faint pink",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.halite.cut\"",
+  "reuse": "kits/resources' rock-salt nodes (cut pit walls, stacked blocks); any salt mine face or salt-block wall",
+  "sha1": "257154d9b7d5634059da47b5cb1f87f3bf3853d0"
+ }
+}

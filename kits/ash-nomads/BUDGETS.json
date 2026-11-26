@@ -1,0 +1,10 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls and bytes; CORE-IMPROVEMENTS.md 3d). A raise needs a new why.",
+ "pages": {
+  "ash-nomads.html": {
+   "bytes": 19922944,
+   "why": "over the 16 MB limit before the cap landed (18.0 MB, the Scyvoi engine's textures inline); the split into texture sidecars (tex.*.js, as Scyvoi does) is owed",
+   "raised": "2026-10-27"
+  }
+ }
+}

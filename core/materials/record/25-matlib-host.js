@@ -23,7 +23,8 @@
     t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = aniso || 1;
     t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding;
     var img = new Image(); window._texPending++;
-    img.onload = function(){ t.image = img; t.needsUpdate = true; window._texPending--; };
+    /* t._onImage: clones of this texture (BIO.libSwap's per-cell cards) take the image when it lands (r128 textures have no userData) */
+    img.onload = function(){ t.image = img; t.needsUpdate = true; (t._onImage || []).forEach(function(f){ f(img); }); window._texPending--; };
     img.onerror = function(){ window._texPending--; (typeof ERR === 'function' ? ERR : console.error)('KMAT: a packed texture failed to decode'); };
     img.src = url;
     return (cache[key] = t);

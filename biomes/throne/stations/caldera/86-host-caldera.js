@@ -25,53 +25,18 @@ const LAVAU={uT:{value:0},uNight:{value:0}};
 const LAVATEX=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const P=KMAT.packed('throne','ground.lava');if(!P)return null;const t=KMAT.textures(P,{aniso:8}).map;t.wrapS=t.wrapT=THREE.RepeatWrapping;return t;})();
 // the vents (the eruption's: 86 below fills them) dome the surface over them as it erupts
 const LAKEVENTS=[new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3(),new THREE.Vector3()];
-// THE SURFACE (shared by the vertex and the fragment shader): slow swells and a heave travelling across it, the vents' domes
-const LAVA_H='uniform float uT,uErupt;uniform vec3 uVents[4];'+
- 'float lavaH(vec2 p){float h=1.3*sin(p.x*0.011+uT*0.21)*sin(p.y*0.013-uT*0.17)+0.7*sin((p.x+p.y)*0.027+uT*0.45)+0.35*sin(p.x*0.061-p.y*0.047+uT*0.8);'+
- ' for(int i=0;i<4;i++){vec2 d=p-uVents[i].xy;h+=uErupt*uVents[i].z*(5.0+1.5*sin(uT*3.0+float(i)))*exp(-dot(d,d)/1800.0);}return h;}';
-const MAT_LAVA=new THREE.ShaderMaterial({fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,LAVAU,{uErupt:{value:0},uCrust:{value:LAVATEX},uVents:{value:LAKEVENTS},uSunDir:{value:new THREE.Vector3(...SUN_POS).normalize()},uC:{value:new THREE.Vector2(LAKE.x,LAKE.z)}}]),
- vertexShader:['#include <fog_pars_vertex>',LAVA_H,'varying vec3 vWP;varying vec3 vN;',
-  'void main(){vec4 wp=modelMatrix*vec4(position,1.0);vec2 p=wp.xz;float e=2.0,h=lavaH(p);wp.y+=h;',
-  ' vN=normalize(vec3(lavaH(p-vec2(e,0.0))-lavaH(p+vec2(e,0.0)),2.0*e,lavaH(p-vec2(0.0,e))-lavaH(p+vec2(0.0,e))));',
-  ' vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uNight,uErupt;uniform sampler2D uCrust;uniform vec3 uSunDir;uniform vec2 uC;varying vec3 vWP;varying vec3 vN;',
-  // a hash without sin (Dave Hoskins' hash22): sin() of large arguments differs between GPUs and broke the noise into squares
-  'vec2 h2(vec2 p){vec3 p3=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));p3+=dot(p3,p3.yzx+33.33);return fract((p3.xx+p3.yz)*p3.zy);}',
-  'float vn(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h2(i).x,h2(i+vec2(1,0)).x,f.x),mix(h2(i+vec2(0,1)).x,h2(i+vec2(1,1)).x,f.x),f.y);}',
-  // the crust is torn, not ruled: the Voronoi's coordinates warped by two octaves of noise, so every edge wiggles
-  'vec2 warp(vec2 p){return vec2(vn(p*0.09)+0.5*vn(p*0.31+7.0),vn(p*0.09+3.1)+0.5*vn(p*0.31+11.0))-0.75;}',
-  // a moving Voronoi: F1, F2 (the edge is F2-F1), the cell's id
-  'vec3 vor(vec2 p,float tm,out vec2 id){vec2 c=floor(p),f=fract(p);float F1=8.0,F2=8.0;id=vec2(0.0);',
-  ' for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec2 g=vec2(float(i),float(j)),o=h2(c+g);o=0.5+0.3*sin(tm+6.2831*o);vec2 r=g+o-f;float d=dot(r,r);',   // a swing of .3: with a 3x3 search F2 is always the true second (.42 broke it: square seams)
-  '  if(d<F1){F2=F1;F1=d;id=c+g;}else if(d<F2)F2=d;}return vec3(sqrt(F1),sqrt(F2),sqrt(F2)-sqrt(F1));}',
-  'void main(){vec2 lp=vWP.xz-uC;float sp=1.0+3.0*uErupt;vec2 drift=vec2(uT*0.004,uT*0.003)*sp;',
-  // THE PLATES (~50 m): the big crust plates, their cracks glowing; a plate now and then overturning
-  ' vec2 wq=lp+warp(lp)*8.0;vec2 pid;vec3 P=vor(wq*0.019+drift,uT*0.15*sp,pid);float pw=(0.035+0.035*vn(lp*0.02))+0.07*uErupt,crack=1.0-smoothstep(0.0,pw,P.z);',
-  ' float hs=h2(pid+floor(uT*0.05*sp)).x,over=step(0.975-0.25*uErupt,hs)*(0.5+0.5*sin(uT*2.0+hs*30.0))*smoothstep(0.0,0.25,P.z);',
-  // THE FACETS (~9 m, riding the plates): each its own tilt, shade and heat; thin glowing seams between them
-  ' vec2 wf=wq+warp(wq*2.3)*2.2;vec2 fid;vec3 Fv=vor(wf*0.11+drift*5.8,uT*0.05*sp,fid);vec2 fh=h2(fid+pid*1.31);',
-  ' float sw=0.012+0.035*vn(wf*0.07+fh*9.0);float seam=1.0-smoothstep(0.0,sw+0.04*uErupt,Fv.z);seam*=(0.35+0.65*smoothstep(0.0,0.35,P.z))*smoothstep(0.0,0.4,vn(wf*0.05+3.0)+0.3*fh.y);',
-  ' float thin=smoothstep(0.82,1.0,fh.x)+0.6*smoothstep(0.3,0.0,P.z);',   // some facets thin: the heat glows through them
-  // the normal: the surface's swell, each facet tilted, the crust's grain
-  ' vec3 tex='+(LAVATEX?'texture2D(uCrust,lp*0.11+fh*5.0).rgb;':'vec3(0.5+0.5*sin(vWP.x*0.9)*sin(vWP.z*0.8));'),
-  ' vec3 N=normalize(vN+vec3((fh.x-0.5)*0.9,0.0,(fh.y-0.5)*0.9)*(0.4+0.6*smoothstep(0.0,0.2,Fv.z))+vec3(tex.r-0.5,0.0,tex.g-0.5)*0.6);',
-  ' float lit=0.25+0.75*max(dot(N,uSunDir),0.0),spec=pow(max(dot(reflect(-uSunDir,N),normalize(cameraPosition-vWP)),0.0),24.0)*0.25;',
-  ' vec3 crust=mix(vec3(0.07,0.06,0.055),vec3(0.36,0.31,0.27),pow(tex.r,1.4)*0.85+0.15*fh.y)*lit*(1.0-uNight*0.8)+spec*vec3(0.75,0.7,0.65)*(1.0-uNight)*(0.5+tex.g);',
-  ' vec3 hot=mix(vec3(1.0,0.3,0.04),vec3(1.0,0.78,0.32),crack*crack);float heat=1.3+uNight*1.6+uErupt*1.2;',
-  ' vec3 col=crust+vec3(0.85,0.18,0.02)*thin*(0.18+0.5*uNight+0.4*uErupt)*(0.6+0.4*tex.r);',
-  ' col=mix(col,vec3(1.0,0.42,0.07)*heat*0.75,seam*0.85);',
-  ' col=mix(col,hot*heat,max(crack,over));',
-  ' col=mix(col,hot*(1.6+uNight),uErupt*0.25*smoothstep(0.3,0.7,h2(floor(lp*0.004+uT*0.02)).x));',   // whole patches churned to bright lava
-  ' gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-['uT','uNight'].forEach(k=>MAT_LAVA.uniforms[k]=LAVAU[k]);MAT_LAVA.uniforms.uErupt=ERUPTU;MAT_LAVA.uniforms.fogColor.value=scene.fog.color;MAT_LAVA.uniforms.fogDensity.value=scene.fog.density;
+// THE SURFACE is core/atmos's lava (core/atmos/fx/89-atmos-fx-lava.js, ATMOS.lavaMaterial: lifted from this station's own
+// shader on 2026-10-25, its numbers ATMOS.PRESETS.lava): the swells, the vents' domes, the plates, facets, seams and overturns,
+// on the module clock. core/atmos loads after this fragment, so the lake takes its material on the first frame (below).
 // the surface: a polar grid out to the outline (and a little under the shore), fine enough for the swells (~5 m)
 (function(){const NR=110,NS=420,pos=[],idx=[];pos.push(LAKE.x,LAKE.level,LAKE.z);
  for(let i=1;i<=NR;i++){const t=i/NR;for(let j=0;j<NS;j++){const a=j/NS*TAU,r=LAKE.rAt(a)*1.05*t;pos.push(LAKE.x+Math.cos(a)*r,LAKE.level,LAKE.z+Math.sin(a)*r);}}
  for(let j=0;j<NS;j++)idx.push(0,1+(j+1)%NS,1+j);
  for(let i=1;i<NR;i++){const a=1+(i-1)*NS,b=1+i*NS;for(let j=0;j<NS;j++){const j1=(j+1)%NS;idx.push(a+j,a+j1,b+j,a+j1,b+j1,b+j);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeBoundingSphere();g.boundingSphere.radius+=20;
- const m=new THREE.Mesh(g,MAT_LAVA);m.userData.inspectLabel=LAKE.name;m.userData.lava=true;scene.add(m);SUMMIT.lakeMesh=m;})();
-TICKS.push(dt=>{LAVAU.uT.value+=dt;});
+ const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x1a0c06}));m.userData.inspectLabel=LAKE.name;m.userData.lava=true;scene.add(m);SUMMIT.lakeMesh=m;})();
+TICKS.push(dt=>{LAVAU.uT.value+=dt;const m=SUMMIT.lakeMesh;if(!m.userData.lavaMat&&typeof ATMOS!=='undefined'&&ATMOS.lavaMaterial&&ATMOS.T){m.material=m.userData.lavaMat=
+ ATMOS.lavaMaterial({name:LAKE.name,centre:[LAKE.x,LAKE.z],sun:SUN_POS,crust:LAVATEX,vents:LAKEVENTS,erupt:ERUPTU,night:LAVAU.uNight});}});
 // its glow on the caldera (and, at night, on everything round it); far brighter in an eruption, flickering with the fountains
 const GLOW=new THREE.PointLight(0xff6a2a,.5,6000,1.2);GLOW.position.set(LAKE.x,LAKE.level+180,LAKE.z);scene.add(GLOW);
 TICKS.push((dt,t)=>{const e=ERUPT.k;GLOW.intensity=((LAVAU.uNight.value?3.2:.45)+e*(LAVAU.uNight.value?6:2.5))*(.9+.1*Math.sin(t*1.7)+.05*Math.sin(t*5.3)+e*.25*Math.sin(t*11.3)*Math.sin(t*3.1));});

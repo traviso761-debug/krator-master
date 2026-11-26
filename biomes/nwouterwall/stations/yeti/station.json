@@ -1,0 +1,6 @@
+{
+ "name": "yeti",
+ "out": "nwouterwall-yeti.html",
+ "note": "Station 3 (PLAN.md section 7): the Yeti Valley at px 141.5,175.5 on scale model 4.22 (region/station-yeti.json), the frozen lake's north-west shore. Its 44s-host-site.js replaces src/'s: the site, the spur, the channel, the fields and the landforms. kits/yeti (the capital's domes) is read in place by 86y-host-yeti.js when the kit is in the tree (the owner, 2026-10-26).",
+ "yeti": true
+}

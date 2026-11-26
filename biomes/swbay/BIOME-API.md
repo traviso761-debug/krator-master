@@ -47,8 +47,9 @@ river's banks and the delta are lush because `wet` and `flow` are both high ther
 
 ## The two knobs
 
-- `SWBAY_TEMPLE_H` (host, before fragment 50; default 110 m): the canopy ceiling. The
-  heights of the five canopy species scale with it; the prism gum's top band IS it.
+- `SWBAY_TEMPLE_H` (host, before fragment 50; default 110 m, this page 156 m: the Temple's top terrace in Voth's city
+  plan): the canopy ceiling. The heights of the five canopy species scale with it; the prism gum's top band IS it (their
+  boles keep the ring count they have at 110 m, so a taller ceiling costs no triangles there).
 - `SWBAY_BAY={hue}` (host, before fragment 50; or `SWBAY.setBay(hue)` / `SWBAY.build({bayHue})`):
   the water (host side, `WATER_*`), the shore reeds' accent and the mosses' tinge derive
   from it. The epiphytes stay red and purple whatever the bay (canon).
@@ -96,15 +97,16 @@ in view. The ranges are `SWBAY.LOD` (metres; `BIO.LOD.scale` multiplies them all
 | key | what | m |
 |---|---|---|
 | `tree` | a hero tree in full (its foot keys it: bole, limbs, caps, foliage, epiphytes) | 1200 |
-| `floor`, `floorMid`, `farFloor` | the floor's near / mid / far bands | 800, 1200, 1200 |
-| `reeds` | the reeds standing in the shallows | 800 |
+| `floor`, `floorMid`, `farFloor` | the floor's near / mid / far bands | 1200, 1200, 1200 |
+| `reeds` | the reeds standing in the shallows | 1200 |
 | `logs` | fallen trees, driftwood, dead wood | 1200 |
 | `dress` | `SWBAY.dress` on a world's structures (`opt.range` overrides) | 1200 |
 
 Behind every hero stands a lite impostor (`minRange` = its range), drawn only past it; a far
 tree (beyond the spine's mid ring) is only its impostor, always drawn. The scene therefore
 HOLDS more than before (the stand-ins) and DRAWS far less: `BIO.lodShown` reports the chunk
-meshes and triangles drawn. Draw calls rise to one per item per chunk in view (KNOWN_ISSUES).
+meshes and triangles drawn. Draw calls rise to one per item per chunk in view (KNOWN_ISSUES). Every range is 1200 m (2026-10-26): an item
+shared by the passes is then ONE mesh per chunk, not one per range (657 chunk meshes became 516, 24-66 fewer calls a view).
 The fauna keeps its own LOD (the `eye` hook) and is not chunked: its meshes are always drawn.
 
 **Shells.** `SWBAY.dress(geos)` takes the core's shells as well as plain geometries:

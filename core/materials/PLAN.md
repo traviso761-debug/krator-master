@@ -213,6 +213,24 @@ Normal maps use the OpenGL convention (+Y up), which three.js and Godot both exp
 
 Scan-library sets skip steps 1-3 and only get resized, muted and checked.
 
+### A card's colour under its alpha (checked 2026-11-10: no fix needed)
+
+A card's transparent texels must carry its leaf colour, or the mipmaps bleed dark into every leaf's edge at range (the core's
+procedural cards fill them on purpose: `BIO.alphaTex`). The library cards already do, end to end: `tools/textures/cards.py`
+leaves the leaf colour under alpha 0 (card.creeper.beach's source: 110, 117, 60 under alpha 0, against 102, 128, 46 for the
+leaves), `pack.py` keeps it (it resizes colour and alpha apart, because Pillow resizes RGBA premultiplied, and writes WebP with
+`exact`), and WebGL samples it (a probe that uploads the valley's packed creeper as a page does, `UNPACK_PREMULTIPLY_ALPHA` off,
+read back through a shader: 97, 102, 66 under alpha 0, leaves 94, 108, 60, its 32 px mip 96, 103, 64; RTX lane). A sweep of all
+710 committed card packs (every build's `tex/`, read from the LFS store) found none near black: the darkest leaf card, the Throne's
+`card.frond.frill`, keeps 0.62 of its leaf's brightness under its alpha; Reed Lake's lattice pattern sheet keeps 0.37 (not a card).
+So neither a dilation in `pack.py` nor a refill in `BIO.libSwap` is owed.
+
+**Do not measure a card through a 2D canvas.** `drawImage` then `getImageData` reads a premultiplied canvas, which zeroes the
+colour wherever alpha is 0, so every card looks black-fringed that way (the report that started this check read 14, 13, 7 under the
+creeper's alpha). Read the WebP with Pillow, or sample the texture in a shader. If leaf cards look dark or speckled at range,
+look first at alpha coverage in the far mips (a sparse card's alpha averages under its `alphaTest`, so it thins to speckle:
+`BIO.setA2C`) and at a double-sided card's back face, lit from behind.
+
 ## Poly Haven ingest (the S rows, and bark and leaf variants)
 
 The owner's Poly Haven download is many gigabytes, so the reduction runs on the owner's machine and only a small
@@ -519,7 +537,7 @@ Voth, owner-written:
 | `patterns/voth/inlay` | Flat, front-on decorative panel of a stone inlay band: stepped chevrons and hooks cut from jade (#3f6b56), lapis (#1f3f6e), red-purple porphyry (#5e1e2d) and basalt (#2b2a28), set into a polished marble ground (#e8e1d2), with thin dark joints between the stones. The pattern repeats horizontally. Full colour. |
 | `patterns/voth/banner` | Flat, front-on decorative panel of banner cloth woven in stepped bands and hooked spirals in ash yellow (#e8d9a0), dark red (#7a2028) and charcoal (#2b2a28), visible weave, slightly faded and uneven dye. The pattern repeats horizontally. Full colour. |
 
-The Ancient Port (`settlements/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
+The Ancient Port (`kits/port`, a sibling of the Ancients kit, built mainly for the planned settlement of Hook) and, separately, the Hykkousoi of Ys (the nacre culture). They are different cultures and builds; their rows are kept apart below (`patterns/port/*` and `patterns/nacre/*`).
 
 Port palette: container white #dcd8cf, blue #2f5f8a, oxide red #9a3a28, mustard #c89a3a (`74-port-dress.js:6`); hazard
 yellow #d9a12c (`89y-sp-1-yard.js:43`); iron #2c2e32; antifouling red #8c3026, topsides slate #3c4652, red-oxide
@@ -553,8 +571,22 @@ mosaic and relief are greyscale (tinted), so these prompts take colours from the
 **Status (2026-10-05): Yuni has adopted the library** (`settlements/yuni/materials.json`; its `KNOWN_ISSUES.md`,
 "Material library"). The base rows below are covered by sets already in the library: `plaster.washes` by `plaster`
 (neutral, tinted), `tile.terracotta` by `roof.tile` (neutral pan tiles, tinted), `earth.banco`, `concrete.board`.
+**Delivered 2026-11-03 and processed, demolition rubble** (`tools/textures/batches/metropolis-rubble-2026-11.json`, pasted by the owner):
+`ground.rubble.demolition` (3 m: broken concrete, brick, bent rebar and rusted flat bar over grey and red-brown gravel), the bed of `kits/metropolis`' ruin
+heaps (`core/terrain` `KRUBBLE`); for any collapsed building's rubble or demolition ground.
+
+**Delivered 2026-11-02 and processed, the metropolis towers** (`tools/textures/batches/metropolis-2026-11.json`, pasted by
+the owner): `metal.ancient.white.macro` (16 m panel courses; processed with the seam pass off, the sheet already tiles: every course
+has a joint at its edge), `stone.adobe.ceramic`, `patterns/ancient/baroque-scroll` (cropped to its period). The macro panel is
+`kits/metropolis`' white skin; the other two wait for S6, S8 and M8.
+
+**Delivered 2026-10-25, the shared sky's moon maps** (pasted by the owner; resized to 1024x512 by hand, albedo only, no batch: they are
+equirectangular maps, not tiles): `sky.moon.companion`, `sky.moon.week`, `sky.moon.thirteen`, `sky.moon.day`, `sky.moon.two-day`,
+`sky.moon.four-day`. Wired in `core/atmos` (the sky's moon atlas, `core/atmos/demo/build.py` `moon_atlas()`); the prompts are in
+each `meta.json`. Before the Godot export the atlas goes through the build's `materials.json` like any set.
+
 **Delivered 2026-10-25 and processed, the Yeti kit** (`tools/textures/batches/chatgpt-2026-10u-yeti.json`, pasted by the
-owner as 1254 px WebP, the prompts of `PROMPTS-NEEDED.md` section 15, now 19): nine surfaces in `library/` (`ice.pycrete`,
+owner as 1254 px WebP, the prompts of `PROMPTS-NEEDED.md` section 15, then 19, now 25): nine surfaces in `library/` (`ice.pycrete`,
 `ice.pycrete.weathered`, `masonry.pycrete.course` (cut to three courses, joint to joint, 2 x 1.5 m), `stone.corbel.slab`
 and `hide.panels.sewn` (tintable, muted 0.4), `stone.soapstone` (reads as green serpentine too), `fur.muskox`,
 `fur.caribou`, `hide.gut` (cut to eight strips and rolled so the seam falls mid-strip)) and seven sheets in
@@ -1833,6 +1865,197 @@ period (three diamonds by two bands, about 1.6 m). Wired in `kits/islanders` as 
 weaver walls (`63-ie-trade.js`); `28-is-paint.js` draws the twill as its stand-in without the pack. Reuse: any patterned
 plaited mat, floor mat or wall hanging in black, ochre and red.
 
+#### Delivered 2026-11-10 and processed: the Cave of Crystals, the Cut's face, Farside's bench, the umbrella plate, the scorched panel (6 images, WebP)
+
+Saved by the owner in `Downloads/krator-textures-2026-11-10/`, named by id (1254 px, the selenite 2000 px: under the prompts' 2048, so
+nothing was upscaled: the pipeline writes 1024 px sets; each `meta.json`'s `size_note`). Batches `tools/textures/batches/owner-2026-11-10.json`
+(5 surfaces, `process.py`) and `owner-2026-11-10-cards.json` (1 cut-out on magenta, `cards.py`, anchor none); each `meta.json` carries the
+full prompt and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-10/`. A seventh image (`unmatched-black-stone`)
+matches no prompt and is not installed: the owner was asked what it is for.
+
+| id | scale | wired | slot (what it replaces) |
+|---|---|---|---|
+| `mineral.selenite` | 2 m, up the crystal's length | `biomes/hearths` station `crystals` | `crystal.selenite`, full colour (`stone.alabaster` tinted pale green) |
+| `rock.limestone.ironstained` | 3 m | `biomes/hearths` station `crystals` | `rock.ironstain`, full colour at mean .42 (`rock.gossan` toned down) |
+| `rock.megabreccia.polished` | 2 m (the face packs it at 3 m) | `biomes/cut` station `face` | `ground.breccia`, a grey detail at mean .7, read through the core hex-cell dither (`kdither`: the owner saw the tile repeat from afar) (`rock.megabreccia`'s weathered face) |
+| `ground.bench` | 3 m, grooves across | `biomes/farside` (every page; the bench is station 1's) | `ground.bench`, the ground's eighth layer over the wet rock, weight `FIELD.bench` times the rock's (`ground.rock` whitened by the vertex tint, now dropped where the set is packed) |
+| `card.umbrella.plate` | the whole sheet | `biomes/abyssal-savannah` | `plate`, keep 0, mean .7, no cell (one `card.acacia` sprig stretched over the disc) |
+| `metal.scorched` | 1.5 m, tintable grey | **not wired** | the Motor Vehicles kit's `scorched` slot exists only on `claude/ancient-vehicles-935f93` (and the valley branches): wire it there at their merge, and delete its PROMPTS-NEEDED entry (their section 36) then |
+
+- **Look.** Selenite and the polished breccia take a faint normal (`normal_strength` .35 and .25): their luminance is colour, not relief,
+  and the default normal made a satin crystal and a polished slab read bumpy. The breccia has two clasts with a hairline crack (the prompt
+  said none): kept. **`rock.limestone.ironstained` came a little off its prompt**: rust over most of the face, little of the grey-buff
+  limestone, no white gypsum crusts; usable, since the stain is the point, so a redo is the owner's call. The bench's grooves turn with
+  KGROUND's hex tiles (rot .6) rather than all running one way (`biomes/farside/KNOWN_ISSUES.md`).
+- **Keying.** `card.umbrella.plate`'s rim sprays are blended into the magenta in the source: the default key (spill all) left them mauve,
+  unmix pink; `spill: 'vlahos'` (`key_gain` 1.3) leaves them a dry tan. 60% of the sheet is over alpha 0.5.
+- **Still owed:** `rock.megabreccia` for nhighlands' crater wall (PROMPTS-NEEDED.md section 32): the polished slab is not it.
+
+#### Delivered 2026-11-10 and processed: Erewhon's citadel, the Tents kit's cloths, the fellfield, the hyperjungle's lands and the savannah rims (22 images, 2048 px PNG)
+
+Generated by the owner in `Documents/Codex/2026-11-10/` (one folder an image, named by subject, not by id: matched by name and by eye against the prompts).
+Batches `tools/textures/batches/owner-2026-11-10.json` (17 surfaces, `process.py`; the patterned ones cropped to their period, `"pattern": true`) and
+`owner-2026-11-10-cards.json` (5 cut-outs on magenta, `cards.py`: the snail leaf sheet anchor none, the grasses and the ghost pipe anchor bottom, the
+miombo spray centre; the reds and the ghost pipe's pink keyed with `spill: edge`, the grasses and the leaves `all`). Each `meta.json` carries the prompt
+and the source's sha1. Checked on contact sheets (every seam score near 1; the haft-rangi and the peacock band keep a non-square period, squeezed square).
+Two more images in the folder were second takes of sets delivered 2026-11-03 (`ground.coral.rubble`, `rock.hematite.mirror`) and were not processed;
+nine folders held no output. **Not delivered:** `patterns/xanadu/jali` (section 41), the other eight of section 40, `card.heath.whorl` (section 37).
+
+| id | wired (2026-11-10) | still to do |
+|---|---|---|
+| `stone.marble.black`, `stone.marble.calacatta`, `patterns/xanadu/zellige-star`, `patterns/xanadu/haft-rangi`, `patterns/xanadu/mughal-gilt-ceiling`, `stone.stucco.yeseria`, `tile.muqarnas.turquoise`, `patterns/xanadu/peacock-band`, `stone.pietra-dura`, `patterns/xanadu/op-art-arcs` | `settlements/xanadu` and `kits/xanadu` `materials.json`: `xMarK`, `xMarW`, `xZel`, `xHaft`, `xGiltC`, `xYes`, `xMuqT`, `xBandR`, `xPietra` on their sets (`owed` dropped); `xMarbleB`, `xMarbleW`, `xOpArt` were already on them; both `tex/` packed | rebuild and verify Xanadu and Erewhon (the cloud) |
+| `wood.cedar.moorish` | library only | `kits/xanadu`: a family for the citadel's door leaves, shutters and painted beams (`KNOWN_ISSUES.md`) |
+| `cloth.canvas.duck.army`, `cloth.ripstop` | `kits/tents`: families `armyc` and `ripstop`, the `republican` and `eternian` dresses' `cover.key`, the key tables in `26k-kit.js`; `tex/` packed | rebuild and verify the tents |
+| `card.grass.elephant`, `card.grass.themeda` | `biomes/abyssal-savannah`: `blind` and `grass` on them (single plants: `cell` dropped); `tex/` packed | rebuild the rim stations; check the tufts' scale |
+| `bark.palm.spined`, `bark.tualang`, `card.ghostpipe` | library only | `biomes/hyperjungle`: the armour palm's trunk, the comb tree's bole, the ghost pipe clumps (vertex colour now; `KNOWN_ISSUES.md`) |
+| `ground.ironstone`, `card.leaf.miombo` | library only | `biomes/abyssal-savannah`: the laterite pavement as a KFIELD `pavement`, the rust miombo's leaflets (`KNOWN_ISSUES.md`) |
+| `ground.fellfield.fines`, `card.rosette.snail` | library only | `biomes/shighlands --station fellfield`: a family under `STATION_GL`'s x weight where `sorted` is high; a leaf a cell on the `snail` whorl |
+
+#### Delivered 2026-11-03 and processed: the Gills, High Rift, nwbay, nhighlands, ringisles, the rift rim, Copper Glacier (15 images, 1254 px WebP)
+
+Saved by the owner in `Downloads/krator-delivery-2026-11-03/`, named by id. Batches `tools/textures/batches/owner-2026-11-03.json` (10 surfaces,
+`process.py`) and `owner-2026-11-03-cards.json` (5 cut-out sheets on magenta, `cards.py`, anchor none); each `meta.json` carries the full prompt
+(copied from the branch that asked for it: `source.prompt_where`) and the source's sha1. Contact sheets: `core/materials/demo/delivery-2026-11-03/` (`surfaces-*.jpg`, `card-*.jpg`, 1024 px).
+- **Keying.** `card.breathfringe` and `card.sedge.fen` are unmixed (key_hi 200): the default spill pass took the green out of the blended
+  filaments and blade tips and turned them salmon-red (150 turned the fringe pink). `card.glasscane`'s canes are translucent, so the magenta
+  showed through them (lavender canes under the default key). Re-keyed the same day with `cards.py`'s `spill: 'vlahos'` (`key_gain` 1.3;
+  npu-cutout's trial, `tools/textures/trials/npu-cutout`): the canes keep their glass shading and clean edges, with a faint lavender cast
+  (gain 1.0 leaves more), and 25% of the sheet is over alpha 0.5, so it alpha-tests. The first take, keyed onto a line to the prompt's
+  `#d8efe9`, flattened the canes and left broken dark rims on a light ground. Saved; no redo needed. `card.turf.limed` and `card.dwarfbirch` take the default key (spill all); the turf keeps a few pinkish stems.
+- **Wired now: the Gills' four**, as a pack of the shared kit (`biomes/gills/materials.json`, `tex/`), read by xanadu's station `gills` as a
+  second pack (`stations/gills/station.json` `"packs"`; `KMAT.packed('gills', f)`), so xanadu's other pages keep their bytes and the Red twin
+  can take the same pack: `pipe.lamina` (`rock.lamina.pipe`, a grey detail map multiplied into `KSTRATA.laminaShade`'s colour), `collar`
+  (`mineral.crust.brucite`, the White collar), `fringe` (`card.breathfringe`, one tuft), `turf` (`card.turf.limed`, crossed quads on
+  `GILLS.life`'s new `turf` records round each dew mat). `mineral.crust.ferromanganese` (the Red collar) is in the library, not packed: no
+  page draws the Red country yet.
+- **Still owed from those branches:** `rock.megabreccia` (nhighlands, section 32 on `claude/rebuild-nhighlands-cloud`) was not in the
+  delivery; `card.umbrella.plate` (the abyssal savannah).
+
+**Delivered 2026-11-03, wire at merge.** The kits are on branches not yet merged; the session that merges each wires its rows. **At the cloud kits' merge (2026-11-03):** `rock.hematite.mirror` is wired (High Rift, merged); `ground.ash.soil` and `rock.marble.white` are wired (nwbay, merged 2026-11-04); the bog's three, the coral rubble and the glass cane need new card families or a new ground layer (and a look), so they wait for their kits' next turns (each kit's `KNOWN_ISSUES.md` names them) (add the
+family to the kit's `materials.json`, `python3 tools/textures/pack.py <kit>`, rebuild, verify, delete the stand-in's note).
+
+| id | kit (branch) | slot | stand-in it replaces |
+|---|---|---|---|
+| `rock.hematite.mirror` | `biomes/highrift` (`claude/highrift-cloud`) | station `mirror`'s fault face (the family `rock.basalt.oxidised` stands in; a `rock.hematite.mirror` family, full colour, 2 m, low roughness) | `rock.basalt.oxidised` at a low roughness |
+| `ground.ash.soil` | `biomes/nwbay` (`claude/nwbay-catchup-cloud`) | `groundAsh` | `ground.ash` darkened by the layer's tint: drop `NWBAY_GEO.ash.tint` in `45-host-stage.js` |
+| `rock.marble.white` | `biomes/nwbay` (`claude/nwbay-catchup-cloud`) | `groundMarble` | `rock.marble012` (grey trim marble) |
+| `ground.peat.hag` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's steep layer (`STATION_STEEP`), a new family | a flat procedural peat colour |
+| `card.dwarfbirch` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's dwarf birch, a new card family (3 x 2 sheet, base bottom centre) | the kit's birch at knee height on its aspen card (`birch`: `card.aspen`) |
+| `card.sedge.fen` | `biomes/nhighlands` (`claude/rebuild-nhighlands-cloud`) | station 5's fen sedge, a new card family (4 x 2 sheet) | the kit's grass card in sedge colours |
+| `ground.coral.rubble` | `biomes/ringisles` (`claude/rebuild-ringisles-cloud`) | a `ground.rubble` family and a layer in `src/84-host-ground.js` (the storm ridge as its mask), in place of `ground.shingle` (17 units otherwise) | the beach's sand (`ground.coast_sand_01`) |
+| `card.glasscane` | `biomes/riftrim` (`claude/riftrim-cloud`) | the glass cane (`50-biome-riftrim-species.js`, `M.glass`), a new card family (3 x 3 sheet) | a procedural clear material on a jointed cylinder |
+| `rock.gneiss.banded` | `biomes/copperglacier` (`claude/infallible-colden-1316a8`) | `rock.granite` (or a new `rock.gneiss` family): the walls, nunataks, boulders | `rock.granite.tor` |
+| `ice.glacier.verdigris` | `biomes/copperglacier` (`claude/infallible-colden-1316a8`) | `ice.glacier` | `ice.glacier` tinted green on the copper ground |
+
+Scales and roughness as processed: lamina 1.5 m (tintable, mute 0.5), the crusts 1 m (ferromanganese roughness 0.35 with dark gloss, brucite
+0.9), hematite 2 m (0.3), ash soil, marble and peat 2 m, coral rubble 1.5 m, gneiss and the verdigris ice 3 m. Each prompt's PROMPTS-NEEDED
+entry is on its branch: the merging session deletes it there (the branch's section 32, or the rift rim's "The rift rim's build").
+
+#### Delivered 2026-10-27 and processed: every prompt still owed (pasted, 20 images, 1254 px WebP)
+
+Batches `tools/textures/batches/owner-2026-10-27.json` (12 surfaces, `process.py`) and `owner-2026-10-27-cards.json` (5 cut-out sheets on
+magenta and the 2 eyes, `cards.py`, anchor none). All in the library, **none wired** (the builds are mid-rebuild; wire each on its build's turn).
+- Surfaces, full colour: `rock.basalt.titanium` (2 m; jet-black flow-banded basalt with orange bead seams), `ground.turf.native` (2 m; grey-green
+  succulent filament mat over peat).
+- Surfaces, tintable: `skin.reptile.scales` (0.25 m), `skin.reptile.scutes` (0.3 m), `skin.reptile.plates` (0.2 m; the plates came rounded,
+  pebble-like, more than three-to-six sided), `metal.etched` (0.5 m, metal 0.6), `rock.halite.cut` (1 m, `mute` 0.3: its faint pink bands kept),
+  `stone.acidstreak` (1 m; vertical, up is the top), `ground.terrace.field` (4 m; furrows run left to right), `ground.gypsum.crust` (1.5 m; the
+  first of two takes: curled plates, polygon cracks, selenite in small clusters; the second had more, evenly strewn blades and fainter cracks,
+  left out), `metal.enamel.scoured` (0.5 m), `earth.termite` (0.5 m; vertical runnels, pellet crust, tunnel mouths).
+- Cards: `card.turf.native` (tintable; spill all), `card.cornlily` (full colour; spill none for the maroon seed heads), `card.lily.victoria`
+  (tintable; one pad filling the frame; spill none keeps the red rim). **Two under new ids**, because the prompt's id was already a wired set:
+  `card.clubmoss.sprig` (prompt `card.clubmoss`, tintable; `card.clubmoss` is the 2026-10-14 nodding clubmoss in geyser and swhighlands; keyed
+  onto a line, subject `#8a9a5a`: the needles are generator-blended with the magenta, so unmix and spill all left them mauve; a few pink specks
+  remain at needle tips) and `card.palm.costa` (prompt `card.palm.fan`, tintable; `card.palm.fan` is the 2026-10-25 3 x 3 sheet in necanyons).
+  The palm sheet came 3 x 1 (2000 x 667) and was padded to a square on magenta so each leaf keeps its aspect: the leaves are the middle row of a
+  3 x 3 grid (v 0.333-0.667).
+- Eyes, not tiling, full colour: `eye.reptile.slit`, `eye.reptile.spiral` (1024 px), through `cards.py` with the white corners keyed out
+  (key `#ffffff`, no crop), so the alpha is the iris mask.
+- Owed after it: nothing with a prompt (the gaps with no prompt yet stay listed in `PROMPTS-NEEDED.md`).
+
+#### Delivered 2026-10-26, later: `rock.cut.polished` (pasted in the Cut's build session, 1254 px)
+
+- Batch `owner-2026-10-26-cut.json`: `rock.cut.polished` (full colour, 2 m, roughness 0.35; bedded rock sawn smooth, two pebble-and-shell beds, quartz veins). For `biomes/cut`'s cut faces (station 3); reuse: any sawn or polished bedded rock.
+
+#### Delivered 2026-10-26 and processed: 29 owed prompts (Downloads, 2026-10-25 23:18-23:45, 1254 px PNG)
+
+Batches `tools/textures/batches/owner-2026-10-26.json` (12 surfaces, `process.py`) and `owner-2026-10-26-cards.json` (17 sheets, 3 x 3 on
+magenta, `cards.py`, anchor none). All in the library, none wired (the kits they are for are planned, except where noted).
+- Surfaces, full colour: `ground.cladonia` (1 m; reindeer lichen over moss), `ice.aufeis` (3 m), `ground.soda.crust` (2 m; the owner's
+  "Cracked Salt Flat" image: pale curled plates, peach tint, dark cracks, so it fills the soda-crust entry and `ground.salt.ochre` is still owed),
+  `ground.lenswort` (0.5 m; living stones with violet flowers), `rock.lichen.iris` (1 m; violet, rust and black map lichen),
+  `ground.snow.algae` (2 m; pink-red watermelon snow), `ground.lakebed.algal` (2 m; teal and violet mats with stromatolite rings).
+- Surfaces, tintable: `bark.larch` (1 m; reddish plates, lichen, resin), `rock.badland.bedded` (2 m; pale buff, horizontal beds, `mute` 0.45),
+  `ground.sand.dune` (1.5 m; wind ripples), `bark.poplar.euphrates` (1 m; grey, knotted, deeply ridged), `bark.frill.ribbed` (1 m; teal
+  fluted culms with rings: reads as a bamboo as much as a frill trunk, vertical).
+- Cards, full colour, one subject per cell: `card.larch` (green top two rows, gold bottom), `card.snowball`, `card.pasque` (purple with
+  seed-head cells), `card.fireweed` (the "Sprite Grid" sheet: three gone-over spikes as the prompt asks, cells filled; the other sheet had
+  two and looser cells), `card.cottongrass`, `card.seabuckthorn`, `card.crop.thule` (rows: sweetvetch, Eskimo potato, roseroot),
+  `card.saltbush` (the "Cutouts" sheet: crisper, larger leaves, less pink on the twigs than its twin), `card.brinelamp`,
+  `card.poplar.euphrates` (narrow and broad leaves, bottom row gold), `card.lobelarch` (bottom row violet and gold), `card.bellfir`,
+  `card.starberry`, `card.sunrosette`, `card.cushion.anemone` (red; three closed cells), `card.lobelia.lantern`, `card.mistcup`.
+- Keying: `card.larch` and `card.saltbush` choke 2 with key 80/200 (a pink halo at choke 1); `card.fireweed` spill none (spill `edge` turned
+  the deep pink flowers dull red; its seed fluff keys slightly pink). Cell margins are tight on `card.saltbush` and `card.brinelamp`.
+- Left out: `Alien Earth Terrain Atlas.png` (a 2:1 planet map, matches no entry), the second fireweed and desert-shrub sheets.
+- Second drop (2026-10-26, batches `owner-2026-10-26b.json` and `owner-2026-10-26b-cards.json`): surfaces `rock.lichen.circles` (full colour,
+  1 m; yellow-green and orange discs), `bark.kelp.stipe` (tintable, 0.5 m; olive stipe with barnacle spots and knots), `ground.wrack`
+  (full colour, 1.5 m), `organic.sponge` (full colour, 0.5 m); cards `card.flower.bloom.highland` (nine different flowers, one per cell),
+  `card.bamboo.giant`, `card.rankgrass` (blue-grey tussocks, lilac-tinged seed spikes), `card.crop.melon`, `card.wineweed` (spill none: deep
+  red survives; edge spill muddied it). `Layered Eroded Mudstone Texture.png` matches no entry (a pale buff horizontally bedded mud, near
+  `rock.badland.bedded`) and is left out.
+- Third drop (2026-10-26, batches `owner-2026-10-26c.json` and `owner-2026-10-26c-cards.json`; the `(1)` files in Downloads are byte-identical
+  re-downloads of the second drop): surfaces `foliage.thorn.cut` (tintable, 1.5 m, `mute` 0.4; grey-brown thorn tangle), `ground.salt.ochre`
+  (full colour, 2 m; ochre polygons ringed with white salt ridges), `ground.grass.lush` (full colour, 1.5 m), `brick.buff` (full colour, 0.6 m;
+  running bond, eight courses), `detail.plaster.grain` and `detail.stone.grain` (tintable, 0.25 m; the grey stucco and the grey sandstone
+  chosen for being near-uniform; `Weathered Ivory Plaster Texture.png` has stains and patches, so it is left out); patterns
+  `tribal/formline` (the REDO: replaces the first take in place, now a true repeat, not a mirror; the Highlands' `formF` pack needs a re-pack)
+  and `screamers/hide-figure` ("Tribal Stick Figure on Weathered Hide": complete border and ring on all four sides; its twin
+  "Shaman Hide Painting" has a larger figure and a clipped border); cards `card.crop.rice` (rows: young, grown, ripe), `card.crop.cane`,
+  `card.crop.greens` (last row the sweet potato vine), `card.orchid.dendrobium` ("Nine Orchid Clumps": thin leaning canes and aerial roots,
+  nearer the prompt than "Orchid Specimens"), `card.fin.glass`, `card.tracery.bronze` (rows: stepped, lancet, ring heads; the openings are
+  keyed through). All cards keyed with the defaults, no fringe. Left out: `Weathered Ivory Plaster Texture.png` (above).
+- Fourth drop (2026-10-26, batches `owner-2026-10-26d.json` and `owner-2026-10-26d-cards.json`; the `(1)` files are byte-identical re-downloads):
+  surfaces, full colour: `organic.pod.honeycomb` (0.5 m), `ground.beads.orange` (0.5 m; diagonal black bands), `rock.megabreccia` (4 m),
+  `ground.riverweed.red` (1 m), `ground.savanna.litter` (2 m; a paler, browner soil than the prompt's red laterite), `bark.carved` (0.6 m;
+  `bark.carved.b` still owed), `rock.sandstone.liesegang` (4 m), `ice.debris` (4 m), `ground.rust.terrace` (1 m; "Mineral Terrace Pools", chosen over
+  "Rust-Orange Geothermal Terrace" for its smoother, darker pool floors), `ice.rust` (2 m), `rock.loess` (2 m), `rock.palagonite` (2 m),
+  `organic.dusttower` ("Rusty Spiral Fossil Bed": orange whorl bosses on dark silt, 1 m); tintable: `bark.cord.braided` (1 m; banyan roots),
+  `bark.banded.ring` (1 m; palm-trunk bands), `rock.rubble.sturzstrom` (4 m), `rock.tafoni` (1 m; "Tafoni Stone" over "Honeycomb Stone": nested hollows,
+  thin ridges). Cards: `card.begonia.escargot`, `card.cloudberry` (bottom row autumn), `card.edelweiss`, `card.pele.hair`, `card.grass.thatch`
+  (tintable, cream), `card.fig` (tintable), `card.cladonia`, `card.birch.dwarf` (top row summer, the rest autumn red; spill none, key 40/120, as
+  `card.fireweed`), `card.puya` (two rosette rows, one spike row), `card.willow.woolly`. Left out: `Polished Layered Stone Strata Texture.png`
+  (banded sediment with a conglomerate band and a quartz vein: no entry; a strata or badland source for a mesa or canyon kit),
+  `Weathered Cream Paint Texture.png` (cream paint over concrete, like the ivory plaster: no entry; any plastered wall), `Weathered Honeycomb Stone
+  Texture.png` (the smaller-pitted twin of the tafoni), `Rust-Orange Geothermal Terrace Texture.png` (the larger-scale twin of `ground.rust.terrace`).
+  Same drop, second half (files from 08:19, plus one sheet pasted in chat): surfaces `ground.pavement.desert` (1 m), `rock.schist.emerald`
+  (1 m; reads as folded gneiss with calcite veins and green beryl), `ice.lake.saltrim` (2 m), `rock.limestone.opal` (1 m; ammonites
+  with iridescent faces), `organic.cap.violet` (1 m), `ground.wadi.cobble` (2 m; "Multicolored Riverbed Pebble" over the duller twin),
+  `bark.plane` (1 m), `organic.pleat.skin` (1 m), `stone.geode.druze` (0.3 m), `organic.lace.copper` (1 m; the paler, thinner-laced of the
+  two "Turquoise Lichen" takes), `rock.marl.blue` (2 m), `ground.biocrust.fog` (1 m), `ground.snow.drift` (tintable, 4 m); cards
+  `card.outlands.scrub` (rows: sac brush, cushion, ember scrub), `card.guyedstalk` (spill none: the red petals), `card.cone.spiral`,
+  `card.broadleaf.cloud`, `card.broadleaf.dry`, `card.epiphyte.garden`, `card.osmanthus` (spill none), `card.fogcomber` (the "Wet Fringe and
+  Patina Comb" sheet over "Droplet Curtains and Rusted Combs"; choke 2, key 80/200: its teeth are finer), `card.outlands.crust` (the owner's
+  chat sheet: rows needle fur, rosettes and pebble mats, pebble mat and salt fans; spill none for the pink cores; the ember tips of row 1 key
+  slightly pink). Pre-wired for the final rebuild (no pages rebuilt): `biomes/oidong` (`bark.carved` on bark7, a lib hook in
+  `50-biome-oidong-species.js`), `biomes/sedesert/stations/mantis` (`broad` = `card.fig`), `biomes/abyssal-savannah` (`thatch` and
+  `groundDetail`), `biomes/nwouterwall` (birch, willow, cloud, deer, edel; cloudberry and caribou moss become upright tufts).
+- Fifth drop (2026-10-26, batches `owner-2026-10-26e.json` and `owner-2026-10-26e-cards.json`): surfaces `ground.quartzite.black` (2 m; "Dark
+  Cracked Rock"), `ground.peat.black` (1.5 m), `organic.lichen.plates` (0.5 m), `bark.carved.b` (0.6 m; large nested rings and the diamond chain),
+  `rock.laterite` (2 m), `rock.turquoise.vein` (1 m); cards `card.scarp.succulents` (spill none: red coral arms), `card.outlands.wadi` (ribbon
+  mat, glass bells, curtain weed, tube clusters), `card.triplets`, `card.bulbheath` (spill none), `card.wingreed`. Owed after it: `metal.enamel.scoured`
+  and `card.cornlily`. Pre-wired: `biomes/shighlands` (`bandedring`, `escargot`).
+
+#### Delivered 2026-10-25 and processed: five owed prompts (pasted, 1254 px WebP)
+
+Batches `tools/textures/batches/owner-2026-10-25.json` (surfaces) and `owner-2026-10-25-cards.json` (3 x 3 sheets on magenta).
+- `bark.alder.lichen` (full colour, 1 m): wired as nhighlands' `nbark8`, the ghost alder's own bark (it borrowed the birch's), 3 m a tile
+  up the trunk so its moss foot does not band every metre.
+- `card.palm.fan`, `card.flametip`, `card.treelily` (full colour): wired in necanyons (`fan`, `flametip`, `lilytuft`, keep 1, 1024 px:
+  a 512 px sheet blurs a fan's sixty segments into a blob). The fan and the tuft cut their cell in their own uv (`cellUV`): a pack
+  `cell` on them cuts twice and shows the middle tenth of the sheet as a square.
+- `rock.yardang.silt` (tintable, 2 m): in the library for the Bowl and the Catch (both planned, not built) and any wind-fluted
+  lake bed; not wired yet.
+
 #### Delivered 2026-10-18 and processed: the Throne's new flora (pasted, 6 images)
 
 Batches `throne-flora-2026-10-18.json` (surfaces: `ground.moss.crimson`, `organic.cap.medusa`, `organic.coil.ribbed`) and
@@ -2026,7 +2249,9 @@ For every generated image, write the exact prompt into the batch file's `_source
   "add the muting sentence". Tintable rows leave out the code's tint hexes, which only invite colour into a grey image.
 - `PROMPTS-ready.md` holds only what is still owed: when a delivery is processed, its blocks are deleted there and listed under
   "Delivered and removed" (with the id it landed as). Before handing prompts to the owner, check them against the library and every
-  local worktree; never append without pruning.
+  local worktree; never append without pruning. `tools/textures/libsearch.py search "<what the prompt asks for>"` lists the
+  nearest sets by words, `like <image>` checks a delivered image by picture, and `dupes` lists sets that are near copies of each
+  other (2026-11-03: `shell.abalone.soft` is `shell.abalone`, and `pattern.bogolan` and `patterns/common/mudcloth` share one source).
 - Every cut-out (card, wing, sprite) is asked for on solid flat bright magenta (#ff00ff), and the prompt says so in full:
   "no magenta, pink or purple anywhere in the subject; no grey or white background". (2026-10-06: four sheets came on grey and
   had to be keyed by hand.)

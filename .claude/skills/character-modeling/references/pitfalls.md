@@ -49,6 +49,10 @@ area you are about to change.
 
 ## 3. Clothing fit and clipping
 
+- **Check the measuring tool before tuning against it** → `shots.py` and `garment_audit.py` stepped the cloth 2 s from `max(0, t - 2)` and then snapped the skeleton to `t`, so for any `t` under 2 the cloth was from another moment of the stride. Rounds of tuning and every shot the owner judged held that error. A clip wraps: start `t - 2` back round the loop. When a fix moves nothing at all, suspect the picture first.
+- **A leg through the back of a robe in a run** → the shin kicked straight back pierces the sheet, and a push out of a capsule only opens a collar round it. No padding helps. Take the cloth over the limb: points on the leg set how far out from the body's axis the cloth must reach at their bearing, the rows below hanging from them, the rows above running to the waist (`pushOut`, the hull). Along the axis's radius, so a front seam stays shut.
+- **Two tiers of one garment in stripes** → they were clamped to one radius, and more padding moves both. Use a smooth maximum and feed it the rest radius, not where the chains swung.
+- **A piece with no chains parting or lifting with the legs** → it is skinned to them: hang it from the hips (`skirt_weights(rigid=True)`) and stand it up against the pelvis's tilt, measured from the hips' joint, not the spine, or posture reads as a tilt. `mpfb_build --only` cannot re-export a library piece.
 - **Skin through a garment that has no delete group** → cast rays out and in from the skin (`covered()`) to derive
   one; for tops with a partial group, union the ray result in (shoulders and chest came through T-shirts).
 - **Knees and the crotch seam through loose library trousers** (cargo trousers in a crouch, a lunge, a roll) → tint the
@@ -154,6 +158,30 @@ area you are about to change.
   (0.60, 0.12, 0.005), its maroon (0.18, 0.025, 0.03). Deepening by eye in the palette's numbers barely moves it.
 - **A people's strangers in another people's hair** → `styles` are only preferred (three in four); `style_share: 1` in
   peoples.json keeps them to their styles (the Order: cropped men, women to a bob).
+- **Trousers in lozenges through a coat, a calf through a court skirt, even at the A-pose** → switch the push off first: here
+  every fault went to zero, so the fit was clean and the push made the gap. A push outward cannot bare what lies under a
+  closed surface, so look for a fold or a parted seam. Two causes, each found by switching one rule off at a time over
+  all 66 outfits: "deep" was measured from the padded radius, so after `PAD_OVER` (5.5 cm out) ordinary cloth round a leg
+  counted as deep and the mirror folded the tube's inner half onto its outer; and a full pad standing still held an open
+  robe's panels off the thigh, so they parted at the seam. Deep is now measured from the bare limb on a hanging leg, and
+  the pad comes in with the stride. Wider padding would have made both worse.
+- **Tune a rule across the whole wardrobe, not on the outfit in the shot** → each of six tries here looked right on the
+  case it was made for. Mirroring by the cloth's own normal cleaned the A-pose and nearly tripled skin in a walk; a pad
+  per limb doubled trousers through tops in a run (the leg a runner stands on took none); and the bare-limb test bared the
+  Yuni boubou at rest, which the old bug had been hiding. `tools/garment_audit.py` counts them in ten minutes: run it
+  before believing a fix, and shoot the regressions it names, some of which are only the same patch a little larger.
+- **Cloth that ignores every change to its chains: a staircase down a skirt, worst on the body with the most posture** → measure each chain bone's world position against its particle before tuning anything. Here bones stood up to 30 cm off at an idle: the offset
+  came from the postured rest, the rotation from a frame built on the A-pose's. Set each joint on its particle. Every rule tuned before that was tuned against the wrong surface: the slits, the padding and more were re-judged after it, and the slits came out.
+- **A slit that gapes, tears and flies out like wings, with fine numbers** → pixel counts fell 84% while the shots got worse: shoot it. Switch stages off first: the lips' ties made no
+  difference, and with the push off the slit was clean. The leg is meant to leave through a slit, so do not push the cloth below its top off the legs (as a garment of flaps), and start it high
+  enough that the thigh does not tear through just above it (24 cm above the knee here; 10 cm tore).
+- **A rest-relative push reads well and fails** → a vertex keeping its rest clearance from each capsule leaves the fit alone, but over the wardrobe skin in a walk and trousers in a crouch doubled: rest clearance is too little
+  over trousers in motion.
+- **A rebuild in a fresh worktree loses the weave with no error** → the library's albedos are LFS pointers, and the textures came out a quarter smaller. Compare an untouched garment's GLB with its piece first (geometry
+  and weights exact, image size close); `make_garments.py` now stops on a pointer. On Windows `make_mpfb.py` writes kit.json with CRLF.
+- **Skin that is bare by design is not a fault** → a flat-colour count flagged the Dalab peasant's midriff and arms in front
+  of skirts. Colour the skin by where it is at rest, take what the A-pose shows bare as the cut, and leave out the arms,
+  the hands, the head and the feet.
 
 ## 4. Materials, alpha and textures
 
@@ -169,6 +197,49 @@ area you are about to change.
 - **A corrupt PNG CRC in a downloaded pack** → fall back to ImageMagick.
 - **Some library and community assets are broken** (404, corrupt, wrong texture names) → keep a SKIP list and a
   fix-up step; record CC-BY assets in CREDITS.
+- **Fur shells hovered in a ring above the hat, level while the head stooped** → they were drawn in the bind pose:
+  three r128 skins only a material made with `skinning: true` (the glTF materials carry it; a new
+  `MeshStandardMaterial` does not). Set it on every material a SkinnedMesh draws with.
+- **A garment's fur came out through what is worn over it** (trousers' pile through the boots' shafts and a deel's
+  skirt in a stride) → shells stand off the cloth by the pile, so anything lying within the pile under another layer
+  shows. Trim the under-item's fur by rest height (the boots' top, the top's hem: `furShells` kfF) rather than shortening
+  the pile everywhere.
+- **Which texels are fur is not in a baked garment** (one texture atlas per garment, a strip per part) → record it at
+  build time (`fur_of`: the rows per part and band, with the metres per unit of u and v); for pieces already built,
+  map strips to parts in source order and use the paint colours only to place band edges: by colour alone the
+  ushanka's umber crown band read as fur.
+- **A coat read as sand, not fur** → the skin showed between the strands and the tips were too bright: give a full
+  coat an undercoat (its first shell whole where the cover is dense) and soften the tip and per-strand contrast. Not for
+  sparse body hair: there the undercoat painted solid patches.
+- **Fur hung over the eyes and down the nose sides** → a bare face found by the normal alone keeps the eye sockets and
+  the nose's sides; mark it as an ellipse on the head's front, sized from the head's extents at rest (the base has no
+  face weights: everything above the neck rides Head).
+- **A furred face had no eyes** (the coyote coat over the whole head) → leave the eyes and the mouth bare as small ellipses
+  in the face ellipse's own measure; first guesses sat a fifth of a face too high and too low, so check them on a shot.
+- **No Blender, no marching cubes, and a head was wanted** → a signed distance field (smooth unions of ellipsoids and
+  round cones) meshed by surface nets in numpy (a vertex per crossed cell, a quad per crossed edge, wound afterwards by
+  the field's gradient, vertices projected onto the surface along it) gives a clean organic mesh in seconds
+  (`tools/heads.py`). Thin parts (an ear's tip) need to be thicker than two grid cells or they break into fragments.
+- **The procedural head's eyes looked uncanny** → bare spheres with a dot pupil staring straight ahead. Carve lids (an
+  almond opening in the head, the eyeball recessed behind it), draw the iris in rings round the gaze with a dark limbal
+  ring and a dark sclera, and turn each eye a little out. Check against the owner's photographs, not memory.
+- **Its crown fur stood up like a hedgehog** → fur combed straight down stands up where the surface faces up; on a head
+  comb it back along the head (nose to nape), and keep the fur sleek on the face, long only in the ruff.
+- **A small feature (a nose's nostrils) is finer than the mesh's grid** → give it its own primitive on a finer grid,
+  and keep the main field's blob under it smaller, or the smooth union bulges over it and hides it.
+- **Shell fur stepped on a thin ear** → its layers show edge-on along the rim and the cup: fur a thin part only where it
+  meets the body and let its shading carry the rest. A finer mesh did not help.
+- **A blink without a face rig** → a lid as a band of sphere round the eyeball, hidden in the head open, and a glTF morph
+  target that turns it shut; three.js runs morph targets on the GPU over the CPU slider morphs (copy the source mesh's
+  `morphTargetDictionary` onto the figure's clone), Godot imports them as blend shapes (carry them through any mesh
+  rebuild, after the morphs' shapes).
+- **A piece's morphs without the export** → give each vertex `_VIDX` of the base vertex it should follow and ship the
+  base skin's own morph entry under the piece's material names: the page's morph code matches by material and `_VIDX`.
+- **The Godot test hung after a small edit** → a `:=` on a value from an untyped node (`mi.mesh.surface_get_format(s)`)
+  is a parse error, and a parse error hangs Godot instead of quitting: give it a type (`var fmt: int = ...`) and load
+  the script alone to see the error.
+- **Sparse body hair read as dirt** → draw it in a colour partway from the skin's toward the hair's (`ink`), comb it flat
+  and keep the comb per layer under a strand's width (more layers), or the streaks step like stairs.
 
 ## 5. Cloth chains
 
@@ -372,6 +443,23 @@ area you are about to change.
 - **Lower sleeves on cybernetic arms** look wrong → leave them off; sleeve pieces keep only their own vertices.
 - **Four-armed tops built before the lower ranges existed had no lower vertices** → regenerate after changing the rig.
 - **Giant roots and ledges** → shrink-wrap to the body, hang at rest, blend by distance from the open edge.
+- **An animal head's face parts showed on the woman** (dark slashes through the lizard's snout) → her brows and lashes
+  are `eyebrow002`, `eyelashes02`, the man's `001`, `01`: hide both variants (or what the base GLB carries).
+- **A blink target on one primitive broke the piece** → glTF wants every primitive of a mesh to carry the same targets:
+  put the lids on a second mesh node of the same skin (`write_piece` prim `mesh: 1`, as `heads.py` does).
+- **A lofted animal head looked like a helmet** → model it as signed distance fields (`heads.py`, `reptile.py`):
+  temples, brows, jowls and nostrils blend in, and a grid bound that clips the field leaves a hole (check open edges).
+- **A beast's jaw reached behind its skull** → the skull overhangs the jaw's hinge; behind the mouth's corner round
+  the upper head down into the jowls, or its palate stands out as a ledge.
+- **The jaw did not open in a still shot** → it moves after a clip (`afterClip`): play the idle to see `jawOpen`.
+- **A pattern over a beast's head and body did not meet at the neck or at the UV seams** → evaluate one 3D field at
+  rest positions for both: per vertex on the head, baked into the body's UV square texel by texel from each texel's
+  rest position (dilated past the islands). Tint multiplying vertex colours can never make cream from green: carry
+  the pattern's fields and blend the record's colours in the shader.
+- **Godot's marbled frog jaw came out nearly black** → vertex colours reach a custom shader as if sRGB (compatibility
+  renderer): decode them back when they carry data, not colour.
+- **three r128 and data in COLOR_0 / TEXCOORD_1** → set `vertexColors` false and declare `attribute vec4 color;` and
+  `attribute vec2 uv2;` yourself (r128 declares them only for vertex colours and light or AO maps).
 
 ## 10. Godot twin
 

@@ -2,6 +2,7 @@
  "name": "The glacier and its ice caves (station 9): a valley glacier and its icefall, moraines, a proglacial lake, the braided outwash, the cold belt's gill-coral trees and conifers, a geothermal shelf with ice towers, ice caves and an arch, the snow weather",
  "out": "throne-glacier.html",
  "core": [],
+ "terrain": ["44g-core-glacier.js", "host/44h-core-glacier-draw.js"],
  "atmos": [
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",
@@ -10,6 +11,18 @@
   "89-atmos-8-export.js",
   "89-atmos-9-host.js",
   "89-atmos-a-waves.js",
-  "89-atmos-b-skylight.js"
+  "89-atmos-b-skylight.js",
+  "fx/89-atmos-fx-snowcover.js",
+  "fx/89-atmos-fx-raincover.js",
+  "sky/89-atmos-j-fog.js",
+  "host/89-atmos-j-heightfog.js"
+ ],
+ "water": [
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "ext/54-core-water-kinds-ext.js"
  ]
 }

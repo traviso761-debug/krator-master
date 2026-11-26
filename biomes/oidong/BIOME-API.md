@@ -67,6 +67,14 @@ number: the probe checks it) and are reported in `OIDONG.STONES` for the host's 
 | 14 | cedar | Temple cedar | 18-34 | | | | Cfb Dfb |
 | 15 | camphor | Camphor laurel | 12-22 | | | | Cfb |
 | 16 | pagodafir | Pagoda fir | 14-28 | | | yes | Cfb Dfb ET |
+| 17 | cloudpad | Cloud-pad tree (carved bark) | 5-9 | | | yes | Cfb Dfb BSk |
+| 18 | stupa | Stupa tree (groups of 3-5) | 20-36 | | | yes | Cfb |
+| 19 | lattice | Lattice tree (landmarks, at most 4) | 13-19 | yes | | yes | Cfb BSk |
+
+17-19 (the diversity pass, 2026-10-26) are placed by `OIDONG.NEWPASSES` after the other passes, from core/rand: each cell
+seeded by `KRAND.cell(KRAND.child(550019,'oidong/<key>'), ix, iz)`, each tree's builder on `reseed(KRAND.hash(550019, sp,
+seed))`, so a tile built alone draws the same trees and nothing placed before them moved. The lattice trees are the best
+points of a 40 m lattice on the open floor, 700 m apart.
 
 Every species and floor plant carries `tags:{climate, aridity, abyssal, riparian, koppen, holy, shared, alien, harvest}`;
 `harvest` names the wood, the edible parts, whether it is medicinal and the catalog fruit (`biomes/FRUIT.md`). The floor

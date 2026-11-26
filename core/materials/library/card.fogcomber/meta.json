@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 200,
+   "key_lo": 80,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.fogcomber",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.fogcomber.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-26, fourth drop), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell)",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.fogcomber\"",
+  "reuse": "the Outlands veil-cap thread fringes (cells 1-6) and comb masts (cells 7-9); any hanging beaded curtain",
+  "sha1": "b7112e9ba4a91f0054b8be366710de37ca3b4d88"
+ }
+}

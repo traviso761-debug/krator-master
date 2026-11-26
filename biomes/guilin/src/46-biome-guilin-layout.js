@@ -108,9 +108,7 @@ GUILIN.at=function(x,z){const r=GUILIN.rockAt(x,z),rd=L.riverD(x,z),gv=sm(L.sfR+
 
 // ---------------------------------------------------------------- the wall: a point on a bed's face, and its outward normal
 // u 0 the bed's foot .. 1 its top edge; a the angle about the bed's centre (its taper and lean followed up the bed)
-GUILIN.wall=function(B,b,a,u){const f=K.prof(b,u)*(1+((b.tp==null?1:b.tp)-1)*u),cx=b.cx+(b.tx||0)*u,cz=b.cz+(b.tz||0)*u,R=K.footR(b,a)*f,x=cx+Math.cos(a)*R,z=cz+Math.sin(a)*R;
- const e=.01,R1=K.footR(b,a+e)*f,tx=cx+Math.cos(a+e)*R1-x,tz=cz+Math.sin(a+e)*R1-z,tl=Math.hypot(tx,tz)||1;
- return {x,y:b.y+u*b.h,z,nx:tz/tl,nz:-tx/tl};};
+GUILIN.wall=(B,b,a,u)=>K.wall(B,b,a,u);   // KSTACKS.wall (core/terrain/37-core-stacks.js)
 
 // ---------------------------------------------------------------- the cliffs' dressing (data: where the scrub holds on)
 // CLIFF: points on the towers' walls, in rows ~3.2 m apart up each bed and ~3.4 m round it, kept by a hash against the

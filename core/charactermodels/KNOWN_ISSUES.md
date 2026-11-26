@@ -1,5 +1,17 @@
 # core/charactermodels: known issues
 
+- **The giant chief's four-armed coat (`giant_free_m_chief4`) has seven dead cloth chains.** Its lower sleeves are split
+  off into `.sleeves2.glb` after the chains are bound (`make_mpfb.py main`: `split_lower` runs after `turn_glb`), so
+  seven chains' anchor indices run past the coat's mesh and the page cannot drive them; `tests/check_kit.py` allows the
+  entry by name (`tests/kit-known-bad.json`). A Blender rebuild that binds the chains after the split clears it; until
+  then the lower sleeves hang rigid.
+- **Ten legacy garments' chain bones were rebound on 2026-11-06** (`make_mpfb.py anchors`): the settle pass had moved their
+  vertices 8 to 140 mm after the chains were bound (the Izani trade coats, the Beast Rider deels, the Republic jackets,
+  peasant dress and sarafan). The pieces are gitignored, so the fix lives in this checkout's `pieces/` and the built
+  `dist/pieces/`; the published labs carry the old binds until their pieces are republished.
+- **The UI inventory covers the Gear and Head tabs only** (`verify.py`, `tests/ui-inventory.json`): the Body, Face and
+  Record tabs draw no `.slot` sections, so a loss there is not caught yet.
+
 - **The Cosmetic Lab is full.** A published version holds at most 256 MiB and the lab is at about 245; the Order of
   Historians' and Xanadu's clothes (`order_`, `xan_`, 2026-10-19) went into a lab of their own (README, Publishing the
   labs); since 2026-10-20 the main lab carries them too (its stale `.morph.txt` files removed), and the Order's own lab
@@ -114,12 +126,10 @@
   a shoulder (no capsule) can show through a mantle in a full overhead reach. A chain point inside a limb leaves on
   the side of the point above it, so a seated lap or a raised arm is draped, but only points collide: a 20 cm segment
   whose two ends are clear can still cut through a knee's corner. In a deep crouch or on a seat, a long robe's layers
-  can still show one through another for a frame or two where the chains swing. In a run, a long robe (the Order's,
-  the court robes, the kimono) has its back pierced by the shin as the trailing leg kicks up, and for a frame a patch at
-  the back of that hip can show: the push skips the back of a thigh's top third (the seat covers it at rest), and the
-  seat capsules do not swing with the thigh. A narrow ankle-length skirt (the Order novice's wrap) cannot cover a thigh
-  raised as high as a run's: at the top of the stride the leading thigh comes out of its side, cloth or no cloth (its
-  fitted shape is a tube; the chains and the push move it, they do not make more of it).
+  can still show one through another for a frame or two where the chains swing.
+- **In a stride a garment stands wider than it hangs.** The hull (`pushOut`, HANDOFF-GARMENT-DEFECTS.md round 4) keeps the legs inside by taking the cloth over them, so a long robe bells out in a walk and a run. Two tiers of one garment
+  can show flecks of the lower through the upper where they meet; the Izani court cape shows more of the robe through it.
+- **No garment has a slit.** `torso_tube(slit=)` and the runtime's handling of it work and are unused: the four skirts cut with one looked worse than uncut once the bones were right.
 - **Tall bodies tear long robes in a run.** The monk's robe (and the skirts now cut as it) holds in a run up to about
   +0.7 height (the owner, 2026-10-20); taller, the thigh is up to 29% longer (44 to 57 cm) and its raised knee goes out
   through the robe's side, and at +1 the walk and idle open small tears at the back of the thigh too. The push's capsules
@@ -138,6 +148,57 @@
   and the gele are rigid; the grand boubou is one stiff sheet over the arms (it swings at the hem but has no folds and
   does not part when an arm is raised); the mosaic and the mud-cloth are painted. A tall hat passes through anything
   held overhead.
+- **Fur is shells, not strands** (2026-10-26; README, "Fur"). Seen edge-on it has a soft, spiky silhouette; seen
+  face-on it is a speckle of strand ends with no lighting of its own (it is lit as the cloth under it), and strands do
+  not move apart in a bend or sway. Fur under another item is trimmed only for trousers (between the boots' top and the
+  top's hem); a fur trim under a part of its own garment (the gown's cape edge under the lace collar) can show through
+  it. The rows of the garments built before `make_garments.py` wrote them were derived from the published pieces
+  (`tools/fur.py`): rebuilding those garments rewrites them from the source (a few texels apart at a band's edge). The
+  Godot twin's legs band takes the unmorphed rest heights (CUSTOM1), the page the morphed ones: a few cm apart at the
+  slider ends. The crowd's baked looks leave the shells out.
+- **Coats are a first pass** (2026-10-26; README, "Coats"). The pelt, the brush and the short coat read as fur; body hair
+  (tuned once: combed flat, inked toward the skin) reads as hair from a few metres and as streaks close up. The Coyote
+  Men are furred human bodies: their coyote head and digitigrade legs need a body of their own (Blender); their furred
+  face has a human face's shape, the eyes and mouth bare by ellipses (until the coyote head, below).
+- **The coyote head is a first pass** (2026-10-26; README, "Therian heads"). A procedural head, two quality passes
+  against the owner's photographs. It blinks (upper lids only; the lower lids are carved, still). Its jaw does not open
+  and its ears do not turn: nothing drives the face joints yet (no clip has a face track), so a jaw or ear joint would
+  sit still; that wants the activities' clips (README, "A core module: where it goes next"). The eyes do not turn either.
+  The colours are vertex colours, so the pattern's edges are soft; the fur's box projection meets itself at 45-degree
+  seams (strands that run on 3D position would need the rest position in Godot's vertex shader); the ears are furred only
+  at the base. It takes the skull's morphs by nearest vertex, so a child's or an old body's head is the man's head
+  moved, a little large on the short ones. Headgear made for a human head floats on it (no people draws one on it yet).
+  In this checkout it was made by `tools/heads.py` from the published base: the Godot twin has no slider shapes for it
+  and its skin regions do not yet hide the human head under it, until `make_mpfb.py` next runs (which makes it with the
+  other mods); its look and its blink were checked in Godot on the bare piece.
+  The digitigrade legs are not built. A MakeHuman UV seam shows in motion as a darker
+  line across the chest under a full coat (the strands run on the UV map and break at the seam). The bare face is an ellipse sized from the
+  head, not a mask painted for each face: a long or wide face sliders can leave a fringe on the cheeks or bare the
+  temples. The ears (their own primitive) stay bare. A UV seam shows as a faint line in a short coat (round the
+  areola). A coat stops at what the clothes hide; a library item with no delete group hides nothing, so a coat comes
+  through it (the polo, the fisherman's sweater). The Godot twin takes its rings through vertices merged by position
+  (the page through MakeHuman's source vertices) and reads its cover from a texture by VERTEX_ID; its figure test
+  could not run here (no pieces), only a test sphere. No people draws a coat yet: the Khaayken's people entry and their
+  1.15 scale are for Y5 (`kits/yeti/PLAN.md`).
+- **The cat, lion, rat, monkey and bird heads are first passes** (2026-11-02; README, "Therian heads";
+  `tools/therian.py`): each on the coyote's machinery, so everything above holds for them (upper lids only, no jaw, ears
+  still, the morphs by the nearest skull vertex, headgear floats). The lion's mane is a solid field under 28 shells of
+  a 6 cm pile: the heaviest piece the labs draw (fine on a GPU; software WebGL takes seconds a frame, so `verify.py`
+  and `tools/shots.py` crawl on it), and it ends flat at the head's floor under the neck, which a top or the coat covers; a piece wears one fur kind,
+  so the lion's face wears the mane's coarse strands short (from the front it reads spiky; a kind per material would
+  need the fur rows to pick by material).
+  The whiskers are crossed ribbons a millimetre wide: fine from near, aliased from afar. The rat's ears and the bird's beak
+  are untinted (the ears pink, the beak horn), whatever the record's colours; the monkey's bare face takes the skin
+  colour, so a people's skin stops should be a macaque's pinks and browns. The bird's beak is one shape (a corvid's);
+  a raptor's hook or a finch's cone would be a species each. None is drawn by a people yet (all marked `test`), none
+  has been checked in Godot (the kit items and `fur.json` are synced; the pieces are not in the repo), and their pieces
+  are not in the published Cosmetic Lab (no room): they are in "Cosmetic Lab: therian heads" (`gallery/README.md`).
+- **Their tails are first passes too** (2026-11-02; `tools/tails.py`). A species' tail puts its own chain on the shared
+  tail joints while it is worn (kit `tail.rest`); the spring chain, the leg capsules and the floor hold as for the
+  reptile's, so a tail carried up (the cat's, the monkey's) is a rest the chain springs back to, not a pose a clip can
+  change, and a curl past the level (the monkey's) can swing through the body's back when the hips turn fast. The bird's
+  feathers are flat blades with no fur shells and no barbs. Not checked in Godot (the twin's `_tail_rest` was written
+  blind to the page's); the tube is 16 vertices round, so the thin tails are faceted close up.
 - **The lower arms (the arm mods) are copies driven by rule, not animated.** The flesh pair is the upper pair's skin
   and joints copied lower (`tools/mods.py`), so its deltoids are the upper's; where the copy blends into the ribs a
   close look finds a soft crease, and an arm swung far back can show the blend. No clip was made for four arms: the
@@ -201,8 +262,18 @@
   - *The tail comes through the cloth* of a top, robe or cape over its root (over trousers it leaves by the waistband's
     back, which reads well). The Lizardmen wear no clothing, but their armour and anyone else's tops would want an
     opening, and the cloth chains do not collide with the tail.
-  - *Its scales are a procedural stand-in* (`mods.scale_texture`) and the body under them is human skin tinted olive:
-    the textures are asked for in `core/materials/PROMPTS-NEEDED.md`, section 21. In Godot the stand-in aliases more.
+  - *Its scales are the library's `organic.scale`*, a snake's flank, on the head, the tail and (under the lizard's head,
+    kit item `skin_detail`) the body: the Lizardmen's own textures are asked for in `core/materials/PROMPTS-NEEDED.md`,
+    section 21. On the body they are tiled over MakeHuman's UVs, whose islands differ in scale by about twice either
+    way: from behind, the neck and shoulders show patches of larger and smaller scales meeting at the islands' edges.
+    A body made for the Lizardmen would want its own UVs (or the scales projected in the skin's rest space).
+  - *The frog's feet are the human ones*: the hands are webbed with pads, the toes (one joint for all five) are not.
+    In the A-pose the fingers lie close, so the webs show little until a hand spreads.
+  - *Godot reads the frog's pattern from its vertex colours as if they were sRGB*: `kchar_pattern.gdshader` decodes
+    them (found on the compatibility renderer; the Forward+ renderer, untried here, may not need it: check a marbled
+    frog's jaw against its body there).
+  - *The neck's crest goes as one*: under any worn item that covers the skin at its roots (most tops do: their hide
+    runs up the back of the neck) the whole neck's crest is left out and the head's stays (`crest_neck`).
   - *The head is rigid*: the face sliders do not move it, and the jaw only opens on its own clock (no clip keys it).
   - *The whole-build path is untried*: `make_mpfb.py` makes the same pieces through `mods.nonhuman` (checked: on the
     published base `make_all` gives the spike's bytes), but it has not been run with Blender's export.

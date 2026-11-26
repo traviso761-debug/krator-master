@@ -1,5 +1,5 @@
 // prefix: res
-// ================================================================= RESOURCE NODES: ten kinds in three grades
+// ================================================================= RESOURCE NODES: twenty kinds in three grades
 // The nodes the works draw on (owner, 2026-10-15; the kinds, the rule and the numbers are 42r-res-ore.js). Larger and richer
 // with the grade; a richer node has loose stuff round its foot. Each is a def `node-<kind>-<grade>` (class prop, kind
 // res-node, culture generic: world content), placeable anywhere with place(); its tags carry the kind (rock), the grade
@@ -14,7 +14,15 @@
 //   coal                a cut bank in a low rise: pale sandstone beds stepping back, black coal seams between them
 //   sulfur              a low warm mound crusted yellow round a fuming vent, sulfur crystals at its lip
 //   saltpeter           a weathered outcrop of dark earth, white saltpeter blooming on its faces and crusting the ground
+//   potash              a salt pan's crust broken open (biomes/catch: the sealed basin's salt field): pink-red potash
+//                       beds under a white halite skin, the slabs dug and stacked, ochre polygons of crust round the pit
+//   alkali              a soda pan: pale peach plates of soda crust curling at their edges round a brine pit (pink-teal)
+//                       where the crust is cut, white trona nodules heaped; borates and lithium come out of the same brine
 //   oil                 a seep: a black pool of oil in a tar-crusted stain, bubbles on it, dead ground round it (a derrick's, not a mine's)
+//   gypsum, halite      the evaporite rings' rim and middle (below, resEvap)
+//   nickel, marble      the new rocks' (2026-11-03, below): a dark norite outcrop with brassy sulphide; a marble quarry
+//   emerald, turquoise  the gems (2026-11-16, below): dark schist with calcite veins and green crystals; pale altered rock
+//                       netted with blue-green veinlets and nodules
 //   RES_LOOK                    per kind: its colours
 //   resOutcrop(S, rich, fn)     the angular outcrop; fn(i, bw, bh, bd) draws a block's dressing in the block's frame
 //   resNode(kind, grade)        draw a node at the origin
@@ -27,11 +35,13 @@ const RES_LOOK={iron:{vein:[0x8a3e1e,0xa4521e,0x6e2e16],lump:0x2a2624,pile:0x6a3
  coal:{vein:[0x16161a,0x1e1c1e],lump:0x121214,pile:0x1a1a1c,bed:[0xb09a78,0xa48c6c,0xbca684]},
  sulfur:{vein:[0xd6c23a,0xe8d84a,0xc8a828],lump:0xf0e060,pile:0xd0b838},
  saltpeter:{vein:[0xf2efe6,0xe8e4d8,0xfaf8f2],lump:0xf6f4ee,pile:0xe0dccf},
+ potash:{vein:[0xc86a5a,0xd88a6e,0xb0503e],lump:0xf2ece4,pile:0xc89a6a},
+ alkali:{vein:[0xead6c2,0xf2e4d4,0xdcc4ae],lump:0xfaf6ee,pile:0x7aa8a0},
  oil:{vein:[0x0e0c0a,0x1a1614],lump:0x141210,pile:0x2a2420}};
 /* the ore sets (materials.json families, full colour): a face takes its set where the page packs it (this kit) and falls back to
    the old key and vertex colour where it does not (a building kit reading this file in place). resK picks the key, resC the colour:
    a packed set carries its own colour, so the vertex colour only varies it. */
-const RES_SET={iron:'gossan',copper:'malachite',gold:'quartz',tin:'cassiterite',silver:'galena','rare-earth':'pegmatite',coal:'coal',saltpeter:'efflor',oil:'tar'};
+const RES_SET={iron:'gossan',copper:'malachite',gold:'quartz',tin:'cassiterite',silver:'galena','rare-earth':'pegmatite',coal:'coal',saltpeter:'efflor',potash:'potash',alkali:'soda',oil:'tar'};
 function resK(k,fb){return MAT[k]&&MAT[k].map?k:fb;}
 function resC(k,c){if(!(MAT[k]&&MAT[k].map))return c;const m=(a,b)=>Math.round(a+(b-a)*.78);return (m(c>>16&255,255)<<16)|(m(c>>8&255,255)<<8)|m(c&255,255);}
 function resOutcrop(S,rich,fn,o){o=o||{};const nb=4+rich*3,strike=rr(0,PI);
@@ -39,7 +49,25 @@ function resOutcrop(S,rich,fn,o){o=o||{};const nb=4+rich*3,strike=rr(0,PI);
   const bw=rr(.22,.34)*S,bd=rr(.18,.28)*S,bh=(.55-Math.abs(t)*.6)*S*rr(.75,1.05),sink=bh*.18;
   WX(x,-sink,z,strike+rr(-.25,.25),rr(-.18,.18),rr(-.22,.22),()=>{box('stone',0,0,0,bw,bh,bd,o.col?o.col(i):(i%3?P('stoneD'):P('stone')));fn(i,bw,bh,bd);});}}
 function resLoose(S,n,cols,mk){for(let i=0;i<n;i++){const a=rr(0,TAU),r=rr(.45,.75)*S,q=rr(.04,.09)*S;box(mk||'plain',Math.cos(a)*r,0,Math.sin(a)*r,q,q*.7,q*.9,cols[i%cols.length],rr(0,TAU));}}
+/* the evaporite rings' rim and middle (the geology bake, 2026-10-26): gypsum, a low bank of pale bedded crust slabs
+   tilted out of the ground with glassy selenite blades in clusters; halite, rock salt cut from the pan, a square pit in
+   the white crust with the cut blocks stacked and polygon ridges round it. Vertex colours until their sets arrive (the
+   efflorescence set reads as dark marble on them: KNOWN_ISSUES.md). */
+const RES_EVLOOK={gypsum:{vein:[0xe8e4dc,0xd8d2c6,0xf2efe8],lump:0xf4f2ec,pile:0xc8c0b0},halite:{vein:[0xf6f4f0,0xeceae4,0xfcfbf8],lump:0xffffff,pile:0xd8d4cc}};
+function resEvap(kind,S,rich){const L=RES_EVLOOK[kind],ek='plain';
+ if(kind==='gypsum'){const n=4+rich*3,strike=rr(0,PI);
+  for(let i=0;i<n;i++){const t=n<2?0:i/(n-1)-.5,x=Math.cos(strike)*t*S*.8,z=Math.sin(strike)*t*S*.8,bw=rr(.2,.32)*S,bh=rr(.05,.09)*S*(1+rich*.3);
+   WX(x,0,z,strike+rr(-.3,.3),rr(-.25,.25),rr(-.1,.1),()=>{box(ek,0,0,0,bw,bh,bw*rr(.6,.9),resC(ek,L.vein[i%3]));box('plain',0,bh,0,bw*.9,.006*S,bw*.55,L.pile);});}
+  for(let i=0;i<3+rich*4;i++){const a=rr(0,TAU),r=rr(.2,.6)*S,cx=Math.cos(a)*r,cz=Math.sin(a)*r;
+   for(let k=0;k<3+rich;k++)cone('plain',cx+rr(-.04,.04)*S,0,cz+rr(-.04,.04)*S,rr(.008,.016)*S,rr(.035,.07)*S*(1+rich*.25),L.lump,4);}
+  return;}
+ const R=.6*S;ellip(ek,0,0,0,R*1.25,.008*S,R*1.1,resC(ek,L.vein[1]),rr(0,TAU),16);
+ for(let i=0;i<8+rich*4;i++){const a=i/(8+rich*4)*TAU,r=R*rr(.8,1.15);box(ek,Math.cos(a)*r,.004*S,Math.sin(a)*r,R*.5,.012*S,.02*S,resC(ek,L.vein[i%3]),a+PI/2);}
+ box('plain',0,-.01*S,0,R*.5,.012*S,R*.5,L.pile);
+ const ns=2+rich*3,ang=rr(0,TAU);for(let i=0;i<ns;i++){const a=ang+rr(-.4,.4),r=R*rr(.55,.8),q=rr(.08,.12)*S,y=(i%3)*.06*S;
+  box(ek,Math.cos(a)*r,y,Math.sin(a)*r,q,q*.7,q,resC(ek,L.lump),a);}}
 function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.size,rich=G.rank;
+ if(kind==='gypsum'||kind==='halite'){resEvap(kind,S,rich);return;}
  if(kind==='iron'||kind==='copper'||kind==='gold'||kind==='silver'){
   resOutcrop(S,rich,(i,bw,bh,bd)=>{const nv=1+rich+(i%2);for(let k=0;k<nv;k++){const c=L.vein[(i+k)%L.vein.length],y=bh*rr(.25,.85),th=(kind==='gold'?.06:.035)*S*(1+rich*.35),side=k%2?1:-1;
     {const vk=resK(RES_SET[kind],kind==='gold'?'stone':kind==='silver'?'iron':'plain');box(vk,0,y,side*(bd/2+.006),bw*rr(.7,1.0),th,.012,resC(vk,c));}
@@ -89,6 +117,24 @@ function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.
    {const vk=resK('efflor','plain');box(vk,0,bh,0,bw*rr(.6,.9),.012,bd*rr(.6,.9),resC(vk,L.vein[i%3]));}},{col:i=>EC[i%3]});
   for(let i=0;i<5+rich*6;i++){const a=rr(-.5,.5)+PI/2,r=rr(.4,.7)*S;const vk=resK('efflor','sand');ellip(vk,Math.cos(a)*r,0,Math.sin(a)*r,rr(.06,.14)*S,.008*S,rr(.05,.12)*S,resC(vk,L.vein[i%3]),rr(0,TAU),8);}
   return;}
+ if(kind==='potash'){
+  /* the pan's crust broken open: a pit cut through the white halite skin into the pink-red potash beds; the slabs stacked
+     beside it (more with the grade), the crust round it in ochre polygons ringed with salt */
+  const R=.62*S,pk=resK('potash','plain');
+  ellip(pk,0,0,0,R*1.25,.01*S,R*1.05,resC(pk,L.pile),rr(0,TAU),16);
+  ellip('plain',0,.006*S,0,R*.55,.012*S,R*.42,L.lump,rr(0,TAU),14);
+  ellip(pk,0,.002*S,0,R*.42,.018*S,R*.32,resC(pk,L.vein[0]),rr(0,TAU),14);
+  const ns=3+rich*4,ang=rr(0,TAU);for(let i=0;i<ns;i++){const a=ang+rr(-.5,.5),r=R*rr(.75,1.05),q=rr(.07,.12)*S,y=(i%3)*.03*S;
+   box(pk,Math.cos(a)*r,y,Math.sin(a)*r,q*1.5,.03*S,q,resC(pk,L.vein[i%3]),rr(0,TAU));box('plain',Math.cos(a)*r,y+.03*S,Math.sin(a)*r,q*1.45,.008*S,q*.95,L.lump,rr(0,TAU));}
+  return;}
+ if(kind==='alkali'){
+  /* a soda pan: plates of crust curling up at their edges round a cut brine pit, white trona nodules heaped by it */
+  const R=.66*S,sk=resK('soda','plain');
+  ellip(sk,0,0,0,R*1.3,.008*S,R*1.1,resC(sk,L.vein[1]),rr(0,TAU),16);
+  for(let i=0;i<8+rich*6;i++){const a=rr(0,TAU),r=R*rr(.45,1.15),q=rr(.08,.16)*S;box(sk,Math.cos(a)*r,.004*S,Math.sin(a)*r,q,.012*S,q*rr(.6,1),resC(sk,L.vein[i%3]),rr(0,TAU),rr(-.12,.12));}
+  ellip('water',0,.01*S,0,R*(.25+.08*rich),.006*S,R*(.2+.06*rich),L.pile,rr(0,TAU),14);
+  for(let i=0;i<2+rich*4;i++){const a=rr(-.6,.6)+PI/3,r=R*rr(.5,.7);sph('plain',Math.cos(a)*r,0,Math.sin(a)*r,rr(.03,.06)*S,L.lump,.6,6);}
+  return;}
  if(kind==='oil'){
   /* the seep: an irregular stain of tar-crusted dead ground, the pool (or pools) of oil with its sheen, tar humps and
      bubbles, a few bleached stones */
@@ -100,8 +146,8 @@ function resNode(kind,grade){const L=RES_LOOK[kind],G=RES_ORE.grades[grade],S=G.
   for(let i=0;i<2+rich*2;i++){const a=rr(0,TAU),r=rr(.6,.8)*S;sph('stone',Math.cos(a)*r,0,Math.sin(a)*r,rr(.03,.06)*S,0xb8b0a0,.6,6);}
   return;}}
 /* a node def's body (its key and seed are written out below, one def each, so the build's seed check sees them) */
-const RES_NAME={iron:'Iron ore',copper:'Copper ore',gold:'Gold ore',tin:'Tin ore',silver:'Silver ore','rare-earth':'Rare earth',coal:'Coal seam',sulfur:'Sulfur',saltpeter:'Saltpeter',oil:'Oil seep'};
-const RES_H={iron:.72,copper:.72,gold:.72,tin:.72,silver:.72,'rare-earth':.72,coal:.82,sulfur:.3,saltpeter:.66,oil:.12};
+const RES_NAME={iron:'Iron ore',copper:'Copper ore',gold:'Gold ore',tin:'Tin ore',silver:'Silver ore','rare-earth':'Rare earth',coal:'Coal seam',sulfur:'Sulfur',saltpeter:'Saltpeter',potash:'Potash',alkali:'Alkali salts',oil:'Oil seep'};
+const RES_H={iron:.72,copper:.72,gold:.72,tin:.72,silver:.72,'rare-earth':.72,coal:.82,sulfur:.3,saltpeter:.66,potash:.1,alkali:.08,oil:.12};
 function resNodeDef(kind,grade){const G=RES_ORE.grades[grade],S=G.size,K=RES_ORE.kinds[kind],W=RES_ORE.works[K.works];
  return {name:RES_NAME[kind]+', '+grade+' grade',cls:'prop',kind:'res-node',w:S*1.7,d:S*1.7,h:S*RES_H[kind],budget:20000,front:{x:0,z:S*.6,yaw:0},
   tags:{culture:'generic',role:'resource node',rock:kind,level:grade,harvest:{item:K.item,efficiency:G.yield,works:K.works}},
@@ -134,6 +180,89 @@ defBuilding({key:'node-sulfur-high',seed:5852,...resNodeDef('sulfur','high')});
 defBuilding({key:'node-saltpeter-low',seed:5860,...resNodeDef('saltpeter','low')});
 defBuilding({key:'node-saltpeter-medium',seed:5861,...resNodeDef('saltpeter','medium')});
 defBuilding({key:'node-saltpeter-high',seed:5862,...resNodeDef('saltpeter','high')});
+defBuilding({key:'node-potash-low',seed:5900,...resNodeDef('potash','low')});
+defBuilding({key:'node-potash-medium',seed:5901,...resNodeDef('potash','medium')});
+defBuilding({key:'node-potash-high',seed:5902,...resNodeDef('potash','high')});
+defBuilding({key:'node-alkali-low',seed:5910,...resNodeDef('alkali','low')});
+defBuilding({key:'node-alkali-medium',seed:5911,...resNodeDef('alkali','medium')});
+defBuilding({key:'node-alkali-high',seed:5912,...resNodeDef('alkali','high')});
 defBuilding({key:'node-oil-low',seed:5870,...resNodeDef('oil','low')});
 defBuilding({key:'node-oil-medium',seed:5871,...resNodeDef('oil','medium')});
 defBuilding({key:'node-oil-high',seed:5872,...resNodeDef('oil','high')});
+/* the geology bake's two evaporite kinds (2026-10-26) */
+Object.assign(RES_NAME,{gypsum:'Gypsum',halite:'Rock salt'});Object.assign(RES_H,{gypsum:.14,halite:.12});
+defBuilding({key:'node-gypsum-low',seed:5920,...resNodeDef('gypsum','low')});
+defBuilding({key:'node-gypsum-medium',seed:5921,...resNodeDef('gypsum','medium')});
+defBuilding({key:'node-gypsum-high',seed:5922,...resNodeDef('gypsum','high')});
+defBuilding({key:'node-halite-low',seed:5930,...resNodeDef('halite','low')});
+defBuilding({key:'node-halite-medium',seed:5931,...resNodeDef('halite','medium')});
+defBuilding({key:'node-halite-high',seed:5932,...resNodeDef('halite','high')});
+/* the new rocks' two kinds (2026-11-03, REBAKE-PLAN.md R3). nickel: a low dark outcrop of norite (the melt sheet's base, green-black),
+   a rust gossan crust over it, brassy-bronze sulphide (pentlandite, pyrrhotite) in blebs and seams on its faces, more and bigger
+   with the grade. marble: a quarry: a stepped face of white and grey veined marble cut in blocks, the cut blocks stacked before
+   it, chips round its foot; the library's rock.marble012 where the page packs it (this kit's materials.json 'marble'), white
+   vertex colour where it does not */
+RES_LOOK.nickel={vein:[0xb08a3a,0xc49a48,0x8a6a2e],lump:0x23261f,pile:0x5a4a34,host:[0x2c3029,0x353a31]};
+RES_LOOK.marble={vein:[0xb8b8bc,0x9a9aa2,0xd8d6d0],lump:0xf2f0ea,pile:0xe0ded8};
+function resNickel(S,rich){const L=RES_LOOK.nickel;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a3e1e));}
+  const nb=2+rich*2;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.018)*S*(1+rich*.25);box('brass',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.4,q,.012,L.vein[k%3]);}
+  if(rich)box('brass',0,bh*rr(.3,.6),bd/2+.007,bw*rr(.4,.7),.008*S*(1+rich*.5),.012,L.vein[0]);},{col:i=>L.host[i%2]});
+ resLoose(S,rich*6,[L.pile,L.lump,L.vein[2]],'plain');}
+function resMarble(S,rich){const L=RES_LOOK.marble,mk=resK('marble','plain'),steps=2+rich,W0=S*1.1,D0=S*.35;
+ for(let s=0;s<steps;s++){const h=S*(.11+.02*rich),y=s*h,back=-s*D0*.55;
+  box(mk,0,y,back-D0*.5,W0*(1-s*.12),h,D0,resC(mk,s%2?L.vein[2]:L.lump));
+  const sw=W0*(1-s*.12);for(let v=0;v<2+rich;v++){const len=rr(.15,.35)*sw;box('plain',rr(-.5,.5)*(sw-len),y+h*rr(.25,.75),back-D0*.5+D0/2+.006,len,.006*S,.006,L.vein[v%2]);}}
+ const nb=2+rich*3;for(let i=0;i<nb;i++){const q=rr(.14,.22)*S,x=rr(-.45,.45)*W0,z=S*rr(.3,.55),y=(i%2)*q*.62;box(mk,x,y,z,q*1.5,q*.6,q,resC(mk,L.lump),rr(-.2,.2));}
+ resLoose(S,4+rich*5,[L.lump,L.pile,L.vein[2]],'plain');}
+{const node0=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='nickel')return resNickel(G.size,G.rank);if(kind==='marble')return resMarble(G.size,G.rank);return node0(kind,grade);};}
+Object.assign(RES_NAME,{nickel:'Nickel ore',marble:'Marble'});Object.assign(RES_H,{nickel:.62,marble:.7});
+defBuilding({key:'node-nickel-low',seed:5940,...resNodeDef('nickel','low')});
+defBuilding({key:'node-nickel-medium',seed:5941,...resNodeDef('nickel','medium')});
+defBuilding({key:'node-nickel-high',seed:5942,...resNodeDef('nickel','high')});
+defBuilding({key:'node-marble-low',seed:5950,...resNodeDef('marble','low')});
+defBuilding({key:'node-marble-medium',seed:5951,...resNodeDef('marble','medium')});
+defBuilding({key:'node-marble-high',seed:5952,...resNodeDef('marble','high')});
+/* zinc (2026-11-12, the owner; biomes/galvanic/PLAN.md section 9): a sphalerite outcrop. Resinous brown-black blocks (massive
+   sphalerite), honey-yellow translucent grains in seams on their faces (more and bigger with the grade), a rust gossan cap where the
+   iron in it has oxidised, and a white crust of zinc vitriol (goslarite) blooming at the foot. The library's gossan where the page
+   packs it; the owed rock.sphalerite (core/materials/PROMPTS-NEEDED.md section 43) would carry the faces */
+RES_LOOK.zinc={vein:[0xc8962e,0xd8aa44,0xa87a26],lump:0x3a2a1c,pile:0xe8e6de,host:[0x5a3e26,0x6a4a2c]};
+function resZinc(S,rich){const L=RES_LOOK.zinc;
+ resOutcrop(S*.9,rich,(i,bw,bh,bd)=>{{const gk=resK('gossan','plain');box(gk,0,bh,0,bw*.9,.012,bd*.9,resC(gk,0x8a4a26));}
+  const nb=2+rich*3;for(let k=0;k<nb;k++){const side=k%2?1:-1,q=rr(.008,.016)*S*(1+rich*.3);box('plain',rr(-.38,.38)*bw,bh*rr(.15,.85),side*(bd/2+.008),q*1.3,q,.012,L.vein[k%3]);}},{col:i=>L.host[i%2]});
+ for(let i=0;i<3+rich*2;i++){const a=rr(0,TAU),r=rr(.45,.7)*S;ellip('plain',Math.cos(a)*r,0,Math.sin(a)*r,rr(.05,.1)*S,.008*S,rr(.04,.08)*S,L.pile,rr(0,TAU),8);}
+ resLoose(S,rich*5,[L.lump,L.vein[0],L.lump],'plain');}
+{const node1=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='zinc')return resZinc(G.size,G.rank);return node1(kind,grade);};}
+Object.assign(RES_NAME,{zinc:'Zinc ore (sphalerite)'});Object.assign(RES_H,{zinc:.62});
+defBuilding({key:'node-zinc-low',seed:5960,...resNodeDef('zinc','low')});
+defBuilding({key:'node-zinc-medium',seed:5961,...resNodeDef('zinc','medium')});
+defBuilding({key:'node-zinc-high',seed:5962,...resNodeDef('zinc','high')});
+/* the gems (2026-11-16, the owner: the Coyote Men's exports; kits/coyote; seeds 6810-6822: 5960-5962 are zinc's on
+   claude/rift-battery-biome, 6710-6797 the mined goods' on claude/resource-nodes). emerald, Muzo's: a low outcrop of dark green-black
+   schist and shale (the library's rock.schist.emerald, family 'schistem'), white calcite veins across its faces, the six-sided
+   green crystals standing in them, more and larger with the grade; turquoise, Nishapur's: a pale bleached outcrop of altered
+   rock (cream, buff) netted with blue-green veinlets (rock.turquoise.vein, family 'turq'), nodules where the veins swell, a
+   chipped face and its chunks before the richer ones */
+RES_LOOK.emerald={vein:[0xece8de,0xf2f0ea],lump:0x1e8a52,pile:0x3a4a40,host:[0x2a3430,0x343e38],gem:[0x1e8a52,0x2aa064,0x14784a]};
+RES_LOOK.turquoise={vein:[0x5ab4a8,0x48a89a,0x7ac4b6],lump:0x6ab8ac,pile:0xb8a88c,host:[0xd8ccb4,0xcabca0]};
+function resEmerald(S,rich){const L=RES_LOOK.emerald,mk=resK('schistem','stone');
+ resOutcrop(S*.85,rich,(i,bw,bh,bd)=>{if(mk!=='stone')box(mk,0,bh-.002,0,bw*.98,.012,bd*.98,resC(mk,L.host[i%2]));
+  const nv=1+rich;for(let k=0;k<nv;k++){const side=k%2?1:-1,y=bh*rr(.25,.8),len=bw*rr(.5,.9);box('plain',0,y,side*(bd/2+.007),len,.012*S,.012,L.vein[k%2]);
+   const nc=2+rich*2;for(let c=0;c<nc;c++){const cx=rr(-.4,.4)*len,q=rr(.012,.022)*S*(1+rich*.3);cyl('plain',cx,y-q*.2,side*(bd/2+.012),q*.45,q*1.6,L.gem[c%3],6);}}},
+  {col:i=>L.host[i%2]});
+ resLoose(S,rich*5,[L.pile,L.host[0],L.lump],'plain');}
+function resTurquoise(S,rich){const L=RES_LOOK.turquoise,mk=resK('turq','plain');
+ resOutcrop(S*.85,rich,(i,bw,bh,bd)=>{const nv=2+rich*2;for(let k=0;k<nv;k++){const side=k%2?1:-1,y=bh*rr(.15,.9),len=bw*rr(.3,.85);
+   box(mk,rr(-.2,.2)*bw,y,side*(bd/2+.006),len,.016*S*(1+rich*.4),.014,resC(mk,L.vein[k%3]),0,0,rr(-.5,.5));}
+  for(let n=0;n<rich*2;n++)sph(mk,rr(-.35,.35)*bw,bh*rr(.3,.8),(n%2?1:-1)*(bd/2),.028*S*(1+rich*.3),resC(mk,L.lump),.7,7);},
+  {col:i=>L.host[i%2]});
+ resLoose(S,2+rich*5,[L.lump,L.pile,L.host[1]],rich?mk:'plain');}
+{const node2=resNode;resNode=function(kind,grade){const G=RES_ORE.grades[grade];if(kind==='emerald')return resEmerald(G.size,G.rank);if(kind==='turquoise')return resTurquoise(G.size,G.rank);return node2(kind,grade);};}
+Object.assign(RES_NAME,{emerald:'Emerald',turquoise:'Turquoise'});Object.assign(RES_H,{emerald:.55,turquoise:.55});
+defBuilding({key:'node-emerald-low',seed:6810,...resNodeDef('emerald','low')});
+defBuilding({key:'node-emerald-medium',seed:6811,...resNodeDef('emerald','medium')});
+defBuilding({key:'node-emerald-high',seed:6812,...resNodeDef('emerald','high')});
+defBuilding({key:'node-turquoise-low',seed:6820,...resNodeDef('turquoise','low')});
+defBuilding({key:'node-turquoise-medium',seed:6821,...resNodeDef('turquoise','medium')});
+defBuilding({key:'node-turquoise-high',seed:6822,...resNodeDef('turquoise','high')});

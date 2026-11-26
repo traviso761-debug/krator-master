@@ -1,0 +1,7 @@
+// ================================================================= HOST — Krator's sky at the cloud slopes (the shared sky, core/atmos SKY-PLAN.md section 9)
+// The Vale's sky (src/89-host-sky.js) at this station's place on the scale model (old px 669,1263) and its air: 1.21 atm, humid, more cloud. The painted
+// ranges are the ranges round the slopes (the high ranges north-east and south, snow above ~2.7 km); the cataract's band and plume are the Vale's view and
+// stay off here (the outlet lies below the slopes, out of sight behind the crest).
+const SKY=ATMOS.skyBiome({renderer,camera,scene,sun:sun,site:{px:669,py:1263},
+ preset:{"air":{"pressure":1.21,"humidity":0.92},"clouds":{"cover":0.62},"fogDensity":0.00021,"ridges":[{"base":6.2,"amp":2.6,"cycles":9,"octaves":3,"seed":61,"peaks":18,"peakAmp":1.8,"win":[20,160,1.2],"floor":-1,"dist":24000,"haze":0.15,"snowH":3900,"forestH":0,"rock":[0.58,0.62,0.68],"snow":[0.93,0.94,0.96]},{"base":3.4,"amp":1.8,"cycles":13,"octaves":3,"seed":62,"peaks":26,"peakAmp":1.0,"win":[180,170,1.0],"floor":-1,"dist":16000,"haze":0.2,"snowH":3600,"forestH":2400,"rock":[0.5,0.54,0.56],"forest":[0.3,0.4,0.33],"snow":[0.93,0.94,0.96]},{"base":1.2,"amp":1.0,"cycles":17,"octaves":3,"seed":63,"peaks":30,"peakAmp":0.6,"win":[0,180,0.4],"floor":-1,"dist":9000,"haze":0.3,"forestH":2600,"rock":[0.36,0.42,0.41],"forest":[0.26,0.36,0.3]}]}});
+const {sky,giant,giantRing}=SKY.legacy;   /* the old dome's names, for what still reads them (the water's skylight scene, a layer) */

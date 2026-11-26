@@ -16,7 +16,7 @@ GEYSER.lay({
   sink: (x,z)=>bool,               // where run-off ends: the host's river, the sea, a terrace flight
   runLen: 520,                     // the longest run-off (m); each source's own is shorter by its size
   geysers: [{key, name, kind:'cone'|'fountain'|'spouter', x, z, H /* the column, m */,
-             period, pre, dur, steam, off /* s: the cycle, its preplay, column, steam phase, the clock's phase */,
+             period, pre, dur, steam, off /* s: the cycle, its preplay, column, steam phase, the clock's phase */, demo /* optional: the same five at a page's demo speed (the host swaps them in: 99-host-take.js setClock) */,
              cone:{r,h,spire}, mound:{r,h}, pool /* a fountain's or spouter's pool radius */, twin:[dx,dz]}],
   springs: [{key, name, kind:'prismatic'|'pool'|'funnel', x, z, r, temp /* 0..1: 1 boils */, out /* run-off channels */,
             outW /* their width, x */, spread /* their fan, rad */, shield, milky /* a travertine spring: no mats */}],
@@ -79,3 +79,6 @@ build with `show:false` and read `GEYSER.R` and `GEYSER.cycle` instead.
 Every species and plant: `climate`, `aridity`, `abyssal`, `riparian`, `koppen` (`GEYSER.KOPPEN`: XA and XV, the scale
 model's abyssal classes, and Af), `origin` (earth, native, dead), `heat` (splash, hot, warm, margin, acid, water,
 dead), `harvest` (biomes/FRUIT.md; the pandan's keys are the catalog's `generic_fruit_pandan_keys`).
+
+`GEYSER.build({..., center:[x,z]})` (2026-10-26): the passes grid round that centre instead of the host's (`BIO.center()`), and
+the host's centre is put back after; left out, nothing moves (biomes/ringisles builds its vent off the island's centre).

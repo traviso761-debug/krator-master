@@ -337,19 +337,6 @@
   "seconds": 172,
   "tris": 3697883
  },
- "core/sockets/example/sockets-example.html": {
-  "calls": 34,
-  "errors": 0,
-  "furnTris": 0,
-  "instSets": 0,
-  "instances": 0,
-  "materials": 46,
-  "meshes": 65,
-  "ready": true,
-  "sceneTris": 8108,
-  "seconds": 22,
-  "tris": 7120
- },
  "kits/ancients-interiors/dist/ancients-interiors.html": {
   "calls": 17397,
   "errors": 0,
@@ -1367,6 +1354,19 @@
   "seconds": 55,
   "tris": 1256243
  },
+ "kits/post-apoc/sockets-example/sockets-example.html": {
+  "calls": 34,
+  "errors": 0,
+  "furnTris": 0,
+  "instSets": 0,
+  "instances": 0,
+  "materials": 46,
+  "meshes": 65,
+  "ready": true,
+  "sceneTris": 8108,
+  "seconds": 22,
+  "tris": 7120
+ },
  "kits/ringsea/dist/ringsea.html": {
   "calls": 223,
   "errors": 0,
@@ -1405,16 +1405,6 @@
   "sceneTris": 1605201,
   "seconds": 210,
   "tris": 1568855
- },
- "openworld/little-demo/dist/little-demo.artifact.html": {
-  "errors": 0,
-  "ready": true,
-  "seconds": 57
- },
- "openworld/little-demo/dist/little-demo.html": {
-  "errors": 0,
-  "ready": true,
-  "seconds": 6
  },
  "settlements/dalab/dist/dalab-set.html": {
   "calls": 73,
@@ -1828,7 +1818,7 @@
   "seconds": 184,
   "tris": 1506302
  },
- "settlements/port/dist/cgBox.html": {
+ "kits/port/dist/cgBox.html": {
   "calls": 111,
   "errors": 0,
   "furnTris": 0,
@@ -1849,7 +1839,7 @@
   "seconds": 40,
   "tris": 409445
  },
- "settlements/port/dist/cgCrane.html": {
+ "kits/port/dist/cgCrane.html": {
   "calls": 149,
   "errors": 0,
   "furnTris": 0,
@@ -1870,7 +1860,7 @@
   "seconds": 75,
   "tris": 424157
  },
- "settlements/port/dist/cgEdges.html": {
+ "kits/port/dist/cgEdges.html": {
   "calls": 108,
   "errors": 0,
   "furnTris": 0,
@@ -1891,7 +1881,7 @@
   "seconds": 86,
   "tris": 392275
  },
- "settlements/port/dist/cgStore.html": {
+ "kits/port/dist/cgStore.html": {
   "calls": 118,
   "errors": 0,
   "furnTris": 0,
@@ -1912,7 +1902,7 @@
   "seconds": 117,
   "tris": 410995
  },
- "settlements/port/dist/chHousing.html": {
+ "kits/port/dist/chHousing.html": {
   "calls": 86,
   "errors": 0,
   "furnTris": 0,
@@ -1933,7 +1923,7 @@
   "seconds": 114,
   "tris": 606994
  },
- "settlements/port/dist/ddDock.html": {
+ "kits/port/dist/ddDock.html": {
   "calls": 115,
   "errors": 0,
   "furnTris": 0,
@@ -1954,7 +1944,7 @@
   "seconds": 122,
   "tris": 430044
  },
- "settlements/port/dist/ddShed.html": {
+ "kits/port/dist/ddShed.html": {
   "calls": 123,
   "errors": 0,
   "furnTris": 0,
@@ -1975,7 +1965,7 @@
   "seconds": 114,
   "tris": 434758
  },
- "settlements/port/dist/ddYard.html": {
+ "kits/port/dist/ddYard.html": {
   "calls": 117,
   "errors": 0,
   "furnTris": 0,
@@ -1996,7 +1986,7 @@
   "seconds": 112,
   "tris": 415166
  },
- "settlements/port/dist/edges.html": {
+ "kits/port/dist/edges.html": {
   "calls": 146,
   "errors": 0,
   "furnTris": 0,
@@ -2017,7 +2007,7 @@
   "seconds": 74,
   "tris": 604568
  },
- "settlements/port/dist/harbour.html": {
+ "kits/port/dist/harbour.html": {
   "calls": 431,
   "errors": 0,
   "furnTris": 0,
@@ -2038,7 +2028,7 @@
   "seconds": 131,
   "tris": 1080931
  },
- "settlements/port/dist/hbEdges.html": {
+ "kits/port/dist/hbEdges.html": {
   "calls": 106,
   "errors": 0,
   "furnTris": 0,
@@ -2059,7 +2049,7 @@
   "seconds": 165,
   "tris": 528237
  },
- "settlements/port/dist/hbFish.html": {
+ "kits/port/dist/hbFish.html": {
   "calls": 128,
   "errors": 0,
   "furnTris": 0,
@@ -2080,7 +2070,7 @@
   "seconds": 135,
   "tris": 552812
  },
- "settlements/port/dist/hbHaven.html": {
+ "kits/port/dist/hbHaven.html": {
   "calls": 134,
   "errors": 0,
   "furnTris": 0,
@@ -2101,7 +2091,7 @@
   "seconds": 115,
   "tris": 440462
  },
- "settlements/port/dist/hbMarina.html": {
+ "kits/port/dist/hbMarina.html": {
   "calls": 124,
   "errors": 0,
   "furnTris": 0,
@@ -2122,7 +2112,7 @@
   "seconds": 85,
   "tris": 535811
  },
- "settlements/port/dist/lbAuthority.html": {
+ "kits/port/dist/lbAuthority.html": {
   "calls": 98,
   "errors": 0,
   "furnTris": 0,
@@ -2143,7 +2133,7 @@
   "seconds": 78,
   "tris": 390922
  },
- "settlements/port/dist/lbBlocks.html": {
+ "kits/port/dist/lbBlocks.html": {
   "calls": 208,
   "errors": 0,
   "furnTris": 0,
@@ -2164,7 +2154,7 @@
   "seconds": 106,
   "tris": 639190
  },
- "settlements/port/dist/lbStores.html": {
+ "kits/port/dist/lbStores.html": {
   "calls": 94,
   "errors": 0,
   "furnTris": 0,
@@ -2185,7 +2175,7 @@
   "seconds": 61,
   "tris": 393876
  },
- "settlements/port/dist/lbTanks.html": {
+ "kits/port/dist/lbTanks.html": {
   "calls": 98,
   "errors": 0,
   "furnTris": 0,
@@ -2206,7 +2196,7 @@
   "seconds": 98,
   "tris": 391142
  },
- "settlements/port/dist/segment.html": {
+ "kits/port/dist/segment.html": {
   "calls": 144,
   "errors": 0,
   "furnTris": 0,
@@ -2227,7 +2217,7 @@
   "seconds": 124,
   "tris": 613508
  },
- "settlements/port/dist/showcase.html": {
+ "kits/port/dist/showcase.html": {
   "calls": 803,
   "errors": 0,
   "furnTris": 0,
@@ -2248,7 +2238,7 @@
   "seconds": 337,
   "tris": 5314804
  },
- "settlements/port/dist/slBerth.html": {
+ "kits/port/dist/slBerth.html": {
   "calls": 136,
   "errors": 0,
   "furnTris": 0,
@@ -2269,7 +2259,7 @@
   "seconds": 217,
   "tris": 561372
  },
- "settlements/port/dist/slCarrier.html": {
+ "kits/port/dist/slCarrier.html": {
   "calls": 118,
   "errors": 0,
   "furnTris": 0,
@@ -2290,7 +2280,7 @@
   "seconds": 140,
   "tris": 455403
  },
- "settlements/port/dist/slPen.html": {
+ "kits/port/dist/slPen.html": {
   "calls": 129,
   "errors": 0,
   "furnTris": 0,
@@ -2311,7 +2301,7 @@
   "seconds": 134,
   "tris": 473467
  },
- "settlements/port/dist/slSub.html": {
+ "kits/port/dist/slSub.html": {
   "calls": 106,
   "errors": 0,
   "furnTris": 0,
@@ -2332,7 +2322,7 @@
   "seconds": 127,
   "tris": 383697
  },
- "settlements/port/dist/spYard.html": {
+ "kits/port/dist/spYard.html": {
   "calls": 202,
   "errors": 0,
   "furnTris": 0,
@@ -2353,7 +2343,7 @@
   "seconds": 93,
   "tris": 626559
  },
- "settlements/port/dist/tmEdges.html": {
+ "kits/port/dist/tmEdges.html": {
   "calls": 101,
   "errors": 0,
   "furnTris": 0,
@@ -2374,7 +2364,7 @@
   "seconds": 129,
   "tris": 461225
  },
- "settlements/port/dist/tmHeli.html": {
+ "kits/port/dist/tmHeli.html": {
   "calls": 133,
   "errors": 0,
   "furnTris": 0,
@@ -2395,7 +2385,7 @@
   "seconds": 122,
   "tris": 426132
  },
- "settlements/port/dist/tmPass.html": {
+ "kits/port/dist/tmPass.html": {
   "calls": 121,
   "errors": 0,
   "furnTris": 0,
@@ -2416,7 +2406,7 @@
   "seconds": 109,
   "tris": 452714
  },
- "settlements/port/dist/tmShip.html": {
+ "kits/port/dist/tmShip.html": {
   "calls": 119,
   "errors": 0,
   "furnTris": 0,
@@ -2437,7 +2427,7 @@
   "seconds": 127,
   "tris": 419092
  },
- "settlements/port/dist/vsFeeder.html": {
+ "kits/port/dist/vsFeeder.html": {
   "calls": 125,
   "errors": 0,
   "furnTris": 0,
@@ -2458,7 +2448,7 @@
   "seconds": 118,
   "tris": 417677
  },
- "settlements/port/dist/vsGiant.html": {
+ "kits/port/dist/vsGiant.html": {
   "calls": 134,
   "errors": 0,
   "furnTris": 0,
@@ -2479,7 +2469,7 @@
   "seconds": 124,
   "tris": 571719
  },
- "settlements/port/dist/vsPanamax.html": {
+ "kits/port/dist/vsPanamax.html": {
   "calls": 126,
   "errors": 0,
   "furnTris": 0,

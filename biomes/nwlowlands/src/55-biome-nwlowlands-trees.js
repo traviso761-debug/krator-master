@@ -31,7 +31,7 @@ function zones(x,z){const wet=BIO.field('wet',x,z),tropic=BIO.field('tropic',x,z
  const bk=fbm(x*.0026+5,z*.0026-9,5501,2)+flow*.08+(wet-.8)*.2,bamboo=smooth(.61,.65,bk)*(rain+sub)*(1-dry*.9);
  return{wet,tropic,dry,flow,up,h,rain,sub,bamboo,
   med:dry,
-  shore:smooth(3.2,.9,h)*smooth(.82,.95,wet)*(1-dry),
+  shore:(BIO.host.fields.shoreM?smooth(34,4,BIO.host.fields.shoreM(x,z)):smooth(3.2,.9,h))*smooth(.82,.95,wet)*(1-dry),   /* the water's own edge where the host gives it (86-host-fields.js) */
   gully:dry*smooth(.34,.5,wet),
   rip:flow,
   // stands: birch and spire cedar grow in stands of their own
@@ -88,11 +88,11 @@ function limbPts(o,a,el,len,r0,r1,n,sag,wig,rise){const ca=Math.cos(a),sa=Math.s
 function limbDir(pts,i){const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b.x-a.x,dz=b.z-a.z;return Math.atan2(dz,dx);}
 
 // ---------------------------------------------------------------- foliage and epiphytes
-function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
+function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey,hold){
  const dx=(x-cx)/ex,dy=(y-cy)/ey,dz=(z-cz)/ex,qq=Math.hypot(dx,dy,dz);
  const ao=mix(.5,1,smooth(.3,.95,qq))*mix(.8,1,smooth(-.6,.35,dy))*rr(.88,1.1);
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
- BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao*1.3),{n:[nx/nn,ny/nn,nz/nn]});}
+ BIO.put(item,hold?BIO.holdTo(hold,[x,y,z],size*.2+.3):[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao*1.3),{n:[nx/nn,ny/nn,nz/nn]});}   /* hold: a point on the limb; its stem card stays on it (the card fit's stems; the draws are as they were) */
 function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col);}
 // the foliage colour of a clump: the species' set, with the odd flush of bronze new growth
 function crownCol(S,flush){return C(rng()<(flush||0)?pick(PAL.flush):pick(S.leaf));}
@@ -118,7 +118,7 @@ function twigs(fam,S,p,a0,n,len,elLo,elHi,st,out){for(let k=0;k<n;k++){const a=a
 function crownOn(item,spots,sz0,flat,colFn,T,cy,ex,ey,dens,st){let n=0;
  for(const p of spots){const m=Math.floor(dens)+(rng()<dens%1?1:0);
   for(let c=0;c<m;c++){const sz=sz0*rr(.85,1.2),a=rr(0,TAU),d=sz*.3*Math.sqrt(rng()),x=p.x+Math.cos(a)*d,z=p.z+Math.sin(a)*d,y=p.y+sz*flat*rr(.1,.35);
-   if(!clear3(x,y,z,sz*.5,sz*flat*.5))continue;clumpAt(item,x,y,z,sz,flat,colFn(),T.x,cy,T.z,ex,ey);st.clumps++;n++;}}
+   if(!clear3(x,y,z,sz*.5,sz*flat*.5))continue;clumpAt(item,x,y,z,sz,flat,colFn(),T.x,cy,T.z,ex,ey,[p.x,p.y,p.z]);st.clumps++;n++;}}
  return n;}
 // a LEADER: an upright limb from the bole to the crown's top, so the top of a crown is carried
 function leader(fam,S,T,from,top,r0,st,all){const el=Math.PI/2-rr(.1,.32),len=(top-from.y)/Math.sin(el);if(len<1.5)return null;
@@ -199,7 +199,7 @@ B.spire=function(T,st,lv){const S=SP[T.sp],fam=S.bk,H=T.H,rb=T.rb;
   for(let k=0;k<nW;k++){const u=k/(nW-1),y=mix(y0,T.y0+H*.96,u),c=at(y),R=col?T.crownR*(.55+.45*Math.sin(Math.PI*mix(.15,1,u)))*(1-.5*u):T.crownR*Math.pow(1-u,.85)+.6,m=lv===2?(col?3:4):3,a0=rr(0,TAU);
    for(let j=0;j<m;j++){const a=a0+j/m*TAU+rr(-.3,.3),el=col?rr(.9,1.2):rr(-.12,.25),len=R/Math.max(.35,Math.cos(el));
     if(lv===2&&!col){const pts=limbPts({x:c.x,y,z:c.z},a,el,len,Math.max(.06,rb*.16*(1-u)),.04,2,-.1,.05,0);st.limb+=BIO.tube(fam,pts,barkC(S),{seg:3});all.push(...pts);spots.push(pts[1],pts[2]);}
-    else spots.push({x:c.x+Math.cos(a)*R*.6,y:y+(col?R*.5:0),z:c.z+Math.sin(a)*R*.6,r:.1});}}
+    else{const sp={x:c.x+Math.cos(a)*R*.6,y:y+(col?R*.5:0),z:c.z+Math.sin(a)*R*.6,r:.1};BIO.beam('rod',[c.x,y,c.z],[sp.x,sp.y,sp.z],.07,.03,C(S.bark[0]));spots.push(sp);}}}   /* a rod to each spot where the tier draws no limb: the crown has something to hold it (core/biome README, "A crown with no structure at all") */
   crownOn('needle',spots,col?rr(2.4,3.2):rr(3,4.2),col?1.1:.55,()=>C(pick(S.leaf)),T,T.y0+H*.6,T.crownR,H*.45,lv===2?1.1:.8,st);}
  T.spread=Math.max(T.crownR,spread(T,all));reg(T,S);};
 // PALM (mist palm): a pale ringed stem, tall and thin, a green crownshaft, an arching
@@ -370,7 +370,7 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  const mk=(x,y,z,sp)=>{const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
  const DENS=.4;   // the showcase's stocking at q=1, measured against the budget (KNOWN_ISSUES)
  function pass(sp,cell,accept,opt){opt=opt||{};let n=0;const pad=opt.pad==null?3:opt.pad;
-  BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z)*(1-smooth(.02,.2,Z.bamboo));if(a<=0)return 0;   // never inside a bamboo grove
+  BIO.grid(cell,0,R,(x,z,d)=>{const Z=zones(x,z);const a=accept(Z,x,z)*(1-smooth(.02,.2,Z.bamboo))*(NWLOW.treeK?NWLOW.treeK(x,z):1);if(a<=0)return 0;   // never inside a bamboo grove
     return a*(opt.lodK?lerp(1,BIO.lod(x,z),opt.lodK):1)*q*(opt.dens==null?DENS:opt.dens);},
    (x,y,z,d)=>{if(!opt.inWater&&y<.3)return;if(opt.inWater&&(y<opt.inWater[0]||y>opt.inWater[1]))return;
     if(blocked(x,z,pad))return;if(!BIO.clearOf(x,z,pad+2))return;
@@ -409,9 +409,21 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  // runtime LOD: a hero is drawn in full while the camera is within NWLOW.LOD.tree of its chunk (its foot
  // keys all of it; the avenue's row: NWLOW.LOD.avenue) and as its lite stand-in past that; a far tree is
  // only ever its impostor, always drawn. trisBySpecies counts the tree itself; the stand-ins are tris.lite.
- const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
+ // OCTAHEDRAL IMPOSTORS (core/biome 34-core-impostor.js, R6; on when the page lists it, NWLOW.IMPOSTORS false turns them off):
+ // a far tree and a hero's stand-in are one quad showing the species baked from 8 x 8 directions, in place of the blobs; every
+ // species on one atlas (64 px a view), so one item, one call a chunk as the blob bucket was. Each
+ // species bakes one of its own trees (the first hero, built again in place after the bake, its registration muted); the
+ // quad is scaled by height and turned by the tree's seed. The blobs draw no random numbers, so no tree moves.
+ const IMPON=NWLOW.IMPOSTORS==null?typeof BIO.impostor==='function':!!NWLOW.IMPOSTORS,IMPS=[],ISET=IMPON?BIO.impostorSet('nwlowlands.trees',{label:'Far trees'}):null;
+ if(IMPON)SP.forEach((S,sp)=>{if(!B[S.habit])return;const T0=TREES.find(T=>T.sp===sp&&T.lv===2)||TREES.find(T=>T.sp===sp);if(!T0)return;
+  const T1=Object.assign({},T0),st1=Object.assign({},st,{byS:st.byS.slice()});
+  const rec=BIO.impostor('nwlowlands.'+S.key,()=>{const R0=window.REGISTER;window.REGISTER=null;try{B[S.habit](Object.assign({},T1),st1,2);}finally{window.REGISTER=R0;}},{set:ISET,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+  if(!rec)return;IMPS[sp]={rec,H:T1.H};});
+ if(IMPON&&ISET.recs.length)BIO.impostorItem('impTrees',ISET,{label:'Far trees'});
+ const farImp=T=>{const I=IMPS[T.sp];if(!I)return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ const SMALL={1:1,2:1,3:1,17:1,18:1},far=(T,i,lite)=>farImp(T)?0:SMALL[T.sp]?buildFarSmall(T,st,lite):buildFar(T,i,st,lite);
  TREES.forEach((T,i)=>{BIO.owner=[T.x,T.z];const t0=cur(),S=SP[T.sp],rg=T.row?NWLOW.LOD.avenue:NWLOW.LOD.tree;
-  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;B[S.habit](T,st,T.lv);st.heroes++;}
+  if(T.lv===0){BIO.range=null;BIO.minRange=0;far(T,i,false);st.fars++;}else{BIO.range=rg;BIO.minRange=0;BIO.c2=S.alt2==null?null:S.alt2;B[S.habit](T,st,T.lv);BIO.c2=null;st.heroes++;}
   st.byS[T.sp]++;trisS[T.sp]+=cur()-t0;
   if(T.lv>0){BIO.range=1e9;BIO.minRange=rg;far(T,i,true);}});
  BIO.owner=null;BIO.range=null;BIO.minRange=0;
@@ -420,4 +432,12 @@ NWLOW.buildTrees=function(R,q,opt){opt=opt||{};
  return{trees:TREES.length,avenue:st.avenue||0,heroes:st.heroes,far:st.fars,culms:st.culms,lanterns:st.lanterns,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),
   trisBySpecies:SP.map((S,i)=>S.key+':'+Math.round(trisS[i]/1000)+'k').join(' '),limbs:st.limbs,clumps:st.clumps,tris:{trunk:st.trunk,limbs:st.limb,far:st.far,lite:st.lite}};};
 NWLOW._canopyH=function(x,z){let h=0;for(const T of NWLOW.TREES){if(Math.hypot(x-T.x,z-T.z)<Math.max(30,T.crownR))h=Math.max(h,T.y0+T.H);}return h||12;};
+// ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
+// NWLOW.make(sp, x, y, z) -> T (the pass's own record); NWLOW.grow(T, lv) -> stats: lv 2 near, 1 mid (its habit's builder),
+// 0 its far impostor (the small species' blob for the palms, ferns, pandan, grass tree and banksia). A world that plants this
+// kit's species in place calls them (biomes/ringisles: the she-oak on the strand); the kit's own pass does not (2026-10-26)
+NWLOW.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),wet:BIO.field('wet',x,z)};};
+NWLOW.grow=function(T,lv){const m=means();if(!m.culm)m.culm=texMean(NWLOW.CULMTEX);
+ const st={trunk:0,limb:0,far:0,lite:0,limbs:0,clumps:0,blooms:0,moss:0,fronds:0,veils:0,lanterns:0,epi:0,culms:0,heroes:0,fars:0,byS:SP.map(()=>0)};
+ T.lv=lv;if(lv===0){if({1:1,2:1,3:1,17:1,18:1}[T.sp])buildFarSmall(T,st,false);else buildFar(T,T.seed%7,st,false);}else{BIO.c2=SP[T.sp].alt2==null?null:SP[T.sp].alt2;B[SP[T.sp].habit](T,st,lv);BIO.c2=null;}return st;};
 })();

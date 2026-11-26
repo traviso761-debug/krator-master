@@ -7,12 +7,12 @@
  "processing": {
   "log": {
    "seam_after": [
-    1.397,
-    1.236
+    1.253,
+    1.146
    ],
    "seam_before": [
-    1.655,
-    1.22
+    1.265,
+    1.023
    ],
    "source_size": [
     1254,
@@ -22,15 +22,15 @@
   "options": {
    "band": 0.06,
    "dark_gloss": 0.0,
-   "delight": 0.5,
+   "delight": 0.6,
    "height_soften": 0.8,
    "invert_height": false,
    "keep_aspect": false,
-   "lift": 0.08,
-   "mute": 0.0,
+   "lift": 0.12,
+   "mute": 0,
    "normal_strength": 1.0,
    "pattern": false,
-   "rough": 0.8,
+   "rough": 0.9,
    "rough_var": 0.15,
    "seam_axes": "xy",
    "size": 1024
@@ -43,20 +43,19 @@
   "family": "ground",
   "id": "ground.quartzite.black",
   "metal": 0,
-  "roughness": 0.8,
+  "roughness": 0.9,
   "scale": [
-   4,
-   4
+   2,
+   2
   ],
   "tint": false
  },
  "source": {
   "file": "ground.quartzite.black.png",
-  "generator": "supplied by the owner (generated to the prompt, Downloads, 2026-10-19)",
+  "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
   "licence": "generated for this project by its owner",
-  "note": "came pinker than the prompt's black crust: pale quartzite with black patches and white veins; the kit darkens it by vertex colour where the crust is thick",
-  "prompt": "core/materials/PROMPTS-NEEDED.md, `ground.quartzite.black` (section 7, Korona)",
-  "reuse": "the tepui summit pavement (Korona); any crusted rock plateau top",
-  "sha1": "c790198d31f681645df498d13a223517b4254299"
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.quartzite.black\"",
+  "reuse": "the tepui summit pavement (southern highlands); any black quartzite or cyanobacteria-crusted rock",
+  "sha1": "9e4ce1749cc2cf7f49fb300d8e410fd877609ad7"
  }
 }

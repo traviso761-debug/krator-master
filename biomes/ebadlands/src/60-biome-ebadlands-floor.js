@@ -22,7 +22,8 @@ const rockTint=(set,k)=>tint(vary(pick(set||PAL.rockRed),.02,.06,.06),means().ro
 const crustTint=(set,k)=>tint(vary(pick(set),.02,.06,.05),means().crust,k==null?rr(.6,.8):k);
 const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 const blooms=(x,y,z,r,n,set,sz)=>EBADLANDS.blooms(x,y,z,r,n,set,sz,{flat:true,tilt:.4,s0:.14,s1:.3});
-// a cluster round a point the mask accepted: each satellite tests the mask itself
+// a cluster round a point the mask accepted: each satellite tests the mask itself (and a tuft takes the ground at its own spot, not the centre's: the
+// final rebuild's attach audit found bunchgrass a metre over the downhill side of a slope)
 function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
 const okGround=(x,z,pad)=>!blocked(x,z,pad)&&BIO.clearOf(x,z,pad);
 const putRooted=(x,z,...a)=>{if(BIO.mask(x,z)<=0)return false;BIO.put(...a);return true;};
@@ -43,12 +44,12 @@ function sage(x,y,z,lv,k){const hc=vary(pick(PAL.sage),.03,.08,.05),Rs=rr(.5,1.1
 function rabbit(x,y,z,lv){const hc=vary(pick(PAL.rabbit),.03,.08,.05),Rs=rr(.5,1.0);
  card('small',x,y+Rs*.5,z,Rs*1.3,Rs*.9,bright(hc,1.3),.2);
  if(lv>=1)for(let i=0,m=lv===2?ri(3,6):2;i<m;i++){const a=rr(0,TAU),d=Rs*rr(0,.45);BIO.put('plume',[x+Math.cos(a)*d,y+Rs*rr(.85,1.15),z+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),Rs*rr(.35,.55),leafCol(PAL.rabbitFl,1.2,.02,.06,.05),{n:[0,1,0]});}}
-function bunch(x,y,z,lv,set){const h=rr(.35,.85)*(lv===0?1.6:1);around(x,z,lv===2?ri(2,4):1,.4,1.4,(px,pz)=>tuft('bunch',px,y,pz,h*rr(.8,1.1),h*1.2,leafCol(set||PAL.bunch,1.3,.03)));}
-function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,y,pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
-function mirage(x,y,z,lv){const h=rr(.9,1.8);around(x,z,lv===2?ri(2,5):1,.5,1.6,(px,pz)=>tuft('mirage',px,y,pz,h*rr(.8,1.1),h*.9,leafCol(PAL.mirage,1.25,.02,.06,.04)));}
+function bunch(x,y,z,lv,set){const h=rr(.35,.85)*(lv===0?1.6:1);around(x,z,lv===2?ri(2,4):1,.4,1.4,(px,pz)=>tuft('bunch',px,Y(px,pz),pz,h*rr(.8,1.1),h*1.2,leafCol(set||PAL.bunch,1.3,.03)));}
+function grass(x,y,z,lv,k){const h=rr(.3,.7)*(k||1)*(lv===0?1.6:1);around(x,z,lv===2?ri(3,6):lv===1?2:1,.4,1.6,(px,pz)=>tuft('grass',px,Y(px,pz),pz,h*rr(.8,1.15),h*1.5,leafCol(PAL.grass,1.25,.04,.12,.06)));}
+function mirage(x,y,z,lv){const h=rr(.9,1.8);around(x,z,lv===2?ri(2,5):1,.5,1.6,(px,pz)=>tuft('mirage',px,Y(px,pz),pz,h*rr(.8,1.1),h*.9,leafCol(PAL.mirage,1.25,.02,.06,.04)));}
 function reed(x,y,z,lv){const h=rr(1.2,2.4)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):lv===1?2:1,.6,2,(hx,hz,k)=>{if(k&&BIO.depth(hx,hz)>.8)return;tuft('reed',hx,y,hz,h*rr(.75,1.1),h*rr(.7,1.0),leafCol(PAL.reed,1.3,.025));});}
 function sedge(x,y,z,lv){const h=rr(.4,.9)*(lv===0?1.5:1);tuft('reed',x,y,z,h,h*1.2,leafCol(PAL.sedge,1.3,.03));}
-function flowers(x,y,z,lv,set){if(lv===2&&rng()<.45){const h=rr(.4,.9);around(x,z,ri(2,4),.3,1,(px,pz)=>tuft('spike',px,y,pz,h*rr(.8,1.1),h*.5,leafCol(set||[0x7a5ab8,0x8a6ac8,0x6a4aa8],1.2,.02)));}
+function flowers(x,y,z,lv,set){if(lv===2&&rng()<.45){const h=rr(.4,.9);around(x,z,ri(2,4),.3,1,(px,pz)=>tuft('spike',px,Y(px,pz),pz,h*rr(.8,1.1),h*.5,leafCol(set||[0x7a5ab8,0x8a6ac8,0x6a4aa8],1.2,.02)));}
  else blooms(x,y,z,rr(.6,1.4),lv===2?ri(4,9):2,set||PAL.flowers);}
 function phlox(x,y,z,lv){const R=rr(.3,.7);BIO.put('lobe',[x,y-.05,z],qEuler(0,rr(0,TAU),0),[R,R*.35,R],leafCol(PAL.cushion,.9,.03));
  blooms(x,y+R*.3,z,R*.8,lv===2?ri(6,12):3,PAL.phlox,[.1,.18]);}
@@ -228,4 +229,29 @@ EBADLANDS.buildFloor=function(R,q){
  // fallen logs in the forests and on the canyon floor
  BIO.grid(40,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>L.mid)return 0;const Z=zones(x,z);return (Z.boreal*.55+Z.pine*.3+Z.rip*.25+Z.tundra*.06)*q;},(x,y,z,d)=>{const Z=zones(x,z),pale=Z.tundra>.3||Z.rip>.4;for(let t=0;t<4;t++)if(log(x+rr(-14,14),y,z+rr(-14,14),st,pale))break;},{patch:0,pad:2});
  return{under:st};};
+
+// ---------------------------------------------------------------- the sulphur life (the Throne's, at the sulphur pools)
+// The Throne kit's sulphur layer (biomes/throne src/60 THRONE.buildSulphur, station 8: vent country), ported for the north's
+// Danakil-like flats (KNOWN_ISSUES, From other kits; the owner, 2026-10-06): BRIMSTONE REEDS only, and only in a narrow band at
+// the acid pools' shores (the grid's depth window: the shallows to 0.45 m and the wet lip half a metre above them; away from a
+// pool the local water is none, so nothing passes), where the host hands in its 'sulph' field (BIOME-API.md; the showcase binds
+// it from the flats' geo ground and the pools' banks; 0 where no host binds it, so the open world grows none yet). The reeds'
+// items as the Throne has them: 'rod' stems in two bands (rust below, sulphur above) and a crusted 'tassel'. The Throne's acid
+// pads and gas bladders stay out (the owner asked for the reeds). Its own seed, after the floor, so no other plant moves.
+EBADLANDS.buildSulphur=function(R,q){reseed(640047);q=q==null?1:q;R=R||3000;const st={reeds:0,stems:0},L=BIO.LOD();
+ const SF=(x,z)=>BIO.field('sulph',x,z)*(1-smooth(.6,.85,BIO.field('slope',x,z)));
+ const RB=EBADLANDS.LIB.reedbrim||[];
+ const reeds=(x,y,z,lv)=>{const w=Math.max(y,BIO.waterH(x,z));
+  /* with the owner's sheet: a stand of the cards rising from the ground under the water (the Throne's branch) */
+  if(RB.length){for(let k=0,n=lv===2?ri(2,4):ri(1,2);k<n;k++){const a=rr(0,TAU),d=k?rr(.5,1.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(BIO.depth(px,pz)>.5||BIO.depth(px,pz)<-.8)continue;const h=rr(1.8,3.4);BIO.put(pick(RB),[px,Y(px,pz)-.1,pz],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[h*.8,h,h*.8],null);st.stems++;}st.reeds++;return;}
+  for(let k=0,n=lv===2?ri(6,11):ri(2,4);k<n;k++){const a=rr(0,TAU),d=k?rr(.2,1.4):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,py=Y(px,pz),h=rr(1.4,3.4),la=rr(0,TAU),ln=rr(.02,.12)*h,
+    tx=px+Math.cos(la)*ln,tz=pz+Math.sin(la)*ln,mx=mix(px,tx,.45),mz=mix(pz,tz,.45),my=mix(Math.max(py,w-.05),py+h,.45),r=rr(.035,.06);
+   if(BIO.depth(px,pz)>.6||BIO.depth(px,pz)<-.8)continue;
+   BIO.beam('rod',[px,py-.1,pz],[mx,my,mz],r*1.2,r,vary(C(pick(PAL.reedLow)),.03,.08,.06));BIO.beam('rod',[mx,my,mz],[tx,py+h,tz],r,r*.6,vary(C(pick(PAL.reedHigh)),.03,.08,.06));
+   const ts=rr(.045,.075);BIO.put('tassel',[tx,py+h+ts*1.2,tz],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[ts,ts*rr(1.6,2.4),ts],C(pick(PAL.tassel)));st.stems++;}
+  st.reeds++;};
+ /* dense near, thinner to the mid band; the shore band only (the depth window) */
+ [[3,L.floor[0],0,2],[6,L.mid,L.floor[0],1]].forEach(([cell,hi,lo,lv])=>BIO.grid(cell,0,R,(x,z)=>{const ld=BIO.lodD(x,z);if(ld>=hi||ld<lo)return 0;return SF(x,z)*.7*q;},
+  (x,y,z)=>{if(blocked(x,z,.8))return;reeds(x,y,z,lv);},{patch:.9,patchScale:.03,pad:.5,depth:[-.5,.45],noMask:true,box:BIO.originBox(hi)}));
+ return{sulphur:st};};
 })();

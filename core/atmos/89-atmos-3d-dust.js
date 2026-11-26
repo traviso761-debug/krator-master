@@ -18,6 +18,7 @@
   t=Math.min(1,Math.max(0,(s-P.lift[0])/(P.lift[1]-P.lift[0])));return Math.pow(t*t*(3-2*t),.6)*(mask==null?1:mask);};
  A.dust=o=>{o=o||{};const T=A.T,P=Object.assign({},A.PRESETS.dust,o),F=A.glf,B=P.box/2,G=P.grid,E=P.box*1.2;
   const ground=o.ground||A.ground,mask=o.mask||(()=>1);
+  A.dustOn=true;A.dustMask=mask;   /* the air's load (fx/89-atmos-fx-airload.js) reads the same lift and mask */
   // THE HEIGHT MAP: height in two bytes (1/64 m, +-512 m about the map's base), the mask in the third; any WebGL reads it
   const data=new Uint8Array(G*G*4),tex=new T.DataTexture(data,G,G,T.RGBAFormat);tex.magFilter=tex.minFilter=T.NearestFilter;tex.generateMipmaps=false;
   const HC={value:new T.Vector3(1e9,1e9,0)};

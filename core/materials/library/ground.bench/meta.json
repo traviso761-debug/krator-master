@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.188,
+    1.043
+   ],
+   "seam_before": [
+    1.355,
+    0.908
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.3,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.bench",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   3,
+   3
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground.bench.webp",
+  "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 14 (biomes/farside, station 1)",
+  "licence": "generated for this project by its owner",
+  "orientation": "the scour grooves run across (left to right)",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: wave-planed coastal bedrock scoured by a tsunami, seen from directly above: a flat, smoothed surface of grey-brown volcanic and sedimentary rock bleached pale by salt, a fine white salt crust in the hollows and along hairline cracks, shallow scour grooves all running one way, scattered rounded cobbles and a few half-buried boulders worn smooth, patches of dried brown wrack and small dark limpet scars. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 14 (biomes/farside, station 1: the tsunami's scour bench); the base surface template, then the entry's Material",
+  "reuse": "Farside's tsunami scour bench (farside, ground.bench, the ground's eighth layer); any wave-cut platform, scoured shore bedrock, salt-bleached flood-scoured rock",
+  "sha1": "7fe8e749d56e9a79f8ae92f72d837ba2090aee72",
+  "size_note": "the source is 1254 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+ }
+}

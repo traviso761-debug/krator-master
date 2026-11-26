@@ -5,7 +5,10 @@ which **rebuilt the abyss floor** (`tools/scale-model/README.md`, `ABYSS_LAKES`)
 between sills, about 10,400 km² of water, with desert strips between them that the lakes' own rain greens at their
 shores. One station draws the new floor; the page as built stays station 1.
 
-**Status: plan, awaiting the owner.**
+**Status (2026-10-27): A1 built** at the rebuild's turn: `python3 build.py --station lakes` -> `dist/eastabyss-lakes.html`
+(`stations/lakes/`). **A0 is approximate**: the site is the lake at px 1041,493 (one of `ABYSS_LAKES`' merged pair in
+`tools/scale-model/edit_rivers.py`); its shore, sills and old beds are an ideal type of that ground, not the live model's cells,
+which were not surveyed here. Locus's lake on the horizon is not drawn. For the owner's look pass.
 
 ## The ground (surveyed 2026-10-23)
 

@@ -75,7 +75,8 @@ function worldMapped(mat,tex,metres){mat.onBeforeCompile=sh=>{sh.uniforms.pavTex
 // the city's real surfaces (C.surfaces, 00-start: surface()): the ground's three by its colour, the streets', the sidewalks'
 const SFC=C.surfaces||{},SF_GROUND=SFC.ground?[SFC.ground.green,SFC.ground.tan,SFC.ground.grey]:null;
 const sfGround=m=>SF_GROUND?surface(m,'ground',SF_GROUND):m;
-const PAVE_TEX=PAVE?settTex():null,PAVE_CLASSES=new Set(PAVE?PAVE.classes||[]:[]);
+// paving.map: a real set from data/textures/ (Sarajevo's river cobbles) in place of the drawn setts, laid at paving.metres
+const PAVE_TEX=PAVE?(PAVE.map?(()=>{const t=new THREE.TextureLoader().load('data/textures/'+PAVE.map);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;})():settTex()):null,PAVE_CLASSES=new Set(PAVE?PAVE.classes||[]:[]);
 const paveMat=off=>worldMapped(groundMat(off),PAVE_TEX,PAVE.metres||3.2);
 const stoneM=new THREE.MeshLambertMaterial({color:0xbdb5a6}),steelM=new THREE.MeshLambertMaterial({color:0x6b6f75});
 section('ground',()=>{
@@ -258,7 +259,10 @@ const BRIDGE_H=Object.entries(C.bridgeHeights||{}).map(([re,h])=>[new RegExp(re,
    const H=named?named[1]:wet?(C.bridgeDeck||6):6*Math.max(1,r.layer||1);
    const ramp=Math.min(H>10?160:30,r.len*0.4),c0=(ends.get(vk(r.pts[0]))||0)>1,c1=(ends.get(vk(r.pts[r.pts.length-1]))||0)>1;
    const firstWet=wetAt.indexOf(true),lastWet=wetAt.lastIndexOf(true);
-   r.ys=cum.map((s,i)=>{const gh=groundH(r.pts[i][0],r.pts[i][1]);if(firstWet>=0&&i>=firstWet&&i<=lastWet+1)return Math.max(H,gh+2);
+   // C.bridgeFromBanks: a deck over water stays at the level of the streets at its two ends (Sarajevo's river runs in
+   // a walled channel cut deeper than the elevation tiles show, so the ground under the deck is the riverbed)
+   const BANKS=C.bridgeFromBanks?Math.max(groundH(r.pts[0][0],r.pts[0][1]),groundH(r.pts[r.pts.length-1][0],r.pts[r.pts.length-1][1]))+0.3:-1e9;
+   r.ys=cum.map((s,i)=>{const gh=groundH(r.pts[i][0],r.pts[i][1]);if(firstWet>=0&&i>=firstWet&&i<=lastWet+1)return Math.max(H,gh+2,BANKS);
      const a=c0?1:smooth(0,ramp,s),b=c1?1:smooth(0,ramp,r.len-s);
      // a city on a plateau (C.bridgeOverGround) measures a deck from the ground under it, not from the water's level
      return C.bridgeOverGround?gh+Math.max(0.6,H*Math.min(a,b)):Math.max(gh+0.6,H*Math.min(a,b));});   // over land the deck meets the hillside it lands on

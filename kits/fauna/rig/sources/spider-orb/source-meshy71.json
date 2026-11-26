@@ -1,0 +1,12 @@
+{
+ "prompt": "Large orb-weaver spider, long slender legs, round abdomen, short fangs, pale ivory-grey all over",
+ "task_ids": [
+  "01a19b4d-bc1f-7285-88c8-85010b128a65",
+  "01a19b50-4b79-70ff-8d65-d0e3c6e39956"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, front left back",
+ "rights": "generated on the owner's Meshy account"
+}

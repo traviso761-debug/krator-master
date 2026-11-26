@@ -167,4 +167,49 @@ OIDONG.buildFloor=function(R,q){
  BIO.grid(3,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;return .45*q*smooth(.9,.25,BIO.depth(x,z))*smooth(.5,.62,fbm(x*.01,z*.01,909,2));},
   (x,y,z,d)=>{tuft('reed',x,Math.max(y,BIO.waterH(x,z)-.35),z,rr(1.2,2.2),rr(.5,.8),leafCol(PAL.jade,1.2,.03));st.reeds++;},{patch:.5,patchScale:.03,noMask:true,depth:[-.1,.9],pad:1,box:BIO.window('water')});
  return{under:st};};
+
+// ---------------------------------------------------------------- the high country (the passes station, PLAN-STATIONS.md; the Cold Hearths' cold ground)
+// OIDONG.buildHigh(R, q, o): the cold desert over the valley on scale model 5.1 (the passes: ET, ~5,000 m, 141 mm, -8 degC; the north rim: Dsc, 4.3 km,
+// 110 mm), above the last tree. Nothing the valley floor grows but its cold plants: CUSHION PLANTS (dense domes, silver-green, on the gravel, fewer as the
+// cold deepens), the SNOW LOTUS in its true home among the stones, SKY POPPIES only in the damp hollows (the wet field: meltwater lies there), SCREE and
+// boulders under the steeps (the rock and slope fields: what the talus mask says, not a noise), and the people's marks: CAIRNS (o.cairns: [x, z, h]) and
+// PRAYER-STONE WALLS (o.walls: [[x0, z0], [x1, z1]]) along the pilgrims' road. New placement: every cell is seeded from KRAND.cell(seed, ix, iz), never from
+// how many draws came before it. Reads the zones' `cold`, `wet`, `rock`, `slope` fields and o.keep(x, z) (0 where the host keeps the ground bare: a vent's
+// hot disc). [G data]
+OIDONG.buildHigh=function(R,q,o){o=o||{};q=q==null?1:q;R=R||2500;means();
+ const st={cushions:0,lotus:0,poppies:0,stones:0,boulders:0,cairns:0,walls:0},seed=KRAND.child(620019,'oidong/high'),keep=o.keep||(()=>1);
+ const F=n=>(x,z)=>BIO.field(n,x,z),cold=F('cold'),wet=F('wet'),FIELD_WET=wet,rock=F('rock'),slope=F('slope');
+ const L=BIO.LOD(),c0=BIO.center();
+ const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
+  const x=c0[0]-R+(ix+.5)*cell,z=c0[1]-R+(iz+.5)*cell;if(Math.hypot(x-c0[0],z-c0[1])>R)continue;const ld=BIO.lodD(x,z);if(ld>maxD)continue;
+  reseed(KRAND.cell(seed+salt,ix,iz));const px=x+rr(-.5,.5)*cell,pz=z+rr(-.5,.5)*cell;if(BIO.mask(px,pz)<=0||keep(px,pz)<=0||blocked(px,pz,.8))continue;
+  fn(px,Y(px,pz),pz,ld<L.floor[0]?2:ld<L.floor[1]?1:0);}};
+ // the cushions: domes on the gravel and between the stones, sparse, thinning as the cold deepens and gone on steep rock
+ cellPass(7,1,L.floor[1]*1.6,(x,y,z,lv)=>{const a=(.55-.35*smooth(.85,1,cold(x,z)))*(1-smooth(.4,.8,rock(x,z)))*q*(lv===0?.5:1);if(rng()>a)return;
+  const n=lv===2?ri(1,4):1;for(let k=0;k<n;k++){const ang=rr(0,TAU),d=k?rr(.4,1.4):0,px=x+Math.cos(ang)*d,pz=z+Math.sin(ang)*d,Rr=rr(.2,.65);if(BIO.mask(px,pz)<=0)continue;
+   BIO.put('lobe',[px,Y(px,pz)-.06,pz],qEuler(0,rr(0,TAU),0),[Rr,Rr*rr(.4,.6),Rr],shade(leafCol(rng()<.5?PAL.sage:PAL.mossPale,.9,.03,.1,.06),-.18));st.cushions++;}});
+ // the snow lotus: among the stones and on the scree's edge, where it is coldest
+ cellPass(11,2,L.floor[1],(x,y,z,lv)=>{const a=.45*smooth(.6,.9,cold(x,z))*(.4+.6*smooth(.15,.5,rock(x,z)))*(1-smooth(.75,.95,slope(x,z)))*q;if(rng()>a)return;
+  snowLotus(x,y,z,lv);st.lotus++;if(lv===2&&rng()<.6){stone(x+rr(-.8,.8),y,z+rr(-.8,.8),lv,st,.7);}});
+ // the sky poppies: drifts in the damp hollows only (the wet field over its median here)
+ cellPass(14,3,L.floor[1],(x,y,z,lv)=>{const a=.9*smooth(.42,.62,wet(x,z))*(1-rock(x,z))*q;if(rng()>a)return;const col=bright(C(pick(PAL.poppy)),1.1),n=lv===2?ri(4,9):2,r=rr(1.2,2.6);   /* the floor's drift, each head on unmasked ground */
+  for(let i=0;i<n;i++){const ang=rr(0,TAU),d=r*Math.sqrt(rng()),fx=x+Math.cos(ang)*d,fz=z+Math.sin(ang)*d,fy=Y(fx,fz),h=rr(.25,.5),sz=rr(.2,.34);if(BIO.mask(fx,fz)<=0||FIELD_WET(fx,fz)<.4)continue;
+   if(lv===2)BIO.beam('rod',[fx,fy,fz],[fx,fy+h,fz],.012,.008,shade(C(0x7a9a6a),-.3));
+   BIO.put('poppy',[fx,fy+h,fz],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),sz,vary(col,.02,.05,.04),{c2:bright(C(pick(PAL.irid.lily)),1.0)});}st.poppies++;});
+ // scree and boulders under the steeps: the talus mask (rock under a steep face, falling off on the flat), not a noise
+ cellPass(9,4,L.mid,(x,y,z,lv)=>{const t=clamp(rock(x,z)*1.2+smooth(.45,.8,slope(x,z))*.5,0,1)*q;if(rng()>t*.8)return;
+  if(rng()<.22)boulder(x,y,z,lv,st,.8);else stone(x,y,z,lv,st,1.2);});
+ // the gravel's loose stones, everywhere a little
+ cellPass(6,5,L.floor[0],(x,y,z,lv)=>{if(rng()>.35*q)return;stone(x,y,z,lv,st,.6);});
+ // CAIRNS: flat stones stacked, each smaller, the top one pale (a pilgrim's); always drawn whole (a landmark)
+ (o.cairns||[]).forEach((c,i)=>{reseed(KRAND.hash(seed,i,61));const x=c[0],z=c[1],h=c[2]==null?1.6:c[2],y0=Y(x,z);let y=y0,r=h*.38;
+  while(y<y0+h&&r>.08){const t=r*rr(.38,.5);BIO.put('stone',[x+rr(-.04,.04),y+t*.5,z+rr(-.04,.04)],qEuler(rr(-.12,.12),rr(0,TAU),rr(-.12,.12)),[r*rr(.95,1.15),t,r*rr(.95,1.15)],rockTint(PAL.granite,rr(.55,.8)));y+=t*.92;r*=rr(.8,.9);}
+  BIO.put('stone',[x,y+.05,z],qEuler(0,rr(0,TAU),0),[.12,.08,.12],nearW(1));st.cairns++;BIO.register({name:'A cairn (the pilgrims\' road)',x,z,y:y0,r:h*.6+.5,h:h+.4});});
+ // PRAYER-STONE WALLS (mani walls): a low long heap of flat stones along the road, a pale carved stone set on top every metre or so
+ (o.walls||[]).forEach((w,i)=>{reseed(KRAND.hash(seed,i,71));const a=w[0],b=w[1],Ln=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.ceil(Ln/.45),ux=(b[0]-a[0])/Ln,uz=(b[1]-a[1])/Ln,ang=Math.atan2(uz,ux);
+  for(let k=0;k<=n;k++){const t=k/n,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t,y=Y(x,z);
+   for(let j=0;j<3;j++){const s=rr(.25,.45);BIO.put('stone',[x+rr(-.25,.25)-uz*rr(-.4,.4),y+s*.25+j*.18,z+rr(-.25,.25)+ux*rr(-.4,.4)],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s*1.3,s*.55,s],rockTint(PAL.granite,rr(.5,.75)));}
+   if(k%2===0)BIO.put('standing',[x,y+.62,z],qEuler(0,-ang,0),[.22,.32,.06],nearW(rr(.92,1.02)));}
+  st.walls++;BIO.register({name:'A prayer-stone wall (the pilgrims\' road)',x:(a[0]+b[0])/2,z:(a[1]+b[1])/2,y:Y((a[0]+b[0])/2,(a[1]+b[1])/2)-.5,r:Ln/2+1,h:2});});
+ return st;};
 })();

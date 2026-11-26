@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.221,
+    1.099
+   ],
+   "seam_before": [
+    2.221,
+    1.966
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "mineral.crust.brucite",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "mineral.crust.brucite.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a chalky, porous brucite-and-carbonate crust of soft rounded cauliflower-like lobes, bone white (#e9e4d6) to pale cream, with faint grey-green manganese staining (#7f8f78) in the seams between lobes, fine powdery texture, a few damp translucent patches. Full colour: not tinted.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 31 (biomes/gills/PLAN.md section 15)",
+  "reuse": "the White Gills' collars (the lime collar); any chalky carbonate or cauliflower crust, Lost City's chimneys, tufa",
+  "sha1": "aa0c439116632da089594c73bf9c6430512f4464"
+ }
+}

@@ -46,7 +46,7 @@ How the biome zones itself from those four (55-trees, `EASTABYSS.zones`):
 |----------|-----------------------------------------|------------------------------------------------------------|
 | flat     | wet<.28, salt>.3, upland<.15            | samphire, salt grass, rosettes + jade shrubs + Calamophyton palms where flow>0 |
 | marsh    | upland<.22, wet>.5, low salt            | knee-trees with beard moss, seal-trees, palmettos, reeds, cordgrass meadows, sedge, marsh shrub, samphire; beard oaks on the hummocks |
-| shore    | terrainH<1.6, wet>.6, basin             | stilt-woods, tide lycopsids and water palms (in the shallows), strap cordaites on prop roots, Sanfordacaulis, reeds, samphire |
+| shore    | terrainH<1.6, wet>.6, basin; salt splits it | stilt-woods and tide lycopsids on the lake's brackish rim, water palms, Sanfordacaulis and strap cordaites on the fresh banks of pools and rivers, reeds, samphire |
 | water    | terrainH<0, flow small                  | lily pads, leaf rafts + water hyacinth, emergent reeds; mat-reed beds on the still margins |
 | jungle   | upland .05..86, wet>.45                 | scale-trees, bell-bark, seal-trees, cordaites, tree ferns, seed ferns, cycads, pipe reeds, the club-moss carpet; rope araucarias toward the top |
 | savannah | upland>.62                              | umbrella trees (thinning up), rope araucarias, Vain fronds, dry grass, rosettes |
@@ -66,7 +66,8 @@ the lake). The Vain fronds stay purple (canon).
 ## What the biome exports
 
 ```js
-EASTABYSS.build({R:3250, quality:1, lakeHue:0}) -> {trees, heroes, far, bySpecies, ..., beds, stems, farBeds, under, tris}
+EASTABYSS.build({R:3250, quality:1, lakeHue:0, reedBeds:'each'}) -> {trees, heroes, far, hullsCut, bySpecies, ..., beds, stems, farBeds, bedsRegistered, under, tris}
+                                     // reedBeds 'none': no registered volume per near bed (EASTABYSS.REEDBEDS only; 2026-10-26)
 EASTABYSS.dress(geometries, opt)     // growth on a structure (the hyperjungle pass, in this palette)
 EASTABYSS.canopyH(x,z)               // approximate canopy top
 EASTABYSS.SPECIES                    // the 21 species (tagged; the mat reed carries `use` and `bed`), EASTABYSS.PAL the palettes
@@ -77,6 +78,7 @@ EASTABYSS.make(sp,x,y,z) -> T        // one tree record as the passes make it (H
 EASTABYSS.grow(T,lv)                 // build that one tree at level lv (2 hero, 1 mid, 0 far) into the kit's buckets:
                                      // no keep-clear entry, no TREES record. Town trees (Locus, Mungo: cap T.H / T.crownR first)
 EASTABYSS.zones(x,z)                 // the zone weights a world can reuse for its own placement
+EASTABYSS.ZONEBANDS, setZoneBands(o) // the zones' smooth() bands as data: retune them for fields scaled differently, before build
 EASTABYSS.FAUNA                      // the fauna kinds (tagged): flamingo, frilled_lizard
 EASTABYSS.FAUNA_LAYOUT               // after build: flocks, birds (walkers), skeins, flyers, lizards (walkers) -- data
 ```

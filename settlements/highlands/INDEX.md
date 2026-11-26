@@ -36,41 +36,13 @@ From `core/minimap/` (shared; see `core/README.md`): `88-core-minimap.js`, `88a-
 | `69-mat-salvage.js` | 17 | salvage (decay level 3) (1); FIRELIGHT (54) |
 | `69b-vern-mat.js` | 14 | textures (world units: a 128px tile = 2 m) (30); world-unit UVs (93); materials (97); geometry (116); kit items (141) |
 | `69c-vern-helpers.js` | 22 | primitives (local frame; y = BASE of the piece) (51); walls, frames, plinths (60); roofs (ridge along local x unless noted) (88); openings (128); porches, stairs, yards (154) |
-| `70-hl-tex.js` | 27 | formline palette (NW-coast inspired) (13); wood: round logs (horizontal), 2 m tile, 6 cours (16); fish-scale shingle / slate: 2 m tile, 0.25 m sca (26); fieldstone (rubble) socle: 4 m tile (35); turf (sod roofs): 2 m tile (45); bamboo: culm (vertical, nodes every ~0.45 m) and (53); the painted carving: formline primitives (67); the animals (the kit's default subjects) (122); crest panels (colour-carrying, plane UV 0..1) (170); totem column (colour-carrying, wraps a cylinder) (194) |
-| `71-hl-mat.js` | 9 | world UV with separate u/v tile sizes (26); materials (32); geometry (54); kit items (74) |
-| `71b-hl-motif.js` | 34 **big** | Celtic drawing kit (16); motifs (unit box 100 x 100 unless noted) (50); shop-sign symbols (unit 100, drawn inside a roun (148); composing the textures (193); the textures and kit items (238) |
-| `72-hl-helpers.js` | 14 | vectors in the local frame (23); walls (39); roofs (113) |
-| `73-hl-carve.js` | 32 **big** | totems and painted posts (9); round 2: branch rules, pillars, signs, emblem (35); dougong (painted bracket sets under eaves) (79); bargeboards, gable finials, horns (99); windows, porches, balconies (124); towers (Peles, clocktowers, wall towers) (157); bamboo (tribal and the poorest Republican/Rustic (186); cliff walkways (tribal cliff settlements) (199); yard furniture of the highlands (223); round 4: fitting murals and bracket rows (hlFlus (253) |
-| `73b-hl-frame.js` | 32 **big** | textures (29); the house's frame, chosen once (like the Fachwer (68); the pieces (79); a frame face (the new hnFachFace) (97); the four overrides (147); the frame and the roof (round 7b) (167); harlequin roofs (the Izmailovo temple, round 7b) (234); balustrades (round 7c) (248); the temple's great dome, flattened (round 7c) (266); glazed polychrome tile (round 10) (277) |
-| `74-rep-dwell.js` | 33 **big** | R-A kit items and helpers (prefix hRA / hnRA) (9); POOR (65); MIDDLE (96); RICH (135); RICH (cont.) (236) |
-| `75-rep-trade.js` | 48 **big** | R-A trade furniture (prefix hnRA) (9); TAVERNS AND INNS (58); SHOPS AND WORKSHOPS (199); SMITHIES (310); STABLES AND WAREHOUSES (361); registry (443) |
-| `76-rep-civic.js` | 45 **big** | R-B kit items (prefix hRB) (9); R-B helpers (prefix hnRB) (38) |
-| `76c-rep-capital.js` | 8 | 1. the Arsenal of the Republic (8); 2. the Mint and Treasury (30); 3. the Rocketeers' Guild (48) |
-| `77-rep-guild.js` | 20 | Mercenary Guild (8); Alchemists' Guild (high explosives) (46); Farmers' Guild (94); Guild of Smiths (132); Mechanics' Guild (clockwork) (160) |
-| `77b-rep-guild2.js` | 17 |  |
-| `78-rep-grand.js` | 53 **big** | package helpers (prefix hnRC / hRC) (11); the Peles tower (wall towers, gate, fortress) (108); the town wall (148); the town gate (184); Hall of the Republic (218); the fortress (301); the Forgehouse (381); the generator (449) |
-| `79-rep-land.js` | 30 **big** | kit items: natural rock (hRCLeaf / hRCHedgeB fol (9); farm furniture (13); granary: a log crib raised on staddle stones (47); farmhouse: the Saxon courtyard farmstead (66); farm: a field plot of strips (105); animal pens (136); windmill: a timber post mill (160); watermill: a log mill on its race (189); the mine (214); the quarry (251) |
-| `79b-rep-salvage.js` | 15 | R1 — the tank house (17); R2 — the hull-plate tower house (47); I1 — the powder works (75); I2 — the hull-breaker's yard (104) |
-| `79c-rep-apoc.js` | 25 | 1. the hull-vault warehouse (41); 2. the Scrap Kontor (60); 3. the container stack (78); 4. the silo house (94); 5. the tank-cluster row (117); 6. the crawler house (136); 7. the salvage garage (152); 8. the container shop row (174); 9. the lantern stall (186); 10. the radome tower house (204) |
-| `79d-rep-scrap2.js` | 9 | 1. the stage tenement (10); 2. the smelter (27); 3. the wreck market hall (40); 4. the press works (52); 5. the gasholder tenement (64) |
-| `79e-rep-arco.js` | 13 |  |
-| `79f-rep-shipbreak.js` | 8 |  |
-| `80-rus-dwell.js` | 25 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (65); MIDDLE (104); RICH (153) |
-| `81-rus-village.js` | 29 | helpers (prefix hnRU) (7); TEMPLE AND HALL (22); TRADE AND CRAFTS (111); FARMS AND MILLS (197) |
-| `81b-rus-salvage.js` | 12 | 1. the tank stue (8); 2. the container chalet (36); 3. the hull naust (59); 4. the silo stabbur (84); 5. the scrap-iron market (101) |
-| `84-tri-dwell.js` | 33 **big** | package kit (prefix hTR / hnTR) (9); package helpers (69); the base: stilts, or the cliff cantilever (109); SMALL (127); LARGE (185); the CLIFF SETTLEMENT (showcase + reusable) (240) |
-| `85-tri-village.js` | 26 | the arched vault (longhouse roofs) (7); HALLS (34); SACRED (152); FARMS AND CRAFTS (163) |
-| `85b-tri-salvage.js` | 11 | 1. the tank roundhouse (7); 2. the container longhouse (29); 3. the hull meeting house (50); 4. the silo drum-house (68); 5. the scrap forge and trading shelter (87) |
-| `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
 | `88y-highlands-matlib.js` | 3 |  |
-| `89-hl-trades.js` | 5 |  |
-| `89y-hl-furnish.js` | 4 | furniture: PLACED from the catalog, not drawn (1) |
 | `90-scene.js` | 6 | scene (Highlands showcase) (1); build every site the target lists (60) |
 | `91-probe.js` | 3 | probe (window._api) — same contract as the Ancie (1) |
 | `91h-hl-tags.js` | 3 | CORE TAGS: HIGHLANDS' REG (1) |
 | `92-camera.js` | 1 | what stays of the camera: the build's own button (1) |
 | `93-labels.js` | 6 | floating building labels (standard new-world pac (1) |
-| `94-hl-anim.js` | 2 | animation: orreries turn, clocks keep time (roun (1) |
+| `95-hl-doors.js` | 2 |  |
 | `99-start.js` | 2 | 99. the take: Highlands on core/host (1) |
 | `99-tail.html` | <1 |  |
 
@@ -81,4 +53,4 @@ Each target adds its own fragments to `src/` and builds one output.
 | Target | Fragments | KB |
 |---|---|---|
 | `highlands` | `89z-rows.js`, `91z-views.js` | <1 |
-| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-45-init.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 186 |
+| `roketstad` | `81-rk-sky.js`, `82a-anc-fuel.js`, `82b-anc-starport.js`, `82c-anc-launch.js`, `82d-anc-bunker.js`, `82e-anc-aa.js`, `84-rk-geo.js`, `85-rk-paint.js`, `86-bio-45-init.js`, `87-rk-layout.js`, `88-rk-place.js`, `89z-rows.js`, `8zn-rk-open-guest.js`, `90a-rk-world.js`, `90b-rk-build.js`, `91z-views.js`, `93-rk-ui.js`, `93b-rk-lod.js` | 187 |

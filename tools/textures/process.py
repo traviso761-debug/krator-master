@@ -13,16 +13,26 @@ Steps, in order:
                 edge (the image loses `--band` of its width and becomes exactly periodic).
   2. delight    divide out the large-scale luminance (a wide periodic blur), so baked lighting gradients
                 and vignettes go; `--lift` raises baked shadows a little so a normal map does not shade
-                them twice.
+                them twice. `--light-from marigold` takes the light out with Marigold-IID instead
+                (tools/textures/marigold_iid.py: its UNet on the NPU, else the CPU; needs its setup): its estimate of
+                the light, divided out, so the raking light on the relief goes as well as the slow gradients (the blur
+                leaves that), and the image keeps its own detail. Beat the blur on 11 of 12 test sets (error 13.4 against
+                16.6), worse on a plank gate: judge each set by eye. About 25 s a set. Trial: tools/textures/trials/npu-delight.
   3. resize     to SIZE (a power of two).
   4. height     luminance minus its wide blur, normalised: the relief the normal and roughness come from.
+                `--height model` takes the relief from a depth model instead (tools/textures/depth.py: on the NPU, else
+                the CPU; needs its setup): better on built relief (brick, cobble, tile, roof, plank) and on flat
+                surfaces whose colour is not relief (polished marble, mosaic), where luminance invents bumps; worse on
+                fine grain (moss, cloth, snow), which stays on the default 'lum'. `--height split` is the model for the
+                shapes plus luminance for the grain: almost never worse than 'lum'. Trial: tools/textures/trials/npu-normals.
   5. normal     OpenGL convention (+Y up), which three.js and Godot both expect.
   6. roughness  a base value per material, varied by the relief; `--dark-gloss` makes dark areas smoother
                 (tar, lacquer, polished nacre).
   3b. --keep-aspect  a non-square sheet keeps its shape (long side = SIZE) instead of being squeezed square.
   7. mute       optional, for library surfaces a culture palette will tint (`--mute`).
 
-Requires numpy and Pillow. Deterministic: the same source and options give the same bytes.
+Requires numpy and Pillow. Deterministic: the same source and options give the same bytes (with `--height model` or
+'split', or `--light-from marigold`, on the same device: meta.json's log records it).
 """
 import argparse, hashlib, json, os, sys
 import numpy as np
@@ -119,7 +129,13 @@ def process(src, out_dir, opt):
         if ys: a = crossfade(a, 0, opt['band'])
 
     # 2. delight
-    if opt['delight'] > 0:
+    if opt['light_from'] == 'marigold':         # the light Marigold-IID sees, divided out (marigold_iid.py); the lift still applies
+        import marigold_iid
+        R, log['light_device'] = marigold_iid.baked_light(a, blur)
+        a = a / R[..., None]
+    elif opt['light_from'] != 'blur':
+        raise ValueError("light_from is 'blur' or 'marigold', not %r" % opt['light_from'])
+    elif opt['delight'] > 0:
         L = lum(a)
         big = blur(L, sigma=min(a.shape[:2]) / 6.0)
         gain = (L.mean() / np.maximum(big, 1e-3)) ** opt['delight']
@@ -147,6 +163,17 @@ def process(src, out_dir, opt):
     L = lum(a)
     hp = L - blur(L, sigma=size / 24.0)
     hp = blur(hp, sigma=opt['height_soften'])
+    if opt['height'] in ('model', 'split'):      # the depth model's relief (depth.py); 'split' keeps luminance's grain under it
+        import depth
+        D, log['height_device'] = depth.height(a)
+        hm = blur(D - blur(D, sigma=size / 24.0), sigma=opt['height_soften'])
+        if opt['height'] == 'model':
+            hp = hm
+        else:
+            z = lambda x: (x - x.mean()) / max(x.std(), 1e-9)
+            hp = z(blur(hm, sigma=SPLIT)) + z(hp - blur(hp, sigma=SPLIT)) * SPLIT_GRAIN
+    elif opt['height'] != 'lum':
+        raise ValueError("height is 'lum', 'model' or 'split', not %r" % opt['height'])
     h = (hp - hp.min()) / max(hp.max() - hp.min(), 1e-6)
     if opt['invert_height']:
         h = 1 - h
@@ -186,12 +213,16 @@ def process(src, out_dir, opt):
 
 DEFAULTS = dict(keep_aspect=False, pattern=False, band=0.06, delight=0.6, lift=0.15, size=1024, mute=0.0,
                 height_soften=0.8, invert_height=False, normal_strength=1.0,
-                rough=0.75, rough_var=0.25, dark_gloss=0.0, seam_axes='xy')
+                rough=0.75, rough_var=0.25, dark_gloss=0.0, seam_axes='xy', height='lum', light_from='blur')
+SPLIT, SPLIT_GRAIN = 3.0, 0.5   # height 'split': the crossover (px, a blur sigma) and the weight of luminance's grain against the model's shapes
 
 
 def run_one(src, out_dir, rec, opt):
     o = dict(DEFAULTS); o.update(opt)
     log = process(src, out_dir, o)
+    for k, d in (('height', 'lum'), ('light_from', 'blur')):    # defaults left out of meta.json, so a set made before the options reads the same
+        if o[k] == d:
+            del o[k]
     with open(src, 'rb') as fh:
         sha = hashlib.sha1(fh.read()).hexdigest()
     meta = {

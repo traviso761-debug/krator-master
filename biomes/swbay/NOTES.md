@@ -32,8 +32,8 @@ grows on.
 
 ## The vibe
 A variation of the established hyperjungle, but not as tall: the tallest trees top out
-at the height of the Voth temple (`SWBAY_TEMPLE_H`, 110 m placeholder — the canon figure
-is not in this kit). The baobabs and the prism gums of the megaflora belt are still seen,
+at the height of the Voth temple (`SWBAY_TEMPLE_H`, 156 m since 2026-10-26: the Temple's top
+terrace in Voth's city plan, `settlements/voth/src/30a-layout-districts.js`). The baobabs and the prism gums of the megaflora belt are still seen,
 scaled to that ceiling; the rest of the flora is new and FUNGOID: giant mushrooms as
 canopy trees, and trees and shrubs whose foliage is a splay of wide fronds. Epiphytes are
 everywhere and trend to red and purple. On the savannah the parasol theme: parasol
@@ -150,3 +150,36 @@ the biome's own (added to the host's scene, ticked through BIO.host.ticks), not 
 ## Next
 More fauna (fish under the surface, something that climbs the boles); a road up the volcano's flank; the canon
 temple height; Yuni Valley, highlands, arctic.
+
+## Geology & `KSTRATA` Notes (`5.1`, 2026-11-13)
+- **Bedrock split:** Outer/southern bay shores expose bedded warm-water **`carbonate-shelf`** (`2–5 m` cream coquina/oolite & recessed marl with diurnal libration-tide solution visors; non-tower coastal karst, `KARST-SITES-5.1.md` #9), while the steep Almua–Voth inner-wall coast (`5.1 px 718, 883` to `734, 998`) exposes **`contact-marble`** (`4–8 m` white/blue-veined marble with epidote-garnet-magnetite skarn selvages; see `PLAN.md`, *"Almua Skarn-Marble Harbour Cliffs"*).
+
+## Station 3: the Almua skarn-marble cliffs, raised (2026-11-16, re-sited 2026-11-17, `stations/skarn/`)
+Gemini 5.1's showcase station 3 (`openworld/GEOLOGY-STATIONS-5.1.md`; `PLAN.md`, "As built"). `python3 build.py --station skarn` writes
+`dist/swbay-skarn.html`; the bay's page is untouched (its bytes checked equal before and after each change).
+
+- **Where:** exactly map 5.1 px 734,998 (the owner, 2026-11-17), 260 m over the Ring Sea and ~13 km from its shore. The raster there: a
+  gentle upland (0.7% at the spot, ~100 m of relief within 4 km) on a north-east-facing ramp to the Almua-Voth coast (4-5 degrees at
+  the steepest); its contours run NNW (az ~328), as the old shorelines do. The scale model is read through `region.json` (godthrone's
+  `tools/region.py`, read in place with `--kit biomes/swbay`) for the ground's level and the far country, and by hand for the site (the
+  rows round 998, the Throne at bearing 35, 398 km).
+- **The uplift** (the owner: "terrain raising over time like in nwbay"): nwbay's docs carry no uplift section; its story is in its ground,
+  marine limestone (the bay's karst, `KARST-SITES-5.1.md` site 1) standing hundreds of metres over today's sea. Here the same: the
+  plan's harbour cliffs are former sea cliffs, lifted with their benches. The page draws one old shoreline (T1's sea) and everything as
+  a height over its level U, U being the model's height where that shoreline runs, so the station sits on the map's own ground.
+- **How the coast is made:** the old shoreline is a polyline in coast coordinates (a along, b across), its signed distance baked on a
+  2 m lattice over the cliffs and an 8 m one over the map; the profiles by inland distance (`platformH` seaward, `shelfH`, `marbleH`)
+  mixed by the marble's share along the coast; the raised stack, the spring's bowl and the plunge pool's bowl cut into it; the ground
+  drawn on the same two lattices (the mask and the fields read their bilinear height and slope, so nothing roots on a face the 2 m cells
+  draw steep). The ground's shader darkens both old waterlines (T1's and the raised bench's) by a per-vertex U (`aU`).
+- **Lessons:** quarry steps cut into a 2 m axis-aligned ground at a diagonal read as a sawtooth of lit tread tops; 9 m treads on a 4 m
+  battered riser soften it. A merged mesh or a ground-drawn landform needs `probePoints` (or `ground: true` on its registered volume), or
+  the registry's occupancy check finds the volume empty. `KSTRATA`'s `lateral` takes `formations`, so the shelf facies can replace only
+  the marble's lower 75 m (the plan's interfingering). A spring's run must stop short of the visor's notch (2.8 m in), or its last
+  point drops into the notch and the curtain loses its height.
+- **Verified (SwiftShader only, 2026-11-17, after the re-siting):** `verify.py dist/swbay-skarn.html --assert`: error panel clean; all 25
+  asserts passed: the invariants (186 registered volumes, no NaN, budgets: 0.57M scene triangles, 123 calls at the plan's view), the
+  station's six checks (beds; profile over U: the raised bench 34.5 m, the crown 94 m, the shelf 4.1 m, T1 -2.3 m, T0 -43.7 m; rooted
+  trees; the spring's 3.2 m curtain; the eye 15.7 m over its platform at az 338; the site at px 734,998 with the platform 259 m and the
+  model 261 m over the sea) and their six negatives, the core card guard, attach audit (0.00% float) and LOD-key checks with their
+  negatives, the export profile (9 of 9 over the crown's box). The plan's view was looked at. The GPU verify is owed (KNOWN_ISSUES.md).

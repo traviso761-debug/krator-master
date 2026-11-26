@@ -50,7 +50,8 @@ const PAL=THRONE.PAL={
  // the windward station (kipuka): Earth's pioneers on young lava, the crater's palms, the great ruff, the frill tree, the siphon tree
  hfrillBark:[0x5e4c3e,0x544436,0x685446],hfrillLeaf:[0x3e6a2e,0x4a7634,0x365e28],
  siphon:[0x8a9a86,0x7e8e7a,0x96a690],siphonLip:[0x6a8a6a,0x5e7e5e],siphonFrond:[0x5a8a4a,0x6a9a52,0x4e7e40],
- lehuaBark:[0x8a8478,0x7e786c,0x96907e],lehuaLeaf:[0x6a7a5a,0x76866a,0x5e6e50],pompom:[0xd8202a,0xe8302a,0xc81828,0xf04a3a],
+ lehuaBark:[0x5e5a52,0x56524a,0x68625a],   /* 2026-10-26: was [0x8a8478,0x7e786c,0x96907e], which read near white in the isle's dense stands (KNOWN_ISSUES) */
+ lehuaLeaf:[0x6a7a5a,0x76866a,0x5e6e50],pompom:[0xd8202a,0xe8302a,0xc81828,0xf04a3a],
  treeFernTrunk:[0x4a3a2a,0x54422e,0x403224],treeFern:[0x4a7a2e,0x56883a,0x3e6a28],
  palmTrunk:[0x7a6a50,0x6e5e46,0x86765a],palm:[0x2e5a2e,0x3a6a36,0x264e28],
  glassfern:[0x14161c,0x1a1c24,0x101218],glassIrid:[0x3a5aa8,0x5a3ab0,0x2a7a8a],
@@ -132,8 +133,10 @@ THRONE.SPECIES=[
  /*20*/{key:'coconut',name:'Coconut palm',isle:true,H:[12,24],rb:[.16,.26],crownR:[4,5.5],barkK:6,bark:PAL.coconutTrunk,leaf:PAL.palmFrond,
   far:{poleU:.95,taper:.2,blobs:[[.97,.75,.12,'L0','L1']]},tags:K('tropic','humid','both',['Af'],'earth','windward')},
  // the cloud forest's (cloud:true: only its page plants them; the owner 2026-10-06: "elfin forest in the mist"). The elfin
- // tree has no far impostor: in the cloud nothing is seen that far, and the ground's canopy layer stands in when it clears
+ // tree had no far impostor until 2026-10-26 (in the cloud nothing is seen that far); now it has a light one (below)
  /*21*/{key:'elfin',name:'Elfin tree',cloud:true,H:[3,9],rb:[.16,.36],crownR:[2.4,4.4],barkK:3,bark:PAL.elfinBark,leaf:PAL.elfinLeaf,
+  /* 2026-10-26: a far impostor after all (a low flat crown on a short pole), so the sparse stand stays on the map past the near range */
+  far:{poleU:.5,taper:.3,blobs:[[.78,1.0,.22,'L0','L1']]},
   far:null,tags:K('temperate','humid','both',['Cfb'],'earth','windward')},
  /*22*/{key:'veil',name:'Veil tree',alien:true,cloud:true,H:[8,16],rb:[.18,.3],crownR:[4,7],barkK:7,bark:PAL.veilBark,leaf:PAL.veilLeaf,
   far:{poleU:.8,taper:.4,blobs:[[.75,.8,.25,'L0','L1']]},tags:K('temperate','humid','yes',['Cfb'],'native','windward')},
@@ -259,8 +262,14 @@ THRONE.PLANTS={
  bloodchalice:PK('Blood chalice','temperate','humid','yes',['BSk'],'native','vent',['tfunnel','rod'],HV('none',[],false,'Clusters of tall red flared trumpets on the acid shores; dew beads on their lips.')),
  mossdome:PK('Moss domes','temperate','subhumid','both',['BSk'],'native','seam',['brain','rod'],HV('none',[],false,'Squat lumpy green domes in the gullies and the skylights, a pale fringe of roots on their downhill side.')),
  redcoral:PK('Red coral-fern','temperate','subhumid','both',['BSk'],'native','seam',['feather'],HV('none',[],false,'Branching red sprays among the moss domes.')),
- snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','feather'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
+ snareraft:PK('Snare raft','temperate','humid','yes',['BSk'],'native','vent',['acidpad','rafthair'],HV('none',[],true,'Carnivorous: the runners\' discs hold what lands on the water. Part of the arrow poison (NOTES.md).')),
+ charscrub:PK('Burnt scrub','temperate','subhumid','no',['Dfc'],'earth','shoulder',['charred0','charred1','charred2','charred3','charred4','charred5','charred6','charred7','charred8'],HV('fuel',[],false,'The understorey the blast\'s heat killed where it did not flatten it: black forking skeletons with an ash coat, a few scorched leaves still hanging.')),
 };
+/* THE MAT IS A HAZARD (core/hazard, 2026-10-26): a slime mould that digests what sleeps on it, so it corrodes slowly and the
+   longer one stays the worse (a soak: nothing at first, full after half an hour, forgotten over ten minutes off it); paths
+   cross it at a cost. Every mat instance carries it (the set's tags); a page without core/hazard keeps it as a tag only */
+THRONE.PLANTS.mat.tags.hazard={kind:'acid',danger:.5,dose:.3,shape:{type:'cyl',h:1.5},soak:{full:1800,from:0,out:600},
+ nav:{travel:2,enter:0,avoid:false},tell:{fx:null,sound:null,sign:'it digests what sleeps on it'}};
 THRONE.plantOfItem=item=>{for(const k in THRONE.PLANTS)if(THRONE.PLANTS[k].items.indexOf(item)>=0)return THRONE.PLANTS[k];return null;};
 
 // ---------------------------------------------------------------- leaf textures
@@ -593,6 +602,8 @@ THRONE.LIB.cards={};
  // THE SAVANNA's cards (stations/savanna): tall seeding grass tussocks, and the flowers that come up after a fire
  sheet('card.grassdry','grassdry',C3,3,{swayW:'(position.y)',swayA:.1});
  sheet('card.flowerspike','flowerspike',C3,3,{swayW:'(position.y)',swayA:.06});
+ // THE BLAST's burnt shrubs (stations/blast): nine charred skeletons, standing where the heat passed and the blast did not flatten
+ sheet('card.charred','charred',C3,3,{swayW:'(position.y)',swayA:.02});
  // THE STAR ALOE's BLOSSOMS (the owner's, 2026-10-06): the six upright spikes (single and candelabra), each rising out of its
  // own small leaf star at the foot of its cell
  sheet('card.aloeflower','aloeflower',[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],3,{swayW:'(position.y)',swayA:.04});
@@ -643,6 +654,15 @@ M.funnelT=capMat('cap.funnel','funnelT');
 M.gcoralT=capMat('cap.gillcoral','gcoralT');   // the owner's gill-coral cap (radial, mapped from above)
 // the drizzle trumpet's pitcher: the cells-and-veins skin as grey detail under its green, still faintly lit from within
 {const L=LIBP('pitcher.cells');if(L){M.pitcher=glowMat('pitcher',.16,.32,KMAT.textures(L,{aniso:4}).map);THRONE.LIB.pitcher=true;}}
+/* 2026-10-26 (KNOWN_ISSUES, the alien surfaces still procedural): the lamp caps' dishes take the library's radial gills (cap.gill, organic.fungus.gill)
+ as the grey detail under their glow, in place of the drawn veins (the same program: glowMat reads its map in the emissive too); the mat takes the cells and
+ pale veins (pitcher.cells) as its colour and its glow, tinted pink by the instance colour, its ragged outline kept from the drawn disc (an alpha map) */
+{const L=LIBP('cap.gill');if(L){M.lamp.map=KMAT.textures(L,{aniso:4}).map;THRONE.LIB.lampGill=true;}}
+{const L=LIBP('pitcher.cells');if(L){const t=KMAT.textures(L,{aniso:4}).map,c=TX.mat.image,A=document.createElement('canvas');A.width=c.width;A.height=c.height;
+ /* the disc's alpha as grey (white where the disc is, over black), by compositing: no pixel read */
+ const g=A.getContext('2d');g.drawImage(c,0,0);g.globalCompositeOperation='source-in';g.fillStyle='#fff';g.fillRect(0,0,A.width,A.height);
+ g.globalCompositeOperation='destination-over';g.fillStyle='#000';g.fillRect(0,0,A.width,A.height);g.globalCompositeOperation='source-over';
+ const am=new T3.CanvasTexture(A);am.encoding=T3.LinearEncoding;M.mat.map=t;M.mat.emissiveMap=t;M.mat.alphaMap=am;M.mat.needsUpdate=true;THRONE.LIB.matCells=true;}}
 THRONE._glow=[M.lamp,M.bracket,M.ventcone,M.pitcher,M.mat];
 THRONE._night=0;
 // the glow's day and night levels: the procedural glowers and every glowing card (their material's own pair)
@@ -664,6 +684,8 @@ const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{
 {const L=libMap('bark.elfin','elfin');BIO.bucket('elfin',BIO.barkMat(L?L.t:null),{label:'Elfin bark (moss-grown)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.elfin=!!L;}
 // the coconut palm's trunk: the owner's coir, in its own colour (B[20] gives its vertices white)
 {const L=libMap('bark.brimstone','brimstone');BIO.bucket('brimstone',BIO.barkMat(L?L.t:null),{label:'Brimstone bark (sulphur-banded)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.brimstone=!!L;}
+// the blast's silver deadwood (stations/blast: the logs and the snags weathered grey), keep-0 under their vertex colours as bark0
+{const L=libMap('bark.silver','silver');BIO.bucket('silver',BIO.barkMat(L?L.t:null),{label:'Silver deadwood (the blast\'s logs and snags)',uvScale:L?L.scale:[1.2,1.8]});THRONE.LIB.silver=!!L;}
 {const L=libMap('bark.coir','coir');BIO.bucket('coir',BIO.barkMat(L?L.t:null),{label:'Coir (the coconut palm\'s trunk)',uvScale:L?L.scale:[1,1.4]});THRONE.LIB.coir=!!L;}
 {const L=libMap('wood.sulphur','wood');if(L)M.wood.map=L.t;BIO.bucket('wood',M.wood,{label:'Dead wood',uvScale:L?L.scale:[3,4]});}
 // the alien bodies too big to instance (a bone bell's root curtain) go into vertex-coloured buckets
@@ -698,6 +720,7 @@ BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Pine needles'});
 BIO.def('glossy',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Ranj-tree leaves'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage'});
 BIO.def('feather',G.tuft(),M.feather,{label:'Plume-bush feathers and anemone tufts'});
+BIO.def('rafthair',G.tuft(),M.feather,{label:'Snare raft hairs',free:true});   /* the feather tuft on the snare rafts, which float (2026-11-02: free, so the attach audit does not read them as a crown off its tree) */
 BIO.def('flame',BIO.geo.clump(),M.flame,{attrs:['aN'],label:'Tufts'});
 BIO.def('plume',G.tuft(),M.plume,{label:'Broom flowers'});
 BIO.def('bloom',BIO.geo.bloom(),M.bloom,{label:'Stalk daisies'});
@@ -772,7 +795,9 @@ BIO.def('bladder',(function(){const g=new T3.IcosahedronGeometry(1,1),p=g.attrib
  const LAB={reedbrim:'Brimstone reeds',angel:'Angel trumpets',spiderlily:'Spider lilies',trumpets:'Trumpet fungi',aloeflower:'Star-aloe blossoms',grassdry:'Tall grass',flowerspike:'Fire flowers',kelp:'Kelp',seaweed:'Seaweed',mosshang:'Moss curtains',ferngreen:'Cloud ferns',weeper:'Veil-tree veils',carnplant:'Snare plants',coralcard:'Vent growths',mushalien:'Plume mushrooms',moltensucc:'Ember succulents',moss:'Snare moss (hanging)',tendril:'Ash creepers (tendrils)',shelf:'Lantern brackets (glowing shelf fungi)',glowshroom:'Glow mushrooms',aflora:'Glow tufts',carnivore:'Snare flowers',specimen:'Plume fungi',drip:'Dripping fungi',succulent:'Spotted succulents'};
  // the wrack lies flat on the sand: a quad in the ground's plane, face up
  (THRONE.LIB.wrack||[]).forEach(k=>BIO.def(k,quad().rotateX(-Math.PI/2),M[k],{label:'Wrack (cast kelp)'}));
- for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond'||key==='pyreblade'||key==='lacecard')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key]}));}
+ for(const key in THRONE.LIB.cards){if(key==='lavaleaf'||key==='distressed')continue;if(key==='frillfrond'||key==='fin'||key==='petal'||key==='palmfrond'||key==='pyreblade'||key==='lacecard')continue;THRONE.LIB.cards[key].forEach(k=>BIO.def(k,key==='shelf'?quad():(key==='drip'||key==='moss'||key==='mosshang'||key==='weeper')?hang():key==='angel'?hangUp():key==='spiderlily'?flipV(BIO.geo.bloom()):key==='tendril'?tuftUp():G.tuft(),M[k],{label:LAB[key],onLeaf:key==='drip'||key==='moss'}));}
+ // (2026-11-02, the attach audit: the drips and the snare moss hang under the parasols' caps, which are drawn on a leaf material for their sway, so
+ // the audit reads a cap as a card and not as structure; onLeaf holds what hangs from one inside the cap's body. Under a limb its bark holds them)
  if(M.lavaleaf)BIO.def('lavaleaf',BIO.geo.clump(),M.lavaleaf,{attrs:['aN'],label:'Lava-leaf shrubs'});
  if(M.distressed)BIO.def('distressed',BIO.geo.clump(),M.distressed,{attrs:['aN'],label:'Withered ash shrubs'});
  if(M.broom)BIO.def('broom',BIO.geo.clump(),M.broom,{attrs:['aN'],label:'Ash broom'});

@@ -25,7 +25,7 @@ function curtain(p,dx,dz,len,w,opt){opt=opt||{};const m=Math.hypot(dx,dz);
   BIO.put('ribbon',[p[0]+tx*o+dx*rr(.05,.35),p[1]+rr(-.15,.05),p[2]+tz*o+dz*rr(.05,.35)],q,[w/nrb*rr(1,1.8),L,1],c.clone().multiplyScalar(rr(.82,1.12)));}
  if(rng()<.75){const o=rr(-w/2,w/2);BIO.put('strand',[p[0]+tx*o+dx*.4,p[1]-rr(0,.2),p[2]+tz*o+dz*.4],q,[rr(.14,.34),len*rr(.9,1.5),1],c.clone().multiplyScalar(.85));}
  if(opt.flowers&&rng()<.55){const fc=bloomCol(),item=rng()<.5?'anemone':'urchin';for(let b=0,nb=2+Math.floor(rng()*5);b<nb;b++){const s=rr(.35,.7);
-  BIO.put(item,[p[0]+tx*rr(-.5,.5)*w+dx*.45,p[1]-rr(.2,len*.75),p[2]+tz*rr(-.5,.5)*w+dz*.45],qEuler(0,rng()*TAU,0),[s,s,s],fc);}}}
+  BIO.put(item,BIO.holdTo(p,[p[0]+tx*rr(-.5,.5)*w+dx*.45,p[1]-rr(.2,len*.75),p[2]+tz*rr(-.5,.5)*w+dz*.45],.55*s),qEuler(0,rng()*TAU,0),[s,s,s],fc);}}}   /* held to the curtain's head on the shell (BIO.holdTo; 2026-11-09: they hung up to 12 m down a ribbon, and the attach audit read them floating) */
 // AERIAL ROOTS off a ceiling: thin, long, hanging straight down
 function roots(p,len,w){const q=qEuler(0,rng()*TAU,0),c=vcol();
  for(let i=0,n=1+Math.floor(rng()*3);i<n;i++)BIO.put('strand',[p[0]+rr(-w,w),p[1],p[2]+rr(-w,w)],q,[rr(.1,.3),len*rr(.6,1.2),1],c.clone().multiplyScalar(rr(.8,1.1)));}
@@ -38,7 +38,7 @@ function plant(p,s){const k=rng();const y=p[1];
  if(k<.35){const rx=rr(-.08,.08),ry=rng()*TAU,rz=rr(-.08,.08);BIO.put('irosette',[p[0],y,p[2]],qEuler(rx,ry,rz),[s*.8,s*.7,s*.8],C(pick(PAL.jungleGreen)),{c2:iridC2(),n:RIFT.leanN(ry,.5)});}
  else if(k<.6){for(let i=0,n=1+Math.floor(rng()*3);i<n;i++){const a=rng()*TAU,d=i?rr(.2,.6):0,h=s*rr(.8,1.4);BIO.put('curl',[p[0]+Math.cos(a)*d,y,p[2]+Math.sin(a)*d],qEuler(rr(-.15,.15),rng()*TAU,rr(-.15,.15)),[h,h,h],C(pick(PAL.tealGreen)),{c2:C(pick(PAL.irid.GB)),n:RIFT.leanN(a,.3+.6*d)});}}
  else if(k<.7){BIO.put('zebra',[p[0],y,p[2]],qEuler(rr(-.08,.08),rng()*TAU,rr(-.08,.08)),[s*.6,s*.45,s*.6],C(0xffffff).lerp(C(0xe0a0c0),.5));}
- else if(k<.8){BIO.put('clubmoss',[p[0],y-.05,p[2]],qEuler(0,rng()*TAU,0),[s*1.6,s*.6,s*1.6],C(pick(PAL.yellowGreen)),{c2:iridC2()});}
+ else if(k<.8){const ry=rng()*TAU;BIO.put('clubmoss',[p[0],y-.05,p[2]],qEuler(0,ry,0),[s*1.6,s*.6,s*1.6],C(pick(PAL.yellowGreen)),{c2:iridC2(),n:RIFT.leanN(ry,.35)});}
  else{const c=C(pick(PAL.jungleGreen)).offsetHSL(rr(-.1,.1),.05,.02);
   BIO.put('lobe',[p[0],y,p[2]],qEuler(0,rng()*TAU,0),[s,s*.7,s],c.clone().multiplyScalar(.82));
   for(let i=0;i<2;i++)BIO.put('ucard',[p[0]+rr(-.4,.4)*s,y+s*.5,p[2]+rr(-.4,.4)*s],qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[s*1.3,s,s*1.3],c.clone().multiplyScalar(rr(.9,1.2)));}}
@@ -48,11 +48,13 @@ function smallTree(p,h){const S=RIFT.SPECIES[28],rb=h*.04+.25;
  const n=8+Math.floor(rng()*5),R=h*.45,a0=rng()*TAU,c=C(pick(S.leaf));
  for(let i=0;i<n;i++){const a=a0+i/n*TAU+rr(-.2,.2),L=R*rr(.85,1.1);BIO.put('bigfrond',[p[0],p[1]+h,p[2]],qEuler(rr(-.1,.1),-a,rr(-.1,.3)),[L,L,L*1.25],c.clone().multiplyScalar(rr(1.2,1.5)));}}
 // LEDGES: moss on the flat, plants toward the outer edge, lips and curtains off the edge
+/* opt.keep(p) (opt-in, 2026-10-27: the Pile's decks, where the tier above rests on part of every roof): a sample point it refuses
+   gets nothing. Unset: every point, as before */
 RIFT.dressLedges=function(geos,opt){opt=opt||{};
- const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140;
- BIO.upFaces(geos,nM,.6).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
- BIO.upFaces(geos,nP,.6).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||10));else plant(f.p,rr(1,opt.size||3));});
- BIO.ledgePoints(geos,nE,2.5).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
+ const nM=opt.moss||400,nP=opt.plants||300,nE=opt.edges||140,K=opt.keep?(L=>L.filter(f=>opt.keep(f.p))):(L=>L);
+ K(BIO.upFaces(geos,nM,.6)).forEach(f=>moss(f.p,f.n,rr(1.2,opt.mossR||3.5)));
+ K(BIO.upFaces(geos,nP,.6)).forEach(f=>{if(rng()<.12)smallTree(f.p,rr(4,opt.treeH||10));else plant(f.p,rr(1,opt.size||3));});
+ K(BIO.ledgePoints(geos,nE,2.5)).forEach(l=>{const p=[l.p[0]+l.n[0]*.3,l.p[1]-.1,l.p[2]+l.n[2]*.3];
   moss([l.p[0],l.p[1],l.p[2]],[0,1,0],rr(1,2.2));
   if(rng()<.7)curtain(p,l.n[0],l.n[2],rr(4,opt.hang||16),rr(2,5),{flowers:rng()<.4});});};
 // SOFFITS: moss rolled over to face the ground, roots and beards hanging out of it, brackets, curtains where the rim is

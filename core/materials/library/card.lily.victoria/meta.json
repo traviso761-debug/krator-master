@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 120,
+   "key_lo": 40,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "none"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.lily.victoria",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "card.lily.victoria.png",
+  "generator": "supplied by the owner (pasted, 2026-10-27), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "one pad filling the frame, seen from above; spill none keeps the red-purple rim",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.lily.victoria\"",
+  "reuse": "the sky lily pads (hyperjungle lake station, skylily slot); any giant water lily",
+  "sha1": "d805a92df66a1b6eb6a56432186593c04cf0d0b7"
+ }
+}

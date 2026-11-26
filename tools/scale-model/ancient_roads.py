@@ -16,7 +16,7 @@ from scipy.sparse.csgraph import dijkstra, minimum_spanning_tree, connected_comp
 from PIL import Image, ImageDraw, ImageFont
 sys.stdout.reconfigure(encoding='utf-8')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from extract_region import load_page, raster
+from smodel.page import load as load_page, raster   # a saved page or model/data
 
 if len(sys.argv) != 5:
     sys.exit(__doc__)
@@ -126,7 +126,7 @@ for f in glob.glob(os.path.join(RDIR, '*.json')):
 UPKEEP = {'Empire of Iziz': 'kept', 'Vothic Kingdom': 'kept', 'Iron Republic': 'kept', 'The Cut': 'kept', 'Eternal State': 'kept',
           'Yuni Emirate': 'partly', 'Xanadu Sultanate': 'partly',
           'Jimjam': 'lapsed', 'League of Amphitriton': 'lapsed', 'Scyvoi': 'lapsed', 'Beast Riders': 'lapsed', 'Dalab Council': 'lapsed',
-          's highlands': 'lapsed', 'sw highlands': 'lapsed', 'e inner wall': 'lapsed'}
+          's highlands': 'lapsed', 'sw highlands': 'lapsed', 'e inner wall': 'lapsed', 'e highlands': 'lapsed'}   # e inner wall: its name to 5.1 edit 3
 masks = []
 for n, u in UPKEEP.items():
     if n not in R: print('no region', n); continue

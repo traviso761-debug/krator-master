@@ -15,7 +15,9 @@ function hostGroundLib(n,fb){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='li
 // stones, dark in the pools, white where it drops); the tarn is a disc; the mist
 // is sheets lying in the hollows and soft sprites standing in them, drifting.
 // Host-only.
-let GROUND=null;
+const BRECCIA_ON=new URLSearchParams(location.search).get('strata')!=='0'&&!(typeof STATION_BRECCIA!=='undefined'&&STATION_BRECCIA===false);   /* the crater wall's megabreccia (86-host-pillars.js); a station off the wall sets STATION_BRECCIA=false */
+const BRECCIA_KINDS={matrix:0x6d6a66,blocks:[0x232124,0x2a2826,0x6e2e24,0x8a8780,0x9a958c,0xd0c4aa,0x9a4430,0xbdb6a6,0x7a7670,0x75716c]};   /* the recipe's colours, weighted by its shares (KGROUND's palette is uniform) */
+let GROUND=null,GROUND_HZ=null;   /* GROUND_HZ: the terrain's horizon maps (KHORIZON), for any material that would take its shadows */
 function buildGround(){
  const SX=TERR.X1-TERR.X0,SZ=TERR.Z1-TERR.Z0,TW=2048,ZN=256;
  // the zones on a coarse lattice (they cost a dozen noise calls each)
@@ -60,10 +62,11 @@ function buildGround(){
    if(ow>0)c.lerp(ROCKMOSS,ow*smooth(.0,.3,n2+.15)*.5);
    const rockK=Math.max(smooth(.62,1.05,sl),rk*.35);if(rockK>0)c.lerp(q.copy(ROCK).lerp(ROCK2,clamp(.5+n3*2.5,0,1)),rockK);
    // the top: snow on the north faces and in the hollows
-   c.lerp(SNOW,smooth(.72,.92,.35*Math.max(0,north)+n3*3.2+.25*n2*4)*smooth(.95,.5,sl)*smooth(.94,1,zat('cold',u,v))*alp*.8);   // patches, never a whole face   // patches: the north faces and the hollows hold it
+   const snc=zat('cold',u,v)-.0573*FC.at(FC.a.valley,wx,wz);c.lerp(SNOW,smooth(.72,.92,.35*Math.max(0,north)+n3*3.2+.25*n2*4)*smooth(.95,.5,sl)*smooth(.94,1,snc)*smooth(.88,.985,snc)*.8);   /* the snow's cold leaves out the valley's pooled air (55/960 of 'cold', 45-host-stage.js), 2026-10-26: the valley floor no longer reads as one white band */   // patches, never a whole face   // patches: the north faces and the hollows hold it
    // the banks: gravel and wet moss; the tarn's peat
    const fl=FC.at(FC.a.flow,wx,wz);c.lerp(BANK,rip*.45);c.lerp(GRAV,smooth(.86,.98,fl)*.7);
    if(Math.hypot(wx-TARN.x,wz-TARN.z)<TARN.r+30)c.lerp(PEAT,smooth(TARN.r+30,TARN.r,Math.hypot(wx-TARN.x,wz-TARN.z))*.6);
+   if(typeof STATION_PAINT==='function')STATION_PAINT(c,wx,wz,n,n2,n3,sl);   /* a station's own ground colours (the mire's sphagnum and peat), over the kit's */
    // the canopy's shade
    const sh=sat(u,v);c.multiplyScalar(1-.62*sh);
    const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
@@ -71,27 +74,60 @@ function buildGround(){
  const DET=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=232+(fbm(x/9,y/9,5,2)-.5)*40+(BIO.fn.h3(x,y,9)-.5)*24;d[i]=d[i+1]=d[i+2]=clamp(v,0,255);d[i+3]=255;}
   g.putImageData(id,0,0);});
- const MAT=new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
- /* the library's two ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow), by zone: the montane needle floor and the glades */
- const GLY=(function(){const L=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.mulch'):null,M=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('nhighlands','ground.meadow'):null;if(!L||!M)return null;
-  return{mulch:KMAT.textures(L,{aniso:8}).map,mulchK:1/L.scale[0],meadow:KMAT.textures(M,{aniso:8}).map,meadowK:1/M.scale[0]};})();
- MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};if(GLY){sh.uniforms.uGMulch={value:GLY.mulch};sh.uniforms.uGMeadow={value:GLY.meadow};}
-  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec2 aGL;varying vec2 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec2 vGL;'+(GLY?'uniform sampler2D uGMulch,uGMeadow;vec3 gkAnti(sampler2D t,vec2 p,float k){float m=smoothstep(0.3,0.7,0.5+0.35*sin(p.x*0.0131+1.3)*sin(p.y*0.0097)+0.15*sin(p.x*0.029+p.y*0.023));vec2 q=mat2(0.799,-0.602,0.602,0.799)*p;return mix(pow(texture2D(t,p*k).rgb,vec3(2.2)),pow(texture2D(t,q*k*0.53+vec2(0.37,0.21)).rgb,vec3(2.2)),m);}':''))
+ /* THE GROUND'S LIGHT PER PIXEL (the cloud kits' merge, 2026-11-04; core/terrain/GROUND.md, the relief's adoption list): on KGROUND the ground is
+    MeshStandard, so the relief's bump and the mesh's hollows reach the light (r128's Lambert lights per vertex); ?kground=0 keeps the Lambert,
+    ?kgrelief=0 drops the relief (the before-and-after) */
+ const KG_STD=typeof KGROUND!=='undefined'&&new URLSearchParams(location.search).get('kground')!=='0',KG_RELIEF=KG_STD&&new URLSearchParams(location.search).get('kgrelief')!=='0';
+ const MAT=KG_STD?new THREE.MeshStandardMaterial({map:TEX,color:0x84847a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX,color:0x84847a});
+ /* the library's ground layers (materials.json ground.mulch: leaf and needle mulch, ground.meadow: green meadow, groundCladonia:
+    the owner's reindeer lichen over the boreal floor), by zone: on core/terrain's ground shader (KGROUND, 43-core-ground.js, 2026-10-26),
+    hex-tiled, scaled with distance and blended by height; the same weights and strengths as the page's own mix before it */
+ const GLY=(function(){const M=KGROUND.layer('nhighlands','ground.mulch',{w:'vGL.x',amt:.7,gain:1.25,tint:'diffuse'}),G=KGROUND.layer('nhighlands','ground.meadow',{w:'vGL.y',amt:.75,gain:1.2,tint:'diffuse'});
+  if(typeof STATION_GLY==='function')return STATION_GLY();   /* a station's own layers on the same three weights (stations/<name>/: STATION_GL fills them) */
+  const L=M&&G?[M,G,KGROUND.layer('nhighlands','groundCladonia',{w:'vGL.z',amt:.4,gain:1.1,tint:'diffuse'})]:[];
+  /* THE CRATER WALL'S MEGABRECCIA on the steep (86-host-pillars.js, BRECCIA_ON; ?strata=0 the old granite bands): KGROUND's `clast` kind, 3D cells (no stretch
+     on a scarp) of 7 m with a finer generation in the matrix and its glass flecks, in the recipe's rocks; no map, so no texture unit. Its weight is the old
+     granite's (the steep), a little under the moss's reach */
+  const BRG=BRECCIA_ON?KGROUND.layer('nhighlands','rock.megabreccia',{}):null;   /* the library's megabreccia (rock.megabreccia): each block's grain, turned per block; one texture unit */
+  if(BRECCIA_ON)L.push({map:BRG?BRG.map:undefined,k:BRG?BRG.k:undefined,kind:'clast',w:'smoothstep(0.42,0.75,1.0-clamp(normalize(vGWN).y,0.0,1.0))',amt:.88,gain:.82,size:7,matrix:.07,sub:.2,fleck:.05,fleckDensity:.25,
+   palette:BRECCIA_KINDS.blocks,matrixColor:BRECCIA_KINDS.matrix,vary:.12,seed:KRAND.hash(86077,0,1,7)%997,name:'megabreccia (clast)'});
+  return L;})();
+ MAT.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:hostGroundLib('groundDetail',DET)};
+  sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;varying vec3 vGWN;attribute vec3 aGL;varying vec3 vGL;').replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGL=aGL;vGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vGWN=normalize(mat3(modelMatrix)*objectNormal);');
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\nuniform sampler2D uDetail;varying vec3 vGWP;varying vec3 vGWN;varying vec3 vGL;')
    .replace('#include <map_fragment>',['#include <map_fragment>',
     '{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*dt2*1.12,0.85);',
-    (GLY?'{vec3 _pd=diffuseColor.rgb;diffuseColor.rgb=mix(_pd,diffuse*gkAnti(uGMulch,vGWP.xz,'+GLY.mulchK.toFixed(4)+')*1.25,clamp(vGL.x*0.7,0.0,0.7));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*gkAnti(uGMeadow,vGWP.xz,'+GLY.meadowK.toFixed(4)+')*1.2,clamp(vGL.y*0.75,0.0,0.75));}':''),
+    '/*KGROUND*/',
     // granite on the steep: grey bands, wandering, lichen-stained (the paint is sRGB-decoded, so these are linear)
     ' float steep=1.0-clamp(vGWN.y,0.0,1.0); float y=vGWP.y+5.0*sin(vGWP.x*0.005+vGWP.z*0.004)+2.0*sin(vGWP.x*0.033);',
     ' float b1=0.5+0.5*sin(y*0.24), b2=smoothstep(0.6,0.95,sin(y*0.08+1.3));',
     ' vec3 st=mix(vec3(0.17,0.18,0.17),vec3(0.26,0.27,0.25),b1); st=mix(st,vec3(0.12,0.14,0.11),b2*0.6);',
     ' st*=0.8+0.4*texture2D(uDetail,vec2(vGWP.x+vGWP.z,vGWP.y*3.0)*0.05).r;',
-    ' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};
+    BRECCIA_ON?' }':typeof STATION_STEEP==='string'?' diffuseColor.rgb=mix(diffuseColor.rgb,'+STATION_STEEP+',smoothstep(0.14,0.36,steep)*0.92);}':' diffuseColor.rgb=mix(diffuseColor.rgb,st,smoothstep(0.42,0.75,steep)*0.85);}'].join('\n'));};   /* with the megabreccia on, the clast layer above draws the steep */
+ KGROUND.hook(MAT,{layers:GLY,key:'nhl-ground',relief:KG_RELIEF&&GLY.length?{bump:.075,cavity:.8,mesh:1}:null});
+ /* THE TERRAIN'S HORIZON (core/terrain/45-core-horizon.js, KHORIZON, 2026-10-26: HEIGHT-RESEARCH item 2): the horizon in eight
+    directions baked over the map (256 texels a side, ~26 m) and, beyond it, over the far country's drawn lattice (FAR.G), so at a
+    low sun the ridges and the Inner Wall throw their shadows across the valley; the hollows and the stream's cut see less sky */
+ const HZ=(function(){const t0=performance.now(),H=KHORIZON.bake({box:[TERR.X0,TERR.Z0,TERR.X1,TERR.Z1],n:256,h:terrainH,
+  far:{h:(x,z)=>{const v=FAR.G.at(x,z);return v===v?v:0;},box:[-16000,-16000,16000,16000],n:200}});window._horizon={ms:Math.round(performance.now()-t0),n:H.n};return H;})();
+ KHORIZON.shade(MAT,HZ);GROUND_HZ=HZ;
+ /* and on what stands on the land (the forest is built before the ground: the canopy's shade is baked from it) */
+ window._horizon.mats=KHORIZON.shadeScene(scene,HZ,{filter:m=>!m.userData.farField});
  const NXg=720,g=new THREE.PlaneGeometry(SX,SZ,NXg,NXg);g.rotateX(-Math.PI/2);g.translate((TERR.X0+TERR.X1)/2,0,(TERR.Z0+TERR.Z1)/2);
- const p=g.attributes.position;for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
+ const p=g.attributes.position;
+ /* THE SHORELINES FOLLOW THE WATER: the 9.2 m grid's diagonals crossed the water's surface in a sawtooth along the stream and round the
+    tarn (the owner's look pass, 2026-10-26). A grid vertex within half a cell of a water edge moves onto it, along the edge's normal:
+    the stream's (its channel's half width plus the 4.5 m the ground is held under the ribbon: the ribbon's own edge) and the tarn's
+    (radius r, where its bowl meets its level), a little inside each so the snapped row stays under the water. The crossing then runs
+    along the edge line; no triangle is added */
+ {const P=STREAM.P,half=SX/NXg*.48;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i);
+   const dt=Math.hypot(x-TARN.x,z-TARN.z);if(Math.abs(dt-TARN.r)<half&&dt>1){const k=(TARN.r-.5)/dt;p.setX(i,TARN.x+(x-TARN.x)*k);p.setZ(i,TARN.z+(z-TARN.z)*k);continue;}
+   const r=streamNear(x,z);if(!r||r.d<.5)continue;const e=r.w+4.2;   /* just inside the hold (w + 4.5), so the snapped row stays under the water */if(Math.abs(r.d-e)>=half)continue;
+   const a=P[r.i],b=P[r.i+1],nx=a[0]+(b[0]-a[0])*r.f,nz=a[1]+(b[1]-a[1])*r.f,k=e/r.d;p.setX(i,nx+(x-nx)*k);p.setZ(i,nz+(z-nz)*k);}}
+ for(let i=0;i<p.count;i++)p.setY(i,terrainH(p.getX(i),p.getZ(i)));
  const uv=g.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,(p.getX(i)-TERR.X0)/SX,1-(p.getZ(i)-TERR.Z0)/SZ);
- {const gl=new Float32Array(p.count*2);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;gl[i*2]=zat('montane',u,v);gl[i*2+1]=zat('glade',u,v);}g.setAttribute('aGL',new THREE.BufferAttribute(gl,2));}
- g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
+ {const gl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const u=(p.getX(i)-TERR.X0)/SX,v=(p.getZ(i)-TERR.Z0)/SZ;if(typeof STATION_GL==='function'){const w=STATION_GL(p.getX(i),p.getZ(i));gl[i*3]=w[0];gl[i*3+1]=w[1];gl[i*3+2]=w[2];continue;}gl[i*3]=zat('montane',u,v);gl[i*3+1]=zat('glade',u,v);gl[i*3+2]=zat('boreal',u,v)*(1-zat('alpine',u,v))*(1-zat('burn',u,v))*(1-zat('rip',u,v));}g.setAttribute('aGL',new THREE.BufferAttribute(gl,3));}   /* z: the boreal floor (cladonia) */
+ g.computeVertexNormals();const m=new THREE.Mesh(g,MAT);if(KG_RELIEF&&GLY.length)KGROUND.cavityMesh(m);m.userData.probeSkip=true;m.userData.inspectLabel='The northern highlands (ground)';scene.add(m);
  // the apron: a vertical skirt 70 m deep round the square's edge, in the paint's edge colour
  {const pos=[],uvs=[],N=NXg,ed=[];for(let k=0;k<=N;k++){const f=k/N;ed.push([TERR.X0+f*SX,TERR.Z0],[TERR.X1,TERR.Z0+f*SZ],[TERR.X1-f*SX,TERR.Z1],[TERR.X0,TERR.Z1-f*SZ]);}
   for(let side=0;side<4;side++)for(let k=0;k<N;k++){const a=ed[k*4+side],b=ed[(k+1)*4+side],ha=terrainH(a[0],a[1]),hb=terrainH(b[0],b[1]);
@@ -111,19 +147,35 @@ function buildGround(){
 const MIST=(function(){const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),id=g.createImageData(128,128);
  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const dx=(x-64)/64,dy=(y-64)/64,r=Math.hypot(dx,dy),a=clamp(1-r,0,1)*(.55+.45*fbm(x/22,y/22,3,3));id.data[(y*128+x)*4]=id.data[(y*128+x)*4+1]=id.data[(y*128+x)*4+2]=255;id.data[(y*128+x)*4+3]=clamp(a*a*255,0,255);}
  g.putImageData(id,0,0);const tex=new THREE.CanvasTexture(c);
+ // TWO DRAW CALLS, NOT ONE A PIECE (2026-10-26): the ~74 sheets and sprites were 74 meshes, each its own draw call wherever
+ // it was in view. Now every sheet is a quad in one mesh and every sprite a camera-facing quad in another, their corners
+ // rewritten each frame as they drift (a few hundred vertices). The same placement, sizes, drift and colours as before.
  const sheetM=new THREE.MeshBasicMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});
- const spriteM=new THREE.SpriteMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.22,depthWrite:false});
+ const spriteM=new THREE.MeshBasicMaterial({map:tex,color:0xd0dada,transparent:true,opacity:.22,depthWrite:false,side:THREE.DoubleSide});
  const L=[];reseed(84031);
- const place=(kind,x,z,lift)=>{const h=FC.at(FC.a.h,x,z);let o;
-  if(kind==='sheet'){o=new THREE.Mesh(new THREE.PlaneGeometry(rr(140,320),rr(70,160)),sheetM);o.rotation.x=-Math.PI/2;o.rotation.z=rr(0,TAU);}
-  else{o=new THREE.Sprite(spriteM);const s=rr(90,220);o.scale.set(s,s*rr(.35,.55),1);}
-  o.position.set(x,h+lift,z);o.userData.probeSkip=true;o.renderOrder=3;scene.add(o);L.push({o,ax:x,az:z,lift,ph:rr(0,TAU),sp:rr(.015,.04),amp:rr(30,70)});};
+ const place=(kind,x,z,lift)=>{let w,d,rz=0;
+  if(kind==='sheet'){w=rr(140,320);d=rr(70,160);rz=rr(0,TAU);}else{const s=rr(90,220);w=s;d=s*rr(.35,.55);}
+  L.push({kind,w,d,c:Math.cos(rz),s:Math.sin(rz),ax:x,az:z,lift,ph:rr(0,TAU),sp:rr(.015,.04),amp:rr(30,70)});};
  // along the stream and at the falls
  for(let k=0;k<26;k++){const i=Math.floor(rng()*STREAM.P.length),p=STREAM.P[i];place(k%2?'sheet':'sprite',p[0]+rr(-40,40),p[1]+rr(-40,40),rr(4,12));}
  STREAM.falls.forEach(i=>{const p=STREAM.P[Math.min(STREAM.P.length-1,i+4)];place('sprite',p[0],p[1],8);place('sprite',p[0]+rr(-20,20),p[1]+rr(-20,20),18);});
  // the hollows, and the cloud band up high
  let tries=0,n=0;while(n<44&&tries++<4000){const x=rr(TERR.X0+200,TERR.X1-200),z=rr(TERR.Z0+200,TERR.Z1-200),mi=FC.at(FC.a.mist,x,z);if(rng()>mi)continue;place(n%3||FC.at(FC.a.valley,x,z)<.5?'sprite':'sheet',x,z,rr(6,26));n++;}   // sheets only in the hollows: on the open crest they read as snow
- tick((dt,t)=>{for(const m of L){const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;m.o.position.x=x;m.o.position.z=z;m.o.position.y=FC.at(FC.a.h,x,z)+m.lift;}});
+ const mk=(list,mat,name)=>{const g=new THREE.BufferGeometry(),N=list.length,pos=new Float32Array(N*12),uv=new Float32Array(N*8),ix=[];
+  for(let i=0;i<N;i++){uv.set([0,0,1,0,1,1,0,1],i*8);const b=i*4;ix.push(b,b+1,b+2,b,b+2,b+3);}
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(ix);
+  const o=new THREE.Mesh(g,mat);o.frustumCulled=false;o.renderOrder=3;o.userData.probeSkip=true;o.userData.noSnow=true;o.name=name;o.raycast=()=>{};scene.add(o);return{o,pos,list};};
+ const SH=mk(L.filter(m=>m.kind==='sheet'),sheetM,'mist:sheets'),SP=mk(L.filter(m=>m.kind==='sprite'),spriteM,'mist:sprites');
+ const at=(m,t)=>{const x=m.ax+Math.sin(t*m.sp+m.ph)*m.amp,z=m.az+Math.cos(t*m.sp*.7+m.ph)*m.amp*.6;return[x,FC.at(FC.a.h,x,z)+m.lift,z];};
+ const step=t=>{
+  SH.list.forEach((m,i)=>{const p=at(m,t),hw=m.w/2,hd=m.d/2,P=SH.pos,o=i*12;   /* a plane lying flat, turned by rz round the vertical */
+   [[-hw,hd],[hw,hd],[hw,-hd],[-hw,-hd]].forEach((q,k)=>{P[o+k*3]=p[0]+q[0]*m.c-q[1]*m.s;P[o+k*3+1]=p[1];P[o+k*3+2]=p[2]-q[0]*m.s-q[1]*m.c;});});
+  const e=camera.matrixWorld.elements,rx=e[0],ry=e[1],rz2=e[2],ux=e[4],uy=e[5],uz=e[6];   /* the sprites face the camera, as a THREE.Sprite does */
+  SP.list.forEach((m,i)=>{const p=at(m,t),hw=m.w/2,hh=m.d/2,P=SP.pos,o=i*12;
+   [[-1,-1],[1,-1],[1,1],[-1,1]].forEach((q,k)=>{const a=q[0]*hw,b=q[1]*hh;P[o+k*3]=p[0]+rx*a+ux*b;P[o+k*3+1]=p[1]+ry*a+uy*b;P[o+k*3+2]=p[2]+rz2*a+uz*b;});});
+  SH.o.geometry.attributes.position.needsUpdate=true;SP.o.geometry.attributes.position.needsUpdate=true;};
+ step(0);
+ tick((dt,t)=>step(t));
  return{L,sheetM,spriteM};})();
 // the water and the mist follow the light (day / dawn / night)
 if(typeof LIGHT_HOOKS!=='undefined')LIGHT_HOOKS.push(mode=>{

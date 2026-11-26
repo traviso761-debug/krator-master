@@ -1,0 +1,2571 @@
+{
+ "name": "Lake Atitlán",
+ "note": "Lake Atitlán in the Guatemalan highlands from OpenStreetMap, on its real ground: the lake at 1560 m in its drowned caldera, the three volcanoes on its southern shore (San Pedro, Tolimán and Atitlán), and the Kaqchikel and Tz'utujil towns round it: Panajachel, Santiago Atitlán, San Pedro and San Juan La Laguna, San Marcos, Santa Cruz, the Palopós, with Sololá on the rim above. The lanchas run between their docks.",
+ "origin": [
+  14.7405,
+  -91.158
+ ],
+ "defaultSeed": 1955,
+ "defaultHour": 9,
+ "bounds": [
+  14.575,
+  -91.33,
+  14.79,
+  -91.09
+ ],
+ "osm": "data/cities/atitlan-osm.json",
+ "attribution": "Lake Atitlán: map data (c) OpenStreetMap contributors, ODbL. Elevation: AWS Terrain Tiles. Built by tools/build-osm-city.py.",
+ "fetch": {
+  "bbox": [
+   14.573,
+   -91.333,
+   14.792,
+   -91.087
+  ],
+  "tiles": {
+   "buildings": [
+    3,
+    3
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ]
+  },
+  "detailZones": [
+   [
+    14.575,
+    -91.33,
+    14.79,
+    -91.09
+   ]
+  ],
+  "extraLand": "nwr[\"landuse\"~\"^(forest|farmland|orchard|meadow|farmyard)$\"]({b});nwr[\"natural\"~\"^(bare_rock|scree|heath|volcano|peak|wetland|cliff)$\"]({b});",
+  "extraRoads": "way[\"highway\"~\"^(track|path)$\"]({b});",
+  "_": "the whole box is a detail zone: the lake's towns are small. extraLand: the coffee fincas and milpas, the forest on the volcanoes, the reed beds; extraRoads: the shore paths between the towns and the trails up the volcanoes"
+ },
+ "terrain": {
+  "zoom": 13,
+  "step": 30,
+  "_": "the lake at 1556 m (the datum, measured from the tiles over the water: the box's own 5th percentile is the land falling to the Pacific), the caldera's walls to 2400 m on the north, San Pedro (3020 m), Tolimán (3158 m) and Atitlán (3537 m) on the south: elevation from tools/fetch-terrain.py",
+  "lakeBed": {
+   "names": [
+    "Lago de Atitlán"
+   ],
+   "shore": 0.8,
+   "scale": 900,
+   "depth": 330,
+   "_": "the elevation carries the lake as a flat sheet at its surface; the bed is the 2014 echo-sounder survey (data/bathy/atitlan-bed.json, from the Dryad grid by tools/grid-aig.py, 60 m), 320 m at the deepest; the first metres off the shore, which it does not reach, are cut as before (a metre at the shore, easing toward 330 m)",
+   "knolls": [
+    {
+     "at": [
+      14.67962,
+      -91.19163
+     ],
+     "r": [
+      170,
+      200
+     ],
+     "top": 16,
+     "tilt": [
+      0.02,
+      0.01
+     ],
+     "flank": 0.6
+    },
+    {
+     "at": [
+      14.68232,
+      -91.19163
+     ],
+     "r": [
+      70,
+      60
+     ],
+     "top": 20,
+     "flank": 1.0
+    }
+   ],
+   "_knolls": "Samabaj's drowned island (Benítez and Samayoa 2000, Medrano and Samayoa 2010): 477 m north to south and 340 east to west, 175 m above the floor; the ceremonial groups on its north-east height 13.5 m down, the houses on the lower west at 17.5 to 21 m, a channel 39 m deep across its north cutting off a small island at 21 m; the slopes fall to 80 m toward the south shore and past 100 m to the north. Placed on the island the 2014 survey shows off the Cerro de Oro's north shore (its top about 20 m down at 60 m cells), which these knolls sharpen: the published coordinates (N 14 43 11, W 91 11 33) fall in the middle of the lake",
+   "grid": "data/bathy/atitlan-bed.json"
+  },
+  "datum": 1556.0
+ },
+ "extraKinds": [
+  [
+   "landuse",
+   "orchard",
+   "finca"
+  ],
+  [
+   "landuse",
+   "farmland",
+   "farm"
+  ],
+  [
+   "landuse",
+   "meadow",
+   "grass"
+  ],
+  [
+   "landuse",
+   "farmyard",
+   "farm"
+  ],
+  [
+   "natural",
+   "bare_rock",
+   "rock"
+  ],
+  [
+   "natural",
+   "scree",
+   "rock"
+  ],
+  [
+   "natural",
+   "wetland",
+   "scrub"
+  ]
+ ],
+ "_extraKinds": "tools/build-osm-city.py: the coffee fincas (orchard), the milpas (farmland), the bare rock of the summits; the reed marshes as scrub",
+ "defaultView": "The lake from Panajachel",
+ "seaLevelWater": false,
+ "cameraFar": 42000,
+ "fog": 1.1e-05,
+ "terrainLOD": [
+  7000,
+  15000
+ ],
+ "terrainColours": {
+  "low": "#7a8a4a",
+  "high": "#3a6a30",
+  "steep": "#4a5238",
+  "far": "#4a6440"
+ },
+ "terrainTints": [
+  {
+   "at": [
+    14.5833,
+    -91.1858
+   ],
+   "r": 1300,
+   "colour": "#5a5048",
+   "strength": 0.75
+  },
+  {
+   "at": [
+    14.6123,
+    -91.1888
+   ],
+   "r": 700,
+   "colour": "#5a5248",
+   "strength": 0.5
+  },
+  {
+   "at": [
+    14.6565,
+    -91.2665
+   ],
+   "r": 500,
+   "colour": "#5a5248",
+   "strength": 0.45
+  }
+ ],
+ "_terrainTints": "Atitlán's upper cone is bare ash and scoria; Tolimán's and San Pedro's summits a little rock through the cloud forest",
+ "treeLine": 1800,
+ "bareGround": [
+  [
+   14.5833,
+   -91.1858,
+   700
+  ]
+ ],
+ "_treeLine": "cloud forest to near the summits; above 3356 m (1800 over the lake) and on Atitlán's top cone, none",
+ "sky": {
+  "day": {
+   "top": "#3a78c8",
+   "hor": "#d4e2ec"
+  },
+  "dusk": {
+   "top": "#34406a",
+   "hor": "#f0a060"
+  },
+  "night": {
+   "top": "#05070f",
+   "hor": "#161c2c"
+  }
+ },
+ "waterColour": "#2e5a6a",
+ "lakeColour": "#1f4c66",
+ "lakeSheen": "#4a6474",
+ "_lakeColour": "deep blue-green, darker in the afternoon wind; clear from a lancha to several metres",
+ "defaultHeights": {
+  "_": "the lake's houses are of block, one or two storeys and often a third begun; the hotels and the churches stand over them",
+  "yes": 5.5,
+  "house": 5.5,
+  "residential": 6,
+  "detached": 5.5,
+  "apartments": 9,
+  "commercial": 6.5,
+  "retail": 5.5,
+  "church": 14,
+  "cathedral": 16,
+  "chapel": 9,
+  "public": 7,
+  "office": 8,
+  "hotel": 8,
+  "school": 6,
+  "civic": 8,
+  "government": 8,
+  "ruins": 7,
+  "industrial": 6,
+  "warehouse": 6,
+  "roof": 4,
+  "shed": 3,
+  "garage": 3
+ },
+ "heightSpread": 0.3,
+ "facade": {
+  "bay": 3.4,
+  "floor": 3.0,
+  "shutters": false,
+  "_": "block houses: a door and a window or two to a floor, often a steel roller shutter on a shop"
+ },
+ "palette": {
+  "_": "block rendered and painted, and bare grey block on the unfinished: turquoise, pink, sky blue, lime, yellow, white, the tienda's soft-drink red",
+  "brick": [
+   "#1fa0b0",
+   "#e88aa8",
+   "#7ab8e0",
+   "#a8d060",
+   "#e8c840",
+   "#f2f0ea",
+   "#c83a3a",
+   "#e8a060",
+   "#9a968e",
+   "#a8a49c",
+   "#5a8ad0",
+   "#f0e0c0",
+   "#8ac0a0"
+  ],
+  "stone": [
+   "#c8c4bc",
+   "#b8b4ac",
+   "#a8a49c"
+  ]
+ },
+ "pitchAll": {
+  "types": [
+   "yes",
+   "house",
+   "residential",
+   "detached",
+   "commercial",
+   "retail",
+   "hotel",
+   "school"
+  ],
+  "share": 0.5,
+  "_": "half the houses under a pitched roof of lámina or tile; the rest flat concrete, waiting for the next floor (src/atitlan/obragris.js)"
+ },
+ "roofMaxArea": 1600,
+ "roofMaxHeight": 12,
+ "roofPitch": 0.3,
+ "roofRise": 2.2,
+ "roofColours": [
+  "#8a8e94",
+  "#7a7e84",
+  "#9a9ea4",
+  "#8a6a50",
+  "#a8583a",
+  "#9a4e34",
+  "#6a8aa8"
+ ],
+ "flatRoofColours": [
+  "#a8a49c",
+  "#9a968e",
+  "#b4b0a8"
+ ],
+ "rooftops": false,
+ "groundMottle": 0.14,
+ "instanceCulling": true,
+ "paving": {
+  "classes": [
+   "pedestrian",
+   "living_street",
+   "alley"
+  ],
+  "plazas": true,
+  "metres": 2.2,
+  "map": "cobbles.webp",
+  "_": "the plazas and the lanes down to the docks are laid in stone"
+ },
+ "roadColours": {
+  "residential": "#6e6a64",
+  "unclassified": "#6e6a64",
+  "living_street": "#8a8276",
+  "pedestrian": "#a49a8a",
+  "alley": "#7e766a",
+  "tertiary": "#5e5a56",
+  "primary": "#3e3f42",
+  "secondary": "#45464a",
+  "trunk": "#3a3b3e",
+  "trail": "#7a6a52",
+  "track": "#7a6a52",
+  "path": "#7a6a52",
+  "footway": "#8a7e6a"
+ },
+ "areaColours": {
+  "park": "#4e7a34",
+  "grass": "#5e8a3e",
+  "garden": "#4c7434",
+  "recreation_ground": "#6a8a44",
+  "residential": "#8e8270",
+  "commercial": "#8e8270",
+  "plaza": "#9a8e7a",
+  "scrub": "#5a6a30",
+  "wood": "#2e5428",
+  "farmland": "#7a8a46",
+  "orchard": "#3e6a32",
+  "finca": "#3a5a2c",
+  "farm": "#8a8a4a",
+  "rock": "#5a524a"
+ },
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "trunk"
+  ],
+  "colour": "#e6e2d8"
+ },
+ "litWindows": 0.35,
+ "streetTrees": 0.1,
+ "parkedCars": 0.25,
+ "traffic": 0,
+ "people": 0.6,
+ "lowRiseFar": 4500,
+ "treeFar": 2400,
+ "scrub": "low",
+ "treeCells": {
+  "garden": 26,
+  "park": 30
+ },
+ "treeMinArea": {
+  "garden": 2500,
+  "park": 1000
+ },
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "underwater": {
+  "colour": "#2a6a5a",
+  "visibility": 30,
+  "fade": 60,
+  "_": "src/atitlan/underwater.js: under the water the fog is the lake's: green and murkier than it was (a Secchi disc is seen to some 7 m since the algal blooms began in 2009), dark by a hundred metres",
+  "basin": {
+   "major": 50,
+   "minor": 10,
+   "deep": 330,
+   "view": [
+    [
+     14.6,
+     -91.16,
+     5200
+    ],
+    [
+     14.69,
+     -91.2,
+     -200
+    ]
+   ],
+   "_": "the Drain the lake button: the bed by depth, a contour every 10 m and a white one every 50 m; the camera goes to the south-east, over San Lucas, looking across the basin"
+  },
+  "floor": 0.3
+ },
+ "flight": true,
+ "noBuildingsInWater": true,
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "t0": [
+   "Panajachel",
+   "#1fa0b0",
+   5,
+   12,
+   [
+    14.7325,
+    -91.1677,
+    14.7525,
+    -91.1473
+   ]
+  ],
+  "t1": [
+   "Sololá",
+   "#e88aa8",
+   5,
+   12,
+   [
+    14.7634,
+    -91.1909,
+    14.7796,
+    -91.1741
+   ]
+  ],
+  "t2": [
+   "Santiago Atitlán",
+   "#a8d060",
+   5,
+   12,
+   [
+    14.6289,
+    -91.2373,
+    14.6461,
+    -91.2197
+   ]
+  ],
+  "t3": [
+   "San Pedro La Laguna",
+   "#e8c840",
+   5,
+   12,
+   [
+    14.6857,
+    -91.2795,
+    14.6993,
+    -91.2655
+   ]
+  ],
+  "t4": [
+   "San Juan La Laguna",
+   "#7ab8e0",
+   5,
+   12,
+   [
+    14.6905,
+    -91.2906,
+    14.6995,
+    -91.2814
+   ]
+  ],
+  "t5": [
+   "San Pablo La Laguna",
+   "#c87a4a",
+   5,
+   12,
+   [
+    14.7159,
+    -91.2771,
+    14.7249,
+    -91.2679
+   ]
+  ],
+  "t6": [
+   "San Marcos La Laguna",
+   "#1fa0b0",
+   5,
+   12,
+   [
+    14.7202,
+    -91.2629,
+    14.7278,
+    -91.2551
+   ]
+  ],
+  "t7": [
+   "Tzununá",
+   "#e88aa8",
+   5,
+   12,
+   [
+    14.7301,
+    -91.2481,
+    14.7359,
+    -91.2421
+   ]
+  ],
+  "t8": [
+   "Jaibalito",
+   "#a8d060",
+   5,
+   12,
+   [
+    14.7367,
+    -91.2204,
+    14.7403,
+    -91.2166
+   ]
+  ],
+  "t9": [
+   "Santa Cruz La Laguna",
+   "#e8c840",
+   5,
+   12,
+   [
+    14.7406,
+    -91.2095,
+    14.7464,
+    -91.2035
+   ]
+  ],
+  "t10": [
+   "Santa Catarina Palopó",
+   "#7ab8e0",
+   5,
+   12,
+   [
+    14.7202,
+    -91.1413,
+    14.727,
+    -91.1343
+   ]
+  ],
+  "t11": [
+   "San Antonio Palopó",
+   "#c87a4a",
+   5,
+   12,
+   [
+    14.689,
+    -91.1191,
+    14.6972,
+    -91.1107
+   ]
+  ],
+  "t12": [
+   "San Lucas Tolimán",
+   "#1fa0b0",
+   5,
+   12,
+   [
+    14.6286,
+    -91.1521,
+    14.644,
+    -91.1363
+   ]
+  ],
+  "t13": [
+   "San Andrés Semetabaj",
+   "#e88aa8",
+   5,
+   12,
+   [
+    14.7415,
+    -91.1396,
+    14.7505,
+    -91.1304
+   ]
+  ],
+  "t14": [
+   "San Jorge La Laguna",
+   "#a8d060",
+   5,
+   12,
+   [
+    14.7587,
+    -91.1735,
+    14.7651,
+    -91.1669
+   ]
+  ],
+  "t15": [
+   "Santa Clara La Laguna",
+   "#e8c840",
+   5,
+   12,
+   [
+    14.709,
+    -91.3091,
+    14.719,
+    -91.2989
+   ]
+  ],
+  "volcanes": [
+   "The volcanoes",
+   "#4a6a3a",
+   0,
+   0,
+   [
+    14.575,
+    -91.3,
+    14.67,
+    -91.15
+   ]
+  ],
+  "outer": [
+   "Lake Atitlán",
+   "#5a7a5a",
+   5,
+   10,
+   [
+    14.575,
+    -91.33,
+    14.79,
+    -91.09
+   ]
+  ]
+ },
+ "casas": {
+  "maxH": 9,
+  "far": 250,
+  "farOut": 650,
+  "zones": [
+   [
+    14.7425,
+    -91.1575,
+    1100
+   ],
+   [
+    14.7715,
+    -91.1825,
+    900
+   ],
+   [
+    14.6375,
+    -91.2285,
+    950
+   ],
+   [
+    14.6925,
+    -91.2725,
+    750
+   ],
+   [
+    14.695,
+    -91.286,
+    500
+   ],
+   [
+    14.7204,
+    -91.2725,
+    500
+   ],
+   [
+    14.724,
+    -91.259,
+    420
+   ],
+   [
+    14.733,
+    -91.2451,
+    320
+   ],
+   [
+    14.7385,
+    -91.2185,
+    200
+   ],
+   [
+    14.7435,
+    -91.2065,
+    320
+   ],
+   [
+    14.7236,
+    -91.1378,
+    380
+   ],
+   [
+    14.6931,
+    -91.1149,
+    450
+   ],
+   [
+    14.6363,
+    -91.1442,
+    850
+   ],
+   [
+    14.746,
+    -91.135,
+    500
+   ],
+   [
+    14.7619,
+    -91.1702,
+    350
+   ],
+   [
+    14.714,
+    -91.304,
+    550
+   ]
+  ],
+  "_": "src/antigua/casas.js: the doors, barred windows and eaves on the house walls that face a street, in the towns"
+ },
+ "infill": {
+  "zones": [
+   [
+    14.7425,
+    -91.1575,
+    1100
+   ],
+   [
+    14.7715,
+    -91.1825,
+    900
+   ],
+   [
+    14.6375,
+    -91.2285,
+    950
+   ],
+   [
+    14.6925,
+    -91.2725,
+    750
+   ],
+   [
+    14.695,
+    -91.286,
+    500
+   ],
+   [
+    14.7204,
+    -91.2725,
+    500
+   ],
+   [
+    14.724,
+    -91.259,
+    420
+   ],
+   [
+    14.733,
+    -91.2451,
+    320
+   ],
+   [
+    14.7385,
+    -91.2185,
+    200
+   ],
+   [
+    14.7435,
+    -91.2065,
+    320
+   ],
+   [
+    14.7236,
+    -91.1378,
+    380
+   ],
+   [
+    14.6931,
+    -91.1149,
+    450
+   ],
+   [
+    14.6363,
+    -91.1442,
+    850
+   ],
+   [
+    14.746,
+    -91.135,
+    500
+   ],
+   [
+    14.7619,
+    -91.1702,
+    350
+   ],
+   [
+    14.714,
+    -91.304,
+    550
+   ]
+  ],
+  "width": [
+   6,
+   13
+  ],
+  "depth": 10,
+  "setback": 1.0,
+  "twoStorey": 0.3,
+  "far": 3000,
+  "parapets": 0.35,
+  "tapias": 0.12,
+  "_": "src/antigua/infill.js: house fronts along every street where the map has none, in each town round the lake: [lat, lon, radius]"
+ },
+ "fincas": {
+  "kind": "finca",
+  "row": 3.6,
+  "bush": 2.4,
+  "shade": 16,
+  "tile": 400,
+  "far": 650,
+  "_": "src/antigua/fincas.js: coffee in rows under shade trees on the slopes behind the towns, planted a tile at a time as the camera comes near"
+ },
+ "facadeStyles": [
+  {
+   "tex": "limewash",
+   "bay": 3.4,
+   "floor": 3.0,
+   "low": true,
+   "when": {
+    "maxH": 10,
+    "where": [
+     [
+      14.575,
+      -91.33,
+      14.79,
+      -91.09
+     ]
+    ]
+   }
+  }
+ ],
+ "_facadeStyles": "the low houses' walls are plain render: src/antigua/casas.js puts the doors, the grilled windows and the eaves on the ones that face a street",
+ "surfaces": {
+  "_": "the engine's real surfaces: Krator's material library (data/textures/README.md). Lámina (rusty corrugated iron) on the pitched roofs, concrete on the flat, render on the walls; the colours stay the map's. No bare concrete block texture in the library yet: core/materials/PROMPTS-NEEDED.md",
+  "dir": "data/textures/",
+  "sets": {
+   "brick": {
+    "map": "brick.webp",
+    "mean": [
+     0.6084,
+     0.6084,
+     0.6083
+    ],
+    "metres": 1.1,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "concrete": {
+    "map": "concrete.webp",
+    "mean": [
+     0.4171,
+     0.3877,
+     0.3446
+    ],
+    "metres": 4.0,
+    "keep": 0.2,
+    "strength": 0.7
+   },
+   "sidewalk": {
+    "map": "sidewalk.webp",
+    "mean": [
+     0.6411,
+     0.6411,
+     0.6362
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.8
+   },
+   "asphalt": {
+    "map": "asphalt.webp",
+    "mean": [
+     0.3694,
+     0.3503,
+     0.3276
+    ],
+    "metres": 5.0,
+    "keep": 0.2,
+    "strength": 0.45
+   },
+   "grass": {
+    "map": "grass.webp",
+    "mean": [
+     0.5926,
+     0.5151,
+     0.349
+    ],
+    "metres": 3.0,
+    "keep": 0.6,
+    "strength": 1.0
+   },
+   "dirt": {
+    "map": "dirt.webp",
+    "mean": [
+     0.3879,
+     0.3216,
+     0.243
+    ],
+    "metres": 4.0,
+    "keep": 0.4,
+    "strength": 0.9
+   },
+   "gravel": {
+    "map": "gravel.webp",
+    "mean": [
+     0.507,
+     0.4788,
+     0.4252
+    ],
+    "metres": 1.6,
+    "keep": 0.3,
+    "strength": 0.8
+   },
+   "stucco": {
+    "map": "stucco.webp",
+    "mean": [
+     0.6824,
+     0.6784,
+     0.6667
+    ],
+    "metres": 2.6,
+    "keep": 0,
+    "strength": 0.85
+   },
+   "plaster": {
+    "map": "plaster.webp",
+    "mean": [
+     0.6627,
+     0.6627,
+     0.6627
+    ],
+    "metres": 3.0,
+    "keep": 0,
+    "strength": 0.9
+   },
+   "rooftile": {
+    "map": "rooftile.webp",
+    "mean": [
+     0.5333,
+     0.5333,
+     0.5333
+    ],
+    "metres": 1.6,
+    "keep": 0,
+    "strength": 0.95
+   },
+   "lamina": {
+    "map": "lamina.webp",
+    "mean": [
+     0.5972,
+     0.4917,
+     0.4103
+    ],
+    "metres": 2.4,
+    "keep": 0,
+    "strength": 0.9
+   }
+  },
+  "fade": [
+   150,
+   800
+  ],
+  "ground": {
+   "green": "grass",
+   "tan": "dirt",
+   "grey": "concrete"
+  },
+  "streets": "asphalt",
+  "sidewalks": "sidewalk",
+  "walls": {
+   "red": "brick",
+   "other": "plaster"
+  },
+  "towers": "concrete",
+  "styles": {
+   "0": "stucco"
+  },
+  "roofs": {
+   "flat": "concrete",
+   "pitched": "lamina"
+  }
+ },
+ "treeSpecies": [
+  {
+   "name": "Pine (Pinus pseudostrobus)",
+   "shape": "fir",
+   "bark": "#6a5040",
+   "height": [
+    16,
+    30
+   ],
+   "colours": [
+    "#3e5e34",
+    "#46683a",
+    "#36562e"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 34,
+    "yard": 0
+   }
+  },
+  {
+   "name": "Oak (Quercus)",
+   "shape": "oak",
+   "bark": "#5a4a3a",
+   "height": [
+    12,
+    22
+   ],
+   "colours": [
+    "#4a6a34",
+    "#56763a",
+    "#425e2e"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 6,
+    "wood": 30,
+    "yard": 0
+   }
+  },
+  {
+   "name": "Cypress (Cupressus lusitanica)",
+   "shape": "column",
+   "bark": "#6a5040",
+   "height": [
+    12,
+    24
+   ],
+   "colours": [
+    "#2e4a2a",
+    "#36522e"
+   ],
+   "weight": {
+    "street": 2,
+    "park": 8,
+    "wood": 10,
+    "yard": 2
+   }
+  },
+  {
+   "name": "Gravilea (silky oak), shading the coffee",
+   "shape": "slender",
+   "bark": "#6a5a4a",
+   "height": [
+    14,
+    24
+   ],
+   "colours": [
+    "#5a7038",
+    "#647a40"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 6,
+    "wood": 8,
+    "yard": 6
+   }
+  },
+  {
+   "name": "Avocado",
+   "shape": "round",
+   "bark": "#5a4632",
+   "height": [
+    8,
+    14
+   ],
+   "colours": [
+    "#2e5a2a",
+    "#36662e"
+   ],
+   "weight": {
+    "street": 2,
+    "park": 4,
+    "wood": 4,
+    "yard": 16
+   }
+  },
+  {
+   "name": "Jacaranda",
+   "shape": "umbrella",
+   "bark": "#6a5a4a",
+   "height": [
+    8,
+    14
+   ],
+   "colours": [
+    "#8a6ac8",
+    "#7a5ab8",
+    "#56783a"
+   ],
+   "weight": {
+    "street": 10,
+    "park": 10,
+    "wood": 0,
+    "yard": 4
+   }
+  },
+  {
+   "name": "Banana",
+   "shape": "small",
+   "bark": "#6a7a3a",
+   "height": [
+    3,
+    6
+   ],
+   "colours": [
+    "#5a8a3a",
+    "#6a9a42"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 2,
+    "wood": 0,
+    "yard": 14
+   }
+  },
+  {
+   "name": "Ficus",
+   "shape": "round",
+   "bark": "#7a7268",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#2e562a",
+    "#36602e"
+   ],
+   "weight": {
+    "street": 12,
+    "park": 12,
+    "wood": 0,
+    "yard": 2
+   }
+  }
+ ],
+ "_treeSpecies": "pine and oak on the caldera walls and the volcanoes, cypress, gravilea over the coffee, avocado and banana in the yards, jacaranda and ficus on the plazas",
+ "yardTrees": {
+  "types": [
+   "house",
+   "detached",
+   "yes",
+   "residential"
+  ],
+  "share": 0.35,
+  "per": [
+   1,
+   2
+  ],
+  "reach": [
+   3,
+   8
+  ],
+  "maxArea": 240,
+  "where": [
+   [
+    14.575,
+    -91.33,
+    14.79,
+    -91.09
+   ]
+  ],
+  "_": "an avocado or a banana in the yard"
+ },
+ "dress": {
+  "cornice": {
+   "share": 0.25,
+   "minH": 4,
+   "maxH": 12,
+   "depth": 0.3
+  },
+  "awnings": {
+   "share": 0.3,
+   "maxH": 10
+  },
+  "laundry": {
+   "share": 0.2,
+   "minH": 5,
+   "maxH": 12
+  },
+  "far": 500,
+  "_": "src/core/dress.js"
+ },
+ "streetlife": {
+  "seed": 1955,
+  "centre": [
+   14.7425,
+   -91.1575,
+   1300
+  ],
+  "far": 500,
+  "shops": 0.6,
+  "flowerBoxes": 0.06,
+  "smoke": 0.08,
+  "_": "src/core/streetlife.js: the tiendas, the weavers' stalls on Calle Santander, comedores"
+ },
+ "vehicles": {
+  "seed": 1955,
+  "side": "right",
+  "cars": 8,
+  "mopeds": 12,
+  "buses": 1.6,
+  "trams": 0,
+  "trains": 0,
+  "far": 1000,
+  "carFar": 700,
+  "mopedFar": 450,
+  "maxCars": 1500,
+  "maxMopeds": 600,
+  "maxBuses": 140,
+  "busColours": [
+   "#c83a2a",
+   "#2a6ac8",
+   "#e8b830",
+   "#3a9a4a",
+   "#e86a2a",
+   "#8a3aaa"
+  ],
+  "carColours": [
+   "#f2f2f0",
+   "#1e1e22",
+   "#8a9aa8",
+   "#c8ccd0",
+   "#9a2a2a",
+   "#2a4a7a",
+   "#d8d0c0"
+  ],
+  "_": "src/core/traffic.js: tuk-tuks and motos, pickups, and the camionetas, the chicken buses, on the road down to Panajachel and round the shore"
+ },
+ "crowds": {
+  "seed": 1955,
+  "centre": [
+   14.7425,
+   -91.1575,
+   1400,
+   9
+  ],
+  "pedestrianMul": 2.0,
+  "maxPedestrians": 9000,
+  "keepOut": [],
+  "pedestrians": 12,
+  "far": 260,
+  "touristFar": 340,
+  "piece": 300,
+  "sites": [
+   [
+    14.7395,
+    -91.1625,
+    40,
+    180
+   ],
+   [
+    14.7445,
+    -91.1555,
+    40,
+    140
+   ],
+   [
+    14.6385,
+    -91.2295,
+    40,
+    200
+   ],
+   [
+    14.6437,
+    -91.2298,
+    25,
+    90
+   ],
+   [
+    14.692,
+    -91.2735,
+    30,
+    120
+   ],
+   [
+    14.7703,
+    -91.1826,
+    45,
+    240
+   ],
+   [
+    14.6944,
+    -91.2866,
+    25,
+    80
+   ]
+  ],
+  "_": "[lat, lon, radius, people] where people gather: Panajachel's docks and Calle Santander, Santiago's market and plaza and its dock, San Pedro's dock, Sololá's market, San Juan's plaza"
+ },
+ "life": {
+  "tile": 600,
+  "seed": 1955,
+  "near": 600,
+  "density": 0.0009,
+  "perArea": 500,
+  "max": 6000
+ },
+ "focus": [
+  {
+   "name": "Panajachel",
+   "at": [
+    14.7425,
+    -91.1575
+   ],
+   "radius": 400
+  },
+  {
+   "name": "Santiago Atitlán",
+   "at": [
+    14.6385,
+    -91.229
+   ],
+   "radius": 300
+  }
+ ],
+ "dogs": {
+  "count": 200,
+  "seed": 1976,
+  "box": [
+   14.63,
+   -91.3,
+   14.775,
+   -91.11
+  ],
+  "asleep": 0.5,
+  "packs": 0.3,
+  "parks": 0.15,
+  "near": 450,
+  "_": "src/sarajevo/dogs.js: the street dogs, asleep in the sun or trotting the lanes, in every town"
+ },
+ "obraGris": {
+  "zones": [
+   [
+    14.7425,
+    -91.1575,
+    1100
+   ],
+   [
+    14.7715,
+    -91.1825,
+    900
+   ],
+   [
+    14.6375,
+    -91.2285,
+    950
+   ],
+   [
+    14.6925,
+    -91.2725,
+    750
+   ],
+   [
+    14.695,
+    -91.286,
+    500
+   ],
+   [
+    14.7204,
+    -91.2725,
+    500
+   ],
+   [
+    14.724,
+    -91.259,
+    420
+   ],
+   [
+    14.733,
+    -91.2451,
+    320
+   ],
+   [
+    14.7385,
+    -91.2185,
+    200
+   ],
+   [
+    14.7435,
+    -91.2065,
+    320
+   ],
+   [
+    14.7236,
+    -91.1378,
+    380
+   ],
+   [
+    14.6931,
+    -91.1149,
+    450
+   ],
+   [
+    14.6363,
+    -91.1442,
+    850
+   ],
+   [
+    14.746,
+    -91.135,
+    500
+   ],
+   [
+    14.7619,
+    -91.1702,
+    350
+   ],
+   [
+    14.714,
+    -91.304,
+    550
+   ]
+  ],
+  "rebar": 0.45,
+  "tanks": 0.55,
+  "lines": 0.25,
+  "every": 3.6,
+  "maxH": 12,
+  "near": 600,
+  "_": "src/atitlan/obragris.js: rebar left standing out of the flat roofs for the next floor, the black tinacos, washing lines"
+ },
+ "painted": {
+  "zones": [
+   [
+    14.7236,
+    -91.1378,
+    420
+   ]
+  ],
+  "share": 0.85,
+  "maxH": 12,
+  "metres": 4,
+  "band": 3,
+  "_": "src/atitlan/painted.js: Santa Catarina Palopó's houses painted in the designs of its huipil"
+ },
+ "blocks": {
+  "types": [
+   "nothing"
+  ],
+  "where": [],
+  "grilles": {
+   "types": [
+    "house",
+    "detached",
+    "yes",
+    "residential",
+    "commercial",
+    "retail"
+   ],
+   "share": 0.5,
+   "street": 0.6,
+   "maxH": 12,
+   "where": [
+    [
+     14.575,
+     -91.33,
+     14.79,
+     -91.09
+    ]
+   ],
+   "skip": []
+  },
+  "_": "src/sarajevo/blocks.js, grilles only: the iron bars on the ground-floor windows"
+ },
+ "lake": {
+  "name": "Lago de Atitlán",
+  "seed": 1955,
+  "docks": {
+   "Panajachel": [
+    14.7385,
+    -91.163
+   ],
+   "Santiago Atitlán": [
+    14.6437,
+    -91.2298
+   ],
+   "San Pedro La Laguna": [
+    14.695,
+    -91.274
+   ],
+   "San Juan La Laguna": [
+    14.6975,
+    -91.2848
+   ],
+   "San Marcos La Laguna": [
+    14.7215,
+    -91.2595
+   ],
+   "Tzununá": [
+    14.729,
+    -91.2445
+   ],
+   "Jaibalito": [
+    14.7362,
+    -91.218
+   ],
+   "Santa Cruz La Laguna": [
+    14.7401,
+    -91.2065
+   ],
+   "Santa Catarina Palopó": [
+    14.7222,
+    -91.136
+   ],
+   "San Antonio Palopó": [
+    14.6922,
+    -91.1176
+   ],
+   "San Lucas Tolimán": [
+    14.64,
+    -91.143
+   ]
+  },
+  "routes": [
+   [
+    "Panajachel",
+    "Santiago Atitlán",
+    3
+   ],
+   [
+    "Panajachel",
+    "San Pedro La Laguna",
+    3
+   ],
+   [
+    "Panajachel",
+    "Santa Cruz La Laguna",
+    1
+   ],
+   [
+    "Santa Cruz La Laguna",
+    "San Marcos La Laguna",
+    1
+   ],
+   [
+    "San Marcos La Laguna",
+    "San Pedro La Laguna",
+    1
+   ],
+   [
+    "Panajachel",
+    "Jaibalito",
+    1
+   ],
+   [
+    "Tzununá",
+    "San Juan La Laguna",
+    1
+   ],
+   [
+    "San Pedro La Laguna",
+    "Santiago Atitlán",
+    2
+   ],
+   [
+    "Panajachel",
+    "Santa Catarina Palopó",
+    1
+   ],
+   [
+    "Santa Catarina Palopó",
+    "San Antonio Palopó",
+    1
+   ],
+   [
+    "San Antonio Palopó",
+    "San Lucas Tolimán",
+    1
+   ]
+  ],
+  "speed": 9,
+  "dwell": 40,
+  "cayucos": {
+   "count": 60,
+   "reach": 320
+  },
+  "reeds": {
+   "zones": [
+    [
+     14.643,
+     -91.233,
+     1200,
+     300
+    ],
+    [
+     14.662,
+     -91.205,
+     1500,
+     200
+    ],
+    [
+     14.696,
+     -91.288,
+     700,
+     200
+    ],
+    [
+     14.738,
+     -91.17,
+     900,
+     120
+    ],
+    [
+     14.645,
+     -91.15,
+     900,
+     140
+    ],
+    [
+     14.715,
+     -91.268,
+     600,
+     100
+    ]
+   ],
+   "reach": 30,
+   "max": 3500
+  },
+  "drowned": {
+   "zones": [
+    [
+     14.7385,
+     -91.16,
+     1100,
+     60,
+     6
+    ],
+    [
+     14.695,
+     -91.276,
+     700,
+     40,
+     5
+    ],
+    [
+     14.643,
+     -91.23,
+     900,
+     40,
+     3
+    ],
+    [
+     14.7225,
+     -91.259,
+     500,
+     25,
+     3
+    ],
+    [
+     14.73,
+     -91.244,
+     400,
+     20,
+     2
+    ]
+   ],
+   "trees": 260,
+   "reach": 45
+  },
+  "shore": {
+   "water": 1.2,
+   "land": 6
+  },
+  "_": "src/atitlan/lake.js: the lanchas on their routes between the docks (found through the water), cayucos, the tul in the shallows, the drowned shore, the Xocomil's whitecaps; the launches, the lanchas tied up at the docks, the kayaks",
+  "launches": 10,
+  "moored": 4,
+  "kayaks": {
+   "count": 45,
+   "reach": 220,
+   "keep": 12,
+   "zones": [
+    [
+     14.7225,
+     -91.259,
+     700
+    ],
+    [
+     14.7385,
+     -91.161,
+     900
+    ],
+    [
+     14.74,
+     -91.206,
+     600
+    ],
+    [
+     14.7365,
+     -91.218,
+     400
+    ],
+    [
+     14.695,
+     -91.276,
+     600
+    ]
+   ]
+  }
+ },
+ "atitlanEvents": {
+  "procession": [
+   [
+    14.639,
+    -91.2338
+   ],
+   [
+    14.6386,
+    -91.232
+   ],
+   [
+    14.6382,
+    -91.2305
+   ],
+   [
+    14.6378,
+    -91.2296
+   ]
+  ],
+  "processionSpeed": 1.0,
+  "cohetes": [
+   {
+    "name": "Santiago Apóstol, 25 July",
+    "at": [
+     14.637563,
+     -91.22902
+    ]
+   },
+   {
+    "name": "San Pedro, 29 June",
+    "at": [
+     14.690995,
+     -91.272796
+    ]
+   },
+   {
+    "name": "San Francisco, 4 October",
+    "at": [
+     14.74586,
+     -91.153266
+    ]
+   },
+   {
+    "name": "Sololá, 15 August",
+    "at": [
+     14.76998,
+     -91.183013
+    ]
+   }
+  ],
+  "ride": [
+   "Panajachel",
+   "Santiago Atitlán"
+  ],
+  "dawnView": [
+   14.734,
+   -91.17
+  ],
+  "xocomilView": [
+   14.73,
+   -91.175
+  ],
+  "sunsetView": [
+   14.7385,
+   -91.162
+  ],
+  "sunsetAt": [
+   14.6565,
+   -91.2665
+  ],
+  "_": "src/atitlan/events.js"
+ },
+ "backdrop": {
+  "file": "data/cities/atitlan-far.json",
+  "taper": 6000,
+  "datum": 1556.0,
+  "colours": [
+   [
+    0,
+    "#7a8a4a"
+   ],
+   [
+    1300,
+    "#5a7a3e"
+   ],
+   [
+    1700,
+    "#3e6232"
+   ],
+   [
+    2600,
+    "#365a2e"
+   ],
+   [
+    3300,
+    "#5a5a48"
+   ],
+   [
+    3600,
+    "#6a665a"
+   ]
+  ],
+  "_": "src/sarajevo/backdrop.js: the highlands round the caldera, the Pacific slope falling south, Fuego and Agua 40 km east"
+ },
+ "farLevel": -1.5,
+ "landmarks": [
+  {
+   "name": "Iglesia Parroquial Santiago Apóstol",
+   "aka": [
+    "the church of Santiago Atitlán"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.637563,
+    -91.22902
+   ],
+   "face": 296,
+   "len": 56,
+   "w": 18,
+   "h": 13,
+   "facadeW": 26,
+   "facadeH": 17,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 3,
+   "clear": [
+    36,
+    0
+   ],
+   "info": "Begun by the Franciscans in 1547, one of the oldest churches in Guatemala: a wide white front over the plaza and the market, the saints inside in clothes the cofradías make for them. Father Stanley Rother, the parish priest from Oklahoma, was murdered in the rectory in 1981; he was beatified in 2017."
+  },
+  {
+   "name": "Iglesia de San Pedro",
+   "aka": [
+    "the church of San Pedro La Laguna"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.690995,
+    -91.272796
+   ],
+   "face": 301,
+   "len": 50,
+   "w": 15,
+   "h": 13,
+   "facadeW": 22,
+   "facadeH": 16,
+   "towers": 2,
+   "towerH": 7,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    32,
+    0
+   ],
+   "info": "The church of the Tz'utujil town under the volcano of San Pedro, white over its plaza; the town runs down from it to the two docks and the backpackers' lanes along the shore."
+  },
+  {
+   "name": "Parroquia de San Juan Bautista",
+   "aka": [
+    "the church of San Juan La Laguna"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.694491,
+    -91.286571
+   ],
+   "face": 259,
+   "len": 40,
+   "w": 14,
+   "h": 12,
+   "facadeW": 20,
+   "facadeH": 15,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    28,
+    0
+   ],
+   "info": "San Juan La Laguna's church. The town is known for its weavers' cooperatives, who dye with plants (indigo, achiote, coffee, bark), and for the murals painted on its walls."
+  },
+  {
+   "name": "Iglesia de San Francisco de Asís",
+   "aka": [
+    "the church of Panajachel"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.74586,
+    -91.153266
+   ],
+   "face": 287,
+   "len": 50,
+   "w": 15,
+   "h": 13,
+   "facadeW": 22,
+   "facadeH": 17,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 3,
+   "clear": [
+    32,
+    0
+   ],
+   "info": "Panajachel's church, founded by the Franciscans in 1567: a white Baroque front of columns and niches in tiers, at the top of the old town above the river."
+  },
+  {
+   "name": "Catedral de Nuestra Señora de la Asunción",
+   "aka": [
+    "the cathedral of Sololá"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.76998,
+    -91.183013
+   ],
+   "face": 270,
+   "len": 44,
+   "w": 16,
+   "h": 14,
+   "facadeW": 24,
+   "facadeH": 18,
+   "towers": 2,
+   "towerH": 9,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    30,
+    0
+   ],
+   "info": "Sololá's cathedral, on the plaza where the market fills the streets on Tuesdays and Fridays and the town's council of Kaqchikel elders, the municipalidad indígena, still meets beside the official one."
+  },
+  {
+   "name": "Iglesia de San Marcos",
+   "model": "iglesia",
+   "at": [
+    14.724215,
+    -91.258459
+   ],
+   "face": 262,
+   "len": 32,
+   "w": 12,
+   "h": 11,
+   "facadeW": 16,
+   "facadeH": 13,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    24,
+    0
+   ],
+   "info": "San Marcos La Laguna, the small town under the cliffs that became the lake's place for yoga, meditation and the cacao ceremony."
+  },
+  {
+   "name": "Iglesia de Santa Cruz",
+   "model": "iglesia",
+   "at": [
+    14.743809,
+    -91.20637
+   ],
+   "face": 251,
+   "len": 20,
+   "w": 10,
+   "h": 10,
+   "facadeW": 13,
+   "facadeH": 12,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 1,
+   "clear": [
+    16,
+    0
+   ],
+   "info": "Santa Cruz La Laguna sits up on the hillside, with no road to it: everything comes by lancha to the dock and up the steps."
+  },
+  {
+   "name": "Iglesia de San Lucas Evangelista",
+   "aka": [
+    "the church of San Lucas Tolimán"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.635913,
+    -91.141406
+   ],
+   "face": 288,
+   "len": 44,
+   "w": 14,
+   "h": 12,
+   "facadeW": 20,
+   "facadeH": 15,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    28,
+    0
+   ],
+   "info": "San Lucas Tolimán, the coffee town at the foot of Tolimán, at the south-east corner of the lake."
+  },
+  {
+   "name": "Iglesia de Santa Clara de Asís",
+   "model": "iglesia",
+   "at": [
+    14.71437,
+    -91.304244
+   ],
+   "face": 297,
+   "len": 46,
+   "w": 16,
+   "h": 12,
+   "facadeW": 22,
+   "facadeH": 15,
+   "towers": 0,
+   "colour": "limewash",
+   "tiers": 2,
+   "clear": [
+    32,
+    0
+   ],
+   "info": "Santa Clara La Laguna, up on the caldera's rim over San Pablo, in the cold among its cornfields."
+  },
+  {
+   "name": "Templo Colonial de San Andrés Semetabaj",
+   "aka": [
+    "the ruined church"
+   ],
+   "model": "iglesia",
+   "at": [
+    14.745978,
+    -91.134237
+   ],
+   "face": 301,
+   "len": 34,
+   "w": 12,
+   "h": 11,
+   "facadeW": 18,
+   "facadeH": 14,
+   "towers": 0,
+   "colour": "ruinStone",
+   "ruin": true,
+   "clear": [
+    24,
+    0
+   ],
+   "info": "The colonial church of San Andrés Semetabaj, above the lake on the road to Godínez, left a roofless shell by the earthquakes. The town built its new church beside it."
+  },
+  {
+   "name": "Torre Centroamericana",
+   "aka": [
+    "the clock tower of Sololá"
+   ],
+   "model": "torre",
+   "at": [
+    14.7716,
+    -91.1834
+   ],
+   "face": 0,
+   "height": 24,
+   "clear": [
+    6,
+    0
+   ],
+   "info": "The clock tower in Sololá's plaza, put up in 1914 to mark the Central American federation's memory: four stages, the clock near the top, a little dome."
+  },
+  {
+   "name": "The Cerro de Oro",
+   "aka": [
+    "Cerro de Oro"
+   ],
+   "at": [
+    14.656,
+    -91.194
+   ],
+   "info": "The hill of gold: a small volcanic dome on the shore between Santiago's bay and San Lucas, with a village at its foot and caves where offerings are still left."
+  },
+  {
+   "name": "Volcán San Pedro",
+   "at": [
+    14.6565,
+    -91.2665
+   ],
+   "info": "3,020 m: the volcano over San Pedro La Laguna, the easiest to climb, through coffee, then cloud forest, to a summit over the whole lake."
+  },
+  {
+   "name": "Volcán Tolimán",
+   "at": [
+    14.6123,
+    -91.1888
+   ],
+   "info": "3,158 m: the twin-summited volcano between Santiago and San Lucas."
+  },
+  {
+   "name": "Volcán Atitlán",
+   "at": [
+    14.5833,
+    -91.1858
+   ],
+   "info": "3,537 m: the highest and the youngest of the three, still active (it last erupted in 1853); from its summit you see the Pacific."
+  },
+  {
+   "name": "Rostro Maya",
+   "aka": [
+    "the Indian Nose",
+    "Nariz del Indio"
+   ],
+   "at": [
+    14.713,
+    -91.296
+   ],
+   "info": "The ridge over San Juan and Santa Clara whose skyline is a face lying looking up; people climb it before dawn for the sunrise over the lake and the volcanoes."
+  },
+  {
+   "name": "Maximón",
+   "at": [
+    14.6408,
+    -91.231
+   ],
+   "info": "Maximón, or Rilaj Mam: a wooden saint in a hat and scarves with a cigar in his mouth, given rum and cigarettes and money for favours. A cofradía keeps him in one of its members' houses, a different house each year, in Santiago Atitlán."
+  },
+  {
+   "name": "Calle Santander",
+   "at": [
+    14.741,
+    -91.159
+   ],
+   "info": "Panajachel's main street, from the town down to the docks: weavers' stalls, travel agencies, cafés, tuk-tuks."
+  },
+  {
+   "name": "Santa Catarina Palopó",
+   "at": [
+    14.7236,
+    -91.1378
+   ],
+   "info": "Since 2016 the town has painted its houses in the patterns of its own huipil, blue and turquoise and purple, so the whole town reads from the water as a piece of weaving."
+  },
+  {
+   "name": "La Iguana Perdida",
+   "aka": [
+    "the Iguana",
+    "the lost iguana"
+   ],
+   "model": "iguana",
+   "at": [
+    14.74045,
+    -91.20575
+   ],
+   "clear": [
+    34,
+    0
+   ],
+   "info": "The hostel on the waterfront by Santa Cruz La Laguna's dock, an oasis on the shore for over twenty years: three dorms and rooms up the slope over the lake, the bar and the family-style dinner at seven, and ATI Divers, for two decades the only dive shop on Lake Atitlán, working from its jetty. Santa Cruz has no road to the shore: everyone comes by lancha."
+  },
+  {
+   "name": "Samabaj",
+   "aka": [
+    "the drowned island",
+    "the Maya Atlantis"
+   ],
+   "model": "samabaj",
+   "at": [
+    14.67962,
+    -91.19163
+   ],
+   "oldLevel": 28,
+   "jetties": [
+    170,
+    205,
+    128
+   ],
+   "info": "A Maya island town of the Late Preclassic, about 300 BC to AD 300, now 13 to 21 m under the lake off the Cerro de Oro. The diver Roberto Samayoa found it in 1996 (the name is his and abaj, stone). The island was 477 m by 340, with the ceremonial groups on its north-east height (a long platform of two levels, a terrace with a basalt column and its altar, smooth stelae and a round altar, an arc of tall stones round a rock) and the houses on the lower west: 11 groups and about 28 structures mapped, and three jetties at its old shore. The lake then stood some 28 m lower; it rose and drowned the island quickly, perhaps when an eruption or a landslide blocked its outflow, so quickly that the walls were not worn away. Its place here is from the divers' descriptions: the coordinates they published fall in the middle of the lake."
+  }
+ ],
+ "navmap": {
+  "labels": [
+   "Iglesia Parroquial Santiago Apóstol",
+   "Iglesia de San Pedro",
+   "Iglesia de San Francisco de Asís",
+   "Catedral de Nuestra Señora de la Asunción",
+   "Torre Centroamericana",
+   "Volcán San Pedro",
+   "Volcán Tolimán",
+   "Volcán Atitlán",
+   "Rostro Maya",
+   "Santa Catarina Palopó",
+   "The Cerro de Oro",
+   "Calle Santander",
+   "La Iguana Perdida"
+  ]
+ },
+ "views": {
+  "The lake from Panajachel": [
+   [
+    14.752,
+    -91.148,
+    342.6
+   ],
+   [
+    14.65,
+    -91.23,
+    261.1
+   ]
+  ],
+  "Over the lake": [
+   [
+    14.76,
+    -91.13,
+    1698.7
+   ],
+   [
+    14.64,
+    -91.22,
+    471.0
+   ]
+  ],
+  "Calle Santander": [
+   [
+    14.7385,
+    -91.1625,
+    14.1
+   ],
+   [
+    14.743,
+    -91.1565,
+    31.3
+   ]
+  ],
+  "Santiago Atitlán": [
+   [
+    14.644,
+    -91.236,
+    60.0
+   ],
+   [
+    14.637563,
+    -91.22902,
+    58.0
+   ]
+  ],
+  "San Pedro La Laguna": [
+   [
+    14.699,
+    -91.267,
+    70.0
+   ],
+   [
+    14.692,
+    -91.2735,
+    55.3
+   ]
+  ],
+  "Santa Catarina Palopó": [
+   [
+    14.719,
+    -91.133,
+    51.5
+   ],
+   [
+    14.7236,
+    -91.1378,
+    50.4
+   ]
+  ],
+  "Sololá's plaza": [
+   [
+    14.7705,
+    -91.184,
+    593.7
+   ],
+   [
+    14.7716,
+    -91.1834,
+    578.2
+   ]
+  ],
+  "The three volcanoes": [
+   [
+    14.7,
+    -91.18,
+    220.1
+   ],
+   [
+    14.61,
+    -91.2,
+    1673.6
+   ]
+  ],
+  "San Marcos under the cliffs": [
+   [
+    14.716,
+    -91.252,
+    60.0
+   ],
+   [
+    14.724,
+    -91.259,
+    46.8
+   ]
+  ],
+  "From the Rostro Maya": [
+   [
+    14.713,
+    -91.296,
+    569.7
+   ],
+   [
+    14.68,
+    -91.2,
+    0.1
+   ]
+  ],
+  "La Iguana Perdida": [
+   [
+    14.7399,
+    -91.2064,
+    5.0
+   ],
+   [
+    14.74045,
+    -91.2058,
+    8.0
+   ]
+  ],
+  "Under the drowned shore": [
+   [
+    14.7376,
+    -91.1611,
+    -2.5
+   ],
+   [
+    14.7379,
+    -91.1606,
+    -1.8
+   ]
+  ],
+  "Samabaj, under the lake": [
+   [
+    14.67982,
+    -91.19081,
+    -11.0
+   ],
+   [
+    14.67994,
+    -91.1907,
+    -15.0
+   ]
+  ]
+ },
+ "cover": {
+  "towns": [
+   [
+    14.7425,
+    -91.1575,
+    880
+   ],
+   [
+    14.7715,
+    -91.1825,
+    720
+   ],
+   [
+    14.6375,
+    -91.2285,
+    760
+   ],
+   [
+    14.6925,
+    -91.2725,
+    600
+   ],
+   [
+    14.695,
+    -91.286,
+    400
+   ],
+   [
+    14.7204,
+    -91.2725,
+    400
+   ],
+   [
+    14.724,
+    -91.259,
+    336
+   ],
+   [
+    14.733,
+    -91.2451,
+    256
+   ],
+   [
+    14.7385,
+    -91.2185,
+    160
+   ],
+   [
+    14.7435,
+    -91.2065,
+    256
+   ],
+   [
+    14.7236,
+    -91.1378,
+    304
+   ],
+   [
+    14.6931,
+    -91.1149,
+    360
+   ],
+   [
+    14.6363,
+    -91.1442,
+    680
+   ],
+   [
+    14.746,
+    -91.135,
+    400
+   ],
+   [
+    14.7619,
+    -91.1702,
+    280
+   ],
+   [
+    14.714,
+    -91.304,
+    440
+   ]
+  ],
+  "field": 70,
+  "strength": 0.9,
+  "tile": 400,
+  "near": 1300,
+  "spacing": 11,
+  "_": "src/atitlan/cover.js: the land the map leaves bare painted as forest, milpa, coffee, cliff and ash, and the forest's trees planted near the camera"
+ },
+ "waves": {
+  "steep": 1.0,
+  "far": 2200,
+  "sky": 0.45,
+  "surf": 5,
+  "surfOpacity": 0.55,
+  "_": "src/atitlan/waves.js: the water's surface (waves that follow the Xocomil and the weather's wind), the volcanoes and towns in it (a true mirror), the green where the bed is shallow, and the surf along the shore",
+  "reflect": {
+   "res": 0.35,
+   "every": 2,
+   "strength": 0.9,
+   "minR": 30
+  },
+  "shallow": {
+   "colour": "#4a8a7a",
+   "depth": 4,
+   "strength": 0.7,
+   "res": 512
+  },
+  "glint": {
+   "shine": 260,
+   "strength": 0.55
+  }
+ },
+ "walls": {
+  "zones": [
+   [
+    14.7425,
+    -91.1575,
+    1100
+   ],
+   [
+    14.7715,
+    -91.1825,
+    900
+   ],
+   [
+    14.6375,
+    -91.2285,
+    950
+   ],
+   [
+    14.6925,
+    -91.2725,
+    750
+   ],
+   [
+    14.695,
+    -91.286,
+    500
+   ],
+   [
+    14.7204,
+    -91.2725,
+    500
+   ],
+   [
+    14.724,
+    -91.259,
+    420
+   ],
+   [
+    14.733,
+    -91.2451,
+    320
+   ],
+   [
+    14.7385,
+    -91.2185,
+    200
+   ],
+   [
+    14.7435,
+    -91.2065,
+    320
+   ],
+   [
+    14.7236,
+    -91.1378,
+    380
+   ],
+   [
+    14.6931,
+    -91.1149,
+    450
+   ],
+   [
+    14.6363,
+    -91.1442,
+    850
+   ],
+   [
+    14.746,
+    -91.135,
+    500
+   ],
+   [
+    14.7619,
+    -91.1702,
+    350
+   ],
+   [
+    14.714,
+    -91.304,
+    550
+   ]
+  ],
+  "skip": [
+   [
+    14.7236,
+    -91.1378,
+    420
+   ]
+  ],
+  "maxH": 12,
+  "zocalo": 0.6,
+  "grey": 0.3,
+  "floor": 3,
+  "band": 0.9,
+  "_": "src/atitlan/walls.js: the zócalo along the foot of the walls, and the upper floors left in bare grey block"
+ },
+ "weather": {
+  "climate": "highland",
+  "cloudH": 1500,
+  "labels": {
+   "storm": "An afternoon storm",
+   "mist": "Morning mist on the lake",
+   "haze": "Smoke haze (burning season)"
+  },
+  "_": "src/core/weather.js: the climate's weather, changing on its own or set from the Weather button (weather=<state> in the address holds one)"
+ }
+}

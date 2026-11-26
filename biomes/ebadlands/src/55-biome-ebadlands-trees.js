@@ -68,6 +68,10 @@ const leafCol=(set,k,dh,ds,dl)=>bright(vary(pick(set),dh==null?.05:dh,ds==null?.
 EBADLANDS.leafCol=leafCol;
 
 // ---------------------------------------------------------------- polyline helpers (Girder's)
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03: "ember crown branch junction needs quality pass"): the root
+// sunk into the parent and swollen to a collar, so a limb leaves its parent as wood does, not as a pipe pushed into a pipe. No random numbers: every
+// tree keeps its form. A page without the fragment (a reader of this kit: eastabyss, Yuni, the open world) draws the plain tube as before
+const FJ=(p,o)=>BIO.flareJoin?BIO.flareJoin(p,o):p;
 function treeGrow(o,d,len,r0,r1,n,curve,wig){let sx=-d[2],sz=d[0];const sl=Math.hypot(sx,sz)||1;sx/=sl;sz/=sl;
  const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,pts=[];
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*len;
@@ -92,17 +96,20 @@ function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
  const nx=dx*.9+rr(-.3,.3),ny=dy*.7+.75+rr(-.15,.2),nz=dz*.9+rr(-.3,.3),nn=Math.hypot(nx,ny,nz)||1;
  BIO.put(item,[x,y,z],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[size,size*flat,size],bright(col,ao),{n:[nx/nn,ny/nn,nz/nn]});}
 function frondAt(item,x,y,z,a,L,pitch,col,wid){BIO.put(item,[x,y,z],qEuler(rr(-.1,.1),-a,pitch),[L,L*rr(.85,1.05),L*(wid||rr(1.1,1.4))],col);}
-// a scatter of blooms in a disc of radius r (one colour per head); o.flat lays them on the ground
-function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.flowers),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt;
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1);
-  BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.3):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
+// a scatter of blooms in a disc of radius r (one colour per head); o.flat lays them on the ground: each head at its own spot's height over the ground
+// (the final rebuild: on a slope the cluster's one height left them in the air downhill and under the ground uphill; the stream of draws is the same)
+function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set||PAL.flowers),.03,.1,.08),1.15),tl=o.tilt==null?.5:o.tilt,g0=o.flat?y-BIO.terrainH(x,z):0;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d;
+  BIO.put('bloom',[bx,o.flat?BIO.terrainH(bx,bz)+g0+rr(0,.3):y+rr(-.3,.4)*r,bz],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 EBADLANDS.blooms=blooms;
 // a CANYON GRAPE curtain hung from a point: leafy vine ribbons, grape clusters among them (generic_fruit_canyon_grape).
 // The floor (grape tangles) and the dressing (vines off a ledge) hang the same curtain.
 function hangVine(x,y,z,len,w,st){const n=ri(2,4),a0=rr(0,TAU),lc=leafCol(PAL.grapeLeaf,1.2,.03,.08,.05);
  for(let i=0;i<n;i++){const a=a0+i*GOLD,d=w*rr(.1,.5),L=len*rr(.6,1.05);
   BIO.put('vine',[x+Math.cos(a)*d,y+rr(-.1,.1),z+Math.sin(a)*d],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w*rr(.7,1.1),L,1],bright(lc,rr(.9,1.08)));
-  if(rng()<.7){const t=rr(.25,.8),gs=rr(.12,.2);BIO.put('grapes',[x+Math.cos(a)*d*1.2,y-L*t,z+Math.sin(a)*d*1.2],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[gs,gs*rr(1.1,1.5),gs],bright(vary(pick(PAL.grape),.02,.06,.05),1.15));if(st)st.fruit++;}}
+  /* a cluster in the strand's upper half, on it (the final rebuild: the attach audit holds an onLeaf item within half a hanging card's length of its
+     hook; lower and .2 of a width out they read as floating); the same draws */
+  if(rng()<.7){const t=rr(.25,.8)*.55,gs=rr(.12,.2);BIO.put('grapes',[x+Math.cos(a)*d,y-L*t,z+Math.sin(a)*d],qEuler(rr(-.15,.15),rr(0,TAU),rr(-.15,.15)),[gs,gs*rr(1.1,1.5),gs],bright(vary(pick(PAL.grape),.02,.06,.05),1.15));if(st)st.fruit++;}}
  if(st)st.vines++;}
 EBADLANDS.hangVine=hangVine;
 // the volume the world's inspector names a tree by
@@ -131,7 +138,7 @@ function pineTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
     const el=cfg.el+cfg.elU*bu+rr(-.15,.15),r0=Math.max(.04,p.r*rr(.35,.55)),dead=cfg.dead&&rng()<cfg.dead;
     const bp=treeGrow({x:p.x+Math.cos(ba)*p.r*.6,y:p.y,z:p.z+Math.sin(ba)*p.r*.6},dirOf(ba,el),L,r0,Math.max(.03,r0*.3),3,cfg.curve,cfg.bwig||.1);
     let ok=true;for(let i=1;i<bp.length;i++)if(!clear3(bp[i].x,bp[i].y,bp[i].z,bp[i].r+.8,bp[i].r+.8)){ok=false;break;}if(!ok)continue;
-    if(lv===2&&r0>.07)st.limb+=BIO.tube(dead?'wood':cfg.fam,bp,dead?deadCol():barkCol(S,k+1),{seg:r0>.2?5:3,cap:r0>.2});
+    if(lv===2&&r0>.07)st.limb+=BIO.tube(dead?'wood':cfg.fam,FJ(bp,{parentR:p.r}),dead?deadCol():barkCol(S,k+1),{seg:r0>.2?6:r0>.12?5:3,cap:r0>.2});
     else BIO.beam('rod',[bp[0].x,bp[0].y,bp[0].z],[bp[3].x,bp[3].y,bp[3].z],r0*2,r0*.8,rodCol(S.bark[0]));
     st.forks++;
     if(dead)continue;
@@ -206,12 +213,12 @@ function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
   for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),el=cfg.el*rr(.8,1.2),L=(H-fh)*cfg.limbK*rr(.8,1.15)/(nS>1?1.15:1),r0=top.r*rr(.55,.75);
    const o=k<2?top:along(pts,rr(.75,.98)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.04,r0*.35),3,cfg.curve,cfg.wig);
    let ok=true;for(let i=1;i<lp.length;i++)if(!clear3(lp[i].x,lp[i].y,lp[i].z,lp[i].r+1,lp[i].r+1)){ok=false;break;}if(!ok)continue;
-   if(lv===2||r0>.3)st.limb+=BIO.tube(cfg.fam,lp,barkCol(S,k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
+   if(lv===2||r0>.3)st.limb+=BIO.tube(cfg.fam,FJ(lp,{parentR:o.r}),barkCol(S,k+2),{seg:r0>.25?7:5,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
    spots.push({p:lp[3],s:L*.3,tip:true},{p:lp[2],s:L*.25});
    const nSec=lv===2?cfg.sec:0;
    for(let q=0;q<nSec;q++){const p=lp[ri(1,2)],a2=la+rr(-1.3,1.3),el2=el+rr(-.3,.5),L2=L*rr(.4,.65);
     const sp2=treeGrow({x:p.x,y:p.y,z:p.z},dirOf(a2,el2),L2,Math.max(.03,p.r*.55),.03,2,cfg.curve,.12);
-    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(cfg.fam,sp2,barkCol(S,q),{seg:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,rodCol(S.bark[0]));
+    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(cfg.fam,FJ(sp2,{parentR:p.r}),barkCol(S,q),{seg:sp2[0].r>.12?5:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,rodCol(S.bark[0]));
     spots.push({p:sp2[2],s:L2*.4,tip:true},{p:sp2[1],s:L2*.3});}
    reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);topY=Math.max(topY,lp[3].y+R*cfg.tuftK);}
   spots.push({p:{x:top.x,y:top.y+R*.15,z:top.z},s:R*.3,tip:true});}
@@ -254,6 +261,7 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,bH=H*rr(.55,.6
  const rAt=u=>rb*(.85+.55*Math.sin(clamp(u*1.1,0,1)*Math.PI*.9))*(1-u*.35);
  // a core lathe so no daylight shows through the pods
  const rings=[];for(let u=0;u<=1.001;u+=.25)rings.push({x:T.x,y:T.y0-.2+bH*u,z:T.z,r:rAt(u)*.62,yy:u*bH,col:barkCol(S,ri(0,2))});
+ if(BIO.flareJoin){const L0=rings[rings.length-1];rings.push({x:T.x,y:L0.y+rb*.3,z:T.z,r:L0.r*.55,yy:L0.yy+rb*.3,col:L0.col});}   /* a shoulder over the limbs' collars (no draw: the stream is as before) */
  st.trunk+=BIO.lathe('bark5',rings,lv===2?8:6,1,3,R2=>R2.r,null);
  const rows=lv===2?Math.round(bH/(rb*.6)):Math.round(bH/(rb*1.5));
  for(let i=0;i<rows;i++){const u=(i+.5)/rows,y=T.y0+bH*u-rb*.4,r=rAt(u),n=Math.max(4,Math.round(TAU*r/(rb*(lv===2?.6:1.3)))),a0=i*.4+rr(0,.3);
@@ -261,7 +269,7 @@ B[11]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,bH=H*rr(.55,.6
    BIO.put('gem',[T.x+Math.cos(a)*r*.62,y,T.z+Math.sin(a)*r*.62],qEuler(Math.sin(a)*.25,rr(0,TAU),-Math.cos(a)*.25),[w,h,w],EBADLANDS.LIB.gem?bright(vary(0xd8ece8,.02,.06,.06),rr(1.0,1.25)):bright(vary(pick(PAL.emberPod),.02,.08,.07),rr(1.0,1.35)));st.pods++;}}
  const top={x:T.x,y:T.y0+bH,z:T.z},nB=lv===2?ri(7,11):5,hc=pick(S.leaf);
  for(let k=0;k<nB;k++){const a=k*GOLD+rr(-.2,.2),el=rr(.35,1.0),L=R*rr(.6,1.0),bp=treeGrow({x:top.x,y:top.y,z:top.z},dirOf(a,el),L,rb*.2,.06,3,.1,.08);
-  st.limb+=BIO.tube('bark5',bp,barkCol(S,1),{seg:4,cap:true});
+  st.limb+=BIO.tube('bark5',FJ(bp,{parentR:rAt(1)*.62,k:2,len:3}),barkCol(S,1),{seg:lv===2?7:4,cap:true});
   for(const p of [bp[3],bp[2]]){clumpAt('flame',p.x,p.y+.3,p.z,R*rr(.42,.6)*(lv===2?1:1.3),.8,bright(vary(hc,.03,.08,.05),1.25),T.x,T.y0+H*.85,T.z,R,H*.2);st.clumps++;if(lv<2)break;}}
  clumpAt('flame',top.x,top.y+R*.35,top.z,R*.6,.8,bright(C(pick(S.leaf)),1.25),T.x,T.y0+H*.85,T.z,R,H*.2);st.clumps++;
  regTree(T,S,R*1.05,H+1);};
@@ -274,8 +282,8 @@ B[12]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,bH=H*rr(.5,.6)
  const nA=lv===2?ri(5,8):4,a0=rr(0,TAU),top={x:T.x,y:T.y0+bH,z:T.z},tips=[];
  for(let k=0;k<nA;k++){const a=a0+k*GOLD,el=rr(.5,1.0),L=(H-bH)*rr(.75,1.05),r0=rb*rr(.18,.26);
   const bp=treeGrow({x:T.x+Math.cos(a)*rAt(.95)*.5,y:T.y0+bH*rr(.88,.98),z:T.z+Math.sin(a)*rAt(.95)*.5},dirOf(a,el),L,r0,r0*.45,3,.12,.06);
-  st.limb+=BIO.tube('bark5',bp,barkCol(S,2),{seg:lv===2?6:4,cap:true});st.forks++;
-  if(lv===2&&rng()<.7){for(let q=-1;q<=1;q+=2){const sp2=treeGrow(bp[2],dirOf(a+q*rr(.4,.7),el+.25),L*.45,r0*.4,r0*.25,2,.06,.05);st.limb+=BIO.tube('bark5',sp2,barkCol(S,1),{seg:4,cap:true});tips.push(sp2[2]);}}
+  st.limb+=BIO.tube('bark5',FJ(bp,{parentR:rAt(.95)*.5}),barkCol(S,2),{seg:lv===2?8:4,cap:true});st.forks++;
+  if(lv===2&&rng()<.7){for(let q=-1;q<=1;q+=2){const sp2=treeGrow(bp[2],dirOf(a+q*rr(.4,.7),el+.25),L*.45,r0*.4,r0*.25,2,.06,.05);st.limb+=BIO.tube('bark5',FJ(sp2,{parentR:bp[2].r}),barkCol(S,1),{seg:4,cap:true});tips.push(sp2[2]);}}
   else tips.push(bp[3]);}
  let reach=R*.5,topY=T.y0+H;
  for(const p of tips){const s=R*rr(.18,.26);BIO.put('urchin',[p.x,p.y+s*.5,p.z],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),s,bright(vary(pick(PAL.sunBall),.02,.08,.05),1.3));st.clumps++;
@@ -291,11 +299,12 @@ B[13]=function(T,st,lv){const S=SP[T.sp],H=T.H,n=lv===2?ri(1,4):1,a0=rr(0,TAU);l
   for(let j=0;j<3;j++){const r0=mix(.06,.03,j/3),r1=mix(.06,.03,(j+1)/3);BIO.beam('rod',P[j],P[j+1],r0,r1,sc);
    if(lv===2&&j<2)BIO.put('fruit',P[j+1],null,[r1*.75,r1*1.1,r1*.75],shade(C(sc),-.15));}   // a node at each joint
   const top=P[3],s=T.crownR*rr(.5,.65)*(h/H*.6+.4),ec=bright(vary(pick(PAL.teal),.02,.06,.05),1.4);
-  BIO.put('needlehead',[top[0],top[1]+s*.55,top[2]],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),s,bright(C(0xffffff).lerp(C(pick(S.leaf)),.2),rr(1,1.15)));
-  BIO.put('fruit',[top[0],top[1]+s*.55,top[2]],null,s*.2,ec);                     // the teal eye
+  /* the head on the stem's tip, the tip inside its core (the owner, 2026-11-03: "needle bloom doesn't quite connect to stem"; it stood .55 of its size above) */
+  BIO.put('needlehead',[top[0],top[1]+s*.3,top[2]],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),s,bright(C(0xffffff).lerp(C(pick(S.leaf)),.2),rr(1,1.15)));
+  BIO.put('fruit',[top[0],top[1]+s*.3,top[2]],null,s*.2,ec);                     // the teal eye
   if(lv===2&&h>H*.6&&rng()<.6){const t=rr(.45,.65),bp=[mix(P[1][0],P[2][0],t),mix(P[1][1],P[2][1],t),mix(P[1][2],P[2][2],t)],ba=rr(0,TAU),bs=s*rr(.25,.35);
    const bt=[bp[0]+Math.cos(ba)*.35,bp[1]+.3,bp[2]+Math.sin(ba)*.35];BIO.beam('rod',bp,bt,.035,.025,sc);
-   BIO.put('needlehead',[bt[0],bt[1]+bs*.4,bt[2]],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),bs,bright(C(0xffffff).lerp(C(pick(S.leaf)),.35),.95));}
+   BIO.put('needlehead',[bt[0],bt[1]+bs*.25,bt[2]],qEuler(rr(0,TAU),rr(0,TAU),rr(0,TAU)),bs,bright(C(0xffffff).lerp(C(pick(S.leaf)),.35),.95));}
   reach=Math.max(reach,d+s);st.clumps++;}
  regTree(T,S,reach+.5,H+T.crownR);};
 // 14 the rose weeper: a leaning curved trunk, arching limbs, curtains of pink feathery strands (alien.jpg)
@@ -303,7 +312,7 @@ B[14]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,la=rr(0,TAU);
  const pts=bole(T,S,'bark5',T.x,T.z,H*rr(.55,.7),rb,rb*.5,rr(.15,.3),la,.12,lv===2?5:3,st,lv===2?7:5,false),top=pts[pts.length-1];
  const nL=lv===2?ri(5,8):4,hc=pick(S.leaf);let reach=Math.hypot(top.x-T.x,top.z-T.z)+R*.5;
  for(let k=0;k<nL;k++){const a=la+k*GOLD+rr(-.3,.3),L=R*rr(.65,1.0),lp=treeGrow({x:top.x,y:top.y,z:top.z},dirOf(a,rr(.5,.9)),L,top.r*.6,.05,4,-.55,.1);
-  st.limb+=BIO.tube('bark5',lp,barkCol(S,k),{seg:4,cap:true});st.forks++;
+  st.limb+=BIO.tube('bark5',FJ(lp,{parentR:top.r}),barkCol(S,k),{seg:lv===2?6:4,cap:true});st.forks++;
   const nH=lv===2?7:3;for(let q=0;q<nH;q++){const p=along(lp,rr(.35,1)),hl=Math.max(1.2,(p.y-T.y0)*rr(.45,.8));
    BIO.put('weep',[p.x,p.y+.2,p.z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[rr(1.1,1.8),hl,1],bright(vary(hc,.03,.08,.06),1.2));st.clumps++;}
   clumpAt('round',lp[2].x,lp[2].y+.4,lp[2].z,R*.4,.6,bright(vary(hc,.03,.08,.06),1.1),T.x,top.y,T.z,R,H*.3);
@@ -322,7 +331,7 @@ B[15]=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,sc=rodCol(pick(PAL.umb
 B[16]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hub={x:T.x,y:T.y0+H*rr(.28,.38),z:T.z},nR=lv===2?ri(5,8):4,a0=rr(0,TAU);
  for(let k=0;k<nR;k++){const a=a0+k/nR*TAU+rr(-.2,.2),d=R*rr(.7,1.1),fx=T.x+Math.cos(a)*d,fz=T.z+Math.sin(a)*d,fy=BIO.terrainH(fx,fz)-.3,pts=[];
   for(let i=0;i<=5;i++){const t=i/5;pts.push({x:mix(hub.x,fx,t),y:mix(hub.y,fy,t)+Math.sin(t*Math.PI)*H*.12,z:mix(hub.z,fz,t),r:mix(rb*.45,rb*.3,t)});}
-  st.limb+=BIO.tube('bark5',pts,barkCol(S,k),{seg:lv===2?5:4,cap:true});}
+  st.limb+=BIO.tube('bark5',FJ(pts,{parentR:rb*.55,sink:.35,k:1.5}),barkCol(S,k),{seg:lv===2?6:4,cap:true});}
  const ph=H*rr(.78,.86),stem=treeGrow({x:hub.x,y:hub.y,z:hub.z},[rr(-.08,.08),1,rr(-.08,.08)],ph-(hub.y-T.y0),rb*.55,rb*.4,3,0,.05);
  st.trunk+=BIO.tube('bark5',stem,barkCol(S,1),{seg:lv===2?6:4});
  const e=stem[3],pw=R*rr(.55,.75),phH=H-ph+.6;

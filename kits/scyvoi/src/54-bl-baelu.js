@@ -79,14 +79,14 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
    force:k=>k===0?[[G0,G0-fr(2.8)],[L-G0,L-G0+fr(2.8)]]:k===1?[[G0-fr(2.8),G1],[L-G0+fr(2.8),L-G1]]:k===2?[[2.9,2.9],[L-2.9,L-2.9]]:[],
    flat:(b,u)=>{const d=Math.min(u,L-u);return (b===2&&d<3.3)||(b<2&&d<2.3);},
    skip:(k,u0,u1)=>{if(k>=2)return false;const c=(((u0+u1)/2)%L+L)%L;return c<G0||c>L-G0;}});
-  // the gate passage through the wall and the ring: stone sides, a dark ceiling, the iron-bound doors folded back
+  // the gate passage through the wall and the ring: stone sides, a dark ceiling, the two gate leaves (core/door: drawn open, E shuts them)
   W(0,Yc,R,0,()=>{const D=R-BL.Rin+.6;for(const s of [-1,1])box('stone',s*(G0+.3),0,-D/2,.6,GH,D,P('stoneD'));
    box('stone',0,GH,-D/2,G0*2+1.2,.6,D,P('stoneD'));box('patStep',0,-.05,-D/2+.5,G0*2,.08,D+1,null);   // the gate passage paved in black and cream
-   for(const s of [-1,1])W(s*(G0-.1),0,-1.2,s*1.35,()=>{box('wood',-s*.9,.05,0,1.8,4.9,.16,P('woodD'));for(const y of [.6,2.4,4.2])box('iron',-s*.9,y,.09,1.8,.12,.03,0x2e2a26);});});
+   svLeaf(0,.05,-1.2,0,2*(G0-.1),4.9,{split:true,ajar:1.35,mk:'wood',col:P('woodD'),t:.16,style:'plank',name:'Baelu gate'});});
   door(0,Yc,R,0,G0*2);
-  // the slit windows of the upper cells: dark trapezoids in the face, a stone hood over each
+  // the slit windows of the upper cells: glass over the room card (the wall is solid: the cells have no interiors), a stone hood over each
   for(let i=0;i<36;i++){const a=PI/2+(i+.5)/36*TAU;if(tkNearDoor(a,.12))continue;for(const lv of [1,2]){const v=BL.lv[lv]+1.6,r=R-v*BL.batter+.14;
-   W(Math.cos(a)*r,Yc+v,Math.sin(a)*r,-a+PI/2,()=>{poly('plain',[[-.22,0,0],[.22,0,0],[.15,1.1,0],[-.15,1.1,0]],0x14100c);box('stone',0,1.12,.02,.75,.18,.22,P('stone'));});}}
+   W(Math.cos(a)*r,Yc+v,Math.sin(a)*r,-a+PI/2,()=>{svPanePoly([[-.22,0,.012],[.22,0,.012],[.15,1.1,.012],[-.15,1.1,.012]],{solid:true,depth:.012});box('stone',0,1.12,.02,.75,.18,.22,P('stone'));});}}
   // ---- the parapet and its merlons, the roof walk, the drains
   lathe('stone',0,0,[[R-BL.Hw*BL.batter+.05,Yc+BL.Hw],[R-BL.Hw*BL.batter+.05,Yc+BL.Hw+.6]],96,P('stone'));
   for(let i=0;i<64;i++){const a=(i+.5)/64*TAU,r=R-BL.Hw*BL.batter-.25;W(Math.cos(a)*r,Yc+BL.Hw+.6,Math.sin(a)*r,-a+PI/2,()=>box('stone',0,0,0,1.5,.85,.75,P('stone'),0,0,rr(-.04,.04)));}
@@ -98,7 +98,8 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
   const NB=48;for(let i=0;i<NB;i++){const a=PI/2+(i+.5)/NB*TAU;const gate=tkNearDoor(a,gg+.04);
    for(let lv=0;lv<3;lv++){if(gate&&lv===0)continue;const y=Yc+BL.lv[lv],stable=lv===0&&Math.sin(a)<-.15;   // the north half of the ground floor is stabling
     W(Math.cos(a)*(ri-.02),y,Math.sin(a)*(ri-.02),-a-PI/2,()=>{const w=stable?2.1:1.0,h=stable?2.8:2.05;
-     box('plain',0,.02,-.02,w,h,.06,0x120e0a);box('stone',0,h,.04,w+.5,.32,.16,P('stone'));if(!stable)box('wood',0,.02,.0,w*.92,h-.05,.03,P('woodD'),0,0,0);});}
+     /* the cell's door, locked: the cells have no interiors yet (KNOWN_ISSUES.md); a stable's a pair of leaves */
+     box('stone',0,h,.04,w+.5,.32,.16,P('stone'));svDoorway(0,.02,0,0,w*.98,h-.03,{hollow:false,mk:'wood',col:P('woodD'),t:.05,style:stable?'half':'plank',name:stable?'stable door':'cell door'});});}
    for(const lv of [1,2]){const y=Yc+BL.lv[lv];W(Math.cos(a)*ri,y-.55,Math.sin(a)*ri,-a-PI/2,()=>{box('stone',0,0,.35,.38,.55,.7,P('stone'));box('stone',0,.25,.85,.32,.3,.4,P('stone'));});}}
   for(const lv of [1,2]){const y=Yc+BL.lv[lv];sector('stone',0,0,ri-BL.gal,ri,0,TAU,y-.3,y,P('stone'),96);sector('stone',0,0,ri-BL.gal,ri-BL.gal+.22,0,TAU,y,y+1.0,P('stone'),96);}
   sector('stone',0,0,ri-1.0,ri+.05,0,TAU,Yc+BL.roofY-.35,Yc+BL.roofY,P('stone'),96);   // the eave over the top gallery
@@ -112,8 +113,8 @@ defBuilding({key:'baelu',name:'Baelu',seed:5401,w:96,d:112,h:BL.Yc+BL.Hw+2.5,bud
    cyl('patQuatre',0,-.2,0,3.6,.26,null,32);sector('stone',0,0,1.7,2.1,0,TAU,0,.9,P('stone'),32);cyl('stone',0,0,0,1.72,.3,P('stoneD'),24);cyl('water',0,.3,0,1.72,.02,0x2a4a4a,24);   // a ring wall round the waterring('stone',0,.9,0,1.95,.18,P('stoneD'));
    for(const s of [-1,1])box('stone',s*1.85,.9,0,.4,1.6,.4,P('stone'));beam('wood',[-2.05,2.4,0],[2.05,2.4,0],.12,P('woodD'),true,8);cyl('wood',0,1.9,0,.18,.5,P('woodD'),8);sagRope('rope',[0,1.9,0],[0,.7,0],0,.02,0xa88a5a,2);
    // a round corbelled store (the smokehouse) and the cistern house
-   W(-9,0,-8,.4,()=>{cyl('stone',0,0,0,2.6,2.4,P('stone'),20);sph('stone',0,2.3,0,2.6,P('stone'),.62,16);box('wood',0,0,2.55,1.0,1.9,.15,P('woodD'));smokeAt(0,4,0,{r:.25});});
-   W(10,0,-7.5,-.5,()=>{box('stone',0,0,0,5.5,2.8,4.0,P('stone'));box('stone',0,2.8,0,6.0,.35,4.5,P('stoneD'));box('plain',0,0,2.01,1.1,2.0,.05,0x120e0a);});
+   W(-9,0,-8,.4,()=>{cyl('stone',0,0,0,2.6,2.4,P('stone'),20);sph('stone',0,2.3,0,2.6,P('stone'),.62,16);svDoorway(0,0,2.55,0,1.0,1.9,{hollow:false,mk:'wood',col:P('woodD'),t:.15,style:'plank',name:'smokehouse door'});smokeAt(0,4,0,{r:.25});});
+   W(10,0,-7.5,-.5,()=>{box('stone',0,0,0,5.5,2.8,4.0,P('stone'));box('stone',0,2.8,0,6.0,.35,4.5,P('stoneD'));svDoorway(0,0,2.04,0,1.1,2.0,{hollow:false,mk:'wood',col:P('woodD'),t:.05,style:'plank',name:'cistern house door'});});
    // the tent platforms: a raised stone ring of fitted kerbs, a felt floor where a tent stands
    const pads=[[-11,6,4.0,'tent-hunter-ger'],[11.5,6.5,3.6,'tent-bell'],[0,-13,4.2,null],[-14,-3,3.4,null],[14,-1,3.4,null]];
    for(const [x,z,r,key] of pads){cyl('stone',x,0,z,r,.55,P('stone'),28);ring('stone',x,.55,z,r-.1,.12,P('stoneD'),0,0,0,28);if(!key)cyl('earth',x,.551,z,r-.25,.01,P('earth'),24);}

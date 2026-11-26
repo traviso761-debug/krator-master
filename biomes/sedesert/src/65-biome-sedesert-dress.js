@@ -60,3 +60,36 @@ SEDESERT.dressWalls=function(geos,opt){opt=opt||{};
 SEDESERT.dressGeos=function(geos,opt){opt=opt||{};reseed(650021+(opt.seed||0));
  SEDESERT.dressLedges(geos,opt.ledges||{});SEDESERT.dressSoffits(geos,opt.soffits||{});SEDESERT.dressWalls(geos,opt.walls||{});};
 })();
+// ---- re-seating what stands on the ground after a ground edit (2026-10-25; KNOWN_ISSUES.md, "A ground stroke")
+// A host that edits its ground (core/host's editor: a stroke, an undo's replay) calls SEDESERT.seat(box) BEFORE it writes
+// the ground and SEDESERT.reseat(box) after; box [x0,z0,x1,z1] is the reach of the edit (reseat(null): everything seated).
+// Every static thing this kit baked is moved up or down by how far the ground moved under its ANCHOR: its own x,z or, for
+// anything more than 0.8 m above the ground inside a tree's crown, the tree's foot (a tree moves whole, its crown with its
+// trunk). seat() records, once, each piece's height over its anchor's ground (a piece never seated stands on the ground it
+// was placed on), so reseat() after any replay puts every piece back on the ground as it now is, and an undo puts it back
+// where it was. Instances move by their matrix, the merged trunks and limbs by vertex. The animals keep their paths
+// (sampled at build); the host's own things (the river, the cave) are the host's. Returns {inst, verts} moved.
+(function(){const KIT=BIO.kitName,UP=.8,S=new WeakMap();
+ const statics=()=>BIO.baked.filter(m=>m.userData&&m.userData.biome&&m.userData.kit===KIT&&!m.userData.motion&&!(m.isInstancedMesh&&m.instanceMatrix.usage===35048));   // 35048: DynamicDrawUsage (BIO.dynamic: the fauna)
+ let trees=null;
+ const treeAt=(x,z)=>{if(!trees){trees=new Map();SEDESERT.TREES.forEach((T,i)=>{const k=Math.floor(T.x/40)+','+Math.floor(T.z/40);let a=trees.get(k);if(!a)trees.set(k,a=[]);a.push(i);});}
+  const gx=Math.floor(x/40),gz=Math.floor(z/40);for(let ix=gx-1;ix<=gx+1;ix++)for(let iz=gz-1;iz<=gz+1;iz++){const a=trees.get(ix+','+iz);if(!a)continue;
+   for(const i of a){const T=SEDESERT.TREES[i],dx=x-T.x,dz=z-T.z,R=T.crownR*1.05+1;if(dx*dx+dz*dz<R*R)return i;}}return -1;};
+ const ax=(t,x)=>t<0?x:SEDESERT.TREES[t].x,az=(t,z)=>t<0?z:SEDESERT.TREES[t].z;
+ const inBox=(b,x,z)=>!b||(x>=b[0]&&x<=b[2]&&z>=b[1]&&z<=b[3]),near=(b,x,z)=>!b||(x>=b[0]-40&&x<=b[2]+40&&z>=b[1]-40&&z<=b[3]+40);
+ // each mesh's record: seat (the height over the anchor's ground; NaN: not seated) and anchor (a tree's index, or -1)
+ const rec=(m,n)=>{let r=S.get(m);if(!r){r={seat:new Float32Array(n).fill(NaN),tree:new Int32Array(n).fill(-1)};S.set(m,r);}return r;};
+ function each(box,fn,mk){const H=BIO.terrainH;let inst=0,verts=0;
+  for(const m of statics()){if(!mk&&!S.has(m))continue;   /* reseat: only the meshes something was seated on */
+   if(m.isInstancedMesh){const A=m.instanceMatrix.array,n=m.count;let r=null,moved=false;
+    for(let i=0;i<n;i++){const x=A[i*16+12],z=A[i*16+14];if(!near(box,x,z))continue;r=r||rec(m,n);if(fn(r,i,x,A[i*16+13],z,y=>{A[i*16+13]=y;moved=true;},H))inst++;}
+    if(moved)m.instanceMatrix.needsUpdate=true;}
+   else if(m.geometry&&m.geometry.attributes.position){const P=m.geometry.attributes.position,a=P.array,n=P.count;let r=null,lo=n,hi=-1;
+    for(let i=0;i<n;i++){const x=a[i*3],z=a[i*3+2];if(!near(box,x,z))continue;r=r||rec(m,n);if(fn(r,i,x,a[i*3+1],z,y=>{a[i*3+1]=y;if(i<lo)lo=i;if(i>hi)hi=i;},H))verts++;}
+    if(hi>=lo){P.updateRange.offset=lo*3;P.updateRange.count=(hi-lo+1)*3;P.needsUpdate=true;}}}
+  return{inst,verts};}
+ SEDESERT.seat=function(box){return each(box,(r,i,x,y,z,set,H)=>{if(r.seat[i]===r.seat[i])return false;const g=H(x,z),t=y-g>UP?treeAt(x,z):-1,X=ax(t,x),Z=az(t,z);
+  if(!inBox(box,X,Z))return false;r.tree[i]=t;r.seat[i]=y-H(X,Z);return false;},true);};
+ SEDESERT.reseat=function(box){return each(box,(r,i,x,y,z,set,H)=>{const s=r.seat[i];if(s!==s)return false;const t=r.tree[i],X=ax(t,x),Z=az(t,z);if(!inBox(box,X,Z))return false;
+  const ny=s+H(X,Z);if(ny===y)return false;set(ny);return true;});};
+})();

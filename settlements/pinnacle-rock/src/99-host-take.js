@@ -538,7 +538,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 
 // ---------------------------------------------------------------- the page, handed to the host
 window._registered=REG.length;
-KHOST.take({build:'pinnacle-rock',title:'Pinnacle Rock',
+KHOST.take(KHOST.standard({build:'pinnacle-rock',title:'Pinnacle Rock',
  hint:'Pinnacle Rock: the Beast Riders\' roost town on a red sandstone mesa (the rock, the roosts, the town on the top, the Garden, the Deep Root, the farms and the bands\' grounds). N for night',
  scene,camera,renderer,ground:terrainH,clear:1.8,
  walk:typeof KWALK!=='undefined'?KWALK:null,   // the walker on the decks, the stairs, the bridges and in the Deep Root (89h, KCAVERN)
@@ -549,7 +549,7 @@ registry:REG,views:VIEWS,ticks:TICKS,
  // the world hour (the panel's slider, ?hour=): the night's light, fog and dome (necanyons' 89n-host-night.js) and the fires and
  // lamps on core/atmos (89y); N flips noon and midnight
  sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},hour:h=>NIGHT.hour(h)},
- clock:{hour:13},keys:{n:()=>NIGHT.flip()},
+ clock:{hour:13},std:{night:{on:()=>NIGHT.flip(),state:()=>NIGHT.f>.5}}   /* Night (N): the one key map (core/host/92k-host-keys.js) */,
  inspect:describe,stats:()=>'inst '+window._instances,
  layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'the rock':{match:o=>!!(o.userData&&o.userData.rock)},
   'the roosts':{match:o=>!!(o.userData&&o.userData.roost)},'the town':{match:o=>!!(o.userData&&o.userData.town)},'the farms':{match:o=>!!(o.userData&&o.userData.farms)},'the camps':{match:o=>!!(o.userData&&o.userData.camps)},'the Deep Root':{match:o=>!!(o.userData&&o.userData.cavern)},'the Garden':{match:o=>!!(o.userData&&o.userData.garden)},'the flyers':{match:o=>!!(o.userData&&o.userData.flyers)},
@@ -564,4 +564,4 @@ registry:REG,views:VIEWS,ticks:TICKS,
   camps:()=>CAMPS?{ms:CAMPS.ms,log:CAMPS.log,draw:CAMPS_DRAW}:null,
   garden:()=>GARDEN_TOWN?{ms:GARDEN_TOWN.ms,log:GARDEN_TOWN.log,draw:GARDEN_DRAW}:null,
   cavern:()=>CAVERN?{ms:CAVERN.ms,prims:CAVERN.C.prims.length,dress:CAVERN.dress.length,draw:CAVERN_DRAW}:null,
-  roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}});
+  roosts:()=>({ms:ROOST.ms,decks:ROOST.decks.length,stalls:ROOST.roosts.length,bridges:ROOST.bridges.length,lifts:ROOST.lifts.length,climbs:ROOST.climbs.length,why:ROOST.why})}}));

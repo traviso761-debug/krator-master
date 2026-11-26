@@ -1,0 +1,4 @@
+{
+ "note": "Station 3, the high ranges (PLAN-STATIONS.md). The land, sky, water and views are the station's own (45b, 89, 89w, 98); 87-host-ranges.js plants the conifer belt, the krummholz, the dwarf frost willow (EXCHANGES.md xanadu->godthrone) and the cushions, lays the glacier and the snow that lies. The Vale's fountain and the test dome are not here.",
+ "drop": ["89x-host-fountain.js", "85-host-dome.js"]
+}

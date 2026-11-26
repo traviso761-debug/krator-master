@@ -112,7 +112,7 @@ NHL.SPECIES=[
   tags:TG('temperate','subhumid','no',HV('timber',['sap'],false,''))},
  /*12*/{key:'elderyew',name:'Elder yew',habit:'yew',H:[9,16],rb:[1.3,2.2],crownR:[7,10],bk:4,bark:[0x6a3a3a,0x5a3040,0x7a4446],leaf:PAL.yew,item:'needle',
   tags:TG('temperate','humid','no',HV('timber',['arils (not the seed)'],true,'Every part poisonous but the red aril: eat the cup, spit the stone. Bows from the heartwood.','generic_fruit_yew_lantern'))},
- /*13*/{key:'spirespruce',name:'Spire spruce',habit:'conifer',H:[24,40],rb:[.4,.7],crownR:[1.8,3.0],bk:0,bark:[0x5a5048,0x4e463e,0x665c52],leaf:PAL.conifer.map(c=>C(c).multiplyScalar(.82).getHex()),item:'needle',
+ /*13*/{key:'spirespruce',name:'Spire spruce',habit:'conifer',H:[24,40],rb:[.4,.7],crownR:[1.8,3.0],bk:0,bark:[0x5a5048,0x4e463e,0x665c52],leaf:PAL.conifer.map((c,i)=>C(c).lerp(C(PAL.coniferBlue[i%4]),.35).multiplyScalar(1.25).getHex()),item:'needle',   /* (2026-10-26) the conifer green a third toward the fir's blue-grey and x1.25, no longer x.82: the dense spires read near-black against the light */
   form:{clear:.08,crown:'spire',step:1.3,droop:.55,L:1,buttress:0,flutes:0,fluteA:0,top:'spire',moss:.2,drape:0,lichen:.6},
   tags:TG('cold','subhumid','no',HV('timber',[],false,'The straight poles of every boreal lodge.'))},
  /*14*/{key:'frostfir',name:'Frost fir',habit:'conifer',H:[18,30],rb:[.35,.6],crownR:[1.8,2.8],bk:0,bark:[0x8a9090,0x7a8282,0x969c9c],leaf:PAL.coniferBlue,item:'needle',
@@ -145,7 +145,7 @@ NHL.SPECIES=[
   tags:TG('temperate','humid','no',HV('timber',['young leaves','flowers (tea)'],true,'Lime-blossom tea for fevers; bast for rope and shoes; soft wood for carving; the bees\' best tree.'))},
  // THE NEW FLORA (HANDOFF-FLORA.md): more canopy, more moss, a few alien touches. farShape names the far impostor's blob
  // (55, HABIT) for a habit the old expression does not know; only these species carry it
- /*25*/{key:'ghostalder',name:'Ghost alder',habit:'broad',H:[16,26],rb:[.2,.36],crownR:[4,6],bk:3,bark:[0x9c9e96,0x929489,0xa8aaa2],leaf:PAL.broad.map(c=>C(c).lerp(C(0x9aba5a),.25).getHex()),item:'broad',
+ /*25*/{key:'ghostalder',name:'Ghost alder',habit:'broad',H:[16,26],rb:[.2,.36],crownR:[4,6],bk:8,bark:[0x9c9e96,0x929489,0xa8aaa2],leaf:PAL.broad.map(c=>C(c).lerp(C(0x9aba5a),.25).getHex()),item:'broad',
   form:{hB:.55,boughs:[3,5],el:[.85,1.25],L:[.55,.8],wig:.1,curve:-.03,moss:.9,drape:.25,bulbs:.05,clump:[2.4,3.4],stems:[1,3]},
   tags:TG('temperate','humid','yes',HV('fuel',[],true,'Grows where nothing else will stand the wet; the lichen on it is a wound dressing.'))},
  /*26*/{key:'shagmaple',name:'Shag maple',habit:'shag',H:[14,24],rb:[1.0,1.6],crownR:[10,15],bk:4,bark:[0x4a4438,0x403a30,0x56503e],leaf:PAL.broad,item:'maple',farShape:'dome',
@@ -158,7 +158,25 @@ NHL.SPECIES=[
  /*29*/{key:'tablecedar',name:'Table cedar',habit:'table',H:[24,38],rb:[1.2,2.0],crownR:[12,18],bk:1,bark:[0x5a4a3a,0x4e4034,0x665446],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.3).getHex()),item:'needle',farShape:'umbrella',
   tags:TG('temperate','subhumid','no',HV('timber',[],true,'Fragrant rot-proof timber for halls; the resin burnt as incense.'))},
  /*30*/{key:'banyan',name:'Veil banyan',habit:'banyan',H:[22,34],rb:[2.2,3.4],crownR:[22,35],bk:2,bark:[0x66665a,0x5c5c50,0x707064],leaf:PAL.broad,item:'broad',farShape:'dome',
-  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))},
+  tags:TG('temperate','humid','both',HV('none',['figs (small, in autumn)'],false,'One tree shelters a village. Where a prop root touches the ground it becomes a trunk.'))}, // THE STATIONS' TREES (PLAN-STATIONS.md; pair 7, 2026-11-09), appended so every key and index above is kept. `station` names the station that places
+ // each (station 1 places none of them: its every-species check leaves them out). Station 2, the dry-summer montane (Dsb, Csb), writes the trees nsemiarid's
+ // station `high` takes kin of (its PLAN-STATIONS.md: "whichever station is built first sets the trees"); station 4, the alpine (Dsc, ET), its two pines
+ /*31*/{key:'copperpine',name:'Copper pine',habit:'conifer',station:'montane',H:[34,56],rb:[.7,1.25],crownR:[4.5,7],bk:0,bark:[0xc8844e,0xb87644,0xd8945e],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x6a8a3a),.35).getHex()),item:'needle',
+  form:{clear:.5,crown:'open',step:2.8,droop:.05,L:1,buttress:.15,flutes:0,fluteA:0,top:'flat',moss:0,drape:0,sparse:true},
+  tags:TG('temperate','semiarid','no',HV('timber',['seeds (in good years)'],true,'The bark plates smell of vanilla in the sun; pitch for torches and boats; the big timber of the dry side.'))},
+ /*32*/{key:'embergiant',name:'Ember giant',habit:'conifer',station:'montane',H:[72,96],rb:[2.8,4.0],crownR:[8,12],bk:1,bark:[0xa8502e,0x984628,0xb85e38],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4e6a34),.3).getHex()),item:'needle',
+  form:{clear:.42,crown:'dome',step:3.2,droop:.15,L:.9,buttress:1.5,flutes:13,fluteA:.13,top:'flat',moss:.1,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'The red giants of the moist draws: a fire scars them and they grow on. The bark is a hand thick and does not burn; the felled wood shatters.'))},
+ /*33*/{key:'whitefir',name:'White fir',habit:'conifer',station:'montane',H:[30,52],rb:[.6,1.1],crownR:[3.5,5.5],bk:0,bark:[0x9a9890,0x8a8a82,0xa8a69e],leaf:PAL.coniferBlue.map(c=>C(c).lerp(C(0x7a9a8a),.25).getHex()),item:'needle',
+  form:{clear:.18,crown:'spire',step:1.8,droop:.3,L:1,buttress:.2,flutes:0,fluteA:0,top:'spire',moss:.05,drape:0},
+  tags:TG('temperate','subhumid','no',HV('timber',[],true,'Balsam from the blisters for cuts; soft white boards.'))},
+ /*34*/{key:'blackoak',name:'Black oak',habit:'broad',station:'montane',H:[12,22],rb:[.5,.9],crownR:[7,11],bk:4,bark:[0x3a3430,0x2e2a26,0x46403a],leaf:PAL.oak,item:'maple',
+  form:{hB:.3,boughs:[4,7],el:[.3,.85],L:[.9,1.25],wig:.28,curve:-.1,moss:.05,drape:0,bulbs:0,clump:[3.4,5],mast:'acorn'},
+  tags:TG('temperate','semiarid','no',HV('fuel',['acorns'],false,'Acorns leached and ground into meal: the staple of the dry side\'s people.','generic_fruit_mast'))},
+ /*35*/{key:'whitebark',name:'Whitebark pine',habit:'pine',station:'alpine',H:[6,14],rb:[.3,.6],crownR:[3,5],bk:6,bark:[0xd8d0c4,0xc8c0b4,0xe2dcd0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x4a6a50),.3).getHex()),item:'needle',
+  tags:TG('cold','subhumid','no',HV('fuel',['pine nuts'],false,'The nuts are cached by the nutcrackers and dug up by bears and people alike.'))},
+ /*36*/{key:'foxtail',name:'Foxtail pine',habit:'pine',station:'alpine',H:[4,10],rb:[.5,1.1],crownR:[2,4],bk:4,bark:[0xc8b8a0,0xb8a890,0xd8c8b0],leaf:PAL.conifer.map(c=>C(c).lerp(C(0x3a5a3a),.45).getHex()),item:'needle',
+  tags:TG('cold','semiarid','no',HV('none',[],false,'Thousands of years old, mostly dead wood with one live strip of bark; never cut.'))},
 ];
 NHL.SPECIES.forEach((S,i)=>{S.index=i;});
 // THE UNDERSTOREY PLANTS, for the inspector and the tags (the items carry the label)
@@ -334,7 +352,7 @@ NHL.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{g.fillStyle='#
   for(let i=0;i<40;i++){const x=rng()*w,y=rng()*h;g.fillStyle='rgba(200,200,200,.55)';g.fillRect(x,y,rr(10,40),rr(20,90));}}
  if(kind===6){const id=g.getImageData(0,0,w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=id.data[i];id.data[i]=id.data[i+1]=id.data[i+2]=clamp(v+12*Math.sin(x*.3+y*.07),0,255);}g.putImageData(id,0,0);}
 });};
-NHL.BARKTEX=[0,1,2,3,4,5,6,7].map(k=>NHL.barkTex(k));
+NHL.BARKTEX=[0,1,2,3,4,5,6,7,3].map(k=>NHL.barkTex(k));   /* 8: the ghost alder's own slot (2026-10-25), painted as the birch until the library's bark.alder.lichen replaces it */
 NHL.WOODTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,v=120+(fbm(x/30,y/6,7,3)-.5)*70+(h3(x,y,3)-.5)*14;d[i]=v;d[i+1]=v*.94;d[i+2]=v*.86;d[i+3]=255;}g.putImageData(id,0,0);});
 NHL.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -360,33 +378,29 @@ const vc=(g,cfn)=>{g=g.index?g.toNonIndexed():g;const p=g.attributes.position,co
 G.bulb=function(){const thread=new T3.CylinderGeometry(.01,.01,.55,3,1,true).translate(0,-.275,0).toNonIndexed();
  const bulb=new T3.SphereGeometry(.17,6,3);   // 24 triangles, not 36: a bulb is a hand across, and there are ~19k
  const p=bulb.attributes.position;for(let i=0;i<p.count;i++){const y=p.getY(i),k=y<0?1+(-y/.17)*.15:1-.35*(y/.17);p.setXYZ(i,p.getX(i)*k,y*1.5,p.getZ(i)*k);}
- bulb.translate(0,-.76,0);const b2=bulb.toNonIndexed();
- const pos=[],nor=[],uv=[],col=[];[[thread,.25],[b2,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);const sh=e[1]===1?lerp(.82,1.08,clamp((-a[i+1]-.6)/.3,0,1)):e[1];col.push(sh,sh,sh);}});
+ /* smooth normals on the indexed shape before it is un-indexed, and its own uv (M.bulb's skin): the bulbs read polygonal (the owner's look pass, 2026-10-26) */
+ bulb.computeVertexNormals();bulb.translate(0,-.76,0);const b2=bulb.toNonIndexed();
+ const pos=[],nor=[],uv=[],col=[];[[thread,.25],[b2,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array,U=e[0].attributes.uv.array;for(let i=0,j=0;i<a.length;i+=3,j+=2){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(U[j]*2,U[j+1]);const sh=e[1]===1?lerp(.82,1.08,clamp((-a[i+1]-.6)/.3,0,1)):e[1];col.push(sh,sh,sh);}});
  return BIO.geo._make(pos,nor,uv,col);};
 // a LANTERN POD: a papery five-ribbed calyx hung from y=0 to y=-1 (the physalis reference)
 G.lantern=function(){const pts=[];for(let i=0;i<=4;i++){const t=i/4;   // four bands: 80 triangles, not 100
  pts.push(new T3.Vector2(Math.max(.01,Math.sin(t*Math.PI)*.34*(1-.25*t)),-.12-t*.86));}
- const g=new T3.LatheGeometry(pts,10).toNonIndexed(),p=g.attributes.position;   // ten segments: two to each of the five ribs
+ const g0=new T3.LatheGeometry(pts,10),p=g0.attributes.position;   // ten segments: two to each of the five ribs
  for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),k=1+.22*Math.cos(5*a);p.setXYZ(i,x*k,p.getY(i),z*k);}
- g.computeVertexNormals();const thread=new T3.CylinderGeometry(.012,.012,.14,3,1,true).translate(0,-.07,0).toNonIndexed();
- const pos=[],nor=[],uv=[],col=[];[[thread,.3],[g,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);
+ /* smooth normals on the indexed lathe, then un-indexed (normals after un-indexing gave every triangle its own facet), and its uv for M.pod's skin */
+ g0.computeVertexNormals();const g=g0.toNonIndexed(),thread=new T3.CylinderGeometry(.012,.012,.14,3,1,true).translate(0,-.07,0).toNonIndexed();
+ const pos=[],nor=[],uv=[],col=[];[[thread,.3],[g,1]].forEach(e=>{const a=e[0].attributes.position.array,n=e[0].attributes.normal.array;const U=e[0].attributes.uv.array;for(let i=0,j=0;i<a.length;i+=3,j+=2){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(U[j]*2,U[j+1]);
   const x=a[i],z=a[i+2],rib=e[1]===1?.82+.18*Math.cos(5*Math.atan2(z,x)):e[1];col.push(rib,rib,rib);}});
  return BIO.geo._make(pos,nor,uv,col);};
-// a DISC: the disc stalk's head -- a shallow ribbed dish with a boss, unit radius, face up, vertex-coloured (the rim paler, the ribs dark)
-G.disc=function(){const pos=[],nor=[],uv=[],col=[];const n=12;   // twelve ribs: 36 triangles, not 54
- for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,rib=k%2;
-  const P=(a,r,y)=>[Math.cos(a)*r,y,Math.sin(a)*r];
-  const A=P(0,0,.06),B=P(a0,1,.16+(rib?.03:0)),Cc=P(a1,1,.16+(rib?0:.03)),M0=P(a0,.5,.08),M1=P(a1,.5,.08);
-  const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(c[0],c[1],c[2]);};
-  const cc=rib?[.78,.72,.6]:[1,1,1],cr=[1.18,1.12,.95],cb=[.6,.48,.32];
-  push(A,cb);push(M1,cc);push(M0,cc);push(M0,cc);push(M1,cc);push(Cc,cr);push(M0,cc);push(Cc,cr);push(B,cr);}
- return BIO.geo._make(pos,nor,uv,col);};
+// the core's fungoid cap (core/biome/33-core-fungoid.js): a ribbed saucer, the rim up and lifted on every other rib; 36 triangles
+G.disc=function(){return BIO.fung.cap({form:'funnel',h:.17,seg:12,rings:2,ribs:12,ribK:.75,under:'none',uv:'planar'});};   /* planar: M.disc's cap texture radiates from the middle */
 // a PLEAT FAN: a round pleated fan (the red-stem fan's leaf), unit radius in the xz plane, the pleats radial, red at the heart
 G.pleat=function(){const pos=[],nor=[],uv=[],col=[];const n=16;   // sixteen pleats: 32 triangles, not 44
  for(let k=0;k<n;k++){const a0=k/n*TAU,a1=(k+1)/n*TAU,up=k%2?.07:-.04,dn=k%2?-.04:.07;
   const P=(a,r,y)=>[Math.cos(a)*r,y+r*r*.12,Math.sin(a)*r];const O=[0,0,0],B=P(a0,1,up),Cc=P(a1,1,dn),M=P((a0+a1)/2,.55,(up+dn)/2);
-  const push=(p,c)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push(0,0);col.push(c[0],c[1],c[2]);};
-  const red=[1.35,.42,.48],g1=[1,1,1],g2=[.84,.9,.84];push(O,red);push(M,k%2?g1:g2);push(B,k%2?g1:g2);push(O,red);push(Cc,k%2?g2:g1);push(M,k%2?g1:g2);}
+  /* uv: u round the fan (two texture repeats a pleat, so M.pleat's stripes run along the pleats), v out from the heart */
+  const push=(p,c,t)=>{pos.push(p[0],p[1],p[2]);nor.push(0,1,0);uv.push((k+t)*.5,Math.hypot(p[0],p[2]));col.push(c[0],c[1],c[2]);};   /* t: 0 at the pleat's first edge, 1 at its second */
+  const red=[1.35,.42,.48],g1=[1,1,1],g2=[.84,.9,.84];push(O,red,.5);push(M,k%2?g1:g2,.5);push(B,k%2?g1:g2,0);push(O,red,.5);push(Cc,k%2?g2:g1,1);push(M,k%2?g1:g2,.5);}
  return BIO.geo._make(pos,nor,uv,col);};
 // a CUSHION: a lumpy dome, origin at the centre (moss mounds, smoke bush, yew domes)
 G.cushion=function(){   // 49 triangles, not 72: there are 14k of them, and the lumps hide the facets
@@ -399,10 +413,7 @@ G.boulder=function(seed){const g=new T3.IcosahedronGeometry(1,1),p=g.attributes.
  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),k=1+.22*(fbm(x*1.3+seed,y*1.3,z*1.3,2)-.5)*2+.08*Math.sin(x*6+seed);p.setXYZ(i,x*k,Math.max(-.25,y*k*.78)+.25,z*k);}
  const ng=g.toNonIndexed();ng.computeVertexNormals();return ng;};
 // a MUSHROOM: pale stem, cap takes the colour (vertex-coloured), origin at the base, 1 high
-G.mushroom=function(){const pos=[],nor=[],uv=[],col=[];
- const add=(g,c)=>{g=g.toNonIndexed();const a=g.attributes.position.array,n=g.attributes.normal.array;for(let i=0;i<a.length;i+=3){pos.push(a[i],a[i+1],a[i+2]);nor.push(n[i],n[i+1],n[i+2]);uv.push(0,0);col.push(c,c,c);}};
- add(new T3.CylinderGeometry(.09,.12,.75,5,1,true).translate(0,.375,0),1.6);add(new T3.SphereGeometry(.42,7,3,0,TAU,0,Math.PI*.5).scale(1,.62,1).translate(0,.72,0),1);
- return BIO.geo._make(pos,nor,uv,col);};
+G.mushroom=function(){return BIO.fung.cap({form:'dome',h:.62,seg:7,rings:3,under:'none',stem:{h:1.7,r:.29,r1:.21,k:1.6}}).scale(.42,.42,.42);};
 G.berry=function(){return new T3.OctahedronGeometry(1,0);};
 // a ROD: an open-ended pentagonal cylinder along y, centred (for BIO.beam): twigs, stalks, stems -- ten triangles, not twenty-four
 G.rod=function(){return new T3.CylinderGeometry(.5,.5,1,5,1,true);};
@@ -413,13 +424,20 @@ NHL.G=G;
 
 // ---------------------------------------------------------------- materials
 // the bark buckets: one per texture kind; the trumpets' bucket shimmers (the Rift's iridescent bark)
+// the floor cover's ground tint (core/biome 30-core-foliage.js, R5): the root takes the painted ground's colour (88-host-build
+// binds it, BIO.setGround) and the tuft shades to its own colour at the tip; past 520 m it turns to the ground and dissolves by
+// 700 m, inside the floor's 650 m chunk range, so the band ends without an edge. gain: the ground material's tint (0x84847a)
+// times its detail map's mean, so the root matches the ground it stands on.
+// leaves held by the stem on the broadleaf crowns (55-trees clumpAt; core/biome 31b-core-leafset.js); ?leafset=0: the old tripods
+NHL.LEAFSET=(typeof BIO.leafOn==='function'&&!(typeof location!=='undefined'&&/[?&]leafset=0/.test(location.search)))?{maple:1,broad:1}:null;
+NHL.FLOOR_GROUND={k:.8,gain:.42,fade:[520,700]};
 const M=NHL.MAT={
  needle:BIO.leafMat(TX.needle,'nh-needle',{aN:true,swayW:'1.0',swayA:.05}),
  spray:BIO.leafMat(TX.spray,'nh-spray',{swayW:'(position.x)',swayA:.10}),
- maple:BIO.leafMat(TX.maple,'nh-maple',{aN:true,swayW:'1.0',swayA:.10}),
- broad:BIO.leafMat(TX.broad,'nh-broad',{aN:true,swayW:'1.0',swayA:.10}),
- small:BIO.leafMat(TX.small,'nh-small',{aN:true,swayW:'1.0',swayA:.07}),
- birch:BIO.leafMat(TX.birch,'nh-birch',{aN:true,swayW:'1.0',swayA:.14}),
+ maple:BIO.leafMat(TX.maple,'nh-maple',{backlit:.35,aN:true,swayW:'1.0',swayA:.10}),
+ broad:BIO.leafMat(TX.broad,'nh-broad',{backlit:.35,aN:true,swayW:'1.0',swayA:.10}),
+ small:BIO.leafMat(TX.small,'nh-small',{backlit:.35,aN:true,swayW:'1.0',swayA:.07}),
+ birch:BIO.leafMat(TX.birch,'nh-birch',{backlit:.35,aN:true,swayW:'1.0',swayA:.14}),
  larch:BIO.leafMat(TX.larch,'nh-larch',{aN:true,swayW:'1.0',swayA:.10}),
  lance:BIO.leafMat(TX.lance,'nh-lance',{aN:true,swayW:'1.0',swayA:.12}),
  pinnate:BIO.leafMat(TX.pinnate,'nh-pinnate',{aN:true,swayW:'1.0',swayA:.10}),
@@ -429,10 +447,10 @@ const M=NHL.MAT={
  lady:BIO.leafMat(TX.lady,'nh-lady',{swayW:'(position.x)',swayA:.08}),
  lace:BIO.leafMat(TX.lace,'nh-lace',{irid:true,swayW:'(position.x)',swayA:.08,alphaTest:.38}),
  bracken:BIO.leafMat(TX.bracken,'nh-bracken',{swayW:'1.0',swayA:.04}),
- blade:BIO.leafMat(TX.blade,'nh-blade',{swayW:'(position.y)',swayA:.10,alphaTest:.4}),
- spike:BIO.leafMat(TX.spike,'nh-spike',{swayW:'(position.y)',swayA:.08,alphaTest:.38}),
- bell:BIO.leafMat(TX.bell,'nh-bell',{swayW:'(position.y)',swayA:.06,alphaTest:.38}),
- heath:BIO.leafMat(TX.heath,'nh-heath',{swayW:'(position.y)',swayA:.03,alphaTest:.4}),
+ blade:BIO.leafMat(TX.blade,'nh-blade',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.10,alphaTest:.4}),
+ spike:BIO.leafMat(TX.spike,'nh-spike',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.08,alphaTest:.38}),
+ bell:BIO.leafMat(TX.bell,'nh-bell',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.06,alphaTest:.38}),
+ heath:BIO.leafMat(TX.heath,'nh-heath',{ground:NHL.FLOOR_GROUND,swayW:'(position.y)',swayA:.03,alphaTest:.4}),
  under:BIO.leafMat(TX.under,'nh-under',{swayW:'1.0',swayA:.05}),
  paddle:BIO.leafMat(TX.paddle,'nh-paddle',{aN:true,swayW:'(position.y)',swayA:.05,alphaTest:.45}),
  zebra:BIO.leafMat(TX.zebra,'nh-zebra',{swayW:'(position.y)',swayA:.02,alphaTest:.42}),
@@ -441,6 +459,10 @@ const M=NHL.MAT={
  cushion:new T3.MeshLambertMaterial({map:NHL.MOSSTEX,vertexColors:true}),
  vcol:BIO.leafMat(null,'nh-vcol',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
  vsway:BIO.leafMat(null,'nh-vsway',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
+ /* the disc stalk's cap and the red-stem fan, given the library's skins as grey detail maps (materials.json: organic.cap.glossy,
+    organic.pleat.skin; the owner's look pass, 2026-10-26): vertex-coloured as before, the map multiplies in */
+ disc:BIO.leafMat(null,'nh-disc',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}),
+ pleat:BIO.leafMat(null,'nh-pleat',{swayW:'(position.y)',swayA:.03,alphaTest:0,vertexColors:true}),
  rock:BIO.solidMat(NHL.ROCKTEX),
  solid:BIO.solidMat(null,0xffffff),
  // THE GLOW. Lambert with an emissive the host's night raises (NHL.setNight). In daylight the
@@ -457,10 +479,7 @@ const M=NHL.MAT={
 NHL.LIB=BIO.libSwap('nhighlands',NHL.MAT);
 M.halo.visible=M.haloV.visible=false;
 // the bulbs sway on their threads like the pods of the core
-[M.bulb,M.pod].forEach((m,i)=>{m.onBeforeCompile=sh=>{sh.uniforms.uWindT=BIO.WIND.t;sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nuniform float uWindT;')
- .replace('#include <begin_vertex>','#include <begin_vertex>\n#ifdef USE_INSTANCING\n{float ph=dot(instanceMatrix[3].xyz,vec3(.13,.07,.11));transformed.x+=-position.y*.05*sin(uWindT*1.1+ph);transformed.z+=-position.y*.05*cos(uWindT*.8+ph*1.3);}\n#endif');};
- const ck=BIO.kitKey('nh-glow'+i);m.customProgramCacheKey=()=>ck;
- m.userData.bio={kind:'hang',key:BIO.kitKey(i?'pod':'bulb'),opts:{swayA:.05,swayW:'(-position.y)',night:i?[.04,1.5]:[.05,1.35]}};});   // as data (42-core-export); night: the emissive intensity by day and by night (NHL.setNight)
+[M.bulb,M.pod].forEach((m,i)=>BIO.hangMat(m,i?'pod':'bulb',{swayA:.05,night:i?[.04,1.5]:[.05,1.35]}));   // the core's 'hang' kind; night: the emissive intensity by day and by night (NHL.setNight)
 NHL._glowMaterials=[M.bulb,M.pod];
 NHL._night=0;
 NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;
@@ -468,7 +487,7 @@ NHL.setNight=function(k){k=clamp(+k||0,0,1);NHL._night=k;
  if(M.spore)M.spore.emissiveIntensity=lerp(.04,1.2,k);   /* the spore lamps (the new flora, at the end of this fragment) */
  M.halo.opacity=.20*k;M.haloV.opacity=.18*k;M.halo.visible=M.haloV.visible=k>0;
  return{bulb:M.bulb.emissiveIntensity,pod:M.pod.emissiveIntensity,halo:M.halo.opacity};};
-const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags'];
+const BK=['Plated bark','Fibrous bark','Smooth bark','Birch bark','Furrowed bark','Trumpet stalks','Pine bark','Charred snags','Alder bark (lichen, moss at the foot)'];
 // the bark, fallen-wood and boulder materials are made first and offered to the library as one table (NHL.BKMAT:
 // nbark0..7 but the trumpets, nwood, nrock), so BIO.libSwap binds them before their buckets read the set's tile size
 NHL.BKMAT={nwood:BIO.barkMat(NHL.WOODTEX),nrock:BIO.barkMat(NHL.ROCKTEX)};
@@ -486,23 +505,26 @@ BIO.bucket('nrock',NHL.BKMAT.nrock,{label:'Boulders',uvScale:[6,6]});
 BIO.bucket('nfar',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('needle',BIO.geo.clump(),M.needle,{attrs:['aN'],label:'Conifer needles'});
+/* the crown sheets (card.pine, card.lobed, card.sage, card.aspen, card.larch, card.acacia: nine sprigs each) are drawn a sprig a
+   quad, three cells a card at .75, the needles .88 (core BIO.geo.cells; the owner, 2026-10-26: whole sheets read as a grid). The
+   library's cell is in the geometry, so these slots carry no cell in materials.json (without the pack each quad shows a ninth of the stand-in) */
+const SHEET=(g,about,scale)=>BIO.geo.cells?BIO.geo.cells(g,{n:3,about,scale:scale==null?.75:scale}):g;   /* .75: the sprigs overlap into a mass (.6 read sparse) */
+BIO.def('needle',SHEET(BIO.geo.clump(),'quad',.88),M.needle,{attrs:['aN'],label:'Conifer needles',cap:700000,capWhy:'every conifer\'s needle masses (17 species, ~25k trees: the boreal band is closed spruce and fir) and the snow on the high crowns, within the 32 M budget the owner set (KNOWN_ISSUES.md, Density): 632k at 2026-11-01, the mid tier at 2.2x the hero\'s step, impostors past 800 m'});
 BIO.def('spray',BIO.geo.frond(3),M.spray,{label:'Cedar and hemlock sprays'});
-BIO.def('maple',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Maple leaves'});
-BIO.def('broad',BIO.geo.clump(),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
-BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Oak and laurel leaves'});
-BIO.def('birch',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Birch leaves'});
-BIO.def('larch',BIO.geo.clump(),M.larch,{attrs:['aN'],label:'Larch needles'});
+BIO.def('maple',NHL.LEAFSET&&NHL.LEAFSET.maple?SHEET(BIO.geo.clump({stem:true}),'origin'):SHEET(BIO.geo.clump()),M.maple,{attrs:['aN'],label:'Maple leaves'});
+BIO.def('broad',BIO.geo.clump(NHL.LEAFSET&&NHL.LEAFSET.broad?{stem:true}:null),M.broad,{attrs:['aN'],label:'Broadleaf canopy'});
+BIO.def('small',SHEET(BIO.geo.clump()),M.small,{attrs:['aN'],label:'Oak and laurel leaves'});
+BIO.def('birch',SHEET(BIO.geo.clump()),M.birch,{attrs:['aN'],label:'Birch leaves'});
+BIO.def('larch',SHEET(BIO.geo.clump()),M.larch,{attrs:['aN'],label:'Larch needles'});
 BIO.def('lance',BIO.geo.clump(),M.lance,{attrs:['aN'],label:'Willow leaves'});
-BIO.def('pinnate',BIO.geo.clump(),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
+BIO.def('pinnate',SHEET(BIO.geo.clump()),M.pinnate,{attrs:['aN'],label:'Rowan leaves'});
 BIO.def('drape',BIO.geo.ribbon(4,.7,.14),M.drape,{label:'Hanging moss'});
 BIO.def('beard',BIO.geo.ribbon(4,.55,.10),M.beard,{label:'Beard lichen'});
-BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns'});
+BIO.def('frond',BIO.geo.frond(3),M.frond,{label:'Sword ferns',cap:650000,capWhy:'the fern sea under the old growth (HANDOFF-FLORA.md), its cell already cut from 3 m to 5 m to hold the 32 M budget, and the far floor band to 1.1 km: 595k at 2026-11-01'});
 BIO.def('lady',BIO.geo.frond(3),M.lady,{label:'Lady ferns'});
 BIO.def('lace',BIO.geo.frond(3),M.lace,{attrs:['aC2'],label:'Lace ferns'});
 BIO.def('bracken',G.flat(),M.bracken,{label:'Bracken'});
-BIO.def('blade',G.tuft(),M.blade,{label:'Grass'});
-BIO.def('mondo',G.tuft(),M.blade,{label:'Black grass'});
+BIO.def('blade',G.tuft(),M.blade,{label:'Grass'});   /* and black grass, by its instances' label (60: L_MONDO); heath carries dark spurge, cushion the smoke bush, rod the mountain cane */
 BIO.def('spike',G.tuft(),M.spike,{label:'Spikes'});
 BIO.def('bell',G.tuft(),M.bell,{label:'Bluebells'});
 BIO.def('heath',G.tuft(),M.heath,{label:'Heath and bilberry'});
@@ -512,23 +534,19 @@ BIO.def('paddle',G.card(),M.paddle,{attrs:['aN'],label:'Teal aroids'});
 BIO.def('zebra',G.tuft(),M.zebra,{label:'Zebra rosettes'});
 BIO.def('mossmat',BIO.geo.mat(),M.moss,{label:'Moss'});
 BIO.def('cushion',G.cushion(),M.cushion,{label:'Moss cushions'});
-BIO.def('smoke',G.cushion(),M.cushion,{label:'Smoke bush'});
-BIO.def('spurge',G.tuft(),M.heath,{label:'Dark spurge'});
 BIO.def('fin',BIO.geo.frond(2),M.fin,{attrs:['aN','aC2'],label:'Trumpet fringes'});
 BIO.def('bulb',G.bulb(),M.bulb,{label:'Bell-bulbs'});
 BIO.def('lantern',G.lantern(),M.pod,{label:'Lantern pods'});
 BIO.def('halo',BIO.geo.bloom(),M.halo,{label:'Bulb glow'});
 BIO.def('haloV',BIO.geo.bloom(),M.haloV,{label:'Pod glow'});
-BIO.def('disc',G.disc(),M.vcol,{label:'Disc stalks'});
-BIO.def('pleat',G.pleat(),M.vsway,{label:'Red-stem fans'});
+BIO.def('disc',G.disc(),M.disc,{label:'Disc stalks'});
+BIO.def('pleat',G.pleat(),M.pleat,{label:'Red-stem fans'});
 BIO.def('boulderA',G.boulder(1.3),M.rock,{label:'Boulders'});
-BIO.def('boulderB',G.boulder(4.7),M.rock,{label:'Boulders'});
 BIO.def('mushroom',G.mushroom(),M.vcol,{label:'Mushrooms'});
 BIO.def('berry',G.berry(),M.solid,{label:'Berries'});
 BIO.def('mast',new T3.TetrahedronGeometry(1,0),M.solid,{label:'Beechmast and acorns'});   // 4 triangles: hero trees only
 BIO.def('rod',G.rod(),M.solid,{label:'Twigs and stems'});
 BIO.def('trunk',BIO.geo.trunk(7),BIO.solidMat(NHL.BARKTEX[0]),{label:'Saplings'});
-BIO.def('cane',G.rod(),M.solid,{label:'Mountain cane'});
 
 // ---------------------------------------------------------------- the new flora (HANDOFF-FLORA.md)
 // The fan-leaf's leaves, the staghorn's fronds, the sun-wheel, the spore lamps and the shag maple's moss sleeves: four
@@ -589,4 +607,5 @@ BIO.def('fan',BIO.geo.clump(),M.fan,{attrs:['aN'],label:'Fan-leaf leaves'});
 BIO.def('staghorn',NHL.LIB.staghorn?G.antler():BIO.geo.frond(3),M.staghorn,{label:'Staghorns'});
 BIO.def('wheel',G.flat(),M.wheel,{label:'Sun-wheels'});
 BIO.def('sporepin',G.spore(),M.spore,{label:'Spore lamps'});
+NHL.TG=TG;NHL.HV=HV;   /* the tag makers, for a station's own plants (stations/bogs/62) */
 })();

@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.248,
+    1.062
+   ],
+   "seam_before": [
+    1.527,
+    1.131
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "detail",
+  "id": "detail.stone.grain",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   0.25,
+   0.25
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "detail.stone.grain.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"detail.stone.grain\"",
+  "reuse": "the detail normal of every cut stone, ashlar, paving and concrete record; rock at close range",
+  "sha1": "ceaa63b3baa1adaaefc4fe54ea9264ebfc8d888e"
+ }
+}

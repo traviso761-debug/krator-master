@@ -38,7 +38,7 @@ var KCharCrowd = (function(){
     fig.group.updateMatrixWorld(true);
     var inv = new THREE.Matrix4().copy(fig.group.matrixWorld).invert(), pos = [], nor = [], col = [], idx = [], v = V(), M = new THREE.Matrix4();
     fig.group.traverseVisible(function(m){
-      if(!m.isMesh || !m.geometry || !m.geometry.attributes.position) return;
+      if(!m.isMesh || !m.geometry || !m.geometry.attributes.position || m.userData.fur) return;   // fur shells: the cloth's colour is enough far off
       var g = m.geometry, P = g.attributes.position, U = g.attributes.uv, I = g.index, mat = Array.isArray(m.material) ? m.material[0] : m.material;
       if(mat && (mat.visible === false || mat.opacity === 0)) return;
       if(m.isSkinnedMesh) m.skeleton.update();

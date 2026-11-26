@@ -604,7 +604,18 @@ ISLE.city = function (town, o) {
     if (B.count && !B.ring) R.count = B.count;
     OUT.world.push(R);
   });
-  return { town: town, K: K, plan: P, lots: lots, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields, cover: cover, prog: PR,
+  /* THE EMPTY LOTS (2026-11-03, 47b; the owner: most cities show some fillable empty lots): `build.vacant` of the dwellings,
+     by a hash of the town and the lot, left empty in the plan: a cleared plot the sim's builders put the house on (its
+     key the house the plan allows there); the census counts their households out (34) */
+  var BV = ISLE.TUNE.sim && ISLE.TUNE.sim.build;
+  if (BV && BV.vacant > 0) lots.forEach(function (L, i) {
+    if (L.cls === 'landmark' || !ISLE.households(L.key)) return;
+    if (KRAND.unit(KRAND.hash(seed, 4127, i)) < BV.vacant) L.vacant = true;
+  });
+  /* the streets outside the gates, closed until the town needs them (33, 2026-11-04) */
+  var spurs = ISLE.spurs ? ISLE.spurs({ town: town, seed: seed, h: h, half: G.half, lots: lots, ways: P.ways, wall: OUT.wall, fields: OUT.fields, tags: tags, dims: dims }) : [];
+  var camp = ISLE.campSite ? ISLE.campSite({ town: town, h: h, half: G.half, lots: lots, ways: P.ways, wall: OUT.wall, fields: OUT.fields, spurs: spurs, tags: tags }) : null;   /* the refugee camp's ground (33, 47r) */
+  return { town: town, K: K, plan: P, lots: lots, spurs: spurs, camp: camp, wall: OUT.wall, vessels: OUT.vessels, landings: OUT.landings, world: OUT.world, districts: DIST, fields: OUT.fields, cover: cover, prog: PR,
     hug: function (x, z) { return HUG ? HUG.at(x, z) : null; },
     log: LOG, missing: OUT.missing, failed: OUT.failed, seed: seed, tune: tune };
 };

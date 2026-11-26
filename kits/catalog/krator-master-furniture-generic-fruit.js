@@ -1395,3 +1395,188 @@ FURN({
     }
   }
 });
+
+/* ================= North semi-arid basin (7 pieces: the Ancients' lakeside orchards gone wild, and the nut trees) =================
+   2026-11-03 (TODO.md, "the missing fruit"): the basin's species named these and the catalog had none (biomes/nsemiarid
+   FRUIT_NOT_DRAWN). Each a handful or a dish, the size of the other fruit here. */
+
+FURN({
+  key: 'generic_fruit_wild_apple', name: 'Wild Apples', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'cloth'],
+  biome: 'nsemiarid', source: ['apple'],
+  w: 0.24, d: 0.24, h: 0.13, variants: 2, variantNames: ['a bowl, every tree a different apple', 'dried rings on a string'],
+  variantDims: [{ w: 0.24, d: 0.24, h: 0.13 }, { w: 0.3, d: 0.06, h: 0.04 }],
+  build: function (F) {
+    const red = F.col('fruitWildApple'), green = F.col('fruitWildAppleGreen');
+    if (F.variant === 0) {
+      KGEN.bowl(F, 0, 0, 0, 0.12, 0.05, F.col('timberOak'), 'wood');
+      KGEN.heap(F, 0, 0.035, 0, 0.11, 0.03, [red, green, F.shade(red, 0.12), F.shade(green, -0.1)], 'food',
+        (x, y, z, c) => KGEN.fruit(F, x, y, z, 0.03, c, F.col('timberWalnut')));
+    } else {
+      F.rod(-0.15, 0.02, 0, 0.15, 0.02, 0, 0.002, F.col('ropeHemp'), 'cloth');
+      for (let i = 0; i < 9; i++) F.cyl(-0.13 + i * 0.0325, 0.0, 0, 0.018, 0.006, i * 0.6, F.shade(F.col('fruitApricotDried'), 0.2 + (i % 3) * 0.04), 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_wild_pear', name: 'Wild Pears', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
+  biome: 'nsemiarid', source: ['pear'],
+  w: 0.22, d: 0.22, h: 0.11, variants: 2, variantNames: ['small and hard, a handful', 'bletted soft on a dish'],
+  variantDims: [{ w: 0.2, d: 0.2, h: 0.09 }, { w: 0.22, d: 0.22, h: 0.11 }],
+  build: function (F) {
+    const pear = F.col('fruitWildPear'), rus = F.col('fruitPearRusset');
+    const one = (x, z, c, lean) => { F.ball(x, 0.022, z, 0.022, c, 'food'); F.frustum(x + lean, 0.035, z, 0.019, 0.01, 0.035, 0, c, 'food', 10);
+      F.rod(x + lean, 0.07, z, x + lean * 1.6, 0.085, z, 0.002, F.col('timberWalnut'), 'wood'); };
+    if (F.variant === 0) { KFRUIT.leaf(F, 0, 0, 0.09, F.col('vegLeaf')); [[-0.04, -0.02], [0.03, -0.035], [0.0, 0.04], [0.05, 0.03]].forEach(([x, z], i) => one(x, z, i % 2 ? rus : pear, 0.004)); }
+    else { KGEN.plate(F, 0, 0, 0, 0.11, F.col('stoneCream')); [[-0.045, 0], [0.04, -0.02], [0.02, 0.05]].forEach(([x, z]) => { F.blob(x, 0.04, z, 0.026, 0.03, x, F.shade(rus, -0.18), 'food'); }); }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_apricot', name: 'Apricots', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'nsemiarid', source: ['apricot'],
+  w: 0.28, d: 0.2, h: 0.06, variants: 2, variantNames: ['fresh, a handful', 'halved and dried on a roof board'],
+  variantDims: [{ w: 0.16, d: 0.16, h: 0.06 }, { w: 0.28, d: 0.2, h: 0.04 }],
+  build: function (F) {
+    const ap = F.col('fruitApricot'), blush = F.col('fruitApricotBlush'), dry = F.col('fruitApricotDried');
+    if (F.variant === 0) { for (let i = 0; i < 6; i++) { const a = i * 1.05, r = i ? 0.045 : 0; F.blob(Math.cos(a) * r, 0.022, Math.sin(a) * r, 0.022, 0.024, a, i % 2 ? blush : ap, 'food'); } }
+    else {
+      F.box(0, 0, 0, 0.28, 0.02, 0.2, 0, F.col('timberPine'), 'wood');
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) KFRUIT.half(F, -0.105 + i * 0.07, 0.02, -0.06 + j * 0.06, 0.022, F.shade(dry, -0.12), dry);
+      F.ball(0.12, 0.028, 0.08, 0.008, F.col('fruitKernel'), 'food');   /* a kernel cracked out */
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_walnut', name: 'Walnuts', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber'],
+  biome: 'nsemiarid', source: ['walnut'],
+  w: 0.22, d: 0.22, h: 0.1, variants: 2, variantNames: ['in their green husks', 'shelled in a bowl'],
+  variantDims: [{ w: 0.2, d: 0.2, h: 0.08 }, { w: 0.22, d: 0.22, h: 0.1 }],
+  build: function (F) {
+    const husk = F.col('fruitWalnutHusk'), shell = F.col('fruitWalnutShell'), meat = F.col('fruitWalnutMeat');
+    if (F.variant === 0) KGEN.heap(F, 0, 0, 0, 0.1, 0.026, [husk, F.shade(husk, 0.1), F.shade(husk, -0.15)], 'food');
+    else {
+      KGEN.bowl(F, 0, 0, 0, 0.11, 0.05, F.col('timberWalnut'), 'wood');
+      KGEN.heap(F, 0, 0.035, 0, 0.095, 0.018, [meat, F.shade(meat, -0.12)], 'food', (x, y, z, c) => F.blob(x, y + 0.012, z, 0.018, 0.012, x * 7, c, 'food'));
+      for (const [x, z] of [[0.13, 0.06], [0.12, -0.07]]) KFRUIT.half(F, x, 0, z, 0.016, shell, F.shade(shell, -0.3));
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_pomegranate', name: 'Pomegranates', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'nsemiarid', source: ['pomegranate'],
+  w: 0.24, d: 0.22, h: 0.11, variants: 2, variantNames: ['whole, crowned', 'broken open, the arils in a dish'],
+  variantDims: [{ w: 0.2, d: 0.18, h: 0.11 }, { w: 0.24, d: 0.22, h: 0.08 }],
+  build: function (F) {
+    const rind = F.col('fruitPomegranateRind'), red = F.col('fruitPomegranate'), aril = F.col('fruitPomegranateAril'), pith = F.col('fruitPomegranatePith');
+    const crown = (x, y, z, r) => { for (let k = 0; k < 6; k++) { const a = k * F.TAU / 6; F.rod(x, y, z, x + Math.cos(a) * r * 0.25, y + r * 0.3, z + Math.sin(a) * r * 0.25, r * 0.06, rind, 'food'); } };
+    if (F.variant === 0) for (const [x, z, r] of [[-0.045, 0, 0.045], [0.05, -0.03, 0.04], [0.035, 0.05, 0.036]]) { F.ball(x, r, z, r, F.shade(red, x * 2), 'food'); crown(x, r * 1.9, z, r); }
+    else {
+      KGEN.bowl(F, 0.03, 0, 0.02, 0.08, 0.04, F.col('stoneCream'), 'stone', aril);
+      KGEN.heap(F, 0.03, 0.03, 0.02, 0.06, 0.01, [aril, F.shade(aril, 0.15)], 'food');
+      KFRUIT.half(F, -0.07, 0, -0.05, 0.04, rind, pith);
+      KGEN.heap(F, -0.07, 0.025, -0.05, 0.03, 0.008, [aril], 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_pistachio', name: 'Pistachios', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
+  biome: 'nsemiarid', source: ['pistachio'],
+  w: 0.18, d: 0.18, h: 0.07, variants: 2, variantNames: ['in their rosy hulls, a cluster', 'split shells in a dish'],
+  variantDims: [{ w: 0.18, d: 0.12, h: 0.05 }, { w: 0.18, d: 0.18, h: 0.07 }],
+  build: function (F) {
+    const hull = F.col('fruitPistachioHull'), shell = F.col('fruitPistachioShell'), nut = F.col('fruitPistachioNut');
+    if (F.variant === 0) {
+      F.rod(-0.08, 0.01, 0, 0.08, 0.01, 0, 0.003, F.col('timberWalnut'), 'wood');
+      for (let i = 0; i < 14; i++) F.blob(-0.07 + (i % 7) * 0.023, 0.016 + (i > 6 ? 0.012 : 0), (i > 6 ? 0.015 : -0.012), 0.011, 0.015, i, F.shade(hull, (i % 3) * 0.05 - 0.05), 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.085, 0.045, F.col('stoneCream'), 'stone', shell);
+      KGEN.heap(F, 0, 0.03, 0, 0.075, 0.011, [shell, F.shade(shell, -0.08)], 'food', (x, y, z, c) => { F.blob(x, y + 0.008, z, 0.011, 0.008, x * 9, c, 'food'); F.ball(x, y + 0.013, z, 0.004, nut, 'food'); });
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_almond', name: 'Almonds', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'timber', 'stone', 'cloth'],
+  biome: 'nsemiarid', source: ['almond'],
+  w: 0.22, d: 0.2, h: 0.07, variants: 2, variantNames: ['in the green hull (the sweet strain, marked)', 'blanched kernels in a dish'],
+  variantDims: [{ w: 0.18, d: 0.16, h: 0.03 }, { w: 0.22, d: 0.2, h: 0.07 }],
+  build: function (F) {
+    const hull = F.col('fruitAlmondHull'), shell = F.col('fruitAlmondShell'), nut = F.col('fruitAlmondNut'), white = F.col('fruitAlmondBlanched');
+    if (F.variant === 0) { for (let i = 0; i < 7; i++) { const a = i * 0.9, r = i ? 0.05 : 0; F.blob(Math.cos(a) * r, 0.016, Math.sin(a) * r, 0.016, 0.026, a, i % 3 ? hull : shell, 'food'); }
+      F.cyl(0.075, 0, -0.06, 0.012, 0.03, 0, F.col('ropeHemp'), 'cloth'); }   /* the tag a keeper ties on a sweet tree's crop */
+    else {
+      KGEN.plate(F, 0, 0, 0, 0.1, F.col('timberOak'));
+      KGEN.heap(F, 0, 0.02, 0, 0.085, 0.01, [white, F.shade(white, -0.06)], 'food', (x, y, z, c) => F.blob(x, y + 0.007, z, 0.009, 0.016, x * 11, c, 'food'));
+      for (const [x, z] of [[0.09, 0.07], [-0.09, 0.07]]) F.blob(x, 0.008, z, 0.009, 0.016, x, nut, 'food');
+    }
+  }
+});
+
+/* ================= Guilin (3 pieces: the plain's orchards, the valley's osmanthus, the river's bamboo) ================= */
+
+FURN({
+  key: 'generic_fruit_pomelo', name: 'Pomelos', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'timber'],
+  biome: 'guilin', source: ['pomelo'],
+  w: 0.3, d: 0.26, h: 0.2, variants: 2, variantNames: ['whole, a head across', 'peeled segments and candied peel'],
+  variantDims: [{ w: 0.2, d: 0.2, h: 0.2 }, { w: 0.3, d: 0.26, h: 0.07 }],
+  build: function (F) {
+    const peel = F.col('fruitPomelo'), pith = F.col('fruitPomeloPith'), flesh = F.col('fruitPomeloFlesh'), cand = F.col('fruitPomeloPeelCandied');
+    if (F.variant === 0) { F.blob(0, 0.095, 0, 0.1, 0.19, 0, peel, 'food');   /* h is the whole height: it rests on the board */ F.cyl(0, 0.19, 0, 0.012, 0.012, 0, F.col('timberWalnut'), 'wood');
+      F.blob(0.04, 0.2, 0.01, 0.04, 0.008, 0.6, F.col('vegLeaf'), 'food'); }
+    else {
+      KGEN.plate(F, -0.03, 0, 0, 0.12, F.col('stoneCream'));
+      for (let i = 0; i < 7; i++) { const a = i * F.TAU / 7; KFRUIT.wedge(F, -0.03 + Math.cos(a) * 0.065, 0.02, Math.sin(a) * 0.065, 0.03, 0.03, a, flesh, pith); }
+      for (let i = 0; i < 5; i++) F.box(0.115, 0.0, -0.08 + i * 0.04, 0.05, 0.012, 0.012, i * 0.5, cand, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_osmanthus', name: 'Osmanthus Flowers', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone', 'glass', 'metal'],
+  biome: 'guilin', source: ['osmanthus'],
+  w: 0.26, d: 0.18, h: 0.16, variants: 2, variantNames: ['dried for tea, in a dish', 'the syrup in a jar, a cup of the tea'],
+  variantDims: [{ w: 0.2, d: 0.2, h: 0.05 }, { w: 0.26, d: 0.18, h: 0.16 }],
+  build: function (F) {
+    const fl = F.col('fruitOsmanthus'), dry = F.col('fruitOsmanthusDried');
+    if (F.variant === 0) {
+      KGEN.bowl(F, 0, 0, 0, 0.09, 0.03, F.col('stoneCream'), 'stone', dry);
+      for (let i = 0; i < 40; i++) { const a = i * 2.39996, r = 0.075 * Math.sqrt((i + 0.5) / 40); F.ball(Math.cos(a) * r, 0.032, Math.sin(a) * r, 0.005, i % 4 ? dry : fl, 'food'); }
+    } else {
+      KGEN.jar(F, -0.06, 0, 0, 0.045, 0.12, F.col('glassClear'), F.col('timberOak'), 'glass', F.col('fruitOsmanthusSyrup'));
+      KGEN.mug(F, 0.07, 0, 0.02, 0.035, 0.05, F.col('stoneCream'), 'stone', F.col('drinkOsmanthusTea'));
+      for (let i = 0; i < 4; i++) F.ball(0.07 + (i - 1.5) * 0.008, 0.051, 0.02 + (i % 2) * 0.008, 0.004, fl, 'food');
+    }
+  }
+});
+
+FURN({
+  key: 'generic_fruit_bamboo_shoot', name: 'Bamboo Shoots', culture: 'generic', tier: 'common', wealth: [0, 1], type: 'food', setting: 'both',
+  rooms: FRUIT_ROOMS, anchor: 'surface', clearance: {}, materials: ['food', 'stone'],
+  biome: 'guilin', source: ['bamboo'],
+  w: 0.3, d: 0.2, h: 0.2, variants: 2, variantNames: ['spring shoots in their sheaths', 'sliced and boiled in a bowl'],
+  variantDims: [{ w: 0.3, d: 0.2, h: 0.2 }, { w: 0.2, d: 0.2, h: 0.08 }],
+  build: function (F) {
+    const sh = F.col('fruitBambooSheath'), shoot = F.col('fruitBambooShoot'), tip = F.col('fruitBambooShootTip');
+    if (F.variant === 0) for (const [x, z, h] of [[-0.08, -0.03, 0.2], [0.02, 0.04, 0.17], [0.1, -0.04, 0.15]]) {
+      F.frustum(x, 0, z, 0.045, 0.006, h, x * 3, sh, 'food', 8);
+      for (let k = 1; k < 4; k++) F.frustum(x, h * k / 5, z, 0.045 * (1 - k / 5) + 0.004, 0.036 * (1 - k / 5), 0.02, k, F.shade(sh, -0.12), 'food', 8);
+      F.cyl(x, h - 0.01, z, 0.006, 0.02, 0, tip, 'food');
+    } else {
+      KGEN.bowl(F, 0, 0, 0, 0.1, 0.05, F.col('stoneCream'), 'stone', F.shade(shoot, -0.25));
+      for (let i = 0; i < 8; i++) { const a = i * 0.8, r = 0.02 + (i % 3) * 0.02; F.blob(Math.cos(a) * r, 0.05, Math.sin(a) * r, 0.018, 0.006, a, i % 2 ? shoot : F.shade(shoot, -0.08), 'food'); }
+    }
+  }
+});

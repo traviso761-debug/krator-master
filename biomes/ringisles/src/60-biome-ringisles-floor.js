@@ -17,7 +17,7 @@ const PAL=RINGISLES.PAL,zones=RINGISLES.zones,blocked=RINGISLES.blocked,C=RINGIS
 const {bright,shade,vary,tint,means,leafCol}=RINGISLES;
 const Y=(x,z)=>BIO.terrainH(x,z);
 const lib=k=>!!RINGISLES.LIB[k],lc=(slot,c)=>RINGISLES.libCol(slot,c);
-function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&BIO.mask(px,pz)<=0)continue;fn(px,pz,i,a);}}
+function around(x,z,n,dLo,dHi,fn){for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(dLo,dHi):0,px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d;if(i&&(BIO.mask(px,pz)<=0||zones(px,pz).thermal>.5))continue;fn(px,pz,i,a);}}   /* a clump's outliers keep off the vent's field too (2026-10-26) */
 function tuft(item,x,y,z,h,w,col,tl){const t=tl==null?.06:tl;BIO.put(item,[x,y-.05,z],qEuler(rr(-t,t),rr(0,TAU),rr(-t,t)),[w||h*.8,h,w||h*.8],col);}
 function flat(item,x,y,z,R,col){BIO.put(item,[x,y+.03,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[R,1,R],col);}
 const rockTint=set=>tint(vary(pick(set||PAL.stone),.02,.06,.06),means().rock,rr(.5,.75));
@@ -33,9 +33,13 @@ function savGrass(x,y,z,lv,Z,k){const b=Z.burn,u=rng();
  around(x,z,lv===2?ri(2,4):lv===1?2:1,.5,1.7,(px,pz)=>tuft(seed&&rng()<.5?'tallgrassb':'tallgrass',px,Y(px,pz),pz,h*rr(.8,1.15),h*rr(.9,1.3),leafCol(set,1.2,.02,.08,.06)));
  return set===PAL.grassFlush?'flush':set===PAL.grassGreen?'green':'cured';}
 function bunch(x,y,z,lv,dry){const h=rr(.3,.65)*(lv===0?1.5:1);around(x,z,lv===2?ri(2,4):1,.5,1.5,(px,pz)=>tuft('bunch',px,Y(px,pz),pz,h*rr(.8,1.15),h*1.3,leafCol(dry?PAL.bunch:PAL.bunchGreen,1.2,.03,.08,.06)));}
-function thornbush(x,y,z,lv,k){const Rs=rr(.5,1.1)*(k||1),hc=vary(pick(PAL.thornbush),.02,.08,.05);
+function thornbush(x,y,z,lv,k){const Rs=rr(.5,1.1)*(k==null?1:k),hc=vary(pick(PAL.thornbush),.02,.08,.05);
  if(lv>=1)BIO.put('lobe',[x,y-.1,z],qEuler(0,rr(0,TAU),0),[Rs*.6,Rs*.55,Rs*.6],shade(hc,-.45));
  for(let i=0,n=lv===2?ri(2,4):1;i<n;i++)BIO.put('thornspray',[x+rr(-.3,.3)*Rs,y+Rs*rr(.45,.8),z+rr(-.3,.3)*Rs],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[Rs*1.3,Rs*.6,Rs*1.3],bright(hc,1.2),{n:[rr(-.2,.2),1,rr(-.2,.2)]});}
+// the termite spires: the Rift's (RIFT.small.termite, its red laterite cones, 2026-10-26) when that kit is on the page; this
+// kit's own mound where it is not (a world that leaves the Rift out, e.g. the open world's)
+const riftApi=()=>{const R=BIO.kits.rift;return R&&R.api&&R.api.small&&R.api.small.termite?R.api:null;},SPIRE={spires:0};
+function spire(x,y,z,lv,big){const a=riftApi();if(a){a.small.termite(x,y,z,lv,SPIRE);return;}mound(x,y,z,lv,big);}
 function mound(x,y,z,lv,big){const h=(big?rr(2.6,5.5):rr(1.2,3))*(lv===0?1:1);BIO.put('mound',[x,y-.25,z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[h*.55,h+.25,h*.55],shade(vary(pick(big?PAL.moundXV:PAL.mound),.02,.06,.05),-.05));}
 function stone(x,y,z,lv,set){around(x,z,lv===2?ri(1,3):1,.4,1.4,(px,pz)=>{const r=rr(.12,.45);BIO.put('stone',[px,Y(px,pz)+r*.15,pz],qEuler(rr(-.5,.5),rr(0,TAU),rr(-.5,.5)),[r*rr(.9,1.4),r*.65,r*rr(.9,1.4)],rockTint(set));});}
 function saltbush(x,y,z,lv){const Rs=rr(.45,.9);for(let i=0,n=lv===2?ri(2,3):1;i<n;i++)BIO.put('saltbush',[x+rr(-.25,.25)*Rs,y+Rs*rr(.35,.6),z+rr(-.25,.25)*Rs],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[Rs*1.3,Rs*.8,Rs*1.3],leafCol(PAL.saltbush,1.15,.01,.04,.04),{n:[0,1,0]});}
@@ -52,7 +56,7 @@ function beachgrass(x,y,z,lv){const h=rr(.4,.9);around(x,z,lv===2?ri(3,6):2,.3,1
 function wrack(x,y,z,lv){const s=rr(.4,1.1);BIO.put('wrack',[x,y+.02,z],qEuler(rr(-.03,.03),rr(0,TAU),rr(-.03,.03)),[s*rr(1.2,2.2),1,s],lc('wrack',leafCol(PAL.wrack,1,.02,.06,.05)));}
 function drift(x,y,z){const a=rr(0,TAU),L=rr(1.5,5),r=rr(.08,.22),ex=x+Math.cos(a)*L,ez=z+Math.sin(a)*L;BIO.beam('drift',[x,y+r*.6,z],[ex,Y(ex,ez)+r*.6,ez],r,r*.8,tint(pick(PAL.drift),means().wood,1));}
 // the forest
-function fern(x,y,z,lv,k){const n=lv===2?ri(5,8):3,L=rr(.6,1.3)*(k||1),c=C(pick(PAL.fern));for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.3,.3);BIO.put('fern',[x,y+.05,z],qEuler(rr(-.1,.1),-a,rr(.25,.7)),[L,L*.8,L*rr(.9,1.2)],lc('fern',bright(vary(c,.02,.06,.06),1.25)));}}
+function fern(x,y,z,lv,k){const n=lv===2?ri(5,8):3,L=rr(.6,1.3)*(k==null?1:k),c=C(pick(PAL.fern));for(let i=0;i<n;i++){const a=i/n*TAU+rr(-.3,.3);BIO.put('fern',[x,y+.05,z],qEuler(rr(-.1,.1),-a,rr(.25,.7)),[L,L*.8,L*rr(.9,1.2)],lc('fern',bright(vary(c,.02,.06,.06),1.25)));}}
 function ginger(x,y,z,lv){const h=rr(1.2,2.2);around(x,z,lv===2?ri(2,4):1,.3,.9,(px,pz)=>{const py=Y(px,pz),hh=h*rr(.8,1.1);BIO.beam('rod',[px,py-.05,pz],[px,py+hh*.6,pz],.03,.025,C(pick(PAL.ginger)));
   for(let k=0;k<3;k++){const a=rr(0,TAU);BIO.put('gingerleaf',[px,py+hh*rr(.3,.6),pz],qEuler(rr(-.1,.1),-a,rr(.3,.7)),[hh*.5,hh*.4,hh*.18],leafCol(PAL.ginger,1.2,.02,.06,.05),{n:[0,1,0]});}
   if(rng()<.6)BIO.put('gingerbloom',[px,py+hh*.62,pz],qEuler(0,rr(0,TAU),0),[.12,.3,.12],C(pick(PAL.gingerBloom)));});}
@@ -78,14 +82,14 @@ function plantForest(x,y,z,Z,lv,st){const t=rng(),xa=Z.xaShare;
 function plantSavanna(x,y,z,Z,lv,st){const t=rng(),k=1+.55*(Z.xv/(Z.sav||1));
  if(t<.8){const s=savGrass(x,y,z,lv,Z,k);st.grass++;st[s]=(st[s]||0)+1;}
  else if(t<.9){if(Z.burn.black<.5){thornbush(x,y,z,lv,1);st.thornbush++;}}
- else if(t<.935){if(lv>=1&&!blocked(x,z,2)){mound(x,y,z,lv,Z.xv>Z.aw);st.mounds++;}}
+ else if(t<.935){if(lv>=1&&!blocked(x,z,2)){spire(x,y,z,lv,Z.xv>Z.aw);st.mounds++;}}
  else if(t<.97){stone(x,y,z,lv);st.stones++;}}
 function plantSteppe(x,y,z,Z,lv,st){const t=rng(),xs=Z.xs/(Z.step||1);
  if(t<.58){bunch(x,y,z,lv,Z.burn.cured+Z.burn.green*.5>.4);st.bunch++;}
  else if(t<.72){thornbush(x,y,z,lv,.7);st.thornbush++;}
  else if(t<.72+.14*xs){saltbush(x,y,z,lv);st.saltbush++;}
  else if(t<.92){stone(x,y,z,lv,PAL.reefRock);st.stones++;}
- else if(lv>=1&&!blocked(x,z,2)&&rng()<.4){mound(x,y,z,lv,false);st.mounds++;}}
+ else if(lv>=1&&!blocked(x,z,2)&&rng()<.4){spire(x,y,z,lv,false);st.mounds++;}}
 function plantSalt(x,y,z,Z,lv,st){const e=Z.panEdge,mid=Z.pan*(1-e);
  if(rng()<e){samphire(x,y,z,lv,rng()<.4);st.samphire++;if(rng()<.2){saltbush(x,y,z,lv);st.saltbush++;}}
  else if(rng()<mid*.6){crust(x,y,z,lv);st.crust++;}}
@@ -102,7 +106,7 @@ const PLANTERS=[plantForest,plantSavanna,plantSteppe,plantSalt,plantStrand];
 // cluster, 'coral' a coral head (dense: the reef's, crowded); lv the level. Draws from the stream the caller seeded
 RINGISLES.waterPlant=function(kind,lv,dense){means();if(kind==='seagrass')seagrass(0,0,0,lv);else coral(0,0,0,lv,!!dense);};
 RINGISLES.floorWeights=Z=>[Z.forest*1.2,Z.sav*1.45,Z.step*1.2,(Z.pan+Z.panEdge)*1.2,(Z.strand+Z.dune)*1.3];
-RINGISLES.buildFloor=function(R,q){reseed(600071);q=q==null?1:q;R=R||2000;means();
+RINGISLES.buildFloor=function(R,q){reseed(600071);q=q==null?1:q;R=(R==null?2000:R);means();
  const st={ferns:0,gingers:0,aroids:0,grass:0,black:0,flush:0,green:0,cured:0,thornbush:0,mounds:0,stones:0,bunch:0,saltbush:0,samphire:0,crust:0,
   creepers:0,beachgrass:0,naupaka:0,drift:0,wrack:0,seagrass:0,coral:0,pools:0,lianas:0,epiphytes:0};
  function plant(x,y,z,lv){if(blocked(x,z,.5))return;const Z=zones(x,z);if(Z.cliff>.6||Z.live<.3)return;
@@ -131,12 +135,20 @@ RINGISLES.buildFloor=function(R,q){reseed(600071);q=q==null?1:q;R=R||2000;means(
 
 // ---------------------------------------------------------------- the forest's dressing (after the trees): lianas and epiphytes
 // The XA forest (and a little of Af): lianas hung from the crowns of the tall trees, bromeliads and moss in their forks
+// a point on a tree's drawn wood (its structure log, 55's T.segs) nearest (x, y, z): on the span's axis, set out by the bark's radius toward the point (plus
+// out m: + clear of it, - into it); null when the tree logged no spans (a lathed bole, a palm drawn by its own kit's mesh): the old spot stands
+function onWood(T,x,y,z,out){if(!T.segs||!T.segs.length)return null;const S=BIO.snapSeg(T.segs,[x,y,z]);if(!S)return null;
+ const s=S.seg,r=s.r0+((s.r1==null?s.r0:s.r1)-s.r0)*S.t,dx=x-S.p[0],dy=y-S.p[1],dz=z-S.p[2],d=Math.hypot(dx,dy,dz)||1,k=Math.max(0,r+out)/d;
+ return[S.p[0]+dx*k,S.p[1]+dy*k,S.p[2]+dz*k];}
 RINGISLES.buildDressing=function(q){reseed(610071);q=q==null?1:q;const st={lianas:0,epiphytes:0};
  for(const T of RINGISLES.TREES){if(T.lv==null||T.lv<1||T.H<9)continue;const Z=zones(T.x,T.z),k=Z.xa*1+Z.af*.25;if(k<=.05||rng()>k*q)continue;
-  const R=T.crownR||3,top=T.y0+T.H*.82;
-  for(let i=0,n=T.lv===2?ri(2,6):2;i<n;i++){const a=rr(0,TAU),d=R*rr(.3,.85),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,gy=Y(x,z),y=top-rr(0,T.H*.15),L=Math.max(1.5,(y-gy)*rr(.45,.95));
-   BIO.put('liana',[x,y,z],qEuler(0,rr(0,TAU),0),[rr(.5,.9),L,1],lc('liana',leafCol(PAL.liana,1.15,.02,.06,.05)));st.lianas++;}
-  for(let i=0,n=T.lv===2?ri(2,5):1;i<n;i++){const y=T.y0+T.H*rr(.35,.75),a=rr(0,TAU),r=(T.rb||.3)*1.1,s=rr(.35,.7);
-   BIO.put(rng()<.6?'epiphyte':'mossclump',[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*.8,s],lc('epiphyte',leafCol(PAL.epiphyte,1.15,.03,.08,.05)),{n:[0,1,0]});st.epiphytes++;}}
+  const R=(T.crownR==null?3:T.crownR),top=T.y0+T.H*.82;
+  for(let i=0,n=T.lv===2?ri(2,6):2;i<n;i++){const a=rr(0,TAU),d=R*rr(.3,.85),x=T.x+Math.cos(a)*d,z=T.z+Math.sin(a)*d,gy=Y(x,z),y=top-rr(0,T.H*.15),L=Math.max(1.5,(y-gy)*rr(.45,.95));if(zones(x,z).thermal>.5)continue;   /* none over the vent's field (a crown at its edge) */
+   /* on the wood: the liana hangs from the span nearest the point the old pass chose (the same draws), set out on its bark, toward that point */
+   const W=onWood(T,x,y,z,.05);const hy=W?W[1]:y,hl=W?Math.max(1.5,(hy-Y(W[0],W[2]))*(L/Math.max(1e-3,y-gy))):L;
+   BIO.put('liana',W||[x,y,z],qEuler(0,rr(0,TAU),0),[rr(.5,.9),hl,1],lc('liana',leafCol(PAL.liana,1.15,.02,.06,.05)));st.lianas++;}
+  for(let i=0,n=T.lv===2?ri(2,5):1;i<n;i++){const y=T.y0+T.H*rr(.35,.75),a=rr(0,TAU),r=((T.rb==null?.3:T.rb))*1.1,s=rr(.35,.7);
+   const W=onWood(T,T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r,-.15);   /* seated in the bark of the trunk or limb nearest the old spot (its centre a little inside the bark) */
+   BIO.put(rng()<.6?'epiphyte':'mossclump',W||[T.x+Math.cos(a)*r,y,T.z+Math.sin(a)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s,s*.8,s],lc('epiphyte',leafCol(PAL.epiphyte,1.15,.03,.08,.05)),{n:[0,1,0]});st.epiphytes++;}}
  return st;};
 })();

@@ -1,0 +1,114 @@
+[
+ {
+  "src": "rock.lichen.circles.png",
+  "out": "core/materials/library/rock.lichen.circles",
+  "record": {
+   "id": "rock.lichen.circles",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.lichen.circles\"",
+    "reuse": "the Cut circle lichen on bare faces; any bare rock face with crustose lichen"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.kelp.stipe.png",
+  "out": "core/materials/library/bark.kelp.stipe",
+  "record": {
+   "id": "bark.kelp.stipe",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.55,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.kelp.stipe\"",
+    "reuse": "the Farside land kelp stipes; any giant kelp or algal stalk (barnacle spots and knots on it)"
+   }
+  },
+  "options": {
+   "rough": 0.55,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0.35
+  }
+ },
+ {
+  "src": "ground.wrack.png",
+  "out": "core/materials/library/ground.wrack",
+  "record": {
+   "id": "ground.wrack",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.wrack\"",
+    "reuse": "the Farside strand wrack and kelp coast floor; any beach wrack line"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.sponge.png",
+  "out": "core/materials/library/organic.sponge",
+  "record": {
+   "id": "organic.sponge",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.sponge\"",
+    "reuse": "the Farside fog sponges; any sponge or porous encrusting organism"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

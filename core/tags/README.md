@@ -11,6 +11,7 @@ Travis's decisions; this file is what was built.
 | `50-core-tags.js` | [G data] | `KTAGS.create({build})`: the registry (`add`, `child`, `get`, `remove`, `query`, `at`, `audit`, `export`), the ids, `KTAGS.uid`, `KTAGS.norm` (the input mapping and the checks). No THREE, no DOM: it runs in node. Needs `core/rand` (the uid is a `KRAND.hash`) |
 | `52-core-tags-vocab.js` | [G data] | `KTAGS.VOCAB`: classes, the 23 cultures and their display names, the aliases, types, wealth, states, settings, jobs, Köppen, fixture kinds, the known tag keys, the id prefixes. The catalog's lists are copied, not read |
 | `53-core-tags-host.js` | [web] | `KTAGS.label(rec, instance)`: the inspector's text, generated from the record |
+| `opt/54-core-tags-sound.js` | [G data] | opt-in (a subfolder, so the settlements that take every file in `core/tags` do not take it): the `sound` key and `VOCAB.soundKinds`; `KTAGS.sound` (a record from its kind), `KTAGS.soundLevel` and `soundAt` (gain and pitch for a wind). Its test is `test-sound.js`, its twin `ksound.gd` (`golden-sound.json`) |
 | `test-tags.js` | | the node test: the vocabulary against the catalog's source, each check with a negative, a fixed run's ids, the pinned uid and export digest, the proposal's three labels, `golden.json` |
 | `ktags.gd`, `ktags_test.gd`, `golden.json` | | the uid in GDScript and its vectors; copied to `godot/tests/tags/` by `godot/tools/sync_core.py` |
 
@@ -113,6 +114,9 @@ Open but checked. `KTAGS.norm(tags)` maps the input, then checks each key agains
 | `diet` | free (an animal's: `fish`, `grass`...) |
 | `fire`, `form`, `origin`, `heat`, `plume`, `spiral` | free: a kit's own trait on every species (crater-drylands' fire response, ehighlands' growth form, geyser's and the Throne's origin, geyser's heat, the Throne's plume, shighlands' spiral habit) |
 | `style` `room` `biome` `family` `variant` | free |
+| `trap` | an object: a carnivorous plant's trap record (`core/biome/37-core-traps.js`) |
+| `hazard` | an object (2026-10-26): what can hurt a walker, `{kind, effect, danger, dose, shape, falloff, cycle, trigger, move, nav, tell, stateFn, seed}`; `kind` one of `VOCAB.hazardKinds` (heat cold gas acid poison fall pit thorn grab drown sink slip crush hunter lava fire luck trap time mine), whose row fills the rest. Read by core/hazard (`KHAZ`; `core/hazard/README.md`) |
+| `taboo` | an object (2026-10-26, the Outlands' C6): an area a people will not build in, `{of: null (every people) \| [culture...], why, shape}`. A record is of a people by `tags.faction`, else `tags.culture`. Placement asks `KHAZ.forbids` / `KHAZ.tabooOk` (`core/hazard/README.md`, "Adopting it" step 5) |
 
 The culture aliases (`PROPOSAL.md`, "The culture list, cleaned"): `yuni-court`, `yuni-common`, `yuni-poor` are
 `yuni` with wealth rich, middle, poor; `sahelian` is `yuni` with `style: 'sahelian'`; `iziz-old` is `iziz`;
@@ -134,7 +138,8 @@ and fails when a copy drifts. A new culture in the catalog is a failing test unt
 order, each left out when empty:
 
 1. the name; else the kind or key; else the class
-2. class · culture · types (else kind, when there is a name) · job · state · setting · wealth · Köppen · harvest · lit · in parent
+2. class · culture · types (else kind, when there is a name) · job · state · setting · wealth · Köppen · harvest · lit ·
+   `hazard: <kind> (<effect>), danger d` · `taboo to <peoples>` · in parent
 3. `w × d m` (or `⌀ d m`), `, h m tall` from 2 m up; then the id (`#n` for an instance)
 4. the note
 
@@ -143,6 +148,11 @@ Gatehouse 1
 building · Iziz · military, infrastructure · intact · lit
 12 × 9 m, 14 m tall · bld_00042
 ```
+
+**The hazard's words and overlay** (53, [web], core/hazard loaded): `KTAGS.hazardNow(rec, t, point)` is the state line
+(`hazard now: on · 100% · 40 s to the next · dose 0.85/s here · paths avoid it`), `KTAGS.hazardAt(x, y, z, t)` the same for
+every hazard at a point, and `KTAGS.hazardLayer()` the host layer that draws each hazard's shape tinted by its kind and
+danger (`core/hazard/README.md`, "The overlay and the inspector").
 
 ## The export
 
@@ -177,3 +187,34 @@ fragment names in `DETERMINISTIC`; a biome kit: `CORE_TAGS`). `godot/tools/expor
 `KTAGS.page` as `tags.json`. Every export node now names its record where one exists: a biome item its set and a uid
 per instance, a bucket the volumes it merges (`BIO.export`), a glTF node its record in its extras and a MultiMesh a
 `krator_records` side table (`godot/tools/spike_export.js`); the Godot importers put them on node metadata.
+
+## Adopting it: the sound key (H9, 2026-11-03)
+
+`opt/54-core-tags-sound.js` is opt-in: list it by path after `52-core-tags-vocab.js`. It sits in a subfolder because a dozen
+settlements take every numbered file in `core/tags`, and those pages must not change. It adds the `sound` key (rule `object`) and
+`VOCAB.soundKinds`, and changes nothing else, so a page without it is untouched. An aeolian emitter is a record like anything placed:
+
+```js
+T.add({class: 'feature', kind: 'sound', key: 'gjar', at: [x, y, z], r: 40, tags: {sound: KTAGS.sound({kind: 'gjar-organ', axis, seed})}});
+```
+
+- **The modes.** `edge` is vortex shedding off a rib or edge (Strouhal: f = .2 u / d). `pipe` is a fissure or a gap closed at its
+  foot (f0 = c / 4 (L + .6 r)), overblown to the odd harmonics as the wind rises. `cavity` is a Helmholtz hole, one tone.
+- **The presets.** `bamboo-howl` is hyperjungle's howl bamboo, about 75 Hz. `gjar-organ` is High Rift's Singing Gjár: its fundamental
+  is under hearing, and its odd harmonics are a drone. `rib-flute` is Outland Gate's singing buttress in the Outland Bore.
+- **The wind.** `axis` makes only the wind across that line count (a fissure's strike). The detune is drawn once, from
+  `KRAND.hash(seed)`, and stored on the record.
+- **Reading it.** `KTAGS.soundLevel(snd, {speed, dir}, {T})` gives `{on, gain, pitch, partials}`; `soundAt` adds the fall with distance.
+  Godot reads the exported record with `ksound.gd`'s `level` and `at`, the same numbers to 1e-13.
+- **Not written:** core/audio, which would play these. The page can do without it (PLAN-LANDS H9).
+
+## Adopting it: the hazard and taboo keys
+
+A page that already takes core/tags has the keys: the vocabulary (52) carries them, and its records may carry them.
+- **A hazard**: `tags: {hazard: {kind}}` on a record (the kinds and what each fills: `VOCAB.hazardKinds`). For the state,
+  the dose, the overlay and the export, take core/hazard (`core/hazard/README.md`, "Adopting it").
+- **A taboo**: `tags: {taboo: {of: null | [culture...], why}}` on the area's record, registered before anything of a people
+  is placed. The label says `taboo to <peoples>`. The placement check is core/hazard's: `KHAZ.tabooOk(culture)` for
+  core/city's `rules.groundOk` or a scatter's `accept`, and `KHAZ.tabooAudit()` in verify.
+- **The digest**: the vocabulary is in the export, so adding a kind or a key moves `test-tags.js`'s DIGEST (f8fc8840 with
+  lava, fire, luck, trap, time, taboo, the ambient rows, acid rain and the dust storms). Rewrite it with a note of what moved it.

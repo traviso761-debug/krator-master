@@ -17,7 +17,7 @@ RINGISLES.ISLE_FIELDS=['koppen:XA','koppen:Af','koppen:Am','koppen:Aw','koppen:X
 RINGISLES.world=function(){if(RINGISLES._world)return RINGISLES._world;
  const Z=RINGISLES.zones,out={};
  // a pass's size: the borrow's scale, the XA forest's extra height, the pass's own k (by its zones)
- const sizeOf=(P,Bo)=>(T,Zs)=>{let k=Bo?(Bo.scale||1)*(Bo.xa?mix(1,Bo.xa,Zs.xaShare||0):1):1;if(P.k)k*=P.k(Zs);T.H*=k;};
+ const sizeOf=(P,Bo)=>(T,Zs)=>{let k=Bo?((Bo.scale==null?1:Bo.scale))*(Bo.xa?mix(1,Bo.xa,Zs.xaShare||0):1):1;if(P.k)k*=P.k(Zs);T.H*=k;};
  const passOf=(P,sp,Bo)=>({sp,cell:P.cell,accept:(Zs,x,z)=>P.accept(Zs,x,z),opt:Object.assign({},P.opt||{},{size:sizeOf(P,Bo)})});
  // this kit's own species
  const ownSP=RINGISLES.SPECIES.map(S=>Object.assign({},S));
@@ -39,7 +39,7 @@ RINGISLES.world=function(){if(RINGISLES._world)return RINGISLES._world;
  for(const kit in byKit){const api=RINGISLES.kitOf(byKit[kit][0]);if(!api)continue;
   const SPL=[],BOS=[];
   byKit[kit].forEach(Bo=>{const src=(api.SPECIES||[]).find(s=>s.key===Bo.src);if(!src)return;
-   SPL.push({key:Bo.key,name:src.name,H:src.H,rb:src.rb?[src.rb[0]*(Bo.scale||1),src.rb[1]*(Bo.scale||1)]:[.4,.6],far:src.far||true,tags:src.tags,src:kit+':'+Bo.src});BOS.push(Bo);});
+   SPL.push({key:Bo.key,name:src.name,H:src.H,rb:src.rb?[src.rb[0]*((Bo.scale==null?1:Bo.scale)),src.rb[1]*((Bo.scale==null?1:Bo.scale))]:[.4,.6],far:src.far||true,tags:src.tags,src:kit+':'+Bo.src});BOS.push(Bo);});
   const P2=[];RINGISLES.PASSES.forEach(P=>{const i=BOS.findIndex(Bo=>Bo.key===P.key);if(i<0)return;if(P.depth)SPL[i].depth=P.depth;P2.push(passOf(P,i,BOS[i]));});
   if(!SPL.length)continue;
   out[kit]={name:kit,SPECIES:SPL,PASSES:P2,zones:Z,

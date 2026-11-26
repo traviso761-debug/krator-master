@@ -28,13 +28,16 @@ function zones(x,z){const F=n=>BIO.field(n,x,z);
  const cliff=smooth(.75,.95,slope)*smooth(.3,.6,rock),live=1-cliff,hot=smooth(.45,.15,cold);
  const pan=smooth(.3,.6,salt),open=(1-dune*.85)*live*(1-pan),gentle=smooth(.6,.28,slope);
  const tugai=Math.max(flow*smooth(.5,.8,wet),smooth(.82,.95,wet))*smooth(.5,.15,up)*hot*live*(1-pan*.6);
- return{wet,flow,up,rock,dune,slope,salt,cold,bed,silt,scour,cliff,hot,pan:pan*live,
+ const Z={wet,flow,up,rock,dune,slope,salt,cold,bed,silt,scour,cliff,hot,pan:pan*live,
   desert:open*smooth(.17,.09,wet)*(1-rock*.5),
   steppe:open*smooth(.1,.18,wet)*smooth(.36,.27,wet)*(1-rock*.6)*(1-scour*.5),
   med:open*smooth(.27,.36,wet)*smooth(.56,.46,wet)*hot*(1-rock*.5),
   forest:open*smooth(.46,.58,wet)*(1-flow*.5)*gentle*(1-rock*.6),
   tugai:tugai,
-  rip:flow*(1-tugai)*live*gentle};}
+  rip:flow*(1-tugai)*live*gentle};
+ /* a station's own country (stations/high: the high country): it reweights the kit's zones where its own flora grows instead (null: the zones as they are) */
+ if(NSEMIARID.ZONE_HOOK)NSEMIARID.ZONE_HOOK(Z,x,z);
+ return Z;}
 NSEMIARID.zones=zones;
 NSEMIARID.standOf=(x,z,n,seed)=>BIO.standAt(x,z,n||2,.0024,seed||87);
 
@@ -83,7 +86,7 @@ const HC=120,HASH={};
 function hkey(x,z){return Math.floor(x/HC)+','+Math.floor(z/HC);}
 function hadd(o){const R=o.r+30;for(let z=Math.floor((o.z-R)/HC);z<=Math.floor((o.z+R)/HC);z++)for(let x=Math.floor((o.x-R)/HC);x<=Math.floor((o.x+R)/HC);x++){const k=x+','+z;(HASH[k]||(HASH[k]=[])).push(o);}}
 function blocked(x,z,pad){const L=HASH[hkey(x,z)];if(!L)return false;for(let i=0;i<L.length;i++){const o=L[i];if(Math.hypot(x-o.x,z-o.z)<o.r+pad)return true;}return false;}
-NSEMIARID.blocked=blocked;
+NSEMIARID.blocked=blocked;NSEMIARID.keepClear=hadd;   /* a station's own trees (stations/high, 87k) claim their ground before the floor */
 
 // ---------------------------------------------------------------- foliage helpers
 function clumpAt(item,x,y,z,size,flat,col,cx,cy,cz,ex,ey){
@@ -127,6 +130,9 @@ const B=[];
 // decTree, with blossom, cauliflory (flowers on the old wood: the Judas tree), fruit, samaras and dead trees added).
 // cfg: fam, item, stems [a,b], forkU, limbs [a,b], el, limbK, sec, curve, wig, tuftK, flat; col(T); mixCol [p,set];
 // fruit {p, s[a,b], long, col}; blossom {p,set}; cauli {n,set}; samara {p}; dead (no leaves, deadwood); vine (gourds)
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03: every rebuild): the tube sinks into its parent and swells to a
+// collar there; the limb's own points (its spots, its secondaries) stay as grown, so no draw moves. A page without 31j draws the plain tube
+const FJ=(pts,parentR)=>typeof BIO.flareJoin==='function'?BIO.flareJoin(pts,{parentR}):pts;
 function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,dead=!!cfg.dead,fam=dead?'wood':cfg.fam;
  const nS=ri(cfg.stems[0],cfg.stems[1]),a0=rr(0,TAU),hc=cfg.col?cfg.col(T):C(pick(S.leaf)),spots=[];let reach=R*.6,topY=T.y0+H*.8;
  const bk=k=>dead?deadCol():barkCol(S,k);
@@ -139,12 +145,12 @@ function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,dead=!!c
   for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),el=cfg.el*rr(.8,1.2),L=(H-fh)*cfg.limbK*rr(.8,1.15)/(nS>1?1.15:1),r0=top.r*rr(.55,.75);
    const o=k<2?top:along(pts,rr(.75,.98)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.04,r0*.35),3,cfg.curve,cfg.wig);
    let ok=true;for(let i=1;i<lp.length;i++)if(!clear3(lp[i].x,lp[i].y,lp[i].z,lp[i].r+1,lp[i].r+1)){ok=false;break;}if(!ok)continue;
-   if(lv===2||r0>.3)st.limb+=BIO.tube(fam,lp,bk(k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
+   if(lv===2||r0>.3)st.limb+=BIO.tube(fam,FJ(lp,o.r),bk(k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
    spots.push({p:lp[3],s:L*.3,tip:true},{p:lp[2],s:L*.25});
    const nSec=lv===2?cfg.sec:0;
    for(let q=0;q<nSec;q++){const p=lp[ri(1,2)],a2=la+rr(-1.3,1.3),el2=el+rr(-.3,.5),L2=L*rr(.4,.65);
     const sp2=treeGrow({x:p.x,y:p.y,z:p.z},dirOf(a2,el2),L2,Math.max(.03,p.r*.55),.03,2,cfg.curve,.12);
-    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(fam,sp2,bk(q),{seg:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,dead?deadCol():rodCol(S.bark[0]));
+    if(lv===2&&sp2[0].r>.06)st.limb+=BIO.tube(fam,FJ(sp2,p.r),bk(q),{seg:3});else BIO.beam('rod',[sp2[0].x,sp2[0].y,sp2[0].z],[sp2[2].x,sp2[2].y,sp2[2].z],sp2[0].r*2,.05,dead?deadCol():rodCol(S.bark[0]));
     spots.push({p:sp2[2],s:L2*.4,tip:true},{p:sp2[1],s:L2*.3});}
    reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);topY=Math.max(topY,lp[3].y+R*cfg.tuftK);}
   spots.push({p:{x:top.x,y:top.y+R*.15,z:top.z},s:R*.3,tip:true});}
@@ -197,7 +203,7 @@ B[9]=function(T,st,lv){decTree(T,st,lv,{fam:'bark0',item:'lobed',stems:[1,1],for
  samara:{p:.45}});};
 // 10 the golden poplar (after the Euphrates poplar): gold in its season, willow-narrow leaves low and round leaves high;
 // on the salt behind the living forest it stands DEAD (salt in its zone, or the pass marks it), grey and leafless
-B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark0',item:'round',stems:[1,2],forkU:rr(.3,.45),limbs:[3,6],el:.7,limbK:.85,sec:2,curve:-.02,wig:.16,tuftK:.4,flat:.75,
+B[10]=function(T,st,lv){const dead=!!T.dead;decTree(T,st,lv,{fam:'bark6',item:'poplarLeaf',stems:[1,2],forkU:rr(.3,.45),limbs:[3,6],el:.7,limbK:.85,sec:2,curve:-.02,wig:.16,tuftK:.4,flat:.75,
  mixCol:[.35,PAL.poplarGreen],dead});
  // its cotton: torn off the crown by the wind and drifting downwind (89c-host-seeds.js)
 };

@@ -53,6 +53,7 @@ const PAL=NSEMIARID.PAL={
  tulip:[0xe8302a,0xf0c030,0xe86aa0,0xf8f0e0,0xd84a20],resurrect:[0x8a6a4a,0x9a7a56,0x7a5a3e],resurrectGreen:[0x5a8a3e,0x66963e],
  balloon:[0xa8c8a0,0xb8d4b0,0x98b890],silk:[0xf8f8f4,0xf0f0ea],gourd:[0x6a8a3a,0x7a9a44],gourdWing:[0xe8dcc0,0xf0e8d0,0xdcd0b0],
  reed:[0x7a9a44,0x8aaa4e,0x6a8a3a],sedge:[0x7a8a4a,0x8a9a54],
+ saltbush:[0x9aa898,0x8e9c8c,0xa6b0a0],buckthorn:[0x8a9a6a,0x96a474,0x7e8e60],   /* without the pack; with it the cards' own colour */
  // the small and weird (PLAN.md section 7: the owner's reference board, 2026-10-20): saturated accents
  strider:[0x6ab04a,0x5aa040,0x3a7ab0,0x2e6aa0],striderRoot:[0x8a7a6a,0x7a6a5a,0x9a8a7a],
  mace:[0x4a7a7a,0x3e6e6e,0x568686],maceKnob:[0xc89090,0xd8a0a0,0xb88080],
@@ -99,7 +100,7 @@ NSEMIARID.SPECIES=[
   far:{poleU:.35,blobs:[[.66,.8,.34,'L0','L2']]},travel:'seed',tags:K('temperate','subhumid','no',['Cfa','Csb','Cfb'])},
  /*9*/{key:'samara',name:'Kite ash',H:[12,24],rb:[.35,.8],crownR:[5,9],barkK:0,bark:[0x6a6a60,0x5e5e54,0x76766c],leaf:PAL.samara,
   far:{poleU:.4,blobs:[[.66,.9,.3,'L0','L2']]},travel:'wind',tags:K('temperate','subhumid','both',['Cfa','Csb','Dfb'])},
- /*10*/{key:'poplar',name:'Golden poplar',H:[10,22],rb:[.4,1.0],crownR:[4,8],barkK:0,bark:[0x8a8070,0x7a7062,0x9a9080],leaf:PAL.poplar,
+ /*10*/{key:'poplar',name:'Golden poplar',H:[10,22],rb:[.4,1.0],crownR:[4,8],barkK:6,bark:[0x8a8070,0x7a7062,0x9a9080],leaf:PAL.poplar,
   far:{poleU:.4,blobs:[[.66,.9,.3,'L0','L1']]},travel:'wind',tags:K('tropic','subhumid','yes',['Aw','Af','Am','BSh','BWh'])},
  /*11*/{key:'frill',windShaped:true,name:'Dandelion frill',alien:true,H:[12,20],rb:[1.0,1.8],crownR:[2.5,3.2],barkK:5,bark:[0x5a7a6a,0x4e6e5e,0x668676],leaf:PAL.frillGreen,
   far:{poleU:.75,taper:.35,blobs:[[.88,1.2,.12,'L0','L1']]},travel:'wind',tags:K('temperate','semiarid','no',['BSh','Csa','BSk'])},
@@ -123,21 +124,21 @@ NSEMIARID.byKey={};NSEMIARID.SPECIES.forEach((S,i)=>{S.i=i;NSEMIARID.byKey[S.key
 // owed to biomes/FRUIT.md), so `fruit` is null and the probe names them as drawn without a catalog piece.
 const HV=(wood,edible,medicinal,notes,fruit)=>({wood,edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||null});
 NSEMIARID.HARVEST={
- pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.'),
+ pistachio:HV('fuel, carving',['nuts'],true,'The nuts split when they ripen; the resin is a chewing gum and a varnish.','generic_fruit_pistachio'),
  saxaul:HV('fuel (the hardest in the steppe), charcoal',[],false,'Burns like coal; the caravans carry it.'),
  plane:HV('timber, carving',[],true,'The great tree of the springs: a village gathers under it.'),
  judas:HV('none',['flowers (raw, pickled)','buds'],false,'The magenta flowers break straight out of the bark and the trunk.'),
- almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.'),
- apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.'),
- walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.'),
- apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.'),
- pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.'),
+ almond:HV('fuel',['kernels (sweet strains)'],true,'Most wild trees are bitter: the sweet strains are marked and guarded.','generic_fruit_almond'),
+ apple:HV('fuel, tool handles',['apples'],true,'The Ancients\' lakeside orchards gone wild: every tree a different apple.','generic_fruit_wild_apple'),
+ walnut:HV('timber (fine)',['walnuts'],true,'The husk dyes brown; the wood is the cabinetmaker\'s.','generic_fruit_walnut'),
+ apricot:HV('fuel',['apricots','kernels'],true,'Dried on the roofs in late summer.','generic_fruit_apricot'),
+ pear:HV('tool handles',['pears'],false,'Small, hard and sweet after a frost or a long keep.','generic_fruit_wild_pear'),
  samara:HV('poles, tool handles',[],false,'Its seeds come down as half-metre helicopters; children race them.'),
  poplar:HV('timber, fuel',['catkins'],true,'Gold in its season; it sheds cotton in drifts like snow.'),
  frill:HV('none',['seed (roasted)'],false,'Each fin is a seed on a plume; the seeds are knocked out of the shed fins and roasted.'),
  trumpet:HV('none',['nectar'],false,'The funnel spins in the wind and flings its winged seeds over its rim.'),
  lantern:HV('none',[],true,'The bulbs lift away at dusk; a crushed bulb is a cooling salve.'),
- pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.'),
+ pomegranate:HV('none',['pomegranates'],true,'Sour wild fruit; the rind tans leather and dyes it yellow.','generic_fruit_pomegranate'),
  foxtail:HV('none',['young roots (cooked)'],false,'The spike opens from the bottom up; bees work it all day.'),
  dandelion:HV('none',['leaves','root (roasted)'],true,'The clock sheds its seeds downwind first.'),
 };
@@ -171,6 +172,8 @@ NSEMIARID.PLANTS={
  stepcone:PK('Step cone','tropic','arid','no',['BWh','BSh'],['stepcone'],'none',HV('none',[],false,'A tier a wet year: on the old beds its height reads how long the ground has been dry.')),
  window:PK('Window plant','tropic','arid','no',['BWh','BSh'],['window'],'none',HV('none',['water'],false,'The plant lives underground behind translucent tips that glow with the low sun behind them.')),
  finger:PK('Salt fingers','tropic','arid','no',['BWh','BSh'],['finger'],'breaking',HV('none',['young tips (salty)'],false,'Jointed salt succulents: a finger breaks off and roots in the crust.')),
+ saltbush:PK('Saltbush','tropic','arid','no',['BWh','BSh'],['saltbush'],'seed',HV('fuel, fodder',['leaves (salty, cooked)'],false,'Silver-grey with the salt it sweats out of its leaves; it rings the pans where nothing else will grow.')),
+ buckthorn:PK('Sea buckthorn','temperate','semiarid','yes',['BSh','Aw','Csa','Cfa'],['buckthorn'],'seed',HV('fuel, hedging',['berries (sour)'],true,'Thorny thickets on the margins, orange with berries in autumn; the oil heals burns. The catalog owes the berry (KNOWN_ISSUES.md).')),
  hulkvine:PK('Rust vine','tropic','semiarid','no',['BWh','BSh'],['vine'],'none',HV('none',[],false,'Roots in rust (iron is locked up in the alkaline bed) and drinks the dew the metal condenses.')),
 };
 NSEMIARID.plantOfItem=item=>{for(const k in NSEMIARID.PLANTS)if(NSEMIARID.PLANTS[k].items.indexOf(item)>=0)return NSEMIARID.PLANTS[k];return null;};
@@ -269,7 +272,8 @@ NSEMIARID.TEX=TX;
 // ---------------------------------------------------------------- bark, rock textures
 // Painted NEAR-GREY and tinted from SPECIES.bark by the builders. Kinds: 0 furrowed grey-brown, 1 the plane's
 // camouflage (pale patches where the bark flakes off), 2 smooth grey with lenticels, 3 gnarled and twisted (deep
-// spiral grooves), 4 silver deadwood, 5 pale smooth alien skin.
+// spiral grooves), 4 silver deadwood, 5 pale smooth alien skin; 6 the golden poplar's own (the furrowed canvas without
+// the pack, bark.poplar.euphrates with it: 2026-10-26).
 NSEMIARID.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
  g.fillStyle='#8c8c8c';g.fillRect(0,0,w,h);
  if(kind===0){for(let i=0;i<240;i++){const x=rng()*w,d=rng();g.strokeStyle='rgba('+(d<.5?'45,45,45':'165,165,165')+','+(.3+rng()*.5).toFixed(2)+')';
@@ -288,7 +292,7 @@ NSEMIARID.barkTex=function(kind){return BIO.canvasTex(256,512,(g,w,h)=>{
  else{for(let k=0;k<26;k++){const y=rng()*h;g.fillStyle='rgba('+(rng()<.5?'125,125,125':'175,175,175')+',.3)';g.fillRect(0,y,w,rr(6,26));}
   for(let i=0;i<500;i++){g.fillStyle='rgba('+(rng()<.6?'70,70,70':'200,200,200')+',.35)';g.beginPath();g.arc(rng()*w,rng()*h,rr(1,3),0,TAU);g.fill();}}
 });};
-NSEMIARID.BARKTEX=[0,1,2,3,4,5].map(k=>NSEMIARID.barkTex(k));
+NSEMIARID.BARKTEX=[0,1,2,3,4,5].map(k=>NSEMIARID.barkTex(k));NSEMIARID.BARKTEX.push(NSEMIARID.BARKTEX[0]);   /* 6 shares 0's canvas: no new draw from the random stream */
 NSEMIARID.WOODTEX=NSEMIARID.BARKTEX[4];
 // rock: rounded grain with faint bedding; tinted per instance (basalt, tan, the salt crust)
 NSEMIARID.ROCKTEX=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
@@ -308,6 +312,16 @@ function lathe(prof,seg,rib,colOf,uvs){const pos=[],nor=[],uv=[],col=[],uR=uvs?u
  const nn=p=>{const l=Math.hypot(p[0],p[2])||1;return[p[0]/l,.25,p[2]/l];};
  for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
   put(a,nn(a),u0);put(d,nn(d),u1);put(c,nn(c),u0);put(a,nn(a),u0);put(b,nn(b),u1);put(d,nn(d),u1);}
+ return BIO.geo._make(pos,nor,uv,col);}
+// LATHE2 (2026-10-26, the small and weird's second pass): the lathe with true normals, each ring's from the profile's own
+// slope (the lathe's are a flat guess, which crumpled the censer caps), and optional relief: bump(p,i,s) pushes a vertex
+// out along its normal by that fraction of its radius. colOf as the lathe's
+function lathe2(prof,seg,colOf,bump){const pos=[],nor=[],uv=[],col=[],n=prof.length;
+ const PN=prof.map((p,i)=>{const a=prof[Math.max(0,i-1)],b=prof[Math.min(n-1,i+1)],dy=b[0]-a[0],dr=b[1]-a[1],l=Math.hypot(dy,dr)||1;return[dy/l,-dr/l];});
+ const V=(i,s)=>{const p=prof[i],a=s/seg*TAU,ca=Math.cos(a),sa=Math.sin(a),k=1+(bump?bump(p,i,s%seg):0),r=p[1]*k,q=PN[i],c=colOf?colOf(p,i,s%seg):1;
+  return{p:[ca*r,p[0]+q[1]*(k-1)*p[1],sa*r],n:[ca*q[0],q[1],sa*q[0]],u:s/seg,v:p[0],c};};
+ const put=e=>{push3(pos,e.p);push3(nor,e.n);uv.push(e.u,e.v);col.push(e.c,e.c,e.c);};
+ for(let i=0;i<n-1;i++)for(let s=0;s<seg;s++){const a=V(i,s),b=V(i,s+1),c=V(i+1,s),d=V(i+1,s+1);put(a);put(d);put(c);put(a);put(b);put(d);}
  return BIO.geo._make(pos,nor,uv,col);}
 // a TUFT: three crossed vertical quads, origin at the base, up to y=1
 G.tuft=function(){const pos=[],uv=[],nor=[];
@@ -344,16 +358,35 @@ G.rosette=function(){const pos=[],nor=[],uv=[],col=[];
 // (skin.cactus: six of the skin's eight ribs round the six of the mesh, v at the same texel size up a barrel ~2.7 of its
 // heights round)
 G.barrel=function(){return lathe([[0,.36],[.12,.47],[.45,.5],[.8,.44],[.95,.26],[1,.04]],12,.07,null,[.75,.28]);};
-// a ribbed COLUMN (the sail candelabra's stems), unit height, radius .5
-G.column=function(){return lathe([[0,.5],[.6,.49],[.9,.42],[1,.18]],8,.08,null,[.5,1.5]);};
+// a ribbed COLUMN (the sail candelabra's stems and arms, the censers' stalks), unit height, radius .5
+// the succulent columns' quality pass (TODO.md's ride-along: biomes/sedesert's 2026-10-26 work, backported 2026-11-09): the
+// profile starts at a NARROW, ROUNDED FOOT closed by a small cap (the stem constricts where it leaves the ground or the trunk,
+// as a Euphorbia's segments do), the top closes in a dome, and a profile row may give its normal's y (third value: down-out at
+// the foot, so the constriction shades as a curve; the lathe's were one flat guess). The lathe's ribs and uv tiling are kept.
+// 80 triangles (was 48, open at both ends)
+const columnGeo=(seg,prof,rib,top,uvs)=>{const pos=[],nor=[],uv=[],col=[],uR=uvs[0],vR=uvs[1];
+ const R=prof.map(p=>{const r=[];for(let s=0;s<seg;s++){const a=s/seg*TAU,k=1+rib*(s%2?1:-1);r.push([Math.cos(a)*p[1]*k,p[0],Math.sin(a)*p[1]*k,s%2?.82:1]);}return r;});
+ const ny=i=>prof[i][2]!=null?prof[i][2]:i===0?.15:.3;
+ const put=(p,n,u)=>{push3(pos,p);push3(nor,n);uv.push(u*uR,p[1]*vR);col.push(p[3],p[3],p[3]);};
+ for(let i=0;i<prof.length-1;i++)for(let s=0;s<seg;s++){const a=R[i][s],b=R[i][(s+1)%seg],c=R[i+1][s],d=R[i+1][(s+1)%seg],u0=s/seg,u1=(s+1)/seg;
+  const na=[a[0],ny(i),a[2]],nb=[b[0],ny(i),b[2]],nc=[c[0],ny(i+1),c[2]],nd=[d[0],ny(i+1),d[2]];
+  put(a,na,u0);put(d,nd,u1);put(c,nc,u0);put(a,na,u0);put(b,nb,u1);put(d,nd,u1);}
+ const tp=[0,top,0,1],L=R[prof.length-1];for(let s=0;s<seg;s++){const a=L[s],b=L[(s+1)%seg];put(a,[a[0],.6,a[2]],s/seg);put(b,[b[0],.6,b[2]],(s+1)/seg);put(tp,[0,1,0],(s+.5)/seg);}
+ /* the foot's cap, facing down (in the ground or the trunk it leaves, but shown where a stem leans) */
+ const bp=[0,-.01,0,.8],F=R[0];for(let s=0;s<seg;s++){const a=F[s],b=F[(s+1)%seg];put(a,[a[0],-.8,a[2]],s/seg);put(bp,[0,-1,0],(s+.5)/seg);put(b,[b[0],-.8,b[2]],(s+1)/seg);}
+ return BIO.geo._make(pos,nor,uv,col);};
+G.column=()=>columnGeo(8,[[0,.3,-.2],[.07,.46,-.12],[.17,.5,.15],[.62,.49],[.9,.4]],.08,1.0,[.5,1.5]);
 // a BEAD: a squashed sphere, unit height, origin at its base
 G.bead=function(){return lathe([[0,.05],[.25,.42],[.75,.42],[1,.05]],6,0,(p,i)=>.75+.25*Math.sin(i/3*Math.PI));};
 // a STEP CONE: tiers stacked like a termite tower (a tier a wet year), unit height, radius .5
 G.stepcone=function(){const P=[[0,.5]];for(let k=0;k<5;k++){const y0=k/5,y1=(k+1)/5,r=.5*(1-k/5.5);P.push([y0+.02,r*.96],[y0+.16,r],[y1-.01,r*.82]);}P.push([1,.03]);
  return lathe(P,10,.04,(p,i)=>i%3===1?1:.78);};
 // an EGG (the roll-egg) in honeycomb cells, unit height, radius .4; the cells dark-rimmed in the vertex colour
-G.egg=function(){const P=[];for(let i=0;i<=10;i++){const t=i/10;P.push([t,.4*Math.sin(Math.PI*Math.pow(t,.8))+(i===0||i===10?.001:0)]);}
- return lathe(P,12,.04,(p,i,s)=>((i+s)%2)?1:.62);};
+// (2026-10-26: the cells were a checker of quads; now each cell is a raised, pale centre in a dark net, the rows offset
+// half a cell like a honeycomb's: true normals, 12 x 12)
+const eggCell=(i,s)=>i>0&&i<12&&i%2===1&&(s+((i>>1)%2))%2===0;
+G.egg=function(){const P=[];for(let i=0;i<=12;i++){const t=i/12;P.push([t,.4*Math.sin(Math.PI*Math.pow(t,.8))+(i===0||i===12?.001:0)]);}
+ return lathe2(P,12,(p,i,s)=>eggCell(i,s)?1.12:.5,(p,i,s)=>eggCell(i,s)?.06:0);};
 // a HORN PIPE: a curved tube flaring to its mouth, unit length up from the origin, the mouth facing sideways
 G.horn=function(){const pos=[],nor=[],uv=[],col=[],seg=8,n=8,R=[];
  for(let i=0;i<=n;i++){const t=i/n,cx=.35*t*t,cy=t,r=.07+.18*Math.pow(t,3),tx=.7*t,ty=1,tl=Math.hypot(tx,ty);const ux=ty/tl,uy=-tx/tl,row=[];
@@ -364,15 +397,25 @@ G.horn=function(){const pos=[],nor=[],uv=[],col=[],seg=8,n=8,R=[];
  return BIO.geo._make(pos,nor,uv,col);};
 // a CENSER CAP: a stalk's sponge cap, a squat dome pitted with pores (dark spots in the vertex colour), unit radius,
 // origin at the cap's underside
-G.censer=function(){return lathe([[0,.3],[.08,.95],[.3,1],[.62,.86],[.86,.5],[1,.02]],14,0,(p,i,s)=>((s*7+i*3)%5===0)?.35:.95);};
+// (2026-10-26: a crumpled sheet before, with a flat guess for its normals and pores as blotches; now a sponge dome with a
+// rolled rim over a dark pore face, the pores soft dark dots in staggered rows up the dome, true normals)
+G.censer=function(){const P=[[0,.16],[.05,.85],[.14,1.03],[.27,.99],[.48,.86],[.7,.6],[.88,.3],[1,.02]];
+ return lathe2(P,12,(p,i,s)=>i<2?.5:i<3?.8:(i>=3&&i<7&&(s+i*2)%4===0)?.42:1,(p,i,s)=>(i>=3&&i<7&&(s+i*2)%4===0)?-.04:0);};
 // a FURLER: a sunburst of strap petals round a bulb; open (unit radius, flat) or shut (the instance's y scale squeezes
 // it: the floor draws a shut one tall and narrow)
-G.furler=function(){const pos=[],nor=[],uv=[],col=[],n=14;
- for(let k=0;k<n;k++){const a=k/n*TAU,ca=Math.cos(a),sa=Math.sin(a),px=-sa,pz=ca,W=.08;
-  const base=[ca*.18,.3,sa*.18],tip=[ca,.45+.25*(k%2),sa];
-  const put=(p,c)=>{push3(pos,p);nor.push(0,1,0);uv.push(0,0);col.push(c,c,c);};
-  put([base[0]-px*W,base[1],base[2]-pz*W],.65);put([base[0]+px*W,base[1],base[2]+pz*W],.65);put(tip,1.1);}
+// (2026-10-26: fourteen flat spikes before; now eleven strap petals, narrow at the foot, broadest past the middle and
+// pointed at the tip (three triangles each, 39 in all: there are thousands), cupped up toward their ends and alternately raised, round a dark eye; still flat enough that the
+// instance's y scale shuts it)
+G.furler=function(){const pos=[],nor=[],uv=[],col=[],n=11,T=[[0,.05,.62],[.62,.11,.92],[1,.0,1.12]];
+ const put=(p,c)=>{push3(pos,p);nor.push(0,1,0);uv.push(0,0);col.push(c,c,c);};
+ for(let k=0;k<n;k++){const a=k/n*TAU,ca=Math.cos(a),sa=Math.sin(a),px=-sa,pz=ca,lift=.12+.14*(k%2);
+  const E=T.map(([t,w,c])=>{const r=.2+.8*t,y=.3+lift*t*t;return[[ca*r-px*w,y,sa*r-pz*w],[ca*r+px*w,y,sa*r+pz*w],c];});
+  for(let j=0;j<E.length-1;j++){const [a0,b0,c0]=E[j],[a1,b1,c1]=E[j+1];put(a0,c0);put(b0,c0);put(b1,c1);if(j<E.length-2){put(a0,c0);put(b1,c1);put(a1,c1);}}}
+ for(let k=0;k<6;k++){const a0=k/6*TAU,a1=(k+1)/6*TAU;put([0,.34,0],.3);put([Math.cos(a1)*.21,.31,Math.sin(a1)*.21],.45);put([Math.cos(a0)*.21,.31,Math.sin(a0)*.21],.45);}
  return BIO.geo._make(pos,nor,uv,col);};
+// a FURLER'S BULB (2026-10-26: before, the core's plain lobe in one flat colour): a fleshy ribbed bulb, darker at its
+// foot, unit radius, origin at the ground
+G.fbulb=function(){return lathe2([[0,.82],[.3,1],[.66,.84],[.9,.42],[1,.08]],9,(p,i)=>.62+.45*(i/4),(p,i,s)=>i>0&&i<4?(s%2?.05:-.03):0);};
 // a WINDOW: a cluster of translucent finger tips just out of the ground, unit radius
 G.window=function(){const pos=[],nor=[],uv=[],col=[];for(let k=0;k<7;k++){const a=k*2.399963,d=k?.55:0,cx=Math.cos(a)*d,cz=Math.sin(a)*d,r=k?.3:.36;
   const g=new T3.SphereGeometry(r,6,3,0,TAU,0,Math.PI*.5).toNonIndexed(),p=g.attributes.position.array,nn=g.attributes.normal.array;
@@ -462,6 +505,7 @@ NSEMIARID.G=G;
 NSEMIARID.MAT={
  bark:NSEMIARID.BARKTEX.map(t=>BIO.barkMat(t)),
  round:BIO.leafMat(TX.round,'round',{aN:true,swayW:'1.0',swayA:.12}),
+ poplar:BIO.leafMat(TX.round,'poplar',{aN:true,swayW:'1.0',swayA:.14}),   /* the golden poplar's own crown card (leaf.poplar), fluttering a little more */
  lobed:BIO.leafMat(TX.lobed,'lobed',{aN:true,swayW:'1.0',swayA:.09}),
  palm:BIO.leafMat(TX.palm,'palm',{aN:true,swayW:'1.0',swayA:.08}),
  small:BIO.leafMat(TX.small,'small',{aN:true,swayW:'1.0',swayA:.06}),
@@ -477,6 +521,8 @@ NSEMIARID.MAT={
  reed:BIO.leafMat(TX.reed,'reed',{swayW:'(position.y)',swayA:.11,alphaTest:.4}),
  spike:BIO.leafMat(TX.spike,'spike',{swayW:'(position.y)',swayA:.05,alphaTest:.42}),
  fern:BIO.leafMat(TX.fern,'fern',{swayW:'(position.x)',swayA:.07}),
+ saltbush:BIO.leafMat(TX.small,'saltbush',{swayW:'(position.y)',swayA:.04,alphaTest:.4}),   /* card.saltbush with the pack */
+ buckthorn:BIO.leafMat(TX.small,'buckthorn',{swayW:'(position.y)',swayA:.06,alphaTest:.4}),   /* card.seabuckthorn with the pack */
  tangle:BIO.leafMat(TX.tangle,'tangle',{swayW:'0.0',swayA:0,alphaTest:.3}),
  lichen:BIO.leafMat(TX.lichen,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  litter:BIO.leafMat(TX.litter,'litter',{swayW:'0.0',swayA:0,alphaTest:.35}),
@@ -512,21 +558,22 @@ function libCell(n,box,W,H,flip){const L=LIBP(n);if(!L)return null;const c=docum
   g.drawImage(img,box[0]*w,box[1]*h,(box[2]-box[0])*w,(box[3]-box[1])*h,0,0,W,H);t.needsUpdate=true;window._texPending--;};
  img.onerror=()=>{window._texPending--;BIO.err('nsemiarid: a library card failed to decode: '+n);};
  img.src=L.map;return t;}
-{const swap={round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter',pappus:'leaf.pappus',stipa:'leaf.stipa',tangle:'leaf.tangle'};
+{const swap={saltbush:'card.saltbush',buckthorn:'card.seabuckthorn',poplar:'leaf.poplar',round:'leaf.round',lobed:'leaf.lobed',small:'leaf.small',broom:'leaf.broom',blossom:'leaf.blossom',litter:'litter',pappus:'leaf.pappus',stipa:'leaf.stipa',tangle:'leaf.tangle'};
  for(const k in swap){const t=libCard(swap[k]);if(t){M[k].map=t;M[k].alphaTest=k==='pappus'||k==='stipa'||k==='tangle'?.3:.4;}}
  // the frill's fin: the middle fin of the sheet, cut close and turned upside down so its foot is the frond's root
  const fin=libCell('leaf.fin',[.395,.338,.605,.662],256,512,true);if(fin){M.fin.map=fin;M.fin.alphaTest=.35;}}
 // the barks: the bucket's uvScale becomes the set's tile size, and means() divides out the pack's brightness
-const LIBBARK=['bark.furrowed','bark.plane','bark.smooth','bark.gnarled','wood.silver','bark.alien'];
+const LIBBARK=['bark.furrowed','bark.plane','bark.smooth','bark.gnarled','wood.silver','bark.alien','bark.poplar'];
 NSEMIARID.LIBMEAN={};
 const libMap=(n,k)=>{const L=LIBP(n);if(!L)return null;const t=KMAT.textures(L,{aniso:4}).map;NSEMIARID.LIBMEAN[k]=L.mean;return{t,scale:L.scale};};
-['Furrowed bark','Plane bark','Smooth bark','Gnarled bark','Weathered deadwood','Alien skin'].forEach((lab,i)=>{const L=libMap(LIBBARK[i],'bark'+i);
+['Furrowed bark','Plane bark','Smooth bark','Gnarled bark','Weathered deadwood','Alien skin','Golden poplar bark'].forEach((lab,i)=>{const L=libMap(LIBBARK[i],'bark'+i);
  if(L)M.bark[i].map=L.t;BIO.bucket('bark'+i,M.bark[i],{label:lab,uvScale:L?L.scale:[i===1?3:4,i===3?3:6]});});
 {const W=BIO.barkMat(NSEMIARID.WOODTEX),L=libMap('wood.silver','wood');if(L)W.map=L.t;BIO.bucket('wood',W,{label:'Dead wood',uvScale:L?L.scale:[3,4]});}
 BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (impostors)'});
 
 // ---------------------------------------------------------------- instanced items
-BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Round leaves (fruit trees, poplar, pistachio)'});
+BIO.def('round',BIO.geo.clump(),M.round,{attrs:['aN'],label:'Round leaves (fruit trees, pistachio)'});
+BIO.def('poplarLeaf',BIO.geo.clump(),M.poplar,{attrs:['aN'],label:'Golden poplar leaves'});
 BIO.def('lobed',BIO.geo.clump(),M.lobed,{attrs:['aN'],label:'Lobed leaves (walnut, kite ash)'});
 BIO.def('palm',BIO.geo.clump(),M.palm,{attrs:['aN'],label:'Plane leaves'});
 BIO.def('small',BIO.geo.clump(),M.small,{attrs:['aN'],label:'Shrub foliage (wormwood, pomegranate)'});
@@ -549,6 +596,8 @@ BIO.def('stipa',G.tuft(),M.stipa,{label:'Drill grass'});
 BIO.def('bunch',G.tuft(),M.bunch,{label:'Bunchgrass'});
 BIO.def('reed',G.tuft(),M.reed,{label:'Reeds and sedge'});
 BIO.def('spike',G.tuft(),M.spike,{label:'Flower spikes (foxtail spires)'});
+BIO.def('saltbush',G.tuft(),M.saltbush,{label:'Saltbush'});
+BIO.def('buckthorn',G.tuft(),M.buckthorn,{label:'Sea buckthorn'});
 BIO.def('tulip',BIO.geo.bloom(),M.bloom,{label:'Steppe tulips'});
 BIO.def('fern',BIO.geo.frond(3),M.fern,{label:'Fronds and strap leaves'});
 BIO.def('tumbler',G.ball(),M.tangle,{label:'Tumblers'});
@@ -563,8 +612,12 @@ BIO.def('sword',G.rosette(),M.vcol,{label:'Roll-egg sword leaves'});
 // waxy skin, the sail candelabra's columns banded joints, the mace heads' spikes horny plates, the horn pipes ribbed rings
 // a keep-0 skin is grey relief about its pack's mean (sRGB): the material's colour divides that out, as the ground's layers
 // do, so a species keeps the colour it had and gains the relief. A three.js rod or cone has no vertex colours: solidMat
+// the final rebuild (2026-11-03): these bodies are solid, so they are drawn as wood (BIO.barkMat, vertex-coloured), not as a still leaf card: the
+// core's attach audit took a leaf material for a card, so a bead chain's upper beads and the blooms on a strider's crown read as floating with nothing
+// under them (the handoff's 81%). The host's ?bodies=leaf (BIO.host.bodyLeaf, 46-host-graphics.js) for the old leaf material
+const BODY_LEAF=!!BIO.host.bodyLeaf;
 const libMat=(n,key,solid)=>{const L=LIBP(n),t=L?KMAT.textures(L,{aniso:4}).map:null;
- const m=solid?BIO.solidMat(t):BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true});
+ const m=solid?BIO.solidMat(t):BODY_LEAF?BIO.leafMat(t,key,{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true}):BIO.barkMat(t);
  if(L)m.color.setScalar(Math.min(4,1/Math.pow(L.mean||.5,2.2)));return m;};
 M.strider=libMat('skin.cactus','strider');M.stilt=libMat('bark.gnarled','stilt',true);M.bead=libMat('skin.smooth','bead');
 M.column=libMat('skin.banded','column');M.mace=libMat('organic.chitin','mace');M.horn=libMat('organic.coil.ribbed','horn');
@@ -576,12 +629,15 @@ BIO.def('stilt',G.rod(),M.stilt,{label:'Strider stilts'});
 BIO.def('stub',G.cone(),M.stilt,{label:'Dead stilt stubs (a strider\'s trail)'});
 BIO.def('column',G.column(),M.column,{label:'Sail candelabra'});
 BIO.def('blade',BIO.geo.frond(2),BIO.leafMat(M.fin.map,'blade',{swayW:'(position.x)',swayA:.1,alphaTest:.35}),{label:'Sail blades'});
+// the blades torn loose and kiting downwind (a still frame of flight, 60-biome-nsemiarid-floor.js sail()): free, as seed fluff is (the attach audit's
+// rule); the same card and material, a new item after the kit's own so no item's index moves (the final rebuild, 2026-11-03)
+BIO.def('kite',BIO.geo.frond(2),BIO.defs.blade.mat,{label:'Sail blades aloft',free:true});
 BIO.def('star',BIO.geo.clump(),M.pappus,{attrs:['aN'],label:'Star drifters'});
 BIO.def('censer',G.censer(),M.vsway,{label:'Censer caps'});
 BIO.def('horn',G.horn(),M.horn,{label:'Horn pipes'});
 BIO.def('egg',G.egg(),M.vcol,{label:'Roll-eggs'});
 BIO.def('furler',G.furler(),M.vsway,{label:'Furlers'});
-BIO.def('bulb',BIO.geo.lobe(),M.solid,{label:'Furler bulbs'});
+BIO.def('bulb',G.fbulb(),M.vcol,{label:'Furler bulbs'});
 BIO.def('stepcone',G.stepcone(),M.vcol,{label:'Step cones'});
 BIO.def('window',G.window(),M.vcol,{label:'Window plants'});
 BIO.def('finger',G.finger(),M.vcol,{label:'Salt fingers'});
@@ -596,7 +652,7 @@ BIO.def('crawlerSpines',G.cactusSpines(6),M.vcol,{label:'Crawler spines'});
 BIO.def('balloon',BIO.geo.pod(),M.vhang,{label:'Balloon pods'});
 BIO.def('silk',BIO.geo.clump(),M.pappus,{label:'Balloon-pod silk'});
 BIO.def('gourd',BIO.geo.pod(),M.vhang,{label:'Glider gourds'});
-BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds'});
+BIO.def('glider',G.samara(),M.vcol,{label:'Glider seeds',free:true});   /* only ever in flight (seedsAloft): free, as seed fluff (2026-11-03) */
 BIO.def('samara',G.samara(),M.vcol,{label:'Kite-ash seeds'});
 // the trumpet's crown turns in the wind: spin materials (86-host-variants.js turns them about the crown's own origin)
 M.spin=BIO.leafMat(null,'spin',{swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true,spin:true});
@@ -613,4 +669,18 @@ BIO.def('rod',G.rod(),M.solid,{label:'Stems'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders'});
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones'});
 BIO.def('fruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Fruit (apples, apricots, pears, walnuts, pomegranates, nuts)'});
+// THE POND BLADDERWORT (2026-11-09; EXCHANGES.md korona -> nsemiarid, `bladderpool`, taken as a cousin): Korona's sucking pool scaled down to a
+// fresh pool's bladderwort bed, danger 0, nothing sucked down: a mat of fine green threads set with bladders floating just under the surface of fresh
+// water, small yellow flowers on stalks above it (the floor's last pass, 60). Defined after every other item and drawn with no draw from the kit's
+// stream (its texture's marks are KRAND hashes), so no item's index and no other plant's look moves
+TX.bladder=BIO.alphaTex(256,(g,S)=>{const u=(i,k)=>KRAND.unit(KRAND.hash(6113,i,k));g.lineCap='round';
+ for(let i=0;i<70;i++){const a=u(i,1)*TAU,d=S*.42*Math.sqrt(u(i,2)),x=S/2+Math.cos(a)*d,y=S/2+Math.sin(a)*d,b=u(i,3)*TAU,L=S*(.06+.12*u(i,4));
+  g.strokeStyle='rgb('+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+','+Math.round(110+90*u(i,5))+')';g.lineWidth=1.2+u(i,6);g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(b)*L,y+Math.sin(b)*L);g.stroke();
+  for(let k=0;k<4;k++){const t=u(i,10+k),r=1.6+2.2*u(i,20+k);g.fillStyle='rgb('+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+','+Math.round(150+80*u(i,30+k))+')';
+   g.beginPath();g.arc(x+Math.cos(b)*L*t,y+Math.sin(b)*L*t,r,0,TAU);g.fill();}}},[140,140,140]);
+M.bladder=BIO.leafMat(TX.bladder,'bladder',{swayW:'0.0',swayA:0,alphaTest:.3});
+BIO.def('bladder',BIO.defs.litter.raw||BIO.defs.litter.geo,M.bladder,{label:'Pond bladderwort (a mat under the surface)'});
+NSEMIARID.PLANTS.bladderwort=Object.assign(PK('Pond bladderwort','temperate','subhumid','yes',['Csa','Cfa','BSh'],['bladder'],'fragments',
+ HV('none',[],false,'A cousin of Korona\'s sucking pool, scaled down for a fresh pool: a floating mat of threads set with tiny bladders that snap up water fleas, harmless to anything larger; birds carry its fragments from pool to pool.')),{kin:'korona.bladderpool'});
+NSEMIARID.PLANTS.bladderwort.tags.kin='korona.bladderpool';
 })();

@@ -61,7 +61,7 @@ function log(x,y,z,st){const a=rr(0,TAU),L=rr(5,13),r0=rr(.25,.5),hx=Math.cos(a)
  BIO.tube('wood',pts,col,{seg:6,cap:true});st.logs++;
  for(let i=0;i<n;i++){const p=pts[i];BIO.put('moss',[p.x,p.y+p.r*.7,p.z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[p.r*3,p.r*1.1,p.r*3],leafCol(PAL.moss,1.15,.03,.08,.05),{n:[0,1,0]});}
  return true;}
-SHIGH.small={tuft,swirl,daisies,fern,coral};
+SHIGH.small={tuft,swirl,daisies,fern,coral,stone,boulder,mossMat,cushion,rosette,around,rockTint};   /* a station's floor (stations/<name>/) reuses them */
 
 // ---------------------------------------------------------------- the zone planters
 // Each takes (x,y,z,Z,lv,st) and places one plant of the zone's mix.
@@ -128,7 +128,7 @@ SHIGH.FLOOR_ZONES=['forest','elfin','paramo','bog','dry','crag','stream'];
 const PLANTERS=[plantForest,plantElfin,plantParamo,plantBog,plantDry,plantCrag,plantStream];
 SHIGH.floorWeights=Z=>[Z.forest*1.5,Z.elfin*1.3,Z.paramo*1.2,Z.bog*1.4,Z.dry*.9,Z.crag*.8,Z.stream*1.6];
 SHIGH.buildFloor=function(R,q){
- reseed(600047);q=q==null?1:q;R=R||2500;means();
+ reseed(600047);q=q==null?1:q;R=R==null?2500:R;means();
  const st={moss:0,begonias:0,ferns:0,ginger:0,shrubs:0,tussocks:0,rush:0,rosettes:0,flowers:0,sundews:0,albuca:0,spears:0,aloes:0,lichen:0,stones:0,boulders:0,logs:0};
  function plant(x,y,z,lv){if(blocked(x,z,.6))return;const Z=zones(x,z);if(Z.cliff>.6)return;
   const w=SHIGH.floorWeights(Z);let tot=0;for(let i=0;i<w.length;i++)tot+=w[i];if(tot<=0)return;
@@ -146,5 +146,15 @@ SHIGH.buildFloor=function(R,q){
  // corkscrew rush standing in the tarn's shallows
  BIO.grid(2.6,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>=L.mid)return 0;return .5*q*smooth(1.0,.3,BIO.depth(x,z));},
   (x,y,z,d)=>{tuft('rush',x,Math.max(y,BIO.waterH(x,z)-.35),z,rr(.6,1.1),rr(.5,.8),leafCol(PAL.rush,1.25,.03));st.rush++;},{patch:.6,patchScale:.03,noMask:true,depth:[-.1,.8],pad:1,box:BIO.window('water')});
+ // the paramo's bunchgrass (2026-10-26): crossed tuft cards (card.ichu in the library) standing between the swirl
+ // tussocks in the near band, so close up the open paramo and the dry side are a sward with height, not the ground's
+ // printed swirls alone. KRAND, one draw set per 3.2 m cell (hash of the cell), so it moves nothing placed before it
+ {const CELLB=3.2,BX=BIO.originBox(L.floor[0]),u=(ix,iz,k)=>KRAND.unit(KRAND.hash(600091,ix,iz,k));st.bunch=0;
+  for(let iz=Math.floor(BX[1]/CELLB);iz<=Math.ceil(BX[3]/CELLB);iz++)for(let ix=Math.floor(BX[0]/CELLB);ix<=Math.ceil(BX[2]/CELLB);ix++){
+   const x=(ix+u(ix,iz,1))*CELLB,z=(iz+u(ix,iz,2))*CELLB;if(Math.hypot(x,z)>R||BIO.lodD(x,z)>=L.floor[0])continue;
+   const Z=zones(x,z),a=q*(Z.paramo*(1-Z.crag)*.34+Z.dry*.2)*(1-Z.bog)*(1-smooth(.3,.6,Z.cliff));if(a<=0||u(ix,iz,3)>a)continue;
+   if(BIO.mask(x,z)<=0||BIO.depth(x,z)>-.15||!BIO.clearOf(x,z,.6)||blocked(x,z,.5))continue;
+   const set=Z.dry>Z.paramo?[0xd8c48a,0xc8b07a,0xe0cc96]:PAL.tussock,h=.45+.4*u(ix,iz,4),w=h*(.8+.4*u(ix,iz,6));
+   BIO.put('bunch',[x,Y(x,z)-.05,z],qEuler(0,u(ix,iz,5)*TAU,0),[w,h,w],bright(C(set[Math.floor(u(ix,iz,7)*set.length)]),1.05+.3*u(ix,iz,8)));st.bunch++;}}
  return{under:st};};
 })();

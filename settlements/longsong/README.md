@@ -20,14 +20,15 @@ lamps in the windows; `89x`).
 
 ## What the page is
 
-- **The site is the scale model's** (4.21). `region/` holds the cut round it (120 km square from
-  `tools/scale-model/extract_region.py`; the model's regions and settlements as read on 2026-10-19 in `region/source/`,
-  the cut's box added as `regions-cut.json`), decoded at build time by Pinnacle Rock's `tools/world_data.py` (read in
-  place, with this page's kit line). The kit grows on the model's 'Oidong Valley' overlay (moved to the biome layer by the
-  owner, 2026-10-19). The page's origin is the foot of the rock, at px 954,1296 (`LS.SITE`): the apron
-  south of the Longsong stream (the model's r105, *Lõsõ-bi Siṭrīm*), where the owner moved the model's Longsong
+- **The site is the scale model's** (5.1). `region/` holds the cut round it (a 120 km square at 500 m cells, from
+  `tools/cut_region.py`, which runs `tools/scale-model/extract_region.py` on the model's data round the model's pin),
+  decoded at build time by Pinnacle Rock's `tools/world_data.py` (read in place, with this page's kit line). The kit grows
+  on the model's 'Oidong Valley' overlay. The page's origin is the foot of the rock, at px 1228.88,1621.23 (`LS.SITE`), on
+  the south bank of the Bīruk al-Ghaym (the model's r105, ~550 m³/s; the owner moved the pin onto it on 2026-11-11, model
+  edit 5.1e7), its frame turned 28.6 degrees so the river runs along its x axis (PLAN.md, section 1). Before, on map 4.21,
+  the page stood at 954,1296 by a ~40 m³/s stream, where the owner had moved the model's Longsong
   marker (2026-10-19; it had stood 7 km east-north-east, at 957,1294 on the medial swell; PLAN.md, section 1).
-  The floor IS the model's land (WORLD.H), with what the plan shapes finer than its 4 km cells: the rock, the ward's
+  The floor IS the model's land (WORLD.H), with what the plan shapes finer than its 500 m cells: the rock, the ward's
   terraces, the building pads, the lotus pond. The far terrain draws the cut to 60 km.
 - **The plan is data** (`src/40-ls-plan.js`, `[G data]`): the rock (`LS.ROCK`, `rockY`), the grounds and the ward,
   the Great Stair, the 30 buildings as records (kind, footprint, base, storeys, core/tags types, the blueprint's
@@ -109,7 +110,11 @@ lamps in the windows; `89x`).
   integrated"): core/walk (the stair walked), core/atmos's weather (auto: the dawn fog and the evening shower; the
   selector beside the clock), hearth smoke, fireflies and culling (`89z`), core/biome's walker (the herds walk their
   pastures, `85`) and its stage (KSTAGE: the export's light and sky), core/lod (the finished scene chunked and banded: `l` toggles it), core/sched (the
-  Procrastinator's burn as a timeline, `66`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
+  Procrastinator's burn as a timeline, `66`), core/hazard (2026-10-26, the Procrastinator's time fields, `66`: each
+  closed seal's niche a `time` field at `P.slow` (1e-4), and the hall's slowing at each seal's bars (a quarter of our
+  time, ours again 8 m out; the keepers at the wheel are clear of it). The sealed figures and the dust run at
+  `KHAZ.timeScale` where they stand; LS-008's open seal is at our time. The `hazards` layer shows the fields, and the
+  inspector says how fast time runs at the point, `99`), core/sockets (the culture marks, `63s` and `65`: the Order's saffron
   banners and scroll-and-wheel emblems on the Great Gate, the Lower Gate and the Order's works; Xanadu's rose and lotus
   on the valley's lay buildings, their awnings and trade signs), core/hamlet (the valley's three lay villages outside
   the wall: Shar and Nub by the east and west fields, Dzo-ling at the head of the yak pastures, `40h` and `85h`, on

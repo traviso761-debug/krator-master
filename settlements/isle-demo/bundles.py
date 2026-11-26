@@ -68,7 +68,11 @@ ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-p
 
 
 def isk_files():
-    fs = {f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP}
+    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them
+    sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
+    import engine as kengine
+    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in ISK_SKIP}
+    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP})
     for f in ('42r-res-ore.js', '44r-res-nodes.js'):      # kits/resources, read in place (kits/islanders/build.py RESOURCES)
         fs[f] = os.path.join(ROOT, 'kits', 'resources', 'src', f)
     return [fs[f] for f in sorted(fs)]
@@ -147,28 +151,16 @@ def isk_bundle():
 
 # ---------------------------------------------------------------- the Iziz Vernacular
 IZIZ = os.path.join(ROOT, 'settlements', 'iziz', 'src')
+sys.path.insert(0, os.path.join(ROOT, 'kits', 'iziz-vernacular'))
+import vernacular as kvern   # the Iziz Vernacular kit, read in place (MODULARITY-PLAN.md step 4)
 MATS = os.path.join(ROOT, 'core', 'materials')
 
 
 def izv_files():
-    """settlements/verge/build.py izv_files() and every vernacular fragment Iziz has added since (one shared copy is a
-    follow-up: KNOWN_ISSUES.md)"""
-    def iz(f):   # a local copy in settlements/iziz/src wins over core/materials (its build's srcpath rule)
-        p = os.path.join(IZIZ, f)
-        if os.path.exists(p):
-            return p
-        q = os.path.join(MATS, f)
-        return q if os.path.exists(q) else os.path.join(MATS, 'opt', f)
-    names = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js',
-             '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js',
-             '69c-vern-helpers.js', '69e-vern-hollow.js', '69e5-iziz-openings.js']   # 69e5: real doors and glass (vnPlate, vnHole, IZDOOR), which the vernacular fragments call since 2026-10-19
-    out = [iz(f) for f in names]
-    # every vernacular building fragment in its file order: Verge's list stops at 74, and Iziz has since added 71a-c, 73b-c
-    out += sorted(glob.glob(os.path.join(IZIZ, '7[0-4]*-vern-*.js')))
-    # Iziz's own library bind (its aliases and tiles) and its material records for the export (KMAT.adapter('iziz'))
-    out.append(os.path.join(IZIZ, '88y-iziz-matlib.js'))
-    return out
-
+    """The Vernacular kit's one bundle list (kits/iziz-vernacular/vernacular.py bundle_files(): the Ancients core, the kit's
+    foundation, every building fragment), and Iziz's own library bind and material records for the export
+    (88y-iziz-matlib.js, KMAT.adapter('iziz'); it moves to core/materials with MODULARITY-PLAN.md step 4's matlib item)."""
+    return kvern.bundle_files() + [os.path.join(IZIZ, '88y-iziz-matlib.js')]
 
 IZV_HEAD = r'''
 var IZV_ERRS = [];
@@ -183,13 +175,32 @@ reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof co
    items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
    carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
 function izvKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
-function izvProto(key, v, w) {
+/* o.doors (the city page, settlements/isle-demo/src/63-isle-doors.js): the piece's doors handed out, not baked. 69e5's
+   IZDOOR.leaf registers each door it draws in the page's KDOOR at the origin, where it means nothing: those records are
+   taken back out of KDOOR as plain templates in the piece's frame (G.userData.doors: at, hinge, p0, yaw, size, kind, style,
+   locked, the leaf's colour), and the leaf items (vDoorLeaf*, vDoorGlass*, vDoorHw*) are emptied before the bake, so the
+   page draws the leaves itself and core/door poses them as they open. Without o.doors (the open world's hamlets) the
+   leaves bake shut into the piece as before; the origin records are still taken out of KDOOR (2026-11-09) */
+function izvDoorsOut(n0, keep) {
+  if (typeof KDOOR === 'undefined') return [];
+  var L = KDOOR.list.slice(n0), out = L.map(function (D) {
+    var c = D.parts && D.parts[0] && D.parts[0][0] && D.parts[0][0].ref ? D.parts[0][0].ref.c : null;
+    return { at: D.at.slice(), hinge: D.hinge.slice(), p0: D.p0.slice(), yaw: D.yaw, sign: D.sign, w: D.w, h: D.h, t: D.t, locked: !!D.locked,
+      kind: D.kind, pair: D.pair === true, both: D.both, spring: D.spring, swing: D.swing, roll: D.roll, walk: D.walk, style: D.style,
+      drop: D.drop, rise: D.rise, rate: D.rate, col: c && c.getHex ? c.getHex() : null };
+  });
+  if (L.length) { var S = new Set(L); KDOOR.prune(function (D) { return !S.has(D); }); }
+  if (keep) KIT.order.forEach(function (n) { if (/^vDoor(Leaf|Glass|Hw)/.test(n)) KIT.items[n].length = 0; });
+  return out;
+}
+function izvProto(key, v, w, o) {
   var D = VERN.defs[key]; if (!D) return null;
-  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length, n0 = typeof KDOOR !== 'undefined' ? KDOOR.list.length : 0, doors = null;
   izvKitClear();
-  withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); });
+  try { withFlatGround(function () { VERN.place(G, key, 0, 0, 0, { y: 0, v: v | 0, w: w == null ? 1 : w }); }); }
+  finally { doors = izvDoorsOut(n0, !!(o && o.doors)); }
   kbake(G); izvKitClear(); REG.length = r0;
-  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
+  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h, doors: o && o.doors ? doors : null };
   return G;
 }
 function izvDims() { var out = {}; VERN.order.forEach(function (k) { var D = VERN.defs[k]; out[k] = { w: D.w, d: D.d, h: D.h || 8, name: D.name, family: D.family, types: [].concat(D.tags.type || []), wealth: D.tags.wealth, variants: D.variants || 2 }; }); return out; }
@@ -204,14 +215,87 @@ def izv_bundle():
                 '})();' + NL), [rel(f) for f in fs]
 
 
+# ---------------------------------------------------------------- the Hykkousoi buildings (settlements/ys), for Nephtos
+# The owner (2026-11-09): "can we get real hykkousoi buildings in there? we don't need all the barnacle skyscrapers Ys does".
+# Ys's kit read in place, sealed like the Vernacular: the Ancients core, the Hykkousoi materials, shell kit, helpers and
+# furniture, and the free-standing pieces (housing, shops, hospitality, sacred, the minor civic, harbour, industry,
+# military, agriculture, markets, spans); NOT the Scallop Stack hosts (69h-*), the grown-on pods (each def's `grown`, left
+# out of hykDims and refused by hykProto), the Ys landmarks (the Amphitriton, the citadel, the arena, the temples of the
+# Tides and the Winds), the Ys port, its towers, ruins and offices. 64-hyk-accrete.js comes for its pure helpers (the
+# pods under a house); the boat shed's moored skiffs are the Ys port's (74-port-dress.js), so a stub draws none.
+YS = os.path.join(ROOT, 'settlements', 'ys')
+HYK_NAMES = ['10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '35-furn-frame.js',
+             '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js',
+             '69b-vern-mat.js', '69c-vern-helpers.js', '60-hyk-mat.js', '60-ys-registries.js', '61-hyk-shell.js', '62-hyk-helpers.js',
+             '64-hyk-accrete.js', '66-hyk-furniture.js', '69w-worn.js',
+             '65-hyk-spans.js', '70-hyk-housing.js', '71-hyk-shops.js', '72-hyk-hospitality.js', '73-hyk-sacred.js', '74f-hyk-civic-minor.js',
+             '75-hyk-harbour.js', '76-hyk-industry.js', '76b-hyk-warehouse-round.js', '77-hyk-military.js', '78-hyk-agri.js', '79-hyk-markets.js',
+             '79z-ys-matlib.js']
+# the library families the pieces use (settlements/ys/tex: its pack beside the page, the rest left out)
+HYK_PACK_SKIP = ('kelp', 'pk', 'rubble', 'concrete', 'corrugate', 'pipeRust', 'rust', 'trav', 'verdigris', 'tarp', 'scale', 'vp', 'sandR')
+
+
+def hyk_files():
+    def ys(f):   # Ys's own copy wins over core/materials (its build's srcpath rule); then the kits Ys reads in place
+        # since 6c04e275 (settlements/ys/build.py VENDORED: kits/ancients/src first)
+        for d in (os.path.join(YS, 'src'), MATS, os.path.join(MATS, 'opt'), os.path.join(ROOT, 'kits', 'ancients', 'src'),
+                  os.path.join(ROOT, 'kits', 'port', 'src'), os.path.join(ROOT, 'settlements', 'iziz', 'src'),
+                  os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')):
+            p = os.path.join(d, f)
+            if os.path.exists(p):
+                return p
+        raise SystemExit('bundles.py: no ' + f + ' in settlements/ys/src or core/materials')
+    return [ys(f) for f in HYK_NAMES]
+
+
+HYK_HEAD = IZV_HEAD.replace('IZV_ERRS', 'HYKB_ERRS')
+HYK_SHIM = r'''
+/* the Ys port's skiffs (74-port-dress.js, not taken): the boat shed draws none */
+if (typeof portSkiff === 'undefined') var portSkiff = function () {};
+'''
+HYK_TAIL = r'''
+reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('HYKB: ' + m); };
+/* HYKB.proto(key, v): a free-standing def built once at the origin on flat ground into a new group, its kit items baked
+   (as IZV's: the kit's items emptied before and after, so a piece never carries another's) */
+function hykKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
+function hykProto(key, v) {
+  var D = HYK.defs[key]; if (!D || D.grown) return null;
+  var G = new THREE.Group(); G.name = key + '#' + (v | 0); var r0 = REG.length;
+  hykKitClear();
+  withFlatGround(function () { HYK.place(G, key, 0, 0, 0, { y: 0, v: v | 0 }); });
+  /* the shell's merged buckets (61-hyk-shell.js: Ys flushes them once a page) into this piece: its outer skins; the
+     interiors (floors, inner skins: `in`) are never seen in the world and are dropped */
+  hykFlush(G); for (var i = G.children.length - 1; i >= 0; i--) { var c = G.children[i]; if (c.userData && c.userData.interior) { G.remove(c); c.geometry.dispose(); } }
+  HYK_MESHES.length = 0;
+  kbake(G); hykKitClear(); REG.length = r0; if (typeof HYK_PLACED !== 'undefined') HYK_PLACED.length = 0;
+  G.userData = { key: key, v: v | 0, w: D.w, d: D.d, h: D.h };
+  return G;
+}
+function hykDims() { var out = {}; HYK.order.forEach(function (k) { var D = HYK.defs[k]; if (D.grown) return;
+  out[k] = { w: D.w, d: D.d, h: D.h, name: D.name, row: D.row, family: D.family, types: [].concat(D.tags.type || []), wealth: D.tags.wealth }; }); return out; }
+return { proto: hykProto, dims: hykDims, HYK: HYK, MAT: MAT, errors: HYKB_ERRS };
+'''
+
+
+def hyk_bundle():
+    fs = hyk_files()
+    return safe('/* HYKB: the Hykkousoi buildings of settlements/ys (free-standing only) and their Ancients core in one closure '
+                '(settlements/isle-demo/bundles.py). GENERATED: edit settlements/ys/src or core/materials. */' + NL + 'var HYKB = (function(){' + NL +
+                HYK_HEAD + body(fs[:-1]) + HYK_SHIM + body(fs[-1:]) + HYK_TAIL + '})();' + NL), [rel(f) for f in fs]
+
+
 # ---------------------------------------------------------------- the Beast Riders' buildings
 # Ridertown's: the Beast Riders kit's own (kits/beast-riders src/50-br-mounts.js: the stables, the byre, the rookery tower)
 # and its ports of Girder's and Mav's Refuge's own buildings (br_port_*: the towns' engines sealed by
 # kits/beast-riders/towns.py, registered by src/60-br-ports.js), on the catalog's core. The catalog's hand-made copies
 # (krator-master-buildings-beast-rider.js) are no longer taken.
 BR = os.path.join(ROOT, 'kits', 'beast-riders')
-CAT_FILES = [os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
+CAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), os.path.join(BR, 'src', '50-br-mounts.js')]
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
+# the kit's tent set (src/70-75: the bands' tents, pens and boundaries), for a page that pitches camps (core/camp): the
+# open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
+CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js',
+                                                  '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
 # the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
 # its buildings with the catalog's detail maps (krator-furniture-detail.js: each material's texture family, projected
 # triplanar from the mesh's own position, its mean brightness divided out), over KF_TEX (kits/beast-riders/build.py
@@ -219,7 +303,7 @@ CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 # page when side is given), the detail code with a stand-in for the furniture batch it extends (CAT draws no furniture),
 # and catProto details every non-port building as the kit's sheet does; each detailed material is tagged
 # userData.courtTri {tile, detail, gain}, the triplanar hook core/export already carries to Godot (Iziz's court finishes).
-CAT_DETAIL = os.path.join(ROOT, 'kits', 'catalog', 'krator-furniture-detail.js')
+CAT_DETAIL = os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-detail.js')
 CAT_TAIL = r'''
 function catDetail(g) {
   if (!KF_TEX) return g;
@@ -253,7 +337,7 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 '''
 
 
-def cat_bundle(side=None):
+def cat_bundle(side=None, tents=False):
     """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
     maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
     origin into a new group (no furniture: the catalog's pieces are not on this page; a port keeps the furniture its
@@ -263,6 +347,7 @@ def cat_bundle(side=None):
     import towns
     tjs, tfiles = towns.bundle(side)
     kf = _kf_tex()
+    files = CAT_FILES + (CAT_TENTS if tents else [])
     if side is None:
         kfjs = 'var KF_TEX = ' + kf + ';' + NL
     else:
@@ -271,7 +356,7 @@ def cat_bundle(side=None):
                 "(the page\\'s .tex.kftex.js did not load)'), null);" + NL)
     return safe('/* CAT: the Beast Riders\' buildings in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/catalog, '
                 'kits/beast-riders and the towns (kits/beast-riders/towns.py). */' + NL +
-                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(CAT_FILES) +
+                'var CAT = (function(){' + NL + 'var scene = new THREE.Group();' + NL + CAT_WINDOW + body(files) +
                 '/* ---- the towns sealed (GENERATED: kits/beast-riders/towns.py) ---- */' + NL + tjs + NL + body([CAT_PORTS]) +
                 '/* ---- the detail maps (KF_TEX: kits/beast-riders/build.py kf_tex) and the catalog\'s detail code over a stand-in batch ---- */' + NL +
                 kfjs + 'var KF_API = { batch: function () { return { flush: function (p) { return p; } }; } };' + NL + body([CAT_DETAIL]) + CAT_TAIL +
@@ -279,7 +364,7 @@ def cat_bundle(side=None):
                 '  scene.remove(g); INSTANCES.length = 0; var A = ASSET_BY_KEY[key]; g.userData = { key: key, v: v | 0, w: A.w, d: A.d, h: A.h, error: g.userData.error, port: A.port || null };' + NL +
                 '  if (!A.port) catDetail(g);   /* the kit\'s own buildings take its detail maps, as its sheet draws them (a port keeps its town\'s maps) */' + NL +
                 '  return g; }' + NL +
-                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in CAT_FILES] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
+                'return { proto: catProto, ASSET_BY_KEY: ASSET_BY_KEY, PORTS: BR_PORTS, detail: catDetail };' + NL + '})();' + NL), [rel(f) for f in files] + tfiles + [rel(CAT_PORTS), rel(CAT_DETAIL)]
 
 
 # ---------------------------------------------------------------- the Ring Sea vessels

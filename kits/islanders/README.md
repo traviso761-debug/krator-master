@@ -41,6 +41,7 @@ python3 ../../tools/textures/pack.py kits/islanders        # (from the repo root
 | Defence | palisade, palisade gate, watch tower, barracks | coral wall, town gate, watch tower, barracks |
 | Palace | | the palace of Kautoa: a walled compound of seven courts (gate court, ceremonial court, the great audience hall under a 44 m ribbed spire, the inner court with the king's, queen's and heir's houses, the kitchens and granaries, the ancestors' shrine, the treasury and garden) |
 | Harbours (on the shore) | fishing dock, dockyard (two slipway sheds, hulls on the slips, ring piers), harbour warehouse, quay and cargo shed, war-canoe shed, ferry landing | fishing dock, dockyard (a double canoe half built, ring piers), quay and cargo shed, drua shed, ferry landing |
+| Camp shelters (core/camp; the isle demo's farming camps) | | lean-to, round hut, A-frame (two households), long shelter (four), camp kitchen (earth oven), camp store: poles, palm mats and grass thatch |
 | Mines and ore | mine (adit, windlass shaft, sorting shed) | mine |
 | Resource nodes | from kits/resources (read in place): iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter and oil in three grades; a mine works the nearest it can (never oil: a derrick's) within 400 m, the grade setting its yield | |
 | Gardens and stock | placeholder flora: coconut, banana, taro, breadfruit, rice paddy; the fauna kit's pig, hen, duck, water buffalo | |
@@ -52,7 +53,7 @@ drua, the kora-kora, the pirates' lanong) are in `kits/ringsea`.
 
 ## How it is made
 
-Forked from `kits/scyvoi`: the engine fragments are the Scyvoi kit's, VENDORED unchanged (`build.py --vendor-check`). The
+Forked from `kits/scyvoi`: the engine is `core/engine`, read in place (its README; MODULARITY-PLAN.md step 2), its alternative materials and gable takes `31-alt-takes.js`. The
 kit's identity and palette are `src/26k-kit.js`; the shared toolkit `40-42` (piles, walls, the horned saddle roof and the
 spire roof as thick shells with scrap patching, carved posts and finials, rooms); the West's houses `50`, its civic, trade,
 harbour and defence buildings `52-55`; the East's `60`, `62-65`; the palace `66`; the shore and the sea `90h`. See `API.md`
@@ -61,3 +62,9 @@ for the fragments and the rules, `KNOWN_ISSUES.md` for what is open.
 **Textures.** The library's thatch, bamboo, reed mat, corrugated iron, tin, carved wood, tarred timber, coral stone, sand and
 the tapa sheet (`materials.json`). The painted motifs are canvas STAND-INS (`28-is-paint.js`) until the owner's sheets come;
 the prompts are in `core/materials/PLAN.md` (Islanders).
+
+## Doors and glass (core/door, 2026-11-03)
+
+The owner: "remove all dark voids and make all windows, doors and portals actual doors or windows that have transparency". The page loads `core/door` (KDOOR, KGLASS, KDOORHOST) and the engine draws it (`core/engine/36o-open.js`: `svLeaf`, `svDoorway`, `svPane`, `svRoom`). A door leaf is a KDOOR record with a stable id (`<def key>.<placement>.d<n>`), shut unless the builder drew it standing open; **E** opens or shuts the one within reach (walking or flying), and `KDOOR.open(id, {by: 'npc'})` does the same for a quest or an NPC. A door on a body with nothing behind it is locked. `_api.openings()`, `_api.doorExport()` and `_api.doorState()` are on the probe. Where the page has `core/walk`, each door's doorway is blocked while it is shut and clear while open (`KDOOR.walk`), and any wall box standing in an unlocked doorway is switched off (`svOpenWalk`).
+
+What it changed here: every door `isWall` cuts has its plank leaf (shut, it opens into the room); the Kautoa corner towers', the palace wall towers' doors and the granary's hatch are locked leaves (solid bodies); the windmill tower's dark window is the room card. Windows stay clear unglazed openings with their shutters: the Islanders glaze nothing. The isle demo's city page builds the kit dry (`bundles.py` ISK), so there the leaves are drawn shut into the buckets with no records.

@@ -22,7 +22,9 @@ const T3=BIO.host.THREE,C=h=>new T3.Color(h);
 const {bright,shade,vary,tint,means}=NWBAY;
 const Y=(x,z)=>BIO.terrainH(x,z);
 const leafCol=(set,k,dh)=>bright(vary(pick(set),dh==null?.05:dh,.14,.07),k==null?1.3:k);
-const rockTint=(set,k)=>tint(vary(pick(set||PAL.rock),.02,.06,.06),means().rock,k==null?rr(.35,.6):k);
+// the lava's boulders are OLD basalt, weathered grey-brown with lichen, not fresh black (the owner, 2026-10-27); the same draws as before
+const OLD_LAVA=[0x4e4842,0x5a534b,0x46413d,0x5c564c,0x514c46];
+const rockTint=(set,k)=>tint(vary(pick(set===PAL.lava?OLD_LAVA:set||PAL.rock),.02,.06,.06),means().rock,k==null?rr(.35,.6):k);
 const rodCol=(hex)=>shade(vary(hex,.02,.08,.06),rr(-.45,-.2));
 const capCol=()=>bright(vary(pick(PAL.shroom),.03,.1,.08),1.15);
 
@@ -74,7 +76,7 @@ function puffball(x,y,z,lv){const R=rr(.4,1.3);BIO.put('lobe',[x,y-.05,z],qEuler
  if(lv===2&&rng()<.5)BIO.put('lobe',[x+rr(-1,1)*R*1.5,y-.05,z+rr(-1,1)*R*1.5],qEuler(0,rr(0,TAU),0),[R*.6,R*.65,R*.6],bright(vary(0xd8d0b8,.02,.06,.08),1.1));}
 function boulder(x,y,z,lv,set,st,k){const n=lv===2?ri(1,2):1,Rb=rr(1,3)*(k||1);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?Rb*rr(.7,1.2):0,r=Rb*(i?rr(.35,.7):1),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d,by=Y(bx,bz),h=r*rr(.55,.95);
-  BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set,set===PAL.lava?rr(.12,.22):set===PAL.lime?rr(.6,.9):null));st.boulders++;
+  BIO.put('boulder',[bx,by+h*.3,bz],qEuler(rr(-.25,.25),rr(0,TAU),rr(-.25,.25)),[r*rr(.9,1.3),h*.8,r*rr(.9,1.3)],rockTint(set,set===PAL.lava?rr(.12,.22)*2.4:set===PAL.lime?rr(.6,.9):null));st.boulders++;
   if(set===PAL.rock&&lv>=1){BIO.put('mossmat',[bx+rr(-.15,.15)*r,by+h*1.05,bz+rr(-.15,.15)*r],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),r*rr(.6,.9),leafCol(PAL.moss,.95));st.moss++;}
   if(lv===2&&set!==PAL.lava&&rng()<.3){const s=rr(.5,1);BIO.put('epi',[bx,by+h*1.1,bz],qUp([rr(-.2,.2),1,rr(-.2,.2)]),[s,s*.8,s],bright(vary(pick(PAL.epi),.02,.1,.06),1.2));}}}
 // SEA-GRAPE: a sprawling shore shrub of big round glossy leaves, a few of them gone red
@@ -204,5 +206,20 @@ NWBAY.buildFloor=function(R,q){
   (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;lilies(x,y,z,BIO.lodD(x,z)<600?2:1,st);},{patch:.6,patchScale:.02,noMask:true,pad:.3});
  // fallen trees in the jungle and the rainforest, driftwood on the shore, dead wood on the dry slopes
  BIO.grid(150,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;const Z=zones(x,z);return (Z.hyper*.8+Z.rain*.6+Z.shore*.4+Z.ridge*.15+Z.top*.3)*q;},(x,y,z,d)=>{const Z=zones(x,z),dry=Z.ridge>.5||Z.cinder>.5;for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st,dry))break;},{patch:0,pad:3});
+ // THE OLD LAVA'S UNDERSTORY (the owner, 2026-10-27: the weathered ground needs more shrubs and understory): the tongues are old flows
+ // weathered to soil, so beside the cinder mix above they carry a shrub layer: broadleaf and frond shrubs, young splay trees, ferns
+ // in the damper hollows, grass between. Its own stream (reseed), drawn after every other floor pass, so no plant
+ // placed before it moves; the near two bands only (past 1.2 km the ground's paint carries it). NWBAY.LAVA_UNDER false: none
+ if(NWBAY.LAVA_UNDER!==false){reseed(600777);
+  const under=(x,y,z,lv,Z)=>{const t=rng();
+   if(t<.26){shrub(x,y,z,lv,rng()<.5?PAL.savleaf:null);st.shrubs++;}
+   else if(t<.44){frondShrub(x,y,z,lv);st.shrubs++;}
+   else if(t<.56){if(lv>=1){splaylet(x,y,z,lv);st.splaylets++;}else{shrub(x,y,z,lv);st.shrubs++;}}
+   else if(t<.72){fern(x,y,z,lv,Z.wet>.35?null:PAL.savleaf);st.ferns++;}
+   else if(t<.84){shrub(x,y,z,lv);st.shrubs++;}
+   else{drygrass(x,y,z,lv);st.tufts++;}};   /* no cinder cushions here: the old pass has them, and a field of them reads as smooth domes */
+  [[7,450,0],[12,1200,450]].forEach((b,bi)=>{const lv=2-bi;
+   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const Z=zones(x,z);return Z.cinder>.05?.72*q*smooth(.05,.45,Z.cinder):0;},
+    (x,y,z,d)=>{if(!okGround(x,z,.8))return;under(x,y,z,lv,zones(x,z));},{patch:.55,patchScale:.03,pad:.6});});}
  return{under:st};};
 })();

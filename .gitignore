@@ -24,7 +24,7 @@ settlements/locus/yuni-*.html
 gallery/site/
 gallery/throne-site/
 gallery/ancients-site/
-settlements/girder/hero/dist/
+archive/girder-hero/hero/dist/
 
 # verify.py variant-shot folders (shots-var etc.)
 shots-*/
@@ -65,3 +65,12 @@ kits/fauna/three.min.js
 
 # the SpringBoneSimulator3D spike (godot/krator/character/REPORT.md): pieces decoded from the published Cosmetic Lab
 godot/data/spike/
+
+# tools/verify_cache.py: the local record of passing verifies (never committed)
+.verify-pass.json
+# nhighlands' wide spike tile (290 MB: biomes/nhighlands/PERF.md has the command that writes it)
+godot/data/world-nhighlands-wide/
+# the Rift jungle tile (biomes/rift/PERF.md: regenerate with tools/harness.py export)
+godot/data/world-rift-jungle/
+# scale-model built HTML snapshots (only model/dist/scale-model.html is built locally)
+tools/scale-model/scale-model-*.html

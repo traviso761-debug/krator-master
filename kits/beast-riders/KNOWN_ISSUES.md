@@ -3,6 +3,15 @@
 - [x] **The catalog's thirteen were lossy copies of Girder's and Mav's Refuge's buildings** (owner, 2026-10-18).
       Closed 2026-10-18: the kit shows the PORTS (`br_port_*`, README), the towns' own builders on their own engines,
       each checked against its town's page (verify.py). The catalog's copies are off the sheet.
+- [x] **The ports were drawn without their towns' openings** (Girder's and Mav's Refuge's `55-arch.js` and `56-levels.js`
+      carried shims for the kit: a door leaf drawn shut into the plank bucket, a locked record nothing, a wall with windows
+      drawn whole, no glass). Closed 2026-11-09: `towns.py` seals each town's `54-openings.js` and core/door's records and
+      glass with its architecture, the shims are gone from the towns, the panes are KGLASS as `81-glow.js` draws them and
+      the ports' doors open on the sheet (README, "The openings"); verify.py checks the doors door for door against the
+      towns' pages and that every doorway and cut window is open.
+- [ ] **The ports' panes are unlit**: the sheet has no night, so the room cards and glass take no light volume, and a
+      world that places the ports (the isle demo, Pinnacle Rock) shows the leaves as built (it does not call
+      `BR_PORTS.host`, so they do not open there).
 - [ ] **The catalog's copies stay in the catalog** (`kits/catalog/krator-master-buildings-beast-rider.js`) for the builds
       that read them (Voth; the isle demo's Ridertown switched to the ports on 2026-10-18). Retiring them means re-pointing those builds to the ports.
 - [ ] **Not ported**: Girder's towers (the Ancients' frame, not a rider building: the catalog's `br_bldg_girder_tower`

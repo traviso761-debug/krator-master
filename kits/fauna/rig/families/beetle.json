@@ -1,0 +1,136 @@
+{
+ "group": "crawlers",
+ "unit": 0.6,
+ "nrmtex": 512,
+ "swap": [
+  "abd",
+  "head"
+ ],
+ "bodies": [
+  "horned",
+  "ground"
+ ],
+ "sources": {
+  "horned": "beetle-horned",
+  "ground": "beetle-ground"
+ },
+ "tex": {
+  "horned": 1024,
+  "ground": 1400
+ },
+ "picks": {
+  "ranch-brown": {
+   "body": "ground",
+   "abd": "ground",
+   "head": "ground",
+   "scale": 2.4,
+   "tint": {
+    "body": "0x4a3626",
+    "legs": "0x3a2a1e",
+    "abd": "0x5a4230"
+   }
+  },
+  "ranch-moss": {
+   "body": "ground",
+   "abd": "ground",
+   "head": "ground",
+   "scale": 2.4,
+   "tint": {
+    "body": "0x34402a",
+    "legs": "0x2a2e20",
+    "abd": "0x4a5a34"
+   }
+  },
+  "arena": {
+   "body": "ground",
+   "abd": "ground",
+   "head": "horned",
+   "scale": 2.75,
+   "tint": {
+    "body": "0x3a2a20",
+    "legs": "0x2c2018",
+    "abd": "0x4e3826"
+   }
+  },
+  "scarab-chestnut": {
+   "body": "horned",
+   "abd": "horned",
+   "head": "horned",
+   "scale": 0.6,
+   "tint": {
+    "body": "0x4a2415",
+    "legs": "0x2e1a12",
+    "abd": "0x6a3218"
+   }
+  },
+  "scarab-black": {
+   "body": "horned",
+   "abd": "horned",
+   "head": "horned",
+   "scale": 0.6,
+   "tint": {
+    "body": "0x1a1816",
+    "legs": "0x141210",
+    "abd": "0x242220"
+   }
+  },
+  "scarab-bronze": {
+   "body": "horned",
+   "abd": "horned",
+   "head": "horned",
+   "scale": 0.6,
+   "tint": {
+    "body": "0x2e3a22",
+    "legs": "0x24281a",
+    "abd": "0x4a5a28"
+   }
+  },
+  "scarab-tan": {
+   "body": "horned",
+   "abd": "horned",
+   "head": "horned",
+   "scale": 0.6,
+   "tint": {
+    "body": "0x8a6a44",
+    "legs": "0x5a4630",
+    "abd": "0xa88256"
+   }
+  },
+  "salt": {
+   "body": "ground",
+   "abd": "ground",
+   "abdScale": 0.85,
+   "head": "ground",
+   "scale": 0.2,
+   "tint": {
+    "body": "0xc8c2b4",
+    "legs": "0x8a8478",
+    "abd": "0xe4dfd2"
+   }
+  },
+  "char": {
+   "body": "horned",
+   "abd": "ground",
+   "head": "ground",
+   "scale": 0.2,
+   "tint": {
+    "body": "0x1c1a1a",
+    "legs": "0x161414",
+    "abd": "0x2a2422"
+   }
+  },
+  "boring": {
+   "body": "ground",
+   "abd": "ground",
+   "abdScale": 0.75,
+   "head": "horned",
+   "headScale": 0.8,
+   "scale": 0.18,
+   "tint": {
+    "body": "0x5a4a30",
+    "legs": "0x46381f",
+    "abd": "0x7a6444"
+   }
+  }
+ }
+}

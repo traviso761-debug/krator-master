@@ -2,7 +2,7 @@
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees and
 // the reed beds), 60 (floor), 65 (dress) and 75 (fauna); this file only orders
 // them and reports.
-NWBAY.build=function(opt){opt=opt||{};const R=opt.R||2400,q=opt.quality==null?1:opt.quality;
+NWBAY.build=function(opt){opt=opt||{};const R=opt.R==null?2400:opt.R,q=opt.quality==null?1:opt.quality;
  if(opt.bayHue!=null)NWBAY.setBay(opt.bayHue);
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(NWBAY.buildTrees){BIO.cur='nwbay/trees';Object.assign(out,NWBAY.buildTrees(R,q));}

@@ -1,0 +1,22 @@
+{
+ "maps": {
+  "map": "albedo.jpg"
+ },
+ "kind": "equirectangular moon map: the centre faces the giant, 25% across is the leading face, north up (core/atmos/sky)",
+ "source": {
+  "sha1": "c29ef6561ca09856be775ed0740b4d0229b8dcdb",
+  "size": [
+   1774,
+   887
+  ],
+  "delivered": "2026-10-25, pasted by the owner",
+  "prompt": "Equirectangular planet surface map, 2048x1024 (2:1), wraps seamlessly from the left edge to the right, a true cylindrical map of a whole sphere with the poles stretched across the top and bottom rows, flat even lighting, no shading, no shadows, no terminator, no clouds, no atmosphere, no stars, no background, no labels: the surface of a world with seas of sulfuric acid. Broad oceans stained brown #5a3c18 to #3a2810 cover about 60% of the surface; their coasts are rimmed with pale sulfate salt crusts #e0d4b0; the continents are covered in dark red vegetation #5a1a10 and #7a2a18, with ochre bare rock #a07848 in the highlands. Full colour, not tinted."
+ },
+ "processing": {
+  "resize": [
+   1024,
+   512
+  ],
+  "jpeg_quality": 88
+ }
+}

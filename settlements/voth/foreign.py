@@ -36,6 +36,9 @@ BUILDS = [
     },
     {   # Hykkousoi
         'name': 'ys', 'src': os.path.join(ROOT, 'settlements', 'ys', 'src'),
+        # Ys reads the Ancients chain in place since 2026-11-09 (settlements/ys/build.py INPLACE): its src/ keeps the adapted
+        # copies only, so the rest is read where Ys reads it (the same bytes its copies had)
+        'up': [os.path.join(ROOT, 'kits', 'ancients', 'src'), os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')],
         'files': ['08-core-rand.js', '10-core.js', '12-stats.js', '20-textures.js', '22-materials.js', '30-kit.js', '32-surfaces.js', '35-furn-frame.js',
                   '34-kitdefs.js', '36-decor.js', '38-helpers2.js', '50-registry.js', '54-mat-concrete.js', '60-hyk-mat.js',
                   '60-ys-registries.js', '61-hyk-shell.js', '62-hyk-helpers.js', '68-mat-v5.js', '69-mat-salvage.js', '69a-world-uv.js', '69b-vern-mat.js', '69c-vern-helpers.js',
@@ -60,8 +63,8 @@ def _read(p):
         return f.read()
 
 
-def _path(src, f):
-    for d in [src] + FALLBACK:
+def _path(src, f, up=()):
+    for d in [src] + list(up) + FALLBACK:
         p = os.path.join(d, f)
         if os.path.exists(p):
             return p
@@ -77,7 +80,7 @@ def _head_js(src):
 def _bundle(B):
     body = [_head_js(B['src'])]
     for f in sorted(B['files']):
-        p = _path(B['src'], f)
+        p = _path(B['src'], f, B.get('up', ()))
         body.append('/* ---- %s ---- */' % os.path.relpath(p, ROOT).replace(os.sep, '/') + NL + _read(p))
     js = NL.join(body).replace("const ERRS=document.getElementById('errs');", '')
     keys = '{' + ', '.join('"%s": "%s"' % kv for kv in B['keys'].items()) + '}'

@@ -80,7 +80,13 @@ function blooms(x,y,z,r,n,set,sz,o){o=o||{};const c=bright(vary(pick(set),.03,.1
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(o.s0==null?.3:o.s0,o.s1==null?.55:o.s1);
   BIO.put('bloom',[x+Math.cos(a)*d,y+(o.flat?rr(0,.3):rr(-.3,.4)*r),z+Math.sin(a)*d],qEuler(rr(-tl,tl),rr(0,TAU),rr(-tl,tl)),s,(o.flat||i%4)?c:shade(c,rr(-.1,.2)));}}
 CRATERDRY.blooms=blooms;
-const regTree=(T,S,r,h)=>BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h,age:T.age});
+// a limb's joint to its parent (core/biome 31j, BIO.flareJoin; the owner, 2026-11-03: every rebuild): the tube's root sinks into its parent and swells
+// to a collar. No random numbers, so no tree moves; only the drawn tube changes (its points' indices for the tips are the kit's own, unchanged).
+// A page without 31j draws the tubes as before
+const FJ=(pts,parentR)=>typeof BIO.flareJoin==='function'?BIO.flareJoin(pts,{parentR}):pts;
+// BAKING: an impostor's bake builds a tree again (BIO.bakeImpostors): it registers nothing
+let BAKING=false;
+const regTree=(T,S,r,h)=>BAKING?null:BIO.register({name:S.name,key:S.key,x:T.x,z:T.z,y:T.y0,r:r,h:h,age:T.age});
 // a bole as a tube from the ground (crooked, tapering), coloured ring by ring: charred below the flame height
 function bole(T,S,fam,x,z,h,r0,r1,lean,la,wig,n,st,seg,dead){const pts=[];const w1=rr(-1,1)*wig,w2=rr(-1,1)*wig,ph=rr(0,TAU),ch=charH(T);
  for(let k=0;k<=n;k++){const t=k/n,w=(w1*Math.sin(t*Math.PI)+w2*Math.sin(t*TAU))*h,ox=Math.cos(la)*lean*h*t*t+Math.cos(ph)*w,oz=Math.sin(la)*lean*h*t*t+Math.sin(ph)*w,y=T.y0-.3+(h+.3)*t;
@@ -125,7 +131,7 @@ B[0]=function(T,st,lv){const S=SP[T.sp],a=T.age,grow=a<6?clamp(.2+a/6*.8,.2,1):1
   const pts=bole(T,S,'bark6',T.x+Math.cos(sa)*rl*.4,T.z+Math.sin(sa)*rl*.4,h*.72,T.rb*grow*.95+.03,T.rb*grow*.45+.02,lean,sa,.08,lv===2?4:2,st,lv===2?5:4,false);
   const e=pts[pts.length-1],nL=lv===2?ri(2,4):2;
   for(let k=0;k<nL;k++){const la=sa+rr(-1.1,1.1),L=h*rr(.3,.45),lp=treeGrow(e,dirOf(la,rr(.55,1.0)),L,e.r*.8,.03,3,-.06,.1);
-   if(lv===2)st.limb+=BIO.tube('bark6',lp,barkCol(S,k+s),{seg:3});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],e.r*1.4,.04,rodCol(S.bark[0]));
+   if(lv===2)st.limb+=BIO.tube('bark6',FJ(lp,e.r),barkCol(S,k+s),{seg:3});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[3].x,lp[3].y,lp[3].z],e.r*1.4,.04,rodCol(S.bark[0]));
    spots.push({p:lp[3],s:L*.4,tip:true},{p:lp[2],s:L*.3});reach=Math.max(reach,Math.hypot(lp[3].x-T.x,lp[3].z-T.z)+L*.3);top=Math.max(top,lp[3].y);}}
  const cy=T.y0+H*.7,sz0=R*.42*(lv===2?1:1.5);
  for(const s of spots){const n=lv===2?(s.tip?2:1):(s.tip?1:0);
@@ -210,7 +216,7 @@ function pineTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,hc=C(pi
   for(let k=0;k<n;k++){const ba=rr(0,TAU),L=R*cfg.shape(bu)*rr(.8,1.15);if(L<.4)continue;
    const el=cfg.el+cfg.elU*bu+rr(-.12,.12),r0=Math.max(.04,p.r*rr(.4,.6));
    const bp=treeGrow({x:p.x+Math.cos(ba)*p.r*.6,y:p.y,z:p.z+Math.sin(ba)*p.r*.6},dirOf(ba,el),L,r0,Math.max(.03,r0*.3),3,cfg.curve,.12);
-   if(lv===2&&r0>.07)st.limb+=BIO.tube(cfg.fam,bp,barkCol(S,k+1),{seg:r0>.2?5:3,cap:r0>.2});
+   if(lv===2&&r0>.07)st.limb+=BIO.tube(cfg.fam,FJ(bp,p.r),barkCol(S,k+1),{seg:r0>.2?5:3,cap:r0>.2});
    else BIO.beam('rod',[bp[0].x,bp[0].y,bp[0].z],[bp[3].x,bp[3].y,bp[3].z],r0*2,r0*.8,rodCol(S.bark[0]));
    st.forks++;spots.push({p:bp[3],s:L*.32,tip:true},{p:bp[2],s:L*.26});topY=Math.max(topY,bp[3].y);}}
  const cy=T.y0+H*mix(cfg.cb,1,.55),ey=H*(1-cfg.cb)*.5,sz0=R*cfg.tuftK*(lv===2?1:1.5);
@@ -236,7 +242,7 @@ function decTree(T,st,lv,cfg){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR;
   const top=pts[pts.length-1],nL=lv===2?ri(cfg.limbs[0],cfg.limbs[1]):Math.max(2,cfg.limbs[0]-1),la0=rr(0,TAU);
   for(let k=0;k<nL;k++){const la=la0+k*GOLD+rr(-.3,.3),el=cfg.el*rr(.8,1.2),L=(H-fh)*cfg.limbK*rr(.8,1.15)/(nS>1?1.15:1),r0=top.r*rr(.55,.75);
    const o=k<2?top:along(pts,rr(.75,.98)),lp=treeGrow({x:o.x,y:o.y,z:o.z},dirOf(la,el),L,r0,Math.max(.04,r0*.35),3,cfg.curve,cfg.wig);
-   if(lv===2||r0>.3)st.limb+=BIO.tube(cfg.fam,lp,barkCol(S,k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
+   if(lv===2||r0>.3)st.limb+=BIO.tube(cfg.fam,FJ(lp,o.r),barkCol(S,k+2),{seg:r0>.25?5:4,cap:r0>.25});else{BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r0*2,r0*1.3,rodCol(S.bark[0]));BIO.beam('rod',[lp[2].x,lp[2].y,lp[2].z],[lp[3].x,lp[3].y,lp[3].z],r0*1.3,r0*.7,rodCol(S.bark[0]));}st.forks++;
    spots.push({p:lp[3],s:L*.3,tip:true},{p:lp[2],s:L*.25});
    for(let q=0,nSec=lv===2?cfg.sec:0;q<nSec;q++){const p=lp[ri(1,2)],a2=la+rr(-1.3,1.3),el2=el+rr(-.3,.5),L2=L*rr(.4,.65);
     const sp2=treeGrow({x:p.x,y:p.y,z:p.z},dirOf(a2,el2),L2,Math.max(.03,p.r*.55),.03,2,cfg.curve,.12);
@@ -264,7 +270,7 @@ B[5]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,tips=[];
  const pts=bole(T,S,'bark0',T.x,T.z,H*rr(.45,.6),rb,rb*.75,rr(0,.06),rr(0,TAU),.05,3,st,lv===2?6:4,false),top=pts[pts.length-1];
  const fork=(o,a,L,r,d)=>{if(d===0||L<.6){tips.push(o);return;}const n=d===2?ri(2,3):2;
   for(let k=0;k<n;k++){const b=a+(k-(n-1)/2)*rr(.7,1.1),lp=treeGrow(o,dirOf(b,rr(.75,1.05)),L,r,r*.8,2,.05,.05);
-   if(lv===2)st.limb+=BIO.tube('bark0',lp,barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r*2,r*1.6,rodCol(S.bark[0]));
+   if(lv===2)st.limb+=BIO.tube('bark0',FJ(lp,o.r),barkCol(S,k),{seg:5,cap:true});else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r*2,r*1.6,rodCol(S.bark[0]));
    fork(lp[2],b,L*.75,r*.8,d-1);}};
  fork(top,rr(0,TAU),(H-H*.5)*.55,rb*.7,lv===2?2:1);
  let reach=R*.5;
@@ -283,7 +289,7 @@ B[6]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,a=T.age,dead=a<
  const pts=bole(T,S,'bark0',T.x,T.z,H*rr(.35,.5),rb,rb*.8,rr(0,.06),rr(0,TAU),.08,3,st,lv===2?6:4,dead?(a>3?.6:.1):false),top=pts[pts.length-1];
  const arm=(o,a0,L,r,d)=>{if(d===0){tips.push(o);return;}const n=ri(2,3);
   for(let k=0;k<n;k++){const b=a0+k*TAU/n+rr(-.4,.4),lp=treeGrow(o,dirOf(b,rr(.35,.85)),L,r,r*.85,2,.15,.15);
-   if(lv===2)st.limb+=BIO.tube(dead?'wood':'bark0',lp,dead?deadCol(a>3?.6:.1):barkCol(S,k),{seg:4,cap:true});
+   if(lv===2)st.limb+=BIO.tube(dead?'wood':'bark0',FJ(lp,o.r),dead?deadCol(a>3?.6:.1):barkCol(S,k),{seg:4,cap:true});
    else BIO.beam('rod',[lp[0].x,lp[0].y,lp[0].z],[lp[2].x,lp[2].y,lp[2].z],r*2,r*1.7,dead?charCol(S):rodCol(S.bark[0]));
    arm(lp[2],b,L*.75,r*.8,d-1);}};
  arm(top,rr(0,TAU),(H-H*.42)*.45,rb*.7,lv===2?2:1);
@@ -313,7 +319,7 @@ B[7]=function(T,st,lv){const S=SP[T.sp],H=T.H,rb=T.rb,R=T.crownR,bH=H*rr(.5,.62)
  const head=(p,s)=>{const brown=scorched(T,p.y);clumpAt('flame',p.x,p.y+.3,p.z,s,.8,brown?leafCol(PAL.scorch,1.1):bright(vary(pick(S.leaf),.03,.08,.05),1.25),T.x,T.y0+H*.85,T.z,R,H*.2);
   if(!brown)BIO.put('fruit',[p.x,p.y+.3,p.z],null,s*.08,bright(C(pick(PAL.cushionEye)),1.1));st.clumps++;};
  for(let k=0;k<nB;k++){const a=k*GOLD+rr(-.2,.2),el=rr(.35,1.0),L=R*rr(.6,1.0),bp=treeGrow({x:top.x,y:top.y,z:top.z},dirOf(a,el),L,rb*.2,.06,3,.1,.08);
-  st.limb+=BIO.tube('bark5',bp,barkCol(S,1),{seg:4,cap:true});
+  st.limb+=BIO.tube('bark5',FJ(bp,rAt(1)*.62),barkCol(S,1),{seg:4,cap:true});
   head(bp[3],R*rr(.42,.6)*(lv===2?1:1.3));if(lv===2)head(bp[2],R*rr(.32,.45));}
  head({x:top.x,y:top.y+R*.35,z:top.z},R*.6);
  regTree(T,S,R*1.05,H+1);};
@@ -338,6 +344,9 @@ B[10]=function(T,st,lv){const S=SP[T.sp],R=T.crownR,H=T.H,a=T.age,flower=a>=.3&&
  BIO.put('rosette',[T.x,T.y0-.05,T.z],qEuler(0,rr(0,TAU),0),[R,R*.8,R],rc);
  if(flower||spent){const sh=H-R*.4,sw=R*rr(.45,.6);
   BIO.put('spire',[T.x,T.y0+R*.35,T.z],qEuler(rr(-.04,.04),rr(0,TAU),rr(-.04,.04)),[sw,sh,sw],spent?leafCol([0x7a5a3a,0x6a4a30],1.0):bright(C(0x7a9a5a).lerp(C(pick(PAL.swordSpike)),.3),1.2));
+  /* the spike's stalk (the final rebuild, pair 12): the spike is a leaf-material item, which the attach audit counts as a card, so its flowers
+     floated (20 on station 1, 123 on the savannah edge). A rod up its axis, inside it, as the yucca's spike has: no random number drawn */
+  if(flower&&lv===2)BIO.beam('rod',[T.x,T.y0+R*.35,T.z],[T.x,T.y0+R*.35+sh*.9,T.z],sw*.16,sw*.06,bright(C(0x7a9a5a),1.0));
   if(flower&&lv===2)for(let k=0,n=ri(16,26);k<n;k++){const u=rr(.1,.85),q=rr(0,TAU),r=sw*.5*Math.sin(Math.PI*Math.min(1,u*.92+.04))*1.05;
    BIO.put('bloom',[T.x+Math.cos(q)*r,T.y0+R*.35+sh*u,T.z+Math.sin(q)*r],qEuler(rr(-1,1),rr(0,TAU),rr(-1,1)),rr(.14,.22),leafCol(PAL.swordSpike,1.35,.02,.06,.05));}
   st.spikes++;}
@@ -389,7 +398,24 @@ CRATERDRY.buildTrees=function(R,q){
    {patch:opt.patch==null?.6:opt.patch,patchScale:opt.patchScale||.01,pad:pad+2});
   return n;}
  CRATERDRY.PASSES.forEach(pass);
- TREES.forEach((T,i)=>{if(T.lv===0){buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ // OCTAHEDRAL IMPOSTORS FOR THE FAR TIER (core/biome 34; the final rebuild, pair 12, 2026-11-09; korona's lines): a far LIVING tree is one quad baked
+ // per species from the hero nearest the middle, built again where it stands at BIO.bakeImpostors (after every placement), drawn as an unburnt tree
+ // (its copy's age set to 20 years: no char band, no scorch). A far tree the fire left bare or black (the blob's own rule below: a resprouter's dead
+ // stems, a seeder's snag, a killed skeleton, anything burnt in the last 18 months) keeps its charred pole and blob, so the mosaic still reads from
+ // afar. Species under 7 m at their tallest keep their blobs (BACKPORT.md's graphics row). The blobs drew no random numbers for a living tree, so
+ // nothing else moves. CRATERDRY.IMPOSTORS=false (?diet=0 in 88) keeps the blobs for every tree
+ const IMPON=CRATERDRY.IMPOSTORS!==false&&typeof BIO.impostor==='function',IMPS=[];
+ const bareFar=T=>{const S=SP[T.sp];return(S.fire==='resprouter'&&T.age<3&&S.key!=='yucca')||(S.fire==='seeder'&&S.key==='frill'&&T.age<4)||(S.fire==='killed'&&T.age<6)||T.age<1.5;};
+ if(IMPON){const set=BIO.impostorSet('craterdry.trees',{label:'Far trees'}),c=BIO.center?BIO.center():[0,0];
+  SP.forEach((S,sp)=>{if(!S.far||S.H[1]<7)return;let T0=null;
+   for(const T of TREES)if(T.sp===sp&&T.lv>0&&(!T0||Math.hypot(T.x-c[0],T.z-c[1])<Math.hypot(T0.x-c[0],T0.z-c[1])))T0=T;if(!T0)return;
+   const T1=Object.assign({},T0,{age:20,_ch:undefined}),st1=newStats();
+   const rec=BIO.impostor('craterdry.'+S.key,()=>{BAKING=true;try{reseed(T1.seed);B[sp](Object.assign({},T1),st1,2);}finally{BAKING=false;}},{set,at:[T1.x,T1.y0,T1.z],label:S.name+' (far)'});
+   if(rec)IMPS[sp]={rec,H:T1.H};});
+  if(set.recs.length)BIO.impostorItem('impTrees',set,{label:'Far trees'});}
+ const farImp=T=>{const I=IMPS[T.sp];if(!I||bareFar(T))return false;BIO.impostorPut('impTrees',I.rec,[T.x,T.y0,T.z],(T.seed%628)/100,T.H/I.H,null);st.far+=2;return true;};
+ TREES.forEach((T,i)=>{if(T.lv===0){if(!farImp(T))buildFar(T,i,st);st.fars++;}else{B[T.sp](T,st,T.lv);st.heroes++;}st.byS[T.sp]++;});
+ CRATERDRY.IMPOSTOR_SPECIES=IMPS.map((I,sp)=>I?SP[sp].key:null).filter(Boolean);
  CRATERDRY.COUNTS=SP.map((S,i)=>st.byS[i]);
  return{trees:TREES.length,heroes:st.heroes,far:st.fars,bySpecies:SP.map((S,i)=>S.key+':'+st.byS[i]).join(' '),forks:st.forks,clumps:st.clumps,blooms:st.blooms,pods:st.pods,spikes:st.spikes,
   shoots:st.shoots,seedlings:st.seedlings,fruit:st.fruit,tris:{trunk:st.trunk,limbs:st.limb,far:st.far}};};
@@ -423,7 +449,9 @@ CRATERDRY.PASSES=[
 // ---------------------------------------------------------------- one tree alone (biomes/WORLD.md: trees as variants)
 // make(sp,x,y,z): the pass's own tree record (H, rb, crownR and seed from the kit's stream, the age of the ground's
 // last burn from the fire history). grow(T,lv): build that one tree at level lv (2 hero, 1 mid, 0 the impostor).
-CRATERDRY.make=function(sp,x,y,z){const S=SP[sp];return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1]),rb:rr(S.rb[0],S.rb[1]),crownR:rr(S.crownR[0],S.crownR[1]),seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
+// BIO.host.treeScale (a station's stage: the salt floor's dense air grows the kiln's scrub at its largest, 1.2): every size times it, after the
+// draws, so no random number moves. No host asking: 1, as before
+CRATERDRY.make=function(sp,x,y,z){const S=SP[sp],k=BIO.host.treeScale==null?1:BIO.host.treeScale;return{x:x,z:z,y0:y-.4,sp:sp,H:rr(S.H[0],S.H[1])*k,rb:rr(S.rb[0],S.rb[1])*k,crownR:rr(S.crownR[0],S.crownR[1])*k,seed:ri(0,999999),age:CRATERDRY.ageAt(x,z)};};
 CRATERDRY.grow=function(T,lv){means();const st=newStats();
  T.lv=lv;if(lv===0){if(!SP[T.sp].far)return null;buildFar(T,T.seed%7,st);}else B[T.sp](T,st,lv);return st;};
 })();

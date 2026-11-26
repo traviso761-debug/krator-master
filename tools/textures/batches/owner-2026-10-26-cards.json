@@ -1,0 +1,563 @@
+[
+ {
+  "src": "card.larch.png",
+  "out": "core/materials/library/card.larch",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 80,
+   "key_hi": 200,
+   "spill": "edge",
+   "choke": 2
+  },
+  "record": {
+   "id": "card.larch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.larch\"",
+    "reuse": "the fur larch crown; any larch or soft-needled deciduous conifer",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge; choke 2 against a pink fringe"
+   }
+  }
+ },
+ {
+  "src": "card.snowball.png",
+  "out": "core/materials/library/card.snowball",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.snowball",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.snowball\"",
+    "reuse": "the woolly snowball of the fellfield; any woolly high-alpine column",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.pasque.png",
+  "out": "core/materials/library/card.pasque",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.pasque",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.pasque\"",
+    "reuse": "the furflower; any pasqueflower or steppe anemone",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.fireweed.png",
+  "out": "core/materials/library/card.fireweed",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 40,
+   "key_hi": 120,
+   "spill": "none",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.fireweed",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.fireweed\"",
+    "reuse": "Ivan-chai on burns; any fireweed or willowherb",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge; spill none (a deep-pink subject: edge spill turned the flowers dull red)"
+   }
+  }
+ },
+ {
+  "src": "card.cottongrass.png",
+  "out": "core/materials/library/card.cottongrass",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cottongrass",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cottongrass\"",
+    "reuse": "the cottongrass of the bogs; any cottongrass or sedge bog",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.seabuckthorn.png",
+  "out": "core/materials/library/card.seabuckthorn",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.seabuckthorn",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.seabuckthorn\"",
+    "reuse": "the silverthorn of the gullies; any sea buckthorn",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.crop.thule.png",
+  "out": "core/materials/library/card.crop.thule",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.crop.thule",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.crop.thule\"",
+    "reuse": "the Three Gifts (sweetvetch, Eskimo potato, roseroot; rows of the sheet) and kits/crops",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.saltbush.png",
+  "out": "core/materials/library/card.saltbush",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 80,
+   "key_hi": 200,
+   "spill": "edge",
+   "choke": 2
+  },
+  "record": {
+   "id": "card.saltbush",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.saltbush\"",
+    "reuse": "the Bowl halophyte belt; any saltbush or silver desert shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.brinelamp.png",
+  "out": "core/materials/library/card.brinelamp",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.brinelamp",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.brinelamp\"",
+    "reuse": "the Bowl brine lamp; any salt-crystal succulent",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.poplar.euphrates.png",
+  "out": "core/materials/library/card.poplar.euphrates",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.poplar.euphrates",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.poplar.euphrates\"",
+    "reuse": "the Catch Euphrates poplar crowns; any desert poplar (narrow and broad leaves, bottom row gold)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.lobelarch.png",
+  "out": "core/materials/library/card.lobelarch",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.lobelarch",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.lobelarch\"",
+    "reuse": "the W highland lobe larch; any lobed-pad deciduous tree (bottom row violet and gold)",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.bellfir.png",
+  "out": "core/materials/library/card.bellfir",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.bellfir",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.bellfir\"",
+    "reuse": "the N rim bell fir crowns; any bell- or cone-shaped needle crown",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.starberry.png",
+  "out": "core/materials/library/card.starberry",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.starberry",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.starberry\"",
+    "reuse": "the N rim starberry; any low berry shrub",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.sunrosette.png",
+  "out": "core/materials/library/card.sunrosette",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.sunrosette",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.sunrosette\"",
+    "reuse": "the S rim sun rosettes; any dark furred alpine rosette",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.cushion.anemone.png",
+  "out": "core/materials/library/card.cushion.anemone",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.cushion.anemone",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.cushion.anemone\"",
+    "reuse": "the S rim cushion anemones; any flowering cushion plant",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.lobelia.lantern.png",
+  "out": "core/materials/library/card.lobelia.lantern",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.lobelia.lantern",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.lobelia.lantern\"",
+    "reuse": "the S rim lantern lobelias; any giant alpine lobelia",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ },
+ {
+  "src": "card.mistcup.png",
+  "out": "core/materials/library/card.mistcup",
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 60,
+   "key_hi": 170,
+   "spill": "edge",
+   "choke": 1
+  },
+  "record": {
+   "id": "card.mistcup",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.mistcup\"",
+    "reuse": "the W highland mist cups; any tank rosette",
+    "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge"
+   }
+  }
+ }
+]

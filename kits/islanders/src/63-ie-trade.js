@@ -103,7 +103,7 @@ defBuilding({key:'ie-windmill',name:'Windmill (Kautoa)',seed:6210,cut:true,w:15,
   /* the tower: an octagon of woven bamboo on a timber frame, woven bands, a window to the front */
   W(0,0,0,PI/8,()=>{cyl('bamboo',0,bh,0,R1,th,P('bamboo'),8,rt);for(const y of [bh+1.3,bh+4.4])cyl('patWeave',0,y,0,rAt(y)+.04,.55,WHITE,8,rAt(y+.55)/rAt(y));});
   for(let k=0;k<8;k++){const a=k*PI/4+PI/8,s=Math.sin(a),c=Math.cos(a);beam('wood',[s*(R1+.05),bh,c*(R1+.05)],[s*(R1*rt+.05),bh+th,c*(R1*rt+.05)],.15,P('woodD'));}
-  {const y=bh+3,r=rAt(y)*Math.cos(PI/8);box('plain',0,y,r+.02,.55,.75,.04,P('black'));box('wood',0,y-.08,r+.06,.75,.08,.1,P('woodD'));}
+  {const y=bh+3,r=rAt(y)*Math.cos(PI/8);svRoom(0,y,r+.02,0,.55,.75);   /* the window: unglazed, the room card behind it (core/door; the tower has no floor up there) */box('wood',0,y-.08,r+.06,.75,.08,.1,P('woodD'));}
   /* the cap: a skirt of golden thatch and a spire with a figure at each end of its ridge; the windshaft; the tail pole */
   ieRoofE({hw:2.3,hd:2.3,eY:bh+th-.05,skirtH:.9,skirtS:.6,towerH:3.4,towerS:.55,topSx:.24,topSz:.08,sq:2.6,th:.22,finial:'figure',facade:'patWeave'});
   isNoCut(()=>{pole('wood',[0,hubY-.33,.4],[0,hubY,hubZ-.2],.16,P('woodD'),8);beam('wood',[0,bh+th+.2,-1.6],[0,bh+.25,-R0-.45],.14,P('woodD'));

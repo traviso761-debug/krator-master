@@ -1,0 +1,12 @@
+{
+ "name": "The bloodfalls (station 6): the ice belt's southern edge at 5.4 km at the head of Qol Ḍrāi, the iron brine out of the ice cliff rusting red as it falls, red-stained icicles, rust terraces, the red pool, the blood river leaving down its valley with the first riverweed; the Red Gill 11 km north-west, the Vale of Xanadu 3.7 km below",
+ "out": "godthrone-blood.html",
+ "region": "../gills/region.json",
+ "tex": ["iceGlacier", "iceRust", "rustTerrace", "lichenCrust"],
+ "water": ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js",
+  "ext/54-core-water-kinds-ext.js", "ext/54b-core-water-kinds-ext-draw.js", "ext/56-core-water-breakup.js", "ext/57-core-water-audit.js", "ext/60-core-water-fields.js"],
+ "reads": {
+  "44-gills-life.js": "biomes/gills/src/44-gills-life.js",
+  "45b-host-model.js": "biomes/godthrone/stations/gills/45b-host-model.js"
+ }
+}

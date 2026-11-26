@@ -57,7 +57,7 @@ function ancDress(F, walls, W, D, light){
   /* C. timber balconies with laundry */
   if(!light) spaced(outer, 7, Math.round(nLean*1.4), function(s){ return s[1]>4.5 && s[1]<14 && used.indexOf(s)<0 && inside(s[0]+s[3]*2,s[2]+s[4]*2,0.4); }).forEach(function(s,i){
     var nx=s[3], nz=s[4], tx=nz, tz=-nx, yaw=Math.atan2(nx,nz), w=F.rr(2.6,3.6), y=s[1]-1.0, bx=s[0]+nx*0.7, bz=s[2]+nz*0.7;
-    F.box(s[0]-nx*0.1, y+0.15, s[2]-nz*0.1, 1.1,2.0,0.5, yaw, VOIDC[0], 'dark');
+    F.doorway(s[0]-nx*0.1, y+0.15, s[2]-nz*0.1, 1.1,2.0,0.5, yaw, { out:[nx,nz] });   /* the door onto the balcony: a locked leaf (53-assets.js) */
     F.box(bx,y,bz, w,0.16,1.5, yaw, PLANKC[i%4], 'plank');
     F.box(bx+nx*0.72,y+0.16,bz+nz*0.72, w,0.85,0.07, yaw, TIMBERC[i%3], 'timber');
     for(var e=-1;e<=1;e+=2) F.beam(bx+tx*e*w*0.42+nx*0.6,y,bz+tz*e*w*0.42+nz*0.6, s[0]+tx*e*w*0.42-nx*0.1,y-1.3,s[2]+tz*e*w*0.42-nz*0.1, 0.12,0.12, TIMBERC[0], 'timber');

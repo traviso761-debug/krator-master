@@ -50,7 +50,9 @@ function describe(hit){const p=hit.point,o=hit.object;
  const fl=THRONE.flowAt(p.x,p.z),gr=fl?fl.name+', '+ageLabel(fl.age)+' old':'old ground (no flow in the record)';
  return name+'\n'+cls+(tg?'\n'+tg.climate+' · '+tg.aridity+' · riparian '+tg.riparian+' · abyssal '+tg.abyssal+' · '+tg.origin+' · lives: '+tg.plume+' · Koppen '+tg.koppen.join(' '):'')+
   (tg&&tg.harvest?'\nharvest: wood '+tg.harvest.wood+' · edible '+(tg.harvest.edible.join(', ')||'none')+(tg.harvest.medicinal?' · medicinal':'')+(tg.harvest.fruit?' · catalog '+tg.harvest.fruit:''):'')+
-  '\nground: '+gr+(FIELD.hollow(p.x,p.z)>.5?' · the hollow (CO2)':FIELD.dune(p.x,p.z)>.5?' · ash dunes':FIELD.hill(p.x,p.z)>.5?' · rhyolite':FIELD.yard(p.x,p.z)>.5?' · a yardang':' · ash, '+Math.round(FIELD.ash(p.x,p.z)*100)+'% deep')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m';}
+  '\nground: '+gr+(FIELD.hollow(p.x,p.z)>.5?' · the hollow (CO2)':FIELD.dune(p.x,p.z)>.5?' · ash dunes':FIELD.hill(p.x,p.z)>.5?' · rhyolite':FIELD.yard(p.x,p.z)>.5?' · a yardang':' · ash, '+Math.round(FIELD.ash(p.x,p.z)*100)+'% deep')+'\n'+p.x.toFixed(0)+', '+p.y.toFixed(0)+', '+p.z.toFixed(0)+'  range '+camera.position.distanceTo(p).toFixed(0)+' m'+hazardWords(p);}
+/* the hazards at the point (core/hazard, KTAGS.hazardAt): the CO2 hollow, the mat; each one's kind, danger and state now */
+function hazardWords(p){const w=typeof KTAGS!=='undefined'&&KTAGS.hazardAt?KTAGS.hazardAt(p.x,p.y,p.z):'';return w?'\n'+w:'';}
 // ---------------------------------------------------------------- the probe's budgets and the kit's own checks (verify.py --assert)
 // What verify.py --assert measures. Budgets per kit pass come from BIO.stats (charged by BIO.cur inside the kit).
 const BUDGET={
@@ -107,13 +109,14 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
+KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.take({build:'throne-ashdesert',title:'Krator biome — the Throne: the ash desert',
  hint:"The Throne, station 7: deep under the plume, the ash desert, ~2.2 km up the south-east flank (the plume's ceiling overhead, ash falling most days). Krator's own life: pagoda caps standing in the ash, ash creepers, drizzle trumpets, rope-trees, lamp caps glowing at night, soot cups and stalk daisies on the striped rhyolite hills; of Earth's only the hardiest. Ash dunes, wind-carved yardangs, old lava scoured bare, a CO2 hollow with the mat on its floor and bones on its rim (ideal type) · the weather picker: ashfall, the ash storm (and the rest) · N night",
  scene,camera,renderer,ground:terrainH,floor:(x,z)=>Math.max(terrainH(x,z),waterH(x,z)),clear:1.8,registry:REG,regHas,views:VIEWS,ticks:TICKS,
  onView:goLight,controls:LCTL,keys:{n:()=>setLightMode(LIGHT_MODE==='night'?'day':'night')},
- sky:{follow(c){sky.position.copy(c.position);giant.position.copy(c.position).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);},objects:()=>[sky,giant,giantRing]},
+ clock:{hour:ATMOS.SKY.viewHour},draw:SKY.draw,   /* the shared sky's pass, then the world (89-host-sky.js) */
  inspect:describe,stats:()=>'inst '+window._instances,
- layers:{'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
+ layers:{'hazards':KTAGS.hazardLayer(),'flora and fauna':{match:o=>!!(o.userData&&o.userData.biome)},'structures':{match:o=>!!(o.userData&&o.userData.host)},'rings':{objects:()=>[giantRing]}},
  exporters:{biome:()=>BIO.export()},
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,

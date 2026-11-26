@@ -1,0 +1,170 @@
+[
+ {
+  "src": "ground.quartzite.black.png",
+  "out": "core/materials/library/ground.quartzite.black",
+  "record": {
+   "id": "ground.quartzite.black",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.quartzite.black\"",
+    "reuse": "the tepui summit pavement (southern highlands); any black quartzite or cyanobacteria-crusted rock"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "ground.peat.black.png",
+  "out": "core/materials/library/ground.peat.black",
+  "record": {
+   "id": "ground.peat.black",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"ground.peat.black\"",
+    "reuse": "a waterlogged black peat bog floor; any bog or fen"
+   }
+  },
+  "options": {
+   "rough": 0.6,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "organic.lichen.plates.png",
+  "out": "core/materials/library/organic.lichen.plates",
+  "record": {
+   "id": "organic.lichen.plates",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    0.5,
+    0.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"organic.lichen.plates\"",
+    "reuse": "the log crust on fallen trees and landslide scars (southern highlands); any foliose lichen on wood or rock"
+   }
+  },
+  "options": {
+   "rough": 0.9,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "bark.carved.b.png",
+  "out": "core/materials/library/bark.carved.b",
+  "record": {
+   "id": "bark.carved.b",
+   "family": "bark",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"bark.carved.b\"",
+    "reuse": "the Oidong second carved bark variant (large nested rings, diamond chain); any sacred or written tree"
+   }
+  },
+  "options": {
+   "rough": 0.85,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.laterite.png",
+  "out": "core/materials/library/rock.laterite",
+  "record": {
+   "id": "rock.laterite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.95,
+   "metal": 0,
+   "scale": [
+    2,
+    2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.laterite\"",
+    "reuse": "the Godstep redlands breakaway cliffs; any tropical laterite or iron-crusted red cliff"
+   }
+  },
+  "options": {
+   "rough": 0.95,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ },
+ {
+  "src": "rock.turquoise.vein.png",
+  "out": "core/materials/library/rock.turquoise.vein",
+  "record": {
+   "id": "rock.turquoise.vein",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Downloads, 2026-10-26, fifth drop), generated from core/materials/PROMPTS-NEEDED.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md, \"rock.turquoise.vein\"",
+    "reuse": "the Outlands gem hills turquoise workings; any turquoise or copper-altered host rock"
+   }
+  },
+  "options": {
+   "rough": 0.7,
+   "rough_var": 0.15,
+   "lift": 0.12,
+   "mute": 0
+  }
+ }
+]

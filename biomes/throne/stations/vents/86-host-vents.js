@@ -8,18 +8,12 @@ const VENTS={marsh:{x:MARSH.x,z:MARSH.z,level:MARSH.level,acid:true},pools:POOLS
 HOLLOWS.forEach(H=>OBSTACLES.push({x:H.x,z:H.z,r:H.r*1.05}));
 
 // ---------------------------------------------------------------- the water: the marsh, the pools
-const MAT_WATER=new THREE.ShaderMaterial({fog:true,vertexColors:true,
- uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd2cec2)},uLight:{value:1}}]),
- vertexShader:['#include <fog_pars_vertex>','varying vec3 vWP;varying vec3 vCol;',
-  'void main(){vCol=color;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vCol;',
-  'void main(){',
-  ' vec3 n=normalize(vec3(0.02*sin(vWP.x*0.31+uT*0.8)+0.015*sin(vWP.z*0.53-uT*0.5),1.0,0.02*cos(vWP.z*0.27+uT*0.7)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(vCol,uSky,0.06+fr*0.5);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),120.0)*0.6*vec3(1.0,0.95,0.85);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_WATER.uniforms.fogColor.value=scene.fog.color;MAT_WATER.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{MAT_WATER.uniforms.uT.value+=dt;});
+// 2026-10-26: the marsh's water is a WATER.still (89w-host-water.js: drawStill needs core/atmos, bound in 89); the hot pools are
+// WATER.spring (core/water/geyser), banded from the middle out by their heat: the hottest deep blue to the rim, a cool one's mats
+// (green, yellow, orange) reaching in, as this page's rings of colours did. The disc is 1.45 r (the old rings reached 1.5 r; the level
+// is the lowest of the ring at 1.3 r). The page's own uniforms: the clock on the ticks, the light by the light mode.
+const SPRINGU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd2cec2)},uLight:{value:1}},SPRING_MATS=new Map();
+TICKS.push(dt=>{SPRINGU.uT.value+=dt;});
 const lin=h=>new THREE.Color(h).convertSRGBToLinear();
 // a water surface of rings: pt(a,t) the point at angle a, t of the way out; cols the colours from the middle out
 function waterRings(pt,Lv,cols,label,mat){const PN=64,R=cols.length-1,pos=[],col=[],idx=[];const c0=pt(0,0);pos.push(c0[0],Lv,c0[1]);const C0=lin(cols[0]);col.push(C0.r,C0.g,C0.b);
@@ -27,12 +21,11 @@ function waterRings(pt,Lv,cols,label,mat){const PN=64,R=cols.length-1,pos=[],col
  for(let k=0;k<PN;k++)idx.push(0,1+(k+1)%PN,1+k);
  for(let r=1;r<R;r++){const a=1+(r-1)*PN,b=1+r*PN;for(let k=0;k<PN;k++){const k1=(k+1)%PN;idx.push(a+k,a+k1,b+k,a+k1,b+k1,b+k);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,mat||MAT_WATER);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
-// the marsh: milky yellow-green acid water, its edge under the bank
-waterRings((a,t)=>upAt(MARSH.u+Math.cos(a)*MARSH.ru*t*1.01,MARSH.p+Math.sin(a)*MARSH.rp*t*1.01),MARSH.level,[0x8aa890,0x9ab088,0xb4b878],'The sulphur marsh\'s acid water');
+ const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
 // the pools: the hotter, the bluer and the deeper its blue; a cool one green, its rim orange
-POOLS.forEach((P,i)=>{const h=P.hot,mixc=(a,b,t)=>'#'+new THREE.Color(a).lerp(new THREE.Color(b),t).getHexString();
- waterRings((a,t)=>[P.x+Math.cos(a)*P.r*1.5*t,P.z+Math.sin(a)*P.r*1.5*t],POOLL[i],[mixc(0x2e8a6a,0x0a4e96,h),mixc(0x4a9a6a,0x1a74a8,h),mixc(0x6aa858,0x38a6b0,h),mixc(0xc0882e,0x9ab448,h)],h>.6?'A hot pool (the hottest are the bluest)':'A cooler hot pool (its mats grow into it)');});
+const HOT_SPRINGS=POOLS.map((P,i)=>{const S=WATER.spring({key:'pool'+i,name:P.hot>.6?'A hot pool (the hottest are the bluest)':'A cooler hot pool (its mats grow into it)',
+  x:P.x,z:P.z,r:P.r*1.45,level:POOLL[i],temp:P.hot,boil:P.hot>.9?1:0,steam:0});
+ const d=WATER.drawSpring(S,{THREE,scene,uniforms:SPRINGU,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});d.mesh.userData.probeSkip=true;return S;});
 
 // ---------------------------------------------------------------- the mud pots
 // Grey mud, bubbling: in the shader, bubbles swell and burst on a jittered grid, each on its own clock, rings spreading
@@ -93,7 +86,7 @@ STEAM_MAT.uniforms.fogColor.value=scene.fog.color;STEAM_MAT.uniforms.fogDensity.
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('aS',new THREE.Float32BufferAttribute(A,4));
  const pts=new THREE.Points(g,STEAM_MAT);pts.frustumCulled=false;pts.userData.probeSkip=true;pts.renderOrder=2;scene.add(pts);})();
 TICKS.push(dt=>{STEAMU.uT.value+=dt;STEAMU.uScale.value=innerHeight*renderer.getPixelRatio()/(2*Math.tan(camera.fov*Math.PI/360));});
-_onLight.push(m=>{const n=m==='night';STEAMU.uCol.value.setHex(n?0x40444c:0xeeeae0);MAT_WATER.uniforms.uLight.value=n?.18:1;MAT_MUD.uniforms.uLight.value=n?.2:1;GLOWU.uK.value=1.6;FISSGLOW.visible=n;});
+_onLight.push(m=>{const n=m==='night';STEAMU.uCol.value.setHex(n?0x40444c:0xeeeae0);SPRINGU.uLight.value=n?.18:1;MAT_MUD.uniforms.uLight.value=n?.2:1;GLOWU.uK.value=1.6;FISSGLOW.visible=n;});
 
 // ---------------------------------------------------------------- the hollows' dead
 // The CO2 kills what wanders in and the mat digests it, so the floor is clean; what is left lies bleached on the west

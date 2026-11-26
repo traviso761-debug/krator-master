@@ -1,7 +1,7 @@
 // ================================================================= SOUTHWEST BAY — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor), 65 (dress) and 75 (fauna); this file only orders them and reports.
-SWBAY.build=function(opt){opt=opt||{};const R=opt.R||2400,q=opt.quality==null?1:opt.quality;
+SWBAY.build=function(opt){opt=opt||{};const R=opt.R==null?2400:opt.R,q=opt.quality==null?1:opt.quality;
  if(opt.bayHue!=null)SWBAY.setBay(opt.bayHue);
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(SWBAY.buildTrees){BIO.cur='bay/trees';Object.assign(out,SWBAY.buildTrees(R,q));}

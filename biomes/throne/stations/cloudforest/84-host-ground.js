@@ -36,21 +36,27 @@ const GROUNDU={uNight:{value:0}};
 const GL_KEYS=['litter','wetmoss','moss3','rockwet','gravel','lichenrock','packed','shoulder'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
  for(const k of GL_KEYS.concat(['canopy'])){const P=KMAT.packed('throne','ground.'+k);if(!P)return null;o[k]={map:KMAT.textures(P,{aniso:8}).map,k:1/P.scale[0]};}return o;})();
-function groundMat(map){const m=new THREE.MeshLambertMaterial({map,color:0xb0aaa4});
+const GW={litter:'vL0.x',wetmoss:'vL0.y',moss3:'vL0.z',rockwet:'vL0.w',gravel:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',shoulder:'vL1.w'};   /* the weights, for KGROUND's hook (THRONE.kgGround, 70) */
+function groundMat(map){let KGI=null;const m=new THREE.MeshStandardMaterial({roughness:.95,metalness:0,map,color:0xb0aaa4});
  m.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};
-  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};GL_KEYS.concat(['canopy']).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
+  if(GLAY){sh.uniforms.uMacro={value:TEX_MACRO};(KGI?['canopy']:GL_KEYS.concat(['canopy'])).forEach(k=>sh.uniforms['uG_'+k]={value:GLAY[k].map});}
   sh.vertexShader=sh.vertexShader.replace('#include <common>','#include <common>\nvarying vec3 vGWP;attribute vec4 aL0,aL1;varying vec4 vL0,vL1;')
    .replace('#include <worldpos_vertex>','#include <worldpos_vertex>\nvGWP=(modelMatrix*vec4(transformed,1.0)).xyz;vL0=aL0;vL1=aL1;');
   const W={litter:'vL0.x',wetmoss:'vL0.y',moss3:'vL0.z',rockwet:'vL0.w',gravel:'vL1.x',lichenrock:'vL1.y',packed:'vL1.z',shoulder:'vL1.w'};
   let decl='uniform sampler2D uDetail;varying vec3 vGWP;varying vec4 vL0,vL1;',body;
-  if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['canopy']).map(k=>'uG_'+k).join(',')+';vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}';
+  if(GLAY&&KGI){decl+='uniform sampler2D uMacro,uG_canopy;';
+  body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);}\n/*KGROUND*/\n'+
+   // far off, the woods' floor reads as the canopy over it (the elfin trees have no far impostors)
+   '{vec3 L=pow(texture2D(uG_canopy,vGWP.xz*'+GLAY.canopy.k.toFixed(4)+').rgb,vec3(2.2));diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.1,vL0.x*smoothstep(300.0,700.0,length(cameraPosition-vGWP))*0.92);}';}
+  else if(GLAY){decl+='uniform sampler2D uMacro,'+GL_KEYS.concat(['canopy']).map(k=>'uG_'+k).join(',')+';'+THRONE.layGLSL(USE_KG,'vec3 _lay(sampler2D t,vec2 p,vec2 q,float k,float mt){return pow(mix(texture2D(t,p*k).rgb,texture2D(t,q*k*0.47+vec2(0.31,0.17)).rgb,mt),vec3(2.2));}');
    body='{vec2 p=vGWP.xz,q=mat2(0.799,-0.602,0.602,0.799)*p;float mt=smoothstep(0.3,0.7,texture2D(uMacro,p*0.0061).r);'+
     'vec3 dt=texture2D(uDetail,p*0.023+0.37).rgb;diffuseColor.rgb*=mix(vec3(1.0),dt*1.06,0.6);vec3 L;'+
     GL_KEYS.map(k=>'L=_lay(uG_'+k+',p,q,'+GLAY[k].k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.25,'+W[k]+');').join('')+
     // far off, the woods' floor reads as the canopy over it (the elfin trees have no far impostors)
     'L=_lay(uG_canopy,p,q,'+GLAY.canopy.k.toFixed(4)+',mt);diffuseColor.rgb=mix(diffuseColor.rgb,diffuse*L*1.1,vL0.x*smoothstep(300.0,700.0,length(cameraPosition-vGWP))*0.92);'+'}';}
   else body='{vec3 dt=texture2D(uDetail,vGWP.xz*0.17).rgb;vec3 dt2=texture2D(uDetail,vGWP.xz*0.023+0.37).rgb;diffuseColor.rgb*=dt*dt2*1.12;}';
-  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body);};
+  sh.fragmentShader=sh.fragmentShader.replace('#include <common>','#include <common>\n'+decl).replace('#include <map_fragment>','#include <map_fragment>\n'+body+'\n/*KGROUND*/');};
+ KGI=THRONE.kgGround(m,{key:'throne-cloudforest',keys:GL_KEYS,W:GW,GLAY});   /* after the page's own hook */
  return m;}
 // a vertex's layer weights
 function layersAt(x,z,h,at,L0,L1,k,slope){const fl=at('flow'),rk=Math.max(at('rock'),slope==null?0:smooth(.7,.95,slope)),ld=at('lee'),cf=at('cforest');
@@ -70,7 +76,7 @@ const GROUND=(function(){const pos=new Float32Array(GNX*GNX*3),uv=new Float32Arr
  const idx=[];for(let j=0;j<GN;j++)for(let i=0;i<GN;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1)continue;const a=j*GNX+i,b=a+GNX,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
- g.setIndex(idx);g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_GROUND));m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s west flank in the cloud belt';scene.add(m);return m;})();
+ g.setIndex(idx);g.computeVertexNormals();const m=THRONE.kgCavity(new THREE.Mesh(g,groundMat(TEX_GROUND)));m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s west flank in the cloud belt';scene.add(m);return m;})();
 _mark('ground');
 const TEX_PATCH=paintTex(2048,Math.max(64,Math.round(2048*PATCH.sz/PATCH.sx*4)),PATCH.x0,PATCH.z0,PATCH.sx,PATCH.sz,atFC);
 const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j0)*P.sub+1,cs=GCS/P.sub;
@@ -87,45 +93,17 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
  for(let j=0;j<nz-1;j++)for(let i=0;i<nx-1;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));
- g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,groundMat(TEX_PATCH));m.userData.probeSkip=true;m.userData.inspectLabel='The ravine of the falls';scene.add(m);return m;})();
+ g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=THRONE.kgCavity(new THREE.Mesh(g,groundMat(TEX_PATCH)));m.userData.probeSkip=true;m.userData.inspectLabel='The ravine of the falls';scene.add(m);return m;})();
 _mark('patch');
 
-// ---------------------------------------------------------------- THE FALLS: a curtain at each step of the ravine
-// From the lip (just above the step) the water is thrown out and falls, but never inside the wall: where the wall leans out
-// under it, the water slides down the wall. Streaked, running on the clock; spray at each foot (85)
-const FALLU={uT:{value:0},uLight:{value:1}};
-const FALL_MAT=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,FALLU]),
- vertexShader:['#include <fog_pars_vertex>','attribute vec2 aF;varying vec2 vF;','void main(){vF=aF;vec4 mvPosition=modelViewMatrix*vec4(position,1.0);gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;varying vec2 vF;',
-  'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
-  'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
-  'void main(){float s=vF.x,t=vF.y;float streak=n(vec2(s*14.0,t*5.0-uT*2.6))*0.6+n(vec2(s*31.0,t*11.0-uT*4.1))*0.4;',
-  ' float edge=smoothstep(0.0,0.18,s)*smoothstep(1.0,0.82,s);float a=edge*(0.35+0.55*smoothstep(0.35,0.75,streak))*(0.75+0.25*t);',
-  ' vec3 c=mix(vec3(0.62,0.72,0.74),vec3(0.96,0.98,1.0),smoothstep(0.4,0.8,streak));gl_FragColor=vec4(c*uLight,a);','#include <fog_fragment>','}'].join('\n')});
-['uT','uLight'].forEach(k=>FALL_MAT.uniforms[k]=FALLU[k]);FALL_MAT.uniforms.fogColor.value=scene.fog.color;FALL_MAT.uniforms.fogDensity.value=scene.fog.density;
+// ---------------------------------------------------------------- THE FALLS, THE STREAMS, THE POOLS: the records here, drawn on core/water (89w)
+// 2026-10-26: a fall at each step of the ravine (FALLS: its lip just above the step, its drop to the pool, its foot where the spray rises, 85),
+// each plunge pool (POOLS, 47) and each ravine's stream are core/water's (89w-host-water.js: WATER.fall, WATER.still, WATER.flow), drawn after
+// core/atmos is bound (89). The page's own streaked curtain shader, the Lambert ribbons and the pools' discs are gone.
 const FALLS=[];
 RAVINES.forEach(V=>(V.steps||[]).forEach((S,si)=>{const dx=-1,dz=0,lx=S.x+1.6,lz=ravC(V,lx),y=terrainH0(lx,lz)+.3,P=POOLS.find(p=>p.key===V.key+'_pool'+si),base=P?P.level:terrainH0(S.x-10,ravC(V,S.x-10)),drop=y-base;
- if(drop<4)return;const w=V.w*.7,nw=8,nr=36,pos=[],aF=[],idx=[],px=0,pz=1;
- for(let r=0;r<=nr;r++){const t=r/nr,dr=drop*t*t,yy=y-dr,ww=w*(1+.4*t);
-  let o=2.0*Math.sqrt(2*Math.max(0,dr)/9.8)+.2;for(let s=0;s<40;s+=.4){if(terrainH0(lx+dx*s,lz+dz*s)<yy-.2){o=Math.max(o,s+.4);break;}}
-  for(let c=0;c<=nw;c++){const s=(c/nw-.5)*ww;pos.push(lx+dx*o+px*s,yy,lz+dz*o+pz*s);aF.push(c/nw,t*t);}}
- for(let r=0;r<nr;r++)for(let c=0;c<nw;c++){const a=r*(nw+1)+c,b=a+nw+1;idx.push(a,b,a+1,b,b+1,a+1);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(aF,2));g.setIndex(idx);
- const name='Fall '+(si+1)+' of the ravine ('+Math.round(drop)+' m)',m=new THREE.Mesh(g,FALL_MAT);m.userData.inspectLabel=name;m.renderOrder=2;scene.add(m);
+ if(drop<4)return;const w=V.w*.7,name='Fall '+(si+1)+' of the ravine ('+Math.round(drop)+' m)';
  const F={key:V.key+'_fall'+si,name,x:lx,z:lz,y,drop,dx,dz,w,foot:[lx+dx*Math.max(4,drop*.25),base,lz]};FALLS.push(F);
  REGISTER({name,x:lx-drop*.15,z:lz,y:base-2,r:Math.max(10,drop*.4),h:drop+4,fall:F.key});}));
-TICKS.push(dt=>{FALLU.uT.value+=dt;});
-
-// ---------------------------------------------------------------- the streams (on the ravines' floors) and the pools
-const STREAM_MAT=new THREE.MeshLambertMaterial({color:0x5a6e68,transparent:true,opacity:.82,side:THREE.DoubleSide});
-RAVINES.forEach(V=>{const pos=[],idx=[];let prev=-1;
- for(let x=2120;x>=-2700;x-=4){const c=ravC(V,x);if(Math.abs(c)>TERR.R*1.08||x<-TERR.R*1.08){prev=-1;continue;}
-  // the stream breaks at each fall (the curtain carries it down)
-  if(V.steps&&V.steps.some(S=>x<S.x+2&&x>S.x-6)){prev=-1;continue;}
-  const L=terrainH0(x,c)+.3,w=V.w*.42+.8*Math.sin(x*.05),n=pos.length/3;pos.push(x,L,c-w,x,L,c+w);if(prev>=0)idx.push(prev,prev+1,n,prev+1,n+1,n);prev=n;}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
- const m=new THREE.Mesh(g,STREAM_MAT);m.userData.probeSkip=true;m.userData.inspectLabel=V.name+' (its stream)';m.renderOrder=1;scene.add(m);});
-POOLS.forEach(P=>{const g=new THREE.CircleGeometry(P.r,28).rotateX(-Math.PI/2);g.translate(P.x,P.level,P.z);
- const m=new THREE.Mesh(g,new THREE.MeshLambertMaterial({color:0x3e5650,transparent:true,opacity:.88}));m.userData.inspectLabel=P.name;m.renderOrder=1;scene.add(m);P.mesh=m;
- REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-4,r:P.r,h:8,pool:P.key});});
-_onLight.push(m=>{FALLU.uLight.value=m==='night'?.2:1;STREAM_MAT.color.setHex(m==='night'?0x101818:0x5a6e68);POOLS.forEach(P=>P.mesh.material.color.setHex(m==='night'?0x0e1414:0x3e5650));GROUNDU.uNight.value=m==='night'?1:0;});
+POOLS.forEach(P=>REGISTER({name:P.name,x:P.x,z:P.z,y:P.level-4,r:P.r,h:8,pool:P.key}));
+_onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});

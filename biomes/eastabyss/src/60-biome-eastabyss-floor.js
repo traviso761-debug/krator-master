@@ -155,15 +155,19 @@ EASTABYSS.buildFloor=function(R,q){
   [plantJungle,plantMarsh,plantFlat,plantSav,plantShore][Math.min(k,4)](x,y,z,Z,lv,st);}
  // three bands along the LOD spine
  const bands=[[7,600,0,[-R,-640,R,640]],[14,1500,600,[-R,-1540,R,1540]],[30,1e9,1500,null]];
- bands.forEach((b,bi)=>{const lv=2-bi;
+ // the runtime LOD (2026-10-27; EASTABYSS.LOD, set by the host: null keeps the spine's static bands only): each band is drawn
+ // while the camera is within its range of a chunk (the near band's detail near, the far band's sparse cover out to LOD.far)
+ const LF=EASTABYSS.LOD,BR=[LF.floor,LF.mid,LF.far];
+ bands.forEach((b,bi)=>{const lv=2-bi;BIO.range=BR[bi]||null;
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;return .82*q*(lv===0?.7:1);},(x,y,z,d)=>plant(x,y,z,lv),{patch:.75,patchScale:.014,pad:.6,box:b[3]});});
  // the water: lily pads on still water, reeds standing in the shallows
  const wbands=[[7,600,0,[-R,-640,R,640]],[14,1500,600,[-R,-1540,R,1540]]];
- wbands.forEach((b,bi)=>{const lv=2-bi;
+ wbands.forEach((b,bi)=>{const lv=2-bi;BIO.range=BR[bi]||null;
   BIO.grid(b[0],0,R,(x,z,d)=>{const ld=BIO.lodD(x,z);if(ld>=b[1]||ld<b[2])return 0;const h=Y(x,z)-BIO.waterH(x,z);if(h>.35||h<-2.6)return 0;   // h: the ground against the local water
     const Z=zones(x,z);const still=1-Z.flow;return .7*q*still*Z.wet*smooth(.02,-.15,h)*smooth(-2.6,-1.0,h)+.3*q*smooth(-.9,-.1,h)*smooth(.6,.85,Z.wet);},
    (x,y,z,d)=>{if(!BIO.clearOf(x,z,1))return;const w=BIO.waterH(x,z);if(y-w<-.9||rng()<.72){if(rng()<raftK(x,z))raft(x,y,z,lv,st);else lily(x,y,z,lv,st);}else{const Z=zones(x,z);reed(x,Math.max(y,w-.6),z,lv,rng()<.5);st.reeds++;}},{patch:.8,patchScale:.02,noMask:true,pad:.5,box:b[3]});});
  // fallen scale-trees in the jungle
+ BIO.range=LF.mid||null;
  BIO.grid(170,0,R,(x,z,d)=>{if(BIO.lodD(x,z)>1500)return 0;return zones(x,z).jung*.8*q;},(x,y,z,d)=>{for(let t=0;t<4;t++)if(log(x+rr(-30,30),y,z+rr(-30,30),st))break;},{patch:0,pad:3});
- return{under:st};};
+ BIO.range=null;return{under:st};};
 })();

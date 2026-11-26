@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- KGROUND's layer kinds on the GPU (43-core-ground.js; core/README.md, "Adopting KGROUND"): every kind and its main variants
+     compiled on a Lambert and a Standard ground, each drawn on a plane and a 60-degree scarp seen from 6 m and 40 m.
+     window._kinds: per case, the shader compiled (no error) and the pixels' spread against the plain ground (a kind that
+     draws nothing has none). The negative: a case with a broken GLSL expression must fail to compile.
+       python3 tools/harness.py smoke core/terrain/check-ground-kinds.html          (the error panel stays empty)
+     No library pack is read: the maps are a generated DataTexture (a grey grain). -->
+<html><head><meta charset="utf-8"><title>KGROUND kinds</title>
+<script>document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"'+(location.protocol==='file:'?'':' crossorigin="anonymous"')+'><\/script>');</script>
+<script src="43-core-ground.js"></script>
+<style>body{margin:0;background:#222;color:#ddd;font:12px monospace}#errs{white-space:pre;color:#f88}</style></head>
+<body><div id="errs"></div><pre id="out"></pre><script>
+(function(){
+const errs=document.getElementById('errs'),W=160,H=120;
+const renderer=window.renderer=new THREE.WebGLRenderer({preserveDrawingBuffer:true});renderer.setSize(W*4,H*4);document.body.appendChild(renderer.domElement);
+/* r128 reports a failed program on console.error ('THREE.WebGLProgram: shader error'), with the log */
+let compileErr=null;const cerr=console.error;console.error=function(){const t=[].join.call(arguments,' ');if(/WebGLProgram|shader/i.test(t))compileErr=t;return cerr.apply(console,arguments);};
+// a grain map: value noise in bytes, the same each run
+const N=256,data=new Uint8Array(N*N*4);for(let i=0;i<N*N;i++){const h=KGROUND.fn.hash3(i%N,Math.floor(i/N),1)[0],v=90+h*80|0;data.set([v,v,v-6,255],i*4);}
+const MAP=new THREE.DataTexture(data,N,N,THREE.RGBAFormat);MAP.wrapS=MAP.wrapT=THREE.RepeatWrapping;MAP.magFilter=THREE.LinearFilter;MAP.minFilter=THREE.LinearMipmapLinearFilter;MAP.generateMipmaps=true;MAP.needsUpdate=true;
+const CASES=[
+  ['plain',null],
+  ['clast tri',{kind:'clast',w:'1.0',size:3,seed:12}],
+  ['clast xz+map',{kind:'clast',w:'1.0',size:3,proj:'xz',map:MAP,k:1/2,palette:KGROUND.BRECCIA}],
+  ['clast tri+map',{kind:'clast',w:'1.0',size:3,map:MAP,k:1/2}],
+  ['clast colorFn',{kind:'clast',w:'1.0',size:3,colorFn:'kgTestBand',sub:0}],
+  ['sand',{kind:'sand',w:'1.0',seed:3}],
+  ['sand+map',{kind:'sand',w:'1.0',map:MAP,k:1/2,h:{from:'a'}}],
+  ['polygon',{kind:'polygon',w:'1.0',size:2,width:.06,rim:.05}],
+  ['polygon+map',{kind:'polygon',w:'1.0',size:2,map:MAP,k:1}],
+  ['negative',{kind:'polygon',w:'1.0',edgeTint:'vec3(0.6'}]];
+const scene=new THREE.Scene();scene.add(new THREE.AmbientLight(0xffffff,.35));const sun=new THREE.DirectionalLight(0xffffff,1.1);sun.position.set(4,7.5,5);scene.add(sun);
+const cam=new THREE.PerspectiveCamera(50,W/H,.1,500);
+const plane=new THREE.PlaneGeometry(80,80,8,8).rotateX(-Math.PI/2),scarp=new THREE.PlaneGeometry(80,80,8,8).rotateX(-Math.PI/2+Math.PI/3);
+const res={},gl=renderer.getContext(),px=new Uint8Array(W*H*4);
+function shoot(mat,geo,d){scene.children.filter(c=>c.isMesh).forEach(c=>scene.remove(c));const m=new THREE.Mesh(geo,mat);scene.add(m);
+  cam.position.set(0,d*.5,d);cam.lookAt(0,0,0);renderer.setViewport(0,0,W,H);renderer.setScissorTest(false);renderer.render(scene,cam);
+  gl.readPixels(0,0,W,H,gl.RGBA,gl.UNSIGNED_BYTE,px);let s=0,s2=0;for(let i=0;i<W*H;i++){const v=px[i*4]*.3+px[i*4+1]*.59+px[i*4+2]*.11;s+=v;s2+=v*v;}
+  const mu=s/(W*H);return {mean:+mu.toFixed(1),sd:+Math.sqrt(Math.max(0,s2/(W*H)-mu*mu)).toFixed(2)};}
+CASES.forEach(([name,L],ci)=>{['lambert','standard'].forEach(kind=>{
+  const mat=kind==='lambert'?new THREE.MeshLambertMaterial({color:0x8a8070}):new THREE.MeshStandardMaterial({color:0x8a8070,roughness:.9});
+  if(name==='clast colorFn')mat.onBeforeCompile=function(sh){sh.fragmentShader=sh.fragmentShader.replace('void main() {','vec3 kgTestBand(vec3 c,float h){return mix(vec3(0.05),vec3(0.5,0.2,0.1),fract(c.y*0.25+h));}\nvoid main() {');};
+  if(L)KGROUND.hook(mat,{layers:[L],key:'check-'+ci});
+  compileErr=null;const r={};[['plane6',plane,6],['plane40',plane,40],['scarp6',scarp,6]].forEach(([k,g,d])=>{r[k]=shoot(mat,g,d);});
+  r.compiled=!compileErr;if(compileErr)r.err=compileErr.split('\n').filter(x=>/ERROR/.test(x)).slice(0,2).join(' | ');res[name+' '+kind]=r;mat.dispose();});});
+// a kind compiles and draws something of its own (its 6 m plane's spread differs from the plain ground's); the negative fails
+const bad=[];Object.keys(res).forEach(k=>{const r=res[k],neg=/^negative/.test(k),plain=res['plain '+k.split(' ').pop()];
+  if(neg?r.compiled:!r.compiled)bad.push(k+(neg?': the broken case compiled':': '+r.err));
+  else if(!neg&&!/^plain/.test(k)&&Math.abs(r.plane6.sd-plain.plane6.sd)<1&&Math.abs(r.plane6.mean-plain.plane6.mean)<2)bad.push(k+': draws nothing of its own');});
+window._kinds=res;window._kindsBad=bad;document.getElementById('out').textContent=JSON.stringify(res,null,1);
+if(bad.length)errs.textContent=bad.join('\n');
+/* a last frame of four cases for the eye */
+scene.children.filter(c=>c.isMesh).forEach(c=>scene.remove(c));renderer.setScissorTest(true);
+[['clast tri',plane,10],['sand',plane,1.2],['polygon',plane,10],['clast tri+map',scarp,10]].forEach(([name,g,d],i)=>{const L=CASES.find(c=>c[0]===name)[1],mat=new THREE.MeshLambertMaterial({color:0x8a8070});
+  KGROUND.hook(mat,{layers:[L],key:'show-'+i});const m=new THREE.Mesh(g,mat);scene.add(m);cam.aspect=1;cam.updateProjectionMatrix();cam.position.set(0,d*.5,d);cam.lookAt(0,0,0);
+  const x=(i%2)*W*2,y=(i<2?1:0)*H*2;renderer.setViewport(x,y,W*2,H*2);renderer.setScissor(x,y,W*2,H*2);renderer.render(scene,cam);scene.remove(m);});
+window._ready=true;})();
+</script></body></html>

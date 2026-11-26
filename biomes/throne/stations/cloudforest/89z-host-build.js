@@ -1,0 +1,16 @@
+// ================================================================= HOST — build (the cloud forest)
+// The cairns came first (86, each an obstacle). Then the Throne kit alone, with its understory (the moss and ferns of the
+// elfin woods' floor); then one bake. The shared atmosphere binds after it (89).
+window._biome=null;
+(function(){
+ const t0=performance.now();
+ const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ /* the cloud forest's floor is dense by design (KNOWN_ISSUES.md, 'The cloud forest is dense only near the cameras'): its moss and ferns say so to the instance cap (core/biome) */
+ {const D=BIO.kits.throne&&BIO.kits.throne.defs;if(D){if(D.mossclump)Object.assign(D.mossclump,{cap:450000,capWhy:'the cloud forest: moss on every limb and boulder in the cloud belt, near the cameras'});if(D.fern)Object.assign(D.fern,{cap:400000,capWhy:'the cloud forest: the fern floor of the elfin woods, near the cameras'});}}
+ try{window._biome=THRONE.build({R:TERR.R-150,quality:q,understory:true});}catch(e){reportErr('throne: '+e.stack);}
+ _mark('throne');
+ if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
+ const b=BIO.bake();
+ _mark('bake');window._instances=b.inst;window._bakeCalls=b.calls;window._buildMs=Math.round(performance.now()-t0);
+ REGISTER({name:'The Throne: the cloud forest (ideal type)',x:0,z:0,y:2600,r:TERR.R,h:1000});
+})();

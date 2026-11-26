@@ -1,11 +1,11 @@
 // ================================================================= EASTERN ABYSS — build / dress / canopyH
 // The biome's public surface (BIOME-API.md). The passes live in 55 (trees),
 // 60 (floor), 65 (dress) and 75 (fauna); this file only orders them and reports.
-EASTABYSS.build=function(opt){opt=opt||{};const R=opt.R||3000,q=opt.quality==null?1:opt.quality;
+EASTABYSS.build=function(opt){opt=opt||{};const R=opt.R==null?3000:opt.R,q=opt.quality==null?1:opt.quality;
  if(opt.lakeHue!=null)EASTABYSS.setLake(opt.lakeHue);
  const out={R,quality:q,trees:0,heroes:0,far:0};
  if(EASTABYSS.buildTrees){BIO.cur='abyss/trees';Object.assign(out,EASTABYSS.buildTrees(R,q));}
- if(EASTABYSS.buildReedBeds){BIO.cur='abyss/reeds';Object.assign(out,EASTABYSS.buildReedBeds(R,q));}
+ if(EASTABYSS.buildReedBeds){BIO.cur='abyss/reeds';Object.assign(out,EASTABYSS.buildReedBeds(R,q,opt.reedBeds));}   /* opt.reedBeds: 'each' (default) registers every near bed, 'none' leaves them to EASTABYSS.REEDBEDS */
  if(EASTABYSS.buildFloor){BIO.cur='abyss/floor';Object.assign(out,EASTABYSS.buildFloor(R,q));}
  // opt.fauna (75): false builds none; a function (kind,x,z)->bool keeps the animals off ground the host keeps
  if(EASTABYSS.buildFauna&&opt.fauna!==false){BIO.cur='abyss/fauna';Object.assign(out,EASTABYSS.buildFauna(R,q,opt.fauna));}

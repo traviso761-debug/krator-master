@@ -1,0 +1,11 @@
+{
+ "note": "Station 1 reads the abyssal savannah in place (PLAN-STATIONS.md section 3): its species, burn mosaic and items, never its build; its pack's thatch, lily and charred cards. 87-host-cousins.js plants them.",
+ "fragments": {
+  "71a-absav-species.js": "../abyssal-savannah/src/50-biome-absav-species.js",
+  "71b-absav-trees.js": "../abyssal-savannah/src/55-biome-absav-trees.js",
+  "71c-absav-kit.js": "../abyssal-savannah/src/70-biome-absav.js"
+ },
+ "packs": {
+  "44c-host-matlib-pack-absav.js": ["../abyssal-savannah", "abyssal-savannah", ["thatch", "lily", "charred"]]
+ }
+}

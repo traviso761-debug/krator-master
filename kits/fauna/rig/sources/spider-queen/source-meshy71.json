@@ -1,0 +1,12 @@
+{
+ "prompt": "Spider queen with a swollen banded abdomen and long legs, pale ivory-grey all over",
+ "task_ids": [
+  "01a19b4d-bd0c-761c-ab18-d4f7f04e5052",
+  "01a19b50-56ac-7434-8446-1f4444be3b07"
+ ],
+ "ai_model": "meshy-7.1",
+ "credits": 39,
+ "raw": "raw-meshy71.glb",
+ "route": "multi-image, front left back",
+ "rights": "generated on the owner's Meshy account"
+}

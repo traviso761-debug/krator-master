@@ -38,8 +38,7 @@ const ERRATIC_MESH=(function(){const T=THREE,u=(h,k)=>KRAND.unit(KRAND.hash(h,k)
  for(const k in buf){const B=buf[k];if(!B.P.length)continue;const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(B.P,3));
   g.setAttribute('normal',new T.Float32BufferAttribute(B.N,3));g.setAttribute('uv',new T.Float32BufferAttribute(B.U,2));
   const m=new T.Mesh(g,mat[k]);m.userData.inspectLabel=k==='basalt'?'Erratics: basalt boulders':k==='rebar'?'Erratics: the rebar':'Erratics: the dam\'s broken concrete';G.add(m);}
- // a marker an erratic for the probe (core/host samples a merged mesh by its box, an instanced one by every instance):
- // no triangles, never drawn (KNOWN_ISSUES.md; the dam bed's debris does the same)
- const mk=new T.InstancedMesh(new T.BufferGeometry(),mat.concrete,ERRATICS.length),MM=new T.Matrix4();
- ERRATICS.forEach((e,i)=>mk.setMatrixAt(i,MM.makeTranslation(e.x,e.y+e.sy*.4,e.z)));mk.visible=false;mk.userData.probeMarker=true;G.add(mk);
+ // a point an erratic for the probe (core/host samples a merged mesh by its box): the group's userData.probePoints
+ // (the dam bed's debris does the same)
+ const pp=[];for(const e of ERRATICS)pp.push(e.x,e.y+e.sy*.4,e.z);G.userData.probePoints=pp;
  scene.add(G);window._erratics=ERRATICS.length;return G;})();

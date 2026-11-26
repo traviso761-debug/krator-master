@@ -13,6 +13,21 @@
 // written in turns (fract of each term), as the wave field's is, so atmWaveT's wrap is seamless and fp32 never steps.
 // Without core/atmos loaded the field is 0 and the period 600 s.
 const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
+ // core/shader: every water hook goes through KHOOK (a layer on a material, an anchor that throws). W.vs / W.fs are a hook's replaces, in order
+ W.KH=()=>{if(typeof KHOOK!=='undefined')return KHOOK;throw new Error('core/water: core/shader is not on this page (KHOOK): list core/shader/06-core-khook.js (khost.resolve adds it)');};
+ W.vs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.v(sh,r[0],r[1],who);return sh;};
+ W.fs=(sh,who,...R)=>{const K=W.KH();for(const r of R)K.f(sh,r[0],r[1],who);return sh;};
+ // a water colour is DECODED into the shader (the owner, 2026-11-08): a hex (number, '#rrggbb', [r, g, b]) is a display (sRGB) colour and
+ // goes in linear, as core/shader's KCOLOR convention says and as the Godot importer has always read it (water_import.gd _lin); a THREE.Color
+ // is linear already and goes in as it is; any other CSS string three parses is decoded. Until 2026-11-08 the hexes went in as written (read
+ // as linear), so every page's water was paler than its hex: decoding darkens it. W.colAsWritten keeps the old reading, for a page that asks
+ const KC=()=>{if(typeof KCOLOR!=='undefined')return KCOLOR;throw new Error('core/water: core/shader is not on this page (KCOLOR): list core/shader/06b-core-kcolor.js (khost.resolve adds it)');};
+ W.colLin=(T,c)=>{const K=KC();if(c&&c.isColor)return[c.r,c.g,c.b];
+  if(typeof c==='number'||Array.isArray(c)||(typeof c==='string'&&/^\s*(#|0x)?([0-9a-f]{3}|[0-9a-f]{6})\s*$/i.test(c)))return K.linArr(c);
+  const q=new T.Color(c);return K.linArr([q.r,q.g,q.b]);};
+ W.colAsWritten=(T,c)=>KC().linArr(new T.Color(c),{linear:true});
+ // the water's slice of KHOOK.checkPrograms: its programs that did not link and its anchors missed; [] when all is runnable
+ W.checkPrograms=(r,scene)=>W.KH().checkPrograms(r,scene,/wtr/);
  const fr=x=>x-Math.floor(x),cl=(x,a,b)=>x<a?a:x>b?b:x,ss=(a,b,x)=>{const t=cl((x-a)/(b-a),0,1);return t*t*(3-2*t);};
  // (a page that declares ATMOS later in the same script has it in its temporal dead zone until then: typeof throws)
  const AT=()=>{try{return typeof ATMOS!=='undefined'&&ATMOS.PRESETS&&ATMOS.PRESETS.waves?ATMOS:null;}catch(e){return null;}};
@@ -132,7 +147,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   // a TINT field: a colour laid over the depth ramp where a body differs (a bayou in a sea, a river's plume, shoals): a raster over a box,
   // {box [x0,z0,x1,z1], cell, at(x,z) -> null | colour | {c, a}} baked at cell centres, or {x0, z0, cell, nx, nz, data} of premultiplied RGBA bytes;
   // S.tintAt(x,z) -> [r, g, b, a] (0..1, premultiplied: the surface's colour becomes colour*(1-a) + rgb), 0 outside the box
-  if(o.tint){S.tint=W.bakeTint(o.tint);}
+  if(o.tint){S.tint=W.bakeTint(o.tint);if(o.tintFlow)S.tintFlow=o.tintFlow;}   /* tintFlow: the tint carried on a current (ext/61; ignored without it) */
   S.tintAt=(x,z)=>S.tint?W.tintSample(S.tint,x,z):[0,0,0,0];
   S.shore=!!(S.bed&&S.bed.shore);
   // depth below the surface at (x,z) and t; the damping it gives (1 where there is no bed); on a shore grid the waves
@@ -206,22 +221,58 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
   const la=S.lip[0],lb=S.lip[S.lip.length-1];S.lipW=Math.hypot(lb[0]-la[0],lb[1]-la[1]);
   S.spread=o.spread!=null?o.spread:W.PRESETS.fall?W.PRESETS.fall.spread*S.drop/100:0;
   const lx=S.lipW>0?(lb[0]-la[0])/S.lipW:0,lz=S.lipW>0?(lb[1]-la[1])/S.lipW:0;
+  // FACE (2026-10-26): the curtain FOLLOWS a sloped face from the lip to the foot instead of arcing through the air (a 70 m fall fitted to its foot
+  // arcs a quarter of its drop off a straight face half way down). o.face: true (a straight face from the lip to the foot), a function (x, z) -> the
+  // ground's height, or the drops themselves (an array, as the export carries them). It is sampled at o.faceN (24) + 1 points evenly along the run
+  // from the lip's middle, `faceLift` m (.3) over the ground, never rising (a running minimum) and never under the foot; the ends are the lip and the
+  // foot. S.face holds the drops from the lip (m, <= 0); null without one. Needs foot (the run); the streaks keep tFall.
+  S.face=null;
+  if(o.face&&S.foot&&S.run>0){const lift=o.faceLift==null?.3:o.faceLift,mx=(la[0]+lb[0])/2,mz=(la[1]+lb[1])/2,my=(la[2]+lb[2])/2,fy=S.foot[2]-my;
+   if(Array.isArray(o.face))S.face=o.face.map(v=>+v);
+   else{const N=o.faceN==null?24:o.faceN,d=[0];for(let i=1;i<=N;i++){const f=i/N,x=mx+S.dir[0]*S.run*f,z=mz+S.dir[1]*S.run*f;let v=i===N?fy:typeof o.face==='function'?o.face(x,z)+lift-my:fy*f;
+     v=Math.min(v,d[i-1]);d.push(Math.max(v,fy));}S.face=d;}}
+  if(S.face){
+   // the face's drop at fall fraction f (linear between its samples) and its slope (m of drop per unit f)
+   const D=S.face,N=D.length-1,seg=f=>Math.min(N-1,Math.floor(cl(f,0,1)*N)),faceY=f=>{const i=seg(f);return D[i]+(D[i+1]-D[i])*(cl(f,0,1)*N-i);},faceD=f=>{const i=seg(f);return(D[i+1]-D[i])*N;};
+   S.faceY=faceY;
+   S.curtainAt=(u,f)=>{const a=S.lip[0],b=S.lip[S.lip.length-1],q=(u*2-1)*S.spread*f,r=S.run*f;return[a[0]+(b[0]-a[0])*u+S.dir[0]*r+lx*q,a[2]+(b[2]-a[2])*u+faceY(f),a[1]+(b[1]-a[1])*u+S.dir[1]*r+lz*q];};
+   // across the lip x down the face, turned to face out and up
+   S.curtainNormal=f=>{const T=[S.dir[0]*S.run,faceD(f),S.dir[1]*S.run],n=[T[1]*lz,T[2]*lx-T[0]*lz,-T[1]*lx],m=Math.hypot(n[0],n[1],n[2])||1,sg=(n[0]*S.dir[0]+n[2]*S.dir[1]+n[1]*1e-6)<0?-1:1;
+    return[sg*n[0]/m,sg*n[1]/m,sg*n[2]/m];};
+   S.contains=()=>false;S.heightAt=()=>null;return add(S);}
   S.curtainAt=(u,f)=>{const a=S.lip[0],b=S.lip[S.lip.length-1],s=f*S.tFall,q=(u*2-1)*S.spread*f;return[a[0]+(b[0]-a[0])*u+S.dir[0]*S.speed*s+lx*q,a[2]+(b[2]-a[2])*u-G*s*s/2,a[1]+(b[1]-a[1])*u+S.dir[1]*S.speed*s+lz*q];};
   // the curtain's normal at fall fraction f: across the lip x along the arc, turned to face out (the way the water goes) and up
   S.curtainNormal=f=>{const s=f*S.tFall,T=[S.dir[0]*S.speed,-G*s,S.dir[1]*S.speed],n=[T[1]*lz-T[2]*0,T[2]*lx-T[0]*lz,T[0]*0-T[1]*lx],m=Math.hypot(n[0],n[1],n[2])||1,sg=(n[0]*S.dir[0]+n[2]*S.dir[1]+n[1]*1e-6)<0?-1:1;
    return[sg*n[0]/m,sg*n[1]/m,sg*n[2]/m];};
   S.contains=()=>false;S.heightAt=()=>null;return add(S);};
  // STILL: pools, fountains, troughs, cisterns, moats: a level over a box (or a polygon [[x,z],...])
+ // a still surface's gradient record from {centre, rim, power, at, radius} (W.still's own; drawPools' gradient option gives one to a pool without one)
+ W.gradientOf=(S,g)=>{const pp=S.poly||(S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:[[0,0]]);
+  const at=g.at||[pp.reduce((a,p)=>a+p[0],0)/pp.length,pp.reduce((a,p)=>a+p[1],0)/pp.length];
+  return{centre:g.centre,rim:g.rim,power:g.power==null?1:g.power,at,radius:g.radius==null?Math.max(1e-6,...pp.map(p=>Math.hypot(p[0]-at[0],p[1]-at[1]))):g.radius};};
  W.still=o=>{const S={kind:'still',name:o.name,level:o.level,bounds:o.bounds||null,poly:o.poly||null,fountain:o.fountain||null};
   S.contains=(x,z)=>{if(S.poly){let c=false;const P=S.poly;for(let i=0,j=P.length-1;i<P.length;j=i++)if((P[i][1]>z)!==(P[j][1]>z)&&x<(P[j][0]-P[i][0])*(z-P[i][1])/(P[j][1]-P[i][1])+P[i][0])c=!c;return c;}return inBox(S.bounds,x,z);};
   // gradient: {centre, rim (hex colours), power (1), at [x, z] (the vertex mean), radius (m: the farthest vertex)}: the colour runs from the middle
   // out as the drawing mixes it, t = (distance / radius)^power clamped to 0..1 (S.gradientT, the shader's wtrStillT); null without one
-  S.gradient=null;
-  if(o.gradient){const g=o.gradient,pp=S.poly||(S.bounds?[[S.bounds[0],S.bounds[1]],[S.bounds[2],S.bounds[1]],[S.bounds[2],S.bounds[3]],[S.bounds[0],S.bounds[3]]]:[[0,0]]);
-   const at=g.at||[pp.reduce((a,p)=>a+p[0],0)/pp.length,pp.reduce((a,p)=>a+p[1],0)/pp.length];
-   S.gradient={centre:g.centre,rim:g.rim,power:g.power==null?1:g.power,at,radius:g.radius==null?Math.max(1e-6,...pp.map(p=>Math.hypot(p[0]-at[0],p[1]-at[1]))):g.radius};}
+  S.gradient=o.gradient?W.gradientOf(S,o.gradient):null;
   S.gradientT=(x,z)=>{const g=S.gradient;return g?Math.pow(cl(Math.hypot(x-g.at[0],z-g.at[1])/g.radius,0,1),g.power):0;};
-  S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];return add(S);};
+  S.heightAt=()=>S.level;S.normalAt=(x,z,t)=>W.stillNormal?W.stillNormal(S,x,z,t):[0,1,0];
+  // SEASONAL (H7, biomes/hyperjungle/PLAN-LANDS.md section 11: the várzea's high and low water): seasonal {low, high, and
+  // KCLOCK.season's options: lagD, sharp, latitude, wetIn} makes the level low + (high - low) * wet. S.levelOf(s) and
+  // S.setSeason(s) take a season record ({wet}) or a wet number 0..1; W.stepSeasons moves them all from the clock. S.base is
+  // the level it was made at (o.level, or low without one). Without the option the still is what it always was
+  if(o.seasonal){const Q=S.seasonal=Object.assign({},o.seasonal);Q.low=Q.low==null?(S.level==null?0:S.level):+Q.low;Q.high=Q.high==null?Q.low:+Q.high;
+   if(S.level==null)S.level=Q.low;S.base=S.level;
+   S.levelOf=s=>{const w=s!=null&&typeof s==='object'?s.wet:s;return Q.low+(Q.high-Q.low)*cl(+w||0,0,1);};
+   S.setSeason=s=>{S.level=S.levelOf(s);return S.level;};}
+  return add(S);};
+ // W.stepSeasons(clock) or (day, hour): every seasonal still to its level on core/clock's season, and each drawn one's mesh
+ // raised to it (D.y0, the level it was drawn at). Returns how many it moved, or false without core/clock (KCLOCK.season)
+ W.stepSeasons=(day,hour)=>{if(day!=null&&typeof day==='object'){hour=day.hour;day=day.day;}
+  let K=null;try{K=typeof KCLOCK!=='undefined'&&KCLOCK.season?KCLOCK:null;}catch(e){K=null;}if(!K)return false;let n=0;
+  for(const S of W.surfaces)if(S.kind==='still'&&S.seasonal){S.setSeason(K.season(day,hour,S.seasonal));n++;}
+  for(const D of W.drawn||[])if(D.S&&D.S.seasonal&&D.mesh&&D.y0!=null)D.mesh.position.y=D.S.level-D.y0;
+  return n;};
  // WET (Phase 4): how wet the ground is, 0..1: the weather's W.wet (core/atmos 4-weather) when a build has it
  W.wet=()=>{const A=AT();return A&&A.W?A.W.wet||0:0;};
 
@@ -252,7 +303,7 @@ const WATER=(function(){const W={},TAU=Math.PI*2,G=9.81;
    S.mask?{mask:{x0:S.mask.x0,z0:S.mask.z0,cell:S.mask.cell,cellZ:S.mask.cellZ,nx:S.mask.nx,nz:S.mask.nz}}:{},
    S.tint?{tint:{x0:S.tint.x0,z0:S.tint.z0,cell:S.tint.cell,nx:S.tint.nx,nz:S.tint.nz}}:{},S.drawOpt?{draw:S.drawOpt}:{});
   else if(S.kind==='flow')Object.assign(o,{pts:S.pts.map(p=>[p.x,p.z,p.y,p.slope,p.w,p.v])},S.ribbonOpt?{ribbon:S.ribbonOpt}:{},S.rapids?{rapids:S.rapids}:{});
-  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{});
-  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{});
+  else if(S.kind==='fall')Object.assign(o,{lip:S.lip,dir:S.dir,speed:S.speed,drop:S.drop,plunge:S.plunge,spread:S.spread,tFall:S.tFall,lipW:S.lipW},S.curtainOpt?{curtain:S.curtainOpt}:{},S.foot?{foot:S.foot,run:S.run}:{},S.face?{face:S.face}:{});
+  else if(S.kind==='still')Object.assign(o,{level:S.level,bounds:S.bounds,poly:S.poly,fountain:S.fountain},S.gradient?{gradient:S.gradient}:{},S.seasonal?{seasonal:S.seasonal,base:S.base}:{});
   else if(S.kind==='shore')Object.assign(o,{of:S.of.id,band:S.band});return o;})},W.groups.length?{groups:W.groups.map(g=>g.export())}:{});
  return W;})();

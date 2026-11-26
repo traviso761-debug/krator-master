@@ -73,6 +73,44 @@ for (const S of IX.sets.list) for (const it of S.items) {
   if (!doors || shut !== doors || openOk !== doors || bad2) bad('doorBlocks: ' + doors + ' doors, ' + shut + ' shut, ' + openOk + ' opened, ' + bad2 + ' wrong');
   console.log('doorBlocks: ' + doors + ' doors, all shut by default and opened by setBlock');
 }
+/* climbs: core/walk's reach (0.45 m steps on 0.4 m cells, the reachability audit's) gets from each stair's or ladder's foot to the floor
+   at its top: a ladder is rung floors, not a strip too steep to step up (2026-11-03) */
+{ let climbs = 0, ladders = 0, miss = [];
+  for (const S of IX.sets.list) for (const it of S.items) {
+    if (it.skip) continue;
+    let inst; try { inst = IX.sets.instantiate(it, 4, -3, 0.4, { baseY: 0, register: false }); } catch (e) { continue; }
+    const W = KWALK.create(); IX.walk.register(inst, W, { ground: 0 });
+    for (const B of inst.buildings) for (const St of B.stairs || []) {
+      const f = B.graph.nodes.find(n => n.tag === 'stairfoot' && n.ref === St.id), tp = B.graph.nodes.find(n => n.tag === 'stairtop' && n.ref === St.id); if (!f || !tp) continue;
+      climbs++; if (St.kind === 'ladder') ladders++;
+      const up = (B.floors || []).filter(F => F.level === St.to).map(F => B.id + '.floor.' + F.level);
+      const R = W.reach([[f.x, f.y, f.z]], { ground: () => 0 }), got = R.reached.some(F => up.some(u => (F.name || '').indexOf(u) === 0));
+      if (!got) miss.push(S.set + '/' + it.key + ' ' + St.id + ' (' + St.kind + ')');
+    }
+  }
+  if (miss.length) bad('climbs: ' + miss.length + ' of ' + climbs + ' stairs and ladders do not reach the floor at their top: ' + miss.slice(0, 6).join(', '));
+  console.log('climbs: ' + climbs + ' stairs and ladders (' + ladders + ' ladders), ' + (climbs - miss.length) + ' reach the floor at their top');
+}
+/* IX.walk.room (50-shell.js, no THREE; read here from src/): two ROOM() shells side by side, a door between them and a street door into the first; with core/door's
+   KDOOR blocking the inner doorway, the second room is reached from the street only once that door is open (the negative:
+   shut, it is not), and the first is reached either way */
+{
+  const kdSrc = fs.readFileSync(path.resolve(__dirname, '../../../core/door/10-core-door.js'), 'utf8');
+  if (!IX.walk.room) (0, eval)(fs.readFileSync(path.resolve(__dirname, '../src/50-shell.js'), 'utf8').replace(/\}\)\(KratorInteriors\);\s*$/, '})(global.KratorInteriors);'));
+  const KDOOR = new Function('var root={};' + kdSrc.replace("typeof window!=='undefined'?window:globalThis", 'root') + ';return root.KDOOR;')().create();
+  const A = IX.normRoom({ id: 'wt.a', poly: [[0, 0], [5, 0], [5, 4], [0, 4]], y: 0, h: 3, doors: [{ at: [2.5, 0], w: 1, to: 'street' }, { at: [5, 2], w: 1, to: 'wt.b' }] });
+  const B = IX.normRoom({ id: 'wt.b', poly: [[5.22, 0], [9, 0], [9, 4], [5.22, 4]], y: 0, h: 3, doors: [{ at: [5.22, 2], w: 1, to: 'wt.a', leaf: false }] });
+  const W = KWALK.create(), r = IX.walk.room([A, B], W);
+  const d = A.doors[1], yaw = Math.atan2(-d.n[0], -d.n[1]);
+  const D = KDOOR.add({ id: 'wt.a.d1', at: [d.at[0] - d.n[0] * 0.11, 0, d.at[1] - d.n[1] * 0.11], yaw, w: d.w - 0.04, h: 2.1, t: 0.05 });
+  KDOOR.walk(W);
+  const start = [[2.5, 0, -1.5]], go = () => { const R = W.reach(start, { ground: () => 0, box: [-3, 12, -4, 7] }), n = R.reached.map(F => F.name); return { a: n.includes('wt.a'), b: n.includes('wt.b') }; };
+  const shut = go(); KDOOR.open(D); for (let i = 0; i < 40; i++) KDOOR.step(0.1); const open = go();
+  if (!(r.floors === 2 && r.doors === 3 && r.blocks > 20)) bad('IX.walk.room: ' + JSON.stringify(r));
+  if (!shut.a || shut.b) bad('IX.walk.room: door shut, reached ' + JSON.stringify(shut) + ' (want a only)');
+  if (!open.a || !open.b) bad('IX.walk.room: door open, reached ' + JSON.stringify(open) + ' (want both)');
+  console.log('IX.walk.room: ' + r.floors + ' floors, ' + r.blocks + ' wall blocks, ' + r.doors + ' doorways; shut ' + JSON.stringify(shut) + ', open ' + JSON.stringify(open));
+}
 console.log('elevated bodies (no flight: tower, ledge or crown; the host routes to them): ' + elevated.length + (process.argv[3] === '-v' ? ' ' + elevated.join(', ') : ''));
 console.log('items ' + items + ', raised ' + raised + ', entry flights ' + entries + ', failures ' + fails);
 process.exit(fails ? 1 : 0);

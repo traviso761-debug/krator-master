@@ -264,7 +264,9 @@ const KM_API = (function () {
   };
   API.cultures = function () { return Object.keys(MECH_CULTURES); };
   API.palette = function (culture) { return MECH_CULTURES[culture] ? Object.assign({}, FPAL[culture]) : null; };
-  API.CLASSES = MECH_CLASSES; API.TYPES = MECH_TYPES; API.DRIVES = MECH_DRIVES; API.PILOTS = MECH_PILOTS; API.WEAPONS = MECH_WEAPONS;
+  API.CLASSES = MECH_CLASSES; API.TYPES = MECH_TYPES; API.DRIVES = MECH_DRIVES; API.PILOTS = MECH_PILOTS; API.WEAPONS = MECH_WEAPONS; API.ROLES = MECH_ROLES;
+  /* a variant's behaviour tag (keeper | hunter | feigner), null where a culture declares none (the Iziz) */
+  API.roleOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? (mechTags(A, v).role || null) : null; };
   API.BUCKETS = MECH_BUCKETS;
   API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
 
@@ -277,6 +279,8 @@ const KM_API = (function () {
     const F = mechFrame({ seed: seed, variant: v });
     F.asset = A; F.data = data;
     const R = mechRig();
+    /* bare (the owner, 2026-11-09, for the Ancient's Valley's keepers): the chassis alone, no rider, no regalia (feathers, standards, numerals, banners) */
+    F.bare = !!o.bare; R.bare = !!o.bare;
     const prev = _target;
     try { A.build(F, R); } finally { _target = prev; }
     if (!R.by.body) throw new Error('mech ' + key + ': no body bone');
@@ -353,9 +357,19 @@ const KM_API = (function () {
     const e = 0.06;
     return smooth(p / e) * smooth((duty - p) / e) + (p > duty ? smooth((p - 1 + e) / e) * 0 : 0);
   }
+  /* a hovering machine (an entry with `hover`, no legs): it rides at its body bone's height, bobs, and leans into its motion */
+  const _hv = new V3(), _hq = new Q();
+  function layerHover(st, P, t) {
+    const H = st.A.hover;
+    add(P, 's', 'body', 0, (H.bob == null ? 0.05 : H.bob) * (Math.sin(t * 1.6) + 0.5 * Math.sin(t * 2.7 + 1)) / 1.5, 0);
+    _hv.copy(st.vel).applyQuaternion(_hq.copy(st.gq).invert());
+    const lean = H.lean == null ? 0.12 : H.lean, roll = H.roll == null ? 0.1 : H.roll;
+    add(P, 'b', 'body', clamp(_hv.z * lean, -0.5, 0.5), 0, clamp(-_hv.x * roll, -0.4, 0.4));
+  }
   function layerWalk(st, P, ph, w) {
     if (w <= 0) return;
     const G = st.gait, n = st.legs.length;
+    if (!n) { if (st.A.anim.walk) st.A.anim.walk(P, ph, w, st); return; }
     let bob = 0, side = 0, tw = 0;
     st.legs.forEach(function (L, i) {
       const p = (ph + (G.offsets[i] || 0)) % 1, s = L.def.hip[0] >= 0 ? 1 : -1;
@@ -557,6 +571,7 @@ const KM_API = (function () {
     const P = { b: {}, s: {}, sc: {} };
     layerIdle(st, P, st.t, 1 - 0.75 * st.walkW);
     layerWalk(st, P, st.phase, st.walkW);
+    if (st.A.hover) layerHover(st, P, st.t);
     if (st.atk >= 0) layerAttack(st, P, st.atk, 1);
     /* spins */
     for (const S of st.spins) {
@@ -658,7 +673,8 @@ const KM_API = (function () {
     return !!on;
   };
   /* something the mech looses, to fly: 'bolt' (a ballista bolt, 1.5 m), 'harpoon' (2.6 m, barbed, with a line),
-     'barb' (a man-sized pneumatic harpoon, 1 m, all steel: the Stalkers'), 'rivet' (a glowing slug).
+     'barb' (a man-sized pneumatic harpoon, 1 m, all steel: the Stalkers'), 'rivet' (a glowing slug), and the Ancients'
+     'beam' (the tripod's lance: 6 m of light), 'shell' (the shrouded walker's cannon) and 'slug' (the trooper's tracer).
      A plain Group, +z forward, origin at its middle. */
   const _projMat = {};
   API.projectile = function (kind) {
@@ -670,6 +686,18 @@ const KM_API = (function () {
       if (kind === 'rivet') {
         F.cy(0, 0, 0, 0.11, 0.11, 0.3, 0xff8a2a, 'glow', 'z', 10);
         F.sph(0, 0, 0.15, 0.11, 0.11, 0.08, 0xffc070, 'glow', 10, 6);
+      } else if (kind === 'beam') {
+        /* the stilt tripod's lance: a 6 m bolt of light, +z, to be flown fast or stretched by the host into a ray */
+        F.cy(0, 0, 0, 0.06, 0.06, 6, 0x9af2ff, 'glow', 'z', 8);
+        F.cy(0, 0, 0, 0.11, 0.11, 5.6, 0x3fc8e6, 'glow', 'z', 8);
+      } else if (kind === 'shell') {
+        /* the shrouded walker's cannon shell: a dark 0.5 m slug with a glowing base */
+        F.cy(0, 0, 0.05, 0.1, 0.07, 0.4, 0x2e2e30, 'metal', 'z', 10);
+        F.sph(0, 0, 0.25, 0.07, 0.07, 0.08, 0x2e2e30, 'metal', 10, 6);
+        F.cy(0, 0, -0.17, 0.09, 0.09, 0.05, 0xff8a2a, 'glow', 'z', 10);
+      } else if (kind === 'slug') {
+        /* the hunched trooper's shoulder gun: a short tracer */
+        F.cy(0, 0, 0, 0.03, 0.03, 0.5, 0xffd080, 'glow', 'z', 6);
       } else if (kind === 'barb') {
         F.rod(0, 0, -0.5, 0, 0, 0.5, 0.012, 0x5a5c60, 'metal');
         F.cy(0, 0, 0.56, 0.02, 0.002, 0.12, 0xc9ccd0, 'metal', 'z', 6);

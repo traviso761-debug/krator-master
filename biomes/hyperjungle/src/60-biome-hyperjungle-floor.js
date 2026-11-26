@@ -54,6 +54,10 @@ const trunkTint=(hex,k)=>tint(hex,means().trunk,k==null?1:k);
 const rockTint=k=>tint(vary(pick(PAL.rock),.02,.06,.06),means().rock,k==null?rr(.32,.6):k);
 const rodCol=()=>shade(vary(pick(DEADWOOD),.02,.08,.06),rr(-.45,-.2));                      // untextured: a shade down
 const fungusCol=()=>shade(vary(pick(BRACKET),.03,.12,.08),rr(-.35,-.1));
+// BIO.fung's bracket is a shelf out along +z (50): turned to the face's outward horizontal normal (nx, nz) where the kit drew a yaw
+// at random (still drawn, so the stream is as before), its height doubled for the shelf's own thickness; ?fung=0 the old dome
+const FUNG=!!HYPERJUNGLE.FUNG;
+const brq=(nx,nz,yaw)=>FUNG?qEuler(0,Math.atan2(nx,nz),0):qEuler(0,yaw,0),brY=FUNG?2:1;
 
 // ---------------------------------------------------------------- keep-clear
 // Boles (hero and impostor), saplings and logs all keep the floor off them.
@@ -139,11 +143,12 @@ function subTree(x,y,z,lv){const H=rr(15,40),r=.3+H*.03,la=rr(0,TAU),lk=rr(0,.07
  const cx=x+Math.cos(la)*lk*H*.86,cz=z+Math.sin(la)*lk*H*.86,cy=y+H*.78,cr=H*rr(.22,.32);
  const set=pick([PAL.fern,SHRUB,PALM,PAL.vine]),hc=vary(pick(set),.06,.12,.06);
  const n=near?ri(5,7):4;
- for(let k=0;k<n;k++){const a=rr(0,TAU),d=k?cr*rr(.3,.75):0,s=cr*rr(.8,1.25);
-  BIO.put('ucard',[cx+Math.cos(a)*d,cy+rr(-.35,.3)*cr,cz+Math.sin(a)*d],qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*.75,s],bright(vary(hc,.04,.1,.07),1.35*rr(.85,1.1)));}
+ /* the crown's cards stem from the trunk, as near as far: rods are near-only, and no card follows them */
+ for(let k=0;k<n;k++){const a=rr(0,TAU),d0=k?cr*rr(.3,.75):0,s=cr*rr(.8,1.25);
+  BIO.put('ucard',BIO.holdTo([cx,cy,cz],[cx+Math.cos(a)*d0,cy+rr(-.35,.3)*cr,cz+Math.sin(a)*d0],s*.2+.3),qEuler(rr(-.3,.3),rr(0,TAU),rr(-.3,.3)),[s,s*.75,s],bright(vary(hc,.04,.1,.07),1.35*rr(.85,1.1)));}
  if(near){const rc=rodCol();
   if(vnear){const nb=ri(1,2);for(let b=0;b<nb;b++){const a=rr(0,TAU),d=cr*rr(.5,.9);BIO.beam('rod',[cx,cy-cr*.6,cz],[cx+Math.cos(a)*d,cy+rr(-.3,.3)*cr,cz+Math.sin(a)*d],r*.35,r*.15,rc);}}
-  const nm=ri(1,2);for(let m=0;m<nm;m++){const a=rr(0,TAU),d=cr*rr(.3,.8);BIO.put('ribbon',[cx+Math.cos(a)*d,cy-cr*.2,cz+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[rr(2.5,5),rr(4,9),1.5],leafCol(PAL.moss,1.5));}
+  const nm=ri(1,2);for(let m=0;m<nm;m++){const a=rr(0,TAU),d=(rr(.3,.8),r*.6);/* on the bark, the same draws: at d in the crown it hung from a card */BIO.put('ribbon',[cx+Math.cos(a)*d,cy-cr*.2,cz+Math.sin(a)*d],qEuler(0,rr(0,TAU),0),[rr(2.5,5),rr(4,9),1.5],leafCol(PAL.moss,1.5));}
   if(rng()<.35){const a=rr(0,TAU),d=cr*rr(.4,.8),lx=cx+Math.cos(a)*d,lz=cz+Math.sin(a)*d,gx=lx+rr(-2,2),gz=lz+rr(-2,2);
    BIO.beam('rod',[lx,cy-cr*.3,lz],[gx,Y(gx,gz)-.3,gz],rr(.05,.11),rr(.05,.11),rc);}}}
 function fungi(x,y,z,lv,st){const n=lv===2?ri(2,4):2,giant=rng()<.3;
@@ -151,8 +156,9 @@ function fungi(x,y,z,lv,st){const n=lv===2?ri(2,4):2,giant=rng()<.3;
   const cr=(giant&&i===0)?rr(1,1.9):rr(.3,.85),stk=cr*rr(.9,1.9),hc=fungusCol();
   const top=stk>.5?fy+stk:fy+.05;
   if(stk>.5)BIO.tube('wood',[{x:fx,y:fy-.25,z:fz,r:cr*.2},{x:fx+rr(-.1,.1),y:top,z:fz+rr(-.1,.1),r:cr*.16}],stalkTint(),{seg:4});
-  if(giant&&i===0)BIO.put('fungus',[fx,top-.08,fz],qEuler(0,rr(0,TAU),0),[cr,cr*rr(.4,.7),cr],hc);
+  if(giant&&i===0)BIO.put(FUNG?'fungcap':'fungus',[fx,top-.08,fz],qEuler(0,rr(0,TAU),0),[cr,cr*rr(.4,.7)*(FUNG?1.25:1),cr],hc);
   else{const h=cr*rr(.45,.8),t=tint(shade(hc,.3),means().wood,1.25),ph=rr(0,TAU);
+   if(FUNG)BIO.put('fungcap',[fx,top-.05,fz],qEuler(0,ph,0),[cr,h*1.2,cr],t);else   /* the gilled cap (BIO.fung) where a lathe stood: the same draws */
    BIO.lathe('wood',[{x:fx,y:top-.05,z:fz,yy:0,col:shade(t,-.25)},{x:fx,y:top+h*.45,z:fz,yy:.5,col:t},{x:fx,y:top+h,z:fz,yy:1,col:shade(t,.1)}],6,1,1,(R,ang)=>cr*(R.yy===0?1:R.yy<.6?.85:.12)*(1+.06*Math.sin(5*ang+ph)));}
   st.fungi++;}
  if(lv===2&&rng()<.5)groundMoss(x+rr(-1,1),y,z+rr(-1,1),rr(1.5,3));}
@@ -255,7 +261,7 @@ function dressLog(G,st,q){const near=BIO.lodD(G.cx,G.cz)<900;
    else{const s2=rr(2,3.6);card(x,y+s2*.4,z,s2,s2*.8,leafCol(SHRUB,1.45),.3);st.shrubs++;}}
   if(rng()<.5){const sd=rng()<.5?1:-1,el=rr(.05,.7),fr=rr(.5,1.5);
    const fx=A.x+G.px*sd*A.r*Math.cos(el)*.96,fy=A.y+A.r*Math.sin(el)*.96,fz=A.z+G.pz*sd*A.r*Math.cos(el)*.96;
-   if(fy>Y(fx,fz)+.4){BIO.put('fungus',[fx,fy,fz],qEuler(0,rr(0,TAU),0),[fr,fr*rr(.22,.4),fr],fungusCol());st.brackets++;}}
+   if(fy>Y(fx,fz)+.4){BIO.put('fungus',[fx,fy,fz],brq(G.px*sd,G.pz*sd,rr(0,TAU)),[fr,fr*rr(.22,.4)*brY,fr],fungusCol());st.brackets++;}}
   if(A.r>1.8&&rng()<.4){const sd3=rng()<.5?1:-1,mx2=A.x+G.px*sd3*A.r*.98,mz2=A.z+G.pz*sd3*A.r*.98;
    BIO.put('ribbon',[mx2,A.y+A.r*.25,mz2],qFacing([G.px*sd3,0,G.pz*sd3]),[rr(2,4.5),Math.min(A.r*1.1,rr(2,5)),1],leafCol(PAL.moss,1.6));st.moss++;}}}
 
@@ -276,6 +282,10 @@ HYPERJUNGLE.buildFloor=function(R,q){
  const charge=(k,fn)=>{const t0=cur();fn();st.tris[k]+=cur()-t0;};
  const TREES=HYPERJUNGLE.TREES||[],SAPS=HYPERJUNGLE.SAPLINGS||[],heroes=TREES.filter(T=>T.hero);
  const lodR=Math.min(1800,R*.6),nearR=650;
+ // the runtime LOD (2026-10-27; HYPERJUNGLE.LOD, set by the host: null keeps the spine's static rings only): each ring is drawn while
+ // the camera is within its range of a chunk (the near ring's detail near, the far ring's sparse cover out to LOD.far), the
+ // fallen trees with the mid ring, a hero's bole dress with the hero (LOD.tree, keyed on its bole)
+ const LF=HYPERJUNGLE.LOD,rg=v=>{BIO.range=v||null;};
  for(const k in HASH)delete HASH[k];LOGS.length=0;
  // ---- keep-clear discs: hero boles on their real footprint, impostor boles, sapling stems ----
  const PROF=new Map();
@@ -285,7 +295,7 @@ HYPERJUNGLE.buildFloor=function(R,q){
  const nearHero=(x,z)=>{let m=1e9;for(const T of heroes){const d=Math.hypot(x-T.x,z-T.z)-PROF.get(T).ground;if(d<m)m=d;}return m;};
 
  // ---- 1. fallen hypertrees: ~1 per 250 m cell inside the hero disc, lying between the boles ----
- BIO.grid(250,60,lodR-40,(x,z,d)=>.9*q,(x,y,z,d)=>{
+ rg(LF.mid);BIO.grid(250,60,lodR-40,(x,z,d)=>.9*q,(x,y,z,d)=>{
   for(let tr=0;tr<6;tr++){const h=rr(0,TAU),L=rr(60,160),r0=rr(1.6,3);
    const o={hx:Math.cos(h),hz:Math.sin(h),L:L,r0:r0,r1:r0*rr(.42,.58),bow:rr(-3,3)};o.bx=x-o.hx*L/2;o.bz=z-o.hz*L/2;
    let ok=true;
@@ -318,32 +328,32 @@ HYPERJUNGLE.buildFloor=function(R,q){
   else if(t<.945){ch('boulders',()=>boulder(x,y,z,lv,st));}
   else{ch('shrubs',()=>shrub(x,y,z,lv,false));st.shrubs++;}}
  // near: full detail; mid: fewer parts; both patchy, thinner (never bare) in the openings
- BIO.grid(7.4,0,nearR,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
- BIO.grid(15,nearR,lodR,(x,z,d)=>mix(.6,.3,smooth(nearR,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
+ rg(LF.floor);BIO.grid(7.4,0,nearR,(x,z,d)=>.92*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,2),{patch:.9,patchScale:.016,pad:1.5});
+ rg(LF.mid);BIO.grid(15,nearR,lodR,(x,z,d)=>mix(.6,.3,smooth(nearR,lodR,d))*openK(x,z)*q,(x,y,z,d)=>plant(x,y,z,d,1),{patch:.9,patchScale:.016,pad:1.5});
  if(BIO.nameSet)BIO.nameSet('hyperjungle.floor',FLOORN);
  // ground cover between the plants: squashed cards and moss in the damp, cheap, so the litter is never a lawn
  const cover=(x,y,z,s)=>{if(!okGround(x,z,.5))return;
   if(dampK(x,z)>.52&&rng()<.3){charge('moss',()=>groundMoss(x,y,z,rr(1.2,2.8)));st.moss++;}
   else{charge('tufts',()=>tuft(x,y,z,s));st.tufts++;}};
- BIO.grid(5.5,0,nearR,(x,z,d)=>.5*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(1.8,3.6)),{patch:.95,patchScale:.02,pad:.5});
- BIO.grid(13,nearR,lodR,(x,z,d)=>.42*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(2.2,4)),{patch:.95,patchScale:.02,pad:.5});
+ rg(LF.floor);BIO.grid(5.5,0,nearR,(x,z,d)=>.5*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(1.8,3.6)),{patch:.95,patchScale:.02,pad:.5});
+ rg(LF.mid);BIO.grid(13,nearR,lodR,(x,z,d)=>.42*openK(x,z)*q,(x,y,z,d)=>cover(x,y,z,rr(2.2,4)),{patch:.95,patchScale:.02,pad:.5});
  // far ring: the cheap mix out to R -- big squashed cards, small ferns, card shrubs -- at a coarser cell
- BIO.grid(24,lodR,R,(x,z,d)=>mix(.7,.4,smooth(lodR,R,d))*(.55+.45*openK(x,z))*q,(x,y,z,d)=>{
+ rg(LF.far);BIO.grid(24,lodR,R,(x,z,d)=>mix(.7,.4,smooth(lodR,R,d))*(.55+.45*openK(x,z))*q,(x,y,z,d)=>{
   if(blockedAt(x,z,1))return;const t=rng();
   charge('far',()=>{if(t<.18){fern(x,y,z,0);st.ferns++;}else if(t<.82){tuft(x,y,z,rr(4,8));st.tufts++;}else{shrub(x,y,z,0,false);st.shrubs++;}});},{patch:.9,patchScale:.016,pad:1});
 
  // ---- 3. on the hero boles: bracket fungi, moss skirts and beards low down, lianas from 30-80 m up ----
- heroes.forEach((T,ti)=>{const prof=PROF.get(T),d0=BIO.lodD(T.x,T.z),lk=clamp(BIO.lod(T.x,T.z),.4,1);
+ heroes.forEach((T,ti)=>{const prof=PROF.get(T),d0=BIO.lodD(T.x,T.z),lk=clamp(BIO.lod(T.x,T.z),.4,1);if(LF.tree){BIO.owner=[T.x,T.z];BIO.range=LF.tree;}
   const gy0=Y(T.x,T.z);
   const nb=Math.round((d0<700?ri(10,16):ri(5,8))*q*lk);
   charge('brackets',()=>{for(let i=0;i<nb;i++){const a=rr(0,TAU),y=gy0+rr(1.5,20),Rs=prof.at(a,y-T.y0),r=rr(1.4,4.2),hc=fungusCol();
-   BIO.put('fungus',[T.x+Math.cos(a)*(Rs-.15*r),y,T.z+Math.sin(a)*(Rs-.15*r)],qEuler(0,rr(0,TAU),0),[r,r*rr(.2,.36),r],hc);st.brackets++;
+   BIO.put('fungus',[T.x+Math.cos(a)*(Rs-.15*r),y,T.z+Math.sin(a)*(Rs-.15*r)],brq(Math.cos(a),Math.sin(a),rr(0,TAU)),[r,r*rr(.2,.36)*brY,r],hc);st.brackets++;
    if(rng()<.5){const a2=a+rr(.04,.09),y2=y+r*rr(.5,.9),R2=prof.at(a2,y2-T.y0),r2=r*rr(.5,.8);
-    BIO.put('fungus',[T.x+Math.cos(a2)*(R2-.15*r2),y2,T.z+Math.sin(a2)*(R2-.15*r2)],qEuler(0,rr(0,TAU),0),[r2,r2*.3,r2],shade(hc,rr(-.1,.1)));st.brackets++;}}});
+    BIO.put('fungus',[T.x+Math.cos(a2)*(R2-.15*r2),y2,T.z+Math.sin(a2)*(R2-.15*r2)],brq(Math.cos(a2),Math.sin(a2),rr(0,TAU)),[r2,r2*.3*brY,r2],shade(hc,rr(-.1,.1)));st.brackets++;}}});
   charge('moss',()=>{
    // moss beards hanging off the bark, and moss skirts plastered on it near the ground
    const nm=Math.round(ri(10,16)*q*lk);
-   for(let i=0;i<nm;i++){const a3=rr(0,TAU),y3=gy0+rr(4,26),h=rr(5,14),Rs=Math.max(prof.at(a3,y3-T.y0),prof.at(a3,y3-h-T.y0))+.3;
+   for(let i=0;i<nm;i++){const a3=rr(0,TAU),y3=gy0+rr(4,26),h=rr(5,14),Rs=prof.at(a3,y3-T.y0)+.3;   /* hung from the bark at its top: the wider buttress below held it 8-10 m off the bole there */
     BIO.put('ribbon',[T.x+Math.cos(a3)*Rs,y3,T.z+Math.sin(a3)*Rs],qFacing([Math.cos(a3),0,Math.sin(a3)]),[rr(4,10),h,2],leafCol(PAL.moss,1.5));st.moss++;}
    const ns=Math.round(ri(10,16)*q*lk);
    for(let i=0;i<ns;i++){const a4=rr(0,TAU),y4=gy0+rr(.5,12),Rs=prof.at(a4,y4-T.y0)+.12,r4=rr(1.5,3.5);
@@ -367,9 +377,14 @@ HYPERJUNGLE.buildFloor=function(R,q){
    lianaRun([top[0],top[1]+.5,top[2]],mid,r,hc,leafy&&rng()<.5);lianaRun(mid,[gx,gy-.3,gz],r*.9,hc,leafy);
    if(rng()<.6){const L3=rr(10,30),xo=top[0]+rr(-.8,.8),zo=top[2]+rr(-.8,.8);   // a free-hanging aerial root beside it
     BIO.put('strand',[xo,top[1],zo],qUp([rr(-.15,.15),1,rr(-.15,.15)]).multiply(qEuler(0,rr(0,TAU),0)),[rr(.6,1.2),L3,L3*.1],leafCol(PAL.vine,1.4,.06));}
-   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;FLOORN.push({name:'Pitch vine',plant:'pitchvine',x:gx,z:gz,y:gy,r:2.5,h:len});}});});
+   card(gx,gy+1,gz,rr(2,3.2),2.2,leafCol(SHRUB,1.45),.3);st.lianas++;FLOORN.push({name:'Pitch vine',plant:'pitchvine',x:gx,z:gz,y:gy,r:2.5,h:len});}});
+  BIO.owner=null;BIO.range=null;});
+ BIO.owner=null;BIO.range=null;
 
  const tt=st.tris;let total=0;for(const k in tt)total+=tt[k];tt.total=total;
  return{under:{ferns:st.ferns,shrubs:st.shrubs,aroids:st.aroids,palms:st.palms,subtrees:st.subtrees,boulders:st.boulders,fungi:st.fungi,logs:st.logs,
   lianas:st.lianas,moss:st.moss,brackets:st.brackets,tufts:st.tufts,treeferns:st.treeferns,screwpines:st.screwpines,gingers:st.gingers,epiphytes:st.epiphytes},tris:tt};};
+// the understorey plants a world may plant in place (2026-10-26, biomes/ringisles: the island rainforest's palm and screwpine):
+// (x, y, z, lv), wrapped to this kit's registry (BIO.kitEnd wraps only the export's own functions); the kit's own pass calls them unwrapped
+HYPERJUNGLE.small=BIO.kitWrap('hyperjungle',{palm,screwpine,treeFern,ginger,aroid,fern,shrub,frondCrown,tuft});   /* frondCrown, tuft: the lake station's moriche crowns and floating meadows (2026-10-27) */
 })();

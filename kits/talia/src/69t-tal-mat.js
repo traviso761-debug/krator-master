@@ -25,11 +25,14 @@ MAT.taMarble=MAT.plaster.clone();MAT.taMarble.roughness=.6;vWorldUV(MAT.taMarble
 MAT.taGilt=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.85,roughness:.32});
 // tile: the shingle map (its courses read as tiles at this scale) tinted terracotta, on domes, hips and cones
 MAT.taTile=MAT.shingle.clone();vWorldUV(MAT.taTile,.5);
-// cobalt glass: a deep blue pane with a little metal in it
-MAT.taCobalt=new THREE.MeshStandardMaterial({color:0x2f5fb8,metalness:.35,roughness:.3});
+// cobalt glass: core/door's stained glass in the cobalt (KGLASS 'stained', transparent: the owner, 2026-11-03, "real glass"),
+// over the room card like every pane on a solid face (69u); it was an opaque deep blue with a little metal in it
+MAT.taCobalt=KGLASS.material(THREE,'stained',{color:0x2f5fb8});
 // the lit pane and the glass, double-sided, for the pointed wedges
-MAT.taLit=MAT.warmPane.clone();MAT.taLit.side=THREE.DoubleSide;MAT.taGlass=MAT.darkGlass.clone();MAT.taGlass.side=THREE.DoubleSide;
-MAT.taVoid=MAT.void.clone();MAT.taVoid.side=THREE.DoubleSide;
+MAT.taLit=MAT.warmPane.clone();MAT.taLit.side=THREE.DoubleSide;MAT.taGlass=MAT.izGlass;   // core/door's clear glass (double-sided already)
+// the room's dim back (KGLASS.SPEC.room, 69e5's MAT.izRoom), no longer the void (KGLASS 'room', its colour taken as sRGB:
+// the Vernacular's IZ_ROOMC card's colour)
+MAT.taRoomS=MAT.izRoom;MAT.taRoom=MAT.taRoomS.clone();MAT.taRoom.side=THREE.DoubleSide;
 // a disc: a smooth cylinder whose axis is local z, centred (scale [r, r, depth]); the round head of an arch, a medallion
 const TADISC=new THREE.CylinderGeometry(1,1,1,28).rotateX(Math.PI/2);
 // (arch bands are boxes in segments: tanArcBand in 69u, so a band keeps its width on any span)
@@ -54,7 +57,7 @@ const TACONE=new THREE.ConeGeometry(1,1,16).translate(0,.5,0);
 // a barrel vault: the upper half of a cylinder lying along z, open below (its springing at y = 0), radius 1, length 1
 const TAVAULT=new THREE.CylinderGeometry(1,1,1,20,1,true,0,Math.PI).rotateZ(Math.PI/2).rotateY(Math.PI/2);
 kdef('taMarble',VBOX,MAT.taMarble);kdef('taGilt',VBOX,MAT.taGilt);kdef('taTileB',VBOX,MAT.taTile);kdef('taCobalt',VBOX,MAT.taCobalt);
-kdef('taDisc',TADISC,MAT.plaster);kdef('taDiscM',TADISC,MAT.taMarble);kdef('taDiscD',TADISC,MAT.void);kdef('taDiscG',TADISC,MAT.darkGlass);kdef('taDiscL',TADISC,MAT.warmPane);kdef('taDiscC',TADISC,MAT.taCobalt);kdef('taDiscGi',TADISC,MAT.taGilt);
+kdef('taDisc',TADISC,MAT.plaster);kdef('taDiscM',TADISC,MAT.taMarble);kdef('taDiscD',TADISC,MAT.taRoomS);kdef('taDiscG',TADISC,MAT.izGlass);kdef('taDiscL',TADISC,MAT.warmPane);kdef('taDiscC',TADISC,MAT.taCobalt);kdef('taDiscGi',TADISC,MAT.taGilt);
 kdef('taRib',TARIB,MAT.plaster);kdef('taRibGi',TARIB,MAT.taGilt);kdef('taRibCu',TARIB,MAT.verdigris);
 kdef('taRing',TARING,MAT.plaster);kdef('taRingGi',TARING,MAT.taGilt);kdef('taRingM',TARING,MAT.taMarble);
 kdef('taCol',TACOL,MAT.taMarble);kdef('taColP',TACOL,MAT.plaster);kdef('taBaluster',TABAL,MAT.taMarble);kdef('taBalusterP',TABAL,MAT.plaster);
@@ -65,7 +68,7 @@ kdef('taCone',TACONE,MAT.taTile);kdef('taConeCu',TACONE,MAT.verdigris);
 kdef('taVault',TAVAULT,MAT.plaster);kdef('taVaultT',TAVAULT,MAT.taTile);
 kdef('taGiltBall',VBALL,MAT.taGilt);kdef('taGiltPost',VPOSTB,MAT.taGilt);kdef('taBallM',VBALL,MAT.taMarble);
 // the pointed heads: wedges in the fill materials, double-sided (the wedge's faces are wound for roofs)
-kdef('taGableD',VGABLE,MAT.taVoid);kdef('taGableG',VGABLE,MAT.taGlass);kdef('taGableL',VGABLE,MAT.taLit);kdef('taGableM',VGABLE,MAT.taMarble);kdef('taGableTile',VGABLE,MAT.taTile);
+kdef('taGableD',VGABLE,MAT.taRoom);kdef('taGableG',VGABLE,MAT.taGlass);kdef('taGableL',VGABLE,MAT.taLit);kdef('taGableM',VGABLE,MAT.taMarble);kdef('taGableTile',VGABLE,MAT.taTile);
 kdef('taHipTile',VHIP,MAT.taTile);kdef('taPyrTile',VPYR,MAT.taTile);
 
 // ---------------------------------------------------------------- the owner's delivery of 2026-10-18 (materials.json, 88yt)
@@ -96,7 +99,7 @@ MAT.taPane=new THREE.MeshStandardMaterial({color:0xffffff,metalness:.15,roughnes
 kdef('taDomeGl',VDOME,MAT.taPane);kdef('taDiscP',TADISC,MAT.taPane);kdef('taVaultGl',TAVAULT,MAT.taPane);kdef('taPaneB',VBOX,MAT.taPane);
 kdef('taRibI',TARIB,MAT.iron);
 // the cobalt glass carries its own colour (TAPAL.cobalt: no arch tints its fill); a double-sided copy for the pointed heads
-MAT.taCobaltDS=MAT.taCobalt.clone();MAT.taCobaltDS.side=THREE.DoubleSide;kdef('taGableC',VGABLE,MAT.taCobaltDS);
+MAT.taCobaltDS=MAT.taCobalt;kdef('taGableC',VGABLE,MAT.taCobaltDS);   // (KGLASS's panes are double-sided)
 // the column's small parts at low poly (its base torus and its capital's volutes: a column carries several of each)
 const TARINGS=new THREE.TorusGeometry(1,.1,4,12).rotateX(Math.PI/2),TANUB=new THREE.SphereGeometry(1,6,4);
 kdef('taRingMs',TARINGS,MAT.taMarble);kdef('taRingGiS',new THREE.TorusGeometry(1,.1,4,12),MAT.taGilt);kdef('taGiltNub',TANUB,MAT.taGilt);
@@ -104,8 +107,16 @@ kdef('taRingMs',TARINGS,MAT.taMarble);kdef('taRingGiS',new THREE.TorusGeometry(1
 kdef('taDomeCu',VDOME,MAT.verdigris);
 
 // ---------------------------------------------------------------- real openings (the owner, 2026-10-19: no dark voids)
-// Talia's pane: the dark glass lifted to a sky grey (Pylon's pyPane, the same values), so a window reads as glass, not a
-// hole; double-sided for the pointed heads. Timber leaves for the doors' arched and pointed heads (white, tinted walnut).
-MAT.taWinPane=MAT.darkGlass.clone();MAT.taWinPane.color.set(0x7d97a3);MAT.taWinPane.roughness=.15;MAT.taWinPane.metalness=.55;
-MAT.taWinPaneDS=MAT.taWinPane.clone();MAT.taWinPaneDS.side=THREE.DoubleSide;
+// Talia's pane: core/door's clear glass (KGLASS 'clear', 69e5's MAT.izGlass, the Vernacular's own pane; Pylon's pyPane the
+// same), transparent, over the room card where nothing real is behind it (69u). It was the dark glass lifted to an opaque
+// sky grey (2026-10-19). Double-sided already, for the pointed heads.
+MAT.taWinPane=MAT.izGlass;MAT.taWinPaneDS=MAT.izGlass;
 kdef('taWinB',VBOX,MAT.taWinPane);kdef('taWinDisc',TADISC,MAT.taWinPane);kdef('taWinGable',VGABLE,MAT.taWinPaneDS);
+
+// ---------------------------------------------------------------- real glass and doors (the owner, 2026-11-03; core/door)
+// A glazed opening (69u: the G, L and C fills, the fanlights) is the room card (taRoomB, taDiscD, taGableD, taHalfD) with the
+// pane in front of it; an arch's round head over a rectangle, and a fanlight over a door, take a HALF disc (TAHALF: the flat on
+// y = 0, the half over it; scale [r, r, depth]), so two panes never lie over one another and the card leaves the doorway clear.
+const TAHALF=(()=>{const s=new THREE.Shape();s.moveTo(-1,0);s.absarc(0,0,1,Math.PI,0,true);s.lineTo(-1,0);
+ const g=new THREE.ExtrudeGeometry(s,{depth:1,bevelEnabled:false,curveSegments:18});g.translate(0,0,-.5);return g;})();
+kdef('taRoomB',VBOX,MAT.taRoomS);kdef('taHalfD',TAHALF,MAT.taRoom);kdef('taHalfG',TAHALF,MAT.taWinPane);kdef('taHalfL',TAHALF,MAT.taLit);kdef('taHalfC',TAHALF,MAT.taCobalt);

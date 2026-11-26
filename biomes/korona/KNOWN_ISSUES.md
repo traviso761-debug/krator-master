@@ -2,38 +2,117 @@
 
 Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in and verified.
 
-- [ ] **The punji-pit lids show the whole litter atlas** (found 2026-10-23, `TODO.md`, "Card sheets shown whole"). The
+- [x] **The punji-pit lids show the whole litter atlas** (found 2026-10-23, `TODO.md`, "Card sheets shown whole"). The
   `lid` slot takes `card.litter` (a three-by-three atlas of forest debris) with no `cell`, and its geometry (`G.pad()`,
   `50-biome-korona-species.js`) is not cut with `cellUV` as every other Korona card is, so each lid is the whole sheet of
   nine pieces. Fix: `cellUV(G.pad(), CELL(k))` on the leaf-pile piece, or a `cell` in `materials.json` (`BIO.libSwap`
   windows it); then rebuild and screenshot a pit.
+  Stays (2026-10-25): a card-sheet item for later, per the owner; not touched in this pass.
+  Fixed (2026-10-26, the owner: "a buried pitcher plant with a tear-through membrane that slowly regrows after a meal"):
+  the pit is rebuilt (`50`, "THE PUNJI PIT"; `57`, `punji`). A flask sunk in the ground (its digestive pool and eight
+  bone spikes inside), a waxy ribbed peristome at grade, and over the mouth a membrane disguised with ONE litter cell (a
+  leaf-pile cell per pit, 0, 4 or 7, picked in the shader: no more whole sheet). The membrane tears into four ragged flaps
+  that hang into the pit, then the flaps lift and the tear closes over six minutes of world time on the motion clock
+  (`BIO.WIND.t`: the speed buttons, pause and `?t=` drive it), pale scar tissue on the seams until the litter settles.
+  Each pit's phase is `KTRAPS.phase` of its id (core/rand), so at any time about a third are torn or regrowing. The state
+  is data: `KORONA.MEMBRANE` (the cycle), `KORONA.pitState(rec,t)` (pure; `KORONA.PIT_GLSL` the same arithmetic),
+  `KORONA.PITS` and `tags.trap.membrane` on each pit's core/tags volume (phase, seed, hang, cell). Three instanced draws
+  for all the pits (a stencil mask that cuts the ground, the body, the membrane; `KORONA.afterBake` orders them):
+  +2 draw calls per page; about 300 triangles a pit (the hollow's 3,326 pits: +0.5 M). `window._punji('torn')` holds
+  every pit in one state for a look. A pit now wants ground flatter than about 1 in 2 (seated on its slope): the
+  table's talus kept 2 of its 14 (one stood proud of the scree, its body showing below the lip).
+  The owner's review (2026-10-26, "make the lid litter flecked; can make the pool a little less red"): the peristome
+  carries a broken ring of litter flecks from the same cell (a second, turned look into the pile's dense middle), so the
+  red shows only in its gaps and most at the inner edge; the pool samples the throat map's pale band under a murky
+  amber-olive vertex colour (it sat on the map's red middle). Same draws and triangles.
 - [ ] **No glow.** The lace fan tree should glow at dusk (the northern highlands' bell-bulbs' emissive, raised by the
   night) and the monkeycup rims faintly blue; the page has no night uniform on these materials yet.
+  Stays (2026-10-25): needs the night uniform, i.e. a day cycle on the page (next item) and an emissive pass; a design task.
+  Stays open (2026-10-26): the glow wants a night to rise in, and the night waits on the shared sky rollout (another
+  session is moving every biome onto core/atmos's sky; this kit must not touch the sky fragments). When it lands: a
+  `uNight` uniform from core/atmos (the sun's elevation) on `M.lacefan` (an emissive term in the leaf hook, the lace fan's
+  peach) and on the monkeycup rims (faint blue), as the northern highlands' bell-bulbs do.
 - [ ] **No night.** `core/atmos` is bound (2026-10-19: `89w-host-water.js`, its clock and skylight for the water, its
   export section) with the hour pinned at 13; the giant's light at night, the dusk glow (above) and the weather wait for
   a day cycle on the page. The station's pressure is a record (`STAGE.air`, exported with the layout: 1.3 atm on the
   table, 1.74 in the hollow, 1.44 in the basin, 2.1 at the salt, 1.7 in the gorge, .8 on the hoar table) and changes
   nothing drawn: the dense-air look (a heavier haze with the pressure) is the owner's call, since the six pages' fog was
   judged as it is.
-- [ ] **The hazard key.** `core/tags` has no `hazard` key; the danger rides on `trap.danger` (`BIOME-API.md`). The key is
-  proposed (`core/tags/PROPOSAL.md`, "A hazard key", 2026-10-19); when it lands, the Throne's CO2 hollows and the
-  natives' punji pits take it too.
+  Stays (2026-10-25): a day cycle and the dense-air haze are the owner's call; `89a-host-atmos.js` binds `core/atmos` with the hour at 13 and takes a night toggle when one lands.
+  Available (2026-10-25): `core/atmos/fx/89-atmos-fx-snowcover.js` (`ATMOS.snowCover({base,line,frozen})`, `ATMOS.snowOnScene`) could give the hoar table a light permanent hoarfrost above a line; not adopted, since it changes the look the six pages were judged on and the page has no weather yet. Owner's call.
+  Stays open (2026-10-26): the host offers an hour slider only when the sky takes an hour, and the sky is the shared sky
+  rollout's (not touched here). The hoar table's snow cover (`stations/hoar/89s-host-snow.js`, 2026-10-25) is kept as is.
+- [x] **The hazard key.** Done 2026-10-26 (core/hazard, branch claude/core-hazard): `core/tags` has the `hazard` key and
+  `57`'s `reg` writes `tags.hazard` beside `tags.trap` for every trap of danger .3 and over (`KORONA.hazardOf`,
+  `KORONA.HAZARDS` in `50`): the punji pits as pits on `KORONA.pitState` (now on the one clock, `KTRAPS.cycle`; hidden while
+  the membrane is whole), the man-eaters, coil tendrils, ground stars, bear traps, snare flowers and trap pads as grabs on
+  their trap's clock, the numb thorn as poison, the sucking pools as drowning. Every page's `hazards` layer shows them; the
+  inspector says their state now. The Throne's CO2 hollows took it too (station 8).
 - [ ] **The salt lake and the Tiers' lake are flat discs at the stage's edge**, far above their true depth (the trenches'
   walls are 4 km). A station cannot hold that; the open world will. Since 2026-10-19 they are `core/water` still
   records like every pool (`89w-host-water.js`); the open world will make them `WATER.open` surfaces on a shore window.
+  Stays (2026-10-25): needs the open world's shore windows (a `WATER.open` on real depth); a station cannot hold it.
+  Stays open (2026-10-26): an open-world item, out of this pass (the owner: known issues besides fauna and the open world).
 - [ ] **The tepui is one record.** The open world wants many tables placed from the scale model's ring crests
   (`NOTES.md`, "The ground"); the station builds one by hand (`STAGE.bodies`).
+  Stays (2026-10-25): wants the scale model's ring crests, an open-world design task.
+  Stays open (2026-10-26): an open-world item, out of this pass.
 - [ ] **Two textures came off their prompts** (`core/materials/PROMPTS-NEEDED.md`, "Delivered 2026-10-19, Korona"):
   `ground.quartzite.black` is pale with black patches (the summit reads lighter than Roraima's crust), `ground.peat.black`
   a rusty moss rather than black peat. Usable; a redo is the owner's call.
-- [ ] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
+  Stays (2026-10-25): a redo is the owner's call (a texture owed).
+  Stays open (2026-10-26): the owner's call. Redo prompts proposed (each after the base template of
+  `core/materials/PLAN.md`, "Prompts for generated sources"; to go into `PROMPTS-NEEDED.md` if the owner wants them):
+  `ground.quartzite.black`: "Roraima-type tepui summit pavement seen from above: quartzite sandstone weathered jet black
+  by a crust of cyanobacteria and lichen over the WHOLE frame, matte charcoal to soot black, sugary grain and fine pits
+  showing dark grey through it, a few hairline cracks and shallow rain pockets holding pale quartz sand, rare small
+  flakes of pale pink quartz where the crust has spalled. Average brightness about 15 percent; no green, no large pale
+  areas." `ground.peat.black`: "Waterlogged black peat bog floor seen from above: saturated near-black humus, dark
+  chocolate to black, half-rotted fibrous plant matter and fine root threads, a few blackened sedge blades pressed flat,
+  a faint wet sheen in the hollows and two or three small pools of dark tea-coloured water. No living moss, no rust or
+  orange, no sticks thicker than a finger. Average brightness about 12 percent."
+- [x] **The hoar table's pavement is drawn on rings.** The table's top carries the station's knolls and its tarn's basin
   through `STAGE.topExtra`; the drawn top reads that function (`KSTACKS.mesh` through the export, on 150 rings and 1,200
   segments for a top with relief: about 10 m), so the basins and the knolls are drawn; a gridded top would be cleaner
   than a 180,000-vertex ring fan.
-- [ ] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
+  Stays (2026-10-25): a gridded top is a terrain-drawing redesign in `KSTACKS` (core/terrain) and the export, over an hour and a core change.
+  Stays open (2026-10-26): a core change. Proposed: `core/terrain/37-core-stacks.js`, `KSTACKS.mesh`, an option
+  `top:{grid:5}` that draws a top with relief as a square grid (5 m) clipped to the top's outline (the outline's ring
+  stitched to the grid's edge cells) in place of the 150-ring by 1,200-segment fan, reading the same top function; the
+  export's terrain section takes the same grid. The hoar station then passes `top:{grid:5}` in its `45-host-stage.js`.
+  Fixed (2026-10-26, branch claude/core-terrain): `KSTACKS.mesh` opt.top `{grid:5}` (core/terrain/37-core-stacks.js); the hoar station
+  passes `STAGE.stackTop:{grid:5}`, read by `47-host-land.js`. The top is a 5 m grid clipped to the edge ring, watertight with the wall, and
+  the cells hidden under the bed above are left out: the pavement is 272,031 vertices and 513,488 triangles where the rings were 900,750 and
+  1,788,000 (the page 10.11 M triangles at its views, from 11.39 M; 37 draw calls as before). The export reads the same mesh.
+- [x] **The man-eater's lid is a flat card.** It is an instanced disc hinged on the back of the rim (it moves on the trap
   cycle); a proper Nepenthes lid (a dome with a spur, veined) wants its own geometry when the plant is redone.
+  Stays (2026-10-25): a veined dome with a spur is new geometry for when the plant is redone, a design task.
+  Fixed (2026-10-26): the lid is a shallow dome (0.22 m high, its edge turned down) with the spur standing up and back
+  at the hinge (`50`, the `hood` def; 63 triangles where the card had 10: +0.17 M on the hollow's 3,114), on the same hinge hook and trap cycle. Its
+  veins are the pitcher skin's mottle; a midrib in the map is for when the plant is redone.
+- [ ] **The final rebuild's owed items** (pair 9, 2026-11-03; `PLAN.md`, "Core adoption"). (1) The necanyons kit's seep curtains and ferns
+  are placed at a bed's outline, past the lip KSTACKS draws (`footR x (1 - ch)`); this page seats them on the drawn lip (`89z`, `?seat=0`),
+  and the fix in `biomes/necanyons/src/57-biome-necanyons-carnivores.js` (`outR` from `lipR`) is owed to necanyons' next turn (9 build
+  commands, 38 pages read it). (2) The hoar table's `polygon` ground (BACKPORT's row) wants KGROUND on the top's material (`MAT_TOP`).
+  (3) Karst site 7 (the west trench rims: gypsum dolines, a salt-shore spring; `biomes/KARST-SITES-5.1.md`) waits on the trenches'
+  5.1 re-survey. (4) The receiver rows (bristlecone, caribou moss, ghost gum, sea buckthorn) and the vendor rows `wallfern` and
+  `bladderpool` (`KORONA.plant` takes four of six). (5) Wet ground (R9) not taken: oidong saw `WATER.wetGround` over KGROUND draw black
+  (`?wet=1` to look). (6) Two banding systems on the walls (the kit's per tier, KSTRATA's per bed): the owner's eye. (7) Two vendors' items are
+  left out of this kit's attach audit (`89z`, `window._auditOwed`; `?owed=0` audits them): the eastern highlands' `bloom` on the hoar table
+  (82% float: flowers on the poured cushions, which the audit sees only as axes; ehighlands' own page 81.5%, pair 13) and the eastern
+  desert's `bloom` on the gorge and the trenches (sedesert's own page 15.4%, its next turn), and the northern highlands' `needle` and `beard` on
+  the trenches' crest (4.38% with them; its pair-7 turn, not merged here yet). Each comes back when its vendor's turn holds it.
+  (8) The trenches lacked `31b-core-leafset` and `33-core-fungoid`, which nhighlands' species need since the core pass (`G.disc` threw):
+  `stations/trench/station.json` lists them now. (9) KGROUND reads the eye uniform r128 leaves at 0 on a Lambert ground; this floor
+  redirects it to `kEye` (`47`), the fix belongs in `core/terrain/43-core-ground.js` (necanyons' floor has the same read). (9) is closed by the core fix of 2026-11-08: `43-core-ground.js` and `30-core-foliage.js` take the eye from `viewMatrix`.
 
 ## Closed
+
+- **Atmos host binding and the hoar sin-hash lint** (2026-10-25, the biome rebuild): `src/89a-host-atmos.js` calls
+  `ATMOS.bindHost` (hour 13) as the migrated biomes do, `build.py` lists `core/atmos/host/89-atmos-c-hostbind.js`, and
+  `89w-host-water.js` no longer calls `ATMOS.init` itself. The water was already `WATER.flow` / `WATER.still` with no
+  workaround (no preset write, no own shader). The `OWN sin-hash` finding in `stations/hoar/45-host-stage.js` was a false
+  positive (`Math.sin(a)*1000`, the radius of the spine's ring of points, not a hash); the radius is a named constant now.
 
 - **Water and air on the core** (2026-10-19, the core adoption audit, `CORE-ADOPTION.md`): the stream is a `WATER.flow`
   (its ribbon drawn by `core/water`), every pool and every rain pool on the rock a `WATER.still` record, all drawn as one
@@ -69,6 +148,8 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   bomb (`47`, `kdither`: each cell of ~2 tiles turns and shifts the tile by its own hash, three corners blended, at the
   map's scale and at a third of it, mixed by a value noise) under a coarse luminance and hue drift (48 m and 140 m), so
   no repeat can line up and the mottle is no longer one flat field; the walls keep their beds level (`kditherW`).
+  (2026-10-26, X4: the dither's GLSL is core now, `core/biome/31-core-dither.js` `BIO.DITHER`, the same text; `47`'s `DITHER`
+  is that string and `build.py` lists the fragment. Farside took the same copy. The core ground shader, R4, is to take it over.)
   **The trenches' two faces were too alike**: the windward face wears sphagnum (a fourth floor layer, `STAGE.layers.d`)
   over litter pulled green (`STAGE.layerMul`, on the library's colour), the lee pale warm scree; the rainforest climbs
   higher and denser (`jungleQ` .9, the lace fans and great sundews biased up). **The stacks all looked alike**: every
@@ -93,3 +174,48 @@ Open items are `- [ ]`; `build.py` counts them. Close an item when the fix is in
   vertical), and the table stands on a forested apron.
 - A density bug (an undefined meadow bias read as 1) put 918,000 cobra lilies on the first page and stalled the
   headless harness for its whole timeout; a station's extras (`cobraMeadow`, `rainbowfanFloor`) now default to 0.
+
+## Open
+
+- [x] **Station 7, Silkhead Gorge (2026-11-16, `stations/silkhead`, `dist/korona-silkhead.html`): the GPU verify was owed** (closed 2026-11-17).
+      Added `"31b-core-leafset.js"` to `stations/silkhead/station.json` `"core"` (eliminating `check_assembly.py` `MISSING BIO.leafOn / BIO.leafQ`),
+      rebuilt through `tools/build.py`, and ran `KRATOR_GL=gpu` `verify.py dist/korona-silkhead.html --assert --all-views` on `rtx`: **all 12 views
+      pass, exit 0 `OK`** (130-153 draw calls, 3.49-4.14 M triangles drawn / 2.95 M BIO triangles, attach audit 0.91%, max samplers 13, export
+      profile 9/9).
+- [ ] **Station 7: the spec's heights are not the model's (for the scale-model queue; nothing edited here).** The spec puts the rim at
+      +3,620 m over the trench at -1,180 m; today's model (5.1, `tools/scale-model/model/data`) has the table at **1,430-1,570 m** round
+      1096,526 and the trench at -580 to -1,400 m within 12-16 km east (`NOTES.md`, "What the model says there today"). The page keeps the
+      spec's 4,800 m. For the model: either raise the central table round 1096,526 (px 1088-1098 by 516-528) to about 3,600 m, which makes it
+      the high cold country the hoar table's tribes live in, or keep the model and read the page as a vertical exaggeration of 2,050 m.
+      The owner's call; the page does not change either way until the map does.
+- [ ] **Station 7: Korona's domes are not on this line's model yet.** Built on the integration line, whose model has none (edit 2's
+      `d6c00c3e0` lives on `claude/firebliss-patera-domes`; 1179,578 reads -86 m here). `origin/main` now has them as **scale model 5.1 edit 8**
+      (`77f94b97d`, `tools/scale-model/edit_518.py`, `DATA.domes`): the same five Korona domes, 12-16 km across and 522-650 m high, the nearest
+      to this station dome 2 (NE trench, 1131,494, 95 km north-east), dome 4 (SE moat, 1179,578) 196 km south-east, and its 189 changed
+      cells all round the domes, none near 1096,526 (the station's ground is the same before and after). The page's dome is its own, 1.3 km
+      on the trench floor below the rim (the spec's "4.7 km below"), with the model records' kind and rock (`pancake_dome`,
+      `rhyolite_obsidian`) and `near` naming dome 2 (`45`, `DOME`; the layout export's `dome`). This branch was not merged with main here
+      (2026-11-17: 232 conflicted files between the integration line and main); when it is, nothing on the page moves. Dome 4 wants its own
+      station (16 km: the spec's "paired" view) or a far-field landmark the open world draws.
+- [ ] **Station 7: what is approximate.** (1) The fog belt is the only "cloud cascade": core/atmos draws no cloud spilling over a lip
+      (a tablecloth cloud would be a core/atmos effect: none written). (2) The water between the veils on the benches is not drawn (each
+      curtain lands in its plunge disc and the next leaves the bench's edge 24 m out); no stream runs in the gorge's col. (3) The dome's glass
+      is the walls' material darkened by vertex colour east of x 20 (`89x`, `?glass=0`) over the lateral obsidian-pancake strata; the
+      `rock.rhyolite.flowbanded` texture is still owed (`core/materials/PROMPTS-NEEDED.md`, Firebliss's entry). (4) The spans, ladders and
+      winch are host-drawn tubes and boxes in flat colours, no texture and no sway in the wind. (5) The main view holds the lip, the
+      carvings, the Silkhead's face and its veils and the trench, not the spans: from inside the cleft the col (600 m below the rims) hides
+      the drop, so the spans have their own view. (6) `45` wraps `KSTACKS.at` with a reject by the lowest bed (`?reject=0` leaves it): these
+      bodies are kilometres across and the layout spent minutes asking every bed; the same reject in `core/terrain/37-core-stacks.js` would
+      speed every big-body page (a core candidate, not done here). (7) The page is the kit's heaviest (a 3.4 km square, 4.8 km of wall):
+      on SwiftShader under load it takes 10-15 minutes to build.
+
+- [ ] **The shared sky (SKY-PLAN.md section 9, 2026-10-26): the look to judge.** The painted dome and the giant mesh are
+      gone; `89s-host-sky.js` calls `ATMOS.skyBiome` (core/atmos) on the host clock: the page opens at 06:00 on game start's
+      day (dawn), `#hour=13` is about the old fixed light. It read the hyperjungle's dome in place (all six pages); now the
+      shared sky at Korona with each page's own air (STAGE.air.pressure: tepui 1.3 here; each station's
+      stations/<name>/89-host-sky.js gives its own). No ridges: the tepuis and gorges are real terrain. Draw calls per
+      station before and after (verify.py --assert, GPU, all passing after; the committed basin and gorge pages passed
+      before, hoar, hollow and trench failed only their export profile): basin 223 to 222, gorge 115 to 112, hoar 40 to 37,
+      hollow 127 to 124, trench 220 to 217. Draw calls at the default camera (verify.py --assert, GPU): 130 before, 129
+      after.
+

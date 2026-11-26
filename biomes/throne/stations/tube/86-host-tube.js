@@ -38,25 +38,17 @@ TICKS.push(dt=>{SHAFTU.uT.value+=dt;MOTEU.uT.value+=dt;MOTEU.uScale.value=innerH
 _onLight.push(m=>{const n=m==='night';SPOTS.forEach(sp=>{sp.color.setHex(n?0x8aa6c8:0xfff0d8);sp.intensity=n?.35:2.6;});SHAFTU.uK.value=n?.12:1;MOTEU.uK.value=n?.1:1;});
 
 // ---------------------------------------------------------------- the hot reach: the lava stream, its lights, the sump
-const LAVAU={uT:{value:0}};
-const MAT_STREAM=new THREE.ShaderMaterial({fog:true,uniforms:THREE.UniformsUtils.merge([THREE.UniformsLib.fog,LAVAU]),
- vertexShader:['#include <fog_pars_vertex>','attribute vec2 aF;varying vec2 vF;varying vec3 vP;','void main(){vF=aF;vec4 wp=modelMatrix*vec4(position,1.0);vP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT;varying vec2 vF;varying vec3 vP;',
-  'vec2 h2(vec2 p){vec3 p3=fract(vec3(p.xyx)*vec3(0.1031,0.1030,0.0973));p3+=dot(p3,p3.yzx+33.33);return fract((p3.xx+p3.yz)*p3.zy);}',
-  // the crust's plates carried downstream (aF.y metres along the stream), torn at the banks (aF.x 0..1 across)
-  'void main(){vec2 p=vec2(vF.x*6.0,vF.y*0.5-uT*0.9);vec2 c=floor(p),f=fract(p);float F1=8.0,F2=8.0;vec2 id=vec2(0.0);',
-  ' for(int j=-1;j<=1;j++)for(int i=-1;i<=1;i++){vec2 g=vec2(float(i),float(j)),o=0.5+0.3*sin(uT*0.4+6.2831*h2(c+g));vec2 r=g+o-f;float d=dot(r,r);if(d<F1){F2=F1;F1=d;id=c+g;}else if(d<F2)F2=d;}',
-  ' float e=sqrt(F2)-sqrt(F1),crack=1.0-smoothstep(0.0,0.12,e),bank=smoothstep(0.38,0.5,abs(vF.x-0.5));',
-  ' float pl=h2(id).x;vec3 crust=mix(vec3(0.05,0.03,0.02),vec3(0.22,0.07,0.03),pl*0.6)*(1.0-bank*0.5);',
-  ' vec3 hot=mix(vec3(1.0,0.35,0.05),vec3(1.0,0.8,0.35),crack);float open=smoothstep(0.82,0.98,pl)*(1.0-bank);',
-  ' vec3 col=mix(crust,hot*2.2,max(crack*(1.0-bank*0.7),open));gl_FragColor=vec4(col,1.0);','#include <fog_fragment>','}'].join('\n')});
-MAT_STREAM.uniforms.uT=LAVAU.uT;MAT_STREAM.uniforms.fogColor.value=scene.fog.color;MAT_STREAM.uniforms.fogDensity.value=scene.fog.density;
-TICKS.push(dt=>{LAVAU.uT.value+=dt;});
+// the stream's crust is core/atmos's lava in its channel mode (core/atmos/fx/89-atmos-fx-lava.js, 2026-10-25: aF across 0..1 and
+// along in metres, the plates carried downstream, torn and cooler at the banks); core/atmos binds after this fragment, so
+// the stream takes its material on the first frame
+const STREAM_W=CHAN.hw*2.3;
+TICKS.push(()=>{const m=CAVE.stream;if(m&&!m.userData.lavaMat&&typeof ATMOS!=='undefined'&&ATMOS.lavaMaterial&&ATMOS.T)
+ m.material=m.userData.lavaMat=ATMOS.lavaMaterial({name:'The lava stream (the hot reach)',swell:false,scale:.05,crack:3,heat:2,channel:{width:STREAM_W,speed:.9},sun:SUN_POS});});
 (function(){const pos=[],F=[],idx=[];let n=0,s=0;
  for(let u=HOT.u0+10;u<=TUBE.L-3;u+=1.5){const p=TUBE.P(u),t=TUBE.tan(u),nn=[-t[1],t[0]],k=hotK(u),w=CHAN.hw*1.15*k,o=-1.5*Math.sin(u*.03),y=lavaY(u)+(1-k)*.8;
   pos.push(p[0]+nn[0]*(o-w),y,p[1]+nn[1]*(o-w),p[0]+nn[0]*(o+w),y,p[1]+nn[1]*(o+w));F.push(0,s,1,s);s+=1.5;if(n)idx.push((n-1)*2,(n-1)*2+1,n*2,(n-1)*2+1,n*2+1,n*2);n++;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aF',new THREE.Float32BufferAttribute(F,2));g.setIndex(idx);
- const m=new THREE.Mesh(g,MAT_STREAM);m.userData.inspectLabel='The lava stream (the hot reach)';m.userData.lava=true;scene.add(m);CAVE.stream=m;})();
+ const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({color:0x2a0c04}));m.userData.inspectLabel='The lava stream (the hot reach)';m.userData.lava=true;scene.add(m);CAVE.stream=m;})();
 // THE VISITOR'S LAMP: a dim warm light carried with the camera (in the dark between the skylights the cave would read as
 // black; anyone down here carries one). Only under the rock
 const LAMP=new THREE.PointLight(0xffd8a8,.9,32,1.6);scene.add(LAMP);

@@ -92,7 +92,7 @@ function buildTalCouncilHouse(G,o){reseed(9761+(o.v|0));const P=2.4,CW=18,CD=22,
  for(const s of[-1,1]){for(let k=0;k<6;k++)tanPilaster(s*CW/2,P,Z0-CD/2+1.2+k*(CD-2.4)/5,s*Math.PI/2,.6,HC,wh,gi);
   for(let k=0;k<5;k++){const z=Z0-CD/2+1.2+(k+.5)*(CD-2.4)/5;tanArch(s*CW/2,P+2.4,z,s*Math.PI/2,1.4,3.6,{kind:'flat',fill:'L',band:or,bw:.14,sill:wh});tanPediment(s*CW/2,P+6.3,z,s*Math.PI/2,2.0,.45,wh,.12,.3,null);}}
  tanColonnade(0,P+.12,zf+PD-.5,0,CW-1.4,5,HC-.12,.5,'corinthian',mb,gi,0);for(const s of[-1,1])tanColumn(s*(CW/2-.7),P+.12,zf+2.2,HC-.12,.5,'corinthian',mb,gi);
- tanDoor(0,P,zf,0,2.6,5.4,'taMarble',wh,wal,false);tanArcBand(0,P+5.4,zf,0,1.4,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,P+5.4,zf,0,1.3,.03,.1,null);
+ tanDoor(0,P,zf,0,2.6,5.4,'taMarble',wh,wal,false);tanArcBand(0,P+5.4,zf,0,1.4,.2,.14,.08,gi,0,Math.PI,10,'taGilt');tanDiscAt('taDiscL',0,P+5.4,zf,0,1.3,.03,.1,null,true);
  for(const s of[-1,1])tanNiche(s*4.6,P+.6,zf,0,1.6,3.8,wh,or,mb);
  const YT=tanEntablature(0,P+HC,Z0+PD/2,CW,CD+PD,0,wh,gi,{});
  tanCoffers(0,P+HC-.14,zf+PD/2,CW-.8,PD-.4,0,or,wh,1.2);
@@ -162,7 +162,7 @@ function buildTalWall(G,o){reseed(9776+(o.v|0));const L=o.len==null?12:o.len,H=7
  vnReg('Wall (civic)',0,0,L/2,H+1.4,{style:'byzantine',type:['military','infrastructure']});
  vB('vStone',0,0,0,L,.8,T+.4,0,st);vB('vPlaster',0,.8,0,L,H-.8,T,0,wh);vB('vPlaster',0,5,T/2+.07,L,.2,.14,0,or);
  for(let k=0;k<n;k++){const u=-L/2+(k+.5)*L/n;vB('vPlaster',u,H,T/2-.25,.9,.75,.5,0,wh);kput('taDisc',[u,H+.75,T/2-.25],null,[.45,.45,.5],or);
-  if(k%2===0){vB('taWinB',u,2.3,T/2+.02,.18,1.0,.05,0,null);vB('vStone',u,2.2,T/2+.04,.42,.1,.12,0,st);vB('vStone',u,3.3,T/2+.04,.42,.1,.12,0,st);}}
+  if(k%2===0){vnPlate(u,2.3,T/2+.02,.18,1.0,.05,0);vB('vStone',u,2.2,T/2+.04,.42,.1,.12,0,st);vB('vStone',u,3.3,T/2+.04,.42,.1,.12,0,st);}}
  vB('vPlaster',0,H,-T/2+.15,L,.8,.3,0,wh);vB('vPlaster',0,H+.8,-T/2+.15,L,.08,.4,0,or);}
 
 // Wall tower (PLAN.md: orange-capped round towers): a white drum on a marble footing, orange bands, slit windows, a
@@ -175,7 +175,7 @@ function buildTalWallTower(G,o){reseed(9781+(o.v|0));const R=3.8,H=11;
  for(const y of[4.5,8])tanArcRun(0,y,0,R+.06,0,TAU,.2,.25,'vPlaster',or);
  tanArcRun(0,H-.4,0,R+.05,0,TAU,.3,.4,'vPlaster',wh);
  for(let k=0;k<12;k++){const a=k*TAU/12;vB('vPlaster',Math.sin(a)*(R-.25),H,Math.cos(a)*(R-.25),.9,.75,.4,a,wh);kput('taDisc',[Math.sin(a)*(R-.25),H+.75,Math.cos(a)*(R-.25)],vQ(a,0,0),[.45,.45,.4],or);}
- for(const [a,y] of[[0,3],[Math.PI/2,6.5],[-Math.PI/2,6.5],[0,9.5],[Math.PI*.75,9.5],[-Math.PI*.75,3]]){vB('taWinB',Math.sin(a)*(R+.02),y,Math.cos(a)*(R+.02),.18,1.0,.05,a,null);for(const dy of[-.1,1.0])vB('vStone',Math.sin(a)*(R+.05),y+dy,Math.cos(a)*(R+.05),.42,.1,.1,a,mb);}
+ for(const [a,y] of[[0,3],[Math.PI/2,6.5],[-Math.PI/2,6.5],[0,9.5],[Math.PI*.75,9.5],[-Math.PI*.75,3]]){vnPlate(Math.sin(a)*(R+.02),y,Math.cos(a)*(R+.02),.18,1.0,.05,a);for(const dy of[-.1,1.0])vB('vStone',Math.sin(a)*(R+.05),y+dy,Math.cos(a)*(R+.05),.42,.1,.1,a,mb);}
  kput('taCone',[0,H,0],null,[R-.6,4.2,R-.6],tile);kput('taBallM',[0,H+4.3,0],null,[.2,.25,.2],wh);
  tanDoor(0,0,-(R+.21),Math.PI,1.1,2.3,'vPlaster',or,wal,false);}
 

@@ -1,0 +1,45 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 2,
+   "key": "#ff00ff",
+   "key_hi": 200,
+   "key_lo": 80,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.saltbush",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.saltbush.png",
+  "generator": "supplied by the owner (Downloads, 2026-10-25), generated from core/materials/PROMPTS-NEEDED.md",
+  "licence": "generated for this project by its owner",
+  "note": "a nine-cell sheet: hosts show one cell (the pack entry's cell); keyed with spill: edge",
+  "prompt": "core/materials/PROMPTS-NEEDED.md, \"card.saltbush\"",
+  "reuse": "the Bowl halophyte belt; any saltbush or silver desert shrub",
+  "sha1": "7c089c1c2a855804951f395b5fd3df86fa1d18f1"
+ }
+}

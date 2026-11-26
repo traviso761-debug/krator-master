@@ -233,6 +233,30 @@
    },
    "metal": 0
   },
+  "birch": {
+   "lib": "bark.birch",
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": null
+   },
+   "metal": 0
+  },
+  "hay": {
+   "lib": "roof.thatch",
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0
+  },
   "carved": {
    "lib": "wood.carved",
    "scale": [
@@ -258,7 +282,7 @@
    "metal": 0
   },
   "snow": {
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "scale": [
     3,
     3
@@ -307,7 +331,7 @@
    "metal": 0
   },
   "ground": {
-   "lib": "ground.snow011",
+   "lib": "ground.snow.drift",
    "scale": [
     5,
     5

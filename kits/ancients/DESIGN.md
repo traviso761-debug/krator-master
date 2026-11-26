@@ -24,7 +24,7 @@ for it and none of them competes with the 32-type showcase for budget.
 A target is two fragments (`89z-rows.js`, `91z-views.js`) plus whatever new
 `src/` fragments it needs; `EXTRA_BUILDERS` registers builders without touching
 `90-scene.js`. Seed blocks reserved: **canyon 9320–9329**, **DALAB 9330–9339**,
-**hanging modules 9340–9369**. `repaired` needs none — it is the same builders
+**hanging modules 9340–9369**, **Span's pieces 12300–12379** (`targets/span`). `repaired` needs none — it is the same builders
 at a new decay level.
 
 ---

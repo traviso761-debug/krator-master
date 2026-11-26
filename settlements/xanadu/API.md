@@ -60,7 +60,8 @@ XA.keys() · XA.families()
 ```
 
 Keys: `xa_*`. `family` is the showcase row (rows appear in definition order). `w,d,h` must be honest — the
-showcase spaces sites by `w` and rows by `d`; `fw,fd` is the footing footprint for slope siting (default 92% of
+showcase spaces sites by `w` and rows by `d`, and everything a builder draws stays inside `w x d`
+(`kits/xanadu/tests/test-footprints.js`); `fw,fd` is the footing footprint for slope siting (default 92% of
 `w,d` — give the house's own footprint when `w,d` include a yard). A builder is a **named**
 `function buildXa<Thing>(G,o){reseed(N+(o.v|0)); …}` that builds in the local frame (origin at the plot centre on
 the ground, **+z is the front**) and calls `vnReg(name, lx, lz, r, h)` for its inspector volume(s).
@@ -105,6 +106,7 @@ xnFlight(x,y,z,ry,w,rise,item,c) -> run                    solid stone stair ris
 xnCrenel(x,y,z,w,d,ry,h,c,{item,pointed})
 xnFooting(x,z,w,d,ry,drop,c) · xnTerrace(x,y,z,w,d,ry,h,c,topC)
 xnTree(x,z,h,c,y) · xnCypress(x,z,h,y) · xnFolk(x,y,z,n,spread) · xnYak(x,z,ry,y) · xnFodder
+xaRoom(x,z) -> m                                          crown room to the def's lot line (crowns fit it: kits/xanadu/README.md, "Footprints")
 xnPool(x,y,z,w,d,ry,c) · xnChannel(a,b,w,c,y) · xnFountain(x,y,z,r,c) · xnCharBagh(x,y,z,w,d,ry,{channel,r,fountain}) · xnPave(x,z,w,d,ry,c,cell)
 ```
 
@@ -179,6 +181,22 @@ vnBannerPole vnChimney vnFence vnPalisade vnFolk vnPaving`.
 * Defs: `xa_barge`, `xa_quay`, `xa_boatshed`, `xa_warehouse`, `xa_lighthouse` (its beacon is a mesh on the group,
   turned by a `FRAME_HOOKS` entry), `xa_teahouse` (16 m double plot), `xa_prison`, `xa_ice_cave`, `xa_palace_gate`,
   `xa_pleasure_dome_bay`. The kit's `xa_pleasure_dome` is named "Garden Pleasure Dome".
+
+## 87s-87u: Scrap Xanadu (opt-in: `xanadu.py` `SCRAP`; `kits/xanadu/PLAN-SCRAP.md`)
+* Items (prefix `xs`): `xsPanel`/`xsPanelV` (a box showing exactly one Ancient sheet, white or verdigris), `xsShellB`,
+  `xsVerdB`, `xsGlassB`, `xsGlassDome`, `xsDomeV/W`, `xsDrumV/W`, `xsArchW`, `xsGirder` (I-section along y), `xsGirderX`
+  (along x), `xsCable`, `xsBronzeB/C/Oct`, `xsBulbB`, `xsBall`, `xsConeB`, `xsRing`.
+* Helpers: `xnXSBlock` (a block faced in panel courses, windows and doors in whole cells), `xnXSWin` (glass, a bronze jali,
+  a stepped cholet frame or a pointed hood), `xnXSCol`, `xnXSBeam`, `xnXSRail`, `xnXSLantern`, `xnXSDome`, `xnXSFinial`,
+  `xnXSWheel`, `xnXSDrumFace`, `xnXSPool`; in 87u `xnXSBay`, `xnXSRoof`, `xnXSRoofRails`, `xnXSPavilion`, `xnXSEyes`. Paint schemes
+  `XS_SCHEMES[v]`; per-panel variation `xsU` (core/rand's hash of the building's seed, face, column and row).
+* Defs (seeds 33000-33299): `xa_scrap_house`, `xa_scrap_row`, `xa_scrap_court`, `xa_scrap_bazaar`, `xa_scrap_serai`,
+  `xa_scrap_gate`, `xa_scrap_tower`, `xa_scrap_shrine`, `xa_scrap_pavilion`, `xa_scrap_bridge`, `xa_scrap_guild_salvage`,
+  `xa_scrap_guild_hall`, `xa_scrap_granary`, `xa_scrap_store`, `xa_scrap_bath`; `xnXSEyes` (a hammam dome's glass eyes).
+* 87v, the poor tier and the farm: `xnXSTank`, `xnXSTankH`, `xnXSPort`, `xnXSRough` (sheets as found, trimmed round
+  `o.holes`), `xnXSBottles` (bottle ends in rainbow arcs), `xnXSGlint`, `xnXSLattice`; items `xsVault`, `xsVaultV`,
+  `xsMudHalf`, `xsBottle`, `xsConeW`, `xsGlassDisc`; defs `xa_scrap_tank_house`, `xa_scrap_silos`, `xa_scrap_hull`,
+  `xa_scrap_glint`, `xa_scrap_shacks`, `xa_scrap_farm`.
 
 ## The biome in the kit (`86-bio-*`, `86b-xa-plants.js`)
 * `86-bio-10…70` are the Vale of Xanadu biome (vendored from `../../biomes/xanadu/src`, byte-identical but for the

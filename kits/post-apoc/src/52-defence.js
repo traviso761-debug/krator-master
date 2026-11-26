@@ -144,15 +144,16 @@ function dfCells(o){
  const cx=-3.6,cz=-6.5,L=CT.L40;
  W(cx,0,cz,0,()=>container({len:L,col:0x6a7a78,doorEnd:false}));
  const fz=cz+CT.W/2;
- // barred slit windows: dark slots cut over the wall with bars across; a door with a wicket
- for(const k of [-2.3,.6,3.2,5.0]){box('iron',cx+k,1.75,fz+.005,.9,.28,.03,jc(0x0a0808,.03));for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
+ // barred slit windows: unglazed slots with bars across, the cell seen behind them as the room card (35-pa-open.js: the container is solid, so
+ // a slot is the card, not a dark void); a door with a wicket (a locked door: core/door's record, the leaf as drawn)
+ for(const k of [-2.3,.6,3.2,5.0]){jc(0x0a0808,.03);poCard(cx+k,1.75,fz+.005,.9,.28);for(let j=0;j<5;j++)box('iron',cx+k-.36+j*.18,1.72,fz+.04,.03,.34,.03,jc(0x3a3430,.05));
   box('iron',cx+k,2.06,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));box('iron',cx+k,1.68,fz+.03,1.0,.05,.06,jc(0x4a4038,.05));}
  // cell door: dark steel frame proud of the face, leaf centred inside it, wicket, hinges, hasp and padlock
  {const dx=cx-4.5,fw=1.1,fh=2.15,y0=.16,fc=jc(0x2a2624,.04);
   for(const sx of [-1,1])box('iron',dx+sx*(fw/2-.05),y0,fz+.02,.1,fh,.1,fc);box('iron',dx,y0+fh-.1,fz+.02,fw,.1,.1,fc);box('iron',dx,y0,fz+.02,fw,.06,.1,fc);
-  box('iron',dx,y0+.06,fz+.03,fw-.2,fh-.16,.06,jc(0x5a4a40,.05));
+  box('iron',dx,y0+.06,fz+.03,fw-.2,fh-.16,.06,jc(0x5a4a40,.05));poLeaf(dx,y0+.06,fz+.03,fw-.2,fh-.16,{locked:true,record:true});
   for(const yy of [.6,1.3,1.9])box('iron',dx,yy,fz+.07,fw-.2,.06,.04,jc(0x3a3430,.05));
-  box('iron',dx,1.55,fz+.07,.38,.22,.05,jc(0x0a0808,.03));for(let j=0;j<3;j++)box('iron',dx-.1+j*.1,1.53,fz+.1,.02,.26,.02,jc(0x3a3430,.05));
+  jc(0x0a0808,.03);poCard(dx,1.55,fz+.07,.38,.22);for(let j=0;j<3;j++)box('iron',dx-.1+j*.1,1.53,fz+.1,.02,.26,.02,jc(0x3a3430,.05));
   for(const yy of [.4,1.85])box('iron',dx-fw/2+.1,yy,fz+.1,.14,.08,.05,jc(0x3a3430,.05));
   box('iron',dx+.3,.95,fz+.1,.28,.1,.04,jc(0x3a3430,.05));dfPadlock(dx+.38,.78,fz+.14);}
  // roof furnishings: barbed wire coils and a spotlight

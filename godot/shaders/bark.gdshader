@@ -12,6 +12,7 @@ render_mode cull_disabled, diffuse_lambert, specular_disabled;
 #include "res://shaders/atmos.gdshaderinc"
 #include "res://shaders/kcolour.gdshaderinc"
 #include "res://shaders/lib/bark.gdshaderinc"
+#include "res://shaders/lib/lod.gdshaderinc"
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform sampler2D data_tex : filter_linear_mipmap_anisotropic, repeat_enable;   // the same map, undecoded (gloss)
@@ -34,16 +35,24 @@ uniform float hang_a = 0.05;
 
 varying vec3 v_wp;
 varying vec3 v_wn;
+varying float v_lod;
 
 void vertex() {
 	if (mode == 5) {   // 50-biome-nhighlands-species.js: the bulbs sway on their threads (local, before the instance matrix)
 		VERTEX = bark_hang(VERTEX, MODEL_MATRIX[3].xyz, atm_time, hang_a);
+	}
+	v_lod = klod(MODEL_MATRIX[3].xyz, CAMERA_POSITION_WORLD, INSTANCE_ID);
+	if (v_lod > 1.5) {
+		VERTEX = vec3(0.0);   // past its range: every vertex at the origin, nothing rasterized (lib/lod.gdshaderinc)
 	}
 	v_wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_wn = normalize(mat3(MODEL_MATRIX) * NORMAL);
 }
 
 void fragment() {
+	if (klod_drop(v_lod, FRAGCOORD.xy)) {
+		discard;
+	}
 	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec2 uv = vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y);
 	vec4 tx = has_tex ? texture(albedo_tex, uv) : vec4(1.0);

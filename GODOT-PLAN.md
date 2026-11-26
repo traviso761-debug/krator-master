@@ -158,7 +158,7 @@ what the importer actually needs, which is cheaper to learn before the substrate
   `dist/*.html` and the sockets example). `python3 tools/port_baseline.py` compares a fresh rebuild with it
   and exits 1 on any difference; `--write` records a new one. Every build is deterministic, so a refactor
   in the phases below must either leave this check green or show a screenshot diff before rewriting the
-  baseline. (`settlements/port/dist/` is gitignored but still hashed: the rebuild reproduces it.)
+  baseline. (`kits/port/dist/` is gitignored but still hashed: the rebuild reproduces it.)
 - **The audit tool.** `python3 tools/audit_port.py` writes a `PORT.md` per build (and one for `core/`) with
   one row per fragment: KB, the API-family counts, a tag and a note, and `PORT-INDEX.md` at the root with
   KB per tag per build, which builds have an exporter, a probe and `--assert`, and the host-shell copies
@@ -848,6 +848,7 @@ and Voth's export case (none yet; Phase 7) must carry it, or Godot's walker and 
 | `core/sockets/37` | [G data] | socket declarations and packs as data |
 | `core/sockets/38, 80` | [draw] | symbols and signs bake to PNG |
 | `core/terrain/36-core-carve.js` | [G data] | export floors and blockers; first Godot order item |
+| `core/hazard/` | [G data] | hazard records (`registry.hazards`, `krator-hazard`) to one `Area3D` per record and a `KHazard` autoload: the mapping is `core/hazard/GODOT.md` |
 | `kits/interiors/` core | [G data] | already pure; add the export; port the planner later if rooms are to be generated in Godot |
 | `kits/interiors/` demo, views | [web] | host shell |
 | `kits/catalog/` entries | [G data] | export entries; the `mk*` geometry kit is [draw] and exports as meshes |

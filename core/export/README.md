@@ -75,14 +75,31 @@ and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as 
 section 11 item 4; GODOT-PLAN.md finding 16).
 
 - **What a page exports.** No LOD render copies: `core/lod`'s `extras.lodCopy` meshes are skipped, so the glTF holds each
-  original once. A record that three draws in LOD chunks carries `lod: {chunk, range, minRange}` in the JSON form.
+  original once. A record that three draws in LOD chunks carries `lod: {chunk, range, minRange}` in the JSON form, and
+  `size` when the chunk was coarsened (`BIO.LOD.minTris`: the chunk key is in units of `size`, not `BIO.LOD.chunk`).
+- **A merged chunk mesh is split by range** (2026-10-26; GRAPHIC-LOAD.md, recommendation 3). With `BIO.LOD.merge` a page
+  bakes one mesh per chunk whose rows (an item's instances, a bucket's index runs) are sorted by range, longest first,
+  `userData.lod.ranges = [[range, rows]...]`. The export writes one record per range: `lod: {chunk, range, minRange, size?}`,
+  id `<kit>/<name>@<chunk>:<range>`, the rows of that range in the mesh's order, so a reader that knows only `lod.range`
+  draws each row to its own range (before, it drew the whole mesh to the longest). A mesh of one range is written as it
+  was. Two flags ride on the records of meshes that take them: `lod.fade` (`BIO.LOD.fade`'s band, a fraction of the
+  range, on a mesh that cross-fades) and `lod.loose` (`BIO.LOD.cull`: no tree owns any row, so each instance is measured
+  from its own origin, not the chunk box). A page with none of merge, fade and cull exports what it exported before, byte
+  for byte (checked 2026-10-26 on test-export's page: the tile, the whole page, the glb's JSON, the joins and
+  `BIO.export`).
 - **What Godot does.** Visibility is measured from a node's point, three's from the chunk's box, so the importer splits
   each LOD-chunked item (instances by position) and bucket (connected pieces by centroid) into `cell`-metre cells, one
   node per cell at its centre, and widens `range` (and narrows `minRange`) by the cell's half-diagonal, `cell * 0.7071`
   (106 m at 150). A 300 m tile then thins cell by cell instead of all at once. `krator/biome_import.gd` reads
   `convention.lod.cell` (`KratorBiome.policy_cell`) and falls back to its `CELL` constant, 150, for an older export or
   the krator-biome JSON route, whose convention has no `lod` entry. `world_import.gd` places whole chunks and keeps the
-  chunk's own widening.
+  chunk's own widening, and since 2026-10-26 culls by row inside the chunk node: the records one chunk mesh was split
+  into are merged back into one node (rows longest range first, up to four ranges), and the leaf and bark shaders
+  (`godot/shaders/lib/lod.gdshaderinc`, the twin of core/biome's `BIO.LODFADE_GLSL`) collapse each row past its own
+  range, measured from the chunk box (or, `lod.loose`, from the instance), dithering out over `lod.fade`. The node's
+  visibility range is then only a coarse cull, unfaded. `KratorWorld.lod_shown` is the rule's CPU twin
+  (`godot/tests/export/lod_test.gd` holds it to the page's rule on `godot/data/world-lod`, made by
+  `node godot/tools/lod_fixture.js`).
 - **Changing it.** A case sets `lod.cell` in the convention (a smaller cell gives smoother thinning and more nodes: the
   rift tile is 175 item nodes and 47 bucket nodes over 12 cells at 150, 607 and 119 over 28 at 75). A change to the
   default is a change to `07-core-export.js`, so every page that lists it rebuilds. `godot/tests/export/world_test.gd`
@@ -94,9 +111,11 @@ section 11 item 4; GODOT-PLAN.md finding 16).
 |---|---|---|
 | `items` | the biome core | `BIO.export`'s item (`biomes/GODOT.md`) plus `id` (`<kit>/<name>`, `@<chunk>` for a LOD chunk, `~<n>` on a repeat): `name, kit, label, material, lod, count, dynamic, geometry, matrices, colours, extras`, and with core/tags `record` (the item set), `recordClass`, `recordKey`, `records` (a uid per instance, aligned with the matrices), `recordIndex` |
 | `buckets` | the biome core | `BIO.export`'s bucket plus `id`; a tile's `geometry` keeps only the vertices its triangles use (`compacted: {vertices, dropped}`; ROADMAP.md finding 10); `records`, `recordIds`, `pieces` |
+| (items) `labels` | the biome core | per-instance inspector labels (`BIO.put`'s `extra.label`, baked as `userData.instLabels`): `{names: [the item's label table], index: Uint16Array (a row's entry in names, aligned with the matrices)}`; absent on an item that gives none. `world_import.gd` keeps it as node meta `krator_labels` (merged with the node's other ranges) |
 | `materials` | the biome core, the KMAT adapter | one vocabulary: core/materials/record's fields (`family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib`) beside the source's own (a biome material's `kind, key, type, options, sway, hooked, vertexColours, transparent`). The adapter's records are `kmat:<build>:<name>`, maps by library reference. `hook` selects the Godot shader library's includes (`godot/README.md`, "The shader library": several joined by `+`; the biome kinds `leaf`, `irid`, `gloss`, `far`, `hang` are aliases of `foliage` and `bark`). A ground's layers are one record with `role: 'ground'`, `hook: 'world-uv'`, `layers` and `weights` ("Ground layers" below) |
 | `textures` | the biome core | `{id, from, wrap, repeat, offset, flipY, size}`; `from: 'png'` with `png` (a data URL: canvases, DataTextures), `'library'` with `lib, pack, family, slot`: a library map **by reference** (the build's `tex/pack.json` names the file; the harness copies the pack beside the case), `'none'` with `error` |
 | `registry` | the core/tags adapter | `KTAGS.page.export()` (`krator-tags`); in a tile, cropped to the records an item or bucket names, the records whose `at` lies in the box (not item sets), and their parents (`cropped: {from, kept, rule}`) |
+| `hazards` | the core/hazard adapter | **optional**: present only when the tile holds a hazard (`EXPORT.OPTIONAL`: a page without them exports what it did before the section existed). `KHAZ.export` (`krator-hazard`, `core/hazard/GODOT.md`): `kinds`, `layers`, `records: [{id, uid, at, ry, hazard (filled from its kind), shape (type cyl, sphere, box or poly; r, h, w, d, pts, y0, y1)}]`, cropped to the tile by `at`. Until 2026-10-26 it rode in `registry.hazards`. `world_import.gd` builds an `Area3D` a record under `Hazards`; `stats.hazards` counts them |
 | `terrain` | the biome core, or `EXPORT.ground` | `{format: 'krator-terrain', source: 'field' \| 'sampled', box, field, grid, probes}`: `field` the build's KFIELD (`krator-field`, core/terrain) cropped to the box on its own lattice; `grid` the page's `h` and water on a 2 m grid over the box (the stand-in where there is no field; the stage's ground look lies on it); `probes` `h` at 16 x 16 points off the lattice, which a port compares its own sampling against. Without a box: the field whole, no grid |
 | `stage` | the biome core's host (43) | `KSTAGE.capture` over the tile (`biomes/GODOT.md`, "The stage"): renderer, lights, fog, environment, the sky panorama from 40 m over the tile's centre, the ground's look on the terrain grid |
 | `atmos` | the core/atmos adapter | `ATMOS.export({stage: false})` as it is (`krator-atmos`, `core/atmos/GODOT.md`; its colours are sRGB) |
@@ -107,7 +126,9 @@ What joins by id (`EXPORT.check`): an item's and a bucket's `material` to `mater
 the weights' length to their grid); a water surface's bed bytes to its texel count, a shore's `of` and every water
 probe's surface to the water section; an item's `record` to an item set in `registry` with the same class and key,
 `records` and `recordIndex` as long as `count` (and, given `uid`, each uid recomputed from its matrix); a bucket's
-`recordIds` to registry records whose uid is the bucket's; every registry record's parent to the registry.
+`recordIds` to registry records whose uid is the bucket's; every registry record's parent to the registry; each hazard's
+`id` (or, `<set>#<index>`, its set) to the registry, and its shape, hazard and `at` present (`joins.hazards`,
+`hazardsResolved`, only when the section is there).
 
 ### Water (core/water; ROADMAP.md stage 2e)
 

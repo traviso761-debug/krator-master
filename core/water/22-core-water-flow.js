@@ -42,7 +42,14 @@
  W.ribbon=(S,o)=>{o=o||{};const Q=PF(),step=o.step==null?Q.step:o.step,NA=o.across==null?Q.across:o.across,mg=o.margin==null?Q.margin:o.margin,P=S.pts,n=P.length;
   const seg=[];let s=0;for(let i=0;i+1<n;i++){const ex=P[i+1].x-P[i].x,ez=P[i+1].z-P[i].z,L=Math.hypot(ex,ez)||1e-9;seg.push({ex:ex/L,ez:ez/L,L,s0:s});s+=L;}
   // the rows: every polyline vertex, and evenly between them at most `step` apart
-  const rows=[];for(let i=0;i+1<n;i++){const k=Math.max(1,Math.ceil(seg[i].L/step));for(let j=0;j<k;j++)rows.push([i,j/k]);}rows.push([n-2,1]);
+  // o.refine {f: (x, z) -> value, tol (.08), min (2 m)} (2026-10-27, opt-in): more rows where f changes along a segment (drawFlow's keep), so a
+  // per-vertex effect resolves: rows close enough that f steps at most about tol between them, never closer than min m
+  const RF=o.refine&&typeof o.refine.f==='function'?o.refine:null,rtol=RF&&RF.tol!=null?RF.tol:.08,rmin=RF&&RF.min!=null?RF.min:2;
+  const rows=[];for(let i=0;i+1<n;i++){let k=Math.max(1,Math.ceil(seg[i].L/step));
+   /* (the steepest change over 16 samples sets the rows: evenly spread rows need the steepest stretch's density, a fade being steepest in its middle) */
+   if(RF){let pv=null,md=0;for(let q=0;q<=16;q++){const u=q/16,v=+RF.f(P[i].x+(P[i+1].x-P[i].x)*u,P[i].z+(P[i+1].z-P[i].z)*u);if(pv!=null)md=Math.max(md,Math.abs(v-pv));pv=v;}
+    k=Math.max(k,Math.min(Math.ceil(md*16/rtol),Math.max(1,Math.floor(seg[i].L/rmin))));}
+   for(let j=0;j<k;j++)rows.push([i,j/k]);}rows.push([n-2,1]);
   const pos=[],flow=[],slope=[],bank=[],along=[],idx=[];
   for(const [i,u] of rows){const a=P[i],b=P[i+1],g=seg[i],x=a.x+(b.x-a.x)*u,z=a.z+(b.z-a.z)*u,y=a.y+(b.y-a.y)*u,w=a.w+(b.w-a.w)*u,v=a.v+(b.v-a.v)*u;
    // the row's direction: the segment's, or at a polyline vertex the bisector with its neighbour (the cross-section
@@ -75,10 +82,27 @@
  // the rows a curtain gets: o.rows, else PRESETS.fall.rows (28), or with o.rowStep (m of drop per row) at least that many (a 70 m cataract
  // at 28 rows is 2.5 m a row; rowStep: 1 makes it 70)
  W.curtainRows=(S,o)=>{o=o||{};const Q=PL();return o.rows!=null?o.rows:o.rowStep>0?Math.max(Q.rows,Math.ceil(S.drop/o.rowStep)):Q.rows;};
- W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=W.curtainRows(S,o),C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[];
-  for(let r=0;r<=R;r++){const f=r/R;for(let c=0;c<=C;c++){const u=c/C,p=S.curtainAt(u,f),n=S.curtainNormal(f);pos.push(p[0],p[1],p[2]);nrm.push(n[0],n[1],n[2]);uv.push(u,f);}}
+ // margin (2026-10-26): m a side the curtain runs past the lip, so it is as wide as the river's ribbon there (drawFlow's margin) and its sides tuck under
+ // the banks; u then runs from -margin/lipW to 1 + margin/lipW and the drawing fades the sides by the metres from the lip's edge (W.curtainSide), as
+ // the ribbon fades under its banks. Without it the curtain is the lip's width, as before (u 0..1)
+ W.curtain=(S,o)=>{o=o||{};const Q=PL(),R=W.curtainRows(S,o),C=o.cols==null?Q.cols:o.cols,pos=[],nrm=[],uv=[],idx=[],mu=o.margin>0&&S.lipW>0?o.margin/S.lipW:0;
+  for(let r=0;r<=R;r++){const f=r/R;for(let c=0;c<=C;c++){const u=mu?-mu+(1+2*mu)*c/C:c/C,p=S.curtainAt(u,f),n=S.curtainNormal(f);pos.push(p[0],p[1],p[2]);nrm.push(n[0],n[1],n[2]);uv.push(u,f);}}
   for(let r=0;r<R;r++)for(let c=0;c<C;c++){const a=r*(C+1)+c,b=a+C+1;idx.push(a,b,b+1,a,b+1,a+1);}
   return{count:(R+1)*(C+1),rows:R,cols:C,pos,nrm,uv,idx};};
+ // the curtain's side fade with a margin (the shader's wtrSide): metres in from the lip's nearer edge (u's distance to 0 or 1 times the lip width; negative
+ // past it), faded from -margin (0, under the bank) to `edge` m inside (1). edge: drawFall's option (default 8% of the lip, the old fade's width)
+ W.curtainSide=(u,lipW,margin,edge)=>ss(-margin,edge,Math.min(u,1-u)*lipW);
+ // SPRAY scaled to the drop (2026-10-26; drawFall and drawFalls with spray: 'drop' or {drop: true, ...}): emitters of core/atmos's 'spray' across the
+ // curtain's foot every `every` m (6) and in layers up a mist column min(drop * `column` (.4), `top` (30)) m tall, one layer per `layer` m (6), each
+ // layer pushed downstream by a share of the plunge's radius and staggered half a step; at most `max` (24) a fall (layers go first, then the
+ // across count). A fall under 3 m gets one emitter. In order, no random draw: [[x, y, z], ...]. Without the option the three fixed emitters stay.
+ W.fallSpray=(S,o)=>{o=o||{};const P=W.plunge(S),y0=(o.plungeY==null?P.y+.06:o.plungeY)+1,max=o.max==null?24:o.max,every=o.every==null?6:o.every,lay=o.layer==null?6:o.layer;
+  if(S.drop<3)return[[P.x,y0,P.z]];
+  const wFoot=S.lipW+2*S.spread,H=Math.min(S.drop*(o.column==null?.4:o.column),o.top==null?30:o.top);let k=cl(Math.ceil(wFoot/every),1,8),L=cl(Math.round(H/lay),1,5);
+  while(k*L>max&&L>1)L--;while(k*L>max&&k>1)k--;
+  const out=[];for(let j=0;j<L;j++){const y=y0+(L>1?H*j/L:0),push=P.r*.3*j/Math.max(1,L-1),st=j%2?.5:0;
+   for(let i=0;i<k;i++){const u=Math.min(1,(i+.5+st)/k),p=S.curtainAt(u,1);out.push([p[0]+S.dir[0]*push,y,p[2]+S.dir[1]*push]);}}
+  return out;};
  // value noise, the shaders' wtrHash and wtrNoise (51-core-water-kinds.js) to the operation; wtrNoiseP repeats every `per`
  // cells in y, so a pattern on a wrapped phase has no seam
  const fr3=v=>v.map(fr);
@@ -103,6 +127,22 @@
      foot:[b.x,b.z,b.y],run:(b.x-a.x)*dx+(b.z-a.z)*dz},o.fit?{fit:true}:{}));}
    i=j;}return out;};
 
+ // ---- RAIN RINGS (2026-10-26, WEATHER-RESEARCH item 2): the twin of 51's WATER.rainRippleGLSL. Per octave (cells of oct[i] m) every cell has a ring
+ // centre, a phase and a threshold from the integer-lattice hash (W.hash2, the shaders' wtrHash: no Math.sin); a ring runs out from its centre to
+ // R cells over `sec` s (whole cycles per wave period), a wave packet F rings to a cell, sharpness K, fading as it grows; a cell rings only where
+ // the rain is over its threshold (more rain, more rings). The 3 x 3 cells round the point are summed. -> the slope [gx, gz] of the ripple's
+ // height (0 without rain), amp times smoothstep(0, .15, rain). NOT in PRESETS (the export carries PRESETS; nothing here moves a page that does not ask)
+ W.RIPPLE={oct:[.6,.37],sec:.9,amp:.45,R:.9,F:2.5,K:60};
+ W.rippleCycles=()=>Math.max(1,Math.round(W.period()/W.RIPPLE.sec));
+ W.rainRipple=(x,z,t,rain)=>{const Q=W.RIPPLE,c=W.rippleCycles()/W.period(),g=[0,0];if(rain<=0)return g;
+  Q.oct.forEach((sz,o)=>{const qx=x*(1/sz),qz=z*(1/sz),ix=Math.floor(qx),iz=Math.floor(qz),ph0=t*c+o*.37;
+   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const cx=ix+dx,cz=iz+dy,h1=W.hash2(cx,cz),h2=W.hash2(cx+17.3,cz+4.1),h3=W.hash2(cx+5.7,cz+31.9),on=rain<fr(h1*7.13+h2*3.71)?0:1;
+    const ex=qx-(cx+(.25+.5*h1)),ez=qz-(cz+(.25+.5*h2)),r=Math.hypot(ex,ez),ph=fr(ph0+h3),u=r-ph*Q.R,sv=Math.sin(TAU*Q.F*u)*Math.exp(-u*u*Q.K)*(1-ph)*(1-ph)*on;
+    if(r>1e-4){g[0]+=ex*(sv/r);g[1]+=ez*(sv/r);}}});
+  const k=Q.amp*ss(0,.15,rain);return[g[0]*k,g[1]*k];};
+ // a shading normal [x, y, z] with the ripple's slope added (the shaders' wtrRainN)
+ W.rainNormal=(n,g)=>{const a=n[0]/n[1]-g[0],b=n[2]/n[1]-g[1],l=Math.hypot(a,1,b);return[a/l,1/l,b/l];};
+
  // ---- still water
  W.stillMesh=S=>{if(!S.poly){const b=S.bounds;return{pos:[b[0],S.level,b[1],b[2],S.level,b[1],b[2],S.level,b[3],b[0],S.level,b[3]],idx:[0,3,2,0,2,1]};}
   // ear clipping, counter-clockwise from above (y up, z south: the polygon's signed area decides the winding)
@@ -118,4 +158,38 @@
   for(const r of Q.ripple){const a=r[2]*Math.PI/180,k=TAU/r[1],c=Math.cos(TAU*(fr(x*Math.cos(a)/r[1])+fr(z*Math.sin(a)/r[1])-fr(t*r[3]/per)))*r[0];sx+=c*Math.cos(a);sz+=c*Math.sin(a);void k;}
   if(S.fountain){const F=Q.fountain,dx=x-S.fountain[0],dz=z-S.fountain[1],r=Math.hypot(dx,dz);if(r>1e-6){const c=Math.cos(TAU*(fr(r/F.ring)-fr(t*F.cycles/per)))*.06*Math.exp(-r/F.r);sx+=c*dx/r;sz+=c*dz/r;}}
   const l=Math.hypot(sx,1,sz);return[-sx/l,1/l,-sz/l];};
+// CONFLUENCE (2026-10-26, biomes/swhighlands; the owner: a tributary must not cross the river it joins, nor stop short of it at a
+// bank): WATER.join(trib, main, o) makes a tributary's line meet a main channel as one water. trib and main are lines run downstream,
+// [[x,z,y],...] (or KRELIEF.river's [{x,z,y}]); o.w the main's half width (m, or (i) => m at its vertex i: 8); o.tuck (.3) how far in
+// toward the main's centreline the tributary ends, as a fraction of that half width; o.lift (.03 m) how far over the main's surface
+// its end lies. The tributary is cut where it first comes within tuck * w of the main's centreline (the point on that line found
+// along its own segment, so it ends on its own heading), and every level is raised to at least the main's surface there + lift (a
+// max with a constant: it still never climbs). Returns {pts, at: [x, z] (the main's point at the join), k (its segment), y (its
+// level there), cut (the tributary's points dropped), order: 'after'}: DRAW THE TRIBUTARY AFTER THE MAIN (a higher renderOrder):
+// across the mouth its surface lies over the main's bank foam, so the two read as one water. The ground under both is the host's
+// (carve every channel near a point and keep the lowest: no bank of one stands in the other's water). Plain data; nothing else moves.
+W.join=(trib,main,o)=>{o=o||{};const tuck=o.tuck==null?.3:o.tuck,lift=o.lift==null?.03:o.lift,wf=typeof o.w==='function'?o.w:(()=>o.w==null?8:o.w);
+ const P=a=>Array.isArray(a)?[a[0],a[1],a[2]]:[a.x,a.z,a.y];const T=trib.map(P),M=main.map(P);
+ if(T.length<2||M.length<2)throw new Error('WATER.join: each line needs two points');
+ const near=(x,z)=>{let bd=1e18,bk=0,bt=0;for(let k=0;k<M.length-1;k++){const a=M[k],b=M[k+1],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=cl(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),
+   px=a[0]+dx*t-x,pz=a[1]+dz*t-z,d2=px*px+pz*pz;if(d2<bd){bd=d2;bk=k;bt=t;}}const a=M[bk],b=M[bk+1];
+  return{d:Math.sqrt(bd),k:bk,x:a[0]+(b[0]-a[0])*bt,z:a[1]+(b[1]-a[1])*bt,y:a[2]+(b[2]-a[2])*bt,w:wf(bk)+(wf(bk+1)-wf(bk))*bt};};
+ let cut=T.length,hit=null,prev=near(T[0][0],T[0][1]);
+ for(let i=1;i<T.length;i++){const q=near(T[i][0],T[i][1]),lim=tuck*q.w;if(q.d<lim){cut=i;hit=q;break;}prev=q;}
+ let out;const found=!!hit;
+ if(found){const a=T[cut-1],b=T[cut],da=prev.d-tuck*prev.w,db=hit.d-tuck*hit.w,f=da<=0?0:cl(da/(da-db),0,1);
+  const e=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];out=T.slice(0,cut).concat([e]);hit=near(e[0],e[1]);}
+ else{out=T.slice();hit=near(out[out.length-1][0],out[out.length-1][1]);}
+ const y0=hit.y+lift;out=out.map(p=>[p[0],p[1],Math.max(p[2],y0)]);
+ /* over: the metres of its line that lie over the main's water (from where it first comes within w of the centreline to its end):
+    drawFlow's endFade, so the tributary fades into the main over them and its own bank foam stops before */
+ let over=0;for(let i=1;i<out.length;i++){const qa=near(out[i-1][0],out[i-1][1]),qb=near(out[i][0],out[i][1]),da=qa.d-qa.w,db=qb.d-qb.w,L=Math.hypot(out[i][0]-out[i-1][0],out[i][1]-out[i-1][1]);
+  over+=da<0&&db<0?L:da<0?L*da/(da-db):db<0?L*db/(db-da):0;}
+ /* pool (with o.tw, the tributary's half width): a round still pool at its end, at the main's level, radius o.poolK (1.6) x tw: drawn
+    UNDER both ribbons it rounds the two land corners their straight edges leave at the mouth; the host lowers its ground under it */
+ const e=out[out.length-1],pool=o.tw==null?null:{x:e[0],z:e[1],r:o.tw*(o.poolK==null?1.6:o.poolK),level:hit.y};
+ /* flowTo: the main's current at the join (a unit [x, z]): drawFlow's endFade.flow turns the tributary's current, and the ripples it
+    carries, into it over its last metres, so the two flows read as joining */
+ const ma=M[hit.k],mb=M[hit.k+1],ml=Math.hypot(mb[0]-ma[0],mb[1]-ma[1])||1,flowTo=[(mb[0]-ma[0])/ml,(mb[1]-ma[1])/ml];
+ return{pts:out,at:[hit.x,hit.z],k:hit.k,y:hit.y,cut:found?T.length-cut:0,over,pool,flowTo,order:'after'};};
 })();

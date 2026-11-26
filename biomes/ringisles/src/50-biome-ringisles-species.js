@@ -103,6 +103,14 @@ RINGISLES.BORROW=[
  {key:'stiltwood',kit:'eastabyss',src:'stiltwood',scale:.9,koppen:['XA','Af'],zone:'mangal'},
  {key:'kneetree',kit:'eastabyss',src:'kneetree',scale:.5,koppen:['XA'],zone:'mangal'},
  {key:'bottle',kit:'sedesert',src:'bottle',scale:.7,koppen:['BSh','XS'],zone:'steppe'},
+ // 2026-10-26: the kits that had no make/grow or kept these in a closure now export them (RIFT.make/grow, NWLOW.make/grow,
+ // HYPERJUNGLE.small): the Rift's acacia on the savanna, the drape she-oak as the strand casuarina, the hyperjungle's
+ // understorey palm and screwpine in the island rainforest. small: a HYPERJUNGLE.small plant (x, y, z, lv), not a tree
+ // record; name and H for the inspector and the keep-clear (it draws its own size)
+ {key:'acacia',kit:'rift',src:'acacia',scale:.8,koppen:['Aw','XV','BSh'],zone:'savanna'},
+ {key:'sheoak',kit:'nwlowlands',src:'sheoak',scale:.55,koppen:['XA','Af','Am','Aw','XV','BSh'],zone:'strand'},
+ {key:'junglepalm',kit:'hyperjungle',small:'palm',name:'Understorey palm',H:8,rb:.3,koppen:['XA','Af','Am'],zone:'forest',tags:K('tropic','humid',false,'no',['XA','Af','Am'],'earth','forest')},
+ {key:'screwpine',kit:'hyperjungle',small:'screwpine',name:'Screwpine',H:5,rb:.5,koppen:['XA','Af','Am'],zone:'forest',tags:K('tropic','humid',false,'yes',['XA','Af','Am'],'earth','forest')},
 ];
 RINGISLES.borrowOf={};RINGISLES.BORROW.forEach((B,i)=>{B.i=i;RINGISLES.borrowOf[B.key]=B;});
 

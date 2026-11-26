@@ -36,7 +36,10 @@ function mossMat(x,y,z,r,set){BIO.put('mossmat',[x,y+.06,z],qEuler(rr(-.06,.06),
 function mossCushion(x,y,z,R,set){BIO.put('cushion',[x,y+R*.15,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.45,.7),R],bright(vary(pick(set||PAL.moss),.03,.08,.06),rr(.95,1.2)));}
 function sorrel(x,y,z,lv){const n=lv===2?ri(4,9):2;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1),s=rr(.25,.45);BIO.put('sorrel',[x+Math.cos(a)*d,y+.08,z+Math.sin(a)*d],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),s,leafCol([0x6aa040,0x78b048,0x5a9038],1.3));}}
 function shrub(x,y,z,lv,set){BIO.put('ucard',[x,y+.5,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[rr(1.2,2),rr(.8,1.2),rr(1.2,2)],leafCol(set||PAL.broad,1.35));}
-function tuft(item,x,y,z,h,w,col){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col);}
+function tuft(item,x,y,z,h,w,col,extra){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col,extra);}
+// B5 (core/biome, per-instance labels): four plants share their geometry and material with another and are drawn as its item, named
+// apart in the inspector (one call a chunk each, not two): black grass as blade, dark spurge as heath, smoke bush as cushion, cane as rod
+const L_MONDO={label:'Black grass'},L_SPURGE={label:'Dark spurge'},L_SMOKE={label:'Smoke bush'},L_CANE={label:'Mountain cane'};
 function grass(x,y,z,lv,set,k){const h=rr(.4,.9)*(k||1)*(lv===0?1.6:1);tuft('blade',x,y,z,h,h*1.3,leafCol(set||[0x6a8a3a,0x7a9a40,0x5a7a34],1.25));}
 function heath(x,y,z,lv){const h=rr(.25,.5),n=lv===2?ri(2,4):1;for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.4,1.2):0;tuft('heath',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*2.2,leafCol([0x3a5a2e,0x44602e,0x4a4a3a,0x3e4e34],1.2));}
  if(lv===2&&rng()<.45)for(let b=0;b<6;b++)BIO.put('berry',[x+rr(-.6,.6),y+h*rr(.4,.9),z+rr(-.6,.6)],null,rr(.035,.05),bright(C(pick(PAL.bilberry)),1.1));}
@@ -56,19 +59,19 @@ function pleatFans(x,y,z,lv){const n=lv===2?ri(3,8):lv===1?2:1;
   BIO.put('pleat',[ex,y+h,ez],qEuler(rr(.35,.9)*(rng()<.5?-1:1),rr(0,TAU),rr(-.3,.3)),[R,R,R],bright(vary(pick(PAL.fanGreen),.02,.06,.05),1.1));}}
 // THE DARK ACCENTS
 function darkAccent(x,y,z,lv,st){const t=rng();
- if(t<.28){const n=lv===2?ri(3,7):2;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.2),h=rr(.25,.45);tuft('mondo',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*1.6,bright(vary(pick(PAL.violet),.02,.05,.03),1.05));}}
- else if(t<.46){const R=rr(.7,1.5);BIO.put('smoke',[x,y+R*.4,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.95),R],bright(vary(pick(PAL.plum),.02,.06,.04),1.1));}
+ if(t<.28){const n=lv===2?ri(3,7):2;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.2),h=rr(.25,.45);tuft('blade',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*1.6,bright(vary(pick(PAL.violet),.02,.05,.03),1.05),L_MONDO);}}
+ else if(t<.46){const R=rr(.7,1.5);BIO.put('cushion',[x,y+R*.4,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.95),R],bright(vary(pick(PAL.plum),.02,.06,.04),1.1),L_SMOKE);}
  else if(t<.62){const n=lv===2?ri(3,6):2;for(let i=0;i<n;i++){const a=rr(0,TAU),L=rr(.9,1.6);BIO.put('paddle',[x+rr(-.3,.3),y,z+rr(-.3,.3)],qEuler(rr(-.55,-.15),a,rr(-.2,.2)),[L*.6,L,L],bright(vary(pick(PAL.tealDark),.02,.06,.04),1.15),{n:[Math.cos(a)*.4,.8,Math.sin(a)*.4]});}}
- else if(t<.78){const h=rr(.4,.7);tuft('spurge',x,y,z,h,h*1.6,bright(vary(pick(PAL.spurge),.02,.05,.04),1.1));if(lv===2)for(let b=0;b<5;b++)BIO.put('berry',[x+rr(-.35,.35),y+h*rr(.85,1.05),z+rr(-.35,.35)],null,rr(.07,.11),bright(C(0xb8d040),1.1));}
+ else if(t<.78){const h=rr(.4,.7);tuft('heath',x,y,z,h,h*1.6,bright(vary(pick(PAL.spurge),.02,.05,.04),1.1),L_SPURGE);if(lv===2)for(let b=0;b<5;b++)BIO.put('berry',[x+rr(-.35,.35),y+h*rr(.85,1.05),z+rr(-.35,.35)],null,rr(.07,.11),bright(C(0xb8d040),1.1));}
  else{const n=lv===2?ri(3,6):2;for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,.9),h=rr(.9,1.6);tuft('spike',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h,h*.7,bright(vary(pick(PAL.plum),.02,.05,.04),1.15));}}
  st.dark++;}
 function zebra(x,y,z){const h=rr(.5,.9);tuft('zebra',x,y,z,h,h*1.2,bright(C(0xf0f0e8),1));}
 function cane(x,y,z,lv,st){const n=lv===2?ri(8,18):4,hc=C(0x5a8a3a);
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=rr(0,1.4)*Math.sqrt(rng()),px=x+Math.cos(a)*d,pz=z+Math.sin(a)*d,h=rr(2,4.2),lean=rr(-.15,.15),tx=px+lean*h,tz=pz+rr(-.15,.15)*h;
-  BIO.beam('cane',[px,y-.1,pz],[tx,y+h,tz],.035,.025,bright(C(pick([0x8aa04a,0x7a9440,0x9aaa58])),1.05));
+  BIO.beam('rod',[px,y-.1,pz],[tx,y+h,tz],.035,.025,bright(C(pick([0x8aa04a,0x7a9440,0x9aaa58])),1.05),L_CANE);
   if(lv>=1)for(let k=0;k<(lv===2?3:1);k++){const u=rr(.5,1);BIO.put('lance',[px+(tx-px)*u,y+h*u,pz+(tz-pz)*u],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),[rr(.8,1.3),rr(.4,.6),rr(.8,1.3)],bright(vary(hc,.02,.06,.05),1.2),{n:[0,1,0]});}}
  st.cane++;}
-function boulder(x,y,z,lv,st,big,mossK){const s=(big?rr(1.4,3.6):rr(.5,1.4)),it=rng()<.5?'boulderA':'boulderB';
+function boulder(x,y,z,lv,st,big,mossK){const s=(big?rr(1.4,3.6):rr(.5,1.4)),it=(rng(),'boulderA');   /* one boulder item (2026-10-26): the second shape was one more draw call in every floor chunk out to 2.4 km; the coin is still drawn so nothing after it moves */
  BIO.put(it,[x,y-s*.3,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.6,.9),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,rr(.5,.7)));st.boulders++;
  const mk=mossK==null?.75:mossK;
  if(rng()<mk){mossCushion(x+rr(-.2,.2)*s,y+s*.45,z+rr(-.2,.2)*s,s*rr(.75,1.1));st.moss++;}
@@ -81,7 +84,7 @@ function log(x,y,z,st,cold){const a=rr(0,TAU),L=rr(12,34),r=rr(.5,1.3),n=Math.ma
  pts.forEach((p,i)=>{p.col=wc.clone().lerp(mc,clamp(.45+.35*Math.sin(i*1.7),0,.85));});
  BIO.tube('nwood',pts,wc,{seg:7,cap:true});
  // the root plate at the foot: a ragged disc of roots and earth
- const p0=pts[0],R0=r*rr(2.2,3.2);BIO.put('boulderB',[p0.x-Math.cos(a)*r*.6,Y(p0.x,p0.z)-R0*.4,p0.z-Math.sin(a)*r*.6],qEuler(0,-a,0),[R0*.35,R0*1.1,R0],C(0x4a3e30));
+ const p0=pts[0],R0=r*rr(2.2,3.2);BIO.put('boulderA',[p0.x-Math.cos(a)*r*.6,Y(p0.x,p0.z)-R0*.4,p0.z-Math.sin(a)*r*.6],qEuler(0,-a,0),[R0*.35,R0*1.1,R0],C(0x4a3e30));
  for(let i=1;i<n;i++){const p=pts[i];BIO.put('mossmat',[p.x,p.y+p.r*.8,p.z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[p.r*1.6,1,p.r*1.6],bright(vary(pick(PAL.moss),.03,.08,.05),.95));
   if(rng()<.35){const h=rr(1.2,3.5);BIO.put('trunk',[p.x,p.y+p.r*.7,p.z],null,[h*.04+.05,h,h*.04+.05],C(0x6a5040));BIO.put('needle',[p.x,p.y+p.r*.7+h*.75,p.z],qEuler(0,rr(0,TAU),0),[h*.35,h*.5,h*.35],bright(vary(pick(PAL.conifer),.02,.06,.05),1.2),{n:[0,1,0]});}
   else if(rng()<.3)swordFern(p.x,p.y+p.r*.6,p.z,2,.7);
@@ -160,7 +163,7 @@ function plantBoreal(x,y,z,Z,lv,st){const t=rng();
 function plantFar(x,y,z,Z,st){const t=rng();
  if(Z.boreal*(1-Z.glade)>.5){if(t<.22)boulder(x,y,z,0,st,rng()<.3,.5);else if(t<.42){swordFern(x,y,z,0,.8);st.ferns++;}return;}   // up high the paint is the floor (heath, lichen): a few stones and ferns
  if(Z.glade>.4){if(t<.45){bracken(x,y,z,0);st.bracken++;}else if(t<.72){swordFern(x,y,z,0);st.ferns++;}else if(t<.82){shrub(x,y,z,0);st.shrubs++;}return;}
- if(Z.dark>.3&&t<Z.dark*.3){const R=rr(.7,1.5);BIO.put('smoke',[x,y+R*.4,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.95),R],bright(vary(pick(PAL.plum),.02,.06,.04),1.1));st.dark++;return;}
+ if(Z.dark>.3&&t<Z.dark*.3){const R=rr(.7,1.5);BIO.put('cushion',[x,y+R*.4,z],qEuler(0,rr(0,TAU),0),[R,R*rr(.75,.95),R],bright(vary(pick(PAL.plum),.02,.06,.04),1.1),L_SMOKE);st.dark++;return;}
  if(t<(Z.oldwood>.4?.4:Z.rip>.4?.3:.12)){boulder(x,y,z,0,st,Z.oldwood>.4||rng()<.3,.85);return;}
  if(t<.62){swordFern(x,y,z,0,rng()<.3?1.2:1);st.ferns++;}
  else if(t<.78){ladyFern(x,y,z,0);st.ferns++;}
@@ -168,11 +171,17 @@ function plantFar(x,y,z,Z,st){const t=rng();
 function plantAlpine(x,y,z,Z,lv,st){const t=rng();
  if(t<.38){heath(x,y,z,lv);st.heath++;}else if(t<.62){lichen(x,y,z,lv);st.lichen++;}else if(t<.82){grass(x,y,z,lv,[0x7a8458,0x8a9460],.7);st.tufts++;}else if(t<.88)boulder(x,y,z,lv,st,rng()<.3,.3);}
 
+// the planters a station's floor may call (NHL.STATION_PLANT's last argument): the kit's own small plants, each drawing as it always does
+const FLOOR_TOOLS={swordFern,ladyFern,laceFern,bracken,mossMat,mossCushion,sorrel,shrub,tuft,grass,heath,lichen,mushrooms,bluebells,discStalks,pleatFans,darkAccent,boulder,
+ plantTemperate,plantGlade,plantBank,plantMontane,plantBoreal,plantAlpine,plantFar};
+NHL.FLOOR_TOOLS=FLOOR_TOOLS;
 // ---------------------------------------------------------------- the pass
 NHL.buildFloor=function(R,q,box){
  reseed(600031);q=q==null?1:q;R=R||3300;means();
  const st={ferns:0,lace:0,moss:0,sorrel:0,shrubs:0,tufts:0,mush:0,zebra:0,boulders:0,bells:0,bracken:0,discs:0,fans:0,heath:0,lichen:0,spikes:0,dark:0,cane:0,logs:0,stones:0};
  function plant(x,y,z,lv){if(!okGround(x,z,.8))return;const Z=zones(x,z);
+  /* a station's own floor (stations/<name>/): NHL.STATION_PLANT(x, y, z, Z, lv, st, tools) -> true when it planted the spot; station 1 sets none */
+  if(typeof NHL.STATION_PLANT==='function'&&NHL.STATION_PLANT(x,y,z,Z,lv,st,FLOOR_TOOLS))return;
   if(lv===0){plantFar(x,y,z,Z,st);return;}
   const w=[Z.temperate*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.glade*1.2,Z.rip*1.6,Z.oldwood*1.4,Z.montane*(1-Z.glade)*(1-Z.oldwood)*(1-Z.rip),Z.boreal*(1-Z.alpine)*(1-Z.glade)*(1-Z.rip),Z.alpine],P=[plantTemperate,plantGlade,plantBank,plantOldwood,plantMontane,plantBoreal,plantAlpine];
   let tot=0;for(const v of w)tot+=v;if(tot<=0)return;
@@ -190,12 +199,12 @@ NHL.buildFloor=function(R,q,box){
  BIO.range=NHL.LOD.floor;
  // stepping stones in the stream: mossy boulders standing in the water (the depth window)
  O.forEach((o,oi)=>{BIO.grid(5,0,1e9,(x,z)=>{if(nearest(x,z)!==oi||Math.hypot(x-o[0],z-o[1])>900)return 0;return .16*q;},
-  (x,y,z)=>{const s=rr(.5,1.6);BIO.put(rng()<.5?'boulderA':'boulderB',[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.45));
+  (x,y,z)=>{const s=rr(.5,1.6);BIO.put((rng(),'boulderA'),[x,y-s*.25,z],qEuler(rr(-.2,.2),rr(0,TAU),rr(-.2,.2)),[s*rr(.9,1.3),s*rr(.7,1),s*rr(.9,1.3)],tint(vary(pick(PAL.rock),.02,.04,.05),means().rock,.45));
    if(rng()<.55)BIO.put('mossmat',[x,y+s*.5,z],qEuler(rr(-.1,.1),rr(0,TAU),rr(-.1,.1)),[s*.8,1,s*.8],bright(vary(pick(PAL.moss),.03,.08,.05),.95));st.stones++;},
   {patch:.4,patchScale:.03,noMask:true,depth:[.15,1.6],pad:.3,center:[0,0],box:[o[0]-900,o[1]-900,o[0]+900,o[1]+900]});});
  BIO.range=NHL.LOD.logs;
  // the fallen giants: across the temperate and montane slopes, more in the old wood
- BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q;},(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
+ BIO.grid(85,0,R*1.42,(x,z)=>{if(BIO.lodD(x,z)>1200)return 0;const Z=zones(x,z);return (Z.temperate*.75+Z.montane*.5+Z.oldwood*.4+Z.boreal*.2)*(1-Z.rip)*q*(NHL.STATION_LOGS?NHL.STATION_LOGS(x,z):1);},   /* a station scales them where no wood stands (NHL.STATION_LOGS; station 1: none) */(x,y,z)=>{const c=BIO.field('cold',x,z);for(let t=0;t<4;t++)if(log(x+rr(-20,20),y,z+rr(-20,20),st,c))break;},{patch:0,pad:2,box});
  BIO.range=null;
  return{under:st};};
 

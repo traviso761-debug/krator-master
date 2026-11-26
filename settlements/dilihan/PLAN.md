@@ -13,6 +13,11 @@ Talia's but with Jimjamite flourish; the region was loyalist, but its remoteness
 state; Iziz maintains extensive diplomatic contact, increasing lately as relations with the Hykkousoi have improved,
 allowing the Izani to cross their territory.
 
+The owner, 2026-10-26 (`LORE.md` §6.2): the independence has a date. Dilihan's lifeline to Iziz was **Port Visas**, on
+the coast, until a Screamer raid all but destroyed it about 120 years ago; since then the colony has governed itself,
+until the Hykkousoi reconciliation reopened the sea road. Dilihan is no longer the Empire's only veterans' enclave:
+**Shell Province**, west of the Beast Riders, is held far more tightly through Port Goto; **Nusidi** was ruined in the civil war.
+
 ## 0. What the build is
 
 | | |
@@ -33,7 +38,7 @@ Dilihan is a settlement and goes in the gallery when it first reaches `main` (`g
 The scale model has Dilihan at px 472,333 (`solqo7hz7s`, a city point) at the southern end of the Cut's polygon
 (px 427-502 by 264-340; the biome polygon "the cut" matches it), 226 km south of Jimjam (px 474,220) and 780 km from
 Iziz. Neighbours: Lipp, a village, 138 km; Trigon, the Hykkousoi arcology, 160 km south; the Hexahedron 166 km east;
-Ys 175 km; Roketstad 273 km west. No river is named through the Cut yet (`tools/scale-model/river-names-4.21.md`); the
+Ys 175 km; Roketstad 273 km west. No river is named through the Cut yet (`tools/scale-model/history/river-names-4.21.md`); the
 plan assumes a stream down the trench to the League's coast and a road beside it, the **pass road** the colony was
 planted to hold.
 

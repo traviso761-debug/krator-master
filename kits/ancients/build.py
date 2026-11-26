@@ -82,6 +82,7 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))   # repo root: biomes/, core/, kits/, settlements/
+sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 SRC = os.path.join(HERE, 'src')
 TARGETS = os.path.join(HERE, 'targets')
 DIST = os.path.join(HERE, 'dist')
@@ -90,6 +91,10 @@ CORE = os.path.join(ROOT, 'core', 'materials')   # shared material fragments (co
 CORE_FILES = sorted(f for f in os.listdir(CORE) if f[0].isdigit())
 LOD_DIR = os.path.join(ROOT, 'core', 'lod')        # shared level of detail (core/lod/README.md)
 LOD_FILES = sorted(f for f in os.listdir(LOD_DIR) if f[0].isdigit())
+# core/door (core/door/README.md): KDOOR's records, KGLASS's glass, KDOORHOST's posing and key; src/8zo-anc-open.js is the
+# kit's drawing of them (the windows' panes and room cards, the doors' records, the interiors' leaves)
+DOOR_DIR = os.path.join(ROOT, 'core', 'door')
+DOOR_FILES = ['10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js']   # 30: KDOORLEAF, the leaves' look
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
 # clashes with core/materials 20-textures.js): materials.json -> tools/textures/pack.py -> tex/ -> the GENERATED
@@ -101,7 +106,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/
 # A target listed here gets the GENERATED 8zy-interiors-bundle.js (the catalog's Ancient furniture, kits/interiors'
 # core with the arcology's set, kits/ancients-interiors' core) and the shared core/rand, core/tags and core/furnish;
 # every other target builds exactly as before (the interior fragments do nothing without the bundle).
-INTERIOR_TARGETS = {'interiors'}
+INTERIOR_TARGETS = {'interiors', 'theodiga-today'}   # theodiga-today: the arcology's inhabited levels (settlements/theodiga T-arc-1)
 INTERIOR_BUNDLE = '8zy-interiors-bundle.js'
 CORE_RAND = os.path.join(ROOT, 'core', 'rand')
 CORE_TAGS = os.path.join(ROOT, 'core', 'tags')
@@ -111,19 +116,79 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum'}
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'theodiga-today'}   # theodiga: the Dome on the Water (2026-11-11)
 TAGS_CORE = INTERIOR_CORE[:4]
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
+                # the engines' industrial set is watched by core/ruins (targets/engines/91y; the owner, 2026-11-10)
+                'engines': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')],
+                # Theodiga (the owner, 2026-11-15: "make sure this build is on core/water and all other relevant core modules"):
+                # its lake, outlets, cascade and river on core/water, bound to core/atmos as kits/port binds it (targets/theodiga
+                # 77c, 90w), and its ruin watched by core/ruins
+                'theodiga': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
                             (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
+# THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
+# draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
+# (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
+# two sealed in closures of their own so their globals meet none of the kit's (core/city's clamp and segDist are the kit's names
+# too): TH_CITY, core/space + core/city's [G data] fragments + kits/crops + the town's plan (src/40-th-town.js) as THCITY;
+# TH_XAK, the Xanadu kit with the scrap set and the Qiblai kit's buildings as XAK (kits/xanadu/kit_bundle.py); and the packs
+# their maps come from, Xanadu's and Qiblai's, sidecars beside the page. Every file is read live, never copied.
+THEO_TARGET = os.path.join(HERE, 'targets', 'theodiga')
+# core/simulation (SIM), read in place for theodiga-today's census (settlements/theodiga src/47-th-sim.js; Longsong's set)
+TH_SIM_FILES = ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
+                '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-govern.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
+                '77-sim-7-ledger.js', '77-sim-7-lod.js', '77-sim-7-stocks.js', '77-sim-8-export.js', '77-sim-9-debug.js')   # govern + ledger: T-econ-1
+TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
+                                  + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
+                                                                '77c-theodiga-water.js', '90w-theodiga-water.js')]
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '46-th-town-rooms.js', '47-th-sim.js', '48-th-walk.js', '49-th-econ.js', '8ay9-th-walkers.js', '8zz1-th-arc-host.js', '8zz2-th-town-rooms.js')]
+                                  + [(os.path.join(ROOT, 'core', 'simulation'), f) for f in TH_SIM_FILES]   # the census on core/simulation (T-sim-1)
+                                  + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js'),   # the works' salvage heaps (KRUBBLE)
+                                     (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
+TH_CITY, TH_XAK, TH_XPACK, TH_QPACK = '8ay8-th-city.js', '8ay9-th-xak.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js'
+SEALED = {TH_CITY, TH_XAK}   # generated closures: the build rules' scans do not reach inside them
+
+
+def th_city_files():
+    city = os.path.join(ROOT, 'core', 'city')
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+            + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
+            + [os.path.join(ROOT, 'settlements', 'theodiga', 'src', '40-th-town.js')])
+
+
+def th_city():
+    """core/city and the town's plan in one closure: var THCITY = {KCITY, KSPACE, town: TH_TOWN}"""
+    body = ''
+    for f in th_city_files():
+        with open(f, encoding='utf-8', newline='') as fh:
+            body += '/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, '/'), fh.read())
+    return ('/* THCITY: core/space, core/city, kits/crops and Theodiga\'s town plan sealed in one closure (kits/ancients/build.py '
+            'th_city). GENERATED: edit core/city or settlements/theodiga/src. */\nvar THCITY = (function(){\n' + body
+            + 'return { KCITY: KCITY, KSPACE: KSPACE, town: TH_TOWN, crops: CROPS };\n})();\n')
+
+
+def th_xak():
+    """the Xanadu kit, its scrap set and the Qiblai kit's buildings, sealed as XAK (kits/xanadu/kit_bundle.py, read live)"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('th_xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.bundle('XAK', scrap=True, qiblai=True)[0]
 # the furniture an intact Ancient building takes: the harvested registry (the ancient pieces) and the goods
 INTERIOR_FURN = ['generic-goods']
+# a target's own furniture cultures beside them: Theodiga's inhabited levels are furnished as Xanadu's clergy would (T-arc-1)
+INTERIOR_SETS_TARGET = {'theodiga-today': ['xanadu-scrap']}   # kits/interiors sets a target's own buildings take (theodiga-today: the town, T-town-7)
+INTERIOR_FURN_TARGET = {'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap']}   # the arcology's and the town's (T-town-7) furniture
 
 
-def interior_bundle():
+def interior_bundle(target=None):
     """kits/catalog furniture_bundle + kits/interiors kit_bundle (the noahs-regret set: its crew, bunkroom and mess
     kinds) + kits/ancients-interiors kit_bundle, each loaded under its own module name."""
     import importlib.util
@@ -135,7 +200,7 @@ def interior_bundle():
     ab = load('anc_ai_bundle', os.path.join(ROOT, 'kits', 'ancients-interiors', 'kit_bundle.py'))
     return ('/* GENERATED by build.py (interior_bundle): do not edit. The catalog\'s Ancient furniture, kits/interiors and\n'
             '   kits/ancients-interiors, for the interiors pass (src/8zz-interiors.js). */\n' +
-            fb.bundle(INTERIOR_FURN, harvested=True) + ib.bundle(['noahs-regret']) + ab.bundle())
+            fb.bundle(INTERIOR_FURN + INTERIOR_FURN_TARGET.get(target, []), harvested=True) + ib.bundle(['noahs-regret'] + INTERIOR_SETS_TARGET.get(target, [])) + ab.bundle())
 
 
 def srcpath(f, base=None):
@@ -156,6 +221,7 @@ TARGET_OUT = {
     'worn': 'worn.html',                   # every type intact and worn (decay 5)
     'iziz-style': 'iziz-style.html',       # the Ancient Iziz Style: families, wreck states, Iziz variants
     'theodiga': 'theodiga.html',           # the dam arcology, on its own
+    'theodiga-today': 'theodiga-today.html',   # Theodiga as it stands now: the ruin, the Dome, the water and the town on the east rim (settlements/theodiga)
     'spire': 'spire.html',                 # the recursive spire, on its own
     'canyon': 'canyon.html',               # the cross-canyon span works
     'dalab': 'dalab.html',                 # the ancient lab domes (domes only)
@@ -168,6 +234,8 @@ TARGET_OUT = {
     'hill': 'hill.html',                     # the sinuous hill arcology
     'arcoindian2': 'arcoindian2.html',       # the half-cave
     'arcube': 'arcube.html',                 # the 1 km cube on its diagonal
+    'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
+    'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
@@ -195,13 +263,16 @@ TARGET_OUT = {
     'hosts': 'hosts.html',                     # five types drawn as Hykkousoi hosts for Ys (src/8ap-host-*)
     'podium': 'podium.html',                   # the spiral arcology (the Sanctum until 2026-10-22: targets/podium)
     'sanctum': 'sanctum.html',                 # the Eternal State's capital arcology: podium, stalk and hexagonal solid
+    'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
+    'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
 DETERMINISTIC = {
     '23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js', '88x-matlib-pack.js', '88y-ancients-matlib.js',   # the material library (no rnd())
     '09-lod.js', '97-lod-auto.js',                     # core/lod: the shared level of detail
+    '10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '8zo-anc-open.js',   # core/door and the kit's openings (no rng())
     '08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js', '50-core-furnish.js',
     '52-core-furnish-draw.js', '53-core-furnish-host.js', '8zy-interiors-bundle.js', '8zz-interiors.js', '92z-interior-ui.js',   # interiors
     '69a-world-uv.js',                                 # core/materials/opt: the shared world-UV hook
@@ -213,12 +284,31 @@ DETERMINISTIC = {
     '8ap-funicular.js',                  # its own hashed stream: no rng(), no reseed, moves nobody's rubble
     '91-probe.js', '92-camera.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
+    '91y-engine-checks.js',               # targets/engines: the industrial set watched by core/ruins (measures the scene, places nothing)
+    '20-core-ruins.js', '21-core-ruins-host.js',   # core/ruins: the ruins check (no rnd())
     '8ap-host-0-lib.js',                  # the host types' shared plan, plate and spec helpers (no builder)
     '8aq0-podium-plan.js', '8aq1-podium-kept.js', '8aq2-podium-skins.js',      # targets/podium: KRAND-hashed records, no rng()
     '8ar0-sanctum-plan.js',                                                     # targets/sanctum: KRAND-hashed records, no rng()
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
+    '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
+    '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',   # targets/theodiga: the Dome on the Water, KRAND records, no rng()
+    '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
+    '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
+    '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
+    '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs
+    '41-th-descent.js', '8ay2-th-descent.js',          # theodiga-today: the ways down from the rim, records on the drawn wall and their drawing (no rng())
+    '42-th-works.js', '8ay3-th-works.js', '37c-core-rubble.js',   # theodiga-today: the works below (KRAND by index) and their drawing; core/terrain's heaps
+    '43-th-arc-program.js', '43-th-arc.js', '8zz1-th-arc-host.js',   # theodiga-today: the arcology's levels as plates (hashed by AI, no rng()) and their host
+    '44-th-dome-today.js', '8ay4-th-dome-today.js',    # theodiga-today: the Dome as the faith keeps it (stairs, glazing: KRAND by cell, no rng())
+    '45-th-life.js', '8ay5-th-life.js',                # theodiga-today: people and lamps (KRAND by place and slot, no rng())
+    '46-th-town-rooms.js', '8zz2-th-town-rooms.js',    # theodiga-today: the town's interiors (the scrap set's plans, no rng())
+    '47-th-sim.js',                                    # theodiga-today: the census on core/simulation (SIM's own seeded stream)
+    '48-th-walk.js', '8ay9-th-walkers.js',             # theodiga-today: the walk graph (the geometry's) and the walkers (SIM.pose)
+    '49-th-econ.js',                                   # theodiga-today: the economy on core/simulation (KRAND by place, no rng())
 }
+DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC |= set(TH_SIM_FILES)   # core/simulation (its own seeded stream, SIM.rng)
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part may open in the middle of a builder: the rules read it joined to the fragment it continues, as one
@@ -227,6 +317,7 @@ CONTINUES = {
     '89b1-arcoindian-cut.js': '89b-arcoindian.js', '89b2-arcoindian-plinth.js': '89b-arcoindian.js',
     '89c1-arcoindian2-lens.js': '89c-arcoindian2.js', '89c2-arcoindian2-stalk.js': '89c-arcoindian2.js',
     '89d1-arcube-faces.js': '89d-arcube.js', '89d2-arcube-elevation.js': '89d-arcube.js', '89d3-arcube-ruin.js': '89d-arcube.js',
+    '89d6-lozenge-faces.js': '89d5-lozenge.js', '89d7-lozenge-elevation.js': '89d5-lozenge.js', '89d8-lozenge-ruin.js': '89d5-lozenge.js',
 }
 
 # Seed ranges known to collide, kept here so the build stays green while the
@@ -239,7 +330,8 @@ RE_RESEED_ARG = re.compile(r'\breseed\(\s*([^)]*?)\s*\)')
 # whole-line // comments and /* */ blocks: a rejected reseed(N+d) quoted in prose is not a claim
 RE_JS_COMMENT = re.compile(r'^[ \t]*//[^\n]*|/\*.*?\*/', re.M | re.S)
 RE_DECL = re.compile(r'^(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
-RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
+# (it stops at an opening bracket: `const W=(function(){const a=1,TAU=...` declares TAU inside the closure, not at the top)
+RE_DECL_MULTI = re.compile(r'^(?:const|let|var)\s+[^;\n({\[]*?,\s*([A-Za-z_$][\w$]*)\s*=', re.M)
 
 GENERIC = {'seed', 'base', 'dir', 'pos', 'tmp', 'i', 'j', 'k', 'n', 'p', 't', 'x', 'y', 'z',
            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'm', 'q', 'r', 's', 'u', 'v', 'w'}
@@ -297,7 +389,7 @@ def check(order, bodies):
         # THE INTERIOR BUNDLE is generated from other kits (the catalog's buildFurn/buildPlant/buildAsset are not kit
         # builders and keep their own seeds), and the core/rand, core/tags and core/furnish fragments are shared
         # modules: none of them draws from the kit's stream
-        if f == INTERIOR_BUNDLE or f in {n for _, n in INTERIOR_CORE}:
+        if f == INTERIOR_BUNDLE or f in {n for _, n in INTERIOR_CORE} or f in SEALED:
             continue
         body = bodies[f]
 
@@ -334,7 +426,7 @@ def check(order, bodies):
     # 2. shared-scope collisions
     decl = {}
     for f in order:
-        if not f.endswith('.js') or '-biome-' in f:    # closures: see above
+        if not f.endswith('.js') or '-biome-' in f or f in SEALED:    # closures: see above
             continue
         for rx in (RE_DECL, RE_DECL_MULTI):
             for m in rx.finditer(bodies[f]):
@@ -349,6 +441,190 @@ def check(order, bodies):
     return errs
 
 
+# PRUNE (the owner, 2026-11-15: "split off all these ancient assets apart from each other as much as possible"). Every src/
+# fragment used to go into every target's page, so a change to one builder re-hashed all of them. Now a page carries the
+# kit's core (everything that is not prunable, below) and, of the prunable fragments, only those its own rows' builders and
+# its own target fragments reach: by a top-level name (a function, const, let or var at column 0), by a kit piece's name
+# in a string (kdef('name') in one, 'name' in the other) or by a material or texture key (MAT.x = / TEX.x =). Reaching
+# is over-generous by design (a comment-free scan of every word and every string): carrying a fragment it does not need
+# costs bytes, missing one breaks the page. 90-scene.js names its builders as strings (ANC_BUILDER_NAMES) and takes
+# those the page has. A fragment's parts (CONTINUES) and the biome cores' closures go as one group.
+PRUNE_LIBS = {'40-factory-extras.js', '66-office-c.js', '77z-iziz-style.js', '78-factory-silo.js', '80-aa-battery.js',
+              '8al-alt-00-lib.js', '8ap-funicular.js', '8ap-host-0-lib.js'}
+# a prunable fragment only some targets carry, whatever reaches it (the interiors' fragments do nothing without the bundle;
+# 90-scene asks for them with typeof)
+ONLY_FOR = {'8zz-interiors.js': INTERIOR_TARGETS, '92z-interior-ui.js': INTERIOR_TARGETS}
+RE_STR = re.compile(r"'(?:[^'\\\n]|\\.)*'|\"(?:[^\"\\\n]|\\.)*\"|`(?:[^`\\]|\\.)*`", re.S)
+RE_WORD = re.compile(r'[A-Za-z_$][\w$]*')
+RE_MIDDECL = re.compile(r'^\S[^\n]*?;\s*(?:const|let|var|function)\s+([A-Za-z_$][\w$]*)', re.M)
+RE_KDEF = re.compile(r"\bkdef\(\s*'([^']+)'")
+RE_MATDEF = re.compile(r'\b((?:MAT|TEX)\.[A-Za-z_$][\w$]*)\s*=(?!=)')
+RE_MATUSE = re.compile(r'\b((?:MAT|TEX)\.[A-Za-z_$][\w$]*)')
+
+
+def top_level_names(text):
+    """The names a fragment declares at its top level (brace and paren depth 0): function, class, const, let and var, with
+    each name of a comma list; strings, template literals, comments and regex literals skipped. The column-0 rules of the
+    checks above are not enough here: the biome closures and many builders' bodies start at column 0."""
+    names, n, i, depth, par = [], len(text), 0, 0, 0
+    prev = ';'                               # the last significant character, to tell a regex from a division
+    word = re.compile(r'[A-Za-z_$][\w$]*')
+    nextword = re.compile(r'\s*([A-Za-z_$][\w$]*)')
+    pending = False                          # inside a const/let/var statement at depth 0: take each `, name =`
+    while i < n:
+        c = text[i]
+        if c in ' \t\r\n':
+            i += 1
+            continue
+        if text.startswith('//', i):
+            j = text.find('\n', i)
+            i = n if j < 0 else j
+            continue
+        if text.startswith('/*', i):
+            j = text.find('*/', i + 2)
+            i = n if j < 0 else j + 2
+            continue
+        if c in '\'"`':
+            j = i + 1
+            while j < n and text[j] != c:
+                j += 2 if text[j] == '\\' else 1
+            i = j + 1
+            prev = 'a'
+            continue
+        if c == '/' and prev in '(,=:[!&|?{};+-*%<>~^':
+            j, cls = i + 1, False
+            while j < n and text[j] != '\n':
+                if text[j] == '\\':
+                    j += 2
+                    continue
+                if text[j] == '[':
+                    cls = True
+                elif text[j] == ']':
+                    cls = False
+                elif text[j] == '/' and not cls:
+                    break
+                j += 1
+            i = j + 1
+            while i < n and text[i].isalpha():
+                i += 1
+            prev = 'a'
+            continue
+        m = word.match(text, i)
+        if m:
+            w = m.group(0)
+            i = m.end()
+            if depth == 0 and par == 0:
+                if w in ('function', 'class', 'const', 'let', 'var'):
+                    m2 = nextword.match(text, i)
+                    if m2:
+                        names.append(m2.group(1))
+                    pending = w in ('const', 'let', 'var')
+            prev = 'a' if w not in ('return', 'typeof', 'case', 'in', 'of', 'new', 'delete', 'void', 'throw') else '('
+            continue
+        if c == '{':
+            depth += 1
+        elif c == '}':
+            depth = max(0, depth - 1)
+        elif c in '([':
+            par += 1
+        elif c in ')]':
+            par = max(0, par - 1)
+        elif c == ';' and depth == 0 and par == 0:
+            pending = False
+        elif c == ',' and pending and depth == 0 and par == 0:
+            m3 = nextword.match(text, i + 1)
+            if m3:
+                names.append(m3.group(1))
+        prev = c
+        i += 1
+    return names
+
+
+def prune_group(f):
+    if f in CONTINUES:
+        return CONTINUES[f]
+    if f.startswith('75-biome-'):
+        return '75-biome'
+    if f.startswith('76-') and 'biome-hyperjungle' in f:
+        return '76-biome-hyperjungle'
+    return f
+
+
+def prune(target, order, bodies, paths):
+    """The fragments this target's page needs (see PRUNE above), in the build's order."""
+    srcdir = os.path.normcase(os.path.abspath(SRC))
+    def prunable(f):
+        if os.path.normcase(os.path.dirname(os.path.abspath(paths[f]))) != srcdir or not f.endswith('.js'):
+            return False
+        return (bool(RE_BUILDER.search(bodies[f])) or f in PRUNE_LIBS or f in CONTINUES or f in ONLY_FOR
+                or prune_group(f) != f)
+    groups = {}
+    for f in order:
+        if prunable(f):
+            groups.setdefault(prune_group(f), []).append(f)
+    for g in list(groups):
+        if g in bodies and g not in groups[g]:
+            groups[g].append(g)               # the parent of a part is in its group
+    owner = {f: g for g, fs in groups.items() for f in fs}
+    by_name, by_kdef, by_mat = {}, {}, {}
+    for g, fs in groups.items():
+        fs.sort(key=lambda f: order.index(f))
+        # a part opens inside its parent's builder: the names are read from the group joined, in the build's order
+        if g not in ONLY_FOR:
+            for nm in top_level_names(''.join(bodies[f] for f in fs)):
+                by_name.setdefault(nm, g)
+        for f in fs:
+            body = RE_JS_COMMENT.sub('', bodies[f])
+            for m in RE_KDEF.finditer(body):
+                by_kdef.setdefault(m.group(1), g)
+            for m in RE_MATDEF.finditer(body):
+                by_mat.setdefault(m.group(1), g)
+    # the roots: the kit's core and the target's own fragments, and the builders of the target's rows
+    rows = bodies.get('89z-rows.js', '')
+    names = dict(re.findall(r"(\w+):'(build\w+)'", bodies.get('90-scene.js', '')))
+    # every word of the rows fragment that is a builder's key (the ROWS keys among them; a stray match only adds a builder)
+    rows_code = RE_JS_COMMENT.sub('', rows)
+    keys = {w for w in RE_WORD.findall(RE_STR.sub("''", rows_code)) if w in names}
+    keys |= {s[1:-1] for s in RE_STR.findall(rows_code) if s[1:-1] in names}    # row types listed as strings (interiors)
+    keep = {f for f in order if f not in owner}
+    todo = list(keep)
+    taken = set()
+    def take(g):
+        if g in groups and g not in taken:
+            taken.add(g)
+            todo.extend(groups[g])
+    for k in keys:
+        if names.get(k) in by_name:
+            take(by_name[names[k]])
+    for g, targets in ONLY_FOR.items():
+        if target in targets:
+            take(g)
+    tfiles = {f for f in order if os.path.normcase(os.path.dirname(os.path.abspath(paths[f]))) != srcdir}
+    while todo:
+        f = todo.pop()
+        body = RE_JS_COMMENT.sub('', bodies[f])
+        if f == '90-scene.js':      # its table of every builder's name is not a use of them
+            body = re.sub(r'const ANC_BUILDER_NAMES=\{[^}]*\};', '', body)
+        for s in RE_STR.findall(body):
+            if s[1:-1] in by_kdef:
+                take(by_kdef[s[1:-1]])
+            elif f in tfiles and s[1:-1] in by_name:   # a target's own builders named as strings (the alt targets' window[fn])
+                take(by_name[s[1:-1]])
+        words = set(RE_WORD.findall(RE_STR.sub("''", body)))
+        for w in words:
+            if w in by_name:
+                take(by_name[w])
+        for mm in RE_MATUSE.findall(body):
+            if mm in by_mat:
+                take(by_mat[mm])
+    kept = [f for f in order if f not in owner or owner[f] in taken]
+    missing = sorted(k for k in keys if names.get(k) and names[k] not in by_name and not any(
+        re.search(r'^function\s+%s\b' % names[k], bodies[f], re.M) for f in kept))
+    if missing:
+        sys.exit('target %s: no fragment declares the builder of row(s) %s' % (target, ', '.join(missing)))
+    return kept
+
+
 def build_one(target, do_checks, assert_origin):
     tdir = os.path.join(TARGETS, target)
     if not os.path.isdir(tdir):
@@ -358,6 +634,8 @@ def build_one(target, do_checks, assert_origin):
     src.update({f: os.path.join(CORE, f) for f in CORE_FILES if f not in src})
     src.update({f: os.path.join(CORE_OPT, f) for f in CORE_OPT_FILES if f not in src})
     src.update({f: os.path.join(LOD_DIR, f) for f in LOD_FILES if f not in src})
+    src.update({f: os.path.join(ROOT, 'core', 'shader', f) for f in ('06-core-khook.js', '06b-core-kcolor.js') if f not in src})   # the vendored biome core's check (tools/fragment_needs.json)
+    src.update({f: os.path.join(DOOR_DIR, f) for f in DOOR_FILES if f not in src})
     src.update({f: os.path.join(ROOT, 'core', 'materials', 'record', f) for f in RECORD_FILES if f not in src})
     tgt = {f: os.path.join(tdir, f) for f in os.listdir(tdir) if f[0].isdigit()}
     clash = set(src) & set(tgt)
@@ -370,6 +648,26 @@ def build_one(target, do_checks, assert_origin):
     for f in order:
         with open(paths[f], encoding='utf-8', newline='') as fh:
             bodies[f] = fh.read()
+    # what a target reads in place (core/tags, TARGET_READS) is read here. What it reads from OUTSIDE core/ (another target's
+    # fragments, a settlement's, another kit's) is read BEFORE the prune, so it is a root like the target's own fragments: a
+    # kit name it uses keeps its fragment on the page (2026-11-16; until then every read was added after the prune). A core
+    # module never uses a kit's names, and the name scan is generous (core/ruins' self-test has a box it calls 'wreck', the Iziz
+    # style's top-level function's name), so core reads are added after the prune, as before
+    core_dir = os.path.normcase(os.path.join(ROOT, 'core')) + os.sep
+    reads = (TAGS_CORE if target in TAGS_TARGETS else []) + TARGET_READS.get(target, [])
+    late = [(d, f) for d, f in reads if os.path.normcase(os.path.abspath(d) + os.sep).startswith(core_dir)]
+    if reads:
+        for d, f in reads:
+            if f in bodies or (d, f) in late:
+                continue
+            paths[f] = os.path.join(d, f)
+            with open(paths[f], encoding='utf-8', newline='') as fh:
+                bodies[f] = fh.read()
+            order.append(f)
+        order = sorted(order)
+    if '--no-prune' not in sys.argv:          # PRUNE: only the fragments this target's page reaches
+        order = prune(target, order, bodies, paths)
+        bodies = {f: bodies[f] for f in order}
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack
     # the pack's maps go in ONE file beside the pages, dist/ancients.tex.ancients.js, that every target loads by <script src>
@@ -380,21 +678,27 @@ def build_one(target, do_checks, assert_origin):
     order = sorted(order + [MATLIB_PACK])
     if target in INTERIOR_TARGETS:
         extra = [INTERIOR_BUNDLE]
-        bodies[INTERIOR_BUNDLE] = interior_bundle()
+        bodies[INTERIOR_BUNDLE] = interior_bundle(target)
         for d, f in INTERIOR_CORE:
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)
         order = sorted(order + extra)
-    if target in TAGS_TARGETS:
+    if late:   # the core modules a target reads in place, after the prune (above)
         extra = []
-        for d, f in TAGS_CORE + TARGET_READS.get(target, []):
+        for d, f in late:
             if f in bodies:
                 continue
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)
         order = sorted(order + extra)
+    if target == 'theodiga-today':   # the town's sealed bodies and the packs its kits' maps come from (THEODIGA TODAY above)
+        bodies[TH_CITY] = th_city()
+        bodies[TH_XAK] = th_xak()
+        bodies[TH_XPACK] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'xanadu'), 'xanadu', side=side)
+        bodies[TH_QPACK] = matlib_pack.fragment(os.path.join(ROOT, 'kits', 'qiblai'), 'qiblai', side=side)
+        order = sorted(order + [TH_CITY, TH_XAK, TH_XPACK, TH_QPACK])
 
     if do_checks:
         errs = check(order, bodies)
@@ -412,6 +716,8 @@ def build_one(target, do_checks, assert_origin):
     if m:
         html = re.sub(r'<title>.*?</title>', lambda _: '<title>%s</title>' % m.group(1),
                       html, count=1)
+    if BSRC.LISTING:   # --list-sources: every file this target read is recorded; main() reports every target's
+        return order, None, None
     out = os.path.join(DIST, TARGET_OUT[target])
     os.makedirs(DIST, exist_ok=True)
     if side:
@@ -447,6 +753,8 @@ def main():
 
     for target in wanted:
         order, html, out = build_one(target, do_checks, assert_origin)
+        if BSRC.LISTING:
+            continue
 
         # --- byte-identity with the single file this repo was split out of ---
         origin_note = ''
@@ -487,6 +795,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    BSRC.report()   # --list-sources: every target's files, then exit
 
 # --- remind whoever is building of the open issues (see KNOWN_ISSUES.md) ---
 _ki = os.path.join(HERE, 'KNOWN_ISSUES.md')

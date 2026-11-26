@@ -9,28 +9,17 @@
 //                 water drops thrown up and falling back, and the steam cloud that rises off them and drifts downwind.
 //                 window._api.erupt(key) starts one now (for a camera); GEYSER_STATE(key) says whether one is playing
 // ---------------------------------------------------------------- the springs
-const SPRINGU=THREE.UniformsUtils.merge([THREE.UniformsLib.fog,{uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd8dcd8)},uLight:{value:1}}]);
-const SPRING_MAT=new THREE.ShaderMaterial({fog:true,uniforms:SPRINGU,
- vertexShader:['#include <fog_pars_vertex>','attribute vec3 aP;varying vec3 vWP;varying vec3 vP;',
-  'void main(){vP=aP;vec4 wp=modelMatrix*vec4(position,1.0);vWP=wp.xyz;vec4 mvPosition=viewMatrix*wp;gl_Position=projectionMatrix*mvPosition;','#include <fog_vertex>','}'].join('\n'),
- fragmentShader:['#include <fog_pars_fragment>','uniform float uT,uLight;uniform vec3 uSun,uSky;varying vec3 vWP;varying vec3 vP;',
-  'void main(){float t=vP.x,temp=vP.y,acid=vP.z;',
-  // the bands: the clear water to where the mats begin (later the cooler the spring), then green, yellow, orange, rust
-  ' float m0=clamp(temp*0.78,0.08,0.86);vec3 deep=vec3(0.02,0.16,0.42),blue=vec3(0.08,0.52,0.72),green=vec3(0.36,0.62,0.28),yel=vec3(0.86,0.72,0.2),ora=vec3(0.8,0.4,0.1),rust=vec3(0.52,0.22,0.08);',
-  ' vec3 c=mix(deep,blue,smoothstep(0.0,m0,t));',
-  ' float u=(t-m0)/max(0.05,1.0-m0);c=mix(c,green,smoothstep(0.0,0.12,u));c=mix(c,yel,smoothstep(0.18,0.38,u));c=mix(c,ora,smoothstep(0.42,0.66,u));c=mix(c,rust,smoothstep(0.75,1.0,u));',
-  ' c=mix(c,vec3(0.62,0.82,0.8),acid);c=mix(c,vec3(0.86,0.76,0.32),acid*smoothstep(0.7,1.0,t));',
-  ' vec3 n=normalize(vec3(0.015*sin(vWP.x*0.6+uT*1.1)+0.01*sin(vWP.z*0.9-uT*0.8),1.0,0.015*cos(vWP.z*0.5+uT*0.9)));',
-  ' vec3 V=normalize(cameraPosition-vWP);float fr=pow(clamp(1.0-max(dot(n,V),0.0),0.0,1.0),3.0);',
-  ' vec3 col=mix(c,uSky,0.04+fr*0.22);vec3 H=normalize(uSun+V);col+=pow(max(dot(n,H),0.0),140.0)*0.8*vec3(1.0,0.95,0.85);',
-  ' gl_FragColor=vec4(col*uLight,1.0);','#include <fog_fragment>','}'].join('\n')});
-SPRING_MAT.uniforms=SPRINGU;SPRING_MAT.uniforms.fogColor.value=scene.fog.color;SPRING_MAT.uniforms.fogDensity.value=scene.fog.density;
-POOLS.forEach((P,i)=>{const R=P.r*1.3,NR=10,NA=56,pos=[],aP=[],idx=[];
- for(let r=0;r<=NR;r++)for(let a=0;a<NA;a++){const t=r/NR,an=a/NA*TAU;pos.push(P.x+Math.cos(an)*R*t,POOLL[i],P.z+Math.sin(an)*R*t);aP.push(Math.min(1,t*R/P.r),P.temp,P.acid?1:0);}
- for(let r=0;r<NR;r++)for(let a=0;a<NA;a++){const A=r*NA+a,B=r*NA+(a+1)%NA,C=(r+1)*NA+a,D=(r+1)*NA+(a+1)%NA;idx.push(A,C,B,B,C,D);}
- const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('aP',new THREE.Float32BufferAttribute(aP,3));g.setIndex(idx);
- const m=new THREE.Mesh(g,SPRING_MAT);m.userData.inspectLabel=P.name;   // not probeSkip: the spring is what its registered volume holds
-m.renderOrder=1;scene.add(m);
+// 2026-10-26: on core/water (core/water/geyser): each spring a WATER.spring (a still surface with its thermal record, its banded ramp the
+// same stops this page's SPRING_MAT carried, which core/water took from it) drawn by WATER.drawSpring. The old disc reached 1.3 r with the
+// bands over r; the spring's disc reaches its r, so r is 1.3 r and temp is divided by 1.3 (the mats begin where they did). The acid spring
+// is milky. The uniforms are the page's (the clock on the ticks, uLight by the light mode, below), not the module's.
+const SPRINGU={uT:{value:0},uSun:{value:new THREE.Vector3(...SUN_POS).normalize()},uSky:{value:new THREE.Color(0xd8dcd8)},uLight:{value:1}};
+const SPRING_MATS=new Map();
+const SPRINGS=POOLS.map((P,i)=>{const S=WATER.spring({key:P.key,name:P.name,x:P.x,z:P.z,r:P.r*1.3,level:POOLL[i],temp:P.temp/1.3,boil:P.temp>.9?1:0,milky:P.acid?1:0,
+  kind:P.key==='prism'?'prismatic':'pool',steam:0});
+ WATER.drawSpring(S,{THREE,scene,uniforms:SPRINGU,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});   /* not probeSkip: the spring is what its registered volume holds */
+ return S;});
+POOLS.forEach((P,i)=>{
  REGISTER({name:P.name,x:P.x,z:P.z,y:POOLL[i]-4,r:P.r*1.6,h:10,spring:P.key});});
 
 // ---------------------------------------------------------------- the mud pots
