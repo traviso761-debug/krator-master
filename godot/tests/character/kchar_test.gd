@@ -363,6 +363,31 @@ func _init() -> void:
 			fig._process(1.0 / 30.0)
 			offn = maxf(offn, fig.off_need)
 		ok(offn < 0.01, "thrust: the empty hand keeps off the dagger (%.3f m in)" % offn)
+		# the fifth round (2026-11-26, 07:16): the drawing elbow out and back, not up; the arrow in the hand from the quiver;
+		# the right forearm beside the rifle's butt
+		fig.hold({"R": null, "L": "bow"})
+		for c in [["bow_scan", 4.59], ["bow_shot", 3.4]]:
+			fig.play(c[0])
+			fig.player.seek(float(c[1]) - 1.0, true)
+			for k in 30:
+				fig._process(1.0 / 30.0)
+			var S: Vector3 = fig._gp(fig.skeleton.find_bone("RightArm")).origin
+			var E: Vector3 = fig._gp(fig.skeleton.find_bone("RightForeArm")).origin
+			var H: Vector3 = fig._gp(fig.skeleton.find_bone("RightHand")).origin
+			var back: Vector3 = (H - fig._gp(fig.skeleton.find_bone("LeftHand")).origin).normalized()
+			ok(E.y - S.y < 0.03 and (E - H).dot(back) > 0.15, "%s at %.2f s: the drawing elbow out and back (%.2f m over the shoulder, %.2f behind the hand)" % [c[0], c[1], E.y - S.y, (E - H).dot(back)])
+		fig.play("bow_draw")
+		fig.player.seek(0.45, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.bow_state().get("in_hand", false), "bow_draw at 1.45 s: an arrow in the drawing hand")
+		fig.hold({"R": "rifle", "L": null, "both": true})
+		fig.play("gun_shot")
+		var sarm := 0.0
+		for k in 119:
+			fig._process(1.0 / 30.0)
+			sarm = maxf(sarm, fig.stock_arm_need)
+		ok(sarm < 0.03, "gun_shot: the right forearm beside the butt (%.3f m in)" % sarm)
 		fig.hold({"R": null, "L": "cup"})
 		fig.play("drink")
 		for k in 30:

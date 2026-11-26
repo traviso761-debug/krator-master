@@ -235,7 +235,14 @@ eases back to the clip's over 0.3 s, so the blade stays on the side it went roun
 it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was. A gun's `stock` (a segment of
 the butt and its half thickness) keeps out of the upper arms the same way, from 35% of the way down from the shoulder (the
 butt sits in the shoulder's pocket when it aims): Long gun shot at the hip ran the rifle's butt through the right upper arm
-(`fig.stockNeed`, `stock_need`). The empty hand keeps off the other hand's blade (`offHand`, `_off_hand`): its forearm, hand,
+(`fig.stockNeed`, `stock_need`). The right forearm lies beside the butt, not in it (`stockArm`, `_stock_arm`): the clips hold
+it straight back from the pistol grip, along the butt (the skinned forearm was 2 cm inside the rifle's butt on every
+frame of Long gun shot, which the capsule keep-out never saw), so the elbow swings about the shoulder-to-wrist line (the
+hand and the gun stay put) by the least 10-degree step that keeps the forearm's first 60% from the elbow out of the butt's
+box (`stock`'s last two numbers, its half width and height): of the two ways the one that lowers the elbow, then the way
+it went (never across, which swept the forearm back through the butt), and straight at up to 10 radians a second while
+the eased swing is still in (`fig.stockArmNeed`, `stock_arm_need`). By the wrist the hand wraps the grip, where the butt
+begins. The empty hand keeps off the other hand's blade (`offHand`, `_off_hand`): its forearm, hand,
 middle and index fingers are tested against the blade from 12 cm below it to its tip, and the wrist moves out by the
 two-bone solve, the move kept from frame to frame and easing back over 0.3 s (Parry's guard hand lay across the sword,
 and the dagger drawn back in Thrust / stab passed the forearm and fingers); `fig.offNeed` (`off_need`).
@@ -317,9 +324,13 @@ leg; the bare capsules let it through the cargo trousers by up to 5 cm), preferr
 are tried on the side the bow is canted to first (tried +10 before -10 every frame, the clear one switched sides as the
 leg moved, +30 to -20 at 2.6 s, and the eased cant swept back through the thigh: the 2026-11-26 note, measured only at the
 cant it was heading for); a step that would put a limb in a leg waits at the clear cant it has until the way is open,
-and a leg that comes to the bow turns it out at up to 8 radians a second; `fig.bowState()` (`bow_state()`) gives the
-turn, the cant, how deep the limbs are in the legs at the cant drawn, whether the arrow shows and how far its head is in front of
-the bow (`ahead`).
+and a leg that comes to the bow turns it out at up to 8 radians a second. At full draw the string arm's elbow goes back
+along the arrow and out, level with the line, by the face's weight (`reachArm`'s pole: the clips raised it above the
+shoulder and in front of it, Bow aim and scan at 4.59 s and Bow shot). A clip's `arrow_hand` (spans of clip seconds) puts
+an arrow in the drawing hand before it is on the string: up out of the quiver, then the way the figure faces, at the bow
+only in the span's last quarter (Draw from quiver, 1.3 to 1.87 s: it showed no arrow until the hand neared the bow); `fig.bowState()` (`bow_state()`) gives the
+turn, the cant, how deep the limbs are in the legs at the cant drawn, whether the arrow shows (and one in the hand, `inHand`,
+`in_hand`) and how far its head is in front of the bow (`ahead`).
 
 **Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,
 made here as MakeHuman clothes (so MPFB fits, weights and morphs them like the library's): peasants in undyed maguey

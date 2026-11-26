@@ -479,7 +479,14 @@ area you are about to change.
   heading for. Try the steps on the current side first, measure at the angle drawn, hold a clear angle while the step to
   the wanted one is blocked, and rate-limit the escape when the leg comes to it.
 - **A max over frames starts at the least value**: a thumb check `max(thumb, dot)` started at 0 could never read -1 and
-  failed every clip; and a 40-frame loop over a 39-frame one-shot measured the idle after it.- **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
+  failed every clip; and a 40-frame loop over a 39-frame one-shot measured the idle after it.
+- **A keep-out that watches capsules misses the limb's own line** (Long gun shot, round 5): the rifle's butt runs straight
+  back from the pistol grip and the clip's forearm does too, so the forearm sat in the butt on every frame while the stock
+  keep-out, watching the upper arm, read 0. Test the skinned mesh against the prop's real box once; fix it by swinging the
+  elbow about the shoulder-to-wrist line (hand and prop stay put), the lower-elbow way first, never across the obstacle.
+- **A two-bone solve keeps the clip's elbow**: Bow shot's elbow stayed up by the head. Give the solve a pole when the pose
+  has a rule (a drawn bow: back along the arrow, level), blended by the same weight as the reach.
+- **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
   down or back; put the wrist in front of the belly with the two-bone solve first. A cup held by the left grip frame
   can come out upside down: keep its mouth up with the wrist, except while it is at the lips.
 - **Capsule keep-outs miss loose clothes**: the bow's limb cleared the leg capsules but went 5 cm into cargo trousers.

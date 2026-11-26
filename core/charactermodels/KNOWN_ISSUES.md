@@ -166,6 +166,12 @@
   - *The rifle's stock* keeps out of the upper arms from 35% down by turning the wrist, which moves the muzzle a little at
     the hip; the butt in the shoulder's pocket at the aim is allowed.
   - *Pistol quick draw's two-hand span* (`two_when`, 2.3 to 4.3 s) is set by hand from the clip.
+  - *The fifth round (2026-11-26, 07:16).* The string arm's elbow at full draw is put back and out by the face's weight; at
+    full draw the hand is in front of the chin (the anchor), so the elbow ends level with the arrow but still somewhat
+    forward of the shoulder. Draw from quiver's `arrow_hand` span is set by hand; the carried arrow is pinched with the
+    draw curl and has no nocking motion. The right forearm swings beside the rifle's butt by moving the elbow (up to 90
+    degrees on the short women at the hip), tested on its first 60% from the elbow against the butt's box; by the wrist the
+    hand still meets the butt, which begins right behind the grip in the model.
   - Checked against a local piece set (`../krator-garments`, not the manifest's): the Godot figure test passed with the
     man's pieces; the giant's checks were not run.
 - **The Voth clothing is generated, not tailored.** Each garment is lofted round the A-posed body and painted by
