@@ -292,6 +292,60 @@
    ],
    "task": "01a215c3-126f-77f8-8592-ce11993e0058",
    "glb": "fight_2.glb"
+  },
+  {
+   "ids": [
+    41,
+    42,
+    365,
+    25,
+    317,
+    290,
+    28,
+    308,
+    313,
+    311
+   ],
+   "names": [
+    "Formal Bow",
+    "Gentlemans Bow",
+    "Kneel on One Knee and Stand",
+    "Agree Gesture",
+    "Shrug",
+    "Wave One Hand",
+    "Big Wave Hello",
+    "Talk Passionately",
+    "Talk with Hands Open",
+    "Stand Talking Angry"
+   ],
+   "task": "01a216c3-b900-7078-8f2f-5ac06f03d919",
+   "glb": "social_0.glb"
+  },
+  {
+   "ids": [
+    51,
+    59,
+    298,
+    49,
+    354,
+    403,
+    405,
+    307,
+    26
+   ],
+   "names": [
+    "Shouting Angrily",
+    "Victory Cheer",
+    "Cheer with Both Hands Up",
+    "Motivational Cheer",
+    "Sitting Clap",
+    "Victory Fist Pump",
+    "Joyful Dance with Hand Sway",
+    "Sitting Answering Questions",
+    "Angry Stomp"
+   ],
+   "task": "01a216c3-bad9-7137-956a-8da7dacbd280",
+   "glb": "social_1.glb"
   }
  ]
 }

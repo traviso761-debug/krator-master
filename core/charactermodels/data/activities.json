@@ -228,6 +228,9 @@
    "clips": [
     "ual_talk",
     "ual_talk",
+    "talk_open",
+    "agree",
+    "shrug",
     "nod",
     "ual_arms_folded",
     "idle_6",
@@ -249,7 +252,8 @@
      "exit": "stand_up"
     }
    },
-   "gap": "more conversation gestures (bow, wave, laugh, shrug)"
+   "gap": "laughing, a handshake, an embrace",
+   "enter": "wave"
   },
   "VISIT": {
    "alias": "SOCIALIZE"
@@ -260,6 +264,8 @@
   "DEBATE": {
    "clips": [
     "ual_talk",
+    "sit_answer",
+    "argue",
     "sit_floor"
    ]
   },
@@ -280,15 +286,18 @@
   },
   "SELL": {
    "clips": [
-    "ual_talk",
+    "talk_open",
+    "talk_open",
     "ual_pickup_table",
     "ual_arms_folded"
    ],
-   "gap": "give and take; calling out wares"
+   "gap": "give and take (coin, goods across a counter)"
   },
   "TRADE": {
    "clips": [
-    "ual_talk"
+    "ual_talk",
+    "talk_open",
+    "agree"
    ]
   },
   "KEEP_SHOP": {
@@ -713,36 +722,44 @@
   "WORSHIP": {
    "clips": [
     "sit_floor",
+    "kneel",
     "idle_5"
    ],
-   "gap": "kneeling to pray, prostration, raised arms, a bow"
+   "enter": "bow_formal",
+   "gap": "prostration; raised arms"
   },
   "PRAY": {
    "alias": "WORSHIP"
   },
   "PRIEST": {
    "clips": [
-    "ual_talk",
+    "orate",
+    "orate",
+    "talk_open",
     "idle_5"
    ],
-   "gap": "preaching; leading a rite; censer"
+   "enter": "bow_formal",
+   "gap": "leading a rite; a censer"
   },
   "RITUAL": {
    "alias": "PRIEST"
   },
   "HONOUR": {
    "clips": [
+    "kneel",
     "idle_5",
     "idle_13"
    ],
-   "gap": "kneeling at a tomb; laying an offering"
+   "enter": "bow_formal",
+   "gap": "laying an offering"
   },
   "MOURN": {
    "clips": [
     "idle_13",
-    "sit_floor"
+    "sit_floor",
+    "kneel"
    ],
-   "gap": "lament: head in hands, kneeling"
+   "gap": "lament: head in hands"
   },
   "KEEP_DEAD": {
    "alias": "HONOUR"
@@ -762,12 +779,30 @@
   "FESTIVAL": {
    "clips": [
     "dance",
-    "dance",
-    "ual_talk",
-    "nod",
-    "ual_arms_folded"
+    "dance_joyful",
+    "dance_joyful",
+    "cheer",
+    "cheer_hands_up",
+    "fist_pump",
+    "ual_talk"
    ],
-   "gap": "cheering, clapping"
+   "by_furniture": {
+    "bench": {
+     "clips": [
+      "clap_sit"
+     ],
+     "enter": "ual_sit_down",
+     "exit": "ual_sit_up"
+    },
+    "chair": {
+     "clips": [
+      "clap_sit"
+     ],
+     "enter": "sit_down",
+     "exit": "stand_up"
+    }
+   },
+   "gap": "standing applause; each culture's own folk dances"
   },
   "GUARD": {
    "clips": [
@@ -853,6 +888,7 @@
     "brawler": {
      "clips": [
       "unarmed_guard",
+      "shadow_box",
       "jab_l",
       "jab_r",
       "punch_combo_1",
@@ -868,7 +904,8 @@
     "jab_l",
     "jab_r",
     "kick_front",
-    "unarmed_guard"
+    "unarmed_guard",
+    "shadow_box"
    ],
    "by_role": {
     "master": "combat_idle"
@@ -907,11 +944,12 @@
   },
   "RULE": {
    "clips": [
-    "sit"
+    "sit",
+    "sit_answer"
    ],
    "enter": "sit_down",
    "exit": "stand_up",
-   "gap": "a throne pose; giving audience, proclaiming"
+   "gap": "a throne pose (proclaiming standing: orate serves)"
   },
   "GOVERN": {
    "alias": "RULE"
@@ -1051,6 +1089,45 @@
   },
   "FREE": {
    "alias": "IDLE"
+  },
+  "GREET": {
+   "clips": [
+    "wave",
+    "wave_big",
+    "bow_court",
+    "nod"
+   ],
+   "about": "meeting someone: a one-shot, then back to what they were doing"
+  },
+  "ARGUE": {
+   "clips": [
+    "argue",
+    "argue",
+    "shout",
+    "stomp"
+   ],
+   "about": "a quarrel short of blows (BRAWL is the fight)"
+  },
+  "CHEER": {
+   "clips": [
+    "cheer",
+    "cheer_hands_up",
+    "cheer_rally",
+    "fist_pump"
+   ],
+   "by_furniture": {
+    "bench": {
+     "clips": [
+      "clap_sit"
+     ]
+    },
+    "chair": {
+     "clips": [
+      "clap_sit"
+     ]
+    }
+   },
+   "about": "a crowd at a race, a triumph, an arena"
   }
  }
 }

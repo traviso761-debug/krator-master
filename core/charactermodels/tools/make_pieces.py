@@ -578,7 +578,7 @@ def action_clips():
     for c in clips:                     # 'ual': '<file>:<clip>' in donors/anims/ (Quaternius, CC0)
         if 'ual' in c:
             f, clip = c['ual'].split(':')
-            out.append((os.path.join(IDLES, f), clip, c['key'], c['label'], c['group'], c['loop']))
+            out.append((os.path.join(IDLES, f), clip, c['key'] + ('@src' if 'derive' in c else ''), c['label'], c['group'], c['loop']))
     for b in json.load(open(jp))['batches']:
         src = os.path.join(IDLES, b['glb'])
         names = [a['name'] for a in glbio.read_glb(open(src, 'rb').read())[0]['animations']]
@@ -891,6 +891,63 @@ def feet_clip(c, clip, floor):
             rig.turn(loc, J[S + 'Foot'], _axis_rot(ax / np.linalg.norm(ax), lim - p))
         rig.quats(loc, out)
     return times, {nm: np.array(v) for nm, v in out.items()}, hips
+
+
+def toes_clip(c, clip, spec):
+    """derive 'toes': {'max': degrees, 'smooth': frames}: each ToeBase kept within max degrees of its rest turn on the
+    foot (the clip's turn eased back toward rest past it) and averaged over smooth frames either side. Meshy's kicks,
+    leg sweep and over-the-shoulder throw flapped the toes up and down and bent them past what a toe bends (the owner's
+    review, 2026-11-26)"""
+    times, rots, hips = clip
+    lim = math.radians(spec.get('max', 20))
+    n = int(spec.get('smooth', 3))
+    rots = dict(rots)
+    for S in ('Left', 'Right'):
+        nm = S + 'ToeBase'
+        if nm not in rots:
+            continue
+        i = c.J[nm]
+        rest = np.array(glbio.mat_quat(c.jrot[c.parents[i]].T @ c.jrot[i]), float)
+        q = np.array(rots[nm], float)
+        for f in range(len(q)):
+            d = abs(float(np.dot(rest, q[f])))
+            ang = 2 * math.acos(min(1.0, d))
+            if ang > lim:
+                q[f] = _slerp(rest, q[f], lim / ang)
+        sm = q.copy()
+        for f in range(len(q)):
+            acc = np.zeros(4)
+            for g in range(max(0, f - n), min(len(q), f + n + 1)):
+                acc += q[g] if np.dot(q[g], q[f]) >= 0 else -q[g]
+            sm[f] = acc / np.linalg.norm(acc)
+        rots[nm] = sm
+    return times, rots, hips
+
+
+def hold_clip(c, clip, spec):
+    """derive 'hold': {'at': seconds, 'cycle': seconds, 'breath': degrees}: the source's pose at 'at' held as a loop,
+    breathing (the upper spine rocks by breath degrees once a cycle, the hips bob a centimetre). Meshy's 'Boxing
+    Practice', the guard idle, was a flurry of punches (the owner's review, 2026-11-26): the fist guard is the pose a
+    jab from guard starts in"""
+    times, rots, hips = clip
+    f0 = int(np.clip(round(spec.get('at', 0.0) * FPS), 0, len(times) - 1))
+    cyc = spec.get('cycle', 2.6)
+    amp = math.radians(spec.get('breath', 1.5))
+    n = max(2, int(round(cyc * FPS)))
+    t2 = np.arange(n + 1) / FPS
+    base = {j: q[f0] for j, q in rots.items()}
+    held = (np.array([0.0]), {j: np.array([q]) for j, q in base.items()}, np.array([hips[f0]]))
+    out = {nm: [] for nm in rots}
+    h2 = []
+    for k in range(n + 1):
+        s = math.sin(2 * math.pi * k / n)
+        rig = _Rig(c, held, 0)
+        loc = list(rig.loc0)
+        rig.turn(loc, c.J['Spine1'], _Rx(-amp * s))
+        rig.turn(loc, c.J['Spine2'], _Rx(amp * 0.5 * s))
+        rig.quats(loc, out)
+        h2.append(hips[f0] + np.array([0.0, 0.006 * s, 0.0]))
+    return t2, {nm: np.array(v) for nm, v in out.items()}, np.array(h2)
 
 
 def loop_back(clip, back):
@@ -1615,6 +1672,10 @@ def derived_clips(c, got):
             clip = make(c, got[spec['from']], spec[kind])
         elif spec.get('feet') is not None and spec.get('from') in got:
             clip = feet_clip(c, got[spec['from']], spec['feet'])
+        elif spec.get('toes') is not None and spec.get('from') in got:
+            clip = toes_clip(c, got[spec['from']], spec['toes'])
+        elif spec.get('hold') is not None and spec.get('from') in got:
+            clip = hold_clip(c, got[spec['from']], spec['hold'])
         else:
             continue
         out.append(clip + (d['key'], d['label'], d['group'], d['loop']))
@@ -1639,10 +1700,11 @@ def write_anims(out, c):
         seq.append(name)
         if '@' not in name:
             made.append(got[name] + (name, label, group, loop))
-    # a clip whose hands or feet are put right (derive 'hands', 'feet') stands where its source stood
+    # a clip whose hands, feet or toes are put right (derive 'hands', 'feet', 'toes') stands where its source stood
     entries = json.load(open(os.path.join(HERE, 'data', 'clips.json')))['clips']
     spots = {d['key']: d['derive']['from'] for d in entries
-             if (d.get('derive') or {}).get('hands') or (d.get('derive') or {}).get('feet') is not None or (any(k in (d.get('derive') or {}) for k in PLACED)
+             if (d.get('derive') or {}).get('hands') or (d.get('derive') or {}).get('feet') is not None
+             or (d.get('derive') or {}).get('toes') is not None or (any(k in (d.get('derive') or {}) for k in PLACED)
                                                        and d['derive'].get('from', '').endswith('@src'))}
     # a clip made from another clip (not its own '@src'): right after it
     after = {d['key']: d['derive']['from'] for d in entries

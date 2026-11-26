@@ -1318,8 +1318,11 @@ function KCharFigure(body, sliders, load){
     HANDS.forEach(function(side){
       var id = held[side] || (side === 'L' && held.both && support() ? held.R : null);
       if(side.length > 1 && holders[side]) holders[side].visible = !!self.fourArms;
-      if(!id) return;
-      var h = skel.hands[side], style = held[side] ? prop(id).grip : 'fist';
+      // an empty hand closes into a fist where the clip says so (data/clips.json fist: the hands, 'R' and 'L'): the
+      // library's strikes and guards have no finger motion, so they punched open-handed (the owner's review, 2026-11-26)
+      var cn = !id && clipNow(), fist = cn && cn.info.fist;
+      if(!id && !(fist && fist.indexOf(side) >= 0)) return;
+      var h = skel.hands[side], style = id && held[side] ? prop(id).grip : 'fist';
       if(style === 'flat') return;                            // an open hand under a bowl: the clip's own fingers
       var curl = h.curls ? h.curls[style] || h.curls.fist : h.curl;
       curl.forEach(function(c){

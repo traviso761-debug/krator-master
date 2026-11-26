@@ -548,6 +548,11 @@ LAB_CHECKS = r'''async () => {
   const rise = {};
   for (const c of ['slash_up', 'slash_left']) { let r = -9; await run(c, (x, t) => { if (t > 0.5 && t < 1.3) r = Math.max(r, bone(x, 'RightHand').getWorldPosition(V()).y - bone(x, 'RightArm').getWorldPosition(V()).y); }); rise[c] = r; }
   if (!(rise.slash_left < rise.slash_up - 0.1)) out.push('clips: Slash left rises ' + rise.slash_left.toFixed(2) + ' m over the shoulder, the up swing ' + rise.slash_up.toFixed(2));
+  // the fifth round (2026-11-26): the empty hands close into fists in the strikes (clips.json fist)
+  { await L.play('jab_l'); const hp = document.getElementById('hold-pick'); if (hp.value !== '') { hp.value = ''; hp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 300)); }
+    at('jab_l', 0.3);
+    six.forEach((x, i) => { const k = x.bones.findIndex(b => b.name === 'RightHandIndex2'), J = KCHAR_DATA.bodies[x.kit.body].skeleton.joints;
+      if (k >= 0 && x.bones[k].quaternion.angleTo(Q().fromArray(J[k].r)) < 0.5) out.push('fist: Left jab at 0.3 s, figure ' + i + ': the empty right hand is open'); }); }
   // the third round (2026-11-26): the bail stays in the fist and the bucket out of the legs; the made dig and hammer keep
   // their tools out of the head; Chop's left arm out of the jaw; the cup to the lips in Sit and drink; Eat's bowl
   // shoulder not hiked

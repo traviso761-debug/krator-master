@@ -1069,6 +1069,9 @@ func _on_ground() -> void:
 		_reach_arm(int(arm[0]), int(arm[1]), hand, at - qh * gt.origin, qh)
 
 
+var _curled := {}                       # side -> the curl _grip set last frame
+
+
 func _grip() -> void:
 	if not skel.has("hands"):
 		return
@@ -1080,13 +1083,22 @@ func _grip() -> void:
 		var id = held[side]
 		if id == null and side == "L" and _support().size() > 0:
 			id = held["R"]
-		if id == null:
+		var curl = null
+		# an empty hand closes into a fist where the clip says so (clips.json fist), as in grip() in 50-figure.js
+		if id != null or side in _clip_info().get("fist", []):
+			var h: Dictionary = skel["hands"][side]
+			var style: String = props.get(id, {}).get("grip", "fist") if id != null and held[side] != null else "fist"
+			if style != "flat":                 # flat: an open hand under a bowl, the clip's own fingers
+				curl = h["curls"].get(style, h["curls"]["fist"]) if h.has("curls") else h["curl"]
+		if curl == null:
+			# the fingers a curl set last frame go back to rest: a clip without finger tracks (Meshy's) does not
+			# write them, so they stayed a fist after a strike (the page starts every bone from the clip each frame)
+			if _curled.has(side):
+				for c in _curled[side]:
+					skeleton.set_bone_pose_rotation(int(c[0]), KChar._q(J[int(c[0])]["r"]))
+				_curled.erase(side)
 			continue
-		var h: Dictionary = skel["hands"][side]
-		var style: String = props.get(id, {}).get("grip", "fist") if held[side] != null else "fist"
-		if style == "flat":
-			continue                        # an open hand under a bowl: the clip's own fingers
-		var curl: Array = h["curls"].get(style, h["curls"]["fist"]) if h.has("curls") else h["curl"]
+		_curled[side] = curl
 		for c in curl:
 			var i: int = int(c[0])
 			skeleton.set_bone_pose_rotation(i, KChar._q(J[i]["r"]) * Quaternion(c[1], c[2], c[3], c[4]))

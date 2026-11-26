@@ -2241,7 +2241,7 @@
    "name": "ual_hook_rec",
    "label": "Hook, recover to guard",
    "group": "unarmed",
-   "seconds": 0.6,
+   "seconds": 0.93,
    "loop": false
   },
   {
@@ -2843,8 +2843,8 @@
    ]
   },
   {
-   "name": "unarmed_guard",
-   "label": "Guard (fists)",
+   "name": "shadow_box",
+   "label": "Shadow boxing (punch flurry)",
    "group": "unarmed",
    "seconds": 6.83,
    "loop": true,
@@ -2940,14 +2940,14 @@
   },
   {
    "name": "punch_combo_3",
-   "label": "Punch combo 3",
+   "label": "Punch and elbow",
    "group": "unarmed",
    "seconds": 3.27,
    "loop": false
   },
   {
    "name": "dodge_counter",
-   "label": "Dodge and counter",
+   "label": "Dodge and counter (surrounded)",
    "group": "unarmed",
    "seconds": 9.33,
    "loop": false
@@ -3058,6 +3058,139 @@
    "loop": false
   },
   {
+   "name": "bow_formal",
+   "label": "Formal bow",
+   "group": "social",
+   "seconds": 7.67,
+   "loop": false
+  },
+  {
+   "name": "bow_court",
+   "label": "Courtly bow",
+   "group": "social",
+   "seconds": 7.27,
+   "loop": false
+  },
+  {
+   "name": "kneel",
+   "label": "Kneel on one knee and rise",
+   "group": "social",
+   "seconds": 2.53,
+   "loop": false
+  },
+  {
+   "name": "agree",
+   "label": "Agree",
+   "group": "social",
+   "seconds": 13.0,
+   "loop": false
+  },
+  {
+   "name": "shrug",
+   "label": "Shrug",
+   "group": "social",
+   "seconds": 2.0,
+   "loop": false
+  },
+  {
+   "name": "wave",
+   "label": "Wave",
+   "group": "social",
+   "seconds": 4.1,
+   "loop": false
+  },
+  {
+   "name": "wave_big",
+   "label": "Big wave hello",
+   "group": "social",
+   "seconds": 5.33,
+   "loop": false
+  },
+  {
+   "name": "orate",
+   "label": "Talk passionately (orate, preach)",
+   "group": "social",
+   "seconds": 10.27,
+   "loop": true
+  },
+  {
+   "name": "talk_open",
+   "label": "Talk with open hands",
+   "group": "social",
+   "seconds": 3.97,
+   "loop": true
+  },
+  {
+   "name": "argue",
+   "label": "Argue angrily",
+   "group": "social",
+   "seconds": 20.8,
+   "loop": true
+  },
+  {
+   "name": "shout",
+   "label": "Shout angrily",
+   "group": "social",
+   "seconds": 7.17,
+   "loop": false
+  },
+  {
+   "name": "cheer",
+   "label": "Victory cheer",
+   "group": "social",
+   "seconds": 9.33,
+   "loop": false
+  },
+  {
+   "name": "cheer_hands_up",
+   "label": "Cheer, both hands up",
+   "group": "social",
+   "seconds": 1.87,
+   "loop": false
+  },
+  {
+   "name": "cheer_rally",
+   "label": "Rallying cheer",
+   "group": "social",
+   "seconds": 9.0,
+   "loop": false
+  },
+  {
+   "name": "clap_sit",
+   "label": "Clap, seated",
+   "group": "social",
+   "seconds": 3.33,
+   "loop": true
+  },
+  {
+   "name": "fist_pump",
+   "label": "Fist pump",
+   "group": "social",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "dance_joyful",
+   "label": "Joyful dance",
+   "group": "social",
+   "seconds": 6.53,
+   "loop": true
+  },
+  {
+   "name": "sit_answer",
+   "label": "Answer questions, seated",
+   "group": "social",
+   "seconds": 9.67,
+   "loop": true
+  },
+  {
+   "name": "stomp",
+   "label": "Angry stomp",
+   "group": "social",
+   "seconds": 8.0,
+   "loop": false
+  },
+  {
    "name": "thrust",
    "label": "Thrust / stab",
    "group": "melee",
@@ -3097,6 +3230,13 @@
    "label": "Hammer at anvil",
    "group": "work",
    "seconds": 1.1,
+   "loop": true
+  },
+  {
+   "name": "unarmed_guard",
+   "label": "Guard (fists)",
+   "group": "unarmed",
+   "seconds": 2.6,
    "loop": true
   }
  ],

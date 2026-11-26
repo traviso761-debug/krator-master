@@ -133,9 +133,10 @@ nearest people as figures in their own records).
 **The record**: `{ body:'mpfb_male', armour:{head, torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
 morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{slot: '#rrggbb'} }`. Colours are albedo.
 
-**Clips** (`data/clips.json`, about 180 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
-as move, melee, hand to hand (fists, kicks, elbows and knees, throws, fist guards: 2026-11-25), ranged, block and
-dodge, hit and fall, swim, ladder, daily life and work. Two sources, both retargeted
+**Clips** (`data/clips.json`, about 200 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
+as move, melee, hand to hand (fists, kicks, elbows and knees, throws, fist guards: 2026-11-25; a clip's `fist` closes
+the empty hands, `toes` derive keeps the toes from flapping), ranged, block and dodge, hit and fall, swim, ladder, daily
+life, social and ceremony (bows, kneeling, waves, oratory, cheers: 2026-11-26) and work. Two sources, both retargeted
 onto the rig by `make_pieces.write_anims` (bone directions matched, hips motion scaled by height):
 Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `tools/meshy.py anims`, 3 credits each:
 `donors/anims/actions*.glb`) and Quaternius's Universal Animation Library 1 and 2 (`ual`, CC0:

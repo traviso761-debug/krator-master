@@ -207,6 +207,16 @@ func _init() -> void:
 			for k in 60:
 				fig._process(1.0 / 30.0)
 			ok(hits.size() == 1 and hits[0][2] == "LeftHand" and hits[0][3] == "Head", "jab_l: one contact, the left hand to the head: %s" % [hits])
+			# fist (data/clips.json fist): the empty hands close in a strike, and stay open in a wave (a clip without it)
+			fig.play("jab_l")
+			for k in 9:
+				fig._process(1.0 / 30.0)
+			ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) > 0.5, "jab_l: the empty right hand is a fist")
+			if fig.player.has_animation("wave"):
+				fig.play("wave")
+				for k in 15:
+					fig._process(1.0 / 30.0)
+				ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) < 0.5, "wave: the hand stays open")
 		# the bow: drawn in the aim-and-scan loop, its arrow shown
 		fig.hold({"R": null, "L": "bow"})
 		fig.play("bow_scan")

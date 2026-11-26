@@ -41,6 +41,10 @@
    "label": "Daily life"
   },
   {
+   "id": "social",
+   "label": "Social and ceremony"
+  },
+  {
    "id": "work",
    "label": "Work"
   }
@@ -1583,7 +1587,11 @@
    "ual": "UAL2_Standard.glb:Melee_Hook",
    "label": "Punch (hook)",
    "group": "melee",
-   "loop": false
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "ual_shield_bash",
@@ -1859,31 +1867,65 @@
   },
   {
    "key": "unarmed_guard",
-   "meshy": 87,
+   "derive": {
+    "hold": {
+     "at": 0.1,
+     "cycle": 2.6,
+     "breath": 1.5
+    },
+    "from": "jab_l"
+   },
    "label": "Guard (fists)",
    "group": "unarmed",
-   "loop": true
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "shadow_box",
+   "meshy": 87,
+   "label": "Shadow boxing (punch flurry)",
+   "group": "unarmed",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "fight_step_l",
    "meshy": 9,
    "label": "Fight step, forward left",
    "group": "unarmed",
-   "loop": true
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "fight_step_r",
    "meshy": 10,
    "label": "Fight step, forward right",
    "group": "unarmed",
-   "loop": true
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "taunt_chest",
    "meshy": 88,
    "label": "Chest-pound taunt",
    "group": "unarmed",
-   "loop": false
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "jab_l",
@@ -1897,6 +1939,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1911,6 +1957,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1925,6 +1975,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1939,6 +1993,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1953,6 +2011,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1967,6 +2029,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -1981,6 +2047,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2010,6 +2080,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2044,12 +2118,16 @@
      "RightHand",
      "Spine2"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
    "key": "punch_combo_3",
    "meshy": 203,
-   "label": "Punch combo 3",
+   "label": "Punch and elbow",
    "group": "unarmed",
    "loop": false,
    "contact": [
@@ -2068,12 +2146,16 @@
      "LeftHand",
      "Spine2"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
    "key": "dodge_counter",
    "meshy": 93,
-   "label": "Dodge and counter",
+   "label": "Dodge and counter (surrounded)",
    "group": "unarmed",
    "loop": false,
    "contact": [
@@ -2117,6 +2199,10 @@
      "LeftHand",
      "Spine2"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2141,6 +2227,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2160,6 +2250,10 @@
      "RightForeArm",
      "Spine2"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2174,6 +2268,10 @@
      "RightLeg",
      "Hips"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2188,6 +2286,17 @@
      "RightFoot",
      "Spine2"
     ]
+   ],
+   "derive": {
+    "toes": {
+     "max": 20,
+     "smooth": 3
+    },
+    "from": "kick_front@src"
+   },
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2202,6 +2311,17 @@
      "RightFoot",
      "Hips"
     ]
+   ],
+   "derive": {
+    "toes": {
+     "max": 20,
+     "smooth": 3
+    },
+    "from": "kick_roundhouse@src"
+   },
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2216,6 +2336,17 @@
      "RightFoot",
      "RightLeg"
     ]
+   ],
+   "derive": {
+    "toes": {
+     "max": 20,
+     "smooth": 3
+    },
+    "from": "leg_sweep@src"
+   },
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2230,6 +2361,17 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "derive": {
+    "toes": {
+     "max": 20,
+     "smooth": 3
+    },
+    "from": "throw_shoulder@src"
+   },
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2244,6 +2386,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2251,21 +2397,33 @@
    "meshy": 140,
    "label": "Fist guard block 1",
    "group": "unarmed",
-   "loop": false
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "guard_block_2",
    "meshy": 141,
    "label": "Fist guard block 2",
    "group": "unarmed",
-   "loop": false
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "guard_block_3",
    "meshy": 142,
    "label": "Fist guard block 3",
    "group": "unarmed",
-   "loop": false
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "hit_face",
@@ -2307,6 +2465,10 @@
      "LeftHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2321,6 +2483,10 @@
      "RightHand",
      "Head"
     ]
+   ],
+   "fist": [
+    "R",
+    "L"
    ]
   },
   {
@@ -2328,7 +2494,22 @@
    "ual": "UAL2_Standard.glb:Melee_Hook_Rec",
    "label": "Hook, recover to guard",
    "group": "unarmed",
-   "loop": false
+   "loop": false,
+   "derive": {
+    "force": {
+     "pace": [
+      [
+       0,
+       1.6
+      ]
+     ]
+    },
+    "from": "ual_hook_rec@src"
+   },
+   "fist": [
+    "R",
+    "L"
+   ]
   },
   {
    "key": "claw_swipe",
@@ -2390,6 +2571,143 @@
    "label": "Nod yes",
    "group": "life",
    "loop": false
+  },
+  {
+   "key": "bow_formal",
+   "meshy": 41,
+   "label": "Formal bow",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "bow_court",
+   "meshy": 42,
+   "label": "Courtly bow",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "kneel",
+   "meshy": 365,
+   "label": "Kneel on one knee and rise",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "agree",
+   "meshy": 25,
+   "label": "Agree",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "shrug",
+   "meshy": 317,
+   "label": "Shrug",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "wave",
+   "meshy": 290,
+   "label": "Wave",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "wave_big",
+   "meshy": 28,
+   "label": "Big wave hello",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "orate",
+   "meshy": 308,
+   "label": "Talk passionately (orate, preach)",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "talk_open",
+   "meshy": 313,
+   "label": "Talk with open hands",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "argue",
+   "meshy": 311,
+   "label": "Argue angrily",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "shout",
+   "meshy": 51,
+   "label": "Shout angrily",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "cheer",
+   "meshy": 59,
+   "label": "Victory cheer",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "cheer_hands_up",
+   "meshy": 298,
+   "label": "Cheer, both hands up",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "cheer_rally",
+   "meshy": 49,
+   "label": "Rallying cheer",
+   "group": "social",
+   "loop": false
+  },
+  {
+   "key": "clap_sit",
+   "meshy": 354,
+   "label": "Clap, seated",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "fist_pump",
+   "meshy": 403,
+   "label": "Fist pump",
+   "group": "social",
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "dance_joyful",
+   "meshy": 405,
+   "label": "Joyful dance",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "sit_answer",
+   "meshy": 307,
+   "label": "Answer questions, seated",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "stomp",
+   "meshy": 26,
+   "label": "Angry stomp",
+   "group": "social",
+   "loop": false
   }
  ],
  "faces": {
@@ -2428,7 +2746,12 @@
      0.1146
     ]
    ],
-   "jaw": [0, -0.02, 0.07, 0.065],
+   "jaw": [
+    0,
+    -0.02,
+    0.07,
+    0.065
+   ],
    "scratch": [
     -0.091,
     0.176,
@@ -2469,7 +2792,12 @@
      0.0903
     ]
    ],
-   "jaw": [0, -0.025, 0.06, 0.055],
+   "jaw": [
+    0,
+    -0.025,
+    0.06,
+    0.055
+   ],
    "scratch": [
     -0.085,
     0.165,

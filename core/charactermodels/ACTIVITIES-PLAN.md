@@ -207,7 +207,12 @@ lancet and mortar. Each in the grip frame (+Y along the handle, +Z the fingers, 
    found by `tools/contacts.py` (forward kinematics: the striking hand's, foot's, elbow's or knee's reach peaks;
    a single strike keeps one, a throw its grip); the figure calls `onContact` (JS) and emits `contact` (Godot) as the
    clip passes each. Not yet: the victim's timed reaction and the reach pass onto them (a game's, or the next step).
-4. The social and ceremonial set from Meshy (bows, kneel, cheer, shout, dances: about 20 actions, 60 credits).
+4. **Done (2026-11-26).** The social and ceremonial set from Meshy, 19 actions (57 credits), group `social`: formal and
+   courtly bows, kneel on one knee, agree, shrug, wave and big wave, orate, talk with open hands, argue, shout, three
+   cheers, a seated clap, a fist pump, a joyful dance, answering seated, an angry stomp (Meshy's pop and hip-hop
+   dances left out). The table uses them: PRIEST orates, SELL calls with open hands, WORSHIP and HONOUR kneel and bow,
+   FESTIVAL cheers and dances (claps on a bench), DEBATE answers and argues; new GREET, ARGUE and CHEER. Still gaps:
+   prostration, raised arms, head-in-hands lament, standing applause, each culture's folk dances.
 5. Made clips for the trades, in order of how many citizens they cover: cook and stir, carry a sack, give / take,
    write and read, kneel-pray, row and paddle, sweep, saw, weave, cast a net, feed and lead beasts, milk.
 6. Riding (a made rider pose per tack anchor), then two-person carries (bier, crate, ladder), then children.
