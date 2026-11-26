@@ -1676,6 +1676,9 @@ def derived_clips(c, got):
             clip = toes_clip(c, got[spec['from']], spec['toes'])
         elif spec.get('hold') is not None and spec.get('from') in got:
             clip = hold_clip(c, got[spec['from']], spec['hold'])
+        elif spec.get('trade') and spec.get('from', 'idle') in got:
+            import trade_clips                                    # tools/trade_clips.py: the trades' work (stage 5)
+            clip = trade_clips.make(c, spec['trade'], got[spec.get('from', 'idle')])
         else:
             continue
         out.append(clip + (d['key'], d['label'], d['group'], d['loop']))

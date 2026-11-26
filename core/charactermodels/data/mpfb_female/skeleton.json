@@ -3238,6 +3238,118 @@
    "group": "unarmed",
    "seconds": 2.6,
    "loop": true
+  },
+  {
+   "name": "cook_stir",
+   "label": "Cook: stir a pot",
+   "group": "work",
+   "seconds": 2.4,
+   "loop": true
+  },
+  {
+   "name": "walk_sack",
+   "label": "Carry a sack on the shoulder",
+   "group": "move",
+   "seconds": 1.03,
+   "loop": true
+  },
+  {
+   "name": "give",
+   "label": "Give (hand over)",
+   "group": "life",
+   "seconds": 2.6,
+   "loop": false
+  },
+  {
+   "name": "take",
+   "label": "Take (receive)",
+   "group": "life",
+   "seconds": 2.6,
+   "loop": false
+  },
+  {
+   "name": "write",
+   "label": "Write at a desk",
+   "group": "work",
+   "seconds": 3.0,
+   "loop": true
+  },
+  {
+   "name": "read",
+   "label": "Read a book",
+   "group": "life",
+   "seconds": 6.0,
+   "loop": true
+  },
+  {
+   "name": "kneel_pray",
+   "label": "Kneel and pray",
+   "group": "social",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "row",
+   "label": "Row (oars)",
+   "group": "work",
+   "seconds": 2.2,
+   "loop": true
+  },
+  {
+   "name": "paddle",
+   "label": "Paddle a canoe",
+   "group": "work",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "sweep",
+   "label": "Sweep (broom)",
+   "group": "work",
+   "seconds": 1.6,
+   "loop": true
+  },
+  {
+   "name": "saw",
+   "label": "Saw a board",
+   "group": "work",
+   "seconds": 1.0,
+   "loop": true
+  },
+  {
+   "name": "weave",
+   "label": "Weave at a loom",
+   "group": "work",
+   "seconds": 3.2,
+   "loop": true
+  },
+  {
+   "name": "cast_net",
+   "label": "Cast a net",
+   "group": "work",
+   "seconds": 3.4,
+   "loop": false
+  },
+  {
+   "name": "feed",
+   "label": "Scatter feed",
+   "group": "work",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "walk_lead",
+   "label": "Lead a beast (halter)",
+   "group": "move",
+   "seconds": 1.03,
+   "loop": true
+  },
+  {
+   "name": "milk",
+   "label": "Milk",
+   "group": "work",
+   "seconds": 1.0,
+   "loop": true
   }
  ],
  "hands": {

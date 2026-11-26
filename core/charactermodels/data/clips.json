@@ -2708,6 +2708,208 @@
    "label": "Angry stomp",
    "group": "social",
    "loop": false
+  },
+  {
+   "key": "cook_stir",
+   "derive": {
+    "trade": "cook",
+    "from": "idle"
+   },
+   "label": "Cook: stir a pot",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "walk_sack",
+   "derive": {
+    "trade": "walk_sack",
+    "from": "walk"
+   },
+   "label": "Carry a sack on the shoulder",
+   "group": "move",
+   "loop": true,
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "give",
+   "derive": {
+    "trade": "give",
+    "from": "idle"
+   },
+   "label": "Give (hand over)",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "take",
+   "derive": {
+    "trade": "take",
+    "from": "idle"
+   },
+   "label": "Take (receive)",
+   "group": "life",
+   "loop": false
+  },
+  {
+   "key": "write",
+   "derive": {
+    "trade": "write",
+    "from": "sit"
+   },
+   "label": "Write at a desk",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "read",
+   "derive": {
+    "trade": "read",
+    "from": "sit"
+   },
+   "label": "Read a book",
+   "group": "life",
+   "loop": true
+  },
+  {
+   "key": "kneel_pray",
+   "derive": {
+    "trade": "kneel_pray",
+    "from": "idle"
+   },
+   "label": "Kneel and pray",
+   "group": "social",
+   "loop": true
+  },
+  {
+   "key": "row",
+   "derive": {
+    "trade": "row",
+    "from": "ual_sit"
+   },
+   "label": "Row (oars)",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "paddle",
+   "derive": {
+    "trade": "paddle",
+    "from": "ual_sit"
+   },
+   "label": "Paddle a canoe",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "sweep",
+   "derive": {
+    "trade": "sweep",
+    "from": "idle"
+   },
+   "label": "Sweep (broom)",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "saw",
+   "derive": {
+    "trade": "saw",
+    "from": "idle"
+   },
+   "label": "Saw a board",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "weave",
+   "derive": {
+    "trade": "weave",
+    "from": "ual_sit"
+   },
+   "label": "Weave at a loom",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "cast_net",
+   "derive": {
+    "trade": "cast_net",
+    "from": "idle"
+   },
+   "label": "Cast a net",
+   "group": "work",
+   "loop": false,
+   "fist": [
+    "R",
+    "L"
+   ]
+  },
+  {
+   "key": "feed",
+   "derive": {
+    "trade": "feed",
+    "from": "idle"
+   },
+   "label": "Scatter feed",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "L"
+   ]
+  },
+  {
+   "key": "walk_lead",
+   "derive": {
+    "trade": "walk_lead",
+    "from": "walk"
+   },
+   "label": "Lead a beast (halter)",
+   "group": "move",
+   "loop": true,
+   "fist": [
+    "R"
+   ]
+  },
+  {
+   "key": "milk",
+   "derive": {
+    "trade": "milk",
+    "from": "ual_sit"
+   },
+   "label": "Milk",
+   "group": "work",
+   "loop": true,
+   "fist": [
+    "R",
+    "L"
+   ]
   }
  ],
  "faces": {

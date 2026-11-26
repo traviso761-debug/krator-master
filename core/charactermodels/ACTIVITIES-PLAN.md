@@ -213,8 +213,12 @@ lancet and mortar. Each in the grip frame (+Y along the handle, +Z the fingers, 
    dances left out). The table uses them: PRIEST orates, SELL calls with open hands, WORSHIP and HONOUR kneel and bow,
    FESTIVAL cheers and dances (claps on a bench), DEBATE answers and argues; new GREET, ARGUE and CHEER. Still gaps:
    prostration, raised arms, head-in-hands lament, standing applause, each culture's folk dances.
-5. Made clips for the trades, in order of how many citizens they cover: cook and stir, carry a sack, give / take,
-   write and read, kneel-pray, row and paddle, sweep, saw, weave, cast a net, feed and lead beasts, milk.
+5. **Done (2026-11-26).** Made clips for the trades (`tools/trade_clips.py`, derive `trade`): cook and stir, a sack
+   on the shoulder (walking), give, take, write and read (at a desk), kneel and pray, row and paddle, sweep, saw, weave
+   at a loom, cast a net, scatter feed, lead a beast (walking), milk: 16, on the idle, the chair, the stool or the walk.
+   The table plays them (COOK, HAUL, BUY, SELL, STUDY, WORSHIP, FISH, FISH_SHORE, HOUSEWORK, carpentry, LOG, WEAVE, FEED,
+   HERD, STABLE; new ROW and MILK). The hands that would hold a tool close into fists: the props are owed (section 7:
+   ladle, sack, quill, book, oars, paddle, broom, saw, net, feed bag), and so are a desk, a loom and a beast to work at.
 6. Riding (a made rider pose per tack anchor), then two-person carries (bier, crate, ladder), then children.
 
 Each step: check all six bodies in the Animation Lab, keep the Godot twin in step, and add the new clips to the

@@ -35,7 +35,7 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
  // operatives guard in a combat stance); remembered per person and activity, as the slots ask every frame
  const ACTS={};
  const CLIP=(i,act)=>{const k=i+'|'+act;return ACTS[k]||(ACTS[k]=KCHAR.activity(D.activities,act,{seed:LS.PEOPLE[i].seed,role:LS.PEOPLE[i].role}).clip);};
- const SITS={sit_floor:1,sit_drink:1,ual_sit_talk:1,ual_sit:1,sit:1,sit_f:1};O.CLIP=CLIP;
+ const SITS={sit_floor:1,sit_drink:1,ual_sit_talk:1,ual_sit:1,sit:1,sit_f:1,read:1,write:1,sit_answer:1,clap_sit:1};O.CLIP=CLIP;
  // ---------------------------------------------------------------- the slots: a figure each, given to the nearest people
  function slot(body){const fig=new KCharFigure(D.bodies[body],D.sliders,load);fig.group.visible=false;fig.group.userData.probeSkip=true;
   fig.group.traverse(m=>{m.userData.inspectLabel='A person of Longsong';m.frustumCulled=false;});scene.add(fig.group);

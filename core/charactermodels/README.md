@@ -136,7 +136,8 @@ morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{sl
 **Clips** (`data/clips.json`, about 200 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
 as move, melee, hand to hand (fists, kicks, elbows and knees, throws, fist guards: 2026-11-25; a clip's `fist` closes
 the empty hands, `toes` derive keeps the toes from flapping), ranged, block and dodge, hit and fall, swim, ladder, daily
-life, social and ceremony (bows, kneeling, waves, oratory, cheers: 2026-11-26) and work. Two sources, both retargeted
+life, social and ceremony (bows, kneeling, waves, oratory, cheers: 2026-11-26) and work (the trades' made clips, tools/trade_clips.py:
+2026-11-26). Two sources, both retargeted
 onto the rig by `make_pieces.write_anims` (bone directions matched, hips motion scaled by height):
 Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `tools/meshy.py anims`, 3 credits each:
 `donors/anims/actions*.glb`) and Quaternius's Universal Animation Library 1 and 2 (`ual`, CC0:
@@ -844,6 +845,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/92-animlab.js` | the Animation Lab: the cast of six, the clip ledger, playback, review marks; `window._lab` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
+| `tools/trade_clips.py` | the trades' made clips (cook, sack, give, take, write, read, kneel and pray, row, paddle, sweep, saw, weave, cast net, feed, lead, milk), data/clips.json derive 'trade' | |
 | `data/activities.json`, `tests/check_activities.py` | what each sim activity plays: clips, props, enter and exit, overrides by furniture, trade and role, `gap` (hand-written); the check lists unmapped ids and gaps | [G data] |
 | `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
 | `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |

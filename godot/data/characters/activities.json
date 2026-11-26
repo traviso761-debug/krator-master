@@ -280,18 +280,21 @@
   "BUY": {
    "clips": [
     "ual_talk",
+    "take",
+    "give",
     "ual_pickup_table"
    ],
-   "gap": "give and take (coin, goods across a counter)"
+   "gap": "coin and goods to hand (props)"
   },
   "SELL": {
    "clips": [
     "talk_open",
     "talk_open",
-    "ual_pickup_table",
-    "ual_arms_folded"
+    "give",
+    "take",
+    "ual_pickup_table"
    ],
-   "gap": "give and take (coin, goods across a counter)"
+   "gap": "coin and goods to hand (props)"
   },
   "TRADE": {
    "clips": [
@@ -328,11 +331,12 @@
   },
   "HAUL": {
    "clips": [
+    "walk_sack",
     "walk_carry",
     "push",
     "ual_push"
    ],
-   "gap": "a sack on the shoulder; pulling a handcart"
+   "gap": "pulling a handcart; a sack (prop)"
   },
   "LOAD": {
    "clips": [
@@ -377,11 +381,12 @@
   },
   "HOUSEWORK": {
    "clips": [
+    "sweep",
+    "sweep",
     "pick_up_side",
-    "ual_pickup_table",
     "ual_carry"
    ],
-   "gap": "sweeping, scrubbing, beating a rug, hanging washing"
+   "gap": "scrubbing, beating a rug, hanging washing; a broom (prop)"
   },
   "FARM": {
    "clips": [
@@ -480,12 +485,13 @@
   "LOG": {
    "clips": [
     "ual_chop",
-    "axe_chop"
+    "axe_chop",
+    "saw"
    ],
    "prop": {
     "R": "axe"
    },
-   "gap": "two-man saw, the sawpit"
+   "gap": "the two-man saw, the sawpit"
   },
   "CRAFT": {
    "clips": [
@@ -522,12 +528,10 @@
     },
     "carpentry": {
      "clips": [
+      "saw",
       "ual_repair",
       "craft_bench"
-     ],
-     "prop": {
-      "R": "hammer"
-     }
+     ]
     },
     "milling": {
      "clips": [
@@ -658,16 +662,17 @@
   },
   "WEAVE": {
    "clips": [
-    "craft_bench"
+    "weave"
    ],
-   "gap": "the loom (throwing the shuttle, beating the weft)"
+   "gap": "the loom itself (drawn), a shuttle"
   },
   "COOK": {
    "clips": [
-    "craft_bench",
+    "cook_stir",
+    "cook_stir",
     "ual_pickup_table"
    ],
-   "gap": "stirring a pot at the hearth, kneading, the oven peel"
+   "gap": "kneading, the oven peel; a ladle (prop)"
   },
   "BREW": {
    "clips": [
@@ -688,19 +693,21 @@
   },
   "STUDY": {
    "clips": [
+    "read",
+    "read",
     "sit_floor"
    ],
    "by_furniture": {
     "desk": {
      "clips": [
-      "sit",
-      "sit_f"
+      "write",
+      "read"
      ],
      "enter": "sit_down",
      "exit": "stand_up"
     }
    },
-   "gap": "reading and writing (a book, a quill)"
+   "gap": "a book and a quill (props)"
   },
   "STUDY_IN": {
    "alias": "STUDY"
@@ -721,8 +728,9 @@
   },
   "WORSHIP": {
    "clips": [
+    "kneel_pray",
+    "kneel_pray",
     "sit_floor",
-    "kneel",
     "idle_5"
    ],
    "enter": "bow_formal",
@@ -987,29 +995,29 @@
   },
   "STABLE": {
    "clips": [
-    "ual_water",
-    "pick_up"
+    "feed",
+    "walk_lead",
+    "ual_water"
    ],
-   "prop": {
-    "R": "bucket"
-   },
-   "gap": "feeding, grooming, leading by the halter"
+   "gap": "grooming"
   },
   "TEND_BEASTS": {
    "alias": "STABLE"
   },
   "FEED": {
    "clips": [
-    "ual_water",
-    "pick_up_side"
+    "feed",
+    "feed",
+    "ual_water"
    ],
-   "gap": "scattering feed; a trough"
+   "gap": "a trough; a feed bag (prop)"
   },
   "HERD": {
    "clips": [
+    "walk_lead",
     "walk"
    ],
-   "gap": "driving beasts with a goad; leading by a halter"
+   "gap": "driving beasts with a goad"
   },
   "WATER_CAMELS": {
    "clips": [
@@ -1021,16 +1029,19 @@
   },
   "FISH": {
    "clips": [
+    "cast_net",
+    "row",
     "idle_5"
    ],
-   "gap": "casting and hauling a net from a boat; line fishing"
+   "gap": "line fishing; a net (prop)"
   },
   "FISH_SHORE": {
    "clips": [
+    "cast_net",
     "idle_5",
     "ual_crouch"
    ],
-   "gap": "a cast net; a rod"
+   "gap": "a rod; a net (prop)"
   },
   "MEND_NETS": {
    "clips": [
@@ -1128,6 +1139,25 @@
     }
    },
    "about": "a crowd at a race, a triumph, an arena"
+  },
+  "ROW": {
+   "clips": [
+    "row"
+   ],
+   "about": "rowing or paddling a boat: the ferrymen, the fishing boats",
+   "by_furniture": {
+    "canoe": {
+     "clips": [
+      "paddle"
+     ]
+    }
+   }
+  },
+  "MILK": {
+   "clips": [
+    "milk"
+   ],
+   "about": "milking a beast, on a stool beside it"
   }
  }
 }

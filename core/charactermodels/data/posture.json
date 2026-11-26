@@ -322,6 +322,28 @@
     "Head": -13.5
    }
   },
+  "walk_lead": {
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -19.5,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -13.5
+   }
+  },
+  "walk_sack": {
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -19.5,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -13.5
+   }
+  },
   "walk_back": {
    "mpfb_male": {
     "lean": 25.5,
