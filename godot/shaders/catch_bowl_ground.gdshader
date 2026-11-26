@@ -19,6 +19,7 @@ shader_type spatial;
 
 #include "res://shaders/lib/breakup.gdshaderinc"
 #include "res://shaders/lib/hextile.gdshaderinc"
+#include "res://shaders/lib/kground_kinds.gdshaderinc"
 
 // THE GROUND'S OWN TEXTURE, hex-tiled (Mikkelsen 2022) out of core/materials/library through
 // godot/tools/pack_ground_layers.py --set catch-bowl. Six layers in the roles terrain.gdshader gives the indices,
@@ -32,6 +33,8 @@ uniform float tex_fade_m = 2600.0;   // the texture's own fade: 2.4 m grain is n
 uniform float tex_strength = 1.0;
 
 uniform vec2 wind_dir = vec2(0.94, 0.34);   // unit, the prevailing wind the dunes lie across
+uniform vec3 sun_dir = vec3(0.51, 0.56, 0.65);   // unit vector toward the sun, for quartz & salt micro-glints
+uniform float glint_strength = 1.0;         // mineral micro-facet glints on sand and salt, 0..1.5
 uniform float dune_spacing = 260.0;         // metres crest to crest
 uniform float dune_height = 7.0;            // metres crest to trough
 // EACH LAYER FADES AT ITS OWN SIZE, which the first pass got wrong by sharing one distance. A feature has to be
@@ -87,6 +90,10 @@ void fragment() {
 	vec3 wp = v_wpos;
 	vec3 n = normalize(v_wnorm);
 	float dist = length(wp - CAMERA_POSITION_WORLD);
+	vec2 dpx = dFdx(wp.xz);
+	vec2 dpy = dFdy(wp.xz);
+	float px_fp = max(max(length(dpx), length(dpy)), dist * 0.0018);
+
 	float d = clamp(detail, 0.0, 1.0);
 	float near = (1.0 - smoothstep(0.0, dune_fade_m, dist)) * d;
 	float nearS = (1.0 - smoothstep(scree_fade_m * 0.3, scree_fade_m, dist)) * d;
@@ -97,22 +104,20 @@ void fragment() {
 
 	vec3 col = COLOR.rgb;
 	float rough = 0.95;
+	float spec_amt = 0.20;
 
 	// --- THE PROVINCES, and the only layer with no distance fade.
-	// Everything else here is arm's-length or near-field relief, so from eight kilometres up the floor fell back to
-	// one flat wash -- which is what "flat and samey" was really about. A desert basin is not one surface: it is a
-	// mosaic of ergs (sand seas: pale, warm, and the only place dunes form), reg or serir (gravel plains swept clean
-	// of sand: darker, greyer, flatter in tone) and stone pavement. That mosaic is kilometres across, so it reads
-	// from any height, and gating the dunes by it means the sand seas are visibly sand seas from the air.
 	float pv = km_n(vec3(wp.xz / 9000.0, 21.0)) * 0.65 + km_n(vec3(wp.xz / 31000.0, 23.0)) * 0.35;
 	float low = (1.0 - smoothstep(sand_top - 400.0, sand_top + 900.0, wp.y))
 		* (1.0 - smoothstep(0.08, 0.18, slope));
 	float erg = smoothstep(0.50, 0.66, pv) * low * province;
 	float reg = smoothstep(0.46, 0.30, pv) * low * province;
+	float salty = (1.0 - smoothstep(-900.0, -300.0, wp.y)) * (1.0 - smoothstep(0.02, 0.06, slope));
 	col *= mix(vec3(1.0), vec3(1.10, 1.03, 0.86), erg);      // sand sea: warmer and paler
 	col *= mix(vec3(1.0), vec3(0.76, 0.78, 0.82), reg);      // gravel plain: darker and greyer
 	rough += 0.03 * reg;
 
+	float sand_mask = 0.0;
 	if (nearB > 0.001) {
 		// --- the tint bands break up, so a kilometre of floor is not one value
 		float m1 = km_n(vec3(wp.xz / 420.0, 3.0)) - 0.5;
@@ -124,32 +129,32 @@ void fragment() {
 			* (1.0 - smoothstep(sand_flat * 0.6, sand_flat, slope))
 			* smoothstep(0.42, 0.62, pv)                                 // only in an erg: no dunes on a gravel plain
 			* smoothstep(0.25, 0.6, km_n(vec3(wp.xz / 5200.0, 2.0)));   // and in patches within it
+		sand_mask = sand;
 		if (sand > 0.001) {
 			vec2 w = normalize(wind_dir);
-			float du = max(dune_spacing * 0.08, 6.0);
+			vec2 perp = vec2(-w.y, w.x);
+			float du = max(dune_spacing * 0.05, 4.5);
 			float u0 = dune_u(wp.xz);
+			float u_frac = fract(u0);
 			float hc = dune_prof(u0);
-			// the gradient by a step along the wind: the profile is piecewise, so a difference is honest and an
-			// analytic derivative would be wrong at the brink of the slipface
+			// BRINK SPLIT: 0..0.72 is the wind-packed stoss slope; 0.72..1.0 is the 33-degree leeward slipface
+			float slip = smoothstep(0.705, 0.735, u_frac) * (1.0 - smoothstep(0.955, 0.995, u_frac));
+			float brink = exp(-pow((u_frac - 0.72) / 0.028, 2.0));
 			float hp = dune_prof(dune_u(wp.xz + w * du));
 			float hm = dune_prof(dune_u(wp.xz - w * du));
 			float g = (hp - hm) * dune_height / (2.0 * du);
-			// a cross-wind break so the crests are barchan-ish rather than endless ridges
-			float cross_g = (km_n(vec3((wp.xz + vec2(-w.y, w.x) * du) / 310.0, 8.0))
-				- km_n(vec3((wp.xz - vec2(-w.y, w.x) * du) / 310.0, 8.0))) * dune_height * 0.25 / (2.0 * du);
-			vec2 perp = vec2(-w.y, w.x);
+			// sharpen the crest brink normal discontinuity so raking sun draws a crisp shadow edge along the dune crest
+			g += (u_frac < 0.72 ? 0.08 : -0.22) * brink * (dune_height / 7.0);
+			float cross_g = (km_n(vec3((wp.xz + perp * du) / 310.0, 8.0))
+				- km_n(vec3((wp.xz - perp * du) / 310.0, 8.0))) * dune_height * 0.25 / (2.0 * du);
 			vec2 slopev = -(w * g + perp * cross_g) * sand * near;
 			n = normalize(n + vec3(slopev.x, 0.0, slopev.y));
-			// --- RIPPLES, the scale under the dunes. A sand sheet is not smooth between its dunes: it is
-			// covered in wind ripples half a metre crest to crest and a couple of centimetres deep, lying
-			// ACROSS the wind exactly as the dunes do, and in any photograph of a dune field they are the
-			// dominant texture of the whole foreground -- more of what the eye reads as "sand" than the dune
-			// shape is. They are tiny, so they fade within a few hundred metres and the dunes carry on alone.
-			if (nearR > 0.002) {
+
+			// --- WIND RIPPLES on the windward stoss only (the leeward slipface is smooth grainflow sand)
+			float nearR_stoss = nearR * (1.0 - slip * 0.92);
+			if (nearR_stoss > 0.002) {
 				float ru = dot(wp.xz, w) / max(ripple_m, 0.05);
-				// ripples wander and fork, so the crest line is perturbed by a noise a few metres across
 				ru += (km_n(vec3(wp.xz / 3.1, 31.0)) - 0.5) * 1.3;
-				// a ripple is asymmetric like its parent dune, just much smaller
 				float rf = fract(ru);
 				float rprof = rf < 0.68 ? smoothstep(0.0, 1.0, rf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (rf - 0.68) / 0.32);
 				float rd = 0.08;
@@ -160,25 +165,50 @@ void fragment() {
 				float pp = pf < 0.68 ? smoothstep(0.0, 1.0, pf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (pf - 0.68) / 0.32);
 				float mm2 = mf < 0.68 ? smoothstep(0.0, 1.0, mf / 0.68) : 1.0 - smoothstep(0.0, 1.0, (mf - 0.68) / 0.32);
 				float rg = (pp - mm2) * ripple_h / (2.0 * rd);
-				n = normalize(n + vec3(-w.x * rg, 0.0, -w.y * rg) * sand * nearR);
-				col *= 1.0 + sand * nearR * 0.05 * (rprof - 0.5) * 2.0;
+				n = normalize(n + vec3(-w.x * rg, 0.0, -w.y * rg) * sand * nearR_stoss);
+				col *= 1.0 + sand * nearR_stoss * 0.05 * (rprof - 0.5) * 2.0;
 			}
 
-			// the crest is scoured pale, the trough holds the coarse dark grains
-			col *= 1.0 + sand * near * 0.12 * (hc - 0.5) * 2.0;
-			rough -= sand * near * 0.08;
+			// --- GRAINFLOW / AVALANCHE TONGUES on the leeward slipface
+			float slip_near = slip * sand * (1.0 - smoothstep(250.0, 1400.0, dist)) * d;
+			if (slip_near > 0.005) {
+				float av = km_n(vec3(dot(wp.xz, perp) / 3.8, dot(wp.xz, w) / 28.0, 41.0)) - 0.5;
+				col *= 1.0 + slip_near * av * 0.11;
+			}
+
+			// windward stoss is wind-packed (paler, lower roughness ~0.79); slipface is loose & matte (~0.96)
+			col *= 1.0 + sand * near * (0.12 * (hc - 0.5) * 2.0 - 0.045 * slip + 0.03 * brink);
+			col *= mix(vec3(1.0), vec3(1.03, 0.99, 0.94), slip * sand * near);
+			float dune_rough = mix(0.79, 0.96, slip);
+			rough = mix(rough, dune_rough, sand * near * 0.85);
+			spec_amt = mix(spec_amt, mix(0.28, 0.14, slip), sand * near);
+		}
+
+		// --- POLYGONAL SALT-PAN THRUST RIDGES (Bowl playa & sabkhas)
+		float salt_near = salty * (1.0 - smoothstep(140.0, 520.0, dist)) * d;
+		if (salt_near > 0.004) {
+			vec3 q_id;
+			vec4 poly_k = vec4(1.0 / 3.4, 0.055, 0.22, 0.82);
+			vec3 poly = kg_polygon(wp.xz, poly_k, 0.075, px_fp, 19.0, q_id);
+			vec3 q_dx; vec3 q_dz;
+			float e_step = 0.14;
+			float rim_x = kg_polygon(wp.xz + vec2(e_step, 0.0), poly_k, 0.075, px_fp, 19.0, q_dx).y
+				- kg_polygon(wp.xz - vec2(e_step, 0.0), poly_k, 0.075, px_fp, 19.0, q_dx).y;
+			float rim_z = kg_polygon(wp.xz + vec2(0.0, e_step), poly_k, 0.075, px_fp, 19.0, q_dz).y
+				- kg_polygon(wp.xz - vec2(0.0, e_step), poly_k, 0.075, px_fp, 19.0, q_dz).y;
+			n = normalize(n + vec3(-rim_x, 0.0, -rim_z) * (0.55 * salt_near));
+			// silt-stained crack trough, bright efflorescent thrust lip, subtle cell-to-cell brine variation
+			col *= 1.0 + salt_near * ((q_id.x - 0.5) * 0.06 + poly.y * 0.07 - poly.x * 0.18);
+			col = mix(col, col * vec3(0.86, 0.80, 0.70), poly.x * salt_near * 0.65);
+			rough = mix(rough, 0.72 + 0.18 * poly.x, salt_near * 0.75);
+			spec_amt = mix(spec_amt, 0.34, salt_near * (1.0 - poly.x * 0.5));
 		}
 
 		// --- THE SWELL: bedrock rolling under the surface, 130 m across, everywhere the sand is not.
-		// Without it the stony ground went smooth between about a kilometre (where the scree fades) and nine
-		// (where the dunes do), which is most of what a camera a few hundred metres up is looking at.
 		float stony = (1.0 - smoothstep(0.30, 0.55, pv)) * 0.6 + smoothstep(0.06, 0.16, slope) * 0.8
 			+ smoothstep(sand_top, sand_top + 900.0, wp.y) * 0.7;
 		float swell = clamp(stony, 0.0, 1.0) * nearW;
 		if (swell > 0.001) {
-			// TWO SCALES, not one. A single 130 m frequency made the near ground look like brain coral: every
-			// swell the same size and the same distance from the next. The second octave at a third of the size
-			// and a third of the weight breaks that up, which is what real weathered bedrock does.
 			float q = 65.0;
 			float qx = km_n(vec3((wp.xz + vec2(q, 0.0)) / 130.0, 17.0)) - km_n(vec3((wp.xz - vec2(q, 0.0)) / 130.0, 17.0))
 				+ 0.34 * (km_n(vec3((wp.xz + vec2(q * 0.33, 0.0)) / 44.0, 29.0)) - km_n(vec3((wp.xz - vec2(q * 0.33, 0.0)) / 44.0, 29.0)));
@@ -200,16 +230,10 @@ void fragment() {
 		}
 	}
 
-	// --- THE GRAIN. Everything above is shape; this is what the ground is made of, and it is the difference
-	// between a shaded surface and a surface. The derivatives are taken here, outside any branch, so the mips are
-	// right whichever layers the fragment ends up sampling.
+	// --- THE GRAIN.
 	if (has_layers) {
 		float tnear = 1.0 - smoothstep(tex_fade_m * 0.45, tex_fade_m, dist);
 		if (tnear > 0.002) {
-			vec2 dpx = dFdx(wp.xz);
-			vec2 dpy = dFdy(wp.xz);
-			// the base layer the province asks for: sand in an erg, gravel on a reg, salt on the pan, ironstone up high
-			float salty = (1.0 - smoothstep(-900.0, -300.0, wp.y)) * (1.0 - smoothstep(0.02, 0.06, slope));
 			float highy = smoothstep(sand_top, sand_top + 1200.0, wp.y) * (1.0 - smoothstep(0.10, 0.22, slope));
 			float base_fl = 0.0;
 			float best = max(erg, 0.08);
@@ -225,17 +249,7 @@ void fragment() {
 			kh_sample(gl_albedo, gl_nr, base_fl, wp.xz / tile_m[bi], dpx / tile_m[bi], dpy / tile_m[bi], ab, nb);
 			vec3 ar; vec4 nr2;
 			kh_sample(gl_albedo, gl_nr, rock_fl, wp.xz / tile_m[ri], dpx / tile_m[ri], dpy / tile_m[ri], ar, nr2);
-			// THE DEVIATION FROM ITS OWN MEAN, not the colour. A library set carries its own cast -- ironstone's
-			// mean is [0.32, 0.10, 0.06], because desert varnish really is that red -- and multiplying the
-			// region's tint by the sample turned every upland pink, losing the height bands and the provinces
-			// that say where you are. What a detail texture should add is grain, mottle and small shadows, with
-			// the cast divided out.
-			//
-			// THE MEAN IS THE TEXTURE'S TOP MIP, not a number passed in. layers.json records mean_linear and I
-			// used it, and the ground came back blown white: the mean is linear, and whether the sampler hands
-			// back linear or sRGB is exactly the thing not to assume -- get it wrong and a mid grey divides to
-			// 2.4 and every clamp saturates. A 512 px map at lod 9 IS its mean, in whatever space the sampler
-			// is working in, so the ratio is right either way and costs one tap.
+			// THE MEAN IS THE TEXTURE'S TOP MIP (lod 9), never an external table
 			vec3 mb = textureLod(gl_albedo, vec3(0.5, 0.5, base_fl), 9.0).rgb;
 			vec3 mr = textureLod(gl_albedo, vec3(0.5, 0.5, rock_fl), 9.0).rgb;
 			vec3 ab_d = kh_tame(ab / max(mb, vec3(0.02)));
@@ -243,29 +257,29 @@ void fragment() {
 			vec3 grain = mix(ab_d, ar_d, rockw);
 			vec4 gnr = mix(nb, nr2, rockw);
 
-			// the texture multiplies the tint rather than replacing it: the height bands and the provinces are the
-			// region's own colour and the grain is what it is made of. Normalised by the layer's own mean so a dark
-			// set does not darken the country.
-			// THE GRAIN IS A MODULATION, NOT A REPLACEMENT. Taking 0.45 of the layer's hue made the whole upland
-			// pink, because ironstone's mean is [0.32, 0.10, 0.06] -- desert varnish really is that red, but the
-			// region's own height bands and provinces are what say where you are, and a texture that overrides
-			// them loses the country. 0.22 lets the material show through the colour instead of replacing it.
-			// grain is now a ratio around 1.0, so this is a modulation and nothing else
 			vec3 tinted = col * mix(vec3(1.0), grain, 0.80);
 			col = mix(col, tinted, tnear * tex_strength);
-			// its normal, in world terms: the maps are tangent-space on a ground plane, so xy maps to xz
 			vec2 tn = (gnr.rg * 2.0 - 1.0) * tnear * tex_strength;
 			n = normalize(n + vec3(tn.x, 0.0, tn.y) * 0.5);
-			// THE DESERT STAYS ROUGH. Taking the packed roughness straight made the ground glossy and the whole
-			// near field washed out to cream: a library roughness map is authored for the material in a lit scene,
-			// not for sand under a 1.23 atm sun, and a sand sheet is about as rough as a surface gets. The map's
-			// variation is kept and its absolute level is not.
-			rough = clamp(mix(rough, 0.82 + 0.16 * gnr.b, tnear * 0.7 * tex_strength), 0.78, 1.0);
+			rough = clamp(mix(rough, 0.82 + 0.16 * gnr.b, tnear * 0.6 * tex_strength), 0.72, 1.0);
 		}
+	}
+
+	// --- MINERAL QUARTZ & HALITE MICRO-GLINTS (kg_glint, footprint-clamped so distant ground never shimmers)
+	float glint_carrier = clamp(max(max(sand_mask, erg * 0.7), salty * 1.15), 0.0, 1.0) * glint_strength * d;
+	if (glint_carrier > 0.01 && px_fp < 1.1) {
+		vec3 sdir = normalize(sun_dir);
+		float sun_up = smoothstep(0.02, 0.20, sdir.y);
+		float g_fine = kg_glint(wp, CAMERA_POSITION_WORLD, sdir, 0.22, 0.52, 42.0, 0.42, px_fp, 17.0);
+		float g_coarse = kg_glint(wp, CAMERA_POSITION_WORLD, sdir, 0.68, 0.44, 28.0, 0.28, px_fp, 53.0);
+		float glint = (g_fine * 0.75 + g_coarse * 0.55) * glint_carrier * sun_up;
+		vec3 glint_tint = mix(vec3(1.0, 0.92, 0.74), vec3(1.0, 0.98, 0.96), clamp(salty, 0.0, 1.0));
+		col += glint_tint * glint * 0.42;
+		spec_amt = clamp(spec_amt + glint * 0.45, 0.0, 0.85);
 	}
 
 	ALBEDO = col;
 	NORMAL = (VIEW_MATRIX * vec4(n, 0.0)).xyz;
 	ROUGHNESS = clamp(rough, 0.0, 1.0);
-	SPECULAR = 0.2;
+	SPECULAR = spec_amt;
 }

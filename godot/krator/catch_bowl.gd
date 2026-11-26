@@ -22,9 +22,13 @@ extends Node3D
 const DATA := "res://data/catch-bowl/"
 const VSCALE := 1.0            # metres per metre: the model's heights are already metres
 
+const KratorSky := preload("res://krator/sky.gd")
+
 var meta := {}
+var sky_node: Node3D
 var fx: KratorAtmosFx
 var grit: KratorGritFx
+var shimmer: KratorShimmerFx
 var rocks: KratorCatchBowlRocks
 var flora: KratorCatchBowlFlora
 var landforms: KratorCatchBowlLandforms
@@ -33,6 +37,9 @@ var cam: Camera3D
 var env: WorldEnvironment
 var sun: DirectionalLight3D
 var terrain: MeshInstance3D
+var terrain_mat: ShaderMaterial
+var layer_albedo_arr: Texture2DArray
+var layer_nr_arr: Texture2DArray
 var water: MeshInstance3D
 var _heights := PackedFloat32Array()
 var _nx := 0
@@ -68,13 +75,16 @@ func _ready() -> void:
 	fx = KratorAtmosFx.new()
 	fx.name = "AtmosFx"
 	add_child(fx)
-	# --nofog=1 turns the air off to look at the ground: the fx layer owns the fog, so setting env.fog_enabled here was
-	# undone by the first weather apply -- which is why the early top-down shots were a flat wash
 	if _arg("nofog", "") != "":
 		fx.fog_scale = 0.0
-	fx.bind(env, sun)
+	fx.bind(env, sun, sky_node, self)
 	_build_ui()
 	_place_camera(_arg("at", "jabal"))
+	shimmer = KratorShimmerFx.new()
+	add_child(shimmer)
+	shimmer.bind(cam, fx, sun)
+	if _arg("noshimmer", "") != "":
+		shimmer.enabled = false
 	network = KratorCatchBowlNetwork.new()
 	network.name = "Network"
 	add_child(network)
@@ -122,7 +132,6 @@ func _load_heights() -> void:
 	_nx = img.get_width()
 	_nz = img.get_height()
 	_heights.resize(_nx * _nz)
-	# the export is 16-bit greyscale normalised over [lo, hi]; Godot gives it back as a float in 0..1
 	for z in _nz:
 		for x in _nx:
 			_heights[z * _nx + x] = _lo + img.get_pixel(x, z).r * (_hi - _lo)
@@ -147,32 +156,32 @@ func height_at(x: float, z: float) -> float:
 
 
 func _build_sky() -> void:
-	env = WorldEnvironment.new()
-	var e := Environment.new()
-	e.background_mode = Environment.BG_SKY
-	var sky := Sky.new()
-	sky.sky_material = ProceduralSkyMaterial.new()
-	e.sky = sky
-	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	e.ambient_light_color = Color(0.62, 0.66, 0.74)
-	e.ambient_light_energy = 0.55
-	e.fog_enabled = true
-	e.fog_density = 0.00004
-	e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.environment = e
-	add_child(env)
-	sun = DirectionalLight3D.new()
-	# 34 degrees: low enough that a slope reads, high enough that the flats are not crushed. At 22 the whole region came
-	# back at a third of its albedo and every tint collapsed into one brown; at 42 the relief vanished. The ambient is
-	# raised with it so the away-facing slopes keep their colour instead of going black.
-	sun.rotation_degrees = Vector3(-34, 38, 0)
-	sun.light_energy = 1.1
-	# SHADOWS, over a box 1,282 km across. They were off, and the note said a directional shadow here is a few metres
-	# of texel and shows nothing but acne. That is true of ONE orthogonal map stretched over the whole box. Godot's
-	# directional shadows are parallel split maps (PSSM): with four splits and a max distance of a few kilometres the
-	# near cascade covers what the camera is actually looking at, at a texel the boulders and the dune slipfaces can
-	# use, and everything past it is unshadowed -- which at that distance the aerial perspective hides anyway.
-	# The split bias has to be tuned to the scene's scale or the seams between cascades show; these are for metres.
+	sky_node = KratorSky.new()
+	sky_node.name = "KratorSky"
+	sky_node.site_px = Vector2(1150.0, 1280.0)   # the Catch & Bowl's true latitude/longitude on the scale model
+	sky_node.pressure = 1.23                     # high-desert atmospheric pressure
+	sky_node.cover = 0.08                        # arid clear sky with sparse high cirrus/cumulus wisps
+	sky_node.hour = float(_arg("hour", "15.6"))  # afternoon sun ~34 deg up: slopes, ripples & gas giant all read crisply
+	sky_node.day = 75.0
+	add_child(sky_node)
+	sky_node.set_process(false)
+	for ch in sky_node.get_children():
+		if ch is WorldEnvironment:
+			env = ch
+			break
+	var e: Environment = sky_node.env
+	e.tonemap_mode = Environment.TONE_MAPPER_AGX
+	e.tonemap_agx_contrast = 1.22
+	e.tonemap_agx_white = 16.29
+	e.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	e.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	e.glow_enabled = true
+	e.glow_intensity = 0.30
+	e.glow_bloom = 0.04
+	e.glow_hdr_threshold = 1.15
+	if get_viewport() != null:
+		get_viewport().use_debanding = true
+	sun = sky_node.sun
 	sun.shadow_enabled = _arg("noshadow", "") == ""
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	sun.directional_shadow_max_distance = float(_arg("shadow_km", "7")) * 1000.0
@@ -184,7 +193,6 @@ func _build_sky() -> void:
 	sun.shadow_bias = 0.09
 	sun.shadow_normal_bias = 1.6
 	sun.shadow_opacity = 0.92
-	add_child(sun)
 
 
 func _build_terrain() -> void:
@@ -235,6 +243,7 @@ func _build_terrain() -> void:
 		sh.set_shader_parameter("dune_height", 7.0)
 		sh.set_shader_parameter("sand_top", 2600.0)
 		_bind_layers(sh)
+		terrain_mat = sh
 		terrain.material_override = sh
 	add_child(terrain)
 	var aabb := terrain.get_aabb()
@@ -254,8 +263,7 @@ func _slope(x: float, z: float) -> float:
 	return clampf(sqrt(hx * hx + hz * hz), 0.0, 1.0)
 
 
-# The country by height. The bands are wider apart in value than a photograph's would be, on purpose: at 2 km a sample
-# there is no texture and no shadow, so the only thing telling salt from floor from rock is its tone.
+# The country by height.
 func _tint(h: float) -> Color:
 	if h < -800.0:
 		return Color(0.93, 0.91, 0.86)       # the Bowl's salt: the brightest thing in the region
@@ -268,6 +276,12 @@ func _tint(h: float) -> Color:
 	if h < 6800.0:
 		return Color(0.52, 0.52, 0.54)       # bare, above the air
 	return Color(0.97, 0.98, 1.00)           # the crests
+
+
+# Exact local surface tint (height band + slope darkening) for rock/landform sand-skirt blending & dust devils
+func surface_tint_at(x: float, z: float) -> Color:
+	var h := height_at(x, z)
+	return _tint(h).darkened(clampf(_slope(x, z) * 1.6, 0.0, 0.55))
 
 
 func _build_pins() -> void:
@@ -478,6 +492,8 @@ func _bind_layers(sh: ShaderMaterial) -> void:
 	if ta.create_from_images(alb) != OK or tn.create_from_images(nr) != OK:
 		print("  ground layers: the arrays will not build")
 		return
+	layer_albedo_arr = ta
+	layer_nr_arr = tn
 	sh.set_shader_parameter("gl_albedo", ta)
 	sh.set_shader_parameter("gl_nr", tn)
 	sh.set_shader_parameter("tile_m", tiles)
@@ -738,6 +754,12 @@ func _unhandled_input(e: InputEvent) -> void:
 			network.outlaws_node.visible = not network.outlaws_node.visible
 		elif kc == KEY_SPACE and network != null:
 			network.paused = not network.paused
+		elif kc == KEY_H and shimmer != null:
+			shimmer.enabled = not shimmer.enabled
+		elif kc == KEY_BRACKETLEFT and sky_node != null:
+			sky_node.hour = fposmod(float(sky_node.hour) - 0.5, 24.0)
+		elif kc == KEY_BRACKETRIGHT and sky_node != null:
+			sky_node.hour = fposmod(float(sky_node.hour) + 0.5, 24.0)
 
 
 # --shot=shots/catch-bowl.png: render, let the weather settle, save a screenshot, quit (spike.gd's idiom)
@@ -768,17 +790,9 @@ func _cull_pins() -> void:
 		var n := c as Node3D
 		if n:
 			var d := eye.distance_to(n.global_position)
-			# and a pin is hidden when you are ON it: a 4.5 km spire seen from 300 m away fills the frame and hides
-			# the place it is marking, which is the one moment you least want it
 			n.visible = d <= reach and d > 5200.0
 
 
-# THE NEAR PLANE HAS TO FOLLOW THE EYE DOWN. 120 m was chosen so that a 900 km far plane still left a usable depth
-# buffer over a box 1,282 km across, and it is right at altitude. At thirty metres above the sand it clips away
-# everything within 120 m -- the whole foreground, which is exactly where the wind ripples, the grit and the nearest
-# rocks are. The first low shots came back with a flat dead band across the bottom of the frame and I took it for a
-# shader fault; it was the near plane eating the ground. Near follows the height above ground, and far follows near,
-# so the ratio stays in the few-thousands at every altitude.
 func _fit_clip() -> void:
 	if cam == null:
 		return
@@ -792,6 +806,8 @@ func _fit_clip() -> void:
 func _process(_d: float) -> void:
 	_fit_clip()
 	_cull_pins()
+	if terrain_mat != null and sun != null:
+		terrain_mat.set_shader_parameter("sun_dir", sun.global_transform.basis.z.normalized())
 	_shot_tick()
 	_update_minimap(_d)
 	if _label == null or cam == null or fx == null:

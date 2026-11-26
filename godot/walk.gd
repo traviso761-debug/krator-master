@@ -115,6 +115,11 @@ func _ready() -> void:
 	add_child(air)
 	decals = KratorDecals.make(look)   # ruts, puddles and worn patches from the road records (M11)
 	add_child(decals)
+	if float(look.get("shimmer", 0.0)) > 0.0:
+		var shim := KratorShimmerFx.new()
+		shim.master_scale = float(look["shimmer"])
+		shim.sun = sun
+		add_child(shim)
 
 	ui = KratorHostUI.new()
 	ui.name = "HostUI"

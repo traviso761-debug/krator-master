@@ -74,7 +74,9 @@ GODOT_TESTS = ['res://tests/rand/krand_test.gd', 'res://tests/clock/kseason_test
                'res://tests/shaders/library_faces_test.gd', 'res://tests/materials/kweather_test.gd', 'res://tests/materials/kdetail_test.gd',
                'res://tests/world_plan/world_plan_test.gd', 'res://tests/catchbowl/catch_bowl_test.gd',
                # the Godot-native Host's minimap and the Gallery (godot/gallery.tscn; godot/README.md, "The Gallery")
-               'res://tests/gallery/gallery_minimap_test.gd']
+               'res://tests/gallery/gallery_minimap_test.gd',
+               # desert surface, weathering, heat shimmer/mirage, haboob dust slab & KratorSky storm browning
+               'res://tests/desert/desert_graphics_test.gd']
 # The must-pass cases compare_shots.py scores in the nightly (M4, M5). COMPARE_ASSERT False: the step prints the table and
 # passes whatever the scores (the owner reads the first numbers); True: a pair under compare_shots.py's threshold fails the nightly.
 COMPARE_CASES = ['world-sedesert', 'world-iziz']

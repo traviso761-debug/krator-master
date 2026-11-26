@@ -29,12 +29,16 @@ owner's new scale model (`openworld/catch-bowl/PLAN.md` section 13) -- so there 
 road, and the ground is a 2 km grid rather than the metre-scale heightfield `krator/world_stream.gd` streams. When the
 region is cut, the usual path replaces this and `krator/catch_bowl.gd` goes.
 
-**The weather is `krator/atmos_fx.gd`**, which sits on top of `krator/atmos.gd`: the browser's fx layer
-(`core/atmos/fx/`: `ATMOS.airLoad`, `ATMOS.gale`, `ATMOS.dustSeason`) is not ported, and this is the region's half of
-it. Each kind is fog, sun and wind numbers -- no new gdshader -- with the honest visibilities (Koschmieder, as
-`KHAZ.sight` computes them), so a black storm really is 400 m and a whiteout 150 m. What a later pass owes: the dust as
-particles riding the camera (`krator/weather_fx.gd`'s rain box is the shape to copy), a gale's spindrift, and the sky
-pass's own browning, which in the browser is `89y-host-storm.js`.
+**The weather, optics and desert surface stack (`krator/atmos_fx.gd`, `krator/grit_fx.gd`, `krator/shimmer_fx.gd`)**:
+`catch_bowl.gd` now runs on `KratorSky` (`krator/sky.gd`, 1.23 atm high-desert sky with the gas giant, rings, six moons
+and AgX; `[` and `]` step the hour), with `89y-host-storm.js` horizon-first storm browning and Mie dust sun-aureole
+(`shaders/sky.gdshader`), a ray-integrated height-bounded karaburan dust slab (`shaders/dust_slab.gdshader`), thermal
+boil and grazing-angle inferior mirage (`shaders/shimmer.gdshader`, `H` toggles), Mie forward-scattered sand saltation
+ribbons plus wandering helical dust devils (`shaders/saltation.gdshader`), brink-split stoss/slipface dunes with salt
+pressure-ridge polygons and mineral quartz/halite glints (`shaders/catch_bowl_ground.gdshader`, `shaders/water_pan.gdshader`),
+stratigraphic rock/landform shaders with per-instance sand/talus ground skirts (`shaders/desert_rock.gdshader`), and an
+arid weathering mode (`k_weather.z = aridity`, `--aridity=<0..1>`, `A` in `look_lab.tscn`) in `shaders/lib/weather.gdshaderinc`.
+Test: `godot --headless --path godot --script res://tests/desert/desert_graphics_test.gd`.
 
 ## The Gallery and the Host's minimap (2026-11-25)
 

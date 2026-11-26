@@ -62,9 +62,22 @@ const KINDS := {
 	},
 }
 
+const DUST_SLAB_SHADER := preload("res://shaders/dust_slab.gdshader")
+const SLAB_FLOOR_RINGS := [0.0, 1500.0, 4500.0]
+
 var kind := "clear"
+var _kind := "clear"
 var env: WorldEnvironment
 var sun: DirectionalLight3D
+var sky_host: Node = null
+var host_ground: Node = null
+var slab_quad: MeshInstance3D
+var slab_mat: ShaderMaterial
+var _floor_y := 0.0
+var _floor_target := 0.0
+var _floor_set := false
+var _floor_cam := Vector3(1e12, 0.0, 1e12)
+var _wind_off := Vector2.ZERO
 var _sun0 := 1.0
 var _blend := 1.0          # 0 just switched, 1 settled: the switch eases over `ease_s` seconds
 var ease_s := 2.5
@@ -82,11 +95,7 @@ const GROUND_BOTTOM := Color(0.42, 0.36, 0.29)
 # black storm and the whiteout saturate well before it and the gale and the dust season sit part way up.
 const SKY_MURK_FULL := 0.0008
 
-# THE GRADE, per kind: contrast, saturation, brightness, and how warm the ramp runs. Until now the host rendered
-# whatever the tonemapper gave it, which is accurate and characterless -- the thing that makes an arid world read as
-# one is as much the grade as the ground. A high desert at 1.23 atm under a hard sun is CONTRASTY and not very
-# saturated: the colour is in the hour, not in the pigment. Each kind gets its own, because a black storm and a dead
-# heat are not the same picture.
+# THE GRADE, per kind: contrast, saturation, brightness, and how warm the ramp runs.
 #   [contrast, saturation, brightness, warmth]  warmth: 0 neutral, 1 shadows cool and highlights warm
 const GRADE := {
 	"clear": [1.14, 0.90, 1.0, 0.75],
@@ -98,20 +107,58 @@ const GRADE := {
 	"monsoon": [1.04, 0.95, 0.96, 0.15],       # the one wet kind: cooler, and the only one that gains saturation
 }
 
+# Height-bounded dust slab parameters per kind: [salt_dens (1/m), salt_h (m), storm_dens (1/m), storm_h (m), mie_w]
+const SLAB := {
+	"clear": [0.00008, 36.0, 0.0, 850.0, 0.45],
+	"dust": [0.00085, 55.0, 0.0022, 850.0, 0.78],
+	"gale": [0.00042, 65.0, 0.00004, 600.0, 0.55],
+	"whiteout": [0.0, 40.0, 0.0, 600.0, 0.25],
+	"duststorm_season": [0.00022, 45.0, 0.00038, 1250.0, 0.68],
+	"deadheat": [0.00005, 32.0, 0.00004, 950.0, 0.55],
+	"monsoon": [0.0, 35.0, 0.0, 700.0, 0.20],
+}
+
 # the order the panel shows them in: clear first, then the three the plans call hazards, then the seasons
 static func order() -> Array:
 	return ["clear", "dust", "gale", "whiteout", "duststorm_season", "deadheat", "monsoon"]
 
 
+# Pure CPU twin of dust_slab.gdshader's ray-integrated exponential dust optical depth
+static func slab_optical_depth(dens0: float, floor_y: float, scale_h: float, cam_y: float, hit_y: float, dist: float) -> float:
+	if dens0 <= 1e-8 or dist <= 0.01:
+		return 0.0
+	var sh := maxf(scale_h, 1.0)
+	var at_cam := exp(clampf((floor_y - cam_y) / sh, -28.0, 2.5))
+	var t := clampf((hit_y - cam_y) / sh, -28.0, 28.0)
+	var mean := (1.0 - exp(-t)) / t if absf(t) > 0.001 else (1.0 - 0.5 * t)
+	return maxf(0.0, dens0 * at_cam * mean * dist)
+
+
 func _ready() -> void:
 	_from = KINDS["clear"].duplicate(true)
+	var q := QuadMesh.new()
+	q.size = Vector2(2.0, 2.0)
+	slab_mat = ShaderMaterial.new()
+	slab_mat.shader = DUST_SLAB_SHADER
+	slab_mat.render_priority = 125
+	slab_quad = MeshInstance3D.new()
+	slab_quad.name = "DustSlab"
+	slab_quad.mesh = q
+	slab_quad.material_override = slab_mat
+	slab_quad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	slab_quad.custom_aabb = AABB(Vector3(-1e7, -1e7, -1e7), Vector3(2e7, 2e7, 2e7))
+	slab_quad.layers = 1
+	slab_quad.visible = false
+	add_child(slab_quad)
 
 
-func bind(e: WorldEnvironment, s: DirectionalLight3D) -> void:
+func bind(e: WorldEnvironment, s: DirectionalLight3D, sk: Node = null, h_node: Node = null) -> void:
 	env = e
 	sun = s
+	sky_host = sk
+	host_ground = h_node
 	if sun:
-		_sun0 = sun.light_energy
+		_sun0 = maxf(sun.light_energy, 1.0)
 	_apply(1.0)
 
 
@@ -122,9 +169,8 @@ func set_kind(k: String) -> void:
 	_from = _now()
 	_from["_kind"] = kind
 	kind = k
+	_kind = k
 	_blend = 0.0
-	if Engine.has_singleton("Atmos"):
-		pass
 	var A := get_node_or_null("/root/Atmos")
 	if A:
 		# the base machine keeps its own modes; the monsoon is its `rain` and everything else is handled here
@@ -141,6 +187,8 @@ func _now() -> Dictionary:
 	var a: Dictionary = _from
 	var b: Dictionary = KINDS.get(kind, KINDS["clear"])
 	var t: float = clampf(_blend, 0.0, 1.0)
+	var sa: Array = SLAB.get(String(a.get("_kind", kind)), SLAB["clear"])
+	var sb: Array = SLAB.get(kind, SLAB["clear"])
 	return {
 		"fog": lerpf(float(a.get("fog", 0.0)), float(b["fog"]), t),
 		"colour": Color(a.get("colour", Color.WHITE)).lerp(b["colour"], t),
@@ -151,61 +199,135 @@ func _now() -> Dictionary:
 		"visibility_km": lerpf(float(a.get("visibility_km", 60.0)), float(b["visibility_km"]), t),
 		"hides": bool(b.get("hides", false)),
 		"name": String(b.get("name", kind)),
+		"salt_dens": lerpf(float(sa[0]), float(sb[0]), t),
+		"salt_h": lerpf(float(sa[1]), float(sb[1]), t),
+		"storm_dens": lerpf(float(sa[2]), float(sb[2]), t),
+		"storm_h": lerpf(float(sa[3]), float(sb[3]), t),
+		"mie_w": lerpf(float(sa[4]), float(sb[4]), t),
 	}
+
+
+func _sample_basin_floor(at: Vector3) -> float:
+	if host_ground == null or not host_ground.has_method("height_at"):
+		return 0.0
+	var lo := INF
+	for ri in SLAB_FLOOR_RINGS.size():
+		var r: float = SLAB_FLOOR_RINGS[ri]
+		var cnt := 1 if r == 0.0 else 8
+		for k in cnt:
+			var ang := TAU * float(k) / float(cnt) + 0.35 * float(ri)
+			var h: float = host_ground.height_at(at.x + cos(ang) * r, at.z + sin(ang) * r)
+			if is_finite(h):
+				lo = minf(lo, h)
+	return lo if is_finite(lo) else 0.0
 
 
 func _process(delta: float) -> void:
 	if _blend < 1.0:
 		_blend = minf(1.0, _blend + delta / maxf(0.01, ease_s))
+	var A := get_node_or_null("/root/Atmos")
+	var w_vec: Vector2 = A.wind_now() if (A and A.has_method("wind_now")) else Vector2(0.80, -0.60)
+	_wind_off += w_vec * delta
+	var vp := get_viewport()
+	var cam := vp.get_camera_3d() if vp else null
+	if cam != null and host_ground != null:
+		var cp := cam.global_position
+		if not _floor_set or Vector2(cp.x - _floor_cam.x, cp.z - _floor_cam.z).length() > 800.0:
+			_floor_cam = cp
+			_floor_target = _sample_basin_floor(cp)
+			if not _floor_set:
+				_floor_y = _floor_target
+				_floor_set = true
+		_floor_y = lerpf(_floor_y, _floor_target, clampf(delta * 0.8, 0.0, 1.0))
 	_apply(_blend)
 
 
 func _apply(_t: float) -> void:
 	var n := _now()
+	var vp := get_viewport()
+	var cam := vp.get_camera_3d() if vp else null
+	var cam_y := cam.global_position.y if cam else 0.0
+	# When the dust slab carries the basin-floor karaburan, thin uniform Environment fog above the ceiling so high walls stand clear
+	var is_dust_slab := slab_quad != null and host_ground != null and (float(n["storm_dens"]) > 1e-6 or float(n["salt_dens"]) > 1e-6)
+	var high_relief := exp(-maxf(0.0, cam_y - (_floor_y + float(n["storm_h"]) * 1.4)) / 2400.0) if (is_dust_slab and kind in ["dust", "duststorm_season"]) else 1.0
+
 	if env and env.environment:
 		var e := env.environment
 		e.fog_enabled = fog_scale > 0.0
-		e.fog_density = float(n["fog"]) * fog_scale
+		var base_fog_scale := 0.35 * high_relief if (is_dust_slab and kind in ["dust", "duststorm_season"]) else 1.0
+		e.fog_density = float(n["fog"]) * fog_scale * base_fog_scale
 		e.fog_light_color = n["colour"]
-		e.fog_sky_affect = 1.0 - float(n["sky"]) * 0.5
-		# AERIAL PERSPECTIVE: distant ground takes the sky's own colour rather than the fog's flat tint. Over a box
-		# 1,284 km across this is most of what makes a far crest read as far instead of as grey paint.
+		e.fog_sky_affect = (1.0 - float(n["sky"]) * 0.5) if sky_host == null else 0.0
 		e.fog_aerial_perspective = 1.0
-		e.ambient_light_energy = float(n["sky"])
-		e.ambient_light_color = Color(0.62, 0.66, 0.74).lerp(n["colour"], 0.6)
+		if sky_host == null:
+			e.ambient_light_energy = float(n["sky"])
+			e.ambient_light_color = Color(0.62, 0.66, 0.74).lerp(n["colour"], 0.6)
+		else:
+			e.ambient_light_energy = clampf(0.55 + 0.45 * float(n["sky"]), 0.35, 1.15)
 		_paint_sky(e, n)
 		_grade(e)
-	if sun:
+	if sun and sky_host == null:
 		sun.light_energy = _sun0 * float(n["sun"])
 		sun.light_color = Color(1.0, 1.0, 1.0).lerp(n["colour"], 0.55 * (1.0 - float(n["sun"])))
+
+	# Update height-bounded dust slab post-pass
+	if slab_quad != null:
+		var s_dens := float(n["salt_dens"]) * fog_scale * (1.0 if _floor_y < 2600.0 else 0.0)
+		var st_dens := float(n["storm_dens"]) * fog_scale
+		var show_slab := fog_scale > 0.0 and host_ground != null and (s_dens > 1e-7 or st_dens > 1e-7)
+		slab_quad.visible = show_slab
+		if show_slab:
+			slab_mat.set_shader_parameter("salt_slab", Vector4(s_dens, _floor_y, float(n["salt_h"]), 0.38))
+			slab_mat.set_shader_parameter("storm_slab", Vector4(st_dens, _floor_y, float(n["storm_h"]), 0.96))
+			slab_mat.set_shader_parameter("dust_colour", n["colour"])
+			var sdir := sun.global_transform.basis.z.normalized() if sun != null else Vector3(0.51, 0.56, 0.65)
+			slab_mat.set_shader_parameter("sun_scatter", Vector4(sdir.x, sdir.y, sdir.z, float(n["mie_w"])))
+			slab_mat.set_shader_parameter("sun_colour", sun.light_color if sun != null else Color(1.0, 0.88, 0.68))
+			slab_mat.set_shader_parameter("wind_offset", _wind_off)
+
 	var A := get_node_or_null("/root/Atmos")
+	var w_vec := Vector2(0.80, -0.60)
 	if A:
 		A.wind_scale = float(n["wind"])
 		A.rain = float(n["rain"])
 		A.fog = clampf(float(n["fog"]) / 0.0045, 0.0, 1.0)
+		if A.has_method("wind_now"):
+			w_vec = A.wind_now()
+	# Sync arid surface weathering (sand skirts, dust pockets, desert varnish; wet darkening in monsoon)
+	var wet_now := clampf(float(n["rain"]) * 0.85, 0.0, 1.0)
+	var arid_now := clampf(1.0 - float(n["rain"]) * 0.85 - (0.5 if kind == "whiteout" else 0.0), 0.0, 1.0)
+	KratorWeather.set_climate(1.0, wet_now, arid_now, w_vec)
 
 
-# THE SKY'S OWN BROWNING, which this file's header listed as owed ("the sky pass's own zenith and haze browning, which
-# in the browser is 89y-host-storm.js"). The fog alone could not do it: fog tints what is in front of the sky, so in a
-# black storm the ground went ochre and the dome stayed blue over it. Here the dome itself goes to the weather's colour
-# as the air thickens, and the whole sky dims or brightens by the kind's `sky`.
+# THE SKY'S OWN BROWNING: supports both KratorSky (sky.gd + sky.gdshader, keeping the gas giant, rings, 6 moons & cloud
+# shadows while 89y-host-storm.js browns the horizon walls first) AND ProceduralSkyMaterial fallback.
 func _paint_sky(e: Environment, n: Dictionary) -> void:
+	var c: Color = n["colour"]
+	var murk: float = clampf(float(n["fog"]) / SKY_MURK_FULL, 0.0, 1.0)
+	var lit: float = maxf(clampf(float(n["sky"]), 0.0, 2.0), 0.6)
+	if sky_host != null and "storm_murk" in sky_host:
+		sky_host.storm_murk = murk
+		sky_host.storm_colour = c
+		sky_host.storm_sun_dim = float(n["sun"])
+		sky_host.storm_sky_lit = lit
+		if sky_host.has_method("_update"):
+			sky_host._update()
+		# Preserve KratorAtmosFx's fog settings after sky_host._update() writes standard sky fog
+		var high_k := 0.35 if (slab_quad != null and slab_quad.visible and kind in ["dust", "duststorm_season"]) else 1.0
+		e.fog_enabled = fog_scale > 0.0
+		e.fog_density = float(n["fog"]) * fog_scale * high_k
+		e.fog_light_color = c
+		e.fog_sky_affect = 0.0
+		e.fog_aerial_perspective = 1.0
+		return
 	var sky: Sky = e.sky
 	if sky == null or not (sky.sky_material is ProceduralSkyMaterial):
 		return
 	var m: ProceduralSkyMaterial = sky.sky_material
-	var c: Color = n["colour"]
-	var murk: float = clampf(float(n["fog"]) / SKY_MURK_FULL, 0.0, 1.0)
-	# `sky` runs to 0.3 in the black storm, and multiplying the dome by it put the zenith at near-black: wrong, because
-	# a karaburan at midday is a lit brown ceiling, not a dark one. The ambient already carries the dimming; the dome
-	# only takes the part of it above 0.6.
-	var lit: float = maxf(clampf(float(n["sky"]), 0.0, 2.0), 0.6)
-	# the horizon goes first and the zenith follows: that is the order a dust wall actually arrives in
 	m.sky_top_color = SKY_TOP.lerp(c, murk) * lit
 	m.sky_horizon_color = SKY_HORIZON.lerp(c, minf(1.0, murk * 1.6)) * lit
 	m.ground_horizon_color = GROUND_HORIZON.lerp(c, minf(1.0, murk * 1.6)) * lit
 	m.ground_bottom_color = GROUND_BOTTOM.lerp(c, murk) * lit
-	# a sun disc the storm swallows and the dead heat opens out
 	m.sun_angle_max = lerpf(1.2, 18.0, murk)
 	m.sun_curve = lerpf(0.12, 0.6, murk)
 

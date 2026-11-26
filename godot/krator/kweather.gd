@@ -96,17 +96,33 @@ static func noise_texture() -> ImageTexture:
 	return _noise
 
 
-# the globals, from a look (krator/look.gd): weather (the stack's strength, 0 is off) and wet
+static var _last_aridity := 0.0
+static var _last_wind_ang := 0.0
+
+
+# the globals, from a look (krator/look.gd): weather (the stack's strength, 0 is off), wet, aridity, and optional wind
 static func apply(spec: Dictionary) -> void:
 	var k := clampf(float(spec.get("weather", 0.0)), 0.0, 1.5)
 	if k > 0.0:
 		RenderingServer.global_shader_parameter_set("k_weather_noise", noise_texture())
-	RenderingServer.global_shader_parameter_set("k_weather", Vector4(k, clampf(float(spec.get("wet", 0.0)), 0.0, 1.0), 0.0, 0.0))
+	_last_aridity = clampf(float(spec.get("aridity", 0.0)), 0.0, 1.0)
+	_last_wind_ang = float(spec.get("wind_angle", _last_wind_ang))
+	RenderingServer.global_shader_parameter_set("k_weather", Vector4(k, clampf(float(spec.get("wet", 0.0)), 0.0, 1.0), _last_aridity, _last_wind_ang))
 
 
-# how wet the world is, 0..1 (krator/sky.gd's weather.wet, when a host passes it on)
+# how wet the world is, 0..1 (krator/sky.gd's weather.wet, when a host passes it on); keeps current aridity & wind angle
 static func set_wet(k: float, wet: float) -> void:
-	RenderingServer.global_shader_parameter_set("k_weather", Vector4(clampf(k, 0.0, 1.5), clampf(wet, 0.0, 1.0), 0.0, 0.0))
+	RenderingServer.global_shader_parameter_set("k_weather", Vector4(clampf(k, 0.0, 1.5), clampf(wet, 0.0, 1.0), _last_aridity, _last_wind_ang))
+
+
+# full climate update for arid/desert hosts: strength, wetness, aridity (0 temperate .. 1 desert), and wind vector
+static func set_climate(k: float, wet: float, aridity: float, wind := Vector2(1.0, 0.0)) -> void:
+	if k > 0.0:
+		RenderingServer.global_shader_parameter_set("k_weather_noise", noise_texture())
+	_last_aridity = clampf(aridity, 0.0, 1.0)
+	if wind.length_squared() > 1e-6:
+		_last_wind_ang = atan2(wind.y, wind.x)
+	RenderingServer.global_shader_parameter_set("k_weather", Vector4(clampf(k, 0.0, 1.5), clampf(wet, 0.0, 1.0), _last_aridity, _last_wind_ang))
 
 
 # the stream's origin ([x, y, z], metres), so the noise stays on the world across a rebase

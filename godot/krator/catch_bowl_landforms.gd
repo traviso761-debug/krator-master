@@ -59,9 +59,14 @@ const PROFILE := {
 const RAGGED := {"mesa": 0.10, "pedestal": 0.07, "hoodoo": 0.09, "karst": 0.05, "evaporite": 0.13}
 const SIDES := {"mesa": 11, "pedestal": 9, "hoodoo": 8, "karst": 10, "evaporite": 7}
 
+const ROCK_SHADER := preload("res://shaders/desert_rock.gdshader")
+const FAM_MODE := {"mesa": 1, "pedestal": 1, "hoodoo": 1, "karst": 2, "evaporite": 2, "breccia": 0, "tor": 0}
+const SKIRT_H := {"mesa": 16.0, "pedestal": 2.6, "hoodoo": 2.4, "karst": 6.5, "evaporite": 1.3, "breccia": 3.4, "tor": 2.8}
+
 var host: Node3D
 var cam: Camera3D
 var _mm := {}
+var _mats := {}
 var _fam := PackedByteArray()
 var _fn := 0
 var _fz := 0
@@ -76,16 +81,31 @@ func _ready() -> void:
 		var m := MultiMesh.new()
 		m.transform_format = MultiMesh.TRANSFORM_3D
 		m.use_colors = true
+		m.use_custom_data = true
 		m.mesh = _pile(k) if (k == "breccia" or k == "tor") else _swept(k)
 		m.instance_count = 0
 		mi.multimesh = m
-		var mat := StandardMaterial3D.new()
-		mat.vertex_color_use_as_albedo = true
-		mat.roughness = 1.0
-		mat.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+		var mat := ShaderMaterial.new()
+		mat.shader = ROCK_SHADER
+		mat.set_shader_parameter("family_mode", int(FAM_MODE.get(k, 0)))
+		mat.set_shader_parameter("skirt_height", float(SKIRT_H.get(k, 3.0)))
+		mat.set_shader_parameter("varnish_strength", 0.0 if k == "evaporite" else (0.35 if k == "karst" else 0.72))
 		mi.material_override = mat
 		add_child(mi)
 		_mm[k] = mi
+		_mats[k] = mat
+
+
+func bind_layers(ta: Texture2DArray, tn: Texture2DArray, rock_tile := 4.2, skirt_tile := 2.4) -> void:
+	if ta == null or tn == null:
+		return
+	for k in _mats:
+		var mat: ShaderMaterial = _mats[k]
+		mat.set_shader_parameter("gl_albedo", ta)
+		mat.set_shader_parameter("gl_nr", tn)
+		mat.set_shader_parameter("rock_tile_m", rock_tile)
+		mat.set_shader_parameter("skirt_tile_m", skirt_tile)
+		mat.set_shader_parameter("has_layers", true)
 
 
 # A profile swept round a jittered polygon. The jitter is per ring AND per side, so the column is not a solid of
@@ -178,6 +198,8 @@ func _bed(key: String, t: float) -> float:
 func bind(h: Node3D, c: Camera3D) -> void:
 	host = h
 	cam = c
+	if host and "layer_albedo_arr" in host and host.layer_albedo_arr != null:
+		bind_layers(host.layer_albedo_arr, host.layer_nr_arr)
 	var img := Image.new()
 	if img.load("res://data/catch-bowl/geology.png") != OK:
 		print("  landforms: no geology.png -- re-run export_godot.py")
@@ -215,9 +237,12 @@ func _process(_d: float) -> void:
 func _rebuild(p: Vector3) -> void:
 	var tf := {}
 	var cols := {}
+	var cust := {}
+	var has_tint := host.has_method("surface_tint_at")
 	for k in FAM:
 		tf[k] = []
 		cols[k] = PackedColorArray()
+		cust[k] = PackedColorArray()
 	var cx := int(floor(p.x / CELL))
 	var cz := int(floor(p.z / CELL))
 	for dz in range(-REACH, REACH + 1):
@@ -248,6 +273,8 @@ func _rebuild(p: Vector3) -> void:
 			var c: Color = f["col"]
 			var sh: float = 0.88 + 0.22 * KRand.unit(KRand.mix32(h0 + 8))
 			cols[key].append(Color(c.r * sh, c.g * sh, c.b * sh))
+			var gt: Color = host.surface_tint_at(x, z) if has_tint else Color(0.55, 0.44, 0.31)
+			cust[key].append(Color(gt.r, gt.g, gt.b, g))
 	for k in FAM:
 		var m: MultiMesh = _mm[k].multimesh
 		var arr: Array = tf[k]
@@ -255,3 +282,4 @@ func _rebuild(p: Vector3) -> void:
 		for i in arr.size():
 			m.set_instance_transform(i, arr[i])
 			m.set_instance_color(i, cols[k][i])
+			m.set_instance_custom_data(i, cust[k][i])

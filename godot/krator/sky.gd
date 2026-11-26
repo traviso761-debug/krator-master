@@ -19,6 +19,11 @@ const SKY_HALF := preload("res://shaders/sky_half.gdshader")
 @export var pressure := -1.0                   # atm; < 0 takes the preset's
 @export var cover := -1.0                      # cloud cover 0..1; < 0 takes the preset's
 @export var weather := {}                      # {cover, grey, fog}
+# Desert storm / karaburan browning (89y-host-storm.js, driven by KratorAtmosFx; 0 leaves the sky untouched)
+@export var storm_murk := 0.0                  # 0..1: horizon-first dust wall & optical extinction of giant/moons/stars
+@export var storm_colour := Color(0.54, 0.39, 0.22)
+@export var storm_sun_dim := 1.0               # 1 clear .. 0.22 black storm
+@export var storm_sky_lit := 1.0               # ceiling brightness in storm/deadheat
 # the cloud layers in the sky's half-resolution pass (shaders/sky_half.gdshader; GODOT-LOOK-PLAN.md C9): the light rig's
 # low tier sets it (krator/look.gd). The material keeps its uniforms across the swap. The Compatibility renderer has no
 # such pass (checked on 4.7.2: the sky comes out wrong), so there the sky stays whole whatever is asked
@@ -148,6 +153,8 @@ func _process(dt: float) -> void:
 
 
 func _update() -> void:
+	if model == null or mat == null:
+		return
 	if pressure >= 0.0:
 		preset["air"]["pressure"] = pressure
 	if cover >= 0.0:
@@ -165,17 +172,42 @@ func _update() -> void:
 	m.set_shader_parameter("uRingT", s["ringLine"])
 	var W: Array = s["eq"]   # the shader's uEq takes the world to the stars' sphere: the transpose of W
 	m.set_shader_parameter("uEq", Basis(W[0], W[1], W[2]).transposed())
-	for k in [["uZen", "zen"], ["uHor", "hor"], ["uSunHor", "sunHor"], ["uSunC", "sunC"], ["uShineC", "shineC"], ["uFogC", "fogC"]]:
-		m.set_shader_parameter(k[0], _v(L[k[1]]))
-	m.set_shader_parameter("uExt", _v(L["ext"]))
-	m.set_shader_parameter("uSunI", L["sunI"])
-	m.set_shader_parameter("uHazeFloor", L["hazeFloor"])
-	m.set_shader_parameter("uDayStars", L["dayStars"])
+	var murk := clampf(storm_murk, 0.0, 1.0)
+	if murk <= 0.0001:
+		for k in [["uZen", "zen"], ["uHor", "hor"], ["uSunHor", "sunHor"], ["uSunC", "sunC"], ["uShineC", "shineC"], ["uFogC", "fogC"]]:
+			m.set_shader_parameter(k[0], _v(L[k[1]]))
+		m.set_shader_parameter("uExt", _v(L["ext"]))
+		m.set_shader_parameter("uSunI", L["sunI"])
+		m.set_shader_parameter("uHazeFloor", L["hazeFloor"])
+		m.set_shader_parameter("uFogD", L["fogD"])
+		m.set_shader_parameter("uDustMurk", Vector4.ZERO)
+	else:
+		# Port of biomes/catch/src/89y-host-storm.js: horizon walls go brown first, airmass extinction swallows giant & moons
+		var dc := Vector3(storm_colour.r, storm_colour.g, storm_colour.b)
+		var dc_zen := dc * 0.78
+		var lit_k := maxf(storm_sky_lit, 0.62)
+		var zen_v := _v(L["zen"]).lerp(dc_zen, murk * 0.85) * lit_k
+		var hor_v := _v(L["hor"]).lerp(dc, minf(1.0, murk * 1.55)) * lit_k
+		var shor_v := _v(L["sunHor"]).lerp(dc * 1.08, minf(1.0, murk * 1.35)) * lit_k
+		var fog_v := _v(L["fogC"]).lerp(dc, minf(1.0, murk * 1.55)) * lit_k
+		m.set_shader_parameter("uZen", zen_v)
+		m.set_shader_parameter("uHor", hor_v)
+		m.set_shader_parameter("uSunHor", shor_v)
+		m.set_shader_parameter("uSunC", _v(L["sunC"]).lerp(dc * 1.35, murk * 0.45))
+		m.set_shader_parameter("uShineC", _v(L["shineC"]))
+		m.set_shader_parameter("uFogC", fog_v)
+		m.set_shader_parameter("uExt", _v(L["ext"]) * (1.0 + 18.0 * murk * murk + 4.0 * murk))
+		m.set_shader_parameter("uSunI", float(L["sunI"]) * clampf(storm_sun_dim, 0.12, 1.5))
+		m.set_shader_parameter("uHazeFloor", lerpf(float(L["hazeFloor"]), 0.96, murk))
+		m.set_shader_parameter("uFogD", float(L["fogD"]) * (1.0 + 36.0 * murk))
+		var aureole := sin(murk * PI * 0.82) * clampf(float(L["sunI"]), 0.0, 1.2)
+		m.set_shader_parameter("uDustMurk", Vector4(murk, aureole, 1.0, lit_k))
+		m.set_shader_parameter("uDustCol", dc)
+	m.set_shader_parameter("uDayStars", L["dayStars"] * (1.0 - murk))
 	m.set_shader_parameter("uNight", L["night"])
 	m.set_shader_parameter("uEclipse", s["eclipse"])
-	m.set_shader_parameter("uShineI", L["shineI"])
+	m.set_shader_parameter("uShineI", L["shineI"] * (1.0 - 0.85 * murk))
 	m.set_shader_parameter("uSpin", s["spin"])
-	m.set_shader_parameter("uFogD", L["fogD"])
 	m.set_shader_parameter("uTime", _t)
 	var cam3 := get_viewport().get_camera_3d() if get_viewport() else null
 	m.set_shader_parameter("uCamPos", cam3.global_position if cam3 else Vector3(0, 1.7, 0))

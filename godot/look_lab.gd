@@ -223,8 +223,8 @@ func _apply() -> void:
 	KratorLook.apply(look, sky.env, sky.sun, get_viewport())
 	KratorLook.apply_sky(look, sky)
 	get_viewport().debug_draw = DEBUG_VIEWS[_debug]
-	hud.text = "%s\nhour %.2f   weather %.2f   wet %.2f   detail %.2f   tangents %s   view: %s\n%d swatches   T tier  H/J hour  W weather  D detail  N tangents  R wet  V view" % [
-		KratorLook.describe(look), hour, float(look["weather"]), float(look["wet"]), float(look["detail"]), "mesh" if bool(look["tangents"]) else "derivative", DEBUG_NAMES[_debug], swatches.size()]
+	hud.text = "%s\nhour %.2f   weather %.2f   wet %.2f   arid %.2f   detail %.2f   tangents %s   view: %s\n%d swatches   T tier  H/J hour  W weather  A arid  R wet  D detail  N tangents  V view" % [
+		KratorLook.describe(look), hour, float(look["weather"]), float(look["wet"]), float(look.get("aridity", 0.0)), float(look["detail"]), "mesh" if bool(look["tangents"]) else "derivative", DEBUG_NAMES[_debug], swatches.size()]
 
 
 func _process(dt: float) -> void:
@@ -270,8 +270,10 @@ func _unhandled_key_input(ev: InputEvent) -> void:
 		KEY_T:
 			var names: Array = KratorLook.TIER_NAMES
 			var keep_w := float(look["wet"])
+			var keep_a := float(look.get("aridity", 0.0))
 			look = KratorLook.tier(names[(names.find(str(look["tier"])) + 1) % names.size()])
 			look["wet"] = keep_w
+			look["aridity"] = keep_a
 		KEY_H:
 			hour = fposmod(hour - 0.5, 24.0)
 		KEY_J:
@@ -284,6 +286,9 @@ func _unhandled_key_input(ev: InputEvent) -> void:
 			look["tangents"] = not bool(look["tangents"])
 		KEY_R:
 			look["wet"] = 0.0 if float(look["wet"]) > 0.0 else 0.7
+		KEY_A:
+			var ar := float(look.get("aridity", 0.0))
+			look["aridity"] = 0.5 if ar < 0.25 else (1.0 if ar < 0.75 else 0.0)
 		KEY_V:
 			_debug = (_debug + 1) % DEBUG_VIEWS.size()
 		_:

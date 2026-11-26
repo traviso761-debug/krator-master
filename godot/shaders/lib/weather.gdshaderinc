@@ -20,7 +20,7 @@
 #define K_WEATHER_INC
 
 global uniform sampler2D k_weather_noise : repeat_enable, filter_linear_mipmap;
-global uniform vec4 k_weather;        // x: strength 0..1.5 (0: off); y: wet 0..1; z, w: spare
+global uniform vec4 k_weather;        // x: strength 0..1.5 (0: off); y: wet 0..1; z: aridity 0..1; w: wind angle rad
 global uniform vec3 k_world_origin;   // the stream's origin modulo 4096 m (krator/kweather.gd set_origin)
 
 // the two lookup axes: no wall or floor lies along their cross product, so a plane varies both ways across it
@@ -34,6 +34,8 @@ void kw_weather(vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
 	if (k <= 0.0) {
 		return;
 	}
+	float arid = clamp(k_weather.z, 0.0, 1.0);
+	vec2 w_dir = vec2(cos(k_weather.w), sin(k_weather.w));
 	vec3 p = wp + k_world_origin;
 	vec2 u = vec2(dot(p, KW_A), dot(p, KW_B));
 	vec4 n1 = texture(k_weather_noise, u / 32.0);
@@ -58,26 +60,42 @@ void kw_weather(vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
 	float sz = texture(k_weather_noise, vec2(p.z / 2.0 + 0.5, p.y / 32.0 + 0.25)).b;
 	float s = mix(sz, sx, td.x * td.x);
 	float streak = smoothstep(0.50, 0.78, s * 0.75 + n2.b * 0.25) * steep;
-	c = mix(c, c * vec3(0.60, 0.565, 0.51), streak * 0.6 * a_r);
-	rough = mix(rough, min(rough + 0.10, 1.0), streak * a_r);
+	float rain_streak = streak * (1.0 - 0.82 * arid);
+	c = mix(c, c * vec3(0.60, 0.565, 0.51), rain_streak * 0.6 * a_r);
+	rough = mix(rough, min(rough + 0.10, 1.0), rain_streak * a_r);
 
-	// under: dark and damp
+	// arid steep faces: windward sand-blast abrasion + sheltered iron-manganese desert varnish sheen
+	if (arid > 0.001) {
+		float windward = clamp(dot(-wn.xz, w_dir), 0.0, 1.0) * steep;
+		float scour = windward * (0.35 + 0.65 * n2.a) * a_r * arid;
+		c = mix(c, c * 1.13 + vec3(0.018, 0.014, 0.008), clamp(scour * 0.55, 0.0, 0.65));
+		rough = mix(rough, 0.95, clamp(scour * 0.50, 0.0, 0.80));
+		float rock_like = smoothstep(0.72, 0.95, amt.x);
+		float varnish = streak * steep * (1.0 - 0.70 * windward) * rock_like * arid * min(k, 1.0);
+		c = mix(c, c * vec3(0.42, 0.29, 0.22) + vec3(0.010, 0.006, 0.005), clamp(varnish * 0.58, 0.0, 0.65));
+		rough = mix(rough, 0.48, clamp(varnish * 0.55, 0.0, 0.70));
+	}
+
+	// under: dark and damp (less damp-darkening in dry desert air)
 	float under = smoothstep(0.3, 0.8, -up);
-	c *= 1.0 - 0.30 * under * a_r;
+	c *= 1.0 - (0.30 - 0.12 * arid) * under * a_r;
 
-	// top: bleach and dust
+	// top: sun bleach and settled dust (stronger sun bleach and ochre dust coat in arid climates)
 	float top = smoothstep(0.55, 0.9, up);
 	float a_t = amt.w * k;
-	c = mix(c, c * 1.14 + vec3(0.012, 0.011, 0.008), top * 0.55 * a_t);
-	rough = mix(rough, min(rough + 0.10, 1.0), top * 0.6 * a_t);
+	vec3 top_dust = mix(vec3(0.012, 0.011, 0.008), vec3(0.042, 0.031, 0.018), arid);
+	c = mix(c, c * (1.14 + 0.08 * arid) + top_dust, top * (0.55 + 0.20 * arid) * a_t);
+	rough = mix(rough, min(rough + 0.10 + 0.08 * arid, 1.0), top * 0.6 * a_t);
 
-	// moss and lichen: where water sits, in patches
+	// temperate moss/lichen vs. arid wind-settled ochre dust & sand pockets in crevices and leeward ledges
 	float patch = smoothstep(0.54, 0.74, n1.g * 0.55 + n2.g * 0.45);
-	float sits = max(smoothstep(0.15, 0.7, up), 0.22 * steep * smoothstep(0.55, 0.8, n1.a));
-	float moss = patch * sits * amt.z * k;
+	float lee = clamp(dot(wn.xz, w_dir), 0.0, 1.0) * steep * arid;
+	float sits = max(smoothstep(0.15, 0.7, up), (0.22 + 0.28 * lee) * steep * smoothstep(0.55, 0.8, n1.a));
+	float deposit = patch * sits * mix(amt.z, max(amt.z, 0.55 * amt.w + 0.25 * amt.x), arid) * k;
 	vec3 moss_c = mix(vec3(0.040, 0.062, 0.018), vec3(0.150, 0.160, 0.105), smoothstep(0.35, 0.75, n2.a));
-	c = mix(c, moss_c, clamp(moss, 0.0, 0.85));
-	rough = mix(rough, 0.96, clamp(moss, 0.0, 1.0));
+	vec3 sand_c = mix(vec3(0.290, 0.215, 0.125), vec3(0.455, 0.355, 0.220), smoothstep(0.30, 0.75, n2.a));
+	c = mix(c, mix(moss_c, sand_c, arid), clamp(deposit, 0.0, 0.85));
+	rough = mix(rough, mix(0.96, 0.98, arid), clamp(deposit, 0.0, 1.0));
 
 	// wet: darker and glossier (as core/atmos wets the ground and the plants), less where rain does not reach
 	float wet = clamp(k_weather.y, 0.0, 1.0) * (1.0 - 0.7 * under) * min(k, 1.0);
@@ -86,21 +104,27 @@ void kw_weather(vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
 }
 
 // The foot of a wall (M7's foot band, on the export form's height field: GODOT-LOOK-PLAN.md section 13). h: the point's
-// height above its building's base, metres; -1 where the mesh is no building's. Splashed earth to about knee height,
-// ragged by the noise, heavier on what streaks (amt.y): darker, earthier, rougher; and darker still when the world is wet.
+// height above its building's base, metres; -1 where the mesh is no building's. Temperate: splashed dark earth; arid:
+// wind-banked pale ochre sand drifted up against the base of walls and boulders.
 void kw_foot(float h, vec3 wp, vec3 wn, vec4 amt, inout vec3 c, inout float rough) {
 	float k = k_weather.x;
 	if (k <= 0.0 || h < 0.0) {
 		return;
 	}
+	float arid = clamp(k_weather.z, 0.0, 1.0);
+	vec2 w_dir = vec2(cos(k_weather.w), sin(k_weather.w));
 	float wall = 1.0 - smoothstep(0.45, 0.8, abs(wn.y));   // a wall's foot, not the paving beside it nor a step's tread
 	vec3 p = wp + k_world_origin;
 	float n = texture(k_weather_noise, vec2(dot(p, KW_A), dot(p, KW_B)) / 8.0).g;
-	float top = 0.25 + 0.5 * n;                                  // where the splash gives out: 25 to 75 cm
+	float drift_lift = arid * (0.18 + 0.22 * abs(dot(wn.xz, w_dir)));
+	float top = 0.25 + 0.5 * n + drift_lift;                     // where the splash or sand bank gives out
 	float band = (1.0 - smoothstep(0.03, top, h)) * (0.35 + 0.65 * amt.y) * min(k, 1.0) * wall;
-	vec3 earth = vec3(0.105, 0.085, 0.062);
-	c = mix(c, c * 0.72 + earth * 0.28, band);
-	rough = mix(rough, 0.95, band * 0.8);
+	vec3 mud = vec3(0.105, 0.085, 0.062);
+	vec3 sand_skirt = vec3(0.375, 0.285, 0.168);
+	vec3 foot_temperate = c * 0.72 + mud * 0.28;
+	vec3 foot_arid = mix(c * 0.90, sand_skirt, 0.72);
+	c = mix(c, mix(foot_temperate, foot_arid, arid), band);
+	rough = mix(rough, mix(0.95, 0.97, arid), band * 0.85);
 	c *= 1.0 - 0.18 * band * clamp(k_weather.y, 0.0, 1.0);
 }
 

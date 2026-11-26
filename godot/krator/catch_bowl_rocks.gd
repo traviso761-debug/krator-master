@@ -20,9 +20,12 @@ const REACH := 11              # cells from the camera: 11 x 420 m is about 4.6 
 const MOVED := 180.0           # rebuild once the camera has gone this far
 const SAND_TOP := 2600.0       # the shader's own sand line: below it and flat, the sand has it
 
-var host: Node3D               # catch_bowl.gd: height_at(x, z)
+const ROCK_SHADER := preload("res://shaders/desert_rock.gdshader")
+
+var host: Node3D               # catch_bowl.gd: height_at(x, z), surface_tint_at(x, z)
 var cam: Camera3D
 var mm: MultiMeshInstance3D
+var rock_mat: ShaderMaterial
 var _last := Vector3(1e12, 1e12, 1e12)
 var _shapes: Array = []
 
@@ -35,15 +38,27 @@ func _ready() -> void:
 	var m := MultiMesh.new()
 	m.transform_format = MultiMesh.TRANSFORM_3D
 	m.use_colors = true
+	m.use_custom_data = true
 	m.mesh = _shapes[0]
 	m.instance_count = 0
 	mm.multimesh = m
-	var mat := StandardMaterial3D.new()
-	mat.vertex_color_use_as_albedo = true
-	mat.roughness = 1.0
-	mat.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-	mm.material_override = mat
+	rock_mat = ShaderMaterial.new()
+	rock_mat.shader = ROCK_SHADER
+	rock_mat.set_shader_parameter("family_mode", 0)
+	rock_mat.set_shader_parameter("skirt_height", 3.4)
+	rock_mat.set_shader_parameter("varnish_strength", 0.70)
+	mm.material_override = rock_mat
 	add_child(mm)
+
+
+func bind_layers(ta: Texture2DArray, tn: Texture2DArray, rock_tile := 4.2, skirt_tile := 2.4) -> void:
+	if rock_mat == null or ta == null or tn == null:
+		return
+	rock_mat.set_shader_parameter("gl_albedo", ta)
+	rock_mat.set_shader_parameter("gl_nr", tn)
+	rock_mat.set_shader_parameter("rock_tile_m", rock_tile)
+	rock_mat.set_shader_parameter("skirt_tile_m", skirt_tile)
+	rock_mat.set_shader_parameter("has_layers", true)
 
 
 # A boulder: a sphere pulled about by core/rand until it is no longer a sphere. Three of them is enough variety at
@@ -68,6 +83,7 @@ func _boulder(k: int) -> ArrayMesh:
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var idx: PackedInt32Array = arr[Mesh.ARRAY_INDEX]
 	for i in idx.size():
+		st.set_color(Color.WHITE)
 		st.add_vertex(out[idx[i]])
 	st.generate_normals()
 	return st.commit()
@@ -76,6 +92,8 @@ func _boulder(k: int) -> ArrayMesh:
 func bind(h: Node3D, c: Camera3D) -> void:
 	host = h
 	cam = c
+	if host and "layer_albedo_arr" in host and host.layer_albedo_arr != null:
+		bind_layers(host.layer_albedo_arr, host.layer_nr_arr)
 
 
 func _process(_d: float) -> void:
@@ -91,6 +109,8 @@ func _process(_d: float) -> void:
 func _rebuild(p: Vector3) -> void:
 	var tf: Array[Transform3D] = []
 	var cols: PackedColorArray = PackedColorArray()
+	var cust: PackedColorArray = PackedColorArray()
+	var has_tint := host.has_method("surface_tint_at")
 	var cx := int(floor(p.x / CELL))
 	var cz := int(floor(p.z / CELL))
 	for dz in range(-REACH, REACH + 1):
@@ -125,18 +145,17 @@ func _rebuild(p: Vector3) -> void:
 				var dist := Vector2(x - p.x, z - p.z).length()
 				if dist > CELL * float(REACH):
 					continue
-				# bigger rocks on the steeper ground: that is where they came off
-				# BIG. The first pass topped out at 11 m and nothing was visible from 400 m up, because at four
-				# kilometres a ten-metre boulder is two pixels. These are tors and fallen slabs, not cobbles: the
-				# Catch's scarps shed blocks the size of a house, so that is the size they are.
 				var s: float = (6.0 + 34.0 * us * us) * (1.0 + clampf(slope * 4.0, 0.0, 1.2))
 				var t := Transform3D(Basis(Vector3.UP, uy * TAU).scaled(Vector3(s, s * (0.55 + 0.4 * us), s)),
 					Vector3(x, g - s * 0.16, z))   # sunk a little: a boulder is bedded, not balanced
 				tf.append(t)
-				var shade: float = 0.72 + 0.24 * KRand.unit(KRand.mix32(h + 4))
-				cols.append(Color(0.33 * shade, 0.29 * shade, 0.26 * shade))
+				var shade: float = 0.78 + 0.24 * KRand.unit(KRand.mix32(h + 4))
+				cols.append(Color(0.42 * shade, 0.36 * shade, 0.31 * shade))
+				var gt: Color = host.surface_tint_at(x, z) if has_tint else Color(0.55, 0.44, 0.31)
+				cust.append(Color(gt.r, gt.g, gt.b, g))
 	var m := mm.multimesh
 	m.instance_count = tf.size()
 	for i in tf.size():
 		m.set_instance_transform(i, tf[i])
 		m.set_instance_color(i, cols[i])
+		m.set_instance_custom_data(i, cust[i])
