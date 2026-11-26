@@ -1,19 +1,23 @@
 {
  "edit": "5.1 edit 30: White Pass, White Lake, Matron's Coast, Arkerum",
  "date": "2026-11-25",
+ "matron_weathering_m": {
+  "cut_max": 683,
+  "cut_p90": 166
+ },
  "matron_new_land_cells": 8003,
  "matron_new_land_km2": 32012,
  "matron_new_land_m": [
-  5,
-  98,
-  863,
-  1371
+  2,
+  65,
+  723,
+  1267
  ],
- "matron_old_strip_raised_cells": 2284,
+ "matron_old_strip_raised_cells": 2107,
  "arkerum": {
-  "floor_m": 520,
-  "rim_m": 1219,
-  "apron_base_m": 920,
+  "floor_m": 228,
+  "rim_m": 928,
+  "apron_base_m": 628,
   "breach_toward": [
    -0.89,
    -0.45
@@ -28,18 +32,21 @@
   "south_end_m": 3483
  },
  "white_lake": {
-  "tarn_cells": 23,
-  "level_m": 5890.0,
-  "floor_m": 5900,
+  "tarn_cells": 31,
+  "level_m": 5896.0,
+  "floor_m": 5900.0,
+  "lip_m": 5978,
+  "deepest_floor_m": 5791,
+  "islets": 0,
   "centre": [
    487.1,
    377.6
   ],
   "town_px": [
-   492,
-   377
+   499,
+   389
   ],
-  "town_m": 5927
+  "town_m": 6078
  },
  "rivers_extended_to_the_new_coast": [
   "r021",
@@ -66,46 +73,45 @@
   "r221",
   9232
  ],
- "land_moved_cells": 13777,
- "lowered_cells": 3490,
- "raised_cells": 10287,
+ "land_moved_cells": 13221,
+ "lowered_cells": 3115,
+ "raised_cells": 10106,
  "pins": {
   "Arkerum": {
-   "m": 520,
+   "m": 228,
    "water": false
   },
   "Whitelake": {
-   "m": 5927,
+   "m": 6078,
    "water": false
   }
  },
- "airless_cells_given_air": 1390,
- "class_O_let_go": 622,
+ "airless_cells_given_air": 467,
+ "class_O_let_go": 344,
  "reclimate": {
-  "cells": 13937,
-  "class_changed": 10823,
-  "rain_mean_before_mm": 2288.0,
-  "rain_mean_after_mm": 2077.0,
+  "cells": 13962,
+  "class_changed": 10971,
+  "rain_mean_before_mm": 2278.0,
+  "rain_mean_after_mm": 1974.0,
   "classes_now": {
-   "Af": 4187,
-   "Am": 3417,
-   "Aw": 2,
+   "Af": 3109,
+   "Am": 5141,
    "BWk": 11,
    "BSk": 441,
-   "Cwa": 326,
+   "Cwa": 243,
    "Cwb": 18,
-   "Cfa": 1818,
-   "Cfb": 34,
+   "Cfa": 1604,
+   "Cfb": 24,
    "Dsb": 192,
-   "Dsc": 510,
-   "Dwb": 20,
-   "Dfb": 30,
-   "Dfc": 72,
-   "ET": 525,
-   "EF": 689,
-   "HT": 378,
-   "HF": 295,
-   "WS": 972
+   "Dsc": 506,
+   "Dwb": 28,
+   "Dfb": 33,
+   "Dfc": 59,
+   "ET": 780,
+   "EF": 618,
+   "HT": 291,
+   "HF": 296,
+   "WS": 568
   }
  }
 }

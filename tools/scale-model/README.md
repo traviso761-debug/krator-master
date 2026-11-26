@@ -1430,17 +1430,26 @@ to change one, check `tools/scale-model/model` out at b6b57c130 and run the chai
   `edit_530_live.json`):
   - Matron's Coast is raised from the sea (32,012 km2), Cfb rainforest. It slopes from its high points to the new
     shore: a harmonic surface between the hills round it and the sea, flattened toward the sea, hills growing with the
-    height. The old coastal strip within 8 px is graded into it (only raised). 23 rivers run on across it, their channels
-    cut to the running low.
+    height. The old coastal strip within 8 px is graded into it (only raised). Then it is weathered ("apply realistic
+    weathering"): 24 rounds of stream-power erosion, each filling the depressions (priority flood), draining every cell
+    to its steepest neighbour, and cutting by K x area^0.5 x slope. Slope creep (diffusion) follows each round, so the
+    valleys branch down the slope and the ridges between them round off. 23 rivers run on across it, their channels cut
+    to the running low.
   - Arkerum's ejecta crater is the Spear-Queens' city: floor 400 m under the plain round it, rim 300 m over it, and a
     breach valley falling to the sea.
   - White Pass is a U-trough over a 5,400 m summit.
-  - White Lake is a Sasquatch-style trough (tarn 5,890 m, WH), with the Yeti town of Whitelake, which tolls the pass.
+  - White Lake is a natural glacial lake, with the Yeti town of Whitelake on its shore, which tolls the pass ("make white
+    lake a more natural mountain lake landform"). Its trough follows its own low ground, winding, its width breathing.
+    Its floor is overdeepened in the middle, held by a moraine lip at the outlet end, and lumpy with till. The lake (WH)
+    is the water the basin holds, so its shore follows the floor.
   - The cut cells get the nearby land's air and classes (edit 32's helpers, below).
 - **31, `edit_531_mistheights.py`: Mistheights** (polygon `edit_531_live.json`). The cut through the W outer wall:
   - Two entry valleys funnel warm damp north-westerly air up to 3,900 m.
   - A misty high country runs at 3,900-4,300 m: Cfc under 4,800 m, 3,500 mm.
   - The way out west is easy (3,000 m). The way east crosses a 5,400 m col, as hard as White Pass.
+  - Its edge is ragged like the Silent Vale's ("more irregularly bordered"). Each valley is routed through its waypoints
+    over the land's own low ground and cut winding (edit 32's `route`, `valley`). Short side coves and hanging valleys
+    (3-7 px, their heads 300-900 m over the floor) branch off every ~6 px on alternating sides.
 - **32, `edit_532_sw_wall_trigemini.py`: the SW outer wall and the Trigemini Pass** (the owner: "a few small vales to
   break up the complete airlessness, but most prominently ... the Trigemini Pass region which contains a Cold Lake type
   lake at its center and provides one of Dalab's backup routes to the Rift"; polygons `edit_532_live.json`):

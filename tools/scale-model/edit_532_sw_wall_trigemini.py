@@ -128,7 +128,7 @@ def route(E, a, b, rng, keep=None, pad=18, wander=0.35):
     return np.stack([np.interp(t_, seg, pts[:, 0]), np.interp(t_, seg, pts[:, 1])], 1)
 
 
-def valley(E0, En, pts, f0, col, f1, hw, rng, rise=1800.0):
+def valley(E0, En, pts, f0, col, f1, hw, rng, rise=1800.0, floor_arr=None, breathe=0.3):
     """A U-valley along a routed course: its floor rises from f0 (None: the land there) to `col` at the course's own
     saddle (the highest land along it, kept to its middle three fifths; None: no col, straight from f0 to f1), then falls
     to f1, with a little unevenness; never above the land. The width breathes (hw x 0.7-1.3 along it) and the walls rise
@@ -152,9 +152,12 @@ def valley(E0, En, pts, f0, col, f1, hw, rng, rise=1800.0):
                       col + (b - col) * (seg - sc) / max(seg[-1] - sc, 1e-6))
     bump = nd.gaussian_filter1d(rng.standard_normal(n), 6.0); bump /= np.abs(bump).max() + 1e-9
     fl = fl + 45.0 * bump * np.sin(np.pi * seg / seg[-1])          # uneven, but the ends and their heights held
+    if floor_arr is not None:                                      # a floor given point by point (a lake basin's)
+        fl = np.asarray(floor_arr, float)
+        ic = None
     fl = np.minimum(fl, E0[yi, xi])
-    hwv = hw * (1.0 + 0.3 * nd.gaussian_filter1d(rng.standard_normal(n), 8.0) / 0.14)
-    hwv = np.clip(hwv, 0.7 * hw, 1.3 * hw)
+    hwv = hw * (1.0 + breathe * nd.gaussian_filter1d(rng.standard_normal(n), 8.0) / 0.14)
+    hwv = np.clip(hwv, (1 - breathe) * hw, (1 + breathe) * hw)
     R = int(math.ceil(2.4 * hw * 1.3)) + 1
     x0, x1 = max(0, int(pts[:, 0].min()) - R), min(sh[1], int(pts[:, 0].max()) + R + 1)
     y0, y1 = max(0, int(pts[:, 1].min()) - R), min(sh[0], int(pts[:, 1].max()) + R + 1)
