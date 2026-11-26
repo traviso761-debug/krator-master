@@ -70,13 +70,20 @@ function describe(hit){const p=hit.point,o=hit.object;
 const BUDGET={showcase:{tris:10000000,calls:140},cls:{life:5000000,curtains:1500000,host:2500000},type:{'arch/life':'life','arch/curtains':'curtains','arch/combs':'life','host':'host'}};
 const instPoints=()=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome)return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push([p.x,p.y,p.z,M.name]);}});return o;};
-const EARTH_ITEMS=['artrunk','argymno','arpycn','arsedge','arpitch','arohia','aruluhe','armangrove','arcastrunk','arnaupaka','aripomoea','arpalmtrunk'],MAQUIS=['artrunk','argymno','arpycn','arsedge','arpitch'],PIONEERS=['arohia','aruluhe'];
-const TALL_TRUNKS=['biome:artrunk','biome:arpycntrunk','biome:arcastrunk','biome:arpalmtrunk','biome:arohiatrunk'];
+const EARTH_ITEMS=['artrunk','arkauri_trunk','argymno','arpycn','arphyllanthus','arsedge','arlepidosperma','ardracophyllum','arcodia','argrevillea','arpitch','ardrosera','artreefern_trunk','arpaperbark_trunk','arrata_trunk','arohia','aruluhe','arnephrolepis','armangrove','aravicennia_fol','arverdigris_fol','arcastrunk','arpandan_trunk','artamanu_trunk','arhibiscus_fol','arnaupaka','aripomoea','arpalmtrunk'];
+const MAQUIS=['artrunk','arkauri_trunk','argymno','arpycn','arphyllanthus','arsedge','arlepidosperma','ardracophyllum','arcodia','argrevillea','arpitch','ardrosera','arpaperbark_trunk'],PIONEERS=['arohia','aruluhe','arnephrolepis'];
+const TALL_TRUNKS=['biome:artrunk','biome:arkauri_trunk','biome:arpycntrunk','biome:arcastrunk','biome:arpalmtrunk','biome:arohiatrunk','biome:arrata_trunk','biome:arpaperbark_trunk','biome:artamanu_trunk','biome:artreefern_trunk','biome:arpandan_trunk'];
+const AQUATIC_ITEMS=['biome:arcurtain','biome:arcurtainhem','biome:arhem','biome:arkelp','biome:arkelp_stipe','biome:arseagrass','biome:arbyssus','biome:aroyster','biome:arbarnacle','biome:armangroveprop','biome:aravicennia_pneum','biome:artealsap_scar'];
 const CHEM=(e)=>({pH:PH_AT(e[1],e[2]),T:HEAT_AT(e[1],e[2]),caMg:CAMG_AT(e[1],e[2]),lavaAge:e.age!==undefined?e.age:LAVA_AT(e[1],e[2])});
 /* what each station must place (the placed check; its negative zeroes the last) */
-const NEED={dome:['araucaria','gymnostoma','sedge','limeshelf'],barrens:['araucaria','gymnostoma','pycnandra','sedge','pitchers','verdigris'],sound:['ohia','uluhe','mangrove','gymnostoma','sedge'],
- coast:['casuarina','naupaka','ipomoea','coconut','fans'],confluence:['araucaria','gymnostoma','sedge','pitchers','limeshelf','felt','fans'],
- cove:['araucaria','gymnostoma','pycnandra','sedge','pitchers','verdigris','limeshelf','fans','casuarina','ohia','uluhe','naupaka','coconut','intertidal']}[SKEY];
+const NEED={
+ dome:['araucaria','kauri','gymnostoma','dracophyllum','codia','grevillea','sedge','lepidosperma','rata','limeshelf'],
+ barrens:['araucaria','kauri','gymnostoma','pycnandra','phyllanthus','dracophyllum','codia','grevillea','sedge','lepidosperma','pitchers','drosera','paperbark','verdigris'],
+ sound:['ohia','uluhe','nephrolepis','mangrove','avicennia','verdigrismangrove','gymnostoma','sedge'],
+ coast:['casuarina','pandan','tamanu','hibiscus','naupaka','ipomoea','coconut','nephrolepis','fans'],
+ confluence:['araucaria','kauri','gymnostoma','dracophyllum','codia','grevillea','treefern','paperbark','rata','sedge','lepidosperma','pitchers','drosera','limeshelf','felt','fans'],
+ cove:['araucaria','kauri','gymnostoma','pycnandra','phyllanthus','dracophyllum','codia','grevillea','treefern','paperbark','rata','sedge','lepidosperma','pitchers','drosera','verdigris','limeshelf','fans','casuarina','pandan','tamanu','hibiscus','verdigrismangrove','ohia','uluhe','nephrolepis','naupaka','coconut','kelp','seagrass','byssus','oyster','intertidal']
+}[SKEY];
 const HCHK={
  placed(st){const need=NEED,zero=need.filter(k=>!(st&&st[k]>0));
   if(SKEY==='confluence'&&!(st&&st.curtains&&st.curtains.curtains>0))zero.push('curtains');
@@ -100,7 +107,7 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][0]+')':log.filter(e=>PIONEERS.indexOf(e[0])>=0).length+' pioneers on the flow, no maquis on it'};},
  aprons(pts){const bad=pts.filter(p=>L.APRON(p[0],p[1])<.5);return{ok:!bad.length,detail:bad.length?bad.length+' terrace points without their white apron':pts.length+' points down the terraces, each on the apron'};},
  dry(P,tide){const sl=WATER.seaLevel(0),dt=tide==null?0:tide;   /* the cove's sea is tidal: roots are held to its datum, not to the level at this moment */
-  const bad=P.filter(p=>{let w=waterH(p[0],p[2]);if(dt&&Math.abs(w-sl)<1e-3)w-=dt;return w>-1e8&&p[1]<w-.6&&['biome:arcurtain','biome:arcurtainhem','biome:arhem'].indexOf(p[3])<0;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned but the curtains, which stand in the water'};},
+  const bad=P.filter(p=>{let w=waterH(p[0],p[2]);if(dt&&Math.abs(w-sl)<1e-3)w-=dt;return w>-1e8&&p[1]<w-.6&&AQUATIC_ITEMS.indexOf(p[3])<0;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned but the curtains and intertidal zones'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
  coveLandform(hFn){let minInner=1e9,minOuter=1e9,maxEast=-1e9,maxWest=-1e9,sillLo=1e9,sillHi=-1e9;
   for(let s=-830;s<=-750;s+=20){let rMin=1e9;for(let da=-80;da<=80;da+=8){const p=L.XZ(s,L.centerA(s)+da);rMin=Math.min(rMin,hFn(p[0],p[1]));}sillLo=Math.min(sillLo,rMin);sillHi=Math.max(sillHi,rMin);}

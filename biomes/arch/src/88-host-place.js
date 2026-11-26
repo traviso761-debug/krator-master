@@ -6,7 +6,7 @@ const DRY=(x,z)=>{const w=waterH(x,z);return w<-1e8||terrainH(x,z)>w+.3?1:0;};
 const COVE_OPT=SKEY==='cove'?{westBasalt:L.WEST_BASALT,treeKeep:L.TREE_KEEP,intertidal:L.INTERTIDAL}:null;
 const STATION_BUILD=function(Q){Q=Q==null?1:Q;const q=SKEY==='cove'?Q*.76:Q,st={};
  BIO.cur='arch/life';Object.assign(st,ARCHB.buildArch(TERR.R-150,q,{heat:HEAT_AT,ph:PH_AT,soil:SOIL_AT,keep:DRY,lava:LAVA_AT,mud:L.MUD||null,strand:L.STRAND||null,sand:L.SAND||null,cove:COVE_OPT}));
- if(COVE_OPT){const it=ARCHB.intertidal(COVE_OPT,TERR.R-150,Q);st.intertidal=it.total;st.intertidalBands=it;}
+ if(COVE_OPT){const it=ARCHB.intertidal(COVE_OPT,TERR.R-150,Q);st.intertidal=it.total;st.intertidalBands=it;st.kelp=it.kelp;st.seagrass=it.seagrass;st.byssus=it.byssus;st.oyster=it.oyster;}
  if(L.MEET){BIO.cur='arch/curtains';const O=L.OUT;st.curtains=ARCHB.curtains(L.MEET,(s,a)=>O.p(s,a),L.outLv,Q);}
  if(FLAMES.list.length){BIO.cur='arch/combs';st.combs=ARCHB.combs(FLAMES.list,Q).combs;}
  BIO.cur=null;return st;};

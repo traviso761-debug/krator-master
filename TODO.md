@@ -82,6 +82,11 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **Move `CROPS.BIOMES.arch` into `kits/crops/src/`** (2026-11-26, Arcoforte P3b; `kits/crops` reaches 61 builds / 150 pages): copy
+  `ARCH.CROPS` (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) from `biomes/arch/src/40-biome-arch-chem.js`
+  into `kits/crops/src/10-crop-core.js` (`BIOMES.arch`), add `'arch'` to `home` on `taro`, `breadfruit`, `banana`, `coconut`,
+  `ramie`, `rope-banana`, `pandan`, `kelp`, `kelp-ash` and `eelgrass` in `kits/crops/src/20-crop-records.js` / `22-crop-material.js`,
+  and drop the runtime `ARCH.registerCrops()` shim in `biomes/arch/src/40-biome-arch-chem.js`.
 - **The skylight recaptures at once on a clock jump** (2026-11-25; `core/atmos/89-atmos-b-skylight.js`, 949 pages): its hook waits
   `every` (30) frames after the hour moves, and `capture()` does not record the hour, so after a jump to night the water and metal
   reflected the old hour's sky (in the Arch cove, the noon sky and the giant's unlit noon face as a dark disc). Fix in the hook:

@@ -450,24 +450,29 @@ barrens, the horsts and the shores; native life holds the springs, the confluenc
 the two share the barrens. The pioneers on fresh lava are Earth's (the wet tropics close a flow in decades) once a flow is
 older than its lag; before that it is bare.
 
-### Earth (New Caledonia's maquis; Hawaii's lava; the tropical shore)
+### Earth (New Caledonia's maquis; Hawaii's lava; the tropical shore and 14 m intertidal; 32 built + 7 native = 39 species)
 
-| Species | Where | Why it is here |
-|---|---|---|
-| *Araucaria* (*A. rulei*, *A. muelleri*: the candelabra araucarias of the ultramafic maquis) | the barrens, the horsts' crests | New Caledonia's emblem on exactly this rock; the silhouette that says "serpentine" |
-| *Agathis ovata* (the maquis kauri) | the barrens | a stunted kauri of the ultramafic maquis |
-| *Gymnostoma deplancheanum* (a she-oak) | everywhere on the laterite | fixes nitrogen through *Frankia*: the answer to the N-poor ground |
-| *Pycnandra acuminata* (sève bleue) | the barrens' wetter gullies | the 25% nickel latex: the blue-green bleed |
-| *Phyllanthus balgooyi* | the barrens | a hyperaccumulator shrub, green sap |
-| *Geissois pruinosa*, *Hybanthus austrocaledonicus* | the barrens | New Caledonia's other nickel hyperaccumulators: the maquis's mid layer |
-| *Berkheya coddii* | the Aw lee only | a nickel hoarder of summer-rain grassland |
-| *Costularia*, *Lepidosperma* (sedges) | the barrens' floor | the maquis's ground cover on laterite |
-| *Dracophyllum*, *Grevillea exul*, *Codia* | the barrens | the maquis's flowering shrubs |
-| *Nepenthes vieillardii*, *Drosera* | the seeps on the barrens | carnivory on poor wet warm ground |
-| *Metrosideros polymorpha* (ʻōhiʻa), *Dicranopteris linearis* (uluhe), *Stereocaulon* lichen, *Nephrolepis* | fresh lava, by age | the wet tropics' lava pioneers (Hawaii) |
-| *Rhizophora*, *Avicennia* | the sound's shores | mangroves in the sheltered graben |
-| *Casuarina equisetifolia*, *Scaevola taccada* (naupaka), *Ipomoea pes-caprae*, *Spinifex* | black sand | the tropical strand |
-| *Cocos nucifera* | the strand, the sound | drift-sown; default taken, owner to confirm (an Earth crop on an uninhabited coast) |
+Every species carries `ARCHB.HARVEST` (`wood`, `fruit`, `sap`, `note`, compatible with `KHAMLET.woodUse`) plus canonical Shore-kin material tags on `S.tags.harvest.tags` (`timber`, `gum`, `pitch`, `fibre`, `bast`, `thatch`, `knees`, `tannin`, `ash`, `lime`, `byssus`, `caulking`).
+
+| Species | Key | Where | Shore-kin harvest & why it is here |
+|---|---|---|---|
+| *Araucaria* (*A. rulei*, *A. muelleri*: candelabra araucarias) | `araucaria` | the barrens, the horsts' crests | `timber`, `gum`, `pitch` — New Caledonia's emblem on ultramafic laterite |
+| *Agathis ovata* (maquis kauri) | `arkauri` | laterite ridges and benches | `timber`, `gum`, `pitch` — straight resinous spars and weeping golden kauri-gum for caulking |
+| *Gymnostoma deplancheanum* (maquis she-oak) | `gymnostoma` | everywhere on the laterite | `timber` — fixes nitrogen through *Frankia*; dense ironwood |
+| *Pycnandra acuminata* (sève bleue) | `pycnandra` | wetter laterite gullies & garnierite hollows | `ash` — 25% nickel blue-green latex (`ARCH.uptake` > 1,000 ug/g) |
+| *Phyllanthus balgooyi* | `arphyllanthus` | garnierite rims (`ni >= 2,200`) | `ash` — hyperaccumulator shrub with emerald sap for paktong bio-ore |
+| *Costularia*, *Lepidosperma* (`arlepidosperma`) | `sedge`, `arlepidosperma` | bare laterite & wet drainage rims | `thatch`, `fibre` — coarse maquis ground cover and plaited roof-thatch / cordage |
+| *Dracophyllum ramosum*, *Codia montana*, *Grevillea exul* | `ardracophyllum`, `arcodia`, `argrevillea` | ultramafic maquis | `thatch`, `tannin`, `timber` — candelabrum rosettes, white puff-heads and creamy toothbrush racemes |
+| *Nepenthes vieillardii*, *Drosera neocaledonica* | `pitcher`, `ardrosera` | wet poor laterite seeps | `fibre` — carnivory (`ARCHB.TRAP`, `ARCHB.SUNDEW_TRAP`) on N/P-starved ground |
+| *Cyathea intermedia* (gully tree-fern) | `artreefern` | wet laterite gullies & basalt ravines | `timber`, `thatch` — rot-resistant fibrous caudex posts and broad bipinnate fronds |
+| *Melaleuca quinquenervia* (niaouli paperbark) | `arpaperbark` | wet laterite hollows (`bark.paperbark`) | `caulking`, `thatch`, `timber` — layered cream-white bark sheets for hull seam caulking and roof lining |
+| *Metrosideros nautica* (gorge rata) | `arrata` | steep rocky gorges, mullions & headlands | `timber`, `knees` — J-curved reaction-wood boughs for naturally grown ship knees and sternposts |
+| *Metrosideros polymorpha* (ʻōhiʻa), *Dicranopteris linearis* (uluhe), *Nephrolepis* | `ohia`, `uluhe`, `arnephrolepis` | fresh lava flows past pioneer lag, basalt bluffs | `timber`, `knees`, `fibre`, `thatch` — wet-tropics lava pioneers |
+| *Rhizophora*, *Avicennia marina*, *Rhizophora pycnandroides* (teal-sap prop-wood) | `mangrove`, `aravicennia`, `arverdigrismangrove` | sound tidal mud & cove gjár seep stream (`bark.mangrove`) | `knees`, `tannin`, `ash`, `gum` — worm-proof ship knees, red tanbark for sails/nets, and Ni-rich coppice ash + 20% Ni teal latex for paktong |
+| *Casuarina equisetifolia*, *Calophyllum inophyllum* (tamanu) | `casuarina`, `artamanu` | black-sand strand & cove western basalt headland | `timber`, `knees`, `tannin`, `gum` — ironwood piles and curved coastal hardwood hull ribs |
+| *Pandanus tectorius* (`card.strap.pandan`), *Hibiscus tiliaceus* | `arpandan`, `arhibiscus` | strand, dunes, basalt bluffs & gjár banks | `fibre`, `thatch`, `bast` — split pandan strap leaves for crab-claw sails and water-retted sea-hibiscus bast for anchor hawsers |
+| *Scaevola taccada* (naupaka), *Ipomoea pes-caprae*, *Cocos nucifera* (`arcoconut`) | `naupaka`, `ipomoea`, `coconut` | black-sand strand & coastal bluffs | `fibre`, `thatch`, `timber` — drooping 5-segment V-cambered pinnate palm crowns + coir nut clusters |
+| *Laminaria* / *Ecklonia* (`arkelp`), *Zostera* (`arseagrass`), *Atrina* / *Pinna* (`arbyssus`), *Crassostrea* (`aroyster`) | `arkelp`, `arseagrass`, `arbyssus`, `aroyster` | Fleetborn Cove 14 m macrotidal band (`[-7, +7 m]`) | `ash`, `thatch`, `fibre`, `byssus`, `lime` — potash/soda kelp ash, rot-resistant seagrass thatch, golden sea-silk anchor threads, and burnt shell-lime hydraulic mortar |
 
 ### Native (fungoid hosts; three partners)
 

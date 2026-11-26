@@ -19,15 +19,31 @@ const PAL=ARCHB.PAL={
  curtainHem:[0x9ab88a,0xa8c49a,0x8aac7e],hem:[0xdfe6da,0xcfdccc,0xb8cca8],lime:[0xeef0ea,0xe2e8e4,0xd8e2e2],limeUnder:[0xb8c8b0,0xa8bca4],
  verd:[0x5a9a7a,0x4a8a72,0x6aa886,0x3f7f6a],verdFlesh:[0xe8e0cc,0xdcd4c0],comb:[0xe6dcc0,0xf0e6cc,0xd8ccb0],felt:[0xc06a2a,0xb85a24,0xd0843a,0xa84e1e],
  fan:[0x8a9a7a,0x7a8a6e,0x96a486],
- trunk:[0x827668,0x74685c,0x8c8072],ohiaBark:[0x8e867c,0x7e766c,0x989086],casBark:[0x6c6258,0x5e544c,0x786e64],
- needles:[0x2e4a32,0x36553a,0x284430,0x3a5a3e],casuar:[0x465e3e,0x526a46,0x3d5436],
- casuar2:[0x5a7456,0x668060,0x506a4c,0x6e8868],naupaka:[0x589848,0x66a654,0x4c8c40],ipomoea:[0x4a8a3a,0x5a9846],palm:[0x5a7a3a,0x668844,0x4e6e34],palmtrunk:[0x8a7a62,0x7e705a],
+ trunk:[0x827668,0x74685c,0x8c8072],araucBark:[0x786c60,0x6c6054,0x84786c],kauriBark:[0x8c8074,0x7e7266,0x988c7e],
+ ohiaBark:[0x8e867c,0x7e766c,0x989086],rataBark:[0x6e5c50,0x604e44,0x7a6658],casBark:[0x6c6258,0x5e544c,0x786e64],
+ paperBark:[0xd8d2c6,0xccc4b6,0xe2dcd0],mangroveBark:[0x544a42,0x483e38,0x60544a],pandanBark:[0x8c8270,0x7e7464,0x988e7c],
+ needles:[0x2e4a32,0x36553a,0x284430,0x3a5a3e],kauriLeaf:[0x345838,0x3e6440,0x2c4e32,0x486e46],kauriGum:[0xd89628,0xe6a834,0xc4821e],
+ casuar:[0x465e3e,0x526a46,0x3d5436],casuar2:[0x5a7456,0x668060,0x506a4c,0x6e8868],
+ naupaka:[0x589848,0x66a654,0x4c8c40],ipomoea:[0x4a8a3a,0x5a9846],
+ palm:[0x4c7832,0x58863a,0x426c2c,0x649042],palmOld:[0x7e7838,0x8c8240],palmtrunk:[0x8a7a62,0x7e705a],coconutNut:[0x6c7a36,0x867238,0x5e6e30],
+ pandanLeaf:[0x487634,0x54843e,0x3e6a2e,0x608e46],pandanFruit:[0xd86e24,0xe4802c,0xc85e1e],
+ fernBark:[0x4a3a2e,0x3e3026,0x564436],fernLeaf:[0x487e34,0x568c3e,0x3e722c,0x629646],nephro:[0x568e36,0x649c40,0x4a802e],
  ohia:[0x5c784e,0x688458,0x526e46,0x728a5e],ohiaFlush:[0x84764a,0x768252],ohiaFlower:[0xdc2e24,0xe83e2c,0xc8241e,0xf05228],
- uluhe:[0x8eb83c,0x9cc446,0x7ea834,0xa6cc50],mangrove:[0x2a4a2a,0x30522e,0x26442a],prop:[0x6a5a48,0x5e5040],
- glossy:[0x2e5a34,0x3a6a3e,0x2a5030,0x46743e],sedge:[0x8a8a52,0x7a7c48,0x9a9660,0x6e7044],pitcher:[0x9a3a2a,0x8a4a2a,0x6a8a3a,0xb8562e]};
-// ---------------------------------------------------------------- the species
+ rataLeaf:[0x345c3c,0x3e6844,0x2c5034],paperLeaf:[0x647e62,0x708a6c,0x587256],tamanuLeaf:[0x285832,0x32643c,0x224e2a],
+ hibiscusLeaf:[0x488438,0x549242,0x3e7830],hibiscusBloom:[0xecc82c,0xf4d43a,0xdcb424],
+ uluhe:[0x8eb83c,0x9cc446,0x7ea834,0xa6cc50],
+ mangrove:[0x2a4a2a,0x30522e,0x26442a],avicennia:[0x586e56,0x647a62,0x4e644c],verdMangrove:[0x285642,0x32624c,0x224a38],
+ tealsap:[0x1ec4ba,0x28d2c6,0x18b0a8],prop:[0x6a5a48,0x5e5040],
+ glossy:[0x2e5a34,0x3a6a3e,0x2a5030,0x46743e],phyllanthus:[0x386c3e,0x447848,0x2e6034],
+ draco:[0x6e4e34,0x7c583a,0x5e6238,0x865e3c],codia:[0x4e6c44,0x5a784e,0x44603c],codiaBloom:[0xf2efe2,0xe8e4d4,0xf8f6ec],
+ grevillea:[0x566e4e,0x627a58,0x4c6444],grevBloom:[0xd44628,0xe25832,0xc83a22],
+ sedge:[0x8a8a52,0x7a7c48,0x9a9660,0x6e7044],lepido:[0x787e46,0x868a50,0x6c723e],
+ pitcher:[0x9a3a2a,0x8a4a2a,0x6a8a3a,0xb8562e],drosera:[0xb82e28,0xc83c32,0x9e2622],
+ kelp:[0x8c7828,0x9c8632,0x786822,0xa6903a],seagrass:[0x2c7846,0x368650,0x246c3e],
+ byssus:[0x3c2e38,0x483842,0x32262e,0x564238],oyster:[0xe2d8d6,0xd6ccca,0xece4e2],barnacle:[0xd8d6cc,0xcccac0,0xe2e0d6]};
+// ---------------------------------------------------------------- the species (39 total: 7 native, 28 Earth terrestrial/coastal, 4 marine/intertidal)
 const SPECIES=ARCHB.SPECIES=[
- // NATIVE
+ // NATIVE (7)
  {key:'curtain',name:'Curtain',how:'a living wall standing in a confluence where alkaline water from the mantle meets acid water from the vents: a ribbed sheet 0.5-4 m tall, glossy black-green on its acid face (iron-nickel sulphide), chalk white on its alkaline face (brucite and aragonite), a pale-green living hem along its top. It keeps the two waters apart and lives on the difference: protons through the wall (PLAN.md 2.1)',
   items:['arcurtain','arcurtainhem'],tags:K('tropical','humid','yes',['Am','Aw'],{ph:[2,11.9],partner:'proton-gradient chemolithotroph'})},
  {key:'hem',name:'Hem frill (young curtain)',how:'low mineral frills along a meeting line where a curtain could stand and none has yet: the curtain\'s young, a hand high',
@@ -42,44 +58,132 @@ const SPECIES=ARCHB.SPECIES=[
   items:['arfelt'],tags:K('tropical','humid','yes',['Am','Aw'],{ph:[1,4],partner:'iron-oxidising acidophile'})},
  {key:'steamfan',name:'Steam fan',how:'low grey-green fans in the steam on ground at 45-90 degC',
   items:['arfan'],tags:K('tropical','humid','no',['Am','Aw'],{ph:[2,8],heat:[45,90],partner:'photosynthetic, thermophile'})},
- // EARTH (New Caledonia's maquis minier & Indo-Pacific / Hawaiian pioneers)
- {key:'araucaria',name:'Candelabra araucaria (Araucaria rulei / muelleri)',how:'the ultramafic maquis\'s emblem: a straight grey trunk and stiff upturned arms of scale-leaved rope, a candelabra 8-20 m, scattered over the low scrub',
+ // EARTH — ultramafic maquis, gully & pioneer flora (19)
+ {key:'araucaria',name:'Candelabra araucaria (Araucaria rulei / muelleri)',how:'the ultramafic maquis\'s emblem: a straight hoop-barked spar trunk and stiff upturned arms of scale-leaved rope, a candelabra 8-20 m, scattered over the low scrub',
   items:['artrunk','arbough'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.5],nickel:'excluder'})},
+ {key:'arkauri',name:'Maquis kauri (Agathis ovata / lanceolata)',how:'a stout columnar ultramafic conifer 7-18 m with flaking silver-bronze bark, heavy upper crown boughs and golden kauri-gum resin stalactites weeping from bough forks',
+  items:['arkauri_trunk','arkauri_fol','arkauri_gum'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
  {key:'gymnostoma',name:'Maquis she-oak (Gymnostoma deplancheanum)',how:'a dark, wiry she-oak 1.5-6 m whose root nodules (Frankia) fix the nitrogen the laterite lacks: the maquis\'s commonest shrub',
   items:['argymno'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.5],nickel:'indicator',fixer:'nitrogen'})},
  {key:'pycnandra',name:'Sève bleue (Pycnandra acuminata)',how:'a glossy-leaved shrub to small tree 3-8 m in the wetter hollows whose latex is a quarter nickel: cut, it bleeds blue-green',
   items:['arpycn','arpycntrunk'],tags:E('tropical','humid','both',['Am'],{ph:[4.5,7.5],nickel:'hyper'})},
+ {key:'arphyllanthus',name:'Green-sap hyperaccumulator (Phyllanthus balgooyi)',how:'a multi-stemmed ultramafic maquis shrub 1.5-4 m with vivid jade-green nickel-bearing phloem and glossy distichous sprays on rich garnierite rims',
+  items:['arphyllanthus'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,7.8],nickel:'hyper'})},
  {key:'costularia',name:'Maquis sedge (Costularia)',how:'stiff tussocks of sedge between the shrubs on the bare laterite',
   items:['arsedge'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.5],nickel:'excluder'})},
+ {key:'arlepidosperma',name:'Sword-sedge (Lepidosperma perteres)',how:'tall flat-bladed ochre-olive sword-sedge clumps 0.7-1.6 m edging laterite cuirasse slabs and drainage lines',
+  items:['arlepidosperma'],tags:E('tropical','humid','both',['Am','Aw'],{ph:[4.5,8.5],nickel:'excluder'})},
+ {key:'ardracophyllum',name:'Dragon-heath (Dracophyllum ramosum)',how:'a candelabrum-branched ultramafic shrub 1.2-3.5 m bearing stiff terminal rosettes of bronzed recurved leaves on bare ringed twigs',
+  items:['ardracophyllum'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
+ {key:'arcodia',name:'White-puff maquis shrub (Codia montana)',how:'a rounded sclerophyll shrub of the laterite barrens 1-3 m covered in cream-white globose pom-pom flowerheads',
+  items:['arcodia','arcodia_bloom'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
+ {key:'argrevillea',name:'Serpentine grevillea (Grevillea exul)',how:'a wiry proteaceous shrub 1.2-3.2 m on red ironstone and serpentinite scree, with silvery divided leaves and rust-red brush racemes',
+  items:['argrevillea','argrevillea_bloom'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
+ {key:'nepenthes',name:'Pitcher plant (Nepenthes vieillardii)',how:'red-green pitchers on the seeps of the laterite, where the ground is poorest and wettest: it eats what drowns in it (a trap record)',
+  items:['arpitch'],tags:E('tropical','humid','both',['Am'],{ph:[4.5,7],nickel:'excluder'})},
+ {key:'ardrosera',name:'Ultramafic sundew (Drosera neocaledonica)',how:'rosettes of ruby-red glandular-tentacled leaves glistening on wet nitrogen-poor laterite seeps beside the pitchers',
+  items:['ardrosera'],tags:E('tropical','humid','yes',['Am','Aw'],{ph:[4.5,7.2],nickel:'excluder'})},
+ {key:'artreefern',name:'Gully tree-fern (Cyathea intermedia)',how:'a slender fibrous caudex trunk 2.5-6.5 m in wet laterite gullies and ravine heads, crowned with an arching fountain of lacy bipinnate fronds',
+  items:['artreefern_trunk','artreefern_frond'],tags:E('tropical','humid','yes',['Am'],{ph:[4.5,7.8],nickel:'excluder'})},
+ {key:'arpaperbark',name:'Niaouli paperbark (Melaleuca quinquenervia)',how:'a twisted cream-barked tree 4-12 m on wet laterite benches and seasonal seeps, shedding thick waterproof sheets of papery bark',
+  items:['arpaperbark_trunk','arpaperbark_fol'],tags:E('tropical','humid','both',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
  {key:'ohia',name:'Ohia lehua (Metrosideros polymorpha)',how:'the first tree on new lava in the wet tropics (Hawaii): a crooked grey-barked tree 3-11 m, leathery grey-green leaves, scarlet brush flowers; it roots in the flow\'s cracks once the lava is a few decades old',
   items:['arohia','arohiatrunk','arohia_bloom'],tags:E('tropical','humid','no',['Am'],{ph:[4.5,8],lava:'pioneer'})},
+ {key:'arrata',name:'Gorge rata (Metrosideros nautica / demonstrans)',how:'a wind-braced coastal and gorge hardwood 6-15 m with J-curved reaction-wood limbs and dike-clasping buttress knees prized by shipwrights',
+  items:['arrata_trunk','arrata_fol'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],nickel:'excluder'})},
  {key:'uluhe',name:'Uluhe (Dicranopteris linearis)',how:'a dichotomously forking staghorn fern that scrambles over lava and coastal bluffs in thickets, bright yellow-green: with the ohia, the lava\'s first cover',
   items:['aruluhe'],tags:E('tropical','humid','no',['Am'],{ph:[4.5,8],lava:'pioneer'})},
+ {key:'arnephrolepis',name:'Sword fern (Nephrolepis exaltata)',how:'tufts of erect pinnate sword-fronds 0.4-1.1 m rooting in cooling lava crevices, tuff ledges and coastal rock cracks',
+  items:['arnephrolepis'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[4.5,8.2],lava:'pioneer'})},
+ // EARTH — mangroves & tropical strand (9)
  {key:'mangrove',name:'Red mangrove (Rhizophora)',how:'the sound\'s sheltered shores: a dense dark crown on arching prop roots, standing in the tidal mud',
   items:['armangrove','armangroveprop'],tags:E('tropical','humid','yes',['Am'],{ph:[6,8.5],tidal:true})},
+ {key:'aravicennia',name:'Grey mangrove (Avicennia marina)',how:'outer-mudflat and brackish-shore mangrove 3-8 m with silvery-olive foliage and a wide carpet of erect pencil pneumatophores',
+  items:['aravicennia_fol','aravicennia_pneum'],tags:E('tropical','humid','yes',['Am','Aw'],{ph:[6,8.8],tidal:true})},
+ {key:'arverdigrismangrove',name:'Teal-sap prop-wood (Rhizophora pycnandroides)',how:'ultramafic shore and gjar-mouth mangrove 4.5-9.5 m on braided elastoplastic stilt roots that bleed vivid teal-blue 20% nickel latex from bark scars',
+  items:['arverdigris_fol','artealsap_scar'],tags:E('tropical','humid','yes',['Am'],{ph:[5.5,8.8],tidal:true,nickel:'hyper'})},
  {key:'casuarina',name:'Beach she-oak (Casuarina equisetifolia)',how:'a drooping, wiry, grey-green she-oak 6-18 m on coastal headlands and dunes behind black sand; it fixes its own nitrogen and holds the shore',
   items:['arcastrunk','arcas','arcas_drape'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
+ {key:'arpandan',name:'Strand pandanus (Pandanus tectorius)',how:'a ringed prop-rooted screw-palm 3.5-8.5 m leaning on strand dunes and coastal bluffs, crowned with spiral rosettes of keeled strap leaves and orange fruit keys',
+  items:['arpandan_trunk','arpandan_strap','arpandan_fruit'],tags:E('tropical','humid','both',['Am','Aw'],{ph:[5,9],strand:true})},
+ {key:'artamanu',name:'Tamanu (Calophyllum inophyllum)',how:'a stout leaning coastal hardwood 7-16 m behind the strand and on basalt bluffs, with dense dark glossy leaves and curved hull-knee limbs',
+  items:['artamanu_trunk','artamanu_fol'],tags:E('tropical','humid','no',['Am'],{ph:[5,8.8],strand:true})},
+ {key:'arhibiscus',name:'Sea hibiscus (Hibiscus tiliaceus)',how:'a scrambling multi-stemmed coastal thicket tree 3-7 m with broad heart leaves and yellow cup flowers, stripped for rot-proof bast cordage',
+  items:['arhibiscus_fol','arhibiscus_bloom'],tags:E('tropical','humid','both',['Am','Aw'],{ph:[5,8.8],strand:true})},
  {key:'naupaka',name:'Beach naupaka (Scaevola taccada)',how:'a rounded shrub of fleshy bright-green leaves on the dune\'s front, white half-flowers',
   items:['arnaupaka'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
  {key:'ipomoea',name:'Beach morning glory (Ipomoea pes-caprae)',how:'a creeping vine of round leaves running over the black sand toward the tide line, pink flowers',
   items:['aripomoea'],tags:E('tropical','humid','no',['Am','Aw'],{ph:[5,9],strand:true})},
- {key:'coconut',name:'Coconut palm (Cocos nucifera), drift-sown',how:'leaning palms along the back of the beach, sown by the sea (default taken, owner to confirm: PLAN.md section 16)',
-  items:['arpalmtrunk','arpalm'],tags:E('tropical','humid','both',['Am'],{ph:[5,9],strand:true})},
- {key:'nepenthes',name:'Pitcher plant (Nepenthes vieillardii)',how:'red-green pitchers on the seeps of the laterite, where the ground is poorest and wettest: it eats what drowns in it (a trap record)',
-  items:['arpitch'],tags:E('tropical','humid','both',['Am'],{ph:[4.5,7],nickel:'excluder'})}];
+ {key:'coconut',name:'Coconut palm (Cocos nucifera), drift-sown',how:'leaning ringed palms along the back of the beach and coastal benches, crowned with arching-and-drooping pinnate fronds and green-bronze nut clusters',
+  items:['arpalmtrunk','arpalm','arcoconut_nut'],tags:E('tropical','humid','both',['Am'],{ph:[5,9],strand:true})},
+ // EARTH — marine & macrotidal zonation (4)
+ {key:'arkelp',name:'Shoal kombu kelp (Ecklonia / Macrocystis)',how:'golden-olive undulating kelp blades and holdfast stipes anchored on low-spring-tide rock ledges (-6.8 to -0.5 m) and pillow-lava tide pools',
+  items:['arkelp','arkelp_stipe'],tags:E('tropical','humid','yes',['Am'],{ph:[7.5,8.6],submarine:true,tidal:true})},
+ {key:'arseagrass',name:'Ribbon seagrass (Enhalus / Cymodocea)',how:'emerald strap-leaved seagrass meadows carpeting sheltered shallow sand and lagoon pockets (-4.5 to -0.4 m)',
+  items:['arseagrass'],tags:E('tropical','humid','yes',['Am'],{ph:[7.5,8.6],submarine:true,tidal:true})},
+ {key:'arbyssus',name:'Giant sea-byssus mussel bed (Pinna / Bathymodiolus)',how:'dense beds of dark bronze-violet fan-shells anchored by golden byssus threads in the lower sill tidal race (-6.6 to -1.0 m), exposed only on spring ebbs',
+  items:['arbyssus'],tags:E('tropical','humid','yes',['Am'],{ph:[7.6,8.8],submarine:true,tidal:true})},
+ {key:'aroyster',name:'Coralline-oyster visor (Saccostrea / Lithophyllum)',how:'cemented rose-chalk visor-oyster reefs (-0.5 to +2.6 m) and upper-littoral barnacle crusts (+2.6 to +6.8 m) banding macrotidal gorge walls',
+  items:['aroyster','arbarnacle'],tags:E('tropical','humid','yes',['Am'],{ph:[7.6,9.2],tidal:true})}];
 SPECIES.forEach((S,i)=>{S.i=i;});
-ARCHB.HARVEST={curtain:HV('none',[],false,'Nothing eats a curtain but the seam wader, which grazes its hem. Its black face, dried, is an iron-nickel sulphide.'),
- hem:HV('none',[],false,''),limeshelf:HV('none',[],false,'Burnt, lime.'),verdigris:HV('none',[],false,'Poisonous: its crust is nickel. Burnt, its ash is nickel ore (bio-ore, 10-20% Ni).'),
- seepcomb:HV('none',[],false,'Where the combs stand, the gas burns.'),acidfelt:HV('none',[],false,'Dried, an ochre pigment.'),steamfan:HV('none',[],false,''),
- araucaria:HV('timber (straight, resinous)',[],false,''),gymnostoma:HV('fuel (hard, hot)',[],false,'It feeds the ground: the maquis is thicker round it.'),
- pycnandra:HV('none',[],false,'Its latex is a quarter nickel: tapped and burnt, the richest nickel ore there is (agromining).'),costularia:HV('thatch',[],false,''),
- nepenthes:HV('none',['the pitchers\' fluid is drunk in need, filtered'],false,''),
- casuarina:HV('fuel (the best: hot and slow)',[],false,''),naupaka:HV('none',[],true,'Its leaves are a poultice.'),ipomoea:HV('none',[],true,''),coconut:HV('timber, thatch, coir',['coconuts'],false,''),
- ohia:HV('fuel, carving',[],false,'Its red flowers are the first colour on a new flow.'),uluhe:HV('thatch (and mulch)',[],false,''),mangrove:HV('timber (dense, rot-proof), tannin',[],false,'The bark is a tannin for nets and hides.')};
-SPECIES.forEach(S=>{S.tags.harvest=ARCHB.HARVEST[S.key];});
-const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);ARCHB.byKey=byKey;
+ARCHB.HARVEST={
+ curtain:HV('none',[],false,'Nothing eats a curtain but the seam wader, which grazes its hem. Its black face, dried, is an iron-nickel sulphide reagent.'),
+ hem:HV('none',[],false,'Juvenile mineral frill along active pH meetings.'),
+ limeshelf:HV('none',[],false,'Burnt in coastal clamps for slaked brucite-carbonate lime mortar and whitewash.'),
+ verdigris:HV('none',[],false,'Poisonous nickel crust; calcined into 15-20% nickel bio-ore ash for paktong smelting.'),
+ seepcomb:HV('none',[],false,'Marks H2-bearing serpentinite fault seeps where abiotic gas burns.'),
+ acidfelt:HV('dye (ochre)',[],false,'Dried and ground into rust-ochre mineral pigment.'),
+ steamfan:HV('none',[],false,'Thermophile fan on 45-90 degC fumarole ground.'),
+ araucaria:HV('timber (straight spars), pitch, resin',[],false,'Yard spar timber for masts and yards; houses take the offcuts and resin.'),
+ arkauri:HV('timber (spars), gum, pitch',[],false,'Straight spar wood and golden kauri gum boiled into marine pitch, caulking and hull varnish.'),
+ gymnostoma:HV('fuel (hard, hot)',[],false,'Hot-burning ironwood fuel; Frankia root nodules feed nitrogen into the laterite.'),
+ pycnandra:HV('none',[],false,'Latex is 25% nickel: tapped and calcined into rich bio-ore ash for paktong smelting.'),
+ arphyllanthus:HV('fuel',[],false,'Coppiced hyperaccumulator burned into green nickel-rich ash for paktong smelting.'),
+ costularia:HV('thatch',[],false,'Bundled with uluhe for tiered Shore-kin roof thatch.'),
+ arlepidosperma:HV('thatch, mats, basketry',[],false,'Stiff silica-edged sword-sedge woven into floor mats, fish-drying screens and ridge thatch.'),
+ ardracophyllum:HV('fuel, torch resin',[],false,'Resinous dry twigs catch fire in wet sea air for kindling and night torches.'),
+ arcodia:HV('fuel, tanbark',[],false,'Astringent bark steeped for tanning hides and fishing lines.'),
+ argrevillea:HV('fuel, carving',[],false,'Silky-grained red heartwood turned for toggles, pins and shrine pegs.'),
+ nepenthes:HV('cordage (tough vine stems)',['filtered pitcher fluid'],false,'Tough woody stems twisted into rough lashing; fluid drunk in need.'),
+ ardrosera:HV('none',[],true,'Mucilaginous sundew extract used as a soothing cough physic.'),
+ artreefern:HV('posts (rot-slow caudex trunks), thatch',[],false,'Fibrous caudex trunks set as damp-ground fence and shed posts; fronds for temporary thatch.'),
+ arpaperbark:HV('bark sheet (caulking and roof lining), fuel',[],true,'Layered waterproof paperbark stripped in sheets for hull seam caulking and under-thatch roof lining; aromatic leaf oil.'),
+ ohia:HV('fuel, carving, knees',[],false,'Hard close-grained wood carved into Rian-strand ridge finials and boat cleats.'),
+ arrata:HV('knees (ship knees), timber, carving',[],false,'J-curved reaction-wood limbs prized for borer-proof ship knees, hull ribs and hoist frames.'),
+ uluhe:HV('thatch, mulch',[],false,'Springy rain-shedding staghorn fern thatch layered over Costularia sedge.'),
+ arnephrolepis:HV('mulch',[],true,'Pioneer fern rhizomes pounded as a cooling poultice.'),
+ mangrove:HV('timber (dense, rot-proof piles), knees, tannin',[],false,'Rot-proof boardwalk planks and piles; red-brown bark tannin stains Fleet-born sails and nets.'),
+ aravicennia:HV('knees, fuel, tannin',['leached mangrove propagules'],false,'Curved boat-rib knees and smokehouse fuel; bark yields astringent net tannin.'),
+ arverdigrismangrove:HV('knees (worm-proof ship knees), timber, tannin, fuel',[],false,'Worm-proof ship knees; coppiced limbs burned into 18-24% nickel bio-ore ash for paktong.'),
+ casuarina:HV('fuel (hot, slow charcoal)',[],false,'Premier smelter and lime-kiln fuelwood; nitrogen-fixing shelterbelt.'),
+ arpandan:HV('fibre (strap leaves), mats, thatch',['cooked pandan keys'],false,'Stripped, dried and plaited into waterproof boat-mats, sails, fenders and baskets.'),
+ artamanu:HV('timber (coastal spars), knees, carving',[],true,'Tough interlocking-grain coastal hardwood for keels, knees and spars; pressed nut oil caulks seams.'),
+ arhibiscus:HV('bast, cordage, fibre, knees',[],false,'Inner bast stripped and retted into salt-proof marine cordage, caulking oakum and net twine; light outrigger knees.'),
+ naupaka:HV('none',[],true,'Fleshy coastal leaves crushed as a salt-burn poultice.'),
+ ipomoea:HV('none',[],true,'Sand-binding runner; leaves used externally on sores.'),
+ coconut:HV('timber, thatch, coir, fibre',['coconuts'],false,'Posts from old trunks, plaited frond thatch, and twisted coir fibre for spring-tide mooring warps.'),
+ arkelp:HV('none',['dried kombu kelp'],true,'Stipes and blades burned in shore kilns for potash-soda kelp ash mortar, glass flux and marine soap.'),
+ arseagrass:HV('thatch, mats, fibre',[],false,'Rot-resistant salt-hay cured for roof insulation, mattress stuffing and woven deck mats.'),
+ arbyssus:HV('spinning (sea-silk byssus)',['mussel meat'],false,'Golden sea-silk byssus beard spun into prized Fleet-born cloth; valves burned for shell lime.'),
+ aroyster:HV('none',['rock oysters'],false,'Cemented oyster shells and coralline crusts burned in coastal kilns into slaked shell limewash and mortar.')};
+ARCHB.HARVEST_TAGS={
+ curtain:['ash'],hem:[],limeshelf:['lime'],verdigris:['ash'],seepcomb:[],acidfelt:[],steamfan:[],
+ araucaria:['timber','pitch'],arkauri:['timber','gum','pitch'],gymnostoma:[],pycnandra:['ash'],arphyllanthus:['ash'],
+ costularia:['thatch'],arlepidosperma:['thatch','fibre'],ardracophyllum:[],arcodia:['tannin'],argrevillea:[],
+ nepenthes:['fibre'],ardrosera:[],artreefern:['timber','thatch'],arpaperbark:['caulking','thatch'],
+ ohia:['knees'],arrata:['knees','timber'],uluhe:['thatch'],arnephrolepis:[],
+ mangrove:['timber','knees','tannin'],aravicennia:['knees','tannin'],arverdigrismangrove:['knees','timber','tannin','ash'],
+ casuarina:[],arpandan:['fibre','thatch'],artamanu:['timber','knees','caulking'],arhibiscus:['bast','fibre','knees','caulking'],
+ naupaka:[],ipomoea:[],coconut:['timber','thatch','fibre'],
+ arkelp:['ash'],arseagrass:['thatch','fibre'],arbyssus:['byssus','fibre','lime'],aroyster:['lime']};
+SPECIES.forEach(S=>{const h=ARCHB.HARVEST[S.key];if(h)h.tags=ARCHB.HARVEST_TAGS[S.key]||[];S.tags.harvest=h;});
+const byKey={};SPECIES.forEach(S=>byKey[S.key]=S);byKey.arcoconut=byKey.coconut;ARCHB.byKey=byKey;
 ARCHB.plantOfItem=it=>{for(const S of SPECIES)if(S.items.indexOf(it)>=0)return S;return null;};
+ARCHB.speciesOfItem=ARCHB.plantOfItem;
+ARCHB.CROPS=(ARCH.registerCrops(),typeof CROPS!=='undefined'&&CROPS&&CROPS.forBiome?CROPS.forBiome('arch'):ARCH.CROPS);
 ARCHB.TRAP=typeof KTRAPS!=='undefined'?KTRAPS.make({kind:'pitfall',mouth:.06,preyMax:'insect',cycle:{wait:86400,shut:0,digest:0,reopen:0},lure:'nectar',danger:0}):null;
+ARCHB.SUNDEW_TRAP=typeof KTRAPS!=='undefined'?KTRAPS.make({kind:'flypaper',mouth:.03,preyMax:'insect',cycle:{wait:43200,shut:1800,digest:28800,reopen:7200},lure:'dew',danger:0}):null;
+if(BIO.kits&&BIO.kits.arch)BIO.kits.arch.api=ARCHB;
 
 // ---------------------------------------------------------------- High-detail procedural bark & unclipped botanical foliage cards
 // NOTE on DataTexture UV convention (30-core-foliage.js): canvas row y = 0 is v = 0 (the low/stem edge of clump(), hang(), and
@@ -378,6 +482,101 @@ TX.sedge=cardTex(256,(g,S)=>{
  }
 },[208,208,184]);
 
+/* 13. Hoop-scarred Araucaria & Kauri conifer bark fallback (swapped to library bark.araucaria) */
+TX.araucariaBark=BIO.canvasTex(256,256,(g,W,H)=>{
+ g.fillStyle='#7c7064';g.fillRect(0,0,W,H);
+ for(let j=0;j<34;j++){const y=(j+.5)*(H/34);
+  g.fillStyle=j%2?'rgba(54,46,38,0.52)':'rgba(162,150,136,0.40)';g.fillRect(0,y-1.8,W,3.4);}
+ for(let i=0;i<90;i++){const x=H01(i,1,92)*W,y=H01(i,2,92)*H,r=4+10*H01(i,3,92);
+  g.fillStyle='rgba(148,136,120,0.32)';g.beginPath();g.ellipse(x,y,r*1.4,r*.55,0,0,TAU);g.fill();}
+},[1,1]);
+
+/* 14. Layered cream-buff peeling Melaleuca paperbark fallback (swapped to library bark.paperbark) */
+TX.paperbark=BIO.canvasTex(256,256,(g,W,H)=>{
+ g.fillStyle='#cfc8ba';g.fillRect(0,0,W,H);
+ for(let i=0;i<120;i++){const x=H01(i,1,93)*W,y=H01(i,2,93)*H,w=8+22*H01(i,3,93),h=24+68*H01(i,4,93);
+  const v=Math.round(182+58*H01(i,5,93));g.fillStyle='rgba('+v+','+(v-6)+','+(v-16)+',0.55)';g.fillRect(x,y,w,h);
+  g.strokeStyle='rgba(112,98,82,0.42)';g.lineWidth=1.1;g.strokeRect(x,y,w,h);}
+},[1,1]);
+
+/* 15. Lenticelled dark mangrove prop-root bark fallback (swapped to library bark.mangrove) */
+TX.mangroveBark=BIO.canvasTex(256,256,(g,W,H)=>{
+ g.fillStyle='#584e46';g.fillRect(0,0,W,H);
+ for(let i=0;i<160;i++){const x=H01(i,1,94)*W,y=H01(i,2,94)*H,w=3+7*H01(i,3,94),h=14+38*H01(i,4,94);
+  const v=Math.round(68+46*H01(i,5,94));g.fillStyle='rgba('+v+','+(v-6)+','+(v-10)+',0.48)';g.fillRect(x,y,w,h);}
+ for(let i=0;i<90;i++){const x=H01(i,6,94)*W,y=H01(i,7,94)*H;
+  g.fillStyle='rgba(176,164,148,0.42)';g.fillRect(x,y,3.2,1.6);}
+},[1,1]);
+
+/* 16. Pinnate coconut palm frond card (512px, v=0 petiole base -> v=0.95 tapering plume tip, unclipped) */
+TX.palmFrond=cardTex(512,(g,S)=>{
+ g.lineCap='round';
+ const nPairs=38;
+ for(let i=1;i<=nPairs;i++){
+  const t=i/(nPairs+1),ry=S*(.05+.88*t);
+  const env=Math.sin(Math.pow(t,.68)*Math.PI)*(1-.12*t);
+  const pLen=S*.40*env;
+  if(pLen<4)continue;
+  for(const side of [-1,1]){
+   const sweep=.34+.26*t,ang=side*(Math.PI*.5-sweep)+(H01(i,side+2,95)-.5)*.05;
+   const mx=S*.5+Math.cos(ang)*pLen*.56,my=ry+Math.sin(Math.abs(sweep))*pLen*.42;
+   const tx=clamp(S*.5+Math.cos(ang)*pLen,.04*S,.96*S),ty=clamp(ry+Math.sin(Math.abs(sweep))*pLen*.88,.04*S,.96*S);
+   const hw=S*.0078*(.6+.5*env);
+   const lum=Math.round(168+64*env+22*(H01(i,side+5,95)-.5));
+   g.fillStyle='rgb('+Math.round(lum*.92)+','+Math.min(255,Math.round(lum*1.05))+','+Math.round(lum*.74)+')';
+   g.beginPath();g.moveTo(S*.5,ry-hw);g.quadraticCurveTo(mx,my-hw*.7,tx,ty);g.quadraticCurveTo(mx,my+hw*.9,S*.5,ry+hw);g.closePath();g.fill();
+  }
+ }
+ g.strokeStyle='rgba(168,176,112,0.96)';g.lineWidth=S*.012;
+ g.beginPath();g.moveTo(S*.5,S*.03);g.lineTo(S*.5,S*.94);g.stroke();
+},[154,182,112]);
+
+/* 17. Keeled toothed Pandanus strap leaf fallback (swapped to library card.strap.pandan) */
+TX.pandanStrap=cardTex(256,(g,S)=>{
+ for(let i=0;i<36;i++){
+  const t0=i/36,t1=(i+1)/36,y0=S*(.04+.90*t0),y1=S*(.04+.90*t1);
+  const w0=S*.11*(1-.78*Math.pow(t0,1.25)),w1=S*.11*(1-.78*Math.pow(t1,1.25));
+  const lum=Math.round(176+48*Math.sin(t0*Math.PI));
+  g.fillStyle='rgb('+Math.round(lum*.90)+','+Math.min(255,Math.round(lum*1.04))+','+Math.round(lum*.78)+')';
+  g.beginPath();g.moveTo(S*.5-w0,y0);g.lineTo(S*.5+w0,y0);g.lineTo(S*.5+w1,y1);g.lineTo(S*.5-w1,y1);g.closePath();g.fill();
+ }
+ g.strokeStyle='rgba(232,242,196,0.65)';g.lineWidth=2.0;g.beginPath();g.moveTo(S*.5,S*.04);g.lineTo(S*.5,S*.92);g.stroke();
+},[158,186,118]);
+
+/* 18. Lacy bipinnate Cyathea tree-fern & Nephrolepis sword-fern frond card (512px, unclipped) */
+TX.fernFrond=cardTex(512,(g,S)=>{
+ g.lineCap='round';
+ const nPin=26;
+ for(let i=1;i<=nPin;i++){
+  const t=i/(nPin+1),ry=S*(.07+.85*t),env=Math.sin(Math.pow(t,.65)*Math.PI)*(1-.15*t),pL=S*.36*env;
+  if(pL<4)continue;
+  for(const side of [-1,1]){
+   const px1=S*.5+side*pL,py1=ry+pL*.22;
+   const nSub=Math.max(5,Math.round(12*env));
+   for(let k=1;k<nSub;k++){
+    const f=k/nSub,bx=lerp(S*.5,px1,f),by=lerp(ry,py1,f),sl=S*.032*env*(1-.45*f);
+    const lum=Math.round(168+62*env+18*(H01(i*9+k,side+2,96)-.5));
+    g.fillStyle='rgb('+Math.round(lum*.90)+','+Math.min(255,Math.round(lum*1.06))+','+Math.round(lum*.72)+')';
+    g.beginPath();g.ellipse(bx,by,sl*.48,sl,side*.25,0,TAU);g.fill();
+   }
+   g.strokeStyle='rgba(116,126,72,0.9)';g.lineWidth=1.5;g.beginPath();g.moveTo(S*.5,ry);g.lineTo(px1,py1);g.stroke();
+  }
+ }
+ g.strokeStyle='rgba(92,76,48,0.96)';g.lineWidth=S*.011;g.beginPath();g.moveTo(S*.5,S*.04);g.lineTo(S*.5,S*.93);g.stroke();
+},[146,178,104]);
+
+/* 19. Corrugated golden-olive kombu kelp blade card (256px, unclipped) */
+TX.kelpBlade=cardTex(256,(g,S)=>{
+ for(let i=0;i<32;i++){
+  const t0=i/32,t1=(i+1)/32,y0=S*(.04+.90*t0),y1=S*(.04+.90*t1);
+  const w0=S*.22*Math.sin(Math.pow(t0,.6)*Math.PI*.94),w1=S*.22*Math.sin(Math.pow(t1,.6)*Math.PI*.94);
+  const wav0=Math.sin(t0*14)*S*.03,wav1=Math.sin(t1*14)*S*.03;
+  const lum=Math.round(170+52*Math.sin(t0*9)*.5+24*t0);
+  g.fillStyle='rgb('+lum+','+Math.round(lum*.94)+','+Math.round(lum*.58)+')';
+  g.beginPath();g.moveTo(S*.5-w0+wav0,y0);g.lineTo(S*.5+w0+wav0,y0);g.lineTo(S*.5+w1+wav1,y1);g.lineTo(S*.5-w1+wav1,y1);g.closePath();g.fill();
+ }
+},[164,148,74]);
+
 const vcol=(o)=>new T3.MeshStandardMaterial(Object.assign({color:0xffffff,roughness:.8,metalness:0,vertexColors:true},o||{}));
 const M=ARCHB.M={
  needles:BIO.leafMat(TX.gymno,'ar-needles',{aN:true,swayW:'.65',swayA:.045,alphaTest:.38}),
@@ -388,14 +587,24 @@ const M=ARCHB.M={
  uluhe:BIO.leafMat(TX.uluhe,'ar-uluhe',{aN:false,swayW:'(position.y)',swayA:.055,alphaTest:.44}),
  glossy:BIO.leafMat(TX.glossy,'ar-glossy',{aN:true,swayW:'.55',swayA:.045,alphaTest:.40}),
  sedge:BIO.leafMat(TX.sedge,'ar-sedge',{aN:false,swayW:'(position.y+.5)',swayA:.07,alphaTest:.36}),
+ palmFrond:BIO.leafMat(TX.palmFrond,'ar-palmfrond',{aN:false,swayW:'(position.x)',swayA:.085,alphaTest:.36}),
+ pandanStrap:BIO.leafMat(TX.pandanStrap,'ar-pandanstrap',{aN:false,swayW:'(position.x)',swayA:.065,alphaTest:.38}),
+ fernFrond:BIO.leafMat(TX.fernFrond,'ar-fernfrond',{aN:false,swayW:'(position.x)',swayA:.06,alphaTest:.38}),
+ kelpBlade:BIO.leafMat(TX.kelpBlade,'ar-kelpblade',{aN:false,swayW:'(-position.y)',swayA:.12,axis:1,alphaTest:.34}),
  curtain:vcol({roughness:.38,envMapIntensity:.35}),lime:vcol({roughness:.7}),flesh:vcol({roughness:.6}),comb:vcol({roughness:.25,metalness:.15}),felt:vcol({roughness:.95}),
- bark:BIO.barkMat(TX.bark),ohiaBark:BIO.barkMat(TX.ohiaBark),casBark:BIO.barkMat(TX.casBark),rope:BIO.barkMat(TX.rope)};
+ amber:vcol({roughness:.24,metalness:.06}),tealsap:vcol({roughness:.28,metalness:.10,emissive:0x0a4a46,emissiveIntensity:.22}),
+ byssus:vcol({roughness:.46,metalness:.12}),oyster:vcol({roughness:.78,metalness:.03}),
+ bark:BIO.barkMat(TX.bark),araucariaBark:BIO.barkMat(TX.araucariaBark),paperbark:BIO.barkMat(TX.paperbark),mangroveBark:BIO.barkMat(TX.mangroveBark),
+ ohiaBark:BIO.barkMat(TX.ohiaBark),casBark:BIO.barkMat(TX.casBark),rope:BIO.barkMat(TX.rope)};
 ARCHB.SWAP=BIO.libSwap('arch',M);
 
-/* Merged bark buckets for sinuous multi-limbed Ohia lehua, Beach she-oak & Maquis she-oak */
-BIO.bucket('ar_ohia_bark',M.ohiaBark,{label:'Ohia lehua gnarled trunks & limbs',uvScale:[0.85,1.35]});
+/* Merged bark buckets for multi-limbed structural trees */
+BIO.bucket('ar_ohia_bark',M.ohiaBark,{label:'Ohia, rata & tamanu gnarled trunks & limbs',uvScale:[0.85,1.35]});
 BIO.bucket('ar_cas_bark',M.casBark,{label:'Beach she-oak furrowed trunks & boughs',uvScale:[1.05,1.55]});
-BIO.bucket('ar_gymno_bark',M.casBark,{label:'Maquis she-oak wiry stems',uvScale:[0.55,1.05]});
+BIO.bucket('ar_gymno_bark',M.casBark,{label:'Maquis she-oak & dragon-heath wiry stems',uvScale:[0.55,1.05]});
+BIO.bucket('ar_araucaria_bark',M.araucariaBark,{label:'Kauri & araucaria hoop-barked trunks & boughs',uvScale:[1.2,1.6]});
+BIO.bucket('ar_paper_bark',M.paperbark,{label:'Niaouli paperbark trunks & boughs',uvScale:[1.1,1.5]});
+BIO.bucket('ar_mangrove_bark',M.mangroveBark,{label:'Mangrove prop-roots, pandanus & sea-hibiscus stems',uvScale:[0.9,1.3]});
 
 /* Custom 7-frond arching 3D rosette geometry for scrambling Uluhe staghorn fern thickets (single-span v=0..1 per forked frond!) */
 function makeUluheThicketGeo(){
@@ -427,6 +636,99 @@ function makeUluheThicketGeo(){
  return BIO.geo._make(pos,nor,uv);
 }
 
+/* Multi-segment V-cambered arching-and-drooping pinnate frond geometry (pinned at origin, arching along +x, v=0..1 once) */
+function makeDroopFrondGeo(nSeg,arch,droop,halfW,vFold){
+ const pos=[],nor=[],uv=[],L=[],C0=[],R0=[];
+ for(let i=0;i<=nSeg;i++){
+  const t=i/nSeg,x=t*(1-.14*t*t),y=arch*Math.sin(t*1.95)-droop*t*t*t;
+  const env=Math.sin(Math.pow(t,.62)*Math.PI*.96)*(.88+.12*(1-t)),w=halfW*(.08+.92*env),vf=vFold*env;
+  L.push([x,y-vf,-w,0,t]);C0.push([x,y,0,.5,t]);R0.push([x,y-vf,w,1,t]);
+ }
+ for(let i=0;i<nSeg;i++){
+  [[L[i],C0[i],L[i+1],C0[i+1],-.28],[C0[i],R0[i],C0[i+1],R0[i+1],.28]].forEach(s=>{
+   const a=s[0],b=s[1],c=s[2],d=s[3],nz=s[4],nl=Math.hypot(.15,.94,nz);
+   [a,b,c,b,d,c].forEach(q=>{pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);nor.push(.15/nl,.94/nl,nz/nl);});
+  });
+ }
+ return BIO.geo._make(pos,nor,uv);
+}
+
+/* 6-frond upright arching Nephrolepis sword-fern tuft geometry */
+function makeSwordFernGeo(){
+ const pos=[],nor=[],uv=[],nF=6,nSeg=4;
+ for(let f=0;f<nF;f++){
+  const az=(f/nF)*TAU+(f%2)*.18,ca=Math.cos(az),sa=Math.sin(az),tilt=.42+(f%2)*.24,P=[];
+  for(let i=0;i<=nSeg;i++){
+   const t=i/nSeg,rad=t*Math.sin(tilt+.24*t)*.82,yy=t*Math.cos(tilt)*.92-.16*t*t;
+   const hw=.22*(.18+.82*Math.sin(Math.pow(t,.65)*Math.PI*.92)),cx=ca*rad,cz=sa*rad,tx=-sa*hw,tz=ca*hw;
+   P.push([cx-tx,yy,cz-tz,0,t],[cx+tx,yy,cz+tz,1,t]);
+  }
+  for(let i=0;i<nSeg;i++){
+   const a=P[2*i],b=P[2*i+1],c=P[2*i+2],d=P[2*i+3],nl=Math.hypot(ca*.3,.9,sa*.3);
+   [a,b,c,b,d,c].forEach(q=>{pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);nor.push(ca*.3/nl,.9/nl,sa*.3/nl);});
+  }
+ }
+ return BIO.geo._make(pos,nor,uv);
+}
+
+/* Clustered weeping golden kauri-gum stalactite geometry (origin at top bough attachment, hanging down -y) */
+function makeKauriGumGeo(){
+ const pos=[],nor=[],col=[],idx=[],lobes=[[0,0,1,.22],[.14,.08,.68,.14],[-.13,.06,.58,.13]],nr=5,ns=6;
+ lobes.forEach(lb=>{
+  const b=pos.length/3;
+  for(let j=0;j<=nr;j++){
+   const t=j/nr,y=-t*lb[2],r=t===1?.015:lb[3]*Math.sin(Math.pow(t,.55)*Math.PI*.92+.22)*(1+.12*Math.sin(t*9));
+   for(let i=0;i<=ns;i++){
+    const a=i/ns*TAU,px=lb[0]+Math.cos(a)*r,pz=lb[1]+Math.sin(a)*r,sh=.78+.22*(1-t);
+    pos.push(px,y,pz);nor.push(Math.cos(a),-.15,Math.sin(a));col.push(sh,sh*.92,sh*.76);
+   }
+  }
+  for(let j=0;j<nr;j++)for(let i=0;i<ns;i++){const a=b+j*(ns+1)+i,c=a+ns+1;idx.push(a,c,a+1,a+1,c,c+1);}
+ });
+ const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+ g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+ g.setIndex(idx);g.computeVertexNormals();return g;
+}
+
+/* Clustered upright Pinna / Bathymodiolus fan-mussel bed geometry with golden byssus base */
+function makeByssusBedGeo(){
+ const pos=[],nor=[],col=[],idx=[];
+ for(let m=0;m<5;m++){
+  const az=(m/5)*TAU+.35*m,d=m?.26:0,ox=Math.cos(az)*d,oz=Math.sin(az)*d,tilt=m?.28:.08,h=m?.78:.95,b=pos.length/3;
+  const ca=Math.cos(az),sa=Math.sin(az);
+  for(let j=0;j<=3;j++){
+   const t=j/3,w=.05+.22*Math.pow(t,.75),th=.04+.07*Math.sin(t*Math.PI),yy=t*h,rr0=t*tilt*h;
+   for(let i=0;i<=6;i++){
+    const a=i/6*TAU,lx=Math.cos(a)*w,lz=Math.sin(a)*th;
+    pos.push(ox+ca*rr0-sa*lx+ca*lz,yy,oz+sa*rr0+ca*lx+sa*lz);nor.push(ca*.3,.85,sa*.3);
+    const bys=t<.25?1:0;col.push(bys?.92:(.55+.35*t),bys?.78:(.48+.32*t),bys?.32:(.58+.32*t));
+   }
+  }
+  for(let j=0;j<3;j++)for(let i=0;i<6;i++){const a=b+j*7+i,c=a+7;idx.push(a,a+1,c,a+1,c+1,c);}
+ }
+ const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+ g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+ g.setIndex(idx);g.computeVertexNormals();return g;
+}
+
+/* Hanging cluster of 4 coconuts under the crownshaft */
+function makeCoconutClusterGeo(){
+ const pos=[],nor=[],col=[],idx=[],offs=[[.14,-.10,0],[-.12,-.12,.09],[.02,-.14,-.13],[0,-.24,.02]];
+ offs.forEach(o=>{
+  const s=new T3.IcosahedronGeometry(.13,1),p=s.attributes.position,n=s.attributes.normal,b=pos.length/3;
+  for(let i=0;i<p.count;i++){pos.push(p.getX(i)+o[0],p.getY(i)*1.22+o[1],p.getZ(i)+o[2]);nor.push(n.getX(i),n.getY(i),n.getZ(i));
+   const sh=.76+.24*clamp(p.getY(i)/.13*.5+.5,0,1);col.push(sh,sh,sh*.92);}
+  if(s.index){const ix=s.index.array;for(let i=0;i<ix.length;i++)idx.push(b+ix[i]);}
+  else for(let i=0;i<p.count;i++)idx.push(b+i);
+ });
+ const g=new T3.BufferGeometry();g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+ g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+ g.setIndex(idx);return g;
+}
+
+const PALM_FROND_GEO=makeDroopFrondGeo(5,.34,.42,.28,.075);
+const TREEFERN_FROND_GEO=makeDroopFrondGeo(4,.28,.22,.26,.045);
+
 // ---------------------------------------------------------------- the items
 // THE CURTAIN: a unit wall 1 long (+x) and 1 tall (+y), two sheets 3 cm apart with a wave through them; the +z sheet white (the alkaline face), the -z
 // sheet black-green (the acid face); ribs up the sheet; a row of blisters near the foot. The kit turns +z toward the alkaline water (60)
@@ -448,34 +750,74 @@ BIO.def('arcomb',BIO.fung.comb({w:1,d:.45,tilt:.3,lobes:3,seg:6}),M.comb,{label:
 BIO.def('arfelt',BIO.fung.cap({form:'disc',h:.08,seg:10,rings:2,lump:.5,wav:7,wavA:.15,under:'none',uv:'planar',seed:20202}),M.felt,{label:'Acid felt'});
 BIO.def('arfan',BIO.fung.cap({form:'funnel',h:.3,seg:9,rings:2,wav:5,wavA:.2,under:'none',seed:20203}),M.flesh,{label:'Steam fan'});
 // EARTH items (single-line BIO.def for check_cells.py)
-BIO.def('artrunk',BIO.fung.stalk({r0:.05,r1:.025,seg:7,rings:6}),M.bark,{label:'Candelabra araucaria (trunk)'});
+BIO.def('artrunk',BIO.fung.stalk({r0:.05,r1:.025,seg:7,rings:6}),M.araucariaBark,{label:'Candelabra araucaria (trunk)'});
 BIO.def('arbough',BIO.fung.stalk({r0:.11,r1:.08,seg:6,rings:6,bend:.35}),M.rope,{label:'Candelabra araucaria (arm)'});
+BIO.def('arkauri_trunk',BIO.fung.stalk({r0:.14,r1:.10,seg:7,rings:4}),M.araucariaBark,{label:'Maquis kauri (trunk)'});
+BIO.def('arkauri_fol',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Maquis kauri (crown)'});
+BIO.def('arkauri_gum',makeKauriGumGeo(),M.amber,{label:'Maquis kauri (weeping kauri-gum resin)'});
 BIO.def('argymno',BIO.geo.clump(),M.needles,{attrs:['aN'],label:'Maquis she-oak'});
 BIO.def('arpycn',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Sève bleue'});
 BIO.def('arpycntrunk',BIO.fung.stalk({r0:.06,r1:.04,seg:6,rings:3}),M.bark,{label:'Sève bleue (stem)'});
+BIO.def('arphyllanthus',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Green-sap hyperaccumulator'});
 BIO.def('arsedge',BIO.geo.clump(),M.sedge,{label:'Maquis sedge'});
-BIO.def('arcastrunk',BIO.fung.stalk({r0:.14,r1:.09,seg:7,rings:4,bend:.05}),M.casBark,{label:'Beach she-oak (trunk)'});
-BIO.def('arcas',BIO.geo.clump(),M.casuarina,{attrs:['aN'],label:'Beach she-oak'});
-BIO.def('arcas_drape',BIO.geo.hang(),M.casDrape,{label:'Beach she-oak (weeping cladodes)'});
-BIO.def('arnaupaka',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Beach naupaka'});
-BIO.def('aripomoea',BIO.fung.cap({form:'disc',h:.05,seg:8,rings:2,lump:.6,wav:6,wavA:.2,under:'none',uv:'planar',seed:20204}),M.flesh,{label:'Beach morning glory'});
-BIO.def('arpalmtrunk',BIO.fung.stalk({r0:.05,r1:.035,seg:7,rings:8,bend:.25,ribs:18,ribA:.08}),M.bark,{label:'Coconut palm (trunk)'});
-BIO.def('arpalm',BIO.fung.comb({w:1,d:.22,tilt:-.35,lobes:5,seg:8}),M.flesh,{label:'Coconut palm (fronds)'});
+BIO.def('arlepidosperma',BIO.geo.clump(),M.sedge,{label:'Sword-sedge'});
+BIO.def('ardracophyllum',BIO.geo.clump(),M.sedge,{label:'Dragon-heath'});
+BIO.def('arcodia',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'White-puff maquis shrub'});
+BIO.def('arcodia_bloom',BIO.geo.bloom(),M.ohiaBloom,{onLeaf:true,label:'White-puff maquis shrub (blossom)'});
+BIO.def('argrevillea',BIO.geo.clump(),M.needles,{attrs:['aN'],label:'Serpentine grevillea'});
+BIO.def('argrevillea_bloom',BIO.geo.bloom(),M.ohiaBloom,{onLeaf:true,label:'Serpentine grevillea (raceme)'});
+BIO.def('arpitch',BIO.fung.bladder({swell:.55,neck:.42,pleats:0,seg:9,rings:5,h:1.6}),M.flesh,{label:'Pitcher plant'});
+BIO.def('ardrosera',BIO.fung.cap({form:'disc',h:.06,seg:9,rings:2,lump:.45,wav:8,wavA:.22,under:'none',uv:'planar',seed:20205}),M.amber,{label:'Ultramafic sundew'});
+BIO.def('artreefern_trunk',BIO.fung.stalk({r0:.09,r1:.065,seg:6,rings:6,bend:.10,ribs:12,ribA:.07}),M.bark,{label:'Gully tree-fern (caudex trunk)'});
+BIO.def('artreefern_frond',TREEFERN_FROND_GEO,M.fernFrond,{label:'Gully tree-fern (frond)'});
+BIO.def('arpaperbark_trunk',BIO.fung.stalk({r0:.13,r1:.085,seg:7,rings:4,bend:.08}),M.paperbark,{label:'Niaouli paperbark (trunk)'});
+BIO.def('arpaperbark_fol',BIO.geo.clump(),M.ohiaLeaf,{attrs:['aN'],label:'Niaouli paperbark (crown)'});
 BIO.def('arohiatrunk',BIO.fung.stalk({r0:.13,r1:.08,seg:7,rings:4,bend:.08}),M.ohiaBark,{label:'Ohia lehua (trunk)'});
 BIO.def('arohia',BIO.geo.clump(),M.ohiaLeaf,{attrs:['aN'],label:'Ohia lehua'});
 BIO.def('arohia_bloom',BIO.geo.bloom(),M.ohiaBloom,{onLeaf:true,label:'Ohia lehua (scarlet brush flower)'});
+BIO.def('arrata_trunk',BIO.fung.stalk({r0:.15,r1:.09,seg:7,rings:4,bend:.16}),M.ohiaBark,{label:'Gorge rata (reaction-wood trunk)'});
+BIO.def('arrata_fol',BIO.geo.clump(),M.ohiaLeaf,{attrs:['aN'],label:'Gorge rata (crown)'});
 BIO.def('aruluhe',makeUluheThicketGeo(),M.uluhe,{label:'Uluhe fern'});
-BIO.def('armangroveprop',BIO.fung.stalk({r0:.05,r1:.04,seg:5,rings:5,bend:.45}),M.bark,{label:'Red mangrove (prop roots)'});
+BIO.def('arnephrolepis',makeSwordFernGeo(),M.fernFrond,{label:'Sword fern'});
+BIO.def('armangroveprop',BIO.fung.stalk({r0:.05,r1:.04,seg:5,rings:5,bend:.45}),M.mangroveBark,{label:'Red mangrove (prop roots)'});
 BIO.def('armangrove',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Red mangrove'});
-BIO.def('arpitch',BIO.fung.bladder({swell:.55,neck:.42,pleats:0,seg:9,rings:5,h:1.6}),M.flesh,{label:'Pitcher plant'});
+BIO.def('aravicennia_fol',BIO.geo.clump(),M.ohiaLeaf,{attrs:['aN'],label:'Grey mangrove'});
+BIO.def('aravicennia_pneum',BIO.fung.stalk({r0:.028,r1:.016,seg:5,rings:3,bend:.06}),M.mangroveBark,{label:'Grey mangrove (pneumatophores)'});
+BIO.def('arverdigris_fol',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Teal-sap prop-wood (crown)'});
+BIO.def('artealsap_scar',BIO.fung.stalk({r0:.10,r1:.06,seg:6,rings:4,bend:.18,ribs:5,ribA:.15}),M.tealsap,{label:'Teal-sap prop-wood (20% Ni latex scar)'});
+BIO.def('arcastrunk',BIO.fung.stalk({r0:.14,r1:.09,seg:7,rings:4,bend:.05}),M.casBark,{label:'Beach she-oak (trunk)'});
+BIO.def('arcas',BIO.geo.clump(),M.casuarina,{attrs:['aN'],label:'Beach she-oak'});
+BIO.def('arcas_drape',BIO.geo.hang(),M.casDrape,{label:'Beach she-oak (weeping cladodes)'});
+BIO.def('arpandan_trunk',BIO.fung.stalk({r0:.09,r1:.065,seg:6,rings:5,bend:.14,ribs:14,ribA:.06}),M.mangroveBark,{label:'Strand pandanus (ringed stem)'});
+BIO.def('arpandan_strap',BIO.geo.frond(4),M.pandanStrap,{label:'Strand pandanus (strap leaf)'});
+BIO.def('arpandan_fruit',BIO.fung.bladder({swell:.68,neck:.35,pleats:8,pleatA:.08,seg:8,rings:4,h:1.15}),M.flesh,{label:'Strand pandanus (fruit key)'});
+BIO.def('artamanu_trunk',BIO.fung.stalk({r0:.16,r1:.10,seg:7,rings:4,bend:.18}),M.ohiaBark,{label:'Tamanu (coastal hardwood trunk)'});
+BIO.def('artamanu_fol',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Tamanu (crown)'});
+BIO.def('arhibiscus_fol',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Sea hibiscus'});
+BIO.def('arhibiscus_bloom',BIO.geo.bloom(),M.ohiaBloom,{onLeaf:true,label:'Sea hibiscus (yellow flower)'});
+BIO.def('arnaupaka',BIO.geo.clump(),M.glossy,{attrs:['aN'],label:'Beach naupaka'});
+BIO.def('aripomoea',BIO.fung.cap({form:'disc',h:.05,seg:8,rings:2,lump:.6,wav:6,wavA:.2,under:'none',uv:'planar',seed:20204}),M.flesh,{label:'Beach morning glory'});
+BIO.def('arpalmtrunk',BIO.fung.stalk({r0:.05,r1:.035,seg:7,rings:8,bend:.25,ribs:18,ribA:.08}),M.araucariaBark,{label:'Coconut palm (trunk)'});
+BIO.def('arpalm',PALM_FROND_GEO,M.palmFrond,{label:'Coconut palm (drooping pinnate frond)'});
+BIO.def('arcoconut_nut',makeCoconutClusterGeo(),M.flesh,{label:'Coconut palm (nut cluster)'});
+BIO.def('arkelp',BIO.geo.ribbon(4,.48,.22),M.kelpBlade,{label:'Shoal kombu kelp (frond)'});
+BIO.def('arkelp_stipe',BIO.fung.stalk({r0:.035,r1:.02,seg:5,rings:4,bend:.22}),M.mangroveBark,{label:'Shoal kombu kelp (holdfast stipe)'});
+BIO.def('arseagrass',BIO.geo.clump(),M.sedge,{sward:false,label:'Ribbon seagrass'});
+BIO.def('arbyssus',makeByssusBedGeo(),M.byssus,{label:'Giant sea-byssus mussel bed'});
+BIO.def('aroyster',BIO.fung.tube({n:6,r:.18,hMin:.48,spread:.34,seg:8,rimK:1.25,inK:.38,seed:20206}),M.oyster,{label:'Coralline-oyster visor'});
+BIO.def('arbarnacle',BIO.fung.cap({form:'disc',h:.12,seg:9,rings:2,lump:.45,wav:6,wavA:.12,under:'none',uv:'planar',seed:20207}),M.oyster,{label:'Upper-littoral barnacle crust'});
 
 // ---------------------------------------------------------------- Structural multi-limbed tree builders (BIO.tree + BIO.tube + BIO.flareJoin)
+const recTree=(key,x,y,z,r,h)=>{const S=byKey[key];if(S&&BIO.record)BIO.record({name:S.name,key:S.key,kind:'tree',x,y,z,r,h,tags:S.tags});};
+ARCHB.recTree=recTree;
+
 /* 1. 'Ōhi'a Lehua (Metrosideros polymorpha): gnarled multi-stemmed silvery-barked pioneer tree, spreading cloud-tiers & scarlet brush blossoms */
 ARCHB.growOhia=function(x,y,z,H,tSeed,flw){
  const h= (i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
  const barkHex=PAL.ohiaBark[(tSeed>>>0)%PAL.ohiaBark.length];
  const yaw=h(1,1)*TAU;
  const rBase=clamp(H*.024*(.85+.3*h(2,1)),.08,.22);
+ recTree('ohia',x,y,z,H*.42,H);
 
  BIO.tree(x,z,()=>{
   /* Root-collar bole instance keeps 'arohiatrunk' registered for SPECIES & Arcoforte tall-trunk audit */
@@ -560,6 +902,7 @@ ARCHB.growCasuarina=function(x,y,z,H,tSeed){
  const yaw=h(1,1)*TAU;
  const lean=(.05+.08*h(2,1));
  const rBase=clamp(H*.019*(.88+.26*h(3,1)),.11,.29);
+ recTree('casuarina',x,y,z,H*.36,H);
 
  BIO.tree(x,z,()=>{
   BIO.put('arcastrunk',[x,y-.24,z],qEuler(0,yaw,0),[rBase/.14,Math.min(1.6,H*.18),rBase/.14],C(barkHex));
@@ -662,6 +1005,301 @@ ARCHB.growGymnostoma=function(x,y,z,s,tSeed,lv){
    ],barkHex,{seg:5});
    const ts=s*(.48+.14*h(k+2,4));
    BIO.put('argymno',[ex,ey-.05,ez],qEuler(0,az,0),[ts,ts*.68,ts],C(cHex),{n:[Math.cos(az)*.3,.92,Math.sin(az)*.3]});
+  }
+ });
+};
+
+/* 4. Coconut Palm (Cocos nucifera): ringed leaning trunk, nut cluster & 3-tier spiralling V-cambered drooping pinnate fronds */
+ARCHB.growCoconut=function(x,y,z,H,yaw,lean,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const r0=clamp(.24+H*.006,.24,.36);
+ recTree('coconut',x,y,z,3.6,H+2.2);
+ BIO.tree(x,z,()=>{
+  BIO.put('arpalmtrunk',[x,y-.22,z],qEuler(0,yaw,lean),[r0/.05,H,r0/.05],C(PAL.palmtrunk[(tSeed>>>0)%PAL.palmtrunk.length]));
+  const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
+  const nutS=.95+.25*h(1,2);
+  BIO.put('arcoconut_nut',[tx,ty-.18,tz],qEuler(0,yaw+1.1,0),[nutS,nutS,nutS],C(PAL.coconutNut[(tSeed>>>0)%PAL.coconutNut.length]));
+  const nF=lv!=null&&lv<1?9:13,gold=2.399963,fLen=clamp(2.5+H*.11,2.8,4.3);
+  for(let k=0;k<nF;k++){
+   const age=k/(nF-1),az=yaw+k*gold+.16*(h(k+3,1)-.5);
+   const pitch=lerp(.78,-.32,Math.pow(age,.88))+.08*(h(k+3,2)-.5);
+   const Lf=fLen*(age<.2?.82:age>.82?.88:1)*(.92+.16*h(k+3,3));
+   const cHex=age>.80?PAL.palmOld[k%PAL.palmOld.length]:PAL.palm[(k+(tSeed>>>0))%PAL.palm.length];
+   BIO.put('arpalm',[tx,ty+.05-.16*age,tz],qEuler((h(k+3,4)-.5)*.14,-az,pitch),[Lf,Lf*.95,Lf*1.08],C(cHex));
+  }
+ });
+};
+
+/* 5. Maquis Kauri (Agathis ovata / lanceolata): columnar silver-bronze spar trunk, heavy upper boughs & weeping kauri-gum resin */
+ARCHB.growKauri=function(x,y,z,H,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.kauriBark[(tSeed>>>0)%PAL.kauriBark.length];
+ const yaw=h(1,1)*TAU,rBase=clamp(H*.028*(.88+.24*h(2,1)),.16,.44),forkH=H*(.56+.12*h(3,1));
+ recTree('arkauri',x,y,z,H*.32,H);
+ BIO.tree(x,z,()=>{
+  BIO.put('arkauri_trunk',[x,y-.25,z],qEuler(0,yaw,0),[rBase/.14,Math.min(2.2,H*.24),rBase/.14],C(barkHex));
+  const bole=[];
+  for(let i=0;i<=4;i++){
+   const t=i/4,flare=1+.38*Math.pow(Math.max(0,1-t/.22),2);
+   bole.push({x:x+(h(4,i)-.5)*.12,y:y-.3+(forkH+.3)*t,z:z+(h(5,i)-.5)*.12,r:rBase*(1-.26*t)*flare});
+  }
+  BIO.tube('ar_araucaria_bark',bole,barkHex,{seg:7});
+  const top=bole[4],nB=lv!=null&&lv<1?4:6;
+  for(let b=0;b<nB;b++){
+   const az=yaw+(b/nB)*TAU+.28*(h(10+b,1)-.5),reach=H*(.20+.10*h(10+b,2)),rise=(H-forkH)*(.68+.28*h(10+b,3));
+   const ox=top.x,oy=lerp(y+forkH*.82,top.y,b/(nB-1)),oz=top.z,br0=top.r*.44;
+   const mx=ox+Math.cos(az)*reach*.54,my=oy+rise*.62,mz=oz+Math.sin(az)*reach*.54;
+   const ex=ox+Math.cos(az)*reach,ey=oy+rise,ez=oz+Math.sin(az)*reach;
+   const bPts=BIO.flareJoin([{x:ox,y:oy,z:oz,r:br0},{x:mx,y:my,z:mz,r:br0*.66},{x:ex,y:ey,z:ez,r:Math.max(.04,br0*.34)}],{parentR:top.r,k:1.45,sink:.5,len:1.5});
+   BIO.tube('ar_araucaria_bark',bPts,barkHex,{seg:5});
+   if(b%2===0){
+    const gW=.55+.35*h(20+b,1),gH=.85+.75*h(20+b,2);
+    BIO.put('arkauri_gum',[mx,my-br0*.35,mz],qEuler(0,az,0),[gW,gH,gW],C(PAL.kauriGum[(b+(tSeed>>>0))%PAL.kauriGum.length]));
+   }
+   const pS=clamp(H*(.22+.06*h(30+b,1)),1.4,3.4),lHex=PAL.kauriLeaf[(b+(tSeed>>>0))%PAL.kauriLeaf.length];
+   BIO.put('arkauri_fol',[ex,ey,ez],qEuler(0,az,0),[pS,pS*.62,pS],C(lHex),{n:[Math.cos(az)*.35,.9,Math.sin(az)*.35]});
+   if(b%2===1)BIO.put('arkauri_fol',[mx,my+.2,mz],qEuler(0,az+1.1,0),[pS*.78,pS*.54,pS*.78],C(lHex),{n:[0,1,0]});
+  }
+  const apPts=BIO.flareJoin([{x:top.x,y:top.y,z:top.z,r:top.r*.68},{x:top.x,y:y+H,z:top.z,r:.06}],{parentR:top.r,k:1.35,sink:.4,len:1.2});
+  BIO.tube('ar_araucaria_bark',apPts,barkHex,{seg:5});
+  const apS=clamp(H*.26,1.6,3.8);
+  BIO.put('arkauri_fol',[top.x,y+H,top.z],qEuler(0,yaw,0),[apS,apS*.62,apS],C(PAL.kauriLeaf[(tSeed>>>0)%PAL.kauriLeaf.length]),{n:[0,1,0]});
+ });
+};
+
+/* 6. Strand & Gorge Pandanus (Pandanus tectorius): prop-root skirt, forked ringed stems, spiral strap rosettes & orange fruit keys */
+ARCHB.growPandan=function(x,y,z,H,tSeed,leanA,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.pandanBark[(tSeed>>>0)%PAL.pandanBark.length];
+ const la=leanA==null?h(1,1)*TAU:leanA+(h(1,2)-.5)*.5,rb=clamp(H*.024,.10,.20);
+ recTree('arpandan',x,y,z,H*.42,H);
+ BIO.tree(x,z,()=>{
+  const hubY=y+.65+H*.08;
+  BIO.put('arpandan_trunk',[x,y-.18,z],qEuler(0,la,.14),[rb/.09,Math.min(1.6,H*.28),rb/.09],C(barkHex));
+  const nP=lv!=null&&lv<1?4:6;
+  for(let k=0;k<nP;k++){
+   const az=(k/nP)*TAU+.28*(h(k+4,1)-.5),sp=.75+.65*h(k+4,2),rx=x+Math.cos(az)*sp,rz=z+Math.sin(az)*sp;
+   const fy=Math.min(y+.2,BIO.host.terrainH(rx,rz))-.28;
+   BIO.tube('ar_mangrove_bark',[{x,y:hubY,z,r:rb*.38},{x:lerp(x,rx,.55),y:lerp(hubY,fy,.42),z:lerp(z,rz,.55),r:rb*.30},{x:rx,y:fy,z:rz,r:rb*.24}],barkHex,{seg:4});
+  }
+  const topX=x+Math.cos(la)*H*.18,topZ=z+Math.sin(la)*H*.18,topY=y+H*.56;
+  BIO.tube('ar_mangrove_bark',[{x,y:hubY-.2,z,r:rb},{x:lerp(x,topX,.5),y:lerp(hubY,topY,.5),z:lerp(z,topZ,.5),r:rb*.86},{x:topX,y:topY,z:topZ,r:rb*.74}],barkHex,{seg:5});
+  const nHeads=lv!=null&&lv<1?2:3,gold=2.399963;
+  for(let hd=0;hd<nHeads;hd++){
+   const haz=la+(hd-(nHeads-1)*.5)*1.65+.3*(h(20+hd,1)-.5),hLen=H*(.30+.12*h(20+hd,2));
+   const hx=topX+Math.cos(haz)*hLen*.65,hy=topY+hLen*.76,hz=topZ+Math.sin(haz)*hLen*.65;
+   const hPts=BIO.flareJoin([{x:topX,y:topY,z:topZ,r:rb*.62},{x:hx,y:hy,z:hz,r:rb*.42}],{parentR:rb*.74,k:1.35,sink:.4,len:1.2});
+   BIO.tube('ar_mangrove_bark',hPts,barkHex,{seg:4});
+   const nS=lv!=null&&lv<1?8:14,sL=clamp(H*.30,1.25,2.45);
+   for(let s=0;s<nS;s++){
+    const age=s/(nS-1),saz=s*gold+hd*1.1,pitch=lerp(.95,-.38,age);
+    const lHex=PAL.pandanLeaf[(s+hd+(tSeed>>>0))%PAL.pandanLeaf.length];
+    BIO.put('arpandan_strap',[hx,hy,hz],qEuler((h(40+s,hd)-.5)*.12,-saz,pitch),[sL*(age<.22?.75:1),sL*.85,sL*.55],C(lHex));
+   }
+   if(hd===0&&h(60,1)<.68){
+    const fs=.20+.08*h(60,2);
+    BIO.put('arpandan_fruit',[hx+Math.cos(haz)*.16,hy-.28,hz+Math.sin(haz)*.16],qEuler(.15,haz,0),[fs,fs*1.25,fs],C(PAL.pandanFruit[(tSeed>>>0)%PAL.pandanFruit.length]));
+   }
+  }
+ });
+};
+
+/* 7. Gully Tree-Fern (Cyathea intermedia): fibrous caudex post-trunk & radial umbrella of lacy bipinnate fronds */
+ARCHB.growTreeFern=function(x,y,z,H,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const yaw=h(1,1)*TAU,lean=.05+.10*h(1,2),r0=clamp(.11+H*.012,.12,.20);
+ recTree('artreefern',x,y,z,H*.55,H+1.0);
+ BIO.tree(x,z,()=>{
+  BIO.put('artreefern_trunk',[x,y-.18,z],qEuler(0,yaw,lean),[r0/.09,H,r0/.09],C(PAL.fernBark[(tSeed>>>0)%PAL.fernBark.length]));
+  const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
+  const nF=lv!=null&&lv<1?7:11,fLen=clamp(H*.56,1.55,3.1);
+  for(let f=0;f<nF;f++){
+   const az=yaw+(f/nF)*TAU+.18*(h(f+3,1)-.5),pitch=.26+.28*(f%2)+.10*(h(f+3,2)-.5);
+   const lHex=PAL.fernLeaf[(f+(tSeed>>>0))%PAL.fernLeaf.length];
+   BIO.put('artreefern_frond',[tx,ty,tz],qEuler((h(f+3,3)-.5)*.10,-az,pitch),[fLen,fLen*.92,fLen*.95],C(lHex));
+  }
+ });
+};
+
+/* 8. Gorge Rata (Metrosideros nautica): J-curved reaction-wood bole, dike-clasping ship-knee buttresses & crimson brush blooms */
+ARCHB.growRata=function(x,y,z,H,tSeed,flw){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.rataBark[(tSeed>>>0)%PAL.rataBark.length],yaw=h(1,1)*TAU,rBase=clamp(H*.028*(.88+.28*h(2,1)),.15,.36);
+ recTree('arrata',x,y,z,H*.44,H);
+ BIO.tree(x,z,()=>{
+  BIO.put('arrata_trunk',[x,y-.24,z],qEuler(0,yaw,.14),[rBase/.15,Math.min(1.8,H*.22),rBase/.15],C(barkHex));
+  for(let rt=0;rt<4;rt++){
+   const ra=yaw+(rt/4)*TAU+.35*(h(rt+5,1)-.5),rSpan=rBase*(2.8+1.3*h(rt+5,2));
+   const rPts=BIO.flareJoin([
+    {x:x+Math.cos(ra)*rBase*.45,y:y+rBase*1.45,z:z+Math.sin(ra)*rBase*.45,r:rBase*.50},
+    {x:x+Math.cos(ra)*rSpan*.58,y:y+rBase*.42,z:z+Math.sin(ra)*rSpan*.58,r:rBase*.32},
+    {x:x+Math.cos(ra)*rSpan,y:y-.48,z:z+Math.sin(ra)*rSpan,r:rBase*.14}
+   ],{parentR:rBase,k:1.5,sink:.5,len:1.6});
+   BIO.tube('ar_ohia_bark',rPts,barkHex,{seg:5});
+  }
+  const rings=[],nR=6,lean=.12+.14*h(3,1);
+  for(let i=0;i<=nR;i++){
+   const t=i/nR,jBow=Math.sin(t*Math.PI)*H*.09;
+   const rx=x+Math.cos(yaw)*lean*H*t*t-Math.sin(yaw)*jBow,rz=z+Math.sin(yaw)*lean*H*t*t+Math.cos(yaw)*jBow;
+   rings.push({x:rx,y:y-.25+H*.88*t,z:rz,r:Math.max(.045,rBase*(1-.72*t)*(i===0?1.35:1))});
+  }
+  BIO.tube('ar_ohia_bark',rings,barkHex,{seg:7});
+  const nB=4+(tSeed%2);
+  for(let b=0;b<nB;b++){
+   const idxS=Math.min(nR-1,2+Math.floor(b/(nB)*3.5)),sp=rings[idxS];
+   const ba=yaw+(b/nB)*TAU+.3*(h(20+b,1)-.5),span=H*(.24+.12*h(20+b,2)),rise=H*(.14+.10*h(20+b,3));
+   const mx=sp.x+Math.cos(ba)*span*.52,my=sp.y+rise*.68+.35,mz=sp.z+Math.sin(ba)*span*.52;
+   const bx=sp.x+Math.cos(ba)*span,by=sp.y+rise,bz=sp.z+Math.sin(ba)*span;
+   const bPts=BIO.flareJoin([{x:sp.x,y:sp.y,z:sp.z,r:sp.r*.52},{x:mx,y:my,z:mz,r:sp.r*.34},{x:bx,y:by,z:bz,r:.04}],{parentR:sp.r,k:1.45,sink:.5,len:1.5});
+   BIO.tube('ar_ohia_bark',bPts,barkHex,{seg:5});
+   const pS=clamp(H*.28,1.5,3.5),lHex=PAL.rataLeaf[(b+(tSeed>>>0))%PAL.rataLeaf.length];
+   BIO.put('arrata_fol',[bx,by,bz],qEuler(0,ba,0),[pS,pS*.58,pS],C(lHex),{n:[Math.cos(ba)*.35,.9,Math.sin(ba)*.35]});
+   if(flw&&h(30+b,1)<.6){
+    const blS=.46+.28*h(30+b,2);
+    BIO.put('arohia_bloom',[bx,by+pS*.24,bz],qEuler(0,ba*1.2,0),[blS,blS*.88,blS],C(PAL.ohiaFlower[(b+(tSeed>>>0))%PAL.ohiaFlower.length]));
+   }
+  }
+  const tp=rings[nR],tS=clamp(H*.30,1.6,3.6);
+  BIO.put('arrata_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.56,tS],C(PAL.rataLeaf[(tSeed>>>0)%PAL.rataLeaf.length]),{n:[0,1,0]});
+ });
+};
+
+/* 9. Niaouli Paperbark (Melaleuca quinquenervia): twisted shaggy cream-white bark trunk & airy grey-green crown */
+ARCHB.growPaperbark=function(x,y,z,H,tSeed){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.paperBark[(tSeed>>>0)%PAL.paperBark.length],yaw=h(1,1)*TAU,rBase=clamp(H*.024*(.88+.24*h(2,1)),.11,.28);
+ recTree('arpaperbark',x,y,z,H*.34,H);
+ BIO.tree(x,z,()=>{
+  BIO.put('arpaperbark_trunk',[x,y-.22,z],qEuler(0,yaw,.06),[rBase/.13,Math.min(1.7,H*.24),rBase/.13],C(barkHex));
+  const nSt=2+(tSeed%2);
+  for(let s=0;s<nSt;s++){
+   const az=yaw+(s/nSt)*TAU+.4*(h(10+s,1)-.5),sp=H*(.16+.10*h(10+s,2)),sh=H*(.80+.18*h(10+s,3));
+   const m1x=x+Math.cos(az)*sp*.45,m1y=y+sh*.46,m1z=z+Math.sin(az)*sp*.45;
+   const tx=x+Math.cos(az)*sp,ty=y+sh,tz=z+Math.sin(az)*sp,sr=rBase*(s===0?.82:.65);
+   const pts=BIO.flareJoin([{x,y:y-.22,z,r:rBase},{x:m1x,y:m1y,z:m1z,r:sr*.68},{x:tx,y:ty,z:tz,r:Math.max(.03,sr*.28)}],{parentR:rBase*1.05,k:1.35,sink:.4,len:1.4});
+   BIO.tube('ar_paper_bark',pts,barkHex,{seg:6});
+   const pS=clamp(H*(.26+.07*h(20+s,1)),1.3,3.0),lHex=PAL.paperLeaf[(s+(tSeed>>>0))%PAL.paperLeaf.length];
+   BIO.put('arpaperbark_fol',[tx,ty,tz],qEuler(0,az,0),[pS,pS*.66,pS],C(lHex),{n:[Math.cos(az)*.28,.94,Math.sin(az)*.28]});
+   BIO.put('arpaperbark_fol',[m1x,m1y+sh*.16,m1z],qEuler(0,az+1.2,0),[pS*.82,pS*.58,pS*.82],C(lHex),{n:[0,1,0]});
+  }
+ });
+};
+
+/* 10. Tamanu (Calophyllum inophyllum): stout seaward-leaning coastal hardwood with curved knee boughs & dark glossy dome */
+ARCHB.growTamanu=function(x,y,z,H,tSeed){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.rataBark[(tSeed>>>0)%PAL.rataBark.length],yaw=h(1,1)*TAU,lean=.18+.16*h(2,1),rBase=clamp(H*.030,.16,.38);
+ recTree('artamanu',x,y,z,H*.46,H);
+ BIO.tree(x,z,()=>{
+  BIO.put('artamanu_trunk',[x,y-.24,z],qEuler(0,yaw,lean*.6),[rBase/.16,Math.min(1.9,H*.24),rBase/.16],C(barkHex));
+  const bole=[],nR=5;
+  for(let i=0;i<=nR;i++){
+   const t=i/nR,bx=x+Math.cos(yaw)*lean*H*t*(.65+.35*t),bz=z+Math.sin(yaw)*lean*H*t*(.65+.35*t);
+   bole.push({x:bx,y:y-.25+H*.82*t,z:bz,r:Math.max(.05,rBase*(1-.68*t)*(i===0?1.32:1))});
+  }
+  BIO.tube('ar_ohia_bark',bole,barkHex,{seg:7});
+  for(let b=0;b<4;b++){
+   const sp=bole[2+Math.min(2,b>>1)],ba=yaw+(b/4)*TAU+.35*(h(10+b,1)-.5),span=H*(.26+.10*h(10+b,2));
+   const ex=sp.x+Math.cos(ba)*span,ey=sp.y+H*(.12+.08*h(10+b,3)),ez=sp.z+Math.sin(ba)*span;
+   const bPts=BIO.flareJoin([{x:sp.x,y:sp.y,z:sp.z,r:sp.r*.52},{x:(sp.x+ex)*.5,y:(sp.y+ey)*.5+.3,z:(sp.z+ez)*.5,r:sp.r*.34},{x:ex,y:ey,z:ez,r:.04}],{parentR:sp.r,k:1.45,sink:.5,len:1.5});
+   BIO.tube('ar_ohia_bark',bPts,barkHex,{seg:5});
+   const pS=clamp(H*.32,1.7,3.8),lHex=PAL.tamanuLeaf[(b+(tSeed>>>0))%PAL.tamanuLeaf.length];
+   BIO.put('artamanu_fol',[ex,ey,ez],qEuler(0,ba,0),[pS,pS*.60,pS],C(lHex),{n:[Math.cos(ba)*.32,.92,Math.sin(ba)*.32]});
+  }
+  const tp=bole[nR],tS=clamp(H*.34,1.8,4.0);
+  BIO.put('artamanu_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.62,tS],C(PAL.tamanuLeaf[(tSeed>>>0)%PAL.tamanuLeaf.length]),{n:[0,1,0]});
+ });
+};
+
+/* 11. Sea Hibiscus (Hibiscus tiliaceus): scrambling decumbent bast-cordage thicket with yellow cup flowers */
+ARCHB.growHibiscus=function(x,y,z,H,tSeed){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.mangroveBark[(tSeed>>>0)%PAL.mangroveBark.length],nSt=3+(tSeed%2);
+ recTree('arhibiscus',x,y,z,H*.55,H);
+ BIO.tree(x,z,()=>{
+  for(let s=0;s<nSt;s++){
+   const az=(s/nSt)*TAU+.5*(h(s+2,1)-.5),sp=H*(.36+.16*h(s+2,2)),sh=H*(.68+.24*h(s+2,3));
+   const mx=x+Math.cos(az)*sp*.55,my=y+sh*.42,mz=z+Math.sin(az)*sp*.55;
+   const ex=x+Math.cos(az)*sp,ey=y+sh,ez=z+Math.sin(az)*sp,r0=clamp(H*.024,.045,.11);
+   BIO.tube('ar_mangrove_bark',[{x,y:y-.18,z,r:r0},{x:mx,y:my,z:mz,r:r0*.68},{x:ex,y:ey,z:ez,r:r0*.34}],barkHex,{seg:5});
+   const pS=clamp(H*.38,1.2,2.7),lHex=PAL.hibiscusLeaf[(s+(tSeed>>>0))%PAL.hibiscusLeaf.length];
+   BIO.put('arhibiscus_fol',[ex,ey,ez],qEuler(0,az,0),[pS,pS*.58,pS],C(lHex),{n:[Math.cos(az)*.35,.9,Math.sin(az)*.35]});
+   if(h(s+20,1)<.65){
+    const blS=.34+.18*h(s+20,2);
+    BIO.put('arhibiscus_bloom',[ex,ey+pS*.22,ez],qEuler(0,az*1.4,0),[blS,blS*.85,blS],C(PAL.hibiscusBloom[s%PAL.hibiscusBloom.length]));
+   }
+  }
+ });
+};
+
+/* 12. Grey Mangrove (Avicennia marina): spreading grey-barked mudflat tree ringed by erect pencil pneumatophores */
+ARCHB.growAvicennia=function(x,y,z,r0Y,H,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.mangroveBark[(tSeed>>>0)%PAL.mangroveBark.length],yaw=h(1,1)*TAU;
+ recTree('aravicennia',x,r0Y,z,H*.48,H);
+ BIO.tree(x,z,()=>{
+  const nSt=2+(tSeed%2);
+  for(let s=0;s<nSt;s++){
+   const az=yaw+(s/nSt)*TAU+.4*(h(s+3,1)-.5),sp=H*(.24+.12*h(s+3,2)),ty=r0Y+H*(.68+.20*h(s+3,3));
+   const ex=x+Math.cos(az)*sp,ez=z+Math.sin(az)*sp,rb=clamp(H*.024,.06,.14);
+   BIO.tube('ar_mangrove_bark',[{x,y:Math.min(y,r0Y)-.25,z,r:rb},{x:lerp(x,ex,.5),y:lerp(r0Y,ty,.52),z:lerp(z,ez,.5),r:rb*.68},{x:ex,y:ty,z:ez,r:rb*.34}],barkHex,{seg:5});
+   const pS=clamp(H*.38,1.3,2.9),lHex=PAL.avicennia[(s+(tSeed>>>0))%PAL.avicennia.length];
+   BIO.put('aravicennia_fol',[ex,ty,ez],qEuler(0,az,0),[pS,pS*.58,pS],C(lHex),{n:[Math.cos(az)*.3,.92,Math.sin(az)*.3]});
+  }
+  const nPn=lv!=null&&lv<1?6:14;
+  for(let p=0;p<nPn;p++){
+   const pa=h(30+p,1)*TAU,pd=.65+2.1*h(30+p,2),px=x+Math.cos(pa)*pd,pz=z+Math.sin(pa)*pd,th=BIO.host.terrainH(px,pz);
+   if(th<y-.45)continue;
+   const py=Math.max(th,r0Y-.25),ph=.22+.26*h(30+p,3);
+   BIO.put('aravicennia_pneum',[px,py-.04,pz],qEuler((h(30+p,4)-.5)*.16,pa,0),[1.1,ph,1.1],C(barkHex));
+  }
+ });
+};
+
+/* 13. Teal-Sap Prop-Wood (Rhizophora pycnandroides): braided ultramafic stilt-roots & weeping 20% Ni teal-blue latex scars */
+ARCHB.growVerdigrisMangrove=function(x,y,z,r0Y,H,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const barkHex=PAL.mangroveBark[(tSeed>>>0)%PAL.mangroveBark.length],rHub=clamp(H*.026,.10,.20);
+ const propTopY=Math.max(r0Y+1.15,y+1.1),crownY=propTopY+H*.22;
+ recTree('arverdigrismangrove',x,r0Y,z,H*.45,H);
+ BIO.tree(x,z,()=>{
+  BIO.tube('ar_mangrove_bark',[{x,y:Math.min(y,r0Y)-.3,z,r:rHub*.74},{x,y:propTopY,z,r:rHub},{x,y:crownY,z,r:rHub*.78}],barkHex,{seg:6});
+  const nP=lv!=null&&lv<1?4:6;
+  for(let k=0;k<nP;k++){
+   const az=(k/nP)*TAU+.34*(h(10+k,1)-.5),sp=1.15+1.1*h(10+k,2),rx=x+Math.cos(az)*sp,rz=z+Math.sin(az)*sp;
+   const fy=Math.min(r0Y+.2,BIO.host.terrainH(rx,rz))-.32;
+   const pPts=BIO.flareJoin([{x,y:propTopY,z,r:rHub*.44},{x:lerp(x,rx,.52),y:lerp(propTopY,fy,.36)+.35,z:lerp(z,rz,.52),r:rHub*.34},{x:rx,y:fy,z:rz,r:rHub*.24}],{parentR:rHub,k:1.5,sink:.5,len:1.6});
+   BIO.tube('ar_mangrove_bark',pPts,barkHex,{seg:5});
+  }
+  const sAz=h(25,1)*TAU;
+  BIO.put('artealsap_scar',[x+Math.cos(sAz)*rHub*.72,propTopY+.12,z+Math.sin(sAz)*rHub*.72],qEuler(.16,sAz,.10),[.75,.85,.75],C(PAL.tealsap[(tSeed>>>0)%PAL.tealsap.length]));
+  for(let b=0;b<4;b++){
+   const az=(b/4)*TAU+.45*h(40+b,1),sp=H*(.24+.10*h(40+b,2)),ty=crownY+H*(.38+.14*h(40+b,3));
+   const ex=x+Math.cos(az)*sp,ez=z+Math.sin(az)*sp;
+   const lPts=BIO.flareJoin([{x,y:crownY,z,r:rHub*.44},{x:(x+ex)*.5,y:(crownY+ty)*.54,z:(z+ez)*.5,r:rHub*.30},{x:ex,y:ty,z:ez,r:rHub*.18}],{parentR:rHub*.78,k:1.45,sink:.5,len:1.5});
+   BIO.tube('ar_mangrove_bark',lPts,barkHex,{seg:5});
+   const pS=clamp(H*.34,1.4,3.1),lHex=PAL.verdMangrove[(b+(tSeed>>>0))%PAL.verdMangrove.length];
+   BIO.put('arverdigris_fol',[ex,ty,ez],qEuler(0,az,0),[pS,pS*.60,pS],C(lHex),{n:[Math.cos(az)*.3,.92,Math.sin(az)*.3]});
+  }
+  const apY=crownY+H*.48,apS=clamp(H*.36,1.5,3.2);
+  BIO.tube('ar_mangrove_bark',[{x,y:crownY,z,r:rHub*.40},{x,y:apY,z,r:rHub*.20}],barkHex,{seg:4});
+  BIO.put('arverdigris_fol',[x,apY,z],qEuler(0,sAz,0),[apS,apS*.58,apS],C(PAL.verdMangrove[(tSeed>>>0)%PAL.verdMangrove.length]),{n:[0,1,0]});
+ });
+};
+
+/* 14. Dragon-Heath (Dracophyllum ramosum): candelabrum ringed twigs & bronzed terminal grass-rosettes */
+ARCHB.growDracophyllum=function(x,y,z,s,tSeed,lv){
+ const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+ const cHex=PAL.draco[(tSeed>>>0)%PAL.draco.length];
+ if(lv<1||s<1.1){BIO.put('ardracophyllum',[x,y-.05,z],qEuler(0,h(1,1)*TAU,0),[s*.55,s*.75,s*.55],C(cHex));return;}
+ const barkHex=PAL.casBark[(tSeed>>>0)%PAL.casBark.length],nSt=2+(tSeed%3);
+ BIO.tree(x,z,()=>{
+  for(let k=0;k<nSt;k++){
+   const az=(k/nSt)*TAU+.4*(h(k+2,1)-.5),sp=s*(.18+.12*h(k+2,2)),sh=s*(.68+.24*h(k+2,3));
+   const ex=x+Math.cos(az)*sp,ey=y+sh,ez=z+Math.sin(az)*sp,r0=clamp(s*.018,.02,.05);
+   BIO.tube('ar_gymno_bark',[{x,y:y-.12,z,r:r0},{x:lerp(x,ex,.45),y:y+sh*.48,z:lerp(z,ez,.45),r:r0*.72},{x:ex,y:ey,z:ez,r:r0*.45}],barkHex,{seg:4});
+   const ts=clamp(s*.36,.32,.78);
+   BIO.put('ardracophyllum',[ex,ey-.04,ez],qEuler(0,az,0),[ts,ts*1.15,ts],C(cHex));
   }
  });
 };

@@ -142,6 +142,77 @@
    "roughLift": 0.3,
    "specular": 0.25,
    "mapOnly": true
+  },
+  "araucariaBark": {
+   "lib": "bark.araucaria",
+   "scale": [
+    1.4,
+    1.8
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.65
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "paperbark": {
+   "lib": "bark.paperbark",
+   "scale": [
+    1.4,
+    1.8
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.68
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "mangroveBark": {
+   "lib": "bark.mangrove",
+   "scale": [
+    1.2,
+    1.6
+   ],
+   "size": 256,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true,
+   "own": true
+  },
+  "pandanStrap": {
+   "lib": "card.strap.pandan",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.25,
+   "cell": [
+    0.415,
+    0.005,
+    0.523,
+    0.333
+   ],
+   "base": "bottom",
+   "mapOnly": true,
+   "own": true
   }
  }
 }

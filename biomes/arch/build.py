@@ -155,10 +155,10 @@ sys.path.insert(0,J('tools','textures'))
 import matlib_pack
 _ALL_FAMS=sorted(_json.load(open(os.path.join(HERE,'materials.json'),encoding='utf-8'))['families'])
 _ST_FAMS={
- 'coast':['ground.sand.black','rock.basalt.vesicular','rock.tuff','rock.palagonite'],
- 'sound':['ground.lava.aa','ground.sand.black','ground.redsoil','ground.lichen.crust'],
- 'cove':['ground.travertine.white','rock.basalt.vesicular','ground.redsoil','ground.lichen.crust'],
-}.get(STATION,['ground.travertine.white','ground.travertine.acid','ground.redsoil','ground.sulphur'])
+ 'coast':['ground.sand.black','rock.basalt.vesicular','rock.tuff','rock.palagonite','araucariaBark','mangroveBark','pandanStrap'],
+ 'sound':['ground.lava.aa','ground.sand.black','ground.redsoil','ground.lichen.crust','araucariaBark','paperbark','mangroveBark'],
+ 'cove':['ground.travertine.white','rock.basalt.vesicular','ground.redsoil','ground.lichen.crust','araucariaBark','paperbark','mangroveBark','pandanStrap'],
+}.get(STATION,['ground.travertine.white','ground.travertine.acid','ground.redsoil','ground.sulphur','araucariaBark','paperbark'])
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'arch',own=True,exclude=[f for f in _ALL_FAMS if f not in _ST_FAMS]),khost.EDITS_JS:khost.edits_js(HERE,'arch')}
 # THE NEIGHBOURS' KITS, read in place (ebadlands' lines): a station names them in station.json ("kin": {"<kit>": [[fragments], "<API>", [pack families]]});
 # each kit's fragments slot after the host stage (45) and before this kit (50), in their own registry, closed by a one-line kitEnd
