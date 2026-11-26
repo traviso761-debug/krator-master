@@ -70,6 +70,14 @@ func _ready() -> void:
 	hud.add_theme_font_size_override("font_size", 14)
 	layer.add_child(hud)
 	hud.visible = shot == ""
+	if shot == "":   # back to the Godot Gallery (F2), top right, out of the readout's way
+		var bg := KratorHostUI._make_btn("<< Gallery (F2)", "Back to the Krator Worlds Gallery (F2)")
+		bg.add_theme_color_override("font_color", Color(1.0, 0.88, 0.56))
+		bg.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+		bg.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+		bg.position = Vector2(-12, 10)
+		bg.pressed.connect(func(): KratorGalleryNav.return_to_gallery(get_tree()))
+		layer.add_child(bg)
 
 	var floor_mi := MeshInstance3D.new()
 	var pm := PlaneMesh.new()
@@ -252,7 +260,13 @@ func _unhandled_key_input(ev: InputEvent) -> void:
 		return
 	match k.keycode:
 		KEY_ESCAPE:
-			get_tree().quit()
+			if KratorGalleryNav.opened_from_gallery:
+				KratorGalleryNav.return_to_gallery(get_tree())
+			else:
+				get_tree().quit()
+		KEY_F2:
+			KratorGalleryNav.return_to_gallery(get_tree())
+			return
 		KEY_T:
 			var names: Array = KratorLook.TIER_NAMES
 			var keep_w := float(look["wet"])

@@ -43,6 +43,11 @@ var _hi := 1.0
 var ui: CanvasLayer
 var _label: RichTextLabel
 var _pins: Node3D
+var nav_bar: PanelContainer          # top right: << Gallery (F2), the vantages, Map (M)
+var vantage_opt: OptionButton
+var map_panel: PanelContainer        # bottom right: the minimap (krator/minimap.gd)
+var minimap: KratorMinimap
+var _map_tt := 0.0
 
 
 func _ready() -> void:
@@ -565,9 +570,146 @@ func _build_ui() -> void:
 	_label.fit_content = true
 	box.add_child(_label)
 	var help := Label.new()
-	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | R routes | U bores/tubes | O outlaws | Space pause"
+	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | R routes | U bores/tubes | O outlaws | Space pause\nM map | F2 Gallery"
 	help.autowrap_mode = TextServer.AUTOWRAP_WORD
 	box.add_child(help)
+	if _arg("shot", "") == "":
+		_build_nav()
+
+
+# The Host's navigation for this scene: back to the Gallery, the vantages, and the minimap (hidden in --shot runs)
+func _build_nav() -> void:
+	nav_bar = PanelContainer.new()
+	nav_bar.name = "NavBar"
+	nav_bar.add_theme_stylebox_override("panel", KratorHostUI._box_style(Color(0.094, 0.082, 0.059, 0.90), Color(0.44, 0.31, 0.21, 0.85), 6, 8, 6))
+	ui.add_child(nav_bar)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 6)
+	nav_bar.add_child(row)
+	var bg := KratorHostUI._make_btn("<< Gallery (F2)", "Back to the Krator Worlds Gallery (F2)")
+	bg.add_theme_color_override("font_color", Color(1.0, 0.88, 0.56))
+	bg.pressed.connect(func(): KratorGalleryNav.return_to_gallery(get_tree()))
+	row.add_child(bg)
+	row.add_child(KratorHostUI._tag_lbl("Vantage:"))
+	vantage_opt = OptionButton.new()
+	KratorHostUI._style_btn(vantage_opt)
+	vantage_opt.add_item("— pick a vantage —", 0)
+	var vi := 1
+	for k in VIEWS:
+		vantage_opt.add_item(str(k), vi)
+		vantage_opt.set_item_tooltip(vi, str(VIEWS[k]["note"]))
+		vi += 1
+	vantage_opt.item_selected.connect(func(idx: int):
+		if idx > 0:
+			_go_vantage(vantage_opt.get_item_text(idx))
+	)
+	row.add_child(vantage_opt)
+	var bm := KratorHostUI._make_btn("Map (M)", "Show / hide the minimap (M)", true)
+	bm.button_pressed = true
+	bm.toggled.connect(func(on: bool): map_panel.visible = on)
+	row.add_child(bm)
+
+	map_panel = PanelContainer.new()
+	map_panel.name = "MinimapPanel"
+	map_panel.add_theme_stylebox_override("panel", KratorHostUI._box_style(Color(0.094, 0.082, 0.059, 0.92), Color(0.44, 0.31, 0.21, 0.85), 6, 6, 6))
+	ui.add_child(map_panel)
+	var mv := VBoxContainer.new()
+	map_panel.add_child(mv)
+	var mh := HBoxContainer.new()
+	mv.add_child(mh)
+	var mt := KratorHostUI._tag_lbl("MAP — THE CATCH & THE BOWL")
+	mt.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mh.add_child(mt)
+	var bf := KratorHostUI._make_btn("Follow", "Keep the map on the eye", true)
+	bf.button_pressed = true
+	bf.toggled.connect(func(on: bool):
+		minimap.follow_viewer = on
+		minimap.queue_redraw()
+	)
+	mh.add_child(bf)
+	var bo := KratorHostUI._make_btn("-", "Zoom out")
+	bo.pressed.connect(func(): minimap.zoom_by(0.8))
+	mh.add_child(bo)
+	var bi := KratorHostUI._make_btn("+", "Zoom in")
+	bi.pressed.connect(func(): minimap.zoom_by(1.25))
+	mh.add_child(bi)
+	minimap = KratorMinimap.new(300.0)
+	minimap.populate_from_catch_bowl(self, meta)
+	minimap.map_clicked.connect(_on_map_clicked)
+	mv.add_child(minimap)
+	var hint := KratorHostUI._tag_lbl("Click: fly there | Wheel: zoom | Right drag: pan")
+	hint.add_theme_font_size_override("font_size", 9)
+	mv.add_child(hint)
+	get_viewport().size_changed.connect(_place_nav)
+	_place_nav.call_deferred()
+
+
+func _place_nav() -> void:
+	if nav_bar == null:
+		return
+	var vs := get_viewport().get_visible_rect().size
+	nav_bar.reset_size()
+	map_panel.reset_size()
+	nav_bar.position = Vector2(vs.x - nav_bar.size.x - 12.0, 12.0)
+	map_panel.position = vs - map_panel.size - Vector2(12, 12)
+
+
+func _go_vantage(k: String) -> void:
+	if cam == null or not VIEWS.has(k):
+		return
+	var v: Dictionary = VIEWS[k]
+	var e: Vector3 = v["eye"]
+	var t: Vector3 = v["at"]
+	var ex := _px_x(e.x)
+	var ez := _px_z(e.y)
+	var tx := _px_x(t.x)
+	var tz := _px_z(t.y)
+	var eye := Vector3(ex, height_at(ex, ez) + minf(float(v["up"]), _vis_limit()), ez)
+	var tgt := Vector3(tx, height_at(tx, tz), tz)
+	if cam.has_method("look_from"):
+		cam.call("look_from", eye, tgt)
+	else:
+		cam.position = eye
+		cam.look_at(tgt)
+
+
+# A click on the map: keep the heading, put the eye over the point at the current height above ground
+func _on_map_clicked(xz: Vector2, _shift: bool, _rec: Dictionary) -> void:
+	if cam == null:
+		return
+	var p := cam.global_position
+	var agl := clampf(p.y - height_at(p.x, p.z), 300.0, 16000.0)
+	var f := -cam.global_transform.basis.z
+	var flat := Vector2(f.x, f.z)
+	if flat.length() < 0.01:
+		flat = Vector2(0, -1)
+	flat = flat.normalized()
+	var g := height_at(xz.x, xz.y)
+	var eye := Vector3(xz.x - flat.x * agl * 2.0, g + agl, xz.y - flat.y * agl * 2.0)
+	if cam.has_method("look_from"):
+		cam.call("look_from", eye, Vector3(xz.x, g, xz.y))
+	else:
+		cam.position = eye
+		cam.look_at(Vector3(xz.x, g, xz.y))
+
+
+func _update_minimap(dt: float) -> void:
+	if minimap == null or not map_panel.visible or cam == null:
+		return
+	var p := cam.global_position
+	var f := -cam.global_transform.basis.z
+	minimap.set_viewer(Vector2(p.x, p.z), Vector2(f.x, f.z))
+	_map_tt += dt
+	if _map_tt >= 0.25 and network != null:
+		_map_tt = 0.0
+		var dots: Array = []
+		for tr in network._trains:
+			var mi = tr.get("node")
+			if mi is Node3D and is_instance_valid(mi):
+				var q: Vector3 = (mi as Node3D).global_position
+				var rangers := str(tr.get("round_id", "")).to_lower().contains("ranger")
+				dots.append({"x": q.x, "z": q.z, "col": Color(0.55, 0.85, 1.0) if rangers else Color(1.0, 0.78, 0.30), "r": 3.0})
+		minimap.dynamic_dots = dots
 
 
 func _note(k: String) -> String:
@@ -584,6 +726,10 @@ func _unhandled_input(e: InputEvent) -> void:
 		var n := kc - KEY_1
 		if n >= 0 and n < ks.size():
 			fx.set_kind(ks[n])
+		elif kc == KEY_F2 and nav_bar != null:
+			KratorGalleryNav.return_to_gallery(get_tree())
+		elif kc == KEY_M and map_panel != null:
+			map_panel.visible = not map_panel.visible
 		elif kc == KEY_R and network != null and network.surface_routes_node != null:
 			network.surface_routes_node.visible = not network.surface_routes_node.visible
 		elif kc == KEY_U and network != null and network.under_routes_node != null:
@@ -647,6 +793,7 @@ func _process(_d: float) -> void:
 	_fit_clip()
 	_cull_pins()
 	_shot_tick()
+	_update_minimap(_d)
 	if _label == null or cam == null or fx == null:
 		return
 	var p := cam.global_position
