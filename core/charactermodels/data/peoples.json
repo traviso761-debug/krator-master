@@ -716,59 +716,143 @@
    "tiers": [
     [
      "peasant",
-     0.22
+     0.1467
     ],
     [
      "trade",
-     0.13
+     0.0867
     ],
     [
      "aedile",
-     0.07
+     0.0467
     ],
     [
      "noble",
-     0.06
-    ],
-    [
-     "flamen",
-     0.05
-    ],
-    [
-     "heliarch",
-     0.05
-    ],
-    [
-     "pontifex",
-     0.03
-    ],
-    [
-     "skirmisher",
-     0.07
-    ],
-    [
-     "legionary",
-     0.11
-    ],
-    [
-     "praetorian",
-     0.05
-    ],
-    [
-     "forgemaster_pilot",
      0.04
     ],
     [
+     "flamen",
+     0.0333
+    ],
+    [
+     "heliarch",
+     0.0333
+    ],
+    [
+     "pontifex",
+     0.02
+    ],
+    [
+     "skirmisher",
+     0.0467
+    ],
+    [
+     "legionary",
+     0.0733
+    ],
+    [
+     "praetorian",
+     0.0333
+    ],
+    [
+     "forgemaster_pilot",
+     0.0267
+    ],
+    [
      "watch",
-     0.07
+     0.0467
     ],
     [
      "crab_marine",
-     0.05
+     0.0333
     ],
     [
      "pc_legatus",
      0.0
+    ],
+    [
+     "marr_dockhand",
+     0.02
+    ],
+    [
+     "marr_gardonz_factor",
+     0.0133
+    ],
+    [
+     "marr_navigator",
+     0.0133
+    ],
+    [
+     "marr_classiarius",
+     0.02
+    ],
+    [
+     "marr_corsair",
+     0.0133
+    ],
+    [
+     "tal_scholar",
+     0.0133
+    ],
+    [
+     "tal_toll_baron",
+     0.01
+    ],
+    [
+     "tal_pass_guard",
+     0.02
+    ],
+    [
+     "tal_highland_auxilia",
+     0.0167
+    ],
+    [
+     "pyl_salvager",
+     0.0167
+    ],
+    [
+     "pyl_conduit_warden",
+     0.0133
+    ],
+    [
+     "pyl_decurion_guard",
+     0.02
+    ],
+    [
+     "pyl_dust_vexillarius",
+     0.0133
+    ],
+    [
+     "shl_foundry_worker",
+     0.0167
+    ],
+    [
+     "shl_enforcer",
+     0.0167
+    ],
+    [
+     "shl_siege_guard",
+     0.02
+    ],
+    [
+     "shl_chain_snapper",
+     0.01
+    ],
+    [
+     "dil_almanac_factor",
+     0.0167
+    ],
+    [
+     "dil_hykk_envoy",
+     0.0133
+    ],
+    [
+     "dil_cut_guard",
+     0.02
+    ],
+    [
+     "dil_aidol_voltigeur",
+     0.0167
     ]
    ],
    "tier_labels": {
@@ -786,7 +870,28 @@
     "watch": "Watch Auxilia (MC-02 Copper-Sallet & Hex-Lamellar)",
     "crab_marine": "Land-Crab Auxilia Marine (MC-07 Chitin-Carapace Guard)",
     "pc_legatus": "Imperial Solar Legatus (PC Hero)",
-    "phil": "Phil (Izani Corsair Lord)"
+    "phil": "Phil (Izani Corsair Lord)",
+    "marr_dockhand": "De Xedaz Canal Rigger",
+    "marr_gardonz_factor": "Qartar de Gardonz Prize-Broker",
+    "marr_navigator": "Navigadarz Chart-Master",
+    "marr_classiarius": "Porta Marr Harbor Guard (Classiarius)",
+    "marr_corsair": "Hooked-Sun Privateer (MC-10 / PF-01)",
+    "tal_scholar": "University of Talia Jurist",
+    "tal_toll_baron": "Highland Pass Toll-Magnate",
+    "tal_pass_guard": "Talia Pass-Gate Guard",
+    "tal_highland_auxilia": "Girder / Daridel Mountain Escort",
+    "pyl_salvager": "Salvagers' Guild Ruin-Breaker",
+    "pyl_conduit_warden": "Aqueduct Ration-Magistrate",
+    "pyl_decurion_guard": "Pylon Salvage-Legion Town Guard",
+    "pyl_dust_vexillarius": "Bowl VIIIb Outrider (Dust-Cloak)",
+    "shl_foundry_worker": "Xelroda Smelter & Sulfur Miner",
+    "shl_enforcer": "Debt-Peon Bailiff & Manhunter",
+    "shl_siege_guard": "Shell Uruk-Roman Siege Guard",
+    "shl_chain_snapper": "BF-03 Chain-Snapper Maroon Rebel",
+    "dil_almanac_factor": "Dellu-Handu Citizen (Jimjam Trend)",
+    "dil_hykk_envoy": "Cut Senator (Hykkousoi Trend)",
+    "dil_cut_guard": "Dilihan Linothorax Town Guard",
+    "dil_aidol_voltigeur": "Aidol Quiet-Copy Rifleman"
    },
    "outfits": {
     "male": {
@@ -928,6 +1033,195 @@
       "beard": null,
       "hair": null,
       "type": "important_npc"
+     },
+     "marr_dockhand": {
+      "head": "marr_m_dockhand_bandana",
+      "torso": "marr_m_dockhand_vest",
+      "gloves": "marr_m_dockhand_cuffs",
+      "legs": "marr_m_dockhand_slops",
+      "feet": "marr_m_dockhand_boots",
+      "back": "marr_m_dockhand_hawser",
+      "region": "marr"
+     },
+     "marr_gardonz_factor": {
+      "head": "marr_m_factor_tricorn",
+      "torso": "marr_m_factor_coat",
+      "gloves": "marr_m_factor_cuffs",
+      "legs": "marr_m_factor_breeches",
+      "feet": "marr_m_factor_boots",
+      "back": "marr_m_factor_cape",
+      "region": "marr"
+     },
+     "marr_navigator": {
+      "head": "marr_m_navigator_bicorne",
+      "torso": "marr_m_navigator_doublet",
+      "gloves": "marr_m_navigator_cuffs",
+      "legs": "marr_m_navigator_trousers",
+      "feet": "marr_m_navigator_boots",
+      "back": "marr_m_navigator_astrolabe",
+      "region": "marr"
+     },
+     "marr_classiarius": {
+      "head": "marr_m_classiarius_helm",
+      "torso": "marr_m_classiarius_lorica",
+      "gloves": "marr_m_classiarius_vambraces",
+      "legs": "marr_m_classiarius_kilt",
+      "feet": "marr_m_classiarius_caligae",
+      "back": "marr_m_classiarius_sagum",
+      "region": "marr"
+     },
+     "marr_corsair": {
+      "head": "marr_m_corsair_hat",
+      "torso": "marr_m_corsair_bolero",
+      "gloves": "marr_m_corsair_cuffs",
+      "legs": "marr_m_corsair_breeches",
+      "feet": "marr_m_corsair_boots",
+      "back": "marr_m_corsair_cape",
+      "region": "marr"
+     },
+     "tal_scholar": {
+      "head": "tal_m_scholar_birretta",
+      "torso": "tal_m_scholar_gown",
+      "gloves": "tal_m_scholar_cuffs",
+      "legs": "tal_m_scholar_trousers",
+      "feet": "tal_m_scholar_shoes",
+      "back": "tal_m_scholar_codex",
+      "region": "talia"
+     },
+     "tal_toll_baron": {
+      "head": "tal_m_baron_hat",
+      "torso": "tal_m_baron_dalmatica",
+      "gloves": "tal_m_baron_cuffs",
+      "legs": "tal_m_baron_breeches",
+      "feet": "tal_m_baron_boots",
+      "back": "tal_m_baron_mantle",
+      "region": "talia"
+     },
+     "tal_pass_guard": {
+      "head": "tal_m_pass_galea",
+      "torso": "tal_m_pass_squamata",
+      "gloves": "tal_m_pass_vambraces",
+      "legs": "tal_m_pass_pteruges",
+      "feet": "tal_m_pass_greaves",
+      "back": "tal_m_pass_cloak",
+      "region": "talia"
+     },
+     "tal_highland_auxilia": {
+      "head": "tal_m_auxilia_spangenhelm",
+      "torso": "tal_m_auxilia_coat",
+      "gloves": "tal_m_auxilia_bracers",
+      "legs": "tal_m_auxilia_braccae",
+      "feet": "tal_m_auxilia_boots",
+      "back": "tal_m_auxilia_sagum",
+      "region": "talia"
+     },
+     "pyl_salvager": {
+      "head": "pyl_m_salvager_wrap",
+      "torso": "pyl_m_salvager_vest",
+      "gloves": "pyl_m_salvager_gloves",
+      "legs": "pyl_m_salvager_trousers",
+      "feet": "pyl_m_salvager_boots",
+      "back": "pyl_m_salvager_condenser",
+      "region": "pylon"
+     },
+     "pyl_conduit_warden": {
+      "head": "pyl_m_warden_hat",
+      "torso": "pyl_m_warden_duster",
+      "gloves": "pyl_m_warden_cuffs",
+      "legs": "pyl_m_warden_trousers",
+      "feet": "pyl_m_warden_boots",
+      "back": "pyl_m_warden_tank",
+      "region": "pylon"
+     },
+     "pyl_decurion_guard": {
+      "head": "pyl_m_decurion_galea",
+      "torso": "pyl_m_decurion_lorica",
+      "gloves": "pyl_m_decurion_gauntlets",
+      "legs": "pyl_m_decurion_pteruges",
+      "feet": "pyl_m_decurion_caligae",
+      "back": "pyl_m_decurion_pack",
+      "region": "pylon"
+     },
+     "pyl_dust_vexillarius": {
+      "head": "pyl_m_vexil_helm",
+      "torso": "pyl_m_vexil_harness",
+      "gloves": "pyl_m_vexil_bracers",
+      "legs": "pyl_m_vexil_trousers",
+      "feet": "pyl_m_vexil_boots",
+      "back": "pyl_m_vexil_standard",
+      "region": "pylon"
+     },
+     "shl_foundry_worker": {
+      "head": "shl_m_foundry_hood",
+      "torso": "shl_m_foundry_apron",
+      "gloves": "shl_m_foundry_mitts",
+      "legs": "shl_m_foundry_trousers",
+      "feet": "shl_m_foundry_clogs",
+      "back": "shl_m_foundry_hod",
+      "region": "shell"
+     },
+     "shl_enforcer": {
+      "head": "shl_m_enforcer_galea",
+      "torso": "shl_m_enforcer_lorica",
+      "gloves": "shl_m_enforcer_bracers",
+      "legs": "shl_m_enforcer_breeches",
+      "feet": "shl_m_enforcer_boots",
+      "back": "shl_m_enforcer_pack",
+      "region": "shell"
+     },
+     "shl_siege_guard": {
+      "head": "shl_m_siege_galea",
+      "torso": "shl_m_siege_lorica",
+      "gloves": "shl_m_siege_gauntlets",
+      "legs": "shl_m_siege_kilt",
+      "feet": "shl_m_siege_sabatons",
+      "back": "shl_m_siege_cloak",
+      "region": "shell"
+     },
+     "shl_chain_snapper": {
+      "head": "shl_m_rebel_collar",
+      "torso": "shl_m_rebel_lame",
+      "gloves": "shl_m_rebel_bracers",
+      "legs": "shl_m_rebel_trousers",
+      "feet": "shl_m_rebel_boots",
+      "back": "shl_m_rebel_pack",
+      "region": "shell"
+     },
+     "dil_almanac_factor": {
+      "head": "dil_m_factor_turban",
+      "torso": "dil_m_factor_tunica",
+      "gloves": "dil_m_factor_cuffs",
+      "legs": "dil_m_factor_trousers",
+      "feet": "dil_m_factor_sandals",
+      "back": "dil_m_factor_satchel",
+      "region": "dilihan"
+     },
+     "dil_hykk_envoy": {
+      "head": "dil_m_envoy_stephane",
+      "torso": "dil_m_envoy_chiton",
+      "gloves": "dil_m_envoy_cuffs",
+      "legs": "dil_m_envoy_skirt",
+      "feet": "dil_m_envoy_sandals",
+      "back": "dil_m_envoy_mantle",
+      "region": "dilihan"
+     },
+     "dil_cut_guard": {
+      "head": "dil_m_guard_galea",
+      "torso": "dil_m_guard_linothorax",
+      "gloves": "dil_m_guard_vambraces",
+      "legs": "dil_m_guard_kilt",
+      "feet": "dil_m_guard_greaves",
+      "back": "dil_m_guard_chlamys",
+      "region": "dilihan"
+     },
+     "dil_aidol_voltigeur": {
+      "head": "dil_m_voltigeur_galea",
+      "torso": "dil_m_voltigeur_corslet",
+      "gloves": "dil_m_voltigeur_gloves",
+      "legs": "dil_m_voltigeur_trousers",
+      "feet": "dil_m_voltigeur_boots",
+      "back": "dil_m_voltigeur_pack",
+      "region": "dilihan"
      }
     },
     "female": {
@@ -1069,6 +1363,195 @@
       "beard": null,
       "hair": null,
       "type": "important_npc"
+     },
+     "marr_dockhand": {
+      "head": "marr_f_dockhand_bandana",
+      "torso": "marr_f_dockhand_vest",
+      "gloves": "marr_f_dockhand_cuffs",
+      "legs": "marr_f_dockhand_slops",
+      "feet": "marr_f_dockhand_boots",
+      "back": "marr_f_dockhand_hawser",
+      "region": "marr"
+     },
+     "marr_gardonz_factor": {
+      "head": "marr_f_factor_tricorn",
+      "torso": "marr_f_factor_coat",
+      "gloves": "marr_f_factor_cuffs",
+      "legs": "marr_f_factor_breeches",
+      "feet": "marr_f_factor_boots",
+      "back": "marr_f_factor_cape",
+      "region": "marr"
+     },
+     "marr_navigator": {
+      "head": "marr_f_navigator_bicorne",
+      "torso": "marr_f_navigator_doublet",
+      "gloves": "marr_f_navigator_cuffs",
+      "legs": "marr_f_navigator_trousers",
+      "feet": "marr_f_navigator_boots",
+      "back": "marr_f_navigator_astrolabe",
+      "region": "marr"
+     },
+     "marr_classiarius": {
+      "head": "marr_f_classiarius_helm",
+      "torso": "marr_f_classiarius_lorica",
+      "gloves": "marr_f_classiarius_vambraces",
+      "legs": "marr_f_classiarius_kilt",
+      "feet": "marr_f_classiarius_caligae",
+      "back": "marr_f_classiarius_sagum",
+      "region": "marr"
+     },
+     "marr_corsair": {
+      "head": "marr_f_corsair_hat",
+      "torso": "marr_f_corsair_bolero",
+      "gloves": "marr_f_corsair_cuffs",
+      "legs": "marr_f_corsair_breeches",
+      "feet": "marr_f_corsair_boots",
+      "back": "marr_f_corsair_cape",
+      "region": "marr"
+     },
+     "tal_scholar": {
+      "head": "tal_f_scholar_birretta",
+      "torso": "tal_f_scholar_gown",
+      "gloves": "tal_f_scholar_cuffs",
+      "legs": "tal_f_scholar_trousers",
+      "feet": "tal_f_scholar_shoes",
+      "back": "tal_f_scholar_codex",
+      "region": "talia"
+     },
+     "tal_toll_baron": {
+      "head": "tal_f_baron_hat",
+      "torso": "tal_f_baron_dalmatica",
+      "gloves": "tal_f_baron_cuffs",
+      "legs": "tal_f_baron_breeches",
+      "feet": "tal_f_baron_boots",
+      "back": "tal_f_baron_mantle",
+      "region": "talia"
+     },
+     "tal_pass_guard": {
+      "head": "tal_f_pass_galea",
+      "torso": "tal_f_pass_squamata",
+      "gloves": "tal_f_pass_vambraces",
+      "legs": "tal_f_pass_pteruges",
+      "feet": "tal_f_pass_greaves",
+      "back": "tal_f_pass_cloak",
+      "region": "talia"
+     },
+     "tal_highland_auxilia": {
+      "head": "tal_f_auxilia_spangenhelm",
+      "torso": "tal_f_auxilia_coat",
+      "gloves": "tal_f_auxilia_bracers",
+      "legs": "tal_f_auxilia_braccae",
+      "feet": "tal_f_auxilia_boots",
+      "back": "tal_f_auxilia_sagum",
+      "region": "talia"
+     },
+     "pyl_salvager": {
+      "head": "pyl_f_salvager_wrap",
+      "torso": "pyl_f_salvager_vest",
+      "gloves": "pyl_f_salvager_gloves",
+      "legs": "pyl_f_salvager_trousers",
+      "feet": "pyl_f_salvager_boots",
+      "back": "pyl_f_salvager_condenser",
+      "region": "pylon"
+     },
+     "pyl_conduit_warden": {
+      "head": "pyl_f_warden_hat",
+      "torso": "pyl_f_warden_duster",
+      "gloves": "pyl_f_warden_cuffs",
+      "legs": "pyl_f_warden_trousers",
+      "feet": "pyl_f_warden_boots",
+      "back": "pyl_f_warden_tank",
+      "region": "pylon"
+     },
+     "pyl_decurion_guard": {
+      "head": "pyl_f_decurion_galea",
+      "torso": "pyl_f_decurion_lorica",
+      "gloves": "pyl_f_decurion_gauntlets",
+      "legs": "pyl_f_decurion_pteruges",
+      "feet": "pyl_f_decurion_caligae",
+      "back": "pyl_f_decurion_pack",
+      "region": "pylon"
+     },
+     "pyl_dust_vexillarius": {
+      "head": "pyl_f_vexil_helm",
+      "torso": "pyl_f_vexil_harness",
+      "gloves": "pyl_f_vexil_bracers",
+      "legs": "pyl_f_vexil_trousers",
+      "feet": "pyl_f_vexil_boots",
+      "back": "pyl_f_vexil_standard",
+      "region": "pylon"
+     },
+     "shl_foundry_worker": {
+      "head": "shl_f_foundry_hood",
+      "torso": "shl_f_foundry_apron",
+      "gloves": "shl_f_foundry_mitts",
+      "legs": "shl_f_foundry_trousers",
+      "feet": "shl_f_foundry_clogs",
+      "back": "shl_f_foundry_hod",
+      "region": "shell"
+     },
+     "shl_enforcer": {
+      "head": "shl_f_enforcer_galea",
+      "torso": "shl_f_enforcer_lorica",
+      "gloves": "shl_f_enforcer_bracers",
+      "legs": "shl_f_enforcer_breeches",
+      "feet": "shl_f_enforcer_boots",
+      "back": "shl_f_enforcer_pack",
+      "region": "shell"
+     },
+     "shl_siege_guard": {
+      "head": "shl_f_siege_galea",
+      "torso": "shl_f_siege_lorica",
+      "gloves": "shl_f_siege_gauntlets",
+      "legs": "shl_f_siege_kilt",
+      "feet": "shl_f_siege_sabatons",
+      "back": "shl_f_siege_cloak",
+      "region": "shell"
+     },
+     "shl_chain_snapper": {
+      "head": "shl_f_rebel_collar",
+      "torso": "shl_f_rebel_lame",
+      "gloves": "shl_f_rebel_bracers",
+      "legs": "shl_f_rebel_trousers",
+      "feet": "shl_f_rebel_boots",
+      "back": "shl_f_rebel_pack",
+      "region": "shell"
+     },
+     "dil_almanac_factor": {
+      "head": "dil_f_factor_turban",
+      "torso": "dil_f_factor_tunica",
+      "gloves": "dil_f_factor_cuffs",
+      "legs": "dil_f_factor_trousers",
+      "feet": "dil_f_factor_sandals",
+      "back": "dil_f_factor_satchel",
+      "region": "dilihan"
+     },
+     "dil_hykk_envoy": {
+      "head": "dil_f_envoy_stephane",
+      "torso": "dil_f_envoy_chiton",
+      "gloves": "dil_f_envoy_cuffs",
+      "legs": "dil_f_envoy_skirt",
+      "feet": "dil_f_envoy_sandals",
+      "back": "dil_f_envoy_mantle",
+      "region": "dilihan"
+     },
+     "dil_cut_guard": {
+      "head": "dil_f_guard_galea",
+      "torso": "dil_f_guard_linothorax",
+      "gloves": "dil_f_guard_vambraces",
+      "legs": "dil_f_guard_kilt",
+      "feet": "dil_f_guard_greaves",
+      "back": "dil_f_guard_chlamys",
+      "region": "dilihan"
+     },
+     "dil_aidol_voltigeur": {
+      "head": "dil_f_voltigeur_galea",
+      "torso": "dil_f_voltigeur_corslet",
+      "gloves": "dil_f_voltigeur_gloves",
+      "legs": "dil_f_voltigeur_trousers",
+      "feet": "dil_f_voltigeur_boots",
+      "back": "dil_f_voltigeur_pack",
+      "region": "dilihan"
      }
     }
    }
@@ -9745,23 +10228,43 @@
    "tiers": [
     [
      "singularity_archon",
-     0.2
+     0.1333
     ],
     [
      "censer_revenant",
-     0.2
+     0.1333
     ],
     [
      "vox_solus",
-     0.2
+     0.1333
     ],
     [
      "accretion_djinn",
-     0.2
+     0.1333
     ],
     [
      "chorus_of_masks",
-     0.2
+     0.1333
+    ],
+    [
+     "ophanim_seraph",
+     0.0667
+    ],
+    [
+     "prism_matriarch",
+     0.0667
+    ],
+    [
+     "clockwork_aeon",
+     0.0667
+    ],
+    [
+     "abyssal_medusa",
+     0.0667
+    ],
+    [
+     "ashen_calamity",
+     0.0667
     ]
    ],
    "tier_labels": {
@@ -9769,7 +10272,12 @@
     "censer_revenant": "Censer Revenant (Decapitated Chimney-Smoke Knight & Tri-Lanterns)",
     "vox_solus": "Vox Solus (Floating Shard Construct & Polychrome Crystals)",
     "accretion_djinn": "Accretion Djinn (Orbiting Cosmic Rings & Smoke-Vortex Tail)",
-    "chorus_of_masks": "Chorus of Seven Masks (Floating Demon Chorus & Astral Haori)"
+    "chorus_of_masks": "Chorus of Seven Masks (Floating Demon Chorus & Astral Haori)",
+    "ophanim_seraph": "Ophanim Seraph (Six-Winged Eyed-Wheel Celestial Hover)",
+    "prism_matriarch": "Prism Matriarch (Stained-Glass Automaton & Rose-Window Mandala)",
+    "clockwork_aeon": "Clockwork Aeon (Brass Orrery & Hourglass Time-Warden)",
+    "abyssal_medusa": "Abyssal Medusa (Bioluminescent Jellyfish & Coral Sovereign)",
+    "ashen_calamity": "Ashen Calamity (Volcanic Obsidian-Magma & Cinder-Brazier Demon)"
    },
    "outfits": {
     "male": {
@@ -9822,6 +10330,56 @@
       "feet": "ext_m_chorus_talons",
       "hair": null,
       "beard": null
+     },
+     "ophanim_seraph": {
+      "head": "ext2_m_seraph_wheel",
+      "torso": "ext2_m_seraph_vestment",
+      "back": "ext2_m_seraph_wings",
+      "gloves": "ext2_m_seraph_hands",
+      "legs": "ext2_m_seraph_trail",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "prism_matriarch": {
+      "head": "ext2_m_prism_crown",
+      "torso": "ext2_m_prism_corset",
+      "back": "ext2_m_prism_rose",
+      "gloves": "ext2_m_prism_gauntlets",
+      "legs": "ext2_m_prism_greaves",
+      "feet": "ext2_m_prism_heels",
+      "hair": null,
+      "beard": null
+     },
+     "clockwork_aeon": {
+      "head": "ext2_m_aeon_astrolabe",
+      "torso": "ext2_m_aeon_chassis",
+      "back": "ext2_m_aeon_orrery",
+      "gloves": "ext2_m_aeon_calipers",
+      "legs": "ext2_m_aeon_coatlegs",
+      "feet": "ext2_m_aeon_boots",
+      "hair": null,
+      "beard": null
+     },
+     "abyssal_medusa": {
+      "head": "ext2_m_medusa_bell",
+      "torso": "ext2_m_medusa_mantle",
+      "back": "ext2_m_medusa_fronds",
+      "gloves": "ext2_m_medusa_tendrils",
+      "legs": "ext2_m_medusa_tentacles",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "ashen_calamity": {
+      "head": "ext2_m_calamity_horns",
+      "torso": "ext2_m_calamity_carapace",
+      "back": "ext2_m_calamity_braziers",
+      "gloves": "ext2_m_calamity_claws",
+      "legs": "ext2_m_calamity_greaves",
+      "feet": "ext2_m_calamity_hooves",
+      "hair": null,
+      "beard": null
      }
     },
     "female": {
@@ -9872,6 +10430,56 @@
       "gloves": null,
       "legs": "ext_f_chorus_legs",
       "feet": "ext_f_chorus_talons",
+      "hair": null,
+      "beard": null
+     },
+     "ophanim_seraph": {
+      "head": "ext2_f_seraph_wheel",
+      "torso": "ext2_f_seraph_vestment",
+      "back": "ext2_f_seraph_wings",
+      "gloves": "ext2_f_seraph_hands",
+      "legs": "ext2_f_seraph_trail",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "prism_matriarch": {
+      "head": "ext2_f_prism_crown",
+      "torso": "ext2_f_prism_corset",
+      "back": "ext2_f_prism_rose",
+      "gloves": "ext2_f_prism_gauntlets",
+      "legs": "ext2_f_prism_greaves",
+      "feet": "ext2_f_prism_heels",
+      "hair": null,
+      "beard": null
+     },
+     "clockwork_aeon": {
+      "head": "ext2_f_aeon_astrolabe",
+      "torso": "ext2_f_aeon_chassis",
+      "back": "ext2_f_aeon_orrery",
+      "gloves": "ext2_f_aeon_calipers",
+      "legs": "ext2_f_aeon_coatlegs",
+      "feet": "ext2_f_aeon_boots",
+      "hair": null,
+      "beard": null
+     },
+     "abyssal_medusa": {
+      "head": "ext2_f_medusa_bell",
+      "torso": "ext2_f_medusa_mantle",
+      "back": "ext2_f_medusa_fronds",
+      "gloves": "ext2_f_medusa_tendrils",
+      "legs": "ext2_f_medusa_tentacles",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "ashen_calamity": {
+      "head": "ext2_f_calamity_horns",
+      "torso": "ext2_f_calamity_carapace",
+      "back": "ext2_f_calamity_braziers",
+      "gloves": "ext2_f_calamity_claws",
+      "legs": "ext2_f_calamity_greaves",
+      "feet": "ext2_f_calamity_hooves",
       "hair": null,
       "beard": null
      }

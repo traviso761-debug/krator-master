@@ -694,11 +694,12 @@
     }
 
     // Post-clip procedural stance overlay:
-    // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon)
+    // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon, ophanim_seraph, abyssal_medusa)
     var rec = fig.record || {};
     var torsoId = (rec.armour && rec.armour.torso) || '';
-    var isFloatEntity = (torsoId.indexOf('ext_') === 0 && (
+    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0) && (
       torsoId.indexOf('revenant') >= 0 || torsoId.indexOf('djinn') >= 0 || torsoId.indexOf('archon') >= 0
+      || torsoId.indexOf('seraph') >= 0 || torsoId.indexOf('medusa') >= 0
     ));
     if(isFloatEntity && fig.bones){
       var hiF = state.byName['Hips'];
