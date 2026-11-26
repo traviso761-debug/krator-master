@@ -924,7 +924,7 @@ func _after_clip(dt: float) -> void:
 	_jaw()
 	_leg_caps()
 	_bow_string(dt)
-	_hang()
+	_hang(dt)
 
 
 # twin of look in 50-figure.js: the head and the eyes turned toward a target ahead (clips.json look): look.ahead metres
@@ -1754,6 +1754,8 @@ func _stand_up() -> void:
 # radius and span along the hang axis) is kept HANG_CLEAR out of the legs by turning the arm at the shoulder so its
 # deepest point goes the way out (the points inside, off their legs, weighted by depth; never in toward the other leg)
 const HANG_TURN := 1.6
+const HANG_RATE := 6.0                   # rad/s: the most the frame's forearm turn changes (a change of side is a turn, not a snap)
+const HANG_RELAX := 0.3                  # s: the legs' push eases back to none over this
 const HANG_WRIST := 0.5
 const HANG_CLEAR := 0.045
 const HANG_OUT := 0.6
@@ -1763,14 +1765,16 @@ var _hang_w := Vector3.ZERO              # the deepest point
 var _hang_n := Vector3.ZERO              # the way out: each point inside, off its leg, weighted by its depth
 
 
-func _hang_turn(side: String, h: Dictionary) -> void:
+func _hang_turn(side: String, h: Dictionary, first: bool) -> void:
 	var hs: Dictionary = skel["hands"][side]
 	if hs.has("arm"):
 		var arm: Array = hs["arm"]
 		var fore := int(arm[1])
 		var F := (_gp(int(arm[2])).origin - _gp(fore).origin).normalized()
 		var Y := (_gp(int(hs["bone"])) * _grip_t(side)).basis.get_rotation_quaternion() * Vector3.UP
-		# the bail turned about the forearm by phi has height a + b cos(phi) + c sin(phi): the nearer phi that zeroes it
+		# the bail turned about the forearm by phi has height a + b cos(phi) + c sin(phi): of the two phi that zero it, the
+		# one (taken round from ref) that brings the frame's whole turn nearer the last frame's, within the cap and HANG_RATE
+		# of it (chosen afresh the hand flipped half a turn in a frame: Water plants)
 		var a := Y.dot(F) * F.y
 		var yp := Y - F * Y.dot(F)
 		var b := yp.y
@@ -1781,7 +1785,19 @@ func _hang_turn(side: String, h: Dictionary) -> void:
 			var ac := acos(clampf(-a / R, -1.0, 1.0))
 			var p1 := atan2(sin(dl + ac), cos(dl + ac))
 			var p2 := atan2(sin(dl - ac), cos(dl - ac))
-			var phi := clampf(p1 if absf(p1) < absf(p2) else p2, -HANG_TURN, HANG_TURN)
+			if first:
+				h["tot"] = 0.0
+			var tot := float(h.get("tot", 0.0))
+			var ref := float(h.get("last", 0.0)) - tot
+			var q1 := ref + atan2(sin(p1 - ref), cos(p1 - ref))
+			var q2 := ref + atan2(sin(p2 - ref), cos(p2 - ref))
+			var lo := -HANG_TURN
+			var hi := HANG_TURN
+			if h.has("last") and float(h.get("dt", 0.0)) > 0.0:
+				lo = maxf(lo, float(h["last"]) - HANG_RATE * float(h["dt"]))
+				hi = minf(hi, float(h["last"]) + HANG_RATE * float(h["dt"]))
+			var phi := clampf(q1 if absf(q1 - ref) < absf(q2 - ref) else q2, lo - tot, hi - tot)
+			h["tot"] = tot + phi
 			if absf(phi) > 1e-5:
 				_turn(fore, Quaternion(F, phi))
 		# what the forearm cannot level (the handle partly along it) the wrist bends out, at most HANG_WRIST
@@ -1825,15 +1841,25 @@ func _hang_depth(side: String, h: Dictionary) -> float:
 	return worst
 
 
-func _hang() -> void:
+func _hang(dt: float) -> void:
 	hang_need = 0.0
 	for side in _hangs:
 		var h: Dictionary = _hangs[side]
-		_hang_turn(side, h)
+		h["dt"] = maxf(dt, 0.0)
 		var hs: Dictionary = skel["hands"][side]
-		if h.get("clear") == null or not hs.has("arm") or _clip == "" or skeleton.find_bone("LeftUpLeg") < 0:
+		var legs: bool = h.get("clear") != null and hs.has("arm") and _clip != "" and skeleton.find_bone("LeftUpLeg") >= 0
+		var up := int(hs["arm"][0]) if hs.has("arm") else -1
+		# the legs' push starts from the frame before's, easing back to none over HANG_RELAX of the clip's time
+		if legs:
+			h["q0"] = skeleton.get_bone_pose_rotation(up)
+			if h.has("push"):
+				if h["dt"] > 0.0:
+					h["push"] = (h["push"] as Quaternion).slerp(Quaternion(), 1.0 - exp(-float(h["dt"]) / HANG_RELAX))
+				skeleton.set_bone_pose_rotation(up, (h["q0"] as Quaternion) * (h["push"] as Quaternion))
+		_hang_turn(side, h, true)
+		if not legs:
+			h["last"] = h.get("tot", 0.0)
 			continue
-		var up := int(hs["arm"][0])
 		var sd := _gp(skeleton.find_bone("LeftUpLeg")).origin - _gp(skeleton.find_bone("RightUpLeg")).origin
 		sd.y = 0.0
 		sd = (sd if side[0] == "L" else -sd).normalized()      # out to the hand's own side
@@ -1859,8 +1885,10 @@ func _hang() -> void:
 			if lever < 0.05:
 				break
 			_turn(up, Quaternion(F / lever, minf(HANG_OUT, 1.2 * need / lever)))
-			_hang_turn(side, h)
+			_hang_turn(side, h, false)
 		hang_need = maxf(hang_need, need)
+		h["last"] = h.get("tot", 0.0)
+		h["push"] = ((h["q0"] as Quaternion).inverse() * skeleton.get_bone_pose_rotation(up)).normalized()
 
 
 # twin of bowString: the string between the bow's limb tips through the drawing hand while it is behind the bow, the

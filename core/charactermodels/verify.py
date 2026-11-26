@@ -29,7 +29,8 @@ the legs in Bow aim and scan; Block 2's blade stays out of the head and neck; Tw
 Drink brings the cup to the lips in the left hand; and the second round (2026-10-21): the arrow's head stays in front
 of the bow in every bow clip on every body; Two-handed parry's left hand does not flip round the hilt; Drink's cup stands
 upright before it is drunk from; Eat's bowl stands level in front of the belly; and the third round (2026-11-26): the
-bucket's bail stays in the fist and its body out of the legs in Carry bucket and Water plants; the pickaxe in Dig and the
+bucket's bail stays in the fist (the hand never turning more than 20 degrees in a frame) and its body out of the legs in
+Carry bucket and Water plants; the pickaxe in Dig and the
 hammer at the anvil stay out of the head; Chop's left arm stays out of the jaw; Sit and drink brings the cup to the lips;
 Eat's bowl shoulder is not hiked.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
@@ -557,9 +558,16 @@ LAB_CHECKS = r'''async () => {
   // their tools out of the head; Chop's left arm out of the jaw; the cup to the lips in Sit and drink; Eat's bowl
   // shoulder not hiked
   for (const c of ['walk_bucket', 'ual_water']) {
-    let legs = 0, bail = 0; await run(c, x => { legs = Math.max(legs, x.hangNeed);
+    // and the hand does not flip from frame to frame (round 5, 2026-11-27: Water plants' hand snapped half a turn as the
+    // forearm turn that lays the bail level changed sides)
+    let legs = 0, bail = 0, flip = 0; const prevQ = new Map();
+    await run(c, x => { legs = Math.max(legs, x.hangNeed);
       const pv = bone(x, 'RightHand').children.find(o => !o.isBone).children[0];
-      bail = Math.max(bail, V().set(0, 1, 0).applyQuaternion(pv.quaternion).angleTo(V().set(0, 1, 0))); });
+      bail = Math.max(bail, V().set(0, 1, 0).applyQuaternion(pv.quaternion).angleTo(V().set(0, 1, 0)));
+      const q = bone(x, 'RightHand').getWorldQuaternion(Q());
+      if (prevQ.has(x) && x.action.time > 0.05) flip = Math.max(flip, prevQ.get(x).angleTo(q));
+      prevQ.set(x, q); });
+    if (flip > 0.35) out.push('props: in ' + c + ' the bucket hand turns ' + (flip * 57.3).toFixed(0) + ' degrees in a frame');
     if (legs > 0.015) out.push('props: in ' + c + ' the bucket comes ' + (legs * 100).toFixed(1) + ' cm into the legs (their capsules and the trousers)');
     if (bail > 0.01) out.push('props: in ' + c + ' the bail turns ' + (bail * 57.3).toFixed(0) + ' degrees out of the fist');
   }

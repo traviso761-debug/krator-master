@@ -380,11 +380,20 @@ func _init() -> void:
 			fig.play(c)
 			var legs2 := 0.0
 			var bail := 0.0
+			var flip2 := 0.0
+			var prev_h := Quaternion()
+			var rh := fig.skeleton.find_bone("RightHand")
 			for k in int(fig.player.current_animation_length * 30.0) - 1:
 				fig._process(1.0 / 30.0)
 				legs2 = maxf(legs2, fig.hang_need)
 				bail = maxf(bail, ((fig._hangs["R"]["pivot"] as Node3D).quaternion * Vector3.UP).angle_to(Vector3.UP))
+				var qh: Quaternion = fig._gp(rh).basis.get_rotation_quaternion()
+				if k > 1:
+					flip2 = maxf(flip2, prev_h.angle_to(qh))
+				prev_h = qh
 			ok(legs2 < 0.015 and bail < 0.01, "%s: the bail in the fist (%.3f rad), the bucket out of the legs (%.3f m in)" % [c, bail, legs2])
+			# round 5 (2026-11-27): the hand does not flip from frame to frame
+			ok(flip2 < 0.35, "%s: the bucket hand turns at most %.2f rad in a frame" % [c, flip2])
 		fig.hold({"R": "axe", "L": null, "both": true})
 		fig.play("ual_chop")
 		var jaw2 := 0.0

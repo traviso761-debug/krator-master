@@ -210,10 +210,15 @@ into the body); in a lower hand a prop with `low_turn` turns about its handle so
 A prop with `hang` (its axis that points down) hangs from its bail, which lies along the grip's handle axis in the
 fist: the forearm turns about its own length (at most 1.6 rad) until the bail lies level, the wrist bends (at most 0.5
 rad) for what that cannot do, and the prop swings about the bail only, so the bucket and the lantern hang plumb (they
-followed the forearm; turned freely about the grip, the bail then came out through the fingers in Water plants). A
+followed the forearm; turned freely about the grip, the bail then came out through the fingers in Water plants). Of
+the two forearm turns that lay the bail level, the one that keeps the frame's whole turn nearest the last frame's is
+taken, and that whole turn changes by at most 6 rad/s of the clip's time (the nearer to none, chosen afresh, swapped as
+the clip turned the forearm, or as the legs' push turned the arm between two calls, and the hand snapped half a turn in a
+frame: the owner, 2026-11-27, Water plants). A
 prop with `hang_clear` (its body's radius and span along the hang axis) is kept 4.5 cm out of the legs' capsules (the
 trousers): the arm turns at the shoulder so the body's deepest point goes the way out, the points inside each pushed off
-their leg and weighted by depth, never in toward the other leg and never back the way it went (the short bodies carried
+their leg and weighted by depth, never in toward the other leg and never back the way it went, starting from the frame before's push, eased back to none over 0.3 s of the clip's time (solved afresh each frame it
+lurched the arm) (the short bodies carried
 the bucket in the thigh; between the legs of a stride, the deepest point alone sent it from one leg to the other). A prop with `upright` (its axis
 that should point up) turns the wrist to keep it up, as far as the hand is not at the face (`standUp`, `_stand_up`): the
 cup stands upright in the hand and tips only to drink (the left hand held it upside down); the bowl, held in an open
