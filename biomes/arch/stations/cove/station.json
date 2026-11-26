@@ -1,0 +1,4 @@
+{
+  "core": {"23-core-water-tide.js": "core/water/tide/23-core-water-tide.js"},
+  "tides": {"box": [226, 232, 246, 252], "name": "KTIDE_DATA"}
+}

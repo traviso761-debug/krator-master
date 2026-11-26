@@ -99,7 +99,8 @@ const HCHK={
  lava(log){const bad=log.filter(e=>(MAQUIS.indexOf(e[0])>=0&&LAVA_AT(e[1],e[2])!=null)||(PIONEERS.indexOf(e[0])>=0&&LAVA_AT(e[1],e[2])==null));
   return{ok:!bad.length,detail:bad.length?bad.length+' on the wrong ground (first '+bad[0][0]+')':log.filter(e=>PIONEERS.indexOf(e[0])>=0).length+' pioneers on the flow, no maquis on it'};},
  aprons(pts){const bad=pts.filter(p=>L.APRON(p[0],p[1])<.5);return{ok:!bad.length,detail:bad.length?bad.length+' terrace points without their white apron':pts.length+' points down the terraces, each on the apron'};},
- dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-.6&&['biome:arcurtain','biome:arcurtainhem','biome:arhem'].indexOf(p[3])<0;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned but the curtains, which stand in the water'};},
+ dry(P,tide){const sl=WATER.seaLevel(0),dt=tide==null?0:tide;   /* the cove's sea is tidal: roots are held to its datum, not to the level at this moment */
+  const bad=P.filter(p=>{let w=waterH(p[0],p[2]);if(dt&&Math.abs(w-sl)<1e-3)w-=dt;return w>-1e8&&p[1]<w-.6&&['biome:arcurtain','biome:arcurtainhem','biome:arhem'].indexOf(p[3])<0;});return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+')':P.length+' instances, none drowned but the curtains, which stand in the water'};},
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
  coveLandform(hFn){let minInner=1e9,minOuter=1e9,maxEast=-1e9,maxWest=-1e9,sillLo=1e9,sillHi=-1e9;
   for(let s=-830;s<=-750;s+=20){let rMin=1e9;for(let da=-80;da<=80;da+=8){const p=L.XZ(s,L.centerA(s)+da);rMin=Math.min(rMin,hFn(p[0],p[1]));}sillLo=Math.min(sillLo,rMin);sillHi=Math.max(sillHi,rMin);}
@@ -128,6 +129,15 @@ const HCHK={
  coveDrawnAndCams(srcs,cams){const hasGrid=Array.isArray(srcs)&&srcs.length>0&&typeof KDRAWN!=='undefined';
   const bad=cams.filter(c=>{const dh=hasGrid?KDRAWN.h(c.x,c.z):terrainH(c.x,c.z),wh=waterH(c.x,c.z),fl=Math.max(terrainH(c.x,c.z),dh==null?-1e9:dh,wh>-1e8?wh:-1e9,0);return c.y<fl+3.0;});
   return{ok:hasGrid&&!bad.length,detail:'KDRAWN sources '+(srcs?srcs.length:0)+', clipped/underwater cameras '+bad.length};},
+ // the scale model's tide (KTIDE): springs above neaps, every day's extremes inside the band the cliff and zonation are built for, more White
+ // Stacks bare at a spring low than at a neap high, and the sea level the water draws is the tide's
+ coveKtide(site,band){if(!site)return{ok:false,detail:'no KTIDE site (core/water/tide or KTIDE_DATA missing)'};
+  let hi=-1e9,lo=1e9,ds=null,dn=null;   /* over a Count of 91 days: the greatest springs' day and the deepest neaps' */
+  for(let d=0;d<92;d++){const x=site.day(d);hi=Math.max(hi,x.highest);lo=Math.min(lo,x.lowest);if(!ds||x.range>ds.range)ds=x;if(!dn||x.range<dn.range)dn=x;}
+  const bare=lv=>L.STACKS.filter(k=>k.h>lv).length,bs=bare(ds.lowest),bn=bare(dn.highest);
+  const ok=site.springs&&ds.range>dn.range*1.4&&hi<=band[1]+.6&&lo>=band[0]-.6&&bs>bn;
+  return{ok,detail:'spring day range '+ds.range.toFixed(1)+' m vs neap '+dn.range.toFixed(1)+' m; 92-day extremes ['+lo.toFixed(2)+', '+hi.toFixed(2)+'] m in band ['+band[0]+', '+band[1]+'] ±0.6; White Stacks bare '+bs+' at a spring low, '+bn+' at a neap high'};},
+ coveSeaIsTide(st,sea){const ok=!!st&&st.ktide&&Math.abs(sea-st.level)<.02;return{ok,detail:'WATER.seaLevel '+sea.toFixed(2)+' m, tide '+(st?st.level:'?')+' m ('+(st?st.mode:'?')+', day range '+(st?st.dayRange:'?')+' m)'};},
  coveCurtainsAndTide(aud,openCnt,uiOk){
   const ok=!!aud&&aud.checked>=200&&aud.clipped===0&&aud.minClear>0&&openCnt===1&&!!uiOk;
   return{ok,detail:'open-water surfaces '+openCnt+' (unified, no entrance seam), curtain samples '+(aud?aud.checked:0)+' (clipped '+(aud?aud.clipped:-1)+', minClear '+(aud?aud.minClear:0)+' m), tide UI '+!!uiOk};}};
@@ -148,8 +158,10 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
   add('Type II alkaline cliff curtains, White Stacks and Chimaera cleft flames',HCHK.coveSerpentinization(L.STACKS,L.WEEPS,FLAMES.list));
   add('14 m macrotidal vertical zonation and east-west lithology split',HCHK.coveZonation(ARCHB.LOG,st.intertidalBands));
   add('KDRAWN ground grid active and all cameras clear of rock and water',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[],Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+  add('the scale model\'s tide (KTIDE): springs and neaps inside the 14 m band',HCHK.coveKtide(typeof COVE_TIDE!=='undefined'?COVE_TIDE.T.site:null,[SITE.tide.low,SITE.tide.high]));
+  add('the drawn sea level is the tide\'s',HCHK.coveSeaIsTide(typeof COVE_TIDE!=='undefined'?COVE_TIDE.state():null,WATER.seaLevel(0)));
   add('unified cove entrance water, rock-clearing 5-tier tufa curtains and 14 m tide UI',HCHK.coveCurtainsAndTide(typeof COVE_TIDE!=='undefined'?COVE_TIDE.T.curtainAudit:null,openN,typeof COVE_TIDE!=='undefined'&&!!COVE_TIDE.T.ui));}
- add('nothing rooted under the water but the curtains',HCHK.dry(P));
+ add('nothing rooted under the water but the curtains',HCHK.dry(P,SKEY==='cove'&&typeof COVE_TIDE!=='undefined'?WATER.seaLevel(0):null));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),V=SITE.solfatara;
@@ -170,6 +182,10 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('White Stacks placed in deep abyss',HCHK.coveSerpentinization([{bedY:-45,h:-30}],L.WEEPS,FLAMES.list));
   add('terrestrial shrub inside +-7 m tidal band',HCHK.coveZonation([['argymno',L.XZ(0,L.centerA(0)+L.hwE(0)+2)[0],L.XZ(0,L.centerA(0)+L.hwE(0)+2)[1]]],window._station&&window._station.intertidalBands));
   add('camera clipped under KDRAWN surface',HCHK.coveDrawnAndCams(typeof KDRAWN!=='undefined'?KDRAWN.sources:[], [{view:'clipped',x:pw.x,y:terrainH(pw.x,pw.z)-2,z:pw.z}]));
+  if(typeof COVE_TIDE!=='undefined'&&COVE_TIDE.T.site){const K2=KTIDE.load(KTIDE_DATA,{origin:SITE.px});
+   add('a 30 m tide over the cliff band',HCHK.coveKtide(K2.site({px:SITE.px[0],py:SITE.px[1]},{range:30}),[SITE.tide.low,SITE.tide.high]));
+   add('a tide without springs and neaps',HCHK.coveKtide(K2.site({px:SITE.px[0],py:SITE.px[1]},{range:SITE.tide.mean,springs:false}),[SITE.tide.low,SITE.tide.high]));}
+  add('a sea level off the tide',HCHK.coveSeaIsTide({ktide:true,level:3,mode:'live',dayRange:11},-2));
   add('split entrance water or clipped travertine curtain',HCHK.coveCurtainsAndTide({checked:250,clipped:4,minClear:-1.2},2,true));}
  add('a hoarder on ordinary ground',HCHK.hoard([{leaf:ARCH.uptake('pycnandra',{ni:30,pH:7}).leaf}]));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-5,z:0}]));

@@ -19,7 +19,9 @@ ARCH_SITES.cove={
  temp:{mean:28,warm:33,cold:24,low:19},
  soil:28,
  lat:-21.5,
- tide:{range:14,low:-7,high:7},
+ /* the tide: KTIDE's cell at px (the scale model's, core/water/tide), mean range 11 m with springs and neaps: 7.5 m at neaps to 14.3 m at the
+    greatest springs, so its extremes stay inside the [-7, +7] band the cliff and the zonation are built for (range: that band) */
+ tide:{range:14,low:-7,high:7,mean:11},
  axis:[0.422618,0.906308],
  sill:{s:-790,depth:[-13.8,-9.2],raceSpeed:5.2,raceLen:420,raceW:138},
  basin:{s:[-450,720],depth:-58.5,width:[280,450]},

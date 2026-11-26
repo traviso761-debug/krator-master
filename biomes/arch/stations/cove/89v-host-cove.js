@@ -1,68 +1,75 @@
 // ================================================================= HOST — Fleetborn Cove water, 5-tier tufa curtains and 14 m tide
 // Loaded only for --station cove (before 89w-host-water.js). Eliminates all straight water/entrance borders with a single continuous
 // 14 km CDLOD marine surface + in-shader bathymetric reversible sill overfalls, builds cliff-clearing 5-tier overhanging travertine
-// and tufa draperies with springhead rimstone basins, stalactite drip-teeth and waterfall veils, and drives a [-7 m, +7 m] tide.
+// and tufa draperies with springhead rimstone basins, stalactite drip-teeth and waterfall veils; the tide is the scale model's (KTIDE, springs and neaps).
 const COVE_TIDE=(function(){
- const S=SITE,T={level:S.sea,target:S.sea,wetTop:.65,mode:'mid',cycling:false,phase:0,rate:0,period:36,racePhase:0,raceU:null,plungeMeshes:[],ui:null,curtainAudit:null};
- const qTide=new URLSearchParams(location.search).get('tide');
- if(qTide==='low'){T.level=T.target=-7;T.mode='low';}
- else if(qTide==='high'){T.level=T.target=7;T.mode='high';T.wetTop=7;}
- else if(qTide==='cycle'){T.cycling=true;T.mode='cycle';}
- else if(qTide!=null&&!isNaN(+qTide)){T.level=T.target=clamp(+qTide,-7,7);T.mode='custom';T.wetTop=Math.max(.65,T.level);}
+ /* The tide is the scale model's (core/water/tide, KTIDE): the cove's cell of tides.json (the slice build.py inlines as KTIDE_DATA),
+    scaled to SITE.tide.mean metres of mean range, with the Week's and the Thirteen's springs and neaps, on WORLD time (the host's
+    KCLOCK: day and hour). Modes: 'live' follows the clock; 'run' runs the tide alone at RUN world seconds a second (a whole day in 48 s);
+    'hold' eases to a held level (the slider, ?tide=low|high|<m>). */
+ const S=SITE,RUN=1800,DAY=86400;
+ const K=typeof KTIDE!=='undefined'&&typeof KTIDE_DATA!=='undefined'?KTIDE.load(KTIDE_DATA,{origin:S.px}):null;
+ const site=K?K.site({px:S.px[0],py:S.px[1]},{range:S.tide.mean==null?11:S.tide.mean}):null;
+ const T={level:S.sea,target:S.sea,wetTop:.65,mode:site?'live':'hold',cycling:false,tw:0,rate:0,racePhase:0,raceU:null,plungeMeshes:[],ui:null,curtainAudit:null,site:site,
+  maxRate:1,clock:null,dayCache:null};
+ if(site){let m=0;for(let t=0;t<14*DAY;t+=600)m=Math.max(m,Math.abs(site.rate(t)));T.maxRate=m||1;}
+ const qp=new URLSearchParams(location.search),qTide=qp.get('tide'),qDay=qp.get('tideday');
+ if(qTide==='low'){T.level=T.target=S.tide.low;T.mode='hold';}
+ else if(qTide==='high'){T.level=T.target=S.tide.high;T.mode='hold';T.wetTop=S.tide.high;}
+ else if(qTide==='cycle'||qTide==='run'){T.mode=site?'run':'hold';T.cycling=!!site;}
+ else if(qTide!=null&&!isNaN(+qTide)){T.level=T.target=clamp(+qTide,S.tide.low,S.tide.high);T.mode='hold';T.wetTop=Math.max(.65,T.level);}
+ const clk=()=>T.clock||(typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null);
+ const ws=()=>{const C=clk();return C?KTIDE.worldSeconds(C):0;};
+ const tNow=()=>T.mode==='run'?T.tw:ws();
+ const mpsOf=r=>S.sill.raceSpeed*r/T.maxRate;
  function syncScene(){
   WATER.PRESETS.sea.level=T.level;
   if(L.setTideLv)L.setTideLv(T.level);
   if(BIGW&&BIGW.U&&BIGW.U.wtrLevel)BIGW.U.wtrLevel.value=T.level;
   if(T.raceU){
-   const cycSpd=Math.abs(T.rate);
-   if(T.cycling){
-    T.raceU.uRaceGain.value=clamp(.16+.95*(cycSpd/1.22),0,1.15);
-   }else{
-    T.raceU.uRaceGain.value=T.mode==='low'?.96:T.mode==='high'?.52:.74;
-   }
+   if(site&&T.mode!=='hold')T.raceU.uRaceGain.value=clamp(.16+.95*Math.abs(mpsOf(T.rate))/S.sill.raceSpeed,0,1.15);
+   else T.raceU.uRaceGain.value=T.level<=S.tide.low+1?.96:T.level>=S.tide.high-1?.52:.74;
   }
-  if(typeof COVE_GND_U!=='undefined'&&COVE_GND_U){
-   COVE_GND_U.uTideLv.value=T.level;
-   COVE_GND_U.uTideWetTop.value=T.wetTop;
-  }
-  for(let i=0;i<T.plungeMeshes.length;i++){
-   const pm=T.plungeMeshes[i];
-   pm.mesh.position.y=Math.max(pm.bedY,T.level)+.12;
-  }
+  if(typeof COVE_GND_U!=='undefined'&&COVE_GND_U){COVE_GND_U.uTideLv.value=T.level;COVE_GND_U.uTideWetTop.value=T.wetTop;}
+  for(let i=0;i<T.plungeMeshes.length;i++){const pm=T.plungeMeshes[i];pm.mesh.position.y=Math.max(pm.bedY,T.level)+.12;}
   paintUI();
  }
+ const hm=t=>{const h=((t%DAY)+DAY)%DAY/3600,H=Math.floor(h),M=Math.floor((h-H)*60);return(H<10?'0':'')+H+':'+(M<10?'0':'')+M;};
+ function dayOf(t){const d=Math.floor(t/DAY);if(!T.dayCache||T.dayCache.d!==d)T.dayCache={d:d,x:site.day(d)};return T.dayCache.x;}
  function labelOf(){
   const lv=(T.level>=0?'+':'')+T.level.toFixed(1)+' m';
-  if(T.cycling){
-   const mps=(T.rate/1.222*S.sill.raceSpeed);
-   const stg=Math.abs(mps)<.65?(T.level>0?'High slack':'Low slack'):mps>0?'Flood +'+mps.toFixed(1)+' m/s':'Ebb '+mps.toFixed(1)+' m/s';
-   return lv+' · '+stg;
-  }
-  const tag=T.level<=-5.5?'Low spring':T.level<-1.2?'Ebb / low':T.level>=5.5?'High spring':T.level>1.2?'Flood / high':'Mid tide';
-  return lv+' · '+tag;
+  if(!site||T.mode==='hold'){const tag=T.level<=-5.5?'Low spring':T.level<-1.2?'Ebb / low':T.level>=5.5?'High spring':T.level>1.2?'Flood / high':'Mid tide';return lv+' · '+tag+' (held)';}
+  const t=tNow(),mps=mpsOf(T.rate),st=Math.abs(mps)<.65?(T.level>0?'High slack':'Low slack'):mps>0?'Flood +'+mps.toFixed(1)+' m/s':'Ebb '+mps.toFixed(1)+' m/s';
+  const x=dayOf(t),sp=site.spring(t),phase=sp>1.2?'springs':sp<.8?'neaps':'mid-cycle';
+  const nx=x.high.concat(x.low).filter(q=>q>t).sort((a,b)=>a-b)[0];
+  return lv+' · '+st+'\nday '+(Math.floor(t/DAY)+1)+' '+hm(t)+' · range '+x.range.toFixed(1)+' m\n'+phase+' ×'+sp.toFixed(2)+(nx!=null?' · next '+(x.high.indexOf(nx)>=0?'high ':'low ')+hm(nx):'')+(T.mode==='run'?' · running':'');
  }
  function paintUI(){
   const U=T.ui;if(!U)return;
   U.readout.textContent=labelOf();
   if(document.activeElement!==U.slider)U.slider.value=T.level.toFixed(1);
-  U.bLow.classList.toggle('on',!T.cycling&&Math.abs(T.target+7)<.15);
-  U.bMid.classList.toggle('on',!T.cycling&&Math.abs(T.target)<.15);
-  U.bHigh.classList.toggle('on',!T.cycling&&Math.abs(T.target-7)<.15);
-  U.bCyc.classList.toggle('on',T.cycling);
+  U.bLive.classList.toggle('on',T.mode==='live');U.bRun.classList.toggle('on',T.mode==='run');U.bHold.classList.toggle('on',T.mode==='hold');
  }
+ /* jump the world clock to a time (s): its day and hour; the tide follows it in 'live' */
+ function jumpTo(t){const C=clk();if(C){C.day=Math.floor(t/DAY);if(C.set)C.set(((t%DAY)+DAY)%DAY/3600);else C.hour=((t%DAY)+DAY)%DAY/3600;}T.mode='live';T.cycling=false;T.dayCache=null;}
+ function extreme(x,want){const L2=want>0?x.high:x.low;let b=null,bv=0;for(const q of L2){const v=site.level(q);if(b==null||(v-bv)*want>0){b=q;bv=v;}}return b;}
  function setTide(arg,opt){
   const inst=!!(opt&&opt.instant);
-  if(arg==='cycle'){
-   T.cycling=opt&&opt.on!=null?!!opt.on:!T.cycling;
-   if(T.cycling){T.mode='cycle';T.phase=Math.asin(clamp(T.level/7,-1,1));}
-   else{T.mode='custom';T.target=T.level;T.rate=0;}
+  if(site&&(arg==='live'||arg==='cycle'||arg==='run')){
+   if(arg==='live'){T.mode='live';T.cycling=false;}
+   else{const on=opt&&opt.on!=null?!!opt.on:T.mode!=='run';if(on){T.tw=tNow();T.mode='run';T.cycling=true;}else{jumpTo(T.tw);}}
+  }else if(site&&(arg==='greatEbb'||arg==='greatFlood'||arg==='spring'||arg==='neap'||arg==='doubleDark')){
+   let t=tNow();
+   if(arg==='spring'||arg==='neap'){const q=arg==='spring'?site.nextSpring(t):site.nextNeap(t);if(q!=null)t=q;}
+   if(arg==='doubleDark'){const e=K.inferred.length?K.inferred[0].epoch:0,P=91*DAY;t=e+Math.ceil((t-e)/P)*P;}
+   const x=site.day(Math.floor(t/DAY)),q=extreme(x,arg==='greatEbb'||arg==='neap'?-1:1);
+   jumpTo(q==null?t:q);
   }else{
-   T.cycling=false;T.rate=0;
-   const v=arg==='low'?-7:arg==='mid'?0:arg==='high'?7:clamp(+arg,-7,7);
-   T.mode=arg==='low'||arg==='mid'||arg==='high'?arg:'custom';
-   T.target=isNaN(v)?0:v;
-   if(inst)T.level=T.target;
+   T.cycling=false;T.rate=0;T.mode='hold';
+   const v=arg==='low'?S.tide.low:arg==='mid'?0:arg==='high'?S.tide.high:clamp(+arg,S.tide.low-1.5,S.tide.high+1.5);
+   T.target=isNaN(v)?0:v;if(inst)T.level=T.target;
   }
+  if(T.mode!=='hold')advance(0);
   T.wetTop=Math.max(T.wetTop,T.level+.35);
   syncScene();
   return state();
@@ -70,22 +77,26 @@ const COVE_TIDE=(function(){
  function state(){
   let sub=0,exp=0;
   for(let i=0;i<L.STACKS.length;i++){if(L.STACKS[i].h<=T.level)sub++;else exp++;}
-  const mps=T.cycling?+(T.rate/1.222*S.sill.raceSpeed).toFixed(2):(T.level<-.5?-S.sill.raceSpeed:S.sill.raceSpeed);
-  return{level:+T.level.toFixed(2),target:+T.target.toFixed(2),mode:T.mode,cycling:T.cycling,currentMps:mps,submergedStacks:sub,exposedStacks:exp};
+  const live=site&&T.mode!=='hold',t=live?tNow():null,x=live?dayOf(t):null;
+  const mps=live?+mpsOf(T.rate).toFixed(2):(T.level<-.5?-S.sill.raceSpeed:S.sill.raceSpeed);
+  return{level:+T.level.toFixed(2),target:+T.target.toFixed(2),mode:T.mode,cycling:T.mode==='run',currentMps:mps,submergedStacks:sub,exposedStacks:exp,
+   ktide:!!site,worldSec:t,day:t==null?null:Math.floor(t/DAY),spring:live?+site.spring(t).toFixed(3):null,dayRange:x?+x.range.toFixed(2):null,
+   dayHighest:x?+x.highest.toFixed(2):null,dayLowest:x?+x.lowest.toFixed(2):null,slack:live?Math.abs(mps)<.65:null};
+ }
+ function advance(d){
+  if(T.mode==='run')T.tw+=RUN*d;
+  const t=tNow(),v=site.level(t);T.rate=site.rate(t);T.level=v;T.target=v;
  }
  tick(function coveTideTick(dt){
   const d=clamp(dt==null?.016:dt,0,.1);
-  const dir=T.cycling?(T.rate/1.222):(T.level<-.5?-1:1);
+  const dir=site&&T.mode!=='hold'?Math.sign(T.rate)*Math.min(1,Math.abs(mpsOf(T.rate))/S.sill.raceSpeed*1.6):(T.level<-.5?-1:1);
   T.racePhase=(T.racePhase+d*dir*1.35)%1000;
   if(T.raceU)T.raceU.uRacePhase.value=T.racePhase;
-  if(T.cycling){
-   const w=TAU/T.period;
-   T.phase=(T.phase+w*d)%TAU;
-   const next=7*Math.sin(T.phase);
-   T.rate=7*w*Math.cos(T.phase);
-   T.level=next;T.target=next;
-   T.wetTop=Math.max(T.level+.35,T.wetTop-.18*d);
-   syncScene();
+  if(site&&T.mode!=='hold'){
+   const prev=T.level;advance(d);
+   T.wetTop=Math.max(T.level+.35,T.wetTop-(T.mode==='run'?.18:.02)*d);
+   if(Math.abs(T.level-prev)>1e-4||T.mode==='run'||!T._painted){T._painted=true;syncScene();}
+   else if(T.ui&&(T._pt=(T._pt||0)+d)>.5){T._pt=0;paintUI();}
   }else if(Math.abs(T.target-T.level)>.004){
    const step=Math.min(1,d*2.4),prev=T.level;
    T.level=lerp(T.level,T.target,step);
@@ -98,27 +109,32 @@ const COVE_TIDE=(function(){
  });
  function mountUI(){
   if(T.ui||typeof document==='undefined')return;
+  T.clock=clk();
+  if(site&&qDay!=null&&isFinite(+qDay)&&T.clock){T.clock.day=Math.floor(+qDay);T.dayCache=null;}
+  if(site&&T.mode==='run')T.tw=ws();
+  if(site&&T.mode!=='hold'){advance(0);T.wetTop=Math.max(T.wetTop,T.level+.35);syncScene();}
   const bar=document.getElementById('bar');if(!bar)return;
   const row=document.createElement('div');row.className='row';row.id='cove-tide';
-  const mk=(tag,txt,cls)=>{const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(cls)e.className=cls;row.appendChild(e);return e;};
-  mk('span','tide','lbl');
-  const bLow=mk('button','Low (-7m)'),bMid=mk('button','Mid (0m)'),bHigh=mk('button','High (+7m)'),bCyc=mk('button','Cycle');
-  bLow.title='Spring low tide (-7.0 m): exposes Lost-City White Stacks, kelp/coralline ledges and -11 m sill shoals';
-  bMid.title='Mean sea level (0.0 m)';
-  bHigh.title='Spring high tide (+7.0 m): floods up to the +7.2 m splash trimline and submerges the White Stacks';
-  bCyc.title='Animate full 14 m flood-slack-ebb macrotidal cycle with reversible sill current';
-  const br=document.createElement('div');br.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px';row.appendChild(br);
-  const slider=document.createElement('input');slider.type='range';slider.min='-7';slider.max='7';slider.step='0.1';slider.value=String(T.level);
-  slider.style.cssText='width:145px;vertical-align:middle';br.appendChild(slider);
-  const readout=document.createElement('span');readout.className='k';readout.style.cssText='opacity:.92;color:#9fe8ff;font:11px ui-monospace,Menlo,monospace';br.appendChild(readout);
-  bLow.onclick=()=>setTide('low');
-  bMid.onclick=()=>setTide('mid');
-  bHigh.onclick=()=>setTide('high');
-  bCyc.onclick=()=>setTide('cycle');
+  const mk=(par,tag,txt,title,fn)=>{const e=document.createElement(tag);if(txt!=null)e.textContent=txt;if(title)e.title=title;if(fn)e.onclick=fn;par.appendChild(e);return e;};
+  mk(row,'span','tide').className='lbl';
+  const bLive=mk(row,'button','Live','The scale model\'s tide on the world clock (core/water/tide): the hour and day move it',()=>setTide('live'));
+  const bRun=mk(row,'button','Run','Run the tide alone, a whole day in 48 s (the clock held)',()=>setTide('run'));
+  const bEbb=mk(row,'button','Great Ebb','Jump the clock to today\'s lowest water',()=>setTide('greatEbb'));
+  const bFl=mk(row,'button','Great Flood','Jump the clock to today\'s highest water',()=>setTide('greatFlood'));
+  const r2=document.createElement('div');r2.style.cssText='display:flex;align-items:center;gap:4px;margin-top:4px';row.appendChild(r2);
+  mk(r2,'button','Spring','Jump to the next springs\' highest water (the Week and the Thirteen in phase with D2)',()=>setTide('spring'));
+  mk(r2,'button','Neap','Jump to the next neaps\' lowest water',()=>setTide('neap'));
+  mk(r2,'button','Double Dark','Jump to the greatest springs: both moons new, every 91 days (and the Double Full between)',()=>setTide('doubleDark'));
+  const bHold=mk(r2,'button','Hold','Hold the level the slider sets',()=>setTide(T.level,{instant:true}));
+  const br=document.createElement('div');br.style.cssText='display:flex;align-items:flex-start;gap:6px;margin-top:4px';row.appendChild(br);
+  const slider=document.createElement('input');slider.type='range';slider.min=String(S.tide.low-1);slider.max=String(S.tide.high+1);slider.step='0.1';slider.value=String(T.level);
+  slider.style.cssText='width:120px;vertical-align:middle';br.appendChild(slider);
+  const readout=document.createElement('span');readout.className='k';readout.style.cssText='opacity:.92;color:#9fe8ff;font:11px ui-monospace,Menlo,monospace;white-space:pre;display:block;margin-top:3px';br.appendChild(readout);
   slider.oninput=()=>setTide(+slider.value,{instant:true});
+  if(!site){bLive.disabled=bRun.disabled=bEbb.disabled=bFl.disabled=true;}
   const anchor=document.getElementById('khost-time')||document.getElementById('khost-export');
   if(anchor&&anchor.parentNode===bar)bar.insertBefore(row,anchor);else bar.appendChild(row);
-  T.ui={row,bLow,bMid,bHigh,bCyc,slider,readout};
+  T.ui={row,bLive,bRun,bHold,slider,readout};
   paintUI();
  }
  return{T,setTide,state,syncScene,mountUI};
@@ -441,5 +457,5 @@ function COVE_BUILD_WATER(H){
   scene.add(m);}
 
  COVE_TIDE.syncScene();
- Object.assign(H.out,{cove:true,raceSpeed:S.sill.raceSpeed,weeps:L.WEEPS.length,stacks:L.STACKS.length,tideRange:14});
+ Object.assign(H.out,{cove:true,raceSpeed:S.sill.raceSpeed,weeps:L.WEEPS.length,stacks:L.STACKS.length,tideRange:14,ktide:!!COVE_TIDE.T.site});
 }

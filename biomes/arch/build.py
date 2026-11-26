@@ -175,6 +175,14 @@ for _i,(_k,(_fs,_api,_keep)) in enumerate(sorted(NEIGH.items())):
     if os.path.isfile(_pj):
         with open(_pj,encoding='utf-8') as _fh: _fam=sorted(_json.load(_fh).get('families',{}))
     VIRTUAL['44%s-host-matlib-pack-%s.js'%(_c,_kk)]=matlib_pack.fragment(_d,_k.split('/')[0],exclude=[f for f in _fam if f not in _keep])
+# the scale model's tide (core/water/tide, KTIDE): a station whose station.json names "tides": {"box": [x0, y0, x1, y1]} (scale-model pixels) gets
+# that slice of tools/scale-model/model/data/tides.json inlined as a data fragment (core/water/tide/tide.py; about 6 KB), read by its own code
+if SJ.get('tides'):
+    sys.path.insert(0,J('core','water','tide'))
+    import tide as _tide
+    _tb=SJ['tides']
+    VIRTUAL['44y-host-tides-data.js']=chr(10)+'// the scale model\'s tides round the station (tide.py --box %s)'%' '.join(str(v) for v in _tb['box'])+chr(10)+\
+        'const %s=%s;'%(_tb.get('name','KTIDE_DATA'),_json.dumps(_tide.slice_box(_tide.read(),*_tb['box']),separators=(',',':')))+chr(10)
 for f in VIRTUAL: PATH[f]=None
 frags=sorted(PATH)
 out=[]; bad=[]
