@@ -76,12 +76,12 @@
    "mode": "inside"
   },
   "The stair, mid-descent": {
-   "az": -0.72,
+   "az": 1.3744,
    "el": 0.22,
    "d": 5.9,
-   "tx": 0.93,
+   "tx": -5.159,
    "ty": -259.6,
-   "tz": 5.42,
+   "tz": -1.905,
    "mode": "inside"
   },
   "The cafeteria and the screen": {
@@ -241,6 +241,19 @@
     "cr": 14,
     "h": 0.4,
     "el": 0.13
+   },
+   "mode": "inside"
+  },
+  "The orchard, level 55": {
+   "room": {
+    "n": 55,
+    "i": 9,
+    "rooms": 36,
+    "frac": 0.5,
+    "r": 30,
+    "cr": 14.8,
+    "h": 1.6,
+    "el": 0.04
    },
    "mode": "inside"
   },
@@ -432,6 +445,24 @@
    "tz": 52.709,
    "mode": "inside"
   },
+  "The old digger, in section": {
+   "az": 0.6,
+   "el": 0.1,
+   "d": 95,
+   "tx": 0,
+   "ty": -627,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The old digger": {
+   "az": 2.0,
+   "el": 0.12,
+   "d": 30,
+   "tx": 0,
+   "ty": -629,
+   "tz": 0,
+   "mode": "inside"
+  },
   "The mines' hall": {
    "az": -1.0875,
    "el": -0.0231,
@@ -497,39 +528,57 @@
    "fly": "On the stair, level 3"
   },
   "On the stair, level 3": {
-   "az": -0.72,
+   "az": 1.3744,
    "el": 0.22,
    "d": 5.9,
-   "tx": 0.93,
+   "tx": -5.159,
    "ty": -20.2,
-   "tz": 5.42,
+   "tz": -1.905,
    "mode": "inside"
   },
   "The landing, level 3": {
-   "az": 3.1416,
+   "az": 5.236,
    "el": 0.0068,
    "d": 14.8,
-   "tx": 22.0,
+   "tx": -11.0,
    "ty": -18.8,
-   "tz": 0.0,
+   "tz": 19.053,
    "mode": "inside"
   },
   "The catwalk, level 3": {
-   "az": 0.1182,
+   "az": 2.2126,
    "el": 0.0713,
    "d": 16.15,
-   "tx": 3.0,
+   "tx": -1.24,
    "ty": -19.8,
-   "tz": -0.3,
+   "tz": 2.748,
+   "mode": "inside"
+  },
+  "The light well": {
+   "az": 0,
+   "el": -0.61,
+   "d": 11,
+   "tx": 0,
+   "ty": -4,
+   "tz": 0,
+   "mode": "inside"
+  },
+  "The light well from level 7": {
+   "az": 0.5,
+   "el": -1.31,
+   "d": 32.6,
+   "tx": 0,
+   "ty": -4,
+   "tz": 0,
    "mode": "inside"
   },
   "Catwalks down the shaft": {
-   "az": 1.6369,
+   "az": 5.8257,
    "el": 1.2201,
    "d": 17.57,
-   "tx": 9.0,
+   "tx": -4.5,
    "ty": -190.8,
-   "tz": 0.0,
+   "tz": -7.794,
    "mode": "inside"
   }
  },

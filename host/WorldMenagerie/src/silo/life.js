@@ -2,7 +2,7 @@
 // in the farms, people going up and down the stair, porters with loads on their backs, and the one in the suit.
 import {mkRng} from '../core/rng.js';
 import {LH,NL,RS,RW,yL,kindOf,zoneOf,cafeTables,CAFE} from './levels.js';
-import {STAIR} from './levels.js';
+import {STAIR,landA} from './levels.js';
 const TAU=Math.PI*2;
 
 // a person, about 1.75 m, feet at 0, facing +x: legs, hips, a torso narrowing to the shoulders, arms, neck, head
@@ -49,7 +49,7 @@ export function buildLife(api,M){
     im.setColorAt(n,c.set('#8a6a4a'));
     im.frustumCulled=packs.frustumCulled=false;scene.add(im,packs);
     // where someone at (fractional) level L is on the stair, in its lane
-    const at=(L,lane,t)=>{const f=L-1,th=(f%1)*TAU,y=yL(1)-f*LH,r=lane;return {x:Math.cos(th)*r,y:y+Math.abs(Math.sin(t*6))*0.05,z:Math.sin(th)*r,th};};
+    const at=(L,lane,t)=>{const f=L-1,th=landA(1+Math.floor(f))+(f%1)*STAIR.span,y=yL(1)-f*LH,r=lane;return {x:Math.cos(th)*r,y:y+Math.abs(Math.sin(t*6))*0.05,z:Math.sin(th)*r,th};};
     out.stairAt=at;
     let np=0;const place=(i,L,dir,t,porter)=>{const lane=dir>0?STAIR.rout-0.8:STAIR.rin+1.0,p=at(L,lane,t);
       // facing along the stair: going down is the way the angle grows

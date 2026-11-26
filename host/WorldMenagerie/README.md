@@ -2784,6 +2784,29 @@ with a logarithmic depth buffer.
   together, a kitchen behind a wall with a hatch over the serving counter, a queue at it), and on its outer wall the screen, one bright panel drawn live from a camera in the housing on the cap
   (it renders only while the camera is near the top); the sheriff's and mayor's offices; the corridor to
   the airlock, with the cleaning suit hung by the inner door, and the ramp up to the exit on the plain.
+- **The old digger** (`digger.js`, `GRAVE`): the machine that bored the silo's shaft, left where it stopped and sealed in its own
+  void under the concrete cap the generator hall stands on, between the plant and the mines. An original design after real
+  vertical shaft-boring machines: a cutter head as wide as the shaft (gauge cutters and muck buckets round its rim, arms across
+  its back, one broken), the main drive and its motors (some gone, two fallen), the gripper ring braced on the rock (one pad
+  sagged), thrust rams, two decks (the upper half fallen in), and the muck hoist's tower cut off and plugged at the cap; rust,
+  hanging cables, drips off the cap, water round the rim. The mine shaft passes through in a concrete tube. The section opens
+  a window onto it. Views: The old digger, The old digger, in section. (The tunnel digger in the mines is a different machine.)
+- **The light well** (`buildTop`, the keys `mirror` and `beam`): the silo's main light, in the shaft's head between level 1's
+  ceiling and the cap (the roof is left open over the shaft). The stair's column carries on up as its mast; a ring truss on it
+  holds 24 lamps aimed up into a shallow dish of mirror facets on the cap's underside, which throws their light back down the
+  shaft; a frosted skirt round the truss, a crew walkway and a ladder up the mast. It follows the silo's day (bright by day, a
+  glow at night) and lights the top of the shaft through a spot light and a faint haze down the well. An original design
+  (a reflector lamp of the kind used for daylighting deep atria), not the show's. Views: The light well, The light well from level 7.
+- **The stair, the floors and the services**: the stair turns two thirds of a circle a level, so each level's landing and its
+  one catwalk stand a third of a turn (120°) round from the one above (`landA` in `levels.js`). It winds round a concrete column (cables and pipes clipped to it, a steel
+  collar and a painted band each level, caged lamps on brackets), its treads with risers and an inner stringer; each catwalk
+  hangs from the floor above on two rods. Every floor has an edge girder with a worn yellow nosing at the shaft, plate seams,
+  steel beams under the slab and a ring girder over the wall; the street lamps are pendants (rod, shade, caged bulb). Under
+  every ceiling a bundle of mains (water, air, return, fire, power) on hangers, banded and valved, a newer line below and a
+  cable tray over the shaft's edge; on the piers between rooms, conduits, junction boxes with pilot lamps, gauges, vent
+  grilles and hose reels; more risers down the shaft. Two farm floors (55, 83) are orchards of fruit trees in tubs, and the
+  other farms keep dwarf trees round the walkway. Fine detail is near-only (`fk`, the stair's `sdet`), so the long shaft
+  views stay near their old cost.
 - **The farms** (levels 49 to 56 and 77 to 84, `FARMV` in `levels.js`): each floor grows its own way, drawn after
   real indoor farming, because feeding ten thousand under lights takes more floor than the silo has: **channels**
   (white gullies two tiers high, a light bar over each tier, a sump under the return, one channel gone green);
