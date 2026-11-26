@@ -139,10 +139,14 @@ func _swept(key: String) -> ArrayMesh:
 			# form is a smooth lump of clay. The band pattern is seeded, not regular, because strata are not.
 			var shade0: float = _bed(key, float(prof[i][0])) * (0.72 if float(prof[i][0]) >= cap_from else 1.0)
 			var shade1: float = _bed(key, float(prof[i + 1][0])) * (0.72 if float(prof[i + 1][0]) >= cap_from else 1.0)
-			for v in [[a0[s], shade0], [a0[t], shade0], [a1[t], shade1],
-					  [a0[s], shade0], [a1[t], shade1], [a1[s], shade1]]:
-				st.set_color(Color(v[1], v[1], v[1]))
-				st.add_vertex(v[0])
+			if (a0[s] as Vector3).distance_squared_to(a0[t]) > 1e-8:
+				for v in [[a0[s], shade0], [a0[t], shade0], [a1[t], shade1]]:
+					st.set_color(Color(v[1], v[1], v[1]))
+					st.add_vertex(v[0])
+			if (a1[s] as Vector3).distance_squared_to(a1[t]) > 1e-8:
+				for v in [[a0[s], shade0], [a1[t], shade1], [a1[s], shade1]]:
+					st.set_color(Color(v[1], v[1], v[1]))
+					st.add_vertex(v[0])
 	st.generate_normals()
 	return st.commit()
 

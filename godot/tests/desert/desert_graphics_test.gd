@@ -40,14 +40,16 @@ func _initialize() -> void:
 		is_equal_approx(KratorWeather._last_aridity, 0.0),
 		"aridity state & shader terms present")
 
-	# 2. Ground & salt-pan surface shaders: brink-split dunes, salt polygons, mineral glints, sine-free
+	# 2. Ground & salt-pan surface shaders: brink-split sinuous dunes, salt polygons, mineral glints, sRGB->linear & 8192m float32 wrap
 	var cb_sh := FileAccess.get_file_as_string("res://shaders/catch_bowl_ground.gdshader")
 	var wp_sh := FileAccess.get_file_as_string("res://shaders/water_pan.gdshader")
-	ok("catch_bowl_ground.gdshader splits windward stoss vs leeward slipface roughness/ripples and wires kg_polygon + kg_glint",
+	var dr_check := FileAccess.get_file_as_string("res://shaders/desert_rock.gdshader")
+	ok("catch_bowl_ground.gdshader & desert_rock.gdshader decode sRGB via k_s2l, wrap near coords at 8192 m, and avoid signed pow() NaNs",
 		cb_sh.contains("lib/kground_kinds.gdshaderinc") and cb_sh.contains("kg_glint(") and cb_sh.contains("kg_polygon(")
-			and cb_sh.contains("nearR_stoss") and cb_sh.contains("slip_near"),
-		not cb_sh.contains("layer_mean"),
-		"brink split, salt polygons & mineral glints wired")
+			and cb_sh.contains("nearR_stoss") and cb_sh.contains("slip_near") and cb_sh.contains("k_s2l(")
+			and cb_sh.contains("8192.0") and dr_check.contains("k_s2l(") and dr_check.contains("8192.0"),
+		not cb_sh.contains("layer_mean") and not cb_sh.contains("pow((u_frac") and not cb_sh.contains("pow(parallel_crest"),
+		"brink split, sinuous dunes, k_s2l linear albedo & 8192m float32 wrap wired")
 	ok("water_pan.gdshader computes polygonal thrust-ridge normals and halite crystal glints on dry salt crust",
 		wp_sh.contains("pan_ridge(") and wp_sh.contains("kg_glint(") and wp_sh.contains("SPECULAR"),
 		not wp_sh.contains("fract(sin"),

@@ -98,23 +98,23 @@ const SKY_MURK_FULL := 0.0008
 # THE GRADE, per kind: contrast, saturation, brightness, and how warm the ramp runs.
 #   [contrast, saturation, brightness, warmth]  warmth: 0 neutral, 1 shadows cool and highlights warm
 const GRADE := {
-	"clear": [1.14, 0.90, 1.0, 0.75],
-	"dust": [0.92, 0.72, 1.02, 0.30],          # a storm flattens everything; the colour is the dust's, not the sun's
-	"gale": [1.18, 0.86, 1.0, 0.60],           # clear air, hard light, the wind does not change what you see
-	"whiteout": [0.80, 0.42, 1.05, 0.10],      # near-monochrome, which is what a whiteout is
-	"duststorm_season": [1.02, 0.80, 1.0, 0.55],
-	"deadheat": [1.22, 0.72, 1.04, 0.90],      # bleached and glaring: the saturation goes, the contrast stays
-	"monsoon": [1.04, 0.95, 0.96, 0.15],       # the one wet kind: cooler, and the only one that gains saturation
+	"clear": [1.14, 1.04, 0.98, 0.72],
+	"dust": [0.96, 0.86, 0.98, 0.35],           # a storm flattens contrast; the colour is the ochre dust's
+	"gale": [1.16, 0.98, 0.98, 0.60],           # clear air, hard light, wind-lifted ground saltation
+	"whiteout": [0.84, 0.44, 1.02, 0.10],       # near-monochrome rime fog
+	"duststorm_season": [1.06, 0.92, 0.98, 0.58],
+	"deadheat": [1.18, 0.96, 0.98, 0.88],       # blazing sun & deep amber shadows without milky desaturation
+	"monsoon": [1.06, 0.98, 0.95, 0.15],        # cool wet monsoon
 }
 
 # Height-bounded dust slab parameters per kind: [salt_dens (1/m), salt_h (m), storm_dens (1/m), storm_h (m), mie_w]
 const SLAB := {
-	"clear": [0.00008, 36.0, 0.0, 850.0, 0.45],
+	"clear": [0.0, 36.0, 0.0, 850.0, 0.45],
 	"dust": [0.00085, 55.0, 0.0022, 850.0, 0.78],
-	"gale": [0.00042, 65.0, 0.00004, 600.0, 0.55],
+	"gale": [0.00028, 55.0, 0.0, 600.0, 0.55],
 	"whiteout": [0.0, 40.0, 0.0, 600.0, 0.25],
-	"duststorm_season": [0.00022, 45.0, 0.00038, 1250.0, 0.68],
-	"deadheat": [0.00005, 32.0, 0.00004, 950.0, 0.55],
+	"duststorm_season": [0.00020, 45.0, 0.00036, 1250.0, 0.68],
+	"deadheat": [0.0, 32.0, 0.0, 950.0, 0.55],
 	"monsoon": [0.0, 35.0, 0.0, 700.0, 0.20],
 }
 
@@ -258,12 +258,10 @@ func _apply(_t: float) -> void:
 		e.fog_density = float(n["fog"]) * fog_scale * base_fog_scale
 		e.fog_light_color = n["colour"]
 		e.fog_sky_affect = (1.0 - float(n["sky"]) * 0.5) if sky_host == null else 0.0
-		e.fog_aerial_perspective = 1.0
+		e.fog_aerial_perspective = 1.0 if sky_host == null else 0.26
 		if sky_host == null:
 			e.ambient_light_energy = float(n["sky"])
 			e.ambient_light_color = Color(0.62, 0.66, 0.74).lerp(n["colour"], 0.6)
-		else:
-			e.ambient_light_energy = clampf(0.55 + 0.45 * float(n["sky"]), 0.35, 1.15)
 		_paint_sky(e, n)
 		_grade(e)
 	if sun and sky_host == null:
@@ -277,7 +275,7 @@ func _apply(_t: float) -> void:
 		var show_slab := fog_scale > 0.0 and host_ground != null and (s_dens > 1e-7 or st_dens > 1e-7)
 		slab_quad.visible = show_slab
 		if show_slab:
-			slab_mat.set_shader_parameter("salt_slab", Vector4(s_dens, _floor_y, float(n["salt_h"]), 0.38))
+			slab_mat.set_shader_parameter("salt_slab", Vector4(s_dens, _floor_y, float(n["salt_h"]), 0.34))
 			slab_mat.set_shader_parameter("storm_slab", Vector4(st_dens, _floor_y, float(n["storm_h"]), 0.96))
 			slab_mat.set_shader_parameter("dust_colour", n["colour"])
 			var sdir := sun.global_transform.basis.z.normalized() if sun != null else Vector3(0.51, 0.56, 0.65)
@@ -303,7 +301,8 @@ func _apply(_t: float) -> void:
 # shadows while 89y-host-storm.js browns the horizon walls first) AND ProceduralSkyMaterial fallback.
 func _paint_sky(e: Environment, n: Dictionary) -> void:
 	var c: Color = n["colour"]
-	var murk: float = clampf(float(n["fog"]) / SKY_MURK_FULL, 0.0, 1.0)
+	# Only engage storm browning when fog exceeds clear/deadheat/gale (0.00014), so clear & dead-heat horizons stay crisp
+	var murk: float = smoothstep(0.00014, SKY_MURK_FULL, float(n["fog"]))
 	var lit: float = maxf(clampf(float(n["sky"]), 0.0, 2.0), 0.6)
 	if sky_host != null and "storm_murk" in sky_host:
 		sky_host.storm_murk = murk
@@ -312,13 +311,22 @@ func _paint_sky(e: Environment, n: Dictionary) -> void:
 		sky_host.storm_sky_lit = lit
 		if sky_host.has_method("_update"):
 			sky_host._update()
-		# Preserve KratorAtmosFx's fog settings after sky_host._update() writes standard sky fog
+		# Calibrate KratorSky's sun, exposure, shadow ambient & fog for AgX + linear PBR (matching walk.gd's balance)
+		var base_sun := float(sky_host.look_now.get("sunI", 1.8)) if ("look_now" in sky_host and not sky_host.look_now.is_empty()) else 1.8
+		var base_exp := float(sky_host.look_now.get("exp", 1.0)) if ("look_now" in sky_host and not sky_host.look_now.is_empty()) else 1.0
+		var sun_up := float(sky_host.state.get("sunAlt", 10.0)) > -1.0 if ("state" in sky_host and not sky_host.state.is_empty()) else true
+		if sun != null:
+			sun.light_energy = clampf(base_sun * 0.92 * float(n["sun"]), 0.0, 1.95) if sun_up else 0.0
+		e.tonemap_exposure = clampf(base_exp * 0.96, 0.50, 1.20)
+		e.ambient_light_color = Color(0.24, 0.17, 0.11).lerp(c, murk * 0.45)
+		e.ambient_light_sky_contribution = lerpf(0.50, 0.72, murk)
+		e.ambient_light_energy = clampf(0.48 + 0.30 * float(n["sky"]), 0.28, 0.86)
 		var high_k := 0.35 if (slab_quad != null and slab_quad.visible and kind in ["dust", "duststorm_season"]) else 1.0
 		e.fog_enabled = fog_scale > 0.0
 		e.fog_density = float(n["fog"]) * fog_scale * high_k
 		e.fog_light_color = c
 		e.fog_sky_affect = 0.0
-		e.fog_aerial_perspective = 1.0
+		e.fog_aerial_perspective = lerpf(0.26, 0.0, murk)
 		return
 	var sky: Sky = e.sky
 	if sky == null or not (sky.sky_material is ProceduralSkyMaterial):

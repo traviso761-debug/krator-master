@@ -152,7 +152,9 @@ func height_at(x: float, z: float) -> float:
 	var h10 := _heights[iz * _nx + jx]
 	var h01 := _heights[jz * _nx + ix]
 	var h11 := _heights[jz * _nx + jx]
-	return lerpf(lerpf(h00, h10, tx), lerpf(h01, h11, tx), tz) * VSCALE
+	# Match _build_terrain()'s (a,b,c) / (b,d,c) diagonal split so cameras, rocks & landforms sit flush on the mesh
+	var h_tri := (h00 + tx * (h10 - h00) + tz * (h01 - h00)) if (tx + tz <= 1.0) else (h11 + (1.0 - tx) * (h01 - h11) + (1.0 - tz) * (h10 - h11))
+	return h_tri * VSCALE
 
 
 func _build_sky() -> void:
@@ -171,27 +173,33 @@ func _build_sky() -> void:
 			break
 	var e: Environment = sky_node.env
 	e.tonemap_mode = Environment.TONE_MAPPER_AGX
-	e.tonemap_agx_contrast = 1.22
+	e.tonemap_agx_contrast = 1.25
 	e.tonemap_agx_white = 16.29
 	e.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
+	e.ambient_light_color = Color(0.22, 0.16, 0.11)
+	e.ambient_light_sky_contribution = 0.54
+	e.ambient_light_energy = 0.72
 	e.reflected_light_source = Environment.REFLECTION_SOURCE_SKY
+	e.ssao_enabled = _arg("nossao", "") == ""
+	e.ssao_radius = 2.2
+	e.ssao_intensity = 1.65
 	e.glow_enabled = true
-	e.glow_intensity = 0.30
-	e.glow_bloom = 0.04
-	e.glow_hdr_threshold = 1.15
+	e.glow_intensity = 0.26
+	e.glow_bloom = 0.03
+	e.glow_hdr_threshold = 1.25
 	if get_viewport() != null:
 		get_viewport().use_debanding = true
 	sun = sky_node.sun
 	sun.shadow_enabled = _arg("noshadow", "") == ""
 	sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
-	sun.directional_shadow_max_distance = float(_arg("shadow_km", "7")) * 1000.0
-	sun.directional_shadow_split_1 = 0.04       # ~280 m: the boulders and the near dune faces
-	sun.directional_shadow_split_2 = 0.13       # ~900 m
-	sun.directional_shadow_split_3 = 0.42       # ~2.9 km
+	sun.directional_shadow_max_distance = float(_arg("shadow_km", "2.8")) * 1000.0
+	sun.directional_shadow_split_1 = 0.06       # ~170 m: crisp boulders, ripples & hoodoo stems
+	sun.directional_shadow_split_2 = 0.18       # ~500 m
+	sun.directional_shadow_split_3 = 0.45       # ~1.25 km
 	sun.directional_shadow_fade_start = 0.85
 	sun.directional_shadow_blend_splits = true
-	sun.shadow_bias = 0.09
-	sun.shadow_normal_bias = 1.6
+	sun.shadow_bias = 0.06
+	sun.shadow_normal_bias = 1.8
 	sun.shadow_opacity = 0.92
 
 
@@ -209,7 +217,7 @@ func _build_terrain() -> void:
 			st.set_uv(Vector2(float(x) / maxf(1.0, nx - 1), float(z) / maxf(1.0, nz - 1)))
 			# and the tint carries the local slope, so a scarp is darker than the bench above it. Two samples is enough
 			# at 2 km: the gradient over a cell is what a shaded relief map draws.
-			st.set_color(_tint(h).darkened(clampf(_slope(wx, wz) * 1.6, 0.0, 0.55)))
+			st.set_color(_tint(h).darkened(clampf(_slope(wx, wz) * 1.4, 0.0, 0.48)))
 			st.add_vertex(Vector3(wx, h, wz))
 	for z in nz - 1:
 		for x in nx - 1:
@@ -226,12 +234,16 @@ func _build_terrain() -> void:
 	terrain = MeshInstance3D.new()
 	terrain.name = "Terrain"
 	terrain.mesh = st.commit()
+	# Do not cast directional shadows from the 1,282 x 1,056 x 18.1 km 2 km grid (which stretches shadow ortho depth
+	# across 18 km and causes cascade self-shadowing bands); boulders, landforms, flora & trains still cast onto it.
+	terrain.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# The near-field layer (shaders/catch_bowl_ground.gdshader): dunes on the sand, scree on the scarps, and the tint
 	# bands broken up. The mesh has nothing below 2 km, so without it the floor is one flat wash -- true to the data
 	# and nothing to look at. --plain=1 puts the bare vertex colours back, which is what to compare against.
 	if _arg("plain", "") != "":
 		var mat := StandardMaterial3D.new()
 		mat.vertex_color_use_as_albedo = true
+		mat.vertex_color_is_srgb = true
 		mat.roughness = 0.95
 		terrain.material_override = mat
 	else:
@@ -263,25 +275,21 @@ func _slope(x: float, z: float) -> float:
 	return clampf(sqrt(hx * hx + hz * hz), 0.0, 1.0)
 
 
-# The country by height.
+# Smoothly blended sRGB desert hypsometric palette (matches catch_bowl_ground.gdshader's desert_hypsometric_srgb)
 func _tint(h: float) -> Color:
-	if h < -800.0:
-		return Color(0.93, 0.91, 0.86)       # the Bowl's salt: the brightest thing in the region
-	if h < 600.0:
-		return Color(0.78, 0.63, 0.39)       # the Catch's floor
-	if h < 2600.0:
-		return Color(0.55, 0.44, 0.31)       # the fans and the benches
-	if h < 4600.0:
-		return Color(0.38, 0.34, 0.32)       # rock
-	if h < 6800.0:
-		return Color(0.52, 0.52, 0.54)       # bare, above the air
-	return Color(0.97, 0.98, 1.00)           # the crests
+	var c := Color(0.84, 0.80, 0.72)                                      # <-850 m: Bowl salt playa
+	c = c.lerp(Color(0.73, 0.57, 0.37), smoothstep(-1080.0, -560.0, h))   # Catch & Bowl sand/silt floor
+	c = c.lerp(Color(0.56, 0.43, 0.31), smoothstep(320.0, 980.0, h))      # fans & benches
+	c = c.lerp(Color(0.40, 0.33, 0.29), smoothstep(2150.0, 3050.0, h))    # canyon & scarp rock
+	c = c.lerp(Color(0.50, 0.49, 0.51), smoothstep(4200.0, 5100.0, h))    # high wind-scoured wall
+	c = c.lerp(Color(0.88, 0.90, 0.94), smoothstep(6400.0, 7500.0, h))    # rime & neve crests
+	return c
 
 
 # Exact local surface tint (height band + slope darkening) for rock/landform sand-skirt blending & dust devils
 func surface_tint_at(x: float, z: float) -> Color:
 	var h := height_at(x, z)
-	return _tint(h).darkened(clampf(_slope(x, z) * 1.6, 0.0, 0.55))
+	return _tint(h).darkened(clampf(_slope(x, z) * 1.4, 0.0, 0.48))
 
 
 func _build_pins() -> void:
@@ -586,7 +594,7 @@ func _build_ui() -> void:
 	_label.fit_content = true
 	box.add_child(_label)
 	var help := Label.new()
-	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | R routes | U bores/tubes | O outlaws | Space pause\nM map | F2 Gallery"
+	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | [ / ] hour | H shimmer | R routes | U bores | O outlaws\nSpace pause | M map | F2 Gallery"
 	help.autowrap_mode = TextServer.AUTOWRAP_WORD
 	box.add_child(help)
 	if _arg("shot", "") == "":
