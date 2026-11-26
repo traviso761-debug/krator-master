@@ -536,7 +536,16 @@
     "R": [
      "pistol"
     ]
-   }
+   },
+   "two_hands": [
+    "pistol"
+   ],
+   "two_when": [
+    [
+     2.3,
+     4.3
+    ]
+   ]
   },
   {
    "key": "pistol_shot",
@@ -1153,7 +1162,10 @@
     "R": [
      "pistol"
     ]
-   }
+   },
+   "two_hands": [
+    "pistol"
+   ]
   },
   {
    "key": "ual_pistol_reload",
@@ -2125,7 +2137,7 @@
   }
  ],
  "faces": {
-  "about": "the face's points, metres from the head joint in the figure's frame at rest (x the figure's left, y up, z forward), turned with the head; the man's for a body without its own (a giant's times its scale). mouth: the lips; sip: a cup's or a bite's middle at the lips; anchor: a drawn bow's string hand, under the jaw; head: the skull's middle and its radius with the hair (weapons are kept out of it)",
+  "about": "the face's points, metres from the head joint in the figure's frame at rest (x the figure's left, y up, z forward), turned with the head; the man's for a body without its own (a giant's times its scale). mouth: the lips; sip: a cup's or a bite's middle at the lips; anchor: a drawn bow's string hand, below and in front of the chin, the hand 6-8 cm off the face (the owner, 2026-11-26: not on the chin); head: the skull's middle and its radius with the hair (weapons are kept out of it)",
   "mpfb_male": {
    "mouth": [
     0,
@@ -2138,9 +2150,9 @@
     0.18
    ],
    "anchor": [
-    -0.07,
-    -0.07,
-    0.07
+    -0.11,
+    -0.122,
+    0.205
    ],
    "head": [
     0,
@@ -2161,9 +2173,9 @@
     0.16
    ],
    "anchor": [
-    -0.06,
-    -0.06,
-    0.06
+    -0.095,
+    -0.115,
+    0.17
    ],
    "head": [
     0,

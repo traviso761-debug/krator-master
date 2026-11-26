@@ -312,6 +312,9 @@ CARRY = {'bowl': [-0.12, 0.02, 0.26]}
 LENGTH = {'arrow': 0.78}
 # a weapon's striking part along the handle (+Y, from..to): the figure turns the wrist so it does not pass through the head
 BLADE = {'sword': [0.1, 0.91], 'dagger': [0.07, 0.32], 'axe': [0.4, 0.68], 'mace': [0.42, 0.65], 'warhammer': [0.5, 0.65]}
+# a gun's stock ([x0, y0, z0, x1, y1, z1, half thickness] in the prop's frame): the figure turns the wrist so it keeps out
+# of the upper arms below the shoulder's pocket (the rifle at the hip ran its butt through the right upper arm)
+STOCK = {'rifle': [0, 0, -0.08, 0, 0, -0.39, 0.045], 'crossbow': [0, 0.04, -0.13, 0, 0.04, -0.27, 0.035]}
 
 PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('axe', 'Axe', 'R', axe),
          ('mace', 'Mace', 'R', mace), ('warhammer', 'War hammer', 'R', warhammer), ('spear', 'Spear', 'R', spear),
@@ -375,6 +378,8 @@ def main():
             out[-1]['length'] = LENGTH[pid]
         if pid in BLADE:
             out[-1]['blade'] = BLADE[pid]
+        if pid in STOCK:
+            out[-1]['stock'] = STOCK[pid]
         if pid in STRING:
             out[-1]['string'], out[-1]['arrow'] = STRING[pid], 'arrow'
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
@@ -388,7 +393,7 @@ def main():
                'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop '
                'turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. '
                'hang: the axis that points down whatever the hand\'s turn (a bail\'s load hangs). blade: '
-               'the striking part along +Y (from, to), kept out of the head. upright: the axis the wrist turns to keep up '
+               'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up '
                '(grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow\'s length per bow-arm length; length: a prop\'s own. '
                'data/clips.json hold says which clip holds what.',
                'props': out}, open(os.path.join(HERE, 'data', 'props.json'), 'w', encoding='utf-8', newline='\n'), indent=1)

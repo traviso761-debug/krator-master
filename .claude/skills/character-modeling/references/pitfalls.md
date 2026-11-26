@@ -416,7 +416,19 @@ area you are about to change.
 - **A two-hand grip that re-chooses its thumb side every frame flips** half a turn round the handle when the clip's hand
   passes square to it (Two-handed parry, 0.47 to 0.83 s on the man only): choose it at the hold's first frame, keep it
   for the clip. Test a hand's turn per frame, not only whether it reaches.
-- **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
+- **A left hand upside down round a haft** (Overhead chop, Heavy blunt swing, Two-handed parry, 2026-11-26): the left grip
+  frame is the right's mirrored, so its +Y is the little finger's side, and "the clip's thumb side at the first frame" came
+  out either way by body and by the clip played before (that frame still blends it). Take the side from the prop: the
+  left index side toward the head, i.e. the left +Y against the right's. Then roll the hand round the haft to bend the
+  wrist least (its axis nearest the forearm's line) and give the forearm half the twist that is left: "fingers away from
+  the shoulder" wrung the wrist 160-180 degrees where the haft ran along the arm (Spear advance). Measure the twist from
+  the hand's rest turn on the forearm, not from the identity.
+- **An eased keep-out sweeps through what it avoids** (Bow aim and scan, "not fixed!"): the least clear cant switched sides
+  between frames (+30 to -20) and the eased cant crossed upright through the thigh, while the check read the cant it was
+  heading for. Try the steps on the current side first, measure at the angle drawn, hold a clear angle while the step to
+  the wanted one is blocked, and rate-limit the escape when the leg comes to it.
+- **A max over frames starts at the least value**: a thumb check `max(thumb, dot)` started at 0 could never read -1 and
+  failed every clip; and a 40-frame loop over a 39-frame one-shot measured the idle after it.- **A bowl on a hanging arm goes through the forearm**: turning the palm up is not enough when the clip holds the arm
   down or back; put the wrist in front of the belly with the two-bone solve first. A cup held by the left grip frame
   can come out upside down: keep its mouth up with the wrist, except while it is at the lips.
 - **Capsule keep-outs miss loose clothes**: the bow's limb cleared the leg capsules but went 5 cm into cargo trousers.

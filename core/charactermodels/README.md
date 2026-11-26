@@ -189,14 +189,20 @@ A weapon's `blade` (its striking part along the handle) keeps out of the head, t
 `_blade_clear`): the wrist turns until the blade passes the skull's sphere (with the hair), a taper down to the neck
 joint and the trunk's capsules, each widened by half a blade's width; the turn carries over from frame to frame and
 eases back to the clip's over 0.3 s, so the blade stays on the side it went round (starting afresh each frame flipped
-it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was.
+it across the head in Block 2). `fig.bladeNeed` (`blade_need`) says how deep it still was. A gun's `stock` (a segment of
+the butt and its half thickness) keeps out of the upper arms the same way, from 35% of the way down from the shoulder (the
+butt sits in the shoulder's pocket when it aims): Long gun shot at the hip ran the rifle's butt through the right upper arm
+(`fig.stockNeed`, `stock_need`). The empty hand keeps off the other hand's blade (`offHand`, `_off_hand`): its forearm, hand,
+middle and index fingers are tested against the blade from 12 cm below it to its tip, and the wrist moves out by the
+two-bone solve, the move kept from frame to frame and easing back over 0.3 s (Parry's guard hand lay across the sword,
+and the dagger drawn back in Thrust / stab passed the forearm and fingers); `fig.offNeed` (`off_need`).
 
 *To the face.* A clip's `face` in `data/clips.json` brings a hand to the face (`toFace`, `_to_face`): the hand's point
 (`point`, in its grip frame: a cup's rim, a bite of bread, the bow string's place in the hand) goes onto one of the
 face's points by the arm's two-bone solve, the hand keeping its turn. The points (`data/clips.json faces`, per body,
 metres from the head joint in the figure's frame at rest, turned with the head; a giant's are the man's times its
-scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a drawn bow's string hand, under the side of
-the jaw) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
+scale): `mouth`, `sip` (a cup's or a bite's middle at the lips), `anchor` (a drawn bow's string hand, below and in front
+of the chin, the hand 6 to 8 cm off the face: the owner, 2026-11-26, not on the chin) and `head` (the skull's middle and radius, for `blade`). With `when` (spans of clip seconds) it does so in
 those spans, easing in over `ease` and out over it after a span's end (a span at a loop's start or end runs on round
 the loop); without, as near as the clip brings the hand (full within `near[0]`, none beyond `near[1]`). Drink holds the
 cup in the left hand (the clip drinks with it) and brings its rim to the lips from 2.4 to 5.2 s; Eat (`ual_consume`:
@@ -208,13 +214,19 @@ the arrow, string hand to bow hand, points up at most 6 degrees (the bow arm com
 *Two hands.* A clip's `two_hands` names the props the left hand also holds in it (the spear, the rifle and crossbow,
 the hoe, the axe, the war hammer and the mace in the clips made for them, and the two-handed parry). A prop's
 `support` is a segment of its handle; each frame the left hand goes to the point of it nearest where the clip has the
-hand (within the arm's reach, a hand's width from the right hand), turned round the handle so its fingers point away
-from the shoulder, and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
+hand (within the arm's reach, a hand's width from the right hand), and a two-bone solve (upper arm, forearm; the elbow kept on the side the clip bends it) brings the
 arm there. When the left arm cannot reach, the right brings the prop toward the left shoulder by the shortfall (up to
 45 cm) and both reach; if the hands are still too far apart the arms ease back to the clip's own pose
-(`fig.reach` says how far short the hand fell). The hand's thumb side along the handle is the clip's at the hold's
-first frame and kept while the clip plays (chosen every frame, the left hand flipped half a turn round the hilt in
-Two-handed parry as the clip's hand passed square to it). The pistol's support is one point, so in Pistol stance and Pistol
+(`fig.reach` says how far short the hand fell). The left grip frame is the right's mirrored, so its +Y is the little
+finger's side: the left hand's index side faces the head of the prop as the right's does (both thumbs up the haft, a
+bat's grip), from the prop, not the clip (taken from the clip's left hand at the hold's first frame, which still blends
+the clip before, it came out either way by body and by what played before: the hand upside down round the haft in
+Overhead chop, Heavy blunt swing, Two-handed parry, the men's Pistol stance). Round the handle it turns to the roll that
+lays its own axis (wrist to knuckles) nearest the forearm's line, so the wrist bends least, and the forearm then takes
+half of the hand's twist about its line (`untwist`, `_untwist`: pronation is the forearm's; Spear advance wrung the
+wrist 160 to 180 degrees, now at most 90). A clip with `two_when` (spans of clip seconds) holds with both hands only
+there, easing in and out over 0.25 s: Pistol quick draw brings the left hand to the gun only while it aims, 2.3 to 4.3 s
+(it lay on the right forearm); Pistol shot holds the pistol with both, as the other pistol clips. The pistol's support is one point, so in Pistol stance and Pistol
 aim the left hand cups the right hand's fingers. A clip with `lead_left` (Two-handed parry: its left hand is above the
 right, toward the blade) takes a prop with a one-point support the other way round: the prop slides half the support's
 offset up through the right hand and the left holds above it, so the forearms do not cross (they went through each
@@ -232,8 +244,12 @@ near its middle; the arrow once the string is pulled 20 cm). The bow is canted a
 stays in the hand): at full draw (`faceW`) toward upright but for 15 degrees of the clip's lean (Draw from quiver held it
 40 degrees over, a limb at the hip), and then by the least of 10-degree steps that keeps its limbs (sampled every 12 cm) out of
 the legs' capsules widened by 4.5 cm for the trousers and the limb (Bow aim and scan put the lower limb through the left
-leg; the bare capsules let it through the cargo trousers by up to 5 cm); `fig.bowState()` (`bow_state()`) gives the
-turn, the cant, how deep the limbs still are in the legs, whether the arrow shows and how far its head is in front of
+leg; the bare capsules let it through the cargo trousers by up to 5 cm), preferring one clear by 2 cm more. The steps
+are tried on the side the bow is canted to first (tried +10 before -10 every frame, the clear one switched sides as the
+leg moved, +30 to -20 at 2.6 s, and the eased cant swept back through the thigh: the 2026-11-26 note, measured only at the
+cant it was heading for); a step that would put a limb in a leg waits at the clear cant it has until the way is open,
+and a leg that comes to the bow turns it out at up to 8 radians a second; `fig.bowState()` (`bow_state()`) gives the
+turn, the cant, how deep the limbs are in the legs at the cant drawn, whether the arrow shows and how far its head is in front of
 the bow (`ahead`).
 
 **Voth clothing** (`tools/make_garments.py`, Blender + MPFB): the Chichani's own clothes in three classes per body,

@@ -1346,10 +1346,28 @@ function KCharFigure(body, sliders, load){
     var m = holders.R && holders.R.children[0]; if(!m) return;
     if(leadLeft()) m.position.fromArray(support(), 0).multiplyScalar(-0.5); else m.position.set(0, 0, 0);
   }
-  var twoY = 0;
+  var qN = Q(), qG = Q(), qD2 = Q(), hAx = null, TWIST = 0.5;
+  /* untwist: the forearm takes TWIST of the hand's turn about the forearm's line away from its rest turn on it (the turn
+     of the forearm is the forearm's, not the wrist's: the left hand on Spear advance's shaft was wrung half a turn round
+     the wrist), and the hand keeps its world turn q */
+  function untwist(fore, hand, hi, q){
+    fore.getWorldQuaternion(qN).multiply(qG.fromArray(J[hi].r));
+    qG.copy(q).multiply(qN.invert());
+    hand.getWorldPosition(tK).sub(fore.getWorldPosition(tV)).normalize();
+    var ang = 2 * Math.atan2(qG.x * tK.x + qG.y * tK.y + qG.z * tK.z, qG.w);
+    if(ang > Math.PI) ang -= 2 * Math.PI; else if(ang < -Math.PI) ang += 2 * Math.PI;
+    turnWorld(fore, qD2.setFromAxisAngle(tK, ang * TWIST));
+    hand.parent.getWorldQuaternion(qN);
+    hand.quaternion.copy(qN.invert().multiply(q));
+    hand.updateMatrixWorld(true);
+  }
   function twoHands(dt){
     var sp = support();
-    if(!sp){ hold2 = 1; twoY = 0; return; }
+    if(!sp){ hold2 = 1; return; }
+    // a clip with two_when (clip seconds) holds with both hands only in those spans, easing in and out over 0.25 s:
+    // Pistol quick draw brings the left hand to the gun only while it aims (it lay on the right forearm)
+    var c2 = clipNow(), w2 = c2 && c2.info.two_when ? spanWeight(c2.info.two_when, 0.25, c2) : 1;
+    if(!(w2 > 0)) return;
     var h = skel.hands.L, arm = h.arm || [byName.LeftArm, byName.LeftForeArm, byName.LeftHand];
     var up = bones[arm[0]], fore = bones[arm[1]], hand = bones[arm[2]];
     self.group.updateMatrixWorld(true);
@@ -1382,14 +1400,20 @@ function KCharFigure(body, sliders, load){
       t = THREE.MathUtils.clamp(t, 0, L);
     }
     tP.copy(tA).addScaledVector(tY, t);
-    // the frame: Y along the handle (the clip's thumb side), Z (the fingers) away from the shoulder, X = Y x Z
-    tX.setFromMatrixColumn(tM, 1);
-    // the thumb side is the clip's at the hold's first frame, kept while the clip plays: chosen afresh each frame it
-    // flipped the hand half a turn round the hilt as the clip's hand passed square to it (Two-handed parry, 0.47 s)
-    if(!twoY) twoY = tX.dot(tY) < 0 ? -1 : 1;
-    if(twoY < 0) tY.negate();
-    tZ.subVectors(tP, tS).addScaledVector(tX.setFromMatrixColumn(tM, 2).normalize(), 0.3 * u);
+    // the frame: Y along the handle, Z (the fingers) round it, X = Y x Z. The left grip frame is the right's mirrored, so
+    // its +Y is the little finger's side: Y is the support's way back (toward the butt), and the left hand's index side
+    // faces the head as the right's does (both thumbs up the haft). Taken from the clip's left hand (the first frame,
+    // which still blends the clip before) it came out either way by body and by what played before: the hand upside
+    // down round the haft (Overhead chop, Heavy blunt swing, Two-handed parry)
+    tY.negate();
+    // round the handle the hand turns to the roll that lays its own axis (wrist to knuckles, hAx in the grip frame) nearest
+    // the forearm's line, so the wrist bends least (the forearm then takes the twist, below): fingers away from the
+    // shoulder bent and wrung it half a turn where the haft runs along the arm (Spear thrust, Spear advance)
+    if(!hAx) hAx = V().copy(bones[byName.LeftHandMiddle1].position).normalize().applyQuaternion(qG.fromArray(h.grip, 3).invert());
+    hand.getWorldPosition(tK).sub(fore.getWorldPosition(tV)).normalize();      // the forearm's line
+    tZ.copy(tK).multiplyScalar(hAx.z).add(tX.crossVectors(tK, tY).multiplyScalar(hAx.x));
     tZ.addScaledVector(tY, -tZ.dot(tY));
+    if(tZ.lengthSq() < 1e-8){ tZ.subVectors(tP, tS); tZ.addScaledVector(tY, -tZ.dot(tY)); }
     if(tZ.lengthSq() < 1e-8) tZ.setFromMatrixColumn(R, 2);
     tZ.normalize();
     tX.crossVectors(tY, tZ);
@@ -1409,14 +1433,16 @@ function KCharFigure(body, sliders, load){
       tW.add(tD);
     }
     reachArm(up, fore, hand, tW, qA);
+    untwist(fore, hand, arm[2], qA);
     self.reach = hand.getWorldPosition(tT).distanceTo(tW);   // how far short the hand fell (0: it holds on)
     // a clip that keeps the hands too far apart for both to hold: the arms go back to the clip's pose (eased, so
     // they do not snap) rather than reach out stiff toward the handle
     var want2 = THREE.MathUtils.clamp((0.16 * u - self.reach) / (0.1 * u), 0, 1);
     hold2 = dt === undefined ? want2 : hold2 + THREE.MathUtils.clamp(want2 - hold2, -dt * 4, dt * 4);
-    if(hold2 < 1){
+    var hw = Math.min(hold2, w2);
+    if(hw < 1){
       var all = rArm ? arm.concat(rArm) : arm;
-      for(k = 0; k < all.length; k++) bones[all[k]].quaternion.copy(saved[k].slerp(bones[all[k]].quaternion, hold2));
+      for(k = 0; k < all.length; k++) bones[all[k]].quaternion.copy(saved[k].slerp(bones[all[k]].quaternion, hw));
       self.bones[0].updateMatrixWorld(true);
     }
   }
@@ -1467,14 +1493,17 @@ function KCharFigure(body, sliders, load){
   /* bladeClear: a weapon's striking part (data/props.json blade, along the handle) that a clip swings through the head
      or the neck (Block 2: retargeted onto a broader head than it was made on) turns the wrist until it passes them: the
      keep-out is the skull's sphere (faces head, with the hair), a taper from it down to the neck joint (NECK_R) and the
-     trunk's capsules (skeleton.json colliders), each widened by EDGE (half a blade's width, and a margin) */
-  var bQ = Q(), bQ0 = Q(), bI = Q(), NECK_R = 0.065, EDGE = 0.035, RELAX = 0.3, bN = V(), bC = V(), bT = V(), bT2 = V(), bladeS = {};
-  this.bladeNeed = [];
+     trunk's capsules (skeleton.json colliders), each widened by EDGE (half a blade's width, and a margin). A gun's stock
+     (props.json stock: a segment in the prop's frame and its half thickness) keeps out of the upper arms the same way,
+     from STOCK_UP of the way down from the shoulder (the butt sits in the shoulder's pocket when it aims): the rifle held at
+     the hip in Long gun shot ran its butt through the right upper arm */
+  var bQ = Q(), bQ0 = Q(), bI = Q(), NECK_R = 0.065, EDGE = 0.035, RELAX = 0.3, bN = V(), bC = V(), bT = V(), bT2 = V(), bladeS = {}, STOCK_UP = 0.35;
+  this.bladeNeed = []; this.stockNeed = [];
   function bladeClear(dt){
-    self.bladeNeed = [];
+    self.bladeNeed = []; self.stockNeed = [];
     ['R', 'L'].forEach(function(side){
-      var id = held[side], bl = id && prop(id).blade, m = holders[side] && holders[side].children[0];
-      if(!bl || !m || !self.action || byName.Neck === undefined){ delete bladeS[side]; return; }
+      var id = held[side], bl = id && prop(id).blade, st = id && prop(id).stock, m = holders[side] && holders[side].children[0];
+      if((!bl && !st) || !m || !self.action || byName.Neck === undefined){ delete bladeS[side]; return; }
       var hand = bones[skel.hands[side].bone], u = self.group.getWorldScale(cS).x * SCALE;
       // the turn kept from the frame before (in the hand's own frame), easing back to the clip's: pushing on from it
       // keeps the blade on the side it went round, where starting afresh each frame could flip it across the head
@@ -1484,26 +1513,41 @@ function KCharFigure(body, sliders, load){
       hand.quaternion.multiply(kept); hand.updateMatrixWorld(true);
       var trunk = caps.filter(function(c){ return !c.pa && (c.a === byName.Hips || c.a === byName.Spine1); });
       self.group.updateMatrixWorld(true);
+      var arms = st ? ['Left', 'Right'].map(function(S){ return caps.filter(function(c){ return !c.pa && c.a === byName[S + 'Arm']; })[0]; }).filter(Boolean) : [];
+      var need = 0;
+      // the deepest of the spheres so far (need, at tP on the prop against the sphere's middle tE); its own depth back
+      function sphere(c, rad){
+        var s = THREE.MathUtils.clamp(tV.subVectors(c, tA).dot(tU) / Math.max(1e-9, tU.lengthSq()), 0, 1);
+        tW.copy(tA).addScaledVector(tU, s);
+        var d = tW.distanceTo(c);
+        if(rad - d > need && d > 1e-6){ need = rad - d; tP.copy(tW); tE.copy(c); }
+        return rad - d;
+      }
       for(var k = 0; k < 3; k++){
-        var r = facePoint('head', fT); if(!r) break;
-        bones[byName.Neck].getWorldPosition(bN);
-        tA.set(0, bl[0], 0).applyMatrix4(m.matrixWorld); tB.set(0, bl[1], 0).applyMatrix4(m.matrixWorld);
-        tU.subVectors(tB, tA);
-        // the deepest of five spheres from the neck up to the skull's middle, and of five along each of the trunk's
-        // capsules (a sword hung over the back went in at the shoulder blades)
-        var need = 0;
-        function sphere(c, rad){
-          var s = THREE.MathUtils.clamp(tV.subVectors(c, tA).dot(tU) / Math.max(1e-9, tU.lengthSq()), 0, 1);
-          tW.copy(tA).addScaledVector(tU, s);
-          var d = tW.distanceTo(c);
-          if(rad - d > need && d > 1e-6){ need = rad - d; tP.copy(tW); tE.copy(c); }
+        need = 0;
+        var r = bl ? facePoint('head', fT) : 0, sn = 0, bn = 0;
+        if(st){
+          tA.fromArray(st, 0).applyMatrix4(m.matrixWorld); tB.fromArray(st, 3).applyMatrix4(m.matrixWorld);
+          tU.subVectors(tB, tA);
+          arms.forEach(function(cp){
+            bones[cp.a].getWorldPosition(bT); bones[cp.b].getWorldPosition(bT2);
+            for(var q = 0; q <= 4; q++) sn = Math.max(sn, sphere(bC.lerpVectors(bT, bT2, STOCK_UP + (1 - STOCK_UP) * q / 4), (cp.r + st[6]) * u));
+          });
+          self.stockNeed.push(sn);
         }
-        for(var q = 0; q <= 4; q++) sphere(bC.lerpVectors(bN, fT, q / 4), THREE.MathUtils.lerp(NECK_R * u, r, q / 4) + EDGE * u);
-        trunk.forEach(function(cp){
-          bones[cp.a].getWorldPosition(bT); bones[cp.b].getWorldPosition(bT2);
-          for(var q = 0; q <= 4; q++) sphere(bC.lerpVectors(bT, bT2, q / 4), cp.r * u + EDGE * u);
-        });
-        self.bladeNeed.push(need);
+        if(bl && r){
+          bones[byName.Neck].getWorldPosition(bN);
+          tA.set(0, bl[0], 0).applyMatrix4(m.matrixWorld); tB.set(0, bl[1], 0).applyMatrix4(m.matrixWorld);
+          tU.subVectors(tB, tA);
+          // the deepest of five spheres from the neck up to the skull's middle, and of five along each of the trunk's
+          // capsules (a sword hung over the back went in at the shoulder blades)
+          for(var q = 0; q <= 4; q++) bn = Math.max(bn, sphere(bC.lerpVectors(bN, fT, q / 4), THREE.MathUtils.lerp(NECK_R * u, r, q / 4) + EDGE * u));
+          trunk.forEach(function(cp){
+            bones[cp.a].getWorldPosition(bT); bones[cp.b].getWorldPosition(bT2);
+            for(var q = 0; q <= 4; q++) bn = Math.max(bn, sphere(bC.lerpVectors(bT, bT2, q / 4), cp.r * u + EDGE * u));
+          });
+          self.bladeNeed.push(bn);
+        }
         if(need <= 0) break;
         hand.getWorldPosition(tO);
         tK.subVectors(tP, tO);                                      // the lever from the wrist
@@ -1515,6 +1559,52 @@ function KCharFigure(body, sliders, load){
     });
   }
 
+  /* offHand: the empty hand keeps out of the other hand's weapon (props.json blade, from HILT below it to its tip, widened
+     by EDGE): Parry's guard hand lay across the sword's blade and the dagger drawn back to the ribs in Thrust / stab went
+     through the forearm. Its forearm (the capsule's radius), hand (OFF_HAND) and fingers (OFF_FINGER: the middle and the index) are tested against
+     the blade's segment, and the wrist moves out by the two-bone solve (the hand keeps its turn): by the depth, over how
+     far along the forearm the contact is. The move is kept from frame to frame in the figure's frame, easing back over
+     RELAX, so the hand stays on the side of the blade it went to; at most OFF_MAX. A hand holding the prop with both is
+     twoHands' */
+  var oS = {}, oA = V(), oB = V(), oP = V(), oC = V(), oT = V(), oWay = V(), oQ = Q(), oH = Q(), oS1 = V(), oS2 = V(),
+      HILT = 0.12, OFF_MAX = 0.3, OFF_HAND = 0.03, OFF_FINGER = 0.012;
+  this.offNeed = 0;
+  function offHand(dt){
+    self.offNeed = 0;
+    ['R', 'L'].forEach(function(side){
+      var other = side === 'R' ? 'L' : 'R', id = held[side], bl = id && prop(id).blade, m = holders[side] && holders[side].children[0], h = skel.hands[other];
+      if(!bl || !m || !h || !h.arm || held[other] || (other === 'L' && support()) || !self.action){ delete oS[other]; return; }
+      var S = other === 'L' ? 'Left' : 'Right', up = bones[h.arm[0]], fore = bones[h.arm[1]], hand = bones[h.arm[2]];
+      var m1 = bones[byName[S + 'HandMiddle1']], m3 = bones[byName[S + 'HandMiddle3']], i1 = bones[byName[S + 'HandIndex1']], i3 = bones[byName[S + 'HandIndex3']];
+      if(!m1 || !m3 || !i1 || !i3) return;
+      var cf = caps.filter(function(c){ return !c.pa && c.a === h.arm[1]; })[0], rf = cf ? cf.r : 0.035;
+      var u = self.group.getWorldScale(cS).x * SCALE;
+      self.group.updateMatrixWorld(true);
+      self.group.getWorldQuaternion(oQ);
+      var kept = oS[other] || (oS[other] = V());
+      if(dt > 0) kept.multiplyScalar(Math.exp(-dt / RELAX));
+      hand.getWorldPosition(oC); hand.getWorldQuaternion(oH);    // the clip's wrist and turn
+      var tot = oT.copy(kept).applyQuaternion(oQ), worst = 0, wf = 1;
+      function deepest(){
+        oA.set(0, bl[0] - HILT, 0).applyMatrix4(m.matrixWorld); oB.set(0, bl[1], 0).applyMatrix4(m.matrixWorld);
+        worst = 0; wf = 1;
+        [[fore, hand, rf, true], [hand, m1, OFF_HAND, false], [m1, m3, OFF_FINGER, false], [i1, i3, OFF_FINGER, false]].forEach(function(sg){
+          var hit = closest(sg[0].getWorldPosition(oS1), sg[1].getWorldPosition(oS2), oA, oB), dep = (sg[2] + EDGE) * u - hit.d;
+          if(dep > worst && hit.d > 1e-6){ worst = dep; oWay.subVectors(fC1, fC2).divideScalar(hit.d); wf = sg[3] ? Math.max(0.3, hit.s) : 1; }
+        });
+        return worst;
+      }
+      if(tot.lengthSq() > 1e-10) reachArm(up, fore, hand, oP.copy(oC).add(tot), oH);
+      for(var it = 0; it < 3 && deepest() > 0; it++){
+        tot.addScaledVector(oWay, worst / wf + 0.002 * u);
+        if(tot.length() > OFF_MAX * u) tot.setLength(OFF_MAX * u);
+        reachArm(up, fore, hand, oP.copy(oC).add(tot), oH);
+      }
+      self.offNeed = Math.max(self.offNeed, deepest());
+      kept.copy(tot).applyQuaternion(oQ.invert());
+    });
+  }
+
   /* toFace: a clip that brings a hand to the face (data/clips.json face: a cup to the lips, a bite to the mouth, a bow's
      string to the anchor under the jaw) has that hand's point (face.point, in its grip frame) moved onto the face's point
      (face.at) by a two-bone solve of the arm, the hand keeping its turn. With face.when (clip seconds) it does so in those
@@ -1523,14 +1613,16 @@ function KCharFigure(body, sliders, load){
      the point, not at all beyond face.near[1], so a reach elsewhere (a draw from the quiver) is left alone. face.level:
      the most degrees a bow's arrow may point up, from the string hand to the bow hand (the bow arm comes down to it) */
   var NEAR = [0.12, 0.3];
+  // the weight of spans of clip seconds at the clip's time: easing in over e from a span's start and out over e after its
+  // end; a span from a loop's start or to its end runs on round the loop: no easing there
+  function spanWeight(when, e, c){
+    var w = 0;
+    when.forEach(function(s){ w = Math.max(w, Math.min(s[0] <= 0 ? 1 : THREE.MathUtils.smoothstep(c.t, s[0], s[0] + e),
+                                                  s[1] >= c.dur - 1e-3 ? 1 : 1 - THREE.MathUtils.smoothstep(c.t, s[1], s[1] + e))); });
+    return w;
+  }
   function faceWeight(fc, c, d, u){
-    if(fc.when){
-      var e = fc.ease == null ? 0.2 : fc.ease, w = 0;
-      // a span from a loop's start or to its end runs on round the loop: no easing there
-      fc.when.forEach(function(s){ w = Math.max(w, Math.min(s[0] <= 0 ? 1 : THREE.MathUtils.smoothstep(c.t, s[0], s[0] + e),
-                                                        s[1] >= c.dur - 1e-3 ? 1 : 1 - THREE.MathUtils.smoothstep(c.t, s[1], s[1] + e))); });
-      return w;
-    }
+    if(fc.when) return spanWeight(fc.when, fc.ease == null ? 0.2 : fc.ease, c);
     var n = fc.near || NEAR;
     return THREE.MathUtils.smoothstep(n[1] * u - d, 0, (n[1] - n[0]) * u);
   }
@@ -2657,25 +2749,41 @@ function KCharFigure(body, sliders, load){
     if(Math.abs(a) > Math.PI / 2) a -= Math.sign(a) * Math.PI;    // the bow is the same either way up: the nearer
     return Math.sign(a) * Math.max(0, Math.abs(a) - LEAN);
   }
-  function cantFor(ax, drawn){
+  /* The steps are tried on the side of upright the bow is canted to now (cur, the eased cant) first: tried +10 before
+     -10 every frame, the clear one switched sides as the leg moved (Bow aim and scan at 2.6 s: +30 to -20), and the
+     eased cant swept back through upright, the lower limb through the left thigh, while the check read only the cant
+     it was heading for */
+  var CANT_SIDE = 5 * Math.PI / 180, CANT_SPEED = 8, CANT_PAD = 0.02;
+  function legsNow(){
+    return DG ? [0, 1, 2, 3].map(function(i){ var s = digiSeg(i, null, 1, V(), V()); return s ? { a:s.ba, b:s.bb, r:0.5 * (s.ra + s.rb) } : null; }).filter(Boolean)
+              : caps.filter(function(cp){ return !cp.pa && (cp.a === byName.LeftUpLeg || cp.a === byName.LeftLeg || cp.a === byName.RightUpLeg || cp.a === byName.RightLeg); });
+  }
+  // how far the limbs, canted by a about ax, are in the legs (summed over the samples)
+  function limbsIn(ax, a, legs, pad){
+    var sc = self.group.getWorldScale(cS).x * SCALE, sum = 0, cl = CLEAR + (pad || 0);
+    cM3.makeRotationFromQuaternion(cQ4.setFromAxisAngle(ax, a)).premultiply(bow.pivot.matrixWorld);
+    LIMB.forEach(function(y){ [1, -1].forEach(function(sg){
+      cW.set(0, sg * y, -0.09 * (y / 0.72) * (y / 0.72)).applyMatrix4(cM3);
+      legs.forEach(function(cp){ sum += Math.max(0, depth(cW, { a:cp.a, b:cp.b, r:(cp.r + cl) * sc })); });
+    }); });
+    return sum;
+  }
+  function cantFor(ax, drawn, cur){
     var base = drawn ? upright(ax) * self.faceW : 0;      // at full draw (the string hand at the anchor), not held low
-    var legs = DG ? [0, 1, 2, 3].map(function(i){ var s = digiSeg(i, null, 1, V(), V()); return s ? { a:s.ba, b:s.bb, r:0.5 * (s.ra + s.rb) } : null; }).filter(Boolean)
-                  : caps.filter(function(cp){ return !cp.pa && (cp.a === byName.LeftUpLeg || cp.a === byName.LeftLeg || cp.a === byName.RightUpLeg || cp.a === byName.RightLeg); });
-    bow.inLegs = 0;
+    var legs = legsNow();
     if(!legs.length) return base;
-    var sc = self.group.getWorldScale(cS).x * SCALE, best = base, least = Infinity;
+    var side = cur - base > CANT_SIDE ? 1 : cur - base < -CANT_SIDE ? -1 : 0, best = base, least = Infinity, clear = null;
     for(var k = 0; k < CANTS.length; k++){
-      var a = base + CANTS[k] * Math.PI / 180, sum = 0;
-      cM3.makeRotationFromQuaternion(cQ4.setFromAxisAngle(ax, a)).premultiply(bow.pivot.matrixWorld);
-      LIMB.forEach(function(y){ [1, -1].forEach(function(sg){
-        cW.set(0, sg * y, -0.09 * (y / 0.72) * (y / 0.72)).applyMatrix4(cM3);
-        legs.forEach(function(cp){ sum += Math.max(0, depth(cW, { a:cp.a, b:cp.b, r:(cp.r + CLEAR) * sc })); });
-      }); });
-      if(sum <= 0){ bow.inLegs = 0; return a; }
+      var c = CANTS[k];
+      // the order: upright, then this side's steps outward, then the other side's
+      if(side) c = k === 0 ? 0 : k <= 8 ? side * k * 10 : -side * (k - 8) * 10;
+      var a = base + c * Math.PI / 180, sum = limbsIn(ax, a, legs);
+      // the first clear by CANT_PAD more (a leg swinging toward a bow held still meets it later), else the first clear
+      if(sum <= 0 && limbsIn(ax, a, legs, CANT_PAD) <= 0) return a;
+      if(sum <= 0 && clear === null) clear = a;
       if(sum < least - 1e-6){ least = sum; best = a; }
     }
-    bow.inLegs = least;
-    return best;
+    return clear !== null ? clear : best;
   }
   this.bowState = function(){ return bow ? { turn:bow.turn, cant:bow.cantA, inLegs:bow.inLegs || 0, arrow:!!(bow.arrow && bow.arrow.visible), ahead:bow.ahead } : null; };   // the labs, tools
   /* the arrow's length follows the body: ARROW_ARM times the bow arm's length (shoulder to wrist), so a long-armed
@@ -2715,9 +2823,15 @@ function KCharFigure(body, sliders, load){
     // the cant, about the arrow's line (through the string hand, so the string stays in it), eased while playing
     bow.pivot.updateMatrixWorld(true);
     var ax = mid ? tK.copy(mid).normalize() : tK.set(0, 0, -1);
-    var want = self.action ? cantFor(ax, !!mid) : 0;
-    bow.cantA = dt > 0 ? bow.cantA + (want - bow.cantA) * (1 - Math.exp(-dt / 0.12)) : want;
+    var want = self.action ? cantFor(ax, !!mid, bow.cantA) : 0, c0 = bow.cantA, lg = self.action ? legsNow() : [];
+    bow.cantA = dt > 0 ? c0 + (want - c0) * (1 - Math.exp(-dt / 0.12)) : want;
+    // a step that would put a limb in a leg: from a clear cant the bow waits there until the way is open (from +40 to
+    // upright, both clear, it swept through the thigh at +10); from one in a leg (the leg came to it) it turns to the clear one at up to CANT_SPEED (radians a second: going straight there turned it 30 degrees in a frame)
+    if(dt > 0 && lg.length && limbsIn(ax, bow.cantA, lg) > 0)
+      bow.cantA = limbsIn(ax, c0, lg) <= 0 ? c0 : c0 + THREE.MathUtils.clamp(want - c0, -CANT_SPEED * dt, CANT_SPEED * dt);
     bow.cant.quaternion.setFromAxisAngle(ax, bow.cantA);
+    // how deep the limbs are in the legs at the cant drawn (the eased one), not the one it heads for
+    bow.inLegs = lg.length ? limbsIn(ax, bow.cantA, lg) : 0;
     if(mid){
       span(bow.a, bow.top, mid); span(bow.c, mid, bow.bot);
       bow.c.visible = true;
@@ -2880,7 +2994,7 @@ function KCharFigure(body, sliders, load){
   this.posture = POSTURE;
   this.postureClips = CLIPP;
 
-  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
+  function afterClip(dt){ posture(); arms2(dt); bodyFix(); toesFlat(); grip(); bladeClear(dt); twoHands(dt); offHand(dt); toFace(); standUp(); nhT += dt || 0; digitigrade(dt); tail(dt); jaw(); clothStep(dt); legCaps(); bowString(dt); hang(); }
 
   /* arms2: the lower arms of a body with a second pair (a mod, tools/mods.py: Left2Arm..., copies of the upper pair's
      joints hung lower on the ribs, on every skeleton). No clip
@@ -3351,7 +3465,6 @@ function KCharFigure(body, sliders, load){
   this.play = function(name){
     return ready.then(function(){
       var c = name && self.clips[name];
-      twoY = 0;
       if(self.action) self.action.fadeOut(0.25);
       if(!c){ self.action = null; self.mixer.stopAllAction(); self.restPose(); return; }
       var once = meta[name] && meta[name].loop === false;

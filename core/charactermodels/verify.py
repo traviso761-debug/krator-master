@@ -445,6 +445,62 @@ LAB_CHECKS = r'''async () => {
   await L.play('ual_consume'); at('ual_consume', 0.7);
   six.forEach((x, i) => { const w = bone(x, 'RightHand').getWorldPosition(V()), sp = bone(x, 'Spine').getWorldPosition(V());
     if (upOf(x, 'R', [1, 0, 0]) < 0.95 || w.z - sp.z < 0.12) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl not level on the palm in front of the belly'); });
+  // the third round (the owner's review of 2026-11-26): the left hand's index side up the haft as the right's (its grip
+  // frame is the right's mirrored, so their +Y point apart), the same on every body and whatever played before; its turn
+  // about the forearm within reach of a wrist (the forearm takes half); no flip between frames
+  const D = KCHAR_DATA, gripQ = (x, s) => { const h = D.bodies[x.kit.body].skeleton.hands[s];
+    return x.bones[h.bone].getWorldQuaternion(Q()).multiply(Q().fromArray(h.grip, 3)); };
+  const axis = (q, a) => V().fromArray(a).applyQuaternion(q);
+  for (const [clip, prop, along] of [['axe_chop', 'axe', [0, 1, 0]], ['blunt_swing', 'mace', [0, 1, 0]], ['parry_2h', 'sword', [0, 1, 0]],
+      ['spear_thrust', 'spear', [0, 1, 0]], ['spear_walk', 'spear', [0, 1, 0]], ['gun_shot', 'rifle', [0, 0, 1]], ['ual_pistol_idle', 'pistol', [0, 1, 0]]]) {
+    await L.play(clip); const hp = document.getElementById('hold-pick'); if (hp.value !== prop) { hp.value = prop; hp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 1500)); }
+    let thumb = -1, twist = 0, flip = 0;
+    for (const x of six) { const d = x.action.getClip().duration, J = D.bodies[x.kit.body].skeleton.joints, hi = x.bones.findIndex(b => b.name === 'LeftHand');
+      x.action.time = 0; x.update(0); let prev = null;
+      // past the cross-fade from the clip before, and short of a one-shot's end (it goes back to the last loop)
+      for (let t = 0; t < d - 1 / 30; t += 1 / 30) { x.update(1 / 30);
+        if (t < 0.3 || x.reach > 0.05) { prev = null; continue; }
+        const ql = gripQ(x, 'L'), qr = gripQ(x, 'R');
+        thumb = Math.max(thumb, axis(ql, [0, 1, 0]).dot(axis(qr, along)));
+        // the hand's turn on the forearm away from its rest turn, about the forearm's line
+        const hq = bone(x, 'LeftHand').getWorldQuaternion(Q()), dq = bone(x, 'LeftForeArm').getWorldQuaternion(Q()).invert().multiply(hq).multiply(Q().fromArray(J[hi].r).invert());
+        const a = bone(x, 'LeftHand').position.clone().normalize();
+        let ang = Math.abs(2 * Math.atan2(dq.x * a.x + dq.y * a.y + dq.z * a.z, dq.w)) * 57.3; if (ang > 180) ang = 360 - ang;
+        twist = Math.max(twist, ang);
+        if (prev) flip = Math.max(flip, prev.angleTo(hq)); prev = hq; } }
+    if (thumb > -0.5) out.push('props: in ' + clip + ' the left hand holds the ' + prop + ' upside down (its index side toward the butt)');
+    if (twist > 100) out.push('props: in ' + clip + ' the left hand is wrung ' + twist.toFixed(0) + ' degrees round the forearm');
+    if (flip > 0.8) out.push('props: in ' + clip + ' the left hand turns ' + (flip * 57.3).toFixed(0) + ' degrees in a frame');
+  }
+  // the empty hand keeps off the other hand's blade (Parry, Thrust / stab: the blade's axis came 1.5 cm from the fingers)
+  for (const [clip, bl] of [['parry', [0.1, 0.91]], ['thrust', [0.07, 0.32]]]) {
+    let near = 9; await run(clip, x => { const h = bone(x, 'RightHand').children.find(c => !c.isBone); if (!h || !h.children.length) return; h.updateMatrixWorld(true);
+      const A = V().set(0, bl[0] - 0.12, 0).applyMatrix4(h.matrixWorld), B = V().set(0, bl[1], 0).applyMatrix4(h.matrixWorld), P = n => bone(x, n).getWorldPosition(V());
+      for (const [a, b] of [['LeftForeArm', 'LeftHand'], ['LeftHand', 'LeftHandMiddle1'], ['LeftHandMiddle1', 'LeftHandMiddle3'], ['LeftHandIndex1', 'LeftHandIndex3']]) near = Math.min(near, segd(P(a), P(b), A, B)); });
+    if (near < 0.04) out.push('props: in ' + clip + ' the blade comes ' + (near * 100).toFixed(1) + ' cm from the empty hand');
+  }
+  // the rifle's stock out of the upper arms (Long gun shot at the hip ran its butt through the right upper arm)
+  let stock = 0; await run('gun_shot', x => { const n = x.stockNeed; if (n.length) stock = Math.max(stock, n[n.length - 1]); });
+  if (stock > 0.01) out.push('props: the rifle\'s stock goes ' + (stock * 100).toFixed(1) + ' cm into an upper arm in Long gun shot');
+  // the pistol clips: both hands on the gun in Pistol shot; in Pistol quick draw only while it aims, off the right forearm
+  await L.play('ual_pistol_shoot'); at('ual_pistol_shoot', 0.3);
+  six.forEach((x, i) => { if (!x.held.both || x.reach > 0.02) out.push('props: Pistol shot at 0.3 s, figure ' + i + ': the left hand not on the gun'); });
+  let fore2 = 9; await run('pistol_draw', (x, t) => { if (t < 2.6 || t > 4.2) return; const P = n => bone(x, n).getWorldPosition(V());
+    fore2 = Math.min(fore2, segd(P('LeftHand'), P('LeftHandMiddle1'), P('RightForeArm'), P('RightHand'))); });
+  if (fore2 < 0.08) out.push('props: in Pistol quick draw the left hand comes ' + (fore2 * 100).toFixed(1) + ' cm from the right forearm');
+  // the bow's string hand at full draw 6-8 cm off the face, not on the chin (Bow shot; the base mesh skinned)
+  await L.play('bow_shot'); at('bow_shot', 3.2);
+  six.forEach((x, i) => {
+    let base = null; x.group.traverse(o => { if (o.isSkinnedMesh && o.visible && (!base || o.geometry.attributes.position.count > base.geometry.attributes.position.count)) base = o; });
+    const g = base.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, nm = base.skeleton.bones.map(b => b.name), head = [], hand = [];
+    base.skeleton.update();
+    for (let k = 0; k < g.attributes.position.count; k++) { let bi = si.getX(k), bw = sw.getX(k);
+      for (const [c, w] of [[si.getY(k), sw.getY(k)], [si.getZ(k), sw.getZ(k)], [si.getW(k), sw.getW(k)]]) if (w > bw) { bw = w; bi = c; }
+      if (nm[bi] === 'Head') head.push(k); else if (/^RightHand/.test(nm[bi])) hand.push(k); }
+    const at3 = k => base.boneTransform(k, V()).applyMatrix4(base.matrixWorld), hp = head.filter((k, j) => j % 2 === 0).map(at3);
+    let gap = 9; hand.map(at3).forEach(a => hp.forEach(b => { gap = Math.min(gap, a.distanceTo(b)); }));
+    if (gap < 0.055 || gap > 0.095) out.push('props: Bow shot at 3.2 s, figure ' + i + ': the string hand ' + (gap * 100).toFixed(1) + ' cm off the face, want 6 to 8');
+  });
   return out;
 }'''
 

@@ -281,6 +281,35 @@ func _init() -> void:
 				if bs["arrow"] and bs["ahead"] != null:
 					ahead = minf(ahead, bs["ahead"])
 			ok(ahead > 0.03, "%s: the arrow's head stays in front of the bow (%.3f m)" % [clip, ahead])
+		# the third round (2026-11-26): the left hand's index side up the haft as the right's (their grip frames' +Y point
+		# apart), whatever played before; a gun's stock out of the upper arms; the empty hand off the other hand's blade
+		for c in [["axe_chop", "axe", Vector3.UP], ["parry_2h", "sword", Vector3.UP], ["spear_walk", "spear", Vector3.UP], ["gun_shot", "rifle", Vector3.BACK]]:
+			fig.hold({"R": c[1], "L": null, "both": true})
+			fig.play(c[0])
+			var thumb := -1.0
+			for k in mini(40, int(fig.player.current_animation_length * 30.0) - 1):    # the clip alone, not the loop after a one-shot
+				fig._process(1.0 / 30.0)
+				if k < 9 or fig.reach > 0.05 or fig._hold2 < 0.99:   # past the cross-fade from the clip before, both hands holding
+					continue
+				var ql: Quaternion = (fig._gp(int(fig.skel["hands"]["L"]["bone"])) * fig._grip_t("L")).basis.get_rotation_quaternion()
+				var qr: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+				thumb = maxf(thumb, (ql * Vector3.UP).dot(qr * (c[2] as Vector3)))
+			ok(thumb < -0.5, "%s: the left hand's index side up the %s (%.2f)" % [c[0], c[1], thumb])
+		fig.hold({"R": "rifle", "L": null, "both": true})
+		fig.play("gun_shot")
+		var stock := 0.0
+		for k in 119:
+			fig._process(1.0 / 30.0)
+			if fig.stock_need.size() > 0:
+				stock = maxf(stock, fig.stock_need[-1])
+		ok(stock < 0.01, "gun_shot: the rifle's stock keeps out of the upper arms (%.3f m in)" % stock)
+		fig.hold({"R": "dagger", "L": null})
+		fig.play("thrust")
+		var offn := 0.0
+		for k in 38:
+			fig._process(1.0 / 30.0)
+			offn = maxf(offn, fig.off_need)
+		ok(offn < 0.01, "thrust: the empty hand keeps off the dagger (%.3f m in)" % offn)
 		fig.hold({"R": null, "L": "cup"})
 		fig.play("drink")
 		for k in 30:
