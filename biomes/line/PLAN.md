@@ -288,12 +288,12 @@ its service bore for every route. The Line's bore is unchanged.
   2.3), with tunnels through the ridges between (Cthonos to The Tubes). The router will bend it round the worst.
 - **The Tubes to the Pile crosses the Rift's lake**: 154 km over water on the straight line; the router may keep to the
   shore. the Pile's own station (9) stands in Lizardmen country: the Line there is the reward's road, mostly broken.
-- **Strongbow to Stair is one long bore** (329 km tunnel under the Catch's walls, 4.5 km high), kin of the Arcbeam-Stair
-  tunnel closed by the quake (`biomes/catch/PLAN.md`). Strongbow was Xanadu's end of the line (`LORE.md` §4): *proposed*,
+- **Strongbow to Stair is one long bore** (329 km tunnel under the Catch's walls, 4.5 km high), kin of the Parabola-Stair
+  bore broken by the quake (`biomes/catch/PLAN.md`). Strongbow was Xanadu's end of the line (`LORE.md` §4): *proposed*,
   the bore beyond it is sealed or fallen, and Xanadu keeps only its own short line.
-- **The Bowl's arcology** is still to be placed (the owner's "maybe"): between Stair (1106,1442) and Arcbeam (1016,1058),
-  on the Bowl's floor near Mantis (1113,1164), it would join the Rift line to the Arcbeam-Stair route and so to the
-  crater's network. Its number would be 13.
+- **The Bowl's arcology is Parabola** (970,1186; the owner, 2026-11-11 and 2026-11-24: *"parabola is the arcology
+  now"*), typed `arcology` on the map in scale-model edit 31. It joins the Rift line to the ruined Parabola-Stair bore
+  (`rift.bowl.parabola-stair`, 580 km, 425 km of it bored) and so to the crater's network. Its number would be 13.
 - **Numbers**: 10 Theodiga, 11 Strongbow, 12 Stair, the Bowl's arcology 13 (*proposed*, by the same north-to-south count
   carried on east).
 

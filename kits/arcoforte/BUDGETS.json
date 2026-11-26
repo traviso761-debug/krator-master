@@ -1,0 +1,13 @@
+{
+  "what": "Ceilings for kits/arcoforte (tools/check_budgets.py, tools/harness.py verify_page).",
+  "pages": {
+    "arcoforte.html": {
+      "bytes": 12582912,
+      "tris": 2500000,
+      "calls": 350,
+      "scene_tris": 3500000,
+      "why": "Full 1:1 Soleri sea-cliff arcology complex with multi-culture interior furniture catalog bundle; texture library maps live in the arcoforte.tex.ancients.js sidecar.",
+      "raised": "2026-11-24"
+    }
+  }
+}

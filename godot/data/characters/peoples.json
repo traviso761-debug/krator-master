@@ -4177,6 +4177,172 @@
           }
         }
       }
+    },
+    {
+      "id": "cflit_qbon",
+      "name": "cFl\u012bt-qB\u014dn (the Fleet-Born)",
+      "note": "The Fleet-Born of the Drownlands and the Ring Sea's trenches: click-speaking boat nomads aboard the Ark-Wards (kits/ringsea 89c-89g; biomes/drownlands/PLAN.md), an engineered dive lineage: a human frame, collapsible rib cartilage, marine fat (core/region/CROOK-RIA-SCOPE.md 3.1, CONTINENTAL-SCOPE.md; Stage 8 B9, T4, 2026-11-24). A proposal: the Ring Sea Islanders' range, sea-weathered, a little heavier, hair cropped or tied back for the dives. Owed, not faked: the plum-indigo lips and sclerae, the valved nostrils and the nictitating inner lids (no morph or item draws them), and their own clothes (they draw from the library)",
+      "ancestry": {
+        "african": [
+          0.2,
+          0.45
+        ],
+        "asian": [
+          0.4,
+          0.65
+        ],
+        "caucasian": [
+          0.05,
+          0.2
+        ]
+      },
+      "skin": [
+        "#a87a55",
+        "#8c6142",
+        "#6b4630"
+      ],
+      "hair": [
+        "#0f0c0a",
+        "#1a1410",
+        "#2a2018"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#2c2434"
+      ],
+      "grey": 0.5,
+      "beard": 0.2,
+      "morph": {
+        "weight": [
+          0.1,
+          0.6
+        ],
+        "muscle": [
+          0.0,
+          0.5
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "short04",
+          "Low_Fade"
+        ],
+        "female": [
+          "braid01",
+          "elvs_braid_bun",
+          "short03"
+        ]
+      }
+    },
+    {
+      "id": "yonni",
+      "name": "Yonni Spear-Queens (Sf\u012bra-Kand\u0113t\u00e6)",
+      "note": "The Twin-Born Spear-Queens of Yonni and the Scoured Hills (kits/yonni; culture 'yonni'; core/region/CROOK-RIA-SCOPE.md 3.1; Stage 8 B9, T4, 2026-11-24): an engineered reverse dimorphism (the women about 1.10 of a human, a heavier-boned martial caste; the men about 0.92) and nine births in ten identical twins. A proposal: a broad coastal range, the martial build drawn a little strong. Owed, not faked: the dimorphism itself (a people's morph is one range for both bodies: KCHAR.stranger), the twins (a crowd draws each stranger alone), and their own clothes",
+      "ancestry": {
+        "african": [
+          0.15,
+          0.45
+        ],
+        "asian": [
+          0.1,
+          0.4
+        ],
+        "caucasian": [
+          0.3,
+          0.6
+        ]
+      },
+      "skin": [
+        "#d9b08c",
+        "#b98a62",
+        "#8a5e3e"
+      ],
+      "hair": [
+        "#110e0c",
+        "#2a1d15",
+        "#4a3020",
+        "#6a4a2e"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22",
+        "#4e6a50"
+      ],
+      "grey": 0.5,
+      "beard": 0.3,
+      "morph": {
+        "muscle": [
+          0.1,
+          0.6
+        ]
+      },
+      "styles": {
+        "male": [
+          "short01",
+          "short04",
+          "long01"
+        ],
+        "female": [
+          "braid01",
+          "elvs_braid_bun",
+          "long01"
+        ]
+      }
+    },
+    {
+      "id": "hush_kin",
+      "name": "The Hush-kin (Handspeak Sanctuary tribes)",
+      "note": "The Sanctuary tribes of the Silent Vales (core/region/CROOK-RIA-SCOPE.md 3.1, CONTINENTAL-SCOPE.md; Stage 8 B9, T4, 2026-11-24): a standard human frame, every one fluent in Handspeak, a two-handed sign language, under the Vales' damping field (bianzhong bells and nephrite lithophones; aggression 0). A proposal: a wide range, as of a refuge people gathered from many; no morph bias. Owed: their own clothes, and Handspeak's gestures (the Animation Lab's clips)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.5
+        ],
+        "asian": [
+          0.2,
+          0.6
+        ],
+        "caucasian": [
+          0.15,
+          0.55
+        ]
+      },
+      "skin": [
+        "#ecc7a8",
+        "#d7ae88",
+        "#a87650",
+        "#6a4630"
+      ],
+      "hair": [
+        "#110e0c",
+        "#2a1d15",
+        "#3b2a1e",
+        "#5a3a22",
+        "#8a6a44"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#5a3a22",
+        "#4e6a80"
+      ],
+      "grey": 0.45,
+      "beard": 0.35,
+      "styles": {
+        "male": [
+          "short02",
+          "short01",
+          "long01"
+        ],
+        "female": [
+          "bob02",
+          "long01",
+          "braid01"
+        ]
+      }
     }
   ]
 }

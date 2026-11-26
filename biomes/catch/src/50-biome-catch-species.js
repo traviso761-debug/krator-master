@@ -19,20 +19,23 @@ const T3=BIO.host.THREE,C=h=>new T3.Color(h);CATCH.C=C;
 CATCH.TAGS={climate:'temperate..tropic',aridity:'arid',abyssal:false,riparian:'both',koppen:['BWh','BWk','BSk']};
 CATCH.SEED=6131;
 
-// ---------------------------------------------------------------- the five oases of the crossing (PLAN.md section 8: proposed)
-// Each carries its name in the four tongues whose roads meet here; px are proposed points on the scale model (2 km a
-// pixel), north to south. lived: only Stair's. kind: what the water is.
+// ---------------------------------------------------------------- the five oases of the crossing (PLAN.md section 8)
+// Each carries its name in the four tongues whose roads meet here, north to south. px are the SCALE MODEL 5.1 pins
+// (1821 x 1723, 2 km a pixel), corrected 2026-11-24: these records carried the 4.21/4.22 canvas, and four of the five
+// were 75 to 209 km from where the owner's edit 5 put the pins (openworld/catch-bowl/PLAN-TERRAIN.md P1; its
+// tools/survey.py `drift` section measures the old drift). kind: what the water is. keeper: whose hands are at the well
+// (the owner, 2026-11-16: each oasis is lived in, ~100 people or less, kept by one caravan group).
 CATCH.OASES=[
- {key:'kolli',meaning:'the cold one',names:{yuni:'Kolli',izani:"Kold'a",dasri:'al-Kōl',xanadui:'Kholṭu'},px:[738,944],kind:'seep',lived:false,
-  note:'The first water down from the notch: snowmelt seeping out at the north fan\'s toe. Cold even in summer.'},
- {key:'arfwai',meaning:'halfway',names:{yuni:'Arfwai',izani:'Afguai',dasri:'al-Ḥafwē',xanadui:'Hāphwe'},px:[792,1030],kind:'well',lived:false,
-  note:'A well in a hollow of the reg, half the way to Stair: a lined shaft, a trough, three poplars.'},
- {key:'stair',meaning:'Stair (the Ancients\' name)',names:{yuni:'Stairo',izani:'Istera',dasri:'Ṣṭēr',xanadui:'Sṭer'},px:[834,1112],kind:'spring',lived:true,
-  note:'The biggest: springs where the interior hills dam the groundwater. A couple of hundred people under the Hill arcology\'s ruin.'},
- {key:'bitta',meaning:'bitter water',names:{yuni:'Bitta',izani:"Bit'ar",dasri:'al-Bitar',xanadui:'Biṭṭar'},px:[806,1180],kind:'seep',lived:false,
-  note:'Brackish: beasts drink it, people only boiled with ash.'},
- {key:'lasso',meaning:'the last water',names:{yuni:'Lasso',izani:"Last'a Guat'ar",dasri:'al-Lāst',xanadui:'Lāsṭu'},px:[768,1236],kind:'spring',lived:false,
-  note:'The last water before the southern passes toward Strongbow.'}];
+ {key:'kolli',meaning:'the cold one',names:{yuni:'Kolli',izani:"Kold'a",dasri:'al-Kōl',xanadui:'Kholṭu'},px:[1058,1367],kind:'seep',lived:true,people:80,keeper:'the two Iziz merchant houses',
+  note:'The first water down from the Godsgate: snowmelt seeping out at the north fan\'s toe. Cold even in summer. Kept by both Iziz houses, Getmastarz and Goldanda, from their own compounds at one well: one more ground for their rivalry.'},
+ {key:'arfwai',meaning:'halfway',names:{yuni:'Arfwai',izani:'Afguai',dasri:'al-Ḥafwē',xanadui:'Hāphwe'},px:[1090,1387],kind:'well',lived:true,people:60,keeper:'the Train of Jabal',
+  note:'A lined well in a hollow of the reg, half the way to Stair: a shaft, a trough, three poplars. The driest of the five (31 mm), and the one whose well runs down in late summer. The Train of Jabal keeps it, by their salt pans.'},
+ {key:'stair',meaning:'Stair (the Ancients\' name)',names:{yuni:'Stairo',izani:'Istera',dasri:'Ṣṭēr',xanadui:'Sṭer'},px:[1106,1442],kind:'spring',lived:true,people:750,keeper:'Stair\'s own merchants',
+  note:'The biggest: springs where the interior hills dam the groundwater. About 750 people in the Hill arcology\'s ruin (the owner, 2026-11-16, in place of "a couple of hundred"): the caravan groups\' factors and pens, a handful of merchants, the Brotherhood of the Two Horns\' guild house, and the arcology divers.'},
+ {key:'bitta',meaning:'bitter water',names:{yuni:'Bitta',izani:"Bit'ar",dasri:'al-Bitar',xanadui:'Biṭṭar'},px:[1088,1455],kind:'seep',lived:true,people:40,keeper:'whoever holds Stair\'s pens',
+  note:'Brackish: beasts drink it, people only boiled with ash. The smallest of the five: a well head, an ash hearth big enough to boil for a caravan, and a shelter.'},
+ {key:'lasso',meaning:'the last water',names:{yuni:'Lasso',izani:"Last'a Guat'ar",dasri:'al-Lāst',xanadui:'Lāsṭu'},px:[1083,1474],kind:'spring',lived:true,people:100,keeper:'Yuni\'s Merchants\' Guild and the Geomancers',
+  note:'The last water before the Twins, and the best on the crossing: 4 km from the perennial Rīfar al-Layl. Two compounds at one spring, the Guild\'s and the Geomancers\'.'}];
 CATCH.oasis=k=>CATCH.OASES.find(o=>o.key===k)||null;
 
 // ---------------------------------------------------------------- palettes (sRGB; a library card carries its own colour)

@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 """Pack Stage 4 (S4) PBR ground detail layers and grass plume card from core/materials/library into godot/data/ground_layers/.
 
+  python3 godot/tools/pack_ground_layers.py                  the built-in global set
+  python3 godot/tools/pack_ground_layers.py --set catch-bowl  a set from godot/tools/ground_layer_sets/<name>.json
+
+A SET FILE is what godot/tools/ground_layer_sets/xanadu.json was written against: {out, size, layers:[{index, role,
+name, library, tile_m}]}. Until now the packer only had its own hardcoded list and the set files were data waiting for
+a reader, so this is that reader. A set writes into its own `out` directory and carries no plume card: the card is the
+global set's meadow accent and a desert has no meadow.
+
 Outputs:
   godot/data/ground_layers/layers.json
   godot/data/ground_layers/tex/layer_<i_name>.albedo.webp       (512x512 RGB/RGBA WebP)
@@ -65,11 +73,30 @@ def fill_clear_rgba(arr_u8, thresh=48):
 
 
 def main():
-    os.makedirs(TEX_DIR, exist_ok=True)
+    setname = None
+    for i, a in enumerate(sys.argv[1:]):
+        if a == '--set' and i + 2 <= len(sys.argv) - 1:
+            setname = sys.argv[i + 2]
+        elif a.startswith('--set='):
+            setname = a.split('=', 1)[1]
+    layers = LAYERS
+    out_dir, tex_dir, size, card = OUT_DIR, TEX_DIR, 512, True
+    if setname:
+        spath = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ground_layer_sets', setname + '.json')
+        if not os.path.isfile(spath):
+            sys.exit('pack_ground_layers: no set file %s' % spath)
+        sdoc = json.load(open(spath, encoding='utf-8'))
+        layers = [(int(L['index']), str(L['name']), str(L['library']), float(L['tile_m']))
+                  for L in sorted(sdoc['layers'], key=lambda L: int(L['index']))]
+        out_dir = os.path.join(ROOT, *str(sdoc['out']).strip('/').split('/'))
+        tex_dir = os.path.join(out_dir, 'tex')
+        size = int(sdoc.get('size', 512))
+        card = False
+        print('pack_ground_layers: set %s -> %s (%d layers at %d px)' % (setname, sdoc['out'], len(layers), size))
+    os.makedirs(tex_dir, exist_ok=True)
     meta_layers = []
-    size = 512
 
-    for idx, name, fam, tile_m in LAYERS:
+    for idx, name, fam, tile_m in layers:
         fdir = os.path.join(LIB, fam)
         if not os.path.isdir(fdir):
             sys.exit('pack_ground_layers: missing library family %s' % fdir)
@@ -102,10 +129,10 @@ def main():
 
         alb_file = 'layer_%d_%s.albedo.webp' % (idx, name)
         nr_file = 'layer_%d_%s.nr.webp' % (idx, name)
-        alb_im.save(os.path.join(TEX_DIR, alb_file), 'WEBP', quality=90, method=4)
+        alb_im.save(os.path.join(tex_dir, alb_file), 'WEBP', quality=90, method=4)
 
         nr_rgba = np.stack([nx, ny, rgh, np.clip(np.round(lum_det * 255.0), 0, 255).astype(np.uint8)], axis=-1)
-        Image.fromarray(nr_rgba, mode='RGBA').save(os.path.join(TEX_DIR, nr_file), 'WEBP', lossless=True, method=4)
+        Image.fromarray(nr_rgba, mode='RGBA').save(os.path.join(tex_dir, nr_file), 'WEBP', lossless=True, method=4)
 
         meta_layers.append({
             'index': idx,
@@ -118,24 +145,30 @@ def main():
         })
         print('packed S4 layer %d (%s <- %s): mean_lin=%s' % (idx, name, fam, mean_lin))
 
-    # Also pack single-tuft card.grass.themeda for meadow seed-plume accents
+    # Also pack single-tuft card.grass.themeda for meadow seed-plume accents (the global set only: a desert set has
+    # no meadow, and the card is what the grass sward draws)
+    card_file = None
     th_dir = os.path.join(LIB, 'card.grass.themeda')
-    th_im = Image.open(os.path.join(th_dir, 'albedo.png')).convert('RGBA').resize((512, 512), Image.Resampling.LANCZOS)
-    th_arr = fill_clear_rgba(np.asarray(th_im, dtype=np.uint8), thresh=48)
-    card_file = 'card_themeda.albedo.webp'
-    Image.fromarray(th_arr, mode='RGBA').save(os.path.join(TEX_DIR, card_file), 'WEBP', lossless=True, method=4)
-    print('packed plume card: %s' % card_file)
+    if card:
+      th_im = Image.open(os.path.join(th_dir, 'albedo.png')).convert('RGBA').resize((512, 512), Image.Resampling.LANCZOS)
+      th_arr = fill_clear_rgba(np.asarray(th_im, dtype=np.uint8), thresh=48)
+      card_file = 'card_themeda.albedo.webp'
+      Image.fromarray(th_arr, mode='RGBA').save(os.path.join(tex_dir, card_file), 'WEBP', lossless=True, method=4)
+      print('packed plume card: %s' % card_file)
 
     doc = {
         'format': 'krator-ground-layers',
         'version': 1,
         'size': size,
         'layers': meta_layers,
-        'plume_card': 'tex/' + card_file,
     }
-    with open(os.path.join(OUT_DIR, 'layers.json'), 'w', encoding='utf-8', newline='\n') as f:
+    if card_file:
+        doc['plume_card'] = 'tex/' + card_file
+    if setname:
+        doc['set'] = setname
+    with open(os.path.join(out_dir, 'layers.json'), 'w', encoding='utf-8', newline='\n') as f:
         json.dump(doc, f, indent=2)
-    print('wrote %s (%d layers)' % (os.path.join(OUT_DIR, 'layers.json'), len(meta_layers)))
+    print('wrote %s (%d layers)' % (os.path.join(out_dir, 'layers.json'), len(meta_layers)))
 
 
 if __name__ == '__main__':

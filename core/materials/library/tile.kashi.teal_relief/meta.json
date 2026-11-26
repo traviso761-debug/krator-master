@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.671,
+    0.515
+   ],
+   "seam_before": [
+    1.911,
+    1.69
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.08,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.08,
+   "mute": 0.0,
+   "normal_strength": 1.3,
+   "pattern": false,
+   "rough": 0.22,
+   "rough_var": 0.16,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "tile.kashi.teal_relief",
+  "metal": 0,
+  "roughness": 0.22,
+  "scale": [
+   1.15,
+   1.15
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "tile.kashi.teal_relief.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on ceramic tile panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no specular glare, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Samarkand Shah-i-Zinda deeply carved high-relief glazed terracotta kashi tiles fitted in a seamless repeating grid, moulded with crisp two-level geometric eight-pointed star strapwork and scrolling split-palmette vine arabesques; coated in rich translucent alkaline turquoise-teal soda glaze (#188d88 to #2caaa2) that pools dark peacock-emerald (#0d5558) in the deep carved background recesses and thins to pale celadon-cream (#8fd2c8) along the sharp raised relief ridges, with occasional small cobalt-blue (#1d4284) and warm buff unglazed terracotta (#c89e74) inlays, fine kiln crackle crazing across the glaze and hair-thin lime joints. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti pishtaq jambs, wind-minarets and friezes (kits/tabisti, kashi, 1.15 m); carved turquoise glazed relief tile",
+  "sha1": "e26456c8fb15f1652e1f227134265c677dc84c46"
+ }
+}

@@ -1,0 +1,111 @@
+{
+ "build": "cascade",
+ "note": "kits/cascade adapter onto the material library (core/materials/PLAN.md): Ancient white panel, board concrete, relief block and bronze, plus Iron Republic forged iron, corrugated iron, birch/pine timber siding, glazed celadon roof tile, cut stone, paving slabs, demolition rubble, tilled garden soil and lush turf. Run python3 tools/textures/pack.py kits/cascade after any change.",
+ "size": 512,
+ "families": {
+  "white": {
+   "lib": "metal.ancient.white.macro",
+   "scale": [16.0, 16.0],
+   "tint": {"keep": 0, "mean": 0.875},
+   "metal": 0.12,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "concrete": {
+   "lib": "concrete.board",
+   "scale": [4.0, 4.0],
+   "tint": {"keep": 0.3, "mean": 0.70},
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "relief": {
+   "lib": "concrete.block.relief",
+   "scale": [6.0, 6.0],
+   "tint": {"keep": 0.3, "mean": 0.72},
+   "metal": 0,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "bronze": {
+   "lib": "metal.bronze",
+   "scale": [3.0, 3.0],
+   "tint": {"keep": 0.8, "mean": 0.42},
+   "metal": 0.8,
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "iron": {
+   "lib": "metal.iron",
+   "scale": [3.0, 3.0],
+   "tint": {"keep": 0.5, "mean": 0.30},
+   "metal": 0.78,
+   "roughLift": 0.05,
+   "specular": 0.45
+  },
+  "corrugate": {
+   "lib": "metal.corrugated_iron_02",
+   "scale": [3.0, 3.0],
+   "tint": {"keep": 0.5, "mean": 0.52},
+   "metal": 0.65,
+   "roughLift": 0.1,
+   "specular": 0.4
+  },
+  "timber": {
+   "lib": "wood.siding",
+   "scale": [2.4, 2.0],
+   "tint": {"keep": 0.65, "mean": 0.58},
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "celadon": {
+   "lib": "roof.tile.celadon",
+   "scale": [2.5, 2.5],
+   "tint": {"keep": 0.85, "mean": 0.52},
+   "metal": 0.05,
+   "roughLift": 0.0,
+   "specular": 0.5
+  },
+  "stone": {
+   "lib": "stone.cut",
+   "scale": [3.0, 2.8],
+   "tint": {"keep": 0.35, "mean": 0.64},
+   "metal": 0,
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "pave": {
+   "lib": "concrete.slab",
+   "scale": [10.0, 10.0],
+   "tint": {"keep": 0.3, "mean": 0.62},
+   "metal": 0,
+   "roughLift": 0.15,
+   "specular": 0.3
+  },
+  "rubble": {
+   "lib": "ground.rubble.demolition",
+   "scale": [3.0, 3.0],
+   "tint": {"keep": 0.75, "mean": 0.52},
+   "metal": 0,
+   "roughLift": 0.05,
+   "specular": 0.3
+  },
+  "tilled": {
+   "lib": "ground.tilled",
+   "scale": [4.0, 4.0],
+   "tint": {"keep": 0.75, "mean": 0.42},
+   "metal": 0,
+   "roughLift": 0.2,
+   "specular": 0.2
+  },
+  "turf": {
+   "lib": "ground.grass.lush",
+   "scale": [8.0, 8.0],
+   "tint": {"keep": 0.8, "mean": 0.46},
+   "metal": 0,
+   "roughLift": 0.25,
+   "specular": 0.2
+  }
+ }
+}

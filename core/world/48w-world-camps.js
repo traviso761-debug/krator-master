@@ -291,4 +291,4 @@ function of(P){const out={camps:[],uncut:[]};if(!P||!(P.version>=2))return out;
 Object.assign(api,{formation:reg('formation'),people:reg('people'),when:reg('when'),calendar:reg('calendar'),works:reg('works'),hook:reg('hook'),kitDims:reg('kit'),
  plan,lay,of,inSeason,yearDay,days,bed,boxOf,pendingBox,seedOf,YEAR,registered:kind=>names(kind==='kitDims'?'kit':kind),
  check:C=>{const F=REG.formation[C.kind];return F&&F.check?F.check(C):anyCheck(C);}});
-return api;})();
+api.of=of;return api;})();

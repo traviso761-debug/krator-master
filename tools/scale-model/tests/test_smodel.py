@@ -862,19 +862,37 @@ check('10-panel.html #settPills exposes filter pills for all 10 settlement stage
 all_setts = P.settlements()
 by_nm_21 = {s['name']: s for s in all_setts}
 by_id_21 = {s['id']: s for s in all_setts}
-check('%d unique pins across the 10 stages; the duplicates on the ids Gemini\'s population data keys (%s); the held salt works out' % (
-    len(all_setts), ', '.join(i for i in ('spalewharf01', 'sbabalhawa01', 'sthetwins01', 'sxangold01')
+# 5.1e10 landed the two salt works (edit 31) and 5.1e33 dropped the Twins (edit 28), both the owner's of 2026-11-24
+# (the drop's batch was 5.1e26, renumbered in the integration-4 merge of 2026-11-26: the map session's 5.1e26 holds
+# Arkerum and Whitelake, already merged by the published map's viewers)
+check('%d unique pins across the 10 stages; the duplicates on the ids Gemini\'s population data keys (%s); the salt works in and the Twins out' % (
+    len(all_setts), ', '.join(i for i in ('spalewharf01', 'sbabalhawa01', 'sxangold01', 'svhmyhf33w', 's0zgu7u6yb')
                               if i not in by_id_21) or 'all there'),
       len({s['id'] for s in all_setts}) == len(all_setts)
       and {s['type'] for s in all_setts} <= set(EXPECTED_STAGES)
-      and all(i in by_id_21 for i in ('spalewharf01', 'sbabalhawa01', 'sthetwins01', 'sxangold01'))
+      and all(i in by_id_21 for i in ('spalewharf01', 'sbabalhawa01', 'sxangold01', 'svhmyhf33w', 's0zgu7u6yb'))
       and not any(i in by_id_21 for i in ('gem_palewharf', 'gem_godsgate', 'gem_twins_pass', 'smgxtultfq', 'skwl1d2hdu',
-                                          'svhmyhf33w', 's0zgu7u6yb'))
+                                          'sthetwins01'))
       and sum(1 for s in all_setts if s['name'] == 'Port Tobin') == 1
       and 'SETT_DROPPED' in s_src)
-check('living ruins classified as inhabited ruin (Carcosa, Henge, Leng, Stair, Noa\'s Regret, Port Visas, Parabola, Hall of Heroes, Corpus)',
+check('the Twins dropped in SETT_DROPPED 5.1e33 and gone from defSetts and every add batch (edit 28)',
+      'sthetwins01' not in by_id_21 and "'5.1e33':[\"sthetwins01\"]" in s_src
+      and s_src.count('"sthetwins01"') == 1)
+check('the two salt works landed in the reserved batch 5.1e10 as outposts on their own ground (edit 31)',
+      "'5.1e10':" in s_src
+      and all(by_id_21[i]['type'] == 'outpost' for i in ('svhmyhf33w', 's0zgu7u6yb'))
+      and (by_id_21['svhmyhf33w']['px'], by_id_21['svhmyhf33w']['py']) == (1080, 1428)
+      and (by_id_21['s0zgu7u6yb']['px'], by_id_21['s0zgu7u6yb']['py']) == (1169, 1150))
+check('Bab al-Hawa on the Godsgate thalweg at 1027,1258 and Esper named (edits 29 and 31)',
+      (by_id_21['sbabalhawa01']['px'], by_id_21['sbabalhawa01']['py']) == (1027, 1258)
+      and by_id_21['sq11desertw7']['name'] == 'Esper')
+check('living ruins classified as inhabited ruin (Carcosa, Henge, Leng, Stair, Noa\'s Regret, Port Visas, Hall of Heroes, Corpus)',
       all(by_nm_21.get(nm, {}).get('type') == 'inhabited ruin' for nm in (
-          'Carcosa', 'Henge', 'Leng', 'Stair', "Noa's Regret", 'Port Visas', 'Parabola', 'Hall of Heroes', 'Corpus')))
+          'Carcosa', 'Henge', 'Leng', 'Stair', "Noa's Regret", 'Port Visas', 'Hall of Heroes', 'Corpus')))
+# Parabola left that list in edit 31: the owner, 2026-11-24, "parabola is the arcology now"
+check('Parabola typed as the Bowl arcology at 970,1186 (edit 31)',
+      by_nm_21.get('Parabola', {}).get('type') == 'arcology'
+      and (by_nm_21['Parabola']['px'], by_nm_21['Parabola']['py']) == (970, 1186))
 check('strongholds classified as fort (Span, Blade, Bastion, Fort Vaklu, Tzunfort, The Gate, Strongwall, Veil, Tallhouse, Tzinguard, the Baelu forts)',
       all(by_nm_21.get(nm, {}).get('type') == 'fort' for nm in (
           'Span', 'Blade', 'Bastion', 'Fort Vaklu', 'Tzunfort', 'The Gate', 'Strongwall',

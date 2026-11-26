@@ -44,8 +44,8 @@ DIST = os.path.join(HERE, 'dist')
 OUT = os.path.join(DIST, 'mungo.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 LOCUS_SRC = os.path.join(ROOT, 'settlements', 'locus', 'src')
-sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
-import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal'), os.path.join(ROOT, 'kits', 'abyss-salvage')]
+import locuskit, abysskit, abysssalvage   # the Locus kit, Eastern Abyssal kit, and Kenshi-swamp Abyssal Salvage kit, read in place
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
 import yunikit              # the Yuni kit's buildings (55-59c), which Locus reads on its frame (step 4b)
 REED_SRC = os.path.join(ROOT, 'settlements', 'reedlake', 'src')
@@ -60,6 +60,7 @@ if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
 
 # Locus's own world: Mungo replaces these (a file of the same name in src/) or does without them.
 LOCUS_SKIP = {
+    '65u-locus-tabisti.js',     # Locus's Tabisti adapter: Mungo has its own 65u-mungo-tabisti.js
     '67-lo-trades.js',          # Locus's census table LO_TRADES: Mungo's is 88d-mungo-trades.js
     '68c-locus-crossings.js',   # Locus's marsh-pool bridges: Mungo's town has no pools in its streets
     '71g-locus-grid.js',        # Locus's distribution line: Mungo's grid is 71g-mungo-grid.js (the Geomancer quarter only)
@@ -101,10 +102,15 @@ DETERMINISTIC |= {'89-atmos-e-weatherhost.js', '89-atmos-j-heightfog.js', '89-at
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV (no rnd())
 DETERMINISTIC.add('66r-locus-roomlight.js')   # Locus's room light adapter, read by name (no rnd(); 2026-11-23, Mungo had not been rebuilt since)
 DETERMINISTIC |= {'09-locus-site.js', '90s-host-sky.js', '76f-locus-far.js', '89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js', '89-atmos-h-skyhost.js'}   # the shared sky on Mungo's site (W7)
-DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js'}
+DETERMINISTIC |= set(MATLIB_RECORD) | {'46-matlib-pack.js', '46r-reed-matlib-pack.js', '69a0-bio-matlib-pack.js', '20-core-roomlight-host.js', '46t-tabisti-matlib-pack.js', '65u-mungo-tabisti.js', '66r-locus-roomlight.js'}
 DETERMINISTIC |= {f for f in os.listdir(os.path.join(ROOT, 'core', 'atmos')) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
 DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '95-locus-doors.js'}   # core/door and Locus's binding of it (no rnd())
 DETERMINISTIC |= {'20-core-water.js', '50-core-water-draw.js', '90w-lake.js'}   # core/water and Locus's lake binding (no rnd())
+# The room light, as Locus and Girder list it (settlements/locus/build.py 105-106): Mungo takes Locus's adapter but
+# never declared either file, so every Mungo build has failed the generative-fragment rule since 4acd6e78. Neither
+# calls rnd(); 66r-locus-roomlight.js only wires KRLHOST.wirePage to the page.
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('66r-locus-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 PALETTE_FILE = '05-palette.js'
 PALETTE_FILES = {'05-palette.js', '05b-mungo-palette.js'}
 # PARTS: Locus's fragments cut at their section markers so they can be read (settlements/locus/build.py CONTINUES)
@@ -113,7 +119,7 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']
 INTERIOR_SETS_WANT = ['locus', 'abyss', 'reedlake', 'yuni']
-VIRTUAL = {'01-reedkit.html', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '78a-world-json.js', khost.EDITS_JS, '09-locus-site.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'01-reedkit.html', '65z-furniture-bundle.js', '65y-vehicles-bundle.js', '78a-world-json.js', khost.EDITS_JS, '09-locus-site.js', '65t-tabisti-bundle.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 
 
 def find_node():
@@ -224,7 +230,12 @@ def virtual_bodies():
     # The maps go in dist/mungo.tex.<key>.js beside the page (SIDE), not in it: the gallery takes 16 MB a file.
     vb['46-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'locus'), 'locus', side=SIDE)
     vb['46r-reed-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'reedlake'), 'reedlake', side=SIDE)
+    vb['46t-tabisti-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'kits', 'tabisti'), 'tabisti', side=SIDE)
     vb['69a0-bio-matlib-pack.js'] = matlib_pack.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss', side=SIDE)
+    import importlib.util as _ilu
+    _tb_spec = _ilu.spec_from_file_location('tabisti_kit_bundle', os.path.join(ROOT, 'kits', 'tabisti', 'kit_bundle.py'))
+    _tb_mod = _ilu.module_from_spec(_tb_spec); _tb_spec.loader.exec_module(_tb_mod)
+    vb['65t-tabisti-bundle.js'] = _tb_mod.bundle('TBK')[0]
     rk, rk_order = reed_kit()
     vb['01-reedkit.html'] = rk
     vb['78a-world-json.js'] = world_json()
@@ -317,7 +328,7 @@ def collect():
     for f in os.listdir(LOCUS_SRC):
         if f[0].isdigit() and f not in LOCUS_SKIP:
             paths[f] = os.path.join(LOCUS_SRC, f); origin[f] = 'locus'
-    for kit, name in ((yunikit, 'kits/yuni'), (locuskit, 'kits/locus'), (abysskit, 'kits/eastern-abyssal')):   # the Yuni kit and Locus's two, kits of their own
+    for kit, name in ((yunikit, 'kits/yuni'), (locuskit, 'kits/locus'), (abysskit, 'kits/eastern-abyssal'), (abysssalvage, 'kits/abyss-salvage')):
         for f, p in kit.paths().items():
             if f not in LOCUS_SKIP:
                 paths[f] = p; origin[f] = name
@@ -355,6 +366,9 @@ def collect():
     for f in CORE_HOST:                                      # core/host and the modules it reads (core/host/host.py)
         if f not in paths:
             paths[f] = khost.path(f); origin[f] = 'core/' + khost.WHERE[f]
+    if '20-core-roomlight-host.js' not in paths:
+        paths['20-core-roomlight-host.js'] = os.path.join(ROOT, 'core', 'interiors', '20-core-roomlight-host.js')
+        origin['20-core-roomlight-host.js'] = 'core/interiors'
     return paths, origin
 
 

@@ -1,0 +1,10 @@
+{
+ "what": "openworld/catch-bowl (one arid-and-mountain region of six whole biome polygons: the catch, the bowl, SE outer wall, stalker range, Stalker Gate and twins; 751,000 km2 filled in a 1,280 x 1,052 km box at 1 km cells) ceilings.",
+ "pages": {
+  "catch-bowl.html": {
+   "bytes": 41943040,
+   "why": "The owner lifted the 16 MB page cap for this region on 2026-11-24: \"We can lift the 16 MB restriction btw... this place will be godot native and go into a godot ported version of the host.\" The page is the Godot build's source rather than a gallery file, so the gallery's 16 MB limit does not bind it; the ceilings that do bind are tris, calls, samplers and vram_mb, which are the Godot build's costs too and are left at their defaults until the first cut measures them.",
+   "raised": "2026-11-24"
+  }
+ }
+}

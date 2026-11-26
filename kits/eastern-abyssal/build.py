@@ -31,8 +31,8 @@ except Exception:
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # noqa: F401  --list-sources (tools/dep_graph.py)
-sys.path[:0] = [HERE, os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'yuni')]
-import abysskit, locuskit                   # the Eastern Abyssal kit, and the Locus kit it leans on
+sys.path[:0] = [HERE, os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'yuni'), os.path.join(ROOT, 'kits', 'abyss-salvage')]
+import abysskit, locuskit, abysssalvage                   # the Eastern Abyssal kit, and the Locus kit it leans on
 import sheetbuild                           # the Yuni lineage's kit sheet (kits/yuni/targets/sheet, the recipe)
 # every numbered fragment of each, read in place: KRAND (core/tags' uid), KTAGS, KDOOR / KGLASS / KDOORHOST, KWALK (the
 # interiors' floors, the doors' blocks, the sheet's ground and footprints), KFURN (the furniture placement pass)
@@ -44,6 +44,6 @@ HEAD = {'__TITLE__': 'Eastern Abyssal Building Kit', '__LOADING__': 'Laying out 
                     'inspector, a click inspects, P marks, F walks, E opens a door within reach; ?interiors=1 plans the rooms.'}
 
 if __name__ == '__main__':
-    kits = dict(locuskit.paths()); kits.update(abysskit.paths())
+    kits = dict(locuskit.paths()); kits.update(abysskit.paths()); kits.update(abysssalvage.paths())   # + the Swamp Salvage pieces (kits/abyss-salvage), a row of this sheet
     sheetbuild.build(HERE, 'eastern-abyssal', CONFIG, HEAD, 'locus', sheetbuild.LOCUS_ENGINE, kits, CORE_MODULES,
-                     core_files=sheetbuild.locus_record_files(), pack_key='locus', bundles=sheetbuild.locus_bundles())
+                     core_files=dict(sheetbuild.locus_record_files(), **{'20-core-roomlight-host.js': os.path.join(ROOT, 'core', 'interiors', '20-core-roomlight-host.js')}), pack_key='locus', bundles=sheetbuild.locus_bundles())

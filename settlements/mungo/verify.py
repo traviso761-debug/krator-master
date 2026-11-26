@@ -89,10 +89,10 @@ R.push({name:'street-network-connected', ok:!!S.connected && A.NAV.reachable===A
   const all=A.REED.islands.flatMap(I=>I.buildings); const docks=all.filter(b=>b.key==='rl_dock').length, weav=all.filter(b=>b.key==='rl_weaver').length;
   R.push({name:'reed-docks-and-weavers', ok:docks>=4 && weav>=4, detail:docks+' fishing docks, '+weav+' weaving workshops on the islands; '+A.DOCKS.length+' fishing docks on the shore'}); }
 { /* "a full set of weapon, armor, general, food, alchemy, and building material shops" between the districts */
-  const want=['abyss_shop_weapons','abyss_shop_armor','abyss_shop_general','abyss_shop_food','abyss_shop_alchemy','abyss_shop_builder'];
+  const want=['tb_bronze_foundry','tb_weaver_dyehouse','tb_souq_arcade','tb_tea_tavern','tb_incense_distillery','tb_ganch_mason_yard'];
   const got=A.SHOPS.filter(s=>s.rec).map(s=>s.placedKey); const miss=want.filter(k=>got.indexOf(k)<0);
   const far=A.SHOPS.filter(s=>want.indexOf(s.key)>=0 && Math.hypot(s.x-A.MARKET.x,s.z-A.MARKET.z) > A.MARKET.r+30).length;
-  R.push({name:'full-set-of-shops-at-the-bridgehead', ok:!miss.length && !far, detail:miss.length?'missing '+JSON.stringify(miss):want.length+' shops round the bridgehead market'}); }
+  R.push({name:'full-set-of-shops-at-the-bridgehead', ok:!miss.length && !far, detail:miss.length?'missing '+JSON.stringify(miss):want.length+' Tabisti shops round the bridgehead market'}); }
 { /* "several warehouses, a caravanserai, 2 inns, a headman's house, and a city watch" */
   const ok=s=>s&&s.rec; const wh=A.WAREHOUSES.filter(ok).length, inn=A.INNS.filter(ok).length;
   R.push({name:'landward-civic-sites', ok:wh>=3&&inn===2&&!!ok(A.CARAVANSERAI)&&!!ok(A.HEADMAN)&&!!ok(A.WATCH), detail:wh+' warehouses, '+inn+' inns, caravanserai '+!!ok(A.CARAVANSERAI)+', headman '+!!ok(A.HEADMAN)+', watch '+!!ok(A.WATCH)}); }

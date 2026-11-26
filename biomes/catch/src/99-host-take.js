@@ -58,6 +58,8 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(STALKERS.length)add('the Stalkers lie half under the sand',HCHK.buried(STALKERS));
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  add('the five oases named in the four tongues',HCHK.oases(CATCH.OASES));
+ /* a station's own checks (the gills stations' 87-host-gills.js; biomes/gills/PLAN.md section 16, G6) ride with the kit's */
+ if(typeof STATION_CHECKS==='function')STATION_CHECKS().forEach(c=>R.push(c));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),T=CATCH.TREES;
  add('a species never placed',HCHK.placed({poplar:0},['poplar']));
@@ -70,6 +72,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
   add('a Stalker standing on the sand',HCHK.buried([{group:g,s:{x:0,z:0}}]));}
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:groundAll(0,0)-5,z:0}]));
  add('an oasis with one name',HCHK.oases(CATCH.OASES.map((o,i)=>i?o:Object.assign({},o,{names:{yuni:'Kolli'}}))));
+ if(typeof STATION_NEGATIVES==='function')STATION_NEGATIVES().forEach(c=>R.push(c));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 KHOST.on(function sky(dt){skyView(dt);STORM.apply(dt||0);},'view');
@@ -87,5 +90,5 @@ KHOST.take({build:'catch',title:STAGE.title,hint:STAGE.hint,
  budget:BUDGET,types:()=>BIO.stats,
  api:{hostChecks,hostNegatives,
   get totals(){const t=BIO.totals();return {tris:t.tris,inst:t.inst,meshes:t.meshes,registered:REG.length,types:Object.keys(BIO.stats).length};},
-  biome:()=>window._biome,desert:()=>window._desert,counts:COUNTS,exportBox:STAGE.exportBox||null,
+  biome:()=>window._biome,desert:()=>window._desert,counts:COUNTS,exportBox:STAGE.exportBox||null,exportProfile:STAGE.exportProfile||null,   /* a station whose tile fills other sections names its own (verify.py EXPORT_PROFILE) */
   at:(x,z)=>{const o={h:terrainH(x,z),ground:groundAll(x,z),water:waterH(x,z)};FNAMES.forEach(n=>o[n]=+FIELD[n](x,z).toFixed(3));return o;}}});

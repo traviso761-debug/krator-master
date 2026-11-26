@@ -20,6 +20,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/30-layout.js` | 54.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the layout as records only (SITES_L, REED, ST, RG, NAV, PORTS): no geometry |
 | `src/40-ground.js` | 6.7 | [draw] | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/65r-reed-village.js` | 4.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 2 | 0 | 0 | 0 | split: calls the reed kit (REEDKIT_MAKE) with the layout records; lifts its meshes for the picker; the interiors finisher |
+| `src/65u-mungo-tabisti.js` | 4.5 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | adapter registering kits/tabisti (TBK) into ASSET_BY_KEY and batching placed masonry by material |
 | `src/68-place.js` | 14.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the placement pass: records into PLACED via buildAsset (draws as it places: Locus's pattern) |
 | `src/69b-locus-biohost.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/69z-locus-flora.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

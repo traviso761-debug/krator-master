@@ -99,10 +99,18 @@ const STAGE={
  hint:'The Catch, station 2: Stair\'s spring in a hollow through the interior hills (~1,000 m): the pool and its seeps, Euphrates poplars, salt cedars and reeds, the eastern desert\'s palms and mesquite, the caravans\' campground, the Hill\'s empty slope (Stair\'s site) and the Theodiga tunnel\'s Stair mouth with the divers\' camp',
  site:{px:834,py:1112},air:{pressure:1.43,humidity:.18},clouds:{cover:.05},fogDensity:0.00016,fogH:{y0:990,H:90,k:.8},siteH:1000,
  ridges:[
-  {dist:220000,base:-1.81,amp:8.82,cycles:30,octaves:6,peaks:18,peakAmp:2.4,seed:51,rock:[0.41,0.36,0.32],hz:0.68},
-  {dist:280000,base:1.4,amp:1.9,cycles:7,octaves:4,peaks:3,peakAmp:1.2,win:[318,22,1.6],floor:-1,seed:52,rock:[0.38,0.33,0.31],hz:0.64},
-  {dist:60000,base:-1.96,amp:8.82,cycles:42,octaves:6,peaks:26,peakAmp:3,seed:53,rock:[0.48,0.40,0.33],snowH:3500,hz:0.48},
-  {peaks:14,peakAmp:1.2,dist:12000,base:0.72,amp:3.7,cycles:34,octaves:5,seed:54,rock:[0.57,0.46,0.34],hz:0.28}],
+  // RE-SURVEYED on the 5.1 model 2026-11-25 (PLAN-TERRAIN.md P19), cast at 1,024 azimuths per distance band with the
+  // planet's curvature from this page's own eye (siteH 1000 + 30), as biomes/seouterwall/region/far.py casts it. The
+  // authored amplitudes were a 4.22-era hand survey copied from station 1, drawing crests to 9.4 deg where nothing
+  // here stands over 8. The eye matters most on the near layer: the model cell reads 1,379 m (Stair's hill) against
+  // this page's siteH of 1,000 (the spring at its foot, sub-cell on a 2 km grid), and that 379 m moves layer 3 by
+  // 1.44 deg. `snowH` is in dist*tan(el) units, not metres, so it is re-expressed with the amplitudes (station 1's
+  // fragment has the derivation); `cycles`, `octaves`, `peaks`, `seed`, `rock`, `floor`, `hz` and the windows are the
+  // author's and untouched.
+  {dist:145000,base:-0.89,amp:3.40,cycles:30,octaves:6,peaks:18,peakAmp:0.10,seed:51,rock:[0.41,0.36,0.32],hz:0.68},   /* 90-240 km: -0.95 to 2.58 deg, terrain tops 15,216 m, highest at az 129 */
+  {dist:273000,base:-0.86,amp:0.74,cycles:7,octaves:4,peaks:3,peakAmp:0.10,win:[318,22,1.6],floor:-1,seed:52,rock:[0.38,0.33,0.31],hz:0.64},   /* the Godthrone window: measured highest at az 321, so the window stands - but it is ENTIRELY BELOW THE HORIZON from here (max -0.07 deg), which is where floor:-1 earns its keep */
+  {dist:41000,base:-0.89,amp:4.46,cycles:42,octaves:6,peaks:26,peakAmp:0.10,seed:53,rock:[0.48,0.40,0.33],snowH:1850,hz:0.48},   /* 30-90 km: -0.90 to 3.60 deg, terrain tops 3,605 m, highest at az 122; the horizon crosses 3,500 m at 2.56 deg */
+  {peaks:14,peakAmp:0.10,dist:11000,base:0.74,amp:7.27,cycles:34,octaves:5,seed:54,rock:[0.57,0.46,0.34],hz:0.28}],   /* 6-30 km: 0.70 to 8.02 deg - the interior hills ringing the hollow, the only near layer of the four that genuinely stands high */
  rockSets:{wall:'ground.rock',top:'ground.rock',wallLabel:'Oxidised basalt (a crag of the interior hills)',topLabel:'The weathered top of a crag',band:[0x9a6a50,0x8a5c44,0xa87a5c,0x7e5440],topCol:0x9a7458},
  spine:SPINE,nebkhas:[],expect:['poplar','tamarisk','reed','saltbush','palm'],
  bias:{poplar:(x,z)=>1.4*(1-smooth(.5,.9,FC.at(FC.a.trod,x,z)))},

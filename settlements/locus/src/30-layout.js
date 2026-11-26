@@ -69,14 +69,14 @@ var MARKET = null, PARK = null, CARAVANSERAI = null, REFINERY = null, TANKS = []
   p=polarXZ(-130, 152); schedule('civic_chapter_house', 0, p[0], p[1], towardHub(p[0],p[1]), 56, 48, "Chapterhouse of the Order of Historians", 'civic');
   p=polarXZ(-45, 142);  schedule('civic_school', 1, p[0], p[1], towardHub(p[0],p[1]), 46, 30, 'School of the Order', 'civic');
   p=polarXZ(143, 150);  schedule('locus_warehouse', 0, p[0], p[1], towardHub(p[0],p[1]), 42, 22, 'Salt-and-oil warehouse', 'civic');
-  CARAVANSERAI = schedule('trade_caravanserai', 0, 0, 148, Math.PI, 96, 72, 'Caravanserai of Locus', 'caravanserai');
-  p=polarXZ(40, 150);   schedule('rich_merchant_palace', 0, p[0], p[1], towardHub(p[0],p[1]), 20, 16, "Oil-factor's town palace", 'rich');
-  /* the second band: the wealthy */
-  p=polarXZ(-160, 228); schedule('rich_family_compound', 1, p[0], p[1], towardHub(p[0],p[1]), 30, 26, 'Prominent family compound', 'rich');
-  p=polarXZ(-80, 214);  schedule('rich_tower_house', 0, p[0], p[1], towardHub(p[0],p[1]), 14, 14, "Oligarch's tower-house", 'rich');
-  p=polarXZ(172, 232);  schedule('rich_terrace_apartments', 0, p[0], p[1], towardHub(p[0],p[1]), 34, 22, 'Painted terrace apartments', 'rich');
-  p=polarXZ(-10, 214);  schedule('rich_merchant_palace', 1, p[0], p[1], towardHub(p[0],p[1]), 20, 16, "Merchant's town palace", 'rich');
-  p=polarXZ(66, 232);   schedule('rich_tower_house', 1, p[0], p[1], towardHub(p[0],p[1]), 14, 14, "Oligarch's tower-house", 'rich');
+  CARAVANSERAI = schedule('tb_caravanserai_urban', 0, 0, 148, Math.PI, 30, 26, 'Caravanserai of Locus', 'caravanserai');
+  p=polarXZ(40, 150);   schedule('tb_capricho_villa', 0, p[0], p[1], towardHub(p[0],p[1]), 22, 20, "Oil-factor's Tabisti villa", 'rich');
+  /* the second band: the Tabisti patricians and civic chambers */
+  p=polarXZ(-160, 228); schedule('tb_secession_palazzo', 0, p[0], p[1], towardHub(p[0],p[1]), 28, 24, 'Prominent Tabisti palazzo', 'rich');
+  p=polarXZ(-80, 214);  schedule('tb_syndic_guildhall', 0, p[0], p[1], towardHub(p[0],p[1]), 24, 20, 'Chamber of the Oil and Potash Syndics', 'civic');
+  p=polarXZ(172, 232);  schedule('tb_mirador_estate', 0, p[0], p[1], towardHub(p[0],p[1]), 28, 24, 'Lakefront mirador estate', 'rich');
+  p=polarXZ(-10, 214);  schedule('tb_lac_merchant_bayt', 0, p[0], p[1], towardHub(p[0],p[1]), 28, 24, "Merchant's Tabisti bayt", 'rich');
+  p=polarXZ(66, 232);   schedule('tb_bimaristan_clinic', 0, p[0], p[1], towardHub(p[0],p[1]), 24, 20, 'Evaporative bimaristan clinic', 'civic');
   /* the market square and the park are round and open: streets stop at their rims */
   p=polarXZ(185, 158); MARKET = { x:p[0], z:p[1], r:46, name:'Market of Locus' }; CIRCLES.push(MARKET);
   p=polarXZ(2, 160);   PARK = { x:p[0], z:p[1], r:40, name:'Garden of the Wells' }; CIRCLES.push(PARK);
