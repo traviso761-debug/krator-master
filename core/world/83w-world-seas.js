@@ -21,8 +21,11 @@
 // (START.pump drives it; settle waits for it: SEAS.pending()).
 var SEAS;LATE.push(()=>{SEAS=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,WIN=8192,CELL=32,NEAR=12000;
-{const env=new THREE.Scene(),HOLD={environment:null};env.add(new THREE.Mesh(SKY.sky.geometry,SKY.sky.material));
- ATMOS.skylight({renderer:HOST.renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x6a5a48)});}
+{const HOLD={environment:null};   /* the shared sky (80, W8): its own scene, recaptured as the hour and the cover move; else the painted dome */
+ if(SKY.S)ATMOS.skylight({renderer:HOST.renderer,sky:SKY.S.scene,scene:HOLD,ground:()=>new THREE.Color().copy(HOST.hemi.groundColor).multiplyScalar(HOST.hemi.intensity),
+  key:()=>{const L=SKY.S.look;return L?[L.cover.toFixed(2),SKY.site.px.toFixed(0),SKY.site.py.toFixed(0)].join():'';}});
+ else{const env=new THREE.Scene();env.add(new THREE.Mesh(SKY.sky.geometry,SKY.sky.material));
+  ATMOS.skylight({renderer:HOST.renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x6a5a48)});}}
 const L=WATER.surfaces.length,list=[],t0=performance.now(),BODIES=WORLD.waterBodies(),bodyMs=performance.now()-t0;
 for(const B of BODIES){const big=B.cells>1000,salt=B.salt>.5,id=B.id;
  const S=WATER.open({name:big?'The Ring Sea':(salt?'salt lake ':'lake ')+id,level:B.level,field:big?.8:salt?.25:.4,tilt:salt?.6:1,bounds:B.box,mask:B.mask,

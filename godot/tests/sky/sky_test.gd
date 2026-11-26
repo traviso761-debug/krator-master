@@ -90,6 +90,27 @@ func _initialize() -> void:
 	var inc := FileAccess.get_file_as_string("res://shaders/atmos_sky.gdshaderinc")
 	if inc.sha1_text() != gold["gdshaderinc_sha1"]:
 		bad += _fail("shaders/atmos_sky.gdshaderinc is stale: rerun node godot/tools/atmos_sky.js")
+	# the volumetric clouds (W6): the include current, the detail volume baked here equal to the JavaScript's at 8^3, and the
+	# shipped 32^3 bytes the JavaScript's by their digest
+	var VG = gold.get("volclouds")
+	if VG != null:
+		var vinc := FileAccess.get_file_as_string("res://shaders/atmos_volclouds.gdshaderinc")
+		if vinc.sha1_text() != VG["sha1"]:
+			bad += _fail("shaders/atmos_volclouds.gdshaderinc is stale: rerun node godot/tools/atmos_sky.js")
+		var d8: PackedByteArray = M.detail_volume(8)
+		var w8: Array = VG["detail"]["n8"]
+		var db := 0
+		for i in w8.size():
+			if d8[i] != int(w8[i]):
+				db += 1
+				if db < 4: print("  detail8 byte %d: %d != %d" % [i, d8[i], int(w8[i])])
+		bad += db
+		var dctx := HashingContext.new()
+		dctx.start(HashingContext.HASH_SHA1)
+		dctx.update(FileAccess.get_file_as_bytes("res://data/sky/detail32.bin"))
+		if dctx.finish().hex_encode() != VG["detail"]["sha1"]:
+			bad += _fail("data/sky/detail32.bin is not the JavaScript's detail volume: rerun node godot/tools/atmos_sky.js")
+		print(("PASS" if db == 0 else "FAIL") + "  the volumes' detail volume (8^3 baked here, 32^3 shipped)")
 	print("sky: %d states, %d looks checked, %d bad" % [n, gold["look"].size(), bad])
 	quit(1 if bad else 0)
 

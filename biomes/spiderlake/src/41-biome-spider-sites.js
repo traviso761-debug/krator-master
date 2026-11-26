@@ -226,6 +226,47 @@ var SPIDER_SITES=(function(){
    curtainSpans:[],
    thermalPools:[],
    reserves:[]
+  },
+  haugel:{
+   id:'haugel',
+   name:'Hau-Gel Inflow Gorge, Scalding Sinter Terrace and Carnelian Ejecta Cliffs',
+   region:'NE 9106 Hau-Gel Canyon (1354, 238)',
+   px:[1354,238],
+   sky:[1082,-92],
+   baseElevM:1460.0,
+   gorgeRimElevM:1505.2,
+   lakeLevelLocal:0.0,
+   hasOpenLake:true,
+   atm:1.330,
+   pO2Atm:0.279,
+   rhoKgM3:1.556,
+   tempC:20.4,
+   rainMm:1584,
+   wind:[-4.5,1.7],
+   inflowM3s:585.0,
+   outflowM3s:0.0,
+   shoreDistBaseM:38.0,
+   seepProximity01:0.88,
+   carnelianWalls:true,
+   strata:{recipe:'secondary-ejecta',range:[-25,220],lateral:'carbonate-shelf',dir:[-0.85,0.52],d0:-85,d1:120,tongue:16},
+   stacks:[
+    {id:'hg-stack-n',x:-58,z:-64,r:32,top:24.5,rock:'ejecta'},
+    {id:'hg-stack-s',x:-52,z:68,r:34,top:25.5,rock:'ejecta'}
+   ],
+   curtainSpans:[
+    {id:'hg-curtain-gorge',a:[-56,23.0,-58],b:[-50,24.0,62],dropM:11.2,tiers:3,boatArch:true,clearMinM:8.4}
+   ],
+   terraces:[
+    {z:-96,y:12.5,w:180}
+   ],
+   thermalPools:[
+    {key:'hg-sinter-1',name:'Hau-Gel Upper Scalding Sinter Terrace Vent',x:44,z:58,r:12.5,level:3.65,temp:0.26,tempC:45.6},
+    {key:'hg-sinter-2',name:'Hau-Gel Lower Alkaline Sinter Basin',x:12,z:48,r:11.0,level:1.85,temp:0.20,tempC:42.2},
+    {key:'hg-sinter-3',name:'North Gorge Warm Carbonate Apron',x:28,z:-52,r:10.5,level:2.45,temp:0.18,tempC:40.8}
+   ],
+   reserves:[
+    {id:'site:haugel-sinter-ford',name:'Hau-Gel Upper Sinter-Gorge & Silk-Toll Reserve',x:-165,z:-135,r:46,specRadiusM:120,kit:'kits/spider-lake'}
+   ]
   }
  };
 })();

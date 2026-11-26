@@ -42,11 +42,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `57-yn-forts.js` | 20 | 1. FORMLINE CURTAIN WALL (yn-wall-curtain) (125); 2. FORMLINE PORTAL GATEHOUSE (yn-gatehouse-porta (166); 3. FORMLINE HIGH WATCH-TOWER (yn-tower-formline, (258) |
 | `58-yn-trades.js` | 14 |  |
 | `59-yn-works.js` | 14 |  |
+| `60-yn-monuments.js` | 31 **big** | 1. CANTILEVERED SAUCER-TERRACE SPIRE (yn-spire-s (97); 2. GOLDEN-DOME SEER MONASTERY CLUSTER (yn-monast (168); 3. ANNULAR SUNKEN-COURT MOOT & EXCHANGE (yn-aren (247); 4. GILT-DOME & VERDIGRIS-DISC SANCTUARY BASTION  (321); 5. FOUR-PYLON BUTTRESSED TERRACOTTA-DOME SHRINE  (403); 6. HEXAGONAL-TRUSS STILTED PAGODA CITADEL (yn-ci (473) |
+| `61-yn-quarters.js` | 29 | 1. STAINED-GLASS ROTUNDA INN & TURRET BRIDGE (yn (48); 2. DOMED BELVEDERE MERCHANT CARAVANSERAI (yn-vil (127); 3. FIVE-APSE PROMONTORY MANOR & SPIRE-TOWERS (yn (194); 4. UMBRELLA-CUPOLA BAZAAR-DRUM (yn-bazaar-drum) (256); 5. SUN-PETAL AWNING & CRANE-SPAR WATCHTOWER (yn- (316); 6. SHADE-SAIL GARRISON & STORE-COMPOUND (yn-comp (385); 7. VERDIGRIS SCALLOP-CAP SMELTER & SIGNAL PYLONS (462) |
 | `62-yn-harbour.js` | 7 |  |
 | `64-yn-cliff.js` | 12 |  |
+| `64b-yn-cliff-grand.js` | 9 | 1. CLIFF-CLINGING SAUCER-LANTERN HOLD (yn-cliff- (39); 2. FLUTED-PILLAR CLIFF ACROPOLIS & VIADUCT (yn-c (68) |
 | `65-yn-borderfort.js` | 13 |  |
 | `66-yn-flora.js` | 3 |  |
-| `68-yn-census.js` | 5 |  |
+| `68-yn-census.js` | 6 |  |
 | `89-rows.js` | 3 |  |
 | `90y-yn-terrain.js` | 7 |  |
 | `91f2-yn-texguard.js` | 1 |  |

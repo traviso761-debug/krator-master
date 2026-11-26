@@ -29,7 +29,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `01b-build-open.html` | <1 |  |
 | `05b-mungo-palette.js` | 2 | 0b. PALETTE — MUNGO's additions (the life layer' (1) |
 | `10-core.js` | 17 | 1. CORE (1); 2. WORLD CONSTANTS — MUNGO (101); 4. TERRAIN FIELD (210) |
-| `20-stage.js` | 15 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (240) |
+| `20-stage.js` | 2 | 4. STAGE (1) |
 | `30-layout.js` | 55 **big** | 8. LAYOUT — MUNGO (1); THE SITES (Locus's contract) (35); 1. THE BRIDGEHEAD (61); 2. THE REED VILLAGE (84); STREET NETWORK (Locus's contract) (181); THE ROUTE GRID (Locus's) (196); 3-4. THE MAIN STREET AND THE SITES OF THE LANDWA (281); 5. THE HIGHWAYS (A* over the route grid, Locus's (350); 6. THE ORGANIC STREETS (376); 7. THE COUNTRYSIDE (422) |
 | `40-ground.js` | 7 | 9. GROUND CANVAS + MASK — MUNGO (Locus's, re-poi (1) |
 | `65r-reed-village.js` | 4 | 16R. THE REED VILLAGE — built by the Reed Lake k (1) |

@@ -260,6 +260,37 @@ var HOLLOW_PHYS=(function(root){
   throw new Error('HOLLOW_PHYS.hazardSpec: unknown hazard key '+key);
  }
 
+ function porphyryRelictQuiltAt(x,z,elevRelM,site){
+  var S=site||{};
+  var dk=porphyryDikeAt(x,z,S);
+  var el=elevRelM==null?0:elevRelM;
+  var knob01=dk.inDike?clamp((el-11.0)/11.0,0,1):0;
+  var KF=(typeof window!=='undefined'?window:globalThis).KFRONTIER;
+  if(KF&&typeof KF.quiltAt==='function'){
+   var q=KF.quiltAt(x,z,{
+    seed:7405,
+    edaphicToxicity01:dk.inDike?clamp(0.42+0.55*knob01,0,1):0.04,
+    xericExposure01:clamp(0.22+0.62*knob01,0,1),
+    skyExposure01:clamp(0.26+0.64*knob01,0,1),
+    baselineRed01:0.28,
+    mistPylon:S.mistPylon||null,
+    elevM:el
+   });
+   return{
+    biosphere:q.biosphere,
+    redDominance01:+q.redDominance01.toFixed(4),
+    mistPool01:+q.mistPool01.toFixed(4),
+    inDike:dk.inDike
+   };
+  }
+  return{
+   biosphere:knob01>=0.52?'carnelian':'earth',
+   redDominance01:+knob01.toFixed(4),
+   mistPool01:0,
+   inDike:dk.inDike
+  };
+ }
+
  return{
   CONST:CONST,
   pressureAtElev:pressureAtElev,
@@ -269,11 +300,12 @@ var HOLLOW_PHYS=(function(root){
   mvtCrystalAt:mvtCrystalAt,
   caveMouthGlowAt:caveMouthGlowAt,
   ecocideScarAt:ecocideScarAt,
+  porphyryRelictQuiltAt:porphyryRelictQuiltAt,
   hazardSpec:hazardSpec
  };
 })(typeof window!=='undefined'?window:globalThis);
 
-// Surveyed Scale-Model 5.1 sites for all 4 stations (PLAN.md section 3)
+// Surveyed Scale-Model 5.1 sites for all 5 stations (PLAN.md section 3)
 var HOLLOW_SITES=(function(){
  'use strict';
  var S={
@@ -406,6 +438,30 @@ var HOLLOW_SITES=(function(){
    },
    reserves:[
     {id:'site:karst-arcology',name:'Springhollows Karst-Spring Hydro-Arcology Approach Reserve',x:156,z:-138,r:56,culture:'ancient'}
+   ]
+  },
+  porphyryrelict:{
+   id:'porphyryrelict',
+   out:'springhollows-porphyryrelict.html',
+   name:'High Red-Porphyry Carnelian Relict Knob & Inert Mist-Pylon',
+   region:'Sikwingi-Khaloyi / NE Porphyry Sky-Island',
+   px:[1268,142],
+   sky:[996,-188],
+   baseElevM:2570.2,
+   atm:1.16,
+   koppen:'Cfa',
+   rainMmYr:1506,
+   tempC:14.0,
+   wind:[3.4,1.5],
+   cavernId:null,
+   tubeId:'tube_ozarks_15',
+   strata:{recipe:'carbonate-shelf',range:[-35,145],lateral:'outland-tuff',dir:[0.82,0.57],d0:-68,d1:68,tongue:11},
+   dikes:[{cx:12.0,cz:8.0,strikeRad:0.62,halfWidthM:66.0}],
+   mistPylon:{x:-62.0,z:24.0,poolElevM:4.5,bandM:12.0,state:'inert',reachM:680.0},
+   cavern:null,
+   terraces:[{x:-132,z:98,r:52}],
+   reserves:[
+    {id:'site:high-ria-porphyry-quarry',name:'High-Ria Imperial Porphyry & Carnelian Assay Reserve',x:-124,z:-104,r:42,culture:'xanadu'}
    ]
   }
  };

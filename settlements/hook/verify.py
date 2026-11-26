@@ -80,6 +80,71 @@ const R=[];
 // P1: every Ancient host and quarter has a core/tags record before it was drawn
 { const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
   R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }
+// S2: the Ancient city as records (77-hook-ruin.js, the owner's site plan): every block, tower, heap, pod, freeway span, the
+// wall and its gates, the roads and the thirteen places in the page's registry, nothing drawn
+{ const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
+  const all=H?[].concat(H.blocks,H.towers,H.heaps,H.pods,H.spans,[H.ramp,H.wall],H.gates,H.roads,H.places):[],miss=T?all.filter(r=>!T.get(r.id)):all;
+  R.push({name:'hook-ruin-records',ok:!!H&&!!T&&all.length>1500&&miss.length===0&&H.places.length===13,detail:H?(all.length+' records, '+miss.length+' not registered; '+JSON.stringify(H.report)):'no HOOK_RUIN'}); }
+// S3: the Ancient city drawn at range (90c): one piece a record; nothing floats (every tower's and pier's base at or
+// under the DRAWN ground, the terrain grid's lowest node, along its footprint's edge, read again here); every drowned
+// tower's foot under the water line, and those that still stand rising out of it
+{ const D=window._ruinDraw||{},G=typeof PORT_ST!=='undefined'?PORT_ST.grid:null,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
+  let floating=0,firstFloat=null,wetBad=0,firstWet=null,n=0;
+  if(D.ready&&G&&H){const bs=(a,v)=>{let lo=0,hi=a.length-1;if(v<=a[0])return 0;if(v>=a[hi])return hi-1;while(hi-lo>1){const m=(lo+hi)>>1;if(a[m]<=v)lo=m;else hi=m;}return lo;};
+   const mm=(x,z)=>{const i=bs(G.xs,x),j=bs(G.zs,z),k=j*G.nx+i;return Math.min(G.H[k],G.H[k+1],G.H[k+G.nx],G.H[k+G.nx+1]);};
+   for(const t of D.towers){n++;const c=Math.cos(t.yaw),s=Math.sin(t.yaw);let m=mm(t.x,t.z);
+    for(const [u,b] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5],[0,-.5],[0,.5],[-.5,0],[.5,0]])m=Math.min(m,mm(t.x+u*t.w*c+b*t.d*s,t.z-u*t.w*s+b*t.d*c));
+    if(t.base>m+1e-3){floating++;firstFloat=firstFloat||[t.id,+t.base.toFixed(2),+m.toFixed(2)];}
+    if(t.wet&&t.state!=='fallen'){const stands=t.state==='intact'||t.state==='gutted'||t.state==='crown';
+     if(!(t.base<0)||(stands&&!(t.top>0))){wetBad++;firstWet=firstWet||[t.id,t.state,+t.base.toFixed(2),+t.top.toFixed(2)];}}}
+   for(const p of D.piers){if(p.base>mm(p.x,p.z)+1e-3){floating++;firstFloat=firstFloat||['pier',+p.base.toFixed(2)];}}}
+  const rec=D.records||{},st=D.stats||{};
+  /* and lit in their colours: no drawn instance black (r128's colour buffer made at count 0 drew every tower black) */
+  let black=0;const grp=typeof HOOK_RUIN_DRAW!=='undefined'&&HOOK_RUIN_DRAW.group;
+  if(grp)for(const m of grp.children){const c=m.instanceColor;if(!c)continue;for(let i=0;i<m.count;i++)if(c.getX(i)+c.getY(i)+c.getZ(i)<.05)black++;}
+  R.push({name:'hook-ruin-drawn',ok:!!D.ready&&st.towers===rec.towers&&st.heaps===rec.heaps&&st.pods===rec.pods&&st.decks===rec.spans+1&&black===0,
+   detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
+  R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
+   detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
+// S5: the environs' hamlets and camps (77m, core/hamlet): the thirteen places laid (the Spire's pods and the deck camp's
+// shacks aloft, off the ground rules), each core/hamlet place linked to the road net (90f draws them), every building on dry ground (a landing at the water's edge), outside Port Hook's zone and off every ruin footprint, none overlapping another
+{ const P=typeof HOOK_PLACES!=='undefined'?HOOK_PLACES:null,L=P?P.lots:[],bad={wet:[],town:[],ruin:[],overlap:[]};
+  if(P){const Z=((HOOK_SITE.districts||[]).find(d=>d.type==='zone')||{}).poly,KL=KCITY.lib;
+    const box=l=>({c:[l.x,l.z],u:[Math.cos(l.ry),-Math.sin(l.ry)],v:[Math.sin(l.ry),Math.cos(l.ry)],hw:l.w/2,hd:l.d/2,r:Math.hypot(l.w,l.d)/2});
+    const LL=L.filter(l=>!l.aloft),B=LL.map(box),proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
+    const sep=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const p=proj(a,ax),q=proj(b,ax);if(p[1]<q[0]+.1||q[1]<p[0]+.1)return true;}return false;};
+    LL.forEach((l,i)=>{if(!l.landing&&!(HOOK_WORLD.natH(l.x,l.z)>.3))bad.wet.push(l.id);if(HOOK_RUIN.townAt(l.x,l.z))bad.town.push(l.id);
+      if(P.ruinAt(l.x,l.z))bad.ruin.push(l.id);   /* a landing stands at the water's edge (core/hamlet's quay), never on a ruin */
+      for(let j=i+1;j<LL.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))bad.overlap.push([l.id,LL[j].id]);}});}
+  const n=k=>bad[k].length,places=P?P.report.places:0;
+  const RD=window._hookRoads||{};
+  R.push({name:'hook-places',ok:!!P&&places>=13&&!P.skipped.length&&!P.unlinked.length&&(P.trunks||[]).length===3&&RD.ready&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
+   detail:P?JSON.stringify(P.report)+'; roads '+JSON.stringify(RD.stats||null)+'; by place '+JSON.stringify(Object.fromEntries(Object.keys(P.villages).map(k=>[k,(P.villages[k].records||[]).filter(Boolean).length])))+
+    '; bad '+JSON.stringify({wet:n('wet'),town:n('town'),ruin:n('ruin'),overlap:n('overlap')})+(n('wet')+n('town')+n('ruin')+n('overlap')?' first '+JSON.stringify([bad.wet[0],bad.town[0],bad.ruin[0],bad.overlap[0]]):'')+
+    '; skipped '+JSON.stringify(P.skipped):'no places'}); }
+// S4: the mangroves and the jungle (90e, the Ring Sea isles kit): planted, the mangroves in the water, and none in Port
+// Hook's zone, on a walled clearing, on a cliff (the kit's own cliff weight), inside a drawn footprint or over the ground
+{ const HF=typeof HOOK_FLORA!=='undefined'?HOOK_FLORA:null,T=HF&&HF.trees||[],bad={town:[],clearing:[],cliff:[],inside:[],floating:[]};let wet=0;
+  if(HF&&HF.on){const RI=HK_FLORA.kits.ringisles,mh=HOOK_RUIN_DRAW.meshH,O=HF.obstacles;
+    for(const t of T){const k=HF.kindAt(t.x,t.z),h=mh(t.x,t.z),p=[Math.round(t.x),Math.round(t.z)];if(h<0)wet++;
+      if(k===3&&(HF.zoneD(t.x,t.z)>HF.fringe+20||HF.townHit(t.x,t.z)))bad.town.push(p);if(k===2)bad.clearing.push(p);   /* the town: its fringe only, clear of lots and streets; the fields */
+      if(RI.zones(t.x,t.z).cliff>.5)bad.cliff.push(p);
+      if(t.y!=null&&t.y>h+.05)bad.floating.push(p.concat([+(t.y-h).toFixed(2)]));
+      for(const q of O)if(Math.abs(q.x-t.x)<q.r&&Math.abs(q.z-t.z)<q.r&&Math.hypot(q.x-t.x,q.z-t.z)<q.r-.5){bad.inside.push(p);break;}}}
+  const n=k=>bad[k].length,all=n('town')+n('clearing')+n('cliff')+n('inside')+n('floating');
+  R.push({name:'hook-flora',ok:!!HF&&HF.on&&T.length>2000&&wet>50&&all===0,
+   detail:(HF?(HF.on?T.length+' trees ('+wet+' standing in the water) in '+HF.ms+' ms; '+JSON.stringify(HF.stats&&{trees:HF.stats.trees,heroes:HF.stats.heroes,far:HF.stats.far,borrowed:HF.stats.borrowed}):'off: '+JSON.stringify(window._hookFlora)):'no flora')+
+    '; bad '+JSON.stringify({town:n('town'),clearing:n('clearing'),cliff:n('cliff'),inside:n('inside'),floating:n('floating')})+(all?' first '+JSON.stringify(Object.keys(bad).filter(k=>n(k)).map(k=>[k,bad[k][0]])):'')}); }
+// S3 up close: the kit's heroes round a point by the Crown (90d): built without an error, each standing on its seat (its
+// lowest point at or under the drawn ground's lowest node along its footprint, never far under it), its massing hidden
+{ const RH=window._ruinHeroes||{},C=typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown;let H=null,bad=[],shown=0;
+  if(RH.ready&&C){H=RH.at(C.x+160,C.y+70,C.z+160);
+    for(const L of HOOK_HEROES.live){const e=L.sl.M.elements,m=new THREE.Matrix4();L.sl.m.getMatrixAt(L.sl.k,m);if(Math.abs(m.elements[5])<1e-6)shown++;
+      if(!(L.lo<=L.seat+.5&&L.lo>=L.seat-40&&L.hi>L.seat+5))bad.push([L.id,L.key,+L.seat.toFixed(1),+L.lo.toFixed(1),+L.hi.toFixed(1)]);}}
+  const live=H?H.live:[],failed=H?Object.keys(H.failed||{}):['no heroes: '+(RH.why||'not ready')];
+  R.push({name:'hook-ruin-heroes',ok:!!H&&live.length>=3&&!failed.length&&!bad.length&&shown===live.length,
+   detail:live.length+' heroes ('+live.map(l=>l.key).join(', ')+'), '+(H?H.calls:0)+' calls, '+(H?H.tris:0)+' triangles, built '+(H?H.stats.built:0)+' in '+(H?Math.round(H.stats.ms):0)+' ms; massing hidden '+shown+
+    (failed.length?'; FAILED '+JSON.stringify(H?H.failed:failed):'')+(bad.length?'; not seated '+JSON.stringify(bad.slice(0,4)):'')}); }
 // P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
 { const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
   R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }

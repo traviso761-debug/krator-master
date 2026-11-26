@@ -19,6 +19,7 @@ const SKY_HALF := preload("res://shaders/sky_half.gdshader")
 @export var pressure := -1.0                   # atm; < 0 takes the preset's
 @export var cover := -1.0                      # cloud cover 0..1; < 0 takes the preset's
 @export var weather := {}                      # {cover, grey, fog}
+@export var cloud_quality := "layers"           # "off", "layers" (the flat cumulus) or "volumes" (W6: the raymarched clouds)
 # Desert storm / karaburan browning (89y-host-storm.js, driven by KratorAtmosFx; 0 leaves the sky untouched)
 @export var storm_murk := 0.0                  # 0..1: horizon-first dust wall & optical extinction of giant/moons/stars
 @export var storm_colour := Color(0.54, 0.39, 0.22)
@@ -84,6 +85,15 @@ func _textures() -> void:
 	vol.create(Image.FORMAT_RGBA8, 64, 64, 64, false, layers)
 	mat.set_shader_parameter("uNoise", vol)
 	RenderingServer.global_shader_parameter_set("atm_sky_noise", vol)   # the cloud shade on the ground (atmos_cloudshade.gdshaderinc)
+	# the volumes' detail (core/atmos's ATMOS.skyDetailVolume(32), shipped as data/sky/detail32.bin by godot/tools/atmos_sky.js)
+	var db := FileAccess.get_file_as_bytes("res://data/sky/detail32.bin")
+	if db.size() == 32 * 32 * 32 * 4:
+		var dl: Array[Image] = []
+		for z in 32:
+			dl.append(Image.create_from_data(32, 32, false, Image.FORMAT_RGBA8, db.slice(z * 32 * 32 * 4, (z + 1) * 32 * 32 * 4)))
+		var dv := ImageTexture3D.new()
+		dv.create(Image.FORMAT_RGBA8, 32, 32, 32, false, dl)
+		mat.set_shader_parameter("uDetail", dv)
 	var W := 512
 	var atlas := Image.create(W, W / 2 * MOONS.size(), false, Image.FORMAT_RGB8)
 	var ok := true
@@ -235,6 +245,18 @@ func _update() -> void:
 	RenderingServer.global_shader_parameter_set("atm_cloud_wind", Vector2(1.0, 0.3))
 	RenderingServer.global_shader_parameter_set("atm_time", _t)
 	RenderingServer.global_shader_parameter_set("atm_wet", float(weather.get("wet", 0.0)))
+	# the volumetric clouds (W6): PRESETS.volclouds from data/sky/sky.json, as the pages' host sets them (host/89-atmos-m-volhost.js)
+	var VC: Dictionary = model.volclouds
+	var vol_on := cloud_quality == "volumes" and not VC.is_empty()
+	m.set_shader_parameter("uVolOn", 1.0 if (vol_on or cloud_quality == "off") else 0.0)
+	if vol_on:
+		m.set_shader_parameter("uVolT", Vector4(VC["thin"], VC["thick"], VC["storm"], VC["density"]))
+		m.set_shader_parameter("uVolS", Vector4(VC["base"], VC["detail"], VC["erode"], VC["steps"] + 100.0 * VC["lightSteps"]))
+		m.set_shader_parameter("uVolP", Vector4(VC["maxDist"], fmod(Engine.get_frames_drawn() * 0.6180339887, 1.0), VC["ambient"], VC["forward"]))
+		m.set_shader_parameter("uVolC", Vector4(VC["key"], VC["amb"], VC["haze"], VC["maxDist"]))
+		m.set_shader_parameter("uBolt", Vector4(0, 0, 1800, 0))
+		m.set_shader_parameter("uFlashC", Vector3(0.82, 0.86, 1.0))
+	RenderingServer.global_shader_parameter_set("atm_vol_mid_h", 0.5 * (float(VC.get("thin", 0.0)) + float(VC.get("thick", 0.0))) * 0.5 if vol_on else 0.0)
 	var vp := get_viewport()
 	var cam := vp.get_camera_3d() if vp else null
 	var fov := deg_to_rad(cam.fov) if cam else deg_to_rad(62.0)

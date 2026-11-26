@@ -1,0 +1,145 @@
+{
+ "edit": "5.1 edit 33: Ricochet Peaks' ejecta craters",
+ "date": "2026-11-25",
+ "craters": {
+  "West": {
+   "centre": [
+    1215.0,
+    1535.0
+   ],
+   "floor_m": 5400,
+   "peaks_m_was": 13359,
+   "across_km": 30
+  },
+  "North": {
+   "centre": [
+    1295.0,
+    1515.0
+   ],
+   "floor_m": 5800,
+   "peaks_m_was": 10322,
+   "across_km": 28
+  },
+  "South": {
+   "centre": [
+    1335.0,
+    1592.0
+   ],
+   "floor_m": 5600,
+   "peaks_m_was": 14572,
+   "across_km": 28
+  },
+  "East": {
+   "centre": [
+    1450.0,
+    1558.0
+   ],
+   "floor_m": 5282,
+   "peaks_m_was": 11220,
+   "across_km": 32
+  }
+ },
+ "cols": {
+  "W flank-West": {
+   "col_m": 6308,
+   "col_px": [
+    1214.0,
+    1545.4
+   ],
+   "km": 101
+  },
+  "West-North": {
+   "col_m": 6614,
+   "col_px": [
+    1232.3,
+    1530.0
+   ],
+   "km": 192
+  },
+  "North-old": {
+   "col_m": 6997,
+   "col_px": [
+    1348.5,
+    1531.0
+   ],
+   "km": 176
+  },
+  "old-East": {
+   "col_m": 7011,
+   "col_px": [
+    1397.9,
+    1535.9
+   ],
+   "km": 175
+  },
+  "East-E flank": {
+   "col_m": 6334,
+   "col_px": [
+    1450.3,
+    1586.8
+   ],
+   "km": 140
+  },
+  "South-old": {
+   "col_m": 7002,
+   "col_px": [
+    1340.6,
+    1577.4
+   ],
+   "km": 168
+  }
+ },
+ "east_hydrothermal": {
+  "pool_cells": 13,
+  "pool_level_m": 5292,
+  "fumaroles": 6,
+  "heat_C_max": 12.9,
+  "floor_cells_over_6C": 137,
+  "floor_temps_C": {
+   "tm": 1.0,
+   "tw": 14.0,
+   "tc": -10.0
+  }
+ },
+ "flanks": {
+  "W": [
+   1215,
+   1585,
+   5902
+  ],
+  "E": [
+   1451,
+   1626,
+   5993
+  ]
+ },
+ "outside_polygon_moved_cells": 95,
+ "rivers_kept_downhill": [],
+ "land_moved_cells": 10266,
+ "lowered_m_max": 9652,
+ "raised_cells": 3992,
+ "reclimate": {
+  "cells": 3665,
+  "class_changed": 1824,
+  "rain_mean_before_mm": 14.0,
+  "rain_mean_after_mm": 93.0,
+  "classes_now": {
+   "BSk": 4,
+   "Dsc": 17,
+   "Dfc": 16,
+   "ET": 1393,
+   "EF": 1824,
+   "HT": 51,
+   "HF": 360
+  },
+  "airless_cells_given_air": 9548,
+  "class_O_let_go": 2917
+ },
+ "floor_classes": {
+  "Dfc": 137,
+  "ET": 741,
+  "EF": 747,
+  "HT": 15,
+  "O": 48
+ }
+}

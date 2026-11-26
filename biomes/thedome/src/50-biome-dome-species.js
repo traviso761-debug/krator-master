@@ -254,6 +254,14 @@ var THEDOME={
  BIO.def('td_dike_block',makeRockGeo(61202,0.82),M.rockPorphyry,{label:'Purple-rose porphyry ring-dike block'});
  BIO.def('td_smoky_prism',BIO.fung.stalk({r0:0.15,r1:0.03,bend:0.0,ribs:6,ribA:0.16,seg:6,rings:3}),M.crystalSmoky,{label:'Hydrothermal smoky-quartz prism'});
 
+ if(typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.defCladeItems==='function'){
+  const eryMat=pbrMat('organic.pitcher',31,{roughness:0.38,metalness:0.04,color:0xe2422c});
+  M.erythroCarnelian=eryMat;
+  BIO.bucket('td_chitin',eryMat,{label:'Carnelian sky-island silica-chitin spires'});
+  BIO.bucket('td_skel',M.rockPegmatite,{label:'Bleach-hardpan petrified chitin skeletons'});
+  KFRONTIER.defCladeItems(BIO,{chitin:eryMat,ruby:eryMat,chalcedony:M.rockPegmatite,bleach:M.rockPegmatite},'td_kf');
+ }
+
  const TREE_CFG={
   cloudgarlandpine:{bucket:'td_pine',fol:'td_pine_fol',pal:PAL.pine,barkCol:0x785644,H:[5.5,11.0],rK:0.028,tiers:4,droop:0.06,flatCrown:true,beard:true},
   panbonsai:{bucket:'td_gnarled',fol:'td_pine_fol',pal:PAL.bonsai,barkCol:0x7e7268,H:[1.5,3.5],rK:0.052,tiers:3,droop:0.04,bonsai:true,flatCrown:true},

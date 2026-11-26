@@ -3,6 +3,7 @@
 
     python3 settlements/hook/world/cut.py           # region.json and the rasters, here beside this script
     python3 settlements/hook/world/cut.py --dry     # print the box and the command, write nothing
+    python3 settlements/hook/world/cut.py --landforms   # only Hook's own landform records into region.json (no re-cut)
 
 The cut is tools/scale-model/extract_region.py on the model's own data (tools/scale-model/model/data, the 5.1 canvas,
 never a saved page) and its own settlement list (`model`), as tools/scale-model/cut_site.py cuts a region: a box of BOX_PX
@@ -28,7 +29,58 @@ HOOK_ID = 'sm3ft5vrof'
 BOX_PX = 10          # half-width of the cut round Hook's pin, in map pixels (2 km each): a 40 km box
 
 
+def own_landforms(M):
+    """Hook's own landform records (landforms.json: the spit, in the model's format) into region.json's `landforms`, as
+    extract_region.py adds the model's (x and z of the record's px in the cut's frame), unless the model already carries
+    the id. A record this script added before (its `source`) is replaced, so an edit to landforms.json lands whole."""
+    cx, cy = M['frame']['origin_px']
+    SRC = 'settlements/hook/world/landforms.json'
+    M['landforms'] = [r for r in M.get('landforms', []) if r.get('source') != SRC]
+    have = {r.get('id') for r in M['landforms']}
+    own = json.load(open(os.path.join(HERE, 'landforms.json'), encoding='utf-8'))['landforms']
+    added = []
+    for r in own:
+        if r['id'] in have:
+            continue
+        r = dict(r, x=round((r['px'] - cx) * 2000.0, 1), z=round((r['py'] - cy) * 2000.0, 1), source=SRC)
+        M['landforms'].append(r)
+        added.append(r['id'])
+    print('Hook\'s own landforms added: %s' % (', '.join(added) or 'none (the model carries them all)'))
+    return added
+
+
+def wander_samples(rp, M, ids):
+    """each wandering bench's noise sample (core/world/landform_wg.js: 41l's own wgSample) stated in its record as wg_n, so
+    the page does not sample it at load; WLAND.check samples it again and fails one that differs"""
+    import shutil
+    node = os.environ.get('NODE') or shutil.which('node') or r'C:\Program Files\nodejs\node.exe'
+    out = subprocess.run([node, os.path.join(ROOT, 'core', 'world', 'landform_wg.js'), rp] + list(ids), capture_output=True, text=True, encoding='utf-8')
+    if out.returncode:
+        sys.exit('cut.py: core/world/landform_wg.js failed:\n' + out.stderr[-2000:])
+    wg = json.loads(out.stdout)
+    for r in M['landforms']:
+        if r.get('id') in wg:
+            r['wg_n'] = wg[r['id']]
+    print('wander samples stated: %s' % (', '.join(sorted(wg)) or 'none'))
+
+
+def write_region(rp, M, added):
+    with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
+        json.dump(M, fh, ensure_ascii=False, indent=1)
+    if added:   # the records as written, then their samples (the tool reads region.json)
+        wander_samples(rp, M, added)
+        with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
+            json.dump(M, fh, ensure_ascii=False, indent=1)
+
+
 def main():
+    if '--landforms' in sys.argv:
+        # only Hook's own records, on the cut as it is (no re-cut of the model's rasters)
+        rp = os.path.join(HERE, 'region.json')
+        M = json.load(open(rp, encoding='utf-8'))
+        M['cut']['own_landforms'] = own_landforms(M)
+        write_region(rp, M, M['cut']['own_landforms'])
+        return 0
     sys.path.insert(0, SM)
     import extract_region as XR
     pin = [s for s in XR.load_model_defaults('settlements') if s['id'] == HOOK_ID]
@@ -53,22 +105,9 @@ def main():
             sys.exit('cut.py: extract_region.py failed (%d)' % r)
     rp = os.path.join(HERE, 'region.json')
     M = json.load(open(rp, encoding='utf-8'))
-    # Hook's own landform records (landforms.json: the spit, in the model's format), added as extract_region.py adds the
-    # model's (x and z of the record's px in the cut's frame), unless the model already carries the id
-    cx, cy = M['frame']['origin_px']
-    have = {r.get('id') for r in M.get('landforms', [])}
-    own = json.load(open(os.path.join(HERE, 'landforms.json'), encoding='utf-8'))['landforms']
-    added = []
-    for r in own:
-        if r['id'] in have:
-            continue
-        r = dict(r, x=round((r['px'] - cx) * 2000.0, 1), z=round((r['py'] - cy) * 2000.0, 1), source='settlements/hook/world/landforms.json')
-        M.setdefault('landforms', []).append(r)
-        added.append(r['id'])
-    print('Hook\'s own landforms added: %s' % (', '.join(added) or 'none (the model carries them all)'))
-    M['cut'] = {'by': 'settlements/hook/world/cut.py', 'pin': HOOK_ID, 'px': [x, y], 'box_px': BOX_PX, 'own_landforms': added}
-    with open(rp, 'w', encoding='utf-8', newline='\n') as fh:
-        json.dump(M, fh, ensure_ascii=False, indent=1)
+    added = own_landforms(M)
+    M['cut'] ={'by': 'settlements/hook/world/cut.py', 'pin': HOOK_ID, 'px': [x, y], 'box_px': BOX_PX, 'own_landforms': added}
+    write_region(rp, M, added)
     print('cut Hook: origin px %s, box px %s, heights %s' % (M['frame']['origin_px'], M['frame']['box_px'], M['heights']['grid']))
     return 0
 

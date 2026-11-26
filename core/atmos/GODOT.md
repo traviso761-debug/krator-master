@@ -297,6 +297,19 @@ and `atm_wind(t, xz, w, amp)` written from `PRESETS.wind` (the same sum of sines
 `ImmediateMesh` of camera-facing quads at the weather's flash, with an `OmniLight3D` pulse at the cloud. Each strike queues a
 thunder event at `t + dist / 343`; the autoload emits `thunder(dist, power)` and an `AudioStreamPlayer3D` plays it.
 
+## Weather cells (`wx/89-atmos-wx-cells.js`, W5)
+
+`godot/krator/atmos_cells.gd` is the data fragment line for line: the same `KRand.hash_ints` draws (tile, slot, generation),
+the same arithmetic in the same order, so `weather_at(x, z, t, S)`, `cover_map`, `strikes` and `shafts` equal the page's.
+`godot/tests/atmos/cells_test.gd` holds it to `core/atmos/wx/golden-cells.json` (written by `node core/atmos/wx/test-cells.js
+--write`; three climates: every weight, cell, local weather, a 16 x 16 map, the strikes and the shafts match exactly, the map
+to 2e-6). The export's `wxcells` record carries the system (seed, steering wind, weights) and `presets.wxcells`. In the
+autoload: in mode `live`, set `W["live"] = cells.weather_at(camera x, z, atm_time, S)` before `weather_step` (which takes it as
+it is); upload `cover_map` (64 x 64 RGBA8: cover, dark, precipitation, fog) as a global `sampler2D atm_wx_map` with
+`atm_wx_box` (centre x, z, span, on) and `atm_wx_mean` for the sky and the cloud shade; each strike from `strikes(S, last, now,
+x, z, 16000)` is a bolt (`ATMOS.boltPath` with the strike's seed) and a `thunder` signal at `t + dist / 343`; the shafts a
+MultiMesh of open cylinders or cylinder `FogVolume`s; the splashes `GPUParticles3D` with the rain occlusion heightfield.
+
 ## Rules that keep the module portable
 
 1. **A new effect is a preset plus a record.** Put its numbers in `ATMOS.PRESETS` and have its call `A.rec()` what it

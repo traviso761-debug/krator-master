@@ -1,0 +1,136 @@
+{
+ "edit": "5.1 edit 35: the Veiled Mountains, Matron's Coast's islands, the north-west audit",
+ "date": "2026-11-26",
+ "valleys": {
+  "Region 174": {
+   "cells": 4515,
+   "floor_m": [
+    2100,
+    2750
+   ],
+   "mouth": [
+    238.0,
+    652.0
+   ]
+  },
+  "Region 175": {
+   "cells": 2030,
+   "floor_m": [
+    2150,
+    2700
+   ],
+   "mouth": [
+    212.0,
+    692.0
+   ]
+  }
+ },
+ "weathering_m": {
+  "cut_p90": 590,
+  "cut_max": 4266
+ },
+ "mountains": {
+  "p10": 4089,
+  "p50": 5745,
+  "p90": 7192,
+  "max": 9491
+ },
+ "valley_floor_m": [
+  2563,
+  3104,
+  4777
+ ],
+ "islands": {
+  "drowned_cells": 1484,
+  "sea_level_m": -0.2,
+  "islands": 16,
+  "island_cells": 46
+ },
+ "rivers_ended_at_the_islands": [
+  "r021",
+  "r091",
+  "r100",
+  "r134",
+  "r137",
+  "r147",
+  "r169",
+  "r184"
+ ],
+ "rivers_kept_downhill": [
+  "r021",
+  "r091",
+  "r100",
+  "r134",
+  "r137",
+  "r147",
+  "r169",
+  "r184",
+  "r448",
+  9113
+ ],
+ "land_moved_cells": 28640,
+ "reclimate": {
+  "cells": 27933,
+  "class_changed": 21980,
+  "rain_mean_before_mm": 785.0,
+  "rain_mean_after_mm": 971.0,
+  "classes_now": {
+   "Af": 20,
+   "Am": 5,
+   "BSk": 69,
+   "Csa": 237,
+   "Csb": 15,
+   "Cfa": 1251,
+   "Cfb": 817,
+   "Dsa": 19,
+   "Dsb": 403,
+   "Dsc": 179,
+   "Dfa": 55,
+   "Dfb": 4244,
+   "Dfc": 5240,
+   "ET": 8558,
+   "EF": 4534,
+   "HT": 1992,
+   "HF": 294,
+   "WS": 1
+  },
+  "airless_cells_given_air": 5895,
+  "class_O_let_go": 6825
+ },
+ "audit": {
+  "matron_tc_C": [
+   22.0,
+   19.7
+  ],
+  "matron_tw_C": 29.2,
+  "seam_cells_smoothed": 3713,
+  "low_airless_given_air": 6409,
+  "rain_cells_fixed": 943,
+  "classes_relettered": 20448
+ },
+ "valley_classes": {
+  "BSk": 57,
+  "Csa": 234,
+  "Csb": 15,
+  "Cfa": 555,
+  "Cfb": 291,
+  "Cfc": 1,
+  "Dsa": 21,
+  "Dsb": 244,
+  "Dsc": 59,
+  "Dfa": 123,
+  "Dfb": 3417,
+  "Dfc": 2146,
+  "ET": 293
+ },
+ "matron_classes": {
+  "Af": 46,
+  "Cwa": 42,
+  "Cfa": 453,
+  "Cfb": 9476
+ },
+ "valley_temps_C": {
+  "tw": 18.0,
+  "tc": -3.0
+ }
+}

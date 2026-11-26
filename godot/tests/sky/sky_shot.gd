@@ -1,7 +1,7 @@
 # The shared sky rendered in Godot (shaders/sky.gdshader + krator/sky.gd): proves the generated include compiles on a GPU
 # and shows it. Needs a renderer, not --headless:
 #   godot --path godot --script res://tests/sky/sky_shot.gd -- --out=<png> [--hour=15] [--day=0] [--look=giant|cluster|sun|station|up]
-#     [--fov=55] [--px=446 --py=690]      writes the frame and exits 0 when the sky drew (not black, not the error magenta)
+#     [--fov=55] [--px=446 --py=690] [--clouds=volumes] [--alt=1.7] [--cover=0.6]      writes the frame and exits 0 when the sky drew (not black, not the error magenta)
 extends SceneTree
 
 var _sky
@@ -50,6 +50,8 @@ void light() {
 	_cam.position.y = float(_args.get("alt", "1.7"))
 	if _args.has("cover"):
 		_sky.cover = float(_args["cover"])
+	if _args.has("clouds"):   # off, layers, volumes (W6)
+		_sky.cloud_quality = _args["clouds"]
 	root.add_child(ground)
 
 

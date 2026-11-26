@@ -94,6 +94,10 @@
   // giantshine: the giant's lit fraction, by night and in an eclipse
   const G=P.giant;L.shineC=G.shine;L.shineI=G.shineI*s.giantLit*Math.max(L.night,s.eclipse*.6)*(1-.7*g);
   L.fogC=mix(L.hor,L.sunHor,.18);L.fogD=P.fogDensity*L.fog*(p/1.6)*(1+6*(w.fog||0));L.cover=cl(P.clouds.cover+(w.cover||0),0,1);
+  // a page's night fill (preset.nightFill {k, colour, ground}: off unless set): the hemisphere's sky and ground colours (display)
+  // lean toward a cool fill and a dark soil by k at night, so a settlement's towers read in silhouette under its lamps (Girder,
+  // the owner 2026-11-24: "raise fill partway")
+  if(P.nightFill&&P.nightFill.k>0){const nf=P.nightFill,k=nf.k*L.night;L.hemiS=mix(L.hemiS,nf.colour||[.365,.443,.58],k);if(nf.ground)L.hemiG=mix(L.hemiG,nf.ground,k);}
   if(P.air.thin){L.p=p;L.hemiI*=1-.75*thin;L.sunC=mix(L.sunC,[1,1,1],.6*thin);L.sunI*=1+.25*thin;L.hazeFloor*=1-thin;L.fogD*=1-thin*thin;}
   return L;};
 })();

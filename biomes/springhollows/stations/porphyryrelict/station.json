@@ -1,0 +1,17 @@
+{
+ "id": "porphyryrelict",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Springhollows — High Red-Porphyry Carnelian Relict Knob & Inert Mist-Pylon",
+ "out": "springhollows-porphyryrelict.html",
+ "px": [1268, 142],
+ "sky": [996, -188],
+ "elevM": 2570.2,
+ "pAtm": 1.16,
+ "koppen": "Cfa",
+ "rainMmYr": 1506,
+ "strataStack": "carbonate-shelf-over-porphyry",
+ "reserves": [
+  { "id": "site:high-ria-porphyry-quarry", "x": -124, "z": -104, "r": 42 }
+ ],
+ "modes": ["Day", "Dusk Cave-Glow"]
+}

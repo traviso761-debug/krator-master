@@ -4,7 +4,10 @@
 // geometry with its edge-on rings) with its painted horizon taken away: the Inner Wall and the far mesas were a
 // stand-in for land the showcase did not have, and this world draws its own land to the horizon (VISUAL-BAR.md, D).
 // The dome and the giant ride with the camera, so a sky 1,400 km wide costs one dome.
-var SKY=(function(){const {TAU,rng,rr}=BIO.fn,scene=HOST.scene,camera=HOST.camera;
+// THE SHARED SKY (W8, STAGE-8/G-weather.md section 6; the owner, 2026-11-24: "moving volumetric weather on all deployed open-world
+// files"): where the build lists core/atmos's sky (sky/89-atmos-g-sky.js and host/89-atmos-h-skyhost.js: ATMOS.sky), the region's
+// sky is Krator's own (SKY_SHARED below), and this painted dome is not made. A build without the sky keeps the dome as before.
+function SKY_PAINTED(){const {TAU,rng,rr}=BIO.fn,scene=HOST.scene,camera=HOST.camera;
 const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const HZ=h*.5,DEG=h/180;
  const grd=g.createLinearGradient(0,0,0,h);
@@ -101,4 +104,50 @@ function follow(){const P=camera.position;sky.position.copy(P);giant.position.co
  if(grey>0)sky.material.color.lerp(_skyWx.copy(HOST.scene.fog.color).multiplyScalar(.5+.5*gold),grey*.8);
  SUNS.position.copy(P).addScaledVector(S,SUN_D);SUNS.visible=up>-.05;SUNS.scale.setScalar(SUN_S*(1+.6*Math.max(0,1-up/.3)));
  SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1))*(1-.9*cover);}
-return{follow,sky,giant};})();
+return{follow,sky,giant};}
+
+// ---------------------------------------------------------------- THE SHARED SKY (W8)
+// ATMOS.sky at the camera's place on the scale model (WORLD.px/py are the 5.1 map's pixels; the sky's site frame is those less 272,
+// 330, as tools/site_cast.py and every W7 page take it), the site moved when the camera has gone 20 km, so the sun, the giant, its
+// ring and the moons stand where they do over that ground. The sky writes the sun, the hemisphere and the exposure (the colour
+// script at the hour of HOST's clock and its day); the fog's colour is the sky's horizon, its density stays this world's own law
+// (98: thick at the ground, thin from orbit), and the weather (45's HOST.weather: the region's climate, the moving cells) composes
+// on both as it did. HOST.SUN_DIR follows the sky's sun, so the flora, the water and the shadow box (KSHADOW) follow too.
+// The cloud layer's base is the region's ground (the median under a 9 x 9 grid of 10 km round the start) plus 1,400 m, at least
+// the sky's 1,600 m (WORLD_CONFIG.sky.cloudBase sets it), so a high plateau's clouds are not under its ground. The volumes
+// (sky/89-atmos-m-volclouds.js, host/89-atmos-m-volhost.js) draw through S.render where the build lists them; they write the
+// logarithmic depth this world's renderer keeps. The night fill raised partway, as Girder's (the owner, 2026-11-24).
+// WORLD_CONFIG.sky: {preset, cover, cloudBase, nightFill, false to keep the painted dome}.
+function SKY_SHARED(){const scene=HOST.scene,camera=HOST.camera,renderer=HOST.renderer,A=ATMOS;
+ const CFG=(typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG&&WORLD_CONFIG.sky)||{};
+ const O={S:null,sky:null,giant:null,hidden:false,site:null,cloudBase:null,follow,render,setHidden:h=>{O.hidden=!!h;}};
+ const clock={get hour(){return HOST.hour();},get day(){return HOST.clock&&HOST.clock.day!=null?HOST.clock.day:0;},get t(){return HOST.clock&&HOST.clock.t!=null?HOST.clock.t:performance.now()/1000;}};
+ const siteAt=(x,z)=>({px:WORLD.px(x)-272,py:WORLD.py(z)-330});
+ let sx=NaN,sz=NaN;
+ /* the air: the ground's pressure under the camera (WORLD.pressure), its humidity from the rain the climate gives (mm a year) */
+ const air=(x,z)=>{const g=WORLD.H(x,z),r=typeof WORLD.rain==='function'?WORLD.rain(x,z):800;
+  return{pressure:+WORLD.pressure(Math.max(g,0)).toFixed(2),humidity:+Math.max(.15,Math.min(.9,r/2500)).toFixed(2)};};
+ function cloudBase(){if(CFG.cloudBase!=null)return CFG.cloudBase;const P=camera.position,h=[];
+  for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++)h.push(WORLD.H(P.x+i*10000,P.z+j*10000));h.sort((a,b)=>a-b);
+  return Math.max(1600,Math.round((h[40]+1400)/100)*100);}
+ function make(){const P=camera.position;O.site=siteAt(P.x,P.z);
+  if(!A.T)A.T=THREE;if(!THREE.ShaderChunk.atmos_sky)THREE.ShaderChunk.atmos_sky=A.skyGLSL();   /* made before 83's ATMOS.init, as the biome pages' sky is (89-atmos-i-skybiome.js) */sx=P.x;sz=P.z;O.cloudBase=cloudBase();
+  const nf=CFG.nightFill===false?null:Object.assign({k:.75,colour:[.365,.443,.580],ground:[.22,.19,.18]},CFG.nightFill||{});
+  O.S=A.sky(A.skyPreset(CFG.preset||'standard',Object.assign({site:O.site,air:air(P.x,P.z),clouds:{cover:CFG.cover==null?.4:CFG.cover,height:O.cloudBase}},nf?{nightFill:nf}:{})),
+   {renderer,camera,scene,sun:HOST.sun,hemi:HOST.hemi,clock,fog:false});
+  O.sky=O.S.scene;scene.background=null;   /* a background would clear the sky's pass */
+  HOST.TICKS.unshift(tick);   /* first in the frame: the weather and the caverns' dark compose on what the sky writes */
+  tick(0);}
+ const KC=()=>A.KC();
+ function tick(dt){const S=O.S;if(!S)return;const P=camera.position;
+  if(Math.hypot(P.x-sx,P.z-sz)>20000){sx=P.x;sz=P.z;O.site=siteAt(P.x,P.z);Object.assign(S.preset.air,air(P.x,P.z));S.setSite(O.site);}
+  S.update(dt||0);const st=S.state,L=S.look;
+  HOST.SUN_DIR.set(st.sunDir[0],st.sunDir[1],st.sunDir[2]);
+  if(typeof BIO!=='undefined'&&BIO.setSun)BIO.setSun([st.sunDir[0],Math.max(.02,st.sunDir[1]),st.sunDir[2]]);
+  KC().lin(L.fogC,scene.fog.color);HOST.HAZE.copy(scene.fog.color);
+  if(HOST.fill)HOST.fill.intensity=.22*(L.hemiI||0)/.62;}
+ function follow(){}   /* the sky is drawn about the camera; nothing to move */
+ function render(){if(O.S&&!O.hidden)O.S.render();else renderer.render(scene,camera);}
+ LATE.unshift(make);   /* once the region's data is decoded (WORLD.px), before 83's ATMOS.init and the seas' skylight */
+ return O;}
+var SKY=typeof ATMOS!=='undefined'&&typeof ATMOS.sky==='function'&&!(typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG&&WORLD_CONFIG.sky===false)?SKY_SHARED():SKY_PAINTED();

@@ -84,6 +84,10 @@ const HCHK={
  camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
 /* THE RHEOLITHS (89y, biomes/rheolith read in place): every living guild where RHEO_PHYS.windowAt says it can live, and the dead byproducts round it */
+/* THE LAKE'S OVERFLOW (47, shared/46k, KLAVA.bake): it froze whole (frozen within 1% of what the vent poured, nothing lost off the map) on the floor */
+function klavaCheck(K,min){const r=K&&K.find(k=>k.key==='overflow');if(!r)return{ok:false,detail:'no KLAVA flow (47)'};
+ const ok=r.volume>0&&r.frozen>=r.volume*.99&&r.lost<=r.volume*.01&&r.cells>=min;
+ return{ok,detail:(r.volume/1e6).toFixed(2)+' Mm3 poured, '+(r.frozen/1e6).toFixed(2)+' frozen, '+Math.round(r.lost)+' m3 lost; '+r.cells+' cells of the mosaic; baked in '+r.ms+' ms'};}
 function rheoCheck(L,minLive,minDead){if(!RHEO_SITE||!L)return{ok:false,detail:'no rheoliths (89y)'};const live=L.filter(p=>p[4]===1),dead=L.length-live.length,
  bad=live.filter(p=>!RHEO_PHYS.windowAt({tempC:p[5],waterActivity:p[6],acidPh:p[7]}).viable);
  return{ok:live.length>=minLive&&dead>=minDead&&!bad.length,detail:live.length+' living in the throat, '+dead+' dead byproducts round it'+(bad.length?', '+bad.length+' living outside the window (first '+bad[0][0]+' at '+Math.round(bad[0][5])+' degC)':'')};}
@@ -94,6 +98,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the eruption toggle',HCHK.erupt(SUMMIT));
  add('the snow and the ash (core/atmos, opt-in) are here',HCHK.weather(ATMOS.W,ATMOS.U));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
+ add('the lake\'s overflow frozen by the lava-flow module',klavaCheck(FLOWS.klava,500));
  add('the Rheoliths live only in the hot dry acid throat',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED:null,10,30));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -105,6 +110,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('an eruption that never starts',HCHK.erupt(Object.assign({},SUMMIT,{eruptStep:(E)=>E})));
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.concat(['snowfall','blizzard'])}),ATMOS.U));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
+ add('an overflow that drained off the map',klavaCheck(FLOWS.klava.map(k=>Object.assign({},k,{lost:k.volume*.2})),500));
  add('a living guild in the cool ground',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED.concat([['chokecoral',0,terrainH(0,0),0,1,40,.5,5.5]]):null,10,30));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}

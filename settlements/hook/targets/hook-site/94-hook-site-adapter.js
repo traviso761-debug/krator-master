@@ -29,8 +29,11 @@ VIEW.extent = function () {
   return Math.ceil((e + 80) / 100) * 100 || 1400;
 };
 VIEW.ext = VIEW.extent();
+/* ?ext=<m> widens the square past the town (2026-11-24: the whole city, its plain, lagoon and strait, to the 7.2 km the
+   page replays strokes over, 76b), its cells coarser so the grid stays about 1,400 a side */
+(function () { var q = /[?&]ext=(\d+)/.exec(location.search); if (q) VIEW.ext = Math.max(VIEW.ext, Math.min(7200, +q[1])); })();
 /* the model's delta grid over the square (10-site-model.js sizes it for Voth's 3.9 km); nothing has been allocated yet */
-TERR.ext = VIEW.ext; TERR.cell = 4; TERR.N = Math.ceil(2 * TERR.ext / TERR.cell) + 1; TERR.D = null; TERR.base = null; TERR.n = 0;
+TERR.ext = VIEW.ext; TERR.cell = VIEW.ext > 2800 ? Math.ceil(VIEW.ext / 700) : 4; TERR.N = Math.ceil(2 * TERR.ext / TERR.cell) + 1; TERR.D = null; TERR.base = null; TERR.n = 0;
 
 /* signed distance to the shore along z at this x: positive inland (the land is -z, the sea +z), negative out at sea;
    marched 5 m a step, at most 3 km. Enough for the inspector's "shore ... m inland". */
@@ -90,10 +93,13 @@ VIEW.setup = function () {
   VIEW.ovCanvas = document.createElement('canvas'); VIEW.ovCanvas.width = VIEW.ovCanvas.height = 2048;
   VIEW.ovTex = new THREE.CanvasTexture(VIEW.ovCanvas); VIEW.ovTex.anisotropy = renderer.capabilities.getMaxAnisotropy(); VIEW.ovTex.encoding = THREE.sRGBEncoding;
   var om = new THREE.MeshBasicMaterial({ map: VIEW.ovTex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-  VIEW.overlay = new THREE.Mesh(VIEW.drape(8, .6, E), om); VIEW.overlay.name = 'hook-site-overlay'; VIEW.overlay.renderOrder = 6; VIEW.overlay.frustumCulled = false;
+  /* the drapes' spacing grows with the square (8 and 16 m on the town's; a wide ?ext= square would read the ground millions
+     of times at those, minutes at load) */
+  var st = Math.max(8, Math.ceil(E / 150)), sp = Math.max(16, Math.ceil(E / 100));
+  VIEW.overlay = new THREE.Mesh(VIEW.drape(st, .6, E), om); VIEW.overlay.name = 'hook-site-overlay'; VIEW.overlay.renderOrder = 6; VIEW.overlay.frustumCulled = false;
   VIEW.overlay.userData.probeSkip = true; scene.add(VIEW.overlay);
   /* a coarse, hidden copy for picking: one ray test, then refined on surf */
-  VIEW.pickMesh = new THREE.Mesh(VIEW.drape(16, 0, E * 1.15), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+  VIEW.pickMesh = new THREE.Mesh(VIEW.drape(sp, 0, E * 1.15),new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
   VIEW.pickMesh.visible = false; VIEW.pickMesh.userData.probeSkip = true; VIEW.pickMesh.updateMatrixWorld();
   /* the Port's terrain chunks keep their built heights: an edit moves a vertex by the delta there */
   VIEW.chunks = (PORT_TERRAIN && PORT_TERRAIN.chunks || []).map(function (m) { return { m: m, base: m.geometry.attributes.position.array.slice() }; });

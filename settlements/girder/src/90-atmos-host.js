@@ -1,6 +1,6 @@
 /* ============================== ATMOS: the shared atmosphere module, bound to Girder ==============================
-   core/atmos (its README.md). Girder takes it for the sky's light (89-atmos-b-skylight.js): the background skyScene of
-   21-sky.js is captured into a prefiltered cube map and set as scene.environment, so the library families (45-kit.js
+   core/atmos (its README.md). Girder takes it for the sky's light (89-atmos-b-skylight.js, set up in 90s-host-sky.js): the shared sky's scene
+   is captured into a prefiltered cube map and set as scene.environment, so the library families (45-kit.js
    famMaterial: MeshStandardMaterial with the scan's colour, normal and roughness maps) reflect the actual sky - the
    giant, the sun-side glow, the eclipse twilight - instead of only the sun's highlight. PRESETS.skylight.diffuse stays 0:
    the hemisphere and ambient fill in 82-daynight.js remain the only diffuse sky light, as the palette was tuned on.
@@ -17,7 +17,4 @@ ATMOS.init({ THREE: THREE, scene: scene, camera: camera,
   err: function(m){ console.warn(m); },
   viewH: function(){ return innerHeight; },
   pixelRatio: function(){ return renderer.getPixelRatio(); } });
-var ATMOS_GROUND_COL = new THREE.Color();
-ATMOS.skylight({ renderer: renderer, sky: skyScene, scene: scene,
-  ground: function(){ return ATMOS_GROUND_COL.copy(hemiLight.groundColor).multiplyScalar(hemiLight.intensity); },
-  key: function(){ return Math.round(SKY_STATE.ecl*20) + '|' + SKY.pressureAtm + '|' + SKY.skyModelK; } });
+/* the skylight (the library materials' reflections) is set up in 90s-host-sky.js, on the shared sky's scene (W7) */

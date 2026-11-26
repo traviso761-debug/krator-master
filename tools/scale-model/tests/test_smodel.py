@@ -862,7 +862,9 @@ check('10-panel.html #settPills exposes filter pills for all 10 settlement stage
 all_setts = P.settlements()
 by_nm_21 = {s['name']: s for s in all_setts}
 by_id_21 = {s['id']: s for s in all_setts}
-# 5.1e10 landed the two salt works (edit 31) and 5.1e26 dropped the Twins (edit 28), both the owner's of 2026-11-24
+# 5.1e10 landed the two salt works (edit 31) and 5.1e33 dropped the Twins (edit 28), both the owner's of 2026-11-24
+# (the drop's batch was 5.1e26, renumbered in the integration-4 merge of 2026-11-26: the map session's 5.1e26 holds
+# Arkerum and Whitelake, already merged by the published map's viewers)
 check('%d unique pins across the 10 stages; the duplicates on the ids Gemini\'s population data keys (%s); the salt works in and the Twins out' % (
     len(all_setts), ', '.join(i for i in ('spalewharf01', 'sbabalhawa01', 'sxangold01', 'svhmyhf33w', 's0zgu7u6yb')
                               if i not in by_id_21) or 'all there'),
@@ -873,8 +875,8 @@ check('%d unique pins across the 10 stages; the duplicates on the ids Gemini\'s 
                                           'sthetwins01'))
       and sum(1 for s in all_setts if s['name'] == 'Port Tobin') == 1
       and 'SETT_DROPPED' in s_src)
-check('the Twins dropped in SETT_DROPPED 5.1e26 and gone from defSetts and every add batch (edit 28)',
-      'sthetwins01' not in by_id_21 and "'5.1e26':[\"sthetwins01\"]" in s_src
+check('the Twins dropped in SETT_DROPPED 5.1e33 and gone from defSetts and every add batch (edit 28)',
+      'sthetwins01' not in by_id_21 and "'5.1e33':[\"sthetwins01\"]" in s_src
       and s_src.count('"sthetwins01"') == 1)
 check('the two salt works landed in the reserved batch 5.1e10 as outposts on their own ground (edit 31)',
       "'5.1e10':" in s_src

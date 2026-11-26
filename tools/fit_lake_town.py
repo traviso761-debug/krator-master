@@ -50,6 +50,8 @@ BROAD = 160    # the smoothing of the depth's line beyond the town's waterfront 
 MINWAVE = 0    # the land as the world draws it (WORLD.Hbare's minWave 0: a broader form drops the coast's own shaping)   # lakeward to the band's far edge (R + band from a pin up to 400 m inland)
 KNOTS = [-1200, -800, -500, -300, -180, -100, -50, -20, 0, 20, 50, 100, 160, 240, 330, 430, 550, 700, 860, 1050, 1300, 1600, 2000, 2500, 3000]
 SMOOTH = 120.0
+# a town's world.islet (m): the raw shore's crossing needs that much dry land inland of it (an islet or a bank in the shallows is
+# passed); 0 by default, as every town was fitted before it
 
 
 def specs():
@@ -96,11 +98,14 @@ for(let dz=-1200;dz<=1200;dz+=50)for(let dx=-1200;dx<=1200;dx+=50){if(dx*dx+dz*d
 const mx=sx/n,mz=sz/n,mh=sh/n,cxx=sxx/n-mx*mx,czz=szz/n-mz*mz,cxz=sxz/n-mx*mz,cxh=sxh/n-mx*mh,czh=szh/n-mz*mh,det=cxx*czz-cxz*cxz;
 const gx=(cxh*czz-czh*cxz)/det,gz=(czh*cxx-cxh*cxz)/det;          /* dh/dx (east), dh/dz (south) */
 let brg=Math.atan2(-gx,gz)*180/Math.PI;brg=Math.round(((brg%360)+360)%360*10)/10;   /* the fall: x east, -z north */
+if(A.brg!=null)brg=A.brg;   /* a town's own (world.brg): where the plane's fall points at a bay or a corner of the shore */
 const b=brg*Math.PI/180,ez=[Math.sin(b),-Math.cos(b)],ex=[-Math.cos(b),-Math.sin(b)];
-/* the landing: the level's crossing from the pin along the bearing (0.5 m steps) */
-let t=0,prev=H(pin[0],pin[1])-lv;if(prev<0)t=-1;
-if(t===0){for(let q=1;q<20000;q++){const s=q*.5,h=H(pin[0]+ez[0]*s,pin[1]+ez[1]*s)-lv;if(h<0){t=s-.5+.5*prev/(prev-h);break;}prev=h;}}
-const L=[pin[0]+ez[0]*t,pin[1]+ez[1]*t];
+/* the landing: the level's crossing along the bearing (0.5 m steps) from the pin, or from the pin moved by the town's world.at
+   [dx, dz] (world metres: a landing on a straight stretch of the shore beside the pin's) */
+const P0=A.at?[pin[0]+A.at[0],pin[1]+A.at[1]]:pin;
+let t=0,prev=H(P0[0],P0[1])-lv;if(prev<0)t=-1;
+if(t===0){for(let q=1;q<20000;q++){const s=q*.5,h=H(P0[0]+ez[0]*s,P0[1]+ez[1]*s)-lv;if(h<0){t=s-.5+.5*prev/(prev-h);break;}prev=h;}}
+const L=[P0[0]+ez[0]*t,P0[1]+ez[1]*t];
 /* the grid in page metres from the landing */
 const nx=Math.round(2*A.GX/A.GS)+1,nz=Math.round((A.GZ1-A.GZ0)/A.GS)+1,G=new Array(nx*nz),G2=new Array(nx*nz);
 /* G the land in full (for the shore), G2 without its detail finer than A.MW m (WORLD.Hbare's minWave: the profile, the rest, the band) */
@@ -141,7 +146,8 @@ def fit(key):
     # a town's own grids (XL.SPECS[key].world.gs, .resStep): finer where the region's shore has an inlet narrower than the
     # default rest step (Hot-Bath's, 2026-11-23); the page reads the step from the row (89zp xlRes)
     GS_, RS_ = W.get('gs') or GS, W.get('resStep') or RES_STEP
-    S = sample(W['region'], {'site': W['site'], 'px': [tune['px'], tune['py']], 'level': -520, 'GX': GX, 'GZ0': GZ0, 'GZ1': GZ1, 'GS': GS_, 'MW': MINWAVE})
+    S = sample(W['region'], {'site': W['site'], 'px': [tune['px'], tune['py']], 'level': -520, 'GX': GX, 'GZ0': GZ0, 'GZ1': GZ1, 'GS': GS_, 'MW': MINWAVE,
+                             'brg': W.get('brg'), 'at': W.get('at')})   # the frame's own bearing and landing, where a town sets them
     nx, nz = S['nx'], S['nz']
     G = np.array(S['G'], dtype=np.float64).reshape(nz, nx)
     G2 = np.array(S['G2'], dtype=np.float64).reshape(nz, nx)
@@ -166,12 +172,15 @@ def fit(key):
     G2[hollow] = np.maximum(G2[hollow], 0.3)
     # ---- the raw shore: every grid column, the first crossing of the level marching inland from the lake (a slot or a
     # hollow behind the shore is not the shore)
+    # with world.islet, an islet in the shallows is not the shore either: the crossing counts only where the land runs on dry that far inland
+    # of it (the re-run's model, 2026-11-24: low banks 300-500 m off Saphran's and Gardan's straight shores)
     raw = np.full(nx, np.nan)
     j0 = int(round((-1500 - GZ0) / GS_))
+    kin = int(math.ceil((W.get('islet') or 0) / GS_))
     for i in range(nx):
         col = G[:, i]
         for j in range(nz - 1, max(j0, 1) - 1, -1):
-            if col[j - 1] >= 0 and col[j] < 0:
+            if col[j - 1] >= 0 and col[j] < 0 and (kin == 0 or (col[max(0, j - 1 - kin):j - 1] >= 0).all()):
                 raw[i] = zs[j - 1] + GS_ * col[j - 1] / (col[j - 1] - col[j])
                 break
     ok = ~np.isnan(raw)

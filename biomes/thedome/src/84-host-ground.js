@@ -54,6 +54,14 @@ function masksAt(x,z,h,out){
   out[0]=gran;out[1]=grus;out[2]=lich;out[3]=0;
   return out;
  }
+ if(SKEY==='eastflank'){
+  const ef=DOME_PHYS.eastFlankFrontierAt(x,z,h,SITE);
+  const grus=clamp(Math.max(step*0.74,rim*0.84,ef.bleach01*0.88),0,1);
+  const lich=clamp(0.40*(1-ef.bleach01)*(1-grus*0.65),0,1);
+  const gran=clamp(1-grus*0.58-lich*0.35,0,1);
+  out[0]=gran;out[1]=grus;out[2]=lich;out[3]=0;
+  return out;
+ }
  /* Station 1 (apron): [0] smooth rose-grey granite-porphyry shell, [1] riser & gnamma-rim feldspar grus, [2] dark cyanobacteria scour flutes */
  const scour=clamp(flute*0.68,0,1);
  const grus=clamp(Math.max(step*0.76,rim*0.88)*(1-scour*0.55),0,1);
@@ -66,7 +74,7 @@ const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{
  const id=g.createImageData(w,h),d=id.data,S=TERR.R*2.2;
  const c=new THREE.Color(),K=hx=>new THREE.Color(hx),m=[0,0,0,0];
  const SHELL=K(0xc9b2a8),LEUCO=K(0xdad4ce),GRUS=K(0xd6c2b4),SCOUR=K(0x7c7476);
- const SPHAG=K(0x9a7e38),MOSS_W=K(0x366e44),PORPH=K(0x88484c),LICH=K(0x9a9c78);
+ const SPHAG=K(0x9a7e38),MOSS_W=K(0x366e44),PORPH=K(0x88484c),LICH=K(0x9a9c78),BLEACH=K(0xedeae2),CARN=K(0xa44642);
 
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){
   const i=(y*w+x)*4,wx=(x/w-0.5)*S,wz=(y/h-0.5)*S;
@@ -82,6 +90,9 @@ const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{
   }else if(SKEY==='cleft'){
    const slot=FC.at(FC.a.cleft,wx,wz);
    c.copy(SHELL).lerp(GRUS,m[1]*0.62).lerp(LICH,m[2]*0.46).lerp(SCOUR,slot*0.32);
+  }else if(SKEY==='eastflank'){
+   const ef=DOME_PHYS.eastFlankFrontierAt(wx,wz,hh,SITE);
+   c.copy(SHELL).lerp(GRUS,m[1]*0.58).lerp(LICH,m[2]*0.42).lerp(CARN,ef.upslopeRed01*0.48).lerp(BLEACH,ef.bleach01*0.86).lerp(MOSS_W,rim*0.55);
   }else{
    c.copy(SHELL).lerp(LEUCO,0.32).lerp(GRUS,m[1]*0.65).lerp(SCOUR,m[2]*0.46).lerp(MOSS_W,rim*0.58);
   }
@@ -119,9 +130,9 @@ if(USE_KG){
   KGROUND.layer('thedome','ground.granite',{w:'vGL.x',amt:0.86,gain:1.0,tint:'_gT',name:'summit leucogranite & porphyry shell'}),
   KGROUND.layer('thedome','ground.grus',{w:'vGL.y',amt:0.82,gain:1.0,tint:'_gT',name:'garland step-riser & pan-rim feldspar grus'}),
   KGROUND.layer('thedome','ground.lichen',{w:'vGL.z',amt:0.80,gain:1.0,tint:'_gT',name:'bullseye summit exfoliation lichen'})
- ]:SKEY==='cleft'?[
+ ]:(SKEY==='cleft'||SKEY==='eastflank')?[
   KGROUND.layer('thedome','ground.granite',{w:'vGL.x',amt:0.86,gain:1.0,tint:'_gT',name:'stacked laccolith-shell porphyry-granite'}),
-  KGROUND.layer('thedome','ground.grus',{w:'vGL.y',amt:0.82,gain:1.0,tint:'_gT',name:'radial Kluft chockstone & feldspar grus'}),
+  KGROUND.layer('thedome','ground.grus',{w:'vGL.y',amt:0.82,gain:1.0,tint:'_gT',name:'Kill-Line bleach-hardpan & step-riser feldspar grus'}),
   KGROUND.layer('thedome','ground.lichen',{w:'vGL.z',amt:0.78,gain:1.0,tint:'_gT',name:'high-shoulder crustose granite lichen'})
  ]:[
   KGROUND.layer('thedome','ground.granite',{w:'vGL.x',amt:0.86,gain:1.0,tint:'_gT',name:'onion-skin rose-grey quartz-porphyry shell'}),

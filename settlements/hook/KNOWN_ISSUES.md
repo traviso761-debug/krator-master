@@ -4,6 +4,86 @@ Open items start with `- [ ]` (build.py prints them after every build). The Port
 `kits/port/KNOWN_ISSUES.md`; shared-fragment problems found from Hook are recorded here, not fixed in the kit
 from a Hook task.
 
+## The Ancient city (the owner's site plan: S1 the ground, S2 the records, 2026-11-24)
+
+- [x] **M1's first layout is replaced.** The Sunk City and Scarp City thirds, the old axis as a spine and the crest at
+      188 m are gone with it; S2 lays the site plan (`README.md`, "The Ancient city").
+- [x] **The landforms sampled their own noise at every load.** Each of the nine wandering benches sampled its wander's
+      steepest slope over 23k points (6.7 s in node for the nine); the records now state it (`wg_n`, written by
+      `world/cut.py --landforms` through `core/world/landform_wg.js`) and `WLAND.check` samples it again (2026-11-24).
+- [ ] **The plan costs about 0.8 s (node) at load.** 2,022 blocks over a 10 km square; its ground reads are memoized by
+      point (13,144 reads, down from 17,046), each a full `WORLD.H` (about 40 us: the model's own relief noise). Baking
+      the records at build time is the fix, but they are 1.07 MB as JSON (the blocks 747 KB): a compact columnar bake, or
+      the blocks left out of the page (only the towers, heaps and freeway are drawn), first.
+- [ ] **Heroes up close, massing beyond: no shell or impostor tier between.** 90d draws the ten standing towers nearest
+      the camera (within 700 m) as the kit's heroes and 90c's massing stands for every other; the kit's shells
+      (KSHELL) exist for the Spindle and the Ledger only (the other designs wait on the kit's shell review), so the
+      middle distance is massing and a tower changes from a box to its hero at the switch (at the same height: the
+      massing stands to the kit's own `MP.ruin` top).
+- [ ] **The jungle costs about 23 s at load.** About 63,000 trees over the whole ruin and into the gap by the town (a 9.6 km square, the outer city at a
+      fifth of the heart's density: 90e `HOOK_FLORA`); placing them is 9 s and baking 12 s. The plateau beyond the square
+      has the painted ground only. Baking the placement (its records are deterministic) or growing the outer city's far
+      trees as impostors only would cut it.
+- [ ] **The flora's detail is static.** The kit's LOD is set at placement by the distance from a spine of eight points
+      through the ruin (hero 180 m, mid 520 m, the far impostors beyond); away from the spine a close camera sees the
+      mid and far trees. The undergrowth stands within 900 m of the centre only (over the square it cost 16 s).
+- [ ] **A wild look draws its plain state up close.** The kit's overgrowth (`59e-mp-overgrow.js`, `MP.overgrowDress`) and
+      flora dress (`59d`) need the biome core's leaf sets, which the Port page does not load; the massing's green tint is
+      the jungle's only sign on the ruin until S4.
+- [ ] **The design families' ruin heroes are clipped in the host.** `MP.ruinDesign` (kits/metropolis 59b) cuts a design's
+      glass and floors but not its frame, so a crown, broken or stump hero stands at full height; the Ancient's Valley
+      clips it at `MP.ruin`'s top in its host (`70-host-city.js`, `avClipHero`) and Hook does the same in 90d (by triangle
+      and by panel, without the valley's floater pass). The cut belongs in the kit, once, for both.
+- [ ] **A hero is built on the frame thread.** About 80 ms a new key (family and state) the first time, as many as
+      fit in 40 ms of a frame (at least one). While the page is idle the keys of the towers within 1.8 km of the camera
+      are built ahead (nearest first, 24 at most), so a flight into the downtown finds most of them; a first flight
+      straight in before the page has idled still stutters. A worker cannot build them (three.js geometry).
+- [ ] **The hunters' camp moved.** The sketch put it on the plateau's edge where, under placement B and the coastal
+      plain on the low ground only, there is water; it stands on the nearest dry ground, the plateau's north foot.
+- [ ] **The flora's texture count is shared by design.** The kits' library cards count on `window._texPending` as the
+      material library does; the closure forwards it to the page's, and `check_assembly` lists the two writers as a clash.
+- [x] **Two places were not laid** (fixed 2026-11-24): the Drowned Spire's village is 18 grown pods on the Spindle's
+      surface, the deck camp its shacks on the deck (77m). Their people, and every place's, are in the simulation by
+      neither yet.
+- [ ] **The Spire's pods are drawn far as massing inside the Spire's.** A pod's record stands at its host's middle (as the
+      town's pods do, 90b); near the camera it is grown on the surface, beyond it hidden in the Spire's massing.
+- [ ] **The salt pans have no road.** Their ground is cut off from the streets by water; they are served from their quay.
+- [ ] **Two places moved.** The mangrove stilt camp's point (C2) is in the open bay and the salt pans' ground (C6) too
+      cramped for its houses: each stands at the roomiest dry ground within 1.5 km (937 m and 433 m off). The Islanders'
+      row has no stilt houses for a camp standing in the water.
+- [ ] **The settlers' and salvagers' rows are Hook's own.** 77m `SETTLERS` is core/hamlet's iziz row with lumber, way
+      station, post and hunting works (on the Vernacular's pieces and the opt-in saw pit and shrine,
+      `kits/iziz-vernacular/extra`); `SALVAGE` is the post-apoc kit's pieces. Both fold into core/hamlet with the kit's
+      extra pieces at the next all-builds rebuild (TODO.md, "Ride along").
+- [ ] **core/hamlet: a resource on the village point leaves its works no facing.** `KHAMLET.village` faces a works
+      building from the point to the resource; with the two equal its box is zero and later houses overlap it. Hook puts a
+      works village's resource 150 m out (77m `outward`); the guard belongs in core/hamlet 30 (a shared change: 56 pages;
+      TODO.md, "Ride along").
+- [ ] **The ruin stands in the town's reserve.** The plan leaves only the quarters (and 60 m) to the town; the build zone's
+      reserve south of them is ruin now. A quarter the town grows into later (the site editor) takes its ground back on
+      the next build: the ruin's blocks follow the quarters, not the other way round.
+- [ ] **The roads are lattice roads.** A link runs on the Ancient city's street grid (its corners square); outside the
+      city limits the grid is the same lattice. A road's own curve (KCITY's) is a later pass.
+- [ ] **The plateau's own north coast is straight.** East of the wall the plateau's north foot runs straight for some
+      4 km: the scale model's 2 km cells, not Hook's records (the mainland strip only raises the water before it).
+      `core/coast` would curve it in the open world; on Hook's page it is the model's line.
+- [ ] **Lightwall was not rebuilt with this 41l.** Its ground bake (`core/world/bake_ground.py`) had fallen behind its
+      region: fixed 2026-11-24 (a stub `KHAMLET.xanaduRow`, the region's laid villages `src/47*-site-*.js`, the land
+      chain from `40-world-smooth.js` with core/terrain's stacks), so `python3 tools/build.py settlements/lightwall` builds
+      again. But its `verify.py --assert` fails `world-ground`: the region's new relief is rougher than the 16 m bake
+      carries (max 39.6 m off `WORLD.H`, mean 0.56; the check asks under 3 and 0.5), and the page was behind several of
+      its sources besides (core/water, the materials, its camera). Its committed page is left as it was: the grid's cell
+      (or the check) is Lightwall's call. It takes none of the outlined benches, so it renders the same.
+- [ ] **The Ancient grid is Hook's own, not lifted.** The owner's answer 6 has the grid lifted out of the valley
+      (`AV.plan`'s lattice and ruin field) by Hook's phases; Hook's plan is still its own fragment, borrowing the
+      valley's far ruin shares as numbers. Lifting both into one shared step is the owner's call on where it lives.
+- [ ] **The design table is a copy.** The plan (77, `[G data]`) runs before the kit's closure (77g, which the heroes
+      use) and stays free of the kit and its interiors, so `HOOK_RUIN_PLAN.DESIGNS` copies footprints, roofs and tips;
+      `tests/test-hook-ruin.js` fails when the kit's records move. A baked plan (above) would take them from the kit.
+- [x] **The three Ancient roads out of Hook are laid** (2026-11-24, 77m): each from where it comes ashore to the road net.
+      Their causeways over the drowned flat (net51's first leg) are not drawn. Was: the south road is the plan's; net51's routes beyond the
+      city limits (to Pylon, Torus, Spirladunon) are not yet joined to it.
+
 ## The ground on 5.1 (the port onto the integration line, 2026-11-24)
 
 - [x] **`KLAND` retired.** The branch's lift of the old open world's land rule (`core/terrain/40-core-land.js`, from

@@ -35,6 +35,10 @@ const TEX_DETAIL=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h)
 const TEX_MACRO=BIO.canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,a=fbm(x/40,y/40,7.3,3),b=fbm(x/13,y/13,7.4,2);d[i]=a*255;d[i+1]=b*255;d[i+2]=128;d[i+3]=255;}g.putImageData(id,0,0);});
 TEX_MACRO.wrapS=TEX_MACRO.wrapT=THREE.RepeatWrapping;TEX_MACRO.encoding=THREE.LinearEncoding;
+// THE WALL'S BEDS (47's STRATA, KSTRATA's tibasalt; 2026-11-24): each bed's colour on the steep of the wall, under the snow and the ice, in one
+// texture unit (shared/84s-host-strata-band.js; the ground reads fifteen). ?strata=0 none (the shader as before)
+const STRATA_BAND=THRONE_STRATA_BAND(STRATA);
+const strataMask=(x,z)=>{const r=calR(x,z);if(r<CAL.foot-40)return 0;const cr=crestR(calA(x,z));return smooth(CAL.foot-40,CAL.foot-10,r)*smooth(cr+12,cr-2,r)*smooth(LAKE.r*1.3,LAKE.r*1.45,LAKE.de(x,z));};
 const GROUNDU={uNight:{value:0}};
 const GL_KEYS=['snow','snow2','cliff','lava','veins','scoria','sulphur','ash','ice','obsidian','cinder','rock037'];
 const GLAY=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;const o={};
@@ -62,7 +66,8 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   // and GLINTS on the snow: a random facet normal per 14 cm cell, a tight highlight of the sun on it (near the camera only)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n {vec2 gc=floor(vGWP.xz*7.0);vec3 rn=fract(sin(vec3(dot(gc,vec2(12.9,78.2)),dot(gc,vec2(39.3,11.1)),dot(gc,vec2(73.1,52.7))))*43758.5)-0.5;'+
    'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(cameraPosition-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
-   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(cameraPosition-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
+   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(cameraPosition-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');
+ THRONE_STRATA_HOOK(STRATA_BAND,sh,{normal:'vGN',cover:'vL0.x+vL0.y+vL2.x'});};
 // THE WALLS' CLASTS (core/terrain KGROUND's layer kind 'clast', BACKPORT.md's row; 2026-11-03): the wall's rock as blocks of its old flows in a
 // matrix of ash, on the steep faces the cliff layer takes (vL0.z): basalt grey and black, red scoria, the pale ash beds; 3D cells, so no stretch
 // down the 450 m wall. Procedural: no texture unit. ?kinds=0 none
@@ -82,13 +87,13 @@ function layersAtC(x,z,k,L0,L1,L2){
   L2[k*4+1]=fl*(1-sn)*smooth(.45,.7,fbm(x*.02+5,z*.02-3,5023,2))*(1-hot)*.7;L2[k*4+2]=smooth(.6,.95,coneAt(x,z).k)*.8;L2[k*4+3]=smooth(.72,.95,sl)*(1-sn*.8)*.7;}
 const BREACH_CELLS=THRONE_BREACH_CELLS(BREACH,880,TERR.R*2.2);   /* the Rheoliths' breach (83r): its cells drawn fine below */
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4),SY=STRATA_BAND?new Float32Array(nx*nx*2):null;
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
-  layersAtC(x,z,k,L0,L1,L2);}
+  layersAtC(x,z,k,L0,L1,L2);if(SY)THRONE_STRATA_ATTR(STRATA,strataMask,x,y,z,k,SY);}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(breachSkip(BREACH_CELLS,i,j))continue;const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));if(SY)g.setAttribute('aSY',new THREE.BufferAttribute(SY,2));
  g.setIndex(new THREE.BufferAttribute(idx.subarray(0,t),1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s summit: the caldera rim, ~10.75 km up';scene.add(m);return m;})();
 THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
 const GROUND_BREACH=THRONE_BREACH_MESH(BREACH_CELLS,{terrainH,attr:layersAtC,mat:MAT_GROUND,label:'The summit: the Rheoliths\' breach in the lake\'s hot ring'});

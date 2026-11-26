@@ -121,6 +121,10 @@ const PORT_LAYOUT_DEF=(()=>{const ok=k=>!!PORT_REG.seg[k];
    tags:{culture:'ancients',types:['civic'],wealth:'civic',decay:it.d,layer:'ancient'},note:it.opt.hostId}).id;}
  for(const q of quarters){let cx=0,cz=0;for(const p of q.poly){cx+=p[0];cz+=p[1];}cx/=q.poly.length;cz/=q.poly.length;
   T.add({class:'feature',kind:'quarter',key:q.id,name:q.name,at:[cx,0,cz],size:[1,1,1],tags:{layer:q.layer,holder:q.holder,mood:q.mood},note:q.id});}
+ /* Huka's ruin (77-hook-ruin.js, phase M1): the Sunk and Scarp Cities' blocks, towers, heaps and people, records only */
+ HOOK_RUIN.register(T);
+ /* the environs' hamlets and camps (77m, S5): their buildings */
+ if(typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES)HOOK_PLACES.register(T);
  const run=Object.assign({d:0,back,sea,moored},R);
  return {items:items.concat(back,hosts,sea,moored),runs:[run],stamps,vessels:portVesselKeys(),
   harbour:{pier,back,sea},hook:{at,pier,berth,heli,hosts,tags:T}};})();

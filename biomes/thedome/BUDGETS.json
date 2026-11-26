@@ -36,6 +36,15 @@
    "vram_mb": 380,
    "why": "Station 4 (cleft) radial Kluft fissure with .tex.thedome.js sidecar keeps HTML under 2.0 MB, KCAVERN + KSPELEO.SMOKY smoky-quartz megaprisms under 110 calls and 15 samplers, and VRAM under 380 MB",
    "raised": "2026-11-23"
+  },
+  "thedome-eastflank.html": {
+   "bytes": 2097152,
+   "tris": 5500000,
+   "calls": 110,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 5 (eastflank) Carnelian sky-island, perimeter Kill-Line & active ecof_mist_pylon with .tex.thedome.js sidecar keeps HTML under 2.0 MB, <= 3 KGROUND layers under 15 samplers, and VRAM under 380 MB",
+   "raised": "2026-11-24"
   }
  }
 }

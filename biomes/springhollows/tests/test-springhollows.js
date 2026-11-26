@@ -12,6 +12,7 @@ function loadInGlobal(relPath) {
 }
 
 loadInGlobal('core/rand/08-core-rand.js');
+loadInGlobal('core/frontier/18-core-frontier.js');
 loadInGlobal('core/tags/50-core-tags.js');
 loadInGlobal('core/tags/52-core-tags-vocab.js');
 loadInGlobal('core/biome/37-core-traps.js');
@@ -163,6 +164,12 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
   const rAA = globalThis.KMAT_M1.roughnessWithVariance(rBase, 3.0, [0.002, 0.008, 0.022, 0.055, 0.095, 0.14, 0.18, 0.22]);
   T.ok('KMAT_M1 M2 roughnessWithVariance widens grazing/far crystal and wet-porphyry roughness cleanly',
     rAA > rBase && rAA < 0.65 && globalThis.KMAT_M1.GLSL_COMMON.indexOf('km1RoughAA') >= 0);
+  // Verify Station 5 (porphyryrelict) Carnelian porphyry knob vs dolomite hollow partition
+  const prKnob = PHYS.porphyryRelictQuiltAt(12, 8, 28.0, SITES.porphyryrelict);
+  const prHollow = PHYS.porphyryRelictQuiltAt(-90, 20, 4.5, SITES.porphyryrelict);
+  T.ok('Station 5 (porphyryrelict) crowns high purple-red porphyry knob in Carnelian clades while keeping dolomite hollows Earthlike',
+    prKnob.inDike === true && prKnob.biosphere === 'carnelian' && prKnob.redDominance01 > 0.70 &&
+    prHollow.inDike === false && prHollow.biosphere === 'earth');
 }
 
 T.done();

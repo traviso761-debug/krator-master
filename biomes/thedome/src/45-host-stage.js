@@ -291,10 +291,23 @@ function baseLandCleft(x,z){
  return mix(shoulder,slotFloor,cutW);
 }
 
-/* Pre-stamp exact horizontal sill elevations for every gnamma solution pan on apron & crown */
+function baseLandEastFlank(x,z){
+ /* Eastern quartz-porphyry dome shoulder sloping downslope from west (-x, Carnelian sky-island) toward Tharn Hills (+x) */
+ const rDom=Math.hypot(x-SITE.domeCenterLocal[0],z-SITE.domeCenterLocal[1]);
+ const shoulder=22.0-0.095*(rDom-890)-0.000028*(rDom-890)*(rDom-890);
+ const steps=onionStepOffset(x,z,SITE)+26.0;
+ let h=shoulder*0.72+steps*0.76+1.15*n2(x,z,0.0085,6505);
+ if(SITE.mistPylon){
+  const dm=Math.hypot(x-SITE.mistPylon.x,z-SITE.mistPylon.z);
+  if(dm<14)h=mix(h,shoulder*0.72+steps*0.76,smooth(14,5,dm));
+ }
+ return h;
+}
+
+/* Pre-stamp exact horizontal sill elevations for every gnamma solution pan on apron, crown & eastflank */
 (function stampGnammaSills(){
  const pans=SITE.gnammas||[];
- const baseFn=SKEY==='crown'?baseLandCrown:baseLandApron;
+ const baseFn=SKEY==='crown'?baseLandCrown:SKEY==='eastflank'?baseLandEastFlank:baseLandApron;
  for(let i=0;i<pans.length;i++){
   const P=pans[i];
   P.sillY=+baseFn(P.x,P.z).toFixed(3);
@@ -339,6 +352,7 @@ function landH(x,z){
  if(SKEY==='crown')return applyGnammas(baseLandCrown(x,z),x,z);
  if(SKEY==='moat')return baseLandMoat(x,z);
  if(SKEY==='cleft')return baseLandCleft(x,z);
+ if(SKEY==='eastflank')return applyGnammas(baseLandEastFlank(x,z),x,z);
  return applyGnammas(baseLandApron(x,z),x,z);
 }
 function terrainH(x,z){return landH(x,z);}
@@ -456,6 +470,7 @@ const OBSTACLES=[];
 const SPINE=SKEY==='apron'?[[-34,-22],[20,-14],[-18,26],[28,48]]
  :SKEY==='moat'?[[-18,-18],[28,48],[0,-110],[158,-42]]
  :SKEY==='crown'?[[0,0],[46,0],[-66,-14],[0,-92]]
+ :SKEY==='eastflank'?[[-62,12],[8,0],[62,-18],[104,46]]
  :[[-95,0],[-18,0],[14,-6],[54,0]];
 
 BIO.init({
@@ -493,5 +508,8 @@ if(typeof KHAZ!=='undefined'&&typeof KTAGS!=='undefined'&&KTAGS.page){
    {kind:'fall',danger:0.86,dose:0.65,falloff:'linear',tell:{sound:'aeolian-chord',sign:'Exhaling warm barometric mist rising from sheer granite slot'}});
   regHaz('dome:spall','Unloading Hoop-Stress Porphyry Rim Scale',-38,-14,22,8,
    {kind:'crush',danger:0.52,dose:0.26,falloff:'linear',cycle:{period:32,warn:1.5,ramp:0.2,on:0.8,after:1.5},tell:{sound:'rifle-crack',sign:'Popped exfoliation edge'}});
+ }else if(SKEY==='eastflank'){
+  regHaz('dome:killline','Ancient Perimeter Defoliant Kill-Line Bleach-Hardpan',8,0,32,8,
+   {kind:'poison',effect:'poison',danger:0.56,dose:0.24,falloff:'smooth',tell:{colour:'#ebe7de',fx:'dust',sign:'Bone-white sterilized exfoliation hardpan dividing Carnelian sky-island from Earth garlands'}});
  }
 }

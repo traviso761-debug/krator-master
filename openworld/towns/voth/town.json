@@ -3796,7 +3796,7 @@
    "settlements/voth/targets/voth-site/10-site-model.js",
    "settlements/voth/site/voth-site.json"
   ],
-  "hash": "a90d8ef0eff36642",
+  "hash": "bb546e5845217315",
   "by": "core/world/bake_towns.py"
  }
 }

@@ -31,6 +31,11 @@ const VIEWS={
  /* stepped back along its own line until no cast is within 4 m (2026-11-02: the rebuild's placement put one at the old spot) */
  'Lava casts at the forest\'s edge':(function(){for(let k=0;k<12;k++){const d=40+k*6,V=across(RIM[0]+Math.sin(RIMA)*d,RIM[1]-Math.cos(RIMA)*d,RIMA-.4,90+k*6,2.5,4);
    if(!REG.some(r=>r.key==='cast'&&Math.hypot(r.x-V[0],r.z-V[2])<(r.r||0)+4))return V;}return across(RIM[0]+Math.sin(RIMA)*40,RIM[1]-Math.cos(RIMA)*40,RIMA-.4,90,2.5,4);})(),
+ /* the rille (47): from its rim, looking down its middle */
+ 'The rille (the tube\'s fallen roof)':(function(){if(!RILLE)return[0,gh(0,0,30),0,100,gh(100,0,0),0];   /* ?rille=0 */const S=RILLE.spans[0],P=TUBE.pts;let s=0,a=P[0],b=P[1];const m=(S.s0+S.s1)/2;
+  for(let i=1;i<P.length;i++){const d=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);if(s+d>=m){a=P[i-1];b=P[i];break;}s+=d;}
+  const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz)||1,cx=a[0]-dz/l*(RILLE.w+14)-dx/l*40,cz=a[1]+dx/l*(RILLE.w+14)-dz/l*40;
+  return[cx,gh(cx,cz,14),cz,a[0]+dx/l*60,gh(a[0]+dx/l*60,a[1]+dz/l*60,-6),a[1]+dz/l*60];})(),
  'The new flow (three years old)':across(FNp.x-20,FNp.z-30,Math.atan2(FN.path[FN.path.length-1].z-FNp.z,FN.path[FN.path.length-1].x-FNp.x),220,3,2),
  'Lehua on the young lava':atTree(nearTree('lehua',RIM[0],RIM[1],12),22,1.2,3,.55),
  'Tree ferns':atTree(nearTree('treefern',RIM[0],RIM[1],6),9,2.0,2.2,.7),
@@ -96,7 +101,10 @@ const HCHK={
   return{ok:s.length>0&&!bad.length,detail:bad.length?bad.length+' siphon trees out of a skylight':s.length+' siphon trees, all in skylights'};},
  onTop(F,key,age){const f=F.flows.find(x=>x.key===key);if(!f||!f.path)return{ok:false,detail:'no flow '+key};const P=f.path.filter((p,i)=>i%3===0&&Math.abs(p.x)<TERR.R&&Math.abs(p.z)<TERR.R),hit=P.filter(p=>F.ageAt(p.x,p.z)===age).length/Math.max(1,P.length);
   return{ok:hit>=.9,detail:(hit*100).toFixed(0)+'% of the '+key+' flow\'s path is '+age+' years old ground'};},
- dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0;});
+ /* a moss skirt on a hyperjungle giant's buttress is on bark, not rooted: a 200 m tree's buttresses reach ~45% of its height out, and over a
+    stream's bank they dip into the water (2026-11-24, the KLAVA flows moved the streams' lines: one skirt 1.1 m under, 85 m from its trunk) */
+ onButtress(p){if(p[3]!=='biome:mossmat'||typeof HYPERJUNGLE==='undefined')return false;return (HYPERJUNGLE.TREES||[]).some(T=>T.hero&&Math.hypot(T.x-p[0],T.z-p[2])<Math.max(30,T.H*.45));},
+ dry(P){const bad=P.filter(p=>{const w=waterH(p[0],p[2]);return w>-1e8&&p[1]<w-1.0&&!HCHK.onButtress(p);});
   return{ok:!bad.length,detail:bad.length?bad.length+' under the water (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':P.length+' instances, none drowned'};},
  cliffs(T){const bad=T.filter(t=>FIELD.slope(t.x,t.z)>.97&&FIELD.rock(t.x,t.z)>.6);
   return{ok:!bad.length,detail:bad.length?bad.length+' trees on sheer rock (first '+KEY(bad[0])+' at '+[bad[0].x|0,bad[0].z|0]+')':T.length+' trees, none on a sheer face'};},

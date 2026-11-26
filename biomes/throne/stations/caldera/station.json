@@ -19,6 +19,12 @@
   "48r3-rheo-place.js": "../rheolith/src/60-rheolith-place.js",
   "48r4-rheo-build.js": "../rheolith/src/70-rheolith.js",
   "44r-host-breach.js": "../throne/shared/44r-host-breach.js",
-  "83r-host-breach-ground.js": "../throne/shared/83r-host-breach-ground.js"
- }
+  "83r-host-breach-ground.js": "../throne/shared/83r-host-breach-ground.js",
+  "84s-host-strata-band.js": "../throne/shared/84s-host-strata-band.js",
+  "46k-host-klava-flows.js": "../throne/shared/46k-host-klava-flows.js"
+ },
+ "terrain": [
+  "35-core-strata.js",
+  "46-core-lava.js"
+ ]
 }

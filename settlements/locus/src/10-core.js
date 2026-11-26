@@ -216,6 +216,22 @@ var SE_HUMMOCKS = [[430,240,120],[640,330,110],[880,420,110],[1080,760,120],[130
 function hummockK(x,z){ var k=0; for(var i=0;i<SE_HUMMOCKS.length;i++){ var H=SE_HUMMOCKS[i], q=Math.hypot(x-H[0],z-H[1])/H[2]; if(q<1) k=Math.max(k, 1-q*q); } return k; }
 /* the east: the basin floor tips up toward the shelf */
 function eastRise(x,z){ var xe = x + 140*Math.sin(z*0.0012) + 50*Math.sin(z*0.0041); return 34*smooth(1500, 2900, xe) + 90*smooth(2800, 4300, xe); }
+/* ---- THE REAL SITE (W7; PLAN-ONMAP.md, the owner 2026-11-24: "lift the page's edge"). On the scale model the abyss wall
+        stands 2 km E and S of the pin. The town's ground is kept to the playable map's edge (MAP_R, where the roads end);
+        from there to the page's edge the E and S ground climbs onto the model's heights (LOCUS_SITE.grid, 09-locus-site.js:
+        absolute m, the page's y = 0 at the lake's -2,400 m), lifting only, so it meets the far field (the wall) with no
+        seam. The river's corridor is left at its own level: it leaves the wall by a gorge. Off on a page with no site grid. */
+function siteH(x,z){ var S = typeof LOCUS_SITE!=='undefined' ? LOCUS_SITE : null, G = S && S.grid; if(!G) return null;
+  var fi = (x-G.x0)/G.dx, fj = (z-G.z0)/G.dz, i = Math.floor(fi), j = Math.floor(fj); if(i<0 || j<0 || i+1>=G.nx || j+1>=G.nz) return null;
+  var u = fi-i, v = fj-j, H = G.h; return H[j][i]*(1-u)*(1-v) + H[j][i+1]*u*(1-v) + H[j+1][i]*(1-u)*v + H[j+1][i+1]*u*v - S.site.y0; }
+var _siteWetSet = null;
+function siteWet(x,z){ var S = typeof LOCUS_SITE!=='undefined' ? LOCUS_SITE : null, G = S && S.grid; if(!G) return null;   /* the model's water at a point: true, false, or null off the grid */
+  if(!_siteWetSet){ _siteWetSet = {}; for(var k=0;k<G.water.length;k++) _siteWetSet[G.water[k][0]+','+G.water[k][1]] = 1; }
+  var i = Math.round((x-G.x0)/G.dx), j = Math.round((z-G.z0)/G.dz); if(i<0 || j<0 || i>=G.nx || j>=G.nz) return null;
+  return !!_siteWetSet[i+','+j]; }
+function wallLift(x,z,h){ var t = siteH(x,z); if(t == null || t <= h) return h;
+  var w = smooth(MAP_R, HW-150, Math.max(x, z)); if(w <= 0) return h;
+  w *= smooth(40, 260, riverQuery(x,z).d); return mix(h, t, w); }
 
 /* ============================== 4. TERRAIN FIELD ============================== */
 var TERRAIN_MOUNDS = [];           /* [x, z, radius, height] */
@@ -248,6 +264,7 @@ function terrainH(x,z){
   for(var q=0;q<TERRAIN_RECTS.length;q++){ var Q=TERRAIN_RECTS[q], lq=loc(0,0,x-Q[0],z-Q[1],-Q[4]), ex=Math.max(Math.abs(lq[0])-Q[2], Math.abs(lq[1])-Q[3], 0);
     if(ex < Q[5]) h = mix(Q[6], h, smooth(0, Q[5], ex)); }
   for(var i=0;i<TERRAIN_MOUNDS.length;i++){ var M=TERRAIN_MOUNDS[i], dx=x-M[0], dz=z-M[1], qq=(dx*dx+dz*dz)/(M[2]*M[2]); if(qq < 1){ var f=1-qq; h += M[3]*f*f; } }
+  h = wallLift(x,z,h);   /* the real site: the E and S edge into the wall's foot */
   /* the lake: west of the shore the floor drops away — wide shallows, then the deep */
   var ld = lakeDist(x,z);
   if(ld < 60){ var lb = -0.5 - 1.6*smooth(0, -300, ld) - 9*smooth(-300, -1400, ld) + 1.4*(nfb(x*0.0018+5, z*0.0018+9)-0.5)*smooth(-40,-220,ld);

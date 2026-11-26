@@ -145,6 +145,21 @@ Hook's own:
 
 ## The ground
 
+**The site plan's ground (S1, 2026-11-24).** The owner's site plan (`plan/hook-site-plan.html`, placement B: the plan
+turned 34 degrees so its waterfront lies on today's quays) is drawn into the ground by Hook's own landform records
+(`world/landforms.json`, `core/world` 41l's outlined benches), made from the owner's sketch, in stamping order:
+`lf_hook_sunk` the drowned downtown (cut only, its floor at least 3 m down, the lagoon's deeper water kept),
+`lf_hook_spit` the walled peninsula with the north ridge running about 3 km into deep water (5 m over the sea, its
+quay edge held straight on today's line, its east edge the wall's), `lf_hook_plain` the coastal plain outside the wall
+(the owner, 2026-11-24: "levelling out into a coastal plain / mangrove swamp": the plan's low ground where the model's
+own ground is under 30 m, levelled to 4 m, cut and filled, meeting the plateau at its own foot; past the city limits it
+narrows to points over the water instead of ending square), `lf_hook_swamp` the mangrove swamp along its water edges
+(0.6 m, on ground under 6 m), and two domed hills (`lf_hook_ridge_hill`, Signal Hill, about 45 m; `lf_hook_crown_hill`,
+the Crown's, about 28 m). The old shank and barb are gone: the drowned downtown and the model's flat take their place.
+The frame is unchanged (the same origin, bearing and stations), so the town stands where it did.
+`python3 world/cut.py --landforms` writes the records into the cut's region.json without re-cutting the model, each wandering
+bench with its noise's sample stated (`wg_n`, `core/world/landform_wg.js`), so the page does not take it at load.
+
 Hook stands on the **Krator Scale Model's ground at 1:1** (the owner, 2026-10-19: built in place on the model, so its
 terrain never has to be reconciled with the open world). The land is the open world's own, read in place:
 `core/world/41-world-fields.js` (`WORLD.H`: the model's heights by Catmull-Rom, the style's detail per biome overlay, the
@@ -239,8 +254,134 @@ and the Capsule Stalks) by the Ys kit's own `HYK.placeOn` on the host's radius f
 under its host. The other layers' additions and the Ancient Iziz markets hung from the towers are still to come
 (`KNOWN_ISSUES.md`, "The landmarks").
 
+## The Ancient city (S2: the records, nothing drawn)
+
+Port Hook was the port district of a far larger Ancient city; the whole is still called Hook (*Huka* to the Hukoa).
+The owner's site plan (`plan/hook-site-plan.html`, `PROPOSAL-METROPOLIS.md` section 10, placement B) is laid as records
+by `src/77-hook-ruin.js` (`[G data]`), on the town's own grid (the site's `grid`: 110 m blocks on 20 m streets, the core
+stretch's columns, rows from `z1`), so the town's streets run on into the ruin. The plan's geometry
+(`HOOK_RUIN_PLAN.SITE`, the cut's world metres) is generated from the owner's sketch under placement B: the downtown's
+centre and the ring freeway's radius (1.8 km), its points every 3 degrees, the wall, the ramp, the south road, the city
+limits (about 10 km across), the Crown and the thirteen places.
+
+- **The field** (`HOOK_RUIN.field(x, z)`): the ground by S1's landforms (`walled` on the peninsula's record, `sunk` in
+  the drowned downtown's, `mainland` dry outside the wall; the living town's zone and the open sea are left out) and the
+  zone by the distance from the downtown's centre over the ring's radius (`core` under 0.55, `downtown` under 1, `inner`
+  under 2.1, `outer` to the limits). The zone picks the designs and the density (0.92, 0.8, 0.55, 0.22), so the height
+  falls with the distance (mean roofs 197, 183, 37, 29 m at this seed); the ground picks the states (picked clean inside
+  the wall, cut down in the water, the valley's far ruin on the mainland) and the wildness (jungle to the crowns on the
+  mainland).
+- **Blocks and towers**: a 2 x 2 tile of cells is four blocks, two long ones or a square, by its hash and its zone's
+  shares, where all four stand on one ground in one zone; a dry block steeper than 0.45 is a cliff (no block), its pad
+  its highest corner. Inside the wall 45 % of the blocks are cleared (round the Glebe, fields). A block's tower is a
+  `kits/metropolis` design that fits it (`HOOK_RUIN_PLAN.DESIGNS`, checked against the kit); one without may hold a
+  heap (a rubble island in the water).
+- **The Crown**: the Spindle on the downtown's hill, gutted, still standing, the port's landmark. **The Drowned Spire**:
+  one Spindle standing to its crown in the water, six Hykkousoi pods on its crown, the village in it; a few other
+  towers standing in the water carry a pod or two.
+- **The ring freeway**: 120 spans, one every 3 degrees of the sketch's angle, the deck 14 m over the ground or the water;
+  the west arc fallen, the south-east arc (the approach) standing, the dry arc standing or broken by hash; the south
+  ramp from the ring down to the South Ramp post. **The wall** (the Pirate Emperors') from the quays' east end to the
+  freeway, the harbour bastion and the Freeway Gate at its ends. **The south road** from the ramp's foot south-west
+  and south-east.
+- **The places**: the thirteen hamlets, camps and posts of the plan (Lantern Point, the Glebe, Breakers' Yard, the
+  Freeway Gate, Signal Hill inside the wall; the Drowned Spire, the mangrove stilts, the deck camp, the South Ramp post,
+  the charcoal burners, the salt pans, the timber camp, the hunters' camp outside), records with their culture, people
+  and work, to be drawn on `core/hamlet` and `core/camp` (S5).
+- Every record has a stable id (`huka.b.<i>.<j>` a block, `huka.t` its tower, `huka.h` its heap, `huka.p` a pod,
+  `huka.fw.<angle>` a span, `huka.wall`, `huka.road.<k>`, `huka.<place>`), a pure function of its cell or its index on
+  the ring (KRAND by (seed, i, j, salt)), and goes into the page's core/tags registry with the town's hosts
+  (`89z-rows.js`; `verify.py` `hook-ruin-records`). At this seed: 2,022 blocks (walled 14.8 km2, drowned 12.0, mainland
+  17.2), 890 towers, 315 heaps, 17 pods, 120 spans.
+
+**Drawn at range (S3's far tier, `src/90c-hook-ruin-draw.js`):** every record as instanced massing, eight draw calls
+for the whole city: a tower's footprint raised to what still stands of it by its state (round for the round designs,
+leaning where it leans, green where the jungle has it), a fallen one lying from its foot as a reef, rubble heaps
+(islands where the water covers the bed), the pods, the freeway's decks and piers (the fallen west arc's spans lying in
+the water) and the south ramp, the wall in 40 m courses with a tower every 160 m and its two gates. Every base is seated
+on the drawn ground (the terrain grid's lowest node along its footprint's edge, a 2 m foundation), so nothing floats and
+a drowned tower's foot stands on the bed under the water. Views: `The Ancient city`, `The drowned downtown`, `The road
+in`. `verify.py`: `hook-ruin-drawn` (a piece a record) and `hook-ruin-seated` (nothing floating, the drowned footed under
+the water).
+
+**Up close (`src/90d-hook-ruin-heroes.js`):** the ten standing towers nearest the camera (within 700 m of the camera,
+measured to the tower's column) are drawn as the metropolis kit draws them, `MP.hero` on the record's family and state,
+and their massing is hidden while they stand; the set is chosen again when the camera moves 30 m, and while the page is
+idle the keys within 1.8 km are built ahead. The kit is read in
+place and sealed in one closure, `KMP` (`77g-kmp-bundle.js`, `build.py` `kmp_bundle`: its records, plans and designs, the
+hero kit and builders, the ruin states and rubble, with the interiors kits its plans read; KRUBBLE from core/terrain),
+its library pack a sidecar (`dist/hook.tex.metropolis.js`). A hero is built once a key at the origin and placed as a copy
+sharing its geometry, at the tower's seat (90c's), turned by its yaw and lean; a design's crown, broken or stump hero is
+cut at the kit's `MP.ruin` top, and the massing stands to that same top, so nothing changes height at the switch. About
+nine draw calls and 30k triangles a hero. View: `The Crown up close`. `verify.py`: `hook-ruin-heroes` (the set round a
+point by the Crown: built without an error, every hero on its seat, its massing hidden). KNOWN_ISSUES.md: no shell tier
+between, wild looks drawn plain, the clip in the host, the build on the frame thread.
+
+**The mangroves and the jungle (S4, `src/90e-hook-flora.js`, `src/77k-hook-paint.js`):** the Ring Sea isles kit
+(`biomes/ringisles`, the Ring Sea's own flora) with the two kits it borrows its forest and mangal from (the Throne: lehua,
+tree fern, the palms, the mangrove; the East Abyss: the stilt and knee trees), sealed with core/biome in one closure
+(`HK_FLORA`, `77h-hkf-bundle.js`, `build.py` `hkf_bundle`; their library packs as sidecars, `dist/hook.tex.ringisles.js`,
+`.throne.js`, `.eastabyss.js`), grown over the whole ruin (a 9.6 km square; the outer city at a fifth of the heart's
+density) and bound to the drawn ground. The kit's
+zones read fields rasterized every 20 m: slope and rock (its cliffs, where it plants nothing), wet and upland (its
+abyssal rainforest, low and wet), the strand, the mangal (the site plan's swamp bands and the shallows round them and the
+drowned downtown) and the gardens (the walled peninsula's clearings and the Glebe's fields). The mask keeps it out of Port
+Hook's zone, the clearings and deep water, and thins it on the walled ground's picked-clean blocks; every drawn footprint
+(the towers, along a long or fallen one), the heaps, the piers and standing decks, the wall and its gates and the
+hamlets' and camps' buildings are kept clear. About 52,000 trees in 13.6 s, the undergrowth round the downtown's heart only. The ground
+under them is painted by `77k` through the Port kit's `PORT.paint` (kits/port 71): mud on the swamp bands, the forest
+floor in patches on the low ground the jungle has. View: `The mangroves`. `verify.py`: `hook-flora` (planted, mangroves
+standing in the water, none in the town, on a clearing, on a cliff, inside a footprint or over the ground).
+
+**The hamlets and camps (S5, `src/77m-hook-places.js`, `[G data]`):** the site plan's thirteen places. Eleven laid out
+by core/hamlet (`KHAMLET.village`; the camps through its work-camp option, `spec.camp`), read in place
+(`build.py` CORE_PLACE, `77j*`): the Hukoa's on the Islanders' row (Lantern Point's fishing hamlet with its quay, the salt
+pans, the mangrove camp, the charcoal burners), the Iziz settlers' on the Iziz Vernacular's (the Glebe's farms, the
+Freeway Gate's way station, the posts, the timber and hunters' camps: `HOOK_PLACES.SETTLERS`, core/hamlet's row with the
+works these want on the Vernacular's rest stop, toll house, guard tower and pens, and two pieces built for them in
+`kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`: the village shrine and the saw pit, opt-in, read by this page only
+until they fold into the kit), the salvagers' (Breakers' Yard) on a row of the post-apoc kit's pieces
+(`HOOK_PLACES.SALVAGE`). The Drowned Spire's Hykkousoi village is 18 of the Ys kit's grown pods (with the plan's six)
+spiralling up the Spire from above the water to under its broken crown, on the Spindle's own surface (the metropolis kit's
+`MP.spindleR`, read when a pod is drawn); the deck camp is the salvagers' shacks along both edges of its standing freeway
+span, on the deck. A building stands on dry, not steep ground, outside Port Hook's zone and
+clear of every ruin footprint; a place whose point is in the water or too cramped for its houses moves to the roomiest
+dry ground within 1.5 km (the mangrove camp 937 m, the salt pans 433 m). 243 buildings, drawn by 90b as the town's lots
+are (in full near the camera, massing beyond; a piece no kit has yet, the Iziz shrine, stays its massing), registered in
+core/tags by 89z; 90e keeps the jungle off them. **The roads** (77m, drawn by `src/90f-hook-roads.js`): core/hamlet's lanes
+(cut back to their last dry, clear point) and each hamlet's link to the road net (the plan's south road, the town's edge,
+the links before it), routed along the Ancient city's own streets (a shortest path over the lattice's crossings, the climb
+weighed, a street passable where the ground is dry, out of the town, clear of every tower, heap, pier, foundation and
+building, and crossing the wall only at a gate); the salt pans, cut off by water, are served from their quay. **The roads
+out** (net51's trunks to Pylon and Torus and the Izani highway to Spirladunon, `HOOK_NET`, generated by `build.py`
+`net_fragment` from `openworld/network-proposal/net51.json`): each comes ashore past the drowned flat (its causeway, not
+drawn), runs 300 m out along its own line and joins the road net along the streets, 8 m wide; the hamlets' links join them. One ribbon
+mesh on the drawn ground. Views: `Lantern Point`, `The Glebe`, `The Spire village`, `The deck camp`. `verify.py`:
+`hook-places`; `node tests/test-hook-places.js` (10 checks: laid, on good ground, apart, linked, each culture on its kit,
+the same on a second run).
+
+**The gap between the port and the ruins** (the owner, 2026-11-24: "skyscraper stumps and medium sized ones so the port
+looks continuous with the city"): the town the ruin leaves alone is now Port Hook's quarters and 60 m round them
+(`PARAMS.townMargin`, the site's quarter polygons), not its whole build zone: the zone's empty reserve to the south (420 m
+deep, nothing built in it yet) is the ruin's, 71 blocks more. The plan's band (`PARAMS.band`), the walled ground within
+900 m of the town, is
+cleared at under a third of the wall's share, has a building on nine blocks in ten, and stands skyscraper stumps and broken
+towers among gutted mid-rises (283 blocks, 83% built, 40% of them skyscraper stumps or broken); a field there keeps a
+skyscraper's stump now and then; a hill too steep for a block elsewhere takes its ruins in the band. Outside it the
+peninsula keeps its picked-clean character, and the height gradient is judged outside it. And a quarried clearing on the walled peninsula keeps its
+building's foundations (77 `foundations`: the footprint's outline as broken wall stubs, 0.6 to 3.6 m, and half of them a
+heap of left rubble; drawn by 90c, 2,002 stubs on 268 clearings); the jungle grows on the walled ground's standing blocks at
+.38 at least and on the clearings at .3 (the Glebe's fields stay clear), and into Port Hook's zone's outer 220 m clear of
+every lot, street and stamp of the town; the walled ground's floor is painted green in sparser patches.
+
+`node tests/test-hook-ruin.js` (31 checks) proves the grid is the town's, every footprint inside its block, the town's
+zone left alone, each block on its ground, the height and density falling from the downtown, each ground's character,
+the freeway's arcs and ramp, the wall and its gates, the Crown and the Spire, the thirteen places on their ground and
+the right side of the wall, the ids stable in any order and core/tags' audit, each with a negative.
+
 ## Next
 
-P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
+The site plan's S6 (tiers and pages: the port page sees the downtown from afar, a ruin page draws it up close); S5's
+remainder: the Drowned Spire's Hykkousoi village (its pods as the Ys kit's grown pods) and the deck camp on the freeway. P3's remainder (`KNOWN_ISSUES.md`, "The landmarks"): the pieces the kits lack (the Temple pyramid on the pad, the
 Ordinator fortress's wall and its breach, the necropolis's tombs, the Kautoan palace court, the toppled statues, the
 war-walkers), then P4: the harbour's life.

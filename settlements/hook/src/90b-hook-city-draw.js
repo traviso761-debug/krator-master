@@ -115,7 +115,7 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  if(!force&&HOOK_DRAW.at&&Math.hypot(at[0]-HOOK_DRAW.at[0],at[1]-HOOK_DRAW.at[1])<HOOK_DRAW.moveFor)return;
  HOOK_DRAW.at=at.slice();const group=HOOK_DRAW.group;
  HOOK_DRAW.inst.forEach(m=>{group.remove(m);m.geometry.dispose();});HOOK_DRAW.inst=[];
- const all=HOOK_DRAW.recs,near=[];all.forEach((L,i)=>{if(L.rubble)return;const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<HOOK_DRAW.nearR)near.push([d,i]);});
+ const all=HOOK_DRAW.recs,near=[];all.forEach((L,i)=>{if(L.rubble||L.pending)return;const d=Math.hypot(L.x-at[0],L.z-at[1]);if(d<HOOK_DRAW.nearR)near.push([d,i]);});
  near.sort((a,b)=>a[0]-b[0]);const sel=near.slice(0,HOOK_DRAW.nearMax),full={},acc={},t0=performance.now();
  /* the near set as ONE mesh per material (the Port's draw-call budget is 900 for the whole page): every near piece's
     flattened parts, transformed by its lot, appended to its material's buffers; rebuilt when the target moves */
@@ -172,7 +172,9 @@ HOOK_DRAW.near=function(at,force){at=at||[-290,-135];
  if(scene.fog&&scene.fog.isFogExp2)scene.fog.density=.00009;
  const town=new THREE.Group();town.name='hook-town';scene.add(town);
  /* the pods are records of the town too (near set and massing as the rest); their frame is their host's */
- try{HOOK_DRAW.records(C.recs.concat(C.pods.map(p=>Object.assign({w:6,d:6,h:5,drop:0,kit:'hykpod'},p))),town);}catch(e){reportErr('town '+e.stack);}
+ /* and the environs' hamlets and camps (77m, S5): drawn as the lots are; a piece no kit has yet stays its massing */
+ const places=typeof HOOK_PLACES!=='undefined'&&HOOK_PLACES?HOOK_PLACES.lots:[];
+ try{HOOK_DRAW.records(C.recs.concat(C.pods.map(p=>Object.assign({w:6,d:6,h:5,drop:0,kit:'hykpod'},p)),places),town);}catch(e){reportErr('town '+e.stack);}
  /* the landmarks' names over them */
  for(const L of C.landmarks){const s=HOST.label(L.name,L.x,L.y+L.h+10,L.z,70,6);scene.remove(s);overlay.add(s);}
  PORT_FRAME.push(()=>{if(typeof ctl!=='undefined'&&ctl.target)HOOK_DRAW.near([ctl.target.x,ctl.target.z]);});})();

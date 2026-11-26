@@ -204,6 +204,34 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
+- **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
+  `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
+  kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:
+  - **Lava steps: a core addition.** KRELIEF has no step form (a flow's front frozen in a terrace down a slope). Add one to
+    `core/terrain/38b-core-relief-lava.js` (with `test-relief-lava.js`, a negative), then take it on the kipuka's and the vents' flow fronts
+    (the KLAVA deposits' margins: `shared/46k-host-klava-flows.js`). Changes every page that inlines `38b` (Godstep, the Godthrone flank, the kipuka).
+  - **The tube station's surface flows.** Not taken: station 11 is underground and its surface shows only through the skylights, so a flow
+    over it would move the skylights' rims and every check on them for nothing seen. Take it only if the tube gets a surface view.
+  - **KSTRATA's core shader on the Throne's walls.** The caldera's and the blast's beds are drawn in one texture unit
+    (`shared/84s-host-strata-band.js`: colour by bed height, no per-pixel warp, cross-bedding, varnish or colonnade joints), as both grounds read
+    15 of 16 units and the core path (`KSTRATA.shade`) takes five. If the ground's layers are packed (two layers to a map, KNOWN_ISSUES
+    "Sixteen texture units"), switch the walls to `KSTRATA.shade`.
+  - **The kipuka's "nothing rooted under the water" check** now skips a moss skirt on a hyperjungle giant's buttress (one skirt 1.1 m under a
+    stream, 85 m from a 205 m tree, after the KLAVA flows moved the streams' lines). The cause is the hyperjungle kit's: it hangs its skirts
+    from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
+    under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
+    hyperjungle kit.
+  - **core/water: the pan's `levelAt`, and the glacier's hand-set line.** `WATER.fields` (ext/60) reads every surface's `levelAt`.
+    Ice has had one in core since Stage 8 B5 (91f152c34, `ext/54`: `S.levelAt=()=>S.level`), so the Throne's glacier no longer needs to
+    set it by hand (`stations/glacier/89w-host-water.js`): drop that line. The pan still has none (its water is only its film): give it one,
+    or let `fields` skip it, with a test.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page

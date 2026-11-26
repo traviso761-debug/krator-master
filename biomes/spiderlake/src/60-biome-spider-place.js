@@ -243,6 +243,39 @@
    });
   }
 
+  // 3D-bis. Station 7 (haugel): Carnelian Erythrophyll erythra-veil fans & 0.75 g ruby bladder-kelp-land on dry secondary-ejecta gorge walls!
+  if(site.carnelianWalls&&typeof KFRONTIER!=='undefined'){
+   st.carnelianRelicts=0;
+   cellPass(15,28,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+2.0))return;
+    if(y<15.5||Math.abs(z)<44.0||!free(x,z,3.4))return;
+    if(rng()>0.68*q)return;
+    claim('carnelian',x,z,3.4);
+    const sc=rr(0.84,1.18),kfCfg={bucket:'sl_chitin',skelBucket:'sl_chitin',prefix:'sl_kf',sunAzimuthRad:0.72};
+    const roll=rng();
+    if(roll<0.42){
+     KFRONTIER.growBladderTether(BIO,kfCfg,x,y,z,hSeed,sc);
+     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'bladder-kelp-land'});
+    }else if(roll<0.82){
+     KFRONTIER.growErythraVeil(BIO,kfCfg,x,y,z,hSeed,sc);
+     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'erythra-veil'});
+    }else{
+     KFRONTIER.growOrganPipe(BIO,kfCfg,x,y,z,hSeed,sc,{});
+     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'carnelian-organpipe'});
+    }
+    st.carnelianRelicts++;
+   });
+   if(reg){
+    reg({
+     tagId:'spiderlake:haugel-carnelian-cliffs',
+     name:'Hau-Gel Dry Secondary-Ejecta Carnelian Erythrophyll Cliff Refugia',
+     tagClass:'flora',
+     x:68,y:Y(68,86)-4,z:86,r:62,h:32,
+     tags:{biome:'spiderlake',biosphere:'carnelian',lithology:'secondary-ejecta'}
+    });
+   }
+  }
+
   // 3D. Upland Chinkapin Oak & Porphyry Rim-Pine (Stations 1-6; dominant woody matrix on dolomite bluffs & +2,040 m rampart!)
   cellPass(skey==='rampart'?22:27,24,Lv.far,false,(x,y,z,wy,lv,hSeed)=>{
    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.60))return;
