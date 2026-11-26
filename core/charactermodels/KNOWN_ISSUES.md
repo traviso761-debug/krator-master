@@ -75,7 +75,26 @@
   clip second) and out (over 0.25 s), a limb that a clip drives quickly into a thigh shows inside it for a frame or
   two, and the result depends on the frames before: scrubbing backwards, or jumping to a time, can give a slightly
   different pose from playing to it. The skull is a ball: an arm lying under a lowered head (a sleeper's pillow arm,
-  a tucked roll) is nudged off it.
+  a tucked roll) is nudged off it. The climb up a ledge's right knee still goes up to 1.5 cm into the right upper arm
+  for a frame at 0.13 to 0.16 s on the tall bodies (3 cm over four frames before the arm-on-arm round, 2026-11-26,
+  measured on the skinned meshes): letting a deep push turn up to three times faster cleared it, but it made the
+  hands jump 2 to 9 cm more in a frame in dig, harvest, repair, the crouch walk and sleep toss, so it was not kept.
+  Folded arms: the hands still grip into the other arm's biceps by a centimetre or two at a few vertices (the hand
+  takes no part in the arm-on-arm test, on purpose).
+- **The man's chest folds under the pecs in the idles, and the torso creases in Sword stance** (owner's reviews,
+  2026-10-25: "lumpy like breasts", "torso has crease"). Both go with the posture pass off (shot, 2026-11-26), so they
+  are the man's large spine bend (`data/posture.json`, his Spine1 -38.5 and the clips' own changes) folding the shirt
+  and the skin under it, not the shirt's fit. Left for the owner's Posture panel; posture.json is unchanged.
+- **Sit (chair, relaxed): "male hand clips face at 8.95 s" was not reproduced** (2026-11-26). The published lab runs
+  the same bodyFix and posture as this branch, and on the skinned meshes the men's hand stays 1.5 cm off the face at
+  8.95 s and at least 0.3 cm off it over the whole clip (the women's palm presses 0.5 to 1 cm into the cheek, as a
+  hand on a cheek does). If it shows again, a shot of the body and frame would settle it.
+- **Push cart: a belt loop of the cargo trousers stands up through the tee's hem at the back** in the deep lean (all
+  three men, the tall woman). A deeper tuck (4 cm) does not move it: the loop stands above the band at the hem line.
+- **129 tops still hide the skin up to their sleeve openings** (`open_sleeves`): no checkout or published lab holds
+  their GLBs as build-manifest.json has them (the 2026-11-06 garment checkpoint), so `make_mpfb.py hides` refreshed the
+  other 52 man's and 45 woman's tops and the giant's harness (2026-11-26) and left these. The next whole build
+  (`tools/rebuild.sh`) or a `hides` run on those pieces takes them.
 - **The elbow limit is a fixed hinge.** `make_pieces.elbow_limit` reads the elbow's bend about an axis fixed in the
   upper arm at rest; an upper arm turned far on its own axis (an overhead wind-up) reads as a bend backwards, so
   readings past 45 degrees backwards are left alone, and the runtime passes (two-hand solve, `bodyFix`) can still

@@ -2688,7 +2688,8 @@ function KCharFigure(body, sliders, load){
        arms  the upper arm (against the trunk its elbow's end only, UPLOW on, and not the top of the chest: the
              shoulder sits in it) turns at the shoulder,
              then the forearm and the hand to the knuckles at the elbow, out of the trunk and both legs' thighs and
-             shins (a giant's lower arm out of its side's upper arm too), the deepest point each time, twice over */
+             shins (a giant's lower arm out of its side's upper arm too) and the other arm of its pair (its upper arm
+             and forearm), the deepest point each time, twice over */
   var ARMS = [['LeftArm', 'LeftForeArm', 'LeftHand', 'LeftHandMiddle1'], ['RightArm', 'RightForeArm', 'RightHand', 'RightHandMiddle1'],
               ['Left2Arm', 'Left2ForeArm', 'Left2Hand', 'Left2HandMiddle1', 'Left'], ['Right2Arm', 'Right2ForeArm', 'Right2Hand', 'Right2HandMiddle1', 'Right']].filter(function(a){ return byName[a[0]] !== undefined; }),
       BF = 0.008, LEGSWING = 0.35, UPLOW = 0.7, BFRELAX = 0.25, BFSPEED = 2.5, BFARM = 1.2, bfStep = 1e9, bfKept = {}, bfClip = {}, bfLast = null, bfI = new THREE.Quaternion(), fV = new THREE.Vector3(), fW = new THREE.Vector3(), fD1 = new THREE.Vector3(), fD2 = new THREE.Vector3(),
@@ -2858,13 +2859,27 @@ function KCharFigure(body, sliders, load){
       if(arm[4]) caps.forEach(function(c){                   // a giant's lower arm: its side's upper arm too
         if(c.a === byName[arm[4] + 'Arm'] || c.a === byName[arm[4] + 'ForeArm']) obs.push(ends({ c:c, ra:c.r * sc, rb:c.r * sc, n:'' }));
       });
+      // the other arm of the pair, as it stands, for the forearm and hand only (Arms folded: each wrist sank 2.5 to 3
+      // cm into the other arm on every body, the owner's review 2026-11-26)
+      var chJ = byName.Spine2 !== undefined ? byName.Spine2 : byName.Spine1, chF = new THREE.Vector3(0, 0, 1);
+      if(chJ !== undefined) chF.applyQuaternion(bones[chJ].getWorldQuaternion(new THREE.Quaternion()).multiply(qB.copy(pRest[chJ]).invert()));
+      // (not while both hands hold one prop: the two-hand solve places the left arm, and the push switching forearms
+      // as a dig's swing passed one over the other jumped the hands 7 cm in a frame)
+      if(!support()) arms.forEach(function(b){
+        if(b === arm || !b[4] !== !arm[4]) return;
+        caps.forEach(function(c){
+          // at its narrow end's radius (the elbow's, the wrist's: one radius for the limb overstated a wrist and the
+          // lower biceps by 2 cm, and the push stood the forearms that far apart)
+          if(c.a === byName[b[0]] || c.a === byName[b[1]]) obs.push(ends({ c:c, ra:c.rb * sc, rb:c.rb * sc, n:'', arm:true }));
+        });
+      });
       for(var it = 0; it < 2; it++){
         var sA = at(byName[arm[0]]), sB = at(byName[arm[1]]), low = sA.clone().lerp(sB, UPLOW), mid = sA.clone().lerp(sB, 0.4), worst = 0;
         obs.forEach(function(o){
           // against the trunk only the elbow's end at its own (tapering) radius, and not the top of the chest: the
           // shoulder and the deltoid sit against the chest, and an arm raised before it is held there
           var tr = trunk.indexOf(o) >= 0;
-          if(tr && o.top) return;
+          if((tr && o.top) || o.arm) return;
           if(o.head) tr = false;
           var hit = closest(tr ? low : o.head ? mid : sA, sB, o.A, o.B);
           var dep = (tr ? cu.ra + (cu.rb - cu.ra) * (UPLOW + (1 - UPLOW) * hit.s) : cu.r) * sc + rad(o, hit.t) + BF - hit.d;
@@ -2876,8 +2891,27 @@ function KCharFigure(body, sliders, load){
         obs.forEach(function(o){
           if(o.head) return;
           [eB, kn].forEach(function(q2, k){
-            if(!q2) return;
-            var hit = closest(k ? eB : eA, q2, o.A, o.B), dep = (k ? cf.rb : cf.r) * sc + rad(o, hit.t) + BF - hit.d;
+            // the other arm: the forearm to the wrist only (a hand may hold the other arm, its fingers round the biceps)
+            if(!q2 || (k && o.arm)) return;
+            var hit = closest(k ? eB : eA, q2, o.A, o.B), R = (k ? cf.rb : cf.r) * sc + rad(o, hit.t) + BF, dep = R - hit.d;
+            // against the other arm the forearm at its own taper (the elbow's radius to the wrist's), and no margin
+            if(o.arm){ R = (cf.ra + (cf.rb - cf.ra) * hit.s) * sc + rad(o, hit.t); dep = R - hit.d; }
+            if(o.arm && dep > 0 && hit.d > 1e-6){
+              // folded forearms lie stacked: the forearm in front of the other arm comes forward out of it along the
+              // chest's forward axis, by the least that clears, and the one behind stays (the gap's own way lifted the
+              // upper forearm and, about the elbow, the hand to the collarbone, and so did forward square to a folded
+              // upper arm, which points down and forward; each arm out of the other in turn ratcheted both forward)
+              fW.subVectors(o.B, o.A).normalize();
+              fV.copy(chF);
+              if(Math.abs(fV.dot(fW)) < 0.9){
+                fR.subVectors(fC1, fC2);
+                var gf = fR.dot(fV), gg = fR.lengthSq();
+                if(gf < 0) return;
+                dep = -gf + Math.sqrt(Math.max(0, gf * gf - gg + R * R));
+                if(dep > worst){ worst = dep; p.copy(fC1); way.copy(fV); }
+                return;
+              }
+            }
             if(dep > worst && hit.d > 1e-6){ worst = dep; p.copy(fC1); way.subVectors(fC1, fC2).divideScalar(hit.d); }
           });
         });

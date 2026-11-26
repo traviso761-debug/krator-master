@@ -833,10 +833,12 @@ def hands_clip(c, clip, spec):
                 w = w * w * (3 - 2 * w)
                 if w <= 0:
                     continue
-                # the palm on the crown, a little behind its top, on the hand's side; the fingers back along the scalp
-                # (tipped 15 degrees into it, so their ends reach it as it curves away), the wrist forward of the
-                # palm, so the forearm comes up over the head from before it, the elbow forward and out
-                n = M @ np.array([0.25 * sx, 0.85, -0.45])
+                # the palm on the upper side of the head, behind the top of the ear, on the hand's side (on the crown
+                # the shoulder and elbow came up high and the wrist bent back to reach it: the owner's review,
+                # 2026-10-25); the fingers back along the scalp (tipped 15 degrees into it, so their ends reach it as it
+                # curves away), the wrist forward of the palm, so the forearm comes up beside the head from before it,
+                # the elbow forward, out and low
+                n = M @ np.array([0.6 * sx, 0.6, -0.5])
                 n /= np.linalg.norm(n)
                 K = C + n * rad
                 Zt = M @ np.array([0.0, -0.2, -1.0])
@@ -845,7 +847,7 @@ def hands_clip(c, clip, spec):
                 Z = Zt * math.cos(math.radians(15)) - n * math.sin(math.radians(15))
                 X = -n                                            # out of the palm: into the head
                 lp = np.linalg.norm(P[J[S + 'HandMiddle1']] - P[hand])
-                rig.reach(loc, up, fore, hand, K + n * 0.03 - Zt * (lp / 2), M @ np.array([0.7 * sx, -0.1, 0.7]))
+                rig.reach(loc, up, fore, hand, K + n * 0.03 - Zt * (lp / 2), M @ np.array([0.75 * sx, -0.45, 0.5]))
                 rig.hold(loc, hand, grips[S], np.cross(Z, X), Z)
             else:
                 w = 1.0
@@ -862,6 +864,31 @@ def hands_clip(c, clip, spec):
                 for k, jj in enumerate((up, fore, hand)):
                     a, b = glbio.mat_quat(clipL[k]), glbio.mat_quat(loc[jj])
                     loc[jj] = _qm(_slerp(np.array(a), np.array(b), w))
+        rig.quats(loc, out)
+    return times, {nm: np.array(v) for nm, v in out.items()}, hips
+
+
+def feet_clip(c, clip, floor):
+    """a clip whose feet point down further than floor degrees (the foot joint to the ball, from level) turned up at the
+    ankle to it, frame by frame (data/clips.json derive 'feet'): Meshy's 'Limp' held each swinging foot 40 to 60 degrees
+    past flat for a third of its stride, the toes pointing at the ground (the owner's review, 2026-10-25); a walk's
+    toe-off passes that for a frame"""
+    times, rots, hips = clip
+    J = c.J
+    lim = math.radians(floor)
+    out = {nm: [] for nm in rots}
+    for f in range(len(times)):
+        rig = _Rig(c, clip, f)
+        loc = list(rig.loc0)
+        for S in ('Left', 'Right'):
+            Rw, P = rig.fk(loc)
+            d = P[J[S + 'ToeBase']] - P[J[S + 'Foot']]
+            h = math.hypot(d[0], d[2])
+            p = math.atan2(d[1], h)
+            ax = np.cross(d, [0.0, 1.0, 0.0])
+            if p >= lim or h < 1e-6 or np.linalg.norm(ax) < 1e-9:
+                continue
+            rig.turn(loc, J[S + 'Foot'], _axis_rot(ax / np.linalg.norm(ax), lim - p))
         rig.quats(loc, out)
     return times, {nm: np.array(v) for nm, v in out.items()}, hips
 
@@ -1586,6 +1613,8 @@ def derived_clips(c, got):
             make = {'level': level_clip, 'bend': bend_clip, 'force': force_clip, 'guard': guard_clip, 'door': door_clip,
                     'place': place_clip, 'handles': handles_clip}[kind]
             clip = make(c, got[spec['from']], spec[kind])
+        elif spec.get('feet') is not None and spec.get('from') in got:
+            clip = feet_clip(c, got[spec['from']], spec['feet'])
         else:
             continue
         out.append(clip + (d['key'], d['label'], d['group'], d['loop']))
@@ -1610,10 +1639,10 @@ def write_anims(out, c):
         seq.append(name)
         if '@' not in name:
             made.append(got[name] + (name, label, group, loop))
-    # a clip whose hands are put right (derive 'hands') stands where its source stood
+    # a clip whose hands or feet are put right (derive 'hands', 'feet') stands where its source stood
     entries = json.load(open(os.path.join(HERE, 'data', 'clips.json')))['clips']
     spots = {d['key']: d['derive']['from'] for d in entries
-             if (d.get('derive') or {}).get('hands') or (any(k in (d.get('derive') or {}) for k in PLACED)
+             if (d.get('derive') or {}).get('hands') or (d.get('derive') or {}).get('feet') is not None or (any(k in (d.get('derive') or {}) for k in PLACED)
                                                        and d['derive'].get('from', '').endswith('@src'))}
     # a clip made from another clip (not its own '@src'): right after it
     after = {d['key']: d['derive']['from'] for d in entries
