@@ -351,9 +351,12 @@ STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 # degrees a prop turns about its handle in a lower hand (the forearm held forward in its guard): the shield stands up
 # with its board out, not flat like a tray (mirrored on the right)
 LOW_TURN = {'shield': 90}
-# the prop's axis that points down whatever the hand's turn (the figure turns it about the grip): a bucket and a lantern
-# hang from their bails
+# the prop's axis that points down whatever the hand's turn: a bucket and a lantern hang from their bails, which lie
+# along the handle axis in the fist (the figure turns the forearm to lay the bail level and swings the load about it)
 HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'basket': [0, 0, 1]}
+# a hanging prop's body, kept out of the legs (the arm swings out at the shoulder): its radius, and from where to where
+# along the hang axis (the short bodies carried the bucket in the thigh)
+HANG_CLEAR = {'bucket': [0.12, 0.13, 0.36], 'lantern': [0.07, 0.05, 0.21]}
 # a prop that stands on the ground (the cart's wheels): height, how far below the grip the ground is (the figure lifts or
 # lowers the hand so the prop meets the ground on every body: a short body's hands come lower in the same clip); y and
 # z, the prop's +Y and +Z in the figure's frame as it stands (the figure keeps it so whatever the hand's turn: a few
@@ -428,6 +431,8 @@ def main():
             out[-1]['low_turn'] = LOW_TURN[pid]
         if pid in HANG:
             out[-1]['hang'] = HANG[pid]
+        if pid in HANG_CLEAR:
+            out[-1]['hang_clear'] = HANG_CLEAR[pid]
         if pid in UPRIGHT:
             out[-1]['upright'] = UPRIGHT[pid]
         if pid in CARRY:
@@ -454,8 +459,9 @@ def main():
                'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '
                'string\'s ends (the figure draws it, through the drawing hand, and nocks the arrow prop). low_turn: degrees the prop '
                'turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. '
-               'hang: the axis that points down whatever the hand\'s turn (a bail\'s load hangs). blade: '
-               'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up '
+                 'hang: the axis that points down, the load swinging about its bail (+Y) once the forearm has turned the '
+                 'bail level; hang_clear: the hanging body\'s radius and its span along the hang axis, kept out of the legs. blade: '
+                 'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up '
                '(grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow\'s length per bow-arm length; length: a prop\'s own. '
                'ground: a prop that stands on the ground (a cart): height, metres from the grip down to the ground (the hand is lifted or lowered to it); y, z: the prop\'s +Y and +Z in the figure\'s frame (kept so whatever the hand\'s turn). '
                'data/clips.json hold says which clip holds what.',

@@ -992,15 +992,21 @@ def hammer_loop(c, idle, cycle=1.1):
     side = 1.0 if c.jpos[J['RightArm']][0] > c.jpos[J['LeftArm']][0] else -1.0     # +x on the right hand's side?
     shR, shL = c.jpos[J['RightArm']], c.jpos[J['LeftArm']]
     anvil = np.array([shR[0] * 0.8 + shL[0] * 0.2, hy - 0.03, 0.34])
-    keys = [(0.0, anvil + [0, 0.06, -0.01], ''), (0.48 * cycle, np.array([shR[0] + side * 0.06, shR[1] + 0.1, 0.12]), 'io'),
-            (0.64 * cycle, anvil, 'in'), (0.74 * cycle, anvil + [0, 0.08, -0.01], 'out'), (cycle, anvil + [0, 0.06, -0.01], 'io')]
+    # the lift goes out to the side first and up beside the head, and the blow comes down in front of the shoulder
+    # before it swings in to the anvil (the owner, 2026-11-26: lifted straight up from the anvil and brought back
+    # across the face, the hammer went through the bowed head)
+    keys = [(0.0, anvil + [0, 0.06, -0.01], ''), (0.24 * cycle, np.array([shR[0] + side * 0.18, hy + 0.26, 0.26]), 'out'),
+            (0.48 * cycle, np.array([shR[0] + side * 0.22, shR[1] + 0.12, 0.10]), 'io'),
+            (0.57 * cycle, np.array([shR[0] + side * 0.12, shR[1] - 0.12, 0.32]), 'in'), (0.64 * cycle, anvil, ''),
+            (0.74 * cycle, anvil + [0, 0.08, -0.01], 'out'), (cycle, anvil + [0, 0.06, -0.01], 'io')]
     lean = [(0.0, np.array([0.22]), ''), (0.48 * cycle, np.array([0.12]), 'io'), (0.64 * cycle, np.array([0.32]), 'in'),
             (cycle, np.array([0.22]), 'io')]
     left = np.array([anvil[0] - side * 0.22, hy + 0.01, 0.3])
     # the hammer's pitch: its handle (the grip's +Y) forward and its face (+Z) down as it lands, swung up and back over
     # the shoulder at the top of the lift
-    pitch = [(0.0, np.array([-0.35]), ''), (0.48 * cycle, np.array([-2.1]), 'io'), (0.64 * cycle, np.array([0.0]), 'in'),
-             (0.74 * cycle, np.array([-0.4]), 'out'), (cycle, np.array([-0.35]), 'io')]
+    pitch = [(0.0, np.array([-0.35]), ''), (0.24 * cycle, np.array([-0.9]), 'out'), (0.48 * cycle, np.array([-2.1]), 'io'),
+             (0.57 * cycle, np.array([-1.0]), 'in'), (0.64 * cycle, np.array([0.0]), ''), (0.74 * cycle, np.array([-0.4]), 'out'),
+             (cycle, np.array([-0.35]), 'io')]
     grip = c.jrot[J['RightHand']].T @ grip_frame(c, 'Right')[:3, :3]        # the grip's axes in the hand bone
     times = np.arange(0, cycle + 1e-6, 1.0 / FPS)
     out = {nm: [] for nm in rig.names}
@@ -1031,14 +1037,17 @@ def dig_loop(c, idle, cycle=1.4):
     T = lambda f: f * cycle
     low = np.array([sh[0] * 0.5, hy + 0.10, sh[2] + 0.34])
     hit = np.array([sh[0] * 0.3, hy - 0.02, sh[2] + 0.40])
-    # the top of the lift: in front of the right shoulder and above it, the handle up and back; nearer the head (it was
-    # 4 cm before the shoulder) the left hand reached behind the head for the handle, its arm round the neck
-    hand = [(0.0, low, ''), (T(0.45), np.array([sh[0], sh[1] + 0.20, sh[2] + 0.28]), 'io'), (T(0.62), hit, 'in'),
+    # the top of the lift: out beside the right shoulder, above it and well in front, the handle up and back (4 cm
+    # before the shoulder the left hand reached behind the head for the handle, its arm round the neck; over the
+    # shoulder the hands passed over the face and the handle through the man's head: the owner, 2026-11-26); the
+    # swing comes down in front of the shoulder, the spine bending into it only as the blow lands
+    hand = [(0.0, low, ''), (T(0.45), np.array([sh[0] + side * 0.16, sh[1] + 0.14, sh[2] + 0.46]), 'io'),
+            (T(0.54), np.array([sh[0] + side * 0.02, sh[1] - 0.02, sh[2] + 0.54]), 'in'), (T(0.62), hit, ''),
             (T(0.74), hit + [0, 0.03, -0.03], 'out'), (cycle, low, 'io')]
-    pitch = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([-1.9]), 'io'), (T(0.62), np.array([0.75]), 'in'),
-             (T(0.74), np.array([0.7]), 'out'), (cycle, np.array([0.3]), 'io')]
-    lean = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([0.05]), 'io'), (T(0.62), np.array([0.5]), 'in'),
-            (T(0.74), np.array([0.5]), ''), (cycle, np.array([0.3]), 'io')]
+    pitch = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([-1.9]), 'io'), (T(0.54), np.array([-0.45]), 'in'),
+             (T(0.62), np.array([0.75]), ''), (T(0.74), np.array([0.7]), 'out'), (cycle, np.array([0.3]), 'io')]
+    lean = [(0.0, np.array([0.3]), ''), (T(0.45), np.array([0.05]), 'io'), (T(0.54), np.array([0.15]), 'in'),
+            (T(0.62), np.array([0.5]), ''), (T(0.74), np.array([0.5]), ''), (cycle, np.array([0.3]), 'io')]
     grip = c.jrot[J['RightHand']].T @ grip_frame(c, 'Right')[:3, :3]
     times = np.arange(0, cycle + 1e-6, 1.0 / FPS)
     out = {nm: [] for nm in rig.names}

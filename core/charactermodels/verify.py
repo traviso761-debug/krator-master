@@ -28,7 +28,10 @@ string and the string hand at the jaw at 5 s, and no arrow after the loose (6.2 
 the legs in Bow aim and scan; Block 2's blade stays out of the head and neck; Two-handed parry's forearms stay apart;
 Drink brings the cup to the lips in the left hand; and the second round (2026-10-21): the arrow's head stays in front
 of the bow in every bow clip on every body; Two-handed parry's left hand does not flip round the hilt; Drink's cup stands
-upright before it is drunk from; Eat's bowl stands level in front of the belly.
+upright before it is drunk from; Eat's bowl stands level in front of the belly; and the third round (2026-11-26): the
+bucket's bail stays in the fist and its body out of the legs in Carry bucket and Water plants; the pickaxe in Dig and the
+hammer at the anvil stay out of the head; Chop's left arm stays out of the jaw; Sit and drink brings the cup to the lips;
+Eat's bowl shoulder is not hiked.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
@@ -545,6 +548,32 @@ LAB_CHECKS = r'''async () => {
   const rise = {};
   for (const c of ['slash_up', 'slash_left']) { let r = -9; await run(c, (x, t) => { if (t > 0.5 && t < 1.3) r = Math.max(r, bone(x, 'RightHand').getWorldPosition(V()).y - bone(x, 'RightArm').getWorldPosition(V()).y); }); rise[c] = r; }
   if (!(rise.slash_left < rise.slash_up - 0.1)) out.push('clips: Slash left rises ' + rise.slash_left.toFixed(2) + ' m over the shoulder, the up swing ' + rise.slash_up.toFixed(2));
+  // the third round (2026-11-26): the bail stays in the fist and the bucket out of the legs; the made dig and hammer keep
+  // their tools out of the head; Chop's left arm out of the jaw; the cup to the lips in Sit and drink; Eat's bowl
+  // shoulder not hiked
+  for (const c of ['walk_bucket', 'ual_water']) {
+    let legs = 0, bail = 0; await run(c, x => { legs = Math.max(legs, x.hangNeed);
+      const pv = bone(x, 'RightHand').children.find(o => !o.isBone).children[0];
+      bail = Math.max(bail, V().set(0, 1, 0).applyQuaternion(pv.quaternion).angleTo(V().set(0, 1, 0))); });
+    if (legs > 0.015) out.push('props: in ' + c + ' the bucket comes ' + (legs * 100).toFixed(1) + ' cm into the legs (their capsules and the trousers)');
+    if (bail > 0.01) out.push('props: in ' + c + ' the bail turns ' + (bail * 57.3).toFixed(0) + ' degrees out of the fist');
+  }
+  const TOOL = { pickaxe: [[0, 0, 0], [0, 0.15, 0], [0, 0.3, 0], [0, 0.45, 0], [0, 0.6, 0, 0.03], [0, 0.57, 0.13], [0, 0.54, 0.26, 0.012], [0, 0.57, -0.13], [0, 0.54, -0.26, 0.012]],
+                 hammer: [[0, 0, 0], [0, 0.1, 0], [0, 0.2, 0], [0, 0.32, 0.07, 0.035], [0, 0.32, 0.01, 0.035], [0, 0.32, -0.05, 0.035]] };
+  for (const c of [['dig', 'pickaxe'], ['hammer_anvil', 'hammer']]) {
+    let deep = 0; await run(c[0], x => { const hc = V(), r = x.facePoint('head', hc), g = bone(x, 'RightHand').children.find(o => !o.isBone);
+      if (!r || !g || x.held.R !== c[1]) return;
+      TOOL[c[1]].forEach(p => { deep = Math.max(deep, r + (p[3] || 0.02) - V().set(p[0], p[1], p[2]).applyMatrix4(g.matrixWorld).distanceTo(hc)); }); });
+    if (deep > 0.005) out.push('props: in ' + c[0] + ' the ' + c[1] + ' comes ' + (deep * 100).toFixed(1) + ' cm into the head');
+  }
+  let jaw = 0; await run('ual_chop', x => { jaw = Math.max(jaw, x.jawNeed); });
+  if (jaw > 0.015) out.push('props: in Chop the left arm comes ' + (jaw * 100).toFixed(1) + ' cm into the jaw');
+  await L.play('sit_drink'); at('sit_drink', 5.5);
+  six.forEach((x, i) => { if (x.held.R !== 'cup' || x.faceW < 0.99) out.push('props: Sit and drink at 5.5 s, figure ' + i + ': the cup not at the lips'); });
+  await L.play('ual_consume'); at('ual_consume', 0.7);
+  six.forEach((x, i) => { const P = KCHAR.fk(KCHAR_DATA.bodies[x.kit.body].skeleton, x.pose.t).P, ia = x.bones.indexOf(bone(x, 'RightArm')), ic = x.bones.indexOf(bone(x, 'RightShoulder'));
+    const e0 = Math.asin(V().fromArray(P[ia]).sub(V().fromArray(P[ic])).normalize().y), e = Math.asin(bone(x, 'RightArm').getWorldPosition(V()).sub(bone(x, 'RightShoulder').getWorldPosition(V())).normalize().y);
+    if (e - e0 > 6 / 57.3) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl shoulder hiked ' + ((e - e0) * 57.3).toFixed(0) + ' degrees'); });
   return out;
 }'''
 
