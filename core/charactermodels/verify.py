@@ -504,6 +504,36 @@ LAB_CHECKS = r'''async () => {
     let gap = 9; hand.map(at3).forEach(a => hp.forEach(b => { gap = Math.min(gap, a.distanceTo(b)); }));
     if (gap < 0.055 || gap > 0.095) out.push('props: Bow shot at 3.2 s, figure ' + i + ': the string hand ' + (gap * 100).toFixed(1) + ' cm off the face, want 6 to 8');
   });
+  // the fifth round (2026-11-26, 07:16): the drawing elbow out and back, not up (Bow aim and scan at 4.59 s, Bow shot: it
+  // stood 11-12 cm above the shoulder and 20 cm in front of it); the arrow in the hand from the quiver (Draw from quiver
+  // showed none until it was on the string); the right forearm beside the rifle's butt, not in it (on the skinned arm)
+  for (const [clip, t] of [['bow_scan', 4.59], ['bow_shot', 3.4]]) {
+    await L.play(clip); at(clip, t);
+    six.forEach((x, i) => { const S = bone(x, 'RightArm').getWorldPosition(V()), E = bone(x, 'RightForeArm').getWorldPosition(V()), H = bone(x, 'RightHand').getWorldPosition(V());
+      const back = H.clone().sub(bone(x, 'LeftHand').getWorldPosition(V())).normalize(), up = E.y - S.y, behind = E.clone().sub(H).dot(back);
+      if (up > 0.03 || behind < 0.15) out.push('props: ' + clip + ' at ' + t + ' s, figure ' + i + ': the drawing elbow ' + (up * 100).toFixed(0) + ' cm over the shoulder, ' + (behind * 100).toFixed(0) + ' cm behind the hand along the arrow'); });
+  }
+  await L.play('bow_draw'); at('bow_draw', 1.45);
+  six.forEach((x, i) => { const b = x.bowState(); if (!b || !b.inHand) out.push('props: Draw from quiver at 1.45 s, figure ' + i + ': no arrow in the drawing hand'); });
+  {
+    await L.play('gun_shot'); const gp = document.getElementById('hold-pick'); if (gp.value !== 'rifle') { gp.value = 'rifle'; gp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 1500)); }
+    const ARMB = /^Right(Arm|ForeArm)$/, sets = six.map(x => { const ms = []; x.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return;
+      const g = o.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, nm = o.skeleton.bones.map(b => b.name), ks = [];
+      for (let k = 0; k < g.attributes.position.count; k++) { let bi = si.getX(k), bw = sw.getX(k);
+        for (const [c, w] of [[si.getY(k), sw.getY(k)], [si.getZ(k), sw.getZ(k)], [si.getW(k), sw.getW(k)]]) if (w > bw) { bw = w; bi = c; }
+        if (ARMB.test(nm[bi])) ks.push(k); }
+      if (ks.length) ms.push([o, ks]); }); return ms; });
+    let inside = 0, frames = 0;
+    for (const [i, x] of six.entries()) { const d = x.action.getClip().duration; x.action.time = 0; x.update(0);
+      for (let t = 0; t < d - 1 / 30; t += 1 / 30) { x.update(1 / 30); if (Math.round(t * 30) % 2) continue;
+        const h = bone(x, 'RightHand').children.find(c => !c.isBone), m = h && h.children[0]; if (!m) continue; m.updateMatrixWorld(true);
+        const inv = m.matrixWorld.clone().invert(); let n = 0;
+        // the butt from 15 cm behind the grip back (by the wrist the hand wraps the grip, where the butt begins)
+        sets[i].forEach(([o, ks]) => { o.skeleton.update(); ks.forEach(k => { const p = o.boneTransform(k, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv);
+          if (Math.abs(p.x) < 0.02 && Math.abs(p.y) < 0.06 && p.z < -0.15 && p.z > -0.39) n++; }); });
+        if (n) { inside = Math.max(inside, n); frames++; } } }
+    if (frames > 2) out.push('props: in Long gun shot the right arm\'s skin is in the rifle\'s butt on ' + frames + ' frames (' + inside + ' vertices at most)');
+  }
   // the owner's review of 2026-11-26. The look pass: Charged slash's head (its clip looked 115 degrees aside, the chest
   // square on) and eyes toward the target ahead
   let lookOff = 0, eyeTurn = 0;

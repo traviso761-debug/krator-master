@@ -728,6 +728,8 @@ func hold(want: Dictionary) -> void:
 			holder.remove_child(ch)
 			ch.queue_free()
 		if side == "L":
+			if not _bow.is_empty() and _bow.get("hand_arrow") != null and (_bow["hand_arrow"] as Node3D).get_parent() != null:
+				(_bow["hand_arrow"] as Node3D).get_parent().remove_child(_bow["hand_arrow"])
 			_bow = {}
 		_hangs.erase(side)
 		if id != null:
@@ -911,6 +913,7 @@ func _after_clip(dt: float) -> void:
 	_toes_flat()
 	_grip()
 	_blade_clear(dt)
+	_stock_arm(dt)
 	_on_ground()
 	_two_hands(dt)
 	_off_hand(dt)
@@ -1295,7 +1298,8 @@ func _untwist(fore: int, hand: int, q: Quaternion) -> void:
 
 # the two-bone solve: the elbow opens or closes to the distance, the upper arm swings onto the target with the elbow
 # turned back to the side it was on, and the hand turns to q (all in the skeleton's space)
-func _reach_arm(up: int, fore: int, hand: int, w: Vector3, q: Quaternion) -> void:
+# pole_dir (a direction, optional): the elbow goes that way from the shoulder-to-target line instead, by pw (0..1)
+func _reach_arm(up: int, fore: int, hand: int, w: Vector3, q: Quaternion, pole_dir := Vector3.ZERO, pw := 0.0) -> void:
 	var S := _gp(up).origin
 	var E := _gp(fore).origin
 	var T := _gp(hand).origin
@@ -1321,6 +1325,13 @@ func _reach_arm(up: int, fore: int, hand: int, w: Vector3, q: Quaternion) -> voi
 		var a := eu.angle_to(pu)
 		if eu.cross(pu).dot(ax) < 0.0:
 			a = -a
+		if pw > 0.0 and pole_dir != Vector3.ZERO:
+			var p2 := pole_dir - ax * ax.dot(pole_dir)
+			if p2.length_squared() > 1e-8:
+				var a2 := eu.angle_to(p2)
+				if eu.cross(p2).dot(ax) < 0.0:
+					a2 = -a2
+				a += pw * wrapf(a2 - a, -PI, PI)
 		_turn(up, Quaternion(ax, a))
 	var par := skeleton.get_bone_parent(hand)
 	skeleton.set_bone_pose_rotation(hand, (_gp(par).basis.get_rotation_quaternion().inverse() * q).normalized())
@@ -1519,6 +1530,99 @@ func _blade_clear(dt: float) -> void:
 		_blade_kept[side] = (q0.inverse() * skeleton.get_bone_pose_rotation(hand)).normalized()
 
 
+# twin of stockArm: the right forearm beside a gun's stock (props.json stock: its segment along the prop's z, the keep-out's
+# half thickness, the butt's half width and half height). The elbow swings about the shoulder-to-wrist line (the hand and
+# the gun stay) by the least of STK_STEPS that keeps the forearm, from the elbow to STK_TO of the way to the wrist, out of
+# the butt's box: of the two ways the one that lowers the elbow, then the way it went while out (never across: from +90 to
+# -80 it swept back through the butt), eased, and straight at up to STK_SPEED while the eased one is still in
+const STK_STEPS := 9
+const STK_TO := 0.6
+const STK_SPEED := 10.0
+var _stk_a := 0.0
+var stock_arm_need := 0.0                # tools: how deep the forearm still is in the butt
+var stock_arm_swing := [0.0, 0.0]        # tools: the swing and the one it heads for
+
+
+func _stock_at(up: int, fore: int, W: Vector3, q0: Quaternion, kx: Vector3, a: float, Mi: Transform3D, st: Array, rf: float, z0: float, z1: float) -> Array:
+	skeleton.set_bone_pose_rotation(up, q0)
+	if a != 0.0:
+		_turn(up, Quaternion(kx, a))
+	var E := _gp(fore).origin
+	var worst := -INF
+	for i in 7:
+		var p := Mi * E.lerp(W, STK_TO * i / 6.0)
+		var ax := absf(p.x - float(st[0])) - float(st[7])
+		var ay := absf(p.y - float(st[1])) - float(st[8])
+		var az := maxf(z0 - p.z, p.z - z1)
+		var dist := Vector3(maxf(ax, 0.0), maxf(ay, 0.0), maxf(az, 0.0)).length() if (ax > 0.0 or ay > 0.0 or az > 0.0) else maxf(ax, maxf(ay, az))
+		worst = maxf(worst, rf - dist)
+	return [worst, E.y]
+
+
+func _stock_arm(dt: float) -> void:
+	stock_arm_need = 0.0
+	var id = held["R"]
+	var st = props.get(id, {}).get("stock") if id != null else null
+	if st == null or (st as Array).size() < 9 or not _holders.has("R") or _holders["R"].get_child_count() == 0 or not skel["hands"]["R"].has("arm") or _clip == "":
+		_stk_a = 0.0
+		return
+	var arm: Array = skel["hands"]["R"]["arm"]
+	var up := int(arm[0])
+	var fore := int(arm[1])
+	var hand := int(arm[2])
+	var rf := 0.035
+	for cp in _caps:
+		if cp.get("pa") == null and cp["a"] == fore:
+			rf = float(cp["r"])
+			break
+	var m := _holders["R"].get_child(0) as Node3D
+	var M := _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R") * m.transform
+	var Mi := M.affine_inverse()
+	rf /= M.basis.get_scale().x
+	var z0 := minf(float(st[2]), float(st[5]))
+	var z1 := maxf(float(st[2]), float(st[5]))
+	var S := _gp(up).origin
+	var W := _gp(hand).origin
+	var qh := _gp(hand).basis.get_rotation_quaternion()
+	var kx := (W - S).normalized()
+	var q0 := skeleton.get_bone_pose_rotation(up)
+	var side := 1 if _stk_a > 0.05 else (-1 if _stk_a < -0.05 else 0)
+	var want = null
+	var least := INF
+	var best := 0.0
+	for k in range(0, 2 * STK_STEPS + 1):
+		if want != null:
+			break
+		var cands := []
+		if k == 0:
+			cands = [0]
+		elif side != 0:
+			cands = [side * k * 10] if k <= STK_STEPS else []
+		elif k <= STK_STEPS:
+			cands = [k * 10, -k * 10]
+		else:
+			break
+		var low_y := INF
+		for c in cands:
+			var a := deg_to_rad(float(c))
+			var r := _stock_at(up, fore, W, q0, kx, a, Mi, st, rf, z0, z1)
+			if float(r[0]) <= 0.0 and float(r[1]) < low_y:
+				low_y = float(r[1])
+				want = a
+			elif float(r[0]) > 0.0 and float(r[0]) < least:
+				least = float(r[0])
+				best = a
+	if want == null:
+		want = best
+	var s0 := _stk_a
+	_stk_a = s0 + (float(want) - s0) * (1.0 - exp(-dt / 0.12)) if dt > 0.0 else float(want)
+	if dt > 0.0 and float(_stock_at(up, fore, W, q0, kx, _stk_a, Mi, st, rf, z0, z1)[0]) > 0.0:
+		_stk_a = s0 + clampf(float(want) - s0, -STK_SPEED * dt, STK_SPEED * dt)
+	stock_arm_need = maxf(0.0, float(_stock_at(up, fore, W, q0, kx, _stk_a, Mi, st, rf, z0, z1)[0]))
+	stock_arm_swing = [_stk_a, float(want)]
+	var par := skeleton.get_bone_parent(hand)
+	skeleton.set_bone_pose_rotation(hand, (_gp(par).basis.get_rotation_quaternion().inverse() * qh).normalized())
+
 # twin of offHand: the empty hand keeps out of the other hand's weapon (props.json blade from HILT below it to its tip,
 # widened by EDGE): its forearm, hand and two fingers are tested against the blade's segment and the wrist moves out by
 # the two-bone solve (the hand keeps its turn), by the depth over how far along the forearm the contact is; the move is
@@ -1643,7 +1747,16 @@ func _to_face() -> void:
 	var arm: Array = h["arm"]
 	var hand := int(arm[2])
 	var ht := _gp(hand)
-	_reach_arm(int(arm[0]), int(arm[1]), hand, ht.origin + (T - P) * w, ht.basis.get_rotation_quaternion())
+	# a bow's string hand: the elbow back along the arrow and out, level with the line, not up, by the face's weight
+	var bw := 0.0
+	var bpole := Vector3.ZERO
+	if fc["hand"] == "R" and held["L"] != null and props.get(held["L"], {}).has("string") and _holders.has("L"):
+		bpole = ht.origin - (_gp(int(skel["hands"]["L"]["bone"])) * _grip_t("L")).origin
+		bpole.y = 0.0
+		if bpole.length_squared() > 1e-8:
+			bpole = bpole.normalized()
+			bw = w
+	_reach_arm(int(arm[0]), int(arm[1]), hand, ht.origin + (T - P) * w, ht.basis.get_rotation_quaternion(), bpole, bw)
 	if fc.get("level") != null and fc["hand"] == "R" and held["L"] != null and _holders.has("L"):
 		_level(float(fc["level"]) + (1.0 - w) * 90.0)
 
@@ -1892,11 +2005,17 @@ func _make_bow(holder: Node3D, p: Dictionary) -> void:
 		ar.visible = false
 		cant.add_child(ar)
 		_bow["arrow"] = ar
+		if skel["hands"].has("R"):
+			var ha := _scene("%s/pieces/props/%s.glb" % [dir, p["arrow"]]) as Node3D
+			ha.visible = false
+			_holder("R").add_child(ha)
+			_bow["hand_arrow"] = ha
 
 
 func bow_state() -> Dictionary:
 	return {} if _bow.is_empty() else {"turn": _bow["turn"], "cant": _bow["cant_a"], "in_legs": _bow["in_legs"],
-		"arrow": _bow["arrow"] != null and _bow["arrow"].visible, "ahead": _bow.get("ahead")}
+		"arrow": _bow["arrow"] != null and _bow["arrow"].visible, "ahead": _bow.get("ahead"),
+		"in_hand": _bow.get("hand_arrow") != null and (_bow["hand_arrow"] as Node3D).visible}
 
 
 func _span(m: MeshInstance3D, a: Vector3, b: Vector3) -> void:
@@ -2008,6 +2127,21 @@ func _arrow_length() -> float:
 	return float(p["arrow_arm"]) * (a.distance_to(e) + e.distance_to(h))
 
 
+# where the clip is in an arrow_hand span (0 at its start, 1 at its end), or -1 outside them
+const HAND_NOCK := 0.04
+
+
+func _arrow_in_hand() -> float:
+	var sp = _clip_info().get("arrow_hand")
+	var r := -1.0
+	if sp != null:
+		var t := player.current_animation_position
+		for s in sp:
+			if t >= float(s[0]) and t <= float(s[1]):
+				r = (t - float(s[0])) / maxf(1e-3, float(s[1]) - float(s[0]))
+	return r
+
+
 func _bow_string(dt: float) -> void:
 	drawn = false
 	if _bow.is_empty():
@@ -2053,8 +2187,24 @@ func _bow_string(dt: float) -> void:
 	# how deep the limbs are in the legs at the cant drawn (the eased one), not the one it heads for
 	_bow["in_legs"] = _limbs_in(ax, float(_bow["cant_a"]), lh * pivot.transform, lg) if not lg.is_empty() else 0.0
 	(_bow["cant"] as Node3D).transform = Transform3D(Basis(ax, float(_bow["cant_a"])), Vector3.ZERO)
+	# the arrow in the drawing hand before it is on the string (clips.json arrow_hand: spans of clip seconds): up out of the
+	# quiver, then the way the figure faces, at the bow only for the last quarter of the span
+	var ha = _bow.get("hand_arrow")
+	var ah := _arrow_in_hand()
+	var ar0 = _bow["arrow"]
+	var ar_on: bool = ar0 != null and drawn and (p.z < -0.2 if nk < 0 else true)
+	if ha != null:
+		ha.visible = ah >= 0.0 and not ar_on
+		if ha.visible:
+			var RG := _gp(int(skel["hands"]["R"]["bone"])) * _grip_t("R")
+			var to_bow := (lh.origin - RG.origin).normalized()
+			var d := Vector3.UP.lerp(Vector3.BACK, smoothstep(0.0, 0.5, ah)).normalized()
+			d = d.lerp(to_bow, smoothstep(0.75, 1.0, ah)).normalized()
+			var dl := RG.basis.get_rotation_quaternion().inverse() * d
+			var alen0 := float(props.get(props.get(held["L"], {}).get("arrow", ""), {}).get("length", 0.78))
+			ha.transform = Transform3D(Basis(Quaternion(Vector3.BACK, dl)) * Basis.from_scale(Vector3(1, 1, ln / alen0)), -dl * HAND_NOCK)
 	var hR: Dictionary = skel["hands"]["R"]
-	if drawn and held["R"] == null and hR.has("curls") and hR["curls"].has("draw"):
+	if (drawn or (ha != null and ha.visible)) and held["R"] == null and hR.has("curls") and hR["curls"].has("draw"):
 		var J: Array = skel["joints"]
 		for cq in hR["curls"]["draw"]:
 			skeleton.set_bone_pose_rotation(int(cq[0]), KChar._q(J[int(cq[0])]["r"]) * Quaternion(cq[1], cq[2], cq[3], cq[4]))

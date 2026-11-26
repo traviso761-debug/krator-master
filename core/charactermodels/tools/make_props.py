@@ -374,9 +374,10 @@ CARRY = {'bowl': [-0.12, 0.02, 0.26]}
 LENGTH = {'arrow': 0.78}
 # a weapon's striking part along the handle (+Y, from..to): the figure turns the wrist so it does not pass through the head
 BLADE = {'sword': [0.1, 0.91], 'dagger': [0.07, 0.32], 'axe': [0.4, 0.68], 'mace': [0.42, 0.65], 'warhammer': [0.5, 0.65]}
-# a gun's stock ([x0, y0, z0, x1, y1, z1, half thickness] in the prop's frame): the figure turns the wrist so it keeps out
-# of the upper arms below the shoulder's pocket (the rifle at the hip ran its butt through the right upper arm)
-STOCK = {'rifle': [0, 0, -0.08, 0, 0, -0.39, 0.045], 'crossbow': [0, 0.04, -0.13, 0, 0.04, -0.27, 0.035]}
+# a gun's stock ([x0, y0, z0, x1, y1, z1, half thickness, half width, half height] in the prop's frame, along its z): the
+# figure turns the wrist so it keeps out of the upper arms below the shoulder's pocket (the rifle at the hip ran its butt
+# through the right upper arm), and swings the elbow so the forearm lies beside the butt's box, not in it
+STOCK = {'rifle': [0, 0, -0.08, 0, 0, -0.39, 0.045, 0.02, 0.06], 'crossbow': [0, 0.04, -0.13, 0, 0.04, -0.27, 0.035, 0.0175, 0.045]}
 
 PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('axe', 'Axe', 'R', axe),
          ('mace', 'Mace', 'R', mace), ('warhammer', 'War hammer', 'R', warhammer), ('spear', 'Spear', 'R', spear),
@@ -461,7 +462,7 @@ def main():
                'turns about its handle in a lower hand (L2, R2: the forearm held forward in its guard), mirrored on the right. '
                  'hang: the axis that points down, the load swinging about its bail (+Y) once the forearm has turned the '
                  'bail level; hang_clear: the hanging body\'s radius and its span along the hang axis, kept out of the legs. blade: '
-                 'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment and its half thickness), kept out of the upper arms. upright: the axis the wrist turns to keep up '
+                 'the striking part along +Y (from, to), kept out of the head (and the other hand kept out of it). stock: a gun\'s butt (a segment along z, its half thickness, half width and half height), kept out of the upper arms and the forearm beside it. upright: the axis the wrist turns to keep up '
                '(grip flat: the hand left open). carry: where the wrist goes, from the lower spine (the arm reaches there). arrow_arm: the arrow\'s length per bow-arm length; length: a prop\'s own. '
                'ground: a prop that stands on the ground (a cart): height, metres from the grip down to the ground (the hand is lifted or lowered to it); y, z: the prop\'s +Y and +Z in the figure\'s frame (kept so whatever the hand\'s turn). '
                'data/clips.json hold says which clip holds what.',
