@@ -82,6 +82,10 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **Fold `core/hamlet/shorekin/26-hamlet-shorekin.js` into `core/hamlet/20-hamlet-cultures.js`** (2026-11-26, Arcoforte P4;
+  `20-hamlet-cultures.js` reaches ~56 builds): register `KHAMLET.shorekinRow()` on `KHAMLET.CULTURES['shore-kin']` alongside
+  `shumariRow()` (`core/hamlet/shumari/25-hamlet-shumari.js`), and fold `core/camp/fleet/58-camp-fleet.js` into `core/camp/` once
+  all `core/camp` consumers rebuild together.
 - **Move `CROPS.BIOMES.arch` into `kits/crops/src/`** (2026-11-26, Arcoforte P3b; `kits/crops` reaches 61 builds / 150 pages): copy
   `ARCH.CROPS` (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) from `biomes/arch/src/40-biome-arch-chem.js`
   into `kits/crops/src/10-crop-core.js` (`BIOMES.arch`), add `'arch'` to `home` on `taro`, `breadfruit`, `banana`, `coconut`,
