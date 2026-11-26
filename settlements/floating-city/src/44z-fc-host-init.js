@@ -42,7 +42,7 @@ renderer.localClippingEnabled = true;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 28000);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 32000);
 window.addEventListener('resize', function () {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
@@ -75,7 +75,7 @@ const SILICA_AT = function () { return 16.8; };
 const ECOTONE_AT = function (x, z) {
   const e = FC_SITE.ecotoneAt(x, z);
   const y = e.elevM;
-  const outsideWeir = Math.hypot(x - FC_SITE.WEIR_CX, z - FC_SITE.WEIR_CZ) > FC_SITE.WEIR_R + 36.0;
+  const outsideWeir = Math.hypot(x - FC_SITE.WEIR_CX, z - FC_SITE.WEIR_CZ) > FC_SITE.WEIR_R + 48.0;
   return {
     elevM: y,
     woodyOk: e.woodyOk && outsideWeir,
@@ -94,10 +94,10 @@ function REGISTER(o) { BIO.record(o); }
 const SITE = {
   id: 'ria-sound-capital',
   biohermMounds: [
-    { x: -920, z: -420, r: 110 },
-    { x: 960,  z: -360, r: 110 }
+    { x: -1360, z: -620, r: 120 },
+    { x:  1380, z: -520, r: 120 }
   ],
-  settlementReserve: { x: 260, z: -1020, r: 520 }
+  settlementReserve: { x: 350, z: -1450, r: 680 }
 };
 
 const L = {
@@ -113,11 +113,12 @@ const L = {
 
 function fcFloraMask(x, z) {
   const rWeir = Math.hypot(x - FC_SITE.WEIR_CX, z - FC_SITE.WEIR_CZ);
-  if (rWeir < FC_SITE.WEIR_R + 55.0) return 0;
+  if (rWeir < FC_SITE.WEIR_R + 68.0) return 0;
   const y = terrainH(x, z);
   if (y < -6.5) return 0;
-  /* Keep the D6 Citadel core, D5 Slipway Ghat & Waterfall Plunge-Harbour clear of wild trunks */
-  if (x > 80 && x < 920 && z > -1360 && z < -680) return 0;
+  /* Keep the 9-Avenue Bluff Metropolis, Upland Terraced Farms, Stone Harbour Moles & Waterfall Plunge-Harbour clear of wild trunks */
+  const sz = FC_SITE.bluffShoreZ(x);
+  if (x > -900 && x < 1700 && z > sz - 880 && z < sz + 280) return 0;
   return 1;
 }
 
@@ -138,8 +139,8 @@ BIO.init({
   mask: fcFloraMask,
   ticks: function (fn) { fcTick(function (nowMs, dt) { fn(dt == null ? 0.016 : dt, nowMs * 0.001); }); },
   origin: [0, 0],
-  center: [0, -320],
-  lod: { hero: 260, mid: 680, far: 2400, floor: [220, 540] },
+  center: [0, -240],
+  lod: { hero: 260, mid: 680, far: 2800, floor: [220, 540] },
   eye: function () { return [camera.position.x, camera.position.y, camera.position.z]; },
   seed: FC_SITE.SEED,
   tags: 'floating-city',

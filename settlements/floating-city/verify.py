@@ -36,7 +36,8 @@ if (A.hostNegatives) {
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT: ')+n.detail});
 }
 const tagCount = (typeof KTAGS !== 'undefined' && KTAGS.page && KTAGS.page.query) ? KTAGS.page.query({}).length : 0;
-R.push({name:'tags-registered', ok:tagCount >= 180, detail:tagCount + ' KTAGS records'});
+const farmCount = (typeof KTAGS !== 'undefined' && KTAGS.page && KTAGS.page.query) ? KTAGS.page.query({tags:{types:'farm'}}).length : 0;
+R.push({name:'tags-registered', ok:tagCount >= 2200 && farmCount >= 28, detail:tagCount + ' KTAGS records (' + farmCount + ' farm/garden plots)'});
 return R;
 }"""
 
@@ -87,7 +88,7 @@ async def run(a):
         views = presets if a.all_views else (
             parse_views(a.views, presets) if a.views else [
                 'overview', 'sw-dyke-and-sumeru', 'sumeru-mandala-aerial', 'suudme-tooka-pontoons',
-                'sea-ring-venetian-harbour', 'bluff-waterfalls-hoists', 'amber-seal-suudme-bluff'
+                'floating-chinampa-gardens', 'sea-ring-venetian-harbour', 'bluff-waterfalls-hoists', 'amber-seal-suudme-bluff'
             ]
         )
         if sw:

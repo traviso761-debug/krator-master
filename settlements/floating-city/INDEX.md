@@ -16,18 +16,18 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | <1 |  |
 | `28-fc-mipvar.js` | 2 |  |
 | `40-fc-tide-phys.js` | 10 |  |
-| `42-fc-megastructure-plan.js` | 12 |  |
+| `42-fc-megastructure-plan.js` | 14 |  |
 | `44z-fc-host-init.js` | 6 |  |
-| `45a-fc-city-defs.js` | 18 |  |
-| `45b-fc-city-steps.js` | 36 **big** |  |
-| `50a-fc-sumeru-core.js` | 26 |  |
-| `50b-fc-dykes-weir.js` | 18 |  |
-| `55-fc-pontoons-hoists.js` | 20 |  |
-| `56-fc-streets-mole.js` | 16 |  |
+| `45a-fc-city-defs.js` | 21 |  |
+| `45b-fc-city-steps.js` | 57 **big** |  |
+| `50a-fc-sumeru-core.js` | 27 |  |
+| `50b-fc-dykes-weir.js` | 21 |  |
+| `55-fc-pontoons-hoists.js` | 40 **big** |  |
+| `56-fc-streets-mole.js` | 19 |  |
 | `58-fc-interiors.js` | 5 |  |
-| `60-fc-sim.js` | 6 |  |
-| `70-fc-chars.js` | 5 |  |
+| `60-fc-sim.js` | 8 |  |
+| `70-fc-chars.js` | 6 |  |
 | `85-fc-world-scene.js` | 24 |  |
 | `89w-fc-water-atmos.js` | 9 |  |
-| `99-fc-host-take.js` | 10 |  |
+| `99-fc-host-take.js` | 11 |  |
 | `99-tail.html` | <1 |  |

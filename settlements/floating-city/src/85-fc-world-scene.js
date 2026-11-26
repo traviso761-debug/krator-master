@@ -1,4 +1,4 @@
-// ================================================================= FLOATING CITY — World Ground, Multi-Kit Atlas (Suudme + Ria), Pontoons, Interiors & Flora [web]
+// ================================================================= FLOATING CITY — World Ground, Multi-Kit Atlas (2,698 Lots), Pontoons, Gardens & Flora [web]
 const FC_WORLD = (function () {
   'use strict';
   const t0 = performance.now();
@@ -71,8 +71,8 @@ const FC_WORLD = (function () {
   /* Bind KHAZ.TIDE zones onto KTAGS.page */
   const HAZARD_RECS = FC_TIDE.bindHazards(KTAGS.page);
 
-  /* 2. Build 1:1 Site Ground Mesh (4,400 m x 4,400 m), KSTRATA Carbonate Cliff Banding, KDRAWN & KFAR */
-  const G_SEGS = 220;
+  /* 2. Build 1:1 Site Ground Mesh (5,200 m x 5,200 m), KSTRATA Carbonate Cliff Banding, KDRAWN & KFAR */
+  const G_SEGS = 240;
   const G_SIZE = FC_SR * 2;
   const groundGeo = new THREE.PlaneGeometry(G_SIZE, G_SIZE, G_SEGS, G_SEGS);
   groundGeo.rotateX(-Math.PI * 0.5);
@@ -100,13 +100,12 @@ const FC_WORLD = (function () {
     if (y >= 82.0) {
       _vc.copy(C_PLATEAU).lerp(C_CLIFF, Math.min(1, e * 0.65));
     } else if (y >= 16.0) {
-      /* Pale stratified Crown Headland limestone cliff */
       const band = 0.88 + 0.12 * Math.sin(y * 0.42);
       _vc.copy(C_CLIFF).multiplyScalar(band);
     } else if (y >= -1.5) {
       _vc.copy(C_GHAT);
-    } else if (y > -20.0) {
-      _vc.copy(C_LAGOON).lerp(C_SILT, x > 450 ? 0.45 : 0.12);
+    } else if (y > -32.0) {
+      _vc.copy(C_LAGOON).lerp(C_SILT, x > 550 ? 0.38 : 0.10);
     } else {
       _vc.copy(C_KOLK);
     }
@@ -141,10 +140,9 @@ const FC_WORLD = (function () {
   const farH = function (x, z) {
     const r = Math.hypot(x, z);
     if (r < FC_SR * 0.96) return terrainH(x, z);
-    /* Northern Crown Headland range + Eastern Suudme-Kuluuna bluff across the sound */
-    const nBluff = z < -1100 ? 145 * Math.min(1, (-z - 1100) / 1800) : 0;
-    const eBluff = (x > 4200 && z > -2400 && z < 3200) ? 118 * Math.min(1, (x - 4200) / 2200) : 0;
-    return Math.max(-42.0, nBluff + eBluff - 28.0 * Math.min(1, (r - FC_SR) / 1800));
+    const nBluff = z < -1450 ? 155 * Math.min(1, (-z - 1450) / 1800) : 0;
+    const eBluff = (x > 4600 && z > -2600 && z < 3400) ? 118 * Math.min(1, (x - 4600) / 2200) : 0;
+    return Math.max(-46.0, nBluff + eBluff - 30.0 * Math.min(1, (r - FC_SR) / 1800));
   };
 
   let GROUND_HZ = null;
@@ -156,7 +154,7 @@ const FC_WORLD = (function () {
         box: [-S0, -S0, S0, S0],
         n: 96,
         h: terrainH,
-        far: { h: farH, box: [-16000, -16000, 16000, 16000], n: 80 }
+        far: { h: farH, box: [-18000, -18000, 18000, 18000], n: 80 }
       });
       if (GROUND_HZ && KHORIZON.shade) {
         KHORIZON.shade(GROUND_MAT, GROUND_HZ);
@@ -168,16 +166,16 @@ const FC_WORLD = (function () {
   let FAR_MESH = null;
   if (typeof KFAR !== 'undefined' && KFAR.grid && KFAR.lines && KFAR.geometry) {
     try {
-      const S0 = FC_SR * 0.98, cs = 64;
+      const S0 = FC_SR * 0.98, cs = 72;
       const cTmp = new THREE.Color(), cBluff = new THREE.Color(0x4c6b48), cCliff = new THREE.Color(0xa89f8c), cSea = new THREE.Color(0x1f444c);
       const G = KFAR.grid({
-        lines: KFAR.lines({ cell: cs, inner: S0 + cs, out: 16000, grow: 1.045 }),
+        lines: KFAR.lines({ cell: cs, inner: S0 + cs, out: 18000, grow: 1.045 }),
         dense: true,
         h: function (x, z) {
           if (Math.abs(x) < S0 && Math.abs(z) < S0) return terrainH(x, z) - 3.5;
           return farH(x, z);
         },
-        skip: function (x0, z0, x1, z1) { return x0 > -S0 + 110 && x1 < S0 - 110 && z0 > -S0 + 110 && z1 < S0 - 110; },
+        skip: function (x0, z0, x1, z1) { return x0 > -S0 + 120 && x1 < S0 - 120 && z0 > -S0 + 120 && z1 < S0 - 120; },
         color: function (x, z, y) {
           cTmp.copy(cCliff).lerp(cBluff, Math.max(0, Math.min(1, (y - 38) / 80)));
           if (y < 0) cTmp.lerp(cSea, Math.max(0, Math.min(1, -y / 16)));
@@ -203,19 +201,19 @@ const FC_WORLD = (function () {
     } catch (e) {}
   }
 
-  /* 3. Build Ancient Sumeru-Noahbabel Megastructure + 49 Pontoons/Fleet + Harbour Moles, Viaduct Funiculars & Bluff Streets */
+  /* 3. Build Grand Megastructure + 30 Neighborhood Platforms + 20 Chinampas + Fleet + Harbour Moles & 9-Avenue Bluff */
   const PLANS = FC_CITY.buildPlans();
   const MEGA_SCENE = FC_SUMERU_DRAW.buildAll(scene, MATS, KTAGS.page, [SUB_CUT_PLANE]);
   const PONTOON_SCENE = FC_PONTOONS_HOISTS.buildAll(scene, MATS, PLANS, KTAGS.page);
   const STREETS_MOLE_SCENE = FC_STREETS_MOLE.buildAll(scene, MATS, PLANS, KTAGS.page);
 
-  /* 4. Multi-Kit Non-Ancient City Instancing: KLK ('suudme') + RIK ('lower-ria' & 'upper-ria') via KCITY.createSharedAtlas */
+  /* 4. Multi-Kit Non-Ancient City Instancing (2,698 Lots across 68 Prototypes at v=0 -> ~215 draw calls via DataTexture2DArray!) */
   const cityGroup = new THREE.Group();
   cityGroup.name = 'fc_multikit_city';
   scene.add(cityGroup);
 
   const ATLAS = (typeof KCITY !== 'undefined' && KCITY.createSharedAtlas)
-    ? KCITY.createSharedAtlas({ renderer: renderer, size: 512, maxVramMB: 350, initialCap: 24 })
+    ? KCITY.createSharedAtlas({ renderer: renderer, size: 512, maxVramMB: 380, initialCap: 24 })
     : null;
 
   const protoCache = {};
@@ -273,7 +271,14 @@ const FC_WORLD = (function () {
       at: [L.x, L.y, L.z],
       ry: L.ry,
       size: [L.w, L.d, L.h],
-      tags: { culture: L.kit, style: L.style, district: L.district, zone: L.instance }
+      tags: {
+        culture: L.kit === 'kulanewa' ? 'kulanewa' : 'ria',
+        style: L.style,
+        wealth: L.wealth,
+        district: L.district,
+        zone: L.instance,
+        types: [L.res ? 'dwelling-multi' : 'civic']
+      }
     });
 
     if (L.instance === 'bluff') {
@@ -290,7 +295,7 @@ const FC_WORLD = (function () {
       plinthList.push({ x: L.x, y: 0.5 * (yTop + yBot), z: L.z, ry: L.ry, w: L.w + 1.4, h: yTop - yBot, d: L.d + 1.4 });
     }
 
-    const P = getMultiKitProto(L.key, L.v);
+    const P = getMultiKitProto(L.key, 0);
     if (!P) continue;
 
     /* Active dockyard / bluff refit sites using KCITY.constructMesh + KCONS.site */
@@ -315,10 +320,10 @@ const FC_WORLD = (function () {
       continue;
     }
 
-    const pk = L.key + '#' + (L.v | 0);
+    const pk = L.key + '#0';
     (byProto[pk] || (byProto[pk] = { P: P, items: [] })).items.push(L);
 
-    if (P.fixtures && fixtureDoors.length < 36) {
+    if (P.fixtures && fixtureDoors.length < 48) {
       const cs = Math.cos(L.ry), sn = Math.sin(L.ry);
       const doors = P.fixtures.doors || [];
       for (let dIdx = 0; dIdx < doors.length; dIdx++) {
@@ -379,6 +384,11 @@ const FC_WORLD = (function () {
         if (P.cachedAtlasParts) drawList = P.cachedAtlasParts;
       }
 
+      let hasFloating = false;
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].instance === 'pontoons') { hasFloating = true; break; }
+      }
+
       for (let pi = 0; pi < drawList.length; pi++) {
         const part = drawList[pi];
         const im = new THREE.InstancedMesh(part.geo, part.mat, items.length);
@@ -402,6 +412,9 @@ const FC_WORLD = (function () {
           }
         }
         im.instanceMatrix.needsUpdate = true;
+        if (!hasFloating && typeof KCITY !== 'undefined' && KCITY.boundedInstanced) {
+          KCITY.boundedInstanced(im);
+        }
         cityMeshesGroup.add(im);
       }
     });
@@ -419,11 +432,10 @@ const FC_WORLD = (function () {
     hostHold = true;
   }
 
-  /* Travertine Bluff Terrace Plinths & D6 Citadel Civic Esplanade */
+  /* Travertine Bluff Terrace Plinths */
   if (plinthList.length) {
     const pGeo = new THREE.BoxGeometry(1, 1, 1);
     const pIm = new THREE.InstancedMesh(pGeo, MATS.travertineStone, plinthList.length);
-    pIm.frustumCulled = false;
     for (let i = 0; i < plinthList.length; i++) {
       const r = plinthList[i];
       _p3.set(r.x, r.y, r.z);
@@ -433,13 +445,15 @@ const FC_WORLD = (function () {
       pIm.setMatrixAt(i, _m4);
     }
     pIm.instanceMatrix.needsUpdate = true;
-    cityGroup.add(pIm);
     _s3.set(1, 1, 1);
+    if (typeof KCITY !== 'undefined' && KCITY.boundedInstanced) KCITY.boundedInstanced(pIm);
+    else pIm.frustumCulled = false;
+    cityGroup.add(pIm);
   }
 
-  /* Bind KCITY.hostFloat so all 28 Moon-Pool Pontoons, 29 Bascules & Floating Suudme/Ria Buildings ride the tide! */
+  /* Bind KCITY.hostFloat so all 30 Neighborhood Pontoons, 20 Chinampa Gardens & 737 Floating Buildings ride the tide! */
   const FLOAT_HOST = KCITY.hostFloat({
-    wards: PLANS.pontoons,
+    wards: PONTOON_SCENE.allFloatWards,
     links: PLANS.bascules,
     fixedY: PONTOON_SCENE.fixedY,
     wardGroups: PONTOON_SCENE.wardGroups,
@@ -464,7 +478,6 @@ const FC_WORLD = (function () {
     return atlasDone;
   }
 
-  /* Build shared WebGL2 DataTexture2DArray as soon as async sidecar WebP images finish decoding (~150 ms) */
   fcTick(function () {
     if (!atlasDone) ensureAtlasBuilt();
   });
@@ -545,8 +558,8 @@ const FC_WORLD = (function () {
   if (typeof DOUBLEDELTA !== 'undefined' && DOUBLEDELTA.build) {
     try {
       biomeOut = DOUBLEDELTA.build({
-        R: 1920,
-        quality: PQ.has('q') ? +PQ.get('q') : 0.62,
+        R: 2350,
+        quality: PQ.has('q') ? +PQ.get('q') : 0.55,
         minWoodyY: FC_SITE.WOODY_TRIM_Y,
         psu: PSU_AT,
         silica: SILICA_AT,
@@ -560,7 +573,7 @@ const FC_WORLD = (function () {
         mire: L.MIRE,
         reserve: SITE.settlementReserve
       });
-      /* Citadel Sacred Timber-Bamboo Garden (280 apex-crowned culms at y >= +118 m inside the clear bluff park) */
+      /* Western Headland Sacred Timber-Bamboo Sanctuary (280 apex-crowned culms at y >= +120 m, clear of Bluff Metropolis) */
       {
         const prevKit = BIO.kit('doubledelta');
         try {
@@ -569,12 +582,11 @@ const FC_WORLD = (function () {
           const cLeaf = new THREE.Color(0x4e7e3e);
           for (let gx = 0; gx < 20; gx++) {
             for (let gz = 0; gz < 14; gz++) {
-              const px = -85 + gx * 5.8;
-              const pz = -1395 + gz * 5.4;
+              const px = -1045 + gx * 5.8;
+              const pz = -1680 + gz * 5.4;
               const py0 = terrainH(px, pz) - 0.15;
               const hCulm = 7.2 + ((gx * 7 + gz * 3) % 5) * 0.35;
               BIO.put('ddbluffculm', [px, py0, pz], qZero, [1.0, hCulm, 1.0], cCulm);
-              /* Stem origin sits right on the culm apex [px + 0.11, py0 + hCulm - 0.02, pz] (0.036 m from tip at rest, >0.28 m when lifted +0.4 m) */
               BIO.put('ddbluffleaf', [px + 0.11, py0 + hCulm - 0.02, pz], qZero, [2.2, 2.4, 2.2], cLeaf);
             }
           }
@@ -592,7 +604,7 @@ const FC_WORLD = (function () {
     }
   }
 
-  /* 7. Citizen Crowds & Economy */
+  /* 7. Citizen Crowds (3,200+) & Economy (44,000 pop + Chinampa Harvest) */
   FC_CHARS.init(scene, PLANS, PONTOON_SCENE.wardGroups);
   const SIM_OUT = FC_SIM.installOnSim(PLANS);
 
@@ -627,7 +639,7 @@ const FC_WORLD = (function () {
 
   function setSubmarineCut(on) {
     FC_STATE.cutSubmarine = !!on;
-    SUB_CUT_PLANE.constant = FC_STATE.cutSubmarine ? 82.0 : 1e6;
+    SUB_CUT_PLANE.constant = FC_STATE.cutSubmarine ? (FC_SITE.WEIR_CZ + 2.0) : 1e6;
   }
 
   window._buildMs = Math.round(performance.now() - t0);

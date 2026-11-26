@@ -1,12 +1,11 @@
-// ================================================================= FLOATING CITY — Bustling Imperial Citizen Crowds (1,500+ Instanced) [draw]
+// ================================================================= FLOATING CITY — Bustling Imperial Citizen Crowds (3,200+ Instanced) [draw]
 // Instanced low-poly citizens dressed in Lower-Ria celadon/saffron silk, Suudme amber/indigo merchant coats,
-// Pioneer slate-cyan coveralls, and Upper-Ria ivory/violet robes strolling across all 850 building frontages,
-// the 3 Boulevard-Dykes, the Sea-Ring Promenade, the Stone Harbour Moles, and all 49 Floating Pontoons.
+// Pioneer slate-cyan coveralls, Chinampa farmer greens, and Upper-Ria ivory/violet robes strolling across all
+// 2,698 building frontages, the 4 Boulevard-Dykes, the Sea-Ring Rampart, the 20 Floating Chinampa Gardens, and the Bluff Metropolis!
 const FC_CHARS = (function () {
   'use strict';
   let group = null;
-  let pontoonActors = [];
-  let fixedActors = [];
+  let allActors = [];
   let bodyIm = null, headIm = null;
   const _m = new THREE.Matrix4(), _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(1, 1, 1), _y = new THREE.Vector3(0, 1, 0);
 
@@ -17,7 +16,8 @@ const FC_CHARS = (function () {
     0x3a5666, /* Pioneer PN-12 dynamo engineer */
     0xdcd4e6, /* Upper-Ria Hongsa truce envoy */
     0xb6382c, /* Heartland lacquer merchant */
-    0xd87a2e  /* Saffron temple pilgrim */
+    0xd87a2e, /* Saffron temple pilgrim */
+    0x4d7e42  /* Chinampa floating-garden cultivator */
   ];
 
   function init(scene, cityPlan, wardGroups) {
@@ -28,40 +28,37 @@ const FC_CHARS = (function () {
 
     const recs = [];
 
-    /* 1. Frontage crowds across all 850 lots (1..2 citizens per lot = ~1,275 citizens) */
+    /* 1. Frontage crowds across all ~2,700 lots (~2,700 citizens) */
     for (let i = 0; i < cityPlan.lots.length; i++) {
       const L = cityPlan.lots[i];
-      const count = (i % 2 === 0) ? 2 : 1;
-      for (let c = 0; c < count; c++) {
-        const h0 = KRAND.unit(KRAND.hash(0xFC900, i, c + 1, 7));
-        const h1 = KRAND.unit(KRAND.hash(0xFC900, i, c + 2, 13));
-        const dist = (L.d * 0.5) + 2.0 + c * 1.4;
-        const lat = (h0 - 0.5) * Math.min(10.0, L.w * 0.6);
-        const sn = Math.sin(L.ry), cs = Math.cos(L.ry);
-        const cx = L.x + sn * dist + cs * lat;
-        const cz = L.z + cs * dist - sn * lat;
-        recs.push({
-          x: cx,
-          z: cz,
-          baseY: L.instance === 'pontoons' ? 0.0 : L.y,
-          wardId: L.instance === 'pontoons' ? L.wardId : null,
-          yaw: L.ry + (h0 - 0.5) * 2.8,
-          phase: h1 * Math.PI * 2,
-          stride: 0.8 + h0 * 1.4,
-          col: PALETTE[(i + c) % PALETTE.length]
-        });
-      }
+      const h0 = KRAND.unit(KRAND.hash(0xFC900, i, 1, 7));
+      const h1 = KRAND.unit(KRAND.hash(0xFC900, i, 2, 13));
+      const dist = (L.d * 0.5) + 1.8;
+      const lat = (h0 - 0.5) * Math.min(9.0, L.w * 0.55);
+      const sn = Math.sin(L.ry), cs = Math.cos(L.ry);
+      const cx = L.x + sn * dist + cs * lat;
+      const cz = L.z + cs * dist - sn * lat;
+      recs.push({
+        x: cx,
+        z: cz,
+        baseY: L.instance === 'pontoons' ? (L.localY == null ? 0.0 : L.localY) : L.y,
+        wardId: L.instance === 'pontoons' ? L.wardId : null,
+        yaw: L.ry + (h0 - 0.5) * 2.6,
+        phase: h1 * Math.PI * 2,
+        stride: 0.8 + h0 * 1.3,
+        col: PALETTE[i % PALETTE.length]
+      });
     }
 
-    /* 2. Bustling Boulevard-Dyke & Sumeru Mandala Court Promenaders (~240 citizens) */
-    const dykeAngles = [-66.0, 152.0, -144.0];
+    /* 2. Bustling 4 Boulevard-Dyke & Sumeru Mandala Promenaders (~440 citizens) */
+    const dykeAngles = [-66.0, 22.0, 146.0, -146.0];
     for (let d = 0; d < dykeAngles.length; d++) {
       const a = dykeAngles[d] * Math.PI / 180;
       const ux = Math.cos(a), uz = Math.sin(a), nx = -uz, nz = ux;
-      for (let s = 0; s < 70; s++) {
-        const rr = 115.0 + s * 8.0;
+      for (let s = 0; s < 110; s++) {
+        const rr = 140.0 + s * 7.8;
         const h0 = KRAND.unit(KRAND.hash(0xFC950, d, s, 5));
-        const lat = (h0 - 0.5) * 14.0;
+        const lat = (h0 - 0.5) * 9.5;
         recs.push({
           x: FC_SITE.WEIR_CX + rr * ux + lat * nx,
           z: FC_SITE.WEIR_CZ + rr * uz + lat * nz,
@@ -69,8 +66,29 @@ const FC_CHARS = (function () {
           wardId: null,
           yaw: Math.atan2(ux, uz) + (s % 2 === 0 ? 0 : Math.PI),
           phase: h0 * Math.PI * 2,
-          stride: 1.6,
+          stride: 1.7,
           col: PALETTE[(d + s) % PALETTE.length]
+        });
+      }
+    }
+
+    /* 3. Chinampa Floating-Garden Cultivators tending all 20 Agricultural Rafts (~80 farmers) */
+    const gardens = cityPlan.gardens || [];
+    for (let g = 0; g < gardens.length; g++) {
+      const G = gardens[g];
+      for (let k = 0; k < 4; k++) {
+        const lx = -G.w * 0.28 + (k % 2) * G.w * 0.52;
+        const lz = -G.d * 0.25 + Math.floor(k / 2) * G.d * 0.50;
+        const wpt = FC_CITY.localToWorld(G.x, G.z, G.yaw, lx, lz);
+        recs.push({
+          x: wpt[0],
+          z: wpt[1],
+          baseY: 0.45,
+          wardId: G.id,
+          yaw: G.yaw + (k % 2 === 0 ? 0 : Math.PI),
+          phase: (g + k) * 0.9,
+          stride: 0.9,
+          col: 0x4d7e42
         });
       }
     }
@@ -93,9 +111,8 @@ const FC_CHARS = (function () {
       r.idx = i;
       cTmp.setHex(r.col);
       bodyIm.setColorAt(i, cTmp);
-      if (r.wardId) pontoonActors.push(r);
-      else fixedActors.push(r);
     }
+    allActors = recs;
     if (bodyIm.instanceColor) bodyIm.instanceColor.needsUpdate = true;
     group.add(bodyIm);
     group.add(headIm);
@@ -104,11 +121,10 @@ const FC_CHARS = (function () {
 
   function update(tSec, wardGroups) {
     if (!bodyIm || !headIm) return;
-    const all = fixedActors.concat(pontoonActors);
-    for (let i = 0; i < all.length; i++) {
-      const r = all[i];
+    for (let i = 0; i < allActors.length; i++) {
+      const r = allActors[i];
       const wy = r.wardId && wardGroups && wardGroups[r.wardId]
-        ? wardGroups[r.wardId].position.y
+        ? wardGroups[r.wardId].position.y + r.baseY
         : r.baseY;
       const walkOff = r.stride * Math.sin(tSec * 0.65 + r.phase);
       const swayX = r.x + Math.sin(r.yaw) * walkOff;
@@ -127,5 +143,5 @@ const FC_CHARS = (function () {
     headIm.instanceMatrix.needsUpdate = true;
   }
 
-  return { init: init, update: update };
+  return { init: init, update: update, count: function () { return allActors.length; } };
 })();

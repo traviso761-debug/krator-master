@@ -28,7 +28,7 @@ const FC_ENV = (function () {
     site: { ox: 354, oy: -190 },
     air: { pressure: 1.58 },
     clouds: { cover: 0.48 },
-    fogDensity: 0.00014
+    fogDensity: 0.00012
   }), {
     renderer: renderer,
     camera: camera,
@@ -46,7 +46,7 @@ const FC_ENV = (function () {
     ATMOS.skylight({ renderer: renderer, sky: env, scene: WENV, ground: function () { return new THREE.Color(0x3a4e48); } });
   }
 
-  /* 2. Two-Basin WATER: Outer Macrotidal Ria Sound + Calm Regulated Inner Noahbabel Lagoon + Twin 64 m Bluff Waterfalls */
+  /* 2. Two-Basin WATER: Outer Macrotidal Ria Sound + Calm Regulated 2,040 m Noahbabel Lagoon + Twin 64 m Bluff Waterfalls */
   let soundWater = null, soundDraw = null;
   let lagoonWater = null, lagoonDraw = null;
   let tideBinder = null;
@@ -56,13 +56,11 @@ const FC_ENV = (function () {
     try {
       const rWeirOf = function (x, z) { return Math.hypot(x - FC_SITE.WEIR_CX, z - FC_SITE.WEIR_CZ); };
 
-      /* Outer Sound bed returns +25 m inside the Sea-Ring and +8 m on Stone Harbour Moles so breakers wrap the moles! */
       const outerBedAt = function (x, z) {
         if (rWeirOf(x, z) < FC_SITE.WEIR_R - 8.0) return 25.0;
         if (FC_SITE.isOnMole && FC_SITE.isOnMole(x, z, 1.0)) return 8.0;
         return terrainH(x, z);
       };
-      /* Inner Lagoon bed returns +25 m outside the Sea-Ring so the calm jade lagoon stays strictly inside the ring! */
       const lagoonBedAt = function (x, z) {
         return rWeirOf(x, z) > FC_SITE.WEIR_R - 4.0 ? 25.0 : terrainH(x, z);
       };
@@ -72,17 +70,17 @@ const FC_ENV = (function () {
         level: 0.0,
         swell: [[0.18, 42, 22, 0, 0.05], [0.10, 21, -28, 0.7, 0.04]],
         field: 0.20,
-        bounds: [-15000, -15000, 15000, 15000],
+        bounds: [-18000, -18000, 18000, 18000],
         bed: outerBedAt,
         shore: {
-          window: 2100,
-          cell: 12,
+          window: 3100,
+          cell: 14,
           seeds: function (x, z) { return outerBedAt(x, z) < -0.1; },
-          band: 46
+          band: 48
         }
       });
-      if (WATER.moveShore) WATER.moveShore(soundWater, 0, -200);
-      if (WATER.farBed) WATER.farBed(soundWater, { ground: outerBedAt, cell: 140 });
+      if (WATER.moveShore) WATER.moveShore(soundWater, 0, -250);
+      if (WATER.farBed) WATER.farBed(soundWater, { ground: outerBedAt, cell: 160 });
       soundDraw = WATER.draw(soundWater, {
         surf: true,
         breakers: true,
@@ -90,7 +88,7 @@ const FC_ENV = (function () {
         roughness: 0.14,
         metalness: 0.06,
         envMapIntensity: 0.46,
-        ramp: [1.5, 22],
+        ramp: [1.5, 24],
         pick: true,
         shallow: linCol(0x3a6e64),
         deep: linCol(0x102c38)
@@ -100,17 +98,17 @@ const FC_ENV = (function () {
       }
 
       lagoonWater = WATER.open({
-        name: 'Noahbabel Regulated Inner Lagoon & Crystal Kolk',
+        name: 'Noahbabel Regulated 2,040 m Inner Lagoon & Crystal Kolk',
         level: 0.0,
         swell: [[0.03, 18, 12, 0, 0.02]],
         field: 0.05,
-        bounds: [-740, -660, 740, 820],
+        bounds: [-1060, -880, 1060, 1240],
         bed: lagoonBedAt,
         shore: {
-          window: 1480,
-          cell: 10,
+          window: 2140,
+          cell: 12,
           seeds: function (x, z) { return lagoonBedAt(x, z) < -0.1; },
-          band: 28
+          band: 30
         }
       });
       if (WATER.moveShore) WATER.moveShore(lagoonWater, FC_SITE.WEIR_CX, FC_SITE.WEIR_CZ);
@@ -121,13 +119,13 @@ const FC_ENV = (function () {
         roughness: 0.07,
         metalness: 0.08,
         envMapIntensity: 0.58,
-        ramp: [2.2, 42],
+        ramp: [2.5, 48],
         pick: true,
         shallow: linCol(0x2d8a82),
         deep: linCol(0x0b3644)
       });
       if (lagoonDraw && lagoonDraw.mesh) {
-        lagoonDraw.mesh.userData.inspectLabel = 'Noahbabel Regulated Inner Lagoon (-1.8..+2.2 m, -95 m central kolk)';
+        lagoonDraw.mesh.userData.inspectLabel = 'Noahbabel Regulated Inner Lagoon (-1.8..+2.2 m, -28 m basin, -96 m central kolk)';
       }
 
       if (WATER.bindTideMeshes) {
@@ -150,7 +148,8 @@ const FC_ENV = (function () {
             const pz = WF.z0 + (WF.z1 - WF.z0) * u;
             const gh = terrainH(px, pz);
             if (gh <= 2.4) break;
-            yc = Math.min(yc, gh + 0.45);
+            const lift = (gh > 12.0 && gh < 83.0) ? 1.95 : 0.55;
+            yc = Math.min(yc, gh + lift);
             pts3.push([+px.toFixed(2), +pz.toFixed(2), +yc.toFixed(2)]);
           }
           if (pts3.length >= 2) {
@@ -186,12 +185,12 @@ const FC_ENV = (function () {
         }
       }
 
-      /* Upper Bluff Freshwater Reservoir (+84 m) & Santa Cristina Nephrite Chime-Well Pool */
+      /* Upper Bluff Freshwater Reservoir (+85 m) & Santa Cristina Nephrite Chime-Well Pool */
       if (WATER.still && WATER.drawPools) {
         const resPoly = [];
         for (let k = 0; k < 16; k++) {
           const a = (k / 16) * Math.PI * 2;
-          resPoly.push([+(615 + Math.cos(a) * 96).toFixed(2), +(-1095 + Math.sin(a) * 48).toFixed(2)]);
+          resPoly.push([+(636 + Math.cos(a) * 94).toFixed(2), +(-1358 + Math.sin(a) * 46).toFixed(2)]);
         }
         const wellPoly = [];
         for (let k = 0; k < 12; k++) {
@@ -199,7 +198,7 @@ const FC_ENV = (function () {
           wellPoly.push([+(FC_SITE.CHIME_WELL.x + Math.cos(a) * 7.2).toFixed(2), +(FC_SITE.CHIME_WELL.z + Math.sin(a) * 7.2).toFixed(2)]);
         }
         const pools = [
-          WATER.still({ name: 'Crown Headland Aqueduct Reservoir', level: 84.8, poly: resPoly }),
+          WATER.still({ name: 'Crown Headland Aqueduct Reservoir', level: 85.2, poly: resPoly }),
           WATER.still({ name: 'Santa Cristina Nephrite Chime-Well Basin', level: FC_SITE.CHIME_WELL.rimY - 1.2, poly: wellPoly })
         ];
         WATER.drawPools(pools, {
@@ -218,7 +217,7 @@ const FC_ENV = (function () {
     }
   }
 
-  /* Master World Tick: Sky, Two-Basin Tide, 28 Pontoons + Bascules, Turbines/Locks, 4 Cliff-Hoists, Fleet & Citizens */
+  /* Master World Tick: Sky, Two-Basin Tide, 30 Pontoons + 20 Chinampas + Bascules, Turbines/Locks, 4 Cliff-Hoists, Fleet & Citizens */
   fcTick(function (nowMs, dtSec) {
     const dt = dtSec == null ? 0.016 : dtSec;
     const tSec = nowMs * 0.001;

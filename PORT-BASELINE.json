@@ -1772,6 +1772,10 @@
    "bytes": 13826402,
    "sha256": "a8c143e0c808363f882131ccee6b57d271bff5ad19dfd99d39b3cc6882834c5f"
   },
+  "settlements/floating-city/dist/floating-city.html": {
+   "bytes": 4067933,
+   "sha256": "45600ce87a02c5023975636c7e642586296af8a6bd32a52e77034e1614348bfc"
+  },
   "settlements/gihon/dist/gihon.html": {
    "bytes": 14506269,
    "sha256": "69314147ee91304cdcf859a72b179fd9f59bca7fde7bda527ca630497590b737"
