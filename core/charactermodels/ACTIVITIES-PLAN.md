@@ -1,4 +1,4 @@
-# Activities to clips: the plan (draft, 2026-11-25)
+# Activities to clips: the plan (2026-11-25; steps 1-3 done the same day)
 
 The simulation knows what every citizen is doing (an activity id each hour, a trade, a workplace, a tool); the
 character kit has 143 clips and 27 props. Nothing joins them yet: Voth tints a stand-in's tunic by activity, and only
@@ -194,11 +194,19 @@ lancet and mortar. Each in the grip frame (+Y along the handle, +Z the fingers, 
 
 ## 8. Order of work
 
-1. `data/activities.json` with today's clips (sections 2-4's ✓ and ~ rows), the lookup in both runtimes, the unmapped
-   list in the build, and Voth's and Longsong's embodiment on it (Longsong's `CLIP()` moves into the table).
-2. The free clips: UAL's jab, cross, hook recovery, scratch, dance, spells, formal walk, leaning on a rail (`Idle_Rail`),
-   nod (`Yes`).
-3. Hand-to-hand from Meshy (§5, about 72 credits: ask first) and the contact event.
+1. **Done (2026-11-25).** `data/activities.json` with today's clips (sections 2-4's ✓ and ~ rows), the lookup in both
+   runtimes (`KCHAR.activity`, `KChar.activity`; 1568 golden cases), the unmapped list (`tests/check_activities.py`:
+   none unmapped; 39 entries marked `gap`), and Longsong's figures on it (its `CLIP()` reads the table). Voth's
+   citizens are not on it yet: they are the next consumer.
+2. **Done.** The free clips: UAL's jab, cross, hook recovery, scratch (`claw_swipe`), dance, spell cast and held
+   ready, formal walk, leaning on a rail (`lean_rail`), nod. The table uses them (CHAM and FESTIVAL dance, SOCIALIZE
+   nods, LOAF leans).
+3. **Done.** Hand-to-hand from Meshy: the 30 actions of §5 (90 credits: 3 each; Boxing Warm-up and Block6 left out,
+   Block3-5 in), group `unarmed` ("Hand to hand") and three hit reactions; BRAWL and HURT in the table, FIGHT and
+   TRAIN with a `brawler` role. The contact event: `contact: [[t, end, target], ...]` on 22 strike and throw clips,
+   found by `tools/contacts.py` (forward kinematics: the striking hand's, foot's, elbow's or knee's reach peaks;
+   a single strike keeps one, a throw its grip); the figure calls `onContact` (JS) and emits `contact` (Godot) as the
+   clip passes each. Not yet: the victim's timed reaction and the reach pass onto them (a game's, or the next step).
 4. The social and ceremonial set from Meshy (bows, kneel, cheer, shout, dances: about 20 actions, 60 credits).
 5. Made clips for the trades, in order of how many citizens they cover: cook and stir, carry a sack, give / take,
    write and read, kneel-pray, row and paddle, sweep, saw, weave, cast a net, feed and lead beasts, milk.

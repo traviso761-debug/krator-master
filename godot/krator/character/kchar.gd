@@ -393,3 +393,51 @@ static func colliders(skel: Dictionary, w: PackedFloat64Array) -> Array:
 			"pa": _v(c["pa"]) if c.has("pa") else null, "pb": _v(c["pb"]) if c.has("pb") else null,
 			"ra": float(c.get("ra", c["r"])) * k, "rb": float(c.get("rb", c["r"])) * k})
 	return out
+
+
+# activity(table, act, ctx) (10-rig.js KCHAR.activity): what a simulated person doing act looks like, from
+# data/activities.json. ctx: { seed, furniture, trade, role }; the override by furniture wins, then trade, then role; one
+# clip of the list per person by KRand.hash(seed, the id's salt). Returns { act, clip, prop, enter, exit, gap, mapped }.
+static func act_salt(id: String) -> int:
+	var h := 0
+	for i in id.length():
+		h = (h * 31 + id.unicode_at(i)) & 0x7fffffff
+	return h
+
+
+static func _act_over(m, k) -> Variant:
+	if k == null or not (m is Dictionary) or not m.has(k):
+		return null
+	var o = m[k]
+	return {"clips": [o]} if o is String else o
+
+
+static func activity(table: Dictionary, act: String, ctx: Dictionary = {}) -> Dictionary:
+	var A: Dictionary = table.get("activities", {})
+	var id := act
+	var e = A.get(id)
+	var n := 0
+	while e != null and e.has("alias") and n < 8:
+		id = e["alias"]
+		e = A.get(id)
+		n += 1
+	var mapped: bool = e != null
+	if e == null:
+		id = table.get("fallback", "IDLE")
+		e = A.get(id, {"clips": ["idle"]})
+	var o = _act_over(e.get("by_furniture"), ctx.get("furniture"))
+	if o == null:
+		o = _act_over(e.get("by_trade"), ctx.get("trade"))
+	if o == null:
+		o = _act_over(e.get("by_role"), ctx.get("role"))
+	if o == null:
+		o = {}
+	var clips: Array = o.get("clips", e.get("clips", ["idle"]))
+	var seed := int(ctx.get("seed", 0)) if ctx.get("seed") != null else 0
+	var clip: String = clips[0]
+	if clips.size() > 1:
+		clip = clips[floori(KRand.unit(KRand.hash_ints(seed, [act_salt(id)])) * clips.size())]
+	var out := {"act": id, "clip": clip, "gap": e.get("gap"), "mapped": mapped}
+	for k in ["prop", "enter", "exit"]:
+		out[k] = o[k] if o.has(k) else e.get(k)
+	return out

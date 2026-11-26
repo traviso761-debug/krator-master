@@ -399,8 +399,33 @@ var KCHAR = (function(){
     return out;
   }
 
+  /* activity(table, act, ctx): what a simulated person doing act looks like (data/activities.json; ACTIVITIES-PLAN.md).
+     ctx: { seed, furniture, trade, role }. The entry's override by the furniture the sim put them at wins, then by
+     trade, then by role; an override may be a clip key alone. One clip of the list per person: KRAND.hash(seed, salt
+     of the id), so a crowd is not in step and the same person always does it the same way. Returns { act (the entry's
+     own id, after aliases), clip, prop ({R, L} or null), enter, exit, gap, mapped (false: no entry, the fallback's) } */
+  function actSalt(id){
+    var h = 0;
+    for(var i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) & 0x7fffffff;
+    return h;
+  }
+  function activity(table, act, ctx){
+    ctx = ctx || {};
+    var A = (table && table.activities) || {}, id = act || '', e = A[id], n = 0;
+    while(e && e.alias && n++ < 8){ id = e.alias; e = A[id]; }
+    var mapped = !!e;
+    if(!e){ id = (table && table.fallback) || 'IDLE'; e = A[id] || { clips:['idle'] }; }
+    var pickO = function(m, k){ var o = k != null && m && m[k]; return typeof o === 'string' ? { clips:[o] } : o || null; };
+    var o = pickO(e.by_furniture, ctx.furniture) || pickO(e.by_trade, ctx.trade) || pickO(e.by_role, ctx.role) || {};
+    var clips = o.clips || e.clips || ['idle'];
+    var seed = ctx.seed == null ? 0 : ctx.seed;
+    var clip = clips.length > 1 ? clips[Math.floor(KRAND.unit(KRAND.hash(seed, actSalt(id))) * clips.length)] : clips[0];
+    var f = function(k){ return k in o ? o[k] : k in e ? e[k] : null; };
+    return { act:id, clip:clip, prop:f('prop'), enter:f('enter'), exit:f('exit'), gap:e.gap || null, mapped:mapped };
+  }
+
   return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, replacesFeet:replacesFeet, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along, crowd:crowd, colliders:colliders };
+           along:along, crowd:crowd, colliders:colliders, activity:activity };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

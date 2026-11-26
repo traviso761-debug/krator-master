@@ -92,6 +92,17 @@ func _init() -> void:
 			hp.sort()
 			ok(hp == pl.get("hidden_parts", []), "hidden parts %s vs %s" % [hp, pl.get("hidden_parts", [])])
 
+	# activities (data/activities.json): KChar.activity against KCHAR.activity
+	var at = j("activities.json")
+	var bad := 0
+	for c in golden.get("activities", []):
+		var got := KChar.activity(at, c["act"], c["ctx"])
+		if not same(JSON.parse_string(JSON.stringify(got)), c["out"]):
+			bad += 1
+			if bad <= 3:
+				print("activity %s %s: %s vs %s" % [c["act"], JSON.stringify(c["ctx"]), JSON.stringify(got), JSON.stringify(c["out"])])
+	ok(bad == 0 and golden.get("activities", []).size() > 0, "activities: %d of %d differ" % [bad, golden.get("activities", []).size()])
+
 	# 4. a figure from the pieces
 	if not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_male"):
 		print("kchar_test: no pieces (run godot/tools/sync_core.py after make_mpfb.py): figure checks skipped")
@@ -186,6 +197,16 @@ func _init() -> void:
 			var hl: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("LeftHand")).origin
 			var hr: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("RightHand")).origin
 			ok(worst2 < 0.03 and hl.distance_to(hr) > 0.08, "%s: the left hand holds the %s (short by %.3f m, hands %.2f m apart)" % [c[0], c[1], worst2, hl.distance_to(hr)])
+		# contact (data/clips.json contact): the left jab passes its one moment of touch, the left hand to the head
+		ok(fig.player.has_animation("jab_l"), "the hand-to-hand clips are in anims.glb")
+		if fig.player.has_animation("jab_l"):
+			var hits := []
+			fig.contact.connect(func(c, t, e, g): hits.append([c, t, e, g]))
+			fig.hold({"R": null, "L": null})
+			fig.play("jab_l")
+			for k in 60:
+				fig._process(1.0 / 30.0)
+			ok(hits.size() == 1 and hits[0][2] == "LeftHand" and hits[0][3] == "Head", "jab_l: one contact, the left hand to the head: %s" % [hits])
 		# the bow: drawn in the aim-and-scan loop, its arrow shown
 		fig.hold({"R": null, "L": "bow"})
 		fig.play("bow_scan")

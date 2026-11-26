@@ -3402,12 +3402,28 @@ function KCharFigure(body, sliders, load){
   }
   this.blink = function(){ blinkAt = blinkT; };
 
+  /* ---- contact: a strike's or a throw's moment of touch (data/clips.json contact: [[t, end, target], ...] in clip
+     seconds; tools/contacts.py finds them), so a game times the other party's hit, fall or block to it and can reach
+     the hands onto them (ACTIVITIES-PLAN.md section 5). update() calls onContact({clip, t, end, target}) as the playing
+     clip passes each, a loop's on every cycle ---- */
+  this.onContact = null;
+  function contacts(a, t0){
+    var c = KCharFigure.clipData[a.getClip().name], L = c && c.contact, t1 = a.time;
+    if(!L || !self.onContact || t1 === t0) return;
+    for(var k = 0; k < L.length; k++){
+      var t = L[k][0];
+      if(t1 > t0 ? t > t0 && t <= t1 : t > t0 || t <= t1) self.onContact({ clip:a.getClip().name, t:t, end:L[k][1], target:L[k][2] });
+    }
+  }
+
   this.update = function(dt){
     blinks(dt);
     if(!self.action) return;
     for(var i = 0; i < bones.length; i++) bones[i].quaternion.copy(clipQ[i]);
     // the morph and lift below are added to the hips once, not once a frame: hipsTrack starts them from the rest
+    var a = self.action, t0 = a.time;
     self.mixer.update(dt * CADENCE);
+    contacts(a, t0);
     for(i = 0; i < bones.length; i++) clipQ[i].copy(bones[i].quaternion);
     hipsTrack();
     self.hips.position.y += self.pose.lift;
@@ -3420,7 +3436,7 @@ function KCharFigure(body, sliders, load){
   this.dispose = function(){ self.mixer.stopAllAction(); self.group.parent && self.group.parent.remove(self.group); };
 }
 KCharFigure.props = {};      // data/props.json by id (the page fills it)
-KCharFigure.clipData = {};   // data/clips.json clips by key: hold, two_hands, face, nock, lead_left (the page fills it)
+KCharFigure.clipData = {};   // data/clips.json clips by key: hold, two_hands, face, nock, lead_left, contact (the page fills it)
 KCharFigure.faces = {};      // data/clips.json faces: per body, the face's points (the page fills it)
 KCharFigure.posture = {};    // data/posture.json bodies (the page fills it)
 KCharFigure.postureClips = {};   // data/posture.json clips: per clip, per body, degrees added (the page fills it)

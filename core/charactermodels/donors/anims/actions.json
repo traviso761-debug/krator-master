@@ -208,6 +208,90 @@
    ],
    "task": "01a130cf-bed7-73ce-9e45-25636d7b15fb",
    "glb": "actions_7.glb"
+  },
+  {
+   "ids": [
+    87,
+    9,
+    10,
+    88,
+    191,
+    192,
+    193,
+    197,
+    194,
+    196
+   ],
+   "names": [
+    "Boxing Practice",
+    "ForwardLeft Run Fight",
+    "ForwardRight Run Fight",
+    "Chest Pound Taunt",
+    "Left Jab from Guard",
+    "Right Jab from Guard",
+    "Left Hook from Guard",
+    "Left Short Hook from Guard",
+    "Right Uppercut from Guard",
+    "Left Uppercut from Guard"
+   ],
+   "task": "01a215c3-0fb3-7346-927b-c3c9588c1d0d",
+   "glb": "fight_0.glb"
+  },
+  {
+   "ids": [
+    195,
+    200,
+    201,
+    203,
+    93,
+    90,
+    212,
+    211,
+    206,
+    207
+   ],
+   "names": [
+    "Right Upper Hook from Guard",
+    "Punch Combo 1",
+    "Punch Combo 2",
+    "Punch Combo 3",
+    "Dodge and Counter",
+    "Counterstrike",
+    "Elbow Strike",
+    "Boxing Guard, Step Knee Strike",
+    "Spartan Kick",
+    "Roundhouse Kick"
+   ],
+   "task": "01a215c3-1101-7659-9e96-731b3e5be5cb",
+   "glb": "fight_1.glb"
+  },
+  {
+   "ids": [
+    213,
+    421,
+    389,
+    140,
+    141,
+    142,
+    174,
+    175,
+    173,
+    7
+   ],
+   "names": [
+    "Leg Sweep",
+    "Over Shoulder Throw",
+    "Grip and Throw Down",
+    "Block3",
+    "Block4",
+    "Block5",
+    "Face Punch Reaction",
+    "Face Punch Reaction 1",
+    "Slap Reaction",
+    "BeHit FlyUp"
+   ],
+   "task": "01a215c3-126f-77f8-8592-ce11993e0058",
+   "glb": "fight_2.glb"
   }
  ]
 }

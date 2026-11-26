@@ -30,19 +30,12 @@ const LSFIG=(function(){const O={on:false,ready:0,want:0,err:null,slots:[],loads
  // ---------------------------------------------------------------- the records (40e), made when first wanted
  const REC=new Array(LS.PEOPLE.length);
  const recOf=i=>REC[i]||(REC[i]=LSK.record(LS.PEOPLE[i],D));
- // the clip each activity wants (data/clips.json's names: the body's anims.glb; 2026-10-20: the library's own for each,
- // no longer idle for most): the walkers walk; the forms, the debate, the wheel as before; prayer, study and the camp sit
- // cross-legged, tea is drunk sitting, a meal eaten; the wardens stand with their arms folded, the keepers and the
- // watch hold a lantern; work is at a bench, trade is talk; at rest or on the festival's forecourt each person keeps
- // one of three (arms folded, talking, sitting), by their seed
- const pick=(i,salt,L)=>L[Math.floor(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,salt))*L.length)];
- const CLIP=(i,act)=>act==='MOVE'||act==='KORA'||act==='WALK'||act==='CHAM'?'walk':act==='DRILL'?(LS.PEOPLE[i].role==='master'?'combat_idle':'ual_punch'):
-  act==='DEBATE'?(KRAND.unit(KRAND.hash(LS.PEOPLE[i].seed,7))<.5?'ual_talk':'sit_floor'):act==='TURN_WHEEL'?'ual_push':
-  act==='GUARD'?(LS.PEOPLE[i].role==='operative'?'combat_idle':'ual_arms_folded'):act==='FARM'?pick(i,17,['ual_harvest','ual_harvest','ual_water','ual_plant']):
-  act==='PRAY'||act==='STUDY'||act==='STUDY_IN'||act==='CAMP'||act==='LODGE'?'sit_floor':act==='TEA'?'sit_drink':act==='EAT'?'ual_consume':
-  act==='WATCH'||act==='KEEP'?'ual_lantern':act==='WORK'?'ual_interact':act==='TRADE'||act==='PILGRIM'?'ual_talk':
-  /^REST/.test(act||'')||act==='FESTIVAL'?pick(i,19,['ual_arms_folded','ual_talk','sit_floor']):'idle';
- const SITS={sit_floor:1,sit_drink:1,ual_sit_talk:1};O.CLIP=CLIP;
+ // the clip each activity wants: core/charactermodels/data/activities.json (ACTIVITIES-PLAN.md), read by KCHAR.activity with
+ // the person's seed (one clip of an activity's list each, so a crowd is not in step) and role (the master drills, the
+ // operatives guard in a combat stance); remembered per person and activity, as the slots ask every frame
+ const ACTS={};
+ const CLIP=(i,act)=>{const k=i+'|'+act;return ACTS[k]||(ACTS[k]=KCHAR.activity(D.activities,act,{seed:LS.PEOPLE[i].seed,role:LS.PEOPLE[i].role}).clip);};
+ const SITS={sit_floor:1,sit_drink:1,ual_sit_talk:1,ual_sit:1,sit:1,sit_f:1};O.CLIP=CLIP;
  // ---------------------------------------------------------------- the slots: a figure each, given to the nearest people
  function slot(body){const fig=new KCharFigure(D.bodies[body],D.sliders,load);fig.group.visible=false;fig.group.userData.probeSkip=true;
   fig.group.traverse(m=>{m.userData.inspectLabel='A person of Longsong';m.frustumCulled=false;});scene.add(fig.group);

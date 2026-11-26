@@ -107,11 +107,12 @@ nearest people as figures in their own records).
    the nearest few dozen as figures and a crowd past them in a handful of looks and poses, one draw each (Longsong's
    `69-ls-figures.js`: 16 looks, standing, two strides, sitting). Not yet: faces of their own at that range, the cloth
    chains' sway, a Godot twin.
-2. **Line up the work tasks with clips.** Map each activity (`core/simulation/ROADMAP.md` §26, the portable
-   primitives, plus a build's own: FETCH_WATER, HERD, SMITH, TRADE, SLEEP...) to a clip, a prop and a loop or one-shot
-   in a table beside `data/clips.json`, and list the activities with no clip. Fill the gaps from the libraries
-   already used (Meshy's animation library, Quaternius UAL), Mixamo clips the owner supplies, or made clips
-   (`derive`, as the hammer, dig and thrusts are).
+2. **Line up the work tasks with clips.** Begun (2026-11-25, `ACTIVITIES-PLAN.md`): `data/activities.json` maps
+   every activity the sims use to clips, props, enter and exit one-shots, with overrides by furniture, trade and role;
+   `KCHAR.activity(table, act, {seed, furniture, trade, role})` and `KChar.activity` read it (golden cases in
+   `tests/golden-mpfb.json`), and Longsong's figures play from it. `tests/check_activities.py` lists the ids the sims
+   use with no entry and the entries marked `gap` (a stand-in clip until the real one is made or fetched). Next: the
+   gaps (the plan's sections 3 and 4), props for them, and Voth's citizens on the table.
 3. **A quality pass, before citizens use it at scale:** clothing (skin and under-layers through garments at the
    slider ends, sleeves, hems in motion, the generated garments' tailoring), posture (the retarget's straightened
    spine is offset after the clip, not fixed in the retarget: `KNOWN_ISSUES.md`; the Animation Lab's Posture panel
@@ -132,8 +133,9 @@ nearest people as figures in their own records).
 **The record**: `{ body:'mpfb_male', armour:{head, torso, legs, feet}, hair, beard, skin:'#rrggbb', hair_color:'#rrggbb', eye_color:'#rrggbb',
 morph:{ <slider>: -1..1 }, ancestry:{african, asian, caucasian}, people, dye:{slot: '#rrggbb'} }`. Colours are albedo.
 
-**Clips** (`data/clips.json`, about 140 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
-as move, melee, ranged, block and dodge, hit and fall, swim, ladder, daily life and work. Two sources, both retargeted
+**Clips** (`data/clips.json`, about 180 in each body's `anims.glb`): walk, run and the idles, plus actions grouped
+as move, melee, hand to hand (fists, kicks, elbows and knees, throws, fist guards: 2026-11-25), ranged, block and
+dodge, hit and fall, swim, ladder, daily life and work. Two sources, both retargeted
 onto the rig by `make_pieces.write_anims` (bone directions matched, hips motion scaled by height):
 Meshy's animation library (`meshy` ids, fetched on the scout donor's rig with `tools/meshy.py anims`, 3 credits each:
 `donors/anims/actions*.glb`) and Quaternius's Universal Animation Library 1 and 2 (`ual`, CC0:
@@ -751,6 +753,7 @@ bodyparts06 (CC-BY: `CREDITS.md`).
 | `src/92-animlab.js` | the Animation Lab: the cast of six, the clip ledger, playback, review marks; `window._lab` for `verify.py` | [web] |
 | `data/peoples.json` | the peoples (hand-written) | [G data] |
 | `data/clips.json` | the action clips: source (Meshy id or UAL clip), label, group, loop, hold, two_hands (hand-written) | [G data] |
+| `data/activities.json`, `tests/check_activities.py` | what each sim activity plays: clips, props, enter and exit, overrides by furniture, trade and role, `gap` (hand-written); the check lists unmapped ids and gaps | [G data] |
 | `data/props.json`, `tools/make_props.py` | the hand-held props (grip style, two-handed support, bow string) and the script that builds them | [G data] |
 | `data/fur.json`, `tools/fur.py` | the fur shells' look per kind and per item; the tool that derives a built garment's fur rows from its GLB (`make_garments.py` writes them for new ones) | [G data] |
 | `data/posture.json` | the posture pass's angles per body (spine, neck, head, shoulder drop and back); the Animation Lab's Posture panel writes its JSON | [G data] |

@@ -3744,6 +3744,22 @@ func _blinks(dt: float) -> void:
 				mi.set_blend_shape_value(k, b)
 
 
+# ---- contact (the twin of contacts in 50-figure.js): a strike's or a throw's moment of touch (data/clips.json
+# contact: [[t, end, target], ...] in clip seconds), emitted as the playing clip passes each, a loop's on every cycle,
+# so a game times the other party's hit, fall or block to it
+signal contact(clip: String, t: float, end: String, target: String)
+
+
+func _contacts(clip: String, t0: float, t1: float) -> void:
+	var L = clip_data.get(clip, {}).get("contact")
+	if L == null or t1 == t0:
+		return
+	for e in L:
+		var t := float(e[0])
+		if (t > t0 and t <= t1) if t1 > t0 else (t > t0 or t <= t1):
+			contact.emit(clip, t, String(e[1]), String(e[2]))
+
+
 func _process(dt: float) -> void:
 	_blinks(dt)
 	if _clip == "":
@@ -3751,7 +3767,11 @@ func _process(dt: float) -> void:
 	# the hips start from the base body's rest (a clip without a hips position track leaves them there), so the
 	# morph delta below is added once, not once a frame
 	skeleton.set_bone_pose_position(_hips, KChar._v(skel["joints"][_hips]["t"]))
+	var c0 := _clip
+	var t0 := player.current_animation_position if player.is_playing() else -1.0
 	player.advance(dt * cadence)
+	if t0 >= 0.0:
+		_contacts(c0, t0, player.current_animation_position if player.is_playing() else player.get_animation(c0).length)
 	_pose_fade += dt * cadence
 	if not player.is_playing() and _clip != looping:
 		play(looping)
