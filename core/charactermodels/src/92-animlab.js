@@ -172,7 +172,9 @@
     var ready = Promise.all(figs.map(function(x){ return x.f.apply(record(x.c)).then(function(){
       x.tag.querySelector('small').textContent = x.f.pose.stature ? Math.round(x.f.pose.stature * 100) + ' cm' : '';
     }); })).then(function(){ $('loading').hidden = true; poseApply(); return play(current); }, function(e){ $('loading').textContent = 'A piece failed to load: ' + e.message; });
-    window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam };
+    window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam,
+      // a door clip's set: how far figure i's grip is from its door's lever (null with no door shown)
+      doorGap:function(i){ var d = SETS[i]; return d && d.root.visible ? gripAt(figs[i], new THREE.Vector3()).distanceTo(d.mark.getWorldPosition(new THREE.Vector3())) : null; } };
   }
 
   // the row: each body's three side by side, a wider gap between the two bodies
@@ -214,10 +216,86 @@
     camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   }
 
+  /* the set a clip is made against, drawn so it reads (the owner, 2026-11-27, on Open door: "not sure this reads as
+     pulling a door handle"): a clip whose derive has a door (make_pieces.door_clip) gets a door beside each figure, its
+     frame, its panel and its lever handle where the clip's hand takes hold, the panel swinging round its hinge and the
+     lever turning on the clip's own seconds, the same easing as the bake. Each body's door is the clip's times its
+     height over its build's neutral one, so the shorter and taller hands meet the handle too. The lab's alone: no
+     figure or game state */
+  var SETS = [], setMat = null;
+  function setSpec(){ var d = INFO[current] && INFO[current].derive; return d && d.door; }
+  function makeDoor(sp){
+    // the panel half seen through, so the figure behind it shows from the front (the lab's default view)
+    if(!setMat) setMat = { wood:new THREE.MeshStandardMaterial({ color:0x7a5a3c, roughness:0.8, transparent:true, opacity:0.45, depthWrite:false }), frame:new THREE.MeshStandardMaterial({ color:0x5a4330, roughness:0.85 }),
+                           iron:new THREE.MeshStandardMaterial({ color:0x3a3a3c, metalness:0.7, roughness:0.4 }) };
+    var s = sp.side == null ? 1 : sp.side, r = sp.hinge == null ? 0.72 : sp.hinge, H = sp.handle, W = r + 0.09;
+    var root = new THREE.Group(), pivot = new THREE.Group(), lever = new THREE.Group();
+    function box(mat, w, h, d, x, y, z, parent){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; parent.add(m); return m; }
+    var hx = H[0] + s * r;
+    pivot.position.set(hx, 0, H[2]); root.add(pivot);
+    // the panel, its face 9 cm behind the grip (the fingers wrap the lever 5 cm past it)
+    box(setMat.wood, W, 2.05, 0.04, -s * W / 2 + s * 0.02, 1.025, 0.11, pivot);
+    var lp = new THREE.Vector3(H[0] - 0.07 * s - hx, H[1], 0);
+    lever.position.copy(lp); pivot.add(lever);
+    box(setMat.iron, 0.06, 0.09, 0.012, 0, 0, 0.084, lever);                                          // the rose plate
+    box(setMat.iron, 0.016, 0.016, 0.08, 0, 0, 0.044, lever);                                         // the stem
+    box(setMat.iron, 0.13, 0.018, 0.02, s * 0.065, 0, 0, lever);                                      // the lever, toward the hinge
+    var mark = new THREE.Object3D(); mark.position.set(s * 0.07, 0, 0); lever.add(mark);              // where the grip holds it
+    box(setMat.frame, 0.07, 2.12, 0.12, hx + s * 0.055, 1.06, H[2] + 0.12, root);                     // the frame
+    box(setMat.frame, 0.07, 2.12, 0.12, hx - s * (W + 0.035), 1.06, H[2] + 0.12, root);
+    box(setMat.frame, W + 0.18, 0.07, 0.12, hx - s * W / 2 + s * 0.01, 2.115, H[2] + 0.12, root);
+    scene.add(root);
+    return { root:root, pivot:pivot, lever:lever, mark:mark, s:s, off:null };
+  }
+  // the right hand's grip point in the world (skeleton.json hands: the grip frame in the hand bone)
+  var gV = new THREE.Vector3();
+  function gripAt(x, out){
+    var h = D.bodies[x.c.body].skeleton.hands.R, b = x.f.bones[h.bone];
+    return out.fromArray(h.grip).applyMatrix4(b.matrixWorld);
+  }
+  function sets(){
+    var sp = setSpec();
+    if(SETS.spec !== sp){ SETS.forEach(function(d){ scene.remove(d.root); }); SETS = []; SETS.spec = sp; }
+    if(!sp) return;
+    var K = sp.keys, sm = function(a, b, t){ var x = Math.min(1, Math.max(0, (t - a) / (b - a))); return x * x * (3 - 2 * x); };
+    figs.forEach(function(x, i){
+      var d = SETS[i] || (SETS[i] = makeDoor(sp)), a = x.f.action;
+      d.root.visible = x.f.group.visible && !!a;
+      if(!d.root.visible) return;
+      var base = figs.filter(function(y){ return y.c.body === x.c.body && y.c.build === 'neutral'; })[0];
+      var k = base && base.f.pose.stature && x.f.pose.stature ? x.f.pose.stature / base.f.pose.stature : x.f.scale;
+      d.root.scale.setScalar(k);
+      var t = a.time % a.getClip().duration, th = (sp.open || 0) * Math.PI / 180 * sm(K.pull[0], K.pull[1], t);
+      var ph = (sp.turn || 0) * Math.PI / 180 * Math.min(sm(K.turn[0], K.turn[1], t), 1 - sm(K.pull[0] + 0.3, K.pull[0] + 0.9, t));
+      d.pivot.rotation.y = -d.s * th;
+      d.lever.rotation.z = -d.s * ph;
+      // the door stands where this figure's hand closes on its lever: the posture and the body's own passes move the
+      // arm off the bake's handle by up to 15 cm, so the first frame the hand holds it (the grip's end to the letting
+      // go) places the door, and it stays there while this clip plays
+      d.root.position.copy(x.f.group.position);
+      var held = t >= K.grip[1] && t <= K.let[0];
+      if(d.off) d.root.position.add(d.off);
+      else if(held){
+        d.root.updateMatrixWorld(true);
+        d.off = gripAt(x, new THREE.Vector3()).sub(d.mark.getWorldPosition(new THREE.Vector3()));
+        d.root.position.add(d.off);
+      }
+      // and the door swings where the hand pulls it: while held, the angle round the hinge that brings the lever to the
+      // grip (the hand's path is the bake's arc bent by those passes); after the letting go it stays where it was left
+      if(held && d.off){
+        d.root.updateMatrixWorld(true);
+        var v = d.root.worldToLocal(gripAt(x, gV)).sub(d.pivot.position);
+        d.th = Math.max(0, Math.atan2(-v.z, -d.s * v.x));
+      } else if(t < K.grip[1]) d.th = 0;
+      if(d.th != null && d.off) d.pivot.rotation.y = -d.s * d.th;
+    });
+  }
+
   var tv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta()), step = paused ? 0 : dt * speed;
     figs.forEach(function(s){ if(s.f.group.visible) s.f.update(step); });
+    sets();
     var k = 1 - Math.pow(0.002, dt);
     ['yaw', 'pitch', 'dist', 'x', 'ty'].forEach(function(n){ cam[n] += (cam.want[n] - cam[n]) * k; });
     var cp = Math.cos(cam.pitch);

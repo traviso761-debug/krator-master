@@ -1392,7 +1392,13 @@ def door_clip(c, clip, spec):
     seconds, which read as nothing). The right hand reaches the handle (x, y from the ground, z forward), closes on it,
     turns the lever down by 'turn', and pulls: the handle travels round the hinge ('hinge' metres to the left of it) as
     the door swings 'open' degrees toward the figure, the lever let back up as it goes and the body leaning back; then
-    the hand lets go and the arm goes back to the clip's end. keys: the seconds of reach, grip, turn, pull, hold, let"""
+    the hand lets go and the arm goes back to the clip's end. keys: the seconds of reach, grip, turn, pull, hold, let.
+    side: +1 the hinge to the figure's left of the handle, -1 to its right (the door swings out past the right hip).
+    step: {'back', 'out', 'lift', 'hips', 'when': [leave, land], 'return': [leave, land]}: the right foot lifted and
+    set 'back' metres behind (and 'out' to the right) as the door comes, the hips following 'hips' metres back through
+    the pull, the left foot kept where it stood (a two-bone solve per leg, the feet keeping their turn); after the
+    letting go the figure steps forward again. The owner (2026-11-27): standing still, the pull was 25 cm at the hip and
+    did not read as opening a door"""
     times, rots, hips = clip
     J, dur = c.J, float(times[-1])
     grips = _grips(c)
@@ -1400,17 +1406,35 @@ def door_clip(c, clip, spec):
     K = spec['keys']
     H0 = np.array(spec['handle'], float)
     r = float(spec.get('hinge', 0.72))
-    hinge = H0 + np.array([r, 0, 0])
+    s = float(spec.get('side', 1))
+    hinge = H0 + np.array([s * r, 0, 0])
     curl = _curl(c, 'Right')
     arm = [J['RightArm'], J['RightForeArm'], J['RightHand']]
     end = min(len(times) - 1, int(round(K['end'] * FPS)))       # the clip's arm at rest by the side, after its own reach
     sm = lambda x: x * x * (3 - 2 * x)
+    ramp = lambda t, a, b: sm(float(np.clip((t - a) / (b - a), 0, 1)))
+    st = spec.get('step')
+    hips2 = hips.copy()
     # the finger joints get tracks of their own: Meshy's clips have none, so a curl set on them would not be written
     out = {nm: [] for nm in list(rots) + [c.joints[i] for i in sorted(curl) if c.joints[i] not in rots]}
     for f in range(len(times)):
         t = float(times[f])
         rig = _Rig(c, clip, f)
         loc = list(rig.loc0)
+        if st:
+            # the step back and, after the door is let go, forward again: the right foot's going (u), the hips' (v)
+            u = ramp(t, *st['when']) - ramp(t, *st['return'])
+            v = ramp(t, st['when'][0] + 0.1, K['pull'][1]) - ramp(t, st['return'][0] - 0.1, st['return'][1])
+            Rw0, P0 = rig.fk(loc)
+            lift = st.get('lift', 0.07) * (math.sin(math.pi * float(np.clip((t - st['when'][0]) / (st['when'][1] - st['when'][0]), 0, 1)))
+                                           + math.sin(math.pi * float(np.clip((t - st['return'][0]) / (st['return'][1] - st['return'][0]), 0, 1))))
+            rig.hips = hips[f] + np.array([0.0, 0.0, -st['hips'] * v])
+            hips2[f] = rig.hips
+            for S, T, kx in (('Right', P0[J['RightFoot']] + np.array([sd * st.get('out', 0.03) * u, lift, -st['back'] * u]), sd),
+                             ('Left', P0[J['LeftFoot']], -sd)):
+                rig.reach(loc, J[S + 'UpLeg'], J[S + 'Leg'], J[S + 'Foot'], T, np.array([kx * 0.2, 0.0, 1.0]))
+                Rw, _ = rig.fk(loc)
+                loc[J[S + 'Foot']] = Rw[J[S + 'Leg']].T @ Rw0[J[S + 'Foot']]     # the foot keeps its turn
         # the arm the clip would have: its own until the reach, after the letting go its rest at the end
         ref = list(_Rig(c, clip, end).loc0) if t >= K['let'][0] else list(loc)
         for jj in arm:
@@ -1426,14 +1450,15 @@ def door_clip(c, clip, spec):
             rig.turn(loc, J['Spine'], _Rx(-lean * 0.6))
             rig.turn(loc, J['Spine1'], _Rx(-lean * 0.4))
         if w > 0:
-            Dr = _Ry(-th)                                           # the door's swing about the hinge's upright
+            Dr = _Ry(-s * th)                                       # the door's swing about the hinge's upright
             T = hinge + Dr @ (H0 - hinge)
-            # the lever pointing toward the hinge (+x), turned down about the door's face normal by ph; the hand over it,
-            # palm down, the fingers forward round it
-            Yl = Dr @ np.array([math.cos(ph), -math.sin(ph), 0.0])
+            # the lever pointing toward the hinge, turned down about the door's face normal by ph from its pivot 7 cm
+            # the other way; the hand over it, palm down (the grip's +Y toward the figure's left), the fingers forward
+            # round it
+            lev = np.array([s * math.cos(ph), -math.sin(ph), 0.0])
+            Yl = Dr @ (s * lev)
             Zl = Dr @ np.array([0.0, -0.25, 1.0])
-            # a lever's turn swings the hand down about its pivot, 7 cm to the right of the grip
-            T = T + Dr @ np.array([0.07 * (math.cos(ph) - 1), -0.07 * math.sin(ph), 0.0])
+            T = T + Dr @ (0.07 * (lev - np.array([s, 0.0, 0.0])))
             _grip_to(rig, loc, 'Right', grips['Right'], T, Yl, Zl, np.array([sd * 0.9, -0.5, -0.2]))
             _blend(loc, clipL, arm, w)
             # the head turned most of the way toward the handle while the hand is on it
@@ -1454,7 +1479,7 @@ def door_clip(c, clip, spec):
                     a, b = np.array(glbio.mat_quat(loc[i])), np.array(glbio.mat_quat(rest(i) @ R))
                     loc[i] = _qm(_slerp(a, b, g))
         rig.quats(loc, out)
-    return times, {nm: np.array(v) for nm, v in out.items()}, hips
+    return times, {nm: np.array(v) for nm, v in out.items()}, hips2
 
 
 def bench_clip(c, idle, cycle=3.6):

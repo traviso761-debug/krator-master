@@ -186,9 +186,13 @@ and aims at the ground a few paces ahead); **Spinning axe attack** (`axe_spin`, 
 little longer, the spin and the blow a third faster, a slower settle, the body leaning 12 degrees into the blow);
 **Block** and **Block 2** (Meshy's, with the right hand's grip put before the face in the block, the blade across it
 and its edge forward, the left hand kept beside the right: they held the blade pointing back past the head); **Open
-door** (Meshy's legs and body, the right arm made: it reaches a lever handle a metre up, closes on it, turns it down
-40 degrees and pulls the door 26 degrees open round its hinge while the body leans back and the head turns to the
-handle, then lets go: the clip held the hand still in front for three seconds); **Pick into basket** (Meshy's, the
+door** (Meshy's body, the right arm and the legs made: it reaches a lever handle in front of the right shoulder,
+1.05 m up, closes on it, turns it down 45 degrees and pulls the door 38 degrees open round a hinge to its right, the
+right foot stepping 28 cm back and the hips following as the door comes, the head on the handle; it lets go and steps
+forward again. The clip held the hand still in front for three seconds; standing still, the pull was 25 cm at the hip,
+and the owner (2026-11-27) still could not read it as a door. The Animation Lab draws the door for it: a frame, a
+half-seen-through panel and the lever, where each figure's hand first closes on it, swinging where the hand pulls it,
+`92-animlab.js sets`); **Pick into basket** (Meshy's, the
 basket hand held under the falling fruit while crouched); **Push cart** (Meshy's legs and body, both hands on the
 cart's crossbar the whole loop, 1.05 m off the ground, following the hips' going; the back bends where the clip stood
 up out of reach). Made outright: **Craft at a bench** (`craft_bench`, on the standing idle: bent over a bench just above
