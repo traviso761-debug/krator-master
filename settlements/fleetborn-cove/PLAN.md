@@ -1,102 +1,72 @@
-# Fleetborn Cove & Arcoforte Sanctuary: Scope & Build Plan (`biomes/arch` Station 6 + `settlements/fleetborn-cove/`)
+# Fleetborn Cove & Arcoforte Sanctuary: Scope & Build Plan (`settlements/fleetborn-cove/`)
 
 > [!IMPORTANT]
-> **Status (`2026-11-24`, branch `claude/arcoforte-fleetborn-cove` on `claude/integration-4`):** **Scoping & integration plan** pairing a new **`biomes/arch` Station 6 (`cove` -> `dist/arch-cove.html`)** with the **`settlements/fleetborn-cove/`** settlement build, adapting the sister session's **`Arcoforte`** megastructure (`kits/ancients` Soleri Plates `19–21` in [arco2-sheet0.jpg](file:///home/antigravity/traviso761-debug/krator-master/kits/ancients/refs/arco2-sheet0.jpg)) as the hidden careening drydock, `paktong`-smelting hearth, and submerged click-echo sanctuary of the **`cFlīt-qBōn` ("Fleet-Born")** ([CROOK-RIA-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CROOK-RIA-SCOPE.md)).
+> **Status (`2026-11-26`, branch `claude/arcoforte-fleetborn-cove`):** **Phases P1 & P3a built and verified** on top of `biomes/arch` Station 6 (`cove`, `px [236, 242]`) and `kits/arcoforte` (Soleri Plates `19–21`). `FCOVE_TIDE` (`src/40-fcove-tide-rules.js`) encodes the six macrotidal laws as `[G data]` records verified over a 92-day cycle (`tests/test-fcove-tides.js`), and `dist/fleetborn-cove.html` seats `Arcoforte` in marginal caretaker state on the `+76..+84 m` eastern ophiolite cliff-prow above zero-pump tidal graving cradles, salvaged Ancient submarine wet-pens (`kits/port` at `d = 3`), reversible `|v|^3` paktong sill rotors, an impounding tide-mill, the `-6 m` White Stacks sea-byssus causeway, and the moored `cFlīt-qBōn` & Hueru-Kuran fleet (`kits/ringsea` `89c–89h`).
 
 ---
 
-## 0. Overview: Two-Stage Architecture (`biomes/arch` Station 6 -> `settlements/fleetborn-cove/`)
+## 1. Site & Two-Anchorage Split: Fleetborn Cove (`px [236, 242]`) vs Deep-Ward (`px [148, 492]`)
 
-| Field | Stage A: New Biome Station (`biomes/arch --station cove`) | Stage B: Sanctuary Settlement (`settlements/fleetborn-cove/`) |
-|---|---|---|
-| **Folder & Output** | `biomes/arch/` (`src/41-biome-arch-sites.js` `cove` key + `stations/cove/`) -> `dist/arch-cove.html` | `settlements/fleetborn-cove/` (`src/`, `tests/`, `build.py`, `verify.py`, `materials.json`, `BUDGETS.json`) -> `dist/fleetborn-cove.html` |
-| **Scale-Model `5.1` Pin** | **`px (236, 242)`** (`world [472000, 484000]`, sky `[-36, -88]`; `5.2 × 5.2 km` cut across the `-59 m` dead-end cove, `-11 m` tidal sill & `+97..+246 m` E serpentinite/sheeted-dyke wall) | Same **`px (236, 242)`** cove + **`px (238, 241)`** eastern cliff-prow (`site:fleetborn-arcoforte` held clear by Station 6); `8 km` NW of the `+7 m` *gjár* saddle (`240, 250`) to the `-73 m` SE fjord (`241, 251`) |
-| **Tsunami & Tide Physics** | **🟢 Tier 1 Double-Proof (`E_worst = 0.13×`, `87%` wave reduction)** behind the `-9 to -14 m` NE-facing sill (`233, 237`); **`11–16 m` macrotidal spring range** (`6.37×` open-ocean amplification — highest on map) | Harnesses the `11–16 m` spring tide for **zero-pump tidal graving cradles**, sill-race rotors, and `[-8 m, +8 m]` amphibious wet-pens while `89c–89g` Ark-Wards ride safely on nephrite-chained moorings |
-| **Polity & Census (`Sphere 27`)** | Uninhabited natural cove stage (`site:fleetborn-arcoforte` registered in `KTAGS`, `0` buildings) | **`cFlīt-qBōn` (*Fleet-Born*)** Sanctuary Hub (`~1,800–2,600` seasonal/resident Ark-Ward population drawn from `Sphere 27`'s `8,000` pelagic `cFlīt-qBōn` pool, `ΔPop = 0`; `0` conventional terrestrial houses, preserving the pelagic rule in [CROOK-RIA-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CROOK-RIA-SCOPE.md#L58)) |
-| **Upstream Reads (Zero Copies)** | `biomes/arch` (`ARCH`, `ARCHB`), `biomes/geyser` / `biomes/gills` (`WATER` & `ATMOS` contracts), `core/coast` | Sister-session **`Arcoforte`** (`kits/ancients/targets/arcoforte` read in place via `TARGET_READS`), **`kits/ringsea`** (`89c–89g` `cFlīt-qBōn` fleet), **`kits/port`** (`87-sl-d-pen.js` sub pens, `82-dd-dock.js` graving cradles), **`biomes/arch`** |
+- **Fleetborn Cove (`px [236, 242]`, Arch Horst Flank):** A dead-end ophiolite pocket fjord opening NNW across a `-9..-14 m` pillow-basalt sill into a `-45..-59 m` inner sanctuary basin (`E_worst = 0.13x` tsunami reduction). `KTIDE` (`core/water/tide`, slice `box: [226, 232, 246, 252]`, `meanRange: 11 m`) drives a **`7.5 m` neap to `14.3 m` greatest-spring tide** (`-7.27 m .. +7.11 m`), amplified by the `3.5`-day Week and `6.5`-day Thirteen lunar beats with peak **Great Careening** syzygies at the **Double Dark** and **Double Full** every `45.5` days (`91`-day full cycle).
+- **Deep-Ward Anchorage (`px [148, 492]`, `~530 km` SSW in the Drownlands):** Shallow (`~4 m`) calm roadstead near a `D2` amphidrome (`~1.9 m` diurnal `D1` tide). Deep-Ward cannot careen deep hulls on the tide, so it serves as the fleets' calm home roadstead and trade hub to Farport and Kaskedi-Kuran (`2–3` days under sail), while **Arcoforte at Fleetborn Cove** is the Fleet-born's **spring-tide drydock, paktong campaign smelter, and Great Careening moot**.
+- **Who Lives Here:**
+  - **Fleet-born (`cFlīt-qBōn`):** Full free-divers (`25 min`, `100+ m`); zero conventional land cottages ([CROOK-RIA-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CROOK-RIA-SCOPE.md#L58)). Caretaker house (`~300–500`, rising to `2,000–2,600` at a Great Careening moot) occupies the moored Ark-Wards and Arcoforte's refurbished lower bastions and ring halls (`socket: 'fleetborn'`).
+  - **Shore-kin:** Mixed Fleet-born, Hueru-Kuran, Eternian, and Rian client crews (`~900–1,400`, weak/lost dive trait) staffing the sub-cliff harbour works (`socket: 'shorekin'`), graving cradles, tide-mill, and upland ash/spar/copper hinterland villages (`kits/shore-kin` in P3c/P4).
 
 ---
 
-## 1. Why `biomes/arch` Needs Station 6 (`cove`)
+## 2. Core Adoption (`README.md`, "CORE MODULES ARE NOT OPTIONAL")
 
-Inspecting [41-biome-arch-sites.js](file:///home/antigravity/traviso761-debug/krator-master/biomes/arch/src/41-biome-arch-sites.js) shows that none of the five existing `biomes/arch` stations represent the deep macrotidal fjords cut into the Arch's horst flanks:
-- `confluence` (`324, 180`, `+183 m`) and `dome` (`318, 178`, `+863 m`) are upland serpentinite core-complex slopes;
-- `barrens` (`258, 246`, `+155 m`, `44 km` E of our cove) is dryish `Aw` nickel-laterite maquis with `lavaka` gullies;
-- `sound` (`299, 220`, `+7 m`) is a **shallow `5–8 m` micro-tidal (`0.5 m` tide)** mangrove and Laki-lava flat;
-- `coast` (`167, 336`, `+2 m`) is an open black-sand Surtseyan beach facing the `Steaming Seamounts`.
+Checked by `python3 tools/check_core_use.py settlements/fleetborn-cove`:
 
-**Station 6 (`cove`, `px [236, 242]`)** fills the missing coastal-fjord endmember of the ophiolite sequence ([PLAN.md](file:///home/antigravity/traviso761-debug/krator-master/biomes/arch/PLAN.md) §4):
-1. **Ophiolite Cliff Wall (`+12 m -> +246 m`):** Exposes **pillow basalts** in the `[-8 m, +8 m]` intertidal foot, **vertical sheeted-dyke columns** in the `+8..+110 m` sheer gorge wall, and **red nickel-laterite maquis** (`Araucaria`, `Pycnandra` blue-sap nickel-hoarders, `verdigris` caps) on the `+110..+246 m` eastern crown leading up toward `barrens` (`258, 246`).
-2. **`14 m` Macrotidal Zonation Band & Sill Race:** A `-11 m` pillow-lava entrance sill at the north-west throat (`WATER.flow` / `WATER.open` white-water standing tidal race), exposing **submerged brucite-carbonate White Stacks** and golden **`Sea-Byssus` pen-shell beds** at `-6 m` spring low ebb while drowning dark-green serpentinite sea-caves at `+7 m` high flood.
-3. **Submarine Alkaline Seep & Chimaera Cliff-Flames:** Type II (`Ca-OH`, `pH 11.4`) alkaline springs weeping white travertine curtains down the sheeted-dyke cliff into the salt cove, plus pale-blue night-visible hydrogen/methane cleft flames (`biomes/gills` `core/atmos` hook) serving as natural navigation leading-marks through the sill.
-4. **Settlement Reserve:** Registers `site:fleetborn-arcoforte` (`KTAGS`) on the eastern cliff-prow so `settlements/fleetborn-cove/` drops `Arcoforte` cleanly onto identical rock and water rules.
-
----
-
-## 2. Adapting Sister-Session `Arcoforte` (`kits/ancients` Plates `19–21`)
-
-In Paolo Soleri's *Arcology: The City in the Image of Man* (Plates `19–21` on [arco2-sheet0.jpg](file:///home/antigravity/traviso761-debug/krator-master/kits/ancients/refs/arco2-sheet0.jpg)), ***Arcoforte*** is a **horseshoe coastal-cliff bastion** (`20,000` design pop, `~80–140 m` structural height above its cliff shelf, `16 ha`) wrapping a small semi-enclosed sea-cove with battered vertical concrete pylons, radial faceted rib-buttresses, deep vertical shafts, and a curved sea-mole closing the harbor mouth.
-
-### 2.1 Upstream Hook Checklist for the Sister Session (`5` Lines, Zero Forking)
-To read `kits/ancients/targets/arcoforte` directly in place (`TARGET_READS` pattern from [build.py](file:///home/antigravity/traviso761-debug/krator-master/kits/ancients/build.py#L123-L135)) without touching its showcase hash:
-1. **`opts.noTerrain` Guard:** Keep any synthetic demo cliff/sea-plane `rng()` calls inside their own `reseed()` sub-stream (or consume draws unconditionally) and skip emitting demo rock meshes when `ARC_HOST && ARC_HOST.noTerrain` is set (avoiding the [Ledge](file:///home/antigravity/traviso761-debug/krator-master/settlements/ledge/PLAN.md) synthetic-cliff conflict).
-2. **Exported Hull Descriptor (`ARCOFORTE_DESC`):** Expose `{ span, H, coveR, moleArc, pylonAngles, toeY, sillZ }` as plain constants so our tidal band, wet-pens, and `KSTRATA` cliff pockets snap analytically to `Arcoforte`'s concrete faces.
-3. **Decay `d = 3` (`reclaimed`) + Waterline Cut:** Place `buildArcoforte` via an `ysPlaceHost`-style wrapper ([64-hyk-accrete.js](file:///home/antigravity/traviso761-debug/krator-master/settlements/ys/src/64-hyk-accrete.js#L10-L40)) at `d = 3` (`69-mat-salvage.js`) with its lower buttress toes straddling `[-18 m, +8 m]` and `KRUINS.watch` verifying any collapsed outer mole blocks.
-
-### 2.2 Fleetborn (`cFlīt-qBōn`) Cultural & Functional Layers Around `Arcoforte`
-1. **Zero Shore Cottages — Pure Amphibious & Pelagic Habitation:**
-   - Honouring [CROOK-RIA-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CROOK-RIA-SCOPE.md#L58), the `cFlīt-qBōn` build **no land villages**. Onshore, they occupy only `Arcoforte`'s **cantilevered concrete sea-bastions, cliff-cut crane galleries, and flooded submarine vaults**, dressed in `paktong` (`Cu-Ni-Zn` white-copper), sawn green `nephrite-jade` ring-stones, `Sea-Byssus` golden cables, and catechu-dyed crab-claw awnings.
-2. **Zero-Pump Macrotidal Graving Cradles & Vaulted Wet-Pens (`[-8 m, +8 m]`):**
-   - Cut into the base of `Arcoforte`'s horseshoe cliff-wall are vaulted concrete submarine pens ([87-sl-d-pen.js](file:///home/antigravity/traviso761-debug/krator-master/kits/port/src/87-sl-d-pen.js) read in place) and stepped **tidal graving cradles** ([82-dd-dock.js](file:///home/antigravity/traviso761-debug/krator-master/kits/port/src/82-dd-dock.js)): `40 m` Ark-Catamarans float over the red-cypress keel-blocks at `+7.5 m` high spring flood and sit completely high-and-dry for `paktong` hull-sheathing and `bitumen` caulking at `-7.5 m` low ebb — **zero mechanical pumps required**.
-3. **Submerged Free-Dive Click-Council Hall & Air-Bell Shafts (`-15 m` to `-52 m`, `khost.UNDERGROUND`):**
-   - Because the `cFlīt-qBōn` free-dive `25 minutes` to `100+ m` with clear nictitating eyelids and speak an underwater-propagating click language ([CROOK-RIA-SCOPE.md](file:///home/antigravity/traviso761-debug/krator-master/core/region/CROOK-RIA-SCOPE.md#L86)), `Arcoforte`'s drowned lower rotunda (`-28 m`) serves as the **`qDīp-cRīng` (*Deep-Ring* Acoustic Council Vault)** — an un-pumped, water-filled concrete dome ringed by resonant `nephrite` lithophone ribs and breath-replenishing trapped-air domes, inspectable via `khost.UNDERGROUND` section-cuts (`C`/`X`) and underwater swim/walk camera!
-4. **The Chained Ark-Lagoon & `Paktong` Smelt-Hearth (`kits/ringsea` `89c–89g`):**
-   - Moored in concentric arcs across the `-59 m` inner lagoon (riding the `14 m` tide on `core/city/float/`):
-     - **`89g` Coupled 3-Hull Chained Ark-Wards** & **`89c` Great Moon-Pool Ark-Catamarans** forming floating clan neighborhoods;
-     - **`89d` `Paktong` Phytomining Smelt-Barges** anchored downwind under the north-east cliff chute, burning bundled **`Pycnandra` blue-sap nickel-shrub ash** harvested from the upland `barrens` (`258, 246`) with `Copper Tarn` copper/zinc ingots;
-     - **`89e` Deep-Trench Vent-Harvester Tenders** & **`89f` Fast Crab-Claw Scout Trimarans** shooting the `-11 m` entrance sill on slack water (plus a narrow flooded-*gjár* portage tramway toward the `+7 m` SE saddle `240, 250`).
-5. **Sill-Throat Tidal Stream Rotors (`-11 m`):**
-   - Slung between two surviving Ancient mole piers at the cove's narrowest throat, reversible `paktong`-bladed tidal rotors spin in the `4–6 m/s` flood/ebb race, driving the capstan sheerlegs, forge-bellows shafts, and storm-gong winches inside `Arcoforte`.
-
----
-
-## 3. Mandatory `Core adoption` & Survey Checks (`README.md`)
-
-Written before any fragment and checked against `tools/check_core_use.py` and `tools/new_build/README.md` (items `22–31`):
-
-| Module | Taken For |
+| Module / Kit | Taken For |
 |---|---|
-| `core/rand` (`KRAND`) | Every rock bed, intertidal cluster, salvage patch, and moored ark pose seeded via `KRAND.cell` / `KRAND.hash` |
-| `core/tags` (`KTAGS`) | Pre-draw registration of `Arcoforte` host tiers, wet-pens, graving cradles, `89c–89g` Ark-Wards, smelt-barges, and `cFlīt-qBōn` dive bells (`culture: 'cflit-qbon'` & `'ancients'`) |
-| `core/space` (`KSPACE`) | Order-free keep-clear between moored Ark-Ward swing circles, sill-race channels, cliff buttresses, and intertidal chimneys |
-| `core/city` + `core/city/float/` | `SINGLE_COMPLEX` / `float` mode laying out the chained pelagic Ark-Ward rings, floating hinge-bridges, and `Arcoforte` terrace slots riding `y_tide(clock)` |
-| `core/water` + `ext/63-core-water-tide` | `WATER.open` (`-59 m` calm cove vs shoaling outer channel), `WATER.flow` reversible `4–6 m/s` sill tidal race, `WATER.still` alkaline cliff pools, and `11–16 m` spring-tide elevation curve |
-| `core/atmos` | Shared Krator sky at `[236, 242]` (`sky: [-36, -88]`, `1.60 atm`), `#include <atmos_waves>`, `ATMOS.skylight` PBR reflections, sea-mist in the fjord, and pale-blue night hydrogen cleft-flames |
-| `core/terrain` + `core/coast` + `core/drawn` | `KSTRATA` ophiolite cliff (`pillow-basalt` -> `sheeted-dyke` -> `serpentinite` -> `laterite`), `36-core-carve` / `KCAVERN` sea-caves & wet-pens, `KGROUND` (`<= 5` samplers), `KCOAST` cliff/shingle rims, `KDRAWN` mesh/grid registration |
-| `core/ruins` (`KRUINS`) | `KRUINS.watch` on collapsed outer `Arcoforte` sea-mole blocks and fallen pylon ribs (`0` floating rubble) |
-| `core/host` + `khost.UNDERGROUND` + `core/walk` | Full viewer, `KWALK` across `Arcoforte` terraces, hinged gangways & Ark decks, plus `UNDERGROUND` section-cuts (`C`/`X`) into the `-28 m` submerged *Deep-Ring* click-council vault & wet-pens |
-| `core/furnish` + `kits/interiors` + `KROOMLIGHT` | Reclaimed Fleetborn rope/nephrite/paktong interiors in `Arcoforte`'s dry chart-bastion & forge-galleries (`<= 6` `PointLight` pool) |
-| `core/simulation` + `core/clock` + `core/sched` | Tide-locked daily schedule: slack-water sill transits, low-ebb hull careening on exposed graving cradles, high-flood wet-pen launches, `paktong` ash-smelting, and `25-min` free-dive cycles |
-| `core/charactermodels` | `cflit_qbon` lineage bodies (`peoples.json`: plum-indigo myoglobin lips/sclerae, dive-harnesses, `paktong` knives) |
-| `core/lod` + `core/minimap` + `core/export` + `core/shadow` | `KSHELL` / impostor LOD, cove + deck minimap, Godot `4.7.2` export, `KSHADOW` **off at load** |
-| `biomes/arch` + `kits/ringsea` + `kits/port` + `kits/ancients` | All read in place by path (`0` vendored copies) |
+| `core/rand` (`KRAND`) | Seeded deterministic placement of cove geology, flora, mooring swing circles, salvage props, and byssus beds (`KRAND.hash` / `KRAND.cell`; zero `Math.random`) |
+| `core/tags` (`KTAGS`) | Pre-draw registration of `site:fleetborn-arcoforte`, `Arcoforte` zones/rooms, graving cradles, `kits/port` segments, sill rotors, tide-mill, causeway, and `89c–89h` vessels |
+| `core/space` (`KSPACE`) | Spatial keep-clear between Arcoforte's `576 m` horseshoe/harbour reserve, drydock quays, sill fairway, and moored Ark-Ward swing circles |
+| `core/drawn` (`KDRAWN`) | Exact drawn-ground height grid (`GROUND` + drydock quays + Arcoforte decks) audited by `harness.SURVEY` eye/camera checks |
+| `core/clock` (`KCLOCK`) | World day and hour driving `KTIDE.worldSeconds(clock)` across the 91-day lunar spring/neap cycle |
+| `core/water` + `core/water/tide` (`KTIDE`) | `KTIDE` (`23-core-water-tide.js` + `tide.py` slice `[226, 232, 246, 252]`), `WATER.open` 14 km marine surface with reversible sill-race overfalls, `WATER.flow` gjár stream & Arcoforte park waterways, `WATER.still` pools, `WATER.fall` cascades, `WATER.spring` alkaline cliff seeps |
+| `core/atmos` (`ATMOS`) | Shared Krator sky at `[236, 242]` (`sky: [-36, -88]`, `1.60 atm`), `#include <atmos_waves>`, `ATMOS.skylight` PBR reflections, Chimaera `H2/CH4` cleft-flames, weather & height fog |
+| `core/terrain` (`KSTRATA`, `KGROUND`, `KFAR`, `KHORIZON`, `KTHERM`, `KRUBBLE`) | Ophiolite cliff strata (`pillow-basalt` -> `sheeted-dyke` -> `serpentinite` -> `laterite`), `<= 5` sampler ground layers, far horizon, Chimaera thermal field, and sub-cliff vault rubble heaps |
+| `core/biome` (`BIO`, `buildlib.CORE_BIOME_MIN`) | Shared biome instancing, leaf cards, octahedral impostors, environmental fields, and guard checks |
+| `core/ruins` (`KRUINS`) | `KRUINS.watch` on Arcoforte's collapsed sub-cliff automated industry vaults and ruined upper sky-crown/tower works (`0` floating pieces, every wreck seated on drawn ground) |
+| `core/hazard` (`KHAZ`) | `20-core-hazard.js` and `21-core-hazard-flow.js` for alkaline seep, Chimaera flame, and tidal race hazard fields |
+| `core/materials` (`KMAT`) | Packed library textures from `biomes/arch`, `kits/ancients`, and `kits/port` via `matlib_pack.py` sidecars |
+| `core/furnish` (`KFURN`) + `core/door` (`KDOOR`) + `core/walk` (`KWALK`) | Camera-independent interior furniture records (`fleetborn` & `shorekin` sockets), interactive portal doors, and walkable terraces/quays |
+| `core/host` (`KHOST`, `khost.FULL + khost.KEYS`) + `core/minimap` + `core/edits` | Standard viewer, cutaway (`X`), walk mode (`F`), inspector, polygon/marks tool, minimap, and `harness.SURVEY` probe |
+| `core/lod` + `core/shadow` + `core/export` | Distance LOD, toggleable sun shadow box (`KSHADOW`, off at load), and Godot `4.7.2` world/tags/water export |
+| `biomes/arch` + `stations/cove` | Read in place for cove fjord bathymetry, ophiolite strata, travertine curtains, White Stacks, and serpentine maquis / intertidal flora |
+| `kits/arcoforte` + `kits/ancients` | Read in place (`ARCOFORTE_OPTS = {noTerrain: true, state: 'marginal', socket: {bastions: 'fleetborn', ring: 'fleetborn', harbour: 'shorekin'}}`) seated on the `+76..+84 m` eastern cliff-prow |
+| `kits/port` (`82-dd-dock`, `82-dd-shed`, `82-dd-yard`, `87-sl-d-pen`) | Read in place at `d = 3` (salvaged/refurbished Ancient port dress) along the sheltered cove quay below Arcoforte |
+| `kits/ringsea` (`89c`–`89h`) | Read in place: `89c` Moon-Pool Ark-Catamaran (moored + careened on `-3 m` blocks), `89d` Paktong Smelt-Barge, `89e` Vent Tender, `89f` Scout Trimaran, `89g` 3-Hull Chained Ark-Ward, `89h` Hueru-Kuran Whaler |
 
-- **Not taken (with reasons):** `core/mask` (`0` `getImageData` raster reads; all placement from pure `[G data]` functions); `core/hamlet` / `core/camp` (no terrestrial village or land tent camp).
-
----
-
-## 4. Phased Order of Work (`S0` -> `S5`)
-
-1. **`S0` — `biomes/arch` Station 6 (`cove`, `dist/arch-cove.html`):** Add `ARCH_SITES.cove` (`px [236, 242]`) to `biomes/arch/src/41-biome-arch-sites.js` and `stations/cove/`; build the `-59 m` ophiolite fjord, `-11 m` sill race, `14 m` intertidal band, brucite stacks, alkaline cliff curtains, hydrogen flames, and `site:fleetborn-arcoforte` reserve; pass `verify.py --assert` (`checks=harness.SURVEY`).
-2. **`S1` — Sister `Arcoforte` Upstream Hook & `mock.html` Massing Gate:** Once the sister session lands `targets/arcoforte`, add the 5-line `noTerrain` + `ARCOFORTE_DESC` hook (`0` change to `dist/arcoforte.html` hash), seat `Arcoforte` into the `(238, 241)` eastern cliff-prow on `mock.html`, and verify proportions at `[Low Ebb]` (`-7.5 m`) and `[High Flood]` (`+7.5 m`).
-3. **`S2` — Wet-Pens, Zero-Pump Tidal Graving Cradles & Submerged *Deep-Ring* Vault:** Carve the cliff-foot submarine pens (`87-sl-d-pen`), stepped careening cradles (`82-dd-dock`), sill-race `paktong` rotors, and `-28 m` flooded acoustic council dome (`khost.UNDERGROUND`).
-4. **`S3` — Pelagic Ark-Lagoon & `Paktong` Smelt-Hearth:** Place the concentric nephrite-chained `89c–89g` `cFlīt-qBōn` fleet on `core/city/float/`, hinged gangways, nickel-ash chute from the eastern maquis rim, and `KWALK` connectivity.
-5. **`S4`–`S5` — Tide-Locked `SIM` Life Layer, `cflit_qbon` Free-Divers & Godot `4.7.2` Export:** Wire tide-gated careening/diving schedules, `verify.py --assert` across `[Low Ebb] / [Slack] / [High Flood]`, and `tools/test_all.py`.
+- **Modules not taken in P3a (with reasons):**
+  - `core/mask`: No `getImageData` or 2D canvas placement masks; all keep-clear and zonation rules are analytical `[G data]` functions.
+  - `core/city`: Single coastal megastructure (`Arcoforte`) + waterfront shipyard + moored pelagic fleet (`SINGLE_COMPLEX`; no terrestrial street/lot grid).
+  - `core/hamlet`, `core/camp`, `core/simulation`, `core/sched`, `core/charactermodels`: Scheduled for Phases P4–P6 (Shore-kin hinterland hamlets on `kits/shore-kin`, `fleet` band routes to Deep-Ward, paktong `SIM` stocks chain, and animated `cflit_qbon` / `shore_kin` crews).
 
 ---
 
-## 5. Open Decisions to Confirm Before `S0`
+## 3. The Six Macrotidal Laws (`src/40-fcove-tide-rules.js`, `[G data]`)
 
-1. **New Arch Station Key (`biomes/arch --station cove`):** Confirm adding `cove` (`px [236, 242]`, `dist/arch-cove.html`) as Station 6 of `biomes/arch` first so the ophiolite cliff, `14 m` intertidal zone, and `-11 m` sill race are verified on the biome core before `Arcoforte` drops in.
-2. **Fleetborn Name for the Cove & `Arcoforte` (`[proposed]`):** Confirm or tweak `cFlīt-qBōn` click-prefixed names: **`qSīl-cKōv`** (*Sill-Cove* / English: **Fleetborn Cove**) for the sanctuary fjord, **`cFōrt-qKlif`** (*Cliff-Fort*) for `Arcoforte` itself, and **`qDīp-cRīng`** (*Deep-Ring*) for the drowned `-28 m` underwater click-council rotunda.
-3. **The `+7 m` *Gjár* Back-Door (`px 240, 250` -> `-73 m` SE Fjord `241, 251`):** Keep the SE rift-fissure neck as a narrow, shallow/portage *gjár* slot usable only by small `89f` Scout Trimarans at `+8 m` spring high water (preserving the dead-end secrecy of the main `-59 m` cove against large warships), or cut it deeper?
+1. **Spring & Shallow Graving Cradles (`cradle_deep`, `cradle_great`, `cradle_shallow`):**
+   - `cradle_deep`: Keel blocks at `-3.0 m`, jammed-open caisson sill at `0.0 m`, `0.4 m` clearance. A careened `89c` Ark-Catamaran (`draft = 5.2 m`) rests dry on the `-3.0 m` blocks until sea level exceeds `+2.6 m`, and can cross the sill gate ONLY when `dayHighest >= +5.6 m` (**opens ONLY on spring days; shut on all neap days** `~+3.7 m`).
+   - `cradle_great`: Inner careening pit (`blocks = 0.0 m`, `draft = 6.2 m` -> `>= +6.6 m`), opening **ONLY around Double Dark & Double Full Great Careenings** every `~45.5` days.
+   - `cradle_shallow`: Blocks at `-1.0 m`, drafts `<= 2.2 m` (`>= +1.6 m`), opening on **every** spring and neap day for trimarans, tenders, whalers, and Shore-kin skiffs.
+2. **The Sill Gate (`vMax = 5.2 m/s`):** Reversible race velocity `v(t) = vMax * rate(t) / maxRate`; deep hulls transit ONLY during slack windows `|v(t)| <= 0.65 m/s` (shorter on springs `~2.5 h/day` than neaps `~4.7 h/day`).
+3. **Submerged Paktong Sill-Race Rotors (`|v|^3`):** Four reversible axial turbines in the NNW sill throat (`P(t) = min(2.4 MW, 0.022 * |v(t)|^3)`). The paktong reverberatory smelt-hearth requires `rotorDay(d).mwh >= 11.0 MWh` -> **active `'campaign'` on spring days, `'banked'` on neaps**.
+4. **Impounding Basin & Tide Mill:** Fills through flap-gates at `dayHighest` and drains on the ebb with hydraulic head `H = dayRange` (`7.5..14.3 m`), driving rope-walk capstans daily and heavy nickel-slag ore stamps on springs (`H >= 10.8 m`).
+5. **Low-Water White Stacks Causeway & Sea-Byssus Beds:** Crest at `-6.0 m`, exposed dry/wadable ONLY when `level(t) <= -6.0 m` (**spring low ebbs only; submerged all day on neaps**).
+6. **92-Day Lunar Calendar:** Verified in `tests/test-fcove-tides.js` across `92` consecutive days covering Double Dark, Double Full, and intervening `3.5`-day / `6.5`-day beats.
+
+---
+
+## 4. Phased Roadmap (`arcoforte_tide_plan.md` §2.6)
+
+- **P0 (Done):** `KTIDE` in `biomes/arch --station cove` with lunar springs & neaps.
+- **P1 (Done):** `FCOVE_TIDE` `[G data]` records + 92-day `ktest.js` suite (`tests/test-fcove-tides.js`).
+- **P2 (Concurrent in `kits/arcoforte`):** Per-zone `'marginal'` state and `'fleetborn'` / `'shorekin'` interior sockets.
+- **P3a (This build):** `settlements/fleetborn-cove` — `Arcoforte` seated on the eastern cliff-prow, `576 m` horseshoe reserve, `kits/port` (`d = 3`) pens/sheds/yard, stepped graving cradles with careened `89c` Ark, sill rotors, tide-mill, `-6 m` White Stacks causeway, moored `89c–89h` fleet, interactive Tide & Drydock Panel, and `verify.py --assert`.
+- **P3b–P3c (Concurrent):** Arch flora expansion (`biomes/arch`) & `kits/shore-kin` vernacular kit.
+- **P4–P6 (Next):** Shore-kin hinterland hamlets & `SIM` paktong chain; `core/camp` `fleet` routes to Deep-Ward; `cflit_qbon` / `shore_kin` crews & Godot export.
