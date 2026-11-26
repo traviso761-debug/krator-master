@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.125,
+    1.133
+   ],
+   "seam_before": [
+    1.077,
+    0.78
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.52,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leather",
+  "id": "hide.sealslick.oiled",
+  "metal": 0.0,
+  "roughness": 0.52,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "hide_sealslick_oiled.png",
+  "generator": "Codex image generation, Nov 2026 (exec-be4d9673-ea1d-4c71-8974-a09a900de766.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smooth hydrodynamic whale-oil-dressed dark slate-charcoal seal hide at 26 cm garment scale (#394247), ultra-fine tight aquatic pore structure with faint salt-water mineral bloom (#9ea8a5) in micro-creases and waterproof double-welted seam lines, supple matte-satin finish. Full colour.",
+  "sha1": "032a08cf5932d7907837462d0a03e7695a620591"
+ }
+}

@@ -59,9 +59,11 @@ PAGES = {'cosmetic-lab': ('00-head.html', '90-editor.js'), 'animation-lab': ('01
 def main():
     if CHECKS and subprocess.call(['node', os.path.join(HERE, 'tests', 'test-rig.js')]) != 0:
         sys.exit('build.py: tests/test-rig.js failed')
-    # the kits against their pieces (chains, anchors, files), and the push shader against its Godot twin
+    # the kits against their pieces (chains, anchors, files), recurring garment regressions, and the push shader against its Godot twin
     if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_kit.py')]) != 0:
         sys.exit('build.py: tests/check_kit.py failed (a kit entry and its GLB disagree; tests/kit-known-bad.json lists what is allowed)')
+    if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tests', 'check_garment_regressions.py')]) != 0:
+        sys.exit('build.py: tests/check_garment_regressions.py failed (floating geometry, motif leak, rigid skirt, or strap collision)')
     if CHECKS and subprocess.call([sys.executable, os.path.join(HERE, 'tools', 'check_twin.py')]) != 0:
         sys.exit('build.py: tools/check_twin.py failed (the push shader and kchar_push.gdshaderinc have drifted apart)')
     J = lambda *p: json.loads(read(os.path.join(HERE, 'data', *p)))
@@ -85,7 +87,8 @@ def main():
     shared = sorted(f for f in os.listdir(SRC) if f.endswith('.js') and f < '90')
     js = ['/* core/rand/08-core-rand.js */', read(RAND)]
     inputs['core/rand/08-core-rand.js'] = js[-1].encode()
-    js.append('var KCHAR_DATA = ' + json.dumps(data, separators=(',', ':')) + ';')
+    data_gz_b64 = base64.b64encode(gzip.compress(json.dumps(data, separators=(',', ':')).encode('utf-8'), 9, mtime=0)).decode('ascii')
+    js.append('var KCHAR_DATA_GZ = "' + data_gz_b64 + '";')
     for f in shared:
         t = read(os.path.join(SRC, f))
         inputs['src/' + f] = t.encode()
@@ -171,7 +174,18 @@ def main():
                 extra.append('var KCHAR_GLB = ' + json.dumps(startup_glb, separators=(',', ':')) + ';')
             if inline_thumbs:
                 extra.append('var KCHAR_THUMBS = ' + json.dumps(inline_thumbs, separators=(',', ':')) + ';')
-        pjs = extra + js + ['/* src/%s */\n%s' % (own, t)]
+        boot_own = (
+            '(function(){\n'
+            '  var _b = atob(KCHAR_DATA_GZ), _u = new Uint8Array(_b.length);\n'
+            '  for(var _i = 0; _i < _b.length; _i++) _u[_i] = _b.charCodeAt(_i);\n'
+            '  KCHAR_DATA_GZ = null;\n'
+            '  new Response(new Blob([_u]).stream().pipeThrough(new DecompressionStream("gzip"))).text().then(function(_txt){\n'
+            '    var KCHAR_DATA = window.KCHAR_DATA = JSON.parse(_txt);\n'
+            '/* src/%s */\n%s\n'
+            '  });\n'
+            '})();'
+        ) % (own, t)
+        pjs = extra + js + [boot_own]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \

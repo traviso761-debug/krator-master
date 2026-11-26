@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 148,
+   "key_lo": 55,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "jimjam/zenana-coin-veil",
+  "kind": "card",
+  "metal": 0.85,
+  "roughness": 0.36,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__jimjam__zenana-coin-veil.png",
+  "generator": "Codex image generation, Nov 2026 (exec-210a4b0c-3a37-40c5-a923-54dc87872945.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Ceremonial South Asian Ruby Zenana Dream-Sibyl coin-veil lattice: eight staggered horizontal rows of small round satin-stamped gold coins (#d8a834, ten coins per row) embossed with miniature spoked calendar wheels, linked vertically and diagonally by braided gold wire strung with faceted red carnelian (#a82020) and deep green emerald (#1b7a48) beads; every gap in the chain-and-bead mesh shows only the solid flat bright magenta background (#ff00ff). Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.",
+  "sha1": "2672427546bc787b24c5f894ff6d460e70ef9823"
+ }
+}

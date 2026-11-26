@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.391,
+    1.131
+   ],
+   "seam_before": [
+    1.365,
+    1.402
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.2,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.hematite.mirror",
+  "metal": 0,
+  "roughness": 0.3,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.hematite.mirror.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/highrift-cloud (High Rift)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: a polished fault plane (slickenside) coated in specular hematite, steel-grey to blue-black (#3a3c42, #23252b) with a faint metallic grain, long straight parallel grooves and fine striations all running top to bottom, a few low steps across the grooves, patches where the coating has worn through to red-brown earthy hematite (#7a3a26) and rust stains (#9a5a32) bleeding down the grooves, hairline cracks across them. Full colour: not tinted.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/highrift-cloud (High Rift)",
+  "reuse": "High Rift's Mirror Graben fault face; any slickenside or polished fault plane, specular hematite",
+  "sha1": "b74236d99497c0fae158a5fa8918c5f211ee98e7"
+ }
+}

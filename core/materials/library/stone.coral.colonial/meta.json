@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.347,
+    1.288
+   ],
+   "seam_before": [
+    2.117,
+    2.738
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.coral.colonial",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "stone.coral.colonial.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-0bc2-7323-9775-12543017daf1; the finished copy Codex saved after its seam pass, coquina-limestone-tile-2048.png)",
+  "licence": "generated for this project by its owner",
+  "original_title": "coquina-limestone-tile-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '65. The Marr kit (`kits/marr`, 2026-11-18)' on claude/integration-4 (id stone.coral.colonial)",
+  "sha1": "01cab3f03701ea9ef3681883eb6230a6d5090056"
+ }
+}

@@ -1225,6 +1225,11 @@ def write_anims(out, c):
             if np.linalg.norm(drift) > 0.02:
                 hips = hips - np.outer(times / times[-1], drift)
                 speed = [round(float(x), 3) for x in drift / times[-1]]
+            else:
+                # Locomotion clips authored in-place still move through the air at stride/sprint speed so capes trail behind
+                in_place_z = {'walk': 1.85, 'run': 5.8, 'ual_jog': 3.5, 'ual_crouch_walk': 1.0, 'walk_injured': 0.9}.get(name)
+                if in_place_z:
+                    speed = [0.0, 0.0, round(in_place_z * (height(c) / 1.543), 3)]
         ia = g.acc(times.astype(np.float32), 'SCALAR', minmax=True)
         chans, samps = [], []
         for n, q in rots.items():

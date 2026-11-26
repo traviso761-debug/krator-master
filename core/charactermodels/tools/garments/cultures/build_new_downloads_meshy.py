@@ -575,15 +575,19 @@ def process_spec(spec, kits, pdata):
         if spec.get('cape_safe_arms'):
             arm_cand = (np.abs(u_pos[:, 0]) > 0.245) & (u_pos[:, 1] > 0.94) & (u_pos[:, 1] < 1.48) & (u_pos[:, 2] > -0.045)
         else:
-            arm_cand = ((np.abs(u_pos[:, 0]) > 0.205) | (u_pos[:, 1] > 1.30)) & (u_pos[:, 1] > 0.76) & (u_pos[:, 1] < 1.48) & (u_pos[:, 2] > -0.11)
+            arm_y_min = float(spec.get('arm_y_min', 0.76))
+            arm_z_min = float(spec.get('arm_z_min', -0.11))
+            arm_cand = ((np.abs(u_pos[:, 0]) > 0.205) | (u_pos[:, 1] > 1.30)) & (u_pos[:, 1] > arm_y_min) & (u_pos[:, 1] < 1.48) & (u_pos[:, 2] > arm_z_min)
         keep_e = arm_cand[e0] & arm_cand[e1]
         e0_a, e1_a = e0[keep_e], e1[keep_e]
         el_a = np.linalg.norm(u_pos[e0_a] - u_pos[e1_a], axis=1)
         G_arm = coo_matrix((el_a, (e0_a, e1_a)), shape=(n_v, n_v))
 
-        x_seed_min = 0.44 if not spec.get('rotate_arms') else 0.30
-        l_seed = np.where((u_pos[:, 0] > x_seed_min) & (u_pos[:, 1] > 0.78) & (u_pos[:, 1] < 1.18) & (u_pos[:, 2] > -0.05))[0]
-        r_seed = np.where((u_pos[:, 0] < -x_seed_min) & (u_pos[:, 1] > 0.78) & (u_pos[:, 1] < 1.18) & (u_pos[:, 2] > -0.05))[0]
+        x_seed_min = float(spec.get('seed_x_min', 0.44 if not spec.get('rotate_arms') else 0.30))
+        seed_y_min = float(spec.get('seed_y_min', 0.78))
+        seed_z_min = float(spec.get('seed_z_min', -0.05))
+        l_seed = np.where((u_pos[:, 0] > x_seed_min) & (u_pos[:, 1] > seed_y_min) & (u_pos[:, 1] < 1.18) & (u_pos[:, 2] > seed_z_min))[0]
+        r_seed = np.where((u_pos[:, 0] < -x_seed_min) & (u_pos[:, 1] > seed_y_min) & (u_pos[:, 1] < 1.18) & (u_pos[:, 2] > seed_z_min))[0]
         d_l_u = dijkstra(G_arm, directed=False, indices=l_seed).min(0)
         d_r_u = dijkstra(G_arm, directed=False, indices=r_seed).min(0)
         d_l = d_l_u[inv]

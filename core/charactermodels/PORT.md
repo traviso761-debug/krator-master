@@ -18,6 +18,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/10-rig.js` | 23.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/50-figure.js` | 214.4 | [draw] | 131 | 0 | 0 | 1 | 0 | 6 | 26 | 0 | 0 | 0 | 0 |  |
 | `src/60-crowd.js` | 7.5 | [draw] | 11 | 2 | 0 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 |  |
+| `src/75-extraplanar.js` | 18.2 | [G shader] | 38 | 0 | 0 | 0 | 0 | 6 | 19 | 0 | 0 | 0 | 0 | `kchar_extraplanar.gdshader` |
 | `src/90-editor.js` | 103.3 | [web] | 13 | 0 | 70 | 41 | 2 | 2 | 0 | 0 | 0 | 6 | 5 |  |
 | `src/92-animlab.js` | 36.0 | [web] | 14 | 0 | 31 | 36 | 2 | 2 | 0 | 0 | 0 | 6 | 2 |  |
 | `src/93-armslab.js` | 34.9 | [web] | 13 | 0 | 46 | 39 | 2 | 2 | 0 | 0 | 0 | 2 | 3 |  |

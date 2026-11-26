@@ -1,0 +1,42 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 155,
+   "key_lo": 55,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "common/trim-bead-fringe",
+  "kind": "card",
+  "metal": 0.0,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "patterns__common__trim-bead-fringe.png",
+  "generator": "Codex image generation, Nov 2026 (exec-d3ed0df3-c033-4d7e-ac06-9cdf50d68044.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Two horizontal ceremonial garment fringe registers running seamlessly left to right, each consisting of a woven beadwork header band suspending sixty vertical hanging strands of alternating cylindrical bone dentalium tubes, round seed beads, and small stamped roundels/tassel tips; every gap between strands shows only the solid flat bright magenta background (#ff00ff). Neutral mid-grey (#8a8a8a), fully desaturated, for palette tinting. Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.",
+  "sha1": "518485d5ebd596540759f337105257e185a075e0"
+ }
+}

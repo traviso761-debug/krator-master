@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.154,
+    1.104
+   ],
+   "seam_before": [
+    0.876,
+    0.583
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "islander/hukoa-tapa-bark",
+  "metal": 0.0,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__islander__hukoa-tapa-bark.png",
+  "generator": "Codex image generation, Nov 2026 (exec-1163d0bd-c5a7-45a3-9e12-04ee7141c19c.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Samoan-Minangkabau Hukoa block-printed tapa barkcloth: warm fibrous cream-sand beaten mulberry bark (#e6d8b8, #c49a5a) woodblock-stamped in matte soot-black (#1e1a18), red earth (#9a2a1e), and golden ochre (#c8922e) with a four-by-four grid of pinwheel frigate-bird wings, shark-tooth triangles, and cross-hatched diamond compartments, crisp hand-stamped pigment grain and fibrous bark relief, exact edge repeat. Full colour.",
+  "sha1": "4dc14f2bf39cbd39835f209bca7fffd65c223985"
+ }
+}

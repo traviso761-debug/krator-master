@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.223,
+    1.15
+   ],
+   "seam_before": [
+    1.178,
+    1.275
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.snow.ash",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ground.snow.ash.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f8-1612-7350-b8d9-f8382e14afed)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-c93631b0-18db-4d86-85c8-c11bd00f182d.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '47. The Firebliss Range (biomes/firebliss, 2026-11-10)' (id ground.snow.ash)",
+  "sha1": "fb43ce98f929fac655197ca36b84142e932e5fc1"
+ }
+}

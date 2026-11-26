@@ -1,0 +1,64 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.151,
+    1.451
+   ],
+   "seam_before": [
+    2.777,
+    7.363
+   ],
+   "source_size": [
+    2000,
+    2000
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 0.35,
+   "pattern": false,
+   "rough": 0.35,
+   "rough_var": 0.15,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "mineral.selenite",
+  "metal": 0,
+  "roughness": 0.35,
+  "scale": [
+   2,
+   2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "mineral.selenite.webp",
+  "generator": "supplied by the owner (krator-textures-2026-11-10, webp, 2000 px), generated from core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+  "licence": "generated for this project by its owner",
+  "look_note": "on its prompt; the striations are colour, not relief, so the normal is kept faint (normal_strength 0.35): a satin crystal face",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: the side face of a giant selenite (gypsum) crystal, milky translucent white to the palest green (#dfe8da), long straight growth striations and fine parallel cleavage lines running from top to bottom, faint cloudy veils and inclusions deeper inside, a few thin hairline fractures across the grain, a soft satin sheen, no bubbles and no colour patches.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 36 (biomes/hearths/PLAN.md section 18)",
+  "reuse": "the Cave of Crystals' selenite beams and blades (hearths, crystal.selenite; up is the crystal's length, 2 m a tile); any gypsum, selenite or satin-spar crystal face, milky striated quartz",
+  "sha1": "b7658787aaf4cbe21a0d1b040dc56bcbb08cec80",
+  "size_note": "the source is 2000 px, under the prompt's 2048: the pipeline writes 1024 px sets, so nothing was upscaled"
+ }
+}

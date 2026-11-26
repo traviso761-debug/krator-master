@@ -20,6 +20,7 @@ from .limbs import (
     armbands,
     trousers,
     skirt,
+    full_gloves,
 )
 from .footwear import (
     boot,
@@ -27,6 +28,7 @@ from .footwear import (
     sandal,
 )
 from .headgear import (
+    head_landmarks_exact,
     head_rings,
     sculpted_faceplate,
     sculpted_cranium,
@@ -49,6 +51,7 @@ from .accoutrements import (
     pouch_belt,
     izani_belt,
     sash_with_tail,
+    pack_straps,
     izani_sash,
     stacked_belts,
     animal_belts,
@@ -70,7 +73,7 @@ __all__ = [
     'head_rings', 'sculpted_faceplate', 'sculpted_cranium', 'hood', 'brim',
     'tower_hat', 'conical_hat', 'cone_hat', 'crown_band', 'fan', 'crest',
     'wing', 'horn', 'turban',
-    'flap', 'blob', 'belt_sash', 'pouch_belt', 'izani_belt', 'sash_with_tail',
+    'flap', 'blob', 'belt_sash', 'pouch_belt', 'izani_belt', 'sash_with_tail', 'pack_straps',
     'izani_sash', 'stacked_belts', 'animal_belts', 'button_row', '_buttons',
     'eye_disc', 'pendants', 'tube', 'strap', 'tassel', 'rosette',
 ]

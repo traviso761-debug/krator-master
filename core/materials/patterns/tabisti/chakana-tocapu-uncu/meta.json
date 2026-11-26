@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    1.105,
+    0.559
+   ],
+   "seam_before": [
+    0.977,
+    0.962
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "tabisti/chakana-tocapu-uncu",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__tabisti__chakana-tocapu-uncu.png",
+  "generator": "Codex image generation, Nov 2026 (exec-c1dbaa03-0a5e-4196-ab0f-1461b6eb73f3.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of syncretic Tabisti and Reed-Lake warp-faced uncu wool tapestry uniting an Inca tocapu checkerboard (four squares across and four down) with Moroccan zellige star geometry: alternating registers in madder abyss-lac (#941720), Liikofi verdigris teal (#177065), Atlas indigo (#152559), and saffron-gold (#c9881e), each square framing either a three-stepped Andean chakana cross, a stylized sacred lake-fish, or an eight-pointed Maghrebi star + Tifinagh yaz outlined in crisp salt-white (#ebe8df), exact grid seams. Full colour.",
+  "sha1": "5ab071e5d0520719e8b9d0988553b890150c9098"
+ }
+}

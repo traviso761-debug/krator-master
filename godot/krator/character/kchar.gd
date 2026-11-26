@@ -53,11 +53,14 @@ static func item(rec: Dictionary, kit: Dictionary, slot: String) -> Variant:
 	var id = rec.get(slot) if slot == "hair" or slot == "beard" else rec.get("armour", {}).get(slot)
 	if id == null:
 		return null
-	# an animal head in place of the human one wears no hair, beard or headgear (KCHAR.replacesHead)
-	if (slot == "hair" or slot == "beard" or slot == "head") and replaces_head(rec, kit):
+	# an animal head in place of the human one wears no hair, beard or non-beast headgear (KCHAR.replacesHead)
+	var beast := replaces_head(rec, kit)
+	if (slot == "hair" or slot == "beard" or slot == "implant") and beast:
 		return null
 	for it in kit["items"]:
 		if it["id"] == id and it["slot"] == slot and fits(it, rec, kit):
+			if beast and slot == "head" and not it.get("fits_beast", false):
+				return null
 			return it
 	return null
 

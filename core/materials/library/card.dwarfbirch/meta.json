@@ -1,0 +1,46 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.dwarfbirch",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.dwarfbirch.webp",
+  "generator": "supplied by the owner (krator-delivery-2026-11-03, webp, 1254 px), generated from core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+  "licence": "generated for this project by its owner",
+  "note": "a six-cell sheet (3 x 2), kept whole: each shrub's base at its cell's bottom centre",
+  "prompt": "Flat sheet of cut-outs, square, 2048x2048, on a solid flat bright magenta background (#ff00ff); no magenta, pink or purple anywhere in the subject; no grey or white background. Flat, even, shadowless lighting. Subject: six separate low sprawling shrubs of dwarf birch, each a tangle of thin dark red-brown twigs spreading sideways from a short base, densely set with tiny round scalloped leaves about a centimetre across, glossy mid green with a few turning orange and red, each shrub drawn whole and wider than tall, with its base clearly at the bottom centre of its cell, all six the same scale, not touching, evenly spaced in a 3x2 grid.",
+  "prompt_where": "core/materials/PROMPTS-NEEDED.md section 32 on claude/rebuild-nhighlands-cloud (nhighlands)",
+  "reuse": "nhighlands' bog: dwarf birch (Betula nana) on the hummocks; any arctic or alpine dwarf shrub",
+  "sha1": "bb493e297aa69c5741fd38d62265021e1205b34b"
+ }
+}

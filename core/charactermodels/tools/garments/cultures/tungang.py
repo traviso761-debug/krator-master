@@ -47,7 +47,7 @@ T = {
     'enamel_cream': _lin(0xe2d8bc), 'enamel_red': _lin(0xa8382c), 'chip': _lin(0x2a2826), 'brass': _lin(0xb08a48),
     'rose': _lin(0xc88478), 'amber': _lin(0xf0a63a), 'steel': _lin(0x70726e),
 }
-CANVAS, WOOL, FELT, LEATHER = 'cloth.weave.burlap', 'cloth.wool', 'cloth.felt', 'leather.buckskin'
+CANVAS, WOOL, FELT, LEATHER = 'cloth.canvas.oiled', 'cloth.wool.fulled', 'cloth.felt.boiled', 'leather.cuir_bouilli'
 BERTH = {'m': '47', 'f': '12'}
 
 
@@ -94,25 +94,36 @@ def _box(name, c, out, width, height, depth, paint, rigid_joint):
 
 def _goggles(gid, down, over=0.0):
     """the smoked goggles of Ancient visor glass: two leather cups with brass rims on a strap, on the brow or over the
-    eyes. `over` stands them off a hood"""
+    eyes, raycast per-eye-socket so cups and nasal bridge connect flush to the face or hood."""
     a, b, up, bk, left = head_frame()
-    f = 0.445 if down else 0.665
+    f = 0.395 if down else 0.685
     c = a + (b - a) * f
     strap_p = P(T['leather_dark'], 0.04, [B('top', 0.0, 0.004, 'solid', T['chip'])], fabric=LEATHER)
     cup_p = P(T['leather'], 0.04, [B('top', 0.0, 0.008, 'solid', T['brass'])], fabric=LEATHER)
     lens_p = P(T['visor'], 0.0, [B('top', 0.0, 0.006, 'solid', T['shine_shadow'])], fabric='beads.glass')
-    parts = [head_rings(gid + '_strap', f - 0.05, f + 0.05, 0.008 + over, strap_p, n=32, rows=3)]
+    parts = [head_rings(gid + '_strap', f - 0.045, f + 0.045, 0.006 + over, strap_p, n=36, rows=4)]
+    h_nose = (first_hit(c, -bk) or 0.104) + over
     ends = []
     for k, sx in enumerate((-1.0, 1.0)):
-        d = -bk + left * (0.37 * sx)
+        p_sock = c + left * (0.032 * sx)
+        d = -bk + left * (0.14 * sx)
         d /= np.linalg.norm(d)
-        h = (first_hit(c, d) or 0.095) + over
-        p0, p1 = c + d * (h - 0.004), c + d * (h + 0.030)
-        parts.append(tube(f'{gid}_cup{k}', [p0, p1], 0.029, cup_p, n=12, rigid_joint='Head'))
-        parts.append(rosette(f'{gid}_rim{k}', p1, d, left, 0.031, _brass(), n=14, thick=0.006, rigid_joint='Head'))
-        parts.append(rosette(f'{gid}_lens{k}', p1 + d * 0.004, d, left, 0.024, lens_p, n=12, thick=0.005, rigid_joint='Head'))
-        ends.append(c + d * (h + 0.016) - left * (0.024 * sx))
-    parts.append(strap(gid + '_bridge', ends, 0.012, strap_p, rigid_joint='Head'))
+        h_s = (first_hit(p_sock, d) or 0.092) + over
+        p0 = p_sock + d * (h_s - 0.006)
+        p1 = p_sock + d * max(h_s + 0.018, h_nose - 0.002)
+        parts.append(tube(f'{gid}_cup{k}', [p0, p1], 0.028, cup_p, n=14, rigid_joint='Head'))
+        parts.append(rosette(f'{gid}_rim{k}', p1, d, left, 0.030, _brass(), n=14, thick=0.006, rigid_joint='Head'))
+        parts.append(rosette(f'{gid}_lens{k}', p1 + d * 0.003, d, left, 0.023, lens_p, n=12, thick=0.005, rigid_joint='Head'))
+        ends.append(p1 - d * 0.006 - left * (0.020 * sx))
+        # Side tab connecting goggle cup into the wrap-around head strap
+        d_tmp = -bk * 0.42 + left * (0.91 * sx)
+        d_tmp /= np.linalg.norm(d_tmp)
+        h_tmp = (first_hit(c, d_tmp) or 0.088) + 0.006 + over
+        p_tab_end = c + d_tmp * h_tmp
+        parts.append(strap(f'{gid}_tab{k}', [p1 - d * 0.008 + left * (0.024 * sx), p_tab_end],
+                           0.014, strap_p, rigid_joint='Head'))
+    br_mid = c + up * 0.003 - bk * (h_nose + 0.003)
+    parts.append(strap(gid + '_bridge', [ends[0], br_mid, ends[1]], 0.012, strap_p, rigid_joint='Head'))
     return _as(parts, 'headgear')
 
 
@@ -198,12 +209,11 @@ def _crew(sex, body_id):
     hem = core.CROTCH - (0.06 if sex == 'm' else 0.08)
     # (the sides hang from the hips' width, not the waist's: hung from the waist, the trouser legs came through at the
     # outer hips in the A-pose)
-    jacket = torso_tube(gid, core.TOP, hem, 0.020, jacket_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.015,
+    jacket = torso_tube(gid, core.TOP, hem, 0.020, jacket_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.04,
                         group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    jacket.cloth = None
     parts = [jacket]
     parts.extend(sleeves(gid, 'wrist', 0.020, sl_p, ease_end=0.030, rows=9))
-    parts.append(_as(cape(gid + '_blanket', core.WAIST - 0.06, blanket_p, span=0.40, ease=0.036, flare=0.02), 'drape'))
+    parts.append(_as(cape(gid + '_blanket', core.WAIST - 0.06, blanket_p, span=0.40, ease=0.032, flare=0.14), 'drape'))
     parts.append(collar(gid + '_cowl', P(T['felt'], 0.06, [B('top', 0.0, 0.01, 'solid', T['blanket_brown'])], fabric=FELT),
                         height=0.036, flare=0.006, ease=0.022))
     belt_p = P(T['canvas'], 0.06, [B('top', 0.0, 0.008, 'solid', T['chip'])],
@@ -215,8 +225,22 @@ def _crew(sex, body_id):
     hood_p = P(T['felt'], 0.06, [B('bottom', 0.0, 0.02, 'solid', T['blanket_brown'])], fabric=FELT)
     for down in (False, True):
         gid = f'tungang_{sex}_hood_goggles_' + ('down' if down else 'up')
-        parts = [_as(hood(gid, hood_p), 'headgear')]
-        parts.extend(_goggles(gid, down, over=0.0 if down else 0.036))
+        hd = hood(gid, hood_p, ease=0.022, ease_low=0.024, open_front=0.92, low=-0.16, rows=14, n=36, peak=0.04)
+        # Trim/seat any lateral earflap or shoulder-wing flare flush to the neck/jawline
+        z_nk_lim = float(core.NECK[2]) + 0.055
+        for ri in range(hd.P.shape[0]):
+            for ci in range(hd.P.shape[1]):
+                pz = float(hd.P[ri, ci, 2])
+                if pz < z_nk_lim:
+                    u_nk = float(np.clip((z_nk_lim - pz) / 0.095, 0.0, 1.0))
+                    x_cap = 0.112 * (1.0 - u_nk) + 0.096 * u_nk
+                    if abs(hd.P[ri, ci, 0]) > x_cap:
+                        hd.P[ri, ci, 0] = math.copysign(x_cap, hd.P[ri, ci, 0])
+        # Separate Spine2/Neck-weighted lower hood mantle collar so head rotation NEVER wings the mantle
+        mantle = collar(gid + '_mantle', hood_p, height=0.042, flare=0.012, ease=0.020, rows=5, n=36)
+        mantle.rigid_joint = 'Spine2'
+        parts = [_as(hd, 'headgear'), _as(mantle, 'headgear')]
+        parts.extend(_goggles(gid, down, over=0.0 if down else 0.024))
         entries.append(assemble_garment(gid, 'Tungang felt hood, goggles ' + ('over the eyes' if down else 'on the brow'),
                                         'head', 'tungang', parts, covers_hair=True))
     return entries
@@ -245,7 +269,7 @@ def _fixer(sex, body_id):
         B('top', 0.0, 0.02, 'solid', T['leather_dark']),
         B('bottom', 0.0, 0.015, 'solid', T['leather_dark']),
         B('top', 0.30, 0.42, 'quilt', T['leather_dark'], T['leather'], 0.10),
-    ], fabric=LEATHER)
+    ], fabric='leather.foundry.pigskin')
     parts.extend(tabard(gid + '_apron', core.KNEE + 0.08, core.CHEST + 0.03, apron_p, width=0.41, ease=0.044,
                         front=True, back=False))
     parts.append(band(gid + '_apron_halter', core.CHEST + 0.02, core.SHOULDER + 0.015, 0.022, 0.030,
@@ -297,7 +321,7 @@ def _steward(sex, body_id):
     n0, n1 = BERTH[sex]
     tab_p = P(T['orange'], 0.07, [
         B('bottom', 0.0, 0.03, 'solid', T['orange_worn']),
-        B('bottom', 0.07, 0.105, 'beads', T['shine'], T['shine_shadow'], 0.014),
+        B('bottom', 0.06, 0.125, 'highvis_bead_stencil', T['shine'], T['orange_worn'], 0.08),
         B('top', 0.0, 0.015, 'solid', T['orange_worn']),
     ], [
         # the Ancients' reflective strips, remembered: two bead stripes over the shoulders, front (u = 0.5) and back
@@ -311,9 +335,8 @@ def _steward(sex, body_id):
         PN(0.000, 0.100, 'solid', T['orange'], T['orange'], 1.0, down=0.125),
     ], fabric=CANVAS)
     sl_p = P(T['canvas_dark'], 0.07, [B('bottom', 0.0, 0.04, 'solid', T['felt'])], fabric=CANVAS)
-    tab = torso_tube(gid, core.TOP, hem, 0.024, tab_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.015,
+    tab = torso_tube(gid, core.TOP, hem, 0.024, tab_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.04,
                      group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    tab.cloth = None
     parts = [tab]
     parts.extend(sleeves(gid, 'wrist', 0.020, sl_p, ease_end=0.030, rows=9))
     parts.append(stand_collar(gid, P(T['canvas_dark'], 0.06, [B('top', 0.0, 0.008, 'solid', T['felt'])], fabric=CANVAS),
@@ -340,9 +363,8 @@ def _bookman(sex, body_id):
     ], fabric=WOOL)
     sl_p = P(T['coat'], 0.05, [B('bottom', 0.0, 0.05, 'solid', T['chip']),
                                B('bottom', 0.05, 0.058, 'solid', T['brass'])], fabric=WOOL)
-    coat = torso_tube(gid, core.TOP, core.KNEE - 0.16, 0.018, coat_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.03,
+    coat = torso_tube(gid, core.TOP, core.KNEE - 0.16, 0.018, coat_p, hang_from=core.WAIST - 0.02, hang_side=core.CROTCH + 0.05, flare=0.08,
                       group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    coat.cloth = None
     parts = [coat]
     parts.append(stand_collar(gid, P(T['coat'], 0.05, [B('top', 0.0, 0.008, 'solid', T['brass'])], fabric=WOOL), high=0.06))
     parts.extend(sleeves(gid, 'wrist', 0.020, sl_p, ease_end=0.030, rows=9))

@@ -1,0 +1,62 @@
+[
+ {
+  "src": "common-trim-lace-filigree-codex.png",
+  "out": "core/materials/patterns/common/trim-lace-filigree",
+  "record": {
+   "id": "common/trim-lace-filigree",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-9963304e-00aa-4cd5-aff7-f7b18402352f.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Three horizontal registers of ornate bobbin-lace and metallic-thread passementerie trim bands running seamlessly from left to right, woven with scalloped floral rosettes, diamond guipure brides, and picot-loop lower edges; every openwork aperture and gap between registers shows only the solid flat bright magenta background (#ff00ff) through it. Neutral mid-grey (#8a8a8a), fully desaturated, so the lace can be tinted gold, silver, cream or black. Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 150,
+   "spill": "all"
+  }
+ },
+ {
+  "src": "ancient-metal-honeycomb-2048.png",
+  "out": "core/materials/patterns/pylon/hex-grille",
+  "record": {
+   "id": "pylon/hex-grille",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.42,
+   "metal": 0.85,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (ancient-metal-honeycomb-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Pre-Cataclysm Ancient metal honeycomb visor and porthole grille, a precision lattice of bevelled flat gunmetal-grey bars (#6e7074 to #8a8a8a) forming regular hexagonal apertures (ten hexagons across the frame) with slight edge wear and fine machining grain; every hexagonal opening shows only the solid flat bright magenta background (#ff00ff) through it. Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.0,
+   "key": "#ff00ff",
+   "key_lo": 50,
+   "key_hi": 150,
+   "spill": "all"
+  }
+ }
+]

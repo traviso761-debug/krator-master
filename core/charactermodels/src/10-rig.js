@@ -149,7 +149,8 @@ var KCHAR = (function(){
       // beard or headgear: they are fitted to the human head it hides
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        if(beast && slot === 'head' && it && !it.fits_beast) it = null;
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
         if(it && it.sleeves2 && !bare) out.push({ key:key(it.sleeves2), mesh:'*', role:'armour', slot:slot });
       });
@@ -186,7 +187,9 @@ var KCHAR = (function(){
       var o = new Uint8Array(kit.base_tris);
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        if(beast && slot === 'head' && it && !it.fits_beast) it = null;
+        if(!it || !it.hide) return;
         var b = unbits(it.hide, kit.base_tris);
         for(var i=0;i<b.length;i++) o[i] |= b[i];
       });

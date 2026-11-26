@@ -240,8 +240,8 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
   }
   var n = 0, h = KCHAR.hidden(r, k).base; for(var i = 0; i < h.length; i++) n += h[i];
   ok(n >= hd.hides, b + ': the lizard head hides the head skin');
-  ok(peoples.every(function(P){ for(var s = 1; s <= 20; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_tail' || m === 'mod_head_lizard'; })) return false; } return true; }),
-     b + ': no people draws a tail or a lizard head');
+  ok(peoples.every(function(P){ if(P.id === 'lizardmen') return true; for(var s = 1; s <= 20; s++){ var st = KCHAR.stranger(s, k, P); if((st.mods || []).some(function(m){ return m === 'mod_tail' || m === 'mod_head_lizard'; })) return false; } return true; }),
+     b + ': no non-lizardman people draws a tail or a lizard head');
 });
 
 console.log(fails ? fails + ' failed' : 'test-rig: all passed');

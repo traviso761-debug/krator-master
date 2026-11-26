@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.275,
+    1.095
+   ],
+   "seam_before": [
+    1.729,
+    1.705
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.4,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "surface",
+  "id": "surface.melon.rind",
+  "metal": 0,
+  "roughness": 0.4,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "surface.melon.rind.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-27f7-7c81-b456-af3d68b3c280)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-8a116c03-d044-4003-adf8-8da7d1a97544.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '44. The Labyrinth's flora (`biomes/labyrinth` src/50-70, 2026-11-12)' on claude/relaxed-ritchie-611932 (id surface.melon.rind)",
+  "sha1": "fd186e8e37d20010ce6aca5f3afdbc1eb91a108f"
+ }
+}

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1740,
+    1617
+   ],
+   "seam_after": [
+    1.263,
+    0.966
+   ],
+   "seam_before": [
+    0.989,
+    0.935
+   ],
+   "source_size": [
+    1747,
+    1624
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.54,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "dilihan/aegean-jimjam-silk",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.54,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__dilihan__aegean-jimjam-silk.png",
+  "generator": "Codex image generation, Nov 2026 (exec-62eb50b5-4107-4d1a-93ac-f83891d01498.png) [pre-squared 2x1 vertical stack from 1774x887 -> 1747x1624]",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of cosmopolitan Dilihan Cut-frontier court brocade: iridescent kiln-crimson (#9c202e) and saffron-gold (#e09f3e) shot-silk ground framed by Iziz-orange (#d95b26) window-reveal piping and pearl-white (#f2eee5) Aegean Greek-meander borders, enclosing alternating bronze-gold (#c89b3c) Hykkousoi spiral-wave octopus medallions and carved white alabaster-style pierced jali diamonds centered with green emerald (#1b7a48) and Frost-turquoise (#2b8c94) stars; four medallions across and two bands down, whole inside seams. Full colour.",
+  "sha1": "50c359d398701c95d75450fa125a35e37d3e34be"
+ }
+}

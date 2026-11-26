@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "bottom",
+   "key": "#ff00ff",
+   "key_hi": 170,
+   "key_lo": 60,
+   "pad": 0.02,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.arum.carrion",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.arum.carrion.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d135-c5cf-7851-b902-9652dbfeca2b)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-e8af9fb6-9107-4057-b32d-f5a35b9ae6e2.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '40. The hyperjungle's lands and the savannah rims (`biomes/hyperjungle` stations `savage` and `north`, `biomes/abyssal-savannah` stations `serim`, `erim` and `north`; J2-J6, 2026-11-08)' on origin/main (id card.arum.carrion)",
+  "sha1": "834b523de26a3282c84f19e838779cb43db05ef5"
+ }
+}

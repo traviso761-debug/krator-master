@@ -3,7 +3,7 @@
 Every texture or pattern sheet the owner still has to source or generate, each with its finished prompt. Paste a block
 as it is, one image per block. **Everything delivered lives in `PROMPTS-archived.md`** (checked against `core/materials/library/`, `patterns/` and each build's `materials.json` on `origin/main`, 2026-10-19); this file holds only what is still owed.
 
-**Count: 0 prompts** (2026-10-27, later: the owner's pasted drop of 20 images delivered every entry that still had a prompt block, `PLAN.md` "Delivered 2026-10-27"; only the gaps with no prompt yet, at the end, are owed; two came under new ids, `card.clubmoss.sprig` and `card.palm.costa`, because `card.clubmoss` and `card.palm.fan` were already wired sets. The count before it: 13 prompts (2026-10-27: 1 for the Lozenge's terraced fields, section 35) (after the fifth 2026-10-26 drop) (2026-10-26, later: 2 for kits/resources' evaporite nodes (section 34), 1 termite set (section 32), 2 for acid rain (section 33); 2 Korona redos in section 0, 7 for the planned stations' gaps (section 28), 1 for the Throne (section 29), 1 for Guilin's osmanthus (section 30); 2 added for the southern highlands, section 27; after the merges with main (the Yeti kit's drift snow, section 25; the Outlands' 13, section 26), the NW outer wall and the Bowl; 2 added for the abyssal savannah, section 24): `card.fig` for Mantis's figs (optional, the Bowl); 1 left from before (`metal.enamel.scoured`, optional, section 7); 5 in section 8 for the NW outer wall's still-procedural plants; 2 for the Oidong Valley's carved bark (section 19); and 24 for the four kits planned on main that day (sections 20-23: the Godthrone and the airless rim, the W outer wall, the SW highlands, Godstep valley). Everything else owed before is delivered: `PLAN.md`, "Delivered 2026-10-26" (three drops). A short list at the end names gaps that have no prompt yet. Plus 5 for the Lizardmen's skin and eyes (section 31, the non-human spike, merged 2026-10-26).
+**Count: 8 prompts** (2026-11-26: 3 remaining in Section 36 [`metal.brass.burnished`, `metal.chrome.porcelain`, `armor.plate.fluted`] + 5 newly requested high-impact `P0` cultural textile prompts in Section 39 [`patterns/jimjam/astral-silk-brocade`, `patterns/painted-men/chilkat-totem-weave`, `patterns/islanders/kautoa-hinggi-ikat`, `patterns/free-clans/ardent-tartan-plaid`, `cloth.linen.stained_apron`]; 15 textures from Sections 36–38 already delivered today).
 
 Open prompt files elsewhere in this folder (`PROMPTS-ready.md`, `PROMPTS-nomads.md`, `PROMPTS-iziz-beast-riders.md`) are older history; their open rows were copied here.
 
@@ -286,3 +286,83 @@ Owed, but a prompt waits on something first; listed so they are not lost.
   generator will not keep those letterforms, so the band is a bake from the chart's paths (a PNG or a `TEX.def`, not a
   generated image), cut into the lintel's stone (`stone.soapstone` or `stone.corbel.slab`, already in the library). No
   clan's name is fixed in the kit yet; the bake needs the names.
+
+
+---
+
+## 36. Sculpted 3D Metallic Armor & Cyber-Lich Surfaces (`core/charactermodels`, built 2026-11-26)
+
+Three remaining metal/plate textures missing from `core/materials/library/` for the sculpted 3D rigid plate pass (`metal.steel.hammered` delivered 2026-11-26 via `charactermodels-2026-11-26.json`).
+
+#### `metal.brass.burnished`
+- Used by: `cyber_liches`, `ring_sea_mariners`, `bandits`, `fellgangs`, `hazmat_and_trades` (`fabric='metal.brass'`). Full colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Burnished hammered naval and clockwork brass plate: warm golden-yellow brass (#c8a048) with fine spun-metal brushing, subtle hand-hammered micro-facets, and light tarnished olive-brown (#6e5828) patina settled in tiny pores and micro-scratches, no green verdigris blobs. Full colour.
+```
+
+#### `metal.chrome.porcelain`
+- Used by: `eternian`, `cyber_liches`, `iziz` (`fabric='metal.chrome'`). Near-colourless, tintable.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Smooth pale chrome-porcelain cybernetic armor shell: ultra-fine brushed satin pale silver-white alloy (#d4d8dc) divided by crisp razor-thin rectilinear panel seams and microscopic recessed fasteners, subtle directional machine-milled sheen, zero rust or dirt. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+#### `armor.plate.fluted`
+- Used by: `armor.py` (`cuirass_plate(style='gothic'|'cyber_plate')`, `sculpted_greaves`, `eternian`, `iron_republic_full`, `vothic`). Near-colourless, tintable.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fluted Gothic plate armor surface seen straight on: crisp parallel vertical raised ridges and shallow concave channels spaced two centimetres apart in satin-polished neutral grey steel (#94989e), subtle dark crease lining inside each flute valley and micro-scratches along the ridge crests, repeating cleanly both horizontally and vertically. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```
+
+---
+
+## 37. New `P0` Wardrobe, Hazmat, Cryo & Extraplanar Builds (`core/charactermodels`, built 2026-11-26)
+
+*All 7 textures delivered 2026-11-26 via `charactermodels-2026-11-26.json` & `charactermodels-2026-11-26b.json` (`cloth.brocade.damask`, `cloth.mylar.foil`, `cloth.cryo.elastomer`, `armor.biogel.vat`, `ceramic.mask.porcelain`, `patterns/extraplanar/nebula-rift`, `patterns/voth/dres-plantation-reed`).*
+
+## 38. Planned `P1` & `P2` Wardrobe Builds (`wardrobe_lore_gap_audit_and_roadmap.md`, planned 2026-11-26)
+
+*All 7 textures delivered 2026-11-26 via `charactermodels-2026-11-26b.json` (`cloth.voidsuit.mlis`, `cloth.fungal.mycelium`, `leather.chitin.carapace`, `cloth.kelp.oilskin`, `plumage.feathers.raptor`, `skin.keratin.beak`, `patterns/fleet-born/signal-flag-patchwork`).*
+
+
+---
+
+## 39. `P0` Cultural Textile Quality Pass (`core/charactermodels`, 2026-11-26)
+
+Five signature cultural textiles to elevate the newly built `P0` outfits (`jimjam`, `painted_men`, `islanders`, `free_clans`, `hazmat_and_trades`) from procedural patterns to rich woven/dyed library sheets.
+
+#### `patterns/jimjam/astral-silk-brocade`
+- Used by: `jimjam.py` (`raja_concordance`, *Wanderer* astronomical schools). Full colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative Indian-astral woven silk brocade panel: deep vermilion-crimson (#9a1e22) and saffron-gold (#d89c28) silk ground woven with repeating geometric astrolabe medallions, eight-pointed lotus stars, and delicate golden orbital arcs in metallic gold thread (#e2be58) and alabaster cream (#ece6d4), fine silk weft sheen throughout. Full colour.
+```
+
+#### `patterns/painted-men/chilkat-totem-weave`
+- Used by: `painted_men.py` (`pc_raven_reiver`, `totem_warden`, clan cloaks & tunics). Full colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative Pacific Northwest Chilkat twined wool-and-cedar-bark blanket weave: bold symmetrical ovoids, U-forms, and stylized raven-eye totem motifs outlined in charcoal black (#1a1818) and filled with mountain-goat wool ivory (#e6dfd0), mineral ochre-yellow (#c89a2e), and copper-turquoise (#2a7c7a), dense twined yarn texture visible across every band. Full colour.
+```
+
+#### `patterns/islanders/kautoa-hinggi-ikat`
+- Used by: `islanders.py` (`king_of_kautoa`, `Kautoa`, `Rumah`, `Hetanini` royal wraps & mantles). Full colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative Sumba hinggi warp-ikat woven cotton cloth: horizontal ceremonial bands in deep sea-indigo (#1e324a) and rust-madder red (#8a2c22) alternating with narrow ochre (#c69232) and bone-cream (#e4dac4) geometric diamond-and-hook borders, characteristic softly feathered ikat-dyed warp threads throughout. Full colour.
+```
+
+#### `patterns/free-clans/ardent-tartan-plaid`
+- Used by: `free_clans.py` (`bronze_gunner`, `nine_clan_jarl`, `ardent_axeman` Highland plaids & trews). Full colour.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative heavy fulled Highland wool tartan twill: bold intersecting sett of deep madder-crimson (#882420), highland bog-moss green (#2c4430), dark peat charcoal (#202224), and thin overcheck stripes of gorse-ochre (#cfa034), crisp diagonal 2/2 wool twill weave texture throughout. Full colour.
+```
+
+#### `cloth.linen.stained_apron`
+- Used by: `hazmat_and_trades.py` (universal `44`-trade civic aprons: blacksmith, butcher, baker, innkeeper, stevedore). Near-colourless, tintable.
+
+```
+Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy unbleached coarse workshop canvas and linen apron cloth seen close up: sturdy plain-weave slubbed threads in neutral warm pale grey (#b4b0a6) with subtle soft weathered mottling, faint worn crease lines, and light workshop dusting, no bright colours or harsh stains. Keep colours natural but slightly muted and even, so the texture can be tinted to different palettes without looking stained.
+```

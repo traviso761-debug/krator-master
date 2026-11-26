@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1148
+   ],
+   "seam_after": [
+    0.872,
+    0.71
+   ],
+   "seam_before": [
+    0.988,
+    0.087
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.2,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.32,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "talia/damascene-niello",
+  "metal": 0.88,
+  "pattern": true,
+  "roughness": 0.32,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__talia__damascene-niello.png",
+  "generator": "Codex image generation, Nov 2026 (exec-bac29775-7f7a-41db-93dd-11063b4f754f.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Talia parade steel armour richly inlaid with niello and damascening: smooth blued-black nielloed steel ground (#1f232a) chased with fine flush metallic gold (#ddb34b) and bright silver (#d8dde6) Roman-Baroque acanthus scrollwork framing circular medallions that pair a radiant gold Sun above a four-armed Mountain Giant silhouette, bordered top and bottom by burgundy cloisonne enamel (#6e1d2a) Greek-meander strips; exactly three medallions across and two registers down, clear of the seams. Full colour.",
+  "sha1": "da6eb5d3e11ca44c3870e5d5cc7779040d190f16"
+ }
+}

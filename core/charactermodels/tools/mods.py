@@ -974,7 +974,7 @@ def lizard_head(body, out, rec, tex, nrm=None):
         m = _Smooth(rec)
         m.C = []
         return m
-    cran, jaw, mouth_m, eye_m, dark_m, tooth_m, crest_m, crest_n, lid_m = (smooth() for _ in range(9))
+    cran, jaw, mouth_m, eye_m, dark_m, tooth_m, tongue_m, crest_m, crest_n, lid_m = (smooth() for _ in range(10))
     for f, is_upper, m, bone in ((lz.upper, True, cran, hj), (lz.lower, False, jaw, jj)):
         lo, hi = np.array([-0.13, -0.1, -0.15]) * k, np.array([0.13, 0.21, 0.29]) * k
         V, T, N, nb = RP._mesh(f, lo, hi, RP.CELL)
@@ -983,8 +983,8 @@ def lizard_head(body, out, rec, tex, nrm=None):
         V, T, U, C, inside, src = HD.box_uv(V, T, C, inside, np.arange(len(V)))
         mats = np.where(inside[T].all(1), 'mouth', 'skin')
         RP.surface({'skin': m, 'mouth': mouth_m}, V + H, T, U, C, [(bone, 1.0)], mats, {'src': src, 'vid': {}})
-    # the eyes (an iris texture the eye colour tints, a round pupil: amphibian.iris_texture), and the lower lids that
-    # shut them
+    # the eyes (an iris texture the eye colour tints, a vertical reptilian slit pupil: amphibian.iris_texture), and the
+    # lower lids that shut them
     import amphibian as AM
     eV, eN, eU, eT = AM.eyeball(lz.eyes, lz.eye_r, H)
     for p, u in zip(eV, eU):
@@ -999,16 +999,107 @@ def lizard_head(body, out, rec, tex, nrm=None):
     for sx in (1, -1):
         # the nostril, dark in the pit of its boss
         c, r = lz.nostrils[0 if sx < 0 else 1]
-        _ellipsoid(dark_m, H + c - np.array([sx * 0.0015 * k, 0, 0]), r * 1.1, [(hj, 1.0)], RP.RIGID)
-        # recurved teeth along both jaws inside the closed mouth (seen when it opens)
-        for z in np.arange(0.0, 0.235, 0.013) * k:
-            wl = RP._lerp(RP.LOWER, 1, z / k) * k
-            my = RP._lerp(RP.UPPER, 3, z / k) * k
-            _cone(tooth_m, H + np.array([sx * wl * 0.82, my + 0.001 * k, z]), np.array([0, -1.0, 0.25]), 0.0022 * k, 0.0065 * k, [(hj, 1.0)], RP.RIGID)
-            ly = RP._lerp(RP.LOWER, 2, z / k) * k
-            _cone(tooth_m, H + np.array([sx * wl * 0.74, ly - 0.001 * k, z + 0.006 * k]), np.array([0, 1.0, 0.25]), 0.0018 * k, 0.005 * k, [(jj, 1.0)], RP.RIGID)
+        _ellipsoid(dark_m, H + c - np.array([sx * 0.0015 * k, 0, 0]), r * 1.15, [(hj, 1.0)], RP.RIGID)
+        # recurved graduated teeth along both jaws inside the closed mouth (seen when it opens)
+        for z_raw in np.arange(0.002, 0.238, 0.0125):
+            z = z_raw * k
+            wl = RP._lerp(RP.LOWER, 1, z_raw) * k
+            my = RP._lerp(RP.UPPER, 3, z_raw) * k
+            canine = 1.0 + 0.42 * math.exp(-((z_raw - 0.115) / 0.038) ** 2) + 0.22 * math.exp(-((z_raw - 0.225) / 0.022) ** 2)
+            _cone(tooth_m, H + np.array([sx * wl * 0.82, my + 0.0022 * k, z]), np.array([0, -1.0, 0.26]),
+                  0.0027 * k * canine ** 0.5, 0.0092 * k * canine, [(hj, 1.0)], RP.RIGID, n=8)
+            ly = RP._lerp(RP.LOWER, 2, z_raw) * k
+            _cone(tooth_m, H + np.array([sx * wl * 0.74, ly + 0.0010 * k, z + 0.006 * k]), np.array([0, 1.0, 0.24]),
+                  0.0023 * k * canine ** 0.5, 0.0074 * k * canine, [(jj, 1.0)], RP.RIGID, n=8)
     for mm in (dark_m, tooth_m):
         mm.C = [np.ones(3)] * len(mm.P)
+    # muscular rictus commissure folds stretching between upper skull (Head) and lower mandible (face_jaw) at the corners
+    for sx in (-1, 1):
+        ric_rows = []
+        for qi in range(5):
+            ur = qi / 4.0                           # 0 = upper maxilla, 1 = lower mandible
+            jw_r = [(hj, 1.0 - ur), (jj, ur)]
+            ring = []
+            for ki, zr in enumerate(np.linspace(-0.028, 0.018, 5)):
+                wr_x = sx * (RP._lerp(RP.LOWER, 1, zr) * 0.82 - 0.004 * math.sin(math.pi * ur)) * k
+                yr_hi = (RP._lerp(RP.UPPER, 3, zr) + 0.004) * k
+                yr_lo = (RP._lerp(RP.LOWER, 2, zr) - 0.005) * k
+                pr = H + np.array([wr_x, yr_hi * (1 - ur) + yr_lo * ur, zr * k])
+                vi = mouth_m.v(pr, (ki / 4.0, ur), jw_r, RP.RIGID)
+                mouth_m.C.append(np.array([0.82, 0.68, 0.70]))
+                ring.append(vi)
+            ric_rows.append(ring)
+        for r_i in range(4):
+            for c_i in range(4):
+                a0, a1, b1, b0 = ric_rows[r_i][c_i], ric_rows[r_i][c_i + 1], ric_rows[r_i + 1][c_i + 1], ric_rows[r_i + 1][c_i]
+                # double-sided muscular fold so visible from both outside 3/4 and across the gape
+                mouth_m.T += [[a0, a1, b1], [a0, b1, b0], [a0, b1, a1], [a0, b0, b1]]
+    # prominent arched forked Komodo/monitor tongue rising proudly above the concave oral floor (outward-wound!)
+    t_spine = []
+    t_body = []
+    for qi, z_raw in enumerate(np.linspace(0.005, 0.168, 9)):
+        u_t = qi / 8.0
+        arch = math.sin(math.pi * min(u_t / 0.82, 1.0)) * 0.0115
+        ly = (RP._lerp(RP.LOWER, 2, z_raw) + 0.0045 + arch) * k
+        c_pt = H + np.array([0.0, ly, z_raw * k])
+        t_spine.append(c_pt)
+        rw = (0.0175 - 0.0075 * u_t ** 1.1) * k
+        rh = (0.0062 - 0.0020 * u_t) * k
+        col_t = np.array([1.15, 0.88, 0.92]) * (1 - 0.65 * u_t ** 1.2) + np.array([0.42, 0.30, 0.52]) * (0.65 * u_t ** 1.2)
+        ring, first = [], None
+        for ri in range(13):
+            th = 2 * math.pi * ri / 12
+            # dorsal median lingual groove at th ~ 0
+            groove = 1.0 - 0.24 * math.exp(-((math.sin(th)) / 0.28) ** 2) * max(math.cos(th), 0.0)
+            p_t = c_pt + np.array([rw * math.sin(th), rh * math.cos(th) * groove, 0.0])
+            vi = tongue_m.v(p_t, (ri / 12.0, u_t * 0.65), [(jj, 1.0)], RP.RIGID, vid=None if ri < 12 else tongue_m.VID[first])
+            if ri == 0:
+                first = vi
+            tongue_m.C.append(col_t)
+            ring.append(vi)
+        t_body.append(ring)
+    tongue_m.grid(t_body)
+    t_spines_fork = []
+    for sx in (-1, 1):                           # two long, sleek diverging forked tines flicking forward
+        f_spine = []
+        t_fork = []
+        for fi in range(6):
+            uf = fi / 5.0
+            zf = (0.162 + 0.082 * uf) * k
+            xf = sx * (0.0032 + 0.0165 * uf ** 1.25) * k
+            yf = (RP._lerp(RP.LOWER, 2, min(0.162 + 0.075 * uf, 0.255)) + 0.011 - 0.0065 * uf ** 1.3) * k
+            c_fk = H + np.array([xf, yf, zf])
+            f_spine.append(c_fk)
+            rf = (0.0052 * (1 - 0.80 * uf)) * k
+            col_f = np.array([0.44, 0.32, 0.54]) * (1 - uf) + np.array([0.22, 0.16, 0.30]) * uf
+            ring, first = [], None
+            for ri in range(9):
+                th = 2 * math.pi * ri / 8
+                p_f = c_fk + np.array([rf * math.sin(th), rf * 0.78 * math.cos(th), 0.0])
+                vi = tongue_m.v(p_f, (ri / 8.0, 0.65 + 0.35 * uf), [(jj, 1.0)], RP.RIGID, vid=None if ri < 8 else tongue_m.VID[first])
+                if ri == 0:
+                    first = vi
+                tongue_m.C.append(col_f)
+                ring.append(vi)
+            t_fork.append(ring)
+        tongue_m.grid(t_fork)
+        tip_pt = H + np.array([sx * 0.022 * k, (RP._lerp(RP.LOWER, 2, 0.245) + 0.003) * k, 0.252 * k])
+        f_spine.append(tip_pt)
+        t_spines_fork.append(np.array(f_spine))
+        tip_v = tongue_m.v(tip_pt, (0.5, 1.0), [(jj, 1.0)], RP.RIGID)
+        tongue_m.C.append(np.array([0.20, 0.14, 0.28]))
+        tongue_m.fan(t_fork[-1], tip_v)
+    t_spine_arr = np.array(t_spine)
+
+    def tongue_axis(q):
+        c0 = _nearest_on(t_spine_arr, q)
+        d0 = np.linalg.norm(q - c0, axis=1)
+        for fsp in t_spines_fork:
+            cf = _nearest_on(fsp, q)
+            df = np.linalg.norm(q - cf, axis=1)
+            m_f = df < d0
+            d0[m_f], c0[m_f] = df[m_f], cf[m_f]
+        return c0
     collar, neck_axis, hide = _head_collar(body, rec, k, RP.TILE)
     # the crest: blades down the midline, the head's rigid, the neck's on the nearest base vertex and a material of
     # their own, which the figures leave out when a worn item covers the skin under their roots (under)
@@ -1024,15 +1115,16 @@ def lizard_head(body, out, rec, tex, nrm=None):
             under.update(int(t) for t in np.nonzero((B['T'] == nb).any(1))[0])
         RP.blade(m, m.C, H + p, up, back, h, min(0.45 * h + 0.004 * k, 0.019 * k), 0.0032 * k, jw, recipe)
     white = flat('#ffffff')
-    spec = [(cran, {'name': 'Mod.head_lizard', 'rough': 0.62}, tex, nrm, None),
-            (jaw, {'name': 'Mod.head_lizard_jaw', 'rough': 0.62}, tex, nrm, None),
-            (collar, {'name': 'Mod.head_lizard_neck', 'rough': 0.65}, tex, nrm, neck_axis),
-            (mouth_m, {'name': 'Mod.head_lizard_mouth', 'rough': 0.4}, flat('#8a4a48'), None, None),
-            (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.08}, AM.iris_texture('round'), None, None),
-            (dark_m, {'name': 'Mod.head_lizard_dark', 'rough': 0.5}, flat('#120c08'), None, None),
-            (tooth_m, {'name': 'Mod.head_lizard_teeth', 'rough': 0.35}, flat('#d8ccb0'), None, None),
-            (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.55}, white, None, None),
-            (crest_n, {'name': 'Mod.head_lizard_crest_neck', 'rough': 0.55}, white, None, None)]
+    spec = [(cran, {'name': 'Mod.head_lizard', 'rough': 0.56}, tex, nrm, None),
+            (jaw, {'name': 'Mod.head_lizard_jaw', 'rough': 0.56}, tex, nrm, None),
+            (collar, {'name': 'Mod.head_lizard_neck', 'rough': 0.60}, tex, nrm, neck_axis),
+            (mouth_m, {'name': 'Mod.head_lizard_mouth', 'rough': 0.28}, flat('#6e2c30'), None, None),
+            (tongue_m, {'name': 'Mod.head_lizard_tongue', 'rough': 0.16}, flat('#923846'), None, tongue_axis),
+            (eye_m, {'name': 'Mod.head_lizard_eye', 'rough': 0.06}, AM.iris_texture('vertical'), None, None),
+            (dark_m, {'name': 'Mod.head_lizard_dark', 'rough': 0.45}, flat('#120c08'), None, None),
+            (tooth_m, {'name': 'Mod.head_lizard_teeth', 'rough': 0.24}, flat('#e2d6b8'), None, None),
+            (crest_m, {'name': 'Mod.head_lizard_crest', 'rough': 0.48}, white, None, None),
+            (crest_n, {'name': 'Mod.head_lizard_crest_neck', 'rough': 0.48}, white, None, None)]
     prims = []
     for m, mat, img, nm, outward in spec:
         if not len(m.T):

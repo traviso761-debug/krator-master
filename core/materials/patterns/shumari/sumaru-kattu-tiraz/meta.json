@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1231,
+    1242
+   ],
+   "seam_after": [
+    0.922,
+    0.766
+   ],
+   "seam_before": [
+    0.878,
+    0.736
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "shumari/sumaru-kattu-tiraz",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__shumari__sumaru-kattu-tiraz.png",
+  "generator": "Codex image generation, Nov 2026 (exec-d54f55dd-4ca5-46a1-9e9c-a3947534d23c.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Shumari Mamluk regimental tiraz arm-and-hem tapestry cloth on dark basalt-charcoal highland wool (#2c2e34): two horizontal epigraphic bands framed by cave-madder crimson caste-bars (#9e2a2b) and stepped blade-shurafat merlon borders, woven in crisp travertine-cream (#d8cdb8) angular katakana-like notched-blade vertical stems accented with burnished bronze-gold (#b8861b) diagonal breath-thorn hooks (ha-tonu), twelve distinct geometric blade-glyphs across, none clipped by the seams. Full colour.",
+  "sha1": "b2791f35e749f85f34eee4c41b06a13912354df2"
+ }
+}

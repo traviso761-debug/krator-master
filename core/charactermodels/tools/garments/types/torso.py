@@ -162,64 +162,172 @@ def stand_collar(gid, paint, high=0.07, arc=None):
 izani_collar = stand_collar
 
 
-def collar_disc(name, width, paint, drop=0.05, rows=4, n=48, scallop=0.12, ease=0.02, z_off=0.005, rigid_joint=None):
-    """Broad flat pectoral/shell collar around the neck lying over the shoulders."""
-    zs = core.TOP + z_off
-    c = spine_at(zs)
+def collar_disc(name, width, paint, drop=0.05, rows=8, n=48, scallop=0.12, ease=0.018, z_off=0.0, rigid_joint=None):
+    """Broad pectoral/mantle collar around the neck that drapes flush along the sloped shoulders, chest, and upper back."""
+    rows = max(int(rows), 8)
+    z_top = core.TOP + min(float(z_off), 0.0) - 0.002
     x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    Q = []
     angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    outer_ease = max(ease, 0.026)
+    eff_drop = max(float(drop), float(width) * 0.88, 0.064)
+    base_ease = min(max(float(ease), 0.016), 0.023)
+    zs = np.linspace(z_top, z_top - eff_drop, rows)
+    Es = np.linspace(max(0.014, base_ease - 0.002), base_ease + 0.002, rows)
+    Q = np.array([
+        ring_points(spine_at(min(zz, core.TOP)), x, y, angles, Es[k], rmin=0.052, rmax=0.22, bvh=core.BVH_T)
+        for k, zz in enumerate(zs)
+    ], dtype=np.float64)
+    # Seat lateral trapezius/clavicle saddle columns directly onto the sloped shoulder roof via downward raycast
     for k in range(rows):
-        s = k / (rows - 1)
-        e_k = ease + (outer_ease - ease) * min(1.0, s * 2.0)
-        row = []
-        for an in angles:
-            d = x * math.cos(an) + y * math.sin(an)
-            h = first_hit(c, d, bvh=core.BVH) or 0.07
-            r = h + e_k + s * width * (1 + scallop * abs(math.cos(8 * an)))
-            row.append(c + d * r + np.array([0, 0, -drop * s * s]))
-        Q.append(row)
-    Q = smooth_push(np.array(Q), True, outer_ease, iters=1, fix_top=True)
-    # (no role yet: as a drape the Yuni duster's shoulder cape stood off the shoulders and showed its underside from behind,
-    # the audit's "inside" 17345 to 23853 px; as a shoulder cap it is skinned to the arms. Its right treatment is Phase 2's)
-    return Part(name, Q, True, ['body'] * rows, paint, rigid_joint=rigid_joint)
+        e_k = Es[k]
+        for j in range(n):
+            px, py, pz = float(Q[k, j, 0]), float(Q[k, j, 1]), float(Q[k, j, 2])
+            c_xy = spine_at(min(pz, core.TOP))[:2]
+            dy_rel = py - float(c_xy[1])
+            if abs(px) >= 0.068 and abs(dy_rel) <= 0.068 and pz >= core.SHOULDER - 0.035:
+                ro = np.array([px, py, core.TOP + 0.12])
+                hd = first_hit(ro, np.array([0.0, 0.0, -1.0]), maxd=0.26, bvh=core.BVH_T)
+                if hd is not None:
+                    z_surf = core.TOP + 0.12 - float(hd)
+                    Q[k, j, 2] = z_surf + e_k
+    # Light tangential Laplacians without ballooning upward off the clavicles
+    for _ in range(2):
+        Q_nb = 0.50 * Q + 0.25 * np.roll(Q, 1, axis=1) + 0.25 * np.roll(Q, -1, axis=1)
+        Q[1:-1] = 0.65 * Q_nb[1:-1] + 0.175 * Q_nb[:-2] + 0.175 * Q_nb[2:]
+        Q[0] = Q_nb[0]
+        Q[-1] = Q_nb[-1]
+    if scallop > 0.0:
+        sc_amp = min(float(scallop), 0.08) * eff_drop * 0.40
+        for k in range(1, rows):
+            s = k / float(rows - 1)
+            for j, an in enumerate(angles):
+                Q[k, j, 2] -= sc_amp * (s ** 1.3) * (0.5 - 0.5 * math.cos(8.0 * an))
+    return Part(name, Q, True, ['body'] * rows, paint, rigid_joint=rigid_joint, role='collar')
 
 
-def cape(name, z_bot, paint, z_top=None, span=0.52, ease=0.035, flare=0.08, rows=16, n=26, top=None):
-    """Back cape/mantle over the shoulders, supporting both radians (`span > 0.85`) and fraction-of-circle (`span <= 0.85`)."""
-    zt = top if top is not None else (z_top if z_top is not None else (core.SHOULDER + 0.02))
-    zt = min(zt, core.TOP + 0.01)
+def cape(name, z_bot, paint, z_top=None, span=0.52, ease=0.025, flare=0.08, rows=16, n=26, top=None, stiff=0.18, back_push=0.0):
+    """Back cape/mantle clasped cleanly at the rear collar/clavicle saddle (never winging out over lateral deltoids)."""
+    zt_req = top if top is not None else (z_top if z_top is not None else (core.TOP - 0.010))
+    zt = min(max(float(zt_req), core.TOP - 0.016), core.TOP - 0.006)
     half = span if span > 0.85 else span * math.pi
-    half = min(half, 0.40 * math.pi)
-    flare = min(flare, 0.12)
-    return torso_tube(name, zt, z_bot, max(ease, 0.036), paint, n=n, rows=rows,
-                      arc=(-half, half), hang_from=zt - 0.03, flare=flare,
-                      group_below=core.CROTCH + 0.05, iters=2, over_arms=False, stiff=0.05, layer=2)
+    half = min(max(half, 0.25 * math.pi), 0.31 * math.pi)
+    flare = min(float(flare), 0.22)
+    # Clamp upper-back base ease (22..28mm off bare skin = ~6..10mm over tunics/coats) so capes never billow out at shoulders!
+    body_ease = min(max(float(ease), 0.022), 0.028)
+    n_cols = max(int(n), 34)
+    pt = torso_tube(name, zt, z_bot, body_ease, paint, n=n_cols, rows=max(int(rows), 24),
+                    arc=(-half, half), hang_from=min(zt - 0.06, core.SHOULDER - 0.02), flare=flare,
+                    group_below=core.CROTCH + 0.05, iters=2, over_arms=False, stiff=float(stiff), layer=2)
+    # Optional posterior clearance sweep below shoulder clasp for capes worn over bulky coats/robes
+    if back_push > 0.0:
+        R_bp = pt.P.shape[0]
+        for k_bp in range(6, R_bp):
+            u_bp = (k_bp - 5) / float(max(R_bp - 6, 1))
+            pt.P[k_bp, :, 1] += float(back_push) * (u_bp ** 1.15)
+    # Taper upper 7 rows inward into a clean rear-clavicle clasp (`|x| <= 0.116` at row 0, medial to deltoids, zero neck climb)
+    R_p, C_p = pt.P.shape[:2]
+    n_seat = min(7, R_p)
+    for k in range(n_seat):
+        w_top = 1.0 - (k / float(max(n_seat, 1)))
+        w_clasp = w_top * w_top
+        e_sh = 0.016 * w_top + body_ease * (1.0 - w_top)
+        x_lim = 0.116 * w_clasp + 0.25 * (1.0 - w_clasp)
+        for j in range(C_p):
+            px, py, pz = float(pt.P[k, j, 0]), float(pt.P[k, j, 1]), float(pt.P[k, j, 2])
+            if abs(px) > x_lim:
+                px = math.copysign(x_lim, px) * w_clasp + px * (1.0 - w_clasp)
+                pt.P[k, j, 0] = px
+            c_xy = spine_at(min(pz, core.TOP - 0.008))[:2]
+            dx, dy = px - float(c_xy[0]), py - float(c_xy[1])
+            r_cur = math.hypot(dx, dy)
+            if r_cur > 1e-6 and w_top > 0.05:
+                d_dir = np.array([dx / r_cur, dy / r_cur, 0.0])
+                h_t = first_hit(spine_at(min(pz, core.TOP - 0.008)), d_dir, bvh=core.BVH_T)
+                if h_t is not None:
+                    r_target = h_t + e_sh
+                    r_blended = w_top * r_target + (1.0 - w_top) * r_cur
+                    pt.P[k, j, 0] = c_xy[0] + d_dir[0] * r_blended
+                    pt.P[k, j, 1] = c_xy[1] + d_dir[1] * r_blended
+            px2, py2 = float(pt.P[k, j, 0]), float(pt.P[k, j, 1])
+            dy_rel = py2 - float(c_xy[1])
+            # Only slope downward across lateral clavicle/shoulder (`|x| >= 0.092`), NEVER upward onto the neck!
+            if abs(px2) >= 0.092 and abs(dy_rel) <= 0.085 and pz >= core.SHOULDER - 0.045:
+                ro = np.array([px2, py2, core.TOP + 0.12])
+                hd = first_hit(ro, np.array([0.0, 0.0, -1.0]), maxd=0.28, bvh=core.BVH_T)
+                if hd is not None:
+                    z_surf = core.TOP + 0.12 - float(hd)
+                    pt.P[k, j, 2] = min(pz, w_top * (z_surf + e_sh) + (1.0 - w_top) * pz)
+        # Smooth upper collar/shoulder rows along columns so lateral borders stay completely crease-free
+        if C_p >= 6:
+            row_cp = pt.P[k].copy()
+            pt.P[k, 1:-1] = 0.50 * row_cp[1:-1] + 0.25 * (row_cp[:-2] + row_cp[2:])
+    # Guarantee monotonic lateral X broadening from shoulder blades (`k >= n_seat`) to hem so the waist NEVER pinches inward in X!
+    for k in range(max(1, n_seat), R_p):
+        dz_k = max(0.0, float(pt.P[k - 1, :, 2].mean() - pt.P[k, :, 2].mean()))
+        x_prev = np.abs(pt.P[k - 1, :, 0])
+        u_col = np.abs(np.linspace(-1.0, 1.0, C_p))
+        min_x_k = x_prev + 0.045 * dz_k * u_col
+        cur_x_k = np.abs(pt.P[k, :, 0])
+        need_w = cur_x_k < min_x_k
+        if need_w.any():
+            sgn_x = np.where(pt.P[k, :, 0] >= 0.0, 1.0, -1.0)
+            sgn_x[C_p // 2] = 0.0
+            pt.P[k, need_w, 0] = sgn_x[need_w] * min_x_k[need_w]
+    # Anchor live cloth chains at `Spine` (`~14 cm` ABOVE `Hips` and `< Spine1` for Gate 4!) so `50-figure.js` fades `fk`
+    # smoothly across `Spine -> Hips` with ZERO mid-cape step kink and full `layered()` protection over glutes & coats!
+    if float(z_bot) < core.CROTCH + 0.02:
+        z_sp_mid = 0.5 * (float(core.J('Spine')[2]) + float(core.J('Spine1')[2])) - 0.015
+        z_cloth = min(zt - 0.14, z_sp_mid)
+        r_cloth = int(np.argmin(np.abs(pt.P[:, :, 2].mean(axis=1) - z_cloth)))
+        if r_cloth < R_p - 2:
+            pt.cloth = {'start': r_cloth, 'stiff': 0.18, 'layer': 2}
+        else:
+            pt.cloth = None
+    else:
+        pt.cloth = None
+    return pt
 
 
-def tabard(name, z_bot, z_top, paint, width=0.22, ease=0.032, front=True, back=False, center_ang=None):
-    """Narrow open woven/armored hanging panel (stole, apron, or tasset) contoured to the trunk."""
+def tabard(name, z_bot, z_top, paint, width=0.22, ease=0.032, front=True, back=False, center_ang=None, hull_from=None):
+    """Narrow open woven/armored hanging panel (stole, apron, or tasset) contoured to the trunk with waist-bridge hull support."""
     z0, z1 = max(z_bot, z_top), min(z_bot, z_top)
     half_ang = max(0.18, min(0.58, width * 1.42))
-    rows = 12
-    cols = 11
+    rows = 22
+    cols = 15
     zs = np.linspace(z0, z1, rows)
     z_anchor_min = core.CROTCH + 0.04
+    z_hull = hull_from if hull_from is not None else (min(z0, core.CHEST + 0.02) if (z0 >= core.WAIST + 0.04 and z1 < core.WAIST) else None)
 
     def _make_panel(pname, c_ang):
         angs = np.linspace(c_ang - half_ang, c_ang + half_ang, cols)
+        r_hull_ref = None
+        if z_hull is not None:
+            c_hl = spine_at(max(z_hull, z_anchor_min))
+            r_hull_ref = []
+            for an in angs:
+                d = np.array([math.sin(an), math.cos(an), 0.0])
+                hh = first_hit(c_hl, d, bvh=core.BVH_T)
+                r_hull_ref.append((hh if (hh is not None and hh > 0.06) else 0.125) + ease)
         Q = []
         for i, z in enumerate(zs):
             z_ray = max(z, z_anchor_min)
             c = spine_at(z_ray)
-            dz = max(0.0, z_anchor_min - z)
+            dz = max(0.0, core.WAIST - z)
             row = []
-            for an in angs:
+            for j_a, an in enumerate(angs):
                 d = np.array([math.sin(an), math.cos(an), 0.0])
                 h = first_hit(c, d, bvh=core.BVH_T)
-                r = (h if (h is not None and h > 0.06) else 0.125) + ease + 0.065 * dz
-                row.append(np.array([c[0] + d[0] * r, c[1] + d[1] * r, z]))
+                if h is None or h <= 0.05:
+                    loc_n, _ = core.nearest(c + d * 0.09, bvh=core.BVH_T)
+                    h = max(0.055, float(np.hypot(loc_n[0] - c[0], loc_n[1] - c[1])))
+                r = h + ease + 0.145 * dz
+                if r_hull_ref is not None and z < z_hull:
+                    r = max(r, r_hull_ref[j_a] + 0.145 * dz)
+                px_r, py_r, pz_r = c[0] + d[0] * r, c[1] + d[1] * r, z
+                if z >= core.SHOULDER - 0.030 and abs(px_r) >= 0.055:
+                    hd_s = first_hit(np.array([px_r, py_r, core.TOP + 0.12]), np.array([0.0, 0.0, -1.0]), maxd=0.28, bvh=core.BVH_T)
+                    if hd_s is not None:
+                        pz_r = min(pz_r, (core.TOP + 0.12 - float(hd_s)) + min(ease, 0.024))
+                row.append(np.array([px_r, py_r, pz_r]))
             Q.append(row)
         Q = np.array(Q)
         for _ in range(2):
@@ -250,11 +358,13 @@ def tabard(name, z_bot, z_top, paint, width=0.22, ease=0.032, front=True, back=F
 
 def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=4, iters=2):
     """Band around the torso on a tilted plane (baldric, sash, or himation)."""
-    z_high = min(z_high, core.SHOULDER + 0.015)
+    if z_high >= core.SHOULDER - 0.02:
+        z_high = max(float(z_high), core.TOP - 0.042)
+    z_high = min(z_high, core.TOP - 0.032)
     zm, amp = (z_high + z_low) / 2, (z_high - z_low) / 2
     angles = np.linspace(0, 2 * math.pi, n, endpoint=False)
     x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    x_clavicle = 0.126
+    x_clavicle = 0.106
     Q = []
     for r in range(rows):
         dz = (r / (rows - 1) - 0.5) * width
@@ -279,43 +389,63 @@ def band(name, z_low, z_high, width, ease, paint, high=math.pi / 2, n=48, rows=4
             rs = np.interp(k, np.concatenate([k[ok] - len(rs), k[ok], k[ok] + len(rs)]), np.tile(rs[ok], 3))
         row = []
         for a, c, d, rv in zip(angles, cs, ds, rs):
-            pt = c + d * min(max(0.10, float(rv)), 0.22)
-            # Route high shoulder side over the clavicle/trapezius (|x| <= x_clavicle) instead of out into the armhole
-            if pt[2] >= core.SHOULDER - 0.08:
-                u_sh = min(1.0, max(0.0, (pt[2] - (core.SHOULDER - 0.08)) / 0.07))
-                x_lim = (1.0 - u_sh) * 0.165 + u_sh * x_clavicle
-                if abs(pt[0]) > x_lim:
-                    pt[0] = math.copysign(x_lim, pt[0])
-                # Arch over top of clavicle when crossing from front chest (y<0) to back (y>0)
-                y_rel = (pt[1] - c[1]) / 0.085
-                if abs(y_rel) < 1.0:
-                    pt[2] = max(pt[2], core.SHOULDER + 0.026 * (1.0 - y_rel * y_rel) - dz * 0.35)
+            pt = c + d * min(max(0.10, float(rv)), 0.21)
+            # Smoothly taper lateral width from waist (0.142) to clavicle (0.114) across the whole upper torso
+            # so a diagonal bandolier travels in a clean straight line across the chest without swinging into the armpit
+            u_sh = min(1.0, max(0.0, (pt[2] - core.WAIST) / max(0.05, core.SHOULDER - core.WAIST)))
+            x_lim = (1.0 - u_sh) * 0.144 + u_sh * x_clavicle
+            if abs(pt[0]) > x_lim:
+                pt[0] = math.copysign(x_lim, pt[0])
+            # Re-project front/back Y at the clamped X so clamping X never pushes the strap inside the chest/back,
+            # and raycast straight down onto the clavicle/trapezius roof over the top of the shoulder so it lies flush!
+            dy_rel = float(pt[1] - c[1])
+            if pt[2] >= core.SHOULDER - 0.045 and abs(dy_rel) <= 0.064:
+                ro_sh = np.array([pt[0], pt[1], core.TOP + 0.12])
+                h_dn = first_hit(ro_sh, np.array([0.0, 0.0, -1.0]), maxd=0.30, bvh=core.BVH_T)
+                if h_dn is not None:
+                    pt[2] = (core.TOP + 0.12 - float(h_dn)) + ease
+            else:
+                dy_sign = -1.0 if dy_rel < 0.0 else 1.0
+                c_x = np.array([pt[0], c[1], min(pt[2], core.TOP - 0.005)])
+                h_y = first_hit(c_x, np.array([0.0, dy_sign, 0.0]), bvh=core.BVH_T)
+                if h_y is not None:
+                    pt[1] = c[1] + dy_sign * (float(h_y) + ease)
             row.append(pt)
         Q.append(row)
     Q = np.array(Q, dtype=np.float64)
     return Part(name, Q, True, ['body'] * rows, paint, role='band')
 
 
-def crossed_sash(name, paint, width=0.06, ease=0.032):
+def crossed_sash(name, paint, width=0.06, ease=0.022):
     """Diagonal sash from waist to opposite shoulder."""
-    return band(name, core.WAIST, core.SHOULDER + 0.02, width, ease, paint, high=math.pi * 0.45, rows=5)
+    return band(name, core.WAIST, core.SHOULDER + 0.015, width, ease, paint, high=math.pi * 0.45, rows=5)
 
 
-def pauldron(name, side, paint, reach=0.5, ease=0.028, flare_end=0.7, span=1.7, rows=6, n=14, drop=None, lift=None):
-    """Shoulder armor plate or epaulette over the deltoid."""
+def pauldron(name, side, paint, reach=0.36, ease=0.024, flare_end=0.95, span=1.55, rows=6, n=14, drop=None, lift=None):
+    """Shoulder armor plate or epaulette contoured over the deltoid."""
     from .limbs import limb_tube
     if drop is not None:
-        reach = min(0.65, max(0.25, drop * 2.6))
+        reach = min(0.42, max(0.24, drop * 2.2))
+    else:
+        reach = min(float(reach), 0.38)
     if lift is not None:
-        ease = 0.026 + lift * 0.5
-        flare_end = 1.06
+        ease = 0.022 + min(float(lift), 0.016) * 0.4
+        flare_end = 1.00
+    else:
+        ease = min(float(ease), 0.026)
+        flare_end = min(float(flare_end), 1.02)
     if span < 0.85:
-        span = max(1.35, min(1.95, span * 7.5))
+        span = max(1.30, min(1.70, span * 7.0))
+    else:
+        span = min(float(span), 1.65)
     a, e = J(side + 'Arm'), J(side + 'ForeArm')
     x, y = frame(e - a)
     c = math.atan2(y[2], x[2])
-    return limb_tube(name, None, None, ease, paint, n=n, rows=rows, ease_end=ease * flare_end, start_back=0.06,
-                     path=[a, a + (e - a) * reach], arc=(c - span, c + span), bvh=core.BVH_A, rmax=0.18)
+    pt = limb_tube(name, None, None, ease, paint, n=n, rows=rows, ease_end=ease * flare_end, start_back=0.022,
+                   path=[a, a + (e - a) * reach], arc=(c - span, c + span), bvh=core.BVH_A, rmax=0.14)
+    pt.role = 'pauldron'
+    pt.side = side[0]
+    return pt
 
 
 def neck_ring(name, paint, r_tube=0.035, drop=0.02, n=32, nr=10):
@@ -330,4 +460,4 @@ def neck_ring(name, paint, r_tube=0.035, drop=0.02, n=32, nr=10):
         z_cur = c[2] + r_tube * math.sin(ph) * 0.75 - drop * 0.3
         row = [np.array([c[0] + math.sin(an) * r_cur, c[1] + math.cos(an) * r_cur, z_cur]) for an in angs]
         Q.append(row)
-    return Part(name, np.array(Q), True, ['body'] * nr, paint, rigid_joint='Spine2', role='pauldron', side=side[0])
+    return Part(name, np.array(Q), True, ['body'] * nr, paint, rigid_joint='Spine2', role='collar')

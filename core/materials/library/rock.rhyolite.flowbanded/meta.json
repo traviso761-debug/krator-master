@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.302,
+    1.093
+   ],
+   "seam_before": [
+    1.669,
+    1.233
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.6,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.rhyolite.flowbanded",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "rock.rhyolite.flowbanded.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13f-87de-7bb0-b4af-738f72013e3b)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-b6f86843-bcb4-44c8-99ae-b625c0c0978b.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Firebliss Patera's domes and Korona's (`biomes/firebliss`, `biomes/korona`, 2026-11-12)' on origin/claude/firebliss-patera-domes (id rock.rhyolite.flowbanded)",
+  "sha1": "3f64187e0828962c825fb22972ed7d9e2ea11976"
+ }
+}

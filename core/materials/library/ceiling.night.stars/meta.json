@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.365,
+    0.817
+   ],
+   "seam_before": [
+    1.073,
+    2.651
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ceiling",
+  "id": "ceiling.night.stars",
+  "metal": 0,
+  "roughness": 0.8,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ceiling.night.stars.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-77da-7912-b066-97a92cbfe2d6)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-049698b0-e700-486e-98d2-317cd1eae4a2.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '56. Gr\u00c4\u201c\u00e1\u00b9\u00ad-\u00c4\u20acil, the Azure Dream's Hall of Dreaming (settlements/azure-dream, 2026-11-16)' (id ceiling.night.stars)",
+  "sha1": "bb22bec1c04cca39807b02a43b3dec87dd125a3e"
+ }
+}

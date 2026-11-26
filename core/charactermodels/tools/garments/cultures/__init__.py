@@ -17,20 +17,45 @@ if str(HERE) not in sys.path:
 import build_inspired_outfits as _b1
 import build_batch2_outfits as _b2
 from .yuni import build_yuni_kit
+from .build_yuni_military import build_yuni_military_kit
 from .historians import build_historians_kit
 from .xanadu import build_xanadu_kit
 from .tungang import build_tungang_kit
+from .dasri import build_dasri_kit
+from .tabisti import build_tabisti_kit
+from .catch_caravans import build_catch_caravans_kit
+from .xanadu_expats import build_xanadu_expats_kit
+from .kimr import build_kimr_kit
+from .cyber_liches import build_cyber_liches_kit
+from .fellgangs import build_fellgangs_kit
+from .iziz import build_iziz_kit
+from .eternian import build_eternian_kit
+from .extraplanar import build_extraplanar_kit
+from .vothic import build_vothic_kit
+from .iron_republic_full import build_iron_republic_kit
+from .free_clans import build_free_clans_kit
+from .yusar_full import build_yusar_full_kit
+from .khaayken import build_khaayken_kit
+from .jimjam import build_jimjam_kit
+from .painted_men import build_painted_men_kit
+from .islanders import build_islanders_kit
+from .coyote_men import build_coyote_men_kit
+from .bandits import build_bandits_kit
+from .ring_sea_mariners import build_ring_sea_mariners_kit
+from .screamers import build_screamers_kit
+from .lizardmen import build_lizardmen_kit
+from .frogmen import build_frogmen_kit
+from .captives_and_arena import build_captives_and_arena_kit
+from .hazmat_and_trades import build_hazmat_and_trades_kit
+from .valley_mutants import build_valley_mutants_kit
 
 # Culture-indexed registry of outfit builder functions
 CULTURE_BUILDERS = {
     'chichani': [
-        _b2.build_voth_scout,
-        _b1.build_voth_confessor,
-        _b2.build_voth_ordinator,
-        _b2.build_voth_priest,
-        _b2.build_voth_chosen,
-        _b2.build_voth_cantor,
-        _b2.build_voth_tzintzun,
+        build_vothic_kit,
+    ],
+    'voth_arcologies': [
+        build_vothic_kit,
     ],
     'beast_riders': [
         _b1.build_beast_stalker,
@@ -39,70 +64,111 @@ CULTURE_BUILDERS = {
         _b2.build_beast_amazon,
     ],
     'izani': [
-        _b1.build_iziz_aedile,
-        _b1.build_iziz_praetorian,
-        _b1.build_iziz_watch,
-        _b1.build_iziz_skirmisher,
+        build_iziz_kit,
         _b1.build_hykk_hierophant,
         _b1.build_hykk_heliarch,
         _b1.build_dalab_heliophant,
         _b2.build_iziz_phil,
     ],
     'hykkousoi': [],
-    'dalabites': [],
+    'dalabites': [
+        _b2.build_dalab_genepriest,
+    ],
     'iron_republic': [
-        _b1.build_rep_magistrate,
-        _b2.build_rep_commissar,
+        build_iron_republic_kit,
     ],
     'rustic_clansmen': [
-        _b1.build_rustic_envoy,
-        _b2.build_rustic_axeman,
+        build_free_clans_kit,
     ],
     'painted_men': [
-        _b1.build_painted_warden,
+        build_painted_men_kit,
     ],
     'eastern_nomads': [
-        _b1.build_nomad_patriarch,
-        _b1.build_nomad_walker,
-        _b1.build_nomad_oracle,
+        build_dasri_kit,
+    ],
+    'dasri': [
+        build_dasri_kit,
     ],
     'abyssal': [
-        _b1.build_abyssal_dredger,
+        build_tabisti_kit,
+    ],
+    'tabisti': [
+        build_tabisti_kit,
+    ],
+    'catch_twins_caravaneers': [
+        build_catch_caravans_kit,
+    ],
+    'xanadu_expats': [
+        build_xanadu_expats_kit,
     ],
     'xanadu': [
         build_xanadu_kit,
     ],
     'jimjam': [
-        _b1.build_jimjam_sibyl,
+        build_jimjam_kit,
     ],
     'islanders': [
-        _b1.build_island_shaman,
+        build_islanders_kit,
     ],
     'yuni': [
         build_yuni_kit,
         _b1.build_yuni_sentinel,
         _b2.build_yuni_breacher,
+        build_yuni_military_kit,
     ],
     'eternian': [
-        _b2.build_eternian_prefect,
-        _b2.build_eternian_censor,
-        _b2.build_eternian_archivist,
-        _b2.build_eternian_minister,
-        _b2.build_eternian_warden,
+        build_eternian_kit,
     ],
     'yusar': [
-        _b2.build_yusar_lightkeeper,
-        _b2.build_yusar_dronemaster,
-        _b2.build_yusar_electropriest,
-        _b2.build_yusar_electromonk,
-        _b2.build_yusar_corsair,
-        _b2.build_yusar_hierophant,
+        build_yusar_full_kit,
     ],
     'historians': [
         build_historians_kit,
     ],
     'tungang': [
         build_tungang_kit,
+    ],
+    'kimr': [
+        build_kimr_kit,
+    ],
+    'cyber_liches': [
+        build_cyber_liches_kit,
+    ],
+    'fellgangs': [
+        build_fellgangs_kit,
+    ],
+    'extraplanar': [
+        build_extraplanar_kit,
+    ],
+    'khaayken': [
+        build_khaayken_kit,
+    ],
+    'coyote_men': [
+        build_coyote_men_kit,
+    ],
+    'bandits': [
+        build_bandits_kit,
+    ],
+    'ring_sea_mariners': [
+        build_ring_sea_mariners_kit,
+    ],
+    'screamers': [
+        build_screamers_kit,
+    ],
+    'lizardmen': [
+        build_lizardmen_kit,
+    ],
+    'frogmen': [
+        build_frogmen_kit,
+    ],
+    'captives_and_arena': [
+        build_captives_and_arena_kit,
+    ],
+    'hazmat_and_trades': [
+        build_hazmat_and_trades_kit,
+    ],
+    'valley_mutants': [
+        build_valley_mutants_kit,
     ],
 }
 
