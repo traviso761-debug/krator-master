@@ -6,7 +6,12 @@
 // CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is the stage's.
 {const env=new THREE.Scene(),WENV={environment:null};
  env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
- ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x7a5a44)});}
+ const SL=ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x7a5a44)});
+ // a clock jump (the hour slider, a view's or the tide panel's jump to night) recaptures at once: the skylight's own hook waits
+ // `every` frames, and until then the water showed the old hour's sky (at night the noon sky, and the giant's unlit noon face
+ // as a dark disc; seen 2026-11-25). The core fix is parked in TODO.md, "Ride along with the next all-builds rebuild".
+ tick(()=>{const c=typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;if(!c||SL.hour==null)return;
+  let d=Math.abs(c.hour-SL.hour);d=Math.min(d,24-d);if(d>=1){SL.capture();SL.hour=c.hour;SL.age=0;}});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 const SPRING_MATS=new Map();
 const ALK_RAMP={deep:[.04,.42,.52],blue:[.22,.66,.72],green:[.62,.84,.86],yel:[.86,.93,.93],ora:[.92,.95,.94],rust:[.95,.96,.95]};   /* turquoise to milk-white */

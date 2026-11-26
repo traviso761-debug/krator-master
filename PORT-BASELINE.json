@@ -49,28 +49,28 @@
    "sha256": "ce8c031d049e9372e65bda9b5839124cc92790d7e1afe22fe47853b27de09297"
   },
   "biomes/arch/dist/arch-barrens.html": {
-   "bytes": 2177385,
-   "sha256": "36a9d7c42a99b59b183b19892ca52d5e42d8b4785842beb3cc26400b9d789983"
+   "bytes": 2177982,
+   "sha256": "354d393fbd14eeaf3d362c9689b425f4da25640aff692a55120d930d5cd77ad2"
   },
   "biomes/arch/dist/arch-coast.html": {
-   "bytes": 2301443,
-   "sha256": "54fa71314fffaa4828b2d7dd0cf9f089a4dfe5c0854da02b1f5c61cfaed4a7a9"
+   "bytes": 2302040,
+   "sha256": "090119e1c6a6fa4d51b7784dc05dd8c65628443ec3a3d9b02a59eccb99cc889d"
   },
   "biomes/arch/dist/arch-cove.html": {
-   "bytes": 2312287,
-   "sha256": "060b36299b06496a0e78d86f444d60b27b3fb0e94721e82cc7abef3a2b88678b"
+   "bytes": 2312884,
+   "sha256": "ff2382bed3bada2ef1c1397daef55a2a7c97249ec1c960207f063cd3e9ee77d2"
   },
   "biomes/arch/dist/arch-dome.html": {
-   "bytes": 2177376,
-   "sha256": "9bccd4806ef63e8aa1c0ea0106248da88e6f9f9bc5374f2f900244f825ce37a6"
+   "bytes": 2177973,
+   "sha256": "dc7cdcd12c2b089d8a69598100a8a1cd9c82f2f2015144c43c79ed7270200d5a"
   },
   "biomes/arch/dist/arch-sound.html": {
-   "bytes": 2312064,
-   "sha256": "892bb0bfd41e9e3fd7a357d656ac1a1448c678947c03f368fb6f186ddd1efd16"
+   "bytes": 2312661,
+   "sha256": "e9be3288e1dd8d2af7c2d83a83d2c676af97b363ef456ab6e413210ef1922a24"
   },
   "biomes/arch/dist/arch.html": {
-   "bytes": 2177143,
-   "sha256": "31a006a5a17b4cbcfb918ac0fc308a351461feb6e6f126911247eab4089dd665"
+   "bytes": 2177740,
+   "sha256": "0559fef04a7fcb7e15ebcc5eaeeb170a6bb565e05352e4a29cfc1c22fe936827"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9612324,

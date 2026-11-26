@@ -82,6 +82,11 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **The skylight recaptures at once on a clock jump** (2026-11-25; `core/atmos/89-atmos-b-skylight.js`, 949 pages): its hook waits
+  `every` (30) frames after the hour moves, and `capture()` does not record the hour, so after a jump to night the water and metal
+  reflected the old hour's sky (in the Arch cove, the noon sky and the giant's unlit noon face as a dark disc). Fix in the hook:
+  when the hour moved 1 h or more, capture now regardless of `every`; and set `S.hour` in `capture()`. Then drop the Arch's
+  stopgap tick in `biomes/arch/src/89w-host-water.js`.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page

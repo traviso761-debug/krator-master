@@ -22,7 +22,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -130,10 +130,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch.html": "31a006a5a17b4cbcfb918ac0fc308a351461feb6e6f126911247eab4089dd665"
+    "biomes/arch/dist/arch.html": "0559fef04a7fcb7e15ebcc5eaeeb170a6bb565e05352e4a29cfc1c22fe936827"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch.html": "31a006a5a17b4cbcfb918ac0fc308a351461feb6e6f126911247eab4089dd665"
+    "biomes/arch/dist/arch.html": "0559fef04a7fcb7e15ebcc5eaeeb170a6bb565e05352e4a29cfc1c22fe936827"
    }
   },
   "build.py --station barrens": {
@@ -157,7 +157,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -267,10 +267,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-barrens.html": "36a9d7c42a99b59b183b19892ca52d5e42d8b4785842beb3cc26400b9d789983"
+    "biomes/arch/dist/arch-barrens.html": "354d393fbd14eeaf3d362c9689b425f4da25640aff692a55120d930d5cd77ad2"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-barrens.html": "36a9d7c42a99b59b183b19892ca52d5e42d8b4785842beb3cc26400b9d789983"
+    "biomes/arch/dist/arch-barrens.html": "354d393fbd14eeaf3d362c9689b425f4da25640aff692a55120d930d5cd77ad2"
    }
   },
   "build.py --station coast": {
@@ -294,7 +294,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -404,10 +404,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-coast.html": "54fa71314fffaa4828b2d7dd0cf9f089a4dfe5c0854da02b1f5c61cfaed4a7a9"
+    "biomes/arch/dist/arch-coast.html": "090119e1c6a6fa4d51b7784dc05dd8c65628443ec3a3d9b02a59eccb99cc889d"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-coast.html": "54fa71314fffaa4828b2d7dd0cf9f089a4dfe5c0854da02b1f5c61cfaed4a7a9"
+    "biomes/arch/dist/arch-coast.html": "090119e1c6a6fa4d51b7784dc05dd8c65628443ec3a3d9b02a59eccb99cc889d"
    }
   },
   "build.py --station cove": {
@@ -431,7 +431,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -545,10 +545,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-cove.html": "060b36299b06496a0e78d86f444d60b27b3fb0e94721e82cc7abef3a2b88678b"
+    "biomes/arch/dist/arch-cove.html": "ff2382bed3bada2ef1c1397daef55a2a7c97249ec1c960207f063cd3e9ee77d2"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-cove.html": "060b36299b06496a0e78d86f444d60b27b3fb0e94721e82cc7abef3a2b88678b"
+    "biomes/arch/dist/arch-cove.html": "ff2382bed3bada2ef1c1397daef55a2a7c97249ec1c960207f063cd3e9ee77d2"
    }
   },
   "build.py --station dome": {
@@ -572,7 +572,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -682,10 +682,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-dome.html": "9bccd4806ef63e8aa1c0ea0106248da88e6f9f9bc5374f2f900244f825ce37a6"
+    "biomes/arch/dist/arch-dome.html": "dc7cdcd12c2b089d8a69598100a8a1cd9c82f2f2015144c43c79ed7270200d5a"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-dome.html": "9bccd4806ef63e8aa1c0ea0106248da88e6f9f9bc5374f2f900244f825ce37a6"
+    "biomes/arch/dist/arch-dome.html": "dc7cdcd12c2b089d8a69598100a8a1cd9c82f2f2015144c43c79ed7270200d5a"
    }
   },
   "build.py --station sound": {
@@ -709,7 +709,7 @@
     "biomes/arch/src/89-host-sky.js": "f7e74a10593d7919d7d30cff3340aba4d5885ef9b9a268cab0d1f7ed097c64db",
     "biomes/arch/src/89a-host-atmos.js": "f9e0fd10531a122a0578088e879be449e8869fded3f4bdace0f7ea0d34c44162",
     "biomes/arch/src/89b-host-steam.js": "ab2275b62d9f8068cbea4c6e2fa2cfc86bae5eeca59d9f188bb1c56fbe588a54",
-    "biomes/arch/src/89w-host-water.js": "99689d4c535a827abfc7a8b6106c545e0118e1928f9f1749f85b354295ec0734",
+    "biomes/arch/src/89w-host-water.js": "51b446b1354c01266fe0389e2deeed14f23d7e580dec7d94b2b5b3e8bafbd020",
     "biomes/arch/src/89z-host-build.js": "0e66cd53aa302511f7711213a43a3c1b181f7f5f51014149bffb86c20018bafc",
     "biomes/arch/src/99-host-take.js": "ee6b14095341b1605c295a1b1f364902679ddeb7bb8580188d6095daedb35b9c",
     "biomes/arch/src/99-tail.html": "b11e55532b18362b049a8b3609e4e2c385ebb3e50282ee6af8ba83ce33b0fa2e",
@@ -819,10 +819,10 @@
    },
    "listed_by": "code",
    "outputs": {
-    "biomes/arch/dist/arch-sound.html": "892bb0bfd41e9e3fd7a357d656ac1a1448c678947c03f368fb6f186ddd1efd16"
+    "biomes/arch/dist/arch-sound.html": "e9be3288e1dd8d2af7c2d83a83d2c676af97b363ef456ab6e413210ef1922a24"
    },
    "outputs_raw": {
-    "biomes/arch/dist/arch-sound.html": "892bb0bfd41e9e3fd7a357d656ac1a1448c678947c03f368fb6f186ddd1efd16"
+    "biomes/arch/dist/arch-sound.html": "e9be3288e1dd8d2af7c2d83a83d2c676af97b363ef456ab6e413210ef1922a24"
    }
   }
  }
