@@ -18,30 +18,36 @@ reseed(658901);
     return PAL.abTin || STEELDC[1];
   }
 
-  /* Patchwork riveted-plate saucer dome on ABYSS.grid, centred at (cx, cy, cz), base radius R, height H */
+  /* Lapped riveted-plate saucer dome on ABYSS.grid, centred at (cx, cy, cz), base radius R, height H.
+     Each plate is its own small grid on the 'rust' family (plated steel: seams and rivet rows), with its UVs set so a seam
+     and a rivet strip fall on the plate's own edge; alternate plates stand 1.5% proud, so the edges read as laps. The hint is
+     the ellipsoid's gradient (x/R2, y/H2, z/R2), the outward side at every point (the old radial hint, with its y floored at
+     .25, could face the crown the wrong way). Raised seam straps follow the meridians, a flange rings the base, a vented cap closes the crown. */
   function swampDome(F, cx, cy, cz, R, H, rings, segs){
     rings = rings || 6; segs = segs || 16;
-    var P = [];
-    for(var r=0; r<=rings; r++){
-      var t = r / rings;
-      var ang = t * (PI * 0.48);
-      var rad = Math.max(0.18, R * Math.cos(ang));
-      var yy = cy + H * Math.sin(ang);
-      var row = [];
-      for(var s=0; s<=segs; s++){
-        var a = (s / segs) * TAU2;
-        row.push([cx + Math.cos(a)*rad, yy, cz + Math.sin(a)*rad]);
+    var TOP = PI*0.5*0.94;
+    function pt(a, b, k){ var rad = R*Math.cos(a)*k, yy = H*Math.sin(a)*k; return [cx+Math.cos(b)*rad, cy+yy, cz+Math.sin(b)*rad]; }
+    function hint(p){ return [(p[0]-cx)/(R*R), (p[1]-cy)/(H*H), (p[2]-cz)/(R*R)]; }
+    for(var r=0; r<rings; r++) for(var s=0; s<segs; s++){
+      var a0=(r/rings)*TOP, a1=((r+1)/rings)*TOP, b0=(s/segs)*TAU2, b1=((s+1)/segs)*TAU2;
+      var k = 1 + 0.015*((r+s)%2), P=[], U=[], h=(r*7+s*3+((F.seed||1)%5))%2;
+      for(var i=0; i<=2; i++){ var rowP=[], rowU=[]; for(var j=0; j<=2; j++){
+        rowP.push(pt(a0+(a1-a0)*i/2, b0+(b1-b0)*j/2, k)); rowU.push([0.5*h + 0.25*j, 0.5*((r+s)%2) + 0.25*i]); }
+        P.push(rowP); U.push(rowU); }
+      ABYSS.grid(F, 'rust', P, patchCol(F, r, s), { uv:U, hint:hint, under:STEELDC[0] });
+    }
+    /* raised seam straps along every other meridian, hugging the plates */
+    for(var m=0; m<segs; m+=2){
+      var bm=(m/segs)*TAU2;
+      for(var q=0; q<rings; q++){
+        var p0=pt((q/rings)*TOP, bm, 1.03), p1=pt(((q+1)/rings)*TOP, bm, 1.03);
+        F.rod(p0[0],p0[1],p0[2], p1[0],p1[1],p1[2], 0.05, STEELDC[0], 'rust');
       }
-      P.push(row);
     }
-    ABYSS.grid(F, 'corrugate', P, function(i, j){ return patchCol(F, i, j); },
-               { wrap:true, under:STEELDC[0], hint:function(p){ return [p[0]-cx, Math.max(0.25, p[1]-cy), p[2]-cz]; } });
-    /* Exterior bolted rib hoops + crown vent cap */
-    for(var s2=0; s2<segs; s2+=2){
-      var a2 = (s2/segs)*TAU2, ca=Math.cos(a2), sa=Math.sin(a2);
-      F.rod(cx+ca*R*0.98, cy+0.15, cz+sa*R*0.98, cx+ca*R*0.35, cy+H*0.92, cz+sa*R*0.35, 0.06, STEELDC[0], 'rust');
-    }
-    F.cyl(cx, cy+H-0.15, cz, R*0.18, 0.45, 0, STEELDC[0], 'rust');
+    /* base flange and a vented crown cap */
+    F.cyl(cx, cy+0.02, cz, R+0.12, 0.34, 0, STEELDC[0], 'rust');
+    var top=pt(TOP, 0, 1);
+    F.cyl(cx, top[1]-0.12, cz, Math.max(0.5, R*0.2), 0.5, 0, STEELDC[0], 'rust');
   }
 
   /* Tall ring of cross-braced stilts supporting a circular catwalk deck at y = deckY */
@@ -72,7 +78,7 @@ reseed(658901);
       }
     }
     /* Entry stair down to the mud */
-    LOCUS.stair(F, 0, stairZ, 0, 1, deckY, 1.8, dkCol);
+    LOCUS.stair(F, 0, stairZ+deckY*1.15, 0, -1, deckY, 1.8, dkCol);   /* foot on the mud, top at the deck edge (stair runs from its x,z away, so it points back at the building) */
   }
 
   /* Cross-braced rectangular stilt frame + plank deck + railings + front stair */
@@ -88,11 +94,11 @@ reseed(658901);
     F.beam( W/2-0.4, my, -D/2+0.4,  W/2-0.4, my, D/2-0.4, 0.10, 0.12, bCol, 'timber');
     F.beam(-W/2+0.4, 0.3, D/2-0.4, W/2-0.4, deckY-0.3, D/2-0.4, 0.08, 0.09, bCol, 'timber');
     LOCUS.deck(F, 0, 0, W+0.8, D+0.8, deckY, dkCol);
-    LOCUS.stair(F, 0, D/2+0.4, 0, 1, deckY, stairW || 1.4, dkCol);
+    LOCUS.stair(F, 0, D/2+0.4+deckY*1.15, 0, -1, deckY, stairW || 1.4, dkCol);
   }
 
   /* 1. Large Kenshi-style patchwork saucer dome hall on stilts */
-  ASSET({ key:'swamp_dome_hall', name:'Swamp salvage dome hall', family:'abyss', culture:'eastabyss', type:'civic',
+  ASSET({ key:'swamp_dome_hall', name:'Swamp salvage dome hall', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['civic'],
     w:18, d:18, h:9.5, variants:2,
     build:function(F){
       var deckY = 3.1, R = 6.8, H = 4.6;
@@ -117,7 +123,7 @@ reseed(658901);
   });
 
   /* 2. Swamp tavern dome ("Dancing Skeleton" style signboard + warm braziers) */
-  ASSET({ key:'swamp_tavern_dome', name:'Swamp stilt tavern dome', family:'abyss', culture:'eastabyss', type:'tavern',
+  ASSET({ key:'swamp_tavern_dome', name:'Swamp stilt tavern dome', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['tavern/inn'],
     w:16, d:16, h:9.2, variants:2,
     build:function(F){
       var deckY = 3.0, R = 6.0, H = 4.2;
@@ -139,7 +145,7 @@ reseed(658901);
   });
 
   /* 3. Small circular swamp pod hut on tall stilts */
-  ASSET({ key:'swamp_pod_hut', name:'Swamp stilt pod hut', family:'abyss', culture:'eastabyss', type:'house',
+  ASSET({ key:'swamp_pod_hut', name:'Swamp stilt pod hut', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['single-family dwelling'],
     w:10, d:10, h:7.2, variants:3,
     build:function(F){
       var deckY = 2.6, R = 3.3, H = 3.1;
@@ -156,7 +162,7 @@ reseed(658901);
   });
 
   /* 4. Elevated lean-to patchwork salvage shack */
-  ASSET({ key:'swamp_shack_a', name:'Swamp salvage lean-to shack', family:'abyss', culture:'eastabyss', type:'house',
+  ASSET({ key:'swamp_shack_a', name:'Swamp salvage lean-to shack', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['single-family dwelling'],
     w:11, d:10, h:6.4, variants:3,
     build:function(F){
       var deckY = 2.3, W = 7.4, D = 5.6, H = 2.7;
@@ -178,7 +184,7 @@ reseed(658901);
   });
 
   /* 5. Double-bay elevated swamp stilt house */
-  ASSET({ key:'swamp_shack_b', name:'Swamp double-bay stilt house', family:'abyss', culture:'eastabyss', type:'house',
+  ASSET({ key:'swamp_shack_b', name:'Swamp double-bay stilt house', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['single-family dwelling'],
     w:13, d:10, h:6.8, variants:3,
     build:function(F){
       var deckY = 2.4, W = 9.4, D = 5.8, H = 2.8;
@@ -197,7 +203,7 @@ reseed(658901);
   });
 
   /* 6. Elevated salvage iron workshop with conical flue & exhaust pipes */
-  ASSET({ key:'swamp_workshop', name:'Swamp salvage workshop', family:'abyss', culture:'eastabyss', type:'shop',
+  ASSET({ key:'swamp_workshop', name:'Swamp salvage workshop', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['market/shop'],
     w:14, d:11, h:7.8, variants:2,
     build:function(F){
       var deckY = 2.5, W = 10.0, D = 6.2, H = 3.0;
@@ -222,7 +228,7 @@ reseed(658901);
   });
 
   /* 7. Tall windowless ribbed iron stronghouse / storehouse (image.png far left) */
-  ASSET({ key:'swamp_storehouse', name:'Swamp iron stronghouse', family:'abyss', culture:'eastabyss', type:'warehouse',
+  ASSET({ key:'swamp_storehouse', name:'Swamp iron stronghouse', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['industry'],
     w:11, d:11, h:7.5, variants:2,
     build:function(F){
       var W = 8.4, D = 7.6, H = 5.8;
@@ -243,14 +249,14 @@ reseed(658901);
       /* Recessed central doorway + short entry stair + parapet teeth */
       F.box(0, 0.85, D/2-0.1, 2.1, 2.5, 0.55, 0, RUSTC[0], 'rust');
       F.door(0, D/2+0.18, 0, 1, 1.35, 2.1, STEELDC[2], 0.9);
-      LOCUS.stair(F, 0, D/2+0.4, 0, 1, 0.9, 1.5, PLANKC[2]);
+      LOCUS.stair(F, 0, D/2+0.4+0.9*1.15, 0, -1, 0.9, 1.5, PLANKC[2]);
       F.cyl(W/2-0.5, 0.85+H, -D/2+0.6, 0.16, 1.2, 0, STEELDC[1], 'rust');
       F.lamp(0, 3.6, D/2+0.45, 0.65, 9);
     }
   });
 
   /* 8. Timber-and-iron stilt marsh watch-gate (image_4.png foreground) */
-  ASSET({ key:'swamp_gatehouse', name:'Swamp stilt watch-gate', family:'abyss', culture:'eastabyss', type:'military',
+  ASSET({ key:'swamp_gatehouse', name:'Swamp stilt watch-gate', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['military'],
     w:12, d:10, h:9.5, variants:2,
     build:function(F){
       var deckY = 2.8, W = 7.2, D = 5.2;
@@ -272,7 +278,7 @@ reseed(658901);
   });
 
   /* 9. Circular plank-walled marsh paddy / sump ring (image_4.png center) */
-  ASSET({ key:'swamp_paddy_ring', name:'Swamp marsh sump ring', family:'abyss', culture:'eastabyss', type:'farm',
+  ASSET({ key:'swamp_paddy_ring', name:'Swamp marsh sump ring', family:'abyss', kit:'abyss', group:'Swamp Salvage', culture:'eastabyss', types:['farm'],
     w:16, d:16, h:3.2, variants:2,
     build:function(F){
       var R = 6.6, H = 2.0, n = 18, pCol = F.pick(PILEC), dkCol = F.pick(PLANKC);
@@ -288,7 +294,7 @@ reseed(658901);
       /* Inner sump bed + central windpump post */
       F.cyl(0, 0.05, 0, R-1.3, 0.12, 0, OILC[1], 'adobe');
       F.cyl(0, 0.1, 0, 0.22, 3.0, 0, STEELDC[0], 'rust');
-      LOCUS.stair(F, 0, R+0.1, 0, 1, H, 1.3, dkCol);
+      LOCUS.stair(F, 0, R+0.1+H*1.15, 0, -1, H, 1.3, dkCol);
     }
   });
 })();

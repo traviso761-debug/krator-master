@@ -90,6 +90,7 @@
     "kits/tabisti/src/39-tb-furn.js": "ce9dd25d5012d8398f17e7efcadf19ef105fe40fa05bf1f3e07cdd281dcdfa0e",
     "kits/tabisti/src/40-tb-kit.js": "c1fba0fe3d38fe3fd0738aca996fe38ea5d09ae8ec6280b478ba0a30cf6f21a4",
     "kits/tabisti/src/42-tb-crowns.js": "8ff1dab38fbe9afa8dfe617bd1a4051a0ba5de6dce38a41c0727860151a150f2",
+    "kits/tabisti/src/43-tb-round.js": "d38bbb885260776edb93f1e9bb2f2a236d137df4d9e489441fb0163d967ccad1",
     "kits/tabisti/src/50-tb-dwell.js": "6679543744eef0c7120af0bd15b3e9e38fb196ff4551b3e9dfa597669c9fe692",
     "kits/tabisti/src/54-tb-bazaar.js": "94aa99992d72bf488946b37285056a1a2b1a2f36ee407539fc969986031b8dba",
     "kits/tabisti/src/58-tb-works.js": "6e372abc8fa63c66e283de967c591259c82e638931bbfe29d55e7f7c7527d529",
@@ -97,11 +98,14 @@
     "kits/tabisti/src/62-tb-civic.js": "14d8155fd4d147159978492d1a06c269312ae09e610e944acdac914db5d944de",
     "kits/tabisti/src/64-tb-walls.js": "99cff3484db254693347f5873618a43441b6ff6895433a0e92d69b34174aa8d8",
     "kits/tabisti/src/66-tb-periurban.js": "01182d6421bb307a508faa8cec55e560db99c04321cde78473d3a43c92572045",
+    "kits/tabisti/src/66d-tb-desert-khans.js": "e53a98235f6b5a27919791a36b111b25392210e269773a829a67b191a6099467",
+    "kits/tabisti/src/67d-tb-desert-forts.js": "2a012388cda68dd49af61ac1d20356c6bccee754df8dfc410b2d5c42bac743c6",
     "kits/tabisti/src/72-tb-trades.js": "79500f32814c4239bcf54cf1b1a1e9851d92c7fd3051eb18118d86ed1b41d71f",
     "kits/tabisti/src/89-rows.js": "3549671ca391bf5e7e476017c303c0f7fc80830f303ee07cde98e9c75e822cf0",
+    "kits/tabisti/src/89d-rows-desert.js": "2334cb3e128644779b3fe808cfa4452425f76eb6c4916ffcedf2c3f03c105eef",
     "kits/tabisti/src/91r-tb-roomlight.js": "870575767915334c76a033a5461f249e4fb6383517a925786af5f1fe20ab2fc0",
     "kits/tabisti/src/91z-tb-world.js": "e2d3b10a8009084cad6bef662a3c16080d96537c0ac0ea17590abfb2b93f1cda",
-    "kits/tabisti/src/99-host-tz-tb.js": "054542241e7fa5b057645a1c320279bcca93899c6190df6511f9580de75a3ad6",
+    "kits/tabisti/src/99-host-tz-tb.js": "737654c71ec1a60b7dfe60c8ea2e6ca696bc093866f20bad26f26e9169b5520f",
     "kits/tabisti/tex/alabaster.albedo.webp": "e07b4f251c0a886af9fde04d83edc4618e09673002ecae367d0f45b283312cfb",
     "kits/tabisti/tex/alabaster.normal.webp": "b8e78217b7b3fee3aa8928d0e5e0b8751880b03917774afa00f2fee7d1013c69",
     "kits/tabisti/tex/alabaster.rough.webp": "bac61dad661dbf3f948045566d8ba6432048f254bae8f307f07b995b6dcd8351",
@@ -291,18 +295,18 @@
     "core/walk": "c2dba1d905c6546cc60841fa95b468a852915494776bd7eee35713cb4f48c648",
     "core/walk/box": "640d3e2f0368a531fc4c1f0be0fdca8de1f41b5e2f176112f6212377ea41494d",
     "kits/catalog": "3c41c7578f03b383b178013c70e92f01f37b79aeb4d79a598ce233156958a61d",
-    "kits/tabisti/src": "2e04b5bd2a2fa62f887fdc2781a1109c85c32aa6e6e00e779c000c90ce1cb8ec"
+    "kits/tabisti/src": "de847554b7de15f95f07d5f1f5816d2ce00f306885181583d0520fdd40f49dab"
    },
    "listed_by": "code",
    "outputs": {
-    "kits/tabisti/build-manifest.json": "17fbbb8e3852b99d27bc92ba832dba366fc0d797195f1f1688250ac5b4ec3673",
-    "kits/tabisti/dist/tabisti.html": "01fd78fc97e92354e4b2cb0a23fc89d985297221497cfe5133543e3b439fac70",
+    "kits/tabisti/build-manifest.json": "dd861054886f0389703ddbb89e224a58eda57f235bc8c490e45d22109e535834",
+    "kits/tabisti/dist/tabisti.html": "c9438b977fc5d8cf93535666cf6baa521d196d29780ecaf3b1a807d47ebf6b45",
     "kits/tabisti/dist/tabisti.tex.tabisti-2.js": "e7b961e64d49f406f228b93acfd3f426209b00cdfe9fe17f8179ce66d6a4f1d7",
     "kits/tabisti/dist/tabisti.tex.tabisti.js": "330a51670b78453a369bec76cd29107b8c1d776ca534fdb6672e43641c013184"
    },
    "outputs_raw": {
-    "kits/tabisti/build-manifest.json": "17fbbb8e3852b99d27bc92ba832dba366fc0d797195f1f1688250ac5b4ec3673",
-    "kits/tabisti/dist/tabisti.html": "01fd78fc97e92354e4b2cb0a23fc89d985297221497cfe5133543e3b439fac70",
+    "kits/tabisti/build-manifest.json": "dd861054886f0389703ddbb89e224a58eda57f235bc8c490e45d22109e535834",
+    "kits/tabisti/dist/tabisti.html": "c9438b977fc5d8cf93535666cf6baa521d196d29780ecaf3b1a807d47ebf6b45",
     "kits/tabisti/dist/tabisti.tex.tabisti-2.js": "e7b961e64d49f406f228b93acfd3f426209b00cdfe9fe17f8179ce66d6a4f1d7",
     "kits/tabisti/dist/tabisti.tex.tabisti.js": "330a51670b78453a369bec76cd29107b8c1d776ca534fdb6672e43641c013184"
    }

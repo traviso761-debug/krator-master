@@ -24,6 +24,7 @@ NL = '\n'
 
 SKIP = (
     '00-head.html', '39-tb-furn.js',
+    '43-tb-round.js', '66d-tb-desert-khans.js', '67d-tb-desert-forts.js', '89d-rows-desert.js',   # the Desert Tabisti variants: on the kit page only until a settlement zones them
     '81-sky.js', '90-scene.js', '91-probe.js', '91f-furnish.js', '91i-interiors.js', '91n-night.js',
     '91r-tb-roomlight.js', '91z-tb-world.js', '92-camera.js', '92-world.js',
     '93-anim.js', '99-host-take.js', '99-host-tz-tb.js', '99-tail.html'

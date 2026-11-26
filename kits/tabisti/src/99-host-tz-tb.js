@@ -347,7 +347,7 @@
    if(shadirvans<18)bad.push('shadirvans<18:'+shadirvans);
    if(ganchOk<14)bad.push('ganchSheltered<14:'+ganchOk);
    return {
-    ok:!bad.length&&buildings===50&&ganchExposed===0,
+    ok:!bad.length&&buildings===62&&ganchExposed===0,
     buildings,plinths,loggias,windTowers,claustra,oriels,kundal,shadirvans,ganchSheltered:ganchOk,ganchExposed,bad
    };
   },

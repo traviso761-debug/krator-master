@@ -35,6 +35,7 @@
  "39-tb-furn.js": "19b467cdc838",
  "40-tb-kit.js": "4c6487dfd5c2",
  "42-tb-crowns.js": "93fb4b5e6965",
+ "43-tb-round.js": "c19743409d5c",
  "50-core-furnish.js": "9c00fd0ef224",
  "50-core-tags.js": "351884caf5b4",
  "50-core-water-draw.js": "b08082ef203d",
@@ -50,6 +51,8 @@
  "62-tb-civic.js": "b0058e5bcf75",
  "64-tb-walls.js": "769511f1981f",
  "66-tb-periurban.js": "fc725eaab616",
+ "66d-tb-desert-khans.js": "256813bb9ad6",
+ "67d-tb-desert-forts.js": "18efec09d4ba",
  "72-tb-trades.js": "a242faa410f2",
  "81-sky.js": "b13975f23277",
  "89-atmos-0-core.js": "586e2898148d",
@@ -68,6 +71,7 @@
  "89-atmos-b-skylight.js": "ef9512dd517b",
  "89-atmos-d-clouddeck.js": "1e789bbcf6fc",
  "89-rows.js": "b3d7cf2ce511",
+ "89d-rows-desert.js": "0f5b1979966b",
  "90-core-door-host.js": "647e103d16fa",
  "90-host-camera.js": "ae9a8b94ac92",
  "90-scene.js": "d98eacc68788",
@@ -84,6 +88,6 @@
  "94-host-polytool.js": "0a9e4cea5b82",
  "95-host-probe.js": "4abec5c5a961",
  "99-host-take.js": "4c9df509e1f2",
- "99-host-tz-tb.js": "2a947ab67776",
+ "99-host-tz-tb.js": "e7cc8ad59b47",
  "99-tail.html": "bf3a2481959e"
 }
