@@ -24,6 +24,7 @@ const CSS=`
 .entside ul{margin:4px 0;padding-left:18px}.entside li{margin:2px 0}.entside li.done{opacity:.55;text-decoration:line-through}
 .entside li.now{color:#ffe2a8}
 .entside .say{font-style:italic;color:#cfe0f0}
+.entside summary{cursor:pointer;color:#ffe2a8;font-weight:bold}.entside details.record .row b{color:#cfe0f0;font-weight:normal}
 body.bare .entside{display:none!important}`;
 
 export function sidePanel(id,title,onToggle){

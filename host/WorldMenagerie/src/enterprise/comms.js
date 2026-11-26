@@ -8,6 +8,11 @@
 //
 // What is said goes in the panel's transcript and in a toast; hails, form-ups and surrenders are told to the orders
 // (W.emit('hail'), 'escort', 'surrender').
+//
+// Standing (standing.js) colours what is said: the Ossari, once they have seen the Enterprise fire for nothing, answer
+// coldly; once they are cordial, their traders are about, and hailed they trade a gift for news (one each). Voyager
+// (ds9.js) has lines of her own and a link to her page; Deep Space 9 its own welcome and its page; a starbase she is
+// docked at offers its refits (refit.js); Starfleet Command's card says how Command regards her.
 import {sidePanel,el,button,typing,seeded} from './ui.js';
 
 export function comms(W){
@@ -22,6 +27,13 @@ export function comms(W){
   // what each says
   const line=(t,k)=>{const r=seeded(t.name+k+hails);const pick=a=>a[Math.floor(r()*a.length)];
     const T=t.task;
+    if(t.lines)return pick(t.lines);
+    if(T.trader)return t.traded?'"We have traded. Come again; we will remember the way."':'Chimes, and a picture of the Enterprise\'s hull beside a heap of things the Ossari seem to think we need. They would like to trade.';
+    const cold=W.standing&&W.standing.get('ossari')<=-2;
+    if(T.kind==='contact'&&cold)return ['A long silence. Then, in our own words, played back to us: "fire", "phasers", "torpedo".',
+      '"We saw what you did with your weapons. We are still deciding what you are."',
+      '"Come again when you have learned to keep your hands still." They send a single word, which the computer translates as: perhaps.',
+      'Silence. They are listening, and they are not laughing.'][Math.min(3,T.hails-1)];
     if(T.kind==='contact')return ['A long silence. Then a sound like wind chimes, and words put together from our own broadcasts: "You are… loud."',
       '"We have listened to your kind for a long time. You argue with yourselves. We like that."',
       '"Come again, when you are older. Bring nothing that burns." They send a single word, which the computer translates as: welcome.',
@@ -43,11 +55,19 @@ export function comms(W){
 
   function hail(c){hails++;chirp(true);if(c.ship&&c.ship.task.kind==='contact')c.ship.task.hails++;W.emit&&W.emit('hail',c);
     if(c.kind==='hq'){say('Starfleet Command',W.orders?W.orders.brief():'No new orders, Enterprise.');return;}
+    if(c.kind==='station'&&c.st.n==='ds9'){say(c.st.name,'Deep Space 9 to Enterprise: welcome to the frontier. There is a docking port with your name on it, and the Promenade is open.');return;}
     if(c.kind==='station'){say(c.st.name,'Enterprise, this is '+c.st.name+' approach control. Berth one is yours whenever you want it.');return;}
     if(c.kind==='foe'){say('The '+c.name,foeLine(c.foe));return;}
     say(c.ship.name,line(c.ship,'hail'));}
   function formUp(t){if(!W.traffic.escort(t)){say(t.name,'Your formation is full, Enterprise. We\'ll stay here.');return;}
     say(t.name,'Forming up on you, Enterprise. Where you go, we go.');W.emit&&W.emit('escort',t);}
+  // an Ossari trader's gift: whatever the ship needs most of what they have
+  function trade(t){if(t.traded){say(t.name,line(t,'trade'));return;}t.traded=true;
+    const dmg=W.damage?W.damage():{hull:100},sick=W.sickbay?W.sickbay.n():0;
+    if(sick){W.sickbay.heal(sick,'The Ossari sent over a medicine grown for us: our '+sick+' in sickbay are on their feet.');say(t.name,'"Your hurt ones. We grew this for them." A flask of something green; sickbay is astonished.');}
+    else if(dmg.hull<100&&W.repair){W.repair(100);say(t.name,'"Your skin is torn." A cloud of something like pollen settles on the hull, and the breaches close.');}
+    else{if(W.standing)W.standing.add('ossari',1,'a trade made in good faith');say(t.name,'"A song of the places we have been, for one of yours." The computer is still translating it.');}
+    W.logEntry&&W.logEntry('Traded with '+t.name.replace(/^The /,'the ')+'.');}
   function dismiss(t){W.traffic.release(t,'Holding station where the Enterprise left it.');say(t.name,'Understood. Resuming our duties.');}
   function surrender(f){
     if(f.hp/f.hp0>=0.4||f.K.name==='Lattice ship'){say('The '+f.K.name,f.K.name==='Lattice ship'?'Nothing. The noise does not change.':'Laughter, and the channel closes.');return;}
@@ -63,10 +83,16 @@ export function comms(W){
     if(s===sig)return;sig=s;P.body.innerHTML='';
     for(const c of ch){
       const card=el('div','card'+(c.kind==='foe'?' foe':c.kind==='hq'?' ok':''),[el('b',null,c.name)]);
-      if(c.kind!=='hq')card.append(el('small',null,' · '+(c.kind==='foe'?'hostile':c.kind==='station'?'starbase':c.ship.task.kind==='escort'?'escort':c.ship.task.kind==='wreck'?'disabled':(/contact|cargo/.test(c.ship.task.kind)?'unknown':'starship'))+' · '+Math.round(c.d/1000).toLocaleString('en')+' km'));
+      if(c.kind==='hq'&&W.standing)card.append(el('small',null,' · the Enterprise is '+W.standing.label('starfleet')));
+      if(c.kind!=='hq')card.append(el('small',null,' · '+(c.kind==='foe'?'hostile':c.kind==='station'?'starbase':c.ship.task.kind==='escort'?'escort':c.ship.task.kind==='wreck'?'disabled':(c.ship.task.trader?'Ossari trader':/contact|cargo/.test(c.ship.task.kind)?'unknown':'starship'))+' · '+Math.round(c.d/1000).toLocaleString('en')+' km'));
       const a=el('div','acts',[button(c.kind==='hq'?'Open a channel':'Hail',()=>hail(c),'Hail '+c.name)]);
       if(c.kind==='station')a.append(button('Request docking',()=>{W.dock(c.st);say(c.st.name,'Cleared to dock, Enterprise. Follow the beacons in.');}));
-      if(c.kind==='ship'&&!/wreck|contact|cargo/.test(c.ship.task.kind))a.append(c.ship.task.kind==='escort'?button('Resume your duties',()=>dismiss(c.ship)):button('Form up on us',()=>formUp(c.ship)));
+      const dk=W.dockPhase&&W.dockPhase()==='docked'&&W.dockTarget();
+      if(c.kind==='station'&&dk===c.st&&W.openRefit)a.append(button('Refits',()=>W.openRefit()));
+      if(c.kind==='station'&&c.st.n==='ds9'&&W.openDS9)a.append(button('The station\'s page',()=>W.openDS9()));
+      if(c.kind==='ship'&&c.ship.task.trader)a.append(button('Trade',()=>trade(c.ship)));
+      if(c.kind==='ship'&&c.ship.link){const l=el('a',null,c.ship.link.label);l.href=c.ship.link.href;l.target='_blank';l.rel='noopener';l.style.cssText='color:#9fc8f0;align-self:center';a.append(l);}
+      if(c.kind==='ship'&&!c.ship.task.trader&&!/wreck|contact|cargo/.test(c.ship.task.kind))a.append(c.ship.task.kind==='escort'?button('Resume your duties',()=>dismiss(c.ship)):button('Form up on us',()=>formUp(c.ship)));
       if(c.kind==='ship'&&c.ship.task.kind==='wreck'&&W.beam)a.append(button('Beam them aboard',()=>W.beam(c)));
       if(c.kind==='foe')a.append(button('Demand surrender',()=>surrender(c.foe)));
       card.append(a);P.body.append(card);}
@@ -76,6 +102,7 @@ export function comms(W){
   let tk=0;animHooks.push(()=>{if(P.open()&&++tk%30===0)refresh();});
   addEventListener('keydown',e=>{if(e.repeat||typing(e))return;if(e.key==='h'||e.key==='H'){W.audio&&W.audio();P.toggle();}else if(e.key==='Escape'&&P.open())P.toggle(false);});
   W.openComms=()=>P.toggle(true);
+  W.comms={hail:c=>hail(c),formUp:t=>formUp(t),say,trade};   // for orders.js's #mauto
   const escorts=()=>W.traffic?W.traffic.escorts():[];
   // #ev=formup: the nearest Federation ship here forms up
   const formNearest=()=>{const c=(W.contacts?W.contacts():[]).filter(c=>c.kind==='ship'&&!/escort|wreck|contact|cargo/.test(c.ship.task.kind)).sort((a,b)=>a.d-b.d)[0];if(c)formUp(c.ship);};

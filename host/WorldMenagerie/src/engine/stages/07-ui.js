@@ -99,7 +99,7 @@ function readHash(){let q;try{q=new URLSearchParams(location.hash.slice(1));}cat
   const t=parseFloat(q.get('t'));if(Number.isFinite(t))setHour(((t%24)+24)%24);if(q.has('paused')&&!clockPaused)pauseBtn.click();return true;}
 let hashT=0;animHooks.push(now=>{if(now-hashT<1500||ctl.goal||PTR.active())return;hashT=now;writeHash(hashState(),HASH_ORDER);});
 if(!readHash())setView(...(VIEWS[C.defaultView]||Object.values(VIEWS)[0]),false);
-{const at=document.createElement('div');at.id='attribution';at.innerHTML=C.attribution||('Map data \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'+(TER?' \u00b7 elevation: AWS Terrain Tiles (SRTM/NED)':''));   // an invented city credits its generator instead
+{const at=document.createElement('div');at.id='attribution';at.innerHTML=C.attribution||('Map data \u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'+(TER?' \u00b7 elevation: AWS Terrain Tiles (SRTM/NED)':'')+(CANOPY?' \u00b7 tree canopy: USDA Forest Service, NLCD Tree Canopy Cover '+(CANOPY.year||''):''));   // an invented city credits its generator instead
  document.body.appendChild(at);}
 {const hint=document.getElementById('hint');const hide=()=>hint.classList.add('gone');setTimeout(hide,12000);el.addEventListener('pointerdown',hide,{once:true});el.addEventListener('wheel',hide,{once:true,passive:true});}
 trackResize(renderer,camera,updatePx);

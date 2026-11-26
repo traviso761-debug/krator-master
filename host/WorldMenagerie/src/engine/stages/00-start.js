@@ -14,6 +14,15 @@ const C=await getJSON('data/cities/'+CITY_ID+'.json');
 if(ctx.configure)ctx.configure(C);
 await stage('map-data');
 const OSM=await getJSON(C.osm);
+// C.canopy: the tree canopy cover over the map (tools/fetch-tcc.py: the Forest Service's percent at 30 m, on the map's
+// grid). ctx.canopy.at(x, z) is the share of the ground under crowns there, 0 to 1, bilinear, null off the survey; the
+// trees stage fills the map to it (03b-details), and a page's own extras may read it too (Mount Hood's forest)
+const CANOPY=C.canopy?await getJSON(C.canopy).then(d=>{const bin=atob(d.data),b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
+    const {x0,z0,step,nx,nz}=d,g=(i,j)=>{if(i<0||j<0||i>=nx||j>=nz)return 255;return b[j*nx+i];};
+    return {x0,z0,step,nx,nz,year:d.year,attribution:d.attribution,at(x,z){const fx=(x-x0)/step,fz=(z-z0)/step,i=Math.floor(fx),j=Math.floor(fz),u=fx-i,v=fz-j;
+      let t=0,w=0;for(const [a,c,k] of [[i,j,(1-u)*(1-v)],[i+1,j,u*(1-v)],[i,j+1,(1-u)*v],[i+1,j+1,u*v]]){const q=g(a,c);if(q<=100&&k>0){t+=q*k;w+=k;}}return w<0.25?null:t/w/100;}};})
+  .catch(e=>{console.warn('canopy: '+e.message);return null;}):null;
+ctx.canopy=CANOPY;
 const SEED_DEFAULT=C.defaultSeed||1871;
 const SEED0=(()=>{try{const v=parseInt(new URLSearchParams(location.search).get('seed')||new URLSearchParams(location.hash.slice(1)).get('seed'),10);return v>0&&v<2147483647?v:SEED_DEFAULT;}catch(e){return SEED_DEFAULT;}})();
 const LCG=createLcg(SEED0);const rnd=LCG.rnd,rr=LCG.rr,pick=LCG.pick;
@@ -99,7 +108,9 @@ if(TER&&C.terrainRaise){if(!TER.h0)TER.h0=TER.h.slice();
       if(R.poly){let d=1e9;for(let q=0;q<pts.length;q++)d=Math.min(d,segD(x,z,pts[q],pts[(q+1)%pts.length])[0]);nh=inPoly(x,z,pts)?R.top:R.top-d*sl;}
       else{let best=1e9,bh=0;for(let q=0;q+1<pts.length;q++){const [d,t]=segD(x,z,pts[q],pts[q+1]);if(d<best){best=d;bh=pts[q][2]+(pts[q+1][2]-pts[q][2])*t;}}nh=bh-Math.max(0,best-hw)*sl;}
       if(nh>TER.h[k])TER.h[k]=nh;}}}
-function groundH(x,z){if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
+// A page with finer ground in places (src/core/fine.js: a mountain, a firth) sets ctx.fineAt(x, z), which answers
+// the height there or null; the kilometre grid answers everywhere else.
+function groundH(x,z){if(ctx.fineAt){const f=ctx.fineAt(x,z);if(f!=null)return f;}if(!TER)return 0;const fx=(x-TER.x0)/TER.step,fz=(z-TER.z0)/TER.step;
   let i=Math.floor(fx),j=Math.floor(fz);i=Math.max(0,Math.min(TER.nx-2,i));j=Math.max(0,Math.min(TER.nz-2,j));
   const tx=Math.max(0,Math.min(1,fx-i)),tz=Math.max(0,Math.min(1,fz-j)),h=TER.h,n=TER.nx;
   return (h[j*n+i]*(1-tx)+h[j*n+i+1]*tx)*(1-tz)+(h[(j+1)*n+i]*(1-tx)+h[(j+1)*n+i+1]*tx)*tz;}

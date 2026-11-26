@@ -1,0 +1,1441 @@
+{
+  "name": "Mount Hood",
+  "note": "Mount Hood (Wy'east), Oregon: the stratovolcano, its glaciers, trails, ski areas and lakes, from OpenStreetMap on the USGS's 3DEP ground",
+  "origin": [
+    45.3736,
+    -121.6959
+  ],
+  "defaultSeed": 1805,
+  "defaultHour": 10,
+  "bounds": [
+    45.255,
+    -121.86,
+    45.505,
+    -121.55
+  ],
+  "osm": "data/cities/mthood-osm.json",
+  "canopy": "data/cities/mthood-canopy.json",
+  "canopyFill": false,
+  "attribution": "Mount Hood: map data (c) OpenStreetMap contributors, ODbL. Elevation: USGS 3D Elevation Program; the far Cascades: AWS Terrain Tiles. Tree canopy: USDA Forest Service, NLCD Tree Canopy Cover 2021. Built by tools/build-osm-city.py and tools/make-mthood.py.",
+  "fetch": {
+    "bbox": [
+      45.253,
+      -121.863,
+      45.507,
+      -121.547
+    ],
+    "tiles": {
+      "buildings": [
+        1,
+        1
+      ],
+      "roads": [
+        2,
+        2
+      ],
+      "land": [
+        1,
+        1
+      ],
+      "landuse": [
+        1,
+        1
+      ]
+    },
+    "detailZones": [
+      [
+        45.255,
+        -121.86,
+        45.505,
+        -121.55
+      ]
+    ],
+    "extraLand": "nwr[\"landuse\"~\"^(forest|meadow)$\"]({b});nwr[\"natural\"~\"^(bare_rock|scree|heath|glacier|wetland|volcano|cliff|arete|ridge)$\"]({b});",
+    "extraRoads": "way[\"highway\"~\"^(track|path|footway|bridleway|steps)$\"]({b});",
+    "extraFiles": {
+      "mountain": "nwr[\"natural\"=\"glacier\"]({b});way[\"aerialway\"]({b});node[\"aerialway\"]({b});nwr[\"piste:type\"]({b});node[\"natural\"~\"^(peak|volcano|saddle|spring|cave_entrance|rock|stone)$\"]({b});nwr[\"waterway\"~\"^(waterfall|stream|river)$\"]({b});node[\"waterway\"=\"waterfall\"]({b});nwr[\"natural\"=\"waterfall\"]({b});nwr[\"tourism\"~\"^(viewpoint|camp_site|alpine_hut|wilderness_hut|information|attraction|hotel)$\"]({b});nwr[\"amenity\"~\"^(shelter|ranger_station)$\"]({b});node[\"highway\"=\"trailhead\"]({b});relation[\"route\"~\"^(hiking|foot|ski|piste)$\"]({b});nwr[\"historic\"]({b});nwr[\"natural\"~\"^(cliff|arete|ridge|valley|couloir)$\"]({b});nwr[\"geological\"]({b});nwr[\"landuse\"=\"winter_sports\"]({b});nwr[\"natural\"=\"fumarole\"]({b});"
+    },
+    "_": "the whole map is a detail zone (the buildings are few: Government Camp, Timberline, the lodges). extraLand: the forest, meadows, glaciers and bare rock; extraRoads: every trail; extraFiles.mountain: glaciers, lifts, ski runs, peaks, waterfalls, streams, viewpoints, camps, huts, trailheads, the hiking routes (the Timberline Trail, the PCT) and the historic sites, read by tools/make-mthood.py"
+  },
+  "terrain": {
+    "source": "3dep",
+    "res": 10,
+    "step": 40,
+    "datum": 0.0,
+    "_": "heights are metres above sea level (the datum is 0): the summit 3429 m, Timberline Lodge 1830 m, Government Camp 1200 m, the Sandy at Ramona's foot 800 m, the Hood River's East Fork under 900 m. The USGS's 3DEP at 10 m (lidar over the mountain); the grid here is 40 m and tools/make-mthood.py writes a 10 m patch over the upper mountain (src/core/fine.js)",
+    "lakeLevels": {
+      "min": 1500,
+      "below": 0.3,
+      "depth": 6,
+      "shore": 30,
+      "_": "tools/build-osm-city.py: every lake at its own level, from the survey's water surface: Lost Lake, Trillium, Mirror, Burnt, Ramona's ponds"
+    }
+  },
+  "defaultView": "Mount Hood from Trillium Lake",
+  "seaLevelWater": false,
+  "cameraFar": 200000,
+  "fog": 7e-06,
+  "terrainLOD": [
+    6000,
+    14000
+  ],
+  "terrainColours": {
+    "low": "#22381f",
+    "high": "#2a4428",
+    "steep": "#6a645e",
+    "far": "#3a5240"
+  },
+  "treeLine": 1900,
+  "bareGround": [],
+  "sky": {
+    "day": {
+      "top": "#2a5fc4",
+      "hor": "#c4d8ec"
+    },
+    "dusk": {
+      "top": "#2c3a6a",
+      "hor": "#f0a070"
+    },
+    "night": {
+      "top": "#03050c",
+      "hor": "#0e1424"
+    }
+  },
+  "waterColour": "#1e4a5a",
+  "lakeColour": "#1a4a5e",
+  "lakeSheen": "#8aa8c0",
+  "defaultHeights": {
+    "_": "Government Camp's cabins and lodges, the ski areas' day lodges; the landmarks are modelled (src/mthood/landmarks.js)",
+    "yes": 6,
+    "house": 6,
+    "residential": 7,
+    "commercial": 6,
+    "retail": 5,
+    "hotel": 12,
+    "service": 6,
+    "shed": 3.5,
+    "garage": 4,
+    "roof": 4
+  },
+  "heightSpread": 0.15,
+  "facade": {
+    "bay": 3.6,
+    "floor": 3.2,
+    "shutters": false
+  },
+  "palette": {
+    "_": "Cascadian rustic: stained timber, shingle, stone",
+    "brick": [
+      "#5a4030",
+      "#6a4a34",
+      "#4e3a2a",
+      "#7a5a3e",
+      "#8a847a"
+    ],
+    "stone": [
+      "#7e7a72",
+      "#8a857c",
+      "#6e6a62"
+    ]
+  },
+  "pitchAll": {
+    "types": [
+      "yes",
+      "house",
+      "residential",
+      "commercial",
+      "retail",
+      "hotel",
+      "service",
+      "shed",
+      "garage"
+    ],
+    "share": 1.0,
+    "_": "every roof pitched, steep, for the snow"
+  },
+  "roofMaxArea": 4000,
+  "roofMaxHeight": 18,
+  "roofPitch": 0.6,
+  "roofRise": 4,
+  "roofColours": [
+    "#3e4a42",
+    "#5a4a3a",
+    "#4a3e36",
+    "#6a5a48",
+    "#2e3a36"
+  ],
+  "flatRoofColours": [
+    "#7a766e"
+  ],
+  "rooftops": false,
+  "groundMottle": 0.1,
+  "instanceCulling": true,
+  "classWidths": {"path": 1.4, "footway": 1.8, "cycleway": 2.2},
+  "roadColours": {
+    "trail": "#7d6c55",
+    "motorway": "#3c3c40",
+    "trunk": "#3e3e42",
+    "primary": "#3e3e42",
+    "secondary": "#424246",
+    "tertiary": "#46464a",
+    "residential": "#4a4a4c",
+    "unclassified": "#4a4a4c",
+    "service": "#55554f",
+    "track": "#7a6e5c",
+    "path": "#8a7c66",
+    "footway": "#8a7c66",
+    "bridleway": "#8a7c66",
+    "steps": "#8a8478"
+  },
+  "areaColours": {
+    "park": "#4e7a34",
+    "grass": "#5e8a3e",
+    "garden": "#4c7434",
+    "recreation_ground": "#6a8a44",
+    "residential": "#8e8270",
+    "commercial": "#8e8270",
+    "plaza": "#9a8e7a",
+    "scrub": "#5a6a30",
+    "wood": "#2e5428",
+    "farmland": "#7a8a46",
+    "orchard": "#3e6a32",
+    "finca": "#3a5a2c",
+    "farm": "#8a8a4a",
+    "rock": "#5a524a"
+  },
+  "laneMarkings": {
+    "classes": [
+      "trunk",
+      "primary",
+      "secondary",
+      "tertiary"
+    ],
+    "colour": "#e8d860"
+  },
+  "litWindows": 0.3,
+  "streetTrees": 0,
+  "parkedCars": 0.7,
+  "traffic": 0,
+  "people": 0.5,
+  "lowRiseFar": 4500,
+  "treeFar": 2400,
+  "scrub": "low",
+  "treeCells": {
+    "garden": 26,
+    "park": 30
+  },
+  "treeMinArea": {
+    "garden": 2500,
+    "park": 1000
+  },
+  "camera": {
+    "elMin": -0.3,
+    "elMax": 1.5
+  },
+  "flight": true,
+  "noBuildingsInWater": true,
+  "dropAreas": [
+    "wood",
+    "reserve",
+    "rock",
+    "grass",
+    "scrub"
+  ],
+  "_dropAreas": "the forest, the wilderness and the national forest are mapped as great polygons, and the meadows and rock as small ones; src/mthood/ground.js paints the ground and plants the trees itself",
+  "extraKinds": [
+    [
+      "landuse",
+      "meadow",
+      "grass"
+    ],
+    [
+      "natural",
+      "bare_rock",
+      "rock"
+    ],
+    [
+      "natural",
+      "scree",
+      "rock"
+    ],
+    [
+      "natural",
+      "heath",
+      "scrub"
+    ],
+    [
+      "natural",
+      "wetland",
+      "scrub"
+    ],
+    [
+      "natural",
+      "glacier",
+      "rock"
+    ]
+  ],
+  "treeSpecies": [
+    {
+      "name": "Douglas-fir",
+      "shape": "fir",
+      "bark": "#5a4434",
+      "height": [
+        25,
+        50
+      ],
+      "colours": [
+        "#203a22",
+        "#243f26"
+      ],
+      "weight": {
+        "street": 0,
+        "park": 10,
+        "wood": 40,
+        "yard": 4
+      }
+    },
+    {
+      "name": "Western hemlock",
+      "shape": "fir",
+      "bark": "#5e4c40",
+      "height": [
+        20,
+        40
+      ],
+      "colours": [
+        "#243e26",
+        "#28442a"
+      ],
+      "weight": {
+        "street": 0,
+        "park": 8,
+        "wood": 30,
+        "yard": 3
+      }
+    },
+    {
+      "name": "Vine maple",
+      "shape": "round",
+      "bark": "#5a5040",
+      "height": [
+        4,
+        8
+      ],
+      "colours": [
+        "#4a7a30",
+        "#527e34"
+      ],
+      "weight": {
+        "street": 2,
+        "park": 4,
+        "wood": 4,
+        "yard": 4
+      }
+    }
+  ],
+  "life": {
+    "tile": 600,
+    "seed": 1805,
+    "near": 600,
+    "density": 0.0004,
+    "perArea": 500,
+    "max": 6000
+  },
+  "vehicles": {
+    "seed": 1805,
+    "side": "right",
+    "cars": 4,
+    "mopeds": 0,
+    "buses": 0.3,
+    "trams": 0,
+    "trains": 0,
+    "far": 1000,
+    "carFar": 700,
+    "mopedFar": 450,
+    "maxCars": 1500,
+    "maxMopeds": 600,
+    "maxBuses": 140,
+    "busColours": [
+      "#1e4a8a",
+      "#e8e4da"
+    ],
+    "carColours": [
+      "#f2f2f0",
+      "#1e1e22",
+      "#8a9aa8",
+      "#c8ccd0",
+      "#9a2a2a",
+      "#2a4a7a",
+      "#d8d0c0",
+      "#4a5a3a"
+    ],
+    "_": "src/core/traffic.js: cars, pickups with ski racks and RVs on US 26 over Government Camp, OR 35 round the east side, the Timberline Highway, the Mount Hood Express bus"
+  },
+  "crowds": {
+    "seed": 1805,
+    "centre": [
+      45.3311,
+      -121.711,
+      900,
+      9
+    ],
+    "pedestrianMul": 1.0,
+    "maxPedestrians": 2500,
+    "keepOut": [],
+    "pedestrians": 6,
+    "far": 260,
+    "touristFar": 340,
+    "piece": 300,
+    "sites": [
+      [
+        45.3311,
+        -121.711,
+        60,
+        200
+      ],
+      [
+        45.3305,
+        -121.665,
+        50,
+        150
+      ],
+      [
+        45.3026,
+        -121.7547,
+        120,
+        160
+      ],
+      [
+        45.3015,
+        -121.771,
+        40,
+        60
+      ],
+      [
+        45.4019,
+        -121.6544,
+        20,
+        25
+      ],
+      [
+        45.27,
+        -121.7364,
+        40,
+        50
+      ],
+      [
+        45.496,
+        -121.817,
+        40,
+        50
+      ],
+      [
+        45.3,
+        -121.7835,
+        15,
+        30
+      ]
+    ],
+    "_": "[lat, lon, radius, people]: Timberline Lodge's terrace and the Wy'East plaza, Mount Hood Meadows' main lodge, Government Camp's loop, Ski Bowl, Cloud Cap, Trillium Lake's dam, Lost Lake's resort, the Mirror Lake trailhead"
+  },
+  "focus": [
+    {
+      "name": "Government Camp",
+      "at": [
+        45.3026,
+        -121.7547
+      ],
+      "radius": 600
+    },
+    {
+      "name": "Timberline",
+      "at": [
+        45.3311,
+        -121.711
+      ],
+      "radius": 300
+    }
+  ],
+  "districts": {
+    "_": "[name, hex colour, base height, tallest, box]",
+    "outer": [
+      "Mount Hood National Forest",
+      "#2e4a30",
+      5,
+      10,
+      [
+        45.255,
+        -121.86,
+        45.505,
+        -121.55
+      ]
+    ],
+    "govy": [
+      "Government Camp",
+      "#6a4a30",
+      5,
+      14,
+      [
+        45.296,
+        -121.77,
+        45.31,
+        -121.735
+      ]
+    ],
+    "timberline": [
+      "Timberline",
+      "#6a4a30",
+      5,
+      22,
+      [
+        45.326,
+        -121.72,
+        45.336,
+        -121.7
+      ]
+    ],
+    "meadows": [
+      "Mount Hood Meadows",
+      "#6a4a30",
+      5,
+      16,
+      [
+        45.325,
+        -121.675,
+        45.336,
+        -121.655
+      ]
+    ],
+    "lostlake": [
+      "Lost Lake",
+      "#6a4a30",
+      4,
+      9,
+      [
+        45.49,
+        -121.83,
+        45.505,
+        -121.8
+      ]
+    ]
+  },
+  "ground": {
+    "summit": [
+      45.3736,
+      -121.6959
+    ],
+    "treeLine": {
+      "north": 1780,
+      "south": 1960
+    },
+    "eastDry": 5500,
+    "tile": 400,
+    "near": 1700,
+    "spacing": 9,
+    "pumice": [
+      [
+        45.345,
+        -121.705,
+        1900,
+        1.0
+      ],
+      [
+        45.3385,
+        -121.683,
+        800,
+        0.8
+      ],
+      [
+        45.356,
+        -121.73,
+        500,
+        0.5
+      ],
+      [
+        45.368,
+        -121.695,
+        700,
+        1.0
+      ]
+    ],
+    "tints": [
+      [
+        45.3655,
+        -121.6968,
+        230,
+        "#6a4a44",
+        0.8
+      ],
+      [
+        45.369,
+        -121.6875,
+        260,
+        "#a88658",
+        0.6
+      ],
+      [
+        45.3672,
+        -121.693,
+        90,
+        "#c4a84a",
+        0.65
+      ],
+      [
+        45.3684,
+        -121.6992,
+        80,
+        "#b49446",
+        0.5
+      ],
+      [
+        45.3625,
+        -121.7155,
+        160,
+        "#5a4a46",
+        0.6
+      ],
+      [
+        45.3545,
+        -121.7298,
+        260,
+        "#6a5850",
+        0.4
+      ],
+      [
+        45.379,
+        -121.714,
+        520,
+        "#7a5a4e",
+        0.3
+      ],
+      [
+        45.385,
+        -121.686,
+        450,
+        "#4e4a48",
+        0.3
+      ]
+    ],
+    "clearings": [
+      [45.30137, -121.77227, 55],
+      [45.29686, -121.75672, 60],
+      [45.32606, -121.64152, 55],
+      [45.37996, -121.77675, 42],
+      [45.38, -121.77627, 26],
+      [
+        45.3311,
+        -121.711,
+        170
+      ],
+      [
+        45.3305,
+        -121.665,
+        200
+      ],
+      [
+        45.3015,
+        -121.771,
+        120
+      ],
+      [
+        45.4019,
+        -121.6544,
+        50
+      ],
+      [
+        45.3986,
+        -121.6494,
+        60
+      ],
+      [
+        45.496,
+        -121.817,
+        60
+      ]
+    ],
+    "_": "src/mthood/ground.js: pumice [lat, lon, radius, strength]: the south side's sands from Timberline to Crater Rock, the White River's canyon, Mississippi Head, the crater; tints [lat, lon, radius, colour, strength]: Crater Rock's dome, Steel Cliff's altered rock, the Devil's Kitchen's and Hot Rocks' sulphur, Illumination Rock, Mississippi Head, the Sandy Headwall, the Eliot's headwall; clearings: Timberline's car parks, Mount Hood Meadows', Ski Bowl's, Cloud Cap, Tilly Jane, Lost Lake's resort"
+  },
+  "backdrop": {
+    "file": "data/cities/mthood-far.json",
+    "taper": 22000,
+    "datum": 0.0,
+    "colours": [
+      [
+        0,
+        "#4a6040"
+      ],
+      [
+        300,
+        "#2e4a2c"
+      ],
+      [
+        900,
+        "#2a4428"
+      ],
+      [
+        1500,
+        "#32482e"
+      ],
+      [
+        1900,
+        "#5a5e50"
+      ],
+      [
+        2300,
+        "#7a7870"
+      ],
+      [
+        2700,
+        "#a8a8a4"
+      ]
+    ],
+    "_": "src/sarajevo/backdrop.js: the Cascades 400 km across: Mount Adams 95 km north-east, Mount St. Helens 95 km north-north-west, Mount Rainier 176 km north, Mount Jefferson 75 km south, the Columbia Gorge; the snow is ground.js's",
+    "hug": 25
+  },
+  "farLevel": 120,
+  "weather": {
+    "climate": "cascade",
+    "cloudH": 2600,
+    "_": "src/core/weather.js; the season's odds replace the climate's (src/mthood/season.js)"
+  },
+  "season": {
+    "yearMinutes": 6,
+    "_": "src/mthood/season.js: opens on today's date unless the address says (#doy=, #month=, #season=)"
+  },
+  "landmarks": [
+    {
+      "name": "Timberline Lodge",
+      "model": "timberline",
+      "at": [
+        45.33113,
+        -121.71124
+      ],
+      "clear": [
+        70,
+        0
+      ],
+      "info": "Built in 1936-38 by the Works Progress Administration, by hand, from the mountain's own andesite and timber, and dedicated by Franklin Roosevelt on 28 September 1937. The six-sided head house holds the lobby round a great stone chimney with fireplaces on three floors; the wings angle off it like the ridges of the mountain. Its ironwork, carved newel posts, hooked rugs and weavings were made by WPA craftsmen. A National Historic Landmark since 1977; its outside is the Overlook Hotel in The Shining. 1,830 m (6,000 ft) up."
+    },
+    {
+      "name": "Wy'East Day Lodge",
+      "model": "footlodge",
+      "at": [
+        45.33045,
+        -121.71013
+      ],
+      "clear": [
+        25,
+        0
+      ],
+      "rise": 5,
+      "info": "Timberline's day lodge for skiers, below the old lodge: lockers, food and the ski school, so the historic building is left for its guests. Wy'east is the Multnomah name for the mountain."
+    },
+    {
+      "name": "Silcox Hut",
+      "model": "silcox",
+      "at": [
+        45.34462,
+        -121.70951
+      ],
+      "face": 168,
+      "clear": [
+        22,
+        0
+      ],
+      "info": "Built in 1939 by the WPA as the top station of the Magic Mile, one of the first chairlifts in the country, and named after Ferdinand Silcox, chief of the Forest Service. A stone storey and a timber one, 2,111 m (6,950 ft) up. Left to decay when the lift was replaced in 1962, it was restored by the Friends of Silcox Hut from 1985 and is a mountain hut that takes guests again."
+    },
+    {
+      "name": "Cloud Cap Inn",
+      "model": "cloudcap",
+      "at": [
+        45.40404,
+        -121.65448
+      ],
+      "face": 207,
+      "clear": [
+        22,
+        0
+      ],
+      "info": "Built in 1889 by William Ladd and C. E. S. Wood of Portland as a resort, reached by stagecoach up from Hood River: two storeys of logs at 1,800 m on the north-east side, under the Eliot Glacier. The steel cables over its roof, anchored in the rock, hold it down against the winter winds. On the National Register of Historic Places; the Hood River Crag Rats, the oldest mountain rescue team in the country, have looked after it since 1954."
+    },
+    {
+      "name": "Tilly Jane A-Frame",
+      "model": "aframe",
+      "at": [
+        45.39905,
+        -121.64591
+      ],
+      "face": 130,
+      "clear": [
+        12,
+        0
+      ],
+      "info": "A ski cabin that is nearly all roof, in the Tilly Jane camp below Cloud Cap, beside the old guard station. In winter it is a hut for skiers who climb the Tilly Jane trail; the forest round it burned in the Gnarl Ridge Fire of 2008."
+    },
+    {
+      "name": "Mount Hood Meadows: North Lodge",
+      "osm": "North Lodge",
+      "model": "footlodge",
+      "at": [
+        45.33188,
+        -121.6647
+      ],
+      "clear": [
+        18,
+        0
+      ],
+      "rise": 4,
+      "info": "One of the lodges at the base of Mount Hood Meadows, the mountain's largest ski area, which opened on the east side in 1968. Its lifts climb Heather Canyon and the Cascade Express to over 2,200 m."
+    },
+    {
+      "name": "Mount Hood Meadows: South Lodge",
+      "osm": "South Lodge",
+      "model": "footlodge",
+      "at": [
+        45.33174,
+        -121.66532
+      ],
+      "clear": [
+        18,
+        0
+      ],
+      "rise": 4,
+      "info": "The lodges at Mount Hood Meadows' main base, at 1,600 m between the Hood River Meadows and the Heather Canyon side, with the Mount Hood Express and Stadium chairs leaving from beside them."
+    },
+    {
+      "name": "McNeil Point Shelter",
+      "model": "shelter",
+      "at": [
+        45.39548,
+        -121.73199
+      ],
+      "size": 5,
+      "face": 200,
+      "info": "A stone shelter the Civilian Conservation Corps built in the 1930s on a shoulder of the north-west side, 1,840 m up, over the Sandy and Glisan glaciers. Its view of the mountain is one of the best on the Timberline Trail; the walk up from Top Spur is about 10 miles there and back."
+    },
+    {
+      "name": "Cairn Basin Shelter",
+      "model": "shelter",
+      "at": [
+        45.404,
+        -121.7231
+      ],
+      "size": 5.5,
+      "face": 160,
+      "info": "One of the stone shelters the CCC built along the Timberline Trail in the 1930s, in the meadows of Cairn Basin on the north-west side, by the streams from the Ladd Glacier."
+    },
+    {
+      "name": "Cooper Spur Shelter",
+      "model": "shelter",
+      "at": [
+        45.38866,
+        -121.66082
+      ],
+      "round": true,
+      "size": 4.2,
+      "face": 180,
+      "clear": [
+        6,
+        0
+      ],
+      "info": "A round stone shelter the CCC built in the 1930s on Cooper Spur, 2,075 m up on the north-east side, over the Eliot Glacier's ice and rubble. The Cooper Spur trail climbs on above it to about 2,600 m, the highest a trail goes on the mountain."
+    },
+    {
+      "name": "Mt. Hood Skibowl: West Lodge",
+      "model": "lodge",
+      "osm": null,
+      "at": [
+        45.30137,
+        -121.77227
+      ],
+      "clear": [
+        24,
+        0
+      ],
+      "blocks": [
+        [
+          [
+            -18.8,
+            1.8
+          ],
+          [
+            14.6,
+            1.8
+          ],
+          12.6,
+          {
+            "up": 5.4,
+            "stone": 1.4,
+            "rise": 6.6,
+            "deck": 1,
+            "chimney": 0.3,
+            "cupola": -0.12
+          }
+        ]
+      ],
+      "info": "The base lodge of Skibowl West, at Government Camp on the south side of US 26, under Tom, Dick and Harry Mountain. Mt. Hood Skibowl lights more of its runs at night than any other ski area in the country, so the lodge's windows and the lit slopes above it are the brightest thing on the mountain on a winter evening."
+    },
+    {
+      "name": "Mt. Hood Skibowl: Multorpor Lodge",
+      "model": "lodge",
+      "osm": "Multorpor Restaurant and Lounge",
+      "at": [
+        45.29686,
+        -121.75672
+      ],
+      "clear": [
+        24,
+        0
+      ],
+      "blocks": [
+        [
+          [
+            -7.3,
+            0.36
+          ],
+          [
+            -15.7,
+            14.2
+          ],
+          12.2,
+          {
+            "aframe": true,
+            "stone": 1.2,
+            "glassEnd": 1,
+            "chimney": -0.25
+          }
+        ],
+        [
+          [
+            6.5,
+            10.0
+          ],
+          [
+            14.8,
+            -3.7
+          ],
+          11.9,
+          {
+            "aframe": true,
+            "stone": 1.2,
+            "glassEnd": -1
+          }
+        ],
+        [
+          [
+            -8.0,
+            -8.0
+          ],
+          [
+            5.7,
+            0.24
+          ],
+          6.6,
+          {
+            "up": 3.6,
+            "rise": 2.8,
+            "stone": 1.0
+          }
+        ],
+        [
+          [
+            1.55,
+            -9.55
+          ],
+          [
+            7.45,
+            -6.05
+          ],
+          5.9,
+          {
+            "up": 3.6,
+            "rise": 3.0,
+            "stone": 1.0
+          }
+        ]
+      ],
+      "info": "Skibowl East's lodge, below Multorpor Mountain, east of Skibowl West along the highway: a restaurant and lounge under two steep roofs, joined by a lower hall. Its lifts climb Multorpor's slopes, and the two halves of Skibowl are linked across the mountain."
+    },
+    {
+      "name": "Hood River Meadows Base Lodge",
+      "model": "lodge",
+      "at": [
+        45.32606,
+        -121.64152
+      ],
+      "clear": [
+        16,
+        0
+      ],
+      "blocks": [
+        [
+          [
+            -10.86,
+            2.5
+          ],
+          [
+            10.86,
+            -2.5
+          ],
+          11.5,
+          {
+            "up": 5.8,
+            "stone": 1.3,
+            "rise": 5.2,
+            "deck": -1,
+            "glassEnd": 1,
+            "chimney": 0.3
+          }
+        ]
+      ],
+      "info": "The base lodge at Hood River Meadows, the quieter east-side entrance to Mount Hood Meadows, at about 4,500 ft (1,370 m) beside the Hood River Meadows chair. The Sahale Falls trail and the Nordic trails start near it."
+    }
+  ],
+  "navmap": {
+    "labels": [
+      "Mount Hood",
+      "Timberline Lodge",
+      "Silcox Hut",
+      "Cloud Cap Inn",
+      "Crater Rock",
+      "Illumination Rock",
+      "Ramona Falls",
+      "Tamanawas Falls",
+      "Trillium Lake",
+      "Mirror Lake",
+      "Lost Lake",
+      "Government Camp",
+      "Eliot Glacier",
+      "Zigzag Glacier",
+      "Paradise Park",
+      "Elk Cove",
+      "Cooper Spur",
+      "Barrett Spur",
+      "Mt. Hood Meadows Ski Resort",
+      "Mt. Hood Skibowl"
+    ]
+  },
+  "views": {
+    "Mt. Hood Skibowl": [[45.30107, -121.77186, 1330], [45.3017, -121.77228, 1200]],
+    "Multorpor": [[45.29657, -121.75626, 1320], [45.29727, -121.75673, 1190]],
+    "Hood River Meadows": [[45.32471, -121.63935, 1470], [45.32606, -121.64152, 1375]],
+    "Mount Hood from Trillium Lake": [
+      [
+        45.2688,
+        -121.7386,
+        1100.2
+      ],
+      [
+        45.37351,
+        -121.69588,
+        3150
+      ]
+    ],
+    "The whole mountain": [
+      [
+        45.262,
+        -121.6,
+        7200
+      ],
+      [
+        45.3736,
+        -121.6959,
+        1900
+      ]
+    ],
+    "Timberline Lodge": [
+      [
+        45.3288,
+        -121.714,
+        1840
+      ],
+      [
+        45.33113,
+        -121.71124,
+        1822
+      ]
+    ],
+    "The south side from Timberline": [
+      [
+        45.33,
+        -121.7118,
+        1835
+      ],
+      [
+        45.37,
+        -121.7003,
+        3050
+      ]
+    ],
+    "Silcox Hut and the Palmer": [
+      [
+        45.3415,
+        -121.712,
+        2130
+      ],
+      [
+        45.3566,
+        -121.704,
+        2450
+      ]
+    ],
+    "Crater Rock and the Hogsback": [
+      [
+        45.364,
+        -121.7055,
+        3060
+      ],
+      [
+        45.3715,
+        -121.6975,
+        3330
+      ]
+    ],
+    "The summit": [
+      [
+        45.3722,
+        -121.6985,
+        3460
+      ],
+      [
+        45.3735,
+        -121.6959,
+        3420
+      ]
+    ],
+    "From the summit, north": [
+      [
+        45.37351,
+        -121.69588,
+        3432
+      ],
+      [
+        45.48,
+        -121.7,
+        1400
+      ]
+    ],
+    "Illumination Rock": [
+      [
+        45.365,
+        -121.718,
+        2760
+      ],
+      [
+        45.36786,
+        -121.71034,
+        2870
+      ]
+    ],
+    "Zigzag Canyon": [
+      [
+        45.3402,
+        -121.7395,
+        1668
+      ],
+      [
+        45.35,
+        -121.756,
+        1450
+      ]
+    ],
+    "Paradise Park": [
+      [
+        45.35,
+        -121.75,
+        1720
+      ],
+      [
+        45.37351,
+        -121.69588,
+        3150
+      ]
+    ],
+    "Ramona Falls": [[45.37993, -121.77738, 1064], [45.38, -121.77627, 1072]],
+    "McNeil Point and the Sandy Glacier": [
+      [
+        45.3953,
+        -121.7325,
+        1848
+      ],
+      [
+        45.379,
+        -121.715,
+        2400
+      ]
+    ],
+    "Elk Cove": [
+      [
+        45.411,
+        -121.705,
+        1720
+      ],
+      [
+        45.37351,
+        -121.69588,
+        3150
+      ]
+    ],
+    "The Eliot Glacier from Cooper Spur": [
+      [
+        45.3887,
+        -121.66,
+        2085
+      ],
+      [
+        45.383,
+        -121.683,
+        2150
+      ]
+    ],
+    "Cloud Cap Inn": [
+      [
+        45.4022,
+        -121.6575,
+        1806
+      ],
+      [
+        45.40405,
+        -121.6545,
+        1802
+      ]
+    ],
+    "Mount Hood Meadows": [[45.3288, -121.6575, 1690], [45.3395, -121.6745, 1700]],
+    "Heather Canyon": [
+      [
+        45.344,
+        -121.659,
+        1820
+      ],
+      [
+        45.348,
+        -121.663,
+        1760
+      ]
+    ],
+    "Tamanawas Falls": [
+      [
+        45.3998,
+        -121.5876,
+        1062
+      ],
+      [
+        45.40101,
+        -121.58937,
+        1075
+      ]
+    ],
+    "Mirror Lake": [
+      [
+        45.2958,
+        -121.7955,
+        1257
+      ],
+      [
+        45.37351,
+        -121.69588,
+        3150
+      ]
+    ],
+    "Lost Lake": [
+      [
+        45.4958,
+        -121.82236,
+        971
+      ],
+      [
+        45.37351,
+        -121.69588,
+        3150
+      ]
+    ],
+    "Government Camp": [
+      [
+        45.2995,
+        -121.749,
+        1240
+      ],
+      [
+        45.3026,
+        -121.7547,
+        1175
+      ]
+    ],
+    "Mount Hood Skibowl": [
+      [
+        45.2985,
+        -121.762,
+        1300
+      ],
+      [
+        45.29462,
+        -121.77121,
+        1300
+      ]
+    ],
+    "The Cascades from the summit": [
+      [
+        45.37351,
+        -121.69588,
+        3432
+      ],
+      [
+        45.6,
+        -121.6,
+        2500
+      ]
+    ]
+  },
+  "hoodTrails": {
+    "_": "src/mthood/trails.js: the Trail map, a trail's card (the figures measured on the map from OpenStreetMap and the USGS ground; `official` where the guidebooks' figure is better: OSM cuts a trail into ways that run over each other), walking a trail, hikers, snowshoers and climbers, and the signs at the trailheads. `about` is matched to a trail's name; `climbs` are routes OSM does not map, as [lat, lon] waypoints",
+    "official": {
+      "Timberline Trail": {
+        "route": "Mt. Hood Timberline Trail",
+        "miles": 41,
+        "feet": 9000
+      },
+      "Pacific Crest Trail": {
+        "note": "2,650 miles from Mexico to Canada; on this map, the stretch from Barlow Pass round the west side to Lolo Pass"
+      }
+    },
+    "about": {
+      "Timberline Trail": "The trail all the way round the mountain, about 41 miles (66 km) with some 9,000 ft of climbing, built by the Civilian Conservation Corps in the 1930s. It keeps near the tree line, through Paradise Park, Ramona Falls, Cairn Basin, Elk Cove, Cloud Cap, Elk Meadows and Mount Hood Meadows, and crosses the glacial rivers at their muddy, shifting fords: the Sandy, the Muddy Fork, the Eliot Branch (washed out in 2006 and only reopened in 2016), Newton Creek and the White River. Most take three to five days.",
+      "Pacific Crest Trail": "The Pacific Crest Trail, 2,650 miles from Mexico to Canada. Here it comes up from Barlow Pass to Timberline Lodge, shares the Timberline Trail round the west side to Ramona Falls, and leaves by Lolo Pass for the Columbia River at Cascade Locks.",
+      "Ramona Falls": "A loop of about 7 miles from the trailhead on the Sandy River: across the river (the footbridge is gone and the ford moves with every flood), up through lodgepole and old fir, to a fall of 120 ft (37 m) spreading in a veil over columns of basalt, green with moss. One of the most walked trails on the mountain.",
+      "Mirror Lake Trail": "About 2 miles up through the forest from US 26 to a small lake that holds Mount Hood in its water on a still morning; the trail goes on up the ridge of Tom Dick and Harry Mountain for the view over the lake, Government Camp and the mountain.",
+      "Mirror Lake Loop": "The short loop round Mirror Lake's shore, with its boardwalk over the wet end and the view of the mountain in the water.",
+      "Paradise Park": "The west side's great meadow, 5,700 to 6,300 ft under the Zigzag Glacier, white with avalanche lilies as the snow goes and then lupine, paintbrush and heather in July and August. From Timberline it is about 12 miles there and back on the Timberline Trail, across Zigzag Canyon.",
+      "McNeil Point": "A stone shelter the Civilian Conservation Corps built in the 1930s at 6,100 ft on the north-west ridge, looking straight at the Sandy and Glisan glaciers. Reached by the Top Spur and Timberline trails past the ponds of Bald Mountain's ridge; the last stretch is a scramble.",
+      "Cooper Spur": "The highest trail on the mountain: from Cloud Cap up the spur beside the Eliot Glacier, the mountain's largest, to about 8,500 ft at Tie-In Rock, with the Eliot's icefall and the north face over it. The 1930s stone shelter is on the way.",
+      "Elk Cove": "A meadow on the north side under the Coe Glacier, with a creek through it, lupine and paintbrush in late July, and elk at its edge in the evening. Reached from Cloud Cap round the Timberline Trail, or from the north by the Elk Cove trail.",
+      "Tamanawas Falls": "Along the East Fork of the Hood River and up Cold Spring Creek to a fall of about 100 ft (30 m) dropping over a lip of lava into a pool. Tamanawas is the Chinook Jargon word for a guardian spirit. In a hard winter it freezes into a curtain of ice, and the snowshoers come.",
+      "Trillium Lake": "A two-mile flat loop round Trillium Lake, made in 1960 by damming Mud Creek where the Barlow Road crossed Summit Meadows: the lake that every picture of Mount Hood is taken across, with boardwalks over its marshes. In winter the road in is closed and becomes a ski and snowshoe trail.",
+      "Zigzag Canyon": "From Timberline Lodge west on the Timberline Trail to the rim of Zigzag Canyon, 700 ft deep, cut by the Zigzag River in the debris the mountain's last eruptions sent down it in the 1780s; the trail goes down into it and up the far side to Paradise Park.",
+      "Hidden Lake": "Up through old forest from the Kiwanis camp road, past little Hidden Lake (the rhododendrons are in flower in June), to the Timberline Trail between Zigzag Canyon and Paradise Park.",
+      "Burnt Lake": "A lake at 4,100 ft under East Zigzag Mountain with the mountain standing over it, reached through forest that burned in the early 1900s; the trail goes on to the top of East Zigzag for the view.",
+      "Lost Lake Butte": "From Lost Lake up the butte, 1,300 ft, to where a fire lookout stood, for the mountain's north-west side across the lake.",
+      "Lost Lake": "Lost Lake, at 3,140 ft, with old-growth cedar along its shore trail and the view of Mount Hood across the water that is on the postcards.",
+      "Umbrella Falls": "From Hood River Meadows across the ski area's runs to a fall of 60 ft on the East Fork of the Hood River, spread like an umbrella, and on to Sahalie Falls.",
+      "Vista Ridge": "The north-west ridge to Wy'east Basin, Eden Park and Cairn Basin: burned in the Dollar Lake fire of 2011, and now silver snags over fireweed, beargrass and huckleberry.",
+      "Timberline To Town": "From Timberline Lodge down through the forest to Government Camp: the way the skiers came down before there were lifts.",
+      "Pinnacle Ridge": "From the north up Pinnacle Ridge to the Timberline Trail between Elk Cove and Cloud Cap.",
+      "South Side route": "The way most people climb Mount Hood, and among the most climbed glaciated routes in the world: from Timberline Lodge (5,960 ft) up the Palmer Snowfield beside the lifts, past Crater Rock, the lava dome of the 1781 eruption, and the steaming, sulphurous fumaroles of the Devil's Kitchen and Hot Rocks, up the snow ridge of the Hogsback to the bergschrund, and through the rime-plastered chute of the Pearly Gates or the Old Chute to the summit ridge at 11,249 ft: 5,300 ft of climbing. Parties start at one or two in the morning, by headlamp, to be down before the sun loosens the ice and the rocks above. The season is April to June.",
+      "Cooper Spur route": "The north-east face above the Eliot Glacier from Tie-In Rock: steep snow, the classic route of 1887 and the scene of the 1981 accident; for experts only."
+    },
+    "climbs": [
+      {
+        "n": "South Side route",
+        "k": "climb",
+        "sac": "alpine_hiking (glaciated: crampons, ice axe, helmet)",
+        "pts": [
+          [
+            45.33113,
+            -121.71124
+          ],
+          [
+            45.338,
+            -121.71
+          ],
+          [
+            45.34462,
+            -121.70952
+          ],
+          [
+            45.35,
+            -121.7085
+          ],
+          [
+            45.3562,
+            -121.7058
+          ],
+          [
+            45.3615,
+            -121.704
+          ],
+          [
+            45.365,
+            -121.7012
+          ],
+          [
+            45.3672,
+            -121.6985
+          ],
+          [
+            45.369,
+            -121.6978
+          ],
+          [
+            45.3708,
+            -121.6972
+          ],
+          [
+            45.3722,
+            -121.6966
+          ],
+          [
+            45.37351,
+            -121.69588
+          ]
+        ],
+        "stops": [
+          [
+            0,
+            "Timberline Lodge"
+          ],
+          [
+            2,
+            "Silcox Hut"
+          ],
+          [
+            4,
+            "the top of the Palmer"
+          ],
+          [
+            6,
+            "Crater Rock"
+          ],
+          [
+            8,
+            "the Hogsback"
+          ],
+          [
+            9,
+            "the bergschrund"
+          ],
+          [
+            10,
+            "the Pearly Gates"
+          ],
+          [
+            11,
+            "the summit"
+          ]
+        ]
+      }
+    ],
+    "pace": {
+      "walk": 1.3,
+      "run": 3.2,
+      "fly": 40
+    }
+  },
+  "hoodEvents": {
+    "first": 45000,
+    "every": [
+      80000,
+      150000
+    ],
+    "order": [
+      "alpenglow",
+      "flowers",
+      "cap",
+      "climbers",
+      "palmer",
+      "smoke",
+      "fdr",
+      "snow",
+      "clark",
+      "oldmaid"
+    ]
+  }
+}

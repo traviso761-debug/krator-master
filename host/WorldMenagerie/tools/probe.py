@@ -34,14 +34,34 @@ PROBE = r"""<script>window.__probeErrs=[];addEventListener('error',e=>window.__p
 // once the task that drew it is over, still before the buffer is cleared
 (function(){let rd=null,sc=null,frames=[],last=0;
 let wantShot=false,shotTaken=false;
-if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
+// --overlays: the canvas is only the 3D view; the page's own elements (captions, panels, a flash over the whole view,
+// a tint below the water) are painted over it here, roughly: each visible element's background (a colour, or a
+// gradient's colours top to bottom) at its opacity, and its text in its own font and colour. No borders, shadows,
+// images or transforms.
+function withOverlays(gl){const W=innerWidth,H=innerHeight,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');
+ const gr=gl.getBoundingClientRect();g.drawImage(gl,gr.left,gr.top,gr.width,gr.height);
+ const cols=t=>(t.match(/rgba?\([^)]*\)|#[0-9a-f]{3,8}\b/gi)||[]);
+ const opac=e=>{let o=1;for(let x=e;x&&x.nodeType===1;x=x.parentElement){const cs=getComputedStyle(x);if(cs.display==='none'||cs.visibility==='hidden')return 0;o*=parseFloat(cs.opacity);}return o;};
+ for(const e of document.body.querySelectorAll('*')){if(e===gl||/^(SCRIPT|STYLE|CANVAS|svg)$/i.test(e.tagName))continue;const b=e.getBoundingClientRect();if(b.width<1||b.height<1||b.bottom<0||b.top>H)continue;
+  const o=opac(e);if(o<0.01)continue;const cs=getComputedStyle(e);g.globalAlpha=o;
+  const bi=cs.backgroundImage;if(bi&&bi.startsWith('linear-gradient')){const c=cols(bi);if(c.length){const lg=g.createLinearGradient(0,b.top,0,b.bottom);c.forEach((k,i)=>lg.addColorStop(c.length>1?i/(c.length-1):0,k));g.fillStyle=lg;g.fillRect(b.left,b.top,b.width,b.height);}}
+  else if(cs.backgroundColor&&!/rgba\(0, 0, 0, 0\)|transparent/.test(cs.backgroundColor)){g.fillStyle=cs.backgroundColor;g.fillRect(b.left,b.top,b.width,b.height);}
+  g.font=cs.font||(cs.fontSize+' '+cs.fontFamily);g.fillStyle=cs.color;g.textBaseline='alphabetic';
+  for(const n of e.childNodes){if(n.nodeType!==3||!n.textContent.trim())continue;const rg=document.createRange();rg.selectNodeContents(n);const rs=[...rg.getClientRects()].filter(q=>q.width>0);if(!rs.length)continue;
+   // the words laid out over the line boxes the browser made, greedily by width
+   const words=n.textContent.replace(/\s+/g,' ').trim().split(' ');let wi=0;
+   for(const q of rs){let line='';while(wi<words.length){const t=line?line+' '+words[wi]:words[wi];if(line&&g.measureText(t).width>q.width+2)break;line=t;wi++;}g.fillText(line,q.left,q.bottom-q.height*0.22);}}}
+ g.globalAlpha=1;return cv.toDataURL('image/jpeg',0.85);}
+if(window.THREE){const W=THREE.WebGLRenderer;THREE.WebGLRenderer=function(o){const r=new W(o);rd=r;const R0=r.render;r.render=function(scene,cam){sc=scene;window.__probeCam=cam;const t=performance.now();if(last)frames.push(t-last);last=t;const out=R0.call(r,scene,cam);if(wantShot){wantShot=false;shotTaken=true;queueMicrotask(()=>{try{const u=OVERLAYS?withOverlays(r.domElement):r.domElement.toDataURL('image/jpeg',0.8);fetch('http://127.0.0.1:SHOTPORT/shot',{method:'POST',mode:'no-cors',body:u});}catch(e){}});}return out;};return r;};}
 // Ready: the loading overlay is gone (#loading removed, or Voth's #load hidden) and, on a 3D page, 30 frames have
 // been drawn since and 1.2 s has passed. WAIT is only the ceiling; a page that never gets there is reported as timed out.
+// A page that runs a test of its own (the Enterprise's #mauto) sets window.__probeDone when it has finished, and is
+// reported then; SETTLE is the ceiling for it.
 const t0=performance.now();let readyAt=0,framesAt=0;
 const loadingGone=()=>{if(document.readyState==='loading')return false;for(const id of ['loading','load']){const e=document.getElementById(id);
  if(e&&e.isConnected){const cs=getComputedStyle(e);if(cs.display!=='none'&&cs.visibility!=='hidden')return false;}}return true;};
 const tick=()=>{const now=performance.now();if(!readyAt&&loadingGone()){readyAt=now;framesAt=frames.length;}
- const settled=readyAt&&now-readyAt>1200+SETTLE&&(!rd||frames.length-framesAt>=30);
+ const settled=readyAt&&(now-readyAt>1200+SETTLE||window.__probeDone&&now-readyAt>1200)&&(!rd||frames.length-framesAt>=30);
  if(settled||now-t0>WAIT){finish(!settled);return;}setTimeout(tick,150);};
 setTimeout(tick,150);
 const rep=o=>{new Image().src='/__probe?'+encodeURIComponent(JSON.stringify(o));};
@@ -74,7 +94,9 @@ try{const out={timedOut,readyMs:readyAt?Math.round(readyAt-t0):null};const IZ=wi
  if(rd&&sc){const inf=rd.info;let n=0,inst=0,cap=0,used=0,pts=0,meshes=0,nocull=0;const mats=new Set();sc.traverse(o=>{n++;if(o.isInstancedMesh){inst++;cap+=o.instanceMatrix.count;used+=o.count;}else if(o.isPoints)pts++;else if(o.isMesh)meshes++;if(o.material)mats.add(o.material);if(o.frustumCulled===false)nocull++;});
   frames=frames.slice(-120);const srt=[...frames].sort((a,b)=>a-b);
   Object.assign(out,{calls:inf.render.calls,triangles:inf.render.triangles,programs:inf.programs.length,textures:inf.memory.textures,objects:n,instanced:inst,instCap:cap,instUsed:used,points:pts,meshes,materials:mats.size,noCull:nocull,
-   frameP50:srt.length?+srt[srt.length>>1].toFixed(1):null,frameP95:srt.length?+srt[Math.floor(srt.length*0.95)].toFixed(1):null,canvas:[rd.domElement.width,rd.domElement.height]});}
+   frameP50:srt.length?+srt[srt.length>>1].toFixed(1):null,frameP95:srt.length?+srt[Math.floor(srt.length*0.95)].toFixed(1):null,canvas:[rd.domElement.width,rd.domElement.height]});
+  // which GPU drew it (the browser may only give a generic name)
+  try{const gl=rd.getContext(),x=gl.getExtension('WEBGL_debug_renderer_info');out.gpu=gl.getParameter(x?x.UNMASKED_RENDERER_WEBGL:gl.RENDERER);}catch(e){}}
  if(window._lotList){const L=window._lotList.map(l=>[r2(l.x),r2(l.z),r2(l.w),r2(l.dpt),r2(l.h),Math.round(l.ry*1000)/1000,l.kind,l.fixed?1:0]);out.lots=L.length;out.lotHash=await sha(JSON.stringify(L));}
  // the interface's layout: every visible fixed or absolute element's box, for checking that nothing tramples anything
  try{out.ui=[...document.querySelectorAll('body *')].filter(e=>{const cs=getComputedStyle(e);if(cs.position!=='fixed'&&cs.position!=='absolute'&&e.tagName!=='BUTTON'&&!['timebar','compass','hud','tslider'].includes(e.id))return false;if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity===0)return false;const r=e.getBoundingClientRect();return r.width>4&&r.height>4&&e.tagName!=='CANVAS';}).map(e=>{const r=e.getBoundingClientRect();return {id:e.id||'',cls:(e.className&&e.className.baseVal===undefined?e.className:'')+'',tag:e.tagName,text:(e.innerText||'').slice(0,40).replace(/\s+/g,' '),x:Math.round(r.left),y:Math.round(r.top),w:Math.round(r.width),h:Math.round(r.height)};});out.viewport=[innerWidth,innerHeight];}catch(e){out.uiError=String(e);}
@@ -118,6 +140,7 @@ def main():
     ap.add_argument("--query", default="", help="extra URL query, e.g. city=iziz-b")
     ap.add_argument("--hash", default="", help="URL hash, e.g. v=0,720,620,0,20,0&t=12")
     ap.add_argument("--shot", help="save a JPEG of the rendered canvas here (taken just before the report)")
+    ap.add_argument("--overlays", action="store_true", help="with --shot: paint the page's own elements (captions, panels, overlays) over the canvas, roughly")
     ap.add_argument("--size", default="1600,900", help="browser window size")
     ap.add_argument("--quiet", action="store_true")
     ap.add_argument("--settle", type=float, default=0, help="seconds more to let it run once it is ready (to catch something part-way through)")
@@ -125,6 +148,10 @@ def main():
     ap.add_argument("--no-build", action="store_true", help="do not regenerate src/*/build.js first (the test runner checks it instead)")
     ap.add_argument("--expect", help="golden JSON (tests/golden/iziz-<seed>.json): exit 2 if the layout fingerprint differs")
     ap.add_argument("--save-golden", help="write the layout fingerprint to this golden JSON")
+    ap.add_argument("--profile", help="a Firefox profile folder to keep between runs (created if missing), so a second run sees the "
+                    "first one's storage; give --port too, as storage belongs to the origin (with a snap Firefox, keep it under ~/snap/firefox/common)")
+    ap.add_argument("--uncapped", action="store_true", help="draw frames as fast as they come (layout.frame_rate=0), not at the "
+                    "display's 60 Hz, so frameP50/frameP95 are what a frame costs and not the vsync interval")
     a = ap.parse_args()
 
     src = open(a.page, encoding="utf-8").read()
@@ -141,13 +168,18 @@ def main():
     if not a.port:
         a.port = free_port()
     shot_port = free_port() if a.shot else 0
-    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SETTLE", str(int(a.settle * 1000))).replace("SHOTPORT", str(shot_port)) + src[cut:]
+    src = src[:cut] + PROBE.replace("WAIT", str(a.wait * 1000)).replace("INPUT", "true" if a.input else "false").replace("SETTLE", str(int(a.settle * 1000))).replace("SHOTPORT", str(shot_port)).replace("OVERLAYS", "true" if a.overlays else "false") + src[cut:]
 
     ff, snap = firefox_cmd()
     home = os.path.expanduser("~")
     work = tempfile.mkdtemp(prefix="iziz-probe-", dir=os.path.join(home, "snap/firefox/common") if snap and os.path.isdir(os.path.join(home, "snap/firefox/common")) else None)
-    profile = os.path.join(work, "profile")
-    os.mkdir(profile)
+    profile = os.path.abspath(a.profile) if a.profile else os.path.join(work, "profile")
+    os.makedirs(profile, exist_ok=True)
+    # a kept profile gets its prefs written afresh each run; a fresh one only when asked for something
+    prefs = {"layout.frame_rate": 0} if a.uncapped else {}
+    if prefs or a.profile:
+        open(os.path.join(profile, "user.js"), "w").write("".join(f'user_pref("{k}", {json.dumps(v)});\n' for k, v in prefs.items())
+                                                           + ('user_pref("layout.frame_rate", -1);\n' if not a.uncapped else ""))
     page = os.path.join(work, "page.html")
     open(page, "w", encoding="utf-8").write(src)
 
@@ -196,9 +228,9 @@ def main():
     url = f"http://127.0.0.1:{a.port}/?debug" + (f"&seed={a.seed}" if a.seed else "") + (f"&{a.query}" if a.query else "") + (f"#{a.hash}" if a.hash else "")
     fx = subprocess.Popen([ff, "--headless", "--no-remote", f"--window-size={a.size}", "--profile", profile, url], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     report = None
-    deadline = time.time() + a.wait + 60
+    deadline = time.monotonic() + a.wait + 60   # monotonic: an NTP step of the wall clock once ended a probe early
     try:
-        while time.time() < deadline:
+        while time.monotonic() < deadline:
             time.sleep(1)
             log.seek(0)
             for line in log:

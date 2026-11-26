@@ -1,0 +1,1834 @@
+{
+ "name": "Barcelona",
+ "origin": [
+  41.387,
+  2.1701
+ ],
+ "bounds": [
+  41.362,
+  2.14,
+  41.418,
+  2.202
+ ],
+ "osm": "data/cities/barcelona-osm.json",
+ "seaLevelWater": true,
+ "fetch": {
+  "bbox": [
+   41.362,
+   2.14,
+   41.418,
+   2.202
+  ],
+  "tiles": {
+   "buildings": [
+    5,
+    5
+   ],
+   "roads": [
+    2,
+    2
+   ],
+   "land": [
+    2,
+    2
+   ],
+   "landuse": [
+    2,
+    2
+   ],
+   "water": [
+    1,
+    1
+   ],
+   "rail": [
+    1,
+    1
+   ]
+  },
+  "extraRoads": "way[\"highway\"=\"service\"][\"name\"]({b});",
+  "detailZones": [
+   [
+    41.362,
+    2.14,
+    41.418,
+    2.202
+   ]
+  ],
+  "_": "the old city, the Eixample, Barceloneta and the port, Montjuïc, Gràcia and Park Güell: every building kept"
+ },
+ "terrain": {
+  "zoom": 14,
+  "step": 12,
+  "datum": 0,
+  "coast": {
+   "shore": 0.5,
+   "slope": 0.04
+  },
+  "filter": {
+   "open": 150,
+   "close": 36,
+   "blur": 48,
+   "_": "the tiles carry the blocks' roofs: filtered as Rome's"
+  },
+  "_": "the plain from the sea to Collserola, Montjuïc and the Turó de la Rovira: tools/fetch-terrain.py"
+ },
+ "note": "Barcelona: Ciutat Vella and the Eixample from the port and Barceloneta's beach to Gràcia and Park Güell, Montjuïc to the Sagrada Família and Torre Glòries. Gaudí's buildings and the other shapes are src/barcelona/landmarks.js.",
+ "defaultSeed": 1882,
+ "defaultHour": 16.2,
+ "defaultView": "The Sagrada Família over the Eixample",
+ "attribution": "Map data © OpenStreetMap contributors (ODbL) · Elevation: Mapzen Terrain Tiles (AWS Open Data)",
+ "flight": true,
+ "defaultHeights": {
+  "_": "Barcelona's untagged buildings are blocks of flats of five to seven floors (the Eixample's limit), not houses",
+  "yes": 20,
+  "apartments": 22,
+  "residential": 20,
+  "house": 11,
+  "commercial": 18,
+  "retail": 10,
+  "church": 20,
+  "public": 18,
+  "office": 24,
+  "hotel": 24,
+  "school": 14,
+  "university": 16,
+  "civic": 16,
+  "government": 18,
+  "chapel": 10,
+  "garage": 4,
+  "garages": 4,
+  "roof": 5,
+  "shed": 3,
+  "kiosk": 3,
+  "industrial": 10,
+  "warehouse": 9
+ },
+ "heightSpread": 0.18,
+ "facade": {
+  "bay": 4.2,
+  "floor": 3.7,
+  "shutters": true,
+  "_": "the Eixample's rhythm: tall balcony doors in bays of about four metres, floors of three and a half to four"
+ },
+ "sky": {
+  "day": {
+   "top": "#4f86c6",
+   "hor": "#e4e0d2"
+  },
+  "dusk": {
+   "top": "#33406e",
+   "hor": "#ef9a5c"
+  },
+  "night": {
+   "top": "#070b18",
+   "hor": "#232a3c"
+  }
+ },
+ "fog": 2.2e-05,
+ "terrainColours": {
+  "low": "#a4977c",
+  "high": "#6f7f4a",
+  "steep": "#8a7a60",
+  "far": "#2e6688"
+ },
+ "waterColour": "#2e6a88",
+ "litWindows": 0.7,
+ "streetTrees": 0.75,
+ "parkedCars": 0.45,
+ "traffic": 0,
+ "people": 1.0,
+ "lowRiseFar": 4200,
+ "camera": {
+  "elMin": -0.3,
+  "elMax": 1.5
+ },
+ "rooftops": false,
+ "palette": {
+  "_": "Barcelona's walls: sandstone, cream and ochre stucco, the Eixample's pale greys and pinks; brick in Poblenou and the Ribera",
+  "brick": [
+   "#d8c4a0",
+   "#cdb38a",
+   "#e2d3b6",
+   "#c9a27a",
+   "#d6b48e",
+   "#bfa688",
+   "#e3cdb0",
+   "#c8957a",
+   "#d9b8a0",
+   "#b9ab98"
+  ],
+  "stone": [
+   "#ddd3c0",
+   "#cfc6b4",
+   "#e6dccb",
+   "#c8bfae",
+   "#d8cdb8"
+  ]
+ },
+ "flatRoofColours": [
+  "#b98c6c",
+  "#a9826c",
+  "#9c928a",
+  "#c39c7c",
+  "#8f8a84",
+  "#b4a698"
+ ],
+ "groundMottle": 0.08,
+ "instanceCulling": true,
+ "courtyards": 40,
+ "noBuildingsInWater": true,
+ "laneMarkings": {
+  "classes": [
+   "primary",
+   "secondary",
+   "tertiary",
+   "trunk"
+  ],
+  "colour": "#e8e6de"
+ },
+ "roadColours": {
+  "trail": "#c8b892",
+  "residential": "#5a5b5e",
+  "unclassified": "#5a5b5e",
+  "living_street": "#b9b2a6",
+  "pedestrian": "#c9c1b2",
+  "alley": "#aaa294",
+  "primary": "#47484b",
+  "secondary": "#4a4b4e",
+  "tertiary": "#4e4f52"
+ },
+ "areaColours": {
+  "plaza": "#b9b0a0",
+  "park": "#5e7442",
+  "grass": "#687a42",
+  "garden": "#56723c",
+  "recreation_ground": "#687a42",
+  "residential": "#a69e90",
+  "commercial": "#a49c8e",
+  "beach": "#e2d2a8",
+  "_": "the city's squares are paved in pale stone and the panot tiles; the parks are dry Mediterranean green"
+ },
+ "weather": {
+  "climate": "mediterranean",
+  "cloudH": 1400
+ },
+ "dress": {
+  "cornice": {
+   "share": 0.85,
+   "minH": 10,
+   "maxH": 45,
+   "depth": 0.9,
+   "height": 1.0,
+   "pitched": false
+  },
+  "string": {
+   "at": 4.6
+  },
+  "far": 650
+ },
+ "streetlife": {
+  "seed": 1859,
+  "centre": [
+   41.389,
+   2.168,
+   3200
+  ],
+  "far": 550,
+  "shops": 0.7,
+  "flowerBoxes": 0.18,
+  "smoke": 0.0,
+  "_": "src/core/streetlife.js: shopfronts, cafés and terraces, the plinth and string course, iron balconies on the first floor"
+ },
+ "balconies": {
+  "far": 380,
+  "tile": 200,
+  "minH": 10,
+  "maxH": 42,
+  "blinds": 0.4,
+  "where": [
+   [
+    41.365,
+    2.14,
+    41.418,
+    2.2
+   ]
+  ],
+  "_": "src/barcelona/balconies.js: a wrought-iron balcony to every bay of every floor of a street front, near the camera"
+ },
+ "palms": {
+  "roads": [
+   "Passeig Marítim de la Barceloneta - Oriol Bohigas i Guardiola",
+   "Passeig Marítim de la Barceloneta",
+   "Passeig de Colom",
+   "Moll de la Fusta",
+   "Passeig de Joan de Borbó",
+   "Moll de Bosch i Alsina",
+   "Passeig de Lluís Companys"
+  ],
+  "spacing": 11,
+  "far": 2600,
+  "squares": [
+   "Plaça Reial"
+  ],
+  "_": "src/barcelona/palms.js: Canary date palms and Washingtonias along the seafront, the port and Lluís Companys, in the Plaça Reial; the rows of plane trees along La Rambla and the Ramblas, Passeig de Gràcia, Sant Joan, the Gran Via and the Diagonal",
+  "rows": [
+   {
+    "roads": [
+     "La Rambla",
+     "Rambla de Catalunya",
+     "Rambla del Raval",
+     "Rambla de Sant Josep"
+    ],
+    "classes": [
+     "pedestrian"
+    ],
+    "kind": "plane",
+    "spacing": 8,
+    "offset": -1.0
+   },
+   {
+    "roads": [
+     "Passeig de Gràcia",
+     "Passeig de Sant Joan",
+     "Gran Via de les Corts Catalanes",
+     "Avinguda Diagonal"
+    ],
+    "classes": [
+     "trail"
+    ],
+    "kind": "plane",
+    "spacing": 9,
+    "offset": "centre"
+   }
+  ]
+ },
+ "crowds": {
+  "seed": 1992,
+  "centre": [
+   41.387,
+   2.172,
+   2600,
+   9
+  ],
+  "pedestrianMul": 2.4,
+  "maxPedestrians": 15000,
+  "pedestrians": 14,
+  "far": 320,
+  "touristFar": 420,
+  "piece": 300,
+  "_sites": "[lat, lon, radius, how many]",
+  "sites": [
+   [
+    41.38121,
+    2.1733,
+    40,
+    260
+   ],
+   [
+    41.38685,
+    2.16874,
+    70,
+    240
+   ],
+   [
+    41.4044,
+    2.17557,
+    60,
+    220
+   ],
+   [
+    41.4024,
+    2.1735,
+    40,
+    200
+   ],
+   [
+    41.39165,
+    2.16505,
+    25,
+    160
+   ],
+   [
+    41.39525,
+    2.16215,
+    25,
+    140
+   ],
+   [
+    41.38435,
+    2.1761,
+    30,
+    160
+   ],
+   [
+    41.38343,
+    2.18176,
+    22,
+    100
+   ],
+   [
+    41.3796,
+    2.1925,
+    120,
+    320
+   ],
+   [
+    41.41388,
+    2.15263,
+    40,
+    200
+   ]
+  ]
+ },
+ "vehicles": {
+  "seed": 2753,
+  "cars": 26,
+  "mopeds": 22,
+  "buses": 1.8,
+  "trams": 1.0,
+  "trains": 0.3,
+  "far": 1300,
+  "carFar": 1000,
+  "mopedFar": 600,
+  "railFar": 2000,
+  "maxCars": 2600,
+  "maxMopeds": 2000,
+  "maxBuses": 140,
+  "maxTrams": 30
+ },
+ "treeSpecies": [
+  {
+   "name": "London plane",
+   "shape": "round",
+   "bark": "#b4ab92",
+   "height": [
+    14,
+    24
+   ],
+   "colours": [
+    "#5f833e",
+    "#668a40",
+    "#577a3a"
+   ],
+   "weight": {
+    "street": 48,
+    "park": 14,
+    "wood": 3
+   }
+  },
+  {
+   "name": "nettle tree (lledoner)",
+   "shape": "oval",
+   "bark": "#8a8476",
+   "height": [
+    10,
+    16
+   ],
+   "colours": [
+    "#4e7436",
+    "#56793a"
+   ],
+   "weight": {
+    "street": 16,
+    "park": 10,
+    "wood": 4
+   }
+  },
+  {
+   "name": "pagoda tree and tipuana",
+   "shape": "round",
+   "bark": "#6a5e4e",
+   "height": [
+    9,
+    15
+   ],
+   "colours": [
+    "#6a8c44",
+    "#72923f"
+   ],
+   "weight": {
+    "street": 14,
+    "park": 8,
+    "wood": 0
+   }
+  },
+  {
+   "name": "jacaranda",
+   "shape": "small",
+   "bark": "#5a4a3c",
+   "height": [
+    7,
+    11
+   ],
+   "colours": [
+    "#7c74b8",
+    "#6f6aac",
+    "#5e7a44"
+   ],
+   "weight": {
+    "street": 5,
+    "park": 5,
+    "wood": 0
+   }
+  },
+  {
+   "name": "stone pine",
+   "shape": "umbrella",
+   "bark": "#6a4a36",
+   "height": [
+    12,
+    20
+   ],
+   "colours": [
+    "#3a5a32",
+    "#42633a",
+    "#35532e"
+   ],
+   "weight": {
+    "street": 3,
+    "park": 26,
+    "wood": 38
+   }
+  },
+  {
+   "name": "holm oak",
+   "shape": "oak",
+   "bark": "#4a4238",
+   "height": [
+    8,
+    14
+   ],
+   "colours": [
+    "#34502c",
+    "#3a562e",
+    "#2f4a28"
+   ],
+   "weight": {
+    "street": 3,
+    "park": 18,
+    "wood": 40
+   }
+  },
+  {
+   "name": "cypress",
+   "shape": "column",
+   "bark": "#4a3a2c",
+   "height": [
+    10,
+    18
+   ],
+   "colours": [
+    "#26402a",
+    "#2c4a2e"
+   ],
+   "weight": {
+    "street": 0,
+    "park": 8,
+    "wood": 6
+   }
+  },
+  {
+   "name": "oleander and pittosporum",
+   "shape": "small",
+   "bark": "#5a4a3a",
+   "height": [
+    2.5,
+    4.5
+   ],
+   "colours": [
+    "#4a6e36",
+    "#527438"
+   ],
+   "weight": {
+    "street": 4,
+    "park": 12,
+    "wood": 8
+   }
+  }
+ ],
+ "districts": {
+  "_": "[name, hex colour, base height, tallest, box as [lat south, lon west, lat north, lon east]]",
+  "ciutatvella": [
+   "Ciutat Vella",
+   "#d6b48a",
+   15,
+   26,
+   [
+    41.375,
+    2.165,
+    41.39,
+    2.185
+   ]
+  ],
+  "barceloneta": [
+   "Barceloneta",
+   "#d8a77c",
+   13,
+   22,
+   [
+    41.372,
+    2.185,
+    41.384,
+    2.196
+   ]
+  ],
+  "eixample": [
+   "Eixample",
+   "#d8c4a0",
+   20,
+   30,
+   [
+    41.38,
+    2.142,
+    41.405,
+    2.19
+   ]
+  ],
+  "gracia": [
+   "Gràcia",
+   "#cfae8a",
+   14,
+   22,
+   [
+    41.397,
+    2.148,
+    41.41,
+    2.168
+   ]
+  ],
+  "poblesec": [
+   "Poble-sec and Sant Antoni",
+   "#ceb08e",
+   17,
+   26,
+   [
+    41.368,
+    2.14,
+    41.38,
+    2.172
+   ]
+  ],
+  "outer": [
+   "Barcelona",
+   "#d2b896",
+   17,
+   26,
+   [
+    41.362,
+    2.14,
+    41.418,
+    2.202
+   ]
+  ]
+ },
+ "navmap": {
+  "labels": [
+   "The Sagrada Família",
+   "Casa Batlló",
+   "Casa Milà (La Pedrera)",
+   "Park Güell",
+   "Palau de la Música Catalana",
+   "Torre Glòries",
+   "The Arc de Triomf",
+   "The Columbus Monument",
+   "Hotel W",
+   "The Cathedral",
+   "Santa Maria del Mar",
+   "The Boqueria",
+   "The Palau Nacional",
+   "Montjuïc Castle",
+   "The Port Cable Car",
+   "The Venetian Towers",
+   "El Peix"
+  ]
+ },
+ "landmarks": [
+  {
+   "name": "The Sagrada Família",
+   "aka": [
+    "Basílica de la Sagrada Família",
+    "Temple Expiatori de la Sagrada Família"
+   ],
+   "at": [
+    41.403621,
+    2.17403
+   ],
+   "model": "sagrada",
+   "face": 134.7,
+   "info": "Gaudí's basilica, begun in 1882 and his work from 1883 until he died in 1926; still building. In 2026, the centenary of his death, the Tower of Jesus Christ was finished at 172.5 m with its cross of glass and white ceramic: the tallest church tower in the world, a metre short of Montjuïc, as Gaudí wanted. Round it the four Evangelists' towers (135 m) with their bull, lion, eagle and angel, and the Virgin Mary's (138 m) with its star; eight of the twelve Apostles' spires stand over the Nativity and Passion fronts. The Glory front, the main one, is under the cranes.",
+   "clearArea": {
+    "poly": [
+     [
+      41.402845,
+      2.174256
+     ],
+     [
+      41.403459,
+      2.175064
+     ],
+     [
+      41.404219,
+      2.174042
+     ],
+     [
+      41.403605,
+      2.173234
+     ]
+    ],
+    "minHeight": 6
+   },
+   "clear": [
+    95,
+    40
+   ]
+  },
+  {
+   "name": "Casa Batlló",
+   "at": [
+    41.39166,
+    2.164906
+   ],
+   "model": "batllo",
+   "face": 44.7,
+   "info": "Gaudí's remodelling of 1904-06 of a house on Passeig de Gràcia: the façade a ripple of trencadís and ceramic discs, the balconies masks of bone, the noble floor framed in sandstone bones, the roof a dragon's scaly back pierced by St George's cross. The \"house of bones\".",
+   "depth": 50,
+   "clearArea": {
+    "poly": [
+     [
+      41.391631,
+      2.164977
+     ],
+     [
+      41.391709,
+      2.164877
+     ],
+     [
+      41.391357,
+      2.164397
+     ],
+     [
+      41.391279,
+      2.164497
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Casa Amatller",
+   "at": [
+    41.391551,
+    2.165047
+   ],
+   "model": "amatller",
+   "face": 44.7,
+   "info": "Josep Puig i Cadafalch's house for the chocolatier Antoni Amatller, 1898-1900: a stepped Flemish gable of pink sgraffito and glazed tile. With the Batlló and the Lleó Morera it makes the Block of Discord, three architects arguing in one street.",
+   "depth": 40,
+   "clearArea": {
+    "poly": [
+     [
+      41.391532,
+      2.165137
+     ],
+     [
+      41.391616,
+      2.165029
+     ],
+     [
+      41.391364,
+      2.164687
+     ],
+     [
+      41.39128,
+      2.164795
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Casa Milà (La Pedrera)",
+   "aka": [
+    "La Pedrera",
+    "Casa Milà"
+   ],
+   "at": [
+    41.39525,
+    2.16196
+   ],
+   "model": "pedrera",
+   "height": 27,
+   "info": "Gaudí's last house, 1906-12, on the corner of Passeig de Gràcia and Provença: a cliff of limestone in waves - \"the quarry\", the city called it - with Jujol's wrought-iron balconies like seaweed, round two courtyards, and on the roof the stairheads and chimneys standing like helmeted warriors.",
+   "clearArea": {
+    "poly": [
+     [
+      41.395268,
+      2.1623
+     ],
+     [
+      41.39556,
+      2.162112
+     ],
+     [
+      41.395332,
+      2.161488
+     ],
+     [
+      41.39504,
+      2.161676
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Park Güell",
+   "at": [
+    41.414003,
+    2.152546
+   ],
+   "gate": [
+    41.41349,
+    2.15298
+   ],
+   "model": "parkguell",
+   "info": "Gaudí's garden city of 1900-14 for Eusebi Güell on the Muntanya Pelada: only two houses were sold, and it became a park in 1926. In past the gingerbread lodges, up the double stair and its mosaic salamander, under the Hypostyle Room's eighty-six columns, and on top the Nature Square edged by the serpentine bench in broken tile, with the whole city and the sea below.",
+   "square": [
+    [
+     41.41393,
+     2.152241
+    ],
+    [
+     41.413908,
+     2.152243
+    ],
+    [
+     41.413738,
+     2.152453
+    ],
+    [
+     41.413765,
+     2.152487
+    ],
+    [
+     41.413738,
+     2.152519
+    ],
+    [
+     41.413762,
+     2.15256
+    ],
+    [
+     41.413735,
+     2.152588
+    ],
+    [
+     41.413763,
+     2.152622
+    ],
+    [
+     41.413734,
+     2.152651
+    ],
+    [
+     41.41376,
+     2.15269
+    ],
+    [
+     41.413732,
+     2.15273
+    ],
+    [
+     41.413754,
+     2.152744
+    ],
+    [
+     41.413791,
+     2.152812
+    ],
+    [
+     41.413825,
+     2.152777
+    ],
+    [
+     41.413846,
+     2.152813
+    ],
+    [
+     41.413866,
+     2.152783
+    ],
+    [
+     41.413882,
+     2.152782
+    ],
+    [
+     41.413892,
+     2.152815
+    ],
+    [
+     41.413926,
+     2.152782
+    ],
+    [
+     41.413941,
+     2.152817
+    ],
+    [
+     41.413955,
+     2.152815
+    ],
+    [
+     41.41397,
+     2.152785
+    ],
+    [
+     41.413988,
+     2.152818
+    ],
+    [
+     41.414005,
+     2.152819
+    ],
+    [
+     41.414014,
+     2.152791
+    ],
+    [
+     41.414034,
+     2.152786
+    ],
+    [
+     41.414039,
+     2.15276
+    ],
+    [
+     41.414062,
+     2.152751
+    ],
+    [
+     41.414067,
+     2.152727
+    ],
+    [
+     41.414086,
+     2.152721
+    ],
+    [
+     41.414092,
+     2.152695
+    ],
+    [
+     41.414116,
+     2.152688
+    ],
+    [
+     41.414119,
+     2.152662
+    ],
+    [
+     41.414141,
+     2.152655
+    ],
+    [
+     41.414169,
+     2.152613
+    ],
+    [
+     41.414184,
+     2.152552
+    ],
+    [
+     41.414261,
+     2.152483
+    ],
+    [
+     41.414331,
+     2.152395
+    ],
+    [
+     41.414355,
+     2.152358
+    ],
+    [
+     41.414378,
+     2.152281
+    ],
+    [
+     41.414378,
+     2.152179
+    ],
+    [
+     41.414349,
+     2.152083
+    ],
+    [
+     41.414301,
+     2.152018
+    ],
+    [
+     41.414218,
+     2.151983
+    ],
+    [
+     41.414179,
+     2.15198
+    ],
+    [
+     41.414118,
+     2.15201
+    ],
+    [
+     41.41403,
+     2.152099
+    ],
+    [
+     41.413969,
+     2.152124
+    ],
+    [
+     41.41395,
+     2.152223
+    ]
+   ],
+   "bench": [
+    [
+     41.41393,
+     2.152241
+    ],
+    [
+     41.413908,
+     2.152243
+    ],
+    [
+     41.413896,
+     2.15227
+    ],
+    [
+     41.413876,
+     2.15228
+    ],
+    [
+     41.41387,
+     2.1523
+    ],
+    [
+     41.41385,
+     2.15231
+    ],
+    [
+     41.413843,
+     2.152332
+    ],
+    [
+     41.413823,
+     2.152342
+    ],
+    [
+     41.413818,
+     2.152363
+    ],
+    [
+     41.413798,
+     2.152372
+    ],
+    [
+     41.41379,
+     2.152396
+    ],
+    [
+     41.413768,
+     2.152407
+    ],
+    [
+     41.413763,
+     2.152431
+    ],
+    [
+     41.413739,
+     2.152445
+    ],
+    [
+     41.413739,
+     2.152461
+    ],
+    [
+     41.41376,
+     2.152473
+    ],
+    [
+     41.413765,
+     2.152487
+    ],
+    [
+     41.413762,
+     2.152498
+    ],
+    [
+     41.413743,
+     2.152507
+    ],
+    [
+     41.413738,
+     2.152519
+    ],
+    [
+     41.413743,
+     2.152534
+    ],
+    [
+     41.41376,
+     2.152542
+    ],
+    [
+     41.413762,
+     2.15256
+    ],
+    [
+     41.413738,
+     2.152575
+    ],
+    [
+     41.413735,
+     2.152588
+    ],
+    [
+     41.41374,
+     2.152602
+    ],
+    [
+     41.413759,
+     2.15261
+    ],
+    [
+     41.413763,
+     2.152622
+    ],
+    [
+     41.413759,
+     2.152635
+    ],
+    [
+     41.413734,
+     2.152651
+    ],
+    [
+     41.413737,
+     2.152666
+    ],
+    [
+     41.413757,
+     2.152678
+    ],
+    [
+     41.41376,
+     2.15269
+    ],
+    [
+     41.413757,
+     2.152701
+    ],
+    [
+     41.413733,
+     2.152717
+    ],
+    [
+     41.413734,
+     2.152735
+    ],
+    [
+     41.413754,
+     2.152744
+    ],
+    [
+     41.41376,
+     2.152768
+    ],
+    [
+     41.413778,
+     2.152781
+    ],
+    [
+     41.413784,
+     2.152805
+    ],
+    [
+     41.413791,
+     2.152812
+    ],
+    [
+     41.413803,
+     2.152811
+    ],
+    [
+     41.413814,
+     2.15278
+    ],
+    [
+     41.413825,
+     2.152777
+    ],
+    [
+     41.413846,
+     2.152813
+    ],
+    [
+     41.413858,
+     2.152807
+    ],
+    [
+     41.413866,
+     2.152783
+    ],
+    [
+     41.413876,
+     2.152779
+    ],
+    [
+     41.413882,
+     2.152782
+    ],
+    [
+     41.413888,
+     2.152811
+    ],
+    [
+     41.413896,
+     2.152817
+    ],
+    [
+     41.413907,
+     2.152811
+    ],
+    [
+     41.413915,
+     2.152785
+    ],
+    [
+     41.413926,
+     2.152782
+    ],
+    [
+     41.413933,
+     2.152789
+    ],
+    [
+     41.413941,
+     2.152817
+    ],
+    [
+     41.413955,
+     2.152815
+    ],
+    [
+     41.413963,
+     2.152788
+    ],
+    [
+     41.41397,
+     2.152785
+    ],
+    [
+     41.413983,
+     2.152793
+    ],
+    [
+     41.413988,
+     2.152818
+    ],
+    [
+     41.414001,
+     2.152821
+    ],
+    [
+     41.414014,
+     2.152791
+    ],
+    [
+     41.414037,
+     2.152783
+    ],
+    [
+     41.414039,
+     2.15276
+    ],
+    [
+     41.414062,
+     2.152751
+    ],
+    [
+     41.414067,
+     2.152727
+    ],
+    [
+     41.41409,
+     2.152717
+    ],
+    [
+     41.414092,
+     2.152695
+    ],
+    [
+     41.414116,
+     2.152688
+    ],
+    [
+     41.414119,
+     2.152662
+    ],
+    [
+     41.414141,
+     2.152655
+    ],
+    [
+     41.414154,
+     2.152622
+    ],
+    [
+     41.414174,
+     2.152604
+    ],
+    [
+     41.414175,
+     2.152592
+    ]
+   ],
+   "lodges": [
+    [
+     41.41356,
+     2.153195,
+     "mushroom"
+    ],
+    [
+     41.413455,
+     2.152772,
+     "tower"
+    ]
+   ],
+   "clearArea": {
+    "poly": [
+     [
+      41.413117,
+      2.152944
+     ],
+     [
+      41.413441,
+      2.153518
+     ],
+     [
+      41.414376,
+      2.152582
+     ],
+     [
+      41.414052,
+      2.152008
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Palau de la Música Catalana",
+   "at": [
+    41.387529,
+    2.175415
+   ],
+   "model": "palaumusica",
+   "face": 135,
+   "info": "Lluís Domènech i Montaner's concert hall for the Orfeó Català, 1905-08: brick, mosaic and stained glass, the loggia's columns clad in tile flowers, Miquel Blay's carved group of Catalan song on the corner, and inside an inverted dome of coloured glass over the hall. A World Heritage Site.",
+   "width": 30,
+   "depth": 30,
+   "clearArea": {
+    "poly": [
+     [
+      41.38741,
+      2.175394
+     ],
+     [
+      41.387616,
+      2.175588
+     ],
+     [
+      41.387826,
+      2.175198
+     ],
+     [
+      41.38762,
+      2.175004
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Torre Glòries",
+   "aka": [
+    "Torre Agbar"
+   ],
+   "at": [
+    41.4035,
+    2.189525
+   ],
+   "model": "glories",
+   "clear": [
+    26,
+    0
+   ],
+   "info": "Jean Nouvel's tower, 2005, built for the water company Agbar: 144 m and 38 floors in the shape of a geyser, its concrete shell clad in panels of 25 colours, reds at the foot to blues at the top, under a skin of glass louvres; 4,500 windows and as many LEDs, which light it at night."
+  },
+  {
+   "name": "The Arc de Triomf",
+   "at": [
+    41.391047,
+    2.180648
+   ],
+   "model": "arctriomf",
+   "face": 134.2,
+   "clear": [
+    16,
+    0
+   ],
+   "info": "Josep Vilaseca's gateway to the Universal Exhibition of 1888, in red brick in the Neo-Mudéjar manner, 30 m high. The frieze shows Barcelona welcoming the nations; the promenade of Lluís Companys runs through it to the Parc de la Ciutadella."
+  },
+  {
+   "name": "The Columbus Monument",
+   "aka": [
+    "Mirador de Colom"
+   ],
+   "at": [
+    41.375802,
+    2.177771
+   ],
+   "model": "colom",
+   "face": 125,
+   "clear": [
+    12,
+    0
+   ],
+   "info": "Gaietà Buïgas's column for the Exhibition of 1888, at the foot of La Rambla where Columbus landed on his return from the first voyage: 60 m, eight bronze lions at its foot, and Columbus on the globe pointing out to sea - towards Mallorca, not America. A lift goes up inside to the gallery under his feet."
+  },
+  {
+   "name": "Hotel W",
+   "aka": [
+    "W Barcelona",
+    "La Vela"
+   ],
+   "at": [
+    41.368708,
+    2.190283
+   ],
+   "model": "hotelw",
+   "face": 180,
+   "clear": [
+    60,
+    0
+   ],
+   "info": "Ricardo Bofill's hotel at the end of the new breakwater, 2009: 99 m of mirror glass in the shape of a sail, the city's newest silhouette from the sea."
+  },
+  {
+   "name": "The Cathedral",
+   "aka": [
+    "Catedral de la Santa Creu i Santa Eulàlia",
+    "La Seu"
+   ],
+   "at": [
+    41.384153,
+    2.176143
+   ],
+   "model": "cathedral",
+   "face": 316,
+   "info": "The Cathedral of the Holy Cross and St Eulalia, Catalan Gothic of 1298-1448 over the Roman city's heart. The front onto the Pla de la Seu, with its spire of 70 m, was finished only in 1913, to a design of 1408. Thirteen white geese live in the cloister, one for each year of St Eulalia's life.",
+   "clearArea": {
+    "poly": [
+     [
+      41.383876,
+      2.177399
+     ],
+     [
+      41.38451,
+      2.176583
+     ],
+     [
+      41.383834,
+      2.175653
+     ],
+     [
+      41.3832,
+      2.176469
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Santa Maria del Mar",
+   "at": [
+    41.383497,
+    2.181788
+   ],
+   "model": "smdelmar",
+   "face": 207.3,
+   "info": "The church of the Ribera's sailors and porters, built in only fifty-four years, 1329-83, and so all of a piece: Catalan Gothic at its purest, a single great hall on slender octagonal piers 13 m apart, the porters who carried its stone from Montjuïc carved on its doors.",
+   "clearArea": {
+    "poly": [
+     [
+      41.384079,
+      2.18243
+     ],
+     [
+      41.384227,
+      2.182046
+     ],
+     [
+      41.383571,
+      2.181596
+     ],
+     [
+      41.383423,
+      2.18198
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "The Boqueria",
+   "aka": [
+    "Mercat de Sant Josep de la Boqueria"
+   ],
+   "at": [
+    41.381994,
+    2.172535
+   ],
+   "model": "boqueria",
+   "face": 61,
+   "info": "Barcelona's great market, on La Rambla since the 1840s on the site of a convent; the iron hall is of 1914, and so is the arch over its entrance with the coloured glass of its name."
+  },
+  {
+   "name": "The Palau Nacional",
+   "aka": [
+    "Museu Nacional d'Art de Catalunya",
+    "MNAC"
+   ],
+   "at": [
+    41.36869,
+    2.153338
+   ],
+   "model": "palaunacional",
+   "face": 333,
+   "info": "Built for the International Exhibition of 1929 on the brow of Montjuïc, and since 1934 the Museu Nacional d'Art de Catalunya, with the world's great collection of Romanesque wall paintings, taken from the Pyrenean churches. Below it the Magic Fountain and the long cascade down to the Plaça d'Espanya.",
+   "clearArea": {
+    "poly": [
+     [
+      41.368065,
+      2.15487
+     ],
+     [
+      41.369251,
+      2.154066
+     ],
+     [
+      41.368577,
+      2.152306
+     ],
+     [
+      41.367391,
+      2.15311
+     ]
+    ],
+    "minHeight": 0
+   }
+  },
+  {
+   "name": "Montjuïc Castle",
+   "aka": [
+    "Castell de Montjuïc"
+   ],
+   "at": [
+    41.3634,
+    2.16615
+   ],
+   "model": "castle",
+   "face": -30,
+   "clear": [
+    90,
+    0
+   ],
+   "info": "The fortress on the summit of Montjuïc, 173 m: a star of bastions of the 1750s round the old keep, its guns turned as often on the city as on the sea. Lluís Companys, President of Catalonia, was shot in its moat in 1940. Since 2007 it belongs to the city."
+  },
+  {
+   "name": "The Port Cable Car",
+   "aka": [
+    "Telefèric del Port"
+   ],
+   "at": [
+    41.37316,
+    2.18779
+   ],
+   "model": "cablecar",
+   "towers": [
+    [
+     41.37316,
+     2.18779,
+     78.4
+    ],
+    [
+     41.37208,
+     2.18012,
+     107
+    ],
+    [
+     41.37101,
+     2.17253,
+     12
+    ]
+   ],
+   "clear": [
+    8,
+    0
+   ],
+   "info": "Carles Buïgas's aerial tramway of 1931, across the harbour from Barceloneta to Montjuïc: 1,300 m of cable between the Torre de Sant Sebastià (78 m), the Torre de Jaume I on the Moll de Barcelona (107 m) - the second-tallest cable-car tower in the world when it was built - and Miramar. Two red cabins shuttle on it, nineteen people in each."
+  },
+  {
+   "name": "The Venetian Towers",
+   "aka": [
+    "Torres Venecianes"
+   ],
+   "at": [
+    41.374032,
+    2.149814
+   ],
+   "model": "venetian",
+   "face": 333.6,
+   "gap": 35,
+   "clear": [
+    25,
+    0
+   ],
+   "info": "Ramon Reventós's pair of brick towers after the campanile of St Mark's in Venice, 47 m, the gateway from the Plaça d'Espanya to the Exhibition of 1929."
+  },
+  {
+   "name": "El Peix",
+   "aka": [
+    "Frank Gehry's fish"
+   ],
+   "at": [
+    41.386088,
+    2.196931
+   ],
+   "model": "peix",
+   "face": 135,
+   "info": "Frank Gehry's golden fish over the Port Olímpic, built for the Games of 1992: 56 m long, a lattice of bronze-coloured steel strips that catch the sun off the sea.",
+   "clear": [
+    30,
+    0
+   ]
+  }
+ ],
+ "views": {
+  "The Sagrada Família over the Eixample": [
+   [
+    41.3975,
+    2.1665,
+    281.8
+   ],
+   [
+    41.4036,
+    2.1743,
+    121.6
+   ]
+  ],
+  "The Sagrada Família from the Plaça de Gaudí": [
+   [
+    41.40458,
+    2.17578,
+    50.5
+   ],
+   [
+    41.4036,
+    2.1743,
+    121.6
+   ]
+  ],
+  "The Passion front from the Plaça de la Sagrada Família": [
+   [
+    41.40245,
+    2.17195,
+    79.0
+   ],
+   [
+    41.4034,
+    2.1736,
+    102.4
+   ]
+  ],
+  "Over the Eixample to the sea": [
+   [
+    41.4065,
+    2.155,
+    464.5
+   ],
+   [
+    41.388,
+    2.176,
+    25.0
+   ]
+  ],
+  "Casa Batlló on Passeig de Gràcia": [
+   [
+    41.391801,
+    2.165332,
+    74.2
+   ],
+   [
+    41.39166,
+    2.16491,
+    61.0
+   ]
+  ],
+  "La Pedrera on its corner": [
+   [
+    41.394659,
+    2.161503,
+    83.3
+   ],
+   [
+    41.3953,
+    2.161894,
+    71.8
+   ]
+  ],
+  "La Rambla from the Plaça de Catalunya": [
+   [
+    41.3862,
+    2.17,
+    72.3
+   ],
+   [
+    41.379,
+    2.175,
+    21.4
+   ]
+  ],
+  "The Gothic Quarter and the Cathedral": [
+   [
+    41.3858,
+    2.1743,
+    86.1
+   ],
+   [
+    41.3839,
+    2.1764,
+    47.1
+   ]
+  ],
+  "Santa Maria del Mar": [
+   [
+    41.38285,
+    2.18105,
+    79.2
+   ],
+   [
+    41.38375,
+    2.18195,
+    43.5
+   ]
+  ],
+  "Park Güell's terrace over the city": [
+   [
+    41.41413,
+    2.15234,
+    170.1
+   ],
+   [
+    41.4,
+    2.17,
+    88.5
+   ]
+  ],
+  "Park Güell from the gate": [
+   [
+    41.41334,
+    2.15312,
+    156.4
+   ],
+   [
+    41.41393,
+    2.15254,
+    161.6
+   ]
+  ],
+  "The port, Columbus and the cable car": [
+   [
+    41.3738,
+    2.1805,
+    55.5
+   ],
+   [
+    41.3758,
+    2.1777,
+    38.5
+   ]
+  ],
+  "Barceloneta beach and the W": [
+   [
+    41.379,
+    2.193,
+    21.9
+   ],
+   [
+    41.3687,
+    2.1903,
+    45.0
+   ]
+  ],
+  "Torre Glòries and the Diagonal": [
+   [
+    41.3985,
+    2.1795,
+    142.8
+   ],
+   [
+    41.4033,
+    2.1897,
+    76.6
+   ]
+  ],
+  "The Arc de Triomf": [
+   [
+    41.3926,
+    2.1789,
+    55.6
+   ],
+   [
+    41.39105,
+    2.18065,
+    35.8
+   ]
+  ],
+  "Montjuïc: the Palau Nacional": [
+   [
+    41.3722,
+    2.1512,
+    67.1
+   ],
+   [
+    41.3687,
+    2.1533,
+    120.5
+   ]
+  ],
+  "The city from Montjuïc": [
+   [
+    41.3655,
+    2.165,
+    200.4
+   ],
+   [
+    41.396,
+    2.17,
+    53.7
+   ]
+  ]
+ }
+}

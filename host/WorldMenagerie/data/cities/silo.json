@@ -1,0 +1,559 @@
+{
+ "name": "Silo 18",
+ "note": "Fan work after Hugh Howey's Wool (the Silo series): the premise of a silo of 144 levels round one spiral stair, buried under a dead plain, one of fifty, drawn as this project's own geometry. Nothing is quoted from the books or the television series, and none of their designs or characters are used; the residents are anonymous figures. Built by src/silo/ on the starship page (src/starship/page.js). y is up; the surface is at 0, level 1's floor at -12, level 144's at -612.6, one level every 4.2 m.",
+ "attribution": "Silo 18 is fan work after Hugh Howey's Wool. Not affiliated with the author, the publisher or the television series; every shape and every line of text here is this project's own. No assets used.",
+ "view0": {
+  "az": 0.6,
+  "el": 0.1,
+  "d": 830,
+  "tx": 0,
+  "ty": -300,
+  "tz": 0,
+  "mode": "cut"
+ },
+ "views": {
+  "Silo 18 whole": {
+   "az": 0.6,
+   "el": 0.1,
+   "d": 830,
+   "tx": 0,
+   "ty": -300,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "Silo 18 in section": {
+   "az": 0.6,
+   "el": 0.24,
+   "d": 840,
+   "tx": 0,
+   "ty": -290,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The top third in section": {
+   "az": 0.6,
+   "el": 0.08,
+   "d": 265,
+   "tx": 0,
+   "ty": -106,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The mids in section": {
+   "az": 0.6,
+   "el": 0.08,
+   "d": 265,
+   "tx": 0,
+   "ty": -314,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The deep in section": {
+   "az": 0.6,
+   "el": 0.08,
+   "d": 330,
+   "tx": 0,
+   "ty": -560,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The mines in section": {
+   "az": 0.6,
+   "el": 0.05,
+   "d": 190,
+   "tx": 0,
+   "ty": -646.6,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The shaft from the top": {
+   "az": 0,
+   "el": 1.555,
+   "d": 300,
+   "tx": -4.74,
+   "ty": -309,
+   "tz": 0,
+   "mode": "inside"
+  },
+  "The stair, mid-descent": {
+   "az": -0.72,
+   "el": 0.22,
+   "d": 5.9,
+   "tx": 0.93,
+   "ty": -259.6,
+   "tz": 5.42,
+   "mode": "inside"
+  },
+  "The cafeteria and the screen": {
+   "az": -1.279,
+   "el": 0.037,
+   "d": 24.35,
+   "tx": 0.8,
+   "ty": -10.0,
+   "tz": 45.99,
+   "mode": "inside"
+  },
+  "The serving counter and kitchen": {
+   "az": 2.48,
+   "el": 0.16,
+   "d": 14,
+   "tx": 17.4,
+   "ty": -10.6,
+   "tz": 26.8,
+   "mode": "inside"
+  },
+  "The airlock": {
+   "az": 0.0,
+   "el": 0.09,
+   "d": 26,
+   "tx": -58,
+   "ty": -12.3,
+   "tz": 0,
+   "mode": "inside"
+  },
+  "Up top": {
+   "az": 0.7,
+   "el": 0.12,
+   "d": 170,
+   "tx": 0,
+   "ty": -60,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "A home, level 12": {
+   "room": {
+    "n": 12,
+    "i": 5,
+    "rooms": 36,
+    "frac": 0.55,
+    "r": 29,
+    "cr": 22.6,
+    "h": 1.5,
+    "el": 0.08
+   },
+   "mode": "inside"
+  },
+  "The commons, level 20": {
+   "room": {
+    "n": 20,
+    "i": 2,
+    "rooms": 12,
+    "frac": 0.4,
+    "r": 40,
+    "cr": 22.6,
+    "h": 1.3,
+    "el": 0.08,
+    "da": -0.012
+   },
+   "mode": "inside"
+  },
+  "The bazaar, market day": {
+   "room": {
+    "n": 72,
+    "i": 3,
+    "rooms": 12,
+    "frac": 0.5,
+    "r": 16.7,
+    "cr": 16.7,
+    "h": 1.4,
+    "el": 0.09,
+    "da": -0.6
+   },
+   "mode": "inside"
+  },
+  "IT, level 34": {
+   "az": 0.5,
+   "el": 0.22,
+   "d": 95,
+   "tx": 0,
+   "ty": -149,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "The upper farms": {
+   "az": 0.8,
+   "el": 0.28,
+   "d": 110,
+   "tx": 0,
+   "ty": -224,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "Channel greens, level 50": {
+   "room": {
+    "n": 50,
+    "i": 9,
+    "rooms": 36,
+    "frac": 0.5,
+    "r": 30,
+    "cr": 14.5,
+    "h": 1.7,
+    "el": 0.02
+   },
+   "mode": "inside"
+  },
+  "Rafts on ponds, level 52": {
+   "room": {
+    "n": 52,
+    "i": 9,
+    "rooms": 36,
+    "frac": 0.5,
+    "r": 30,
+    "cr": 13.5,
+    "h": 0.5,
+    "el": 0.14
+   },
+   "mode": "inside"
+  },
+  "Racks of greens, level 51": {
+   "room": {
+    "n": 51,
+    "i": 9,
+    "rooms": 36,
+    "frac": 0.53,
+    "r": 30,
+    "cr": 14.2,
+    "h": 1.6,
+    "el": 0.0
+   },
+   "mode": "inside"
+  },
+  "Grain under sodium lamps, level 53": {
+   "room": {
+    "n": 53,
+    "i": 9,
+    "rooms": 36,
+    "frac": 0.5,
+    "r": 30,
+    "cr": 13.0,
+    "h": 1.2,
+    "el": 0.08
+   },
+   "mode": "inside"
+  },
+  "The animals, level 54": {
+   "room": {
+    "n": 54,
+    "i": 4,
+    "rooms": 36,
+    "frac": 0.7,
+    "r": 32,
+    "cr": 14,
+    "h": 0.4,
+    "el": 0.13
+   },
+   "mode": "inside"
+  },
+  "The mushroom rooms, level 56": {
+   "room": {
+    "n": 56,
+    "i": 2,
+    "rooms": 36,
+    "frac": 0.4,
+    "r": 32,
+    "cr": 18.2,
+    "h": 1.6,
+    "el": 0.0
+   },
+   "mode": "inside"
+  },
+  "Fish tanks and compost, level 56": {
+   "room": {
+    "n": 56,
+    "i": 13,
+    "rooms": 36,
+    "frac": 0.3,
+    "r": 28,
+    "cr": 14,
+    "h": 0.9,
+    "el": 0.12
+   },
+   "mode": "inside"
+  },
+  "The bazaar": {
+   "az": 1.1,
+   "el": 0.22,
+   "d": 90,
+   "tx": 0,
+   "ty": -308,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "Supply": {
+   "az": 0.4,
+   "el": 0.2,
+   "d": 95,
+   "tx": 0,
+   "ty": -468,
+   "tz": 0,
+   "mode": "cut"
+  },
+  "Supply's workshop": {
+   "room": {
+    "n": 110,
+    "i": 1,
+    "rooms": 12,
+    "frac": 0.42,
+    "r": 42,
+    "cr": 27,
+    "h": 1.6,
+    "el": 0.1,
+    "da": -0.04
+   },
+   "mode": "inside"
+  },
+  "Water treatment": {
+   "room": {
+    "n": 125,
+    "i": 2,
+    "rooms": 10,
+    "frac": 1.0,
+    "r": 31,
+    "cr": 17,
+    "h": 1.4,
+    "el": 0.05,
+    "da": -0.22
+   },
+   "mode": "inside"
+  },
+  "The casting rooms": {
+   "room": {
+    "n": 130,
+    "i": 2,
+    "rooms": 8,
+    "frac": 0.36,
+    "r": 38,
+    "cr": 23.2,
+    "h": 2.1,
+    "el": 0.08,
+    "da": 0.03
+   },
+   "mode": "inside"
+  },
+  "Sewage basins, level 124": {
+   "room": {
+    "n": 124,
+    "i": 6,
+    "rooms": 36,
+    "frac": 0.3,
+    "r": 30,
+    "cr": 16,
+    "h": 1.0,
+    "el": 0.18
+   },
+   "mode": "inside"
+  },
+  "The air plant, level 125": {
+   "room": {
+    "n": 125,
+    "i": 4,
+    "rooms": 36,
+    "frac": 0.5,
+    "r": 40,
+    "cr": 31,
+    "h": 1.3,
+    "el": 0.04
+   },
+   "mode": "inside"
+  },
+  "Mechanical and the generator": {
+   "az": 1.5,
+   "el": 0.26,
+   "d": 48,
+   "tx": 13,
+   "ty": -605,
+   "tz": -21,
+   "mode": "cut"
+  },
+  "The turbine, close": {
+   "az": 2.738,
+   "el": 0.3,
+   "d": 22,
+   "tx": 11.4,
+   "ty": -608.6,
+   "tz": -25.75,
+   "mode": "inside"
+  },
+  "The boiler and deaerator": {
+   "az": -1.823,
+   "el": -0.0694,
+   "d": 18.73,
+   "tx": 26.01,
+   "ty": -608.1,
+   "tz": 23.42,
+   "mode": "inside"
+  },
+  "The control boards": {
+   "az": 2.818,
+   "el": 0.12,
+   "d": 9,
+   "tx": 45.05,
+   "ty": -610.8,
+   "tz": -15.07,
+   "mode": "inside"
+  },
+  "The wellhead and the pumpjack": {
+   "az": 0.85,
+   "el": 0.22,
+   "d": 17,
+   "tx": -31,
+   "ty": -609.4,
+   "tz": -11.3,
+   "mode": "inside"
+  },
+  "The digger": {
+   "dig": {
+    "s": 130.2,
+    "w": 1.4,
+    "h": 4.4,
+    "ts": 122,
+    "tw": 0,
+    "th": 3.0
+   },
+   "mode": "inside"
+  },
+  "The digger's tunnel": {
+   "dig": {
+    "s": 12,
+    "w": -1.2,
+    "h": 2.4,
+    "ts": 60,
+    "tw": 0.3,
+    "th": 3.4
+   },
+   "mode": "inside"
+  },
+  "The mines": {
+   "az": -2.475,
+   "el": 0.0245,
+   "d": 28.523,
+   "tx": 62.816,
+   "ty": -651.1,
+   "tz": 52.709,
+   "mode": "inside"
+  },
+  "The mines' hall": {
+   "az": -1.0875,
+   "el": -0.0231,
+   "d": 77.95,
+   "tx": -15.21,
+   "ty": -648.6,
+   "tz": 32.63,
+   "mode": "inside"
+  },
+  "Up the mine shaft": {
+   "az": 0.4636,
+   "el": -1.5471,
+   "d": 28.31,
+   "tx": -15.21,
+   "ty": -622.6,
+   "tz": 32.63,
+   "mode": "inside"
+  },
+  "The cap and the exit": {
+   "az": 2.0,
+   "el": 0.28,
+   "d": 110,
+   "tx": -55,
+   "ty": 0,
+   "tz": -8,
+   "mode": "outside"
+  },
+  "Outside, toward the hill": {
+   "az": 1.5708,
+   "el": 0.06,
+   "d": 750,
+   "tx": 0,
+   "ty": 10,
+   "tz": -640,
+   "mode": "outside"
+  },
+  "The dead city": {
+   "az": 1.5,
+   "el": 0.04,
+   "d": 9000,
+   "tx": 0,
+   "ty": 150,
+   "tz": -11000,
+   "mode": "outside"
+  },
+  "The field of fifty silos": {
+   "az": 1.15,
+   "el": 0.5,
+   "d": 5600,
+   "tx": -1050,
+   "ty": -330,
+   "tz": 420,
+   "mode": "field"
+  },
+  "Into Silo 18": {
+   "az": 1.15,
+   "el": 0.5,
+   "d": 5600,
+   "tx": -1050,
+   "ty": -330,
+   "tz": 420,
+   "mode": "field",
+   "fly": "On the stair, level 3"
+  },
+  "On the stair, level 3": {
+   "az": -0.72,
+   "el": 0.22,
+   "d": 5.9,
+   "tx": 0.93,
+   "ty": -20.2,
+   "tz": 5.42,
+   "mode": "inside"
+  },
+  "The landing, level 3": {
+   "az": 3.1416,
+   "el": 0.0068,
+   "d": 14.8,
+   "tx": 22.0,
+   "ty": -18.8,
+   "tz": 0.0,
+   "mode": "inside"
+  },
+  "The catwalk, level 3": {
+   "az": 0.1182,
+   "el": 0.0713,
+   "d": 16.15,
+   "tx": 3.0,
+   "ty": -19.8,
+   "tz": -0.3,
+   "mode": "inside"
+  },
+  "Catwalks down the shaft": {
+   "az": 1.6369,
+   "el": 1.2201,
+   "d": 17.57,
+   "tx": 9.0,
+   "ty": -190.8,
+   "tz": 0.0,
+   "mode": "inside"
+  }
+ },
+ "silo": {
+  "seed": 18
+ },
+ "space": {
+  "stars": 1,
+  "seed": 18,
+  "far": 900000,
+  "starLight": {
+   "colour": "#e8dcc8",
+   "az": 0.9,
+   "el": 0.9,
+   "intensity": 0.55,
+   "ambient": 0.75,
+   "lamp": 0.6,
+   "lampColour": "#e8dcc8"
+  },
+  "fill": {
+   "colour": "#a89880",
+   "az": 3.6,
+   "el": 0.4,
+   "intensity": 0.2
+  }
+ }
+}

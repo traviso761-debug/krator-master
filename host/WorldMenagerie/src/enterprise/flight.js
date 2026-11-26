@@ -159,6 +159,8 @@ export function flight(W){
     let yaw=(has('a')||has('ArrowLeft')?1:0)-(has('d')||has('ArrowRight')?1:0);
     let pitch=(has('ArrowUp')||has('r')?1:0)-(has('ArrowDown')||has('f')?1:0);
     let roll=(has('e')?1:0)-(has('q')?1:0);
+    // the touch stick and the gamepad (helm.js), by how far they are pushed
+    {const ax=W.helmIn&&W.helmIn();if(ax){const c=v=>Math.max(-1,Math.min(1,v));yaw=c(yaw+ax.turn);pitch=c(pitch+ax.pitch);roll=c(roll+ax.roll);}}
     const manual=yaw||pitch||roll;
     if(has('w'))setThrottle(S.thr+dt*0.35);if(has('s'))setThrottle(S.thr-dt*0.35);
     if(manual||has('w')){if(manual)S.orbit=null;if(W.cancelAuto)W.cancelAuto();}
@@ -174,9 +176,10 @@ export function flight(W){
       const err=right.dot(planeUp)*(1-Math.min(1,Math.abs(f.dot(planeUp))*1.4));want.x=Math.max(-MAXR.x*0.4,Math.min(MAXR.x*0.4,err*0.6));
       if(S.orbit)want.x=0;}
     // a ship this size turns harder when it is moving (the field round it helps), and never quickly
-    const auth=0.55+0.45*Math.min(1,S.v/HANDY);want.y*=auth;want.z*=auth;
+    // (the stardrive alone, the saucer away, is lighter and turns quicker: S.agile, saucer.js)
+    const auth=(0.55+0.45*Math.min(1,S.v/HANDY))*(S.agile||1);want.y*=auth;want.z*=auth;
     prevRate.copy(S.rate);
-    for(let i=0;i<3;i++){const r=S.rate.getComponent(i),d=want.getComponent(i)-r,m=ACC.getComponent(i)*dt;S.rate.setComponent(i,r+Math.max(-m,Math.min(m,d)));}
+    for(let i=0;i<3;i++){const r=S.rate.getComponent(i),d=want.getComponent(i)-r,m=ACC.getComponent(i)*dt*(S.agile||1);S.rate.setComponent(i,r+Math.max(-m,Math.min(m,d)));}
     angAcc.copy(S.rate).sub(prevRate).divideScalar(dt);
     for(let i=0;i<3;i++){const r=S.rate.getComponent(i);if(r){qd.setFromAxisAngle(ax[i],r*dt);q.multiply(qd);}}
     q.normalize();
@@ -187,7 +190,7 @@ export function flight(W){
     if(!S.warp){
       // the push: 26 g at low speed, more as the gap to the speed asked for grows (the engines run up to full
       // impulse in about half a minute, but nudge a ship this size gently)
-      const along=S.vel.dot(fwd),target=S.thr*S.thr*FULL,gap=Math.abs(target-along),th=Math.max(THRUST,gap*0.12);
+      const along=S.vel.dot(fwd),target=S.thr*S.thr*FULL*(W.sys?W.sys.impulse():1),gap=Math.abs(target-along),th=Math.max(THRUST,gap*0.12);
       const dv=Math.max(-th*1.2*dt,Math.min(th*dt,target-along));
       S.acc+=((dv/dt)-S.acc)*(1-Math.exp(-dt*4));
       tmp.copy(fwd).multiplyScalar(along);r1.copy(S.vel).sub(tmp).multiplyScalar(Math.exp(-dt*0.9));
@@ -197,7 +200,8 @@ export function flight(W){
       W.collide&&W.collide(S,dt);
     }else{S.acc*=0.9;S.v=FULL;S.vel.copy(fwd).multiplyScalar(FULL);if(W.warpTick)W.warpTick(dt,fwd);}
     // the floating origin
-    if(ROOT.position.lengthSq()>4e8){const off=ROOT.position.clone();for(const o of [ROOT,SYS,FX])o.position.sub(off);if(S.fb)S.fb.sub(off);
+    // (an orbit's centre is kept in the world, so it moves back with everything else)
+    if(ROOT.position.lengthSq()>4e8){const off=ROOT.position.clone();for(const o of [ROOT,SYS,FX])o.position.sub(off);if(S.fb)S.fb.sub(off);if(S.orbit)S.orbit.b.c.sub(off);
       for(let i=0;i<DN;i++){dpos[i*3]-=off.x;dpos[i*3+1]-=off.y;dpos[i*3+2]-=off.z;}}
     // the glow of the impulse engines answers the push; the thrusters answer the turn
     const push=Math.max(0,Math.min(1,S.acc/THRUST)),idle=S.warp?0.2:0.35+0.4*S.thr;
@@ -261,9 +265,9 @@ export function flight(W){
         camera.lookAt(dv2.copy(c).lerp(sub,Math.min(0.35,1800/Math.max(1,sub.distanceTo(c)))));fv=FOV0-4;}
       S.camRel.copy(camera.position).sub(c);
     }else if(S.cam==='bridge'){
-      // on top of the bridge dome, looking ahead over the saucer
-      const bq=BANK.getWorldQuaternion(qd);camera.position.copy(SAU.localToWorld(r2.set(-8,W.bridgeTop+3.2,0)));
-      camera.up.set(0,1,0).applyQuaternion(bq);camera.lookAt(r2.copy(camera.position).addScaledVector(tmp.set(1,0,0).applyQuaternion(bq),1000).addScaledVector(camera.up,-70));
+      // at the bridge's forward windows (bridgeview.js), looking ahead over the saucer
+      const bq=BANK.getWorldQuaternion(qd);camera.position.copy(W.bridgeEye?W.bridgeEye(r2):SAU.localToWorld(r2.set(-8,W.bridgeTop+3.2,0)));
+      camera.up.set(0,1,0).applyQuaternion(bq);camera.lookAt(r2.copy(camera.position).addScaledVector(tmp.set(1,0,0).applyQuaternion(bq),1000).addScaledVector(camera.up,-60));
       S.camRel.copy(camera.position).sub(c);fv=FOV0+14+(S.warp?12:0);
     }else{
       tmp.set(-Math.cos(S.cp)*Math.cos(S.cy),Math.sin(S.cp),Math.cos(S.cp)*Math.sin(S.cy)).multiplyScalar(S.cd).applyQuaternion(q);

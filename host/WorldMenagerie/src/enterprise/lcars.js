@@ -10,6 +10,14 @@ const CSS=`
 html.lcars{--a:#ff9c3a;--b:#ffbf87;--c:#c89bd8;--d:#9a8cf0;--e:#8fb4ff;--f:#e7a36a;--on:#ffd27a;--ink:#000;--txt:#f4dcc0;--dim:#b49a86;
   --lf:"Antonio","Oswald","Roboto Condensed","Ubuntu Condensed","Liberation Sans Narrow","Arial Narrow","DejaVu Sans Condensed","Helvetica Neue",Helvetica,Arial,sans-serif}
 html.lcars.alert{--a:#ff5a46;--b:#ff9a80;--c:#d8606a;--d:#b8404a;--e:#ff7a6a;--f:#e8705a;--on:#ffd0c0}
+/* ---- for colour-blind eyes (html.cb, access.js): the Okabe-Ito colours, which stay apart under the commoner kinds of
+   colour blindness, as light tints for black type; pressed is white, told by brightness and not by hue alone. Red alert
+   goes to vermillion and yellow, and stripes the ends of the bar, so it is seen without seeing red. ---- */
+html.lcars.cb{--a:#e69f00;--b:#f0e442;--c:#56b4e9;--d:#cc79a7;--e:#9fd8f6;--f:#f2bf63;--on:#ffffff;--txt:#f2f2f2;--dim:#bdbdbd}
+html.lcars.cb.alert{--a:#d55e00;--b:#f0e442;--c:#e69f00;--d:#d55e00;--e:#f5c48a;--f:#f0e442;--on:#ffffff}
+html.lcars.cb.alert #ui::before,html.lcars.cb.alert #ui::after{background:repeating-linear-gradient(135deg,var(--a) 0 7px,#000 7px 11px)}
+html.lcars.cb .entside .card.foe{border-left-color:#d55e00;border-left-style:dashed}
+html.lcars.cb #ent-quick button.warn[aria-pressed="true"]{background:#d55e00;color:#fff;outline:2px solid #fff;outline-offset:-4px}
 html.lcars body{background:#000;font-family:var(--lf);font-stretch:condensed}
 /* ---- the title and the hint ---- */
 html.lcars #title{font:600 24px/1 var(--lf);letter-spacing:.18em;color:var(--a);text-shadow:none;display:flex;align-items:center;gap:10px}

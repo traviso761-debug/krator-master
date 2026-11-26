@@ -42,6 +42,7 @@ export const CLIMATES={
   basin:        {clear:2,fair:2,cloud:2,rain:1,fog:1.5,haze:1,snow:1},              // Sarajevo, under its inversions
   highland:     {clear:3,fair:3,cloud:1.5,rain:2,storm:1,haze:1,mist:1},            // Antigua, Atitlán: dry season and rains
   alpine:       {clear:4,fair:3,cloud:1.5,rain:1,storm:1,fog:1,snow:1},             // Crater Lake, Yellowstone
+  cascade:      {clear:3,fair:3,haze:0.5,cloud:2,drizzle:1,rain:1.5,storm:0.5,fog:1,mist:1,snow:1.5},   // Mount Hood: the season's weights replace these (setWeights)
 };
 
 export function weather(api){
@@ -107,7 +108,10 @@ void main(){vec2 p=vU-0.5;float ph=vR*31.0,n=sin(p.x*11.0+ph)*0.5+sin(p.y*15.0-p
   // ---- the clock ----
   const fogC=new THREE.Color(),white=new THREE.Color(1,1,1),FL=new THREE.Color('#c8d0e0');let fe=null,acc=0,accSet=0;
   const O=api.ctx.weather={get state(){return state;},get auto(){return auto;},rain:0,snow:0,wind:cur.wind,cover:cur.cover,labels:Object.fromEntries(NAMES.map(k=>[k,label(k)])),
-    set(k,hold=true){if(!ST[k])return;state=k;if(hold)auto=false;else nextAt=t+span();show();},setAuto(on){auto=!!on;if(auto)nextAt=t+30;show();}};
+    set(k,hold=true){if(!ST[k])return;state=k;if(hold)auto=false;else nextAt=t+span();show();},setAuto(on){auto=!!on;if(auto)nextAt=t+30;show();},
+    // a page whose weather follows the season (Mount Hood) gives new weights for the states its climate has: one
+    // weighted 0 is no longer picked, and if it is the weather now, it changes within half a minute
+    setWeights(w){for(const k of NAMES)W[k]=w[k]==null?0:w[k];if(auto&&!(W[state]>0))nextAt=Math.min(nextAt,t+30);}};
   animHooks.push(now=>{const dt=Math.min(0.1,(now-last)/1000)*(api.ctx.evspeed||1);last=now;t+=dt;
     if(auto&&t>nextAt){state=pick();nextAt=t+span();show();}
     const S=ST[state],k=1-Math.exp(-dt/(K.ease||14));

@@ -306,5 +306,13 @@ export function model(api){
     });
   }
 
-  return {radius:1300, group:G};
+  // the shared bridge view (src/starship/bridge.js): Ops, at the window round the top of the core, looking out
+  // towards where the wormhole opens
+  const bridge={title:'Deep Space 9 · Ops',label:'Ops view',down:0,
+    // on the side of the dome that faces the wormhole, looking level at it (or a little down at the pylons)
+    eye:v=>{const h=WH.position.clone();h.y=0;if(h.lengthSq()<1)h.set(1,0,0);return G.localToWorld(v.copy(h.normalize()).multiplyScalar(80).setY(251));},
+    quat:q=>{const e=bridge.eye(new THREE.Vector3()),d=WH.position.clone().sub(e);d.y=Math.min(d.y,0)-d.length()*0.04;
+      return q.setFromUnitVectors(new THREE.Vector3(1,0,0),d.normalize());},
+    readout:()=>'Station keeping · six docking pylons · the wormhole '+(WH.scale.x>0.4?'open':'closed')};
+  return {radius:1300, group:G, bridge};
 }

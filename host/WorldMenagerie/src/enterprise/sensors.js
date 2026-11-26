@@ -31,7 +31,7 @@ export function sensors(W){
     return best||cs.slice().sort((a,b)=>a.d-b.d)[0];
   }
   function scan(target){
-    if(busy)return;W.audio&&W.audio();
+    if(busy)return;if(W.sys&&W.sys.down('sensors'))return;W.audio&&W.audio();
     const c=target||pick(),R=c?Math.min(60000,Math.max(3000,c.d+(c.kind==='body'?0:c.r)+500)):30000,T=Math.min(3.2,0.9+R/25000);
     busy={c,t0:F.T(),T,R};ping();shell.visible=true;
     if(!P.open())P.toggle(true);show({wait:true,c});
@@ -82,7 +82,7 @@ export function sensors(W){
       el('small',null,'N scans what is ahead; a chart\'s card scans what it shows.'));
   }
   // a sweep of the place, on purpose
-  const sweep=()=>{if(busy)return;busy={c:null,t0:F.T(),T:2.4,R:60000};ping();shell.visible=true;if(!P.open())P.toggle(true);show({wait:true,c:null});};
+  const sweep=()=>{if(busy)return;if(W.sys&&W.sys.down('sensors'))return;busy={c:null,t0:F.T(),T:2.4,R:60000};ping();shell.visible=true;if(!P.open())P.toggle(true);show({wait:true,c:null});};
   const s0=scan;W.scan=c=>c===null?sweep():s0(c);
   addEventListener('keydown',e=>{if(e.repeat||typing(e))return;if(e.key==='n'||e.key==='N')W.scan();else if(e.key==='Escape'&&P.open())P.toggle(false);});
   return {act:{scan:()=>W.scan(),sweep},hud:()=>busy?'scanning':'',state:()=>({count,busy:!!busy,last:last&&last.title,scanned:[...scanned]}),scanned};

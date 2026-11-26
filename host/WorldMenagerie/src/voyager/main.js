@@ -6,6 +6,7 @@ import {model} from './ship.js';
 starshipPage({
   city:'voyager',
   model,
+  photo:true,
   prefix:'making way… ',
   labels:{config:'reading the specification',sky:'hanging the stars',hull:'laying the keel',ui:'running the lights'},
   lines:[
