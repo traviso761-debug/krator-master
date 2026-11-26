@@ -466,11 +466,12 @@ const ADG_HEX = (function(){
     }
    }
   }
-  /* Quay strip between the ring avenue and the sea wall: pieces front the water (face k), laid along the face tangent */
+  /* Quay strip between the ring avenue and the sea wall: pieces front the water (face k), laid along the face tangent;
+     a fifth field pushes a slip piece out over the water (the dockyard's slipway) */
   const QUAY = {
    0: [['et_wood_coaling_bunker', 18, 12, 0], ['et_wood_crane_stage', 12, 10, 0], ['et_quay', 32, 14, 1], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_coaling_bunker', 18, 12, 1], ['et_fish_landing', 14, 16, 0]],
    1: [['et_wood_net_loft', 16, 10, 0], ['et_quay', 32, 14, 0], ['et_wood_crane_stage', 12, 10, 0], ['et_wood_coaling_bunker', 18, 12, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_quay', 32, 14, 1]],
-   2: [['et_wood_boat_shed', 14, 18, 0], ['et_wood_boat_shed', 14, 18, 1], ['et_ferry_landing', 12, 16, 0], ['et_canal_landing', 12, 12, 0], ['et_wood_boat_shed', 14, 18, 0], ['et_wood_net_loft', 16, 10, 1]],
+   2: [['et_wood_boat_shed', 14, 18, 0], ['et_dock', 30, 26, 0, 8.0], ['et_ferry_landing', 12, 16, 0], ['et_wood_boat_shed', 14, 18, 1], ['et_canal_landing', 12, 12, 0], ['et_wood_boat_shed', 14, 18, 0], ['et_wood_net_loft', 16, 10, 1]],
    3: [['et_wood_crane_stage', 12, 10, 0], ['et_wood_transit_shed', 20, 11, 0], ['et_wood_net_loft', 16, 10, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_chandlery', 12, 10, 1]],
    4: [['et_wood_crane_stage', 12, 10, 0], ['et_wood_transit_shed', 20, 11, 0], ['et_wood_crane_stage', 12, 10, 1], ['et_wood_transit_shed', 20, 11, 1], ['et_wood_boat_shed', 14, 18, 1], ['et_wood_net_loft', 16, 10, 0]]
   };
@@ -487,7 +488,7 @@ const ADG_HEX = (function(){
     const tc = t + P[1] * 0.5;
     t += P[1] + GAP;
     if (Math.abs(tc) + P[1] * 0.5 > T_LIM) continue;
-    const dn = apMole - 1.6 - P[2] * 0.5;
+    const dn = apMole - 1.6 - P[2] * 0.5 + (P[4] == null ? 0 : P[4]);
     push(P[0], cx + N[k][0] * dn + tx * tc, cz + N[k][1] * dn + tz * tc, ryForFace(k), P[3], QUAY_NAME[k] + ' ' + P[0].replace('et_wood_', 'timber ').replace('et_', '').replace(/_/g, ' '));
    }
   }
