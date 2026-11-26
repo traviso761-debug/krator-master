@@ -185,11 +185,13 @@ def main():
     target = np.where(np.isfinite(floor_t), floor_t + worn, np.where(vp_floor, vpE + worn, mount))
     dvm = nd.distance_transform_edt(VM)
     # faded into the land round the polygon over ~12 px, along a ragged line (the polygon's straight edges not drawn)
-    edge_n = nd.gaussian_filter(rng.standard_normal(sh), 3.0); edge_n /= edge_n.std() + 1e-9
-    w = np.clip((dvm + 4.0 * edge_n) / 12.0, 0, 1) * ~whas0
+    # two scales of jitter, so the fade line wanders ~16 km and no stretch of the polygon's edge reads straight
+    edge_n = (0.7 * nd.gaussian_filter(rng.standard_normal(sh), 4.0) / 0.07 + 0.3 * nd.gaussian_filter(rng.standard_normal(sh), 1.5) / 0.19)
+    edge_n /= edge_n.std() + 1e-9
+    w = np.clip((dvm + 8.0 * edge_n) / 14.0, 0, 1) * ~whas0
     # the valleys fade at the polygon's edge too, over a ragged ~6 px (cut to the edge they left a straight wall where
     # Region 174's arm runs along it)
-    wv_ = np.clip((dvm + 2.0 * edge_n) / 6.0, 0, 1) * ~whas0
+    wv_ = np.clip((dvm + 5.0 * edge_n) / 8.0, 0, 1) * ~whas0
     w = np.where(np.isfinite(floor_t) | vp_floor, np.maximum(w, wv_), w)
     En = np.where(VM & ~whas0, E0 * (1 - w) + target * w, En)
     # ... and the whole highland weathered as Matron's Coast is (edit 30's weather: stream power cutting where the rain
