@@ -49,28 +49,28 @@
    "sha256": "ce8c031d049e9372e65bda9b5839124cc92790d7e1afe22fe47853b27de09297"
   },
   "biomes/arch/dist/arch-barrens.html": {
-   "bytes": 2177982,
-   "sha256": "354d393fbd14eeaf3d362c9689b425f4da25640aff692a55120d930d5cd77ad2"
+   "bytes": 2285783,
+   "sha256": "aa83cb92b0ab33ede77599a728cb0baab951cb3acf92a2def84d25500f1d632b"
   },
   "biomes/arch/dist/arch-coast.html": {
-   "bytes": 2302040,
-   "sha256": "090119e1c6a6fa4d51b7784dc05dd8c65628443ec3a3d9b02a59eccb99cc889d"
+   "bytes": 2492932,
+   "sha256": "0e59b6cabaf84ca5d218b5921bf55c1771d32d9d3b9dc209f42c9e2ce0fe548b"
   },
   "biomes/arch/dist/arch-cove.html": {
-   "bytes": 2312884,
-   "sha256": "ff2382bed3bada2ef1c1397daef55a2a7c97249ec1c960207f063cd3e9ee77d2"
+   "bytes": 2522975,
+   "sha256": "e59687f32e317f623fbcb0b5c7dbb43ad833333b84afafceaad917afea9b08e1"
   },
   "biomes/arch/dist/arch-dome.html": {
-   "bytes": 2177973,
-   "sha256": "dc7cdcd12c2b089d8a69598100a8a1cd9c82f2f2015144c43c79ed7270200d5a"
+   "bytes": 2285774,
+   "sha256": "f47588147bf7ab2a614b87a8300c99b45d3a8c62c4eebab7ec5f05a45078a693"
   },
   "biomes/arch/dist/arch-sound.html": {
-   "bytes": 2312661,
-   "sha256": "e9be3288e1dd8d2af7c2d83a83d2c676af97b363ef456ab6e413210ef1922a24"
+   "bytes": 2443943,
+   "sha256": "8fecdc7a83e23a567030b2ce09fc90ad994cef018c5d9addb692a3d0f772b4e2"
   },
   "biomes/arch/dist/arch.html": {
-   "bytes": 2177740,
-   "sha256": "0559fef04a7fcb7e15ebcc5eaeeb170a6bb565e05352e4a29cfc1c22fe936827"
+   "bytes": 2285541,
+   "sha256": "cc308099c8d5b0e35cac6ac9396f13355f929fe94d897a224bdfffe40fe40b66"
   },
   "biomes/catch/dist/catch-fan.html": {
    "bytes": 9612324,
@@ -1317,8 +1317,8 @@
    "sha256": "1c4d9927d492e58f312055ecad5ed97d3753670a0cfb04802981d1f661d03ff6"
   },
   "kits/arcoforte/dist/arcoforte.html": {
-   "bytes": 2428126,
-   "sha256": "1e4b356c2040cf207d2cfcbf93f5c49186324d846bfc82f22c6422d8895b4ef7"
+   "bytes": 2490812,
+   "sha256": "a1e455d7e475ed8670b7dfee0973db94aef3b58ad45c4ca3a63f9d01f329416a"
   },
   "kits/ash-nomads/dist/ash-nomads.html": {
    "bytes": 19035333,
@@ -1559,6 +1559,10 @@
   "kits/scyvoi/dist/scyvoi.html": {
    "bytes": 1586290,
    "sha256": "f94d112708ea6c71978f3b8870d7c2c6c51abf7db574dfa5830fe11491fe47df"
+  },
+  "kits/shore-kin/dist/shore-kin.html": {
+   "bytes": 1238399,
+   "sha256": "dce6184b4da49d5bac7419bee22b6c53c5ea76c649b55d09c60f2ecacae2e049"
   },
   "kits/shumari/dist/shumari.html": {
    "bytes": 1914703,
@@ -1803,6 +1807,10 @@
   "settlements/flashing-eye/dist/flashing-eye.html": {
    "bytes": 13826402,
    "sha256": "a8c143e0c808363f882131ccee6b57d271bff5ad19dfd99d39b3cc6882834c5f"
+  },
+  "settlements/fleetborn-cove/dist/fleetborn-cove.html": {
+   "bytes": 4113289,
+   "sha256": "0fec218af7fd9f3ae2908a9cd631103a15fc014a23d76fc872716518dd8c3bec"
   },
   "settlements/gihon/dist/gihon.html": {
    "bytes": 14506269,
