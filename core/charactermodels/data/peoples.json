@@ -4237,6 +4237,77 @@
       }
     },
     {
+      "id": "shore_kin",
+      "name": "Shore-Kin (the Arch Half-Divers)",
+      "note": "Mixed Fleet-born (cFl\u012bt-qB\u014dn), Hueru-Kuran, Eternian, and Rian (Ria Sound) villagers and harbour-yard crews of the Arch hinterland around Arcoforte (kits/shore-kin, settlements/fleetborn-cove); clients of the Fleet-born caretaker house who lost the engineered deep-dive gene or inherited a weak copy ('half-divers': 2\u20134 min breath-hold to 20\u201330 m, lacking full nictitating inner lids and plum-indigo scleral dive adaptations). Blended coastal ancestry and sea-weathered bronze-to-olive skin, cropped or braided hair for intertidal and yard work; their own clothes are owed (they draw from the library)",
+      "ancestry": {
+        "african": [
+          0.1,
+          0.35
+        ],
+        "asian": [
+          0.45,
+          0.75
+        ],
+        "caucasian": [
+          0.1,
+          0.35
+        ]
+      },
+      "skin": [
+        "#d4ad8c",
+        "#b88963",
+        "#966948",
+        "#754e35"
+      ],
+      "hair": [
+        "#0f0c0a",
+        "#1a1410",
+        "#2a2018",
+        "#3a2b1f"
+      ],
+      "eyes": [
+        "#2a1a10",
+        "#3b2414",
+        "#4a3520",
+        "#38323e"
+      ],
+      "grey": 0.48,
+      "beard": 0.28,
+      "morph": {
+        "weight": [
+          -0.05,
+          0.45
+        ],
+        "muscle": [
+          0.0,
+          0.5
+        ],
+        "cheek-bones-decr-incr": [
+          0.0,
+          0.4
+        ]
+      },
+      "styles": {
+        "male": [
+          "short02",
+          "short04",
+          "Low_Fade",
+          "ponytail01",
+          "braid01",
+          "hair_s5_02_compact_martial_bun"
+        ],
+        "female": [
+          "braid01",
+          "elvs_braid_bun",
+          "o4saken_chinesebob01",
+          "ponytail01",
+          "short03",
+          "hair_f1_05_braided_low_chignon"
+        ]
+      }
+    },
+    {
       "id": "yonni",
       "name": "Yonni Spear-Queens (Sf\u012bra-Kand\u0113t\u00e6)",
       "note": "The Twin-Born Spear-Queens of Yonni and the Scoured Hills (kits/yonni; culture 'yonni'; core/region/CROOK-RIA-SCOPE.md 3.1; Stage 8 B9, T4, 2026-11-24): an engineered reverse dimorphism (the women about 1.10 of a human, a heavier-boned martial caste; the men about 0.92) and nine births in ten identical twins. A proposal: a broad coastal range, the martial build drawn a little strong. Owed, not faked: the dimorphism itself (a people's morph is one range for both bodies: KCHAR.stranger), the twins (a crowd draws each stranger alone), and their own clothes",
