@@ -80,9 +80,10 @@ def main():
             'comments': saved_state.get('comments', {}),
             'baked_models': saved_state.get('baked', {}),
             'clips': J('clips.json'),
+            'combat_links': J('combat-links.json'),
             'props': J('props.json')['props'], 'posture': J('posture.json'), 'fur': J('fur.json'), 'bodies': {}}
     inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb')
-              for f in ('sliders.json', 'peoples.json', 'clips.json', 'props.json', 'posture.json', 'fur.json')}
+              for f in ('sliders.json', 'peoples.json', 'clips.json', 'combat-links.json', 'props.json', 'posture.json', 'fur.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}
@@ -189,6 +190,12 @@ def main():
             L = labs[spec[2]]
             head = head.replace('<title>Animation Lab</title>', '<title>%s</title>' % L['title'])
             extra.append('var KCHAR_LAB = ' + json.dumps({'id': spec[2], 'title': L['title'], 'anims': L['anims'], 'groups': L['groups']}) + ';')
+        own_chunks = ['/* src/%s */\n%s' % (own, t)]
+        if page == 'combat-lab':
+            duel_f = '94-combat-duel.js'
+            duel_t = read(os.path.join(SRC, duel_f))
+            inputs['src/' + duel_f] = duel_t.encode()
+            own_chunks.append('/* src/%s */\n%s' % (duel_f, duel_t))
         boot_own = (
             '(function(){\n'
             '  var _b = atob(KCHAR_DATA_GZ), _u = new Uint8Array(_b.length);\n'
@@ -196,10 +203,10 @@ def main():
             '  KCHAR_DATA_GZ = null;\n'
             '  new Response(new Blob([_u]).stream().pipeThrough(new DecompressionStream("gzip"))).text().then(function(_txt){\n'
             '    var KCHAR_DATA = window.KCHAR_DATA = JSON.parse(_txt);\n'
-            '/* src/%s */\n%s\n'
+            '%s\n'
             '  });\n'
             '})();'
-        ) % (own, t)
+        ) % ('\n'.join(own_chunks),)
         pjs = extra + js + [boot_own]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \

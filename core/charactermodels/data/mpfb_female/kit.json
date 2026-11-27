@@ -154089,8 +154089,7 @@
    "slot": "head",
    "glb": "pieces/mpfb_female/xan_f_sultan_taj.glb",
    "culture": "xanadu",
-   "covers_hair": true,
-   "made_by": "garments"
+   "covers_hair": true
   },
   {
    "id": "xan_f_sultan_robe",
@@ -154124,15 +154123,15 @@
        [
         [
          "LeftUpLeg",
-         0.6162
+         0.616
         ],
         [
          "Hips",
-         0.312
+         0.3121
         ],
         [
          "RightUpLeg",
-         0.0718
+         0.0719
         ]
        ],
        [
@@ -154229,7 +154228,7 @@
        [
         [
          "LeftUpLeg",
-         0.6163
+         0.6162
         ],
         [
          "Hips",
@@ -154237,7 +154236,7 @@
         ],
         [
          "RightUpLeg",
-         0.0717
+         0.0718
         ]
        ],
        [
@@ -154429,13 +154428,13 @@
      {
       "parent": "Spine",
       "pts": [
-       1016,
-       1122,
-       1334,
-       1546,
-       1864,
-       2182,
-       2553
+       1017,
+       1123,
+       1335,
+       1547,
+       1865,
+       2183,
+       2554
       ],
       "bw": [
        [
@@ -154465,11 +154464,11 @@
        [
         [
          "LeftUpLeg",
-         0.6896
+         0.7184
         ],
         [
          "Hips",
-         0.3104
+         0.2816
         ]
        ],
        [
@@ -154545,13 +154544,13 @@
      {
       "parent": "Spine",
       "pts": [
-       1019,
-       1125,
-       1337,
-       1549,
-       1867,
-       2185,
-       2556
+       1020,
+       1126,
+       1338,
+       1550,
+       1868,
+       2186,
+       2557
       ],
       "bw": [
        [
@@ -154571,15 +154570,15 @@
        [
         [
          "Hips",
-         0.6563
+         0.7056
         ],
         [
          "Spine",
-         0.2997
+         0.2584
         ],
         [
          "LeftUpLeg",
-         0.0441
+         0.036
         ]
        ],
        [
@@ -154609,7 +154608,7 @@
        [
         [
          "LeftUpLeg",
-         0.6017
+         0.5853
         ],
         [
          "RightUpLeg",
@@ -154621,7 +154620,7 @@
         ],
         [
          "LeftLeg",
-         0.0083
+         0.0247
         ]
        ],
        [
@@ -154665,41 +154664,41 @@
      {
       "parent": "Spine",
       "pts": [
-       1022,
-       1128,
-       1340,
-       1552,
-       1870,
-       2188,
-       2559
+       1023,
+       1129,
+       1341,
+       1553,
+       1871,
+       2189,
+       2560
       ],
       "bw": [
        [
         [
          "Spine",
-         0.629
+         0.5717
         ],
         [
          "Hips",
-         0.3597
+         0.4127
         ],
         [
          "LeftUpLeg",
-         0.0113
+         0.0156
         ]
        ],
        [
         [
          "Hips",
-         0.7056
+         0.7789
         ],
         [
          "Spine",
-         0.2584
+         0.1501
         ],
         [
          "LeftUpLeg",
-         0.036
+         0.071
         ]
        ],
        [
@@ -154729,7 +154728,7 @@
        [
         [
          "LeftUpLeg",
-         0.5473
+         0.5833
         ],
         [
          "RightUpLeg",
@@ -154741,127 +154740,7 @@
         ],
         [
          "LeftLeg",
-         0.0627
-        ]
-       ],
-       [
-        [
-         "LeftLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "LeftLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       1025,
-       1131,
-       1343,
-       1555,
-       1873,
-       2191,
-       2562
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.5694
-        ],
-        [
-         "Hips",
-         0.4188
-        ],
-        [
-         "LeftUpLeg",
-         0.0117
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.8066
-        ],
-        [
-         "Spine",
-         0.1237
-        ],
-        [
-         "LeftUpLeg",
-         0.0697
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.8029
-        ],
-        [
-         "Hips",
-         0.1971
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.754
-        ],
-        [
-         "RightUpLeg",
-         0.164
-        ],
-        [
-         "Hips",
-         0.082
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.5846
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ],
-        [
-         "LeftLeg",
-         0.0254
+         0.0267
         ]
        ],
        [
@@ -154901,27 +154780,27 @@
      {
       "parent": "Spine",
       "pts": [
-       1028,
-       1134,
-       1346,
-       1558,
-       1876,
-       2194,
-       2565
+       1027,
+       1133,
+       1345,
+       1557,
+       1875,
+       2193,
+       2564
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6108
+         0.6039
         ],
         [
          "Hips",
-         0.3805
+         0.3848
         ],
         [
          "LeftUpLeg",
-         0.0088
+         0.0113
         ]
        ],
        [
@@ -154937,11 +154816,11 @@
        [
         [
          "LeftUpLeg",
-         0.6377
+         0.7958
         ],
         [
          "Hips",
-         0.3623
+         0.2042
         ]
        ],
        [
@@ -154997,6 +154876,118 @@
        [
         [
          "LeftLeg",
+         0.4023
+        ],
+        [
+         "LeftUpLeg",
+         0.2989
+        ],
+        [
+         "RightUpLeg",
+         0.2989
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       1030,
+       1136,
+       1348,
+       1560,
+       1878,
+       2196,
+       2567
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6107
+        ],
+        [
+         "Hips",
+         0.3829
+        ],
+        [
+         "LeftUpLeg",
+         0.0063
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9843
+        ],
+        [
+         "LeftUpLeg",
+         0.0157
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5767
+        ],
+        [
+         "Hips",
+         0.4233
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.754
+        ],
+        [
+         "RightUpLeg",
+         0.164
+        ],
+        [
+         "Hips",
+         0.082
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.6039
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "LeftLeg",
+         0.0061
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
          0.35
         ],
         [
@@ -155017,33 +155008,37 @@
      {
       "parent": "Spine",
       "pts": [
-       1031,
-       1137,
-       1349,
-       1561,
-       1879,
-       2197,
-       2568
+       1033,
+       1139,
+       1351,
+       1563,
+       1881,
+       2199,
+       2570
       ],
       "bw": [
        [
         [
          "Spine",
-         0.5783
+         0.5496
         ],
         [
          "Hips",
-         0.4217
+         0.4504
         ]
        ],
        [
         [
          "Hips",
-         0.9923
+         0.9943
         ],
         [
          "LeftUpLeg",
-         0.0077
+         0.0033
+        ],
+        [
+         "RightUpLeg",
+         0.0025
         ]
        ],
        [
@@ -155091,19 +155086,19 @@
        [
         [
          "LeftUpLeg",
-         0.4524
+         0.4963
         ],
         [
          "RightUpLeg",
          0.26
         ],
         [
-         "LeftLeg",
-         0.1576
-        ],
-        [
          "Hips",
          0.13
+        ],
+        [
+         "LeftLeg",
+         0.1138
         ]
        ],
        [
@@ -155129,159 +155124,47 @@
      {
       "parent": "Spine",
       "pts": [
-       1035,
-       1141,
-       1353,
-       1565,
-       1883,
-       2201,
-       2572
+       1036,
+       1142,
+       1354,
+       1566,
+       1884,
+       2202,
+       2573
       ],
       "bw": [
        [
         [
          "Spine",
-         0.5758
+         0.6045
         ],
         [
          "Hips",
-         0.4242
+         0.3891
+        ],
+        [
+         "RightUpLeg",
+         0.0064
         ]
        ],
        [
         [
          "Hips",
-         0.9941
+         0.985
         ],
         [
          "RightUpLeg",
-         0.0059
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.8581
-        ],
-        [
-         "RightUpLeg",
-         0.1419
+         0.015
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.754
-        ],
-        [
-         "LeftUpLeg",
-         0.164
+         0.6772
         ],
         [
          "Hips",
-         0.082
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.6066
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ],
-        [
-         "RightLeg",
-         0.0034
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.5098
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ],
-        [
-         "RightLeg",
-         0.1002
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       1038,
-       1144,
-       1356,
-       1568,
-       1886,
-       2204,
-       2575
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.6027
-        ],
-        [
-         "Hips",
-         0.3884
-        ],
-        [
-         "RightUpLeg",
-         0.0089
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.9718
-        ],
-        [
-         "RightUpLeg",
-         0.0282
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.6892
-        ],
-        [
-         "Hips",
-         0.3108
+         0.3228
         ]
        ],
        [
@@ -155318,6 +155201,122 @@
        ],
        [
         [
+         "RightUpLeg",
+         0.4666
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightLeg",
+         0.1434
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       1039,
+       1145,
+       1357,
+       1569,
+       1887,
+       2205,
+       2576
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6055
+        ],
+        [
+         "Hips",
+         0.3827
+        ],
+        [
+         "RightUpLeg",
+         0.0117
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9613
+        ],
+        [
+         "RightUpLeg",
+         0.0387
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6892
+        ],
+        [
+         "Hips",
+         0.3108
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.754
+        ],
+        [
+         "LeftUpLeg",
+         0.164
+        ],
+        [
+         "Hips",
+         0.082
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6024
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0076
+        ]
+       ],
+       [
+        [
          "RightLeg",
          0.35
         ],
@@ -155357,51 +155356,167 @@
      {
       "parent": "Spine",
       "pts": [
-       1041,
-       1147,
-       1359,
-       1571,
-       1889,
-       2207,
-       2578
+       1043,
+       1149,
+       1361,
+       1573,
+       1891,
+       2209,
+       2580
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6162
+         0.6406
         ],
         [
          "Hips",
-         0.3701
+         0.3435
         ],
         [
          "RightUpLeg",
-         0.0136
+         0.0158
         ]
        ],
        [
         [
          "Hips",
-         0.7952
+         0.7959
         ],
         [
          "Spine",
-         0.1279
+         0.1322
         ],
         [
          "RightUpLeg",
-         0.0769
+         0.072
         ]
        ],
        [
         [
          "RightUpLeg",
-         0.7561
+         0.835
         ],
         [
          "Hips",
-         0.2439
+         0.165
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.754
+        ],
+        [
+         "LeftUpLeg",
+         0.164
+        ],
+        [
+         "Hips",
+         0.082
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5833
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0267
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.4023
+        ],
+        [
+         "LeftUpLeg",
+         0.2989
+        ],
+        [
+         "RightUpLeg",
+         0.2989
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       1046,
+       1152,
+       1364,
+       1576,
+       1894,
+       2212,
+       2583
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6193
+        ],
+        [
+         "Hips",
+         0.3688
+        ],
+        [
+         "RightUpLeg",
+         0.0119
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7587
+        ],
+        [
+         "Spine",
+         0.212
+        ],
+        [
+         "RightUpLeg",
+         0.0293
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.7702
+        ],
+        [
+         "Hips",
+         0.2298
         ]
        ],
        [
@@ -155457,122 +155572,6 @@
        [
         [
          "RightLeg",
-         0.4023
-        ],
-        [
-         "LeftUpLeg",
-         0.2989
-        ],
-        [
-         "RightUpLeg",
-         0.2989
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       1044,
-       1150,
-       1362,
-       1574,
-       1892,
-       2210,
-       2581
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.6191
-        ],
-        [
-         "Hips",
-         0.369
-        ],
-        [
-         "RightUpLeg",
-         0.0118
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.7587
-        ],
-        [
-         "Spine",
-         0.212
-        ],
-        [
-         "RightUpLeg",
-         0.0293
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.835
-        ],
-        [
-         "Hips",
-         0.165
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.754
-        ],
-        [
-         "LeftUpLeg",
-         0.164
-        ],
-        [
-         "Hips",
-         0.082
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.5616
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ],
-        [
-         "RightLeg",
-         0.0484
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "RightLeg",
          0.35
         ],
         [
@@ -155593,133 +155592,13 @@
      {
       "parent": "Spine",
       "pts": [
-       1047,
-       1153,
-       1365,
-       1577,
-       1895,
-       2213,
-       2584
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.6193
-        ],
-        [
-         "Hips",
-         0.3688
-        ],
-        [
-         "RightUpLeg",
-         0.0119
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.7466
-        ],
-        [
-         "Spine",
-         0.2222
-        ],
-        [
-         "RightUpLeg",
-         0.0312
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.7702
-        ],
-        [
-         "Hips",
-         0.2298
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.754
-        ],
-        [
-         "LeftUpLeg",
-         0.164
-        ],
-        [
-         "Hips",
-         0.082
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.6019
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ],
-        [
-         "RightLeg",
-         0.0081
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       1050,
-       1156,
-       1368,
-       1580,
-       1898,
-       2216,
-       2587
+       1049,
+       1155,
+       1367,
+       1579,
+       1897,
+       2215,
+       2586
       ],
       "bw": [
        [
@@ -155749,11 +155628,11 @@
        [
         [
          "RightUpLeg",
-         0.6736
+         0.7116
         ],
         [
          "Hips",
-         0.3264
+         0.2884
         ]
        ],
        [
@@ -155966,15 +155845,15 @@
        [
         [
          "RightUpLeg",
-         0.7101
+         0.71
         ],
         [
          "Hips",
-         0.2072
+         0.2073
         ],
         [
          "LeftUpLeg",
-         0.0827
+         0.0828
         ]
        ],
        [
@@ -156067,8 +155946,7 @@
        12,
        13,
        14,
-       15,
-       16
+       15
       ],
       "stiff": 0.12,
       "layer": 1
@@ -156078,14 +155956,13 @@
    "tucks": true,
    "loose": true,
    "long": true,
-   "hem": 0.877,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P/////////P//////////8//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z///////D////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA//////////////////////////////////////////////////////////////8/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AwAA/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//AwDw////P/8AAAAAAAAAAAAAAAAAAPD///////////////////////////////////////////////////////////////////////////////////8//wv/AgwgAAD8//////////P/P/8/DDDAAAMA/////////////8DL8MAA/AMMz/AwwPAzMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A8AAAAwAQAAAAAAAAAAAAAA/AAAAMADAAAAAAAAMP8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////////////////////8//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////////////P//////z9///z//////////////////////////////////////////////////////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8//////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PAAD8////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8PAMD//////AMAAAAAAAAAAAAAAAAAwP/////////////////////////////////////////////////////////////////////////////+/////////////f/////8H/wHMEAAAPD//z8A8P///////MN//M/g//8DDDDADPz/A/////////////////8PPAwPDMA/wPAMDwMMPzMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwDAAAADAAAAAAAAAAAAAAAAD8AAACAAAAAAAAAAMwvAAAAAAAAAADwMw==",
-   "hides": 4611,
+   "hem": 0.873,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////////P/+//8//////8AAAAAAAAAMwD/M88P/z////+D//////////////////////////////////////f/8/////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA//////////////////////////////////////////////////////////////8/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AwAA/////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//AwDw////P/8AAAAAAAAAAAAAAAAAAPD///////////////////////////////////////////////////////////////////////////////////8//wv/AgwgAAD8//////////P/P/8/DDDAAAMA/////////////8DL8MAA/AMMz/AwwPAzMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A8AAAAwAQAAAAAAAAAAAAAA/AAAAMADAAAAAAAA8P8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////////////z//P/9//8//////8AAAAAAAAAD8A/z/PD//P//D/3////////////////////////////////////P78//////////////////////////////////////////////////////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8//////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PAAD8////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8PAMD//////AMAAAAAAAAAAAAAAAAAwP/////////////////////////////////////////////////////////////////////////////+/////////////f/////8H/wHMEAAAPD//z8A8P///////MP//M/g//8DDDDADPz/A/////////////////8PfAwPDMA/wPAMDwMMPzMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPwDAAAADAAAAAAAAAAAAAAAAD8AAADQAAAAAAAAAPwvAAAAAAAAAADwMw==",
+   "hides": 4618,
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "xan_f_sultan_slippers",
@@ -156095,8 +155972,7 @@
    "culture": "xanadu",
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAzDNDMD//////////////////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z///////////////////////////////////////////////////////////////////////////////////////////////////////////////8TAAAAAAAAAAAA/P///////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAADA////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAADAMIwzM/D//////////////////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A/////////////////////////////////////////////////////////////////////////////////////////////////////////////////8IAAAAAAAAAAAA/////////////////////////////////////////////////////////////////////////////////////////////z8AAAAAAAAAAAAA8P///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 4504,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "xan_f_mint_kavuk",
@@ -180899,12 +180775,6 @@
    "slot": "head",
    "glb": "pieces/mpfb_female/fell_f_wildcat_mask.glb",
    "culture": "fellgangs",
-   "type": "important_npc",
-   "hide_by": "rays",
-   "hide_parts": [
-    "Human.eyebrow001",
-    "Human.eyebrow002"
-   ],
    "covers_hair": true
   },
   {
@@ -251768,18 +251638,96 @@
      {
       "parent": "Spine",
       "pts": [
-       750,
-       832
+       749,
+       831
       ],
       "bw": [
        [
         [
          "Spine",
-         0.8094
+         0.8007
         ],
         [
          "Spine1",
-         0.1869
+         0.196
+        ],
+        [
+         "LeftUpLeg",
+         0.0033
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.4999
+        ],
+        [
+         "Spine",
+         0.4698
+        ],
+        [
+         "LeftUpLeg",
+         0.0303
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       752,
+       834
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6475
+        ],
+        [
+         "Spine1",
+         0.3254
+        ],
+        [
+         "Hips",
+         0.0245
+        ],
+        [
+         "LeftUpLeg",
+         0.0026
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.5178
+        ],
+        [
+         "Spine",
+         0.4573
+        ],
+        [
+         "LeftUpLeg",
+         0.025
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       755,
+       837
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8403
+        ],
+        [
+         "Hips",
+         0.156
         ],
         [
          "LeftUpLeg",
@@ -251789,15 +251737,15 @@
        [
         [
          "Hips",
-         0.5104
+         0.5969
         ],
         [
          "Spine",
-         0.4557
+         0.3904
         ],
         [
          "LeftUpLeg",
-         0.0339
+         0.0127
         ]
        ]
       ]
@@ -251805,73 +251753,32 @@
      {
       "parent": "Spine",
       "pts": [
-       753,
-       835
+       758,
+       840
       ],
       "bw": [
        [
         [
          "Spine",
-         0.7434
+         0.7053
         ],
         [
          "Hips",
-         0.2513
-        ],
-        [
-         "LeftUpLeg",
-         0.0053
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.5641
-        ],
-        [
-         "Spine",
-         0.4137
-        ],
-        [
-         "LeftUpLeg",
-         0.0222
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       756,
-       838
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.7616
+         0.1476
         ],
         [
          "Spine1",
-         0.1452
-        ],
-        [
-         "Hips",
-         0.0908
-        ],
-        [
-         "LeftUpLeg",
-         0.0023
+         0.1471
         ]
        ],
        [
         [
          "Hips",
-         0.5945
+         0.6942
         ],
         [
          "Spine",
-         0.4055
+         0.3058
         ]
        ]
       ]
@@ -251879,36 +251786,73 @@
      {
       "parent": "Spine",
       "pts": [
-       760,
-       842
+       761,
+       843
       ],
       "bw": [
        [
         [
          "Spine",
-         0.6789
+         0.8072
         ],
         [
          "Hips",
-         0.1685
+         0.1886
+        ],
+        [
+         "RightUpLeg",
+         0.0041
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6361
+        ],
+        [
+         "Spine",
+         0.3535
+        ],
+        [
+         "RightUpLeg",
+         0.0105
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       764,
+       846
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.6394
         ],
         [
          "Spine1",
-         0.1502
+         0.3578
         ],
         [
          "RightUpLeg",
-         0.0024
+         0.0029
         ]
        ],
        [
         [
-         "Hips",
-         0.605
+         "Spine",
+         0.4986
         ],
         [
-         "Spine",
-         0.395
+         "Hips",
+         0.4772
+        ],
+        [
+         "RightUpLeg",
+         0.0242
         ]
        ]
       ]
@@ -251916,69 +251860,32 @@
      {
       "parent": "Spine",
       "pts": [
-       763,
-       845
+       767,
+       849
       ],
       "bw": [
        [
         [
          "Spine",
-         0.7976
-        ],
-        [
-         "Hips",
-         0.1958
+         0.9945
         ],
         [
          "RightUpLeg",
-         0.0066
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.5751
-        ],
-        [
-         "Spine",
-         0.4068
-        ],
-        [
-         "RightUpLeg",
-         0.0181
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       766,
-       848
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.9934
-        ],
-        [
-         "RightUpLeg",
-         0.0066
+         0.0055
         ]
        ],
        [
         [
          "Spine",
-         0.4942
+         0.5314
         ],
         [
          "Hips",
-         0.4763
+         0.4448
         ],
         [
          "RightUpLeg",
-         0.0295
+         0.0238
         ]
        ]
       ]
@@ -252099,7 +252006,8 @@
        9,
        10,
        11,
-       12
+       12,
+       13
       ],
       "stiff": 0.12,
       "layer": 1
@@ -252109,13 +252017,12 @@
    "tucks": true,
    "loose": true,
    "hem": 0.0,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8//LP/0P/A//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z///////P/z+/T/w////////////////////////////////////3////+T8/z//////z///DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////f////////////////w8P8////////////8/A8P3/DwADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/BP/4P+A//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////73//////P//////w9/v/wP///3//////////////////////////////////v//jMz/z9P//////P//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8//f//////////////wzD/////////////DAwPAADg//8AAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAPz/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
-   "hides": 3831,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8//LP/0P/A//////8AAAAAAAAAAwD/M88P/z////+D/////////////////////////z///////P/z+/T/w////////////////////////////////////3///z8T8/zz+////z///DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////P/7//////////////w8P8////////////8/A8P3/DwADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/BP/4P+A//////8AAAAAAAAAA8A/z/PD//P//D/3//////////////////73//////P//////w9/v/wP///3////////////////////////////+///P/v//jMz/z9P//////P//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8//f//////////////wzD/////////////DAwPAADg//8AAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAPz/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
+   "hides": 3816,
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "fg_f_gorge_kreel",
@@ -252668,13 +252575,12 @@
    "tucks": true,
    "loose": true,
    "hem": 0.0,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P/////////////////0//A//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z/////////z+/z/w////////////////////////////////////3////+z8/3z/////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////P/T//////////////w8P8////////////8/A8/////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/B//4/+A//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////73//////P//////w9///wP///3//////////////////////////////////v//zMz/z9v/////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8/+P//////////////wzD/////////////DDwPAMD0////DwAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwIwAAAPz/////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
-   "hides": 3892,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////////vP/0//A//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z///////v/z+/T/w////////////////////////////////////3////+z8/3z/////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////P/T//////////////wsD8////////////8/A8/////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/BP/4P+A//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////73//////P//////w9/v/wP///3//////////////////////////////////v//zMz/z9v//////v//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8/+P//////////////ATD/////////////DDwPAMD0////DwAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwIwAAAPz/////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
+   "hides": 3875,
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "fg_f_ice_hook_coil",
@@ -256836,13 +256742,12 @@
    "tucks": true,
    "loose": true,
    "hem": 0.0,
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8//L//0P/A//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z///////P/z+/z/w////////////////////////////////////3///z8T8/zz+////z///zwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////P/7//////////////w8P8////////////8/A8P3/DwADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/B//4P+A//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////////////P//////w9///wP//////////////////////////////////////v//jMz/z9P//////P//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8/+P//////////////wzD/////////////DAwPAADg//8AAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAPz/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
-   "hides": 3832,
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/CP/8P/w//////8AAAAAAAAAMwD/M88P/z////+D/////////////////////////z///////P/z+/T/w////////////////////////////////////3////+T8/zz/////z///zwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADA////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAP////8DAAAAAAAAAAAAAAD/////AzAA/////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////P//DwDw//////8AAAAAAAAAAAAAAAAAAPD/////////////////////////////////////P/7//////////////w8P8////////////8/A8P3/DwADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAwP////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P///////////8P/BP/4P+A//////8AAAAAAAAAD8A/z/PD//P//D/3//////////////////73//////P//////w9/v/wP///3//////////////////////////////////v//jMz/z9P//////P//AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAA8P///z8AAAAAAAAAAAAAAPz///8PwAD8////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz////z//8/AMD//////wMAAAAAAAAAAAAAAAAAwO////////////////////////////////////8/+P//////////////wzD/////////////DAwPAADg//8AAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAPz/////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwMw==",
+   "hides": 3826,
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "fg_f_wildcat_trophy_rack",
@@ -281565,8 +281470,7 @@
    "covers_hair": true,
    "hide_parts": [
     "Human.lips"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_praetorian_lorica",
@@ -281581,8 +281485,7 @@
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_praetorian_manica",
@@ -281595,8 +281498,7 @@
    ],
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/AAAAAAAAAAAAAAAAwMwAwAAwM8/AzDwDM+MACD8Mz/P/////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAAAP//////////////////////////////////8AAAAAAzz8////AfAD8Mz//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAAzAwADAAz8wzMzDMwMw1A8MPwPP//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAADz8/////////////////////////////////wMAAAAM8PD///8LwA/AM///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 6990,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_praetorian_tassets",
@@ -281607,8 +281509,7 @@
    "legged": true,
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwzEAAAAAAAAAAAAAAAAP//DwDwzcADAAAAAPz//w///////////////////////////////////////////////8//PwAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////AADAP88yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAADwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD/////////////////AwAAAAAAAAAA/P////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDMgAAAAAAAAAAAAAADA//8AAO8MPAAAAADA////////8P/////////////////////////////////////////////////////////////////P/////wMAAADA//////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAD/////z3MMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAA8A/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD//////////////////wAAAAAAAAAAAP//////////////////AAAAAAAAAAAAAw==",
    "hides": 2878,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_praetorian_greaves",
@@ -281618,8 +281519,7 @@
    "culture": "izani",
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAADPDwDz8AADwM8PAPDAzBITMPzNM/zO/////////////////////////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////Dz8AAwAAAAAA/P///////////////////////////////////////////////////////////////////////////////////////////w8AAAAAAAAAAADw////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAMMDDM/AMDPAwwMMzMDwAQ8g4PI/zPH/z/////////////////////////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A///////////////////////////////////////////////////////////////////////////////////////////////////////////////////ww/AAAAAAAAA//////////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAA/P///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 4758,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_praetorian_cape",
@@ -281724,11 +281624,11 @@
        [
         [
          "Hips",
-         0.937
+         0.9442
         ],
         [
          "Spine",
-         0.063
+         0.0558
         ]
        ],
        [
@@ -281785,11 +281685,11 @@
        [
         [
          "Hips",
-         0.9367
+         0.9439
         ],
         [
          "Spine",
-         0.0633
+         0.0561
         ]
        ],
        [
@@ -281846,11 +281746,11 @@
        [
         [
          "Hips",
-         0.9357
+         0.9426
         ],
         [
          "Spine",
-         0.0643
+         0.0574
         ]
        ],
        [
@@ -281907,11 +281807,11 @@
        [
         [
          "Hips",
-         0.9383
+         0.946
         ],
         [
          "Spine",
-         0.0617
+         0.054
         ]
        ],
        [
@@ -282007,12 +281907,11 @@
        4,
        5
       ],
-      "stiff": 0.01,
+      "stiff": 0.18,
       "layer": 2
      }
     ]
-   },
-   "made_by": "garments"
+   }
   },
   {
    "id": "iziz_f_pilot_casque",
@@ -282020,8 +281919,7 @@
    "slot": "head",
    "glb": "pieces/mpfb_female/iziz_f_pilot_casque.glb",
    "culture": "izani",
-   "covers_hair": true,
-   "made_by": "garments"
+   "covers_hair": true
   },
   {
    "id": "iziz_f_pilot_harness",
@@ -282036,8 +281934,7 @@
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_pilot_gauntlets",
@@ -282050,8 +281947,7 @@
    ],
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/AAAAAAAAAAAAAAAAwMwAwAAwM8/AzDwDM+MACD8Mz/P/////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAAAP//////////////////////////////////8AAAAAAzz8////AfAD8Mz//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAAzAwADAAz8wzMzDMwMw1A8MPwPP//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAADz8/////////////////////////////////wMAAAAM8PD///8LwA/AM///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 6990,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pilot_breeches",
@@ -282062,8 +281958,7 @@
    "legged": true,
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwzEAAAAAAAAAAAAAAAAP//DwDwzcADAAAAAPz//w///////////////////////////////////////////////8//PwAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////AADAP88yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAADwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD/////////////////AwAAAAAAAAAA/P////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDMgAAAAAAAAAAAAAADA//8AAO8MPAAAAADA////////8P/////////////////////////////////////////////////////////////////P/////wMAAADA//////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAD/////z3MMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAA8A/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD//////////////////wAAAAAAAAAAAP//////////////////AAAAAAAAAAAAAw==",
    "hides": 2878,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pilot_boots",
@@ -282071,18 +281966,16 @@
    "slot": "feet",
    "glb": "pieces/mpfb_female/iziz_f_pilot_boots.glb",
    "culture": "izani",
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMM0MwP///////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z//////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAA/P//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAA/P//////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwjDMz8P///////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAA/////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-   "hides": 4330,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMM0M8P///////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z//////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAA/P//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAA/P//////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwjDMz/P///////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAA/////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 4334,
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pilot_aegis_pack",
    "name": "Forgemaster Pilot Dorsal Aegis Capacitor Pack",
    "slot": "back",
    "glb": "pieces/mpfb_female/iziz_f_pilot_aegis_pack.glb",
-   "culture": "izani",
-   "made_by": "garments"
+   "culture": "izani"
   },
   {
    "id": "iziz_f_watch_sallet",
@@ -282090,8 +281983,7 @@
    "slot": "head",
    "glb": "pieces/mpfb_female/iziz_f_watch_sallet.glb",
    "culture": "izani",
-   "covers_hair": true,
-   "made_by": "garments"
+   "covers_hair": true
   },
   {
    "id": "iziz_f_watch_cuirass",
@@ -282106,8 +281998,7 @@
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_watch_bracers",
@@ -282117,8 +282008,7 @@
    "culture": "izani",
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwMwAwAAwM8/AzDwDM+MACD8Mz/P/////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAAAAAAAAAP/wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADz8DwDwAfAD8MwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAzAwADAAz8wzMzDMwMw1A8MPwPP//////////////////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAADz8DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8PA/AMALwA/AMwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 542,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_watch_trousers",
@@ -282129,8 +282019,7 @@
    "legged": true,
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwzEAAAAAAAAAAAAAAAAP//DwDwzcADAAAAAPz//w///////////////////////////////////////////////8//PwAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////AADAP88yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAADwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD/////////////////AwAAAAAAAAAA/P////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDMgAAAAAAAAAAAAAADA//8AAO8MPAAAAADA////////8P/////////////////////////////////////////////////////////////////P/////wMAAADA//////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAD/////z3MMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAA8A/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD//////////////////wAAAAAAAAAAAP//////////////////AAAAAAAAAAAAAw==",
    "hides": 2878,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_watch_boots",
@@ -282138,18 +282027,16 @@
    "slot": "feet",
    "glb": "pieces/mpfb_female/iziz_f_watch_boots.glb",
    "culture": "izani",
-   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMM0MwP///////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z//////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAA/P//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAA/P//////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwjDMz8P///////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAA/////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-   "hides": 4330,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMM0M8P///////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z//////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAA/P//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAA/P//////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwjDMz/P///////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A////////////////////////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAA/////////////////////////////////////////////////////////////////////////////////////////////wAAAAAAAAAAAAAAAP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 4334,
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_watch_pack",
    "name": "Watch Auxilia Grapple & Shackle Patrol Pack",
    "slot": "back",
    "glb": "pieces/mpfb_female/iziz_f_watch_pack.glb",
-   "culture": "izani",
-   "made_by": "garments"
+   "culture": "izani"
   },
   {
    "id": "iziz_f_crab_galea",
@@ -282230,8 +282117,7 @@
    "covers_hair": true,
    "hide_parts": [
     "Human.lips"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_pc_legatus_cuirass",
@@ -282246,8 +282132,7 @@
    "hide_by": "rays",
    "hide_parts": [
     "Human.nipple"
-   ],
-   "made_by": "garments"
+   ]
   },
   {
    "id": "iziz_f_pc_legatus_gauntlets",
@@ -282260,8 +282145,7 @@
    ],
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/AAAAAAAAAAAAAAAAwMwAwAAwM8/AzDwDM+MACD8Mz/P/////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAAAP//////////////////////////////////8AAAAAAzz8////AfAD8Mz//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAAzAwADAAz8wzMzDMwMw1A8MPwPP//////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAADz8/////////////////////////////////wMAAAAM8PD///8LwA/AM///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 6990,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pc_legatus_tassets",
@@ -282272,8 +282156,7 @@
    "legged": true,
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwzEAAAAAAAAAAAAAAAAP//DwDwzcADAAAAAPz//w///////////////////////////////////////////////8//PwAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////AADAP88yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAADwA8AMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD/////////////////AwAAAAAAAAAA/P////////////////8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADDMgAAAAAAAAAAAAAADA//8AAO8MPAAAAADA////////8P/////////////////////////////////////////////////////////////////P/////wMAAADA//////////////////////////////////////////////////////////////////////////////////////////////////////////8DAAD/////z3MMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAAAAAAAAA8A/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD//////////////////wAAAAAAAAAAAP//////////////////AAAAAAAAAAAAAw==",
    "hides": 2878,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pc_legatus_greaves",
@@ -282283,8 +282166,7 @@
    "culture": "izani",
    "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAADPDwDz8AADwM8PAPDAzBITMPzNM/zO/////////////////////////////////8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z/////////////////////////////////////////////////////////////////////////////////////////////////////////////////Dz8AAwAAAAAA/P///////////////////////////////////////////////////////////////////////////////////////////w8AAAAAAAAAAADw////////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAMMDDM/AMDPAwwMMzMDwAQ8g4PI/zPH/z/////////////////////////////////////////z8AAAAAAAAAAAAAAPz///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////////////////////////////////////////////////////////////////////A///////////////////////////////////////////////////////////////////////////////////////////////////////////////////ww/AAAAAAAAA//////////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAA/P///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
    "hides": 4758,
-   "hide_by": "rays",
-   "made_by": "garments"
+   "hide_by": "rays"
   },
   {
    "id": "iziz_f_pc_legatus_vexillum",
@@ -282365,13 +282247,13 @@
      {
       "parent": "Spine",
       "pts": [
-       585,
-       653,
-       755,
-       891,
-       1061,
-       1265,
-       1469
+       584,
+       652,
+       754,
+       890,
+       1060,
+       1264,
+       1468
       ],
       "bw": [
        [
@@ -282397,11 +282279,11 @@
        [
         [
          "Hips",
-         0.937
+         0.946
         ],
         [
          "Spine",
-         0.063
+         0.054
         ]
        ],
        [
@@ -282433,13 +282315,13 @@
      {
       "parent": "Spine",
       "pts": [
-       591,
-       659,
-       761,
-       897,
-       1067,
-       1271,
-       1475
+       589,
+       657,
+       759,
+       895,
+       1065,
+       1269,
+       1473
       ],
       "bw": [
        [
@@ -282465,11 +282347,11 @@
        [
         [
          "Hips",
-         0.9367
+         0.9426
         ],
         [
          "Spine",
-         0.0633
+         0.0574
         ]
        ],
        [
@@ -282501,13 +282383,13 @@
      {
       "parent": "Spine",
       "pts": [
-       598,
-       666,
-       768,
-       904,
-       1074,
-       1278,
-       1482
+       594,
+       662,
+       764,
+       900,
+       1070,
+       1274,
+       1478
       ],
       "bw": [
        [
@@ -282533,11 +282415,11 @@
        [
         [
          "Hips",
-         0.9357
+         0.9466
         ],
         [
          "Spine",
-         0.0643
+         0.0534
         ]
        ],
        [
@@ -282569,13 +282451,13 @@
      {
       "parent": "Spine",
       "pts": [
-       604,
-       672,
-       774,
-       910,
-       1080,
-       1284,
-       1488
+       600,
+       668,
+       770,
+       906,
+       1076,
+       1280,
+       1484
       ],
       "bw": [
        [
@@ -282601,11 +282483,79 @@
        [
         [
          "Hips",
-         0.9383
+         0.9411
         ],
         [
          "Spine",
-         0.0617
+         0.0589
+        ]
+       ],
+       [
+        [
+         "Hips",
+         1.0
+        ]
+       ],
+       [
+        [
+         "Hips",
+         1.0
+        ]
+       ],
+       [
+        [
+         "Hips",
+         1.0
+        ]
+       ],
+       [
+        [
+         "Hips",
+         1.0
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       606,
+       674,
+       776,
+       912,
+       1082,
+       1286,
+       1490
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8085
+        ],
+        [
+         "Spine1",
+         0.1915
+        ]
+       ],
+       [
+        [
+         "Spine",
+         0.8734
+        ],
+        [
+         "Hips",
+         0.1266
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.9466
+        ],
+        [
+         "Spine",
+         0.0534
         ]
        ],
        [
@@ -282712,14 +282662,14 @@
        2,
        3,
        4,
-       5
+       5,
+       6
       ],
-      "stiff": 0.01,
+      "stiff": 0.18,
       "layer": 2
      }
     ]
-   },
-   "made_by": "garments"
+   }
   },
   {
    "id": "etn_f_heir_undertrousers",
@@ -308413,7 +308363,7 @@
       "t0": 0,
       "t1": 4240,
       "v0": 0.0,
-      "v1": 0.09668
+      "v1": 0.05957
      }
     ]
    },
@@ -308542,13 +308492,13 @@
      {
       "parent": "Hips",
       "pts": [
-       1150,
-       1232,
-       1355,
-       1519,
-       1724,
-       1929,
-       2175
+       1151,
+       1233,
+       1356,
+       1520,
+       1725,
+       1930,
+       2176
       ],
       "bw": [
        [
@@ -308564,15 +308514,15 @@
        [
         [
          "LeftUpLeg",
-         0.6021
-        ],
-        [
-         "Hips",
-         0.3167
+         0.794
         ],
         [
          "RightUpLeg",
-         0.0811
+         0.1069
+        ],
+        [
+         "Hips",
+         0.099
         ]
        ],
        [
@@ -308688,15 +308638,15 @@
        [
         [
          "Hips",
-         0.6866
+         0.6828
         ],
         [
          "Spine",
-         0.2809
+         0.2913
         ],
         [
          "LeftUpLeg",
-         0.0325
+         0.0259
         ]
        ],
        [
@@ -308725,12 +308675,12 @@
        ],
        [
         [
-         "LeftLeg",
-         0.3315
+         "LeftUpLeg",
+         0.342
         ],
         [
-         "LeftUpLeg",
-         0.2785
+         "LeftLeg",
+         0.268
         ],
         [
          "RightUpLeg",
@@ -308782,133 +308732,13 @@
      {
       "parent": "Spine",
       "pts": [
-       827,
-       909,
-       1073,
-       1319,
-       1565,
-       1852,
-       2180
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.8145
-        ],
-        [
-         "Spine1",
-         0.1824
-        ],
-        [
-         "LeftUpLeg",
-         0.0031
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.6563
-        ],
-        [
-         "Spine",
-         0.2997
-        ],
-        [
-         "LeftUpLeg",
-         0.0441
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.6221
-        ],
-        [
-         "Hips",
-         0.3779
-        ]
-       ],
-       [
-        [
-         "LeftUpLeg",
-         0.637
-        ],
-        [
-         "RightUpLeg",
-         0.242
-        ],
-        [
-         "Hips",
-         0.121
-        ]
-       ],
-       [
-        [
-         "LeftLeg",
-         0.3269
-        ],
-        [
-         "LeftUpLeg",
-         0.2831
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "LeftLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "LeftLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       829,
-       911,
-       1075,
-       1321,
-       1567,
-       1854,
-       2182
+       828,
+       910,
+       1074,
+       1320,
+       1566,
+       1853,
+       2181
       ],
       "bw": [
        [
@@ -308928,15 +308758,15 @@
        [
         [
          "Hips",
-         0.7056
+         0.6563
         ],
         [
          "Spine",
-         0.2584
+         0.2997
         ],
         [
          "LeftUpLeg",
-         0.036
+         0.0441
         ]
        ],
        [
@@ -308966,15 +308796,15 @@
        [
         [
          "LeftUpLeg",
-         0.3171
-        ],
-        [
-         "LeftLeg",
-         0.2929
+         0.4218
         ],
         [
          "RightUpLeg",
          0.26
+        ],
+        [
+         "LeftLeg",
+         0.1882
         ],
         [
          "Hips",
@@ -309022,51 +308852,51 @@
      {
       "parent": "Spine",
       "pts": [
-       832,
-       914,
-       1078,
-       1324,
-       1570,
-       1857,
-       2185
+       831,
+       913,
+       1077,
+       1323,
+       1569,
+       1856,
+       2184
       ],
       "bw": [
        [
         [
          "Spine",
-         0.8094
+         0.8007
         ],
         [
          "Spine1",
-         0.1869
+         0.196
         ],
         [
          "LeftUpLeg",
-         0.0037
+         0.0033
         ]
        ],
        [
         [
          "Hips",
-         0.6925
+         0.4999
         ],
         [
          "Spine",
-         0.2618
+         0.4698
         ],
         [
          "LeftUpLeg",
-         0.0457
+         0.0303
         ]
        ],
        [
         [
-         "Hips",
-         0.7472
+         "LeftUpLeg",
+         0.6359
         ],
         [
-         "LeftUpLeg",
-         0.2528
+         "Hips",
+         0.3641
         ]
        ],
        [
@@ -309142,23 +308972,23 @@
      {
       "parent": "Spine",
       "pts": [
-       834,
-       916,
-       1080,
-       1326,
-       1572,
-       1859,
-       2187
+       833,
+       915,
+       1079,
+       1325,
+       1571,
+       1858,
+       2186
       ],
       "bw": [
        [
         [
          "Spine",
-         0.711
+         0.6756
         ],
         [
          "Hips",
-         0.283
+         0.3185
         ],
         [
          "LeftUpLeg",
@@ -309168,15 +308998,15 @@
        [
         [
          "Hips",
-         0.7056
+         0.6924
         ],
         [
          "Spine",
-         0.2566
+         0.2712
         ],
         [
          "LeftUpLeg",
-         0.0377
+         0.0364
         ]
        ],
        [
@@ -309206,7 +309036,7 @@
        [
         [
          "LeftUpLeg",
-         0.517
+         0.5259
         ],
         [
          "RightUpLeg",
@@ -309218,7 +309048,7 @@
         ],
         [
          "LeftLeg",
-         0.093
+         0.0841
         ]
        ],
        [
@@ -309434,7 +309264,7 @@
        [
         [
          "LeftUpLeg",
-         0.6035
+         0.5971
         ],
         [
          "RightUpLeg",
@@ -309446,7 +309276,7 @@
         ],
         [
          "LeftLeg",
-         0.0065
+         0.0129
         ]
        ],
        [
@@ -309550,7 +309380,7 @@
        [
         [
          "RightUpLeg",
-         0.6035
+         0.5971
         ],
         [
          "LeftUpLeg",
@@ -309562,7 +309392,7 @@
         ],
         [
          "RightLeg",
-         0.0065
+         0.0129
         ]
        ],
        [
@@ -309726,41 +309556,41 @@
      {
       "parent": "Spine",
       "pts": [
-       846,
-       928,
-       1092,
-       1338,
-       1584,
-       1871,
-       2199
+       847,
+       929,
+       1093,
+       1339,
+       1585,
+       1872,
+       2200
       ],
       "bw": [
        [
         [
          "Spine",
-         0.756
+         0.7316
         ],
         [
          "Hips",
-         0.2372
+         0.262
         ],
         [
          "RightUpLeg",
-         0.0068
+         0.0064
         ]
        ],
        [
         [
          "Hips",
-         0.6753
+         0.6587
         ],
         [
          "Spine",
-         0.284
+         0.3027
         ],
         [
          "RightUpLeg",
-         0.0406
+         0.0386
         ]
        ],
        [
@@ -309790,7 +309620,7 @@
        [
         [
          "RightUpLeg",
-         0.5148
+         0.5343
         ],
         [
          "LeftUpLeg",
@@ -309802,7 +309632,7 @@
         ],
         [
          "RightLeg",
-         0.0952
+         0.0757
         ]
        ],
        [
@@ -309826,19 +309656,15 @@
        [
         [
          "RightLeg",
-         0.35
+         0.4023
         ],
         [
          "LeftUpLeg",
-         0.26
+         0.2989
         ],
         [
          "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
+         0.2989
         ]
        ]
       ]
@@ -309846,47 +309672,47 @@
      {
       "parent": "Spine",
       "pts": [
-       848,
-       930,
-       1094,
-       1340,
-       1586,
-       1873,
-       2201
+       849,
+       931,
+       1095,
+       1341,
+       1587,
+       1874,
+       2202
       ],
       "bw": [
        [
         [
          "Spine",
-         0.9934
+         0.9945
         ],
         [
          "RightUpLeg",
-         0.0066
+         0.0055
         ]
        ],
        [
-        [
-         "Hips",
-         0.66
-        ],
         [
          "Spine",
-         0.2923
+         0.5314
+        ],
+        [
+         "Hips",
+         0.4448
         ],
         [
          "RightUpLeg",
-         0.0477
+         0.0238
         ]
        ],
        [
         [
-         "Hips",
-         0.7406
+         "RightUpLeg",
+         0.6638
         ],
         [
-         "RightUpLeg",
-         0.2594
+         "Hips",
+         0.3362
         ]
        ],
        [
@@ -309942,15 +309768,19 @@
        [
         [
          "RightLeg",
-         0.4023
+         0.35
         ],
         [
          "LeftUpLeg",
-         0.2989
+         0.26
         ],
         [
          "RightUpLeg",
-         0.2989
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
         ]
        ]
       ]
@@ -309958,13 +309788,13 @@
      {
       "parent": "Spine",
       "pts": [
-       851,
-       933,
-       1097,
-       1343,
-       1589,
-       1876,
-       2204
+       852,
+       934,
+       1098,
+       1344,
+       1590,
+       1877,
+       2205
       ],
       "bw": [
        [
@@ -309980,15 +309810,15 @@
        [
         [
          "Hips",
-         0.7587
+         0.7466
         ],
         [
          "Spine",
-         0.212
+         0.2222
         ],
         [
          "RightUpLeg",
-         0.0293
+         0.0312
         ]
        ],
        [
@@ -310018,131 +309848,15 @@
        [
         [
          "RightUpLeg",
-         0.3125
+         0.4248
+        ],
+        [
+         "LeftUpLeg",
+         0.26
         ],
         [
          "RightLeg",
-         0.2975
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.35
-        ],
-        [
-         "LeftUpLeg",
-         0.26
-        ],
-        [
-         "RightUpLeg",
-         0.26
-        ],
-        [
-         "Hips",
-         0.13
-        ]
-       ]
-      ]
-     },
-     {
-      "parent": "Spine",
-      "pts": [
-       853,
-       935,
-       1099,
-       1345,
-       1591,
-       1878,
-       2206
-      ],
-      "bw": [
-       [
-        [
-         "Spine",
-         0.9949
-        ],
-        [
-         "RightUpLeg",
-         0.0051
-        ]
-       ],
-       [
-        [
-         "Hips",
-         0.7466
-        ],
-        [
-         "Spine",
-         0.2222
-        ],
-        [
-         "RightUpLeg",
-         0.0312
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.6445
-        ],
-        [
-         "Hips",
-         0.3555
-        ]
-       ],
-       [
-        [
-         "RightUpLeg",
-         0.637
-        ],
-        [
-         "LeftUpLeg",
-         0.242
-        ],
-        [
-         "Hips",
-         0.121
-        ]
-       ],
-       [
-        [
-         "RightLeg",
-         0.3269
-        ],
-        [
-         "RightUpLeg",
-         0.2831
-        ],
-        [
-         "LeftUpLeg",
-         0.26
+         0.1852
         ],
         [
          "Hips",
@@ -310249,12 +309963,12 @@
        ],
        [
         [
-         "RightLeg",
-         0.3319
+         "RightUpLeg",
+         0.34
         ],
         [
-         "RightUpLeg",
-         0.2781
+         "RightLeg",
+         0.27
         ],
         [
          "LeftUpLeg",
@@ -310306,13 +310020,13 @@
      {
       "parent": "Hips",
       "pts": [
-       1186,
-       1268,
-       1391,
-       1555,
-       1760,
-       1965,
-       2211
+       1185,
+       1267,
+       1390,
+       1554,
+       1759,
+       1964,
+       2210
       ],
       "bw": [
        [
@@ -310328,15 +310042,15 @@
        [
         [
          "RightUpLeg",
-         0.6938
-        ],
-        [
-         "Hips",
-         0.2126
+         0.8267
         ],
         [
          "LeftUpLeg",
-         0.0935
+         0.1114
+        ],
+        [
+         "Hips",
+         0.0619
         ]
        ],
        [
@@ -310422,6 +310136,1630 @@
         ]
        ]
       ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2974,
+       3054,
+       3214,
+       3414,
+       3654,
+       3934,
+       4254
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.756
+        ],
+        [
+         "Hips",
+         0.2372
+        ],
+        [
+         "RightUpLeg",
+         0.0068
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6753
+        ],
+        [
+         "Spine",
+         0.284
+        ],
+        [
+         "RightUpLeg",
+         0.0406
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7406
+        ],
+        [
+         "RightUpLeg",
+         0.2594
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.741
+        ],
+        [
+         "LeftUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5853
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0247
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2977,
+       3057,
+       3217,
+       3417,
+       3657,
+       3937,
+       4257
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9934
+        ],
+        [
+         "RightUpLeg",
+         0.0066
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.66
+        ],
+        [
+         "Spine",
+         0.2923
+        ],
+        [
+         "RightUpLeg",
+         0.0477
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7406
+        ],
+        [
+         "RightUpLeg",
+         0.2594
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.741
+        ],
+        [
+         "LeftUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5634
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0466
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2980,
+       3060,
+       3220,
+       3420,
+       3660,
+       3940,
+       4260
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9952
+        ],
+        [
+         "RightUpLeg",
+         0.0048
+        ]
+       ],
+       [
+        [
+         "Spine",
+         0.5314
+        ],
+        [
+         "Hips",
+         0.4448
+        ],
+        [
+         "RightUpLeg",
+         0.0238
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6638
+        ],
+        [
+         "Hips",
+         0.3362
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.741
+        ],
+        [
+         "LeftUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5336
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0764
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2983,
+       3063,
+       3223,
+       3423,
+       3663,
+       3943,
+       4263
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9949
+        ],
+        [
+         "RightUpLeg",
+         0.0051
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7466
+        ],
+        [
+         "Spine",
+         0.2222
+        ],
+        [
+         "RightUpLeg",
+         0.0312
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6292
+        ],
+        [
+         "Hips",
+         0.3708
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.741
+        ],
+        [
+         "LeftUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.5408
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "RightLeg",
+         0.0692
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2986,
+       3066,
+       3226,
+       3426,
+       3666,
+       3946,
+       4266
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.996
+        ],
+        [
+         "RightUpLeg",
+         0.004
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7393
+        ],
+        [
+         "Spine",
+         0.2343
+        ],
+        [
+         "RightUpLeg",
+         0.0265
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.58
+        ],
+        [
+         "Hips",
+         0.42
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.741
+        ],
+        [
+         "LeftUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.61
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2989,
+       3069,
+       3229,
+       3429,
+       3669,
+       3949,
+       4269
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9974
+        ],
+        [
+         "RightUpLeg",
+         0.0026
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6701
+        ],
+        [
+         "Spine",
+         0.3117
+        ],
+        [
+         "RightUpLeg",
+         0.0182
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.5065
+        ],
+        [
+         "RightUpLeg",
+         0.4935
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.7364
+        ],
+        [
+         "LeftUpLeg",
+         0.1716
+        ],
+        [
+         "Hips",
+         0.092
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.61
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2992,
+       3072,
+       3232,
+       3432,
+       3672,
+       3952,
+       4272
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9982
+        ],
+        [
+         "RightUpLeg",
+         0.0018
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6643
+        ],
+        [
+         "Spine",
+         0.3237
+        ],
+        [
+         "RightUpLeg",
+         0.012
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.5961
+        ],
+        [
+         "RightUpLeg",
+         0.4039
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.6181
+        ],
+        [
+         "Hips",
+         0.2379
+        ],
+        [
+         "LeftUpLeg",
+         0.1441
+        ]
+       ],
+       [
+        [
+         "RightUpLeg",
+         0.61
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "RightLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2995,
+       3075,
+       3235,
+       3435,
+       3675,
+       3955,
+       4275
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.9984
+        ],
+        [
+         "LeftUpLeg",
+         0.0016
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.657
+        ],
+        [
+         "Spine",
+         0.3306
+        ],
+        [
+         "LeftUpLeg",
+         0.0124
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.5712
+        ],
+        [
+         "LeftUpLeg",
+         0.4288
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5363
+        ],
+        [
+         "Hips",
+         0.3386
+        ],
+        [
+         "RightUpLeg",
+         0.125
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.61
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       2998,
+       3078,
+       3238,
+       3438,
+       3678,
+       3958,
+       4278
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8922
+        ],
+        [
+         "Spine1",
+         0.106
+        ],
+        [
+         "LeftUpLeg",
+         0.0018
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6836
+        ],
+        [
+         "Spine",
+         0.2952
+        ],
+        [
+         "LeftUpLeg",
+         0.0211
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.502
+        ],
+        [
+         "Hips",
+         0.498
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.7072
+        ],
+        [
+         "RightUpLeg",
+         0.1648
+        ],
+        [
+         "Hips",
+         0.128
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.61
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3001,
+       3081,
+       3241,
+       3441,
+       3681,
+       3961,
+       4281
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8224
+        ],
+        [
+         "Spine1",
+         0.1752
+        ],
+        [
+         "LeftUpLeg",
+         0.0025
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6866
+        ],
+        [
+         "Spine",
+         0.2809
+        ],
+        [
+         "LeftUpLeg",
+         0.0325
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.525
+        ],
+        [
+         "Hips",
+         0.475
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.741
+        ],
+        [
+         "RightUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.61
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3004,
+       3084,
+       3244,
+       3444,
+       3684,
+       3964,
+       4284
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8145
+        ],
+        [
+         "Spine1",
+         0.1824
+        ],
+        [
+         "LeftUpLeg",
+         0.0031
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6563
+        ],
+        [
+         "Spine",
+         0.2997
+        ],
+        [
+         "LeftUpLeg",
+         0.0441
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.6052
+        ],
+        [
+         "Hips",
+         0.3948
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.741
+        ],
+        [
+         "RightUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5281
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "LeftLeg",
+         0.0819
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3007,
+       3087,
+       3247,
+       3447,
+       3687,
+       3967,
+       4287
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8092
+        ],
+        [
+         "Spine1",
+         0.1878
+        ],
+        [
+         "LeftUpLeg",
+         0.003
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.4999
+        ],
+        [
+         "Spine",
+         0.4698
+        ],
+        [
+         "LeftUpLeg",
+         0.0303
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.6359
+        ],
+        [
+         "Hips",
+         0.3641
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.741
+        ],
+        [
+         "RightUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5129
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "LeftLeg",
+         0.0971
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3010,
+       3090,
+       3250,
+       3450,
+       3690,
+       3970,
+       4290
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.8094
+        ],
+        [
+         "Spine1",
+         0.1869
+        ],
+        [
+         "LeftUpLeg",
+         0.0037
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.6925
+        ],
+        [
+         "Spine",
+         0.2618
+        ],
+        [
+         "LeftUpLeg",
+         0.0457
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7472
+        ],
+        [
+         "LeftUpLeg",
+         0.2528
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.741
+        ],
+        [
+         "RightUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5515
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "LeftLeg",
+         0.0585
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ]
+      ]
+     },
+     {
+      "parent": "Spine",
+      "pts": [
+       3013,
+       3093,
+       3253,
+       3453,
+       3693,
+       3973,
+       4293
+      ],
+      "bw": [
+       [
+        [
+         "Spine",
+         0.711
+        ],
+        [
+         "Hips",
+         0.283
+        ],
+        [
+         "LeftUpLeg",
+         0.0059
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7056
+        ],
+        [
+         "Spine",
+         0.2566
+        ],
+        [
+         "LeftUpLeg",
+         0.0377
+        ]
+       ],
+       [
+        [
+         "Hips",
+         0.7472
+        ],
+        [
+         "LeftUpLeg",
+         0.2528
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.741
+        ],
+        [
+         "RightUpLeg",
+         0.1727
+        ],
+        [
+         "Hips",
+         0.0863
+        ]
+       ],
+       [
+        [
+         "LeftUpLeg",
+         0.5853
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ],
+        [
+         "LeftLeg",
+         0.0247
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.35
+        ],
+        [
+         "LeftUpLeg",
+         0.26
+        ],
+        [
+         "RightUpLeg",
+         0.26
+        ],
+        [
+         "Hips",
+         0.13
+        ]
+       ],
+       [
+        [
+         "LeftLeg",
+         0.4023
+        ],
+        [
+         "LeftUpLeg",
+         0.2989
+        ],
+        [
+         "RightUpLeg",
+         0.2989
+        ]
+       ]
+      ]
      }
     ],
     "parts": [
@@ -310442,27 +311780,45 @@
        11,
        12,
        13,
-       14,
-       15,
-       16
+       14
       ],
-      "stiff": 0.13,
+      "stiff": 0.14,
       "layer": 0
+     },
+     {
+      "closed": false,
+      "chains": [
+       15,
+       16,
+       17,
+       18,
+       19,
+       20,
+       21,
+       22,
+       23,
+       24,
+       25,
+       26,
+       27,
+       28
+      ],
+      "stiff": 0.14,
+      "layer": 1
      }
     ]
    },
    "tucks": true,
    "loose": true,
    "long": true,
-   "hem": 0.978,
+   "hem": 1.043,
    "hide_parts": [
     "Human.nipple",
     "Human.toenails"
    ],
    "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wPwL8A/wP8A/z///////////wP8//////////////////////////////////////////8///////MPMAAAAAAAzA/zC8P/AzD8AwAAAAAAAAAAAAAAAAAAAPz//////////////////////////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP////////////8/AADA////////////////PwAAAAAA///AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPD//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wPwH8A/wP8A/z///////////wD8///////////////////////////////////////////z////P/wAAwAAAADA/DB8MPw/AMM/AAAAAAAAAAAAAAAAAAAAwP//////////////////////////////DwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P////////////8DAAD8////////////////AAAAAAD8/wMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/AwMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
    "hides": 15914,
-   "hide_by": "extraplanar_custom",
-   "made_by": "garments"
+   "hide_by": "extraplanar_custom"
   },
   {
    "id": "ext_f_archon_ribbons",

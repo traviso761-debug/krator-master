@@ -1314,7 +1314,7 @@ def _build_praetorian(sex):
     gid = f'iziz_{sex}_praetorian_cape'
     entries.append(assemble_garment(
         gid, 'Relic-Guard Praetorian Sun-Orange Paludamentum', 'back', cul,
-        [cape(f'{gid}_cape', core.KNEE - 0.06, p_orange, span=1.75, ease=0.026, flare=0.072)],
+        [cape(f'{gid}_cape', core.KNEE - 0.06, p_orange, span=1.75, ease=0.044, flare=0.095)],
     ))
     return entries
 
@@ -1376,7 +1376,7 @@ def _build_forgemaster_pilot(sex):
     gid = f'iziz_{sex}_pilot_boots'
     entries.append(assemble_garment(
         gid, 'Forgemaster Pilot Bronze-Toed Walker Boots', 'feet', cul,
-        boots(gid, p_copper, p_leather, top=0.58, cuff_paint=p_copper, ease_top=0.007),
+        boots(gid, p_copper, p_leather, top=0.58, cuff_paint=p_copper, ease_top=0.024),
     ))
 
     # 6. BACK: Dorsal Ancient-hex Aegis kinetic-shield generator pack with copper coils
@@ -1444,7 +1444,7 @@ def _build_watch(sex):
     gid = f'iziz_{sex}_watch_boots'
     entries.append(assemble_garment(
         gid, 'Watch Auxilia Hobnailed Patrol Boots', 'feet', cul,
-        boots(gid, _p_leather('soot', 'copper'), p_boot, top=0.58, cuff_paint=p_copper, ease_top=0.007),
+        boots(gid, _p_leather('soot', 'copper'), p_boot, top=0.58, cuff_paint=p_copper, ease_top=0.024),
     ))
 
     # 6. BACK: Mercenary grapple-coil & manacle patrol pack
@@ -1576,7 +1576,7 @@ def _build_pc_legatus(sex):
 
     # 6. BACK: Imperial sun-orange paludamentum cape + dorsal gilded Sun-Orb vexillum standard
     gid = f'iziz_{sex}_pc_legatus_vexillum'
-    parts_b = [cape(f'{gid}_paludamentum', core.ANKLE + 0.16, p_orange, span=1.78, ease=0.026, flare=0.072)]
+    parts_b = [cape(f'{gid}_paludamentum', core.ANKLE + 0.16, p_orange, span=1.78, ease=0.044, flare=0.095)]
     p_bk, bk, rgt, up = _dorsal_anchor(0.62)
     base_p = p_bk + bk * 0.034
     top_p = base_p + up * 0.36 + bk * 0.015

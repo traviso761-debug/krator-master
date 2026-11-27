@@ -733,16 +733,16 @@ def _build_singularity_archon(sex):
     apply_custom_hide(ent_h, select_body_tris(('Head', 'Neck'), weight_thresh=0.20, mode='any'))
     entries.append(ent_h)
 
-    # --- 1B. TORSO: ext_{s}_archon_robe (Waist-Cropped Indigo-Gold Kimono + Single Unified Flared Galaxy-Rift Lower Robe) ---
+    # --- 1B. TORSO: ext_{s}_archon_robe (Full Ankle-Sweeping Split Indigo-Gold Kimono over Galaxy-Rift Void Skirt) ---
     gid_t = f'ext_{sex}_archon_robe'
     parts_t = []
 
-    # 1) Single unified full-height, dramatically flared Cosmic Nebula Rift robe (`nebula_rift` shader, layer=0).
-    #    Below `core.WAIST`, this is the ONLY cloth skirt — zero concentric inner/outer skirt overlap so lower-layer
-    #    clipping is 100% geometrically impossible across idle, walk, and run!
+    # 1) Inner full-height Cosmic Nebula Rift void column/bell (`nebula_rift` shader, layer=0).
+    #    Uses a sleek, slightly tapered bell (`flare=0.135`) so the outer split kimono robe sweeps cleanly
+    #    outside it with generous +26..34 mm radial clearance at every height from waist to ankle.
     void_tube = torso_tube(
-        gid_t + '_galaxy_rift', core.TOP + 0.018, 0.030, ease=0.014, paint=void_p,
-        n=40, hang_from=core.WAIST, flare=0.220, stiff=0.13, layer=0
+        gid_t + '_galaxy_rift', core.TOP + 0.018, 0.030, ease=0.010, paint=void_p,
+        n=40, hang_from=core.WAIST, flare=0.135, stiff=0.14, layer=0
     )
     tag_vfx(void_tube, {
         'kind': 'nebula_rift',
@@ -756,22 +756,28 @@ def _build_singularity_archon(sex):
     }, no_conform=True)
     parts_t.append(void_tube)
 
-    # 2) Upper-Body C-Split Regal Indigo-Violet & Gold Kimono Jacket cropped cleanly at `core.WAIST + 0.015`
-    #    (NO lower skirt below the waist — frames the upper chest rift & joins the gilded waist cincture cleanly!)
+    # 2) Full-Length Ankle-Sweeping Open-Front Split Indigo-Violet & Gold Kimono Robe (`layer=1`).
+    #    Wide front V-opening (`arc=(-0.72*pi, +0.72*pi)`, i.e. |angle - pi| > 0.88 rad) reveals the inner
+    #    spiral galaxy cleanly from chest to ankle, with synchronized cloth `chains` (`hang_from=core.WAIST`,
+    #    identical `stiff=0.14`) and guaranteed +26..34 mm radial clearance outside `void_tube` at every row!
     outer_robe = torso_tube(
-        gid_t + '_split_robe', core.TOP + 0.008, core.WAIST + 0.015, ease=0.032, paint=indigo_robe_p,
-        n=38, rows=12, arc=(-0.74 * math.pi, 0.74 * math.pi)
+        gid_t + '_split_robe', core.TOP + 0.008, 0.042, ease=0.038, paint=indigo_robe_p,
+        n=40, arc=(-0.72 * math.pi, 0.72 * math.pi),
+        hang_from=core.WAIST, flare=0.175, stiff=0.14, layer=1
     )
-    _ensure_radial_clearance(outer_robe, void_tube, min_gap=0.024)
+    # Enforce smooth +26 mm (chest/waist) ramping to +34 mm (ankle) radial clearance over `void_tube`
+    _ensure_radial_clearance(outer_robe, void_tube, min_gap=0.026)
+    _ensure_radial_clearance(outer_robe, void_tube, min_gap=0.030, z_below=core.WAIST + 0.02)
+    _ensure_radial_clearance(outer_robe, void_tube, min_gap=0.034, z_below=core.KNEE + 0.08)
     outer_robe.no_conform = True
     parts_t.append(outer_robe)
 
-    # 2B) Gilded Astral Waist Cincture bridging the upper kimono jacket cleanly into the flared galaxy-rift skirt
+    # 2B) Open-Front Gilded Astral Waist Cincture wrapping cleanly outside the split kimono panels
     waist_cincture = torso_tube(
-        gid_t + '_waist_cincture', core.WAIST + 0.032, core.WAIST - 0.010, ease=0.038, paint=gold_p,
-        n=36, rows=5
+        gid_t + '_waist_cincture', core.WAIST + 0.032, core.WAIST - 0.010, ease=0.046, paint=gold_p,
+        n=36, rows=5, arc=(-0.72 * math.pi, 0.72 * math.pi)
     )
-    _ensure_radial_clearance(waist_cincture, void_tube, min_gap=0.018)
+    _ensure_radial_clearance(waist_cincture, outer_robe, min_gap=0.008)
     waist_cincture.no_conform = True
     parts_t.append(waist_cincture)
 
@@ -1030,19 +1036,21 @@ def _build_censer_revenant(sex):
         parts_t.extend(pld_parts)
 
     # Ornate waist clasp + cropped gothic chest stole-straps ending cleanly at `core.WAIST - 0.02`
-    buckle_c = chest_front(core.WAIST - 0.002, 0.048)
+    # Use smooth body-transferred spine skinning (`rigid_joint=None`) and flush chest/waist offsets
+    # so the clasp and stoles bend cleanly in lockstep with `cuirass_plate` during animation!
+    buckle_c = chest_front(core.WAIST - 0.002, 0.034)
     parts_t.append(torus_ring(
-        gid_t + '_belt_clasp', buckle_c, fwd, 0.026, 0.008, 0.007, gold_p, rigid_joint='Spine', n_major=16, n_minor=6
+        gid_t + '_belt_clasp', buckle_c, fwd, 0.026, 0.008, 0.007, gold_p, rigid_joint=None, n_major=16, n_minor=6
     ))
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
         lap_pts = [
-            chest_front(core.CHEST + 0.075, 0.046, x=sgn * 0.072),
-            chest_front(core.CHEST - 0.035, 0.050, x=sgn * 0.068),
-            chest_front(core.WAIST - 0.020, 0.048, x=sgn * 0.064),
+            chest_front(core.CHEST + 0.075, 0.038, x=sgn * 0.072),
+            chest_front(core.CHEST - 0.035, 0.040, x=sgn * 0.068),
+            chest_front(core.WAIST - 0.020, 0.034, x=sgn * 0.064),
         ]
         parts_t.append(sweep_tube(
             f'{gid_t}_stole_{tag}', catmull_spline(lap_pts, 8), [0.020, 0.022],
-            plate_p, n=8, rigid_joint='Spine2', scale_xy=(1.35, 0.22), ref_dir=left_w, cap_ends=False
+            plate_p, n=8, rigid_joint=None, scale_xy=(1.35, 0.22), ref_dir=left_w, cap_ends=False
         ))
 
     # Chest chains draped proudly across the gothic breastplate keel

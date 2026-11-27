@@ -70,7 +70,9 @@ from ..types.headgear import (
 from ..types.accoutrements import (
     blob, pouch_belt, pendants, tube, rosette, eye_disc
 )
-from .xanadu import _dorsal_pad
+from .xanadu import (
+    _dorsal_pad, _push_outside_parts, _conform_to_surface, _smooth_sleeve_shoulders
+)
 
 
 def _physician_gloves(gid, palm_paint, cuff_paint):
@@ -146,8 +148,8 @@ def _build_monk_crimson_for_sex(sex, body_id):
     ], [
         PN(0.32, 0.68, 'fluted', 'omaroon', 'basalt', 0.08),
     ], fabric=WOOL)
-    parts_h.append(hood(gid_h + '_hood', hood_paint, ease=0.030, ease_low=0.048,
-                        open_front=0.92, low=-0.52, rows=14, n=36, peak=0.055, high=1.02))
+    parts_h.append(hood(gid_h + '_hood', hood_paint, ease=0.030, ease_low=0.044,
+                        open_front=0.92, low=-0.18, rows=14, n=36, peak=0.055, high=1.02))
 
     brow_band_p = P('omaroon', 0.04, [
         B('top', 0.0, 0.008, 'solid', 'gold'),
@@ -228,15 +230,24 @@ def _build_monk_crimson_for_sex(sex, body_id):
         PN(0.64, 0.84, 'fluted', 'slate', 'basalt', 0.07),
         PN(0.47, 0.53, 'solid', 'omaroon', 'basalt', 1.0),
     ], fabric=WOOL)
-    parts_t.append(torso_tube(gid_t + '_robe', TOP, KNEE + 0.04, 0.016, robe_paint,
-                              n=48, rows=20, hang_from=WAIST - 0.02, flare=0.13,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    robe_pt = torso_tube(gid_t + '_robe', TOP, KNEE + 0.04, 0.016, robe_paint,
+                         n=48, rows=20, hang_from=WAIST - 0.02, flare=0.13,
+                         group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)
+    parts_t.append(robe_pt)
     parts_t.append(stand_collar(gid_t, P('holyred', 0.04, [
         B('top', 0.0, 0.010, 'solid', 'cream'),
         B('bottom', 0.0, 0.010, 'solid', 'gold'),
     ], fabric=WOOL), high=0.036))
 
-    # Central crimson chest/skirt tabard bearing 3D bronze Open-Eye pectoral boss
+    sl_paint = P('basalt', 0.05, [
+        B('bottom', 0.0, 0.020, 'solid', 'cream'),
+        B('bottom', 0.020, 0.048, 'solid', 'holyred'),
+        B('bottom', 0.048, 0.062, 'solid', 'gold'),
+    ], fabric=WOOL)
+    sl_flash = sleeves(gid_t, 'wrist', 0.017, sl_paint, ease_end=0.024, rows=10)
+    _smooth_sleeve_shoulders(robe_pt, sl_flash)
+
+    # Central crimson chest/skirt tabard conformed flush onto the robe chest/waist (no 30-70mm floating!)
     tab_paint = P('holyred', 0.04, [
         B('top', 0.0, 0.018, 'solid', 'gold'),
         B('bottom', 0.0, 0.022, 'solid', 'cream'),
@@ -245,9 +256,12 @@ def _build_monk_crimson_for_sex(sex, body_id):
         PN(0.0, 0.12, 'solid', 'cream', 'holyred', 1.0),
         PN(0.88, 1.0, 'solid', 'cream', 'holyred', 1.0),
     ], fabric='cloth.silk')
-    parts_t.extend(tabard(gid_t + '_tabard', KNEE + 0.06, CHEST + 0.01, tab_paint, width=0.19, ease=0.024, front=True))
+    tab_parts = tabard(gid_t + '_tabard', KNEE + 0.06, CHEST + 0.01, tab_paint, width=0.19, ease=0.021, front=True)
+    for tp in tab_parts:
+        _conform_to_surface(tp, [robe_pt], target_gap=0.0055, max_gap=0.009, z_min=WAIST - 0.04, z_max=CHEST + 0.03, front_only=True, smooth_iters=2)
+    parts_t.extend(tab_parts)
 
-    p_pect = chest_front(CHEST - 0.018, 0.026, x=0.0)
+    p_pect = chest_front(CHEST - 0.018, 0.024, x=0.0)
     pect_eye = eye_disc(
         gid_t + '_pectoral_eye', p_pect, FRONT, 0.078,
         P('speculum', 0.02, [B('bottom', 0.0, 0.008, 'solid', 'gold')], fabric='metal.bronze'),
@@ -257,21 +271,28 @@ def _build_monk_crimson_for_sex(sex, body_id):
         pt.rigid_joint = 'Spine2'
     parts_t.extend(pect_eye)
 
-    # Contoured basalt leather pauldrons
+    # Contoured basalt leather pauldrons cleanly outside sleeves & robe
     pauld_p = P('basalt', 0.05, [
         B('bottom', 0.0, 0.020, 'dentils', 'holyred', 'cream', 0.025),
         B('top', 0.0, 0.014, 'solid', 'gold'),
     ], fabric='leather.polished')
-    parts_t.append(pauldron(gid_t + '_pauld_L', L, pauld_p, reach=0.34, ease=0.024, flare_end=0.98))
-    parts_t.append(pauldron(gid_t + '_pauld_R', R, pauld_p, reach=0.34, ease=0.024, flare_end=0.98))
+    pl_L = pauldron(gid_t + '_pauld_L', L, pauld_p, reach=0.34, ease=0.025, flare_end=0.98)
+    pl_R = pauldron(gid_t + '_pauld_R', R, pauld_p, reach=0.34, ease=0.025, flare_end=0.98)
+    _push_outside_parts(pl_L, [sl_flash[0], robe_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=L)
+    _push_outside_parts(pl_R, [sl_flash[1], robe_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=R)
+    parts_t.append(pl_L)
+    parts_t.append(pl_R)
 
-    # Diagonal scout bandolier with 3D brass spyglass at chest & handheld speculum flash-mirror at hip
+    # Diagonal scout bandolier seated flush onto robe & tabard in front (zero floating, zero shoulder clipping)
     band_p = P('omaroon', 0.05, [
         B('top', 0.0, 0.008, 'solid', 'gold'),
         B('bottom', 0.0, 0.008, 'solid', 'cream'),
     ], fabric='leather.polished')
-    parts_t.append(band(gid_t + '_bandolier', WAIST + 0.01, SHOULDER + 0.02, 0.046, 0.022,
-                        band_p, high=math.pi * 0.45, rows=5))
+    band_pt = band(gid_t + '_bandolier', WAIST + 0.01, SHOULDER + 0.02, 0.046, 0.023,
+                   band_p, high=math.pi * 0.45, rows=5)
+    _push_outside_parts(band_pt, [robe_pt, pl_L, pl_R] + tab_parts + sl_flash, margin=0.006, z_lift=0.008, smooth_iters=2)
+    _conform_to_surface(band_pt, [robe_pt] + tab_parts, target_gap=0.0055, max_gap=0.009, z_min=WAIST - 0.02, z_max=CHEST + 0.06, front_only=True, smooth_iters=2)
+    parts_t.append(band_pt)
 
     p_spy = chest_front(CHEST - 0.058, 0.025, x=0.052)
     spy_dir = np.array([0.52, -0.05, -0.85])
@@ -304,12 +325,7 @@ def _build_monk_crimson_for_sex(sex, body_id):
                            P('speculum', 0.02, [B('bottom', 0.0, 0.010, 'solid', 'gold')], fabric='metal.bronze'),
                            n=16, thick=0.008, rigid_joint='Hips'))
 
-    sl_paint = P('basalt', 0.05, [
-        B('bottom', 0.0, 0.020, 'solid', 'cream'),
-        B('bottom', 0.020, 0.048, 'solid', 'holyred'),
-        B('bottom', 0.048, 0.062, 'solid', 'gold'),
-    ], fabric=WOOL)
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.017, sl_paint, ease_end=0.024, rows=10))
+    parts_t.extend(sl_flash)
     entries.append(assemble_garment(gid_t, 'Flashing-Eye Rift-Scout Robe, Spyglass & Flash-Mirror', 'torso', 'xanadu', parts_t))
 
     # --- 3. BACK: Dorsal Heliograph Relay Mirror, Tripod Staves & Climbing Rope (`xan_m/f_flashing_heliograph`) ---
@@ -1123,9 +1139,10 @@ def _build_monk_violet_storm_for_sex(sex, body_id):
     ], [
         PN(0.0, 1.0, 'diamond_quilt', 'violet', 'purple', 0.15),
     ], fabric='cloth.quilted.diamond')
-    parts_t.append(torso_tube(gid_t + '_coat', TOP, KNEE + 0.02, 0.017, coat_p,
-                              n=48, rows=20, hang_from=WAIST - 0.02, flare=0.14,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    coat_pt = torso_tube(gid_t + '_coat', TOP, KNEE + 0.02, 0.017, coat_p,
+                         n=48, rows=20, hang_from=WAIST - 0.02, flare=0.14,
+                         group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)
+    parts_t.append(coat_pt)
     parts_t.append(stand_collar(gid_t, P('purple', 0.04, [
         B('top', 0.0, 0.010, 'solid', 'gold'),
         B('bottom', 0.0, 0.010, 'solid', 'saffron'),
@@ -1138,46 +1155,59 @@ def _build_monk_violet_storm_for_sex(sex, body_id):
     ], [
         PN(0.12, 0.88, 'chahar_aina', 'gold', 'steel', 0.18),
     ], fabric='metal.iron')
-    parts_t.append(torso_tube(gid_t + '_cuirass_band', CHEST + 0.012, WAIST + 0.04, 0.019, mirror_p,
-                              n=44, rows=7, hull_from=CHEST + 0.02, role='band'))
+    cuirass_pt = torso_tube(gid_t + '_cuirass_band', CHEST + 0.012, WAIST + 0.04, 0.021, mirror_p,
+                            n=44, rows=7, hull_from=CHEST + 0.02, role='band')
+    _push_outside_parts(cuirass_pt, [coat_pt], margin=0.005, z_lift=0.0, smooth_iters=1)
+    parts_t.append(cuirass_pt)
 
     # Gilded storm-wheel chest boss
-    p_boss = chest_front(CHEST - 0.038, 0.029, x=0.0)
+    p_boss = chest_front(CHEST - 0.038, 0.031, x=0.0)
     parts_t.append(rosette(gid_t + '_storm_boss', p_boss, FRONT, np.array([1.0, 0.0, 0.0]), 0.040,
                            P('gold', 0.02, [B('bottom', 0.0, 0.010, 'solid', 'violet')], fabric='metal.gold'),
                            n=10, thick=0.011, rigid_joint='Spine2'))
-
-    # Contoured steel/gold pauldrons
-    pauld_p = P('steel', 0.03, [
-        B('bottom', 0.0, 0.022, 'dentils', 'gold', 'violet', 0.03),
-        B('top', 0.0, 0.014, 'solid', 'gold'),
-    ], [
-        PN(0.0, 1.0, 'chahar_aina', 'gold', 'steel', 0.065),
-    ], fabric='metal.iron')
-    parts_t.append(pauldron(gid_t + '_pauld_L', L, pauld_p, reach=0.35, ease=0.024, flare_end=0.98))
-    parts_t.append(pauldron(gid_t + '_pauld_R', R, pauld_p, reach=0.35, ease=0.024, flare_end=0.98))
-
-    # Diagonal saffron monastic zen sash
-    zen_p = P('saffron', 0.04, [
-        B('top', 0.0, 0.008, 'solid', 'gold'),
-        B('bottom', 0.0, 0.008, 'solid', 'gold'),
-    ], [
-        PN(0.0, 1.0, 'saffron_kesa', 'gold', 'saffron', 0.08),
-    ], fabric='cloth.silk')
-    parts_t.append(band(gid_t + '_zen_sash', WAIST + 0.01, SHOULDER + 0.02, 0.052, 0.022,
-                        zen_p, high=math.pi * 0.45, rows=5))
-
-    parts_t.append(torso_tube(gid_t + '_belt', WAIST + 0.035, WAIST - 0.035, 0.021,
-                              P('purple', 0.04, [B('top', 0.0, 0.010, 'solid', 'gold'),
-                                                 B('bottom', 0.0, 0.010, 'solid', 'gold')], fabric='leather.polished'),
-                              rows=4, n=42, hull_from=WAIST + 0.08, role='belt'))
 
     # Sleeves with chahar_aina archer's bazuband forearm cuffs
     sl_p = P('violet', 0.05, [
         B('bottom', 0.0, 0.155, 'chahar_aina', 'gold', 'steel', 0.045),
         B('bottom', 0.155, 0.175, 'solid', 'gold'),
     ], fabric='cloth.quilted.diamond')
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.017, sl_p, ease_end=0.024, rows=10))
+    sl_tempest = sleeves(gid_t, 'wrist', 0.017, sl_p, ease_end=0.024, rows=10)
+    _smooth_sleeve_shoulders(coat_pt, sl_tempest)
+
+    # Contoured steel/gold pauldrons cleanly outside sleeves & coat
+    pauld_p = P('steel', 0.03, [
+        B('bottom', 0.0, 0.022, 'dentils', 'gold', 'violet', 0.03),
+        B('top', 0.0, 0.014, 'solid', 'gold'),
+    ], [
+        PN(0.0, 1.0, 'chahar_aina', 'gold', 'steel', 0.065),
+    ], fabric='metal.iron')
+    pl_L = pauldron(gid_t + '_pauld_L', L, pauld_p, reach=0.35, ease=0.025, flare_end=0.98)
+    pl_R = pauldron(gid_t + '_pauld_R', R, pauld_p, reach=0.35, ease=0.025, flare_end=0.98)
+    _push_outside_parts(pl_L, [sl_tempest[0], coat_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=L)
+    _push_outside_parts(pl_R, [sl_tempest[1], coat_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=R)
+    parts_t.append(pl_L)
+    parts_t.append(pl_R)
+
+    belt_pt = torso_tube(gid_t + '_belt', WAIST + 0.035, WAIST - 0.035, 0.021,
+                         P('purple', 0.04, [B('top', 0.0, 0.010, 'solid', 'gold'),
+                                            B('bottom', 0.0, 0.010, 'solid', 'gold')], fabric='leather.polished'),
+                         rows=4, n=42, hull_from=WAIST + 0.08, role='belt')
+
+    # Diagonal saffron monastic zen sash pushed cleanly (+10mm) outside coat, cuirass, pauldrons & sleeves
+    zen_p = P('saffron', 0.04, [
+        B('top', 0.0, 0.008, 'solid', 'gold'),
+        B('bottom', 0.0, 0.008, 'solid', 'gold'),
+    ], [
+        PN(0.0, 1.0, 'saffron_kesa', 'gold', 'saffron', 0.08),
+    ], fabric='cloth.silk')
+    zen_sash = band(gid_t + '_zen_sash', WAIST + 0.01, SHOULDER + 0.02, 0.052, 0.034,
+                    zen_p, high=math.pi * 0.45, rows=5)
+    _push_outside_parts(zen_sash, [coat_pt, cuirass_pt, belt_pt, pl_L, pl_R] + sl_tempest,
+                        margin=0.010, z_lift=0.010, smooth_iters=2)
+    parts_t.append(zen_sash)
+    parts_t.append(belt_pt)
+
+    parts_t.extend(sl_tempest)
     bazu_p = P('steel', 0.03, [
         B('top', 0.0, 0.012, 'solid', 'gold'),
         B('bottom', 0.0, 0.012, 'solid', 'gold'),

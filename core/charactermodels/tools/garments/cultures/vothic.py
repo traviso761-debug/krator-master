@@ -1033,6 +1033,78 @@ def _build_voth_canton_citizen(s):
     return [head, torso, gloves, legs, feet, back]
 
 
+def _sealed_neck_collar_and_yoke(gid, collar_paint, yoke_paint, kaftan_part, height=0.036, n=42):
+    """Build a solid top-facing neck/clavicle yoke seal + folded double-walled standing collar.
+
+    Eliminates top-down neck transparency on wide-ease kaftans (`ease=0.036`):
+    1. Yoke seal bridges smoothly from `kaftan_part`'s wide top rim (`ease=0.036`) inward to the
+       snug neck base (`ease=0.006`), with upward-facing normals visible from above.
+    2. Folded collar rises snugly around the neck (`ease=0.015`), folds inward across a solid
+       top horizontal rim (`ease=0.015 -> 0.005`), and descends inside as an inner neck lining.
+    Both parts set `no_conform=True` so Check #5 never pushes the snug inner rim away from the neck.
+    """
+    angles = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+    x_ax, y_ax = np.array([0.0, 1.0, 0.0]), np.array([1.0, 0.0, 0.0])
+    z_ref = core.NECK[2] - 0.006
+    c_ref = spine_at(z_ref)
+    ring_in = np.array(core.ring_points(c_ref, x_ax, y_ax, angles, 0.005, rmin=0.048, rmax=0.082, bvh=core.BVH_T), dtype=np.float64)
+    ring_out = np.array(core.ring_points(c_ref, x_ax, y_ax, angles, 0.016, rmin=0.056, rmax=0.094, bvh=core.BVH_T), dtype=np.float64)
+    rel_in = ring_in[:, :2] - c_ref[:2]
+    rel_out = ring_out[:, :2] - c_ref[:2]
+
+    # 1. Top-facing shoulder/clavicle yoke bridge from kaftan outer top rim inward to snug neck base
+    k_top = kaftan_part.P[0].copy()
+    z_k = float(k_top[:, 2].mean())
+    c_k = spine_at(min(z_k, core.TOP))
+    # Resample kaftan top ring onto `angles`
+    dk = k_top[:, :2] - c_k[:2]
+    rk = np.hypot(dk[:, 0], dk[:, 1])
+    ak = np.mod(np.arctan2(dk[:, 0], dk[:, 1]), 2.0 * math.pi)
+    ord_k = np.argsort(ak)
+    ak_ext = np.concatenate([ak[ord_k] - 2.0 * math.pi, ak[ord_k], ak[ord_k] + 2.0 * math.pi])
+    rk_ext = np.tile(rk[ord_k], 3)
+    zk_ext = np.tile(k_top[ord_k, 2], 3)
+    r_kaf = np.interp(angles, ak_ext, rk_ext)
+    z_kaf = np.interp(angles, ak_ext, zk_ext)
+    # Direction vectors matching torso_tube: an=0 -> +Y, an=pi/2 -> +X
+    u_x = np.sin(angles)
+    u_y = np.cos(angles)
+    rel_kaf = np.column_stack([u_x * (r_kaf + 0.003), u_y * (r_kaf + 0.003)])
+
+    Q_yoke = []
+    for t in (0.0, 0.35, 0.70, 1.0):
+        # t=0 at kaftan outer rim -> t=1 at snug inner neck ring
+        xy = c_k[:2] + (1.0 - t) * rel_kaf + t * rel_in
+        zz = (1.0 - t) * (z_kaf - 0.002) + t * (core.TOP + 0.004)
+        Q_yoke.append(np.column_stack([xy, zz]))
+    yoke_seal = Part(f'{gid}_neck_yoke_seal', np.array(Q_yoke, dtype=np.float64), True, ['body'] * 4, yoke_paint, role='collar')
+    yoke_seal.no_conform = True
+
+    # 2. Continuous folded standing collar (outer wall -> solid top rim -> inner neck lining)
+    h_eff = min(float(height), 0.038)
+    z_top = core.TOP + h_eff
+    z_bot = core.TOP - 0.016
+    # Outer wall (4 rows up) + top fold (2 rows inward) + inner lining (3 rows down)
+    specs = [
+        (z_bot, rel_out * 1.04),
+        (z_bot + 0.35 * (z_top - z_bot), rel_out * 1.01),
+        (z_bot + 0.72 * (z_top - z_bot), rel_out * 0.99),
+        (z_top, rel_out * 0.98),
+        (z_top + 0.002, 0.50 * rel_out + 0.50 * rel_in),
+        (z_top, rel_in * 1.02),
+        (z_bot + 0.65 * (z_top - z_bot), rel_in * 1.00),
+        (z_bot + 0.25 * (z_top - z_bot), rel_in * 1.00),
+        (z_bot - 0.004, rel_in * 1.00),
+    ]
+    Q_col = []
+    for zz, rel_xy in specs:
+        cz = spine_at(min(zz, core.TOP))
+        Q_col.append(np.column_stack([cz[:2] + rel_xy, np.full(n, zz)]))
+    folded_col = Part(f'{gid}_folded_collar', np.array(Q_col, dtype=np.float64), True, ['body'] * len(specs), collar_paint, role='collar')
+    folded_col.no_conform = True
+    return [yoke_seal, folded_col]
+
+
 def _build_almua_port_factor(s):
     """8. Almua & Temora Arsenal & Spice-Port Purser."""
     p_ind = P('vth_almuaindigo', 0.04, [
@@ -1053,17 +1125,17 @@ def _build_almua_port_factor(s):
         covers_hair=True,
     )
 
-    # Torso: Salt-proofed indigo & purple Ottoman mariner kaftan w/ brass toggle-frogs
+    # Torso: Salt-proofed indigo & purple Ottoman mariner kaftan w/ brass toggle-frogs + solid sealed folded collar
     kaftan = torso_tube(f'vth_{s}_almua_kaf', core.TOP + 0.018, core.KNEE + 0.06, 0.036, p_ind,
                         hang_from=core.WAIST, flare=0.105, rows=22, n=42)
     slv = sleeves(f'vth_{s}_almua', 'wrist', 0.018, p_ind, rows=10)
-    incol = collar(f'vth_{s}_almua_incol', P('vth_blitrit', 0.04, fabric='cloth.silk'), height=0.052, flare=0.026, ease=0.012)
-    col = stand_collar(f'vth_{s}_almua', P('vth_blitrit', 0.04, fabric='cloth.silk'), high=0.036)
+    p_col_silk = P('vth_blitrit', 0.04, fabric='cloth.silk')
+    neck_seals = _sealed_neck_collar_and_yoke(f'vth_{s}_almua', p_col_silk, p_ind, kaftan, height=0.036, n=42)
     frogs = button_row(f'vth_{s}_almua_frg', core.CHEST + 0.09, core.WAIST + 0.02, n_buttons=5, paint=p_brass, ease=0.038, double=True)
     sash = belt_sash(f'vth_{s}_almua_sash', core.WAIST - 0.020, core.WAIST + 0.028, _p_blitrit(), ease=0.039)
     torso = _vth_assemble(
         f'vth_{s}_almua_kaftan', 'Salt-Proofed Indigo & Blïtrit Mariner Kaftan', 'torso', 'chichani',
-        [kaftan, slv, incol, col, frogs, sash],
+        [kaftan, slv, neck_seals, frogs, sash],
     )
 
     # Gloves: Tarred leather rigger cuffs

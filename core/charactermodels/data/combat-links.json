@@ -1,0 +1,474 @@
+{
+  "about": "Engine-neutral linked combat exchange scaffold (attack -> dodge / block / hit) and Martial Arts Monk Duel presets/choreography. [G data]",
+  "idle_clip": "unarmed_guard",
+  "links": [
+    {
+      "attack": "jab_l",
+      "label": "Left Jab",
+      "short": "Jab",
+      "hit_t": 0.42,
+      "hit_y": 1.38,
+      "dist_m": 1.06,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_1", "guard_block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "jab_r",
+      "label": "Right Cross",
+      "short": "Cross",
+      "hit_t": 0.48,
+      "hit_y": 1.36,
+      "dist_m": 1.08,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step", "dodge_spin"],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_2", "guard_block_1", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "ual_hit_head", "hit_2"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "hook_l",
+      "label": "Left Hook",
+      "short": "Hook",
+      "hit_t": 0.36,
+      "hit_y": 1.38,
+      "dist_m": 1.02,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_spin", "dodge_step"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_1", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "ual_hit_head", "hit_2"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "hook_l_short",
+      "label": "Short Left Hook",
+      "short": "Short Hook",
+      "hit_t": 0.34,
+      "hit_y": 1.34,
+      "dist_m": 0.96,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_2", "guard_block_1"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_2", "hit_body"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "uppercut_r",
+      "label": "Right Uppercut",
+      "short": "Uppercut",
+      "hit_t": 0.38,
+      "hit_y": 1.32,
+      "dist_m": 0.96,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "ual_knockback", "ual_hit_head"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "uppercut_l",
+      "label": "Left Uppercut",
+      "short": "Uppercut L",
+      "hit_t": 0.42,
+      "hit_y": 1.32,
+      "dist_m": 0.96,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_1", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_face", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "elbow_strike",
+      "label": "Elbow Strike",
+      "short": "Elbow",
+      "hit_t": 0.56,
+      "hit_y": 1.30,
+      "dist_m": 0.92,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_spin", "dodge_step", "dodge_back"],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_2", "guard_block_3"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "hit_body", "ual_hit_chest"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "knee_strike",
+      "label": "Knee Strike",
+      "short": "Knee",
+      "hit_t": 0.58,
+      "hit_y": 1.02,
+      "dist_m": 0.94,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.15,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_1"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "ual_hit_chest", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "kick_front",
+      "label": "Front Kick",
+      "short": "Front Kick",
+      "hit_t": 0.44,
+      "hit_y": 1.08,
+      "dist_m": 1.22,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_step", "dodge_spin", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_2", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "hit_body", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "kick_roundhouse",
+      "label": "Roundhouse Kick",
+      "short": "Roundhouse",
+      "hit_t": 0.52,
+      "hit_y": 1.24,
+      "dist_m": 1.24,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_spin", "dodge_step"],
+          "lead_s": 0.16,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_1", "guard_block_2"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "ual_knockback", "hit_body"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "leg_sweep",
+      "label": "Leg Sweep",
+      "short": "Leg Sweep",
+      "hit_t": 0.62,
+      "hit_y": 0.28,
+      "dist_m": 1.18,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_spin"],
+          "lead_s": 0.16,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_2"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "punch_combo_1",
+      "label": "Punch Combo 1",
+      "short": "Combo",
+      "hit_t": 0.46,
+      "hit_y": 1.28,
+      "dist_m": 1.06,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_1", "guard_block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "hit_face", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "punch_combo_2",
+      "label": "Punch Combo 2",
+      "short": "Combo II",
+      "hit_t": 0.65,
+      "hit_y": 1.26,
+      "dist_m": 1.08,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_spin", "dodge_back"],
+          "lead_s": 0.15,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_2"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "hit_2", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "punch_combo_3",
+      "label": "Punch & Elbow",
+      "short": "Punch & Elbow",
+      "hit_t": 0.54,
+      "hit_y": 1.28,
+      "dist_m": 1.00,
+      "outcomes": {
+        "dodge": {
+          "clips": ["dodge_step", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_3", "guard_block_1"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_face", "hit_body", "ual_hit_head"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    }
+  ],
+  "fighters": [
+    {
+      "id": "crimson_monk",
+      "label": "Crimson Flashing-Eye Monk",
+      "short": "Crimson Monk",
+      "people": "xanadu",
+      "tier": "monk_crimson",
+      "body": "mpfb_male",
+      "skin": "#b8845c",
+      "hair": "short02",
+      "hair_color": "#1e1712",
+      "eye_color": "#7a3b1e",
+      "morph": { "muscle": 0.35, "weight": -0.05 }
+    },
+    {
+      "id": "violet_monk",
+      "label": "Violet Storm Tempest Monk",
+      "short": "Violet Monk",
+      "people": "xanadu",
+      "tier": "monk_violet_storm",
+      "body": "mpfb_female",
+      "skin": "#c69672",
+      "hair": "braid01",
+      "hair_color": "#221a28",
+      "eye_color": "#5c4a82",
+      "morph": { "muscle": 0.3, "weight": -0.1 }
+    },
+    {
+      "id": "lu_tze",
+      "label": "Lu-Tze the Melon Monk",
+      "short": "Lu-Tze",
+      "people": "historians",
+      "tier": "lu_tze_melon_monk",
+      "body": "mpfb_male",
+      "skin": "#b98a64",
+      "hair": "short01",
+      "hair_color": "#8f8d88",
+      "eye_color": "#4a3c2a",
+      "morph": { "height": -0.25, "muscle": 0.25, "weight": -0.15 }
+    },
+    {
+      "id": "azure_monk",
+      "label": "Azure Dream Silent Monk",
+      "short": "Azure Monk",
+      "people": "xanadu",
+      "tier": "monk_azure",
+      "body": "mpfb_male",
+      "skin": "#a87654",
+      "hair": "ponytail01",
+      "hair_color": "#181a22",
+      "eye_color": "#3e5c78",
+      "morph": { "height": 0.15, "muscle": 0.25, "weight": -0.1 }
+    },
+    {
+      "id": "viridian_monk",
+      "label": "Viridian Thought Tea-Monk",
+      "short": "Viridian Monk",
+      "people": "xanadu",
+      "tier": "monk_viridian",
+      "body": "mpfb_female",
+      "skin": "#c4946e",
+      "hair": "ponytail01",
+      "hair_color": "#241d18",
+      "eye_color": "#3f6a4e",
+      "morph": { "muscle": 0.2, "weight": -0.15 }
+    },
+    {
+      "id": "chronomonk",
+      "label": "Order Chrono-Monk (Master of Arms)",
+      "short": "Chrono-Monk",
+      "people": "historians",
+      "tier": "chronomonk",
+      "body": "mpfb_male",
+      "skin": "#b2825e",
+      "hair": "short04",
+      "hair_color": "#2c221b",
+      "eye_color": "#52402b",
+      "morph": { "muscle": 0.45, "weight": 0.05 }
+    },
+    {
+      "id": "electromonk",
+      "label": "Yusar Henge Electro-Monk",
+      "short": "Electro-Monk",
+      "people": "yusar",
+      "tier": "electromonk",
+      "body": "mpfb_male",
+      "skin": "#987462",
+      "hair": "short02",
+      "hair_color": "#1c2026",
+      "eye_color": "#4da6c8",
+      "morph": { "muscle": 0.4, "weight": 0.0 }
+    },
+    {
+      "id": "white_lily_monk",
+      "label": "White Lily Apothecary Monk",
+      "short": "White Lily",
+      "people": "xanadu",
+      "tier": "monk_white_lily",
+      "body": "mpfb_female",
+      "skin": "#cfa280",
+      "hair": "bob02",
+      "hair_color": "#2a201a",
+      "eye_color": "#5a4a38",
+      "morph": { "muscle": 0.2, "weight": -0.1 }
+    }
+  ],
+  "choreography": [
+    { "attacker": 0, "attack": "jab_l", "outcome": "block", "note": "Opening probe met with a tight fist guard" },
+    { "attacker": 1, "attack": "kick_front", "outcome": "dodge", "counter": true, "note": "Sidestepped front kick into a crisp counterstrike" },
+    { "attacker": 0, "attack": "hook_l", "outcome": "hit", "note": "Clean left hook lands through the guard" },
+    { "attacker": 1, "attack": "punch_combo_1", "outcome": "block", "note": "Flurry absorbed on the forearms" },
+    { "attacker": 0, "attack": "kick_roundhouse", "outcome": "dodge", "counter": false, "note": "High roundhouse evaded with a spin" },
+    { "attacker": 1, "attack": "elbow_strike", "outcome": "hit", "note": "Close-quarters elbow breaks the rhythm" },
+    { "attacker": 0, "attack": "knee_strike", "outcome": "block", "note": "Rising knee checked at the midsection" },
+    { "attacker": 1, "attack": "uppercut_r", "outcome": "dodge", "counter": true, "note": "Slip back from the uppercut and answer" },
+    { "attacker": 0, "attack": "punch_combo_3", "outcome": "hit", "note": "Punch-and-elbow combination lands" },
+    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low leg sweep scores a knockdown -> kip-up recovery" }
+  ]
+}

@@ -1572,39 +1572,49 @@ def _build_reliquary_lich(sex, body_id):
                                        0.015, obs_p, bronze_p, 'Spine2', slot_hint='back'))
 
         palm_c = wrist_p + u_fa * 0.058
-        parts_b.append(mech_tube(f'{gid_b}_palm_{tag}', [wrist_p - u_fa * 0.01, palm_c + u_fa * 0.048],
-                                 0.044, 0.040, bronze_p, n=10, rows=5, rigid_joint='Spine2', slot_hint='back',
-                                 scale_xy=(1.25, 0.65)))
-        parts_b.append(mech_sphere(f'{gid_b}_palm_core_{tag}', palm_c - bk_w * 0.022, 0.022, cyan_p,
-                                   'Spine2', slot_hint='back', n=10, rows=6))
         side_h = np.cross(u_fa, bk_w)
         if np.linalg.norm(side_h) < 1e-4:
             side_h = up_w
         side_h = side_h / max(np.linalg.norm(side_h), 1e-6)
-        claw_tips = []
-        for fi, off_f in enumerate((-0.034, 0.0, 0.034)):
-            f0 = palm_c + u_fa * 0.036 + side_h * off_f
-            f1 = f0 + u_fa * 0.068 - bk_w * 0.028 + left_w * (-sgn * 0.018)
-            f2 = f1 + u_fa * 0.054 - bk_w * 0.044 + left_w * (-sgn * 0.032)
-            claw_tips.append(f2)
-            parts_b.append(mech_tube(f'{gid_b}_claw_{tag}_{fi}', [f0, f1, f2],
-                                     0.014, 0.005, bronze_p if fi != 1 else jade_p,
-                                     n=7, rows=7, rigid_joint='Spine2', slot_hint='back'))
-        th0 = wrist_p + u_fa * 0.045 - bk_w * 0.024 + left_w * (-sgn * 0.034)
-        th1 = th0 + u_fa * 0.055 - bk_w * 0.048 + left_w * (-sgn * 0.038)
-        parts_b.append(mech_tube(f'{gid_b}_thumb_{tag}', [th0, th1], 0.015, 0.006, bronze_p,
+        # Align palm wide axis explicitly with `side_h` and cap distally with a solid bronze knuckle block
+        parts_b.append(mech_tube(f'{gid_b}_palm_{tag}', [wrist_p - u_fa * 0.01, palm_c + u_fa * 0.048],
+                                 0.044, 0.042, bronze_p, n=10, rows=5, rigid_joint='Spine2', slot_hint='back',
+                                 scale_xy=(1.25, 0.68), ref_dir=side_h))
+        parts_b.append(mech_sphere(f'{gid_b}_palm_core_{tag}', palm_c - bk_w * 0.020, 0.022, cyan_p,
+                                   'Spine2', slot_hint='back', n=10, rows=6))
+        knuckle_c = palm_c + u_fa * 0.042
+        parts_b.append(mech_tube(f'{gid_b}_knuckle_bar_{tag}',
+                                 [knuckle_c - side_h * 0.036, knuckle_c + side_h * 0.036],
+                                 0.019, 0.019, bronze_p, n=8, rows=4, rigid_joint='Spine2', slot_hint='back',
+                                 ref_dir=u_fa))
+        for fi, off_f in enumerate((-0.028, 0.0, 0.028)):
+            # Seat proximal phalanx root 10mm deep inside the palm/knuckle socket and bridge every joint with knuckle spheres
+            mcp_p = knuckle_c + side_h * off_f
+            f0 = mcp_p - u_fa * 0.010
+            f1 = mcp_p + u_fa * 0.062 - bk_w * 0.026 + left_w * (-sgn * 0.016)
+            f2 = f1 + u_fa * 0.052 - bk_w * 0.042 + left_w * (-sgn * 0.028)
+            f_mat = bronze_p if fi != 1 else jade_p
+            parts_b.append(mech_sphere(f'{gid_b}_mcp_{tag}_{fi}', mcp_p, 0.016, bronze_p,
+                                       'Spine2', slot_hint='back', n=8, rows=5))
+            parts_b.append(mech_tube(f'{gid_b}_claw_prox_{tag}_{fi}', [f0, f1],
+                                     0.014, 0.011, f_mat, n=7, rows=5, rigid_joint='Spine2', slot_hint='back'))
+            parts_b.append(mech_sphere(f'{gid_b}_pip_{tag}_{fi}', f1, 0.012, bronze_p,
+                                       'Spine2', slot_hint='back', n=8, rows=5))
+            parts_b.append(mech_tube(f'{gid_b}_claw_dist_{tag}_{fi}', [f1 - (f1 - f0) * 0.10, f2],
+                                     0.011, 0.005, f_mat, n=7, rows=5, rigid_joint='Spine2', slot_hint='back'))
+        # Solidly rooted opposable thumb seated directly inside the radial palm housing with CMC & IP knuckle joints
+        th_cmc = palm_c - u_fa * 0.010 + left_w * (-sgn * 0.022) - bk_w * 0.012
+        th0 = th_cmc - left_w * (-sgn * 0.010)
+        th_mid = th_cmc + u_fa * 0.034 - bk_w * 0.026 + left_w * (-sgn * 0.024)
+        th1 = th_mid + u_fa * 0.036 - bk_w * 0.034 + left_w * (-sgn * 0.024)
+        parts_b.append(mech_sphere(f'{gid_b}_th_cmc_{tag}', th_cmc, 0.016, bronze_p,
+                                   'Spine2', slot_hint='back', n=8, rows=5))
+        parts_b.append(mech_tube(f'{gid_b}_thumb_prox_{tag}', [th0, th_mid], 0.015, 0.011, bronze_p,
                                  n=7, rows=5, rigid_joint='Spine2', slot_hint='back'))
-
-        # Right Servo-Claw cradles the Obsidian & Chartreuse-Jade Reliquary Necro-Orb (anchored into claws!)
-        if tag == 'R':
-            orb_c = 0.5 * (claw_tips[1] + th1) + u_fa * 0.010
-            parts_b.append(mech_tube(gid_b + '_orb_tether', [palm_c + u_fa * 0.02, orb_c], 0.012, 0.012, lime_p,
-                                     n=8, rows=4, rigid_joint='Spine2', slot_hint='back'))
-            parts_b.append(mech_sphere(gid_b + '_reliquary_orb', orb_c, 0.062, obs_p, 'Spine2', slot_hint='back', n=14, rows=9))
-            parts_b.append(mech_tube(gid_b + '_orb_jade_ring', [orb_c + up_w * 0.012, orb_c - up_w * 0.012],
-                                     0.068, 0.068, jade_p, n=16, rows=4, rigid_joint='Spine2', slot_hint='back'))
-            parts_b.append(mech_sphere(gid_b + '_orb_plasma', orb_c - bk_w * 0.018 + up_w * 0.014, 0.050, lime_p,
-                                       'Spine2', slot_hint='back', n=12, rows=8))
+        parts_b.append(mech_sphere(f'{gid_b}_th_ip_{tag}', th_mid, 0.012, bronze_p,
+                                   'Spine2', slot_hint='back', n=8, rows=5))
+        parts_b.append(mech_tube(f'{gid_b}_thumb_dist_{tag}', [th_mid - (th_mid - th0) * 0.12, th1], 0.011, 0.006, bronze_p,
+                                 n=7, rows=5, rigid_joint='Spine2', slot_hint='back'))
 
     ent_b = assemble_garment(gid_b, 'Egyptian-Eternian Cyber-Reliquary Djed Spine & Bi-Joint Servo-Arms', 'back', parts_b)
     entries.append(ent_b)

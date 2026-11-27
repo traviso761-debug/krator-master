@@ -155,6 +155,219 @@ def _head_box():
     return np.array([xc, yc, 0.5 * (z_bot + z_top)]), fwd, rgt, up, z_bot, z_top, rx, ry
 
 
+def _closed_cap_dome(name, f0, f1, ease, paint, n=36, rows=12, scale=(1.0, 1.0), z_lift=0.018):
+    """Sealed closed-apex hat crown with guaranteed skull clearance (`BVH_H`) and zero top hole."""
+    a, b, up, bk, left, _, _, _, f_crown, _ = head_landmarks_exact()
+    h_ab = max(float(np.linalg.norm(b - a)), 1e-6)
+    hv = core.CO[core.CO[:, 2] > float(a[2]) + 0.01]
+    z_skull_top = float(hv[:, 2].max()) if len(hv) else float(b[2])
+    c_mid = a + (b - a) * 0.56
+    angles = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+    ds = [bk * math.cos(an) + left * math.sin(an) for an in angles]
+
+    # Sample max radial skull extent across the upper cranium so the hat never pinches inward into the skull
+    base_rs = []
+    for d in ds:
+        hits = []
+        for ff in (f0, 0.5 * (f0 + 0.85), 0.78, 0.88):
+            h = first_hit(a + (b - a) * ff, d, maxd=0.28)
+            if h is not None and 0.04 < h < 0.20:
+                hits.append(float(h))
+        base_rs.append((max(hits) if hits else 0.098) + float(ease))
+    base_rs = np.array(base_rs, dtype=np.float64)
+    # Smooth azimuthally
+    base_rs = np.array([np.mean([base_rs[(j + dj) % n] for dj in (-2, -1, 0, 1, 2)]) for j in range(n)])
+
+    z_rim = float((a + (b - a) * f0)[2])
+    z_apex = max(float((a + (b - a) * f1)[2]), z_skull_top + float(z_lift))
+    z_dome_start = max(z_rim + 0.025, z_skull_top - 0.022)
+
+    # Top-to-bottom or bottom-to-top rings ending in a completely sealed apex ring (r = 0.0005)
+    Q = np.zeros((rows, n, 3), dtype=np.float64)
+    sx, sy = float(scale[0]), float(scale[1])
+    for i in range(rows):
+        u = i / float(max(rows - 1, 1))
+        if u < 0.65:
+            # Lower/mid crown rising smoothly to just above skull brow/parietal
+            t = u / 0.65
+            z_i = z_rim + (z_dome_start - z_rim) * t
+            r_scale = 1.0 + 0.03 * math.sin(t * math.pi)
+        else:
+            # Ellipsoidal dome closing cleanly to apex strictly above z_skull_top + z_lift
+            t = (u - 0.65) / 0.35
+            phi = t * (0.5 * math.pi)
+            z_i = z_dome_start + (z_apex - z_dome_start) * math.sin(phi)
+            r_scale = max(0.005, math.cos(phi) ** 0.90)
+        c_i = np.array([c_mid[0], c_mid[1], z_i], dtype=np.float64)
+        for j, an in enumerate(angles):
+            v_xy = bk * (math.cos(an) * sy) + left * (math.sin(an) * sx)
+            Q[i, j] = c_i + v_xy * (base_rs[j] * r_scale)
+    # Final apex ring closed to 0.5mm radius so there is ZERO open hole from above
+    apex_pt = np.array([c_mid[0], c_mid[1], z_apex + 0.002], dtype=np.float64)
+    for j, an in enumerate(angles):
+        v_xy = bk * math.cos(an) + left * math.sin(an)
+        Q[-1, j] = apex_pt + v_xy * 0.0005
+    return Part(name, Q, True, ['body'] * rows, paint, rigid_joint='Head')
+
+
+def _push_out_radial(part, dr, dz=0.0):
+    """Push a torso/collar Part radially outward from the local spine axis by `dr` and vertically by `dz`."""
+    P_new = part.P.copy()
+    for r in range(P_new.shape[0]):
+        zm = float(P_new[r, :, 2].mean())
+        c2 = spine_at(min(zm, core.TOP))[:2]
+        d_xy = P_new[r, :, :2] - c2
+        rad = np.linalg.norm(d_xy, axis=1, keepdims=True)
+        u_xy = d_xy / np.maximum(rad, 1e-6)
+        P_new[r, :, :2] = P_new[r, :, :2] + u_xy * float(dr)
+        if dz:
+            P_new[r, :, 2] += float(dz)
+    part.P = P_new
+    return part
+
+
+def _push_arm_out(part, side, dr):
+    """Push a pauldron/arm Part radially outward from the shoulder-to-elbow axis by `dr`."""
+    a, e = J(side + 'Arm'), J(side + 'ForeArm')
+    ax = e - a
+    ax_len = max(float(np.linalg.norm(ax)), 1e-6)
+    ax_u = ax / ax_len
+    P_new = part.P.copy()
+    for r in range(P_new.shape[0]):
+        for c in range(P_new.shape[1]):
+            v = P_new[r, c] - a
+            proj = float(np.dot(v, ax_u))
+            rad_v = v - ax_u * proj
+            rn = float(np.linalg.norm(rad_v))
+            if rn > 1e-6:
+                P_new[r, c] = P_new[r, c] + (rad_v / rn) * float(dr)
+    part.P = P_new
+    return part
+
+
+def _build_wildcat_mask(sex, gid_h):
+    """Solid high-res procedural upper-face Wildcat war-helm (`fell_{m,f}_wildcat_mask`).
+
+    Replaces the jagged triangle-culled Meshy shell with a smooth closed-apex helmet dome
+    (`n=40, rows=16`, +20mm radial & +22mm crown skull clearance), riveted brow visor band,
+    wildcat snout-ridge crest, forged ear-crests, and twin sweeping megafauna bone horns.
+    """
+    a, b, up, bk, left, f_nose, f_eyes, f_brow, f_crown, x_eye = head_landmarks_exact()
+    fwd = -bk
+    hv = core.CO[core.CO[:, 2] > float(a[2]) + 0.01]
+    z_skull_top = float(hv[:, 2].max()) if len(hv) else float(b[2])
+    c_mid = a + (b - a) * 0.54
+
+    sign_p = _p_roadsign('repochre', 'soot')
+    iron_p = P('iron', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'rust')], fabric='metal.iron')
+    bone_p = P('ivory', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'umber')], fabric='armor.osteoderm.scute')
+
+    n = 40
+    rows = 16
+    ease = 0.020
+    angles = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+    ds = [bk * math.cos(an) + left * math.sin(an) for an in angles]
+
+    # Sample max radial skull extent per azimuth across cranium & upper face so head NEVER pokes through
+    base_rs = []
+    for d in ds:
+        hits = []
+        for ff in (0.25, 0.42, 0.58, 0.74, 0.86):
+            h = first_hit(a + (b - a) * ff, d, maxd=0.28)
+            if h is not None and 0.04 < h < 0.20:
+                hits.append(float(h))
+        base_rs.append((max(hits) if hits else 0.098) + ease)
+    base_rs = np.array(base_rs, dtype=np.float64)
+    base_rs = np.array([np.mean([base_rs[(j + dj) % n] for dj in (-2, -1, 0, 1, 2)]) for j in range(n)])
+
+    # Smooth parametric lower-rim height curve `f_rim(an)`:
+    # - Back & nape: low down to f = 0.02 (covers skull rear cleanly)
+    # - Cheeks/temples: sweeps down to f = 0.26 (protective cheek guards)
+    # - Front eye/lower-face visor arch: rises smoothly to f_brow - 0.03 (clean open lower face, ZERO jagged culling!)
+    f_front_visor = max(f_eyes + 0.03, f_brow - 0.02)
+    f_rim = np.zeros(n, dtype=np.float64)
+    for j, an in enumerate(angles):
+        ang_front = abs(an - math.pi)
+        if ang_front < 0.72:
+            # Smooth arched brow visor cutout across the front face
+            w = 0.5 + 0.5 * math.cos(math.pi * ang_front / 0.72)
+            f_rim[j] = 0.24 + (f_front_visor - 0.24) * (w ** 1.15)
+        elif ang_front < 1.55:
+            # Sweeping cheek-guard curve from cheek down toward rear nape
+            t = (ang_front - 0.72) / (1.55 - 0.72)
+            f_rim[j] = 0.24 * (1.0 - t) + 0.04 * t
+        else:
+            f_rim[j] = 0.04
+
+    z_dome_start = max(float((a + (b - a) * 0.78)[2]), z_skull_top - 0.020)
+    z_apex = z_skull_top + 0.022
+    Q = np.zeros((rows, n, 3), dtype=np.float64)
+    for i in range(rows):
+        u = i / float(max(rows - 1, 1))
+        for j, (an, d) in enumerate(zip(angles, ds)):
+            z_rim_j = float((a + (b - a) * f_rim[j])[2])
+            if u < 0.68:
+                t = u / 0.68
+                z_ij = z_rim_j + (z_dome_start - z_rim_j) * t
+                # Slight flare at lower cheek/nape rim + subtle dorsal war-helm keel
+                keel = 0.006 * math.exp(-((abs(an - math.pi) if abs(an - math.pi) < 0.5 else min(an, 2 * math.pi - an)) / 0.22) ** 2)
+                r_scale = 1.0 + 0.03 * (1.0 - t)
+                r_ij = base_rs[j] * r_scale + keel * t
+            else:
+                t = (u - 0.68) / 0.32
+                phi = t * (0.5 * math.pi)
+                z_ij = z_dome_start + (z_apex - z_dome_start) * math.sin(phi)
+                r_ij = base_rs[j] * max(0.005, math.cos(phi) ** 0.88)
+            Q[i, j] = np.array([c_mid[0], c_mid[1], z_ij], dtype=np.float64) + d * r_ij
+    # Seal apex completely (r = 0.5mm)
+    apex_pt = np.array([c_mid[0], c_mid[1], z_apex + 0.002], dtype=np.float64)
+    for j, d in enumerate(ds):
+        Q[-1, j] = apex_pt + d * 0.0005
+
+    helm_dome = Part(f'{gid_h}_dome', Q, True, ['body'] * rows, sign_p, rigid_joint='Head')
+
+    # Riveted iron brow reinforcement band hugging the lower visor edge (+4mm proud)
+    Q_brow = np.zeros((3, n, 3), dtype=np.float64)
+    for bi, dz_b in enumerate((0.0, 0.011, 0.022)):
+        for j, d in enumerate(ds):
+            p_base = Q[0, j] if bi == 0 else (0.5 * Q[0, j] + 0.5 * Q[1, j] if bi == 1 else Q[1, j])
+            Q_brow[bi, j] = p_base + d * 0.0045 + up * (dz_b * 0.35)
+    brow_band = Part(f'{gid_h}_brow_band', Q_brow, True, ['body'] * 3, iron_p, rigid_joint='Head')
+
+    # Wildcat nasal/snout ridge guard descending cleanly between the eyes
+    j_front = int(np.argmin(np.abs(angles - math.pi)))
+    p_brow_f = Q[1, j_front] + fwd * 0.004
+    nasal_pts = [
+        p_brow_f + up * 0.018,
+        p_brow_f - up * 0.018 + fwd * 0.008,
+        p_brow_f - up * 0.044 + fwd * 0.006,
+    ]
+    nasal = horn(f'{gid_h}_nasal', nasal_pts, 0.014, 0.006, iron_p, n=8, rows=6, rigid_joint='Head')
+
+    parts = [helm_dome, brow_band, nasal]
+
+    # Twin angular wildcat ear-crests + sweeping megafauna bone war-horns on temples
+    for sgn, tag in ((1.0, 'L'), (-1.0, 'R')):
+        side_v = left * sgn
+        # Wildcat ear-crest rising from upper parietal
+        e0 = apex_pt - up * 0.036 + side_v * 0.058 + fwd * 0.024
+        e1 = e0 + up * 0.042 + side_v * 0.018 + fwd * 0.006
+        e2 = e1 + up * 0.028 + side_v * 0.006 - fwd * 0.008
+        parts.append(horn(f'{gid_h}_ear_{tag}', [e0, e1, e2], 0.020, 0.004, iron_p, n=8, rows=6, rigid_joint='Head'))
+
+        # Sweeping curved megafauna bone horn rooted on temple dome
+        h0 = np.array([c_mid[0], c_mid[1], z_dome_start - 0.010]) + side_v * (float(base_rs.mean()) * 0.96) + fwd * 0.012
+        h1 = h0 + side_v * 0.058 + up * 0.036 - fwd * 0.018
+        h2 = h1 + side_v * 0.034 + up * 0.068 - fwd * 0.032
+        h3 = h2 - side_v * 0.014 + up * 0.052 + fwd * 0.016
+        parts.append(horn(f'{gid_h}_horn_{tag}', [h0, h1, h2, h3], 0.024, 0.005, bone_p, n=12, rows=9, rigid_joint='Head'))
+
+    return assemble_garment(
+        gid_h, 'Wildcat Riveted Highway-Sign & Bone-Horn Upper-Face War-Helm', 'head', 'fellgangs',
+        parts, covers_hair=True, covers_face=False,
+    )
+
+
 def _fg_sleeves(gid, end, ease, paint, ease_end=0.017, rows=12, n=22, rmax=0.135):
     """Fellgangs sleeves with deep shoulder-root overlap (`start_back=0.058`) and full wrist overlap (`0.98`)."""
     out = []
@@ -228,9 +441,15 @@ def _back_ice_hook_coil(gid, rope_p, iron_p, strap_p):
     return parts
 
 
+def _dorsal_pad(gid, strap_p):
+    hit, b_dir = _dorsal_anchor(-0.02)
+    return [blob(f'{gid}_dpad', hit + b_dir * 0.014, (0.118, 0.026, 0.150), strap_p,
+                 n=10, rows=5, out=b_dir, rigid_joint='Spine2')]
+
+
 def _back_box_or_pannier(gid, body_p, trim_p, strap_p, dims=(0.145, 0.078, 0.165), lid=True):
-    """Dorsal salt pannier or painted vardo pedlar's box on snug `pack_straps`."""
-    parts = list(pack_straps(gid, strap_p, ease=0.015, width=0.025))
+    """Dorsal salt pannier or painted vardo pedlar's box on dorsal mounting pad."""
+    parts = _dorsal_pad(gid, strap_p)
     hit, b_dir = _dorsal_anchor(-0.03)
     c_b = hit + b_dir * (dims[1] * 0.55)
     parts.append(blob(f'{gid}_box', c_b, dims, body_p, n=16, rows=7, rigid_joint='Spine2'))
@@ -241,8 +460,8 @@ def _back_box_or_pannier(gid, body_p, trim_p, strap_p, dims=(0.145, 0.078, 0.165
 
 
 def _back_tinker_frame(gid, copper_p, wood_p, strap_p):
-    """West-Rift smelter's copper-pipe & ingot tinker frame on snug `pack_straps`."""
-    parts = list(pack_straps(gid, strap_p, ease=0.015, width=0.026))
+    """West-Rift smelter's copper-pipe & ingot tinker frame on dorsal mounting pad."""
+    parts = _dorsal_pad(gid, strap_p)
     hit, b_dir = _dorsal_anchor(-0.02)
     c_f = hit + b_dir * 0.028
     # Twin copper condenser/ingot cylinders
@@ -258,8 +477,8 @@ def _back_tinker_frame(gid, copper_p, wood_p, strap_p):
 
 
 def _back_barricade_buckler(gid, sign_p, rim_p, strap_p):
-    """Octagonal sheared-highway STOP/YIELD sign buckler slung on snug `pack_straps`."""
-    parts = list(pack_straps(gid, strap_p, ease=0.015, width=0.026))
+    """Octagonal sheared-highway STOP/YIELD sign buckler slung on dorsal mounting pad."""
+    parts = _dorsal_pad(gid, strap_p)
     hit, b_dir = _dorsal_anchor(-0.02)
     c_s = hit + b_dir * 0.024
     parts.append(rosette(f'{gid}_oct_sign', c_s, b_dir, np.array([1.0, 0.0, 0.0]),
@@ -289,8 +508,8 @@ def _back_wildcat_trophy_rack(gid, iron_p, bone_p, sign_p, strap_p):
 
 
 def _back_kradz_bone_cage(gid, bone_p, glow_p, strap_p):
-    """Curved cave-predator ribcage basket holding luminous pale-cyan glow-fungus on snug `pack_straps`."""
-    parts = list(pack_straps(gid, strap_p, ease=0.015, width=0.022))
+    """Curved cave-predator ribcage basket holding luminous pale-cyan glow-fungus on dorsal mounting pad."""
+    parts = _dorsal_pad(gid, strap_p)
     hit, b_dir = _dorsal_anchor(-0.02)
     c_g = hit + b_dir * 0.032
     # Luminous glow-fungus cluster inside rib cage
@@ -318,26 +537,28 @@ def _build_blakhed_stairman(sex, body_id):
     peat_p = _p_peat_wool('peatumber', 'slate')
     slate_p = _p_peat_wool('slate', 'peatumber')
 
-    # HEAD: Greased slate-wool pit flatcap (`covers_hair=True, covers_face=False`, clear eyeline)
+    # HEAD: Greased slate-wool pit flatcap (`covers_hair=True, covers_face=False`, clear eyeline, closed crown +18mm lift)
     gid_h = f'fg_{sex}_flatcap'
     parts_h = [
-        head_rings(f'{gid_h}_crown', 0.60, 1.02, 0.016, slate_p, n=36, rows=9, apex=True, scale=(1.04, 1.08)),
-        brim(f'{gid_h}_peak', 0.60, 0.048, P('charcoal', 0.05, fabric=WOOL), ease=0.014, droop=0.010),
+        _closed_cap_dome(f'{gid_h}_crown', 0.60, 1.06, 0.024, slate_p, n=36, rows=12, scale=(1.06, 1.12), z_lift=0.018),
+        brim(f'{gid_h}_peak', 0.60, 0.048, P('charcoal', 0.05, fabric=WOOL), ease=0.023, droop=0.010),
     ]
     entries.append(assemble_garment(gid_h, 'Blakhed Slate-Wool Pit Flatcap', 'head', 'fellgangs', parts_h,
                                     covers_hair=True, covers_face=False))
 
-    # TORSO: Padded shoulder-bolster porter jerkin over peat wool vest (cleanly separated shoulder layers: sleeve 0.016 < jerkin 0.022 < bolster 0.030)
+    # TORSO: Padded shoulder-bolster porter jerkin over peat wool vest (strict >=10mm layer hierarchy: sleeve 0.013 < jerkin 0.024 < bolster 0.036)
     gid_t = f'fg_{sex}_porter_jerkin'
     bolster_p = leathery(P('saddle', 0.06, [B('bottom', 0.0, 0.016, 'solid', 'soot')], fabric='leather.polished'))
+    bol_l = _push_arm_out(pauldron(f'{gid_t}_bolster_L', L, bolster_p, reach=0.28, ease=0.026), L, 0.011)
+    bol_r = _push_arm_out(pauldron(f'{gid_t}_bolster_R', R, bolster_p, reach=0.28, ease=0.026), R, 0.011)
     parts_t = [
-        torso_tube(f'{gid_t}_jerkin', TOP, WAIST - 0.06, ease=0.022, ease_bottom=0.044, paint=peat_p,
+        torso_tube(f'{gid_t}_jerkin', TOP, WAIST - 0.06, ease=0.024, ease_bottom=0.044, paint=peat_p,
                    hang_from=WAIST + 0.02, flare=0.12, rows=18, n=40),
-        pauldron(f'{gid_t}_bolster_L', L, bolster_p, reach=0.28, ease=0.030),
-        pauldron(f'{gid_t}_bolster_R', R, bolster_p, reach=0.28, ease=0.030),
-        belt_sash(f'{gid_t}_belt', WAIST - 0.024, WAIST + 0.028, bolster_p, ease=0.032),
+        bol_l,
+        bol_r,
+        belt_sash(f'{gid_t}_belt', WAIST - 0.024, WAIST + 0.028, bolster_p, ease=0.034),
     ]
-    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.016, slate_p, ease_end=0.015))
+    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.013, slate_p, ease_end=0.014))
     entries.append(assemble_garment(gid_t, 'Blakhed Padded Porter Jerkin', 'torso', 'fellgangs', parts_t))
 
     # BACK: Ash-wood A-frame Chimes Gorge kreel
@@ -375,30 +596,28 @@ def _build_fowler_icecutter(sex, body_id):
     oil_p = _p_oiled('slate', 'charcoal')
     oil_dk = _p_oiled('charcoal', 'soot')
 
-    # HEAD: Broad-brimmed tarred oilcloth sou'wester
+    # HEAD: Broad-brimmed tarred oilcloth sou'wester (sealed closed apex, zero hole at top)
     gid_h = f'fg_{sex}_tarred_souwester'
     parts_h = [
-        head_rings(f'{gid_h}_dome', 0.58, 1.03, 0.016, oil_dk, n=36, rows=10, apex=True),
-        brim(f'{gid_h}_brim', 0.59, 0.095, oil_dk, ease=0.016, droop=0.035),
+        _closed_cap_dome(f'{gid_h}_dome', 0.58, 1.08, 0.024, oil_dk, n=36, rows=12, z_lift=0.020),
+        brim(f'{gid_h}_brim', 0.59, 0.095, oil_dk, ease=0.023, droop=0.035),
     ]
     entries.append(assemble_garment(gid_h, 'Fellgang Tarred Oilcloth Souwester', 'head', 'fellgangs', parts_h,
                                     covers_hair=True, covers_face=False))
 
-    # TORSO: Oiled waterfowl/wool smock + hemp abseil harness (sealed neckline, armhole gussets, deep-rooted wrist sleeves)
+    # TORSO: Oiled waterfowl/wool smock + hemp abseil harness (strict >=10mm shoulder layer hierarchy: sleeve 0.014 < smock 0.023 < capelet 0.034 < harness 0.040)
     gid_t = f'fg_{sex}_fowler_smock'
     hemp_p = P('oat', 0.06, fabric='straw.reed.plaited')
+    capelet = _push_out_radial(collar_disc(f'{gid_t}_capelet', 0.16, oil_dk, drop=0.075, ease=0.023), 0.011, dz=0.008)
     parts_t = [
-        torso_tube(f'{gid_t}_smock', TOP + 0.016, WAIST - 0.06, ease=0.022, ease_bottom=0.044, paint=oil_p,
+        torso_tube(f'{gid_t}_smock', TOP + 0.016, WAIST - 0.06, ease=0.023, ease_bottom=0.044, paint=oil_p,
                    hang_from=WAIST + 0.02, flare=0.12, rows=18, n=40),
-        collar(f'{gid_t}_incol', oil_dk, height=0.050, flare=0.020, ease=0.011),
-        collar_disc(f'{gid_t}_capelet', 0.16, oil_dk, drop=0.075, ease=0.026),
-        crossed_sash(f'{gid_t}_abseil', hemp_p, width=0.048, ease=0.032),
-        belt_sash(f'{gid_t}_belt', WAIST - 0.024, WAIST + 0.028, hemp_p, ease=0.035),
+        collar(f'{gid_t}_incol', oil_dk, height=0.050, flare=0.014, ease=0.011),
+        capelet,
+        crossed_sash(f'{gid_t}_abseil', hemp_p, width=0.048, ease=0.040),
+        belt_sash(f'{gid_t}_belt', WAIST - 0.024, WAIST + 0.028, hemp_p, ease=0.042),
     ]
-    for side in (L, R):
-        parts_t.append(blob(f'{gid_t}_gusset_{side[0]}', J(side + 'Arm'), (0.062, 0.062, 0.066), oil_p,
-                            n=12, rows=6, rigid_joint=side + 'Arm'))
-    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.018, oil_p, ease_end=0.017))
+    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.014, oil_p, ease_end=0.015))
     entries.append(assemble_garment(gid_t, 'Fowler Oiled Smock & Abseil Harness', 'torso', 'fellgangs', parts_t))
 
     # BACK: Coiled tarred abseil rope & glacier ice-hook
@@ -664,7 +883,7 @@ def _build_barricade_picket(sex, body_id):
 
 
 def _build_wildcat_boast_hero(sex, body_id):
-    """Wildcat Fellgang-Kimr Boss — pairs with existing Meshy hero `fell_{m,f}_wildcat_mask`."""
+    """Wildcat Fellgang-Kimr Boss — builds procedural `fell_{m,f}_wildcat_mask` + boss cuirass."""
     set_body(body_id)
     TOP, CHEST, WAIST, CROTCH = core.TOP, core.CHEST, core.WAIST, core.CROTCH
     entries = []
@@ -673,19 +892,26 @@ def _build_wildcat_boast_hero(sex, body_id):
     tyre_p = _p_tyre()
     iron_p = P('iron', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'rust')], fabric='metal.iron')
 
+    # HEAD: Procedural solid closed-apex Wildcat upper-face war-helm (`fell_{m,f}_wildcat_mask`)
+    entries.append(_build_wildcat_mask(sex, f'fell_{sex}_wildcat_mask'))
+
     # TORSO: Asymmetrical sloth-pelt left pauldron + highway-sign steel right pauldron over slate-wool & tyre brigandine
+    # Strict >=9..10mm radial separation: sleeve 0.014 < jacket 0.022 < brigandine 0.032 < fur_mantle/pauldrons 0.041 < belt 0.042
     gid_t = f'fg_{sex}_wildcat_cuirass'
+    fur_mantle = _push_out_radial(collar_disc(f'{gid_t}_fur_mantle', 0.18, fur_p, drop=0.09, ease=0.023, scallop=0.14), 0.018, dz=0.010)
+    pauld_l = _push_arm_out(pauldron(f'{gid_t}_pauld_L', L, fur_p, reach=0.38, ease=0.026), L, 0.014)
+    pauld_r = _push_arm_out(pauldron(f'{gid_t}_pauld_R', R, sign_p, reach=0.38, ease=0.026), R, 0.014)
     parts_t = [
-        torso_tube(f'{gid_t}_jacket', TOP, WAIST - 0.06, ease=0.024, ease_bottom=0.044, paint=_p_maud_plaid(),
+        torso_tube(f'{gid_t}_jacket', TOP, WAIST - 0.06, ease=0.022, ease_bottom=0.044, paint=_p_maud_plaid(),
                    hang_from=WAIST + 0.02, flare=0.11, rows=16, n=38),
-        torso_tube(f'{gid_t}_brigandine', CHEST + 0.09, WAIST - 0.01, ease=0.030, paint=tyre_p, rows=12, n=36),
-        collar_disc(f'{gid_t}_fur_mantle', 0.18, fur_p, drop=0.09, ease=0.024, scallop=0.14),
-        pauldron(f'{gid_t}_pauld_L', L, fur_p, reach=0.38, ease=0.030),
-        pauldron(f'{gid_t}_pauld_R', R, sign_p, reach=0.38, ease=0.030),
-        belt_sash(f'{gid_t}_belt', WAIST - 0.026, WAIST + 0.028, sign_p, ease=0.036),
+        torso_tube(f'{gid_t}_brigandine', CHEST + 0.09, WAIST - 0.01, ease=0.032, paint=tyre_p, rows=12, n=36),
+        fur_mantle,
+        pauld_l,
+        pauld_r,
+        belt_sash(f'{gid_t}_belt', WAIST - 0.026, WAIST + 0.028, sign_p, ease=0.042),
     ]
-    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.024, _p_peat_wool('slate', 'soot')))
-    cf = chest_front(CHEST - 0.01, 0.032)
+    parts_t.extend(_fg_sleeves(gid_t, 'wrist', 0.014, _p_peat_wool('slate', 'soot'), ease_end=0.015))
+    cf = chest_front(CHEST - 0.01, 0.044)
     parts_t.append(rosette(f'{gid_t}_boss_sign', cf, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]),
                            0.050, sign_p, n=8, thick=0.014, rigid_joint='Spine2'))
     entries.append(assemble_garment(gid_t, 'Wildcat Sloth-Pelt & Road-Sign Boss Cuirass', 'torso', 'fellgangs', parts_t))

@@ -143,7 +143,7 @@
   function groupOf(n){ return GROUPS.filter(function(g){ return g.clips.indexOf(n) >= 0; })[0]; }
 
   /* ---- stage ---- */
-  var renderer, scene, camera, clock = new THREE.Clock(), figs = [], current = 'idle', paused = false, speed = 1, keyLight = null;
+  var renderer, scene, camera, clock = new THREE.Clock(), figs = [], current = 'idle', paused = false, speed = 1, keyLight = null, duelHook = null;
   var cam = { yaw:0, pitch:0.12, dist:9, x:0, ty:0.95, want:{ yaw:0, pitch:0.12, dist:9, x:0, ty:0.95 } }, focus = null, who = 'all';
   function boot(){
     var stage = $('stage');
@@ -185,6 +185,23 @@
     window._lab = { figs:figs.map(function(x){ return x.f; }), ready:ready, play:play, reviews:function(){ return reviews; }, setTime:setTime, cam:cam,
       // a door clip's set: how far figure i's grip is from its door's lever (null with no door shown)
       doorGap:function(i){ var d = SETS[i]; return d && d.root.visible ? gripAt(figs[i], new THREE.Vector3()).distanceTo(d.mark.getWorldPosition(new THREE.Vector3())) : null; } };
+    if(LAB && LAB.id === 'combat'){
+      window.__KCHAR_ANIMLAB = {
+        D:D, LAB:LAB, scene:scene, renderer:renderer, camera:camera, cam:cam,
+        keyLight:keyLight, load:load, figs:figs, ready:ready, lineup:lineup,
+        setPaused:setPaused, play:play,
+        setDuelHook:function(h){ duelHook = h; },
+        hideLineup:function(hide){
+          if(hide){
+            figs.forEach(function(s){ s.f.group.visible = false; s.tag.hidden = true; });
+            SETS.forEach(function(d){ if(d && d.root) d.root.visible = false; });
+          } else {
+            lineup();
+          }
+        }
+      };
+      window.dispatchEvent(new CustomEvent('kchar-animlab-ready', { detail:window.__KCHAR_ANIMLAB }));
+    }
   }
 
   // the row: each body's three side by side, a wider gap between the two bodies
@@ -304,8 +321,13 @@
   var tv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta()), step = paused ? 0 : dt * speed;
-    figs.forEach(function(s){ if(s.f.group.visible) s.f.update(step); });
-    sets();
+    var inDuel = !!(duelHook && duelHook.active);
+    if(inDuel){
+      duelHook.tick(dt);
+    } else {
+      figs.forEach(function(s){ if(s.f.group.visible) s.f.update(step); });
+      sets();
+    }
     var k = 1 - Math.pow(0.002, dt);
     ['yaw', 'pitch', 'dist', 'x', 'ty'].forEach(function(n){ cam[n] += (cam.want[n] - cam[n]) * k; });
     var cp = Math.cos(cam.pitch);
@@ -313,13 +335,17 @@
     camera.lookAt(cam.x, cam.ty, 0);
     renderer.render(scene, camera);
     var r = renderer.domElement.getBoundingClientRect();
-    figs.forEach(function(s){
-      if(!s.f.group.visible) return;
-      tv.set(s.f.group.position.x, 0, 0.55).project(camera);
-      s.tag.style.left = ((tv.x + 1) / 2 * r.width) + 'px';
-      s.tag.style.top = Math.min(r.height - 120, (1 - tv.y) / 2 * r.height + 6) + 'px';
-    });
-    clockText();
+    if(inDuel){
+      if(duelHook.afterRender) duelHook.afterRender(r);
+    } else {
+      figs.forEach(function(s){
+        if(!s.f.group.visible) return;
+        tv.set(s.f.group.position.x, 0, 0.55).project(camera);
+        s.tag.style.left = ((tv.x + 1) / 2 * r.width) + 'px';
+        s.tag.style.top = Math.min(r.height - 120, (1 - tv.y) / 2 * r.height + 6) + 'px';
+      });
+      clockText();
+    }
     requestAnimationFrame(frame);
   }
 
@@ -732,6 +758,7 @@
       status('Every clip has a mark.');
     });
     document.addEventListener('keydown', function(e){
+      if(duelHook && duelHook.active) return;
       var t = e.target.tagName;
       if(t === 'TEXTAREA' || t === 'INPUT' || t === 'SELECT' || e.metaKey || e.ctrlKey || e.altKey) return;
       if(e.key === 'ArrowDown'){ e.preventDefault(); step(1); }

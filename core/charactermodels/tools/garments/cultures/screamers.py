@@ -365,7 +365,7 @@ def _build_shared_pieces(sex):
     entries.append(assemble_garment(
         f'scr_{sex}_scald_mitts', 'Oiled Bladder-Hide & Sulfur Fumarole Mitts', 'gloves', 'screamers',
         full_gloves(f'scr_{sex}_scald_mitts', P('scr_sulfur', 0.05, fabric='hide.sealslick.oiled'),
-                    P('scr_ironwood', 0.05, fabric='leather.foundry.pigskin'), f0=0.58, ease=0.014),
+                    P('scr_ironwood', 0.05, fabric='leather.foundry.pigskin'), f0=0.46, ease=0.017),
     ))
 
     return entries
@@ -616,11 +616,45 @@ def _build_screamer_tiers(sex):
         B('bottom', 0.0, 0.06, 'scr_dot_skull', 'scr_bloodwood', 'scr_sulfur', 0.12),
     ], [PN(0.0, 1.0, 'scr_hide_figure', 'scr_bloodwood', 'scr_sulfur', 0.22)], fabric='metal.bronze')
     sh_cop = P('copper', 0.04, fabric='metal.bronze')
+    sh_hide = P('scr_sulfur', 0.05, fabric='hide.sealslick.oiled')
     sh_cuir = cuirass_plate(f'{gid_t}_cuir', sh_brz, trim_paint=sh_cop, style='lamellar', faulds=2, ease=0.022)
-    ch_pld = articulated_pauldron(f'{gid_t}_chitin_pld', R, sh_cop, trim_paint=sh_brz, lames=3, haute_piece=False, ease=0.020)
+    ch_pld = articulated_pauldron(f'{gid_t}_chitin_pld', R, sh_cop, trim_paint=sh_brz, lames=3, haute_piece=False, ease=0.024)
+    # Full forearm-overlapping sleeves (`f1=0.78`, `ease=0.014`) tuck cleanly inside `scr_scald_mitts` (`f0=0.46`, cuff `0.019`)
+    # so there is ZERO open gap at the elbows during Idle, Walk, or Run!
+    sh_slvs = [
+        sleeve(f'{gid_t}_sleeve_{side[0]}', side, sh_hide, f0=0.0, f1=0.78, ease=0.014, flare=0.001, rows=12, n=22)
+        for side in (L, R)
+    ]
+    # Snug double-walled folded neck wrap + clavicle bridge sealing the cuirass neck opening completely
+    n_nk = 36
+    angs_nk = np.linspace(0.0, 2.0 * math.pi, n_nk, endpoint=False)
+    x_nk, y_nk = np.array([0.0, 1.0, 0.0]), np.array([1.0, 0.0, 0.0])
+    z_nk_ref = core.NECK[2] - 0.006
+    c_nk_ref = core.spine_at(z_nk_ref)
+    r_nk_in = np.array(core.ring_points(c_nk_ref, x_nk, y_nk, angs_nk, 0.006, rmin=0.048, rmax=0.082, bvh=core.BVH_T), dtype=np.float64)
+    r_nk_out = np.array(core.ring_points(c_nk_ref, x_nk, y_nk, angs_nk, 0.018, rmin=0.058, rmax=0.098, bvh=core.BVH_T), dtype=np.float64)
+    rel_nk_in = r_nk_in[:, :2] - c_nk_ref[:2]
+    rel_nk_out = r_nk_out[:, :2] - c_nk_ref[:2]
+    z_nk_top = core.TOP + 0.028
+    z_nk_bot = core.TOP - 0.020
+    nk_specs = [
+        (z_nk_bot, rel_nk_out * 1.18),
+        (z_nk_bot + 0.35 * (z_nk_top - z_nk_bot), rel_nk_out * 1.04),
+        (z_nk_bot + 0.72 * (z_nk_top - z_nk_bot), rel_nk_out * 1.00),
+        (z_nk_top, rel_nk_out * 0.98),
+        (z_nk_top + 0.002, 0.50 * rel_nk_out + 0.50 * rel_nk_in),
+        (z_nk_top, rel_nk_in * 1.02),
+        (z_nk_bot + 0.50 * (z_nk_top - z_nk_bot), rel_nk_in * 1.00),
+        (z_nk_bot - 0.004, rel_nk_in * 1.00),
+    ]
+    Q_nk = []
+    for zz, rel_xy in nk_specs:
+        cz = core.spine_at(min(zz, core.TOP))
+        Q_nk.append(np.column_stack([cz[:2] + rel_xy, np.full(n_nk, zz)]))
+    sh_neck = Part(f'{gid_t}_neck_seal', np.array(Q_nk, dtype=np.float64), True, ['body'] * len(nk_specs), sh_hide, role='collar')
+    sh_neck.no_conform = True
     entries.append(assemble_garment(gid_t, 'Fumarole Boiler-Bronze Lamellar Cuirass & Sulfur-Hide Sleeves', 'torso', 'screamers',
-                                    sh_cuir + ch_pld
-                                    + sleeves(gid_t, 'elbow', 0.018, P('scr_sulfur', 0.05, fabric='hide.sealslick.oiled'))))
+                                    sh_cuir + ch_pld + sh_slvs + [sh_neck]))
 
     gid_b = f'scr_{sex}_steam_pot_pack'
     pad, anc = _dorsal_pad(gid_b, P('scr_sulfur', 0.05), clearance=0.030)

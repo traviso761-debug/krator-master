@@ -67,7 +67,7 @@ from ..types.headgear import head_rings, hood, brim, tower_hat, crown_band, horn
 from ..types.accoutrements import (
     blob, pouch_belt, sash_with_tail, button_row, pendants, strap, tube, rosette
 )
-from .xanadu import _dorsal_pad
+from .xanadu import _dorsal_pad, _push_outside_parts, _smooth_sleeve_shoulders
 
 
 # ===============================================================================================================
@@ -719,6 +719,9 @@ def _build_house_two_horns(sex, body_id):
         p4 = p3 + up * 0.036 + bk * 0.034 - left * (sx * 0.010)
         parts_h.append(horn(f'{gid_h}_horn_{s_tag}', [p0, p1, p2, p3, p4], 0.022, 0.004,
                             horn_p, n=12, rows=11, rigid_joint='Head'))
+    # Raise the entire Two Horns helmet assembly +1.2 cm (+0.012 m along +Z) for unobstructed sight lines
+    for pt_h in parts_h:
+        pt_h.P[:, :, 2] += 0.012
     entries.append(assemble_garment(gid_h, 'Two Horns Spired Kulah-Bashlyk Helm & Swept Argali Crest-Horns', 'head', 'xanadu', parts_h,
                                     covers_hair=True, covers_face=False))
 
@@ -736,12 +739,22 @@ def _build_house_two_horns(sex, body_id):
         PN(0.60, 0.64, 'solid', 'gold', 'yakbrown', 1.0),
         PN(0.40, 0.60, 'cholet_pangden', 'pomegranate', 'turq', 0.14),
     ], fabric=WOOL)
-    parts_t.append(torso_tube(gid_t + '_chuba', TOP, KNEE - 0.02, 0.018, chuba_p,
-                              n=48, rows=22, hang_from=WAIST - 0.02, flare=0.15,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    chuba_pt = torso_tube(gid_t + '_chuba', TOP, KNEE - 0.02, 0.016, chuba_p,
+                          n=48, rows=22, hang_from=WAIST - 0.02, flare=0.15,
+                          group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=5)
+    parts_t.append(chuba_pt)
+
+    sl_p = P('yakbrown', 0.06, [
+        B('bottom', 0.0, 0.038, 'solid', 'cream'),
+        B('bottom', 0.038, 0.080, 'cholet_pangden', 'pomegranate', 'turq', 0.04),
+    ], fabric=WOOL)
+    sl_th = sleeves(gid_t, 'wrist', 0.017, sl_p, ease_end=0.027, rows=12, n=22)
+    _smooth_sleeve_shoulders(chuba_pt, sl_th)
 
     fleece_p = P('cream', 0.10, [B('bottom', 0.0, 0.020, 'solid', 'yakbrown')], fabric='fur.yak')
-    parts_t.append(collar_disc(gid_t + '_fleece_collar', 0.078, fleece_p, drop=0.062, rows=6, scallop=0.05, ease=0.019))
+    fleece_col = collar_disc(gid_t + '_fleece_collar', 0.078, fleece_p, drop=0.062, rows=8, scallop=0.05, ease=0.022)
+    _push_outside_parts(fleece_col, [chuba_pt] + sl_th, margin=0.007, z_lift=0.007, smooth_iters=2)
+    parts_t.append(fleece_col)
 
     scute_p = P('bone', 0.05, [
         B('bottom', 0.0, 0.020, 'dentils', 'ochre', 'yakbrown', 0.03),
@@ -749,8 +762,12 @@ def _build_house_two_horns(sex, body_id):
     ], [
         PN(0.0, 1.0, 'hex', 'ochre', 'bone', 0.055),
     ], fabric='leather.buckskin')
-    parts_t.append(pauldron(gid_t + '_scute_L', L, scute_p, reach=0.36, ease=0.024, flare_end=0.98))
-    parts_t.append(pauldron(gid_t + '_scute_R', R, scute_p, reach=0.36, ease=0.024, flare_end=0.98))
+    sc_L = pauldron(gid_t + '_scute_L', L, scute_p, reach=0.36, ease=0.026, flare_end=0.98)
+    sc_R = pauldron(gid_t + '_scute_R', R, scute_p, reach=0.36, ease=0.026, flare_end=0.98)
+    _push_outside_parts(sc_L, [sl_th[0], fleece_col, chuba_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=L)
+    _push_outside_parts(sc_R, [sl_th[1], fleece_col, chuba_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=R)
+    parts_t.append(sc_L)
+    parts_t.append(sc_R)
 
     parts_t.append(torso_tube(gid_t + '_belt', WAIST + 0.04, WAIST - 0.035, 0.020,
                               P('pomegranate', 0.04, [B('top', 0.0, 0.010, 'solid', 'turq'),
@@ -786,11 +803,7 @@ def _build_house_two_horns(sex, body_id):
                                            B('top', 0.0, 0.010, 'solid', 'gold')], fabric='metal.bronze'),
                         n=12, rows=5, out=d_bell, rigid_joint='Hips'))
 
-    sl_p = P('yakbrown', 0.06, [
-        B('bottom', 0.0, 0.038, 'solid', 'cream'),
-        B('bottom', 0.038, 0.080, 'cholet_pangden', 'pomegranate', 'turq', 0.04),
-    ], fabric=WOOL)
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.018, sl_p, ease_end=0.028, rows=10))
+    parts_t.extend(sl_th)
     entries.append(assemble_garment(gid_t, 'Two Horns Glyptodont-Scute Chuba & Split-Tallies', 'torso', 'xanadu', parts_t))
 
     # --- 3. BACK: Timber Saddle-Frame, Coiled Yak-Hair Rope & Glyptodont Goad (`xan_{sex}_twohorns_pack`) ---
@@ -913,32 +926,46 @@ def _build_sultan_court(sex, body_id):
         PN(0.60, 0.64, 'solid', 'gold', 'gold', 1.0),
         PN(0.40, 0.60, 'xanadu_sun_wheel', 'gold', 'pomegranate', 0.20),
     ], fabric='cloth.silk')
-    parts_t.append(torso_tube(gid_t + '_caftan', TOP, ANKLE + 0.04, 0.016, caftan_p,
-                              n=52, rows=24, hang_from=WAIST - 0.01, flare=0.22,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    caftan_pt = torso_tube(gid_t + '_caftan', TOP, ANKLE + 0.04, 0.015, caftan_p,
+                           n=52, rows=24, hang_from=WAIST - 0.01, flare=0.22,
+                           group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=5)
+    parts_t.append(caftan_pt)
 
-    # Plush snow-leopard spotted fur capelet + gilded pauldrons
+    sl_p = P('violet', 0.03, [
+        B('bottom', 0.0, 0.032, 'solid', 'gold'),
+        B('bottom', 0.032, 0.105, 'xanadu_sun_wheel', 'gold', 'pomegranate', 0.055),
+    ], fabric='cloth.silk')
+    sl_sul = sleeves(gid_t, 'wrist', 0.017, sl_p, ease_end=0.027, rows=12, n=22)
+    _smooth_sleeve_shoulders(caftan_pt, sl_sul)
+
+    # Plush snow-leopard spotted fur capelet + gilded pauldrons with strict shoulder layer separation
     leop_p = P('snowleopard', 0.09, [
         B('bottom', 0.0, 0.018, 'solid', 'gold'),
         B('top', 0.012, 0.040, 'beads', 'charcoal', 'snowleopard', 0.030),
     ], [
         PN(0.0, 1.0, 'orb', 'soot', 'snowleopard', 0.045),
     ], fabric='fur.yak')
-    parts_t.append(collar_disc(gid_t + '_leopard_capelet', 0.086, leop_p, drop=0.070, rows=6, scallop=0.06, ease=0.020))
+    leop_col = collar_disc(gid_t + '_leopard_capelet', 0.086, leop_p, drop=0.070, rows=8, scallop=0.06, ease=0.022)
+    _push_outside_parts(leop_col, [caftan_pt] + sl_sul, margin=0.007, z_lift=0.007, smooth_iters=2)
+    parts_t.append(leop_col)
 
     gilt_pauld_p = P('gold', 0.02, [
         B('bottom', 0.0, 0.022, 'dentils', 'violet', 'gold', 0.028),
         B('top', 0.0, 0.014, 'beads', 'cybercyan', 'gold', 0.022),
     ], fabric='metal.gold')
-    parts_t.append(pauldron(gid_t + '_pauld_L', L, gilt_pauld_p, reach=0.35, ease=0.024, flare_end=0.98))
-    parts_t.append(pauldron(gid_t + '_pauld_R', R, gilt_pauld_p, reach=0.35, ease=0.024, flare_end=0.98))
+    pl_L = pauldron(gid_t + '_pauld_L', L, gilt_pauld_p, reach=0.35, ease=0.026, flare_end=0.98)
+    pl_R = pauldron(gid_t + '_pauld_R', R, gilt_pauld_p, reach=0.35, ease=0.026, flare_end=0.98)
+    _push_outside_parts(pl_L, [sl_sul[0], leop_col, caftan_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=L)
+    _push_outside_parts(pl_R, [sl_sul[1], leop_col, caftan_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=R)
+    parts_t.append(pl_L)
+    parts_t.append(pl_R)
 
     # Dual continuous interlocking gold chains + Pleasure-Dome electric-filament pectoral jewel
     gold_chain_p = P('gold', 0.02, [B('top', 0.0, 0.006, 'solid', 'amber')], fabric='metal.gold')
-    parts_t.extend(_build_chest_gold_chain(f'{gid_t}_chain_in', TOP - 0.016, 0.068, 0.110, 0.019, gold_chain_p, n_links=29))
-    parts_t.extend(_build_chest_gold_chain(f'{gid_t}_chain_out', TOP - 0.016, 0.090, 0.165, 0.020, gold_chain_p, n_links=37))
+    parts_t.extend(_build_chest_gold_chain(f'{gid_t}_chain_in', TOP - 0.016, 0.068, 0.110, 0.024, gold_chain_p, n_links=29))
+    parts_t.extend(_build_chest_gold_chain(f'{gid_t}_chain_out', TOP - 0.016, 0.090, 0.165, 0.024, gold_chain_p, n_links=37))
 
-    p_pec = chest_front(TOP - 0.016 - 0.165, 0.025, x=0.0)
+    p_pec = chest_front(TOP - 0.016 - 0.165, 0.026, x=0.0)
     parts_t.append(rosette(gid_t + '_pectoral_bezel', p_pec, FRONT, np.array([1.0, 0.0, 0.0]), 0.042,
                            P('gold', 0.02, [B('bottom', 0.0, 0.010, 'solid', 'violet')], fabric='metal.gold'),
                            n=16, thick=0.010, rigid_joint='Spine2'))
@@ -956,11 +983,7 @@ def _build_sultan_court(sex, body_id):
     ], fabric='metal.gold')
     parts_t.extend(sash_with_tail(gid_t, sash_p, sash_p, ease=0.020, tail=0.34))
 
-    sl_p = P('violet', 0.03, [
-        B('bottom', 0.0, 0.032, 'solid', 'gold'),
-        B('bottom', 0.032, 0.105, 'xanadu_sun_wheel', 'gold', 'pomegranate', 0.055),
-    ], fabric='cloth.silk')
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.018, sl_p, ease_end=0.028, rows=10))
+    parts_t.extend(sl_sul)
     entries.append(assemble_garment(gid_t, 'Sultan Pleasure-Dome Gold Caftan & Snow-Leopard Regalia', 'torso', 'xanadu', parts_t))
 
     # --- 3. FEET: Solid Gold & Violet Opal-Studded Court Slippers (`xan_{sex}_sultan_slippers`) ---

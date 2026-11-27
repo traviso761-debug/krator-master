@@ -117,19 +117,8 @@ def cuirass_plate(gid, plate_paint, trim_paint=None, style='gothic', z_top=None,
 
         P_grid[r, :, :2] = c[:2] + u_dir * (rad + dr)[:, None]
 
-    # Rigid anatomical plate weighting: upper chest locked to Spine2, lower plackart to Spine1, waist to Spine
-    row_joints = []
-    for r in range(R_cnt):
-        z_r = z_rows[r]
-        if z_r >= core.CHEST - 0.035:
-            row_joints.append('Spine2')
-        elif z_r >= core.WAIST + 0.040:
-            row_joints.append('Spine1')
-        else:
-            row_joints.append('Spine')
-
+    # Smooth body-transferred spine skinning prevents hard row-to-row shearing/displacement during animation
     cuirass = Part(f'{gid}_cuirass', P_grid, True, ['body'] * R_cnt, p_mat, role='trunk')
-    cuirass.row_joints = row_joints
     parts = [cuirass]
 
     # 4. Articulated overlapping fauld hoops below waist (with front groin cutout arch)
@@ -156,7 +145,7 @@ def cuirass_plate(gid, plate_paint, trim_paint=None, style='gothic', z_top=None,
                 qf.append(ring)
             lame_p = Part(f'{gid}_fauld_{k}', np.array(qf, dtype=np.float64), True, ['body'] * 3,
                           t_mat if (k == n_f - 1 and trim_paint is not None) else p_mat,
-                          rigid_joint='Hips', role='belt')
+                          role='belt')
             parts.append(lame_p)
 
     return parts

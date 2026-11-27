@@ -68,6 +68,318 @@ from ..types.headgear import (
 from ..types.accoutrements import (
     flap, blob, pouch_belt, sash_with_tail, button_row, pendants, strap, tube, tassel, rosette
 )
+from scipy.spatial import cKDTree
+
+
+def _sample_part_surface(parts):
+    """Densify Part grids (vertices + quad centers + edge midpoints) for accurate clearance queries."""
+    pts_list = []
+    for pt in parts:
+        Q = pt.P
+        pts_list.append(Q.reshape(-1, 3))
+        if Q.shape[0] >= 2 and Q.shape[1] >= 2:
+            mid_r = 0.5 * (Q[:-1, :, :] + Q[1:, :, :])
+            pts_list.append(mid_r.reshape(-1, 3))
+            if pt.closed:
+                Q_next = np.roll(Q, -1, axis=1)
+                mid_c = 0.5 * (Q + Q_next)
+                mid_q = 0.25 * (Q[:-1] + Q[1:] + Q_next[:-1] + Q_next[1:])
+            else:
+                mid_c = 0.5 * (Q[:, :-1, :] + Q[:, 1:, :])
+                mid_q = 0.25 * (Q[:-1, :-1] + Q[1:, :-1] + Q[:-1, 1:] + Q[1:, 1:])
+            pts_list.append(mid_c.reshape(-1, 3))
+            pts_list.append(mid_q.reshape(-1, 3))
+    return np.concatenate(pts_list, axis=0)
+
+
+def _push_outside_parts(outer_part, inner_parts, margin=0.007, z_lift=0.007, smooth_iters=2,
+                        axis_mode='spine', arm_side=None):
+    """Push outer_part vertices cleanly outside inner_parts with guaranteed radial and shoulder-top clearance."""
+    inner_pts = _sample_part_surface(inner_parts)
+    tree = cKDTree(inner_pts)
+    Q = outer_part.P.copy()
+    rows, cols = Q.shape[:2]
+
+    if axis_mode == 'arm' and arm_side is not None:
+        a_j = J(arm_side + 'Arm')
+        e_j = J(arm_side + 'ForeArm')
+        arm_vec = e_j - a_j
+        arm_len2 = max(float(np.dot(arm_vec, arm_vec)), 1e-8)
+
+    def _push_once(G):
+        for r in range(rows):
+            for c_i in range(cols):
+                p = G[r, c_i]
+                idxs = tree.query_ball_point(p, 0.036)
+                if not idxs:
+                    continue
+                near = inner_pts[idxs]
+                if axis_mode == 'arm' and arm_side is not None:
+                    t_a = float(np.clip(np.dot(p - a_j, arm_vec) / arm_len2, -0.35, 1.0))
+                    ctr = a_j + arm_vec * t_a
+                    v_cur = p - ctr
+                    r_cur = float(np.linalg.norm(v_cur))
+                    if r_cur < 1e-5:
+                        continue
+                    u_out = v_cur / r_cur
+                    v_near = near - ctr
+                    r_near = np.linalg.norm(v_near, axis=1)
+                    dots = (v_near @ u_out) / np.maximum(r_near, 1e-6)
+                    sec = dots >= 0.88
+                    if sec.any():
+                        r_req = float(r_near[sec].max()) + margin
+                        if r_cur < r_req:
+                            G[r, c_i] = ctr + u_out * r_req
+                else:
+                    ctr = spine_at(min(float(p[2]), core.TOP))
+                    d_xy = p[:2] - ctr[:2]
+                    r_cur = float(np.linalg.norm(d_xy))
+                    if r_cur > 1e-5:
+                        u_xy = d_xy / r_cur
+                        near_z = near[np.abs(near[:, 2] - p[2]) <= 0.024]
+                        if len(near_z):
+                            v_xy = near_z[:, :2] - ctr[:2]
+                            r_near = np.linalg.norm(v_xy, axis=1)
+                            dots = (v_xy @ u_xy) / np.maximum(r_near, 1e-6)
+                            sec = dots >= 0.975
+                            if sec.any():
+                                r_req = float(r_near[sec].max()) + margin
+                                if r_cur < r_req:
+                                    G[r, c_i, 0] = ctr[0] + u_xy[0] * r_req
+                                    G[r, c_i, 1] = ctr[1] + u_xy[1] * r_req
+                    # Shoulder-top vertical clearance (clavicle/trapezius roof)
+                    if z_lift > 0.0 and p[2] >= core.SHOULDER - 0.040 and abs(p[0]) >= 0.055:
+                        d_horiz = np.hypot(near[:, 0] - G[r, c_i, 0], near[:, 1] - G[r, c_i, 1])
+                        above_ok = d_horiz <= 0.022
+                        if above_ok.any():
+                            z_req = float(near[above_ok, 2].max()) + z_lift
+                            if G[r, c_i, 2] < z_req:
+                                G[r, c_i, 2] = z_req
+
+    _push_once(Q)
+    for _ in range(smooth_iters):
+        Q_s = Q.copy()
+        if outer_part.closed:
+            Q_c = 0.50 * Q + 0.25 * np.roll(Q, 1, axis=1) + 0.25 * np.roll(Q, -1, axis=1)
+        else:
+            Q_c = Q.copy()
+            if cols >= 3:
+                Q_c[:, 1:-1] = 0.50 * Q[:, 1:-1] + 0.25 * (Q[:, :-2] + Q[:, 2:])
+        if rows >= 3:
+            Q_s[1:-1] = 0.65 * Q_c[1:-1] + 0.175 * (Q_c[:-2] + Q_c[2:])
+            Q_s[0] = Q_c[0]
+            Q_s[-1] = Q_c[-1]
+        else:
+            Q_s = Q_c
+        Q = Q_s
+        _push_once(Q)
+    outer_part.P = Q
+    return outer_part
+
+
+def _conform_to_surface(outer_part, inner_parts, target_gap=0.006, max_gap=0.011,
+                        z_min=None, z_max=None, front_only=False, smooth_iters=2):
+    """Pull floating front straps/tabards flush onto inner_parts within [target_gap, max_gap]."""
+    inner_pts = _sample_part_surface(inner_parts)
+    tree = cKDTree(inner_pts)
+    Q = outer_part.P.copy()
+    rows, cols = Q.shape[:2]
+
+    def _clamp_once(G):
+        for r in range(rows):
+            for c_i in range(cols):
+                p = G[r, c_i]
+                if z_min is not None and p[2] < z_min:
+                    continue
+                if z_max is not None and p[2] > z_max:
+                    continue
+                if front_only and p[1] > -0.02:
+                    continue
+                ctr = spine_at(min(float(p[2]), core.TOP))
+                d_xy = p[:2] - ctr[:2]
+                r_cur = float(np.linalg.norm(d_xy))
+                if r_cur < 1e-5:
+                    continue
+                u_xy = d_xy / r_cur
+                # Find inner points in matching Z slice and angular sector
+                idxs = tree.query_ball_point(p, 0.095)
+                if not idxs:
+                    continue
+                near = inner_pts[idxs]
+                near_z = near[np.abs(near[:, 2] - p[2]) <= 0.024]
+                if not len(near_z):
+                    continue
+                v_xy = near_z[:, :2] - ctr[:2]
+                r_near = np.linalg.norm(v_xy, axis=1)
+                dots = (v_xy @ u_xy) / np.maximum(r_near, 1e-6)
+                sec = dots >= 0.985
+                if not sec.any():
+                    continue
+                r_in = float(r_near[sec].max())
+                r_new = min(max(r_cur, r_in + target_gap), r_in + max_gap)
+                G[r, c_i, 0] = ctr[0] + u_xy[0] * r_new
+                G[r, c_i, 1] = ctr[1] + u_xy[1] * r_new
+
+    _clamp_once(Q)
+    for _ in range(smooth_iters):
+        Q_s = Q.copy()
+        if outer_part.closed:
+            Q_c = 0.50 * Q + 0.25 * np.roll(Q, 1, axis=1) + 0.25 * np.roll(Q, -1, axis=1)
+        else:
+            Q_c = Q.copy()
+            if cols >= 3:
+                Q_c[:, 1:-1] = 0.50 * Q[:, 1:-1] + 0.25 * (Q[:, :-2] + Q[:, 2:])
+        if rows >= 3:
+            Q_s[1:-1] = 0.65 * Q_c[1:-1] + 0.175 * (Q_c[:-2] + Q_c[2:])
+            Q_s[0] = Q_c[0]
+            Q_s[-1] = Q_c[-1]
+        else:
+            Q_s = Q_c
+        Q = Q_s
+        _clamp_once(Q)
+    outer_part.P = Q
+    return outer_part
+
+
+def _fix_town_boot_heel(boot_parts):
+    """Close and round the rear heel cup of town boots so shaft, vamp, and sole seal solidly with zero empty gap."""
+    for s_tag, s_name in (('L', L), ('R', R)):
+        sole = next((pt for pt in boot_parts if pt.name.endswith(f'_sole_{s_tag}')), None)
+        shaft = next((pt for pt in boot_parts if pt.name.endswith(f'_shaft_{s_tag}')), None)
+        foot_p = next((pt for pt in boot_parts if pt.name.endswith(f'_foot_{s_tag}')), None)
+        if sole is None or shaft is None or foot_p is None:
+            continue
+        sgn = 1.0 if s_name == L else -1.0
+        foot_j = J(s_name + 'Foot')
+        fv = core.CO[(core.CO[:, 0] * sgn > 0.01) & (core.CO[:, 2] < foot_j[2] + 0.03)]
+        y_heel_skin = float(fv[:, 1].max())
+        ease_foot = 0.013
+        y_heel = y_heel_skin + ease_foot
+        y_ank_front = float(foot_j[1]) - 0.046
+        y_mid = 0.5 * (y_heel + y_ank_front)
+
+        # 1. Widen rear heel rows of the sole so it provides a solid rounded heel bed with full welt support
+        Q_s = sole.P.copy()
+        n_s = Q_s.shape[1]
+        angles_s = np.linspace(0.0, 2.0 * math.pi, n_s, endpoint=False)
+        for k, new_taper in ((0, 0.78), (1, 0.96)):
+            ys = float(Q_s[k, :, 1].mean())
+            sub = fv[np.abs(fv[:, 1] - ys) < 0.028]
+            if len(sub) < 4:
+                sub = fv[np.argsort(np.abs(fv[:, 1] - ys))[:16]]
+            xc_s = 0.5 * (float(sub[:, 0].min()) + float(sub[:, 0].max()))
+            hw_s = 0.5 * (float(sub[:, 0].max()) - float(sub[:, 0].min())) + ease_foot
+            w_s = (hw_s + 0.003) * new_taper
+            for j, a_s in enumerate(angles_s):
+                dy_cap = (0.003 * abs(math.cos(a_s))) if k == 0 else 0.0
+                Q_s[k, j] = [xc_s + math.cos(a_s) * w_s, ys + dy_cap, 0.008 + 0.008 * math.sin(a_s)]
+        sole.P = Q_s
+
+        # 2. Curve shaft rear-heel transition (rows 6..8) and welded vamp row[0] along a true rounded heel arc
+        Q_sh = shaft.P.copy()
+        Q_u = foot_p.P.copy()
+        n = Q_sh.shape[1]
+        thetas = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+        cos_t = np.cos(thetas)
+        sin_t = np.sin(thetas)
+
+        # Compute rounded heel contour at bottom ankle ring (row -1 of shaft == row 0 of vamp)
+        R_new = Q_sh[-1].copy()
+        for j in range(n):
+            if cos_t[j] < 0.0:
+                u_back = (-cos_t[j]) ** 0.82
+                yj = y_mid + (y_heel - y_mid) * u_back
+                sub = fv[np.abs(fv[:, 1] - yj) < 0.028]
+                if len(sub) < 4:
+                    sub = fv[np.argsort(np.abs(fv[:, 1] - yj))[:16]]
+                xc_j = 0.5 * (float(sub[:, 0].min()) + float(sub[:, 0].max()))
+                hw_j = 0.5 * (float(sub[:, 0].max()) - float(sub[:, 0].min())) + ease_foot
+                # Elliptical heel taper so back of heel sits strictly INSIDE the sole welt (zero overhang!)
+                heel_taper = 1.0 - 0.14 * (u_back ** 1.5)
+                R_new[j] = [xc_j + sin_t[j] * hw_j * heel_taper, yj, 0.0075]
+            else:
+                R_new[j, 2] = max(0.0075, R_new[j, 2])
+        Q_sh[-1] = R_new
+        # Re-interpolate shaft rows 6..7 smoothly between row 5 (above ankle) and rounded R_new
+        rows_sh = Q_sh.shape[0]
+        for r in range(6, rows_sh - 1):
+            w = (r - 5) / float(rows_sh - 1 - 5)
+            for j in range(n):
+                if cos_t[j] < 0.0:
+                    Q_sh[r, j] = Q_sh[5, j] * (1.0 - w) + R_new[j] * w
+                    Q_sh[r, j, 2] = max(0.0075, Q_sh[r, j, 2])
+        shaft.P = Q_sh
+
+        # Weld vamp row[0] identically to shaft[-1] and smoothly re-blend rows 1..2
+        Q_u[0] = Q_sh[-1].copy()
+        y_toe = float(Q_u[-1, :, 1].mean())
+        rows_u = Q_u.shape[0]
+        for k in range(1, min(4, rows_u - 1)):
+            v = k / float(rows_u - 1)
+            for j in range(n):
+                if cos_t[j] < 0.0:
+                    yj = Q_u[0, j, 1] * (1.0 - v) + y_toe * v
+                    Q_u[k, j, 1] = yj
+                    Q_u[k, j, 0] = Q_u[0, j, 0] * (1.0 - 0.35 * v) + Q_u[k, j, 0] * (0.35 * v)
+                    Q_u[k, j, 2] = 0.0075
+        foot_p.P = Q_u
+    return boot_parts
+
+
+def _smooth_sleeve_shoulders(torso_part, sleeve_parts):
+    """Eliminate lumpy shoulder creases by smoothly blending sleeve cap rows 0..3 over the torso armhole."""
+    torso_pts = _sample_part_surface([torso_part])
+    tree = cKDTree(torso_pts)
+    for sl in sleeve_parts:
+        Q = sl.P.copy()
+        rows, cols = Q.shape[:2]
+        # Smooth rows 0..4 tangentially so shoulder cap transitions cleanly without bumps
+        for _ in range(3):
+            Q_c = 0.50 * Q + 0.25 * np.roll(Q, 1, axis=1) + 0.25 * np.roll(Q, -1, axis=1)
+            for r in range(min(5, rows)):
+                if 0 < r < rows - 1:
+                    Q[r] = 0.55 * Q_c[r] + 0.225 * (Q_c[r - 1] + Q_c[r + 1])
+                else:
+                    Q[r] = Q_c[r]
+        # Tuck row 0 gently inside torso (-3mm) and ensure rows 2..3 sit cleanly outside (+3mm)
+        for r, want_dr in ((0, -0.003), (2, 0.003), (3, 0.004)):
+            if r >= rows:
+                continue
+            for c_i in range(cols):
+                p = Q[r, c_i]
+                ctr = spine_at(min(float(p[2]), core.TOP))
+                d_xy = p[:2] - ctr[:2]
+                r_cur = float(np.linalg.norm(d_xy))
+                if r_cur < 1e-5:
+                    continue
+                u_xy = d_xy / r_cur
+                idxs = tree.query_ball_point(p, 0.032)
+                if not idxs:
+                    continue
+                near = torso_pts[idxs]
+                near_z = near[np.abs(near[:, 2] - p[2]) <= 0.022]
+                if not len(near_z):
+                    continue
+                v_xy = near_z[:, :2] - ctr[:2]
+                r_near = np.linalg.norm(v_xy, axis=1)
+                dots = (v_xy @ u_xy) / np.maximum(r_near, 1e-6)
+                sec = dots >= 0.90
+                if not sec.any():
+                    continue
+                r_in = float(r_near[sec].max())
+                if want_dr < 0.0 and r_cur > r_in + want_dr:
+                    r_new = r_in + want_dr
+                    Q[r, c_i, 0] = ctr[0] + u_xy[0] * r_new
+                    Q[r, c_i, 1] = ctr[1] + u_xy[1] * r_new
+                elif want_dr > 0.0 and r_cur < r_in + want_dr:
+                    r_new = r_in + want_dr
+                    Q[r, c_i, 0] = ctr[0] + u_xy[0] * r_new
+                    Q[r, c_i, 1] = ctr[1] + u_xy[1] * r_new
+        # Blend row 1 smoothly between tucked row 0 and emerged row 2
+        if rows >= 3:
+            Q[1] = 0.50 * Q[0] + 0.50 * Q[2]
+        sl.P = Q
+    return sleeve_parts
 
 
 def _dorsal_pad(gid, pad_paint, z_off=-0.01, pad_size=(0.18, 0.052, 0.22), clearance=0.022):
@@ -153,9 +465,10 @@ def _build_town_and_rich_for_sex(sex, body_id):
             PN(0.43, 0.45, 'solid', 'gold', 'peacock', 1.0, down=0.36),
             PN(0.55, 0.57, 'solid', 'gold', 'peacock', 1.0, down=0.36),
         ], fabric=COTTON)
-        parts_tt.append(torso_tube(gid_tt + '_kurta', TOP, KNEE + 0.05, 0.014, kurta_paint,
-                                   n=48, rows=22, hang_from=WAIST - 0.02, flare=0.12,
-                                   group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=4))
+        kurta_pt = torso_tube(gid_tt + '_kurta', TOP, KNEE + 0.05, 0.014, kurta_paint,
+                              n=48, rows=22, hang_from=WAIST - 0.02, flare=0.12,
+                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=6)
+        parts_tt.append(kurta_pt)
         parts_tt.append(stand_collar(gid_tt,
                                      P('peacock', 0.03, [B('top', 0.0, 0.010, 'solid', 'gold'),
                                                          B('bottom', 0.0, 0.010, 'solid', 'kesar')], fabric='cloth.silk'),
@@ -171,7 +484,9 @@ def _build_town_and_rich_for_sex(sex, body_id):
             B('bottom', 0.0, 0.020, 'solid', 'gold'),
             B('bottom', 0.020, 0.065, 'cholet_pangden', 'peacock', 'kesar', 0.045),
         ], fabric=COTTON)
-        parts_tt.extend(sleeves(gid_tt, 'wrist', 0.014, sl_p, ease_end=0.020, rows=12, rmax=0.112))
+        sl_tt = sleeves(gid_tt, 'wrist', 0.017, sl_p, ease_end=0.022, rows=14, n=24, rmax=0.112)
+        _smooth_sleeve_shoulders(kurta_pt, sl_tt)
+        parts_tt.extend(sl_tt)
         entries.append(assemble_garment(gid_tt, 'Xanadui kurta', 'torso', 'xanadu', parts_tt))
     else:
         chuba_paint = P('yakbrown', 0.05, [
@@ -184,9 +499,10 @@ def _build_town_and_rich_for_sex(sex, body_id):
             PN(0.39, 0.42, 'stripes', 'gold', 'lacrose', 0.03, down=0.38),
             PN(0.58, 0.61, 'stripes', 'gold', 'peacock', 0.03, down=0.38),
         ], fabric=WOOL)
-        parts_tt.append(torso_tube(gid_tt + '_chuba', TOP, ANKLE + 0.05, 0.014, chuba_paint,
-                                   n=48, rows=24, hang_from=WAIST - 0.02, flare=0.15,
-                                   group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=4))
+        chuba_pt = torso_tube(gid_tt + '_chuba', TOP, ANKLE + 0.05, 0.014, chuba_paint,
+                              n=48, rows=24, hang_from=WAIST - 0.02, flare=0.15,
+                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=6)
+        parts_tt.append(chuba_pt)
         parts_tt.append(stand_collar(gid_tt,
                                      P('cream', 0.03, [B('top', 0.0, 0.010, 'solid', 'peacock'),
                                                        B('bottom', 0.0, 0.010, 'solid', 'lacrose')], fabric='cloth.silk'),
@@ -211,7 +527,9 @@ def _build_town_and_rich_for_sex(sex, body_id):
             B('bottom', 0.072, 0.145, 'solid', 'cream'),
             B('bottom', 0.145, 0.158, 'solid', 'lacrose'),
         ], fabric=WOOL)
-        parts_tt.extend(sleeves(gid_tt, 'wrist', 0.014, sl_p, ease_end=0.021, rows=12, rmax=0.112))
+        sl_tt = sleeves(gid_tt, 'wrist', 0.017, sl_p, ease_end=0.023, rows=14, n=24, rmax=0.112)
+        _smooth_sleeve_shoulders(chuba_pt, sl_tt)
+        parts_tt.extend(sl_tt)
         entries.append(assemble_garment(gid_tt, 'Xanadui chuba and apron', 'torso', 'xanadu', parts_tt))
 
     # --- 1B. TOWN BOOTS (`xan_m/f_town_boots`): Closed-Heel Contoured Xanadui Felt Boots ---
@@ -220,8 +538,8 @@ def _build_town_and_rich_for_sex(sex, body_id):
     tb_upper = P('pomegranate', 0.05, [
         B('top', 0.0, 0.05, 'stripes', 'peacock', 'kesar', 0.012),
     ], fabric='cloth.felt.boiled')
-    entries.append(assemble_garment(gid_tb, 'Xanadui felt boots', 'feet', 'xanadu',
-                                    boots(gid_tb, tb_sole, tb_upper, top=0.52, ease_top=0.022)))
+    tb_parts = _fix_town_boot_heel(boots(gid_tb, tb_sole, tb_upper, top=0.52, ease_top=0.022))
+    entries.append(assemble_garment(gid_tb, 'Xanadui felt boots', 'feet', 'xanadu', tb_parts))
 
     # --- 1C. RICH SLIPPERS (`xan_m/f_rich_slippers`): Closed-Heel Silk & Gold Court Slippers ---
     gid_rs = f'xan_{sex}_rich_slippers'
@@ -329,9 +647,10 @@ def _build_guild_for_sex(sex, body_id):
         PN(0.58, 0.61, 'stripes', 'gold', 'kesar', 0.025),
         PN(0.42, 0.58, 'xanadu_mosaic', 'turq', 'mongolblue', 0.18),
     ], fabric='cloth.silk')
-    parts_t.append(torso_tube(gid_t + '_qaba', TOP, KNEE + 0.04, 0.015, qaba_paint,
-                              n=48, rows=22, hang_from=WAIST - 0.02, flare=0.14,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    qaba_pt = torso_tube(gid_t + '_qaba', TOP, KNEE + 0.04, 0.015, qaba_paint,
+                         n=48, rows=22, hang_from=WAIST - 0.02, flare=0.14,
+                         group_below=CROTCH + 0.02, hull_from=CHEST + 0.02)
+    parts_t.append(qaba_pt)
 
     parts_t.append(stand_collar(gid_t,
                                 P('turq', 0.03, [B('top', 0.0, 0.012, 'solid', 'gold'),
@@ -345,26 +664,35 @@ def _build_guild_for_sex(sex, body_id):
     ], [
         PN(0.0, 1.0, 'diamonds', 'gold', 'maroon', 0.04),
     ], fabric='cloth.silk')
-    parts_t.append(torso_tube(gid_t + '_sash', WAIST + 0.045, WAIST - 0.040, 0.020, sash_paint,
-                              rows=5, n=42, hull_from=WAIST + 0.08, role='band'))
+    sash_pt = torso_tube(gid_t + '_sash', WAIST + 0.045, WAIST - 0.040, 0.020, sash_paint,
+                         rows=5, n=42, hull_from=WAIST + 0.08, role='band')
+    parts_t.append(sash_pt)
 
     p_seal = chest_front(WAIST + 0.005, 0.022, x=0.0)
     parts_t.append(rosette(gid_t + '_seal', p_seal, FRONT, np.array([1.0, 0.0, 0.0]), 0.034,
                            P('gold', 0.02, [B('bottom', 0.0, 0.01, 'solid', 'turq')], fabric='metal.gold'),
                            n=12, thick=0.010, rigid_joint='Spine1'))
 
-    # Diagonal Leather & Brass Assay/Alchemist Bandolier with flush Spice/Acid Phials (raised +12mm over clavicle/shoulder)
-    parts_t.append(crossed_sash(gid_t + '_bandolier',
-                                P('leather', 0.06, [B('top', 0.0, 0.008, 'solid', 'gold'),
-                                                    B('bottom', 0.0, 0.008, 'solid', 'gold')], fabric='leather.polished'),
-                                width=0.046, ease=0.033))
+    sl_paint = P('mongolblue', 0.04, [
+        B('bottom', 0.0, 0.025, 'solid', 'gold'),
+        B('bottom', 0.025, 0.085, 'xanadu_mosaic', 'turq', 'mongolblue', 0.04),
+    ], fabric='cloth.silk')
+    sl_guild = sleeves(gid_t, 'wrist', 0.016, sl_paint, ease_end=0.026, rows=10)
+
+    # Diagonal Leather & Brass Assay/Alchemist Bandolier pushed cleanly (+10mm) outside qaba & sleeves at shoulder/chest
+    band_guild = crossed_sash(gid_t + '_bandolier',
+                              P('leather', 0.06, [B('top', 0.0, 0.008, 'solid', 'gold'),
+                                                  B('bottom', 0.0, 0.008, 'solid', 'gold')], fabric='leather.polished'),
+                              width=0.046, ease=0.038)
+    _push_outside_parts(band_guild, [qaba_pt, sash_pt] + sl_guild, margin=0.010, z_lift=0.010, smooth_iters=2)
+    parts_t.append(band_guild)
     for idx, (z_f, x_off, col_phial) in enumerate([
         (CHEST + 0.03,  0.065, 'turq'),
         (CHEST - 0.01,  0.020, 'saffron'),
         (CHEST - 0.05, -0.025, 'lacrose'),
         (WAIST + 0.06, -0.068, 'gold'),
     ]):
-        p_ph = chest_front(z_f, 0.034, x=x_off)
+        p_ph = chest_front(z_f, 0.038, x=x_off)
         parts_t.append(tube(f'{gid_t}_phial_{idx}',
                             [p_ph - np.array([0.0, 0.0, 0.024]), p_ph + np.array([0.0, 0.0, 0.024])],
                             0.011,
@@ -372,11 +700,7 @@ def _build_guild_for_sex(sex, body_id):
                                                 B('bottom', 0.0, 0.010, 'solid', 'gold')], fabric='metal.gold'),
                             n=10, rigid_joint='Spine2'))
 
-    sl_paint = P('mongolblue', 0.04, [
-        B('bottom', 0.0, 0.025, 'solid', 'gold'),
-        B('bottom', 0.025, 0.085, 'xanadu_mosaic', 'turq', 'mongolblue', 0.04),
-    ], fabric='cloth.silk')
-    parts_t += sleeves(gid_t, 'wrist', 0.016, sl_paint, ease_end=0.026, rows=10)
+    parts_t += sl_guild
     entries.append(assemble_garment(gid_t, 'Guildmaster Mosaic Qaba Coat & Assay Bandolier', 'torso', 'xanadu', parts_t))
 
     # --- 3. BACK: Gilded Assay Strongbox, Copper Alchemical Retort & Spice-Ledger Satchel (`xan_m/f_guild_pack`) ---
@@ -595,35 +919,51 @@ def _build_priest_for_sex(sex, body_id):
         PN(0.60, 0.64, 'solid', 'gold', 'gold', 1.0),
         PN(0.40, 0.60, 'tocharian_wheel', 'gold', 'omaroon', 0.24),
     ], fabric='cloth.silk')
-    parts_t.append(torso_tube(gid_t + '_robe', TOP, ANKLE + 0.04, 0.015, robe_paint,
-                              n=48, rows=22, hang_from=WAIST - 0.02, flare=0.18,
-                              group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
+    robe_pt = torso_tube(gid_t + '_robe', TOP, ANKLE + 0.04, 0.014, robe_paint,
+                         n=48, rows=22, hang_from=WAIST - 0.02, flare=0.18,
+                         group_below=CROTCH + 0.02, hull_from=CHEST + 0.02, iters=5)
+    parts_t.append(robe_pt)
 
-    # Maroon Penbey chest-frieze band (seated cleanly across the ribcage below the armpits)
+    sl_paint = P('saffron', 0.04, [
+        B('bottom', 0.0, 0.025, 'solid', 'gold'),
+        B('bottom', 0.025, 0.085, 'tocharian_wheel', 'gold', 'holyred', 0.055),
+    ], fabric='cloth.silk')
+    sl_priest = sleeves(gid_t, 'wrist', 0.016, sl_paint, ease_end=0.026, rows=12, n=22)
+    _smooth_sleeve_shoulders(robe_pt, sl_priest)
+
+    # Smooth high-resolution Maroon Penbey chest-frieze band seated cleanly (+8mm) outside the robe
     frieze_paint = P('omaroon', 0.05, [
         B('top', 0.0, 0.010, 'solid', 'gold'),
         B('bottom', 0.0, 0.010, 'solid', 'gold'),
     ], fabric=WOOL)
-    parts_t.append(torso_tube(gid_t + '_penbey_band', CHEST + 0.012, CHEST - 0.055, 0.017, frieze_paint,
-                              n=42, rows=4, hull_from=CHEST + 0.02, role='band'))
+    penbey_pt = torso_tube(gid_t + '_penbey_band', CHEST + 0.012, CHEST - 0.055, 0.023, frieze_paint,
+                           n=48, rows=8, hull_from=CHEST + 0.02, iters=4, role='band')
+    _push_outside_parts(penbey_pt, [robe_pt], margin=0.008, z_lift=0.0, smooth_iters=3)
+    parts_t.append(penbey_pt)
 
     # Three flush 3D Gold Eight-Spoked Dharma Wheel Roundels sitting directly on the maroon Penbey chest band
     for idx, x_off in enumerate((-0.072, 0.0, 0.072)):
-        p_rnd = chest_front(CHEST - 0.022, 0.028, x=x_off)
+        p_rnd = chest_front(CHEST - 0.022, 0.030, x=x_off)
         r_wheel = 0.032 if idx == 1 else 0.024
         parts_t.append(rosette(f'{gid_t}_wheel_roundel_{idx}', p_rnd, FRONT, np.array([1.0, 0.0, 0.0]),
                                r_wheel,
                                P('gold', 0.02, [B('bottom', 0.0, 0.008, 'solid', 'turq')], fabric='metal.gold'),
                                n=8, thick=0.009, rigid_joint='Spine2'))
 
-    # Contoured Gilded Shoulder Epaulettes + Shoulder-Draped Mantle Collar
+    # Contoured Gilded Shoulder Epaulettes + Shoulder-Draped Mantle Collar with strict layer separation
     gilt_sh_paint = P('gold', 0.02, [
         B('bottom', 0.0, 0.020, 'dentils', 'holyred', 'gold', 0.025),
         B('top', 0.0, 0.015, 'solid', 'omaroon'),
     ], fabric='metal.gold')
-    parts_t.append(collar_disc(gid_t + '_collar', 0.060, gilt_sh_paint, drop=0.052, scallop=0.06, ease=0.018, rows=6))
-    parts_t.append(pauldron(gid_t + '_gilt_sh_L', L, gilt_sh_paint, reach=0.34, ease=0.023, flare_end=0.98))
-    parts_t.append(pauldron(gid_t + '_gilt_sh_R', R, gilt_sh_paint, reach=0.34, ease=0.023, flare_end=0.98))
+    collar_pt = collar_disc(gid_t + '_collar', 0.060, gilt_sh_paint, drop=0.052, scallop=0.06, ease=0.022, rows=8)
+    _push_outside_parts(collar_pt, [robe_pt] + sl_priest, margin=0.007, z_lift=0.007, smooth_iters=2)
+    parts_t.append(collar_pt)
+    pl_L = pauldron(gid_t + '_gilt_sh_L', L, gilt_sh_paint, reach=0.34, ease=0.026, flare_end=0.98)
+    pl_R = pauldron(gid_t + '_gilt_sh_R', R, gilt_sh_paint, reach=0.34, ease=0.026, flare_end=0.98)
+    _push_outside_parts(pl_L, [sl_priest[0], collar_pt, robe_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=L)
+    _push_outside_parts(pl_R, [sl_priest[1], collar_pt, robe_pt], margin=0.007, z_lift=0.006, smooth_iters=2, axis_mode='arm', arm_side=R)
+    parts_t.append(pl_L)
+    parts_t.append(pl_R)
 
     # Saffron & Gold Liturgical Sash
     parts_t.append(torso_tube(gid_t + '_sash', WAIST + 0.04, WAIST - 0.035, 0.020,
@@ -656,11 +996,7 @@ def _build_priest_for_sex(sex, body_id):
     parts_t.append(blob(gid_t + '_mani_spire', p_hip + np.array([0.0, 0.0, 0.050]), (0.032, 0.032, 0.038),
                         P('gold', 0.02, fabric='metal.gold'), n=10, rows=4, out=np.array([0.0, 0.0, 1.0]), rigid_joint='Hips'))
 
-    sl_paint = P('saffron', 0.04, [
-        B('bottom', 0.0, 0.025, 'solid', 'gold'),
-        B('bottom', 0.025, 0.085, 'tocharian_wheel', 'gold', 'holyred', 0.055),
-    ], fabric='cloth.silk')
-    parts_t += sleeves(gid_t, 'wrist', 0.018, sl_paint, ease_end=0.028, rows=10)
+    parts_t += sl_priest
     entries.append(assemble_garment(gid_t, 'Sanctum Robe of the Eight-Spoked Wheel & Tocharian Syllabary', 'torso', 'xanadu', parts_t))
 
     # --- 3. FEET: Sanctum Wheel-Priest Boots (`xan_m/f_priest_boots`) ---

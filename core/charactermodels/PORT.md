@@ -22,6 +22,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/90-editor.js` | 104.5 | [web] | 13 | 0 | 70 | 41 | 2 | 2 | 0 | 0 | 0 | 6 | 5 |  |
 | `src/92-animlab.js` | 37.3 | [web] | 14 | 0 | 31 | 36 | 2 | 2 | 0 | 0 | 0 | 6 | 2 |  |
 | `src/93-armslab.js` | 34.9 | [web] | 13 | 0 | 46 | 39 | 2 | 2 | 0 | 0 | 0 | 2 | 3 |  |
+| `src/94-combat-duel.js` | 20.5 | [web] | 14 | 0 | 26 | 14 | 0 | 8 | 0 | 0 | 0 | 0 | 0 | Combat Lab linked-animation Monk Duel overlay (data in `data/combat-links.json`) |
 
 ## Notes
 
