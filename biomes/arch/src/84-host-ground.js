@@ -36,6 +36,9 @@ function masksAt(x,z,h,out){if(SKEY==='coast'){const rock=FC.at(FC.a.rock,x,z),s
   const lat=clamp((1-trav)*(1-wb)*smooth(104,138,h)*(1-.65*rock),0,1);
   const barn=clamp((1-trav)*it*smooth(-2.5,1.2,h)*smooth(6.8,4.2,h)*(.55+.45*smooth(.35,.65,fbm(x*.03,z*.03,8.3,2))),0,1);
   out[0]=trav;out[1]=pil;out[2]=lat;out[3]=barn;return out;}
+ if(SKEY==='lakes'){const rock=FC.at(FC.a.rock,x,z),ap=L.APRON(x,z),cb=L.COBBLES(x,z,h),al=L.ALLUVIAL(x,z,h);
+  const trav=clamp(ap,0,1),cob=clamp((1-trav)*cb,0,1),lat=clamp((1-trav)*(1-cob)*(1-.92*al)*(1-.68*rock),0,1),lic=clamp((1-trav)*(1-cob)*.65*rock*(1-.88*al),0,1);
+  out[0]=trav;out[1]=cob;out[2]=lat;out[3]=lic;return out;}
  const T=HEAT_AT(x,z),rock=FC.at(FC.a.rock,x,z),ap=L.APRON?L.APRON(x,z):0,ac=L.ACIDG?L.ACIDG(x,z):0;
  const trav=clamp(ap*(1-.5*rock),0,1),acid=clamp(ac*(1-trav)*(1-.4*rock),0,1),sul=clamp(smooth(50,70,T)*(1-trav),0,1);
  out[0]=trav;out[1]=Math.max(acid,sul*.5);out[2]=clamp((1-trav)*(1-acid)*(1-sul)*(1-.7*rock),0,1);out[3]=sul;return out;}
@@ -61,6 +64,12 @@ const TEX_GROUND=BIO.canvasTex(SKEY==='cove'?1024:1536,SKEY==='cove'?1024:1536,(
    if(hh<7.2&&L.S_OF(wx,wz)<1075){c.lerp(BASALT,smooth(7.5,-2,hh)*.85);
     if(it){c.lerp(KELP,smooth(-1.5,-5.5,hh)*.75);c.lerp(CORAL,smooth(-2.4,-.4,hh)*smooth(1.6,.2,hh)*.72);
      c.lerp(BARN,smooth(1.0,2.2,hh)*smooth(5.0,3.6,hh)*.74);c.lerp(SPLASH,smooth(4.4,5.6,hh)*smooth(7.4,6.4,hh)*.82);}}
+   c.lerp(TRAV,m[0]*.94);}
+  else if(SKEY==='lakes'){
+   const al=L.ALLUVIAL(wx,wz,hh),canopy=smooth(.28,.72,fbm(x/10,y/10,3.4,2));
+   c.lerp(K(0x1b3319).lerp(K(0x2d4d24),canopy),al*.96);
+   c.lerp(SERP,smooth(.28,.65,rock)*.65);
+   c.lerp(K(0x465044),m[1]*.88);
    c.lerp(TRAV,m[0]*.94);}
   else{c.lerp(TRAV,m[0]*.9);c.lerp(ACID,m[1]*.75);c.lerp(SUL,m[3]*.7);}
   const k=1+n*.08;d[i]=clamp(c.r*255*k,0,255);d[i+1]=clamp(c.g*255*k,0,255);d[i+2]=clamp(c.b*255*k,0,255);d[i+3]=255;}
@@ -92,7 +101,11 @@ if(USE_KG){const KG_LAYERS=SKEY==='coast'?[
  KGROUND.layer('arch','ground.travertine.white',{w:'vGL.x',amt:.94,gain:1.06,tint:'vec3(1.0)',name:'travertine and brucite-carbonate curtains (Type II pH > 11 seeps)'}),
  KGROUND.layer('arch','rock.basalt.vesicular',{w:'vGL.y',amt:.84,gain:1.0,tint:'_gT',name:'pillow basalt intertidal ledges and western basalt headland'}),
  KGROUND.layer('arch','ground.redsoil',{w:'vGL.z',amt:.76,gain:1.0,tint:'_gT',name:'eastern nickel-laterite maquis plateau'}),
- KGROUND.layer('arch','ground.lichen.crust',{w:'vGL.w',amt:.82,gain:1.0,tint:'vec3(1.0)',name:'macrotidal barnacle and coralline encrustation'})]:[
+ KGROUND.layer('arch','ground.lichen.crust',{w:'vGL.w',amt:.82,gain:1.0,tint:'vec3(1.0)',name:'macrotidal barnacle and coralline encrustation'})]:SKEY==='lakes'?[
+ KGROUND.layer('arch','ground.travertine.white',{w:'vGL.x',amt:.92,gain:1.04,tint:'vec3(1.0)',name:'travertine and lake marl (Type II fault-foot spring)'}),
+ KGROUND.layer('arch','ground.sand.black',{w:'vGL.y',amt:.84,gain:1.0,tint:'_gT',name:'serpentinite, nephrite and awaruite river cobble bars'}),
+ KGROUND.layer('arch','ground.redsoil',{w:'vGL.z',amt:.76,gain:1.0,tint:'_gT',name:'alluvial laterite neck and horst benches'}),
+ KGROUND.layer('arch','ground.lichen.crust',{w:'vGL.w',amt:.78,gain:1.0,tint:'_gT',name:'moss and lichen on serpentinite fault scarps'})]:[
  KGROUND.layer('arch','ground.travertine.white',{w:'vGL.x',amt:.9,gain:1.05,tint:'vec3(1.0)',name:'travertine (the alkaline aprons)'}),
  KGROUND.layer('arch','ground.travertine.acid',{w:'vGL.y',amt:.85,gain:1.0,tint:'vec3(1.0)',name:'acid crust'}),
  KGROUND.layer('arch','ground.redsoil',{w:'vGL.z',amt:.75,gain:1.0,tint:'_gT',name:'laterite (red earth)'}),
@@ -145,3 +158,12 @@ if(SKEY==='cove'){const S=SITE,pw=L.PROW,py=terrainH(pw.x,pw.z);
  {const p=L.XZ(1480,L.centerA(1480));REGISTER({name:'The southern gjar fissure neck (+7..+22 m tectonic rift saddle and seep stream)',x:p[0],z:p[1],y:4,r:420,h:90,ground:true});}
  L.WEEPS.forEach((w,i)=>{const m=w.F.p(w.F.L*.5,0);REGISTER({name:'Travertine and brucite-carbonate cliff curtain '+(i+1)+' (Type II Ca-OH seep, pH '+w.chem.pH.toFixed(1)+')',x:m[0],z:m[1],y:-3,r:w.F.L*.55+14,h:terrainH(w.x,w.z)+12});});
  L.STACKS.forEach((k,i)=>REGISTER({name:'Brucite-carbonate White Stack '+(i+1)+' (Lost-City alkaline seep chimney on shallow fault ledge)',x:k.x,z:k.z,y:k.bedY-1.5,r:k.r*2.4+2,h:k.h-k.bedY+4}));}
+if(SKEY==='lakes'){const S=SITE;
+ {const p=L.XZ(S.upperLake.sMax-520,0);REGISTER({name:'Upper Axial Rift Lake (+14.5 m freshwater graben basin, 52 m deep; Lake 3 in the Arch chain)',x:p[0],z:p[1],y:S.upperLake.depth-4,r:620,h:62,ground:true});}
+ {const p=L.XZ(S.lowerLake.sMin+520,0);REGISTER({name:'Lower Axial Rift Lake (+6.0 m freshwater graben basin, 40 m deep; Lake 4 with river marl plume)',x:p[0],z:p[1],y:S.lowerLake.depth-4,r:640,h:50,ground:true});}
+ {const p=L.XZ(45,L.rivA(45));REGISTER({name:'The Arch Axial River (inter-lake trunk channel linking the six enclosed rift lakes toward 9103 Mere-Upe)',x:p[0],z:p[1],y:4,r:660,h:24,ground:true});}
+ REGISTER({name:'Oxbow sedge-fen tarn (+11.4 m backwater with Nepenthes pitchers and Drosera sundews)',x:L.OXBOW.x,z:L.OXBOW.z,y:L.OXBOW.level-5,r:L.OXBOW.r+28,h:14,ground:true});
+ S.springs.forEach((sp,i)=>REGISTER({name:'Type II fault-foot spring '+(i+1)+' (Ca-OH, pH ~11.5, hydrogen; '+sp.flow+' L/s)',x:sp.x,z:sp.z,y:terrainH(sp.x,sp.z)-4,r:sp.r+8,h:10}));
+ REGISTER({name:'Alkaline marl pool (turquoise-white Ca-OH basin at the NNW horst scarp foot)',x:S.pool.x,z:S.pool.z,y:L.POOL_LV-4,r:S.pool.r+12,h:8});
+ L.TER.forEach((T,i)=>REGISTER({name:'Fault-scarp travertine terraces ('+T.levels.length+' white rimstone treads)',x:(T.F.A[0]+T.F.B[0])/2,z:(T.F.A[1]+T.F.B[1])/2,y:T.levels[T.levels.length-1]-5,r:T.F.L/2+12,h:T.levels[0]-T.levels[T.levels.length-1]+12}));
+ L.BARS.forEach((b,i)=>REGISTER({name:'Serpentinite, nephrite and awaruite river cobble bar '+(i+1),x:b.x,z:b.z,y:terrainH(b.x,b.z)-2,r:b.r+10,h:8,ground:true}));}

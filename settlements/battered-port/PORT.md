@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 89 (55%) | 0 (0%) | 0 (0%) | 47 (29%) | 25 (15%) |
+| KB | 89 (55%) | 0 (0%) | 0 (0%) | 47 (29%) | 25 (16%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -24,8 +24,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/58-bp-roomlight.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/60-bp-sim.js` | 19.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-bp-chars.js` | 4.7 | [draw] | 19 | 0 | 0 | 0 | 0 | 3 | 0 | 6 | 0 | 0 | 0 |  |
-| `src/85-bp-world-scene.js` | 32.7 | [web] | 62 | 0 | 0 | 0 | 2 | 12 | 0 | 5 | 0 | 0 | 0 |  |
-| `src/89w-bp-water-atmos.js` | 6.6 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/85-bp-world-scene.js` | 31.9 | [web] | 59 | 0 | 0 | 0 | 2 | 12 | 0 | 5 | 0 | 0 | 0 |  |
+| `src/89w-bp-water-atmos.js` | 6.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/99-bp-host-take.js` | 8.2 | [web] | 0 | 0 | 2 | 1 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

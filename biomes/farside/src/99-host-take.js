@@ -40,20 +40,24 @@ const BUDGET={
  type:{'farside/stands':'pass','farside/floor':'pass','farside/dress':'pass','nwlow/trees':'pass','nwlow/floor':'pass','host':'host'},
 };
 // the crops kits/crops files Farside's yields under (kits/crops/src/20-crop-records.js, 22-crop-material.js: the farside rows)
-const FARSIDE_CROPS=['kelp','wineweed','sea-lettuce','sea-grapes','coral-lime','eelgrass','kelp-ash'];
+const FARSIDE_CROPS=['kelp','wineweed','sea-lettuce','sea-grapes','coral-lime','eelgrass','kelp-ash','coconut','pandan','glasswort','tidewort'];
 const instOf=re=>{const o=[],m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),sc=new THREE.Vector3();
  scene.traverse(M=>{if(!M.isInstancedMesh||!M.userData.biome||!re.test(M.name))return;for(let i=0;i<M.count;i++){M.getMatrixAt(i,m);m.decompose(p,q,sc);o.push({x:p.x,y:p.y,z:p.z,q:q.clone(),name:M.name});}});return o;};
 const HCHK={
  // harvest: every species carries a harvest tag, and every edible one names a crop kits/crops files it under
  harvest(SP,crops){const miss=SP.filter(S=>!S.tags.harvest).map(S=>S.key),nocrop=SP.filter(S=>S.tags.harvest&&S.tags.harvest.edible.length&&crops.indexOf(S.tags.harvest.crop)<0).map(S=>S.key);
-  return{ok:!miss.length&&!nocrop.length,detail:(miss.length?'no harvest tag: '+miss.join(', ')+'; ':'')+(nocrop.length?'edible but no crop: '+nocrop.join(', ')+'; ':'')+SP.length+' species; crops '+crops.join(', ')};},
+  return{ok:SP.length>=24&&!miss.length&&!nocrop.length,detail:(miss.length?'no harvest tag: '+miss.join(', ')+'; ':'')+(nocrop.length?'edible but no crop: '+nocrop.join(', ')+'; ':'')+SP.length+' species; crops '+crops.join(', ')};},
  // THE BLADES STREAM INLAND (PLAN.md section 3): a blade's hanging axis (its local -y) leans down the onshore wind
  stream(B,wind){if(!B.length)return{ok:!STAGE.fields.invade(0,0),detail:'no blades drawn (no land kelp on this page)'};const d=new THREE.Vector3();let down=0;
   B.forEach(b=>{d.set(0,-1,0).applyQuaternion(b.q);if(d.x*wind[0]+d.z*wind[1]>0)down++;});
   return{ok:down/B.length>.85,detail:down+' of '+B.length+' blades lean down the wind ('+(100*down/B.length).toFixed(0)+'%, at least 85%)'};},
- // nothing of the sea's flora stands in the sea or the stream, and no kelp stand on the sand, the coral or the surf rock
- place(ST){const bad=ST.filter(T=>T.key==='landkelp'&&(waterMask(T.x,T.z)<.5||F.sand(T.x,T.z)>.5||F.coral(T.x,T.z)>.6||F.rock(T.x,T.z)>.6));
-  return{ok:!bad.length&&(ST.some(T=>T.key==='landkelp')||!STAGE.fields.invade(0,0)),detail:bad.length?bad.length+' stands misplaced, first at '+bad[0].x.toFixed(0)+','+bad[0].z.toFixed(0):ST.length+' stands, none in the water, on the sand, the coral or the rock'};},
+ // nothing of the sea's flora stands in the sea or the stream, no kelp stand on sand/coral/surf rock, and coastal coconuts/pandan/casuarina stay above wave-wash
+ place(ST){const badKelp=ST.filter(T=>(T.key==='landkelp'||T.key==='bladderstipe')&&(waterMask(T.x,T.z)<.5||F.sand(T.x,T.z)>.5||F.coral(T.x,T.z)>.6||F.rock(T.x,T.z)>.6));
+  const palms=ST.filter(T=>T.key==='coconut');
+  const strandTrees=ST.filter(T=>T.key==='coconut'||T.key==='farsidepandan'||T.key==='strandcasuarina');
+  const badPalm=strandTrees.filter(T=>waterMask(T.x,T.z)<.9||F.coral(T.x,T.z)>.45||F.rock(T.x,T.z)>.55||!STAGE.sea);
+  const bad=badKelp.concat(badPalm),palmOk=STAGE.sea?palms.length>=4:strandTrees.length===0;
+  return{ok:!bad.length&&palmOk&&(ST.some(T=>T.key==='landkelp')||!STAGE.fields.invade(0,0)),detail:bad.length?bad.length+' stands misplaced, first at '+bad[0].x.toFixed(0)+','+bad[0].z.toFixed(0):ST.length+' stands ('+palms.length+' coastal coconuts, '+strandTrees.length+' strand trees), none in water or on coral/surf rock'};},
  // the works: every one the station names is drawn and registered as Eternian furniture (to be backported)
  works(W,R){const named=window._worksNamed==null?(STAGE.works||[]).length:window._worksNamed,rec=R.filter(r=>r.tags&&r.tags.culture==='eternian'&&r.cls==='furniture');
   return{ok:W.length===named&&rec.length===named,detail:W.length+' of '+named+' works drawn; '+rec.length+' registered as Eternian furniture'};}};

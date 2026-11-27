@@ -148,10 +148,37 @@ T.ok('DROWN_SITES defines shoal (145,520), bar (195,420), drowned (95,545) and s
   S.shoal.brucitePools.every(p => p.level >= 0.12 && p.rimH - p.level >= 0.04) &&
   DROWN_FAUNA.length === 6);
 
+const coStrand = P.coconutStrandAt({ elevM: 4.2, ultramaficByte: 255, tidalRangeM: 1.4, brucite01: 0, bruciteActive: false, waveShearPa: 95, shelter01: 0.72, slope: 0.12 });
+const coBrucite = P.coconutStrandAt({ elevM: 4.2, ultramaficByte: 255, tidalRangeM: 1.4, brucite01: 0.55, bruciteActive: true, waveShearPa: 95, shelter01: 0.72, slope: 0.12 });
+const coScarp = P.coconutStrandAt({ elevM: 32.0, ultramaficByte: 255, tidalRangeM: 1.5, brucite01: 0, bruciteActive: false, waveShearPa: 215, shelter01: 0.52, slope: 0.25, trimElevM: 48.0, isHorstSkerry: true });
+const coCove = P.coconutStrandAt({ elevM: 3.4, ultramaficByte: 255, tidalRangeM: 1.5, brucite01: 0, bruciteActive: false, waveShearPa: 85, shelter01: 0.84, slope: 0.10, trimElevM: 48.0, isHorstSkerry: true });
+T.ok('coconutStrandAt accepts sheltered leeward strand pockets (pH 5..8.8) and rejects caustic pH > 9.5 brucite pools and scoured horst scarps',
+  coStrand.strandOk === true && coStrand.pH >= 5.0 && coStrand.pH <= 8.8 &&
+  coCove.strandOk === true && coBrucite.strandOk === false && coScarp.strandOk === false,
+  JSON.stringify({ coStrand, coCove, coBrucite, coScarp }));
+
+T.neg('coconutStrandAt rejects caustic pH 11.4 brucite sinter pool and accepts sheltered pH 7.05 lagoon levee',
+  cfg => P.coconutStrandAt(cfg).strandOk === true,
+  { elevM: 3.5, ultramaficByte: 255, tidalRangeM: 1.4, brucite01: 0.65, bruciteActive: true, waveShearPa: 90, shelter01: 0.75, slope: 0.08 },
+  { elevM: 3.5, ultramaficByte: 0, tidalRangeM: 1.5, brucite01: 0, bruciteActive: false, waveShearPa: 55, shelter01: 0.85, slope: 0.08 });
+
 const dlCrops = CROPS.forBiome('drownlands');
 const cropIds = dlCrops.map(r => r.crop.id);
-T.ok('CROPS.forBiome(drownlands) resolves kelp, eelgrass, coconut and taro across shoal, drowned and highskerry zones',
-  dlCrops.length >= 18 && cropIds.indexOf('kelp') >= 0 && cropIds.indexOf('coconut') >= 0 && cropIds.indexOf('taro') >= 0,
-  'count=' + dlCrops.length);
+const dlCoco = dlCrops.find(r => r.crop.id === 'coconut');
+T.ok('CROPS.forBiome(drownlands) resolves wild coconut, kelp, eelgrass and taro across shoal, drowned and highskerry zones',
+  dlCrops.length >= 18 && cropIds.indexOf('kelp') >= 0 && cropIds.indexOf('coconut') >= 0 && dlCoco && dlCoco.how === 'wild' && cropIds.indexOf('taro') >= 0,
+  'count=' + dlCrops.length + ', coconut=' + (dlCoco && dlCoco.how));
+
+const dlSpSrc = fs.readFileSync(path.join(ROOT, 'biomes/drownlands/src/50-biome-drown-species.js'), 'utf8');
+const reqDl = [
+ 'verdigrismangrove','tealcoppice','brucitestack','spongecoral','tidefan','shoalkelp','ribbonseagrass','snaggrove',
+ 'limeshelf','seepcomb','stormwrack','coconut','araucaria','pycnandra','gymnostoma','verdigris',
+ 'refugekauri','skerrypaperbark','skerryphyllanthus','skerrysedge','skerrypitcher','skerrycasuarina',
+ 'skerrypandan','skerryhibiscus','skerrynaupaka','greymangrove','byssusmussel','skerryoyster','halimedaturf'
+];
+const missDl = reqDl.filter(k => dlSpSrc.indexOf("key:'" + k + "'") < 0);
+T.ok('50-biome-drown-species.js registers all 29 canonical species including coconut (Cocos nucifera) with HV tags',
+  missDl.length === 0 && dlSpSrc.indexOf("coconut:HV(") >= 0 && dlSpSrc.indexOf("['coconuts']") >= 0 && dlSpSrc.indexOf('BIO.alphaTex(512') >= 0,
+  'missing=' + missDl.join(','));
 
 T.done();

@@ -57,7 +57,7 @@ def find_node():
 
 HERE=os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0,os.path.join(os.path.dirname(os.path.dirname(HERE)),'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
-STATIONS=['barrens','coast','cove','dome','sound']
+STATIONS=['barrens','coast','cove','dome','lakes','sound']
 if '--station' not in sys.argv: BSRC.variants([['--station',_st] for _st in STATIONS])
 if '--all' in sys.argv:
     _r=[subprocess.call([sys.executable,os.path.abspath(__file__)]+[a for a in sys.argv[1:] if a!='--all'])]
@@ -158,6 +158,7 @@ _ST_FAMS={
  'coast':['ground.sand.black','rock.basalt.vesicular','rock.tuff','rock.palagonite','araucariaBark','mangroveBark','pandanStrap'],
  'sound':['ground.lava.aa','ground.sand.black','ground.redsoil','ground.lichen.crust','araucariaBark','paperbark','mangroveBark'],
  'cove':['ground.travertine.white','rock.basalt.vesicular','ground.redsoil','ground.lichen.crust','araucariaBark','paperbark','mangroveBark','pandanStrap'],
+ 'lakes':['ground.travertine.white','ground.sand.black','ground.redsoil','ground.lichen.crust','araucariaBark','paperbark','mangroveBark','pandanStrap'],
 }.get(STATION,['ground.travertine.white','ground.travertine.acid','ground.redsoil','ground.sulphur','araucariaBark','paperbark'])
 VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'arch',own=True,exclude=[f for f in _ALL_FAMS if f not in _ST_FAMS]),khost.EDITS_JS:khost.edits_js(HERE,'arch')}
 # THE NEIGHBOURS' KITS, read in place (ebadlands' lines): a station names them in station.json ("kin": {"<kit>": [[fragments], "<API>", [pack families]]});

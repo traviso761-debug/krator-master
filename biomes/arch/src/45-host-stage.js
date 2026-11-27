@@ -282,6 +282,186 @@ const L=(function(){const S=SITE;
   return{land,water,setTideLv:v=>{tideLv=v;},getTideLv:()=>tideLv,AX,VX,S_OF,A_OF,XZ,centerA,hwE,hwW,thalwegY,PROW,HOLLOWS,WEEPS,STACKS,GJAR_PTS,FL_F,APRON,ACIDG:()=>0,
    WEST_BASALT,INTERTIDAL,TREE_KEEP,RIM,FLOOR,SEEP,NI,farBase:-38,
    spine:[[PROW.x,PROW.z],[S.flames.x,S.flames.z],XZ(-790,centerA(-790)),XZ(80,centerA(80)),XZ(1200,centerA(1200))].concat(WEEPS.map(w=>[w.x,w.z]))};}
+ if(SKEY==='lakes'){const AX=S.axis,VX=[AX[1],-AX[0]],S_OF=(x,z)=>x*AX[0]+z*AX[1],A_OF=(x,z)=>x*VX[0]+z*VX[1],XZ=(s,a)=>[s*AX[0]+a*VX[0],s*AX[1]+a*VX[1]];
+  const UL=S.upperLake,LL=S.lowerLake,RV=S.river;
+  const rivA=s=>RV.meanderAmp*Math.sin((s+135)*.0044)+28*Math.cos(s*.0089-.4)+18*Math.sin(s*.0021+1.1);
+  const rivLv=s=>{const t=clamp((s-(UL.sMax+36))/((LL.sMin-36)-(UL.sMax+36)),0,1),eased=t*t*(3-2*t);return lerp(UL.level,LL.level,clamp(eased+.028*Math.sin(t*Math.PI*4)*Math.sin(t*Math.PI),0,1));};
+  /* Organic rift-lake shorelines: sweeping headlands, coves, rocky fault-steps, and asymmetric alluvial delta spit + drowned funnel estuary */
+  const upOutA=rivA(UL.sMax),loMouthA=rivA(LL.sMin);
+  const upShoreS=(a,x,z)=>{
+   const da=a-upOutA,absD=Math.abs(da);
+   const funnel=92*Math.exp(-Math.pow(da/64,2)),spit=-46*Math.exp(-Math.pow((da+68)/52,2));
+   const bays=-185*smooth(70,680,absD)+78*Math.sin(a*.0054+.7)+46*Math.cos(a*.0115-1.1);
+   const n=(64*n2(x,z,.0032,301)+24*n2(x,z,.0105,311))*smooth(18,85,absD);
+   return UL.sMax+funnel+spit+bays+n;};
+  const loShoreS=(a,x,z)=>{
+   const da=a-loMouthA,absD=Math.abs(da);
+   const funnel=-108*Math.exp(-Math.pow(da/68,2)),spit=58*Math.exp(-Math.pow((da-74)/56,2));
+   const bays=205*smooth(75,720,absD)+84*Math.sin(a*.0049-.6)+52*Math.cos(a*.0108+.9);
+   const n=(68*n2(x,z,.0031,302)+26*n2(x,z,.0102,312))*smooth(18,88,absD);
+   return LL.sMin+funnel+spit+bays+n;};
+  S.springs.forEach(sp=>{const p=XZ(sp.s,sp.a);sp.x=p[0];sp.z=p[1];});
+  {const ap=XZ(S.alkPool.s,S.alkPool.a);S.pool={x:ap[0],z:ap[1],r:S.alkPool.r};}
+  const OX_P=XZ(S.oxbow.s,S.oxbow.a),OXBOW=Object.assign({x:OX_P[0],z:OX_P[1]},S.oxbow);
+  const HOLLOWS=S.hollows.map(h=>{const p=XZ(h.s,h.a);return Object.assign({x:p[0],z:p[1]},h);});
+  {const C=S.flames,p=XZ(C.s,C.a);C.x=p[0];C.z=p[1];C.dir=[AX[0],AX[1]];}
+  const FL_F=segFrame([S.flames.x,S.flames.z],[S.flames.x+S.flames.dir[0]*S.flames.len,S.flames.z+S.flames.dir[1]*S.flames.len]);
+  const baseProf=(x,z)=>{const s=S_OF(x,z),a=A_OF(x,z),absA=Math.abs(a),
+   horstWall=(a>=0?235:195)*smooth(380,1580,absA)+(a>=0?95:75)*smooth(1550,3600,absA),
+   faultStep=26*smooth(365,455,absA)+18*smooth(680,790,absA),
+   mull=7.5*Math.sin(s*.018+1.6*n2(x,z,.0018,303))*smooth(340,720,absA),
+   neckTilt=lerp(18.6,10.0,smooth(UL.sMax-180,LL.sMin+180,s));
+   return neckTilt+horstWall+faultStep+mull+2.3*n2(x,z,.0032,304)+.55*n2(x,z,.018,305);};
+  const POOL_LV=baseProf(S.pool.x,S.pool.z)-.45;
+  /* 16 Scalloped Crescent / Kidney Rimstone Travertine Gours (Pamukkale / Huanglong style; zero square rectangles, zero overlap with round pools) */
+  const GOUR_F=segFrame([S.springs[0].x,S.springs[0].z],[S.pool.x,S.pool.z]);
+  const GOURS=(function(){
+   const sp=S.springs[0],s0=sp.r+9,s1=GOUR_F.L-S.pool.r-9,top=baseProf(sp.x,sp.z)-1.05,bot=POOL_LV+.75;
+   const tiers=[[-0.5],[ -5.5, 6.2 ],[ -12.5, 0.4, 12.8 ],[ -7.8, 8.4 ],[ -14.2, -0.6, 13.4 ],[ -8.6, 8.8 ],[ -6.2, 6.6 ],[ 0.2 ]];
+   const list=[];let idx=0;
+   for(let ti=0;ti<tiers.length;ti++){
+    const u=ti/(tiers.length-1),sBase=lerp(s0,s1,u),sway=7.5*Math.sin(u*Math.PI*1.35+.3),row=tiers[ti];
+    for(let li=0;li<row.length;li++){
+     const h1=KRAND.unit(KRAND.hash(S.seed,idx,511)),h2=KRAND.unit(KRAND.hash(S.seed,idx,512)),h3=KRAND.unit(KRAND.hash(S.seed,idx,513));
+     const gs=sBase+(h1-.5)*4.2,ga=sway+row[li]+(h2-.5)*2.4,c=GOUR_F.p(gs,ga);
+     const rx=8.6+4.2*Math.sin(u*Math.PI)+2.2*h3-(row.length===3?1.4:0),ry=6.8+2.6*h1;
+     const y=+(lerp(top,bot,u)-(li%2)*.18-.12*h2).toFixed(2);
+     const yawOff=(row[li]*.018)+(h3-.5)*.16;
+     const ux=GOUR_F.B[0]-GOUR_F.A[0],uz=GOUR_F.B[1]-GOUR_F.A[1],ul=Math.hypot(ux,uz)||1;
+     const ca=Math.cos(yawOff),sa=Math.sin(yawOff),dx=(ux/ul)*ca-(uz/ul)*sa,dz=(uz/ul)*ca+(ux/ul)*sa;
+     list.push({idx,tier:ti,s:gs,a:ga,x:c[0],z:c[1],rx,ry,y,dx,dz,ph1:h1*TAU,ph2:h2*TAU});
+     idx++;
+    }
+   }
+   return list;
+  })();
+  const gourShape=(g,ang)=>{
+   const c=Math.cos(ang),lobe=1+.11*Math.sin(3*ang+g.ph1)+.065*Math.cos(5*ang+g.ph2);
+   return c>=0?lobe:mix(lobe,.72+.07*Math.sin(2*ang+g.ph1),Math.min(1,-c*1.15));
+  };
+  const gourLocal=(g,x,z)=>{
+   const px=x-g.x,pz=z-g.z,ds=px*g.dx+pz*g.dz,da=-px*g.dz+pz*g.dx;
+   const u=ds/g.ry,v=da/g.rx,r0=Math.hypot(u,v);
+   if(r0<1e-6)return{d:0,ang:0,ds,da};
+   const ang=Math.atan2(v,u),sh=gourShape(g,ang);
+   return{d:r0/sh,ang,ds,da,sh};
+  };
+  const GOUR_MX=(S.springs[0].x+S.pool.x)*.5,GOUR_MZ=(S.springs[0].z+S.pool.z)*.5;
+  const TER=[{F:GOUR_F,levels:GOURS.map(g=>g.y),sp:S.springs[0]}];
+  function land(x,z){const s=S_OF(x,z),a=A_OF(x,z);let h=baseProf(x,z);
+   /* Upper & Lower Axial Rift Lakes: smooth distance-from-shore bathymetry (evaluated only near/inside each lake basin) */
+   if(s<UL.sMax+295&&Math.abs(a)<UL.halfW+260){
+    const sUp=upShoreS(a,x,z),dUp=sUp-s,latUp=smooth(UL.halfW+260,UL.halfW-90,Math.abs(a));
+    if(dUp>-110&&latUp>0){
+     const wUp=smooth(-105,6,dUp)*latUp,shoal=1+.22*n2(x,z,.0045,321);
+     const profUp=dUp<=0?UL.level+3.4*smooth(0,-105,dUp):UL.level-(1.4+.11*dUp*shoal+(UL.level-UL.depth-12)*smooth(35,540,dUp)*smooth(UL.halfW+40,UL.halfW*.3,Math.abs(a)));
+     h=mix(h,profUp,wUp);}}
+   if(s>LL.sMin-295&&Math.abs(a)<LL.halfW+260){
+    const sLo=loShoreS(a,x,z),dLo=s-sLo,latLo=smooth(LL.halfW+260,LL.halfW-90,Math.abs(a));
+    if(dLo>-110&&latLo>0){
+     const wLo=smooth(-105,6,dLo)*latLo,shoal=1+.22*n2(x,z,.0045,322);
+     const profLo=dLo<=0?LL.level+3.1*smooth(0,-105,dLo):LL.level-(1.35+.105*dLo*shoal+(LL.level-LL.depth-11)*smooth(35,540,dLo)*smooth(LL.halfW+40,LL.halfW*.3,Math.abs(a)));
+     h=mix(h,profLo,wLo);}}
+   /* Winding Arch Axial River & natural drowned estuary/outlet thalwegs */
+   if(s>UL.sMax-240&&s<LL.sMin+240){
+    const ra=rivA(clamp(s,UL.sMax-40,LL.sMin+40)),da=Math.abs(a-ra);
+    const flUp=smooth(UL.sMax+130,UL.sMax-55,s),flLo=smooth(LL.sMin-130,LL.sMin+55,s),fl=Math.max(flUp,flLo);
+    const hw=RV.width*.5+34*flUp+42*flLo+4.5*n2(x,z,.008,325);
+    if(da<hw+58){
+     const lv=rivLv(s),bed=lv-(2.65+1.85*fl)*smooth(hw+10,hw*.28,da),bank=lv+1.1+.032*Math.max(0,da-hw-8);
+     const neckW=smooth(UL.sMax+10,UL.sMax+75,s)*smooth(LL.sMin-10,LL.sMin-75,s);
+     const endW=smooth(UL.sMax-235,UL.sMax-50,s)*smooth(LL.sMin+235,LL.sMin+50,s);
+     const carvedNeck=mix(h,da<hw+5?bed:Math.min(h,bank),smooth(hw+58,hw+5,da));
+     const carvedMouth=Math.min(h,mix(h,bed,smooth(hw+24,hw*.42,da)*endW));
+     h=mix(carvedMouth,carvedNeck,neckW);}}
+   /* Oxbow sedge-fen tarn */
+   if(Math.abs(x-OXBOW.x)<OXBOW.r+56&&Math.abs(z-OXBOW.z)<OXBOW.r+56){
+    const dOx=Math.hypot((x-OXBOW.x)*.92,(z-OXBOW.z)*1.12)+5.5*n2(x,z,.018,328);
+    if(dOx<OXBOW.r+48){const bowl=OXBOW.level-OXBOW.depth*(1-Math.pow(clamp(dOx/OXBOW.r,0,1),1.7));
+     h=mix(dOx<OXBOW.r?bowl:OXBOW.level+.45+(dOx-OXBOW.r)*.04,h,smooth(OXBOW.r,OXBOW.r+48,dOx));}}
+   /* Scalloped crescent rimstone travertine gours (lowest tier to highest tier so upper lips terrace cleanly over lower pools) */
+   if(Math.abs(x-GOUR_MX)<260&&Math.abs(z-GOUR_MZ)<260){
+    const qb=GOUR_F.at(x,z);
+    if(qb.s>-45&&qb.s<GOUR_F.L+45&&Math.abs(qb.a)<68){
+     for(let gi=GOURS.length-1;gi>=0;gi--){
+      const g=GOURS[gi];if(Math.abs(x-g.x)>26||Math.abs(z-g.z)>26)continue;
+      const gl=gourLocal(g,x,z);
+      if(gl.d<1.46){
+       const floorY=g.y-.52,lipY=g.y+.12;
+       const profG=gl.d<.94?floorY:gl.d<1.08?mix(floorY,lipY,smooth(.92,1.04,gl.d)):mix(lipY,h,smooth(1.08,1.46,gl.d));
+       h=mix(profG,h,smooth(1.24,1.46,gl.d));
+      }
+     }
+    }
+    const P=S.pool,d=Math.hypot(x-P.x,z-P.z)+2.6*n2(x,z,.045,331);if(d<P.r)h=POOL_LV-1.9*(1-Math.pow(clamp(d/P.r,0,1),1.6))-.25;else if(d<P.r+54)h=mix(POOL_LV+.38+(d-P.r)*.015,h,smooth(P.r,P.r+54,d));
+    for(const sp of S.springs){const ds=Math.hypot(x-sp.x,z-sp.z)+1.8*n2(x,z,.055,332),top=baseProf(sp.x,sp.z);if(ds<sp.r)h=top-.6-1.7*(1-Math.pow(clamp(ds/sp.r,0,1),1.5));else if(ds<sp.r+32)h=mix(top+.32,h,smooth(sp.r,sp.r+32,ds));}}
+   for(const k of HOLLOWS){if(Math.abs(x-k.x)>k.r*1.3||Math.abs(z-k.z)>k.r*1.3)continue;const dk=Math.hypot(x-k.x,z-k.z);if(dk<k.r*1.25)h-=k.depth*smooth(k.r*1.15,k.r*.3,dk);}
+   if(Math.abs(x-S.flames.x)<150&&Math.abs(z-S.flames.z)<150){const qf=FL_F.at(x,z);if(qf.s>-10&&qf.s<FL_F.L+10)h-=.95*smooth(3.6,.5,Math.abs(qf.a))*smooth(-10,10,qf.s)*smooth(FL_F.L+10,FL_F.L-10,qf.s);}
+   return h;}
+  const inUpperLake=(x,z)=>{const s=S_OF(x,z);if(s>UL.sMax+175)return false;const a=A_OF(x,z);if(Math.abs(a)>UL.halfW+240)return false;const sUp=upShoreS(a,x,z);if(s>sUp+72)return false;if(s<sUp-12&&Math.abs(a)<UL.halfW-95)return true;return terrainH(x,z)<UL.level;};
+  const inLowerLake=(x,z)=>{const s=S_OF(x,z);if(s<LL.sMin-175)return false;const a=A_OF(x,z);if(Math.abs(a)>LL.halfW+240)return false;const sLo=loShoreS(a,x,z);if(s<sLo-72)return false;if(s>sLo+12&&Math.abs(a)<LL.halfW-95)return true;return terrainH(x,z)<LL.level;};
+  const inOxbow=(x,z)=>{if(Math.abs(x-OXBOW.x)>OXBOW.r+22||Math.abs(z-OXBOW.z)>OXBOW.r+22)return false;return Math.hypot((x-OXBOW.x)*.92,(z-OXBOW.z)*1.12)+5.5*n2(x,z,.018,328)<OXBOW.r+8&&terrainH(x,z)<OXBOW.level;};
+  const RIV_PTS=[],RIV_W=[];for(let s=RV.s0;s<=RV.s1+.1;s+=10){
+   const cs=Math.min(s,RV.s1),ra=rivA(cs),p=XZ(cs,ra);
+   const fl=Math.max(smooth(UL.sMax+95,UL.sMax+15,cs),smooth(LL.sMin-95,LL.sMin-15,cs));
+   RIV_PTS.push([p[0],p[1],rivLv(cs)]);RIV_W.push(RV.width+10*fl);}
+  const BARS=[
+   (()=>{const p=XZ(-315,rivA(-315)-RV.width*.62-7);return{x:p[0],z:p[1],r:24,n:16};})(),
+   (()=>{const p=XZ(45,rivA(45)+RV.width*.62+7);return{x:p[0],z:p[1],r:26,n:18};})(),
+   (()=>{const p=XZ(410,rivA(410)-RV.width*.62-7);return{x:p[0],z:p[1],r:24,n:16};})()
+  ];
+  function water(x,z){
+   if(inUpperLake(x,z))return UL.level;
+   if(inLowerLake(x,z))return LL.level;
+   if(inOxbow(x,z))return OXBOW.level;
+   const s=S_OF(x,z);
+   if(s>=RV.s0&&s<=RV.s1){
+    const a=A_OF(x,z),flUp=smooth(UL.sMax+130,UL.sMax-55,s),flLo=smooth(LL.sMin-130,LL.sMin+55,s);
+    const hw=RV.width*.5+34*flUp+42*flLo;
+    if(Math.abs(a-rivA(s))<hw+1.5&&terrainH(x,z)<rivLv(s))return rivLv(s);}
+   if(Math.abs(x-GOUR_MX)<240&&Math.abs(z-GOUR_MZ)<240){
+    const qb=GOUR_F.at(x,z);if(qb.s>-20&&qb.s<GOUR_F.L+20&&Math.abs(qb.a)<46){
+     for(let gi=0;gi<GOURS.length;gi++){const g=GOURS[gi];if(Math.abs(x-g.x)<22&&Math.abs(z-g.z)<22&&gourLocal(g,x,z).d<1.0)return g.y;}}
+    if(Math.hypot(x-S.pool.x,z-S.pool.z)<S.pool.r+1.5)return POOL_LV;
+    for(const sp of S.springs)if(Math.hypot(x-sp.x,z-sp.z)<sp.r+1)return baseProf(sp.x,sp.z)-.6;}
+   return -1e9;}
+  /* Multi-lobed cauliflower travertine apron hugging the spring, crescent gours, and receiving pool */
+  const APRON=(x,z)=>{
+   if(Math.abs(x-GOUR_MX)>265||Math.abs(z-GOUR_MZ)>265)return 0;
+   const qb=GOUR_F.at(x,z);if(qb.s<-55||qb.s>GOUR_F.L+65||Math.abs(qb.a)>85)return 0;
+   const fr=3.5*n2(x,z,.045,336)+1.8*n2(x,z,.11,337);
+   let ap=smooth(S.pool.r+26,S.pool.r+4,Math.hypot(x-S.pool.x,z-S.pool.z)+fr);
+   for(const sp of S.springs)ap=Math.max(ap,smooth(sp.r+24,sp.r+3,Math.hypot(x-sp.x,z-sp.z)+fr));
+   for(let gi=0;gi<GOURS.length;gi++){const g=GOURS[gi];if(Math.abs(x-g.x)>34||Math.abs(z-g.z)>34)continue;const d=gourLocal(g,x,z).d+.08*n2(x,z,.05,340+gi);ap=Math.max(ap,smooth(1.72,1.06,d));}
+   return clamp(ap,0,1);};
+  const COBBLES=(x,z,hOpt)=>{const s=S_OF(x,z);if(s<UL.sMax-45||s>LL.sMin+45)return 0;
+   const a=A_OF(x,z),da=Math.abs(a-rivA(clamp(s,UL.sMax,LL.sMin)));if(da>RV.width*.5+42)return 0;
+   const h=hOpt==null?terrainH(x,z):hOpt,lv=rivLv(s);
+   let c=smooth(RV.width*.5+22,RV.width*.5+2,da)*smooth(lv+2.2,lv+.15,h);
+   for(const b of BARS)c=Math.max(c,smooth(b.r*1.25,b.r*.38,Math.hypot(x-b.x,z-b.z)));
+   return clamp(c,0,1);};
+  const RIM=(x,z)=>{let r=0;for(const k of HOLLOWS){const dx=x-k.x,dz=z-k.z;if(Math.abs(dx)>k.r*1.2||Math.abs(dz)>k.r*1.2)continue;const c=smooth(k.r*1.18,k.r*.35,Math.hypot(dx,dz));r=Math.max(r,c*(1-c)*4);}return clamp(r,0,1);};
+  const FLOOR=(x,z)=>{let r=0;for(const k of HOLLOWS){const dx=x-k.x,dz=z-k.z;if(Math.abs(dx)>k.r*1.1||Math.abs(dz)>k.r*1.1)continue;r=Math.max(r,smooth(k.r*1.05,k.r*.3,Math.hypot(dx,dz)));}return clamp(r,0,1);};
+  /* Alluvial tropical rainforest belt (Plaine des Lacs / Riviere Bleue edaphic split): leached Ca-buffered valley floor & lake benches vs ultramafic horst scarps & garnierite hollows */
+  const ALLUVIAL=(x,z,hOpt)=>{
+   const a=A_OF(x,z);if(Math.abs(a)>520)return 0;
+   const h=hOpt==null?terrainH(x,z):hOpt;if(h>54)return 0;
+   const ed=48*n2(x,z,.0036,315)+18*n2(x,z,.011,316);
+   const valley=smooth(445,275,Math.abs(a)+ed)*smooth(52,24,h);
+   if(valley<=0)return 0;
+   const oxCut=(Math.abs(x-OXBOW.x)<OXBOW.r+44&&Math.abs(z-OXBOW.z)<OXBOW.r+44)?smooth(OXBOW.r+6,OXBOW.r+42,Math.hypot(x-OXBOW.x,z-OXBOW.z)):1;
+   const hollowCut=1-clamp(FLOOR(x,z)*1.15+RIM(x,z)*.85,0,1);
+   return clamp(valley*oxCut*hollowCut*(1-APRON(x,z)),0,1);
+  };
+  const RIPARIAN=(x,z)=>{const h=terrainH(x,z),w=water(x,z);
+   if(w>-1e8&&h<=w+.32)return 0;
+   return ALLUVIAL(x,z,h);};
+  const SEEP=(x,z)=>{let r=smooth(OXBOW.r+75,OXBOW.r+4,Math.hypot(x-OXBOW.x,z-OXBOW.z))*.92;
+   for(const k of HOLLOWS)r=Math.max(r,smooth(k.r*.85,k.r*.2,Math.hypot(x-k.x,z-k.z))*.88);return clamp(r,0,1);};
+  const NI=(x,z)=>mix(3050+2050*RIM(x,z)+1050*FLOOR(x,z)+620*n2(x,z,.002,308),260+140*n2(x,z,.003,309),ALLUVIAL(x,z));
+  return{land,water,prof:baseProf,AX,VX,S_OF,A_OF,XZ,rivA,rivLv,upShoreS,loShoreS,inUpperLake,inLowerLake,inOxbow,RIV_PTS,RIV_W,BARS,OXBOW,TER,GOURS,GOUR_F,gourLocal,gourShape,POOL_LV,HOLLOWS,FL_F,
+   APRON,ACIDG:()=>0,COBBLES,ALLUVIAL,RIPARIAN,RIM,FLOOR,SEEP,NI,farBase:6,
+   spine:[XZ(0,rivA(0)),XZ(UL.sMax-160,0),XZ(LL.sMin+160,0),[OXBOW.x,OXBOW.z],[S.pool.x,S.pool.z],[S.flames.x,S.flames.z]]};}
  throw new Error('no station '+SKEY);})();
 function landH(x,z){return L.land(x,z);}
 function floor0(x){return L.farBase;}
@@ -289,10 +469,10 @@ const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=L.land(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
 function waterH(x,z){return L.water(x,z);}
 // THE CHEMISTRY OF THE GROUND (PLAN.md 3.5): the pH every plant asks ARCH.lifeAt for; the water's own where it is wet
-const PH_AT=(x,z)=>{const ap=L.APRON(x,z),ac=L.ACIDG(x,z);let p=SKEY==='cove'?(L.WEST_BASALT(x,z)?6.4:5.8):(L.LAVA&&L.LAVA(x,z)!=null?6.6:L.MUD&&L.MUD(x,z)?7.2:5.8);p=mix(p,SKEY==='cove'?11.5:10.6,smooth(SKEY==='cove'?.25:.3,SKEY==='cove'?.65:.7,ap));p=mix(p,2.8,smooth(.3,.7,ac));return p;};
-const CAMG_AT=(x,z)=>SKEY==='cove'?(L.WEST_BASALT(x,z)?1.35:.08):L.LAVA&&L.LAVA(x,z)!=null?1.2:L.MUD&&L.MUD(x,z)?.6:L.TUFF?.9:.08;   /* basalt and the sound's mud are not serpentine ground */
-const LAVA_AT=(x,z)=>L.LAVA?L.LAVA(x,z):null;   /* the age of the flow under a point (years), or null: ARCH.lifeAt's lavaAge */   /* the laterite over serpentinite: Ca:Mg ~.08 everywhere on this page (PLAN.md 3.3) */
-const SOIL_AT=(x,z)=>({ni:L.NI?L.NI(x,z):3200+1400*n2(x,z,.002,31),pH:PH_AT(x,z),caMg:CAMG_AT(x,z),n:.15,p:.12});
+const PH_AT=(x,z)=>{const ap=L.APRON(x,z),ac=L.ACIDG(x,z);let p=SKEY==='cove'?(L.WEST_BASALT(x,z)?6.4:5.8):SKEY==='lakes'?mix(5.8,6.7,L.ALLUVIAL(x,z)):(L.LAVA&&L.LAVA(x,z)!=null?6.6:L.MUD&&L.MUD(x,z)?7.2:5.8);p=mix(p,SKEY==='cove'?11.5:10.6,smooth(SKEY==='cove'?.25:.3,SKEY==='cove'?.65:.7,ap));p=mix(p,2.8,smooth(.3,.7,ac));return p;};
+const CAMG_AT=(x,z)=>SKEY==='cove'?(L.WEST_BASALT(x,z)?1.35:.08):SKEY==='lakes'?mix(.08,1.18,L.ALLUVIAL(x,z)):L.LAVA&&L.LAVA(x,z)!=null?1.2:L.MUD&&L.MUD(x,z)?.6:L.TUFF?.9:.08;   /* basalt, the sound's mud, and leached alluvial rift-lake silt are buffered off raw serpentine */
+const LAVA_AT=(x,z)=>L.LAVA?L.LAVA(x,z):null;   /* the age of the flow under a point (years), or null: ARCH.lifeAt's lavaAge */
+const SOIL_AT=(x,z)=>{const al=SKEY==='lakes'&&L.ALLUVIAL?L.ALLUVIAL(x,z):0;return{ni:L.NI?L.NI(x,z):3200+1400*n2(x,z,.002,31),pH:PH_AT(x,z),caMg:CAMG_AT(x,z),n:mix(.15,.78,al),p:mix(.12,.72,al)};};
 
 // ---------------------------------------------------------------- the climate fields (the field contract's units: core/biome/README.md)
 //   wet     the water's margins, the seeps under the terraces; the bench damper than the dome

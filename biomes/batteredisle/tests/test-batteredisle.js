@@ -97,9 +97,40 @@ T.ok('all 3 custom worn-cone KSTRATA columns and 6 fauna schedules are present',
 
 const cropList = CROPS.forBiome('batteredisle', { underground: true, works: ['cellar'], nodes: ['coal', 'iron'] });
 const cropKeys = cropList.map(c => (c.crop && c.crop.id) || c.id || c);
-T.ok('CROPS.forBiome(batteredisle) yields sweet-potato, taro, tea, and kelp',
- cropList.length >= 12 && cropKeys.indexOf('sweet-potato') >= 0 && cropKeys.indexOf('taro') >= 0 && cropKeys.indexOf('tea') >= 0 && cropKeys.indexOf('kelp') >= 0,
- 'crops=' + cropList.length);
+const cocoEntry = cropList.find(c => ((c.crop && c.crop.id) || c.id) === 'coconut');
+T.ok('CROPS.forBiome(batteredisle) yields wild coconut, sweet-potato, taro, tea, and kelp',
+ cropList.length >= 13 && !!cocoEntry && cocoEntry.how === 'wild' &&
+ cropKeys.indexOf('sweet-potato') >= 0 && cropKeys.indexOf('taro') >= 0 && cropKeys.indexOf('tea') >= 0 && cropKeys.indexOf('kelp') >= 0,
+ 'crops=' + cropList.length + ' coco=' + JSON.stringify(cocoEntry));
+
+/* 6. Drift-sown coconut (Cocos nucifera) wave-shadow strand physics & species HV metadata */
+const csLee = BATTER_PHYS.coconutStrandAt({ exposedWNW: false, hasSea: true, elevASL: 9.5, seaClearM: 9.5, slope: 0.16, dikeRib01: 0.08, azFromCenterDeg: 138 });
+const csRampart = BATTER_PHYS.coconutStrandAt({ exposedWNW: true, hasSea: true, elevASL: 12.0, seaClearM: 12.0, slope: 0.14, dikeRib01: 0.10, azFromCenterDeg: 278 });
+const csPlug = BATTER_PHYS.coconutStrandAt({ exposedWNW: false, hasSea: false, elevASL: 710.0, seaClearM: 710.0, slope: 0.22, dikeRib01: 0.15, azFromCenterDeg: 280 });
+const csSurf = BATTER_PHYS.coconutStrandAt({ exposedWNW: false, hasSea: true, elevASL: 1.2, seaClearM: 1.2, slope: 0.12, dikeRib01: 0.0, azFromCenterDeg: 140 });
+T.ok('coconutStrandAt accepts sheltered ESE/SSE wave-shadow coves (+3..+45 m) and rejects WNW scour rampart, +868 m plug, and surf zone',
+ csLee.strandOk === true && csLee.suitability01 > 0.4 &&
+ csRampart.strandOk === false && csPlug.strandOk === false && csSurf.strandOk === false,
+ JSON.stringify(csLee));
+T.neg('coconutStrandAt rejects wave-planed WNW rampart and accepts sheltered leeward cove',
+ rec => rec.strandOk === true,
+ csRampart,
+ csLee);
+
+const spSrc = read('biomes/batteredisle/src/50-biome-batter-species.js');
+const reqKeys = [
+ 'batteredlaurel', 'ironkneepodocarp', 'nickelmyrtle', 'scoriathrift', 'cindersedge', 'covepandan', 'tuffcress', 'soundkelp',
+ 'coconut', 'seatamanu', 'seahibiscus', 'craterfern', 'beachsheoak', 'saltnaupaka', 'cinderglory', 'archfern',
+ 'olivinesheoak', 'nickelphyllanthus', 'springsundew', 'coalhorsetail', 'rampartpalm', 'corallineturf', 'cliffsamphire', 'plugohia', 'plugcushion'
+];
+const missSp = reqKeys.filter(k => spSrc.indexOf("key: '" + k + "'") < 0);
+T.ok('50-biome-batter-species.js registers all 25 canonical species including coconut (Cocos nucifera) with HV tags',
+ missSp.length === 0 &&
+ spSrc.indexOf('Cocos nucifera') >= 0 &&
+ spSrc.indexOf("['coconuts']") >= 0 &&
+ spSrc.indexOf('palmFrond') >= 0 &&
+ spSrc.indexOf('BATTER.HARVEST') >= 0,
+ 'missing=' + missSp.join(','));
 
 const rBase = 0.35;
 const rFar = KMAT_M1.roughnessWithVariance(rBase, 5.0, KMAT_MIPVAR['rock.basalt']);

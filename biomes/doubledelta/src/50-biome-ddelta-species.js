@@ -10,9 +10,10 @@ BIO.kit('doubledelta');
 var DOUBLEDELTA={SITES:DDELTA_SITES,PHYS:DDELTA_PHYS};
 var DDELTA=DOUBLEDELTA;
 (function(){
- const {TAU,clamp,smooth}=BIO.fn;
+ const {TAU,clamp,lerp,smooth,qEuler}=BIO.fn;
  const T3=BIO.host.THREE,C=h=>new T3.Color(h);
  DOUBLEDELTA.C=C;
+ const H01=(a,b,c)=>KRAND.unit(KRAND.hash(0x5d1a95,a|0,b|0,c|0));
 
  const KT=(c,a,r,kp,o)=>Object.assign({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp,origin:'krator'},o||{});
  const ET=(c,a,r,kp,o)=>Object.assign({climate:c,aridity:a,abyssal:false,riparian:r,koppen:kp,origin:'earth'},o||{});
@@ -50,7 +51,11 @@ var DDELTA=DOUBLEDELTA;
   oakLeaf:[0x3a6434,0x46723e,0x32582e],
   cedarLeaf:[0x2c5236,0x365e40,0x264830],
   cypressLeaf:[0x34583c,0x3e6446,0x2c4e34],
-  pineLeaf:[0x305434,0x3a603e,0x2a4a2e]
+  pineLeaf:[0x305434,0x3a603e,0x2a4a2e],
+  palm:[0x4c7832,0x58863a,0x426c2c,0x649042],
+  palmOld:[0x7e7838,0x8c8240],
+  palmtrunk:[0x8a7a62,0x7e705a,0x94846c],
+  coconutNut:[0x6c7a36,0x867238,0x5e6e30]
  };
 
  // ---------------------------------------------------------------- species roster
@@ -123,6 +128,50 @@ var DDELTA=DOUBLEDELTA;
    how:'translucent golden, honey-orange and cherry-red fossil resin nodules winnowed out of slate-blue glauconite clay in tsunami scour-channels',
    items:['ddamber'],gather:'ria-amber',
    tags:ET('tropic','humid','yes',['Am'],{zone:'scourseep',form:'nodule'})},
+  {key:'coconut',name:'Drift-Sown Coconut Palm (Cocos nucifera)',
+   how:'leaning ringed monocot strand palm (6.5-14.5 m) drift-sown along elevated shell-and-sand chenier beach ridges and natural distributary levee crests, crowned with V-cambered drooping pinnate fronds and green-bronze nut clusters',
+   items:['ddpalmtrunk','ddpalm','ddcoconut_nut'],crop:'coconut',
+   tags:ET('tropic','humid','both',['Am'],{zone:'surfbar',form:'strand-palm',strand:true})},
+  {key:'chenierpandan',name:'Delta Chenier Screwpine (Pandanus tectorius)',
+   how:'stilt-rooted monocot screwpine (3.2-6.8 m) binding oyster-shell chenier beach ridges with spiral keeled strap rosettes and orange fruit keys',
+   items:['dd_pandan_fol','dd_pandan_fruit'],crop:'pandan',
+   tags:ET('tropic','humid','both',['Am'],{zone:'surfbar',form:'strand-palm',strand:true})},
+  {key:'bayouhibiscus',name:'Bayou Bast Sea-Hibiscus (Hibiscus tiliaceus)',
+   how:'supple multi-stemmed levee thicket shrub (2.4-5.0 m) with heart leaves and yellow cup blooms that bends under bores and resprouts',
+   items:['dd_hibiscus_fol','dd_hibiscus_bloom'],
+   tags:ET('tropic','humid','both',['Am'],{zone:'surfbar',form:'shrub',strand:true})},
+  {key:'bayoufanpalm',name:'Levee Palmetto Fan-Palm (Sabal deltaica)',
+   how:'surge-resilient fibrous monocot fan-palm (4.0-8.8 m) along natural levees and shell ridges crowned with radiating costapalmate fans',
+   items:['dd_fanpalm_frond'],
+   tags:ET('tropic','humid','both',['Am'],{zone:'surfbar',form:'strand-palm',strand:true})},
+  {key:'bayoutupelo',name:'Buttressed Bayou Knee-Tupelo (Taxodium pneumatophora)',
+   how:'fluted-buttress slough tree (4.8-10.5 m) ringed by conical breathing knees in sheltered inner bayou backwaters',
+   items:['dd_tupelo_fol','dd_tupelo_knee'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'peatmat',form:'buttress-bayou'})},
+  {key:'bayoulily',name:'Levee White Spider-Lily (Crinum americanum)',
+   how:'fragrant six-rayed white spider-lily (0.45-0.95 m) lining fresh-to-brackish natural levee rims',
+   items:['dd_lily_fol','dd_lily_bloom'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'peatmat',form:'rosette'})},
+  {key:'chenierglory',name:'Shell-Ridge Morning-Glory (Ipomoea pes-caprae)',
+   how:'creeping succulent runner vine (0.15-0.38 m) with rose-violet trumpet blooms stabilizing white shell chenier crests',
+   items:['dd_glory_mat','dd_glory_bloom'],
+   tags:ET('tropic','humid','no',['Am'],{zone:'surfbar',form:'vine',strand:true})},
+  {key:'deltalotus',name:'Sacred Pink Delta-Lotus (Nelumbo nucifera)',
+   how:'emergent umbrella-held peltate pads and rose-pink lotus blossoms rising 0.5-1.1 m above calm freshwater peat-ponds',
+   items:['dd_lotus_leaf','dd_lotus_bloom'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'peatmat',form:'tethered-mat'})},
+  {key:'redwaterfern',name:'Velvet Floating Azolla-Mat (Azolla rubra)',
+   how:'crimson-burgundy and bronze-green nitrogen-fixing floating water-fern carpets on calm slackwater sloughs',
+   items:['dd_azolla_mat'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'peatmat',form:'floating-mat'})},
+  {key:'bayoucattail',name:'Giant Delta Reed-Mace (Typha domingensis)',
+   how:'tall sword-leaved marsh reed (1.6-3.4 m) bearing velvety dark-brown cylindrical seed spikes along levee ditches',
+   items:['dd_cattail_blade','dd_cattail_spike'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'peatmat',form:'reed'})},
+  {key:'silicarush',name:'Distributary Silica Scour-Rush (Equisetum giganteum)',
+   how:'jointed hollow emerald-olive high-silica stems (0.8-2.1 m) colonizing silica-rich sandy point-bars and levee toes',
+   items:['dd_silicarush'],
+   tags:ET('tropic','humid','yes',['Am'],{zone:'spongebraid',form:'reed'})},
   /* Bluff-only woody trees: strictly forbidden below MIN_WOODY_Y (>= +25..+38 m) */
   {key:'bluffoak',name:'Maritime Bluff Oak (Quercus maritima)',
    how:'broad wind-firm evergreen oak crowning Ria Sound loess-capped bluffs strictly above the Ghost-Tsunami trimline',
@@ -165,6 +214,17 @@ var DDELTA=DOUBLEDELTA;
   fensedge:HV('thatch, matting',[],false,'Plaited into resilient salt-proof kneeling mats and skiff cushions.'),
   driftwrack:HV('timber (seasoned driftwood), fertiliser',['dried nori sheet'],false,'Tsunami-seasoned drift logs salvaged by skiff-crews; wineweed boiled for agar sizing.'),
   riaamber:HV('none',[],true,'Golden and cherry fossil resin prized for electrostatic insulators, liquid-amber compasses, succinic varnish, and medicinal incense.'),
+  coconut:HV('timber (monocot posts), thatch, coir, cordage',['coconuts'],false,'Buoyant sea-dispersed nuts sprout along shell-lag cheniers and natural levee crests; plaited frond thatch and rot-proof coir mooring warps.'),
+  chenierpandan:HV('weaving, thatch, cordage',['cooked pandan key'],false,'Prop-rooted chenier stabilizer; cured strap leaves plaited into Ria skiff sails, mats and grain baskets.'),
+  bayouhibiscus:HV('bast, cordage, fibre, knees',[],false,'Inner bark retted in brackish sloughs into rot-proof skiff tow-lines, net twine and caulking oakum.'),
+  bayoufanpalm:HV('timber (borer-proof pilings), thatch, weaving',['palm heart'],false,'Spongy vascular monocot trunks resist marine borers for skiff-dock pilings; broad fan leaves thatch seasonal camps.'),
+  bayoutupelo:HV('timber (dugout & cooperage wood), carving',[],false,'Light rot-proof wood hollowed for shallow-draft marsh pirogues, net floats and water casks; blossoms yield pale tupelo honey.'),
+  bayoulily:HV('weaving',[],true,'Mucilaginous bulbs sliced by delta skiff-crews as an antiseptic wound poultice.'),
+  chenierglory:HV('cordage (rough binding)',[],true,'Trailing runners arrest wind-blown shell sand on chenier ridges; leaves steeped as a poultice.'),
+  deltalotus:HV('none',['sacred lotus seed','lotus rhizome'],true,'Crisp starchy rhizomes and protein-rich nuts harvested from slackwater ponds; petals dried for calming tea.'),
+  redwaterfern:HV('fertiliser (green manure)',[],false,'Symbiotic nitrogen-fixing water-fern skimmed onto bamboo-rice rafts as rich green fertilizer.'),
+  bayoucattail:HV('thatch, weaving, tinder, insulation',['cattail pollen','rhizome'],false,'Split leaves caulk barrel staves and weave mats; seed-down stuffs waterproof life-floats and catches sparks.'),
+  silicarush:HV('none',[],true,'High-opal jointed stems bundled to polish Ria-amber cabochons, horn lantern panes and skiff oars.'),
   bluffoak:HV('timber (ship frames, heavy joinery), firewood',['acorn'],false,'Dense bluff timber safely above the tsunami trimline; tanbark cures fishing nets.'),
   bluffcedar:HV('timber (rot-proof skiff planking, carving)',[],false,'Light fragrant redcedar split for Ria Sound harvesting skiffs and hórreo granary posts.'),
   bluffcypress:HV('timber (slipway piles, chests)',[],true,'Resinous water-resistant timber for lower bench slipway rails.'),
@@ -216,6 +276,29 @@ var DDELTA=DOUBLEDELTA;
 
  // ---------------------------------------------------------------- procedural fallback cards & PBR materials (swapped to packed library textures)
  const mkCard=(rgb,draw)=>BIO.alphaTex(256,(g,S)=>draw(g,S),rgb);
+ const mkPalmFrondTex=()=>{
+  const t=BIO.alphaTex(512,(g,S)=>{
+   g.lineCap='round';
+   const nPairs=38;
+   for(let i=1;i<=nPairs;i++){
+    const u=i/(nPairs+1),ry=S*(0.05+0.88*u);
+    const env=Math.sin(Math.pow(u,0.68)*Math.PI)*(1-0.12*u),pLen=S*0.40*env;
+    if(pLen<4)continue;
+    for(const side of [-1,1]){
+     const sweep=0.34+0.26*u,ang=side*(Math.PI*0.5-sweep)+(H01(i,side+2,95)-0.5)*0.05;
+     const mx=S*0.5+Math.cos(ang)*pLen*0.56,my=ry+Math.sin(Math.abs(sweep))*pLen*0.42;
+     const tx=clamp(S*0.5+Math.cos(ang)*pLen,0.04*S,0.96*S),ty=clamp(ry+Math.sin(Math.abs(sweep))*pLen*0.88,0.04*S,0.96*S);
+     const hw=S*0.0078*(0.6+0.5*env),lum=Math.round(168+64*env+22*(H01(i,side+5,95)-0.5));
+     g.fillStyle='rgb('+Math.round(lum*0.92)+','+Math.min(255,Math.round(lum*1.05))+','+Math.round(lum*0.74)+')';
+     g.beginPath();g.moveTo(S*0.5,ry-hw);g.quadraticCurveTo(mx,my-hw*0.7,tx,ty);g.quadraticCurveTo(mx,my+hw*0.9,S*0.5,ry+hw);g.closePath();g.fill();
+    }
+   }
+   g.strokeStyle='rgba(168,176,112,0.96)';g.lineWidth=S*0.012;
+   g.beginPath();g.moveTo(S*0.5,S*0.03);g.lineTo(S*0.5,S*0.94);g.stroke();
+  },[154,182,112]);
+  t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+  return t;
+ };
  const TX={
   seapen:mkCard([225,175,185],(g,S)=>{g.strokeStyle='rgba(240,210,215,1)';g.lineWidth=4;g.beginPath();g.moveTo(S*0.5,S*0.96);g.quadraticCurveTo(S*0.46,S*0.5,S*0.52,S*0.08);g.stroke();
    for(let k=0;k<22;k++){const t=0.12+0.78*(k/21),y=S*(1-t),w=S*0.32*Math.sin(t*Math.PI);g.lineWidth=3;g.beginPath();g.moveTo(S*0.5,y);g.lineTo(S*0.5-w,y-S*0.05);g.moveTo(S*0.5,y);g.lineTo(S*0.5+w,y-S*0.05);g.stroke();}}),
@@ -223,7 +306,8 @@ var DDELTA=DOUBLEDELTA;
   hydroid:mkCard([195,215,160],(g,S)=>{g.strokeStyle='rgba(205,225,175,1)';g.lineWidth=2.5;for(let k=0;k<11;k++){const a=-0.8+1.6*(k/10);g.beginPath();g.moveTo(S*0.5,S*0.96);g.quadraticCurveTo(S*0.5+a*S*0.22,S*0.52,S*0.5+a*S*0.42,S*0.14);g.stroke();}}),
   reed:mkCard([195,215,165],(g,S)=>{g.strokeStyle='rgba(210,225,180,1)';g.lineWidth=3;for(let k=0;k<36;k++){const x0=S*(0.24+0.52*((k*37)%100)/100),dx=(-0.5+((k*53)%100)/100)*S*0.34;g.beginPath();g.moveTo(x0,S*0.98);g.quadraticCurveTo(x0+dx*0.4,S*0.5,x0+dx,S*(0.05+0.2*((k*19)%100)/100));g.stroke();}}),
   pad:mkCard([160,200,175],(g,S)=>{g.fillStyle='rgba(185,220,195,1)';g.beginPath();g.arc(S*0.5,S*0.5,S*0.42,0.18,TAU-0.18);g.lineTo(S*0.5,S*0.5);g.closePath();g.fill();}),
-  leaf:mkCard([190,215,180],(g,S)=>{g.fillStyle='rgba(205,228,195,1)';for(let k=0;k<42;k++){const x=S*(0.14+0.72*((k*61)%100)/100),y=S*(0.14+0.72*((k*29+7)%100)/100);g.beginPath();g.ellipse(x,y,S*0.075,S*0.04,((k*41)%100)/100*TAU,0,TAU);g.fill();}})
+  leaf:mkCard([190,215,180],(g,S)=>{g.fillStyle='rgba(205,228,195,1)';for(let k=0;k<42;k++){const x=S*(0.14+0.72*((k*61)%100)/100),y=S*(0.14+0.72*((k*29+7)%100)/100);g.beginPath();g.ellipse(x,y,S*0.075,S*0.04,((k*41)%100)/100*TAU,0,TAU);g.fill();}}),
+  palmFrond:mkPalmFrondTex()
  };
 
  /* Procedural fallback solid detail texture so even with ?mat=proc zero meshes are untextured */
@@ -263,7 +347,8 @@ var DDELTA=DOUBLEDELTA;
   wrack:BIO.leafMat(TX.hydroid,'dd-wrack',{aN:false,swayW:'0.25',swayA:0.02}),
   oakleaf:BIO.leafMat(TX.leaf,'dd-oakleaf',{aN:false,swayW:'0.65',swayA:0.05}),
   cypressleaf:BIO.leafMat(TX.leaf,'dd-cypressleaf',{aN:false,swayW:'0.55',swayA:0.04}),
-  pineleaf:BIO.leafMat(TX.leaf,'dd-pineleaf',{aN:false,swayW:'0.60',swayA:0.05})
+  pineleaf:BIO.leafMat(TX.leaf,'dd-pineleaf',{aN:false,swayW:'0.60',swayA:0.05}),
+  palmFrond:BIO.leafMat(TX.palmFrond,'dd-palmfrond',{aN:false,swayW:'(position.x)',swayA:0.085,alphaTest:0.36})
  };
 
  // ---------------------------------------------------------------- geometry definitions (all with full position, normal, uv, color)
@@ -373,7 +458,78 @@ var DDELTA=DOUBLEDELTA;
  }
  BIO.def('ddamber',BIO.fung.pod({tip:0.45,h:1.15,seg:9,rings:5,seed:55106}),M.amber,{cls:'feature',kind:'gather',label:'Ria-Amber Nodule (gather: ria-amber)',tags:{role:'gather:ria-amber'}});
 
- /* 7. Safe >= +38 m Ria Sound bluff forest species (strictly above tsunami trimline!) */
+ /* 7. Drift-sown coconut palm (Cocos nucifera): ringed J-curved stem segments, 4-nut cluster & 5-seg V-cambered pinnate fronds */
+ function makePalmSegGeo(){
+  const seg=7,rings=8,pos=[],nor=[],uv=[],col=[],idx=[];
+  for(let r=0;r<=rings;r++){
+   const t=r/rings,yy=-0.5+t,taper=lerp(0.54,0.46,t),rib=1+0.065*Math.cos(t*TAU*5),rad=taper*rib;
+   const sh=0.82+0.14*t+0.05*Math.cos(t*TAU*5);
+   for(let s=0;s<=seg;s++){
+    const u=s/seg,ang=u*TAU;
+    pos.push(Math.cos(ang)*rad,yy,Math.sin(ang)*rad);
+    nor.push(Math.cos(ang),0.06,Math.sin(ang));
+    uv.push(u*1.6,t*1.8);
+    col.push(sh,sh*0.98,sh*0.94);
+   }
+  }
+  for(let r=0;r<rings;r++)for(let s=0;s<seg;s++){
+   const a=r*(seg+1)+s,b=a+seg+1;
+   idx.push(a,b,a+1,a+1,b,b+1);
+  }
+  const g=new T3.BufferGeometry();
+  g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return g;
+ }
+ function makeDroopFrondGeo(nSeg,arch,droop,halfW,vFold){
+  const pos=[],nor=[],uv=[],L0=[],C0=[],R0=[];
+  for(let i=0;i<=nSeg;i++){
+   const t=i/nSeg,x=t*(1-0.14*t*t),y=arch*Math.sin(t*1.95)-droop*t*t*t;
+   const env=Math.sin(Math.pow(t,0.62)*Math.PI*0.96)*(0.88+0.12*(1-t)),w=halfW*(0.08+0.92*env),vf=vFold*env;
+   L0.push([x,y-vf,-w,0,t]);C0.push([x,y,0,0.5,t]);R0.push([x,y-vf,w,1,t]);
+  }
+  for(let i=0;i<nSeg;i++){
+   [[L0[i],C0[i],L0[i+1],C0[i+1],-0.28],[C0[i],R0[i],C0[i+1],R0[i+1],0.28]].forEach(s=>{
+    const a=s[0],b=s[1],c=s[2],d=s[3],nz=s[4],nl=Math.hypot(0.15,0.94,nz);
+    [a,b,c,b,d,c].forEach(q=>{pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);nor.push(0.15/nl,0.94/nl,nz/nl);});
+   });
+  }
+  const g=BIO.geo._make(pos,nor,uv);
+  g.userData.card={base:'top',kind:'frond'};
+  return g;
+ }
+ function makeCoconutClusterGeo(){
+  const pos=[],nor=[],uv=[],col=[],idx=[],offs=[[0.14,-0.10,0],[-0.12,-0.12,0.09],[0.02,-0.14,-0.13],[0,-0.24,0.02]];
+  offs.forEach(o=>{
+   const s=new T3.IcosahedronGeometry(0.13,1),p=s.attributes.position,n=s.attributes.normal,u=s.attributes.uv,b=pos.length/3;
+   for(let i=0;i<p.count;i++){
+    pos.push(p.getX(i)+o[0],p.getY(i)*1.22+o[1],p.getZ(i)+o[2]);
+    nor.push(n.getX(i),n.getY(i),n.getZ(i));
+    uv.push(u?u.getX(i):0.5,u?u.getY(i):0.5);
+    const sh=0.76+0.24*clamp(p.getY(i)/0.13*0.5+0.5,0,1);
+    col.push(sh,sh,sh*0.92);
+   }
+   if(s.index){const ix=s.index.array;for(let i=0;i<ix.length;i++)idx.push(b+ix[i]);}
+   else for(let i=0;i<p.count;i++)idx.push(b+i);
+  });
+  const g=new T3.BufferGeometry();
+  g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+  g.setIndex(idx);
+  return g;
+ }
+ const DD_PALM_FROND_GEO=makeDroopFrondGeo(5,0.34,0.42,0.28,0.075);
+ BIO.def('ddpalmtrunk',makePalmSegGeo(),M.bark,{label:'Drift-Sown Coconut Palm (ringed trunk)'});
+ BIO.def('ddpalm',DD_PALM_FROND_GEO,M.palmFrond,{label:'Drift-Sown Coconut Palm (drooping pinnate frond)'});
+ BIO.def('ddcoconut_nut',makeCoconutClusterGeo(),M.culm,{label:'Drift-Sown Coconut Palm (nut cluster)'});
+
+ /* 8. Safe >= +38 m Ria Sound bluff forest species (strictly above tsunami trimline!) */
  BIO.def('ddoaktrunk',BIO.fung.stalk({r0:0.085,r1:0.042,seg:7,rings:5,bend:0.14}),M.bark,{label:'Maritime Bluff Oak (trunk)'});
  BIO.def('ddoakcrown',BIO.geo.clump(),M.oakleaf,{label:'Maritime Bluff Oak (crown)'});
  BIO.def('ddcedartrunk',BIO.fung.stalk({r0:0.075,r1:0.025,seg:7,rings:6,bend:0.06}),M.cedarbark,{label:'Ria Bluff Redcedar (trunk)'});
@@ -384,6 +540,160 @@ var DDELTA=DOUBLEDELTA;
  BIO.def('ddpinecrown',BIO.geo.clump(),M.pineleaf,{label:'Maritime Stone-Pine (crown)'});
  BIO.def('ddbluffculm',BIO.fung.stalk({r0:0.032,r1:0.018,seg:6,rings:6,bend:0.14}),M.culm,{label:'Bluff Timber-Bamboo (culm)'});
  BIO.def('ddbluffleaf',BIO.geo.clump(),M.bambooleaf,{label:'Bluff Timber-Bamboo (crown)'});
+
+ const recTree=(key,x,y,z,r,h)=>{const S=byKey[key];if(S&&BIO.record)BIO.record({name:S.name,key:S.key,kind:'tree',x,y,z,r,h,tags:S.tags});};
+ DOUBLEDELTA.recTree=recTree;
+
+ DOUBLEDELTA.growCoconut=function(x,y,z,H,yaw,lean,tSeed,lv){
+  const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const r0=clamp(0.22+H*0.006,0.22,0.34);
+  const dx=-Math.cos(yaw)*Math.sin(lean)*H,dz=Math.sin(yaw)*Math.sin(lean)*H;
+  const baseY=y-0.26,ty=y+H*Math.cos(lean)*0.97,tx=x+dx,tz=z+dz;
+  /* Register in KTAGS strictly before drawing */
+  recTree('coconut',x,y,z,Math.max(3.6,Math.hypot(dx,dz)+2.0),H+2.4);
+  const trunkCol=C(PAL.palmtrunk[(tSeed>>>0)%PAL.palmtrunk.length]);
+  const rSeg=[r0*1.08,r0*0.88,r0*0.73];
+  const pts=[];
+  for(let i=0;i<=3;i++){
+   const t=i/3,ht=Math.pow(t,0.78);
+   pts.push([x+dx*ht,baseY+(ty+0.04-baseY)*t,z+dz*ht]);
+  }
+  BIO.tree(x,z,()=>{
+   for(let i=0;i<3;i++){
+    const a=pts[i],b=pts[i+1];
+    const ex=i>0?[a[0]-(b[0]-a[0])*0.05,a[1]-(b[1]-a[1])*0.05,a[2]-(b[2]-a[2])*0.05]:a;
+    BIO.beam('ddpalmtrunk',ex,b,rSeg[i],rSeg[i],trunkCol);
+   }
+   const nutS=0.95+0.25*h(1,2);
+   BIO.put('ddcoconut_nut',[tx,ty-0.10,tz],qEuler(0,yaw+1.1,0),[nutS,nutS,nutS],C(PAL.coconutNut[(tSeed>>>0)%PAL.coconutNut.length]));
+   const nF=lv!=null&&lv<1?9:13,gold=2.399963,fLen=clamp(2.5+H*0.11,2.8,4.3);
+   for(let k=0;k<nF;k++){
+    const age=k/(nF-1),az=yaw+k*gold+0.16*(h(k+3,1)-0.5);
+    const pitch=lerp(0.78,-0.32,Math.pow(age,0.88))+0.08*(h(k+3,2)-0.5);
+    const Lf=fLen*(age<0.2?0.82:age>0.82?0.88:1)*(0.92+0.16*h(k+3,3));
+    const cHex=age>0.80?PAL.palmOld[k%PAL.palmOld.length]:PAL.palm[(k+(tSeed>>>0))%PAL.palm.length];
+    BIO.put('ddpalm',[tx,ty+0.04-0.14*age,tz],qEuler((h(k+3,4)-0.5)*0.14,-az,pitch),[Lf,Lf*0.95,Lf*1.08],C(cHex));
+   }
+  });
+ };
+
+ /* 9. 10-species diversity pass: chenier screwpine, sea-hibiscus, palmetto fan-palm, bayou knee-tupelo, spider-lily, morning-glory, delta lotus, red azolla, cattail & silica rush */
+ const fanPalmTex=(function(){
+  const t=BIO.alphaTex(512,(g,S)=>{
+   g.lineCap='round';
+   for(let r=0;r<19;r++){
+    const a=-1.18+2.36*(r/18),len=S*(0.52+0.34*Math.cos(a*0.95));
+    const tx=clamp(S*0.5+Math.sin(a)*len,0.05*S,0.95*S),ty=clamp(S*0.08+Math.cos(a)*len,0.05*S,0.95*S);
+    const lum=Math.round(166+48*Math.cos(a*0.8));
+    g.strokeStyle='rgb('+Math.round(lum*0.90)+','+Math.min(255,Math.round(lum*1.06))+','+Math.round(lum*0.72)+')';
+    g.lineWidth=S*0.022;
+    g.beginPath();g.moveTo(S*0.5,S*0.07);g.quadraticCurveTo(S*0.5+Math.sin(a)*len*0.48,S*0.08+Math.cos(a)*len*0.52,tx,ty);g.stroke();
+   }
+  },[148,180,108]);
+  t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+  return t;
+ })();
+ const bloomTex=(function(){
+  const t=BIO.alphaTex(256,(g,S)=>{
+   for(let p=0;p<6;p++){
+    const a=(p/6)*TAU,cx=S*0.5+Math.cos(a)*S*0.18,cy=S*0.5+Math.sin(a)*S*0.18;
+    g.fillStyle='rgba(245,238,236,0.96)';
+    g.beginPath();g.ellipse(cx,cy,S*0.17,S*0.085,a,0,TAU);g.fill();
+   }
+   g.fillStyle='rgba(242,208,92,0.98)';g.beginPath();g.arc(S*0.5,S*0.5,S*0.075,0,TAU);g.fill();
+  },[238,225,215]);
+  t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+  return t;
+ })();
+ M.fanPalmFrond=BIO.leafMat(fanPalmTex,'dd-fanpalm',{aN:false,swayW:'(position.x)',swayA:0.065,alphaTest:0.36});
+ M.bloomCard=BIO.leafMat(bloomTex,'dd-bloom',{aN:false,swayW:'0.55',swayA:0.05,alphaTest:0.36});
+
+ BIO.def('dd_pandan_fol',BIO.geo.clump(),M.sedge,{label:'Delta Chenier Screwpine strap rosette'});
+ BIO.def('dd_pandan_fruit',BIO.fung.cap({form:'dome',h:0.38,seg:8,rings:3,lump:0.22,under:'none',uv:'planar',seed:55121}),M.culm,{label:'Pandanus compound fruit key'});
+ BIO.def('dd_hibiscus_fol',BIO.geo.clump(),M.oakleaf,{label:'Bayou Bast Sea-Hibiscus heart leaves'});
+ BIO.def('dd_hibiscus_bloom',BIO.geo.clump(),M.bloomCard,{label:'Bayou Bast Sea-Hibiscus yellow cup blooms'});
+ BIO.def('dd_fanpalm_frond',makeDroopFrondGeo(4,0.28,0.22,0.38,0.07),M.fanPalmFrond,{label:'Levee Palmetto Fan-Palm costapalmate frond'});
+ BIO.def('dd_tupelo_fol',BIO.geo.clump(),M.cypressleaf,{label:'Buttressed Bayou Knee-Tupelo crown'});
+ BIO.def('dd_tupelo_knee',BIO.fung.stalk({r0:0.11,r1:0.025,seg:6,rings:4,bend:0.08}),M.bark,{label:'Bayou Tupelo conical breathing knee'});
+ BIO.def('dd_lily_fol',BIO.geo.clump(),M.sedge,{label:'Levee White Spider-Lily strap rosette'});
+ BIO.def('dd_lily_bloom',BIO.geo.mat(0.65,5),M.bloomCard,{label:'Levee White Spider-Lily blossom'});
+ BIO.def('dd_glory_mat',BIO.geo.mat(1.05,6),M.oakleaf,{label:'Shell-Ridge Morning-Glory runner vine'});
+ BIO.def('dd_glory_bloom',BIO.geo.mat(0.68,5),M.bloomCard,{label:'Shell-Ridge Morning-Glory rose trumpets'});
+ BIO.def('dd_lotus_leaf',BIO.geo.mat(0.82,6),M.lotuspad,{label:'Sacred Pink Delta-Lotus emergent pad'});
+ BIO.def('dd_lotus_bloom',BIO.geo.clump(),M.bloomCard,{label:'Sacred Pink Delta-Lotus blossom'});
+ BIO.def('dd_azolla_mat',BIO.geo.mat(1.15,6),M.lotuspad,{label:'Velvet Floating Azolla-Mat'});
+ BIO.def('dd_cattail_blade',BIO.geo.clump(),M.reed,{label:'Giant Delta Reed-Mace sword blades'});
+ BIO.def('dd_cattail_spike',BIO.fung.stalk({r0:0.045,r1:0.042,seg:6,rings:3}),M.bark,{label:'Giant Delta Reed-Mace velvety seed spike'});
+ BIO.def('dd_silicarush',BIO.geo.clump(),M.reed,{label:'Distributary Silica Scour-Rush jointed stems'});
+
+ DOUBLEDELTA.growFanPalm=function(x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale,h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const H=(4.4+3.6*h(1,1))*sc,lean=0.06+0.12*h(1,2),yaw=h(1,3)*TAU;
+  const dx=-Math.cos(yaw)*Math.sin(lean)*H,dz=Math.sin(yaw)*Math.sin(lean)*H,tx=x+dx,tz=z+dz,ty=y+H*Math.cos(lean);
+  recTree('bayoufanpalm',x,y,z,2.8*sc,H+1.8);
+  const trunkCol=C(PAL.palmtrunk[(tSeed>>>0)%PAL.palmtrunk.length]);
+  const fLen=clamp(1.7+H*0.14,1.8,2.9);
+  BIO.tree(x,z,()=>{
+   BIO.beam('ddpalmtrunk',[x,y-0.22,z],[x+dx*0.48,y+H*0.5,z+dz*0.48],0.24*sc,0.20*sc,trunkCol);
+   BIO.beam('ddpalmtrunk',[x+dx*0.45,y+H*0.47,z+dz*0.45],[tx,ty+0.04,tz],0.20*sc,0.17*sc,trunkCol);
+   for(let k=0;k<9;k++){
+    const az=yaw+k*2.399963,age=k/8,pitch=lerp(0.68,-0.22,age);
+    const cHex=age>0.78?PAL.palmOld[k%PAL.palmOld.length]:PAL.palm[(k+(tSeed>>>0))%PAL.palm.length];
+    BIO.put('dd_fanpalm_frond',[tx,ty+0.02-0.08*age,tz],qEuler(0,-az,pitch),[fLen,fLen*0.92,fLen],C(cHex));
+   }
+  });
+  return{H};
+ };
+
+ DOUBLEDELTA.growChenierWoody=function(kind,x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale,h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const isPan=kind==='chenierpandan';
+  const H=(isPan?3.4+2.8*h(1,1):2.5+2.1*h(1,1))*sc;
+  recTree(kind,x,y,z,1.9*sc,H+1.0);
+  const stemCol=C(0x7c6e5c),leafCol=C(isPan?0x50843c:0x4a8a3c);
+  BIO.tree(x,z,()=>{
+   if(isPan){
+    for(let p=0;p<3;p++){
+     const pa=(p/3)*TAU+0.3*h(p+2,1);
+     BIO.beam('ddpalmtrunk',[x,y+H*0.28,z],[x+Math.cos(pa)*0.55*sc,y-0.16,z+Math.sin(pa)*0.55*sc],0.055*sc,0.04*sc,stemCol);
+    }
+   }
+   for(let s=0;s<3;s++){
+    const az=(s/3)*TAU+0.4*(h(s+5,1)-0.5),sp=(0.38+0.44*h(s+5,2))*sc;
+    const tx=x+Math.cos(az)*sp,tz=z+Math.sin(az)*sp,ty=y+H*(0.78+0.20*(s/3));
+    BIO.beam('ddpalmtrunk',[x,y-0.16,z],[tx,ty,tz],0.07*sc,0.035*sc,stemCol);
+    const sz=(1.05+0.42*h(s+5,3))*sc;
+    BIO.put(isPan?'dd_pandan_fol':'dd_hibiscus_fol',[tx,ty-0.04,tz],qEuler(0,az,0),[sz,sz*0.82,sz],leafCol);
+    if(isPan&&s===0)BIO.put('dd_pandan_fruit',[tx,ty-0.14,tz],qEuler(0,az,0),[0.34*sc,0.38*sc,0.34*sc],C(0xdc7224));
+    if(!isPan)BIO.put('dd_hibiscus_bloom',[tx,ty-0.02,tz],qEuler(0,az+0.9,0),[sz*0.52,sz*0.44,sz*0.52],C(0xf2ce38));
+   }
+  });
+  return{H};
+ };
+
+ DOUBLEDELTA.growBayouTupelo=function(x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale,h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const H=(5.2+4.4*h(1,1))*sc;
+  recTree('bayoutupelo',x,y,z,3.0*sc,H+1.6);
+  const barkCol=C(PAL.bark[(tSeed>>>0)%PAL.bark.length]),leafCol=C(0x467448);
+  BIO.tree(x,z,()=>{
+   BIO.beam('ddpalmtrunk',[x,y-0.30,z],[x,y+H*0.28,z],0.38*sc,0.20*sc,barkCol);
+   BIO.beam('ddpalmtrunk',[x,y+H*0.24,z],[x,y+H*0.66,z],0.20*sc,0.12*sc,barkCol);
+   for(let b=0;b<3;b++){
+    const az=(b/3)*TAU+0.4*h(b+3,1),span=(0.95+0.65*h(b+3,2))*sc;
+    const bx=x+Math.cos(az)*span,bz=z+Math.sin(az)*span,by=y+H*(0.78+0.18*h(b+3,3));
+    BIO.beam('ddpalmtrunk',[x,y+H*0.60,z],[bx,by,bz],0.09*sc,0.04*sc,barkCol);
+    const cSz=(1.55+0.55*h(b+3,4))*sc;
+    BIO.put('dd_tupelo_fol',[bx,by-0.04,bz],qEuler(0,az,0),[cSz,cSz*0.72,cSz],leafCol);
+   }
+   for(let k=0;k<5;k++){
+    const ka=(k/5)*TAU+0.3*h(k+9,1),kr=(0.95+1.15*h(k+9,2))*sc;
+    const kx=x+Math.cos(ka)*kr,kz=z+Math.sin(ka)*kr,ky=BIO.host.terrainH(kx,kz);
+    BIO.put('dd_tupelo_knee',[kx,ky-0.06,kz],qEuler(0,ka,0),[1.1*sc,(0.45+0.45*h(k+9,3))*sc,1.1*sc],barkCol);
+   }
+  });
+  return{H};
+ };
 
  /* Swap every material slot to its packed library texture (materials.json -> tex/pack.json) */
  DOUBLEDELTA.SWAP=BIO.libSwap('doubledelta',M);

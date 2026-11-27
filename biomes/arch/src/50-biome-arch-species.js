@@ -959,11 +959,11 @@ ARCHB.growCasuarina=function(x,y,z,H,tSeed){
 
     const cHex1=PAL.casuar2[(sIdx+(tSeed>>>0))%PAL.casuar2.length];
     const cHex2=PAL.casuar2[(sIdx+1+(tSeed>>>0))%PAL.casuar2.length];
-    const padS=clamp(span*.82,1.35,3.4);
+    const padS=clamp(span*.94,1.35,6.2);
     const nx=Math.cos(az)*.4,nz=Math.sin(az)*.4;
     /* Feathery crown sprays socketed directly onto mid-bough and tip (zero floating!) */
-    BIO.put('arcas',[mx,my,mz],qEuler(0,az+.9,0),[padS*.82,padS*.56,padS*.82],C(cHex1),{n:[nx*.6,.92,nz*.6]});
-    BIO.put('arcas',[ex,ey,ez],qEuler(0,az,0),[padS,padS*.54,padS],C(cHex2),{n:[nx,.86,nz]});
+    BIO.put('arcas',[mx,my,mz],qEuler(0,az+.9,0),[padS*.84,padS*.58,padS*.84],C(cHex1),{n:[nx*.6,.92,nz*.6]});
+    BIO.put('arcas',[ex,ey,ez],qEuler(0,az,0),[padS,padS*.56,padS],C(cHex2),{n:[nx,.86,nz]});
 
     /* Pendulous weeping Casuarina needle curtains hanging directly from the bough & tip */
     const drW=clamp(span*.44,.85,1.85),drL=clamp(H*(.14+.06*h(30+sIdx,3)),1.1,2.35);
@@ -975,7 +975,7 @@ ARCHB.growCasuarina=function(x,y,z,H,tSeed){
   }
 
   /* Feathery crown leader spray at bole apex */
-  const top=bole[bole.length-1],topS=clamp(H*.22,1.5,3.2);
+  const top=bole[bole.length-1],topS=clamp(H*.28,1.5,5.8);
   const topHex=PAL.casuar2[(tSeed>>>0)%PAL.casuar2.length];
   BIO.put('arcas',[top.x,top.y,top.z],qEuler(0,yaw,0),[topS,topS*.62,topS],C(topHex),{n:[0,1,0]});
  });
@@ -1056,13 +1056,13 @@ ARCHB.growKauri=function(x,y,z,H,tSeed,lv){
     const gW=.55+.35*h(20+b,1),gH=.85+.75*h(20+b,2);
     BIO.put('arkauri_gum',[mx,my-br0*.35,mz],qEuler(0,az,0),[gW,gH,gW],C(PAL.kauriGum[(b+(tSeed>>>0))%PAL.kauriGum.length]));
    }
-   const pS=clamp(H*(.22+.06*h(30+b,1)),1.4,3.4),lHex=PAL.kauriLeaf[(b+(tSeed>>>0))%PAL.kauriLeaf.length];
+   const pS=clamp(H*(.28+.06*h(30+b,1)),1.4,6.8),lHex=PAL.kauriLeaf[(b+(tSeed>>>0))%PAL.kauriLeaf.length];
    BIO.put('arkauri_fol',[ex,ey,ez],qEuler(0,az,0),[pS,pS*.62,pS],C(lHex),{n:[Math.cos(az)*.35,.9,Math.sin(az)*.35]});
-   if(b%2===1)BIO.put('arkauri_fol',[mx,my+.2,mz],qEuler(0,az+1.1,0),[pS*.78,pS*.54,pS*.78],C(lHex),{n:[0,1,0]});
+   if(b%2===1)BIO.put('arkauri_fol',[mx,my+.2,mz],qEuler(0,az+1.1,0),[pS*.82,pS*.56,pS*.82],C(lHex),{n:[0,1,0]});
   }
   const apPts=BIO.flareJoin([{x:top.x,y:top.y,z:top.z,r:top.r*.68},{x:top.x,y:y+H,z:top.z,r:.06}],{parentR:top.r,k:1.35,sink:.4,len:1.2});
   BIO.tube('ar_araucaria_bark',apPts,barkHex,{seg:5});
-  const apS=clamp(H*.26,1.6,3.8);
+  const apS=clamp(H*.32,1.6,7.2);
   BIO.put('arkauri_fol',[top.x,y+H,top.z],qEuler(0,yaw,0),[apS,apS*.62,apS],C(PAL.kauriLeaf[(tSeed>>>0)%PAL.kauriLeaf.length]),{n:[0,1,0]});
  });
 };
@@ -1112,7 +1112,7 @@ ARCHB.growTreeFern=function(x,y,z,H,tSeed,lv){
  BIO.tree(x,z,()=>{
   BIO.put('artreefern_trunk',[x,y-.18,z],qEuler(0,yaw,lean),[r0/.09,H,r0/.09],C(PAL.fernBark[(tSeed>>>0)%PAL.fernBark.length]));
   const tx=x-Math.cos(yaw)*Math.sin(lean)*H,ty=y+H*Math.cos(lean)*.97,tz=z+Math.sin(yaw)*Math.sin(lean)*H;
-  const nF=lv!=null&&lv<1?7:11,fLen=clamp(H*.56,1.55,3.1);
+  const nF=lv!=null&&lv<1?7:11,fLen=clamp(H*.56,1.55,3.6);
   for(let f=0;f<nF;f++){
    const az=yaw+(f/nF)*TAU+.18*(h(f+3,1)-.5),pitch=.26+.28*(f%2)+.10*(h(f+3,2)-.5);
    const lHex=PAL.fernLeaf[(f+(tSeed>>>0))%PAL.fernLeaf.length];
@@ -1152,15 +1152,15 @@ ARCHB.growRata=function(x,y,z,H,tSeed,flw){
    const bx=sp.x+Math.cos(ba)*span,by=sp.y+rise,bz=sp.z+Math.sin(ba)*span;
    const bPts=BIO.flareJoin([{x:sp.x,y:sp.y,z:sp.z,r:sp.r*.52},{x:mx,y:my,z:mz,r:sp.r*.34},{x:bx,y:by,z:bz,r:.04}],{parentR:sp.r,k:1.45,sink:.5,len:1.5});
    BIO.tube('ar_ohia_bark',bPts,barkHex,{seg:5});
-   const pS=clamp(H*.28,1.5,3.5),lHex=PAL.rataLeaf[(b+(tSeed>>>0))%PAL.rataLeaf.length];
+   const pS=clamp(H*.35,1.5,6.8),lHex=PAL.rataLeaf[(b+(tSeed>>>0))%PAL.rataLeaf.length];
    BIO.put('arrata_fol',[bx,by,bz],qEuler(0,ba,0),[pS,pS*.58,pS],C(lHex),{n:[Math.cos(ba)*.35,.9,Math.sin(ba)*.35]});
    if(flw&&h(30+b,1)<.6){
     const blS=.46+.28*h(30+b,2);
     BIO.put('arohia_bloom',[bx,by+pS*.24,bz],qEuler(0,ba*1.2,0),[blS,blS*.88,blS],C(PAL.ohiaFlower[(b+(tSeed>>>0))%PAL.ohiaFlower.length]));
    }
   }
-  const tp=rings[nR],tS=clamp(H*.30,1.6,3.6);
-  BIO.put('arrata_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.56,tS],C(PAL.rataLeaf[(tSeed>>>0)%PAL.rataLeaf.length]),{n:[0,1,0]});
+  const tp=rings[nR],tS=clamp(H*.37,1.6,7.0);
+  BIO.put('arrata_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.58,tS],C(PAL.rataLeaf[(tSeed>>>0)%PAL.rataLeaf.length]),{n:[0,1,0]});
  });
 };
 
@@ -1178,9 +1178,9 @@ ARCHB.growPaperbark=function(x,y,z,H,tSeed){
    const tx=x+Math.cos(az)*sp,ty=y+sh,tz=z+Math.sin(az)*sp,sr=rBase*(s===0?.82:.65);
    const pts=BIO.flareJoin([{x,y:y-.22,z,r:rBase},{x:m1x,y:m1y,z:m1z,r:sr*.68},{x:tx,y:ty,z:tz,r:Math.max(.03,sr*.28)}],{parentR:rBase*1.05,k:1.35,sink:.4,len:1.4});
    BIO.tube('ar_paper_bark',pts,barkHex,{seg:6});
-   const pS=clamp(H*(.26+.07*h(20+s,1)),1.3,3.0),lHex=PAL.paperLeaf[(s+(tSeed>>>0))%PAL.paperLeaf.length];
+   const pS=clamp(H*(.32+.07*h(20+s,1)),1.3,5.8),lHex=PAL.paperLeaf[(s+(tSeed>>>0))%PAL.paperLeaf.length];
    BIO.put('arpaperbark_fol',[tx,ty,tz],qEuler(0,az,0),[pS,pS*.66,pS],C(lHex),{n:[Math.cos(az)*.28,.94,Math.sin(az)*.28]});
-   BIO.put('arpaperbark_fol',[m1x,m1y+sh*.16,m1z],qEuler(0,az+1.2,0),[pS*.82,pS*.58,pS*.82],C(lHex),{n:[0,1,0]});
+   BIO.put('arpaperbark_fol',[m1x,m1y+sh*.16,m1z],qEuler(0,az+1.2,0),[pS*.84,pS*.60,pS*.84],C(lHex),{n:[0,1,0]});
   }
  });
 };
@@ -1203,11 +1203,11 @@ ARCHB.growTamanu=function(x,y,z,H,tSeed){
    const ex=sp.x+Math.cos(ba)*span,ey=sp.y+H*(.12+.08*h(10+b,3)),ez=sp.z+Math.sin(ba)*span;
    const bPts=BIO.flareJoin([{x:sp.x,y:sp.y,z:sp.z,r:sp.r*.52},{x:(sp.x+ex)*.5,y:(sp.y+ey)*.5+.3,z:(sp.z+ez)*.5,r:sp.r*.34},{x:ex,y:ey,z:ez,r:.04}],{parentR:sp.r,k:1.45,sink:.5,len:1.5});
    BIO.tube('ar_ohia_bark',bPts,barkHex,{seg:5});
-   const pS=clamp(H*.32,1.7,3.8),lHex=PAL.tamanuLeaf[(b+(tSeed>>>0))%PAL.tamanuLeaf.length];
-   BIO.put('artamanu_fol',[ex,ey,ez],qEuler(0,ba,0),[pS,pS*.60,pS],C(lHex),{n:[Math.cos(ba)*.32,.92,Math.sin(ba)*.32]});
+   const pS=clamp(H*.38,1.7,7.4),lHex=PAL.tamanuLeaf[(b+(tSeed>>>0))%PAL.tamanuLeaf.length];
+   BIO.put('artamanu_fol',[ex,ey,ez],qEuler(0,ba,0),[pS,pS*.62,pS],C(lHex),{n:[Math.cos(ba)*.32,.92,Math.sin(ba)*.32]});
   }
-  const tp=bole[nR],tS=clamp(H*.34,1.8,4.0);
-  BIO.put('artamanu_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.62,tS],C(PAL.tamanuLeaf[(tSeed>>>0)%PAL.tamanuLeaf.length]),{n:[0,1,0]});
+  const tp=bole[nR],tS=clamp(H*.40,1.8,7.6);
+  BIO.put('artamanu_fol',[tp.x,tp.y,tp.z],qEuler(0,yaw,0),[tS,tS*.64,tS],C(PAL.tamanuLeaf[(tSeed>>>0)%PAL.tamanuLeaf.length]),{n:[0,1,0]});
  });
 };
 

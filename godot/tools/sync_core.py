@@ -35,6 +35,8 @@ PAIRS += [(f"core/kits/{f}", f"godot/tests/kits/{f}") for f in ("kkit.gd", "kkit
 PAIRS += [("kits/kits-manifest.json", "godot/data/kits/kits-manifest.json")]
 # core/water/tide: KratorTide (KTIDE) GDScript 4.7.2 twin, headless test and 92-day golden vectors
 PAIRS += [(f"core/water/tide/{f}", f"godot/tests/water/{f}") for f in ("ktide.gd", "ktide_test.gd", "golden-tide.json")]
+# core/water/ext: KratorTsunami (WATER.tsunami) GDScript 4.7.2 twin, headless test and golden vectors
+PAIRS += [(f"core/water/ext/{f}", f"godot/tests/water/{f}") for f in ("ktsunami.gd", "ktsunami_test.gd", "golden-tsunami.json")]
 # core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.

@@ -253,7 +253,43 @@ var DROWN_PHYS = (function () {
     };
   }
 
-  /* 7. Interactive host mode table ([Low Water] / [Drawdown] / [Swell] / [Mean Tide]) */
+  /* 7. Sheltered leeward drift-coconut strand & pH 5.0-8.8 geochemical gate */
+  function coconutStrandAt(o) {
+    o = o || {};
+    var elevM = o.elevM == null ? 3.5 : o.elevM;
+    var ultra = o.ultramaficByte == null ? 255 : o.ultramaficByte;
+    var tidalRangeM = o.tidalRangeM == null ? 1.5 : o.tidalRangeM;
+    var tideHighM = tidalRangeM * 0.5;
+    var clearHighM = +(elevM - tideHighM).toFixed(2);
+    var brucite01 = o.brucite01 == null ? 0 : o.brucite01;
+    var bruciteActive = !!o.bruciteActive;
+    var pH = o.pH == null
+      ? (bruciteActive || brucite01 >= 0.08 ? +(10.6 + 0.9 * clamp(brucite01, 0, 1)).toFixed(2) : (ultra >= 128 ? 8.15 : 7.05))
+      : +o.pH;
+    var shear = o.waveShearPa == null ? 110 : o.waveShearPa;
+    var shelter = o.shelter01 == null ? clamp(1 - shear / 420, 0, 1) : o.shelter01;
+    var slope = o.slope == null ? 0.08 : o.slope;
+    var trim = o.trimElevM == null ? 48.0 : o.trimElevM;
+    var isHorst = !!o.isHorstSkerry;
+
+    var phOk = pH >= 5.0 && pH <= 8.8 && !bruciteActive && brucite01 < 0.08;
+    var dryOk = clearHighM >= 1.45 && elevM >= 2.25;
+    var zoneOk = isHorst
+      ? ((elevM <= 15.5 && shelter >= 0.72) || (elevM >= trim + 0.5 && elevM <= 68.0))
+      : (elevM <= 26.0 && shelter >= 0.36);
+    var strandOk = phOk && dryOk && zoneOk && shear <= 225 && slope <= 0.48;
+    var suitability01 = strandOk
+      ? +(clamp(shelter * (1 - 0.55 * smooth(0.22, 0.48, slope)) * smooth(1.4, 2.8, clearHighM), 0, 1)).toFixed(3)
+      : 0;
+    return {
+      strandOk: strandOk,
+      pH: pH,
+      clearHighM: clearHighM,
+      suitability01: suitability01
+    };
+  }
+
+  /* 8. Interactive host mode table ([Low Water] / [Drawdown] / [Swell] / [Mean Tide]) */
   function tideState(mode) {
     var m = mode || 'Mean Tide';
     if (m === 'Low Water') {
@@ -280,6 +316,7 @@ var DROWN_PHYS = (function () {
     snagLagoonAt: snagLagoonAt,
     shoalFloraAt: shoalFloraAt,
     ecotoneAt: ecotoneAt,
+    coconutStrandAt: coconutStrandAt,
     tideState: tideState
   };
 })();
@@ -295,6 +332,9 @@ if (typeof CROPS !== 'undefined' && CROPS && CROPS.BIOMES) {
       highskerry: { warmth: [3, 4], arid: [3, 4] }
     }
   };
+  if (CROPS.BY_ID && CROPS.BY_ID.coconut && Array.isArray(CROPS.BY_ID.coconut.home) && CROPS.BY_ID.coconut.home.indexOf('drownlands') < 0) {
+    CROPS.BY_ID.coconut.home.push('drownlands');
+  }
 }
 
 /* Six amphibious, cetacean-commensal & shoal fauna records ([G data], PLAN.md section 5) */

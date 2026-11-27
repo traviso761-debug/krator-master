@@ -223,6 +223,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hazard/22-core-hazard-env.js` | 28.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.crust/under, KHAZ.night (bindClock, bindWind), KHAZ.front (flood, charge, bindHerd), KHAZ.ENV builders; test-hazard-env.js; GODOT.md "Crusts, night and fronts" |
 | `hazard/22-core-hazard-tunnel.js` | 20.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/23-core-hazard-tide.js` | 8.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.bindTide, tideSample, KHAZ.tide (macrotidal bench submergence & Ghost-Tsunami drawdown warning), KHAZ.race (reversing flood/ebb sluice & narrows race), KHAZ.TIDE builders; test-hazard-tide.js |
+| `hazard/24-core-hazard-tsunami.js` | 13.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.bindTsunami, tsunamiSample, KHAZ.tsunami (seismic/drawdown warning, bore_impact, inundated, backwash_scour, safe_refuge above trimlineM), directional surge/backwash drift, KHAZ.TSUNAMI.zone; test-hazard-tsunami.js |
 | `host/90-host-camera.js` | 11.7 | [web] | 7 | 0 | 0 | 10 | 0 | 2 | 0 | 0 | 1 | 0 | 0 |  |
 | `host/91-host-loop.js` | 8.2 | [web] | 3 | 0 | 1 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/91b-host-follow.js` | 13.1 | [web] | 5 | 0 | 1 | 3 | 1 | 8 | 0 | 0 | 0 | 0 | 0 |  |
@@ -427,6 +428,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/ext/62b-core-water-flood-draw.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 | the flood ribbon lifted to the level in the vertex shader, on drawFlow's look; GLSL checked against the twin, not judged on a GPU |
 | `water/ext/63-core-water-tide.js` | 3.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.tide two-basin tidal weir & turbine head solver |
 | `water/ext/63b-core-water-tide-draw.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.bindTideMeshes live tidal surface updater |
+| `water/ext/64-core-water-tsunami.js` | 23.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.tsunami seamount & ghost tsunami wave-train solver (tremor, drawdown, bore, runup, backwash, seiche); ktsunami.gd twin (golden-tsunami.json); test-tsunami.js |
+| `water/ext/64b-core-water-tsunami-draw.js` | 24.4 | [draw] | 0 | 0 | 5 | 1 | 2 | 5 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.drawTsunami (seaMesh drawdown, 3D curling boreMesh, terrain-conforming surgeMesh, mistGroup) & WATER.mountTsunamiUI |
 | `water/farbed/53-core-water-farbed.js` | 5.8 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the water shader's far bed (a baked depth texture past the shore window); the bake is data, the GLSL Godot's water shader rewrites |
 | `water/geyser/52-core-water-geyser.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52b-core-water-geyser-draw.js` | 13.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 |  |

@@ -1,4 +1,9 @@
 {
-  "core": {"23-core-water-tide.js": "core/water/tide/23-core-water-tide.js"},
+  "core": {
+    "23-core-water-tide.js": "core/water/tide/23-core-water-tide.js",
+    "24-core-hazard-tsunami.js": "core/hazard/24-core-hazard-tsunami.js",
+    "64-core-water-tsunami.js": "core/water/ext/64-core-water-tsunami.js",
+    "64b-core-water-tsunami-draw.js": "core/water/ext/64b-core-water-tsunami-draw.js"
+  },
   "tides": {"box": [226, 232, 246, 252], "name": "KTIDE_DATA"}
 }

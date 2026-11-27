@@ -16,7 +16,7 @@ const VIEWS = {};
   let x = ex, y = ey, z = ez;
   for (let pass = 0; pass < 10; pass++) {
    let moved = false;
-   const trees = BATTER.TREES || [];
+   const trees = (BATTER.TREES || []).concat(BATTER.PALMS || []);
    for (let i = 0; i < trees.length; i++) {
     const T = trees[i];
     if (T.lv === 0) continue;
@@ -171,8 +171,8 @@ const HCHK = {
  speciesHarvest: function(spList){
   const miss = spList.filter(function(s){ return !s.tags || !s.tags.harvest; }).map(function(s){ return s.key; });
   return {
-   ok: spList.length === 8 && miss.length === 0,
-   detail: miss.length ? 'missing harvest: ' + miss.join(',') : '8 canonical species with complete HV botany tags'
+   ok: spList.length === 25 && miss.length === 0,
+   detail: miss.length ? 'missing harvest: ' + miss.join(',') : '25 canonical species with complete HV botany tags'
   };
  },
 
@@ -265,6 +265,22 @@ const HCHK = {
    ok: m2Ok && drawnOk && shadOff,
    detail: 'M2 km1RoughAA=' + m2Ok + ', KDRAWN sources=' + (drawnSrcs ? drawnSrcs.length : 0) + ', shadowOffAtLoad=' + shadOff
   };
+ },
+
+ coconutWaveShadow: function(logList, exposedWNW, stKey){
+  const palms = logList.filter(function(r){ return r.key === 'coconut'; });
+  if (exposedWNW || stKey === 'plug') {
+   return {
+    ok: palms.length === 0,
+    detail: palms.length ? palms.length + ' drift coconuts illegally placed on ' + stKey : '0 drift coconuts on wave-planed rampart or +868.8 m summit plug'
+   };
+  }
+  const badElev = palms.filter(function(r){ return r.elevASL < 2.5 || r.elevASL > 49.0; });
+  return {
+   ok: palms.length >= 4 && badElev.length === 0,
+   detail: badElev.length ? badElev.length + ' coconuts outside +2.6..+48 m leeward strand band'
+                          : palms.length + ' drift-sown coconut palms in sheltered ' + stKey + ' wave-shadow strand (+2.6..+48 m)'
+  };
  }
 };
 
@@ -279,8 +295,9 @@ function hostChecks(){
  const add = function(name, res){ R.push(Object.assign({ name: name }, res)); };
  const mode = (typeof KMAT !== 'undefined' && KMAT.mode) || 'proc';
  add('all lit meshes use genuine library textures', HCHK.texturedMeshes(collectSceneMeshes(), mode));
- add('all eight species carry harvest botany tags', HCHK.speciesHarvest(BATTER.SPECIES));
+ add('all twenty-five species carry harvest botany tags', HCHK.speciesHarvest(BATTER.SPECIES));
  add('asymmetric WNW vs leeward megatsunami trimline enforced', HCHK.asymmetricTrimline(BATTER.TREES, STAGE.exposedWNW, STAGE.key));
+ add('drift-sown coconuts confined to sheltered leeward wave-shadow coves', HCHK.coconutWaveShadow(BATTER.LOG, STAGE.exposedWNW, STAGE.key));
  add('bimodal ultramafic vs sedimentary collar lithology enforced', HCHK.bimodalLithology(BATTER.LOG, STAGE.lithology, STAGE.key));
  add('extinct cinder cone blowholes free of volcanic vents and ant-galls', HCHK.extinctBlowholeFidelity(STAGE.blowholes, STAGE.key, REG));
  add('submarine soundkelp, tuffcress springs and shoreline mouths valid', HCHK.submarineKelpAndSprings(
@@ -300,6 +317,7 @@ function hostNegatives(){
  add('untextured lit mesh injected', HCHK.texturedMeshes([dummyUntex], 'lib'));
  add('species missing harvest tag', HCHK.speciesHarvest(BATTER.SPECIES.slice(0, 4)));
  add('canopy tree below +55 m on WNW tsunami rampart', HCHK.asymmetricTrimline([{ elevASL: 24.0 }], true, 'rampart'));
+ add('drift coconut placed on WNW tsunami scour rampart', HCHK.coconutWaveShadow([{ key: 'coconut', elevASL: 12.0 }], true, 'rampart'));
  add('nickelmyrtle placed on sedimentary collar', HCHK.bimodalLithology([{ key: 'nickelmyrtle' }], 'sedimentary', 'strait'));
  add('volcanic fumarole or Shroudhills ant-gall injected', HCHK.extinctBlowholeFidelity([], 'cove', [{ name: 'Shroud-Ant Drum-Gall' }]));
  add('terrestrial soundkelp above sea level', HCHK.submarineKelpAndSprings([{ key: 'soundkelp', bedElevM: 4.5 }], [], [], terrainH));

@@ -69,6 +69,9 @@ re-baked a slice at a time: `WATER.shoreJob`), drawn on 17 CDLOD levels about a 
 | `ext/62-core-water-flood.js` | [G data] | `WATER.flood` (kind `flood`: a gorge flood whose water rises and falls on the `KHAZ.front` law, shared with core/hazard), `WATER.frontK`, `frontLevel`, `frontProject`, `floodGLSL`; `S.hazard()`. Opt-in by path. "A gorge flood" below |
 | `ext/62b-core-water-flood-draw.js` | [draw] + [G shader] | `WATER.drawFlood`: a ribbon the vertex shader lifts to the flood's level, on drawFlow's look |
 | `ext/test-flood.js`, `ext/test-flood-front.js` | | `node core/water/ext/test-flood.js`: 62 and 62b against the law written again from its text, the GLSL as text, the hazard body and the export; `node core/water/ext/test-flood-front.js` holds core/hazard's KHAZ.front to the same records (level, s, k) |
+| `ext/64-core-water-tsunami.js` | [G data] | `WATER.tsunami` (kind `tsunami`: `'seamount'` & `'ghost'` wave-trains across `tremor`, `drawdown`, `bore`, `runup`, `backwash`, `seiche`, static presets & `'live'`); Godot twin `ext/ktsunami.gd` |
+| `ext/64b-core-water-tsunami-draw.js` | [draw] | `WATER.drawTsunami` (`seaMesh` drawdown, 3D curling `boreMesh`, terrain-conforming `surgeMesh`, `mistGroup`) and `WATER.mountTsunamiUI` |
+| `ext/test-tsunami.js` | | `node core/water/ext/test-tsunami.js [--golden]`: 64 and 64b on `tools/ktest.js`; `--golden` writes `ext/golden-tsunami.json` |
 | `glsl-interp.js` | | the GLSL interpreter the tests share (`require('./glsl-interp.js').glslProgram`). Not numbered: no build takes it |
 
 ## core/shader (2026-11-02)
@@ -936,3 +939,12 @@ bore) and muddy flood colours. The clock is `wtrFloodT`: the page's `o.uniforms.
 depth. `KTIDE.load(data, {origin}).site({x, z}, {range, lag})` gives a place's `level(t)`, `rate(t)`, `state(t)`, range, highs and lows;
 `KTIDE.bindWater(WATER, site)` drives `WATER.seaLevel` from it in place of the single sinusoid of `WATER.tide`. A build inlines only its
 region (`tide/tide.py --box`). Read `tide/README.md`.
+
+## Tsunami wave-trains and coastal run-up: `WATER.tsunami` (2026-11-27: ext/64 and 64b; `node core/water/ext/test-tsunami.js`)
+
+For volcanic seamount-collapse coasts and Ghost-Tsunami shores (`ext/64-core-water-tsunami.js` `[G data]`, `ext/64b-core-water-tsunami-draw.js` `[draw]`):
+- `WATER.tsunami(spec)` models `'seamount'` (pre-drawdown seismic `tremor` phase with `tremorAmp > 0`) and `'ghost'` (`timings.tremor = 0`, `tremorAmp = 0`: silent arrival betrayed only by rapid ocean `drawdown`) regimes across static inspection presets (`'calm'`, `'tremor'`, `'drawdown'`, `'bore'`, `'runup'`, `'backwash'`, `'seiche'`) and `'live'` progression from `TS.trigger(tNow)` or `period` wrap.
+- Answers `TS.project(x, z)`, `TS.stateAt(t)`, `TS.sample(x, z, t)` (`level`, `depth`, `wet`, `vx`, `vz`, `speed`, `momentumFlux`, `boreFront`, `foam`, `exposedShelf`, `safeRefuge` above `seaBaseY + runupMaxM * shelter`), `TS.heightAt`, `TS.flowAt`, `TS.hazardFn()` and `TS.hazardRecord()`, and leaves `WATER.at` / `WATER.heightAt` unchanged in `'calm'` mode.
+- `WATER.drawTsunami(TS, opts)` and `WATER.mountTsunamiUI(TS, drawHandle, opts)` drive `seaMesh` drawdown, a 3D curling breaking bore wall (`boreMesh`), a terrain-conforming overland run-up & backwash sheet (`surgeMesh`), and surf / caldera spray mist (`mistGroup`) with zero extra texture samplers.
+- Godot 4.7.2 twin: `ext/ktsunami.gd` (`KratorTsunami`), synced to `godot/tests/water/` and verified against `ext/golden-tsunami.json` by `ktsunami_test.gd`.
+

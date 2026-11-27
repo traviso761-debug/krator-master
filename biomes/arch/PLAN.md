@@ -417,6 +417,7 @@ at px 294,588) across the sea to the south-east. No kit borders the Arch on land
 | `sound` | **299,220**, the graben floor on the sound's shore | 7 m | 1.60 | 1,804 mm | +30 (+34 / +26) | Am | 21.0 S |
 | `coast` | **167,336**, the seamount island's south-west shore, the Surtseyan caldera 3 km off | 2 m | 1.60 | 1,710 mm | +28 (+33 / +23) | Am | 23.7 S |
 | `cove` | **236,242** (`5.1e23`), Fleetborn Cove sinuous drowned-gjár pocket fjord & `-11 m` sill, 44 km W of `barrens` | 0 m (`-59..+246 m`) | 1.60 | 1,750 mm | +28 (+33 / +24) | Am | 21.5 S |
+| `lakes` | **403,170**, interior alluvial rift-valley neck between enclosed freshwater Axial Rift Lakes 3 (`+14.5 m`) and 4 (`+6.0 m`), linked by the Arch Axial River (`9103` *Mere-Upe* headwater chain) | +18 m (`-38..+247 m`) | 1.59 | 1,976 mm | +28 (+32 / +23) | Am | 19.6 S |
 
 The dome's profile from the summit (px 314,168) to the sound's shore (329,188): 1,456, 1,265, 896, 749, 591, 444, 271, 275,
 218, 76, 8 m: a 1,450 m fall over 50 km, the springs at its foot.
@@ -526,7 +527,7 @@ confirm). All data first: `kits/fauna` records with biome tags, traits, diet, sc
 | Alkali burn (pH 11-12) | the Type II pools | by contact time |
 | Acid burn (pH 1-3), scald | the solfatara, mud pots | `KHAZ` heat and acid |
 | Asbestos dust | the dome's shear zones, dry season | dust on disturbance |
-| Base surge, tsunami, steam explosions | the seamounts, the coast | the seamounts' state (later; the tsunami coast's physics is `DATA.tsunami_farside`) |
+| Base surge, tsunami, steam explosions | the seamounts, the coast, Fleetborn Cove | `WATER.tsunami` (`core/water/ext/64*`) + `KHAZ.TSUNAMI` (`core/hazard/24*`): near-field `'seamount'` regime on `coast` (`-5.8 m` drawdown, `14.5 m` curling bore, `+26 m` run-up vs `+70 m` tuff-cone refuge) and sill-damped `'ghost'` regime composed with `KTIDE` on `cove` (`8.2 m` sill bore, `+12.5 m` throat run-up vs `+76 m` Arcoforte refuge) |
 | Laze | where an episode's lava meets the sound | HCl and glass in the steam |
 | Monsoon flash flood | the gullies and the gjár | the wet season |
 
@@ -560,8 +561,9 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `dome` | `dist/arch-dome.html` | the corrugated whaleback of serpentinite, its springs and white terraces stepping down, the eternal flames in the clefts, a chrysotile shear zone, the red laterite plateau with candelabra araucarias |
 | `barrens` | `dist/arch-barrens.html` | the nickel maquis in the Aw lee: red earth, green rock, Earth hoarders and native verdigris caps, pitcher seeps, lavaka gullies, the verdigris browser |
 | `sound` | `dist/arch-sound.html` | the graben floor: gjár with blue water, the last episode's fissure flow with spatter ramparts and rootless cones on the mangrove flats, a gas hollow, the White Stacks in the sound |
-| `coast` | `dist/arch-coast.html` | the seamount island: black sand, a tuff ring's cliff, a pillow-lava platform with tide pools, the Surtseyan caldera steaming offshore, the ash brooders' warm ground |
-| `cove` | `dist/arch-cove.html` | Fleetborn Cove (`settlements/fleetborn-cove/PLAN.md` §1): sinuous drowned-gjár pocket fjord opening NNW across a `-9..-14 m` pillow-lava & serpentinite sill (`5.2 m/s` reversible tidal race, `14 m` macrotidal band `[-7, +7 m]`) into a calm `-45..-59 m` inner sanctuary basin; `+246 m` eastern ophiolite gorge wall (pillow basalt, sheeted dykes, green serpentinite fault bench with Type II `pH > 11` white travertine cliff curtains, red nickel-laterite maquis crown) with the `+76 m` `Arcoforte` cliff-prow spur reserved in `KTAGS` as `site:fleetborn-arcoforte`; `+150 m` western basalt coastal headland with Chimaera `H2`/`CH4` cleft-flames overlooking the sill; Lost-City brucite-carbonate White Stacks on shallow fault ledges; narrow `+7..+22 m` southern gjár fissure neck |
+| `coast` | `dist/arch-coast.html` | the seamount island: black sand, a `+70 m` tuff ring refuge, a pillow-lava platform with tide pools, drift-sown coconuts, the Surtseyan caldera steaming offshore, the ash brooders' warm ground, and triggerable Surtseyan tsunami (`drawdown` -> `14.5 m` curling `bore` -> `+26 m` `runup` -> `backwash`) |
+| `cove` | `dist/arch-cove.html` | Fleetborn Cove (`settlements/fleetborn-cove/PLAN.md` §1): sinuous drowned-gjár pocket fjord opening NNW across a `-9..-14 m` pillow-lava & serpentinite sill (`5.2 m/s` reversible tidal race, `14 m` macrotidal band `[-7, +7 m]`, and sill-damped tsunami surge composed with `KTIDE`) into a calm `-45..-59 m` inner sanctuary basin; `+246 m` eastern ophiolite gorge wall (pillow basalt, sheeted dykes, green serpentinite fault bench with Type II `pH > 11` white travertine cliff curtains, red nickel-laterite maquis crown) with the `+76 m` `Arcoforte` cliff-prow spur reserved in `KTAGS` as `site:fleetborn-arcoforte`; `+150 m` western basalt coastal headland with Chimaera `H2`/`CH4` cleft-flames overlooking the sill; Lost-City brucite-carbonate White Stacks on shallow fault ledges; narrow `+7..+22 m` southern gjár fissure neck |
+| `lakes` | `dist/arch-lakes.html` | Interior Axial Rift Lakes & River (`nw_expansion.py` §3B, `px 403,170`): zero-tide, zero-marine-salt alluvial rift neck between enclosed freshwater Axial Rift Lakes 3 (`+14.5 m`, `52 m` deep) and 4 (`+6.0 m`, `40 m` deep), linked by the winding Arch Axial River (`8.5 m` drop over `1.34 km`, nephrite/awaruite cobble point-bars, swirling carbonate-and-laterite river plume `ext/61`) beneath a dense freshwater riparian gallery (niaouli paperbark, maquis kauri, ironwood casuarina, pandanus, tamanu, tree-ferns), beside an oxbow sedge-fen tarn with *Nepenthes* pitchers, a Type II fault-foot travertine staircase, and Chimaera cleft-flames |
 
 ## 12. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
@@ -574,11 +576,11 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `core/space` (`KSPACE`) | on the page (the biome core's binding) | the kit's own placement does not call it yet: curtains are spaced by walking the meeting's line, plants by KRAND cells (as highrift's). Wanted when the stations grow obstacles |
 | `core/mask` (`KMASK`) | **no** | no canvas is read for placement at all: every plant asks the data functions (`ARCH.lifeAt`, `ARCH.earthOk`, the stage's `PH_AT`) directly |
 | `core/terrain` | yes | `KGROUND` kinds, `KSTRATA` (new recipes), `KRELIEF` (dome, graben), `KLAVA` (the fissure flow), `KTHERM` (the hot ground and vents), `KFAR`, `KHORIZON` |
-| `core/water` | yes | the springs' pools (`still`), the streams (`flow`), the meeting (`ext/55` confluence), the terraces (`ext/53`), looks (`ext/54`: the kit adds its looks to `WATER.LOOKS` from its own fragment), the sea (`open`) at the coast and the sound |
+| `core/water` | yes | the springs' pools (`still`), the streams (`flow`), the meeting (`ext/55` confluence), the terraces (`ext/53`), looks (`ext/54`: the kit adds its looks to `WATER.LOOKS` from its own fragment), the river plume (`ext/61` at `lakes`), the scale model's tide (`tide/23` `KTIDE` at `cove`), the tsunami wave & bore (`ext/64`, `ext/64b` at `coast` and `cove`), the sea (`open`) at the coast and the sound |
 | `core/water/geyser` | yes | `WATER.spring` for the springs' boils and the mud pots |
 | `core/atmos` | yes | the standard sky, the monsoon weather, the steam (particles), height fog in the graben. The eternal flames are the kit's own cones (89b): core has no flame module but the brazier's (KNOWN_ISSUES.md) |
 | `core/host` (`KHOST`), `core/walk` | yes | the page, camera, probe, inspector, polygon tool |
-| `core/hazard` (`KHAZ`) | yes | the gas hollows, the flames, alkali and acid, heat, asbestos |
+| `core/hazard` (`KHAZ`) | yes | the gas hollows, the flames, alkali and acid, heat, asbestos, and tsunami inundation/backwash (`24-core-hazard-tsunami.js`) |
 | `core/shadow` | yes | the sun's shadows |
 | `core/materials` | yes | `materials.json`, `tools/textures/pack.py`, `KMAT`, `TEX` |
 | `core/export` | yes | the export profile |

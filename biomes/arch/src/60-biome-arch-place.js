@@ -20,8 +20,8 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
  const Lv=BIO.LOD(),c0=BIO.center();
  const chem=(x,z)=>({pH:ph(x,z),T:heat(x,z),caMg:soil(x,z).caMg,lavaAge:lava(x,z)});
  /* the maquis is serpentine ground's: never on the basalt of a flow, in the sound's mud, on cove's western basalt headland, or inside the +-7 m tide band */
- const cv=o.cove||null,tKeep=(x,z)=>!cv||cv.treeKeep(x,z)>0;
- const earth=(x,z)=>!strand&&(!cv||(!cv.westBasalt(x,z)&&Y(x,z)>7.4))&&ARCH.earthOk(chem(x,z))&&lava(x,z)==null&&!mud(x,z);
+ const cv=o.cove||null,lk=o.lakes||null,tKeep=(x,z)=>!cv||cv.treeKeep(x,z)>0;
+ const earth=(x,z)=>!strand&&(!cv||(!cv.westBasalt(x,z)&&Y(x,z)>7.4))&&(!lk||lk.riparian(x,z)<.38)&&ARCH.earthOk(chem(x,z))&&lava(x,z)==null&&!mud(x,z);
  const pioneer=(x,z)=>lava(x,z)!=null&&ARCH.earthOk(chem(x,z)),life=(x,z)=>ARCH.lifeAt(chem(x,z));
  const leanDown=(x,z)=>{const e=3,gx=Y(x+e,z)-Y(x-e,z),gz=Y(x,z+e)-Y(x,z-e);return gx||gz?Math.atan2(-gz,-gx):null;};
  const cellPass=(cell,salt,maxD,fn)=>{const N=Math.ceil(R*2/cell);for(let iz=0;iz<N;iz++)for(let ix=0;ix<N;ix++){
@@ -176,6 +176,30 @@ ARCHB.buildArch=function(R,q,o){o=o||{};q=q==null?1:q;R=R==null?2500:R;
     const H=rr(4.5,7.8);ARCHB.growVerdigrisMangrove(x,y,z,y,H,KRAND.hash(seed+521,Math.round(x*10),Math.round(z*10)),lv);
     ARCHB.HOARD.push({x,z,leaf:up.leaf,latex:up.latex});log('arverdigris_fol',x,z);st.verdigrismangrove++;}
    else{const H=rr(3.0,5.5);ARCHB.growHibiscus(x,y,z,H,KRAND.hash(seed+522,Math.round(x*10),Math.round(z*10)));log('arhibiscus_fol',x,z);st.hibiscus++;}});}
+ if(lk){const ripOk=(x,z)=>lk.riparian(x,z)>.14&&lk.cobbles(x,z)<.58&&ARCH.earthOk(chem(x,z));
+  /* Multi-storey Plaine des Lacs / Riviere Bleue alluvial tropical rainforest: emergent Agathis kauri & Calophyllum tamanu,
+     closed broadleaf canopy (Metrosideros rata, Melaleuca paperbark, Casuarina, Ohia), mid-storey Cyathea tree-ferns, Pandanus & Hibiscus,
+     and lush uluhe + Nephrolepis fern floor */
+  cellPass(24,60,Lv.far,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.68*smooth(.22,.78,r)*(1-smooth(.42,.72,rock(x,z)))*q;if(rng()>a)return;
+   const H=rr(13.5,24.5);ARCHB.growKauri(x,y,z,H,KRAND.hash(seed+601,Math.round(x*10),Math.round(z*10)),lv);log('arkauri_trunk',x,z);st.kauri++;});
+  cellPass(19,61,Lv.far,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.66*smooth(.14,.68,r)*q;if(rng()>a)return;
+   const H=rr(9.5,19.5);ARCHB.growCasuarina(x,y,z,H,KRAND.hash(seed+611,Math.round(x*10),Math.round(z*10)));log('arcastrunk',x,z);st.casuarina++;});
+  cellPass(17,62,Lv.mid,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.64*smooth(.18,.74,r)*q;if(rng()>a)return;
+   const H=rr(4.8,9.4);ARCHB.growPandan(x,y,z,H,KRAND.hash(seed+621,Math.round(x*10),Math.round(z*10)),leanDown(x,z),lv);log('arpandan_trunk',x,z);st.pandan++;});
+  cellPass(20,63,Lv.far,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.68*smooth(.22,.78,r)*q;if(rng()>a)return;
+   const H=rr(10.5,19.5);ARCHB.growTamanu(x,y,z,H,KRAND.hash(seed+631,Math.round(x*10),Math.round(z*10)));log('artamanu_trunk',x,z);st.tamanu++;});
+  cellPass(16,64,Lv.mid,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.62*smooth(.16,.72,r)*q;if(rng()>a)return;
+   const H=rr(4.0,7.4);ARCHB.growHibiscus(x,y,z,H,KRAND.hash(seed+641,Math.round(x*10),Math.round(z*10)));log('arhibiscus_fol',x,z);st.hibiscus++;});
+  cellPass(17,65,Lv.far,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.68*smooth(.18,.74,r)*q;if(rng()>a)return;
+   const H=rr(7.5,15.5);ARCHB.growPaperbark(x,y,z,H,KRAND.hash(seed+651,Math.round(x*10),Math.round(z*10)));log('arpaperbark_trunk',x,z);st.paperbark++;});
+  cellPass(21,67,Lv.far,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.62*smooth(.24,.8,r)*q;if(rng()>a)return;
+   const H=rr(9.0,17.5);ARCHB.growRata(x,y,z,H,KRAND.hash(seed+671,Math.round(x*10),Math.round(z*10)),rng()<.48);log('arrata_trunk',x,z);st.rata++;});
+  cellPass(15,68,Lv.mid,(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.66*smooth(.2,.76,r)*q;if(rng()>a)return;
+   const H=rr(3.8,7.6);ARCHB.growTreeFern(x,y,z,H,KRAND.hash(seed+681,Math.round(x*10),Math.round(z*10)),lv);log('artreefern_trunk',x,z);st.treefern++;});
+  cellPass(6.2,66,Lv.floor[1],(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.68*smooth(.15,.7,r)*q;if(rng()>a)return;
+   const s=rr(.65,1.25);BIO.put('arnephrolepis',[x,y-.03,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*.95,s],pickC(PAL.nephro,.03));log('arnephrolepis',x,z);st.nephrolepis++;});
+  cellPass(6.8,69,Lv.floor[1],(x,y,z,lv)=>{if(!ripOk(x,z))return;const r=lk.riparian(x,z),a=.64*smooth(.25,.78,r)*q;if(rng()>a)return;
+   const s=rr(1.1,2.1);BIO.put('aruluhe',[x,y-.04,z],qEuler(rr(-.08,.08),rr(0,TAU),rr(-.08,.08)),[s,s*.95,s],pickC(PAL.uluhe,.03));log('aruluhe',x,z);st.uluhe++;});}
  return st;};
 /* COVE 14 m MACROTIDAL ZONATION ([-7 m, +7 m]): shoal kombu kelp, ribbon seagrass & giant sea-byssus mussel beds (-6.6..-0.5 m),
    coralline-oyster visor (-0.5..+2.6 m), and upper-littoral barnacle crust (+2.6..+6.8 m) — real species, zero arhem/arlime stand-ins */

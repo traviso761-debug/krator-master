@@ -14,6 +14,7 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 | `22-core-hazard-bore.js` | opt-in: `KHAZ.rockburst`, `inrush`, `seal`: a bore's hazards (openworld/ANCIENT-TUNNELS.md section 4) as presets on kinds core/tags has (`crush` and `drown` on a cycle, `gas` on the state function `KHAZ.seal`); no vocabulary edited; `test-hazard-bore.js` |
 | `22-core-hazard-tunnel.js` | opt-in: the tunnels' kinds `rockburst`, `inrush`, `seal` (their rows added to the vocabulary at first use), `KHAZ.TUNNEL`, `burstAt`, `spalls`, `flood`, `pressure`, `breach`, `reseal`, `bindDoor`, `sealStep`, `tunnelAudit`; `test-hazard-tunnel.js` |
 | `23-core-hazard-tide.js` | opt-in: 2D macrotidal submergence & Ghost-Tsunami drawdown warning (`KHAZ.tide`, `bindTide`, `tideSample`), reversing flood/ebb sluice & narrows currents (`KHAZ.race`, directional `drift`), `KHAZ.TIDE` (`bench`, `race`); no vocabulary edited; `test-hazard-tide.js` |
+| `24-core-hazard-tsunami.js` | opt-in: tsunami wave-train inundation, breaking bore impact, backwash scour & trimline safe refuge (`KHAZ.tsunami`, `bindTsunami`, `tsunamiSample`, directional surge/backwash `drift`, `KHAZ.TSUNAMI.zone`); uses existing vocabulary (`drown`, `crush`, `grab`); `test-hazard-tsunami.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):

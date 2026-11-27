@@ -21,7 +21,7 @@ function ribbon(name,pts,width,speed,shallow,deep,rapids){const F=WATER.flow({na
  const D=WATER.drawFlow(F,{shallow:lin(shallow),deep:lin(deep),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:6,across:4,margin:.6,depthBias:1.5,renderOrder:2,pick:true});
  D.mesh.userData.inspectLabel=name;return F;}
 let BIGW=null,BIG_DRAW=null;const W_OUT={};
-if(SITE.springs){const S=SITE;
+if(SITE.springs&&SKEY!=='lakes'){const S=SITE;
  // THE SPRINGS: hyperalkaline, warm, milky turquoise with a white rim
  S.springs.forEach((sp,i)=>spring('spring'+i,'Type II spring '+(i+1)+' (pH ~11.5, '+sp.flow+' L/s, hydrogen)',sp.x,sp.z,sp.r,L.prof(sp.x,sp.z)-.6,.45,ALK_RAMP,{milky:.7}));
  if(S.pool)spring('pool','The alkaline pool (pH ~11)',S.pool.x,S.pool.z,S.pool.r,L.POOL_LV,.3,ALK_RAMP,{milky:.8});
@@ -84,5 +84,6 @@ if(SKEY==='sound'){const S=SITE,lin2=lin;
   m.position.set(L.HP[0],terrainH(L.HP[0],L.HP[1])+.08,L.HP[1]);m.userData.host=true;m.userData.inspectLabel='The gas hollow\'s bare floor';scene.add(m);}
  Object.assign(W_OUT,{sound:true,gjar:L.GJ.length,stacks:L.STACKS.length});}
 if(SKEY==='cove'&&typeof COVE_BUILD_WATER==='function')COVE_BUILD_WATER({spring,ribbon,lin,alkRamp:ALK_RAMP,out:W_OUT});
+if(SKEY==='lakes'&&typeof LAKES_BUILD_WATER==='function')LAKES_BUILD_WATER({spring,ribbon,lin,alkRamp:ALK_RAMP,out:W_OUT});
 if(WATER.breakupFlows)WATER.breakupFlows();   /* core/water ext/56: the streams' glint broken up */
 window._water=Object.assign({station:SKEY,surfaces:WATER.surfaces.length},W_OUT);

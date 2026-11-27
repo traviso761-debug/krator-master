@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 146 (57%) | 0 (0%) | 0 (0%) | 49 (19%) | 59 (23%) |
+| KB | 149 (57%) | 0 (0%) | 0 (0%) | 49 (19%) | 62 (24%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,21 +14,21 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 0.8 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/28-adg-mipvar.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/40-adg-site.js` | 18.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/40-adg-site.js` | 19.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-adg-trades.js` | 5.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/42-adg-tune.js` | 16.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44-adg-crook-delta.js` | 6.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/44z-adg-host-init.js` | 5.8 | [web] | 9 | 0 | 3 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/45a-adg-hex-plan.js` | 18.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/45b-adg-city-steps.js` | 56.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/55-adg-hoists-fleet.js` | 24.7 | [draw] | 69 | 0 | 0 | 0 | 0 | 42 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/45a-adg-hex-plan.js` | 29.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/45b-adg-city-steps.js` | 47.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/55-adg-hoists-fleet.js` | 24.9 | [draw] | 69 | 0 | 0 | 0 | 0 | 42 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/58-adg-roomlight.js` | 6.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/60-adg-sim.js` | 15.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/70-adg-chars.js` | 5.4 | [draw] | 19 | 0 | 0 | 0 | 0 | 3 | 0 | 6 | 0 | 0 | 0 |  |
-| `src/84-adg-streets-portal.js` | 17.6 | [draw] | 36 | 0 | 0 | 0 | 0 | 22 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/84-adg-streets-portal.js` | 21.0 | [draw] | 36 | 0 | 0 | 0 | 0 | 20 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/85-adg-world-scene.js` | 30.2 | [web] | 35 | 0 | 0 | 0 | 2 | 4 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/89w-adg-water-atmos.js` | 11.2 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/99-adg-host-take.js` | 12.5 | [web] | 0 | 0 | 3 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/99-adg-host-take.js` | 12.6 | [web] | 0 | 0 | 3 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

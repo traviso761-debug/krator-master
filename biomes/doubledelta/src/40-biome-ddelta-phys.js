@@ -229,6 +229,31 @@ var DDELTA_PHYS = (function () {
     };
   }
 
+  function coconutStrandAt(c) {
+    c = c || {};
+    var elevM = dflt(c.elevM, 3.2);
+    var waterM = dflt(c.waterM, -1e9);
+    var refWaterM = waterM > -1e8 ? waterM : dflt(c.nearWaterM, 1.2);
+    var clearM = elevM - refWaterM;
+    var chenier01 = cl(dflt(c.chenier01, 0.4), 0, 1);
+    var bitumen01 = cl(dflt(c.bitumen01, 0), 0, 1);
+    var mire01 = cl(dflt(c.mire01, 0), 0, 1);
+    var slope = Math.max(0, dflt(c.slope, 0.05));
+    var psu = cl(dflt(c.psu, 14), 0, 35);
+    /* Drift-sown Cocos nucifera roots on elevated shell-and-sand chenier beach ridges,
+       natural distributary levee crests & coastal strand pockets (> water + 1.2 m, never submerged or in tar/mire) */
+    var strandOk = waterM < -1e8 && clearM > 1.2 && elevM >= 2.45 && elevM <= 22.0 &&
+      chenier01 >= 0.16 && bitumen01 < 0.10 && mire01 < 0.10 && slope <= 0.38 && psu <= 34.5;
+    var suitability01 = strandOk
+      ? cl((0.35 + 0.65 * chenier01) * ss(1.2, 2.4, clearM) * (1 - 0.5 * ss(0.18, 0.38, slope)), 0, 1)
+      : 0;
+    return {
+      strandOk: strandOk,
+      clearM: +clearM.toFixed(2),
+      suitability01: +suitability01.toFixed(3)
+    };
+  }
+
   /* kits/crops integration (PLAN.md §7.1): 1.60 atm (atm: 2), +28..+31 degC, 2,243-2,557 mm/yr */
   var CROPS_BIOME = {
     atm: 2,
@@ -236,11 +261,15 @@ var DDELTA_PHYS = (function () {
       braid:   { warmth: [4, 4], arid: [4, 4], wet: true },
       marsh:   { warmth: [4, 4], arid: [4, 4], wet: true, salt: true },
       surfbar: { warmth: [4, 5], arid: [4, 4], wet: true, salt: true },
+      chenier: { warmth: [4, 5], arid: [3, 4], salt: true },
       bluff:   { warmth: [3, 4], arid: [3, 3] }
     }
   };
-  if (typeof CROPS !== 'undefined' && CROPS && CROPS.BIOMES && !CROPS.BIOMES.doubledelta) {
+  if (typeof CROPS !== 'undefined' && CROPS && CROPS.BIOMES) {
     CROPS.BIOMES.doubledelta = CROPS_BIOME;
+    if (CROPS.BY_ID && CROPS.BY_ID.coconut && Array.isArray(CROPS.BY_ID.coconut.home) && CROPS.BY_ID.coconut.home.indexOf('doubledelta') < 0) {
+      CROPS.BY_ID.coconut.home.push('doubledelta');
+    }
   }
 
   /* Six vertebrate-grade hexapod, benthic ray, amphibious fish & wading-bird records (PLAN.md §6) */
@@ -293,6 +322,7 @@ var DDELTA_PHYS = (function () {
     elasticity: elasticity,
     scourExpose: scourExpose,
     ecotoneAt: ecotoneAt,
+    coconutStrandAt: coconutStrandAt,
     CROPS_BIOME: CROPS_BIOME,
     FAUNA: FAUNA
   };

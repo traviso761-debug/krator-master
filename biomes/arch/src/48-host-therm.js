@@ -3,7 +3,7 @@
 // the one temperature field the ground's sulphur (84), the steam fans and the plants' ARCH.lifeAt (60) and the hazards read, so they cannot disagree.
 // The springs are warm (the type II water ~33-45 degC at the boil), not hot: a small vent each so the steam fans can find them.
 const VENTS=(function(){const S=SITE,V=[];if(S.solfatara){V.push({x:S.solfatara.x,z:S.solfatara.z,T:S.solfatara.T,reach:S.solfatara.reach,decay:2.2});
- S.solfatara.pots.forEach(p=>V.push({x:p[0],z:p[1],T:92,reach:p[2]*5,decay:2}));}(S.springs||[]).forEach(sp=>V.push({x:sp.x,z:sp.z,T:44,reach:sp.r*3,decay:2.4}));(L.WARM||[]).forEach(v=>V.push({x:v.x,z:v.z,T:v.T,reach:v.r*2,decay:2}));
+ S.solfatara.pots.forEach(p=>V.push({x:p[0],z:p[1],T:92,reach:p[2]*5,decay:2}));}(S.springs||[]).forEach(sp=>V.push({x:sp.x,z:sp.z,T:sp.T==null?44:sp.T,reach:sp.reach==null?sp.r*3:sp.reach,decay:sp.decay==null?2.4:sp.decay}));(L.WARM||[]).forEach(v=>V.push({x:v.x,z:v.z,T:v.T,reach:v.r*2,decay:2}));
  if(SKEY==='cove')(L.WEEPS||[]).forEach(w=>V.push({x:w.x,z:w.z,T:62,reach:w.r*4.5,decay:2.0}));return V;})();
 const THERM=KTHERM.create({soil:SITE.soil,vents:VENTS.map((v,i)=>({id:SKEY+'-vent'+i,kind:'point',x:v.x,z:v.z,T:v.T,reach:v.reach,decay:v.decay})),
  detail:{amp:1.2,scale:.02,seed:7300},world:'arch-'+SKEY});
