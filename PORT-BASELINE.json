@@ -1384,6 +1384,10 @@
    "bytes": 784556,
    "sha256": "18bc45d869c72a1c07568111abc6b95a7dc153f26d659162cd5a0548eeb49482"
   },
+  "kits/kulanewa/dist/kulanewa.html": {
+   "bytes": 1428956,
+   "sha256": "363bb76ed0b3b5e8a2f676ad2844497520acb864afdfae4fca6929f59f579b94"
+  },
   "kits/lizardmen/dist/lizardmen.html": {
    "bytes": 1731452,
    "sha256": "fcaaf91f3781e306f1966b67c866f921714cc2638f03186a8dd7447987d0c2d2"
@@ -1760,6 +1764,10 @@
    "bytes": 8513625,
    "sha256": "7216145e7a4349521c0a4ed9f2f4478f5a709cb771ad7fa4c30270d0df288196"
   },
+  "settlements/arcodiga/dist/arcodiga.html": {
+   "bytes": 4912059,
+   "sha256": "5858c433bfba5061912a4189aa0f2cde9a3495aa1a95a374689ce0b0b3576585"
+  },
   "settlements/azure-dream/dist/azure-dream-east-end.html": {
    "bytes": 13551285,
    "sha256": "46013cb953dddd3992a0f9dc57c299e0999897d4f6f1aec955ced3c5ee67fcd4"
@@ -1811,6 +1819,10 @@
   "settlements/fleetborn-cove/dist/fleetborn-cove.html": {
    "bytes": 4963298,
    "sha256": "697fc2edc5f6df688032f4aaa82e563150ff8edb4f5838b9f0dc0555fad34cc2"
+  },
+  "settlements/floating-city/dist/floating-city.html": {
+   "bytes": 4125073,
+   "sha256": "ba9203653baaa935c8159ea17e33abe9ca98ee08d30ba3f95b196804b4b2e81c"
   },
   "settlements/gihon/dist/gihon.html": {
    "bytes": 14506269,

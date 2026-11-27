@@ -1,19 +1,18 @@
 // ================================================================= HOST WORLD HOOK: drawn ground, core/water streams, detail dedup & exports
 // Runs at 91z, after 91f-furnish.js / 91r-kl-roomlight.js and before 92-world.js's initial buildWorld(). Scales the ground
-// plane over all four Kulanewa rows, registers KDRAWN, wires library textures onto door hardware and room fallback material,
+// plane over all six Kulanewa rows, registers KDRAWN, wires library textures onto door hardware and room fallback material,
 // deduplicates furniture detail shader programs (K1), draws flowing core/water streams, rebuilds Stage 7 KROOMLIGHT, and exposes klDims().
 (function(){
  if(typeof groundM!=='undefined'){
   groundM.name='ground';
-  groundM.position.z=-80;
-  groundM.scale.set(1.5,1.5,1);
+  groundM.position.z=-125;
+  groundM.scale.set(1.6,1.6,1);
   if(typeof groundMat!=='undefined'){
-   for(const t of [groundMat.map,groundMat.normalMap,groundMat.roughnessMap])if(t)t.repeat.multiplyScalar(1.5);
+   for(const t of [groundMat.map,groundMat.normalMap,groundMat.roughnessMap])if(t)t.repeat.multiplyScalar(1.6);
   }
   groundM.updateMatrixWorld(true);
-  if(typeof KDRAWN!=='undefined'){
-   const half=GROUND_SIZE*1.5*0.5;
-   KDRAWN.add(KDRAWN.grid({x0:-half,z0:-80-half,x1:half,z1:-80+half,nx:2,nz:2,h:()=>0}));
+  if(typeof KDRAWN!=='undefined'&&KDRAWN.fromObject){
+   KDRAWN.add(KDRAWN.fromObject(groundM));
   }
  }
  if(typeof svHwMat==='function'&&MAT.bronze&&MAT.bronze.map){

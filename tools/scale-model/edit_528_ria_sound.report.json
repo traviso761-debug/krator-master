@@ -1,0 +1,41 @@
+{
+ "edit": "5.1 edit 28: Ria Sound natural drowned dendritic ria & East Bluff Kuruneva seat",
+ "date": "2026-11-24",
+ "new_water_cells": 321,
+ "reclaimed_land_cells": 88,
+ "floating_city_bay_635_138_m": -49.0,
+ "s_bend_narrows_622_141_m": -38.4,
+ "east_bluff_pin": [
+  649,
+  141
+ ],
+ "east_bluff_m": 81.8,
+ "east_bluff_harbor_north_m": -28.2,
+ "ocean_4connected": true,
+ "rivers": {
+  "9101": {
+   "mouth_px": [
+    645.08,
+    154.21
+   ],
+   "mouth_bed_m": -10.9,
+   "max_climb_m": 0.0
+  },
+  "9107": {
+   "mouth_px": [
+    672.6,
+    129.31
+   ],
+   "mouth_bed_m": -5.4,
+   "max_climb_m": 0.0
+  },
+  "9108": {
+   "mouth_px": [
+    649.54,
+    130.18
+   ],
+   "mouth_bed_m": -8.2,
+   "max_climb_m": 0.0
+  }
+ }
+}

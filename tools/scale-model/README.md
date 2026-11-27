@@ -1394,6 +1394,21 @@ model data did not) replayed on this model by river id, its names only, none of 
   region cut (9105, 9110; page rebuilt), `openworld/resources-settlements.json` (r074) and the globe's
   `gallery/krator-globe/globe_data.json` (38; not republished).
 
+## 5.1 edit 28: `edit_528_ria_sound.py` (2026-11-24): Ria Sound's dendritic ria and East Bluff
+
+The owner flagged Ria Sound's synthetic axis-aligned bay (`615..624 x 140..142` at -14 m + 1-px +78 m spike at 626,140 from
+continental-scope's settlement fit, separated by a 44 km +6 m plug from the -49 m eastern box `648..671 x 133..141` sliced at
+Step 3's `x <= 648` paste seam) and approved reshaping `px 598..677 x 123..160` into a continuous 70 km S-curving drowned
+dendritic ria with East Bluff as the southernmost assimilated Kuruneva town (`settlements/floating-city/PLAN.md` section 8):
+- **The sound**: S-bend rock-jawed tidal narrows at `622,141` (-38 m) opening into **the Floating City's** sheltered central
+  bay at `635,138` (-49 m), 4-connected to the NW Ocean (`w_lbl4 == 1`) and branching into three drowned river-mouth arms;
+- **The three rivers & canal**: `9101` *Rīwa-Wāta* (`645.08,154.21`), `9107` *Suur-Neva* (`672.60,129.31`) and `9108`
+  *Musta-Jõgi* (`649.54,130.18`) each descend with 0.0 m climb into open sea water at 0 m (`to: {sea: 'ocean'}`);
+  `cn_ria_tongqu` locks directly into *Musta-Jõgi* Cove (`649,130`);
+- **East Bluff (`sriasound1` moved to `649,141`, `5.1e25`)**: +82 m tsunami-safe promontory dividing the *Rīwa-Wāta* and
+  *Suur-Neva* arms, 1 cell south of -28 m harbor water, inside `r27arcflow1` (*Arcflow Republics* / Kulanewa Free-Towns) as
+  *Suudme-Kuluuna* (`tests/test_smodel.py` section 27).
+
 ## Cutting a region out for the open world
 
 `extract_region.py <page.html> <regions> <settlements> "<region name>" <out dir>` reads the same page (no edit) and

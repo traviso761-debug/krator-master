@@ -1,0 +1,58 @@
+{
+  "build": "floating_city",
+  "note": "Bespoke library material slots for settlements/floating-city (all 8 sampled by the Sumeru-Noahbabel megastructure, pontoons, guide-piles & Crown Headland ground; RIK, KLK & DOUBLEDELTA bring their own sidecars).",
+  "size": 512,
+  "families": {
+    "ancient_ceramic": {
+      "lib": "plaster.white_stucco_02",
+      "scale": [2.2, 2.2],
+      "tint": { "keep": 0.15, "mean": 0.88 },
+      "metal": 0
+    },
+    "ancient_concrete": {
+      "lib": "stone.tuff.hewn",
+      "scale": [2.6, 2.6],
+      "tint": { "keep": 0.45, "mean": 0.64 },
+      "metal": 0
+    },
+    "celadon_roof": {
+      "lib": "roof.tile.celadon",
+      "scale": [1.5, 1.5],
+      "tint": { "keep": 0.55, "mean": 0.72 },
+      "metal": 0,
+      "roughLift": 0.10
+    },
+    "gilt_chofa": {
+      "lib": "roof.scale.gilt",
+      "scale": [1.3, 1.3],
+      "tint": { "keep": 0.60, "mean": 0.78 },
+      "metal": 0.78,
+      "roughLift": 0.06
+    },
+    "cobalt_glaze": {
+      "lib": "ceramic.glaze",
+      "scale": [1.5, 1.5],
+      "tint": { "keep": 0.25, "mean": 0.68 },
+      "metal": 0,
+      "roughLift": 0.08
+    },
+    "travertine_stone": {
+      "lib": "stone.travertine",
+      "scale": [2.0, 2.0],
+      "tint": { "keep": 0.35, "mean": 0.78 },
+      "metal": 0
+    },
+    "paktong_metal": {
+      "lib": "metal.bronze.verdigris",
+      "scale": [1.4, 1.4],
+      "tint": { "keep": 0.40, "mean": 0.74 },
+      "metal": 0.72
+    },
+    "cypress_hull": {
+      "lib": "wood.mahogany",
+      "scale": [1.6, 1.6],
+      "tint": { "keep": 0.45, "mean": 0.54 },
+      "metal": 0
+    }
+  }
+}

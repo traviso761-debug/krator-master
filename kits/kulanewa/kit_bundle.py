@@ -4,13 +4,13 @@ kits/ria/kit_bundle.py seals RIK and kits/xanadu/kit_bundle.py seals XAK), so it
 REG, TAU, clamp, terrainH, ...) meet neither the page's nor another kit's:
 
     bundle(key='KLK') -> (js, files)   var KLK = (function(){ ... })(): core/engine's geometry & building registry,
-                                       Stage 5 KMAT_M1, the Kulanewa vertical-stack shader hooks, helpers, crowns, all 42
-                                       Karum & Ikki defBuildings, and KL_TRADES.
+                                       Stage 5 KMAT_M1, the Kulanewa vertical-stack shader hooks, helpers, crowns, all 63
+                                       Karum, Ikki & Suudme defBuildings, and KL_TRADES.
 
     KLK.proto(key, v)   the def built once at the origin (y=0, front +z) into a new THREE.Group, its material buckets
                         flushed, userData = {key, v, tris, w, d, h, style, doors, fixtures}; null for an unknown key
-    KLK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants}} for all 42 defs
-    KLK.trades          KL_TRADES (all 44 Voth census trades mapped to karum and ikki)
+    KLK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants}} for all 63 defs
+    KLK.trades          KL_TRADES (all 44 Voth census trades mapped to karum, ikki and suudme)
     KLK.tradeDefs(st)   klTradeDefs(style) -> {trade: [keys...]}
     KLK.factions        KL_FACTIONS
     KLK.errors          the kit's reportErr messages
