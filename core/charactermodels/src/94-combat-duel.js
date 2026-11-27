@@ -46,6 +46,25 @@
   var FIGHTERS = SPEC.fighters || [];
   var CHOREO = SPEC.choreography || [];
   var EXTRA_CHOREO = SPEC.extraplanar_choreography || [];
+  var FOURARM_CHOREO = SPEC.fourarm_choreography || [];
+  var ARTHRO_CHOREO = SPEC.arthropod_choreography || [];
+  var ARTHRO_ZONE_META = {
+    head:      { short:'JW', label:'Jaws/Horn' },
+    chest:     { short:'TH', label:'Thorax' },
+    stomach:   { short:'AB', label:'Abdomen' },
+    left_arm:  { short:'FL', label:'Fore-L' },
+    right_arm: { short:'FR', label:'Fore-R' },
+    left_leg:  { short:'HL', label:'Hind-L' },
+    right_leg: { short:'HR', label:'Hind-R' }
+  };
+
+  function zoneMetaFor(slot, z){
+    var base = ZONE_META[z] || { short:z, label:z };
+    if(slot && slot.preset && slot.preset.arthropod && ARTHRO_ZONE_META[z]){
+      return Object.assign({}, base, ARTHRO_ZONE_META[z]);
+    }
+    return base;
+  }
 
   var $ = function(id){ return document.getElementById(id); };
   var host = null;
@@ -55,6 +74,8 @@
 
   var sandboxMode = '1v1';        // '1v1' | '2v1'
   var extraplanarDemo = false;    // Extraplanar Boss Bout mode
+  var fourArmDemo = false;        // Thorax vs Dorsal 4-Limb Showcase mode
+  var arthropodDemo = false;      // Giant Arthropod Trial mode
   var hoverClock = 0;
   var attackSlots = RULES.default_attack_slots || 2;
   var tacticalPause = false;      // Spacebar RTWP pause
@@ -322,6 +343,7 @@
       team: side === 'B' ? 1 : 0,
       fig: null,
       bodyId: null,
+      arthropodId: null,
       preset: preset,
       state: 'GUARD',
       clip: IDLE_CLIP,
@@ -378,6 +400,7 @@
       var maxHp = cyber ? 125 : (zm.hp || 100);
       slot.limbs[z] = { hp:maxHp, max:maxHp, severed:false, cyber:cyber };
     });
+    if(slot.fig && slot.fig.setLimbState) slot.fig.setLimbState(slot.limbs);
   }
 
   function resetAllHP(){
@@ -396,8 +419,13 @@
     return sandboxMode === '2v1' ? [F[0], F[1], F[2]] : [F[0], F[1]];
   }
 
+  function isArthropodFighter(slot){
+    return !!(slot && ((slot.preset && slot.preset.arthropod) || (slot.fig && slot.fig.isArthropod)));
+  }
+
   function hasSeveredArm(slot){
     if(!slot || !slot.limbs) return false;
+    if(slot.preset && slot.preset.arthropod) return false;
     var la = slot.limbs.left_arm, ra = slot.limbs.right_arm;
     return !!((la && la.severed && !la.cyber) || (ra && ra.severed && !ra.cyber));
   }
@@ -406,8 +434,18 @@
     var p = slot && slot.preset;
     if(!p) return 0;
     if(p.bonus_slots) return p.bonus_slots;
-    if(p.four_arms || slot.graftedMods.indexOf(CYBER_MOD) >= 0) return 1;
+    if(p.four_arms || p.dorsal_4arm || slot.graftedMods.indexOf(CYBER_MOD) >= 0) return 1;
     return 0;
+  }
+
+  function isDorsalFighter(slot){
+    var p = slot && slot.preset;
+    return !!(p && (p.dorsal_4arm || p.style === 'dorsal_4arm' || (slot.fig && slot.fig.hasDorsalArms)));
+  }
+
+  function isFourLimbFighter(slot){
+    var p = slot && slot.preset;
+    return !!(isDorsalFighter(slot) || (p && (p.four_arms || p.style === 'thorax_4arm')) || (slot && slot.fig && slot.fig.fourArms));
   }
 
   function parryWindowMsFor(slot){
@@ -490,12 +528,13 @@
         result.severedZone = z;
       }
     }
+    if(defender.fig && defender.fig.setLimbState) defender.fig.setLimbState(defender.limbs);
     return result;
   }
 
   function graftCyberArm(fighterIdx){
     var slot = F[fighterIdx];
-    if(!slot) return Promise.resolve(false);
+    if(!slot || (slot.preset && slot.preset.arthropod)) return Promise.resolve(false);
     if(slot.graftedMods.indexOf(CYBER_MOD) < 0) slot.graftedMods.push(CYBER_MOD);
     ['left_arm', 'right_arm'].forEach(function(z){
       if(slot.limbs[z]){
@@ -524,9 +563,10 @@
     limb.cyber = false;
     limb.hp = -Math.round(limb.max * 1.12);
     limb.severed = true;
+    if(slot.fig && slot.fig.setLimbState) slot.fig.setLimbState(slot.limbs);
     playSfx('sever_limb');
     spawnCue('sever', 1.24, slot.fig ? slot.fig.group.position : null);
-    var zLabel = (ZONE_META[z] && ZONE_META[z].label) || z;
+    var zLabel = zoneMetaFor(slot, z).label || z;
     showCallout('🩸 ' + zLabel.toUpperCase() + ' SEVERED!', 'sever');
     appendSystemLog((slot.preset.short || slot.side) + ' suffered dismemberment: ' + zLabel + ' (' + limb.hp + ' HP <= -100%)!');
     refreshHudCards();
@@ -605,6 +645,12 @@
       '#dhud-extraplanar-btn { background: linear-gradient(90deg, rgba(109,40,217,.26), rgba(46,230,255,.22)); border: 1px solid rgba(94,234,255,.58); color: var(--ink); font-weight: 700; }',
       '#dhud-extraplanar-btn:hover { filter: brightness(1.1); border-color: #2ee6ff; }',
       '#dhud-extraplanar-btn[aria-pressed="true"] { background: linear-gradient(90deg, #6d28d9, #0891b2); color: #fff; border-color: #a5f3fc; box-shadow: 0 0 12px rgba(46,230,255,.42); }',
+      '#dhud-fourarm-btn { background: linear-gradient(90deg, rgba(217,130,24,.28), rgba(20,184,166,.26)); border: 1px solid rgba(245,158,11,.62); color: var(--ink); font-weight: 700; }',
+      '#dhud-fourarm-btn:hover { filter: brightness(1.1); border-color: #fbbf24; }',
+      '#dhud-fourarm-btn[aria-pressed="true"] { background: linear-gradient(90deg, #b45309, #0d9488); color: #fff; border-color: #fde68a; box-shadow: 0 0 12px rgba(245,158,11,.42); }',
+      '#dhud-arthropod-btn { background: linear-gradient(90deg, rgba(34,197,94,.26), rgba(161,98,7,.28)); border: 1px solid rgba(74,222,128,.62); color: var(--ink); font-weight: 700; }',
+      '#dhud-arthropod-btn:hover { filter: brightness(1.1); border-color: #4ade80; }',
+      '#dhud-arthropod-btn[aria-pressed="true"] { background: linear-gradient(90deg, #15803d, #854d0e); color: #fff; border-color: #bbf7d0; box-shadow: 0 0 12px rgba(74,222,128,.42); }',
 
       /* Center-Top Active Defense Window Banner */
       '#duel-def-banner { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); min-width: 320px; max-width: 92%; background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--line); border-radius: 9px; padding: 6px 11px; display: flex; flex-direction: column; gap: 4px; align-items: center; pointer-events: auto; box-shadow: 0 3px 12px rgba(0,0,0,.16); transition: border-color .12s, transform .12s; }',
@@ -701,6 +747,13 @@
         r.armour[sl] = (set[sl] && kit.items.some(function(it){ return it.id === set[sl]; })) ? set[sl] : null;
       });
     }
+    if(preset && preset.armour){
+      Object.keys(preset.armour).forEach(function(sl){
+        var ov = preset.armour[sl];
+        r.armour[sl] = (ov && kit.items.some(function(it){ return it.id === ov; })) ? ov : null;
+      });
+    }
+    r.dorsal_rig = (preset && preset.dorsal_rig) || null;
     // Expose gleaming bronze cyber-forearms when cybernetic upper arms are grafted
     if(r.mods.indexOf(CYBER_MOD) >= 0){
       r.armour.gloves = null;
@@ -710,10 +763,12 @@
 
   function fighterIdleClip(slot){
     var p = (slot && slot.preset) || {};
+    if(p.style === 'arthropod' || p.arthropod) return STYLE_IDLES.arthropod || 'arthro_idle';
     var hold = p.hold || {};
     if(slot.stance === 'guard' && (hold.L === 'shield' || p.style === 'shield')) return 'ual_shield_up';
     if(p.style === 'sword') return STYLE_IDLES.sword || 'ual_sword_idle';
     if(p.style === 'heavy' || p.style === 'polearm') return 'combat_idle';
+    if(p.style === 'thorax_4arm' || p.style === 'dorsal_4arm') return STYLE_IDLES[p.style] || 'combat_idle';
     if(p.style === 'arcane') return STYLE_IDLES.arcane || 'combat_idle';
     if(p.style === 'ranged') return hold.L === 'bow' ? 'bow_scan' : 'combat_idle';
     return STYLE_IDLES[p.style] || IDLE_CLIP;
@@ -1253,6 +1308,374 @@
     activeCues.push({ vfxKind:'rift_claw', group:g, parts:parts, t:0, dur:0.40 });
   }
 
+  var _tbL = new THREE.Vector3(), _tbR = new THREE.Vector3(), _tbC = new THREE.Vector3(), _tbDst = new THREE.Vector3();
+
+  function rebuildTriBeams(cue){
+    var srcSlot = cue.srcSlot, dstSlot = cue.dstSlot;
+    var sx = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.x : cue.sx;
+    var sy = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.y : 0;
+    var sz = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.z : cue.sz;
+    var dx = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.x : cue.dx;
+    var dy = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.y : 0;
+    var dz = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.z : cue.dz;
+
+    _tbDst.set(dx, dy + 1.24, dz);
+    V_DIR.subVectors(_tbDst, _tbC.set(sx, sy + 1.26, sz));
+    var dLen = Math.max(0.25, V_DIR.length());
+    V_DIR.divideScalar(dLen);
+    if(Math.abs(V_DIR.y) < 0.92) V_P1.crossVectors(V_DIR, V_UP).normalize();
+    else V_P1.set(1, 0, 0);
+
+    var gotDorsal = false;
+    if(srcSlot && srcSlot.fig && srcSlot.fig.getDorsalTipsWorld){
+      gotDorsal = srcSlot.fig.getDorsalTipsWorld(_tbL, _tbR);
+    }
+    if(!gotDorsal){
+      _tbL.set(sx, sy + 1.56, sz).addScaledVector(V_DIR, 0.34).addScaledVector(V_P1, -0.32);
+      _tbR.set(sx, sy + 1.56, sz).addScaledVector(V_DIR, 0.34).addScaledVector(V_P1,  0.32);
+    }
+    // Primary casting hand / sternum focal emitter
+    _tbC.set(sx, sy + 1.24, sz).addScaledVector(V_DIR, 0.36);
+
+    var origins = [_tbL, _tbR, _tbC];
+    for(var b = 0; b < cue.beams.length; b++){
+      var bm = cue.beams[b];
+      var p0 = origins[b];
+      bm.muzzle.position.copy(p0);
+      orientSegment(bm.core, p0, _tbDst, bm.radScale);
+      orientSegment(bm.sheath, p0, _tbDst, bm.radScale);
+    }
+    if(cue.targetGroup) cue.targetGroup.position.copy(_tbDst);
+    if(cue.groundGroup) cue.groundGroup.position.set(dx, 0.018, dz);
+  }
+
+  function spawnDorsalTriBeamVfx(srcSlot, dstSlot){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind, baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    // 3 converging cyan-lime plasma lances: Left Dorsal Claw, Right Dorsal Claw, Primary Hand!
+    var sheathColors = [0x3ef5a8, 0x3ef5a8, 0x1ee6ff];
+    var beams = [];
+    for(var bi = 0; bi < 3; bi++){
+      var mGeo = new THREE.SphereGeometry(0.085, 12, 10);
+      var mMat = new THREE.MeshBasicMaterial({ color:0xeaffff, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+      var muzzle = addPart(new THREE.Mesh(mGeo, mMat), mGeo, mMat, 'tb_muzzle');
+      g.add(muzzle);
+
+      var shGeo = new THREE.CylinderGeometry(0.044, 0.056, 1.0, 8, 1, false);
+      var shMat = new THREE.MeshBasicMaterial({ color:sheathColors[bi], transparent:true, opacity:0.64, blending:addBlend, depthWrite:false });
+      var sheath = addPart(new THREE.Mesh(shGeo, shMat), shGeo, shMat, 'tb_beam');
+      g.add(sheath);
+
+      var crGeo = new THREE.CylinderGeometry(0.017, 0.022, 1.0, 8, 1, false);
+      var crMat = new THREE.MeshBasicMaterial({ color:0xf2ffff, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+      var core = addPart(new THREE.Mesh(crGeo, crMat), crGeo, crMat, 'tb_beam');
+      g.add(core);
+
+      beams.push({ muzzle:muzzle, sheath:sheath, core:core, radScale:1 });
+    }
+
+    var targetGroup = new THREE.Group();
+    g.add(targetGroup);
+    var tCoreGeo = new THREE.SphereGeometry(0.19, 16, 12);
+    var tCoreMat = new THREE.MeshBasicMaterial({ color:0xf0ffff, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+    targetGroup.add(addPart(new THREE.Mesh(tCoreGeo, tCoreMat), tCoreGeo, tCoreMat, 'tb_target_core'));
+
+    var tRingGeo = new THREE.TorusGeometry(0.34, 0.022, 8, 32);
+    var tRingMat = new THREE.MeshBasicMaterial({ color:0x48f59b, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+    targetGroup.add(addPart(new THREE.Mesh(tRingGeo, tRingMat), tRingGeo, tRingMat, 'tb_ring'));
+
+    var groundGroup = new THREE.Group();
+    g.add(groundGroup);
+    var gRingGeo = new THREE.RingGeometry(0.18, 0.34, 36);
+    var gRingMat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.88, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var gRing = new THREE.Mesh(gRingGeo, gRingMat);
+    gRing.rotation.x = -Math.PI / 2;
+    groundGroup.add(addPart(gRing, gRingGeo, gRingMat, 'tb_ground'));
+
+    var cue = {
+      vfxKind: 'dorsal_tri_beam',
+      group: g,
+      parts: parts,
+      srcSlot: srcSlot,
+      dstSlot: dstSlot,
+      sx: srcSlot && srcSlot.fig ? srcSlot.fig.group.position.x : -1,
+      sz: srcSlot && srcSlot.fig ? srcSlot.fig.group.position.z : 0,
+      dx: dstSlot && dstSlot.fig ? dstSlot.fig.group.position.x : 1,
+      dz: dstSlot && dstSlot.fig ? dstSlot.fig.group.position.z : 0,
+      beams: beams,
+      targetGroup: targetGroup,
+      groundGroup: groundGroup,
+      t: 0,
+      dur: 0.68
+    };
+    rebuildTriBeams(cue);
+    vfxGroup.add(g);
+    activeCues.push(cue);
+  }
+
+  function spawnThoraxXCrusherVfx(srcSlot, dstSlot){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var dPos = dstSlot && dstSlot.fig ? dstSlot.fig.group.position : { x:0, y:0, z:0 };
+    var sPos = srcSlot && srcSlot.fig ? srcSlot.fig.group.position : { x:-1, y:0, z:0 };
+    var cx = dPos.x + (sPos.x - dPos.x) * 0.25;
+    var cz = dPos.z + (sPos.z - dPos.z) * 0.25;
+    g.position.set(cx, (dPos.y || 0) + 1.22, cz);
+    g.lookAt(sPos.x, (dPos.y || 0) + 1.22, sPos.z);
+
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind, baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    // 4-Quadrant Golden/Orange X-Shock Cross (+45° & -45° heavy impact blades)
+    [-Math.PI / 4, Math.PI / 4].forEach(function(ang){
+      var barGeo = new THREE.BoxGeometry(0.065, 1.32, 0.035);
+      var barMat = new THREE.MeshBasicMaterial({ color:0xff9f1c, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var bar = new THREE.Mesh(barGeo, barMat);
+      bar.rotation.z = ang;
+      g.add(addPart(bar, barGeo, barMat, 'xc_bar'));
+
+      var coreBarGeo = new THREE.BoxGeometry(0.026, 1.18, 0.020);
+      var coreBarMat = new THREE.MeshBasicMaterial({ color:0xfff6d6, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+      var coreBar = new THREE.Mesh(coreBarGeo, coreBarMat);
+      coreBar.rotation.z = ang;
+      g.add(addPart(coreBar, coreBarGeo, coreBarMat, 'xc_bar'));
+    });
+
+    var hubGeo = new THREE.SphereGeometry(0.18, 16, 12);
+    var hubMat = new THREE.MeshBasicMaterial({ color:0xffe066, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+    g.add(addPart(new THREE.Mesh(hubGeo, hubMat), hubGeo, hubMat, 'xc_hub'));
+
+    var ringGeo = new THREE.RingGeometry(0.24, 0.38, 8);
+    var ringMat = new THREE.MeshBasicMaterial({ color:0xff7b00, transparent:true, opacity:0.90, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    g.add(addPart(new THREE.Mesh(ringGeo, ringMat), ringGeo, ringMat, 'xc_ring'));
+
+    for(var qi = 0; qi < 8; qi++){
+      var qa = (qi / 8) * Math.PI * 2 + Math.PI / 8;
+      var spGeo = new THREE.CylinderGeometry(0.018, 0.004, 0.44, 5);
+      var spMat = new THREE.MeshBasicMaterial({ color:qi % 2 === 0 ? 0xffd166 : 0xff6d00, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+      var sp = new THREE.Mesh(spGeo, spMat);
+      var dv = new THREE.Vector3(Math.cos(qa), Math.sin(qa), 0.18).normalize();
+      sp.quaternion.setFromUnitVectors(V_UP, dv);
+      sp.userData.dir = dv;
+      g.add(addPart(sp, spGeo, spMat, 'xc_spark'));
+    }
+
+    vfxGroup.add(g);
+    activeCues.push({ vfxKind:'thorax_x_crusher', group:g, parts:parts, t:0, dur:0.56 });
+  }
+
+  function spawnArthropodVfx(vfxKind, srcSlot, dstSlot, hitY){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+    var sPos = srcSlot && srcSlot.fig ? srcSlot.fig.group.position : { x:-1, y:0, z:0 };
+    var dPos = dstSlot && dstSlot.fig ? dstSlot.fig.group.position : { x:1, y:0, z:0 };
+    var hy = hitY || 1.18;
+
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind, baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    if(vfxKind === 'arthro_venom_spit'){
+      var startV = new THREE.Vector3(sPos.x, (sPos.y || 0) + 0.96, sPos.z);
+      var endV = new THREE.Vector3(dPos.x, (dPos.y || 0) + hy, dPos.z);
+      var globGroup = new THREE.Group();
+      globGroup.position.copy(startV);
+      g.add(globGroup);
+
+      var globCoreGeo = new THREE.SphereGeometry(0.11, 14, 12);
+      var globCoreMat = new THREE.MeshBasicMaterial({ color:0xd9f99d, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+      globGroup.add(addPart(new THREE.Mesh(globCoreGeo, globCoreMat), globCoreGeo, globCoreMat, 'vs_glob_core'));
+
+      var globHaloGeo = new THREE.SphereGeometry(0.20, 14, 12);
+      var globHaloMat = new THREE.MeshBasicMaterial({ color:0x22c55e, transparent:true, opacity:0.62, blending:addBlend, depthWrite:false });
+      globGroup.add(addPart(new THREE.Mesh(globHaloGeo, globHaloMat), globHaloGeo, globHaloMat, 'vs_glob_halo'));
+
+      var silkSegs = [];
+      for(var si = 0; si < 3; si++){
+        var skGeo = new THREE.CylinderGeometry(0.012, 0.022, 1.0, 6);
+        var skMat = new THREE.MeshBasicMaterial({ color:si === 0 ? 0xf0fdf4 : 0x86efac, transparent:true, opacity:0.86, blending:addBlend, depthWrite:false });
+        var skMesh = addPart(new THREE.Mesh(skGeo, skMat), skGeo, skMat, 'vs_silk');
+        g.add(skMesh);
+        silkSegs.push(skMesh);
+      }
+
+      var splashGroup = new THREE.Group();
+      splashGroup.position.copy(endV);
+      g.add(splashGroup);
+      for(var di = 0; di < 10; di++){
+        var dAng = (di / 10) * Math.PI * 2 + 0.3;
+        var drGeo = new THREE.SphereGeometry(0.045, 8, 6);
+        var drMat = new THREE.MeshBasicMaterial({ color:di % 2 === 0 ? 0x4ade80 : 0xbef264, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+        var dr = new THREE.Mesh(drGeo, drMat);
+        dr.userData.dir = new THREE.Vector3(Math.cos(dAng) * 0.75, 0.35 + (di % 3) * 0.25, Math.sin(dAng) * 0.75).normalize();
+        splashGroup.add(addPart(dr, drGeo, drMat, 'vs_drop'));
+      }
+      var webRingGeo = new THREE.RingGeometry(0.16, 0.30, 28);
+      var webRingMat = new THREE.MeshBasicMaterial({ color:0x86efac, transparent:true, opacity:0.88, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      var webRing = new THREE.Mesh(webRingGeo, webRingMat);
+      webRing.lookAt(startV);
+      splashGroup.add(addPart(webRing, webRingGeo, webRingMat, 'vs_ring'));
+
+      vfxGroup.add(g);
+      activeCues.push({
+        vfxKind: 'arthro_venom_spit',
+        group: g,
+        parts: parts,
+        startV: startV,
+        endV: endV,
+        globGroup: globGroup,
+        silkSegs: silkSegs,
+        t: 0,
+        dur: 0.62
+      });
+      return;
+    }
+
+    if(vfxKind === 'arthro_scythe_cross'){
+      var cx = dPos.x + (sPos.x - dPos.x) * 0.26;
+      var cz = dPos.z + (sPos.z - dPos.z) * 0.26;
+      g.position.set(cx, (dPos.y || 0) + hy, cz);
+      g.lookAt(sPos.x, (dPos.y || 0) + hy, sPos.z);
+
+      [-1, 1].forEach(function(sg){
+        var arcGeo = new THREE.TorusGeometry(0.56, 0.026, 8, 32, Math.PI * 0.96);
+        var arcMat = new THREE.MeshBasicMaterial({ color:sg < 0 ? 0xa3e635 : 0xfacc15, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+        var arc = new THREE.Mesh(arcGeo, arcMat);
+        arc.rotation.set(0.32, sg * 0.28, sg * 0.74 - Math.PI * 0.45);
+        arc.userData.sg = sg;
+        g.add(addPart(arc, arcGeo, arcMat, 'sc_blade'));
+
+        var innerGeo = new THREE.TorusGeometry(0.54, 0.012, 6, 28, Math.PI * 0.88);
+        var innerMat = new THREE.MeshBasicMaterial({ color:0xfefce8, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+        var inner = new THREE.Mesh(innerGeo, innerMat);
+        inner.rotation.copy(arc.rotation);
+        inner.userData.sg = sg;
+        g.add(addPart(inner, innerGeo, innerMat, 'sc_blade'));
+      });
+
+      var scHubGeo = new THREE.SphereGeometry(0.12, 12, 10);
+      var scHubMat = new THREE.MeshBasicMaterial({ color:0xecfccb, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+      g.add(addPart(new THREE.Mesh(scHubGeo, scHubMat), scHubGeo, scHubMat, 'xc_hub'));
+
+      for(var sci = 0; sci < 8; sci++){
+        var scA = (sci / 8) * Math.PI * 2;
+        var scSpkGeo = new THREE.CylinderGeometry(0.014, 0.003, 0.38, 5);
+        var scSpkMat = new THREE.MeshBasicMaterial({ color:sci % 2 === 0 ? 0xbef264 : 0xfde047, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+        var scSpk = new THREE.Mesh(scSpkGeo, scSpkMat);
+        var scDir = new THREE.Vector3(Math.cos(scA), Math.sin(scA), 0.16).normalize();
+        scSpk.quaternion.setFromUnitVectors(V_UP, scDir);
+        scSpk.userData.dir = scDir;
+        g.add(addPart(scSpk, scSpkGeo, scSpkMat, 'xc_spark'));
+      }
+
+      vfxGroup.add(g);
+      activeCues.push({ vfxKind:'arthro_scythe_cross', group:g, parts:parts, t:0, dur:0.48 });
+      return;
+    }
+
+    if(vfxKind === 'arthro_horn_gore' || vfxKind === 'arthro_ram_shock'){
+      var isGore = (vfxKind === 'arthro_horn_gore');
+      g.position.set(dPos.x, 0, dPos.z);
+
+      var shGeo1 = new THREE.RingGeometry(0.28, 0.46, 48);
+      var shMat1 = new THREE.MeshBasicMaterial({ color:0xf59e0b, transparent:true, opacity:0.92, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      var sh1 = new THREE.Mesh(shGeo1, shMat1);
+      sh1.rotation.x = -Math.PI / 2;
+      sh1.position.y = 0.02;
+      g.add(addPart(sh1, shGeo1, shMat1, 'hg_ring1'));
+
+      var shGeo2 = new THREE.RingGeometry(0.16, 0.28, 36);
+      var shMat2 = new THREE.MeshBasicMaterial({ color:0xfef3c7, transparent:true, opacity:0.88, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      var sh2 = new THREE.Mesh(shGeo2, shMat2);
+      sh2.rotation.x = -Math.PI / 2;
+      sh2.position.y = 0.026;
+      g.add(addPart(sh2, shGeo2, shMat2, 'hg_ring2'));
+
+      if(isGore){
+        var goreArcGeo = new THREE.TorusGeometry(0.62, 0.028, 8, 28, Math.PI * 0.85);
+        var goreArcMat = new THREE.MeshBasicMaterial({ color:0xfcd34d, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+        var goreArc = new THREE.Mesh(goreArcGeo, goreArcMat);
+        goreArc.position.y = 0.95;
+        goreArc.rotation.y = Math.PI / 2;
+        g.add(addPart(goreArc, goreArcGeo, goreArcMat, 'hg_arc'));
+      } else {
+        var ramWaveGeo = new THREE.RingGeometry(0.32, 0.52, 32);
+        var ramWaveMat = new THREE.MeshBasicMaterial({ color:0xfbbf24, transparent:true, opacity:0.90, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+        var ramWave = new THREE.Mesh(ramWaveGeo, ramWaveMat);
+        ramWave.position.y = 1.02;
+        ramWave.lookAt(sPos.x, 1.02, sPos.z);
+        g.add(addPart(ramWave, ramWaveGeo, ramWaveMat, 'hg_wave'));
+      }
+
+      for(var hi = 0; hi < 12; hi++){
+        var hAng = (hi / 12) * Math.PI * 2 + 0.2;
+        var shdGeo = new THREE.OctahedronGeometry(0.055, 0);
+        var shdMat = new THREE.MeshBasicMaterial({ color:hi % 3 === 0 ? 0xfde68a : hi % 3 === 1 ? 0xd97706 : 0x92400e, transparent:true, opacity:0.94, depthWrite:false });
+        var shd = new THREE.Mesh(shdGeo, shdMat);
+        shd.userData.vx = Math.cos(hAng) * (isGore ? 0.65 : 1.15);
+        shd.userData.vy = isGore ? (1.65 + (hi % 4) * 0.35) : (0.85 + (hi % 3) * 0.28);
+        shd.userData.vz = Math.sin(hAng) * (isGore ? 0.65 : 1.15);
+        shd.position.set(Math.cos(hAng) * 0.18, 0.24, Math.sin(hAng) * 0.18);
+        g.add(addPart(shd, shdGeo, shdMat, 'hg_shard'));
+      }
+
+      vfxGroup.add(g);
+      activeCues.push({ vfxKind:vfxKind, group:g, parts:parts, t:0, dur:0.64 });
+      return;
+    }
+
+    // arthro_sting_lance or arthro_fang_bite
+    var stStart = new THREE.Vector3(sPos.x, (sPos.y || 0) + (vfxKind === 'arthro_sting_lance' ? 1.34 : 1.28), sPos.z);
+    var stEnd = new THREE.Vector3(dPos.x, (dPos.y || 0) + hy, dPos.z);
+    var stDir = stEnd.clone().sub(stStart);
+    var stLen = Math.max(0.55, stDir.length() * 0.72);
+    stDir.normalize();
+    var stMid = stEnd.clone().addScaledVector(stDir, -stLen * 0.38);
+
+    var lanceGeo = new THREE.ConeGeometry(0.055, stLen, 8);
+    var lanceMat = new THREE.MeshBasicMaterial({ color:vfxKind === 'arthro_sting_lance' ? 0xfacc15 : 0xfbbf24, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+    var lance = new THREE.Mesh(lanceGeo, lanceMat);
+    lance.position.copy(stMid);
+    lance.quaternion.setFromUnitVectors(V_UP, stDir);
+    g.add(addPart(lance, lanceGeo, lanceMat, 'sl_lance'));
+
+    var venomHaloGeo = new THREE.SphereGeometry(0.20, 14, 12);
+    var venomHaloMat = new THREE.MeshBasicMaterial({ color:vfxKind === 'arthro_sting_lance' ? 0xef4444 : 0x84cc16, transparent:true, opacity:0.78, blending:addBlend, depthWrite:false });
+    var venomHalo = new THREE.Mesh(venomHaloGeo, venomHaloMat);
+    venomHalo.position.copy(stEnd);
+    g.add(addPart(venomHalo, venomHaloGeo, venomHaloMat, 'sl_halo'));
+
+    for(var sli = 0; sli < 8; sli++){
+      var slA = (sli / 8) * Math.PI * 2;
+      var slSpkGeo = new THREE.CylinderGeometry(0.015, 0.003, 0.40, 5);
+      var slSpkMat = new THREE.MeshBasicMaterial({ color:sli % 2 === 0 ? 0xfef08a : 0xf87171, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+      var slSpk = new THREE.Mesh(slSpkGeo, slSpkMat);
+      var slDv = new THREE.Vector3(Math.cos(slA), Math.sin(slA), 0.25).normalize();
+      slSpk.quaternion.setFromUnitVectors(V_UP, slDv);
+      slSpk.userData.dir = slDv;
+      slSpk.userData.origin = stEnd.clone();
+      g.add(addPart(slSpk, slSpkGeo, slSpkMat, 'sl_spark'));
+    }
+
+    vfxGroup.add(g);
+    activeCues.push({ vfxKind:vfxKind, group:g, parts:parts, t:0, dur:0.48 });
+  }
+
   function spawnCue(outcome, y, pos){
     if(!vfxGroup) return;
     var g = new THREE.Group();
@@ -1430,6 +1853,130 @@
             p.mat.opacity = p.baseOpacity * domeFade;
           }
         });
+      } else if(c.vfxKind === 'dorsal_tri_beam'){
+        var pulse = 0.84 + 0.22 * Math.sin(c.t * 46.0);
+        var bFade = u < 0.72 ? 1.0 : Math.max(0, (1 - u) / 0.28);
+        c.beams.forEach(function(bm){ bm.radScale = (0.85 + 0.35 * pulse) * (1 - u * 0.25); });
+        rebuildTriBeams(c);
+        c.parts.forEach(function(p){
+          if(p.kind === 'tb_beam'){
+            p.mat.opacity = p.baseOpacity * bFade * pulse;
+          } else if(p.kind === 'tb_muzzle' || p.kind === 'tb_target_core'){
+            p.mesh.scale.setScalar(0.88 + 0.36 * pulse);
+            p.mat.opacity = p.baseOpacity * bFade;
+          } else if(p.kind === 'tb_ring'){
+            p.mesh.rotation.z += dt * 10.5;
+            p.mesh.rotation.x += dt * 6.0;
+            p.mesh.scale.setScalar(0.75 + ease * 1.25);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'tb_ground'){
+            p.mesh.scale.setScalar(0.65 + ease * 3.2);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'thorax_x_crusher'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'xc_bar'){
+            p.mesh.scale.set(1.25 - u * 0.55, 0.65 + ease * 0.75, 1.0);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'xc_hub'){
+            p.mesh.scale.setScalar(1.4 - u * 0.9);
+            p.mat.opacity = p.baseOpacity * (1 - u);
+          } else if(p.kind === 'xc_ring'){
+            p.mesh.scale.setScalar(0.65 + ease * 2.65);
+            p.mesh.rotation.z = ease * 0.65;
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'xc_spark'){
+            p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.16 + ease * 0.58);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'arthro_venom_spit'){
+        var flightU = Math.min(1, u / 0.42);
+        V_A.lerpVectors(c.startV, c.endV, flightU);
+        V_A.y += Math.sin(flightU * Math.PI) * 0.26;
+        c.globGroup.position.copy(V_A);
+        for(var sk = 0; sk < c.silkSegs.length; sk++){
+          var t0 = Math.max(0, flightU - (sk + 1) * 0.16);
+          var t1 = Math.max(0.02, flightU - sk * 0.14);
+          V_P1.lerpVectors(c.startV, c.endV, t0); V_P1.y += Math.sin(t0 * Math.PI) * 0.26;
+          V_P2.lerpVectors(c.startV, c.endV, t1); V_P2.y += Math.sin(t1 * Math.PI) * 0.26;
+          orientSegment(c.silkSegs[sk], V_P1, V_P2, 1 - u * 0.35);
+        }
+        var spU = Math.max(0, (u - 0.30) / 0.70);
+        c.parts.forEach(function(p){
+          if(p.kind === 'vs_glob_core' || p.kind === 'vs_glob_halo'){
+            p.mesh.scale.setScalar(u < 0.42 ? (0.9 + flightU * 0.35) : Math.max(0.1, 1.25 - spU * 1.1));
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'vs_silk'){
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'vs_drop'){
+            p.mesh.visible = spU > 0;
+            if(spU > 0){
+              var dd = p.mesh.userData.dir;
+              p.mesh.position.set(dd.x * spU * 0.58, dd.y * spU * 0.46 - spU * spU * 0.42, dd.z * spU * 0.58);
+              p.mat.opacity = p.baseOpacity * (1 - spU);
+            }
+          } else if(p.kind === 'vs_ring'){
+            p.mesh.visible = spU > 0;
+            p.mesh.scale.setScalar(0.55 + spU * 2.1);
+            p.mat.opacity = p.baseOpacity * (1 - spU);
+          }
+        });
+      } else if(c.vfxKind === 'arthro_scythe_cross'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'sc_blade'){
+            p.mesh.rotation.z += p.mesh.userData.sg * dt * 6.2;
+            p.mesh.scale.setScalar(0.78 + ease * 0.56);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'xc_hub'){
+            p.mesh.scale.setScalar(1.3 - u * 0.85);
+            p.mat.opacity = p.baseOpacity * (1 - u);
+          } else if(p.kind === 'xc_spark'){
+            p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.14 + ease * 0.52);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'arthro_horn_gore' || c.vfxKind === 'arthro_ram_shock'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'hg_ring1'){
+            p.mesh.scale.setScalar(0.55 + ease * 3.1);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'hg_ring2'){
+            p.mesh.scale.setScalar(0.45 + ease * 2.5);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'hg_arc'){
+            p.mesh.position.y = 0.65 + ease * 0.95;
+            p.mesh.scale.setScalar(0.75 + ease * 0.65);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'hg_wave'){
+            p.mesh.scale.setScalar(0.60 + ease * 2.25);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'hg_shard'){
+            var st = c.t;
+            p.mesh.position.set(
+              p.mesh.userData.vx * st,
+              Math.max(0.03, 0.20 + p.mesh.userData.vy * st - 3.2 * st * st),
+              p.mesh.userData.vz * st
+            );
+            p.mesh.rotation.x += dt * 8.0;
+            p.mesh.rotation.z += dt * 6.5;
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'arthro_sting_lance' || c.vfxKind === 'arthro_fang_bite'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'sl_lance'){
+            p.mesh.scale.set(1.2 - u * 0.55, 0.75 + ease * 0.55, 1.2 - u * 0.55);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'sl_halo'){
+            p.mesh.scale.setScalar(0.7 + ease * 1.35);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'sl_spark'){
+            p.mesh.position.copy(p.mesh.userData.origin).addScaledVector(p.mesh.userData.dir, 0.10 + ease * 0.48);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
       } else {
         c.parts.forEach(function(p){
           if(p.kind === 'ring'){
@@ -1509,7 +2056,15 @@
     lightning_blast: ['spell_cast', 'ual_throw', 'throw'],
     energy_burst:    ['taunt_chest', 'slash_charged', 'ual_sword_heavy'],
     astral_lance:    ['spear_thrust', 'thrust', 'attack'],
-    rift_claw:       ['claw_swipe', 'slash_right', 'attack']
+    rift_claw:       ['claw_swipe', 'slash_right', 'attack'],
+    thorax_quad_flurry: ['punch_combo_2', 'combo', 'ual_punch'],
+    thorax_pin_cleave:  ['axe_chop', 'slash_charged', 'ual_sword_heavy'],
+    thorax_aegis_viper: ['block_2', 'guard_block_2', 'thrust'],
+    thorax_x_crusher:   ['slash_charged', 'axe_chop', 'ual_sword_heavy'],
+    dorsal_mantis_impale: ['spear_thrust', 'thrust', 'attack'],
+    dorsal_scissor_shear: ['slash_right', 'ual_sword_a', 'attack'],
+    dorsal_canopy_parry:  ['parry', 'block_2', 'ual_sword_a'],
+    dorsal_tri_beam:      ['spell_cast', 'ual_throw', 'throw']
   };
 
   function resolveClip(fighter, name){
@@ -1537,6 +2092,11 @@
 
   function playFighterClip(fighter, clipName, fadeSec){
     if(!fighter || !fighter.fig) return Promise.resolve();
+    if(fighter.fig.isArthropod){
+      var arthroClip = fighter.fig.resolveClipName ? fighter.fig.resolveClipName(clipName) : clipName;
+      fighter.clip = arthroClip;
+      return fighter.fig.play(arthroClip);
+    }
     fighter.clip = clipName;
     var initial = resolveClip(fighter, clipName);
     var h = (fighter.preset && fighter.preset.hold) || {};
@@ -1562,6 +2122,13 @@
   function rebuildFighterAppearance(slot){
     if(!slot || !slot.fig) return Promise.resolve();
     var idle = fighterIdleClip(slot);
+    if(slot.fig.isArthropod){
+      if(slot.fig.setLimbState) slot.fig.setLimbState(slot.limbs);
+      slot.fig.looping = idle;
+      return playFighterClip(slot, idle, 0.08).then(function(){
+        if(slot.fig) slot.fig.update(0);
+      });
+    }
     return slot.fig.apply(buildRecord(slot.preset, slot)).then(function(){
       return slot.fig.hold(buildHoldSpec(slot, idle));
     }).then(function(){
@@ -1574,19 +2141,15 @@
 
   function ensureFighter(slot){
     var preset = slot.preset || FIGHTERS[0];
-    var bodyId = (preset.body && D.bodies[preset.body]) ? preset.body : 'mpfb_male';
-    if(slot.fig && slot.bodyId !== bodyId){
+    var wantArthro = !!(preset.arthropod && preset.fauna && window.KArthropodCombat);
+    var wantArthroId = wantArthro ? preset.id : null;
+    var bodyId = wantArthro ? ('arthro:' + preset.id) : ((preset.body && D.bodies[preset.body]) ? preset.body : 'mpfb_male');
+    if(slot.fig && (slot.bodyId !== bodyId || !!slot.fig.isArthropod !== wantArthro || slot.arthropodId !== wantArthroId)){
       host.scene.remove(slot.fig.group);
       slot.fig = null;
+      slot.arthropodId = null;
     }
     var idle = fighterIdleClip(slot);
-    if(!slot.fig){
-      slot.fig = new KCharFigure(D.bodies[bodyId], D.sliders, host.load);
-      slot.fig.looping = idle;
-      slot.bodyId = bodyId;
-      slot.fig.group.visible = active && (slot.idx < 2 || sandboxMode === '2v1');
-      host.scene.add(slot.fig.group);
-    }
     if(!slot.tag){
       var t = document.createElement('div');
       t.className = 'duel-tag';
@@ -1596,6 +2159,35 @@
       slot.tag = t;
     }
     slot.tag.querySelector('.dt-name').textContent = slot.side + ' · ' + (preset.short || preset.label);
+
+    if(wantArthro){
+      if(!slot.fig){
+        slot.fig = new window.KArthropodCombat.KArthropodFighter(preset, host);
+        slot.fig.looping = idle;
+        slot.bodyId = bodyId;
+        slot.arthropodId = wantArthroId;
+        slot.fig.group.visible = active && (slot.idx < 2 || sandboxMode === '2v1');
+        host.scene.add(slot.fig.group);
+      }
+      return slot.fig.load().then(function(){
+        if(slot.fig && slot.fig.setLimbState) slot.fig.setLimbState(slot.limbs);
+        slot.fig.looping = idle;
+        setFighterState(slot, 'GUARD');
+        positionFighters(1);
+        return playFighterClip(slot, idle, 0);
+      }).then(function(){
+        if(slot.fig) slot.fig.update(0);
+      });
+    }
+
+    if(!slot.fig){
+      slot.fig = new KCharFigure(D.bodies[bodyId], D.sliders, host.load);
+      slot.fig.looping = idle;
+      slot.bodyId = bodyId;
+      slot.arthropodId = null;
+      slot.fig.group.visible = active && (slot.idx < 2 || sandboxMode === '2v1');
+      host.scene.add(slot.fig.group);
+    }
     return slot.fig.apply(buildRecord(preset, slot)).then(function(){
       return slot.fig.hold(buildHoldSpec(slot, idle));
     }).then(function(){
@@ -1618,7 +2210,7 @@
 
   function fighterHoverY(slot){
     if(!slot || !slot.preset || !slot.preset.hover) return 0;
-    if(slot.clip === 'knock_down') return 0;
+    if(slot.clip === 'knock_down' || slot.clip === 'arthro_death_curl') return 0;
     return 0.10 + 0.032 * Math.sin(hoverClock * 2.5 + slot.idx * 1.9);
   }
 
@@ -1673,9 +2265,18 @@
   function linksForFighter(slot){
     var p = (slot && slot.preset) || {};
     var style = p.style || 'unarmed';
+    if(style === 'arthropod'){
+      var arch = p.archetype || null;
+      var aList = LINKS.filter(function(l){
+        return l.style === 'arthropod' && (!arch || !l.archetype || l.archetype === arch);
+      });
+      if(aList.length) return aList;
+    }
     var hold = p.hold || {};
     var list = LINKS.filter(function(l){
       if(l.style === style) return true;
+      if(style === 'thorax_4arm' && hold.R === 'axe' && l.attack === 'axe_chop') return true;
+      if(style === 'dorsal_4arm' && hold.R === 'sword' && l.attack === 'slash_left') return true;
       if(hold.L === 'shield' && l.style === 'shield') return true;
       if(style === 'sword' && l.attack === 'thrust') return true;
       return false;
@@ -1688,7 +2289,10 @@
     var stA = (attacker.preset && attacker.preset.stats) || {};
     var stD = (defender.preset && defender.preset.stats) || {};
     var stanceD = STANCES[defender.stance] || STANCES.balanced;
-    var atkScore = ((link.style === 'unarmed' || link.style === 'arcane') ? (stA.martial_arts || 55) : (stA.melee_atk || 55)) * ((STANCES[attacker.stance] && STANCES[attacker.stance].atk_mult) || 1);
+    var rawAtk = link.style === 'arthropod'
+      ? Math.max(stA.melee_atk || 55, stA.martial_arts || 55)
+      : ((link.style === 'unarmed' || link.style === 'arcane') ? (stA.martial_arts || 55) : (stA.melee_atk || 55));
+    var atkScore = rawAtk * ((STANCES[attacker.stance] && STANCES[attacker.stance].atk_mult) || 1);
     var defScore = (stD.melee_def || 55) * (stanceD.def_window || 1);
     var dodgeScore = (stD.dodge || 50) * (stanceD.def_window || 1);
     var roll = ((exSeq * 37 + pickCursor * 19) % 100) / 100;
@@ -1760,7 +2364,10 @@
     var badgeKind = entry.severedZone ? 'sever' : ex.outcome;
     var badgeTxt = entry.severedZone ? 'SEVERED!' : entry.guardBroken ? 'GUARD BREAK' : ex.outcome.toUpperCase();
     var metaBits = [];
-    if(entry.zone && entry.hpDelta) metaBits.push((ZONE_META[entry.zone] ? ZONE_META[entry.zone].short : entry.zone) + ' ' + entry.hpDelta + ' HP');
+    if(entry.zone && entry.hpDelta){
+      var zMetaLog = zoneMetaFor(F[ex.defender], entry.zone);
+      metaBits.push((zMetaLog ? zMetaLog.short : entry.zone) + ' ' + entry.hpDelta + ' HP');
+    }
     if(entry.poiseDelta) metaBits.push((ex.outcome === 'parry' ? 'Atk ' : 'Def ') + entry.poiseDelta + ' Poise');
     if(ex.note) metaBits.push(ex.note);
 
@@ -1816,9 +2423,16 @@
     var p = slot.preset || {};
     var stObj = STANCES[slot.stance] || STANCES.balanced;
     var pPct = Math.max(0, Math.min(100, Math.round((slot.poise / Math.max(1, slot.maxPoise)) * 100)));
-    var modLabel = p.four_arms ? '4-ARMS' : (slot.graftedMods.indexOf(CYBER_MOD) >= 0 || p.cyber_arms) ? 'CYBER' : p.hover ? 'HOVER' : p.style === 'arcane' ? 'ARCANE' : (p.hold && p.hold.R ? p.hold.R.toUpperCase() : 'MA');
+    var modLabel = p.arthropod
+      ? ((p.archetype ? p.archetype.toUpperCase() : 'ARTHRO') + (p.hover ? ' · FLY' : ''))
+      : p.dorsal_4arm ? 'DORSAL 4A'
+      : p.four_arms ? 'THORAX 4A'
+      : (slot.graftedMods.indexOf(CYBER_MOD) >= 0 || p.cyber_arms) ? 'CYBER'
+      : p.hover ? 'HOVER'
+      : p.style === 'arcane' ? 'ARCANE'
+      : (p.hold && p.hold.R ? p.hold.R.toUpperCase() : 'MA');
     var limbsHtml = ZONES.map(function(z){
-      var zm = ZONE_META[z] || { short:z };
+      var zm = zoneMetaFor(slot, z);
       var info = limbClassAndTag(slot.limbs[z]);
       return '<div class="df-limb ' + info.cls + '" title="' + (zm.label || z) + ': ' + slot.limbs[z].hp + '/' + slot.limbs[z].max + ' HP">' +
         '<span>' + zm.short + '</span><i><b style="width:' + info.w + '%"></b></i><em>' + info.tag + '</em></div>';
@@ -1911,13 +2525,18 @@
     ex.outcome = kind; // 'parry' | 'dodge'
     var outSpec = ex.link.outcomes[kind] || ex.link.outcomes.dodge || ex.link.outcomes.block;
     ex.reactClip = pickClip(outSpec && outSpec.clips) || (kind === 'parry' ? 'parry' : 'dodge_step');
-    var riposte = (outSpec && (outSpec.riposte || outSpec.counter)) || (F[ex.defender].preset.style === 'unarmed' ? 'counterstrike' : 'ual_sword_a');
+    var riposte = isArthropodFighter(F[ex.defender])
+      ? (window.KArthropodCombat ? window.KArthropodCombat.counterForArchetype(F[ex.defender].preset.archetype) : 'spider_rear_bite')
+      : ((outSpec && (outSpec.riposte || outSpec.counter)) || (F[ex.defender].preset.style === 'unarmed' ? 'counterstrike' : 'ual_sword_a'));
     ex.counterClip = riposte;
     ex.followupClip = null;
     ex.reacted = true;
 
     setFighterState(F[ex.defender], kind.toUpperCase());
     playFighterClip(F[ex.defender], ex.reactClip, 0.05);
+    if(kind === 'parry' && isFourLimbFighter(F[ex.defender]) && F[ex.defender].fig && F[ex.defender].fig.playFourArmMove){
+      F[ex.defender].fig.playFourArmMove(isDorsalFighter(F[ex.defender]) ? 'dorsal_canopy_parry' : 'thorax_mid_parry', 0.50);
+    }
     var reactDur = Math.min(1.35, clipDur(F[ex.defender], ex.reactClip));
     ex.chainT = ex.elapsed + Math.max(0.28, reactDur * 0.55);
     ex.defEndT = ex.elapsed + reactDur + 0.9;
@@ -2030,7 +2649,9 @@
 
     var wantCounter = (opts && opts.counter !== undefined) ? opts.counter : !!(outSpec.counter || outSpec.riposte);
     var counterClip = null;
-    if(outcome === 'parry'){
+    if(isArthropodFighter(F[def]) && (outcome === 'parry' || (outcome === 'dodge' && wantCounter))){
+      counterClip = window.KArthropodCombat ? window.KArthropodCombat.counterForArchetype(F[def].preset.archetype) : 'spider_rear_bite';
+    } else if(outcome === 'parry'){
       counterClip = outSpec.riposte || outSpec.counter || ((F[def].preset.style === 'unarmed' || F[def].preset.style === 'arcane') ? 'counterstrike' : 'ual_sword_a');
     } else if(outcome === 'dodge' && wantCounter){
       counterClip = isFlankOverlap ? 'dodge_counter' : (outSpec.counter || null);
@@ -2108,11 +2729,14 @@
     setFighterState(F[atk], 'ATTACK');
     if(!isFlankOverlap) setFighterState(F[def], 'GUARD');
     playFighterClip(F[atk], animKey, 0.08);
+    if(link.four_arm_move && F[atk].fig && F[atk].fig.playFourArmMove){
+      F[atk].fig.playFourArmMove(link.four_arm_move, atkDur);
+    }
 
     // Exchange start (windup) SFX
     sfxClock += 0.07;
     if(link.attack === 'energy_burst') playSfx('energy_burst_charge');
-    else if(link.attack === 'lightning_blast') playSfx('lightning_blast');
+    else if(link.attack === 'lightning_blast' || link.attack === 'dorsal_tri_beam') playSfx('lightning_blast');
     else if(link.attack === 'bow_shot') playSfx('bow_shot');
     else if(link.attack === 'gun_shot') playSfx('gun_shot');
     else playSfx('windup_whoosh');
@@ -2132,6 +2756,54 @@
   }
 
   function nextAutoStep(){
+    var hasArthropod1v1 = sandboxMode === '1v1' && (isArthropodFighter(F[0]) || isArthropodFighter(F[1]));
+    if((arthropodDemo || hasArthropod1v1) && sandboxMode === '1v1' && ARTHRO_CHOREO.length && outcomeMode === 'choreo'){
+      var aStep = ARTHRO_CHOREO[choreoIdx % ARTHRO_CHOREO.length];
+      var stepOrd = choreoIdx;
+      choreoIdx++;
+      var bothArthro = isArthropodFighter(F[0]) && isArthropodFighter(F[1]);
+      var aAtkSlot = aStep.attacker;
+      if(!bothArthro){
+        var arthroSlotIdx = isArthropodFighter(F[1]) ? 1 : 0;
+        var humanSlotIdx = arthroSlotIdx === 1 ? 0 : 1;
+        aAtkSlot = (aStep.role === 'challenger' || aStep.attacker === 0) ? humanSlotIdx : arthroSlotIdx;
+      }
+      var aPool = linksForFighter(F[aAtkSlot]);
+      var chosenAtkKey = aStep.attack;
+      if(isArthropodFighter(F[aAtkSlot])){
+        var curArch = F[aAtkSlot].preset && F[aAtkSlot].preset.archetype;
+        var candLink = LINK_BY_KEY[chosenAtkKey];
+        if(!candLink || candLink.style !== 'arthropod' || (curArch && candLink.archetype && candLink.archetype !== curArch)){
+          var slotPick = aStep.slot != null ? aStep.slot : stepOrd;
+          chosenAtkKey = aPool[slotPick % aPool.length].attack;
+        }
+      } else {
+        var oppSlot = F[aAtkSlot === 0 ? 1 : 0];
+        if(oppSlot && oppSlot.preset && oppSlot.preset.hover && F[aAtkSlot].preset && F[aAtkSlot].preset.style === 'unarmed' && (stepOrd % 4 === 3)){
+          chosenAtkKey = 'leg_sweep';
+        } else if(!aPool.some(function(l){ return l.attack === chosenAtkKey; })){
+          chosenAtkKey = aPool[stepOrd % aPool.length].attack;
+        }
+      }
+      var aForced = (outcomeMode !== 'choreo' && outcomeMode !== 'sim') ? outcomeMode : aStep.outcome;
+      var stepNote = (chosenAtkKey === aStep.attack) ? aStep.note : ((LINK_BY_KEY[chosenAtkKey] && LINK_BY_KEY[chosenAtkKey].label) || '');
+      trigger(chosenAtkKey, aForced, aAtkSlot, { counter:aStep.counter, note:stepNote });
+      return;
+    }
+    var hasFourArmPair = sandboxMode === '1v1' && isFourLimbFighter(F[0]) && isFourLimbFighter(F[1]);
+    if((fourArmDemo || hasFourArmPair) && FOURARM_CHOREO.length && outcomeMode === 'choreo'){
+      var fStep = FOURARM_CHOREO[choreoIdx % FOURARM_CHOREO.length];
+      choreoIdx++;
+      var fAtkSlot = fStep.attacker;
+      var fLink = LINK_BY_KEY[fStep.attack];
+      if(fLink && fLink.style === 'dorsal_4arm' && isDorsalFighter(F[0]) && !isDorsalFighter(F[1])) fAtkSlot = 0;
+      else if(fLink && fLink.style === 'dorsal_4arm' && isDorsalFighter(F[1]) && !isDorsalFighter(F[0])) fAtkSlot = 1;
+      else if(fLink && fLink.style === 'thorax_4arm' && !isDorsalFighter(F[0]) && isDorsalFighter(F[1])) fAtkSlot = 0;
+      else if(fLink && fLink.style === 'thorax_4arm' && !isDorsalFighter(F[1]) && isDorsalFighter(F[0])) fAtkSlot = 1;
+      var fForced = (outcomeMode !== 'choreo' && outcomeMode !== 'sim') ? outcomeMode : fStep.outcome;
+      trigger(fStep.attack, fForced, fAtkSlot, { counter:fStep.counter, note:fStep.note });
+      return;
+    }
     var hasArcane = (F[0].preset && F[0].preset.style === 'arcane') || (F[1].preset && F[1].preset.style === 'arcane');
     if((extraplanarDemo || (sandboxMode === '1v1' && hasArcane)) && EXTRA_CHOREO.length && outcomeMode === 'choreo'){
       var eStep = EXTRA_CHOREO[choreoIdx % EXTRA_CHOREO.length];
@@ -2237,6 +2909,9 @@
         ex.reacted = true;
         setFighterState(F[ex.defender], ex.outcome.toUpperCase());
         playFighterClip(F[ex.defender], ex.reactClip, 0.07);
+        if((ex.outcome === 'block' || ex.outcome === 'parry') && isFourLimbFighter(F[ex.defender]) && F[ex.defender].fig && F[ex.defender].fig.playFourArmMove){
+          F[ex.defender].fig.playFourArmMove(isDorsalFighter(F[ex.defender]) ? 'dorsal_canopy_parry' : 'thorax_mid_parry', 0.50);
+        }
         var dodgeReacted = (ex.outcome === 'dodge');
         if(ex.extraDefs && ex.extraDefs.length){
           ex.extraDefs.forEach(function(ed){
@@ -2244,6 +2919,9 @@
             if(ed.outcome === 'dodge') dodgeReacted = true;
             setFighterState(F[ed.idx], ed.outcome.toUpperCase());
             playFighterClip(F[ed.idx], ed.reactClip, 0.07);
+            if((ed.outcome === 'block' || ed.outcome === 'parry') && isFourLimbFighter(F[ed.idx]) && F[ed.idx].fig && F[ed.idx].fig.playFourArmMove){
+              F[ed.idx].fig.playFourArmMove(isDorsalFighter(F[ed.idx]) ? 'dorsal_canopy_parry' : 'thorax_mid_parry', 0.50);
+            }
           });
         }
         if(dodgeReacted) playSfx('dodge_step');
@@ -2259,7 +2937,8 @@
           playSfx('block_shield');
         } else if(ex.outcome === 'hit'){
           if(ex.link.attack === 'energy_burst') playSfx('energy_burst_boom');
-          else if(ex.link.attack === 'lightning_blast') playSfx('lightning_blast');
+          else if(ex.link.attack === 'lightning_blast' || ex.link.attack === 'dorsal_tri_beam') playSfx('lightning_blast');
+          else if(ex.link.sfx) playSfx(ex.link.sfx);
           else if(ex.link.dmg_type === 'cut' || ex.link.dmg_type === 'pierce') playSfx('hit_cut');
           else playSfx('hit_blunt');
         }
@@ -2267,7 +2946,7 @@
         if(dmgRes.severedZone) playSfx('sever_limb');
         var cuePos = F[ex.defender].fig ? F[ex.defender].fig.group.position.clone().lerp(F[ex.attacker].fig.group.position, 0.35) : null;
 
-        // Spectacular Extraplanar 3D VFX at contact
+        // Spectacular Extraplanar & 4-Limb 3D VFX at contact
         if(ex.link.vfx === 'lightning_blast'){
           spawnLightningBlastVfx(F[ex.attacker], F[ex.defender], ex.outcome);
         } else if(ex.link.vfx === 'energy_burst'){
@@ -2276,6 +2955,12 @@
           spawnAstralLanceVfx(F[ex.attacker], F[ex.defender]);
         } else if(ex.link.vfx === 'rift_claw'){
           spawnRiftClawVfx(F[ex.defender]);
+        } else if(ex.link.vfx === 'dorsal_tri_beam'){
+          spawnDorsalTriBeamVfx(F[ex.attacker], F[ex.defender]);
+        } else if(ex.link.vfx === 'thorax_x_crusher'){
+          spawnThoraxXCrusherVfx(F[ex.attacker], F[ex.defender]);
+        } else if(ex.link.vfx && /^arthro_/.test(ex.link.vfx)){
+          spawnArthropodVfx(ex.link.vfx, F[ex.attacker], F[ex.defender], ex.link.hit_y);
         }
 
         // True AoE secondary targets in 2v1 Flank
@@ -2303,7 +2988,7 @@
           ex.note = '✨ HOVER IMMUNE — Sweep Resisted! (light Poise chip)';
           hitStopTimer = 0.035;
         } else if(ex.trauma.severedZone){
-          var zLbl = (ZONE_META[ex.trauma.severedZone] && ZONE_META[ex.trauma.severedZone].label) || ex.trauma.severedZone;
+          var zLbl = zoneMetaFor(F[ex.defender], ex.trauma.severedZone).label || ex.trauma.severedZone;
           spawnCue('sever', ex.link.hit_y || 1.22, cuePos);
           showCallout('🩸 ' + zLbl.toUpperCase() + ' SEVERED!', 'sever');
           hitStopTimer = 0.075;
@@ -2319,6 +3004,18 @@
             showCallout('⚡ ASTRAL LIGHTNING BLAST!', 'arcane');
           } else if(ex.link.vfx === 'energy_burst' && ex.outcome === 'hit'){
             showCallout('💥 SINGULARITY ENERGY BURST!', 'arcane');
+          } else if(ex.link.vfx === 'dorsal_tri_beam' && ex.outcome === 'hit'){
+            showCallout('⚡ DORSAL TRI-BEAM CONVERGENCE!', 'arcane');
+          } else if(ex.link.vfx === 'thorax_x_crusher' && ex.outcome === 'hit'){
+            showCallout('💥 4-QUADRANT X-CRUSHER SLAM!', 'parry');
+          } else if(ex.link.vfx === 'arthro_venom_spit' && ex.outcome === 'hit'){
+            showCallout('🧪 ACID-SILK VENOM VOLLEY!', 'dodge');
+          } else if(ex.link.vfx === 'arthro_scythe_cross' && ex.outcome === 'hit'){
+            showCallout('🦗 TWIN RAPTORIAL SCYTHE-SNAP!', 'parry');
+          } else if(ex.link.vfx === 'arthro_horn_gore' && ex.outcome === 'hit'){
+            showCallout('🪲 STAGHORN SKYWARD GORE-TOSS!', 'parry');
+          } else if(ex.link.vfx === 'arthro_sting_lance' && ex.outcome === 'hit'){
+            showCallout('🐝 AERIAL STINGER JACKHAMMER!', 'sever');
           } else {
             spawnCue(ex.outcome, ex.link.hit_y || 1.18, cuePos);
           }
@@ -2349,7 +3046,11 @@
           ex.defEndT = ex.elapsed + fDur - 0.08;
         } else if(ex.counterClip){
           setFighterState(F[ex.defender], ex.outcome === 'parry' ? 'RIPOSTE' : 'COUNTER');
-          playFighterClip(F[ex.defender], ex.counterClip, 0.08);
+          var cLinkObj = LINK_BY_KEY[ex.counterClip];
+          playFighterClip(F[ex.defender], (cLinkObj && cLinkObj.clip) || ex.counterClip, 0.08);
+          if(cLinkObj && cLinkObj.four_arm_move && F[ex.defender].fig && F[ex.defender].fig.playFourArmMove){
+            F[ex.defender].fig.playFourArmMove(cLinkObj.four_arm_move, 0.92);
+          }
           ex.defEndT = ex.elapsed + 1.05;
           ex.counterHitAt = ex.elapsed + 0.36;
         }
@@ -2448,14 +3149,15 @@
   /* ---- Shadow & Camera Framing ---- */
   function frameDuelStage(){
     if(!host) return;
+    var hasArthro = isArthropodFighter(F[0]) || isArthropodFighter(F[1]) || (sandboxMode === '2v1' && isArthropodFighter(F[2]));
     if(host.keyLight){
       var sc = host.keyLight.shadow.camera;
-      sc.left = -3.4; sc.right = 3.4; sc.bottom = -2.2; sc.top = 3.2;
+      sc.left = -3.8; sc.right = 3.8; sc.bottom = -2.4; sc.top = 3.4;
       sc.updateProjectionMatrix();
     }
     host.cam.want.yaw = sandboxMode === '2v1' ? 0.34 : 0.24;
-    host.cam.want.pitch = sandboxMode === '2v1' ? 0.22 : 0.16;
-    host.cam.want.dist = sandboxMode === '2v1' ? 4.55 : 3.95;
+    host.cam.want.pitch = sandboxMode === '2v1' ? 0.22 : (hasArthro ? 0.19 : 0.16);
+    host.cam.want.dist = sandboxMode === '2v1' ? (hasArthro ? 5.35 : 4.55) : (hasArthro ? 4.85 : 3.95);
     host.cam.want.x = 0;
     host.cam.want.ty = 0.96;
   }
@@ -2545,7 +3247,11 @@
     var selId = slotIdx === 0 ? 'duel-fa' : slotIdx === 1 ? 'duel-fb' : 'duel-fc';
     if($(selId)) $(selId).value = p.id;
     extraplanarDemo = (F[0].preset && F[0].preset.style === 'arcane') || (F[1].preset && F[1].preset.style === 'arcane');
+    fourArmDemo = isFourLimbFighter(F[0]) && isFourLimbFighter(F[1]);
+    arthropodDemo = isArthropodFighter(F[0]) || isArthropodFighter(F[1]);
     if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', extraplanarDemo);
+    if($('dhud-fourarm-btn')) $('dhud-fourarm-btn').setAttribute('aria-pressed', fourArmDemo);
+    if($('dhud-arthropod-btn')) $('dhud-arthropod-btn').setAttribute('aria-pressed', arthropodDemo);
     populateAttackButtons();
     if(!active || !host){
       refreshHudCards();
@@ -2612,6 +3318,10 @@
 
   function startExtraplanarDemo(opts){
     extraplanarDemo = true;
+    fourArmDemo = false;
+    arthropodDemo = false;
+    if($('dhud-fourarm-btn')) $('dhud-fourarm-btn').setAttribute('aria-pressed', 'false');
+    if($('dhud-arthropod-btn')) $('dhud-arthropod-btn').setAttribute('aria-pressed', 'false');
     if(opts && (opts.mode === '2v1' || opts.mode === '1v1')){
       sandboxMode = opts.mode;
       Array.prototype.forEach.call(document.querySelectorAll('[data-duel-mode]'), function(b){
@@ -2687,6 +3397,186 @@
       appendSystemLog('⚡ Extraplanar Boss Demo: Singularity Archon [arcane / hover] vs Crimson Monk!');
       restTimer = 0.12;
       nextAutoStep();
+      return true;
+    });
+  }
+
+  function startFourArmDemo(opts){
+    fourArmDemo = true;
+    extraplanarDemo = false;
+    arthropodDemo = false;
+    if(opts && (opts.mode === '2v1' || opts.mode === '1v1')){
+      sandboxMode = opts.mode;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-duel-mode]'), function(b){
+        b.setAttribute('aria-pressed', b.dataset.duelMode === sandboxMode);
+      });
+      var fcWrap = $('duel-fc-wrap'), fGrid = $('duel-fgrid');
+      if(fcWrap) fcWrap.hidden = (sandboxMode !== '2v1');
+      if(fGrid) fGrid.classList.toggle('three', sandboxMode === '2v1');
+    }
+    if($('dhud-fourarm-btn')) $('dhud-fourarm-btn').setAttribute('aria-pressed', 'true');
+    if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', 'false');
+    if($('dhud-arthropod-btn')) $('dhud-arthropod-btn').setAttribute('aria-pressed', 'false');
+
+    var pThorax = findPreset((opts && opts.fighterA) || 'loader_enforcer', 0);
+    var pDorsal = findPreset((opts && opts.fighterB) || 'reliquary_lich', 1);
+    if(pThorax){
+      F[0].preset = pThorax;
+      F[0].graftedMods = [];
+      initFighterStats(F[0]);
+      if($('duel-fa')) $('duel-fa').value = pThorax.id;
+    }
+    if(pDorsal){
+      F[1].preset = pDorsal;
+      F[1].graftedMods = [];
+      initFighterStats(F[1]);
+      if($('duel-fb')) $('duel-fb').value = pDorsal.id;
+    }
+    if(sandboxMode === '2v1'){
+      var pFlank = findPreset((opts && opts.fighterC) || 'mantis_stalker', 2);
+      if(pFlank){
+        F[2].preset = pFlank;
+        if($('duel-fc')) $('duel-fc').value = pFlank.id;
+      }
+      F[2].graftedMods = [];
+      initFighterStats(F[2]);
+    }
+
+    tacticalPause = false;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tactical-pause]'), function(b){
+      b.setAttribute('aria-pressed', 'false');
+      b.textContent = '⏸ Pause (Space)';
+    });
+    setOutcomeMode('choreo');
+    setAutoBout(true);
+    manualAttacker = 0;
+    if($('duel-swap')) $('duel-swap').textContent = 'Atk: A → B';
+    choreoIdx = 0;
+    activeExchanges = [];
+    clearCues();
+
+    var boot = active
+      ? (function(){
+          ready = false;
+          var ld = $('loading');
+          if(ld){ ld.hidden = false; ld.textContent = 'Equipping Thorax vs Dorsal 4-Limb Showcase…'; }
+          return Promise.all(visibleFighters().map(function(s){ return ensureFighter(s); }).concat([ensureSfxBundle()])).then(function(){
+            visibleFighters().forEach(function(s){
+              if(s.fig) s.fig.group.visible = true;
+              if(s.tag) s.tag.hidden = false;
+            });
+            ready = true;
+            if(ld) ld.hidden = true;
+          });
+        })()
+      : enter();
+
+    return boot.then(function(){
+      if(!active) return false;
+      curDist = targetDist = 1.24;
+      positionFighters(1);
+      if(host){
+        host.cam.want.yaw = sandboxMode === '2v1' ? 0.34 : 0.26;
+        host.cam.want.pitch = 0.18;
+        host.cam.want.dist = sandboxMode === '2v1' ? 4.65 : 3.95;
+        host.cam.want.ty = 1.00;
+      }
+      populateAttackButtons();
+      refreshHudCards();
+      showCallout('🦾 4-LIMB SHOWCASE · THORAX vs DORSAL', 'parry');
+      appendSystemLog('🦾 4-Limb Combat Showcase: ' + (F[0].preset.label) + ' [Thorax] vs ' + (F[1].preset.label) + ' [Dorsal]!');
+      restTimer = 0.10;
+      if(autoBout) nextAutoStep();
+      return true;
+    });
+  }
+
+  function startArthropodDemo(opts){
+    arthropodDemo = true;
+    fourArmDemo = false;
+    extraplanarDemo = false;
+    if(opts && (opts.mode === '2v1' || opts.mode === '1v1')){
+      sandboxMode = opts.mode;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-duel-mode]'), function(b){
+        b.setAttribute('aria-pressed', b.dataset.duelMode === sandboxMode);
+      });
+      var fcWrap = $('duel-fc-wrap'), fGrid = $('duel-fgrid');
+      if(fcWrap) fcWrap.hidden = (sandboxMode !== '2v1');
+      if(fGrid) fGrid.classList.toggle('three', sandboxMode === '2v1');
+    }
+    if($('dhud-arthropod-btn')) $('dhud-arthropod-btn').setAttribute('aria-pressed', 'true');
+    if($('dhud-fourarm-btn')) $('dhud-fourarm-btn').setAttribute('aria-pressed', 'false');
+    if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', 'false');
+
+    var pLead = findPreset((opts && opts.fighterA) || 'iziz_legionary', 0);
+    var pArthro = findPreset((opts && opts.fighterB) || 'bowl_mantis', 1);
+    if(pLead){
+      F[0].preset = pLead;
+      F[0].graftedMods = [];
+      initFighterStats(F[0]);
+      if($('duel-fa')) $('duel-fa').value = pLead.id;
+    }
+    if(pArthro){
+      F[1].preset = pArthro;
+      F[1].graftedMods = [];
+      initFighterStats(F[1]);
+      if($('duel-fb')) $('duel-fb').value = pArthro.id;
+    }
+    if(sandboxMode === '2v1'){
+      var pFlankA = findPreset((opts && opts.fighterC) || 'spider_matriarch', 2);
+      if(pFlankA){
+        F[2].preset = pFlankA;
+        if($('duel-fc')) $('duel-fc').value = pFlankA.id;
+      }
+      F[2].graftedMods = [];
+      initFighterStats(F[2]);
+    }
+
+    tacticalPause = false;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tactical-pause]'), function(b){
+      b.setAttribute('aria-pressed', 'false');
+      b.textContent = '⏸ Pause (Space)';
+    });
+    setOutcomeMode('choreo');
+    setAutoBout((opts && opts.autoBout === false) ? false : true);
+    manualAttacker = isArthropodFighter(F[1]) && !isArthropodFighter(F[0]) ? 1 : 0;
+    if($('duel-swap')) $('duel-swap').textContent = manualAttacker === 0 ? 'Atk: A → B' : 'Atk: B → A';
+    choreoIdx = 0;
+    activeExchanges = [];
+    clearCues();
+
+    var boot = active
+      ? (function(){
+          ready = false;
+          var ld = $('loading');
+          if(ld){ ld.hidden = false; ld.textContent = 'Unleashing Giant Arthropod Combat Trial…'; }
+          return Promise.all(visibleFighters().map(function(s){ return ensureFighter(s); }).concat([ensureSfxBundle()])).then(function(){
+            visibleFighters().forEach(function(s){
+              if(s.fig) s.fig.group.visible = true;
+              if(s.tag) s.tag.hidden = false;
+            });
+            ready = true;
+            if(ld) ld.hidden = true;
+          });
+        })()
+      : enter();
+
+    return boot.then(function(){
+      if(!active) return false;
+      curDist = targetDist = 1.98;
+      positionFighters(1);
+      if(host){
+        host.cam.want.yaw = sandboxMode === '2v1' ? 0.34 : 0.25;
+        host.cam.want.pitch = 0.19;
+        host.cam.want.dist = sandboxMode === '2v1' ? 5.15 : 4.55;
+        host.cam.want.ty = 1.00;
+      }
+      populateAttackButtons();
+      refreshHudCards();
+      showCallout('🐛 GIANT ARTHROPOD TRIAL · ' + (F[1].preset.short || 'ARTHROPOD').toUpperCase(), 'dodge');
+      appendSystemLog('🐛 Giant Arthropod Combat Trial: ' + F[0].preset.label + ' vs ' + F[1].preset.label + '!');
+      restTimer = 0.10;
+      if(autoBout) nextAutoStep();
       return true;
     });
   }
@@ -2770,6 +3660,8 @@
         '  </div>',
         '  <div class="dhud-pill-grp" role="group" aria-label="Extraplanar Boss Demo">',
         '    <button id="dhud-extraplanar-btn" aria-pressed="false" title="Launch Singularity Archon vs Crimson Monk Extraplanar Boss Demo">⚡ Extraplanar Demo</button>',
+        '    <button id="dhud-fourarm-btn" aria-pressed="false" title="Launch Loader-Rig Thorax Brawler vs Reliquary Cyber-Lich 4-Limb Showcase">🦾 4-Limb Demo</button>',
+        '    <button id="dhud-arthropod-btn" aria-pressed="false" title="Launch Rigged Giant Arthropod Combat Trial (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet)">🐛 Arthropod Trial</button>',
         '  </div>',
         '  <div class="dhud-pill-grp" role="group" aria-label="Attack Slots">',
         '    <button data-atk-slots="1" aria-pressed="false" title="Kenshi Vanilla: Strict 1-by-1 turn queue">Slots: 1</button>',
@@ -2802,6 +3694,8 @@
         if(!btn) return;
         if(btn.dataset.duelMode) setMode(btn.dataset.duelMode);
         else if(btn.id === 'dhud-extraplanar-btn') startExtraplanarDemo();
+        else if(btn.id === 'dhud-fourarm-btn') startFourArmDemo();
+        else if(btn.id === 'dhud-arthropod-btn') startArthropodDemo();
         else if(btn.dataset.atkSlots) setAttackSlots(+btn.dataset.atkSlots);
         else if(btn.dataset.tacticalPause) setTacticalPause(!tacticalPause);
         else if(btn.id === 'dhud-reset-hp') resetAllHP();
@@ -2875,6 +3769,9 @@
       '  <div id="duel-queue-note"></div>',
       '  <div class="duel-style-tabs" id="duel-style-tabs">',
       '    <button data-stf="auto" aria-pressed="true">Equipped</button>',
+      '    <button data-stf="arthropod" aria-pressed="false">Arthropod</button>',
+      '    <button data-stf="thorax_4arm" aria-pressed="false">Thorax 4A</button>',
+      '    <button data-stf="dorsal_4arm" aria-pressed="false">Dorsal 4A</button>',
       '    <button data-stf="unarmed" aria-pressed="false">MA</button>',
       '    <button data-stf="sword" aria-pressed="false">Sword</button>',
       '    <button data-stf="heavy" aria-pressed="false">Heavy</button>',
@@ -3034,11 +3931,16 @@
   function getState(){
     var primaryEx = activeExchanges[0] || null;
     var winEx = findWindupExchange();
+    var arthroSlot = visibleFighters().filter(function(s){ return isArthropodFighter(s); })[0] || null;
     return {
       active: active,
       ready: ready,
       mode: sandboxMode,
       extraplanarDemo: extraplanarDemo,
+      fourArmDemo: fourArmDemo,
+      arthropodDemo: arthropodDemo,
+      arthropodArchetype: (arthroSlot && arthroSlot.preset && arthroSlot.preset.archetype) || null,
+      arthropodClip: (arthroSlot && arthroSlot.fig && arthroSlot.fig.activeClip) || null,
       attackSlots: attackSlots,
       paused: tacticalPause,
       autoBout: autoBout,
@@ -3063,6 +3965,12 @@
           id: s.preset && s.preset.id,
           label: s.preset && s.preset.label,
           style: s.preset && s.preset.style,
+          fourArms: !!(s.fig && s.fig.fourArms),
+          hasDorsalArms: !!(s.fig && s.fig.hasDorsalArms),
+          fourArmMove: (s.fig && s.fig._faMove && s.fig._faMove.key) || null,
+          arthropod: isArthropodFighter(s),
+          arthropodArchetype: (s.preset && s.preset.archetype) || null,
+          arthropodClip: (s.fig && s.fig.activeClip) || null,
           hover: !!(s.preset && s.preset.hover),
           hold: (s.preset && s.preset.hold) || {},
           stance: s.stance,
@@ -3114,10 +4022,16 @@
       graftCyberArm: graftCyberArm,
       severLimb: severLimbNow,
       startExtraplanarDemo: startExtraplanarDemo,
+      startFourArmDemo: startFourArmDemo,
+      startArthropodDemo: startArthropodDemo,
       playSfx: playSfx,
       setSfxEnabled: setSfxEnabled
     };
-    if(/[?&]duel=extraplanar(?:&|$)/.test(location.search) || /duel=extraplanar/.test(location.hash)){
+    if(/[?&]duel=arthropods?(?:&|$)/.test(location.search) || /duel=arthropods?/.test(location.hash)){
+      startArthropodDemo();
+    } else if(/[?&]duel=fourarms(?:&|$)/.test(location.search) || /duel=fourarms/.test(location.hash)){
+      startFourArmDemo();
+    } else if(/[?&]duel=extraplanar(?:&|$)/.test(location.search) || /duel=extraplanar/.test(location.hash)){
       startExtraplanarDemo();
     } else if(/[?&]duel=1(?:&|$)/.test(location.search) || /duel=1/.test(location.hash)){
       enter();

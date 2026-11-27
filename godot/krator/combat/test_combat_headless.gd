@@ -4,6 +4,8 @@
 extends SceneTree
 
 const KCombatAudioScript = preload("res://krator/combat/kcombat_audio.gd")
+const KCombatFourArmsScript = preload("res://krator/combat/kcombat_fourarms.gd")
+const KCombatArthropodScript = preload("res://krator/combat/kcombat_arthropod.gd")
 
 var passed := 0
 var failed := 0
@@ -34,6 +36,8 @@ func _init() -> void:
 	_test_5_limbs_sever_prosthetic_giant_hover_xp()
 	_test_6_hitbox_and_hurtboxes()
 	_test_7_combat_audio_cues_and_streams()
+	_test_8_four_arm_thorax_and_dorsal_moves()
+	_test_9_giant_arthropod_combat_anims()
 
 	print("---------------------------------------------------")
 	print("Combat Headless Summary: %d passed, %d failed" % [passed, failed])
@@ -507,4 +511,317 @@ func _test_7_combat_audio_cues_and_streams() -> void:
 		])
 
 	dir.free()
+
+
+# 8. 4-Limb Combat Animations (Thorax Left2*/Right2* + Dorsal Spine2 Scapula Rig) parity & trajectory uniqueness
+func _test_8_four_arm_thorax_and_dorsal_moves() -> void:
+	print("\n[Suite 8] 4-Limb Combat Animations: Thorax (Left2*/Right2*) & Dorsal (Spine2 Scapula) parity")
+	var links := KCombatLinks.new()
+
+	var thorax_links := links.links_for_style("thorax_4arm")
+	var dorsal_links := links.links_for_style("dorsal_4arm")
+	check(thorax_links.size() == 4 and dorsal_links.size() == 4,
+		"Loaded 4 thorax_4arm links (%d) and 4 dorsal_4arm links (%d) from combat-links.json" % [thorax_links.size(), dorsal_links.size()])
+	check(String(links.style_idles.get("thorax_4arm", "")) == "combat_idle"
+		and String(links.style_idles.get("dorsal_4arm", "")) == "combat_idle"
+		and links.fourarm_choreography.size() == 8,
+		"Loaded style_idles for thorax_4arm/dorsal_4arm and 8-step fourarm_choreography (%d steps)" % links.fourarm_choreography.size())
+
+	var fighter_ids: Array[String] = []
+	for f in links.fighters:
+		if f is Dictionary:
+			fighter_ids.append(String(f.get("id", "")))
+	check(fighter_ids.has("dalab_giant")
+		and fighter_ids.has("loader_enforcer")
+		and fighter_ids.has("surgical_monk")
+		and fighter_ids.has("reliquary_lich")
+		and fighter_ids.has("mantis_stalker"),
+		"All 5 Thorax & Dorsal 4-limb fighter presets registered in combat-links.json")
+
+	# 8a. Verify all 4 Thorax moves produce non-identity & mutually distinct joint trajectories at peak contact u = 0.52
+	var thorax_keys := ["thorax_quad_flurry", "thorax_pin_cleave", "thorax_aegis_viper", "thorax_x_crusher"]
+	var thorax_samples: Array[Dictionary] = []
+	var all_thorax_valid := true
+	for mk in thorax_keys:
+		var lnk := links.get_link(mk)
+		var p0 := KCombatFourArmsScript.sample_thorax_pose(mk, 0.0)
+		var pk := KCombatFourArmsScript.sample_thorax_pose(mk, 0.52)
+		var p1 := KCombatFourArmsScript.sample_thorax_pose(mk, 1.0)
+		var q_la: Quaternion = pk["Left2Arm"]
+		var q_ra: Quaternion = pk["Right2Arm"]
+		var q_lf: Quaternion = pk["Left2ForeArm"]
+		var ok_mk: bool = (String(lnk.get("four_arm_move", "")) == mk
+			and is_zero_approx(float(p0["blend"]))
+			and is_zero_approx(float(p1["blend"]))
+			and is_equal_approx(float(pk["blend"]), 1.0)
+			and q_la.angle_to(Quaternion.IDENTITY) > 0.35
+			and q_ra.angle_to(Quaternion.IDENTITY) > 0.25
+			and q_lf.angle_to(Quaternion.IDENTITY) > 0.15)
+		if not ok_mk:
+			all_thorax_valid = false
+		thorax_samples.append(pk)
+	check(all_thorax_valid,
+		"All 4 Thorax moves map four_arm_move, blend 0->1->0 cleanly, and drive non-identity Left2*/Right2* rotations at u=0.52")
+
+	var min_thorax_dist := 1e9
+	for i in range(thorax_samples.size()):
+		for j in range(i + 1, thorax_samples.size()):
+			var d: float = KCombatFourArmsScript.channel_distance(thorax_samples[i]["channels"], thorax_samples[j]["channels"])
+			if d < min_thorax_dist:
+				min_thorax_dist = d
+	check(min_thorax_dist >= 18.0,
+		"All 4 Thorax moves produce distinct joint trajectories at u=0.52 (min pairwise L2 delta = %.1f deg)" % min_thorax_dist)
+
+	var mid_parry := KCombatFourArmsScript.sample_thorax_pose("thorax_mid_parry", 0.52)
+	check((mid_parry["Left2Arm"] as Quaternion).angle_to(Quaternion.IDENTITY) > 0.50
+		and (mid_parry["Right2Arm"] as Quaternion).angle_to(Quaternion.IDENTITY) > 0.45,
+		"Reactive thorax_mid_parry drives crossed lower-arm guard lock at u=0.52")
+
+	# 8b. Verify all 4 Dorsal moves produce non-identity & mutually distinct Turret/Elbow trajectories at peak contact u = 0.52
+	var dorsal_keys := ["dorsal_mantis_impale", "dorsal_scissor_shear", "dorsal_canopy_parry", "dorsal_tri_beam"]
+	var dorsal_samples: Array[Dictionary] = []
+	var all_dorsal_valid := true
+	var d_guard := KCombatFourArmsScript.sample_dorsal_pose("dorsal_mantis_impale", 0.0)
+	for mk in dorsal_keys:
+		var lnk := links.get_link(mk)
+		var pk := KCombatFourArmsScript.sample_dorsal_pose(mk, 0.52)
+		var q_tl: Quaternion = pk["TurretL"]
+		var q_tr: Quaternion = pk["TurretR"]
+		var q_el: Quaternion = pk["ElbowL"]
+		var ok_mk: bool = (String(lnk.get("four_arm_move", "")) == mk
+			and is_equal_approx(float(pk["blend"]), 1.0)
+			and q_tl.angle_to(Quaternion.IDENTITY) > 0.45
+			and q_tr.angle_to(Quaternion.IDENTITY) > 0.45
+			and q_el.angle_to(Quaternion.IDENTITY) > 0.35
+			and (q_tl.angle_to(d_guard["TurretL"]) > 0.30 or q_tr.angle_to(d_guard["TurretR"]) > 0.30))
+		if not ok_mk:
+			all_dorsal_valid = false
+		dorsal_samples.append(pk)
+	check(all_dorsal_valid,
+		"All 4 Dorsal moves map four_arm_move and drive non-identity Spine2 TurretL/R & ElbowL/R strikes at u=0.52")
+
+	var min_dorsal_dist := 1e9
+	for i in range(dorsal_samples.size()):
+		for j in range(i + 1, dorsal_samples.size()):
+			var d: float = KCombatFourArmsScript.channel_distance(dorsal_samples[i]["channels"], dorsal_samples[j]["channels"])
+			if d < min_dorsal_dist:
+				min_dorsal_dist = d
+	check(min_dorsal_dist >= 14.0,
+		"All 4 Dorsal moves produce distinct Turret/Elbow trajectories at u=0.52 (min pairwise L2 delta = %.1f deg)" % min_dorsal_dist)
+
+	# 8c. Live Skeleton3D (Left2*/Right2*) & Dorsal Node3D articulation driver check
+	var skel := Skeleton3D.new()
+	for bn in ["Hips", "Spine2", "Left2Arm", "Left2ForeArm", "Left2Hand", "Right2Arm", "Right2ForeArm", "Right2Hand"]:
+		skel.add_bone(bn)
+	var fa := KCombatFourArmsScript.new()
+	check(fa.play_move("thorax_x_crusher", 1.0), "Started thorax_x_crusher on KCombatFourArms instance")
+	fa.tick(0.52)
+	var applied_skel := fa.apply_to_skeleton(skel, 1.0)
+	check(applied_skel and skel.get_bone_pose_rotation(skel.find_bone("Left2Arm")).angle_to(Quaternion.IDENTITY) > 0.40,
+		"apply_to_skeleton posed Left2Arm/Right2Arm on Skeleton3D at u=0.52")
+
+	var tl := Node3D.new()
+	var el := Node3D.new()
+	var tr := Node3D.new()
+	var er := Node3D.new()
+	check(fa.play_move("dorsal_scissor_shear", 1.0), "Started dorsal_scissor_shear on KCombatFourArms instance")
+	fa.tick(0.52)
+	var applied_dorsal := fa.apply_to_dorsal_nodes(tl, el, tr, er)
+	check(applied_dorsal and tl.quaternion.angle_to(Quaternion.IDENTITY) > 0.50 and tr.quaternion.angle_to(Quaternion.IDENTITY) > 0.50,
+		"apply_to_dorsal_nodes posed TurretL/R & ElbowL/R Node3D hierarchy at u=0.52")
+
+	skel.free()
+	tl.free()
+	el.free()
+	tr.free()
+	er.free()
+
+
+# 9. Giant Arthropod Combat Animations (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet) parity & exchanges
+func _test_9_giant_arthropod_combat_anims() -> void:
+	print("\n[Suite 9] Giant Arthropod Combat Animations: Spider, Beetle, Mantis & Hornet parity")
+	var links := KCombatLinks.new()
+
+	var arthro_links := links.links_for_style("arthropod")
+	check(arthro_links.size() == 8,
+		"Loaded all 8 arthropod combat links (%d) from combat-links.json" % arthro_links.size())
+	check(String(links.style_idles.get("arthropod", "")) == "arthro_idle"
+		and links.arthropod_choreography.size() == 8,
+		"Loaded style_idles['arthropod']=='arthro_idle' and 8-step arthropod_choreography (%d steps)" % links.arthropod_choreography.size())
+
+	var presets_by_id := {}
+	for f in links.fighters:
+		if f is Dictionary:
+			presets_by_id[String(f.get("id", ""))] = f
+	check(presets_by_id.has("spider_matriarch")
+		and presets_by_id.has("staghorn_beetle")
+		and presets_by_id.has("bowl_mantis")
+		and presets_by_id.has("emperor_hornet"),
+		"All 4 rigged giant arthropod fighter presets registered in combat-links.json")
+	check(links.links_for_archetype("spider").size() == 2
+		and links.links_for_archetype("beetle").size() == 2
+		and links.links_for_archetype("mantis").size() == 2
+		and links.links_for_archetype("hornet").size() == 2,
+		"links_for_archetype partitions the 8 arthropod links cleanly (2 per species archetype)")
+
+	# 9a. Verify all 8 offensive moves blend 0 -> 1 -> 0 cleanly, drive species-authentic nodes, and are pairwise distinct
+	var move_specs := [
+		["spider_rear_bite", "spider"],
+		["spider_venom_spit", "spider"],
+		["beetle_horn_gore", "beetle"],
+		["beetle_ram_charge", "beetle"],
+		["mantis_scythe_snap", "mantis"],
+		["mantis_flurry_reap", "mantis"],
+		["hornet_dive_sting", "hornet"],
+		["hornet_mandible_maul", "hornet"],
+	]
+	var peak_samples: Array[Dictionary] = []
+	var all_blends_ok := true
+	for pair in move_specs:
+		var mk: String = pair[0]
+		var arch: String = pair[1]
+		var p0: Dictionary = KCombatArthropodScript.sample_arthropod_pose(mk, 0.0, arch)
+		var pk: Dictionary = KCombatArthropodScript.sample_arthropod_pose(mk, 0.50, arch)
+		var p1: Dictionary = KCombatArthropodScript.sample_arthropod_pose(mk, 1.0, arch)
+		var q0_thx: Quaternion = p0["quats"]["thorax"]
+		var q1_thx: Quaternion = p1["quats"]["thorax"]
+		if not (links.has_link(mk)
+				and is_zero_approx(float(p0["blend"]))
+				and is_zero_approx(float(p1["blend"]))
+				and is_equal_approx(float(pk["blend"]), 1.0)
+				and q0_thx.is_equal_approx(Quaternion.IDENTITY)
+				and q1_thx.is_equal_approx(Quaternion.IDENTITY)):
+			all_blends_ok = false
+		peak_samples.append(pk)
+	check(all_blends_ok,
+		"All 8 arthropod offensive moves exist in KCombatLinks and blend 0 -> 1 -> 0 cleanly")
+
+	# Species-specific biomechanical signature checks at peak contact u = 0.50
+	var sp_bite: Dictionary = peak_samples[0]
+	var bt_gore: Dictionary = peak_samples[2]
+	var bt_ram: Dictionary = peak_samples[3]
+	var mn_snap: Dictionary = peak_samples[4]
+	var hn_sting: Dictionary = peak_samples[6]
+	check((sp_bite["nodes"]["jaw"] as Vector3).x > 0.65 and (sp_bite["quats"]["leg0L"] as Quaternion).angle_to(Quaternion.IDENTITY) > 0.45,
+		"Spider spider_rear_bite drives downward fang-slam on jaw (rx=%.2f) & foreleg leg0L sweep" % (sp_bite["nodes"]["jaw"] as Vector3).x)
+	check((bt_gore["nodes"]["head"] as Vector3).x < -0.70 and (bt_gore["nodes"]["thorax"] as Vector3).x < -0.50
+		and (bt_ram["nodes"]["head"] as Vector3).x > 0.40,
+		"Staghorn Beetle pitches horns/thorax skyward on beetle_horn_gore (head.rx=%.2f) vs down-forward on beetle_ram_charge (%.2f)" % [
+			(bt_gore["nodes"]["head"] as Vector3).x,
+			(bt_ram["nodes"]["head"] as Vector3).x,
+		])
+	check((mn_snap["nodes"]["armL"] as Vector3).x > 1.05 and (mn_snap["nodes"]["armR"] as Vector3).x > 1.05
+		and (mn_snap["quats"]["armLt"] as Quaternion).angle_to(Quaternion.IDENTITY) > 0.70,
+		"Bowl Mantis mantis_scythe_snap drives twin raptorial armL/armLt & armR/armRt strike (armL.rx=%.2f rad)" % (mn_snap["nodes"]["armL"] as Vector3).x)
+	check((hn_sting["nodes"]["abd"] as Vector3).x < -1.25 and String(hn_sting["base_mode"]) == "fly",
+		"Emperor Hornet hornet_dive_sting curls abdomen stinger forward under thorax (abd.rx=%.2f rad, mode='fly')" % (hn_sting["nodes"]["abd"] as Vector3).x)
+
+	var min_arthro_dist := 1e9
+	for i in range(peak_samples.size()):
+		for j in range(i + 1, peak_samples.size()):
+			var d: float = KCombatArthropodScript.channel_distance(peak_samples[i]["channels"], peak_samples[j]["channels"])
+			if d < min_arthro_dist:
+				min_arthro_dist = d
+	check(min_arthro_dist >= 0.90,
+		"All 8 arthropod offensive moves have mutually distinct 16-channel trajectories at u=0.50 (min L2 delta = %.2f rad)" % min_arthro_dist)
+
+	# Reaction & species counterstrike alias mapping check
+	check(KCombatArthropodScript.resolve_arthropod_clip("parry", "mantis") == "arthro_claw_parry"
+		and KCombatArthropodScript.resolve_arthropod_clip("dodge_step", "spider") == "arthro_skitter_dodge"
+		and KCombatArthropodScript.resolve_arthropod_clip("ual_shield_up", "beetle") == "arthro_hunker_block"
+		and KCombatArthropodScript.resolve_arthropod_clip("knock_down", "spider") == "arthro_death_curl"
+		and KCombatArthropodScript.resolve_arthropod_clip("ual_get_up", "spider") == "arthro_uncurl_rise"
+		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "mantis") == "mantis_scythe_snap"
+		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "hornet") == "hornet_dive_sting",
+		"Human defense/knockdown/counter clip names map cleanly to species-authentic arthropod clips")
+
+	# 9b. Live Node3D arthropod hierarchy driver + crippled leg trauma curl
+	var root_wrap := Node3D.new()
+	var nodes_map := {}
+	for nm in ["thorax", "head", "jaw", "abd", "armL", "armLt", "armR", "armRt"]:
+		nodes_map[nm] = Node3D.new()
+	for p in range(4):
+		for suf in ["L", "R"]:
+			var bn := "leg%d%s" % [p, suf]
+			nodes_map[bn] = Node3D.new()
+			nodes_map[bn + "t"] = Node3D.new()
+			nodes_map[bn + "f"] = Node3D.new()
+
+	var spider_rig := KCombatArthropodScript.new("spider")
+	check(spider_rig.play_clip("spider_rear_bite") == "spider_rear_bite", "Started spider_rear_bite on KCombatArthropod instance")
+	spider_rig.tick(0.52)
+	var posed_ok := spider_rig.apply_to_nodes(nodes_map, root_wrap)
+	check(posed_ok
+		and root_wrap.position.z > 0.30
+		and (nodes_map["jaw"] as Node3D).quaternion.angle_to(Quaternion.IDENTITY) > 0.65
+		and (nodes_map["leg0L"] as Node3D).quaternion.angle_to(Quaternion.IDENTITY) > 0.45,
+		"apply_to_nodes() posed live Node3D arthropod hierarchy & root_wrap lunge (z=+%.2fm)" % root_wrap.position.z)
+
+	# Return to idle and apply crippled/severed Fore-Left ('left_arm') trauma -> curls leg0L/leg1L while leg0R stays uncurled!
+	spider_rig.play_clip("arthro_idle")
+	var sp_stats := KCombatStats.new("human")
+	sp_stats.toughness = 0.0
+	sp_stats.apply_limb_damage("left_arm", 210.0, "cut", true)
+	spider_rig.set_limb_state(sp_stats.limbs)
+	spider_rig.apply_to_nodes(nodes_map, root_wrap)
+	check((nodes_map["leg0L"] as Node3D).quaternion.angle_to(Quaternion.IDENTITY) > 0.70
+		and (nodes_map["leg0Lt"] as Node3D).quaternion.angle_to(Quaternion.IDENTITY) > 0.60
+		and (nodes_map["leg0R"] as Node3D).quaternion.is_equal_approx(Quaternion.IDENTITY)
+		and (nodes_map["thorax"] as Node3D).quaternion.angle_to(Quaternion.IDENTITY) > 0.05,
+		"Severed Fore-Left ('left_arm') curls leg0L/leg0Lt/leg1L under body, tilts thorax, and leaves leg0R uncurled")
+
+	root_wrap.free()
+	for k in nodes_map:
+		(nodes_map[k] as Node3D).free()
+
+	# 9c. Live KCombatDirector exchanges: Staghorn Beetle horn_gore knockdown & Emperor Hornet hover sweep immunity
+	var dir := KCombatDirector.new(links)
+	root.add_child(dir)
+
+	var beetle_stats := KCombatStats.new("giant")
+	beetle_stats.configure_from_kchar(presets_by_id["staghorn_beetle"])
+	beetle_stats.strength = 96.0
+	var legionary_stats := KCombatStats.new("human")
+	var beetle_brain := KCombatBrain.new().setup("staghorn_beetle", beetle_stats, links, dir)
+	var legionary_brain := KCombatBrain.new().setup("iziz_legionary", legionary_stats, links, dir)
+	dir.add_child(beetle_brain)
+	dir.add_child(legionary_brain)
+
+	var gore_ex := dir.begin_exchange(beetle_brain, legionary_brain, "beetle_horn_gore", "hit")
+	for i in 14:
+		dir.tick(0.05)
+	check(bool(gore_ex["hit_report"].get("knocked_down", false))
+		and legionary_brain.state == KCombatBrain.State.DOWNED
+		and legionary_brain.current_clip == "knock_down",
+		"Staghorn Beetle 'beetle_horn_gore' skyward toss knocks down human defender ('knock_down')")
+	for i in 16:
+		dir.tick(0.05)
+	check(legionary_brain.state == KCombatBrain.State.DOWNED and legionary_brain.current_clip == "ual_get_up",
+		"Gored defender transitions cleanly from 'knock_down' -> 'ual_get_up'")
+
+	var hornet_stats := KCombatStats.new("human")
+	hornet_stats.configure_from_kchar(presets_by_id["emperor_hornet"])
+	var hornet_brain := KCombatBrain.new().setup("emperor_hornet", hornet_stats, links, dir)
+	var monk_brain := KCombatBrain.new().setup("crimson_monk", KCombatStats.new("human"), links, dir)
+	dir.add_child(hornet_brain)
+	dir.add_child(monk_brain)
+	check(hornet_brain.stats.is_hover_entity and hornet_brain.stats.is_immune_to_trip(),
+		"Emperor Hornet preset ('hover': true) configures KCombatStats as hover trip-immune entity")
+
+	var hornet_poise_before := hornet_brain.stats.poise
+	var sweep_hornet_ex := dir.begin_exchange(monk_brain, hornet_brain, "leg_sweep", "hit")
+	for i in 15:
+		dir.tick(0.05)
+	check(bool(sweep_hornet_ex["hit_report"].get("trip_immune_converted", false))
+		and not bool(sweep_hornet_ex["hit_report"].get("knocked_down", true))
+		and hornet_brain.state != KCombatBrain.State.DOWNED
+		and hornet_brain.stats.poise < hornet_poise_before,
+		"Hovering Emperor Hornet resists 'leg_sweep' knockdown and takes Poise chip instead (%.1f -> %.1f)" % [
+			hornet_poise_before,
+			hornet_brain.stats.poise,
+		])
+
+	dir.free()
+
+
 

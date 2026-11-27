@@ -8,7 +8,10 @@
     "polearm": "combat_idle",
     "shield": "ual_shield_up",
     "ranged": "walk_shoot",
-    "arcane": "combat_idle"
+    "arcane": "combat_idle",
+    "thorax_4arm": "combat_idle",
+    "dorsal_4arm": "combat_idle",
+    "arthropod": "arthro_idle"
   },
   "rules": {
     "default_attack_slots": 2,
@@ -1503,6 +1506,659 @@
           "followup": null
         }
       }
+    },
+    {
+      "attack": "thorax_quad_flurry",
+      "clip": "punch_combo_2",
+      "four_arm_move": "thorax_quad_flurry",
+      "label": "Thorax 4-Beat Piston Flurry",
+      "short": "🦾 Quad Flurry",
+      "style": "thorax_4arm",
+      "skill_min": 0,
+      "base_dmg": 38,
+      "poise_dmg": 36,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.48,
+      "hit_y": 1.24,
+      "dist_m": 1.08,
+      "sfx": "hit_blunt",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "dorsal_canopy_parry",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_3", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "ual_hit_chest", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "thorax_pin_cleave",
+      "clip": "axe_chop",
+      "four_arm_move": "thorax_pin_cleave",
+      "label": "Rib-Pin Overhead Cleave",
+      "short": "🦾 Pin & Cleave",
+      "style": "thorax_4arm",
+      "skill_min": 15,
+      "base_dmg": 52,
+      "poise_dmg": 54,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "sever_bonus": true,
+      "hit_t": 0.62,
+      "hit_y": 1.30,
+      "dist_m": 1.14,
+      "sfx": "hit_cut",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_back"],
+          "lead_s": 0.16,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["block_2", "guard_block_3"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "ual_hit_chest"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "thorax_aegis_viper",
+      "clip": "block_2",
+      "four_arm_move": "thorax_aegis_viper",
+      "label": "Aegis Guard Viper-Thrust",
+      "short": "🦾 Aegis Viper",
+      "style": "thorax_4arm",
+      "skill_min": 10,
+      "base_dmg": 34,
+      "poise_dmg": 32,
+      "dmg_type": "pierce",
+      "target_zone": "stomach",
+      "hit_t": 0.44,
+      "hit_y": 1.12,
+      "dist_m": 1.10,
+      "sfx": "hit_blunt",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_2", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "thorax_x_crusher",
+      "clip": "slash_charged",
+      "four_arm_move": "thorax_x_crusher",
+      "label": "4-Quadrant X-Crusher Slam",
+      "short": "💥 X-Crusher",
+      "style": "thorax_4arm",
+      "skill_min": 25,
+      "base_dmg": 58,
+      "poise_dmg": 64,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.56,
+      "hit_y": 1.24,
+      "dist_m": 1.16,
+      "vfx": "thorax_x_crusher",
+      "sfx": "guard_break",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_back"],
+          "lead_s": 0.16,
+          "counter": null
+        },
+        "block": {
+          "clips": ["block_2", "guard_block_3"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "dorsal_mantis_impale",
+      "clip": "spear_thrust",
+      "four_arm_move": "dorsal_mantis_impale",
+      "label": "Over-Shoulder Mantis Impale",
+      "short": "🦂 Mantis Impale",
+      "style": "dorsal_4arm",
+      "skill_min": 0,
+      "base_dmg": 46,
+      "poise_dmg": 42,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "sever_bonus": true,
+      "hit_t": 0.46,
+      "hit_y": 1.32,
+      "dist_m": 1.34,
+      "sfx": "hit_cut",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.12,
+          "riposte": "thorax_aegis_viper",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["block_2", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "dorsal_scissor_shear",
+      "clip": "slash_right",
+      "four_arm_move": "dorsal_scissor_shear",
+      "label": "Dorsal Scissor-Shear",
+      "short": "✂ Scissor Shear",
+      "style": "dorsal_4arm",
+      "skill_min": 10,
+      "base_dmg": 50,
+      "poise_dmg": 40,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "sever_bonus": true,
+      "hit_t": 0.46,
+      "hit_y": 1.36,
+      "dist_m": 1.28,
+      "vfx": "rift_claw",
+      "sfx": "hit_cut",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_spin", "dodge_step"],
+          "lead_s": 0.14,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "dorsal_canopy_parry",
+      "clip": "parry",
+      "four_arm_move": "dorsal_canopy_parry",
+      "label": "Canopy Intercept & Riposte",
+      "short": "🛡 Canopy Riposte",
+      "style": "dorsal_4arm",
+      "skill_min": 15,
+      "base_dmg": 38,
+      "poise_dmg": 42,
+      "dmg_type": "pierce",
+      "target_zone": "head",
+      "hit_t": 0.42,
+      "hit_y": 1.38,
+      "dist_m": 1.24,
+      "sfx": "parry_ring",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_3", "block_2"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_face", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "dorsal_tri_beam",
+      "clip": "spell_cast",
+      "four_arm_move": "dorsal_tri_beam",
+      "label": "Reliquary Tri-Beam Convergence",
+      "short": "⚡ Tri-Beam",
+      "style": "dorsal_4arm",
+      "skill_min": 20,
+      "base_dmg": 54,
+      "poise_dmg": 58,
+      "dmg_type": "arcane",
+      "target_zone": "chest",
+      "hit_t": 0.44,
+      "hit_y": 1.26,
+      "dist_m": 2.05,
+      "vfx": "dorsal_tri_beam",
+      "sfx": "lightning_blast",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "block_2"],
+          "lead_s": 0.13,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_step"],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "ual_knockback"],
+          "lead_s": 0.03,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "spider_rear_bite",
+      "clip": "spider_rear_bite",
+      "label": "Tarantula Rear & Fang Slam",
+      "short": "Rear & Bite",
+      "style": "arthropod",
+      "archetype": "spider",
+      "skill_min": 0,
+      "base_dmg": 38,
+      "poise_dmg": 34,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "hit_t": 0.48,
+      "hit_y": 1.18,
+      "dist_m": 1.95,
+      "sfx": "hit_cut",
+      "vfx": "arthro_fang_bite",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "spider_venom_spit",
+      "clip": "spider_venom_spit",
+      "label": "Acid-Silk Venom Volley",
+      "short": "Venom Spit",
+      "style": "arthropod",
+      "archetype": "spider",
+      "skill_min": 10,
+      "base_dmg": 30,
+      "poise_dmg": 26,
+      "dmg_type": "arcane",
+      "target_zone": "head",
+      "hit_t": 0.44,
+      "hit_y": 1.32,
+      "dist_m": 2.55,
+      "sfx": "bow_shot",
+      "vfx": "arthro_venom_spit",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_step", "dodge_back"],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "beetle_horn_gore",
+      "clip": "beetle_horn_gore",
+      "label": "Staghorn Skyward Gore-Toss",
+      "short": "Horn Gore",
+      "style": "arthropod",
+      "archetype": "beetle",
+      "skill_min": 0,
+      "base_dmg": 48,
+      "poise_dmg": 54,
+      "dmg_type": "pierce",
+      "target_zone": "stomach",
+      "hit_t": 0.54,
+      "hit_y": 0.96,
+      "dist_m": 1.88,
+      "sfx": "hit_cut",
+      "vfx": "arthro_horn_gore",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "ual_sword_a",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_back"],
+          "lead_s": 0.16,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "block_2", "guard_block_3"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "beetle_ram_charge",
+      "clip": "beetle_ram_charge",
+      "label": "Carapace Bulldozer Charge",
+      "short": "Ram Charge",
+      "style": "arthropod",
+      "archetype": "beetle",
+      "skill_min": 10,
+      "base_dmg": 44,
+      "poise_dmg": 64,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.50,
+      "hit_y": 1.04,
+      "dist_m": 1.92,
+      "sfx": "block_shield",
+      "vfx": "arthro_ram_shock",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_step"],
+          "lead_s": 0.16,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "knock_down"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "mantis_scythe_snap",
+      "clip": "mantis_scythe_snap",
+      "label": "Twin Raptorial Scythe-Snap",
+      "short": "Scythe Snap",
+      "style": "arthropod",
+      "archetype": "mantis",
+      "skill_min": 0,
+      "base_dmg": 46,
+      "poise_dmg": 36,
+      "dmg_type": "cut",
+      "sever_bonus": true,
+      "target_zone": "right_arm",
+      "hit_t": 0.38,
+      "hit_y": 1.28,
+      "dist_m": 1.82,
+      "sfx": "hit_cut",
+      "vfx": "arthro_scythe_cross",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.11,
+          "riposte": "ual_sword_a",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.13,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "mantis_flurry_reap",
+      "clip": "mantis_flurry_reap",
+      "label": "Alternating Raptorial Reap",
+      "short": "Mantis Reap",
+      "style": "arthropod",
+      "archetype": "mantis",
+      "skill_min": 10,
+      "base_dmg": 36,
+      "poise_dmg": 28,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "hit_t": 0.44,
+      "hit_y": 1.24,
+      "dist_m": 1.78,
+      "sfx": "hit_cut",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "slash_right",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_spin", "dodge_step"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_2", "hit_body"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "hornet_dive_sting",
+      "clip": "hornet_dive_sting",
+      "label": "Aerial Stinger Jackhammer",
+      "short": "Dive Sting",
+      "style": "arthropod",
+      "archetype": "hornet",
+      "skill_min": 0,
+      "base_dmg": 42,
+      "poise_dmg": 32,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "hit_t": 0.42,
+      "hit_y": 1.26,
+      "dist_m": 1.98,
+      "sfx": "hit_cut",
+      "vfx": "arthro_sting_lance",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_roll"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "ual_knockback", "hit_body"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "hornet_mandible_maul",
+      "clip": "hornet_mandible_maul",
+      "label": "Buzzing Mandible Blitz",
+      "short": "Mandible Blitz",
+      "style": "arthropod",
+      "archetype": "hornet",
+      "skill_min": 10,
+      "base_dmg": 32,
+      "poise_dmg": 24,
+      "dmg_type": "cut",
+      "target_zone": "head",
+      "hit_t": 0.36,
+      "hit_y": 1.36,
+      "dist_m": 1.80,
+      "sfx": "hit_cut",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.13,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
     }
   ],
   "fighters": [
@@ -1606,7 +2262,7 @@
       "id": "dalab_giant",
       "label": "Four-Armed Dalab Giant",
       "short": "Dalab Giant",
-      "style": "heavy",
+      "style": "thorax_4arm",
       "hold": { "R": "axe", "L": "shield", "R2": "sword", "L2": "shield" },
       "mods": ["mod_arms_flesh"],
       "bonus_slots": 1,
@@ -1622,15 +2278,55 @@
       "morph": { "muscle": 0.7, "weight": 0.25 }
     },
     {
+      "id": "loader_enforcer",
+      "label": "Loader-Rig Thorax Brawler",
+      "short": "Loader Brawler",
+      "style": "thorax_4arm",
+      "hold": {},
+      "mods": ["mod_arms_loader"],
+      "bonus_slots": 1,
+      "four_arms": true,
+      "armour": { "head": null, "torso": null, "gloves": null, "back": null },
+      "stats": { "melee_atk": 74, "melee_def": 70, "martial_arts": 78, "dodge": 54, "toughness": 84, "strength": 88, "dexterity": 62 },
+      "people": "izani",
+      "tier": "forgemaster_pilot",
+      "body": "mpfb_male",
+      "skin": "#a67452",
+      "hair": "short04",
+      "hair_color": "#1c1612",
+      "eye_color": "#5e4328",
+      "morph": { "height": 0.14, "muscle": 0.72, "weight": 0.10 }
+    },
+    {
+      "id": "surgical_monk",
+      "label": "Surgical 4-Arm Cyber-Monk",
+      "short": "Surgical Monk",
+      "style": "thorax_4arm",
+      "hold": {},
+      "mods": ["mod_arms_surgical"],
+      "bonus_slots": 1,
+      "four_arms": true,
+      "armour": { "torso": null, "gloves": null, "back": null },
+      "stats": { "melee_atk": 72, "melee_def": 78, "martial_arts": 84, "dodge": 76, "toughness": 68, "strength": 66, "dexterity": 86 },
+      "people": "xanadu",
+      "tier": "monk_crimson",
+      "body": "mpfb_male",
+      "skin": "#b6835c",
+      "hair": "ponytail01",
+      "hair_color": "#1a1512",
+      "eye_color": "#4ad6e8",
+      "morph": { "height": 0.08, "muscle": 0.42, "weight": -0.08 }
+    },
+    {
       "id": "reliquary_lich",
       "label": "Reliquary Cyber-Lich",
       "short": "Cyber-Lich",
-      "style": "sword",
+      "style": "dorsal_4arm",
       "hold": { "R": "sword" },
-      "mods": ["mod_arms_cyber_up"],
       "bonus_slots": 1,
+      "dorsal_4arm": true,
       "cyber_arms": true,
-      "stats": { "melee_atk": 74, "melee_def": 72, "martial_arts": 64, "dodge": 56, "toughness": 84, "strength": 74, "dexterity": 72 },
+      "stats": { "melee_atk": 76, "melee_def": 74, "martial_arts": 74, "dodge": 58, "toughness": 86, "strength": 76, "dexterity": 74 },
       "people": "cyber_liches",
       "tier": "reliquary_lich",
       "body": "mpfb_male",
@@ -1639,6 +2335,26 @@
       "hair_color": "#1c1c1e",
       "eye_color": "#5ad4e6",
       "morph": { "height": 0.18, "muscle": 0.25, "weight": -0.2 }
+    },
+    {
+      "id": "mantis_stalker",
+      "label": "Carcosa Dorsal Mantis-Stalker",
+      "short": "Mantis-Stalker",
+      "style": "dorsal_4arm",
+      "hold": { "R": "sword" },
+      "bonus_slots": 1,
+      "dorsal_4arm": true,
+      "dorsal_rig": "mantis",
+      "armour": { "back": null },
+      "stats": { "melee_atk": 78, "melee_def": 72, "martial_arts": 76, "dodge": 74, "toughness": 74, "strength": 72, "dexterity": 84 },
+      "people": "yusar",
+      "tier": "electromonk",
+      "body": "mpfb_male",
+      "skin": "#8e7060",
+      "hair": "short02",
+      "hair_color": "#182028",
+      "eye_color": "#4ef4ff",
+      "morph": { "height": 0.16, "muscle": 0.44, "weight": -0.10 }
     },
     {
       "id": "lu_tze",
@@ -1788,6 +2504,54 @@
       "hair_color": "#0e0e14",
       "eye_color": "#a86bff",
       "morph": { "height": 0.42, "muscle": 0.45, "weight": -0.15 }
+    },
+    {
+      "id": "spider_matriarch",
+      "label": "Crimson Matriarch Giant Spider",
+      "short": "Spider Matriarch",
+      "style": "arthropod",
+      "arthropod": true,
+      "archetype": "spider",
+      "bonus_slots": 1,
+      "hold": {},
+      "fauna": { "species": "gilded-orb-spider", "variant": 5, "scale": 1.38, "z_offset": 0.14 },
+      "stats": { "melee_atk": 72, "melee_def": 64, "martial_arts": 74, "dodge": 72, "toughness": 74, "strength": 70, "dexterity": 78 }
+    },
+    {
+      "id": "staghorn_beetle",
+      "label": "Voth Staghorn War-Beetle",
+      "short": "Staghorn Beetle",
+      "style": "arthropod",
+      "arthropod": true,
+      "archetype": "beetle",
+      "bonus_slots": 1,
+      "hold": {},
+      "fauna": { "species": "staghorn-beetle", "variant": 4, "scale": 0.58, "z_offset": 0.18 },
+      "stats": { "melee_atk": 76, "melee_def": 82, "martial_arts": 68, "dodge": 32, "toughness": 94, "strength": 96, "dexterity": 48 }
+    },
+    {
+      "id": "bowl_mantis",
+      "label": "Hyperjungle Bowl Mantis",
+      "short": "Bowl Mantis",
+      "style": "arthropod",
+      "arthropod": true,
+      "archetype": "mantis",
+      "bonus_slots": 1,
+      "hold": {},
+      "fauna": { "species": "bowl-mantis", "variant": 1, "scale": 0.88, "z_offset": -0.10 },
+      "stats": { "melee_atk": 80, "melee_def": 74, "martial_arts": 82, "dodge": 76, "toughness": 66, "strength": 72, "dexterity": 88 }
+    },
+    {
+      "id": "emperor_hornet",
+      "label": "Emperor Giant Hornet",
+      "short": "Emperor Hornet",
+      "style": "arthropod",
+      "arthropod": true,
+      "archetype": "hornet",
+      "hover": true,
+      "hold": {},
+      "fauna": { "species": "emperor-hornet", "variant": 3, "scale": 1.32, "y_offset": 0.34 },
+      "stats": { "melee_atk": 74, "melee_def": 60, "martial_arts": 76, "dodge": 84, "toughness": 58, "strength": 62, "dexterity": 86 }
     }
   ],
   "choreography": [
@@ -1811,5 +2575,25 @@
     { "attacker": 0, "attack": "astral_lance", "outcome": "parry", "counter": true, "note": "Monk lands Timed Perfect Parry on Starlight Rift-Lance -> instant Riposte!" },
     { "attacker": 0, "attack": "rift_claw", "outcome": "hit", "note": "Void-Talon Rend rakes across the guard at close quarters" },
     { "attacker": 0, "attack": "lightning_blast", "outcome": "parry", "counter": true, "note": "Monk grounds the Astral Lightning Bolt with a two-hand deflection!" }
+  ],
+  "fourarm_choreography": [
+    { "attacker": 0, "attack": "thorax_quad_flurry", "outcome": "hit", "note": "Loader Brawler fires 4-beat counter-phased rib piston punches & uppercut!" },
+    { "attacker": 1, "attack": "dorsal_mantis_impale", "outcome": "parry", "counter": true, "note": "Cyber-Lich rears twin dorsal claws overhead — Brawler cross-parries mid-level!" },
+    { "attacker": 0, "attack": "thorax_aegis_viper", "outcome": "hit", "note": "Upper arms lock high Aegis guard while twin lower hydraulic fists spear under!" },
+    { "attacker": 1, "attack": "dorsal_scissor_shear", "outcome": "hit", "note": "Articulated Djed servo-arms unfold ±72° and snap across in a scissor-shear!" },
+    { "attacker": 0, "attack": "thorax_pin_cleave", "outcome": "block", "note": "Lower arms sweep & clamp ribs while Lich intercepts with Dorsal Canopy guard!" },
+    { "attacker": 1, "attack": "dorsal_canopy_parry", "outcome": "hit", "note": "Left dorsal claw forms canopy shield while Right dorsal claw spears over-shoulder!" },
+    { "attacker": 0, "attack": "thorax_x_crusher", "outcome": "hit", "note": "4-Quadrant X-Crusher flares wide then slams inward — knockdown into kip-up!" },
+    { "attacker": 1, "attack": "dorsal_tri_beam", "outcome": "hit", "note": "Both dorsal servo-palms aim over the shoulders firing Triple Converging Plasma Lances!" }
+  ],
+  "arthropod_choreography": [
+    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "mantis_scythe_snap", "outcome": "hit", "note": "Twin raptorial scythe-arms flare high and snap shut across the guard!" },
+    { "attacker": 0, "role": "challenger", "attack": "slash_left", "outcome": "parry", "counter": true, "note": "Fore-claws deflect the steel slash -> instant species counter-lunge!" },
+    { "attacker": 1, "role": "arthropod", "slot": 1, "attack": "spider_venom_spit", "outcome": "block", "note": "Secondary species volley (Venom Spit / Ram / Reap / Blitz) braced on raised shield!" },
+    { "attacker": 0, "role": "challenger", "attack": "slash_charged", "outcome": "dodge", "counter": true, "note": "Rapid lateral skitter-dodge evades charged cleave -> counterstrike!" },
+    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "beetle_horn_gore", "outcome": "parry", "counter": true, "note": "Defender lands Timed Perfect Parry on apex lunge -> 0-Poise Riposte!" },
+    { "attacker": 0, "role": "challenger", "attack": "attack", "outcome": "block", "note": "Counter-cut absorbed on hunched chitin carapace guard!" },
+    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "hornet_dive_sting", "outcome": "hit", "note": "Aerial stinger jackhammer / skyward horn-gore lands cleanly!" },
+    { "attacker": 1, "role": "arthropod", "slot": 1, "attack": "spider_rear_bite", "outcome": "hit", "note": "Finishing tarantula rear & chitin slam drives home!" }
   ]
 }

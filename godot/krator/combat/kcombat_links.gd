@@ -77,6 +77,23 @@ const CLIP_FALLBACKS := {
 	"energy_burst": ["taunt_chest", "slash_charged", "ual_sword_heavy"],
 	"astral_lance": ["spear_thrust", "thrust", "attack"],
 	"rift_claw": ["claw_swipe", "slash_right", "attack"],
+	"thorax_quad_flurry": ["punch_combo_2", "combo", "ual_punch"],
+	"thorax_pin_cleave": ["axe_chop", "slash_charged", "ual_sword_heavy"],
+	"thorax_aegis_viper": ["block_2", "guard_block_2", "thrust"],
+	"thorax_x_crusher": ["slash_charged", "axe_chop", "ual_sword_heavy"],
+	"dorsal_mantis_impale": ["spear_thrust", "thrust", "attack"],
+	"dorsal_scissor_shear": ["slash_right", "ual_sword_a", "attack"],
+	"dorsal_canopy_parry": ["parry", "block_2", "ual_sword_a"],
+	"dorsal_tri_beam": ["spell_cast", "ual_throw", "throw"],
+	"arthro_idle": ["combat_idle", "unarmed_guard", "idle"],
+	"spider_rear_bite": ["thrust", "attack"],
+	"spider_venom_spit": ["bow_shot", "ual_throw", "attack"],
+	"beetle_horn_gore": ["slash_charged", "ual_sword_heavy", "attack"],
+	"beetle_ram_charge": ["ual_shield_bash", "ual_sword_heavy", "attack"],
+	"mantis_scythe_snap": ["slash_right", "ual_sword_a", "attack"],
+	"mantis_flurry_reap": ["combo", "slash_left", "attack"],
+	"hornet_dive_sting": ["spear_thrust", "thrust", "attack"],
+	"hornet_mandible_maul": ["claw_swipe", "slash_right", "attack"],
 }
 
 # Martial Arts move skill thresholds matching Proposal Section 2:
@@ -355,11 +372,16 @@ var style_idles := {
 	"shield": "ual_shield_up",
 	"ranged": "walk_shoot",
 	"arcane": "combat_idle",
+	"thorax_4arm": "combat_idle",
+	"dorsal_4arm": "combat_idle",
+	"arthropod": "arthro_idle",
 }
 var rules := DEFAULT_RULES.duplicate(true)
 var fighters: Array = []
 var choreography: Array = []
 var extraplanar_choreography: Array = []
+var fourarm_choreography: Array = []
+var arthropod_choreography: Array = []
 var _links: Array[Dictionary] = []
 var _by_key: Dictionary = {}
 
@@ -387,6 +409,8 @@ func load_from_file(preferred_path: String = "") -> bool:
 	fighters = []
 	choreography = []
 	extraplanar_choreography = []
+	fourarm_choreography = []
+	arthropod_choreography = []
 	source_path = ""
 
 	var parsed = null
@@ -414,6 +438,10 @@ func load_from_file(preferred_path: String = "") -> bool:
 			choreography = parsed["choreography"].duplicate(true)
 		if parsed.get("extraplanar_choreography") is Array:
 			extraplanar_choreography = parsed["extraplanar_choreography"].duplicate(true)
+		if parsed.get("fourarm_choreography") is Array:
+			fourarm_choreography = parsed["fourarm_choreography"].duplicate(true)
+		if parsed.get("arthropod_choreography") is Array:
+			arthropod_choreography = parsed["arthropod_choreography"].duplicate(true)
 		for raw_link in parsed.get("links", []):
 			if raw_link is Dictionary and raw_link.has("attack"):
 				_register_link(_normalize_link(raw_link))
@@ -499,6 +527,7 @@ static func _normalize_link(raw: Dictionary) -> Dictionary:
 		"label": String(raw.get("label", key.capitalize())),
 		"short": String(raw.get("short", raw.get("label", key))),
 		"style": style,
+		"archetype": String(raw.get("archetype", defs.get("archetype", ""))),
 		"skill_min": skill_min,
 		"tier": tier,
 		"hit_t": hit_t,
@@ -510,6 +539,8 @@ static func _normalize_link(raw: Dictionary) -> Dictionary:
 		"target_zone": target_zone,
 		"aoe": bool(raw.get("aoe", defs.get("aoe", false))),
 		"vfx": String(raw.get("vfx", defs.get("vfx", ""))),
+		"sfx": String(raw.get("sfx", defs.get("sfx", ""))),
+		"four_arm_move": String(raw.get("four_arm_move", defs.get("four_arm_move", ""))),
 		"sever_bonus": bool(raw.get("sever_bonus", defs.get("sever_bonus", false))),
 		"focus_cost": float(raw.get("focus_cost", defs.get("focus_cost", 0.0))),
 		"heavy": bool(raw.get("heavy", defs.get("heavy", poise_dmg >= 35.0))),
@@ -579,6 +610,17 @@ func links_for_style(style: String, skill_level: float = 100.0) -> Array[Diction
 			style_ok = (ls == norm_style)
 		if style_ok and float(l["skill_min"]) <= skill_level + 1e-5:
 			out.append(l)
+	return out
+
+
+func links_for_archetype(archetype: String, skill_level: float = 100.0) -> Array[Dictionary]:
+	var norm_arch := archetype.to_lower()
+	var out: Array[Dictionary] = []
+	for l in _links:
+		if String(l["style"]).to_lower() == "arthropod":
+			var la := String(l.get("archetype", "")).to_lower()
+			if (norm_arch == "" or la == "" or la == norm_arch) and float(l["skill_min"]) <= skill_level + 1e-5:
+				out.append(l)
 	return out
 
 

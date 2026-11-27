@@ -435,12 +435,24 @@ def _clich_custom_motif(style, w, h, fg, bg, aspect=1.0):
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_jade_chassis':
-        # Gunmetal plate panels with pale-jade seam channels and dark bevels
+        # Brushed gunmetal armor plates with beveled edges, paired steel micro-rivets, and luminous jade/cyan conduits
+        grain = 0.94 + 0.06 * np.sin(u * 2.0 * math.pi * 48.0 + 1.5 * np.sin(v * 2.0 * math.pi * 4.0))
+        img[:] = np.asarray(bg)[None, None, :] * grain[:, :, None]
         pu = (u * 4.0) % 1.0
         pv = (v * 5.0) % 1.0
-        seam = (pu < 0.05) | (pv < 0.06)
-        jade_tr = (np.abs(pv - 0.50) < 0.055) & (pu > 0.16) & (pu < 0.84)
-        img[jade_tr] = fg
+        seam = (pu < 0.055) | (pu > 0.965) | (pv < 0.065) | (pv > 0.965)
+        bevel = (~seam) & ((pu < 0.11) | (pu > 0.91) | (pv < 0.12) | (pv > 0.90))
+        riv = (~seam) & (
+            (np.hypot(pu - 0.14, ((pv * 3.0) % 1.0) - 0.5) < 0.048)
+            | (np.hypot(pu - 0.86, ((pv * 3.0) % 1.0) - 0.5) < 0.048)
+        )
+        jade_tr = (np.abs(pv - 0.50) < 0.055) & (pu > 0.18) & (pu < 0.82)
+        jade_step = ((np.abs(pu - 0.50) < 0.045) & (pv > 0.22) & (pv < 0.78))
+        cyan_core = (np.abs(pv - 0.50) < 0.020) & (pu > 0.26) & (pu < 0.74)
+        img[bevel] = 0.58 * img[bevel] + 0.42 * np.asarray(C['clich_steel'])
+        img[riv] = C['clich_chrome']
+        img[jade_tr | jade_step] = fg
+        img[cyan_core] = C['clich_jadecore']
         img[seam] = C['clich_obsidian']
         return np.clip(img, 0.0, 1.0)
 
@@ -2021,10 +2033,10 @@ def _build_tentacle_lich(sex, body_id):
     bk_w = np.array([0.0, 1.0, 0.0])
 
     jade_skull_p = P('clich_jade', 0.02, [], [PN(0.0, 1.0, 'clich_skull_face', 'clich_jadecore', 'clich_jade', 0.22)], fabric='metal.iron')
-    jade_p = P('clich_jade', 0.02, [B('bottom', 0.0, 0.12, 'solid', 'clich_jade_dk')], fabric='metal.iron')
+    jade_p = P('clich_jade', 0.02, [B('bottom', 0.0, 0.14, 'stripes', 'clich_jade_dk'), B('top', 0.0, 0.14, 'stripes', 'clich_jadecore')], fabric='metal.iron')
     jadecore_p = P('clich_jadecore', 0.0, [B('top', 0.0, 0.25, 'solid', 'clich_limecore')], fabric='beads.glass')
     gunmetal_p = P('clich_gunmetal', 0.02, [], [PN(0.0, 1.0, 'clich_jade_chassis', 'clich_jade', 'clich_gunmetal', 0.20)], fabric='metal.iron')
-    obs_p = P('clich_obsidian', 0.015, fabric='metal.iron')
+    obs_p = P('clich_obsidian', 0.015, [B('bottom', 0.0, 0.18, 'stripes', 'clich_steel')], fabric='metal.iron')
     poncho_p = P('clich_charcoal', 0.02, [], [PN(0.0, 1.0, 'clich_circuit_poncho', 'clich_steel', 'clich_charcoal', 0.22)], fabric='cloth.wool')
 
     # --- 1. HEAD: clich_{s}_cyber_skull (Verdigris/Pale-Jade Cyber-Skull + Audio-Ports + 3-Spike Crown) ---

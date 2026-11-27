@@ -29,6 +29,8 @@ SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
 AUDIO_CUES = os.path.join(ROOT, 'core', 'audio', '22-core-audio-cues.js')
+FAUNA_DIR = os.path.join(ROOT, 'kits', 'fauna')
+ARTHRO_MODELS = ('spider', 'staghorn-beetle', 'bowl-mantis', 'hornet', 'beetle')
 CHECKS = '--no-checks' not in sys.argv
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -95,6 +97,19 @@ def main():
     js = ['/* core/rand/08-core-rand.js */', read(RAND)]
     inputs['core/rand/08-core-rand.js'] = js[-1].encode()
     audio_cues_t = read(AUDIO_CUES)
+    fauna_js = ''
+    arthro_models_raw = {}
+    if os.path.isdir(FAUNA_DIR):
+        sys.path.insert(0, FAUNA_DIR)
+        import fauna_bundle
+        fauna_js = fauna_bundle.bundle(['crawlers', 'hyperjungle', 'voth'], tex=False,
+                                       mdl=['crawlers', 'hyperjungle', 'voth'], side={})
+        for mk in ARTHRO_MODELS:
+            mp = os.path.join(FAUNA_DIR, 'models', mk + '.json')
+            if os.path.isfile(mp):
+                mraw = read(mp, 'rb')
+                inputs['kits/fauna/models/%s.json' % mk] = mraw
+                arthro_models_raw[mk] = mraw
     data_gz_b64 = base64.b64encode(gzip.compress(json.dumps(data, separators=(',', ':')).encode('utf-8'), 9, mtime=0)).decode('ascii')
     js.append('var KCHAR_DATA_GZ = "' + data_gz_b64 + '";')
     for f in shared:
@@ -106,7 +121,7 @@ def main():
     # when a record needs them: dist/pieces/<body>/<name>.txt
     if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
         for b in os.listdir(os.path.join(DIST, 'pieces')):
-            if b not in data['bodies'] and b not in ('props', 'sfx_combat', 'sfx_combat.txt'):
+            if b not in data['bodies'] and b not in ('props', 'sfx_combat', 'sfx_combat.txt', 'fauna_arthropods.txt'):
                 q = os.path.join(DIST, 'pieces', b)
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
@@ -164,6 +179,22 @@ def main():
                 o.write(base64.b64encode(sfx_gz).decode('ascii'))
     else:
         print('build.py: no pieces/sfx_combat here: the page is built, combat SFX bundle is not')
+    if arthro_models_raw:
+        os.makedirs(os.path.join(DIST, 'pieces'), exist_ok=True)
+        arthro_out = os.path.join(DIST, 'pieces', 'fauna_arthropods.txt')
+        repack_arthro = '--repack' in sys.argv or not os.path.isfile(arthro_out)
+        if not repack_arthro:
+            for mk in arthro_models_raw:
+                mp = os.path.join(FAUNA_DIR, 'models', mk + '.json')
+                if os.path.getmtime(mp) > os.path.getmtime(arthro_out):
+                    repack_arthro = True
+                    break
+        if repack_arthro:
+            arthro_obj = '{' + ','.join('%s:%s' % (json.dumps(mk), arthro_models_raw[mk].decode('utf-8'))
+                                        for mk in sorted(arthro_models_raw)) + '}'
+            arthro_gz = gzip.compress(arthro_obj.encode('utf-8'), 9, mtime=0)
+            with open(arthro_out, 'w', encoding='utf-8', newline='\n') as o:
+                o.write(base64.b64encode(arthro_gz).decode('ascii'))
     os.makedirs(DIST, exist_ok=True)
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
         if os.path.exists(os.path.join(DIST, old)):
@@ -220,6 +251,18 @@ def main():
         if page == 'combat-lab':
             inputs['core/audio/22-core-audio-cues.js'] = audio_cues_t.encode()
             combat_js = ['/* core/audio/22-core-audio-cues.js */', audio_cues_t]
+            if fauna_js:
+                inputs['kits/fauna/bundle(crawlers,hyperjungle,voth)'] = fauna_js.encode()
+                combat_js.extend([
+                    'var FA_MODELS_SIDE = window.FA_MODELS_SIDE = window.FA_MODELS_SIDE || {};',
+                    '/* kits/fauna (crawlers, hyperjungle, voth) */',
+                    fauna_js,
+                ])
+            arthro_f = '95-arthropod-combat.js'
+            if os.path.isfile(os.path.join(SRC, arthro_f)):
+                arthro_t = read(os.path.join(SRC, arthro_f))
+                inputs['src/' + arthro_f] = arthro_t.encode()
+                own_chunks.append('/* src/%s */\n%s' % (arthro_f, arthro_t))
             duel_f = '94-combat-duel.js'
             duel_t = read(os.path.join(SRC, duel_f))
             inputs['src/' + duel_f] = duel_t.encode()
