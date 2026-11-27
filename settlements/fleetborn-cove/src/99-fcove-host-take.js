@@ -113,6 +113,7 @@ const FCOVE_PANEL=(function initFcovePanel(){
    snap.mode=T.mode;
    snap.level=+lv.toFixed(2);
    snap.sim=simAtDay(snap.day);
+   snap.life=(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.status():null;
    return snap;
   }
   /* Hold mode: evaluate instantaneous hydraulic rules directly at held sea level `lv` */
@@ -144,7 +145,8 @@ const FCOVE_PANEL=(function initFcovePanel(){
    mill:{dayHeadM:+Math.max(7.5,Math.abs(lv)*2).toFixed(1),heavyStampsActive:Math.abs(lv)>=5.4,ropeWalkActive:true,state:lv<2.8?'milling':'holding'},
    causeway:{exposed:cwyExp,byssusGatherable:cwyExp},
    careenedHullY:+arkY.toFixed(2),
-   sim:simAtDay(curDay)
+   sim:simAtDay(curDay),
+   life:(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.status():null
   };
  }
 
@@ -163,6 +165,10 @@ const FCOVE_PANEL=(function initFcovePanel(){
   const lines=[hdr,lnSill,lnCradles,lnRot,lnMill];
   if(S.sim){
    lines.push('Fleets in Cove: '+S.sim.fleetCount+'/5 ('+S.sim.totalHullsInCove+' hulls) · Moot Pop: '+S.sim.mootPop+' · Paktong Stock: '+S.sim.stocks.paktong+' ingots · Shore-kin Villages: '+S.sim.shorekinVillages+' ('+S.sim.shorekinPop+' clients)');
+  }
+  if(S.life){
+   const L=S.life,bp=L.byPeople||{};
+   lines.push('Citizens Active: '+L.totalActive+' (cFlīt-qBōn '+(bp.cflit_qbon||0)+', Shore-Kin '+(bp.shore_kin||0)+', Hueru-Kuran '+(bp.hueru_kuran||0)+') · Careening Crew: '+L.careeningInPit+' pit / '+L.careeningBench+' quay · Free-Divers: '+L.diversInWater+' swimming · Byssus Causeway: '+L.byssusOnCauseway);
   }
   return lines.join('\n');
  }
@@ -199,11 +205,14 @@ const FCOVE_PANEL=(function initFcovePanel(){
    }
   }
   const res=COVE_TIDE.setTide(cmd,opt);
-  const S=status();
+  const preS=status();
   if(typeof FCOVE_SCENE!=='undefined'&&FCOVE_SCENE&&FCOVE_SCENE.syncFleetsForDay){
-   FCOVE_SCENE.syncFleetsForDay(S.day);
-   S.sim=simAtDay(S.day);
+   FCOVE_SCENE.syncFleetsForDay(preS.day);
   }
+  if(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE&&typeof FCOVE_LIFE.update==='function'){
+   FCOVE_LIFE.update(0);
+  }
+  const S=status();
   paint();
   return Object.assign({},res,{fcove:S});
  }
@@ -458,6 +467,37 @@ function fcoveChecks(){
   detail:'water errs '+wp.length+', curtains '+(ca?ca.weeps+' (clipped '+ca.clipped+')':'missing')
  });
 
+ /* 13. P6: Articulated citizen crowds (<= 6 InstancedMesh draw calls, 0 submerged non-divers, 700+ SIM actors) */
+ const lifeAud=(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.audit():null;
+ const lifeSum=lifeAud?lifeAud.summary:null;
+ const simActors=(typeof SIM!=='undefined'&&typeof SIM.all==='function')?SIM.all('actor'):[];
+ const lifeOk=!!(
+  typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE&&
+  FCOVE_LIFE.drawCalls<=6&&
+  lifeAud&&lifeAud.ok&&lifeSum&&lifeSum.submergedNonDivers===0&&
+  simActors.length>=700
+ );
+ R.push({
+  name:'fcove-life-cohorts-and-zero-submerged',
+  ok:lifeOk,
+  detail:lifeSum
+   ?('drawCalls='+FCOVE_LIFE.drawCalls+', active='+lifeSum.totalActive+', submergedNonDivers='+lifeSum.submergedNonDivers+', simActors='+simActors.length+', careenPit='+lifeSum.careeningInPit+', divers='+lifeSum.diversInWater+', cwy='+lifeSum.byssusOnCauseway)
+   :'missing FCOVE_LIFE'
+ });
+
+ /* 14. P7: core/export (krator-world) registered with KTIDE {px: 236, py: 242, meanRange: 11} */
+ const expTide=WATER.PRESETS&&WATER.PRESETS.tide?WATER.PRESETS.tide:null;
+ const expOk=!!(
+  typeof EXPORT!=='undefined'&&EXPORT&&typeof EXPORT.world==='function'&&
+  typeof FCOVE_EXPORT!=='undefined'&&FCOVE_EXPORT&&
+  expTide&&expTide.px===236&&expTide.py===242&&expTide.meanRange===11
+ );
+ R.push({
+  name:'fcove-export-registered',
+  ok:expOk,
+  detail:expTide?('EXPORT ready, tide px=['+expTide.px+','+expTide.py+'] meanRange='+expTide.meanRange+'m'):'missing EXPORT or WATER.PRESETS.tide'
+ });
+
  return R;
 }
 
@@ -473,6 +513,12 @@ function fcoveNegatives(){
  const W=FCOVE_SCENE.world;
  add('banked-neap-zero-paktong',!!(W&&W.dailyLog[67]&&W.dailyLog[67].paktongSmelted===0),'neap day 67 smelts 0 paktong');
  add('deep-ward-zero-deep-careen',!!(typeof KCAMP!=='undefined'&&KCAMP.PORTS&&KCAMP.PORTS.deep_ward.tideRange_m<2.2&&W&&W.audit().deepWardCareens===0),'Deep-Ward 1.9 m diurnal tide performs 0 deep careenings');
+ if(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE&&FCOVE_LIFE.plan){
+  const f1=FCOVE_LIFE.plan.auditState({seaLevel:7.05,activeFleetIds:['trench_fleet'],faults:{floodedCradleCrewFault:true}});
+  add('flooded-cradle-catches-submerged-crew',f1.ok===false,'auditState catches flooded cradle shipwrights ('+(f1.summary&&f1.summary.submergedNonDivers)+' submerged)');
+  const f2=FCOVE_LIFE.plan.auditState({seaLevel:0.0,activeFleetIds:['trench_fleet'],faults:{submergedCausewayFault:true}});
+  add('submerged-causeway-catches-byssus-crew',f2.ok===false,'auditState catches submerged causeway gatherers ('+(f2.summary&&f2.summary.submergedNonDivers)+' submerged)');
+ }
  return R;
 }
 
@@ -502,7 +548,9 @@ window._build={
  sparChuteLengthM:FCOVE_SCENE.sparChute.lengthM,
  visitingFleets:5,
  mooredVessels:FCOVE_SCENE.moored.length,
- careenedVessels:FCOVE_SCENE.careened.length
+ careenedVessels:FCOVE_SCENE.careened.length,
+ lifeRoster:(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE&&FCOVE_LIFE.plan)?FCOVE_LIFE.plan.roster.length:0,
+ lifeDrawCalls:(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.drawCalls:0
 };
 
 const afInt=FCOVE_SCENE.arcoforte&&FCOVE_SCENE.arcoforte.intHost?FCOVE_SCENE.arcoforte.intHost:null;
@@ -510,7 +558,7 @@ const afInt=FCOVE_SCENE.arcoforte&&FCOVE_SCENE.arcoforte.intHost?FCOVE_SCENE.arc
 KHOST.take(KHOST.standard({
  build:'fleetborn-cove',
  title:'Fleetborn Cove — Arcoforte Sanctuary & Macrotidal Drydock',
- hint:'Soleri\'s Arcoforte seated in marginal caretaker state on the +76..+84 m eastern ophiolite cliff-prow of Fleetborn Cove (px 236, 242; 7.5–14.3 m KTIDE lunar tide): zero-pump spring graving cradles (-3 m blocks), salvaged Ancient submarine pens (kits/port d=3), reversible |v|^3 paktong sill rotors, impounding tide-mill, -6 m White Stacks sea-byssus causeway, 5 Shore-kin client villages (kits/shore-kin) + 540 m spar log-chute, and 5 dynamic cFlīt-qBōn & Hueru-Kuran nomad fleets (Deep-Ward <-> Arcoforte). Press O for Stocks, X for cutaway ([ / ]), E for doors, F to walk.',
+ hint:'Soleri\'s Arcoforte seated in marginal caretaker state on the +76..+84 m eastern ophiolite cliff-prow of Fleetborn Cove (px 236, 242; 7.5–14.3 m KTIDE lunar tide): zero-pump spring graving cradles (-3 m blocks), salvaged Ancient submarine pens (kits/port d=3), reversible |v|^3 paktong sill rotors, impounding tide-mill, -6 m White Stacks sea-byssus causeway, 5 Shore-kin client villages (kits/shore-kin) + 540 m spar log-chute, 5 dynamic cFlīt-qBōn & Hueru-Kuran nomad fleets, and tide-driven 3D citizen crowds (click any citizen to inspect). Press O for Stocks, X for cutaway ([ / ]), E for doors, F to walk.',
  scene:scene,
  camera:camera,
  renderer:renderer,
@@ -547,20 +595,23 @@ KHOST.take(KHOST.standard({
   show:afInt.showUnit,
   bar:afInt.barText
  }:undefined,
+ inspect:hit=>(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.inspectHit(hit,camera):null,
  describe:describeHit,
  records:()=>KTAGS.page.query({}),
  stats:()=>{
   const S=FCOVE_PANEL.status();
   const fl=S.sim?(S.sim.fleetCount+'/5 fleets ('+S.sim.totalHullsInCove+' hulls)'):((FCOVE_SCENE.moored.length+FCOVE_SCENE.careened.length)+' hulls');
+  const lf=S.life?(' · '+S.life.totalActive+' citizens ('+S.life.diversInWater+' divers)'):'';
   return'tide '+(S.level>=0?'+':'')+S.level.toFixed(1)+' m · sill '+S.sill.v.toFixed(1)+' m/s\n'+
-   'hearth '+S.rotors.hearthState+' · '+fl;
+   'hearth '+S.rotors.hearthState+' · '+fl+lf;
  },
  minimap:{title:'Fleetborn Cove'},
  exporters:{
   biome:()=>BIO.export(),
   tags:()=>KTAGS.page.export(),
   water:()=>WATER.export(),
-  sim:()=>SIM.export()
+  sim:()=>SIM.export(),
+  'godot world':()=>FCOVE_EXPORT.exportWorld()
  },
  types:()=>BIO.stats,
  budget:{
@@ -572,7 +623,9 @@ KHOST.take(KHOST.standard({
   hostChecks:fcoveChecks,
   hostNegatives:fcoveNegatives,
   setTide:(m,o)=>FCOVE_PANEL.setTide(m,o),
-  tideStatus:()=>FCOVE_PANEL.status()
+  tideStatus:()=>FCOVE_PANEL.status(),
+  lifeStatus:()=>(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.status():null,
+  pickCitizen:(ray,maxPx)=>(typeof FCOVE_LIFE!=='undefined'&&FCOVE_LIFE)?FCOVE_LIFE.pickRay(ray,camera,maxPx):null
  }
 }));
 

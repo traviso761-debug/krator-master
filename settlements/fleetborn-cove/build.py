@@ -55,23 +55,27 @@ def rd(p):
 
 PATH = {}
 
-# 1. Settlement own fragments (00-head.html, 40, 42, 44zz, 46, 60, 86, 89x, 99, 99-tail.html)
+# 1. Settlement own fragments (00-head.html, 40, 41, 42, 43, 44zz, 46, 60, 86, 89x, 70, 94, 99, 99-tail.html)
 OWN_MAP = {
     '00-head.html': '00-head.html',
     '40b-fcove-tide-rules.js': '40-fcove-tide-rules.js',
+    '41b-fcove-names.js': '41-fcove-names.js',
     '42b-fcove-layout.js': '42-fcove-layout.js',
+    '43b-fcove-life-plan.js': '43-fcove-life-plan.js',
     '44zz-fcove-site-patch.js': '44zz-fcove-site-patch.js',
     '46-fcove-stage-bind.js': '46-fcove-stage-bind.js',
     '60-fcove-sim.js': '60-fcove-sim.js',
     '86-fcove-works-and-fleet.js': '86-fcove-works-and-fleet.js',
     '89x-fcove-arcoforte-water.js': '89x-fcove-arcoforte-water.js',
+    '89zz-fcove-life.js': '70-fcove-life.js',
+    '98z-fcove-export.js': '94-fcove-export.js',
     '99-host-take.js': '99-fcove-host-take.js',
     '99-tail.html': '99-tail.html',
 }
 for k, v in OWN_MAP.items():
     PATH[k] = os.path.join(SRC, v)
 
-# 2. Core modules (core/rand, core/tags, core/space, core/drawn, core/clock, core/water + tide, core/atmos,
+# 2. Core modules (core/rand, core/tags, core/space, core/drawn, core/clock, core/sched, core/water + tide, core/atmos,
 #    core/terrain, core/biome, core/ruins, core/hazard, core/door, core/walk, core/furnish, core/shadow, core/lod,
 #    core/city, core/hamlet + shorekin, core/camp + fleet, core/simulation, core/materials/record, core/host, core/export)
 PATH['06-core-khook.js'] = J('core', 'shader', '06-core-khook.js')
@@ -79,6 +83,7 @@ PATH['06b-core-kcolor.js'] = J('core', 'shader', '06b-core-kcolor.js')
 PATH['07-core-export.js'] = J('core', 'export', '07-core-export.js')
 PATH['08-core-rand.js'] = J('core', 'rand', '08-core-rand.js')
 PATH['09-core-export-adapters.js'] = J('core', 'export', '09-core-export-adapters.js')
+PATH['10-core-export-scene.js'] = J('core', 'export', '10-core-export-scene.js')
 PATH['09-lod.js'] = J('core', 'lod', '09-lod.js')
 PATH['97-lod-auto.js'] = J('core', 'lod', '97-lod-auto.js')
 
@@ -86,6 +91,7 @@ PATH['10-core-door.js'] = J('core', 'door', '10-core-door.js')
 PATH['10-core-drawn.js'] = J('core', 'drawn', '10-core-drawn.js')
 PATH['10-core-shadow.js'] = J('core', 'shadow', '10-core-shadow.js')
 PATH['12-core-shadow-host.js'] = J('core', 'shadow', 'host', '12-core-shadow-host.js')
+PATH['20-core-sched.js'] = J('core', 'sched', '20-core-sched.js')
 PATH['20-core-space.js'] = J('core', 'space', '20-core-space.js')
 PATH['20-core-walk.js'] = J('core', 'walk', '20-core-walk.js')
 PATH['20-core-ruins.js'] = J('core', 'ruins', '20-core-ruins.js')
@@ -258,6 +264,34 @@ VIRTUAL['44y-host-tides-data.js'] = (
         json.dumps(_tide.slice_box(_tide.read(), *_tb['box']), separators=(',', ':'))
     )
 )
+
+
+# 5b. Slice cflit_qbon, shore_kin, and hueru_kuran from core/charactermodels/data/peoples.json
+def peoples_fragment():
+    raw = json.loads(rd(J('core', 'charactermodels', 'data', 'peoples.json')))
+    by_id = {p['id']: p for p in raw.get('peoples', []) if isinstance(p, dict) and 'id' in p}
+    sub = {}
+    for k in ('cflit_qbon', 'shore_kin', 'hueru_kuran'):
+        if k in by_id:
+            p = by_id[k]
+            sub[k] = {
+                'id': k,
+                'name': p.get('name', k),
+                'skin': list(p.get('skin', [])),
+                'hair': list(p.get('hair', [])),
+            }
+    if 'hueru_kuran' not in sub:
+        hk_src = by_id.get('hykkousoi', {})
+        sub['hueru_kuran'] = {
+            'id': 'hueru_kuran',
+            'name': 'Hueru-Kuran (the Outer Whalers)',
+            'skin': list(hk_src.get('skin') or ['#d4a982', '#b88b62', '#966b47']),
+            'hair': list(hk_src.get('hair') or ['#16120e', '#2a2017', '#4a3524']),
+        }
+    return '\n// Peoples palette slice from core/charactermodels/data/peoples.json\nvar FCOVE_PEOPLES=' + json.dumps(sub, separators=(',', ':')) + ';\n'
+
+
+VIRTUAL['41a-fcove-peoples-data.js'] = peoples_fragment()
 
 # 6. Furniture + Interiors + Ancients-Interiors runtime bundle (for Arcoforte sockets & cutaway)
 for d in (('kits', 'catalog'), ('kits', 'interiors')):
