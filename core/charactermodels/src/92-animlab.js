@@ -18,17 +18,32 @@
     if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
-  var raws = {}, cache = {};
+  var raws = {}, cache = {}, _relBase = '';
+  function fetchRel(rel){
+    if(_relBase){
+      return fetch(_relBase + rel).then(function(r){ if(!r.ok) throw new Error(rel + ': ' + r.status); return r; });
+    }
+    return fetch(rel).then(function(r){
+      if(!r.ok) throw new Error(rel + ': ' + r.status);
+      return r;
+    }).catch(function(){
+      return fetch('http://127.0.0.1:8123/' + rel).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        _relBase = 'http://127.0.0.1:8123/';
+        return r;
+      });
+    });
+  }
   // a piece's file: its GLB, and on a second line its morph deltas (build.py); key + '.morph' asks for the second
   var texts = {};
   function fetchText(key){
     var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
-    if(!texts[base]) texts[base] = fetch('pieces/' + base + '.txt').then(function(r){ if(!r.ok) throw new Error(base + ': ' + r.status); return r.text(); });
+    if(!texts[base]) texts[base] = fetchRel('pieces/' + base + '.txt').then(function(r){ return r.text(); });
     return texts[base].then(function(t){
       var s = t.split('\n')[line];
       if(s) return gunzip(b64(s));
       // a piece published before the two were one file: its deltas in a file of their own
-      return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+      return fetchRel('pieces/' + key + '.txt').then(function(r){ return r.text(); }).then(b64).then(gunzip);
     });
   }
   function fetchPiece(key){
