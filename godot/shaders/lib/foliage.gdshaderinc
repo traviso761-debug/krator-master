@@ -22,7 +22,8 @@ vec3 fol_sway(vec3 local, vec3 origin, float sc, float wg, float t, vec2 wind, f
 
 // a card's lighting normal without the clump's own (aN): its face normal pulled 45% toward up, so a clump reads as a mass
 vec3 fol_card_normal(vec3 n_world) {
-	return normalize(mix(normalize(n_world), vec3(0.0, 1.0, 0.0), 0.45));
+	vec3 nw = length(n_world) > 1e-5 ? normalize(n_world) : vec3(0.0, 1.0, 0.0);
+	return normalize(mix(nw, vec3(0.0, 1.0, 0.0), 0.45));
 }
 
 // the prism gum (o.irid): 0 shows the second colour, 1 the first, by the sun on the face, the view's grazing and a slow shimmer

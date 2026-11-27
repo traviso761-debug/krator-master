@@ -75,10 +75,12 @@ void vertex() {
 }
 
 void fragment() {
+	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
+	vec2 dtx = dFdx(tuv);
+	vec2 dty = dFdy(tuv);
 	if (klod_drop(v_lod, FRAGCOORD.xy)) {
 		discard;
 	}
-	vec2 tuv = UV * uv_repeat + uv_offset;   // three's uv transform (repeat, then offset), then its flipY
 	vec4 tx = has_tex ? texture(albedo_tex, vec2(tuv.x, flip_v ? 1.0 - tuv.y : tuv.y)) : vec4(1.0);
 	vec3 vcol = srgb_vcol ? k_s2l(COLOR.rgb) : COLOR.rgb;
 	vec3 c = vcol * colour;
@@ -100,7 +102,7 @@ void fragment() {
 		discard;
 	}
 	vec3 lin_leaf = k_tex(tx.rgb) * c;
-	ALBEDO = k_albedo(lin_leaf);
+	ALBEDO = k_albedo(max(lin_leaf, vec3(0.0)));
 	NORMAL = fol_vein_normal(NORMAL, fract(tuv), v_depth);
 	ROUGHNESS = mix(0.52, 0.72, dry_k);
 	SPECULAR = mix(0.22, 0.14, dry_k);
@@ -109,10 +111,10 @@ void fragment() {
 	// far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d/650, 0, 1.1))
 	ALPHA = fol_far_alpha(tx.a, v_depth);
 	ALPHA_SCISSOR_THRESHOLD = alpha_test;
-	// alpha to coverage under the project's MSAA: a scissored card has hard, stair-stepped edges and keeps its thin
-	// twig strokes at full strength into the distance; with coverage they thin and soften as the page's do
-	ALPHA_ANTIALIASING_EDGE = 0.25;
-	ALPHA_TEXTURE_COORDINATE = tuv * vec2(textureSize(albedo_tex, 0));
+	// alpha to coverage under the project's MSAA: guard untextured / constant-UV solid twigs & petals so calc_mip_level never evaluates log2(0.0) -> NaN
+	bool flat_uv = !has_tex || (dot(dtx, dtx) + dot(dty, dty) < 1e-10);
+	ALPHA_ANTIALIASING_EDGE = flat_uv ? 0.0 : 0.25;
+	ALPHA_TEXTURE_COORDINATE = flat_uv ? (v_wp.xz * 16.0 + vec2(v_wp.y * 8.0)) : tuv * vec2(textureSize(albedo_tex, 0));
 	// B1: gated by the leaf's normal: the clump's own (use_an), else the card's turned to the face drawn (as the page does)
 	vec3 bn = normalize(v_bn);
 	if (!use_an && !FRONT_FACING) {

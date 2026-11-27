@@ -326,6 +326,7 @@ func _paint_sky(e: Environment, n: Dictionary) -> void:
 		e.fog_density = float(n["fog"]) * fog_scale * high_k
 		e.fog_light_color = c
 		e.fog_sky_affect = 0.0
+		e.volumetric_fog_sky_affect = 0.0
 		e.fog_aerial_perspective = lerpf(0.26, 0.0, murk)
 		return
 	var sky: Sky = e.sky

@@ -220,7 +220,8 @@ func _update() -> void:
 	m.set_shader_parameter("uSpin", s["spin"])
 	m.set_shader_parameter("uTime", _t)
 	var cam3 := get_viewport().get_camera_3d() if get_viewport() else null
-	m.set_shader_parameter("uCamPos", cam3.global_position if cam3 else Vector3(0, 1.7, 0))
+	var cpos := cam3.global_position if cam3 else Vector3(0, 1.7, 0)
+	m.set_shader_parameter("uCamPos", Vector3(cpos.x, maxf(cpos.y, 1.7), cpos.z))
 	m.set_shader_parameter("uMoonT", s["t"] * 24.0)
 	var md := PackedVector3Array(); var ml := PackedVector3Array(); var mv := PackedVector3Array(); var mg := PackedVector3Array(); var mc := PackedVector3Array()
 	var mr := PackedFloat32Array(); var mk := PackedFloat32Array(); var mf := PackedFloat32Array(); var mlp := PackedFloat32Array()
@@ -272,4 +273,6 @@ func _update() -> void:
 	env.tonemap_exposure = L["exp"]
 	env.fog_light_color = _c(L["fogC"])
 	env.fog_density = L["fogD"] * 0.8326   # one exponential matched to three's squared one (stage.gd)
+	env.fog_sky_affect = 0.0
+	env.volumetric_fog_sky_affect = 0.0
 	env.fog_sun_scatter = clampf(0.26 * float(L["sunI"]), 0.0, 0.34)

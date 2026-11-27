@@ -21,6 +21,7 @@ const WEATHER_SHIMMER := {
 var cam: Camera3D
 var fx: Node
 var sun: DirectionalLight3D
+var host_ground: Node = null
 var quad: MeshInstance3D
 var mat: ShaderMaterial
 var enabled := true
@@ -48,10 +49,11 @@ func _init() -> void:
 	add_child(quad)
 
 
-func bind(c: Camera3D, f: Node = null, s: DirectionalLight3D = null) -> void:
+func bind(c: Camera3D, f: Node = null, s: DirectionalLight3D = null, h: Node = null) -> void:
 	cam = c
 	fx = f
 	sun = s
+	host_ground = h
 
 
 # Bind an explicit KTHERM field Dictionary {x0, z0, cell, nx, nz, T (PackedFloat32Array or Array of degC)}
@@ -146,8 +148,13 @@ func _process(dt: float) -> void:
 	if sun != null:
 		var sdir := sun.global_transform.basis.z.normalized()
 		sun_k = smoothstep(0.05, 0.42, sdir.y)
-	target_boil *= sun_k * master_scale
-	target_mir *= sun_k * master_scale
+	# Suppress desert heat shimmer & mirage inside wet monsoon pockets (e.g. Mantis 1,553 mm/yr)
+	var wet_k := 1.0
+	if cam != null and host_ground != null and host_ground.has_method("rain_mm_at"):
+		var r_mm := float(host_ground.rain_mm_at(cam.global_position.x, cam.global_position.z))
+		wet_k = 1.0 - smoothstep(880.0, 1180.0, r_mm)
+	target_boil *= sun_k * wet_k * master_scale
+	target_mir *= sun_k * wet_k * master_scale
 
 	current_boil = move_toward(current_boil, target_boil, dt * 0.6)
 	current_mirage = move_toward(current_mirage, target_mir, dt * 0.6)

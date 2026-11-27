@@ -32,6 +32,7 @@ var shimmer: KratorShimmerFx
 var rocks: KratorCatchBowlRocks
 var flora: KratorCatchBowlFlora
 var landforms: KratorCatchBowlLandforms
+var arcologies: KratorCatchBowlArcologies
 var network: KratorCatchBowlNetwork
 var cam: Camera3D
 var env: WorldEnvironment
@@ -42,11 +43,16 @@ var layer_albedo_arr: Texture2DArray
 var layer_nr_arr: Texture2DArray
 var water: MeshInstance3D
 var _heights := PackedFloat32Array()
+var _rain_img: Image
+var _rain_tex: ImageTexture
+var _rnx := 0
+var _rnz := 0
 var _nx := 0
 var _nz := 0
 var _m := 2000.0               # metres a sample
 var _lo := 0.0
 var _hi := 1.0
+var walk_mode := false
 var ui: CanvasLayer
 var _label: RichTextLabel
 var _pins: Node3D
@@ -68,6 +74,7 @@ func _ready() -> void:
 	_lo = float(meta["height"]["lo"])
 	_hi = float(meta["height"]["hi"])
 	_load_heights()
+	_load_rain()
 	_build_sky()
 	_build_terrain()
 	_build_water()
@@ -82,7 +89,11 @@ func _ready() -> void:
 	_place_camera(_arg("at", "jabal"))
 	shimmer = KratorShimmerFx.new()
 	add_child(shimmer)
-	shimmer.bind(cam, fx, sun)
+	shimmer.bind(cam, fx, sun, self)
+	if _rain_tex != null and shimmer.mat != null:
+		shimmer.mat.set_shader_parameter("rain_tex", _rain_tex)
+		shimmer.mat.set_shader_parameter("rain_box", Vector4(0.0, 0.0, maxf(1.0, float(_nx - 1) * _m), maxf(1.0, float(_nz - 1) * _m)))
+		shimmer.mat.set_shader_parameter("has_rain_tex", true)
 	if _arg("noshimmer", "") != "":
 		shimmer.enabled = false
 	network = KratorCatchBowlNetwork.new()
@@ -94,12 +105,14 @@ func _ready() -> void:
 	grit.name = "Grit"
 	add_child(grit)
 	grit.bind(cam, fx, self)
-	# rocks where the sand is not: the other half of the near-field layer (krator/catch_bowl_rocks.gd)
+	# rocks, real biome flora, landforms & Ancient Arcologies
 	if _arg("plain", "") == "":
 		rocks = KratorCatchBowlRocks.new()
 		rocks.name = "Rocks"
 		add_child(rocks)
 		rocks.bind(self, cam)
+		if layer_albedo_arr != null and layer_nr_arr != null:
+			rocks.bind_layers(layer_albedo_arr, layer_nr_arr)
 		flora = KratorCatchBowlFlora.new()
 		flora.name = "Flora"
 		add_child(flora)
@@ -108,6 +121,12 @@ func _ready() -> void:
 		landforms.name = "Landforms"
 		add_child(landforms)
 		landforms.bind(self, cam)
+		if layer_albedo_arr != null and layer_nr_arr != null:
+			landforms.bind_layers(layer_albedo_arr, layer_nr_arr)
+		arcologies = KratorCatchBowlArcologies.new()
+		arcologies.name = "Arcologies"
+		add_child(arcologies)
+		arcologies.bind(self, cam)
 	var w := _arg("weather", "")
 	if w != "":
 		fx.set_kind(w)
@@ -135,6 +154,33 @@ func _load_heights() -> void:
 	for z in _nz:
 		for x in _nx:
 			_heights[z * _nx + x] = _lo + img.get_pixel(x, z).r * (_hi - _lo)
+
+
+func _load_rain() -> void:
+	var img := Image.new()
+	if img.load(DATA + "rain.png") != OK:
+		return
+	_rain_img = img
+	_rnx = img.get_width()
+	_rnz = img.get_height()
+	_rain_tex = ImageTexture.create_from_image(img)
+
+
+# Bilinear annual rainfall in mm/yr at mesh world (x, z), matching export_godot.py's 4,000 mm scale
+func rain_mm_at(x: float, z: float) -> float:
+	if _rain_img == null or _rnx < 2 or _rnz < 2:
+		return 0.0
+	var fx0 := clampf(x / _m, 0.0, float(_rnx - 1))
+	var fz0 := clampf(z / _m, 0.0, float(_rnz - 1))
+	var ix := mini(_rnx - 2, int(fx0))
+	var iz := mini(_rnz - 2, int(fz0))
+	var tx := fx0 - float(ix)
+	var tz := fz0 - float(iz)
+	var r00 := _rain_img.get_pixel(ix, iz).r
+	var r10 := _rain_img.get_pixel(ix + 1, iz).r
+	var r01 := _rain_img.get_pixel(ix, iz + 1).r
+	var r11 := _rain_img.get_pixel(ix + 1, iz + 1).r
+	return ((r00 * (1.0 - tx) + r10 * tx) * (1.0 - tz) + (r01 * (1.0 - tx) + r11 * tx) * tz) * 4000.0
 
 
 func height_at(x: float, z: float) -> float:
@@ -254,6 +300,10 @@ func _build_terrain() -> void:
 		sh.set_shader_parameter("dune_spacing", float(_arg("dunes", "260")))
 		sh.set_shader_parameter("dune_height", 7.0)
 		sh.set_shader_parameter("sand_top", 2600.0)
+		if _rain_tex != null:
+			sh.set_shader_parameter("rain_tex", _rain_tex)
+			sh.set_shader_parameter("rain_box", Vector4(0.0, 0.0, maxf(1.0, float(_nx - 1) * _m), maxf(1.0, float(_nz - 1) * _m)))
+			sh.set_shader_parameter("has_rain_tex", true)
 		_bind_layers(sh)
 		terrain_mat = sh
 		terrain.material_override = sh
@@ -389,19 +439,26 @@ const VIEWS := {
 		"note": "along Route B (the Steaming-Stone Dash) over the Brazier toward Catch-Lookout"},
 	"stalkergate": {"eye": Vector3(1415.0, 1252.0, 0.0), "at": Vector3(1493.0, 1225.0, 0.0), "up": 5500.0,
 		"note": "east from Ranger HQ on Lake Vapora up the shared east graben trunk toward the fork"},
+	"mantis": {"eye": Vector3(1113.1, 1164.1, 0.0), "at": Vector3(1115.5, 1162.0, 0.0), "up": 2.0,
+		"note": "ground-level walk in Mantis's Socotran monsoon forest (Ficus vasta, dragon's-blood & frankincense)"},
+	"parabola": {"eye": Vector3(970.9, 1187.1, 0.0), "at": Vector3(970.0, 1186.0, 0.0), "up": 420.0,
+		"note": "the Bowl's 1,800 m parabolic solar-furnace arcology on its mountainside bench"},
+	"arcbeam": {"eye": Vector3(1016.24, 1058.42, 0.0), "at": Vector3(1015.64, 1057.37, 0.0), "up": 85.0,
+		"note": "the refurbished Iziz plateau arcology (Arckibuz) on the north road"},
+	"stair": {"eye": Vector3(1107.2, 1443.3, 0.0), "at": Vector3(1106.0, 1442.0, 0.0), "up": 460.0,
+		"note": "the ruined 3,760 m terraced Hill Arcology rising above Stair's oasis"},
+	"monolith": {"eye": Vector3(1344.9, 1410.1, 0.0), "at": Vector3(1344.0, 1409.0, 0.0), "up": 380.0,
+		"note": "the unlabelled 1,100 m ruined Slab Monolith in the high eastern valley"},
 }
 
 
 func _place_camera(at: String) -> void:
 	cam = Camera3D.new()
 	cam.set_script(load("res://krator/fly_camera.gd"))
-	# NEAR MATTERS AS MUCH AS FAR in a world 1,282 km across. The first pass left near at Godot's 0.05 and set far to
-	# 4,000,000: a ratio of eighty million, which empties the depth buffer, and the terrain simply did not draw -- what
-	# looked like ground in the early shots was the procedural sky's own ground hemisphere. At 120 m to 900 km the ratio
-	# is 7,500 and the mesh appears.
 	cam.near = 120.0
 	cam.far = 900000.0
 	cam.fov = 60.0
+	walk_mode = _arg("walk", "") != ""
 	var off: Array = meta.get("origin_offset_m", [0, 0])
 	var wx := float(_nx) * _m * 0.5
 	var wz := float(_nz) * _m * 0.5
@@ -416,23 +473,21 @@ func _place_camera(at: String) -> void:
 		var vup := float(_arg("up", str(v["up"])))
 		if _arg("up", "") == "":
 			vup = minf(vup, _vis_limit())
+		if vup <= 4.0:
+			walk_mode = true
 		cam.position = Vector3(ex, height_at(ex, ez) + vup, ez)
 		add_child(cam)
-		cam.look_at(Vector3(tx, height_at(tx, tz), tz))
+		var look_y := height_at(tx, tz) + (2.0 if vup <= 4.0 else 0.0)
+		cam.look_at(Vector3(tx, look_y, tz))
 		cam.current = true
 		if "speed" in cam:
-			cam.speed = 12000.0
+			cam.speed = 16.0 if walk_mode else 12000.0
 		print("  view %s: %s" % [at, v["note"]])
 		return
 	var s := site(at)
 	if not s.is_empty():
 		wx = float(s["x"]) - float(off[0])
 		wz = float(s["z"]) - float(off[1])
-	# add_child BEFORE look_at: look_at wants the node in the tree, and the first run said so
-	# 7 km up and 16 km back: an aerial view a real atmosphere allows. The first attempt put the eye 61 km up and 90 km
-	# back and the picture came out a flat wash -- correctly, because the fog densities here are the honest ones
-	# (Koschmieder: density = 3 / visibility_m), so 60 km of clear air already swallows the ground. If you want the
-	# whole 1,284 km box at once, that is a map, not a view: fly up and the fog will tell you the same thing.
 	var g := height_at(wx, wz)
 	var up := float(_arg("up", "16000"))
 	var back := float(_arg("back", "48000"))
@@ -441,12 +496,14 @@ func _place_camera(at: String) -> void:
 		up = minf(up, lim)
 	if _arg("back", "") == "":
 		back = minf(back, lim * 3.0)
+	if up <= 4.0:
+		walk_mode = true
 	cam.position = Vector3(wx, g + up, wz + back)
 	add_child(cam)
 	cam.look_at(Vector3(wx, g, wz))
 	cam.current = true
 	if "speed" in cam:
-		cam.speed = 12000.0
+		cam.speed = 16.0 if walk_mode else 12000.0
 
 
 # How high it is worth starting, given the weather asked for on the command line. The kinds keep their honest
@@ -594,7 +651,7 @@ func _build_ui() -> void:
 	_label.fit_content = true
 	box.add_child(_label)
 	var help := Label.new()
-	help.text = "WASD/QE fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | [ / ] hour | H shimmer | R routes | U bores | O outlaws\nSpace pause | M map | F2 Gallery"
+	help.text = "WASD/QE move, F walk/fly, drag to look, Shift x5, Ctrl+wheel speed\n1-7 weather | [ / ] hour | H shimmer | R routes | U bores | O outlaws\nSpace pause | M map | F2 Gallery"
 	help.autowrap_mode = TextServer.AUTOWRAP_WORD
 	box.add_child(help)
 	if _arg("shot", "") == "":
@@ -688,8 +745,12 @@ func _go_vantage(k: String) -> void:
 	var ez := _px_z(e.y)
 	var tx := _px_x(t.x)
 	var tz := _px_z(t.y)
-	var eye := Vector3(ex, height_at(ex, ez) + minf(float(v["up"]), _vis_limit()), ez)
-	var tgt := Vector3(tx, height_at(tx, tz), tz)
+	var vup := minf(float(v["up"]), _vis_limit())
+	walk_mode = vup <= 4.0
+	if "speed" in cam:
+		cam.speed = 16.0 if walk_mode else 12000.0
+	var eye := Vector3(ex, height_at(ex, ez) + vup, ez)
+	var tgt := Vector3(tx, height_at(tx, tz) + (2.0 if walk_mode else 0.0), tz)
 	if cam.has_method("look_from"):
 		cam.call("look_from", eye, tgt)
 	else:
@@ -754,16 +815,20 @@ func _unhandled_input(e: InputEvent) -> void:
 			KratorGalleryNav.return_to_gallery(get_tree())
 		elif kc == KEY_M and map_panel != null:
 			map_panel.visible = not map_panel.visible
-		elif kc == KEY_R and network != null and network.surface_routes_node != null:
-			network.surface_routes_node.visible = not network.surface_routes_node.visible
+		elif kc == KEY_R and network != null:
+			network.toggle_routes()
 		elif kc == KEY_U and network != null and network.under_routes_node != null:
 			network.under_routes_node.visible = not network.under_routes_node.visible
-		elif kc == KEY_O and network != null and network.outlaws_node != null:
-			network.outlaws_node.visible = not network.outlaws_node.visible
+		elif kc == KEY_O and network != null:
+			network.toggle_outlaws()
 		elif kc == KEY_SPACE and network != null:
 			network.paused = not network.paused
 		elif kc == KEY_H and shimmer != null:
 			shimmer.enabled = not shimmer.enabled
+		elif kc == KEY_F and cam != null:
+			walk_mode = not walk_mode
+			if "speed" in cam:
+				cam.speed = 16.0 if walk_mode else 12000.0
 		elif kc == KEY_BRACKETLEFT and sky_node != null:
 			sky_node.hour = fposmod(float(sky_node.hour) - 0.5, 24.0)
 		elif kc == KEY_BRACKETRIGHT and sky_node != null:
@@ -778,8 +843,11 @@ var _shot_frames := 0
 func _shot_tick() -> void:
 	if _shot == "":
 		return
+	var target_frames := maxi(4, int(_arg("shot_frames", "90")))
+	if target_frames < 30 and fx != null:
+		fx._blend = 1.0
 	_shot_frames += 1
-	if _shot_frames == 90:   # 90 frames: the weather's ease is 2.5 s, so the picture is of the settled condition
+	if _shot_frames == target_frames:
 		var img := get_viewport().get_texture().get_image()
 		DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://" + _shot.get_base_dir()))
 		img.save_png("res://" + _shot)
@@ -806,12 +874,19 @@ func _fit_clip() -> void:
 		return
 	var p := cam.global_position
 	var up: float = maxf(1.0, p.y - height_at(p.x, p.z))
-	var n: float = clampf(up * 0.02, 0.2, 120.0)
+	var n: float = clampf(up * 0.02, 0.22, 120.0)
 	cam.near = n
-	cam.far = clampf(n * 9000.0, 40000.0, 900000.0)
+	# Forward+ / Mobile use Reversed-Z float32 depth: keep the full 900 km far plane even at AGL 2 m so basin rims never cut off!
+	if RenderingServer.get_current_rendering_method() == "gl_compatibility":
+		cam.far = clampf(n * 90000.0, 260000.0, 900000.0)
+	else:
+		cam.far = 900000.0
 
 
 func _process(_d: float) -> void:
+	if walk_mode and cam != null:
+		var cp := cam.global_position
+		cam.global_position = Vector3(cp.x, height_at(cp.x, cp.z) + 2.0, cp.z)
 	_fit_clip()
 	_cull_pins()
 	if terrain_mat != null and sun != null:

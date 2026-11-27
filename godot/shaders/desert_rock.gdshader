@@ -106,7 +106,8 @@ void fragment() {
 	// --- 2. TRIPLANAR HEX-TILED ROCK GRAIN & NORMALS (sampled on float32-safe lp)
 	float tex_w = (1.0 - smoothstep(600.0, 2200.0, dist));
 	if (has_layers && tex_w > 0.01) {
-		vec3 tw = pow(abs(wn), vec3(4.0));
+		vec3 wn2 = wn * wn;
+		vec3 tw = wn2 * wn2;
 		tw /= max(tw.x + tw.y + tw.z, 1e-4);
 		float r_fl = family_mode == 2 ? 1.0 : 4.0;
 		float t_sc = 1.0 / max(rock_tile_m, 0.5);
@@ -157,7 +158,7 @@ void fragment() {
 		float skirt = (1.0 - smoothstep(-skirt_height * 0.15, skirt_height * n_rag, h_above))
 			* (1.0 - smoothstep(0.88, 0.99, -wn.y));
 		if (skirt > 0.005) {
-			vec3 g_lin = k_s2l(v_ground.rgb);
+			vec3 g_lin = k_s2l(clamp(v_ground.rgb, vec3(0.0), vec3(1.0)));
 			c = mix(c, g_lin, skirt * 0.88);
 			wn = normalize(mix(wn, vec3(0.0, 1.0, 0.0), skirt * 0.58));
 			rough = mix(rough, 0.93, skirt * 0.85);
@@ -165,7 +166,7 @@ void fragment() {
 		}
 	}
 
-	ALBEDO = k_albedo(c);
+	ALBEDO = k_albedo(max(c, vec3(0.0)));
 	NORMAL = normalize((VIEW_MATRIX * vec4(wn, 0.0)).xyz);
 	ROUGHNESS = clamp(rough, 0.08, 1.0);
 	SPECULAR = spec;

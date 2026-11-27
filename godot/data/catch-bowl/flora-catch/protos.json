@@ -1,0 +1,86 @@
+{
+ "format": "krator-flora-protos",
+ "version": 1,
+ "protos": [
+  {
+   "key": "poplar_live|0",
+   "species": "poplar_live",
+   "name": "Euphrates poplar (tugai)",
+   "H": 9.367,
+   "crownR": 7.441,
+   "tris": 1178
+  },
+  {
+   "key": "poplar_live|1",
+   "species": "poplar_live",
+   "name": "Euphrates poplar (tugai)",
+   "H": 10.023,
+   "crownR": 6.256,
+   "tris": 1124
+  },
+  {
+   "key": "poplar_gold|0",
+   "species": "poplar_gold",
+   "name": "Euphrates poplar (autumn gold)",
+   "H": 10.003,
+   "crownR": 5.54,
+   "tris": 932
+  },
+  {
+   "key": "poplar_dead|0",
+   "species": "poplar_dead",
+   "name": "Dead standing tugai poplar",
+   "H": 11.352,
+   "crownR": 4.68,
+   "tris": 296
+  },
+  {
+   "key": "poplar_dead|1",
+   "species": "poplar_dead",
+   "name": "Dead standing tugai poplar",
+   "H": 8.395,
+   "crownR": 2.903,
+   "tris": 266
+  },
+  {
+   "key": "tamarisk|0",
+   "species": "tamarisk",
+   "name": "Salt cedar (tamarisk)",
+   "H": 4.777,
+   "crownR": 3.649,
+   "tris": 392
+  },
+  {
+   "key": "tamarisk|1",
+   "species": "tamarisk",
+   "name": "Salt cedar (tamarisk)",
+   "H": 5.235,
+   "crownR": 3.77,
+   "tris": 504
+  },
+  {
+   "key": "broom|0",
+   "species": "broom",
+   "name": "Dune broom shrub",
+   "H": 2.1,
+   "crownR": 1.26,
+   "tris": 152
+  },
+  {
+   "key": "saltbush|0",
+   "species": "saltbush",
+   "name": "Saltbush",
+   "H": 1.3,
+   "crownR": 1.4,
+   "tris": 12
+  },
+  {
+   "key": "brinelamp|0",
+   "species": "brinelamp",
+   "name": "Brine lamps (halophyte)",
+   "H": 0.9,
+   "crownR": 1.2,
+   "tris": 18
+  }
+ ]
+}

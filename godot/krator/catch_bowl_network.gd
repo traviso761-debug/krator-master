@@ -460,18 +460,59 @@ func _update_caravans(day: float) -> void:
 			mi.rotation.y = atan2(dir.x, dir.z)
 
 
+var routes_enabled := true
+var outlaws_enabled := true
+var force_low_altitude := false
+
+
+func toggle_routes() -> void:
+	if cam != null and host != null and host.has_method("height_at"):
+		var agl := cam.global_position.y - float(host.height_at(cam.global_position.x, cam.global_position.z))
+		if agl < 2400.0 and not force_low_altitude:
+			force_low_altitude = true
+			routes_enabled = true
+			return
+	routes_enabled = not routes_enabled
+	if not routes_enabled:
+		force_low_altitude = false
+
+
+func toggle_outlaws() -> void:
+	if cam != null and host != null and host.has_method("height_at"):
+		var agl := cam.global_position.y - float(host.height_at(cam.global_position.x, cam.global_position.z))
+		if agl < 2400.0 and not force_low_altitude:
+			force_low_altitude = true
+			outlaws_enabled = true
+			return
+	outlaws_enabled = not outlaws_enabled
+
+
 func _process(delta: float) -> void:
 	if not paused:
 		sim_day += delta * sim_speed_days_per_sec
 		_update_caravans(sim_day)
-	# Cull stop/outlaw labels by visibility reach just like site pins
-	if cam != null and fx != null:
-		var reach: float = float(fx.row().get("visibility_km", 200.0)) * 1000.0 * 1.4
+	if cam != null:
 		var eye := cam.global_position
-		for grp in [stops_node, outlaws_node]:
-			if grp == null or not grp.visible:
-				continue
-			for ch in grp.get_children():
-				if ch is Label3D:
-					var d := eye.distance_to((ch as Node3D).global_position)
-					(ch as Node3D).visible = d <= reach and d > 1800.0
+		var agl := 99999.0
+		if host != null and host.has_method("height_at"):
+			agl = eye.y - float(host.height_at(eye.x, eye.z))
+		# Schematic 560 m map ribbons & 900 m blocks belong to high-altitude regional flyovers (>= 2.4 km AGL);
+		# hide them during ground walks and close-up arcology inspection unless explicitly toggled on with R/O.
+		var map_alt := agl >= 2400.0 or force_low_altitude
+		if surface_routes_node != null:
+			surface_routes_node.visible = routes_enabled and map_alt
+		if stops_node != null:
+			stops_node.visible = routes_enabled and map_alt
+		if caravans_node != null:
+			caravans_node.visible = routes_enabled and map_alt
+		if outlaws_node != null:
+			outlaws_node.visible = outlaws_enabled and map_alt
+		if fx != null:
+			var reach: float = float(fx.row().get("visibility_km", 200.0)) * 1000.0 * 1.4
+			for grp in [stops_node, outlaws_node]:
+				if grp == null or not grp.visible:
+					continue
+				for ch in grp.get_children():
+					if ch is Label3D:
+						var d := eye.distance_to((ch as Node3D).global_position)
+						(ch as Node3D).visible = d <= reach and d > 1800.0

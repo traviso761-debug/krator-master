@@ -43,6 +43,9 @@ uniform float scree_from = 0.10;
 uniform float breakup = 0.16;
 uniform float province = 1.0;
 uniform float detail = 1.0;
+uniform bool has_rain_tex = false;
+uniform sampler2D rain_tex : filter_linear, repeat_disable;
+uniform vec4 rain_box = vec4(0.0, 0.0, 1282000.0, 1056000.0);
 
 // Detail ratio clamped around neutral so hex-tiled textures carry value & grain without bleaching
 vec3 kh_tame(vec3 d) {
@@ -137,6 +140,20 @@ void fragment() {
 	float nearB = (1.0 - smoothstep(0.0, breakup_fade_m, dist)) * d;
 	float slope = clamp(1.0 - n.y, 0.0, 1.0);
 
+	// Rainfall raster lookup (with organic 600 m + 140 m domain warp so Mantis's 2 km monsoon pocket edge blends naturally)
+	float rain_mm = 0.0;
+	if (has_rain_tex) {
+		vec2 rwarp = vec2(km_n(vec3(wp.xz / 680.0, 61.0)) - 0.5, km_n(vec3(wp.xz / 680.0, 67.0)) - 0.5) * 1400.0
+			+ vec2(km_n(vec3(wp.xz / 150.0, 71.0)) - 0.5, km_n(vec3(wp.xz / 150.0, 73.0)) - 0.5) * 320.0;
+		vec2 ruv = clamp((wp.xz + rwarp - rain_box.xy) / max(rain_box.zw, vec2(1.0)), vec2(0.0), vec2(1.0));
+		rain_mm = texture(rain_tex, ruv).r * 4000.0;
+	}
+	float low_monsoon = 1.0 - smoothstep(350.0, 950.0, wp.y);
+	float monsoon_rain = rain_mm * low_monsoon;
+	float dry_k = 1.0 - smoothstep(880.0, 1180.0, monsoon_rain);
+	float savanna_w = smoothstep(880.0, 1180.0, monsoon_rain) * (1.0 - smoothstep(0.22, 0.46, slope));
+	float forest_w = smoothstep(1120.0, 1460.0, monsoon_rain) * (1.0 - smoothstep(0.18, 0.40, slope));
+
 	// Organic contour breakup on elevation before looking up hypsometric linear color: zero 2 km vertex stripes
 	float h_break = (km_n(vec3(wp.xz / 1200.0, 6.0)) - 0.5) * 210.0 + (km_n(vec3(wp.xz / 290.0, 14.0)) - 0.5) * 55.0;
 	vec3 col = desert_hypsometric_srgb(wp.y + h_break);
@@ -146,16 +163,31 @@ void fragment() {
 	float spec_amt = 0.18;
 	float ao = 1.0;
 
-	// --- THE PROVINCES (erg sand seas, dark reg lag gravel, Bowl salt playa)
+	// --- THE PROVINCES (erg sand seas, dark reg lag gravel, Bowl salt playa — suppressed inside wet monsoon pockets)
 	float pv = km_n(vec3(wp.xz / 9000.0, 21.0)) * 0.65 + km_n(vec3(wp.xz / 31000.0, 23.0)) * 0.35;
 	float low = (1.0 - smoothstep(sand_top - 400.0, sand_top + 900.0, wp.y))
 		* (1.0 - smoothstep(0.08, 0.18, slope));
-	float erg = smoothstep(0.48, 0.66, pv) * low * province;
-	float reg = smoothstep(0.46, 0.28, pv) * low * province;
-	float salty = (1.0 - smoothstep(-980.0, -480.0, wp.y + h_break * 0.45)) * (1.0 - smoothstep(0.02, 0.06, slope));
+	float erg = smoothstep(0.48, 0.66, pv) * low * province * dry_k;
+	float reg = smoothstep(0.46, 0.28, pv) * low * province * dry_k;
+	float salty = (1.0 - smoothstep(-980.0, -480.0, wp.y + h_break * 0.45)) * (1.0 - smoothstep(0.02, 0.06, slope)) * dry_k;
 	col = mix(col, col * vec3(1.14, 0.96, 0.72), erg);       // erg: deeper warm golden sand
 	col = mix(col, col * vec3(0.62, 0.60, 0.62), reg);       // reg: dark desert-varnished lag gravel
 	rough += 0.03 * reg;
+
+	// --- MANTIS MONSOON POCKET (Socotran savanna sward -> rich dark-humus monsoon forest floor)
+	if (savanna_w > 0.002) {
+		float patch_s = km_n(vec3(wp.xz / 95.0, 83.0)) * 0.6 + km_n(vec3(wp.xz / 22.0, 89.0)) * 0.4;
+		vec3 sav_a = k_s2l(vec3(0.48, 0.49, 0.24));   // warm monsoon savanna grass
+		vec3 sav_b = k_s2l(vec3(0.35, 0.42, 0.20));   // greener croton & aloe swales
+		vec3 for_a = k_s2l(vec3(0.20, 0.31, 0.13));   // deep Ficus vasta shade & moss
+		vec3 for_b = k_s2l(vec3(0.28, 0.39, 0.17));   // sunlit Socotran forest glades
+		vec3 c_sav = mix(sav_a, sav_b, smoothstep(0.32, 0.68, patch_s));
+		vec3 c_for = mix(for_a, for_b, smoothstep(0.28, 0.72, patch_s));
+		col = mix(col, c_sav, savanna_w);
+		col = mix(col, c_for, forest_w);
+		rough = mix(rough, 0.88, savanna_w * 0.8);
+		spec_amt = mix(spec_amt, 0.14, savanna_w * 0.8);
+	}
 
 	float sand_mask = 0.0;
 	if (nearB > 0.001) {
@@ -168,7 +200,7 @@ void fragment() {
 			* (1.0 - smoothstep(sand_flat * 0.6, sand_flat, slope))
 			* smoothstep(0.40, 0.62, pv)
 			* smoothstep(0.24, 0.60, km_n(vec3(wp.xz / 5200.0, 2.0)))
-			* (1.0 - salty * 0.85);   // dry salt flats carry scattered low sheets, not tall dunes
+			* (1.0 - salty * 0.85) * dry_k;
 		sand_mask = sand;
 		if (sand > 0.001) {
 			vec2 w = normalize(wind_dir);
@@ -257,7 +289,7 @@ void fragment() {
 
 		// --- THE SWELL: rolling pediment & sabkha micro-undulation where dunes thin out
 		float stony = (1.0 - smoothstep(0.30, 0.55, pv)) * 0.55 + smoothstep(0.06, 0.16, slope) * 0.80
-			+ smoothstep(sand_top, sand_top + 900.0, wp.y) * 0.70;
+			+ smoothstep(sand_top, sand_top + 900.0, wp.y) * 0.70 + savanna_w * 0.45;
 		float swell = clamp(stony, 0.0, 1.0) * nearW * (1.0 - salty * 0.55);
 		if (swell > 0.001) {
 			float q = 65.0;
@@ -291,7 +323,7 @@ void fragment() {
 			float best = max(erg, 0.08);
 			if (reg > best) { best = reg; base_fl = 3.0; }
 			if (salty > best) { best = salty; base_fl = 1.0; }
-			if (highy > best) { best = highy; base_fl = 2.0; }
+			if (highy > best || savanna_w > 0.25) { best = max(highy, savanna_w); base_fl = 2.0; }
 			float rock_fl = slope > scree_from * 2.2 ? 4.0 : 5.0;
 			float rockw = smoothstep(scree_from * 0.8, scree_from * 2.4, slope);
 
@@ -317,24 +349,26 @@ void fragment() {
 		}
 	}
 
-	// --- MINERAL QUARTZ & HALITE MICRO-GLINTS (evaluated on camera-local 3D position for sub-mm precision)
-	float glint_carrier = clamp(max(max(sand_mask, erg * 0.7), salty * 1.15), 0.0, 1.0) * glint_strength * d;
-	if (glint_carrier > 0.01 && px_fp < 1.1) {
+	// --- MINERAL QUARTZ & HALITE MICRO-GLINTS (dry ground only, softened & faded near boots so walking never strobes)
+	float glint_carrier = clamp(max(max(sand_mask, erg * 0.7), salty * 1.15), 0.0, 1.0)
+		* dry_k * smoothstep(3.5, 11.0, dist) * glint_strength * d;
+	if (glint_carrier > 0.01 && px_fp < 0.95) {
 		vec3 sdir = normalize(sun_dir);
 		float sun_up = smoothstep(0.02, 0.20, sdir.y);
 		vec3 p_loc = vec3(np.x, wp.y, np.y);
 		vec3 cam_loc = p_loc - (wp - CAMERA_POSITION_WORLD);
-		float g_fine = kg_glint(p_loc, cam_loc, sdir, 0.22, 0.52, 42.0, 0.42, px_fp, 17.0);
-		float g_coarse = kg_glint(p_loc, cam_loc, sdir, 0.68, 0.44, 28.0, 0.28, px_fp, 53.0);
-		float glint = (g_fine * 0.75 + g_coarse * 0.55) * glint_carrier * sun_up;
+		float g_fine = kg_glint(p_loc, cam_loc, sdir, 0.28, 0.52, 16.0, 0.36, px_fp, 17.0);
+		float g_coarse = kg_glint(p_loc, cam_loc, sdir, 0.75, 0.44, 12.0, 0.26, px_fp, 53.0);
+		float glint = (g_fine * 0.65 + g_coarse * 0.45) * glint_carrier * sun_up;
 		vec3 glint_tint = mix(vec3(0.95, 0.78, 0.48), vec3(0.95, 0.92, 0.86), clamp(salty, 0.0, 1.0));
-		col += glint_tint * glint * 0.28;
-		spec_amt = clamp(spec_amt + glint * 0.40, 0.0, 0.85);
+		col += glint_tint * min(glint * 0.14, 0.075);
+		spec_amt = clamp(spec_amt + glint * 0.24, 0.0, 0.65);
 	}
 
-	ALBEDO = k_albedo(col);
-	NORMAL = normalize((VIEW_MATRIX * vec4(n, 0.0)).xyz);
-	ROUGHNESS = clamp(rough, 0.0, 1.0);
+	ALBEDO = k_albedo(max(col, vec3(0.0)));
+	vec3 vn = (VIEW_MATRIX * vec4(n, 0.0)).xyz;
+	NORMAL = length(vn) > 1e-5 ? normalize(vn) : vec3(0.0, 0.0, 1.0);
+	ROUGHNESS = clamp(rough, 0.04, 1.0);
 	SPECULAR = spec_amt;
 	AO = clamp(ao, 0.35, 1.0);
 	AO_LIGHT_AFFECT = 0.35;

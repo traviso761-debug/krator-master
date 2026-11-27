@@ -113,10 +113,67 @@ func _initialize() -> void:
 	var devils_ok := grit_inst._devils.size() == KratorGritFx.DEVIL_COUNT and grit_inst._devil_mats.size() == KratorGritFx.DEVIL_COUNT
 	grit_inst.free()
 	var grit_src := FileAccess.get_file_as_string("res://krator/grit_fx.gd")
-	ok("KratorGritFx uses Mie forward-scattered saltation.gdshader and spawns pooled KRand-seeded helical dust devils",
-		salt_ok and devils_ok and grit_src.contains("KRand.cell(DEVIL_SEED"),
-		not KratorShimmerFx.WEATHER_SHIMMER["monsoon"][0] > 0.0,
-		"%d dust devil emitters, monsoon shimmer=0" % KratorGritFx.DEVIL_COUNT)
+	var salt_sh := FileAccess.get_file_as_string("res://shaders/saltation.gdshader")
+	var shim_sh := FileAccess.get_file_as_string("res://shaders/shimmer.gdshader")
+	ok("KratorGritFx & saltation.gdshader use non-HDR linear wisps, KRand dust devils, and gate saltation/shimmer off in wet monsoon pockets",
+		salt_ok and devils_ok and grit_src.contains("KRand.cell(DEVIL_SEED") and grit_src.contains("rain_mm_at")
+			and salt_sh.contains("k_s2l(") and salt_sh.contains("vec3(0.72)") and shim_sh.contains("has_rain_tex"),
+		not KratorShimmerFx.WEATHER_SHIMMER["monsoon"][0] > 0.0 and not grit_src.contains("amount = 5500"),
+		"%d dust devil emitters, non-HDR saltation <=0.72, wet-pocket gating wired" % KratorGritFx.DEVIL_COUNT)
+
+	# 7. Ground-level (AGL 2 m) 900 km horizon clip & rain.png Mantis monsoon pocket verification
+	var cb_src := FileAccess.get_file_as_string("res://krator/catch_bowl.gd")
+	var rimg := Image.new()
+	var r_ok := rimg.load("res://data/catch-bowl/rain.png") == OK
+	var mantis_rain := rimg.get_pixel(1113 - 913, 1164 - 1042).r * 4000.0 if r_ok else 0.0
+	var salt_rain := rimg.get_pixel(1225 - 913, 1149 - 1042).r * 4000.0 if r_ok else 9999.0
+	var stair_rain := rimg.get_pixel(1106 - 913, 1442 - 1042).r * 4000.0 if r_ok else 9999.0
+	ok("catch_bowl.gd keeps 900 km Forward+ horizon at AGL 2 m and separates Mantis monsoon (>1,400 mm) from arid Bowl/Catch (<700 mm)",
+		r_ok and mantis_rain > 1400.0 and salt_rain < 700.0 and stair_rain < 100.0 and cb_src.contains("cam.far = 900000.0")
+			and cb_src.contains("\"mantis\":") and cb_src.contains("\"parabola\":") and cb_src.contains("\"stair\":"),
+		not cb_src.contains("clampf(n * 9000.0, 40000.0"),
+		"Mantis=%.0f mm/yr, Jabal=%.0f mm/yr, Stair=%.0f mm/yr" % [mantis_rain, salt_rain, stair_rain])
+
+	# 8. Real 3D Mantis Socotran monsoon forest + Catch oasis flora prototypes
+	var fl_node := KratorCatchBowlFlora.new()
+	fl_node._ready()
+	var has_real := fl_node.has_real_protos()
+	var pcount := fl_node.proto_count()
+	var m_wet := fl_node._mantis_species_for(1450.0, 0.04, 0.85, 0.10)
+	var m_drac := fl_node._mantis_species_for(1450.0, 0.04, 0.85, 0.32)
+	var m_sav := fl_node._mantis_species_for(980.0, 0.04, 0.85, 0.40)
+	var m_arid := fl_node._mantis_species_for(650.0, 0.04, 0.85, 0.10)
+	var m_cliff := fl_node._mantis_species_for(1450.0, 0.55, 0.85, 0.10)
+	fl_node.free()
+	ok("KratorCatchBowlFlora loads >=20 real 3D Mantis & Catch biome prototypes onto foliage/bark shaders and stratifies monsoon species",
+		has_real and pcount >= 20 and m_wet == "mantis_fig" and m_drac == "dragon_blood" and m_sav == "cucumber_tree",
+		m_cliff == "" and m_arid == "",
+		"%d real prototypes loaded; wet=%s/%s, savanna=%s, Solta(650mm)=%s" % [pcount, m_wet, m_drac, m_sav, "arid" if m_arid == "" else m_arid])
+
+	# 9. Four Ancient Arcologies exported & verified (Parabola, Arckibuz, Stair Hill, and unlabelled Monolith)
+	var arco_doc = KData.read_json("res://data/catch-bowl/arcologies/arcologies.json")
+	var arco_list: Array = arco_doc.get("arcologies", []) if arco_doc is Dictionary else []
+	var arco_ids := {}
+	var hub_unlabelled := false
+	var all_glbs := arco_list.size() == 4 and FileAccess.file_exists("res://data/catch-bowl/arcologies/tex/pack.json")
+	for a in arco_list:
+		if a is Dictionary:
+			var sid := String(a.get("site_id", ""))
+			arco_ids[sid] = String(a.get("key", ""))
+			if not FileAccess.file_exists("res://data/catch-bowl/arcologies/" + String(a.get("glb", ""))):
+				all_glbs = false
+			if sid == "sodpa02bfv" and bool(a.get("unlabelled", false)) and bool(a.get("ruined", false)):
+				hub_unlabelled = true
+	var pb_node := KratorGltf.build("res://data/catch-bowl/arcologies/parabola.glb") if all_glbs else null
+	var pb_rep: Dictionary = pb_node.get_meta("report", {}) if pb_node != null else {}
+	var pb_lib_replaced := int(pb_rep.get("materials_library", {}).get("replaced", 0))
+	if pb_node != null:
+		pb_node.free()
+	ok("all four Catch & Bowl Ancient Arcologies load with EXT_mesh_gpu_instancing + library.gdshader PBR maps, and sodpa02bfv stays unlabelled",
+		all_glbs and arco_ids.get("scyeauyek7") == "parabola" and arco_ids.get("skz25tuq0w") == "arckibuz"
+			and arco_ids.get("s2o8f4p123") == "hill" and arco_ids.get("sodpa02bfv") == "monolith" and pb_lib_replaced > 0,
+		hub_unlabelled,
+		"sites=%s, Parabola library surfaces=%d" % [JSON.stringify(arco_ids), pb_lib_replaced])
 
 
 var _frames := 0
@@ -134,6 +191,7 @@ func _process(_dt: float) -> bool:
 		sky_inst._update()
 		var ext_clear: Vector3 = sky_inst.mat.get_shader_parameter("uExt")
 		var murk_clear: Vector4 = sky_inst.mat.get_shader_parameter("uDustMurk")
+		var sky_fog_off: bool = is_equal_approx(sky_inst.env.fog_sky_affect, 0.0) and is_equal_approx(sky_inst.env.volumetric_fog_sky_affect, 0.0)
 		var fx_inst := KratorAtmosFx.new()
 		root.add_child(fx_inst)
 		var we := sky_inst.get_child(0) as WorldEnvironment
@@ -143,12 +201,13 @@ func _process(_dt: float) -> bool:
 		fx_inst._apply(1.0)
 		var ext_storm: Vector3 = sky_inst.mat.get_shader_parameter("uExt")
 		var murk_storm: Vector4 = sky_inst.mat.get_shader_parameter("uDustMurk")
+		var storm_sky_fog_off: bool = is_equal_approx(we.environment.fog_sky_affect, 0.0) and is_equal_approx(we.environment.volumetric_fog_sky_affect, 0.0)
 		fx_inst.queue_free()
 		sky_inst.queue_free()
-		ok("KratorAtmosFx drives KratorSky storm browning: clear air leaves uDustMurk=0, black storm raises airmass extinction uExt >10x",
-			murk_storm.x > 0.95 and ext_storm.length() > ext_clear.length() * 10.0,
+		ok("KratorAtmosFx drives KratorSky storm browning while keeping fog_sky_affect=0 & volumetric_fog_sky_affect=0",
+			murk_storm.x > 0.95 and ext_storm.length() > ext_clear.length() * 10.0 and sky_fog_off and storm_sky_fog_off,
 			murk_clear == Vector4.ZERO,
-			"clear murk=%.2f ext=%.4f -> storm murk=%.2f ext=%.4f" % [murk_clear.x, ext_clear.length(), murk_storm.x, ext_storm.length()])
+			"clear murk=%.2f ext=%.4f -> storm murk=%.2f ext=%.4f, fog_sky_affect=0" % [murk_clear.x, ext_clear.length(), murk_storm.x, ext_storm.length()])
 		_sky_checked = true
 		return false
 	if not _sky_checked:

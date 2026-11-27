@@ -16,6 +16,9 @@ uniform bool has_heat_tex = false;
 uniform sampler2D heat_tex : filter_linear, repeat_disable;
 uniform vec4 heat_box = vec4(0.0, 0.0, 1.0, 1.0);   // (x0, z0, span_x, span_z)
 uniform vec2 heat_dims = vec2(2.0, 2.0);            // (nx, nz)
+uniform bool has_rain_tex = false;
+uniform sampler2D rain_tex : filter_linear, repeat_disable;
+uniform vec4 rain_box = vec4(0.0, 0.0, 1282000.0, 1056000.0);
 
 // shimmer_params: (strength 0..1.5, amp_uv 0.0035, speed 1.2, cell_scale 34.0)
 uniform vec4 shimmer_params = vec4(0.0, 0.0035, 1.2, 34.0);
@@ -44,18 +47,24 @@ vec3 world_from_uv(vec2 uv, mat4 inv_proj, mat4 inv_view, out float dist, out bo
 }
 
 float ground_heat_at(vec3 wp) {
+	float dry_k = 1.0;
+	if (has_rain_tex) {
+		vec2 ruv = clamp((wp.xz - rain_box.xy) / max(rain_box.zw, vec2(1.0)), vec2(0.0), vec2(1.0));
+		float rain_mm = textureLod(rain_tex, ruv, 0.0).r * 4000.0;
+		dry_k = 1.0 - smoothstep(880.0, 1180.0, rain_mm);
+	}
 	if (has_heat_tex) {
 		vec2 g = (wp.xz - heat_box.xy) / max(heat_box.zw, vec2(1e-3));
 		if (g.x < 0.0 || g.y < 0.0 || g.x > 1.0 || g.y > 1.0) {
 			return 0.0;
 		}
 		g = (g * (heat_dims - 1.0) + 0.5) / heat_dims;
-		return texture(heat_tex, g).r;
+		return texture(heat_tex, g).r * dry_k;
 	}
 	// Regional desert thermal profile: strongest in deep low-altitude basins (Bowl < 0 m, Catch floor), tapering off up rock walls
 	float hot_top = shimmer_ramp.z;
 	float low_boost = 1.0 + 0.35 * (1.0 - smoothstep(-1200.0, 200.0, wp.y));
-	return clamp((1.0 - smoothstep(hot_top - 700.0, hot_top + 900.0, wp.y)) * low_boost, 0.0, 1.25);
+	return clamp((1.0 - smoothstep(hot_top - 700.0, hot_top + 900.0, wp.y)) * low_boost, 0.0, 1.25) * dry_k;
 }
 
 void fragment() {
@@ -97,8 +106,8 @@ void fragment() {
 			float d2;
 			bool sky2;
 			vec3 wp2 = world_from_uv(uv_boil, INV_PROJECTION_MATRIX, INV_VIEW_MATRIX, d2, sky2);
-			// Guard against foreground silhouettes bleeding into far hot ground
-			bool valid_boil = !sky2 && (d2 >= dist * 0.65) && ground_heat_at(wp2) > 0.02;
+			// Tight depth guard so background desert/sky never bleeds across foreground tree crowns or trunks
+			bool valid_boil = !sky2 && (abs(d2 - dist) <= max(dist * 0.16, 1.5)) && ground_heat_at(wp2) > 0.05;
 			vec3 col = textureLod(screen_tex, valid_boil ? uv_boil : SCREEN_UV, 0.0).rgb;
 
 			if (k_mir > 0.005) {

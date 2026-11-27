@@ -86,28 +86,28 @@ func _ready() -> void:
 	# SALTATION: ground-hugging blown sand ribbons lit by forward sun scatter (shaders/saltation.gdshader)
 	_salt = GPUParticles3D.new()
 	_salt.name = "Saltation"
-	_salt.amount = 5500
+	_salt.amount = 420
 	_salt.lifetime = 1.6
 	_salt.preprocess = 1.6
 	_salt.local_coords = false
 	_salt.visibility_aabb = AABB(Vector3(-180.0, -35.0, -180.0), Vector3(360.0, 100.0, 360.0))
 	_salt_pm = ParticleProcessMaterial.new()
 	_salt_pm.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	_salt_pm.emission_box_extents = Vector3(155.0, 1.4, 155.0)   # saltation is a low sheet centimetres to a metre deep
-	_salt_pm.direction = Vector3(1, 0.06, 0)
+	_salt_pm.emission_box_extents = Vector3(140.0, 1.2, 140.0)   # saltation is a low sheet centimetres to a metre deep
+	_salt_pm.direction = Vector3(1, 0.04, 0)
 	_salt_pm.spread = 8.0
-	_salt_pm.gravity = Vector3(0, -0.6, 0)
-	_salt_pm.initial_velocity_min = 9.0
-	_salt_pm.initial_velocity_max = 21.0
+	_salt_pm.gravity = Vector3(0, -0.5, 0)
+	_salt_pm.initial_velocity_min = 6.5
+	_salt_pm.initial_velocity_max = 14.0
 	_salt_pm.particle_flag_align_y = true
 	_salt.process_material = _salt_pm
 	var sq := QuadMesh.new()
-	sq.size = Vector2(0.11, 1.65)
+	sq.size = Vector2(0.42, 1.30)
 	_salt_mat = ShaderMaterial.new()
 	_salt_mat.shader = SALT_SHADER
 	_salt_mat.set_shader_parameter("is_streak", true)
 	_salt_mat.set_shader_parameter("billboard_kind", 0)   # aligned along velocity vector via particle_flag_align_y
-	_salt_mat.set_shader_parameter("mie_gain", 0.72)
+	_salt_mat.set_shader_parameter("mie_gain", 0.45)
 	sq.material = _salt_mat
 	_salt.draw_pass_1 = sq
 	_salt.emitting = false
@@ -238,17 +238,21 @@ func _process(dt: float) -> void:
 		qm.size = Vector2(sz, sz)
 
 
-# The blown sand (saltation), which is on in any weather with wind over ground the sand lies on, boosted along dune crests.
+# The blown sand (saltation), which is on in any weather with wind over dry desert sand, boosted along dune crests.
 func _salt_tick() -> void:
 	var c := cam.global_position
 	var g: float = 0.0
+	var rain_mm: float = 18.0
 	if host and host.has_method("height_at"):
 		g = host.height_at(c.x, c.z)
+	if host and host.has_method("rain_mm_at"):
+		rain_mm = float(host.rain_mm_at(c.x, c.z))
 	var up: float = c.y - g
 	var low: float = 1.0 - clampf((up - 18.0) / 75.0, 0.0, 1.0)
 	var n: Dictionary = fx._now()
 	var wind: float = float(n.get("wind", 1.0))
-	var sandy: float = clampf(1.0 - (g - 2300.0) / 900.0, 0.0, 1.0) * (1.0 - float(n.get("rain", 0.0)))
+	var arid_ground: float = clampf(1.0 - (rain_mm - 880.0) / 220.0, 0.0, 1.0)
+	var sandy: float = clampf(1.0 - (g - 2300.0) / 900.0, 0.0, 1.0) * (1.0 - float(n.get("rain", 0.0))) * arid_ground
 	var w := Vector2(0.80, -0.60)
 	var A := get_node_or_null("/root/Atmos")
 	if A and A.has_method("wind_now"):
@@ -256,21 +260,22 @@ func _salt_tick() -> void:
 	var wn := w.normalized() if w.length_squared() > 1e-5 else Vector2(0.80, -0.60)
 	# Dune-crest blow-off modulation: stronger plumes streaming off transverse crests (spacing 260 m, brink at 0.72)
 	var crest_phase := fposmod(Vector2(c.x, c.z).dot(wn) / 260.0, 1.0)
-	var crest_boost := 0.85 + 0.35 * exp(-pow((crest_phase - 0.72) / 0.18, 2.0))
-	var amt: float = clampf(low * sandy * clampf(wind * 0.55, 0.0, 1.0) * crest_boost, 0.0, 1.0)
-	_salt.emitting = amt > 0.02
+	var db := (crest_phase - 0.72) / 0.18
+	var crest_boost := 0.85 + 0.35 * exp(-db * db)
+	var amt: float = clampf(low * sandy * clampf(wind * 0.50, 0.0, 1.0) * crest_boost, 0.0, 1.0)
+	_salt.emitting = amt > 0.03
 	if not _salt.emitting:
 		return
-	_salt.global_position = Vector3(c.x, g + 0.9, c.z)
+	_salt.global_position = Vector3(c.x, g + 0.8, c.z)
 	_salt.amount_ratio = amt
-	_salt_pm.direction = Vector3(wn.x, 0.05, wn.y).normalized()
-	_salt_pm.initial_velocity_min = 7.0 * wind
-	_salt_pm.initial_velocity_max = 17.5 * wind
-	var dim: float = 0.5 + 0.5 * clampf(float(n.get("sun", 1.0)), 0.0, 1.5)
-	_salt_mat.set_shader_parameter("base_tint", Vector4(0.86 * dim, 0.76 * dim, 0.56 * dim, 0.18 + 0.22 * amt))
+	_salt_pm.direction = Vector3(wn.x, 0.04, wn.y).normalized()
+	_salt_pm.initial_velocity_min = 6.0 * wind
+	_salt_pm.initial_velocity_max = 13.5 * wind
+	var dim: float = 0.5 + 0.5 * clampf(float(n.get("sun", 1.0)), 0.0, 1.3)
+	_salt_mat.set_shader_parameter("base_tint", Vector4(0.76 * dim, 0.64 * dim, 0.44 * dim, 0.06 + 0.08 * amt))
 
 
-# Deterministic helical dust devils wandering across flat warm basins in clear, deadheat & duststorm_season weather
+# Deterministic helical dust devils wandering across flat warm dry basins in clear, deadheat & duststorm_season weather
 func _devils_tick() -> void:
 	if host == null or not host.has_method("height_at") or _devils.is_empty():
 		return
@@ -305,13 +310,14 @@ func _devils_tick() -> void:
 		var wx := bx + cos(ph) * 140.0
 		var wz := bz + sin(ph * 0.7) * 140.0
 		var gy: float = host.height_at(wx, wz)
+		var rain_here: float = float(host.rain_mm_at(wx, wz)) if host.has_method("rain_mm_at") else 18.0
 		var sx: float = absf(host.height_at(wx + 250.0, wz) - host.height_at(wx - 250.0, wz)) / 500.0
 		var sz: float = absf(host.height_at(wx, wz + 250.0) - host.height_at(wx, wz - 250.0)) / 500.0
-		if gy > 2400.0 or (sx + sz) > 0.08:
+		if gy > 2400.0 or (sx + sz) > 0.08 or rain_here > 880.0:
 			dv.emitting = false
 			continue
 		dv.global_position = Vector3(wx, gy, wz)
 		dv.emitting = true
 		dv.amount_ratio = weather_k
 		var gt: Color = host.surface_tint_at(wx, wz) if host.has_method("surface_tint_at") else Color(0.78, 0.66, 0.46)
-		_devil_mats[i].set_shader_parameter("base_tint", Vector4(gt.r, gt.g, gt.b, 0.30 * weather_k))
+		_devil_mats[i].set_shader_parameter("base_tint", Vector4(gt.r, gt.g, gt.b, 0.24 * weather_k))
