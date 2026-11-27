@@ -60,7 +60,7 @@ const KM_API = (function () {
     if (!T || !m) return;
     m.map = T.map;
     const P = M._prof, dMix = P ? (P.mix == null ? 1 : P.mix) : 1;
-    const tile = (P && P.tile ? P.tile : 1) / (T.scale || 1), gain = 1 / Math.max(0.05, Math.pow(T.mean || 0.5, 2.2)), bump = (T.bump == null ? LOOK[b][2] : T.bump) * dMix;
+    const tile = (P && P.tile ? P.tile : 1) / (T.scale == null ? 1 : T.scale), gain = 1 / Math.max(0.05, Math.pow(T.mean == null ? 0.5 : T.mean, 2.2)), bump = (T.bump == null ? LOOK[b][2] : T.bump) * dMix;
     const chip = T.chip;   /* livery: where the paint has chipped (dark in the map) the vertex colour gives way to bare steel */
     m.onBeforeCompile = function (sh) {
       sh.uniforms.uDetTile = { value: tile }; sh.uniforms.uDetGain = { value: gain }; sh.uniforms.uDetMix = { value: dMix }; sh.uniforms.uDetBump = { value: bump * 0.01 };   /* metres of relief per unit of detail brightness */
@@ -107,12 +107,12 @@ const KM_API = (function () {
     o = o || {};
     for (const b of DETAIL) {
       if (!o[b]) continue;
-      TEX[b] = { map: loadTex(o[b].src || o[b].map), scale: o[b].scale || 1, mean: o[b].mean || 0.5, bump: o[b].bump,
+      TEX[b] = { map: loadTex(o[b].src || o[b].map), scale: o[b].scale == null ? 1 : o[b].scale, mean: o[b].mean == null ? 0.5 : o[b].mean, bump: o[b].bump,
         chip: o[b].chip || (b === 'livery' ? [0.42, 0.62, 0x6a6862] : null) };
       for (const id in MATSETS) attachDetail(b, MATSETS[id]);
     }
-    if (o.banner) TEX.banner = { src: o.banner.src || o.banner.map, cell: o.banner.cell || 0.9 };
-    if (o.sunbanner) { const z = o.sunbanner.size || o.sunbanner.scale || 2; TEX.sunbanner = { src: o.sunbanner.src || o.sunbanner.map, size: Array.isArray(z) ? z : [z, z] }; }
+    if (o.banner) TEX.banner = { src: o.banner.src || o.banner.map, cell: o.banner.cell == null ? 0.9 : o.banner.cell };
+    if (o.sunbanner) { const z = o.sunbanner.size || (o.sunbanner.scale == null ? 2 : o.sunbanner.scale); TEX.sunbanner = { src: o.sunbanner.src || o.sunbanner.map, size: Array.isArray(z) ? z : [z, z] }; }
     return Object.keys(TEX);
   };
 
@@ -146,7 +146,7 @@ const KM_API = (function () {
         const n = P.stripes.length;
         for (let i = 0; i < n * 3; i++) { g.fillStyle = css(P.stripes[i % n]); g.fillRect(0, i * H / (n * 3), W, H / (n * 3) + 1); }
       }
-      const R0 = Math.min(W, H) * 0.34, cx = W / 2, cy = P.sym === 'numeral' ? H * 0.36 : H * (P.symY || 0.45);
+      const R0 = Math.min(W, H) * 0.34, cx = W / 2, cy = P.sym === 'numeral' ? H * 0.36 : H * (P.symY == null ? 0.45 : P.symY);
       const ink = css(P.ink != null ? P.ink : 0xf1dba6), ink2 = css(P.ink2 != null ? P.ink2 : P.field);
       if (P.sym === 'sun' || P.sym === 'numeral') {
         /* the Iziz sun (core/sockets/38-symbols.js) inside a ring of rays */
@@ -248,6 +248,22 @@ const KM_API = (function () {
   API.has = function (key) { return !!MECH_BY_KEY[key]; };
   API.get = function (key) { return MECH_BY_KEY[key] || null; };
   API.tagsOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechTags(A, v) : null; };
+  /* the core/tags record of a placed mech (Stage 8 T9, 2026-11-24, the owner: make new tags): class 'vehicle', kind 'mech'
+     (core/tags/52-core-tags-vocab.js), so a query for vehicles finds the walkers and kind tells them apart; the variant's tags in
+     core/tags' keys (culture; types from type; drive, crew, pilot, weapon, role, setting, guild; the kit's own class 'mech' left
+     out: the class is the record's), the box its size. The culture is the kit's: core/tags' cultureAlias maps 'stalker' to
+     'ancient'. o: {at: [x, y, z] (or x, y, z), ry, name, variant}. A host registers what it places, before it is drawn:
+     KratorMechs.register(KTAGS.page, key, o) -> the stored record (an id veh_*) */
+  API.record = function (key, o) {
+    const A = MECH_BY_KEY[key]; if (!A) return null; o = o || {};
+    const v = o.variant == null ? 0 : o.variant, T = mechTags(A, v), tags = { culture: A.culture };
+    const at = o.at ? o.at.slice() : [o.x == null ? 0 : o.x, o.y == null ? 0 : o.y, o.z == null ? 0 : o.z];
+    for (const k in T) if (k !== 'class' && k !== 'type' && T[k] !== undefined) tags[k] = T[k];
+    if (T.type) tags.types = [].concat(T.type);
+    const name = o.name || (A.variants > 1 && A.variantNames[v] ? A.name + ' (' + A.variantNames[v] + ')' : A.name);
+    return { 'class': 'vehicle', kind: 'mech', key: A.key, name: name, at: at, ry: o.ry == null ? 0 : o.ry, size: [A.w, A.d, A.h], tags: tags };
+  };
+  API.register = function (T, key, o) { const r = API.record(key, o); return r && T ? T.add(r) : null; };
   API.dataOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechData(A, v) : null; };
   /* a variant's attack clip (variantAttack[v] or the entry's own) */
   API.clip = function (key, v) { const A = MECH_BY_KEY[key]; return A ? mechAttack(A, v) : null; };
@@ -256,7 +272,7 @@ const KM_API = (function () {
     o = o || {};
     const A = MECH_BY_KEY[key];
     if (!A) return null;
-    const F = mechFrame({ seed: o.seed || 1, variant: o.variant | 0 });
+    const F = mechFrame({ seed: o.seed == null ? 1 : o.seed, variant: o.variant | 0 });
     F.asset = A; F.data = mechData(A, o.variant | 0);
     const R = mechRig(), prev = _target;
     try { A.build(F, R); } finally { _target = prev; }
@@ -264,7 +280,9 @@ const KM_API = (function () {
   };
   API.cultures = function () { return Object.keys(MECH_CULTURES); };
   API.palette = function (culture) { return MECH_CULTURES[culture] ? Object.assign({}, FPAL[culture]) : null; };
-  API.CLASSES = MECH_CLASSES; API.TYPES = MECH_TYPES; API.DRIVES = MECH_DRIVES; API.PILOTS = MECH_PILOTS; API.WEAPONS = MECH_WEAPONS;
+  API.CLASSES = MECH_CLASSES; API.TYPES = MECH_TYPES; API.DRIVES = MECH_DRIVES; API.PILOTS = MECH_PILOTS; API.WEAPONS = MECH_WEAPONS; API.ROLES = MECH_ROLES;
+  /* a variant's behaviour tag (keeper | hunter | feigner), null where a culture declares none (the Iziz) */
+  API.roleOf = function (key, v) { const A = MECH_BY_KEY[key]; return A ? (mechTags(A, v).role || null) : null; };
   API.BUCKETS = MECH_BUCKETS;
   API.setDetail = function (k) { _LOD = Math.max(0.25, Math.min(1, +k || 1)); return _LOD; };
 
@@ -272,11 +290,13 @@ const KM_API = (function () {
     o = o || {};
     const A = MECH_BY_KEY[key];
     if (!A) { console.error('KratorMechs: no such mech', key); return null; }
-    const v = Math.max(0, Math.min(A.variants - 1, o.variant | 0)), seed = o.seed || 1, linear = o.linear !== false;
+    const v = Math.max(0, Math.min(A.variants - 1, o.variant | 0)), seed = o.seed == null ? 1 : o.seed, linear = o.linear !== false;
     const data = mechData(A, v);
     const F = mechFrame({ seed: seed, variant: v });
     F.asset = A; F.data = data;
     const R = mechRig();
+    /* bare (the owner, 2026-11-09, for the Ancient's Valley's keepers): the chassis alone, no rider, no regalia (feathers, standards, numerals, banners) */
+    F.bare = !!o.bare; R.bare = !!o.bare;
     const prev = _target;
     try { A.build(F, R); } finally { _target = prev; }
     if (!R.by.body) throw new Error('mech ' + key + ': no body bone');
@@ -324,7 +344,7 @@ const KM_API = (function () {
     const st = { A: A, variant: v, attack: mechAttack(A, v), key: key, bones: bones, by: by, rest: rest, legs: legs, legBone: legBone, dang: dang, dangle: dangle,
       spins: spins, spin: spin, cloth: cloth, points: R.points, glow: glow, t: 0, mode: 'idle', resume: 'idle', walkW: 0,
       phase: 0, atk: -1, atkW: 0, vel: new V3(), last: null, gq: new Q(), reach: 0, events: [], planted: false,
-      gait: A.gait, mass: data.mass || 10 };
+      gait: A.gait, mass: data.mass == null ? 10 : data.mass };
     g.userData = { key: key, name: A.name, culture: A.culture, role: A.role || '', origin: A.origin || '',
       tags: mechTags(A, v), kind: 'mech', variant: v, variantName: A.variantNames[v] || '', seed: seed,
       w: A.w, d: A.d, h: A.h, tris: Math.round(tris), bones: bones.map(function (b) { return b.name; }),
@@ -353,9 +373,19 @@ const KM_API = (function () {
     const e = 0.06;
     return smooth(p / e) * smooth((duty - p) / e) + (p > duty ? smooth((p - 1 + e) / e) * 0 : 0);
   }
+  /* a hovering machine (an entry with `hover`, no legs): it rides at its body bone's height, bobs, and leans into its motion */
+  const _hv = new V3(), _hq = new Q();
+  function layerHover(st, P, t) {
+    const H = st.A.hover;
+    add(P, 's', 'body', 0, (H.bob == null ? 0.05 : H.bob) * (Math.sin(t * 1.6) + 0.5 * Math.sin(t * 2.7 + 1)) / 1.5, 0);
+    _hv.copy(st.vel).applyQuaternion(_hq.copy(st.gq).invert());
+    const lean = H.lean == null ? 0.12 : H.lean, roll = H.roll == null ? 0.1 : H.roll;
+    add(P, 'b', 'body', clamp(_hv.z * lean, -0.5, 0.5), 0, clamp(-_hv.x * roll, -0.4, 0.4));
+  }
   function layerWalk(st, P, ph, w) {
     if (w <= 0) return;
     const G = st.gait, n = st.legs.length;
+    if (!n) { if (st.A.anim.walk) st.A.anim.walk(P, ph, w, st); return; }
     let bob = 0, side = 0, tw = 0;
     st.legs.forEach(function (L, i) {
       const p = (ph + (G.offsets[i] || 0)) % 1, s = L.def.hip[0] >= 0 ? 1 : -1;
@@ -445,7 +475,7 @@ const KM_API = (function () {
         }
         else if (!swinging) {
           restWorld(g, L, _T);
-          if (Math.hypot(_T.x - L.plant.x, _T.z - L.plant.z) > (G.settle || 0.12)) { go = true; swinging++; }
+          if (Math.hypot(_T.x - L.plant.x, _T.z - L.plant.z) > (G.settle == null ? 0.12 : G.settle)) { go = true; swinging++; }
         }
         if (go) { L.swing = true; L.u = walking && !late ? clamp((p - G.duty) / (1 - G.duty), 0, 0.5) : 0; L.from.copy(L.plant); }
       }
@@ -464,7 +494,7 @@ const KM_API = (function () {
       if (L.swing) {
         const u = L.u, hu = smooth(Math.min(1, u / 0.85));
         _T.copy(L.from).lerp(L.to, hu);
-        _T.y += (G.lift || 0.3) * Math.pow(Math.sin(Math.PI * u), u < 0.5 ? 0.7 : 1.5);
+        _T.y += (G.lift == null ? 0.3 : G.lift) * Math.pow(Math.sin(Math.PI * u), u < 0.5 ? 0.7 : 1.5);
         pitch = L.def.toe * (0.6 * (1 - u) * (1 - u) - 0.5 * Math.sin(Math.PI * u) * u);
       } else {
         _T.copy(L.plant);
@@ -516,7 +546,7 @@ const KM_API = (function () {
   function stepCloth(g, st) {
     const t = st.t, sp = st.vel.length();
     for (const C of st.cloth) {
-      const B = C.def, m = C.mesh, p = m.geometry.attributes.position, A = (B.flutter || 0.05) + 0.035 * Math.min(sp, 2);
+      const B = C.def, m = C.mesh, p = m.geometry.attributes.position, A = (B.flutter == null ? 0.05 : B.flutter) + 0.035 * Math.min(sp, 2);
       /* the wind of walking, in the cloth's frame: a hanging banner billows away from where it is going */
       m.matrixWorld.decompose(_S, _q1, _gv);
       const vl = _a.copy(st.vel).applyQuaternion(_q1.invert());
@@ -557,6 +587,7 @@ const KM_API = (function () {
     const P = { b: {}, s: {}, sc: {} };
     layerIdle(st, P, st.t, 1 - 0.75 * st.walkW);
     layerWalk(st, P, st.phase, st.walkW);
+    if (st.A.hover) layerHover(st, P, st.t);
     if (st.atk >= 0) layerAttack(st, P, st.atk, 1);
     /* spins */
     for (const S of st.spins) {
@@ -658,7 +689,8 @@ const KM_API = (function () {
     return !!on;
   };
   /* something the mech looses, to fly: 'bolt' (a ballista bolt, 1.5 m), 'harpoon' (2.6 m, barbed, with a line),
-     'barb' (a man-sized pneumatic harpoon, 1 m, all steel: the Stalkers'), 'rivet' (a glowing slug).
+     'barb' (a man-sized pneumatic harpoon, 1 m, all steel: the Stalkers'), 'rivet' (a glowing slug), and the Ancients'
+     'beam' (the tripod's lance: 6 m of light), 'shell' (the shrouded walker's cannon) and 'slug' (the trooper's tracer).
      A plain Group, +z forward, origin at its middle. */
   const _projMat = {};
   API.projectile = function (kind) {
@@ -670,6 +702,18 @@ const KM_API = (function () {
       if (kind === 'rivet') {
         F.cy(0, 0, 0, 0.11, 0.11, 0.3, 0xff8a2a, 'glow', 'z', 10);
         F.sph(0, 0, 0.15, 0.11, 0.11, 0.08, 0xffc070, 'glow', 10, 6);
+      } else if (kind === 'beam') {
+        /* the stilt tripod's lance: a 6 m bolt of light, +z, to be flown fast or stretched by the host into a ray */
+        F.cy(0, 0, 0, 0.06, 0.06, 6, 0x9af2ff, 'glow', 'z', 8);
+        F.cy(0, 0, 0, 0.11, 0.11, 5.6, 0x3fc8e6, 'glow', 'z', 8);
+      } else if (kind === 'shell') {
+        /* the shrouded walker's cannon shell: a dark 0.5 m slug with a glowing base */
+        F.cy(0, 0, 0.05, 0.1, 0.07, 0.4, 0x2e2e30, 'metal', 'z', 10);
+        F.sph(0, 0, 0.25, 0.07, 0.07, 0.08, 0x2e2e30, 'metal', 10, 6);
+        F.cy(0, 0, -0.17, 0.09, 0.09, 0.05, 0xff8a2a, 'glow', 'z', 10);
+      } else if (kind === 'slug') {
+        /* the hunched trooper's shoulder gun: a short tracer */
+        F.cy(0, 0, 0, 0.03, 0.03, 0.5, 0xffd080, 'glow', 'z', 6);
       } else if (kind === 'barb') {
         F.rod(0, 0, -0.5, 0, 0, 0.5, 0.012, 0x5a5c60, 'metal');
         F.cy(0, 0, 0.56, 0.02, 0.002, 0.12, 0xc9ccd0, 'metal', 'z', 6);

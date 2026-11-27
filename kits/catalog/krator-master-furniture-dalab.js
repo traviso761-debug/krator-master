@@ -398,7 +398,7 @@ FURN({
 });
 FURN({
   key: 'dalab_court_banner', name: 'Temple banner of the eye', culture: 'dalab', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['temple', 'hall', 'court', 'shrine'], anchor: 'wall', clearance: { front: 0.3 },
+  rooms: ['temple', 'hall', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: { front: 0.3 },
   materials: ['cloth', 'timber', 'gold'], w: 1.1, d: 0.08, h: 2.3, variants: 1,
   build: function (F) {
     F.rod(-0.52, 2.24, 0, 0.52, 2.24, 0, 0.025, F.col('oakDark'), 'wood');

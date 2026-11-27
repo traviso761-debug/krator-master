@@ -96,7 +96,20 @@ const HCHK={
  // nothing roots on a KSTACKS body (a dome, a tor) or at its foot: BIO.init's mask (45)
  offRock(P){const bad=P.filter(p=>{const f=KSTACKS.foot(ROCK,p[0],p[2]);return f&&f.d<.5&&!/^biome:impTrees|^variant:impTrees/.test(p[3]);});
   return{ok:!bad.length,detail:bad.length?bad.length+' on a rock body (first '+bad[0][3]+' at '+bad[0].slice(0,3).map(v=>v|0)+')':ROCK.length+' bodies, none under a plant'};},
- camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};}};
+ camerasOut(C){const bad=C.filter(c=>c.y<terrainH(c.x,c.z)+.5);return{ok:!bad.length,detail:bad.length?'under the ground: '+bad.map(c=>c.view).join(', '):C.length+' cameras above the ground'};},
+ // the near ground (45, KGROUND.nearMesh) at the banded flank: it carries the beds' steps the coarse cells cannot (a mean departure from the coarse
+ // surface over 10 cm), its rim lies on the coarse surface (no crack, under 2 cm) and the coarse cells under it are cut (no second ground)
+ near(m){if(!m)return{ok:false,detail:'no near ground on the page'};
+  return{ok:m.mean>.1&&m.crack<.02&&m.cut===m.cells,detail:'departure mean '+m.mean.toFixed(3)+' m, max '+m.max.toFixed(2)+' m; rim crack '+m.crack.toFixed(4)+' m; '+m.cut+' of '+m.cells+' coarse cells cut'};}};
+// the near ground measured round a camera (the check above): the drawn patch's departure from the coarse surface, the crack at its rim, the cells cut.
+// o.h: build a stand-in patch from this height instead (the negatives)
+function nearMeasure(cam,o){o=o||{};if(!NEARG)return null;NEARG.sync({position:{x:cam[0],y:cam[1],z:cam[2]}});
+ const G=NEARG.grid,b=NEARG.box(),NR=KGROUND.near,cy=(x,z)=>{const t=NR.at(G,x,z);return G.pos[t.k[0]*3+1]*t.w[0]+G.pos[t.k[1]*3+1]*t.w[1]+G.pos[t.k[2]*3+1]*t.w[2];};
+ let pos=NEARG.mesh.geometry.attributes.position.array,nx=Math.round(Math.sqrt(pos.length/3));
+ if(o.h){const P=NR.build(G,b,{h:o.h,cell:LAND.nearCell==null?.5:LAND.nearCell});pos=P.pos;nx=P.nx;if(o.rim)for(let k=0;k<nx;k++)pos[k*3+1]=o.rim(pos[k*3],pos[k*3+2]);}
+ const r=NR.rough(pos,nx,G);let crack=0;for(let k=0;k<nx*nx;k++){const i=k%nx,j=(k/nx)|0;if(i&&j&&i<nx-1&&j<nx-1)continue;crack=Math.max(crack,Math.abs(pos[k*3+1]-cy(pos[k*3],pos[k*3+2])));}
+ const I=GROUND.geometry.index.array;let cut=0;for(let j=b.j0;j<b.j0+b.n;j++)for(let i=b.i0;i<b.i0+b.n;i++){const f=(j*G.N+i)*6;if(I[f]===I[f+1]&&I[f]===I[f+2]&&I[f+3]===I[f+4]&&I[f+3]===I[f+5])cut++;}
+ return{mean:r.mean,max:r.max,crack,cut,cells:b.n*b.n};}
 // the flora and the ground's wet band read the water's own shore (the review's third line): the env fields in the contract, no tree standing in the water,
 // and the wet band wet at the water's edge (WATER.edgeAudit). EDGE_OWED: what this turn leaves (a ratchet)
 function edgeCheck(){const P=[];for(const T of EBADLANDS.TREES){if(T.sp==null)continue;P.push({x:T.x,z:T.z,r:Math.min(T.rb==null?.4:T.rb,.6),name:EBADLANDS.SPECIES[T.sp].key});if(P.length>6000)break;}
@@ -118,8 +131,13 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  if(ROCK.length)add('nothing rooted on a rock body (a dome, a tor)',HCHK.offRock(P));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(NEARG&&VIEWS['Banded flank, close'])add('the near ground carries the bed steps at the banded flank',HCHK.near(nearMeasure(VIEWS['Banded flank, close'])));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),P=instPoints();
+ if(NEARG&&VIEWS['Banded flank, close']){const V=VIEWS['Banded flank, close'],G=NEARG.grid,NR=KGROUND.near,
+   cy=(x,z)=>{const t=NR.at(G,x,z);return G.pos[t.k[0]*3+1]*t.w[0]+G.pos[t.k[1]*3+1]*t.w[1]+G.pos[t.k[2]*3+1]*t.w[2];};
+  add('a near ground as smooth as the coarse cells',HCHK.near(nearMeasure(V,{h:cy})));
+  add('a near ground whose rim stands on the true height (a crack)',HCHK.near(nearMeasure(V,{h:terrainH,rim:(x,z)=>terrainH(x,z)+.3})));}
  const C=(EBADLANDS.COUNTS||[]).slice();C[SPI(LAND.species?LAND.species[0]:'umbel')]=0;add('a species never placed',LAND.species?HCHK.placedIn(LAND.species,C):HCHK.placed(C));
  add('a species with no Koppen classes',HCHK.tagged(EBADLANDS.SPECIES.map((S,i)=>i===3?Object.assign({},S,{tags:Object.assign({},S.tags,{koppen:[]})}):S)));
  add('a species tagged with the ice cap',HCHK.tagged([Object.assign({},EBADLANDS.SPECIES[0],{tags:Object.assign({},EBADLANDS.SPECIES[0].tags,{koppen:['EF']})})]));
@@ -137,6 +155,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 // the tree variants (VARIANTS) follow the eye, after the camera is placed
+if(NEARG)KHOST.on(function nearGround(){NEARG.update(camera);},'view');   /* the near ground follows the camera (45, KGROUND.nearMesh) */
 KHOST.on(function variants(){if(typeof VARIANTS!=='undefined'&&VARIANTS.ready)VARIANTS.update(camera.position);},'view');
 KHOST.on(SKY.view,'view');   /* the shared sky, its lights and fog at the hour (89-host-sky.js) */
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');   /* the runtime LOD (45: merge, fade, cull): each chunk mesh by its range */

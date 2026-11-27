@@ -1,0 +1,20 @@
+{
+ "id": "neva",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arcflow — Musta-Jogi Kalju-Selka Serpentine Skerries & Raha-Maak Penny-Ore Fen",
+ "out": "arcflow-neva.html",
+ "px": [648, 130],
+ "sky": [376, -200],
+ "elevM": 235.0,
+ "pAtm": 1.55,
+ "koppen": "Cfa",
+ "rainMmYr": 1850,
+ "riverId": 9108,
+ "riverName": "Musta-Jogi",
+ "dischargeM3s": 465.0,
+ "strataStack": "arch-ophiolite",
+ "reserves": [
+  { "id": "site:kulanewa-bog-rake", "x": -118, "z": -96, "r": 44 }
+ ],
+ "modes": ["Day", "Low-Sun Carnelian Glow"]
+}

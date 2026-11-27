@@ -10,6 +10,7 @@ way the port needs it:
 |---|---|---|
 | `50-core-furnish.js` | [G data] | `KFURN.create(cfg)`: the registry and the **placement pass**. The record, missing keys, the catalog's recentring table, ids, jobs, the interiors hook (`R.interior`), the summary. No THREE, no DOM: it runs in node |
 | `52-core-furnish-draw.js` | [draw] | the draw adapter's shared parts: a record into the catalog batch (`KFURN.drawRec`, with an optional detail level), `KFURN.useBatch`, and the two sRGB-to-linear colour steps (`KFURN.srgbHook` in the shader, `KFURN.linearColours` into a float attribute) |
+| `scale/54-core-furnish-scale.js` | [G data] | **opt-in** (in a subfolder: Girder, Mav's Refuge and Highlands take every numbered file of this folder, so a fragment here would join their pages) per-culture scale (`KFURN.SCALE`: tungang and glazier 0.94, khaayken 1.15): `scaleOf`, `scaleRec` (sets `rec.s`), `scaleAdapter` / `adapterFor` (an interiors adapter whose pieces are s times the size: dims, tops, lights, the built object scaled about its placement point). A page takes it by listing it after `50`; no page that does not list it changes. Taken by the interiors sets sheet (2026-11-11). `node core/furnish/scale/test-furnish-scale.js` |
 | `53-core-furnish-host.js` | [web] | `KFURN.flags(interiorsByDefault)`: `?furniture=0` and `?interiors=1` (or `=0` where they are on by default) |
 | `test-furnish.js` | | the node test: a fixed list of calls against a stub catalog, checked field by field and by digest |
 | `fingerprint.py`, `fingerprint.json` | | every furnished page's furniture fingerprint (below) |
@@ -33,7 +34,7 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 
 ## The record
 
-`{ id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, setting, room, job }`
+`{ id, key, variant, seed, lx, ly, lz, lry, x, y, z, ry, building, part?, setting, room, job, scale? }`
 
 - `id`: `furn_00001`, in placement order (deterministic, as Yuni's fixture ids are). A dry run's records get none.
 - `x y z ry`: the world transform; `ry` is three's rotation.y (the piece's front, +z, turns to (sin ry, cos ry)).
@@ -42,6 +43,15 @@ overrides, and an override goes in its `KNOWN_ISSUES.md`).
 - `job`: the catalog's (`FURN_JOBS`), or null.
 
 This is the shape `core/tags` will register as class `furniture` (Phase 2 item 3) and the exporter will write.
+
+## Scale (opt-in)
+
+`cfg.scale` (a number, or `function(key, entry, o, ctx)` returning one; `o.scale` overrides it for one call) draws a piece that many
+times its catalog size about its foot: a people larger than human furnishes its rooms with goods its own size (kits/yeti, the
+Khaayken's 1.15x: its `src/91g-yt-furn.js` scales every piece but its own culture's and the Eternian loot). A scaled record carries
+`scale`; a record at 1 carries no such field, so a build without `cfg.scale` writes the records it always did (`fingerprint.py`
+reads `same`). `KFURN.drawRec` scales the piece's group about (x, y, z) before the batch takes it, and moves its lights with it;
+the core/tags record's `size` is the drawn size. `test-furnish.js` checks it beside the digest, which it leaves unchanged.
 
 ## Tags
 
@@ -72,3 +82,13 @@ node core/furnish/test-furnish.js
 `fingerprint.json` was written from the pages before the move (2026-10-05). Every build matched it after. Rewritten 2026-10-08
 (the Zeijani branch): the catalog's beds, the interiors' measured host tops and stretched pennants, and the batch merging
 painted panels per material; compared first with main's own pages, which matched it nowhere since main's catalog changes.
+
+## The per-culture scale (2026-11-11)
+
+The Tungangs stand 0.94 of a human and the Khaayken 1.15 (`kits/tungang/PLAN.md` 3.1, `kits/yeti/PLAN.md` "Scale"); their rooms are
+cut to that measure, and the catalog draws every piece at a human's. `scale/54-core-furnish-scale.js` scales a piece where it is placed, from
+one constant per culture: a piece in a room of a scaled culture takes the room's scale (the generic and scrap pieces a hold falls back on
+are cut to its people too), a piece of a scaled culture elsewhere takes its own, everything else 1. Clearance is not scaled (the walker
+and the door swings are the room's). A host that draws records rather than interiors calls `KFURN.scaleRec(rec, entry, roomCulture)`
+in its `finish` and scales the piece by `rec.s` about its origin; `drawRec` does not yet pass a scale to the catalog batch (no furnished
+build places Tungang or Khaayken pieces through the batch yet): add it there when the first one does.

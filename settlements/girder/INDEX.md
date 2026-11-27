@@ -6,7 +6,7 @@ Girder: an outlying Beast Rider village in the central-crater hyperjungle.
 
 Docs: `API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `girder-hero.html`, `girder.html`
+Built output (never open it; edit `src/` and rebuild): `girder.html`
 
 Build: `cd settlements/girder && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -37,18 +37,19 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `00-head.html` | 6 |  |
 | `05-palette.js` | 11 | 0. PALETTE (1) |
 | `10-core.js` | 8 | 1. CORE (1); 2. WORLD CONSTANTS (79); 3. TERRAIN FIELD (140) |
-| `20-stage.js` | 14 | 4. STAGE (1); 5. BAKED HORIZON DOME (48); 6. ERUPTION CYCLE (285) |
-| `21-sky.js` | 54 **big** | 5b. KRATOR SKY (1) |
+| `20-stage.js` | 2 | 4. STAGE (1) |
+| `21-sky.js` | 5 | 5b. KRATOR SKY: the clock and the sky's state (1) |
 | `30-layout.js` | 26 | 5. LAYOUT — GIRDER (1); THE RUIN (41); THE TERRACE (148); THE FOREST (182); NAV GRAPH (217) |
 | `32-branches.js` | 5 | 6. BRANCH SKELETONS (1) |
-| `45-kit.js` | 34 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
+| `45-kit.js` | 30 **big** | 10. KIT (1); NIGHT LIGHT VOLUME (176) |
 | `47-texture.js` | 15 | 11. TEXTURES (1) |
 | `48-detail.js` | 7 | 11b. DETAIL MAPS: the library on meshes without  (1) |
 | `50-structure.js` | 19 | 12. STRUCTURE — GIRDER (1) |
 | `53-furnish.js` | 12 | 13b. FURNITURE (CATALOG PIECES AS DATA) (1) |
 | `54-openings.js` | 7 | 13d. OPENINGS: real doors and real glass on core (1) |
-| `55-arch.js` | 59 **big** | 14. ARCHITECTURE — GIRDER (1) |
+| `55-arch.js` | 58 **big** | 14. ARCHITECTURE — GIRDER (1) |
 | `56-interiors.js` | 19 | 13c. INTERIORS (THE INTERIORS KIT) (1) |
+| `56r-roomlight.js` | 1 | ROOM LIGHT (core/interiors/20-core-roomlight-hos (1) |
 | `58-overgrowth.js` | 14 | 15. OVERGROWTH — GIRDER (1) |
 | `60-trees.js` | 41 **big** | 14. TREES (1) |
 | `62-jungle.js` | 47 **big** | 15. JUNGLE (Girder) (1) |
@@ -59,7 +60,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `78-life.js` | 61 **big** | 78. LIFE — GIRDER (2) |
 | `80-camera.js` | 8 | 25. CAMERA: GIRDER ON core/host (1) |
 | `81-glow.js` | 8 | 26. NIGHT GLOW (1) |
-| `82-daynight.js` | 6 | 27. DAY / NIGHT (1) |
+| `82-daynight.js` | 1 | 27. DAY / NIGHT (1) |
 | `83-walk.js` | 19 | 25b. WALK MODE, on core/walk (1) |
 | `84-flyers.js` | 24 | 84. FLYERS (1) |
 | `84a-flyers-routes.js` | 20 |  |
@@ -70,6 +71,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `86-inspect.js` | 4 | 27. INSPECTOR WORDS (core/host's inspector) (1) |
 | `87-pathviz.js` | 3 | 28. PATH VISUALIZER (1) |
 | `90-atmos-host.js` | 2 | ATMOS: the shared atmosphere module, bound to Gi (1) |
+| `90s-host-sky.js` | 3 | HOST: Krator's sky over Girder, the shared sky (W7) (1) |
 | `90w-brook-water.js` | 2 | BROOK WATER: the brook on core/water (1) |
 | `98-start.js` | 9 | 99. START: GIRDER ON core/host (1) |
 | `99-tail.html` | <1 |  |

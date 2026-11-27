@@ -1,0 +1,51 @@
+{
+ "targets": {
+  "house": "beacon.html"
+ },
+ "core": {
+  "house": ["sched"]
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "settlements/beacon/gen/69wb-bc-ground.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js",
+  "kits/ancients/pieces/89p-anc-beacon-lamp.js",
+  "core/terrain/37c-core-rubble.js",
+  "core/ruins/20-core-ruins.js",
+  "core/ruins/21-core-ruins-host.js"
+ ],
+ "files": {"house": [["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]], ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]], ["core/water/ext", ["56-core-water-breakup.js"]]]},
+ "pack": "qiblai",
+ "packSide": true,
+ "packFrom": "kits/qiblai",
+ "deterministic": [
+  "69wb-bc-ground.js",
+  "80f-xa-fort-data.js",
+  "89p-anc-beacon-lamp.js",
+  "37c-core-rubble.js",
+  "20-core-ruins.js",
+  "21-core-ruins-host.js",
+  "20-core-sched.js",
+  "30-bc-layout.js",
+  "31-bc-rules.js",
+  "40-bc-lamp.js",
+  "41-bc-life.js",
+  "42-bc-relay.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "89z-rows.js",
+  "89zs-bc-site.js",
+  "90q-bc-world.js",
+  "90t-bc-life.js",
+  "90u-bc-relay.js",
+  "90w-bc-interiors.js",
+  "91z-views.js"
+ ]
+}

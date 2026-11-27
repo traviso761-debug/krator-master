@@ -9,6 +9,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
@@ -16,6 +17,7 @@
    "lib": "brick.red",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.2,
    "scale": [
     1.2,
@@ -43,6 +45,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "concrete.cw.webp",
     "map": "concrete.albedo.webp",
     "normalMap": "concrete.normal.webp",
     "roughnessMap": "concrete.rough.webp"
@@ -77,6 +80,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "concreteR.cw.webp",
     "map": "concreteR.albedo.webp",
     "normalMap": "concreteR.normal.webp",
     "roughnessMap": "concreteR.rough.webp"
@@ -145,6 +149,7 @@
    },
    "card": false,
    "files": {
+    "cwMap": "paving.cw.webp",
     "map": "paving.albedo.webp",
     "normalMap": "paving.normal.webp",
     "roughnessMap": "paving.rough.webp"
@@ -152,6 +157,7 @@
    "lib": "concrete.ancient.b",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.3,
    "scale": [
     3.25,

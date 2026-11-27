@@ -1,0 +1,30 @@
+{
+ "perch": {
+  "dur": 4.0,
+  "edge_stretch_max": 7.14,
+  "edge_stretch_p99": 2.012
+ },
+ "walk": {
+  "dur": 1.2,
+  "edge_stretch_max": 7.407,
+  "edge_stretch_p99": 2.151
+ },
+ "glide": {
+  "dur": 2.0,
+  "edge_stretch_max": 12.109,
+  "edge_stretch_p99": 1.796
+ },
+ "flap": {
+  "dur": 1.0,
+  "edge_stretch_max": 12.109,
+  "edge_stretch_p99": 1.814
+ },
+ "fold": {
+  "dur": 4.0,
+  "edge_stretch_max": 7.14,
+  "edge_stretch_p99": 2.0
+ },
+ "tris": 13000,
+ "raw_tris": 19561,
+ "bones": 84
+}

@@ -1,0 +1,22 @@
+{
+  "id": "apron",
+  "out": "thedome.html",
+  "title": "The Dome — Onion-Skin Exfoliation Apron & Gnamma Sky-Mirror Gardens",
+  "px": [1336, 128],
+  "inDomeVerified": true,
+  "elevM": 2268.5,
+  "pAtm": 1.20,
+  "koppen": "Cfa",
+  "rainMmYr": 1255,
+  "domeApexPx": [1328, 150],
+  "strataStack": "laccolith-shell",
+  "kin": {
+    "swlowlands": [
+      ["src/50-biome-swlowlands-species.js", "src/55-biome-swlowlands-trees.js"],
+      "SWLOW",
+      ["bk_cork", "bk_furrow", "oakleaf", "veil", "moss", "beard"]
+    ]
+  },
+  "reserves": [],
+  "modes": ["Vernal-Brim", "Sun-Baked Dry", "Crown-Mist"]
+}

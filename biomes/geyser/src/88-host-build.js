@@ -25,7 +25,7 @@ const IMP_GAIN=1.6;   /* the hyperjungle's, measured on its page against its nea
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||IMP_GAIN),wrap:+(Q.get('impwrap')||1)});
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer,{wait:180});}catch(e){reportErr('impostors: '+e.stack);}}   /* after every placement; waits for the library maps */
  /* the terrain's horizon on the flora (85-host-far.js: KHORIZON); not the far field, not the ground (85 did it) */
- if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
+ if(typeof GROUND_HZ!=='undefined'&&GROUND_HZ){try{window._horizon.mats=KHORIZON.shadeScene(scene,GROUND_HZ,{filter:m=>!m.userData.farField&&m.material!==MAT_GROUND});}catch(e){reportErr('horizon: '+e.stack);}}
  /* the sun's shadows: 89zz-host-shadow.js, after the sea's weather has hooked the ground (it counts the ground's texture units) */
  window._buildMs=Math.round(performance.now()-t0);
 })();

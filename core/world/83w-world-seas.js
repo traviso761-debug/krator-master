@@ -8,6 +8,9 @@
 //    the flood from the body's own cells over the ground under its level, so a lower hollow beside a lake inside its
 //    ring stays dry, and the shore grid's breakers, shoaling and wet-sand band (the ground does not take the band yet:
 //    the terrain is this world's own ShaderMaterial; KNOWN_ISSUES.md);
+//  * past the window, a coarse FAR BED (core/water/farbed, where the build lists it: 1 km over the mask), into which the
+//    window's depth and shore distance ease at its edge, so the shallows' colour does not stop on a straight line;
+//  * the masks are core/coast's where the build lists it (44c-world-coast.js: redrawn from the coast field);
 //  * at 1:1: 19 CDLOD levels (a 2,097 km root) and a camera-relative origin. The root is centred on the camera snapped to
 //    half its size, so its reach is a quarter of the root at worst: 17 levels (524 km) dropped lakes 130 km away (the
 //    owner, 2026-11-11: "water does not show up from far away"); 19 keeps every body inside SEAS's 400 km in reach. And a camera-relative origin (the mesh stands within 2 km
@@ -18,12 +21,16 @@
 // (START.pump drives it; settle waits for it: SEAS.pending()).
 var SEAS;LATE.push(()=>{SEAS=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera,WIN=8192,CELL=32,NEAR=12000;
-{const env=new THREE.Scene(),HOLD={environment:null};env.add(new THREE.Mesh(SKY.sky.geometry,SKY.sky.material));
- ATMOS.skylight({renderer:HOST.renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x6a5a48)});}
+{const HOLD={environment:null};   /* the shared sky (80, W8): its own scene, recaptured as the hour and the cover move; else the painted dome */
+ if(SKY.S)ATMOS.skylight({renderer:HOST.renderer,sky:SKY.S.scene,scene:HOLD,ground:()=>new THREE.Color().copy(HOST.hemi.groundColor).multiplyScalar(HOST.hemi.intensity),
+  key:()=>{const L=SKY.S.look;return L?[L.cover.toFixed(2),SKY.site.px.toFixed(0),SKY.site.py.toFixed(0)].join():'';}});
+ else{const env=new THREE.Scene();env.add(new THREE.Mesh(SKY.sky.geometry,SKY.sky.material));
+  ATMOS.skylight({renderer:HOST.renderer,sky:env,scene:HOLD,ground:()=>new THREE.Color(0x6a5a48)});}}
 const L=WATER.surfaces.length,list=[],t0=performance.now(),BODIES=WORLD.waterBodies(),bodyMs=performance.now()-t0;
 for(const B of BODIES){const big=B.cells>1000,salt=B.salt>.5,id=B.id;
  const S=WATER.open({name:big?'The Ring Sea':(salt?'salt lake ':'lake ')+id,level:B.level,field:big?.8:salt?.25:.4,tilt:salt?.6:1,bounds:B.box,mask:B.mask,
   bed:(x,z)=>WORLD.H(x,z,48),shore:{window:WIN,cell:CELL,band:big?120:60,seeds:(x,z)=>WORLD.waterBodyAt(x,z)===id}});
+ if(WATER.farBed)WATER.farBed(S,{ground:(x,z)=>WORLD.H(x,z,250),cell:1000});   /* core/water/farbed (opt-in): the shallows shaded past the window, no straight edge */
  const D=WATER.draw(S,{color:salt?0x6fa79c:0x1d3c48,shallow:salt?0xc8dccd:0x6d9c92,deep:salt?0x6fa79c:0x1d3c48,roughness:salt?.3:.16,metalness:.1,
   envMapIntensity:salt?.25:.45,transparent:true,renderOrder:2,cdlod:{levels:19},origin:2048,hideEmpty:true});
  D.mesh.userData.inspectLabel=S.name;list.push({B,S,D,job:null,at:null});}

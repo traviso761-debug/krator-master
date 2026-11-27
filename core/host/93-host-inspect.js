@@ -78,7 +78,10 @@ K.onTake(function inspectTake(H){
   const lab=L.names[L.idx[h.instanceId]];if(lab==null||lab===ob.userData.inspectLabel)return h;
   h.mesh=ob;h.label=lab;h.object=Object.create(ob,{userData:{value:Object.assign({},ob.userData,{inspectLabel:lab})}});return h;};
  K.instView=instView;
- function hitsAt(x,y){return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hidden().has(h.object)&&h.object.visible).map(instView);}
+ /* only hits on what is drawn: a hidden parent (a deck the cut hid) or a cut's clipping planes (99, 99-host-section) leave the
+    object in three's raycast, so C.drawn filters them (BUGS-2026-11-15 C8) */
+ const drawn=C.drawn||(h=>h.object.visible);
+ function hitsAt(x,y){const hid=hidden();return ray(x,y).intersectObjects(H.scene.children,true).filter(h=>(!h.object.userData.probeSkip||h.object.userData.inspectLabel)&&!h.object.userData.khost&&!hid.has(h.object)&&drawn(h)).map(instView);}
  K.inspectAt=function(x,y){if(o.click&&o.click(x,y))return;for(const f of K.clickHooks)if(f(x,y))return;
   let A;try{A=at(x,y);}catch(e){A={w:{t:'inspector: '+e.message,rec:null},hit:null};K.err('inspect: '+((e&&e.stack)||e));}
   if(!A){K.inspector('(nothing)');K.selected=null;mark(null);if(K.holdsFor)K.holdsFor(null,null);if(K.onSelect)K.onSelect(null);return;}

@@ -153,7 +153,7 @@ here maps onto the catalog's correction. The catalog copy is the centred one.
       walker (`KHOST.take({walk: KWALK, walker: {step .55, drop 1.4, r .28, h 1.75}})`; F, W A S D, Shift) walks it. `window._walk` stays as a thin layer for
       `tools/harness.py walk` and scripts. Checked headless: the first flight of a tower climbs to its half landing, a core wall stops the walker, a bridge
       is crossed along its sag, the rope sides hold, the palisade stops the walker between the gates and a gate lets it out.
-- [ ] Girder Hero (hero/88-hero.js, 89-talk.js) still calls the walker the 2026-10-19 port removed (`wkSupport`, `wkBlocked`, `wkPush`, `wkStops`, `WALKER`): `_hero.navAudit()` throws `wkSupport is not defined`, and its routing and body want porting onto `KWALK` (`floorBelow`, `blocked`, `push`). Use `_walk.navAudit()` (83-walk.js) for the graph meanwhile.
+- [x] (retired 2026-11-10: the owner archived the page to `archive/girder-hero`, its README says why; a PC port can take code from it) Girder Hero (hero/88-hero.js, 89-talk.js) still calls the walker the 2026-10-19 port removed (`wkSupport`, `wkBlocked`, `wkPush`, `wkStops`, `WALKER`): `_hero.navAudit()` throws `wkSupport is not defined`, and its routing and body want porting onto `KWALK` (`floorBelow`, `blocked`, `push`). Use `_walk.navAudit()` (83-walk.js) for the graph meanwhile.
 - [ ] No jump and no gravity any more (Space did both): the host keeps to a deck's edge instead of letting a walker fall (a design choice of the host; jump is not planned).
 - [x] The lift ride (the cage floor follows the cage, a rider sends it) is written but I did not ride one. 2026-10-20: ridden headless: the walker set on lift 0's cage sent it after its wait, and the walker's feet followed the cage from 34.95 m to 43.7 m, within 0.15 m of the cage floor all the way; the top step-off and the stop at the head were not watched.
 
@@ -175,4 +175,31 @@ The owner: "remove all dark voids and make all windows, doors and portals actual
 - [ ] Left (23 floors): 6 roof plates the roof's missing bays cut off from the landing (the unfinished roof, by design until it gets a stair or a plank run); in the round-hut compounds, 9 store-hut floors and their 6 plinths and house 5's main hut: the stores' doors face the main hut a metre off (55-arch.js `buildHouse`, `a2`/`a3`), the interiors place furniture in a store's doorway (house 7's store 1: pieces from 0 to 0.75 m inside the door), and house 5's yard is not entered from its gate (not traced); and house 4's joglo, whose house door the pendopo's furniture walls off (blocks 1.2 to 2.2 m outside it). The fixes are in the interiors' plans (56-interiors.js: a clear way to each door, which moves furniture: the fingerprint) and the compound's layout, not done here.
 - [ ] A few store windows (55-arch.js, `winAt(f,..,y+2.7,'f',0.8,0.45)`) rise above a shabby store's low lid wall (H 2.5 to 3.1 m), so they cannot be cut and stand before a card on nothing above the wall; they did before (as a dark plate). Lower them or skip them on a lid.
 - [ ] The leaves turn on the instance's world-UV map, so the plank grain slides a little as a leaf swings. The room cards and lit panes take no night light volume.
-- [ ] kits/beast-riders seals 55-arch.js in a closure without 54-openings.js and core/door (its towns.py): there `gaLeaf` draws a leaf shut into the plank bucket and the ring walls are drawn whole (the shims at the top of 55-arch.js's IIFE); the shells' windows are cut there too, but there is no glass. A faithful port takes 54-openings.js, 81-glow.js's panes and core/door into towns.py.
+- [x] kits/beast-riders sealed 55-arch.js in a closure without 54-openings.js and core/door, its leaves drawn shut and ring walls whole through shims at the top of 55-arch.js's IIFE. Closed 2026-11-09: towns.py seals 54-openings.js and core/door (KDOOR, KGLASS on the closure's own root) with it, the kit draws the panes as 81-glow.js does and its doors open (kits/beast-riders/README.md); the shims are gone (`gaLeaf`/`gaSectorWins` are `goLeaf`/`goSectorWins`).
+
+## The shared sky (W7, 2026-11-24)
+
+Girder's sky moved onto core/atmos's shared sky (STAGE-8/G-weather.md W7; core/atmos/SKY-PLAN.md section 9): `90s-host-sky.js`
+draws `ATMOS.sky` at Girder's place on the scale model (map 5.1 px 1039, 869; the sky's site frame 767, 539), 1.9 atm and
+humid, and sets the sun, the hemisphere, the fog and the exposure from the colour script, with its own giantshine light.
+`21-sky.js` keeps the clock, `SKY` and `SKY_STATE` (filled from the shared sky each frame); `82-daynight.js` keeps the lamps'
+night factor and the ambient fill; `20-stage.js` lost the baked dome, its eruption cycle and the sun and moon sprites.
+`verify.py --assert` passes on the arc lane. Before and after: `shots-before-10/21`, `shots-after-10/21` (four views each).
+The look changes, for the owner to judge (SKY-PLAN.md section 8: each page's light is the model's at its site):
+- [ ] **The sky**: the real sky (sun, giant, ring, moons, station, cluster, stars, procedural cumulus) replaces the painted
+      haze. By day a blue sky with cumulus over the towers; at night the stars where the old page had a blue night.
+- [ ] **The light is the model's**: by day the towers' shaded faces are darker (the sky's hemisphere is dimmer than the old
+      tuned fill). At night (the owner, 2026-11-24, on the pairs: "raise fill partway") the preset's `nightFill` (core/atmos
+      skyLook, JS and Godot) leans the hemisphere toward the old page's cool fill and warm soil by 0.75 at night: about 60% of
+      the old night fill, the giantshine key kept, the lamps still the brightest thing. From above the canopy and the town read;
+      from the brook the towers' south faces (turned from the giant) read mostly by their lamps.
+- [x] **The far land is the model's own ground** (the owner, 2026-11-24: "no painted volcano, real terrain only"):
+      `region/far.py` casts three bands (4-20, 20-80 and 80-450 km) from the scale model at Girder's pixel, the water's surface
+      where there is water, with the planet's curve and the thick air's refraction; build.py embeds `region/far.json` as
+      `89r-host-far.js`. Girder sits at -1,386 m: the near land lies about the horizon, the far land rises to 1.75 degrees in
+      the ENE. The old dome's painted volcano is gone: the Throne is 390 km WNW and below the horizon on the model, and nothing
+      stands in for it. Rerun `far.py` when the model moves. The flyers' sortie "toward the volcano" (84a) still flies north-west.
+- [ ] **The page opens at 06:00** (SKY-PLAN.md 2.1: every page opens at sunrise; it opened at 10:00).
+- [x] **One clock**: on the shared sky the host shows an hour too; it mirrors Girder's (98-start's girderFrame), its slider sets
+      Girder's hour and its run / hold drives Girder's pause.
+- [ ] **The Sky panel is gone** (the old dome's debug panel: pressure, forced eclipse, rings): the shared sky has no page panel.

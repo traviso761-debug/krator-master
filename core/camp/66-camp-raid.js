@@ -26,7 +26,7 @@ KCAMP.RAID_CAPS = { stock: 0.15, people: 0.02, floorDays: 14, broken: 0.4, budge
 KCAMP.resolve = function (W, party, id, d, spec) {
   var C = Object.assign({}, KCAMP.RAID_CAPS, spec.caps || {}), Tg = spec.targets[id], St = spec.state, H = W.host, lead = party[0];
   var u = function (s) { return KCAMP.u(W.world, id, d, lead.id, s); };
-  var rows = party.map(function (b) { var war = Math.max(1, Math.round(b.warriors == null ? b.people * (spec.warShare || 0.4) : b.warriors)), mk = b.mountKind;
+  var rows = party.map(function (b) { var war = Math.max(1, Math.round(b.warriors == null ? b.people * ((spec.warShare==null?0.4:spec.warShare)) : b.warriors)), mk = b.mountKind;
     return { b: b, war: war, mk: mk, mounts: mk ? b.beasts[mk] || 0 : 0, room: KCAMP.packCap(W.beasts, b.beasts) }; });
   var war = 0, mounts = 0, room = 0; rows.forEach(function (r) { war += r.war; mounts += Math.min(r.mounts, r.war); room += r.room; });
   var morale = St.morale == null ? 1 : St.morale, strength = war * (1 + C.mountK * Math.min(1, mounts / war)) * morale;

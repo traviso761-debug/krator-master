@@ -1,0 +1,105 @@
+# biomes/loom-chasms: known issues
+
+Open items, each with what is owed. Stations 3 (the Loom) and 1 (the Weavers' Cradle) were built in a cloud session (2026-11-11), stations 2, 4
+and 5 in the same session the next day, with
+**no GPU**: `verify.py --assert --all-views` ran in software GL (SwiftShader). **The real-GPU verify is owed on the owner's PC**
+(`KRATOR_GL=gpu`: the log's `gpu-renderer` line must name the card), with the owner's look pass.
+
+## Verified (2026-11-12, the cloud session: SwiftShader, no GPU)
+
+`python3 verify.py <page> --assert --all-views`, 1280x800, software GL (`tools/harness.py`), each page on its committed bytes:
+
+| Page | Checks | Fails | Heaviest view (draw calls, scene triangles) | Attach audit |
+|---|---|---|---|---|
+| `dist/loom-chasms.html` (station 3, the Loom) | 69 pass | 0 | From afar: 83, 2.10 M | 1 of 921 cards float (0.11%: an ember, the Great Chasm kit's) |
+| `dist/loom-chasms-cradle.html` (station 1, the Cradle) | 63 pass | 0 | From afar: 33, 3.33 M | 0 of 1707 |
+| `dist/loom-chasms-monocline.html` (station 2, the Weave-Step) | 59 pass | 0 | Up the benches: 20, 1.77 M | 0 of 1 |
+| `dist/loom-chasms-caelum.html` (station 4, Mount Caelum) | 75 pass | 0 | From afar: 39, 1.69 M | 2 of 341 (0.59%: lichen, the Great Chasm kit's) |
+| `dist/loom-chasms-whiteloom.html` (station 5, the White Loom) | 58 pass | 0 | From afar: 86, 2.19 M | none drawn (no cards on the playa) |
+
+The Weave-Step: 23 Yuni records on the waystation's pad (within 0.6 m on the drawn ground), 23-24 risers on each of three fall-line
+transects, ten box-canyon floors never climbing, the road at 16.7% at its steepest. Mount Caelum: ten fumaroles (six on the caldera's
+floor, four in the rifts' throats), each on its floor, crusted, its gas a hazard; the parent colony 49 grown cables at 15-20 cm and 73
+pioneer shoots across the two rifts, every anchor on the drawn rock, every span clear of it, the hardest pull 0.50 MN. The White Loom:
+seven brine pools, each its water over its drawn bowl under its rim, four halite sifters on the biggest pool's rim, the salt camp's 11
+records on the flat crust. What the runs caught, all fixed: the canopy's options shadowed by a loop's own variable (src/85, after it was
+lifted out of the Loom's station), the fumaroles' and the pools' core/tags volumes holding nothing the probe counts (the vents' mouths
+and the pools' halite rims are drawn now; the fauna are counted), two of the Weave-Step's views (the benches seen from below now).
+
+Stations 3 and 1, 2026-11-11: The Loom: 93 cables (68 grown, 25 pioneer shoots), every anchor on the drawn rock within 5 cm, 1767 points on the spans all clear of the
+rock, the grown cables' low points 40-170 m over the slot's floor, the hardest pull 1.10 MN within its beds (one station left ungrown on
+weak rock); 642 wall curtains seated within 5 cm. The Cradle: 53 Yuni records (240 people, 40 households), every one a pending stand-in;
+612 fields of six crops kits/crops gives the Cradle's bands (flax, frost oat, emmer, saffron, woad, helix bean); Aina Bruk falls from
+2167.9 to 2146.7 m over 163 points, never climbing; the kin rows grew (poplar 60, apricot 292). Both: the ground at 15 texture units,
+every camera over the drawn ground, the hazards registered, each check fed a broken input that fails. What the first Cradle run caught:
+the wadi's view stood 16 km out under the far field (it stands on the wadi's first points inside the drawn ground now), and the fields'
+view looked at the orchard, not the terraces (it stands in a field now).
+
+## Owed to the GPU run (the owner's PC)
+
+- [ ] `verify.py --assert --all-views` on both pages on the GPU: the ground at 15 texture units (the Arc's limit), the far
+  field to 118 km under a camera far plane of 260 km and a near of 1.5 m (the cables' beards on the floor's view), the frame rate.
+
+## Stations 2, 4 and 5 (built 2026-11-12)
+
+- [x] **Their full software-GL verify** (2026-11-12): every page passes (the table above).
+- [ ] **For the owner's look pass** (the checks pass; these are the shots): the stryder's view stands on its cable, so the animal reads as
+  a dark shape along the span; Caelum's fumarole view stands about 90 m from its vent; past the pages the far field reads as a pale sandy
+  plain at range (the model's colours), not yet as the chasm net.
+- [ ] **The Weave-Step's road** is held to a pack train's grade (under 20%: 16.7% at its steepest), not a cart's: the model's ramp is 13% in
+  the page's west and the road runs down its fall line. A cart road would switch back across the benches (the owner's call).
+- [ ] **The waystation and the salt camp are pending stand-ins** (Yuni records drawn at their boxes), as the Cradle's farms: the Yuni kit's
+  buildings draw through the Yuni engine. core/hamlet has no `trade` focus (the waystation) and core/camp no Yuni row nor tent program
+  (the salt camp): both laid by hand, as the Great Chasm's post.
+- [ ] **Caelum's geothermal surfaces**: the vents' crust is the painted sulphur colour over `ground.efflorescence`'s relief (a stand-in:
+  `bark.sulphur.porous` is a bark, fibred, not a crust); the sinter and sulphur sets and the vents' warm ground in core/water are owed.
+  The steam is ATMOS.smoke's `steam`. The plan's hearth field at the summit is the owner's to allow: not drawn.
+- [ ] **The White Loom's halophytes and brine mats**: the playa's rim plants are this kit's (*proposed* in the plan) and are not made; the
+  Great Chasm kit's salt tufts are keyed to its Deep's floor and do not place here. The mats are the ground's paint (the geo field), not
+  their own surface. The salt crust over brine is registered as `sink` (the shared amendment, a crust that breaks underfoot, is owed in
+  core/hazard); the pools' brine burns as a mild `poison`.
+- [ ] **Lake Nim** is a still over the page's west edge at 240 m (the model's level); its shoreline is the model's, 2 km cells.
+
+## Owed to core adoption and to the plan
+
+- [x] **The chasm head** (2026-11-11): `KRELIEF.stepcut`'s opt-in `head: {len, minW}` (core/terrain 38c, its tests in test-landforms.js);
+  the slot pinches out over its last 700 m.
+- [x] **The cable-stryder** (2026-11-11): kits/fauna's new `loom` group (`krator-fauna-loom.js`, on the `wild` group's hexapod builder:
+  the bundle takes `hyperjungle`, `wild`, `loom`, vertex colours only, through station.json's `fauna`). Three sleep hanging under grown
+  cables (nocturnal; the page opens at 14:00), each a core/tags record over a `hunter` hazard (KHAZ.PREDATOR.lair) on the floor below;
+  the station's check holds each to its span and its hazard, with two negatives. Awake, running the cables, is the runtime's to animate
+  (KratorFauna's walk is on the ground). The halite sifter is in the same group, for the White Loom.
+- [x] **The anchors' rock** (2026-11-11): a grown cable is grown only where both anchors' beds hold its pull (KSPAN.tension against
+  0.3 MN plus 1.2 MN times KSTRATA's hardness of the bed at the anchor); the station's check holds every cable to it, with a negative.
+  The numbers are the kit's; a geotechnical figure for a fused root mat is the owner's to set.
+- [ ] **The cable's texture** is `bark.cord.braided` tinted iron (a stand-in for the iron-silica fibre); the bladders `organic.pleat.skin`.
+  Its set is delivered: `organic.cable.ironsilica`, `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet.
+- [ ] The slot's floor gathers the wadi plants of the Great Chasm's kit (the wash field); the plan's "shade lovers on the slot walls"
+  are the wall curtains (card.moss.hanging), one form for now.
+
+## The Cradle (station 1)
+
+- [ ] **The Yuni farms are pending stand-ins** (boxes, domes and towers in banco adobe at the core/hamlet records' boxes): the Yuni kit's
+  buildings draw through the Yuni engine, which this page does not carry. The village is core/hamlet's on the Yuni row
+  (core/hamlet/ext/21), so a page that can read the kit answers `dims(key)` and draws them.
+- [ ] **The farms' books** (core/simulation: the stock, the harvest, the road's trade with Spindle Fan) and the draught animals
+  (kits/fauna) are owed.
+- [x] **Irrigation** (2026-11-11): the spring canal, led off the pool's south side along the contour (falling 1.5 m a km, traced on the
+  ground's gradient, bent downhill where its cut runs deep), 3.6 km south-east across the terraces; its bed cut in the ground, its water a
+  core/water flow (chasmLand's `canals`: the page's water and wet ground), the fields kept off it. The check: it never climbs and its water
+  stays between its banks, with a negative. Not yet: its offtakes to each field and which fields it commands (the crops are picked
+  irrigated or not by kits/crops; the canal does not yet change the pick).
+- [ ] **The wadis' floods**: the gorge flood (a timed `drown`/`crush`) is a shared core/hazard amendment; the wadis are dry here.
+- [ ] `check_assembly` carries one MISSING on the Cradle's page (`KCITY.stance`, in its baseline): core/city's strategies fragment
+  (33, which core/hamlet reads for its frontage cursor) names the stance path of core/city's ground (15), which core/hamlet never takes;
+  loading 15 would need core/city's core (10) and its globals.
+- [ ] The station record's v2 crops (cold rye, mountain flax, lichen spelt) are kept in its `station.json` as `crops_v2`; kits/crops
+  grows emmer, frost oat, helix bean, flax, saffron and woad for these bands (PLAN.md 7c).
+
+## How the canopy is seated (for whoever changes it)
+
+- The ground mesh here is **not** `probeSkip` (it is on the Great Chasm's and riftrim's pages): it holds the wall curtains and the cables'
+  tubers, so the core attach audit must count its triangles as structure.
+- The anchors and the curtains are rays at the drawn mesh (`src/45d-host-drawn.js`, bucketed by the ground's cells); the station's
+  checks hold every anchor and curtain root within 5 cm of the drawn surface, every span clear of it, the grown cables in the canopy's
+  band, each with a negative. Nothing roots on the slot's risers and lips or within a cell of them (`LAND.noRoot`).

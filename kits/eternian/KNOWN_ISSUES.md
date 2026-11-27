@@ -4,7 +4,8 @@
       closed-eyed face on black, green highlights) want an `eternian` pack and a closed-eyed-face symbol in
       `core/sockets/80-cultures.js` and `38-symbols.js` (the owner's sign, `patterns/eternian/sign`, is its banner cloth).
       A core change every build that takes core/sockets would rebuild for. P4's banners are the kit's own (`etBanner`, the
-      owner's sign as cloth); the culture pack waits for the owner's word on that rebuild.
+      owner's sign as cloth); the culture pack waits for the owner's word on that rebuild. (Confirmed 2026-11-09: P1 moved
+      the pack to P4, and P4 drew the banners in the kit instead; the pack is still not in `core/sockets/80-cultures.js`.)
 - [ ] **The onyx furniture is cut stone**: the ancestor niche and the visor case draw their onyx on the furniture's
       `stone` surface, which takes `f_stone`; giving them the owner's onyx wants a `FAMILY_SPLITS` row for the palette key
       `onyx` in `kits/catalog/krator-furniture-core.js` (a catalog core change every furnished build rebuilds for).
@@ -20,23 +21,35 @@
 - [x] **(Passes again, 2026-10-22.) The catalog's `verify.py --assert` failed on two generic fruit pieces** (`generic_fruit_bell_pod`,
       `generic_fruit_cherry`: materials missing stone, timber). Not this kit's: it fails the same without the Eternian
       file (checked 2026-10-20).
-- [ ] **The palace and canton staffs** are the census's one trade the kit does not carry: the Sanctum
-      (`kits/ancients/targets/sanctum`) houses them. Tabled: envoys and embassy staff (Farport's page).
+- [x] **The palace and canton staffs** were the census's one trade the kit did not carry: the Sanctum
+      (`kits/ancients/targets/sanctum`) houses them. Closed 2026-11-09: the court over water (`et_heir_pavilion`,
+      `et_heir_gallery`, built in P3) and the ministries (`et_ministry`) carry them, the palace itself staying the Sanctum's
+      (41 of 44 carried, no gap). Tabled still: envoys and embassy staff (Farport's page, na).
 - [x] **Fixed 2026-10-20 (the owner's review):** the glaze vats' and basins' water was hidden in solid stone, or z-fought
       its top (`etBasin`, hollow); the shutters z-fought the window surrounds (now 2 cm proud of them); wall heads and pier
       caps showed through the roofs (every roof is lifted over the wall's outer edge by its own slope: `etRoofLift`;
       cornices 3 cm out); the hexagonal roofs' tiles ran straight across the hexagon (`etOgee` is drawn face by face, each
       face's courses along its own eave, as `etHexHip` and `etHip` already were).
-- [ ] **The frontier fort (`et_fort`, 2026-10-22)**: the corner towers and the wall walk are solid (no rooms inside the
-      towers; a door from the court on each, no stair up); the keep's three storeys have no stair between them (the
-      interiors set does not plan the keep yet). Its gatehouse is the city gate, so the fort carries the gate's colossi.
-- [ ] **Backport Farside's works (the owner, 2026-10-26)** the next time this kit is rebuilt: `biomes/farside/src/86-host-works.js`
+- [ ] **The frontier fort (`et_fort`, 2026-10-22)**: the corner towers are solid (no rooms inside the towers; a door from
+      the court on each, locked, and no stair up). Its gatehouse is the city gate, so the fort carries the gate's colossi.
+      The stairs pass (2026-11-03, below) gave the wall walk its two stairs and the keep a stair a storey.
+- [x] **Backport Farside's works (the owner, 2026-10-26)** the next time this kit is rebuilt. Done 2026-11-09:
+      `src/69-et-coast.js` (`et_kelp_kiln`, `et_lime_kiln`, `et_wrack_heap`, `et_wrack_cart`, `et_terraces`, `et_goat_fold`,
+      `et_kelp_rack`), a row of the sheet, the trades in `ET_TRADES`. Farside still draws its own until its page places the
+      kit's (`biomes/farside/KNOWN_ISSUES.md`); the goats are not drawn (the kit keeps no beasts). The owner's note: `biomes/farside/src/86-host-works.js`
       draws the coast's works as Eternian furniture (core/tags class `furniture`, culture `eternian`, keys `farside_<kind>`,
       tag `backport: kits/eternian`): the **kelp kiln** (a stone-lined trench, ash, a drying heap, its smoke), the **lime kiln**
       (whitewashed, a draw-arch, coral rubble), the **wrack heap**, the **wrack cart**, the **walled terraces** (dry-stone
       walls on the contour), the **goat fold** and the **drying rack** (kelp and wine weed hung as kombu and nori). Simple
       host geometry on the library's `rock.old_stone_wall`, `plaster.white_stucco_02` and `wood.weathered_brown_planks`;
       the kit's own trades (`etTrade`, the kilns and racks) should draw them properly, and Farside then places the kit's.
+
+- [x] **The owner's buff brick (`brick.buff`, delivered 2026-10-26)** is wired (2026-11-09): `materials.json`'s `brick`
+      takes it in place of the plain `brick` set the kit tinted (`tex/brick.*`, `pack.json`).
+- [ ] **`card.tracery.bronze` is delivered and not wired** (the owner's nine-cell sheet: stepped, lancet and ring window heads,
+      cut out). The kit draws its tracery heads as bronze bars (`etTracery`, `41-et-profile.js`), which read; a card head over
+      the bars would double them. Wiring it means drawing the heads from the sheet instead (a `materials.json` family with its
+      `cell`, the lancet's head an alpha card): a pass with the owner's eye on it.
 
 ## Doors, glass and the reachability audit (core/door, 2026-11-03)
 

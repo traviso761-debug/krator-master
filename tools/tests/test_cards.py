@@ -50,6 +50,13 @@ def main():
         cards.run_one(src, os.path.join(tmp, 'd'), {'id': 'test.d'}, {'key': '#ff00ff', 'size': 64, 'anchor': 'none'})
         want = cards.bleed(np.asarray(cards.key_out(Image.open(src).convert('RGBA'), '#ff00ff', 45, 120, 'edge').resize((64, 64), Image.LANCZOS)).astype(np.float64))
         check(np.array_equal(np.asarray(Image.open(os.path.join(tmp, 'd', 'albedo.png'))), want), 'run_one: the default key is still key_out')
+        # T17 (BUGS-2026-11-15.md): meta.json was written CRLF on Windows (open with no newline=)
+        mb = open(os.path.join(tmp, 'v', 'meta.json'), 'rb').read()
+        check(b'\n' in mb and b'\r\n' not in mb, 'run_one: meta.json is written with LF line ends, on Windows too')
+        with open(os.path.join(tmp, 'old.json'), 'w') as fh:   # the old call, as the negative control
+            json.dump(meta, fh, indent=1)
+        check((b'\r\n' in open(os.path.join(tmp, 'old.json'), 'rb').read()) == (os.name == 'nt'),
+              'negative control: the old open() writes CRLF on Windows (and the check above would see it)')
     print('%d failed' % len(fails) if fails else 'all passed')
     return 1 if fails else 0
 

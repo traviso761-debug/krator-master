@@ -1,0 +1,12 @@
+{
+ "what": "Shumari building kit sheet ceilings (kits/shumari/PLAN.md, Phases SM1-SM5).",
+ "pages": {
+  "shumari.html": {
+   "bytes": 16777216,
+   "tris": 1900000,
+   "calls": 240,
+   "why": "Full 59-def Shumari kit sheet (60 placements across 9 caste/role rows, fluted/carved Mamluk domes, Station 4 Shumar highland flora band, and SM5 ?interiors=1 111-room / 785-piece interior furnishing; measured Overview ~1.12M tris default, ~1.70M tris with ?interiors=1).",
+   "raised": "2026-11-18"
+  }
+ }
+}

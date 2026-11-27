@@ -22,11 +22,19 @@ its own site table and view list, merged into one sorted filename order:
 |---|---|---|
 | `kit` | `dist/ancients-kit.html` | the 32-type showcase, rows along +z |
 | `theodiga` | `dist/theodiga.html` | the dam arcology alone, at the origin |
+| `theodiga-today` | `dist/theodiga-today.html` | the ruin with its Dome and river and the town on the east rim (`settlements/theodiga`): reads the theodiga target's fragments, the town's plan and drawer in place; core/city and `XAK` (scrap Xanadu + Qiblai) sealed |
 | `hosts` | `dist/hosts.html` | the five Ancient host types (`src/8ap-host-*`), each also cut and holed as Ys hosts it |
 
-Everything else — core, helpers, all 33 builders — is shared, so a fix to
-`buildDam` or to `lathe()` lands in both and the two cannot drift. A target
-directory contributes exactly two fragments:
+Everything else — core, helpers, the builders — is one shared source, so a fix
+to `lathe()` lands in every page and the pages cannot drift. **But a page carries
+only what it uses** (2026-11-15, `build.py` PRUNE): the kit's core, and of the
+builder fragments and libraries only those its rows' builders and its own target
+fragments reach (by a top-level name, a kit piece's string name, or a `MAT.`/`TEX.`
+key). So editing one builder changes only the pages that place it. Writing a new
+builder: declare it at the top level (`function buildX`), name it in
+`90-scene.js`'s `ANC_BUILDER_NAMES` or the target's `EXTRA_BUILDERS`, and reach any
+helper by its name; `python3 build.py --no-prune` builds the old all-in pages. A
+target directory contributes exactly two fragments:
 
 * `89z-rows.js` — `TITLE`, `GROUND_C` (z centre of the ground plane) and
   `ROWS`/`RUINS`.
@@ -44,8 +52,11 @@ To add a target: make `targets/<name>/` with those two files and add a line to
 `build.py` refuses if it does.
 
 Theodiga lives in its own target because it is the heaviest single structure in
-the kit and is being taken up as its own piece of work. `buildDam` still ships
-in the kit's `<script>` — only the site is gone.
+the kit and is being taken up as its own piece of work. Since 2026-11-15 its
+builder lives there too (`targets/theodiga/77-dam.js`, with the Dome and the
+water, `77a`-`77c`, `90w`): only Theodiga's page carries `buildDam`, and
+`90-scene.js` adds it to `BUILDERS` when it is present, so editing the dam no
+longer changes the other pages.
 
 ## Loop
 
@@ -435,7 +446,7 @@ ceilings are exceeded — see `KNOWN_ISSUES.md`.
 | `_api.typeStats()` | per `type/decay` key: `{tris, inst, meshes, cls, limit, over}` |
 | `_api.regOccupancy()` | per registered volume: how many sample points fall inside |
 | `_api.nanSweep()` | meshes with a non-finite vertex, instances placed at NaN |
-| `_api.setView(cx,cy,cz,tx,ty,tz)`, `_api.views()` | camera, preset names |
+| `_api.setView(cx,cy,cz,tx,ty,tz)` or `_api.setView('Name')`, `_api.views` | camera (a preset by name; an unknown name throws, listing the names), the preset names (a list, not a function, since 2026-11-15) |
 | `_api.BUDGET`, `_api.REG` | the budget table and the raw registry |
 
 ## Animation

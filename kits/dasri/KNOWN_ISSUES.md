@@ -1,0 +1,4 @@
+# kits/dasri: Known Issues & Ride-Along Notes
+
+- [x] **Opt-in `dasri` culture tag registration (`src/52d-ds-tags.js`)**: `dasri` ("Dasri") is registered on `KTAGS.VOCAB` inside `kits/dasri` (and `dasri_bundle.py`) so all 160+ existing committed pages keep their exact hashes. At the next all-builds ride-along rebuild (`TODO.md`), fold `'dasri': 'Dasri'` directly into `core/tags/52-core-tags-vocab.js` and `tools/checks_optin.json`, then drop `src/52d-ds-tags.js`.
+- [x] **Dedicated Dasri furniture catalog file**: The kit currently furnishes rooms, souqs, `mafraj` pavilions, and compounds with the Eastern Nomad (`nomad`, `LORE.md` §6.8), `generic`, `generic-goods`, and `jobs` catalog sets (`0` missing keys). A dedicated `krator-master-furniture-dasri.js` set (alabaster `qamariya` lamps, brass `qishr` ewers, carved `juss` wall-niches) can be added when `kits/catalog` next rebuilds.

@@ -12,6 +12,9 @@ Checks (they exist because fragments share one JS scope and several agents write
 The catalog's furniture and the interiors core with this kit's interior set are one GENERATED fragment, 38-furniture-bundle.js (virtual_bodies(),
 never written to src/; the name checks skip it but its four globals must not meet a kit name). 91f-furnish.js is the glue (FURNISH, API.md).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -52,10 +55,18 @@ except Exception: pass
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.join(HERE, 'src'); DIST = os.path.join(HERE, 'dist')
 CORE_SOCK = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'sockets')   # shared: the socket + culture system (core/sockets/README.md)
 CORE_FURNISH = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furnish')   # shared: the furniture placement pass (core/furnish/README.md)
-CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags', 'walk', 'door')]   # shared: KRAND, the tag registry the furniture is registered in (core/tags/README.md), KWALK (the interiors' floors, walls and stairs), and core/door (KDOOR, KGLASS, KDOORHOST: src/35-pa-open.js)
+CORE_TAGS = [os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', d) for d in ('rand', 'tags', 'walk', os.path.join('walk', 'box'), 'door')]   # shared: KRAND, the tag registry the furniture is registered in (core/tags/README.md), KWALK (the interiors' floors, walls and stairs), and core/door (KDOOR, KGLASS, KDOORHOST: src/35-pa-open.js)
 OUT = os.path.join(DIST, 'post-apoc.html')
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
+# the viewer is core/host's (2026-11-09; it replaced src/92-camera.js and the probe's own window._api): the shell, the one key map,
+# the polygon tool and the cut-away; src/99-host-take.js hands it the page. core/engine/91i-interiors.js is read for its cut-away units
+# (svixUnitsFor: a building with an interior set, storey by storey); its furnishing stays off here (no KIT_INTERIORS: 91f-furnish.js
+# furnishes this kit's interiors with ?interiors=1, as before)
+sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
+import host as khost
+CORE_HOST = khost.SHELL + khost.KEYS + ['94-host-polytool.js', '99-host-cutaway.js']
+ENGINE_READ = {'91i-interiors.js': os.path.join(ROOT, 'core', 'engine', '91i-interiors.js')}
 # GENERATED fragment: the catalog's furniture (kits/catalog/furniture_bundle.py: one closure exposing KratorFurniture) and
 # the interiors core with this kit's interior set (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom).
 # Inserted at build time after the registry (36-def, 37-sockets); never written to src/. 91f-furnish.js is the glue
@@ -87,6 +98,8 @@ def main():
     paths = {f: os.path.join(CORE_SOCK, f) for f in os.listdir(CORE_SOCK) if f[0].isdigit()}
     paths.update({f: os.path.join(CORE_FURNISH, f) for f in os.listdir(CORE_FURNISH) if f[0].isdigit() and f.endswith('.js')})
     for d in CORE_TAGS: paths.update({f: os.path.join(d, f) for f in os.listdir(d) if f[0].isdigit() and f.endswith('.js')})
+    paths.update({f: khost.path(f) for f in CORE_HOST + khost.SHADER})   # core/host and core/shader (resolve's set)
+    paths.update(ENGINE_READ)
     paths.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()})   # a local copy with the same name overrides the shared one
     vb = virtual_bodies()
     files = sorted(list(paths) + list(vb))
@@ -96,7 +109,7 @@ def main():
     if '--no-checks' not in sys.argv:
         decl = {}
         for f in files:
-            if not f.endswith('.js') or f in VIRTUAL: continue   # the generated bundle keeps its names in closures (but its globals: below)
+            if not f.endswith('.js') or f in VIRTUAL or f in CORE_HOST: continue   # the generated bundle keeps its names in closures (but its globals: below); the host's files are IIFEs
             for m in RE_DECL.finditer(bodies[f]): decl.setdefault(m.group(1), set()).add(f)
         for f in VIRTUAL:   # the bundle's own globals must not meet a kit name
             for n in ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom'):
@@ -143,7 +156,7 @@ def main():
 # silently wins in main(). That is an error. The shell (head, core, camera, tail) is a FORK of the Ancients-lineage
 # shell, not a copy: its distance from kits/ancients/src is printed for information only.
 ANCIENTS = os.path.join(os.path.dirname(HERE), 'ancients', 'src')
-SHELL = ['00-head.html', '10-core.js', '92-camera.js', '99-tail.html']
+SHELL = ['00-head.html', '10-core.js', '99-tail.html']   # 92-camera.js went to core/host (2026-11-09)
 def vendor_check():
     bad = []
     for f in sorted(x for x in os.listdir(CORE_SOCK) if x[0].isdigit()):

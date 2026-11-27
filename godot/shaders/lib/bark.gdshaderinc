@@ -47,4 +47,34 @@ vec3 bark_hang(vec3 local, vec3 origin, float t, float a) {
 	float ph = dot(origin, vec3(0.13, 0.07, 0.11));
 	return local + vec3(-local.y * a * sin(t * 1.1 + ph), 0.0, -local.y * a * cos(t * 0.8 + ph * 1.3));
 }
+
+// M5 bark crevice AO and physical roughness from linear bark luminance + damp root-collar grounding near local_y = 0
+// Returns vec3(ao, roughness, collar_tint_mul)
+vec3 bark_ao_rough(float luma, float local_y, bool is_impostor) {
+	if (is_impostor) {
+		return vec3(1.0, 0.86, 1.0);
+	}
+	float collar = 1.0 - smoothstep(0.0, 1.35, max(local_y, 0.0));
+	float ao = clamp(mix(0.54, 1.0, smoothstep(0.03, 0.34, luma)) * mix(1.0, 0.68, collar), 0.42, 1.0);
+	float rough = mix(mix(0.90, 0.64, smoothstep(0.04, 0.42, luma)), 0.48, collar * 0.42);
+	float tint = mix(1.0, 0.78, collar);
+	return vec3(ao, rough, tint);
+}
+
+// M5 close-up bark furrow normal bump (< 55 m) using pre-branch world/luma derivatives (safe before discard/non-uniform branches)
+vec3 bark_furrow_normal(vec3 world_n, vec3 dpdx, vec3 dpdy, float dlx, float dly, float depth, bool enabled) {
+	float fade = enabled ? (1.0 - smoothstep(18.0, 55.0, depth)) : 0.0;
+	if (fade <= 0.001) {
+		return world_n;
+	}
+	vec3 r1 = cross(dpdy, world_n);
+	vec3 r2 = cross(world_n, dpdx);
+	float det = dot(dpdx, r1);
+	if (abs(det) <= 1e-8) {
+		return world_n;
+	}
+	vec3 grad = sign(det) * (dlx * r1 + dly * r2) / max(abs(det), 1e-5);
+	grad = clamp(grad * 0.045, vec3(-0.42), vec3(0.42));
+	return normalize(world_n - grad * fade);
+}
 #endif

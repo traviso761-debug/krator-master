@@ -35,6 +35,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "block.cw.webp",
     "map": "block.albedo.webp",
     "normalMap": "block.normal.webp",
     "roughnessMap": "block.rough.webp"
@@ -42,6 +43,7 @@
    "lib": "concrete.block.relief",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.0,
    "scale": [
     1.6,
@@ -185,13 +187,15 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "brick.cw.webp",
     "map": "brick.albedo.webp",
     "normalMap": "brick.normal.webp",
     "roughnessMap": "brick.rough.webp"
    },
-   "lib": "brick",
+   "lib": "brick.buff",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.015,
    "roughLift": 0.0,
    "scale": [
     1.2,
@@ -199,16 +203,16 @@
    ],
    "size": 512,
    "source": {
-    "albedo": "1b832e93b2cabd2b02d090e2f1a30342f06044e8",
-    "normal": "3afaed755f00b5d9e300899bff527a021ed3197d",
-    "roughness": "f7dbd270b38734bd15a359a0aa7cae6d42b482a1"
+    "albedo": "aba93cb74be439abe0d91604b502b523d55d1630",
+    "normal": "a4589aeaa19e89c98c007bdcd8b25d24070bab44",
+    "roughness": "b8a95bb484e501de0f3b11e83af1524831db8e72"
    },
    "specular": 0.5,
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
     "mean": 0.8,
-    "sourceMean": 0.6084
+    "sourceMean": 0.7675
    }
   },
   "bronze": {
@@ -221,6 +225,18 @@
    },
    "lib": "metal.bronze.cast",
    "metal": 0.45,
+   "mipVariance": [
+    0.0,
+    0.0366,
+    0.05402,
+    0.05762,
+    0.05817,
+    0.05818,
+    0.05809,
+    0.05804,
+    0.05802,
+    0.05802
+   ],
    "normalScale": 1.0,
    "roughLift": 0.0,
    "scale": [
@@ -251,6 +267,18 @@
    },
    "lib": "roof.tile.celadon",
    "metal": 0,
+   "mipVariance": [
+    0.0,
+    0.01164,
+    0.02276,
+    0.02955,
+    0.03217,
+    0.0337,
+    0.03414,
+    0.03415,
+    0.03416,
+    0.03415
+   ],
    "normalScale": 1.0,
    "roughLift": 0.45,
    "scale": [
@@ -701,6 +729,18 @@
    },
    "lib": "metal.gold",
    "metal": 0.5,
+   "mipVariance": [
+    0.0,
+    0.02981,
+    0.05334,
+    0.06147,
+    0.06331,
+    0.06359,
+    0.06357,
+    0.06355,
+    0.06354,
+    0.06353
+   ],
    "normalScale": 1.0,
    "roughLift": 0.0,
    "scale": [
@@ -995,6 +1035,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "paving.cw.webp",
     "map": "paving.albedo.webp",
     "normalMap": "paving.normal.webp",
     "roughnessMap": "paving.rough.webp"
@@ -1002,6 +1043,7 @@
    "lib": "paving.flagstone",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.0,
    "scale": [
     2,
@@ -1290,6 +1332,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "stone.cw.webp",
     "map": "stone.albedo.webp",
     "normalMap": "stone.normal.webp",
     "roughnessMap": "stone.rough.webp"
@@ -1297,6 +1340,7 @@
    "lib": "stone.cut.b",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.0,
    "scale": [
     2.6,
@@ -1356,6 +1400,18 @@
    },
    "lib": "roof.tile",
    "metal": 0,
+   "mipVariance": [
+    0.0,
+    0.01566,
+    0.02802,
+    0.0353,
+    0.03846,
+    0.03969,
+    0.03992,
+    0.03994,
+    0.03996,
+    0.03995
+   ],
    "normalScale": 1.0,
    "roughLift": 0.0,
    "scale": [

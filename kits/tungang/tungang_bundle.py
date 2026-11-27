@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""The Tungang kit as ONE closure for another world: tungang_bundle.bundle(tex=True) -> JS text (kits/tungang/API.md).
+
+    import sys; sys.path.insert(0, '<repo>/kits/tungang'); import tungang_bundle
+    js = tungang_bundle.bundle()               # the page's <script> takes it after three.js
+    js, files = tungang_bundle.bundle(with_files=True)   # and the repo-relative files it read (a build's --list-sources)
+
+The text defines the single global `TG` (src/26k-kit.js, its host API src/80-fg-host.js): TG.fg.draw(V, o), TG.fg.ropes,
+TG.fg.pieces, TG.fg.proto, TG.fg.dims, TG.fg.BOX, TG.fg.check, TG.errors. Inside the closure, read in place at bundle
+time (never copied): the building-kit engine (core/engine: 10-core, 27-mat, 30-geo, 36-def, 36o-open, 36s-stair, 37-wk-rec), core/rand
+(KRAND), core/materials/record (KMAT, its own pack of this kit's tex/), and the kit's fragments (26k-kit.js, the Fellgang
+set 40-60, 80-fg-host.js). Left out: the sheet (00-head, 89-rows, 91t, 96t, 99-sheet), the engine's page shell (scene,
+furniture adapter, night, world, clock, host take, tail). Their top-level names (MAT, REG, TAU, clamp, terrainH, KIT...)
+stay inside the closure, so they never meet the host's. It needs only a global THREE (r128).
+
+A draw from a host is DRY: nothing is registered (the host registers its records in core/tags first) and no furniture is
+placed by default (FURNISH is a stub, as the isle demo's ISK has it); bundle(furniture=True) seals the catalog in and furnishes the draw.
+The plate doors are drawn shut into the buckets (no core/door in the closure). tex=False leaves the library maps out
+(vertex colours only); tex='lean' packs only the eight families the buildings' faces show most (stone, turf, pole, wood,
+plate, rust, rope, cord), about a third of the size."""
+import base64, json, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(os.path.dirname(HERE))
+SRC = os.path.join(HERE, 'src')
+TEX = os.path.join(HERE, 'tex')
+NL = '\n'
+ENGINE = ['10-core.js', '27-mat.js', '30-geo.js', '36-def.js', '36o-open.js', '36s-stair.js',
+          '37-wk-rec.js']   # the walk records (wkLadder, the building wrap) the kit's src/37t-wk-ring.js adds round walls to (wave 2, 2026-11-16)
+CORE = [('core/rand', '08-core-rand.js'), ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'),
+        ('core/materials/record', '25-matlib-host.js'),
+        # Wildcat's plans (src/44-fg-wc-plan.js): core/pueblo and the spatial index it reads (KPUEBLO, KSPACE)
+        ('core/space', '20-core-space.js'), ('core/pueblo', '10-pueblo-plan.js'), ('core/pueblo', '20-pueblo-access.js'), ('core/pueblo', '30-pueblo-court.js'),
+        ('core/pueblo', '40-pueblo-rooms.js')]
+KIT_SKIP = ('00-head.html', '89-rows.js', '91t-fg-sheet.js', '96t-fg-views.js', '99-sheet-fg.js', '91z-gz-sheet.js', '96z-gz-views.js', '91g-tg-sheet.js', '96g-tg-views.js', '89w-wc-rows.js', '91w-wc-sheet.js', '96w-wc-views.js')
+LEAN = ('stone', 'turf', 'pole', 'wood', 'plate', 'rust', 'rope', 'cord')
+# tex='glazier': the families the Glazier set draws with (a town of theirs: settlements/lightwall)
+GLAZIER = ('wash', 'hewn', 'gilt', 'carpet', 'celadon', 'enamel', 'potch', 'carved', 'silk', 'plate', 'iron', 'stone', 'wood', 'rope', 'cord')
+
+HEAD = r'''
+/* the page's shell, as the kit's fragments ask for it (tungang_bundle.py). The engine's error hooks stay in here: window.onerror,
+   the console.error forward and the unhandled-rejection listener are swallowed, and its errors go to TG.errors (and the host's
+   console). A host without an #errs panel is fine. */
+var TG_ERRS = [], TG_TEXRESET = false;
+/* _texPending: the sealed matlib host's opening reset (25-matlib-host.js: window._texPending = 0) must not wipe the host's own
+   count, so the FIRST 0-write (the reset) is swallowed while the host holds a number, and passes when it holds none; either
+   way every later write passes, so the bundle's own loads count up and back down to 0 on the host's counter (riftrim found
+   the last decrement swallowed too, 2026-11-11; Loj Twenny found it again on a host with no counter of its own). */
+var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) { if (k === 'addEventListener') return function () {};
+    var v = t[k]; return typeof v === 'function' && !/^[A-Z]/.test(String(k)) ? v.bind(t) : v; },
+  set: function (t, k, v) { if (k === 'onerror') return true;
+    /* a host's own globals stay its own: the closure's core files publish theirs (23-mat-record.js: window.KMAT = KMAT), and
+       on a page that already has one (Laitwal, on Xanadu's page, whose KMAT carries bindMat) the closure keeps its copy inside */
+    if (typeof k === 'string' && /^[A-Z]/.test(k) && k in t) return true;
+    if (k === '_texPending' && v === 0 && typeof t._texPending === 'number' && !TG_TEXRESET) { TG_TEXRESET = true; return true; }
+    t[k] = v; return true; } });
+var document = (function () { var D = globalThis.document, stub = { style: {}, textContent: '' };
+  return { getElementById: function (id) { return (D && D.getElementById(id)) || stub; }, createElement: function (n) { return D ? D.createElement(n) : stub; } }; })();
+var console = Object.create(globalThis.console || { log: function () {}, warn: function () {}, error: function () {} });
+var location = globalThis.location || { search: '', hash: '' };
+'''
+
+STUB_FURN = r'''
+/* no furniture in a host's draw (bundle(furniture=False), the default): FURNISH places nothing, the catalog is empty */
+function FURNISH() { return null; }
+function FURNISH_HANG() { return null; }
+var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {} };
+'''
+
+# bundle(furniture=True): the catalog sealed in (kits/catalog/furniture_bundle.py), and a FURNISH that queues each piece in the
+# world frame; TG.fg.draw (src/80-fg-host.js fgDrawInto) places the queue through a KratorFurniture batch and flushes it into the
+# draw's group, so a world's buildings are furnished as the sheet's are (dry: nothing is registered)
+FURN_HEAD = r'''
+var FG_FURN_PENDING = [];
+function FURNISH(key, lx, ly, lz, lry, o) { if (!KratorFurniture.has(key)) return null; var p = new THREE.Vector3(lx, ly || 0, lz).applyMatrix4(CM), e = CM.elements;
+  var r = { key: key, x: p.x, y: p.y, z: p.z, ry: Math.atan2(e[8], e[10]) + (lry || 0), v: (o && o.v) | 0 }; FG_FURN_PENDING.push(r); return r; }
+function FURNISH_HANG(key, lx, topY, lz, lry, o) { var A = KratorFurniture.FURN_BY_KEY[key]; if (!A) return null; return FURNISH(key, lx, topY - KratorFurniture.entryDims(A, (o && o.v) | 0).h, lz, lry, o); }
+'''
+FURN_CULTURES = ['fellgang', 'tungang', 'xanadu', 'generic', 'generic-goods', 'jobs']
+
+TAIL = r'''
+reportErr = function (m) { TG_ERRS.push(String(m).slice(0, 600)); if (globalThis.console) globalThis.console.error('TG: ' + m); };
+TG.errors = TG_ERRS; TG.MAT = MAT; TG.DEFS = DEFS; TG.KIT = KIT; TG.ANIMU = ANIMU;
+return TG;
+'''
+
+
+def rel(p):
+    return os.path.relpath(p, ROOT).replace(os.sep, '/')
+
+
+def rd(p):
+    with open(p, encoding='utf-8') as f:
+        return f.read()
+
+
+def safe(js):
+    """inline text may hold no script tag, not even in a comment (kits/catalog/furniture_bundle.py)"""
+    return js.replace('</script', '<\\/script').replace('<script', '<\\x73cript')
+
+
+def files():
+    """the closure's files in the page's filename order (a name sorts where the kit's build.py sorts it)"""
+    fs = {f: os.path.join(ROOT, 'core', 'engine', f) for f in ENGINE}
+    fs.update({f: os.path.join(ROOT, *d.split('/'), f) for d, f in CORE})
+    fs.update({f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit() and f.endswith('.js') and f not in KIT_SKIP})
+    return fs
+
+
+def furn_text(on, cultures=None, tex=False):
+    """tex: the catalog's library detail maps with it (furniture_bundle.bundle(tex=True): every family, about 1.9 MB), so a
+    flush gives each piece its family's set; without, the pieces are vertex colours only (the default, byte for byte)"""
+    if not on:
+        return STUB_FURN
+    sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
+    import furniture_bundle
+    cs = cultures or FURN_CULTURES
+    return ('/* ---- kits/catalog (furniture_bundle.py: %s%s) ---- */' % (', '.join(cs), '; detail maps' if tex else '') + NL + furniture_bundle.bundle(cs, tex=bool(tex)) + NL +
+            'KratorFurniture.setDetail(.6);' + NL + FURN_HEAD)
+
+def pack(tex=True, side=None):
+    """KMAT.pack('tungang', ...) from the committed tex/ (bytes as data URLs: deterministic, no image library). side (a dict):
+    the maps go into side['tungang'] for a file beside the host's page (tools/textures/matlib_pack.py write_sidecar), and the
+    closure registers KMAT_SIDE.tungang (matlib_pack.loader), as a page near the 16 MB cap keeps its packs"""
+    pj = os.path.join(TEX, 'pack.json')
+    if not tex or not os.path.isfile(pj):
+        return "KMAT.pack('tungang', {});\n"
+    P = json.load(open(pj, encoding='utf-8'))
+    out = []
+    for fam in sorted(P['families']):
+        if fam.startswith('f_') or (tex == 'lean' and fam not in LEAN) or (tex == 'glazier' and fam not in GLAZIER):
+            continue
+        e = P['families'][fam]
+        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'], 'specular': e.get('specular', 0.5),
+             'breakup': e.get('breakup'), 'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
+        for k, name in sorted(e['files'].items()):
+            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX, name), 'rb').read()).decode('ascii')
+        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
+    if side is not None:
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack
+        side['tungang'] = '{' + NL + (',' + NL).join(out) + NL + '}'
+        return matlib_pack.loader('tungang')
+    return "KMAT.pack('tungang', {\n" + ',\n'.join(out) + '\n});\n'
+
+
+RES_FILES = ['42r-res-ore.js', '42s-res-ore-mined.js', '44r-res-nodes.js', '44t-res-nodes-gem.js']
+RES_SHIM = r'''
+/* ---- the Resources kit's nodes inside TG (tungang_bundle.py res=True; kits/resources/API.md): the material keys and palette
+   entries its node fragments draw with that this kit lacks map onto this kit's own (earth and sand on the stone) ---- */
+for(const [k,f] of [['earth','stone'],['sand','stone']])if(!MAT[k]&&MAT[f]){MAT[k]=MAT[f];TILE[k]=TILE[f];}
+for(const [k,v] of [['earth',[0x8a6a4a,0x7a5c40]],['stoneD',[0x5e5a54,0x56524c]],['woodD',[0x3a2a20,0x32241a]]])if(!SVPAL[k])SVPAL[k]=v;
+'''
+RES_HOST = r'''
+/* TG.res: the Resources kit's nodes for a host (tungang_bundle.py res=True). draw(nodes, o) places each node
+   {id, kind, grade, x, z, y?, ry?, v?} as its def node-<kind>-<grade>, dry (the host registers its records first), into one
+   group (o.scene, o.label); source and rate are the kit's nearest-node rule (kits/resources/API.md "The rule") */
+TG.res={ORE:RES_ORE,source:resSource,rate:resRate,
+ draw:function(nodes,o){o=o||{};const missing={};
+  const out=fgDrawInto(Object.assign({name:'res:nodes',label:'Resource nodes'},o),()=>(nodes||[]).map((n,i)=>{const key='node-'+n.kind+'-'+n.grade;
+   if(!DEFS[key]){missing[key]=(missing[key]==null?0:missing[key])+1;return null;}
+   const rec=place(key,n.x,n.z,n.ry==null?0:n.ry,{y:n.y==null?0:n.y,v:n.v==null?KRAND.hash(o.seed==null?7601:o.seed,i,0x3e1)%97:n.v});
+   if(rec){rec.id=n.id;rec.node=n;}return rec;}));
+  out.missing=missing;return out;}};
+'''
+
+
+def bundle(tex=True, with_files=False, furniture=False, side=None, res=False, cultures=None, furniture_tex=False):
+    """furniture=True seals the catalog's fellgang, generic and generic-goods pieces in (about 0.4 MB more: README.md, "For
+    another world"), so TG.fg.draw furnishes what it draws; off by default. res=True seals the Resources kit's ore rule and
+    node defs in (kits/resources/src, read in place: about 40 KB) as TG.res; off by default, so the bundle is as before.
+    cultures: the catalog cultures sealed in with the furniture (default FURN_CULTURES; a Tungang hold passes
+    ['tungang', 'generic', 'generic-goods'] for TG.tg.draw). furniture_tex=True: the catalog's library detail maps with
+    the furniture (Loj Twenny; off by default, byte for byte)"""
+    fs = files()
+    names = sorted(list(fs) + ['26-matlib-pack.js'])
+    body = ''
+    for n in names:
+        if n == '26-matlib-pack.js':
+            body += '/* ---- kits/tungang/tex (generated: the library pack, materials.json) ---- */' + NL + pack(tex, side) + NL
+        else:
+            body += '/* ---- %s ---- */%s%s%s;%s' % (rel(fs[n]), NL, rd(fs[n]), NL, NL)
+            if n == '40-pueblo-rooms.js':
+                # core/pueblo publishes on root (globalThis); a sealing host may hand the closure a proxy for it
+                # (tools/kit_pack.py: _KP_WIN), so the kit's bare KPUEBLO is bound here (Stage 8, 2026-11-24)
+                body += 'var KPUEBLO = window.KPUEBLO;' + NL
+    rfs = []
+    if res:
+        rfs = [os.path.join(ROOT, 'kits', 'resources', 'src', f) for f in RES_FILES]
+        body += RES_SHIM + ''.join('/* ---- %s ---- */%s%s%s;%s' % (rel(f), NL, rd(f), NL, NL) for f in rfs) + RES_HOST
+    js = safe('/* TG: the Tungang kit in one closure (kits/tungang/tungang_bundle.py). GENERATED: edit kits/tungang/src or core/. */' + NL +
+              'var TG = (function(){' + NL + HEAD + furn_text(furniture, cultures, furniture_tex) + body + TAIL + '})();' + NL)
+    return (js, [rel(fs[n]) for n in names if n in fs] + [rel(f) for f in rfs] + ['kits/tungang/tex'] + (['kits/catalog/tex'] if furniture and furniture_tex else [])) if with_files else js
+
+
+if __name__ == '__main__':
+    js = bundle(tex='--no-tex' not in sys.argv and ('lean' if '--lean' in sys.argv else True), furniture='--furniture' in sys.argv)
+    print('%d KB' % (len(js) // 1024))

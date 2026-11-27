@@ -6,7 +6,8 @@
     python3 tools/check_source.py --write-baseline  # accept today's findings (after fixes, or for a deliberate case)
     python3 tools/check_source.py biomes/rift       # one folder (its keys only, against the baseline)
 
-It reads core/**/*.js and each build's src/, targets/ and stations/ (no dist/, no *.min.js, no test-*.js), lexed by
+It reads core/**/*.js, each build's src/, targets/ and stations/, and the *.js at a kit's top level (the catalog, fauna, mechs
+and motor-vehicles keep their fragments there; no dist/, no *.min.js, no test-*.js), lexed by
 tools/jsscan.py, so a rule sees code as code and a comment as a comment. Key: '<file>: <RULE>', counted per file, so a
 line that moves does not read as new. The ratchet is tools/ratchet.py: the piles below stay, and may only shrink.
 
@@ -49,6 +50,9 @@ def sources():
     for top in TOPS:
         for part in PARTS:
             out += glob.glob(os.path.join(ROOT, top, '*', part, '**', '*.js'), recursive=True)
+    # the kits that keep their fragments at the top level (catalog, fauna, mechs, motor-vehicles: the survey of 2026-11-11,
+    # item 32, found check_source never read them)
+    out += glob.glob(os.path.join(ROOT, 'kits', '*', '*.js'))
     keep = []
     for f in out:
         r = os.path.relpath(f, ROOT).replace(os.sep, '/')
@@ -67,7 +71,7 @@ def trailing(text):
     return coded >= 2 or (coded >= 1 and BRACE_END.search(t) is not None)
 
 
-def lint(text):
+def lint(text, relpath=''):
     """{rule: [line numbers]} for one file's text."""
     found = {}
 
@@ -75,6 +79,9 @@ def lint(text):
         found.setdefault(rule, []).append(line)
 
     hooks = 'onBeforeCompile' in text
+    check_voids = relpath.startswith('kits/marr/src/') and not relpath.endswith('69m-mar-mat.js')
+    void_lits = frozenset(("'vHole'", '"vHole"', "'vRoomB'", '"vRoomB"', "'maRoomB'", '"maRoomB"',
+                           "'maHalfD'", '"maHalfD"', "'maDiscD'", '"maDiscD"', "'vWinGlass'", '"vWinGlass"'))
     toks = list(jsscan.scan(text))
     for i, (kind, v, s, e, ln) in enumerate(toks):
         if kind == 'line_comment':
@@ -87,6 +94,8 @@ def lint(text):
                     and float_nonzero(nxt[1]):
                 hit('ORNUM', ln)
         elif kind == 'string' or kind == 'template':
+            if check_voids and v in void_lits:
+                hit('DARK_VOID', ln)
             if hooks:
                 if WORD_CAM.search(v):
                     hit('CAMPOS', ln)
@@ -125,7 +134,7 @@ def main(argv):
     for f in files:
         with open(os.path.join(ROOT, f), encoding='utf-8', errors='replace') as fh:
             text = fh.read().replace('\r\n', '\n')
-        for rule, lines in lint(text).items():
+        for rule, lines in lint(text, f).items():
             k = '%s: %s' % (f, rule)
             findings[k] = len(lines)
             detail[k] = ['line %d' % n for n in lines[:20]]

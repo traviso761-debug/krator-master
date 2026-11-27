@@ -56,6 +56,27 @@ ASSERT_JS = r"""()=>{const A=window._api;const R=[];const F=A.footprints();
    out.push(r.key+' '+(T.filter(t=>!t.opt).length-miss.length)+'/'+T.filter(t=>!t.opt).length);if(miss.length)bad.push(r.key+'(v'+r.v+'): '+miss.map(t=>t.who+':'+t.name).join(','));}
   DOP.forEach(([B,on])=>W.setBlock(B,on));
   R.push({name:'walk-reach',ok:!bad.length&&out.length>0,detail:bad.length?'unreached: '+bad.join(' | '):out.length+' buildings walked: '+out.join(', ')});}
+ /* Y5, the inside (PLAN.md section 5): the khaayken culture file furnishes the rooms; every generic piece drawn at the Khaayken's 1.15x
+    through core/furnish's opt-in scale, the khaayken and Eternian pieces at their own; the war-loot rule (none in a poor house, the
+    first ytLootN(tier) of a building's offered places, a wall of it in the rich and the halls, every piece Eternian, the State's faces
+    from kits/eternian's head generator read in place); the carved figures each from their own seed */
+ {const recs=A.furniture(true).records||[],kh=recs.filter(r=>/^khaayken_/.test(r.key)).length,
+   sc=recs.filter(r=>(/^generic_/.test(r.key)&&r.scale!==1.15)||(/^(khaayken|eternian)_/.test(r.key)&&r.scale!=null));
+  R.push({name:'khaayken-furniture',ok:kh>=40&&!sc.length,detail:kh+' khaayken pieces of '+recs.length+(sc.length?'; wrong scale: '+sc.slice(0,8).map(r=>r.key+' '+r.scale).join(', '):'; every generic piece at 1.15x, the khaayken and Eternian at 1')});
+  const LR=A.REG.filter(r=>r.lootRule),bad=LR.filter(r=>r.lootRule.shown!==Math.min(r.lootRule.offered,r.lootRule.share)),
+   poor=A.REG.filter(r=>r.tags&&r.tags.wealth==='poor'&&(r.loot||[]).length),rich=LR.filter(r=>r.lootRule.tier==='rich'||r.lootRule.tier==='state'),
+   thin=rich.filter(r=>(r.loot||[]).length<6),all=[].concat(...A.REG.map(r=>r.loot||[])),foreign=all.filter(l=>l.from!=='eternian'),
+   faces=all.filter(l=>l.kind==='head'||l.kind==='mask').length;
+  R.push({name:'loot-rule',ok:!bad.length&&!poor.length&&rich.length>0&&!thin.length&&!foreign.length&&faces>0,
+   detail:(bad.length?'rule not kept: '+bad.map(r=>r.key).join(', ')+'; ':'')+(poor.length?'loot in a poor house: '+poor.map(r=>r.key).join(', ')+'; ':'')+(thin.length?'a rich house or hall under 6: '+thin.map(r=>r.key).join(', ')+'; ':'')+
+    all.length+' trophies in '+LR.length+' buildings ('+faces+' State faces and masks), '+rich.length+' rich houses and halls with 6 or more, none in the poor'});
+  const figs=[].concat(...A.REG.map(r=>r.figures||[])),seeds=new Set(figs.map(f=>f.seed)),forms=new Set(figs.map(f=>f.form));
+  R.push({name:'figures',ok:figs.length>=10&&seeds.size===figs.length&&forms.size>=4,detail:figs.length+' carved figures, '+seeds.size+' seeds, forms: '+[...forms].join(' ')});}
+ /* Y6: Leng's occupation (two bay houses and a plug inside the hall) and the forest-steppe row on the nwouterwall kit's flora */
+ {const L=A.REG.filter(r=>r.key==='yt_leng_hall');const okL=L.every(r=>r.children.filter(c=>c.key==='yt_leng_bay_house').length===2&&r.children.some(c=>c.key==='yt_leng_plug'));
+  R.push({name:'leng-occupation',ok:okL,detail:L.length?L.length+' hall(s), each with its two bay houses and its plugged breach':'not on the page (?only)'});
+  const F=window._flora,on=typeof YT_FLORA!=='undefined'&&!!YT_FLORA;
+  R.push({name:'flora-row',ok:!on||!!(F&&F.trees>10&&F.plants>10&&F.records>0),detail:!on?'the forest-steppe row is not on the page (?only)':F?'nwouterwall ('+F.season+'): '+F.trees+' trees ('+F.bySpecies+'), '+F.plants+' floor plants, '+F.records+' core/tags records, '+F.ms+' ms':'no flora built'});}
  const M=A.materials();R.push({name:'material-records',ok:!!(M&&M.records&&M.records.length>15),detail:M?M.records.length+' records, '+M.records.filter(r=>r.lib).length+' from the library':'none'});
  return R;}"""
 async def run(a):

@@ -119,4 +119,20 @@ const ground = () => 0, Q = new THREE.Quaternion(), G = 0x336622;
   ok('held by its own tier, with the far bark closer: no split', A.floating === 0 && A.split === 0, A);
   ok('negative: only the far tier holds it: a split', B.split === 1, B);
 }
+// 9. the open world's far terrain (2026-11-24, Stage 8): triangles hundreds of km across, one 8 m cell test each cell under them, made the
+//    audit 1.6e11 lookups on pinnacle with no card at all. Nothing to audit returns at once; a card on such a triangle is judged as before,
+//    and the walk is bounded by the cells the cards want
+{
+  const far = (card, off) => {
+    const { BIO, scene } = page(), g = new THREE.BufferGeometry(), K = 200000;
+    g.setAttribute('position', new THREE.Float32BufferAttribute([-K, 20, -K, K, 20, -K, 0, 20, K, -K, 20, K, K, 20, K, 0, 20, -K], 3));
+    scene.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial()));
+    if (card) BIO.put('clump', [0, 20 + off, 0], Q, [1, 1, 1], G);
+    BIO.bake(); const t = Date.now(), r = BIO.attachAudit({ ground }); r.ms = Date.now() - t; return r;
+  };
+  const E = far(false), H = far(true, .5), F = far(true, 3);
+  ok('no card under 400 km triangles: nothing audited, at once', E.audited === 0 && E.floating === 0 && E.ms < 1000, E);
+  ok('a card on a 400 km triangle is held, quickly', H.audited === 1 && H.floating === 0 && H.ms < 2000, H);
+  ok('negative: the same card 3 m off it floats', F.audited === 1 && F.floating === 1 && F.ms < 2000, F);
+}
 console.log(fails ? fails + ' FAILED' : 'all passed'); process.exit(fails ? 1 : 0);

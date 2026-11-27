@@ -1,0 +1,59 @@
+{
+ "build": "settlements/skink",
+ "note": "Skink's ground pack (PLAN.md section 6): four library ground layers under KGROUND (abyssal savanna litter, white halite salt crust round the salt lake and rock-salt quarries, beaten dirt streets and haul tracks, and tilled savanna fields). mapOnly with tint.keep 0.8.",
+ "size": 512,
+ "families": {
+  "gSav": {
+   "lib": "ground.savanna.litter",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the closed XV savanna basin floor round Skink",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gSalt": {
+   "lib": "ground.salt",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the halite salt crust round the southern salt lake, evaporating pans and rock-salt quarries",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.72
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.dirt",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the four-winding spiral street, yards and haul tracks down to the quarries and salt pans",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.52
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the northern basin grain and produce fields",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.5
+   },
+   "mapOnly": true
+  }
+ }
+}

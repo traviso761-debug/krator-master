@@ -8,7 +8,8 @@
 //             search round that spot), pop (the village's ceiling), name, culture (the row, when not the site's)}
 //   links     the roads between the sites: [site a, site b, {hw, r, keep, via, stops}]
 // Longsong's ring is 15 villages on core/hamlet's `xanadu` row (12 farming, 2 herding, 1 silk and paper; PLAN.md section 2):
-// its first three stand where its page lays them (settlements/longsong/src/40h-ls-hamlets.js), the rest 3.5 to 12 km out,
+// its first three stand where its page lays them (settlements/longsong/src/40h-ls-hamlets.js: page spots turned by the page's
+// 28.6 degrees onto the compass, LS.dirToWorld), the rest 3.5 to 12 km out,
 // a day's walk. Each house of the Order is a village on core/hamlet's `order` row (its `monastery` focus), its work camps
 // and lay villages on the `xanadu` row.
 var ORDER_STOPS={every:25000,inn:'xa_rich_b',rest:'xa_teahouse',culture:'order',look:5000};
@@ -17,15 +18,14 @@ var XANADU_STOPS={every:25000,inn:'xa_house_turk_a',rest:'xa_teahouse',culture:'
 /* a work camp (the Vein Camp; the owner 2026-11-11, "rebalance it so it is mostly miners"): its people are nearly all at
    work, men who sleep in bunkhouses and send their pay home, with no families, so the `xanadu` row's 45 % at work becomes
    90 %. A cookhouse, a store and the camp's tally house stand in for a village's temple, guild hall and bazaar (the
-   miners keep their own shrine). The row lives here until core/hamlet takes a `camp` option (TODO.md, ride along with the
-   next all-builds rebuild: core/hamlet reaches 56 pages) */
-KHAMLET.CULTURES['xanadu-camp']=Object.assign({},KHAMLET.CULTURES.xanadu,{workShare:0.9,household:4,
- services:{religious:0,civic:1,general:1,food:2,warehouse:1},
- houses:{poor:[['xa_poor_b',3,2],['xa_mid_c',4,1]],middling:[['xa_mid_c',4,1]],head:[['xa_rich_a',1,1]],middlingShare:0}});
-/* its buildings are the Sultanate's: the row's name tags as `xanadu` (core/tags' alias table, as 'yuni-order' is 'order') */
-if(typeof KTAGS!=='undefined')KTAGS.VOCAB.cultureAlias['xanadu-camp']={culture:'xanadu'};
+   miners keep their own shrine, its religious building). Since Stage 8 B8 (T25) it is the `xanadu` row with `camp: true`:
+   core/hamlet's camp census (30) takes the row's camp overrides, the numbers this region's own `xanadu-camp` row had, and
+   core/world's site planner (48s) passes the hamlet's `camp` to KHAMLET.village */
 // bridges (core/world/42b-world-bridges.js, the owner 2026-11-11): every road and link this region lays is bridged where it
 // crosses a named river, so the links are laid on the ground and the rivers run on under them
+/* staffing (the owner, 2026-11-11: "make hamlets and monasteries be at least 70% fully staffed, increase pop if needed"):
+   every village's and house's ceiling lets KHAMLET.census fill at least 70 % of the focus jobs its row wants (farming 90,
+   monastery 260); the Beck Fields and the Caldron shelf village rose to 180 (66 of 90 field jobs), the Mirror Grange and the Caldron House to 260 (187 of 260) */
 var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
  sites:{
   /* Strongbow, the Ancients' cliff arcology hung in the scarp between the Oidong Valley and Xanadu, 3 km north of the
@@ -35,12 +35,9 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
      Sultanate's road down the valley ends at its top */
   sfgtxw10kr:{culture:'xanadu'},
   sq80bzd7ep:{culture:'xanadu',road:{r:400,hw:2,join:true},hamlets:[
-   {id:'east',name:'Shar, the east village',focus:'farming',near:[780,100],look:1200,pop:220},
-   /* Shar is searched from 45 m south-east of where Longsong's page lays it (760,60): on the frame of 2026-11-11 (cut wider
-      for Strongbow on the scarp) the spot the page's point found had no road to the town; this one lands 92 m from it, inside
-      the page's 150 m check */
-   {id:'west',name:'Nub, the west village',focus:'farming',near:[-880,60],look:1200,pop:220},
-   {id:'herders',name:"Dzo-ling, the herders' village",focus:'ranch',near:[480,650],look:1200,pop:145},
+   {id:'east',name:'Shar, the east village',focus:'farming',near:[638,417],look:1200,pop:220},
+   {id:'west',name:'Nub, the west village',focus:'farming',near:[-801,-369],look:1200,pop:220},
+   {id:'herders',name:"Dzo-ling, the herders' village",focus:'ranch',near:[110,801],look:1200,pop:145},
    {id:'lho',name:'Lho, the south village',focus:'farming',bearing:180,km:4,pop:240},
    {id:'jang',name:'Jang, the north village',focus:'farming',bearing:0,km:4.5,pop:240},
    {id:'dongkar',name:'Dongkar',focus:'farming',bearing:60,km:5,pop:240},
@@ -55,27 +52,152 @@ var SITE_SPEC={region:'oidong-highrift',world:1311634,bridges:{culture:'order'},
    {id:'darling',name:'Dar-ling, the silk and paper village',focus:'silk',bearing:210,km:6,pop:160}]},
   ssinggjar01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
    {id:'house',name:'The house at the Singing Gjar',focus:'monastery',near:[0,0],look:4000,pop:350,link:[-3000,0],road:false},
-   {id:'beck-fields',name:'The Beck Fields',culture:'xanadu',focus:'farming',bearing:265,km:10,look:5000,pop:90},
-   {id:'vein-camp',name:'The Vein Camp',culture:'xanadu-camp',focus:'mine',bearing:40,km:5,look:4000,pop:50}]},
+   {id:'beck-fields',name:'The Beck Fields',culture:'xanadu',focus:'farming',bearing:265,km:10,look:5000,pop:180},
+   {id:'vein-camp',name:'The Vein Camp',culture:'xanadu',camp:true,focus:'mine',bearing:40,km:5,look:4000,pop:50}]},
   smirrorgrange01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
-   {id:'house',name:'The Mirror Grange',focus:'monastery',near:[0,0],look:3000,pop:80,link:[-3000,0],road:false},
+   {id:'house',name:'The Mirror Grange',focus:'monastery',near:[0,0],look:3000,pop:260,link:[-3000,0],road:false},
    {id:'growers',name:"The grange's growers",culture:'xanadu',focus:'farming',bearing:200,km:3,look:3000,pop:200},
    {id:'herders',name:"The graben's herders",culture:'xanadu',focus:'ranch',bearing:120,km:6,look:4000,pop:150}]},
   scaldronhouse01:{culture:'order',road:{r:150,hw:1.6,join:true},hamlets:[
-   {id:'house',name:'The Caldron House',focus:'monastery',near:[0,0],look:3000,pop:60,link:[-3000,0],road:false},
-   {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:150}]}},
+   {id:'house',name:'The Caldron House',focus:'monastery',near:[0,0],look:3000,pop:260,link:[-3000,0],road:false},
+   {id:'shelf',name:'The Caldron shelf village',culture:'xanadu',focus:'farming',bearing:120,km:2.5,look:3000,pop:180}]}},
  /* the Order's road up the Oidong Valley and the beck's staircase (`guide`, 5.1 px: the straight line crosses the range
     south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
  /* the Order's road up the Oidong Valley and the beck's staircase to the Caldron House (`guide`, 5.1 px: the straight line
     crosses the range south of the valley, which took it over 6,000 m), past Oidong's lake on its north shore */
- links:[['sq80bzd7ep','scaldronhouse01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS,guide:[[1226,1626],[1240,1628],[1255,1632],[1265,1636],
-   [1275,1640],[1282,1643],[1288,1645],[1294,1647],[1306,1651],[1312,1653],[1318,1657],[1325,1662],[1332,1666],[1340,1667],[1347,1665],[1360,1664],[1366,1668]]}],
+ links:[['sq80bzd7ep','scaldronhouse01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS,guide:[[1228.88,1621.23],[1240,1628],[1255,1632],[1265,1636],
+   [1275,1640],[1282,1642],[1288,1644],[1294,1647],[1306,1651],[1312,1653],[1318,1657],[1325,1662],[1332,1666],[1340,1667],[1347,1665],[1360,1664],[1366,1668]]}],
   /* the Sultanate's road down the valley from Longsong to Strongbow's top on the lip above Xanadu: the only way along the
      valley (the owner, 2026-11-11: "there is no rift line in oidong valley, just a road"), on the valley floor (`guide`:
      a least-climb line on the region's heights, under 2,700 m) */
-  ['sq80bzd7ep','sfgtxw10kr',{hw:3,r:800,keep:true,stops:XANADU_STOPS,culture:'xanadu',guide:[[1226,1626],[1219,1626],[1213,1624],[1207,1623],
+  ['sq80bzd7ep','sfgtxw10kr',{hw:3,r:800,keep:true,stops:XANADU_STOPS,culture:'xanadu',guide:[[1228.88,1621.23],[1219,1626],[1213,1624],[1207,1623],
    [1201,1620],[1195,1618],[1189,1618],[1183,1615],[1177,1613],[1171,1613],[1165,1607],[1159,1605],[1153,1602],[1147,1603],[1135,1603],
    [1123,1603],[1111,1602],[1099,1602],[1093,1599],[1087,1598],[1081,1597],[1075,1595],[1063,1595],[1051,1595],[1045,1594],[1039,1592],
    [1033,1592],[1027,1590],[1021,1590],[1016,1593],[1010,1596],[1004,1596],[1001,1596]]}],
   ['scaldronhouse01','smirrorgrange01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}],
   ['smirrorgrange01','ssinggjar01',{hw:2.5,r:800,keep:true,stops:ORDER_STOPS}]]};
+
+/* ---------------------------------------------------------------- Strongbow's face, cut into the scarp
+   The owner, 2026-11-16: "Yes, carve it", and "make sure this doesn't result in water flowing uphill". Strongbow's page
+   (kits/ancients' strongbow-today, settlements/strongbow) has a 900 m face (STRONGBOW.DIM.LIP); here the scale model's
+   2 km cells spread the scarp's 3,100 m over 19 km, so seated on its lip at the pin the page's foot, town and floor stood
+   about 800 m inside the ground. The cut gives the page its face. It is a land hook (WORLD.landHook, chained after the
+   coast), here in the sites' spec so the bake (core/world/bake_sites.py), the page and the Godot export read one ground.
+   In the page's frame turned to the site (OHR_CUT.ry: the page's +z, its front, to the region's west), its lip 150 m in
+   front of the pin (the pin stays on the plateau), u along the face and v ahead of it from the lip:
+     behind the lip (1.6 km, Strongbow's top: the page  the pad at the lip's level at its back and sides, 0.5 m under it
+     draws no plateau of its own there)                at the lip's middle: it drains over the edge, never back
+     at the lip, 40 to 20 m behind the page's face    the step down, behind the page's own cliff
+     ahead (the page's floor and town, 1.1 km)         1 m under the page's floor (the lip less 900 m), falling 0.4 % west,
+                                                      and on as a gorge, narrowing to 450 m, whose bed falls the same until
+                                                      the scarp's own slope reaches it (about 7 km out)
+   It only lowers the ground (min with the land), its sides ease back over 300 to 600 m and its back over 1 km (about 2 %:
+   the Sultanate's road comes onto the pad from the east within its 8 % grade), and it keeps off the rivers: its
+   weight is 0 within 500 m of a channel and whole only past 900 m (WORLD.carveAt), so no river's bed or water moves.
+   The flora keeps off the page's footprint (WORLD.clearHook). OHR_CUT.info() gives the lip's level, where the page's
+   anchor stands (openworld/oidong-highrift/tools/godot_case.py). */
+var OHR_CUT=(function(){'use strict';
+const W=WORLD,C={site:'sfgtxw10kr',px:[1001,1596],ry:-Math.PI/2,ahead:150,lip:900,half:1150,sideB:600,gorgeHalf:450,gorgeB:300,town:1100,taper:2500,
+ back:1596,backB:1000,pageHalf:1100,rec0:-40,rec1:-20,padDrop:.5,floorSlope:.004,gorgeSlope:.0224,maxV:16000,river:[500,900],
+ zN:-123500,zN1:-120200,zS1:-27800,zS:-24500,scarpDrop:900,scarpFace:110,scarpSlope:.022,
+ catLipX:-609955,catLipZ:-71585,caulBed:148.74,caulR:260,canSlope:.0052,canHalf:240,canB:480,canGuard:1};
+const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);},lerp=(a,b,t)=>a+(b-a)*t;
+let P=null,LIPH=null,SC=null,CAT=null,busy=false;
+/* Escarpment lip X(z) across the 97 km valley mouth: joins Strongbow's lip (-610110 at z=-76000) and the Great Cataract's
+   headland (-609955 at z=-71585, immediately downstream of Rifar al-Jadwal's 1,318.0 m lip vertex) */
+function scarpLipX(z){
+ const dCat=(z+71585)/2000,bow=155*Math.exp(-dCat*dCat);
+ const q=((z+125000)/14000)%2,tri=q<1?q*2-1:3-q*2,prom=140*tri*(1.5-.5*tri*tri);
+ const wKeep=smooth(1200,3000,Math.abs(z+76000))*smooth(800,2400,Math.abs(z+71585));
+ return -610110+bow+prom*wKeep;}
+/* the page's anchor (its lip at the bay's centre) stands C.ahead m in front of the pin, so the pin (the site's own point,
+   where its road ends and its records stand) is on the plateau, back from the edge */
+function frame(){if(P)return P;const p=W.fromPx(C.px[0],C.px[1]),c=Math.cos(C.ry),s=Math.sin(C.ry);
+ P={x:p[0]+C.ahead*s,z:p[1]+C.ahead*c,pin:p,c,s};
+ busy=true;try{
+  LIPH=W.Hbare(P.x,P.z);
+  const z0=-125000,z1=-23000,dz=200,n=Math.round((z1-z0)/dz)+1,raw=new Float64Array(n),sm=new Float64Array(n);
+  for(let i=0;i<n;i++){const zz=z0+i*dz;raw[i]=W.Hbare(scarpLipX(zz)+30,zz);}
+  for(let i=0;i<n;i++){let acc=0,w=0;for(let k=-2;k<=2;k++){const j=Math.max(0,Math.min(n-1,i+k)),wk=k===0?4:Math.abs(k)===1?2:1;acc+=raw[j]*wk;w+=wk;}sm[i]=acc/w;}
+  SC={z0,dz,n,h:sm};
+  const crs=W.riverCourse?W.riverCourse():[];
+  const rj=crs.find(r=>r.pts&&r.pts.some(q=>q[0]>-615000&&q[0]<-609000&&q[1]>-75000&&q[1]<-70000));
+  if(rj){
+   const pts=[];let carry=0;
+   for(let k=0;k<rj.pts.length-1;k++){const a=rj.pts[k],b=rj.pts[k+1],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    for(let d=carry;d<L;d+=40){const t=d/L,w=rj.exact?[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]:W.unwarp(a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t);
+     if(w[0]<=-609850&&w[0]>=-622500)pts.push(w);}
+    carry=L>carry?carry+Math.ceil((L-carry)/40)*40-L:carry-L;}
+   let lipIdx=0;for(let i=0;i<pts.length;i++)if(pts[i][0]>C.catLipX)lipIdx=i;
+   const cpts=pts.slice(lipIdx);let arc=0;const rec=[];
+   for(let i=0;i<cpts.length;i++){if(i>0)arc+=Math.hypot(cpts[i][0]-cpts[i-1][0],cpts[i][1]-cpts[i-1][1]);rec.push([cpts[i][0],cpts[i][1],arc]);}
+   const p0=cpts[0]||[-609936.5,-71580.7],p1=cpts[Math.min(cpts.length-1,4)]||[-610160,-71668],dl=Math.hypot(p1[0]-p0[0],p1[1]-p0[1])||1;
+   const lipY=W.riverWater?W.riverWater(p0[0],p0[1]):W.Hbare(p0[0],p0[1])+4.6;
+   CAT={lip:[p0[0],p0[1],lipY],dir:[(p1[0]-p0[0])/dl,(p1[1]-p0[1])/dl],caul:[p1[0],p1[1],C.caulBed+3.46],pts:rec};}
+ }finally{busy=false;}return P;}
+function lipHAt(z){const f=Math.max(0,Math.min(SC.n-1.001,(z-SC.z0)/SC.dz)),i=f|0;return lerp(SC.h[i],SC.h[i+1],f-i);}
+/* region (x, z) to the page's frame about the pin: u along the face, v ahead of the lip */
+function local(x,z){const F=frame(),dx=x-F.x,dz=z-F.z;return [dx*F.c-dz*F.s,dx*F.s+dz*F.c];}
+const floorAt=v=>{const d1=Math.min(Math.max(0,v-C.rec1),C.town-C.rec1),d2=Math.max(0,v-C.town);return LIPH-C.lip-1-C.floorSlope*d1-C.gorgeSlope*d2;};
+const padAt=(u,v)=>C.rec0-v>=C.back||Math.abs(u)>=C.pageHalf?LIPH:
+ LIPH-C.padDrop*(1-(C.rec0-v)/C.back)*(1-smooth(C.pageHalf-300,C.pageHalf,Math.abs(u)));
+function target(u,v){
+ if(v<=C.rec0)return padAt(u,v);
+ if(v<C.rec1)return lerp(padAt(u,C.rec0),floorAt(C.rec1),smooth(0,1,(v-C.rec0)/(C.rec1-C.rec0)));
+ return floorAt(v);}
+function sbWeight(u,v){
+ const au=Math.abs(u);
+ if(v<C.rec0-C.back-C.backB||v>C.maxV)return 0;
+ const k=v<=C.town?0:Math.min(1,(v-C.town)/(C.taper-C.town)),hw=lerp(C.half,C.gorgeHalf,k),B=lerp(C.sideB,C.gorgeB,k);
+ if(au>=hw+B)return 0;
+ return (1-smooth(hw,hw+B,au))*(v<C.rec0?1-smooth(C.back,C.back+C.backB,C.rec0-v):1)*(1-smooth(C.maxV-1000,C.maxV,v));}
+function scarpWeight(x,z,u,v){
+ if(z<=C.zN||z>=C.zS)return 0;
+ if(Math.abs(u)<C.pageHalf+200&&v<=C.rec0)return 0;
+ const vs=scarpLipX(z)-x;if(vs<=0||vs>=C.maxV)return 0;
+ const wz=smooth(C.zN,C.zN1,z)*(1-smooth(C.zS1,C.zS,z));
+ const wv=smooth(0,16,vs)*(1-smooth(C.maxV-1500,C.maxV,vs));
+ return wz*wv;}
+function scarpTarget(x,z){
+ const vs=scarpLipX(z)-x,hl=lipHAt(z),fl0=hl-C.scarpDrop;
+ const fl=fl0-C.scarpSlope*Math.max(0,vs-C.scarpFace);
+ if(vs<C.scarpFace)return lerp(hl,fl0,smooth(0,C.scarpFace,vs));
+ return fl;}
+function catEval(x,z){
+ if(!CAT||z<-76500||z>-69500||x>-609930||x<-622000)return null;
+ let bd=1e18,bs=0;
+ const P=CAT.pts;
+ for(let i=0;i<P.length-1;i++){
+  const ax=P[i][0],az=P[i][1],dx=P[i+1][0]-ax,dz=P[i+1][1]-az,l2=dx*dx+dz*dz;
+  let t=l2>0?((x-ax)*dx+(z-az)*dz)/l2:0;t=t<0?0:t>1?1:t;
+  const d=Math.hypot(ax+dx*t-x,az+dz*t-z);
+  if(d<bd){bd=d;bs=lerp(P[i][2],P[i+1][2],t);}}
+ const hw=bs<450?C.caulR:C.canHalf,B=bs<450?260:C.canB;
+ if(bd>=hw+B||bs<=12)return null;
+ if(!C.canGuard&&bs>560)return null;
+ const w=(1-smooth(hw,hw+B,bd))*smooth(12,28,bs)*(C.canGuard?1:1-smooth(400,560,bs));
+ if(w<=0)return null;
+ const bed=bs<=380?C.caulBed:C.caulBed-C.canSlope*(bs-380);
+ const wall=smooth(hw*.55,hw+B,bd)*160;
+ return {w,T:bed+wall};}
+function weight(x,z){frame();const L=local(x,z),ws=sbWeight(L[0],L[1]),we=scarpWeight(x,z,L[0],L[1]),ce=catEval(x,z);return Math.max(ws,we,ce?ce.w:0);}
+function cut(x,z,h){if(busy)return h;frame();
+ const L=local(x,z),ws=sbWeight(L[0],L[1]),we=scarpWeight(x,z,L[0],L[1]),ce=catEval(x,z);
+ if(ws<=0&&we<=0&&!ce)return h;
+ let out=h;
+ if(ws>0){const T=target(L[0],L[1]);if(out>T)out=out-ws*(out-T);}
+ if(we>0){const T=scarpTarget(x,z);if(out>T)out=out-we*(out-T);}
+ if(ce&&out>ce.T)out=out-ce.w*(out-ce.T);
+ return out;}
+const prevLand=W.landHook;
+W.landHook=(x,z,h,mw)=>cut(x,z,prevLand?prevLand(x,z,h,mw):h);
+const prevClear=W.clearHook;
+W.clearHook=(x,z)=>{if(prevClear&&prevClear(x,z))return true;frame();const L=local(x,z);
+ if(Math.abs(L[0])<=C.half&&L[1]>=C.rec0-C.back&&L[1]<=C.town)return true;
+ const vs=scarpLipX(z)-x;if(z>C.zN&&z<C.zS&&vs>0&&vs<C.scarpFace+40)return true;
+ return false;};
+return {spec:C,local,weight,target,scarpLipX,cat:()=>{frame();return CAT;},
+ /* f() on the land without the cut (the test's comparison: tests/test_cut.py) */
+ uncut:f=>{frame();const was=busy;busy=true;try{return f();}finally{busy=was;}},
+ info:()=>{const F=frame();const ct=CAT;return {site:C.site,at:[F.x,LIPH,F.z],pin:F.pin,ry:C.ry,lip:C.lip,floor:LIPH-C.lip,
+  cataract:ct?{lip:ct.lip,dir:ct.dir,cauldron:ct.caul,drop:+(ct.lip[2]-ct.caul[2]).toFixed(2)}:null};}};})();

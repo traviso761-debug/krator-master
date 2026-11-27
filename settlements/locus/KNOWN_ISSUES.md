@@ -116,6 +116,13 @@ failed on every page: the keys moved to the kits; fixed here) and after:
 The audit (`LDOOR.reach()`, `?interiors=1`; core/walk's defaults, one flood per placement over its doors' box, from each unlocked
 door's step and the street 1 to 7 m out): 145 placements, 510 interior floors. With every door open (`LDOOR.reach({all:true})`, the
 page as it was, its leaves in no walk) 422 reached; with the locked ones shut 390 (146 doors unlocked onto a planned room).
+- [ ] (2026-11-09) **The fix for the 32 floors below does nothing yet.** `locfDoorsIn` (`66-locus-furnish.js`) also unlocks the
+      placement's KDOOR record nearest each of the interiors' planned street doors (within 4 m in plan, 2 m of the ground
+      floor's y), unless one there is unlocked already. Measured on `?interiors=1` (`verify.py --eval` with `LDOOR.reach()`, the
+      core/biome `bk` bug patched locally to get a page): 146 starts, 390 of 510 floors reached, 422 with every door open:
+      the same numbers as before it, so it unlocked nothing. Not yet known whether the planned doors' coordinates, the floors'
+      `y` or the "one already unlocked within reach" test is why. `verify.py locus.html --assert --query interiors=1` fails only
+      on the draw-call budget (222 of 190: the interiors' furniture batches).
 - [ ] 32 floors are reached only through a locked door: a door that leads into a planned room but meets no floor of it within
       1.6 m of its sill (the warehouse hall's entry flight, the refinery's still-house): the interiors kit's entrance and the
       building's F.door do not coincide. A fix unlocks by the set's own street doors (`kits/interiors/sets/locus.js`).
@@ -130,3 +137,46 @@ page as it was, its leaves in no walk) 422 reached; with the locked ones shut 39
       `stilt_mid#1` (`lc.18`) has its whole upper storey and its stair unreached (the stair's foot is not reached from its ground
       floor), the warehouse's entry flight and hall, the refinery's still-house. Not traced further in this pass.
 
+
+## The sheets fail the one key map (2026-11-10, the all-builds rebuild)
+
+- [ ] `locus-kit.html` and `abyss-kit.html` (`verify.py --assert`): every check passes but the harness's universal `one-key-map`:
+      "P is Marks on every page; this page: its own". The sheet binds P to step back through the assets on purpose
+      (`src/98-start.js` `keys: SHEET ? { p: ... }`, 89-sheetui.js), and the key map (`core/host/92k-host-keys.js`) reserves P for
+      Marks. The check came with this round's key-map merge; the town page (`locus.html`) passes. Move the sheet's step-back
+      to a key the map leaves to builds (or to a `std` entry), then rebuild Locus.
+      Source fixed 2026-11-24 (Stage 8 B14, D30): the sheet steps back on the left arrow only (as the Yuni kit's sheet,
+      `kits/yuni/targets/sheet/89-ys-sheetui.js`) and `98-start.js` hands the host no `p` key; the pages wait for the rebuild and
+      `verify.py --assert` on both sheets.
+
+## On its real site, on the shared sky (W7, 2026-11-24; PLAN-ONMAP.md)
+
+The page on its real site (the owner): its town ground kept; round it the scale model's ground; the shared sky at its site;
+the weather, the basin's air and the refinery's smoke. `verify.py --assert` passes (on the rtx lane). Before and after:
+`shots-before-12/21`, `shots-after-12/21`, `shots-*-wall12` (E, S, W from the hill), `shots-after-live` (the moving weather).
+- [x] **The site**: `region/site.py` (on `tools/site_cast.py`) casts the model at px 1267, 1043: -2,403 m, the lake at -2,400 m
+      (the page's y = 0), 2.16 atm, XA 32 C 3,827 mm; the 2 km grid +-60 km, the far rim's bands, the rivers within 45 km and
+      the cataracts within 80 km. build.py embeds it as `09-locus-site.js` (LOCUS_SITE). Rerun it when the model moves.
+- [ ] **The lifted edge** (the owner: "lift the page's edge"): from the playable map's edge (MAP_R 2.6 km) to the page's edge
+      the E and S ground climbs onto the model's heights (10-core.js `wallLift`: +940 m at 2.6 km E, ~+1,300 m at the edge),
+      the river's corridor left as a gorge. The jungle stands on the new slope as the biome places it: watch for trees on the
+      steepest faces.
+- [x] **The far field** (`76f-locus-far.js`, core/terrain KFAR): the abyss wall and the lake's far shore to 42 km, the beds on
+      its faces (KSTRATA's canyon column), the model's rivers on it (water; white on the falls: Wadi al-Naft, the page's own
+      river, falls 765 m 7 km E), its fog thinned to a fifth (the page's fog hid the wall), KHORIZON over the page and the field
+      (the wall shades the town at a low eastern sun). The camera's far plane is 45 km.
+- [ ] **The real-terrain rule removed** the painted dome's shelf (11-13 deg), its far rim, the dark far shore, the painted
+      cumulus, the silhouette mask and `skyFront`, the eruption cycle and the sprites. The model's wall stands much higher than
+      the painted shelf did: 12.7 deg at azimuth 60, 20-38 deg from E round to S.
+- [ ] **The light is the model's** at the site, the night fill raised partway (as Girder's). **Game start's day has a total
+      eclipse at Locus from 08:30 to 10:00** (the giant hides the sun; the lamps come on): the model, not a fault.
+- [ ] **The weather** (`90t-locus-air.js`): wet, the moving cells ('live' in the Weather selector); the dawn mist on the lake
+      and the marsh, the fog belt on the wall's foot (150-480 m), the slope wind off the wall at night, the rain's cover.
+- [ ] **The refinery** (`90t`): the flare's flame and smoke and the heater stack's soot, bent downwind (ATMOS.plumes); the town
+      and the flare light the cloud's underside at night (the sky's cloud glow). **The heat shimmer over the stills is not
+      done**: it is a post pass that would cost the page its MSAA.
+- [ ] **The cataracts** (`90s`): the Bigga's main fall (46 km NNE), the Waita Riba's two (58-64 km SW) and the Longa Riba's (78
+      km ESE) as streaks in the sky behind the ground; from the town the Bigga's stands behind the wall's NE limb (0.9 deg against
+      5-7 deg), as on the model.
+- [ ] **Volumes** (W6) listed; draw calls stay 181-187 of 190 at the views (the volumes' passes are not world draws).
+- [x] **One clock**: the host's clock mirrors LCLOCK (98-start's locFrame); the page opens at 06:00.

@@ -22,6 +22,9 @@ Also enforces the rules that make subagent work safe:
 
 Usage:  python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
     sys.stdout.reconfigure(encoding='utf-8')
@@ -82,6 +85,7 @@ CORE_DIRS = (LOD_DIR, RAND_DIR, TAGS_DIR) + tuple(os.path.join(os.path.dirname(o
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                         # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                       # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 TEX_DIR = os.path.join(HERE, 'tex')          # the library pack: tools/textures/pack.py writes it from materials.json
 PACK_FRAGMENT = '46-matlib-pack.js'          # GENERATED from tex/ (never written to src/)
 # The eastern badlands biome (biomes/ebadlands, BIOME-API.md: "the valley of Yuni" is its humid south): core/biome and
@@ -114,6 +118,9 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '88-underview.js', '88b-yuni-minimap.js', '89-sheetui.js', '69b-yuni-biohost.js', '69z-yuni-badlands.js', '51-fixtures.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '77-export.js'}
 DETERMINISTIC.add('67-yu-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('64r-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
+DETERMINISTIC.add('19-core-roomlight.js')   # core/interiors KROOMLIGHT, under a prefix of its own (no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 CORE_FRAGS = set()   # fragments taken from a core/ directory: each is a unit of its own, never grouped with a src/ prefix
 PALETTE_FILE = '05-palette.js'
@@ -278,6 +285,9 @@ def main():
         if f not in paths:
             paths[f] = p
             CORE_FRAGS.add(f)
+    # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('19-core-roomlight.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '10-core-roomlight.js'))   # KROOMLIGHT (Yuni has no interiors bundle)
+    paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(paths)
     bodies = {}
     for f in order:
@@ -301,7 +311,7 @@ def main():
         sys.path.insert(0, os.path.join(_ROOT, 'tools', 'textures'))
         import matlib_pack as _mp
         html = _mp.write_sidecar(SIDE, html, HERE, 'yuni.tex.js', prune=False)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     def flavour(target, title, h1, loading):
         t = html.replace('<title>Yuni</title>', '<title>%s</title>' % title, 1)
@@ -310,9 +320,9 @@ def main():
 
     sheet = flavour('sheet', 'Yuni Building Kit', 'Yuni — building kit', 'Laying out the kit…')
     flora = flavour('flora', 'Yuni Plants',       'Yuni — plants',       'Laying out the plants…')
-    with open(OUT_SHEET, 'w', encoding='utf-8') as fh:
+    with open(OUT_SHEET, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(sheet)
-    with open(OUT_FLORA, 'w', encoding='utf-8') as fh:
+    with open(OUT_FLORA, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(flora)
     # artifact flavour: the publish skeleton supplies doctype/html/head/body, so strip ours
     import re as _re
@@ -321,7 +331,7 @@ def main():
         a_ = src_html
         for tag in ('<!DOCTYPE html>','<html lang="en">','<head>','</head>','<body>','</body>','</html>','<meta charset="utf-8">','<meta name="viewport" content="width=device-width,initial-scale=1">'):
             a_ = a_.replace(tag,'')
-        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8') as fh: fh.write(a_.lstrip())
+        with open(os.path.join(HERE,'publish',name),'w', encoding='utf-8', newline='\n') as fh: fh.write(a_.lstrip())
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},
                   fh, indent=1, sort_keys=True)

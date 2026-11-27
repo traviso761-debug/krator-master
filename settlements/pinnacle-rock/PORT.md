@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 175 (50%) | 0 (0%) | 0 (0%) | 24 (7%) | 153 (44%) |
+| KB | 188 (51%) | 0 (0%) | 0 (0%) | 24 (7%) | 153 (42%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,8 +14,9 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/14-pr-legs.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | GENERATED (tools/bake_legs.py): the planned far legs from the scale model (PR_LEGS) |
-| `src/15-pr-tune.js` | 20.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the Beast Riders' table (PR_TUNE): the beasts (S4), the valley spec and the bands' world for the sim (S7) |
-| `src/40-pr-layout.js` | 18.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the settled plan as records and pure queries (PR) |
+| `src/15-pr-tune.js` | 19.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the Beast Riders' table (PR_TUNE): the beasts (S4), the valley spec and the bands' world for the sim (S7) |
+| `src/16-pr-sim.js` | 13.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the full sim's table (PR_SIM): the region host's kinds, jobs, needs, items, economy and unrest for the Beast Riders |
+| `src/40-pr-layout.js` | 18.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the settled plan as records and pure queries (PR) |
 | `src/42-pr-world.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/43-pr-roosts.js` | 44.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the roosts as records (PRR.plan on KSTACKS bodies): decks, Girder-shaped stalls and bridges, climbs, lifts, the Stair |
 | `src/45-host-stage.js` | 9.6 | [web] | 7 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 |  |
@@ -42,7 +43,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89h-host-walk.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the walk registry (core/walk): the decks' rings, the climbs' and ascents' treads, the bridges, the Stair, the lift road |
 | `src/89w-host-water.js` | 4.1 | [draw] | 8 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | core/water's still water on core/atmos (the paddies, the spring, the seep pond, the Deep Root's pool, the rain pools on the slickrock); core/atmos bound on the host's hour |
 | `src/89y-host-night.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the night's fires and lamps placed from the records with core/atmos (braziers, beacons, the glow layer, one hall light); core/atmos's export carries them (its lamps and glows) |
-| `src/99-host-take.js` | 73.0 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
+| `src/99-host-take.js` | 73.1 | [draw] | 9 | 0 | 0 | 0 | 0 | 14 | 0 | 2 | 8 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

@@ -297,7 +297,7 @@ def main():
 #     fields and the isle's coast, core/simulation, core/materials/record (KMAT) and the two packs' loaders
 #   the bundles: KCITY, CAT (the Beast Riders' buildings: the kit's own and its ports), ISK (the Islanders), IZV (the Vernacular), RINGSEA
 #   this page's own: 15 (the sim's tuning), 20 (ground), 30 (programme), 32 (the city plan), 34 (census, checks), 40-47 (the
-#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 98 (start) [web]
+#   towns on core/simulation, the canoe line) [G data]; 57 (the sim's run loop), 59 (citizens near the camera), 60 (draw), 61 (the canoe line's vessels), 63 (the doors on core/door), 98 (start) [web]
 # The [G data] half (data, ground, core/simulation, KCITY, 15-49) is also written as dist/isle-city.plan.js, which the node
 # tests run.
 CITY_CORE = [os.path.join(ROOT, *p.split('/')) for p in (
@@ -310,11 +310,16 @@ CITY_EXPORT = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export
 # core/simulation (P7b, PLAN.md section 9): every fragment, as Dhelv and Shade take it; the isle host is src/15 and 40-49
 CITY_SIM = [os.path.join(ROOT, 'core', 'simulation', f) for f in sorted(os.listdir(os.path.join(ROOT, 'core', 'simulation'))) if re.match(r'77-sim-.*\.js$', f)]
 CITY_DATA_JS = ['15-isle-tune.js', '20-isle-ground.js', '30-isle-programme.js', '32-isle-city.js', '33-isle-spurs.js', '34-isle-census.js', 'core/region/00-region-core.js', '39-isle-region.js',
-                'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js', 'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js', 'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
+                'core/region/40-region-sim.js', 'core/region/41-region-nav.js', 'core/region/42-region-people.js', 'core/region/43-region-items.js', 'core/region/44-region-economy.js', 'core/region/45-region-sim-checks.js', 'core/region/46-region-stocks.js', '47-isle-trade.js', 'core/region/47b-region-build.js', 'core/region/47c-region-crime.js', 'core/region/47f-region-found.js', 'core/region/47h-region-hamlets.js', '47k-isle-colony.js', '47x-isle-expeditions.js', '47y-isle-houses.js', 'core/region/47n-region-herders.js', 'core/region/47m-region-money.js', 'core/region/47u-region-unrest.js', 'core/region/47r-region-refugees.js',
+                'core/region/47s-region-styles.js',   # the multi-kit styles (Stage 8 D8): inert until RH.simStyles is called
+                'core/region/48-region-week.js', 'core/region/49-region-govern.js', '50-isle-export.js']
 # the Construction kit (kits/construction, KCONS: a building site's gear) and core/city's build-up of a kit piece
 # (KCITY.constructMesh), read in place for the empty lots' works (60, 2026-11-04)
 CITY_CONSTRUCT = [os.path.join(ROOT, 'core', 'city', '54-city-host-construct.js'), os.path.join(ROOT, 'kits', 'construction', 'src', '10-cons-site.js')]
-CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '98-isle-city-start.js']
+# core/door's host (KDOORHOST: the leaves posed, the tick, E), for the Vernacular's doors the page hosts (src/63-isle-doors.js);
+# KDOOR, KGLASS and KDOORLEAF come with the IZV bundle (kits/iziz-vernacular/vernacular.py DOOR)
+CITY_CONSTRUCT.append(os.path.join(ROOT, 'core', 'door', '90-core-door-host.js'))
+CITY_WEB_JS = ['57-isle-run.js', '58-isle-protos.js', '59-isle-citizens.js', '60-isle-draw.js', '61-isle-canoes.js', '62-isle-export-scene.js', '63-isle-doors.js', '98-isle-city-start.js']
 CITY_HEAD = '''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Isle Demo Towns</title>
 <style>
@@ -369,7 +374,7 @@ def city_page():
                                                        read(os.path.join(ROOT, *f.split('/')) if '/' in f else os.path.join(HERE, 'src', f)), NL) for f in L)
     kc = bundles.kcity_bundle()
     cat, _ = bundles.cat_bundle(side)      # the towns' maps beside the page (isle-city.tex.brtowns.js)
-    isk, _ = bundles.isk_bundle()
+    isk, _ = bundles.isk_bundle(furniture=True)   # each piece furnished as the kit's sheet furnishes it (S2-C24)
     izv, _ = bundles.izv_bundle()
     rs, _ = bundles.ringsea_fragment()
     sc = lambda s: '<script>' + NL + s + '</script>' + NL

@@ -71,14 +71,18 @@ CORE = {
     '08-core-rand.js': 'core/rand/08-core-rand.js',
     '10-core-head.js': 'core/biome/10-core-head.js', '20-core-kit.js': 'core/biome/20-core-kit.js',
     '30-core-foliage.js': 'core/biome/30-core-foliage.js', '40-core-place.js': 'core/biome/40-core-place.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat (sedesert's fauna calls it unguarded since the anim move)
     '42-core-export.js': 'core/biome/42-core-export.js', '43-core-export-host.js': 'core/biome/43-core-export-host.js',
     '44-core-stage.js': 'core/biome/44-core-stage.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat: sedesert's fauna is drawn on it (since the biome rebuild)
     '20-core-clock.js': 'core/clock/20-core-clock.js', '20-core-sched.js': 'core/sched/20-core-sched.js',
     '20-core-walk.js': 'core/walk/20-core-walk.js', '25-core-mask.js': 'core/mask/25-core-mask.js',
     '20-core-space.js': 'core/space/20-core-space.js',
+    '35-core-anim.js': 'core/biome/35-core-anim.js',   # BIO.animMat: the sedesert fauna's birds (2026-11-10: the page threw without it)
     '35-core-strata.js': 'biomes/sedesert/src/35-core-strata.js',
     '50-core-tags.js': 'core/tags/50-core-tags.js', '52-core-tags-vocab.js': 'core/tags/52-core-tags-vocab.js',
     '53-core-tags-host.js': 'core/tags/53-core-tags-host.js',
+    '90-core-door-host.js': 'core/door/90-core-door-host.js',   # KDOORHOST: the Vernacular's leaves posed, the tick, E (src/95-verge-doors.js)
     '50-core-furnish.js': 'core/furnish/50-core-furnish.js', '52-core-furnish-draw.js': 'core/furnish/52-core-furnish-draw.js',
     '53-core-furnish-host.js': 'core/furnish/53-core-furnish-host.js',
 }
@@ -87,7 +91,7 @@ CORE = {
 # src/99-start.js is the take; a src/ file with a host file's name would win (none)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')] + khost.KEYS   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for _f in CORE_HOST:
     CORE.setdefault(_f, os.path.relpath(khost.path(_f), ROOT).replace(os.sep, '/'))
 # the two biome kits: slot prefix, kit folder, the kit's fragments in its own order (a missing one is skipped)
@@ -102,7 +106,7 @@ MATLIB_RECORD = ['23-mat-record.js', '25-matlib-host.js', '26-matlib-bind.js']  
 SIDE = {}   # the library packs' maps, written to dist/verge.tex.js (tools/textures/matlib_pack.py write_sidecar)
 
 # the catalog's cultures Verge furnishes from (kits/catalog/furniture_bundle.py; names are file suffixes)
-FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs']
+FURN_CULTURES = ['iziz', 'eastabyss', 'nomad', 'generic', 'generic-goods', 'scrap', 'jobs', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 INTERIOR_SETS = ['iziz', 'locus', 'abyss', 'yuni', 'yuni-town']   # yuni: the middle-class houses; yuni-town: civic, trade, poor, rich
 
 # ---------------------------------------------------------------- the Iziz Vernacular bundle (IZV)
@@ -129,6 +133,7 @@ def izv_bundle():
                 'return { VERN: VERN, kbake: kbake, KIT: KIT, REG: REG, MAT: MAT, TEX: TEX, reseed: reseed, rng: rng,\n'
                 '  TSTAT: (typeof TSTAT !== "undefined" ? TSTAT : null),\n'
                 '  FUNICULAR: (typeof FUNICULAR !== "undefined" ? FUNICULAR : null),\n'
+                '  IZDOOR: (typeof IZDOOR !== "undefined" ? IZDOOR : null),\n'
                 '  setTerrain: function(f){ terrainH = f; } };\n})();\n'), [os.path.relpath(f, ROOT).replace(os.sep, "/") for f in fs]
 
 
@@ -182,7 +187,8 @@ def ykit_bundle():
 # core/city (the city-layout module), its data fragments in one closure: its globals (SL, PLAN, TUNE, V, obb, clamp...)
 # stay inside it, and Verge reads KCITY and KCITY.lib (70-verge-place.js runs one instance per level)
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 
 
 def kcity_bundle():
@@ -263,7 +269,7 @@ def main():
     BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     html = matlib_pack.write_sidecar(SIDE, html, DIST, 'verge.tex.js')
-    with open(os.path.join(DIST, OUT), 'w', encoding='utf-8') as fh:
+    with open(os.path.join(DIST, OUT), 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)
     chk = os.path.join(HERE, '.syntax.js')

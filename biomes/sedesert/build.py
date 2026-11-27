@@ -12,6 +12,9 @@ The core and the biome leaf never reference a host global except through
 BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
 biome fragment cannot quietly grow a dependency on one world's engine.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -197,7 +200,7 @@ for f in frags:
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

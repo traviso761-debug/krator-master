@@ -13,6 +13,10 @@ const STEAM=VENTS.length?(function(){const KETTLE=STAGE.kettle!==false;
  const coneMat=new THREE.MeshLambertMaterial({color:STAGE.coneCol==null?0xd8d4ca:STAGE.coneCol,vertexColors:true});
  VENTS.forEach((V,i)=>{const y=terrainH(V.x,V.z),R=3+5*V.k,H=1+2.2*V.k,pts=[];
   for(let k=0;k<=8;k++){const t=k/8;pts.push(new THREE.Vector2(t<.25?mix(R*.18,R*.24,t/.25):mix(R*.24,R,(t-.25)/.75),t<.25?mix(H-.6,H,t/.25):H*(1-Math.pow((t-.25)/.75,1.4))));}
+  /* the profile runs from the foot up to the lip (2026-11-15, the owner: "a transparency problem" at station 3's fumarole): written lip to foot,
+     the lathe wound every face toward the ground, so from above the near flank was culled (seen through) and the far flank showed its
+     unlit underside, a flat black crescent. The core's inside-out probe (core/biome BIO.insideOut) now fails a page with such a mesh */
+  pts.reverse();
   const g=new THREE.LatheGeometry(pts,24).toNonIndexed();const p=g.attributes.position.array,c=[];
   for(let j=0;j<p.length;j+=3){const r=Math.hypot(p[j],p[j+2]),k=r<R*.26?.3:mix(1.0,.85,r/R)*(1+.08*Math.sin(Math.atan2(p[j+2],p[j])*9));c.push(k,k*.98,k*.94);}
   g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));g.computeVertexNormals();g.translate(V.x,y-.5,V.z);

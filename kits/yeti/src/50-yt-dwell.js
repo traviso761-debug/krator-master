@@ -91,13 +91,8 @@ function ytDwellDome(D,season,o){o=o||{};const stone=D.stone,AE={hw:D.hw+D.tv,hv
   CURREC.heat=o.bare?Object.assign({stove:null,lamps:0,crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated},inner||{}):heart?Object.assign({lamps:1,crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated:true},heart,{chamber:undefined})
    :{stove:null,lamps:1,fuel:'fat',crownVent:+(D.rVent*2).toFixed(2),inlet:'passage',heated,floor:{sunk:-D.yFl,onPermafrost:'insulated'}};
   if(o.bare)return;
-  /* the household's goods (catalog pieces until the khaayken culture file, Y5) */
-  const yP=D.yPlat+.07,s=D.Rr/2.645;
-  FURNISH('generic_chest',-1.5*s,yP,-1.4*s,.7);
-  FURNISH('generic_tea_set',.2*s,yP,-.6*s,0);
-  FURNISH('generic_lamp_oil',1.3*s,yP,-.5*s,-.4);
-  FURNISH('generic_stew_pot',1.2*s,D.yFl,1.2*s,-1.2);
-  if(!o.small){FURNISH('generic_floor_basket',-1.4*s,D.yFl,1.1*s,1.1);FURNISH('generic_fuel',-.6*s,D.yFl,1.9*s,2.4);}});}
+  /* the household's goods by its tier, the khaayken catalog culture file's and the generic goods; the loot rule (45-yt-inside.js) */
+  ytGoods(D,o);});}
 /* each dome house has a covered variant (o.covered: its passage ends at the mouth on a covered way, no open trench) and
    says where that mouth is (mouth: its local z), so a town can join it to its tunnels (ytDoorNetPlan, 42-yt-tunnel.js) */
 const ytDwellPair=c=>[ytDomeDims(c),ytDomeDims(Object.assign({covered:true},c))];

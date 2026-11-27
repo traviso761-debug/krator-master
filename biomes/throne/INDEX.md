@@ -35,6 +35,7 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `82-host-sky.js` | <1 |  |
 | `83-host-heat.js` | 6 |  |
 | `84-host-ground.js` | 16 | the ground (18); the water: the acid lake, the hot pools (117); the steam (121) |
+| `85-host-far.js` | 3 | the far country: one KFAR ring round the map from the scale model's region (REGION_DATA, the Godthrone's REGION read in place) |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 3 |  |
@@ -46,22 +47,34 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `99-host-tz-core.js` | 3 |  |
 | `99-tail.html` | <1 |  |
 
+## shared/
+
+Fragments only some stations take, each listed in that station's `station.json` `kits` (not in `src/`, so the other pages do not carry them).
+
+| Fragment | KB | What |
+|---|---|---|
+| `44r-host-breach.js` | 1 | `THRONE_BREACH`: the Rheoliths' breached throat cut into a station's ground (the kit's own profile, from the local ground); vents and caldera |
+| `46k-host-klava-flows.js` | 3 | `THRONE_KLAVA_FLOWS`: the kit's flow mosaic with the flows marked `klava` frozen by `KLAVA.bake` instead of the kit's sheet; vents |
+| `84s-host-strata-band.js` | 2 | `THRONE_STRATA_BAND`, `_HOOK`, `_ATTR`: a wall's KSTRATA beds on a station's ground in one texture unit; caldera, blast |
+| `83r-host-breach-ground.js` | 2 | the breach's ground eight times finer than the 6.5 m mesh, its coarse cells left out (`THRONE_BREACH_CELLS`, `breachSkip`, `THRONE_BREACH_MESH`); vents and caldera |
+
 ## stations/
 
 Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
 
 | Station | Fragments | KB |
 |---|---|---|
-| ashdesert | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-ash.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 45 |
+| ashdesert | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-ash.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 46 |
 | blast | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-blast.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 45 |
 | caldera | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-caldera.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 63 |
 | cloudforest | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-mist.js, 86-host-cloud.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 59 |
-| delta | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-delta.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 50 |
-| frontier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-frontier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 59 |
+| delta | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-delta.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 51 |
+| frontier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-frontier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 60 |
 | glacier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-glacier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 63 |
-| isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 87 |
-| kipuka | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 49 |
-| penitentes | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-pen.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 39 |
+| kipuka (bake) | `bake-flows.js` (node, run by build.py when its inputs change): the five flows' KLAVA breakouts -> `kipuka-flows.json` | |
+| isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 48p9-host-ri-close.js, 88p-host-pandan.js (ringisles' strand pandanus, read in place), 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 91 |
+| kipuka | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 50 |
+| penitentes | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-pen.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 40 |
 | savanna | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-savanna.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 40 |
 | tube | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-tube.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 58 |
-| vents | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-vents.js, 87g-host-bismuth.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 79 |
+| vents | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-vents.js, 87g-host-bismuth.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 80 |

@@ -32,6 +32,7 @@ const WIND=SITE.wind||[.6,-.4];
 // ---------------------------------------------------------------- the land
 const TERR={R:1400};
 const SEA=-1e4;   /* no sea: nothing is under it */
+const AIR_ATM=SITE.sky.pressure;   /* the air (atm): the sky takes it (89) and the thermal record its boiling point (46: GEYSER.boilAt) */
 const landH=(x,z)=>SITE.land(x,z);
 const F0=SITE.field;
 const BASIN={x:F0.x,z:F0.z,rx:F0.r,rz:F0.r*(F0.e==null?.8:F0.e),name:SITE.fieldName||'The geyser field'};

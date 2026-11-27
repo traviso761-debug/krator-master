@@ -50,6 +50,10 @@ const L=(function(){const S=SITE;
   const OL=S.outlet.levels,ON=OL.length,ORS=3,OLEN=(O.L-(ON-1)*ORS)/ON;   /* WATER.terraces' own layout of equal treads (53: levels, riser) */
   const outLevel=s=>{s=clamp(s,0,O.L-1e-6);const i=Math.min(ON-1,Math.floor(s/(OLEN+ORS))),r=s-i*(OLEN+ORS);return r<=OLEN||i===ON-1?OL[i]:lerp(OL[i],OL[i+1],(r-OLEN)/ORS);};
   const gillBed=s=>lerp(S.gill.y0,S.gill.y1,clamp(s/G.L,0,1));
+  /* THE OUTFALL (the owner, 2026-11-15: "fall where the stream leaves the pool"): OLIP the outlet's s where its line leaves the pool's water (r + 3),
+     the fall's lip; below it a sinter valley, its head wall at the lip, its floor the terraces' ridge, its sides rising 1 in 4, fading out where the
+     land has fallen to the staircase (it fell only 3 m in the first 300 m, so a channel 18 m down would have been a slot) */
+  const OLIP=(()=>{for(let s=0;s>-200;s-=.5)if(Math.hypot(O.A[0]+O.ux*s-P.x,O.A[1]+O.uz*s-P.z)<=P.r+3)return s;return 0;})();
   function land(x,z){
    let h=2584+12*n2(x,z,.0016,11)+3*n2(x,z,.012,12);
    h+=430*smooth(-200,1700,(x-z)*.707)+90*smooth(600,1900,(x-z)*.707)*n2(x,z,.004,13);   /* the Outer Wall's spur: north-east, the pinch the cataract comes out of */
@@ -67,7 +71,10 @@ const L=(function(){const S=SITE;
      const w=smooth(-300,0,q.s)*smooth(C.L*1.06,C.L*.97,q.s)*smooth(900,450,aa);h=mix(h,Math.max(Math.min(g,h+260),aa<24?bed:-1e9),w);if(aa<16&&w>.5)h=bed;}}
    // the outlet's rimstone terraces on their built sinter ridge
    {const q=O.at(x,z),aa=Math.abs(q.a);if(q.s>-40&&q.s<O.L+60){const lv=outLevel(q.s),ridge=lv+1.6*smooth(150,24,aa)-.2;
-     const w=smooth(-40,10,q.s)*smooth(O.L+60,O.L,q.s);h=mix(h,Math.max(h,ridge),w*smooth(260,140,aa));if(aa<22&&w>.5)h=lv-.8;}}
+     const w=smooth(-40,10,q.s)*smooth(O.L+60,O.L,q.s);h=mix(h,Math.max(h,ridge),w*smooth(260,140,aa));
+     const hv=smooth(OLIP-.5,OLIP+.5,q.s)*smooth(O.L*.45,O.L*.2,q.s);   /* a sharp head wall: a 6 m ramp half-carved left a lone spike before the fall */if(hv>0){const vf=ridge+Math.max(0,aa-24)*.25,dv=Math.abs(h-vf);   /* the outfall's valley */
+      h=mix(h,Math.min(h,vf)-Math.pow(Math.max(6-dv,0),2)/24,hv);}   /* a smooth minimum (6 m): the rim rounded, the ground mesh drew the hard crease as a zigzag */
+     if(aa<22&&w>.5&&q.s>OLIP+.5)h=lv-.8;}}
    // the geyser's cone and the small vents' mounds
    {const g=S.geyser,d=Math.hypot(x-g.x,z-g.z);h+=5*smooth(45,4,d)-1.2*smooth(4,0,d);}
    return h;}
@@ -76,7 +83,7 @@ const L=(function(){const S=SITE;
    {const q=O.at(x,z);if(q.s>=0&&q.s<O.L&&Math.abs(q.a)<20)return outLevel(q.s);}
    {const q=G.at(x,z);if(q.s>=0&&q.s<G.L&&Math.abs(q.a+14*Math.sin(q.s*.006))<8)return gillBed(q.s)-1.6+.6;}
    return -1e9;}
-  return{land,water,C,O,G,catLevel,outLevel,gillBed,farBase:2560,spine:[[P.x,P.z],[C.B[0],C.B[1]],[C.A[0],C.A[1]],[O.A[0],O.A[1]],[O.B[0],O.B[1]],[S.geyser.x,S.geyser.z],[G.A[0],G.A[1]]]};}
+  return{land,water,C,O,G,catLevel,outLevel,outLip:OLIP,gillBed,farBase:2560,spine:[[P.x,P.z],[C.B[0],C.B[1]],[C.A[0],C.A[1]],[O.A[0],O.A[1]],[O.B[0],O.B[1]],[S.geyser.x,S.geyser.z],[G.A[0],G.A[1]]]};}
  if(SKEY==='mirror'){const K=S.lake,F=S.fault;
   const shoreZ=x=>K.shore+60*Math.sin(x*.0013+.7)+25*Math.sin(x*.0047+2.1);
   const faultZ=x=>F.z+70*Math.sin(x*.0009+1.3)+20*Math.sin(x*.004);

@@ -13,6 +13,9 @@ The core and the biome leaf never reference a host global except through
 BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
 biome fragment cannot quietly grow a dependency on one world's engine.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -136,6 +139,7 @@ for f in CORE_ATMOS:
 CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js','50-core-water-draw.js','51-core-water-kinds.js']
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
+PATH.setdefault('56-core-water-breakup.js',os.path.normpath(os.path.join(HERE,'..','..','core','water','ext','56-core-water-breakup.js')))   # the breakup (core/water ext/56), on by default since 2026-11-09
 PATH['89-atmos-c-hostbind.js']=os.path.normpath(os.path.join(HERE,'..','..','core','atmos','host','89-atmos-c-hostbind.js'))   # ATMOS.bindHost, in core/atmos/host/ so the kits that take core/atmos whole are not changed
 # the shared sky (core/atmos/SKY-PLAN.md section 9, 2026-10-26): core/atmos's core where the kit had none, the sky's model,
 # presets and shader, its host and the biome call (src/89-host-sky.js: ATMOS.skyBiome); they replace the painted dome
@@ -195,7 +199,7 @@ for f in frags:
 if bad: print('BIOME FRAGMENT DEPENDS ON A HOST ENGINE:\n  '+'\n  '.join(bad)); sys.exit(1)
 BSRC.report(PATH)   # --list-sources: what the page is made of, then exit
 os.makedirs(DIST,exist_ok=True)
-html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8').write(html)
+html=''.join(out); open(os.path.join(DIST,OUT),'w',encoding='utf8', newline='\n').write(html)
 # syntax check on the script body
 m=re.search(r'<script>\n(?!document)(.*)</script>\s*</body>',html,re.S)
 js=m.group(1) if m else ''

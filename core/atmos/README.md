@@ -92,9 +92,16 @@ carry `userData.probeSkip`. `ATMOS.stats` counts what was made.
 | `fx/snowcover` (opt-in: `core/atmos/fx/89-atmos-fx-snowcover.js`) | `snowCover(o)`, `snowStep(S,W,dt,hour)`, `snowOn(mat,o)`, `snowOnScene(scene)`, `snowGLSL()`, `snowBare(M)` (a mask from a field: warm ground bare, `core/README.md`, KTHERM), `PRESETS.snowcover` | snow that LIES (2026-10-25; the weather's `snow` modes make it fall): a depth 0..1 that builds while it snows and melts when it does not (slower at night, never in `frozen` air), a pure step; any lit material whitens where it holds (up-facing first, patchy at the edges by an integer-hash noise, steeper faces as it deepens, a cliff stays bare), `base` cover and a snow `line` [y0, y1] for permanent snow, the biome core's bent normal (`aN`) on leaf cards. `node core/atmos/fx/test-fx.js`. Taken by the Throne's glacier |
 | `fx/lightning` (opt-in: `core/atmos/fx/89-atmos-fx-lightning.js`) | `boltPath(seed, from, to, o)`, `thunderDelay(d)`, `thunder`, `onThunder(fn)`, `PRESETS.lightning` | branched lightning (2026-10-26, WEATHER item 8): 4-weather's storm strikes become seeded midpoint-displacement bolts with forks, a flash of the cloud above, and thunder events at `dist / 343` s (`onThunder` for the host's sound). Without the file the old ribbon stays |
 | `fx/raincover` (opt-in: `core/atmos/fx/89-atmos-fx-raincover.js`) | `rainCover({renderer, size, box, step, every, lift, depth, skip})`, `rainCoverGLSL()`, `rainCoverUniforms(u)`, GLSL `atmRainOpen(wp)` (1 open sky), `atmRainCover(wp)`, `atmRainOccY(xz)` | the rain occlusion map (2026-10-26, R10): a top-down depth map of a 160 m box round the eye, re-rendered every 20 m; rain streaks, flakes, cloudShade's wet darkening and the fresh snow stay off what is more than 1.2 m under cover (crowns, roofs, overhangs; grass shelters nothing). core/water's wetness takes it through `rainCoverGLSL` |
+| `fx/katabatic` (opt-in: `core/atmos/fx/89-atmos-fx-katabatic.js`, `test-katabatic.js`) | `katabaticK(hour, cloud, o)`, `katabaticWind(hour, cloud, o)`, `katabatic({hour, cloud, down, up, speed, daySpeed, calm})` | the night's katabatic wind off the walls and the day's valley breeze (2026-11-09, the basin plans' shared amendment): `ATMOS.windBase` set each frame from the host's hour and the cloud, so every plume drifts downslope before dawn and back up in the afternoon; an overcast night barely drains. First taken by `biomes/godshearth` |
+| `fx/gale` (opt-in: `core/atmos/fx/89-atmos-fx-gale.js`; not `fx/katabatic`, Godshearth's drainage and breeze) | `gale({from, speed, on, off, ramp, gust, name})` -> `{rec, at(hour), stop()}`, `galeAt(hour, o)` (pure: `{k, wind, gust}`) | a night gale draining downslope (2026-11-10, biomes/seouterwall's God-Bore): turns the base wind (`windBase`) toward `-from` at `speed` x the calm base from `on` to `off` (ramped over `ramp` h), raises the gust floor with it; every rider of the one wind field (foliage, smoke, rain, snow) follows. Its frame hook moves itself after the weather's. No core file edited; an effect record for the export. `node core/atmos/fx/test-katabatic.js` |
 | `sky/fog` + `host/heightfog` (opt-in: `sky/89-atmos-j-fog.js`, `host/89-atmos-j-heightfog.js`) | `heightFog(o)`, `heightFogOn(mat)`, `heightFogScene(scene)`, `fogGLSL()`, `fogAt(ro, P, F)`, `fogLayer/fogPool/fogSlab` | height fog (2026-10-26, R1): the page's fog (its colour and density, which the sky and the weather drive) up to the ground under the eye and thinning above it, graded toward the sky's zenith colour up the ray and the sun's in a forward lobe; dawn mist pooling under a level; a broken cloud band at mid-height; the patches drifting on the wind and its gusts. Exact closed-form integrals (Quilez), ~20 ops a fragment. A level view at the reference height is FogExp2's own fog (`test-fog.js`) |
 | `host/hostbind` | `windUniforms(u)`, `windGLSL()` | the gust field for any shader (R8): `atmWindV`, `atmGustAmp`, `atmTime` (the shared uniforms) and `atmGust`, `atmWind`, `atmGustHere(xz)`, `atmWindHere(xz)` |
+| `sky/fog` + `host/heightfog`, the mist field (opt-in, 2026-11-09) | `heightFog({mist:{field:{at, extent / centre + radius, res}, samples}})`, `fogMistFieldMake(o)`, `fogMistFieldAt(M, x, z)`, `fogMistField(at, lvl, b, ro, rd, L, n)` | the mist's density by place from a half-precision texture built once; the chunk's mist term times the field's density-weighted mean along the ray's crossing of the layer (below, "The smog") |
+| `sky/cloudmood` + the sky host (opt-in, 2026-11-09: `sky/89-atmos-k-cloudmood.js` for the data and the twin; the shader's lines are in `sky/89-atmos-g-sky.js`) | `cloudMood(S, o)`, `moodAt(t, o)`, `moodGlow(t, kind, seed, eye)`, `skyCloudAt(d, U)`, `skyCloudUniforms(P, L, st, o)`, `skyCloudField(xz, oct, U)`, `skyMoodWanted(P)`, `MOOD_PALETTE`, `MOOD_TURB`, `MOOD_GLOW`, `MOOD_DEFAULTS` | the clouds' `dark`, `tint`, `turbulence` (violent, ordered, glitched) and `glow` (ethereal, lightning), shifting in hashed episodes, together or apart, the tint by area; the layer's JS twin (below, "The smog") |
 | `host/skyhost` | `shaderHook(mat, key, fn)` | every core hook on a material's `onBeforeCompile` (cloudShade, heightFog, snowOn) goes through it: any number compose in any order, a page's own hook (set before or after) runs first, no hook can call itself, the program key carries each layer |
+| `host/skyhost` (Stage 8 V8, 2026-11-24) | `cloudShade(mat, {porosity})` once a material (a second call, at any porosity, is a no-op); `cloudShadeScene(scene, {biome, host, other, leave, skip})` (moved from `host/skybiome`) | the scene pass every lit material takes once (plants `biome` .4 or `BIO.CLOUD.porosity`, works `host` .6, the rest `other` 1; `leave` a RegExp on the program key, the animated fauna by default, null for none; `skip(mesh, material)`); it sets `ATMOS.skyShadeOn` and hands the biome core its queue (`BIO.cloudShadeFlush`), so the core's materials made before or after it are shaded too. `skyBiome` runs it (`o.shade` false: not; an object: its options); the kits on `ATMOS.sky` (swbay, the outer walls, catch, cut, farside, k-guilin, sedesert's bowl, shroudhills, abyssal-savannah, ancientsvalley, batteredisle) call it after their build |
+| `fx/slopewind` (opt-in, [G data]: `core/atmos/fx/89-atmos-fx-slopewind.js`) | `slopeWind(o)` -> `W.windAt(x,z,hour)`, `coldAt(x,z,hour,y)`, `still(x,z,hour)`, `bake()`, `export()`, `attach(ATMOS,hourFn)`/`detach()`, `provide(KHAZ,base,hourFn)`; `slopeWindLoad(rec)` | the wind the ground makes (2026-11-09): katabatic downslope by night, anabatic upslope by day (weaker), gap winds along an axis reversing day and night, cold pools in hollows by night, all on one bake of the host's ground. `attach` adds it to `ATMOS.windAt` (CPU only) and `provide` takes the pools off KHAZ's `temperature`. `test-slopewind.js` |
+| `fx/ashplume` (opt-in, [G data]: `core/atmos/fx/89-atmos-fx-ashplume.js`) | `ashPlume(o)` -> `P.fog(x,y,z)`, `under(x,z)`, `shade(x,z,sun,y)`, `deposit(x,z)`, `sources(o)`, `aim(a)`, `update(t)`, `provide(KHAZ,o)`, `export()`; `ashPlumeLoad(rec)` | a volcanic plume as a weather source (2026-11-09): a Gaussian plume from each vent, the column leaning to an umbrella that drifts along an azimuth, a wind vector or `ATMOS.windAt`; the ash fall (airLoad's `ashAt`), the sun's shade, a deposit for a KGROUND mask and KFAR.sprites sources. `test-ashplume.js` |
 
 Positions are world metres: `x` east, `z` south, `y` up. A rotation `ry` is about y, three.js convention: local `+z` turns to
 `(sin ry, cos ry)`. A *bearing* is the angle from `+x` toward `+z`.
@@ -213,7 +220,8 @@ page is where the thin end is tuned (the plan's G4).
 
 **The rain wall** (the SW highlands, `biomes/swhighlands/PLAN.md`: 2,600-4,000 mm at ~2 km on the windward ramp):
 orographic rain, a field on the ground, not a weather mode: rain where the ground lies in the band, on faces turned to the
-wind (`ATMOS.rainWallAt`). Inside it the weather's own rain falls (it lifts `W.rain`, so the streaks, the wet ground, the grey
+wind (`ATMOS.rainWallAt`), or a host's own field (`o.field(x, z)` -> 0..1, since 2026-11-09: the Ancient's Valley's oily rain stands on its
+polluted half). Inside it the weather's own rain falls (it lifts `W.rain`, so the streaks, the wet ground, the grey
 sky and the rain cover all follow); seen from outside it is curtains of grey falling streaks standing on the ground up into
 the cloud, one per cell of the field, seeded by `KRAND.hash` of the cell. Build: list `fx/89-atmos-fx-rainwall.js` (station.json
 `"fx/89-atmos-fx-rainwall.js"`) and core/rand (`08-core-rand.js`, which every biome page has); then, after `ATMOS.weather` /
@@ -275,6 +283,125 @@ when `ATMOS.rainCoverGLSL` and `ATMOS.U.rainOcc` exist (`ATMOS.rainCoverUniforms
 to `WATER.wetGround(mat, o.wet)` (porosity, puddles, ripples). The terrain workstream's KHORIZON reads the sky's `uSunDir`: a stable name. core/biome's foliage and grass
 sway can read the travelling gusts with `ATMOS.windGLSL()` and `ATMOS.windUniforms(sh.uniforms)` (R8).
 
+### The smog: a mist field and the clouds' mood (the Ancient's Valley, 2026-11-09)
+
+The owner's ask (2026-11-08): "a frequent atmos effect of dark, unnaturally turbulent, coloured, or softly glowing cloudiness and
+medium distance smog/thick fog/haze; near cities this becomes universal. this should both enhance the atmosphere and help sell the
+LOD"; and (2026-11-09) "shifting so the glow, turbulence, or colour could all be together or separate; and some variations for
+each. colours could range brown to dull red to sickly green (may vary depending on area); glow could come from frequent lightning
+or an ethereal glow; clouds could be unnaturally violent or unnaturally regular and ordered or subtly glitched (clouds moving in
+different directions like they each feel their own wind)". Two opt-in pieces, both under the belt's rule: a page that does not
+ask gets the chunk text it had (`test-fog.js`, `test-sky.js` hold the identity), so no other page needs a rebuild.
+
+**The mist field** (`ATMOS.heightFog({mist:{..., field}})`, `sky/89-atmos-j-fog.js` "THE MIST FIELD"). The height fog's MIST
+layer had one density for the page; `field` scales it by place:
+
+```js
+ATMOS.heightFog({mist:{density:.006,y:40,depth:60,noise:.5,
+ field:{at:(x,z)=>F.density(x,z),          /* 0..1: universal in the cores, thin on the terraces */
+  centre:[0,0],radius:6000,res:128},       /* or extent:[x0,z0,x1,z1]; default 6 km round the camera */
+ samples:6}});                              /* the ray's samples of the field, at most 8 */
+ATMOS.heightFogScene(scene);
+```
+
+The field is built once from `at` into a `res` x `res` half-precision texture (R the field), as the belt's is; along a view ray the
+mist's exact pool integral is multiplied by the field's density-weighted mean over the ray's crossing of the layer (the part of
+the ray below `y + 3 depth`): `samples` midpoints, each weighted by the pool's density there, so a ray falling into the mist reads
+the field where the mist is. Within a few percent of a fine march on a smooth field (0.2% on the test's ramp), exact on a constant
+one. `F.field.at(x, z)` reads the texture's own halves (bilinear, as the GPU does), for a page's own checks; the twin
+`ATMOS.fogAt` takes `mist.field` as a function or as `ATMOS.fogMistFieldMake`'s record. Cost: up to `samples` texture reads a
+fragment on rays that enter the layer, none on a page without a field.
+
+**The clouds' mood** (`sky/89-atmos-g-sky.js` layer 7, the presets file, `sky/89-atmos-k-cloudmood.js`, `ATMOS.cloudMood` in
+the sky host). Four settings on the sky preset's `clouds`, each absent by default:
+
+| key | what |
+|---|---|
+| `dark` 0..1 | the cloud's lit colour pulled toward a storm grey (0.62 of its luminance), its shadow side blacker (0.22) |
+| `tint` [r,g,b], `tintK` 0..1 | drawn toward the tint's hue, keeping its own light and shade; `ATMOS.MOOD_PALETTE` is brown, dull red, sickly green, ash, ghostly purple, jaundice yellow |
+| `turbulence` 0..1, `turbKind` | `violent` (a second, faster noise warps the shape by 0.35 of a cell, a fine one breaks the edges, the drift up to 2.5x), `ordered` (parallel rows of cloud a lattice cell apart, gently waved: unnaturally regular cloud streets), `glitched` (two more sheets of cloud under the first, one across the page's wind at 1.6x its speed and finer, one 120 degrees round at 0.7x and coarser, the three unioned: clouds slide through each other as if each felt its own wind; each sheet's wind is a random walk whose heading is held 30-90 s of real time and then turns abruptly, `ATMOS.skyMoodWalk`, its speed by the pace, `ATMOS.MOOD_SHEETS`; `sheetTint` 0..1 colours the sheets where they show through in the tint's complement and its hue-rotated twin), `ripple` (rings spreading from `turbAt` [x, z] as from a stone dropped in water, in slow motion: a 1.2 km wave at 40 m/s pushing the cloud's shape to and fro along the radius and its density with the crest, dying over 8 km) |
+| `pace` (default 3) | how much faster than the page's wind the pattern's own motions run (the warp's drift, the sheets' walks, the rings' speed, the rows' slide), so they read at 1x; the plain cloud's drift is untouched |
+| `glow` 0..1, `glowColour`, `glowLocus`, `glowLocus2` | at night only (`uNight`): the base lit from below by the colour, strongest where the cloud is thick; `glowLocus` [x, z, radius, spread] lights one patch (spread 0) or the whole sky (spread 1, the default); `glowLocus2` [x, z, radius, on] a second light (the orbs' pair) |
+| `event` | a sky event now (`ATMOS.moodEvent`'s record with `x`, `z`, `ground`): `pillar` (a brief flashing pillar of light from the ground to its top, 60 m wide) or `ascent` (a point of light climbing from the ground to the top over 14 s with a faint trail), drawn under the clouds in the glow's colour, hazed with distance; `cloudMood` writes one when its hashed minute says so |
+| `mood` true | compile the lines with everything at rest, for a page that drives them later |
+
+The turbulence lives in the shared cloud field, so `ATMOS.cloudShade`'s shadows are torn, ordered or glitched with the cloud.
+The lines compile only when the preset asks (any of the four, or `mood`), decided in `ATMOS.sky` before the material compiles;
+`ATMOS.skyGLSL()` and `cloudShadeGLSL()` are otherwise the text they were (and the Godot include's digest holds).
+`ATMOS.skyCloudAt(d, U)` is the layer's JS twin on the same noise volume (`skyCloudUniforms(preset, look, state, {cam, wind,
+time, air})` builds `U`): `test-sky.js` holds that a dark cloud is darker, a tinted one nearer its tint and as bright, a violent
+field rougher, an ordered one periodic, a glitched one a union of sheets the page's wind alone does not carry, a rippling one changed near its epicentre and plain 60 km out, the glow zero by day and
+under one patch when its locus says so.
+
+**Shifting** (`ATMOS.cloudMood(S, o)`, right after `ATMOS.sky` and before the first render): episodes of `period` seconds (300),
+each drawn from a hash of (seed, episode): each of the three effects on or off on its own (`chance` {tint .6, glow .5,
+turbulence .6}: alone, together, or a quiet spell), the tint from the `palette` (or by area: `tintAt(x, z)` at the eye returns a
+colour or null), the turbulence in one of the four kinds (a ripple's epicentre latched near the eye when the episode comes,
+`turbOffset`; a glitched episode's `sheetTint` on or off by a coin), the glow in one of three, the dark riding whenever anything is on (`dark` [.35, .9]); neighbours cross-fade over the
+last `blend` (.6) of the period, so a colour never snaps. `glowKind` `ethereal` is a slow breathe over the whole sky (18 s value noise, .55..1);
+`lightning` fires about every second or two under a patch 2-4.5 km across within 6 km of the eye, decaying in ~0.3 s, a dim floor
+between; with `fx/89-atmos-fx-lightning.js` on the page each flash strikes a visible branched bolt from the cloud plane to the
+ground at its locus (`ATMOS.moodBolt`, through the fx's `boltFx` and `A.boltGlow`), with the fx's thunder event, else the light
+alone; `orbs` are two
+small bright lights (300-600 m across) wandering on value-noise paths within 3 km of the eye, ball lightning or something flying.
+The **sky events** (the owner, 2026-11-09: "a light ascending to the heavens in the distance or a brief distant flashing pillar of
+light") run beside the episodes: `ATMOS.moodEvent(t, seed, {kinds, chance, range})` gives at most one event a 60 s slot (chance .5),
+3-8 km off at a hashed bearing, a pillar flickering out in about a second or an ascent climbing for 14 s; the host places it where
+the eye stood when it began and on the ground there (`ATMOS.moodEventAt`), `events: false` turns them off, `eventOpts` tunes them;
+`ATMOS.skyBeamAt(d, U)` is the twin of the shader's `atmSkyBeam`.
+
+**Heard** (`core/audio/24-core-audio-sky.js`, `KSKYSOUND`; the owner, 2026-11-09). The driver reports what the sky did through
+`ATMOS.onSky(fn)`: a `flash` (x, z, its strength), an `event` beginning (`pillar` or `ascent`, x, z, its length), an `episode`
+change; the lightning fx's `ATMOS.onThunder` carries the thunder, already delayed by the distance; `ATMOS.skyLevel` holds the orbs'
+and the breathe's strength each frame. `ATMOS.skyDiff` and `skyLevels` are the pure side (`test-sky.js`); `ATMOS.skyTrack(S, now)`
+is what cloudMood calls each frame, and what a page setting the clouds itself calls. `KSKYSOUND.CUES` are the six cues in KCUE's
+shape (`sfx.sky.thunder`, `sfx.sky.flash`, `sfx.sky.pillar`, `sfx.sky.ascent`, `amb.sky.orbs`, `amb.sky.breathe`), their variants
+empty until the clips come through intake; `KSKYSOUND.bind({play, master})` fires them (KCUE's pick to the page's player when a cue
+has clips, else a stand-in Web Audio synth so the timing can be judged now), delayed by `dist / 343` and scaled by the sky's own
+`1 / (1 + dist / 2500)`. `node core/audio/test-sky-sound.js`. `S.moodPaused = true` holds the driver while a page sets the clouds itself (the demo's toggles). `glowColour` sets every kind's colour, `glowColours` {ethereal, lightning} each kind's, else
+`ATMOS.MOOD_GLOW`. All of it is `ATMOS.moodAt(t, o)` and `ATMOS.moodGlow(t, kind, seed, eye)`: plain numbers from the module
+clock, the same in Godot (`GODOT.md`); the host writes them into `preset.clouds` each frame and `S.mood` is the episode now.
+
+```js
+const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{clouds:{mood:true,cover:.5}}),{renderer,camera,scene,sun,hemi,fog:true});
+ATMOS.cloudMood(SKY,{seed:7,glowColour:[1,.55,.2],tintAt:(x,z)=>F.taint(x,z)});   /* the fires' orange; the taint's colour by place */
+```
+
+The demo (`demo/`: Colour, Pattern, Glow and Dark toggles, a Shifting switch, Smog mist; `#colour=brown&pattern=violent&glow=ethereal&dark=.6&smog=1`)
+shows a dark tinted turbulent sky, the shifting episodes and a mist with a field.
+
+## Radiation: a warm glow filling a zone of air (`fx/89-atmos-fx-radiation.js`, opt-in, 2026-11-10; `test-radiation.js`)
+
+The owner's ask: "a visible 'radiation' ambient atmos effect ... fills the affected area with a subtle warm glow and heat-haze-like
+shimmer. it should not obscure anything but should be noticeable from a fair distance". A zone is a ball of glowing air (centre,
+radius; density `1 - d^2 / r^2`). Each pixel takes, ADDED in the zone's colour, the zone's strength times the density summed along
+its view ray's chord through the ball, in closed form, over the chord through the centre: 1 through the heart, 0 at the limb.
+Nothing is dimmed or hidden. A surface inside the zone stops the sum at itself, so near things glow less than the air behind
+them; from far off the whole chord shows and the zone reads as a soft warm dome. The shimmer is a slow rising waver of the glow
+itself (`shimmer`, 0..1 of the strength), concentric rings about the zone's centre that expand, always outward and never drawing back (the owner's eye, 2026-11-10), a ring
+taking about 5 s to cross its own width; and the glow breathes: `pulse` (default .3) swells and ebbs it over about 11 s with a
+slower swell under it, each zone out of step, the zone's edge holding still (`ATMOS.radPulse` is the twin).
+
+```js
+const RAD=ATMOS.radiation({zones:[{x,y,z,r:300,strength:.16,shimmer:.35}],colour:[1,.62,.25]});   /* at most 4 zones */
+ATMOS.radiationScene(scene);          /* every lit material adds the glow up to itself; the sky behind takes it from a far shell */
+RAD.k=.5;RAD.set();                   /* a master strength; edit RAD.zones and call set(); RAD.off = true clears it */
+```
+
+The geometry's share goes through `ATMOS.shaderHook` (composes with the height fog, cloud shade, snow); the sky's share is a
+back-face shell a zone drawn at the far plane after the world, so it lands only where no geometry was drawn and the two never add
+twice. A ShaderMaterial of the page's own takes `ATMOS.radGLSL()` and adds `atmRad(eye, dir, dist)` itself. The pure side:
+`ATMOS.radChord`, `radGlow`, `radAt(zones, x, y, z)` (the density at a point: placement, a meter; registered as core/hazard's
+`radiation` field when the page's KHAZ takes one). **True heat haze** (the owner, 2026-11-10: "try it like a true bent light heat haze") is `ATMOS.radiationHaze({renderer, amp, speed,
+scale})`, a post pass: `H.draw(() => drawTheFrame(), camera, dt)` draws the page's frame into its target, then each pixel reads
+from a little beside itself, the offset swinging to and fro and swelling with the breath, by how much zone air its ray crosses up to what it shows
+(`ATMOS.radHazeK`: shimmer x chord, summed and doubled, capped at 1; the sky takes the whole chord). What lies behind a zone swims,
+what stands in front of it holds still, and it reads from as far off as the glow does. The target is not multisampled, as the
+shimmer pass's. (The older ground pass also works: `ATMOS.shimmer({renderer, field: ATMOS.radiationHeat(RAD.zones)})`, near the
+eye and on the ground only.) Cost: about 40
+operations a zone a fragment, no textures, no loop but the four zones. **Not judged:** against a bright noon sky a strength of .16
+is faint (it is additive on an already bright pixel); a page may raise the strength by day or tie `RAD.k` to the hour.
+
 ## Steam in groups and the heat shimmer (`fx/`, opt-in, 2026-11-03)
 
 **`ATMOS.smokeGroups`** (`fx/89-atmos-fx-smokegroups.js`, `test-smokegroups.js`): one `ATMOS.smoke` cloud a group, each with its own
@@ -301,6 +428,105 @@ one); `ATMOS.deckDay(deck, o)` writes it into a `cloudDeck`'s `uY` each frame; `
 the cloud; `ATMOS.provideDeck(KHAZ, {level, base})` registers `visibility` (25 m deep in it, the page's own elsewhere), the field the
 deck gave none of. The deck's ground-clearance window is fixed when it is made: make it at `o.y` and keep `lap` and `burn` within about
 60 m. **Godot:** `deckLevel` is arithmetic on the clock; the deck's shader takes the level as a uniform, as here.
+
+## The wind the ground makes: katabatic, anabatic, gap wind and cold pools (`fx/89-atmos-fx-slopewind.js`, opt-in, 2026-11-09; `fx/test-slopewind.js`)
+
+`ATMOS.windAt` is one base vector times travelling gusts; walls and basins make their own wind. `ATMOS.slopeWind({ground, box, cell,
+katabatic, anabatic, gaps, pool})` bakes the host's ground once (heights, their gradient, and each node's hollow: how far it lies under
+the mean ground within `pool.reach`) and answers from the bake: `W.windAt(x, z, hour)` m/s runs down the fall line by night (4 m/s at a
+20 degree slope, the root of the slope's sine below it: Mahrt 1982) and up it by day (2.5 m/s), a gap's axis carries its own (10 m/s
+down by night, half that up by day, whole within `w/2`, nothing past `w`), `W.coldAt(x, z, hour, y)` is the cold a hollow pools by
+night (8 C at full, filling through the evening; Whiteman, "Mountain Meteorology"), `W.still(x, z, hour)` where the air lies still.
+Level ground has none. The magnitudes are the gentle valley's; the God-Bore's density winds are a kit's `max`.
+
+*Adopting it:*
+- List `fx/89-atmos-fx-slopewind.js` (station.json `"fx/89-atmos-fx-slopewind.js"`); it needs only the ATMOS object.
+- `const W = ATMOS.slopeWind({ground: terrainH, box: [x0, z0, x1, z1], cell: 20, katabatic: {max: 30, from: 18.5, lag: 2}, gaps: [{id:
+  'bellows', pts, w: 400, max: 25}], pool: {reach: 600, drop: 30, depth: 80}})` (seouterwall's God-Bore, twins' sink behind the moraine,
+  outlandgate's Bellows; `lag` holds the low ground back: hours per 1000 m under the bake's top).
+- `W.attach(ATMOS)` after `ATMOS.init` so the CPU readers of `windAt` (the dust lift's twin, seeds, a probe) feel it; the shaders' `atmWind`
+  does not (sway and dust sprites keep the base wind). `W.detach()` undoes it bit for bit.
+- With core/hazard: `W.provide(KHAZ, (x, y, z, t) => baseC, () => hour)` registers `temperature` = base minus the pool. The hazard
+  builder's night gas reads `W.still`.
+- **Godot:** `W.export()` (the options and the grids as plain arrays) loads with `ATMOS.slopeWindLoad`, which answers identically; the
+  twin is the same bilinear arithmetic.
+
+## A volcanic plume as a weather source (`fx/89-atmos-fx-ashplume.js`, opt-in, 2026-11-09; `fx/test-ashplume.js`)
+
+One record of vents and a wind gives every field a plume puts on a world. `ATMOS.ashPlume({vents: [{id, x, z, y, top, rate}], azimuth
+| wind: [vx, vz] | wind: 'atmos', speed, spread, reach, settle})`: the air is a Gaussian plume (the column rises from each vent, leaning
+downwind, and spreads at its top as an umbrella that thins as 1 / (sy sz) while it widens); `P.under(x, z)` is the ash-fall share at the
+ground, a lobe peaking `speed x top / settle` downwind (a taller column, or finer ash, lands farther), the plume's width across, nothing
+upwind and nothing past `reach`; `P.shade(x, z, sunDir, y)` the sun it blocks (the fog along the ray to the sun); `P.deposit(x, z)` a
+relative ash depth (the coarse fall round the vent and the lobe); `P.sources()` KFAR.sprites' sources along each centreline. The azimuth
+is the downwind bearing, clockwise from north (`[sin a, -cos a]`). Not core/water's river plume.
+
+*Adopting it:*
+- List `fx/89-atmos-fx-ashplume.js` (station.json `"fx/89-atmos-fx-ashplume.js"`), and core/rand for `P.sources`.
+- `const PL = ATMOS.ashPlume({vents: [{id: 'firebliss', x, z, y: terrainH(x, z), top: 3000, rate: 1}], azimuth: 2.4, reach: 25000})`;
+  `ATMOS.airLoad({ashAt: PL.under})` makes the ash in the air, the page's fog and core/hazard's `ash` (or, without airLoad,
+  `PL.provide(KHAZ, {mg: 120})`).
+- The ground: `PL.deposit` as a KGROUND mask; the sun: `PL.shade(x, z, sunDir)` where a probe or a bake wants the plume's shadow.
+- Far off: `KFAR.sprites({world, sources: PL.sources(), kind: 'cloud', shape})`, scaled by the eruption's k (a weak k shows the column).
+- `wind: 'atmos'` follows `ATMOS.windAt` at each vent; call `PL.update(t)` now and then (it re-derives the footprint). `PL.aim(a)` turns it.
+- **Godot:** `PL.export()` loads with `ATMOS.ashPlumeLoad` (the winds as resolved), identical answers; the twin is exp and smoothstep on a
+  dot product a vent.
+
+## Local time and gravity (`fx/89-atmos-fx-localtime.js`, opt-in, 2026-11-10; `fx/test-localtime.js`)
+
+The Ancient's Valley's Stilled Ground and Press (`biomes/ancientsvalley/PLAN-ANOMALIES.md` 14). `ATMOS.localFx(emitters, {rate,
+g, seed, reach, fade})` draws particles that read two numbers at their home when the set is built: the time field's rate there and
+the gravity there (`core/anomaly`'s `KANOM.at(...).time` and `.g`, or any function). A particle's place is a pure function of its
+seeds and `time x rate`, so at rate 1e-4 it hangs and nothing shears (one particle's rate never changes). Kinds: `drops` (a rain
+field: beads hanging, streaks falling), `motes` (dust; flat under heavy gravity), `steam`, `curtain` (a fall from a lip, WATER.fall's
+arc: stopped in the air, or under 3 g short and hard), `burst` (an explosion held at its phase), `birds` (a flock on a circle: the
+field is read on the circle, so a flock round a zone runs while one inside hangs), `pall` (the Press's flat dust). The data
+(`localFxData`) and the motion's JS twin (`localFxAt`) are plain arithmetic, seeded on `KRAND.hash(seed, emitter, particle, salt)`;
+the test holds them to it and `core/atmos/fxdemo` shows them on the GPU. The handle frees its geometry (`dispose()`) and hides
+past `reach`.
+## The works and the fields (`fx/`, opt-in, 2026-11-10; `fx/test-industry.js`)
+
+The Ancient's Valley's Yards and Terraces (`biomes/ancientsvalley/PLAN.md` 15). Each is a record first (a pure `*Rec` fills and
+checks it, seeded on `KRAND.hash` by its index), drawn after; every handle frees its geometry (`dispose()`) and hides past `reach`.
+The shader noise is an integer hash (lowbias32), never sin.
+
+| File | Calls | What |
+|---|---|---|
+| `fx/89-atmos-fx-plumes.js` | `ATMOS.plumes(list)`, `plumeRec`, `plumeOn`, `plumeAt` (the twin) | a stack's soot bent downwind for a kilometre, a cooling tower's cloud evaporating as it rises, a flare, a vent; a plume on a duty cycle shows only the particles that left the mouth while it ran |
+| `fx/89-atmos-fx-sparks.js` | `ATMOS.sparks(list)`, `ATMOS.arcs(list)`, `sparkEpoch`, `arcPoint` (the twin), `arcHazard` | a dead machine's showers on a hashed period; a jagged arc re-drawn each flicker from (seed, flash, flicker, segment), its strike throwing sparks; the arc's shock as a core/hazard record on the arc's own cycle |
+| `fx/89-atmos-fx-sludge.js` | `ATMOS.sludgePools(list)`, `sludgeMaterial`, `spillOn(material, spills)`, `spillAt` (the twin), `poolHazard`, `krandGLSL` | a toxic pool's surface (foam rafts, thin-film sheen, bubbles); a ground layer of oil spills (black, crusted rim, bleached fringe) and wet stains, at most 16 a material; the stain's broken edge is KRAND's value noise in GLSL, bit for bit (`krandGLSL`, held to `KRAND.h3` by the test) |
+| `fx/89-atmos-fx-slag.js` | `ATMOS.slagOn(material, rec)`, `slagRec`, `slagHeat` (the twin) | a heap's crust split by glowing seams (a 3D Voronoi in world space), hottest at the pour, breathing plate by plate |
+| `fx/89-atmos-fx-spill.js` | `ATMOS.aqueductSpill(o)`, `ATMOS.spill(rec)` | a broken aqueduct (an open span or a breach): the lip, direction, speed and the drop to where the arc lands, as `WATER.fall`'s options for a page with core/water, drawn otherwise on `localFx`; drips from the cracks, spray and a wet stain at the foot |
+| `fx/89-atmos-fx-gustsheen.js` | `ATMOS.gustOn(material, {sheen, sway, height})`, `gustAt` (the twin) | the paler band that runs over a field as a gust front bends the stems, on the foliage's own `atmGust`; a sway for crop meshes that have none (`sway: 0` on the kits' foliage) |
+
+`localFx` gained two kinds for them: `fume` (a pool's low haze) and `chaff` (seed heads lifted and carried as a gust front passes).
+`core/atmos/fxdemo` shows them (`#scene=yards`, `#scene=terraces`).
+## Weather cells: the weather on the map (`wx/`, opt-in, 2026-11-23; W5 of `STAGE-8/G-weather.md`; `wx/test-cells.js`)
+
+The weather has a place: a seeded set of cells (rain, storm, fog, snow, dust, ash) drifts on the wind over the map, so a
+storm is seen coming, rains where it is and not a kilometre off, and the ground dries after it has gone.
+
+- **The data** (`wx/89-atmos-wx-cells.js`, [G data]). The plane is cut into spawn tiles in the frame that drifts with the
+  steering wind (the base wind's direction at `PRESETS.wxcells.speed`, 9 m/s). Each tile has six slots; a slot lives a run of
+  generations, each with a kind drawn from the climate's weights (or clear), a life, a centre, a wander, a size, a stretch
+  along the wind and a strength. Every draw is `KRAND.hash` of integers (seed, tile, slot, generation), so a cell is a pure
+  function of the place and the clock: no stream, no draw order, the same in Godot. `ATMOS.weatherAt(x, z, t)` is the local
+  `W` (`wet` is the rain of the last 20 minutes, `PRESETS.wxcells.lag`). The weights come from the climate flags
+  `bindWeather` takes and the crops kit's axes (`ATMOS.wxAxesFromCrops(CROPS, biome)`: warmth, aridity, air).
+- **On a page** (`wx/89-atmos-wx-host.js`): `ATMOS.bindWeather({..., cells: {biome}})` (or `ATMOS.weatherCells(o)` after it)
+  adds the mode `live` to the Weather selector. While it is chosen, the camera's sample is `W`; a 64 px coverage map round
+  the camera clouds the sky over the cells and darkens a storm's base (`sky/89-atmos-g-sky.js`, `atmWx`, compiled only on a
+  page that lists the cells file), and the ground's cloud shadows read the same map; storm cells strike in their cores (by
+  the clock: the same strikes at any frame rate), each a branched bolt (`fx/89-atmos-fx-lightning.js`, its own seed) with its
+  thunder delayed by distance (`ATMOS.onThunder`: `core/audio`'s); rain shafts and virga hang under the nearest wet cells (one
+  draw); splashes land on the ground and on cover round the camera (`ATMOS.rainSplashes`, `fx/89-atmos-fx-raincover.js`).
+- **It changes nothing until asked.** The page keeps its own start mode (`bindWeather` keeps `clear`); `?weather=<mode>` in
+  the URL picks and holds a mode, so a verify passes `?weather=clear` and its views stay what they were. List `core/rand`,
+  `wx/89-atmos-wx-cells.js` and `wx/89-atmos-wx-host.js` (after `89-atmos-4-weather.js` and the sky), and
+  `fx/89-atmos-fx-lightning.js` and `fx/89-atmos-fx-raincover.js` for the bolts and the splashes.
+- **The demo** is `core/atmos/wxdemo` (`?climate=temperate|tropic|desert|highland|ash`, `?view=front|under|village|aerial`,
+  `?hold=1`). **Godot**: `godot/krator/atmos_cells.gd`, held to `wx/golden-cells.json` by `godot/tests/atmos/cells_test.gd`
+  (`GODOT.md`, "Weather cells").
 
 ## Tags
 

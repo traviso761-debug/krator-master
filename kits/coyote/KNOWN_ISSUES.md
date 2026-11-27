@@ -1,0 +1,51 @@
+# kits/coyote: known issues
+
+- [ ] **The culture `coyote` is not registered in `core/tags`** (the owner, 2026-11-16: it rides along with the next
+  all-builds rebuild, `TODO.md`). Until then every record's `culture: 'coyote'` is an unknown value; `verify.py`'s
+  `tags-vocabulary` passes only while that is the one unknown value, and says so.
+- [ ] **Texture stand-ins** (`core/materials/PROMPTS-NEEDED.md` section 53): the mud brick draws `plaster.clay_block_wall`
+  (family `brick`; no wall shows it bare yet: the walls are rendered); the rugs, the shrine friezes, the turquoise inlay and
+  the ostrich plumes are not drawn yet (C2, C7, C8).
+- [ ] **No birds yet**: the ostrich, the runner bird and the golden bird are not in `kits/fauna` (a subsession is trying
+  Tripo for them, 2026-11-16). The pens and stage houses (C2, C4, C5) will stand empty until they land.
+- [ ] **The walk-reach audit runs on a 0.2 m cell** (`src/99-host-tz-cy.js`): a steep ladder is a stack of rung floors
+  (`KWALKBOX.ladder`) the flood climbs by stepping between neighbouring cells, and against a wall the walker's 0.25 m radius
+  leaves too few 0.4 m cells to step between. The ladders lean at rise/run 2.4 (`CY.LEAN`).
+- [ ] **The ear door** is the owner's to judge in practice (PLAN.md section 2).
+- [ ] **The Valley village has a yard in its middle**: `KHAMLET.platform` lays a plaza and rings of rooms round it (the pueblo's
+  pattern), and puts the sunk rooms in it; Catalhoyuk had no central plaza, only middens where houses had fallen. The layout
+  is core/hamlet's; a Catalhoyuk packing (no plaza, open middens, storeys by age not by ring) would be an option there, asked
+  of the owner before it is written.
+- [ ] **On the sheet the sunk rooms stand in the ground** (`89-rows.js` places them 2.6 and 2.8 m down, as in the yard), so
+  their painted interiors are hidden by the sheet's ground plane even in the cut-away; the village's are reached by the walk.
+- [x] **`check_assembly` baselines `MISSING KCITY.stance`** on the page: resolved in C6 (`build.py` bundles `core/city`'s `10`, `15`, `25`, `33` in one closure `19-kcity-site.js`, as Verge does).
+- [x] **Emerald and turquoise nodes** are in `kits/resources` since 2026-11-16 (`node-emerald-*`, `node-turquoise-*`, the field's
+  families from `geology.py --gems`). The sheet's Peak alcove village still passes its node by hand (`resource: {kind: 'emerald',
+  ...}`): it stands on no map; a host on the map lets `KHAMLET.resourceFor` take the nearest node.
+- [ ] **Round walls are not walk blocks**: `cy_round_room`'s ring wall is a `sector()` and the corbelled store a `lathe()`, which
+  the engine's box reader does not read; a walker could pass through them. Their floors and roofs are walk floors.
+- [ ] **The Peak village's cliff is a stand-in** (`cyMound` ledge, back rock, overhang, ends, in `rock.tuff`): a host on the
+  map draws its own cliff (`KCARVE`) and passes the alcove's line, depth and heights.
+- [ ] **A tipi's cover is not a walk block** (a `lathe()`, which the engine's box reader does not read): a walker can pass through
+  it anywhere, not only at the door. Its floor is a walk floor; the door flap is a real `core/door` leaf.
+- [ ] **The camps' wind on the sheet is `11-camp-coyote.js`'s fallback** (`[0.7071, 0.7071]`): a host on the map passes the
+  scale model's wind at the camp (`KCAMP.pitch` `wind`). The pens stand empty until the birds land in `kits/fauna`.
+- [ ] **The stepped street's hill is a stand-in** (`68-cy-street.js`: rock boxes, a fill under each band, the scarp behind the
+  top row, the canyon's flanks): a host on the map lays `KHAMLET.terrace` on its own slope (`slope {origin, up, width}`) and cuts
+  the ground to the rows' floors.
+- [ ] **The lowest row of the stepped street is mostly gardens**: `KHAMLET.terrace` fills from the top row down (the headman at the
+  top, the middling, then the poor), so the lowest row takes what is left; with seventy people on a 44 m wall that is one house.
+  The gardens are the terrace fields, so this reads; a host wanting a full lowest row passes a narrower slope.
+- [ ] **The landings' and the quay's masses are drawn past the box reader** (`cy_stair_lane`, the spring hall's stair, the lake
+  house's quay): a block there stops a walker a radius short of the flight's head, so only their tops are walk floors (`wkPad`).
+  A walker on the ground can pass into them from the side; nothing on the sheet sends one there.
+- [ ] **The treasury's tholos is a `lathe()`** (as the round room and the corbelled store are): its courses are not walk blocks;
+  the passage's walls and the door's wall are.
+- [ ] **The terrace gardens' plants are stand-ins** (green boxes on stakes): the crops come from `kits/crops` (`CROPS.at` at the
+  Tiers' climate) when the gardens get their models.
+- [ ] **Masuleh's rule at a city's size is not on `core/city` yet** (the owner, 2026-11-16: "both"): the rule and its test are
+  `core/hamlet/36-hamlet-terrace.js` and `test-hamlet-terrace.js`; Coyote Canyon's page wants the same on `core/city`, which is
+  the city session's to write (`core/city/PLAN.md`): this kit does not touch `core/city`.
+- [ ] **The Gate's scarps and river banks are sheet stand-ins** (`72-cy-gate-wall.js`: rock boxes at the ends, gravel strips along
+  the test channel): a host on the map (`biomes/outlandgate` station 1) lays `cyWallPlan` on its own `KRELIEF.gap` floor and
+  `WATER.flow` river.

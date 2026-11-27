@@ -155,6 +155,24 @@ of schedule falls due over the hour's first minutes instead of all at :00 (the h
 stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
 buckets, half of them a half-hour later).
 
+**Riding** (opt-in: the page lists `ride/78-sim-ride.js`, and `ride/79-sim-ride-porters.js` for porters; PLAN-RIDING.md).
+A **ride source** (`SIM.rideSource`) is one train: a track (`{pts, cum, len}`), a `KSCHED.timeline` of its fixed A end along
+it (dwells named `stop:<id>:<side>` or `stop:<id>`), cars `{off, b, cap: {seats, stand}, seats: [{id, at, yaw}], stand, doors:
+[{id, side, at}]}` in their own frame (car k's middle at s - off), stops `{place, side, gap, wait: [[x, y, z]...]}`; a gap's
+recorded walk between two stops by `SIM.rideFootpath({from, to, pts})`. A task's leg may carry `frame: {source, k}`: its route is
+in car k's frame and `SIM.pose` poses it through the car. `SIM.journey(a, {to})` plans (a connection scan over the runs,
+the walks between stops among the footpaths) and bakes walk, wait, board, ride, alight, walk; the actor is `driven` until
+it arrives. Occupancy is counted per run and car; `SIM.RIDE.log` holds every door crossing; `SIM.rideAudit()` checks them
+against the door windows and the room. `SIM.vehiclePose` answers a ride source, so `SIM.trade({line: <source>})` carries
+goods on a train; `SIM.porters({route, crew})` walks a crew in step with a timer route's carrier (a gap between two
+segments). `SIM.rideExportMotion` is `SIM.exportMotion` with each leg's frame and the sources (`ride/kride.gd` replays it).
+R6 (PLAN-RIDING.md section 8c): `SIM.lineEconomy({id, goods, lojes: [{id, stop, pop, makes, uses, stock}], links: [{from, to,
+rail | porters}]})` (`ride/80-sim-ride-line.js`) declares a line's settlements as books only (a store at each station, making
+and using by the hour from the population, no actors), its routes on the trains and porters, and the through-demand (each
+hop's `expect` = the net deficit beyond it, each good one way a hop); a role or actor with `ride: true` takes the train when
+the resolver's walk is impossible or slower (`ride/81-sim-ride-choose.js` wraps `SIM.plan`); `SIM.rideFromTransport(route,
+{car, stops})` turns a non-exclusive `SIM.transport` into one ride source a vessel.
+
 ## Settlements and their economies (P7a, 2026-10-19)
 
 A page may hold several settlements, each with its own economy (`settlements/isle-demo/PLAN.md` section 9). It is
@@ -192,6 +210,38 @@ A page may hold several settlements, each with its own economy (`settlements/isl
   `SIM.trades(a, b)` gates it: one faction, or each faction's relation to the other not shut (`trade` false, `'none'`
   or `'closed'`; without `trade`, a stance of wary or better). `SIM.tradeReport(id?)`: voyages, refused, what went
   each way, landed, each carrier's load.
+
+## A caravan's stops: every one of them feeds the beasts (2026-11-25)
+
+`SIM.trade`'s `provision` draws the beasts' water and fodder **at every stop on the road**, not only at the stops named
+in `halts` -- `77-sim-6-trade.js`'s own words, where it does it: *"the beasts water and feed whether or not the stop
+trades."* So **a settlement put on a caravan's road needs a water number and a fodder number, or it is a sink that can
+never be filled**, and the shortfall is paid by every train that passes rather than reported against the stop.
+
+It is worth stating because the failure does not look like its cause. A caravanserai added to the Catch's Godsgate pass
+with a well and no fodder work (the reasoning being that nothing is cut at 3,590 m, so the trains would carry its
+fodder as freight through `forHalts`) ended its first simulated year 321,624 kg short of fodder. What showed in the
+tests was not a hungry serai: it was that **one of the two rival houses loading at the shared Iziz pool stopped
+carrying any trade cargo at all** -- its round still ran, still crossed, still came home full, but it never landed iron
+at its destination, because the grain and fodder the halts needed had taken the capacity, and the house that loads
+second got what was left. It read exactly like two rivals contending for one warehouse, and was misdiagnosed as that
+for a day. `openworld/catch-bowl/PLAN-SIM.md` section 2y has the probe that settled it.
+
+Two things follow for any new stop: give it both numbers, and when a trade route goes quiet, check the stops' shortfalls
+before the carriers' schedules.
+
+**A footnote on how that was found, because the second lesson is the more useful one.** The quiet route turned out *not*
+to be caused by the hungry serai — it was caused by the two rival houses sharing one pool and leaving on the same
+minute, and the `offset` written to stagger them was **silently dropped by `core/region/50-region-valley.js`**, which
+builds each `SIM.trade` call from an explicit field list that carried `stagger` but not `offset`. The tune wrote
+`offset: 24018`, a probe read it straight back off the road spec, and the sim was handed `offset: undefined`. So the
+output was byte-identical before and after the stagger, and that was read as "the stagger is not the lever" when it
+meant "the stagger never arrived".
+
+**When a change produces byte-identical output, check that the change arrived before concluding it does not matter.** A
+spec field that a loader forwards by name is exactly where one gets lost, and `50-region-valley.js`'s own doc comment
+did not list `offset` either, so nothing contradicted the wrong reading. Both are fixed; the fodder rule above is real
+and was a second bug found on the way.
 
 ## The books (the accounting contract; PLAN-ECONOMY.md Phase 0)
 

@@ -36,6 +36,62 @@ function haloAt(x,y,z,hex,big){if(GTARGET!==GB)return;const p=new THREE.Vector3(
  const c=hc(hex||0xffb060);HALOS.push({x:p.x,y:p.y,z:p.z,r:c.r,g:c.g,b:c.b,big:!!big});}
 function halosReset(){HALOS=[];HALOKEY=new Set();}
 let GSTAT={tris:0};
+/* THE EXPORT FORM (GODOT-LOOK-PLAN.md section 13; README.md, "The export form"). Geometry a game engine wants and a page
+   does not: off unless a host calls setForm() before the world is built, so no page's geometry moves and the fingerprint
+   stays as it was. With it on:
+     chamfer  box() draws the chamfered box: its own 24 vertices, each moved a bevel's width in along its face, with twelve
+              edge strips and eight corner triangles stitched between them: 44 triangles and no new vertex. The strips keep
+              the faces' normals, so they shade as a rounded edge. chamfer(mk) -> the bevel in metres for a material key
+              (0: a plain box); a box thinner than four bevels on any side stays plain
+     jitter   0..1: a building out of true. Its walls lean in (a batter of half a degree to a degree and a half) and the
+              whole stands a little off plumb, by a hash of where it stands (core/rand). Applied to the vertices as they
+              are emitted, after the record and its box are taken, so no record, walk box or door moves
+     fields   every bucket carries aForm, three numbers a vertex: its height above the building's base (metres; -1 outside
+              any building), 1 (a place for baked occlusion, which nothing here bakes yet), and 1 on a chamfered box's
+              vertices, 0 elsewhere (they sit on an arris) */
+const FORM={chamfer:null,jitter:0,fields:false};let FORM_ROOT=null;
+function setForm(o){o=o||{};FORM.chamfer=typeof o.chamfer==='number'?(()=>o.chamfer):typeof o.chamfer==='function'?o.chamfer:null;FORM.jitter=o.jitter==null?0:+o.jitter;FORM.fields=!!o.fields;return FORM;}
+/* place() calls these round a building it draws at the top level: the frame the height and the lean are measured in */
+function formRoot(){if(!(FORM.jitter||FORM.fields))return null;const keep=FORM_ROOT;const e=CM.elements;
+ const h=KRAND.hash(0x0f0a,Math.round(e[12]*4),Math.round(e[13]*4),Math.round(e[14]*4));
+ const u=k=>KRAND.unit(KRAND.hash(0x0f0b,h,k));
+ FORM_ROOT={inv:new THREE.Matrix4().copy(CM).invert(),m:new THREE.Matrix4().copy(CM),
+  batter:Math.tan((.5+u(1))*PI/180)*FORM.jitter,leanX:(u(2)-.5)*.012*FORM.jitter,leanZ:(u(3)-.5)*.012*FORM.jitter};return keep;}
+function formRootEnd(keep){FORM_ROOT=keep;}
+/* where smoke rises and where a wall stains, as plain records for an exporter (section 13): the smoke sources smokeAt()
+   noted and the sill of every window a placement record holds (36-def.js windowAt). reg: REG; smokes: SMOKES.
+   -> [{kind:'smoke', at:[x,y,z], r, source} | {kind:'sill', at:[x,y,z], yaw, w, key}] */
+function formMarks(reg,smokes){const out=[];
+ for(const s of smokes||[])out.push({kind:'smoke',at:[s.x,s.y,s.z],r:s.r,source:s.kind});
+ for(const r of reg||[])for(const w of r.windows||[])out.push({kind:'sill',at:[w.wx,w.wy+(w.sill||0),w.wz],yaw:w.yaw,w:w.w,key:r.key});
+ return out;}
+const _fv=new THREE.Vector3();
+/* the chamfered box, w by h by d metres, bevel bv, as a UNIT box to be drawn through the plain box's own scaled matrix:
+   BoxGeometry's 24 vertices in its order, each moved in along its face by the bevel's share of that side; 12 face
+   triangles, 24 of edge strips, 8 corners. On its face's own axis a vertex keeps the plain box's coordinate (half a unit)
+   and goes through the same matrix, so a face lands where the plain box's does, to the bit: a slab that lay in the
+   ground's plane still does (a chamfered box built in metres took another path through the arithmetic and flickered
+   against the terrain: seen in Godot, 2026-11-24). Cached by the three shares */
+const _GCH={};
+function gboxCh(w,h,d,bv){const fr=[bv/w,bv/h,bv/d],key=fr.map(v=>Math.round(v*1e5)).join('_');if(_GCH[key])return _GCH[key];
+ const src=new THREE.BoxGeometry(1,1,1),P=src.attributes.position.array.slice(),N=src.attributes.normal.array,n=24;
+ const corner=new Int8Array(n*3);   /* which corner a vertex is (the signs of its place), before it moves */
+ for(let i=0;i<n;i++)for(let k=0;k<3;k++){const sg=P[i*3+k]>0?1:-1;corner[i*3+k]=sg;if(Math.abs(N[i*3+k])<.5)P[i*3+k]-=sg*fr[k];}
+ const idx=Array.from(src.index.array);
+ const at=(sx,sy,sz,axis)=>{for(let i=0;i<n;i++)if(corner[i*3]===sx&&corner[i*3+1]===sy&&corner[i*3+2]===sz&&Math.abs(N[i*3+axis])>.5)return i;return -1;};
+ const tri=(a,b,c,ox,oy,oz)=>{   /* wound so that it faces away from the centre, toward (ox, oy, oz) */
+  const ux=P[b*3]-P[a*3],uy=P[b*3+1]-P[a*3+1],uz=P[b*3+2]-P[a*3+2],vx=P[c*3]-P[a*3],vy=P[c*3+1]-P[a*3+1],vz=P[c*3+2]-P[a*3+2];
+  const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;if(nx*ox+ny*oy+nz*oz>=0)idx.push(a,b,c);else idx.push(a,c,b);};
+ const S=[-1,1];
+ /* an edge runs along one axis, where two faces meet: a strip between the two faces' vertices at its two ends */
+ for(let ax=0;ax<3;ax++){const b1=(ax+1)%3,b2=(ax+2)%3;for(const s1 of S)for(const s2 of S){
+  const sg=t=>{const q=[0,0,0];q[ax]=t;q[b1]=s1;q[b2]=s2;return q;};
+  const a0=at(...sg(-1),b1),a1=at(...sg(1),b1),c0=at(...sg(-1),b2),c1=at(...sg(1),b2);const o=[0,0,0];o[b1]=s1;o[b2]=s2;
+  tri(a0,a1,c1,o[0],o[1],o[2]);tri(a0,c1,c0,o[0],o[1],o[2]);}}
+ for(const sx of S)for(const sy of S)for(const sz of S)tri(at(sx,sy,sz,0),at(sx,sy,sz,1),at(sx,sy,sz,2),sx,sy,sz);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(N.slice(),3));
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(src.attributes.uv.array.slice(),2));g.setIndex(idx);g.userData.arris=1;
+ return _GCH[key]=g;}
 /* emit a base geometry through matrix lm (local to CM). uvm: undefined = world box projection; {su,sv} = the geometry's own UVs
    scaled. A geometry with its own `color` attribute multiplies the tint per vertex (the salamanders' markings). */
 /* a building's alternative takes, set per building by place() (36-def.js) from a hash of its seed, variant and place, so
@@ -45,20 +101,52 @@ let GSTAT={tris:0};
                   entry the usual material (repeats weight it); the library mode only, and only when the second is a MAT */
 let GABLE_ALT=0;const GABLE_ALT_K={};
 let MAT_ALT=0;const MAT_VAR={};
+/* PLOT-BASE GROUNDING (K2/M4, GRAPHICS-TERRAIN-PROPOSAL.md 12d): a wall, post or plinth standing on its plot darkens toward
+   its foot, BASE_AO.lo at the ground to 1 at BASE_AO.band metres up, baked into the vertex colour (no shader, so Godot's
+   import takes it as it is). box(), cyl() and a vertical beam() whose foot is on the plot (PLOT_Y, the plot's ground,
+   set by place(); within 6 cm, the frame upright) are drawn in two: the band, ramped, and the rest above it, untouched, so
+   the ramp ends at the band and does not stretch up a 3 m wall. Flat pieces (a slab, a floor: lower than 0.6 of their
+   narrowest side), glass, glow, water, unlit (basic) materials and the cut-away's cloth keys are left as they were.
+   A kit turns it off with BASE_AO=null before it builds. */
+let BASE_AO={lo:.72,band:.30};let PLOT_Y=null,AO_ON=0;
+const AO_SKIP={glass:1,glow:1,water:1};
+function aoKey(mk){if(!BASE_AO||PLOT_Y===null||AO_SKIP[mk]||SV_CUT[mk])return false;const m=MAT[mk];return !(m&&m.isMeshBasicMaterial);}
+/* JOINTS (M4 "corner and joint darkening is baked per vertex by the builders"): the ramp's base is whatever the piece stands on,
+   its plot or a slab the same building drew before it (a floor, a deck, a platform: a flat box, SLABS), so a wall on an upper
+   floor or a post on a deck darkens at its joint as one on the ground does. aoGrounded sets AO_BASE to that surface. */
+let AO_BASE=0,SLABS=[];
+function aoGrounded(x,y,z){const e=CM.elements,sy=Math.hypot(e[4],e[5],e[6]);if(!(sy>0)||e[5]/sy<.999)return false;
+ const wx=e[0]*x+e[4]*y+e[8]*z+e[12],wy=e[1]*x+e[5]*y+e[9]*z+e[13],wz=e[2]*x+e[6]*y+e[10]*z+e[14];
+ if(Math.abs(wy-PLOT_Y)<.06){AO_BASE=PLOT_Y;return true;}
+ for(let i=SLABS.length-1;i>=0;i--){const s=SLABS[i];if(Math.abs(wy-s[4])<.06&&wx>=s[0]&&wx<=s[1]&&wz>=s[2]&&wz<=s[3]){AO_BASE=s[4];return true;}}
+ return false;}
+/* a flat box drawn inside a plot is a slab others may stand on: its world box (the turned corners' bounds) and top */
+function aoSlab(x,y,z,w,h,d,ry){if(PLOT_Y===null||!BASE_AO)return;const m=TF(x,y,z,ry),v=new THREE.Vector3();let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9,top=-1e9;
+ for(const[a,b]of[[-w/2,-d/2],[w/2,-d/2],[w/2,d/2],[-w/2,d/2]]){v.set(a,h,b).applyMatrix4(m).applyMatrix4(CM);x0=Math.min(x0,v.x);x1=Math.max(x1,v.x);z0=Math.min(z0,v.z);z1=Math.max(z1,v.z);top=Math.max(top,v.y);}
+ SLABS.push([x0,x1,z0,z1,top]);}
+function aoRun(fn){AO_ON=1;try{fn();}finally{AO_ON=0;}}
+function aoF(wy){const t=(wy-AO_BASE)/BASE_AO.band;return t>=1?1:BASE_AO.lo+(1-BASE_AO.lo)*(t>0?t:0);}
 function emit(mk,geo,lm,col,uvm){if(GABLE_ALT&&GABLE_ALT_K[mk])mk=GABLE_ALT_K[mk];if(MAT_ALT&&MAT_VAR[mk]&&MAT[MAT_VAR[mk][1]]){const v=MAT_VAR[mk];mk=v[MAT_ALT%v.length];}_mm.copy(CM);if(lm)_mm.multiply(lm);
  let a1=0;if(mk==='glow')a1=geo.type==='ConeGeometry'?1:geo.type==='SphereGeometry'?.45:.25;
  const b=GTARGET[mk]||(GTARGET[mk]={p:[],n:[],u:[],c:[],i:[]});
- if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
+ if(!b.f&&SV_CLOTH[mk])b.f=[];if(!b.k&&SV_CUT[mk])b.k=[];if(!b.w&&mk==='glow')b.w=[];if(!b.x&&FORM.fields){b.x=[];for(let q=b.p.length/3;q>0;q--)b.x.push(-1,1,0);}if(b.f&&CLOTHW)_cm3.setFromMatrix4(CM);
  const Pa=geo.attributes.position,Na=geo.attributes.normal,Ua=geo.attributes.uv,Ca=geo.attributes.color,I=geo.index;const base=b.p.length/3;_nm.getNormalMatrix(_mm);
  const c=col===undefined||col===null?_WC:(typeof col==='number'?hc(col):col);const ts=1/(TILE[mk]||1);
  for(let i=0;i<Pa.count;i++){_v.fromBufferAttribute(Pa,i).applyMatrix4(_mm);_n.fromBufferAttribute(Na,i).applyMatrix3(_nm).normalize();
   b.p.push(_v.x,_v.y,_v.z);b.n.push(_n.x,_n.y,_n.z);
-  if(Ca)b.c.push(c.r*Ca.getX(i),c.g*Ca.getY(i),c.b*Ca.getZ(i));else b.c.push(c.r,c.g,c.b);
+  if(AO_ON){const f=aoF(_v.y);if(Ca)b.c.push(c.r*Ca.getX(i)*f,c.g*Ca.getY(i)*f,c.b*Ca.getZ(i)*f);else b.c.push(c.r*f,c.g*f,c.b*f);}
+  else if(Ca)b.c.push(c.r*Ca.getX(i),c.g*Ca.getY(i),c.b*Ca.getZ(i));else b.c.push(c.r,c.g,c.b);
   if(b.f){if(CLOTHW){_lp.fromBufferAttribute(Pa,i);if(lm)_lp.applyMatrix4(lm);CLOTHW(_lp,_fl);_fl.applyMatrix3(_cm3);b.f.push(_fl.x,_fl.y,_fl.z);}else b.f.push(0,0,0);}
   if(b.k)b.k.push(CUTC[0],CUTC[1],CUTC[2],CUTC[3]);
   if(b.w)b.w.push(a1);
   if(uvm&&Ua){b.u.push(Ua.getX(i)*uvm.su,Ua.getY(i)*uvm.sv);}
   else{const ax=Math.abs(_n.x),ay=Math.abs(_n.y),az=Math.abs(_n.z);if(ay>=ax&&ay>=az)b.u.push(_v.x*ts,_v.z*ts);else if(ax>az)b.u.push(_v.z*ts,_v.y*ts);else b.u.push(_v.x*ts,_v.y*ts);}
+  if(FORM_ROOT){_fv.copy(_v).applyMatrix4(FORM_ROOT.inv);if(b.x)b.x.push(_fv.y,1,geo.userData&&geo.userData.arris?1:0);
+   if(FORM.jitter){const hy=Math.max(0,_fv.y);
+    const jx=-_fv.x*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.x)))+FORM_ROOT.leanX*hy,jz=-_fv.z*Math.min(.2,FORM_ROOT.batter*hy/Math.max(1,Math.abs(_fv.z)))+FORM_ROOT.leanZ*hy;
+    /* under a tenth of a millimetre a vertex is left as it was, to the bit: what lies on the ground keeps its place against the ground */
+    if(Math.abs(jx)+Math.abs(jz)>1e-4){_fv.x+=jx;_fv.z+=jz;_fv.applyMatrix4(FORM_ROOT.m);const q=b.p.length-3;b.p[q]=_fv.x;b.p[q+1]=_fv.y;b.p[q+2]=_fv.z;}}}
+  else if(b.x)b.x.push(-1,1,geo.userData&&geo.userData.arris?1:0);
   if(SB){if(_v.x<SB.mn[0])SB.mn[0]=_v.x;if(_v.y<SB.mn[1])SB.mn[1]=_v.y;if(_v.z<SB.mn[2])SB.mn[2]=_v.z;if(_v.x>SB.mx[0])SB.mx[0]=_v.x;if(_v.y>SB.mx[1])SB.mx[1]=_v.y;if(_v.z>SB.mx[2])SB.mx[2]=_v.z;}}
  if(I){for(let i=0;i<I.count;i++)b.i.push(base+I.getX(i));GSTAT.tris+=I.count/3;}else{for(let i=0;i<Pa.count;i++)b.i.push(base+i);GSTAT.tris+=Pa.count/3;}
  if(!isFinite(_v.x+_v.y+_v.z))reportErr('NaN vertex in bucket '+mk);}
@@ -72,9 +160,63 @@ function gsph(seg){const k='sph'+(seg||12);return _G[k]||(_G[k]=new THREE.Sphere
 function gtor(R,t,rs,ts){const k='tor'+R.toFixed(3)+'_'+t.toFixed(3)+'_'+(rs||6)+'_'+(ts||14);return _G[k]||(_G[k]=(()=>{const g=new THREE.TorusGeometry(R,t,rs||6,ts||14);g.rotateX(PI/2);return g;})());}
 function gplane(){return _G.pl||(_G.pl=new THREE.PlaneGeometry(1,1));}
 // ---- primitives. Boxes and cylinders are BASE-anchored: (x,y,z) is the middle of the underside.
-function box(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);m.scale(new THREE.Vector3(w,h,d));emit(mk,gbox(),m,col);}
+/* HERO BEVELS (M4 "bevels are geometry", 2026-11-23): a kit names its masonry keys and their chamfer in BEVEL_KEYS (its
+   31-alt-takes.js: BEVEL_KEYS.stoneP=.05) and box() draws those boxes with boxBevel(), axis-aligned ones at least 2.5
+   chamfers thick on every side, until the page has spent BEVEL_BUDGET extra triangles (32 a box, more where the grounding
+   band cuts it). BEVEL_STAT counts what was spent; the kit's sheet reports it. A grounded bevelled box keeps its base ramp:
+   its triangles are cut at the band (clipY) so the darkening ends there, as a split box's does. */
+const BEVEL_KEYS={};let BEVEL_BUDGET=60000;const BEVEL_STAT={boxes:0,extra:0,skipped:0};
+function clipY(g,c){const P=g.attributes.position,N=g.attributes.normal,I=g.index?g.index.array:null,n=I?I.length:P.count,pos=[],nor=[],uv=[],idx=[];
+ const V=k=>({x:P.getX(k),y:P.getY(k),z:P.getZ(k),nx:N.getX(k),ny:N.getY(k),nz:N.getZ(k)});
+ const cut=(a,b)=>{const t=(c-a.y)/(b.y-a.y);return {x:a.x+(b.x-a.x)*t,y:c,z:a.z+(b.z-a.z)*t,nx:a.nx,ny:a.ny,nz:a.nz};};
+ for(let t=0;t<n;t+=3){const T=[V(I?I[t]:t),V(I?I[t+1]:t+1),V(I?I[t+2]:t+2)];
+  for(const below of[true,false]){const poly=[];for(let i=0;i<3;i++){const a=T[i],b=T[(i+1)%3],ia=below?a.y<=c:a.y>=c,ib=below?b.y<=c:b.y>=c;
+    if(ia)poly.push(a);if(ia!==ib)poly.push(cut(a,b));}
+   for(let i=1;i+1<poly.length;i++)for(const q of[poly[0],poly[i],poly[i+1]]){idx.push(pos.length/3);pos.push(q.x,q.y,q.z);nor.push(q.nx,q.ny,q.nz);uv.push(0,0);}}}
+ return mkGeo(pos,nor,uv,idx);}
+function bevelBox(mk,x,y,z,w,h,d,col,ry){const e=Math.min(BEVEL_KEYS[mk],.45*Math.min(w,h,d));
+ const grounded=h>=.12&&h>=.6*Math.min(w,d)&&aoKey(mk)&&aoGrounded(x,y,z),B=BASE_AO?BASE_AO.band:0;
+ const k='bevc'+[w,h,d,e,grounded&&h>B*1.5?B:0].map(v=>v.toFixed(3)).join('_');
+ const g=_G[k]||(_G[k]=grounded&&h>B*1.5?clipY(gbevel(w,h,d,e),-h/2+B):gbevel(w,h,d,e));
+ const extra=(g.index?g.index.count:g.attributes.position.count)/3-12;
+ BEVEL_STAT.boxes++;BEVEL_STAT.extra+=extra;
+ const run=()=>emit(mk,g,TF(x,y+h/2,z,ry),col);if(grounded)aoRun(run);else run();}
+function box(mk,x,y,z,w,h,d,col,ry,rx,rz){
+ if(!rx&&!rz&&h<.6*Math.min(w,d)&&h>=.02&&aoKey(mk))aoSlab(x,y,z,w,h,d,ry);
+ if(BEVEL_KEYS[mk]&&!rx&&!rz){if(Math.min(w,h,d)>=2.5*BEVEL_KEYS[mk]&&BEVEL_STAT.extra+40<=BEVEL_BUDGET)return bevelBox(mk,x,y,z,w,h,d,col,ry);BEVEL_STAT.skipped++;}
+ if(!rx&&!rz&&h>=.12&&h>=.6*Math.min(w,d)&&aoKey(mk)&&aoGrounded(x,y,z)){const B=BASE_AO.band;   /* grounded: the band ramped, the rest above */
+  if(h>B*1.5){aoRun(()=>boxRaw(mk,x,y,z,w,B,d,col,ry));boxRaw(mk,x,y+B,z,w,h-B,d,col,ry);}else aoRun(()=>boxRaw(mk,x,y,z,w,h,d,col,ry));return;}
+ boxRaw(mk,x,y,z,w,h,d,col,ry,rx,rz);}
+function boxRaw(mk,x,y,z,w,h,d,col,ry,rx,rz){const m=TF(x,y+h/2,z,ry,rx,rz);
+ const bv=FORM.chamfer?+FORM.chamfer(mk):0;m.scale(new THREE.Vector3(w,h,d));
+ emit(mk,bv>0&&Math.min(w,h,d)>=bv*4?gboxCh(w,h,d,bv):gbox(),m,col);}   /* the export form's chamfered box (GODOT-LOOK-PLAN 13) goes through the plain box's matrix; hero bevels (BEVEL_KEYS) are drawn by bevelBox above */
+/* boxBevel(mat, x,y,z, w,h,d, bev, col, ry): box()'s base-anchored box with every edge chamfered by bev metres (44 triangles
+   to box()'s 12: six inset faces, twelve chamfer strips, eight corner triangles; flat normals, so the chamfers catch the
+   light). For near-tier plinths, piers and lintels where the budget allows (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d); the
+   chamfer is clamped to 0.45 of the smallest side. Its foot grounds like a box's (no split: the ramp runs to its top
+   when it is under the band, else it is left as it is). */
+function gbevel(w,h,d,e){const k='bev'+[w,h,d,e].map(v=>v.toFixed(3)).join('_');if(_G[k])return _G[k];
+ const H=[w/2,h/2,d/2],pos=[],nor=[],uv=[],idx=[];
+ const put=(pts,n)=>{const b=pos.length/3,l=Math.hypot(n[0],n[1],n[2]);for(const p of pts){pos.push(p[0],p[1],p[2]);nor.push(n[0]/l,n[1]/l,n[2]/l);uv.push(0,0);}
+  if(pts.length===4)idx.push(b,b+1,b+2,b,b+2,b+3);else idx.push(b,b+1,b+2);};
+ const P=(i,vi,j,vj,k,vk)=>{const p=[0,0,0];p[i]=vi;p[j]=vj;p[k]=vk;return p;};
+ for(let i=0;i<3;i++){const j=(i+1)%3,k=(i+2)%3,J=H[j]-e,K=H[k]-e;
+  for(const s of[-1,1]){const n=[0,0,0];n[i]=s;put([P(i,s*H[i],j,-J,k,-K),P(i,s*H[i],j,J,k,-K),P(i,s*H[i],j,J,k,K),P(i,s*H[i],j,-J,k,K)],n);   /* face */
+   for(const t of[-1,1]){const m=[0,0,0];m[i]=s;m[j]=t;   /* the chamfer between face i and face j, along k */
+    put([P(i,s*H[i],j,t*J,k,-K),P(i,s*H[i],j,t*J,k,K),P(i,s*(H[i]-e),j,t*H[j],k,K),P(i,s*(H[i]-e),j,t*H[j],k,-K)],m);}}}
+ for(const sx of[-1,1])for(const sy of[-1,1])for(const sz of[-1,1])   /* the corner triangles */
+  put([[sx*H[0],sy*(H[1]-e),sz*(H[2]-e)],[sx*(H[0]-e),sy*H[1],sz*(H[2]-e)],[sx*(H[0]-e),sy*(H[1]-e),sz*H[2]]],[sx,sy,sz]);
+ return (_G[k]=fixWind(mkGeo(pos,nor,uv,idx)));}
+function boxBevel(mk,x,y,z,w,h,d,bev,col,ry){const e=Math.max(0,Math.min(bev==null?.04:bev,.45*Math.min(w,h,d)));
+ if(!(e>1e-4))return box(mk,x,y,z,w,h,d,col,ry);
+ const run=()=>emit(mk,gbevel(w,h,d,e),TF(x,y+h/2,z,ry),col);
+ if(aoKey(mk)&&h<=BASE_AO.band*1.5&&aoGrounded(x,y,z))aoRun(run);else run();}
 // cyl(mat, x,y,z, r,h, colour, seg, rTop, wrap): vertical, base at y. wrap: own UVs (u round, v up) so a pattern follows the surface
-function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
+function cyl(mk,x,y,z,r,h,col,seg,rt,wrap){
+ if(!wrap&&(rt==null||rt===r)&&h>=.12&&h>=1.2*r&&aoKey(mk)&&aoGrounded(x,y,z)){const B=BASE_AO.band;   /* a grounded post: see box() */
+  if(h>B*1.5){aoRun(()=>cylRaw(mk,x,y,z,r,B,col,seg));cylRaw(mk,x,y+B,z,r,h-B,col,seg);}else aoRun(()=>cylRaw(mk,x,y,z,r,h,col,seg));return;}
+ cylRaw(mk,x,y,z,r,h,col,seg,rt,wrap);}
+function cylRaw(mk,x,y,z,r,h,col,seg,rt,wrap){seg=seg||14;const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));const tl=TILE[mk]||1;const uv=wrap?{su:TAU*r/tl,sv:h/tl}:undefined;
  if(rt!==undefined&&rt!==null&&rt!==r)emit(mk,gfrus(seg,rt/r),m,col,uv);else emit(mk,gcyl(seg),m,col,uv);}
 function cone(mk,x,y,z,r,h,col,seg){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,h,r));emit(mk,gcone(seg||14),m,col);}
 function sph(mk,x,y,z,r,col,sy,seg){const m=new THREE.Matrix4().compose(new THREE.Vector3(x,y,z),new THREE.Quaternion(),new THREE.Vector3(r,r*(sy||1),r));emit(mk,gsph(seg),m,col);}
@@ -87,9 +229,16 @@ function beamQ(dir){const q=new THREE.Quaternion();
  if(Math.abs(dir.y)>.999){if(dir.y>0)q.identity();else q.setFromAxisAngle(new THREE.Vector3(1,0,0),PI);}
  else{const X=new THREE.Vector3().crossVectors(_up,dir).normalize();const Z=new THREE.Vector3().crossVectors(X,dir).normalize();q.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X,dir,Z));}return q;}
 function beam(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dy,dz);if(L<1e-6)return;
+ if(dy/L>.9999&&(w2===undefined||w2===w)&&L>=.12&&L>=(round?1.2:.6)*w&&aoKey(mk)&&aoGrounded(a[0],a[1],a[2])){const B=BASE_AO.band;   /* a grounded post: see box() */
+  if(L>B*1.5){const m=[a[0]+dx*B/L,a[1]+B,a[2]+dz*B/L];aoRun(()=>beamRaw(mk,a,m,w,col,round,seg,w2));beamRaw(mk,m,b,w,col,round,seg,w2);}
+  else aoRun(()=>beamRaw(mk,a,b,w,col,round,seg,w2));return;}
+ beamRaw(mk,a,b,w,col,round,seg,w2);}
+function beamRaw(mk,a,b,w,col,round,seg,w2){const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2];const L=Math.hypot(dx,dy,dz);if(L<1e-6)return;
  const dir=new THREE.Vector3(dx/L,dy/L,dz/L);const q=beamQ(dir);const m=new THREE.Matrix4();
  if(round){m.compose(new THREE.Vector3(a[0],a[1],a[2]),q,new THREE.Vector3(w,L,w));emit(mk,w2!==undefined&&w2!==w?gfrus(seg||8,w2/w):gcyl(seg||8),m,col);}
- else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));emit(mk,gbox(),m,col);}}
+ else{m.compose(new THREE.Vector3((a[0]+b[0])/2,(a[1]+b[1])/2,(a[2]+b[2])/2),q,new THREE.Vector3(w,L,w2===undefined?w:w2));
+  const d2=w2===undefined?w:w2,bv=FORM.chamfer?+FORM.chamfer(mk):0;   /* a square beam takes the export form's chamfer as a box does */
+  emit(mk,bv>0&&Math.min(w,L,d2)>=bv*4?gboxCh(w,L,d2,bv):gbox(),m,col);}}
 function pole(mk,a,b,r,col,seg){beam(mk,a,b,r,col,true,seg||8);}
 // a sheet spanning two edges: p0->p1 one edge, p0->p2 the other; thickness th along the normal
 function plane4(mk,p0,p1,p2,th,col){
@@ -142,7 +291,12 @@ function psurf(mk,f,nu,nv,col,o){o=o||{};const P=[];for(let j=0;j<=nv;j++)for(le
  for(let j=0;j<=nv;j++)for(let i=0;i<=nu;i++){const p=P[id(i,j)];pos.push(p[0],p[1],p[2]);
   const du=sub(P[id(Math.min(nu,i+1),j)],P[id(Math.max(0,i-1),j)]),dv=sub(P[id(i,Math.min(nv,j+1))],P[id(i,Math.max(0,j-1))]);
   let n=[du[1]*dv[2]-du[2]*dv[1],du[2]*dv[0]-du[0]*dv[2],du[0]*dv[1]-du[1]*dv[0]];let L=len(n);
-  if(L<1e-9){const dv2=sub(P[id(i,Math.min(nv,j+2))],P[id(i,Math.max(0,j-2))]),du2=sub(P[id(Math.min(nu,i+2),j)],P[id(Math.max(0,i-2),j)]);n=[du2[1]*dv2[2]-du2[2]*dv2[1],du2[2]*dv2[0]-du2[0]*dv2[2],du2[0]*dv2[1]-du2[1]*dv2[0]];L=len(n)||1;}
+  if(L<1e-9){const dv2=sub(P[id(i,Math.min(nv,j+2))],P[id(i,Math.max(0,j-2))]),du2=sub(P[id(Math.min(nu,i+2),j)],P[id(Math.max(0,i-2),j)]);n=[du2[1]*dv2[2]-du2[2]*dv2[1],du2[2]*dv2[0]-du2[0]*dv2[2],du2[0]*dv2[1]-du2[1]*dv2[0]];L=len(n);
+   /* a row that has shrunk to one point (a lathe's pole: S3-84a) has no normal of its own, and a zero one shaded the cap black:
+      take o.pole, the axis, turned to the side the next row's grid normal faces */
+   if(L<1e-9&&o.pole){const jn=j===0?Math.min(nv,1):j-1,a=sub(P[id(Math.min(nu,i+1),jn)],P[id(Math.max(0,i-1),jn)]),c=sub(P[id(i,Math.min(nv,jn+1))],P[id(i,Math.max(0,jn-1))]);
+    const s=o.pole[0]*(a[1]*c[2]-a[2]*c[1])+o.pole[1]*(a[2]*c[0]-a[0]*c[2])+o.pole[2]*(a[0]*c[1]-a[1]*c[0]);if(s!==0){n=s>0?o.pole.slice():o.pole.map(x=>-x);L=len(n);}}
+   L=L||1;}
   if(o.flip)L=-L;if(o.up&&n[1]/L<0)L=-L;nor.push(n[0]/L,n[1]/L,n[2]/L);
   if(o.uvf){const q=o.uvf(i/nu,j/nv);uv.push(q[0]/tl,q[1]/tl);}else uv.push(U[id(i,j)]/tl,V[id(i,j)]/tl);
   if(cl){const c=o.colf(i/nu,j/nv);cl.push(c.r,c.g,c.b);}}
@@ -166,7 +320,7 @@ function lathe(mk,cx,cz,prof,seg,col,o){o=o||{};const a0=o.a0||0,a1=o.a1===undef
   const rBase=top?r0:rn,sBase=Lt+(top?rn:r0)*Lt/Math.max(.01,Math.abs(r0-rn)),k=Math.min(1,rBase/Math.max(.01,sBase)),off=(top?rn:r0)*Lt/Math.max(.01,Math.abs(r0-rn));
   uvf=(u,v)=>{const s0=sAt(v)+off,a=(a1-a0)*u;return [s0*Math.cos(k*a),s0*Math.sin(k*a)];};}
  psurf(mk,(u,v)=>{const a=a0+(a1-a0)*u;const t=v*(n-1),j=Math.min(n-2,Math.floor(t)),f=t-j;const r=prof[j][0]+(prof[j+1][0]-prof[j][0])*f,y=prof[j][1]+(prof[j+1][1]-prof[j][1])*f;
-  return [cx+Math.cos(a)*r,y,cz+Math.sin(a)*r];},seg,(n-1)*(o.sub||1),col,{colf:o.colf,flip:o.flip?!flip:flip,uvf});
+  return [cx+Math.cos(a)*r,y,cz+Math.sin(a)*r];},seg,(n-1)*(o.sub||1),col,{colf:o.colf,flip:o.flip?!flip:flip,uvf,pole:[0,1,0]});
  return {rmax,len:sv[n-1]};}
 /* TUBE: a skin along a centre curve. c(t) -> [x,y,z], t in 0..1; rad(t) -> [half-width, half-height]; the section is an
    ellipse in the plane across the curve, with the curve's up as close to +y as the curve allows. Caps close the ends
@@ -192,6 +346,7 @@ function sagRope(mk,a,b,sag,r,col,n){n=n||8;const P=[];for(let i=0;i<=n;i++){con
 // ---- flush: turn buckets into meshes
 function flushBuckets(buckets,parent,shadow){const out=[];for(const mk in buckets){const b=buckets[mk];if(!b.i.length)continue;const m=MAT[mk];if(!m){reportErr('no material for bucket '+mk);continue;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.p,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.n,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.u,2));g.setAttribute('color',new THREE.Float32BufferAttribute(b.c,3));
+ if(b.x)g.setAttribute('aForm',new THREE.Float32BufferAttribute(b.x,3));
  if(b.f)g.setAttribute('aFlut',new THREE.Float32BufferAttribute(b.f,3));if(b.k)g.setAttribute('aCut',new THREE.Float32BufferAttribute(b.k,4));if(b.w)g.setAttribute('aFlk',new THREE.Float32BufferAttribute(b.w,1));
  g.setIndex(b.p.length/3>65535?new THREE.Uint32BufferAttribute(b.i,1):new THREE.Uint16BufferAttribute(b.i,1));g.computeBoundingSphere();
  const mesh=new THREE.Mesh(g,m);mesh.userData.mk=mk;const pane=!!(m.userData.kglass&&m.transparent);if(mk==='glass'||mk==='water'||pane)mesh.renderOrder=2;   /* pane: core/door's glass (36o-open.js) */

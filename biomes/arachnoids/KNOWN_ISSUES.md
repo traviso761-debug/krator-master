@@ -1,0 +1,7 @@
+# biomes/arachnoids: known issues & planned follow-ups
+
+All production quality gates on `biomes/arachnoids` (`dist/arachnoids.html`, `dist/arachnoids-fumarole.html`, `dist/arachnoids-ledges.html`, `dist/arachnoids-frostrim.html`) pass with `0` untextured lit meshes, `<= 12` active ground samplers (`< 15` hard ceiling), `0.000 m` ATMOS anchor drift on all communal bridge-webs, `0` z-fighting coplanar decals, and `KSHADOW` detached at default page load.
+
+## Planned future tie-ins (out of scope for the biome kit)
+- **Hum Gorge Toll-Villages & Caravanserais (`core/hamlet` / `core/city`):** Permanent Hum cliff-pier toll-gates and placer camps are held clear as registered `KTAGS` `site:hum-*` reserves (`site:hum-webgate`, `site:hum-placer-camp`, `site:hum-cliff-stair`, `site:hum-pass-cairn`), dressed with optional `?works=0` outdoor silk capstans, basalt wind-flutes, and placer riffle-boxes (`class: 'furniture'`).
+- **Bespoke material-library sets (`PLAN.md` §6.3):** Currently mapped onto genuine packed library sets (`ground.obsidian`, `cloth.silk`, `fibre.rope.twist`, `organic.cap.orange`, `card.crop.rosette`, `card.bromeliad`). When bespoke `ground.gravel.vitrophyre`, `card.web.chasmcable`, `organic.sinter.therm`, or `card.lithophyte.dikeclaw` textures land in `core/materials/library/`, swap their `"lib"` entries in `materials.json` and rerun `python3 tools/textures/pack.py biomes/arachnoids`.

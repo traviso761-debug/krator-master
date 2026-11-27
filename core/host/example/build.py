@@ -6,6 +6,9 @@ editor, the cutaway). The reference for a build adopting core/host (core/host/RE
     python3 build.py      # -> host-example.html next to this file
     python3 check.py      # headless: the stocks panel, the contents, the editor's ops, each with a negative
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); HOST = os.path.dirname(HERE); CORE = os.path.dirname(HOST)

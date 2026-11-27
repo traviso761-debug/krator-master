@@ -8,13 +8,12 @@
   "provinces": {
    "sedimentary": 8864,
    "water": 256,
-   "granite": 128,
-   "crystalline": 80,
-   "impact": 448
+   "granite": 256,
+   "crystalline": 400
   },
   "families": {
    "iron": {
-    "mean": 68.5,
+    "mean": 69.8,
     "good_km2": 2320,
     "rich_km2": 1664,
     "peak": {
@@ -22,7 +21,7 @@
      "x": 4000,
      "z": 70000
     },
-    "nodes": 292
+    "nodes": 297
    },
    "copper": {
     "mean": 12.4,
@@ -36,62 +35,62 @@
     "nodes": 30
    },
    "tin": {
-    "mean": 4.9,
-    "good_km2": 128,
-    "rich_km2": 128,
+    "mean": 7.7,
+    "good_km2": 256,
+    "rich_km2": 256,
     "peak": {
      "byte": 200,
      "x": 52000,
      "z": 70000
     },
-    "nodes": 12
+    "nodes": 18
    },
    "nickel": {
-    "mean": 13.7,
-    "good_km2": 528,
-    "rich_km2": 304,
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
     "peak": {
-     "byte": 220,
-     "x": 48000,
-     "z": 98000
+     "byte": 0,
+     "x": -48000,
+     "z": -126000
     },
-    "nodes": 21
+    "nodes": 0
    },
    "gold": {
-    "mean": 6.5,
-    "good_km2": 208,
+    "mean": 7.4,
+    "good_km2": 656,
     "rich_km2": 0,
     "peak": {
      "byte": 110,
      "x": 52000,
      "z": 70000
     },
-    "nodes": 10
+    "nodes": 11
    },
    "silver": {
-    "mean": 6,
-    "good_km2": 208,
+    "mean": 7.4,
+    "good_km2": 656,
     "rich_km2": 0,
     "peak": {
      "byte": 110,
      "x": 52000,
      "z": 70000
     },
-    "nodes": 9
+    "nodes": 11
    },
    "rare-earth": {
-    "mean": 5.7,
-    "good_km2": 208,
+    "mean": 8.3,
+    "good_km2": 656,
     "rich_km2": 0,
     "peak": {
      "byte": 160,
      "x": 52000,
      "z": 70000
     },
-    "nodes": 6
+    "nodes": 9
    },
    "coal": {
-    "mean": 118.1,
+    "mean": 118,
     "good_km2": 5776,
     "rich_km2": 2864,
     "peak": {
@@ -102,15 +101,15 @@
     "nodes": 503
    },
    "oil": {
-    "mean": 92.8,
-    "good_km2": 4752,
-    "rich_km2": 528,
+    "mean": 92.9,
+    "good_km2": 4768,
+    "rich_km2": 544,
     "peak": {
      "byte": 178,
      "x": -36000,
      "z": -50000
     },
-    "nodes": 142
+    "nodes": 143
    },
    "sulfur": {
     "mean": 0,
@@ -143,7 +142,7 @@
      "x": -36000,
      "z": -126000
     },
-    "nodes": 47
+    "nodes": 46
    },
    "gypsum": {
     "mean": 0,
@@ -190,9 +189,9 @@
     "nodes": 0
    },
    "stone": {
-    "mean": 156,
-    "good_km2": 8496,
-    "rich_km2": 3984,
+    "mean": 156.3,
+    "good_km2": 8512,
+    "rich_km2": 4016,
     "peak": {
      "byte": 255,
      "x": 52000,
@@ -245,13 +244,13 @@
     "nodes": 0
    },
    "impactite": {
-    "mean": 24.3,
-    "good_km2": 1424,
-    "rich_km2": 448,
+    "mean": 0,
+    "good_km2": 0,
+    "rich_km2": 0,
     "peak": {
-     "byte": 255,
-     "x": 52000,
-     "z": 106000
+     "byte": 0,
+     "x": -48000,
+     "z": -126000
     },
     "nodes": 0
    },
@@ -301,9 +300,9 @@
    }
   },
   "farm": {
-   "mean": 0.432,
+   "mean": 0.429,
    "good_km2": 4576,
-   "best_km2": 2672,
+   "best_km2": 2688,
    "peak": {
     "score": 0.885,
     "x": 52000,
@@ -319,16 +318,6 @@
   "geology": true
  },
  "markers": [
-  {
-   "id": "res-mining-nickel-48-98",
-   "kind": "mining",
-   "family": "nickel",
-   "x": 48000,
-   "z": 98000,
-   "score": 220,
-   "label": "Ore: nickel (very rich, 220/255)",
-   "why": "the scale model's geology: nickel prospectivity 220 on sedimentary ground"
-  },
   {
    "id": "res-mining-oil--36--50",
    "kind": "mining",
@@ -350,10 +339,10 @@
    "why": "the scale model's geology: tin prospectivity 200 on granite ground"
   },
   {
-   "id": "res-mining-coal--48--74",
+   "id": "res-mining-coal--44--74",
    "kind": "mining",
    "family": "coal",
-   "x": -48000,
+   "x": -44000,
    "z": -74000,
    "score": 203,
    "label": "Fuel: coal (rich, 203/255)",
@@ -408,6 +397,16 @@
    "score": 0.78,
    "label": "Farmland: the best (78%, 1365 mm, 25 °C)",
    "why": "warm, watered, flat and deep-soiled (Cfa)"
+  },
+  {
+   "id": "res-unique-tin-44-122",
+   "kind": "unique",
+   "family": "tin",
+   "x": 44036.89999999991,
+   "z": 121816.69999999995,
+   "score": 749,
+   "label": "Placer tin (high grade, river r031)",
+   "why": "a tin placer the rivers carried down (flatten)"
   }
  ]
 }

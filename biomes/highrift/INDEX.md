@@ -27,18 +27,29 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `40-biome-hrift-sites.js` | 7 |  |
-| `45-host-stage.js` | 18 | the land (36); the climate fields (the field contract's units:  (152); the host binding (184) |
+| `45-host-stage.js` | 19 | the land (36); the climate fields (the field contract's units:  (159); the host binding (191) |
 | `48-host-therm.js` | 2 |  |
 | `50-biome-hrift-species.js` | 7 | palettes (sRGB hex; the colour maths is the core (14); the species (21); textures and materials (a card's procedural map  (40); the items (54) |
 | `60-biome-hrift-place.js` | 5 |  |
 | `70-biome-hrift.js` | <1 |  |
 | `84-host-ground.js` | 11 |  |
-| `85-host-far.js` | 5 |  |
+| `85-host-far.js` | 4 |  |
 | `88-host-vents.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89b-host-steam.js` | 2 |  |
-| `89w-host-water.js` | 10 |  |
+| `89w-host-water.js` | 12 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 11 |  |
+| `99-host-take.js` | 12 |  |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| coulee | 44z-host-site.js | <1 |
+| gjar | 44z-host-site.js | <1 |
+| mirror | 44z-host-site.js, 87-host-larch.js | 2 |
+| wedge | 44z-host-site.js | <1 |

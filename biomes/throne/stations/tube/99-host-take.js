@@ -15,6 +15,8 @@ const VMODE={},VWEATHER={};
 // a camera in a tube: u along it, l across, h above the floor, looking along it (du) and a little across (dl) or up (dh)
 const inTube=(T,u,l,h,du,dl,dh)=>{const p=T.P(u),t=T.tan(u),q=T.P(u+du),tq=T.tan(u+du),f=T.floor(u);return[p[0]-t[1]*l,f+floorRel(T,u,l,p[0]-t[1]*l,p[1]+t[0]*l)+h,p[1]+t[0]*l,q[0]-tq[1]*(dl||0),T.floor(u+du)+(dh||1.5),q[1]+tq[0]*(dl||0)];};
 const VIEWS={
+ /* the Rheoliths at the hot reach (89y): from just upstream of the throat */
+ 'The Rheoliths at the hot reach':inTube(TUBE,HOT.u0-12,3,2,22,-1,.5),
  'In the tube':inTube(TUBE,420,-3,1.7,60,1,2.5),
  'A skylight from below':(function(){const S=SKY[1];return inTube(TUBE,S.u-15,2,1.7,15,0,TUBE.H(S.u)+10);})(),
  'Siphon trees in the light':(function(){const S=SKY[1],T=THRONE.nearestTree(THRONE.SPECIES.indexOf(THRONE.byKey.siphon),S.x,S.z);const u=S.u-24;return inTube(TUBE,u,-4,2,24,T?0:0,8);})(),
@@ -63,7 +65,7 @@ const HCHK={
   const sip=T.filter(t=>t.sp===sp('siphon')),lamp=T.filter(t=>t.sp===sp('lampcap')),dark=T.filter(t=>inT(t)&&!near(t));
   return{ok:sip.length>=2&&lamp.length>=3&&!dark.length,detail:sip.length+' siphon trees, '+lamp.length+' lamp caps'+(dark.length?'; '+dark.length+' trees in the dark':'; none in the dark')};},
  // the cave life holds the dark floor; nothing lives in the hot reach
- cave(B,P){const hot=P.filter(p=>{const t=tubeAt(p[0],p[2]);return t&&t.T===TUBE&&hotK(t.u)>.5&&p[1]<t.T.floor(t.u)+3&&/^biome:/.test(p[3])&&!/^biome:(lavacicle|block)/.test(p[3]);});
+ cave(B,P){const hot=P.filter(p=>{const t=tubeAt(p[0],p[2]);return t&&t.T===TUBE&&hotK(t.u)>.5&&p[1]<t.T.floor(t.u)+3&&/^biome:/.test(p[3])&&!/^biome:(lavacicle|block)/.test(p[3])&&!/^biome:rh_/.test(p[3]);});   /* the Rheoliths (rh_) live in the hot reach by design (89y) */
   const n=B&&B.cave?B.cave.mat+B.cave.glow+B.cave.cards:0;return{ok:n>=150&&!hot.length,detail:n+' cave plants on the dark floor'+(hot.length?'; '+hot.length+' in the hot reach':'; none in the hot reach')};},
  // the walls and the roof carry their life; the skylights their light
  walls(C){return{ok:C.brackets>=40&&C.lavacicles>=500&&C.curtains>=60,detail:C.brackets+' lantern brackets, '+C.drips+' drips, '+C.ledgeGlow+' on the ledges, '+C.curtains+' curtains, '+C.lavacicles+' lavacicles, '+C.blocks+' blocks'};},
@@ -76,13 +78,18 @@ const HCHK={
   return{ok:!bad.length,detail:bad.length?'untagged: '+bad.join(', '):L.length+' species and plants tagged'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
 const camList=()=>Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}));
+/* THE RHEOLITHS (89y, biomes/rheolith read in place): every living guild where RHEO_PHYS.windowAt says it can live, and the dead byproducts round it */
+function rheoCheck(L,minLive,minDead){if(!RHEO_SITE||!L)return{ok:false,detail:'no rheoliths (89y)'};const live=L.filter(p=>p[4]===1),dead=L.length-live.length,
+ bad=live.filter(p=>!RHEO_PHYS.windowAt({tempC:p[5],waterActivity:p[6],acidPh:p[7]}).viable);
+ return{ok:live.length>=minLive&&dead>=minDead&&!bad.length,detail:live.length+' living in the throat, '+dead+' dead byproducts round it'+(bad.length?', '+bad.length+' living outside the window (first '+bad[0][0]+' at '+Math.round(bad[0][5])+' degC)':'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the light\'s life under the skylights, none in the dark',HCHK.skylit(THRONE.TREES));
  add('cave life on the dark floor, none in the hot reach',HCHK.cave(window._biome,P));
  add('the walls and the roof alive',HCHK.walls(CAVE));
  add('daylight through every skylight',HCHK.light(SPOTS));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
- add('preset cameras inside the tube',HCHK.inside(camList()));
+ add('the Rheoliths live only in the hot dry acid throat',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED:null,4,10));
+ add('preset cameras clear of the ground',HCHK.inside(camList()));
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail}),u=800,p=TUBE.P(u);
  add('a lamp cap in the dark',HCHK.skylit(THRONE.TREES.concat([{sp:THRONE.SPECIES.indexOf(THRONE.byKey.lampcap),x:p[0],z:p[1]}])));
@@ -90,7 +97,8 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('bare walls',HCHK.walls(Object.assign({},CAVE,{brackets:0})));
  add('a skylight without light',HCHK.light(SPOTS.slice(1)));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
- add('a camera in the rock',HCHK.inside([{view:'rock',x:p[0],y:TUBE.floor(u)+TUBE.H(u)+6,z:p[1]}]));
+ add('a living guild in the cool ground',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED.concat([['chokecoral',0,TUBE.floor(800),0,1,40,.5,5.5]]):null,4,10));
+ add('a camera under the ground',HCHK.inside([{view:'rock',x:p[0],y:TUBE.floor(u)+TUBE.H(u)+6,z:p[1]}]));
  return R;}
 // ---------------------------------------------------------------- the page, handed to the host
 const LCTL=[{button:'Day',on:()=>setLightMode('day')},{button:'Night',on:()=>setLightMode('night')}];

@@ -45,3 +45,6 @@ const groundEye=(x,z)=>Math.max(terrainH(x,z),STATION.storey===0||terrainH(x,z)<
 BIO.init({tags:'hearths',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,mask:()=>0,obstacles:[],ticks:tick,seed:52,
  origin:[CAVE.centre].concat(CAVE.chambers.map(c=>[c.c[0],c.c[2]])),center:CAVE.centre,fields:{},register:REGISTER,err:reportErr,
  lod:{hero:60,mid:160,far:420,floor:[40,110]},windows:{}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}

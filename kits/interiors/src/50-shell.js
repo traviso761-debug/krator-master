@@ -8,6 +8,11 @@
    door (to its h) and window (sill .. sill + h). A wall is drawn twice: `full`, and `stub`,
    a knee-high cut of it the cut-away shows instead of a wall that faces the camera.
    Door leaves hang from their hinge, opened 75 degrees the way they swing.
+   core/door (where the page carries it): each leaf is a KDOOR record (id '<room id>.d<n>', n its number among the hung
+   leaves; kind 'swing', style 'flat', standing open as hung), posed by KDOORHOST.posed as it moves (the page ticks
+   KDOORHOST and gives E: kits/ancients-interiors/src/75-ai-doors.js), and the panes are KGLASS 'clear'. opt.kdoor: the
+   registry (default the page's KDOOR; false: no records, the leaves stay drawn). userData.shell.doors: [{ door, mesh }].
+   IX.walk.room (49b) puts the shell's floor and walls in core/walk; KDOOR.walk(W) the shut leaves.
    ====================================================================== */
 (function (IX) {
   'use strict';
@@ -36,17 +41,58 @@
     m.rotation.x = -Math.PI / 2; m.position.y = y0;
     return m;
   }
-  /* a box from u0..u1 along a wall, y0..y1, standing outside it (thick) */
-  function wallBox(W, u0, u1, y0, y1, thick, mat) {
+  /* CORNER AO (K2/I4, GRAPHICS-TERRAIN-PROPOSAL.md 12d): KROOMLIGHT.vertexCornerAO baked into the walls' vertex colours, so
+     the floor-wall, ceiling-wall and wall-wall joints darken (0.44 at a trihedral corner) in both engines. A wall box is
+     gridded on the room's lines (BoxGeometry 5 x 3, its lines moved to the room's corners, the reach in from them, the floor
+     plus the reach and the ceiling less it, each clamped to the box), so a vertex stands on every joint, the darkening ends
+     at the reach and the wall's middle keeps its colour; only faces inside the room's box and turned into it take it (the
+     outer face and the roof stay as they were). opt.cornerAO false turns it off; opt.aoReach (KROOMLIGHT's 0.85 m). */
+  function lines(a, b, marks) {   /* a .. b with the marks clamped into it, sorted: the grid's lines along one axis */
+    return [a].concat(marks.map(function (m) { return Math.min(b, Math.max(a, m)); })).concat([b]).sort(function (p, q) { return p - q; });
+  }
+  function gridBox(len, h, thick, xs, ys) {   /* xs (6) and ys (4): the lines in the box's own frame, -len/2 .. len/2, -h/2 .. h/2 */
+    const g = new THREE.BoxGeometry(len, h, thick, xs.length - 1, ys.length - 1, 1), P = g.attributes.position;
+    const idx = function (v, half, n) { return Math.max(0, Math.min(n, Math.round((v + half) / (2 * half) * n))); };
+    for (let i = 0; i < P.count; i++) {
+      P.setX(i, xs[idx(P.getX(i), len / 2, xs.length - 1)]);
+      P.setY(i, ys[idx(P.getY(i), h / 2, ys.length - 1)]);
+    }
+    return g;
+  }
+  const _ao = { p: null, n: null };
+  function bakeAO(m, ao) {
+    const RL = root.KROOMLIGHT; if (!RL || !ao) return;
+    if (!_ao.p) { _ao.p = new THREE.Vector3(); _ao.n = new THREE.Vector3(); }
+    m.updateMatrix();
+    const g = m.geometry, P = g.attributes.position, N = g.attributes.normal, B = ao.box, e = 0.05, col = new Float32Array(P.count * 3);
+    const cx = (B[0] + B[3]) / 2, cy = (B[1] + B[4]) / 2, cz = (B[2] + B[5]) / 2;
+    for (let i = 0; i < P.count; i++) {
+      const p = _ao.p.fromBufferAttribute(P, i).applyMatrix4(m.matrix), n = _ao.n.fromBufferAttribute(N, i).applyQuaternion(m.quaternion);
+      const inside = p.x > B[0] - e && p.x < B[3] + e && p.y > B[1] - e && p.y < B[4] + e && p.z > B[2] - e && p.z < B[5] + e;
+      const facing = n.x * (cx - p.x) + n.y * (cy - p.y) + n.z * (cz - p.z) > 0;
+      const f = inside && facing ? RL.vertexCornerAO(p.x, p.y, p.z, n.x, n.y, n.z, B, ao.reach) : 1;
+      col[i * 3] = col[i * 3 + 1] = col[i * 3 + 2] = f;
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  }
+  /* a box from u0..u1 along a wall, y0..y1, standing outside it (thick); ao: {box, reach, y0, top} bakes the corner AO */
+  function wallBox(W, u0, u1, y0, y1, thick, mat, ao) {
     const len = u1 - u0, h = y1 - y0;
     if (len < 0.01 || h < 0.01) return null;
-    const m = new THREE.Mesh(new THREE.BoxGeometry(len, h, thick), mat);
-    const uc = (u0 + u1) / 2;
+    const uc = (u0 + u1) / 2, yc = (y0 + y1) / 2, r = ao ? ao.reach : 0;
+    const geo = ao ? gridBox(len, h, thick,
+      lines(u0, u1, [0, r, W.len - r, W.len]).map(function (u) { return u - uc; }),
+      lines(y0, y1, [ao.box[1] + r, ao.box[4] - r]).map(function (y) { return y - yc; })) : new THREE.BoxGeometry(len, h, thick);
+    const m = new THREE.Mesh(geo, mat);
     m.position.set(W.a[0] + W.t[0] * uc - W.n[0] * thick / 2, y0 + h / 2, W.a[1] + W.t[1] * uc - W.n[1] * thick / 2);
     m.rotation.y = Math.atan2(-W.t[1], W.t[0]);
+    bakeAO(m, ao);
     return m;
   }
 
+  /* the open fraction KDOOR eases to a swing of `a` by (its smoothstep, inverted): the leaf stands as the shell hung it */
+  function openFor(a, SW) { let lo = 0, hi = 1; for (let k = 0; k < 40; k++) { const m = (lo + hi) / 2; if (m * m * (3 - 2 * m) * SW < a) lo = m; else hi = m; } return Math.min(1, (lo + hi) / 2); }
+  const root = typeof window !== 'undefined' ? window : globalThis;
   V.shell = function (room, opt) {
     opt = opt || {};
     const thick = opt.thick || 0.22, pal = Object.assign({}, DEFAULT_PAL, V.PALETTES[room.culture] || {}, opt.palette || {});
@@ -54,8 +100,15 @@
     const grp = new THREE.Group();
     grp.name = 'shell:' + room.id;
     const mats = { wall: V.lambert(pal.wall), floor: V.lambert(pal.floor), roof: V.lambert(pal.roof), trim: V.lambert(pal.trim),
-      glass: V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
+      glass: root.KGLASS ? root.KGLASS.material(THREE, 'clear') : V.lambert(0x9fc4d8, { transparent: true, opacity: 0.35, depthWrite: false }),
       fade: V.lambert(pal.wall, { transparent: true, opacity: 0.16, depthWrite: false }) };
+    /* the corner AO's room box (the polygon's bounds, floor to ceiling); the walls' material then reads the vertex colour */
+    const AO = opt.cornerAO !== false && root.KROOMLIGHT ? { box: [room.bbox[0], y0, room.bbox[1], room.bbox[2], top, room.bbox[3]], reach: opt.aoReach == null ? 0.85 : opt.aoReach } : null;
+    if (AO) mats.wall.vertexColors = true;
+    /* the room light (I1-I2): opt.roomLight = { tex, uById } (core/interiors 20-core-roomlight-host.js KRLHOST.texture over
+       IX.roomLight()): the shell's surfaces are lit by the room's portal daylight and lamp ambience, not the sky */
+    if (opt.roomLight && root.KRLHOST && opt.roomLight.uById[room.id] != null)
+      ['wall', 'floor', 'roof', 'trim'].forEach(function (k) { root.KRLHOST.apply(mats[k], { tex: opt.roomLight.tex, u: opt.roomLight.uById[room.id], sunDay: opt.roomLight.sunDay, lampAmb: opt.roomLight.lampAmb }); });
     const outer = G.offset(room.poly, thick);
     const floor = slab(outer, y0 - 0.25, y0, mats.floor);
     floor.userData.room = room.id; floor.userData.part = 'floor';
@@ -79,27 +132,30 @@
       let u = -ea;
       function add(g, m) { if (m) g.add(m); }
       for (const o of ops) {
-        add(full, wallBox(W, u, o.u0, y0, top, thick, mats.wall));
-        add(stub, wallBox(W, u, o.u0, y0, y0 + SH, thick, mats.wall));
-        add(full, wallBox(W, o.u0, o.u1, y0 + o.y1, top, thick, mats.wall));            /* lintel */
+        add(full, wallBox(W, u, o.u0, y0, top, thick, mats.wall, AO));
+        add(stub, wallBox(W, u, o.u0, y0, y0 + SH, thick, mats.wall, AO));
+        add(full, wallBox(W, o.u0, o.u1, y0 + o.y1, top, thick, mats.wall, AO));            /* lintel */
         if (o.y0 > 0) {
-          add(full, wallBox(W, o.u0, o.u1, y0, y0 + o.y0, thick, mats.wall));          /* under a window */
-          add(stub, wallBox(W, o.u0, o.u1, y0, y0 + Math.min(o.y0, SH), thick, mats.wall));
+          add(full, wallBox(W, o.u0, o.u1, y0, y0 + o.y0, thick, mats.wall, AO));          /* under a window */
+          add(stub, wallBox(W, o.u0, o.u1, y0, y0 + Math.min(o.y0, SH), thick, mats.wall, AO));
           add(full, wallBox(W, o.u0, o.u1, y0 + o.y0, y0 + o.y1, 0.04, mats.glass));
         }
         u = o.u1;
       }
-      add(full, wallBox(W, u, W.len + eb, y0, top, thick, mats.wall));
-      add(stub, wallBox(W, u, W.len + eb, y0, y0 + SH, thick, mats.wall));
+      add(full, wallBox(W, u, W.len + eb, y0, top, thick, mats.wall, AO));
+      add(stub, wallBox(W, u, W.len + eb, y0, y0 + SH, thick, mats.wall, AO));
       stub.visible = false;
       const mid = [W.a[0] + W.t[0] * W.len / 2, W.a[1] + W.t[1] * W.len / 2];
       const rec = { wall: W.i, out: [-W.n[0], -W.n[1]], mid: mid, full: full, stub: stub };
       [full, stub].forEach(function (g) { g.traverse(function (o) { o.userData.room = room.id; o.userData.part = 'wall'; }); grp.add(g); });
       walls.push(rec);
     });
-    /* door leaves, hung from the hinge and opened 75 degrees */
+    /* door leaves, hung from the hinge and opened 75 degrees; with core/door each is a KDOOR record the host poses */
+    const KD = opt.kdoor === false ? null : opt.kdoor || root.KDOOR || null, HOST = KD ? root.KDOORHOST || null : null, doors = [];
+    let hung = 0;
     room.doors.forEach(function (d) {
       if (d.swing === 'none' || !d.leaf) return;
+      const n = hung++;
       const left = [-d.n[1], d.n[0]], hs = d.hinge === 'right' ? -1 : 1;
       const hx = d.at[0] + left[0] * hs * d.w / 2, hz = d.at[1] + left[1] * hs * d.w / 2;
       const dir = d.swing === 'out' ? -1 : 1, a = 75 * Math.PI / 180;
@@ -112,8 +168,49 @@
       m.rotation.y = Math.atan2(-vz, vx);
       m.userData.room = room.id; m.userData.part = 'door';
       grp.add(m);
+      if (!KD) return;
+      /* the record: the face looks away from the swing (KDOOR swings a leaf to the face's -z); the sign follows the hinge's jamb */
+      const yaw = Math.atan2(-d.n[0] * dir, -d.n[1] * dir), ux = Math.cos(yaw), uz = -Math.sin(yaw), sill = y0 + 0.01, id = room.id + '.d' + n;
+      if (KD.get(id)) KD.prune(function (r) { return r.id !== id; });    /* the room's shell drawn again: its old record goes */
+      const D = KD.add({ id: id, at: [d.at[0], sill, d.at[1]], hinge: [hx, sill, hz], p0: [d.at[0], m.position.y, d.at[1]], yaw: yaw,
+        sign: (ux * (hx - d.at[0]) + uz * (hz - d.at[1])) < 0 ? 1 : -1, w: d.w - 0.04, h: leafH, t: 0.05, open: openFor(a, KD.SWING),
+        key: room.id, room: room.id, style: 'flat', name: 'door' });
+      if (HOST) HOST.posed(D, function (D, P) { const vx = P[0] - hx, vz = P[2] - hz; m.position.set(P[0], P[1], P[2]); m.rotation.set(0, Math.atan2(-vz, vx), 0); });
+      if (HOST) HOST.pose(D);
+      doors.push({ door: D, mesh: m });
     });
-    grp.userData.shell = { room: room.id, floor: floor, roof: roof, walls: walls, mats: mats };
+    grp.userData.shell = { room: room.id, floor: floor, roof: roof, walls: walls, mats: mats, doors: doors };
     return grp;
+  };
+
+  /* IX.walk.room(rooms, W, o): the shell's walk (no THREE: plain records, here beside the shell it describes, so only the pages
+     that draw shells carry it). A ROOM()'s shell into core/walk (KWALK or KWALK.create()), so a sheet of shells can run
+     KWALK.reach: the floor out to the walls' outer face (two rooms sharing a wall share a floor strip, so a doorway between
+     them is walkable), each wall as blocks along its middle line gapped at its doors (windows stay shut). The doors' leaves are
+     core/door's: the shell registers them in KDOOR above, and the sheet's KDOOR.walk(W) blocks a shut one.
+     rooms: a room or an array; o: { thick (.22, the shell's), tag, blockStep (.3) } -> { floors, blocks, doors } */
+  const WK = IX.walk = IX.walk || {};
+  WK.room = function (rooms, W, o) {
+    o = o || {};
+    const out = { floors: 0, blocks: 0, doors: 0 };
+    if (!rooms || !W) return out;
+    const L = Array.isArray(rooms) ? rooms : [rooms], t = o.thick == null ? 0.22 : o.thick, st = o.blockStep == null ? 0.3 : o.blockStep, h = Math.max(t, st) / 2;
+    for (const R of L) {
+      const tag = o.tag || 'room:' + R.id;
+      W.poly({ pts: G.offset(R.poly, t).map(function (p) { return [p[0], p[1], R.y]; }), name: R.id, tag: tag }); out.floors++;
+      for (const Wl of R.walls) {
+        if (Wl.open) continue;
+        const ox = -Wl.n[0] * t / 2, oz = -Wl.n[1] * t / 2, ax = Wl.a[0] + ox, az = Wl.a[1] + oz, dx = Wl.b[0] - Wl.a[0], dz = Wl.b[1] - Wl.a[1];
+        const gaps = R.doors.filter(function (d) { return d.wall === Wl.i; }).map(function (d) { return [d.at[0] + ox, d.at[1] + oz, d.w / 2]; });
+        const n = Math.max(1, Math.ceil(Wl.len / st));
+        for (let i = 0; i < n; i++) {
+          const u = (i + 0.5) / n, x = ax + dx * u, z = az + dz * u;
+          if (gaps.some(function (g) { return Math.hypot(x - g[0], z - g[1]) < g[2]; })) continue;
+          W.block([x - h, x + h, z - h, z + h, R.y, R.y + R.h], tag); out.blocks++;
+        }
+        out.doors += gaps.length;
+      }
+    }
+    return out;
   };
 })(KratorInteriors);

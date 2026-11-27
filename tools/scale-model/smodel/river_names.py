@@ -1,5 +1,5 @@
 """Culturally & Linguistically Authentic Planetary River Naming Pass (`Scale Model 5.1`):
-  - Covers all 26 tongues and dialects documented in `lore/tongues-of-krator.html` & `LORE.md`
+  - Covers all 35 tongues and dialects documented in `lore/tongues-of-krator.html`, `LORE.md`, and the Northern/NW kits
     across the entire `1821x1723` (`2 km/cell`) planetary grid:
       1. `vothic`      — Vothic (`Vothic Kingdom`, `Bay of Voth`, `SW Bay`)
       2. `izani`       — Izani (`Empire of Iziz`, `Dilihan Province`, `Shell Province`, `east rim`, `e savannah rim`, `ne rim`, `se savannah rim`, `e inner wall`, `The Cut`)
@@ -19,20 +19,27 @@
      16. `screamer`    — Screamer Caravan English (`Screamer Country`)
      17. `zeijani`     — Zeijani / Ash-Speech (`Throne/Volcano`, `Lesser Throne`, `godthrone`, `Steampits`)
      18. `jimjam`      — Jamṭōkku (`Jimjam`, eastern `NW lowlands`)
-     19. `eternian`    — Paper Speech / Mã-wè (`Eternal State`, central/western `NW lowlands`, `Ria River Valley`, `Great Double Delta`)
+     19. `eternian`    — Paper Speech / Mã-wè (`Eternal State`, central/western `NW lowlands`, southern `Farside` / `Farport`)
      20. `yusar`       — Yusar Avoidance Speech (`Ancient's Valley`, `Ruins of Nazar`)
      21. `heiland`     — Hayrant Outer-Wall Tongue (`w outer wall`)
-     22. `farside`     — Farside Click Dialect (`Farside`)
+     22. `farside`     — Farside Click Dialect (`Farside` south of `Y = 515` around `Farport`)
      23. `argot`       — Matok Northern Traders' Argot (`dam`, `dam 2`, `floodzone`)
      24. `khaay`       — Khaayken Yeti Tongue (`Yeti Kingdom`, `NW outer wall`, `NE Tharn Uplands`)
      25. `talovolci`   — Talovolci Cloud-Giant Tongue (`Talovolci Chiefs`, `s highlands`, `godstep valley`)
-     26. `hum`         — Hām / Coyote-Bark Hum (`Korona / NE`, `Arachnoid Canyons`, `The Tiers`, `Coyote Kingdom`, `N Outlands`, `S Outlands`, `Outland Gate`)
-     27. `tungang`     — Tungang / Fellgangs Northern English (`Tungang Union`, `Fellgangs`, `rift rim N`, `rift rim S`, `w rift highland`, `The Crook`, `Copper Glacier`, `The Rift`, `Lizardmen`, `High Rift`)
+     26. `hum`         — Hām / Coyote-Bark Hum (`Korona / NE`, `Arachnoid Canyons`, `Spider Lake`, `The Tiers`, `Coyote Kingdom`, `N Outlands`, `S Outlands`, `Outland Gate`)
+     27. `tungang`     — Tungang / Fellgangs Northern English (`Tungang Union`, `Fellgangs`, `rift rim N`, `rift rim S`, `w rift highland`, `Copper Glacier`, `The Rift`, `Lizardmen`, `High Rift`)
      28. `shumari`     — Shumari Highland Mamluk Tongue (`Shumar`)
-  - Preserves all canon/lore-referenced river names (`Dariba`, `Kaskejt Rivr`, `Chimes Riba`, `the Bigga`,
+     29. `low-ria`     — Rīwa-Tōka / Western Ria Dynastic Tongue (`Heartland`, `Ria Sound`, `Double Delta`)
+     30. `high-ria`    — Līwa-Tōga / Eastern Ria Labial-Free Dynastic Tongue (`Upper Ria`, `Springhollows`, `Weeping Valley`, `Compass Hills`, `The Dome`)
+     31. `kulanewa`    — Külaneva-keel Finnic/Estonian/Baltic + Rian Loans (`Arcflow`, northern `Double Delta`)
+     32. `molu-che`    — Mōlu-Dungu Mole-Tribe Tongue (`Moleshelf`, `Carnelian Pass`)
+     33. `yonni`       — Yonni-Zāg Kushitic-Meroitic + Sarmatian Spear-Queen Tongue (`Spear-Queens of Yonni`, `Shroudhills`, `Farside` `Y <= 515`)
+     34. `hueru-kuran` — Hueru-Bide Paleo-Sardinian/Nuragic Whale-Clan Tongue (`Crookshore`)
+     35. `dzagh-vardzi`— Vardzi-Ena Kartvelian-Shifted Gorge-Kingdom Tongue (`Crookwash`, `Crookhead`, `The Crook`)
+  - Preserves all canon/lore-referenced river names (`Dariba`, `Līng-Mā`, `Kaskejt Rivr`, `Chimes Riba`, `the Bigga`,
     `Pan Riba`, `Ālph`, `Dip Rivrh`, `Shim Rivrh`, `Drïm Rivrh`, `Tors Rivrh`, `Rrivar Falz`, `Rrivar Grin`,
     `Rrivar Isguifta`, `Rrivar Loña`, `Borun Gulusu`, `Filem Gulusu`, `Sivift Gulusu`, `Bitir Gulusu`,
-    `Rīfar al-Bālm`, `K'etsaal Baatar`, and `Ria River`).
+    `Rīfar al-Bālm`, `K'etsaal Baatar`, and `Rīwa-Wāta (Ria River)`).
 """
 import hashlib
 import json
@@ -66,6 +73,7 @@ CANON_RIVER_NAMES = {
     'Rīfar al-Bālm',
     "K'etsaal Baatar",
     'Ria River',
+    'Rīwa-Wāta (Ria River)',
 }
 
 # Explicit canon overrides by numeric river ID
@@ -87,17 +95,45 @@ CANON_BY_ID = {
     679: ('Blùd Gèl', 'painted', "Blùd (blood-ochre) + Gèl (wadi) — southern canyon wash of the Painted Men"),
     863: ('Dip Rivrh', 'vothic', "Deep River ('Dip Rivrh') — Almua's navigable harbour river"),
     864: ('Auwai Kura', 'islander', "Kura (red-feather) + Auwai (stream) — East Ring Isles stream"),
-    # New N/W Expansion Rivers (`9101..9107`) matching `nw_expansion.py` 1-to-1:
-    9101: ('Ria River (Mā-Rīa)', 'eternian', "Ria River / Mā-Rīa ('River of Reeds & Ink') — 2,140 km sinuous Nile-style trunk river from the Eastern Highland Lake to the Great Double Delta"),
-    9102: ('Hām-Tsēk (Web-Cleaver River)', 'hum', "Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through the Northern Korona & Arachnoid Scenic Gorge into the Ria River"),
-    9103: ('Tōng-Mā (North Ria Distributary)', 'eternian', "Tōng-Mā ('Northern Reed-Channel') — 235 km northern distributary of the Great Double Delta"),
-    9104: ('Sī-Mā (South Ria Distributary)', 'eternian', "Sī-Mā ('Southern Marsh-Channel') — 250 km southern distributary of the Great Double Delta"),
-    9105: ('Kopa-Tarn Warra (Crook River)', 'tungang', "Kopa-Tarn Warra ('Copper-Tarn Water') — 980 km emerald-green glacial meltwater river draining the Copper Tarn northward through the Crook"),
-    9106: ('Hau-Gèl (Outland Gate River)', 'hum', "Hau-Gèl ('Coyote-Gate River') — 360 km trans-boundary pass river linking the eastern Ria basin through the Outland Gate into northern Outland"),
-    9107: ('Pāk-Mā (North Ria Fork)', 'eternian', "Pāk-Mā ('White-Peak Water') — 560 km Blue-Nile-style northern tributary joining the lower Ria River"),
+    # Northern & NW Expansion Rivers (`9101..9135`) in authentic local tongues:
+    9101: ('Rīwa-Wāta (Ria River)', 'low-ria', "Rīwa-Wāta ('Sound-Reach Water'; High-Ria Līwa-Wāda, Kulanewa Riiava-Jõgi) — 2,140 km trunk river from Upper Ria past Weeping Valley and Heartland to Ria Sound & the Great Double Delta"),
+    9102: ('Hām-Tsēk (Web-Cleaver River)', 'hum', "Hām-Tsēk ('Web-Cleaver Water') — 890 km canyon river carving through Spider Lake & the Arachnoid Scenic Gorge into Rīwa-Wāta"),
+    9103: ('Mere-Upe (North Delta Reach)', 'kulanewa', "Mere (sea-tide, Estonian) + Upe (river, Baltic; Low-Ria Hālā-Bāča) — 780 km northern Double Delta & Kārum wharf channel joining Rīwa-Wāta"),
+    9104: ('Helme-Koski', 'kulanewa', "Helme (amber-bead, Estonian helmes / Finnic helmi; Rian loanword kōlu-helme) + Koski (cataract / mill-rapids, Finnic) — 310 km northern rim torrent feeding Mere-Upe in the amber fens"),
+    9105: ('Khōpri-Tskhali (Crook River)', 'dzagh-vardzi', "Khōpri-Tskhali ('Copper-Water' in Dzagh-Vardzi; Hueru-Kuran Kōpa-Kawa at the mouth, Tungang Kopa-Tarn Warra at its Copper Tarn head) — 1,030 km emerald-green glacial meltwater trunk river of the Crook"),
+    9106: ('Hau-Gèl (Outland Gate River)', 'hum', "Hau-Gèl ('Coyote-Gate River') — 680 km trans-boundary pass river linking Spider Lake through the Outland Gate into northern Outland"),
+    9107: ('Suur-Neva (Arcflow River)', 'kulanewa', "Suur (great, Estonian) + Neva (broad navigable fen-river, Finnic; Rian Nōła-Bāča, Mōlu-Dungu Fütra-Lüfü) — 740 km main trunk river of the Kulanewa Free-Towns joining Rīwa-Wāta above the Double Delta"),
+    9108: ('Musta-Jõgi', 'kulanewa', "Musta (black-slate / bog-iron, Finnic-Estonian) + Jõgi (river, Estonian) — 340 km steep northern hydro-forge tributary of the Suur-Neva in upland Kulanewa"),
+    9109: ('Tlīla-Wāda', 'high-ria', "Tlīla (sapphire-clear / mirror) + Wāda (river, labial-free High-Ria Līwa-Tōga) — 320 km Springhollows karst-spring & red-porphyry shut-in tributary joining the upper Ria (Līwa-Wāda)"),
+    9110: ('Shāvi-Hūshi Tskhali', 'dzagh-vardzi', "Shāvi (black-shale) + Hūshi (Silent-Vale hush) + Tskhali (river) — 410 km black-shale & acoustic-shadow gorge river draining the Silent Vales to Flūmi-Brīdzi"),
+    9111: ('Hueru-Bēnchi Kawa', 'hueru-kuran', "Whale-Bench River: SSW-hooked coastal cedar stream into Whale-Haven"),
+    9112: ('Fjōdu-Mīst Kawa', 'hueru-kuran', "Fjord-Mist River: NNW-curving rainforest river into Cascade-Caldera"),
+    9113: ('Sīda-Gōji Kawa', 'hueru-kuran', "Cedar-Gorge River: winding SE Crookshore torrent with big northward bend"),
+    9114: ('Bāsaruto-Kawa', 'hueru-kuran', "Basalt-Creek: SSE-arcing columnar-basalt torrent"),
+    9115: ('Khāi-Gēti Tskhali', 'dzagh-vardzi', "High-Gate Water: dogleg granite gorge river of K1 Khāi-Gēti"),
+    9116: ('Rēd-Spāiri Tskhali', 'dzagh-vardzi', "Red-Spire Water: giant red-cypress flume gorge of K2 Rēd-Spāiri"),
+    9117: ('Tīn-Flītsi Tskhali', 'dzagh-vardzi', "Tin-Fleece Water: S-curving cassiterite & golden-fleece river of K3 Tīn-Flītsi"),
+    9118: ('Rōzi-Vārdzi Tskhali', 'dzagh-vardzi', "Rose-Ward Water: winding apricot-tuff gorge of K5 Rōzi-Vārdzi"),
+    9119: ('Dzēdi-Khrōsi Tskhali', 'dzagh-vardzi', "Jade-Cross Water: S-hooked nephrite boulder river of K7 Dzēdi-Khrōsi"),
+    9120: ('Nōrt-Khrāgi Tskhali', 'dzagh-vardzi', "North-Crag Water: winding west-wall cascade stream"),
+    9121: ('Āirn-Dzāghi Tskhali', 'dzagh-vardzi', "Iron-Jag Water: winding skarn-magnetite gorge of K4 Āirn-Dzāghi"),
+    9122: ('Mīst-Khōpri Tskhali', 'dzagh-vardzi', "Mist-Copper Water: fog-saddle & malachite-skarn river of K6 Mīst-Khōpri"),
+    9123: ('Sāut-Flūmi Tskhali', 'dzagh-vardzi', "South-Flume Water: NNE-arcing hanging-flume torrent"),
+    9124: ('Tbīli-Tbā Tskhali', 'dzagh-vardzi', "Tbīli (warm/hearth) + Tbā (tarn) + Tskhali (river) — 192 km Crookhead thermogenic melt-well & malachite river"),
+    9125: ('Chūmi-Kāri Tskhali', 'dzagh-vardzi', "Chūmi (hushed/silent) + Kāri (pass-gate) + Tskhali (river) — 198 km fluted-chimney pass river below the Silent Vales"),
+    9126: ('Nōrt-Fjōdu Kawa', 'hueru-kuran', "North-Fjord Fork: cloud-forest branch of Sīda-Gōji Kawa"),
+    9127: ('Zēmo-Bēnihi Tskhali', 'dzagh-vardzi', "Upper-Cypress Fork: giant red-cypress headwater branch of Khāi-Gēti Tskhali"),
+    9128: ('Khwēla-Spāiri Tskhali', 'dzagh-vardzi', "Lower-Spire Fork: southern quartz-needle branch of Rēd-Spāiri Tskhali"),
+    9129: ('Gōldi-Flītsi Tskhali', 'dzagh-vardzi', "Gold-Fleece Fork: placer-gold headwater branch of Tīn-Flītsi Tskhali"),
+    9130: ('Hūsh-Rīmi Tskhali', 'dzagh-vardzi', "Hush-Rim Fork: high eastern divide branch of Rōzi-Vārdzi Tskhali"),
+    9131: ('Skhārn-Khrāgi Tskhali', 'dzagh-vardzi', "Skarn-Crag Fork: magnetite cliff branch of Āirn-Dzāghi Tskhali"),
+    9132: ('Fōgi-Gēti Tskhali', 'dzagh-vardzi', "Fog-Gate Fork: ocean-saddle branch of Mīst-Khōpri Tskhali"),
+    9133: ('Lārtshi-Ghrūdi Tskhali', 'dzagh-vardzi', "Lārtshi (larch) + Ghrūdi (moraine-ridge) + Tskhali (brook) — 114 km subalpine larch-moraine western tributary of Khōpri-Tskhali"),
+    9134: ('Sfīra-Vēli', 'yonni', "Sfīra (spear) + Vēli (river) — Spear-Queen coastal watch-fork joining Mārka-Dānu on the Y = 515 frontier"),
+    9135: ('Hāi-Wān-Kē', 'eternian', "Hāi (sea-kelp) + Wān (cove) + Kē (stream) — Farport headland tributary of Līng-Mā"),
 }
 
-# Explicit canon overrides by string river ID (for the SE-complex, Labyrinth, and Xanadu cataract rivers)
+# Explicit canon overrides by string river ID (for the SE-complex, Labyrinth, Xanadu cataract, and Yonni Spear-Queen coastal rivers)
 CANON_BY_STR_ID = {
     'r_sg_vapora_bigga': ('Vapora Riba', 'yuni', "Vapora Riba ('Steam-Gate River') — geothermal headwater of the Bigga rising in the Stalker Gate"),
     'r_mb_siphon_breach': ('Ostrukh Riba', 'yuni', "Ostrukh Riba ('Ostrukh Breach River') — Mid Basin & Siphon Pits overflow channel feeding Lake Ostrukh"),
@@ -109,6 +145,41 @@ CANON_BY_STR_ID = {
     'r_lab_chaos_s': ('Shatter-Scarp Gill', 'tungang', "Shatter-Scarp Gill ('South Chaos Cross-Channel') — anastomosing meltwater channel threading the southern Chaos mesas"),
     'r_oidong_cataract': ('Nahr Uydūng', 'xanadui', "Nahr Uydūng ('Oidong Cataract River') — eastern rift river discharging from the Oidong Rift Lake over the Great Eastern Cataract into the Lower Xanadu Lake"),
     'r_xanadu_low_cataracts': ('Nahr ash-Shalālāt', 'xanadui', "Nahr ash-Shalālāt ('River of the Stepped Cataracts') — outflow river descending a series of low cataracts from the Lower Xanadu Lake to the Lizardman Rift Sea"),
+    'r_pher_swit': ('Swīṭ Siṭrīm', 'xanadui', "Swīṭ (sweet) + Siṭrīm (stream): the fair town's fresh water"),
+    # Yonni Spear-Queen coastal & Shroudhills rivers (`Y <= 515`, replacing old `farside` stand-ins north of Eternal State):
+    'r021': ('Kandē-Dānu', 'yonni', "Kandē (Spear-Queen / Kandake) + Dānu (river) — 82 km principal river of the Twin-Born Spear-Queens south of Yonni"),
+    'r041': ('Khōnna-Dānu', 'yonni', "Khōnna (twin-sister) + Dānu (river) — 75 km twin-ridge river of northern Yonni"),
+    'r043': ('Astāra-Dānu', 'yonni', "Astāra (star-beacon, Sarmatian *stāra) + Dānu (river) — 63 km raid-galley haven river south of Yonni"),
+    'r044': ('Tīgra-Dānu', 'yonni', "Tīgra (darting/spear-swift, Sarmatian *tigra) + Dānu (river) — 80 km swift gorge river NE of Yonni"),
+    'r334': ('Sāva-Dānu', 'yonni', "Sāva (black-basalt, Sarmatian *syāva) + Dānu (river) — 69 km southern fork of Kandē-Dānu"),
+    'r061': ('Āsina-Dānu', 'yonni', "Āsina (iron-sand, Sarmatian *āsin) + Dānu (river) — iron-sand cove river of the southern Yonni coast"),
+    'r064': ('Arzī-Vēli', 'yonni', "Arzī (silver-mist) + Vēli (river) — mist-veiled coastal river of northern Yonni"),
+    'r074': ('Yonni-Vēli', 'yonni', "Yonni (Twin-Citadel) + Vēli (river) — 54 km citadel river flowing past Yonni into the NWern Ocean"),
+    'r075': ('Tāmga-Vēli', 'yonni', "Tāmga (twin-spear clan brand) + Vēli (river) — coastal gorge river south of Yonni"),
+    'r083': ('Sāla-Vēli', 'yonni', "Sāla (salt-spray) + Vēli (river) — wave-cut terrace river south of Yonni"),
+    'r087': ('Rōxna-Khōra', 'yonni', "Rōxna (shining/clear, Sarmatian *rauxšna) + Khōra (brook) — clear pebble-cove stream"),
+    'r091': ('Vēta-Khōra', 'yonni', "Vēta (wind-swept, Sarmatian *vāta) + Khōra (brook) — gale-swept headland stream"),
+    'r093': ('Mēda-Khōra', 'yonni', "Mēda (mead-amber / dark-peat) + Khōra (brook) — steep coastal gorge stream"),
+    'r095': ('Dēva-Khōra', 'yonni', "Dēva (deep-cleft) + Khōra (brook) — sea-cliff torrent of central Yonni"),
+    'r096': ('Sūrkha-Khōra', 'yonni', "Sūrkha (red-ochre / carnelian) + Khōra (brook) — red-scarp coastal torrent"),
+    'r100': ('Nābara-Khōra', 'yonni', "Nābara (electrum-gold, Meroitic *nabara) + Khōra (brook) — placer-gold coastal brook"),
+    'r357': ('Fāla-Vēli', 'yonni', "Fāla (cataract-step) + Vēli (river) — stepped waterfall fork of Khōnna-Dānu"),
+    'r119': ('Kēda-Khōra', 'yonni', "Kēda (cairn-shrine, Meroitic *kēda) + Khōra (brook) — Shroudhills cairn-cove stream"),
+    'r120': ('Vārda-Vēli', 'yonni', "Vārda (shield-watch) + Vēli (river) — southern Yonni raid-cove river"),
+    'r134': ('Tūra-Khōra', 'yonni', "Tūra (swift-wind, Sarmatian *tūra) + Khōra (brook) — wind-gap coastal torrent"),
+    'r360': ('Sārda-Khōra', 'yonni', "Sārda (cold-snowmelt, Sarmatian *sarda) + Khōra (brook) — highland tributary of Tīgra-Dānu"),
+    'r137': ('Kālla-Khōra', 'yonni', "Kālla (scarp-step) + Khōra (brook) — bench-falls coastal stream"),
+    'r147': ('Fāra-Khōra', 'yonni', "Fāra (watch-beacon) + Khōra (brook) — northern cape watch-stream"),
+    'r155': ('Spēta-Vēli', 'yonni', "Spēta (white-foam, Sarmatian *spēta) + Vēli (river) — white-surf river north of Yonni"),
+    'r157': ('Amāni-Khōra', 'yonni', "Amāni (sacred-cloud, Meroitic *Amani) + Khōra (brook) — northernmost Shroudhills cove stream"),
+    'r169': ('Mīsta-Khōra', 'yonni', "Mīsta (sea-shroud fog) + Khōra (brook) — fogbound coastal brook"),
+    'r175': ('Mārka-Dānu', 'yonni', "Mārka (frontier-march) + Dānu (river) — fortified Y = 515 border river between the Spear-Queens of Yonni and Eternal State Farside (Farside: ɗStara cBruk)"),
+    'r184': ('Asānga-Khōra', 'yonni', "Asānga (sling-stone / boulder, Sarmatian *asanga) + Khōra (brook) — boulder-choked outer-wall torrent"),
+    'r196': ('Khāra-Khōra', 'yonni', "Khāra (black-shale) + Khōra (brook) — piedmont tributary of Mārka-Dānu"),
+    'r374': ('Bārza-Khōra', 'yonni', "Bārza (high-ridge, Sarmatian *barz) + Khōra (brook) — ridge tributary of Āsina-Dānu"),
+    'r210': ('Dārga-Khōra', 'yonni', "Dārga (long-spear, Sarmatian *darga) + Khōra (brook) — Shroudhills cove stream"),
+    'r221': ('Shrūda-Khōra', 'yonni', "Shrūda (shroud-mist) + Khōra (brook) — mist-draped western Shroudhills stream"),
+    'r234': ('Zārin-Khōra', 'yonni', "Zārin (golden-bronze, Sarmatian *zaranya) + Khōra (brook) — upper frontier tributary of Mārka-Dānu"),
 }
 
 
@@ -170,6 +241,7 @@ REGION_TO_TONGUE = {
     'Oidong Valley': ('xanadui', 2),
     'Yuni Valley': ('yuni', 2),
     'Region 99': ('yuni', 2),
+    'Loom Chasms': ('yuni', 2),          # region 99's name since 5.1 edit 3 (2026-11-11)
     'Siphon Pits': ('yuni', 2),
     'Mid Basin': ('yuni', 2),
     'Stalker Gate': ('yuni', 2),
@@ -197,22 +269,40 @@ REGION_TO_TONGUE = {
     'Lesser Throne': ('zeijani', 3),
     'godthrone': ('zeijani', 3),
     'Steampits': ('zeijani', 2),
-    'ria valley': ('eternian', 2),
-    'double delta': ('eternian', 2),
+    'ria valley': ('low-ria', 2),
+    'double delta': ('low-ria', 3),
+    'Delta': ('low-ria', 3),
+    'heartland': ('low-ria', 3),
+    'red river': ('high-ria', 4),
+    'Upper Ria': ('high-ria', 4),
+    'neo-ozarks': ('high-ria', 4),
+    'Springhollows': ('high-ria', 4),
+    'weeping valley': ('high-ria', 3),
+    'compass hills': ('high-ria', 3),
+    'the dome': ('high-ria', 3),
+    'Arcflow': ('kulanewa', 4),
+    'moleshelf': ('molu-che', 4),
+    'Carnelian Pass': ('molu-che', 4),
+    'Shroudhills': ('yonni', 4),
+    'Scoured hills': ('yonni', 4),
+    'Spear-Queens of Yonni': ('yonni', 4),
     'NW lowlands': ('eternian', 1),  # split with jimjam on east side
     "ancient's valley": ('yusar', 3),
     "Ancient's Valley": ('yusar', 3),
     'w outer wall': ('heiland', 2),
-    'Farside': ('farside', 3),
+    'Farside': ('farside', 3),       # split at Y <= 515 (yonni) vs Y > 515 (farside) in build_tongue_grid
     'dam': ('argot', 3),
     'dam 2': ('argot', 3),
     'floodzone': ('argot', 2),
     'NW outer wall': ('khaay', 2),
     'tharn uplands': ('khaay', 2),
+    'Tharn Uplands': ('khaay', 2),
+    'tharn hills': ('khaay', 2),
     's highlands': ('talovolci', 2),
     'godstep valley': ('talovolci', 2),
     'Korona / NE': ('hum', 2),
     'arachnoid canyons': ('hum', 2),
+    'spider lake': ('hum', 3),
     'Tiers': ('hum', 2),
     'The Tiers': ('hum', 2),
     'N Outlands': ('hum', 2),
@@ -221,7 +311,10 @@ REGION_TO_TONGUE = {
     'rift rim N': ('tungang', 2),
     'rift rim S': ('tungang', 2),
     'w rift highland': ('tungang', 2),
-    'the crook': ('tungang', 2),
+    'the crook': ('dzagh-vardzi', 2),
+    'crookwash': ('dzagh-vardzi', 4),
+    'crookhead': ('dzagh-vardzi', 3),
+    'crookshore': ('hueru-kuran', 4),
     'copper glacier': ('tungang', 2),
     'Labyrinth': ('tungang', 2),
     'Firebliss Range': ('tungang', 2),
@@ -234,34 +327,41 @@ REGION_TO_TONGUE = {
 # Generic water/stream/wadi words per tongue (`lore/tongues-of-krator.html`):
 # `(river_word, stream_word, wadi_word, order)` where `order` is `'GW'` (Generic + Word) or `'WG'` (Word + Generic)
 TONGUE_GENERICS = {
-    'vothic':     ('Rivrh',    'Brük',     'Gülch',    'WG'),
-    'izani':      ('Rrivar',   'Bruk',     'Guli',     'GW'),
-    'hykkousik':  ('Rhyver',   'Brouk',    'Ghouly',   'WG'),
-    'islander':   ('Vai',      'Auwai',    'awa',      'GW'),
-    'islanderw':  ('Vai',      'Hau',      'Kaha',     'GW'),
-    'xanadui':    ('Riwā',     'Siṭrīm',   'Ḍrāi',     'WG'),
-    'yuni':       ('Riba',     'Bruk',     'Guli',     'WG'),
-    'dalab':      ('Riba',     'Bruk',     'Guli',     'WG'),
-    'vrivolci':   ('Riba',     'Bruk',     'Guli',     'WG'),
-    'republic':   ('Rivr',     'Bruk',     'Guli',     'WG'),
-    'painted':    ('Rìv',      'Bèk',      'Gèl',      'WG'),
-    'riders':     ('Baatar',   'Buruuk',   'Kuli',     'WG'),
-    'dasri':      ('Rīfar',    'al-Bīruk', 'Wādī',     'GW'),
-    'tabist':     ('Rvr',      'Brk',      'Gl',       'GW'),
-    'scyvoi':     ('Riviri',   'Buruku',   'Gulusu',   'WG'),
-    'screamer':   ('Run',      'Creek',    'Wash',     'WG'),
-    'zeijani':    ('Nāru',     'Palgu',    'ḫarru',    'GW'),
-    'jimjam':     ('āṟu',      'ōṭai',     'kāl',      'WG'),
-    'eternian':   ('Mā',       'Kē',       'Kū',       'WG'),
-    'yusar':      ('Waywater', 'Runbrook', 'Cutdry',   'WG'),
-    'heiland':    ('Ripar',    'Puruk',    'Kuri',     'WG'),
-    'farside':    ('qRiba',    'cBruk',    'xGuli',    'WG'),
-    'argot':      ('Rivar',    'Kriki',    'Guli',     'WG'),
-    'khaay':      ("Baa'ar",   'Bïruuq',   'Quli',     'WG'),
-    'talovolci':  ('Rivros',   'Brucos',   'Gilva',    'WG'),
-    'hum':        ('Hām',      'Kē',       'Gèl',      'WG'),
-    'tungang':    ('Warra',    'Beck',     'Gill',     'WG'),
-    'shumari':    ('Nārun',    'Buruqu',   'Ḫarrun',   'WG'),
+    'vothic':       ('Rivrh',    'Brük',     'Gülch',    'WG'),
+    'izani':        ('Rrivar',   'Bruk',     'Guli',     'GW'),
+    'hykkousik':    ('Rhyver',   'Brouk',    'Ghouly',   'WG'),
+    'islander':     ('Vai',      'Auwai',    'awa',      'GW'),
+    'islanderw':    ('Vai',      'Hau',      'Kaha',     'GW'),
+    'xanadui':      ('Riwā',     'Siṭrīm',   'Ḍrāi',     'WG'),
+    'yuni':         ('Riba',     'Bruk',     'Guli',     'WG'),
+    'dalab':        ('Riba',     'Bruk',     'Guli',     'WG'),
+    'vrivolci':     ('Riba',     'Bruk',     'Guli',     'WG'),
+    'republic':     ('Rivr',     'Bruk',     'Guli',     'WG'),
+    'painted':      ('Rìv',      'Bèk',      'Gèl',      'WG'),
+    'riders':       ('Baatar',   'Buruuk',   'Kuli',     'WG'),
+    'dasri':        ('Rīfar',    'al-Bīruk', 'Wādī',     'GW'),
+    'tabist':       ('Rvr',      'Brk',      'Gl',       'GW'),
+    'scyvoi':       ('Riviri',   'Buruku',   'Gulusu',   'WG'),
+    'screamer':     ('Run',      'Creek',    'Wash',     'WG'),
+    'zeijani':      ('Nāru',     'Palgu',    'ḫarru',    'GW'),
+    'jimjam':       ('āṟu',      'ōṭai',     'kāl',      'WG'),
+    'eternian':     ('Mā',       'Kē',       'Kū',       'WG'),
+    'yusar':        ('Waywater', 'Runbrook', 'Cutdry',   'WG'),
+    'heiland':      ('Ripar',    'Puruk',    'Kuri',     'WG'),
+    'farside':      ('qRiba',    'cBruk',    'xGuli',    'WG'),
+    'argot':        ('Rivar',    'Kriki',    'Guli',     'WG'),
+    'khaay':        ("Baa'ar",   'Bïruuq',   'Quli',     'WG'),
+    'talovolci':    ('Rivros',   'Brucos',   'Gilva',    'WG'),
+    'hum':          ('Hām',      'Kē',       'Gèl',      'WG'),
+    'tungang':      ('Warra',    'Beck',     'Gill',     'WG'),
+    'shumari':      ('Nārun',    'Buruqu',   'Ḫarrun',   'WG'),
+    'low-ria':      ('Wāta',     'Bāča',     'Kīlīka',   'WG'),
+    'high-ria':     ('Wāda',     'Sikwīngi', 'Gwlūka',   'WG'),
+    'kulanewa':     ('Jõgi',     'Oja',      'Koski',    'WG'),
+    'molu-che':     ('Lüfü',     'Kō',       'Trēlü-Kō', 'WG'),
+    'yonni':        ('Dānu',     'Vēli',     'Khōra',    'WG'),
+    'hueru-kuran':  ('Kawa',     'Ura',      'Erreka',   'WG'),
+    'dzagh-vardzi': ('Tskhali',  'Flūmi',    'Khēvi',    'WG'),
 }
 
 
@@ -469,6 +569,48 @@ TONGUE_LEXICON = {
         ('Šumāru', 'highland-watch'), ('Qappu', 'crest-keep'), ('Kattu', 'blade-cut'), ('Wārun', 'war-host'),
         ('Ṣōrun', 'salt-rime'), ('Mīṣu', 'mist'), ('Pāyaru', 'beacon-fire'), ('Gēdun', 'giant-spear'),
     ],
+    'low-ria': [
+        ('Rīwa', 'sound-reach'), ('Hālā', 'salt-tide'), ('Kōlu', 'amber-gold'), ('Sāuła', 'south-marsh'),
+        ('Nōła', 'north-reach'), ('Čūla', 'red-clay'), ('Tōka', 'seal-tablet'), ('Pāsa', 'dyke-weir'),
+        ('Mīko', 'high-king'), ('Bāča', 'barge-channel'), ('Tālo', 'terrace-town'), ('Sīpi', 'spring-boil'),
+        ('Wāka', 'lotus-fen'), ('Hīni', 'cedar-path'), ('Lūma', 'silt-bar'), ('Kīli', 'clear-run'),
+    ],
+    # High-Ria (Līwa-Tōga): strict labial-free Cherokee shift (zero p, b, m, f, v)
+    'high-ria': [
+        ('Tlīla', 'sapphire-clear'), ('Sikwīngi', 'karst-spring'), ('Ākwala', 'upper-reach'), ('Līwa', 'reed-sound'),
+        ('Gīlōni', 'red-porphyry'), ('Tālōni', 'gold-saffron'), ('Tsīngi', 'shut-in'), ('Kālōyi', 'cavern-hall'),
+        ('Kwlūni', 'crown-seal'), ('Gwālā', 'barge-lift'), ('Nōlā', 'north-ridge'), ('Dōlā', 'dolomite-bluff'),
+        ('Sāhōni', 'blue-mist'), ('Tōgā', 'edict-stone'), ('Yōnā', 'crag-bear'), ('Ūlā', 'crystal- chime'),
+    ],
+    # Kulanewa (Külaneva-keel): Finnic / Estonian / Baltic substrate + Rian loanwords
+    'kulanewa': [
+        ('Suur', 'great'), ('Musta', 'black-slate'), ('Valge', 'white-foam'), ('Raud', 'bog-iron'),
+        ('Helme', 'amber-bead'), ('Mere', 'sea-tide'), ('Vasar', 'hydro-hammer'), ('Hõbe', 'silver-ingot'),
+        ('Küla', 'free-commune'), ('Kaarum', 'bonded-wharf'), ('Vaigu', 'pine-tar'), ('Kivi', 'granite-stone'),
+        ('Koidu', 'dawn-mist'), ('Lääne', 'west-reach'), ('Põhja', 'north-fen'), ('Kuluuna', 'crown-loan'),
+    ],
+    # Mōlü-che (Mōlu-Dungu): Mapuche-shifted Moleshelf sunken-loess clan tongue
+    'molu-che': [
+        ('Fütra', 'great'), ('Kūra', 'carnelian-stone'), ('Lūma', 'deep-tuber'), ('Pūra', 'eight-clan'),
+        ('Kō', 'sweet-spring'), ('Mōlu', 'mole-delver'), ('Līgh', 'white-loess'), ('Kūrü', 'black-shale'),
+        ('Mīlla', 'gold-ochre'), ('Rāha', 'bonded-silver'), ('Wēnu', 'high-table'), ('Trēlü', 'sunken-trail'),
+    ],
+    # Yonni (Yonni-Zāg): Kushitic-Meroitic + Sarmatian Spear-Queen speech
+    'yonni': [
+        ('Kandē', 'Spear-Queen'), ('Yonni', 'Twin-Citadel'), ('Sfīra', 'bronze-spear'), ('Mārka', 'frontier-march'),
+        ('Tīgra', 'darting-swift'), ('Khōnna', 'twin-sister'), ('Astāra', 'star-beacon'), ('Sāva', 'black-basalt'),
+        ('Āsina', 'iron-sand'), ('Spēta', 'white-foam'), ('Tāmga', 'spear-brand'), ('Vārda', 'shield-watch'),
+        ('Nābara', 'electrum-gold'), ('Sārda', 'cold-snowmelt'), ('Rōxna', 'shining-clear'), ('Shrūda', 'shroud-mist'),
+    ],
+    'hueru-kuran': [
+        ('Hueru', 'whale-fluke'), ('Kōpa', 'copper-plume'), ('Fjōdu', 'caldera-fjord'), ('Sīda', 'cloud-cedar'),
+        ('Bāsaruto', 'columnar-basalt'), ('Kuran', 'nuraghe-clan'), ('Nēfurīto', 'nephrite-jade'), ('Mīstu', 'sea-spray'),
+    ],
+    'dzagh-vardzi': [
+        ('Khōpri', 'malachite-copper'), ('Āirn', 'skarn-iron'), ('Tīn', 'cassiterite-tin'), ('Dzēdi', 'nephrite-jade'),
+        ('Rōzi', 'apricot-tuff'), ('Khāi', 'high-gate'), ('Rēd', 'red-cypress'), ('Shāvi', 'black-shale'),
+        ('Tbīli', 'warm-hearth'), ('Chūmi', 'silent-hush'), ('Flūmi', 'timber-flume'), ('Khrāgi', 'granite-crag'),
+    ],
 }
 
 
@@ -507,6 +649,19 @@ def build_tongue_grid(regs_exp, shape=(1723, 1821)):
             p_grid[upd_et] = prio
             continue
 
+        # Special split inside `Farside`: north of & on `Y = 515` is `yonni` (Spear-Queens), south is `farside` (Farport click dialect)
+        if nm == 'Farside':
+            Y_i, _ = np.indices((OH, OW))
+            m_yn = m & (Y_i <= 515)
+            m_fs = m & (Y_i > 515)
+            upd_yn = m_yn & (4 >= p_grid)
+            t_grid[upd_yn] = t_to_id['yonni']
+            p_grid[upd_yn] = 4
+            upd_fs = m_fs & (prio >= p_grid)
+            t_grid[upd_fs] = t_to_id['farside']
+            p_grid[upd_fs] = prio
+            continue
+
         upd = m & (prio >= p_grid)
         t_grid[upd] = t_to_id[t_code]
         p_grid[upd] = prio
@@ -542,11 +697,15 @@ def infer_river_tongue(r, t_grid, id_to_t, setts_exp):
         if mx > 1250:
             return 'khaay' if my < 240 else 'hum'
         if mx > 880:
-            return 'hum'
+            return 'high-ria' if my < 235 else 'hum'
+        if mx < 510 and my > 320:
+            return 'yonni'
         if mx < 460:
             return 'islanderw'
-        return 'eternian'
+        return 'kulanewa'
     if mx < 380:
+        if my <= 515:
+            return 'yonni'
         if my < 760:
             return 'farside'
         if my < 1100:
@@ -581,20 +740,8 @@ def format_river_name(tongue, stem, generic, order, rid):
         # Akkadian construct state: `Nāru-Šurpu`, `Palgu-Qarnu`, `ḫarru-Kibrītu`
         return f'{generic}-{stem_c.capitalize()}'
 
-    if tongue == 'jimjam':
-        # Dravidian agglutinative compound: `Veḷḷiyāṟu`, `Poṉṉōṭai`, `Karuppukkāl`
-        return f'{stem_c}-{generic}'
-
-    if tongue == 'eternian':
-        # Hyphenated monosyllabic tone-compound: `Pāk-Mā`, `Lōk-Kē`, `Sēk-Kū`
-        return f'{stem_c}-{generic}'
-
-    if tongue == 'hum':
-        # Hām / Coyote-Bark monosyllabic compound: `Hau-Hām`, `Tsēk-Kē`, `Pāk-Gèl`
-        return f'{stem_c}-{generic}'
-
-    if tongue == 'shumari':
-        # Shumari Akkadian-Japanese highland compound: `Šubaru-Nārun`, `Urudīru-Buruqu`, `Suṭōnun-Ḫarrun`
+    if tongue in {'jimjam', 'eternian', 'hum', 'shumari', 'low-ria', 'high-ria', 'kulanewa', 'molu-che', 'yonni'}:
+        # Hyphenated stem-generic compound (`Rīwa-Wāta`, `Tlīla-Wāda`, `Musta-Jõgi`, `Kandē-Dānu`, etc.)
         return f'{stem_c}-{generic}'
 
     if tongue == 'vrivolci':
@@ -633,6 +780,24 @@ def _stable_river_seed(rid_str, tng, mod_a, mod_b):
     seed_a = int.from_bytes(digest[:4], 'big') % max(1, mod_a)
     seed_b = int.from_bytes(digest[4:8], 'big') % max(1, mod_b)
     return seed_a, seed_b
+
+
+def drains_to(to):
+    """the table's "Drains To": a river's name, a sea's, a lake's or basin's level; '—' where the record says only where it ends"""
+    to = to or {}
+    if to.get('name'):
+        return to['name']
+    if to.get('river'):
+        return str(to['river'])
+    if to.get('sea') or to.get('kind') == 'sea':
+        return to.get('sea') or 'sea'
+    if 'lake_m' in to:
+        return 'lake (%s m%s)' % (format(int(to['lake_m']), ','), ', through' if to.get('through') else '')
+    if 'basin_m' in to:
+        return 'basin (%s m)' % format(int(to['basin_m']), ',')
+    if 'below_lake_m' in to:
+        return 'ends below a lake (%s m)' % format(int(to['below_lake_m']), ',')
+    return to.get('kind') or '—'
 
 
 def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, markdown_out_path=None, old_rivers=None):
@@ -756,8 +921,15 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         'khaay':     [('Haay', 'upper'), ('Loo', 'lower'), ('Bïïg', 'great'), ('Lïtl', 'little'), ('Noor', 'north'), ('Suut', 'south')],
         'talovolci': [('Uxo', 'upper'), ('Ande', 'lower'), ('Marios', 'great'), ('Bccos', 'little'), ('Touto', 'north'), ('Dexso', 'south')],
         'hum':       [('Sāng', 'upper'), ('Hā', 'lower'), ('Tāi', 'great'), ('Sīu', 'little'), ('Pāk', 'north'), ('Nām', 'south'), ('Tōng', 'east'), ('Sī', 'west')],
-        'tungang':   [('Haa', 'high'), ('Laa', 'low'), ('Muckle', 'great'), ('Lile', 'little'), ('Noth', 'north'), ('Sooth', 'south'), ('Yist', 'east'), ('Wist', 'west')],
-        'shumari':   [('ʾElū', 'upper'), ('Šaplū', 'lower'), ('Gurēṭu', 'great'), ('Ṣīru', 'little'), ('Nōšu', 'north'), ('Ṣūšu', 'south'), ('ʾĪṣu', 'east'), ('Weṣu', 'west')],
+        'tungang':      [('Haa', 'high'), ('Laa', 'low'), ('Muckle', 'great'), ('Lile', 'little'), ('Noth', 'north'), ('Sooth', 'south'), ('Yist', 'east'), ('Wist', 'west')],
+        'shumari':      [('ʾElū', 'upper'), ('Šaplū', 'lower'), ('Gurēṭu', 'great'), ('Ṣīru', 'little'), ('Nōšu', 'north'), ('Ṣūšu', 'south'), ('ʾĪṣu', 'east'), ('Weṣu', 'west')],
+        'low-ria':      [('Hāya', 'upper'), ('Lāwa', 'lower'), ('Čīto', 'great'), ('Īsi', 'little'), ('Nōła', 'north'), ('Sāuła', 'south')],
+        'high-ria':     [('Ākwala', 'upper'), ('Ēlā', 'lower'), ('Ēgwā', 'great'), ('Ūsdi', 'little'), ('Nōlā', 'north'), ('Dōlā', 'south')],
+        'kulanewa':     [('Ülem', 'upper'), ('Alam', 'lower'), ('Suur', 'great'), ('Väike', 'little'), ('Põhja', 'north'), ('Lõuna', 'south'), ('Ida', 'east'), ('Lääne', 'west')],
+        'molu-che':     [('Wēnte', 'upper'), ('Nāgh', 'lower'), ('Fütra', 'great'), ('Pīchi', 'little'), ('Pīkum', 'north'), ('Wīlli', 'south')],
+        'yonni':        [('Bārza', 'upper'), ('Nīya', 'lower'), ('Māza', 'great'), ('Kāsra', 'little'), ('Apākhtara', 'north'), ('Rāpi', 'south')],
+        'hueru-kuran':  [('Gōra', 'upper'), ('Bēra', 'lower'), ('Hāndi', 'great'), ('Chīki', 'little'), ('Nōrt', 'north'), ('Sāut', 'south')],
+        'dzagh-vardzi': [('Zēmo', 'upper'), ('Khwēla', 'lower'), ('Dīdi', 'great'), ('Pātara', 'little'), ('Nōrt', 'north'), ('Sāut', 'south')],
     }
 
     for r in remaining:
@@ -827,7 +999,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
                 q_loc, q_en = quals[(q_seed + q_step) % len(quals)]
                 for step in range(len(lex)):
                     stem, gls_en = lex[(seed_idx + step) % len(lex)]
-                    if tng in {'eternian', 'hum', 'zeijani', 'jimjam', 'shumari'}:
+                    if tng in {'eternian', 'hum', 'zeijani', 'jimjam', 'shumari', 'low-ria', 'high-ria', 'kulanewa', 'molu-che', 'yonni', 'hueru-kuran', 'dzagh-vardzi'}:
                         comp_stem = f'{q_loc}-{stem}'
                     elif tng == 'dasri':
                         comp_stem = f'{stem} {q_loc}'
@@ -876,7 +1048,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
     # Write markdown summary table if requested
     if markdown_out_path:
         lines = [
-            '# Rivers & Wadis of Krator — Scale Model 5.1 (All 27 Cultural Tongues & Dialects)',
+            f'# Rivers & Wadis of Krator — Scale Model 5.1 (All {len(TONGUE_GENERICS)} Cultural Tongues & Dialects)',
             '',
             f'Total named courses: **{len(rivers_exp)}** (`0` unnamed placeholders remaining).',
             '',
@@ -908,8 +1080,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ]
         major.sort(key=lambda r: (-float(r.get('length_km') or 0.0), _rid_num(r['id'])))
         for r in major:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "
@@ -926,8 +1097,7 @@ def rename_all_rivers_culturally(rivers_exp, regs_exp, setts_exp, En_exp=None, m
         ])
         all_sorted = sorted(rivers_exp, key=lambda r: _rid_num(r['id']))
         for r in all_sorted:
-            to_d = r.get('to') or {}
-            to_str = to_d.get('name') or to_d.get('kind') or 'sea'
+            to_str = drains_to(r.get('to'))
             old_nm = r.get('old_name') or '—'
             lines.append(
                 f"| `{r['id']}` | `{old_nm}` | **{r['name']}** | `{r.get('tongue')}` | {r.get('kind')} "

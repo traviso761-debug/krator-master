@@ -1,0 +1,5 @@
+# Arcoforte — known issues and open notes
+
+- **Site placement pending:** Arcoforte is built on its canonical sea-cliff headland (`ARCOFORTE.groundAt`: ocean at `y = 0`, harbour bench at `y = 5.5 m`, sheltered central park at `y = 66..82 m`, plateau at `y = 84 m`). When a coastal settlement places it on `core/world`, pass the site's frame into `ARCOFORTE.toWorld` and swap the stand-in park/cliff trees (`VEG` / kit planters) for that region's biome kit.
+- **Representative storey plates in tall stacks:** All 12 cutaway zones have full multi-storey interior plates covering every `living`, `work`, and `rec` archetype; in the 300 m cliff skyscrapers (`T0..T6`), `tower_central` plans 6 representative multi-function trays (repeated by template in `AF_INT.areaSummary` for the full 7-tower capacity count) so page load stays under a second while every room shape is audited and walkable in cutaway.
+- **Life layer deferred to the host settlement:** Room capacities, beds, workplaces, and recreation slots are exported via `AF_INT.simPlaces()` (`[G data]`), ready for `core/simulation` when the surrounding settlement is built.

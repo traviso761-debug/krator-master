@@ -1,0 +1,39 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "pad": 0.02,
+   "size": 1024
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leaf",
+  "id": "card.leaf.photonic",
+  "kind": "card",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "card.leaf.photonic.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-a9b8-73f3-b2b4-a775a68127af)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-5104eb48-8229-4e57-8f4b-641e7df1b540.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. Opal Valley (`biomes/opalvalley`, 2026-11-11)' on claude/zealous-allen-0cd44d (id card.leaf.photonic)",
+  "sha1": "b84c74b76e9b6e2d1f0841bf0e9c52c503d4c1e4"
+ }
+}

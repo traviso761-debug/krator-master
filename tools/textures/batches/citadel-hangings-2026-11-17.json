@@ -1,0 +1,1362 @@
+[
+ {
+  "src": "patterns__xanadu__hanging-pleasure-dome.png",
+  "out": "core/materials/patterns/xanadu/hanging-pleasure-dome",
+  "record": {
+   "id": "xanadu/hanging-pleasure-dome",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ae-2ca0, exec-dafcd160-feff-414d-8a82-0a5a850ba37d.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the decree: the dome over the river Alph; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__hanging-caves-of-ice.png",
+  "out": "core/materials/patterns/xanadu/hanging-caves-of-ice",
+  "record": {
+   "id": "xanadu/hanging-caves-of-ice",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ae-64b6, exec-59e3a35c-4436-4d5f-88f2-cb270b602f74.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the sunny dome on its caves of ice; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__hanging-damsel-dulcimer.png",
+  "out": "core/materials/patterns/xanadu/hanging-damsel-dulcimer",
+  "record": {
+   "id": "xanadu/hanging-damsel-dulcimer",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ae-fac0, exec-09ce5a35-2dbe-4bf3-96fa-a60d3e3dbd3c.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the damsel with a dulcimer before Mount Abora; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__hanging-sinuous-rills.png",
+  "out": "core/materials/patterns/xanadu/hanging-sinuous-rills",
+  "record": {
+   "id": "xanadu/hanging-sinuous-rills",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ae-82c5, exec-92962ee9-ce16-4e8e-9607-38e99068802c.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the gardens bright with sinuous rills; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__tapestry-pleasure-dome.png",
+  "out": "core/materials/patterns/xanadu/tapestry-pleasure-dome",
+  "record": {
+   "id": "xanadu/tapestry-pleasure-dome",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-18d9, exec-09523b0d-1e58-474a-99f7-1bb2dd95fa57.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the decree, panorama; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__tapestry-pleasure-dome.b.png",
+  "out": "core/materials/patterns/xanadu/tapestry-pleasure-dome.b",
+  "record": {
+   "id": "xanadu/tapestry-pleasure-dome.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ae-d1f9, exec-a944fb15-9d4f-4349-aea9-64bf6272b88c.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the decree, panorama (second take); a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__tapestry-caves-of-ice.png",
+  "out": "core/materials/patterns/xanadu/tapestry-caves-of-ice",
+  "record": {
+   "id": "xanadu/tapestry-caves-of-ice",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-492c, exec-452d5c1f-cec9-42af-93a2-e5cd845ef614.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the caves of ice and the mighty fountain; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__tapestry-damsel-dulcimer.png",
+  "out": "core/materials/patterns/xanadu/tapestry-damsel-dulcimer",
+  "record": {
+   "id": "xanadu/tapestry-damsel-dulcimer",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-8022, exec-8e3532cf-5c0e-4aae-8c73-87fe62599d6c.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "the damsel among the musicians; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__tapestry-sinuous-rills.png",
+  "out": "core/materials/patterns/xanadu/tapestry-sinuous-rills",
+  "record": {
+   "id": "xanadu/tapestry-sinuous-rills",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-8d3c, exec-39fff331-1d10-4893-943f-187424d6491d.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "two chahar baghs; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__common__suzani-roundels.png",
+  "out": "core/materials/patterns/common/suzani-roundels",
+  "record": {
+   "id": "common/suzani-roundels",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8af-cb55, exec-068ad426-5c71-4736-a648-a9597f26f8e8.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "suzani, ivory ground; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__common__suzani-roundels.b.png",
+  "out": "core/materials/patterns/common/suzani-roundels.b",
+  "record": {
+   "id": "common/suzani-roundels.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8b0-a945, exec-5d5a077a-9995-4445-8b09-fc83d7893f14.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 57",
+    "reuse": "suzani, madder ground; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-albatross.png",
+  "out": "core/materials/patterns/easter/mariner-albatross",
+  "record": {
+   "id": "easter/mariner-albatross",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bf-b9d1, exec-9843338e-a983-471b-8656-6eb00b431177.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the Mariner and the albatross; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-spectre-ship.png",
+  "out": "core/materials/patterns/easter/mariner-spectre-ship",
+  "record": {
+   "id": "easter/mariner-spectre-ship",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bf-eb3e, exec-c90ad8bb-3202-4332-85a8-3f2de6a9204d.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "Death and Life-in-Death at dice; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-ice.png",
+  "out": "core/materials/patterns/easter/mariner-ice",
+  "record": {
+   "id": "easter/mariner-ice",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bf-ff13, exec-ac4a4fd7-f159-499e-a4fc-395cf2a579e9.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the ship in the ice; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-statues.png",
+  "out": "core/materials/patterns/easter/erewhon-statues",
+  "record": {
+   "id": "easter/erewhon-statues",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-2fae, exec-4b48ad13-a063-4913-bba4-7349c2e7ca01.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the statues at the pass; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-musical-banks.png",
+  "out": "core/materials/patterns/easter/erewhon-musical-banks",
+  "record": {
+   "id": "easter/erewhon-musical-banks",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-558b, exec-6ec606aa-0fb1-4a02-ae22-71ea104a5562.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the Musical Bank; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-machines.png",
+  "out": "core/materials/patterns/easter/erewhon-machines",
+  "record": {
+   "id": "easter/erewhon-machines",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-7b82, exec-bc4ab6cd-afab-4c90-a2a8-32c330ef6702.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the tree of machines; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__salt-marsh-village.png",
+  "out": "core/materials/patterns/easter/salt-marsh-village",
+  "record": {
+   "id": "easter/salt-marsh-village",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-9721, exec-6d492c89-ba57-4a1c-a0fb-4e1ab26bf670.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the salt-marsh village; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mutant-scholar.png",
+  "out": "core/materials/patterns/easter/mutant-scholar",
+  "record": {
+   "id": "easter/mutant-scholar",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-aa6b, exec-52483fd1-ddcd-4658-8b59-0d7cf77c85eb.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the four-armed scholar; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__rust-spindle.png",
+  "out": "core/materials/patterns/easter/rust-spindle",
+  "record": {
+   "id": "easter/rust-spindle",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c0-d4f2, exec-560d1a8a-520a-48cb-8660-84b1c7e3df89.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the spindle over the rust jungle; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__shell-caravan.png",
+  "out": "core/materials/patterns/easter/shell-caravan",
+  "record": {
+   "id": "easter/shell-caravan",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c2-f5d5, exec-2db3e812-dc4e-421b-8ed2-c396d35fb60d.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the shell-backed caravan; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__wanderer-bones.png",
+  "out": "core/materials/patterns/easter/wanderer-bones",
+  "record": {
+   "id": "easter/wanderer-bones",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-ddd63b9c-b1b2-4675-a959-aa40ba427ebb.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "the wanderer among giants' bones; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__desert-ruins.png",
+  "out": "core/materials/patterns/easter/desert-ruins",
+  "record": {
+   "id": "easter/desert-ruins",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-a3beafd8-59ec-4ad3-b4f5-49a1ce8a9254.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "travellers crossing the desert of ruins (the owner's Kenshi reference, Mughal; landscape); a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__portrait-sultan-staff.png",
+  "out": "core/materials/patterns/xanadu/portrait-sultan-staff",
+  "record": {
+   "id": "xanadu/portrait-sultan-staff",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-111eaacf-0601-490e-b566-564fa56cd00b.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "a sultan with crescent staff and tablet; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__portrait-sultan-triumphant.png",
+  "out": "core/materials/patterns/xanadu/portrait-sultan-triumphant",
+  "record": {
+   "id": "xanadu/portrait-sultan-triumphant",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-9224ade9-5cf7-4db4-a1db-23ae9691f78e.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "a sultan in triumph; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__portrait-sultan-pensive.png",
+  "out": "core/materials/patterns/xanadu/portrait-sultan-pensive",
+  "record": {
+   "id": "xanadu/portrait-sultan-pensive",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-a2c2356a-0c46-4696-8a6c-d16532b56c65.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "a sultan, pensive, in his garden; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__portrait-sultan-poet.png",
+  "out": "core/materials/patterns/xanadu/portrait-sultan-poet",
+  "record": {
+   "id": "xanadu/portrait-sultan-poet",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-c5455498-cae7-4e90-bc85-1e291c436636.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "a sultan writing poetry; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__xanadu__portrait-sultan-sitar.png",
+  "out": "core/materials/patterns/xanadu/portrait-sultan-sitar",
+  "record": {
+   "id": "xanadu/portrait-sultan-sitar",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8c3-5f30, exec-74ae52d8-e9a6-4699-a453-a2ad9610b0b5.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): the owner's own requests in the Codex session (a Mughal version of a reference image; turbaned sultans: pensive, writing poetry, playing a sitar, in triumph)",
+    "reuse": "a sultan playing a sitar; a single panel (not tiling), shown whole on a hanging (kits/catalog xanadu citadel section)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-albatross.classic.png",
+  "out": "core/materials/patterns/easter/mariner-albatross.classic",
+  "record": {
+   "id": "easter/mariner-albatross.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-0aa1, exec-e6929dc4-d57d-4032-ae5e-8e64f118a072.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "romantic oil; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-spectre-ship.classic.png",
+  "out": "core/materials/patterns/easter/mariner-spectre-ship.classic",
+  "record": {
+   "id": "easter/mariner-spectre-ship.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-52ab, exec-2cfdbe32-4d7b-40c0-96dc-05007935ab84.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "romantic oil; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mariner-ice.classic.png",
+  "out": "core/materials/patterns/easter/mariner-ice.classic",
+  "record": {
+   "id": "easter/mariner-ice.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-86cb, exec-82a5c03d-8705-4fe7-aa91-c512cc621e5e.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "romantic oil; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-musical-banks.classic.png",
+  "out": "core/materials/patterns/easter/erewhon-musical-banks.classic",
+  "record": {
+   "id": "easter/erewhon-musical-banks.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-ff9a, exec-c4c6e904-2859-4504-85d8-56a317fe9e0b.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "arts-and-crafts tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-statues.classic.png",
+  "out": "core/materials/patterns/easter/erewhon-statues.classic",
+  "record": {
+   "id": "easter/erewhon-statues.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-ff9a, exec-f1729538-8a4d-4092-be72-ab494eb2a026.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "arts-and-crafts tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__erewhon-machines.classic.png",
+  "out": "core/materials/patterns/easter/erewhon-machines.classic",
+  "record": {
+   "id": "easter/erewhon-machines.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bc-2092, exec-fbafc66d-63a6-436f-838c-582ba09b7bbe.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "arts-and-crafts tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__salt-marsh-village.classic.png",
+  "out": "core/materials/patterns/easter/salt-marsh-village.classic",
+  "record": {
+   "id": "easter/salt-marsh-village.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bc-4b58, exec-c6918f30-d12d-4f3c-b7a6-0c0ebbece9a2.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "medieval tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__rust-spindle.classic.png",
+  "out": "core/materials/patterns/easter/rust-spindle.classic",
+  "record": {
+   "id": "easter/rust-spindle.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bc-757f, exec-341d785f-57d5-4137-b66f-91e32d18882f.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "medieval tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__easter__mutant-scholar.classic.png",
+  "out": "core/materials/patterns/easter/mutant-scholar.classic",
+  "record": {
+   "id": "easter/mutant-scholar.classic",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8bc-ea03, exec-0596dca8-6902-44ed-8bd7-e312d33d1e42.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+    "reuse": "medieval tapestry; a single panel, installed for a later use (Talia's art museum)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__tungang__loj-banner.png",
+  "out": "core/materials/patterns/tungang/loj-banner",
+  "record": {
+   "id": "tungang/loj-banner",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8b0-cfee, exec-dd08bf89-d8ec-427d-b6c0-9e987ea459cb.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 43",
+    "reuse": "loj banner, crimson; installed for kits/tungang to wire"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__tungang__loj-banner.b.png",
+  "out": "core/materials/patterns/tungang/loj-banner.b",
+  "record": {
+   "id": "tungang/loj-banner.b",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8b1-0c84, exec-85355a17-62b2-4756-9a5e-18dd80c12a89.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 43",
+    "reuse": "loj banner, green; installed for kits/tungang to wire"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ },
+ {
+  "src": "patterns__tungang__enamel-signs.png",
+  "out": "core/materials/patterns/tungang/enamel-signs",
+  "record": {
+   "id": "tungang/enamel-signs",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8b1-3013, exec-bd5ab41c-5d17-4e43-a2c8-60c77be3ea84.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 43",
+    "reuse": "enamel signs atlas; installed for kits/tungang to wire"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "normal_strength": 0.15,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "size": 1024,
+   "seam_axes": "none"
+  }
+ }
+]

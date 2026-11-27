@@ -7,8 +7,11 @@
 //               margin, the nunatak ridges (KRELIEF.range, joined), then KGLACIER's trough, moraines and pond basin (G.bed), and the frost's
 //               patterned ground on the flats (KFROST)
 //   THE ICE     KGLACIER.iceAt, thinned to nothing where a ridge stands through it, cleared inside an ice cave's shell
-//   THE WATER   the tarn (a station's own lake: every ground under its level west of the snout), the pond behind the terminal moraine (KGLACIER's
-//               basin), the streams graded so they never climb (the owner's rule) and cut into the ground
+//   THE WATER   the tarn (a station's own lake: every ground under its level west of the snout, inside SITE.tarn.at where a station bounds it), the
+//               pond behind the terminal moraine (KGLACIER's basin), the streams graded so they never climb (the owner's rule) and cut into the ground
+// A STATION'S OWN TERMS (each optional; stations 1-3 give none, station 11 all): SITE.land(x,z,h,u,a) the land before KGLACIER's bed (station 11: the
+// crater's bowl and its ejecta collar), SITE.tarn.at(x,z) where the tarn may lie, a stream's `path` (a polyline from the tarn's outlet, graded down
+// from its level), SITE.fields(x,z,h,slope,F) the kit's fields amended (and SITE.fieldNames, its own fields)
 const {TAU,clamp,lerp,mix,smooth,reseed,rng,rr,ri,pick,qEuler,qFacing,qUp}=BIO.fn;
 const fbm=(x,z,seed,o)=>KRAND.fbm(x,.5,z,o==null?3:o,seed);   /* core/rand's noise ([0,1]) */
 const ERRS=document.getElementById('errs');
@@ -65,6 +68,7 @@ const FROST=KFROST.create({seed:KRAND.child(4411,'copperglacier/frost/'+SITE.key
  polygons:{cell:3.2,trough:.22,rim:.06,width:.14,where:(x,z)=>{const u=uOf(x,z),a=pOf(x,z)-GS.centre(u),aa=Math.abs(a)-G.W(u);return smooth(30,90,aa)*smooth(SITE.coral[1]+200,SITE.coral[1]-200,PROF(u));}}});
 function landH(x,z){const u=uOf(x,z),p=pOf(x,z),a=p-GS.centre(u);
  let h=PROF(u)+26*(fbm(x*.0008,z*.0008,91,3)-.5)+7*(fbm(x*.004,z*.004,92,2)-.5)+wallAt(u,a)+ridgeAt(x,z);
+ if(SITE.land)h=SITE.land(x,z,h,u,a);   /* a station's own land (44z), before the glacier cuts its trough through it */
  h=G.bed(x,z,h)+FROST.h(x,z);
  if(GS.pondDeep){const u2=uOf(x,z),p2=pOf(x,z);h-=GS.pondDeep*G.lakeK(u2,p2,p2-GS.centre(u2));}   /* a pond on a slope: KGLACIER's 9 m basin and the site's more */
  for(const C of CAVES){const d=Math.hypot(x-C.x,z-C.z);if(d<C.R*2.6&&C.floor!=null)h=mix(h,C.floor,smooth(C.R*2.5,C.R*1.7,d));}   /* a pad levelled out past the shell, wider than a ground cell (12 m), so the drawn ground lies flat round the cave */
@@ -77,10 +81,18 @@ function iceAt(x,z){let t=G.iceAt(x,z);if(t<=0)return 0;if(RIDGES.length){const 
 function terrainH1(x,z){return landH(x,z)+iceAt(x,z);}   /* a cave meets its ground by its own apron (86: KGLACIER.drawer's apron), not by the ground mesh, whose 12 m cells are as wide as a cave */
 // THE TARN (a station's own lake, west of the snout) and the POND (KGLACIER's basin behind the terminal moraine)
 const TARN=SITE.tarn?Object.assign({},SITE.tarn):null;
+const tarnIn=(x,z)=>!!TARN&&(!TARN.at||TARN.at(x,z));   /* where the tarn may lie: everywhere west of the snout, or a station's own bound (SITE.tarn.at) */
 const POND=GS.lake&&GS.terminal?(function(){const u=G.termU(TERM.breach),c=upAt(u+6,TERM.breach);return{level:terrainH1(c[0],c[1])-.6,name:'The pond (behind the terminal moraine)'};})():null;
 // THE STREAMS: from a cave's mouth along the ice's margin, or from the pond's breach, down the bed; graded (each step the lower of the ground there less
 // 0.8 m and the last surface less a fall), ending where they reach the tarn
 const STREAMS=(SITE.streams||[]).map(S=>{const P=[],du=8;let u,side=0,p0=0;
+ if(S.path){   /* a station's own line out of the tarn (its outlet), resampled every du m and graded down from the tarn's level: it never climbs */
+  let prev=S.from==='tarn'&&TARN?TARN.level:1e9;const L=S.path;
+  for(let i=0;i+1<L.length;i++){const a=L[i],b=L[i+1],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/du));
+   for(let k=(i?1:0);k<=n;k++){const x=a[0]+(b[0]-a[0])*k/n,z=a[1]+(b[1]-a[1])*k/n,g=terrainH1(x,z);
+    const y=S.from==='tarn'&&tarnIn(x,z)?TARN.level:Math.min(g-.8,prev-(P.length?du*(S.fall==null?.004:S.fall):0));   /* level while still in the tarn's bound: its cut floods from the tarn */
+    P.push([x,z,y]);prev=y;}}
+  return{name:S.name,hw:S.hw,plume:!!S.plume,pts:P,out:true};}
  if(S.from==='breach'){u=G.termU(TERM.breach)+10;p0=TERM.breach;}else{const C=CAVES[+S.from.slice(4)];u=C.u;side=Math.sign(C.aw);}
  let prev=1e9;for(;u>-TERR.R*1.15;u-=du){const p=side?GS.centre(u)+side*(G.W(Math.max(u,GS.snout))+C_OFF(u)):p0,c=upAt(u,p),g=terrainH1(c[0],c[1]);
   const y=Math.min(g-.8,prev-du*.006);if(TARN&&y<TARN.level+.15){P.push([c[0],c[1],TARN.level]);break;}P.push([c[0],c[1],y]);prev=y;}
@@ -100,7 +112,7 @@ function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,
 function terrainH0(x,z){return streamCut(x,z,terrainH1(x,z));}
 const pondAt=(x,z)=>POND?G.lakeAt(x,z):0;
 function waterH(x,z){
- if(TARN&&uOf(x,z)<GS.snout+400&&iceAt(x,z)<.3&&terrainH(x,z)<TARN.level+.2)return TARN.level;
+ if(TARN&&uOf(x,z)<GS.snout+400&&iceAt(x,z)<.3&&tarnIn(x,z)&&terrainH(x,z)<TARN.level+.2)return TARN.level;
  if(POND&&pondAt(x,z)>.2&&terrainH(x,z)<POND.level+.2)return POND.level;
  if(STREAMS.length){const s=SBK.at(x,z);if(s.d<0)return s.y;}
  return -1e9;}
@@ -132,9 +144,11 @@ function fieldsAt(x,z,h,slope){const u=uOf(x,z),p=pOf(x,z),a=p-GS.centre(u),it=i
  const flat=(1-ice)*(1-rock)*(1-under)*smooth(.25,.06,slope)*smooth(sl[1]+200,sl[0],h);
  const cold=clamp((h-SITE.coral[0])/Math.max(300,SITE.snowLine[1]-SITE.coral[0]),0,1);
  const wet=clamp(.35+.5*shore+.25*flat*(n2-.3)-.3*rock-.2*steep+.15*(SITE.rain>1500?1:0),0,1);
- return{wet,flow:smooth(10,-1,s.d),upland:clamp((h-PROF(GS.snout))/900,0,1),canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:0,
-  barren:Math.max(ice,under,cave),fog:0,mist:0,ice,debris,moraine:mor,snow,algae,copper,flat,cave,tarn:under,shore};}
-const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','ice','debris','moraine','snow','algae','copper','flat','cave','tarn','shore'];
+ const F={wet,flow:smooth(10,-1,s.d),upland:clamp((h-PROF(GS.snout))/900,0,1),canyon:0,rim:0,rock,dune:0,oasis:0,slope,abyss:0,salt:0,cold,geo:0,
+  barren:Math.max(ice,under,cave),fog:0,mist:0,ice,debris,moraine:mor,snow,algae,copper,flat,cave,tarn:under,shore};
+ if(SITE.fields)SITE.fields(x,z,h,slope,F,{ice,under,steep,n,n2,s});   /* a station's own amendments (44z) */
+ return F;}
+const FNAMES=['wet','flow','upland','canyon','rim','rock','dune','oasis','slope','abyss','salt','cold','geo','barren','fog','mist','ice','debris','moraine','snow','algae','copper','flat','cave','tarn','shore'].concat(SITE.fieldNames||[]);
 const FC=(function(){const N=400,S=TERR.R*2.2,a={};FNAMES.forEach(n=>a[n]=new Float32Array(N*N));a.h=new Float32Array(N*N);
  const cs=S/(N-1);
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){a.h[j*N+i]=terrainH((i/(N-1)-.5)*S,(j/(N-1)-.5)*S);}
@@ -155,7 +169,7 @@ CAVES.forEach(C=>SPINE.push([C.x,C.z]));SPINE.push(upAt(GS.snout-150,GS.centre(G
 CU.nodes.forEach(n=>{if(Math.abs(n.x)<TERR.R&&Math.abs(n.z)<TERR.R)SPINE.push([n.x,n.z]);});
 if(!SITE.walls)for(let z=-2000;z<=2000;z+=1000)for(let x=-2000;x<=2000;x+=1000)SPINE.push([x,z]);
 // the mask: nothing roots on the ice, in the water, in a cave
-function rootMask(x,z){if(iceAt(x,z)>.3)return 0;for(const C of CAVES)if(Math.hypot(x-C.x,z-C.z)<C.R*1.7)return 0;   /* the cave and its apron of ice */
+function rootMask(x,z){if(iceAt(x,z)>.3)return 0;if(SITE.rootClear&&!SITE.rootClear(x,z))return 0;   /* a station's own clearance (44z) */for(const C of CAVES)if(Math.hypot(x-C.x,z-C.z)<C.R*1.7)return 0;   /* the cave and its apron of ice */
  if(STREAMS.length&&SBK.at(x,z).d<2.8)return 0;   /* the stream's ribbon is drawn 2.4 m out under its banks (89w): nothing roots in it */
  if(window._waterShore){const s=window._waterShore(x,z);if(s===s&&s<1.2)return 0;}   /* the water the eye sees (89z: its shore grid laps a little over the land) */
  const w=waterH(x,z);if(w>-1e8){const d=terrainH(x,z)-w;if(d<.7)return d<.15?0:(d-.15)/.55;}return 1;}

@@ -12,9 +12,11 @@ The engine the Scyvoi lineage of building kits runs on, moved here unchanged fro
 | `30-geo.js` | the geometry engine: every primitive merged into a bucket per material key, in world space |
 | `36-def.js` | the registry and placement: `defBuilding`, the records, doors |
 | `36o-open.js` | real doors and glass on `core/door` (2026-11-03): `svLeaf`, `svDoorway`, `svPane`, `svPanePoly`, `svRoom`, `svGlass`; the leaves' meshes and walk blocks (`svOpenFlush`, `svOpenWalk`) |
+| `37-wk-rec.js` | every box a building draws read as `core/walk` floors and blocks (`KWALKBOX`): the walker stands on decks and treads and is stopped by walls (moved here 2026-11-09 from the identical copies in Islanders, Lizardmen and Eternian) |
 | `36s-stair.js` | stairs a walker climbs (2026-11-03): `svStair` (an open timber flight, solid steps or a ladder, in the kit's materials), `svWell` (a slab less the stair's well), `svLanding`; each flight a `KWALK.strip` tagged `stair:<key>` |
 | `90-scene.js` | the scene: renderer, the placeholder sky (`core/atmos/placeholder`), ground, the sheet's layout |
 | `91f-furnish.js` | the furniture adapter onto `core/furnish` |
+| `91i-interiors.js` | the interiors a kit opts into (below): cut-away units, `?interiors=1` / U planned and furnished rooms |
 | `91n-night.js` | the night lights |
 | `92-world.js` | builds the world and names the views |
 | `93-anim.js` | the clock (`?t=` pins it), smoke, the export's material table |
@@ -35,9 +37,68 @@ half, and adds `openings()`, `doorExport()` and `doorState()` to the probe. Ever
 build.py `CORE_DIRS`); Zeijani's fork reads `36o-open.js` by path. A bundle without `core/door` (the isle demo's `ISK`, built
 dry) gets the leaves drawn shut into the buckets and the engine's lamp glass for panes.
 
+**Plot-base grounding and bevels** (K2 of GRAPHICS-TERRAIN-PROPOSAL.md 12d, 2026-11-23). A `box()`, `cyl()` or vertical `beam()`
+whose foot stands on its plot (`PLOT_Y`, the ground `place()` sets; within 6 cm, the frame upright) darkens toward its foot in
+the vertex colour, `BASE_AO.lo` (0.72) at the ground to 1 at `BASE_AO.band` (0.30 m) up. A piece taller than 1.5 bands is drawn
+in two, the band ramped and the rest above it as it was, so the ramp ends at the band (12 more triangles a grounded wall);
+flat pieces (a slab), glass, glow, water, basic materials and the cut-away's cloth keys are left alone. `BASE_AO=null` before
+the build turns it off. `boxBevel(mk, x,y,z, w,h,d, bev, col, ry)` is `box()` with every edge chamfered by `bev` (44
+triangles; for near-tier plinths, piers and lintels). `node core/engine/test-k2-geo.js`. Both move every engine page's
+fingerprint (the colours, and the triangle counts of the records with grounded pieces): rewrite `fingerprint.json` once,
+after the owner has seen the shots.
+
+**Hero bevels and joints** (M4, 2026-11-23). A kit names its masonry keys in `BEVEL_KEYS` (its `31-alt-takes.js`: `BEVEL_KEYS.stoneP=.05`) and `box()` draws those boxes with `boxBevel()` (axis-aligned, at least 2.5 chamfers thick) until the page has spent `BEVEL_BUDGET` (60,000) extra triangles; `BEVEL_STAT` counts boxes, extra triangles and the ones left plain. A grounded bevelled box keeps its base ramp (its triangles cut at the band). The base ramp's foot is whatever the piece stands on: its plot, or a slab the same building drew before it (`SLABS`: a floor, a deck, a platform), so walls on upper floors and posts on decks darken at their joints. Lizardmen (`stoneP`, `brick`) and Eternian (`block`, `brick`, `stone`, `paving`) take bevels.
+
+**Room light, lit** (I1-I3): the interiors fragment (`engine.interiors()`) carries `core/interiors/20-core-roomlight-host.js`; with `?interiors=1` every vertex of the world inside a planned room takes that room's column of the table (`KRLHOST.tagRooms`: `SVIX.rlTag`), the materials read it (`matHook 'rl'`: the room's portal daylight and lamp ambience replace the sky's ambient indoors, the sun's share off at night) and four pool lights follow the eye's room's lamps and windows.
+
+**Room light** (K2): with `?interiors=1` the planned rooms' `KROOMLIGHT` table is `SVIX.lightTable` (`_api.interiors().light`
+counts the lit, reached and dark rooms), `svixLightPool(eye)` the eye's room's light pool and `svixExport()` interiors.json v2
+(kits/interiors API.md, "Room light").
+
+**Furniture in a host's dry draw** (S2-C24, 2026-11-24). A host that draws the kit's buildings itself places them dry
+(`PLACE_DRY`), and a dry `FURNISH` places nothing. A host that wants them furnished opens the engine's queue round its draw:
+`svfDryBegin()`, then the dry `place()`, then `svfDryFlush(group)`, which draws the queued pieces into the group through a
+fresh indexed batch (`-> {placed, tris, missing, records, group}`). Each record is the one the kit's own page makes (the same
+world frame, seed and wealth; nothing registered in core/tags), the meshes are finished as `buildWorld` finishes the page's
+(shadows, linear colours, detail maps, halos), and every flush shares one material per family (`SVF_DRYMATS`). Without
+`svfDryBegin` nothing changes. A bundle takes the catalog and `core/furnish` with `engine.host_furniture(cultures)` and keeps
+`91f-furnish.js` in place of its FURNISH stub (`settlements/isle-demo/bundles.py` `isk_bundle(furniture=True)`, the city
+page's). `node core/engine/test-furnish-dry.js`. Tungang's bundle (`kits/tungang/tungang_bundle.py` `FURN_HEAD`) keeps its
+own queue: it places with the catalog's default seed and no wealth, so moving it onto this one would change its pieces.
+
 **Taken by:** kits scyvoi, ash-nomads, desert-nomads, eternian, islanders, lizardmen, yeti, resources. `settlements/isle-demo`
 bundles it with the Islanders kit (`bundles.py` `isk_files`). Not yet: `kits/zeijani` and `settlements/noahs-regret` run
 their own forks of it (most files differ); porting them is a later step.
+
+**Controls and walk** (TODO.md, Viewers; 2026-11-09). The engine carries no camera: `99-host-take.js` hands `core/host` the
+page with its controls named by id from the one key map (`core/host/92k-host-keys.js`, `KHOST.standard`): Cut-away (X; C
+before), Door (E), Night (N), Shadows, and Interiors (U) on a kit with interiors; ? lists them. `engine.py` has what every kit
+on it takes: `HOST` (beside `khost.SHELL`: the polygon tool and the key map) and `CORE_DIRS` (with `core/walk` and
+`core/walk/box`, so `37-wk-rec.js` registers every building's floors and walls and the host's walker (F) stands on them). A
+page built without the key map gets the same words and keys from a fallback in `99-host-take.js`. Tents and round bodies drawn
+from cylinders and cones register nothing (KWALKBOX reads boxes): the walker walks through a tent's cloth.
+
+**Interiors** (TODO.md, Viewers: "done once in `core/engine` through `kits/interiors` and `core/furnish`"; 2026-11-09). A kit
+whose buildings have an interior set (`kits/interiors/sets/<name>.js`, keyed by its `defBuilding` keys; `<key>#<v>` for a
+variant) opts in from its `build.py`:
+
+```python
+CORE_HOST = khost.SHELL + kengine.HOST + kengine.INTERIORS_HOST          # the host's cut-away (99-host-cutaway.js)
+VIRTUAL = {..., kengine.INTERIORS_FRAGMENT}; BUNDLE_GLOBALS = (...) + kengine.INTERIORS_GLOBALS
+def virtual_bodies(): return dict({...}, **kengine.interiors(['eternian']))   # kits/interiors' core + the sets + KIT_INTERIORS
+```
+
+Then (`91i-interiors.js`): every placed building with an item is a unit of the host's cut-away: X opens the one nearest the
+view at its ground storey, [ ] change storey (its levels read from the item's data, nothing planned), and the engine's own
+near-half cut opens with it. `?interiors=1` (U reloads with it) plans every such building into rooms and furnishes them from
+the master catalog through `core/furnish`'s `R.interior` in a batch of their own, each room a `part` and each piece
+`furniture` in core/tags before it is drawn, the rooms' floors, walls and stairs in `KWALK` (`IX.walk`); the kit's own pieces
+standing inside a planned body are left out (`_api.interiors().replaced`), so a room is furnished once. `_api.interiors()`
+reports it. Off by default: a page without `?interiors=1` draws what it drew. Why not `kits/interiors`' `55-cutaway.js`: it
+drops the walls of shells the interiors kit draws itself (50-shell, 51-building); an engine kit draws its own walls, so the
+host's clipping cut (Voth's, Ys's, Noah's Regret's) is the one that opens them, and it is the same X and [ ] on every page.
+**Wired:** Eternian (the only engine kit with a set). The other sets belong to kits on other engines (Highlands, Iziz, Talia,
+Pylon, Reed Lake, Yuni, Locus, the Eastern Abyssal, the Beast Riders on the catalog; Zeijani and Noah's Regret on their forks).
 
 **A kit's `src/` copy of an engine file wins** for that kit (`--vendor-check` reports it as a shadow). Record why in the kit's
 `KNOWN_ISSUES.md`; the aim is none. Yeti keeps its own `10-core.js`.
@@ -45,3 +106,30 @@ their own forks of it (most files differ); porting them is a later step.
 **Changing it.** Every kit above draws through it. Rebuild them all and run `python3 core/engine/fingerprint.py`, which
 compares what each page draws (the registry's records and every mesh's vertex data and material key) with
 `fingerprint.json`: a refactor must leave every page's fingerprint the same.
+
+The export form (2026-11-24; `GODOT-LOOK-PLAN.md` section 13)
+--------------------------------------------------------------
+Geometry a game engine wants and a page does not, in `30-geo.js`, **off unless a host calls `setForm()` before the world is
+built**: with it off `box()` and `emit()` do what they did, and `fingerprint.py` reads every page `same`.
+
+    setForm({ chamfer: mk => metres, jitter: 0..1, fields: true })
+
+- `chamfer`: `box()` draws the chamfered box (`gboxCh`): the box's own 24 vertices, each moved a bevel in along its face, with
+  twelve edge strips and eight corner triangles: 44 triangles, no new vertex, the faces' normals kept. A box thinner than
+  four bevels stays plain. Widths by class are the caller's (8 to 12 mm furniture, 15 to 25 mm sawn timber, 20 to 40 mm
+  dressed stone, 50 mm and up adobe). A square `beam()` is chamfered the same way; a kit's own boxes are not yet.
+- `jitter`: a building out of true: a batter of half a degree to a degree and a half and a lean off plumb, from a hash of
+  where it stands (`core/rand`), applied to vertices as they are emitted. The placement record and its box are taken from
+  the true positions, so no record, walk box or door moves. Ridge sag and bowed beams are not done.
+- `fields`: every bucket carries `aForm`, three numbers a vertex: height above its building's base (-1 outside any), 1 (a
+  place for baked occlusion: nothing bakes it yet), and 1 on a chamfered box's vertices. `core/export`'s scene reader
+  writes it as a bucket's `geometry.form`.
+- `formMarks(REG, SMOKES)`: where smoke rises (`smokeAt`) and every window's sill (`windowAt`) as plain records.
+
+`node core/engine/test-form.js` checks each. A page opened with **`?form=1`** builds in the form (`90-scene.js`: chamfer
+widths by the material key's kind, `formWidth`; `?form=chamfer`, `jitter` or `fields` for one at a time), and a kit's
+exporter writes the fields (`kits/eternian/src/93e-et-export.js`; `godot/data/world-eternian-form` is the case).
+Rendered walls (plaster, render, lime) are not chamfered: they are drawn as panels that abut in one plane, and a chamfer
+on each cut a groove across the wall. A building's frame is its own; a street, a canal and furniture have none.
+The chamfered box is a unit box drawn through the plain box's own scaled matrix, so each face lands where the plain
+box's does, to the bit. **Not done**: occlusion and the arris of anything but a box are not computed.

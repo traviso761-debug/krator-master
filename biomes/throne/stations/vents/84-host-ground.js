@@ -125,13 +125,14 @@ const PATCH=(function(){let x0=1e9,z0=1e9,x1=-1e9,z1=-1e9;const add=(x,z,r)=>{x0
  const i0=Math.floor((x0-GX0)/GCS),i1=Math.ceil((x1-GX0)/GCS),j0=Math.floor((z0-GX0)/GCS),j1=Math.ceil((z1-GX0)/GCS);
  return{i0,i1,j0,j1,sub:4,x0:GX0+i0*GCS,z0:GX0+j0*GCS,sx:(i1-i0)*GCS,sz:(j1-j0)*GCS};})();
 const GW={ash:'vL0.x',mycelium:'vL0.y',lava:'vL0.z',veins:'vL0.w',scoria:'vL1.x',sulphur:'vL1.y',rim:'vL1.z',sinter:'vL1.w',mud:'vL2.x',matfloor:'vL2.y',lichenrock:'vL2.z',crust:'vL2.w'};
+const BREACH_CELLS=THRONE_BREACH_CELLS(BREACH,GN,GS);   /* the Rheoliths' breach (83r): its cells drawn fine below */
 KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-vents',keys:GL_KEYS,W:GW,GLAY});
 const GROUND=(function(){const N=GN,S=GS,cs=GCS,nx=GNX;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
  const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);GH[k]=y;pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   layersAtV(x,z,k,L0,L1,L2);}
  const idx=[];
- for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1)continue;const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
+ for(let j=0;j<N;j++)for(let i=0;i<N;i++){if(i>=PATCH.i0&&i<PATCH.i1&&j>=PATCH.j0&&j<PATCH.j1||breachSkip(BREACH_CELLS,i,j))continue;const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx.push(a,b,d,b,c,d);}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(new Uint32Array(idx),1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Vent country: the east rift under the plume';scene.add(m);return m;})();
@@ -147,5 +148,6 @@ const GROUND_PATCH=(function(){const P=PATCH,nx=(P.i1-P.i0)*P.sub+1,nz=(P.j1-P.j
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
  g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='Vent country: the hot pools and the mud pots';scene.add(m);return m;})();
+const GROUND_BREACH=THRONE_BREACH_MESH(BREACH_CELLS,{terrainH,attr:layersAtV,mat:MAT_GROUND,label:'Vent country: the Rheoliths\' breach on the fissure'});
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});
 _mark('ground');

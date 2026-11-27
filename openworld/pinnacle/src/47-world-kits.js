@@ -13,6 +13,11 @@
 // The corridors east of the rock (the crater's east wall, the Nomad Country's sedesert, the Tiers by Coyote Canyon) have no
 // kit here yet: their floor and ground style only (KNOWN_ISSUES.md).
 // The savannah's eastabyss entry must stay second (49-world-absav.js maps its weight from index 1 to 0).
+// The hyperjungle's far level is an octahedral impostor (core/world/84i-world-impostors.js: `impostor`, baked from its mid
+// tree, two variants a species; lit with wrap 1 as the kit's page lights them, but gain 2.4 where the kit's page has 1.6:
+// the world's leaf shader draws the near crowns brighter than the kit's own, and 2.4 matched them in screenshots,
+// 2026-11-16), two triangles a tree where the kit's blob crowns were ~450; so its mid hands over at 600 m (5x its
+// height, at most 900 m) where little-demo's handed over at 900-1500 m (2026-11-10, KNOWN_ISSUES.md).
 var WORLD_KITS=(function(){
 const LOD={hero:[14,90,240],mid:[50,320,900],far:[200,900,2500]};
 const H=(...a)=>KRAND.hash(...a),U=u=>KRAND.unit(u);
@@ -21,10 +26,11 @@ const hjSpecies=(x,z,h)=>{if(U(H(h,91))<.26)return Math.floor(U(H(h,92))*6);cons
 return[{name:'abyssal-savannah',global:'ABSAV_WORLD.absav',overlay:['ne rim','e savannah rim'],lod:LOD,floor:null},
  {name:'eastabyss',global:'ABSAV_WORLD.eastabyss',overlay:null,lod:LOD,floor:null},
  {name:'hyperjungle',global:'HYPERJUNGLE',overlay:['savage hyperjungle','hyperjungle n'],
-  lod:{hero:[2,300,420],mid:[7,900,1500],far:[40,5000,7000],sapling:[0,800,800]},
+  lod:{hero:[2,300,420],mid:[5,600,900],far:[40,5000,7000],sapling:[0,800,800]},
   passes:[{cell:165,accept:()=>.9,opt:{patch:0,pad:20},far:true,pick:hjSpecies},
           {cell:74,accept:()=>.55,opt:{patch:.5,pad:6},far:false,sapling:true,pick:hjSpecies}],
-  floor:{profiles:{floor:{}},pick:()=>({floor:1})}}];})();
+  floor:{profiles:{floor:{}},pick:()=>({floor:1})},
+  impostor:{lv:1,variants:2,gain:2.4,wrap:1}}];})();
 // a kit's export object by its expression (a top-level const is not on window: an indirect eval reaches it)
 WORLD_KITS.api=k=>k._api||(k._api=(0,eval)(k.global));
 /* a kit on several overlays: core/world/41-world-fields.js finds a biome's kit with WORLD_KITS.findIndex(k=>k.overlay===name);

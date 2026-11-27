@@ -15,16 +15,26 @@ PAIRS += [(f"core/mask/{f}", f"godot/tests/mask/{f}") for f in ("kmask.gd", "kma
 PAIRS += [(f"core/clock/{f}", f"godot/tests/clock/{f}") for f in ("kseason.gd", "kseason_test.gd", "golden-season.json", "kseason_flush_test.gd", "golden-flush.json")]   # KCLOCK.season's twin
 PAIRS += [(f"core/biome/{f}", f"godot/tests/fire/{f}") for f in ("kfire.gd", "kfire_test.gd", "golden-fire.json")]   # KFIRE (38-core-fire.js)
 PAIRS += [("core/simulation/ksim.gd", "godot/tests/sim/ksim.gd")]   # SIM.pose's twin (its test reads a world's export: tests/dhelv)
+PAIRS += [(f"core/simulation/ride/{f}", f"godot/tests/ride/{f}") for f in ("kride.gd", "kride_test.gd", "golden-ride.json", "golden-ride-ferry.json")]   # riding's twin (PLAN-RIDING.md)
 # KField (class_name: the importer godot/krator/field_import.gd uses it from here)
 PAIRS += [(f"core/terrain/{f}", f"godot/tests/terrain/{f}") for f in ("kfield.gd", "kfield_test.gd", "golden-field.json",
                                                                            "kstrata.gd", "kstrata_test.gd", "golden-strata.json",
                                                                            "klava.gd", "klava_test.gd", "golden-lava.json",
     "ktherm.gd", "ktherm_test.gd", "golden-therm.json",
     "klamina.gd", "klamina_test.gd", "golden-lamina.json",
-    "kstrata_vary.gd", "kstrata_vary_test.gd", "golden-strata-vary.json")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js; KStrataVary: 35c-core-strata-vary.js
+    "kstrata_vary.gd", "kstrata_vary_test.gd", "golden-strata-vary.json",
+    "kslab.gd", "kslab_test.gd", "golden-slab.json",
+    "kstacks.gd", "kstacks_test.gd", "golden-stacks.json")]   # KLava: 46-core-lava.js; KTherm: 47-core-therm.js; KLamina: 35b-core-lamina.js; KStrataVary: 35c-core-strata-vary.js; KSlab: 38d-core-slab.js; KStacks: 37-core-stacks.js
+# core/world's relief twins (core/world/PLAN-RELIEF.md P15): WRELIEF, WSMOOTH, WSTREAMS, WLAND (on kstacks.gd above), WRESIDUAL and their golden
+PAIRS += [(f"core/world/{f}", f"godot/tests/relief/{f}") for f in ("wrelief.gd", "wmicro.gd", "wresidual.gd", "wsmooth.gd", "wstreams.gd", "wland.gd", "wrelief_test.gd", "wresidual_test.gd", "golden-relief.json")]
+# core/world's version 3 hazard & fixture twins (PLAN-HAZARDS.md, PLAN-SETPIECES.md): WHAZ, WFIX and their golden vectors
+PAIRS += [(f"core/world/{f}", f"godot/tests/world_plan/{f}") for f in ("whaz.gd", "wfix.gd", "world_plan_test.gd", "golden-world-plan.json")]
 # kits/resources' node field (KResField), its test and vectors, the geology it reads, and krand.gd beside it (it preloads it)
 PAIRS += [(f"kits/resources/godot/{f}", f"godot/tests/resources/{f}") for f in ("kres_field.gd", "kres_field_test.gd", "golden-field.json")]
 PAIRS += [("kits/resources/data/geology.json", "godot/tests/resources/geology.json"), ("core/rand/krand.gd", "godot/tests/resources/krand.gd")]
+# core/kits: multi-kit manifest, KratorKits GDScript twin and golden vectors (MULTI-KIT-SCOPE.md Phase 4)
+PAIRS += [(f"core/kits/{f}", f"godot/tests/kits/{f}") for f in ("kkit.gd", "kkit_test.gd", "golden-kits.json")]
+PAIRS += [("kits/kits-manifest.json", "godot/data/kits/kits-manifest.json")]
 # core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.

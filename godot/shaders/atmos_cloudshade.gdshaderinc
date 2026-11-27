@@ -7,7 +7,7 @@ global uniform vec4 atm_cloud;
 global uniform vec4 atm_cloud_h;
 global uniform vec2 atm_cloud_wind;
 global uniform float atm_time;
-global uniform float atm_wet;
+global uniform float atm_vol_mid_h;
 uint atmSkyH(uvec3 c,uint s){uint h=(c.x*1597334677u)^(c.y*3812015801u)^(c.z*2246822519u)^(s*2654435769u);h^=h>>16u;h*=2146121005u;h^=h>>15u;h*=2221713035u;h^=h>>16u;return h;}
 float atmSkyAng(vec3 a,vec3 b){return 2.0*asin(clamp(0.5*length(a-b),0.0,1.0));}
 float atmSkyU(uvec3 c,uint s){return float(atmSkyH(c,s))/4294967296.0;}
@@ -17,6 +17,6 @@ float atmSkyNoise(vec3 x,uint s){vec3 o=vec3(float(s*7u%16u),float(s*11u%16u),fl
 float atmSkyFbm(vec3 p,int oct,uint s){float v=0.0,a=0.5,n=0.0;for(int i=0;i<6;i++){if(i>=oct)break;v+=a*atmSkyNoise(p,s+uint(i));n+=a;p=p*2.03+vec3(1.7,9.2,3.1);a*=0.5;}return v/n;}
 float atmCloudField(vec2 xz,int oct){vec2 w=atm_cloud_wind*atm_time*atm_cloud_h.w;return atmSkyFbm(vec3(xz/atm_cloud_h.z+w,0.0),oct,100u)*0.5+0.5;}
 float atmCloudCover(float n){return smoothstep(1.0-atm_cloud.x,1.0-atm_cloud.x+0.22,n);}
-float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||atm_cloud.x<=0.0||atm_cloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*(atm_cloud_h.x-P.y);
+float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||atm_cloud.x<=0.0||atm_cloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*(atm_cloud_h.x+atm_vol_mid_h-P.y);
  return 1.0-0.72*atm_cloud.y*atmCloudCover(atmCloudField(Q,3));}
 #endif

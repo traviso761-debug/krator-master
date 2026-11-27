@@ -1,0 +1,59 @@
+{
+ "build": "settlements/tuatara",
+ "note": "Tuatara's ground pack (PLAN.md sections 1 and 6): four library ground layers under KGROUND (savanna litter, beaten dirt, tilled fields and volcanic ash round the copper diggings). mapOnly with tint.keep 0.8.",
+ "size": 512,
+ "families": {
+  "gSav": {
+   "lib": "ground.savanna.litter",
+   "scale": [
+    6,
+    6
+   ],
+   "use": "the dry volcanic savanna floor round Tuatara",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gYard": {
+   "lib": "ground.dirt",
+   "scale": [
+    4,
+    4
+   ],
+   "use": "the spiral street, yards, mustering ground and tracks to the diggings",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gTill": {
+   "lib": "ground.tilled",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the grain and produce fields south of the village",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.55
+   },
+   "mapOnly": true
+  },
+  "gAsh": {
+   "lib": "ground.ash",
+   "scale": [
+    5,
+    5
+   ],
+   "use": "the volcanic soil and spoil aprons round the copper diggings",
+   "tint": {
+    "keep": 0.8,
+    "mean": 0.45
+   },
+   "mapOnly": true
+  }
+ }
+}

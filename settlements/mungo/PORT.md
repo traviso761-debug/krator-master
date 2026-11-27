@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 117 (54%) | 0 (0%) | 5 (2%) | 60 (28%) | 35 (16%) |
+| KB | 117 (57%) | 0 (0%) | 5 (2%) | 48 (23%) | 35 (17%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,10 +16,11 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/01b-build-open.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/05b-mungo-palette.js` | 1.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the life layer's dress by organisation (data) |
 | `src/10-core.js` | 16.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/20-stage.js` | 15.3 | [web] | 22 | 8 | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/20-stage.js` | 2.4 | [web] | 12 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | host: renderer, scene and lights (the baked dome went with W7: the shared sky draws the sky) |
 | `src/30-layout.js` | 54.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the layout as records only (SITES_L, REED, ST, RG, NAV, PORTS): no geometry |
 | `src/40-ground.js` | 6.7 | [draw] | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
 | `src/65r-reed-village.js` | 4.2 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 2 | 0 | 0 | 0 | split: calls the reed kit (REEDKIT_MAKE) with the layout records; lifts its meshes for the picker; the interiors finisher |
+| `src/65u-mungo-tabisti.js` | 4.5 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | adapter registering kits/tabisti (TBK) into ASSET_BY_KEY and batching placed masonry by material |
 | `src/68-place.js` | 14.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the placement pass: records into PLACED via buildAsset (draws as it places: Locus's pattern) |
 | `src/69b-locus-biohost.js` | 4.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/69z-locus-flora.js` | 5.0 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |

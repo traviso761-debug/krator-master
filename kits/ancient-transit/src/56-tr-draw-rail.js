@@ -12,13 +12,8 @@
   const T = KTRANSIT, C = () => T.COL, RAIL_PROF = [[-0.07, 0], [0.07, 0], [0.04, 0.05], [0.045, 0.16], [-0.045, 0.16], [-0.04, 0.05]].reverse();   /* foot, web, head: six points (ten cost a third more and read the same at 2 m) */
   const jersey = (x, h, t) => [[x - t, 0], [x + t, 0], [x + t, h], [x - t, h]].reverse();
   const mix = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k], scale = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
-  /* frames along a line from s0 to s1 every `step`, at the deck height plus `up` */
-  function frames(R, s0, s1, step, up, offFn) {
-    const out = [], n = Math.max(1, Math.round((s1 - s0) / step));
-    for (let i = 0; i <= n; i++) { const s = s0 + (s1 - s0) * i / n, p = R.path.at(s), y = R.deckAt(s), s2 = Math.min(R.L, s + 2), p2 = R.path.at(s2), pitch = s2 > s ? Math.atan2(R.deckAt(s2) - y, 2) : 0, off = offFn ? offFn(s, i / n) : 0;
-      out.push(T.frame(p.x + Math.cos(p.yaw) * off, y + up, p.z - Math.sin(p.yaw) * off, p.yaw, pitch, 0)); }
-    return out;
-  }
+  /* frames along a line: the kit's shared helper (46-tr-mats.js) */
+  const frames = T.draw.frames;
   function post(B, x, y, z, yaw, h, r, col, lean, fallen) {
     const m = fallen ? T.frame(x, y + 0.12, z, yaw, 0, 0).multiply(T.frame(0, 0, 0, 0, 0, Math.PI / 2 * 0.97)) : T.frame(x, y, z, yaw, lean ? lean : 0, lean ? lean * 0.4 : 0);
     B.box(fallen || lean ? 'rust' : 'steel', m, r * 2, h, r * 2, col); return m;

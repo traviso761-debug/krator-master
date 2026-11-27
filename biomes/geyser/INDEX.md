@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/geyser-basin.html`, `dist/geyser-corona.html`, `dist/geyser-ice.html`, `dist/geyser-puna.html`, `dist/geyser-stills.html`, `dist/geyser.html`
+Built output (never open it; edit `src/` and rebuild): `dist/geyser-basin.html`, `dist/geyser-corona.html`, `dist/geyser-cove.html`, `dist/geyser-ice.html`, `dist/geyser-puna.html`, `dist/geyser-stills.html`, `dist/geyser.html`
 
 Build: `cd biomes/geyser && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -20,8 +20,8 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 16 | the land before the thermal ground (57); the thermal layout (the showcase's; the kit's re (112) |
-| `46-biome-geyser-layout.js` | 26 | lay out (29); relief (92); the heat and the rest (GEYSER.at) (147); the cycles (186); the hazards (core/hazard, 2026-10-26) (200); a site from a point (the open world; the isles) (223) |
+| `45-host-stage.js` | 16 | the land before the thermal ground (57); the thermal layout (the showcase's; the kit's re (113) |
+| `46-biome-geyser-layout.js` | 27 | lay out (35); relief (98); the heat and the rest (GEYSER.at) (153); the cycles (192); the hazards (core/hazard, 2026-10-26) (206); a site from a point (the open world; the isles) (229) |
 | `47-host-land.js` | 5 | the fields (cached below; these are the definiti (21); the host binding (43) |
 | `50-biome-geyser-species.js` | 21 | palettes (27); the tree species (42); harvest (biomes/FRUIT.md) (62); the small plants (the floor), tagged (73); leaf textures (89); bark, wood, glass, sinter, moss textures (grey,  (131); local geometries (144); materials (166); instanced items (202) |
 | `55-biome-geyser-trees.js` | 18 | zones (11); colour (29); keep-clear between trees (41); the builders: (T, st, lv) with lv 2 near, 1 mid (58); impostors (the far canopy) (136); the pass (151); the passes (data: species, cell, acceptance from (174); one tree alone (biomes/WORLD.md: trees as varian (184) |
@@ -31,11 +31,25 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `70-biome-geyser.js` | 3 |  |
 | `82-host-sky.js` | <1 |  |
 | `84-host-ground.js` | 24 | the paint (per vertex) (24); the layers (the library, or procedural without i (47); the meshes (137) |
-| `85-host-far.js` | 5 |  |
+| `85-host-far.js` | 4 |  |
 | `88-host-build.js` | 3 |  |
 | `89-host-sky.js` | 2 |  |
 | `89w-host-sea.js` | 4 |  |
 | `89w-host-water.js` | 5 |  |
 | `89zz-host-shadow.js` | 1 |  |
-| `99-host-take.js` | 22 | the inspector's words (63); the probe's budgets and the kit's own checks (ve (80); the page, handed to the host (162) |
+| `99-host-take.js` | 23 | the inspector's words (63); the probe's budgets and the kit's own checks (ve (80); the page, handed to the host (169) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| basin | 44s-host-site.js | 7 |
+| corona | 44s-host-site.js | 7 |
+| cove | 45-host-stage.js, 80-host-cove-ground.js, 87-host-cove.js, 89-host-sky.js, 89w-host-sea.js, 98-host-cove-take.js | 45 |
+| field | 45-host-stage.js, 47-host-land.js, 75-biome-geyserfield-flora.js, 85-host-far.js, 88-host-build.js, 89-host-sky.js, 89w-host-sea.js, 89w-host-water.js, 98-host-field-take.js | 30 |
+| ice | 44s-host-site.js, 87-host-ice.js | 9 |
+| puna | 44s-host-site.js | 6 |
+| stills | 87-host-stills.js | 7 |

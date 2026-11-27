@@ -39,3 +39,11 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `89w-host-water.js` | 11 |  |
 | `99-host-take.js` | 11 | the inspector's words (58); the probe's budgets and the kit's own checks (ve (68); the page, handed to the host (103) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| lakes | 45-host-stage.js, 85-host-tower.js, 89-host-sky.js, 89w-host-water.js, 99-host-take.js | 37 |

@@ -45,9 +45,9 @@ function faVoDome(A, fam, c, r, col, nu, nv, o) {
    chord; a straight swept leading edge, the chord tapering to a rounded tip; dihedral lifts it, droop bends the hand */
 function faVoWing(A, fam, side, root, o) {
   const L = o.len, ch = o.chord, cd = Math.cos(o.dihedral), sd = Math.sin(o.dihedral), sw = Math.sin(o.sweep);
-  const cAt = t => ch * (1 - (o.taper == null ? 0.25 : o.taper) * t) * Math.sqrt(Math.max(0.03, 1 - Math.pow(t, o.tipPow || 4)));
+  const cAt = t => ch * (1 - (o.taper == null ? 0.25 : o.taper) * t) * Math.sqrt(Math.max(0.03, 1 - Math.pow(t, o.tipPow == null ? 4 : o.tipPow)));
   const c = t => [root[0] + side * L * cd * t, root[1] + L * sd * t - (o.droop || 0) * t * t, root[2] + ch / 2 - L * sw * t - cAt(t) / 2];
-  A.tube(fam, c, t => [cAt(t) / 2, o.thick * (1 - 0.7 * t)], o.nt || 12, o.ns || 8, null, { caps: true, colf: o.colf || (() => o.col) });
+  A.tube(fam, c, t => [cAt(t) / 2, o.thick * (1 - 0.7 * t)], o.nt == null ? 12 : o.nt, o.ns == null ? 8 : o.ns, null, { caps: true, colf: o.colf || (() => o.col) });
   return c;
 }
 

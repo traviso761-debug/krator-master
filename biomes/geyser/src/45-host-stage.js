@@ -57,6 +57,7 @@ const WIND=[.62,-.42];
 // ---------------------------------------------------------------- the land before the thermal ground
 const TERR={R:1400};
 const SEA=0;   // the Ring Sea (local); the scale model puts it ~1.49 km below the datum
+const AIR_ATM=1.9;   // the air (atm): the sky takes it (89) and the thermal record its boiling point (46: GEYSER.boilAt, ~119 degC)
 // THE STAIR's line (the basin's outlet to the sea): its axis and half-width by z
 const STAIR={x0:60,z0:240,w:185,name:'The Stair (travertine terraces down to the sea)'};
 const stairX=z=>STAIR.x0+28*Math.sin((z-STAIR.z0)*.0065);
@@ -121,7 +122,7 @@ function creekAt(x,z){const L=CRH.H.get(Math.floor(x/CRH.C)*8192+Math.floor(z/CR
 //   cone {r,h} the cone, mound {r,h} the sinter shield under it, pool the fountain's pool radius; off its clock's phase
 // springs: kind prismatic (a broad shallow spring on its shield), pool, funnel (deep, steep-sided); temp 0..1 (1 boils
 // at its middle: deep blue; cooler the mats reach in: green, yellow, orange); out how many run-off channels it feeds
-const THERMAL={seed:631,amb:33,ground:landH,sea:SEA,wind:WIND,
+const THERMAL={seed:631,amb:33,atm:AIR_ATM,ground:landH,sea:SEA,wind:WIND,
  geysers:[
   {key:'kettle',name:'The Old Kettle (a cone geyser)',kind:'cone',x:-120,z:-300,H:52,period:6600,pre:90,dur:270,steam:420,off:1042,demo:{period:190,pre:24,dur:32,steam:40,off:30},cone:{r:9,h:6.5},mound:{r:36,h:2.6}},
   {key:'grandmother',name:'Grandmother (a great fountain geyser in her crater pool)',kind:'fountain',x:95,z:-430,H:64,period:39600,pre:3600,dur:2700,steam:1800,off:18000,demo:{period:330,pre:40,dur:50,steam:60,off:150},pool:11,mound:{r:44,h:1.9}},

@@ -22,6 +22,7 @@ const VIEWS=(function(){const V={},sn=GS.snout,W0=G.W(sn+100);
  if(POND){const c=upAt(G.termU(TERM.p0)-60,TERM.p0+40);V['The pond and the moraine']=look(c[0],c[1],8,upAt(sn,TERM.p0)[0],upAt(sn,TERM.p0)[1],5);}
  if(RIDGES.length){const r=SITE.ridges[0];V['A nunatak']=look(r.a[0]-300,r.a[1]-250,30,(r.a[0]+r.b[0])/2,(r.a[1]+r.b[1])/2,r.h*.5);}
  V['From afar']=lookUP(-2300,-900,420,600,0,60);
+ if(SITE.views2)SITE.views2(V,{look,lookUP,gh,upAt});   /* a station's own views (44z): station 11's hero framing from the breach */
  return V;})();
 function hazardWords(p){return typeof KTAGS!=='undefined'&&KTAGS.hazardAt?'\n'+KTAGS.hazardAt(p.x,p.y,p.z):'';}
 function describe(hit){const p=hit.point,o=hit.object;
@@ -69,6 +70,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('the frost coral\'s limbs flared into their parents (BIO.flareJoin)',HCHK.joints(st));
  add('the flora and the wet band read the shore of the water (BIO.envCheck, WATER.edgeAudit)',edgeCheck());
  add('preset cameras above the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
+ if(SITE.checks)SITE.checks(add,false);   /* a station's own checks (44z), each with its negative below */
  return R;}
 function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,detail:r.detail});
  const ip=upAt(SITE.icefall[0],GS.centre(SITE.icefall[0])),c0=[ip[0],terrainH(ip[0],ip[1]),ip[1]];
@@ -80,12 +82,13 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a node of the data lost',HCHK.nodes((window._nodes||[]).slice(1),CG_RES.nodes.length?CG_RES.nodes:[{id:'res:none:0:0'}]));
  add('no hazards',HCHK.hazards(0));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:c0[0],y:c0[1]-10,z:c0[2]}]));
+ if(SITE.checks)SITE.checks(add,true);
  return R;}
 KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 const MS=STILLS[0];
 /* verify.py's export box: the largest still (the water section) and the nearest frost coral (the buckets), at most 900 m a side */
-const EXPORT_BOX=(function(){const c=MS?MS.center:RIDGES.length?[(SITE.ridges[0].a[0]+SITE.ridges[0].b[0])/2,(SITE.ridges[0].a[1]+SITE.ridges[0].b[1])/2]:[0,0];   /* no still (the icefield): a nunatak, where its stones and lichen are */let x0=c[0]-150,z0=c[1]-150,x1=c[0]+150,z1=c[1]+150;const co=REG.filter(r=>/frost coral/.test(r.name)).sort((a,b)=>Math.hypot(a.x-c[0],a.z-c[1])-Math.hypot(b.x-c[0],b.z-c[1]))[0];
+const EXPORT_BOX=SITE.exportBox||(function(){const c=MS?MS.center:RIDGES.length?[(SITE.ridges[0].a[0]+SITE.ridges[0].b[0])/2,(SITE.ridges[0].a[1]+SITE.ridges[0].b[1])/2]:[0,0];   /* no still (the icefield): a nunatak, where its stones and lichen are */let x0=c[0]-150,z0=c[1]-150,x1=c[0]+150,z1=c[1]+150;const co=REG.filter(r=>/frost coral/.test(r.name)).sort((a,b)=>Math.hypot(a.x-c[0],a.z-c[1])-Math.hypot(b.x-c[0],b.z-c[1]))[0];
  if(co&&Math.hypot(co.x-c[0],co.z-c[1])<750){x0=Math.min(x0,co.x-20);z0=Math.min(z0,co.z-20);x1=Math.max(x1,co.x+20);z1=Math.max(z1,co.z+20);}return[x0,z0,x1,z1].map(Math.round);})();
 const MIRROR=MS&&WATER.mirrorSwitch?WATER.mirrorSwitch({THREE,renderer,scene,camera,sky:SKY,materials:[MS.mat],level:MS.level,center:MS.center,radius:MS.radius,far:MS.far,
  hour:()=>ATMOS.clock?ATMOS.clock.hour:0}):null;window.MIRROR=MIRROR;   /* the reflections switch: off at page load (the owner, 2026-11-01) */

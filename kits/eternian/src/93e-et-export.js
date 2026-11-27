@@ -17,11 +17,11 @@
    for(let t=0;t<I.length;t+=3){const a=I[t]*3,b=I[t+1]*3,c=I[t+2]*3;
     if(!ctx.box||ctx.inBox((P[a]+P[b]+P[c])/3,(P[a+2]+P[b+2]+P[c+2])/3))k.push(I[t],I[t+1],I[t+2]);}
    if(!k.length)return;const idx=Uint32Array.from(k),A={};
-   for(const n of ['position','normal','uv','color']){const at=g.attributes[n];if(at)A[n]=[at.array,at.itemSize];}
+   for(const n of ['position','normal','uv','color','aForm']){const at=g.attributes[n];if(at)A[n==='aForm'?'form':n]=[at.array,at.itemSize];}   /* aForm: the export form's fields (?form=1) */
    const c=EXPORT.compact(A,idx),geo={};for(const n in c.arrays)geo[n]=EXPORT.pack(c.arrays[n]);geo.index=EXPORT.pack(c.index);
    const n=seen[mk]=(seen[mk]||0)+1;
    out.push({id:'b:'+KIT.pack+':'+mk+(n>1?'~'+n:''),name:mk,kit:KIT.pack,label:mk,material:KIT.pack+':'+mk,lod:null,
-    triangles:idx.length/3,geometry:geo,compacted:{vertices:c.vertices,dropped:c.dropped}});});
+    triangles:idx.length/3,closed:EXPORT.closed?EXPORT.closed(c.arrays.position,c.index):false,geometry:geo,compacted:{vertices:c.vertices,dropped:c.dropped}});});
   return out;},{by:'eternian'}]);
  reg(['materials',ctx=>{const out=[],seen={};if(typeof WORLD==='undefined'||!WORLD)return out;
   WORLD.traverse(m=>{const mk=m.userData&&m.userData.mk;if(!m.isMesh||!mk||seen[mk])return;seen[mk]=1;const M=m.material,em=M.emissive&&(M.emissive.r||M.emissive.g||M.emissive.b);
@@ -29,4 +29,7 @@
     roughness:M.roughness==null?1:M.roughness,metal:M.metalness||0,specular:.5,emissive:em?'#'+M.emissive.getHexString():null,emissiveIntensity:M.emissiveIntensity==null?1:M.emissiveIntensity,
     doubleSided:M.side===2,transparent:!!M.transparent,opacity:M.opacity==null?1:M.opacity,alphaTest:M.alphaTest||0,vertexColours:!!M.vertexColors,tint:true,unlit:!!M.isMeshBasicMaterial,
     hook:null,worldUV:null,scale:[1,1],lib:(()=>{const L=SV_LIB[mk]&&KMAT.mode==='lib'?KMAT.packed(KIT.pack,SV_LIB[mk]):null;return L&&L.lib||null;})(),breakup:null,normalScale:1,map:null,normalMap:null,roughnessMap:null});});
-  return out;},{by:'eternian'}]);})(window);
+  return out;},{by:'eternian'}]);
+ /* where smoke rises and where a wall stains (30-geo.js formMarks), inside the tile */
+ reg(['marks',ctx=>{const all=typeof formMarks==='function'?formMarks(REG,SMOKES):[],recs=all.filter(m=>!ctx.box||ctx.inBox(m.at[0],m.at[2]));
+  return recs.length?{format:'krator-marks',version:1,records:recs}:null;},{by:'eternian'}]);})(window);

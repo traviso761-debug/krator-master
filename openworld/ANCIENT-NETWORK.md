@@ -45,7 +45,8 @@ own piece in its own record shape. This file is the join; the pieces keep their 
 - **Hub 01 to Yuni.** No human has reached Hub 01 since the Cataclysm and come back.
 - **Pluton** (743,1328, 9,650 m) is the key to the Ancients' own tunnels up the Godthrone. They are not public and are
   uninhabitable now.
-- **Xanadu's short line ends at Strongbow**, and the network there was never extensive.
+- **Xanadu's short line ends at Strongbow**, and the network there was never extensive. (Since 2026-11-11 that leg is abandoned:
+  section 8.16.)
 - **Trickster's House** joins the network by one route only, to Verge, through a rim tunnel. The god's road through the Gate
   is a separate thing.
 - **Span** (554,1010) has two Ancient tunnels (`settlements/span/PLAN.md`):
@@ -126,7 +127,7 @@ script is in this session's scratchpad: `measure.py`, `lines.py`).
 | G6 | **Loj Twenny's cave** | 457,1269 | riftrim and the tungang plan put it "on `tube_rift_08`", but that tube is at 628,1528-594,1558, 300 km off | the Line plan's side gallery from km 218 (25 km); its question 3 |
 | G7 | **The Inner Wall tunnel's surface access** | Cascade 568,841 is 214 km from the Drum-Dorado line (the doc's "~140 km" was measured on the old line) | the draft found surface passes (Cascade-Drum, 6 km of tunnel) instead of the tunnel | pin the tunnel (M2); question 5 |
 | G8 | **Span's tunnels are not in the draft** | Span 554,1010: the Basin Tunnel's lower portal is unplaced; the Valley Tunnel's portal is on the Deep Reach floor | span's plan says "the two Ancient highways meet on the Cross" | branch routes `span.basin`, `span.valley`; question 6 |
-| G9 | **The Stair tunnel** | Arcbeam-Stair | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | question 7 |
+| G9 | **The Stair tunnel** | Parabola-Stair (was "Arcbeam-Stair") | the draft has an 860 km surface route with 16 km of tunnel; seouterwall *proposes* a 180 km base tunnel, the Bab al-Hawa shaft (1033,1258) and a surface highway through the Godsgate; catch has the caravans enter by the 6.2 km notch (*old* 726,896) | **answered** (the owner, 2026-11-24): no bore to Arcbeam, a **ruined bore from Parabola to Stair** and the surface highway; `rift.bowl.parabola-stair` is in the network layer (scale-model edit 31) |
 | G10 | **Xanadu's line** | Strongbow 1026,1594 to Theodiga 908,1535 (264 km, under 2,600 m); Theodiga to the Pile 381 km | the draft joins them; no doc says how Strongbow's line meets the rest, and the caravans use the Lasso pass (1040,1566) | **answered**: the Rift line's east end runs the Pile-Theodiga-Strongbow; it may go on from Theodiga to Stair and a Bowl arcology (section 8) |
 | G11 | **Nodes the draft lacks or should drop** | new: Fort Ebon 695,782, Nulab 443,1359; in the valley plan but not in the model's source: Wheel 406,886, Thera 526,955; the three Zeijani caverns (876,802; 834,882; 806,818) and Dhelv would be picked up as "cavern" nodes | the draft skips only Dhelv | M1 |
 | G12 | **Upkeep spheres by polygon name** | `ancient_roads.py` `UPKEEP` | names are stale: "Dalab Council" is now "Realm of Dalab"; "Dilihan Province", "Tungang Union", "Fellgangs" and "Shell Province" are unmapped; there is no "Beast Riders" or "The Cut" political polygon | M1, M3 |
@@ -631,10 +632,20 @@ swhighlands' Drum and Cascade.
 - **The Bowl arcology** goes at **970,1186**: the Bowl's most temperate ground near the Godsgate (15 degC mean, 1,716 m,
   314 mm of rain).
 - **"No tunnel to Arcbeam" means: drop the Stair tunnel.** There is no Ancient tunnel from Arcbeam to Stair at all.
-  - Stair is reached by the Rift line's possible leg from Strongbow, and by the surface trunks.
-  - This changes canon in `LORE.md` §4 (the Catch: "the Ancients' tunnel to Stair ... sealed halfway", the divers'
-    prospect), `biomes/catch/PLAN.md` and `biomes/seouterwall/PLAN.md` (the base tunnel and Bab al-Hawa). I have not
-    rewritten those yet (follow-up question 1 below).
+  - **Narrowed 2026-11-24 (the owner): "there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."**
+    So there IS a bore to Stair; its north end is **Parabola** (970,1186), which the same answers of 2026-11-11 had
+    already made the Bowl arcology, and the owner confirmed on 2026-11-24 ("parabola is the arcology now"). Proposed id:
+    `rift.bowl.parabola-stair`, beside the kept `rift.bowl.theodiga-stair`. It is **ruined**, not shut by design: 580 km,
+    its line straight down the Godsgate corridor, 115 km of it under the SE outer wall with up to 6.6 km of rock over it,
+    and sealed halfway — Yuni stripped the northern half long ago, the southern half from Stair is the divers' prospect.
+    Bab al-Hawa's 40 m shaft (1033,1258) is its ventilation and access shaft, 1,400 m down to the bore's summit section
+    near +2,190 m. **Nothing runs under Arcbeam**, which the highway merely passes.
+    `openworld/catch-bowl/PLAN-TERRAIN.md` P17 has the measurements; `PLAN.md` answers M and N.
+  - Stair is reached by that bore, by the Rift line's possible leg from Strongbow, and by the surface trunks.
+  - ~~This changes canon in `LORE.md` §4 ... I have not rewritten those yet~~ **Done 2026-11-24**, as a rename rather
+    than a demolition, now that the Parabola bore stands: `LORE.md` §4, `biomes/catch/PLAN.md` section 6 and
+    `biomes/seouterwall/PLAN.md` section 3.3 carry Parabola's name, and §4's oldest passage (sealed halfway, the northern
+    half stripped by Yuni, the southern the divers' prospect) is true again word for word.
 - **Quintagon** goes at **1349,830** (2,320 m, 14 degC, 376 mm, 289 km from Verge).
 - **The Outland Gate highway** runs from the Outlands (Trickster's House) north through the Gate to the Ria valley. It
   splits at the Gate, and the branch runs south-west through the Tiers to the Korona site.
@@ -892,23 +903,42 @@ The Ancient network is 63 sites and 22,026 km, 3,627 km of it in tunnel, with no
 
 ### 8.16 Strongbow moves to Oidong (the owner, 2026-11-11)
 
-**Where it is now.** Strongbow is a cliff arcology at the Oidong Valley's east end, at 5.1 px 1298,1647. It was at 1026,1594.
-It stands on the valley floor at the foot of the High Rift's escarpment, over Oidong's lake.
-- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8` (`bd01a61f5`).
-- **The router:** `route51.py` takes the new place before `setts.json`'s snapshot catches up.
+**Where it is now.** Strongbow is a cliff arcology on the **Xanadu–Oidong scarp**, at 5.1 px 1001,1596, 3 km north of the
+cataract. The owner: "right on the xanadu-oidong border - the same cliff the cataract is on - so that it offers a real advantage
+to anyone using its elevator".
+- **Its two ends:** its top is on the Oidong lip, at about 1,400 m. Its foot is on the Xanadu floor, about 3,100 m below, to the
+  west (around 991,1596).
+- **History:** it was at 1026,1594. The same day it went to the valley's east end (1298,1647), then to its west end (1013,1585),
+  then to the scarp.
+- **Source:** the Oidong-High Rift session's scale-model edit 5.1e5, on branch `claude/cool-tereshkova-d594e8`. `setts.json` is
+  taken from that branch at `7cff97d0c`, which also moves Qiblai to 922,1595 and Erehwon to 805,1516.
 
-Re-routed (the owner's corrections the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a
-line stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow"):
-- **The Rift line, Theodiga (10) to Strongbow (11): 1,124 km**, 197 km of it in tunnel (it was 296 km to the old site).
-  - It stays out of the Oidong Valley: the router traces it with the valley's polygon at 1,000x the cost, except within 10 km
-    of Strongbow.
-  - Its route runs south from Theodiga past Strongwall, east along the uplands south of the valley, then north into Strongbow.
-  - It stops at neither Qiblai (a much later city) nor Longsong.
-- **The valley has a road and no line.** With the line out of the valley, the Xanadu roads come back: Strongbow to Longsong on
-  the valley floor (162 km), Qiblai to Longsong (583 km) and Qiblai to Strongbow (745 km). The Oidong session's surface road
-  (Longsong to Strongbow, then the Order's road up the beck) is the same road.
+**Routes from Xanadu's side end at the foot; the valley road ends at the top** (`route51.py` `STRONGBOW_FOOT`). Each route that
+ends at the foot carries a note: the arcology's elevator climbs the 3,100 m to the lip.
+
+The owner's other answers the same day: "qiblai shouldnt be a line stop it was built much later", "longsong shouldnt be a line
+stop either", "there is no rift line in oidong valley, just a road", "it goes to strongbow".
+- **The Rift line, Theodiga (10) to Strongbow's foot (11): 253 km**, 48 km of it in tunnel.
+  - **It is abandoned** (the owner, 2026-11-11, in the Strongbow session; `settlements/strongbow/PLAN.md` on
+    `claude/keen-swanson-68a311`, `38ebac2ba`).
+    - The way is broken near Strongbow.
+    - The terminus hall at the foot, station 11, is a ruin the town builds over.
+    - The leg's upkeep is `decayed` all along, with the note on the route (`route51.py` `SB_ABANDONED`).
+  - It stays out of the Oidong Valley (the 'Oidong Valley' polygon is traced at 1,000x the cost).
+  - It stops at neither Qiblai nor Longsong. A 40 km Xanadu spur joins Qiblai to it.
+- **The Xanadu roads:**
+  - Qiblai to Strongbow's foot, 160 km;
+  - Strongbow's foot to Strongwall, 187 km;
+  - Qiblai to Strongwall, 83 km;
+  - Erehwon to Qiblai and to Theodiga.
+  - Qiblai to Theodiga is dropped as redundant, since 61 % of it runs beside the Rift line. Theodiga to Strongwall is no longer a
+    neighbour pair.
+- **The valley road**, from Strongbow's top down the Oidong Valley floor to Longsong, is 469 km. It is laid on the Oidong
+  session's least-climb guide (`GUIDES`), so the network map and the open world share one alignment.
+- **Qiblai to Longsong is dropped** (the owner: "Drop it"). It ran beside the valley road; Qiblai reaches Longsong by Strongbow
+  (`DROPPED`).
 - **Possible: the dead bore from Theodiga (10) to Stair (12)**, 438 km, 385 km of it bored. The owner: "theodiga could go to
-  stair". It replaces the possible leg from Strongbow, which from the new site would have been a 562 km bore.
+  stair". It replaces the possible leg from Strongbow.
   - It is a third way across, but a hard one: dark, with little food or water.
   - **The trains do not run in it.**
   - From Stair, the possible leg on to Parabola (13) by the Godsgate is unchanged.

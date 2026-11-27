@@ -845,31 +845,179 @@ sessions hit is a check request here, not a third paragraph. Most are tools-only
 
 - **22. A "GPU" verify in SwiftShader** (7 sessions). Make `gpu-renderer` a hard fail whenever a lane lock is held (a lane
   without `KRATOR_GL=gpu` is a mistake, not a mode), and print the renderer in the harness's first line.
+  **Done 2026-11-11:** `verify_page` prints `harness: renderer ...; lane ...; KRATOR_GL=...` first, and a lane lock held without `KRATOR_GL=gpu` fails `gpu-renderer`, which the ratchet cannot excuse (`HARD`). `python3 tools/tests/test_verify_page.py` (case lane-no-gpu). On for every build.
 - **23. LFS pointers read in place** (10+). `tools/build.py --pull` (or a `tools/lfs_needs.py <build>`) that lists every
   `tex/` and `dist/*.js` a page reads, from `--list-sources` and `fragment_needs.json`, and pulls them in one go; plain
   `build.py` files refuse pointers as `tools/build.py` does; node tests that require a `dist/` file name the pull to run.
+  **Done 2026-11-11:** `python3 tools/lfs_needs.py <build> [--pull] [--pages]` (its tex/, its manifest's inputs, `--list-sources` and their `fragment_needs.json` needs, the tex/ and dist/ folders its sources name) and `--test <node test>`; `test_all.py` skips a node test whose bundle is a pointer, naming that command; a build listed under `recorded` refuses a plain run and names its pointers (`tools/check_port.py`). `python3 tools/tests/test_survey_checks.py`.
 - **24. Docs and listed folders as build inputs** (5). `check_stale` says "docs only: rebuild, bytes unchanged" when the
   only changed inputs are `KNOWN_ISSUES.md`/`PORT.md` or a folder listing, so nobody chases it.
+  **Done 2026-11-11:** `python3 tools/check_stale.py` reports such a run as `DOCS-ONLY` ("docs/listing only: rebuild, bytes unchanged") and never fails on it; a listing counts only when the run read no fragment in that folder (tools/, on Python's import path); a listing of src/ or core/water/ stays STALE. 119 findings were only that. `python3 tools/tests/test_survey_checks.py`.
 - **25. Builds that skip `tools/build.py`** (5). Each kit's `build.py` writes `build-inputs.json` itself (shared helper),
   or refuses to write `dist/` unless called through `tools/build.py`.
+  **Done 2026-11-11 (opt-in):** `buildlib.through_tools_build(__file__)` at a build.py's top re-runs a plain run through `tools/build.py`; a build listed under `recorded` in `tools/checks_optin.json` is refused a plain run by `tools/check_port.py`. `python3 tools/tests/test_survey_checks.py`.
 - **26. Missing core fragments on hand-listed pages** (4: `31b-core-leafset.js`). `check_assembly` names the fragment to add,
   and a `CORE_BIOME_MIN` list (10, 20, 30, 31b, 34, 40) is the default a build extends.
+  **Done 2026-11-11:** a MISSING finding names the core fragment that defines the call (`add core/biome/31b-core-leafset.js (it defines BIO.leafOn)`); `buildlib.CORE_BIOME_MIN`, and rule MINSET for the builds listed under `minset`. `python3 tools/check_assembly.py`; `python3 tools/tests/test_survey_checks.py`.
 - **27. Texture units** (4 + the ground that vanished). A universal assert that reads every linked program's sampler count
   (fail at 16 on any lane, warn at 15), replacing `samplersOf`'s guess, which overcounts.
+  **Done 2026-11-11 (opt-in):** the universal assert `samplers` reads each linked program's active samplers (`getActiveUniform`), fails at 16 and warns at 15 for a build listed under `samplers` (or `checks=harness.SURVEY`), and is a report elsewhere. `python3 tools/tests/test_verify_page.py` (samplers-16, samplers-15). Proved on SwiftShader only: the Arc's and the RTX's counts want a GPU run; the Throne's `samplersOf` goes at the ride-along.
 - **28. Audits against the drawn ground** (5). `drawnH` as a core function (strip cells, else the mesh's triangles); the
   eye check, the water audit, the cliff gate and the attach audit's ground all take it by default.
+  **Done 2026-11-11 (part, opt-in):** `core/drawn` (`KDRAWN.grid`, `KDRAWN.mesh`, `KDRAWN.h`, `KDRAWN.compare`; `node core/drawn/test-drawn.js`); the harness's eye check measures the eye against it for a build listed under `drawn-ground` (`python3 tools/tests/test_verify_page.py`, case eye-under-drawn). The water audit, the cliff gate and the attach audit are page code: TODO.md "Ride along".
 - **29. Negatives written backwards, predicates shadowing `ok`** (3). The node test helper refuses a negative that passes
   on the fixed code and refuses a local named `ok`; the pass count is printed against the number of `ok(` calls in the file.
+  **Done 2026-11-11:** `tools/ktest.js` (`T.ok`, `T.neg(name, check, faulty, fixed)`, `T.done()`): refuses a local `ok`, a negative that passes on the fault or fails the fix, and an `ok(` site that never ran. `python3 tools/tests/test_ktest.py`; `core/drawn/test-drawn.js` is the first test on it.
 - **30. Windows text traps** (9 commit messages, 8 heredocs, BOMs twice). A `tools/commit.py -m-file` helper; a pre-commit
   check for a BOM, mojibake (`Ã`, `â€`) or CRLF in staged text; `check_views` and the build both refuse apostrophes and
   colons in view and check names.
+  **Done 2026-11-11:** `python3 tools/commit.py -F msg.txt` (the message cleaned of a BOM and CRLF, mojibake refused, the staged text checked); `python3 tools/check_text.py` (staged; `--files`; `--install-hook` per clone); `check_views` refuses apostrophes (99 existing names baselined) and `tools/build.py` fails a build listed under `names` on either. `python3 tools/tests/test_survey_checks.py`.
 - **31. Stale committed pages passing verify** (3). The verify cache records the page's source hash; a pass on a page whose
   sources moved since is reported "stale pass", not "pass".
+  **Done 2026-11-11:** `harness.page_sources` reads the page's build-inputs.json; `VerifyPage.exit` prints "OK, but a STALE PASS" and a cached pass on such a page "cached STALE pass"; the cache entry records the sources' state and hash. `python3 tools/tests/test_survey_checks.py`.
 - **32. Owed fixes the survey found** (one session each, each small): KHOOK clones re-running layers; `43-core-ground.js`
   reading `kEye`; `kits/fauna/src/90-sheet.js:147` `_texPending` as a function; `BIO.alphaTex` without
   `willReadFrequently`; library-card mipmap fringes (fill transparent texels as `alphaTex` does); KKARST duplicate sink ids
   across branch levels; 19 biome `build.py` files writing CRLF pages; `check_source` not scanning kits' top-level files;
   hyperjungle's harvest-wood phrases failing `test-hamlet.js`; the ISK error loop.
+  **Done 2026-11-11 (the tools-only ones):** `check_source` reads kits' top-level files (19 keys baselined); the eleven page writers left of the nineteen write `newline='\n'` (Linux bytes unchanged; their builds' stale keys recorded). The fauna `_texPending` and the hyperjungle phrases were already fixed. Every fix that moves page bytes is a row in TODO.md "Ride along" with its file and line.
+
+## Survey of 2026-11-15: pitfalls, tips and unfixed bugs (check requests)
+
+The owner asked the sessions of 2026-11-11 to 11-15 (the underground round, Kimr, Strongbow, Qiblai, Voth, the open world,
+Integration 2, characters, fauna, textures, audio) for their pitfalls, tips and the bugs they found and did not fix; 34
+answered, and the coordinator added two findings (the eastern highlands' card and attach guards; the open world's ground
+palettes). The story is the skill's 5x (`references/stories-rounds.md`); every unfixed bug is in `BUGS-2026-11-15.md`. Per the
+growth rule, each lesson two or more sessions hit (or one that recurred after a rule or check was meant to stop it) is a check
+request here. Each names the check, where it lives, and the negative control that must fail.
+
+- **33. Stale bases** (4 sessions reported pages broken "on main" that origin/main had fixed; 4 more started 14-39 commits
+  behind). `tools/base_check.py`, run first by `tools/build.py` and `test_all.py`: prints "HEAD is N commits behind
+  origin/main (fetched <age> ago)" and, when a file the build lists changed on origin/main since the merge base, names it and
+  warns. Negative: a worktree at 2009202c8 building settlements/mungo names `core/biome/30-core-foliage.js` (e8df733d3).
+- **34. `check_stale` false alarms** (10 sessions). In `buildlib` / `tools/check_stale.py`: record a folder listing only for
+  folders a build globs, not folders on Python's import path (`core/host/`, `tools/`); a `.py` change whose AST is unchanged
+  (docstrings, comments) is DOCS-ONLY; a page that is an LFS pointer reads NOT BUILT, never UNRECORDED (kits/port); record
+  kits/motor-vehicles. Negatives: a new file in `core/host/` stales no build; a new `core/simulation/77-sim-zz.js` stales the
+  five builds that glob it; a changed `def` body in `transit_bundle.py` is still STALE.
+- **35. Opt-in proof for new files** (10 sessions). `tools/reach.py --staged` (and a line from `tools/commit.py`): for each
+  added file, the builds that read its folder whole or record its listing, so "opt-in" is checked before the commit. Negative:
+  a staged `core/shader/zz.js` lists Dhelv and the Scyvoi-engine kits; a staged `core/simulation/ride/zz.js` lists none.
+- **36. LFS pointers, all at once and never packed** (17 sessions, after item 23). `tools/build.py` runs `lfs_needs.py` first
+  and refuses with the whole list (not one folder per run); every tex sidecar writer (buildlib, `kits/ancients/build.py`'s
+  `dist/*.tex.*.js`) refuses pointer input; `lfs_needs` covers run-time files a page fetches (`dist/kchar/*.js`) and
+  `pack.py` skips or names a library set no family names (roof.shingle); the harness's `textures-decoded` says "an LFS
+  pointer" when a data URL decodes to "version https". Negatives: a worktree with `kits/ancients/tex` and
+  `biomes/nwlowlands/tex` as pointers: `tools/build.py biomes/labyrinth` refuses naming both; a pointer `dist/kchar/x.js` is
+  named for settlements/longsong.
+- **37. `test_all` survives its steps** (4 sessions crashed or timed out; 5 failed on unbuilt `dist/isle-city.plan.js`). In
+  `tools/test_all.py`: a `TimeoutExpired` is that step's FAIL and the run goes on; output printed with `errors='replace'` to the
+  console's encoding; `--from <step>` and `--only <glob>`; a node test whose required `dist/` file is missing (not a pointer) is
+  SKIP naming the build to run. Negatives: a fixture step that sleeps past a 1 s timeout fails and the next step runs; a step
+  printing a Hawaiian okina (U+02BB) on a cp1252 console does not crash the run.
+- **38. Stations from `tools/build.py`** (2 sessions). `tools/build.py <kit> --stations` (and `--all`) builds every station
+  through test_all's `extra_builds` list; `check_stale` names `--station <name>` for a stale station page. Negative: a kit
+  fixture with stations a and b: both pages rebuilt, a `baseOnly` stage not.
+- **39. A settled shot** (13 sessions with the pane; 4 with a shot a frame late). `KHOST.settle(n)` in core/host (and the
+  Ancients' `_api`): waits n rendered frames after `setView`, returns `{w, h, frames, lod}`, and throws "hidden pane: drawing
+  buffer 1x1" when the buffer is under 64 px; core/lod keeps chunks on while the canvas has no size. Negatives: a 0x0 canvas
+  throws; a view set and shot without `settle` in the fixture page shows the previous view's marker.
+- **40. Sealed bundles in `check_assembly`** (8 sessions on shared names; 3 on false CLASH). `kit_bundle.py` (and Strongbow's
+  `sb_city`, Qiblai's `flora_bundle`) write a manifest of the globals a sealed bundle reads and writes (window, globalThis,
+  uniforms such as `uWind`, counters such as `_texPending`); `check_assembly` checks the host page against it and skips the
+  writes a Proxy window swallows. Negatives: a sealed bundle writing `window.onerror` through its Proxy is no CLASH; one exporting
+  `KMAT` onto a page with core/materials/record is; an unsealed `uniform float uWind` beside the sky host's `vec2` is.
+- **41. Shadowed engine names** (2 sessions: "P is not a function"). A `check_source` rule for core/engine kits: a parameter or
+  local named after an engine global the same function calls (`P`, `B`, `box`). Negative: `function d(P){return P('rock')}` in a
+  kit fragment fails; `function d(p){return P('rock')}` passes.
+- **42. Silent fallbacks in lookups** (5 sessions and the coordinator). `core/world/41-world-fields.js` keeps the biome names it
+  had no style for in `WORLD.unstyled` (a warning once, not `||'desert'`) and the harness asserts it empty; a node test maps every
+  overlay of the five open-world regions; `FAUNALANDS.pool(...).missing`, `FOREIGN.place` nulls and the Xanadu host's CITY label
+  report the same way. A `check_source` ratchet on `TABLE[key]||'<string>'` in core. Negatives: an overlay named 'nonesuch'
+  fails the region test; the 17-name table fails it on xanadu-oidong-highrift today.
+- **43. The foliage guards, measured in the fault's unit** (the coordinator's eastern highlands; 3 sessions on the 2 m rod
+  sampling). In `core/biome/20-core-kit.js`: `BIO.attachAudit` measures instanced rods point-to-segment and judges a crown card
+  by its stem's distance to its twig (not `.6*size+.5`); `cardWhy` refuses a one-plant card cut into cells (`plants:1` with
+  `sheet:'geometry'` or `BIO.geo.cells`); a transparency audit per card material (opaque cover per mip against `alphaTest`, and
+  sorting of `transparent` cards: the fumarole, the creeper curtains' speckles). Negatives, each in `test-guards.js`: the
+  beech's `card.broadleaf` slot fails; a fir sprig with its stem 0.8 m off its twig fails; a bloom 0.1 m from a 4 m rod passes.
+- **44. `shader-programs` over every program** (harness; 3 sessions chased link errors that were context loss). In
+  `tools/harness.py`: `KHOOK.checkPrograms` gets the page's renderer as `PROGRAMS_JS` finds it, not only `KHOOK.renderers`; a
+  run with a context loss and every program valid now ends "rerun". Negative: `tools/tests/verify_page/gl.html?case=broken`
+  (no KHOOK) fails `shader-programs`.
+- **45. The shell traps, refused at the tool** (8 sessions lost a commit and 10 an edit after the 5w rules). A Claude Code
+  PreToolUse hook in the repo's `.claude/settings.json` (script in `tools/hooks/`) refuses `git commit -F -` and `git commit -m
+  @'` and a heredoc that writes under `src/`, `targets/`, `core/` or `tools/` with a backslash in it, naming `tools/commit.py -F`
+  and the Edit tool; `check_text.py` refuses control characters (0x00-0x08, 0x0B, 0x0C, 0x0E-0x1F) in staged text and runs
+  `node --check` on staged `.js`. Negatives: the hook refuses `git commit -F - <<'EOF'`; a staged file holding 0x08 fails.
+- **46. Process trees** (4 sessions: `TaskStop` left children). `tools/procs.py [--kill]`: this worktree's python, node, git and
+  headless-Chrome processes by command line, cwd and parent tree (`Win32_Process`, `/proc` on Linux), killed with the tree.
+  Negative: a process started from another worktree is never listed.
+- **47. One build per folder, and transient errors named** (7 sessions). `tools/build.py` takes a lock per build folder (a
+  second build of the same folder waits or refuses), retries a write that fails with OSError 22 once, and on MemoryError or WebP
+  "encoding error 1" prints the free memory and "retry when the machine is quieter". Negative: two concurrent
+  `tools/build.py kits/ancients` runs: the second waits and says so.
+- **48. Dark surfaces and the sun** (4 sessions). A verify report per material: effective albedo (map mean x colour x mean
+  instance colour, linear) under 0.04 warns, naming the material and its tint; the hero view's angle to the sun is printed.
+  Negatives: a fixture `kput` at lightness 0.2 on the green map warns; a hero view facing away from the sun is flagged.
+- **49. Merges of generated files** (2 sessions). `tools/merge_generated.py`: takes a side for generated files in one batch,
+  then checks no file changed between blob and LFS pointer (`git diff --cached HEAD --stat` sizes) and merges
+  `PORT-BASELINE.json` per key (theirs where the page's blob equals theirs, from the working tree). Negative: a fixture merge
+  taking "ours" on the baseline drops a key of theirs: flagged.
+- **50. PROMPTS-NEEDED.md lint** (3 sessions: unclosed fences, a count 18 off, colliding section numbers). `tools/check_prompts.py`
+  in test_all: fences paired, the count line equal to the prompt blocks, section numbers unique. Negative: an unclosed fence fails;
+  two sections numbered 41 fail.
+- **51. KRAND arguments** (2 sessions, and the memory note on seed XOR). `core/rand/08-core-rand.js` in a test mode
+  (`KRAND.STRICT`, on in node tests and verify) throws on a non-finite or non-integer argument to `hash`; `test-rand.js` asserts
+  `KRAND.child`-derived seeds are uncorrelated. Negatives: `KRAND.hash(1,'band:raptor')` throws under STRICT; `hash(5,0,s)` equal
+  to `hash(6,3,s)` is the recorded fault `child` avoids.
+- **52. Floors underground** (3 sessions). core/host's F, `C.standY` and the double-click pick take the floor under the eye
+  (`KWALK.floorBelow`) and a swept step; a host test page on `core/host/underground`. Negatives: F in a tunnel under a town stays in
+  the tunnel; a 0.15 m wall at 2 fps stops the walker; a pick on a cavern page with no `o.pick` lands on a floor, not -60 m.
+  It moves 408 pages: ride along.
+
+## Survey of 2026-11-17: eight biome sessions and their merge (check requests)
+
+The coordinator of the eight biome sessions of 2026-11-11/12 (the painted highlands, the Cliff Lungs, the Siphon Pits, Opal
+Valley, the Rift battery, the Arch, the Firebliss patera and domes, the Slabfields) read their transcripts and branches for
+pitfalls after merging them into `main` (2026-11-16) and publishing the gallery. The story is the skill's 5y
+(`references/stories-rounds.md`). Each lesson two or more sessions hit, or one that recurred after a rule meant to stop it, is a
+check request here, with its negative control.
+
+- **53. A per-instance attribute the shader reads must be declared** (three kits: the Arch's maquis, High Rift's tussock and
+  heath, Opal Valley's tussock drew black). In `core/biome`'s leaf hook: list the attributes the composed shader reads and throw
+  at build (or in `BIO.attachAudit`) when an item's def does not declare one (`attrs:['aN']`). Negative: the tussock without
+  `attrs` fails; with it, passes.
+- **54. Wood tags parse at build, not in core/hamlet's test** (the Rift battery, the Arch's "thatch, mulch", the painted
+  highlands' crops, and 5w's hyperjungle). A biome `build.py` step (or `check_core_use`) runs `KHAMLET.woodUse` over its
+  species' `harvest.wood` and fails on an unknown phrase. Negative: "thatch, mulch" fails; "thatch (and mulch)" passes.
+- **55. Numbers chosen on a branch** (both model sessions: edit numbers 512/513 and the reconcile key `5.1e3` taken on main; both
+  added a `test_smodel` "section 15"; three kits took PROMPTS-NEEDED 43, 44 and 46 twice; item 50 still unbuilt). Name a model
+  edit by its subject (`edit_slabfields.py`) and give it its number in `tools/scale-model/README.md` at the merge; a lint in
+  test_all that fails two scripts or two `test_smodel` sections claiming one number, and two `regMerged` keys alike; build item
+  50. Negative: two `edit_513.py` reports, or two `5.1e3` keys, fail.
+- **56. Main's known failures, written down** (four sessions and the coordinator each re-proved the same failures in a clean
+  worktree). The nightly on main writes `tools/known_failures.json` (step, first failing sha); `test_all.py` prints a failing
+  step on that list as KNOWN and fails only on a new step or a new message in a known one. Negative: a fresh failure in a
+  known file still fails.
+- **57. `test_all` resumes** (three sessions and the coordinator ran past 50 minutes in the isle demo's tests). `--from <step>`
+  and a progress file, so a killed run continues; `--list` names the steps. Negative: a step whose inputs changed since its
+  pass runs again.
+- **58. A station does not open under the giant's eclipse** (the Cliff Lungs at 08:30, the Siphon Pits at 11:00). core/host
+  asserts `!ATMOS.sunHidden` at the page's load hour and site, and the verify warns on a preset under the eclipse unless its name
+  says night or eclipse. Negative: the Siphon Pits' terraces at 11:00 fail.
+- **59. `test_smodel.py` collects its failures** (the coordinator: a known neouterwall failure on main hid every check of edits 7
+  and 8). `check()` records and continues; the script exits 1 at the end with the list. Negative: with the neouterwall failure
+  present, the domes' checks still run and print.
+- **60. The gallery refuses pointers and plans its publish** (the coordinator: an LFS pointer page was refused at publish; every
+  in-place batch was refused over 256 MiB). `split_site.py` fails on any site file that is an LFS pointer, and writes each
+  part's publish plan: departing paths nulled in the first call, uploads under 60 MB a call, given the live file list.
+  Negative: a pointer `girder.html` in a part fails the split.
+- **61. Model edits: the moved mask and the stations** (both model sessions and the coordinator). The edit template
+  (`edit_511.py`'s pattern) takes `moved = En != Eo` on decoded heights, compares JPEG maps through the same encodes beyond
+  16 px, has `--dry-run` and a refuse-twice marker, and lists every built station (`biomes/*/stations/*/station.json` with a
+  site, and each build's `model_site` window) whose window the edit touches, failing unless the edit names it as allowed.
+  Negative: the patera with `PATERA_ON = True` fails on Firebliss station 1.
 
 ## Order of work this suggests
 

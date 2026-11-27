@@ -1,0 +1,1018 @@
+{
+ "format": "krator-landforms",
+ "version": 1,
+ "note": "Hook's own landform records, in the scale model's format (tools/scale-model/model/data/landforms.json: px, py on the 5.1 canvas, heights absolute; the Ring Sea at -1500.19 m). The model's 2 km cells hold no land at Hook's pin (sm3ft5vrof, px 809,923): it is a wet cell on a drowned flat, -10 to +5 m for some 8 km, under the plateau 1.5 km east. The records say Hook stands on a peninsula and a spit (populations-gemini.json 'Hook peninsula', GEOLOGY-SANITY-CHECK.md 'Hook spit', a carbonate shelf; every net51 trunk out of Hook starts with a causeway), so the ground is drawn here as core/world 41l outlined benches (the owner's site plan of 2026-11-24, placement B: plan/hook-site-plan.html): the drowned downtown (cut only), the walled peninsula with the north ridge (the spit's id, its quay edge held), the coastal plain outside the wall (4 m, cut and filled, tapering to points past the city limits) and its mangrove swamp at the water (0.6 m), and two domed hills. px, py, l_m and w_m are the outline's box, for a reader that takes rectangles only. settlements/hook/world/cut.py adds each record to the cut's region.json unless the model already carries its id (cut.py --landforms rewrites only these records); the same records are written up for the scale model's edit queue (the coordinator), after which the model carries them and this file can go. The Heights and the hill behind are the town's, not the map's: they stay the Port kit's stamps in src/76-hook-ground.js.",
+ "landforms": [
+  {
+   "id": "lf_hook_sunk",
+   "kind": "bench",
+   "px": 808.7877,
+   "py": 924.5173,
+   "l_m": 5368,
+   "w_m": 3858,
+   "rotation": 0,
+   "outline_px": [
+    [
+     807.4457,
+     923.629
+    ],
+    [
+     807.5085,
+     923.6314
+    ],
+    [
+     807.548,
+     923.5986
+    ],
+    [
+     807.6322,
+     923.6129
+    ],
+    [
+     807.7716,
+     923.5927
+    ],
+    [
+     807.8852,
+     923.5529
+    ],
+    [
+     807.9535,
+     923.557
+    ],
+    [
+     808.2212,
+     923.7292
+    ],
+    [
+     808.3104,
+     923.845
+    ],
+    [
+     808.504,
+     923.8914
+    ],
+    [
+     808.6727,
+     924.1382
+    ],
+    [
+     808.7156,
+     924.1622
+    ],
+    [
+     808.8249,
+     924.1637
+    ],
+    [
+     808.9681,
+     924.1026
+    ],
+    [
+     809.0899,
+     923.8776
+    ],
+    [
+     809.188,
+     923.8012
+    ],
+    [
+     809.325,
+     923.7835
+    ],
+    [
+     809.51,
+     923.7195
+    ],
+    [
+     809.7614,
+     923.73
+    ],
+    [
+     809.8664,
+     923.8002
+    ],
+    [
+     810.0076,
+     923.8465
+    ],
+    [
+     810.1177,
+     923.9834
+    ],
+    [
+     810.1298,
+     924.0803
+    ],
+    [
+     810.048,
+     924.2222
+    ],
+    [
+     809.9003,
+     924.5835
+    ],
+    [
+     809.695,
+     924.7487
+    ],
+    [
+     809.5707,
+     924.746
+    ],
+    [
+     809.4628,
+     924.8339
+    ],
+    [
+     809.3316,
+     924.8869
+    ],
+    [
+     809.2915,
+     925.0837
+    ],
+    [
+     809.0839,
+     925.2123
+    ],
+    [
+     809.0423,
+     925.2945
+    ],
+    [
+     809.0054,
+     925.4497
+    ],
+    [
+     808.8954,
+     925.4818
+    ],
+    [
+     808.6001,
+     925.3679
+    ],
+    [
+     808.4185,
+     925.2436
+    ],
+    [
+     808.3397,
+     925.1209
+    ],
+    [
+     808.3055,
+     924.9335
+    ],
+    [
+     808.2586,
+     924.8334
+    ],
+    [
+     808.1748,
+     924.7491
+    ],
+    [
+     807.9736,
+     924.6114
+    ],
+    [
+     807.8033,
+     924.3832
+    ],
+    [
+     807.788,
+     924.2884
+    ],
+    [
+     807.7963,
+     924.0991
+    ],
+    [
+     807.7748,
+     924.0521
+    ],
+    [
+     807.7432,
+     924.0206
+    ],
+    [
+     807.6187,
+     923.9895
+    ],
+    [
+     807.555,
+     923.953
+    ],
+    [
+     807.4742,
+     923.8492
+    ],
+    [
+     807.4495,
+     923.7693
+    ]
+   ],
+   "cut_only": true,
+   "wobble_m": 40,
+   "level_m": -1503.19,
+   "batter_deg": 20,
+   "skirt_m": 60,
+   "reach_m": 600,
+   "note": "The drowned downtown (the owner's site plan, 2026-11-24, placement B): the half of the Ancient downtown that sank, its floor at least 3 m under the sea; it only lowers the ground, so the lagoon keeps its own deeper water. Today's shank and the spit's south-west lie in it. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_plain",
+   "kind": "bench",
+   "px": 810.4258,
+   "py": 923.0177,
+   "l_m": 2762,
+   "w_m": 5863,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6284,
+     921.622
+    ],
+    [
+     811.1164,
+     921.5518
+    ],
+    [
+     811.0036,
+     922.1603
+    ],
+    [
+     810.8406,
+     922.3762
+    ],
+    [
+     810.6756,
+     922.4967
+    ],
+    [
+     810.37,
+     922.5636
+    ],
+    [
+     810.2112,
+     922.6672
+    ],
+    [
+     810.0928,
+     922.8796
+    ],
+    [
+     810.0393,
+     923.0465
+    ],
+    [
+     810.0583,
+     923.1651
+    ],
+    [
+     810.1408,
+     923.2853
+    ],
+    [
+     810.4399,
+     923.3275
+    ],
+    [
+     810.5581,
+     923.3756
+    ],
+    [
+     810.6865,
+     923.4566
+    ],
+    [
+     810.7853,
+     923.6186
+    ],
+    [
+     810.6438,
+     923.6739
+    ],
+    [
+     810.5267,
+     923.761
+    ],
+    [
+     810.2476,
+     924.1973
+    ],
+    [
+     810.0526,
+     924.4308
+    ],
+    [
+     809.971,
+     924.4834
+    ],
+    [
+     809.9848,
+     924.3692
+    ],
+    [
+     810.131,
+     924.0533
+    ],
+    [
+     810.1177,
+     923.9834
+    ],
+    [
+     810.0333,
+     923.8644
+    ],
+    [
+     809.8664,
+     923.8002
+    ],
+    [
+     809.7352,
+     923.7123
+    ],
+    [
+     809.8444,
+     922.7033
+    ],
+    [
+     809.828,
+     922.6354
+    ],
+    [
+     809.9054,
+     922.4704
+    ],
+    [
+     810.3979,
+     921.9601
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_plain_2",
+   "kind": "bench",
+   "px": 809.3055,
+   "py": 925.3423,
+   "l_m": 1384,
+   "w_m": 2385,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3262,
+     924.8919
+    ],
+    [
+     809.4628,
+     924.8339
+    ],
+    [
+     809.5707,
+     924.746
+    ],
+    [
+     809.6516,
+     924.7657
+    ],
+    [
+     809.6244,
+     924.985
+    ],
+    [
+     809.5619,
+     925.1544
+    ],
+    [
+     809.5802,
+     925.3005
+    ],
+    [
+     809.554,
+     925.4455
+    ],
+    [
+     809.3259,
+     925.8398
+    ],
+    [
+     809.1552,
+     925.9387
+    ],
+    [
+     809.0463,
+     925.8679
+    ],
+    [
+     808.9594,
+     925.7595
+    ],
+    [
+     809.0127,
+     925.4002
+    ],
+    [
+     809.0839,
+     925.2123
+    ],
+    [
+     809.2939,
+     925.0803
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp",
+   "kind": "bench",
+   "px": 810.2719,
+   "py": 922.2273,
+   "l_m": 1779,
+   "w_m": 2400,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6264,
+     921.6322
+    ],
+    [
+     810.6604,
+     921.6272
+    ],
+    [
+     810.7166,
+     921.7212
+    ],
+    [
+     810.6939,
+     921.8129
+    ],
+    [
+     810.4816,
+     922.0992
+    ],
+    [
+     809.9946,
+     922.6046
+    ],
+    [
+     809.9013,
+     922.8198
+    ],
+    [
+     809.845,
+     922.8273
+    ],
+    [
+     809.8273,
+     922.6425
+    ],
+    [
+     809.9013,
+     922.4773
+    ],
+    [
+     810.3978,
+     921.96
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp_2",
+   "kind": "bench",
+   "px": 809.2691,
+   "py": 925.279,
+   "l_m": 1179,
+   "w_m": 1952,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3329,
+     924.8887
+    ],
+    [
+     809.5305,
+     924.7911
+    ],
+    [
+     809.5639,
+     924.8065
+    ],
+    [
+     809.5208,
+     924.9739
+    ],
+    [
+     809.4339,
+     925.0276
+    ],
+    [
+     809.3774,
+     925.2192
+    ],
+    [
+     809.1645,
+     925.3599
+    ],
+    [
+     809.0851,
+     925.7277
+    ],
+    [
+     809.0313,
+     925.7654
+    ],
+    [
+     808.9745,
+     925.7669
+    ],
+    [
+     809.0133,
+     925.3998
+    ],
+    [
+     809.0456,
+     925.2862
+    ],
+    [
+     809.0905,
+     925.2088
+    ],
+    [
+     809.2887,
+     925.0856
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_swamp_3",
+   "kind": "bench",
+   "px": 809.9835,
+   "py": 923.8037,
+   "l_m": 951,
+   "w_m": 710,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.7456,
+     923.6263
+    ],
+    [
+     809.8868,
+     923.6379
+    ],
+    [
+     810.1666,
+     923.7758
+    ],
+    [
+     810.2214,
+     923.862
+    ],
+    [
+     810.1587,
+     923.9713
+    ],
+    [
+     810.1209,
+     923.9812
+    ],
+    [
+     810.0073,
+     923.8466
+    ],
+    [
+     809.8595,
+     923.7961
+    ],
+    [
+     809.7467,
+     923.7223
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_spit",
+   "kind": "bench",
+   "px": 808.4864,
+   "py": 922.6591,
+   "l_m": 5555,
+   "w_m": 6018,
+   "rotation": 0,
+   "outline_px": [
+    [
+     808.15,
+     922.7
+    ],
+    [
+     809.875,
+     922.7
+    ],
+    [
+     809.7208,
+     923.7206
+    ],
+    [
+     809.5018,
+     923.7203
+    ],
+    [
+     809.325,
+     923.7835
+    ],
+    [
+     809.1946,
+     923.798
+    ],
+    [
+     809.0946,
+     923.8714
+    ],
+    [
+     808.9681,
+     924.1026
+    ],
+    [
+     808.8249,
+     924.1637
+    ],
+    [
+     808.7192,
+     924.1627
+    ],
+    [
+     808.6727,
+     924.1382
+    ],
+    [
+     808.5039,
+     923.8916
+    ],
+    [
+     808.3104,
+     923.845
+    ],
+    [
+     808.2212,
+     923.7292
+    ],
+    [
+     807.9601,
+     923.5613
+    ],
+    [
+     807.8931,
+     923.5516
+    ],
+    [
+     807.6322,
+     923.6129
+    ],
+    [
+     807.5489,
+     923.6
+    ],
+    [
+     807.4911,
+     923.6315
+    ],
+    [
+     807.3641,
+     923.6073
+    ],
+    [
+     807.2936,
+     923.514
+    ],
+    [
+     807.1861,
+     923.4542
+    ],
+    [
+     807.1015,
+     923.3266
+    ],
+    [
+     807.0977,
+     923.2766
+    ],
+    [
+     807.1448,
+     923.163
+    ],
+    [
+     807.2555,
+     923.0492
+    ],
+    [
+     807.2883,
+     922.7299
+    ],
+    [
+     807.1919,
+     922.5051
+    ],
+    [
+     807.1814,
+     922.4071
+    ],
+    [
+     807.2343,
+     922.1793
+    ],
+    [
+     807.1613,
+     922.044
+    ],
+    [
+     807.1586,
+     921.9719
+    ],
+    [
+     807.2287,
+     921.7611
+    ],
+    [
+     807.4035,
+     921.5368
+    ],
+    [
+     807.4353,
+     921.374
+    ],
+    [
+     807.5217,
+     921.3063
+    ],
+    [
+     807.5923,
+     921.2151
+    ],
+    [
+     807.6523,
+     921.1737
+    ],
+    [
+     807.802,
+     921.1545
+    ],
+    [
+     807.8592,
+     921.2215
+    ],
+    [
+     807.9464,
+     921.2605
+    ],
+    [
+     807.9829,
+     921.3143
+    ],
+    [
+     808.019,
+     921.4304
+    ],
+    [
+     808.0012,
+     921.6436
+    ],
+    [
+     808.0897,
+     921.9261
+    ],
+    [
+     808.1439,
+     922.2428
+    ],
+    [
+     808.189,
+     922.359
+    ],
+    [
+     808.1489,
+     922.552
+    ]
+   ],
+   "keep_edges": [
+    0
+   ],
+   "wobble_m": 70,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 1700,
+   "note": "The walled peninsula (the owner's site plan, placement B): Port Hook's ground, 5 m over the sea, with the north ridge running about 3 km out into deep water and the downtown's dry half; its first edge is the quay line (world x -1700 to +1750 m at z -600), held straight; its east edge is the wall's line. The id is the spit's, which the frame and the town read. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_ridge_hill",
+   "kind": "bench",
+   "px": 807.705,
+   "py": 922.7533,
+   "l_m": 961,
+   "w_m": 1755,
+   "rotation": 0,
+   "outline_px": [
+    [
+     807.4964,
+     922.3354
+    ],
+    [
+     807.5263,
+     922.3146
+    ],
+    [
+     807.5622,
+     922.3291
+    ],
+    [
+     807.7912,
+     922.5883
+    ],
+    [
+     807.8515,
+     922.6883
+    ],
+    [
+     807.8758,
+     922.8647
+    ],
+    [
+     807.9453,
+     922.9847
+    ],
+    [
+     807.912,
+     923.1058
+    ],
+    [
+     807.7632,
+     923.1849
+    ],
+    [
+     807.663,
+     923.192
+    ],
+    [
+     807.6123,
+     923.1622
+    ],
+    [
+     807.5868,
+     923.0217
+    ],
+    [
+     807.4666,
+     922.7952
+    ],
+    [
+     807.4647,
+     922.7089
+    ],
+    [
+     807.4954,
+     922.601
+    ],
+    [
+     807.4701,
+     922.4165
+    ]
+   ],
+   "fill_only": true,
+   "dome_m": 45,
+   "dome_run_m": 350,
+   "wobble_m": 40,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The north ridge's hill (Signal Hill): rising about 45 m over the ridge, domed, not terraced. settlements/hook/world/landforms.json"
+  },
+  {
+   "id": "lf_hook_crown_hill",
+   "kind": "bench",
+   "px": 808.7777,
+   "py": 923.3334,
+   "l_m": 2185,
+   "w_m": 748,
+   "rotation": 0,
+   "outline_px": [
+    [
+     808.2375,
+     923.2269
+    ],
+    [
+     808.3038,
+     923.2082
+    ],
+    [
+     808.4737,
+     923.2532
+    ],
+    [
+     808.6293,
+     923.1843
+    ],
+    [
+     808.8604,
+     923.1764
+    ],
+    [
+     809.0243,
+     923.1465
+    ],
+    [
+     809.1535,
+     923.1798
+    ],
+    [
+     809.3039,
+     923.2461
+    ],
+    [
+     809.3238,
+     923.2767
+    ],
+    [
+     809.2583,
+     923.3803
+    ],
+    [
+     809.1635,
+     923.4351
+    ],
+    [
+     809.0509,
+     923.4632
+    ],
+    [
+     808.802,
+     923.4705
+    ],
+    [
+     808.5987,
+     923.5203
+    ],
+    [
+     808.5552,
+     923.5073
+    ],
+    [
+     808.4873,
+     923.4299
+    ],
+    [
+     808.3589,
+     923.4096
+    ],
+    [
+     808.2867,
+     923.3619
+    ],
+    [
+     808.2315,
+     923.2848
+    ]
+   ],
+   "fill_only": true,
+   "dome_m": 28,
+   "dome_run_m": 300,
+   "wobble_m": 30,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The downtown's hill, where the Crown stands: rising about 28 m over the dry half of the downtown, domed. settlements/hook/world/landforms.json"
+  }
+ ]
+}

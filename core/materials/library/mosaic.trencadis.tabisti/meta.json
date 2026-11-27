@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.584,
+    0.572
+   ],
+   "seam_before": [
+    1.527,
+    1.181
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.24,
+   "rough_var": 0.18,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "tile",
+  "id": "mosaic.trencadis.tabisti",
+  "metal": 0,
+  "roughness": 0.24,
+  "scale": [
+   1.1,
+   1.1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "mosaic.trencadis.tabisti.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on mosaic surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no glare, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gaud\u00ed trencad\u00eds broken-tile mosaic made of irregular hand-nipped polygonal shards of glazed ceramic plates and tiles (2 to 6 cm across) bedded flush in pale warm lime-pozzolana mortar (#e4ddd0): a luminous field of milk-white (#f2ece2) and pale blush-cream (#e2bfb0) shards woven with sinuous geometric medallions and wave bands of vivid alkaline turquoise (#1b8c86), deep cobalt blue (#1d3f84), and warm saffron-ochre (#d49b30) ceramic fragments, each shard showing fine ceramic crackle and crisp nipped edges separated by 3 to 5 mm mortar joints. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti trencad\u00eds ventilation lanterns, domes and pishtaq tympanums (kits/tabisti, trencadis, 1.1 m)",
+  "sha1": "b319d2a07dd532a5ec3209fc97bc4738a7dd91a4"
+ }
+}

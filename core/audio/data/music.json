@@ -1,0 +1,118 @@
+{
+  "_doc": "Music pieces, stems, and combat beats (core/audio/PLAN.md section 4.4, step A5).",
+  "pieces": [
+    {
+      "id": "music.hyperjungle.canopy_dawn",
+      "name": "Canopy Dawn Chorus",
+      "biome": "hyperjungle",
+      "dur": 65,
+      "fadeIn": 4.0,
+      "fadeOut": 3.0,
+      "hourWeight": [[4, 0.0], [6, 1.0], [9, 0.4], [18, 0.0]],
+      "weatherWeight": {
+        "rain": [[0, 1.0], [0.6, 0.2]],
+        "wind": [[0, 1.0], [2.0, 0.1]]
+      },
+      "stems": [
+        { "id": "pad", "clip": "pixabay-rainforest-33441", "role": "pad", "vol": 0.7, "chance": 1.0 },
+        { "id": "flute", "clip": "pixabay-bamboo-flute-02-543358", "role": "melody", "vol": 0.85, "chance": 0.85 },
+        { "id": "coqui", "clip": "pixabay-coqui-88362", "role": "texture", "vol": 0.6, "chance": 0.7 }
+      ],
+      "tags": ["dawn", "peaceful", "jungle"]
+    },
+    {
+      "id": "music.hyperjungle.deep_twilight",
+      "name": "Deep Jungle Twilight",
+      "biome": "hyperjungle",
+      "dur": 70,
+      "fadeIn": 5.0,
+      "fadeOut": 4.0,
+      "hourWeight": [[16, 0.1], [19, 1.0], [23, 0.8], [3, 0.1]],
+      "weatherWeight": {
+        "rain": [[0, 1.0], [0.5, 0.4]]
+      },
+      "stems": [
+        { "id": "pad", "clip": "pixabay-rainforest-33441", "role": "pad", "vol": 0.65, "chance": 1.0 },
+        { "id": "native_flute", "clip": "pixabay-native-flute-transition-5-209643", "role": "melody", "vol": 0.8, "chance": 0.8 },
+        { "id": "insect_atmo", "clip": "pixabay-cricket-19830", "role": "texture", "vol": 0.55, "chance": 0.75 }
+      ],
+      "tags": ["dusk", "mystic", "night"]
+    },
+    {
+      "id": "music.savannah.scrub_solitude",
+      "name": "Scrub Solitude",
+      "biome": "savannah",
+      "dur": 60,
+      "fadeIn": 4.0,
+      "fadeOut": 3.5,
+      "hourWeight": [[7, 0.4], [12, 1.0], [17, 0.8], [21, 0.1]],
+      "weatherWeight": {
+        "wind": [[0, 0.6], [1.5, 1.0]]
+      },
+      "stems": [
+        { "id": "wind_pad", "clip": "pixabay-wind-savannah-74120", "role": "pad", "vol": 0.7, "chance": 1.0 },
+        { "id": "ney_melody", "clip": "sfxmint-flute-note-01", "role": "melody", "vol": 0.8, "chance": 0.85 },
+        { "id": "distant_horn", "clip": "sfxmint-war-horn-02", "role": "texture", "vol": 0.5, "chance": 0.6 }
+      ],
+      "tags": ["day", "wind", "savannah"]
+    },
+    {
+      "id": "music.savannah.stalker_night",
+      "name": "Stalker Night",
+      "biome": "savannah",
+      "dur": 75,
+      "fadeIn": 5.0,
+      "fadeOut": 4.0,
+      "hourWeight": [[20, 0.5], [23, 1.0], [4, 0.9], [6, 0.1]],
+      "stems": [
+        { "id": "night_pad", "clip": "pixabay-cricket-19830", "role": "pad", "vol": 0.6, "chance": 1.0 },
+        { "id": "pan_pipe", "clip": "pixabay-pan-pipe_d2-93859", "role": "melody", "vol": 0.85, "chance": 0.8 },
+        { "id": "harp_pluck", "clip": "sfxmint-single-harp-pluck-01", "role": "texture", "vol": 0.6, "chance": 0.65 }
+      ],
+      "tags": ["night", "sparse", "tension"]
+    },
+    {
+      "id": "music.highlands.solitary_horn",
+      "name": "Highland Solitary Horn",
+      "biome": "highlands",
+      "dur": 55,
+      "fadeIn": 3.5,
+      "fadeOut": 3.0,
+      "stems": [
+        { "id": "french_horn", "clip": "sfxmint-french-horn-note-01", "role": "melody", "vol": 0.85, "chance": 1.0 },
+        { "id": "harp_stinger", "clip": "mixkit-arabian-mystery-harp-2489", "role": "texture", "vol": 0.7, "chance": 0.75 }
+      ],
+      "tags": ["mountains", "vast", "horn"]
+    }
+  ],
+  "combatBeats": [
+    {
+      "id": "combat.hyperjungle.cadence",
+      "name": "Hyperjungle War Cadence",
+      "biome": "hyperjungle",
+      "bpm": 120,
+      "barLen": 4,
+      "stems": {
+        "percussion": "pixabay-battle-warrior-fighting-drums-478210",
+        "bass": "mixkit-deep-dark-horror-drum-557",
+        "lead": "pixabay-congas-and-woodblock-526722"
+      },
+      "tailClip": "kenney-jingles-hit-11",
+      "holdTime": 5.0
+    },
+    {
+      "id": "combat.savannah.drums",
+      "name": "Savannah Dune War Drums",
+      "biome": "savannah",
+      "bpm": 110,
+      "barLen": 4,
+      "stems": {
+        "percussion": "pixabay-dune-percussion-antigroove-tribal-desert-cinematic-rhyth",
+        "bass": "mixkit-cinematic-ancient-drums-heartbeat-487",
+        "lead": "pixabay-war-horn-and-drums-512545"
+      },
+      "tailClip": "mixkit-cinematic-mystery-trailer-drum-hit-546",
+      "holdTime": 4.5
+    }
+  ]
+}

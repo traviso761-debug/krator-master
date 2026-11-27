@@ -1,10 +1,63 @@
 # gallery/
 
-The shareable gallery of every built world, in nine parts (below); it starts at https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
+The shareable gallery of every built world, in twelve parts (below); it starts at https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9
 
 It is shared as anyone-with-the-link (the four world parts and Krator Biomes A–E; the four parts made on 2026-11-09 are private until shared).
 
 **Retired entry:** the Little Demo was deprecated (October 2026) and retired to `archive/little-demo` (owner, 2026-11-03; its `DEPRECATED.md`). `build_gallery.py` no longer lists it; the 2026-11-09 publish dropped it from the live parts.
+
+## The Tiers added to Krator Biomes S–X (2026-11-17)
+
+The Tiers (`biomes/tiers`, a new biome kit, merged to `main` at e0091b9a8) went into the part its name sorts to, Krator Biomes S–X
+(https://claude.ai/artifact/Cs4gLyiqdKfmL1oFkvSTx4, version 6): its four pages (`worlds/tiers.html`, `tiers-canyon.html`,
+`tiers-lip.html`, `tiers-tread.html`, ~40 MB) uploaded beside the part's files, and the part's index given their four `ENTRIES` between the
+southwestern lowlands and the Twins. The other parts were not re-split (a re-split needs every page pulled from LFS to size the parts);
+`build_gallery.py`'s `ENTRIES` carry the four lines for the next full publish. The part stays private until the owner shares it.
+
+## Twelve artifacts: the merge of 2026-11-16 (2026-11-17)
+
+Republished after eight biome sessions were merged into `main` (218481e88; the owner: "yes", 2026-11-17). `ENTRIES` gained 78
+lines: the seven new kits (the Arch, Opal Valley, the Cliff Lungs, the painted highlands, the Siphon Pits, the Rift battery, the
+Slabfields) and every biome or station main gained since the 2026-11-09 publish (Firebliss, Godshearth, Godstep, the Great
+Chasm, Greenstep, the NE outer wall, the Outlands, the Twins, the W outer wall, the Ancient's Valley's stations, and the new
+stations of abyssal-savannah, nsemiarid, the Rift, the rift rim, the scablands and swhighlands), all in the Biomes section,
+named "<biome> · <station>". The world pages now need five parts and the biomes six, so there are twelve:
+
+| Part | URL |
+|---|---|
+| Krator Worlds A–H | https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9 |
+| Krator Worlds H–L (was H–N) | https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z |
+| Krator Worlds L–S (was P–V) | https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM |
+| Krator Worlds S–Y (was X–Z) | https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF |
+| Krator Worlds Y–Z (new, private) | https://claude.ai/artifact/WYgbXMTwc2VjzgDxM5U9qX |
+| Krator Biomes A–C (was A–E) | https://claude.ai/artifact/CaKSU16sowMsexa3djES5g |
+| Krator Biomes C–G (was E–N) | https://claude.ai/artifact/MJz7qQZBcCPek7NyaioWNL |
+| Krator Biomes G–N (was N–R) | https://claude.ai/artifact/XsLyGhXkZH62ac15Lg5fiC |
+| Krator Biomes N–R (was R–X) | https://claude.ai/artifact/4qCUwBddE97YsdgBHPpthr |
+| Krator Biomes R–S (new, private) | https://claude.ai/artifact/YKtvAanuqrEH3ZW2AhQie1 |
+| Krator Biomes S–X (new, private) | https://claude.ai/artifact/Cs4gLyiqdKfmL1oFkvSTx4 |
+| Krator Objects | https://claude.ai/artifact/JEtGhA4yWuXUhKfs8Sd2P8 |
+
+The three new ones are private until the owner shares them from their Share menus. Built from `main`'s pages
+(`build_gallery.py --no-build`), then the split with the twelve URLs in this order:
+
+```
+python3 gallery/split_site.py --alpha --alone "biome,throne,korona=Krator Biomes" --alone "objects=Krator Objects" --urls "https://claude.ai/artifact/UhTfQ2kioZEbrzZR1agHv9,https://claude.ai/artifact/3Q5T4Pswhnf1Hx51xDRV3z,https://claude.ai/artifact/SGLsybd5LJJB6DySmToPKM,https://claude.ai/artifact/7s7dsXbECz92WU21LDhgjF,https://claude.ai/artifact/WYgbXMTwc2VjzgDxM5U9qX,https://claude.ai/artifact/CaKSU16sowMsexa3djES5g,https://claude.ai/artifact/MJz7qQZBcCPek7NyaioWNL,https://claude.ai/artifact/XsLyGhXkZH62ac15Lg5fiC,https://claude.ai/artifact/4qCUwBddE97YsdgBHPpthr,https://claude.ai/artifact/YKtvAanuqrEH3ZW2AhQie1,https://claude.ai/artifact/Cs4gLyiqdKfmL1oFkvSTx4,https://claude.ai/artifact/JEtGhA4yWuXUhKfs8Sd2P8"
+```
+
+**How it was published, part by part, uploading only what moved.** Each part was updated in place: the files the live part
+lacked, those whose size differed, and those whose source changed since the last publish (`git diff 0e2f6649d HEAD -- '*/dist/*'`,
+by basename) were uploaded in batches under 60 MB, the paths the part no longer holds nulled in the last batch, the new index
+with every batch. A part's live file list comes from the Artifact tool's `list` with `scope: "files"`. The two nomad kits are
+still over 16 MB a file (ash nomads 18.2 MB, desert nomads 16.2 MB), so A–H keeps their earlier live pages, as before.
+
+**Pitfalls met.** (1) Pull every page the gallery copies, not only `dist/`: Girder's `girder.html`, Mav's Refuge's and Yuni's pages
+sit at their build's root, and a pointer copied into the site is refused at publish ("does not begin with markup"); check the
+site with `grep -l '^version https://git-lfs' gallery/site-*/worlds/*` before publishing. (2) The part count follows the pages:
+pull first, split, then count the parts before creating any artifact (the pointer pages were small, so the first split made four
+world parts and the real one five). (3) `build_gallery.py` takes no `--help`: run without `--no-build` it rebuilds every listed
+build, here from texture pointers; read its docstring instead. (4) A part this conversation has not viewed refuses a publish until
+it is read; read it first (`action: "read"`).
 
 ## Nine artifacts: the biomes by the alphabet (2026-11-09)
 
@@ -546,3 +599,16 @@ moves to Biomes and Objects as **Mechs and Robots** (`worlds/mechs.html`, 1.7 MB
 war-walkers and the two Stalkers of the Catch) under Objects; `worlds/iziz-mechs.html` and its card are removed from I–S.
 Both live indexes were edited in place (one card each, as in `build_gallery.py`, where the entry is now `('objects',
 'mechs', ...)`); every other file is as it was.
+
+## The page-cap splits (Stage 8 B10, 2026-11-24)
+
+The pages that were over the 16 MB a file now keep their maps beside them, as Scyvoi's does
+(`tools/textures/matlib_pack.py` `write_sidecar`; each build's `--inline-packs` puts them back): `worlds/desert-nomads.html`
+(1.6 MB, with `desert-nomads.tex.desert-nomads.js` and `-2.js`), `worlds/ash-nomads.html` (1.5 MB, with
+`ash-nomads.tex.ash-nomads.js` and `-2.js`) and `worlds/beast-riders.html` (3.6 MB, with `beast-riders.tex.brtowns.js`, the
+towns' maps, and `beast-riders.tex.kftex.js`, the catalog's and the kit's detail maps). `bundle()` copies every
+`.tex.<key>.js` a page loads into `worlds/` with it, so the parts take them with no change here: publish the new files with
+their pages, and the two nomad kits can replace the earlier live copies Krator Worlds A–H kept. Voth's city plan, its own
+artifact, is now its page (9.6 MB) and `voth-city.tex.voth.js` (9.5 MB): publish both to the Voth City Plan, side by side;
+its card's size counts both (`LINKED`). The fauna sheet already loaded its models beside it; `kits/fauna/dist/krator-fauna.js`
+(the bundle alone, which no part publishes) now reads the same `fauna.tex.models*.js` files.

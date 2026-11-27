@@ -11,7 +11,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 From `core/clock/` (shared; see `core/README.md`): `20-core-clock.js`
 
-From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`
+From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-loop.js`, `92-host-panel.js`, `95-host-probe.js`, `94-host-polytool.js`, `92k-host-keys.js`
 
 ## src/
 
@@ -20,18 +20,23 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `00-head.html` | 1 |  |
 | `26k-kit.js` | 6 |  |
 | `31-alt-takes.js` | <1 |  |
-| `37-wk-rec.js` | 2 |  |
-| `40-lz-kit.js` | 31 **big** |  |
+| `40-lz-kit.js` | 41 **big** |  |
 | `42-lz-dress.js` | 3 |  |
-| `50-lz-dwell.js` | 10 |  |
+| `50-lz-dwell.js` | 11 |  |
 | `52-lz-nest.js` | 5 |  |
-| `54-lz-trade.js` | 15 |  |
+| `54-lz-trade.js` | 16 |  |
 | `55-lz-special.js` | 7 |  |
 | `56-lz-military.js` | 7 |  |
 | `56-sa-beasts.js` | 3 |  |
 | `57-lc-camp.js` | 10 |  |
 | `58-lz-monument.js` | 4 |  |
-| `59-lz-trades.js` | 6 | = (2) |
+| `59-lz-trades.js` | 8 | = (2) |
+| `59w-lz-works.js` | 35 **big** |  |
 | `60-lz-reliquary.js` | 11 |  |
-| `62-lk-capital.js` | 18 |  |
-| `89-rows.js` | 1 |  |
+| `62-lk-capital.js` | 24 |  |
+| `63-lk-works.js` | 28 |  |
+| `64-lk-variety.js` | 17 |  |
+| `65-lk-statuary.js` | 52 **big** | A. REPRESENTATIVE OF THE LIZARDMEN (175); B. REPRESENTATIVE OF THE COIL (367); C. STRANGE THINGS ONLY THEY COULD UNDERSTAND (496) |
+| `66-lk-planters.js` | 12 |  |
+| `89-rows.js` | 2 |  |
+| `91g-lz-interior-lod.js` | 9 |  |

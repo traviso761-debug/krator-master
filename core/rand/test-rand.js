@@ -19,9 +19,9 @@ function vectors(){
   for(let i=0;i<1000;i++){const s=g.u32(),a=g.int(-100000,100000),b=g.int(-100000,100000),c=g.int(-100000,100000);
     H1.push(K.hash(s,a));H2.push(K.hash(s,a,b));H3.push(K.hash(s,a,b,c));}
   for(const [k,a] of [['one',H1],['two',H2],['three',H3]])out.hash[k]={first:a.slice(0,8),sha256:sha(u32bytes(a))};
-  g=K.stream(2024);const N={h3:[],vnoise:[],fbm3:[],fbm5:[]};
+  g=K.stream(2024);const N={h3:[],vnoise:[],fbm3:[],fbm5:[],gnoise:[],gfbm:[]};
   for(let i=0;i<1000;i++){const x=g.range(-500,500),y=g.range(-50,50),z=g.range(-500,500),s=i%5;
-    N.h3.push(K.h3(x,y,z,s));N.vnoise.push(K.vnoise(x,y,z,s));N.fbm3.push(K.fbm(x,y,z,3,s));N.fbm5.push(K.fbm(x*.01,y*.01,z*.01,5,s));}
+    N.h3.push(K.h3(x,y,z,s));N.vnoise.push(K.vnoise(x,y,z,s));N.fbm3.push(K.fbm(x,y,z,3,s));N.fbm5.push(K.fbm(x*.01,y*.01,z*.01,5,s));N.gnoise.push(K.gnoise(x*.1,z*.1,s));N.gfbm.push(K.gfbm(x*.01,z*.01,4,s));}
   for(const k in N)out.noise[k]={first:N[k].slice(0,4),sha256:sha(f64bytes(N[k]))};
   g=K.stream(7);const C=[];for(let i=0;i<1000;i++)C.push(K.cell(g.u32(),g.int(-5000,5000),g.int(-5000,5000)));
   out.cell={first:C.slice(0,8),sha256:sha(u32bytes(C))};

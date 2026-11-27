@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 14 (11%) | 0 (0%) | 3 (2%) | 50 (40%) | 59 (47%) |
+| KB | 14 (11%) | 0 (0%) | 2 (2%) | 50 (40%) | 59 (47%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,7 +28,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89t-host-weather.js` | 2.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindWeather, the wet hollows, the height fog (the dawn mist, the walls' cloud band), the rain cover |
 | `src/89w-host-water.js` | 6.1 | [draw] | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the lake (no breakers), its plume, the creek (a WATER.flow) and the stations' pools on core/water |
 | `src/89zy-host-bend.js` | 2.4 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | KWARP's bend on ?bend=1 (off at load): Godot needs the same warp in its own shaders (core/shader/README.md) (2026-11-04) |
-| `src/89zz-host-shadow.js` | 3.0 | [G native] | 1 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | KSHADOW on ?shadow=1 (off at load): Godot's DirectionalLight3D shadows (2026-11-04) |
+| `src/89zz-host-shadow.js` | 2.4 | [G native] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | KSHADOW on ?shadow=1 (off at load): Godot's DirectionalLight3D shadows (2026-11-04) |
 | `src/99-host-take.js` | 13.9 | [web] | 2 | 0 | 6 | 0 | 0 | 1 | 0 | 2 | 0 | 0 | 0 | views, inspector, compass, checks, KHOST.take |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 

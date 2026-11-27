@@ -114,7 +114,7 @@ const SCYVOI_FX = {
       SCYVOI_FX.hornPair(g, x, b * 0.55, b * 0.55, i % 2 ? Math.PI : 0, c.small, c.cord);
       SCYVOI_FX.hornPair(g, x, H - b * 0.55, b * 0.55, i % 2 ? 0 : Math.PI, c.small, c.cord);
     }
-    const cols = c.cols || 3, rows = c.rows || 2, fw = (W - 2 * b) / cols, fh = (H - 2 * b) / rows;
+    const cols = c.cols == null ? 3 : c.cols, rows = c.rows == null ? 2 : c.rows, fw = (W - 2 * b) / cols, fh = (H - 2 * b) / rows;
     for (let r = 0; r < rows; r++) for (let q = 0; q < cols; q++) {
       SCYVOI_FX.quad(g, b + fw * (q + 0.5), b + fh * (r + 0.5), Math.min(fw, fh) * 0.42, (r + q) % 2 ? c.horn2 : c.horn, c.cord);
     }
@@ -962,7 +962,7 @@ FURN({
 /* ====================================================================== Felts and rugs */
 FURN({
   key: 'scyvoi_wall_felt', name: 'Shyrdak felt hanging', culture: 'scyvoi', tier: 'common', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', clearance: {},
+  rooms: ['hall', 'bedroom', 'antechamber', 'court', 'shrine'], anchor: 'wall', hung: 'top', clearance: {},
   materials: ['cloth', 'lacquer', 'bronze'],
   w: 1.6, d: 0.06, h: 1.4, variants: 2, variantNames: ['madder field, teal horns', 'teal field, madder horns'],
   build: function (F) {

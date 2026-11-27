@@ -73,6 +73,60 @@ SL.pass11 = function () {
   SL.note(11, (PLAN.lots.length - n0 - refill) + ' side-street lots, ' + PLAN.entrances.length + ' alley entrances, ' + refill + ' lots back in knocked-out frontage, ' + (PLAN.greens.length - g0) + ' greens');
 };
 
+/* the exact-streets rule for step 12's alleys (S3-86a; 2026-11-24, Stage 8 D8). An alley is routed on the raster round the
+   lot cells and then smoothed, and nothing held its carriageway to the footprints already standing: a smoothed corner, an
+   alley run along a lot's side (its building only Lt.side / 2 inside the lot) or an interior alley's run-on could reach a
+   building placed before it. With TUNE.exact an alley yields to every standing building (civic ones and landmarks too):
+   where its smoothed line would reach one it takes its unsmoothed cell line, and failing that it stops short at the last
+   clear point from its street; one shorter than `min` is not laid. Without TUNE.exact nothing changes (Voth). */
+SL.alleyHit = function (a, b, w) {
+  var len = V.dist(a, b);
+  if (len < 1e-6) return null;
+  var q = obb(V.lerp(a, b, 0.5), V.mul(V.sub(b, a), 1 / len), len / 2 + w / 2 + 0.5, w / 2 + 0.5), H = SL.index.all(q);
+  for (var i = 0; i < H.length; i++) if (polySegDist(obbCorners(H[i].bo), a, b) < w / 2 - 0.05) return H[i];
+  return null;
+};
+/* the line SL.addWay would lay for pts (resampled every 2 m), cut before its first segment that reaches a building */
+SL.clearPrefix = function (pts, w) {
+  var P = resample(pts, 2, false);
+  for (var i = 1; i < P.length; i++) if (SL.alleyHit(P[i - 1], P[i], w)) return { pts: P.slice(0, i), whole: false };
+  return { pts: pts, whole: true };
+};
+/* where an alley's line may run (TUNE.exact only, else null): 1 on each cell whose centre lies within the alley's half width
+   (and a quarter metre) of a standing building's footprint. The routing prices those cells (the joining tree) or keeps off
+   them (the blind and interior walks), so the line is laid clear and SL.clearAlley seldom has to cut it */
+SL.alleyRoom = function () {
+  if (!TUNE.exact) return null;
+  var R = SL.R, n = R.n, room = new Uint8Array(n * n), r = TUNE.width.alley / 2 + 0.25;
+  PLAN.lots.forEach(function (L) {
+    if (L.died != null || !L.bo) return;
+    var o = L.bo, ex = Math.abs(o.u[0]) * o.hw + Math.abs(o.v[0]) * o.hd + r, ez = Math.abs(o.u[1]) * o.hw + Math.abs(o.v[1]) * o.hd + r;
+    var i0 = Math.max(0, R.ix(o.c[0] - ex)), i1 = Math.min(n - 1, R.ix(o.c[0] + ex)), j0 = Math.max(0, R.ix(o.c[1] - ez)), j1 = Math.min(n - 1, R.ix(o.c[1] + ez));
+    for (var j = j0; j <= j1; j++) for (var i = i0; i <= i1; i++) {
+      var dx = R.cx(i) - o.c[0], dz = R.cx(j) - o.c[1];
+      var a = Math.max(0, Math.abs(dx * o.u[0] + dz * o.u[1]) - o.hw), b = Math.max(0, Math.abs(dx * o.v[0] + dz * o.v[1]) - o.hd);
+      if (a * a + b * b < r * r) room[j * n + i] = 1;
+    }
+  });
+  return room;
+};
+/* the alley to lay from the candidate lines (the street end first in each, the preferred line first): the first line
+   whole, else the longest clear prefix (cut again until it stands clear as laid), else null under min metres */
+SL.clearAlley = function (lines, min) {
+  var w = TUNE.width.alley, best = null;
+  for (var i = 0; i < lines.length; i++) {
+    var c = SL.clearPrefix(lines[i], w);
+    if (c.whole) return c;
+    if (!best || plLen(c.pts) > plLen(best.pts)) best = c;
+  }
+  for (var guard = 0; guard < 4 && best.pts.length > 1; guard++) {
+    var again = SL.clearPrefix(best.pts, w);
+    if (again.whole) break;
+    best = again;
+  }
+  return best.pts.length > 1 && plLen(best.pts) >= (min == null ? 10 : min) ? best : null;
+};
+
 /* step 12: alleys. The blocks are what the streets enclose. In each block the alley entrances are joined by a
    spanning tree of alleys routed round the lots; an entrance alone in its block (or one no route reaches) gets a
    blind alley into the block's open middle. Then lots along the alleys. */
@@ -92,10 +146,13 @@ SL.pass12 = function () {
   var byBlock = {};
   PLAN.entrances.forEach(function (E) { var k = R.idx(E.inner[0], E.inner[1]); E.block = k >= 0 ? lab[k] : -1; if (E.block >= 0) (byBlock[E.block] = byBlock[E.block] || []).push(E); });
   var F = SL.fields(), joined = 0, blind = 0;
+  SL._alleysCut = 0;
+  var room = SL.alleyRoom();
   var cost = function (blk) {
     return function (k) {
       if (lab[k] !== blk) return Infinity;
       var c = R.occ[k];
+      if (room && room[k] && (c === OCC.FREE || c === OCC.RESERVE || c === OCC.ALLEY || c === OCC.GREEN)) return 25;
       if (c === OCC.FREE) return 1 + 0.4 * F.wob[k];
       if (c === OCC.RESERVE) return 1;
       if (c === OCC.ALLEY) return 0.6;
@@ -107,6 +164,14 @@ SL.pass12 = function () {
   var alley = function (pts, E1, E2, tag) {
     var P = [E1.street].concat(chaikin(rdp(pts, 1.5), 1));
     if (E2) P.push(E2.street);
+    if (TUNE.exact) {   /* S3-86a: the alley yields to the buildings standing (SL.clearAlley) */
+      var raw = [E1.street].concat(pts);
+      if (E2) raw.push(E2.street);
+      var c = SL.clearAlley([P, raw]);
+      if (!c) return null;
+      if (!c.whole) { E2 = null; SL._alleysCut++; }
+      P = c.pts;
+    }
     var w = SL.addWay('alley', P, 12, { tag: tag });
     E1.used = true; if (E2) E2.used = true;
     return w;
@@ -127,8 +192,7 @@ SL.pass12 = function () {
         var win = [Math.max(0, Math.min(ai, bi2) - m) | 0, Math.max(0, Math.min(aj, bj2) - m) | 0, Math.min(n - 1, Math.max(ai, bi2) + m) | 0, Math.min(n - 1, Math.max(aj, bj2) + m) | 0];
         var path = ASTAR(R, ka, [kb], cost(blk), win, 1.1);
         if (!path) continue;
-        alley(path.map(cellPt), A, B, 'alley b' + blk);
-        joined++;
+        if (alley(path.map(cellPt), A, B, 'alley b' + blk)) joined++;
       }
     }
     /* blind alleys: entrances still unjoined walk into the block's open ground, as deep as blindMax */
@@ -143,7 +207,7 @@ SL.pass12 = function () {
         [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (D) {
           var i2 = ii + D[0], j2 = jj + D[1]; if (i2 < 0 || j2 < 0 || i2 >= n || j2 >= n) return;
           var m2 = j2 * n + i2, c = R.occ[m2];
-          if (dist.has(m2) || lab[m2] !== blk || !(c === OCC.FREE || c === OCC.RESERVE)) return;
+          if (dist.has(m2) || lab[m2] !== blk || !(c === OCC.FREE || c === OCC.RESERVE) || (room && room[m2])) return;
           /* keep a clear metre each side: an alley needs its width */
           var x = R.cx(i2), z = R.cx(j2);
           if (R.at(x + 2, z) === OCC.LOT || R.at(x - 2, z) === OCC.LOT || R.at(x, z + 2) === OCC.LOT || R.at(x, z - 2) === OCC.LOT) return;
@@ -154,7 +218,7 @@ SL.pass12 = function () {
       if (fd * R.c < 10) return;
       var chain = []; for (var c2 = far; c2 >= 0; c2 = par.get(c2)) chain.push(c2);
       chain.reverse();
-      alley(chain.map(cellPt), E, null, 'blind b' + blk);
+      if (!alley(chain.map(cellPt), E, null, 'blind b' + blk)) return;
       E.blind = true; blind++;
     });
   });
@@ -162,7 +226,8 @@ SL.pass12 = function () {
   PLAN.ways.forEach(function (w) { if (w.cls === 'alley') [-1, 1].forEach(function (side) { SL.lineLots(w, side, SL.choosers.alley, 12); }); });
   var n1 = PLAN.lots.length, deep = SL.interiorAlleys(lab);
   SL.note(12, nb + ' blocks; ' + joined + ' alleys joining entrances, ' + blind + ' blind alleys; ' + (n1 - n0) + ' alley lots; then ' + deep.alleys +
-    ' blind alleys into the deepest open ground left, with ' + (PLAN.lots.length - n1) + ' lots');
+    ' blind alleys into the deepest open ground left, with ' + (PLAN.lots.length - n1) + ' lots' +
+    (SL._alleysCut ? '; ' + SL._alleysCut + ' alleys stopped short of a building' : ''));
 };
 
 /* interior infill: open ground still deeper than interiorDepth from anything built is reached by a blind alley
@@ -178,6 +243,7 @@ SL.interiorAlleys = function (lab) {
   var R = SL.R, n = R.n, N = n * n, D = new Float32Array(N), skip = new Uint8Array(N), made = 0;
   var open = function (c) { return c === OCC.FREE || c === OCC.RESERVE; };
   for (var round = 0; round < TUNE.interiorRounds; round++) {
+    var room = SL.alleyRoom();   /* S3-86a: the walks keep off the buildings standing (null without TUNE.exact) */
     /* depth of open ground: chamfer distance to the nearest cell that is not open */
     for (var k = 0; k < N; k++) D[k] = open(R.occ[k]) ? 1e9 : 0;
     var a = R.c, b = R.c * Math.SQRT2, rl = function (k, m, w) { if (D[m] + w < D[k]) D[k] = D[m] + w; };
@@ -205,7 +271,7 @@ SL.interiorAlleys = function (lab) {
           var i3 = ii + nb4[e][0], j3 = jj + nb4[e][1]; if (i3 < 1 || j3 < 1 || i3 >= n - 1 || j3 >= n - 1) continue;
           var m = j3 * n + i3, cm = R.occ[m];
           if (cm === OCC.STREET || cm === OCC.ALLEY) { end = kk; endStreet = m; break; }
-          if (par.has(m) || !open(cm) || lab[m] !== lab[ks]) continue;
+          if (par.has(m) || !open(cm) || lab[m] !== lab[ks] || (room && room[m])) continue;
           if (!open(R.occ[m + 1]) && !open(R.occ[m - 1])) continue;          /* keep the alley's width clear */
           if (!open(R.occ[m + n]) && !open(R.occ[m - n])) continue;
           par.set(m, kk); dist.set(m, dd + 1); qq.push(m);
@@ -216,9 +282,16 @@ SL.interiorAlleys = function (lab) {
       var pts = chain.map(function (k4) { return [R.cx(k4 % n), R.cx((k4 / n) | 0)]; });
       /* carry the alley on past the deepest point, so lots can line its far end too */
       var tip = pts[pts.length - 1], dir = pts.length > 2 ? V.norm(V.sub(tip, pts[pts.length - 3])) : [1, 0];
-      for (var t = 2; t <= 12; t += 2) { var pp = V.add(tip, V.mul(dir, t)); if (!open(R.at(pp[0], pp[1]))) break; pts.push(pp); }
+      for (var t = 2; t <= 12; t += 2) { var pp = V.add(tip, V.mul(dir, t)), kp = R.idx(pp[0], pp[1]); if (!open(R.at(pp[0], pp[1])) || (room && kp >= 0 && room[kp])) break; pts.push(pp); }
       if (plLen(pts) < 12) { skip[ks] = 1; return; }
-      var w = SL.addWay('alley', chaikin(rdp(pts, 1.5), 1), 12, { tag: 'interior alley' });
+      var line = chaikin(rdp(pts, 1.5), 1);
+      if (TUNE.exact) {   /* S3-86a: the alley yields to the buildings standing (SL.clearAlley) */
+        var cl = SL.clearAlley([line, pts], 12);
+        if (!cl) { skip[ks] = 1; return; }
+        if (!cl.whole) SL._alleysCut = (SL._alleysCut == null ? 0 : SL._alleysCut) + 1;
+        line = cl.pts;
+      }
+      var w = SL.addWay('alley', line, 12, { tag: 'interior alley' });
       [-1, 1].forEach(function (side) { SL.lineLots(w, side, SL.choosers.alley, 12); });
       R.eachNearSeg([P[0], P[1]], [P[0], P[1]], 6, function (k5) { skip[k5] = 1; });
       made++; got++;

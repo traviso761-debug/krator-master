@@ -1,0 +1,242 @@
+{
+  "format": "krator-kits-golden",
+  "version": 1,
+  "kitCount": 28,
+  "keyCases": [
+    {
+      "in": [
+        "xanadu:xa_house_poor_1",
+        "islanders"
+      ],
+      "out": {
+        "kitId": "xanadu",
+        "key": "xa_house_poor_1",
+        "qkey": "xanadu:xa_house_poor_1"
+      }
+    },
+    {
+      "in": [
+        "is_poor_1",
+        "islanders"
+      ],
+      "out": {
+        "kitId": "islanders",
+        "key": "is_poor_1",
+        "qkey": "islanders:is_poor_1"
+      }
+    },
+    {
+      "in": [
+        "rep_hall",
+        null
+      ],
+      "out": {
+        "kitId": null,
+        "key": "rep_hall",
+        "qkey": "rep_hall"
+      }
+    }
+  ],
+  "sampleDims": [
+    {
+      "qkey": "islanders:node-iron-low",
+      "dims": {
+        "key": "islanders:node-iron-low",
+        "qkey": "islanders:node-iron-low",
+        "rawKey": "node-iron-low",
+        "kit": "islanders",
+        "v": 1,
+        "w": 5.44,
+        "d": 5.44,
+        "h": 2.3,
+        "variants": 2,
+        "wealth": 0.5,
+        "family": "misc",
+        "types": [],
+        "doorH": 2.2,
+        "access": "pile",
+        "tier": 2
+      }
+    },
+    {
+      "qkey": "xanadu:xa_poor_a",
+      "dims": {
+        "key": "xanadu:xa_poor_a",
+        "qkey": "xanadu:xa_poor_a",
+        "rawKey": "xa_poor_a",
+        "kit": "xanadu",
+        "v": 1,
+        "w": 18,
+        "d": 16,
+        "h": 8,
+        "fw": 9.4,
+        "fd": 8,
+        "variants": 5,
+        "wealth": "poor",
+        "family": "Housing — poor",
+        "types": [
+          "single-family dwelling"
+        ],
+        "doorH": 2.5,
+        "access": "ground",
+        "tier": 2
+      }
+    },
+    {
+      "qkey": "yeti:yt_dome",
+      "dims": {
+        "key": "yeti:yt_dome",
+        "qkey": "yeti:yt_dome",
+        "rawKey": "yt_dome",
+        "kit": "yeti",
+        "v": 1,
+        "w": 8.81,
+        "d": 12.46,
+        "h": 5.25,
+        "variants": 2,
+        "wealth": "poor",
+        "family": "misc",
+        "types": [],
+        "doorH": 3.2,
+        "access": "ground",
+        "tier": 2
+      }
+    },
+    {
+      "qkey": "beast-riders:br_bldg_raptor_stable",
+      "dims": {
+        "key": "beast-riders:br_bldg_raptor_stable",
+        "qkey": "beast-riders:br_bldg_raptor_stable",
+        "rawKey": "br_bldg_raptor_stable",
+        "kit": "beast-riders",
+        "v": 1,
+        "w": 23,
+        "d": 24,
+        "h": 11,
+        "variants": 2,
+        "wealth": 0.5,
+        "family": "industrial",
+        "types": [
+          "farm",
+          "industry"
+        ],
+        "doorH": 3.4,
+        "access": "mount",
+        "tier": 2
+      }
+    }
+  ],
+  "candidates": {
+    "harbourPoorCount": 2,
+    "harbourPoorFirst5": [
+      {
+        "qkey": "dilihan:dil_house_poor_dogtrot",
+        "weight": 0.07143
+      },
+      {
+        "qkey": "dilihan:dil_house_poor_yard",
+        "weight": 0.07143
+      }
+    ],
+    "giantCount": 43,
+    "giantAllYeti": true,
+    "pinnedCands": [
+      "xanadu:xa_poor_a"
+    ]
+  },
+  "statuses": {
+    "dilihanAfterDepart": {
+      "kitId": "dilihan",
+      "active": false,
+      "effectiveTier": 0,
+      "tradesmanTier": 0,
+      "blueprintTier": 0,
+      "blueprintKeys": [],
+      "practitioners": 0,
+      "standingOnly": true
+    },
+    "xanaduAfterDepart": {
+      "kitId": "xanadu",
+      "active": true,
+      "effectiveTier": 2,
+      "tradesmanTier": 0,
+      "blueprintTier": 2,
+      "blueprintKeys": [
+        "xa_poor_a"
+      ],
+      "practitioners": 0,
+      "standingOnly": false
+    }
+  },
+  "usedByLots": [
+    "islanders",
+    "xanadu",
+    "yeti"
+  ],
+  "constructOrder": {
+    "pos": [
+      -2,
+      4.2,
+      -2,
+      2,
+      4.2,
+      -2,
+      0,
+      5.5,
+      0,
+      -2,
+      0.5,
+      2,
+      2,
+      0.5,
+      2,
+      2,
+      3,
+      2,
+      -2,
+      0.5,
+      -2,
+      -1.92,
+      0.5,
+      -2,
+      -2,
+      3,
+      -2,
+      -2.2,
+      0,
+      -2.2,
+      2.2,
+      0,
+      -2.2,
+      2.2,
+      0.35,
+      -2.2
+    ],
+    "index": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "tris": [
+      3,
+      2,
+      1,
+      0
+    ],
+    "keys": [
+      0,
+      1.102273,
+      1.143182,
+      2.474545
+    ]
+  }
+}

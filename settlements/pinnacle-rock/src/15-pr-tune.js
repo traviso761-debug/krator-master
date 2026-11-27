@@ -71,7 +71,8 @@ T.food={grain:1,meat:1.6,fruit:.5};
 T.calendar={year:{yearD:365,startDay:0,solsticeDay:172},windows:{home:[120,300],harvest:[255,300],'clearing-harvest':[250,295]}};   /* the sim's year day is the world tick's (day 0 the year's first) */
 T.ring={ha:80,tHa:1,crew:300,fruitT:40,fruitCrew:80,beetleT:8,beetleCrew:40};
 T.clearing={inCropHa:1.5,yieldTHa:1.2,seed:1/6,sells:.9,fruitT:5};
-T.home={hunt:{meat:1.5,hides:.3},huntMeat:{meat:6.5,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};
+T.home={hidesWant:4,   /* kg of hides a day each band's road plans for the town's tanneries (boots, leather): its want before any use shows */
+ hunt:{meat:1.5,hides:.3},huntMeat:{meat:6.5,hides:.6},gather:{fruit:4},breed:1/6,silkT:.2,graze:1.05,want:250,keep:10};
 T.rules={diet:T.diet.band,food:T.food,hunt:{meat:10,hides:1},spoil:{meat:.01,fruit:.03},gather:{fruit:6},minDays:3,cross:.7,detour:1.3,siteKm:15,hours:8,roadside:1,
  marchHunt:.5,selfHunt:.4,again:30,keepTrade:{}};
 T.range={n:8,r0:15000,r1:70000,cap:{meat:3500,hides:300,fruit:1800,fodder:40000},regrow:120};
@@ -88,6 +89,12 @@ T.targets={};Object.keys(TG).forEach(k=>T.targets[T.ids[k]]=TG[k]);
 T.slots=['raid:goto','raid:goto','raid:goto','raid:goto','raid:nusidi','raid:nusidi','raid:nusidi','far:coyote-canyon','far:shade','far:shade',
  'city:talon','city:talon','city:fort-kreia','city:fort-kreia','city:mavs','city:mavs','city:fort-ordo','city:girder'];
 T.near=['talon','fort-kreia'];
+/* THE CARAVANS TO THE GRANARY TOWN (2026-11-12, the owner: 'we could also have carts or caravans deliver additional goods to
+   the granary towns from the main settlement'): the nearest Beast Rider cities' merchants run pack trains to Pinnacle Rock
+   the year round, topping its stores up when they fall under want days of its use (the bands' haul fills them in the wet
+   season; the caravans keep the dry season's end from running short). Each a SIM.trade carrier on its planned leg (PR_LEGS)
+   at a pack train's pace, cap kg a train; staples and fruit in, the town's hides and silk out */
+T.caravans={from:['talon','fort-kreia'],carriers:2,cap:8000,want:40,kmDay:20,goods:['grain','fruit','meat','salt'],back:['hides','silk']};
 /* the eighteen bands: every ground of BR_CAMP (the six ground tribes' upper and lower grounds, the flyers' upper, the
    Dragonfly's, Spider's and Mammoth's lower), each a band of 40-70 by core/camp's census, ids as the page's */
 T.bands=function(world){const out=[];BR_CAMP_TRIBES.forEach(t=>['upper','lower'].forEach(g=>{const G=brcGround(t,g);if(!G)return;
@@ -125,7 +132,7 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
   if(b.tribe==='spider')works.push({id:b.id+'.silk',kind:'spinning-shed',name:'the spinning shed',crew:roles('spinner')||2,out:['silk'],rate:rate(c.pop*H.silkT*1000/10,roles('spinner')||2,hd),season:'home'});
   S.push({id:b.id,name:BR_CAMP[b.tribe].name+' band ('+b.ground+' ground)',faction:'beast-riders',parent:town,people:c.pop,x:0,z:0,eats:T.diet.band,feeds:N,keepDays:H.keep,start:{},works,band:b,
    reserve:{grain:Math.round(c.pop*T.diet.band.grain*(hd+5)),salt:Math.round(c.pop*T.diet.band.salt*(hd+5)),meat:Math.round(((N.meat||0)*(1-T.beasts.meatFrom.herd)+c.pop*T.diet.band.meat)*(hd+5))}});   /* the band's own home season (its people's grain and salt, its mounts' meat less the herd's), never sent to the town */
-  R.push({id:'home.'+b.id,from:b.id,to:town,minutes:45,cap:60000,want:H.want,keep:H.keep,goods:{[b.id]:['grain','meat','fruit','hides','salt','iron','cloth','silk','beasts'],[town]:[]}});});
+  R.push({id:'home.'+b.id,from:b.id,to:town,minutes:45,cap:60000,want:H.want,keep:H.keep,expect:{[town]:{hides:H.hidesWant}},goods:{[b.id]:['grain','meat','fruit','hides','salt','iron','cloth','silk','beasts'],[town]:[]}});});
  /* THE MARKETS (off the map: core/camp's caravans trade there) and THE TARGETS (Iziz's: the raids take from their books) */
  Object.keys(T.markets).forEach(m=>{const M=T.markets[m];S.push({id:m,name:M.name,faction:M.far?'far':'beast-riders',people:0,x:M.x,z:M.z,eats:{},keepDays:0,start:Object.assign({},T.pools),
   works:[{id:m+'.market',kind:'market',name:'the market',crew:0,out:[],rate:0}]});});
@@ -134,11 +141,21 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
   works:[{id:m+'.fields',kind:'farmstead',name:'the fields',crew,out:['grain'],rate:rate(Tg.fieldsT*1000,crew,win('harvest')),season:'harvest'}]});});
  /* the intermediaries (everything else: the far market off the map at a mark-up, the isle demo's foreign ships' rule) */
  S.push({id:'intermediaries',name:'The intermediaries (off the map)',faction:'far',people:0,x:0,z:-900000,eats:{},keepDays:0,start:Object.assign({},T.pools),works:[{id:'int.market',kind:'market',name:'the factors',crew:0,out:[],rate:0}]});
+ T.caravans.from.forEach(k=>{const id=T.ids[k],L=PR_LEGS.legs[id],C=T.caravans,days=Math.ceil(L.fwd/C.kmDay);
+  R.push({id:'caravan.'+k,from:id,to:town,minutes:days*1440,carriers:C.carriers,stagger:Math.round(days*1440/C.carriers),cap:C.cap,want:C.want,keep:0,
+   goods:{[id]:C.goods,[town]:C.back}});});
  R.push({id:'intermediaries',from:town,to:'intermediaries',minutes:30*1440,cap:8000,keep:60,want:120,goods:{[town]:['hides'],intermediaries:['salt','iron','cloth']},expect:{intermediaries:{hides:2},[town]:{salt:30,iron:2,cloth:3}}});
+ /* ATTACHED (2026-11-12, the full sim: tests/test-pr-sim.js): the town is the region host's (its people, households and
+    shops on core/region 40-49), so the valley drops its own town and its roads end at the town's granary (o.attach.place);
+    its kilograms become the town's servings (o.attach.unit a kilo) */
+ if(o.attach){const u=(o.attach.unit==null?1:o.attach.unit),sc=x=>{const r={};Object.keys(x||{}).forEach(g=>r[g]=x[g]*u);return r;};
+  const i=S.findIndex(s=>s.id===town);if(i>=0)S.splice(i,1);
+  S.forEach(s=>{s.eats=sc(s.eats);if(s.feeds)s.feeds=sc(s.feeds);s.start=sc(s.start);if(s.reserve)s.reserve=sc(s.reserve);s.works.forEach(w=>{if(w.rate)w.rate*=u;});});
+  R.forEach(r=>{r.cap*=u;if(r.expect)Object.keys(r.expect).forEach(k=>r.expect[k]=sc(r.expect[k]));});}
  return {seed:20261111,scale:K,start:0,calendar:T.calendar,goods:T.goods,food:T.food,
   factions:[{id:'beast-riders',name:'The Beast Riders'},{id:'iziz',name:'The Empire of Iziz'},{id:'far',name:'The far markets'}],
   relations:[{a:'beast-riders',b:'far',stance:'friendly'},{a:'far',b:'beast-riders',stance:'friendly'},{a:'beast-riders',b:'iziz',stance:'hostile'},{a:'iziz',b:'beast-riders',stance:'hostile'}],
-  settlements:S,roads:R,bands:B};};
+  settlements:S,roads:R,bands:B,attach:!!o.attach,extern:o.attach?{[town]:o.attach.place}:null};};
 /* the roads as a graph (core/world 48t KTRAVEL). T.graph(plans): the open world's baked links (openworld/pinnacle's plan
    first, then any other region's that shares a town with it: the Iziz cluster's, where Girder is), moved into this
    table's frame (the rock at 0, 0; another plan aligned on the town it shares), so the hub's and the ranges' cross-country

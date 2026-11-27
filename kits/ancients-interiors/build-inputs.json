@@ -72,7 +72,7 @@
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
     "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
-    "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
+    "kits/interiors/src/45-placer.js": "3bb089432d4ace2fe30dad5b84d4a11de18dadcd3e47eaad14bce27ddb6ecd26",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
     "kits/interiors/src/47-life.js": "a4d65b15bcb00041797887dc037a7f6fb751bbb4d6accca807ad5cdcf5a4c28b",
     "kits/interiors/src/48-audit.js": "4ccf3274479fb4e3c66501e02205b8aec77ee6e54749c516b311431939572c2e",
@@ -92,14 +92,14 @@
     "tools": "2d2fdaca850a104a2a2c553313ccb3ad18dc6bc48cb554c8c714fc1ca39607bf"
    },
    "outputs": {
-    "kits/ancients-interiors/build-manifest.json": "0f9caae9c534baa5fbb794e7ad3ac1ebaa44969c17760bde97934cff9c50321e",
+    "kits/ancients-interiors/build-manifest.json": "54747b1a2636e729c4f569bf31e733b5104c5b54b27205536e7fd4425637c527",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "cbb2af24c864a2cf3c828cfde7c125029eac7e0fdc78e16219a559366ff096a5"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "f2dacc9b7348396f2485219e865e2acc7b2b9df7eb5d285b2dbadb8cdc9833c2"
    },
    "outputs_raw": {
-    "kits/ancients-interiors/build-manifest.json": "2daac6f7822bbc41963df82c901cc97816df923a938b331571334cc7c034203a",
+    "kits/ancients-interiors/build-manifest.json": "2f03fd401e149a4bf22ba0c937eca94864cb024c92ac01d0acf40bdd8672f308",
     "kits/ancients-interiors/dist/ancients-interiors-core.js": "48261396bc3742eaa94ee7a24c34fe23fca13eec6cc535fe3ecc9d00e1bc1f88",
-    "kits/ancients-interiors/dist/ancients-interiors.html": "cbb2af24c864a2cf3c828cfde7c125029eac7e0fdc78e16219a559366ff096a5"
+    "kits/ancients-interiors/dist/ancients-interiors.html": "f2dacc9b7348396f2485219e865e2acc7b2b9df7eb5d285b2dbadb8cdc9833c2"
    }
   }
  }

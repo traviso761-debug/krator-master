@@ -31,6 +31,9 @@
 The biome fragments never reference a host global except through BIO.host
 (see biomes/sedesert/BIOME-API.md); the grep below fails the build if one does.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
     sys.stdout.reconfigure(encoding='utf-8')
@@ -55,6 +58,7 @@ CORE_MODULES = ['clock', 'sched', 'simulation', 'rand', 'tags']   # core/<module
 sys.path.insert(0, os.path.normpath(os.path.join(HERE, '..', '..', 'core', 'host')))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f != '40-core-edits.js']
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 WORLD_DIR = os.path.join(HERE, 'world'); WORLD_FRAG = '83-host-world-json.js'
 MATLIB_FRAG = '78a-host-matlib-pack.js'   # GENERATED: the library pack (main())
 # The south-east desert biome, READ IN PLACE (2026-11-03, MODULARITY-PLAN.md step 4's ride-along; until then src/ held
@@ -145,7 +149,7 @@ def main():
         print('BIOME FRAGMENT DEPENDS ON THE HOST:\n  ' + '\n  '.join(bad)); return 1
     BSRC.report(vendor_check=vendor_check)   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
-    html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8').write(html)
+    html = ''.join(out); open(os.path.join(DIST, OUT), 'w', encoding='utf8', newline='\n').write(html)
     m = re.search(r'<script>\n(?!document)(.*)</script>\s*</body>', html, re.S)
     chk = os.path.join(HERE, '.syntax.js'); open(chk, 'w', encoding='utf8').write(m.group(1) if m else '')
     try:

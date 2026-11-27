@@ -42,6 +42,7 @@
    }
   },
   "concrete": {
+   "m4": true,
    "lib": "concrete.ancient",
    "scale": [
     1.95,
@@ -61,6 +62,7 @@
    }
   },
   "concreteR": {
+   "m4": true,
    "lib": "concrete.ancient",
    "scale": [
     1.95,
@@ -80,6 +82,8 @@
    }
   },
   "paving": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "concrete.ancient.b",
    "scale": [
     3.25,
@@ -99,6 +103,8 @@
    }
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.red",
    "scale": [
     1.2,

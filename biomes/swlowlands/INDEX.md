@@ -45,3 +45,12 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89z-host-build.js` | 4 |  |
 | `99-host-take.js` | 17 | the inspector's words (48); the probe's budgets and the kit's own checks (ve (59); the host's own checks (verify.py runs them when  (71); the page, handed to the host (145) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| delta | 44z-host-delta.js | 8 |
+| gorge | 44z-host-gorge.js | 4 |

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Krator Weather Demo</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#000;font:12px/1.35 system-ui,sans-serif;color:#e6e9ee}
+canvas{display:block}
+#ui{position:absolute;left:10px;top:10px;width:300px;max-height:calc(100% - 20px);overflow:auto;background:rgba(14,18,26,.82);border:1px solid #2c3546;border-radius:8px;padding:10px 12px;box-sizing:border-box}
+#ui h1{font-size:14px;margin:0 0 6px}
+#ui .row{display:flex;align-items:center;gap:6px;margin:5px 0}
+#ui label{width:64px;color:#9aa6b8;flex:none}
+#ui input[type=range]{flex:1;min-width:0}
+#ui select{flex:1;background:#1c2330;color:#e6e9ee;border:1px solid #2c3546;border-radius:4px;padding:2px}
+#ui button{background:#243048;color:#e6e9ee;border:1px solid #39465f;border-radius:4px;padding:3px 7px;margin:2px 2px 2px 0;cursor:pointer;font:inherit}
+#ui button:hover{background:#2e3d5c}
+#wxsel select{flex:1}
+#info{color:#9aa6b8;white-space:pre-line;font-variant-numeric:tabular-nums;margin-top:6px}
+#vname{color:#cfd8e6;margin:3px 0}
+#map{position:absolute;right:10px;top:10px;width:192px;height:192px;border:1px solid #2c3546;border-radius:6px;background:#111}
+#errs{position:absolute;right:10px;bottom:10px;max-width:50%;color:#ff8a80;white-space:pre-wrap;font:11px monospace}
+#hint{position:absolute;right:10px;top:210px;color:#9aa6b8;background:rgba(14,18,26,.6);padding:4px 8px;border-radius:6px;max-width:192px}
+@media (max-width:640px){#ui{width:calc(100% - 20px);max-height:45%}#map{top:auto;bottom:10px;width:128px;height:128px}#hint{display:none}}
+</style></head><body>
+<div id="ui"><h1>Krator's weather</h1>
+<div class="row"><label>Climate</label><select id="climate"></select></div>
+<div class="row" id="wxsel"><label>Weather</label></div>
+<div class="row"><label>Time</label><select id="speed"><option value="1">x1</option><option value="10">x10</option><option value="30">x30</option><option value="60">x60</option></select>
+ <span><input id="hold" type="checkbox"> held</span><button id="skip">+10 min</button></div>
+<div class="row"><label>Clouds</label><select id="tier"><option value="volumes">volumes (W6)</option><option value="layers">layers (the flat sky as it was)</option><option value="off">off</option></select></div>
+<div class="row"><label>Hour</label><input id="hour" type="range" min="0" max="24" step="0.05"></div>
+<div class="row"><label>Sound</label><input id="snd" type="checkbox"><span style="flex:1;color:#9aa6b8">thunder (the stand-in synth)</span></div>
+<div class="row"><label>Views</label><span id="views"></span></div>
+<div id="vname"></div>
+<div id="info"></div>
+</div>
+<canvas id="map" width="192" height="192"></canvas>
+<div id="hint">Drag to look. WASD to move, shift fast, Q and E down and up. The map: cells over 64 km round you; you are the yellow ring.</div>
+<div id="errs"></div>
+<script>/*THREE*/</script>
+<script>
+window.addEventListener('error',e=>{const el=document.getElementById('errs');if(el)el.textContent+=String(e.message)+'\n';});
+/*JS*/
+</script>
+</body></html>

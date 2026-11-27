@@ -760,7 +760,7 @@ Surveyed on the model; the owner chose among the options where a choice was need
 | Ys | 789,738 | **788,741** | about -55° | the cliffed shore with a lagoon shoal; the stacks are the page's own (none on the model at 2 km) |
 | The Hexahedron | 827,668 | **817,670** | - | the hyperjungle climate all round within 6 km |
 | Reed | 1277,676 | **1280,678** | - | the shallows by the east shore's landing |
-| **Tabist town (new)** | - | **1270,666** | - | `seur98e8mv`, type town, name to come: a flat strip on the strait between the lake's west arm and the main lake, 24 km NW of Reed (`SETT_ADDED['5.1e6']`) |
+| **Tabist town (new)** | - | **1270,666** | - | `seur98e8mv`, type town, name to come (merged into Gemini's Sfenops, `sn98ob5duu`, 1282,663: the owner, 2026-11-23, "Merge them"; scale model 5.1e16): a flat strip on the strait between the lake's west arm and the main lake, 24 km NW of Reed (`SETT_ADDED['5.1e6']`) |
 
 **Not in this batch:**
 - Longsong: the Oidong-High Rift session moves it onto the Bīruk al-Ghaym (`SETT_MOVED['5.1e7']`, its branch).

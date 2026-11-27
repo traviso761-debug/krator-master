@@ -94,6 +94,60 @@ ok('nwouterwall: a thin-air polar point grows the Thule crops, not the lowland o
 ok('nwouterwall: the High Country makes a plaid (larch red-brown, silverthorn yellow, birch-tar black)',
   C.canPlaid('nwouterwall') && ['brown', 'yellow', 'black'].every(k => C.palette('nwouterwall').colours.includes(k)) && C.palette('nwouterwall').sources.brown.includes('larch-bark:wild'),
   !C.palette('nwouterwall').colours.includes('purple'));
+// the hinge's own (the owner, 2026-11-12): the maar yam and fumewort grow in the Siphon Pits, the Mid Basin and the Loom-Chasms and nowhere else
+const HINGE = ['siphon-pits', 'midbasin', 'loom-chasms'], grownIn = id => bio.filter(b => how(C.forBiome(b), id) !== 'no');
+for (const id of ['maar-yam', 'fumewort'])
+  ok(id + ': grows in the three hinge biomes only, and is traded beyond', grownIn(id).join() === HINGE.join() && HINGE.every(b => how(C.forBiome(b), id) === 'wild'),
+    how(C.forBiome('swlowlands'), id) === 'no' && how(C.forBiome('swlowlands', { trade: [id] }), id) === 'trade' && how(C.at({ warmth: 'temperate', atm: 'standard', arid: 'subhumid' }), id) === 'no', grownIn(id).join());
 
+// the painted highlands (biomes/paintedhighlands/PLAN.md sections 4 and 9, 2026-11-11): the Painted Men's three colours from the beds (red with an iron
+// node, the teal clay, the lignite black: wild there, its own beds), so the plateau makes a plaid; its neighbour the cushion plateau has no teal
+{const P = C.palette('paintedhighlands', { nodes: ['iron', 'coal'] });
+ ok('paintedhighlands: the Painted Men\'s red, teal and black from the beds', ['red', 'teal', 'black'].every(k => P.colours.includes(k)) && C.canPlaid('paintedhighlands', { nodes: ['iron', 'coal'] })
+   && (P.sources.black || []).some(s => /^lignite-black/.test(s)) && (P.sources.teal || []).some(s => /^celadonite-teal/.test(s)),
+   !C.palette('ehighlands', { nodes: [] }).colours.includes('teal'));
+ ok('paintedhighlands: its own bulb and medicine are native, the juniper wild there', C.BY_ID['painted-camas'].home.includes('paintedhighlands') && C.isBucket(C.BY_ID.paintbrush, 'medicine') && C.BY_ID.juniper.home.includes('paintedhighlands'),
+   !C.BY_ID.murnong.home.includes('paintedhighlands'));}
+// Shumar & the Ordeal ramp on shighlands (SM-Sim-1, core/simulation/PROPOSAL-SHUMAR.md section 2d & 7): dry-summer plateau & gorges + polar thin-air ramp
+{const sh = C.forBiome('shighlands'), B = C.BIOMES.shighlands, fitZ = (zid, id) => { const z = B.zones[zid]; return C.fitZone(C.BY_ID[id], z, z.atm == null ? B.atm : z.atm, 'shighlands'); };
+ ok('shighlands (shumar): grows hardy grains (dustmillet, frostoat, emmer), apricot and cave-madder, excluding tropical lowlands',
+   ['dustmillet', 'frostoat', 'emmer', 'apricot', 'cave-madder'].every(id => how(sh, id) !== 'no' && fitZ('shumar', id) !== 'no')
+   && C.pick(sh, 'fruit', { seed: 1, prefer: ['apricot'] }).crop.id === 'apricot'
+   && C.palette('shighlands', { grow: true }).colours.includes('red'),
+   ['cacao', 'rice'].every(id => how(sh, id) === 'no' && fitZ('shumar', id) === 'no'));
+ ok('shighlands (ordeal): thin-air polar ramp takes hardy alpine staples (bistort, redstem, frostroot) and excludes warm orchard fruit',
+   ['bistort', 'redstem', 'frostroot'].every(id => fitZ('ordeal', id) !== 'no'),
+   ['apricot', 'canyon-grape', 'fig', 'emmer', 'cacao'].every(id => fitZ('ordeal', id) === 'no'));}
+
+// ---- Wave 0 hygiene: atm 'thick' alias, missing CROPS.BIOMES keys, nwlowlands and tiers natives
+{const denseAt = C.at({ warmth: 'tropic', atm: 'dense', arid: 'humid' }), thickAt = C.at({ warmth: 'tropic', atm: 'thick', arid: 'humid' });
+ const keyAt = r => r.map(x => x.crop.id + ':' + x.how).join(',');
+ ok("atm 'thick' aliases to 2 ('dense') without changing CROPS.ATM.length === 3",
+   C.ATM.length === 3 && C.index('thick', C.ATM) === 2 && thickAt.length > 40 && keyAt(thickAt) === keyAt(denseAt),
+   C.index('nonesuch', C.ATM) === -1 && keyAt(thickAt) !== keyAt(C.at({ warmth: 'tropic', atm: 'thin', arid: 'humid' })));}
+{const reqBiomes = ['ancientsvalley', 'gills', 'westrift', 'crook', 'riftrim', 'greenstep', 'riavalley', 'nsemiarid', 'dambasins', 'neouterwall', 'tiers'];
+ ok('newly registered biomes resolve in CROPS.forBiome with staples and dyes',
+   reqBiomes.every(b => C.forBiome(b).length > 0 && has(b, 'staple', true) && C.palette(b).colours.length > 0) && how(C.forBiome('gills'), 'lung-salt') === 'wild',
+   how(C.forBiome('ancientsvalley'), 'lung-salt') === 'no');}
+{const nwl = C.forBiome('nwlowlands'), nwlPal = C.palette('nwlowlands');
+ const nwlWild = ['murnong', 'ironplum', 'rice', 'tea', 'mulberry', 'lotus-root', 'bamboo', 'pandan', 'cotton', 'willow', 'wine-grape', 'lacquer-tree'];
+ ok('nwlowlands: native wild staples, orchards, fibres, lotus, wine-grape and lacquer-tree, and a 3-colour plaid palette',
+   nwlWild.every(id => how(nwl, id) === 'wild') && C.canPlaid('nwlowlands') && ['blue', 'red', 'yellow'].every(k => nwlPal.colours.includes(k)),
+   how(C.forBiome('swlowlands'), 'lacquer-tree') === 'no' && how(C.forBiome('xanadu'), 'lacquer-tree') === 'wild');}
+{const plaid3 = cols => ['orange', 'purple', 'brown'].every(k => cols.includes(k));
+ ok('the Tiers make a plaid from their own (saffron, the band lichen\'s orchil, the shelf oak\'s tannin)', C.canPlaid('tiers') && plaid3(C.palette('tiers').colours),
+   !plaid3(C.palette('tiers').colours.filter(k => k !== 'purple')));}
+
+
+// giant mound-termite hive fungi (swbay Aw upland savanna and crater-drylands N edge ONLY): subterranean hive-comb & fruiting mound-cap
+{const sw = C.forBiome('swbay'), cd = C.forBiome('crater-drylands'), hj2 = C.forBiome('hyperjungle'), as2 = C.forBiome('abyssal-savannah');
+ const comb = C.BY_ID['hive-comb'], cap = C.BY_ID['mound-cap'];
+ ok('termites: hive-comb is an underground termite-hive crop (mushroom + reagent + medicine) with soldier hazard',
+   !!comb && comb.grown === 'underground' && comb.works.includes('termite-hive') && !!comb.hazard && C.isBucket(comb, 'mushroom') && C.isBucket(comb, 'reagent') && C.isBucket(comb, 'medicine'),
+   !C.isBucket(comb, 'grain'));
+ ok('termites: hive-comb and mound-cap grow ONLY in swbay and crater-drylands (never hyperjungle or abyssal-savannah)',
+   how(sw, 'hive-comb') === 'wild' && how(cd, 'hive-comb') === 'wild' && how(C.forBiome('swbay', { works: ['termite-hive'] }), 'hive-comb') === 'bed' && how(sw, 'mound-cap') === 'wild' && how(cd, 'mound-cap') === 'wild',
+   how(hj2, 'hive-comb') === 'no' && how(as2, 'hive-comb') === 'no' && how(hj2, 'mound-cap') === 'no' && how(as2, 'mound-cap') === 'no');}
 console.log(bad ? '\n' + bad + ' FAILED' : '\nall passed');
 process.exit(bad ? 1 : 0);
+

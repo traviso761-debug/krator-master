@@ -34,6 +34,9 @@ Valley, built in situ on the scale model's land (PLAN.md, README.md; the program
 The kit never references a host global except through BIO.host (BIOME-API.md); build.py greps its fragments for the
 forbidden names.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -87,6 +90,7 @@ for f, d in {'08-core-rand.js': 'rand', '50-core-tags.js': 'tags', '52-core-tags
     PATH.setdefault(f, os.path.join(ROOT, 'core', d, f))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'export', f))
+PATH.setdefault('10-core-roomlight.js', os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js'))   # Stage 7 I2-I4: room-graph daylight, gated pool & corner AO
 # the OIDONG kit, read in place (biomes/oidong/src): the species, the trees, the floor and its build; its own stage (45),
 # ground (84), build (88) and page (99) are this page's. Its sky (82) is read in place: the valley's light.
 OD = os.path.join(ROOT, 'biomes', 'oidong')
@@ -101,6 +105,7 @@ for f in ('10-crop-core.js', '20-crop-records.js', '22-crop-material.js', '40-cr
 # chunk and sky light (8-export: ATMOS.export, so the export's atmos section fills)
 for f in ('20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js'):
     PATH.setdefault(f, os.path.join(ROOT, 'core', 'water', f))
+PATH.setdefault('56-core-water-breakup.js', os.path.join(ROOT, 'core', 'water', 'ext', '56-core-water-breakup.js'))   # the breakup (core/water ext/56), on by default since 2026-11-09
 # core/simulation (SIM), read in place: the people's world (40d-ls-sim.js declares it; 68-ls-life.js draws SIM.pose)
 for f in ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
           '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
@@ -131,7 +136,7 @@ PATH['41-world-fields.js'] = os.path.join(ROOT, 'core', 'world', '41-world-field
 # the editor, the cutaway, and the core modules they read (core/edits, core/space, core/minimap)
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
-khost.resolve(PATH, khost.FULL)
+khost.resolve(PATH, khost.FULL + khost.KEYS)   # KEYS: the one key map and the one walk mode (core/host/92k-host-keys.js)
 for f in ('10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '40-core-place.js'):
     if f not in PATH:
         sys.exit('NO BIOME CORE: ' + f)
@@ -191,18 +196,30 @@ def _kchar():
     import json
     J = lambda *p: json.load(open(os.path.join(CM, 'data', *p), encoding='utf-8'))
     peoples = [p for p in J('peoples.json')['peoples'] if p['id'] in KCHAR_PEOPLES]
-    bodies, need = {}, []
+    kd = os.path.join(DIST, 'kchar')
+    has_piece = lambda k: (os.path.exists(os.path.join(CM, 'dist', 'pieces', k + '.txt'))
+                           or os.path.exists(os.path.join(kd, k.replace('/', '__') + '.js')))
+    bodies, need, skipped = {}, [], []
     for b in ('mpfb_male', 'mpfb_female'):
         kit = J(b, 'kit.json')
         sty = {x for p in peoples for x in p['styles'][b[5:]]}
-        kit['items'] = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
-                        or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        cand = [it for it in kit['items'] if it.get('culture') in KCHAR_PEOPLES or (it['slot'] == 'hair' and it['id'] in sty)
+                or (it['slot'] == 'beard' and it['id'] in KCHAR_BEARDS[b])]
+        kept = []
+        for it in cand:
+            pk = it['glb'][len('pieces/'):-len('.glb')]
+            if BSRC.LISTING or has_piece(pk):
+                kept.append(it)
+            else:
+                skipped.append(pk)
+        kit['items'] = kept
         bodies[b] = {'skeleton': J(b, 'skeleton.json'), 'kit': kit}
         need += [b + '/base', b + '/anims'] + [it['glb'][len('pieces/'):-len('.glb')] for it in kit['items']]
     if BSRC.LISTING:   # --list-sources: the pieces it would copy beside the page, by name; nothing is written
         BSRC.note([os.path.join(CM, 'dist', 'pieces', k + '.txt') for k in need])
         return ''
-    kd = os.path.join(DIST, 'kchar')
+    if skipped:
+        print('NOTE: %d new kit.json piece(s) have no sidecar in dist/kchar yet (skipped until core/charactermodels pieces build)' % len(skipped))
     os.makedirs(kd, exist_ok=True)
     keep, missing = set(), []
     for k in need:

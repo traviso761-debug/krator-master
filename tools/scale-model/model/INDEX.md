@@ -11,6 +11,7 @@ variables, so a fragment can use what an earlier one declared.
 | `00-head.html` | 111 | `<title>`, the fonts, the stylesheet |
 | `10-panel.html` | 103 | the panel (readout, legends, map-mode buttons, settlements and regions sections), the draw and measure bars, the hint, the three.js tag and `<script>` |
 | *(DATA)* | 1 | `const DATA = {...};`, written from `data/` |
+| *(NET)* | 1 | `const NET = {...};`, the Ancient network (a proposal), written by `build.py` from `openworld/network-proposal/net51.json`, compacted (`net_line`); not part of `DATA`, so it stays out of the model's edit queue |
 | `20-decode.js` | 22 | `ZONES`, image loading, and `start()`: decodes heights, water, rain, class, temperatures and zones |
 | `21-scene.js` | 20 | renderer, camera, lights, the terrain plane, the painted textures (`t`, `rt`, `ct`, `st`) |
 | `22-temp-ramp.js` | 9 | the temperature colour ramp |
@@ -31,6 +32,7 @@ variables, so a fragment can use what an earlier one declared.
 | `45-region-status.js` | 3 | the store's status line |
 | `50-measure.js` | 90 | the distance ruler and its profile |
 | `51-region-store.js` | 19 | regions in the shared store (`db`), with a per-browser fallback |
+| `52-network.js` | 80 | the Transit layer: the Ancient network from `NET` drawn on the overlay canvas (lines and trunks by form and upkeep, the later roads by class, tunnels, stations, the towns the roads end at), its hover text in the River row, its legend in the key drawer, and the toggle beside Tubes |
 | `60-settlements.js` | 195 | the settlements layer: glyphs, labels, list, add, import from (city) regions, Copy JSON, store |
 | `90-ui.js` | 24 | map-mode buttons (`setMap`), resize, the animation loop; closes `start()` |
 | `99-tail.html` | 4 | `</script>` |

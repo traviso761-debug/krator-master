@@ -73,7 +73,28 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
   ok('snowOn under a hook that replaced <project_vertex> still sets its varyings (a leaf card takes the snow)',/vAtmSnP=/.test(s5.vertexShader)&&s5.vertexShader.indexOf('vAtmSnP=')<s5.vertexShader.indexOf('#include <fog_vertex>')&&/atmSnN=aN/.test(s5.vertexShader),!/vAtmSnP=/.test(s5.vertexShader));
   ok('...and on a plain material it stays right after <project_vertex>',s6.vertexShader.indexOf('#include <project_vertex>\nvec4 atmSnWp')>=0,false);}
  const m4=new Material();A.cloudShade(m4,{porosity:1});A.cloudShade(m4,{porosity:1});const s4=compile(m4);
- ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);}
+ ok('a layer added twice runs once',(s4.vertexShader.match(/CLOUD/g)||[]).length===1,(s4.vertexShader.match(/CLOUD/g)||[]).length!==1);
+ // V8 (Stage 8, G-weather W1, 2026-11-24): the biome core's makers and a page's scene pass both reach a plant's material, at two
+ // porosities; that was two layers (the shade and the wet twice). Now one, the first caller's
+ const m7=new Material();A.cloudShade(m7,{porosity:.4});A.cloudShade(m7,{porosity:1});const s7=compile(m7),L7=m7.userData.atmHooks.filter(n=>/^atmos-cloudshade-/.test(n));
+ ok('cloudShade at two porosities is one layer, the first one\'s',(s7.vertexShader.match(/CLOUD/g)||[]).length===1&&L7.length===1&&L7[0]==='atmos-cloudshade-0.4'&&s7.uniforms.uPorosity.value===.4,L7.length!==1);}
+// ATMOS.cloudShadeScene(scene, o) (V8, 2026-11-24: in host/89-atmos-h-skyhost.js, so a page on ATMOS.sky has it; the 14 kits that wired
+// their own pass call it): every lit material once, by its mesh (plants o.biome, works o.host, the rest o.other), the fauna left out
+// unless o.leave is null, o.skip's left out; it turns the page's shading on and hands the biome core its queue (BIO.cloudShadeFlush)
+{let flushed=null;const keepB=global.BIO;global.BIO={CLOUD:{porosity:.4},cloudShadeFlush:p=>{flushed=p;}};
+ const lam=()=>{const m=new Material();m.isMeshLambertMaterial=true;return m;},mesh=(m,ud)=>({isMesh:true,material:m,userData:ud||{}});
+ const sc=L=>({traverse:fn=>L.forEach(fn)});let err=null;
+ try{const g=lam(),p=lam(),h=lam(),fa=lam(),w=lam(),b=new Material();fa.customProgramCacheKey=()=>'bioanim|x';
+  A.skyShadeOn=false;A.cloudShadeScene(sc([mesh(g),mesh(p,{biome:true}),mesh(h,{host:true}),mesh(fa,{biome:true}),mesh(w,{water:true}),mesh(b)]),{biome:.44,host:.68,skip:o=>!!o.userData.water});
+  const n=m=>(m.userData.atmHooks||[]).filter(x=>/^atmos-cloudshade-/.test(x));
+  ok('cloudShadeScene: the ground at 1, a plant at o.biome, a work at o.host; the fauna, an o.skip and an unlit material left out',
+   n(g)[0]==='atmos-cloudshade-1'&&n(p)[0]==='atmos-cloudshade-0.44'&&n(h)[0]==='atmos-cloudshade-0.68'&&!n(fa).length&&!n(w).length&&!n(b).length,!!n(w).length||!!n(fa).length);
+  ok('...turns the page\'s shading on and hands the biome core its plants\' porosity',A.skyShadeOn===true&&flushed===.44,flushed===null);
+  const fb=lam();fb.customProgramCacheKey=()=>'biofauna|y';A.cloudShadeScene(sc([mesh(fb,{biome:true})]),{leave:null});
+  ok('...o.leave null shades the fauna too (the kits that did), at BIO.CLOUD.porosity by default',n(fb)[0]==='atmos-cloudshade-0.4',!n(fb).length);}
+ catch(e){err=e;}
+ ok('cloudShadeScene is in the sky\'s host file (it ran)',!err,!!err);if(err)console.log('     '+err.message);
+ global.BIO=keepB;A.skyShadeOn=false;}
 // the real WATER.wetGround through ATMOS.shaderHook (HANDOFF-REBUILD.md's open request, 2026-10-26): a page hook set after
 // cloudShade and wetGround replaces neither. The negative is the same sequence with shaderHook hidden (wetGround's own
 // accessor, the old way): the page's hook then replaces cloudShade, the bug the request named
@@ -119,7 +140,22 @@ A.cloudShadeGLSL=()=>'uniform float uWet;CLOUD';
  const patchSrc=fs.readFileSync(path.join(D,'fx/89-atmos-fx-raincover.js'),'utf8');ok('the rain streaks fade under cover (the patch\'s pattern matches 4-weather\'s shader end)',
   /vA\*=1\.0-atmRainCover\(p\)/.test(patchSrc)&&/gl_Position=projectionMatrix\*mv;\}`/.test(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8')),false);
  const sg=A.snowGLSL();ok('the snow that lies reads the cover (fresh snow only) and the lee',/atmRainCover\(wp\)/.test(sg)&&/atmSnowLee/.test(sg),false);A.U.rainOcc=null;
- ok('...and without the map it carries no cover',!/atmRainCover/.test(A.snowGLSL()),false);}
+ ok('...and without the map it carries no cover',!/atmRainCover/.test(A.snowGLSL()),false);
+ /* log depth (2026-11-24, Stage 8 V9): the open world's renderer has logarithmicDepthBuffer, so the weather's ShaderMaterials take the
+    chunks (A.logDepth), and the rain cover's pattern must still find the shader's end past the include. The negative: the old pattern */
+ {const o=A.logDepth({vertexShader:rm.vertexShader,fragmentShader:'uniform float light;void main(){gl_FragColor=vec4(1.0);}'});
+  const re=eval(patchSrc.match(/A\.KH\(\)\.rep\(m\.vertexShader,(\/.*?\/),'vA\*=/)[1]),old=/(gl_Position=(projectionMatrix\*mv|atmQuad\(mv,ps\));\s*\}\s*)$/;
+  const pat=r=>o.vertexShader.replace(r,'vA*=1.0-atmRainCover(p);$1');
+  ok('log depth: the weather\'s four shaders take the chunks, and the rain cover still patches them',
+   /^#include <common>\n#include <logdepthbuf_pars_vertex>/.test(o.vertexShader)&&/gl_Position=projectionMatrix\*mv;\n#include <logdepthbuf_vertex>\n\}$/.test(o.vertexShader)&&
+   /^#include <logdepthbuf_pars_fragment>\nuniform float light;void main\(\)\{\n#include <logdepthbuf_fragment>\n/.test(o.fragmentShader)&&
+   /vA\*=1\.0-atmRainCover\(p\);gl_Position/.test(pat(re))&&(fs.readFileSync(path.join(D,'89-atmos-4-weather.js'),'utf8').match(/new T\.ShaderMaterial\(A\.logDepth\(\{/g)||[]).length===4,
+   /vA\*=/.test(pat(old)));
+  /* each #include on a line of its own (2026-11-24): the first cut left '#include <logdepthbuf_vertex>}', which expands to '#endif}'
+     and the snow and ash flecks did not compile (Oidong's and the Throne's verify). The negative: that text */
+  const inc=/#include <[^>]+>[^\n]/;
+  ok('log depth: every #include stands on its own line (an #endif} does not compile)',!inc.test(o.vertexShader)&&!inc.test(o.fragmentShader)&&!inc.test(pat(re)),
+   !inc.test(o.vertexShader.replace('<logdepthbuf_vertex>\n}','<logdepthbuf_vertex>}')));}}
 {const u={};A.windUniforms(u);const g=A.windGLSL();ok('the gust field for leaf shaders: atmWindV, atmGustAmp, atmTime, atmGust/atmWind',u.atmWindV===A.U.wind&&u.atmGustAmp===A.U.gustAmp&&u.atmTime===A.U.time&&/float atmGust\(/.test(g)&&/uniform vec2 atmWindV/.test(g),!u.atmWindV);
  // the GLSL gust is the JS gust
  const t=12.5,x=40,z=-30,w=A.U.wind.value,j=A.gust(t,x,z);ok('...and atmGust in GLSL is ATMOS.gust in JS (the same sum)',g.indexOf(A.GLSL_WIND.slice(0,40))>=0&&isFinite(j),false);}
@@ -161,10 +197,56 @@ const rampW=(x,z)=>3000+.4*x,rampL=(x,z)=>3000-.4*x;
  A.fog.off=true;A._frame(.1);ok('...and the A/B switch (A.fog.off) turns it off',A.U.fogBelt.value.x===0,A.U.fogBelt.value.x>0);A.fog.off=false;
  A.fogBeltOn=false;A.h.ground=g_;}
 
+// ---------------------------------------------------------------- the mist field (the valley's smog, 2026-11-09): the mist's density by place
+{const F0={density:0,colour:[.6,.65,.7],falloff:1/900,ref:0,shape:'exp2'},mist={density:.004,y:30,depth:40,noise:0};
+ const tM=(F,ro,P)=>-Math.log(1-A.fogAt(ro,P,F).amount);   /* no air: the amount is the mist's optical depth alone */
+ const Fm=Object.assign({},F0,{mist}),Fz=Object.assign({},F0,{mist:Object.assign({},mist,{field:()=>0})}),F1=Object.assign({},F0,{mist:Object.assign({},mist,{field:()=>1})});
+ const ro=[0,10,0],P=[3000,10,0];
+ ok('a ray through a 0 region of the field sees no mist, through a 1 region the full mist (the page\'s own)',A.fogAt(ro,P,Fz).amount===0&&near(tM(F1,ro,P),tM(Fm,ro,P),1e-12)&&tM(Fm,ro,P)>.5,A.fogAt(ro,P,Fz).amount>0);
+ // a smooth field (a smoothstep ramp over 2 km) against a fine march of density x field along the ray, level and falling into the pool
+ const ramp=(x,z)=>A.ss(300,1900,x),Fr=Object.assign({},F0,{mist:Object.assign({},mist,{field:ramp})});
+ const march=(ro,P)=>{const L=Math.hypot(P[0]-ro[0],P[1]-ro[1],P[2]-ro[2]),N=40000;let s=0;for(let i=0;i<N;i++){const t=L*(i+.5)/N,x=ro[0]+(P[0]-ro[0])*t/L,y=ro[1]+(P[1]-ro[1])*t/L,z=ro[2]+(P[2]-ro[2])*t/L;
+   s+=mist.density*(y<mist.y?1:Math.exp(-(y-mist.y)/mist.depth))*ramp(x,z)*L/N;}return s;};
+ const e1=Math.abs(tM(Fr,ro,P)-march(ro,P))/march(ro,P),ro2=[0,140,0],P2=[3000,-10,0],e2=Math.abs(tM(Fr,ro2,P2)-march(ro2,P2))/march(ro2,P2);
+ const F1s=Object.assign({},F0,{mist:Object.assign({},mist,{field:ramp,samples:1})}),e3=Math.abs(tM(F1s,ro2,P2)-march(ro2,P2))/march(ro2,P2);
+ ok('its integral is the fine march within a few percent (level '+(e1*100).toFixed(2)+'%, falling into the pool '+(e2*100).toFixed(2)+'%), the density-weighted samples reading the field where the mist is',e1<.04&&e2<.04,e3<.04);
+ ok('a ray that never comes near the layer reads the field at its end (nothing to weight)',near(tM(Object.assign({},F0,{mist:Object.assign({},mist,{field:(x)=>x>2000?1:0})}),[0,900,0],[3000,900,0]),tM(Fm,[0,900,0],[3000,900,0]),1e-12),false);
+ // the record: a grid at half precision, bilinear between its nodes, clamped at its edge
+ const M=A.fogMistFieldMake({at:ramp,extent:[-4000,-4000,4000,4000],res:65});
+ ok('fogMistFieldMake: a res x res grid of halves over the extent, its at() the function within half precision, 1 at a texel\'s centre',M.n===65&&M.half.length===65*65*4&&Math.abs(M.at(1500,0)-ramp(1500,0))<2e-3&&M.at(3000,0)===1&&M.at(-3000,0)===0&&M.v[0]===A.fromHalf(A.toHalf(M.v[0]))&&M.half[3]===15360,Math.abs(M.at(1500,0)-ramp(1500,0))>=2e-3);
+ ok('...clamped outside the extent, a record the twin takes as it takes a function',M.at(9000,0)===1&&M.at(-9000,0)===0&&near(tM(Object.assign({},F0,{mist:Object.assign({},mist,{field:M})}),ro,P),tM(Fr,ro,P),.01),false);
+ // the chunk: the same text as before on every page without a field
+ A.fogMistFieldOn=false;const g0=A.fogGLSL();A.fogMistFieldOn=true;const g1=A.fogGLSL();A.fogMistFieldOn=false;
+ ok('the chunk without a field is the chunk it was; with one it scales the mist\'s pool term by the field\'s weighted mean (a loop of at most 8, as the belt\'s)',g0===A.fogGLSL()&&!/atmFogMistT|atmFogMistField/.test(g0)&&/float atmFogMistField\(/.test(g1)&&g1.indexOf('ro.y,rd.y,L);tM*=atmFogMistField(ro,rd,L);')>0&&/for\(int i=0;i<8;i\+\+\)\{if\(float\(i\)>=atmFogMistK\.y\)break;/.test(g1)&&!/sin\(/.test(g1),/atmFogMistField/.test(g0));
+ // the host: the texture, its uniforms, the hook binds them, the record carries the grid and not the function
+ Object.assign(T,{Vector2:T.Vector2||V2});
+ const HF=A.heightFog({mist:{density:.004,y:30,depth:40,noise:0,field:{at:ramp,centre:[0,0],radius:4000,res:64},samples:5}});A._frame(.1);
+ const m=new Material();A.heightFogOn(m);const sh=compile(m),rec=A.fx.filter(r=>r.type==='heightfog').pop();
+ ok('ATMOS.heightFog({mist:{field}}): its texture is the field\'s halves (64 x 64 over 8 km), 5 samples, the hook binds it, the record keeps the grid',HF.field.texture.image.data===HF.field.half&&HF.field.texture.type===T.HalfFloatType&&A.U.fogMistK.value.x===64&&A.U.fogMistK.value.y===5&&near(A.U.fogMistE.value.z,1/8000,1e-15)&&sh.uniforms.atmFogMistT===A.U.fogMistT&&/atmFogMistField/.test(sh.fragmentShader)&&rec.mist.field.res===64&&!rec.mist.field.at&&typeof HF.field.at==='function'&&near(HF.field.at(1500,0),ramp(1500,0),1e-2),!sh.uniforms.atmFogMistT);   /* 1e-2: the bilinear's error between nodes 127 m apart on a 1.6 km ramp */
+ A.fogMistFieldOn=false;}
+
+// ---------------------------------------------------------------- the mist's own colour (2026-11-24, T41: the Siphon Pits' amber deck tinted the fog colour
+// each frame, since the chunk's mist took the fog's colour, cM = fc): mist.colour and mist.mix, on a page that asks
+{const F0={density:0,colour:[.6,.65,.7],falloff:1/900,ref:0,shape:'exp2'},mist={density:.004,y:30,depth:40,noise:0},ro=[0,10,0],P=[3000,10,0];
+ const plain=A.fogAt(ro,P,Object.assign({},F0,{mist})).colour,amber=A.fogAt(ro,P,Object.assign({},F0,{mist:Object.assign({},mist,{colour:[.83,.64,.35]})})).colour,
+  half=A.fogAt(ro,P,Object.assign({},F0,{mist:Object.assign({},mist,{colour:[.83,.64,.35],mix:.5})})).colour;
+ ok('the twin: a ray through the mist alone takes the mist\'s colour ('+amber.map(v=>v.toFixed(2))+'), mix .5 half way from the fog\'s; without one the fog\'s colour ('+plain.map(v=>v.toFixed(2))+')',
+  amber.every((v,i)=>near(v,[.83,.64,.35][i],1e-12))&&half.every((v,i)=>near(v,(F0.colour[i]+[.83,.64,.35][i])/2,1e-12))&&plain.every((v,i)=>near(v,F0.colour[i],1e-12)),plain.every((v,i)=>near(v,amber[i],1e-6)));
+ A.fogMistColOn=false;const g0=A.fogGLSL();A.fogMistColOn=true;const g1=A.fogGLSL();A.fogMistColOn=false;
+ ok('the chunk without a mist colour is the chunk it was (cM = fc); with one cM mixes toward atmFogMistC by its w',g0===A.fogGLSL()&&!/atmFogMistC/.test(g0)&&/vec3 cM=fc;/.test(g0)&&/uniform vec4 atmFogMistC;/.test(g1)&&/vec3 cM=mix\(fc,atmFogMistC\.rgb,atmFogMistC\.w\);/.test(g1)&&!/vec3 cM=fc;/.test(g1),!/vec3 cM=fc;/.test(g0));
+ const HF=A.heightFog({mist:{density:.004,y:30,depth:40,noise:0,colour:[.83,.64,.35],mix:.85}});A._frame(.1);
+ const m=new Material();A.heightFogOn(m);const sh=compile(m),rec=A.fx.filter(r=>r.type==='heightfog').pop(),u=A.U.fogMistC&&A.U.fogMistC.value;
+ ok('ATMOS.heightFog({mist:{colour, mix}}): the uniform holds them, the hook binds it and compiles the colour\'s line, the record keeps the colour',
+  u&&near(u.x,.83,1e-12)&&near(u.z,.35,1e-12)&&u.w===.85&&sh.uniforms.atmFogMistC===A.U.fogMistC&&/cM=mix\(fc,atmFogMistC/.test(sh.fragmentShader)&&rec.mist.colour.join()==='0.83,0.64,0.35',!sh.uniforms.atmFogMistC);
+ A.fogMistColOn=false;A.heightFog({mist:{density:.004,y:30,depth:40,noise:0}});const s0=compile((()=>{const q=new Material();A.heightFogOn(q);return q;})());
+ ok('...a page whose mist has no colour compiles the old line and binds no colour',!s0.uniforms.atmFogMistC&&/vec3 cM=fc;/.test(s0.fragmentShader),/atmFogMistC/.test(s0.fragmentShader));}
+
 // ---------------------------------------------------------------- the SW highlands' rain wall (fx/89-atmos-fx-rainwall.js)
 const rw=(x,z)=>1000+.4*x,rl=(x,z)=>1000-.4*x;
 {const R=A.rainWallMake({y0:1700,y1:2600,windward:[-1,0]});
  ok('the rain wall rains on the windward face in its band, little in the lee',A.rainWallAt(R,2500,0,rw)>.95&&near(A.rainWallAt(R,-2500,0,rl),R.lee,1e-9),A.rainWallAt(R,2500,0,rw)<=A.rainWallAt(R,-2500,0,rl));
+ {const Rf=A.rainWallMake({field:(x,z)=>x>0?1.4:x>-100?.5:-1,rain:.8});   /* a host's own field (the Ancient's Valley's oily rain, 2026-11-09): clamped, times rain, the orographic formula unused */
+  ok('a host field replaces the orographic formula, clamped to 0..1 and scaled by rain',near(A.rainWallAt(Rf,500,0,rw),.8,1e-9)&&near(A.rainWallAt(Rf,-50,0,rw),.4,1e-9)&&A.rainWallAt(Rf,-500,0,rw)===0,A.rainWallAt(A.rainWallMake({rain:.8}),500,0,rw)===.8);}
  ok('...and none below its band or above it',A.rainWallAt(R,0,0,rw)===0&&A.rainWallAt(R,7000,0,rw)===0,A.rainWallAt(R,2500,0,rw)===0);
  Object.assign(R,{extent:[-1000,-1000,6000,1000],cell:250,min:.2,top:3000,max:700});
  const c1=A.rainWallCells(R,rw,7),c2=A.rainWallCells(R,rw,7),c3=A.rainWallCells(R,rw,8);

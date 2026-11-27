@@ -1,0 +1,49 @@
+{
+ "what": "Vertical-stack budgets for biomes/batteredisle across all four stations (cove, rampart, strait, plug); HTML pages keep packed library maps in dist/batteredisle.tex.*.js sidecars (< 2.0 MB HTML) with <= 13 active samplers and <= 380 MB VRAM.",
+ "pages": {
+  "batteredisle.html": {
+   "bytes": 2097152,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Default cove station HTML capped under 2.0 MB via .tex.batteredisle.js sidecar, <= 3 KGROUND layers keeping active samplers <= 13 (< 15 ceiling), and 380 MB VRAM ceiling.",
+   "raised": "2026-11-23"
+  },
+  "batteredisle-rampart.html": {
+   "bytes": 2097152,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "WNW tsunami rampart station HTML capped under 2.0 MB via shared .tex.batteredisle.js sidecar, with KSTACKS radial-dike sea-stacks and blowhole caverns under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-23"
+  },
+  "batteredisle-strait.html": {
+   "bytes": 2097152,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Leeward strait station HTML capped under 2.0 MB via shared .tex.batteredisle.js sidecar, KCOAST pocket coves, Farside wrack kin, and 17 km Shroudhills KFAR silhouette under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-23"
+  },
+  "batteredisle-plug.html": {
+   "bytes": 2097152,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Summit volcanic plug station HTML capped under 2.0 MB via shared .tex.batteredisle.js sidecar, columnar olivine-basalt neck, radial dike hogbacks, and Arch nickel-scrub kin under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-23"
+  },
+  "*": {
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Shared sidecar bundles (.tex.*.js) stay under the 16 MB gallery cap while station HTML pages enforce 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-23"
+  }
+ }
+}

@@ -4,7 +4,10 @@
 // geometry with its edge-on rings) with its painted horizon taken away: the Inner Wall and the far mesas were a
 // stand-in for land the showcase did not have, and this world draws its own land to the horizon (VISUAL-BAR.md, D).
 // The dome and the giant ride with the camera, so a sky 1,400 km wide costs one dome.
-var SKY=(function(){const {TAU,rng,rr}=BIO.fn,scene=HOST.scene,camera=HOST.camera;
+// THE SHARED SKY (W8, STAGE-8/G-weather.md section 6; the owner, 2026-11-24: "moving volumetric weather on all deployed open-world
+// files"): where the build lists core/atmos's sky (sky/89-atmos-g-sky.js and host/89-atmos-h-skyhost.js: ATMOS.sky), the region's
+// sky is Krator's own (SKY_SHARED below), and this painted dome is not made. A build without the sky keeps the dome as before.
+function SKY_PAINTED(){const {TAU,rng,rr}=BIO.fn,scene=HOST.scene,camera=HOST.camera;
 const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  const HZ=h*.5,DEG=h/180;
  const grd=g.createLinearGradient(0,0,0,h);
@@ -14,14 +17,7 @@ const skyTex=BIO.canvasTex(4096,2048,(g,w,h)=>{
  grd.addColorStop(0.503,'#d2bfa4');grd.addColorStop(1.00,'#d2bfa4');   // below the horizon: the haze, as the fog is
  g.fillStyle=grd;g.fillRect(0,0,w,h);
  const wrapE=(x,y,rx,ry,f)=>{g.fillStyle=f;for(let k=-1;k<=1;k++){g.beginPath();g.ellipse(x+k*w,y,rx,ry,0,0,TAU);g.fill();}};
- // the sun at the azimuth and altitude the light uses (HOST.SUN_DIR); u = ((270-az)/360) mod 1 as the kit's dome maps it
- const S=HOST.SUN_DIR,az=(Math.atan2(S.x,-S.z)*180/Math.PI+360)%360,alt=Math.asin(S.y)*180/Math.PI;
- const SUNU=((270-az)/360%1+1)%1,sx=w*SUNU,sy=HZ-alt*DEG;
- {const gl=g.createRadialGradient(sx,sy,0,sx,sy,520);
-  gl.addColorStop(0,'rgba(255,250,236,.95)');gl.addColorStop(.05,'rgba(255,244,214,.5)');
-  gl.addColorStop(.2,'rgba(255,236,196,.16)');gl.addColorStop(1,'rgba(255,230,180,0)');
-  g.fillStyle=gl;for(let k=-1;k<=1;k++)g.fillRect(sx-520+k*w,sy-520,1040,1040);
-  wrapE(sx,sy,15,15,'rgba(255,253,244,1)');}
+ /* the sun is not painted here: it follows the clock (45's sunAt), drawn as a sprite on the dome (SUNS below) */
  for(let i=0;i<40;i++){const y=HZ-rr(28,70)*DEG,x=rng()*w,L=rr(200,700),a=rr(-.06,.06);
   g.save();g.translate(x,y);g.rotate(a);g.fillStyle='rgba(245,246,250,'+(.05+.1*rng()).toFixed(3)+')';
   for(let k=0;k<5;k++){g.beginPath();g.ellipse(rr(-L*.4,L*.4),rr(-6,6),L*rr(.3,.6),rr(2,6),0,0,TAU);g.fill();}g.restore();}
@@ -83,8 +79,75 @@ const ringMat=new THREE.ShaderMaterial({fog:false,transparent:true,depthWrite:fa
   ' a*=1.0-0.55*smoothstep(0.40,0.46,t)*(1.0-smoothstep(0.46,0.52,t));',' vec3 c=uCol*(0.8+0.3*sin(t*21.0));',
   ' float up=max(vSky.y,0.0);',' c=mix(c,uHazeC,clamp(0.2+uHazeK*exp(-up/0.16),0.0,0.86));',' gl_FragColor=vec4(c,a);}'].join('\n')});
 const giantRing=new THREE.Mesh(new THREE.RingGeometry(GIANT_R*1.30,GIANT_R*2.12,256,1),ringMat);
-giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   // opened 6 degrees toward us: a plane exactly edge-on covers no pixelgiantRing.renderOrder=-9;giantRing.userData.probeSkip=true;giantRing.frustumCulled=false;scene.add(giantRing);
+giantRing.quaternion.setFromUnitVectors(new THREE.Vector3(0,0,1),GIANT_AXIS.clone().multiplyScalar(Math.cos(.105)).addScaledVector(giantDir,-Math.sin(.105)).normalize());   /* opened 6 degrees toward us: a plane exactly edge-on covers no pixel */
+giantRing.renderOrder=-9;giantRing.userData.probeSkip=true;giantRing.frustumCulled=false;scene.add(giantRing);
 HOST.TICKS.push(dt=>{GU.uSpin.value+=dt*0.006;});
 // every frame, before drawing: the dome, the giant and its rings stay centred on the camera
-function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);}
-return{follow,sky,giant};})();
+// THE SUN on the dome where the light is (HOST.SUN_DIR, moved by the clock): a sprite of its disc and glow, the glow redder and
+// wider near the horizon, gone under it
+const sunTex=BIO.canvasTex(256,256,(g,w,h)=>{const gl=g.createRadialGradient(w/2,h/2,0,w/2,h/2,w/2);
+ gl.addColorStop(0,'rgba(255,253,244,1)');gl.addColorStop(.035,'rgba(255,253,244,1)');gl.addColorStop(.05,'rgba(255,244,214,.55)');
+ gl.addColorStop(.2,'rgba(255,236,196,.17)');gl.addColorStop(1,'rgba(255,230,180,0)');g.fillStyle=gl;g.fillRect(0,0,w,h);});
+const SUNS=new THREE.Sprite(new THREE.SpriteMaterial({map:sunTex,fog:false,depthWrite:false,transparent:true,blending:THREE.AdditiveBlending}));
+SUNS.renderOrder=-9;SUNS.frustumCulled=false;SUNS.userData.probeSkip=true;scene.add(SUNS);
+const SUN_D=DOME*.9,SUN_S=SUN_D*.22,_warm=new THREE.Color(1,.62,.38),_white=new THREE.Color(1,1,1);
+const _skyNight=new THREE.Color(0x162238),_skyDusk=new THREE.Color(0xd29c7e),_skyDay=new THREE.Color(0xffffff);
+// THE WEATHER (45's HOST.weather, where the build lists core/atmos's): the dome greys toward the weather's fog, the giant sinks into
+// its haze and the sun's disc fades as the sky clouds over (ATMOS.wxLook: grey, cover). Clear, or no weather on the page: as before
+const _skyWx=new THREE.Color(0x8c9299);
+function follow(){const P=camera.position;sky.position.copy(P);giant.position.copy(P).addScaledVector(giantDir,GIANT_DIST);giantRing.position.copy(giant.position);
+ const S=HOST.SUN_DIR,up=S.y,twi=Math.max(0,Math.min(1,(up+.18)/.22)),gold=Math.max(0,Math.min(1,(up+.02)/.32));
+ const L=typeof ATMOS!=='undefined'&&ATMOS.wxLook?ATMOS.wxLook():null,grey=L?L.grey:0,cover=L?L.cover:0;
+ GU.uSunDir.value.copy(S);GU.uHazeC.value.copy(HOST.HAZE);GU.uHazeK.value=.30+.56*cover;
+ if(grey>0)GU.uHazeC.value.lerp(HOST.scene.fog.color,grey);
+ sky.material.color.copy(_skyNight).lerp(_skyDusk,twi).lerp(_skyDay,gold);
+ if(grey>0)sky.material.color.lerp(_skyWx.copy(HOST.scene.fog.color).multiplyScalar(.5+.5*gold),grey*.8);
+ SUNS.position.copy(P).addScaledVector(S,SUN_D);SUNS.visible=up>-.05;SUNS.scale.setScalar(SUN_S*(1+.6*Math.max(0,1-up/.3)));
+ SUNS.material.color.copy(_warm).lerp(_white,Math.max(0,Math.min(1,up/.35)));SUNS.material.opacity=Math.max(0,Math.min(1,(up+.05)/.1))*(1-.9*cover);}
+return{follow,sky,giant};}
+
+// ---------------------------------------------------------------- THE SHARED SKY (W8)
+// ATMOS.sky at the camera's place on the scale model (WORLD.px/py are the 5.1 map's pixels; the sky's site frame is those less 272,
+// 330, as tools/site_cast.py and every W7 page take it), the site moved when the camera has gone 20 km, so the sun, the giant, its
+// ring and the moons stand where they do over that ground. The sky writes the sun, the hemisphere and the exposure (the colour
+// script at the hour of HOST's clock and its day); the fog's colour is the sky's horizon, its density stays this world's own law
+// (98: thick at the ground, thin from orbit), and the weather (45's HOST.weather: the region's climate, the moving cells) composes
+// on both as it did. HOST.SUN_DIR follows the sky's sun, so the flora, the water and the shadow box (KSHADOW) follow too.
+// The cloud layer's base is the region's ground (the median under a 9 x 9 grid of 10 km round the start) plus 1,400 m, at least
+// the sky's 1,600 m (WORLD_CONFIG.sky.cloudBase sets it), so a high plateau's clouds are not under its ground. The volumes
+// (sky/89-atmos-m-volclouds.js, host/89-atmos-m-volhost.js) draw through S.render where the build lists them; they write the
+// logarithmic depth this world's renderer keeps. The night fill raised partway, as Girder's (the owner, 2026-11-24).
+// WORLD_CONFIG.sky: {preset, cover, cloudBase, nightFill, false to keep the painted dome}.
+function SKY_SHARED(){const scene=HOST.scene,camera=HOST.camera,renderer=HOST.renderer,A=ATMOS;
+ const CFG=(typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG&&WORLD_CONFIG.sky)||{};
+ const O={S:null,sky:null,giant:null,hidden:false,site:null,cloudBase:null,follow,render,setHidden:h=>{O.hidden=!!h;}};
+ const clock={get hour(){return HOST.hour();},get day(){return HOST.clock&&HOST.clock.day!=null?HOST.clock.day:0;},get t(){return HOST.clock&&HOST.clock.t!=null?HOST.clock.t:performance.now()/1000;}};
+ const siteAt=(x,z)=>({px:WORLD.px(x)-272,py:WORLD.py(z)-330});
+ let sx=NaN,sz=NaN;
+ /* the air: the ground's pressure under the camera (WORLD.pressure), its humidity from the rain the climate gives (mm a year) */
+ const air=(x,z)=>{const g=WORLD.H(x,z),r=typeof WORLD.rain==='function'?WORLD.rain(x,z):800;
+  return{pressure:+WORLD.pressure(Math.max(g,0)).toFixed(2),humidity:+Math.max(.15,Math.min(.9,r/2500)).toFixed(2)};};
+ function cloudBase(){if(CFG.cloudBase!=null)return CFG.cloudBase;const P=camera.position,h=[];
+  for(let i=-4;i<=4;i++)for(let j=-4;j<=4;j++)h.push(WORLD.H(P.x+i*10000,P.z+j*10000));h.sort((a,b)=>a-b);
+  return Math.max(1600,Math.round((h[40]+1400)/100)*100);}
+ function make(){const P=camera.position;O.site=siteAt(P.x,P.z);
+  if(!A.T)A.T=THREE;if(!THREE.ShaderChunk.atmos_sky)THREE.ShaderChunk.atmos_sky=A.skyGLSL();   /* made before 83's ATMOS.init, as the biome pages' sky is (89-atmos-i-skybiome.js) */sx=P.x;sz=P.z;O.cloudBase=cloudBase();
+  const nf=CFG.nightFill===false?null:Object.assign({k:.75,colour:[.365,.443,.580],ground:[.22,.19,.18]},CFG.nightFill||{});
+  O.S=A.sky(A.skyPreset(CFG.preset||'standard',Object.assign({site:O.site,air:air(P.x,P.z),clouds:{cover:CFG.cover==null?.4:CFG.cover,height:O.cloudBase}},nf?{nightFill:nf}:{})),
+   {renderer,camera,scene,sun:HOST.sun,hemi:HOST.hemi,clock,fog:false});
+  O.sky=O.S.scene;scene.background=null;   /* a background would clear the sky's pass */
+  HOST.TICKS.unshift(tick);   /* first in the frame: the weather and the caverns' dark compose on what the sky writes */
+  tick(0);}
+ const KC=()=>A.KC();
+ function tick(dt){const S=O.S;if(!S)return;const P=camera.position;
+  if(Math.hypot(P.x-sx,P.z-sz)>20000){sx=P.x;sz=P.z;O.site=siteAt(P.x,P.z);Object.assign(S.preset.air,air(P.x,P.z));S.setSite(O.site);}
+  S.update(dt||0);const st=S.state,L=S.look;
+  HOST.SUN_DIR.set(st.sunDir[0],st.sunDir[1],st.sunDir[2]);
+  if(typeof BIO!=='undefined'&&BIO.setSun)BIO.setSun([st.sunDir[0],Math.max(.02,st.sunDir[1]),st.sunDir[2]]);
+  KC().lin(L.fogC,scene.fog.color);HOST.HAZE.copy(scene.fog.color);
+  if(HOST.fill)HOST.fill.intensity=.22*(L.hemiI||0)/.62;}
+ function follow(){}   /* the sky is drawn about the camera; nothing to move */
+ function render(){if(O.S&&!O.hidden)O.S.render();else renderer.render(scene,camera);}
+ LATE.unshift(make);   /* once the region's data is decoded (WORLD.px), before 83's ATMOS.init and the seas' skylight */
+ return O;}
+var SKY=typeof ATMOS!=='undefined'&&typeof ATMOS.sky==='function'&&!(typeof WORLD_CONFIG!=='undefined'&&WORLD_CONFIG&&WORLD_CONFIG.sky===false)?SKY_SHARED():SKY_PAINTED();

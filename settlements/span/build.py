@@ -23,6 +23,9 @@
 
     python3 build.py              # writes dist/span.html and dist/span.tex.ancients.js (the kit's textures)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import json, os, re, subprocess, sys
 
 _cp = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'tools', 'check_port.py')
@@ -128,6 +131,7 @@ for f in ('89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.
 sys.path.insert(0, core('host'))
 import host as khost
 CORE_HOST = khost.FULL
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 own = khost.resolve(PATH, CORE_HOST)
 if own:
     print('NOTE: a local copy overrides core/host: ' + ', '.join(own))

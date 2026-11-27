@@ -232,12 +232,13 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
   for(let k=0;k<2;k++){vB('vStone',s*(8+k*9),0,48.6,1.1,.6,1.1,0,ash);vnBannerPole(s*(8+k*9),.6,48.6,0,9,k%2?flagC:hC(HPAL.teal));}
   if(vLit())for(let k=0;k<2;k++)hnLampPost(s*(5+k*8),0,41.5,4.2);}
  // ---- the ring hall: cream stucco with quoins and pilasters, arched lit windows, a cornice with dougong
- const RW=62,RD=52,RH=7.5,rz0=ZC-RD/2,rz1=ZC+RD/2;hnStucco(0,FL,ZC,RW,RH,RD,0,cream,ash);vB('vStone',0,FL+RH-.4,ZC,RW+.3,.4,RD+.3,0,ash);
- vB('vStone',0,FL,ZC,RW+.3,.6,RD+.3,0,rub);
+ const RW=62,RD=52,RH=7.5,rz0=ZC-RD/2,rz1=ZC+RD/2,IX=hnPlanOn(),band=IX?vnBand:vB;hnStucco(0,FL,ZC,RW,RH,RD,0,cream,ash);band('vStone',0,FL+RH-.4,ZC,RW+.3,.4,RD+.3,0,ash,.55);
+ band('vStone',0,FL,ZC,RW+.3,.6,RD+.3,0,rub,.55);   // with the interiors (hnPlanOn: the ring and the core hollow), the base and the cornice are rings round the walls, open at the doors
  const face=(a,L,fn)=>{for(let u=-L/2+2.6;u<=L/2-2.5;u+=4.4)fn(u,a);};
  for(const [a,L,D] of [[0,RW,RD],[Math.PI,RW,RD],[Math.PI/2,RD,RW],[-Math.PI/2,RD,RW]])face(a,L,(u,a)=>{const c=loc(0,ZC,u,D/2,a);
   if(a===0&&Math.abs(u)<12)return;vnWin(c[0],FL+1.8,c[1],a,1.3,2.6,lit,'vStone',ash);const q=loc(0,ZC,u,D/2+.12,a);kput('hKeelP',[q[0],FL+4.5,q[1]],qEuler(0,a,0),[2.1,.9,.12],ash);
-  const pp=loc(0,ZC,u+2.2,D/2+.05,a);vB('vStone',pp[0],FL+.6,pp[1],.6,RH-1.0,.12,a,ash);});
+  const pp=loc(0,ZC,u+2.2,D/2+.05,a);vB('vStone',pp[0],FL+.6,pp[1],.6,RH-1.0,.12,a,ash);
+  if(IX){const c2=loc(0,ZC,u,D/2,a);vnWin(c2[0],FL+5.3,c2[1],a,1.1,1.3,lit,'vStone',ash);}});   // the upper storey's windows (the interiors' committee rooms and corridors), over the keel heads
  // ---- the core: rises through the ring roof as a half-timber clerestory
  const CW=44,CD=36;hnStucco(0,FL,ZC,CW,15.4-FL,CD,0,cream,false);hnFachBox(0,15.4,ZC,CW,4.6,CD,0,cream,red,lit);
  // tier A: the ring roof, dougong under its eaves on the flanks and back
@@ -259,13 +260,13 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
   let t=hnRCLoggia(0,yb+6.7,ZC,TWc+.8,2.9,0,red,{lit:vLit()});
   hnRCPagoda(0,t,ZC,TWc+.8,0,2,roofC,{cream,wood:red,lit:vLit(),flag:true});}
  // ---- the entrance hall: a keel-vaulted (bochka) pavilion with the great arched portal
- {const EW=22,ED=14,EZ=ZC+RD/2+ED/2,EH=9;hnStucco(0,FL,EZ,EW,EH,ED,0,cream,ash);vB('vStone',0,FL,EZ,EW+.3,.6,ED+.3,0,rub);
+ {const EW=22,ED=14,EZ=ZC+RD/2+ED/2,EH=9;hnStucco(0,FL,EZ,EW,EH,ED,0,cream,ash);band('vStone',0,FL,EZ,EW+.3,.6,ED+.3,0,rub,.55);
   const fz=EZ+ED/2;hnBochka(0,FL+EH,EZ-1,ED+3,EW+1.6,9.4,Math.PI/2,'hKeelSc',roofC);
   kput('hKeelG',[0,FL+EH-.02,fz+1.57],null,[EW+.9,9.0,.08]);kput('hKeelP',[0,FL+EH+.1,fz+1.66],null,[EW-.4,8.2,.08],cream);
   hnForm('hFormA',0,FL+EH+1.2,fz+1.64,0,9.6,4.8);
   for(const s of[-1,1]){const q=[s*(EW/2-1.6),fz+1.66];hnForm('hFormV',q[0],FL+EH+.4,q[1],0,1.6,3.2);}
   // the portal: ashlar jambs and keel head, a painted formline tympanum, carved leaves
-  vB('vStone',0,FL,fz+.02,11,7.6,.12,0,ash);kput('hKeelP',[0,FL+6.1,fz+.04],null,[11,3.0,.12],ash);
+  for(const s of[-1,1])vB('vStone',s*4.8,FL,fz+.02,1.4,7.6,.12,0,ash);vB('vStone',0,FL+6.1,fz+.02,8.2,1.5,.12,0,ash);kput('hKeelP',[0,FL+6.1,fz+.04],null,[11,3.0,.12],ash);   // the portal's jambs and head (the leaves fill the 8.2 m doorway)
   hnDoorway(0,FL,fz+.03,0,8.2,6.1,{t:.06,out:0});kput('hKeelDark',[0,FL+6.1,fz+.12],null,[8.2,2.4,.1]);hnForm('hFormW',0,FL+5.95,fz+.1,0,5.2,2.0);
   for(const s of[-1,1])hnForm('hFormV',s*2.05,FL+.15,fz+.12,0,3.9,5.7);
   if(vLit())for(const s of[-1,1])hnWallLamp(s*6.4,FL+4.8,fz,0);
@@ -296,13 +297,48 @@ function buildHlRepHallRepublic(G,o){reseed(21201+(o.v|0));
   for(const [u,v,w,d] of [[0,5.6,15,.8],[0,-5.6,15,.8],[7.1,0,.8,10.4],[-7.1,0,.8,10.4],[0,0,9,.6],[0,0,.6,7]])vB('hRCHedgeB',gx+u,0,gz+v,w,.9,d,0,hC(0x3f6a2e));
   for(const [u,v] of [[-4,-2.6],[4,-2.6],[-4,2.6],[4,2.6]]){kput('hRCLeaf',[gx+u,1.7,gz+v],null,[.85,1.7,.85],hC(0x3a6a2c));}
   for(let k=0;k<6;k++){const x=s*(20+k*5.6);vB('vStone',x,FL,33.2-2.4,1.2,.6,1.2,0,ash);kput('hRCLeaf',[x,FL+1.3,30.8],null,[.8,.8,.8],hC(0x3f6a2e));}}
- vnFolk(0,45,10,5);hnRCFolk(-22,FL,26,4,3);hnRCFolk(22,FL,26,4,3);hnRCFolk(-22,FL,19.2,3,1.8);hnRCFolk(22,FL,19.2,3,1.8);}
+ vnFolk(0,45,10,5);hnRCFolk(-22,FL,26,4,3);hnRCFolk(22,FL,26,4,3);hnRCFolk(-22,FL,19.2,3,1.8);hnRCFolk(22,FL,19.2,3,1.8);
+ if(IX){hnPlan({wallC:cream});hnHallChamber(FL);}}
 
+// the Assembly's chamber (the interiors on: kits/highlands/hall/BLUEPRINT.md, "The chamber"): a horseshoe of five tiers of
+// benches opening north to the Speaker's dais, round the well and the clerks' table; the tiers 0.4 m apart and 1.5 m deep (a
+// step a walker takes), each tier a floor in core/walk. The members' benches, the Speaker's chair, the clerks' table and the
+// banners are catalog pieces (FURNISH); the tiers, the dais and the hanging are the building. Fixed colours: no rng() here
+function hnHallChamber(FL){const C0=[0,-12],oak=hC(HPAL.redwood[0]),boards=hC(HPAL.pine[0]).multiplyScalar(.85),red=hC(HPAL.red);
+ const W2=(x,z,y)=>{const v=IZDOOR._w(x,y,z);return[v[0],v[2],v[1]];},walk=typeof KWALK!=='undefined';
+ const W2r=(x0,x1,z0,z1)=>{const a=W2(x0,z0,0),b=W2(x1,z1,0);return[Math.min(a[0],b[0]),Math.max(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[1],b[1])];};
+ const pick=(...k)=>k.find(q=>KratorFurniture.has(q))||k[0];
+ const bench=pick('republican_common_bench','republican_court_divan'),chair=pick('republican_court_throne','republican_common_chair');
+ for(let i=0;i<5;i++){const r=6.75+1.5*i,ri=r-.75,ro=r+.75,y=FL+.4*(i+1),n=18,dA=Math.PI/n;
+  // the curve, toward the entrance (+z), from the west arm round to the east
+  for(let k=0;k<n;k++){const a0=-Math.PI/2+k*dA,a1=a0+dA,am=(a0+a1)/2,w=2*ro*Math.sin(dA/2)+.06,c=[C0[0]+r*Math.sin(am),C0[1]+r*Math.cos(am)];
+   vB('vWood',c[0],FL,c[1],w,y-FL,1.5,am,i%2?boards:oak);
+   if(walk)KWALK.poly({pts:[[ri,a0],[ro,a0],[ro,a1],[ri,a1]].map(([q,a])=>W2(C0[0]+q*Math.sin(a),C0[1]+q*Math.cos(a),y)),name:'tier '+(i+1),tag:'interior:hl-hall-tiers'});}
+  // the arms, back toward the dais
+  for(const s of[-1,1]){vB('vWood',s*r,FL,C0[1]-4,1.5,y-FL,8,0,i%2?boards:oak);
+   if(walk)KWALK.poly({pts:[[s*ri,C0[1]],[s*ro,C0[1]],[s*ro,C0[1]-8],[s*ri,C0[1]-8]].map(([x,z])=>W2(x,z,y)),name:'tier '+(i+1),tag:'interior:hl-hall-tiers'});}
+  // the members' benches, on the back half of each tread, facing the well
+  const rb=r+.3,nb=Math.floor(Math.PI*rb/1.65);for(let k=0;k<nb;k++){const a=-Math.PI/2+Math.PI*(k+.5)/nb;FURNISH(bench,C0[0]+rb*Math.sin(a),y,C0[1]+rb*Math.cos(a),a+Math.PI,{setting:'indoor'});}
+  for(const s of[-1,1])for(let k=0;k<4;k++)FURNISH(bench,s*rb,y,C0[1]-1.2-k*1.8,-s*Math.PI/2,{setting:'indoor'});}
+ // the Speaker's dais at the north wall, a step up to it, the red hanging behind his chair; the clerks' table in the well
+ vB('vWood',0,FL,-24.4,12.4,.9,4.2,0,oak);vB('vWood',0,FL,-22.05,12.4,.45,.5,0,oak);vB('hPaint',0,FL+.9,-26.9,8,4.5,.12,0,red);
+ if(walk){KWALK.floor({rect:W2r(-6.2,6.2,-26.5,-22.3),y:FL+.9,name:'dais',tag:'interior:hl-hall-tiers'});KWALK.floor({rect:W2r(-6.2,6.2,-22.3,-21.8),y:FL+.45,name:'dais step',tag:'interior:hl-hall-tiers'});}
+ FURNISH(chair,0,FL+.9,-25.4,0,{setting:'indoor'});
+ FURNISH(pick('republican_court_table','republican_common_table'),0,FL,-17.6,0,{setting:'indoor'});
+ for(const s of[-1,1])FURNISH(pick('republican_common_chair','republican_court_throne'),s*1.1,FL,-16.6,Math.PI,{setting:'indoor'});
+ for(const s of[-1,1])FURNISH(pick('republican_court_banner','republican_common_banner'),s*9,FL,-27.1,0,{setting:'indoor'});}
 // ---------------------------------------------------------------- the fortress
 // A square curtain of rubble and ashlar with a roofed half-timber hoarding, Peles towers at the corners (spires to
 // the field, tent roofs behind), the gatehouse in the front wall, a tall keep with a jettied timber storey and
 // corner bartizans, the commandant's palace, a barracks, stables and a smithy in the bailey.
-function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=17,H=9.5;
+// the war room's map table (kits/highlands/fortress/BLUEPRINT.md; the catalog has none): an oak table 3.6 x 2.2 m on six legs,
+// the Republic's map laid on it, the corps' and the batteries' markers on the map; the set's war room keeps its floor clear
+// (fixture map_table). Fixed colours: no rng() here
+function hnMapTable(x,y,z){const oak=hC(HPAL.redwood[0]),map=hC(0xcdb98e),W=3.6,D=2.2,H=.86;
+ for(const sx of[-1,0,1])for(const sz of[-1,1])vB('vWood',x+sx*(W/2-.12),y,z+sz*(D/2-.12),.12,H-.06,.12,0,oak);
+ vB('vWood',x,y+H-.06,z,W,.06,D,0,oak);vB('vWood',x,y+H-.16,z,W-.2,.1,D-.2,0,oak);vB('hPaint',x,y+H,z,W-.24,.012,D-.24,0,map);
+ [[-1.1,-.5,0x9a2a22],[-.4,.3,0x9a2a22],[.6,-.2,0x2a3e7a],[1.2,.55,0x2a3e7a],[.1,.7,0x9a2a22],[-1.3,.6,0x3a5a2a]].forEach(([u,v,c])=>vB('vWood',x+u,y+H+.012,z+v,.08,.06,.08,0,hC(c)));}
+function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=17,H=9.5,IX=hnPlanOn(),band=IX?vnBand:vB;   // IX: the interiors on (kits/highlands/fortress/BLUEPRINT.md)
  const rub=hC(vPick(HPAL.rubble)),ash=hC(vPick(HPAL.ashlar)),cream=hC(vPick(HPAL.stucco)),red=hC(vPick(HPAL.redwood)),slate=hC(vPick(HPAL.slate)),lit=vLit()?'lit':'glass',tar=hC(vPick(HPAL.tar));
  vnReg('Fortress',0,0,48,44);vnReg('Fortress — keep',-14,-14,9,44);
  // curtain walls between the towers; the front is split by the gatehouse
@@ -313,7 +349,7 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
  hnRCGate(0,Z,0,{tw:8.5,th:TH,roofC:slate});
  for(const sx of[-1,1])for(const sz of[-1,1])hnRCTower(sx*X,0,sz*Z,TW,TH,0,{roof:sz>0?'spire':'tent',lit:vLit(),roofC:slate,beamC:red,cream,flag:sz<0&&sx>0});
  // the keep
- {const kx=-14,kz=-14,KW=14,KH=24;vB('hRubB',kx,0,kz,KW+1.6,1.4,KW+1.6,0,rub.clone().multiplyScalar(.85));vB('hRubB',kx,1.4,kz,KW,11-1.4,KW,0,rub);vB('vStone',kx,11,kz,KW+.24,.3,KW+.24,0,ash);
+ {const kx=-14,kz=-14,KW=14,KH=24;vB('hRubB',kx,0,kz,KW+1.6,1.4,KW+1.6,0,rub.clone().multiplyScalar(.85));vB('hRubB',kx,1.4,kz,KW,11-1.4,KW,0,rub);band('vStone',kx,11,kz,KW+.24,.3,KW+.24,0,ash,.4);
   hnStucco(kx,11.3,kz,KW,KH-11.3,KW,0,cream,ash);
   for(let k=0;k<4;k++){const a=k*Math.PI/2;for(const u of[-3.6,0,3.6]){const f=loc(kx,kz,u,KW/2,a);for(const yy of[4,7.6])hnRoom(f[0],yy,f[1],.24,1.3,.08,a);
     for(const yy of[13,17.5]){vnWin(f[0],yy,f[1],a,.9,1.9,lit,'vStone',ash);const q=loc(kx,kz,u,KW/2+.12,a);kput('hKeelP',[q[0],yy+2.02,q[1]],qEuler(0,a,0),[1.4,.62,.12],ash);}}
@@ -321,7 +357,7 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
   // clock on the bailey face, door at first-floor level up an external stair
   {const f=loc(kx,kz,0,KW/2+.1,0);vB('vStone',f[0],KH-4.7,f[1],3.4,3.4,.1,0,ash);kput('hClock',[f[0],KH-3.0,f[1]+.1],null,[3,3,1],null);}
   vnDoor(kx+3.6,5.2,kz+KW/2,0,1.4,2.4,'vStone',ash,tar,false);vB('vStone',kx+3.6,0,kz+KW/2+1.0,2.4,5.0,2,0,ash);hnRCFlight(kx+2.4-31*.34,0,kz+KW/2+1.0,-Math.PI/2,1.6,5.0,'vStone',ash);
-  vB('vStone',kx,KH,kz,KW+1.2,.3,KW+1.2,0,ash);hnJetty(kx,KH+.8,kz,KW+.6,KW+.6,0,red,.45);hnFachBox(kx,KH+.8,kz,KW+.6,3.4,KW+1.5,0,cream,red,lit);
+  band('vStone',kx,KH,kz,KW+1.2,.3,KW+1.2,0,ash,.7);hnJetty(kx,KH+.8,kz,KW+.6,KW+.6,0,red,.45);hnFachBox(kx,KH+.8,kz,KW+.6,3.4,KW+1.5,0,cream,red,lit);
   const ry0=KH+4.2;vnHipRoof('hHipSc',kx,ry0,kz,KW+1.5,KW+1.5,9,0,slate,.8);
   for(const sx of[-1,1])for(const sz of[-1,1]){const bx=kx+sx*(KW/2+.2),bz=kz+sz*(KW/2+.2);kput('vConeI',[bx,KH-2.4,bz],qEuler(Math.PI,0,0),[1.1,1.6,1.1],ash);
    kput('hOctP',[bx,KH-2.45,bz],null,[1.15,KH-(KH-2.45)+4.2,1.15],cream);vB('vStone',bx,KH+4.2,bz,2.5,.2,2.5,Math.PI/8,ash);kput('hTentSc',[bx,KH+4.35,bz],null,[1.5,5,1.5],slate);vBall('hGold',bx,KH+9.4,bz,.16,hC(HPAL.gold[0]));
@@ -353,6 +389,13 @@ function buildHlRepFortress(G,o){reseed(21211+(o.v|0));const X=36,Z=32,TW=10,TH=
   // up through the lean-to roof is the lean-to's own
   const fz=sz+SL/2-2.4;hlRngSkip(12);FURNISH('hl_rep_hooded_forge',sx+.8,0,fz,0,{v:1});FURNISH('hl_rep_anvil',sx-.8,0,fz,0,{v:1});
   vnChimney(sx+1.3,4.08,fz-.5,3.32,.25,true);}
+ // the interiors (kits/highlands/fortress/BLUEPRINT.md): the covered bridge from the keep's guard hall to the First Citizen's
+ // study (the secure link to the war room), the steps up to the magazine's and the gaol's doors, and every room drawn from
+ // the plan (72c hnPlan). The bridge is a half-timber gallery on four oak posts, its floor at the guard hall's sill
+ if(IX){const wood=red;hnFachBox(-2,5.0,-18.5,10,3.0,2.6,0,cream,wood,lit);vB('vWood',-2,4.75,-18.5,10.2,.25,2.9,0,wood);
+  for(const x of[-5,1])for(const s of[-1,1])vPst('vPostB',x,0,-18.5+s*1.1,.16,4.75,wood);vnGableRoof(-2,8.0,-18.5,10,2.6,1.1,0,'hGableSc',slate,.35);
+  for(const s of[-1,1])vnStairs(s*32.5,0,-26.1,0,1.6,1.32,5,'vStone',ash);
+  hnMapTable(-17.4,12.6,-15.2);hnPlan({wallC:cream});}
  // the bailey: a well, a cart, barrels, a pell-post and the garrison
  FURNISH('hl_rep_civic_well',6,0,2,0,{v:1});   // the windlass well
  hnRCPave(0,22,8,14,0,hC(vPick(HPAL.rubble)),2.2);

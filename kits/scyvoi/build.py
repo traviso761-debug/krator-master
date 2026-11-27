@@ -28,6 +28,9 @@ Checks (fragments share one JS scope):
   4. `node --check` on the script when node exists (otherwise the build says the syntax was NOT checked:
      verify.py's error panel is then the only syntax check).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -70,7 +73,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   # --list-sources (tools/dep_graph.py)
 OUT = os.path.join(DIST, 'scyvoi.html')
 TEX_DIR = os.path.join(HERE, 'tex')
-CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door')]
+CORE_DIRS = [os.path.join(ROOT, 'core', *d.split('/')) for d in ('shader', 'rand', 'materials/record', 'tags', 'furnish', 'atmos', 'door', 'walk', 'walk/box')]   # core/walk: the walker on the buildings (core/engine/37-wk-rec.js)
 # the host shell from core/host (core/host/README.md): the camera, the frame loop and its clock (core/clock), the panel, the probe,
 # and the authoring tools (inspect, polygon, path). src/98-host-take.js hands it the page (KHOST.take); it replaced the engine's own
 # 92-camera.js and 91-probe.js (2026-10-18, KNOWN_ISSUES.md "Host port"). A src/ file with a shell file's name would win.
@@ -80,7 +83,7 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST   # the polygon tool and the one key map (core/host/92k-host-keys.js)
 VENDORED = {}
 # GENERATED fragments, never written to src/
 FURN_CULTURES = ['scyvoi', 'nomad', 'generic', 'generic-goods']   # the Scyvoi pieces, the Eastern Nomads' for fallbacks, the shared goods

@@ -101,11 +101,13 @@ var PLACED = [], PLACE_STATS = { scheduled:0, fallback:[], frontage:0, backlot:0
   })();
 
   /* ---------------- 3. THE FILL ---------------- */
-  var POOR_A = ['abyss_house_poor','abyss_house_poor','abyss_house_poor','stilt_poor'];
-  var MID_A  = ['abyss_house_mid','abyss_house_mid','stilt_mid','abyss_house_poor'];
-  var CORE_A = ['abyss_house_mid','abyss_house_mid','abyss_house_mid','stilt_mid'];
+  var POOR_A = ['abyss_house_poor','abyss_house_poor','stilt_poor','swamp_pod_hut','swamp_shack_a','swamp_shack_b'];
+  var MID_A  = ['tb_breeze_cot','tb_loggia_row','abyss_house_mid','stilt_mid','swamp_workshop'];
+  var CORE_A = ['tb_loggia_row','tb_shop_house','tb_oriel_townhouse','tb_breeze_cot'];
   var TARGET_PEOPLE = 400;
-  var PEOPLE = { abyss_house_poor:5, abyss_house_mid:6, stilt_poor:5, stilt_mid:6, abyss_house_rich:10 };
+  var PEOPLE = { abyss_house_poor:5, abyss_house_mid:6, stilt_poor:5, stilt_mid:6, abyss_house_rich:10,
+                 swamp_pod_hut:5, swamp_shack_a:5, swamp_shack_b:6, swamp_workshop:5, swamp_storehouse:4, swamp_dome_hall:8, swamp_tavern_dome:6,
+                 tb_breeze_cot:5, tb_loggia_row:6, tb_shop_house:6, tb_oriel_townhouse:8, tb_tahawst_mid:8, tb_capricho_villa:10 };
   function choose(x, z, cls, r01){
     var D=districtAt(x,z), h=terrainH(x,z), low = h < 2.4 || lakeDist(x,z) < 45 || riverDist(x,z) < 40, w=D.wealth, key;
     if(D.key==='geo') return null;                                         /* the Geomancers' quarter is scheduled, not filled */
@@ -118,7 +120,7 @@ var PLACED = [], PLACE_STATS = { scheduled:0, fallback:[], frontage:0, backlot:0
   function tagOf(key){ var A=ASSET_BY_KEY[key]; if(!A) return 'house'; if(key==='tent_pavilion'||key==='sunshade_poles') return 'yard';
     return (key.indexOf('poor')>=0) ? 'home_poor' : 'home_mid'; }
   function countPeople(key){ var n=PEOPLE[key]; if(n){ PLACE_STATS.dwellings++; PLACE_STATS.people += n; } }
-  SITES_L.forEach(function(S){ if(S.rec && S.role==='headman') countPeople('abyss_house_rich'); if(S.rec && S.tag==='yuni') { PLACE_STATS.dwellings++; PLACE_STATS.people += 5; } });
+  SITES_L.forEach(function(S){ if(S.rec && S.role==='headman') countPeople(S.placedKey||'tb_capricho_villa'); if(S.rec && S.tag==='yuni') { PLACE_STATS.dwellings++; PLACE_STATS.people += 5; } });
 
   /* 3a. frontage: both sides of every street in the landward town, the main street first, then outward */
   var edges = ST.edges.filter(function(e){ var A=ST.nodes[e.a], B=ST.nodes[e.b], mx=(A.x+B.x)/2, mz=(A.z+B.z)/2;

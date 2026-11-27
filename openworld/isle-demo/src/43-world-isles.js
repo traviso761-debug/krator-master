@@ -1,7 +1,7 @@
 // ================================================================= ISLE DEMO — the isles' fields: the climate classes as weights, the coast
 // [G data] The fields the Ring Sea isles kit reads (biomes/ringisles/BIOME-API.md, "The fields a host binds") that the
 // open world (openworld/little-demo/src/41-world-fields.js) does not make. Added to WORLD.FIELDS before the host binds
-// the biome core (45-world-host.js builds its field functions from that list), and filled in by wrapping WORLD.at and
+// the biome core (45-world-host.js builds its field functions from that list), and filled in by wrapping WORLD.atShared (WORLD.at copies it) and
 // WORLD.fieldsFrom, so every sample (a full one, a terrain chunk's) carries them. Plain maths of (x, z) and the rasters.
 //   koppen:<class>  the scale model's climate class at the point as soft weights over the seven isle classes (XA, Af, Am,
 //                   Aw, XV, BSh, XS): the map pixels round a warped point, so a class boundary blends over ~2 km rather
@@ -58,8 +58,8 @@ function add(A){const x=A.x,z=A.z,d=A.depth,above=-d,slope=A.slope,land=d<0?1:0;
  let fl=0;for(const [vx,vz] of VENTS){const r=Math.hypot(x-vx,z-vz);if(r<900)fl=Math.max(fl,1-smooth(420,700,r));}A.floor=fl;
  A.dry=dry;
  return A;}
-const at0=W.at,from0=W.fieldsFrom;
-W.at=(x,z)=>add(at0(x,z));
+const at0=W.atShared,from0=W.fieldsFrom;
+W.atShared=(x,z)=>add(at0(x,z));   /* WORLD.at copies it (core/world 41) */
 W.fieldsFrom=(x,z,h,tanS,P,out)=>add(from0(x,z,h,tanS,P,out));
 // ---------------------------------------------------------------- the ground's colour (WORLD.ground, wrapped)
 // The world colours the ground from the scale model's biome overlays; here the isles all lie under the Ring Sea's water
@@ -91,6 +91,27 @@ W.ground=function(x,z,S,out){ground0(x,z,S,out);const d=S.depth;
 // is flattened into MANGROVE FLATS: tidal mud just round the water line. Applied to every height the world samples (the
 // terrain, the fields, the seas' beds), so the water, the shore's surf and the kit's zones all see the same coast.
 const NR=KN(4404);
+/* With core/coast on the page (44c-world-coast.js, KCOAST loaded before this file) the coast's marsh class lays the
+   mangrove flats instead (they put land under the level outside any mask: the water stopped on the mask's straight
+   edges, the owner 2026-11-11), and the towns as the owner drew them (the site file's districts, avenues and markers)
+   keep their coast: WORLD.coastKeeps. The settlement page that reads this file without core/coast is unchanged. */
+const COASTED=typeof KCOAST!=='undefined';
+if(COASTED)W.coastKeeps=()=>{const out=[];if(typeof SITE_INIT==='undefined'||!SITE_INIT||!SITE_INIT.towns)return out;
+ for(const t in SITE_INIT.towns){const T=SITE_INIT.towns[t],F=T.frame;if(!F)continue;let r=0;
+  const pt=(x,z)=>{if(isFinite(x)&&isFinite(z))r=Math.max(r,Math.hypot(x,z));};
+  for(const k of ['districts','avenues','causeways','routes'])for(const o of (T[k]||[]))for(const p of (o.poly||o.pts||[]))pt(p[0],p[1]);
+  for(const m of (T.markers||[]))pt(m.x,m.z);
+  /* the town's whole ground (its plan's square, ISLE.PROG[t].half: the wall, the fields and the quays reach its corners) */
+  const P=typeof ISLE!=='undefined'&&ISLE.PROG&&ISLE.PROG[t];if(P&&P.half)r=Math.max(r,P.half*1.42);
+  if(r>0)out.push({x:F.x,z:F.z,r:r+400});}
+ /* Nephtos, the Hykkousoi colony (48p): surveyed round the owner's pick on the forest island west's coast, its villages
+    and their quays round it: the coast there is kept as the colony was planned on */
+ if(typeof ISLE_COLONY!=='undefined'&&ISLE_COLONY.SPEC&&ISLE_COLONY.SPEC.near){const S=ISLE_COLONY.SPEC;out.push({x:S.near[0],z:S.near[1],r:S.look});}
+ /* an overseas village (48's `overseas`: Valapo's clove plantation on the forest island west, the owner 2026-11-09) is
+    surveyed round its island's point for a coastal cell with a sea route: that coast is kept as it was planned on (core/coast's
+    second pass moved it a kilometre out, and no fit cell kept the sea within reach) */
+ if(typeof ISLE_HAMLETS!=='undefined'&&ISLE_HAMLETS.SPECS)for(const S of ISLE_HAMLETS.SPECS)if(S.overseas&&S.island)out.push({x:S.island[0],z:S.island[1],r:S.look==null?6000:S.look});
+ return out;};
 /* the sea's and the lakes' level only (WORLD.lakeWater reads the raster): WORLD.water's river part samples the height, which calls this */
 W.landHook=(x,z,h)=>{const wl=W.lakeWater(x,z);if(wl<-1e8)return h;const d=wl-h;
  if(d>0){if(d>=70)return h;
@@ -98,8 +119,11 @@ W.landHook=(x,z,h)=>{const wl=W.lakeWater(x,z);if(wl<-1e8)return h;const d=wl-h;
   let g;if(d<12)g=.5+2.3*smooth(0,12,d);else if(d<22)g=2.8-2.45*smooth(12,19,d);else if(d<30)g=.35+.15*NR.vn(x/120,z/120);else g=lerp(.5,d,smooth(30,70,d));
   return wl-lerp(d,g,on);}
  const above=-d;if(above>4)return h;
+ /* on core/coast (44c) the marsh class makes the flats, keeping the water's sign; where the coast is kept (a town as it
+    was planned, Nephtos) the flats are as they were, so a kept coast is exactly the old one */
+ const kp=COASTED?(W.coast&&W.coast.keepAt?W.coast.keepAt(x,z):0):1;if(kp<=0)return h;
  const C=classWeights(x,z),wetCl=C[IDX.XA]+C[IDX.Af]+C[IDX.Am]+C[IDX.Aw]*.4;if(wetCl<.3)return h;
- const m=smooth(.45,.6,NC.fbm(x/3000,z/3000,3))*smooth(.3,.6,wetCl)*(1-smooth(2.5,4,above));if(m<=0)return h;
+ const m=smooth(.45,.6,NC.fbm(x/3000,z/3000,3))*smooth(.3,.6,wetCl)*(1-smooth(2.5,4,above))*kp;if(m<=0)return h;
  return wl+lerp(above,-.4+above*.3,m);};
 const lerp=(a,b,t)=>a+(b-a)*t;
 // the kits' weights: the Ring Sea isles kit (and the lenders it grows trees from, 47-world-kits.js) covers the whole demo

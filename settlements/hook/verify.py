@@ -2,7 +2,7 @@
 """Headless verification for Hook (settlements/hook) on the shared harness (tools/harness.py).
 
 Usage:
-  python3 verify.py dist/hook.html [--views "Overview,The Strand at eye level"] [--all-views]
+  python3 verify.py dist/hook.html [--views "Overview;The hill behind"] [--all-views]
                                   [--assert] [--strict-budget] [--out ./shots]
                                   [--cam=cx,cy,cz,tx,ty,tz] [--eval "()=>..."] [--size 1280x800]
 
@@ -16,6 +16,9 @@ page's own `_api.extra()` checks, port-stamps-inside-footprint and port-clearanc
   port-every-key   every key registered with PORT_SEG or PORT_VESSEL is placed at least once (a layout item, or a
                    vessel a berth placed): settlements/hook/PLAN.md, section 2.
 
+The site editor: `python3 verify.py dist/hook-site.html --assert` runs the editor's own checks instead (hook-site-loaded,
+-select, -moved, -tools, -roundtrip: SITE_CHECK_JS) and shots the map and city views.
+
 SwiftShader flakes about one run in seven with a null shader-info-log TypeError: re-run before believing it. Budget
 20-40 s a screenshot; keep a run to 16 views and background it.
 """
@@ -24,7 +27,7 @@ import argparse, asyncio, importlib.util, json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
-from harness import STATS_JS, launch_chromium, open_page, parse_views, serve, verify_page, Abort
+from harness import STATS_JS, parse_views, verify_page, Abort
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -55,10 +58,233 @@ const R=[];
 { const bad=[];for(const v of PORT_VPLACED){const V=PORT_REG.vessel[v.key];if(!V)continue;const h=terrainH(v.x,v.z);
     if(h>-V.draft+1.5)bad.push(v.key+'/'+v.d+' ground '+h.toFixed(1)+' m at midship, draft '+V.draft);}
   R.push({name:'hook-vessels-afloat',ok:!bad.length,budget:true,detail:bad.length?bad.join(' | '):PORT_VPLACED.length+' vessels, every midship over water deeper than its draft'}); }
+// P1: the site ran on core/city (steps 0-5): the quarters, the avenues and every footprint filed as a landmark
+{ const C=window._city||{};const ok=!!C.ready&&C.districts>=10&&C.ways>=3&&C.landmarks>=PORT_LAYOUT.items.filter(it=>it.vessel!==true).length;
+  R.push({name:'hook-site-plan',ok,detail:C.ready?(C.districts+' quarters, '+C.ways+' ways, '+C.landmarks+' landmark footprints ('+C.hosts+' Ancient hosts); '+JSON.stringify(C.log)):'the city plan did not run'}); }
+// P1: every named host of the site is placed (an unplaced one overlapped a Port footprint and reported an error)
+{ const want=(HOOK_SITE.hosts||[]).map(h=>h.id),have=PORT_LAYOUT.items.filter(it=>it.ancient).map(it=>it.opt.hostId);
+  const miss=want.filter(id=>have.indexOf(id)<0);
+  R.push({name:'hook-hosts-placed',ok:!miss.length,detail:miss.length?'named hosts not placed: '+miss.join(', '):want.length+' named hosts and '+(have.length-want.length)+' drawn on the grid'}); }
+// P1: the Heights stand 24 m or more above the quays at the palace's marker (the plan's 25-40; the scale model's own
+// slope gives more: README.md "The ground"), and the hill behind the site rises 60 m or more over the quays
+{ const B=(HOOK_SITE.markers||[]).find(m=>m.id==='B'),r=HOOK_GROUND.ridge,c=HOOK_GROUND.hill,F=HOOK_GROUND.fromModel;
+  const hB=B?terrainH(B.x,B.z)-PORT.DECK:null,hC=terrainH(0,c.z0-20)-PORT.DECK;
+  const ok=hB!=null&&hB>=24&&hC>=60;
+  R.push({name:'hook-heights',ok,detail:'the palace marker stands '+(hB==null?'?':hB.toFixed(1))+' m above the quays, the hill behind '+hC.toFixed(1)+' m; the model gives the ridge: '+F.ridge+', the hill: '+F.hill+' (a stamp is kept only where it does not)'}); }
+// the scale model's ground (75d-hook-world.js): the kit's frame stands at the 1:1 shoreline (the natural ground at the
+// origin within 12 m of sea level: the shoreline is found on the land without its fine terms, which add up to ~10 m;
+// the sea 300 m out, land 300 m in), and the report's numbers for the README
+{ const W=HOOK_WORLD,h0=W.natH(0,0),hs=W.natH(0,300),hl=W.natH(0,-300);
+  const ok=Math.abs(h0)<=12&&hs<0&&hl>0;
+  R.push({name:'hook-world',ok,detail:'natural ground at the origin '+h0.toFixed(2)+' m, 300 m seaward '+hs.toFixed(1)+', 300 m inland '+hl.toFixed(1)+'; '+JSON.stringify(W.report)}); }
+// P1: every Ancient host and quarter has a core/tags record before it was drawn
+{ const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,a=T?T.audit():null,n=PORT_LAYOUT.items.filter(it=>it.ancient&&it.tag).length;
+  R.push({name:'hook-tags',ok:!!a&&n===PORT_LAYOUT.items.filter(it=>it.ancient).length,detail:a?(a.records+' records, '+n+' hosts tagged; unknown vocabulary '+a.unknown):'no registry'}); }
+// S2: the Ancient city as records (77-hook-ruin.js, the owner's site plan): every block, tower, heap, pod, freeway span, the
+// wall and its gates, the roads and the thirteen places in the page's registry, nothing drawn
+{ const T=PORT_LAYOUT.hook&&PORT_LAYOUT.hook.tags,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
+  const all=H?[].concat(H.blocks,H.towers,H.heaps,H.pods,H.spans,[H.ramp,H.wall],H.gates,H.roads,H.places):[],miss=T?all.filter(r=>!T.get(r.id)):all;
+  R.push({name:'hook-ruin-records',ok:!!H&&!!T&&all.length>1500&&miss.length===0&&H.places.length===13,detail:H?(all.length+' records, '+miss.length+' not registered; '+JSON.stringify(H.report)):'no HOOK_RUIN'}); }
+// S3: the Ancient city drawn at range (90c): one piece a record; nothing floats (every tower's and pier's base at or
+// under the DRAWN ground, the terrain grid's lowest node, along its footprint's edge, read again here); every drowned
+// tower's foot under the water line, and those that still stand rising out of it
+{ const D=window._ruinDraw||{},G=typeof PORT_ST!=='undefined'?PORT_ST.grid:null,H=typeof HOOK_RUIN!=='undefined'?HOOK_RUIN:null;
+  let floating=0,firstFloat=null,wetBad=0,firstWet=null,n=0;
+  if(D.ready&&G&&H){const bs=(a,v)=>{let lo=0,hi=a.length-1;if(v<=a[0])return 0;if(v>=a[hi])return hi-1;while(hi-lo>1){const m=(lo+hi)>>1;if(a[m]<=v)lo=m;else hi=m;}return lo;};
+   const mm=(x,z)=>{const i=bs(G.xs,x),j=bs(G.zs,z),k=j*G.nx+i;return Math.min(G.H[k],G.H[k+1],G.H[k+G.nx],G.H[k+G.nx+1]);};
+   for(const t of D.towers){n++;const c=Math.cos(t.yaw),s=Math.sin(t.yaw);let m=mm(t.x,t.z);
+    for(const [u,b] of [[-.5,-.5],[.5,-.5],[.5,.5],[-.5,.5],[0,-.5],[0,.5],[-.5,0],[.5,0]])m=Math.min(m,mm(t.x+u*t.w*c+b*t.d*s,t.z-u*t.w*s+b*t.d*c));
+    if(t.base>m+1e-3){floating++;firstFloat=firstFloat||[t.id,+t.base.toFixed(2),+m.toFixed(2)];}
+    if(t.wet&&t.state!=='fallen'){const stands=t.state==='intact'||t.state==='gutted'||t.state==='crown';
+     if(!(t.base<0)||(stands&&!(t.top>0))){wetBad++;firstWet=firstWet||[t.id,t.state,+t.base.toFixed(2),+t.top.toFixed(2)];}}}
+   for(const p of D.piers){if(p.base>mm(p.x,p.z)+1e-3){floating++;firstFloat=firstFloat||['pier',+p.base.toFixed(2)];}}}
+  const rec=D.records||{},st=D.stats||{};
+  /* and lit in their colours: no drawn instance black (r128's colour buffer made at count 0 drew every tower black) */
+  let black=0;const grp=typeof HOOK_RUIN_DRAW!=='undefined'&&HOOK_RUIN_DRAW.group;
+  if(grp)for(const m of grp.children){const c=m.instanceColor;if(!c)continue;for(let i=0;i<m.count;i++)if(c.getX(i)+c.getY(i)+c.getZ(i)<.05)black++;}
+  R.push({name:'hook-ruin-drawn',ok:!!D.ready&&st.towers===rec.towers&&st.heaps===rec.heaps&&st.pods===rec.pods&&st.decks===rec.spans+1&&black===0,
+   detail:JSON.stringify({stats:st,records:rec,blackInstances:black})});
+  R.push({name:'hook-ruin-seated',ok:!!D.ready&&n>0&&floating===0&&wetBad===0,
+   detail:n+' towers and '+(D.piers||[]).length+' piers: '+floating+' floating'+(firstFloat?' (first '+JSON.stringify(firstFloat)+')':'')+'; '+wetBad+' drowned towers not footed under the water'+(firstWet?' (first '+JSON.stringify(firstWet)+')':'')}); }
+// S5: the environs' hamlets and camps (77m, core/hamlet): the thirteen places laid (the Spire's pods and the deck camp's
+// shacks aloft, off the ground rules), each core/hamlet place linked to the road net (90f draws them), every building on dry ground (a landing at the water's edge), outside Port Hook's zone and off every ruin footprint, none overlapping another
+{ const P=typeof HOOK_PLACES!=='undefined'?HOOK_PLACES:null,L=P?P.lots:[],bad={wet:[],town:[],ruin:[],overlap:[]};
+  if(P){const Z=((HOOK_SITE.districts||[]).find(d=>d.type==='zone')||{}).poly,KL=KCITY.lib;
+    const box=l=>({c:[l.x,l.z],u:[Math.cos(l.ry),-Math.sin(l.ry)],v:[Math.sin(l.ry),Math.cos(l.ry)],hw:l.w/2,hd:l.d/2,r:Math.hypot(l.w,l.d)/2});
+    const LL=L.filter(l=>!l.aloft),B=LL.map(box),proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
+    const sep=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const p=proj(a,ax),q=proj(b,ax);if(p[1]<q[0]+.1||q[1]<p[0]+.1)return true;}return false;};
+    LL.forEach((l,i)=>{if(!l.landing&&!(HOOK_WORLD.natH(l.x,l.z)>.3))bad.wet.push(l.id);if(HOOK_RUIN.townAt(l.x,l.z))bad.town.push(l.id);
+      if(P.ruinAt(l.x,l.z))bad.ruin.push(l.id);   /* a landing stands at the water's edge (core/hamlet's quay), never on a ruin */
+      for(let j=i+1;j<LL.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))bad.overlap.push([l.id,LL[j].id]);}});}
+  const n=k=>bad[k].length,places=P?P.report.places:0;
+  const RD=window._hookRoads||{};
+  R.push({name:'hook-places',ok:!!P&&places>=13&&!P.skipped.length&&!P.unlinked.length&&(P.trunks||[]).length===3&&RD.ready&&L.length>=150&&!n('wet')&&!n('town')&&!n('ruin')&&!n('overlap'),
+   detail:P?JSON.stringify(P.report)+'; roads '+JSON.stringify(RD.stats||null)+'; by place '+JSON.stringify(Object.fromEntries(Object.keys(P.villages).map(k=>[k,(P.villages[k].records||[]).filter(Boolean).length])))+
+    '; bad '+JSON.stringify({wet:n('wet'),town:n('town'),ruin:n('ruin'),overlap:n('overlap')})+(n('wet')+n('town')+n('ruin')+n('overlap')?' first '+JSON.stringify([bad.wet[0],bad.town[0],bad.ruin[0],bad.overlap[0]]):'')+
+    '; skipped '+JSON.stringify(P.skipped):'no places'}); }
+// S4: the mangroves and the jungle (90e, the Ring Sea isles kit): planted, the mangroves in the water, and none in Port
+// Hook's zone, on a walled clearing, on a cliff (the kit's own cliff weight), inside a drawn footprint or over the ground
+{ const HF=typeof HOOK_FLORA!=='undefined'?HOOK_FLORA:null,T=HF&&HF.trees||[],bad={town:[],clearing:[],cliff:[],inside:[],floating:[]};let wet=0;
+  if(HF&&HF.on){const RI=HK_FLORA.kits.ringisles,mh=HOOK_RUIN_DRAW.meshH,O=HF.obstacles;
+    for(const t of T){const k=HF.kindAt(t.x,t.z),h=mh(t.x,t.z),p=[Math.round(t.x),Math.round(t.z)];if(h<0)wet++;
+      if(k===3&&(HF.zoneD(t.x,t.z)>HF.fringe+20||HF.townHit(t.x,t.z)))bad.town.push(p);if(k===2)bad.clearing.push(p);   /* the town: its fringe only, clear of lots and streets; the fields */
+      if(RI.zones(t.x,t.z).cliff>.5)bad.cliff.push(p);
+      if(t.y!=null&&t.y>h+.05)bad.floating.push(p.concat([+(t.y-h).toFixed(2)]));
+      for(const q of O)if(Math.abs(q.x-t.x)<q.r&&Math.abs(q.z-t.z)<q.r&&Math.hypot(q.x-t.x,q.z-t.z)<q.r-.5){bad.inside.push(p);break;}}}
+  const n=k=>bad[k].length,all=n('town')+n('clearing')+n('cliff')+n('inside')+n('floating');
+  R.push({name:'hook-flora',ok:!!HF&&HF.on&&T.length>2000&&wet>50&&all===0,
+   detail:(HF?(HF.on?T.length+' trees ('+wet+' standing in the water) in '+HF.ms+' ms; '+JSON.stringify(HF.stats&&{trees:HF.stats.trees,heroes:HF.stats.heroes,far:HF.stats.far,borrowed:HF.stats.borrowed}):'off: '+JSON.stringify(window._hookFlora)):'no flora')+
+    '; bad '+JSON.stringify({town:n('town'),clearing:n('clearing'),cliff:n('cliff'),inside:n('inside'),floating:n('floating')})+(all?' first '+JSON.stringify(Object.keys(bad).filter(k=>n(k)).map(k=>[k,bad[k][0]])):'')}); }
+// S3 up close: the kit's heroes round a point by the Crown (90d): built without an error, each standing on its seat (its
+// lowest point at or under the drawn ground's lowest node along its footprint, never far under it), its massing hidden
+{ const RH=window._ruinHeroes||{},C=typeof HOOK_RUIN!=='undefined'&&HOOK_RUIN.crown;let H=null,bad=[],shown=0;
+  if(RH.ready&&C){H=RH.at(C.x+160,C.y+70,C.z+160);
+    for(const L of HOOK_HEROES.live){const e=L.sl.M.elements,m=new THREE.Matrix4();L.sl.m.getMatrixAt(L.sl.k,m);if(Math.abs(m.elements[5])<1e-6)shown++;
+      if(!(L.lo<=L.seat+.5&&L.lo>=L.seat-40&&L.hi>L.seat+5))bad.push([L.id,L.key,+L.seat.toFixed(1),+L.lo.toFixed(1),+L.hi.toFixed(1)]);}}
+  const live=H?H.live:[],failed=H?Object.keys(H.failed||{}):['no heroes: '+(RH.why||'not ready')];
+  R.push({name:'hook-ruin-heroes',ok:!!H&&live.length>=3&&!failed.length&&!bad.length&&shown===live.length,
+   detail:live.length+' heroes ('+live.map(l=>l.key).join(', ')+'), '+(H?H.calls:0)+' calls, '+(H?H.tris:0)+' triangles, built '+(H?H.stats.built:0)+' in '+(H?Math.round(H.stats.ms):0)+' ms; massing hidden '+shown+
+    (failed.length?'; FAILED '+JSON.stringify(H?H.failed:failed):'')+(bad.length?'; not seated '+JSON.stringify(bad.slice(0,4)):'')}); }
+// P2: the town's lots (steps 6-12): some hundreds of them, of every culture the quarters name
+{ const C=window._city||{},recs=C.recs||[],L=C.log||{};const cults=Object.keys(L.byCulture||{});
+  R.push({name:'hook-lots',ok:recs.length>=300&&cults.length>=5,detail:recs.length+' lots: '+JSON.stringify(L.byCulture)+' classes '+JSON.stringify(L.byClass)+'; salvage '+L.salvage+', host lots '+L.hostLots+'; ways '+JSON.stringify(L.ways)}); }
+// P2: no two standing footprints overlap: every lot's BUILDING box (its yard may touch a neighbour's) and every landmark's
+// footprint, exact SAT with 0.1 m slack
+{ const C=window._city||{},P=C.plan,KL=KCITY.lib,pairs=[];
+  if(P){const B=(C.boxes||[]).map(l=>{const o=l.box;return {id:l.id,key:l.key,c:o.c,u:o.u,v:[-o.u[1],o.u[0]],hw:o.hw,hd:o.hd,r:Math.hypot(o.hw,o.hd)};});
+    const proj=(b,ax)=>{const cx=b.c[0]*ax[0]+b.c[1]*ax[1],e=Math.abs((b.u[0]*ax[0]+b.u[1]*ax[1])*b.hw)+Math.abs((b.v[0]*ax[0]+b.v[1]*ax[1])*b.hd);return [cx-e,cx+e];};
+    const sep=(a,b)=>{for(const ax of [a.u,a.v,b.u,b.v]){const p=proj(a,ax),q=proj(b,ax);if(p[1]<q[0]+.1||q[1]<p[0]+.1)return true;}return false;};
+    for(let i=0;i<B.length;i++)for(let j=i+1;j<B.length;j++){const a=B[i],b=B[j];if(Math.hypot(a.c[0]-b.c[0],a.c[1]-b.c[1])>a.r+b.r)continue;if(!sep(a,b))pairs.push([a.key+'#'+a.id,b.key+'#'+b.id]);}
+    R.push({name:'hook-lots-overlap',ok:!pairs.length,detail:pairs.length?pairs.length+' overlapping pairs: '+JSON.stringify(pairs.slice(0,5)):B.length+' footprints, none overlap'});}
+  else R.push({name:'hook-lots-overlap',ok:false,detail:'no plan'}); }
+// P2: nothing stands on a carriageway (no building corner within a way's half width of its centreline, by the exact
+// lines, as the builder places with TUNE.exact; the raster's stamp is a cell wider at a junction) or in the water
+// (every corner on ground above sea level)
+{ const C=window._city||{},recs=C.recs||[],KL=KCITY.lib,onStreet=[],wet=[],ways=(C.plan&&C.plan.ways||[]).map(w=>({hw:w.w/2-.5,pts:w.pts,bb:w.pts.reduce((b,p)=>[Math.min(b[0],p[0]),Math.min(b[1],p[1]),Math.max(b[2],p[0]),Math.max(b[3],p[1])],[1e9,1e9,-1e9,-1e9])}));
+  // a corner a metre or less inside the kerb line is the builder's own tolerance at a junction, not a house in the road
+  const onWay=p=>{for(const w of ways){if(p[0]<w.bb[0]-w.hw||p[0]>w.bb[2]+w.hw||p[1]<w.bb[1]-w.hw||p[1]>w.bb[3]+w.hw)continue;for(let i=1;i<w.pts.length;i++)if(KL.segDist(p,w.pts[i-1],w.pts[i])<w.hw-1)return true;}return false;};
+  for(const L of recs){const o={c:[L.x,L.z],u:[Math.cos(L.ry),-Math.sin(L.ry)],v:[Math.sin(L.ry),Math.cos(L.ry)],hw:L.w/2-.3,hd:L.d/2-.3};
+    const corners=[[1,1],[1,-1],[-1,1],[-1,-1]].map(s=>[o.c[0]+o.u[0]*o.hw*s[0]+o.v[0]*o.hd*s[1],o.c[1]+o.u[1]*o.hw*s[0]+o.v[1]*o.hd*s[1]]).concat([o.c]);
+    if(corners.some(onWay))onStreet.push(L.key+'#'+L.id);
+    if(corners.some(p=>terrainH(p[0],p[1])<0.2))wet.push(L.key+'#'+L.id);}
+  R.push({name:'hook-lots-off-street',ok:!onStreet.length,detail:onStreet.length?onStreet.length+' on a street: '+onStreet.slice(0,5).join(', '):recs.length+' lots, none on a carriageway'});
+  R.push({name:'hook-lots-dry',ok:!wet.length,detail:wet.length?wet.length+' in the water: '+wet.slice(0,5).join(', '):recs.length+' lots, every corner on dry ground'}); }
+// P3: every landmark of the programme placed by step 6 (a civic piece on an avenue near its marker), the damage field
+// read into the records, the Tethyan pods grown
+{ const C=window._city||{},L=C.log||{},civ=C.civics||[],want=(HOOK_PROG.landmarks||[]).map(l=>l.key),have=civ.map(c=>c.key);
+  const miss=want.filter(k=>have.indexOf(k)<0);
+  R.push({name:'hook-landmarks',ok:!miss.length&&civ.length>=want.length,detail:miss.length?'not placed: '+miss.join(', '):civ.length+' landmarks placed: '+civ.map(c=>c.role).join(', ')});
+  const P=C.pods||[],fp=Object.keys(C.failed||{}).filter(k=>/^hykpod/.test(k));
+  R.push({name:'hook-damage-and-pods',ok:L.rubble!=null&&P.length>0&&!fp.length,detail:'damage: '+L.rubble+' rubble lots, '+L.scorch+' scorched; '+P.length+' pods on '+[...new Set(P.map(p=>p.hostName))].join(', ')+(fp.length?'; pods FAILED: '+fp.join(', '):'')}); }
+// P2: every piece near the opening camera built (its kit's closure ran it) and the massing stands for the rest
+{ const C=window._city||{},S=C.draw||{},F=C.failed||{},n=Object.keys(F).length;
+  R.push({name:'hook-lots-drawn',ok:S.protos>0&&n===0,detail:S.protos+' prototypes built, '+S.near+' near in full, '+S.massing+' as massing, '+S.footings+' footings'+(n?'; FAILED '+n+': '+JSON.stringify(Object.keys(F).slice(0,6).map(k=>k+' '+String(F[k]).slice(0,80))):'')}); }
 return R;}"""
 
 
+def marr_families():
+    """{MAT key: library set} from kits/marr/materials.json: what Marr's own pack (88ym-mar-matlib.js) binds"""
+    with open(os.path.join(ROOT, 'kits', 'marr', 'materials.json'), encoding='utf-8') as fh:
+        return {k: v['lib'] for k, v in json.load(fh)['families'].items()}
+
+
+# Marr's materials in the IZV closure carry Marr's own library sets (kits/marr/materials.json), not the Iziz sets their
+# clones came from: Marr's files must load before Iziz's bind (build.py izv_marr_bundle), or a clone of a bound material
+# keeps Iziz's userData.lib and KMAT.bindMat skips it. With ?mat=proc (no library) the check reports and passes.
+MARR_MAT_JS = r"""(fam)=>{const M=typeof IZV!=='undefined'&&IZV.MAT;if(!M)return [{name:'hook-marr-materials',ok:false,detail:'no IZV.MAT'}];
+ if(typeof KMAT==='undefined'||!KMAT.bindMat)return [{name:'hook-marr-materials',ok:true,detail:'no material library on this page'}];
+ const bad=[],ok=[];for(const k in fam){const m=M[k];if(!m){bad.push(k+' missing');continue;}const lib=m.userData&&m.userData.lib;
+  if(lib===fam[k])ok.push(k);else bad.push(k+': '+(lib||'unbound')+' (want '+fam[k]+')');}
+ return [{name:'hook-marr-materials',ok:!bad.length,detail:bad.length?bad.join('; '):ok.length+' Marr materials on their own sets: '+ok.join(', ')}];}"""
+
+
+# The site editor (dist/hook-site.html): the page opened the current site, every quarter, marker, avenue and named host
+# can be selected and moved (through the tools, on a scratch copy), the tools round-trip (add, undo, redo, raise, undo),
+# and a save round-trips: SITE.clean(JSON.parse(SITE.json())) is the site again, with the quarters' fields, the hosts and
+# the grid. Returns {err, from, counts, select, moved, tools, roundTrip}.
+SITE_CHECK_JS = r"""()=>{
+const out={err:_site.error||null,from:_site.from,counts:{}};
+if(out.err)return out;
+const S=SITE.data,keep=JSON.stringify(S);
+out.counts={districts:S.districts.length,quarters:S.districts.filter(d=>d.type==='quarter').length,markers:S.markers.length,avenues:S.avenues.length,hosts:S.hosts.length,gridRows:S.grid.rows.length};
+/* every item selects (with the fly) and draws its marks; a quarter carries its fields */
+const sel=[];let marks=0;
+const tryS=(k,id)=>{try{TOOL.select({kind:k,id},true);if(!TOOL.item()||TOOL.item().id!==id)sel.push(k+':'+id+' not selected');marks+=TOOL.objs.length;}catch(e){sel.push(k+':'+id+' threw '+e.message);}};
+S.districts.forEach(d=>tryS('district',d.id));S.markers.forEach(m=>tryS('marker',m.id));S.avenues.forEach(a=>tryS('avenue',a.id));S.hosts.forEach(h=>tryS('host',h.id));
+out.select={failed:sel,marks};
+const q=S.districts.find(d=>d.type==='quarter');out.quarterFields=q?{layer:q.layer,ruin:q.ruin,cultures:Object.keys(q.cultures||{}).length,holder:!!q.holder,mood:q.mood}:null;
+/* moves, the way a drag ends (the record's x/z, then changed()): a marker, a host and a quarter's corner */
+const m=S.markers[0],h=S.hosts[0],d=S.districts.find(x=>x.type==='quarter');
+TOOL.select({kind:'marker',id:m.id});m.x+=10;SITE.dirty=true;SITE.changed();
+TOOL.select({kind:'host',id:h.id});h.z-=10;SITE.changed();
+TOOL.select({kind:'district',id:d.id});d.poly[0][0]+=5;SITE.changed();
+out.moved={marker:SITE.marker(m.id).x,host:SITE.host(h.id).z,corner:SITE.district(d.id).poly[0][0],listRows:document.querySelectorAll('#items .it').length,editor:document.getElementById('editor').style.display};
+/* the tools: a quarter, two markers, a host, an avenue; undo, redo; a raise stroke moves the ground and undoes */
+const n0={d:S.districts.length,m:S.markers.length,h:S.hosts.length,a:S.avenues.length};
+const Q=SITE.addDistrict('quarter',[[-600,-900],[-400,-900],[-400,-1000],[-600,-1000]]);
+const M1=SITE.addMarker(-500,-950),M2=SITE.addMarker(-520,-960);
+const H=SITE.addHost('anBell',-300,-950);SITE.addLine('avenue',[[-600,-950],[-300,-950]]);
+SITE.doUndo();const afterUndo=SITE.data.avenues.length-n0.a;SITE.doRedo();
+const h0=TERR.h(-500,-950);TOOL.terrLive=false;SITE.edit(X=>{X.terrain.push({m:'raise',r:80,s:6,pts:[[-500,-950]]});});const h1=TERR.h(-500,-950);SITE.doUndo();
+out.tools={quarter:Q.type,newMarkers:M1.id!==M2.id?2:1,host:H.key,hostId:H.id,avenues:SITE.data.avenues.length-n0.a,afterUndo,raised:+(h1-h0).toFixed(2),undoneGround:+(TERR.h(-500,-950)-h0).toFixed(2),
+  added:{d:SITE.data.districts.length-n0.d,m:SITE.data.markers.length-n0.m,h:SITE.data.hosts.length-n0.h}};
+/* the save round-trips: what SITE.json writes, cleaned again, is the site */
+SITE.load(JSON.parse(keep));
+const J=JSON.parse(SITE.json()),back=SITE.clean(J);
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+out.roundTrip={keys:Object.keys(J),districts:same(back.districts,SITE.data.districts),markers:same(back.markers,SITE.data.markers),avenues:same(back.avenues,SITE.data.avenues),
+  hosts:same(back.hosts,SITE.data.hosts),grid:same(back.grid,SITE.data.grid),hostFields:J.hosts.length?Object.keys(J.hosts[0]):[],
+  inlineSame:same(SITE.clean(HOOK_SITE).districts.map(d=>d.poly),SITE.data.districts.map(d=>d.poly))};
+TOOL.select(null);
+return out;}"""
+
+
+async def run_site(a):
+    os.makedirs(a.out, exist_ok=True)
+    root = os.path.dirname(os.path.dirname(os.path.abspath(a.html)))   # the folder above dist/, so ../site/hook-site.json is served too
+    async with verify_page(a.html, here=HERE, size=a.size, root=root) as V:
+        pg, errs, fails = V.page, V.errs, V.fails
+        if not V.ready:
+            print("timed out waiting for the page to build")
+            fails.append("build timeout")
+        await pg.wait_for_function("window._site && window._site.ready", timeout=120000)
+        await pg.wait_for_timeout(1500)
+        st = await pg.evaluate(STATS_JS)
+        print("ERROR PANEL:", repr(st["errs"]) if st["errs"] else "clean")
+        if st["errs"]:
+            fails.append("error panel not clean")
+        if errs:
+            print("PAGE ERRORS:", errs[:5])
+            fails.append("page errors")
+        r = await pg.evaluate(SITE_CHECK_JS)
+        print("site loaded from", r["from"], "; counts", json.dumps(r["counts"]))
+        if r.get("err"):
+            print("EDITOR ERROR:", r["err"]); fails.append("editor failed")
+        else:
+            print("select:", json.dumps(r["select"]), "; quarter fields", json.dumps(r["quarterFields"]))
+            print("moved:", json.dumps(r["moved"]))
+            print("tools:", json.dumps(r["tools"]))
+            print("round trip:", json.dumps(r["roundTrip"]))
+            if a.assert_:
+                c, t, rt = r["counts"], r["tools"], r["roundTrip"]
+                if r["from"] not in ("server", "inline") or c["quarters"] < 10 or c["markers"] < 9 or c["avenues"] < 3 or c["hosts"] < 8 or not c["gridRows"]: fails.append("assert hook-site-loaded")
+                if r["select"]["failed"] or not r["select"]["marks"] or not r["quarterFields"] or not r["quarterFields"]["layer"]: fails.append("assert hook-site-select")
+                if r["moved"]["editor"] != "block" or r["moved"]["listRows"] < c["districts"] + c["markers"] + c["avenues"] + c["hosts"]: fails.append("assert hook-site-moved")
+                if t["quarter"] != "quarter" or t["newMarkers"] != 2 or t["host"] != "anBell" or t["avenues"] != 1 or t["afterUndo"] != 0 or t["raised"] < 5 or abs(t["undoneGround"]) > 0.01 or t["added"] != {"d": 1, "m": 2, "h": 1}: fails.append("assert hook-site-tools")
+                if not (rt["districts"] and rt["markers"] and rt["avenues"] and rt["hosts"] and rt["grid"] and rt["inlineSame"]) or "cut" not in rt["hostFields"]: fails.append("assert hook-site-roundtrip")
+        await pg.evaluate("()=>document.getElementById('v-map').onclick()")
+        await pg.wait_for_timeout(1200)
+        await V.shot(os.path.join(a.out, "site_map.png"))
+        await pg.evaluate("()=>document.getElementById('v-city').onclick()")
+        await pg.wait_for_timeout(1200)
+        await V.shot(os.path.join(a.out, "site_city.png"))
+        print("shot:", os.path.join(a.out, "site_map.png"), os.path.join(a.out, "site_city.png"))
+    return V.exit()
+
+
 async def run(a):
+    if 'hook-site' in os.path.basename(a.html):
+        return await run_site(a)
     os.makedirs(a.out, exist_ok=True)
     assert_js = port_asserts()
     async with verify_page(a.html, here=HERE, size=a.size) as V:
@@ -84,6 +310,7 @@ async def run(a):
             print("\n--- invariants ---")
             results = await pg.evaluate(assert_js)
             results += await pg.evaluate(HOOK_ASSERT_JS)
+            results += await pg.evaluate(MARR_MAT_JS, marr_families())
             for r in results:
                 soft = r.get("budget") and not a.strict_budget
                 tag = "  PASS  " if r["ok"] else ("  OVER  " if soft else "  FAIL  ")

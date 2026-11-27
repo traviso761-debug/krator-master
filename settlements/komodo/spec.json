@@ -1,0 +1,414 @@
+{
+ "_": "Proposed for Komodo (kits/lizardmen/settle/towns_plan.py; settlements/komodo/PLAN.md). Page frame: x east, z SOUTH, metres from the pin. GUIDE.md section 4 turns this into src/81-km-spec.js (var LZV_SPEC). Keys starting with _ are the plan's notes, not the spec's.",
+ "_pin": {
+  "px": [
+   865,
+   1617
+  ],
+  "id": "spnqhezhiw",
+  "model_m": -2451.9,
+  "build": {
+   "near": [
+    -4500,
+    13500,
+    -5000,
+    4000,
+    25
+   ],
+   "far": [
+    -30000,
+    30000,
+    -30000,
+    30000,
+    500
+   ]
+  }
+ },
+ "_census": {
+  "Tenders": 750,
+  "Makers": 660,
+  "Drovers": 750,
+  "Line warriors": 450,
+  "Interpreters": 90,
+  "Bulwarks": 300
+ },
+ "key": "komodo",
+ "name": "Komodo",
+ "seed": 8401,
+ "spiral": {
+  "axis": 15,
+  "windings": 5,
+  "depth0": 32,
+  "court": 46,
+  "street": 7,
+  "ratio": 1.25,
+  "mouthExtra": 18
+ },
+ "ley": {
+  "to": [
+   790,
+   1578
+  ],
+  "name": "the east reliquary",
+  "stone": 58
+ },
+ "court": {
+  "nest": "lz-nest"
+ },
+ "pools": {
+  "w0": [
+   [
+    "lz-warren",
+    1
+   ]
+  ],
+  "w1": [
+   [
+    "lz-warren",
+    5
+   ],
+   [
+    "lz-tower",
+    3
+   ]
+  ],
+  "w2": [
+   [
+    "lz-makers",
+    1
+   ]
+  ],
+  "w3": [
+   [
+    "lz-longhouse",
+    1
+   ]
+  ],
+  "w4": [
+   [
+    "lz-lodge",
+    1
+   ]
+  ]
+ },
+ "gaps": {
+  "w0": [
+   2.2,
+   4.2
+  ],
+  "w1": [
+   3.2,
+   6.2
+  ],
+  "w2": [
+   4.2,
+   8.2
+  ],
+  "w3": [
+   12.0,
+   20.0
+  ],
+  "w4": [
+   18.0,
+   30.0
+  ]
+ },
+ "wells": [
+  1,
+  2,
+  2,
+  2,
+  2
+ ],
+ "specials": [
+  [
+   "gl-tank",
+   0,
+   0,
+   0.52,
+   2.2
+  ],
+  [
+   "lz-seer",
+   0,
+   1,
+   0.45,
+   2.0
+  ],
+  [
+   "lz-medicine",
+   0,
+   2,
+   0.38,
+   1.8
+  ],
+  [
+   "lz-obelisk",
+   0,
+   3,
+   0.55,
+   2.0
+  ],
+  [
+   "lz-hall-bronze",
+   2,
+   0,
+   0.35,
+   2.0
+  ],
+  [
+   "lz-hall-reed",
+   2,
+   1,
+   0.62,
+   2.0
+  ],
+  [
+   "lz-hall-bone",
+   2,
+   2,
+   0.38,
+   2.0
+  ],
+  [
+   "lz-warehouse",
+   2,
+   3,
+   0.6,
+   2.0
+  ],
+  [
+   "lz-granary",
+   3,
+   0,
+   0.3,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   2,
+   0.34,
+   2.2
+  ],
+  [
+   "lz-granary",
+   3,
+   3,
+   0.66,
+   2.2
+  ],
+  [
+   "lz-barracks",
+   4,
+   1,
+   0.35,
+   2.4
+  ],
+  [
+   "lz-barracks",
+   4,
+   3,
+   0.65,
+   2.4
+  ]
+ ],
+ "mouth": {
+  "muster": true,
+  "tents": [
+   "lc-seer",
+   "lc-sail",
+   "lc-hide",
+   "lc-shield",
+   "lc-hide"
+  ]
+ },
+ "fields": {
+  "dir": [
+   1.0,
+   0.0
+  ],
+  "r0": 800,
+  "r1": 3600,
+  "w": 110,
+  "d": 70,
+  "half": 6,
+  "crops": [
+   "bamboo-rice",
+   "taro",
+   "shade-manioc"
+  ],
+  "farms": 5,
+  "windmills": 1,
+  "maxSlope": 0.16,
+  "gaps": 30,
+  "circle": true
+ },
+ "lake": {
+  "name": "The eastern terminal sea",
+  "level": -2600.5,
+  "band": 16,
+  "field": 0.08,
+  "label": "the eastern terminal sea (salt; no tide)"
+ },
+ "hamlet": {
+  "id": "komodo.placers",
+  "focus": "mine",
+  "site": [
+   11400,
+   -2200
+  ],
+  "workers": 90,
+  "popMax": 180,
+  "why": "the placer camp on Kruk Warra, the near grid run east 13.5 km along the shore to hold it"
+ },
+ "expect": {
+  "people": 3000,
+  "wells": 12,
+  "keys": [
+   "lz-nest",
+   "lz-ley",
+   "lz-muster",
+   "gl-tank",
+   "lz-weir",
+   "lz-placer"
+  ],
+  "lake": true,
+  "hamlet": true
+ },
+ "look": {
+  "hour": 9.4,
+  "dens": 2.2,
+  "fog": 6e-05
+ },
+ "layers": [
+  "ground.redsoil",
+  "ground.brown_mud_02",
+  "ground.damp_beach_sand",
+  "ground.tilled"
+ ],
+ "_spiral": {
+  "axis_deg": 15.0,
+  "why": "the mouth (+e2) due north, down to the shore and the weirs; the arms along the contour within 6 degrees (the bluff falls 11 % to the north: the long arms run level, the cross arms climb, every block on a plinth)",
+  "winding_depths_m": [
+   32.0,
+   40.0,
+   50.0,
+   62.5,
+   78.1
+  ],
+  "outer_radius_m": 449.0,
+  "mouth": [
+   422.1,
+   -323.9
+  ]
+ },
+ "_ley": {
+  "unit": [
+   -0.8872,
+   -0.4614
+  ],
+  "distM": 169068,
+  "bearing_deg": 297.5,
+  "stone": [
+   -51.5,
+   -26.8
+  ]
+ },
+ "_muster": [
+  422.1,
+  -361.9
+ ],
+ "sites": [
+  {
+   "key": "lz-weir",
+   "x": -320,
+   "z": -1560,
+   "ry": 0,
+   "kind": "works",
+   "name": "fishing weir and drying racks",
+   "wet": true
+  },
+  {
+   "key": "lz-weir",
+   "x": 60,
+   "z": -1600,
+   "ry": 0,
+   "kind": "works",
+   "name": "fishing weir and drying racks",
+   "wet": true
+  },
+  {
+   "key": "lz-weir",
+   "x": 440,
+   "z": -1560,
+   "ry": 0,
+   "kind": "works",
+   "name": "fishing weir and drying racks",
+   "wet": true
+  }
+ ],
+ "_resolve": [
+  {
+   "key": "lz-placer",
+   "kind": "tin",
+   "n": 3,
+   "r": 1500,
+   "at": [
+    11640,
+    -2400
+   ],
+   "why": "the placer washing floors on Kruk Warra (r088, 51 m3/s), 11.9 km east: the geology's placer (870.82,1615.8: gold high, tin medium); KRES.near on the river's gravel within 1.5 km of it"
+  }
+ ],
+ "views": [
+  {
+   "name": "Overview",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    -600,
+    380,
+    860
+   ]
+  },
+  {
+   "name": "The nest hall",
+   "at": [
+    0,
+    0
+   ],
+   "from": [
+    60,
+    26,
+    70
+   ]
+  },
+  {
+   "name": "The shore and the weirs",
+   "at": [
+    60,
+    -1500
+   ],
+   "from": [
+    -200,
+    60,
+    260
+   ]
+  },
+  {
+   "name": "The placers on Kruk Warra",
+   "at": [
+    11400,
+    -2300
+   ],
+   "from": [
+    -160,
+    70,
+    160
+   ]
+  }
+ ]
+}

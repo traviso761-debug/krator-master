@@ -37,17 +37,18 @@ MAT.glass=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.15,metaln
 {const m=new THREE.MeshBasicMaterial({vertexColors:true});m.toneMapped=false;MAT.glow=m;TILE.glow=1;}   // embers, lamp flames, lit glass
 MAT.water=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.08,metalness:.1,transparent:true,opacity:.86,depthWrite:false});TILE.water=1;
 /* ---------------------------------------------------------------- shared uniforms and the two geometry-side hooks
-   ANIMU: uTime (93-anim.js, seconds; pinned by ?t=), uWind, uCut (0/1: the cut-away), uCam (the camera, for the cut).
+   ANIMU: uTime (93-anim.js, seconds; pinned by ?t=), uAnimWind (the flutter's scale; never uWind, the sky's vec2 cloud wind,
+   S2-C23), uCut (0/1: the cut-away), uCam (the camera, for the cut).
    CLOTH: vertices move by aFlut x a two-sine wave (aFlut is 0 where the cloth is pinned: emit() writes it from CLOTHW).
    CUT-AWAY: every bucket in SV_CUT carries aCut = (cx, cz, baseY, on) of the tent it belongs to (place() sets it for a def
    with cut:true). With uCut on, a fragment of a cut tent above baseY+0.3 whose ground position lies on the camera's half
    of the tent is discarded: the near half of every tent opens, so its furnished interior shows from wherever you look. */
-const ANIMU={uTime:{value:0},uWind:{value:1},uCut:{value:0},uCam:{value:new THREE.Vector3()}};
+const ANIMU={uTime:{value:0},uAnimWind:{value:1},uCut:{value:0},uCam:{value:new THREE.Vector3()}};
 const GLSL_FLICK='float flick(vec3 p,float t){vec3 c=floor(p/1.5);float ph=fract(sin(dot(c,vec3(12.9898,78.233,37.719)))*43758.5453)*6.2832;return .5*sin(t*9.1+ph)+.3*sin(t*15.3+ph*2.1)+.2*sin(t*23.7+ph*3.7);}\n';
 function svAnimHooks(){
  for(const k in SV_CLOTH){const m=MAT[k];if(!m)continue;
-  matHook(m,'flut',sh=>{sh.uniforms.uTime=ANIMU.uTime;sh.uniforms.uWind=ANIMU.uWind;
-   sh.vertexShader='uniform float uTime;uniform float uWind;attribute vec3 aFlut;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n{float ph=dot(position,vec3(.9,.7,1.3));float s=.62*sin(uTime*3.1+ph*1.7)+.38*sin(uTime*5.3+ph*3.1+1.7);transformed+=aFlut*s*uWind;}');});}
+  matHook(m,'flut',sh=>{sh.uniforms.uTime=ANIMU.uTime;sh.uniforms.uAnimWind=ANIMU.uAnimWind;
+   sh.vertexShader='uniform float uTime;uniform float uAnimWind;attribute vec3 aFlut;\n'+sh.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\n{float ph=dot(position,vec3(.9,.7,1.3));float s=.62*sin(uTime*3.1+ph*1.7)+.38*sin(uTime*5.3+ph*3.1+1.7);transformed+=aFlut*s*uAnimWind;}');});}
  for(const k in SV_CUT){const m=MAT[k];if(!m)continue;
   matHook(m,'cut',sh=>{sh.uniforms.uCut=ANIMU.uCut;sh.uniforms.uCam=ANIMU.uCam;
    sh.vertexShader='attribute vec4 aCut;varying vec4 vCut;varying vec3 vCutW;\n'+sh.vertexShader.replace('#include <project_vertex>','vCut=aCut;vCutW=(modelMatrix*vec4(transformed,1.)).xyz;\n#include <project_vertex>');

@@ -45,7 +45,9 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
     if(lv>0)REGISTER({name:k.K.record.name,key:k.K.record.key,x,z,y:y-1,r:T.crownR*1.1,h:T.H+2});}}
   return out;}
  E.build=function(q){{const D=BIO.kits&&BIO.kits.craterdry&&BIO.kits.craterdry.defs;if(D&&D.bloom)Object.assign(D.bloom,{cap:1000000,capWhy:'the savannah edge: younger, oftener-burnt ground, its mosaic mostly bloom and regrowth (PLAN-STATIONS.md station 3; the instance-cap rule, 2026-11-08): 904,208 at 2026-11-09'});}const out=CRATERDRY.build({R:TERR.R-150,quality:q});
-  BIO.cur='edge/mounds';out.mounds=mounds();BIO.cur='edge/kin';out.kin=kinTrees(q);BIO.cur=null;
+  BIO.cur='edge/mounds';out.mounds=mounds();
+  if(Q.get('termites')!=='0'&&typeof SWBAY!=='undefined'&&SWBAY.buildTermites){BIO.cur='edge/termites';out.termites=E.termites=SWBAY.buildTermites(E.mounds,{biome:'crater-drylands',world:W,ground:terrainH,register:REGISTER,maxActive:16});}
+  BIO.cur='edge/kin';out.kin=kinTrees(q);BIO.cur=null;
   /* OWED TO SWBAY'S TURN (KNOWN_ISSUES.md; korona's way): the bay's `leaflet` and `bloom` cards float on the thorn and the baobab for want of a
      structure near them in swbay's own builders (221 of 351 and 121 of 206 here on software GL; ringisles found the same on these two trees), so
      this page's attach audit leaves them to that turn rather than raise its cap. Marked free here only: drawn as they are. ?owed=0 audits them */
@@ -57,15 +59,19 @@ const EDGE=(function(){const Q=new URLSearchParams(location.search),W=0xed6e,E={
   if(t)V['Umbrella thorns over the grass']=h.atTree(t,t.crownR*3.2,.8,2.4,.55);
   if(b)V['A gate baobab at the edge']=h.atTree(b,b.crownR*3.4,2.1,3,.5);
   const f=nearKin('flamecrown',SEEP.x,SEEP.z);if(f)V['Flame-crowns at the waterhole']=h.atTree(f,f.crownR*2.6,2.6,3,.5);
-  let M=null;for(const m of E.mounds)if(!M||m.top-m.y0>M.top-M.y0)M=m;
-  if(M)V['Termite mounds in the grass']=[M.x+18,h.gh(M.x+18,M.z+11,2.2),M.z+11,M.x,M.y0+(M.top-M.y0)*.5,M.z];
+  let M=null,bestM=-1e9;for(const m of E.mounds){const sc=(m.top-m.y0)-(BIO.lodD?BIO.lodD(m.x,m.z)*.005:0);if(sc>bestM){bestM=sc;M=m;}}
+  if(M)V['Termite mounds in the grass']=[M.x+14,h.gh(M.x+14,M.z+9.5,2.3),M.z+9.5,M.x,M.y0+(M.top-M.y0)*.45,M.z];
   const K0=KOP[0];V['The waterhole kopje']=h.look(K0.x+K0.r*2.2,K0.z+K0.r*1.4,10,K0.x,K0.z,K0.h*.5);
   V['The savannah edge from above']=h.look(2400,-2300,700,-400,400,0);return V;};
  // the station's checks, each with its broken input (99's negatives)
  const CH={kin:(n)=>({ok:n.thorn>=30&&n.baobab>=3,detail:'umbrella thorns '+n.thorn+', baobabs '+n.baobab+' (SW Bay\'s, as kin)'}),
   mounds:(M)=>{const bad=M.filter(m=>{const Z=CRATERDRY.zones(m.x,m.z);return Z.wash>.5||Z.kop>.5||Z.seep>.5;});
-   return{ok:M.length>=40&&!bad.length,detail:M.length+' mounds'+(bad.length?', '+bad.length+' in a wash, on a kopje or at the seep':', all on the open grass')};}};
- E.checks=(add)=>{add('SW Bay\'s umbrella trees grown as kin',CH.kin((window._biome&&window._biome.kin)||{}));add('termite mounds on the open grass',CH.mounds(E.mounds));};
+   return{ok:M.length>=40&&!bad.length,detail:M.length+' mounds'+(bad.length?', '+bad.length+' in a wash, on a kopje or at the seep':', all on the open grass')};},
+  termites:(st)=>({ok:!!st&&st.workers>=100&&st.soldiers>=40&&st.caps>=60&&st.combs>=40&&st.hazards>=10,
+   detail:st?(st.workers+' workers, '+st.soldiers+' wolf-sized soldiers, '+st.caps+' mound-caps, '+st.combs+' hive-combs, '+st.hazards+' KHAZ lair hazards'):'no termites built'})};
+ E.checks=(add)=>{add('SW Bay\'s umbrella trees grown as kin',CH.kin((window._biome&&window._biome.kin)||{}));add('termite mounds on the open grass',CH.mounds(E.mounds));
+  if(Q.get('termites')!=='0')add('giant mound-termites, hive-fungi and KHAZ hazards at the mounds',CH.termites(E.termites));};
  E.negatives=(add)=>{add('no umbrella trees',CH.kin({thorn:0,baobab:0}));
-  const w=CRATERDRY.TREES.find(T=>CRATERDRY.zones(T.x,T.z).wash>.6)||{x:SEEP.x,z:SEEP.z};add('a mound in the wash',CH.mounds(E.mounds.concat([{x:w.x,z:w.z}])));};
+  const w=CRATERDRY.TREES.find(T=>CRATERDRY.zones(T.x,T.z).wash>.6)||{x:SEEP.x,z:SEEP.z};add('a mound in the wash',CH.mounds(E.mounds.concat([{x:w.x,z:w.z}])));
+  add('mounds with no soldier caste or KHAZ hazard',CH.termites({workers:120,soldiers:0,caps:80,combs:50,hazards:0}));};
  return E;})();

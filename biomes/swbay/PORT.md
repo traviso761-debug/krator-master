@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 5 (2%) | 0 (0%) | 5 (2%) | 45 (20%) | 167 (75%) |
+| KB | 5 (2%) | 0 (0%) | 5 (2%) | 47 (19%) | 186 (77%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,23 +14,35 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/00-head.html` | 1.2 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 | `src/45-host-stage.js` | 31.1 | [web] | 29 | 3 | 3 | 1 | 0 | 5 | 8 | 0 | 0 | 0 | 0 | split: terrainH, water and fields are data for core/terrain; the DOM goes to core/host |
-| `src/50-biome-swbay-species.js` | 41.2 | [draw] | 0 | 5 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/50-biome-swbay-species.js` | 41.3 | [draw] | 0 | 5 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/52-biome-swbay-library.js` | 1.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/55-biome-swbay-trees.js` | 56.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 19 | 0 | 0 | 0 | 0 | 0 | placement pass: `SWBAY.buildTrees` (line 410); `mk` (line 414) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 449) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop |
+| `src/55-biome-swbay-trees.js` | 57.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 20 | 0 | 0 | 0 | 0 | 0 | placement pass: `SWBAY.buildTrees` (line 410); `mk` (line 414) makes a record and the `BIO.grid` calls push it to `TREES`, with the LOD level `T.lv` set there (see TODO.md, level-free records). Draw pass: the `TREES.forEach` loop (line 449) in the same function, which calls the per-species builder `B[sp]` (hero and stand-in) or `buildFar` for the far impostor. The two passes share one function but not one loop |
 | `src/60-biome-swbay-floor.js` | 15.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then BIO.put) |
 | `src/65-biome-swbay-dress.js` | 8.6 | [draw] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: places and draws in one pass (BIO.upFaces, downFaces, sideFaces and ledgePoints over the host's shells, then BIO.put); not a BIO.grid pass |
 | `src/70-biome-swbay.js` | 0.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/75-biome-swbay-fauna.js` | 18.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 10 | 0 | 7 | 0 | 0 | 0 | split: places and draws in one pass (BIO.grid then the body build) |
+| `src/76-biome-swbay-termites.js` | 13.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 12 | 0 | 3 | 0 | 0 | 0 |  |
 | `src/85-host-tower.js` | 5.5 | [draw] | 8 | 2 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 | a preview prop builder (one Girder tower); no port |
 | `src/86-host-jetty.js` | 5.1 | [draw] | 4 | 1 | 0 | 0 | 0 | 10 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/86t-host-termites.js` | 3.4 | [draw] | 7 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/87-host-kin.js` | 8.3 | [draw] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the neighbours' cousins (BIO.kin): the cuts (SWBAY.veto) and the places by KRAND hash are data; the source kits' builders draw them |
-| `src/88-host-build.js` | 3.3 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
+| `src/88-host-build.js` | 3.6 | [web] | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/89a-host-atmos.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.bindHost on the host clock's hour; the wind field, alpha-to-coverage, wet ground and the puddles' hollows (2026-10-27) |
 | `src/89s-host-sky.js` | 4.6 | [G native] | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | the shared sky (core/atmos, SKY-PLAN.md S1): ATMOS.sky at Voth's site, its lights and fog by the hour, the cloud shade on the lit materials; Godot: krator/sky.gd and atmos_cloudshade |
 | `src/89w-host-water.js` | 7.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/water records and draws; the skylight from the shared sky's scene |
-| `src/99-host-take.js` | 9.7 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
+| `src/99-host-take.js` | 11.2 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | the page handed to core/host (KHOST.take): the preset views, the inspector's words, the budgets and the kit's own checks; replaced 90-host-camera.js and 91-host-probe.js |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes
 
 **Hand pass (2026-10-03): the kit's own copies.** PRNG and noise: none of its own. `reseed`/`rng` (mulberry32), `h3` (a sin hash), `vnoise` and `fbm` are the one copy in `core/biome/10-core-head.js` (`BIO.fn`); its `rng` already equals `KRAND.stream` (`core/PORT.md`), and the sin-based `h3`, `vnoise` and `fbm` move to `core/rand` in the biome reseeding event. Terrain: its own `terrainH` (line 77) in `src/45-host-stage.js` and the climate-field bake `FC`, which is the data `core/terrain` replaces. Palette: its own `SWBAY.PAL`, built in `src/50-biome-swbay-species.js` (line 34).
+
+**Showcase station 3, the skarn-marble cliffs (2026-11-16, `stations/skarn/`; not in the table above, which lists `src/`):** the page
+takes `src/` (the kit's 50-75 and the shell) with the station's own host in place of 45 and 85-99 (`85-host-tower.js`, `86-host-jetty.js`
+and `87-host-kin.js` dropped, no neighbours' cousins). `45-host-stage.js` is `[web]` split as the bay's 45: the old shoreline (a polyline and its
+signed distance, its level U from the model), the profiles (`platformH`, `marbleH`, `shelfH`), the raised stack, `terrainH`, the masonry's sections and the fields are data for core/terrain, the
+renderer and the lights host; `45b-host-ground.js` `[draw]`: the height lattices and the plant mask (data), the KSTRATA stack (data, its
+shader core's), the ground's material (a hook: the beds, the grain, the magnetite's gloss) and meshes, the far country (KFAR) and the
+Throne's plume; `85-host-quarry.js` `[draw]`: the visor's lip, the cut blocks (their places by KRAND hash are data), the ledge trees (`SWBAY.treeAt`)
+and the masonry's builder (no masonry since the re-siting, 2026-11-17); `88`, `89a`, `89s`, `89w`, `99` as the bay's own. Read in place: `core/terrain/35`
+(KSTRATA) and its shade, `core/shader/06b` (KCOLOR), `biomes/godthrone/src/45a5-host-region.js` (REGION).

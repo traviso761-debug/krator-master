@@ -230,8 +230,340 @@
       black:{p:.24,th:[4,25],col:[0x3a3634,0x2e2b2a,0x45403d],hard:.95,xbed:.2,varnish:1},
       rust:{p:.24,th:[3,20],col:[0x8a4a2a,0x9a5530,0x7e4224],hard:.9,xbed:.3,varnish:1},
       parting:{p:.16,th:[.2,1],col:[0x6a5a50,0x5e5048],hard:.3,xbed:0,varnish:.3,between:true}},
-      fx:{varnish:1,varnishCol:[.16,.2,.15],xbed:.3}}
+      fx:{varnish:1,varnishCol:[.16,.2,.15],xbed:.3}},
+
+    // STRATA-PLAN section 11's six scale-model 5.1 geological recipes (strictly additive).
+    // 1. `carbonate-shelf`: bedded warm-water bioclastic/oolitic platform limestone and pale marl (2-5 m tabular beds,
+    // solution-notched tidal visors, high warm cream/buff albedo) for ringisles, swbay, hyperjungle shelf benches, and
+    // crater-drylands lower benches (plus swlowlands box-canyon bluffs, spiderlake basement, and riavalley dolomite palisades)
+    'carbonate-shelf':{main:'bioclastic',kinds:{
+      bioclastic:{p:.38,th:[2,5],col:[0xe8dfc8,0xdfd3b6,0xede5d0],hard:.82,xbed:.25,varnish:.2},
+      oolite:{p:.26,th:[2,4.5],col:[0xf0e8d5,0xe6dcc4,0xd9ccb0],hard:.85,xbed:.4,varnish:.18},
+      marl:{p:.18,th:[.4,1.4],col:[0xd6ceb8,0xccc3ab,0xded7c4],hard:.3,xbed:0,varnish:.08,between:true},
+      visor:{p:.12,th:[.6,1.8],col:[0xc9bda4,0xbfb298,0xd2c7ae],hard:.42,xbed:.1,varnish:.35},
+      terrarossa:{p:.06,th:[.15,.5],col:[0xb55a3c,0xa64e34,0xc26646],hard:.2,xbed:0,varnish:.1,between:true}},
+      fx:{xbed:.3,varnish:.2,joints:1,regolith:.5}},
+
+    // 2. `contact-marble`: recrystallized massive white-to-blue-veined calcite/dolomite marble with dark epidote-garnet-magnetite
+    // skarn selvages (4-8 m massive blocks, crisp quarry/scarp fracture, specular glint) for inner-wall contact-metamorphic
+    // belts (swbay Almua, cut Dilihan, ringisles Tethis/Ys, greenstep/riftrim Tallwalls, korona trenches, seouterwall, copperglacier)
+    'contact-marble':{main:'calcite',noRepeat:true,kinds:{
+      calcite:{p:.42,th:[4,8],col:[0xedeae2,0xf3f0e8,0xe5e1d8],hard:.86,xbed:0,varnish:.15,jit:.04},
+      bluevein:{p:.24,th:[4,7.5],col:[0xdce2e8,0xcfd7df,0xe4e8ee],hard:.88,xbed:.15,varnish:.15,jit:.04},
+      rosemarble:{p:.1,th:[3.5,6.5],col:[0xe8d6d0,0xdfc8c0,0xeee0da],hard:.85,xbed:.1,varnish:.15,jit:.05},
+      epidote:{p:.1,th:[.4,1.8],col:[0x5d6e32,0x6b7d3a,0x4e5e2a],hard:.9,xbed:0,varnish:.25,between:true},
+      garnet:{p:.08,th:[.4,1.6],col:[0x7d3a28,0x8e4430,0x6b3020],hard:.92,xbed:0,varnish:.25,between:true},
+      magnetite:{p:.06,th:[.25,1.2],col:[0x222428,0x2b2d33,0x1b1c20],hard:.95,xbed:0,varnish:.1,irid:1,between:true}},
+      fx:{sheen:1,joints:1,varnish:.15}},
+
+    // 3. `evaporite-strand`: thin-bedded white lacustrine aragonite/tufa benches, gypsum crystal crusts, and bright halite/borate
+    // salt-pan laminations (0.4-1.5 m crisp horizontal wave-cut strandline steps) for nsemiarid, dambasins, bowl, catch, and eabyss
+    'evaporite-strand':{main:'aragonite',noRepeat:true,kinds:{
+      aragonite:{p:.32,th:[.5,1.5],col:[0xebe7dc,0xf2efe6,0xe2ddd0],hard:.74,xbed:0,varnish:.1,jit:.03},
+      tufa:{p:.2,th:[.4,1.4],col:[0xded6c2,0xd4cab4,0xe6dfd0],hard:.7,xbed:.15,varnish:.15,jit:.04},
+      gypsum:{p:.22,th:[.4,1.2],col:[0xe2e7e8,0xd8dfe0,0xecf0f0],hard:.48,xbed:0,varnish:0,jit:.03},
+      halite:{p:.16,th:[.4,1.1],col:[0xf4f5f7,0xebedf0,0xfafbfc],hard:.25,xbed:0,varnish:0,jit:.02},
+      potash:{p:.06,th:[.15,.5],col:[0xdc9a8c,0xe4a89a,0xcf8c7e],hard:.18,xbed:0,varnish:0,between:true,jit:.04},
+      clay:{p:.04,th:[.2,.6],col:[0xb8b4a6,0xaca89a],hard:.15,xbed:0,varnish:0,between:true}},
+      fx:{sheen:1,regolith:.75,wash:1.2}},
+
+    // 4. `secondary-ejecta`: coarse polymictic impact-melt and megablock boulder breccia (3-9 m chaotic angular clast beds
+    // capped by hummocky radial ejecta) for spiderlake, seouterwall (Tharn secondary crater), copperglacier (Copper Tarn collar),
+    // and arch (Crookshore twin ejecta bays)
+    'secondary-ejecta':{main:'breccia',kinds:{
+      breccia:{p:.34,th:[3,9],col:[0x78736c,0x6b6760,0x857f76,0x706c66],hard:.86,xbed:.35,varnish:.35,jit:.12},
+      melt:{p:.2,th:[3,7.5],col:[0x2f2d30,0x3a3638,0x262528],hard:.93,xbed:.15,varnish:.2,jit:.08},
+      megaclast:{p:.18,th:[3.5,9],col:[0xc8c2b4,0xb8b0a0,0xd4cec0],hard:.88,xbed:.2,varnish:.3,jit:.12},
+      radial:{p:.18,th:[3,8],col:[0x94897a,0xa09484,0x877d6f],hard:.62,xbed:.5,varnish:.25,jit:.1},
+      fallback:{p:.1,th:[.5,2],col:[0x5e5952,0x68625a],hard:.3,xbed:0,varnish:.1,between:true,jit:.1}},
+      fx:{xbed:.4,varnish:.3,joints:1,sheen:.5,regolith:.55}},
+
+    // 5. `arch-rift-basalt`: dark columnar and entablature flood/rift-shoulder tholeiitic basalt with red baked-bolus interbeds
+    // (3-7 m colonnade tiers, plus slickensided serpentinite fault lenses) for arch (Crookshore and Double Delta onshore horsts)
+    // and outer structural lineaments (gills White Gills detachment windows)
+    'arch-rift-basalt':{main:'colonnade',kinds:{
+      colonnade:{p:.46,th:[3,7],col:[0x20232a,0x272a32,0x1b1e24],hard:.95,xbed:0,varnish:.15,jit:.04},
+      entablature:{p:.24,th:[3,6.5],col:[0x2c3038,0x343840,0x252830],hard:.93,xbed:.15,varnish:.2,jit:.05},
+      amygdaloid:{p:.1,th:[1.5,3.5],col:[0x434846,0x4d5350,0x3a3f3d],hard:.55,xbed:0,varnish:.15},
+      bole:{p:.14,th:[.3,1.2],col:[0x9e3c26,0xae462e,0x8c3320],hard:.22,xbed:0,varnish:.1,between:true},
+      serpentinite:{p:.06,th:[1,3],col:[0x2d4234,0x38503f,0x24362a],hard:.6,xbed:.2,varnish:.1,between:true}},
+      fx:{columns:1,sheen:1,varnish:.15}},
+
+    // 6. `obsidian-pancake`: flow-banded glassy rhyolite/dacite dome carapace with pumiceous breccia talus (2-6 m foliated
+    // vitreous ledges) for firebliss silicic pancake domes and godshearth / throne / korona evolved domes
+    'obsidian-pancake':{main:'obsidian',kinds:{
+      obsidian:{p:.36,th:[2,6],col:[0x15161a,0x1d1f26,0x111216],hard:.9,xbed:.35,varnish:.1,irid:1,jit:.04},
+      rhyodacite:{p:.28,th:[2.5,6],col:[0x6e6764,0x7d7470,0x5f5957],hard:.88,xbed:.4,varnish:.2,jit:.05},
+      perlite:{p:.18,th:[2,4.5],col:[0xaeb3b8,0xbcc1c6,0x9ea3a8],hard:.58,xbed:.25,varnish:.1},
+      pumice:{p:.14,th:[.8,2.5],col:[0xd6cfc2,0xe0d9cc,0xc8c0b2],hard:.28,xbed:0,varnish:0,between:true},
+      fumarolic:{p:.04,th:[.3,1.2],col:[0xc89648,0xb87638,0xd4ae5c],hard:.35,xbed:0,varnish:.2,between:true}},
+      fx:{sheen:1,xbed:.35,joints:1,regolith:.45}}
   };
+
+  // ---- the biome kits' recipes, held here (Stage 8, the owner's D13: a kit names its recipe, it no longer adds one at load with
+  // KSTRATA.add). Each keeps the name its kit and verify files use; the derived ones follow their bases, below.
+  [
+    // arch (biomes/arch/PLAN.md section 6): the band's rock, serpentinite (green-black, white veins, a buff peridotite rind, dunite)
+    // under the laterite (red, mottled, a green garnierite seam at its base, an iron crust)
+    {name:'arch-serpentinite',main:'serp',kinds:{
+      serp:{p:.55,th:[2,12],col:[0x1e2a22,0x2c3a2e,0x3e5040,0x2a3428],hard:.7,xbed:0,varnish:0},
+      rind:{p:.15,th:[.5,3],col:[0xa07040,0xb8864e,0x8a6438],hard:.5,xbed:0,varnish:0},
+      dunite:{p:.18,th:[1,5],col:[0x4a5a32,0x3a4628,0x56663a],hard:.75,xbed:0,varnish:0},
+      vein:{p:.12,th:[.05,.35],col:[0xe8e6dc,0xdcd8cc],hard:.6,xbed:0,varnish:0,between:true}},
+      fx:{}},
+    {name:'arch-laterite',main:'red',kinds:{
+      red:{p:.58,th:[1,4],col:[0x9a3a1e,0xa84426,0x8a321a],hard:.3,xbed:0,varnish:0},
+      mottled:{p:.2,th:[.5,2],col:[0xb86a3a,0xc87a48,0xa45e32],hard:.25,xbed:0,varnish:0},
+      garnierite:{p:.08,th:[.2,.8],col:[0x6a9a6a,0x5a8a5a],hard:.3,xbed:0,varnish:0,between:true},
+      crust:{p:.14,th:[.3,1.2],col:[0x5a2414,0x6a2c18],hard:.8,xbed:0,varnish:0}},
+      fx:{}},
+    // batteredisle (biomes/batteredisle/PLAN.md section 8.1): the worn cone's columns: oxidised scoria over palagonite tuff with welded
+    // spatter, the olivine basalt plug, the upturned coal collar
+    {name:'battered-scoria-palagonite',main:'scoria',kinds:{
+      basalt:{p:.2,th:[3,9],col:[0x25262b,0x2c2e34],hard:.94,xbed:0,varnish:.08},
+      palagonite:{p:.36,th:[4.5,14],col:[0xb9985a,0xc4a466,0xa8884e],hard:.52,xbed:.1,varnish:.05},
+      spatter:{p:.12,th:[1.2,3.8],col:[0x3b2826,0x48302c],hard:.88,xbed:0,varnish:.12,between:true},
+      scoria:{p:.32,th:[3.5,12],col:[0x7a2e22,0x62261e,0x382826],hard:.28,xbed:.15,varnish:0}},
+      fx:{}},
+    {name:'battered-plug-basalt',main:'columnar',kinds:{
+      olivine:{p:.38,th:[5,16],col:[0x2a332b,0x323d34],hard:.96,xbed:0,varnish:.06},
+      columnar:{p:.52,th:[6,20],col:[0x2e3036,0x383a42],hard:.98,xbed:0,varnish:.08},
+      garnierite:{p:.1,th:[.6,2.4],col:[0x4f8a6b,0x5ca07c],hard:.65,xbed:0,varnish:.15,between:true}},
+      fx:{}},
+    {name:'battered-coal-collar',main:'sandstone',kinds:{
+      sandstone:{p:.36,th:[2.5,8],col:[0xa89674,0xb4a280],hard:.74,xbed:.12,varnish:.04},
+      coal:{p:.18,th:[.6,1.9],col:[0x141518,0x1e2024],hard:.44,xbed:0,varnish:.24,between:true},
+      shale:{p:.22,th:[1.8,5.5],col:[0x4e5258,0x585c62],hard:.48,xbed:0,varnish:0},
+      palagonite:{p:.24,th:[3,9],col:[0xb59458,0xc09e62],hard:.54,xbed:.08,varnish:.04}},
+      fx:{}},
+    // compasshills: banded ironstone, jet-black specular magnetite and crimson jasper-chert bands over warm ferruginous cuesta sandstone
+    {name:'banded-ironstone',main:'magnetite',noRepeat:true,kinds:{
+      magnetite:{p:.38,th:[1.2,4.2],col:[0x1c1e26,0x242730,0x171920],hard:.96,xbed:.15,varnish:.25,irid:1,jit:.04},
+      cuestasand:{p:.34,th:[2.2,6.8],col:[0xc4945a,0xb8864e,0xd0a268],hard:.76,xbed:.72,varnish:.35,jit:.06},
+      jasper:{p:.14,th:[.25,.95],col:[0x8e3428,0x9e3e30,0x7c2c22],hard:.92,xbed:.1,varnish:.2,between:true,jit:.04},
+      quenchslag:{p:.14,th:[.8,2.6],col:[0x583a44,0x68444e,0x4c323c],hard:.84,xbed:.2,varnish:.3,jit:.06}},
+      fx:{sheen:1,xbed:.55,joints:1,varnish:.25,regolith:.45}},
+    // doubledelta (biomes/doubledelta/PLAN.md sections 4 and 7): the delta's amber bed (blue clay, lignite, peat, thin amber seams), the
+    // ria's carbonate bluff (limestone, chert, marl, the oyster notch) and its loess cap
+    {name:'delta-amber-bed',main:'blueclay',kinds:{
+      blueclay:{p:.52,th:[.8,3.2],col:[0x3b5264,0x466074,0x344858,0x4f6a7e],hard:.28,xbed:0,varnish:0},
+      lignite:{p:.26,th:[.3,1.4],col:[0x1c1a18,0x262320,0x161412],hard:.55,xbed:0,varnish:0},
+      peat:{p:.16,th:[.4,1.6],col:[0x3c2e22,0x4a3828],hard:.22,xbed:0,varnish:0},
+      amberseam:{p:.06,th:[.08,.28],col:[0xc88424,0xb46e1c],hard:.35,xbed:0,varnish:0,between:true}},
+      fx:{}},
+    {name:'ria-carbonate-bluff',main:'limestone',kinds:{
+      limestone:{p:.58,th:[1.8,7.5],col:[0xd6d0c0,0xc8c0ae,0xe0dacb,0xbcb4a2],hard:.82,xbed:0,varnish:0},
+      chert:{p:.12,th:[.15,.6],col:[0x6e6a62,0x5c5850],hard:.92,xbed:0,varnish:0,between:true},
+      marl:{p:.18,th:[.6,2.4],col:[0xa8a494,0x989484],hard:.48,xbed:0,varnish:0},
+      oysternotch:{p:.12,th:[.3,1.1],col:[0xe4e6df,0xd4d8d0],hard:.75,xbed:0,varnish:0}},
+      fx:{}},
+    {name:'ria-loess-cap',main:'loess',kinds:{
+      loess:{p:.74,th:[2.5,9],col:[0xc6a874,0xb89a66,0xd2b480],hard:.36,xbed:0,varnish:0},
+      paleosol:{p:.26,th:[.4,1.5],col:[0x8e6c48,0x7e5e3e],hard:.42,xbed:0,varnish:0}},
+      fx:{}},
+    // drownlands (biomes/drownlands/PLAN.md sections 3 and 6): serpentinite, the ophiolite's pillow basalt and sheeted dykes, the laterite
+    // and its cuirasse, the coal measures
+    {name:'drown-serpentinite',main:'antigorite',kinds:{
+      antigorite:{p:.56,th:[1.2,4.2],col:[0x263e36,0x2e4a40,0x1f332c,0x355448],hard:.78,xbed:0,varnish:0},
+      peridotite:{p:.24,th:[.8,2.8],col:[0x1e2d28,0x283832],hard:.88,xbed:0,varnish:0},
+      magnesite:{p:.12,th:[.1,.42],col:[0xdce6e2,0xcad8d4],hard:.62,xbed:0,varnish:0,between:true},
+      garnierite:{p:.08,th:[.18,.65],col:[0x3aa68c,0x2e927a],hard:.54,xbed:0,varnish:0}},
+      fx:{}},
+    {name:'drown-ophiolite',main:'pillowbasalt',kinds:{
+      pillowbasalt:{p:.58,th:[1.6,5.5],col:[0x343a42,0x2c323a,0x3e454e],hard:.86,xbed:0,varnish:0},
+      sheetdyke:{p:.28,th:[.9,3.2],col:[0x282e34,0x323840],hard:.9,xbed:0,varnish:0},
+      nephritelens:{p:.14,th:[.2,.85],col:[0x36886a,0x2c765a],hard:.92,xbed:0,varnish:0,between:true}},
+      fx:{}},
+    {name:'drown-laterite-cuirasse',main:'laterite',kinds:{
+      laterite:{p:.58,th:[1.4,4.8],col:[0x8e3e2a,0x9e4832,0x7c3422],hard:.52,xbed:0,varnish:0},
+      cuirasse:{p:.26,th:[.8,2.6],col:[0x6c2c1e,0x5c2418],hard:.84,xbed:0,varnish:0},
+      saprolite:{p:.16,th:[.6,2],col:[0x487c62,0x3c6c54],hard:.38,xbed:0,varnish:0}},
+      fx:{}},
+    {name:'drown-coal-measure',main:'sandstone',kinds:{
+      sandstone:{p:.46,th:[1.2,4],col:[0x98886c,0x8a7a60,0xa69678],hard:.68,xbed:0,varnish:0},
+      shale:{p:.3,th:[.6,2.2],col:[0x4e5458,0x42484c],hard:.42,xbed:0,varnish:0},
+      bituminous:{p:.18,th:[.5,1.6],col:[0x18181c,0x222226,0x121216],hard:.58,xbed:0,varnish:0},
+      seatclay:{p:.06,th:[.2,.7],col:[0x6a6860,0x5c5a52],hard:.32,xbed:0,varnish:0,between:true}},
+      fx:{}},
+    // godstep's redlands (biomes/godstep/PLAN.md section 2, "Laterite"): the relict laterite profile, the hardpan (ferricrete with dark
+    // pisolite bands; hard, so the ledge pass stands it as a cliff) over the pale kaolin (the pallid zone: soft, gullied)
+    {name:'godstep-hardpan',main:'hardpan',kinds:{
+      hardpan:{p:.72,th:[.6,2.4],col:[0x8e3a22,0xa0482a,0x7e321e,0x94401f],hard:.92,xbed:0,varnish:.15},
+      pisolite:{p:.28,th:[.2,.8],col:[0x5a2616,0x6a2e1a,0x4e2214],hard:.8,xbed:0,varnish:.1,between:true}},
+      fx:{}},
+    {name:'godstep-kaolin',main:'kaolin',kinds:{
+      kaolin:{p:.6,th:[.8,4],col:[0xe6ddcc,0xdcd0bc,0xeee6d8],hard:.12,xbed:0,varnish:0},
+      mottled:{p:.4,th:[.4,2.5],col:[0xd6a07e,0xc88a68,0xe0b898],hard:.18,xbed:0,varnish:0}},
+      fx:{}},
+    // godthrone's orange belt (biomes/godthrone/PLAN.md section 4, "Palagonite ridges"): hyaloclastite under the dry-cold line turned
+    // palagonite, ochre to rust-orange and soft, the odd black pillow lens and a hard basalt sill; thin soft beds: ridges, not ledges
+    {name:'palagonite-tuff',main:'palag',kinds:{
+      palag:{p:.55,th:[.5,6],col:[0xb8862f,0xc69a45,0xa8742a,0xb07a34],hard:.25,xbed:0,varnish:0},
+      rust:{p:.16,th:[.3,3],col:[0x9a5a26,0x8e4e22,0xa5622c],hard:.3,xbed:0,varnish:0},
+      shard:{p:.14,th:[.2,2],col:[0xcfa45a,0xd8b068],hard:.2,xbed:0,varnish:0,between:true},
+      pillow:{p:.1,th:[1,5],col:[0x2a2622,0x332d28],hard:.8,xbed:0,varnish:0},
+      sill:{p:.05,th:[2,8],col:[0x1e1d1f,0x25232a],hard:.95,xbed:0,varnish:0}},
+      fx:{}},
+    // greatchasm (biomes/greatchasm/PLAN.md section 2; loom-chasms reads them too): flood basalt flow on flow (colonnade, entablature,
+    // a vesicular flow top, a red bole between eruptions), the chaos's ochre caps (tuff, palagonite), the floor's komatiite and glass
+    {name:'chasm-trap',main:'entab',kinds:{
+      colon:{p:.3,th:[8,30],col:[0x6e6a62,0x7a746a,0x645f58,0x847c70],hard:.95,xbed:0,varnish:.6},
+      entab:{p:.36,th:[6,40],col:[0x2c2a29,0x353230,0x242322,0x3a3633],hard:.9,xbed:0,varnish:.4},
+      ftop:{p:.2,th:[1,5],col:[0x5a3a2c,0x6a4232,0x4e3428],hard:.45,xbed:0,varnish:.3},
+      bole:{p:.14,th:[.4,3],col:[0x8a3a24,0x9a4428,0x7a3220],hard:.2,xbed:0,varnish:.1,between:true}},
+      fx:{varnish:.5}},
+    {name:'chasm-cap',main:'tuff',kinds:{
+      tuff:{p:.5,th:[2,12],col:[0xb08a4a,0xc09a56,0xa47e40,0xbe9450],hard:.35,xbed:.2,varnish:.5},
+      palag:{p:.3,th:[1,6],col:[0x9a7a3a,0x8e6e34,0xa88440],hard:.3,xbed:0,varnish:.4},
+      ash:{p:.2,th:[.3,2],col:[0xd8c49a,0xe2d0a8,0xccb88e],hard:.15,xbed:0,varnish:0,between:true}},
+      fx:{varnish:.5}},
+    {name:'chasm-floor',main:'kom',kinds:{
+      kom:{p:.55,th:[1,8],col:[0x2a2c26,0x323428,0x26281f,0x3a3a30],hard:.85,xbed:0,varnish:.7},
+      glass:{p:.2,th:[.2,1.2],col:[0x141416,0x1c1a1e,0x101012],hard:.9,xbed:0,varnish:0},
+      salt:{p:.25,th:[.1,.8],col:[0xd8d0c0,0xe2dccc,0xccc2b0],hard:.1,xbed:0,varnish:0,between:true}},
+      fx:{varnish:.4}},
+    // nhighlands' Tiguantin: the baked red paleosol at the terrace contact (tig-ignimbrite, the welded tuff over it, is below)
+    {name:'tig-paleosol',main:'bole',kinds:{
+      bole:{p:.62,th:[.3,.8],col:[0xa4422a,0xb04c30,0x983c26],hard:.25,xbed:0,varnish:.1},
+      baked:{p:.26,th:[.15,.45],col:[0x7a2a1c,0x862f1e,0x6e2618],hard:.4,xbed:0,varnish:.15},
+      root:{p:.12,th:[.05,.2],col:[0xc8a68a,0xd2b294],hard:.2,xbed:0,varnish:0,between:true}},
+      fx:{varnish:.2}},
+    // nwbay (BACKPORT.md nwbay's row): a massive grey limestone in thick beds, darker and paler by bed, thin marl partings and
+    // iron-stained bands (Krabi's Ratburi limestone); k-guilin's tower limestone is the same province (kguilin-karst, below)
+    {name:'nwbay-karst',main:'lime',kinds:{
+      lime:{p:.5,th:[4,16],col:[0xc4bfb5,0xbab5aa,0xcdc8bd],hard:.95,xbed:0,varnish:.2},
+      dark:{p:.24,th:[2,8],col:[0x9a978f,0x8e8b84,0xa39f96],hard:.9,xbed:0,varnish:.2},
+      marl:{p:.14,th:[.3,1.4],col:[0xa69a84,0x9c907a],hard:.3,xbed:0,varnish:0,between:true},
+      iron:{p:.12,th:[.3,1.2],col:[0xb8946c,0xae8a62],hard:.6,xbed:0,varnish:0,between:true}},
+      fx:{xbed:0,varnish:.2}},
+    // nwlowlands: the gorge's marl, soft blue-grey clay with thin harder bands, near level
+    {name:'nwl-marl',main:'marl',kinds:{
+      marl:{p:.56,th:[1.2,3.8],col:[0x8ba2ac,0x7f97a2,0x97acb2],hard:.25,xbed:0,varnish:0},
+      clay:{p:.26,th:[.5,1.6],col:[0x62798a,0x6d8490],hard:.1,xbed:0,varnish:0},
+      band:{p:.18,th:[.25,.7],col:[0xb8bdb2,0xaab2aa],hard:.8,xbed:0,varnish:0,between:true}},
+      fx:{xbed:0,varnish:0}},
+    // opalvalley (biomes/opalvalley/PLAN.md section 2): rhyolitic ignimbrite and tuff with perlite, dark titanium-basalt sills,
+    // ironstone partings, pale potch and thin precious-opal seams; the lower bed's fire-opal tuffs (cherry-orange)
+    {name:'opal-rhyolite',main:'ignimbrite',kinds:{
+      ignimbrite:{p:.36,th:[4,18],col:[0xb6a490,0xc2b19c,0xa8977f,0xbcae9c],hard:.7,xbed:.15,varnish:.35},
+      tuff:{p:.2,th:[1,6],col:[0xd6cbb6,0xe0d6c0,0xcbbfa6],hard:.35,xbed:.3,varnish:.2},
+      perlite:{p:.08,th:[.5,3],col:[0x8c8e94,0x9a9da4,0x7e8088],hard:.6,xbed:0,varnish:.4},
+      basalt:{p:.14,th:[2,10],col:[0x3a3a42,0x30303a,0x46464e],hard:.92,xbed:0,varnish:.6},
+      ironstone:{p:.07,th:[.3,1.5],col:[0x7a4a2a,0x8a5634,0x6a3e22],hard:.85,xbed:0,varnish:.5,between:true},
+      potch:{p:.1,th:[.15,.8],col:[0xc6cdd4,0xb6c2cc,0xd0d6de],hard:.6,xbed:0,varnish:.1,between:true},
+      opal:{p:.05,th:[.08,.35],col:[0x58b8c4,0x7a68c8,0xc8784a,0x6ac888],hard:.7,xbed:0,varnish:0,between:true}},
+      fx:{xbed:.2,varnish:.3}},
+    {name:'opal-firetuff',main:'firetuff',kinds:{
+      firetuff:{p:.4,th:[3,14],col:[0xc0683a,0xcc7444,0xb45c34,0xd8884e],hard:.55,xbed:.25,varnish:.25},
+      ash:{p:.18,th:[1,5],col:[0xe0c49a,0xd8b88c,0xe8cfa8],hard:.3,xbed:.3,varnish:.15},
+      ignimbrite:{p:.16,th:[3,12],col:[0xb08a6e,0xa07c62,0xbc967a],hard:.72,xbed:.15,varnish:.35},
+      basalt:{p:.08,th:[2,8],col:[0x3c3638,0x34303a],hard:.92,xbed:0,varnish:.6},
+      potch:{p:.1,th:[.15,.8],col:[0xe8d8c8,0xf0dcc0],hard:.6,xbed:0,varnish:.1,between:true},
+      fireopal:{p:.08,th:[.08,.4],col:[0xe8602a,0xf0882a,0xd8402a,0xf4a83a],hard:.7,xbed:0,varnish:0,between:true}},
+      fx:{xbed:.25,varnish:.25}},
+    // shroudhills (biomes/shroudhills/PLAN.md section 1): sedimentary ironstone and coal; the crystalline granite tors
+    {name:'shroudhills-ironcoal',main:'ironstone',kinds:{
+      ironstone:{p:.56,th:[1.2,5.5],col:[0x6e442c,0x7c4e32,0x5c3824],hard:.65,xbed:0,varnish:.1},
+      siltstone:{p:.24,th:[.8,3.2],col:[0x4c4a44,0x58544c,0x3e3c38],hard:.5,xbed:0,varnish:0},
+      coal:{p:.2,th:[.35,1.4],col:[0x1c1d20,0x24262a,0x16171a],hard:.42,xbed:0,varnish:.2,between:true}},
+      fx:{}},
+    {name:'shroudhills-granite',main:'granite',kinds:{
+      granite:{p:.68,th:[3.5,14],col:[0xc6c4bc,0xd2d0c8,0xb4b2aa],hard:.92,xbed:0,varnish:.05},
+      gneiss:{p:.22,th:[1.5,6],col:[0x989a96,0xa8aaa4,0x888a86],hard:.85,xbed:0,varnish:0},
+      quartz:{p:.1,th:[.12,.55],col:[0xe8e8e2,0xf0efe8],hard:.95,xbed:0,varnish:0,between:true}},
+      fx:{}},
+    // slabfields (biomes/slabfields/PLAN.md sections 6 and 14): the Siphon Pits' flood basalt, thick flows (columns under a hackly
+    // entablature), oxidised flow tops, red boles and here and there a pale maar tuff
+    {name:'slab-floodbasalt',main:'flow',kinds:{
+      flow:{p:.58,th:[8,32],col:[0x3e3a36,0x47423c,0x36322e,0x4a443d],hard:.95,xbed:0,varnish:.25},
+      top:{p:.2,th:[1,4],col:[0x5a3e34,0x66463a,0x4e382f],hard:.5,xbed:0,varnish:.3},
+      bole:{p:.13,th:[.3,1.6],col:[0x8a3a26,0x9a4630,0x7a3222],hard:.2,xbed:0,varnish:.1,between:true},
+      tuff:{p:.09,th:[.5,3],col:[0xa89a80,0xb4a88c,0x9c8e74],hard:.3,xbed:0,varnish:.05,between:true}},
+      fx:{columns:1,varnish:.3}},
+    // tiers (biomes/tiers/PLAN.md section 2): the floor's shales and mudstones, the Black Step's basalt flows, the Red Step's red beds,
+    // the White Step's pale cross-bedded sandstone, the Grey Steps' tuffs and limestones
+    {name:'tiers-floor',main:'shale',kinds:{
+      shale:{p:.45,th:[2,9],col:[0x6e7262,0x666a5a,0x767a6a,0x5e6254],hard:.2,xbed:0,varnish:.1},
+      mud:{p:.35,th:[1,6],col:[0x8a5a48,0x7e5040,0x96624e],hard:.15,xbed:0,varnish:.05},
+      silt:{p:.2,th:[.5,3],col:[0xa49a82,0x9a907a,0xaea48c],hard:.35,xbed:.3,varnish:.1}},
+      fx:{varnish:.2}},
+    {name:'tiers-black',main:'flow',kinds:{
+      flow:{p:.46,th:[6,24],col:[0x2e2c2a,0x363331,0x282624,0x3c3835],hard:.92,xbed:0,varnish:.45},
+      vtop:{p:.18,th:[1,4],col:[0x5a3c30,0x664436,0x4e362c],hard:.5,xbed:0,varnish:.25},
+      bole:{p:.16,th:[.4,2.5],col:[0x8a3e2a,0x9a4a30,0x7a3626],hard:.18,xbed:0,varnish:.1,between:true},
+      tuff:{p:.2,th:[1,5],col:[0x9a8e78,0xa69a82,0x8e826c],hard:.25,xbed:.2,varnish:.15,between:true}},
+      fx:{varnish:.4}},
+    {name:'tiers-red',main:'mud',kinds:{
+      mud:{p:.42,th:[2,10],col:[0x9a4a34,0x8a4230,0xa6563c,0x7e3c2c],hard:.2,xbed:0,varnish:.1},
+      sand:{p:.38,th:[3,14],col:[0xb05e3e,0xbc6a46,0xa45438,0xc4764e],hard:.8,xbed:.6,varnish:.3},
+      gyp:{p:.2,th:[.3,1.5],col:[0xd8ccb8,0xe2d8c4,0xccc0aa],hard:.3,xbed:0,varnish:0,between:true}},
+      fx:{varnish:.35}},
+    {name:'tiers-white',main:'sand',kinds:{
+      sand:{p:.7,th:[8,30],col:[0xe2d4b8,0xd8c8aa,0xeadcc2,0xd0be9e],hard:.85,xbed:.9,varnish:.35},
+      pink:{p:.3,th:[1,4],col:[0xd4a88a,0xc89a7c,0xdcb496],hard:.3,xbed:.2,varnish:.1,between:true}},
+      fx:{varnish:.4}},
+    {name:'tiers-grey',main:'lime',kinds:{
+      lime:{p:.55,th:[4,18],col:[0x8a8a86,0x9a9a94,0x7e7e7a,0xa4a49e],hard:.75,xbed:0,varnish:.2},
+      tuff:{p:.3,th:[2,8],col:[0xa69e8e,0xb2aa98,0x9a9282],hard:.35,xbed:.2,varnish:.1},
+      marl:{p:.15,th:[.5,3],col:[0xb8b0a0,0xc4bcac,0xaca494],hard:.15,xbed:0,varnish:0,between:true}},
+      fx:{varnish:.25}},
+    // thedome (biomes/thedome/PLAN.md section 3): the laccolith's onion-skin sheets (quartz porphyry and leucogranite, aplite veins,
+    // dark partings) and the moat's ring dike (purple-red porphyry) with its upturned arkose and carbonate collar
+    {name:'laccolith-shell',main:'porphyry',noRepeat:false,kinds:{
+      porphyry:{p:.48,th:[1.1,2.8],col:[0xc4a89e,0xbba096,0xccb2a8,0xb5988e],hard:.9,xbed:0,varnish:.35},
+      leuco:{p:.3,th:[.8,2.2],col:[0xdad4ce,0xe2dcd6,0xcfc8c2],hard:.86,xbed:0,varnish:.25},
+      aplite:{p:.12,th:[.15,.45],col:[0xede9e2,0xf2eee8],hard:.94,xbed:0,varnish:.12,between:true},
+      parting:{p:.1,th:[.12,.38],col:[0x7e6d68,0x6e5f5a],hard:.28,xbed:0,varnish:.55,between:true}},
+      fx:{varnish:.35}},
+    {name:'ring-dike-collar',main:'redporph',kinds:{
+      redporph:{p:.44,th:[2,6.5],col:[0x8c484c,0x9a5256,0x7c3e42],hard:.92,xbed:0,varnish:.55},
+      arkose:{p:.32,th:[1.2,4],col:[0xb88e74,0xc49a80,0xa87e66],hard:.68,xbed:.45,varnish:.4},
+      carbonate:{p:.24,th:[1,3.5],col:[0xd2ccc0,0xdcd6ca,0xc4beb2],hard:.74,xbed:.1,varnish:.28}},
+      fx:{xbed:.35,varnish:.45}}
+  ].forEach(function(r){RECIPES[r.name]=r;});
+
+  // the derived recipes, each from its base as its kit made it
+  (function(){
+    function kindsOf(r){var K={},k;for(k in r.kinds)K[k]=Object.assign({},r.kinds[k]);return K;}
+    var MB=RECIPES.megabreccia,T,K,B,pal;
+    // the crater wall's megabreccia at smaller scales: nhighlands' crags (8 m blocks nesting 1.4 m: a pillar 10-25 m across shows a
+    // dozen) and the Cut's sawn face (22 m blocks nesting 2.6 m, unweathered: no wash; biomes/cut, station face)
+    RECIPES['nhl-crag-breccia']=Object.assign({},MB,{name:'nhl-crag-breccia',blocks:Object.assign({},MB.blocks,{size:8,nest:{kind:'fine',size:1.4}})});
+    RECIPES['cut-face-breccia']=Object.assign({},MB,{name:'cut-face-breccia',fx:Object.assign({},MB.fx,{wash:false}),
+      blocks:Object.assign({},MB.blocks,{size:22,nest:{kind:'fine',size:2.6}})});
+    // k-guilin's tower limestone: nwbay's recipe (one landscape: the owner, 2026-10-26)
+    RECIPES['kguilin-karst']=Object.assign({},RECIPES['nwbay-karst'],{name:'kguilin-karst'});
+    // godthrone's downwind flanks (kits/resources/ROCK-PROPOSAL.md, "Where the biomes must change" 3): tibasalt with the summit's
+    // ash as pale partings between the flows and the big eruptions welded into buff ignimbrite benches; under the dry-cold line the
+    // ash alters as the beads do
+    T=RECIPES.tibasalt;K=kindsOf(T);
+    K.flow.p=.5;K.bead.p=.13;K.beadblack.p=.08;
+    K.ash={p:.12,th:[.3,3],col:[0xcfc3a8,0xd9cfb6,0xc4b79a],hard:.2,xbed:0,varnish:0,between:true};
+    K.ignimbrite={p:.06,th:[2,12],col:[0xb8a080,0xc4ab88,0xa99272],hard:.7,xbed:0,varnish:0};
+    RECIPES['tibasalt-ash']={name:'tibasalt-ash',main:'flow',kinds:K,alter:[{kinds:['bead','beadblack','ash'],to:'palagonite',below:8500,band:400}],fx:Object.assign({},T.fx)};
+    // godstep (biomes/godstep/PLAN.md section 2): the whole valley is below the 8,500 m dry-cold line, so its recipes are core's with
+    // the alteration already done: the bead kinds replaced by palagonite (their share, the bead's thickness, between the flows)
+    function palagonitised(name,from){var T=RECIPES[from],K=kindsOf(T);
+      K.palagonite=Object.assign({},K.palagonite,{p:K.bead.p+(K.beadblack?K.beadblack.p:0),th:K.bead.th,between:true});delete K.bead;delete K.beadblack;
+      RECIPES[name]={name:name,main:T.main||'flow',kinds:K,fx:Object.assign({},T.fx)};}
+    palagonitised('godstep-ponded','tibasalt-ponded');palagonitised('godstep-thin','tibasalt');
+    // godstep's vent pit (PLAN.md section 4): red oxidised scoria on the upper wall over a thin dark flow, red bole partings
+    RECIPES['godstep-scoria']={name:'godstep-scoria',main:'scoria',kinds:{
+      scoria:{p:.5,th:[1,6],col:[0x7a3326,0x8a3d2a,0x6a2c22,0x93452e],hard:.35,xbed:0,varnish:0},
+      flow:Object.assign({},RECIPES.tibasalt.kinds.flow,{p:.3,th:[1,6]}),
+      bole:{p:.2,th:[.2,1.2],col:[0xa0402a,0xae4a30,0x963c28],hard:.2,xbed:0,varnish:0,between:true}},fx:{}};
+    // godstep's north wall (PLAN.md section 2): godstep-ponded with laterite still forming, a red rind between the flows beside the
+    // palagonite: black colonnades banded ochre and red
+    T=RECIPES['godstep-ponded'];K=kindsOf(T);pal=K.palagonite;K.palagonite=Object.assign({},pal,{p:pal.p*.6});
+    K.laterite=Object.assign({},K.laterite,{p:pal.p*.55,th:[1,5],between:true});K.flow=Object.assign({},K.flow,{p:K.flow.p-pal.p*.15});
+    RECIPES['godstep-wall']={name:'godstep-wall',main:T.main||'flow',kinds:K,fx:Object.assign({},T.fx)};
+    // nhighlands' Tiguantin: the welded tuff over the paleosol, outland-tuff with black glass lenses (fiamme) flattened in the welding
+    B=RECIPES['outland-tuff'];K=Object.assign({},B.kinds);
+    K.fiamme={p:.1,th:[.08,.3],col:[0x2a2622,0x34302a,0x221e1c],hard:.6,xbed:0,varnish:.3,between:true};
+    K.welded=Object.assign({},K.welded,{p:.26});
+    RECIPES['tig-ignimbrite']=Object.assign({},B,{name:'tig-ignimbrite',kinds:K});
+  })();
+
   function recipe(name){var r=RECIPES[name],n=0;
     while(r&&r.alias&&n++<8)r=RECIPES[r.alias];
     if(!r)throw new Error('KSTRATA: no recipe '+name);

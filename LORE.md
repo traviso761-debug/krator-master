@@ -79,18 +79,38 @@ See https://claude.ai/artifact/N76KxfMXL5C7hfRGHKJK5q for scale map; some region
   **wind-carved lake beds** (the owner, 2026-10-23, in place of the tuff once proposed). The model's rain there is about
   ten times too generous (a 4.22 item). The owner (2026-10-23): **the Catch is the biggest barrier to trade between
   Xanadu and everywhere else**. It has **oases, but only just enough for the crossing to be doable, not comfortable or
-  safe**. **No Ancient tunnel crosses the Catch's walls to Stair** [the owner, 2026-11-11, dropping the sealed tunnel
-  that stood here]. The Ancients reached Stair over the surface by the **Godsgate highway**, whose broken way the
-  caravans still follow in places (`openworld/ANCIENT-NETWORK.md` section 8). Stair, the nearest thing to a settlement, is **a glorified campground** of **a couple of hundred people**: a handful of
-  merchants, the caravans passing through, and occasional bands of daring or desperate arcology divers. There are **five
-  oases** on the crossing, unnamed, and **none is lived in but Stair's**. The residents, the traders and the oases' names
-  are **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off. The Catch is Krator's one great salt field, an alkaline soda lake whose
+  safe**. **The Ancients' bore to Stair runs from Parabola, not Arcbeam, and it is ruined** [the owner,
+  2026-11-11 dropping the Arcbeam tunnel, 2026-11-24: "there can be a (ruined) tunnel from stair to parabola, but not to
+  arcbeam"]: 580 km from the Bowl arcology to Stair, its line straight down the Godsgate, 115 km of it under the SE
+  outer wall with up to 6.6 km of rock over it. It is **sealed halfway**: both halves are open from their own ends and
+  both offer salvage; **Yuni stripped the northern half bare a long time ago**, and the southern half, entered from
+  Stair, is the divers' prospect. Above it the Ancients graded the **Godsgate highway**, 30 m wide at a 4 % ruling grade,
+  for what would not fit the bore and for when the bore was shut; its broken way is what the caravans still follow, and
+  `openworld/ANCIENT-NETWORK.md` section 8 has both. Stair, the nearest thing to a settlement, is a caravan town of **about 750** [the owner, 2026-11-16, in place of "a couple
+  of hundred"]: its merchants, who sell water, fodder, repairs and news; the caravan groups' factors and pens; the
+  Brotherhood of the Two Horns' guild house; and the arcology divers. There are **five oases** on the crossing: Stair's
+  and four more, **Kolli, Arfwai, Bitta and Lasso** (`biomes/catch/PLAN.md`), each **~100 people or less** [the owner,
+  2026-11-16, in place of "none is lived in but Stair's"]. Each is kept by one caravan group's hands at its well (the Train
+  of Jabal at Arfwai, Iziz's two houses at Kolli, Yuni's Merchants' Guild and the Geomancers at Lasso; Bitta's brackish well
+  is kept by Stair's merchants), who sell water and fodder to all. The residents, the traders and the oases' names are
+  **Yuni, Izani, Dasrī or Xanadui**, with very occasional bold ventures from further off.
+  **The northern caravaneers** [the owner, 2026-11-16]: the Geomancers; the Yuni Merchants' Guild, independent of the
+  Geomancers; two rival Izani merchant noble houses, Getmastarz (the Gatemasters) and Goldanda; and **the Train of Jabal**,
+  the Dasri's salt caravan company out of Jabal, which works both the Catch's salt works (Ṣalṭ al-Bān) and the Bowl's
+  (Solta). **The seasons** [the owner, 2026-11-16]: the Catch floor closes in the spring's black dust storms, and the
+  Twins' col in winter (`core/simulation/PROPOSAL-CATCH.md`). The Catch is Krator's one great salt field, an alkaline soda lake whose
   resources are **potash and alkali salts** [the owner, 2026-10-23]; its alkali dust is caustic in the storms. Stair's
   ruin is **the Hill arcology** (`kits/ancients/targets/hill`), in the springs' hollow through the basin's interior hills
-  (moved there on the model 2026-10-23, px 834,1112, `biomes/catch/PLAN.md` section 6b). *Proposed*: the divers' prospect is **the Hill
+  (moved there on the model 2026-10-23; **scale model 5.1 px 1106,1442**, the 4.21 canvas's 834,1112,
+  `biomes/catch/PLAN.md` section 6b). *Proposed*: the divers' prospect is **the Hill
   arcology itself**, its lower levels drifted full of sand and sealed by salt, which the dunes uncover and bury again.
-  If the Rift line ever reached Stair by its bore from Strongbow under the Catch's walls (a possibility the owner left
-  open, 2026-11-11), the bore's mouth is the divers' other prospect. *Proposed* (section 6a): in
+  **The Theodiga tunnel stays** [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"]: the Ancients'
+  dead bore from Theodiga to Stair under the Twins and the Catch's southern wall (438 km, 385 km of it bored;
+  `openworld/ANCIENT-NETWORK.md`, `rift.bowl.theodiga-stair`). The trains do not run in it; it is a third way across, but
+  a hard one, dark, with little food or water. Its Stair mouth by the spring is the divers' other prospect, so Stair is a
+  junction of two Ancient bores: Theodiga's south under the Twins, and Parabola's north under the SE outer wall. Only
+  the Arcbeam tunnel is dropped: **nothing runs under Arcbeam**, which is an Iziz arcology the highway merely passes
+  [the owner, 2026-11-24]. *Proposed* (section 6a): in
   the dry air **Ancient alloys and energy cells keep** as nowhere else, and that is what the divers bring out, for the
   Yusar, the Geomancers and the engine-keepers.
 - **Korona.** A planned region in the NE, under the giant. It is formed of a type of volcanic structure or ‘corona’ that does not exist on Earth, but does exist elsewhere in the Solar System, forming a crazy quilt of small plateau, depressions, and microclimates. Known to be home to bandits and ghouls. A kaleidoscope of microclimates, tepuis and carnivorous plants, home to many isolated tribes of humans and therian mutants (§6.18). [the owner, Oct 2026]
@@ -150,7 +170,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **The Ear**: the one Ancient satellite dish the Order of the History Monks can still point at the sky.
 - Salvaged Ancient engines driving generators (Locus, Xanadu).
 - **Ancient’s Valley** (also the Valley of the Ancients): In the far west (name subject to change), there lies a region of dense ruins which is believed to have been the Ancient’s capital. Now it is home only to mutants, killer robots, and the rare bandit desperate enough to seek refuge there.
-- **Hub 01:** a ruined arcology high in the chill, thin-aired mountains east of the Catch, the **Stalker Peaks** [the owner, 2026-10-23], named for the crossing's other great danger: **the Stalkers**, quiet robotic killers that stalk the sands, hunt down straggling caravaneers or lie in wait under the sand, and work in pairs or triads (`biomes/catch/PLAN.md` section 6c). The merchants who pass from the crater to Xanadu through the Bowl and the Catch know only that they come out of the peaks and go back into them. **No human has reached Hub 01 since the Cataclysm and lived to tell the tale.**
+- **Hub 01:** a ruined arcology high in the chill, thin-aired mountains east of the Catch, the **Stalker Peaks** [the owner, 2026-10-23], named for the crossing's other great danger: **the Stalkers**, quiet robotic killers that stalk the sands, hunt down straggling caravaneers or lie in wait under the sand, and work in pairs or triads (`biomes/catch/PLAN.md` section 6c). The merchants who pass from the crater to Xanadu through the Bowl and the Catch know only that they come out of the peaks and go back into them. **No human has reached Hub 01 since the Cataclysm and lived to tell the tale** — but **foolhardy rangers of Yuni's Stalker-watch have come back with reports of an Ancient facility out there, and that the Stalkers come from it is their surmise, not a thing anyone knows** [the owner, 2026-11-24]. **There is no trail towards it; people who go that way tend not to come back.** So three tiers of knowledge stand in the world and nobody holds the third: the caravaneers' "they come out of the peaks", the Rangers' reported facility with its function guessed at, and the truth.
   - **About human size, in two variants** [the owner, 2026-10-23]: one with a **pneumatic harpoon gun**, one with **blade-arms** for close quarters (*proposed*: a pair is one of each; the harpoon pins, the blades finish). The harpooner is a white hull on two sleeved legs with a gun on each side; the blade a hunched walker with great shoulders and hooked blades on its long arms (`kits/mechs`: `st_harpooner`, `st_blade`). **A wise caravan carries explosives or more exotic Ancient weapons** to fight them; **one that does not, flees** [the owner, 2026-10-23].
   - **The author's secret** [the owner, 2026-10-23]: the Stalkers' source is **Hub 01, run by a mad AI**. No one in the world knows it; the game shows it, never says it. It was **driven mad during the Cataclysm**, and **no one is sure how**: the Ancients' contamination (§6.19), some kind of virus, or deliberate reprogramming.
 - **The Rift line** [the owner, 2026-10-23]: the Ancients built **tunnels under the Outer Wall** for transport to **their settlements in the Rift**, which were less extensive than those up north but still substantial. **Ledge**, on the cliff over the great lake at the Rift's western head, is where the line comes out of the Wall (§6.1). **The Pile** (once called Cube or Arccube; renamed by the owner, 2026-11-11) is **the hub of Ancient activity in the Rift** [the owner, 2026-10-23: the most settled of these], deep in the Lizardmen's country (px 448,1237 on the model), **the reward for a player who braves the Lizardmen**. The Rift's other ruins' names and positions are **very tentative** [the owner]: *proposed*, **Chimes** at the foot of the great lake's gorge, **Cthonos**, **The Tubes** (a cavern: a station or a tunnel mouth). **Pluton** [the owner, 2026-10-23], on the Godthrone's airless flank (px 471,998, 9.7 km), **is the key to the tunnels the Ancients drove up inside the Godthrone to its summit** (17.1 km, ~270 km from Pluton) and used **for their own purposes**: not part of the public line, and **uninhabitable now**. The line was worked by an **Ancient worker caste** that went feral when the Ancients fell: the **Tungangs** (§6.1; *proposed* name, from the *tunnel gangs*). **Most of the Dalab-Ledge line runs underground** [the owner, 2026-10-23]: from portals in the Outer Wall's northern foothills (~3.5 km) to the cliff over Ledge, ~340-420 km of tunnel with its stations, sidings and side galleries, joined to the natural caves: enough underground to hold a people. *Proposed*: the rim and the Rift's walls hold **natural caverns**, wide rather than deep (lava tubes, gypsum and salt mazes, hydrothermal chambers: `biomes/riftrim/PLAN.md` section 4), which the tunnels joined where they could and the Tungangs hold.
@@ -224,6 +244,52 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - **Ledge** (the owner, 2026-10-23): the **Ancient arcology** that gives the settlement its name, on the cliff over the great lake at the Rift's western head, across the Outer Wall: where the Ancients' Rift line came out of the Wall (§4; the Pile was the Rift's hub), and **a bridge between two levels**, the highland where the road arrives and the basin and lake ~1.3 km below, so holding it means working both. Dalab has occupied the abandoned arcology to **study the rim's flora and fauna (as strange as the Rift's, but temperate) for useful genes**. Dalab is the only real power on the rift rim (too high for the Lizardmen to venture comfortably, too far and too many Lizardmen in the way for Xanadu), because its genepriests can **mod for cold and altitude**: Dalab's people cross the Outer Wall by a road built partly through **Ancient tunnels** under its airless crest (`biomes/riftrim/PLAN.md`). **The hold is tenuous**: the distance and the crossing make every supply train an expedition. **The rim's natives are an Ancient worker caste gone feral: the Tungangs** (the owner, 2026-10-23: a name evolved from the *tunnel gangs*, *proposed*; `biomes/riftrim/PLAN.md` section 6), in **two branches, perhaps divergent**: the **underground** branch in the tunnels and caverns, and **wilder highland-dwelling** branches on the rim's fells (*proposed*: the **Fellgangs**): the crews the Ancients engineered to run the Rift line, **Morlock-like and born to the dark** (the Zeijani merely adopted the night): pale, huge-eyed and dazzled by day, echolocating by tongue-clicks, with **holds within the caverns**, which they know better than anyone. They still keep stretches of the tunnels and Ledge's lifts, the old timetable and signal codes kept as rite. **The crews were unionised, and it runs deep in them still** (the owner, 2026-10-23), though a thousand years in the dark have kept **the forms without their meanings**: syndicalist communes, each hold a **loj** under a steward elected by show of hands at an open meeting, bound by the old agreement with the Ancients (the Book), in practice often run by a charismatic steward or a big man; over them the union **President** (*Tpresden*), an honour most of the time, granted exceptional powers when the lojes agree there is a crisis; out of crisis the Tpresden judges disputes between lojes and oversees the **Fixers**, the cadre who keep up the Line far from the holds and the whole network maintained. The lojes are **numbered** after the Line's original stations north to south (Ledge's lifts are Loj Fower), an order broken by lojes lost to disaster and new ones founded as they spread into new caverns. **Tungangs once lived throughout the Rift**: those east of Chimes were wiped out in tunnel wars after the Lizardmen came, and many Fellgangs descend from those who fled; a lost loj in the east is rumoured, unheard from officially in over five hundred years. **The truth of Loj Nahn** [the owner, 2026-10-23; known to no one outside it]: the lost loj is **Loj Nahn**, the number no Tungang says. In the tunnel wars it retreated into **the upper levels of the Pile** and sealed them off. About **a thousand people** have held out there ever since, farming the arcology's **upper terraces**, surrounded by Lizardmen, and lowering **stealthy gathering parties at night** for wood and the few other things the arcology cannot give them. The Lizardmen attack any they meet, but seem to lack the means or the will to press the loj further. Five centuries on open terraces have changed them, as the fells changed the Fellgangs, and the hold is **the human heart of the reward** that waits for whoever braves the Lizardmen (both the owner's, 2026-10-23). **The Tungangs' tales of the Cataclysm** [the owner, 2026-10-23]: there was a great war, because **the Gaffers got too greedy**; the crews called **the Great Strike**, went underground, and rode out the catastrophes that followed. What happened when the Lizardmen came they are not sure of: the sagas tell of **much wailing and screaming in the Pile, and then the Lizardmen were there; and there were no Ancient bodies.** Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard. With no one to negotiate with until Dalab came, the Book gathered a Midrash of **readings**, argued by the Bookmen, who **still read English** for its sake (many lojes go by an oral tradition of the laws); *skab* is the general curse (traitor, bastard). **Their tongue is Northern English worn past understanding** (*us'll nobbut gan t'wark while t'stoord sez* > *usl nobga twak wilstood sez*). Dalab's road and Ledge's lifts depend on an uneasy bargain with them, and **Dalab's cold and altitude mods were learned from their genes**, which they remember.
   - **Perhaps a fluid society** (the owner, 2026-11-03): the Tungangs, the tunnel people of the Rift and the southern
     Outer Wall, might, like the Iron Republic and Yuni, let a person rise two stations in a life (core/simulation/PLAN-MONEY.md).
+  - **Friendly Morlocks** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md`): pale, light-shy, nocturnal tunnel folk who are
+    decent people, not monsters, and not dwarves: the night shift that never ended. **The Line is at least four tracks wide**
+    (a gallery 37 m across with a two-lane service road along its west wall; where it runs above ground an Ancient highway
+    runs beside it, on elevated decks over bog and water: the owner, 2026-11-11, `biomes/line/PLAN.md`), broken in places
+    but mostly running: where the whole width has fallen it is cut into segments, each segment's trains
+    trapped in it since the collapses, shuttling between its gaps, and **travellers walk the caverns between intact
+    segments**; holds grow at the gaps. Their light is rationed and coded, **the lamp code** on every gallery and door (red a
+    home, green the Line, amber work, glow-cap the passages, white the surface and danger, hooded at once), with rooms lit
+    by wax. At a meeting the hands are counted **by their shadows** on a white **count wall**; every junction is cut with
+    **click-ribs** that give it its own echo; the rich live in **carriage houses**, derelict cars drawn into a siding; once a
+    year at **the Big Meeting** every loj walks its banner down the Line to the Tpresden; rank is **shine**, ground-glass bead
+    strips on a faded copy of the crews' orange. They stand about 0.94 of a human. Much of what they own is fitted salvage of
+    the Line.
+  - **The stations' numbers** (the owner, 2026-11-11: "cube is loj nahn so renumber accordingly"), north to south: 1 Dalab,
+    2 Shelf, 3 the Twenny junction, 4 Ledge's lifts (Loj Fower), 5 Nulab, 6 Chimes, 7 Cthonos, 8 The Tubes, **9 Cube: Loj
+    Nahn, the number no one says**; the other stops are lettered halts. Loj Twenny (20) is a later founding by the Twenny
+    junction. Whether the Line ran on past Cube to Theodiga, Strongbow, Stair and an arcology in the Bowl (10-13) is open.
+  - **What the Line gives them** (the owner, 2026-11-11): more to trade than copper. The bores cut **veins of metal** and the
+    Tungangs work them, for they need metal to keep the trains running; *maybe* something more exotic keeps the power
+    running (agreed 2026-11-11: rare earths from the rift fill's carbonatites for the magnets of a power plant that runs on
+    the deep middle's heat by the hot doors, and a few recharged Ancient power cells, the rarest thing they sell); they take **ice and other
+    things from the mountains**; and **at least a few ventilation shafts** reach the surface, whose heads are their second
+    way out (`kits/tungang/PLAN.md` §1.2.1). **The shaft heads are kept well hidden from outsiders**, and a striking Union
+    might use them to take **direct action against Dalab's caravans**: up by night, a caravan's road blocked or its cargo
+    taken down, and no door for Dalab to find (the owner, 2026-11-11).
+  - **The Fellgangs' villages and Wildcat** (the owner, 2026-11-10/11): the Fowlers (a rope is a vote) and the Ice-cutters
+    ("the Cold is owed") are built (`biomes/riftrim` stations 8 and 9). **Wildcat** is about half **Kimr** by descent
+    (`biomes/labyrinth/PLAN.md` §5), and the Kimr's bravado shapes its raiding: capital-H heroism in a **scrap pueblo**, stepped
+    room blocks faced in salvage, ladders pulled up at night. A raid is proposed by **a Boast** from the round room's roof and
+    joined by **show of hands**; the minute book became **the Deeds**, every boast and whether it was made good; the
+    Aurochs-horn helmet is earned, never inherited; its walls carry heroes and trophies, no spirits. A **market town** of
+    1,000-2,000, **Blakhed** (the owner, 2026-11-11), stands at **the Blak Riba head** (5.1 px 441,1400),
+    where the south road tops out of the Chimes gorge, the one land crossing between the rims. Kin to both villages and
+    raiding no one, it stores the Ice-cutters' ice and the Fowlers' eggs and keeps the gorge stair's ropes; it **pays
+    Dalab a toll**, whose realm holds the ground, and keeps its market peace under Dalab's claim
+    (`kits/tungang/PLAN.md` 1.3.3). West of Nulab live three more Fellgang peoples (the owner, 2026-11-11): **the
+    drovers** of the west highland, **the pass-keepers** at the foot of Copper Glacier's pass, and **the coppersmiths**,
+    who work the glacier's copper. The richer skarn west of Nulab is a Dalab mining hamlet (`kits/tungang/PLAN.md`
+    1.3.4). **The Travellers** (the
+    owner, 2026-11-11) are the Fellgang families who live on the road, with some cultural similarities to the Irish
+    Travellers: hauling, dealing in beasts and goods, mending salvage, guiding, portering on the Line's branches near the
+    surface but never deeper in, save for **one clan that ventures into the dark unexplored caverns** and services and
+    porters for the underground and the ventilation shafts (the owner, 2026-11-11: **the Kradz**, *dark* said backwards in the cant; they marry into the lojes more than any other
+    family, and their way-marks and enamel-plate maps are the best of the Line's unknown parts);
+    barrel-top sledge-wagons and halting places along the lantern roads; a yearly Fair
+    on a fell everyone knows, and a cant of their own (`lore/tongues-of-krator.html`, "The Travellers' cant").
 - **Language.** Two tongues. The priests' **high tongue** is our English, held in place because the God only answers to it; that is the root of priestly rule. The peasants' **low tongue** drifted like a creole: *the* fused on as *da-* (*Dalab* = the lab, *Daranch* = the ranch), plural *-dem*, tense particles *di/go/a*. Latin letters; the God's fixed-width letters are holy. The oldest prayers are the staff's prompts; the formula that let the God forget is lost. The lab had a rival at Ys (§6.16). `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.2 The Empire of Iziz: the Izani (hyperjungle)
@@ -257,7 +323,7 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - **Mantis** (the owner, 2026-10-23): an **oasis town** on the south-west shore of the Bowl's great salt lake, in the one green pocket of monsoon forest and savanna on a hot-desert shore (px 841,834, -976 m, ~1,550 mm; `biomes/sedesert/PLAN-BOWL.md`), an **Iziz holding**. It grew under **Yuni's** influence and was later **taken over by Izani merchant houses**; it may want a vassal kit of its own (`settlements/iziz/VASSAL-KITS.md`). Named after the **Bowl mantis**, a large predator of the region.
   - Port Tobin (major port, Iziz proper is landlocked)
   - Fort Vaklu (fort against the beast riders)
-  - **Hook** (the Ancient port city; retaken from Voth a few months before game start): the premier port of the Ring Sea, on the sea's southern shore (the scale model has it at px 537,596: the sea to the north, the East Ring Isles 45 km offshore to the east, the Throne 50 km to the north-east). It stands on a narrow shelf of Izani coast: the cliff that is the Crag Men's northern border rises 4 km behind the city, and the Vothic Kingdom's border is about 45 km west along the coast, Temora and Almua beyond it; Voth is 230 km south-west, Iziz 330 km east, Port Tobin 260 km east along the shore, Tethys 340 km north-west across the sea. The Izani call it *Uga* (`tools/scale-model/river_names.py`). Named for **the Hook**, the Ancients' great pier and the hooked breakwater of sea platforms off its end, which still shelter the harbour; the city uses every segment of the Ancient Port kit (`kits/port`) at least once, and its architecture is **nautical salvage** above all: hulls turned to roofs, container towers, ships' superstructures as watch towers, the stack town on a grounded ultra-large freighter, rope bridges between stilt houses. A cultural melting pot laid down in layers by its rulers, each layer still standing:
+  - **Hook** (the Ancient port city; retaken from Voth a few months before game start): the premier port of the Ring Sea, on the sea's southern shore (the scale model has it at px 537,596: the sea to the north, the East Ring Isles 45 km offshore to the east, the Throne 50 km to the north-east). It stands on a narrow shelf of Izani coast: the cliff that is the Crag Men's northern border rises 4 km behind the city, and the Vothic Kingdom's border is about 45 km west along the coast, Temora and Almua beyond it; Voth is 230 km south-west, Iziz 330 km east, Port Tobin 260 km east along the shore, Tethys 340 km north-west across the sea. The Izani call it *Uga* (`tools/scale-model/river_names.py`). Named for **the Hook**, the Ancients' great pier and the hooked breakwater of sea platforms off its end, which still shelter the harbour. **Hook was a far larger Ancient city, laid out like Alexandria** (the owner, 2026-11-24): the whole is still called Hook (*Huka* to the Hukoa), and the living town is **Port Hook**, on the spit that was the city's Pharos, joined to the mainland by an Ancient causeway. The old city on the mainland behind the harbours is ruin gone to jungle, and two of its quarters sank in the Cataclysm: one in the lagoon behind the spit, where the Nekropolis stood at Alexandria, and a peninsula that once closed the great harbour into a lagoon, trailing off to the north-east. Salvagers' camps, Hukoa stilt villages among the drowned stumps and Hykkousoi pods on the towers that still stand; picked clean near the port, wilder with distance, jungle to the crowns far off; the Izani patrol its edge (`settlements/hook/PROPOSAL-METROPOLIS.md`). The port uses every segment of the Ancient Port kit (`kits/port`) at least once, and its architecture is **nautical salvage** above all: hulls turned to roofs, container towers, ships' superstructures as watch towers, the stack town on a grounded ultra-large freighter, rope bridges between stilt houses. A cultural melting pot laid down in layers by its rulers, each layer still standing:
     1. **The Hukoa** (the owner, 2026-10-17; the city is *Huka* in their tongue, a western Islander speech, Hikau, that kept its h and k; the regular Hikau word for a fish-hook is *huku*, the east's *uʻu*, so the name is older than the rule, as Kautoa's is), a cousin people of the Ring Sea Islanders, settled the ruined port about nine centuries ago and live there still as its fishers, boatwrights and lightermen: the West Islander style patched with scrap, boats turned to houses, the fishing harbour and the haven at the western point.
     2. **A colony of Tethys** (the Hykkousoi): a Tethyan quarter of grown nacre and bronze round the old passenger terminal, a sea temple, a drowned mole; a Hykkousoi minority remains, pearl divers and pilots.
     3. **A vassal of Kautoa** in the island kingdom's great days: a Kautoan governor's house with spire roofs, Kautoan ancestor shrines, the East Islander style among the West.
@@ -297,12 +363,13 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - **Salvagers**, formerly Scavengers: "those who strip the Ancient ruins".
   - **Rocketeers**.
 - Capital institutions: the Hall of the Republic, the **Arsenal** (racks of rockets), the Mint and Treasury, the Forgehouse.
+- **The First Citizen** is the Republic's head of state (the owner, 2026-11-09): the Republic's military headquarters and the First Citizen's residence are Roketstad's **Fortress**; the Hall of the Republic is the **Assembly of Citizens**' house, presided over by its own Speaker, where the First Citizen speaks as a citizen (`kits/highlands/hall/BLUEPRINT.md`, `kits/highlands/fortress/BLUEPRINT.md`).
 - A salvage culture: houses in fuel tanks, rocket stages and hull plate. **Shipbreakers** dismantle the ships "that came down short of the port".
 - Murals: Norse and Celtic knots, triskele, tree of life, wolves, Mjölnir, the green gas giant, and **rockets** (Republic only).
 - Landlocked: no ships.
 - **A fluid society** (the owner, 2026-11-03): class follows profession everywhere, but the Republic offers more room to rise
   than most: a person may climb two stations in a lifetime, not one (core/simulation/PLAN-MONEY.md).
-- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer; the Painted Men (§6.5) keep the oldest highland words, worn short and sung with two melodies by their Korona neighbours. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language.** **Hajlandsk** (Highlandish): the Third Legion's highland auxiliaries' English, gone Norse and Slavic (w > v, th > t, e > je, k > č, syllabic r, postposed *-et* article), with Izani words for law, rank and the state on top (*sidizan* citizen, *serviz*, *guar*; *kiñ* now means tyrant). Motto *Serviz gir sidizan*, “service makes a citizen”. Written in the Izani alphabet unchanged. The **Legion cant**, the Third Legion's camp speech that every citizen speaks: words joined with an apostrophe, the first losing its final vowel, highland and Izani mixed (*jern'knekt* veteran, *lejon'tjen* Legion service, *sid'kiñ* Izani governor, *Rok'stad*); the barracks motto is *Tjen'gir sidizan*. Hajlandsk has no ejectives: Izani *port'a* is Republican *porta*. The Free Clans (§6.4) keep it without the Izani layer. `lore/tongues-of-krator.html` [the owner, Oct 2026; Painted Men severed 2026-11-19]
 
 ### 6.4 The Rustic Clansmen (northeast of the Republic)
 
@@ -312,34 +379,35 @@ The Ancients were the original civilization that colonized Krator, with roots, h
 - The scale model calls their country the **Free Clans** (the political polygon north-east of the Republic, px 473-625 by 144-313); §6.3 uses the same name for them. One people, two names.
 - **Ardent** (the owner, 2026-10-18; planned build, `settlements/ardent/PLAN.md`): the main city and meeting place of the Free Clans, where the **Clanthing** meets: the thing of every clan, which makes the law the clans share and settles their feuds, and the nearest thing the Clans have to a government. On the scale model at px 579,242, in the northern highlands at the eastern end of the Clans' country; the Hexahedron 198 km south-west, Jimjam 215 km west, Dilihan 281 km south-west, the Republic's border about 200 km west. **Major nearby sources of copper and tin** make bronze common where every other highland people has iron or salvage: bronze fittings, bronze bells and horns, bronze on the hall doors and the crests, the Clans' trade good. Built in the Rustic style (`settlements/highlands`, the Rustic branch: Alpine chalets and Norse houses, a stave temple, a longhall). **Allied with Dilihan** (§6.2) against the Iron Republic, which has sought to control both: the Republic's law and levy reach for the Clans' bronze and for the pass road through the Cut, and the two cities that stand in its way have made common cause. **Nine clans** sit at the Clanthing under an **elected law-speaker**, and the Republic's pressure is law and levy under the threat of arms, so the town is watchful, not walled (the owner, 2026-10-18; the clans' names and crests are still to come). *Proposed, awaiting the owner*: the Clanthing meets in a ring of standing stones on the hill above the town, the thing-stead, with the longhall beside it for the law-speaker and the winter session; Dilihan keeps an envoy's house by the hall; Ardent's smiths sell cast bronze down the Cut and over the Wall to Jimjam, which gives it the Jimjam reckoning for its contracts too.
 
-### 6.5 The Painted Men (high-country raider tribes)
+### 6.5 The Painted Men (northeast danxia & badland cliff tribes — independent origin)
 
-- "The Painted Men and other raider tribes of the northeast high country."
+- "The Painted Men and other raider tribes of the northeast high country." **Severed from the Highlanders (`Iron Republic` and `Free Clans`) in origins and lore** (the owner, 2026-11-19): an independent people of the northeast painted badlands and sheer danxia canyons (`biomes/paintedhighlands`), never auxiliaries of the Third Legion and sharing no ancestry with Hajlandsk.
 - Raw logs and bamboo; whole painted house-fronts; totems everywhere; thunderbird finials.
-- **Cliff settlements** hung on rock faces.
-- Formline crests: salmon, orca, thunderbird, bear; poles of eagle, bear and frog. Faces are out ("creepy").
+- **Cliff settlements** hung on rock faces and seep alcoves.
+- Formline crests in lignite-black, falu-red and celadonite-teal: salmon, orca, thunderbird, bear; poles of eagle, bear and frog. Faces are out ("creepy").
 - Sign: the **raven**. Shamans' houses, warriors' halls, stone circles.
-- **Language.** They sit on the Inner Wall next to Korona (§6.18) and have long traded and married with its tepui tribes. They keep the oldest highland words in the crater, with no Izani layer, but the Hum wore their sound: every word cut to its stressed syllable (*sòl* soldier, *àirn* iron), and a **pitch accent** left by the lost syllables, Swedish-fashion. A word that was always one syllable has one falling melody (*win*); one that lost a syllable keeps a fall-and-rise, written with a grave accent (*wìn* winter, *kìng* kingdom, *ràv* raven). Not tonal: they kept their consonants. They took the Hum's question word *há* whole (*Yu kom, há?*) and whistle across the cliffs in the Hum, not in their own speech. `lore/tongues-of-krator.html` (the Republic tab) [the owner, Oct 2026]
+- **Language.** **Kwéent'x̱** ("Painted Speech", spoken by the *Kwéent'qw*, the Painted People; the owner, 2026-11-19): English evolved in a **partial tonal** direction with **Tlingit-like consonant clusters**. Labial stops vanished into labialized velars, uvulars and glides (*p > kw / k'w*, *f > xw / x̱w*, *b > w / gw*, *m > w / n*: *paint* > *kwéent'*, *water* > *wàatł'*, *market* > *wáax̱k't*), *l* hardened to breathed lateral *ł* with lateral affricates *tł, tł', dl* (*cliff* > *tł'íxw*, *light* > *łáxt'*), back vowels pulled velars back to uvular *q, q', x̱* (*star* > *st'áax̱*, *war* > *wàax̱*), and heavy sibilant-ejective clusters piled up (*stone* > *st'úun*, *salt* > *s'áałt'*, *stranger* > *stł'èenchx̱*). Tones are **partial** (Tlingit-fashion): stems carry **High (`á`)** from checked voiceless/glottalized codas or **Low (`à`)** from voiced codas and lost unstressed syllables (*wìntł'* winter, *tlàaw* raven), while grammatical particles and prefixes (*da* the, *aa* at, *wu-*, *ga-*, and the Korona border question word *ha*) are toneless. Painted as black-red-teal **formline crest blocks** (never human faces) on house-fronts and boundary stones; its own page in `lore/tongues-of-krator.html` (`#painted`).
 
-### 6.6 The Beast Riders (hyperjungle; Mav's Refuge, Girder)
+### 6.6 The Beast Riders (hyperjungle; Mav's Refuge, Girder, Pinnacle Rock, Talon — plus the loyalist Land-Crab tribe)
 
-- Divided into tribes, they were subjugated by the Izani Empire for hundreds of years until the exiled Queen Mav defected, impressed them with her natural talent as a quetzal-whisperer, and united the tribes. The civil war was a stalemate but they secured their independence. Current kings and queens must keep many tribal chiefs happy to exercise any real power
-- Known tribes:
-  - Quetzal (reigning)
-  - Wingclaw (giant archeopteryx)
-  - Dragonfly
-  - Nightwing (giant bat)
-  - Spider
-  - [Veloci-] Raptor
-  - Staghorn [Beetle]
-  - Threehorn [triceratops]
-  - Hardshell [glyptodont]
-  - Tiger
-  - Mammoth
-  - Longcrawler [millipede]
-  - More? TBD
-- **Mav's Refuge**: a tree city on 300–480 m hypertrees on the NE lee shore of the Ring Sea (1.9 atm, 33 °C).
-  - Three **gateway trees** are giant baobabs carved down to ~30 m, with spiral ramps and beast lifts: "un-assailable".
+- Divided into tribes, they were subjugated by the Izani Empire for hundreds of years until the exiled Queen Mav defected, impressed them with her natural talent as a quetzal-whisperer, and united twelve of the tribes. The civil war was a stalemate that secured the Confederacy's independence, **save for a single tribe — the littoral Land-Crab tribe — that stayed loyal to Iziz in the civil war and resides in Imperial territory** along the southern hyperjungle/mangrove coast (the owner, 2026-11-19). Current kings and queens at Mav's Refuge must keep many tribal chiefs happy to exercise any real power.
+- **Each tribe's villages and camps carry a distinct visual trademark** (silhouette, material, totem/trophy, enclosure, and banner palette) making every tribe's settlement and `KCAMP` ground visually unmistakable at a glance (the owner, 2026-11-19).
+- Known tribes (12 Free Confederacy tribes + 1 Iziz-loyalist littoral tribe):
+  - Quetzal (reigning; flyer)
+  - Wingclaw (giant archaeopteryx; flyer)
+  - Dragonfly (pond-breeding flyer)
+  - Nightwing (giant bat; nocturnal/canyon flyer)
+  - Spider (silk-house & dragline grove riders)
+  - [Veloci-] Raptor (pack runners & coastal/border raiders)
+  - Staghorn [Beetle] (rotting-log & heavy forest riders)
+  - Threehorn [triceratops] (savannah herd chargers)
+  - Hardshell [glyptodont] (armoured dome-herd grazers)
+  - Tiger (great sabercat hunters)
+  - Mammoth (heavy timber & capstan beasts)
+  - **Longcrawler [millipede]** — **the Beast Riders' far-ranging overland caravan tribe**, running freight trains across the Confederacy and its border gates and gathering once a year for an **annual clan meeting** in the heartland (the owner, 2026-11-19)
+  - **Land-Crab** *(Iziz-loyalist 13th tribe)* — amphibious littoral crab-riders who stayed loyal to the Emperor during Mav's rebellion and hold tidal mangrove crab-villages inside Imperial Iziz territory (`Marka de Fridon i Vaklu` / `Port Tobin` coast) as coastal scouts and marine auxiliaries (the owner, 2026-11-19)
+- **Mav's Refuge & the Deep Jungle Province (~15,000 total):** a tree city on 300–480 m hypertrees on the NE lee shore of the Ring Sea (1.9 atm, 33 °C), anchoring a more populous (~15,000) deep-jungle heartland in which the **flyer tribes also build single-tree crown villages accessed by trunk elevators** — single-tree versions of Mav's Refuge (the owner, 2026-11-19).
+  - Three **gateway trees** at Mav's Refuge are giant baobabs carved down to ~30 m, with spiral ramps and beast lifts: "un-assailable".
   - The central platform, **Mav's Crown**, carries the **Council Chamber**, with speakers' stones at the quarters.
   - Holds: Ghostwood Hold, Prism Hold, Highbough, Southbank Hold, Riders' Rest. Also the Rookery and the Silk Loft.
 - **Girder**: an outlying village in a cyclopean Ancient ruin of four rusted 30-storey frame towers.
@@ -347,16 +415,16 @@ The Ancients were the original civilization that colonized Krator, with roots, h
   - Roost decks on top; a palisade, farms and a round tajug-roofed assembly hall below.
 - **Pinnacle Rock:** a Beast Rider town (the owner, 2026-10-18; planned build, `settlements/pinnacle-rock/PLAN.md`). A **red sandstone mesa** rises out of the jungle, topped by a group of **rock stacks and pinnacles** of the Garden of the Gods kind, fins and spires of the same red stone. The pinnacles carry **platforms built round them for the flyers' roosting**, the rookery decks of Girder's towers on living rock; the **body of the town is on the mesa** top among the stacks; **farms surround the mesa** on the jungle floor below. **The site** (moved 2026-11-10, the owner: "a spot not too far that's got a bit more forest"): **map 5.1 px 1007,686**, on the savage hyperjungle's north-east edge, a knoll about 110 m over its 14 km round at about -1,290 m, with the north-east rim's savanna beyond it; about **1,500 mm** of rain a year on the 5.1 cut (1,200-1,600 mm within 12 km: monsoon forest and savanna glades, not the deep hyperjungle). Its first site (2026-10-18), a knoll at 4.21 px 755,351 standing 500-600 m over the floor under a reading of 3,000 mm that 4.22 corrected to ~1,380 mm, is retired: the page and the open world both stand at 1007,686 (core/simulation/PROPOSAL-LONGSONG-PINNACLE.md section 5). It stands at the northern edge of the Beast Riders' country where the hyperjungle thins toward the Inner Wall (Mav's Refuge 250 km south, the Hexahedron 400 km west; the Painted Men's polygon begins 10 km north, and Korona beyond it). The forest at this margin is Girder's size (150-270 m): the mesa rises about 250 m from the knoll's foot and the stacks 40 to 90 m more, so the roosts stand clear of every crown. The **gorge** of the old note is a dry one under the mesa's northern rim, where the rookery platforms look out. **The tribes:** the **Wingclaw** (giant archaeopteryx) are the roost town's own tribe, with **Quetzal** and **Nightwing** Wings posted there; the **Staghorn, Threehorn, Raptor, Hardshell, Tiger and Longcrawler** tribes are all represented in the town and in the farms and ranches round the mesa, their beasts the stock of the ranches and the draught of the fields. It is the Riders' northern march, a roost town where the Wings keep watch on the Painted Men's raiding trails (proposed, with the above).
 - **Raids on Shell Province**, the Izani veterans' enclave west of their country (§6.2), and on the road from Port Goto (the owner, 2026-10-26). **Nusidi**, the veterans' colony in their own country that the tribes took when they rose under Mav, is still contested: Iziz keeps trying to resettle it (the owner, 2026-10-27).
-- Mounts: quetzalcoatlus, giant bats, giant archaeopteryx, giant dragonflies. Riders carry lances. **Spider-riders** ride giant spiders that climb trunks and leap on draglines; they live in silk houses and work silk looms.
+- Mounts: quetzalcoatlus, giant bats, giant archaeopteryx, giant dragonflies, giant spiders, velociraptors, staghorn beetles, triceratops, glyptodonts, sabercat tigers, mammoths, giant millipedes, and (among the Iziz loyalists) littoral land-crabs. Riders carry lances. **Spider-riders** ride giant spiders that climb trunks and leap on draglines; they live in silk houses and work silk looms.
 - Architecture: Javanese joglo and limasan, Viking stave, Kashyyyk.
 - Sign: the **claw** (three talon slashes), green. Skull poles; "simple but not primitive".
 - Barracks are named by **Wing**. Nature shrines: First Bough, Rain Mother, Winged Ones, Deep Root, Green Silence.
 - Ships: a double-hulled voyaging canoe with a flyer's perch; a rookery raft.
-- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks), and gave Izani its ejectives, which the loans keep (*port'a*, *mek'a*); since Mav, the dialects are levelling into a Council speech on the Quetzal dialect. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **Language.** **Tł'aai** (“of the Claw”): Mongol and Apache sounds with a Star Wars edge (cl > tł', th > ł, ejectives, nasal vowels, vowel harmony, h > kh); verbs classify what they carry (*bii-* beast, *istik-* lance). Once one dialect per tribe; under Izani rule it took many Izani words and the Izani letters for trade (with four added marks), and gave Izani its ejectives, which the loans keep (*port'a*, *mek'a*); since Mav, the Free Confederacy's dialects are levelling into a Council speech on the Quetzal dialect, while the loyalist Land-Crab tribe speaks an archaic coastal dialect thick with Izani naval loans. `lore/tongues-of-krator.html` [the owner, Oct 2026; updated 2026-11-19]
 
 ### 6.7 The Screamers (north of the central crater; the Hexahedron)
 
-- A tribe living in and under the ruined **Hexahedron** arcology (1,100 m, a double pyramid held 300 m up on shafts).
+- A tribe living in and under the ruined **Hexahedron** arcology (1,100 m, a double pyramid held 300 m up on shafts), supported by a ring of autarchic out-villages and war-camps plus a **coastal fishing and raider-barge village** that sends out crude barges to interdict passing ships on the northern Ring Sea (the owner, 2026-11-19).
 - The Screamers are notable for two things: one, they seem to eschew ordinary speech and language, and communicate solely by screaming, yelling, and grunting at each other. This seems to be enough for them to get by, as they appear to have something like a functioning tribal village based out of a ruined arcology, the Hexahedron. This would make them more of a curiosity except for their habit of kidnapping outsiders and whisking them away to the Hexahedron, after which, they are never seen again… or if they are, they’re seen screaming and grunting along with everyone else at the next Screamer raid. Whether this is due to some kind of genetic or technochemical process, or even contagious mental illness, is not clear. None have ever returned and most caravans give the Hexahedron a wide berth, lest they fall into a Screamer punji trap, or wake up in the night by screaming raiders with nets and lassos.
 
 The Screamers’ mental faculties are a bit warped, but they are not stupid. They don’t know much of the wider world but, but they do know they are surrounded on all sides by foreigners babbling nonsense at each other, and it’s doing them a favor to bring them back to the village so the elders can make them Talk Good.
@@ -430,7 +498,8 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - Sign: the **hyperboloid**, yellow. No ships.
 - **A fluid society** (the owner, 2026-11-03): as in the Iron Republic, a Yuni worker may rise two stations in a single
   generation (core/simulation/PLAN-MONEY.md).
-- Controls Locus, Verge lower city, and an outpost to their north [TBD].
+- Controls Locus, Verge lower city, and Ranger HQ on Lake Vapora at the eastern end of the Stalker Gate (`sz85a8i5js`).
+- **Stalker bounties, gate guns, and elite Rangers** [the owner, 2026-11-25]: the Rangers' standing bounty on Stalkers is implemented as a high exchange price for salvaged **Stalker pneumatic guns** (`st_harpooner`) and **Ancient-alloy blades** (`st_blade`). The Ancient-alloy blades are used by an elite Ranger unit, and the pneumatic guns are mounted as **gate guns** at important places throughout the Yuni lands (Yuni's gates and Grand Vault, Locus, Verge, and Ranger HQ).
 - **Language and letters.** Yuni is *UNIV.* off the gate: the town grew in an Ancient agricultural and mechanical college, whose people sounded Australian. A thousand years carried those habits on until a modern English speaker cannot follow it: words clipped with *-o* and *-i* (*Labbo*, *Deppo*, *Bildo*), sliding vowels (*dai*, *hoi*, *nau*), phrases run together (*Gdai, mai. Awyagoi?*). The ruler is the *Emmo* (from Emeritus); outsiders say *Emir*, the desert caravaneers' form (§6.8). The walls keep the old spelling. Latin letters in stencil gate capitals; the ampersand counts as a 27th letter. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
 ### 6.12 Voth (SW Bay of Ring Sea)
@@ -473,6 +542,10 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - "The remote southern Sultanate": a rich hilly valley "like Shangri-La". **Gold is on everything wealthy, religious or civic; the valley's mines pay for it.**
 - Look: Tibetan massing with Indian, Turkish and Persian detail; Andean "cholet" paint. **No minarets, great prayer wheels instead.**
 - Rulers: the Sultan's Palace, the **Pleasure Dome**, the **Grand Vizier**.
+- **Money: the qud** (the owner, 2026-11-16: "Sultanate currency is the qud"), the coin the economy's Mint strikes from the
+  Treasury's gold; traders take the Izani Talent too (§6.2). Settled (the owner, 2026-11-16, agreeing Theodiga's money's proposal): a thin struck gold coin of about a gram, twenty to the Talent (0.05 Talents, the Kautoan shell's
+  worth, so a day's wage reads alike across the nations); a working day's wage about 54 quds (6 an hour, as the isles').
+  The sim keeps it in `settlements/theodiga/src/49m-th-money.js` (`TH_MONEY.TUNE`).
 - Guilds: Farmers, Miners, Goldsmiths ("the richest house in the valley"), Alchemists, Masons, Spicers.
 - Faith: temples, monasteries and a pilgrims' circuit of prayer wheels.
 - **Erewhon, Pearl of Xanadu** [Ed: city is half built rn as hill placement is broken and haven’t been able to spare a session for it].
@@ -480,6 +553,11 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - The palace sits on a plateau above a cliff; the prison is in a cliff.
   - The **Pleasure Dome of the Bay** is the Sultans' own extravagance, built for their feasts. It is not Ancient: no Ancient dome stood there. [the owner, Oct 2026]
   - **The Caves of Ice** are an Ancient construction, not a natural cave. Something deep inside keeps them unnaturally cold. The sacred river Alph. [the owner, Oct 2026]
+- **A domesticated glyptodont**: the Xanadui's slow, armoured pack and draught beast, domed shell and thick legs, carrying the
+  caravans' bales and water-jars; got from the **Kimr** (the Labyrinth's people, `biomes/labyrinth/PLAN.md`) in the distant past and bred tame since, a cousin of the
+  wild glyptodonts the Beast Riders' **Hardshell** tribe rides. Its name is still to be set. [the owner, 2026-11-17: "given the
+  painting, we can also canonically give the Xanadui a domesticated glyptodont, perhaps acquired from the Kimr in the distant past";
+  the painting is the envoys' tapestry of the shell-backed caravan in Erewhon's citadel, `patterns/easter/shell-caravan`]
 - **Origins:** the Xanadui likely descend from **Theodiga**, the Ancient dam arcology at the valley mouth that harnessed the cascade (§4). *Xanadu*, *Alph* and the *Caves of Ice* are Ancient names, taken from Coleridge's *Kubla Khan*. [the owner, Oct 2026]
 - **The faith: the Decree (*Ḍikrī*) and the Broken Wheel** [the owner, 2026-11-11; the detail is *proposed*:
   `kits/qiblai/PLAN.md` section 2a].
@@ -495,13 +573,89 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
     milk.
   - **Pilgrimage.** The kora is walked three times with eyes lowered. The **Ālph** is the sacred river; the geysers, the
     Caves of Ice and **the Singing Gjár** in the High Rift are holy places.
-  - **Qiblai** (Kubla's city) is its holy city, under a council of abbots.
-  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth; it is to be redesigned
-    with a dome or domes.
+  - **Qiblai** (Kubla's city) is its holy city, under the **Prismarchy**, the council of the eight abbots of its great
+    monasteries. Each abbot is a **Prismarch**, and each monastery has its own colour (crimson, saffron, gold, green,
+    turquoise, blue, violet, white). The great temple flies a banner of each colour turned toward its monastery, so it is
+    also called the **Rainbow Temple** [the owner, 2026-11-11]. The saffron monastery is the **History Monks'**, the Order
+    of Longsong's, flying the Order's banner, and the Order takes an eighth of the council's income [the owner, 2026-11-16].
+    The green monastery is the **Order of Viridian Thought**, the tea Order: its house in Qiblai is its seat on the council,
+    its head monastery a tea estate on the scarp's mist slopes (scale model px 962,1562; 813 m, ~400 people, ~40 t of tea a
+    year in the spring flush, sent to Qiblai by road, about five days) [the owner, 2026-11-16]. The blue monastery is the
+    **Order of the Azure Dream**, whose head monastery is **Grēṭ-Āil**, the long isle in the middle of Erewhon's lake
+    (px 845,1504, 900 people with its fishing villages) [the owner, 2026-11-16]. Each Order keeps its spoke in Qiblai as its
+    town house on the council. The crimson monastery is the **Order of the Flashing Eye**; Sekriḍ, a village on Kirstabal's
+    lake, is its own (`settlements/kirstabal/PLAN.md`). **Its monks are the Sultanate's scouts on the Rift**: from their head
+    house on the east volcano of Erewhon's lake, which faces the Rift, they watch the Lizardmen's movements on the Rift floor
+    [the owner, 2026-11-23] (§6.20; `settlements/flashing-eye`). The white monastery is the **Order of the White Lily**, known for its
+    knowledge of medicine and healing; unlike the other great Orders, its complex in the city is its head house, and doubles
+    as the city's hospital [the owner, 2026-11-16]. It also runs **the latex house at Kirstabal**, where the Scarp's poppy
+    latex is dried to opium; it keeps a share and the seat pays it a small fee [the owner, 2026-11-16: "The White Monastery
+    runs the latex house", "takes a share and a small fee"]. The violet monastery is the **Order of the Violet Storm**, a
+    martial order of sword and bow; its central monastery is **the House of the Tempest** on the West Arm in the Gold March,
+    about 600 strong, and its house in Qiblai is the Tempest's daughter [the owner, 2026-11-16; `settlements/strongwall/PLAN.md`].
+    The Decree forbids its clergy war-making, and the Violet Storm keeps that law by keeping the Vale: it makes no war, and
+    its riders go out only to chase a raid [the owner, 2026-11-16: "they ride out to chase a raid";
+    `settlements/strongwall/tempest/BLUEPRINT.md`].
+    The gold monastery is **the Yellow Monastery, the Order of the Beacon**, whose head house is the refurbished Ancient
+    beacon fort over the Rift [the owner, 2026-11-16; `settlements/beacon/PLAN.md`]. The turquoise (teal) monastery is the
+    **Iridescent Order**: it keeps a house in Lāiṭwāl, the Light Wall, and its head monastery stands at the outlet of Lāiṭwāl's
+    lake in Opal Valley, on the shelf below the sill where the lake spills over the lower riser (scale model px 1016,1655) [the
+    owner, 2026-11-16 and 17; `settlements/iridescent/PLAN.md`]; it keeps a second great house at Ōpal-Phōrḍ, the opal road's ford at the valley's mouth, at the
+    cataract's foot [the owner, 2026-11-23; `settlements/opal-ford/PLAN.md`].
+    The city is fed by the Orders' **temple estates**: about 128 villages and 30,000 people out to 30 km, each Order
+    holding the sector round its monastery's spoke, rice farms near the city, buffalo dairies and hives toward the
+    forest (milk and honey are the sacraments) [the owner, 2026-11-16: "Grow the estates"; `settlements/qiblai/WORLD.md`].
+  - **Grēṭ-Āil, the Azure Dream's head monastery**, on the long isle's south shore facing Erehwon across the lake, in a
+    cove at scale-model px 846,1508.7 [the owner, 2026-11-16; `settlements/azure-dream/PLAN.md`].
+    - **The fishermonks** fish the lake from dugouts, by night with lamps, without qualm.
+    - **The Hall of Dreaming** holds 256 cots in eight turnings. Anyone who has fasted and bathed may sleep there, the
+      women on one side and the men on the other.
+    - **The rite.** The sleepers drink honey, milk and blue lotus. The Hall's prayer wheels stop at night: the Order's
+      heresy, argued on the council.
+    - **The Order of the White Lily** sends the sick who are not mending to sleep there seven nights.
+    - **The Station's passes** open the Hall's shutters.
+    - **The isle's people**: 900 in all, 300 in the monastery and 600 in three fishing villages (West End, North Shore,
+      East End).
+    - *Proposed* (the plan's): the Order holds that the Song was dreamed, broke off, and comes back in dreams.
+  - **Theodiga.** *Proposed:* Theodiga, the arcology the Xanadui come from, is the dome on earth. It is redesigned with
+    domes, the Song's dome among them (`settlements/theodiga`, 2026-11-16). The Rare Devisers work the Ancients' dead bore
+    from Theodiga to Stair under the royal licence [the owner, 2026-11-16: "we can leave in the stair to theodiga tunnel"].
   - **Distinct from the History Monks,** who keep the same poem as an English text with its author's name, and say
     nothing.
 - What to say of the fabled city of Erewhon, Pearl of Xanadu, Queen of Cities? Its great wealth and great remoteness make it a byword for exoticism and luxury among the peoples of the northern crater. The Vale of Xanadu is blessed by geography – a lush vale in an eastern rift lake, rising above the abyssal lakes that stretch west; to the north, rough high passes, often blocked by lava flows or earthquakes, are the most direct way to reach the teeming peoples of the Crater. With this ruggedness, only brave adventurers and traders brave the country, its bandits, and the robotic stalkers rumored to haunt it to venture south to Xanadu. But ah, what rewards! For Xanadu has plentiful gold mines and lush fields of cacao and other spices to match. Even the poorest of Erewhon eat like nobles elsewhere – and the Sultan himself? Well, the feasts and orgies of the Pleasure Dome have made Xanadu a byword for decadence as well. With its closest neighbors being the peaceful History Monks of the chilly Oidong Valley, and the lowlands tribes of Lizardmen who occasionally raid, but find the highland air too thin and chilly, the Sultanate has enjoyed splendid isolation for most of its history; even Iziz at its height was not so arrogant as to try to conquer it.
 - Things may be poised to change however. The current Sultan, a tremendously fat man who relies on 4 servants to carry him around in a palanquin, is such a prodigal spender that even the Sultanate’s ledgers are running in the red; and his longsuffering Grand Vizier has been pulling his beard out trying to muster up more money for guard patrols. The Lizardmen, from as much as can be gathered about that famously hostile race, seem to have new leadership, and their raids grow increasingly bold. While rich, the Sultanate is rather deficient in iron ore and scrap, and their best weapons are always obtained from Izizian and Yuni traders. If something were to cut that trade off, trouble may well come to paradise….
+- **The towns and houses** [the owner, 2026-11-15/16; the plans named, and `core/region/data/xan-tune.js`, the Sultanate's
+  economy on the sim]:
+  - **Erewhon's lake** is narrower and in the valley's middle, an Atitlán shore of bays and headlands round a long isle (scale
+    model 5.1 edit 7 re-run). **Erehwon** stands on its south shore.
+  - **Phēr**, the north shore's fair town (6,000), is seated by **the Sultan's heir**. It stands by the Swīṭ Siṭrīm, "sweet stream",
+    with a harbour under the wall and the fair ground on the rim (`settlements/pher/PLAN.md`).
+  - **Thalaba** moved up to the bench at the mouth of Godshearth (2,400), with **Ōlḍ-Thalaba**, a fishing village of 600, on its
+    old shore. Its road to Phēr goes up the Qol valley (about 105 km), with a mule path straight down the scarp. A small **Dalab
+    mission** of about 30 genepriests keeps a house there and sends its own party to the Grove. The Sultan takes **a tenth of every
+    Godshearth haul and a fifth of the rarities** (`settlements/thalaba/PLAN.md`).
+  - **Kirstabal**, the road town under Strongbow, has a smaller Atitlán of its own, the Lower Xanadu Lake and its eight villages (and Gihon),
+    and the White Lily's latex house (`settlements/kirstabal/PLAN.md`).
+  - **Lāiṭwāl**, the Light Wall, is the seat of Opal Valley and the Glaziers' main hold: 5,000, half Glaziers in the wall and half
+    Xanadui on the bench. The Glaziers pay the Sultan's Fifth in opals, and the Sultan's mines across the lake are its works village
+    (`settlements/lightwall/PLAN.md`).
+  - **Strongwall**, the Master of Mines' fort in the Gold March, keeps **the Golden Tears' court** inside its walls, their
+    forward post for the Lizard-country expeditions. It **assays and smelts** the March's ore to bullion. It holds enough
+    powder for a few cannon, but **its musketeers are hired from the north** (Izani, Yuni and the Crater's free companies), paid by
+    the Treasury (`settlements/strongwall/PLAN.md`).
+  - **Gihon**, at the Opal River's mouth on the Lower Xanadu Lake (where the fishing village of Ōpal-Māuṭh stood), is **the Lower
+    Lake's garrison town** (8,500) and **the seat of the Sultan's Mint**. Inside its slate-walled square stands a second walled
+    square, **the forbidden city**: the garrison fortress, the **Mint** that strikes the qud, the **assessors** who take the Sultan's
+    Fifth of the gold and the opals where they come down (the bullion from Strongwall, the opal down the gorge from Lāiṭwāl),
+    the treasury, and **the Golden Tears' head house** (the owner, 2026-11-17: "Move HQ, keep a court"; "Assay at Strongwall,
+    mint at Gihon"). Its temple of the Decree is dressed in gold and opal. The White and the Violet orders keep daughter houses
+    there. The capital's citadel keeps the Treasury and a small **court mint** for the court's own coin (the owner, 2026-11-22).
+    Down the lake at the outlet, **the Landing** (2,500) stands on monumental stone piers either side of the river's mouth, the
+    barges' stop and the portage road's head to Qiblai; hamlets line the Alph's valley up toward Theodiga
+    (`settlements/gihon/PLAN.md`).
+  - **The three merchant houses** are the Brotherhood of the Two Horns (the Twins' guides), the Golden Tears (armed prospecting
+    in Lizard country, caravan escorts) and the Rare Devisers (the Godshearth expeditions; the royal licence in scrap and rare
+    artifacts, their main house at Theodiga).
 - Sign: the **eight-spoked wheel**, saffron and maroon. Ships: a swan barge, a dragon boat, a bullion carrack.
 - **Language and script.** Xanadui: the furthest drift of all, with Nepali, Tibetan and Persian sounds (retroflex t/d, breathy stops, q, x, nasal vowels), verb-last, prepositions turned case suffixes (*-bi* by, *-ṭu* to), and evidentials (*-sin* seen, *-se* they say). The Latin letters were lost; the temple grammarians invented a Tocharian-looking syllabary on a sound grid for the prayer wheels. `lore/tongues-of-krator.html` [the owner, Oct 2026]
 
@@ -510,6 +664,15 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   few loanwords** and **a greater proclivity for large eyes among the Xanadui**. The loans (settled 2026-10-23), Northern English by
   way of the crews: *gāphar* (an overseer, from *gaffer*), *mārā* (a comrade, from *marra*), *bāiṭ* (a traveller's packed
   food, from *bait*), *lāin* (a caravan route, from *line*).
+- **The Glaziers, the crews who were not absorbed** (the owner, 2026-11-10/11; `kits/tungang/PLAN.md` §1.4). One crew went on up
+  into **Opal Valley** and kept a loj in the fault scarp over its milk-opal tarns, above the Sultanate's writ, a thousand years
+  apart from the Union: no Line, no trains, and still they read **the timetable of a train that never comes** at every turn.
+  The Xanadui call them **the Mārā**, "the comrades"; the Tungangs call them *glaizaz*. They sell precious opal down the valley
+  (the Sultan's Fifth paid in cut stones) and cut **potch**, the common opal jewellers throw away, into lamp panes
+  (*moonglass*). From Oidong's herbalist-monks they took the register (every adit and vein numbered like a station) and the
+  long watch; from Xanadu gilt, click wheels and painted fronts tiered on the scarp. Their tongue is now **half Xanadui**:
+  Tungang words in Xanadui grammar and sounds (`lore/tongues-of-krator.html`, "Glazier speech"). They wear **turbans like the
+  Xanadui**, with slight touches of the Orient in their dress and halls.
 
 ### 6.14 Jimjam
 
@@ -556,6 +719,13 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
   - Saffron-robed monks and academics; only they and the geomancers may enter the **Vault**.
   - Their saffron is the Order's colour.
   - Chapterhouses at Dalab, Iziz and Locus.
+  - **An outpost at the High Rift's Singing Gjár** (the owner, 2026-11-11): monks keep watch on its singing crystal fissures
+    from a small house in Longsong's style (`biomes/highrift/PLAN.md` station 5).
+  - **The White Gills Hermitage** (the owner, 2026-11-02 and 2026-11-16): fifteen monks keep a house in the White Gills' pipe
+    field (scale model px about 1015,1430), on the Twins' Dark-Tube Road. They count the Breath Pipes' day-rings for the date
+    of the Cataclysm, and the house doubles as the crossing's caravan stop, its saltcups the only potable water between Bitta
+    and Lasso. Their other duty is passing the news and rumours of travellers to Longsong: the Order's ear on the Catch
+    crossing (`biomes/gills/PLAN.md`; `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`).
   - They keep the Ear.
   - Main monastery is **Longsong**, in the Oidong Valley east of Xanadu (owner, 2026-10-15; an older note put Oidong far south over the outer wall). The Ear is at Yuni.
   - Rumored to have techniques to speed up and slow down time. Some say they can travel in time; authorially they cannot.
@@ -563,6 +733,12 @@ The Screamers’ mental faculties are a bit warped, but they are not stupid. The
 - **Longsong at Oidong** is a training, research, archival and containment facility. Keepwell sends its most promising operatives, proven in the field, to learn the Order's more secretive techniques and relics. It holds the Order's archives and its most powerful technology, much of which it seeks out so it does not fall into the wrong hands, and some of which may not be safe for even the wisest to use. Built in the Xanadu style with the chapterhouses' own forms (drum halls under tile cones, the parabolic gate, the toron spire, the Order's blue) to the overall effect of the Potala: one complex of 400 x 400 m, a walled lower ward with farms and gardens at its foot, a main mass on the rock, the founders' tombs in its red upper palace, vaults for relics, a closed ward for people and a sealed library of forbidden records (the blueprint: `settlements/longsong/`).
 - **The forbidden depths and the Procrastinator (owner, 2026-10-19).** Longsong's decor is as if Buddhist monks ran the SCP Foundation: a register of what the Order holds (designation, class, procedure), seals and plaques on every sealed door. In the forbidden lower depths of the monastery lie many artifacts, among them one resembling a gigantic prayer wheel with glowing glyphs, **the Procrastinator**: the Monks are known to be able to speed up and slow down time, and this device keeps several malign entities and objects sealed by slowing their time down to a virtual standstill. Only the eldest monks know the full extent of what it protects them from. Other Monks, it is said, practise a Kung Fu that is fast as lightning... and there are rumours of more advanced techniques. (The build: `settlements/longsong`, on its own rock over the Longsong stream at px 954,1296; the register's seven named seals and its blank eighth are in `src/40-ls-plan.js`.)
 - **Language.** The Historians keep the most careful English in the crater, in a rounded book hand, with a little Xanadui from Oidong (*sar*, dental th) and Xanadu's evidence grammar as margin marks: seen, said, and (their own) inferred. They keep Coleridge's *Kubla Khan*, which the Sultanate's names come from. `lore/tongues-of-krator.html` [the owner, Oct 2026]
+- **The Labyrinth report** [the owner, 2026-11-09]. A Monk posted from Longsong to the Labyrinth, a remote and savage region, wrote
+  that its Two-Snouts keep their own funeral customs, paint one another with ochre and mud, and set fermented melons aside for later
+  occasions. Many at Longsong think he had a few too many fermented melons himself. The Monk was **Lu-Tze** [the owner,
+  2026-11-11], and the Two-Snouts are in fact sapient, or very nearly so. **The report is in Longsong's archive** [the owner,
+  2026-11-11], with the Kimr's Tellings he wrote down, the only written record of them; the Kimr remember him as the Melon Monk
+  (§6.24).
 
 ### 6.16 Hykkousoi
 
@@ -818,8 +994,12 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   hall's stock: hides for roofs, bone for building). Captives would be pointless anyway: their kin always know where they
   are, and as slaves they are listless.
 - **Where.** The Rift floor east of the great lake's basin: the "Lizardmen" region on the scale model (px ~293-610 by
-  1087-1345), round the Rift's terminal seas. On the model: **Sauropolis** (city, px 493,1266, at the trough's deepest,
-  -2,600 m), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224). Too high for them to go
+  1087-1345), round the Rift's terminal seas. On the model: **Basilisk**, the capital (city, px 493,1266, at the trough's deepest,
+  -2,600 m; called Sauropolis until the owner renamed it, 2026-11-17), the villages **Komodo** (593,1287), **Gila** (381,1155) and **Tuatara** (546,1224),
+  and **Iguana**, the granary town on the Pile's plateau (the owner, 2026-11-17: "the cube plateau village will be called iguana";
+  *proposed* 5.1 px 713,1569); and **Skink**, the salt village on the country's richest rock salt beside a salt lake north
+  of the Pile's plateau, ~1,500, between Iguana and Gila (the owner, 2026-11-17: "this will be the village of Skink";
+  *proposed* 5.1 px 691,1521; `settlements/skink/PLAN.md`). These are old-canvas pixels: 5.1 is +272,+330 (`core/simulation/PLAN-LIZARDMEN.md`). Too high for them to go
   comfortably: the rift rim, which is why the Tungangs and Dalab hold out there (§6.1). **The Pile**, the Ancients' hub in the
   Rift and the reward for whoever braves the Lizardmen (§4), lies deep in their country.
 - **The reliquaries.** They build great **cyclopean reliquaries** (the Xanadui call them temples), store strange
@@ -833,10 +1013,14 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
   The army was destroyed and Rishtowar killed. The eastern Rift floor was not won back for 200 years, when his
   great-great-great-grandson took it with ex-Izani legionaries. **Today Xanadu's vigilance is waning**, and raids reach as
   far as the Vale, for livestock, tools and valuables (§6.13).
+- **Who watches them** [the owner, 2026-11-23]: **the Order of the Flashing Eye**, the crimson monastery of Qiblai's council
+  (§6.13), whose monks are scouts monitoring the Lizardmen's movements in the Rift, from their head house on the east volcano
+  of Erewhon's lake, over the Rift (`settlements/flashing-eye`). *Proposed*: what they see goes up the council's mirror line,
+  which the Order keeps, the same day.
 - **The tunnel wars** [the owner, 2026-10-23]. The Ancients' Rift line once ran the length of the Rift, worked by the
   crews who became the Tungangs (§6.1). When the Lizardmen came, the Tungangs east of Chimes were wiped out in **vicious
-  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**,
-  sealed into the upper levels of **the Pile**, about a thousand people farming its terraces among the Lizardmen, who
+  tunnel wars**; the survivors fled west and up onto the fells, and many Fellgangs descend from them. One loj did hold out: **Loj Nahn**
+  (Cube was the Line's ninth station: the owner, 2026-11-11), sealed into the upper levels of **the Pile**, about a thousand people farming its terraces among the Lizardmen, who
   attack its night parties but have never pressed it further (§6.1). Tungang and Fellgang agree that the only thing worse than a Labber is a Lizard.
 - **What everyone can see** [the owner, 2026-10-23]: the Lizardmen **try to use Ancient relics**, fumblingly, in bizarre
   and esoteric ways no human would think of: the strange constructions in the reliquaries are made of them. And they
@@ -956,6 +1140,257 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 - **The Ordeal (*Urudīru* / *ʾUrdīlum*) and open recruitment.** Slavery as it was no longer exists, but its legacy endures: families seeking their children to advance may submit their sons to be drafted into the soldiery, where they start at the bottom of the hierarchy (the cadet-caste, marked by **-ko**), subjected to a brutal high-altitude training process (**the Ordeal**, *Urudīru*) that not all survive, and in time may rise as far as their ability takes them. This offer extends to outsiders as well: after the Vothic conquest of Nazar, many escaped **Nazari** slaves fled up to the plateau, and the braver and stronger among them submitted to the Ordeal and in time earned their place among the ruling Sword-Caste (**-šu**). While most escaped Giants prefer the refuge of **Tallwalls** in **Greenstep**, not a few **Free Giants** (*Vrivolci*, Shumari *Gēdu-šu*) are found among the Shumari these days either.
 - **Language and script** (`lore/tongues-of-krator.html`, the Shumari tab). Their language is English evolved to sound like **Akkadian and Japanese**: it shares the Proto-Nazari / Zeijani emphatic consonants (*ṣ, ṭ, q*), *š* for *th*, *p/b* for *f/v*, long vowels, and old Akkadian mimation (*-um / -im*, worn in spoken Shumari to the Japanese-style moraic nasal *-n*), reshaped in the polyglot Mamluk barracks by broken consonant clusters (*suṭāru* "star", *suṭurōn* "strong", *urudīru* "ordeal", *gurudun* "gold"), *l > r*, geminate stops (*šippu*, *kattu*), and strict verb-final syntax. **Reference to caste is part of the grammar**: every animate noun, pronoun, and finite verb must mark one of the four caste registers — **Sword-Caste** (*-šu* / verb *-maṣu*, *-šaru*), **Hearth-Commons** (*-ra* / verb *-baru*, humble *-ṣabu*), **Ordeal-Cadet** (*-ko* / verb *-ṭiru*), or **Outlander** (*-no* / verb *-naru*). They use an **invented 28-letter Blade-and-Hook Alphabet** (*Šumaru-kattu*) of katakana- and Daedric-like blade stems, gold breath-thorns (*ḫa-ṭōnu*), and crimson caste-bars that was one of the parent influences on the **Vothic alphabet** when the Chichani conquered Doriyan (*Driyan*).
 
+
+### 6.24 The Kimr (the Labyrinth; the Hall of Heroes)
+
+[the owner, 2026-11-09 and 2026-11-11, where marked, with the owner's answers to the first draft (2026-11-11, second round);
+everything else *proposed*, 2026-11-11; what is still open is at the end of the section. The land: `biomes/labyrinth/PLAN.md`; the Hall: `biomes/labyrinth/PLAN-GATE.md`; the tongue:
+`lore/kimr-tongue.md`; the look: `biomes/labyrinth/KIMR.md`.]
+
+- **Who they are** [the owner]. The native people of **the Labyrinth**, the canyon maze in the SW Glaciated Dome that the Historians
+  read as an Ancient preserve of Earth's Ice Age megafauna, grown huge. They descend from the people of the ruined arcology at its
+  eastern mouth, **the Hall of Heroes**, where they now bury their dead. They live in small **raised pueblos** (Zuni and Hopi), each
+  a fortress on a rock or a plinth against the rampaging herds, entered by ladders pulled up at night, and they **use every part of
+  every animal**. **Conan-the-barbarian types**, culturally obsessed with the idea that one can **draw strength, bravery or other
+  qualities from the honoured dead**, animal and human. **Their art: southwestern meets Cimmerian.**
+- **The Hall's war** [the owner, 2026-11-11]. **The Ancients are among the Kimr's ancestors.** In the Cataclysm the Hall of Heroes
+  (then the preserve's arcology) was notable for **a united effort by its whole population to defeat an Enemy the Kimr now call the
+  Dark Spirit** (*y Sbirid Darg*). **They won, but the arcology was ruined in the process**: the Hall's broken cells and fallen decks
+  are the scars of that war, and the Hall is named for those who fought it. *Proposed*: the Tellings of the war are the oldest and
+  the most sung; they say the Dark Spirit came "out of the Boss's things" and was fought room by room down the columns, and that
+  the survivors walked down into the Range and became the Kimr. What the Dark Spirit was, no Kimr knows, and the Tellings disagree.
+- **The keepers.** They call themselves **Kimr**, from *keeper* [the owner, 2026-11-11] (*keepers* > *kipr* > *Kimr*: `lore/kimr-tongue.md` section 3),
+  for their ancestors were the preserve's staff and the town round them, who kept its beasts. They hold that they were set to keep
+  the Range (*y Reinj*, the Labyrinth) by **the Boss** (*y Bos*), the preserve's owner, who was never at the Hall, and who will come
+  back one day to **count the herd** (*y Kawnt*, the Count). This is the root of their law [the owner, 2026-11-11: keep it]:
+  - **every part of every animal is used**, because the Boss will ask for an account of every beast, and a wasted one cannot be
+    accounted for;
+  - **the herds are counted** every spring from the Lookout (*Lwgawd*), and the tallies are painted on its walls, a thousand years of
+    rows;
+  - **the Aurochs is the Boss's own beast**, and the only one they hunt only in rites.
+
+  The Boss is not an ancestor, unlike the Hall's own Ancients, and has no mask: no one may make his face. Whether the Boss will be
+  pleased with the count, and whether he knows about the Dark Spirit, is the Kimr's oldest argument.
+- **How they look.** *Proposed*: baseline humans (no Ancient lineage of their own: §7's rule leaves them unmarked unless the owner
+  says otherwise), big-framed and heavy from a meat diet: ruddy brown skin weathered dark, black or dark brown hair worn long and
+  bound with bone and sinew, light grey or blue eyes common in some clans (the "keepers' eyes"). Warriors are scarred on purpose:
+  a scar for every taking (below), cut and rubbed with ochre.
+
+**Virtue-taking (*teig*): what the dead give, and how it is taken**
+
+- **The doctrine.** Every creature holds its virtues in its body after death, until someone takes them. A virtue passes into the one
+  who **wears** part of it, **eats** part of it, **paints** with what is made from it, or **carries** part of it as a charm. Their
+  grammar marks it (`lore/kimr-tongue.md` section 4, "the taking mutation"): *Twsgr* is a tusker; *Dwsgr* is its toughness, held by a
+  person, and the person who holds it.
+- **What each animal gives:**
+
+  | The animal (Kimr) | The virtue (taken form) | How it is taken |
+  |---|---|---|
+  | **The great Aurochs** (*Awrog*) | **kingship** (*Hawrog*): the right to lead in war and to be obeyed | only in the rite hunt (below): its horns on the helm, its heart eaten by the one who struck the killing blow, its hide the mantle, its skull on a pole on the Hall's causeways |
+  | **The pachyderms**, the tuskers (*Twsgr*: gomphotheres, shovel-tuskers, deinotheres, stegodons) | **toughness** (*Dwsgr*): the hide's | **worn**: tusker-hide cuirasses and kilts, layered, the line warriors' armour; tusk-ivory for spear blades and the greatsword |
+  | **The mammoth** (*Mamth*) | **endurance and memory** (*Famth*) | **worn**: mammoth wool woven into the elders' robes and the masks' ruffs; the Tellers chew a sliver of its ivory before a long recital |
+  | **The woolly rhino** (*Rhainw*) | **the charge** (*Rainw*) | **worn**: its horn on the brow of the shock warriors' helms |
+  | **The sabre-tooth** (*Semr*) | **ferocity** (*Hemr*) | **eaten and carried**: its heart eaten raw by its killer; its canines as daggers; its skull as a helm. Those who hold Hemr are the **Hemr**, berserks, who fight in front |
+  | **The ground sloth** (*Lloth*) | **the grip, and patience** (*Loth*) | **carried**: claw charms on climbers and on the women and men who work the ladders and the walls; its fat for the lamps of long vigils |
+  | **The glyptodont** (*Glib*) | **guarding** (*Lib*) | **given to the house**: its shells roof the round rooms and cover the cisterns; its osteoderms are sewn into scale shields; its tail club is a mace. A house under a shell is guarded |
+  | **The giant elk** (*Elg*) | **swiftness and pride** (*Helg*) | **worn**: antler crowns on scouts and runners; its marrow eaten before a race |
+  | **The dire wolf** (*Dair*) | **the pack's faith**, loyalty (*Ddair*) | **eaten together**: sworn brothers and sisters share one wolf's heart; its teeth as necklaces, one for each bond |
+  | **The short-faced bear** (*Ber*) | **boldness**, and **greed** (*Fer*) | **painted**: a bear-fat paint on the face before a raid. It is a doubtful virtue: the bear robs the sabre-tooth of its kills, and "Ber's way" is to take what others killed |
+  | **The Two-Snout** (*Twsnawd*, said only at funerals; *Llefr*, "the Clever One", in daily speech) | **cunning** (*Dwsnawd*): **the forbidden taking** | almost never. A Two-Snout's skull is never taken, its heart never eaten. A very few scouts and the Bogi dancers (below) wear a strip of its hide, and are trusted by no one after. *Na teig Dwsnawd*, "do not take the Two-Snout's cunning", is the proverb for *do not be too clever* |
+
+- **The rules of taking.**
+  - **Only from your own kill, or a gift.** A virtue taken from another's kill is stolen ("Ber's way"), and a stolen virtue is held to
+    rot in the thief.
+  - **Every taking binds** (*proposed*, after the Irish *geis*): each virtue lays a **nogo** (taboo) on its holder. One who holds
+    Dwsgr may not turn from a charge; one who holds Hemr may not eat where others can see; one who holds Helg may not ride or be
+    carried; the Hawrog may not refuse a challenge to the horns. A broken nogo spills the virtue, and the taken name is cut from the
+    person's name.
+  - **A name is a list of deeds.** Each virtue taken is added to the holder's name (`lore/kimr-tongue.md` section 5): *Darg Dwsgr
+    Ddair*. A scar, rubbed with ochre, is cut for each; a stranger's life can be read from their name and their arms.
+  - **Never from people.** The Kimr do not take trophies or virtues from human enemies: only the beasts and their own kin give. A
+    foe's body is left whole, which their enemies find stranger than any mutilation.
+- **The human dead give too.** A dead Kimr's virtues go to their kin by what they leave: a warrior's tusker cuirass to the child who
+  carries their name, an elder's robe to the one who keeps their house. The greatest of the dead give to everyone: they become
+  **heroes** (*Hirw*), and are carried in masks.
+
+**The heroes (*Hirw*): the ancestor-embodiment cult**
+
+- **What a Hirw is.** A **hero of the dead, carried by the living in a mask**, after the Hopi and Zuni *katsina*: when a dancer puts on a
+  hero's mask, the dancer **is** the hero for as long as the mask is on, and speaks with the hero's voice and authority. The heroes
+  are always **"they"** (*ddei*), even one: a hero lives on in all who carry them (*Na dai Hirw: kari wi ddei*, "heroes do not die: we
+  carry them"). Not Dhelv's spirits (`kits/zeijani/PLAN.md` 6.2): every Kimr mask is a person who lived.
+- **Women carry them; men wear them** [the owner, 2026-11-11]. The heroes live in **women's keeping**: women carry the masks between
+  the Hall and the villages, keep them, feed them and speak for them between the dances, and the proverb's *we* who carry the
+  heroes is the women. **Men wear them in the ceremonies**: a man puts the mask on only for the dance, and gives it back to the
+  woman who carries it when the dance is done. *Proposed*: a mask travels as a **hide bundle** on a carrier's back, wrapped like a
+  child; a man who keeps a mask overnight has stolen it. **Households are matrilineal** [the owner, 2026-11-11]: the rooms, the
+  clan and the masks a house carries pass from mother to daughter, and a husband moves into his wife's house. The other offices
+  of the society (Tellers, Painters, clowns) are filled by **women and men both** [the owner, 2026-11-11].
+- **How a hero is made.** *Proposed*:
+  1. **The drying.** A dead Kimr of note lies a year in the Hall (below), and the deeds are gathered from the living.
+  2. **The Telling** (*telyn*). At the next Go Awd (the year below), the **Teller** recites the life before the masked society, name by
+     name, every taking and every nogo kept. Anyone may speak against a deed.
+  3. **The judgement.** If the society's head, the **Mask-keeper**, accepts the Telling, a mask is made: its face painted with the
+     hero's sign, its crown carrying the hero's takings (Aurochs horn for a Hawrog, tusks for Dwsgr, sabre canines for Hemr, antler
+     for Helg), and **one finger bone of the hero sewn into its brow**. From then the dead person is *Hirw* before the name, keeps
+     every taken name, and has a doll (below).
+
+  Most of the dead are not made heroes. They are the **honoured dead** (*Onr*), at rest in the Hall. The dead who are neither buried
+  in the Hall nor carried (the drowned, the lost, those killed by a Two-Snout and not recovered) are **ghosts** (*Gosd*), and walk.
+- **The First Keepers: the Ancients carried** [the owner, 2026-11-11: the Ancients are among the ancestors]. The oldest heroes are the
+  Hall's own Ancients, who fought the Dark Spirit and came down out of the ruin. *Proposed*: their masks have no small names, only
+  their old job titles: **the Ranger** (*y Reinjr*, the hunt's mask), **the Warden** (*y Wordn*, the law's mask: judges disputes at
+  the dances), **the Vet** (*y Fed*, the healer's mask, with a horn of salve and a bone knife), **the Counter** (*y Kawntr*, who opens
+  the Count every spring and carries a tally staff), and behind them a long line of the war's dead known only by what they did in
+  it (*the One Who Held the Stair*, *the Ones Who Shut the Door*). They dance first and last at every festival, and their masks are
+  the plainest: white, with the turquoise the Kimr keep for the Ancients' things, and alone of all masks a scrap of the Hall's white
+  metal, which is theirs (`biomes/labyrinth/KIMR.md`).
+- **The masked society: the People of the Hall** (*Pibl y Hol*). *Proposed* offices:
+  - **The Mask-keeper** (*Kimr Masg*): the society's head, always a woman (the women carry the heroes), who keeps the masks in the
+    Hall between seasons, judges the Tellings and names the wearers. The same word as the people's own name: the keeper of keepers.
+  - **The Carriers** (*karir*, women): each keeps one or more heroes' masks, carries them on the funeral road at Kwm In and Go Awd,
+    and hands the mask to its wearer at the dance.
+  - **The Tellers** (*telr*): the memory of the deeds, the names and the nogo. Each knows the Tellings of a clan by heart.
+  - **The Painters**: who make and renew the masks, the dolls and the hero signs on the niches, and grind the colours from bone,
+    blood, fat, ochre and kaolin.
+  - **The Wearers** (*werr*, men): the dancers who wear the heroes in the ceremonies. A wearer usually wears a hero of his own clan
+    and is chosen by the Mask-keeper for a likeness of deeds: a young warrior who has taken Hemr may be given a Hemr hero to wear. A
+    woman hero is worn by a man too, as the Hopi men dance the women katsinas.
+  - **The Clowns** (*llawn*, "the full ones"): sacred clowns drunk on melon beer, after the Hopi *koyemsi* and Zuni *koyemshi*, who
+    mock everything at the dances, the heroes included. Since the Monk's visit (below), one of them always plays **the Melon Monk**,
+    in a saffron hide and a gourd hat, writing nonsense on a melon rind.
+  - **The Bogi**: the ogre masks, after the Hopi *Soyoko*: Two-Snout masks with two trunks, who come to the villages at Long Naid
+    to frighten disobedient children and are bought off with meat. The only masks that are not heroes, and the only ones that wear
+    the Two-Snout's hide.
+- **The dances.** At each festival the heroes come down the ladders into the village courts in a line, the First Keepers leading,
+  each hero's wearer dancing the hero's deeds, the carriers at the court's edge with the empty bundles: the Hawrog's hunt, the Hemr's fight, the Telling of a life in steps. Drums of
+  tusker hide and rattles of glyptodont osteoderms; the songs are the Tellings, sung. The heroes give gifts (dolls, meat, horn
+  cups of melon beer) and judge: a dispute put before the Warden at a dance is settled, and no one appeals it.
+- **The dolls** (*dol Hirw*). Carved from poplar or larch root, or from ivory for a Hawrog, 15 to 40 cm, blocky, painted as the mask,
+  with a scrap of the hero's own takings tied on (a hair of the Aurochs, a chip of tusk). Given to children by the heroes at Kwm In,
+  so they learn who the heroes are and what each took; hung from the rafters of every house.
+- **The year.** *Proposed*: the heroes come out of the Hall with the herds and go home with the melons.
+
+  | Season | Feast | What happens |
+  |---|---|---|
+  | late autumn (*ffol*) | **Kwm In**, "come in" | the herds come down from the high paddocks to the gate lake and the low floors; the masks are fetched from the Hall along the funeral road, and the First Keepers dance the heroes into the villages. Dolls are given |
+  | the solstice | **Long Naid**, "long night" | the Bogi come; the Hawrog is confirmed or challenged (below); the longest Telling |
+  | spring (*sbring*) | **the Count** (*y Kawnt*) | the Counter's mask climbs the Lookout and the herds are counted, and the tallies painted; the year's quotas set (how many of each beast may be taken) |
+  | early summer | **the Aurochs Hunt** (*Hwnt Awrog*) | held only when a new Hawrog is to be made: the rite hunt |
+  | summer (*swmr*) | (no feast) | the hunters go north up the Warras' gorges to the Firebliss Range after the strays (`biomes/firebliss/PLAN.md`); the masks rest in the villages' round rooms |
+  | late dry season | **Melyn**, "melon" | the wild melons ripen and ferment where they fall; the clowns' feast, melon beer |
+  | after Melyn | **Go Awd**, "go out" | the year's Tellings; new heroes judged; the heroes walk home to the Hall along the funeral road, with melons and horn cups for the dead |
+
+**The Hall of Heroes (*Hol Hirw*)**
+
+- **The necropolis** [the owner, 2026-11-11; `PLAN-GATE.md` section 9]. The ruined arcology at the Labyrinth's mouth, where the Kimr
+  bury their dead: **burial niches** cut in rows into the broken cells of the residential skin (the cells are the tombs); **bundled
+  dead** on the topographies' fallen decks; **ossuaries** in the columns' halls. **Aurochs skulls and horns** over the niches and on
+  poles along the causeways; **ochre hand-prints**; **offerings of horn vessels and melons** on ledges. **The causeways across the pond
+  are the funeral road.** No pueblo is built at the Hall: **the living stay out**.
+- **Who lies where.** *Proposed*:
+  - **every Kimr** is buried in the Hall, but for kin-slayers, cowards who broke a nogo in battle, and anyone a Two-Snout took (if
+    the body is lost: the Kimr go to great risks to recover their dead from the Two-Snouts, below). The unburied are left outside
+    the Range for the scavengers, and become ghosts;
+  - **the honoured dead** (*Onr*) are bundled on the lower decks for a year (the drying), then their bones gathered into the
+    column halls' **bone houses** (*Bon Haws*), each clan to its own column;
+  - **heroes**: their skulls go to the **high niches** of the residential skin, facing out over the Range, under an Aurochs skull if
+    they held Hawrog; their sign is painted on the niche, and every mourner leaves an ochre hand-print;
+  - **the First Keepers**, the Ancients who fought the Dark Spirit, lie (the Kimr say) where they fell, through the whole Hall,
+    and their leaders in its top, in the dwelling caps, where no one has climbed in living memory.
+- **The funeral** (*Ffiwn*). The dead are carried on a hide litter from the village down the Way Out's bank (*y Wei Awd*, the Gowd
+  Warra) to the pond, and across the causeways by masked heroes of the dead person's clan, the mourners behind them with their hands
+  wet with ochre. At the niche, a **burial bowl with a hole knocked through its centre** (the Mimbres "kill hole": `KIMR.md`) is laid
+  over the face, a horn cup of melon beer beside it, and the words *Go awd, kwm in*: go out by the river, and come back in the masks.
+- **The Hall's hollows.** The topographies' great hollow halls are the **Mask House**, where the masks rest between Go Awd and Kwm In,
+  hung in rows from the Ancient galleries: only the People of the Hall go in. The stacks have their names and their stories
+  (`lore/kimr-tongue.md` section 6, "The Range: places"): the Garden (*y Gardn*), the Chimney (*y Chimni*, the Works Stack, which
+  "smoked when the Boss was home"), the Mine (*y Main*, where the keepers dug the Boss's copper, now nogo), the Lookout (*Lwgawd*,
+  where the Count is made) and the Quarry (*y Kwari*).
+- **The Ancient things are the dead's.** Any Ancient object found in the Hall belongs to the dead, the Kimr's own Ancient
+  ancestors, and some of it (the Kimr say) to the Dark Spirit, which is why none of it may be woken: it is nogo to take it out. The
+  Kimr have little metal for it, and the white Ancient metal in the ruin stays there. That leaves the Hall unlooted by its own
+  people, and a temptation to every outsider (the Fellgangs; the Order).
+
+**War and kingship**
+
+- **The Aurochs-horn helm** [the owner, 2026-11-09: their most famed warriors and kings wear its horns on their helmets]. The right
+  to wear Aurochs horns is **Hawrog**, kingship, and is earned only in the **rite hunt**. *Proposed*:
+  - a candidate who has held Dwsgr and Hemr, or another three takings, may ask the Hed of the villages for the hunt;
+  - the hunt's band brings an old bull out of its herd with fire and dogs into a graben corridor; the candidate **strikes the killing
+    blow alone**, on foot, with the heavy spear. A bull 3.5 m at the shoulder kills many candidates;
+  - the candidate eats its heart, takes its hide for the mantle, and has its horns set on a helm of its own skull bone; its skull goes
+    up on a pole on the Hall's causeways, where the poles of past Hawrog stand in a line that counts the kings.
+- **The Hawrog** is a **war-king**, raised over the villages in war or a great hunt; in peace each village is run by its **Hed** and
+  its elders, and the Hawrog is a name and a seat at the dances. Any Kimr who has made the rite hunt may **challenge to the horns**
+  at Long Naid, and a Hawrog may not refuse (the Hawrog's nogo). There may be several living Hawrog; only one leads at a time, the
+  one the villages follow.
+- **The war-queen** [the owner, 2026-11-11]. **Only the rarest and most Amazonian of women has ever been accepted as Hawrog.** The
+  rite is the same and the horns are the same; *proposed*: the Tellings name few enough that every Kimr child knows them all, and
+  each of them is a hero carried, and worn, at every festival. The word is the same, *Hawrog*: the Kimr have no other.
+- **The great houses** [the owner, 2026-11-11]. The Kimr feud with one another as readily as with anyone. **Each great-house-sized
+  pueblo** (*proposed*: *greidhaws*, after Chaco's great houses: a village of several hundred on its own rock, the head of the lesser
+  villages round it) **has its preferred ally house and its preferred enemy house.** *Proposed*: the ally is its *mara* (a Fellgang
+  word, below: they share hunts, Tellings and marriages, and stand together at the Hawrog's call); the enemy its *ffiwd*, the house
+  it raids for beasts and glory, whose champions its own meet, and whose dead it returns whole. Both pairings are old and remembered
+  in the Tellings, and they change only by a great deed or a great wrong. A Hawrog's first work is to make the feuding houses
+  follow one set of horns.
+- **War.** Against the beasts: a herd stampeding at a village, a sabre-tooth that has learned the ladders, a Two-Snout family. Between
+  the great houses, the feuds above, over hunting grounds and stolen kills, fought by champions where possible. And with the
+  Fellgangs (below), in the same way.
+- **The look of war** (`KIMR.md`, "Regalia" and "Weapons"): tusker-hide cuirasses, glyptodont scale shields, horn and skull helms,
+  heavy spears with ivory or obsidian blades, spear-throwers, stone and femur war clubs, glyptodont tail maces, sabre-tooth daggers,
+  and the ivory greatsword with obsidian teeth, carried by the Hawrog's band.
+
+**Relations**
+
+- **The Fellgangs** (§6.1). The Kimr's only neighbours: **Wildcat**, a Fellgang village, stands 100 km east of the Hall at the Rift's
+  edge (`biomes/riftrim/PLAN.md`), and Fellgang hunters come over the fells into the **Firebliss Range** each summer, where the Kimr
+  hunt the strays (`biomes/firebliss/PLAN.md` section 3).
+  - **A complicated relationship** [the owner, 2026-11-11]. **The raider tribe has intermarried with the Kimr**: Wildcat is about
+    half Kimr by descent (§6.1, "The Fellgangs' villages and Wildcat"; `kits/tungang/PLAN.md` 1.3.1: Kimr bravado in a scrap
+    pueblo, the Boast, the Deeds, the earned horn helmet). **The Kimr feud with the Fellgangs just as they feud with each other**:
+    Wildcat stands in the great houses' web like one of them (*proposed*: with a Kimr great house for its *mara* and another for its
+    *ffiwd*, kin to both), and the other Fellgang bands are raided, traded with and married into by the same rules.
+  - **Words both ways** (`lore/kimr-tongue.md` section 7): the Kimr took *mara* (an ally, from *marra*), *sgab* (a nogo-breaker, from
+    *skab*), *Tlab* (Dalab) and *beid* (trail food, from *bait*) from the raiders; the fell speech took *Awrog*, *nogo*, *teig* and
+    *melinbru* (melon beer). At Wildcat both are spoken at one fire.
+  - **The trade** (*proposed*): Kimr ivory, tusker hide, wool and melon beer for Fellgang obsidian, sulphur, salt and salvage metal
+    from the tunnels.
+  - **What each thinks of the other** (*proposed*): to the Kimr the Fellgangs who are not kin are **the Pale** (*Peil*), a people with
+    no Hall, who leave their dead in the dark: the unburied, and so a people of ghosts; Wildcat's Kimr half bring their dead to the
+    Hall. To the Fellgangs the Kimr are **t'Horns**, and their Hall a hoard of the Gaffers' metal guarded by nothing but taboo. The
+    young of the other bands dare each other to rob it; the Kimr kill those who try, and leave them whole.
+- **The History Monk, Lu-Tze** [the owner, 2026-11-09 and 2026-11-11; `biomes/labyrinth/PLAN.md` section 4]: a Monk of History
+  posted from Longsong to this remote and savage region wrote that the Two-Snouts **keep their own funeral customs, paint one another
+  with ochre and mud, and set fermented melons aside for later occasions**; many at Longsong think he had a few too many fermented
+  melons himself (§6.15). He was right more than they think: **the Two-Snouts are sapient, or very nearly so** [the owner,
+  2026-11-11]. *Proposed*:
+  - **The Kimr** remember Lu-Tze as **the Melon Monk** (*Mwng Melyn*, for his saffron, the colour of the melons' flesh), whom they
+    tolerated because he asked to be told the Tellings and wrote them down. He is a clown's mask now.
+  - **What the Kimr believe of the Two-Snouts**, which Lu-Tze heard and could not prove: the Two-Snouts are **keepers too**, a herd
+    that took the cunning of the Kimr dead they killed, as the Kimr take the virtues of the beasts. That is why they mourn, paint and
+    store as the Kimr do, and why their cunning is so dangerous. It is the reason the Kimr will go into a Two-Snout family's ground to
+    bring back a body: a Kimr left to the Two-Snouts makes them cleverer. Lu-Tze's report says the Kimr believe this; it does not
+    say whether he did. Whether their cunning came from Kimr dead or from the Boss's breeding, the Two-Snouts' minds are real.
+- **Everyone else** knows the Kimr only through the Order. Dalab (*Tlab*, the raiders' word) is a rumour the Fellgangs carry; if Dalab ever comes for
+  the Labyrinth's genes (§6.1, "Dalab collects peoples"), it will come for the beasts and the Kimr both.
+
+**Settled** (the owner, 2026-11-11, on the first draft): the tongue is the keepers' English, with loanwords to and from the
+Fellgangs, most through the raiders; the Ancients are among the ancestors, and the Hall's people fought the Dark Spirit; women
+carry the heroes and men wear them; only the rarest, most Amazonian women have been war-queens; the Boss's Count stays; the
+Fellgangs are intermarried and feuded with like any house, and every great house has its ally and enemy house; the Monk is
+Lu-Tze; the Two-Snouts are sapient, or very nearly so. Then (the owner, 2026-11-11, third round): **households are matrilineal**
+(a *haws*, its rooms and its clan pass through the mother, as among the Hopi and Zuni: a husband moves into his wife's house); **the
+Tellers, the Painters and the clowns are both women and men**; **Lu-Tze's report is in Longsong's archive** (§6.15).
+
+**The name is settled** (the owner, 2026-11-11): *Kimr* comes from *keeper*.
+
+**TBD (the owner, 2026-11-11: open for now)**
+
+1. **The Dark Spirit.** Is it something the Historians know by another name (one of the Cataclysm's other enemies, §4, §6.19), or
+   the Kimr's alone?
+
 ## 7. Peoples of Krator (species and kinds)
 
 - **Humans**, in most cultures.
@@ -1048,6 +1483,7 @@ marked *proposed* is this session's and waits on the owner. Its placeholder entr
 | Post-Apoc | gear | faded rust red, teal, mustard, olive |
 | The Eternal State (§6.19) | a gold face, eyes closed | black, gold, green highlights (the owner, 2026-10-19); buildings in celadon, pewter and pale brick |
 | Shumari (§6.23) | notched blade & breath-thorn (*Šumaru-kattu*) | basalt grey, crimson lacquer (the Sword-Caste bar), burnished bronze/gold |
+| Kimr (§6.24; *proposed*) | the Aurochs's head, frontal, horns raised, over the Range's labyrinth | red ochre, kaolin white, charcoal black; turquoise for the Ancients' things (`biomes/labyrinth/KIMR.md`) |
 
 Rule: a building never names a culture. Its sockets (awning, banner, flag, emblem, sign) are dressed by whichever culture holds it.
 
@@ -1072,6 +1508,9 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Ring Sea:** a shared sea for the Hykkousoi, Voth, Xanadu, Iziz, Beast Riders and Islanders.
 - **The Talovolci and Dalab** (§6.21): Dalab's skinchangers raided them for their genes, and made Dalab's Giants of them; **the Talovolci and the Free Giants**: kin by blood, uneasy, imitated.
 - **The Shumari, Voth, Nazar, and the Free Giants** (§6.23): the Shumari once held **Driyan** (formerly *Doriyan*) and the SW basin lakeshore before centuries of war with the Chichani drove them up to the highland plateau of **Shumar**, while their purchased slave-soldiers from Nazar, Dalab, and the lakeshore towns inverted into a Mamluk ruling caste (*Šubaru-šu*); escaped **Nazari** slaves and **Free Giants** from **Greenstep** still climb to Shumar to undergo **the Ordeal** (*Urudīru*) and join the ruling caste, and the Shumari alphabet helped shape the Vothic script.
+- **The Kimr and the Fellgangs** (§6.24; the owner, 2026-11-11): intermarried (Wildcat is about half Kimr) and feuded with as the
+  Kimr feud with each other, every great house with its ally and its enemy house; loanwords both ways. **The Kimr and the Order:**
+  one Monk, Lu-Tze, and the Labyrinth report (§6.15).
 - **The Lizardmen** (§6.20): no contact at all; they never trade or treat. War with Xanadu (Rishtowar VII; the raids on the Vale), the tunnel wars with the Tungangs (§6.1), and the Monks of History's contradictory accounts.
 
 ## 12. Contradictions and open questions
@@ -1101,6 +1540,8 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **Shell Province** (§6.2): the Izani names of Shell and Port Goto.
 - What does the abyssal people's ruler call themselves (the Headman placeholder)?
 - What exactly do the Screamers do with their captives in the Hexahedron?
+- **The Kimr** (§6.24, 2026-11-11; the drafts' questions answered): the name is settled (*Kimr* < *keeper*); TBD is what the Dark Spirit
+  was. The list is at the end of §6.24.
 - **The rift rim** (§6.1, §6.20, `biomes/riftrim/PLAN.md` section 12): the Fellgangs (proposed name) and how far they have diverged; the Rift's ruins other than the Pile and Pluton (Chimes, Cthonos, The Tubes: names and places very tentative; Chimes may become The Span, which clashes with Dalab's Span); the model's Rift settlements want a rework; Ledge's own settlement plan.
 - **The Ancients' highways** (§4, `openworld/ANCIENT-ROADS.md` section 7): the Republic's arcology over the Inner Wall tunnel (Cascade or a new site), other cities on Ancient ground, and the tentative ruins, before the network is routed for good.
 - **The Talovolci** (§6.21): the Empire's loans *Emparos* and *comandaros* are proposed; their clans, chiefs and the ceremonial rites at Daridel are open.
@@ -1110,4 +1551,4 @@ Rule: a building never names a culture. Its sockets (awning, banner, flag, emble
 - **The Catch** (`biomes/catch/PLAN.md` section 8): what drove Hub 01 mad (contamination, a virus or reprogramming: left open); the five oases' names (in Yuni, Izani, Dasrī or Xanadui); the preserved salvage (proposed); whether the Rift line's bore from Strongbow reached Stair (`openworld/ANCIENT-NETWORK.md` section 8; the sealed Stair tunnel was dropped, 2026-11-11).
 - When did the scablands' lake fill and break (the Ancients' time, a wetter age)? Did the Godthrone ever erupt explosively? (Not needed for the Catch any more: its soft rock is old lake beds.)
 - What are the religions of Iziz, Yuni, the Beast Riders and the Hykkousoi? On record so far: The God at Dalab, the Republic's Pantheon, Voth's Temple and ancestor cult, Xanadu's Decree and the Broken Wheel (§6.13), the Altar of the Abyss, the Deep Aquifer, Jimjam's calendar, and the Beast Riders' nature shrines.
-- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named.
+- Is there a common calendar (Jimjam's reckoning is the nearest, §6.14), a common language, or writing (post-apoc signs are pictographs)? *Coinage is settled* (the owner, 2026-11-03): each nation has its own currency (the Republic has a Mint), and the Izani Talent is the trade money everyone takes (§6.2). The other nations' currencies are still to be named, but for the Kautoan shells and Xanadu's qud (§6.13).

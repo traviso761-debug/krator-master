@@ -37,7 +37,7 @@
     "kits/interiors/src/20-rooms.js": "4b54dca9f15014c721897d598a55f88c9e9dace32568faab59f10ca771694498",
     "kits/interiors/src/30-programs.js": "9af057a236981da86772dd9a8caa88b893305db70ec033986bae318002eb79e4",
     "kits/interiors/src/40-grid.js": "a69dadb0ff525a510e51739e92b442a0f7269d4fdab164d19ca410d8f360b098",
-    "kits/interiors/src/45-placer.js": "60d2ecc3c3edc9b5fc5ecd734c16f261367a2c51bbdf5a67b5c5751ac3ad7ab3",
+    "kits/interiors/src/45-placer.js": "3bb089432d4ace2fe30dad5b84d4a11de18dadcd3e47eaad14bce27ddb6ecd26",
     "kits/interiors/src/46-planner.js": "acfb0a52c6f533a53a4df2519d8598ff11b80ad430b978cd9d9707c05dfe43e0",
     "kits/interiors/src/47-life.js": "a4d65b15bcb00041797887dc037a7f6fb751bbb4d6accca807ad5cdcf5a4c28b",
     "kits/interiors/src/48-audit.js": "4ccf3274479fb4e3c66501e02205b8aec77ee6e54749c516b311431939572c2e",
@@ -143,12 +143,12 @@
     "tools/textures": "8ac296816ad02959f03e42f887e4f35c5dbfcf157510c6a9f22410866109d799"
    },
    "outputs": {
-    "kits/post-apoc/build-manifest.json": "861b03e91a9661f115b78050b92953789ef8578e5b6932fbf15a4dc1271bd947",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "c8e8ccc4b4ea2115a94c0ad9658e8c9eefb1951d740b6f3bc4e56e8ef7dd2d25",
+    "kits/post-apoc/dist/post-apoc.html": "6d3afb81f3a9817f260873bb5b78fb9b9ebd58e2b87ede7f3730854c6bb1d310"
    },
    "outputs_raw": {
-    "kits/post-apoc/build-manifest.json": "3ceeadbe825b426b499544a1167aaeb02fed457b2f32fdfc48a7708e72f5e2f8",
-    "kits/post-apoc/dist/post-apoc.html": "2468226f8b0fa8ef9b546e395b119b7b7e7232de781a3ebdc2e6595af6e3b323"
+    "kits/post-apoc/build-manifest.json": "c660a2f62deb87889f291d9c528f815dfdbd9b1d5fa4465f7c36b517ed5b40c1",
+    "kits/post-apoc/dist/post-apoc.html": "6d3afb81f3a9817f260873bb5b78fb9b9ebd58e2b87ede7f3730854c6bb1d310"
    }
   }
  }

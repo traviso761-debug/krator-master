@@ -62,7 +62,7 @@ def step_kind(p, q):
 
 # ---- nodes
 S = [json.load(open(f, encoding='utf8')) for f in glob.glob(os.path.join(SDIR, '*.json'))]
-ANC_TYPES = ('arcology', 'ruined arcology', 'ruin', 'cavern')
+ANC_TYPES = ('arcology', 'inhabited ruin', 'ruined arcology', 'ruin', 'cavern')
 EXTRA = ('Hook', 'Iziz', 'Yuni', 'Ys', 'Dalab', 'Roketstad', 'Verge')
 SKIP = ('Dhelv',)          # the Zeijani's carved city, not an Ancient site
 nodes = [s for s in S if (s['type'] in ANC_TYPES or s['name'] in EXTRA) and s['name'] not in SKIP]
@@ -126,7 +126,7 @@ for f in glob.glob(os.path.join(RDIR, '*.json')):
 UPKEEP = {'Empire of Iziz': 'kept', 'Vothic Kingdom': 'kept', 'Iron Republic': 'kept', 'The Cut': 'kept', 'Eternal State': 'kept',
           'Yuni Emirate': 'partly', 'Xanadu Sultanate': 'partly',
           'Jimjam': 'lapsed', 'League of Amphitriton': 'lapsed', 'Scyvoi': 'lapsed', 'Beast Riders': 'lapsed', 'Dalab Council': 'lapsed',
-          's highlands': 'lapsed', 'sw highlands': 'lapsed', 'e inner wall': 'lapsed'}
+          's highlands': 'lapsed', 'sw highlands': 'lapsed', 'e inner wall': 'lapsed', 'e highlands': 'lapsed'}   # e inner wall: its name to 5.1 edit 3
 masks = []
 for n, u in UPKEEP.items():
     if n not in R: print('no region', n); continue

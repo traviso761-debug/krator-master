@@ -14,6 +14,9 @@
 
 Usage: python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys, importlib.util
 
 import os as _os, subprocess as _sp, sys as _sys
@@ -51,6 +54,7 @@ def core(folder, names):
 
 
 core('rand', ['08-core-rand.js'])
+core('shader', ['06-core-khook.js', '06b-core-kcolor.js'])   # core/biome 20 and core/atmos 0 call KHOOK and KCOLOR since the 2026-11 core pass (tools/fragment_needs.json)
 core('terrain', ['37c-core-rubble.js'])   # KRUBBLE: a ruin's rubble heaps (57-mp-debris.js)
 core('shadow', ['10-core-shadow.js'])   # KSHADOW: the sun's shadow box that follows the view (47-host-land.js attaches it)
 core('shadow/host', ['12-core-shadow-host.js'])

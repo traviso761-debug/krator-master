@@ -14,9 +14,35 @@
                                season?, seasonRate?, batch?: {in, out, hours}, herd?: {out, rate, animals, seasonRate?},
                                pasture?: {id, window} (a summer pasture the herd moves to while `window` is open)}]}],
        food?: {good: grain-equivalent of a unit} (S7: a food short is made up from the others by value; else it is hungry),
-       roads: [{id, from, to, minutes, cap, carriers?, stagger?, want? (days of want a load fills: SIM.trade's), share?: {settlement: {good: fraction}} (a tithe),
+       roads: [{id, from, to, minutes, cap, carriers?, stagger?, offset? (minutes before the FIRST carrier's first
+                sailing, beside `stagger` between carriers: two rounds loading at one pool leave in turn), want? (days of use a load fills the far end to: SIM.trade's
+                `want`; a long road's carriers come seldom, so its want must cover the gap), most?, share?: {settlement: {good: fraction}} (a tithe),
                 goods?: {settlement: [goods]}, expect?: {settlement: {good: a day}}, keep?}],
        transfers: [SIM.transfer's spec] (the grant of fealty, the grants of esteem)
+     X1 (core/simulation/PROPOSAL-XANADU.md, 2026-11-16), each inert where its field is absent:
+       a settlement's `scale` (people an actor stands for there; V.scale otherwise): a valley of 350,000 keeps its
+         countrysides at 200 a head and its drawn villages at 10, and Longsong's 10 joins it unchanged (X2);
+       a work's `site`: {id?, kind, grade?, yield?, amount?, regen?, capacity?}: SIM.site in its settlement, the work's
+         recipe drawing on it (a lode that runs out, a stand that regrows a night up to its start: 77-sim-6-economy.js);
+       a road's `stops`: [settlement, ...] (three or more) in place of from/to: a round, 0, 1, ... and back to 0, each
+         leg `minutes` long (SIM.trade's round: a carrier buys at each stop what the next one wants and lands it there;
+         the lake's market boats round a shore)
+     X2 (2026-11-16, the owner: "the gold and opal lodes should collectively last >200 years but individually lodes may
+     dry up over the course of 2-3 years"; the Guilds of the Twins "try to profit from trade"):
+       a work's `site.veins`: [{amount}, ...]: a field of veins, one SIM.site each; the work draws on one until it runs dry,
+         then moves to the next (SIM.recipeSite), booked in S.veinMoves; the field is spent when the last runs dry;
+       a road's `cut`: [{at, to, share, goods?}]: of what the road lands at `at`, `share` goes on to `to` (a merchant
+         house's margin, a lift's toll), taken from `at`'s warehouses and landed in `to`'s first work (booked exported
+         and imported, so the books balance); S.cuts[road] = {taken: {good: n}}
+     C1-C2 (core/simulation/PROPOSAL-CATCH.md, 2026-11-16), passed to SIM.trade as they are:
+       a road's `legs`: [minutes, ...], a passage per leg of a round (a caravan's stages differ);
+       a road's `provision`: {beasts, eat: {good: a beast a day}, loss?, home?}: a caravan's beasts draw water and fodder at
+         each stop for the leg ahead, a shortfall kills some, a train short of beasts carries less until it remounts at home
+     C3-C5 (the same proposal): a road's `halts`, `sells` and `closed` (SIM.trade's: waystations that keep the cargo
+       aboard, the oasis towns that buy from it as it passes, legs shut in a season); a road's `losses`: [{legs, every,
+       spare, share, window?, why}] (a provisioned caravan's beasts lost on those legs, by a fixed rule: the Stalkers, the
+       col, an unguided crossing of the Twins); V.siteSeasons: [{settlement, site, window, regen}] (a site's recharge cut in
+       a season: an oasis found dry)
      H.valleyRun(minutes, step)   the clock stepped `step` minutes at a time (60: the abstract level's hour)
      H.valleyBooks()         a snapshot: each settlement's people, stock, made, imported, exported, used and short by good,
                              what it ate and went without (`eaten`, `hungry`), and SIM.ledgerSnap()
@@ -28,9 +54,13 @@
    nothing for want from it; the other end sends for want as any road does. Deterministic: no draws but SIM.init's. */
 KREGION.part('50-region-valley', function (H) {
 H.simValley = function (V) {
-  var K = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
-  var S = H.SIM = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: m0 };
-  SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
+  /* V.attach (2026-11-12, Pinnacle Rock's full sim): the valley joins a sim the region host has already declared (its towns
+     on 40-49, RH.SIM): no SIM.init, the host's clock, its own walking layer; a road may end at one of the host's towns,
+     at the place V.extern names for it ({settlement: place}) */
+  var KV = V.scale == null ? 10 : V.scale, m0 = V.start == null ? 0 : V.start, C = V.attach && H.SIM ? H.SIM.clock : { m: m0, day: Math.floor(m0 / 1440), hour: (m0 % 1440 + 0.5) / 60, t: 0 };
+  var S = H.VALLEY = { clock: C, valley: V, towns: {}, order: [], problems: [], eaten: {}, hungry: {}, fed: {}, starved: {}, away: {}, carry: {}, moves: [], last: C.m, veinWorks: [], veinMoves: [], cuts: {}, roadRaids: {} };
+  if (!V.attach) H.SIM = S;
+  if (!V.attach) SIM.init({ seed: V.seed == null ? 1 : V.seed, hour: function () { return C.hour; }, day: function () { return C.day; }, t: function () { return C.t; }, err: function (m) { S.problems.push(m); } });
   ['SLEEP', 'WORK', 'REST'].forEach(function (a) { if (!SIM.R.activity[a]) SIM.activity({ id: a, indoor: a !== 'WORK' }); });
   if (V.calendar) SIM.calendar(V.calendar);
   (V.factions || []).forEach(function (f) { if (!SIM.R.faction[f.id]) SIM.faction(f); });
@@ -38,6 +68,7 @@ H.simValley = function (V) {
   var nodes = [], edges = [], node = function (x, z) { nodes.push({ id: nodes.length, x: x, y: 0, z: z }); return nodes.length - 1; };
   V.settlements.forEach(function (Sd) {
     var s = Sd.id, x0 = Sd.x == null ? 0 : Sd.x, z0 = Sd.z == null ? 0 : Sd.z, X = S.towns[s] = { id: s, spec: Sd, places: [], actors: 0, herds: 0, works: [] };
+    var K = Sd.scale == null ? KV : Sd.scale;   /* X1: the settlement's own scale */
     SIM.settlement({ id: s, faction: Sd.faction, name: Sd.name, parent: Sd.parent });
     SIM.org({ id: s + '.folk', faction: Sd.faction, name: 'The people of ' + Sd.name });
     SIM.role({ id: s + '.worker', org: s + '.folk', sched: [[0, 'SLEEP'], [6, 'WORK'], [18, 'REST'], [21, 'SLEEP']] });
@@ -52,6 +83,15 @@ H.simValley = function (V) {
       X.places.push(P);
       SIM.store(Wk.id, { kind: 'warehouse', cap: Wk.cap });
       var R = { cap: Wk.cap, season: Wk.season, seasonRate: Wk.seasonRate };
+      if (Wk.site && Wk.site.veins) {   /* X2: a field of veins, worked one at a time */
+        var Sv = Wk.site, vids = Sv.veins.map(function (v, i) { var vid = Wk.id + '.vein' + i;
+          SIM.site({ id: vid, settlement: s, kind: Sv.kind || Wk.kind, goods: Sv.goods || Wk.out, grade: v.grade == null ? Sv.grade : v.grade, yield: Sv.yield, amount: v.amount });
+          return vid; });
+        R.site = vids[0]; S.veinWorks.push({ work: Wk.id, settlement: s, veins: vids, at: 0 });
+      } else if (Wk.site) {   /* X1: the work draws on a resource site of its settlement */
+        var St = Wk.site, sid = St.id || Wk.id + '.site';
+        SIM.site({ id: sid, settlement: s, kind: St.kind || Wk.kind, goods: St.goods || Wk.out, grade: St.grade, yield: St.yield, amount: St.amount, regen: St.regen, capacity: St.capacity });
+        R.site = sid; }
       if (Wk.batch) R.batch = Object.assign({}, Wk.batch, { hours: Wk.batch.hours / K }); else   /* an actor's hour is K people's */
       { R.out = Wk.out || []; R.rate = (Wk.rate == null ? 0 : Wk.rate) * K; }
       if (Wk.herd) R.herd = { out: Wk.herd.out, rate: Wk.herd.rate * K, seasonRate: Wk.herd.seasonRate };
@@ -70,14 +110,85 @@ H.simValley = function (V) {
     if (W0) Object.keys(Sd.start || {}).forEach(function (g) { W0.stock[g] = (W0.stock[g] || 0) + Sd.start[g]; });
     S.order.push(s); S.eaten[s] = {}; S.hungry[s] = {}; S.carry[s] = {};
   });
-  SIM.nav.layer('pedestrian', { nodes: nodes, edges: edges });
+  SIM.nav.layer(V.attach ? 'valley' : 'pedestrian', { nodes: nodes, edges: edges });
+  var stopOf = function (id) { var X = S.towns[id]; if (X) return { settlement: id, place: X.spec.works[0].id }; var p = (V.extern || {})[id]; return p ? { settlement: id, place: p } : null; };
   (V.roads || []).forEach(function (Rd) {
-    var a = S.towns[Rd.from], b = S.towns[Rd.to];
-    if (!a || !b) { S.problems.push('road ' + Rd.id + ': no settlement ' + (a ? Rd.to : Rd.from)); return; }
-    SIM.trade({ id: Rd.id, stops: [{ settlement: Rd.from, place: a.spec.works[0].id }, { settlement: Rd.to, place: b.spec.works[0].id }], cap: Rd.cap, carriers: Rd.carriers,
-      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want });
+    var ids = Rd.stops || [Rd.from, Rd.to], stops = ids.map(stopOf), miss = ids.filter(function (k, i) { return !stops[i]; });
+    if (miss.length) { S.problems.push('road ' + Rd.id + ': no settlement ' + miss[0]); return; }
+    SIM.trade({ id: Rd.id, stops: stops, cap: Rd.cap, carriers: Rd.carriers,
+      minutes: Rd.minutes, stagger: Rd.stagger, offset: Rd.offset, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most,
+      legs: Rd.legs, provision: Rd.provision, halts: Rd.halts, sells: Rd.sells, forHalts: Rd.forHalts, closed: Rd.closed });
   });
+  /* C4-C5: a caravan's losses on the way, as data: on a road's leg (from stop `leg`), of every `every` passages a carrier
+     makes, `spare` cross whole and the others lose `share` of the beasts (deterministic, by the carrier's count of
+     passages of the loss's legs); `window` limits it to a season. S.losses[road] = [{carrier, leg, dead, why, minute}] */
+  var LOSS = (V.roads || []).filter(function (Rd) { return Rd.losses && Rd.losses.length && SIM.TRADE && SIM.TRADE.routes[Rd.id] && SIM.TRADE.routes[Rd.id].provision; });
+  S.losses = {}; LOSS.forEach(function (Rd) { S.losses[Rd.id] = []; });
+  if (LOSS.length) SIM.stepHooks.push(function (minute) {
+    LOSS.forEach(function (Rd) { var TR = SIM.TRADE.routes[Rd.id];
+      TR.carriers.forEach(function (Cr) { if (Cr.phase !== 'sail' || Cr.from == null) return; var mark = Cr.from + '@' + Cr.eta;
+        if (Cr._lossSeen === mark) return; Cr._lossSeen = mark;
+        Rd.losses.forEach(function (Ls) { if (Ls.legs.indexOf(Cr.from) < 0) return; if (Ls.window && !(SIM.inSeason && SIM.inSeason(Ls.window, minute))) return;
+          var cnt = Cr._lossN || (Cr._lossN = {}), key = Ls.why, n = cnt[key] = (cnt[key] || 0) + 1, every = Ls.every > 0 ? Ls.every : 1, spare = Ls.spare == null ? 0 : Ls.spare;   /* counted over every leg of its kind */
+          if ((n - 1) % every < spare || Cr.beasts <= 0) return;
+          var dead = Math.max(1, Math.round(Cr.beasts * Ls.share)); Cr.beasts -= dead; TR.died += dead;
+          S.losses[Rd.id].push({ carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why, minute: minute });
+          SIM.logEvent('caravan loss', { route: Rd.id, carrier: Cr.k, leg: Cr.from, dead: dead, why: Ls.why }); }); }); });
+  });
+  /* C5: a well run down in a season: a site's nightly regen times `regen` while `window` is open (an oasis found dry) */
+  var SS = (V.siteSeasons || []).map(function (q) { var E = SIM.econ(q.settlement), st = E && E.resSites && E.resSites[q.site]; return st ? { q: q, st: st, base: st.regen } : null; }).filter(Boolean);
+  if (SS.length) SIM.stepHooks.push(function (minute) {
+    SS.forEach(function (o) { o.st.regen = SIM.inSeason && SIM.inSeason(o.q.window, minute) ? o.base * o.q.regen : o.base; }); });
   (V.transfers || []).forEach(function (Tr) { SIM.transfer(Tr); });
+  /* X2: the cuts: what a road landed at a stop since the last hour, a share of it moved on */
+  var CUTS = (V.roads || []).filter(function (Rd) { return Rd.cut && Rd.cut.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });
+  CUTS.forEach(function (Rd) { S.cuts[Rd.id] = { taken: {}, seen: {} }; });
+  if (CUTS.length) SIM.stepHooks.push(function () {
+    CUTS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Cx = S.cuts[Rd.id];
+      Rd.cut.forEach(function (c, ci) { if (!S.towns[c.at] || !S.towns[c.to]) return;
+        Object.keys(L).sort().forEach(function (leg) { if (leg.split('>')[1] !== c.at) return; var got = L[leg];
+          Object.keys(got).sort().forEach(function (g) { if (c.goods && c.goods.indexOf(g) < 0) return;
+            var k = ci + '|' + leg + '|' + g, d = (got[g] || 0) - (Cx.seen[k] || 0); if (d <= 0) return; Cx.seen[k] = got[g];
+            var owe = (Cx.carry && Cx.carry[k] || 0) + d * c.share, n = Math.floor(owe); (Cx.carry || (Cx.carry = {}))[k] = owe - n; if (n <= 0) return;
+            var took = 0; SIM.withEcon(c.at, function () { took = SIM.economyTake(g, n); if (took > 0) SIM.economyBook('exported', g, took); });
+            if (took <= 0) return;
+            SIM.withEcon(c.to, function () { SIM.economyLand(g, took, S.towns[c.to].spec.works[0].id); SIM.economyBook('imported', g, took); });
+            Cx.taken[c.to + ':' + g] = (Cx.taken[c.to + ':' + g] || 0) + took; }); }); }); });
+  });
+  /* W5: road cargo raids: on a road's landing at `at` (optionally from `from`, while `window` is open), of every `every`
+     arrivals `spare` pass whole and the rest lose `share` of their landed goods to `to`'s first warehouse (booked exported
+     from `at` and imported into `to`, keeping SIM.ledgerSnap zero-sum); S.roadRaids[road] = {events, taken} (S3-87b: not S.raids,
+     the generic name; the Lizardmen's raids are S.raiding, 52) */
+  var RAIDS = (V.roads || []).filter(function (Rd) { return Rd.raids && Rd.raids.length && SIM.TRADE && SIM.TRADE.routes[Rd.id]; });
+  RAIDS.forEach(function (Rd) { S.roadRaids[Rd.id] = { events: [], seen: {}, count: {}, taken: {} }; });
+  if (RAIDS.length) SIM.stepHooks.push(function (minute) {
+    RAIDS.forEach(function (Rd) { var L = SIM.TRADE.routes[Rd.id].landed, Rx = S.roadRaids[Rd.id];
+      Rd.raids.forEach(function (ra, ri) { if (!S.towns[ra.at] || !S.towns[ra.to]) return;
+        Object.keys(L).sort().forEach(function (leg) { var sp = leg.split('>');
+          if (sp[1] !== ra.at || (ra.from && sp[0] !== ra.from)) return;
+          var got = L[leg], deltas = [], ck = ri + '|' + leg;
+          Object.keys(got).sort().forEach(function (g) {
+            var k = ck + '|' + g, d = (got[g] || 0) - (Rx.seen[k] || 0);
+            if (d <= 0) return; Rx.seen[k] = got[g];
+            if (!ra.goods || ra.goods.indexOf(g) >= 0) deltas.push([g, d]); });
+          if (!deltas.length) return;
+          if (ra.window && !(SIM.inSeason && SIM.inSeason(ra.window, minute))) return;
+          var nPass = Rx.count[ck] = (Rx.count[ck] || 0) + 1, ev = ra.every > 0 ? ra.every : 1, sp0 = ra.spare == null ? 0 : ra.spare;
+          if ((nPass - 1) % ev < sp0) return;
+          deltas.forEach(function (pair) { var g = pair[0], d = pair[1], want = Math.max(1, Math.floor(d * ra.share)), took = 0;
+            SIM.withEcon(ra.at, function () { took = SIM.economyTake(g, want); if (took > 0) SIM.economyBook('exported', g, took); });
+            if (took <= 0) return;
+            SIM.withEcon(ra.to, function () { SIM.economyLand(g, took, S.towns[ra.to].spec.works[0].id); SIM.economyBook('imported', g, took); });
+            Rx.taken[ra.to + ':' + g] = (Rx.taken[ra.to + ':' + g] || 0) + took;
+            Rx.events.push({ leg: leg, to: ra.to, good: g, n: took, why: ra.why, minute: minute });
+            SIM.logEvent('caravan raid', { route: Rd.id, leg: leg, to: ra.to, good: g, n: took, why: ra.why }); }); }); }); });
+  });
+  /* X2: a vein run dry moves its work to the next vein of its field */
+  if (S.veinWorks.length) SIM.stepHooks.push(function (minute) {
+    S.veinWorks.forEach(function (Vw) { if (Vw.at >= Vw.veins.length - 1) return; var E = SIM.econ(Vw.settlement), st = E && E.resSites && E.resSites[Vw.veins[Vw.at]];
+      if (!st || st.amount == null || st.amount >= 1) return;
+      Vw.at++; SIM.recipeSite(Vw.work, Vw.veins[Vw.at]); S.veinMoves.push({ minute: minute, work: Vw.work, from: Vw.veins[Vw.at - 1], to: Vw.veins[Vw.at] }); });
+  });
   /* the herds to their summer pasture and home again (77-sim-6-season.js: the window's turn) */
   if (SIM.onSeason) SIM.onSeason(function (now, before, minute) {
     S.order.forEach(function (s) { S.towns[s].works.forEach(function (w) { if (!w.pasture) return; var on = !!now.windows[w.window], was = !!before.windows[w.window]; if (on === was) return;
@@ -101,16 +212,16 @@ H.simValley = function (V) {
           var got = SIM.supply(g, n, false, s); F[g] = (F[g] || 0) + got; if (got < n) St[g] = (St[g] || 0) + n - got; }); } });
   });
   S.order.forEach(function (s) { SIM.level(s, 'abstract'); });
-  S.problems = S.problems.concat(SIM.check());
+  if (!V.attach) S.problems = S.problems.concat(SIM.check());
   return S;
 };
 H.valleyRun = function (minutes, step) {
-  var C = H.SIM.clock, st = step == null ? 60 : step, end = C.m + minutes;
+  var C = H.VALLEY.clock, st = step == null ? 60 : step, end = C.m + minutes;
   while (C.m < end) { C.m = Math.min(end, C.m + st); C.day = Math.floor(C.m / 1440); C.hour = (C.m % 1440 + 0.5) / 60; C.t += st; SIM.step(); }
   return C.m;
 };
 H.valleyBooks = function () {
-  var S = H.SIM, out = { minute: S.clock.m, towns: {}, ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
+  var S = H.VALLEY, out = { minute: S.clock.m, towns: {}, ledger: SIM.ledgerSnap ? SIM.ledgerSnap() : null };
   S.order.forEach(function (s) { var E = SIM.econ(s), st = {};
     Object.keys(E.goods).forEach(function (g) { var n = SIM.stockOf(g, s); if (n) st[g] = Math.round(n); });
     out.towns[s] = { people: S.towns[s].spec.people, stock: st, made: Object.assign({}, E.made), imported: Object.assign({}, E.imported), exported: Object.assign({}, E.exported),
@@ -122,28 +233,29 @@ H.valleyBooks = function () {
    stock handed in lands in its settlement's warehouses (imported); taken back out (exported) when it leaves; a market's
    side of a caravan's barter; a raid's loot leaving the target (exported, tallied in H.SIM.raided) and its dead. Every
    load is booked, so the sim's ledger holds across the hand-overs (off the map: the ledger's abroad columns) */
-H.valleyHost = function () {
-  var S = H.SIM; S.raided = S.raided || {}; S.killed = S.killed || {};
+H.valleyHost = function (u) {   /* u: the sim's units of a world unit (the world tick books kilograms; an attached valley may book servings) */
+  var S = H.VALLEY; u = u == null ? 1 : u; S.raided = S.raided || {}; S.killed = S.killed || {};
+  var sc = function (o, k) { var r = {}; Object.keys(o || {}).forEach(function (g) { r[g] = o[g] * k; }); return r; };
   var wh = function (s, g) { var n = 0; SIM.econ(s).warehouses.forEach(function (P) { n += P.stock[g] || 0; }); return n; };
   var put = function (s, goods, kind) { var out = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = goods[g];
     if (!(n > 0) || !SIM.ECON.goods[g]) return; if (SIM.economyLand(g, n) == null) return; SIM.economyBook(kind || 'imported', g, n); out[g] = n; }); }); return out; };
   var out = function (s, goods) { var got = {}; SIM.withEcon(s, function () { Object.keys(goods).sort().forEach(function (g) { var n = Math.floor(Math.min(goods[g], wh(s, g)));
     if (!(n > 0)) return; n = SIM.economyTake(g, n); if (n > 0) { SIM.economyBook('exported', g, n); got[g] = n; } }); }); return got; };
   return {
-    land: function (s, goods) { return put(s, goods); },
-    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return out(s, all); },
+    land: function (s, goods) { return sc(put(s, sc(goods, u)), 1 / u); },
+    take: function (s) { var all = {}; Object.keys(SIM.econ(s).goods).forEach(function (g) { var n = Math.floor(wh(s, g)); if (n > 0) all[g] = n; }); return sc(out(s, all), 1 / u); },
     away: function (s, a) { H.valleyAway(s, a); },
     people: function (s) { return S.towns[s].spec.people; },
-    stock: function (s, g) { return wh(s, g); },
-    raid: function (s, goods) { var got = out(s, goods), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
+    stock: function (s, g) { return wh(s, g) / u; },
+    raid: function (s, goods) { var got = sc(out(s, sc(goods, u)), 1 / u), R = S.raided[s] || (S.raided[s] = {}); Object.keys(got).forEach(function (g) { R[g] = (R[g] || 0) + got[g]; }); return got; },
     kill: function (s, n) { var Sd = S.towns[s].spec; n = Math.min(n, Sd.people); Sd.people -= n; S.killed[s] = (S.killed[s] || 0) + n; },
-    trade: function (s, sold, bought) { put(s, sold); out(s, bought); }
+    trade: function (s, sold, bought) { put(s, sc(sold, u)); out(s, sc(bought, u)); }
   };
 };
 /* a band out ranging (S6: core/camp's hand-over): away, its people and beasts neither eat here nor its works make (each
    held by SIM.recipeHold, 'away'); home again, they do */
 H.valleyAway = function (s, away) {
-  var S = H.SIM, X = S.towns[s]; if (!X) return false;
+  var S = H.VALLEY, X = S.towns[s]; if (!X) return false;
   S.away[s] = !!away;
   X.spec.works.forEach(function (Wk) { SIM.recipeHold(Wk.id, away ? 'away' : null); if (Wk.pasture) SIM.recipeHold(Wk.pasture.id, away ? 'away' : null); });
   return true;

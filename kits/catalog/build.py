@@ -22,6 +22,9 @@ Every build is deterministic: build-manifest.json holds a sha1 per input.
 
 Usage:  python3 build.py [--no-checks] [--vendor-check]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import fnmatch, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -142,6 +145,12 @@ def main():
     js = [f for f in frags if f.endswith('.js')]
     out_name = OUT
     parts = [(f, read(kcat.path(f))) for f in sources()] + [(f, read(src_path(f))) for f in js]
+    # the delivered decal pictures (materials.json "decals", packed into tex/ by tools/textures/pack.py kits/catalog): the sheet
+    # shows each painted panel whose key is one as its image (core/catalog mkDecal reads KF_DECALS); none packed, no part
+    import furniture_bundle
+    _dt = furniture_bundle.decal_table()
+    if _dt:
+        parts.insert(len(sources()), ('KF_DECALS (GENERATED)', 'var KF_DECALS = %s;\n' % json.dumps(_dt, sort_keys=True)))
     if '--no-checks' not in sys.argv:
         errs = check(parts)
         if errs:

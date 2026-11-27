@@ -1,0 +1,390 @@
+{
+ "edit": "5.1 edit 30: the SE outer wall's partial rescale",
+ "date": "2026-11-24",
+ "why": "the owner, 2026-11-24, answer A3: \"leave only east se outer wall high and airless\". biomes/seouterwall/PLAN.md step 6.1 on the Godsgate frame and the five tarns only (openworld/catch-bowl/PLAN.md section 11 edit 4)",
+ "boundary_rederived": {
+  "x": 1056,
+  "gap": 54.9,
+  "west_pct_over_8km": 1.4,
+  "east_pct_over_8km": 56.3,
+  "west_median_m": 6137,
+  "east_median_m": 8282
+ },
+ "shape": {
+  "frame_x": [
+   997,
+   1056
+  ],
+  "disc_radius_cells": 12.5,
+  "disc_radius_km": 25.0,
+  "tarn_centres": {
+   "1": [
+    1016,
+    1236
+   ],
+   "2": [
+    1064,
+    1272
+   ],
+   "3": [
+    1134,
+    1218
+   ],
+   "4": [
+    1208,
+    1254
+   ],
+   "5": [
+    1288,
+    1184
+   ]
+  },
+  "disc_radius_read_as": "radius, not diameter: 6.3 already gives each tarn 9-13 km of amphitheatre, so a 12.5 km radius would add nothing to the owner's breathable approach"
+ },
+ "feathers_cells": {
+  "province_interior": 8.0,
+  "shape_outward": 12.0,
+  "guard": 12.0,
+  "province_exterior_term_dropped": "6.1's 0.35 * sstep(4.5, 0, d_out) would move ground outside the province, which other regions read"
+ },
+ "corrections_to_6_1_as_written": {
+  "curve_identity_below_knee": "max(0, E_base - 3850) maps every cell under 3,850 m up to 3,850 m; 6.1 ran before 6.2 carved the pass, so below the knee the curve is the identity here",
+  "relief_scaled_by_the_curve_slope": "dE_hp restored at (2150/3600) * sech^2(u), not at full amplitude, so the result stays inside 6.1's own window"
+ },
+ "cells": {
+  "province": 38377,
+  "lobe": 12066,
+  "reached_w_over_0_01": 10019,
+  "core_w_over_0_9": 1072,
+  "moved_over_1m": 10294,
+  "rescale_moved_outside_province": 0,
+  "rescale_moved_inside_guard": 0,
+  "carve_moved_outside_province": 0,
+  "carve_max_cut_outside_province_m": 0.0,
+  "carve_moved_inside_guard": 0,
+  "raised_over_1m": 26
+ },
+ "heights": {
+  "core": {
+   "median_before_m": 6723,
+   "median_after_m": 5332,
+   "max_before_m": 8621,
+   "max_after_m": 5989,
+   "pct_over_6500_before": 70.52,
+   "pct_over_6500_after": 0.0
+  },
+  "reached": {
+   "median_before_m": 6955,
+   "median_after_m": 6180,
+   "pct_over_6500_before": 70.0,
+   "pct_over_6500_after": 36.7
+  },
+  "province": {
+   "median_before_m": 7963,
+   "median_after_m": 7784,
+   "pct_over_6500_before": 82.5,
+   "pct_over_6500_after": 73.8
+  }
+ },
+ "no_new_scarp": {
+  "province_gradient_m_per_cell_before": {
+   "p50": 125,
+   "p95": 391,
+   "p99": 662,
+   "p99_9": 1170,
+   "max": 1911
+  },
+  "province_gradient_m_per_cell_after": {
+   "p50": 133,
+   "p95": 412,
+   "p99": 662,
+   "p99_9": 1137,
+   "max": 1911
+  },
+  "largest_single_cell_increase_m": 527,
+  "cells_gaining_over_300m": 142
+ },
+ "eastern_wall_above_hub_01": {
+  "max_abs_change_m_by_x_band": {
+   "1280-1289": 2733.2,
+   "1290-1299": 2856.4,
+   "1300-1309": 2606.4,
+   "1310-1319": 264.2,
+   "1320-1329": 0.0,
+   "1330-1339": 0.0,
+   "1340-1349": 0.0,
+   "1350-1359": 0.0
+  },
+  "untouched_from_x": 1312
+ },
+ "rivers_6_4_step_1": {
+  "allowance_m": 50.0,
+  "channel_depth_m": 12.0,
+  "in_province": [
+   {
+    "id": "r708",
+    "name": "Wādī al-Ṣakhr",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r440",
+    "name": "Guli rrija",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r505",
+    "name": "Loua Waita Guli",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r514",
+    "name": "Waita Guli",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r464",
+    "name": "Wādī al-Qamar al-Kabīr",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r637",
+    "name": "Wādī al-Jabal",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   },
+   {
+    "id": "r645",
+    "name": "Wādī al-Zulāl al-Ṣaghīr",
+    "climb_before_m": 0.0,
+    "climb_after_m": 0.0,
+    "graded": false
+   }
+  ],
+  "graded": [],
+  "max_climb_in_province_before_grading_m": 0.0,
+  "max_climb_in_province_after_grading_m": 0.0,
+  "cells_the_carve_took_off_the_rescale": 0,
+  "max_climb_over_every_river_after_m": 48.3
+ },
+ "landed_before_after": [
+  {
+   "name": "godsgate_saddle_crest",
+   "px": [
+    1031,
+    1252
+   ],
+   "must_read_m": 3620.0,
+   "before_m": 3619.9,
+   "after_m": 3619.9,
+   "moved_m": 0.0
+  },
+  {
+   "name": "tarn1_gate_bell",
+   "px": [
+    1016,
+    1236
+   ],
+   "must_read_m": 3680.0,
+   "before_m": 3680.0,
+   "after_m": 3680.0,
+   "moved_m": 0.0
+  },
+  {
+   "name": "tarn2_amber_sinter",
+   "px": [
+    1064,
+    1272
+   ],
+   "must_read_m": 3940.0,
+   "before_m": 3940.1,
+   "after_m": 3940.1,
+   "moved_m": 0.0
+  },
+  {
+   "name": "tarn3_mirror_slump",
+   "px": [
+    1134,
+    1218
+   ],
+   "must_read_m": 4120.0,
+   "before_m": 4119.9,
+   "after_m": 4119.9,
+   "moved_m": 0.0
+  },
+  {
+   "name": "tarn4_jade_karst_polje",
+   "px": [
+    1208,
+    1254
+   ],
+   "must_read_m": 4380.0,
+   "before_m": 4380.1,
+   "after_m": 4380.1,
+   "moved_m": 0.0
+  },
+  {
+   "name": "tarn5_copper_vein",
+   "px": [
+    1288,
+    1184
+   ],
+   "must_read_m": 3820.0,
+   "before_m": 3820.0,
+   "after_m": 3820.0,
+   "moved_m": 0.0
+  },
+  {
+   "name": "hub_01",
+   "px": [
+    1344,
+    1409
+   ],
+   "must_read_m": 4351.0,
+   "before_m": 4350.7,
+   "after_m": 4350.7,
+   "moved_m": 0.0
+  }
+ ],
+ "horn_targets_before_after": [
+  {
+   "name": "ilmenite_horn",
+   "px": [
+    1008,
+    1248
+   ],
+   "planned_m": 5480.0,
+   "before_m": 6526.8,
+   "after_m": 5627.1,
+   "off_plan_before_m": 1047,
+   "off_plan_after_m": 147
+  },
+  {
+   "name": "shatter_crown",
+   "px": [
+    1056,
+    1244
+   ],
+   "planned_m": 5760.0,
+   "before_m": 6902.6,
+   "after_m": 5388.8,
+   "off_plan_before_m": 1143,
+   "off_plan_after_m": -371
+  }
+ ],
+ "station_base_check": [
+  {
+   "station": "seouterwall/godsgate",
+   "px": [
+    1031,
+    1252
+   ],
+   "base_m": 3620.0,
+   "before_m": 3619.9,
+   "after_m": 3619.9,
+   "passed_before": true,
+   "passed_after": true
+  },
+  {
+   "station": "seouterwall/gatetarn",
+   "px": [
+    1016,
+    1236
+   ],
+   "base_m": 3680.0,
+   "before_m": 3680.0,
+   "after_m": 3680.0,
+   "passed_before": true,
+   "passed_after": true
+  },
+  {
+   "station": "seouterwall/ambertarn",
+   "px": [
+    1064,
+    1272
+   ],
+   "base_m": 3940.0,
+   "before_m": 3940.1,
+   "after_m": 3940.1,
+   "passed_before": true,
+   "passed_after": true
+  },
+  {
+   "station": "seouterwall/mirrorscarp",
+   "px": [
+    1134,
+    1218
+   ],
+   "base_m": 4120.0,
+   "before_m": 4119.9,
+   "after_m": 4119.9,
+   "passed_before": true,
+   "passed_after": true
+  },
+  {
+   "station": "seouterwall/jadecrest",
+   "px": [
+    1208,
+    1254
+   ],
+   "base_m": 4380.0,
+   "before_m": 4380.1,
+   "after_m": 4380.1,
+   "passed_before": true,
+   "passed_after": true
+  },
+  {
+   "station": "seouterwall/coppertarn",
+   "px": [
+    1288,
+    1184
+   ],
+   "base_m": 3820.0,
+   "before_m": 3820.0,
+   "after_m": 3820.0,
+   "passed_before": true,
+   "passed_after": true
+  }
+ ],
+ "thalweg_before": {
+  "min_m": 2284.3,
+  "max_m": 3789.3,
+  "median_grade_pct": 1.32,
+  "p95_grade_pct": 3.89
+ },
+ "thalweg_after": {
+  "min_m": 2284.3,
+  "max_m": 3789.3,
+  "median_grade_pct": 1.32,
+  "p95_grade_pct": 3.9
+ },
+ "water": {
+  "cells_in_province": 53,
+  "bodies": 5,
+  "changed": false,
+  "tarn_water_within_km_before": {
+   "1": 4.0,
+   "2": 2.0,
+   "3": 2.0,
+   "4": 2.0,
+   "5": 2.0
+  },
+  "tarn_water_within_km_after": {
+   "1": 4.0,
+   "2": 2.0,
+   "3": 2.0,
+   "4": 2.0,
+   "5": 2.0
+  }
+ }
+}

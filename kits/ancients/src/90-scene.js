@@ -36,7 +36,7 @@ const fill=new THREE.DirectionalLight(0xc0d0ff,.35);fill.position.set(800,400,-9
 // sky dome
 const skyMat=new THREE.ShaderMaterial({side:THREE.BackSide,fog:false,depthWrite:false,uniforms:{u_n:{value:0}},
  vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
- fragmentShader:'uniform float u_n;varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=mix(vec3(.86,.62,.42),vec3(.085,.075,.105),u_n);vec3 zen=mix(vec3(.36,.46,.66),vec3(.014,.018,.040),u_n);vec3 c=mix(hz,zen,pow(h,.55));gl_FragColor=vec4(c,1.);}'});
+ fragmentShader:'uniform float u_n;varying vec3 vP;void main(){float h=clamp(normalize(vP).y,-.05,1.);vec3 hz=mix(vec3(.86,.62,.42),vec3(.085,.075,.105),u_n);vec3 zen=mix(vec3(.36,.46,.66),vec3(.014,.018,.040),u_n);vec3 c=mix(hz,zen,pow(max(h,0.),.55));gl_FragColor=vec4(c,1.);}'});
 const sky=new THREE.Mesh(new THREE.SphereGeometry(9000,32,16),skyMat);sky.userData.probeSkip=true;scene.add(sky);
 // the gas giant, low in the north-east (Krator canon: altitude 25°, azimuth 66°)
 const giantTex=canvasTex(512,512,(g,w,h)=>{g.clearRect(0,0,w,h);const grd=g.createRadialGradient(256,256,0,256,256,256);
@@ -62,7 +62,11 @@ const groundM=new THREE.Mesh(new THREE.PlaneGeometry(GROUND_SIDE,GROUND_SIDE),MA
 // A target may add builders of its own by declaring EXTRA_BUILDERS in its
 // 89z-rows.js fragment, so new work can live entirely in its own target and
 // its own new src/ fragment without editing this file.
-const BUILDERS=Object.assign({},typeof EXTRA_BUILDERS!=='undefined'?EXTRA_BUILDERS:{},{skyA:buildSkyA,skyB:buildSkyB,skyC:buildSkyC,mega:buildMega,fac:buildFactory,port:buildStarport,gov:buildGovernment,lib:buildLibrary,bunk:buildBunker,off:buildOffices,apt:buildApartments,amph:buildAmphitheater,fuel:buildFuelStation,radar:buildRadarTower,dish:buildDish,house:buildHouses,lab:buildLab,house2:buildHouses2,skyD:buildSkyD,skyE:buildSkyE,skyF:buildSkyF,arc:buildArc,robo:buildRobotics,campus:buildCampus,skyG:buildSkyG,skyH:buildSkyH,dc:buildDataCenter,police:buildPolice,hosp:buildHospital,hotel:buildHotel,dam:buildDam});
+const ANC_BUILDER_NAMES={skyA:'buildSkyA',skyB:'buildSkyB',skyC:'buildSkyC',mega:'buildMega',fac:'buildFactory',port:'buildStarport',gov:'buildGovernment',lib:'buildLibrary',bunk:'buildBunker',off:'buildOffices',apt:'buildApartments',amph:'buildAmphitheater',fuel:'buildFuelStation',radar:'buildRadarTower',dish:'buildDish',house:'buildHouses',lab:'buildLab',house2:'buildHouses2',skyD:'buildSkyD',skyE:'buildSkyE',skyF:'buildSkyF',arc:'buildArc',robo:'buildRobotics',campus:'buildCampus',skyG:'buildSkyG',skyH:'buildSkyH',dc:'buildDataCenter',police:'buildPolice',hosp:'buildHospital',hotel:'buildHotel',dam:'buildDam'};
+// THE BUILDERS BY NAME (2026-11-15): a page carries only the builder fragments its rows place (build.py, PRUNE), so the
+// table names them and takes each one the page has; a row whose builder is not on the page is a build error, not a gap.
+const BUILDERS=Object.assign({},typeof EXTRA_BUILDERS!=='undefined'?EXTRA_BUILDERS:{},Object.fromEntries(Object.entries(ANC_BUILDER_NAMES)
+ .filter(e=>typeof self[e[1]]==='function').map(e=>[e[0],self[e[1]]])));
 // A target may choose which decay levels it shows by declaring DECAYS in its
 // 89z-rows.js. 0 intact, 1 ruined, 2 toppled, 3 repaired, 4 rehabilitated and
 // STILL STANDING ("The Project"). Level 3 is a whole showcase of its own, so it

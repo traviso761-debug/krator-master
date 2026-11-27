@@ -34,7 +34,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `46-host-ground.js` | 14 | the lake (118) |
 | `50-biome-xanadu-species.js` | 64 **big** | THE LAKE COLOUR (21); the tree species (76); harvest (biomes/FRUIT.md) (204); leaf and flower textures (272); an iridescent bark (420); bark textures (423); geometries local to this biome (472); materials (567); instanced items (628) |
 | `52-biome-xanadu-library.js` | 1 |  |
-| `55-biome-xanadu-trees.js` | 86 **big** | zones from the fields (17); colour (34); polyline helpers (59); keep-clear between trees (75); foliage helpers (82); the builders (122); impostors (the far canopy) (575); the diversity pass (2026-10-26) (614); the pass (667); one tree at a point (additive, for a world's gar (778) |
+| `55-biome-xanadu-trees.js` | 86 **big** | zones from the fields (17); colour (39); polyline helpers (64); keep-clear between trees (80); foliage helpers (87); the builders (127); impostors (the far canopy) (580); the diversity pass (2026-10-26) (619); the pass (672); one tree at a point (additive, for a world's gar (783) |
 | `60-biome-xanadu-floor.js` | 20 | small plants (34); the zone planters (101); the pass (168) |
 | `65-biome-xanadu-dress.js` | 5 |  |
 | `70-biome-xanadu.js` | <1 |  |
@@ -49,3 +49,15 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `98-host-views.js` | 5 |  |
 | `99-host-take.js` | 13 | the inspector's words (5); the probe's budgets and the kit's own checks (ve (18); the host's own checks (verify.py runs them), eac (26); the page, handed to the host (89) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| cloud | 45b-host-land.js, 87-host-cloud.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| descent | 45a-host-descent-land.js, 45b-host-land.js, 87-host-descent.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| floor | 45b-host-land.js, 87-host-floor.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 23 |
+| gills | 45b-host-land.js, 87-host-gills.js, 89-host-sky.js, 89w-host-water.js, 89x-host-fountain.js, 98-host-views.js | 39 |
+| ranges | 45b-host-land.js, 87-host-ranges.js, 89-host-sky.js, 89w-host-water.js, 98-host-views.js | 36 |

@@ -316,7 +316,7 @@ func _initialize() -> void:
 		var has_img := false
 		if mat is ShaderMaterial:
 			var sm := mat as ShaderMaterial
-			if sm.shader == KratorKmat.LIB:
+			if KratorKmat.is_lib(sm.shader):
 				on_lib += 1
 				has_img = bool(sm.get_shader_parameter("has_albedo")) and sm.get_shader_parameter("albedo_tex") != null
 			else:

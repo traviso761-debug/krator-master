@@ -310,13 +310,13 @@ if 'tail' in FACES and CFG.get('tail_level') and CFG['pitch'] == 'torso':
     old = PIV['tail'] - S; dyw, dzw = old[1], -0.17; c_, s_ = np.cos(FP), np.sin(FP)
     TAILFLY = [float(old[0]), float(dyw * c_ + dzw * s_), float(-dyw * s_ + dzw * c_)]; NTR = {'tail': lambda ph: TAILFLY}
 anims = [clip('flap', Tf, lambda n, ph: fly(n, ph, Tf), ntr=NTR),
-         clip('glide', 3.0, lambda n, ph: fly(n, ph, 3.0, mid=0.12, amp=(0.07, 0.10), tuck=0.2), ntr=NTR),
+         clip('glide', 3.0, lambda n, ph: fly(n, ph, 3.0, mid=CFG.get('glide_mid', 0.12), amp=(0.07, 0.10), tuck=0.2), ntr=NTR),
          clip('perch', 4.0, perch, scl=FOLDSC),
          clip('walk', T_WALK, walk, n=N_WALK, scl=FOLDSC, tfn=rigT(lambda ph: BOB(ph) - CROUCH),
               extras={'speed': SPEED, 'stride': STRIDE, 'duty': DUTY, 'ground': GROUND, 'crouch': CROUCH, 'legOffset': OFFS, 'note': 'walk in place; drive the root forward at "speed" units per second so planted feet do not slide'})]
 tr = {k: v for k, v in tris.items()}
 outj = {'asset': {'version': '2.0', 'generator': 'meshy + frig.py'}, 'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': nodes, 'meshes': meshes, 'materials': J['materials'], 'textures': J['textures'],
-        'images': imgs, 'samplers': J['samplers'], 'bufferViews': BV, 'accessors': AC, 'animations': anims, 'buffers': [{'byteLength': len(blob)}]}
+        'images': imgs, 'samplers': J.get('samplers', [{}]), 'bufferViews': BV, 'accessors': AC, 'animations': anims, 'buffers': [{'byteLength': len(blob)}]}
 js = json.dumps(outj, separators=(',', ':')).encode()
 while len(js) % 4: js += b' '
 while len(blob) % 4: blob.append(0)

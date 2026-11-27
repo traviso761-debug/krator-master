@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.189,
+    1.268
+   ],
+   "seam_before": [
+    1.647,
+    1.391
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.opal.matrix",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.opal.matrix.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-12 (~/.codex/generated_images/01a1d13e-6b01-7e52-a534-62fe94d6c376)",
+  "licence": "generated for this project by its owner",
+  "original_title": "exec-744fe4e6-1299-47f3-bea0-b0d860a8aeff.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. Opal Valley (`biomes/opalvalley`, 2026-11-11)' on claude/zealous-allen-0cd44d (id rock.opal.matrix)",
+  "sha1": "50d5b9f43b5bd4b53c943e38d001a77680e18db5"
+ }
+}

@@ -164,6 +164,203 @@
    "metal": 0.2,
    "roughLift": 0.1,
    "specular": 0.3
+  },
+  "metal": {
+   "lib": "metal.steel.brushed",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.84
+   },
+   "metal": 0.8,
+   "normalScale": 0.65,
+   "roughLift": 0.05,
+   "specular": 0.5,
+   "breakup": {
+    "mix": 0.35,
+    "macro": 0.08,
+    "cell": 5
+   }
+  },
+  "rope": {
+   "lib": "fibre.rope.twist",
+   "scale": [
+    0.35,
+    0.35
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.82
+   },
+   "metal": 0,
+   "normalScale": 0.85,
+   "breakup": {
+    "mix": 0.3,
+    "macro": 0.08,
+    "cell": 4
+   }
+  },
+  "tarwood": {
+   "lib": "wood.tarred",
+   "scale": [
+    0.81,
+    0.81
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.76
+   },
+   "metal": 0,
+   "normalScale": 0.85,
+   "roughLift": 0.06,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "jade": {
+   "lib": "stone.soapstone",
+   "scale": [
+    0.6,
+    0.6
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78,
+    "contrast": 1.35
+   },
+   "metal": 0.05,
+   "normalScale": 0.65,
+   "roughLift": -0.05,
+   "specular": 0.65,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "brick": {
+   "lib": "brick.buff",
+   "scale": [
+    0.65,
+    0.65
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0,
+   "normalScale": 0.85,
+   "roughLift": 0.08,
+   "breakup": {
+    "mix": 0.45,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "hide": {
+   "lib": "hide.panels.sewn",
+   "scale": [
+    0.85,
+    0.85
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0,
+   "normalScale": 0.85,
+   "roughLift": -0.05,
+   "specular": 0.38,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 5
+   }
+  },
+  "bone": {
+   "lib": "organic.bone",
+   "scale": [
+    0.75,
+    0.75
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.84
+   },
+   "metal": 0,
+   "normalScale": 0.8,
+   "roughLift": 0.04,
+   "specular": 0.35,
+   "breakup": {
+    "mix": 0.4,
+    "macro": 0.1,
+    "cell": 6
+   }
+  },
+  "stone": {
+   "lib": "stone.marble.ashlar",
+   "scale": [
+    0.85,
+    0.85
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.84
+   },
+   "metal": 0,
+   "normalScale": 0.65,
+   "roughLift": 0.04,
+   "specular": 0.45,
+   "breakup": {
+    "mix": 0.38,
+    "macro": 0.08,
+    "cell": 6
+   }
+  },
+  "glaze": {
+   "lib": "ceramic.glaze",
+   "scale": [
+    0.7,
+    0.7
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.8
+   },
+   "metal": 0.06,
+   "normalScale": 0.6,
+   "roughLift": -0.06,
+   "specular": 0.65,
+   "breakup": {
+    "mix": 0.3,
+    "macro": 0.08,
+    "cell": 5
+   }
+  },
+  "silk": {
+   "lib": "cloth.silk",
+   "scale": [
+    0.55,
+    0.55
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.88
+   },
+   "metal": 0,
+   "normalScale": 0.5,
+   "roughLift": 0.04,
+   "specular": 0.32,
+   "breakup": {
+    "mix": 0.3,
+    "macro": 0.06,
+    "cell": 5
+   }
   }
  }
 }

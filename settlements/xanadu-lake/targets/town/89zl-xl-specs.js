@@ -1,0 +1,422 @@
+// ================================================================= THE LAKE TOWNS — each town's design row (settlements/xanadu-lake/PLAN.md section 4)
+// [G data] XL.SPECS[key], keyed by the town's XAN_TUNE.lake key (its id 'lk.' + key). A row never copies a tune number: the
+// people, px, trade, hub and province are read from XAN_TUNE.lake in place (core/region/data/xan-tune.js, on the page as
+// gen/89zk-xl-tune.js, in node by require): XL.tune(key). tests/test-xl-towns.js holds every key to a tune record.
+//
+//   key        the tune key
+//   bearing    the plan's direction from the town to open water (degrees; the fit's own, XL.FIT[key].bearing, is what the
+//              ground uses: the test holds the two within 45 degrees)
+//   shore      the core/coast class at the landing (the region's, read by tools/fit_lake_town.py)
+//   wall       {rise: metres to the rim within 7 km (the model's), benches: the terrace benches' count}
+//   world      {region, site, R, band, smooth}: the open world's region and site, the footprint and the band
+//              (core/world/bake_towns.py), the shore's smoothing (m, default 120: tools/fit_lake_town.py)
+//   quarters   [{id, role, share, at}]: share of the houses; at 'shore' | 'slope' | 'bench' | 'stream'
+//   landmarks  [{id, key, at}]: the civic set
+//   works      [{key, n, at}]: the trade's pieces
+//   craft      {dugouts, launches, barges}
+//   wealth     [poor, mid, rich] shares of the houses; andean: the share in the Andean set (87b)
+//   ruins      null | {...} (Ōlḍ-Thalaba's old quarter)
+//   layout     the town's frame (page metres from the landing: x along the shore, d inland of the waterline): the shore road and
+//              the contour rows (d), the terrace stairs (x), the market square, the benches ([d0, d1] and their half-length),
+//              the stream ({x, drift, to}: its line x + drift * d, up to d = to), the core (the town's own ground: |x| < x,
+//              d < d; outside it the region's rest fades in over `fade` m) and the town's half-width
+var XL=XL||{};
+XL.SPECS={
+ mouth:{key:'mouth',bearing:180,
+  shore:'sand',   /* the plan proposed shingle; the region's coast field reads sand at the landing (tools/fit_lake_town.py): kept */
+  wall:{rise:510,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxanmouth01',R:1400,band:600},
+  quarters:[{id:'landing',role:'harbour',share:.15,at:'shore'},{id:'market',role:'market',share:.10,at:'shore'},
+   {id:'town',role:'residential',share:.50,at:'slope'},{id:'bench',role:'farm',share:.15,at:'bench'},{id:'stream',role:'residential',share:.10,at:'stream'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'},{id:'bridge',key:'xa_bridge',at:'stream'}],
+  works:[{key:'xa_fish_racks',n:8,at:'shore'},{key:'xa_boatshed',n:4,at:'shore'},{key:'xa_granary',n:1,at:'slope'},{key:'xa_smithy',n:1,at:'slope'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:55,launches:2,barges:1},
+  stalls:16,
+  wealth:[.55,.35,.10],andean:.25,ruins:null,
+  layout:{half:470,road:26,rows:[26,92,158,224,290,356],stairs:[-235,0,235],
+   market:{x:-150,w:110,d:52},
+   benches:[[410,520],[600,710]],benchHalf:560,
+   stream:{x:430,drift:.06,to:960},
+   core:{x:700,d:760,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'The first lake town: the plain pattern the shared target is proved on (mouth/PLAN.md). A quay and landing stair, the fish racks and boat sheds along the beach, the market square with the temple and the governor\'s house by the landing, the town up the 8 % slope in five contour rows, two terrace benches above, the stream\'s ravine at its east edge with a footbridge.'},
+ /* step L1: the fishing village left on Thalaba's shore (old-thalaba/PLAN.md): the village in the lowest streets, the old town
+    above it standing empty (its roofs and timber carried up to the new Thalaba: open point 1's default, about 440 houses in
+    all, the village living in the lowest 110), the old caravan market a ruin; every ruin watched by core/ruins */
+ 'old-thalaba':{key:'old-thalaba',bearing:180,
+  shore:'shingle',   /* the plan's; the fit reads the region's at the landing (XL.FIT['old-thalaba'].coast) */
+  wall:{rise:502,benches:2},
+  world:{region:'xanadu-north-shore',site:'soldthalaba1',R:1400,band:600,smooth:40},   /* a notch in the shore at the landing: a tight line */
+  quarters:[{id:'landing',role:'harbour',share:.20,at:'shore'},{id:'village',role:'residential',share:.50,at:'shore'},
+   {id:'temple',role:'civic',share:.15,at:'shore'},{id:'bench',role:'farm',share:.15,at:'bench'},
+   {id:'ruins',role:'ruin',share:0,at:'slope',rest:true}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'serai',key:'xa_serai_ruin',at:'slope',q:'ruins'}],
+  works:[{key:'xa_fish_racks',n:4,at:'shore'},{key:'xa_boatshed',n:2,at:'shore'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:25,launches:1,barges:0},
+  stalls:0,
+  wealth:[.75,.22,.03],andean:.30,
+  ruins:{houses:331,quarter:'ruins',note:'the old town of about 440 houses (old Thalaba\'s 2,400 people), less the village\'s 109'},
+  layout:{half:620,road:26,rows:[26,92,158,224,290,356,422,488],stairs:[-310,0,310],
+   market:null,
+   benches:[[560,670],[750,860]],benchHalf:700,
+   stream:null,
+   core:{x:820,d:900,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'A village inside a town too big for it: the fishers in the lower streets by the water, the temple still kept, a quay too long for its boats; above them the empty old town, its houses roofless, the caravan market a ruin.'},
+ /* step L1: the dyers' town, the north shore's east end (dyer/PLAN.md): the dye works along the water, the cloth hung down to
+    the beach, the dye plants on the benches (kits/crops: what the Vale grows by rain), the fishers at the landing */
+ dyer:{key:'dyer',bearing:180,
+  shore:'sand',
+  wall:{rise:510,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxandyer01',R:1400,band:600,smooth:60},   /* its shore jagged (the coast's coves): a tighter line */
+  quarters:[{id:'dyes',role:'industry',share:.20,at:'shore'},{id:'landing',role:'harbour',share:.10,at:'shore'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'fields',role:'farm',share:.15,at:'bench'},
+   {id:'market',role:'market',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'}],
+  works:[{key:'xa_dye_works',n:5,at:'shore'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:50,launches:2,barges:1},
+  stalls:12,
+  wealth:[.55,.35,.10],andean:.25,ruins:null,
+  layout:{half:520,road:40,rows:[40,106,172,238,304,370],stairs:[-250,0,250],
+   market:{x:140,w:100,d:48,d0:114},
+   benches:[[450,560],[640,750]],benchHalf:600,
+   stream:null,
+   core:{x:760,d:820,lake:180,fade:300},
+   fields:{rows:9,bucket:'dye',biome:'xanadu'}},
+  notes:'Colour on the shore: five dye works along the water with their vats and cloth on lines down to the beach, the fishers\' racks and sheds beyond them, the market and the temple a row up the slope, the dye plants on the two benches.'},
+ /* step L2, Phēr's north-west round (its sites added to openworld/SITES.json, the region re-cut): */
+ /* the cacao town on the bend (cocoa/PLAN.md): the fermentaries by the landing, the drying floors up the slope, the cacao
+    groves under their shade trees on the benches (the kit's orchard plots); Qōqō takes the bend's west side (open point 1) */
+ cocoa:{key:'cocoa',bearing:180,shore:'sand',wall:{rise:548,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxanlkcocoa01',R:1400,band:600},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'ferment',role:'industry',share:.15,at:'shore'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'groves',role:'farm',share:.20,at:'bench'},{id:'market',role:'market',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'}],
+  works:[{key:'xa_fermentary',n:4,at:'shore'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_farm',n:4,at:'slope'},{key:'xa_wayside_shrine',n:3,at:'bench'}],
+  craft:{dugouts:50,launches:3,barges:1},stalls:12,
+  wealth:[.50,.38,.12],andean:.25,ruins:null,
+  layout:{half:600,road:36,rows:[36,102,168,234,300,366,432],stairs:[-300,0,300],
+   market:{x:-150,w:100,d:48,d0:108},
+   benches:[[520,630],[710,820]],benchHalf:680,stream:null,
+   core:{x:820,d:880,lake:180,fade:300},
+   fields:{rows:9,orchard:true,crop:'cacao',colour:'green',plot:0}},
+  notes:'The cacao town on the bend: the fermentaries and the fishers\' racks along the beach, the drying floors a row up, the market and the temple above them, the cacao groves under their shade trees on the two benches.'},
+ /* the net-makers' town on its point (net/PLAN.md): the net lofts and their frames along the beach, the racks on the point */
+ /* bearing 180, was 225: moved along the shore to the strand between Malbari and Phēr (2026-11-24, the owner: "Move along the
+    shore"), the water due south there (fitted 170.5) */
+ net:{key:'net',bearing:180,shore:'shingle',wall:{rise:532,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxanlknet01',R:1400,band:600,smooth:35},   /* its point between two bays: a tight line */
+  quarters:[{id:'point',role:'harbour',share:.20,at:'shore'},{id:'lofts',role:'industry',share:.20,at:'shore'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'slope'},{id:'bench',role:'farm',share:.05,at:'bench'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'}],
+  works:[{key:'xa_net_loft',n:6,at:'shore'},{key:'xa_fish_racks',n:8,at:'shore'},{key:'xa_boatshed',n:4,at:'shore'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:55,launches:2,barges:1},stalls:10,
+  wealth:[.60,.32,.08],andean:.30,ruins:null,
+  layout:{half:540,road:36,rows:[36,102,168,234,300,366],stairs:[-260,0,260],
+   market:{x:150,w:90,d:46,d0:108},
+   benches:[[440,550],[630,740]],benchHalf:620,stream:null,
+   core:{x:780,d:820,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'Net frames everywhere: the net lofts with their nets hung to dry along the beach, the racks and sheds beyond them, the town up behind the point.'},
+ /* the silk town at the Qol Siṭrīm's mouth (mulberry/PLAN.md): the river 2 km west of the pin, outside the footprint, so the
+    river's quarter (the reeling houses, the watermills) and the road's (the han, the market) stand on the town's west edge,
+    toward it (layout.side); the mulberry plots and the rearing houses on the benches */
+ mulberry:{key:'mulberry',bearing:180,shore:'marsh',wall:{rise:495,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxanlkmulberry01',R:2000,band:600,smooth:70},
+  quarters:[{id:'river',role:'industry',share:.20,at:'stream'},{id:'landing',role:'harbour',share:.10,at:'shore'},
+   {id:'town',role:'residential',share:.40,at:'slope',rest:true},{id:'groves',role:'farm',share:.20,at:'bench'},{id:'road',role:'market',share:.10,at:'stream'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'han',key:'xa_caravanserai',at:'stream',q:'road'},{id:'bridge',key:'xa_river_span',at:'stream'},{id:'temple',key:'xa_temple',at:'slope'},
+   {id:'market',key:'xa_shops',at:'stream'}],
+  works:[{key:'xa_reeling_house',n:6,at:'stream'},{key:'xa_watermill',n:2,at:'stream'},{key:'xa_workshop',n:8,at:'bench'},
+   {key:'xa_fish_racks',n:8,at:'shore'},{key:'xa_boatshed',n:4,at:'shore'},{key:'xa_wayside_shrine',n:3,at:'bench'}],
+  craft:{dugouts:70,launches:2,barges:2},stalls:12,
+  wealth:[.50,.38,.12],andean:.25,ruins:null,
+  layout:{half:700,road:30,rows:[30,106,182,258,334,410,486],stairs:[-420,-140,140,420],side:'west',
+   market:{x:-560,w:100,d:48,d0:118},
+   benches:[[580,700],[780,900]],benchHalf:640,stream:null,   /* 640 (was 760): the re-run's shore bends 57 degrees at x -700, past where a bench's works and plots can stand (2026-11-24) */
+   core:{x:900,d:960,lake:180,fade:300},
+   fields:{rows:9,orchard:true,crop:'mulberry',colour:'green',plot:1}},
+  notes:'The north-west\'s largest town, on the flattest shore: the reeling houses, the watermills, the han and the market on its west edge toward the Qol Siṭrīm, the town up the gentle slope, the mulberry plots and the rearing houses on the benches.'},
+ /* the honey town at the lake's north-west end (hive/PLAN.md): the apiaries in rows on the benches, the honey houses by the landing */
+ hive:{key:'hive',bearing:180,shore:'shingle',wall:{rise:495,benches:2},
+  world:{region:'xanadu-north-shore',site:'sxanlkhive01',R:1400,band:600,brg:180,at:[-500,0],islet:150},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.50,at:'slope',rest:true},
+   {id:'hives',role:'farm',share:.20,at:'bench'},{id:'market',role:'market',share:.10,at:'shore'},{id:'fishers',role:'residential',share:.10,at:'shore'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_workshop',n:3,at:'shore'},{key:'xa_fish_racks',n:5,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_apiary',n:12,at:'bench'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:40,launches:2,barges:1},stalls:10,
+  wealth:[.55,.35,.10],andean:.30,ruins:null,
+  layout:{half:500,road:36,rows:[36,102,168,234,300,366],stairs:[-250,0,250],   /* road 36 (was 30): the second move's beach is flat, its works stand further up it (2026-11-24) */
+   market:{x:-160,w:100,d:48},
+   benches:[[440,560],[640,760]],benchHalf:560,stream:null,
+   core:{x:600,d:820,lake:180,fade:200},   /* 600, fade 200 (was 740, 300): inside the waterfront and its 120 m (the second move, 2026-11-24) */
+   fields:{rows:9}},
+  notes:'A low, sunny town on a gentle shore: the honey houses and the racks by the landing, the market with the temple and the governor\'s house, the apiaries in rows on the benches.'},
+ /* step L3, Erehwon's south-east round (BUILD-PLAN A4), on openworld/xanadu-lake-shore: the south shore under the caldera's
+    steepest wall, then round the east shore to the Ālph's outflow and the Vale's granary */
+ /* the shipwrights' town (boatyard/PLAN.md): the slipways, the dry dock and the boat sheds along the beach, the timber yards
+    up the slope (kits/xanadu/extra/88i), the rope walk's shed; no dugouts in the tune (lk.boatyard.store) */
+ boatyard:{key:'boatyard',bearing:0,shore:'sand',wall:{rise:730,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkboatyard01',R:2200,band:600,brg:0,at:[700,0]},
+  quarters:[{id:'yards',role:'industry',share:.30,at:'shore'},{id:'timber',role:'industry',share:.10,at:'slope'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'shore'},{id:'bench',role:'farm',share:.05,at:'bench'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_slipway',n:4,at:'shore'},{key:'xa_boatshed',n:4,at:'shore'},{key:'xa_drydock',n:1,at:'shore'},
+   {key:'xa_timber_yard',n:2,at:'slope'},{key:'xa_workshop',n:4,at:'slope'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:0,launches:4,barges:3},stalls:10,
+  wealth:[.55,.35,.10],andean:.20,ruins:null,
+  layout:{half:620,road:36,rows:[36,102,168,234,300,366,432],stairs:[-310,0,310],
+   market:{x:-170,w:100,d:48},
+   benches:[[520,630],[710,820]],benchHalf:600,stream:null,
+   core:{x:640,d:880,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'The shipwrights\' town: slipways with hulls on the stocks, the dry dock and the boat sheds along the beach, the timber yards and the workshops up the slope, the town above them under the steep south wall.'},
+ /* the weavers' town (weaver/PLAN.md): 300 looms in ten loom houses up the slope, the dye works by the water; no dugouts */
+ weaver:{key:'weaver',bearing:0,shore:'shelf',wall:{rise:769,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkweaver01',R:1500,band:600},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'dyes',role:'industry',share:.10,at:'shore'},
+   {id:'looms',role:'industry',share:.25,at:'slope'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'temple',role:'civic',share:.10,at:'bench'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'market',key:'xa_shops',at:'shore'},{id:'temple',key:'xa_temple',at:'slope',q:'looms'}],
+  works:[{key:'xa_dye_works',n:2,at:'shore'},{key:'xa_warehouse',n:2,at:'shore'},{key:'xa_loom_house',n:10,at:'slope'},
+   {key:'xa_wayside_shrine',n:3,at:'bench'}],
+  craft:{dugouts:0,launches:2,barges:2},stalls:12,
+  wealth:[.50,.38,.12],andean:.25,ruins:null,
+  layout:{half:700,road:36,rows:[36,102,168,234,300,366,432,498],stairs:[-420,-140,140,420],
+   market:{x:-320,w:100,d:48},
+   benches:[[590,700],[780,890]],benchHalf:760,stream:null,
+   core:{x:780,d:960,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'The busiest of the small towns, all clatter: ten long loom houses in rows up the slope, the dye works by the water staining the shallows, the silk store and the brocade house by the landing.'},
+ /* the saffron town under the highest wall (saffron/PLAN.md): the saffron houses on the first bench, the crocus terraces
+    above, the factor's strong house by the landing */
+ saffron:{key:'saffron',bearing:0,shore:'shelf',wall:{rise:769,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlksaffron01',R:1400,band:600,islet:500},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},
+   {id:'houses',role:'industry',share:.15,at:'slope'},{id:'fields',role:'farm',share:.20,at:'bench'},{id:'temple',role:'civic',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'factor',key:'xa_warehouse',at:'shore'},{id:'market',key:'xa_shops',at:'shore'},{id:'temple',key:'xa_temple',at:'slope',q:'temple'}],
+  works:[{key:'xa_saffron_house',n:8,at:'bench'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:50,launches:2,barges:1},stalls:10,
+  wealth:[.45,.40,.15],andean:.25,ruins:null,
+  layout:{maxSlope:.4,   /* the re-run's wall behind the town rises a third (2026-11-24) */
+   half:580,road:36,rows:[36,102,168,234,300,366,432],stairs:[-290,0,290],
+   market:{x:-150,w:96,d:46},
+   benches:[[520,630],[710,820]],benchHalf:640,stream:null,
+   core:{x:780,d:880,lake:180,fade:300},
+   fields:{rows:9,colour:'violet'}},
+  notes:'A small, well-to-do town on a narrow shore under a wall that rises 770 m in 7 km: the saffron houses in a row on the first bench, the crocus terraces above them, the factor\'s strong house by the landing.'},
+ /* the potters' town (pottery/PLAN.md): the kiln yards (each with its clay pit and sherd heap: 88g) up the ravine above the
+    town, the long stair down to the landing; no dugouts (lk.pottery.store) */
+ /* bearing 0, was 315: moved along the shore to the lake's east end (2026-11-24, the owner: "Move along the shore"), the
+    water due north there (fitted 0.8) */
+ pottery:{key:'pottery',bearing:0,shore:'shingle',wall:{rise:350,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkpottery01',R:3000,band:600},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'kilns',role:'industry',share:.25,at:'stream'},
+   {id:'town',role:'residential',share:.45,at:'slope',rest:true},{id:'market',role:'market',share:.10,at:'slope'},{id:'upper',role:'residential',share:.10,at:'bench'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'},{id:'bridge',key:'xa_bridge',at:'stream'}],
+  works:[{key:'xa_kiln_yard',n:8,at:'stream'},{key:'xa_workshop',n:4,at:'stream'},{key:'xa_warehouse',n:2,at:'slope'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:0,launches:1,barges:2},stalls:12,
+  wealth:[.60,.32,.08],andean:.30,ruins:null,
+  layout:{half:480,road:30,rows:[30,96,162,228,294,360,426],stairs:[-240,0,240],
+   market:{x:-140,w:96,d:46,d0:96},
+   benches:[[500,610],[690,800]],benchHalf:560,
+   stream:{x:400,drift:.06,to:960},
+   core:{x:720,d:840,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'Smoke and red ground: eight kiln yards in a row up the ravine on the town\'s east edge, the throwing sheds beside them, the town built of its own seconds and its lanes paved with sherds, the landing at the foot of a long stair.'},
+ /* the tea town of stairs (tea-terraces/PLAN.md): the tea factories by the landing, the houses in rows on the contour benches,
+    the tea gardens to the rim; the landing for the Flashing Eye's road */
+ 'tea-terraces':{key:'tea-terraces',bearing:0,shore:'shelf',wall:{rise:565,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlktea01',R:1400,band:600,smooth:80},
+  quarters:[{id:'landing',role:'harbour',share:.15,at:'shore'},{id:'market',role:'market',share:.10,at:'shore'},
+   {id:'rows',role:'residential',share:.45,at:'slope',rest:true},{id:'gardens',role:'farm',share:.20,at:'bench'},{id:'gate',role:'civic',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'},{id:'inn',key:'xa_teahouse',at:'slope',q:'rows'}],
+  works:[{key:'xa_tea_factory',n:2,at:'slope'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_workshop',n:4,at:'slope'},{key:'xa_wayside_shrine',n:3,at:'bench'}],
+  craft:{dugouts:55,launches:2,barges:1},stalls:12,
+  wealth:[.55,.35,.10],andean:.30,ruins:null,
+  layout:{half:620,road:36,rows:[36,102,168,234,300,366,432],stairs:[-310,0,310],
+   market:{x:-170,w:100,d:48},
+   benches:[[520,630],[710,820]],benchHalf:680,stream:null,
+   core:{x:820,d:880,lake:180,fade:300},
+   fields:{rows:13}},
+  notes:'A town of stairs: the tea factories by the landing where the leaf comes down, the houses in rows on the contours, the gardens in narrow rows on the benches above, the pilgrims\' inn by the upper stair to the Red Monastery\'s road.'},
+ /* the baths at the Ālph's outflow (hot-bath/PLAN.md): the bath house over the spring by the water, the sulfur works on the
+    crust beds up the slope, the inns and teahouses; the Ālph leaves the lake 3 km north-east, outside the footprint, so its
+    bridge is the region's road's (core/world 42b), not the town's */
+ 'hot-bath':{key:'hot-bath',bearing:315,shore:'shelf',wall:{rise:427,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkhotbath01',R:2400,band:600},
+  quarters:[{id:'baths',role:'civic',share:.15,at:'shore'},{id:'market',role:'market',share:.15,at:'shore'},
+   {id:'town',role:'residential',share:.40,at:'slope',rest:true},{id:'works',role:'industry',share:.15,at:'bench'},{id:'fishers',role:'residential',share:.15,at:'shore'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'bath',key:'xa_bath',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},{key:'xa_teahouse',n:4,at:'slope'},
+   {key:'xa_sulfur_works',n:3,at:'bench'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:50,launches:3,barges:1},stalls:14,
+  wealth:[.45,.40,.15],andean:.20,ruins:null,
+  layout:{half:500,road:36,rows:[36,102,168,234,300,366,432,498],stairs:[-250,0,250],   /* half 500: the waterfront ends 120 m short of the inlet at x -800, so the waterline eases into the region's own before it */
+   market:{x:-150,w:100,d:48},
+   benches:[[590,700],[780,890]],benchHalf:560,stream:null,
+   core:{x:520,d:960,lake:180,fade:200},   /* the core's edge 520 m, faded by 720 m: the region's own ground (its inlet) in full at x -800 */
+   fields:{rows:9}},
+  notes:'A spa town for Erewhon\'s court and its merchants: the bath house over the spring by the water, the inns and teahouses along the shore road, the sulfur works up on the bench where the crust forms, apart and downwind.'},
+ /* the Vale's granary on the lake (alph-head/PLAN.md): the grain quay and its granaries, the threshing floors and the windmills
+    on the benches where the wind comes over from the Vale; its 900 t field grain is the region's farmland, not the page's
+    (open point 2) */
+ 'alph-head':{key:'alph-head',bearing:225,shore:'shingle',wall:{rise:497,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkalph01',R:2100,band:600},
+  quarters:[{id:'quay',role:'harbour',share:.15,at:'shore'},{id:'market',role:'market',share:.15,at:'shore'},
+   {id:'old',role:'residential',share:.40,at:'slope',rest:true},{id:'bench',role:'farm',share:.15,at:'bench'},{id:'mills',role:'industry',share:.15,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_slip',n:3,at:'shore'},{key:'xa_fish_racks',n:12,at:'shore'},{key:'xa_boatshed',n:6,at:'shore'},
+   {key:'xa_granary',n:10,at:'slope'},{key:'xa_smithy',n:2,at:'slope'},{key:'xa_windmill',n:4,at:'bench'},{key:'xa_farm',n:6,at:'slope'},
+   {key:'xa_wayside_shrine',n:4,at:'bench'}],
+  craft:{dugouts:110,launches:3,barges:8},stalls:24,
+  wealth:[.50,.38,.12],andean:.20,ruins:null,
+  layout:{half:900,road:40,rows:[40,106,172,238,304,370,436,502,568,634,700],stairs:[-600,-200,200,600],
+   market:{x:-460,w:140,d:52},
+   benches:[[780,890],[970,1080]],benchHalf:1000,stream:null,
+   core:{x:1020,d:1200,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'The largest of the twenty with Phish-Mārkiṭ, built wide: a long grain quay with the barges\' slips, the granaries up behind it, the market and the temple, the old town up the first slope, the farmers\' houses and the threshing floors on the benches, the windmills on the rim.'},
+ /* step L4, Erehwon's west round (BUILD-PLAN A5), on openworld/xanadu-lake-shore: west from Erehwon under the south-west
+    wall, round to the lake's north-west corner. Siṭāq's stack and the quarry's cut face are left for later (their plans:
+    a landform record from the scale-model queue, a core/terrain carve) */
+ /* the Sultan's gardens' town (garden/PLAN.md): walled orchards up the benches (the kit's orchard plots, fruit), the rill
+    gardens of the merchants' summer houses on the slope, the fruit market and stores by the landing */
+ garden:{key:'garden',bearing:0,shore:'shingle',wall:{rise:796,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkgarden01',R:1400,band:600,islet:150},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},
+   {id:'orchards',role:'farm',share:.20,at:'bench'},{id:'villas',role:'residential',share:.15,at:'slope'},{id:'temple',role:'civic',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'market',key:'xa_shops',at:'shore'},{id:'temple',key:'xa_temple',at:'slope',q:'temple'},{id:'rill',key:'xa_rill_garden',at:'slope',q:'villas'}],
+  works:[{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},{key:'xa_warehouse',n:2,at:'slope'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:50,launches:3,barges:1},stalls:10,
+  wealth:[.40,.40,.20],andean:.20,ruins:null,
+  layout:{half:460,road:36,rows:[36,102,168,234,300,366,432,498],stairs:[-230,0,230],
+   market:{x:-150,w:100,d:48},
+   benches:[[590,700],[780,890]],benchHalf:480,stream:null,
+   core:{x:480,d:960,lake:180,fade:300},
+   fields:{rows:9,orchard:true,crop:'citron',colour:'green',plot:2}},
+  notes:'A green town of garden walls: the fruit market and the stores by the landing, the merchants\' summer houses and their rill gardens on the slope, the walled orchards up the benches.'},
+ /* the quarrymen's town (quarry/PLAN.md): the masons' yards up the slope at the wall's foot, the stone slips at the water;
+    no dugouts (lk.quarry.store); the quarry's cut face is a core/terrain carve still to come */
+ quarry:{key:'quarry',bearing:0,shore:'shelf',wall:{rise:768,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkquarry01',R:1400,band:600},
+  quarters:[{id:'yards',role:'industry',share:.20,at:'slope'},{id:'town',role:'residential',share:.45,at:'slope',rest:true},
+   {id:'market',role:'market',share:.10,at:'shore'},{id:'landing',role:'harbour',share:.15,at:'shore'},{id:'upper',role:'residential',share:.10,at:'bench'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_slip',n:2,at:'shore'},{key:'xa_quarry_yard',n:4,at:'slope'},{key:'xa_smithy',n:2,at:'slope'},{key:'xa_workshop',n:2,at:'slope'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:0,launches:1,barges:4},stalls:10,
+  wealth:[.55,.35,.10],andean:.15,ruins:null,
+  layout:{half:480,road:30,rows:[30,96,162,228,294,360],stairs:[-240,0,240],
+   market:{x:-150,w:96,d:46},
+   benches:[[440,550],[630,740]],benchHalf:500,stream:null,
+   core:{x:600,d:800,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'A white town at the foot of the steepest wall: the stone slips at the water, the masons\' yards up the slope where the blocks are dressed, a town of good ashlar for its size.'},
+ /* the orchard town of the south-west shore (orchard/PLAN.md): open orchards on the benches (fruit), the hives at their edge,
+    the fermentary and the packing sheds */
+ orchard:{key:'orchard',bearing:90,   /* 90 (was 45): the re-run's shore runs north-south a kilometre east of the pin (2026-11-24; world.brg) */
+ shore:'shingle',wall:{rise:682,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkorchard01',R:2000,band:600,brg:90,at:[0,-100],smooth:40},
+  quarters:[{id:'landing',role:'harbour',share:.10,at:'shore'},{id:'town',role:'residential',share:.50,at:'slope',rest:true},
+   {id:'orchards',role:'farm',share:.25,at:'bench'},{id:'market',role:'market',share:.10,at:'shore'},{id:'hives',role:'farm',share:.05,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},
+   {id:'governor',key:'xa_governor',at:'shore'},{id:'market',key:'xa_shops',at:'shore'}],
+  works:[{key:'xa_fermentary',n:1,at:'shore'},{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:2,at:'shore'},
+   {key:'xa_warehouse',n:3,at:'slope'},{key:'xa_apiary',n:4,at:'slope'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:45,launches:2,barges:2},stalls:10,
+  wealth:[.55,.35,.10],andean:.30,ruins:null,
+  layout:{half:420,road:36,rows:[36,102,168,234,300,366],stairs:[-260,0,260],   /* half 420 (was 520): the re-run's straight shore here is 1 km long between a bay and a bulge (2026-11-24) */
+   market:{x:-160,w:100,d:48},
+   benches:[[440,580],[650,790]],benchHalf:440,stream:null,
+   core:{x:540,d:820,lake:180,fade:200},
+   fields:{rows:9,orchard:true,crop:'pomegranate',colour:'green',plot:2}},
+  notes:'Gārḍan\'s working cousin: open orchards on broad benches where the wall eases, the hives along their edges, the fermentary and the packing sheds by the landing.'},
+ /* the reed and lotus town (lotus/PLAN.md): the town on its knoll, the mat sheds and reed racks along the shallows' edge; the
+    reed beds and the walled lotus ponds in the shallows wait for core/mask's beds and the fishponds' water seat */
+ lotus:{key:'lotus',bearing:45,shore:'marsh',wall:{rise:336,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlklotus01',R:2600,band:600},
+  quarters:[{id:'knoll',role:'residential',share:.45,at:'slope',rest:true},{id:'sheds',role:'industry',share:.20,at:'shore'},
+   {id:'ponds',role:'farm',share:.15,at:'bench'},{id:'market',role:'market',share:.10,at:'slope'},{id:'landing',role:'harbour',share:.10,at:'shore'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'temple',key:'xa_temple',at:'slope',q:'market'},{id:'market',key:'xa_shops',at:'slope'}],
+  works:[{key:'xa_mat_shed',n:6,at:'slope'},{key:'xa_fish_racks',n:5,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},
+   {key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:45,launches:1,barges:1},stalls:10,
+  wealth:[.60,.32,.08],andean:.30,ruins:null,
+  layout:{half:480,road:30,rows:[30,96,162,228,294,360],stairs:[-240,0,240],
+   market:{x:150,w:96,d:46,d0:96},
+   benches:[[440,550],[630,740]],benchHalf:500,stream:null,
+   core:{x:600,d:800,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'Two towns, one on the knoll and one on the water: the houses up the knoll, the mat sheds and reed racks at the shallows\' edge, the dugouts threading the channels.'},
+ /* the west shore's market town and the lake's fish market (fish-market/PLAN.md): the largest fleet, the racks and
+    smokehouses along the beach, the market streets and the caravanserai where the west road comes in */
+ 'fish-market':{key:'fish-market',bearing:0,   /* 0 (was 45): the re-run's shore runs east-west here (2026-11-24; world.brg) */
+ shore:'sand',wall:{rise:510,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkfish01',R:1800,band:600,smooth:60,islet:150,brg:0},
+  quarters:[{id:'harbour',role:'harbour',share:.15,at:'shore'},{id:'market',role:'market',share:.15,at:'shore'},
+   {id:'old',role:'residential',share:.40,at:'slope',rest:true},{id:'merchants',role:'residential',share:.15,at:'slope'},
+   {id:'bench',role:'farm',share:.10,at:'bench'},{id:'temple',role:'civic',share:.05,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'governor',key:'xa_governor',at:'shore'},
+   {id:'market',key:'xa_shops',at:'shore'},{id:'temple',key:'xa_temple',at:'shore'},{id:'serai',key:'xa_caravanserai',at:'shore'}],
+  works:[{key:'xa_fish_racks',n:20,at:'shore'},{key:'xa_boatshed',n:8,at:'shore'},{key:'xa_warehouse',n:3,at:'slope'},
+   {key:'xa_smithy',n:2,at:'slope'},{key:'xa_wayside_shrine',n:4,at:'bench'}],
+  craft:{dugouts:200,launches:4,barges:4},stalls:40,
+  wealth:[.45,.40,.15],andean:.20,ruins:null,
+  layout:{half:900,road:40,rows:[40,110,176,242,308,374,440,506,572,638,704],stairs:[-600,-200,200,600],
+   market:{x:-460,w:140,d:52},
+   benches:[[780,890],[970,1080]],benchHalf:900,stream:null,
+   core:{x:1020,d:1200,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'Panajachel and Santiago Atitlán\'s market crowded together: the largest fleet\'s racks and smokehouses along the beach, the market streets and stalls, the merchants\' houses and the caravanserai up the slope where the west road comes in.'},
+ /* the fishing village under the stack (stack/PLAN.md): a tight village up the slope between two wadis' fans, the landing in
+    the stack's lee, the terraces on the fans; the stack itself waits for its landform record */
+ stack:{key:'stack',bearing:0,   /* 0 (was 45): the re-run's ring put its shore east-west on the stack's arm; the landing on that stretch 1.4 km east of the pin (2026-11-24; world.brg, world.at) */
+ shore:'cliff',wall:{rise:457,benches:2},
+  world:{region:'xanadu-lake-shore',site:'sxanlkstack01',R:2600,band:600,smooth:60,brg:0,at:[1400,0],gs:12.5,resStep:20},
+  quarters:[{id:'landing',role:'harbour',share:.15,at:'shore'},{id:'village',role:'residential',share:.60,at:'slope',rest:true},
+   {id:'fans',role:'farm',share:.15,at:'bench'},{id:'temple',role:'civic',share:.10,at:'slope'}],
+  landmarks:[{id:'ghat',key:'xa_ghat',at:'shore'},{id:'quay',key:'xa_quay',at:'shore'},{id:'temple',key:'xa_temple',at:'slope',q:'temple'}],
+  works:[{key:'xa_fish_racks',n:6,at:'shore'},{key:'xa_boatshed',n:3,at:'shore'},{key:'xa_wayside_shrine',n:2,at:'bench'}],
+  craft:{dugouts:30,launches:1,barges:0},stalls:0,
+  wealth:[.65,.30,.05],andean:.35,ruins:null,
+  layout:{half:380,road:26,rows:[26,92,158,224,290],stairs:[-190,0,190],
+   market:null,
+   benches:[[370,480],[560,670]],benchHalf:400,stream:null,
+   core:{x:500,d:740,lake:180,fade:300},
+   fields:{rows:9}},
+  notes:'A tight fishing village up the slope in the lake\'s north-west corner, the landing in the lee, the racks on the rocks, the terraces on the fans above.'}};
+// the town's tune record (XAN_TUNE.lake), read in place
+XL.tune=key=>(typeof XAN_TUNE!=='undefined'&&XAN_TUNE.lake||[]).find(L=>L.key===key)||null;
+// the town's household size: the tune's (T.farm.hh, people a household), read in place
+XL.HH=(typeof XAN_TUNE!=='undefined'&&XAN_TUNE.farm)?XAN_TUNE.farm.hh:null;
+// the houses the tune's people make: one a household
+XL.households=key=>{const L=XL.tune(key);return L?Math.round(L.people/XL.HH):0;};
+// the town the page draws: ?town=<key>, else the first built
+XL.DEFAULT='mouth';
+XL.pick=function(){let k=null;try{if(typeof location!=='undefined')k=new URLSearchParams(location.search).get('town');}catch(e){}return k&&XL.SPECS[k]?k:XL.DEFAULT;};

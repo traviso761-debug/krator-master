@@ -1,0 +1,304 @@
+// ================================================================= CORE — coast: natural coastlines (KCOAST)
+// [G data] core/coast/PLAN.md. The open world's coasts followed the scale model's cells (the owner, 2026-11-11: "a module
+// to transform coasts like this and introduce some randomness and a proper coastline with sand or rocks etc"). For one
+// water body this builds a COAST FIELD c(x, z): a signed distance (m, positive inland) to a natural shoreline, and a
+// coast profile per stretch of coast, and redraws the body's mask from the same field, so the land and the water agree.
+// Plain maths on typed arrays: no THREE, no DOM, no WORLD (the world's glue, core/world/44c-world-coast.js, passes the
+// samplers), no Math.random. Every bit of randomness is core/rand's (KRAND.fbm, vnoise, child, hash), read as a function
+// of (x, z): the same point gives the same coast in any tile order. The signed distance is core/mask's (KMASK.distance).
+//
+//   KCOAST.build({id, level, mask, seed, salt, sample, frame, sourceCell, islands, opts}) -> COAST
+//     islands     [{id, x, z, r, top}]: sub-cell islands to stamp (a landform under one of the mask's cells; top: m over
+//                 the level); the mask's own islets (under PRESETS.islet.r) are found and kept by the build
+//     stampLand   false: the coast field takes the islands, the ground is left to a region's own stamp (same maths)
+//     sourceCell  m, the cells the mask came from (4000: the scale model's): the blur and the broad warp scale with it
+//     frame       {ox, oz}: added to x, z for the noise, so the warp is the map's, not the region's: two regions'
+//                 copies of one coast agree
+//     mask    the body's mask {x0, z0, cell, cellZ, nx, nz, data}: one byte a texel (>= 128 water), texel i's centre at
+//             x0 + (i + .5) * cell (core/water's frame); its flood is where the coast starts
+//     sample  {bare(x, z) -> h: the land before the coast (coarse is enough), rock(x, z) -> 0..1 hardness (geology),
+//             wet(x, z) -> 0..1 (the climate's wetness), temp(x, z) -> C, chan(x, z) -> m from a river channel's bank
+//             (negative inside; optional), keep(x, z) -> 0..1 where the coast must not move (a town's ground; optional),
+//             guard(x, z) -> 0..1 round a kept place, where the coast may move out but not in (optional)}
+//     builds over the mask's frame (one value a texel):
+//       F     the signed distance to the mask's water, clamped to +-bmax and Gaussian-blurred (sigma `sig`): the cells'
+//             staircases round into curves
+//       E     exposure 0..1: the share of `rays` rays from a shore texel that run `fetch` m over open water
+//       RISE  how high the bare land stands 300 m inland of a shore texel (m over the level)
+//       K     the five class weights (CLASSES), blurred so a class changes over a few hundred metres
+//       CH    the distance to a river channel's bank (where `chan` is given): an estuary is not filled
+//       BB    the bare land over the level on every other texel, wherever a warped read can land (the carry)
+//       FI,IW near an islet: the land's own contour field, and the warp's hold
+//   KCOAST.at(C, x, z, minWave, out) -> out {c, c0, F0, wx, wz, band, keep, lf, cls: Float32Array(5)}   c read at the WARPED point
+//   KCOAST.shape(C, x, z, h, minWave) -> h'      the land carried with the coast, then through the coast profile,
+//                                                sign-safe: inside the band the ground is over the level exactly where
+//                                                c > 0 and under it where c < 0
+//   KCOAST.mask(C) -> {x0, z0, cell, cellZ, nx, nz, data}   the water's mask redrawn from c (same frame and size)
+//   KCOAST.fields(C, x, z, out)                  out.coast 0..1 (1 at the water line), out.coastC (m), out['coast:<class>']
+//                                                (not 'shore': core/biome's BIO.ENV has a shore of its own, in metres)
+//   KCOAST.CLASSES, KCOAST.PRESETS, KCOAST.FIELDS, KCOAST.stats(C), KCOAST.hash(C)
+//
+// The classes (soft weights, sum 1): cliff (the land rises fast: hard rock holds a lower one), rock (hard ground, or an
+// exposed headland: a wave-cut platform), shingle (cold or exposed soft ground: a storm ridge), marsh (flat, sheltered,
+// wet; a salt lake's flats), sand (the rest: a beach face, a berm, a backshore). The profiles are in `profile` below.
+(function(root){
+'use strict';
+const CLASSES=['sand','shingle','rock','cliff','marsh'],NC=5;
+const PRESETS={
+ bmax:6000,          // the signed distance is clamped here (m) before the blur
+ sig:1000,           // the blur's sigma (m): the 4 km cells' corners round over about this
+ band:{land:2100,water:1500,lift:1700,mask:1000},   // the coast band (m each side); the land kept over the level to `lift`,
+                     // easing out by `land`; a mask texel is water when c < `mask` at its centre (its edge under dry land)
+ warp:{a0:3000,l0:16000,a1:2600,l1:7000,a2:1300,l2:2300,a3:450,l3:800,k:[.6,.85,1.15,1.1,.5]},   /* the warp (m, wavelength m), scaled per class; KRAND's 2-octave fbm has sigma .25, so a1 moves a coast ~650 m typically, 2.6 km at the most; a0 bends a long straight shore (a caldera's 40 km wall) into bays and headlands */
+ carry:{full:500,out:2000,edge:1500,rim:250},   /* the land moves with the coast: near the old shoreline or the new one (the nearer of |F| and |c|) the bare land is read at the warped point, so a headland is the wall moved out and a cove the bed moved in; full within `full` m, none past `out` */
+ fine:{a1:120,l1:320,a2:20,l2:70,k:[.12,.5,1,1,.15]},            /* a small term on c, rock and cliff coasts most */
+ fetch:12000,rays:16,entry:2500,  // exposure: rays from a shore texel, open when they run `fetch` m over water
+ classSig:700,       // the class weights' blur (m)
+ shore:{land:260,water:380},      /* the coast field's reach (m): 'coast' 1 at the water line, 0 by these */
+ eps:{k:.0005,near:.05,max:.6},   /* the sign rule's margin: k per m from the water line, +near after 20 m, at most max: enough to keep the land out of the water, not to raise a low plain (4 m at 1 km took the salt pans) */
+ high:{h0:4,k:0},    /* the coast field may gain k m per m the bare land stands over h0 m (high ground stays land). Off since the land is carried (carry): it moved c without the land, so a cove into high ground left a plate at the level */
+ islet:{r:2500,zone:1500,hold:600,gmin:.01,still:.75},   /* an island of the mask at most r m from its middle to its water (the blur loses it): within `zone` m of it the coast is the bare land's own contour (its height over the level over its slope), and the warp is cut by `still` within `hold` m (a quarter of it wanders the islet's outline) */
+ stamp:{stack:.15,edge:.25},   /* a stamped island (o.islands: a sub-cell landform): a stack when it stands over .15 of its radius; its outline wanders by `edge` of its radius */
+ cut:{face:25,big:1e4,near:8,reach:200},   // inland the profile may cut any depth within the face, `near` m to `reach`, none beyond
+ sign:true};         // false: the sign rule off (the tests' negative)
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const smooth=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
+function K(){const k=root.KRAND;if(!k)throw new Error('KCOAST needs core/rand (08-core-rand.js) loaded first');return k;}
+function M(){const k=root.KMASK;if(!k||!k.distance)throw new Error('KCOAST needs core/mask (25-core-mask.js, 27-core-mask-distance.js) loaded first');return k;}
+
+// ---------------------------------------------------------------- rasters
+function bil(C,A,x,z){let u=(x-C.x0)/C.cell-.5,v=(z-C.z0)/C.cellZ-.5;u=clamp(u,0,C.nx-1.0001);v=clamp(v,0,C.nz-1.0001);
+ const i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,o=j*C.nx+i,n=C.nx;
+ return (A[o]*(1-fu)+A[o+1]*fu)*(1-fv)+(A[o+n]*(1-fu)+A[o+n+1]*fu)*fv;}
+// a separable Gaussian, edges clamped (in place through a scratch row)
+function blur(A,nx,nz,sx,sz){
+ const ker=s=>{const r=Math.max(1,Math.ceil(3*s)),k=new Float64Array(2*r+1);let t=0;for(let i=-r;i<=r;i++){k[i+r]=Math.exp(-i*i/(2*s*s));t+=k[i+r];}for(let i=0;i<k.length;i++)k[i]/=t;return{r,k};};
+ const X=ker(sx),Z=ker(sz),T=new Float32Array(Math.max(nx,nz));
+ for(let j=0;j<nz;j++){const o=j*nx;for(let i=0;i<nx;i++){let s=0;for(let a=-X.r;a<=X.r;a++)s+=A[o+clamp(i+a,0,nx-1)]*X.k[a+X.r];T[i]=s;}for(let i=0;i<nx;i++)A[o+i]=T[i];}
+ for(let i=0;i<nx;i++){for(let j=0;j<nz;j++){let s=0;for(let a=-Z.r;a<=Z.r;a++)s+=A[clamp(j+a,0,nz-1)*nx+i]*Z.k[a+Z.r];T[j]=s;}for(let j=0;j<nz;j++)A[j*nx+i]=T[j];}
+ return A;}
+
+// ---------------------------------------------------------------- the classes at one shore texel
+// rise: m over the level 300 m inland; hard 0..1; exp 0..1; wet 0..1; temp C; salt: a salt lake
+function classify(rise,hard,exp,wet,temp,salt,out){
+ const cliffT=52-22*hard;                               /* a hard coast holds a cliff from a lower rise (1:6 on granite, 1:10 is a hillside, not a cliff) */
+ const cliff=smooth(cliffT*.55,cliffT*1.25,rise);
+ const flat=1-smooth(2.5,8,rise);
+ const marsh=(1-cliff)*flat*(salt?1:smooth(.35,.75,wet)*(1-smooth(.3,.65,exp)));
+ const rock=(1-cliff)*smooth(.4,.7,hard)*Math.max(smooth(4,16,rise),smooth(.5,.85,exp));
+ const shingle=(1-cliff)*(1-smooth(.5,.8,hard))*Math.max(smooth(7,1,temp)*.85,smooth(.5,.85,exp)*smooth(3,12,rise)*.7);
+ const sand=Math.max(.04,1-cliff-rock-shingle-marsh);
+ const t=sand+shingle+rock+cliff+marsh;
+ out[0]=sand/t;out[1]=shingle/t;out[2]=rock/t;out[3]=cliff/t;out[4]=marsh/t;return out;}
+
+// ---------------------------------------------------------------- build
+/* the most the warp can move a point (its fbm terms reach 1 at most, vnoise 1): the early-out stays continuous */
+function warpMax(P,ws){const W=P.warp;return(((W.a0||0)+W.a1+W.a2)*ws+(W.a3||0))*Math.SQRT2*Math.max(...W.k);}
+function build(o){const KR=K(),KM=M(),P=Object.assign({},PRESETS,o.opts||{}),G=o.mask,S=o.sample||{},t0=Date.now();
+ /* sourceCell: the cells the mask's water came from (m; the scale model's 2 km pixel at least): the blur is half of one (1 km at most), and the
+    broad warp scales with it (a 4 km staircase needs kilometre moves to break, a 500 m one a few hundred metres) */
+ const sc=o.sourceCell==null?4000:o.sourceCell,ws=clamp(sc/2000,.25,1);if(!(o.opts&&o.opts.sig!=null))P.sig=clamp(sc*.6,150,1200);
+ const nx=G.nx,nz=G.nz,n=nx*nz,cell=G.cell,cellZ=G.cellZ==null?G.cell:G.cellZ,cs=Math.sqrt(cell*cellZ),lv=o.level;
+ const seed=KR.child(o.seed==null?0:o.seed,'coast'),fr=o.frame||{};   /* not the body's id: two regions' copies of one coast agree */
+ const C={id:o.id,level:lv,salt:!!o.salt,x0:G.x0,z0:G.z0,cell,cellZ,nx,nz,P,keep:S.keep||null,guard:S.guard||null,oldMask:G.data,ox:fr.ox||0,oz:fr.oz||0,ws,sourceCell:sc,
+  seeds:[KR.child(seed,'wx1'),KR.child(seed,'wz1'),KR.child(seed,'wx2'),KR.child(seed,'wz2'),KR.child(seed,'fine'),KR.child(seed,'plat'),KR.child(seed,'wx3'),KR.child(seed,'wz3'),KR.child(seed,'wx0'),KR.child(seed,'wz0')]};
+ C.warpMax=warpMax(P,ws);C.fineMax=P.fine.a1+P.fine.a2;
+ // F: the signed distance (m) to the mask's water, exact (KMASK.distance both ways), clamped, blurred
+ const grid={width:nx,height:nz,data:G.data};
+ const dW=KM.distance(grid,{threshold:128}),dL=KM.distance(grid,{inside:(i,j)=>G.data[j*nx+i]<128});
+ const F=new Float32Array(n);
+ for(let k=0;k<n;k++){const w=G.data[k]>=128;F[k]=w?(dL.empty?-P.bmax:-(Math.sqrt(dL.d2[k])-.5)*cs):(dW.empty?P.bmax:(Math.sqrt(dW.d2[k])-.5)*cs);
+  F[k]=clamp(F[k],-P.bmax,P.bmax);}
+ blur(F,nx,nz,P.sig/cell,P.sig/cellZ);C.F=F;
+ // the shore texels: within 2 km of the blurred shoreline
+ const near=new Uint8Array(n);let nNear=0;for(let k=0;k<n;k++)if(Math.abs(F[k])<2000){near[k]=1;nNear++;}
+ // exposure: rays over the raster (outside it is land), open when they run `fetch` m over water after entering it
+ const E=new Float32Array(n),step=cs,nf=Math.ceil(P.fetch/step),ne=Math.ceil(P.entry/step),dirs=[];
+ for(let r=0;r<P.rays;r++){const a=r/P.rays*2*Math.PI;dirs.push([Math.cos(a)*step/cell,Math.sin(a)*step/cellZ]);}
+ const wetAt=(u,v)=>{const i=Math.round(u),j=Math.round(v);return i>=0&&j>=0&&i<nx&&j<nz&&F[j*nx+i]<0;};
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i;if(!near[k])continue;let open=0;
+  for(const [du,dv] of dirs){let s=0,u=i,v=j;while(s<ne&&!wetAt(u,v)){u+=du;v+=dv;s++;}if(s>=ne)continue;
+   let ok=1;for(let q=0;q<nf;q++){u+=du;v+=dv;if(!wetAt(u,v)){ok=0;break;}}open+=ok;}
+  E[k]=open/P.rays;}
+ C.E=E;
+ // the rise 300 m inland (along F's gradient), the hardness, the climate, the classes; the river channels
+ const RISE=new Float32Array(n),KW=[0,1,2,3,4].map(()=>new Float32Array(n)),CH=S.chan?new Float32Array(n).fill(1e9):null,cl=new Float32Array(NC);
+ const cx=i=>C.x0+(i+.5)*cell,cz=j=>C.z0+(j+.5)*cellZ;
+ for(let j=0;j<nz;j++)for(let i=0;i<nx;i++){const k=j*nx+i;
+  if(!near[k]){KW[0][k]=1;continue;}
+  const gx=(F[j*nx+clamp(i+1,0,nx-1)]-F[j*nx+clamp(i-1,0,nx-1)])/(2*cell),gz=(F[clamp(j+1,0,nz-1)*nx+i]-F[clamp(j-1,0,nz-1)*nx+i])/(2*cellZ),gl=Math.hypot(gx,gz)||1;
+  const x=cx(i),z=cz(j),sx=x-gx/gl*F[k],sz=z-gz/gl*F[k];   // the shoreline's point nearest this texel
+  /* the rise: how far the land climbs over the 300 m behind the shoreline, from the shoreline's own height (the mask's
+     flood is generous, so the blurred shore can lie up the beach: measured from the level it read every slope as a cliff) */
+  const rise=S.bare?Math.max(0,S.bare(sx+gx/gl*300,sz+gz/gl*300)-Math.max(lv,S.bare(sx,sz))):0;RISE[k]=rise;
+  const hard=S.rock?clamp(S.rock(sx,sz),0,1):.3,wet=S.wet?clamp(S.wet(sx,sz),0,1):.5,temp=S.temp?S.temp(sx,sz):15;
+  classify(rise,hard,E[k],wet,temp,C.salt,cl);for(let c=0;c<NC;c++)KW[c][k]=cl[c];
+  if(CH&&F[k]>-600&&F[k]<P.band.land+800){const d=S.chan(x,z);CH[k]=d==null?1e9:d;}}
+ for(let c=0;c<NC;c++)blur(KW[c],nx,nz,P.classSig/cell,P.classSig/cellZ);
+ // the blur leaks the default (sand) inland of the band: harmless, the profile is off there
+ C.RISE=RISE;C.K=KW;C.CH=CH;
+ /* HA: the bare land's height over the level, on a grid of every other texel, within reach of the coast on the land side:
+    `at` adds `hk` m of coast distance per m over `h0`, so the warp cannot carry a shoreline up into high ground (it moved
+    one a kilometre into a hillside 150 m high, and the beach's profile flattened the hill) */
+ /* islets: an island of the mask (land not touching the raster's edge) at most islet.r m from its middle to its water: the
+    blur takes it under (a 2 km cell's islet blurs to water). Within islet.zone of one, FI is the land's own contour (the bare
+    land over the level, over its slope: a signed distance where the land is a slope) and IW eases the warp still */
+ C.FI=C.IW=null;
+ if(P.islet&&S.bare&&!dW.empty){const IS=P.islet,seen=new Uint8Array(n),isl=new Uint8Array(n),st=[],list=[];let any=0;
+  for(let s0=0;s0<n;s0++){if(G.data[s0]>=128||seen[s0])continue;let edge=false,mx=0;list.length=0;st.push(s0);seen[s0]=1;
+   while(st.length){const k=st.pop();list.push(k);const i=k%nx,j=(k-i)/nx;if(i===0||j===0||i===nx-1||j===nz-1)edge=true;
+    const d=Math.sqrt(dW.d2[k])*cs;if(d>mx)mx=d;
+    if(i>0&&!seen[k-1]&&G.data[k-1]<128){seen[k-1]=1;st.push(k-1);}if(i<nx-1&&!seen[k+1]&&G.data[k+1]<128){seen[k+1]=1;st.push(k+1);}
+    if(j>0&&!seen[k-nx]&&G.data[k-nx]<128){seen[k-nx]=1;st.push(k-nx);}if(j<nz-1&&!seen[k+nx]&&G.data[k+nx]<128){seen[k+nx]=1;st.push(k+nx);}}
+   if(!edge&&mx<IS.r){for(const k of list)isl[k]=1;any++;}}
+  if(any){const dI=KM.distance({width:nx,height:nz,data:isl},{inside:(i,j)=>isl[j*nx+i]===1}),B=new Float32Array(n).fill(NaN),FI=new Float32Array(n).fill(-IS.zone),IW=new Float32Array(n);
+   /* only where the islet is nearer than the other land (the mainland's own contour is the cells' staircase) */
+   const dM=KM.distance({width:nx,height:nz,data:isl},{inside:(i,j)=>{const k=j*nx+i;return G.data[k]<128&&!isl[k];}});
+   for(let k=0;k<n;k++){const d=Math.sqrt(dI.d2[k])*cs,dm=dM.empty?1e9:Math.sqrt(dM.d2[k])*cs;
+    IW[k]=(1-smooth(IS.hold,IS.zone,d))*smooth(0,IS.hold,dm-d);
+    if(IW[k]>0||d<IS.zone+2*cs&&dm-d>-2*cs){const i=k%nx,j=(k-i)/nx;B[k]=S.bare(C.x0+(i+.5)*cell,C.z0+(j+.5)*cellZ)-lv;}}
+   const at2=(i,j,k)=>{const v=(i<0||j<0||i>=nx||j>=nz)?NaN:B[j*nx+i];return v===v?v:B[k];};
+   for(let k=0;k<n;k++){if(!(IW[k]>0))continue;const i=k%nx,j=(k-i)/nx;
+    const gx=(at2(i+1,j,k)-at2(i-1,j,k))/(2*cell),gz=(at2(i,j+1,k)-at2(i,j-1,k))/(2*cellZ);
+    FI[k]=clamp(B[k]/Math.max(Math.hypot(gx,gz),IS.gmin),-IS.zone,IS.zone);}
+   C.FI=FI;C.IW=IW;C.islets=any;}}
+ /* stamped islands (o.islands: sub-cell landforms {id, x, z, r, rx, rz (the shore's half-axes east and south, r when
+    absent), top (m over the level), px, py (its scale-model pixel: the wobble's seed)}): the stamp of the region's own
+    44-world-landforms.js (Erewhon's branch, 98d15b9b9), so the isle is the Erewhon page's: an ellipse whose shore wobbles by
+    a few tenths of its radius, its phase from the record's place (KRAND); inside, the ground rises from the water to the
+    crest over the inner fifth; past the shore a bank falls under the water to the bed by 1.8 radii. A stack (tall for its
+    size) takes cliff and rock classes, a low isle sand and rock */
+ C.stampLand=o.stampLand!==false;   /* false: a region stamps the islands' ground itself (xanadu-oidong-highrift's 44-world-landforms.js, the same maths); the coast field still takes them */
+ C.LF=(o.islands||[]).filter(L=>L&&isFinite(L.x)&&isFinite(L.z)&&L.r>0).map(L=>{const top=Math.max(1,L.top==null?10:L.top),rx=L.rx==null?L.r:L.rx,rz=L.rz==null?L.r:L.rz,stack=top/Math.max(rx,rz)>P.stamp.stack;
+  const s=KR.hash(0x1a4df0,Math.round((L.px==null?L.x/2000:L.px)*1000),Math.round((L.py==null?L.z/2000:L.py)*1000));
+  return{id:L.id,x:L.x,z:L.z,r:L.r,rx,rz,rmin:Math.min(rx,rz),top,water:L.water==null?null:L.water,stack,p1:(s&1023)/1023*6.2832,p2:((s>>>10)&1023)/1023*6.2832,reach:1.9*Math.max(rx,rz)*1.2,cls:stack?[0,0,.35,.65,0]:[.65,0,.35,0,0]};});
+ /* BB: the bare land over the level (signed, m) on the same grid, wherever a warped read can land: `shape` carries the land
+    with the coast (P.carry), reading it at the warped point */
+ {const s=2,hx=Math.ceil(nx/s)+1,hz=Math.ceil(nz/s)+1,HA=new Float32Array(hx*hz),BB=new Float32Array(hx*hz),reach=P.band.land+C.warpMax,wide=Math.max(P.band.land,P.band.water)+C.warpMax+C.fineMax;
+  for(let J=0;J<hz;J++)for(let I=0;I<hx;I++){const i=clamp(Math.floor((I+.5)*s),0,nx-1),j=clamp(Math.floor((J+.5)*s),0,nz-1),f=F[j*nx+i];
+   if(!S.bare||f<-wide||f>wide)continue;const b=S.bare(C.x0+(I+.5)*s*cell,C.z0+(J+.5)*s*cellZ)-lv;BB[J*hx+I]=b;if(f>-1500&&f<reach)HA[J*hx+I]=Math.max(0,b);}
+  C.HA={x0:C.x0,z0:C.z0,cell:cell*s,cellZ:cellZ*s,nx:hx,nz:hz,A:HA};if(S.bare)C.BB={x0:C.x0,z0:C.z0,cell:cell*s,cellZ:cellZ*s,nx:hx,nz:hz,A:BB};}
+ C.ms=Date.now()-t0;C.nNear=nNear;
+ return C;}
+
+// ---------------------------------------------------------------- the field at a point
+function at(C,x,z,minWave,out){out=out||{cls:new Float32Array(NC)};if(!out.cls)out.cls=new Float32Array(NC);
+ const P=C.P,F0=bil(C,C.F,x,z);out.keep=0;out.wx=out.wz=out.bx=out.bz=0;out.F0=F0;out.lf=null;out.gc=0;
+ const iw=C.IW?bil(C,C.IW,x,z):0,KR=root.KRAND,X=x+C.ox,Z=z+C.oz,y=.37;   /* the noise in the map's frame (frame: the region's offset) */
+ // a stamped island near (left out below a wavelength of twice its short half-axis, as the region's stamp): its field
+ let lf=null,lc=-1e9,lq=9;
+ if(C.LF.length)for(const L of C.LF){const dx=x-L.x,dz=z-L.z;if(Math.abs(dx)>L.reach||Math.abs(dz)>L.reach||(minWave||0)>=2*L.rmin)continue;
+  const q=stampQ(L,dx,dz),v=(1-q)*L.rmin;if(v>lc){lc=v;lf=L;lq=q;}}
+ out.lq=lq;
+ if(!lf&&!(iw>0)&&(F0>P.band.land+C.warpMax+C.fineMax||F0<-(P.band.water+C.warpMax+C.fineMax))){out.c=out.c0=out.cm=F0;out.band=0;return out;}
+ const s=C.seeds,cls=out.cls;let wk=0,fk=0;
+ for(let c=0;c<NC;c++){cls[c]=bil(C,C.K[c],x,z);wk+=cls[c]*P.warp.k[c];fk+=cls[c]*P.fine.k[c];}
+ const kp=C.keep?clamp(C.keep(x,z),0,1):0;out.keep=kp;wk*=(1-kp)*(1-iw*(P.islet?P.islet.still:0));fk*=1-kp;
+ const W=P.warp;
+ const a3=W.a3==null?0:W.a3,l3=W.l3==null?800:W.l3,w3=a3>0&&(minWave||0)<l3;
+ const a0=W.a0||0,l0=W.l0||16000;
+ /* bx, bz: the broad warp (a0-a2), the same at every sampling scale: the land is carried on it, so a road baked from
+    coarse reads lies on the ground the page draws (the 800 m octave moved the carried land 0.7 m between the two) */
+ const bx=((a0?(KR.fbm(X/l0,y,Z/l0,2,s[8])-.5)*2*a0*C.ws:0)+(KR.fbm(X/W.l1,y,Z/W.l1,2,s[0])-.5)*2*W.a1*C.ws+(KR.fbm(X/W.l2,y,Z/W.l2,2,s[2])-.5)*2*W.a2*C.ws)*wk;
+ const bz=((a0?(KR.fbm(X/l0,y,Z/l0,2,s[9])-.5)*2*a0*C.ws:0)+(KR.fbm(X/W.l1,y,Z/W.l1,2,s[1])-.5)*2*W.a1*C.ws+(KR.fbm(X/W.l2,y,Z/W.l2,2,s[3])-.5)*2*W.a2*C.ws)*wk;
+ const wx=bx+(w3?(KR.vnoise(X/l3,y,Z/l3,s[6])-.5)*2*a3*wk:0),wz=bz+(w3?(KR.vnoise(X/l3,y,Z/l3,s[7])-.5)*2*a3*wk:0);
+ out.wx=wx;out.wz=wz;out.bx=bx;out.bz=bz;
+ let c=bil(C,C.F,x+wx,z+wz);
+ const Fi=P.fine;minWave=minWave||0;
+ if(fk>.01&&minWave<Fi.l1){c+=(KR.vnoise(X/Fi.l1,y,Z/Fi.l1,s[4])-.5)*2*Fi.a1*fk;if(minWave<Fi.l2)c+=(KR.vnoise(X/Fi.l2,y+3,Z/Fi.l2,s[4])-.5)*2*Fi.a2*fk;}
+ /* round a kept place (S.guard, 0..1, wider than the keep) the coast may move out but not in: the kept shore is not cut
+    off behind by water reaching round it (a lagoon behind a town's strip of old coast) */
+ if(C.guard){const g=clamp(C.guard(x,z),0,1);out.gc=g;if(g>0&&c<F0)c+=(F0-c)*g;}   /* gc: the guard's weight (the land is carried less where it holds the coast) */
+ // an islet: the land's own contour where it stands higher than the blurred field
+ if(iw>0){const fi=bil(C,C.FI,x+wx,z+wz);if(fi>c)c+=(fi-c)*iw;}   /* read where the field is (the land is carried there too) */
+ // a stamped island: its field where it stands higher, its classes near it
+ out.cm=c;out.lf=lf;   /* cm: the coast's own field, which shapes the land; the stamp is raised over it in `shape` */
+ if(lf&&lc>c){const t=smooth(0,300,lc-c);c=lc;for(let k=0;k<NC;k++)cls[k]+=(lf.cls[k]-cls[k])*t;}
+ /* c0: the field before the height term (its slope stays near 1: the mask is drawn on it); then high ground stays land */
+ out.c0=c;if(C.HA){const H=C.HA,ha=bil(H,H.A,x,z);if(ha>P.high.h0)c+=(ha-P.high.h0)*P.high.k;}
+ out.c=c;out.band=c<P.band.land&&c>-P.band.water?1:0;return out;}
+
+// ---------------------------------------------------------------- the profiles: [y over the level, weight] at c
+// hl: the land's own height over the level here; rise: the bare land's rise 300 m in; plat: the platform's width (m)
+const PR=[0,0];
+function profile(k,c,hl,rise,plat){let y,w;
+ if(c>=0){switch(k){
+  case 0:y=c<50?c*.04:2+(c-50)*.004;w=1-smooth(120,450,c);break;                          // sand: beach face 1:25, berm +2 m, backshore
+  case 1:y=c<25?3.2*c/25:Math.max(2.4,3.2-(c-25)*.03);w=1-smooth(90,300,c);break;          // shingle: 1:8 to a storm ridge
+  case 2:y=.4*smooth(0,3,c)+c/4;w=1-smooth(30,180,c);break;                                // rock: a low rock bank
+  case 3:{const T=Math.max(rise,18),FW=22,f=smooth(2,FW,c);y=Math.max(.6*smooth(0,2,c)+(T-.6)*f,hl*f);w=1-smooth(FW+60,FW+350,c);break;}   // cliff: the face to the top
+  default:y=.1*smooth(0,5,c)+c*.0022;w=1-smooth(250,700,c);}                              // marsh: flats just over the water
+ }else{const d=-c;switch(k){   // every profile is 0 at the water line from both sides: no step where c crosses 0
+  case 0:y=-d/35;w=1-smooth(200,700,d);break;                                              // sand: shoreface 1:35
+  case 1:y=d<30?-d/7:-30/7-(d-30)/25;w=1-smooth(150,500,d);break;                          // shingle: a steep shoreface
+  case 2:y=d<plat?-.3*smooth(0,3,d)-1.2*smooth(0,plat,d):-1.5-(d-plat)*.12;w=1-smooth(plat+60,plat+450,d);break;   // rock: a wave-cut platform, then a step
+  case 3:y=d<25?-1.5*smooth(0,3,d)-3.5*smooth(0,25,d):-5-(d-25)*.05;w=1-smooth(80,400,d);break;   // cliff: deep water at its foot, talus
+  default:y=-.15*smooth(0,5,d)-.85*smooth(0,350,d);w=1-smooth(350,900,d);}}               // marsh: mud flats
+ PR[0]=y;PR[1]=w;return PR;}
+
+// ---------------------------------------------------------------- a stamped island (the region stamp's own maths)
+/* q: 1 on its wobbling shore, under 1 inside */
+function stampQ(L,dx,dz){const a=Math.atan2(dz,dx);return Math.hypot(dx/L.rx,dz/L.rz)/(1+.14*Math.sin(3*a+L.p1)+.07*Math.sin(5*a+L.p2));}
+/* the stamped height over the land's h: the crest over the inner fifth, the water on the shore, a bank to the bed by 1.8 */
+function stampH(L,q,h,lv){if(q>=1.8)return h;const w=L.water==null?lv:L.water,c=lv+L.top;   /* w: the record's own water (the region stamp's) */
+ const t=q<1?w+(c-w)*(1-smooth(.2,1,q)):w-(q-1)/.8*Math.max(3,w-h+2);return t>h?t:h;}
+
+const AT={cls:new Float32Array(NC)};
+/* the coast's shaping, then a stamped island raised over it (also inside a kept place: a stamp is the map's own record) */
+function shape(C,x,z,h0,minWave){const A=at(C,x,z,minWave,AT),h=shapeCoast(C,A,x,z,h0);return A.lf&&C.stampLand?stampH(A.lf,A.lq,h,C.level):h;}
+function shapeCoast(C,A,x,z,h0){if(A.keep>=1)return h0;
+ const P=C.P,lv=C.level,c=A.cm;let h=h0;
+ /* the raster's edge: outside it the coast does not apply, so the carry fades out over its last carry.edge m and every
+    change over its last carry.rim m (iziz-cluster's lake: a 1.5 m step on its box's edge) */
+ const eb=Math.min(x-C.x0,C.x0+C.nx*C.cell-x,z-C.z0,C.z0+C.nz*C.cellZ-z),er=smooth(0,P.carry.rim,eb);if(er<=0)return h0;
+ /* the land moves with the coast: the bare land's broad shape is read where the coast field was (the warped point), so a
+    headland pushed into a lake is the wall moved out (not a plate at the level) and a cove cut into a hill is the bed moved
+    in (not the hill flattened, nor the old shore left standing as a ridge past the band); the fine detail stays where it
+    was. Full near the old shoreline or the new one, none past carry.out */
+ if(C.BB&&P.carry&&(A.bx||A.bz)){const B=C.BB,cb=bil(C,C.F,x+A.bx,z+A.bz),g=(1-smooth(P.carry.full,P.carry.out,Math.min(Math.abs(cb),Math.abs(A.F0))))*(1-(A.gc||0)*smooth(0,300,A.F0-cb))*smooth(0,P.carry.edge,eb);
+  if(g>0)h+=(bil(B,B.A,x+A.bx,z+A.bz)-bil(B,B.A,x,z))*g;}   /* all on the broad warp: the same carried land at every sampling scale */
+ if(!A.band){if(A.keep>0)h+=(h0-h)*A.keep;return h0+(h-h0)*er;}
+ const hl=h-lv,cls=A.cls,rise=bil(C,C.RISE,x,z);
+ const plat=40+110*root.KRAND.vnoise((x+C.ox)/900,1.5,(z+C.oz)/900,C.seeds[5]);
+ let sw=0,sy=0;for(let k=0;k<NC;k++){if(cls[k]<.002)continue;const r=profile(k,c,hl,rise,plat),ww=cls[k]*r[1];sw+=ww;sy+=ww*(lv+r[0]);}
+ let h1=h*(1-sw)+sy;
+ /* inland, the profile cuts the land down only within the cliff's face: past it a hill keeps its height, so a coast that
+    meets high ground is a cliff, not a hillside flattened over hundreds of metres to a beach */
+ if(c>=0&&h1<h){const FW=P.cut.face,allow=P.cut.big*(1-smooth(2,FW,c))+P.cut.near*(1-smooth(FW,P.cut.reach,c));if(h-h1>allow)h1=h-allow;}
+ // the sign rule: over the level on the land side, under it on the water side; 0 at the water line, so c's zero set is
+ // where the ground meets the water
+ const e=P.eps,ad=Math.abs(c),eps=Math.min(e.max,e.k*ad+e.near*smooth(0,20,ad));
+ if(P.sign===false){}
+ else if(c>=0){const lam=1-smooth(P.band.lift,P.band.land,c),fl=lv+eps;if(h1<fl)h1+=(fl-h1)*lam;}
+ else{const mu=1-smooth(P.band.water*.7,P.band.water,ad),ce=lv-eps;if(h1>ce)h1-=(h1-ce)*mu;}
+ // a river's channel under the level near its mouth stays (an estuary), and a town's ground is its own
+ if(C.CH&&h<lv+2){const ch=bil(C,C.CH,x,z);if(ch<450){const ex=(1-smooth(150,450,ch))*smooth(lv+2,lv-1,h);h1+=(h-h1)*ex;}}
+ if(A.keep>0)h1+=(h0-h1)*A.keep;
+ return er<1?h0+(h1-h0)*er:h1;}
+
+// ---------------------------------------------------------------- the mask, redrawn from c
+function mask(C){const P=C.P,out=new Uint8Array(C.nx*C.nz),A={cls:new Float32Array(NC)},old=C.oldMask;let wet=0;
+ for(let j=0;j<C.nz;j++)for(let i=0;i<C.nx;i++){const x=C.x0+(i+.5)*C.cell,z=C.z0+(j+.5)*C.cellZ,a=at(C,x,z,250,A),k=j*C.nx+i;
+  let v=(a.band?a.c0:a.c)<P.band.mask?255:0;   /* c0 <= c: water wherever c < 0, the edge where c >= c0 = mask */if(old&&a.keep>.5)v=old[k];out[k]=v;if(v)wet++;}
+ C.maskWet=wet;
+ return{x0:C.x0,z0:C.z0,cell:C.cell,cellZ:C.cellZ,nx:C.nx,nz:C.nz,data:out};}
+
+// ---------------------------------------------------------------- the fields the kits read
+const FIELDS=['coast','coastC'].concat(CLASSES.map(c=>'coast:'+c));
+const FA={cls:new Float32Array(NC)};
+function fields(C,x,z,out){const A=at(C,x,z,0,FA),P=C.P,c=A.c;
+ out.coastC=c;out.coast=c>=0?1-smooth(0,P.shore.land,c):1-smooth(0,P.shore.water,-c);
+ const on=A.band?out.coast:0;for(let k=0;k<NC;k++)out['coast:'+CLASSES[k]]=on>0?A.cls[k]:0;
+ return out;}
+function blank(out){out.coastC=1e9;out.coast=0;for(const k of CLASSES)out['coast:'+k]=0;return out;}
+
+// ---------------------------------------------------------------- stats and hash
+function stats(C){const s=[0,0,0,0,0];let n=0;for(let k=0;k<C.nx*C.nz;k++)if(Math.abs(C.F[k])<C.cell){n++;for(let c=0;c<NC;c++)s[c]+=C.K[c][k];}
+ const share={};CLASSES.forEach((c,i)=>share[c]=n?Math.round(s[i]/n*1000)/1000:0);
+ return{id:C.id,level:C.level,texels:C.nx*C.nz,cell:Math.round(C.cell),shoreTexels:n,classes:share,ms:C.ms,maskWet:C.maskWet==null?null:C.maskWet,islets:C.islets||0,islands:C.LF.map(L=>L.id)};}
+function hash(C){let h=0x811C9DC5>>>0;const add=v=>{v|=0;for(let b=0;b<4;b++){h^=(v>>>(8*b))&255;h=Math.imul(h,0x01000193)>>>0;}};
+ for(let k=0;k<C.F.length;k++){add(Math.round(C.F[k]*10));for(let c=0;c<NC;c++)add(Math.round(C.K[c][k]*1000));}
+ return('0000000'+h.toString(16)).slice(-8);}
+
+root.KCOAST={version:1,CLASSES,PRESETS,FIELDS,build,at,shape,mask,fields,blank,profile,classify,stats,hash};
+})(typeof window!=='undefined'?window:globalThis);

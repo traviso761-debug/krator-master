@@ -5,6 +5,7 @@
  "families": {
   "leaf.small": {
    "lib": "card.sage",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -15,15 +16,73 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "cell": [
-    0.333,
-    0.329,
-    0.644,
-    0.671
+   "sheet": "geometry",
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.024,
+      0.3,
+      0.339
+     ],
+     "stem": [
+      0.1953,
+      0.3379
+     ],
+     "tip": [
+      0.2373,
+      0.0273
+     ],
+     "w": [
+      -0.16,
+      0.14
+     ]
+    },
+    {
+     "cell": [
+      0.333,
+      0.329,
+      0.644,
+      0.671
+     ],
+     "stem": [
+      0.5684,
+      0.6699
+     ],
+     "tip": [
+      0.5244,
+      0.3281
+     ],
+     "w": [
+      -0.18,
+      0.14
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.98,
+      0.985
+     ],
+     "stem": [
+      0.9482,
+      0.9795
+     ],
+     "tip": [
+      0.7529,
+      0.6602
+     ],
+     "w": [
+      -0.16,
+      0.18
+     ]
+    }
    ]
   },
   "leaf.moss": {
    "lib": "card.moss",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -37,6 +96,7 @@
   },
   "bark.cherry": {
    "lib": "bark.cherry",
+   "class": "flat",
    "scale": [
     1.2,
     1.6
@@ -51,6 +111,7 @@
   },
   "bark.smooth": {
    "lib": "bark.smooth",
+   "class": "flat",
    "scale": [
     1.6,
     2.0
@@ -65,6 +126,7 @@
   },
   "bark.whorled": {
    "lib": "bark.whorled",
+   "class": "flat",
    "scale": [
     1.4,
     1.8
@@ -79,6 +141,7 @@
   },
   "stone.granite": {
    "lib": "rock.granite.tor",
+   "class": "flat",
    "scale": [
     2.5,
     2.5
@@ -93,6 +156,7 @@
   },
   "ground.moss": {
    "lib": "ground.moss002",
+   "class": "flat",
    "scale": [
     2.6,
     2.6
@@ -107,6 +171,7 @@
   },
   "ground.sand": {
    "lib": "ground.park_sand",
+   "class": "flat",
    "scale": [
     2.4,
     2.4
@@ -121,6 +186,7 @@
   },
   "heart": {
    "lib": "card.heartleaf",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -130,10 +196,33 @@
     "mean": null
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.013,
+      0.177,
+      0.985,
+      0.82
+     ],
+     "stem": [
+      0.019,
+      0.385
+     ],
+     "tip": [
+      0.979,
+      0.375
+     ],
+     "w": [
+      -0.23,
+      0.44
+     ]
+    }
+   ]
   },
   "lace": {
    "lib": "card.lace.birch",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -143,10 +232,33 @@
     "mean": null
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.013,
+      0.19,
+      0.985,
+      0.81
+     ],
+     "stem": [
+      0.019,
+      0.503
+     ],
+     "tip": [
+      0.979,
+      0.586
+     ],
+     "w": [
+      -0.35,
+      0.28
+     ]
+    }
+   ]
   },
   "lily": {
    "lib": "card.lily.iridescent",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -160,6 +272,7 @@
   },
   "cherrybloom": {
    "lib": "card.blossom.cherry",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -169,10 +282,33 @@
     "mean": null
    },
    "roughLift": 0,
-   "specular": 0.2
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.013,
+      0.216,
+      0.985,
+      0.785
+     ],
+     "stem": [
+      0.019,
+      0.509
+     ],
+     "tip": [
+      0.979,
+      0.514
+     ],
+     "w": [
+      -0.3,
+      0.28
+     ]
+    }
+   ]
   },
   "mooncapcard": {
    "lib": "card.mooncap",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -186,6 +322,7 @@
   },
   "peyotecard": {
    "lib": "card.peyote",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -199,6 +336,7 @@
   },
   "padcard": {
    "lib": "card.giantpad",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -212,6 +350,7 @@
   },
   "beadscard": {
    "lib": "card.beads.bell",
+   "class": "card",
    "scale": [
     1.0,
     1.0
@@ -226,6 +365,7 @@
   },
   "bark.marble": {
    "lib": "bark.marble",
+   "class": "flat",
    "scale": [
     3.0,
     3.0
@@ -240,6 +380,7 @@
   },
   "bark.carved": {
    "lib": "bark.carved",
+   "class": "flat",
    "scale": [
     0.8,
     0.8
@@ -254,6 +395,7 @@
   },
   "bark.bamboo": {
    "lib": "bark.bamboo.jade",
+   "class": "flat",
    "scale": [
     1.2,
     2.4
@@ -272,6 +414,7 @@
   },
   "bark.cedar": {
    "lib": "bark.cedar.red",
+   "class": "flat",
    "scale": [
     1.2,
     1.2
@@ -286,6 +429,7 @@
   },
   "organic.cap": {
    "lib": "organic.chalicecap",
+   "class": "flat",
    "scale": [
     3.0,
     3.0
@@ -300,6 +444,7 @@
   },
   "organic.mossball": {
    "lib": "organic.mossball",
+   "class": "flat",
    "scale": [
     1.0,
     1.0
@@ -314,6 +459,7 @@
   },
   "ground.forest": {
    "lib": "ground.ground106",
+   "class": "flat",
    "scale": [
     3.0,
     3.0
@@ -328,6 +474,7 @@
   },
   "stone.marblecliff": {
    "lib": "rock.marble012",
+   "class": "flat",
    "scale": [
     3.5,
     3.5

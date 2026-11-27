@@ -1,0 +1,32 @@
+{
+  "out": "ancientsvalley-yards.html",
+  "region": "yards",
+  "mp": [
+    "46e-mp-industry.js",
+    "46f-mp-yards.js",
+    "57y-mp-yards-draw.js"
+  ],
+  "anc": [
+    "42-offices.js",
+    "40-factory-extras.js",
+    "62-robotics.js",
+    "72-datacenter.js",
+    "78-factory-silo.js",
+    "84-fuel.js",
+    "88-factory.js",
+    "8al-alt-00-lib.js",
+    "8al-alt-08-robotics.js",
+    "8al-alt-09-datacenter.js",
+    "8ak-alt-b-civic.js",
+    "8ak-alt-c-works.js",
+    "64-houses-def.js",
+    "66-office-c.js",
+    "80-aa-battery.js",
+    "8ak-alt-a-houses.js",
+    "targets/engines/8aj-engines3.js"
+  ],
+  "kits": {
+    "20-core-ruins.js": "../../core/ruins/20-core-ruins.js",
+    "21-core-ruins-host.js": "../../core/ruins/21-core-ruins-host.js"
+  }
+}

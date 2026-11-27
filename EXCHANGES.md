@@ -166,6 +166,7 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### crater drylands N ↔ swhighlands
 
 - **Existing exchanges: none.** `swhighlands/PLAN.md:98` only names the crater drylands as a neighbour.
+- **Taken (2026-11-09, `claude/swhighlands-rest-f8a7ee`):** swhighlands' station 5 (`-coast`) grows the crater drylands' `yucca` in place and its`n  `swordspire` as the glaucous cousin (`stations/coast/87-host-kin.js`: `CRATERDRY.make`/`grow`).
 - **Shared ground:** swhighlands' dry east scarp and its fan deltas are station 5, `-coast`, in the rain shadow
   (~400 mm). Its low Csa is at about 1.8 km (+15 °C).
 
@@ -339,7 +340,9 @@ is nearer still to nwlowlands and nhighlands, so the rows name it where the plan
 ### swhighlands ↔ swlowlands
 
 - **swlowlands → swhighlands: exists (plan).** `swhighlands/PLAN.md` section 3: the sprawl oak (as the derived sprawl cap),
-  `cedar`, `madrone` and `manzanita`.
+  `cedar`, `madrone` and `manzanita`. **Built in part (2026-11-09):** the flayed madrone grows on swhighlands' station 3
+  (`-span`) in place (`stations/span/87-host-kin.js`); the tier cedar is held back (the core attach audit), the sprawl cap and the
+  manzanita are still owed.
 - **swhighlands → swlowlands: exists (plan).** `swlowlands/PLAN-FLORA.md`: `fishingbridge`, a red lattice sprawl derived
   from `latticeoak`, `coralmelon`, and bead coral.
 - No proposals needed.
@@ -606,6 +609,13 @@ at about 6.1 km.
 | nsemiarid→korona | `buckthorn` | Sea buckthorn | birds (berries) | read in place | the east lobe's lake shore on Korona's side (about 830 m) | a temperate, semiarid, salt-tolerant shore shrub; the same shore runs on both sides |
 | korona→nsemiarid | `bladderpool` | Sucking pool | birds (fragments on their feet) | cousin: a small pond bladderwort bed, danger 0, with no sucking | fresh pools and reed margins on nsemiarid's lake shore | bladderworts grow in steppe pools on Earth; Korona's version is scaled down for richer ground |
 
+**Status (2026-11-09):** `bladderpool` **taken** (korona→nsemiarid): the cousin as the row says, the **pond bladderwort**
+(`biomes/nsemiarid/src/50`: item `bladder`, `NSEMIARID.PLANTS.bladderwort` with `tags.kin: 'korona.bladderpool'`, danger 0, no sucking; `60`'s last
+pass), mats on still, fresh, warm water: station 1's spring pool (not its salt lake, not the stream), and the overlays' fresh water (the coulee's plunge
+lake and potholes, the high line's rain pond); not the high country's cold tarns. `buckthorn` (nsemiarid→korona) **owed**: no Korona station stands on
+the east lobe's lake shore yet (the basin's lake is the Tiers' lake, the trenches' a salt lake); nsemiarid's `buckthorn` item and `60`'s `buckthorn()`
+are ready to read in place there. `biomes/nsemiarid/KNOWN_ISSUES.md`.
+
 ### korona ↔ nwouterwall
 
 **Existing exchanges: none either way.** nwouterwall names Korona only for method (stations, dithering, the mask form:
@@ -658,7 +668,7 @@ the cherry as `BIO.kin('oidong.cherry')` keyed `cloudcherry`, a deeper rose. The
 **Existing exchanges.**
 - **throne→ringisles: yes, read in place.** The lehua, tree fern, arch palm, palm frill, mangrove, coconut and star aloe
   (`ringisles/build.py:16,85,167`).
-- **ringisles→throne: none.** The only hit is a water-gap note (`throne/KNOWN_ISSUES.md:211`).
+- **ringisles→throne: yes, read in place (2026-11-24).** The strand pandanus on the geyser isle's beaches (`throne/stations/isle/station.json` `kits` and `packs`, `88p-host-pandan.js`, `RINGISLES.treeAt`).
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|

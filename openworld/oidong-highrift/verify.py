@@ -9,7 +9,7 @@ The checks, each with a negative:
   - the world's own (core/world/91-world-probe.js, round Longsong's village Lho): order-free seeding, the land continuous,
     nothing in water or outside the region, spacing across tiles, the rivers that carry water, the villages' roads on
     the land at their grade, nothing growing on a road or a village, no NaN;
-  - the region: each site where the cut put it (Longsong px 1226,1626 in the 'oidong valley' with the Oidong kit; the
+  - the region: each site where the cut put it (Longsong px 1228.88,1621.23 in the 'oidong valley' with the Oidong kit; the
     Singing Gjar 1572,1643, the Mirror Grange 1430,1644 and the Caldron House 1366,1668 in the 'high rift' with the High
     Rift kit), on dry land (the negative reads Longsong at the Gjar's spot, where the Oidong kit does not grow);
   - the sites (core/world/88s-world-sites.js _sites.checks): the baked plan is the plan made again in the browser, every
@@ -34,7 +34,7 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
- const want={sq80bzd7ep:{px:[1226,1626],biome:'oidong valley',kit:'oidong'},ssinggjar01:{px:[1572,1643],biome:'high rift',kit:'highrift'},
+ const want={sq80bzd7ep:{px:[1228.88,1621.23],biome:'oidong valley',kit:'oidong'},ssinggjar01:{px:[1572,1643],biome:'high rift',kit:'highrift'},
   smirrorgrange01:{px:[1430,1644],biome:'high rift',kit:'highrift'},scaldronhouse01:{px:[1366,1668],biome:'high rift',kit:'highrift'}};
  for(const id in want){const S=(M.sites||[]).find(s=>s.id===id),W=want[id];if(!S){bad.push('no site '+id);continue;}
   const L=(M.sites||[]).find(s=>s.id==='ssinggjar01'),moved=neg==='site'&&id==='sq80bzd7ep'&&L;   /* the negative: Longsong read at the Gjar's spot, in the High Rift */
@@ -81,6 +81,7 @@ async def run(a):
                 if need and not has[need]:
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the region ---')
             for neg in (None, 'site'):
                 for r in await pg.evaluate(REGION, neg):

@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `BRIEF.md`, `HANDOFF-FLORA-REPORT.md`, `HANDOFF-FLORA.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PERF.md`, `PLAN-STATIONS.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/nhighlands-alpine.html`, `dist/nhighlands-bogs.html`, `dist/nhighlands-foothills.html`, `dist/nhighlands-montane.html`, `dist/nhighlands.html`
+Built output (never open it; edit `src/` and rebuild): `dist/nhighlands-alpine.html`, `dist/nhighlands-bogs.html`, `dist/nhighlands-foothills.html`, `dist/nhighlands-montane.html`, `dist/nhighlands-tiguantin.html`, `dist/nhighlands.html`
 
 Build: `cd biomes/nhighlands && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -33,7 +33,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `65-biome-nhighlands-dress.js` | 7 |  |
 | `70-biome-nhighlands.js` | 2 |  |
 | `82-host-sky.js` | 11 | the fog (7); the far country (17); light modes (109) |
-| `84-host-ground.js` | 21 | the water (136); the mist (140) |
+| `84-host-ground.js` | 21 | the water (140); the mist (144) |
 | `85-host-tower.js` | 5 |  |
 | `86-host-pillars.js` | 6 |  |
 | `87-host-cut.js` | 4 |  |
@@ -41,6 +41,18 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89-host-sky.js` | 2 |  |
 | `89a-host-atmos.js` | 3 |  |
 | `89w-host-water.js` | 3 |  |
-| `89zz-host-shadow.js` | 3 |  |
+| `89zz-host-shadow.js` | 2 |  |
 | `99-host-take.js` | 22 | the inspector's words (63); the probe's budgets and the kit's own checks (ve (82); the page, handed to the host (160) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| alpine | 44z-host-site.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 98-host-station-take.js | 12 |
+| bogs | 45-host-stage.js, 62-biome-nhighlands-bog.js, 83-host-bog-ground.js, 88-host-build.js, 89-host-sky.js, 89w-host-water.js, 98-host-bog-take.js | 51 |
+| foothills | 44z-host-site.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 87-host-station-kin.js, 98-host-station-take.js | 14 |
+| montane | 44z-host-site.js, 45-host-stage.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 88-host-build.js, 89-host-sky.js, 98-host-station-take.js | 38 |
+| tiguantin | 44z-host-site.js, 62-biome-nhighlands-station.js, 83-host-station-ground.js, 87-host-station-kin.js, 88t-host-tiguantin.js, 89a-host-atmos.js, 89w2-host-cisterns.js, 98-host-station-take.js, 98z-host-floor.js | 68 |

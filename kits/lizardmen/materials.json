@@ -165,6 +165,7 @@
    "specular": 0.2
   },
   "bronze": {
+   "specAA": true,
    "lib": "metal.bronze.verdigris",
    "scale": [
     1.0,
@@ -179,6 +180,7 @@
    "metal": 0.5
   },
   "bronzeC": {
+   "specAA": true,
    "lib": "metal.bronze.cast",
    "scale": [
     1.2,
@@ -206,6 +208,8 @@
    "specular": 0.15
   },
   "stoneP": {
+   "m4": true,
+   "pom": 0.025,
    "lib": "stone.basalt.polished",
    "scale": [
     1.8,
@@ -232,6 +236,8 @@
    "specular": 0.12
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.ochre",
    "scale": [
     1.4,
@@ -349,6 +355,7 @@
    "specular": 0.2
   },
   "jade": {
+   "specAA": true,
    "lib": "stone.amazonite",
    "scale": [
     0.6,

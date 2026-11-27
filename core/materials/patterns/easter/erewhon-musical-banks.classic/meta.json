@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1024,
+    1536
+   ],
+   "seam_after": [
+    1.124,
+    1.0
+   ],
+   "seam_before": [
+    1.381,
+    1.107
+   ],
+   "source_size": [
+    1024,
+    1536
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.0,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": true,
+   "lift": 0.0,
+   "mute": 0.0,
+   "normal_strength": 0.15,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.05,
+   "seam_axes": "none",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "easter/erewhon-musical-banks.classic",
+  "metal": 0,
+  "pattern": true,
+  "roughness": 0.85,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__easter__erewhon-musical-banks.classic.png",
+  "generator": "generated through Codex (ChatGPT) by the owner, 2026-11-17 (01a1e8ba-ff9a, exec-c4c6e904-2859-4504-85d8-56a317fe9e0b.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "core/materials/PROMPTS-NEEDED.md (archived in PROMPTS-archived.md): section 58",
+  "reuse": "arts-and-crafts tapestry; a single panel, installed for a later use (Talia's art museum)",
+  "sha1": "f5111ab39637122e2335112e50f509c4bbe377c3"
+ }
+}

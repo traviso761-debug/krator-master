@@ -31,6 +31,7 @@ enabled=PackedStringArray("res://addons/krator_gltf/plugin.cfg", "res://addons/g
 [rendering]
 
 anti_aliasing/quality/msaa_3d=2
+limits/global_shader_variables/buffer_size=65536
 
 [shader_globals]
 
@@ -114,7 +115,59 @@ atm_wet={
 "type": "float",
 "value": 0.0
 }
+atm_vol_mid_h={
+"type": "float",
+"value": 0.0
+}
 atm_sky_noise={
 "type": "sampler3D",
 "value": ""
+}
+k_weather={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+k_weather_noise={
+"type": "sampler2D",
+"value": ""
+}
+k_world_origin={
+"type": "vec3",
+"value": Vector3(0, 0, 0)
+}
+k_surface={
+"type": "vec4",
+"value": Vector4(0, 0, 0, 0)
+}
+k_detail_arr={
+"type": "sampler2DArray",
+"value": ""
+}
+khz_tex0={
+"type": "sampler2D",
+"value": ""
+}
+khz_tex1={
+"type": "sampler2D",
+"value": ""
+}
+khz_box={
+"type": "vec4",
+"value": Vector4(0, 0, 0.001, 0.001)
+}
+khz_params={
+"type": "vec4",
+"value": Vector4(2, 0, 2, 2)
+}
+kgd_albedo_arr={
+"type": "sampler2DArray",
+"value": ""
+}
+kgd_nr_arr={
+"type": "sampler2DArray",
+"value": ""
+}
+kgd_params={
+"type": "vec4",
+"value": Vector4(0, 1, 6, 0)
 }

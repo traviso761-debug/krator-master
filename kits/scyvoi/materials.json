@@ -114,6 +114,7 @@
    "specular": 0.35
   },
   "stone": {
+   "m4": true,
    "lib": "rock.rock_boulder_dry",
    "scale": [
     2.6,
@@ -152,6 +153,8 @@
    }
   },
   "paving": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "paving.flagstone",
    "scale": [
     3.0,

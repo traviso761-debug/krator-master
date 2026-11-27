@@ -16,9 +16,19 @@ logistics book these links).
   Every view and check reads a site's own point; Pinnacle Rock is at x -168 km, z +6 km.
   - **Moved 2026-11-10** (the owner: "a spot not too far that's got a bit more forest"): 41 km west of 1027,681, where
     map 5.1 had left the rock in the NE rim's savanna.
-  - The rock is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
-  - Pinnacle Rock's own page (`settlements/pinnacle-rock`) still stands on its own 4.21 cut (`region/`): it does not
-    read this region (`KNOWN_ISSUES.md`).
+  - The new spot is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
+    77 % of the ground within 9 km is jungle; the NE rim's savanna is the other half of the cut.
+  - The square is from `openworld/SITES.json`; `tools/scale-model/cut_site.py pinnacle` makes the cut.
+  - **Smoothed** (`"smooth": true` in SITES.json, 2026-11-12; `core/world/README.md`, "Smoothing"):
+    - the cut's heights have no pixel staircases on their scarps and no row streaks;
+    - its rivers are carved along curves through the model's vertices, not in straight cell-rounded runs;
+    - the page lists `core/world/40-world-smooth.js` and carves the same curves.
+    The first region on it.
+  - **Relief** (`"relief": 1`, 2026-11-15; `core/world/PLAN-RELIEF.md`, P1): terraces only on caprock, on beds that dip, and none
+    cut on the absolute height (the cut's 60 m ledges, the fingerprint whorls on the NE rim, are gone); the page lists
+    `core/world/43-world-relief.js`.
+  - The frame's origin is the site's pixel. Pinnacle Rock's own page still stands on its old cut at the old pixel, until
+    it is rebuilt on the new spot (a re-cut tried on 2026-11-12 left it loading past 16 minutes: its `KNOWN_ISSUES.md`).
 - **The site:** the nine Beast Rider bands that camp on the floor round the rock, a track from each camp's gate to the
   rock, and four farming clearings 6-8 km out (the sim's S7: core/hamlet's `beast-rider` row, 229 people each), each with
   its road to the rock.
@@ -62,7 +72,8 @@ logistics book these links).
   mesa (`KNOWN_ISSUES.md`).
 - **The flora:**
   - the hyperjungle grows on the savage hyperjungle and hyperjungle N (Port Goto's), in its stands with saplings under
-    them (its pass table as the retired little-demo gave it);
+    them (its pass table as the retired little-demo gave it). Its far level is an octahedral impostor baked at load from
+    its mid tree (`core/world/84i-world-impostors.js`), so the mid hands over at 600 m;
   - the abyssal savannah's own trees, and the eastern abyss's it borrows, grow over the NE and E rims. `src/49-world-absav.js`
     presents that kit to the world as two registries;
   - the corridors east of the rock (the crater's east wall, the Nomad Country, the Tiers) have no kit yet.
@@ -74,7 +85,16 @@ python3 tools/scale-model/cut_site.py pinnacle     # the cut (data/, source/)
 python3 core/world/bake_sites.py pinnacle          # the plan (plan/sites.json); --check fails on a stale bake
 python3 build.py                                   # dist/pinnacle.html
 python3 verify.py dist/pinnacle.html --assert --views 1,2,6
+python3 ../../tools/harness.py lock --lane arc -- python3 tools/perf.py dist/pinnacle.html --detail --fly 150 [--ablate]
 ```
+
+`tools/perf.py` is the frame's cost from fixed views (fps, the world pass's GPU time, draw calls, triangles, the flora by
+level). `--detail` breaks it down by flora prototype and camp piece, `--fly` times a flight (with each streaming step's CPU
+time, its worst frame, the long tasks and the prototypes grown; `--profile` adds a CPU profile's hottest functions by
+fragment), and `--ablate` times the GPU with each kind of mesh hidden. `tools/grow_times.py` times every flora prototype
+the kits can ask for (every one is grown at load: `core/world/85p-world-pregrow.js`). Compare a before and an after
+inside one lock: other work on the machine swings the numbers by up to 2x. The numbers of 2026-11-16 are in
+`KNOWN_ISSUES.md`.
 
 On the GPU: `KRATOR_GL=gpu` (verify.py takes a lane itself, under the stall watchdog).
 

@@ -5,10 +5,12 @@
 // Then the fumaroles (the 'vent' field), the fields the kit reads (cached), BIO.init.
 function landH0(x,z){return flankH(x,z)-grabenAt(x,z).drop+fissAt(x,z).h+coneAt(x,z).h;}
 const FLOW_SRC=(function(){const S=(key,name,p,o)=>Object.assign({key,name,x:p[0],z:p[1]},o);
- return[S('fissure','The fissure\'s flow (four years old)',fissPt(1020),{age:4,len:1500,w:[90,220],th:[3,6],veer:0,wander:.35,seed:9801}),
+ /* the fissure's flow: frozen by core/terrain's lava-flow module (shared/46k, KLAVA.bake), four vents along the fissure's middle, ~1 Mm3 */
+ return[S('fissure','The fissure\'s flow (four years old)',fissPt(1020),{age:4,len:1500,w:[90,220],th:[3,6],veer:0,wander:.35,seed:9801,
+   klava:{cell:10,pad:900,vents:[700,950,1200,1450].map(u=>{const p=fissPt(u);return{x:p[0],z:p[1],r:22,Q:8,duration:31250,T:1420};})}}),
   S('east','An old flow on the east shoulder',upAt(2650,760),{age:700,len:4800,w:[240,420],th:[5,8],veer:.1,wander:.4,seed:9802}),
   S('west','An ancient flow on the west shoulder',upAt(2650,-2050),{age:2600,len:5200,w:[260,460],th:[5,8],veer:-.1,wander:.4,seed:9803})];})();
-_mark('stage');const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD});
+_mark('stage');const FLOWS=THRONE_KLAVA_FLOWS({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD});window._klava=FLOWS.klava;
 const ageLabel=a=>a<1.5?Math.round(a*12)+' months':a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 _mark('flows');
 
@@ -25,12 +27,16 @@ function poolCut(x,z){let c=0;for(const P of POOLS){const d=Math.hypot(x-P.x,z-P
 function hollowCut(x,z){let c=0;for(const H of HOLLOWS){const d=Math.hypot(x-H.x,z-H.z);if(d<H.r*1.6)c=Math.max(c,H.depth*Math.pow(smooth(H.r*1.5,H.r*.3,d),1.2));}return c;}
 const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
 const marshHum=(x,z)=>2.4*(fbm(x*.03,z*.03,4731,2)-.5)+.9*(fbm(x*.1,z*.1,4732,2)-.5);
+// THE RHEOLITHS' BREACH (89y; src/44r): the throat on the fissure's middle at the kit's own size, cut into the ground last. ?rheo=0 none
+const BREACH=new URLSearchParams(location.search).get('rheo')==='0'?null:(function(){const c=fissPt((FISS.u0+FISS.u1)/2);return{x:c[0],z:c[1],r:26,throatR:7.4,floor:-21,rim:3.6};})();
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH1(x,z){let h=landH0(x,z);const th=FLOWS.thickAt(x,z);h+=th;
+function terrainH1(x,z){return THRONE_BREACH(BREACH,terrainH1u(x,z),x,z);}
+function terrainH1u(x,z){let h=landH0(x,z);const th=FLOWS.thickAt(x,z);h+=th;
  // the lava's skin: pahoehoe ropes and tumuli on the young flow, aa rubble on the old, softened with age
  const fl=smooth(.4,2.2,th);if(fl>0){const a=FLOWS.ageAt(x,z),k=fl*(1-.65*smooth(300,3500,a));h+=k*(1.4*ridged(x*.04,z*.04,4711)+.6*(fbm(x*.17,z*.17,4712,2)-.5)-.6);}
  return h-valleyAt(x,z).cut-crackAt(x,z)-5*fissAt(x,z).crack-hollowCut(x,z);}
+if(BREACH){let s=0;for(let i=0;i<16;i++){const a=i/16*TAU;s+=terrainH1u(BREACH.x+Math.cos(a)*BREACH.throatR,BREACH.z+Math.sin(a)*BREACH.throatR);}BREACH.y=s/16;}   /* the rim's height (the kit's pitY) */
 MARSH.level=terrainH1(MARSH.x,MARSH.z)-1.2;
 MUD.forEach(M=>M.base=terrainH1(M.x,M.z));
 function terrainH0(x,z){let h=terrainH1(x,z);

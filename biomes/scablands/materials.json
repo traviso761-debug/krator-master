@@ -1,7 +1,7 @@
 {
  "build": "scablands",
  "size": 512,
- "note": "The scablands overlay's own library pack (its build passes it beside the n semiarid kit's: biomes/nsemiarid/build.py build(overlay={tex, pack})). concrete: the dam's broken concrete the flood carried kilometres (the erratics, keep 1: its own grey with the rebar's rust bleeding down it). basalt: the flood basalt's boulders the flood rolled with them (keep 1). Run python3 tools/textures/pack.py biomes/scablands after any change, then python3 build.py. (2026-10-23) The pools' own flora (src/72-biome-scablands-pools.js), whole sheets cut by cell in code: card.lily (card.lotus: pads and blooms), card.quill (card.sword: the yellow-green rosettes), card.sedge (card.seagrass), card.fern (card.fern.green); keep 1, their own colours. (2026-11-09) The geodes (src/87g-host-geodes.js, PLAN.md, Geodes): agate (stone.onyx toned grey-blue: the agate rind of a broken geode and of the walk-in pocket), amethyst (stone.geode.druze, the Throne druse, its reuse note any crystal-lined cavity, toned grey: the material colours it amethyst); basalt is the walk-in block too.",
+ "note": "The scablands overlay's own library pack (its build passes it beside the n semiarid kit's: biomes/nsemiarid/build.py build(overlay={tex, pack})). concrete: the dam's broken concrete the flood carried kilometres (the erratics, keep 1: its own grey with the rebar's rust bleeding down it). basalt: the flood basalt's boulders the flood rolled with them (keep 1). Run python3 tools/textures/pack.py biomes/scablands after any change, then python3 build.py. (2026-10-23) The pools' own flora (src/72-biome-scablands-pools.js), whole sheets cut by cell in code: card.lily (card.lotus: pads and blooms), card.quill (card.sword: the yellow-green rosettes), card.sedge (card.seagrass), card.fern (card.fern.green); keep 1, their own colours. (2026-11-09) The geodes (src/87g-host-geodes.js, PLAN.md, Geodes): agate (stone.onyx toned grey-blue: the agate rind of a broken geode and of the walk-in pocket), amethyst (stone.geode.druze, the Throne druse, its reuse note any crystal-lined cavity, toned grey: the material colours it amethyst); basalt is the walk-in block too. (2026-11-09) Station 2, the high line (stations/highline; packed into that page only: build.py --station leaves a station's own families out of every other page, and the coulee's cards, agate and amethyst out of it): rust (metal.rust.plate, keep 1) on the wrack the flood lake stranded at its high line (the dam basins' flotsam kind, DBF, read in place).",
  "families": {
   "concrete": {
    "lib": "concrete.rust.streaked",
@@ -100,6 +100,18 @@
    },
    "roughLift": 0.0,
    "mapOnly": true
+  },
+  "rust": {
+   "lib": "metal.rust.plate",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.1
   }
  }
 }

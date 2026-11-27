@@ -8,8 +8,8 @@ Open `index.html` from a local server rooted at the repo root, because the page
 loads `../three.min.js`, the engine from `../../../core/catalog/` and the Voth buildings from `../../../kits/catalog/`:
 
 ```
-python3 -m http.server 8000          # from the repo root
-# http://localhost:8000/settlements/voth/catalog/index.html
+python3 -m http.server 0 --bind 127.0.0.1   # from the repo root: a free port, printed at start-up
+# http://localhost:<port>/settlements/voth/catalog/index.html
 #   ?src=voth-shops   ?fam=military   ?only=voth_tavern_b   ?lod=off|auto|0|1|2
 ```
 
@@ -17,6 +17,7 @@ python3 -m http.server 8000          # from the repo root
 
 | Source (registry file) | What |
 |---|---|
+| `registry/voth-scrap.js` | **scrap Voth** (`PLAN-SCRAP.md`; the owner, 2026-11-12): the Vothic body with the Ancients' scrap set where Voth had the same form (tank heads for domes, hull plates for Redoran shells and copper roofs, girders for flying buttresses, panel courses on upper storeys): poor, middle and rich houses, a shop, a cornerclub, a canal store, a tomb, a Sun shrine, a watchtower and a canton gate, the slave market (Hook's container compounds) and an arena, 22 variants. **Opt-in**: on this page only (first in the sheet order), not in the city build's kit, so core/city does not place them in Voth. Textured from the material library: `materials.json` -> `tools/textures/pack.py settlements/voth/catalog` -> `tex/`, then `python3 kftex.py` -> `tex/kf-tex.js`; the page loads core/catalog's runtime and detail maps and `layout.js` applies them to this registry's entries (built unmerged) |
 | `registry/voth-housing.js` | `voth_house_poor` / `_middle` / `_rich`, 5 variants each |
 | `registry/voth-manors.js` | `voth_manor` (Hlaalu, Velothi, Redoran/Mournhold) and `voth_clan_compound_b` (mudbrick yard, fortified, waterside), 3 each |
 | `registry/voth-shops.js` | smithy, alchemist, clothier, trader/pawnbroker, scribe, enchanter, provisioner, potter/glassblower, 2 variants each |
@@ -24,7 +25,7 @@ python3 -m http.server 8000          # from the repo root
 | `registry/voth-warehouses.js` | `voth_warehouse_b`: canal warehouse with hoist bay, bonded grain store |
 | `registry/voth-civic.js` | school (Temple college, schoolhouse), generator (turbine hall, fumarole vent house), farmhouses (Velothi, chinampa, Hlaalu), governor's palace |
 | `registry/voth-military.js` | garrison (Velothi fortress, harbour fort), barracks (Hlaalu, Velothi), mustering grounds, army camp |
-| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (27 entries): the 13 first ones, the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), the power station, and the rest day's two temples (the Ash Saints, the Tide Mother), the village chapel and the village shrine (2026-10-12), the shipwright's dock (2026-10-13), each with an `ix` shell for its interior (`settlements/voth` 41-vc-building-interiors.js) |
+| `../../../kits/catalog/krator-master-buildings-voth.js` | first-generation registry (28 entries): the 13 first ones, the citizen simulation's 8 (2026-10-12: watchhouse, caravanserai, coast-guard berth, weaver, tannery, brewery, butcher, bakery), the power station, and the rest day's two temples (the Ash Saints, the Tide Mother), the village chapel and the village shrine (2026-10-12), the shipwright's dock (2026-10-13), the Ordinators' citadel (2026-10-15, not placed in Voth), each with an `ix` shell for its interior (`settlements/voth` 41-vc-building-interiors.js) |
 | `registry/voth-city-captured.js` + `.data.js` | **generated**: every structure the city builds, pulled from a live build (see below) |
 
 ## Walk records: stairs and ladders

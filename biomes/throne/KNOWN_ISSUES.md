@@ -236,7 +236,7 @@
 
 ## The final rebuild (pair 5, 2026-11-02; `PLAN.md`, "Core adoption")
 
-- [ ] **The far field.** No page takes KFAR: each station is an ideal type whose `terrainH` past the map is its own procedure, not the scale model, and
+- [x] **The far field (taken 2026-11-23: `src/85-host-far.js`, `PLAN.md` "Dropped or owed"; what follows was the state before).** No page took KFAR: each station is an ideal type whose `terrainH` past the map is its own procedure, not the scale model, and
   station 1 is at its triangle ceiling. KHORIZON is baked over the map alone. Owed: a far ring per station from the model's heights round its px (the
   sky's ridges stand in today).
 - [ ] **Sixteen texture units.** Station 1's floor reads fifteen (the paint, the detail, the macro and twelve library layers), the isle's and the vents'
@@ -260,7 +260,7 @@
   the page's lava lake lies in a pit of 28 m. Deepening it changes the station's main view; not done.
 - [ ] **The Zeijani's tubes round the kipuka** (map 5.1, `tubes.json`): `tube_dhelv_01`'s West Kipuka Portal (a cliff portal in old-growth kipuka forest, a
   rolling stone door 2 km in) and its neighbours `tube_surpu_02`, `_qarnu_03`, `_nuru_04` give station 2 a real route; the page draws none of them.
-- [ ] **ringisles' strand pandanus** (`EXCHANGES.md`, ringisles ↔ throne) is not on the isle's beaches: ringisles reads this kit in place and has its turn in
+- [x] **ringisles' strand pandanus (taken 2026-11-24: `stations/isle/88p-host-pandan.js`, `PLAN.md` "Dropped or owed")** was not on the isle's beaches: ringisles reads this kit in place and has its turn in
   pair 8; read it in place there, or here after it.
 
 ## Open

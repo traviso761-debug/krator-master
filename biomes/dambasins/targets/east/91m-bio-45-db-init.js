@@ -17,4 +17,7 @@ const DB_FL=(()=>{const R=2600,C0=[0,dbShore(0)+900],S={};
 BIO.init({tags:DB_TAGS,THREE:THREE,scene:scene,terrainH:(x,z)=>terrainH(x,z),waterH:()=>-1e9,mask:DB_FL.mask,obstacles:DB_FL.obstacles,
  ticks:fn=>{PORT_FRAME.push(fn);},seed:29,origin:DB_FL.spine,center:DB_FL.C0,fields:{},register:r=>REGISTER(r),err:m=>reportErr('biome: '+m),
  lod:{hero:500,mid:1200,far:2600,floor:[360,880]}});
+{const q=new URLSearchParams(location.search);
+ BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
 BIO.setSun([-1200,900,900]);   /* the kit's sun (90-scene.js) */

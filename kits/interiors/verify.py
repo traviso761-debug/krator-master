@@ -169,6 +169,12 @@ async def run(a):
             print('  ' + (r.stdout + r.stderr).strip()[:1500])
             if r.returncode:
                 fails.append('core test')
+            r = subprocess.run(['node', os.path.join(HERE, 'tests', 'test-fixtures.js'), core], capture_output=True, text=True)
+            print('fixtures test (node: a fixture of any front clearance leaves the wall pieces a fit):',
+                  'ok' if r.returncode == 0 else 'FAIL')
+            print('  ' + (r.stdout + r.stderr).strip()[:1500])
+            if r.returncode:
+                fails.append('fixtures test')
         if a.sets and info['ready']:
             await run_sets(pg, a, fails)
         if walk and info['ready']:

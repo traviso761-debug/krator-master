@@ -120,7 +120,9 @@ MP.fan = function (F, R, name, parent, x, y, z, r, depth, duct, blade, spinner, 
   R.bone(name + '_duct', parent, x, y, z, rx, ry, rz);
   R.on(name + '_duct');
   F.cy(0, 0, 0, r, r, depth, duct, 'paint', 'z', 20, 0, 0, 0, true);
-  F.cy(0, 0, 0, r * 0.98, r * 0.98, depth * 0.96, F.shade(duct, -0.5), 'metal', 'z', 20, 0, 0, 0, true);
+  /* the inner wall stands at least 8 mm inside the duct: at a small radius 2% is under the audit's tolerance and the two walls fight */
+  const ri = r - Math.max(r * 0.02, 0.008);
+  F.cy(0, 0, 0, ri, ri, depth * 0.96, F.shade(duct, -0.5), 'metal', 'z', 20, 0, 0, 0, true);
   F.tor(0, 0, depth / 2, r, 0.05, duct, 'paint', 'z', 20);
   F.tor(0, 0, -depth / 2, r, 0.05, duct, 'paint', 'z', 20);
   for (let k = 0; k < 4; k++) { const a = k * TAU / 4 + 0.4; F.rod(0, 0, -depth * 0.3, Math.cos(a) * r, Math.sin(a) * r, -depth * 0.3, 0.025, F.shade(duct, -0.4), 'metal'); }
@@ -167,7 +169,7 @@ MP.auger = function (F, len, r, turns, core, flight) {
    nut, so they follow both. Point <name>_muzzle at the front of the trough. o: { len, span, h, wood, iron,
    bronze, rope, skein, bolt, flight }. Returns { draw: how far the nut travels when loosed }. */
 MP.ballista = function (F, R, name, parent, x, y, z, o, rx, ry, rz) {
-  const L = o.len || 1.6, S = o.span || 0.9, H = o.h || 0.16, zf = L * 0.3, zn = -L * 0.32, wS = S * 0.32;
+  const L = o.len == null ? 1.6 : o.len, S = o.span == null ? 0.9 : o.span, H = o.h == null ? 0.16 : o.h, zf = L * 0.3, zn = -L * 0.32, wS = S * 0.32;
   R.bone(name, parent, x, y, z, rx, ry, rz);
   R.on(name);
   /* the stock and the trough */
@@ -223,8 +225,9 @@ MP.ballista = function (F, R, name, parent, x, y, z, o, rx, ry, rz) {
    bone; a bone <bone>_pilotHead (made here) carries the head, so the idle layer can turn it. o: { tunic, skin,
    helm, crest, harness, crestDir ('across' | 'along'), lean } */
 MP.pilot = function (F, R, bone, x, y, z, o) {
+  if (F.bare) return;   /* a bare build has no rider */
   R.on(bone);
-  const lean = o.lean || 0.1;
+  const lean = o.lean == null ? 0.1 : o.lean;
   /* thighs and shins */
   for (const s of [-1, 1]) {
     F.cb(x + s * 0.11, y + 0.08, z + 0.22, 0.15, 0.15, 0.46, o.trousers || o.tunic, 'cloth');
@@ -270,14 +273,14 @@ MP.foot = function (F, o) {
     F.chb(0, -a + 0.25, l * 0.02, w * 0.86, 0.16, l * 0.78, 0.06, o.plate, 'paint', 'z');
     F.chb(0, -a + 0.17, l * 0.5, w * 0.92, 0.2, l * 0.22, 0.05, o.plate, 'paint', 'x', -0.35, 0, 0);
     F.cb(0, -a + 0.2, -l * 0.42, w * 0.6, 0.24, l * 0.16, o.iron, 'metal');
-    for (let i = 0; i < (o.toes || 3); i++) {
-      const tx = (i - ((o.toes || 3) - 1) / 2) * w * 0.32;
+    for (let i = 0; i < (o.toes == null ? 3 : o.toes); i++) {
+      const tx = (i - ((o.toes == null ? 3 : o.toes) - 1) / 2) * w * 0.32;
       F.chb(tx, -a + 0.07, l * 0.6, w * 0.24, 0.14, l * 0.2, 0.04, o.iron, 'metal', 'z');
     }
     F.cy(0, -a * 0.3, 0, 0.16, 0.2, a * 0.9, o.iron, 'metal', 'y', 10);
   } else if (k === 'claw') {
     F.chb(0, -a + 0.2, 0, w * 0.5, 0.3, l * 0.4, 0.06, o.plate, 'paint', 'z');
-    const toes = o.toes || 3;
+    const toes = o.toes == null ? 3 : o.toes;
     for (let i = 0; i < toes; i++) {
       const ang = (i - (toes - 1) / 2) * 0.5;
       const dx = Math.sin(ang), dz = Math.cos(ang);
@@ -303,8 +306,8 @@ MP.foot = function (F, o) {
   } else {   /* pad: a round elephant foot */
     F.cy(0, -a + 0.14, 0, w / 2, w / 2 * 1.06, 0.28, o.iron, 'metal', 'y', 16);
     F.cy(0, -a + 0.34, 0, w / 2 * 0.86, w / 2 * 0.96, 0.14, o.plate, 'paint', 'y', 16);
-    for (let i = 0; i < (o.toes || 4); i++) {
-      const ang = (i - ((o.toes || 4) - 1) / 2) * 0.55;
+    for (let i = 0; i < (o.toes == null ? 4 : o.toes); i++) {
+      const ang = (i - ((o.toes == null ? 4 : o.toes) - 1) / 2) * 0.55;
       F.cb(Math.sin(ang) * w * 0.48, -a + 0.1, Math.cos(ang) * w * 0.48, 0.16, 0.18, 0.14, o.trim, 'bronze', 0, ang, 0);
     }
     F.cy(0, -a * 0.3, 0, 0.18, 0.24, a * 0.8, o.iron, 'metal', 'y', 10);

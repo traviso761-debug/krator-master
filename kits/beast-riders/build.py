@@ -20,10 +20,14 @@ kit's own buildings and the page round them. One <script>, in this order:
                                            larger houses and the farmhouse (2026-10-19)
   TOWNS (GENERATED: towns.py)              Girder's and Mav's Refuge's engines and builders, each sealed in a closure
                                            (BR_GIRDER, BR_MAVS) with the kit's hook and port table (towns/), and the
-                                           library maps their packs point into (BR_TOWN_IMG)
+                                           library maps their packs point into (BR_TOWN_IMG: the maps themselves in
+                                           dist/beast-riders.tex.brtowns.js beside the page)
   src/60-br-ports.js                       the ports: the towns' own buildings as ASSETs (BR_PORTS)
   kits/catalog: krator-furniture-runtime.js, then KF_TEX (GENERATED: the catalog's packed detail maps with this kit's
-                tex/ over them, materials.json), then krator-furniture-detail.js: the detail maps (KF_API.detailize)
+                tex/ over them, materials.json; the maps in dist/beast-riders.tex.kftex.js beside the page), then
+                krator-furniture-detail.js: the detail maps (KF_API.detailize)
+The two .tex.*.js files load by plain <script src> tags ahead of the page's script (tools/textures/matlib_pack.py
+write_sidecar; publish them with the page). --inline-packs puts the maps back in the page.
   src/90-br-sheet.js                       lays out every building and variant; the probe window._kit
   kits/catalog: inspector.js, src/92-hover.js, src/93-polygon.js   the click inspector, the hover inspector (T) and the
                 polygon tool (P), the catalog's own
@@ -63,7 +67,10 @@ OWN = ['50-br-mounts.js',
        '51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js']   # the sedentary trades and the larger houses (2026-10-19)
 # the tent set (2026-10-19): the tent kit, the tents, the pens and trainers, the bands' grounds, the boundaries, BR_CAMP;
 # core/rand first (KRAND: every varying choice in the tents is hashed from its own indices)
-CORE_JS = ['core/rand/08-core-rand.js']
+CORE_JS = ['core/rand/08-core-rand.js',
+           # core/door: the page's door records and their host (the ports' doors open: src/60-br-ports.js host, the sheet's E);
+           # the towns' own KDOOR and KGLASS are sealed in their closures (towns.py)
+           'core/door/10-core-door.js', 'core/door/90-core-door-host.js']
 TENTS = ['70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js', '73-br-tents-pens.js', '74-br-tents-bands.js',
          '75-br-tents-bounds.js', '79-br-camp.js']
 OWN_PREFIX = ('br_bldg_', 'br_tent_', 'br_hedge_', 'br_fence_')
@@ -87,9 +94,16 @@ def read(p):
         return fh.read()
 
 
-def kf_tex():
+# the maps beside the page (Stage 8 B10, as kits/scyvoi and settlements/pinnacle-rock do; tools/textures/matlib_pack.py
+# write_sidecar): the towns' (BR_TOWN_IMG) in dist/beast-riders.tex.brtowns.js, the catalog's and the kit's detail maps
+# (KF_TEX) in dist/beast-riders.tex.kftex.js, each under 15 MB a file (the gallery takes no file over 16 MB). --inline-packs
+# puts them back in the page
+SIDE = None if '--inline-packs' in sys.argv else {}
+
+
+def kf_tex(side=None):
     """KF_TEX: the catalog's packed detail maps (kits/catalog/tex), with this kit's (tex/, materials.json) over them by
-    family: the same shape kits/catalog/furniture_bundle.py textures() writes"""
+    family: the same shape kits/catalog/furniture_bundle.py textures() writes. side: the maps go into side['kftex']"""
     out = {}
     for d in (os.path.join(CAT, 'tex'), os.path.join(HERE, 'tex')):
         pack = json.load(open(os.path.join(d, 'pack.json'), encoding='utf-8'))
@@ -98,17 +112,21 @@ def kf_tex():
             if name:
                 out[fam] = {'lib': e['lib'], 'scale': e['scale'][0], 'mean': e['tint']['mean'],
                             'map': 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(d, name), 'rb').read()).decode()}
-    return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
+    if side is None:
+        return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
+    side['kftex'] = json.dumps(out, sort_keys=True)
+    return ("const KF_TEX = (typeof KMAT_SIDE !== 'undefined' && KMAT_SIDE.kftex) || (console.warn('KF_TEX: the detail maps are "
+            "missing (the page\\'s .tex.kftex.js did not load): vertex colours'), null);\n")
 
 
 def main():
     sys.path.insert(0, HERE)
     import towns
-    tjs, tfiles = towns.bundle()
+    tjs, tfiles = towns.bundle(SIDE)
     parts = [(f, read(os.path.join(ROOT, f))) for f in CORE_JS] + \
             [(kcat.rel(f), read(kcat.path(f))) for f in BEFORE] + [('src/' + f, read(os.path.join(SRC, f))) for f in OWN + TENTS] + \
             [(TOWNS, tjs)] + [('src/' + f, read(os.path.join(SRC, f))) for f in PORTS] + \
-            [(kcat.rel(f), read(kcat.path(f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex())] + \
+            [(kcat.rel(f), read(kcat.path(f))) for f in AFTER] + [('KF_TEX (GENERATED)', kf_tex(SIDE))] + \
             [(kcat.rel(DETAIL), read(kcat.path(DETAIL)))] + [('src/' + f, read(os.path.join(SRC, f))) for f in SHEET] +             [(kcat.rel(f) if '/' not in f else 'kits/catalog/' + f, read(kcat.path(f) if '/' not in f else os.path.join(CAT, f))) for f in TOOLS]
     if '--no-checks' not in sys.argv:
         errs, decl, keys = [], {}, {}
@@ -132,6 +150,10 @@ def main():
     BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')
+    if SIDE:   # the maps beside the page, under the gallery's 16 MB a file
+        sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+        import matlib_pack as _mp
+        html = _mp.write_sidecar(SIDE, html, DIST, OUT + '.tex.js')
     with open(out, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n') as fh:
@@ -148,7 +170,9 @@ def main():
         if r.returncode:
             print(r.stderr[-2000:]); sys.exit(1)
         syn = 'syntax OK'
-    print('built dist/%s.html (%d KB)  %s' % (OUT, os.path.getsize(out) // 1024, syn))
+    side = sorted(f for f in os.listdir(DIST) if f.startswith(OUT + '.tex.') and f.endswith('.js')) if SIDE else []
+    print('built dist/%s.html (%d KB%s)  %s' % (OUT, os.path.getsize(out) // 1024, ''.join(
+        '; %s %d KB' % (f, os.path.getsize(os.path.join(DIST, f)) // 1024) for f in side), syn))
 
 
 if __name__ == '__main__':

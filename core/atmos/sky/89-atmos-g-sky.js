@@ -9,7 +9,11 @@
 //   4 the giant  an analytic sphere: bands, storms, spin, the terminator, the ring's shadow on it
 //   5 the ring   in the giant's equator; its far half hidden behind the disc, the giant's shadow across it
 //   6 the air    the colour script's sky, the sun's glow, extinction and haze over layers 1-5
-//   7 clouds     a cumulus and a cirrus layer on sky planes, riding the wind, lit by the sun and giantshine
+//   7 clouds     a cumulus and a cirrus layer on sky planes, riding the wind, lit by the sun and giantshine; with a MOOD (the
+//                preset's clouds.dark / tint / turbulence / glow, the Ancient's Valley's smog, 2026-11-09) darkened toward a
+//                storm grey, drawn toward a tint, torn by a second noise (or set in unnatural rows, or each cell on its own
+//                wind) and lit from below at night. Those lines compile only on a page that asks (ATMOS.skyMoodOn, set by
+//                ATMOS.sky from the preset): every other page's chunk is the text it was, as the fog belt's rule
 //   8 ridges     the far land, far to near, from the ridge texture: lit by the sun, hazed by distance
 // The integer hash is lowbias32 (the cloud deck's), so the Godot twin (atmos_sky.gdshaderinc) draws the same stars.
 // GLSL ES 3 (uint, texelFetch): three r128 compiles a ShaderMaterial as ES 3 on WebGL2.
@@ -31,16 +35,93 @@
  // THE CLOUD FIELD, anchored to the world (SKY-PLAN.md 11.1): the cumulus cover at world xz on the cloud plane, drifting
  // on the wind. The sky reads it along each view ray, the ground along the ray toward each light, so a cloud and its
  // shadow are the same cloud. oct: octaves (the sky 5, a shadow 3: a cloud 1.6 km up casts a penumbra ~15 m wide)
- const CLOUDF=[
-  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;return atmSkyFbm(vec3(xz/uCloudH.z+w,0.0),oct,100u)*0.5+0.5;}',
-  'float atmCloudCover(float n){return smoothstep(1.0-uCloud.x,1.0-uCloud.x+0.22,n);}'];
+ // With a mood (A.skyMoodOn) the field takes the turbulence: uCloudX.y its strength, uCloudY.x its kind (ATMOS.MOOD_TURB):
+ //   0 violent   a second, faster-drifting noise warps the cloud's shape (0.35 of a cell at full) and a fine one breaks its
+ //               edges; the whole field drifts up to 2.5x faster
+ //   1 ordered   the field is drawn toward parallel rows of cloud a lattice cell apart, gently waved (unnaturally regular cloud
+ //               streets; the first cut's cos x cos y grid read as squares: the owner, 2026-11-09)
+ //   2 glitched  two more sheets of cloud under the first, each on its own wind (one across the page's wind at 1.6x its speed
+ //               and 1.3x finer, one 120 degrees round at 0.7x and 0.8x coarser), the three unioned: clouds slide through each
+ //               other as if each felt a different wind (the owner, 2026-11-09; the first cut's cells drew a crosshatch of seams);
+ //               each sheet's wind is a RANDOM WALK (atmMoodWalk: six hashed headings held 30-90 s each in real time, repeating,
+ //               the position continuous), so a sheet turns abruptly every half minute or so, at the pace's speed (the owner,
+ //               2026-11-09, third cut); with uCloudZ.x the
+ //               sheets take the tint's complement and its hue-rotated twin where they show through (atmSheetW)
+ //   3 ripple    rings spread from an epicentre (uCloudY.yz) as from a stone dropped in water, in slow motion: a 1.2 km wave at
+ //               40 m/s, the cloud's shape pushed to and fro along the radius and its density rising and falling with the crest,
+ //               dying out over 8 km
+ // The shade (atmCloudShade) reads the same field, so a torn or glitched cloud and its shadow are still the same cloud
+ const MOODU=['uniform vec4 uCloudX;uniform vec4 uCloudY;uniform vec4 uCloudZ;uniform vec3 uCloudTint;uniform vec3 uCloudGlow;uniform vec4 uCloudGlowP;uniform vec4 uCloudGlowQ;uniform vec4 uCloudBeam;uniform vec4 uCloudBeamP;'];
+ /* uCloudX: dark, turbulence, glow, tintK; uCloudY: turbKind (0 violent, 1 ordered, 2 glitched, 3 ripple), the ripple's epicentre x, z (world), pace (the
+    mood's motions x this: the warp's drift, the sheets' walks, the rings' speed, the rows' slide; 1 the page's own wind); uCloudZ: sheetTint (0..1: the
+    glitched sheets in the tint's complement and its hue-rotated twin), 0, 0, 0;
+    uCloudTint and uCloudGlow display RGB; uCloudGlowP: the glow's locus x, z (world, on the cloud plane), its radius (m), its spread (1: the
+    whole sky lit alike); uCloudGlowQ: a second light x, z, radius, on (the orbs' pair); uCloudBeam: a SKY EVENT (the owner, 2026-11-09:
+    "a light ascending to the heavens in the distance or a brief distant flashing pillar of light"): x, z (world), kind (0 none, 1 a pillar,
+    2 an ascent), its brightness; uCloudBeamP: its top (m), its width (m), the ascending light's height now (m), the ground at its foot (m) */
+ const CLOUDF=()=>(A.skyMoodOn?[
+  'vec2 atmSheetW=vec2(0.0);',
+  'vec2 atmMoodWalk(float t,uint s){float L[6];float T=0.0;for(int i=0;i<6;i++){L[i]=30.0+60.0*atmSkyU(uvec3(uint(i),s,4u),151u);T+=L[i];}float c=floor(t/T),tc=t-c*T,st=0.0;vec2 o=vec2(0.0),D=vec2(0.0);',
+  ' for(int i=0;i<6;i++){float h=atmSkyU(uvec3(uint(i),s,3u),150u)*6.2831853;vec2 d=vec2(cos(h),sin(h));D+=d*L[i];o+=d*clamp(tc-st,0.0,L[i]);st+=L[i];}return o+D*c;}',
+  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;float tb=uCloudX.y;float kd=uCloudY.x;float pc=uCloudY.w;vec2 p=xz/uCloudH.z;atmSheetW=vec2(0.0);',
+  ' if(tb>0.0&&kd<0.5)w*=1.0+1.5*tb*pc;p+=w;',
+  ' float rp=0.0,ra=0.0;if(tb>0.0&&kd>2.5){vec2 dd=xz-uCloudY.yz;float r=length(dd);rp=(r-uTime*40.0*pc)*0.005236;ra=tb*exp(-r/8000.0);p+=dd/max(r,1.0)*(0.18*ra*sin(rp));}',
+  ' if(tb>0.0&&kd<0.5){vec3 q=vec3(p*1.9+w*1.6*pc,5.0);p+=tb*0.35*vec2(atmSkyNoise(q,120u),atmSkyNoise(q+vec3(31.0,17.0,0.0),121u));}',
+  ' float n=atmSkyFbm(vec3(p,0.0),oct,100u)*0.5+0.5;',
+  ' if(tb>0.0&&kd<0.5)n+=tb*0.2*atmSkyNoise(vec3(p*9.0+w*2.5*pc,9.0),122u);',
+  ' if(ra>0.0)n+=0.08*ra*cos(rp);',
+  ' if(tb>0.0&&kd>0.5&&kd<1.5){vec2 pl=p+w*(pc-1.0);float r=0.5+0.5*cos(pl.y*6.2831853+0.6*sin(pl.x*6.2831853));n=mix(n,0.25+0.75*r,tb*0.85);}',
+  ' if(tb>0.0&&kd>1.5&&kd<2.5){vec2 p0=xz/uCloudH.z;float ws=length(uWind)*uCloudH.w*pc;',
+  '  float n1=atmSkyFbm(vec3(p0*1.3+atmMoodWalk(uTime,1u)*(ws*1.6)+vec2(7.0,3.0),0.0),oct,100u)*0.5+0.5,n2=atmSkyFbm(vec3(p0*0.8+atmMoodWalk(uTime,2u)*(ws*0.7)+vec2(2.0,11.0),0.0),oct,100u)*0.5+0.5;',
+  '  atmSheetW=vec2(clamp((n1-0.05-n)*10.0,0.0,1.0),clamp((n2-0.05-max(n,n1-0.05))*10.0,0.0,1.0))*tb;n=mix(n,max(n,max(n1,n2)-0.05),tb);}',
+  ' return n;}']:[
+  'float atmCloudField(vec2 xz,int oct){vec2 w=uWind*uTime*uCloudH.w;return atmSkyFbm(vec3(xz/uCloudH.z+w,0.0),oct,100u)*0.5+0.5;}']).concat([
+  'float atmCloudCover(float n){return smoothstep(1.0-uCloud.x,1.0-uCloud.x+0.22,n);}'],A.wxOn?WXF:[]);
+ // THE WEATHER CELLS' COVERAGE MAP (W5, wx/89-atmos-wx-cells.js): compiled only on a page that lists that file (A.wxOn), so
+ // every other page's chunk is the text it was. uWxMap: n px RGBA over uWxBox.z m round uWxBox.xy (cover, dark,
+ // precipitation, fog: ATMOS.wxCoverMap); uWxBox.w 1 while the weather is live, else the map is off; uWxMean: what the sky
+ // takes beyond the map's edge. A cell clouds over the part of the sky the preset leaves free, and a storm's dark thickens it
+ const WXF=['uniform sampler2D uWxMap;uniform vec4 uWxBox;uniform vec4 uWxMean;',
+  'vec4 atmWx(vec2 xz){if(uWxBox.w<0.5)return vec4(0.0);vec2 uv=(xz-uWxBox.xy)/uWxBox.z+0.5;vec2 e=abs(uv-0.5);return mix(uWxMean,texture(uWxMap,uv),1.0-smoothstep(0.42,0.5,max(e.x,e.y)));}',
+  'float atmCloudCoverAt(float n,vec2 xz,out vec4 m){m=atmWx(xz);float c=clamp(uCloud.x+m.r*(1.0-uCloud.x),0.0,1.0);n+=0.15*m.g;return smoothstep(1.0-c,1.0-c+0.22,n);}'];
+ // the mood on a cloud's colour: dark pulls it to a storm grey (the lit side to 0.62 of its luminance, the shadow side to 0.22),
+ // tint keeps its luminance and takes the tint's hue, glow adds the page's colour from below at night (uNight), strongest where
+ // the cloud is thick (cov), near the glow's locus unless its spread is 1
+ const MOODC=[
+  'vec3 atmCloudMood(vec3 c,float sh,float cov,vec2 xz,vec2 sw){const vec3 LW=vec3(0.3,0.55,0.15);float dk=uCloudX.x;if(dk>0.0){float l=dot(c,LW);c=mix(c,vec3(l)*(0.22+0.40*sh),dk);}',
+  ' if(uCloudX.w>0.0){float l=dot(c,LW);vec3 T=uCloudTint;if(uCloudZ.x>0.0){T=mix(T,1.0-uCloudTint,sw.x*uCloudZ.x);T=mix(T,uCloudTint.gbr,sw.y*uCloudZ.x);}float lt=max(dot(T,LW),1e-3);c=mix(c,T*(l/lt),uCloudX.w);}',
+  ' if(uCloudX.z>0.0&&uNight>0.0){vec2 dp=xz-uCloudGlowP.xy;float rr=max(uCloudGlowP.z,1.0);float loc=mix(exp(-dot(dp,dp)/(rr*rr)),1.0,uCloudGlowP.w);',
+  '  vec2 dq=xz-uCloudGlowQ.xy;float rq=max(uCloudGlowQ.z,1.0);loc+=uCloudGlowQ.w*exp(-dot(dq,dq)/(rq*rq));c+=uCloudGlow*(uCloudX.z*uNight*loc*(0.15+0.35*cov));}',
+  ' return c;}',
+  // the sky event: a vertical pillar of light at (x, z) from the ground to its top, or a point of light climbing from the ground to
+  // the top with a faint trail under it; in the glow's colour, hazed with distance; drawn under the clouds, so the cloud base covers it
+  'vec3 atmSkyBeam(vec3 d){if(uCloudBeam.z<0.5||uCloudBeam.w<=0.0)return vec3(0.0);vec2 rel=uCloudBeam.xy-uCamPos.xz;float D=max(length(rel),50.0);float hl=length(d.xz);if(hl<1e-4)return vec3(0.0);',
+  ' float az=acos(clamp(dot(d.xz/hl,rel/D),-1.0,1.0)),aw=max(uCloudBeamP.y/D,uPixAng*1.5);float g=exp(-az*az/(aw*aw));if(g<1e-3)return vec3(0.0);',
+  ' float el=atan(d.y,hl),fe=atan((uCloudBeamP.w-uCamPos.y)/D),te=atan((uCloudBeamP.x-uCamPos.y)/D),v;',
+  ' if(uCloudBeam.z<1.5)v=smoothstep(fe,fe+0.004,el)*(1.0-smoothstep(te-0.5*(te-fe),te,el));',
+  ' else{float ea=atan((uCloudBeamP.z-uCamPos.y)/D),q=(el-ea)/(aw*2.5);v=3.0*exp(-q*q)+0.2*smoothstep(fe,fe+0.004,el)*(1.0-smoothstep(ea-0.03,ea,el));}',
+  ' return uCloudGlow*(uCloudBeam.w*g*v*exp(-D/25000.0));}'];
+ A.skyMoodOn=false;
+ // does a preset ask for the mood's lines? any of the four set, or clouds.mood true (a page that will drive them later: ATMOS.cloudMood)
+ A.skyMoodWanted=P=>{const C=P&&P.clouds;return !!(C&&(C.mood||C.dark>0||C.turbulence>0||C.glow>0||C.tint));};
  // the shade of the cloud deck on a world point P lit along L (1 in the open, down to 1-0.72 under thick cumulus)
- const SHADE=[
-  'float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||uCloud.x<=0.0||uCloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*(uCloudH.x-P.y);',
-  ' return 1.0-0.72*uCloud.y*atmCloudCover(atmCloudField(Q,3));}'];
+ // with the cells (A.wxOn) the shade reads the coverage map at the same point the sky does, and a storm's shadow is deeper
+ // with the volumetric clouds (A.volOn, sky/89-atmos-m-volclouds.js) the shadow ray meets the field at the layer's middle
+ // (uVolMidH over the base), where the volume's footprint is, so a cloud's shadow lies under the cloud and not beside it
+ const SHADE=()=>{const H=A.volOn?'(uCloudH.x+uVolMidH-P.y)':'(uCloudH.x-P.y)';return A.wxOn?[
+  'float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||(uCloud.x<=0.0&&uWxBox.w<0.5)||uCloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*'+H+';',
+  ' vec4 m;float cv=atmCloudCoverAt(atmCloudField(Q,3),Q,m);return 1.0-min(0.92,0.72*uCloud.y*(1.0+0.28*m.g))*cv;}']:[
+  'float atmCloudShade(vec3 P,vec3 L){if(L.y<0.02||uCloud.x<=0.0||uCloud.y<=0.0)return 1.0;vec2 Q=P.xz+L.xz/L.y*'+H+';',
+  ' return 1.0-0.72*uCloud.y*atmCloudCover(atmCloudField(Q,3));}'];};
  // the chunk any ground or plant material includes (ATMOS.cloudShade): its own uniforms, the noise, the field, the shade
  A.cloudShadeGLSL=function(){return['uniform highp sampler3D uNoise;','uniform vec4 uCloud;','uniform vec4 uCloudH;','uniform vec2 uWind;',
-  'uniform float uTime;','uniform float uWet;'].concat(NOISE,CLOUDF,SHADE).join('\n');};
+  'uniform float uTime;','uniform float uWet;'].concat(A.volOn?['uniform float uVolMidH;']:[],A.skyMoodOn?MOODU:[],NOISE,CLOUDF(),SHADE()).join('\n');};
+ // the noise and the cloud field alone, for the volumetric clouds' passes (sky/89-atmos-m-volclouds.js): the same text the sky
+ // and the shade compile, so the volume's footprint is the field the ground's shadows read
+ A.skyFieldGLSL=function(){return (A.skyMoodOn?MOODU:[]).concat(NOISE,CLOUDF()).join('\n');};
+ // the mood on a cloud's colour alone (atmCloudMood), for a pass that draws clouds outside the sky's chunk: the volumes' composite
+ A.skyMoodGLSL=function(){return MOODC.join('\n');};
+ A.skyNoiseGLSL=function(){return NOISE.join('\n');};
  A.skyGLSL=function(){const f=A.glf,S=A.SKY,G=S.giant,NR=A.SKY_MAX_RIDGES,NS=S.stars.length,NL=A.SKY_MAX_LANDMARKS;
   const rg=Math.sin(G.diaDeg/2*Math.PI/180),cosG=Math.cos(G.diaDeg/2*Math.PI/180);
   return[
@@ -52,7 +133,8 @@
   'uniform vec3 uMoonDir[6],uMoonC[6],uMoonL[6],uMoonV[6];uniform float uMoonR[6],uMoonK[6],uMoonF[6],uMoonLump[6],uMoonT;uniform vec3 uRingT;',   // uMoonT: world hours since game start   // uMoonF: 1 when nearer than the giant   // uMoonL: each moon's sun (its phase); uMoonK: its kind
   'uniform vec4 uStar['+NS+'];uniform vec3 uStarC['+NS+'];uniform vec4 uPN;',   // uPN: the planetary nebula (inertial direction, radius in radians)
   'uniform vec3 uGDeep,uGMid,uGPale,uGCloud,uGPlank,uGHaze,uGTeal,uGRim,uGNight,uGRing;',
-  'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform vec3 uCamPos;',   // uCamPos: the page camera's world position (the clouds are anchored to the world)   // cover, cumulus, cirrus, bank; heights, scale, drift
+  'uniform vec4 uCloud;uniform vec4 uCloudH;uniform vec2 uWind;uniform vec3 uCamPos;'+(A.volOn?'uniform float uVolOn;':''),   // uCamPos: the page camera's world position (the clouds are anchored to the world)   // cover, cumulus, cirrus, bank; heights, scale, drift
+  ].concat(A.skyMoodOn?MOODU:[],[
   'uniform vec3 uNightK;',                               // stars, nebula, galaxy gains
   'uniform sampler2D uRidgeTex;uniform int uRidgeN;uniform vec4 uRidge['+NR+'];uniform vec3 uRidgeRock['+NR+'],uRidgeForest['+NR+'],uRidgeSnow['+NR+'];',
   // the broken station (ATMOS.skyStation): its direction, torus axis and motion; uStaK: ring radius (radians), lit, distance (km), over the horizon
@@ -61,7 +143,8 @@
   'uniform vec4 uLm['+NL*5+'];uniform float uLmK['+NL+'];uniform int uLmN;',   // the landmarks (ATMOS.skyLandmarks): five vec4 each, their kinds, how many   // uRealT: wall-clock seconds (the meteors keep real time whatever the game clock does); uMeteor: their rate, 0 none, 1 the usual night
   // ---- the hash and gradient noise (lowbias32; bit-exact across engines)
   ...NOISE,
-  ...CLOUDF,
+  ...CLOUDF(),
+  ...(A.skyMoodOn?MOODC:[]),
   // ---- 1 deep sky, on the inertial sphere e
   // a star field on a cube-face grid of n cells a face: one star at most per cell, kept off the cell's edges
   'vec3 atmSkyField(vec3 e,float n,float dens,uint s){vec3 a=abs(e);float m=max(a.x,max(a.y,a.z));vec2 uv;uint fc;',
@@ -272,19 +355,19 @@
   ' if(k>1.5&&k<2.5)col+=vec3(0.9,0.85,0.7)*pow(1.0-max(dot(N,-d),0.0),3.0)*0.25*smoothstep(-0.3,0.2,ndl);',
   ' return vec4(col,1.0-smoothstep(r-uPixAng,r,ang));}',
   // ---- 7 clouds: (rgb, alpha)
-  'vec4 atmSkyClouds(vec3 d,vec3 air){if(d.y<0.004||uCloud.x<=0.0)return vec4(0.0);',
+  'vec4 atmSkyClouds(vec3 d,vec3 air){if(d.y<0.004||'+(A.wxOn?'(uCloud.x<=0.0&&uWxBox.w<0.5)':'uCloud.x<=0.0')+')return vec4(0.0);',
   ' vec2 w=uWind*uTime*uCloudH.w;vec3 amb=mix(uZen,uHor,0.55);float cs=max(dot(d,uSunDir),0.0);',
   ' vec3 sunL=uSunC*uSunI*(1.0-uEclipse);vec2 s2=normalize(uSunDir.xz+1e-5);',
   ' vec4 o=vec4(0.0);',
   ' if(uCloud.z>0.0&&(uCloudH.y-uCamPos.y)/d.y>0.0){vec2 p=(uCamPos.xz+d.xz/d.y*(uCloudH.y-uCamPos.y))/uCloudH.z;vec3 q=vec3(p.x*0.35+w.x*0.5,p.y*1.6+w.y*0.5,3.0);',
   '  float n=atmSkyFbm(q,4,90u)*0.5+0.5;float a=smoothstep(0.58,0.86,n)*uCloud.z*0.5*smoothstep(0.004,0.08,d.y)*exp(-uCloudH.y/max(d.y,0.004)/160000.0);',
-  '  vec3 c=sunL*0.42*(0.75+0.5*pow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;o=vec4(c,a);}',
-  ' float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0){vec2 xz=uCamPos.xz+d.xz/d.y*hc;',
-  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;',
-  '  float cov=atmCloudCover(n);',
+  '  vec3 c=sunL*0.42*(0.75+0.5*pow(cs,6.0))+amb*0.85+uShineC*uShineI*0.25;'+(A.skyMoodOn?'c=atmCloudMood(c,1.0,0.0,p*uCloudH.z,vec2(0.0));':'')+'o=vec4(c,a);}',
+  ' float hc=uCloudH.x-uCamPos.y;if(uCloud.y>0.0&&hc/d.y>0.0'+(A.volOn?'&&uVolOn<0.5':'')+'){vec2 xz=uCamPos.xz+d.xz/d.y*hc;',
+  '  float bank=uCloud.w*exp(-d.y*9.0);float n=atmCloudField(xz,5)+bank*0.35;'+(A.skyMoodOn?'vec2 sw=atmSheetW;':''),
+  A.wxOn?'  vec4 wm;float cov=atmCloudCoverAt(n,xz,wm);':'  float cov=atmCloudCover(n);',
   '  float n2=atmCloudField(xz+s2*0.18*uCloudH.z,5)+bank*0.35;float sh=clamp(0.62+(n-n2)*3.2,0.0,1.0);',
   '  float dist=abs(hc/max(abs(d.y),0.004));float a=cov*smoothstep(0.004,0.05,d.y)*exp(-dist/60000.0);',
-  '  vec3 c=sunL*0.40*(0.35+0.65*sh)*(1.0+0.6*pow(cs,10.0)*(1.0-cov))+amb*(0.75-0.25*cov)+uShineC*uShineI*0.35*sh;',
+  '  vec3 c=sunL*0.40*(0.35+0.65*sh)*(1.0+0.6*pow(cs,10.0)*(1.0-cov))+amb*(0.75-0.25*cov)+uShineC*uShineI*0.35*sh;'+(A.skyMoodOn?'c=atmCloudMood(c,sh,cov,xz,sw);':'')+(A.wxOn?'c*=mix(1.0,0.26+0.24*sh,smoothstep(0.0,0.7,wm.g));':''),   /* a storm cell's base: dark, its lit tops less so */
   '  c=mix(c,air,1.0-exp(-dist/45000.0));o.rgb=mix(o.rgb,c,a);o.a=o.a+a*(1.0-o.a);}',
   ' return o;}',
   // ---- 8 the ridges: elevation (degrees) of layer i at azimuth fraction u, interpolated between two texels
@@ -410,10 +493,10 @@
   ' col+=deb*T*(1.0-0.9*uHazeFloor);',
   ' col+=atmSkyMeteors(d)*T*clamp(1.0-smoothstep(0.03,0.30,skyL),0.0,1.0);',
   ' vec4 lm=uLmN>0?atmSkyLandmarks(d,air,false):vec4(0.0);col=mix(col,lm.rgb,lm.a);',
-  ' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
+  (A.skyMoodOn?' col+=atmSkyBeam(d);':'')+' vec4 cl=atmSkyClouds(d,air);col=mix(col,cl.rgb,cl.a);',
   ' vec4 rd=atmSkyRidges(d,air);col=mix(col,rd.rgb,rd.a);',
   ' vec4 lo=uLmN>0?atmSkyLandmarks(d,air,true):vec4(0.0);col=mix(col,lo.rgb,lo.a);',
   ' if(d.y<0.0)col=mix(col,uFogC,(1.0-smoothstep(-0.12,0.0,d.y))*(1.0-rd.a)*(1.0-lm.a)*(1.0-lo.a));',
-  ' return col;}'].join('\n');};
+  ' return col;}']).join('\n');};
  A.onInit.push(()=>{if(A.T.ShaderChunk)A.T.ShaderChunk.atmos_sky=A.skyGLSL();});
 })();

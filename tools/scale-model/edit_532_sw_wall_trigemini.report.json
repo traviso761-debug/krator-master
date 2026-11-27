@@ -1,0 +1,106 @@
+{
+ "edit": "5.1 edit 32: the SW outer wall, its vales, the Trigemini Pass",
+ "date": "2026-11-25",
+ "trigemini": {
+  "tarn_cells": 37,
+  "tarn_level_m": 5680.0,
+  "arms": {
+   "NE": {
+    "col_m": 6352,
+    "col_px": [
+     340.0,
+     1087.8
+    ],
+    "km": 234,
+    "end_m": 4867
+   },
+   "S": {
+    "col_m": 6236,
+    "col_px": [
+     280.0,
+     1170.8
+    ],
+    "km": 204,
+    "end_m": 4635
+   },
+   "W": {
+    "col_m": 6476,
+    "col_px": [
+     258.3,
+     1116.0
+    ],
+    "km": 223,
+    "end_m": 5131
+   }
+  }
+ },
+ "vales": [
+  {
+   "head": [
+    410.0,
+    1213.0
+   ],
+   "flank": [
+    386,
+    1239
+   ],
+   "flank_m": 5834,
+   "head_m": 6100.0,
+   "crest_m_was": 9831
+  },
+  {
+   "head": [
+    568.0,
+    1292.0
+   ],
+   "flank": [
+    584,
+    1252
+   ],
+   "flank_m": 5437,
+   "head_m": 5900.0,
+   "crest_m_was": 10123
+  },
+  {
+   "head": [
+    628.0,
+    1362.0
+   ],
+   "flank": [
+    655,
+    1347
+   ],
+   "flank_m": 5899,
+   "head_m": 6200.0,
+   "crest_m_was": 8687
+  }
+ ],
+ "rivers_kept_downhill": [],
+ "land_moved_cells": 4391,
+ "lowered_m_max": 7666,
+ "raised_cells": 0,
+ "reclimate": {
+  "cells": 3526,
+  "class_changed": 2218,
+  "rain_mean_before_mm": 260.0,
+  "rain_mean_after_mm": 495.0,
+  "classes_now": {
+   "BSk": 18,
+   "Dsc": 1,
+   "Dfc": 137,
+   "ET": 829,
+   "EF": 1312,
+   "HT": 789,
+   "HF": 440
+  },
+  "airless_cells_given_air": 3318,
+  "class_O_let_go": 1845
+ },
+ "floor_classes": {
+  "BSk": 13,
+  "Dfc": 77,
+  "ET": 503,
+  "EF": 684,
+  "HT": 241
+ }
+}

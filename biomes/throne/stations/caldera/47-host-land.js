@@ -1,23 +1,46 @@
 // ================================================================= HOST — the land, the fields, the binding (the caldera rim)
 // The rim (its crest ragged, its peaks), the plateau falling gently away behind it, the wall terraced down to the floor, the
 // floor's cones, the lake's pit. The fields the kit reads (cached), BIO.init.
-const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:16,baseH:(x,z)=>CAL.rim,flows:[],old:THRONE.OLD});
+var CAL_FLOWS=null;   /* the lake's overflow on the floor (below, once the ground it runs over is defined): terrainH0u adds it */
 const ageLabel=a=>a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 _mark('stage');
 const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
 function coneAt(x,z){let h=0,k=0;for(const C of CONES){const d=Math.hypot(x-C.x,z-C.z)/C.r;if(d>1.4)continue;h=Math.max(h,C.h*Math.pow(smooth(1,.4,d),.9)-C.h*.5*smooth(.42,.15,d));k=Math.max(k,smooth(1.2,.85,d));}return{h,k};}
 // the wall's profile from the crest (t 0) to its foot (t 1): terraced by its old collapses
 const wallP=t=>clamp(t+.085*Math.sin(t*TAU*2.5),0,1);
+// THE RHEOLITHS' BREACH (89y; src/44r): the throat in the lake's hot ring on the side toward the rim, at the kit's own size, cut into the ground last. ?rheo=0 none
+const BREACH=new URLSearchParams(location.search).get('rheo')==='0'?null:(function(){const ul=Math.hypot(LAKE.x,LAKE.z)||1,R1=LAKE.r*1.22;return{x:LAKE.x-LAKE.x/ul*R1,z:LAKE.z-LAKE.z/ul*R1,r:26,throatR:7.4,floor:-21,rim:3.6};})();
+// THE WALL'S BEDS (core/terrain KSTRATA, the tibasalt recipe; PLAN.md "the row's terrain", 2026-11-24): the shield's thin flows stacked in the
+// 450 m wall, glass-bead horizons between them, laid open by the collapse. The ledge pass (S.ledge) stands the hard flows steep and eases the soft
+// beds into benches where the wall shows rock (|grad h| over .45); 84 draws each bed's colour on the steep (STRATA.colorAt by the stratigraphic
+// height, one band texture). Fresh beds: the recipe's palagonite line is at 8,500 m, far below. ?strata=0 the wall as before
+const STRATA=new URLSearchParams(location.search).get('strata')==='0'||typeof KSTRATA==='undefined'?null:
+ KSTRATA.create({seed:KRAND.hash(571,514,0x57A7),formations:[{recipe:'tibasalt'}],range:[CAL.floor-300,CAL.rim+300],dip:[1,0,0],warp:[6,1.6],regolith:.35,dust:0x8a8580});
+const STRATA_LEDGE={k:.55,bench:2};
+function wallH(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a);if(r>=cr)return CAL.rim+peakH(a);const t=clamp((cr-r)/(cr-CAL.foot),0,1),p=Math.pow(wallP(t),.85);
+ return mix(CAL.rim+peakH(a),CAL.floor,p)+(1-p)*p*60*(ridged(a*9,r*.02,116)-.5)+3*(fbm(x*.03,z*.03,117,2)-.5);}
 const _tm={x:NaN,z:NaN,h:0};
 function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,z);_tm.x=x;_tm.z=z;_tm.h=h;return h;}
-function terrainH0(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n=fbm(x*.002,z*.002,113,3)-.5;let h;
+function terrainH0(x,z){return THRONE_BREACH(BREACH,terrainH0u(x,z),x,z);}
+function terrainH0u(x,z){const r=calR(x,z),a=calA(x,z),cr=crestR(a),pk=peakH(a),n=fbm(x*.002,z*.002,113,3)-.5;let h;
  if(r>=cr){const e=r-cr;h=CAL.rim+pk*Math.exp(-Math.pow(e/150,2))+30*ridged(x*.008,z*.008,114)*Math.exp(-Math.pow(e/260,2))-e*.07+22*n+5*(fbm(x*.02,z*.02,115,2)-.5);}
- else{const t=clamp((cr-r)/(cr-CAL.foot),0,1),p=Math.pow(wallP(t),.85);
-  h=mix(CAL.rim+pk,CAL.floor,p)+(1-p)*p*60*(ridged(a*9,r*.02,116)-.5)+3*(fbm(x*.03,z*.03,117,2)-.5);
+ else{h=wallH(x,z);
+  /* the beds' ledges on the wall itself (not the floor's cones): the slope by differences of the wall alone */
+  if(STRATA&&r>CAL.foot-20){const e=2,gx=(wallH(x+e,z)-wallH(x-e,z))/(2*e),gz=(wallH(x,z+e)-wallH(x,z-e))/(2*e);h=STRATA.ledge(x,z,h,Math.sqrt(gx*gx+gz*gz),STRATA_LEDGE);}
   if(r<CAL.foot+20){h+=coneAt(x,z).h+5*(fbm(x*.01,z*.01,118,2)-.5)*smooth(CAL.foot,CAL.foot-200,r);}}
+ if(CAL_FLOWS)h+=CAL_FLOWS.thickAt(x,z);
  // the lake's pit: steep walls down to the lava, a spatter lip round it
  const dl=LAKE.de(x,z);if(dl<LAKE.r*1.35){h+=3.5*Math.exp(-Math.pow((dl-LAKE.r*1.12)/(LAKE.r*.06),2));h=mix(h,LAKE.level-5,smooth(LAKE.r*1.07,LAKE.r*.99,dl));}
  return h;}
+if(BREACH){let s=0;for(let i=0;i<16;i++){const a=i/16*TAU;s+=terrainH0u(BREACH.x+Math.cos(a)*BREACH.throatR,BREACH.z+Math.sin(a)*BREACH.throatR);}BREACH.y=s/16;}   /* the rim's height (the kit's pitY) */
+// THE LAKE'S OVERFLOW (core/terrain KLAVA.bake through shared/46k; PLAN.md "the row's terrain", 2026-11-24): eleven years ago the lake rose
+// and spilled over its lip on the side away from the rim's breach, ~1.5 Mm3 frozen in lobes on the floor round the cones; the pit itself
+// is walled off for the bake (the lava cannot run back into it). ?klava=0 none (the floor as before)
+const OVERFLOW=(function(){const ul=Math.hypot(LAKE.x,LAKE.z)||1,R1=LAKE.r*1.24;return{x:LAKE.x+LAKE.x/ul*R1,z:LAKE.z+LAKE.z/ul*R1};})();
+const FLOWS=THRONE_KLAVA_FLOWS({R:TERR.R+260,cell:16,old:THRONE.OLD,baseH:(x,z)=>LAKE.de(x,z)<LAKE.r*1.16?CAL.rim:terrainH0u(x,z),
+ flows:[{key:'overflow',name:'The lake\'s overflow (eleven years old)',x:OVERFLOW.x,z:OVERFLOW.z,age:11,len:0,w:[0,0],th:[0,0],seed:9701,
+  klava:{cell:10,pad:700,vents:[{x:OVERFLOW.x,z:OVERFLOW.z,r:20,Q:20,duration:75000,T:1420}]}}]});
+CAL_FLOWS=FLOWS;window._klava=FLOWS.klava;
 function waterH(x,z){return -1e9;}   // no water up here: the lake is lava (86 draws it); the snow is solid
 
 // ---------------------------------------------------------------- the fields (cached below; these are the definitions)

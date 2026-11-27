@@ -3,20 +3,20 @@
   "name": "site Port Goto (ski7uk8fjc)",
   "map_px": [
    [
-    910.5,
-    690.5
+    912.5,
+    695.5
    ],
    [
-    925.5,
-    690.5
+    927.5,
+    695.5
    ],
    [
-    925.5,
-    705.5
+    927.5,
+    710.5
    ],
    [
-    910.5,
-    705.5
+    912.5,
+    710.5
    ]
   ]
  },
@@ -189,7 +189,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (2/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (2/19)",
   "map_px": [
    [
     1002.232,
@@ -210,7 +210,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (3/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (3/19)",
   "map_px": [
    [
     994.0,
@@ -231,7 +231,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (4/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (4/19)",
   "map_px": [
    [
     988.232,
@@ -252,7 +252,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (5/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (5/19)",
   "map_px": [
    [
     988.0,
@@ -273,7 +273,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (6/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (6/19)",
   "map_px": [
    [
     971.768,
@@ -294,7 +294,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (7/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (7/19)",
   "map_px": [
    [
     968.0,
@@ -315,7 +315,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (8/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (8/19)",
   "map_px": [
    [
     936.232,
@@ -336,18 +336,18 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (9/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (9/19)",
   "map_px": [
    [
     936.0,
     695.5
    ],
    [
-    918.0,
+    920.0,
     695.5
    ],
    [
-    918.0,
+    920.0,
     700.5
    ],
    [
@@ -357,7 +357,28 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (10/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (10/19)",
+  "map_px": [
+   [
+    917.5,
+    698.0
+   ],
+   [
+    917.5,
+    703.0
+   ],
+   [
+    922.5,
+    703.0
+   ],
+   [
+    922.5,
+    698.0
+   ]
+  ]
+ },
+ {
+  "name": "corridor Pinnacle Rock - Port Goto (11/19)",
   "map_px": [
    [
     1006.5,
@@ -394,7 +415,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (11/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (12/19)",
   "map_px": [
    [
     996.5,
@@ -431,7 +452,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (12/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (13/19)",
   "map_px": [
    [
     992.5,
@@ -468,7 +489,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (13/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (14/19)",
   "map_px": [
    [
     990.5,
@@ -505,7 +526,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (14/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (15/19)",
   "map_px": [
    [
     972.5,
@@ -542,7 +563,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (15/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (16/19)",
   "map_px": [
    [
     970.5,
@@ -579,7 +600,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (16/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (17/19)",
   "map_px": [
    [
     940.5,
@@ -616,7 +637,7 @@
   ]
  },
  {
-  "name": "corridor Pinnacle Rock - Port Goto (17/17)",
+  "name": "corridor Pinnacle Rock - Port Goto (18/19)",
   "map_px": [
    [
     938.5,
@@ -648,6 +669,43 @@
    ],
    [
     938.5,
+    696.964
+   ]
+  ]
+ },
+ {
+  "name": "corridor Pinnacle Rock - Port Goto (19/19)",
+  "map_px": [
+   [
+    922.5,
+    699.036
+   ],
+   [
+    921.036,
+    700.5
+   ],
+   [
+    918.964,
+    700.5
+   ],
+   [
+    917.5,
+    699.036
+   ],
+   [
+    917.5,
+    696.964
+   ],
+   [
+    918.964,
+    695.5
+   ],
+   [
+    921.036,
+    695.5
+   ],
+   [
+    922.5,
     696.964
    ]
   ]

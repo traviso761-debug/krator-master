@@ -1,5 +1,8 @@
 // ================================================================= HOST — the orange belt's views and checks (station 3)
 // 99-host-take.js reads STATION_VIEWS and STATION_CHECKS / STATION_NEGATIVES (each check with a broken input that must fail).
+/* the way a split stone's break faces, [x, z] in the plan (its instance's local +x): the stone at p (itemPositions' [x, y, z]) */
+function itemBreak(p){const m=new THREE.Matrix4();let f=[1,0];BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:splitstone')return;
+  for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);const e=m.elements;if(Math.abs(e[12]-p[0])<1e-3&&Math.abs(e[14]-p[2])<1e-3){const l=Math.hypot(e[0],e[2])||1;f=[e[0]/l,e[2]/l];}}});return f;}
 function STATION_VIEWS(VIEWS){const G=(x,z)=>terrainH(x,z),add=(k,v,mode)=>{if(v)VIEWS[k]={v,mode:mode||'day'};},P=(d,a)=>xzDA(d,a);
  // down the slope from above the line: the black flows going ochre, the cliff's lip, the ridges and the ice below
  {const c=P(-2900,-300),t=P(1800,200);add('The dry-cold line',[c[0],G(c[0],c[1])+60,c[1],t[0],G(t[0],t[1]),t[1]]);}
@@ -15,7 +18,8 @@ function STATION_VIEWS(VIEWS){const G=(x,z)=>terrainH(x,z),add=(k,v,mode)=>{if(v
   const o=P(T.d0+900,T.a-250),q=P(T.d0+1500,T.a);add('On the buried ice',[o[0],G(o[0],o[1])+3,o[1],q[0],G(q[0],q[1]),q[1]]);}
  // a split stone and its endolith band (the nearest to the cliff's foot)
  {const S=itemPositions('splitstone',1);if(S.length){const c0=P(700,0);let b=S[0],bd=1e18;S.forEach(p=>{const d=(p[0]-c0[0])**2+(p[2]-c0[1])**2;if(d<bd){bd=d;b=p;}});
-   add('The endolith band',[b[0]+2.2,b[1]+1.4,b[2]+1.6,b[0],b[1],b[2]]);}}
+   /* facing the break (the stone's local +x, from its instance matrix): the view used to stand at a fixed offset, often behind the stone */
+   const f=itemBreak(b);add('The endolith band',[b[0]+f[0]*2.4+f[1]*.8,b[1]+1.3,b[2]+f[1]*2.4-f[0]*.8,b[0],b[1],b[2]]);}}
  // overview high over the belt; dawn on the cliff; night
  {const c=P(-3800,-3600),t=P(1200,500);add('Overview',[c[0],G(c[0],c[1])+1600,c[1],t[0],OB.y0-500,t[1]]);}
  {const c=P(1100,600),t=P(500,300);add('Dawn, the cliff',[c[0],G(c[0],c[1])+12,c[1],t[0],G(t[0],t[1])+40,t[1]],'dawn');}
@@ -34,7 +38,13 @@ const OCHK={
  ridges(R){const ok=R.n>5&&R.sharp>=R.n*.7&&R.deep>=R.n*.7;return{ok,detail:R.n+' crests sampled: '+R.sharp+' sharp, '+R.deep+' over a gully 20 m+ deep'};},
  // the ice: both tongues on the map, under rubble (ice shows on under half of each) and standing over the ground beside it
  ice(I){const ok=I.length===2&&I.every(t=>t.n>30&&t.bare<.5&&t.over>8);return{ok,detail:I.map(t=>t.n+' samples, '+(t.bare*100).toFixed(0)+'% bare ice, '+t.over.toFixed(1)+' m over the ground beside').join('; ')};},
- air(p){const ok=Math.abs(p-.56)<.03;return{ok,detail:p.toFixed(3)+' atm at the site (map 5.1: 0.56)'};}};
+ air(p){const ok=Math.abs(p-.56)<.03;return{ok,detail:p.toFixed(3)+' atm at the site (map 5.1: 0.56)'};},
+ // the endolith band lies on its stone's break (2026-11-15: it drew as a green box stuck on the stone): each band put with its split stone's own
+ // matrix, the band's geometry within 2 cm proud of the break's plane (local x 0) and inside the break's outline (the ring cut from it)
+ band(B,S,g){const k=e=>e.map(v=>v.toFixed(3)).join(','),set=new Set(S.map(k)),bad=B.filter(e=>!set.has(k(e))).length;
+  return{ok:B.length>10&&!bad&&g.lo>=0&&g.hi<=.02,detail:B.length+' bands, '+bad+' off their split stone; the band '+g.lo.toFixed(3)+' to '+g.hi.toFixed(3)+' proud of the break'};}};
+const itemMats=name=>{const out=[],m=new THREE.Matrix4();BIO.baked.forEach(o=>{if(!o.isInstancedMesh||o.name!=='biome:'+name)return;for(let i=0;i<o.count;i++){o.getMatrixAt(i,m);out.push(Array.from(m.elements));}});return out;};
+const bandX=()=>{let lo=1e9,hi=-1e9;const o=BIO.baked.find(o=>o.name==='biome:endolith');if(o){const p=o.geometry.attributes.position;for(let i=0;i<p.count;i++){lo=Math.min(lo,p.getX(i));hi=Math.max(hi,p.getX(i));}}return{lo,hi};};
 const presAt=y=>ATMOS.airPressureAt(SKY.preset||{air:{pressure:1.6,thin:{y0:0,scale:8000}}},y);
 const lineSamples=()=>{const S=[];for(let k=0;k<1600;k++){const x=TERR.X0+200+(k*613)%(TERR.R*2-400),z=TERR.Z0+200+(k*389)%(TERR.R*2-400);
  S.push({y:terrainH(x,z),p:FIELD.palag(x,z),ice:FIELD.ice(x,z)>.05||iceAt(x,z,{}).k>0});}return S;};
@@ -54,6 +64,7 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  add('the ridges: knife-edged, deep gullies',OCHK.ridges(ridgeSamples()));
  add('the debris-covered ice: two tongues under rubble',OCHK.ice(iceSamples(FIELD.ice)));
  add('the air at 8.3 km',OCHK.air(presAt(OB.y0)));
+ add('the endolith band on each split stone\'s break',OCHK.band(itemMats('endolith'),itemMats('splitstone'),bandX()));
  return R;}
 function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,detail:r.detail});
  add('palagonite over the line too',OCHK.line(lineSamples().map(q=>Object.assign({},q,{p:.8}))));
@@ -62,4 +73,5 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('the ridges smoothed away',OCHK.ridges({n:20,sharp:2,deep:1}));
  add('bare ice (no debris cover)',OCHK.ice(iceSamples(()=>1)));
  add('the summit\'s air on the belt',OCHK.air(presAt(25000)));
+ add('the band as it was (a box off the break, half the stone\'s height)',OCHK.band(itemMats('endolith').map(e=>{const q=e.slice();q[4]*=.5;q[5]*=.5;q[6]*=.5;q[12]+=q[0]*.05;q[14]+=q[2]*.05;return q;}),itemMats('splitstone'),{lo:.04,hi:.06}));
  return R;}

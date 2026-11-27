@@ -281,7 +281,44 @@
  "card.sword": "centre",
  "card.palm": "bottom",
  "card.reef": "bottom",
- "card.spruce": "top",
+ "card.spruce": {
+  "base": "top",
+  "stems": [
+   {
+    "plant": 0,
+    "stem": [
+     0.024,
+     0.029
+    ],
+    "tip": [
+     0.293,
+     0.313
+    ]
+   },
+   {
+    "plant": 4,
+    "stem": [
+     0.51,
+     0.344
+    ],
+    "tip": [
+     0.508,
+     0.645
+    ]
+   },
+   {
+    "plant": 8,
+    "stem": [
+     0.967,
+     0.656
+    ],
+    "tip": [
+     0.718,
+     0.952
+    ]
+   }
+  ]
+ },
  "card.pods": "top",
  "card.beads.bell": "top",
  "card.moss.carnivorous": "top",

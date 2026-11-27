@@ -1,0 +1,41 @@
+{
+ "targets": {
+  "works": "xanadu-works.html"
+ },
+ "external": [
+  "settlements/xanadu-works/gen/69w-works-core.js",
+  "settlements/xanadu-works/gen/69w2-tungang-bundle.js",
+  "core/terrain/37c-core-rubble.js",
+  "kits/xanadu/src/80f-xa-fort-data.js",
+  "kits/xanadu/src/80g-xa-fort.js"
+ ],
+ "scoped": [
+  "69w-works-core.js",
+  "69w2-tungang-bundle.js",
+  "37c-core-rubble.js"
+ ],
+ "files": {
+  "works": [
+   [
+    "core/drawn",
+    [
+     "10-core-drawn.js"
+    ]
+   ]
+  ]
+ },
+ "deterministic": [
+  "69w-works-core.js",
+  "69w2-tungang-bundle.js",
+  "37c-core-rubble.js",
+  "88d-xa-lakecraft.js",
+  "89zw-works-site.js",
+  "90w-works-world.js",
+  "90x-works-build.js",
+  "10-core-drawn.js",
+  "80f-xa-fort-data.js"
+ ],
+ "interiors": [],
+ "furniture": [],
+ "interiorSets": []
+}

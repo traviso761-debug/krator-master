@@ -24,6 +24,9 @@ the inland tower karst behind the NW bay, forked from biomes/guilin (Earth's Sou
 The core and the kit never reference a host global except through BIO.host (BIOME-API.md); build.py greps for the
 forbidden names so a kit fragment cannot quietly grow a dependency on one world's engine.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -143,7 +146,7 @@ CORE_WATER=['20-core-water.js','21-core-water-shore.js','22-core-water-flow.js',
 for f in CORE_WATER:
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','water',f))
 # the final rebuild's water ext: the audit (57), the reflections switch (58: off at load), by path (tools/fragment_needs.json orders them)
-for f in ['57-core-water-audit.js','58-core-water-mirror.js']: PATH.setdefault(f,J('core','water','ext',f))
+for f in ['56-core-water-breakup.js','57-core-water-audit.js','58-core-water-mirror.js']: PATH.setdefault(f,J('core','water','ext',f))
 # core/atmos: the core, presets, the weather (4) and its selector (9), the export, the waves, the skylight; ATMOS.bindHost,
 # ATMOS.bindWeather and the shared sky's host (core/atmos/host) and the shared sky (core/atmos/sky, SKY-PLAN.md step S1), as
 # biomes/swbay and biomes/nwouterwall take them: src/89a-host-atmos.js binds, src/89s-host-sky.js draws the sky and the weather

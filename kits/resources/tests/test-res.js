@@ -138,12 +138,41 @@ const LG = RES_LEDGER.build();
   ok(pols.length >= 20, 'ledger: ' + pols.length + ' polities');
   ok(pols.every(p => LG.polities[p].cells > 0), 'every polity has land');
   ok(Object.values(LG.polities).some(R => R.imports.length) && Object.values(LG.polities).some(R => R.exports.length), 'imports and exports found');
+  ['city', 'town', 'village', 'fort', 'outpost', 'cavern', 'arcology', 'inhabited ruin'].forEach(st =>
+    ok(RES_LEDGER.isLiving(st), 'stage ' + st + ' is living'));
+  ['ruin', 'ruined arcology'].forEach(st =>
+    ok(!RES_LEDGER.isLiving(st), 'negative: stage ' + st + ' is uninhabited'));
+  ok(RES_LEDGER.stageOf('town').pop === 2800 && RES_LEDGER.stageOf('inhabited ruin').pop === 1200 && RES_LEDGER.stageOf('fort').pop === 800,
+    'stage default populations: town 2800, inhabited ruin 1200, fort 800');
+  const lgTypes = new Set(Object.values(LG.settlements).map(s => s.type));
+  ['town', 'inhabited ruin', 'fort'].forEach(st =>
+    ok(lgTypes.has(st), 'ledger settlements include living stage ' + st));
+  ['ruin', 'ruined arcology'].forEach(st =>
+    ok(!lgTypes.has(st), 'negative: ledger settlements omit uninhabited stage ' + st));
+  ['Yuni Emirate', 'Frogmen', 'Hookfleet', 'Tiguantin', 'Andaru', 'Jabal Shiekdom', 'Kimr'].forEach(pn =>
+    ok(!!LG.polities[pn], 'polity present in ledger: ' + pn));
+  ok(DATA.polities.filter(p => p.name === 'Yuni Emirate').length === 1, 'Yuni Emirate is single (deduplicated) in geology.json');
   const kt = LG.polities['Kautoa'];
   ok(kt && kt.settlements.length > 0, 'Kautoa has its settlements in the ledger');
   const tg = RES_LEDGER.tradeGoods(LG, { kautoa: 'Kautoa', nobody: 'No Such Polity' }, { kautoa: ['cloves'] });
   ok(Array.isArray(tg.kautoa) && tg.kautoa.indexOf('cloves') >= 0 && tg.nobody.length === 0, 'tradeGoods: a town\'s own goods kept, its surplus added; none for an unknown polity');
   const strict = RES_LEDGER.build({ basics: { stone: { family: 'stone', min: 256 } } });
   ok(!strict.audit.ok && strict.audit.failures.length > 0, 'negative: an impossible basic fails the audit');
+  ok(!!RES_LEDGER.BASIC.clay && RES_LEDGER.BASIC.clay.family === 'clay' && LG.settlements['Roketstad'] && LG.settlements['Roketstad'].basics.clay === true,
+    'clay is a ledger basic and Roketstad passes its glacial varve clay');
+  const strictClay = RES_LEDGER.build({ basics: { clay: { family: 'clay', min: 256 } } });
+  ok(!strictClay.audit.ok && strictClay.audit.failures.some(f => f.indexOf('clay') >= 0), 'negative: an impossible clay threshold fails the audit');
+  ok(!Object.values(LG.settlements).some(s => s.type === 'ruin' || s.stage === 'ruin') && !LG.settlements['Nazar'] && !LG.settlements['Dorado'],
+    'uninhabited ruin pins (type === ruin) are excluded from the ledger');
+  { const dStage = Object.assign({}, DATA, { settlements: DATA.settlements.concat([{ name: 'TestRuinStage', px: 900, py: 900, type: 'arcology', stage: 'ruin' }, { name: 'TestLiveStage', px: 900, py: 900, type: 'arcology', stage: 'town' }]) });
+    RES_GEO.load(dStage); const lgS = RES_LEDGER.build({ families: ['iron'] }); RES_GEO.load(DATA);
+    ok(!lgS.settlements['TestRuinStage'] && !!lgS.settlements['TestLiveStage'], 'stage === ruin pins are excluded while non-ruin stage pins stay'); }
+  { const lodesDoc = JSON.parse(fs.readFileSync(path.join(KIT, 'data', 'lodes.json'), 'utf8'));
+    const loc = lodesDoc.lodes.find(l => l.id === 'lode:locus-oil'), yn = lodesDoc.lodes.find(l => l.id === 'lode:yuni-north-oil');
+    ok(!!loc && loc.family === 'oil' && loc.px === 1267 && loc.py === 1043 && loc.r_km === 14 && loc.peak === 200
+      && !!yn && yn.family === 'oil' && yn.px === 1268 && yn.py === 994 && yn.r_km === 8 && yn.peak === 145,
+      'lodes.json holds lode:locus-oil and lode:yuni-north-oil');
+    ok(!lodesDoc.lodes.some(l => l.id === 'lode:nonesuch'), 'negative: unknown lode absent'); }
   console.log('fairness audit: ' + (LG.audit.ok ? 'ok' : LG.audit.failures.length + ' failures'));
   LG.audit.failures.forEach(f => console.log('  ' + f)); }
 { const f = path.join(KIT, 'data', 'ledger.json'), txt = JSON.stringify(LG, null, 1) + '\n';

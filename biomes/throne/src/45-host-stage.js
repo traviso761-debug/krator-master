@@ -41,6 +41,7 @@ const fill=new THREE.DirectionalLight(0xb8bcd0,.24);fill.position.set(900,400,90
 
 // ---------------------------------------------------------------- the land before the lava
 const TERR={R:2600};
+const FAR_CELL=320;   /* the far country's lattice (85): coarser here, station 1 stands at its triangle ceiling */
 const UP=[-.5,-.866],DN=[.5,.866],PERP=[.866,-.5];   // toward the summit, away from it (downslope), across
 // the shield's flank: ~9% down toward the south-south-east, with long low swells
 function slopeH(x,z){const u=x*UP[0]+z*UP[1];

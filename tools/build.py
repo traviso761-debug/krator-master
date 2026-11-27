@@ -3,7 +3,7 @@
 
     python3 tools/build.py biomes/rift                      # = cd biomes/rift && python3 build.py, plus build-inputs.json
     python3 tools/build.py biomes/throne --station kipuka   # arguments after the build go to build.py
-    python3 tools/build.py settlements/girder --script build_hero.py
+    python3 tools/build.py settlements/girder --script <other>.py    # a build's second script (see test_all.extra_builds)
     python3 tools/build.py --all [-j 4]                     # every build and the extra pages (test_all's rebuild list)
 
 It is the same build: build.py runs unchanged in its own folder. What it adds:
@@ -14,9 +14,14 @@ It is the same build: build.py runs unchanged in its own folder. What it adds:
     the `git lfs pull` to run (2a);
   - a page over its size cap fails, a page over 90% of it warns (3a; the cap is 16 MB unless BUDGETS.json raises it);
   - a page missing a fragment a shared fragment needs, or holding it too late, fails (tools/fragment_needs.json, the
-    NEEDS rule of tools/check_assembly.py: the water ext modules' order).
-A plain `python3 build.py` still works and still refuses the pointers it would read (tools/check_port.py runs
-buildlib.preflight first), but it leaves build-inputs.json behind, so check_stale.py reports its page as UNRECORDED.
+    NEEDS rule of tools/check_assembly.py: the water ext modules' order);
+  - a build that takes the "names" check (tools/checks_optin.json) fails on a view name holding an apostrophe or a colon
+    (item 30; tools/check_views.py's VIEW-NAME rule with no ratchet).
+A build that takes the "recorded" check (item 25) refuses a plain `python3 build.py` (tools/check_port.py says why); a
+new build's build.py calls buildlib.through_tools_build(__file__) at its top, so a plain run comes here by itself.
+Fresh worktree: `python3 tools/lfs_needs.py <build> --pull` fetches every texture pack and bundle the build reads first.
+A plain `python3 build.py` still works (unless the build takes the "recorded" check), but it leaves build-inputs.json behind,
+so check_stale.py reports its page as UNRECORDED, and it does not see the LFS pointers it reads.
 """
 import concurrent.futures, os, shutil, subprocess, sys, tempfile, time
 
@@ -66,6 +71,8 @@ def run(build, args, script='build.py', quiet=False):
     buildlib.write_manifest(build, cmd, {
         'inputs': {p: buildlib.file_hash(os.path.join(ROOT, p)) for p in inputs},
         'listings': listings,
+        # the listings are the build's own (the audit hook skips the importer's since 2026-11-15); check_stale trusts them
+        'listed_by': 'code',
         'outputs': {p: buildlib.file_hash(os.path.join(ROOT, p)) for p in outputs},
         'outputs_raw': {p: buildlib.raw_hash(os.path.join(ROOT, p)) for p in outputs},
     })
@@ -82,6 +89,21 @@ def run(build, args, script='build.py', quiet=False):
             for key, lines in check_assembly.check_needs(text):
                 notes.append('FRAGMENT NEEDS FAIL  %s: %s' % (p, lines[0]))
                 code = 1
+    if buildlib.opted_in('names', build):   # item 30: no apostrophe or colon in a view name, no ratchet
+        import check_views
+        found, where, _, _ = check_views.scan(build)
+        for k in sorted(found):
+            if ': VIEW-NAME ' in k:
+                notes.append('VIEW NAME FAIL  %s (%s): a view or check name may not hold : \' \\ / * ? " < > |' % (k, where[k][0]))
+                code = 1
+    if build.startswith('biomes/'):
+        try:
+            import check_botany
+            _, b_msg = check_botany.check_or_update_biome(build)
+            if b_msg:
+                notes.append('botany check  %s' % b_msg)
+        except Exception as e:
+            notes.append('botany check note  %s' % e)
     tail = '\n'.join(notes)
     out += ('\n' + tail if tail else '') + '\nrecorded %s: %d inputs, %d listings, %d outputs' % (
         man, len(inputs), len(listings), len(outputs))

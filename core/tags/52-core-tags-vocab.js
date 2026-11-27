@@ -4,8 +4,9 @@
 // reads kits/catalog/krator-furniture-core.js and fails when a copied list no longer matches its source, so drift
 // is a failing test, not a silent fork.
 //
-//   KTAGS.VOCAB.classes, cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
-//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix
+//   KTAGS.VOCAB.classes (vessel and vehicle since 2026-11-17), cultures, cultureNames, cultureAlias, types, wealth, wealthAlias, wealthOf(0..1), tiers,
+//               states, settings, jobs, koppen, doorStyles, lightKinds, keys (tag key -> its rule), prefix;
+//               a vessel's propulsions, hulls; a vehicle's drives; a walker's pilots, weapons (kits/mechs, Stage 8 T9, 2026-11-24)
 (function(){
  'use strict';
  var K = typeof KTAGS !== 'undefined' ? KTAGS : globalThis.KTAGS;
@@ -16,7 +17,7 @@
  var CATALOG_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad',
    'voth', 'iziz', 'beast-rider', 'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican',
    'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
-   'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];
+   'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia', 'shumari'];
  // BUILDING_TYPES
  var CATALOG_TYPES = ['civic', 'market', 'shop', 'tavern', 'inn', 'industry', 'farm', 'dwelling-single', 'dwelling-multi',
    'infrastructure', 'religious', 'funerary'];
@@ -42,10 +43,18 @@
    'reedlake': 'Reed Lake', 'post-apoc': 'Post-Apoc salvage', 'hykkousoi': 'Hykkousoi', 'scyvoi': 'Scyvoi',
    'zeijani': 'Zeijani', 'ashnomad': 'Ash Nomads', 'eternian': 'Eternians',
    'jimjam': 'Jimjam', 'dalab': 'Dalab', 'khaayken': 'Khaayken', 'tungang': 'Tungangs', 'fellgang': 'Fellgangs',
-   'talovolci': 'Talovolci', 'pylon': 'Pylon', 'talia': 'Talia'
+   'talovolci': 'Talovolci', 'pylon': 'Pylon', 'talia': 'Talia',
+   // Stage 8 (D14, 2026-11-24): the cultures the kits had added to their own pages at load, folded in here; Shumari has a catalog
+   // culture file (its name is FURN_CULTURE's), the rest have none yet (NO_CATALOG)
+   'shumari': 'Shumari', 'glazier': 'Glaziers', 'kimr': 'Kimr', 'dasri': 'Dasri', 'ria': 'Ria Dynasty', 'yonni': 'Yonni Spear-Queens',
+   'dzagh-vardzi': 'Petty Gorge-Kingdoms of Dzagh-Vardzi', 'molu-che': 'Molu-Che Fossorial Clans of Moleshelf',
+   'kulanewa': 'The Kulanewa Free-Towns', 'coyote': 'Coyote', 'qiblai': 'Qiblai', 'hueru-kuran': 'Hueru-Kuran Whale Clans',
+   'spider-lake': 'The Silk Principality of Spider Lake', 'marr': 'Marr'
  };
  // cultures of a settlement with no catalog furniture set (yet): not in FURN_CULTURES, so test-tags.js does not look for them there
- var NO_CATALOG = [];   // Jimjam and Dalab have their culture files since 2026-11-03
+ // (Jimjam and Dalab have their culture files since 2026-11-03; a kit's own FURN pieces without a kits/catalog culture file count as none)
+ var NO_CATALOG = ['glazier', 'kimr', 'dasri', 'ria', 'yonni', 'dzagh-vardzi', 'molu-che', 'kulanewa', 'coyote', 'qiblai', 'hueru-kuran',
+   'spider-lake', 'marr'];
  var CULTURES = Object.keys(CULTURE_NAMES);
  // old spellings and catalog sets on input: the culture they become, and the tags they bring (never over a given one)
  var CULTURE_ALIAS = {
@@ -62,7 +71,13 @@
    'iziz-vernacular': { culture: 'iziz', style: 'vernacular' },
    'yuni-order': { culture: 'order' },
    'generic': { culture: null, set: 'generic' },   // the poor-tier sets any culture draws on: a set, not a culture
-   'scrap': { culture: null, set: 'scrap' }
+   'scrap': { culture: null, set: 'scrap' },
+   // the vehicle and walker kits' culture names (Stage 8 T9, 2026-11-24): the Motor Vehicles' republic is the Iron Republic, the
+   // Republicans; its geomancer the oil guild of Locus and Yuni, culturally "mostly Yuni" (LORE.md 6.9), so Yuni with the guild;
+   // the Mechs' stalker the Catch's killers, the Ancients' own make never refitted (kits/mechs/krator-mechs-stalker.js)
+   'republic': { culture: 'republican' },
+   'geomancer': { culture: 'yuni', guild: 'Geomancers' },
+   'stalker': { culture: 'ancient', style: 'stalker' }
  };
 
  // wealth: three names or null (civic is a type). The catalog's 0..1 maps by FURN_TIERS' poor and court floors.
@@ -71,9 +86,21 @@
  function wealthOf(v){ return v < CATALOG_TIERS.poor[1] ? 'poor' : v < CATALOG_TIERS.court[0] ? 'middle' : 'rich'; }
 
  K.VOCAB = {
-   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature'],
+   // a walker (kits/mechs, Stage 8 T9, 2026-11-24) is a vehicle of kind 'mech': a query for vehicles finds it, kind tells it apart.
+   // vessel (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea vessels"): a ship or boat, its
+   // tags the Ring Sea's (kits/ringsea/API.md: types, propulsion, hull, wealth, crew, role). vehicle (the same day: "we should
+   // add a vehicle tag as well"): a land vehicle or a walker, its tags the Motor Vehicles kit's (kits/motor-vehicles/API.md:
+   // types, drive, seats, fuel)
+   classes: ['building', 'part', 'fixture', 'furniture', 'prop', 'flora', 'life', 'landmark', 'infrastructure', 'feature', 'vessel', 'vehicle'],
    cultures: CULTURES, noCatalog: NO_CATALOG, cultureNames: CULTURE_NAMES, cultureAlias: CULTURE_ALIAS,
-   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain']),   // + Yuni's park; Iziz's military, statue, plaza, fountain
+   types: CATALOG_TYPES.concat(['park', 'military', 'statue', 'plaza', 'fountain'])   // + Yuni's park; Iziz's military, statue, plaza, fountain
+     // + a vessel's work (the Ring Sea's types by what the boat does; its hull form, a carrack or a junk, is not a type)
+     .concat(['cargo', 'fishing', 'passenger', 'pleasure', 'warship', 'ferry', 'barge', 'taxi', 'voyager', 'state'])
+     // + a vehicle's (the Motor Vehicles kit's types)
+     .concat(['vehicle', 'transport', 'survey', 'patrol', 'utility'])
+     // + a walker's (Stage 8 T9, 2026-11-24, the owner: make new tags): kits/mechs' MECH_TYPES as the kit spells them (transport
+     // and utility above); kits/mechs/tests/test-tags.js fails when the kit's list and this one drift
+     .concat(['war machine', 'industrial', 'siege', 'standard-bearer', 'scout', 'line', 'heavy']),
    // older spellings of a type, on input (Iziz's REG): one becomes one or more
    typeAlias: { 'market/shop': ['market', 'shop'], 'tavern/inn': ['tavern', 'inn'], 'single-family dwelling': ['dwelling-single'],
      'multi-family dwelling': ['dwelling-multi'] },
@@ -86,6 +113,15 @@
    settings: CATALOG_SETTINGS.concat(['room']),
    jobs: CATALOG_JOBS,
    sets: ['generic', 'scrap'],
+   propulsions: ['sail', 'oar', 'sweep', 'paddles', 'pole', 'tow', 'steam', 'engine'],   // a vessel's (kits/ringsea/API.md)
+   hulls: ['monohull', 'catamaran', 'trimaran', 'outrigger', 'raft'],
+   // a vehicle's (kits/motor-vehicles/API.md), then a walker's by its legs (kits/mechs MECH_DRIVES, hover among the first; Stage 8 T9)
+   drives: ['wheeled', 'tracked', 'legged', 'drawn', 'rail', 'hover', 'half-track',
+     'biped', 'digitigrade', 'quadruped', 'tripod', 'hexapod'],
+   // a walker's (kits/mechs MECH_PILOTS, MECH_WEAPONS; Stage 8 T9, 2026-11-24): where its pilot sits, what it fights or works with
+   pilots: ['head', 'chest', 'cab', 'saddle', 'none'],
+   weapons: ['ballista', 'twin ballista', 'repeating ballista', 'harpoon', 'rivet gun', 'cleaver', 'shield', 'pile driver',
+     'claw', 'shears', 'grapple', 'auger', 'saw', 'hammer', 'fist', 'bucket', 'blade', 'lance', 'beam', 'cannon', 'gun', 'none'],
    // biomes/WORLD.md, plus Krator's X (abyssal) and H (hyperalpine). The biome kits (2026-10-12) add Cwb (shighlands)
    // and the scale model's own classes: XA (abyssal hypertropic jungle) and XV (abyssal savanna: geyser), HF (the
    // hyperalpine frost) and O (airless: ebadlands, the Throne's summit)
@@ -107,6 +143,13 @@
      style: 'free', room: 'free', biome: 'free', family: 'free', variant: 'free',
      role: 'free', quarter: 'free', part: 'free', finish: 'free', rock: 'free', level: 'free', district: 'free', destination: 'free', stalls: 'free', canopies: 'free',
      lit: 'bool', landmark: 'bool', market: 'bool', harvest: 'object',
+     // a vessel's (2026-11-17): how it moves, its hull, its crew (a number)
+     propulsion: 'propulsions', hull: 'hulls', crew: 'free',
+     // a vehicle's (2026-11-17): how it goes, its seats (a number), its fuel
+     drive: 'drives', seats: 'free', fuel: 'free',
+     // a walker's (Stage 8 T9, 2026-11-24): its pilot's seat, its weapons and tools (a list), the guild that keeps it (free: a
+     // name, Forgemasters, Geomancers, the watch; 'none')
+     pilot: 'pilots', weapon: 'weapons', guild: 'free',
      // flora and fauna (the biome kits, 2026-10-12): the climate band, aridity, abyssal, riparian; an animal's diet
      climate: 'climates', aridity: 'aridities', abyssal: 'bool', riparian: 'riparians', diet: 'free',
      // a kit's own trait on every species, free: crater-drylands' fire response (pyrophyte, seeder, resprouter...),
@@ -199,7 +242,7 @@
    navLayers: { walk: 1, avoid: 2 },
    // the order id's prefix per class; a fixture's per kind
    prefix: { building: 'bld', part: 'part', fixture: 'fix', furniture: 'furn', prop: 'prop', flora: 'flora', life: 'life',
-     landmark: 'site', infrastructure: 'infra', feature: 'feat' },
+     landmark: 'site', infrastructure: 'infra', feature: 'feat', vessel: 'ves', vehicle: 'veh' },
    fixturePrefix: { door: 'door', window: 'window', light: 'light' },
    // what test-tags.js compares with the catalog
    catalog: { cultures: CATALOG_CULTURES, types: CATALOG_TYPES, tiers: CATALOG_TIERS, jobs: CATALOG_JOBS, settings: CATALOG_SETTINGS }

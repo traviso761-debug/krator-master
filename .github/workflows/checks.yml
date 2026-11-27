@@ -1,10 +1,16 @@
-# Every push: the lints, the node tests, a rebuild of every build, the hash baseline, and a clean tree after it
-# (every committed page is what its sources build). tools/test_all.py is the whole job; run it locally the same way.
+# Every push to main and every pull request: the lints, the node tests, a rebuild of every build, the hash baseline,
+# and a clean tree after it (every committed page is what its sources build). tools/test_all.py is the whole job; run
+# it locally the same way. Working branches are not checked here (the owner, 2026-11-12: the per-branch runs used up
+# the Actions minutes); each session runs tools/test_all.py before its branch is merged.
 name: checks
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   checks:
     runs-on: ubuntu-latest

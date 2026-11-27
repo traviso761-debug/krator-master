@@ -32,13 +32,13 @@ const t0=Date.now(),Y=years(),T=Y.T,F=T.food,ge=o=>Object.keys(o||{}).reduce((s,
 console.log('two years of Pinnacle Rock in '+((Date.now()-t0)/1000).toFixed(1)+' s: '+Y.S.order.length+' settlements, '+SIM.all('actor').length+' actors, '+Y.W.order.length+' bands, '+Y.W.ops.length+' ops');
 const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
 // 1. declared: the town of 3,000, the ring, the plan's four clearings, the eighteen bands of 40-70, the markets, the targets
-/* the floor's and the flyers' twelve bands are 40-70 (core/camp's rule); the six ground tribes' upper grounds on the mesa keep their laid five tents
-   (20-29 people: more tents do not fit the mesa's margin, the page's own check), an open question for the owner */
-{const cl=Y.V.settlements.filter(s=>/hamlet\.clearing/.test(s.id)),bands=Y.V.bands,post=b=>b.ground==='upper'&&BR_CAMP[b.tribe].grounds.lower,full=bands.filter(b=>!post(b)),pops=full.map(b=>b.census.pop),posts=bands.filter(post).map(b=>b.census.pop),floor=['mammoth','dragonfly'].map(tr=>bands.find(b=>b.tribe===tr).census.pop);
- const markets=Object.keys(T.markets),ok1=Y.V.settlements.find(s=>s.id===TOWN).people===3000&&cl.length===4&&bands.length===18&&full.length===12&&pops.every(p=>p>=40&&p<=70)&&!Y.S.problems.length;
- ok('declared: Pinnacle Rock of 3,000, the floor ring, the plan\'s four clearings, eighteen bands (the twelve that roam 40-70, Mammoth and Dragonfly too; six posts on the mesa), seven markets, Goto and Nusidi',
+/* eighteen bands of 40-70 (the owner, 2026-11-12: eighteen; the six ground tribes' upper grounds widened on the mesa for their
+   two more domes) */
+{const cl=Y.V.settlements.filter(s=>/hamlet\.clearing/.test(s.id)),bands=Y.V.bands,post=b=>false,full=bands.filter(b=>!post(b)),pops=full.map(b=>b.census.pop),posts=bands.filter(post).map(b=>b.census.pop),floor=['mammoth','dragonfly'].map(tr=>bands.find(b=>b.tribe===tr).census.pop);
+ const markets=Object.keys(T.markets),ok1=Y.V.settlements.find(s=>s.id===TOWN).people===3000&&cl.length===4&&bands.length===18&&full.length===18&&pops.every(p=>p>=40&&p<=70)&&!Y.S.problems.length;
+ ok('declared: Pinnacle Rock of 3,000, the floor ring, the plan\'s four clearings, eighteen bands of 40-70 (Mammoth and Dragonfly too), seven markets, Goto and Nusidi',
   ok1&&markets.length===7&&Y.V.settlements.some(s=>s.id===T.ids.goto)&&Y.V.settlements.some(s=>s.id===T.ids.nusidi),pops.some(p=>p<40)||floor.some(p=>p<40),
-  cl.length+' clearings ('+cl.map(c=>c.people).join(', ')+'), twelve bands '+Math.min(...pops)+'-'+Math.max(...pops)+' (Mammoth '+floor[0]+', Dragonfly '+floor[1]+'), six posts '+Math.min(...posts)+'-'+Math.max(...posts)+'; '+pops.concat(posts).reduce((a,b)=>a+b,0)+' people; problems: '+(Y.S.problems.slice(0,2).join('; ')||'none'));}
+  cl.length+' clearings ('+cl.map(c=>c.people).join(', ')+'), eighteen bands '+Math.min(...pops)+'-'+Math.max(...pops)+' (Mammoth '+floor[0]+', Dragonfly '+floor[1]+'); '+pops.reduce((a,b)=>a+b,0)+' people; problems: '+(Y.S.problems.slice(0,2).join('; ')||'none'));}
 // 2. the books balance: the sim's ledger over the second year, and every band's world books across its hand-overs
 {let worst=0;Y.W.order.forEach(id=>Object.values(KCAMP.books(Y.W,id)).forEach(r=>worst=Math.max(worst,Math.abs(r.residual))));
  const b0=Y.W.bands[Y.W.order[0]];b0.stock.grain+=500;let w2=0;Object.values(KCAMP.books(Y.W,b0.id)).forEach(r=>w2=Math.max(w2,Math.abs(r.residual)));b0.stock.grain-=500;
@@ -46,9 +46,9 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
   (Y.ledger.ok?'all settlements':Y.ledger.problems.slice(0,2).join('; '))+'; bands\' worst residual '+worst.toExponential(1));}
 // 3. the town is fed all year by its four streams, its stores as full at the year's end; without the dry season's haul it goes short
 {const ate=ge(y2('eaten')),hung=ge(y2('hungry')),st1=ge(T1.stock),st2=ge(T2.stock);
- const N=years({world:{assign:()=>null}}),N2=D(N.B2[TOWN].hungry,N.B1[TOWN].hungry);
- ok('the town fed all year (short under 0.5 % of what it ate), its stores as full at the year\'s end; with no haul it goes short',hung<ate*.005&&st2>=st1*.85,ge(N2)<ate*.005,
-  'ate '+t(ate)+' grain-equivalent, went without '+t(hung)+'; stores '+t(st1)+' -> '+t(st2)+'; with no haul it went without '+t(ge(N2)));}
+ const N=years({world:{assign:()=>null},edit:V=>{V.roads=V.roads.filter(r=>!/^caravan\./.test(r.id));}}),N2=D(N.B2[TOWN].hungry,N.B1[TOWN].hungry);   /* no haul and no caravans */
+ ok('the town fed all year (short under 0.5 % of what it ate), its stores as full at the year\'s end; with no haul and no caravans it goes short',hung<ate*.005&&st2>=st1*.85,ge(N2)<ate*.005,
+  'ate '+t(ate)+' grain-equivalent, went without '+t(hung)+'; stores '+t(st1)+' -> '+t(st2)+'; with no haul and no caravans it went without '+t(ge(N2)));}
 // 4. the four streams of the proposal: the floor ring, the clearings, the bands at home, their dry-season haul
 {const R2=Y.R2,R1=Y.R1,landed=(re)=>{const o={};Object.keys(R2).filter(k=>re.test(k)).forEach(k=>{const l2=R2[k].landed||{},l1=(R1[k]||{}).landed||{};Object.keys(l2).forEach(leg=>{if(!leg.endsWith('>'+TOWN))return;Object.keys(l2[leg]).forEach(g=>o[g]=(o[g]||0)+l2[leg][g]-((l1[leg]||{})[g]||0));});});return o;};
  const fromBands=landed(/^home\./),made={},imp={};Y.V.bands.forEach(b=>{const m=D(Y.B2[b.id].made,Y.B1[b.id].made),im=D(Y.B2[b.id].imported,Y.B1[b.id].imported);Object.keys(m).forEach(g=>made[g]=(made[g]||0)+m[g]);Object.keys(im).forEach(g=>imp[g]=(imp[g]||0)+im[g]);});
@@ -93,7 +93,12 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
  const viaShade=P&&P.legs.some(l=>l.b===T.ids.shade||l.a===T.ids.shade),N=years({noRoads:true}),NM=N.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan'));
  ok('the roads: every partner on the baked links, none planned; every raid and caravan rides them; Coyote Canyon by way of Shade, a climb slowing a leg',
   nodes&&noPlanned&&onRoads&&viaShade&&P.moving!==Pb.moving,NM.length&&NM.every(o=>!o.args.planned),
-  ids.length+' partners; '+marches.length+' venture marches, '+marches.filter(o=>o.args.planned).length+' planned; Coyote Canyon '+(P.length_m/1000).toFixed(0)+' km by road ('+P.legs.length+' stretches), '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back; on the model\'s estimate '+NM.filter(o=>o.args.planned).length+' of '+NM.length+' planned');}
-console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
+  ids.length+' partners; '+marches.length+' venture marches, '+marches.filter(o=>o.args.planned).length+' planned; Coyote Canyon '+(P.length_m/1000).toFixed(0)+' km by road ('+P.legs.length+' stretches), '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back; on the model\'s estimate '+NM.filter(o=>o.args.planned).length+' of '+NM.length+' planned');}// 11. the caravans to the granary town (the owner, 2026-11-12): the Beast Rider cities' pack trains top the town's stores up
+//     the year round, staples and fruit in; with the bands' haul gone they carry the town (it does not go short)
+{const cv=(R2,R1,k)=>{const l2=(R2[k]||{}).landed||{},l1=(R1[k]||{}).landed||{},o={};Object.keys(l2).forEach(leg=>{if(!leg.endsWith('>'+TOWN))return;Object.keys(l2[leg]).forEach(g=>o[g]=(o[g]||0)+l2[leg][g]-((l1[leg]||{})[g]||0));});return o;};
+ const full=Object.keys(Y.R2).filter(k=>/^caravan\./.test(k)).reduce((s,k)=>s+ge(cv(Y.R2,Y.R1,k)),0);
+ const N=years({world:{assign:()=>null}}),NH=ge(D(N.B2[TOWN].hungry,N.B1[TOWN].hungry)),land=Object.keys(N.R2).filter(k=>/^caravan\./.test(k)).map(k=>[k,ge(cv(N.R2,N.R1,k))]),tot=land.reduce((s,x)=>s+x[1],0);
+ ok('the caravans from Talon and Fort Kreia: idle while the haul keeps the granary over 40 days; with no haul they carry the town',land.length===2&&tot>50000&&NH<ge(D(Y.B2[TOWN].eaten,Y.B1[TOWN].eaten))*.005,false,
+  t(full)+' landed in a year with the haul; with none '+land.map(x=>x[0]+' '+t(x[1])).join(', ')+' grain-equivalent, and the town went without '+t(NH));}console.log('\nPinnacle Rock, the second year: made '+Object.entries(y2('made')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  imported '+Object.entries(y2('imported')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+
  '\n  ate '+Object.entries(y2('eaten')).map(([g,n])=>g+' '+Math.round(n)).join(', ')+'\n  stores '+JSON.stringify(T1.stock)+' -> '+JSON.stringify(T2.stock));
 console.log(bad?'\n'+bad+' FAILED':'\nOK');process.exit(bad?1:0);

@@ -18,14 +18,13 @@ SRC = os.path.join(HERE, 'src')
 # table, the furniture glue (catalog pieces placed through FURNISH) and the clocks' and orreries' animation. 71c-hl-openings.js
 # (the real doors and glass) draws through the Vernacular's openings, 69e5-iziz-openings.js, and core/door's 10 and 20
 # (KDOOR, KGLASS), which a build takes with it (OPENINGS below)
-FOUNDATION = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '71c-hl-openings.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',
+FOUNDATION = ['70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '71c-hl-openings.js', '72-hl-helpers.js', '72c-hl-plan.js', '73-hl-carve.js', '73b-hl-frame.js',
               '88-hl-dress.js', '89-hl-trades.js', '89y-hl-furnish.js', '94-hl-anim.js']
 SETS = {
     'republican': ['74-rep-dwell.js', '75-rep-trade.js', '76-rep-civic.js', '76c-rep-capital.js', '77-rep-guild.js',
-                   '77b-rep-guild2.js', '78-rep-grand.js', '79-rep-land.js', '79b-rep-salvage.js', '79c-rep-apoc.js',
+                   '77b-rep-guild2.js', '77c-rep-hydro.js', '78-rep-grand.js', '79-rep-land.js', '79b-rep-salvage.js', '79c-rep-apoc.js',
                    '79d-rep-scrap2.js', '79e-rep-arco.js', '79f-rep-shipbreak.js'],
-    'rustic': ['80-rus-dwell.js', '81-rus-village.js', '81b-rus-salvage.js'],
-    'tribal': ['84-tri-dwell.js', '85-tri-village.js', '85b-tri-salvage.js'],
+    'rustic': ['80-rus-dwell.js', '81-rus-village.js', '81b-rus-salvage.js', '81c-rus-trades.js', '81d-rus-water.js'],
 }
 FILES = sorted(FOUNDATION + [f for s in SETS.values() for f in s])
 
@@ -37,6 +36,10 @@ OPENINGS = {'10-core-door.js': os.path.join(_ROOT, 'core', 'door', '10-core-door
             '20-core-glass.js': os.path.join(_ROOT, 'core', 'door', '20-core-glass.js'),
             '30-core-door-leaf.js': os.path.join(_ROOT, 'core', 'door', '30-core-door-leaf.js'),   # the leaves' look (KDOORLEAF)
             '69e5-iziz-openings.js': os.path.join(_ROOT, 'kits', 'iziz-vernacular', 'src', '69e5-iziz-openings.js')}
+# the hollow walls (2026-11-09): the Vernacular's hollow bodies (69e: vnBody, the planned storeys) and its auto bodies (69e6: a
+# builder's solid block that matches a shell of the def's interior set item is drawn hollow, the kit's own openings cut it), read
+# in place by a page that takes the interiors (Highlands and Roketstad with ?interiors=1); 71c wraps its helpers when they are there
+HOLLOW = {f: os.path.join(_ROOT, 'kits', 'iziz-vernacular', 'src', f) for f in ('69e-vern-hollow.js', '69e6-vern-autobody.js')}
 
 
 def path(f):

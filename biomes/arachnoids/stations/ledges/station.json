@@ -1,0 +1,21 @@
+{
+ "id": "ledges",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arachnoid Canyons — Mid-Wall Columnar Basalt and Tuff Ledge Forest",
+ "name": "Mid-Wall Columnar Basalt and Tuff Ledge Forest (984,283, +1,629.0 m, 1.31 atm, Csa): KRELIEF.slab horizontal colonnades & outland-tuff benches, columnarpine & ledgeoak woods, dikeclaw cliff rosettes, and KSPELEO.SMOKY quartz Kluft",
+ "out": "arachnoids-ledges.html",
+ "px": [984, 283],
+ "ownVerified": true,
+ "elevM": 1629.0,
+ "pAtm": 1.31,
+ "koppen": "Csa",
+ "rainMmYr": 769,
+ "riverId": 9102,
+ "dischargeM3s": 0.0,
+ "strataStack": "arch-rift-basalt",
+ "kin": ["nwlowlands", "swlowlands", "korona"],
+ "reserves": [
+  {"id": "site:hum-cliff-stair", "x": -78, "z": 18, "r": 110}
+ ],
+ "modes": ["Clear", "Slot-Mist", "Rim-Gale"]
+}

@@ -38,7 +38,7 @@ const KratorFaunaAPI = (function () {
     t.wrapS = t.wrapT = THREE.RepeatWrapping; t.encoding = THREE.sRGBEncoding; t.anisotropy = 4;
     TEXST.pending++; img.onload = function () { t.image = img; t.needsUpdate = true; TEXST.pending--; }; img.onerror = function () { TEXST.pending--; };
     img.src = L.map; TEXST.families.push(fam);
-    return (TEXC[fam] = { map: t, tile: 1 / (L.scale || 0.3), gain: 1 / Math.max(0.05, Math.pow(L.mean == null ? 0.5 : L.mean, 2.2)) });
+    return (TEXC[fam] = { map: t, tile: 1 / (L.scale == null ? 0.3 : L.scale), gain: 1 / Math.max(0.05, Math.pow(L.mean == null ? 0.5 : L.mean, 2.2)) });
   }
   function material(fam) {
     if (MATS[fam]) return MATS[fam];
@@ -134,9 +134,20 @@ const KratorFaunaAPI = (function () {
         tr.push(k.path === 'quaternion' ? new THREE.QuaternionKeyframeTrack(k.node + '.quaternion', t, v) : new THREE.VectorKeyframeTrack(k.node + (k.path === 'scale' ? '.scale' : '.position'), t, v)); }
       clips[cn] = new THREE.AnimationClip(cn, A.dur, tr);
     }
+    let skin = null;      /* a skinned model (M.skin, rig/pack_skinned.py): one mesh, every vertex on up to four bones (j: node indices, w: weights out of 255), stored where the rest pose puts it */
+    if (M.skin) { const m = M.skin.mesh, p16 = new Uint16Array(buf64(m.pos)), pos = new Float32Array(p16.length), n8 = new Int8Array(buf64(m.nrm)), nrm = new Float32Array(n8.length), u16 = new Uint16Array(buf64(m.uv)), uv = new Float32Array(u16.length), j8 = new Uint8Array(buf64(m.j)), w8 = new Uint8Array(buf64(m.w)), sw = new Float32Array(w8.length);
+      for (let i = 0; i < p16.length; i++) pos[i] = m.min[i % 3] + p16[i] / 65535 * m.size[i % 3];
+      for (let i = 0; i < n8.length; i++) nrm[i] = n8[i] / 127;
+      for (let i = 0; i < u16.length; i++) uv[i] = u16[i] / 65535;
+      for (let i = 0; i < w8.length; i++) sw[i] = w8[i] / 255;
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nrm, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      g.setAttribute('skinIndex', new THREE.BufferAttribute(new Uint16Array(j8), 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
+      g.setIndex(new THREE.BufferAttribute(m.wide ? new Uint32Array(buf64(m.idx)) : new Uint16Array(buf64(m.idx)), 1)); g.computeBoundingSphere();
+      g.boundingSphere.radius = Math.max(g.boundingSphere.radius, Math.max(M.rest.extent.w, M.rest.extent.d, M.rest.extent.h) / M.scale);      /* bound for the widest pose, not the rest, or a spread wing is culled at the screen's edge */
+      const sm = mat.clone(); sm.skinning = true; skin = { geo: g, mat: sm }; }
     const partMat = M.family ? familyMats(M, geo) : {};      /* a part with a material of its own (M.mats: a wing card, see-through); the rest share the baked maps */
     for (const mn in (M.mats || {})) { const q = M.mats[mn], m2 = new THREE.MeshStandardMaterial({ map: modelTex(q.map, true), transparent: true, alphaTest: 0.02, depthWrite: false, metalness: 0, roughness: q.roughness == null ? 0.5 : q.roughness, side: THREE.DoubleSide }); for (const p of q.parts) partMat[p] = m2; }
-    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips });
+    return (MODELC[mkey] = { M: M, geo: geo, mat: mat, partMat: partMat, clips: clips, skin: skin });
   }
   /* a model of many parts as one draw call (M.merge, a millipede): every part a bone, every vertex wholly its part's. The file and the gate still see parts */
   function mergedGeo(mc) {
@@ -154,12 +165,19 @@ const KratorFaunaAPI = (function () {
   function buildModel(E, key, opt) {
     const v = opt.variant | 0, mc = modelOf(E.models[v]), M = mc.M, S = M.scale, root = new THREE.Group(); root.name = 'fauna:' + key;
     const top = new THREE.Group(); top.scale.setScalar(S); top.position.set(-M.rest.center[0] * S, -M.rest.ground * S, -M.rest.center[1] * S); root.add(top);
-    const gs = M.nodes.map(nd => { const g = M.merge ? new THREE.Bone() : new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+    const gs = M.nodes.map(nd => { const g = M.merge || M.skin ? new THREE.Bone() : new THREE.Group(); g.name = nd.name; g.position.set(nd.t[0], nd.t[1], nd.t[2]); g.userData.rest = { x: nd.t[0] * S, y: nd.t[1] * S, z: nd.t[2] * S };
+      if (nd.r) g.quaternion.set(nd.r[0], nd.r[1], nd.r[2], nd.r[3]); if (nd.s) g.scale.set(nd.s[0], nd.s[1], nd.s[2]);      /* a skinned model's bones rest turned */
       const geo = M.merge ? null : mc.geo[nd.name], pm = mc.partMat[nd.name]; if (geo) { const m = new THREE.Mesh(geo, pm || mc.mat); m.castShadow = !pm; m.receiveShadow = true; m.userData.family = 'model'; g.add(m); } return g; });
     M.nodes.forEach((nd, i) => (nd.parent < 0 ? top : gs[nd.parent]).add(gs[i]));
     if (M.merge) { const q = mergedGeo(mc), sk = new THREE.SkinnedMesh(q.geo, q.mat); sk.castShadow = sk.receiveShadow = true; sk.userData.family = 'model'; top.add(sk); sk.bind(new THREE.Skeleton(gs, q.inv), new THREE.Matrix4()); }
+    if (M.skin) {      /* the bones' inverses in top's frame, as the merged path's: the bind is then the same wherever the animal is first placed */
+      top.updateMatrixWorld(true); const ti = new THREE.Matrix4().copy(top.matrixWorld).invert(), inv = gs.map(b => new THREE.Matrix4().multiplyMatrices(ti, b.matrixWorld).invert());
+      const sk = new THREE.SkinnedMesh(mc.skin.geo, mc.skin.mat); sk.castShadow = sk.receiveShadow = true; sk.userData.family = 'model'; top.add(sk); sk.bind(new THREE.Skeleton(gs, inv), new THREE.Matrix4()); }
     const P = { legs: [] }, side = s => (s === 'R' ? 1 : 0);
-    M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
+    if (M.skin) { const q = M.skin.parts, at = n => gs[M.nodes.findIndex(nd => nd.name === n)];      /* a skinned model names its parts: bones, not meshes */
+      for (const k of ['head', 'body', 'tail', 'wingL', 'wingR', 'wing2L', 'wing2R']) if (q[k]) P[k] = at(q[k]);
+      (q.legs || []).forEach((n, i) => { P.legs[i] = at(n); }); }
+    else M.nodes.forEach((nd, i) => { const g = gs[i], n = nd.name; let m;
       if ((m = /^leg(\d)([LR])$/.exec(n))) P.legs[2 * +m[1] + side(m[2])] = g;           /* hexapod: leg0L, leg0R, leg1L ... = the kit's order */
       else if ((m = /^leg([LR])$/.exec(n))) P.legs[side(m[1])] = g;                     /* biped */
       else if ((m = /^leg(\d+)$/.exec(n))) P.legs[+m[1]] = g;                           /* a chain: front to back, left then right */
@@ -184,7 +202,7 @@ const KratorFaunaAPI = (function () {
     o = o || {}; const mx = g.userData._mx, has = n => !!mx.acts[n];
     const cn = mode === 'strike' && has('strike') ? 'strike' : mode === 'walk' && has('walk') ? 'walk' : mode === 'graze' && has('graze') ? 'graze' : mode === 'fly' ? (o.glide && has('glide') ? 'glide' : has('flap') ? 'flap' : has('hover') ? 'hover' : 'perch') : 'perch';
     if (mx.cur !== cn) { if (mx.cur) mx.acts[mx.cur].stop(); mx.acts[cn].reset().play(); mx.cur = cn; }
-    const a = mx.acts[cn], dur = mx.clips[cn].duration, tm = t * (o.rate || 1) + (o.phase || 0) / TAU * dur;
+    const a = mx.acts[cn], dur = mx.clips[cn].duration, tm = t * (o.rate == null ? 1 : o.rate) + (o.phase || 0) / TAU * dur;
     a.time = ((tm % dur) + dur) % dur; mx.mixer.update(0);
   }
   function build(key, opt) {
@@ -242,23 +260,23 @@ const KratorFaunaAPI = (function () {
     if (g.userData._mx) return animateModel(g, t, mode, o);   /* a model variant plays its own clips */
     o = o || {}; if (mode === 'run') { o = Object.assign({}, o, { run: 1 }); mode = 'walk'; }   /* 'run' is a walk at the animal's run blend (only a 'centaur' gait reads it) */
     const u = g.userData, P = u.parts, D = u.data || {}, gait = D.gait || { type: 'quadruped', freq: 1.5, stride: 0.4 };
-    const ph = (o.phase || 0), f = gait.freq || 1.5, w = TAU * f * t + ph, type = gait.type || 'quadruped';
+    const ph = (o.phase || 0), f = gait.freq == null ? 1.5 : gait.freq, w = TAU * f * t + ph, type = gait.type || 'quadruped';
     const set = (p, x, y, z) => { if (p) p.rotation.set(x || 0, y || 0, z || 0); };
     const legs = P.legs.filter(Boolean), body = P.body, segs = P.segs || [];
     if (body) body.position.y = body.userData.rest ? body.userData.rest.y : 0;
     legs.forEach(L => set(L)); segs.forEach(S => set(S)); set(body); set(P.head); set(P.tail); set(P.jaw);   /* every frame starts from rest (a mode leaves nothing behind) */
     const CH = D.chain, chained = CH ? [P.head, P.tail, P.jaw && P.jaw.parent === g ? P.jaw : null].concat(segs, legs).filter(Boolean) : null;
     if (chained) chained.forEach(q => { if (q.userData.rest) q.position.x = q.userData.rest.x; });
-    const snake = (ph2, amp) => { const k = TAU / (CH.wave || 3);
+    const snake = (ph2, amp) => { const k = TAU / (CH.wave == null ? 3 : CH.wave);
       for (const q of chained) { const z0 = q.userData.rest ? q.userData.rest.z : 0, a = ph2 + k * z0;
         q.position.x = (q.userData.rest ? q.userData.rest.x : 0) + amp * Math.sin(a);
         if (legs.indexOf(q) < 0) q.rotation.y = Math.atan(amp * k * Math.cos(a)); } };
     /* wings: a flyer flaps in 'fly' (with glides), holds them folded otherwise; an insect beats them unless resting */
-    const fl = D.flap || { freq: 2, amp: 0.7, glide: 0 }, wf = TAU * (fl.freq || 2) * t + ph;
+    const fl = D.flap || { freq: 2, amp: 0.7, glide: 0 }, wf = TAU * (fl.freq == null ? 2 : fl.freq) * t + ph;
     const flying = (type === 'flyer' && mode === 'fly') || (type === 'insect' && mode !== 'rest');
     const glide = fl.glide ? (Math.sin(TAU * 0.07 * t + ph) > 1 - 2 * fl.glide ? 0.15 : 1) : 1;
-    const flapA = flying ? (fl.amp || 0.7) * glide * Math.sin(wf) : (type === 'flyer' ? -(fl.fold || 0) : 0);
-    const sweep = flying || type !== 'flyer' ? 0 : (fl.sweep || 0), fsc = flying || type !== 'flyer' ? 1 : (fl.foldScale || 1);
+    const flapA = flying ? (fl.amp == null ? 0.7 : fl.amp) * glide * Math.sin(wf) : (type === 'flyer' ? -(fl.fold || 0) : 0);
+    const sweep = flying || type !== 'flyer' ? 0 : (fl.sweep || 0), fsc = flying || type !== 'flyer' ? 1 : (fl.foldScale == null ? 1 : fl.foldScale);
     for (const n of ['wingL', 'wingR', 'wing2L', 'wing2R']) if (P[n]) P[n].scale.x = fsc;
     /* roll (perched): the wing turns about its own span first (rotation order YZX), so a folded wing hangs down the flank */
     const roll = flying || type !== 'flyer' ? 0 : (fl.roll || 0);
@@ -267,7 +285,7 @@ const KratorFaunaAPI = (function () {
       set(P[n], -roll, s * sweep, s * (n.indexOf('2') > 0 && !fl.sync ? -flapA : flapA)); }
     if (flying && type === 'flyer' && fl.tuck) legs.forEach(L => set(L, fl.tuck, 0, 0));
     if (flying && type === 'flyer' && u.anchors && u.anchors.spread0) legs.forEach((L, i) => { const sp = u.anchors['spread' + i]; if (sp) set(L, 0, 0, ((i & 1) ? -1 : 1) * sp[0]); });   /* a glider's limbs swing out level: its builder gives the angles as 'spread<i>' anchors */
-    if (type === 'flyer' && mode === 'fly' && body) body.position.y = 0.04 * (u.S || 1) * Math.sin(wf + 1);
+    if (type === 'flyer' && mode === 'fly' && body) body.position.y = 0.04 * (u.S == null ? 1 : u.S) * Math.sin(wf + 1);
     const wt = (type === 'flyer' || type === 'insect') ? (legs.length === 2 ? 'biped' : legs.length === 4 ? 'quadruped' : legs.length === 6 ? (gait.walk || 'hexapod') : type) : type;
     if (mode === 'walk' && !(flying && type === 'flyer')) {
       if (wt === 'sprawl') {
@@ -277,26 +295,26 @@ const KratorFaunaAPI = (function () {
       } else if (wt === 'biped') {
         legs.forEach((L, i) => set(L, (i % 2 ? -1 : 1) * 0.5 * Math.sin(w), 0, 0));
         set(P.head, 0.08 * Math.sin(2 * w), 0, 0); set(P.tail, 0.1 * Math.sin(2 * w), 0, 0);
-        if (body) body.position.y = 0.015 * Math.abs(Math.sin(w)) * (u.S || 1);
+        if (body) body.position.y = 0.015 * Math.abs(Math.sin(w)) * (u.S == null ? 1 : u.S);
       } else if (wt === 'hexapod' || wt === 'octopod') {
         const group = i => wt === 'hexapod' ? ([0, 3, 4].indexOf(i) >= 0 ? 1 : -1) : ((Math.floor(i / 2) + i) % 2 ? -1 : 1);
         legs.forEach((L, i) => { const s = group(i); set(L, 0, s * 0.35 * Math.sin(w), (i % 2 ? -1 : 1) * 0.15 * Math.max(0, s * Math.cos(w))); });
       } else if (type === 'multipede') {
         legs.forEach((L, i) => { const k = Math.floor(i / 2); set(L, 0.45 * Math.sin(w - k * 0.6 + (i % 2) * Math.PI), 0, 0); });
-        if (chained) snake(w * 0.5, CH.amp || 0.15); else segs.forEach((S, i) => set(S, 0, 0.08 * Math.sin(w * 0.5 - i * 0.5), 0));
+        if (chained) snake(w * 0.5, CH.amp == null ? 0.15 : CH.amp); else segs.forEach((S, i) => set(S, 0, 0.08 * Math.sin(w * 0.5 - i * 0.5), 0));
       } else if (wt === 'climber') {   /* hanging hand over hand along a bough (along x): diagonal pairs swing about z */
         legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, 0, 0, s * 0.35 * Math.sin(w)); });
         set(P.head, 0, 0.1 * Math.sin(w), 0);
       } else if (wt === 'quadruped') {
         legs.forEach((L, i) => { const s = (i === 0 || i === 3) ? 1 : -1; set(L, s * 0.42 * Math.sin(w), 0, 0); });
-        if (body) body.position.y = 0.012 * Math.abs(Math.sin(w)) * (u.S || 1);
+        if (body) body.position.y = 0.012 * Math.abs(Math.sin(w)) * (u.S == null ? 1 : u.S);
         set(P.head, 0.06 * Math.sin(2 * w), 0, 0); set(P.tail, 0.15 * Math.sin(2 * w), 0, 0);
       }
     } else if (mode === 'swim' || type === 'swimmer') {
-      const sw = D.swim || { freq: 0.6, amp: 0.25 }, s = TAU * (sw.freq || 0.6) * t + ph;
-      if (sw.axis === 'x') { set(P.tail, (sw.amp || 0.25) * Math.sin(s), 0, 0); if (body) body.rotation.x = -0.03 * Math.sin(s - 1); set(P.head, 0.04 * Math.sin(s + 0.6), 0, 0); }
-      else if (chained) snake(s, CH.amp || 0.15);
-      else { set(P.tail, 0, (sw.amp || 0.25) * Math.sin(s), 0); segs.forEach((S, i) => set(S, 0, (sw.amp || 0.25) * 0.4 * Math.sin(s - i * 0.7), 0)); set(P.head, 0, -0.05 * Math.sin(s), 0); }
+      const sw = D.swim || { freq: 0.6, amp: 0.25 }, s = TAU * (sw.freq == null ? 0.6 : sw.freq) * t + ph;
+      if (sw.axis === 'x') { set(P.tail, (sw.amp == null ? 0.25 : sw.amp) * Math.sin(s), 0, 0); if (body) body.rotation.x = -0.03 * Math.sin(s - 1); set(P.head, 0.04 * Math.sin(s + 0.6), 0, 0); }
+      else if (chained) snake(s, CH.amp == null ? 0.15 : CH.amp);
+      else { set(P.tail, 0, (sw.amp == null ? 0.25 : sw.amp) * Math.sin(s), 0); segs.forEach((S, i) => set(S, 0, (sw.amp == null ? 0.25 : sw.amp) * 0.4 * Math.sin(s - i * 0.7), 0)); set(P.head, 0, -0.05 * Math.sin(s), 0); }
     } else if (mode === 'graze') {
       const nod = 0.06 * Math.sin(TAU * 0.7 * t + ph);
       set(P.head, (D.grazePitch == null ? 0.95 : D.grazePitch) + nod, 0.15 * Math.sin(TAU * 0.11 * t + ph), 0);
@@ -322,7 +340,7 @@ const KratorFaunaAPI = (function () {
         else if (pair === 0) set(L, hold + (wk ? 0.35 * Math.sin(ww + ph0 + Math.PI * 0.5) : 0.07 * Math.sin(TAU * 0.35 * t + ph0)) + 0.1 * bl * Math.sin(ww + ph0), 0, (i & 1) ? 0.08 : -0.08);
         else { const armX = -0.7 + (wk ? 0.3 * Math.sin(ww + ph0 + Math.PI * 1.5) : 0.05 * Math.sin(TAU * 0.3 * t + ph0 + 1)), legX = wk ? 0.5 * Math.sin(ww + ph0 + Math.PI) : 0; set(L, armX * (1 - bl) + legX * bl, 0, ((i & 1) ? 0.08 : -0.08) * (1 - bl)); }
       });
-      if (wk && body) body.position.y += 0.012 * (u.S || 1) * Math.abs(Math.sin(w));
+      if (wk && body) body.position.y += 0.012 * (u.S == null ? 1 : u.S) * Math.abs(Math.sin(w));
     }
     for (const n of ['earL', 'earR']) if (P[n]) set(P[n], 0, 0, (n === 'earL' ? 1 : -1) * 0.18 * Math.max(0, Math.sin(TAU * 0.23 * t + ph * 3)) ** 8);
   }

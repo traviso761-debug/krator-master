@@ -26,15 +26,34 @@ Hook is a settlement and goes in the gallery when it first reaches `main` (`gall
 
 ## 1. The site
 
-The scale model (`openworld/little-demo/source/settlements.json`) has Hook at px 537,596, on the Ring Sea's southern
-shore: the sea is to the **north**, the coast runs west-south-west to east-north-east, and the cliff that is the Crag
-Men's northern border stands 4 km behind the city. The Heights are the first step of that cliff. The Port kit's local
-convention (`N` land, `S` sea) is therefore turned about: the kit's "south" is the world's north, and the Hook points
-north into the sea. The East Ring Isles are 45 km offshore to the east, the Throne 50 km north-east (its smoke stands
+The scale model (`openworld/little-demo/source/settlements.json`) has Hook at px 537,593 (moved from 596 to the shore
+by the owner, 2026-10-19), on the Ring Sea's southern shore: the sea is to the **north**, the coast runs
+west-south-west to east-north-east, and behind the city the land climbs a gentle slope to a plateau 740 m up, 6 km
+back (the owner, 2026-10-19: no cliff; the Crag Men's border is up that slope, not a wall over the town). The Heights
+are the first step of that slope. The Port kit's local convention (`N` land, `S` sea) is therefore turned about: the
+kit's "south" is the world's north, and the Hook points north into the sea. The East Ring Isles are 45 km offshore to the east, the Throne 50 km north-east (its smoke stands
 over the harbour's eastern sky), the Vothic border about 45 km west along the coast: Hook is a frontier city on a
 sliver of Izani shore, which is why it changed hands so often.
 
-About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
+**On 5.1 (2026-11-24, the port onto the integration line).** The model now has Hook at px 809,923 (the same place on the
+5.1 canvas), and at 1:1 that pin is a wet cell on a drowned flat (-10 to +5 m for some 8 km, the plateau 1.5 km east).
+The owner chose a spit at the pin, as the continental records describe Hook (a peninsula, a carbonate spit, a causeway at
+the head of every road): three core/world 41l benches at +5 m in `world/landforms.json` (the peninsula off the plateau's
+foot, the hook's shank south off its west end, its barb), written up for the model's edit queue. The waterfront stands on
+the peninsula's north shore, bearing -0.3 deg, with 22 m of water 250 m out and 50 m at 1 km; the Heights and the hill
+behind are the kit's stamps on the flat spit; the lagoon lies behind. `README.md` "The ground" has the numbers. The
+paragraph below is the 4.21 cut's, kept for the record.
+
+**On the model's ground (2026-10-19).** The page stands on the scale model at 1:1 through the open world's ground rule
+(`core/terrain/40-core-land.js`; `README.md` "The ground", `world/`). The 4.21 cut says: the Ring Sea at −1,500 m; the
+pixel 10 m above it, the 1:1 shoreline 124 m seaward (the kit's origin stands there); the coast's bearing −9.2° from
+east (ENE, the bay west of the Point, the headland east); the land behind the quays a steady slope, +29 m at 300 m,
++85 m at the Heights' back edge (760 m), +139 m at the hill behind (1,180 m), +258 m at 2 km; the sea bed −30 m at
+500 m out, −59 m at 1 km; climate Af (tropical rainforest, 4,000 mm, 28 °C), overlays SW Bay and the Ring Sea; no
+escarpment in the data and no channel across the site. The Heights and the hill come from the slope itself (both
+stamps dropped). The kit's −x end (the Point) lies at the world's east: Iziz's segments east, Voth's west.
+
+About 2.6 km of waterfront, 1.2 km deep to the hill behind. From the world's east to its west (the kit's −x to +x):
 
 | Zone | Ground | Layer it belongs to |
 |---|---|---|
@@ -50,9 +69,9 @@ About 2.6 km of waterfront, 1.2 km deep to the cliff's foot. From west to east:
 | **The Stacks** | the container towers, compounds and silo houses at the eastern edge | the poor of every people; Voth's slave market |
 
 Behind every zone stands **the Ancient town** (the owner, 2026-10-19): the city the port served, on a grid of 110 m
-blocks and 20 m streets aligned to the waterfront, three rows deep behind the Customs and the Arsenal (z -130 to
--520 in the kit's frame), two behind the Strand, the Tethyan quarter and the Sun Canton, one behind the Point and the
-Stacks. The site's avenues are its streets: the pier's axis was the Ancient city's main avenue, the shore road its
+blocks and 20 m streets aligned to the waterfront, three rows deep behind the Customs and the Arsenal (z -150 to
+-540 in the kit's frame, the first row behind the shore road), two behind the Strand, the Tethyan quarter and the Sun
+Canton, one behind the Point and the Stacks (`site/hook-site.json` `grid`). The site's avenues are its streets: the pier's axis was the Ancient city's main avenue, the shore road its
 esplanade (the Arcades along it), and the Heights its upper terrace, reached by an Ancient stair and the stump of a
 funicular (`kits/ancients/src/8ap-funicular.js`, Verge's piece). Each later ruler reclaimed what stood and built on
 it in their own style, so the Ancient fabric shows in every zone: whole and repaired in the Customs and on the
@@ -101,6 +120,12 @@ salvagers live.
 | `slSub` | Submarine | inside the pen, and one sunk off the platforms | 1 / 3 | the pens' last boats |
 | `vsPanamax` | Panamax container ship | alongside the platforms' west face | 1 | the Empire's grain ship, unloading |
 | `vsFeeder` | Container feeder | off the L's east end | 3 | a wreck on the breakwater's end, the salvagers' bridgehead |
+
+**Built decays (the owner, 2026-10-19):** every segment listed at 0 above (the Customs' stores, dock and crane, the
+pier, the Imperial quay, the shipping terminal, the graving dock, the Customs House) is built at the kit's worn decay
+1, so the port's buildings carry the kit's rust and match the ships; the "repaired first" of section 6, question 5,
+becomes dressing records in P3 (scaffolds, new timber against old, Izani orange on the rails), not the kit's clean
+decay.
 
 The Ring Sea fleets alongside, from `kits/ringsea`: Iziz's turtle ship, dhoni, wheel galley and salvage lighter at the
 Imperial quay; the Islanders' oruwa, karakoa and lakatoi at the Strand; a Hykkousoi pearl baghlah at the marina; a
@@ -206,12 +231,19 @@ The waterfront comes first, because the Port kit is finished and the city's shap
   with their roles and culture mixes, the avenues (the pier's axis up to the palace, the shore road, the Arsenal road)
   on the Ancient grid, and the Ancient town's `hosts` (section 3, "The Ancient town": the named ones by hand, the rest
   drawn on the grid by `core/rand`) drawn as plain ruins at their decay. Done when the owner has laid the site out in
-  the editor and `core/city` steps 0-5 run on it with the hosts filed as footprints.
+  the editor and `core/city` steps 0-5 run on it with the hosts filed as footprints. **Built 2026-10-19** on the
+  branch `claude/hook-p1`, except the editor page: the site file is seeded from `LAYOUT.svg` and the steps run on it
+  (`README.md`, "P1"); the editor is the open item (`KNOWN_ISSUES.md`), the owner edits the JSON until it comes.
 - **P2. The town on `core/city`.** Steps 6-12 with the kits' dims (`isDims`, the Vernacular's, the Ys kit's, Voth's
   catalog); the lot filler drawing a culture then a type; the salvage rule on the poor and middle lots; the host-lot
   rule (a lot on a ruin draws the ruin, then its culture's addition on it). Done when the
   town fills the site with no overlap, nothing on a street or in the water, `node core/city/test-city.js` green.
-- **P3. The layers' landmarks**, placed as records with `near` scorers: the Customs House, the governor's palace, the
+  **Built 2026-10-19** on `claude/hook-p1` (`README.md`, "P2"): 671 lots of the six cultures from five kits sealed in
+  closures; the salvage rule and the host-lot rule are tags on the records until the kits can draw them
+  (`KNOWN_ISSUES.md`, "The town"); no civic pieces yet (P3's landmarks).
+- **P3. The layers' landmarks** (first pass built 2026-10-19, `README.md` "P3": the kits' civic pieces on avenue lots
+  by step 6 with marker scorers, the damage field as rubble and scorch tags, Hykkousoi pods on the Tethyan ruins;
+  the set pieces the kits lack are `KNOWN_ISSUES.md` "The landmarks"), placed as records with `near` scorers: the Customs House, the governor's palace, the
   Temple of the Sun, the Iron Court's fortress wall, the Tethyan hall and sea temple, the Kautoan house, the necropolis,
   the slave market. The reconquest's damage as a decay field over the eastern harbour. Done when each landmark is in
   its zone and the eye-level views of section 5 read right.
@@ -229,10 +261,10 @@ The waterfront comes first, because the Port kit is finished and the city's shap
 
 | View | Camera | What it must show |
 |---|---|---|
-| Overview | high, from the north-west over the Point (out at sea) | the whole waterfront, the Hook's L, the Heights and the cliff behind |
+| Overview | high, from the north-east over the Point (out at sea) | the whole waterfront, the Hook's L, the Heights and the slope behind |
 | The Hook from the sea | low, from beyond the platforms to the north | the pier's axis up to the palace, the stack town, the cranes, the Throne's smoke to the east |
 | The Strand at eye level | on the fishing harbour's jetty | boat houses, stilt houses, rope bridges, the light |
-| The Customs | on the pier's head, looking south | the Customs House with the garrison's flags, the Vernacular quarter above, the cliff |
+| The Customs | on the pier's head, looking south | the Customs House with the garrison's flags, the Vernacular quarter above, the slope |
 | The Iron Court | on the carrier's deck | the fortress wall's breach, the pens, the fresh damage |
 | The Sun Canton at dusk | from the tank farm's bund | the pyramid's cut summit, the necropolis's gardens, the diamond painted over |
 | The Stacks | between two container towers | the salvage style, the compounds' empty cages |
@@ -240,10 +272,11 @@ The waterfront comes first, because the Port kit is finished and the city's shap
 
 ## 6. Open questions for the owner
 
-1. **Settled (2026-10-17).** Hook is on the scale model at px 537,596 (section 1): the sea to the north, the Crag
-   Men's cliff behind, the Vothic border 45 km west. The Crag Men themselves have no lore yet (LORE §12).
+1. **Settled (2026-10-17; the pixel moved and the cliff dropped 2026-10-19).** Hook is on the scale model at px
+   537,593 (section 1): the sea to the north, a gentle slope behind, the Vothic border 45 km west. The Crag Men
+   themselves have no lore yet (LORE §12).
 2. **Settled (2026-10-17).** The people are the **Hukoa**; the city is *Huka* in their tongue and *Uga* in Izani
-   (`tools/scale-model/river_names.py`, `PLACE`). Their records keep the catalog culture `islander` (the West set
+   (`tools/scale-model/history/river_names.py`, `PLACE`). Their records keep the catalog culture `islander` (the West set
    builds them) and carry `layer: 'hukoa'`; no new catalog culture. Their speech is the western Islander tongue,
    Hikau (`lore/tongues-of-krator.html`, "Sikau"), which kept h and k: the regular Hikau for a fish-hook is *huku*
    (east *uʻu*), so *Huka* is a name older than the rule, like *Kautoa*.

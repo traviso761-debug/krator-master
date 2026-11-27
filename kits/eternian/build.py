@@ -12,7 +12,7 @@ The page is one <script> made of, in filename order:
   core/materials/record 23-mat-record.js, 24-tex-def.js, 25-matlib-host.js (KMAT: the material records and the library loader)
   core/tags             50/52/53-core-tags*.js (KTAGS: every placed thing is registered with its class and tags)
   core/furnish          50/52/53-core-furnish*.js (KFURN: the catalog furniture placement pass)
-  core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; src/37-wk-rec.js)
+  core/walk             20-core-walk.js, box/24-core-walk-box.js (KWALK, KWALKBOX: the boxes a building draws are its floors and walls; core/engine/37-wk-rec.js)
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
                         core/engine/36o-open.js draws them)
@@ -28,6 +28,9 @@ Checks (fragments share one JS scope):
   4. `node --check` on the script when node exists (otherwise the build says the syntax was NOT checked:
      verify.py's error panel is then the only syntax check).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -81,12 +84,13 @@ sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky   # the placeholder sky (KratorSky), read in place: MODULARITY-PLAN.md step 1
 sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
 import engine as kengine   # the building-kit engine, read in place: MODULARITY-PLAN.md step 2
-CORE_HOST = khost.SHELL + ['94-host-polytool.js']
+CORE_HOST = khost.SHELL + kengine.HOST + kengine.INTERIORS_HOST   # the polygon tool, the one key map, the cut-away storey by storey
+INTERIOR_SETS = ['eternian']   # kits/interiors/sets/eternian.js: core/engine plans and furnishes them (91i-interiors.js; ?interiors=1, U)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap']   # the Eternians' pieces, the shared goods, the trades, scrap
-VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js'}
-BUNDLE_GLOBALS = ('KratorFurniture',)
+FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap', 'arms']   # the Eternians' pieces, the shared goods, the trades, scrap; arms: the fort's armour stands (61-et-defence.js; Stage 8 D27, O5)
+VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', kengine.INTERIORS_FRAGMENT}
+BUNDLE_GLOBALS = ('KratorFurniture',) + kengine.INTERIORS_GLOBALS
 
 
 # the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
@@ -125,7 +129,8 @@ def matlib_pack():
 def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     import furniture_bundle
-    return {'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)}
+    return dict({'26-matlib-pack.js': matlib_pack(), '38-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES)},
+                **kengine.interiors(INTERIOR_SETS))
 
 
 RE_DECL = re.compile(r'^(?:const|let|var|function|class)\s+([A-Za-z_$][\w$]*)', re.M)

@@ -165,16 +165,23 @@ MAT_GROUND.onBeforeCompile=sh=>{STRATA.inject(sh);sh.uniforms.uDetail={value:hos
 // (`clast`, the Outlands' recipe: small varnished stones packed in the reg, ?pave=0), MUD POLYGONS on the playa (`polygon`, pale cracks between
 // curled plates, ?polygon=0) and the TALUS's red scree (`clast` in 3D cells, blocks a hand to a metre across)
 const KG_Q=GQ,KG_PAVE=KG_Q.get('pave')!=='0',KG_POLY=KG_Q.get('polygon')!=='0';
+// (2026-11-22) The beds' bump steps at each contact (ksRelief's height jumps from bed to bed), which on the near ground's half-metre cells drew a
+// dashed black line along every contact and a speckle on the flank: inside the near ground (30-48 m, its box is 96 m) the real shape carries the beds
+// (the rills, the ledges) and the bed bump fades out; past it, as before. ?near=0 keeps it everywhere
+const NEAR_ON=GQ.get('near')!=='0';
 // THE RELIEF (KGROUND's opt-in relief, core/terrain/GROUND.md; the ground catch-up 2026-11-04): the layers' height bumps the lit normal near the
 // eye, the low of it and the mesh's hollows (aKGAO, KGROUND.cavityMesh below) lose sky light, and on the bedded rock (vRock) the hard beds stand
 // proud of the soft ones. The side planes (tri) only where a station names its walls steep and near (LAND.kgTri: the canyons). ?relief=0 none
-const KG_REL=KG_Q.get('relief')!=='0'?{bump:.075,cavity:.8,mesh:1,strata:.45,strataW:'vRock'}:null,KG_TRI=KG_REL&&LAND.kgTri?LAND.kgTri:null;
+const KG_REL=KG_Q.get('relief')!=='0'?{bump:KG_Q.get('bump')!=null?+KG_Q.get('bump'):.075,cavity:.8,mesh:1,strata:.45,strataW:NEAR_ON?'vRock*smoothstep(30.0,48.0,kgD)':'vRock'}:null,KG_TRI=KG_REL&&KG_Q.get('tri')!=='0'?(LAND.kgTri||(NEAR_ON?{from:.4,to:.75,far:60}:null)):null;   /* the near ground's steep flanks take the side planes to 60 m (its texture streaked down them sampled from above); ?tri=0 none */
 if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'ebadlands-ground'+(KG_PAVE?'p':'')+(KG_POLY?'g':''),at:'/*KGROUND*/',layers:(GL?GL.map((l,i)=>{const m=Math.pow(l.mean==null?.78:l.mean,2.2),w='vGL'+Math.floor(i/4)+'.'+'xyzw'[i%4];
   return KGROUND.layer('ebadlands','ground.'+l.name,{w,amt:1,gain:1,tint:'mix(_gP*'+(1/m).toFixed(4)+',vec3(1.0),'+l.keep.toFixed(2)+')',name:l.name});}):[]).concat([
  KG_PAVE?{kind:'clast',w:'vGM.x*(1.0-vRock)',amt:.72,proj:'xz',size:.06,matrix:.24,matrixColor:0xb08a6a,sub:0,fleck:0,jitter:.95,vary:.3,
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vGM.y*(1.0-vRock)',amt:.85,size:3.2,width:.05,edgeTint:'vec3(0.62,0.56,0.5)',warp:.14,seed:312,name:'mud polygons'}:null,
  {kind:'clast',w:'vGM.w',amt:.8,proj:'tri',size:.7,matrix:.12,matrixColor:LAND.talusMatrix==null?0x8a6650:LAND.talusMatrix,sub:.2,fleck:0,jitter:.9,vary:.35,palette:LAND.talusPalette||[0x9a5a44,0xb07058,0x7a4a3a,0xc08a6a,0x8a6a5a],seed:313,name:'talus'}]),relief:KG_REL,tri:KG_TRI});
+/* the bump's tilt capped (core/terrain 43n, KGROUND.clampBump): on the near ground's steep half-metre faces the layers' height-blend edges ran the
+   bump away into black pixels and streaks down the slope; capped at 35 degrees. ?near=0 as before */
+if(USE_KG&&KG_REL&&NEAR_ON&&KGROUND.clampBump)KGROUND.clampBump(MAT_GROUND,{tilt:.7});
 /* THE GROUND MESH: N x N cells of TERR.R*2.2/N metres on terrainH, its zone weights per vertex. THE GROUND'S MASKS (the review's first line: each layer
    on a documented mask, no layer on a bare noise): aGL0..2 the ten library layers' zone weights (GLW above: the strata field, slope, the vents' geo,
    the pools' banks, cold, wet; normalised to sum 1 at most), aCrack the paint's mud cracks, aRock the strata's share (bedded rock showing), and aGM:
@@ -188,7 +195,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
   gm[k*4]=Math.max(F.pave,F.wash*.8);gm[k*4+1]=F.polyg;gm[k*4+3]=F.talus;
   if(GL){F.pool=POOLS.length?smooth(2.6,1.15,poolD(x,z)[0]):0;F.x=x;F.z=z;
    let s=0;const w=GL.map(l=>{const v=clamp(l.w(F),0,1)*(1-F.char);s+=v;return v;}),k1=s>1?1/s:1;   /* a burn (a station's char field) keeps its paint: no litter or turf over the ash */
-   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
+   for(let q=0;q<4;q++){g0[k*4+q]=(w[q]||0)*k1;g1[k*4+q]=(w[q+4]||0)*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
@@ -206,6 +213,13 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
  if(USE_KG&&KG_REL)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});   /* aKGAO: relief.mesh (the relief, above) */
  scene.add(m);return m;})();
 function ST_GROUND_N(){return LAND.groundN==null?560:LAND.groundN;}
+/* THE NEAR GROUND (core/terrain 43n, KGROUND.nearMesh; the owner, 2026-11-03: the banded flanks "look painted on" up close): the ground's cells
+   (13 m on the transect, 7.9 m at the waste) cannot carry the beds' ledges (KSTRATA's ledge pass in terrainH, 0.3-2 m steps), so a box of
+   LAND.nearSize (96 m) round the camera is re-meshed at half a metre from terrainH itself, its rim on the coarse ground's own surface, its paint
+   the coarse grid's attributes; the coarse cells under it are cut from the index. The steps catch the sun on their lips and turn their risers
+   from it, and the relief's mesh cavity darkens each step's foot. Followed each frame (99, KHOST.on 'view'). ?near=0 none */
+const NEARG=NEAR_ON&&KGROUND.nearMesh?KGROUND.nearMesh(GROUND,{h:terrainH,N:ST_GROUND_N(),x0:-TERR.R*1.1,z0:-TERR.R*1.1,cs:TERR.R*2.2/ST_GROUND_N(),
+ size:LAND.nearSize==null?96:LAND.nearSize,cell:LAND.nearCell==null?.5:LAND.nearCell,scene}):null;
 
 // ---------------------------------------------------------------- the rock bodies (KSTACKS, 44w: the plateau's slickrock domes, the tundra's tors)
 // One mesh each kind: the domes in the strata's beds (their own shader: the canyon recipe's cross-bedded sandstone), the tors in granite grey by

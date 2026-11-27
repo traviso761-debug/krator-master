@@ -16,8 +16,10 @@
 //                                      three.js's convention: local (lx,lz) -> (x+lx cos ry+lz sin ry, z-lx sin ry+lz cos ry)
 //   M.strip(a:[x,z], b:[x,z], w, o)    a band of full width w (roads, passages, stairs)
 //   M.disc(x,z,r, o)
+//   M.poly(pts:[[x,z],...], o)         a filled polygon (a carved room's floor)
 //   M.label(x,z,text, o)               o.size (px, 9)
-//   M.fromWalk(W, colourOf(y))         every floor of a KWALK registry, coloured by its height
+//   M.fromWalk(W, colourOf(y))         every floor of a KWALK registry (rect, strip, poly), coloured by its height; returns
+//                                      the records it added
 //   M.relief(h(x,z), {cell:24, water:0, lo, hi})   a hill-shaded height grid under everything, water below `water`
 //   M.toPx(x,z) / M.toWorld(px,py)
 //   M.pick(x,z)                        the topmost named or tagged record under (x,z), or null
@@ -49,10 +51,21 @@
     function strip(a,b,wd,op){return add({kind:'strip',a:a.slice(0,2),b:b.slice(0,2),w:wd},op);}
     function disc(x,z,r,op){return add({kind:'disc',x:x,z:z,r:r},op);}
     function label(x,z,text,op){var r=add({kind:'label',x:x,z:z,text:String(text)},op);r.size=(op&&op.size)||9;r.y=1e9;return r;}
-    function fromWalk(W,colourOf){
-      W.floors.forEach(function(fl){var y=fl.kind==='rect'?fl.y:(fl.a[2]+fl.b[2])/2,col=colourOf?colourOf(y,fl):'';
-        if(fl.kind==='rect')rect(fl.rect[0],fl.rect[1],fl.rect[2],fl.rect[3],{y:y,col:col,tag:fl.tag,name:fl.name});
-        else strip([fl.a[0],fl.a[1]],[fl.b[0],fl.b[1]],fl.w,{y:y,col:col,tag:fl.tag,name:fl.name});});
+    function poly(pts,op){if(!pts||pts.length<3)throw new Error('KMAP.poly: pts [[x,z],...] (3 or more) required');
+      return add({kind:'poly',pts:pts.map(function(p){return [p[0],p[1]];})},op);}
+    /* every KWALK floor: rect, strip, and poly (a carved room, KCAVERN): a poly floor's height is the mean of its corners'.
+       Returns the records added, in floor order; a floor of a kind it does not know is skipped */
+    function fromWalk(W,colourOf){var out=[];
+      W.floors.forEach(function(fl){var y,o2,r;
+        if(fl.kind==='rect')y=fl.y;else if(fl.kind==='strip')y=(fl.a[2]+fl.b[2])/2;
+        else if(fl.kind==='poly'&&fl.pts&&fl.pts.length>=3){y=0;fl.pts.forEach(function(p){y+=p[2];});y/=fl.pts.length;}
+        else return;
+        o2={y:y,col:colourOf?colourOf(y,fl):'',tag:fl.tag,name:fl.name};
+        if(fl.kind==='rect')r=rect(fl.rect[0],fl.rect[1],fl.rect[2],fl.rect[3],o2);
+        else if(fl.kind==='strip')r=strip([fl.a[0],fl.a[1]],[fl.b[0],fl.b[1]],fl.w,o2);
+        else r=poly(fl.pts,o2);
+        out.push(r);});
+      return out;
     }
     function reliefOf(h,op){
       op=op||{};var cell=op.cell||24,water=op.water===undefined?0:op.water,n=Math.max(2,Math.ceil(span/cell)),H=new Float32Array((n+1)*(n+1));
@@ -75,6 +88,8 @@
         return Math.abs(lx)<=r.hx&&Math.abs(lz)<=r.hz;}
       if(r.kind==='strip'){var ax=r.a[0],az=r.a[1],ex=r.b[0]-ax,ez=r.b[1]-az,L2=ex*ex+ez*ez,t=L2>0?((x-ax)*ex+(z-az)*ez)/L2:0;
         if(t<0||t>1)return false;var px=ax+ex*t-x,pz=az+ez*t-z;return px*px+pz*pz<=r.w*r.w/4;}
+      if(r.kind==='poly'){var P=r.pts,cin=false;for(var i=0,j=P.length-1;i<P.length;j=i++){var u=P[i],v=P[j];
+        if((u[1]>z)!==(v[1]>z)&&x<(v[0]-u[0])*(z-u[1])/(v[1]-u[1])+u[0])cin=!cin;}return cin;}
       return false;
     }
     function ordered(){return recs.slice().sort(function(p,q){return p.y-q.y||p.seq-q.seq;});}
@@ -94,6 +109,8 @@
           g.fillStyle=r.col||'#e8e0cc';g.fillText(r.text,p[0]-tw/2,p[1]);return;}
         g.fillStyle=colOf(r);g.strokeStyle=colOf(r);
         if(r.kind==='rect'){var a=toPx(r.rect[0],r.rect[2]),b=toPx(r.rect[1],r.rect[3]);g.fillRect(a[0],a[1],Math.max(1,b[0]-a[0]),Math.max(1,b[1]-a[1]));}
+        else if(r.kind==='poly'){var q0=toPx(r.pts[0][0],r.pts[0][1]);g.beginPath();g.moveTo(q0[0],q0[1]);
+          for(var pi=1;pi<r.pts.length;pi++){var qi=toPx(r.pts[pi][0],r.pts[pi][1]);g.lineTo(qi[0],qi[1]);}g.closePath();g.fill();}
         else if(r.kind==='disc'){var cpx=toPx(r.x,r.z);g.beginPath();g.arc(cpx[0],cpx[1],Math.max(1,r.r/span*size),0,Math.PI*2);g.fill();}
         else if(r.kind==='strip'){var s0=toPx(r.a[0],r.a[1]),s1=toPx(r.b[0],r.b[1]);g.lineWidth=Math.max(1,r.w/span*size);g.lineCap='butt';g.beginPath();g.moveTo(s0[0],s0[1]);g.lineTo(s1[0],s1[1]);g.stroke();}
         else if(r.kind==='obb'){var c=Math.cos(r.ry),s=Math.sin(r.ry),pts=[[-1,-1],[1,-1],[1,1],[-1,1]].map(function(q){
@@ -114,11 +131,12 @@
         frame:f.slice(),size:size,bg:bg,
         records:ordered().map(function(r){var o2={kind:r.kind,tag:r.tag,col:colOf(r),y:r.kind==='label'?null:r.y,name:r.name};
           if(r.kind==='rect')o2.rect=r.rect.slice();else if(r.kind==='strip'){o2.a=r.a.slice();o2.b=r.b.slice();o2.w=r.w;}
+          else if(r.kind==='poly')o2.pts=r.pts.map(function(p){return p.slice();});
           else{o2.x=r.x;o2.z=r.z;if(r.kind==='disc')o2.r=r.r;if(r.kind==='obb'){o2.hx=r.hx;o2.hz=r.hz;o2.ry=r.ry;}if(r.kind==='label'){o2.text=r.text;o2.size=r.size;}}
           return o2;}),
         relief:relief?{n:relief.n,cell:relief.cell,rgb:Array.prototype.slice.call(relief.rgb)}:null};
     }
-    return {rect:rect,obb:obb,strip:strip,disc:disc,label:label,fromWalk:fromWalk,relief:reliefOf,toPx:toPx,toWorld:toWorld,
+    return {rect:rect,obb:obb,strip:strip,disc:disc,label:label,poly:poly,fromWalk:fromWalk,relief:reliefOf,toPx:toPx,toWorld:toWorld,
       pick:pick,paint:paint,reliefPixels:reliefPixels,overlay:overlay,rev:function(){return rv;},export:exp,records:recs,frame:f,size:size};
   }
   root.KMAP={create:create};

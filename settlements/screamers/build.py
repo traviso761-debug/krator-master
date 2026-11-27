@@ -39,6 +39,9 @@ claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -113,6 +116,7 @@ DOOR_FILES['8zo-anc-open.js'] = os.path.join(ROOT, 'kits', 'ancients', 'src', '8
 sys.path.insert(0, os.path.join(ROOT, 'core', 'host'))
 import host as khost
 CORE_HOST = [f for f in khost.FULL if f not in ('20-core-space.js', '40-core-edits.js')]
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 TEX_DIR = os.path.join(HERE, 'tex')                 # the library pack: tools/textures/pack.py writes it from materials.json
 MATLIB_PACK = '72b-matlib-pack.js'                  # GENERATED (matlib_pack()), never written to src/; 72c-matlib.js applies it
 # GENERATED, never written to src/ (virtual_bodies()): the catalog's furniture and the interiors core with the Post-Apoc

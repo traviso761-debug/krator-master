@@ -87,11 +87,12 @@ IZ.crest = function (F, x, y, z, len, h, dir, col, ridge) {
 /* a bunch of feathers on a cord, hanging from (x, y, z) of parent on a swinging bone `name`.
    o: { n, len, cols:[...], spread, cord } */
 IZ.feathers = function (F, R, name, parent, x, y, z, o) {
+  if (F.bare) return;
   o = o || {};
-  const n = o.n || 5, L = o.len || 0.6, cols = o.cols || ['fScarlet', 'fGold', 'fGreen', 'fTeal', 'fBlack'], sp = o.spread == null ? 0.5 : o.spread;
-  R.dangle(name, parent, x, y, z, { mode: 'hang', len: L + (o.cord || 0.15), k: o.k || 9, c: o.c || 1.6, wind: o.wind == null ? 0.05 : o.wind, max: 1.1 });
+  const n = o.n == null ? 5 : o.n, L = o.len == null ? 0.6 : o.len, cols = o.cols || ['fScarlet', 'fGold', 'fGreen', 'fTeal', 'fBlack'], sp = o.spread == null ? 0.5 : o.spread;
+  R.dangle(name, parent, x, y, z, { mode: 'hang', len: L + (o.cord == null ? 0.15 : o.cord), k: o.k == null ? 9 : o.k, c: o.c == null ? 1.6 : o.c, wind: o.wind == null ? 0.05 : o.wind, max: 1.1 });
   R.on(name);
-  const cd = o.cord || 0.15;
+  const cd = o.cord == null ? 0.15 : o.cord;
   F.rod(0, 0, 0, 0, -cd, 0, 0.012, F.col('rope'), 'rope');
   F.knob(0, -cd, 0, 0.04, F.col('gold'), 'gold');
   for (let i = 0; i < n; i++) {
@@ -109,7 +110,8 @@ IZ.feathers = function (F, R, name, parent, x, y, z, o) {
 /* a vexillum: a pole from (x, y, z) of parent, h tall, a crossbar, a banner hanging (and swinging) from it,
    phalerae down the pole, a gilt finial. o: { h, w, bh, paint, finial:'sun'|'orb'|'hand', discs } */
 IZ.vexillum = function (F, R, name, parent, x, y, z, o) {
-  const h = o.h || 2.6, w = o.w || 0.8, bh = o.bh || 0.9;
+  if (F.bare) return;
+  const h = o.h == null ? 2.6 : o.h, w = o.w == null ? 0.8 : o.w, bh = o.bh == null ? 0.9 : o.bh;
   R.dangle(name, parent, x, y, z, { mode: 'whip', len: h, k: 26, c: 3.2, wind: 0.015, max: 0.25 });
   R.on(name);
   F.cy(0, h / 2, 0, 0.045, 0.04, h, F.col('woodDk'), 'wood', 'y', 8);
@@ -123,7 +125,7 @@ IZ.vexillum = function (F, R, name, parent, x, y, z, o) {
     F.cy(s * (w / 2 + 0.1), cy - 0.36, 0.06, 0.025, 0.05, 0.12, F.col('crimson'), 'hair', 'y', 6);
   }
   /* phalerae down the pole, under the crossbar */
-  for (let i = 0; i < (o.discs || 3); i++) IZ.phalera(F, 0, cy - bh - 0.25 - i * 0.24, 0.06, 0, 0, 1, 0.1);
+  for (let i = 0; i < (o.discs == null ? 3 : o.discs); i++) IZ.phalera(F, 0, cy - bh - 0.25 - i * 0.24, 0.06, 0, 0, 1, 0.1);
   /* the finial */
   if (o.finial === 'orb') {
     F.knob(0, h + 0.12, 0, 0.14, F.col('gold'), 'gold');
@@ -140,7 +142,7 @@ IZ.vexillum = function (F, R, name, parent, x, y, z, o) {
 /* a sashimono: a springy pole from (x, y, z) of parent, h tall, with a short arm at the top from which a long
    flag hangs beside the pole. o: { h, w, bh, paint, side (+1 the arm reaches +x) } */
 IZ.sashimono = function (F, R, name, parent, x, y, z, o) {
-  const h = o.h || 2.4, w = o.w || 0.55, bh = o.bh || 1.6, s = o.side || 1;
+  const h = o.h == null ? 2.4 : o.h, w = o.w == null ? 0.55 : o.w, bh = o.bh == null ? 1.6 : o.bh, s = o.side == null ? 1 : o.side;
   R.dangle(name, parent, x, y, z, { mode: 'whip', len: h, k: 20, c: 2.6, wind: 0.02, max: 0.3 });
   R.on(name);
   F.cy(0, h / 2, 0, 0.04, 0.032, h, F.col('woodDk'), 'wood', 'y', 8);
@@ -152,6 +154,7 @@ IZ.sashimono = function (F, R, name, parent, x, y, z, o) {
 };
 /* legion numerals in raised bars (I, V, X) on a plate facing +z, centred at (x, y, z), h tall */
 IZ.numeral = function (F, x, y, z, s, h, col) {
+  if (F.bare) return;
   const cw = h * 0.6, bw = h * 0.17, x0 = x - (s.length * cw) / 2 + cw / 2;
   col = col == null ? F.col('cream') : col;
   for (let i = 0; i < s.length; i++) {

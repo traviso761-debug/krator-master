@@ -6,7 +6,7 @@ The northern semiarid country, the walking steppe (biomes/nsemiarid/PLAN.md): th
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN-STATIONS.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/nsemiarid.html`
+Built output (never open it; edit `src/` and rebuild): `dist/nsemiarid-high.html`, `dist/nsemiarid.html`
 
 Build: `cd biomes/nsemiarid && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -32,11 +32,11 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `00-head.html` | 1 |  |
 | `45-host-scene.js` | 2 |  |
 | `45b-host-stage.js` | 13 | the land (23); the climate fields (cached below; these are the  (96); the host binding (121); the water (136) |
-| `45c-host-ground.js` | 15 | the ground (5) |
+| `45c-host-ground.js` | 16 | the ground (5) |
 | `46-host-graphics.js` | 1 |  |
-| `50-biome-nsemiarid-species.js` | 65 **big** | palettes (31); the tree species (76); harvest (biomes/FRUIT.md; kits/crops) (120); the small plants (the floor), tagged (147); leaf textures (182); bark, rock textures (272); geometries local to this biome (303); materials (488); the library cards and barks (materials.json) (521); instanced items (558) |
-| `55-biome-nsemiarid-trees.js` | 37 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (41); colour (the maths is the core's, BIO.col) (56); polyline helpers (Girder's) (71); keep-clear between trees (81); foliage helpers (88); the builders (123); impostors (the far canopy) (296); the pass (321); the passes (data: species, cell, acceptance from (350) |
-| `60-biome-nsemiarid-floor.js` | 30 **big** | small plants (39); the travellers (60); dew gardens (196); the zone planters (206); the pass (281) |
+| `50-biome-nsemiarid-species.js` | 68 **big** | palettes (31); the tree species (76); harvest (biomes/FRUIT.md; kits/crops) (120); the small plants (the floor), tagged (147); leaf textures (182); bark, rock textures (272); geometries local to this biome (303); materials (504); the library cards and barks (materials.json) (537); instanced items (574) |
+| `55-biome-nsemiarid-trees.js` | 37 **big** | zones from the fields (13); the travellers' shapes (positions only: core/ran (44); colour (the maths is the core's, BIO.col) (59); polyline helpers (Girder's) (74); keep-clear between trees (84); foliage helpers (91); the builders (126); impostors (the far canopy) (299); the pass (324); the passes (data: species, cell, acceptance from (353) |
+| `60-biome-nsemiarid-floor.js` | 32 **big** | small plants (39); the travellers (60); dew gardens (200); the zone planters (210); the pass (285) |
 | `70-biome-nsemiarid.js` | <1 |  |
 | `86-host-variants.js` | 18 | materials for instancing (the open world's) (19); harvest: what the kit wrote, one geometry per ma (55); growing the variants (82); drawing: one pool of instances per prototype (100); the far level as octahedral impostors (VARIANTS. (136) |
 | `87-host-far.js` | 3 |  |
@@ -45,5 +45,13 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | `89b-host-atmos.js` | 9 |  |
 | `89c-host-seeds.js` | 14 |  |
 | `98-host-checks.js` | 15 | the inspector's words (11) |
-| `99-host-take.js` | 12 | the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (99) |
+| `99-host-take.js` | 13 | the probe's budgets and the kit's own checks (ve (37); the page, handed to the host (106) |
 | `99-tail.html` | <1 |  |
+
+## stations/
+
+Each station builds one page (`build.py --station <name>`) from its own fragments, with `src/` or its `base` station.
+
+| Station | Fragments | KB |
+|---|---|---|
+| high | 45b-host-stage.js, 56-biome-nsemiarid-high.js, 87k-host-kin.js, 89-host-sky.js, 99-host-take.js | 45 |

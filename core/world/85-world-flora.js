@@ -41,7 +41,7 @@ const NK=KITS.length,REACH=KITS.map(K=>K.lod.far[2]);
 const GRID_FIELDS=['h','water','abyssUp'].concat(WORLD.FIELDS.filter(f=>f!=='abyssUp'));
 function fieldGrid(x0,z0){const n=FG*FG,F={};const names=GRID_FIELDS;
  names.forEach(k=>F[k]=new Float32Array(n));F.w=KITS.map(()=>new Float32Array(n));F.inside=new Uint8Array(n);
- for(let j=0;j<FG;j++)for(let i=0;i<FG;i++){const x=x0+i*FS,z=z0+j*FS,k=j*FG+i,A=WORLD.at(x,z);
+ for(let j=0;j<FG;j++)for(let i=0;i<FG;i++){const x=x0+i*FS,z=z0+j*FS,k=j*FG+i,A=WORLD.atShared(x,z);
   for(const nm of names)F[nm][k]=A[nm];F.inside[k]=A.inside?1:0;for(let q=0;q<NK;q++)F.w[q][k]=WORLD.kitW(q,x,z);}
  F.names=names;F.x0=x0;F.z0=z0;return F;}
 function gridSampler(F){const out={},names=F.names;let lx=NaN,lz=NaN;
@@ -128,8 +128,10 @@ function ensure(p,n){if(n<=p.cap)return;let cap=Math.max(16,p.cap);while(cap<n)c
  for(const m of p.meshes){scene.remove(m);m.dispose&&m.dispose();}p.meshes=[];const old=p.arr;p.arr=new Float32Array(cap*16);if(old)p.arr.set(old);p.attr=new THREE.InstancedBufferAttribute(p.arr,16);p.attr.setUsage(THREE.DynamicDrawUsage);p.cap=cap;
  // white per-instance colours: three.js r128 leaves instanceColor out of its program cache key, so an instanced mesh
  // without them can be handed a program built for one with them (a town tile's) and throw every frame
- const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3);
- for(const part of p.proto.parts){const m=new THREE.InstancedMesh(part.geo,part.mat,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
+ const white=new THREE.InstancedBufferAttribute(new Float32Array(cap*3).fill(1),3),cast=!!(HOST.shadow&&!/\|0$/.test(p.key));
+ for(const part of p.proto.parts){const M=part.mat,m=new THREE.InstancedMesh(part.geo,M,cap);m.instanceMatrix=p.attr;m.instanceColor=white;m.frustumCulled=false;m.count=0;
+  m.castShadow=cast&&!!(M&&!M.transparent&&M.depthWrite!==false&&!M.isShaderMaterial&&!M.isMeshBasicMaterial);
+  m.userData.flora=p.key;m.userData.inspectLabel='flora';scene.add(m);p.meshes.push(m);}}
 const spec=(r,lv)=>({kit:KITS[r.k].name,sp:r.sp,v:r.v,lv:r.sap?2:lv,sapling:r.sap});
 const pkey=(r,lv)=>r.k+'|'+r.sp+'|'+r.v+'|'+(r.sap?'s':lv);
 let on=true;

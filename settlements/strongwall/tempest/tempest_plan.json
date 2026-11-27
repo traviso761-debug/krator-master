@@ -1,0 +1,2832 @@
+{
+ "id": "xan.tempest",
+ "name": "The House of the Tempest",
+ "px": [
+  886,
+  1619
+ ],
+ "blueprint": "settlements/strongwall/tempest/BLUEPRINT.md",
+ "frame": "u from the Main Gate (east, toward Strongwall) west along the axis; v north; metres; y up from the outer ward",
+ "owner": {
+  "layout": "concentric",
+  "prismarch": "in the utse",
+  "novices": "their own court",
+  "muster": "horses inside, three gates"
+ },
+ "fort": {
+  "size": "monastery",
+  "dress": {
+   "curtains": "march, the twig band violet",
+   "utse_and_main_gate": "royal"
+  },
+  "outer": {
+   "poly": [
+    [
+     -130,
+     -95
+    ],
+    [
+     130,
+     -95
+    ],
+    [
+     130,
+     95
+    ],
+    [
+     -130,
+     95
+    ]
+   ],
+   "h": 9,
+   "t": 3.5,
+   "walk_h": 9,
+   "walk": [
+    [
+     -128.5,
+     -93.5
+    ],
+    [
+     128.5,
+     -93.5
+    ],
+    [
+     128.5,
+     93.5
+    ],
+    [
+     -128.5,
+     93.5
+    ],
+    [
+     -128.5,
+     -93.5
+    ]
+   ]
+  },
+  "inner": {
+   "poly": [
+    [
+     -55,
+     -48
+    ],
+    [
+     55,
+     -48
+    ],
+    [
+     55,
+     48
+    ],
+    [
+     -55,
+     48
+    ]
+   ],
+   "h": 12,
+   "talus_h": 4,
+   "talus": [
+    [
+     -59,
+     -52
+    ],
+    [
+     59,
+     -52
+    ],
+    [
+     59,
+     52
+    ],
+    [
+     -59,
+     52
+    ]
+   ]
+  },
+  "towers": [
+   {
+    "at": [
+     -130,
+     95
+    ],
+    "kind": "corner",
+    "form": "drum",
+    "r": 7
+   },
+   {
+    "at": [
+     130,
+     95
+    ],
+    "kind": "corner",
+    "form": "drum",
+    "r": 7
+   },
+   {
+    "at": [
+     -130,
+     -95
+    ],
+    "kind": "corner",
+    "form": "drum",
+    "r": 7
+   },
+   {
+    "at": [
+     130,
+     -95
+    ],
+    "kind": "corner",
+    "form": "drum",
+    "r": 7
+   },
+   {
+    "at": [
+     -98,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -98,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -46,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -46,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     8,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     8,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     60,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     60,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     84,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     84,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     108,
+     98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     108,
+     -98
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -133,
+     -70
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -133,
+     -40
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -133,
+     40
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -133,
+     70
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     133,
+     -62
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     133,
+     -30
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     133,
+     30
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     133,
+     62
+    ],
+    "kind": "interval",
+    "form": "square",
+    "r": 3
+   },
+   {
+    "at": [
+     -55,
+     48
+    ],
+    "kind": "inner",
+    "form": "drum",
+    "r": 5
+   },
+   {
+    "at": [
+     55,
+     48
+    ],
+    "kind": "inner",
+    "form": "drum",
+    "r": 5
+   },
+   {
+    "at": [
+     -55,
+     -48
+    ],
+    "kind": "inner",
+    "form": "drum",
+    "r": 5
+   },
+   {
+    "at": [
+     55,
+     -48
+    ],
+    "kind": "inner",
+    "form": "drum",
+    "r": 5
+   }
+  ],
+  "gates": [
+   {
+    "name": "Main Gate",
+    "rect": [
+     -138,
+     -114,
+     -9,
+     9
+    ],
+    "kind": "iwan",
+    "bent": true,
+    "barbican": [
+     -162,
+     -138,
+     -26,
+     26
+    ],
+    "gold": "gilt pavilion"
+   },
+   {
+    "name": "North Sally Gate",
+    "rect": [
+     -22,
+     -10,
+     81,
+     101
+    ],
+    "kind": "sally",
+    "to": "the trough road"
+   },
+   {
+    "name": "South Sally Gate",
+    "rect": [
+     -22,
+     -10,
+     -101,
+     -81
+    ],
+    "kind": "sally",
+    "to": "the Kruk Warra road"
+   },
+   {
+    "name": "Inner Gate",
+    "rect": [
+     -63,
+     -41,
+     -3,
+     3
+    ],
+    "kind": "ramp",
+    "through": "the utse",
+    "rise": 4
+   },
+   {
+    "name": "Founder's Way",
+    "from": [
+     50,
+     -23
+    ],
+    "to": [
+     165,
+     -25
+    ],
+    "kind": "tunnel",
+    "hidden": true
+   }
+  ],
+  "keep": "utse",
+  "west_tower": {
+   "name": "Storm Tower",
+   "rect": [
+    114,
+    140,
+    -12,
+    12
+   ],
+   "h": 20
+  },
+  "gold": [
+   "the Main Gate's pavilion",
+   "the utse's chapel finial",
+   "the Assembly Hall's holy crown (the kit's)"
+  ]
+ },
+ "hosted": {
+  "key": "qb_monastery",
+  "kit": "kits/qiblai",
+  "o": {
+   "v": 6
+  },
+  "rect": [
+   -20,
+   32,
+   -26,
+   26
+  ],
+  "y": 4,
+  "kit_frame": "u = 6 - z, v = x (the gate tower faces east, the hall west)",
+  "clear_of_inner_curtain_m": 6
+ },
+ "utse": {
+  "rect": [
+   -63,
+   -41,
+   -11,
+   11
+  ],
+  "roof_y": 22.5,
+  "finial_y": 25.5,
+  "floors": {
+   "U0": {
+    "y": 0,
+    "rooms": [
+     [
+      1,
+      "U0: Inner Gate passage",
+      "passage",
+      -63.0,
+      -41.0,
+      -3.0,
+      3.0,
+      2
+     ],
+     [
+      2,
+      "U0: Keepers of the Inner Gate",
+      "guard",
+      -63.0,
+      -46.0,
+      3.0,
+      11.0,
+      1
+     ],
+     [
+      3,
+      "U0: Stair",
+      "stair",
+      -46.0,
+      -41.0,
+      6.0,
+      11.0,
+      2
+     ],
+     [
+      4,
+      "U0: Lobby",
+      "passage",
+      -46.0,
+      -41.0,
+      3.0,
+      6.0,
+      1
+     ],
+     [
+      5,
+      "U0: Runners' Room",
+      "runners",
+      -63.0,
+      -41.0,
+      -11.0,
+      -3.0,
+      1
+     ]
+    ]
+   },
+   "U1": {
+    "y": 5,
+    "rooms": [
+     [
+      6,
+      "U1: War Room",
+      "war_room",
+      -63.0,
+      -41.0,
+      -11.0,
+      -3.0,
+      3
+     ],
+     [
+      7,
+      "U1: Murder Gallery",
+      "murder",
+      -63.0,
+      -46.0,
+      -3.0,
+      3.0,
+      1
+     ],
+     [
+      8,
+      "U1: Clerks of the Raid Ledger",
+      "office",
+      -63.0,
+      -46.0,
+      3.0,
+      11.0,
+      2
+     ],
+     [
+      9,
+      "U1: Stair",
+      "stair",
+      -46.0,
+      -41.0,
+      6.0,
+      11.0,
+      2
+     ],
+     [
+      10,
+      "U1: Landing",
+      "passage",
+      -46.0,
+      -41.0,
+      -3.0,
+      6.0,
+      1
+     ]
+    ]
+   },
+   "U2": {
+    "y": 9.5,
+    "rooms": [
+     [
+      11,
+      "U2: Hall of the Banner",
+      "banner_hall",
+      -63.0,
+      -46.0,
+      -11.0,
+      11.0,
+      3
+     ],
+     [
+      12,
+      "U2: Balcony",
+      "balcony",
+      -65.5,
+      -63.0,
+      -6.0,
+      6.0,
+      3
+     ],
+     [
+      13,
+      "U2: Antechamber",
+      "antechamber",
+      -46.0,
+      -41.0,
+      -11.0,
+      6.0,
+      2
+     ],
+     [
+      14,
+      "U2: Stair",
+      "stair",
+      -46.0,
+      -41.0,
+      6.0,
+      11.0,
+      2
+     ]
+    ]
+   },
+   "U3": {
+    "y": 14.5,
+    "rooms": [
+     [
+      15,
+      "U3: Audience Room",
+      "audience",
+      -63.0,
+      -52.0,
+      -11.0,
+      11.0,
+      3
+     ],
+     [
+      16,
+      "U3: The Prismarch's Cell",
+      "abbot_cell",
+      -52.0,
+      -41.0,
+      -11.0,
+      1.0,
+      2
+     ],
+     [
+      17,
+      "U3: Secretary",
+      "office",
+      -52.0,
+      -46.0,
+      1.0,
+      11.0,
+      2
+     ],
+     [
+      18,
+      "U3: Attendant and Garderobe",
+      "attendant",
+      -46.0,
+      -41.0,
+      1.0,
+      6.0,
+      1
+     ],
+     [
+      19,
+      "U3: Stair",
+      "stair",
+      -46.0,
+      -41.0,
+      6.0,
+      11.0,
+      2
+     ]
+    ]
+   },
+   "U4": {
+    "y": 18.5,
+    "rooms": [
+     [
+      20,
+      "U4: Roof Terrace",
+      "roof",
+      -63.0,
+      -41.0,
+      -11.0,
+      11.0,
+      2
+     ],
+     [
+      21,
+      "U4: Chapel of the Prismarch",
+      "chapel",
+      -60.0,
+      -44.0,
+      -8.0,
+      8.0,
+      4
+     ],
+     [
+      22,
+      "U4: Beacon",
+      "beacon",
+      -63.0,
+      -58.0,
+      -11.0,
+      -6.0,
+      1
+     ],
+     [
+      23,
+      "U4: Stair (head)",
+      "stair",
+      -46.0,
+      -41.0,
+      6.0,
+      11.0,
+      2
+     ]
+    ]
+   }
+  }
+ },
+ "sheets": {
+  "T0": {
+   "y": 0,
+   "note": "the crest",
+   "title": "Sheet T0: the West Arm's crest round the House (1,000 x 800 m)",
+   "rooms": [
+    [
+     1,
+     "The House of the Tempest (sheets T1, T2)",
+     "void",
+     -130.0,
+     130.0,
+     -95.0,
+     95.0,
+     4
+    ],
+    [
+     2,
+     "Barbican",
+     "lists",
+     -162.0,
+     -138.0,
+     -26.0,
+     26.0,
+     1
+    ],
+    [
+     3,
+     "The Maydan",
+     "maydan",
+     -100.0,
+     250.0,
+     130.0,
+     230.0,
+     1
+    ],
+    [
+     4,
+     "Remounts' Paddock",
+     "horse_park",
+     -420.0,
+     -200.0,
+     -360.0,
+     -140.0,
+     0
+    ],
+    [
+     5,
+     "Byres and the Herdsmen's Huts",
+     "byres",
+     -200.0,
+     -130.0,
+     -360.0,
+     -300.0,
+     1
+    ],
+    [
+     6,
+     "The Great Tank",
+     "cistern",
+     -300.0,
+     -220.0,
+     -110.0,
+     -40.0,
+     0
+    ],
+    [
+     7,
+     "Barley Terraces (west)",
+     "field",
+     190.0,
+     500.0,
+     -400.0,
+     120.0,
+     1
+    ],
+    [
+     8,
+     "Barley Terraces (south-east)",
+     "field",
+     -130.0,
+     -5.0,
+     -400.0,
+     -160.0,
+     1
+    ],
+    [
+     9,
+     "Barley Terraces (south-west)",
+     "field",
+     15.0,
+     180.0,
+     -400.0,
+     -160.0,
+     1
+    ],
+    [
+     10,
+     "Threshing Floors",
+     "threshing",
+     140.0,
+     180.0,
+     -150.0,
+     -110.0,
+     0
+    ],
+    [
+     11,
+     "Tea Garden",
+     "field",
+     260.0,
+     480.0,
+     180.0,
+     380.0,
+     2
+    ],
+    [
+     12,
+     "Hives",
+     "field",
+     260.0,
+     320.0,
+     125.0,
+     170.0,
+     1
+    ],
+    [
+     13,
+     "Commons of the Crest",
+     "field",
+     -500.0,
+     -160.0,
+     130.0,
+     400.0,
+     0
+    ],
+    [
+     14,
+     "Hay Barns and Ricks",
+     "hay",
+     -190.0,
+     -140.0,
+     -250.0,
+     -160.0,
+     0
+    ],
+    [
+     15,
+     "Midden (south)",
+     "midden",
+     -60.0,
+     -25.0,
+     -150.0,
+     -115.0,
+     0
+    ],
+    [
+     16,
+     "Midden (north)",
+     "midden",
+     -70.0,
+     -35.0,
+     106.0,
+     126.0,
+     0
+    ],
+    [
+     17,
+     "Caravan Halt",
+     "caravan_halt",
+     -240.0,
+     -170.0,
+     20.0,
+     80.0,
+     1
+    ],
+    [
+     18,
+     "Thorn Brake",
+     "field",
+     160.0,
+     182.0,
+     -42.0,
+     -12.0,
+     0
+    ]
+   ]
+  },
+  "T1": {
+   "y": 0,
+   "inner_y": 4,
+   "note": "the outer ward at 0; the inner ward's rooms (u -55..55, v -48..48) at 4",
+   "title": "Sheet T1: the House, ground floor (outer curtain 260 x 190 m; concentric)",
+   "rooms": [
+    [
+     1,
+     "Barbican",
+     "lists",
+     -162.0,
+     -138.0,
+     -26.0,
+     26.0,
+     1
+    ],
+    [
+     2,
+     "Main Gate",
+     "gatehouse",
+     -138.0,
+     -114.0,
+     -9.0,
+     9.0,
+     3
+    ],
+    [
+     3,
+     "Guard of the Gate",
+     "guard",
+     -128.0,
+     -114.0,
+     9.0,
+     19.0,
+     1
+    ],
+    [
+     4,
+     "Guard of the Gate",
+     "guard",
+     -128.0,
+     -114.0,
+     -19.0,
+     -9.0,
+     1
+    ],
+    [
+     5,
+     "Sword Hall (the armoury)",
+     "armoury",
+     -128.0,
+     -114.0,
+     19.0,
+     57.0,
+     1
+    ],
+    [
+     6,
+     "Marshal's Hall",
+     "office",
+     -128.0,
+     -114.0,
+     57.0,
+     79.0,
+     2
+    ],
+    [
+     7,
+     "Gate Stable",
+     "stable",
+     -128.0,
+     -114.0,
+     -57.0,
+     -19.0,
+     0
+    ],
+    [
+     8,
+     "Guest House",
+     "guest_hall",
+     -128.0,
+     -114.0,
+     -79.0,
+     -57.0,
+     2
+    ],
+    [
+     9,
+     "Corner stair and garderobe",
+     "stair",
+     -128.0,
+     -114.0,
+     79.0,
+     93.0,
+     0
+    ],
+    [
+     10,
+     "Corner stair and garderobe",
+     "stair",
+     -128.0,
+     -114.0,
+     -93.0,
+     -79.0,
+     0
+    ],
+    [
+     11,
+     "Stables of the North (east)",
+     "stable",
+     -114.0,
+     -22.0,
+     81.0,
+     93.0,
+     0
+    ],
+    [
+     12,
+     "North Sally Gate",
+     "sally_gate",
+     -22.0,
+     -10.0,
+     81.0,
+     101.0,
+     2
+    ],
+    [
+     13,
+     "Stables of the North (west)",
+     "stable",
+     -10.0,
+     80.0,
+     81.0,
+     93.0,
+     0
+    ],
+    [
+     14,
+     "Stables of the South (east)",
+     "stable",
+     -114.0,
+     -22.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     15,
+     "South Sally Gate",
+     "sally_gate",
+     -22.0,
+     -10.0,
+     -101.0,
+     -81.0,
+     2
+    ],
+    [
+     16,
+     "Stables of the South (west)",
+     "stable",
+     -10.0,
+     80.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     17,
+     "Novices' Yard",
+     "yard",
+     86.0,
+     116.0,
+     51.0,
+     81.0,
+     1
+    ],
+    [
+     18,
+     "School of the Song",
+     "song_school",
+     80.0,
+     104.0,
+     81.0,
+     93.0,
+     2
+    ],
+    [
+     19,
+     "Novices' Refectory",
+     "novice_refectory",
+     104.0,
+     128.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     20,
+     "Master of Novices",
+     "chamber",
+     116.0,
+     128.0,
+     69.0,
+     81.0,
+     2
+    ],
+    [
+     21,
+     "The Little Armoury",
+     "novice_armoury",
+     116.0,
+     128.0,
+     51.0,
+     69.0,
+     1
+    ],
+    [
+     22,
+     "Novices' Wash House",
+     "wash",
+     116.0,
+     128.0,
+     39.0,
+     51.0,
+     1
+    ],
+    [
+     23,
+     "Novices' Gate and Arcade",
+     "passage",
+     80.0,
+     86.0,
+     51.0,
+     75.0,
+     1
+    ],
+    [
+     24,
+     "Novices' Stair",
+     "stair",
+     80.0,
+     86.0,
+     75.0,
+     81.0,
+     1
+    ],
+    [
+     25,
+     "Hall of the Bow",
+     "bow_hall",
+     80.0,
+     116.0,
+     39.0,
+     51.0,
+     1
+    ],
+    [
+     26,
+     "Great Refectory",
+     "refectory",
+     80.0,
+     116.0,
+     -61.0,
+     -39.0,
+     2
+    ],
+    [
+     27,
+     "Great Kitchen",
+     "kitchen",
+     80.0,
+     104.0,
+     -81.0,
+     -61.0,
+     1
+    ],
+    [
+     28,
+     "Bakehouse",
+     "bakehouse",
+     104.0,
+     116.0,
+     -81.0,
+     -61.0,
+     1
+    ],
+    [
+     29,
+     "Granary",
+     "granary",
+     116.0,
+     128.0,
+     -81.0,
+     -39.0,
+     0
+    ],
+    [
+     30,
+     "Larder, Tea and Butter",
+     "larder",
+     80.0,
+     100.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     31,
+     "Dairy",
+     "dairy",
+     100.0,
+     116.0,
+     -93.0,
+     -81.0,
+     1
+    ],
+    [
+     32,
+     "Corner stair and garderobe",
+     "stair",
+     116.0,
+     128.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     33,
+     "West Watch",
+     "guard",
+     114.0,
+     140.0,
+     -12.0,
+     4.0,
+     2
+    ],
+    [
+     34,
+     "Beacon Fuel Store",
+     "store",
+     114.0,
+     132.0,
+     4.0,
+     12.0,
+     0
+    ],
+    [
+     35,
+     "Storm Tower Stair",
+     "stair",
+     132.0,
+     140.0,
+     4.0,
+     12.0,
+     1
+    ],
+    [
+     36,
+     "Smithy and Farriery",
+     "smithy",
+     114.0,
+     128.0,
+     12.0,
+     39.0,
+     1
+    ],
+    [
+     37,
+     "Bowyers and Fletchers",
+     "bowyers",
+     114.0,
+     128.0,
+     -39.0,
+     -12.0,
+     1
+    ],
+    [
+     38,
+     "Muster Court",
+     "muster",
+     -114.0,
+     -63.0,
+     -79.0,
+     79.0,
+     2
+    ],
+    [
+     39,
+     "Well and Troughs of the Muster",
+     "well",
+     -104.0,
+     -92.0,
+     -70.0,
+     -58.0,
+     1
+    ],
+    [
+     40,
+     "Riders' Lane (north lists)",
+     "lists",
+     -63.0,
+     80.0,
+     52.0,
+     81.0,
+     1
+    ],
+    [
+     41,
+     "South Lists",
+     "lists",
+     -63.0,
+     80.0,
+     -81.0,
+     -52.0,
+     1
+    ],
+    [
+     42,
+     "Hay Shed (north)",
+     "hay",
+     56.0,
+     80.0,
+     69.0,
+     81.0,
+     0
+    ],
+    [
+     43,
+     "Hay Shed (south)",
+     "hay",
+     -63.0,
+     -51.0,
+     -80.0,
+     -66.0,
+     0
+    ],
+    [
+     44,
+     "Archery Range",
+     "archery",
+     -50.0,
+     76.0,
+     -74.0,
+     -58.0,
+     2
+    ],
+    [
+     45,
+     "Stop Bank",
+     "bank",
+     76.0,
+     80.0,
+     -76.0,
+     -56.0,
+     0
+    ],
+    [
+     46,
+     "Drill Court",
+     "drill_court",
+     63.0,
+     114.0,
+     -39.0,
+     39.0,
+     2
+    ],
+    [
+     47,
+     "Utse (sheet U)",
+     "void",
+     -63.0,
+     -41.0,
+     -11.0,
+     11.0,
+     3
+    ],
+    [
+     48,
+     "Inner Court",
+     "inner_court",
+     -41.0,
+     -20.0,
+     -26.0,
+     26.0,
+     3
+    ],
+    [
+     49,
+     "The great monastery (sheets M1, M2, MR)",
+     "void",
+     -20.0,
+     32.0,
+     -26.0,
+     26.0,
+     4
+    ],
+    [
+     50,
+     "Infirmary of the Order",
+     "infirmary",
+     -51.0,
+     0.0,
+     30.0,
+     46.0,
+     2
+    ],
+    [
+     51,
+     "Apothecary",
+     "apothecary",
+     0.0,
+     12.0,
+     30.0,
+     46.0,
+     2
+    ],
+    [
+     52,
+     "Physic Garden",
+     "garden",
+     12.0,
+     51.0,
+     30.0,
+     46.0,
+     2
+    ],
+    [
+     53,
+     "Bath House of the Brothers",
+     "wash",
+     -51.0,
+     -25.0,
+     -46.0,
+     -30.0,
+     1
+    ],
+    [
+     54,
+     "Cistern and Well-house",
+     "cistern",
+     -25.0,
+     -5.0,
+     -46.0,
+     -30.0,
+     0
+    ],
+    [
+     55,
+     "Field of the Fallen",
+     "fallen",
+     -5.0,
+     51.0,
+     -46.0,
+     -30.0,
+     3
+    ],
+    [
+     56,
+     "Founder's Garden",
+     "garden",
+     34.0,
+     53.0,
+     -26.0,
+     26.0,
+     3
+    ],
+    [
+     57,
+     "Founder's Chorten",
+     "founder",
+     38.0,
+     48.0,
+     -5.0,
+     5.0,
+     4
+    ],
+    [
+     58,
+     "Founder's Way (stair head)",
+     "stair",
+     48.0,
+     52.0,
+     -26.0,
+     -20.0,
+     1
+    ],
+    [
+     59,
+     "Garderobe Turret",
+     "garderobe",
+     -70.0,
+     -64.0,
+     93.0,
+     99.0,
+     0
+    ],
+    [
+     60,
+     "Garderobe Turret",
+     "garderobe",
+     32.0,
+     38.0,
+     93.0,
+     99.0,
+     0
+    ],
+    [
+     61,
+     "Garderobe Turret",
+     "garderobe",
+     -70.0,
+     -64.0,
+     -99.0,
+     -93.0,
+     0
+    ],
+    [
+     62,
+     "Garderobe Turret",
+     "garderobe",
+     32.0,
+     38.0,
+     -99.0,
+     -93.0,
+     0
+    ],
+    [
+     63,
+     "Towers (grey): 4 corner drums, 20 interval towers at about 30 m, 4 inner drums",
+     "towers",
+     -137.0,
+     -123.0,
+     88.0,
+     102.0,
+     0
+    ]
+   ]
+  },
+  "T2": {
+   "y": 4.5,
+   "inner_y": 8.5,
+   "note": "the ranges' upper storey; the infirmary's upper ward in the inner ward",
+   "title": "Sheet T2: the House, upper storey of the ranges (about 4.5 m)",
+   "rooms": [
+    [
+     1,
+     "Gate Chamber, gilt pavilion",
+     "gatehouse",
+     -138.0,
+     -114.0,
+     -9.0,
+     9.0,
+     3
+    ],
+    [
+     2,
+     "Gate Watch",
+     "barracks",
+     -128.0,
+     -114.0,
+     9.0,
+     19.0,
+     1
+    ],
+    [
+     3,
+     "Gate Watch",
+     "barracks",
+     -128.0,
+     -114.0,
+     -19.0,
+     -9.0,
+     1
+    ],
+    [
+     4,
+     "Bow Loft",
+     "bow_loft",
+     -128.0,
+     -114.0,
+     19.0,
+     40.0,
+     1
+    ],
+    [
+     5,
+     "Quiver House",
+     "quiver_house",
+     -128.0,
+     -114.0,
+     40.0,
+     57.0,
+     1
+    ],
+    [
+     6,
+     "The Marshal's Rooms",
+     "chamber",
+     -128.0,
+     -114.0,
+     57.0,
+     79.0,
+     2
+    ],
+    [
+     7,
+     "Grooms' and Couriers' Loft",
+     "lay_dorm",
+     -128.0,
+     -114.0,
+     -57.0,
+     -35.0,
+     1
+    ],
+    [
+     8,
+     "Hay Loft",
+     "store",
+     -128.0,
+     -114.0,
+     -35.0,
+     -19.0,
+     0
+    ],
+    [
+     9,
+     "Guest Chambers",
+     "hostel",
+     -128.0,
+     -114.0,
+     -79.0,
+     -57.0,
+     2
+    ],
+    [
+     10,
+     "Corner stair",
+     "stair",
+     -128.0,
+     -114.0,
+     79.0,
+     93.0,
+     0
+    ],
+    [
+     11,
+     "Corner stair",
+     "stair",
+     -128.0,
+     -114.0,
+     -93.0,
+     -79.0,
+     0
+    ],
+    [
+     12,
+     "Company of the North Wind",
+     "company_hall",
+     -114.0,
+     -70.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     13,
+     "Stair and Captains' Cells",
+     "captains",
+     -70.0,
+     -64.0,
+     81.0,
+     93.0,
+     2
+    ],
+    [
+     14,
+     "Company of the North-East Wind",
+     "company_hall",
+     -64.0,
+     -22.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     15,
+     "North Sally Gate chamber",
+     "gatehouse",
+     -22.0,
+     -10.0,
+     81.0,
+     101.0,
+     1
+    ],
+    [
+     16,
+     "Company of the North-West Wind",
+     "company_hall",
+     -10.0,
+     32.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     17,
+     "Stair and Captains' Cells",
+     "captains",
+     32.0,
+     38.0,
+     81.0,
+     93.0,
+     2
+    ],
+    [
+     18,
+     "Company of the West Wind",
+     "company_hall",
+     38.0,
+     80.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     19,
+     "Company of the South Wind",
+     "company_hall",
+     -114.0,
+     -70.0,
+     -93.0,
+     -81.0,
+     1
+    ],
+    [
+     20,
+     "Stair and Captains' Cells",
+     "captains",
+     -70.0,
+     -64.0,
+     -93.0,
+     -81.0,
+     2
+    ],
+    [
+     21,
+     "Company of the South-East Wind",
+     "company_hall",
+     -64.0,
+     -22.0,
+     -93.0,
+     -81.0,
+     1
+    ],
+    [
+     22,
+     "South Sally Gate chamber",
+     "gatehouse",
+     -22.0,
+     -10.0,
+     -101.0,
+     -81.0,
+     1
+    ],
+    [
+     23,
+     "Company of the South-West Wind",
+     "company_hall",
+     -10.0,
+     32.0,
+     -93.0,
+     -81.0,
+     1
+    ],
+    [
+     24,
+     "Stair and Captains' Cells",
+     "captains",
+     32.0,
+     38.0,
+     -93.0,
+     -81.0,
+     2
+    ],
+    [
+     25,
+     "Company of the East Wind",
+     "company_hall",
+     38.0,
+     80.0,
+     -93.0,
+     -81.0,
+     1
+    ],
+    [
+     26,
+     "Novices' Dormitory (north)",
+     "novice_dorm",
+     80.0,
+     128.0,
+     81.0,
+     93.0,
+     1
+    ],
+    [
+     27,
+     "Novices' Dormitory (west)",
+     "novice_dorm",
+     116.0,
+     128.0,
+     39.0,
+     81.0,
+     1
+    ],
+    [
+     28,
+     "Elder Novices",
+     "novice_dorm",
+     80.0,
+     104.0,
+     39.0,
+     51.0,
+     1
+    ],
+    [
+     29,
+     "Masters of Arms",
+     "chamber",
+     104.0,
+     116.0,
+     39.0,
+     51.0,
+     2
+    ],
+    [
+     30,
+     "Novices' Stair",
+     "stair",
+     80.0,
+     86.0,
+     75.0,
+     81.0,
+     1
+    ],
+    [
+     31,
+     "Great Refectory (rises through)",
+     "void",
+     80.0,
+     116.0,
+     -61.0,
+     -39.0,
+     2
+    ],
+    [
+     32,
+     "Lay Brothers' Dormitory",
+     "lay_dorm",
+     80.0,
+     116.0,
+     -81.0,
+     -61.0,
+     1
+    ],
+    [
+     33,
+     "The Cellarer",
+     "office",
+     80.0,
+     100.0,
+     -93.0,
+     -81.0,
+     2
+    ],
+    [
+     34,
+     "Stores",
+     "store",
+     100.0,
+     116.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     35,
+     "Corner stair",
+     "stair",
+     116.0,
+     128.0,
+     -93.0,
+     -81.0,
+     0
+    ],
+    [
+     36,
+     "Granary Loft",
+     "store",
+     116.0,
+     128.0,
+     -81.0,
+     -39.0,
+     0
+    ],
+    [
+     37,
+     "Signal Room of the Storm Tower",
+     "signal",
+     114.0,
+     140.0,
+     -12.0,
+     0.0,
+     2
+    ],
+    [
+     38,
+     "Barrack of the West Watch",
+     "barracks",
+     114.0,
+     132.0,
+     0.0,
+     12.0,
+     1
+    ],
+    [
+     39,
+     "Storm Tower Stair",
+     "stair",
+     132.0,
+     140.0,
+     4.0,
+     12.0,
+     1
+    ],
+    [
+     40,
+     "Armourers' Loft",
+     "armourers",
+     114.0,
+     128.0,
+     12.0,
+     39.0,
+     1
+    ],
+    [
+     41,
+     "Bow-curing Loft",
+     "bow_loft",
+     114.0,
+     128.0,
+     -39.0,
+     -12.0,
+     1
+    ],
+    [
+     42,
+     "Utse (sheet U)",
+     "void",
+     -63.0,
+     -41.0,
+     -11.0,
+     11.0,
+     3
+    ],
+    [
+     43,
+     "The great monastery (sheet M2)",
+     "void",
+     -20.0,
+     32.0,
+     -26.0,
+     26.0,
+     4
+    ],
+    [
+     44,
+     "Infirmary, Upper Ward",
+     "infirmary",
+     -51.0,
+     -12.0,
+     30.0,
+     46.0,
+     2
+    ],
+    [
+     45,
+     "The Infirmarer",
+     "chamber",
+     -12.0,
+     0.0,
+     30.0,
+     46.0,
+     2
+    ],
+    [
+     46,
+     "Herb Drying Loft",
+     "drying",
+     0.0,
+     12.0,
+     30.0,
+     46.0,
+     1
+    ]
+   ]
+  },
+  "M1": {
+   "y": 5.2,
+   "note": "the kit's plinth (1.2) on the inner ward; the hall's floor at 5.8 (its own 0.6 plinth)",
+   "title": "Sheet M1: the great monastery, ground floor (the kit's 52 m block, violet dress)",
+   "rooms": [
+    [
+     1,
+     "Gate of the Song",
+     "song_gate",
+     -20.5,
+     -12.5,
+     -5.0,
+     5.0,
+     3
+    ],
+    [
+     2,
+     "Porter's Lodge",
+     "chamber",
+     -20.0,
+     -13.0,
+     5.0,
+     11.0,
+     2
+    ],
+    [
+     3,
+     "Blade Room",
+     "blade_room",
+     -20.0,
+     -13.0,
+     11.0,
+     26.0,
+     2
+    ],
+    [
+     4,
+     "Sacristy",
+     "sacristy",
+     -20.0,
+     -13.0,
+     -26.0,
+     -5.0,
+     2
+    ],
+    [
+     5,
+     "Cloister Court",
+     "cloister_court",
+     -13.0,
+     5.8,
+     -16.8,
+     16.8,
+     3
+    ],
+    [
+     6,
+     "Wheel of the Storm (the Song drum)",
+     "song_drum",
+     -9.2,
+     -5.2,
+     -2.0,
+     2.0,
+     4
+    ],
+    [
+     7,
+     "Cloister Walk (north)",
+     "kora",
+     -13.0,
+     25.0,
+     16.8,
+     19.0,
+     2
+    ],
+    [
+     8,
+     "Cloister Walk (south)",
+     "kora",
+     -13.0,
+     25.0,
+     -19.0,
+     -16.8,
+     2
+    ],
+    [
+     9,
+     "Kora beside the Hall (north)",
+     "kora",
+     5.8,
+     22.8,
+     12.0,
+     16.8,
+     2
+    ],
+    [
+     10,
+     "Kora beside the Hall (south)",
+     "kora",
+     5.8,
+     22.8,
+     -16.8,
+     -12.0,
+     2
+    ],
+    [
+     11,
+     "Kora behind the Hall",
+     "kora",
+     22.8,
+     25.0,
+     -16.8,
+     16.8,
+     2
+    ],
+    [
+     12,
+     "Porch of the Hall",
+     "porch",
+     2.6,
+     5.8,
+     -6.0,
+     6.0,
+     3
+    ],
+    [
+     13,
+     "Assembly Hall (dukhang)",
+     "assembly",
+     5.8,
+     19.0,
+     -12.0,
+     12.0,
+     4
+    ],
+    [
+     14,
+     "Shrine of the Storm",
+     "shrine",
+     19.0,
+     22.8,
+     -12.0,
+     8.0,
+     4
+    ],
+    [
+     15,
+     "Hall Stair",
+     "stair",
+     19.0,
+     22.8,
+     8.0,
+     12.0,
+     2
+    ],
+    [
+     16,
+     "Library of the Song",
+     "song_library",
+     -9.5,
+     9.0,
+     19.0,
+     26.0,
+     3
+    ],
+    [
+     17,
+     "Scriptorium of the Drums",
+     "scriptorium",
+     9.0,
+     17.0,
+     19.0,
+     26.0,
+     2
+    ],
+    [
+     18,
+     "Tea Kitchen",
+     "tea_kitchen",
+     17.0,
+     25.0,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     19,
+     "Cells of the Old Brothers (ten)",
+     "cells",
+     -9.5,
+     25.0,
+     -26.0,
+     -19.0,
+     1
+    ],
+    [
+     20,
+     "Chapter House",
+     "chapter_house",
+     25.0,
+     32.0,
+     -12.0,
+     12.0,
+     3
+    ],
+    [
+     21,
+     "Treasury of the Order",
+     "treasury",
+     25.0,
+     32.0,
+     15.5,
+     26.0,
+     2
+    ],
+    [
+     22,
+     "Back Stair",
+     "stair",
+     25.0,
+     32.0,
+     12.0,
+     15.5,
+     1
+    ],
+    [
+     23,
+     "Lamp, Butter and Robe Store",
+     "store",
+     25.0,
+     32.0,
+     -20.0,
+     -12.0,
+     0
+    ],
+    [
+     24,
+     "Latrines",
+     "latrine",
+     25.0,
+     32.0,
+     -26.0,
+     -20.0,
+     0
+    ],
+    [
+     25,
+     "Stair (north)",
+     "stair",
+     -13.0,
+     -9.5,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     26,
+     "Stair (south)",
+     "stair",
+     -13.0,
+     -9.5,
+     -26.0,
+     -19.0,
+     1
+    ]
+   ]
+  },
+  "M2": {
+   "y": 8.6,
+   "hall_gallery_y": 10.8,
+   "note": "the ranges' upper floor; the hall's gallery a storey higher (the hall is 5 m)",
+   "title": "Sheet M2: the great monastery, upper floor (the cells; the hall's gallery)",
+   "rooms": [
+    [
+     1,
+     "Drum of the Hours",
+     "drum_room",
+     -20.5,
+     -12.5,
+     -5.0,
+     5.0,
+     2
+    ],
+    [
+     2,
+     "Cells (front, north: six)",
+     "cells",
+     -20.0,
+     -15.4,
+     5.0,
+     26.0,
+     1
+    ],
+    [
+     3,
+     "Corridor",
+     "passage",
+     -15.4,
+     -13.0,
+     5.0,
+     26.0,
+     1
+    ],
+    [
+     4,
+     "Cells (front, south: six)",
+     "cells",
+     -20.0,
+     -15.4,
+     -26.0,
+     -5.0,
+     1
+    ],
+    [
+     5,
+     "Corridor",
+     "passage",
+     -15.4,
+     -13.0,
+     -26.0,
+     -5.0,
+     1
+    ],
+    [
+     6,
+     "Cells of the Chapter (north: ten)",
+     "cells",
+     -9.5,
+     25.0,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     7,
+     "Cells of the Chapter (south: ten)",
+     "cells",
+     -9.5,
+     25.0,
+     -26.0,
+     -19.0,
+     1
+    ],
+    [
+     8,
+     "Gallery on the Cloister Roof",
+     "passage",
+     -13.0,
+     25.0,
+     16.8,
+     19.0,
+     1
+    ],
+    [
+     9,
+     "Gallery on the Cloister Roof",
+     "passage",
+     -13.0,
+     25.0,
+     -19.0,
+     -16.8,
+     1
+    ],
+    [
+     10,
+     "Gallery over the Kora",
+     "passage",
+     22.8,
+     25.0,
+     -16.8,
+     16.8,
+     1
+    ],
+    [
+     11,
+     "The Prior",
+     "chamber",
+     25.0,
+     32.0,
+     -12.0,
+     0.0,
+     3
+    ],
+    [
+     12,
+     "The Chant-master",
+     "chamber",
+     25.0,
+     32.0,
+     0.0,
+     12.0,
+     2
+    ],
+    [
+     13,
+     "Guest Cells of the Daughter House (four)",
+     "cells",
+     25.0,
+     32.0,
+     -26.0,
+     -12.0,
+     2
+    ],
+    [
+     14,
+     "Cells (three)",
+     "cells",
+     25.0,
+     32.0,
+     15.5,
+     26.0,
+     1
+    ],
+    [
+     15,
+     "Back Stair",
+     "stair",
+     25.0,
+     32.0,
+     12.0,
+     15.5,
+     1
+    ],
+    [
+     16,
+     "Masters' Gallery (north)",
+     "gallery",
+     5.8,
+     19.0,
+     9.0,
+     12.0,
+     3
+    ],
+    [
+     17,
+     "Masters' Gallery (south)",
+     "gallery",
+     5.8,
+     19.0,
+     -12.0,
+     -9.0,
+     3
+    ],
+    [
+     18,
+     "Masters' Gallery (west)",
+     "gallery",
+     16.0,
+     19.0,
+     -9.0,
+     9.0,
+     3
+    ],
+    [
+     19,
+     "Assembly Hall below",
+     "void",
+     5.8,
+     16.0,
+     -9.0,
+     9.0,
+     4
+    ],
+    [
+     20,
+     "Shrine below (rises through)",
+     "void",
+     19.0,
+     22.8,
+     -12.0,
+     8.0,
+     4
+    ],
+    [
+     21,
+     "Hall Stair",
+     "stair",
+     19.0,
+     22.8,
+     8.0,
+     12.0,
+     2
+    ],
+    [
+     22,
+     "Cloister Court (open)",
+     "void",
+     -13.0,
+     5.8,
+     -16.8,
+     16.8,
+     3
+    ],
+    [
+     23,
+     "Stair (north)",
+     "stair",
+     -13.0,
+     -9.5,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     24,
+     "Stair (south)",
+     "stair",
+     -13.0,
+     -9.5,
+     -26.0,
+     -19.0,
+     1
+    ]
+   ]
+  },
+  "MR": {
+   "y": 11.6,
+   "hall_y": 14.8,
+   "note": "the ranges' roofs; the hall's third storey (vigil, light well, gonkhang)",
+   "title": "Sheet MR: the great monastery, the hall's third storey and the roofs",
+   "rooms": [
+    [
+     1,
+     "Hall of Vigil",
+     "gallery",
+     5.8,
+     11.6,
+     -12.0,
+     12.0,
+     4
+    ],
+    [
+     2,
+     "Light Well (under the crown)",
+     "void",
+     11.6,
+     17.0,
+     -3.84,
+     3.84,
+     4
+    ],
+    [
+     3,
+     "Protectors' Chapel (gonkhang)",
+     "protectors",
+     17.0,
+     22.8,
+     -12.0,
+     8.0,
+     4
+    ],
+    [
+     4,
+     "Hall Stair (head)",
+     "stair",
+     19.0,
+     22.8,
+     8.0,
+     12.0,
+     2
+    ],
+    [
+     5,
+     "Lookout of the Song",
+     "watch",
+     -20.5,
+     -12.5,
+     -5.0,
+     5.0,
+     1
+    ],
+    [
+     6,
+     "Roof (north range)",
+     "roof",
+     -9.5,
+     25.0,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     7,
+     "Roof (south range)",
+     "roof",
+     -9.5,
+     25.0,
+     -26.0,
+     -19.0,
+     1
+    ],
+    [
+     8,
+     "Roof (back range)",
+     "roof",
+     25.0,
+     32.0,
+     -26.0,
+     12.0,
+     1
+    ],
+    [
+     9,
+     "Roof (front range)",
+     "roof",
+     -20.0,
+     -13.0,
+     5.0,
+     26.0,
+     1
+    ],
+    [
+     10,
+     "Roof (front range)",
+     "roof",
+     -20.0,
+     -13.0,
+     -26.0,
+     -5.0,
+     1
+    ],
+    [
+     11,
+     "Incense Altar (sang)",
+     "sang",
+     26.0,
+     31.0,
+     -3.0,
+     3.0,
+     2
+    ],
+    [
+     12,
+     "Back Stair (head)",
+     "stair",
+     25.0,
+     32.0,
+     12.0,
+     15.5,
+     1
+    ],
+    [
+     13,
+     "Stair (north, head)",
+     "stair",
+     -13.0,
+     -9.5,
+     19.0,
+     26.0,
+     1
+    ],
+    [
+     14,
+     "Stair (south, head)",
+     "stair",
+     -13.0,
+     -9.5,
+     -26.0,
+     -19.0,
+     1
+    ],
+    [
+     15,
+     "Roof (back range)",
+     "roof",
+     25.0,
+     32.0,
+     15.5,
+     26.0,
+     1
+    ],
+    [
+     16,
+     "Cloister Court (open)",
+     "void",
+     -13.0,
+     5.8,
+     -16.8,
+     16.8,
+     3
+    ],
+    [
+     17,
+     "Hall of Vigil (north arm)",
+     "gallery",
+     11.6,
+     17.0,
+     3.84,
+     12.0,
+     4
+    ],
+    [
+     18,
+     "Hall of Vigil (south arm)",
+     "gallery",
+     11.6,
+     17.0,
+     -12.0,
+     -3.84,
+     4
+    ],
+    [
+     19,
+     "Landing",
+     "passage",
+     17.0,
+     19.0,
+     8.0,
+     12.0,
+     2
+    ]
+   ]
+  }
+ },
+ "stairs": {
+  "monastery_north": [
+   -13,
+   -9.5,
+   19,
+   26
+  ],
+  "monastery_south": [
+   -13,
+   -9.5,
+   -26,
+   -19
+  ],
+  "monastery_back": [
+   25,
+   32,
+   12,
+   15.5
+  ],
+  "hall": [
+   19,
+   22.8,
+   8,
+   12
+  ],
+  "ne_corner": [
+   -128,
+   -114,
+   79,
+   93
+  ],
+  "se_corner": [
+   -128,
+   -114,
+   -93,
+   -79
+  ],
+  "sw_corner": [
+   116,
+   128,
+   -93,
+   -81
+  ],
+  "novices": [
+   80,
+   86,
+   75,
+   81
+  ],
+  "storm_tower": [
+   132,
+   140,
+   4,
+   12
+  ],
+  "founders_way": [
+   48,
+   52,
+   -26,
+   -20
+  ],
+  "utse": [
+   -46,
+   -41,
+   6,
+   11
+  ]
+ },
+ "people": {
+  "companies": 8,
+  "per_company": 40,
+  "captains": 8,
+  "chapter": 65,
+  "officers": 6,
+  "prismarch_and_secretary": 2,
+  "novices": 150,
+  "lay_brothers": 50
+ },
+ "horses": {
+  "stalls_flanks": 292,
+  "stalls_gate": 35,
+  "remounts": 300
+ },
+ "fodder": {
+  "answer": "duty rota (the owner: \"add fodder\"; the numbers proposed)",
+  "rule": "four companies' horses and the gate stable stabled at a time, the other four at grass on the crest with the remounts; every stall kept for the wet months and the alarm",
+  "stabled_avg": 181,
+  "hay_kg_day": 8,
+  "barley_kg_day_season": 2,
+  "season_days": 182,
+  "hay_t_yr": 530,
+  "barley_t_yr": 66,
+  "hay_from": "the crest's meadows (no trade)",
+  "barley_from": "up the Strongwall road with the grain (road.sw-tempest carries grain)",
+  "tune": "core/region/data/xan-tune.js T.tempest.horses: the good fodder, the work tp.meadows, the barley in the House's grain passed on by Strongwall"
+ }
+}

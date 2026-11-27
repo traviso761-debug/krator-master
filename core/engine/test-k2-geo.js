@@ -1,0 +1,151 @@
+// node core/engine/test-k2-geo.js: K2's engine half (GRAPHICS-TERRAIN-PROPOSAL.md 12d): the plot-base grounding baked into
+// the vertex colours by box(), cyl() and a vertical beam() standing on their plot, and boxBevel(), the chamfered box.
+// Runs 30-geo.js on the pinned three.js r128 with the few globals it reads from 10-core.js and 27-mat.js stubbed.
+// Also (Stage 8 B6): lathe()'s pole normal (S3-84a), 27-mat.js's flutter uniform uAnimWind (S2-C23) and 10-core.js's
+// console.error re-entry guard (T21), each in its own context.
+const fs = require('fs'), path = require('path'), vm = require('vm');
+const T = require('../../tools/ktest.js')(__filename);
+const THREE = require(path.join(__dirname, '..', '..', 'kits', 'ancients', 'three.min.js'));
+const ctx = { THREE, Math, console, Float32Array, Uint16Array, Uint32Array, isFinite };
+vm.createContext(ctx);
+vm.runInContext('const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v,lerp=(a,b,t)=>a+(b-a)*t,TAU=Math.PI*2,PI=Math.PI;' +
+  'const ERRS=[];function reportErr(m){ERRS.push(m);}const SV_CLOTH={},SV_CUT={tentCloth:1};' +
+  'const MAT={},TILE={};function hc(h){return new THREE.Color(h);}function terrainH(){return 0;}', ctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname, '30-geo.js'), 'utf8'), ctx, { filename: '30-geo.js' });
+const run = s => vm.runInContext(s, ctx);
+run('MAT.wall=new THREE.MeshStandardMaterial();MAT.glass=new THREE.MeshStandardMaterial();MAT.glow=new THREE.MeshBasicMaterial();MAT.tentCloth=new THREE.MeshStandardMaterial();');
+
+/* draw into a fresh bucket set and read one key back: [{y, c}] per vertex, and the triangle count */
+function draw(src, mk, plotY){
+  run('GB={};GTARGET=GB;resetCM();SLABS=[];PLOT_Y=' + (plotY === undefined ? 0 : plotY) + ';' + src + ';PLOT_Y=null;');
+  const b = run('GB')[mk || 'wall']; if(!b) return { v: [], tris: 0, b: null };
+  const v = []; for(let i = 0; i < b.p.length / 3; i++) v.push({ x: b.p[i * 3], y: b.p[i * 3 + 1], z: b.p[i * 3 + 2], c: b.c[i * 3] });
+  return { v, tris: b.i.length / 3, b };
+}
+const darkAbove = (R, y) => R.v.filter(q => q.y > y + 1e-6 && q.c < 1 - 1e-9).length;
+const footC = R => Math.min.apply(null, R.v.map(q => q.c));
+
+/* 1. a 3 m wall on its plot */
+const wall = draw('box("wall",0,0,0,4,3,.3,0xffffff)');
+T.ok('a grounded wall is drawn in two (24 triangles: the band and the rest)', wall.tris === 24, 'tris ' + wall.tris);
+T.ok('its foot is BASE_AO.lo (0.72)', Math.abs(footC(wall) - 0.72) < 1e-6, 'foot ' + footC(wall));
+T.ok('the band\'s top and everything above it keep the full colour', wall.v.filter(q => q.y >= 0.3 - 1e-6).every(q => q.c === 1));
+/* the colour the rasteriser interpolates at height y: along every vertical triangle edge that spans it, the darkest */
+function shadeAt(R, y){ const P = R.b.p, C = R.b.c, I = R.b.i; let lo = 1;
+  for(let t = 0; t < I.length; t += 3) for(const [u, w] of [[I[t], I[t + 1]], [I[t + 1], I[t + 2]], [I[t + 2], I[t]]]){
+    const ya = P[u * 3 + 1], yb = P[w * 3 + 1]; if(Math.abs(P[u * 3] - P[w * 3]) > 1e-6 || Math.abs(P[u * 3 + 2] - P[w * 3 + 2]) > 1e-6) continue;
+    if((ya - y) * (yb - y) > 0 || ya === yb) continue; const f = (y - ya) / (yb - ya); lo = Math.min(lo, C[u * 3] + (C[w * 3] - C[u * 3]) * f); }
+  return lo; }
+T.neg('the ramp ends at the band, not up the wall (a 3 m band is the unsplit look: mid-wall shaded)',
+  R => shadeAt(R, 1.5) === 1 && Math.abs(shadeAt(R, 0.15) - 0.86) < 1e-6, (() => { run('BASE_AO={lo:.72,band:3}'); const r = draw('box("wall",0,0,0,4,3,.3,0xffffff)'); run('BASE_AO={lo:.72,band:.30}'); return r; })(), wall);
+T.neg('off a plot (no place()) and with BASE_AO off nothing darkens',
+  R => R.v.every(q => q.c === 1),
+  draw('box("wall",0,0,0,4,3,.3,0xffffff)'),
+  (() => { run('BASE_AO=null'); const r = draw('box("wall",0,0,0,4,3,.3,0xffffff)'); run('BASE_AO={lo:.72,band:.30}'); return r; })());
+T.ok('off a plot: one box, as before', draw('box("wall",0,0,0,4,3,.3,0xffffff)', 'wall', 'null').tris === 12);
+T.ok('a floor slab stays as it was (flat: lower than 0.6 of its narrowest side)', draw('box("wall",0,0,0,5,.1,5,0xffffff)').v.every(q => q.c === 1));
+T.ok('a box on a shelf (its foot 1 m up) stays as it was', draw('box("wall",0,1,0,.4,.6,.4,0xffffff)').v.every(q => q.c === 1));
+T.ok('glass, a basic (glow) material and the cut-away cloth stay as they were',
+  ['glass', 'glow', 'tentCloth'].every(k => draw('box("' + k + '",0,0,0,1,2,.1,0xffffff)', k).v.every(q => q.c === 1)));
+T.ok('a tilted box stays as it was', draw('box("wall",0,0,0,.3,2,.3,0xffffff,0,.3,0)').v.every(q => q.c === 1));
+const low = draw('box("wall",0,0,0,.4,.25,.25,0xffffff)');
+T.ok('a low plinth (under 1.5 bands) is one box ramped to its top', low.tris === 12 && Math.abs(footC(low) - 0.72) < 1e-6 && low.v.filter(q => q.y > .2).every(q => Math.abs(q.c - (0.72 + 0.28 * 0.25 / 0.3)) < 1e-6));
+const placed = draw('W(10,2,-4,.7,()=>box("wall",0,0,0,2,3,.3,0xffffff))', 'wall', 2);
+T.ok('in a placed frame (a plot 2 m up, turned) the foot is found and ramped', placed.tris === 24 && Math.abs(footC(placed) - 0.72) < 1e-6 && darkAbove(placed, 2.3) === 0);
+T.ok('the vertex colour multiplies the tint (a 0x808080 wall)', (() => { const r = draw('box("wall",0,0,0,4,3,.3,0x808080)'), top = Math.max.apply(null, r.v.map(q => q.c));
+  return Math.abs(footC(r) - top * 0.72) < 1e-6; })());
+
+/* 2. posts: a cylinder and a vertical beam */
+const post = draw('cyl("wall",0,0,0,.15,2.5,0xffffff,8)');
+T.ok('a grounded cylinder is split at the band and ramped', Math.abs(footC(post) - 0.72) < 1e-6 && darkAbove(post, 0.3) === 0 && post.tris > draw('cyl("wall",0,0,0,.15,2.5,0xffffff,8)', 'wall', 'null').tris);
+T.ok('a wrapped cylinder (its own UVs) is left whole', draw('cyl("wall",0,0,0,.15,2.5,0xffffff,8,undefined,true)').v.every(q => q.c === 1));
+const bm = draw('beam("wall",[1,0,1],[1,3,1],.2,0xffffff)');
+T.ok('a vertical beam on the plot is split and ramped', bm.tris === 24 && Math.abs(footC(bm) - 0.72) < 1e-6 && darkAbove(bm, 0.3) === 0);
+T.ok('a sloping beam stays as it was', draw('beam("wall",[0,0,0],[2,3,0],.2,0xffffff)').v.every(q => q.c === 1));
+
+/* 3. boxBevel */
+const bv = draw('boxBevel("wall",0,1,0,1.2,.8,.6,.06,0xffffff)', 'wall', 'null');
+T.ok('boxBevel draws 44 triangles', bv.tris === 44, 'tris ' + bv.tris);
+const ext = k => [Math.min.apply(null, bv.v.map(q => q[k])), Math.max.apply(null, bv.v.map(q => q[k]))];
+T.ok('it is base-anchored and exactly w x h x d', [ext('x'), ext('y'), ext('z')].every((e, i) => Math.abs(e[0] - [-.6, 1, -.3][i]) < 1e-6 && Math.abs(e[1] - [.6, 1.8, .3][i]) < 1e-6));
+/* closed and outward: every edge (by position) in exactly two triangles, the signed volume positive and below the box's */
+function solid(R){ const P = R.b.p, I = R.b.i, key = i => [P[i * 3], P[i * 3 + 1], P[i * 3 + 2]].map(v => v.toFixed(5)).join(','), E = {};
+  let vol = 0;
+  for(let t = 0; t < I.length; t += 3){ const a = I[t], b = I[t + 1], c = I[t + 2];
+    for(const [u, w] of [[a, b], [b, c], [c, a]]){ const k = [key(u), key(w)].sort().join('|'); E[k] = (E[k] || 0) + 1; }
+    const A = [P[a * 3], P[a * 3 + 1], P[a * 3 + 2]], B = [P[b * 3], P[b * 3 + 1], P[b * 3 + 2]], C = [P[c * 3], P[c * 3 + 1], P[c * 3 + 2]];
+    vol += (A[0] * (B[1] * C[2] - B[2] * C[1]) - A[1] * (B[0] * C[2] - B[2] * C[0]) + A[2] * (B[0] * C[1] - B[1] * C[0])) / 6; }
+  return { closed: Object.values(E).every(n => n === 2), vol }; }
+const S = solid(bv), box0 = 1.2 * .8 * .6;
+T.ok('it is closed (every edge in two triangles)', S.closed);
+T.neg('its triangles face out: positive volume just under the box\'s (a flipped one would be negative)',
+  R => { const s = solid(R); return s.vol > box0 * 0.9 && s.vol < box0; },
+  (() => { const r = draw('boxBevel("wall",0,1,0,1.2,.8,.6,.06,0xffffff)', 'wall', 'null'); const I = r.b.i; for(let t = 0; t < I.length; t += 3){ const k = I[t + 1]; I[t + 1] = I[t + 2]; I[t + 2] = k; } return r; })(), bv);
+T.ok('a bevel larger than the piece is clamped (0.45 of the smallest side), still closed', (() => { const r = draw('boxBevel("wall",0,0,0,.2,.2,.2,1,0xffffff)', 'wall', 'null'); return r.tris === 44 && solid(r).closed; })());
+T.ok('a bevel of 0 is a plain box', draw('boxBevel("wall",0,0,0,1,1,1,0,0xffffff)', 'wall', 'null').tris === 12);
+T.ok('a low grounded bevelled plinth ramps to its top', (() => { const r = draw('boxBevel("wall",0,0,0,1,.3,1,.05,0xffffff)'); return Math.abs(footC(r) - 0.72) < 1e-6; })());
+/* 4. joints: a wall standing on a slab the building drew (a floor, a deck) darkens at that joint */
+const onDeck = draw('box("wall",0,0,0,6,.4,6,0xffffff);box("wall",0,.4,0,4,2.6,.3,0xffffff)');
+T.neg('a wall on a deck darkens at the deck (its joint), not only on the ground',
+  R => R.v.some(q => Math.abs(q.y - 0.4) < 1e-6 && Math.abs(q.c - 0.72) < 1e-6) && darkAbove(R, 0.7) === 0,
+  draw('box("wall",0,.4,0,4,2.6,.3,0xffffff)'), onDeck);
+T.ok('the deck itself (a flat slab) stays as it was', onDeck.v.filter(q => q.y < 0.41 && Math.abs(q.x) > 2.5).every(q => q.c === 1));
+T.ok('a slab registers only inside its plot (off a plot nothing changes)', draw('box("wall",0,0,0,6,.4,6,0xffffff);box("wall",0,.4,0,4,2.6,.3,0xffffff)', 'wall', 'null').v.every(q => q.c === 1));
+
+/* 5. the kit's bevel table: box() bevels its hero keys, within the budget */
+run('MAT.stoneP=new THREE.MeshStandardMaterial();BEVEL_KEYS.stoneP=.05;BEVEL_STAT.boxes=BEVEL_STAT.extra=BEVEL_STAT.skipped=0;');
+const bev = draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null');
+T.ok('a box of a BEVEL_KEYS key is drawn bevelled (44 triangles) and counted', bev.tris === 44 && run('BEVEL_STAT.boxes') === 1 && run('BEVEL_STAT.extra') === 32);
+T.ok('a box thinner than 2.5 chamfers stays a box', draw('box("stoneP",0,1,0,1.2,.1,.8,0xffffff)', 'stoneP', 'null').tris === 12);
+T.ok('a key not in the table stays a box', draw('box("wall",0,1,0,1.2,.6,.8,0xffffff)', 'wall', 'null').tris === 12);
+const gb = draw('box("stoneP",0,0,0,1,2,1,0xffffff)', 'stoneP');
+T.ok('a grounded bevelled pier keeps its ramp, cut at the band', Math.abs(footC(gb) - 0.72) < 1e-6 && darkAbove(gb, 0.3) === 0 && gb.tris > 44 && solid(gb).closed);
+T.neg('the budget stops the bevels (BEVEL_BUDGET spent: plain boxes after)',
+  R => R.tris === 12, (() => { run('BEVEL_BUDGET=1e9'); return draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); })(),
+  (() => { run('BEVEL_BUDGET=0'); const r = draw('box("stoneP",0,1,0,1.2,.6,.8,0xffffff)', 'stoneP', 'null'); run('BEVEL_BUDGET=60000'); return r; })());
+/* 6. lathe(): a profile that closes on the axis (S3-84a). The pole row is one point, so the grid gives it no normal; a zero one
+   shaded the cap black, worst with a long last segment. It takes the axis, turned to the surface's side */
+function latheV(src){ const R = draw(src, 'wall', 'null'), N = R.b.n;
+  return R.v.map((q, i) => ({ x: q.x, y: q.y, z: q.z, nx: N[i * 3], ny: N[i * 3 + 1], nz: N[i * 3 + 2] })); }
+const poleFaces = sgn => V => V.every(q => Math.abs(Math.hypot(q.nx, q.ny, q.nz) - 1) < 1e-5) &&
+  V.some(q => Math.hypot(q.x, q.z) < 1e-9) && V.filter(q => Math.hypot(q.x, q.z) < 1e-9).every(q => Math.abs(q.ny - sgn) < 1e-5);
+const dome = latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff)');
+T.neg('a dome closing on the axis: every normal is unit, the pole\'s straight up (a zero pole normal is the black cap)',
+  poleFaces(1), dome.map(q => Math.hypot(q.x, q.z) < 1e-9 ? Object.assign({}, q, { nx: 0, ny: 0, nz: 0 }) : q), dome);
+T.ok('a cone pointing down (the pole at the bottom): the pole faces down', poleFaces(-1)(latheV('lathe("wall",0,0,[[0,0],[1,1.5],[1,2]],12,0xffffff)')));
+T.ok('a lining (o.inward) of the dome: the pole faces down, into the room', poleFaces(-1)(latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff,{inward:true})')));
+T.ok('a part sweep (a door gap) closing on the axis: the pole still faces up', poleFaces(1)(latheV('lathe("wall",0,0,[[1,0],[1,1],[0,2.5]],12,0xffffff,{a0:.3,a1:5.5})')));
+T.ok('no error was reported', run('ERRS').length === 0, run('ERRS').join('; '));
+
+/* 7. 27-mat.js: the cloth flutter's scale is uAnimWind (S2-C23). It was `uniform float uWind`, and a host's sky puts
+   `uniform vec2 uWind` (core/atmos's cloud shading) in every scene material: "Types of uniform 'uWind' differ" */
+const mctx = { THREE, Math, console };
+vm.createContext(mctx);
+vm.runInContext('const clamp=(v,lo,hi)=>v<lo?lo:v>hi?hi:v;function rr(a,b){return (a+b)/2;}const SV_LIB={},SV_TILE0={},SV_CLOTH={flag:1},SV_CUT={},' +
+  'KIT={pack:"t"},KIT_FALLBACK=[],KMAT={mode:"proc"};', mctx);
+vm.runInContext(fs.readFileSync(path.join(__dirname, '27-mat.js'), 'utf8'), mctx, { filename: '27-mat.js' });
+const flutSh = { uniforms: {}, vertexShader: '#include <common>\nvoid main(){\n#include <begin_vertex>\n#include <project_vertex>\n}', fragmentShader: 'void main() {\n}' };
+vm.runInContext('MAT.flag.onBeforeCompile', mctx)(flutSh);
+/* one program's uniforms by name: a name declared with two types is the clash */
+const skyDecl = 'uniform vec2 uWind;uniform float uTime;';
+const clashes = text => { const D = {}, bad = []; for(const m of (text + skyDecl).matchAll(/uniform\s+(\w+)\s+(\w+)\s*;/g)){ if(D[m[2]] && D[m[2]] !== m[1]) bad.push(m[2]); D[m[2]] = m[1]; } return bad; };
+T.neg('the flutter\'s uniforms meet the sky\'s in one program without a clash (the old float uWind against the sky\'s vec2)',
+  text => clashes(text).length === 0, 'uniform float uTime;uniform float uWind;attribute vec3 aFlut;\n', flutSh.vertexShader + flutSh.fragmentShader);
+T.ok('the flutter reads ANIMU.uAnimWind, and ANIMU has no uWind', flutSh.uniforms.uAnimWind === vm.runInContext('ANIMU.uAnimWind', mctx) &&
+  !('uWind' in flutSh.uniforms) && vm.runInContext('!("uWind" in ANIMU)', mctx) && /\*s\*uAnimWind;/.test(flutSh.vertexShader));
+
+/* 8. 10-core.js: the console.error wrapper's re-entry guard (T21). A bundle's reportErr that logs with console.error (the isle
+   demo's ISK did) came back through the wrapper, which matched the shader in it again: round and round to a stack overflow */
+function errLoop(src){
+  const logged = [], c = { THREE, Math, Float64Array, document: { getElementById: () => ({ style: {}, textContent: '' }) },
+    window: { addEventListener(){} }, console: { error(){ logged.push([].join.call(arguments, ' ')); }, log(){}, warn(){} } };
+  vm.createContext(c);
+  vm.runInContext(src + '\nvar BUNDLE_ERRS=[];reportErr=function(m){BUNDLE_ERRS.push(m);console.error("ISK: "+m);};', c, { filename: '10-core.js' });
+  vm.runInContext('console.error("THREE.WebGLProgram: shader error: 0 35715 false")', c);
+  vm.runInContext('console.error("a plain error")', c);
+  return { pushed: vm.runInContext('BUNDLE_ERRS.length', c), logged: logged.length };
+}
+const coreSrc = fs.readFileSync(path.join(__dirname, '10-core.js'), 'utf8');
+T.neg('a shader error is forwarded to a bundle\'s reportErr once, and logged twice (its own line and the bundle\'s; a plain error once), not looped',
+  R => R.pushed === 1 && R.logged === 3, errLoop(coreSrc.replace('if(!inErr){', 'if(true){')), errLoop(coreSrc));
+T.done();

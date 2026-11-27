@@ -39,6 +39,9 @@ claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -106,6 +109,7 @@ TAGS_FILES = {f: os.path.join(d, f) for d in (RAND_DIR, TAGS_DIR, WALK_DIR) for 
 # and the Vernacular's openings (69e5: IZDOOR.leaf, the vDoorLeaf and vWinClear items), read in place: the kit's real doors and
 # glass (kits/highlands/src/71c-hl-openings.js) draw through them; src/95-hl-doors.js finishes them once the world is built
 DOOR_FILES = dict(khl.OPENINGS)
+DOOR_FILES.update(khl.HOLLOW)   # the hollow walls (69e, 69e6): kits/highlands/README.md "Hollow walls"
 DOOR_FILES['90-core-door-host.js'] = os.path.join(ROOT, 'core', 'door', '90-core-door-host.js')
 CORE_OPT = os.path.join(CORE, 'opt')   # opt-in shared fragments: a build takes only the ones it names
 # the material library (core/materials/record: KMAT, the loader and the in-place bind; not 24-tex-def.js, whose TEX
@@ -148,6 +152,9 @@ TARGET_BIO = {'roketstad': {'kit': 'nhighlands', 'files': {
     '86-bio-10-core-head.js': _BIO('core', 'biome', '10-core-head.js'),
     '86-bio-20-core-kit.js': _BIO('core', 'biome', '20-core-kit.js'),
     '86-bio-30-core-foliage.js': _BIO('core', 'biome', '30-core-foliage.js'),
+    '86-bio-31b-core-leafset.js': _BIO('core', 'biome', '31b-core-leafset.js'),   # the kit's cores as biomes/nhighlands takes
+    '86-bio-31j-core-joint.js': _BIO('core', 'biome', '31j-core-joint.js'),       # them (2026-11-09: its species call BIO.fung,
+    '86-bio-33-core-fungoid.js': _BIO('core', 'biome', '33-core-fungoid.js'),     # and Roketstad failed at load without 33)
     '86-bio-40-core-place.js': _BIO('core', 'biome', '40-core-place.js'),
     '86-bio-50-biome-nhighlands-species.js': _BIO('biomes', 'nhighlands', 'src', '50-biome-nhighlands-species.js'),
     '86-bio-55-biome-nhighlands-trees.js': _BIO('biomes', 'nhighlands', 'src', '55-biome-nhighlands-trees.js'),
@@ -188,7 +195,7 @@ DETERMINISTIC = {
     '30-kit.js', '32-surfaces.js', '34-kitdefs.js', '36-decor.js', '38-helpers2.js',
     '50-registry.js', '54-mat-concrete.js', '68-mat-v5.js', '69-mat-salvage.js',
     '69b-vern-mat.js', '69c-vern-helpers.js',          # vendored from ../iziz/src (Iziz Vernacular helpers)
-    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '73-hl-carve.js', '73b-hl-frame.js',   # the Highlands vocabulary
+    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '72-hl-helpers.js', '72c-hl-plan.js', '73-hl-carve.js', '73b-hl-frame.js',   # the Highlands vocabulary
     '88-hl-dress.js', '90-scene.js', '91-probe.js', '92-camera.js', '93-labels.js', '94-hl-anim.js', '99-tail.html',
     '89z-rows.js', '91z-views.js',        # per-target site table and view list
     '89y-hl-furnish.js',                  # furniture placed through the catalog (FURNISH) and the interiors hook
@@ -217,7 +224,7 @@ SCOPED_PREFIXES = ('86-bio-',)
 # KratorFurniture) and the interiors core with this kit's interior set (kits/interiors/kit_bundle.py:
 # KratorInteriors, ROOM, furnishRoom). Inserted at build time between the vernacular helpers and the
 # Highlands vocabulary; never written to src/. 89y-hl-furnish.js is the glue (after 73-hl-carve's own VERN.place, before the scene) (FURNISH, the interiors hook).
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's weapon racks and armour stands for the barracks and the armoury (Stage 8 D27, O5)
 VIRTUAL = {'69d-furniture-bundle.js'}
 
 
@@ -225,7 +232,7 @@ def virtual_bodies():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'catalog'))
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'interiors'))
     import furniture_bundle, kit_bundle
-    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(['highlands'])}
+    return {'69d-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES, tex=True) + kit_bundle.bundle(['highlands'])}   # tex: the library's detail maps on every piece (2026-11-10)
 def scoped(f):
     return f.startswith(SCOPED_PREFIXES) or f in VIRTUAL or f in CORE_HOST   # core/host: each file one IIFE (KHOST)
 

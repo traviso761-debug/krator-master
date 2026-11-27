@@ -298,6 +298,23 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
 
   The page's people are not yet declared through the host. Longsong's page declares its walkers on core/simulation
   itself (`40d-ls-sim.js`); its economy is the valley test's.
+- **The long run (2026-11-12; the owner: "what happens to needs, stocks, happiness and resources over time").** A
+  three-year run showed the first year's balance did not hold: the caravan brought a quarter of the valley's salt and
+  little tea or iron, Longsong's grain piled up while the Order's houses in the rift went short from the second year,
+  the dairy herds fell short of the house's diet. Fixed in `settlements/longsong/src/15-ls-tune.js`:
+  - the long roads take a `want` (the days of use a load fills the far end to; the host's default, twice its 3 import
+    days, starved a far end between carriers three weeks apart), passed through by `core/region/50-region-valley.js`;
+  - the caravan buys to the valley's use (salt 130 kg a day, tea 34, iron 9) with a 4.5 t load; the smithy has 16 hands;
+  - Longsong's grain goes up the beck road to the Caldron House and on to the Mirror Grange (a new road), the relay
+    houses asking for their dependants too (`expect`); grain runs both ways between the grange and the gjar;
+  - the herds are sized to the diets (380 head a ring village, 400 yaks at the Beck Fields), the Beck Fields' tithe is
+    its surplus as the ring's is.
+
+  The food the valley eats goes short by 0.56, 0.85 and 0.89 % in its first three years (2.45 to 4.78 % before); the
+  test checks the third year (`test-ls-economy.js` check 10). **Not modelled at the valley level yet:** people's needs,
+  happiness and unrest (core/simulation has them; the valley host books eating and shortfalls only), and finite
+  resources (no work draws on a site with an amount, so mines and fields never run down). Longsong's grain store still
+  grows ~7 t a year, and its books and paper pile up (the library).
 
 **Done (2026-11-12): S4 to S7, Pinnacle Rock on the sim** (branch `claude/sim-s4-s7-fdaeba`, not pushed).
 - **S4:** `core/camp/50-camp-beasts.js` (`KCAMP.appetite`, `beastNeeds`, `packCap`, `pace`, `bandBeasts`, `meatPlan`) and the
@@ -357,6 +374,23 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
     checks all eighteen grounds (`test-pr-economy.js` check 1). The six ground tribes' upper grounds took more tents too,
     but on the page's mesa two of them no longer fit (Raptor 6 of 8 pitched, Longcrawler 7 of 8), so they are back to their
     five tents.
+
+**Done (2026-11-12): eighteen bands, and Pinnacle Rock's full sim** (the owner: "18 bands"; "implement full sim to the level
+of isle demo including needs and happiness and see what happens").
+- **Eighteen bands of 40-70:** the six ground tribes' upper grounds are widened on the mesa and pitch their seven tents.
+- **The full sim** (`settlements/pinnacle-rock/tests/test-pr-sim.js`; `--year` for the whole year):
+  - the town's 2,934 people on core/region's host, read from the page's exported plan (`tools/export_plan.py`), with needs,
+    happiness, loyalty, items, the economy and unrest;
+  - the valley attached: the clearings, the bands, the markets and the targets;
+  - the bands on core/camp's world tick.
+- **What happened:** the first year starved with a full granary. A meal is two foods, and households buying by the
+  warehouses' stock bought nearly all grain. **Fixed in core** (the owner): the balanced basket, `77-sim-6-items.js`.
+  The year now runs fed (hunger 17-18) and calm (happiness 74) every day.
+- **The caravans to the granary town** (the owner's suggestion): Talon's and Fort Kreia's pack trains (`PR_TUNE.caravans`)
+  top Pinnacle Rock's stores up whenever they fall under 40 days of its use. They stay idle while the bands' haul keeps the
+  granary full. With no haul they carry the town, which then goes without only 0.2 t (`test-pr-economy.js` check 11).
+  In the full sim the year ends with 390,000 servings in store, over a month of food (`test-pr-sim.js --year`).
+  About half the town is "uneasy", on material wants.
 
 **Still open after S7:**
 - **For the owner:** the proposal counts eighteen bands, but the six ground tribes' upper grounds hold 23-27 people each,

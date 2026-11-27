@@ -4,6 +4,9 @@
  "size": 512,
  "families": {
   "taMarble": {
+   "m4": true,
+   "pom": 0.015,
+   "specAA": true,
    "lib": "stone.marble.ashlar",
    "scale": [
     2.4,

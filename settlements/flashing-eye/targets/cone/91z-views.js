@@ -1,0 +1,37 @@
+// TARGET: cone — camera presets [camX,camY,camZ, targetX,targetY,targetZ], and the page's budgets
+const feEye=(x,z,tx,ty,tz,dy)=>[x,terrainH(x,z)+1.7+(dy==null?0:dy),z,tx,ty,tz];
+const VIEWS=(function(){
+ const V={},R=FE_PLACE.find(p=>p.id==='lip-range'),P=FE_PLACE.find(p=>p.id==='post'),vy=FE_VENT.y;
+ V['Overview']=[-620,180,980,0,-40,-120];   /* from over the apron, south-west: the band, the bench and the cone */
+ V['The band from the apron']=feEye(140,520,-40,-40,0,0);   /* on the apron below: the face, its talus, the Lip Range on top */
+ V['The Lip Range from the east']=[150,30,60,0,-4,0];   /* from over the face's east end: the range on the Lip, its lower floors in the rock */
+ V['The bench from the Gate of Breath']=feEye(6,-158,0,4,-40,2);
+ V['On the balcony of the Mirror Hall']=[-58,1.75,2.2,80,2,2.2];   /* on the terrace in front of L0, east along the range */
+ V['The Rift from the Mirror Hall']=[-45,9,-4,-260,-900,3000];
+ V['The cone from the cap']=feEye(60,-900,0,vy+260,-2200,0);
+ V['The crater from the rim']=[P.x+14,P.o.y+30,P.z+34,FE_VENT.x,vy+30,FE_VENT.z];   /* behind the Eye Post, over the rim: the bowl and the vent */
+ V['The Eye Post']=[P.x+40,P.o.y+18,P.z+50,P.x,P.o.y+6,P.z];
+ /* the revamp (the owner, 2026-11-23): the Way of Shrines from the apron, from its last bridge, and the complex from the Rift side */
+ {const S1=FE_STACKS[0],S6=FE_STACKS[5];V['The Way of Shrines']=feEye(S1.x+120,S1.z+160,(S1.x+S6.x)/2,-90,(S1.z+S6.z)/2,0);}
+ {const B=FE_BRIDGES[5],m=B.pts[24];V['On the last bridge']=[m[0],m[1]+1.7,m[2],B.b[0],B.b[1]+8,B.b[2]-30];}
+ V['The house from the Rift']=[260,40,420,0,10,-60];
+ V['The terraces and the Ember Tower']=[70,22,-30,0,20,-126];
+ {const F=FE_PLACE.find(p=>p.id==='foothouse');V['The Foot House']=[F.x+90,F.o.y+40,F.z+110,F.x,F.o.y+5,F.z];}
+ /* the Stair of the Eye (90fl): down its switchbacks from over a hairpin, and the Rest House at its gate */
+ {const S=FE_STAIR.S,a=S[Math.floor(S.length*.62)],b=S[Math.floor(S.length*.45)];V['The Stair of the Eye']=[a.x+140,a.y+70,a.z+60,b.x,b.y,b.z];}
+ {const R=FE_PLACE.find(p=>p.id==='resthouse');V['The Rest House']=[R.x-60,R.o.y+26,R.z-40,R.x,R.o.y+4,R.z];}
+ /* the interiors (90fk): the Mirror Hall on L0 of the range's west house, the Ember's sanctum, the Eye Post's platform */
+ V['In the Mirror Hall']=[R.x-58,1.75,R.z+4.5,R.x-40,1.3,R.z-4];
+ {const E=FE_PLACE.find(p=>p.id==='ember'),y=E.o.y+.9;V['In the sanctum of the Ember']=[E.x+4.4,y+1.75,E.z-5.9,E.x-3,y+1.2,E.z-8.6];}
+ {const L=(window._feIx||{}).ladder,B=FE_ROOMS.buildings.find(b=>b.id==='post'),y=P.o.y+B.shell.y+.06+B.shell.hs[0]+B.shell.hs[1];if(L){const cx=L.at[0]+L.n[0]*2.4+L.t[0]*.9,cz=L.at[1]+L.n[1]*2.4+L.t[1]*.9;V['The ladder in the Mirror Room']=[P.x+cx,y+1.6,P.z+cz,P.x+L.at[0],y+2.1,P.z+L.at[1]];}}   /* in front of the ladder, in its room */
+ V['On the platform of the Eye Post']=[P.x+1.9,P.o.y+12.5+1.7,P.z+1.9,P.x-1.6,P.o.y+12.9,P.z-.6];
+ /* the people (90fl): the chapter debating in the Monastery Court and the novices at lessons in their yard (the morning's) */
+ V['The Monastery Court']=[-12,6,-14,2,1.5,-26];
+ V['The novices at lessons']=[64,7.5,-83.5,66,5,-92];
+ return V;})();
+BUDGET.showcase={tris:16000000,calls:2400};BUDGET.cls.city=16000000;for(const k in TSTAT.by)BUDGET.type[k.split('/')[0]]='city';
+if(window._api)Object.assign(window._api,FE_API);
+if(window._api)window._api.setHour=h=>{FE_SKY.hour=h;FE_CLOCK.t0=FE_SKY.day*86400+h*3600;FE_CLOCK.start=performance.now();};   /* the clock, for a night shot */
+if(window._api)window._api.lamps=b=>({format:'krator-lamps',version:1,convention:'metres, +Y up; at is the lamp; color sRGB; size the halo\'s world diameter',
+ lamps:FE_LAMPS.filter(l=>!b||(l[0]>=b[0]&&l[0]<=b[2]&&l[2]>=b[1]&&l[2]<=b[3])).map(l=>({at:[+l[0].toFixed(3),+l[1].toFixed(3),+l[2].toFixed(3)],amp:1,
+  radius:l[3]==='fire'?60:40,cool:false,color:l[3]==='fire'?'#ff8a3a':'#ff7a30',size:.6,hours:[18.4,30.2],kind:l[3]}))});

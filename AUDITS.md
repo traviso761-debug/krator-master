@@ -15,7 +15,7 @@ index, so the next session does not have to find them in a transcript.
 | Voth census tables per settlement and kit | `tools/check_trades.py`, `tools/trades_census.json`, `GI_TRADES`-style tables per build | on main |
 | Material library wiring and sheet cards | `tools/textures/audit_wiring.py`, `tools/textures/audit_catalog.js`, `tools/textures/cell_audit.py` (`TODO.md` "Card sheets shown whole") | on main; the cell audit (215 slots in 25 builds) is open |
 | Port audit (Godot tags) | `tools/audit_port.py` -> each build's `PORT.md`, `PORT-INDEX.md` | on main. **Rewrites every PORT.md whatever its argument** |
-| Scale-model satellite audit 4.21 | `tools/scale-model/sat_audit.py`, `satellite-audit-4.21.json` | on main |
+| Scale-model satellite audit 4.21 | `tools/scale-model/history/sat_audit.py`, `satellite-audit-4.21.json` | on main |
 | Menagerie audit | `host/WorldMenagerie/AUDIT.md` | on main (the Menagerie's own) |
 | `origin/materials-audit` branch | its audit tool is already on main; its catalog furniture textures (`kits/catalog/tex/*.webp`, `materials.json`) collide add/add with main's | not merged on purpose: the branch can be deleted once the owner agrees |
 

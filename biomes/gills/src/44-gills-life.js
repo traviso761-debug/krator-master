@@ -2,7 +2,7 @@
 // The breath, the species and the layouts as plain records: no THREE, no DOM, no Math.random, no sin hash; every draw from core/rand (KRAND.hash of
 // (world, gill, index, salt)), never from how many draws came before. The host kits read this fragment in place (biomes/xanadu --station gills: its
 // station.json "reads"; the catch's and the godthrone's stations later) and draw the records with their own builders; their 87 opens the registry
-// (BIO.kit('gills')) and closes it with BIO.kitEnd(GILLS), so this file needs only KRAND (core/rand) and runs in node as it does on a page.
+// (BIO.kit('gills')) and closes it with BIO.kitEnd(GILLS), so this file needs KRAND (core/rand) and KSPACE (core/space, the keep-clear between pipes) and runs in node as it does on a page.
 //
 //   GILLS.breath(t | ATMOS.libration(t))   the breath state 0..1 at clock t (days from game start, the sky's t = day + hour/24): 1 the out-breath (Bhlo), 0 the in-breath
 //                          (Suq). A plateau of 3 hours centred on the top of the giant's nod (Noḍ), an hour's ramp each side, the in-breath the rest of the
@@ -83,6 +83,14 @@ var GILLS=(function(){
  G.life=function(L,o){const gr=o.ground,ice=o.iceH==null?1e9:o.iceH,lip=o.lip||[3,9],step=o.step==null?18:o.step,wd=o.wind||[.7,.7],seed=o.seed==null?0x6112:o.seed;
   const R={pipes:[],collars:[],fringes:[],pads:[],beads:[],lamps:[],dew:[],turf:[],cups:[],wood:[],steam:[]};
   const wl=Math.hypot(wd[0],wd[1])||1,wx=wd[0]/wl,wz=wd[1]/wl;
+  /* THE KEEP-CLEAR BETWEEN PIPES (PLAN.md section 13's core adoption: core/space, "the keep-clear between pipes"). Without it the lips' pipes
+     grew into one another and a FALLEN pipe lay straight through whatever stood along its bearing, which is what the eye caught first. One
+     KSPACE grid, never a second spatial hash (CLAUDE.md). A pipe's footprint is its own disc; a fallen one sweeps its length, so its disc sits at
+     the body's middle with half its length for a radius. Each pipe draws from its own (gill, k, side) stream, so rejecting one moves no other. */
+  const SPC=(typeof KSPACE!=='undefined'&&KSPACE.create)?KSPACE.create({cell:40}):null,GAP=o.gap==null?1.5:o.gap;
+  const footOf=p=>{if(p.state!=='fallen')return [p.x,p.z,p.r];
+   const d=p.toward,l=Math.hypot(d[0],d[1])||1;return [p.x+d[0]/l*p.H/2,p.z+d[1]/l*p.H/2,p.H/2+p.r];};
+  const roomFor=F=>!SPC||!SPC.some(F[0],F[1],F[2]+GAP,it=>Math.hypot(it[0]-F[0],it[1]-F[1])<it[2]+F[2]+GAP);
   L.gills.forEach((g,gi)=>{const len=g.r*(g.a1-g.a0),N=Math.max(2,Math.floor(len/step));
    for(let k=0;k<N;k++)for(let side=-1;side<=1;side+=2){const s=H(seed,gi,k,side+2),al=(k+.2+.6*s.next())/N,an=g.a0+(g.a1-g.a0)*al,end=sm(0,.12,al)*sm(1,.88,al);
     if(s.next()>.35+.6*end)continue;
@@ -92,7 +100,11 @@ var GILLS=(function(){
     const mid=.55+.45*end,H0=Math.min(88,(10+30*s.next()*mid)*(.7+.5*Math.min(1,g.age))),stu=s.next();
     const state=g.alive?'standing':(stu<.45?'standing':stu<.75?'broken':stu<.9?'fallen':'rubble');
     const p={id:g.id+'.pipe.'+k+(side<0?'a':'b'),gill:g.id,x,z,y0,H:H0,r:1.8+2.6*s.next()*(.6+.4*mid),mouths:1+Math.floor(s.next()*2.99),state,ice:isIce,live,
-     lag:s.next()*.5,toward:[g.c[0],g.c[1]],side,lean:.02*s.next(),seed:KRAND.hash(seed,gi,k,side+2,0x91BE)>>>0};
+     /* toward is a BEARING, not a place (KSTACKS reads atan2(toward[1], toward[0])): the way the pipe leans, and the way it lies if it has
+        fallen. It points out across the lip, away from the crack's centre, so a pipe topples off its own edge. It used to be handed the gill's
+        centre COORDINATES, which gave every pipe on a gill one identical bearing: whole fields leaned and fell the same way. */
+     lag:s.next()*.5,toward:[Math.cos(an)*side,Math.sin(an)*side],side,lean:.02*s.next(),seed:KRAND.hash(seed,gi,k,side+2,0x91BE)>>>0};
+    const F=footOf(p);if(!roomFor(F))continue;if(SPC)SPC.insert(F,F[0],F[1],F[2]);
     R.pipes.push(p);
     if(state==='standing'&&!isIce){const top=y0+H0;
      R.collars.push({id:p.id.replace('.pipe.','.collar.'),pipe:p.id,x,z,y:top,r:p.r*(.9+.3*s.next()),lag:p.lag});
@@ -115,5 +127,39 @@ var GILLS=(function(){
      const st=H(seed,gi,k,0x7F2F),nt=3+Math.floor(st.next()*4);for(let q=0;q<nt;q++){const a3=TAU*(q+st.next()*.7)/nt,rq=d.r*(.75+.6*st.next()),tx=x+Math.cos(a3)*rq,tz=z+Math.sin(a3)*rq;
       R.turf.push({id:g.id+'.turf.'+k+'.'+q,gill:g.id,mat:d.id,x:tx,z:tz,y:gr(tx,tz),h:.3+.35*st.next(),yaw:TAU*st.next()});}}}}});
   return R;};
+ // ---- THE MOUTH'S LIFE FITTED TO THE DRAWN PIPES (the owner, 2026-11-15: "gill ring almost but doesn't quite touch so it looks like it floats").
+ // G.life puts the collars, fringes and steam at the life's own pipe (its top y0 + H, its radius r, its foot x, z), but no host draws that pipe: the
+ // White builds its chimney from y0 - 0.6 with a taper, a flare and up to three mouths forked off the trunk; the Red makes it 1.7x as tall and .72x
+ // as wide. So the collars stood off their pipes (on the Red part way up the shaft, 0.5-2.4 m clear). fitMouths moves each onto the record the host
+ // drew (a KSTACKS chimney: B.beds, each bed's col 0 the trunk, 1..3 the mouths), by its outline at the height (ring, KSTACKS.ring, passed in so
+ // this file keeps needing only KRAND): a collar on EACH mouth (the life's on the first, '<id>.m<k>' on the others), its top `under` (.3 m) below
+ // that mouth's lip, centred on the outline at its foot, its inner rim (COLLAR.rim of its r) at .98 of the outline's least radius there, so it
+ // bears on the pipe all round; the fringes shared out over the mouths, on each lip's rim; the steam over the highest mouth.
+ //   G.COLLAR               the collar lathe's profile in units of its r (y scaled .8): its inner rim 1.0 at y -.15 (foot), its top .32
+ //   G.mouths(B)            [{col, beds, top}] the mouths of a chimney record (the trunk alone when it has one)
+ //   G.fitMouths(L, recs, ring, o)  L G.life's result, recs [{p, B}] (the host's pipes and their records); fits L.collars (each gains col), L.fringes,
+ //                          L.steam in place, drops a collar whose pipe was not drawn; -> {collars, fringes, steam, dropped}
+ //   G.collarFit(C, recs, ring)  {n, gap, deep, off, worst}: per collar the gap of its inner rim round its mouth's outline at its foot, from the
+ //                          collar's own centre (gap: over 5 cm clear somewhere; deep: sunk a quarter of r all round; off: not within 2 m under its lip)
+ G.COLLAR={rim:1.0,foot:-.15*.8,top:.32*.8};
+ G.mouths=function(B){const n=Math.max(1,B.cols==null?1:B.cols),cols=n>1?Array.from({length:n},(_,i)=>i+1):[0];
+  return cols.map(col=>{const beds=B.beds.filter(b=>b.col===col);let top=-Infinity;beds.forEach(b=>{top=Math.max(top,b.y+b.h);});return{col,beds,top};}).filter(m=>m.beds.length);};
+ const outline=(ring,M,y)=>{const R=ring({beds:M.beds},y,32);if(!R||!R.length)return null;let cx=0,cz=0;R.forEach(q=>{cx+=q[0];cz+=q[1];});cx/=R.length;cz/=R.length;
+  let lo=1e9,mean=0;R.forEach(q=>{const d=Math.hypot(q[0]-cx,q[1]-cz);lo=Math.min(lo,d);mean+=d/R.length;});return{cx,cz,lo,mean,R};};
+ G.fitMouths=function(L,recs,ring,o){o=o||{};const under=o.under==null?.3:o.under,C=G.COLLAR,by={};recs.forEach(q=>{by[q.p.id]=q.B;});
+  const out={collars:0,fringes:0,steam:0,dropped:0},M={};const mouthsOf=id=>M[id]||(M[id]=by[id]?G.mouths(by[id]):[]);
+  const fit=(c,m)=>{let r=c.r,y=m.top,q=null;for(let k=0;k<4;k++){y=m.top-under-C.top*r;q=outline(ring,m,y+C.foot*r);if(!q)return null;r=q.lo*.98/C.rim;}
+   return Object.assign({},c,{x:q.cx,z:q.cz,y,r,col:m.col});};
+  const coll=[];L.collars.forEach(c=>{const ms=mouthsOf(c.pipe);let k=0;ms.forEach(m=>{const f=fit(c,m);if(!f)return;if(k)f.id=c.id+'.m'+k;coll.push(f);k++;out.collars++;});if(!k)out.dropped++;});
+  L.collars=coll;
+  const nth={};L.fringes.forEach(f=>{const ms=mouthsOf(f.pipe);if(!ms.length)return;const i=nth[f.pipe]=(nth[f.pipe]||0)+1,m=ms[(i-1)%ms.length],q=outline(ring,m,m.top-.2);if(!q)return;
+   f.x=q.cx+Math.cos(f.yaw)*q.mean*.7;f.z=q.cz+Math.sin(f.yaw)*q.mean*.7;f.y=m.top-.2;f.col=m.col;out.fringes++;});
+  L.steam.forEach(s=>{const ms=mouthsOf(s.pipe);if(!ms.length)return;const m=ms.reduce((a,b)=>b.top>a.top?b:a),q=outline(ring,m,m.top-.1);if(!q)return;s.x=q.cx;s.z=q.cz;s.y=m.top+1;out.steam++;});
+  return out;};
+ G.collarFit=function(C,recs,ring){const by={};recs.forEach(q=>{by[q.p.id]=q.B;});let n=0,gap=0,deep=0,off=0,worst=-1e9;
+  C.forEach(c=>{const B=by[c.pipe];if(!B){off++;return;}n++;const ms=G.mouths(B),m=ms.find(q=>q.col===(c.col==null?ms[0].col:c.col))||ms[0];
+   const q=outline(ring,m,c.y+G.COLLAR.foot*c.r);if(!q){off++;return;}let g=-1e9;q.R.forEach(p=>{g=Math.max(g,c.r*G.COLLAR.rim-Math.hypot(p[0]-c.x,p[1]-c.z));});
+   worst=Math.max(worst,g);if(g>.05)gap++;if(g<-.25*c.r)deep++;const lip=m.top-(c.y+G.COLLAR.top*c.r);if(lip<0||lip>2)off++;});
+  return{n,gap,deep,off,worst};};
  return G;})();
 if(typeof module!=='undefined'&&module.exports)module.exports=GILLS;

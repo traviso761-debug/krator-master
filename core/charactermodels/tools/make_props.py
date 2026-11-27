@@ -22,7 +22,13 @@ MAT = {'steel': ([0.70, 0.72, 0.75], 0.85, 0.32), 'iron': ([0.30, 0.30, 0.32], 0
        'leather': ([0.22, 0.13, 0.08], 0.0, 0.8), 'brass': ([0.76, 0.58, 0.28], 0.9, 0.35),
        'string': ([0.85, 0.80, 0.68], 0.0, 0.9), 'paint': ([0.55, 0.12, 0.09], 0.0, 0.6),
        'flame': ([1.0, 0.55, 0.15], 0.0, 1.0), 'glass': ([0.95, 0.8, 0.45], 0.0, 0.2), 'clay': ([0.62, 0.38, 0.24], 0.0, 0.85),
-       'bread': ([0.72, 0.47, 0.22], 0.0, 0.9), 'stew': ([0.45, 0.24, 0.10], 0.0, 0.5)}
+       'bread': ([0.72, 0.47, 0.22], 0.0, 0.9), 'stew': ([0.45, 0.24, 0.10], 0.0, 0.5),
+       # the Tungangs' (kits/tungang/PLAN.md section 1.5.1, the hex turned linear): painted conduit, cream and red
+       # enamel, brass, and the lamp code's green (the Line), which glows
+       'tg_pipe': ([0.023, 0.022, 0.020], 0.6, 0.55), 'tg_cream': ([0.761, 0.686, 0.503], 0.1, 0.35),
+       'tg_red': ([0.392, 0.040, 0.025], 0.1, 0.35), 'tg_brass': ([0.434, 0.254, 0.065], 0.9, 0.4),
+       'tg_lamp': ([0.061, 0.539, 0.194], 0.0, 0.3)}
+EMISSIVE = ('flame', 'tg_lamp')
 
 
 class Mesh:
@@ -272,6 +278,35 @@ def torch(m):
     m.loft('flame', [ring((0, 0.38, 0), 'y', 0.03, 6), ring((0, 0.52, 0), 'y', 0.003, 6)])
 
 
+def tg_lamp_pole(m):
+    # the Tungangs' lamp pole: 1.9 m of conduit, a hook at the top, the lamp hung 0.25 m below the hook; held as a staff
+    rod(m, 'tg_pipe', 'y', (0, -0.95, 0), (0, 0.87, 0), 0.013)
+    rod(m, 'tg_red', 'y', (0, 0.30, 0), (0, 0.36, 0), 0.0145)
+    arc(m, 'tg_pipe', [(0, 0.87, 0), (0, 0.93, 0.02), (0, 0.95, 0.07), (0, 0.92, 0.12), (0, 0.88, 0.12)], 0.006, 6)
+    arc(m, 'tg_brass', [(0, 0.88, 0.12), (0, 0.78, 0.12)], 0.003, 4)
+    m.loft('tg_pipe', [ring((0, 0.78, 0.12), 'y', 0.028, 8), ring((0, 0.76, 0.12), 'y', 0.046, 8)][::-1])
+    m.loft('tg_lamp', [ring((0, 0.76, 0.12), 'y', 0.040, 8), ring((0, 0.66, 0.12), 'y', 0.040, 8)][::-1], cap0=False, cap1=False)
+    m.loft('tg_pipe', [ring((0, 0.66, 0.12), 'y', 0.046, 8), ring((0, 0.645, 0.12), 'y', 0.046, 8)][::-1])
+
+
+def tg_spanner(m):
+    # the long spanner: 0.85 m, its jaw 0.12 m across
+    rod(m, 'iron', 'y', (0, -0.15, 0), (0, 0.60, 0), 0.011, rx0=0.016, rx1=0.016)
+    rod(m, 'tg_red', 'y', (0, 0.10, 0), (0, 0.14, 0), 0.0125, rx0=0.0175, rx1=0.0175)
+    box(m, 'iron', (0, 0.605, 0), (0.016, 0.03, 0.12))
+    box(m, 'iron', (0, 0.66, 0.045), (0.016, 0.08, 0.03))
+    box(m, 'iron', (0, 0.66, -0.045), (0.016, 0.08, 0.03))
+    box(m, 'iron', (0, -0.15, 0), (0.016, 0.04, 0.045))
+
+
+def tg_bait_tin(m):
+    # the bait tin, 0.25 x 0.15 x 0.10 m of cream enamel with a red lid band, carried by its wire bail
+    arc(m, 'iron', [(0, -0.10, 0.04), (0, -0.08, 0.01), (0, 0, 0), (0, 0.08, 0.01), (0, 0.10, 0.04)], 0.003, 4)
+    box(m, 'tg_cream', (0, 0, 0.115), (0.10, 0.25, 0.15))
+    box(m, 'tg_red', (0, 0, 0.062), (0.103, 0.253, 0.014))
+    box(m, 'tg_brass', (0.052, 0, 0.075), (0.006, 0.03, 0.03))
+
+
 def arrow(m):
     # not held in a grip: the figure lays it from the drawing hand (its nock, at the origin) toward the bow, along +Z
     rod(m, 'wood', 'z', (0, 0, 0.0), (0, 0, 0.72), 0.004, n=6)
@@ -290,7 +325,8 @@ SUPPORT = {'spear': [0, 0.3, 0, 0, 1.0, 0], 'hoe': [0, -0.4, 0, 0, 0.9, 0], 'pic
            'axe': [0, -0.12, 0, 0, 0.45, 0], 'warhammer': [0, -0.1, 0, 0, 0.5, 0], 'mace': [0, -0.1, 0, 0, 0.38, 0],
            'sword': [0, -0.1, 0, 0, -0.1, 0],
            'rifle': [0, 0.06, 0.16, 0, 0.06, 0.42], 'crossbow': [0, 0.075, 0.1, 0, 0.075, 0.3],
-           'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02]}
+           'pistol': [0.04, -0.03, 0.02, 0.04, -0.03, 0.02],
+           'tg_lamp_pole': [0, 0.3, 0, 0, 0.8, 0], 'tg_spanner': [0, 0.2, 0, 0, 0.5, 0]}
 # how the hand closes on it (make_mpfb.py hands(): fist, trigger: the index finger along the barrel, wide: round a cup)
 GRIP = {'pistol': 'trigger', 'rifle': 'trigger', 'crossbow': 'trigger', 'cup': 'wide', 'bowl': 'flat', 'bread': 'wide'}
 STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
@@ -299,7 +335,7 @@ STRING = {'bow': [0, 0.72, -0.09, 0, -0.72, -0.09]}
 LOW_TURN = {'shield': 90}
 # the prop's axis that points down whatever the hand's turn (the figure turns it about the grip): a bucket and a lantern
 # hang from their bails
-HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1]}
+HANG = {'bucket': [0, 0, 1], 'lantern': [0, 0, 1], 'tg_bait_tin': [0, 0, 1]}
 # the grip-frame axis the figure turns the wrist to keep up (but while the hand is at the face): a cup's mouth, and a
 # bowl's opening, so the open hand under it turns palm up (grip 'flat': the fingers stay as the clip has them)
 UPRIGHT = {'cup': [0, 1, 0], 'bowl': [1, 0, 0]}
@@ -319,7 +355,9 @@ PROPS = [('sword', 'Sword', 'R', sword), ('dagger', 'Dagger', 'R', dagger), ('ax
          ('rifle', 'Rifle', 'R', rifle), ('pistol', 'Pistol', 'R', pistol), ('pickaxe', 'Pickaxe', 'R', pickaxe),
          ('hoe', 'Hoe', 'R', hoe), ('hammer', 'Hammer', 'R', hammer), ('bucket', 'Bucket', 'R', bucket),
          ('cup', 'Cup', 'R', cup), ('lantern', 'Lantern', 'L', lantern), ('torch', 'Torch', 'L', torch),
-         ('arrow', 'Arrow', 'R', arrow), ('bowl', 'Bowl', 'R', bowl), ('bread', 'Bread', 'L', bread)]
+         ('arrow', 'Arrow', 'R', arrow), ('bowl', 'Bowl', 'R', bowl), ('bread', 'Bread', 'L', bread),
+         ('tg_lamp_pole', 'Tungang lamp pole', 'R', tg_lamp_pole), ('tg_spanner', 'Tungang long spanner', 'R', tg_spanner),
+         ('tg_bait_tin', 'Tungang bait tin', 'L', tg_bait_tin)]
 
 
 def write(path, m):
@@ -338,7 +376,7 @@ def write(path, m):
         col, met, rough = MAT[name]
         mat = {'name': 'prop.' + name, 'doubleSided': True, 'pbrMetallicRoughness': {'baseColorFactor': col + [1.0], 'metallicFactor': met,
                                                                  'roughnessFactor': rough}}
-        if name == 'flame':
+        if name in EMISSIVE:
             mat['emissiveFactor'] = col
         mats.append(mat)
         prims.append({'attributes': {'POSITION': g.acc(P.astype(np.float32), 'VEC3', 34962, minmax=True),
@@ -378,6 +416,10 @@ def main():
         if pid in STRING:
             out[-1]['string'], out[-1]['arrow'] = STRING[pid], 'arrow'
         print('%-10s %s %6d tris' % (pid, hand, sum(len(t) for t in m.parts.values())))
+    # the imported props (tools/import_props.py: Meshy models, kept by their 'src') stay after the made ones
+    pj = os.path.join(HERE, 'data', 'props.json')
+    if os.path.exists(pj):
+        out += [p for p in json.load(open(pj, encoding='utf-8'))['props'] if p.get('src')]
     json.dump({'about': 'Hand-held props (tools/make_props.py), modelled in the grip frame: +Y along the handle, +Z where '
                'the fingers point, +X out of the palm; hand R or L. grip: how the hand closes (skeleton.json hands curls). '
                'support: the segment of the handle the left hand may hold when a clip\'s two_hands names the prop. string: a bow '

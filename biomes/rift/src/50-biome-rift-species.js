@@ -690,6 +690,8 @@ BIO.def('claw',BIO.fung?BIO.fung.stalk({r0:.5,r1:.03,bend:.45,seg:4,rings:3}):ne
 BIO.def('bpad',new T3.SphereGeometry(1,9,6),BIO.solidMat(RIFT.BARKTEX[4]),{label:'Blade pear pads'});
 BIO.def('trunk',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[1]),{label:'Small trunks (fibrous)'});
 BIO.def('trunk2',BIO.geo.trunk(8),BIO.solidMat(RIFT.BARKTEX[2]),{label:'Small trunks (pale)'});
-BIO.def('fungus',new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
+/* the bracket fungus on core/biome's fungoid parts (BIO.fung.bracket, as eastabyss and the hyperjungle: Stage 8 D27, O6); 65's bracket()
+   turns the shelf out of its wall. ?fung=0 (or no BIO.fung) keeps the old dome */
+BIO.def('fungus',RIFT.FUNG&&BIO.fung.bracket?BIO.fung.bracket({arc:Math.PI*1.1,seg:9,thick:.32,droop:.18,wav:3,wavA:.07,lump:.08,seed:5107}):new T3.SphereGeometry(1,9,5,0,TAU,0,Math.PI*.5),M.solid,{label:'Bracket fungus'});
 BIO.def('boulder',new T3.IcosahedronGeometry(1,1),BIO.solidMat(RIFT.ROCKTEX),{label:'Boulders (small)'});
 })();

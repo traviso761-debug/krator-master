@@ -25,10 +25,11 @@ const BR_CAMP_FLYERS = ['quetzal', 'wingclaw', 'nightwing'];
 function brcE(key, n, v) { return { key: key, n: n == null ? 1 : n, v: v == null ? 0 : v }; }
 function brcHedge() { return { key: 'br_hedge_thorn', v: 0, gate: { key: 'br_hedge_thorn', v: 1, n: 2 } }; }
 function brcPasture(ha) { return { fence: { key: 'br_fence_rail', v: 0, gate: { key: 'br_fence_rail', v: 1, n: 1 } }, ha: ha }; }
-/* the six ground tribes' upper ground: the chief's pavilion, two family domes, a small dome, one trade, a hitching line */
+/* the six ground tribes' upper ground (a band of its own: 18 bands, the owner 2026-11-12): the chief's pavilion, a double and
+   three family domes, a small dome, one trade, a hitching line */
 function brcUpperGround(trade, tv, line) {
   return { where: "the mesa top's open margin, away from the Crown",
-    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_family', 2, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
+    tents: [brcE('br_tent_chief', 1, 1), brcE('br_tent_dome_double', 1, 0), brcE('br_tent_dome_family', 3, 0), brcE('br_tent_dome_small', 1, 0), brcE(trade, 1, tv)],
     pens: [brcE('br_tent_hitch_line', 1, line)] };
 }
 /* a ground tribe's lower ground: its camp (the chief, the council, the dwellings, the shrine, its trades) and its pens */

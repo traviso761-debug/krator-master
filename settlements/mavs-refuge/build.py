@@ -23,6 +23,9 @@ Also enforces the rules that make subagent work safe:
 
 Usage:  python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
     sys.stdout.reconfigure(encoding='utf-8')
@@ -71,6 +74,7 @@ FURNISH_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'furn
 RAND_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'rand')   # KRAND: the tags' uid is its hash
 TAGS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'tags')   # the tag registry the furniture is registered in (core/tags/README.md)
 DOOR_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'door')   # KDOOR, KGLASS, KDOORHOST: doors that open and real glass (core/door/README.md; src/54-openings.js)
+WALK_FILE = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'walk', '20-core-walk.js')   # KWALK: the units' floors and walls, the doors' blocks (src/83-mr-walk.js)
 PORTS_DIR = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'ports')   # PORT: each building's draw marked, for kits/beast-riders (core/ports/README.md)
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Mav's has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
@@ -80,6 +84,7 @@ TEX_DIR = os.path.join(HERE, 'tex')
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'host'))
 import host as khost                       # core/host: the camera, loop, panel, probe, inspector, marks, pictures, minimap, editor,
 CORE_HOST = khost.FULL                     # cutaway (core/host/README.md; ROADMAP.md section 10, step 5), with core/edits, core/space, core/minimap
+CORE_HOST = CORE_HOST + khost.KEYS   # the one key map and the one walk mode (core/host/92k-host-keys.js; TODO.md, Viewers)
 OUT = os.path.join(HERE, 'mavs-refuge.html')
 MANIFEST = os.path.join(HERE, 'build-manifest.json')
 
@@ -87,6 +92,12 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '44-core-ports.js', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '87-pathviz.js', '98-start.js', '99-tail.html'}
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+# the shared sky (W7, 2026-11-24): core/atmos's core, the skylight and the sky; the site's data; the page's binding and sky
+ATMOS_FILES = [('', '89-atmos-0-core.js'), ('', '89-atmos-0p-presets.js'), ('', '89-atmos-8-export.js'), ('', '89-atmos-b-skylight.js'),
+               ('sky', '89-atmos-e-skymodel.js'), ('sky', '89-atmos-f-skypresets.js'), ('sky', '89-atmos-g-sky.js'), ('host', '89-atmos-h-skyhost.js')]
+DETERMINISTIC |= {f for _, f in ATMOS_FILES} | {'09-mr-site.js', '90-atmos-host.js', '90s-host-sky.js'}
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('57r-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
 DETERMINISTIC |= {'08-core-rand.js', '50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'}   # core/rand, core/tags (no rnd())
 PALETTE_FILE = '05-palette.js'
@@ -94,6 +105,7 @@ DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js'}   # core/materials/re
 DETERMINISTIC.add('53-furnish.js')     # the furniture glue (FURNISH, brfMaterial): no generation of its own
 DETERMINISTIC |= {'57a-interiors.js', '57c-interiors-draw.js'}   # the rooms inside (data; drawing near the camera): no rnd()
 DETERMINISTIC |= {'10-core-door.js', '20-core-glass.js', '30-core-door-leaf.js', '90-core-door-host.js', '54-openings.js'}   # core/door and its drawing (no rnd())
+DETERMINISTIC |= {'20-core-walk.js', '83-mr-walk.js'}   # core/walk and the walk's registration (no rnd())
 DETERMINISTIC.add('65-mr-trades.js')   # the Voth census table (plain data, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
@@ -110,7 +122,7 @@ CONTINUES = {f: '84-flyers.js' for f in ('84a-flyers-routes.js', '84b-flyers-ani
 # chain (kits/interiors IX.CULTURE_FAMILY['beast-rider'] = lizardmen, generic).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic']
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'52-furniture-bundle.js', '57b-interiors-bake.js', '46-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'52-furniture-bundle.js', '57b-interiors-bake.js', '46-matlib-pack.js', khost.EDITS_JS, '09-mr-site.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 
 # GENERATED fragment 57b: the interiors' bake (README "Furniture that is not always drawn is data first"; API.md,
 # Interiors). interiors-bake.json holds every unit's furniture, written by bake_interiors.py from a loaded page. Its
@@ -168,8 +180,11 @@ def virtual_bodies():
         print('NOTE: no interiors-bake.json: the page computes every interior itself. Run python3 bake_interiors.py')
     body = ('/* GENERATED by build.py from interiors-bake.json (bake_interiors.py): every unit\'s furniture. Do not edit. */\n'
             'MIX.adoptBake(%s, %s);\n' % (json.dumps(bake, separators=(',', ':')) if bake else 'null', json.dumps(kit)))
+    # the real site (W7): region/site.json, cast from the scale model by region/site.py, as MR_SITE (the shared sky reads it)
+    with open(os.path.join(HERE, 'region', 'site.json'), encoding='utf-8') as fh:
+        site = '/* ==================== the real site, cast from the scale model (region/site.py) */\nvar MR_SITE = ' + fh.read().strip() + ';\n'
     return {'52-furniture-bundle.js': bundle, '57b-interiors-bake.js': body, '46-matlib-pack.js': matlib_pack(),
-            khost.EDITS_JS: khost.edits_js(HERE, 'mavs-refuge')}
+            khost.EDITS_JS: khost.edits_js(HERE, 'mavs-refuge'), '09-mr-site.js': site}
 
 RE_HEAD_SEED = re.compile(r'^reseed\(\s*(-?\d+)\s*\)\s*;')
 RE_ANY_SEED = re.compile(r'\breseed\(\s*(-?\d+)\s*\)')
@@ -263,7 +278,12 @@ def main():
         for f in os.listdir(d):
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
+    paths.setdefault('20-core-walk.js', WALK_FILE)
+    for _d, _f in ATMOS_FILES:                             # the shared sky (W7)
+        paths.setdefault(_f, os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'atmos', *([_d, _f] if _d else [_f])))
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
+    # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:
@@ -282,7 +302,7 @@ def main():
 
     BSRC.report()   # --list-sources: every file read so far is what the page is made of; then exit
     html = ''.join(bodies[f] for f in order)
-    with open(OUT, 'w', encoding='utf-8') as fh:
+    with open(OUT, 'w', encoding='utf-8', newline='\n') as fh:
         fh.write(html)
     with open(MANIFEST, 'w', encoding='utf-8') as fh:
         json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in order},

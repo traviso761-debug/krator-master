@@ -44,7 +44,13 @@ const R = ROOM({
   fixtures: [{ id, kind: 'stair', x, z, ry, w, d, h?, clearance: { front: 0.9 }, reach: true }]
                                   // optional: what the building already put in the room (a stair's
                                   //   flight, the well a stair rises through): furniture keeps off it
-                                  //   and out of its clearance; reach: its front is a way in, kept reachable
+                                  //   and out of its clearance; reach (default true; false for a post or a
+                                  //   bench that is only kept clear of): its front is a way in, kept
+                                  //   reachable, and keeps at least 0.45 m free (MIN_USE, as a usable piece
+                                  //   does) whatever its clearance.front; a reachable fixture whose front has
+                                  //   no walkable cell (it faces a wall, or a desk), or none the first door
+                                  //   reaches, is left out of the walk check and listed in
+                                  //   plan.report.blockedFixtures [{ id, reason }] (not in report.missing)
 });
 ```
 
@@ -304,6 +310,28 @@ frame; `furnishRoom` turns them into world data on each placement and in `plan.l
 and, by default, STRIPS them from every piece it builds; `IX.catalogAdapter({ lights: 'keep' })`
 keeps them. The demo lights rooms with a fixed pool of 6 point lights moved to the rooms nearest
 the camera (the count never changes, so nothing recompiles); `?lights=keep` shows the catalog's.
+
+### Room light (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d: I1-I4)
+
+`core/interiors/10-core-roomlight.js` (`KROOMLIGHT`) is bundled ahead of the core (`kit_bundle.py`; `build.py` reads it
+in place as `src/05-roomlight.js`), so every page with the interiors has it, and `49-exports.js` reads the ROOM()
+records with it:
+
+```js
+IX.lightRoom(room, plan?)            // the room as KROOMLIGHT reads it: box, doors (to a ROOM: a portal; else out),
+                                     //   windows, src skylights / vault / outdoor, the plan's lights as lamps
+const table = IX.roomLight(rooms?, plans?, { shut });   // KROOMLIGHT.buildTable: daylight by hop over the doorways
+IX.lightPool({ eye, eyeRoom, table, rooms?, plans?, sunUp, count, heroShadows });  // KROOMLIGHT.pickPool, filled in
+const json = IX.exportInteriors(rooms?, plans?);         // interiors.json v2 for Godot's KInteriorsLight:
+                                                         //   { version: 2, rooms, portals, room_table, plans }
+```
+
+`rooms` defaults to every ROOM(), `plans` is `{ room id: plan }`. The engine's interiors (`core/engine/91i-interiors.js`)
+keep the planned rooms' table as `SVIX.lightTable` (its counts in `_api.interiors().light`), `svixLightPool(eye)` and
+`svixExport()`. `IX.view.shell` bakes `KROOMLIGHT.vertexCornerAO` into its walls' vertex colours (the walls gridded on the
+room's corners and the reach in from them, so the darkening ends at the reach; only faces inside the room and turned into
+it): `{ cornerAO: false }` turns it off, `aoReach` (0.85 m). The web twin of Godot's room-light texture, to light a room
+from the table, is `core/interiors/20-core-roomlight-host.js` `KRLHOST` (`texture(table)`, `apply(mat, { tex, u })`).
 
 ## 10. Building sets and the residence rule
 

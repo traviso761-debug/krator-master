@@ -14,6 +14,5 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:{px:SITE.px,py:SITE.py},air
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame once the camera is placed: 99-host-take.js subscribes it */
 // the clouds' shadows on every lit material: after the bake (89z, which runs after the water: the flora is built there now)
-function cloudShadeScene(){const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||m.userData.cloudShaded||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);m.userData.cloudShaded=true;
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+// (the core's pass, Stage 8 V8, 2026-11-24: once a material, the fauna too as before, and the biome core's materials made after it)
+function cloudShadeScene(){ATMOS.cloudShadeScene(scene,{leave:null});}

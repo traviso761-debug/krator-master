@@ -1,0 +1,61 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.393,
+    1.344
+   ],
+   "seam_before": [
+    3.144,
+    3.593
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.12,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "ground",
+  "id": "ground.sulfur.crust",
+  "metal": 0,
+  "roughness": 0.9,
+  "scale": [
+   1,
+   1
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "ground.sulfur.crust.png",
+  "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-9b92-7873-a23b-224ef99ad6b2; the finished copy Codex saved after its seam pass, sulfur-hot-spring-ground-2048.png)",
+  "licence": "generated for this project by its owner",
+  "original_title": "sulfur-hot-spring-ground-2048.png",
+  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '67. The Xanadu kit's works pieces (`kits/xanadu/extra/88g-xa-works.js`, the build-out's wave 0.1, 2026-11-17)' on claude/integration-4 (id ground.sulfur.crust)",
+  "sha1": "a675ccb2145ff6c86b25d1fc0307cfffc12f9faf"
+ }
+}

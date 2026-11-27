@@ -19,6 +19,9 @@ rest houses. The monastery itself is its page's (settlements/longsong).
   python3 build.py
   python3 build.py --no-checks
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -51,7 +54,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(path):
     pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 # the Xanadu building kit's library pack (still settlements/xanadu's), only the families the village buildings draw
 # (settlements/longsong/build.py XA_FAMS, the same villages)
@@ -70,18 +73,31 @@ RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
-     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
+       # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+       ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+       ('core/atmos/fx', '89-atmos-fx-raincover.js'),
+       # the shared sky (W8, STAGE-8/G-weather.md section 6): core/world's SKY_SHARED (80) draws it, with the moving cells (W5: the
+       # region opens 'live'), their lightning and the volumetric clouds (W6)
+       ('core/atmos/sky', '89-atmos-e-skymodel.js'), ('core/atmos/sky', '89-atmos-f-skypresets.js'), ('core/atmos/sky', '89-atmos-g-sky.js'),
+       ('core/atmos/host', '89-atmos-h-skyhost.js'), ('core/atmos/sky', '89-atmos-m-volclouds.js'), ('core/atmos/host', '89-atmos-m-volhost.js'),
+       ('core/atmos/wx', '89-atmos-wx-cells.js'), ('core/atmos/wx', '89-atmos-wx-host.js'), ('core/atmos/fx', '89-atmos-fx-lightning.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
-       ('biomes/sedesert/src', '35-core-strata.js')]
-    + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js') + [('src', '43-world-ohr.js')]
+       ('biomes/sedesert/src', '35-core-strata.js'),
+       # core/export (GODOT-PLAN.md M7, the owner 2026-11-16): the region is the one-world case, exported by
+       # tools/godot_case.py through core/world 94
+       ('core/export', '07-core-export.js'), ('core/export', '09-core-export-adapters.js'), ('core/export', '10-core-export-scene.js')]
+    + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js', '41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js') + [('src', '43-world-ohr.js')]
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
     + [('pack', k) for k in PACK_KITS] + [('xapack', 'xanadu')]
@@ -94,10 +110,10 @@ ORDER = (
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
        ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '49-world-highrift.js')]
-    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
+    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js') + [('src', '83c-world-cataract.js')] + LDF('83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
-    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
+    + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '94-world-export.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site; 94: the export (M7)
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: the Oidong Valley and the High Rift</title>'),
         ("<b>Little Demo</b> · the scale model's eastern desert at 1:1",

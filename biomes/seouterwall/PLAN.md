@@ -1,6 +1,6 @@
 # SE Outer Wall (`seouterwall`) — Scenic Alpine Cordillera, The Godsgate Pass & Hidden Highland Tarn Oases (`PLAN.md`)
 
-> **Status: Proposed Biome Kit & Scale-Model `5.1` Sculpting Blueprint (`2026-11-06`).**
+> **Status: all six stations built on a branch, 2026-11-10 (a cloud session: each page's own checks pass in software GL; the full `--all-views` verify is queued for the owner's GPU, `HANDOFF-REBUILD.md`). Section 7 is the build: its Core adoption (7.1), the stations on the model (7.2, 7.4-7.6), the road and the plants (7.7), what is owed (7.3).** Proposed 2026-11-06 as a biome kit and scale-model `5.1` sculpting blueprint; the model's pass (`build_425_master.py`, "SE outer wall") has since run, taller than this plan's numbers (section 7.2).
 >
 > **Polygon:** `SE outer wall` (`id: "rmw4xy4tp9b29"`, `kind: "biome"`, `20` vertices: `[[1329,1136],[1356,1201],[1336,1222],[1299,1228],[1267,1254],[1245,1276],[1224,1300],[1201,1346],[1130,1352],[1092,1340],[1060,1310],[1039,1292],[1009,1305],[997,1207],[1032,1205],[1091,1204],[1164,1198],[1249,1188],[1300,1160],[1324,1141]]`).
 > - **Bounding Box:** `X = 997..1356`, `Y = 1136..1352` (`359 × 216 px` span; `38,207` cells = **`152,828 km²`** on the `1821 × 1723` `2 km/px` Scale Model `5.1` master grid, or `~224 km E–W × 135 km N–S` / `14,925 km²` at the `625 m/px` regional detail scale). All `px, py` coordinates below are on the unified **Scale Model `5.1` (`X = 997..1356, Y = 1136..1352`)** grid (subtract `DX = 272, DY = 330` for legacy `4.23` coordinates).
@@ -19,7 +19,7 @@
 | :--- | :--- |
 | **Kit Folder & Object** | `biomes/seouterwall/` (`window.SEOUTERWALL`, `BIO.init({tags:'seouterwall'})`) |
 | **Core Modules Adopted** | `core/biome`, `core/rand` (`KRAND`), `core/tags`, `core/space` (`KSPACE`), `core/host` (`KHOST.FULL`), `core/atmos` (thin-air sky, katabatic gust-front weather, rime fog, snowcover fx), `core/water` (`WATER.still` tarns, `WATER.flow` headwater torrents, `WATER.fall` cascades), `core/terrain` (`KFIELD`, `KSTRATA` with `megabreccia` + `tibasalt` dike recipes, `KRELIEF.talus`, `KFROST` patterned ground & rock glaciers, `KSTACKS` arête gendarmes), `core/hazard` (katabatic wind-chill, nocturnal frost, rockfall, Stalker scout patrols on the eastern col) |
-| **Read in Place** | `biomes/nwouterwall` & `biomes/ehighlands` (cushion domes, fellfield lichens, dwarf willow/birch); `biomes/wouterwall` (puya spikes & slump-scarp ledges); `biomes/oidong` (snow lotus & prayer cairns on the western Godsgate); `biomes/godshearth` / `biomes/hearths` (relict dwarf *pocket-hearths* at the two geothermal/volcanic-sill tarns); `kits/ancients` (cyclopean wind-baffles, broken viaduct piers, & sealed Arcbeam–Stair tunnel ventilation shafts) |
+| **Read in Place** | `biomes/nwouterwall` & `biomes/ehighlands` (cushion domes, fellfield lichens, dwarf willow/birch); `biomes/wouterwall` (puya spikes & slump-scarp ledges); `biomes/oidong` (snow lotus & prayer cairns on the western Godsgate); `biomes/godshearth` / `biomes/hearths` (relict dwarf *pocket-hearths* at the two geothermal/volcanic-sill tarns); `kits/ancients` (cyclopean wind-baffles, broken viaduct piers, & sealed Parabola–Stair bore ventilation shafts) |
 | **Target Elevation Tiers (`5.1`)** | **`+3,350 – +3,750 m`** in the **Godsgate Pass** saddle (`0.99–1.05 atm`); **`+3,680 – +4,520 m`** in the **5 Hidden Highland Tarn Oases** (`0.91–1.01 atm`); **`+4,200 – +5,400 m`** across the wind-planed periglacial benches & felsenmeer (`0.81–0.95 atm`, `ET` / `Dsc`); **`+5,400 – +6,450 m`** along the central glaciated megabreccia arêtes & horn peaks (`0.71–0.81 atm`, `EF` / `HT`) |
 | **Why Nobody Lingers** | Violent nocturnal **katabatic density-windavalanches** (`70–130 km/h`) roaring off Godthrone and the crest into the `-1,000 m` Bowl vacuum; flash **barometric whiteouts** & freezing rime-fogs; relentless **freeze-thaw rockfall** off overhanging shatter-cone cliffs; nocturnal radiative frosts (`-8 °C to -22 °C` even in summer); and, east of `X = 1180`, roving **Stalker** harpooner/blade triads patrolling the western ridges above Hub 01 |
 
@@ -101,7 +101,7 @@ Even after lowering the cordillera into the breathable `0.71–1.05 atm` envelop
 
 ### 2.5 The Eastern Shadow: Stalker Reconnaissance Triads (`X > 1200`)
 - While the western Godsgate is patrolled by caravaneers, the eastern half of `SE outer wall` (`X = 1200..1356`) directly overlooks **Hub 01** (`5.1 px 1344, 1409`, `4,351 m`) and the **Stalker Range** (`rmvkknh1am4fw`).
-- Caravaneers and Yuni prospectors know that **Stalker pairs and triads** (`st_harpooner` and `st_blade`, `biomes/catch/PLAN.md` §6c) use the high snow-chutes and dry wadis of the eastern wall (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) to transit between Hub 01, the Catch, and the collapsed northern half of the Arcbeam–Stair tunnel. In the whiteout rime-fog, a white-hulled Harpooner crouching motionless among white quartz-breccia boulders is virtually invisible until its pneumatic harpoon hisses.
+- Caravaneers and Yuni prospectors know that **Stalker pairs and triads** (`st_harpooner` and `st_blade`, `biomes/catch/PLAN.md` §6c) use the high snow-chutes and dry wadis of the eastern wall (`Loua Waita Guli`, `Waita Guli`, `Wādī al-Zulāl`) to transit between Hub 01, the Catch, and the collapsed northern half of the Parabola–Stair bore. In the whiteout rime-fog, a white-hulled Harpooner crouching motionless among white quartz-breccia boulders is virtually invisible until its pneumatic harpoon hisses.
 
 ---
 
@@ -155,13 +155,22 @@ On the `5.1` height grid, we carve **The Godsgate** as a meandering, domain-warp
 - **Southern Mouth (`px 1028..1045, py 1278..1305`):** The pass narrows through **The Southern Narrows (`+3,480 m` at `1035, 1292`)** before plunging down the coalescing gravel bajada fan into the northern Catch toward **Kolli / al-Kōl** (Oasis #1, `"the cold one"`, `biomes/catch/PLAN.md` §8) and southwestward along the high volcanic bench toward **Godshearth** (`rmw4wou2y1hhc`) and **Xanadu** (`rmvkkmitffbjk`).
 
 ### 3.3 Ancient Engineering & Caravan Infrastructure in the Godsgate
-How does the Godsgate relate to the **sealed Arcbeam–Stair tunnel** (`biomes/catch/PLAN.md` §6, `openworld/ANCIENT-ROADS.md` §4b)?
+
+> **Renamed 2026-11-24 (the owner): the bore's north end is PARABOLA, not Arcbeam.** *"There is no tunnel ti arcbeam but
+> there is a highway"*, and *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam."* Everything in
+> this section stands — the base tunnel, the 30 m surface highway, the 1,400 m vent shaft, the 180 m plug, the +16 °C
+> updraft, the caravanserai — with **Parabola (970,1186, the Bowl arcology)** in place of Arcbeam throughout. Measured
+> afterwards: the Parabola-Stair line is 580 km and runs straight down this corridor (at 45 % and 50 % of its length it
+> stands at px 1031,1301 and 1038,1314), 115 km of it inside this polygon with 4,506-8,154 m of rock over it, so the
+> shaft reaches a bore standing near +2,190 m from the 3,590 m apron — 1,400 m, the figure this section already gives.
+> `openworld/catch-bowl/PLAN-TERRAIN.md` P17 and `PLAN.md` answers M and N.
+How does the Godsgate relate to the **sealed Parabola–Stair bore** (`biomes/catch/PLAN.md` §6, `openworld/ANCIENT-ROADS.md` §4b)?
 1. **The Deep Tunnel Below vs. The Surface Service Highway Above:**
    - During the Ancients' era, the primary high-speed maglev/guideway trunk between **Arcbeam** (`px 1016, 1058`, `2,119 m`) and **Stair** (`px 1106, 1442`, `1,379 m`) bored straight underneath the eastern shoulder of the Godsgate in a deep base-tunnel.
    - However, to build and ventilate that `180 km` tunnel—and to haul oversized industrial reactors and heavy crawlers that could not fit the tunnel bore—the Ancients also graded a **`30 m`-wide surface construction highway** (`4%` ruling grade, board-formed cyclopean concrete cuttings, and monolithic **parabolic wind-baffle walls**) directly through the Godsgate saddle!
-   - When the Cataclysm's earthquakes collapsed the deep Arcbeam–Stair tunnel halfway through, **the surface Godsgate road became the sole surviving artery between the Crater and the south**.
+   - When the Cataclysm's earthquakes collapsed the deep Parabola–Stair bore halfway through, **the surface Godsgate road became the sole surviving artery between the Crater and the south**.
 2. **The Vent-Shaft Caravanserai (*Bāb al-Hawa* / "Gate of the Wind-Shaft", `px 1033, 1258`, `+3,590 m`):**
-   - Just south of the `3,620 m` saddle divide stands a colossal, `40 m`-diameter **Ancient Ventilation & Access Shaft Collar** of seamed white metal and bronze ring-bands (`kits/ancients`), originally sunk `1,400 m` vertically down to the mid-point of the Arcbeam–Stair tunnel.
+   - Just south of the `3,620 m` saddle divide stands a colossal, `40 m`-diameter **Ancient Ventilation & Access Shaft Collar** of seamed white metal and bronze ring-bands (`kits/ancients`), originally sunk `1,400 m` vertically down to the mid-point of the Parabola–Stair bore.
    - The shaft is plugged by fallen megabreccia `180 m` down, *but* warm, dry air (`+16 °C`) still drafts gently upward through the rubble from the geothermally heated tunnel below!
    - Yuni, Izani, Dasrī, and Xanadui caravaneers have turned the sunken concrete apron inside the shaft's massive **cyclopean wind-baffle crescent** into the pass's only safe overnight camp: a roofless stone-and-salvage caravanserai where beasts are tethered out of the `100 km/h` nocturnal *God-Bore* katabatic gale, prayer wheels (`kits/xanadu`) spin alongside Izani milestones and Yuni stencil signs, and desperate arcology divers occasionally attempt to winch down the choked shaft toward the sealed mid-tunnel wreck.
 
@@ -216,7 +225,7 @@ All station coordinates `(px, py)` and `base` elevations (`m`) are specified on 
 
 | # | Station ID | Page (`dist/`) | `5.1` `px, py` | Base Elev (`m`) | Pressure | Temp (`mean` / `w` / `c`) | Precip | Köppen | Narrative & Visual Showcase Description |
 | :-: | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **1** | `godsgate` | `seouterwall.html` | **`1031, 1252`** | **`+3,620 m`** | `1.02 atm` | `+3.5 °C` (`+15 / -8`) | `285 mm` | **`Dsc`** | **The Godsgate Saddle & Vent-Shaft Caravanserai:** The flagship trans-cordilleran pass at the drainage divide between `Guli rrija` (N) and `Wādī al-Qamar` (S). Western cliffs of black colonnaded Godthrone `tibasalt` striped with orange glass face eastern cliffs of patchwork impact `megabreccia`. Features the `30 m` Ancient highway cutting, parabolic wind-baffle walls, the steaming `40 m` Arcbeam–Stair tunnel ventilation shaft (`Bāb al-Hawa`) converted into a four-tongue caravan camp, prayer wheels, and roaring nocturnal katabatic dust/snow spindrift. |
+| **1** | `godsgate` | `seouterwall.html` | **`1031, 1252`** | **`+3,620 m`** | `1.02 atm` | `+3.5 °C` (`+15 / -8`) | `285 mm` | **`Dsc`** | **The Godsgate Saddle & Vent-Shaft Caravanserai:** The flagship trans-cordilleran pass at the drainage divide between `Guli rrija` (N) and `Wādī al-Qamar` (S). Western cliffs of black colonnaded Godthrone `tibasalt` striped with orange glass face eastern cliffs of patchwork impact `megabreccia`. Features the `30 m` Ancient highway cutting, parabolic wind-baffle walls, the steaming `40 m` Parabola–Stair bore ventilation shaft (`Bāb al-Hawa`) converted into a four-tongue caravan camp, prayer wheels, and roaring nocturnal katabatic dust/snow spindrift. |
 | **2** | `gatetarn` | `seouterwall-gatetarn.html` | **`1016, 1236`** | **`+3,680 m`** | `1.01 atm` | `+5.5 °C` (`+16 / -5`) | `340 mm` | **`Dsc`** | **Tarn of the Gate-Bell (Oasis #1):** A sheltered hanging glacial cirque `260 m` above the western wall of the Godsgate. A `120 m` waterfall plunges over an orange palagonite and columnar basalt headwall into a cobalt tarn ringed by gold-needled furlarch, red guyed stalks, goldroot carpets, and a toppled bronze Ancient acoustic fog-bell housing a Historian monk's lookout over the pass below. |
 | **3** | `ambertarn` | `seouterwall-ambertarn.html` | **`1064, 1272`** | **`+3,940 m`** | `0.98 atm` | `+1.0 °C` ambient (`+13.5 °C` oasis) | `210 mm` | **`Csb` / `ET`** | **Amber-Sinter Geothermal Tarn (Oasis #2):** A steaming `+30 °C` hydrothermal oasis in a fault-wedge canyon at the head of `Wādī al-Ṣakhr`. Opaline-and-iron sinter terraces dam a turquoise lake surrounded by `12 m` *Dwarf Alpine Hearth-Trees* (`HEARTH.cycle`: silver daytime spindles unfolding into black nocturnal radiator umbrellas under a freezing starry sky), orange volcanic glass sandbars, and a hidden Talovolci/runaway winter camp in the warm travertine caves. |
 | **4** | `mirrorscarp` | `seouterwall-mirrorscarp.html` | **`1134, 1218`** | **`+4,120 m`** | `0.96 atm` | `+2.5 °C` (`+13 / -8`) | `195 mm` | **`ET` / `Dsc`** | **Mirror-Slump Tarn & The Bowl Overlook (Oasis #3):** Back-tilted listric slump terrace on the northern rim scarp. A `300 m` uphill-facing fault mirror of polished black pseudotachylite friction-glass reflects noon sunlight onto a narrow sag-pond tarn lined with giant `10 m` Puya spikes and woolly willow, while `200 m` north the bench breaks away in a breathtaking `5,000 m` vertical vista down into the pink-and-white salt pan of **The Bowl**. Includes a cantilevered Ancient geodetic laser-relay bunker. |
@@ -288,3 +297,147 @@ Carve 5 circular-to-elliptical cirque/graben depressions (`r_tarn = 1.8..2.6 px`
      - **`EF` / `HT` (Glaciated Horns & Arêtes, `~18%`):** `+5,500–6,450 m` crest (`tm = -9 to -16 °C`, `tw < 0 °C`, **0% Class O / 0% HF**).
      - **`Dsc` / `Dsb` / `Dfc` (Subalpine Pass & Cirque Pockets, `~20%`):** `+3,350–4,250 m` Godsgate floor, northern slump toes, and Tarn Oases #1, #3, #5 (`tm = +1 to +6 °C`, `tw = +12 to +16 °C`).
      - **`BSk` / `Csb` (Dry Steppe Thresholds & Geothermal Tarn #2, `~4%`):** Southern Godsgate fan mouth and Amber-Sinter Tarn (`tm = +4 to +13.5 °C`).
+
+---
+
+## 7. Scale-Model 5.1 Skarn Reconciliation, Tharn Annex & Showcase Station #12 (`2026-11-13`)
+
+### 7.1 Tarn Oases #4 & #5 Lithology Fix (`contact-marble` Cu/Nephrite Skarn, `0%` Subduction Porphyry)
+- **Tarn #4 (`Jade-Karst Polje`, `1208, 1254`, `+4,380 m`) & Tarn #5 (`Copper-Vein Tarn`, `1288, 1184`, `+3,820 m`):** Reconciled with `GEOLOGY-SANITY-CHECK.md` §2 — all references to subduction "copper-porphyry" are replaced by **impact-ring hydrothermal contact-metamorphic skarn** bound to `KSTRATA` **`contact-marble`** (`core/terrain/35-core-strata.js`). Dolomitic carbonate blocks slumped inside the `megabreccia` outer-wall collar and intruded by radial mafic dikes yield **nephrite jade / tremolite marble** at Tarn #4 and **magnetite-chalcopyrite-malachite skarn veins** feeding `Waita Guli` (`r514`) toward Yuni at Tarn #5.
+
+### 7.2 Annex: Tharn Secondary Impact Crater (`5.1 px 1375, 1525`, `D = 108 km`) & Showcase Station #12
+- **Tectonic & Impact Setting:** South-southeast of `SE outer wall` across the airless **Tharn / Stalker Massif** (`+10,450 to +11,150 m` `Class O` shocked anorthosite & norite barrier between **The Catch**, **Oidong/Longsong**, and **Siphon Pits**), a **`D = 108 km` complex secondary/late-stage impact crater** centered at **`5.1 px (1375, 1525)`** punches `4.3–5.0 km` down through the vacuum barrier into a sheltered **`+6,185 m`** flat impact-melt floor (`0.74 atm`, `ET` / `EF` boundary) ringed by chaotic **`secondary-ejecta`** boulder-breccia terraces.
+- **Showcase Station #12 — `Tharn Secondary Crater Cryo-Fumarole Tarn`:**
+  - **Canonical `5.1` Coordinates:** **`(1375, 1525)`** (`2,750 km E, 3,050 km S` on the `1821 × 1723` `2 km/px` canvas — central peak-ring toe & geothermal cryo-fumarole tarn on the floor of the `D = 108 km` Tharn Crater).
+  - **Elevation & Atmosphere:** **`+6,185 m`** crater floor & **`+6,180 m`** warm cryo-fumarole tarn (`0.74 atm` breathable thin air pooled inside the deep crater bowl; pure-water boiling point `~91.3 °C`), completely encircled by **`+10,450 to +11,150 m`** airless (`0.40–0.44 atm`, `Class O`) shocked white anorthosite ring walls rising `4.5 km` into a dark violet-indigo zenith sky.
+  - **`KSTRATA` Binding:** **`secondary-ejecta`** (`3–9 m` chaotic polymictic megablock breccia, glassy black impact-melt sheets, and hummocky fallback benches across the crater floor and stepped terrace slump walls) beneath towering far-field **`rift-basement` / `megabreccia`** shocked lunar-white anorthosite cliffs.
+  - **Camera Framing (`5.2 × 5.2 km` cryo-oasis cut):** Dramatic low-angle shore camera at `+12 m` on dark `secondary-ejecta` impact-melt pavement looking WNW across the steaming, sapphire-blue `+6,180 m` cryo-fumarole tarn (`WATER.open` + `WATER.ice` drifted rim): `6–14 m` Erebus-type hollow fumarolic ice chimneys (`KGLACIER` ice towers) venting sunlit silver steam plumes into `-18 °C`, `0.74 atm` thin air, orange-and-emerald endolithic/thermophile microbial aprons and `ehighlands` glass-tower outliers hugging the `KTHERM` warm rim, and `4.6 km` of vertical airless white Tharn walls crowning the entire horizon under stark daytime starlight/giantshine.
+  - **Hydrology & Trade Tie-In:** Closed endorheic sub-permafrost hydrothermal circulation driven by residual deep fault heat melts basal crater ice into the `+6,180 m` tarn without surface spill; this hidden breathable pocket is the sole emergency oxygen-and-water staging refuge for **Yuni Geomancers**, **Longsong History Monk** couriers, and **Stalker-Peak** salvage expeditions attempting the high Tharn traverse between **Oidong** and **Lake Ostrukh** (`1516, 1471`).
+
+## 7b. The build (2026-11-10)
+
+### 7.1 Core adoption (written before the first fragment)
+
+Station 1 starts from the nearest finished kit of the family: the W outer wall's station 1 (`biomes/wouterwall`, the loess tablelands,
+on `origin/claude/cloud-kits-verify`), itself forked from `biomes/nwouterwall`. Same host shape (`44s` the site, `45` the stage on the
+model, `46` the kit's layout as data, `47` the land, `89*` the air and the water, `99` the hand-over to core/host), same reading of the NW
+outer wall's flora in place.
+
+| Module | Takes it for |
+|---|---|
+| `core/biome` | the kit contract (`BIO.init`, items, cards, bark, bake, LOD, impostors, export, `44-core-stage`) |
+| `core/rand` (`KRAND`) | every draw: the site's crags and swells (`KRAND.fbm`), the moraines' and the rockfall heaps' seeds, the ground's mottle; placement reseeded per cell by the read-in-place passes. No page noise, no `Math.random` |
+| `core/tags` | every item set, tree, plant volume, landform and hazard is a record (`BIO.init({tags:'seouterwall'})`, `BIO.record`) before it is drawn |
+| `core/space` (`KSPACE`) | keep-clear between trees (the read-in-place passes) and the brook's segment index |
+| `core/host` (`KHOST.FULL`) | camera, loop, panel, inspector, marks (the polygon tool), probe, pictures, minimap, editor |
+| `core/atmos` | `ATMOS.bindHost`; the shared sky at the station's pixel with its far land cast from the model (`region/far.py`); `ATMOS.bindWeather` (`{cold:true}`); snow that lies; height fog (the col's dawn mist); the rain cover; lightning; cloud shade; the skylight for the brook; `BIO.bindAtmosWind`; **the God-Bore as the wind** (`fx/89-atmos-fx-katabatic.js`, a new opt-in written for this kit, 2026-11-10: the night's gale turns the one wind field); station 3's steam (`89-atmos-3-particles.js`) and its warm ground bare of snow (`ATMOS.snowBare`) |
+| `core/water` | the meltwater brook (`WATER.flow`) down the north slope's wadi, drawn on core/atmos; the ext 56, 57, 60 (glint, audit, the water's fields) |
+| `core/terrain` | `KFIELD` (the baked near ground the export carries), `KRELIEF` (`range` for the moraines, `wadi` for the meltwater gully and its fan), `KRUBBLE` (`37c`: the rockfall heaps under the crags), `KSTRATA` and its shade (`megabreccia` with the Godthrone's `tibasalt` as its lateral stack to the west: section 1.2), `KGROUND` (the library layers, hex-tiled, height-blended, triplanar on the steep), `KHORIZON` (the walls' shadows at a low sun) |
+| `core/hazard` (`KHAZ`) | the God-Bore (the night's katabatic gale on the col: `cold`, on the day's cycle) and the rockfall heaps (`crush`): `tags.hazard` records (section 2) |
+| `core/materials` | the library through `materials.json` and `tools/textures/pack.py` (`tex/`), and the NW outer wall's pack read in place for its flora |
+| `core/shadow` (`KSHADOW`) | the sun's shadows, toggleable and off by default (`?shadow=1`) |
+| `core/export`, `core/minimap`, `core/edits` | through core/host's full interface, as every biome |
+| `biomes/nwouterwall` | **read in place**: its layout, species, trees (the larch, the stone pine, the creeping pine: the krummholz, silverthorn) and floor, bound to this page's fields; each of this kit's zones names the NW zone that grows there (section 4's "read in place") |
+| `core/mask` | not taken: placement reads plain functions of (x, z) (the fields, the landforms), never a canvas |
+| `core/city`, `core/hamlet`, `core/simulation`, `core/camp` | not taken at station 1: the caravanserai at Bab al-Hawa is the owed Ancients turn (7.3), and its camp would be `core/camp`'s when it is built |
+| `kits/ancients` | **not taken at station 1** (owed, 7.3): the 30 m highway cutting, the parabolic wind-baffles and the vent-shaft collar are buildings; no biome page reads the Ancients kit yet but ancientsvalley, and the road needs its line on the model first |
+| `core/terrain` `KFROST`, `KGLACIER` | not at station 1: the col (mean +4 °C) has no permafrost, and the hanging glaciers stand on the walls 6-12 km out (the mid ground and the sky's far land). The benches' stations (5, `jadecrest`) take them |
+| `kits/crops` | not taken: nothing is farmed on the col |
+
+### 7.2 Station 1 on the scale model
+
+`region/far.py` (forked from the W outer wall's) cuts the model (`extract_region.py 'SE outer wall'`, upsample 2: 1 km cells, plus
+`region/farland.json`, a box west to px 870 so the far land holds the Godthrone's flank) and writes `region/station-godsgate.json`:
+
+- **The pixel, px 1031,1252: 3,620 m, 1.02 atm, Dsc, mean +4 °C, 282 mm** (the model pins it: `build_425_master.py`'s
+  `seow_station_pins`; `test_smodel.py` checks it). The plan's 3,620 m, Dsc and 285 mm hold.
+- **The ground there is not the plan's U-trough.** The model's pass ran taller than section 6 (the cordillera at 6.2-11 km, not 3.8-6.5),
+  and the Godsgate's carved corridor runs N-S **7.5 km west of the pin** (px ~1027, floor 3,630-3,680 m all along). The pin is a 7x7
+  stamp at 3,620 m, so the station stands in **a closed hollow about 2 km across**: its floor within 60 m of the pin, rising 140 m to the
+  north rim 2 km out (570 m at 3 km), 100-200 m to the south, 400 m to the east at 3 km and 280 m to the west at 3 km, between the low
+  rise that hides the corridor and the cordillera's slopes. The walls (6.3-7.5 km) stand 6-12 km out, on the mid ground.
+- **So station 1 stands on the corridor (moved 2026-11-10, the owner's word: "move the stations to be appropriate to the map")**, at the
+  thalweg's high point, the drainage divide: **px 1027.5,1256, 3,672 m** (52 m over the plan's pin; the page's check holds it within 8 px
+  and 150 m of the plan's station). There the corridor is a north-south U-trough, its floor about 2 km wide within 30 m of the divide,
+  falling 26 m in 4 km north and 50 m south, its walls 160-540 m up 3 km out. Its site (`src/44s-host-site.js`): laterals at both walls'
+  feet and the divide moraine, dry braided channels north (Guli rrija's head) and south (the Wadi al-Qamar's), the meltwater gully off
+  the east wall and its fan, rockfall heaps under the west wall's crags, the Ancients' highway down the floor (7.7). The model's pin and
+  `test_smodel.py`'s row stay at px 1031,1252 (the model's files are another session's): re-pinning them is the model's turn.
+
+**Layout on the page** (axes as every station: metres, x east, z south, y up, y = 0 at 3,620 m): the near box +-2.3 km on a 10 m KFIELD;
+the mid ground to 20 km on the model's 1 km cells with the far roughness; the far land in the sky from 18 to 320 km.
+
+### 7.3 Owed (the next turns)
+
+- **The Ancients' side of station 1** (kits/ancients read in place, as ancientsvalley reads it): the 30 m surface highway at a 4 % ruling
+  grade through the col, its board-formed cuttings, the parabolic wind-baffle crescent and the 40 m vent-shaft collar of Bab al-Hawa with
+  the caravanserai in its lee (section 3.3). The road's line wants the model's corridor (7.2) or a re-pinned station first: a question for
+  the owner (KNOWN_ISSUES.md).
+- ~~The katabatic wind as weather~~: done 2026-11-10, `core/atmos/fx/89-atmos-fx-gale.js (ATMOS.gale)` (opt-in), on every station.
+- **The kit's own species** (the plan's borrowings: puya, snow lotus, cushion domes from wouterwall, oidong, ehighlands) and stations 2-6.
+- **The real-GPU verify** of station 1 (the cloud session ran SwiftShader only).
+
+### 7.4 Station 2 on the scale model: the Tarn of the Gate-Bell (`python3 build.py --station gatetarn`, 2026-11-10)
+
+- **The plan's pixel, px 1016,1236, is the model's pin at 3,680 m, but the model's tarn is not under it.** The model's pass filled a tarn
+  of 45 cells at 3,680 m (about 7 km across, not the plan's 4 x 3 km) on a flat cirque floor of 13 x 8 km at 3,660-3,690 m, lying
+  3-9 km west of the pixel and 3 km either side of its row; the floor's walls rise to 4.4-5.4 km 4-8 km out.
+- **So station 2 stands on the tarn's north-east shore, px 1014.5,1234.5** (`region/far.py`: 3,695 m, 1.01 atm, Dsc, mean +7 °C,
+  408 mm; the tarn 15 m under the page's y = 0, its shore 300-700 m south-west). The check holds the page's pixel within 8 px and its
+  height within 150 m of the plan's (`HCHK.model`, `SITE.plan`).
+- **Its landforms** (`stations/gatetarn/44s-host-site.js`, the same interface as station 1's site): the cirque's headwall, a horseshoe
+  of black basalt 140 m tall bowed north across the near box (`KRELIEF.scarp`, buttresses, talus at its foot; the hanging bench above
+  it), the Gate-Bell brook off the bench's snow, over the lip (core/water finds the fall on its line: `WATER.fallsOf`, the curtain, its
+  plunge and spray) and across the floor into the tarn (`KRELIEF.wadi` on a resampled line); the moraine damming the tarn's east shore
+  and an older one behind it (`KRELIEF.range`); rockfall heaps at the headwall's foot (`KRUBBLE`); the tarn itself, the model's water
+  as one `WATER.still`, its strand a zone of its own (`shore`).
+- **The rock is the Godthrone's here.** The Godsgate's corridor (the strata's contact) lies 25 km east of the page's origin
+  (`SITE.rock.contact`), so the headwall and the far walls read KSTRATA's `tibasalt`: black flows with orange glass-bead beds, ochre
+  palagonite where the beads are altered (section 4, Oasis 1's "orange-striped palagonite cliff").
+- **Not built here**: the toppled Ancient fog-bell on the moraine lip and the Historian's cache (kits/ancients: 7.3), the plan's red
+  guyed stalks and goldroot (the flora is the NW outer wall's, read in place: its larch in the cirque's lee, the creeping pine, the
+  floor's shrubs and herbs), the wild ibex at dawn (fauna: a later turn).
+
+### 7.5 Station 3 on the scale model: the Amber-Sinter Tarn (`python3 build.py --station ambertarn`)
+
+- The model's geothermal tarn (53 cells at 3,940 m, about 8 x 6 km, Csb, mean +13 °C: the model's boost) lies 1 km west of its station
+  pin, **px 1064,1272**, which is on its east shore at the water's level: the page stands at the pin.
+- **The heat**: a fault under the east shore (the plan's feeder dike) as KTHERM records (`SITE.heat`: a line vent and the two springs'
+  points over a +2 °C soil), baked on a 4 m lattice: the hot zone (nothing roots on 20 °C and over but the Hearths), the snow kept off the
+  warm ground (`ATMOS.snowBare`), heat hazards on the springs.
+- **The water**: two hot springs (`WATER.spring`, the sinter and iron ramps), the amber one's overflow down twelve rimstone sinter terraces
+  to the tarn (`WATER.terraces`, the ground stepped under each tread), steam (`ATMOS.smoke`).
+- **The Hearths** (`biomes/hearths`, read in place as oidong's station reads them: `station.json` "kin"): the hearth trees in the 'rim'
+  dress (broad fans, 4-11 m stalks: the plan's dwarf alpine hearth-trees), coal moss, stokers and the dead in rings, placed on the heat by
+  `HEARTH.layout` (every tree on 25-60 °C: a check), the fans folding by day and opening by night (`HEARTH.work`).
+- Not here: the warm sinter caves behind the fall and the Talovolci camp (a settlement's), the orange glass sandbars.
+
+### 7.6 Stations 4-6 on the scale model
+
+The model stamps every tarn the same way: 53 cells, a flat floor round it, walls 5-6 km out, the station pin on its east shore at the
+water's level, the tarn 3 px west. Each station stands at its pin; its landforms are its own (`stations/<name>/44s-host-site.js`, from
+station 2's):
+
+- **4, `mirrorscarp`, the Mirror-Slump Tarn** (px 1134,1218, 4,120 m, ET, +4 °C): the slump block's uphill-facing **fault mirror**, 150 m
+  of polished black glass over the breccia (KRELIEF.scarp, run 70 m, rough .005; `rock.basalt.titanium`'s dark tinted by the megabreccia
+  column) south of the trench, facing north into the sun; the block's crest north of it; the glass's spall at its foot. The geodetic bunker
+  is owed (kits/ancients).
+- **5, `jadecrest`, the Jade-Karst Polje** (px 1208,1254, 4,380 m, ET, +3 °C): the polje's **limestone cliffs** north and east
+  (`rock.limestone.karst`), the **resurgence** brook from their foot to the jade tarn, the cliffs' fallen blocks. The cave behind the
+  resurgence and the ponor (`KKARST`), the felsenmeer and the rock glaciers (`KFROST`) are owed.
+- **6, `coppertarn`, the Copper-Vein Tarn** (px 1288,1184, 3,820 m, Dsc, +6 °C): the cirque's megabreccia headwall and **the Copper-Vein
+  fall** (127 m, its water verdigris), the peacock tarn, the moraine dam, rockfall, larch and stone pine in the lee. The Geomancers' winch,
+  the Stalker wreck and the live pair are owed (kits/mechs, the Catch's Stalkers).
+
+### 7.7 The road and the plants (2026-11-10)
+
+- **The Ancients' highway** (station 1, `SITE.road`, 47): a road record (its line down the floor's east half, 30 m, a 4 % ruling grade),
+  its profile the baked ground smoothed over 300 m and held to the grade both ways, **graded into the baked ground by KFIELD's flatten
+  strokes** (`31-core-field-brush.js`: plain records applied in order, so Godot replays the same ground), its board-formed concrete pavement
+  (`concrete.ancient`) a ribbon on the graded ground; its zone grows nothing; a check (grade, the ground under the pavement) with negatives.
+  It runs out of both ends of the near box along the corridor (the trunk the plan's section 3.3 describes). The wind-baffles and the
+  vent-shaft collar are kits/ancients' (owed).
+- **The plants** (`src/50-biome-seow-species.js`, `src/60-biome-seow-floor.js`, the kit's own registry): the puya (rosettes, and one in five
+  in flower on a 4-9 m spike), the red guyed stalk (godstep's, by the water), the sky and gold poppies (by the season), goldroot (in the
+  scree), tagged and harvested as every kit's, on the library's cards, placed on core/biome's cell-form grid by zone. The NW outer wall's
+  flora stays read in place; its upright trees are held to the lee, its silverthorn to the hero band.

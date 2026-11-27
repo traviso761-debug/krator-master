@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "kulanewa.html": {
+   "tris": 3200000,
+   "calls": 220,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "42 Kulanewa Free-Towns buildings (21 Karum Ledger-Syndicate ports and banking halls + 21 Kula-Na Ikki Covenant-Commune citadels, hydro-forges and dwellings) across four rows with furnished interiors, Stage 5 M1-M4 materials and Stage 7 KROOMLIGHT",
+   "raised": "2026-11-24"
+  }
+ }
+}

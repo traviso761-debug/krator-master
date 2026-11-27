@@ -42,13 +42,18 @@ function place(key,x,z,ry,o){const d=DEFS[key];if(!d){reportErr('no def '+key);r
  CURKEY=key;CURREC=rec;DOORS_CUR=[];WINDOWS_CUR=[];if(keep.rec)keep.rec.children.push(rec);
  if(d.cut)CUTC=[org.x,org.z,org.y,1];
  const bb=sbBegin();const t0=GSTAT.tris;
+ /* the export form's frame (30-geo.js): one a building, the outermost when one stands in another. A street, a canal or
+    a piece of furniture is no building: it leans with nothing and takes no height of its own */
+ const formKeep=(d.cls!=='feature'&&d.cls!=='furniture'&&!FORM_ROOT)?formRoot():undefined;
  reseed(d.seed+(o.v|0)*7);
  /* the gable sheets' two takes (owner, 2026-10-14: "alternative versions for variety"): a building takes one or the other by
     a hash of its seed, variant and place, drawing nothing from the stream (30-geo.js emit swaps the key) */
  const keepAlt=GABLE_ALT;GABLE_ALT=((Math.imul(d.seed|0,2654435761)^Math.imul((o.v|0)+1,40503)^Math.imul(Math.round(org.x*4),73856093)^Math.imul(Math.round(org.z*4),19349663))>>>7)&1;
  const keepMat=MAT_ALT;MAT_ALT=KMAT.mode==='lib'?(KRAND.hash(0x15a7,d.seed|0,o.v|0,Math.round(org.x*4),Math.round(org.z*4))>>>1)|1:0;
+ const keepPlot=PLOT_Y,keepSlabs=SLABS;PLOT_Y=org.y;SLABS=[];   /* the plot's ground, for the base grounding (30-geo.js BASE_AO) */
  try{d.build(o);}catch(err){reportErr('build '+key+': '+(err.stack||err));}
- sbEnd();popM();GABLE_ALT=keepAlt;MAT_ALT=keepMat;const doors=DOORS_CUR,windows=WINDOWS_CUR;
+ if(formKeep!==undefined)formRootEnd(formKeep);
+ sbEnd();popM();GABLE_ALT=keepAlt;MAT_ALT=keepMat;PLOT_Y=keepPlot;SLABS=keepSlabs;const doors=DOORS_CUR,windows=WINDOWS_CUR;
  CURKEY=keep.key;CURREC=keep.rec;DOORS_CUR=keep.doors;WINDOWS_CUR=keep.windows;CUTC=keep.cut;
  rec.bbox=bb;rec.tris=GSTAT.tris-t0;rec.front=svFront(d,doors,org,wry);rec.doorCount=doors.length;rec.doors=doors;rec.windows=windows;rec.r=Math.hypot(d.w,d.d)/2;rec.h=d.h;
  if(!PLACE_DRY)REG.push(rec);return rec;}

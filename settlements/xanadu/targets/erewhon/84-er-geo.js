@@ -77,7 +77,107 @@ const ISLAND=(function(){const raw=terrainBase,S=4,N=45,land=(i,j)=>raw(ISLAND_C
  // the inward distance to the hull's edge (negative outside)
  const edge=(x,z)=>{if(x<x0-40||x>x1+40||z<z0-40||z>z1+40)return -1e9;let d=1e9;for(let i=0;i<H.length;i++){const a=H[i],b=H[(i+1)%H.length],l=Math.hypot(b[0]-a[0],b[1]-a[1])||1;d=Math.min(d,((b[0]-a[0])*(z-a[1])-(b[1]-a[1])*(x-a[0]))/l);}return d;};
  return{hull:H,edge};})();
+// ---------------------------------------------------------------- the page's place in the open world (the owner, 2026-11-11)
+// Scale-model edit 5.1-512 remade Erewhon's lake as a caldera and moved Erehwon's pin to 805,1516 on its south shore.
+// The page faces as the world does (x east, z south: the lake north, the mountain south), so it stands with its centre
+// on the pin, unturned, its lake (ER.LAKE) the caldera lake at -520 m. The world's 1:1 shore runs within ~250 m of the
+// page's; its 2 km cells hold none of the page's relief (the 90 m cliff, the palace plateau), which only a bake of
+// this page's ground into the world (a town grid) would give it. The Pleasure Dome's island (ISLAND_C) is the scale
+// model's landform lf_pleasure_dome_isle (tools/scale-model/model/data/landforms.json), stamped into the world by
+// openworld/xanadu-oidong-highrift: verify.py --assert checks the two stand on one spot.
+// Re-seated 2026-11-23 on the pin as it stands now, 841,1507.9 (the vale ring moved it to 841,1507.64 with its lake,
+// 2026-11-17; on the 11-23 re-run that point lay 11.6 m under the lake at 1:1, so the pin went 520 m south to the
+// nearest dry ground with the lake 613 m north for the island; ER_WORLD had stayed at 805,1516 till now)
+const ER_WORLD={px:841,py:1507.9,turn:0,lake:-520,mPerPx:2000,island:'lf_pleasure_dome_isle'};
+function erWorldPx(x,z){return[ER_WORLD.px+x/ER_WORLD.mPerPx,ER_WORLD.py+z/ER_WORLD.mPerPx];}
 if(ISLAND){const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h>=ISLAND_LEVEL)return h;const e=ISLAND.edge(x,z);if(e<=0)return h;return h+(ISLAND_LEVEL-h)*smoothstep(0,ISLAND_RAMP,e);};}
+// ---------------------------------------------------------------- the west flank, under the citadel (the owner, 2026-11-12)
+// The citadel stands on a table over everything round it ("this ridge runs higher than the citadel's ridge, when it should
+// run lower"). The map's steep west flank climbed from the shore to 240-275 m along its cliff line (z +20 to +80, x -650 to
+// the frame's edge), over the citadel's grounds (147-191 m). West of the plateau's west cliff its heights over the lake
+// are scaled to WEST_K (the crest about 125 m), and out toward the mountain behind the town (WEST_Z: whole north of z 150,
+// none south of z 450). The shore and the lake bed keep theirs.
+// THE EDGE IS THE MAP'S GREY CLIFF (the owner: "that grey streak should define the edge of the plateau"). The flank is the
+// ground flooded from the frame's west edge on the class grid (ER_C, 4 m), stopped by the map's cliff and unbuildable cells
+// (thickened by a cell, so a diagonal gap does not leak), the lake and the palace plateau (erewhon-map.py's PLAT). The
+// drawn cliff wraps the plateau's west face only (z -320 to +45), so two straight stops close the flood where it does
+// not: due north of the citadel's north-west corner to the lake (x -514, WEST_N) and due south of the cliff's foot (x -650,
+// WEST_S). The cliff band itself is the drop: its cells reached from the flank take the lowering in proportion, none at
+// the band's plateau side and all of it at the flank's (the grey face runs from the plateau's rim to the flank's foot).
+// Elsewhere (the straight stops) the lowering eases in over WEST_B metres inside the flank.
+const WEST_K=.45,WEST_Z=[450,150],WEST_N=[-330,-514],WEST_S=[40,-650],WEST_B=24;
+const WEST_W=(function(){const C=ER_C,GW=C.w,GH=C.h,cell=C.cell,X=i=>-ER.W/2+(i+.5)*cell,Z=j=>-ER.H/2+(j+.5)*cell;
+ const PLAT=[[325,340],[400,325],[470,345],[500,420],[482,520],[430,565],[360,605],[300,565],[318,470]].map(p=>MP(p[0],p[1]));
+ const inP=(x,z)=>{let c=false;for(let i=0,j=PLAT.length-1;i<PLAT.length;j=i++){const a=PLAT[i],b=PLAT[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ const wall=new Uint8Array(GW*GH);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const v=C.a[j*GW+i];if(v!==4&&v!==5)continue;for(let b=-1;b<=1;b++)for(let a=-1;a<=1;a++){const ii=i+a,jj=j+b;if(ii>=0&&jj>=0&&ii<GW&&jj<GH)wall[jj*GW+ii]=1;}}
+ const stop=(x,z)=>(z<WEST_N[0]&&x>WEST_N[1])||(z>WEST_S[0]&&x>WEST_S[1])||z>WEST_Z[0]||inP(x,z);
+ const ok=k=>{const v=C.a[k];if(v<1||v>3||wall[k])return false;const i=k%GW,j=(k-i)/GW;return !stop(X(i),Z(j));};
+ const okB=k=>{if(!wall[k]||C.a[k]===0)return false;const i=k%GW,j=(k-i)/GW;return !stop(X(i),Z(j));};
+ const N4=[[1,0],[-1,0],[0,1],[0,-1]];
+ const grow=(M,test,st)=>{while(st.length){const k=st.pop(),i=k%GW,j=(k-i)/GW;for(const [a,b] of N4){const ii=i+a,jj=j+b;if(ii<0||jj<0||ii>=GW||jj>=GH)continue;const kk=jj*GW+ii;if(M[kk]||!test(kk))continue;M[kk]=1;st.push(kk);}}};
+ /* the flank, flooded from the frame's west edge */
+ const R=new Uint8Array(GW*GH),st=[];for(let j=0;j<GH;j++){const k=j*GW;if(ok(k)){R[k]=1;st.push(k);}}grow(R,ok,st);
+ /* the cliff band the flank touches, flooded through the wall cells from the flank's edge */
+ const Bn=new Uint8Array(GW*GH);for(let k=0;k<GW*GH;k++){if(!R[k])continue;const i=k%GW;for(const kk of[k-1,k+1,k-GW,k+GW]){if(kk<0||kk>=GW*GH||Bn[kk]||R[kk]||!okB(kk))continue;if((kk===k-1&&i===0)||(kk===k+1&&i===GW-1))continue;Bn[kk]=1;st.push(kk);}}
+ grow(Bn,k=>!R[k]&&okB(k),st);
+ /* distances (two-pass chamfer, metres) to the nearest cell where src is false */
+ const s=cell,dg=cell*Math.SQRT2;
+ const dist=src=>{const D=new Float32Array(GW*GH);for(let k=0;k<GW*GH;k++)D[k]=src(k)?1e9:0;
+  for(let j=0;j<GH;j++)for(let i=0;i<GW;i++){const k=j*GW+i;if(!D[k])continue;let d=D[k];if(i>0)d=Math.min(d,D[k-1]+s);if(j>0){d=Math.min(d,D[k-GW]+s);if(i>0)d=Math.min(d,D[k-GW-1]+dg);if(i<GW-1)d=Math.min(d,D[k-GW+1]+dg);}D[k]=d;}
+  for(let j=GH-1;j>=0;j--)for(let i=GW-1;i>=0;i--){const k=j*GW+i;if(!D[k])continue;let d=D[k];if(i<GW-1)d=Math.min(d,D[k+1]+s);if(j<GH-1){d=Math.min(d,D[k+GW]+s);if(i<GW-1)d=Math.min(d,D[k+GW+1]+dg);if(i>0)d=Math.min(d,D[k+GW-1]+dg);}D[k]=d;}return D;};
+ const dOut=dist(k=>R[k]||Bn[k]),dR=dist(k=>!R[k]);
+ /* the flank: eased in from the straight stops (a flank cell beside the band is a band's width from them, or more);
+    the band: in proportion across it, from its plateau side (dOut 0) to the flank (dR 0) */
+ const W=new Float32Array(GW*GH);for(let k=0;k<GW*GH;k++)W[k]=R[k]?smoothstep(0,WEST_B,dOut[k]):Bn[k]?smoothstep(0,1,dOut[k]/(dOut[k]+dR[k])):0;
+ return{GW,GH,cell,W,at(x,z){const u=clamp((x+ER.W/2)/cell-.5,0,GW-1.001),v=clamp((z+ER.H/2)/cell-.5,0,GH-1.001),i=Math.floor(u),j=Math.floor(v),fu=u-i,fv=v-j,k=j*GW+i;
+  return (W[k]*(1-fu)+W[k+1]*fu)*(1-fv)+(W[k+GW]*(1-fu)+W[k+GW+1]*fu)*fv;}};})();
+{const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(h<=0||z>=WEST_Z[0]||x>WEST_N[1])return h;
+ const wt=WEST_W.at(x,z)*smoothstep(WEST_Z[0],WEST_Z[1],z);return wt>0?h*(1-(1-WEST_K)*wt):h;};}
+// ---------------------------------------------------------------- the citadel's north foot (the owner, 2026-11-12)
+// "Area 2 should be lowered and smoothed to its neighbors to extend the cliff face": the slope between the citadel's
+// north wall and the lake (the owner's mark 'Area 2', x z below) took the plateau's lift (erewhon-map.py's PLAT and its
+// fall-off), so it ran down from the wall as a ramp, not a cliff. Inside the outline the ground is a smooth surface
+// (a Laplace fill on a 4 m grid) meeting the ground round it on the west, north and east, and free along the wall
+// (NORTH_FOOT_FREE: the outline's first edges, the citadel's side), so it does not climb to the wall: the plateau ends
+// there in a drop, the cliff face carried on from the west. The fill only lowers (the lower of the two).
+const NORTH_FOOT=[[-530,-144],[-459,-207],[-430,-273],[-391,-315],[-346,-328],[-338,-323],[-323,-315],[-280,-309],[-241,-301],
+ [-128,-491],[-233,-460],[-329,-444],[-371,-446],[-422,-445],[-382,-545],[-521,-539],[-539,-478],[-533,-317],[-542,-173]],NORTH_FOOT_FREE=8;
+const NORTH_FILL=(function(){const P=NORTH_FOOT,S=4;let x0=1e9,x1=-1e9,z0=1e9,z1=-1e9;for(const p of P){x0=Math.min(x0,p[0]);x1=Math.max(x1,p[0]);z0=Math.min(z0,p[1]);z1=Math.max(z1,p[1]);}
+ x0-=3*S;z0-=3*S;const NX=Math.ceil((x1-x0)/S)+4,NZ=Math.ceil((z1-z0)/S)+4,X=i=>x0+i*S,Z=j=>z0+j*S;
+ const inF=(x,z)=>{let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ /* the outline's nearest edge to a point: edges 0..FREE-1 run along the wall */
+ const edgeAt=(x,z)=>{let bd=1e9,be=0;for(let e=0;e<P.length;e++){const a=P[e],b=P[(e+1)%P.length],dx=b[0]-a[0],dz=b[1]-a[1],l2=dx*dx+dz*dz||1,t=clamp(((x-a[0])*dx+(z-a[1])*dz)/l2,0,1),d=Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);if(d<bd){bd=d;be=e;}}return be;};
+ const G=new Float32Array(NX*NZ),IN=new Uint8Array(NX*NZ),FIX=new Uint8Array(NX*NZ);let sum=0,n=0;
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i,x=X(i),z=Z(j);G[k]=terrainBase(x,z);if(inF(x,z))IN[k]=1;}
+ for(let j=0;j<NZ;j++)for(let i=0;i<NX;i++){const k=j*NX+i;if(IN[k])continue;let near=false;for(const kk of[k-1,k+1,k-NX,k+NX])if(kk>=0&&kk<NX*NZ&&IN[kk])near=true;
+  if(near&&edgeAt(X(i),Z(j))>=NORTH_FOOT_FREE){FIX[k]=1;sum+=G[k];n++;}}
+ const H0=G.slice();for(let k=0;k<NX*NZ;k++)if(IN[k])G[k]=n?sum/n:G[k];
+ /* over-relaxed Gauss-Seidel: each inside cell the mean of its inside and fixed neighbours (a wall-side neighbour is left out) */
+ for(let it=0;it<900;it++)for(let j=1;j<NZ-1;j++)for(let i=1;i<NX-1;i++){const k=j*NX+i;if(!IN[k])continue;let s=0,c=0;
+  for(const kk of[k-1,k+1,k-NX,k+NX])if(IN[kk]||FIX[kk]){s+=G[kk];c++;}if(c)G[k]+=1.8*(s/c-G[k]);}
+ for(let k=0;k<NX*NZ;k++)G[k]=IN[k]?Math.min(G[k],H0[k]):H0[k];
+ return{inF,at(x,z){if(x<x0||z<z0||x>X(NX-1)||z>Z(NZ-1))return null;const u=(x-x0)/S,v=(z-z0)/S,i=Math.min(NX-2,Math.floor(u)),j=Math.min(NZ-2,Math.floor(v)),fu=u-i,fv=v-j,k=j*NX+i;
+  return (G[k]*(1-fu)+G[k+1]*fu)*(1-fv)+(G[k+NX]*(1-fu)+G[k+NX+1]*fu)*fv;}};})();
+{const raw=terrainBase;terrainBase=function(x,z){const h=raw(x,z);if(!NORTH_FILL.inF(x,z))return h;const t=NORTH_FILL.at(x,z);return t==null?h:Math.min(h,t);};}
+// ---------------------------------------------------------------- the east streak steps down (the owner, 2026-11-12)
+// "the grey streak between the brown and green regions should be a step down toward the water, not a step up turning the
+// brown area into a canyon"; "lower east of streak". The map's cliff line east of the town runs from about (599,173)
+// south-east to (821,513). The ground beside it climbed from the lake at the steep class's 26 degrees, so its crest stood
+// on the cliff 70-85 m over the town's side (the ridge class, 9 degrees) and fell away east: a step up and a trough. East
+// of that line the heights over the lake are scaled to EAST_K, eased in across EAST_D metres about the line (so the
+// cliff face is the drop), from z EAST_Z[0] (south of the streak's north end, so the town and the east gate keep theirs)
+// and out toward the mountain (EAST_Z[1]). The shore and the lake bed keep theirs.
+const EAST_K=.5,EAST_A=[599,173],EAST_B=[821,513],EAST_D=[-10,30],EAST_Z=[[100,160],[800,550]];
+{const L=Math.hypot(EAST_B[0]-EAST_A[0],EAST_B[1]-EAST_A[1]),nx=(EAST_B[1]-EAST_A[1])/L,nz=-(EAST_B[0]-EAST_A[0])/L,raw=terrainBase;
+ const zf=z=>smoothstep(EAST_Z[0][0],EAST_Z[0][1],z)*smoothstep(EAST_Z[1][0],EAST_Z[1][1],z);
+ const low=(x,z,d)=>{const h=raw(x,z);if(h<=0)return h;return h*(1-(1-EAST_K)*smoothstep(EAST_D[0],EAST_D[1],d)*zf(z));};
+ /* the band about the line (BAND m either side) is capped by a ramp from the town side's height (BAND m west of the line)
+    down to the lowered east side's (BAND m east): the cliff's own cells stood over both sides, a blade, not a step */
+ const BAND=40;
+ terrainBase=function(x,z){if(z<=EAST_Z[0][0]||z>=EAST_Z[1][0])return raw(x,z);const d=(x-EAST_A[0])*nx+(z-EAST_A[1])*nz;if(d<=-BAND)return raw(x,z);
+  const h=low(x,z,d);if(d>=BAND||h<=0)return h;
+  const wx=x-nx*(d+BAND),wz=z-nz*(d+BAND),ex=x+nx*(BAND-d),ez=z+nz*(BAND-d),hw=raw(wx,wz),he=low(ex,ez,BAND);
+  const cap=hw+(he-hw)*smoothstep(-BAND*.6,BAND*.8,d),k=zf(z);return Math.min(h,h+(cap-h)*k);};}
 // nearest point on a polyline set: {x,z,d,seg:[a,b]}
 function nearestOnLines(lines,x,z){let best=null;for(const P of lines)for(let i=0;i<P.length-1;i++){const ax=P[i][0],az=P[i][1],bx=P[i+1][0],bz=P[i+1][1];const dx=bx-ax,dz=bz-az,l2=dx*dx+dz*dz||1;const t=clamp(((x-ax)*dx+(z-az)*dz)/l2,0,1);
  const qx=ax+dx*t,qz=az+dz*t,d=Math.hypot(x-qx,z-qz);if(!best||d<best.d)best={x:qx,z:qz,d,a:P[i],b:P[i+1]};}return best;}
