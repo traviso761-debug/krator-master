@@ -501,10 +501,10 @@
     "key": "acidfelt",
     "name": "Acid felt",
     "harvest": {
-      "wood": "none",
+      "wood": "dye (ochre)",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Dried, an ochre pigment.",
+      "notes": "Dried and ground into rust-ochre mineral pigment.",
       "fruit": "",
       "reagent": "none"
     },
@@ -522,10 +522,346 @@
     "key": "araucaria",
     "name": "Candelabra araucaria (Araucaria rulei / muelleri)",
     "harvest": {
-      "wood": "timber (straight, resinous)",
+      "wood": "timber (straight spars), pitch, resin",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Yard spar timber for masts and yards; houses take the offcuts and resin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "aravicennia",
+    "name": "Grey mangrove (Avicennia marina)",
+    "harvest": {
+      "wood": "knees, fuel, tannin",
+      "edible": "['leached mangrove propagules']",
+      "medicinal": false,
+      "notes": "Curved boat-rib knees and smokehouse fuel; bark yields astringent net tannin.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "tannins_leather"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arbyssus",
+    "name": "Giant sea-byssus mussel bed (Pinna / Bathymodiolus)",
+    "harvest": {
+      "wood": "spinning (sea-silk byssus)",
+      "edible": "['mussel meat']",
+      "medicinal": false,
+      "notes": "Golden sea-silk byssus beard spun into prized Fleet-born cloth; valves burned for shell lime.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arcodia",
+    "name": "White-puff maquis shrub (Codia montana)",
+    "harvest": {
+      "wood": "fuel, tanbark",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Astringent bark steeped for tanning hides and fishing lines.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "tannins_leather"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "ardracophyllum",
+    "name": "Dragon-heath (Dracophyllum ramosum)",
+    "harvest": {
+      "wood": "fuel, torch resin",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Resinous dry twigs catch fire in wet sea air for kindling and night torches.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "ardrosera",
+    "name": "Ultramafic sundew (Drosera neocaledonica)",
+    "harvest": {
+      "wood": "none",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Mucilaginous sundew extract used as a soothing cough physic.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "argrevillea",
+    "name": "Serpentine grevillea (Grevillea exul)",
+    "harvest": {
+      "wood": "fuel, carving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Silky-grained red heartwood turned for toggles, pins and shrine pegs.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arhibiscus",
+    "name": "Sea hibiscus (Hibiscus tiliaceus)",
+    "harvest": {
+      "wood": "bast, cordage, fibre, knees",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Inner bast stripped and retted into salt-proof marine cordage, caulking oakum and net twine; light outrigger knees.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "bioluminescence",
+      "textiles_cordage"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arkauri",
+    "name": "Maquis kauri (Agathis ovata / lanceolata)",
+    "harvest": {
+      "wood": "timber (spars), gum, pitch",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Straight spar wood and golden kauri gum boiled into marine pitch, caulking and hull varnish.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arkelp",
+    "name": "Shoal kombu kelp (Ecklonia / Macrocystis)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['dried kombu kelp']",
+      "medicinal": true,
+      "notes": "Stipes and blades burned in shore kilns for potash-soda kelp ash mortar, glass flux and marine soap.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": true,
+    "is_edible": true,
+    "misc_domains": [
+      "hygiene_sunscreen"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arlepidosperma",
+    "name": "Sword-sedge (Lepidosperma perteres)",
+    "harvest": {
+      "wood": "thatch, mats, basketry",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Stiff silica-edged sword-sedge woven into floor mats, fish-drying screens and ridge thatch.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arnephrolepis",
+    "name": "Sword fern (Nephrolepis exaltata)",
+    "harvest": {
+      "wood": "mulch",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Pioneer fern rhizomes pounded as a cooling poultice.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": []
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "aroyster",
+    "name": "Coralline-oyster visor (Saccostrea / Lithophyllum)",
+    "harvest": {
+      "wood": "none",
+      "edible": "['rock oysters']",
+      "medicinal": false,
+      "notes": "Cemented oyster shells and coralline crusts burned in coastal kilns into slaked shell limewash and mortar.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": []
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arpandan",
+    "name": "Strand pandanus (Pandanus tectorius)",
+    "harvest": {
+      "wood": "fibre (strap leaves), mats, thatch",
+      "edible": "['cooked pandan keys']",
+      "medicinal": false,
+      "notes": "Stripped, dried and plaited into waterproof boat-mats, sails, fenders and baskets.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arpaperbark",
+    "name": "Niaouli paperbark (Melaleuca quinquenervia)",
+    "harvest": {
+      "wood": "bark sheet (caulking and roof lining), fuel",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Layered waterproof paperbark stripped in sheets for hull seam caulking and under-thatch roof lining; aromatic leaf oil.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "adhesives_resins",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arphyllanthus",
+    "name": "Green-sap hyperaccumulator (Phyllanthus balgooyi)",
+    "harvest": {
+      "wood": "fuel",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Coppiced hyperaccumulator burned into green nickel-rich ash for paktong smelting.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arrata",
+    "name": "Gorge rata (Metrosideros nautica / demonstrans)",
+    "harvest": {
+      "wood": "knees (ship knees), timber, carving",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "J-curved reaction-wood limbs prized for borer-proof ship knees, hull ribs and hoist frames.",
       "fruit": "",
       "reagent": "none"
     },
@@ -540,13 +876,101 @@
   {
     "biome": "arch",
     "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arseagrass",
+    "name": "Ribbon seagrass (Enhalus / Cymodocea)",
+    "harvest": {
+      "wood": "thatch, mats, fibre",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Rot-resistant salt-hay cured for roof insulation, mattress stuffing and woven deck mats.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "hygiene_sunscreen",
+      "textiles_cordage",
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "artamanu",
+    "name": "Tamanu (Calophyllum inophyllum)",
+    "harvest": {
+      "wood": "timber (coastal spars), knees, carving",
+      "edible": "[]",
+      "medicinal": true,
+      "notes": "Tough interlocking-grain coastal hardwood for keels, knees and spars; pressed nut oil caulks seams.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": true,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": true,
+    "misc_domains": [
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "artreefern",
+    "name": "Gully tree-fern (Cyathea intermedia)",
+    "harvest": {
+      "wood": "posts (rot-slow caudex trunks), thatch",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Fibrous caudex trunks set as damp-ground fence and shed posts; fronds for temporary thatch.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": false,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "weaving_thatch_paper"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
+    "key": "arverdigrismangrove",
+    "name": "Teal-sap prop-wood (Rhizophora pycnandroides)",
+    "harvest": {
+      "wood": "knees (worm-proof ship knees), timber, tannin, fuel",
+      "edible": "[]",
+      "medicinal": false,
+      "notes": "Worm-proof ship knees; coppiced limbs burned into 18-24% nickel bio-ore ash for paktong.",
+      "fruit": "",
+      "reagent": "none"
+    },
+    "is_medicinal": false,
+    "is_fuel": true,
+    "is_reagent": false,
+    "is_edible": false,
+    "misc_domains": [
+      "metallophytes_mining",
+      "tannins_leather",
+      "woodcraft_weapons"
+    ]
+  },
+  {
+    "biome": "arch",
+    "file": "biomes/arch/src/50-biome-arch-species.js",
     "key": "casuarina",
     "name": "Beach she-oak (Casuarina equisetifolia)",
     "harvest": {
-      "wood": "fuel (the best: hot and slow)",
+      "wood": "fuel (hot, slow charcoal)",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Premier smelter and lime-kiln fuelwood; nitrogen-fixing shelterbelt.",
       "fruit": "",
       "reagent": "none"
     },
@@ -562,10 +986,10 @@
     "key": "coconut",
     "name": "Coconut palm (Cocos nucifera), drift-sown",
     "harvest": {
-      "wood": "timber, thatch, coir",
+      "wood": "timber, thatch, coir, fibre",
       "edible": "['coconuts']",
       "medicinal": false,
-      "notes": "",
+      "notes": "Posts from old trunks, plaited frond thatch, and twisted coir fibre for spring-tide mooring warps.",
       "fruit": "",
       "reagent": "none"
     },
@@ -574,6 +998,7 @@
     "is_reagent": false,
     "is_edible": true,
     "misc_domains": [
+      "textiles_cordage",
       "weaving_thatch_paper",
       "woodcraft_weapons"
     ]
@@ -587,7 +1012,7 @@
       "wood": "thatch",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Bundled with uluhe for tiered Shore-kin roof thatch.",
       "fruit": "",
       "reagent": "none"
     },
@@ -608,13 +1033,13 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Nothing eats a curtain but the seam wader, which grazes its hem. Its black face, dried, is an iron-nickel sulphide.",
+      "notes": "Nothing eats a curtain but the seam wader, which grazes its hem. Its black face, dried, is an iron-nickel sulphide reagent.",
       "fruit": "",
       "reagent": "none"
     },
     "is_medicinal": false,
     "is_fuel": false,
-    "is_reagent": false,
+    "is_reagent": true,
     "is_edible": false,
     "misc_domains": [
       "metallophytes_mining"
@@ -629,7 +1054,7 @@
       "wood": "fuel (hard, hot)",
       "edible": "[]",
       "medicinal": false,
-      "notes": "It feeds the ground: the maquis is thicker round it.",
+      "notes": "Hot-burning ironwood fuel; Frankia root nodules feed nitrogen into the laterite.",
       "fruit": "",
       "reagent": "none"
     },
@@ -648,7 +1073,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Juvenile mineral frill along active pH meetings.",
       "fruit": "",
       "reagent": "none"
     },
@@ -667,7 +1092,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": true,
-      "notes": "",
+      "notes": "Sand-binding runner; leaves used externally on sores.",
       "fruit": "",
       "reagent": "none"
     },
@@ -686,7 +1111,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Burnt, lime.",
+      "notes": "Burnt in coastal clamps for slaked brucite-carbonate lime mortar and whitewash.",
       "fruit": "",
       "reagent": "none"
     },
@@ -702,10 +1127,10 @@
     "key": "mangrove",
     "name": "Red mangrove (Rhizophora)",
     "harvest": {
-      "wood": "timber (dense, rot-proof), tannin",
+      "wood": "timber (dense, rot-proof piles), knees, tannin",
       "edible": "[]",
       "medicinal": false,
-      "notes": "The bark is a tannin for nets and hides.",
+      "notes": "Rot-proof boardwalk planks and piles; red-brown bark tannin stains Fleet-born sails and nets.",
       "fruit": "",
       "reagent": "none"
     },
@@ -714,6 +1139,7 @@
     "is_reagent": false,
     "is_edible": false,
     "misc_domains": [
+      "dyes_pigments",
       "tannins_leather",
       "woodcraft_weapons"
     ]
@@ -727,7 +1153,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": true,
-      "notes": "Its leaves are a poultice.",
+      "notes": "Fleshy coastal leaves crushed as a salt-burn poultice.",
       "fruit": "",
       "reagent": "none"
     },
@@ -743,10 +1169,10 @@
     "key": "nepenthes",
     "name": "Pitcher plant (Nepenthes vieillardii)",
     "harvest": {
-      "wood": "none",
-      "edible": "['the pitchers\\' fluid is drunk in need, filtered']",
+      "wood": "cordage (tough vine stems)",
+      "edible": "['filtered pitcher fluid']",
       "medicinal": false,
-      "notes": "",
+      "notes": "Tough woody stems twisted into rough lashing; fluid drunk in need.",
       "fruit": "",
       "reagent": "none"
     },
@@ -754,7 +1180,9 @@
     "is_fuel": false,
     "is_reagent": false,
     "is_edible": true,
-    "misc_domains": []
+    "misc_domains": [
+      "textiles_cordage"
+    ]
   },
   {
     "biome": "arch",
@@ -762,17 +1190,17 @@
     "key": "ohia",
     "name": "Ohia lehua (Metrosideros polymorpha)",
     "harvest": {
-      "wood": "fuel, carving",
+      "wood": "fuel, carving, knees",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Its red flowers are the first colour on a new flow.",
+      "notes": "Hard close-grained wood carved into Rian-strand ridge finials and boat cleats.",
       "fruit": "",
       "reagent": "none"
     },
     "is_medicinal": false,
     "is_fuel": true,
     "is_reagent": false,
-    "is_edible": false,
+    "is_edible": true,
     "misc_domains": [
       "woodcraft_weapons"
     ]
@@ -786,7 +1214,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Its latex is a quarter nickel: tapped and burnt, the richest nickel ore there is (agromining).",
+      "notes": "Latex is 25% nickel: tapped and calcined into rich bio-ore ash for paktong smelting.",
       "fruit": "",
       "reagent": "none"
     },
@@ -808,7 +1236,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Where the combs stand, the gas burns.",
+      "notes": "Marks H2-bearing serpentinite fault seeps where abiotic gas burns.",
       "fruit": "",
       "reagent": "none"
     },
@@ -827,7 +1255,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Thermophile fan on 45-90 degC fumarole ground.",
       "fruit": "",
       "reagent": "none"
     },
@@ -843,10 +1271,10 @@
     "key": "uluhe",
     "name": "Uluhe (Dicranopteris linearis)",
     "harvest": {
-      "wood": "thatch (and mulch)",
+      "wood": "thatch, mulch",
       "edible": "[]",
       "medicinal": false,
-      "notes": "",
+      "notes": "Springy rain-shedding staghorn fern thatch layered over Costularia sedge.",
       "fruit": "",
       "reagent": "none"
     },
@@ -867,7 +1295,7 @@
       "wood": "none",
       "edible": "[]",
       "medicinal": false,
-      "notes": "Poisonous: its crust is nickel. Burnt, its ash is nickel ore (bio-ore, 10-20% Ni).",
+      "notes": "Poisonous nickel crust; calcined into 15-20% nickel bio-ore ash for paktong smelting.",
       "fruit": "",
       "reagent": "none"
     },
