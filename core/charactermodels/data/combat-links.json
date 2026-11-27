@@ -7,7 +7,8 @@
     "heavy": "combat_idle",
     "polearm": "combat_idle",
     "shield": "ual_shield_up",
-    "ranged": "walk_shoot"
+    "ranged": "walk_shoot",
+    "arcane": "combat_idle"
   },
   "rules": {
     "default_attack_slots": 2,
@@ -78,9 +79,10 @@
       "right_leg": { "short": "RL", "label": "Right Leg", "hp": 100, "weight": 0.10, "vital": false, "severable": true  }
     },
     "damage_types": {
-      "cut":    { "label": "Cut",    "bleed": 0.35, "poise_mult": 0.85, "scale_stat": "dexterity", "armor_pen": 0.45, "sever_capable": true  },
-      "blunt":  { "label": "Blunt",  "bleed": 0.05, "poise_mult": 1.35, "scale_stat": "strength",  "armor_pen": 0.80, "sever_capable": false },
-      "pierce": { "label": "Pierce", "bleed": 0.25, "poise_mult": 0.95, "scale_stat": "dexterity", "armor_pen": 0.65, "sever_capable": true  }
+      "cut":    { "label": "Cut",    "bleed": 0.35, "poise_mult": 0.85, "scale_stat": "dexterity",    "armor_pen": 0.45, "sever_capable": true  },
+      "blunt":  { "label": "Blunt",  "bleed": 0.05, "poise_mult": 1.35, "scale_stat": "strength",     "armor_pen": 0.80, "sever_capable": false },
+      "pierce": { "label": "Pierce", "bleed": 0.25, "poise_mult": 0.95, "scale_stat": "dexterity",    "armor_pen": 0.65, "sever_capable": true  },
+      "arcane": { "label": "Arcane", "bleed": 0.08, "poise_mult": 1.30, "scale_stat": "martial_arts", "armor_pen": 0.85, "sever_capable": false }
     }
   },
   "links": [
@@ -1343,6 +1345,164 @@
           "followup": null
         }
       }
+    },
+    {
+      "attack": "lightning_blast",
+      "clip": "spell_cast",
+      "label": "Astral Lightning Blast",
+      "short": "⚡ Lightning",
+      "style": "arcane",
+      "skill_min": 0,
+      "base_dmg": 44,
+      "poise_dmg": 48,
+      "dmg_type": "arcane",
+      "target_zone": "chest",
+      "hit_t": 0.42,
+      "hit_y": 1.24,
+      "dist_m": 2.25,
+      "vfx": "lightning_blast",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "block_2"],
+          "lead_s": 0.13,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_step"],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "ual_knockback"],
+          "lead_s": 0.03,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "energy_burst",
+      "clip": "taunt_chest",
+      "label": "Singularity Energy Burst",
+      "short": "💥 Energy Burst",
+      "style": "arcane",
+      "skill_min": 15,
+      "base_dmg": 56,
+      "poise_dmg": 68,
+      "dmg_type": "arcane",
+      "target_zone": "chest",
+      "hit_t": 0.50,
+      "hit_y": 1.15,
+      "dist_m": 1.55,
+      "aoe": true,
+      "vfx": "energy_burst",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h"],
+          "lead_s": 0.14,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_roll"],
+          "lead_s": 0.16,
+          "counter": null
+        },
+        "block": {
+          "clips": ["block_2", "guard_block_3"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down"],
+          "lead_s": 0.04,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "astral_lance",
+      "clip": "spear_thrust",
+      "label": "Starlight Rift-Lance",
+      "short": "Astral Lance",
+      "style": "arcane",
+      "skill_min": 10,
+      "base_dmg": 36,
+      "poise_dmg": 34,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "hit_t": 0.36,
+      "hit_y": 1.24,
+      "dist_m": 1.95,
+      "vfx": "astral_lance",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_spin"],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "rift_claw",
+      "clip": "claw_swipe",
+      "label": "Void-Talon Rend",
+      "short": "Rift Claw",
+      "style": "arcane",
+      "skill_min": 5,
+      "base_dmg": 34,
+      "poise_dmg": 28,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "sever_bonus": true,
+      "hit_t": 0.32,
+      "hit_y": 1.22,
+      "dist_m": 1.18,
+      "vfx": "rift_claw",
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.13,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": ["guard_block_2", "block_2"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
     }
   ],
   "fighters": [
@@ -1577,6 +1737,57 @@
       "hair_color": "#2a201a",
       "eye_color": "#5a4a38",
       "morph": { "muscle": 0.2, "weight": -0.1 }
+    },
+    {
+      "id": "singularity_archon",
+      "label": "Singularity Archon",
+      "short": "Singularity Archon",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": { "melee_atk": 78, "melee_def": 72, "martial_arts": 82, "dodge": 76, "toughness": 85, "strength": 75, "dexterity": 80 },
+      "people": "extraplanar",
+      "tier": "singularity_archon",
+      "body": "mpfb_male",
+      "skin": "#1e2430",
+      "hair": null,
+      "hair_color": "#0e0e14",
+      "eye_color": "#8efcff",
+      "morph": { "height": 0.38, "muscle": 0.30, "weight": -0.28 }
+    },
+    {
+      "id": "ophanim_seraph",
+      "label": "Ophanim Seraph",
+      "short": "Ophanim Seraph",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": { "melee_atk": 74, "melee_def": 78, "martial_arts": 84, "dodge": 82, "toughness": 80, "strength": 68, "dexterity": 84 },
+      "people": "extraplanar",
+      "tier": "ophanim_seraph",
+      "body": "mpfb_female",
+      "skin": "#2b3440",
+      "hair": null,
+      "hair_color": "#d8dcff",
+      "eye_color": "#ffd86b",
+      "morph": { "height": 0.34, "muscle": 0.24, "weight": -0.30 }
+    },
+    {
+      "id": "ashen_calamity",
+      "label": "Ashen Calamity",
+      "short": "Ashen Calamity",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": { "melee_atk": 82, "melee_def": 68, "martial_arts": 78, "dodge": 62, "toughness": 88, "strength": 86, "dexterity": 72 },
+      "people": "extraplanar",
+      "tier": "ashen_calamity",
+      "body": "mpfb_male",
+      "skin": "#384858",
+      "hair": null,
+      "hair_color": "#0e0e14",
+      "eye_color": "#a86bff",
+      "morph": { "height": 0.42, "muscle": 0.45, "weight": -0.15 }
     }
   ],
   "choreography": [
@@ -1590,5 +1801,15 @@
     { "attacker": 1, "attack": "uppercut_r", "outcome": "dodge", "counter": true, "note": "Slip back from the uppercut and answer" },
     { "attacker": 0, "attack": "punch_combo_3", "outcome": "hit", "note": "Combination lands cleanly on the arm" },
     { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low sweep scores a knockdown -> kip-up recovery" }
+  ],
+  "extraplanar_choreography": [
+    { "attacker": 0, "attack": "lightning_blast", "outcome": "hit", "note": "Astral Lightning Blast arcs across the arena into the chest" },
+    { "attacker": 1, "attack": "kick_roundhouse", "outcome": "dodge", "counter": false, "note": "Monk rushes in with a high roundhouse — Archon phases aside" },
+    { "attacker": 0, "attack": "lightning_blast", "outcome": "block", "note": "Second Astral Lightning Blast grounded on raised forearm guard" },
+    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low sweep passes beneath levitating Archon — Hover Immunity!" },
+    { "attacker": 0, "attack": "energy_burst", "outcome": "hit", "note": "Singularity Energy Burst implodes & detonates — knockdown into kip-up!" },
+    { "attacker": 0, "attack": "astral_lance", "outcome": "parry", "counter": true, "note": "Monk lands Timed Perfect Parry on Starlight Rift-Lance -> instant Riposte!" },
+    { "attacker": 0, "attack": "rift_claw", "outcome": "hit", "note": "Void-Talon Rend rakes across the guard at close quarters" },
+    { "attacker": 0, "attack": "lightning_blast", "outcome": "parry", "counter": true, "note": "Monk grounds the Astral Lightning Bolt with a two-hand deflection!" }
   ]
 }

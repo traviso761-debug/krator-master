@@ -203,7 +203,7 @@
     if(LAB && LAB.id === 'combat'){
       window.__KCHAR_ANIMLAB = {
         D:D, LAB:LAB, scene:scene, renderer:renderer, camera:camera, cam:cam,
-        keyLight:keyLight, load:load, figs:figs, ready:ready, lineup:lineup,
+        keyLight:keyLight, load:load, fetchRel:fetchRel, figs:figs, ready:ready, lineup:lineup,
         setPaused:setPaused, play:play,
         setDuelHook:function(h){ duelHook = h; },
         hideLineup:function(hide){

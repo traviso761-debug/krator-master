@@ -68,6 +68,15 @@ const CLIP_FALLBACKS := {
 	"knock_down": ["fall_down", "ual_knockback", "hit_2"],
 	"ual_get_up": ["get_up", "unarmed_guard", "idle"],
 	"get_up": ["ual_get_up", "unarmed_guard", "idle"],
+	"spell_cast": ["ual_throw", "throw", "attack"],
+	"taunt_chest": ["slash_charged", "ual_sword_heavy", "combo"],
+	"claw_swipe": ["slash_right", "ual_sword_a", "attack"],
+	"dodge_roll": ["ual_roll", "dodge_back", "dodge_step"],
+	"ual_shield_up": ["guard_block_3", "block_2", "parry"],
+	"lightning_blast": ["spell_cast", "ual_throw", "throw"],
+	"energy_burst": ["taunt_chest", "slash_charged", "ual_sword_heavy"],
+	"astral_lance": ["spear_thrust", "thrust", "attack"],
+	"rift_claw": ["claw_swipe", "slash_right", "attack"],
 }
 
 # Martial Arts move skill thresholds matching Proposal Section 2:
@@ -345,10 +354,12 @@ var style_idles := {
 	"polearm": "combat_idle",
 	"shield": "ual_shield_up",
 	"ranged": "walk_shoot",
+	"arcane": "combat_idle",
 }
 var rules := DEFAULT_RULES.duplicate(true)
 var fighters: Array = []
 var choreography: Array = []
+var extraplanar_choreography: Array = []
 var _links: Array[Dictionary] = []
 var _by_key: Dictionary = {}
 
@@ -375,6 +386,7 @@ func load_from_file(preferred_path: String = "") -> bool:
 	rules = DEFAULT_RULES.duplicate(true)
 	fighters = []
 	choreography = []
+	extraplanar_choreography = []
 	source_path = ""
 
 	var parsed = null
@@ -400,6 +412,8 @@ func load_from_file(preferred_path: String = "") -> bool:
 			fighters = parsed["fighters"].duplicate(true)
 		if parsed.get("choreography") is Array:
 			choreography = parsed["choreography"].duplicate(true)
+		if parsed.get("extraplanar_choreography") is Array:
+			extraplanar_choreography = parsed["extraplanar_choreography"].duplicate(true)
 		for raw_link in parsed.get("links", []):
 			if raw_link is Dictionary and raw_link.has("attack"):
 				_register_link(_normalize_link(raw_link))
@@ -445,6 +459,7 @@ static func _infer_target_zone(attack_key: String, hit_y: float) -> String:
 
 static func _normalize_link(raw: Dictionary) -> Dictionary:
 	var key := String(raw.get("attack", "jab_l"))
+	var clip := String(raw.get("clip", key))
 	var defs: Dictionary = MOVE_STAT_DEFAULTS.get(key, {})
 	var style := String(raw.get("style", defs.get("style", "martial_arts")))
 	if style == "unarmed":
@@ -480,6 +495,7 @@ static func _normalize_link(raw: Dictionary) -> Dictionary:
 
 	return {
 		"attack": key,
+		"clip": clip,
 		"label": String(raw.get("label", key.capitalize())),
 		"short": String(raw.get("short", raw.get("label", key))),
 		"style": style,
@@ -492,6 +508,9 @@ static func _normalize_link(raw: Dictionary) -> Dictionary:
 		"poise_dmg": poise_dmg,
 		"dmg_type": dmg_type,
 		"target_zone": target_zone,
+		"aoe": bool(raw.get("aoe", defs.get("aoe", false))),
+		"vfx": String(raw.get("vfx", defs.get("vfx", ""))),
+		"sever_bonus": bool(raw.get("sever_bonus", defs.get("sever_bonus", false))),
 		"focus_cost": float(raw.get("focus_cost", defs.get("focus_cost", 0.0))),
 		"heavy": bool(raw.get("heavy", defs.get("heavy", poise_dmg >= 35.0))),
 		"sweep": bool(raw.get("sweep", defs.get("sweep", key == "leg_sweep"))),

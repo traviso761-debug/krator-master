@@ -45,6 +45,7 @@
   LINKS.forEach(function(l){ LINK_BY_KEY[l.attack] = l; });
   var FIGHTERS = SPEC.fighters || [];
   var CHOREO = SPEC.choreography || [];
+  var EXTRA_CHOREO = SPEC.extraplanar_choreography || [];
 
   var $ = function(id){ return document.getElementById(id); };
   var host = null;
@@ -53,6 +54,8 @@
   var loadingPromise = null;
 
   var sandboxMode = '1v1';        // '1v1' | '2v1'
+  var extraplanarDemo = false;    // Extraplanar Boss Bout mode
+  var hoverClock = 0;
   var attackSlots = RULES.default_attack_slots || 2;
   var tacticalPause = false;      // Spacebar RTWP pause
   var autoBout = true;
@@ -84,6 +87,226 @@
   var savedCam = null;
   var savedNow = { clip:'', meta:'' };
   var savedBrand = '';
+
+  /* ---- WebAudio Combat SFX Player (KCUE + pieces/sfx_combat.txt) ---- */
+  var RAW_CUES = D.combat_cues || {};
+  var sfxCues = {};
+  var sfxStates = {};
+  var sfxClipFileMap = {};
+  Object.keys(RAW_CUES).forEach(function(k){
+    var raw = RAW_CUES[k];
+    if(raw && Array.isArray(raw.variants)){
+      raw.variants.forEach(function(v){
+        if(v && v.clip && v.file){
+          var base = String(v.file).replace(/^.*\//, '').replace(/\.mp3$/i, '');
+          sfxClipFileMap[v.clip] = base;
+        }
+      });
+    }
+    sfxCues[k] = (window.KCUE && window.KCUE.clean) ? window.KCUE.clean(raw) : raw;
+    sfxStates[k] = (window.KCUE && window.KCUE.state) ? window.KCUE.state() : { n:0, recent:[], last:-1e9, voices:0 };
+  });
+
+  var sfxEnabled = true;
+  var sfxLoaded = false;
+  var sfxLoadPromise = null;
+  var sfxRawMap = {};
+  var sfxBufCache = {};
+  var sfxDecodePromises = {};
+  var sfxCtx = null;
+  var sfxSeed = 0x4B524154;
+  var sfxWallT0 = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+  var sfxClock = 0;
+  var lastSfx = null;
+  var lastSfxInfo = null;
+  var sfxHistory = [];
+  var sfxPlayCount = 0;
+
+  function b64ToBytes(s){
+    var clean = String(s || '').trim();
+    var bin = atob(clean);
+    var u = new Uint8Array(bin.length);
+    for(var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+
+  function fetchSfxRel(rel){
+    if(host && host.fetchRel) return host.fetchRel(rel);
+    return fetch(rel).then(function(r){
+      if(!r.ok) throw new Error(rel + ': ' + r.status);
+      return r;
+    }).catch(function(){
+      return fetch('http://127.0.0.1:8123/' + rel).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        return r;
+      });
+    });
+  }
+
+  function ensureSfxBundle(){
+    if(sfxLoaded) return Promise.resolve(sfxRawMap);
+    if(sfxLoadPromise) return sfxLoadPromise;
+    sfxLoadPromise = fetchSfxRel('pieces/sfx_combat.txt').then(function(r){
+      return r.text();
+    }).then(function(txt){
+      var u = b64ToBytes(txt);
+      if(u.length >= 2 && u[0] === 0x1f && u[1] === 0x8b && typeof DecompressionStream !== 'undefined'){
+        return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+      }
+      return new TextDecoder().decode(u);
+    }).then(function(jsonTxt){
+      var parsed = JSON.parse(jsonTxt);
+      Object.keys(parsed).forEach(function(k){ sfxRawMap[k] = parsed[k]; });
+      sfxLoaded = Object.keys(sfxRawMap).length > 0;
+      return sfxRawMap;
+    }).catch(function(){
+      sfxLoadPromise = null;
+      return sfxRawMap;
+    });
+    return sfxLoadPromise;
+  }
+
+  function ensureAudioContext(){
+    if(!sfxCtx){
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      if(Ctx){
+        try { sfxCtx = new Ctx(); } catch(e){ sfxCtx = null; }
+      }
+    }
+    if(sfxCtx && sfxCtx.state === 'suspended'){
+      try { sfxCtx.resume().catch(function(){}); } catch(e){}
+    }
+    return sfxCtx;
+  }
+
+  function unlockAudioGesture(){
+    if(!sfxEnabled) return;
+    ensureAudioContext();
+    if(active) ensureSfxBundle();
+  }
+
+  function resolveSfxShortId(clipId){
+    if(sfxClipFileMap[clipId]) return sfxClipFileMap[clipId];
+    return String(clipId || '').replace(/^lotsofsounds-/, '');
+  }
+
+  function decodeSfxClip(shortId){
+    if(sfxBufCache[shortId]) return Promise.resolve(sfxBufCache[shortId]);
+    if(sfxDecodePromises[shortId]) return sfxDecodePromises[shortId];
+    var ctx = sfxCtx;
+    if(!ctx) return Promise.resolve(null);
+    sfxDecodePromises[shortId] = ensureSfxBundle().then(function(map){
+      var b64 = map[shortId];
+      if(!b64 || !sfxCtx) return null;
+      var bytes = b64ToBytes(b64);
+      var ab = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+      return new Promise(function(resolve){
+        try {
+          var p = sfxCtx.decodeAudioData(ab, function(buf){ resolve(buf); }, function(){ resolve(null); });
+          if(p && typeof p.then === 'function') p.then(resolve, function(){ resolve(null); });
+        } catch(e){
+          resolve(null);
+        }
+      });
+    }).then(function(buf){
+      delete sfxDecodePromises[shortId];
+      if(buf) sfxBufCache[shortId] = buf;
+      return buf;
+    });
+    return sfxDecodePromises[shortId];
+  }
+
+  function playSfx(cueKey){
+    if(!sfxEnabled) return null;
+    var cue = sfxCues[cueKey];
+    var st = sfxStates[cueKey];
+    if(!cue || !st) return null;
+
+    var wallNow = ((typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000) - sfxWallT0;
+    if(wallNow > sfxClock) sfxClock = wallNow;
+
+    var fired = null;
+    if(window.KCUE && window.KCUE.fire){
+      fired = window.KCUE.fire(cue, st, sfxClock, sfxSeed);
+    } else if(cue.variants && cue.variants.length){
+      var v0 = cue.variants[st.n % cue.variants.length];
+      st.n++; st.last = sfxClock; st.voices++;
+      fired = { variant:0, clip:v0.clip, start:v0.start || 0, end:v0.end || 0, fx:v0.fx || {}, pitch:0, gain:1 };
+    }
+    if(!fired) return null;
+
+    var shortId = resolveSfxShortId(fired.clip);
+    sfxPlayCount++;
+    lastSfx = cueKey;
+    lastSfxInfo = {
+      cue: cueKey,
+      id: cue.id,
+      clip: shortId,
+      variant: fired.variant,
+      start: fired.start || 0,
+      pitch: +(fired.pitch || 0).toFixed(3),
+      gain: +(fired.gain == null ? 1 : fired.gain).toFixed(3),
+      count: sfxPlayCount
+    };
+    sfxHistory.push(cueKey);
+    if(sfxHistory.length > 32) sfxHistory.shift();
+
+    ensureSfxBundle();
+    if(!sfxCtx){
+      if(window.KCUE && window.KCUE.done) window.KCUE.done(st);
+      else if(st.voices > 0) st.voices--;
+      return lastSfxInfo;
+    }
+    if(sfxCtx.state === 'suspended'){
+      try { sfxCtx.resume().catch(function(){}); } catch(e){}
+    }
+    var released = false;
+    function releaseVoice(){
+      if(released) return;
+      released = true;
+      if(window.KCUE && window.KCUE.done) window.KCUE.done(st);
+      else if(st.voices > 0) st.voices--;
+    }
+    decodeSfxClip(shortId).then(function(buf){
+      if(!buf || !sfxEnabled || !sfxCtx){
+        releaseVoice();
+        return;
+      }
+      try {
+        var src = sfxCtx.createBufferSource();
+        var gainNode = sfxCtx.createGain();
+        src.buffer = buf;
+        var rate = Math.pow(2, (fired.pitch || 0) / 12) * ((fired.fx && fired.fx.speed) || 1);
+        src.playbackRate.value = Math.max(0.25, Math.min(3.0, rate));
+        gainNode.gain.value = Math.max(0, Math.min(2.0, fired.gain == null ? 1 : fired.gain));
+        src.connect(gainNode);
+        gainNode.connect(sfxCtx.destination);
+        src.onended = releaseVoice;
+        var offset = Math.max(0, Math.min(Math.max(0, buf.duration - 0.01), fired.start || 0));
+        if(fired.end && fired.end > offset){
+          src.start(0, offset, Math.max(0.01, fired.end - offset));
+        } else {
+          src.start(0, offset);
+        }
+        var durMs = Math.ceil(((buf.duration - offset) / Math.max(0.25, rate)) * 1000) + 120;
+        setTimeout(releaseVoice, sfxCtx.state === 'running' ? durMs : 150);
+      } catch(e){
+        releaseVoice();
+      }
+    });
+    return lastSfxInfo;
+  }
+
+  function setSfxEnabled(on){
+    sfxEnabled = !!on;
+    var btn = $('dhud-sfx-btn');
+    if(btn){
+      btn.setAttribute('aria-pressed', sfxEnabled ? 'true' : 'false');
+      btn.textContent = sfxEnabled ? '🔊 SFX' : '🔇 SFX';
+    }
+    if(sfxEnabled) ensureAudioContext();
+    return sfxEnabled;
+  }
 
   function findPreset(id, fallbackIdx){
     for(var i = 0; i < FIGHTERS.length; i++){
@@ -126,6 +349,13 @@
   var vfxGroup = null;
   var activeCues = [];
   var tv = new THREE.Vector3();
+  var V_UP = new THREE.Vector3(0, 1, 0);
+  var V_A = new THREE.Vector3();
+  var V_B = new THREE.Vector3();
+  var V_C = new THREE.Vector3();
+  var V_DIR = new THREE.Vector3();
+  var V_P1 = new THREE.Vector3();
+  var V_P2 = new THREE.Vector3();
 
   /* ---- Kenshi+ Fighter Stats, Poise & 7-Limb Trauma ---- */
   function initFighterStats(slot){
@@ -217,6 +447,15 @@
       return result;
     }
 
+    // Extraplanar Hover Immunity against low leg sweeps
+    if(defender.preset && defender.preset.hover && (link.attack === 'leg_sweep' || link.sweep)){
+      var hoverChip = Math.max(8, Math.round(basePoise * 0.35));
+      defender.poise = Math.max(0, defender.poise - hoverChip);
+      result.poiseDelta = -hoverChip;
+      result.hoverImmune = true;
+      return result;
+    }
+
     // Clean HIT: 7-limb zone trauma + poise shock
     var z = (opts && opts.zone) || link.target_zone || 'chest';
     if(!defender.limbs[z]) z = 'chest';
@@ -244,8 +483,9 @@
     }
 
     // Check Kenshi+ Dismemberment (<= -100% max HP on severable biological limb)
+    var sevThresh = link.sever_bonus ? SEVER_THRESHOLD * 0.85 : SEVER_THRESHOLD;
     if(RULES.limb_severing !== false && zm.severable && !limb.cyber && !limb.severed){
-      if(limb.hp <= SEVER_THRESHOLD * limb.max){
+      if(limb.hp <= sevThresh * limb.max){
         limb.severed = true;
         result.severedZone = z;
       }
@@ -284,6 +524,7 @@
     limb.cyber = false;
     limb.hp = -Math.round(limb.max * 1.12);
     limb.severed = true;
+    playSfx('sever_limb');
     spawnCue('sever', 1.24, slot.fig ? slot.fig.group.position : null);
     var zLabel = (ZONE_META[z] && ZONE_META[z].label) || z;
     showCallout('🩸 ' + zLabel.toUpperCase() + ' SEVERED!', 'sever');
@@ -317,10 +558,11 @@
       '.duel-stances { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }',
       '.duel-stances button { border: 1px solid var(--line); background: var(--chip); font-size: 11px; padding: 5px 3px; border-radius: 5px; font-weight: 600; }',
       '.duel-stances button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }',
-      '.duel-focus-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }',
-      '.duel-focus-row button { border: 1px solid var(--line); background: var(--chip); font-size: 11px; padding: 5px 4px; border-radius: 5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }',
+      '.duel-focus-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }',
+      '.duel-focus-row button { border: 1px solid var(--line); background: var(--chip); font-size: 10.5px; padding: 5px 3px; border-radius: 5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }',
       '.duel-focus-row button.parry-btn { border-color: rgba(218,165,32,.55); }',
       '.duel-focus-row button.dodge-btn { border-color: rgba(47,158,102,.55); }',
+      '.duel-focus-row button.arcane-btn { border-color: rgba(138,92,246,.65); background: linear-gradient(90deg, rgba(124,58,237,.18), rgba(46,230,255,.16)); }',
       '.duel-style-tabs { display: flex; gap: 3px; flex-wrap: wrap; }',
       '.duel-style-tabs button { font-size: 10.5px; padding: 3px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--chip); }',
       '.duel-style-tabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }',
@@ -360,6 +602,9 @@
       '.dhud-pill-grp button { font: 600 11.5px/1 var(--body); padding: 5px 8px; border-radius: 6px; color: var(--ink); }',
       '.dhud-pill-grp button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }',
       '#dhud-pause-btn[aria-pressed="true"] { background: #c97a16; color: #fff; }',
+      '#dhud-extraplanar-btn { background: linear-gradient(90deg, rgba(109,40,217,.26), rgba(46,230,255,.22)); border: 1px solid rgba(94,234,255,.58); color: var(--ink); font-weight: 700; }',
+      '#dhud-extraplanar-btn:hover { filter: brightness(1.1); border-color: #2ee6ff; }',
+      '#dhud-extraplanar-btn[aria-pressed="true"] { background: linear-gradient(90deg, #6d28d9, #0891b2); color: #fff; border-color: #a5f3fc; box-shadow: 0 0 12px rgba(46,230,255,.42); }',
 
       /* Center-Top Active Defense Window Banner */
       '#duel-def-banner { position: absolute; top: 52px; left: 50%; transform: translateX(-50%); min-width: 320px; max-width: 92%; background: color-mix(in srgb, var(--panel) 92%, transparent); border: 1px solid var(--line); border-radius: 9px; padding: 6px 11px; display: flex; flex-direction: column; gap: 4px; align-items: center; pointer-events: auto; box-shadow: 0 3px 12px rgba(0,0,0,.16); transition: border-color .12s, transform .12s; }',
@@ -379,6 +624,7 @@
       '#duel-callout.on { opacity: 1; }',
       '#duel-callout.sever, #duel-callout.break { color: #ff8e85; border-color: #e0483e; }',
       '#duel-callout.dodge { color: #8ef5be; border-color: #36b877; }',
+      '#duel-callout.arcane { color: #b8f7ff; border-color: #2ee6ff; box-shadow: 0 0 16px rgba(46,230,255,.42), 0 4px 14px rgba(0,0,0,.3); }',
 
       /* Fighter Kenshi+ Cards (Poise + 7-Limb Strip + Stance + Graft Cyber-Arm) */
       '#duel-cards { position: absolute; left: 16px; right: 16px; bottom: 62px; display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; pointer-events: none; }',
@@ -468,6 +714,7 @@
     if(slot.stance === 'guard' && (hold.L === 'shield' || p.style === 'shield')) return 'ual_shield_up';
     if(p.style === 'sword') return STYLE_IDLES.sword || 'ual_sword_idle';
     if(p.style === 'heavy' || p.style === 'polearm') return 'combat_idle';
+    if(p.style === 'arcane') return STYLE_IDLES.arcane || 'combat_idle';
     if(p.style === 'ranged') return hold.L === 'bow' ? 'bow_scan' : 'combat_idle';
     return STYLE_IDLES[p.style] || IDLE_CLIP;
   }
@@ -523,6 +770,487 @@
       vfxGroup = new THREE.Group();
       host.scene.add(vfxGroup);
     }
+  }
+
+  function orientSegment(mesh, p0, p1, radScale){
+    V_DIR.subVectors(p1, p0);
+    var len = V_DIR.length();
+    if(len < 1e-4){
+      mesh.visible = false;
+      return;
+    }
+    mesh.visible = true;
+    mesh.position.copy(p0).addScaledVector(V_DIR, 0.5);
+    V_DIR.divideScalar(len);
+    mesh.quaternion.setFromUnitVectors(V_UP, V_DIR);
+    var rs = radScale == null ? 1 : radScale;
+    mesh.scale.set(rs, len * 1.06, rs);
+  }
+
+  function rebuildLightningBolts(cue){
+    var srcSlot = cue.srcSlot, dstSlot = cue.dstSlot;
+    var sx = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.x : cue.sx;
+    var sy = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.y : 0;
+    var sz = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.z : cue.sz;
+    var dx = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.x : cue.dx;
+    var dy = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.y : 0;
+    var dz = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.z : cue.dz;
+
+    // Caster extended hand/chest -> Defender chest
+    V_A.set(sx, sy + 1.30, sz);
+    V_B.set(dx, dy + 1.18, dz);
+    V_DIR.subVectors(V_B, V_A);
+    var dist = V_DIR.length();
+    if(dist > 0.55){
+      // Nudge origin slightly forward toward caster's extended hand
+      V_A.addScaledVector(V_DIR, 0.22 / dist);
+    }
+
+    if(cue.casterGroup) cue.casterGroup.position.copy(V_A);
+    if(cue.targetGroup) cue.targetGroup.position.copy(V_B);
+    if(cue.groundGroup) cue.groundGroup.position.set(dx, 0.016, dz);
+
+    V_DIR.subVectors(V_B, V_A);
+    var span = Math.max(0.25, V_DIR.length());
+    V_C.copy(V_DIR).divideScalar(span);
+    // Orthogonal basis around bolt axis
+    if(Math.abs(V_C.y) < 0.92) V_P1.crossVectors(V_C, V_UP).normalize();
+    else V_P1.set(1, 0, 0);
+    V_P2.crossVectors(V_C, V_P1).normalize();
+
+    var ph = cue.jitterPhase || 0;
+    var bolts = cue.bolts || [];
+    var anchorNodes = [];
+
+    for(var b = 0; b < bolts.length; b++){
+      var bolt = bolts[b];
+      var segs = bolt.segs;
+      var nSeg = segs.length;
+      var pts = bolt.pts;
+      var seedBase = (b <= 2 ? 0 : b) * 17.3 + cue.seed; // Bolts 0..2 form concentric indigo->cobalt->white core!
+      var amp = bolt.amp * Math.min(1.25, span * 0.55);
+
+      pts[0].copy(V_A);
+      pts[nSeg].copy(V_B);
+      for(var k = 1; k < nSeg; k++){
+        var f = k / nSeg;
+        var env = Math.sin(f * Math.PI);
+        var h1 = Math.sin(ph * 1.9 + k * 5.17 + seedBase) * 0.65 + Math.cos(ph * 3.4 - k * 9.31 + seedBase * 1.7) * 0.35;
+        var h2 = Math.cos(ph * 2.3 + k * 6.43 + seedBase * 1.3) * 0.65 + Math.sin(ph * 4.1 + k * 3.89 - seedBase) * 0.35;
+        if(b === 1){
+          h1 += Math.sin(ph * 5.0 + k * 2.1) * 0.14;
+          h2 += Math.cos(ph * 5.2 - k * 2.7) * 0.14;
+        }
+        pts[k].copy(V_A).addScaledVector(V_C, f * span)
+          .addScaledVector(V_P1, h1 * amp * env)
+          .addScaledVector(V_P2, h2 * amp * env);
+      }
+      for(var s = 0; s < nSeg; s++){
+        orientSegment(segs[s], pts[s], pts[s + 1], bolt.radScale);
+      }
+      if(b === 0 || b === 2 || b === 3) anchorNodes.push(pts);
+    }
+
+    // Branching side-forks off main bolt nodes
+    var forks = cue.forks || [];
+    for(var fi = 0; fi < forks.length; fi++){
+      var fk = forks[fi];
+      var srcPts = anchorNodes[fi % anchorNodes.length];
+      if(!srcPts) continue;
+      var nodeIdx = fk.nodeIdx % (srcPts.length - 1);
+      if(nodeIdx < 1) nodeIdx = 1;
+      var pStart = srcPts[nodeIdx];
+      var ang = fk.angle + Math.sin(ph * 1.7 + fi * 2.9) * 0.42;
+      var reach = fk.len * (0.75 + 0.25 * Math.cos(ph * 2.6 + fi * 4.1));
+      fk.mid.copy(pStart)
+        .addScaledVector(V_C, reach * 0.55)
+        .addScaledVector(V_P1, Math.cos(ang) * reach * 0.62)
+        .addScaledVector(V_P2, Math.sin(ang) * reach * 0.62);
+      fk.tip.copy(fk.mid)
+        .addScaledVector(V_C, reach * 0.50)
+        .addScaledVector(V_P1, Math.cos(ang + 0.55) * reach * 0.58)
+        .addScaledVector(V_P2, Math.sin(ang - 0.48) * reach * 0.58);
+      orientSegment(fk.seg0, pStart, fk.mid, fk.radScale);
+      orientSegment(fk.seg1, fk.mid, fk.tip, fk.radScale * 0.68);
+    }
+
+    // Grounding arc when parried or blocked!
+    if(cue.groundArc){
+      var ga = cue.groundArc;
+      ga.mid.set(dx + Math.sin(ph * 3.1) * 0.14, (dy + 1.18) * 0.48, dz + 0.16 + Math.cos(ph * 2.7) * 0.12);
+      ga.end.set(dx + 0.18, 0.02, dz + 0.22);
+      orientSegment(ga.seg0, V_B, ga.mid, 1);
+      orientSegment(ga.seg1, ga.mid, ga.end, 0.85);
+    }
+  }
+
+  function spawnLightningBlastVfx(srcSlot, dstSlot, outcome){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind || 'custom', baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    // Caster extended-hand / chest plasma sphere
+    var casterGroup = new THREE.Group();
+    g.add(casterGroup);
+    var cCoreGeo = new THREE.SphereGeometry(0.12, 16, 12);
+    var cCoreMat = new THREE.MeshBasicMaterial({ color:0xe8ffff, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+    casterGroup.add(addPart(new THREE.Mesh(cCoreGeo, cCoreMat), cCoreGeo, cCoreMat, 'lb_caster_core'));
+
+    var cHaloGeo = new THREE.SphereGeometry(0.24, 16, 12);
+    var cHaloMat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.56, blending:addBlend, depthWrite:false });
+    casterGroup.add(addPart(new THREE.Mesh(cHaloGeo, cHaloMat), cHaloGeo, cHaloMat, 'lb_caster_halo'));
+
+    var cRingGeo = new THREE.TorusGeometry(0.22, 0.018, 8, 28);
+    var cRingMat = new THREE.MeshBasicMaterial({ color:0x9d4edd, transparent:true, opacity:0.88, blending:addBlend, depthWrite:false });
+    var cRing = new THREE.Mesh(cRingGeo, cRingMat);
+    casterGroup.add(addPart(cRing, cRingGeo, cRingMat, 'lb_caster_ring'));
+
+    // 5 high-contrast jagged multi-segment 3D lightning tubes (dark-indigo/cobalt NormalBlending sheaths + bright cyan/white cores!)
+    var normBlend = THREE.NormalBlending;
+    var boltDefs = [
+      { color:0x24147a, radius:0.056, opacity:0.62, amp:0.13, segCount:10, blend:normBlend },
+      { color:0x0084ff, radius:0.036, opacity:0.88, amp:0.13, segCount:10, blend:normBlend },
+      { color:0xf4ffff, radius:0.019, opacity:0.99, amp:0.13, segCount:10, blend:normBlend },
+      { color:0x00b4ff, radius:0.024, opacity:0.92, amp:0.25, segCount:10, blend:normBlend },
+      { color:0x8a2be2, radius:0.024, opacity:0.90, amp:0.28, segCount:10, blend:normBlend }
+    ];
+    var bolts = [];
+    boltDefs.forEach(function(bd){
+      var segs = [], pts = [];
+      for(var k = 0; k <= bd.segCount; k++) pts.push(new THREE.Vector3());
+      for(var s = 0; s < bd.segCount; s++){
+        var sGeo = new THREE.CylinderGeometry(bd.radius, bd.radius, 1.0, 6, 1, false);
+        var sMat = new THREE.MeshBasicMaterial({ color:bd.color, transparent:true, opacity:bd.opacity, blending:bd.blend || addBlend, depthWrite:false });
+        var sMesh = new THREE.Mesh(sGeo, sMat);
+        g.add(addPart(sMesh, sGeo, sMat, 'lb_seg'));
+        segs.push(sMesh);
+      }
+      bolts.push({ segs:segs, pts:pts, amp:bd.amp, radScale:1 });
+    });
+
+    // 8 branching 2-segment side-forks
+    var forkColors = [0x0084ff, 0x8a2be2, 0x00b4ff, 0x24147a, 0x8a2be2, 0x0084ff, 0x00b4ff, 0x8a2be2];
+    var forks = [];
+    for(var fi = 0; fi < 8; fi++){
+      var fCol = forkColors[fi];
+      var fGeo0 = new THREE.CylinderGeometry(0.018, 0.012, 1.0, 5, 1, false);
+      var fMat0 = new THREE.MeshBasicMaterial({ color:fCol, transparent:true, opacity:0.92, blending:normBlend, depthWrite:false });
+      var fSeg0 = addPart(new THREE.Mesh(fGeo0, fMat0), fGeo0, fMat0, 'lb_seg');
+      var fGeo1 = new THREE.CylinderGeometry(0.012, 0.005, 1.0, 5, 1, false);
+      var fMat1 = new THREE.MeshBasicMaterial({ color:0xe8ffff, transparent:true, opacity:0.95, blending:normBlend, depthWrite:false });
+      var fSeg1 = addPart(new THREE.Mesh(fGeo1, fMat1), fGeo1, fMat1, 'lb_seg');
+      g.add(fSeg0);
+      g.add(fSeg1);
+      forks.push({
+        seg0:fSeg0, seg1:fSeg1,
+        mid:new THREE.Vector3(), tip:new THREE.Vector3(),
+        nodeIdx: 2 + (fi % 7),
+        angle: (fi / 8) * Math.PI * 2 + 0.35,
+        len: 0.26 + (fi % 3) * 0.09,
+        radScale: 1
+      });
+    }
+
+    // Target electric shock corona
+    var targetGroup = new THREE.Group();
+    g.add(targetGroup);
+    var tFlashGeo = new THREE.SphereGeometry(0.17, 16, 12);
+    var tFlashMat = new THREE.MeshBasicMaterial({ color:0xe8ffff, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+    targetGroup.add(addPart(new THREE.Mesh(tFlashGeo, tFlashMat), tFlashGeo, tFlashMat, 'lb_target_core'));
+
+    var tCoronaGeo1 = new THREE.TorusGeometry(0.32, 0.020, 8, 32);
+    var tCoronaMat1 = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.90, blending:addBlend, depthWrite:false });
+    var tCorona1 = new THREE.Mesh(tCoronaGeo1, tCoronaMat1);
+    targetGroup.add(addPart(tCorona1, tCoronaGeo1, tCoronaMat1, 'lb_corona_1'));
+
+    var tCoronaGeo2 = new THREE.TorusGeometry(0.28, 0.018, 8, 28);
+    var tCoronaMat2 = new THREE.MeshBasicMaterial({ color:0x9d4edd, transparent:true, opacity:0.88, blending:addBlend, depthWrite:false });
+    var tCorona2 = new THREE.Mesh(tCoronaGeo2, tCoronaMat2);
+    tCorona2.rotation.x = Math.PI / 2.6;
+    targetGroup.add(addPart(tCorona2, tCoronaGeo2, tCoronaMat2, 'lb_corona_2'));
+
+    for(var si = 0; si < 10; si++){
+      var sAng = (si / 10) * Math.PI * 2;
+      var spkGeo = new THREE.CylinderGeometry(0.015, 0.003, 0.42, 5);
+      var spkCol = si % 3 === 0 ? 0xe8ffff : si % 3 === 1 ? 0x2ee6ff : 0x9d4edd;
+      var spkMat = new THREE.MeshBasicMaterial({ color:spkCol, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var spk = new THREE.Mesh(spkGeo, spkMat);
+      var dirV = new THREE.Vector3(Math.sin(sAng) * 0.45, Math.cos(sAng), Math.sin(sAng * 1.7)).normalize();
+      spk.quaternion.setFromUnitVectors(V_UP, dirV);
+      spk.userData.dir = dirV;
+      targetGroup.add(addPart(spk, spkGeo, spkMat, 'lb_spark'));
+    }
+
+    // Ground spark ring beneath target
+    var groundGroup = new THREE.Group();
+    g.add(groundGroup);
+    var gRingGeo1 = new THREE.RingGeometry(0.20, 0.34, 40);
+    var gRingMat1 = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.90, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var gRing1 = new THREE.Mesh(gRingGeo1, gRingMat1);
+    gRing1.rotation.x = -Math.PI / 2;
+    groundGroup.add(addPart(gRing1, gRingGeo1, gRingMat1, 'lb_ground_1'));
+
+    var gRingGeo2 = new THREE.RingGeometry(0.11, 0.20, 32);
+    var gRingMat2 = new THREE.MeshBasicMaterial({ color:0x9d4edd, transparent:true, opacity:0.86, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var gRing2 = new THREE.Mesh(gRingGeo2, gRingMat2);
+    gRing2.rotation.x = -Math.PI / 2;
+    groundGroup.add(addPart(gRing2, gRingGeo2, gRingMat2, 'lb_ground_2'));
+
+    var groundArc = null;
+    if(outcome === 'parry' || outcome === 'block'){
+      var gaCol = outcome === 'parry' ? 0xffe066 : 0x2ee6ff;
+      var gaGeo0 = new THREE.CylinderGeometry(0.022, 0.016, 1.0, 6);
+      var gaMat0 = new THREE.MeshBasicMaterial({ color:gaCol, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+      var gaSeg0 = addPart(new THREE.Mesh(gaGeo0, gaMat0), gaGeo0, gaMat0, 'lb_seg');
+      var gaGeo1 = new THREE.CylinderGeometry(0.016, 0.008, 1.0, 6);
+      var gaMat1 = new THREE.MeshBasicMaterial({ color:0xe8ffff, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var gaSeg1 = addPart(new THREE.Mesh(gaGeo1, gaMat1), gaGeo1, gaMat1, 'lb_seg');
+      g.add(gaSeg0);
+      g.add(gaSeg1);
+      groundArc = { seg0:gaSeg0, seg1:gaSeg1, mid:new THREE.Vector3(), end:new THREE.Vector3() };
+    }
+
+    var cue = {
+      vfxKind: 'lightning_blast',
+      group: g,
+      parts: parts,
+      srcSlot: srcSlot,
+      dstSlot: dstSlot,
+      sx: srcSlot && srcSlot.fig ? srcSlot.fig.group.position.x : -1,
+      sz: srcSlot && srcSlot.fig ? srcSlot.fig.group.position.z : 0,
+      dx: dstSlot && dstSlot.fig ? dstSlot.fig.group.position.x : 1,
+      dz: dstSlot && dstSlot.fig ? dstSlot.fig.group.position.z : 0,
+      casterGroup: casterGroup,
+      targetGroup: targetGroup,
+      groundGroup: groundGroup,
+      bolts: bolts,
+      forks: forks,
+      groundArc: groundArc,
+      seed: exSeq * 7.13,
+      jitterPhase: exSeq * 3.7,
+      t: 0,
+      dur: 0.78
+    };
+    rebuildLightningBolts(cue);
+    vfxGroup.add(g);
+    activeCues.push(cue);
+  }
+
+  function spawnEnergyBurstChargeVfx(casterSlot, chargeDur){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var cPos = casterSlot && casterSlot.fig ? casterSlot.fig.group.position : { x:0, y:0, z:0 };
+    g.position.set(cPos.x, (cPos.y || 0) + 1.22, cPos.z);
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind, baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    // Singularity Charge Orb (incandescent gold-white core + imploding violet/cyan shells)
+    var coreGeo = new THREE.SphereGeometry(0.15, 20, 16);
+    var coreMat = new THREE.MeshBasicMaterial({ color:0xffe885, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+    g.add(addPart(new THREE.Mesh(coreGeo, coreMat), coreGeo, coreMat, 'eb_chg_core'));
+
+    var shellGeo = new THREE.SphereGeometry(0.46, 20, 16);
+    var shellMat = new THREE.MeshBasicMaterial({ color:0x9d4edd, transparent:true, opacity:0.54, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    g.add(addPart(new THREE.Mesh(shellGeo, shellMat), shellGeo, shellMat, 'eb_chg_shell'));
+
+    var rimGeo = new THREE.SphereGeometry(0.32, 18, 14);
+    var rimMat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.48, blending:addBlend, depthWrite:false });
+    g.add(addPart(new THREE.Mesh(rimGeo, rimMat), rimGeo, rimMat, 'eb_chg_rim'));
+
+    // 2 counter-spinning torus rings
+    var rGeo1 = new THREE.TorusGeometry(0.48, 0.022, 10, 40);
+    var rMat1 = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.90, blending:addBlend, depthWrite:false });
+    var rMesh1 = new THREE.Mesh(rGeo1, rMat1);
+    rMesh1.rotation.x = 0.65;
+    g.add(addPart(rMesh1, rGeo1, rMat1, 'eb_chg_ring1'));
+
+    var rGeo2 = new THREE.TorusGeometry(0.40, 0.020, 10, 40);
+    var rMat2 = new THREE.MeshBasicMaterial({ color:0xffcf48, transparent:true, opacity:0.90, blending:addBlend, depthWrite:false });
+    var rMesh2 = new THREE.Mesh(rGeo2, rMat2);
+    rMesh2.rotation.y = 0.85;
+    g.add(addPart(rMesh2, rGeo2, rMat2, 'eb_chg_ring2'));
+
+    // 18 inward-pulling energy motes
+    var moteCols = [0x2ee6ff, 0x9d4edd, 0xffd86b, 0xe8ffff];
+    for(var mi = 0; mi < 18; mi++){
+      var mGeo = new THREE.OctahedronGeometry(0.042, 0);
+      var mMat = new THREE.MeshBasicMaterial({ color:moteCols[mi % 4], transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var mMesh = new THREE.Mesh(mGeo, mMat);
+      var theta = (mi / 18) * Math.PI * 2;
+      var phi = ((mi * 5) % 11) / 10 * Math.PI - Math.PI * 0.5;
+      mMesh.userData.theta = theta;
+      mMesh.userData.phi = phi * 0.72;
+      mMesh.userData.phase = (mi / 18);
+      g.add(addPart(mMesh, mGeo, mMat, 'eb_chg_mote'));
+    }
+
+    vfxGroup.add(g);
+    activeCues.push({
+      vfxKind: 'energy_burst_charge',
+      casterSlot: casterSlot,
+      group: g,
+      parts: parts,
+      t: 0,
+      dur: Math.max(0.24, chargeDur || 0.50)
+    });
+  }
+
+  function spawnEnergyBurstDetonateVfx(casterSlot){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var cPos = casterSlot && casterSlot.fig ? casterSlot.fig.group.position : { x:0, y:0, z:0 };
+    g.position.set(cPos.x, 0, cPos.z);
+    var chestY = (cPos.y || 0) + 1.15;
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+
+    function addPart(mesh, geo, mat, kind){
+      parts.push({ mesh:mesh, geo:geo, mat:mat, kind:kind, baseOpacity:mat.opacity });
+      return mesh;
+    }
+
+    // Giant expanding translucent Energy Dome (SphereGeometry scaling 0.25 -> 2.8m, AdditiveBlending electric gold/cyan/violet)
+    var domeOuterGeo = new THREE.SphereGeometry(1.0, 28, 20);
+    var domeOuterMat = new THREE.MeshBasicMaterial({ color:0x9d4edd, transparent:true, opacity:0.46, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var domeOuter = new THREE.Mesh(domeOuterGeo, domeOuterMat);
+    domeOuter.position.y = chestY;
+    domeOuter.scale.setScalar(0.25);
+    g.add(addPart(domeOuter, domeOuterGeo, domeOuterMat, 'eb_dome_outer'));
+
+    var domeMidGeo = new THREE.SphereGeometry(1.0, 24, 18);
+    var domeMidMat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.52, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var domeMid = new THREE.Mesh(domeMidGeo, domeMidMat);
+    domeMid.position.y = chestY;
+    domeMid.scale.setScalar(0.25);
+    g.add(addPart(domeMid, domeMidGeo, domeMidMat, 'eb_dome_mid'));
+
+    var domeCoreGeo = new THREE.SphereGeometry(1.0, 20, 14);
+    var domeCoreMat = new THREE.MeshBasicMaterial({ color:0xffd15c, transparent:true, opacity:0.88, blending:addBlend, depthWrite:false });
+    var domeCore = new THREE.Mesh(domeCoreGeo, domeCoreMat);
+    domeCore.position.y = chestY;
+    domeCore.scale.setScalar(0.25);
+    g.add(addPart(domeCore, domeCoreGeo, domeCoreMat, 'eb_dome_core'));
+
+    // 2 concentric floor shockwave rings (RingGeometry expanding to 2.6m)
+    var ring1Geo = new THREE.RingGeometry(0.84, 1.0, 64);
+    var ring1Mat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.94, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var ring1 = new THREE.Mesh(ring1Geo, ring1Mat);
+    ring1.rotation.x = -Math.PI / 2;
+    ring1.position.y = 0.018;
+    ring1.scale.setScalar(0.25);
+    g.add(addPart(ring1, ring1Geo, ring1Mat, 'eb_shock_1'));
+
+    var ring2Geo = new THREE.RingGeometry(0.75, 0.96, 56);
+    var ring2Mat = new THREE.MeshBasicMaterial({ color:0xffcf48, transparent:true, opacity:0.88, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+    var ring2 = new THREE.Mesh(ring2Geo, ring2Mat);
+    ring2.rotation.x = -Math.PI / 2;
+    ring2.position.y = 0.024;
+    ring2.scale.setScalar(0.20);
+    g.add(addPart(ring2, ring2Geo, ring2Mat, 'eb_shock_2'));
+
+    // 14 radial energy rays
+    var rayCols = [0xffe066, 0x2ee6ff, 0x9d4edd, 0xe8ffff];
+    for(var ri = 0; ri < 14; ri++){
+      var az = (ri / 14) * Math.PI * 2 + 0.18;
+      var el = ((ri % 3) - 1) * 0.34;
+      var rDir = new THREE.Vector3(Math.cos(az) * Math.cos(el), Math.sin(el) * 0.75 + 0.08, Math.sin(az) * Math.cos(el)).normalize();
+      var rayGeo = new THREE.CylinderGeometry(0.026, 0.005, 1.0, 6);
+      var rayMat = new THREE.MeshBasicMaterial({ color:rayCols[ri % 4], transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var ray = new THREE.Mesh(rayGeo, rayMat);
+      ray.quaternion.setFromUnitVectors(V_UP, rDir);
+      ray.userData.dir = rDir;
+      ray.userData.chestY = chestY;
+      ray.position.set(rDir.x * 0.25, chestY + rDir.y * 0.25, rDir.z * 0.25);
+      g.add(addPart(ray, rayGeo, rayMat, 'eb_ray'));
+    }
+
+    vfxGroup.add(g);
+    activeCues.push({
+      vfxKind: 'energy_burst',
+      group: g,
+      parts: parts,
+      t: 0,
+      dur: 0.72
+    });
+  }
+
+  function spawnAstralLanceVfx(srcSlot, dstSlot){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+    var sx = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.x : -0.9;
+    var sy = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.y : 0;
+    var sz = srcSlot && srcSlot.fig ? srcSlot.fig.group.position.z : 0;
+    var dx = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.x : 0.9;
+    var dy = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.y : 0;
+    var dz = dstSlot && dstSlot.fig ? dstSlot.fig.group.position.z : 0;
+    V_A.set(sx, sy + 1.26, sz);
+    V_B.set(dx, dy + 1.22, dz);
+    V_DIR.subVectors(V_B, V_A);
+    var len = Math.max(0.6, V_DIR.length() + 0.35);
+    var dirN = V_DIR.clone().normalize();
+    var mid = V_A.clone().addScaledVector(dirN, len * 0.48);
+
+    var coreGeo = new THREE.CylinderGeometry(0.008, 0.032, len, 8);
+    var coreMat = new THREE.MeshBasicMaterial({ color:0xe8ffff, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+    var core = new THREE.Mesh(coreGeo, coreMat);
+    core.position.copy(mid);
+    core.quaternion.setFromUnitVectors(V_UP, dirN);
+    g.add(core);
+    parts.push({ mesh:core, geo:coreGeo, mat:coreMat, kind:'al_beam', baseOpacity:0.96 });
+
+    var auraGeo = new THREE.CylinderGeometry(0.018, 0.068, len * 0.95, 8);
+    var auraMat = new THREE.MeshBasicMaterial({ color:0x2ee6ff, transparent:true, opacity:0.55, blending:addBlend, depthWrite:false });
+    var aura = new THREE.Mesh(auraGeo, auraMat);
+    aura.position.copy(mid);
+    aura.quaternion.setFromUnitVectors(V_UP, dirN);
+    g.add(aura);
+    parts.push({ mesh:aura, geo:auraGeo, mat:auraMat, kind:'al_beam', baseOpacity:0.55 });
+
+    for(var ri = 0; ri < 3; ri++){
+      var wGeo = new THREE.TorusGeometry(0.18 + ri * 0.06, 0.014, 8, 28);
+      var wMat = new THREE.MeshBasicMaterial({ color:ri === 1 ? 0xffd86b : 0x9d4edd, transparent:true, opacity:0.88, blending:addBlend, depthWrite:false });
+      var w = new THREE.Mesh(wGeo, wMat);
+      w.position.copy(V_A).addScaledVector(dirN, 0.32 + ri * 0.48);
+      w.lookAt(V_B);
+      g.add(w);
+      parts.push({ mesh:w, geo:wGeo, mat:wMat, kind:'arc', baseOpacity:0.88 });
+    }
+
+    vfxGroup.add(g);
+    activeCues.push({ vfxKind:'astral_lance', group:g, parts:parts, t:0, dur:0.46 });
+  }
+
+  function spawnRiftClawVfx(dstSlot){
+    if(!vfxGroup) return;
+    var g = new THREE.Group();
+    var dPos = dstSlot && dstSlot.fig ? dstSlot.fig.group.position : { x:0, y:0, z:0 };
+    g.position.set(dPos.x, (dPos.y || 0) + 1.22, dPos.z);
+    var parts = [];
+    var addBlend = THREE.AdditiveBlending;
+    for(var ci = -1; ci <= 1; ci++){
+      var cGeo = new THREE.TorusGeometry(0.42, 0.018, 8, 26, Math.PI * 0.92);
+      var cMat = new THREE.MeshBasicMaterial({ color:ci === 0 ? 0x2ee6ff : 0x9d4edd, transparent:true, opacity:0.92, blending:addBlend, depthWrite:false });
+      var cm = new THREE.Mesh(cGeo, cMat);
+      cm.position.set(0, ci * 0.11, ci * 0.09);
+      cm.rotation.set(0.65 + ci * 0.14, Math.PI * 0.5, -0.45);
+      g.add(cm);
+      parts.push({ mesh:cm, geo:cGeo, mat:cMat, kind:'arc', baseOpacity:0.92 });
+    }
+    vfxGroup.add(g);
+    activeCues.push({ vfxKind:'rift_claw', group:g, parts:parts, t:0, dur:0.40 });
   }
 
   function spawnCue(outcome, y, pos){
@@ -590,25 +1318,143 @@
       var u = Math.min(1, c.t / c.dur);
       var ease = 1 - Math.pow(1 - u, 3);
       var fade = Math.max(0, 1 - u * u);
-      c.parts.forEach(function(p){
-        if(p.kind === 'ring'){
-          p.mesh.scale.setScalar(0.7 + ease * 3.0);
-          p.mat.opacity = 0.92 * fade;
-        } else if(p.kind === 'core'){
-          p.mesh.scale.setScalar(1.35 - u * 0.95);
-          p.mat.opacity = 0.95 * (1 - u);
-        } else if(p.kind === 'spark'){
-          p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.08 + ease * 0.42);
-          p.mat.opacity = 0.92 * fade;
-        } else if(p.kind === 'ward'){
-          p.mesh.scale.setScalar(0.85 + ease * 1.15);
-          p.mat.opacity = 0.45 * fade;
-        } else if(p.kind === 'arc'){
-          p.mesh.rotation.z = ease * 1.8;
-          p.mesh.scale.setScalar(0.9 + ease * 1.4);
-          p.mat.opacity = 0.88 * fade;
+
+      if(c.vfxKind === 'lightning_blast'){
+        if(dt > 0){
+          c.jitterPhase += dt * 38;
+          rebuildLightningBolts(c);
         }
-      });
+        var flicker = 0.82 + 0.18 * Math.sin(c.jitterPhase * 2.7);
+        var boltFade = u < 0.72 ? 1.0 : Math.max(0, (1 - u) / 0.28);
+        c.parts.forEach(function(p){
+          if(p.kind === 'lb_seg'){
+            p.mat.opacity = p.baseOpacity * boltFade * flicker;
+          } else if(p.kind === 'lb_caster_core' || p.kind === 'lb_target_core'){
+            p.mesh.scale.setScalar((0.92 + 0.32 * flicker) * (1 - u * 0.35));
+            p.mat.opacity = p.baseOpacity * boltFade;
+          } else if(p.kind === 'lb_caster_halo'){
+            p.mesh.scale.setScalar(0.95 + ease * 0.55);
+            p.mat.opacity = p.baseOpacity * boltFade * flicker;
+          } else if(p.kind === 'lb_caster_ring'){
+            p.mesh.rotation.z += dt * 9.5;
+            p.mesh.rotation.x += dt * 5.2;
+            p.mat.opacity = p.baseOpacity * boltFade;
+          } else if(p.kind === 'lb_corona_1'){
+            p.mesh.rotation.z += dt * 11.0;
+            p.mesh.rotation.y += dt * 6.5;
+            p.mesh.scale.setScalar(0.75 + ease * 1.15);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'lb_corona_2'){
+            p.mesh.rotation.x -= dt * 9.0;
+            p.mesh.rotation.z += dt * 7.2;
+            p.mesh.scale.setScalar(0.80 + ease * 1.25);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'lb_spark'){
+            p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.14 + ease * 0.48);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'lb_ground_1'){
+            p.mesh.scale.setScalar(0.65 + ease * 3.6);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'lb_ground_2'){
+            p.mesh.scale.setScalar(0.55 + ease * 4.2);
+            p.mesh.rotation.z -= dt * 5.0;
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'energy_burst_charge'){
+        if(c.casterSlot && c.casterSlot.fig){
+          var cp = c.casterSlot.fig.group.position;
+          c.group.position.set(cp.x, (cp.y || 0) + 1.22, cp.z);
+        }
+        var implode = Math.max(0.28, 1.25 - u * 0.92);
+        var swell = u > 0.82 ? 1.0 + (u - 0.82) * 4.5 : 0.75 + u * 0.65;
+        c.parts.forEach(function(p){
+          if(p.kind === 'eb_chg_core'){
+            p.mesh.scale.setScalar(swell);
+            p.mat.opacity = Math.min(1, 0.78 + u * 0.22);
+          } else if(p.kind === 'eb_chg_shell'){
+            p.mesh.scale.setScalar(implode);
+            p.mat.opacity = p.baseOpacity * (0.65 + u * 0.55);
+          } else if(p.kind === 'eb_chg_rim'){
+            p.mesh.scale.setScalar(implode * 0.88);
+            p.mat.opacity = p.baseOpacity * (0.7 + 0.3 * Math.sin(c.t * 24));
+          } else if(p.kind === 'eb_chg_ring1'){
+            p.mesh.rotation.z += dt * 7.8;
+            p.mesh.rotation.x += dt * 4.4;
+            p.mesh.scale.setScalar(Math.max(0.35, 1.15 - u * 0.72));
+          } else if(p.kind === 'eb_chg_ring2'){
+            p.mesh.rotation.z -= dt * 8.6;
+            p.mesh.rotation.y -= dt * 5.2;
+            p.mesh.scale.setScalar(Math.max(0.32, 1.12 - u * 0.70));
+          } else if(p.kind === 'eb_chg_mote'){
+            var mp = (u * 1.85 + p.mesh.userData.phase) % 1;
+            var rad = (1 - mp) * 0.92 + 0.05;
+            var spinTh = p.mesh.userData.theta + mp * 4.2;
+            var phM = p.mesh.userData.phi;
+            p.mesh.position.set(
+              Math.cos(spinTh) * Math.cos(phM) * rad,
+              Math.sin(phM) * rad,
+              Math.sin(spinTh) * Math.cos(phM) * rad
+            );
+            p.mesh.scale.setScalar(0.55 + (1 - mp) * 0.75);
+            p.mat.opacity = p.baseOpacity * Math.sin(mp * Math.PI);
+          }
+        });
+      } else if(c.vfxKind === 'energy_burst'){
+        var domeScale = 0.25 + ease * 2.55; // 0.25 -> 2.80m!
+        var shock1Scale = 0.25 + ease * 2.35; // -> 2.60m!
+        var shock2Scale = 0.20 + ease * 1.95; // -> 2.15m!
+        var domeFade = Math.max(0, 1 - Math.pow(u, 1.65));
+        c.parts.forEach(function(p){
+          if(p.kind === 'eb_dome_outer'){
+            p.mesh.scale.setScalar(domeScale);
+            p.mat.opacity = p.baseOpacity * domeFade;
+          } else if(p.kind === 'eb_dome_mid'){
+            p.mesh.scale.setScalar(0.22 + ease * 2.05);
+            p.mat.opacity = p.baseOpacity * domeFade;
+          } else if(p.kind === 'eb_dome_core'){
+            p.mesh.scale.setScalar(0.28 + ease * 1.05);
+            p.mat.opacity = p.baseOpacity * Math.max(0, 1 - u * 1.35);
+          } else if(p.kind === 'eb_shock_1'){
+            p.mesh.scale.setScalar(shock1Scale);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'eb_shock_2'){
+            p.mesh.scale.setScalar(shock2Scale);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'eb_ray'){
+            var rLen = 0.35 + ease * 2.30;
+            var rDist = 0.18 + ease * 1.25;
+            var d = p.mesh.userData.dir;
+            p.mesh.scale.set(1 - u * 0.45, rLen, 1 - u * 0.45);
+            p.mesh.position.set(d.x * rDist, p.mesh.userData.chestY + d.y * rDist, d.z * rDist);
+            p.mat.opacity = p.baseOpacity * domeFade;
+          }
+        });
+      } else {
+        c.parts.forEach(function(p){
+          if(p.kind === 'ring'){
+            p.mesh.scale.setScalar(0.7 + ease * 3.0);
+            p.mat.opacity = 0.92 * fade;
+          } else if(p.kind === 'core'){
+            p.mesh.scale.setScalar(1.35 - u * 0.95);
+            p.mat.opacity = 0.95 * (1 - u);
+          } else if(p.kind === 'spark'){
+            p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.08 + ease * 0.42);
+            p.mat.opacity = 0.92 * fade;
+          } else if(p.kind === 'ward'){
+            p.mesh.scale.setScalar(0.85 + ease * 1.15);
+            p.mat.opacity = 0.45 * fade;
+          } else if(p.kind === 'arc'){
+            p.mesh.rotation.z = ease * 1.8;
+            p.mesh.scale.setScalar(0.9 + ease * 1.4);
+            p.mat.opacity = (p.baseOpacity || 0.88) * fade;
+          } else if(p.kind === 'al_beam'){
+            p.mesh.scale.set(1 + ease * 0.35, 1, 1 + ease * 0.35);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      }
+
       if(u >= 1){
         vfxGroup.remove(c.group);
         c.parts.forEach(function(p){ p.geo.dispose(); p.mat.dispose(); });
@@ -651,7 +1497,19 @@
     hit_face_2:      ['ual_hit_head', 'hit_2', 'hit'],
     hit_slap:        ['ual_hit_head', 'hit'],
     spell_cast:      ['ual_throw', 'throw'],
-    spell_ready:     ['combat_idle', 'idle']
+    spell_ready:     ['combat_idle', 'idle'],
+    taunt_chest:     ['slash_charged', 'ual_sword_heavy', 'combo'],
+    spear_thrust:    ['thrust', 'attack'],
+    claw_swipe:      ['slash_right', 'ual_sword_a', 'attack'],
+    dodge_roll:      ['ual_roll', 'dodge_back', 'dodge_step'],
+    ual_roll:        ['dodge_roll', 'dodge_back', 'dodge_step'],
+    parry_2h:        ['parry', 'block_2', 'block'],
+    block_2:         ['block', 'parry_2h', 'ual_sword_block'],
+    ual_shield_up:   ['guard_block_3', 'block_2', 'parry'],
+    lightning_blast: ['spell_cast', 'ual_throw', 'throw'],
+    energy_burst:    ['taunt_chest', 'slash_charged', 'ual_sword_heavy'],
+    astral_lance:    ['spear_thrust', 'thrust', 'attack'],
+    rift_claw:       ['claw_swipe', 'slash_right', 'attack']
   };
 
   function resolveClip(fighter, name){
@@ -758,16 +1616,22 @@
     el.className = 'dt-state s-' + state.replace(/[^A-Z0-9]/gi, '').toUpperCase();
   }
 
+  function fighterHoverY(slot){
+    if(!slot || !slot.preset || !slot.preset.hover) return 0;
+    if(slot.clip === 'knock_down') return 0;
+    return 0.10 + 0.032 * Math.sin(hoverClock * 2.5 + slot.idx * 1.9);
+  }
+
   function positionFighters(alpha){
     var k = alpha == null ? 1 : alpha;
     curDist += (targetDist - curDist) * k;
     if(sandboxMode === '1v1'){
       if(F[0].fig){
-        F[0].fig.group.position.set(-curDist / 2, 0, 0);
+        F[0].fig.group.position.set(-curDist / 2, fighterHoverY(F[0]), 0);
         F[0].fig.group.rotation.y = Math.PI / 2;
       }
       if(F[1].fig){
-        F[1].fig.group.position.set(curDist / 2, 0, 0);
+        F[1].fig.group.position.set(curDist / 2, fighterHoverY(F[1]), 0);
         F[1].fig.group.rotation.y = -Math.PI / 2;
       }
       if(F[2].fig) F[2].fig.group.visible = false;
@@ -779,12 +1643,12 @@
       var ax = -half * 0.85, az = -0.54;
       var cx = -half * 0.72, cz = 0.66;
       if(F[0].fig){
-        F[0].fig.group.position.set(ax, 0, az);
+        F[0].fig.group.position.set(ax, fighterHoverY(F[0]), az);
         F[0].fig.group.rotation.y = Math.atan2(bx - ax, bz - az);
       }
       if(F[2].fig){
         F[2].fig.group.visible = active;
-        F[2].fig.group.position.set(cx, 0, cz);
+        F[2].fig.group.position.set(cx, fighterHoverY(F[2]), cz);
         F[2].fig.group.rotation.y = Math.atan2(bx - cx, bz - cz);
       }
       if(F[2].tag) F[2].tag.hidden = !active;
@@ -792,7 +1656,7 @@
         var focusAtk = activeExchanges.length ? F[activeExchanges[activeExchanges.length - 1].attacker] : F[0];
         var tx = focusAtk && focusAtk.fig ? focusAtk.fig.group.position.x : ax;
         var tz = focusAtk && focusAtk.fig ? focusAtk.fig.group.position.z : 0;
-        F[1].fig.group.position.set(bx, 0, bz);
+        F[1].fig.group.position.set(bx, fighterHoverY(F[1]), bz);
         F[1].fig.group.rotation.y = Math.atan2(tx - bx, tz - bz);
       }
     }
@@ -824,7 +1688,7 @@
     var stA = (attacker.preset && attacker.preset.stats) || {};
     var stD = (defender.preset && defender.preset.stats) || {};
     var stanceD = STANCES[defender.stance] || STANCES.balanced;
-    var atkScore = (link.style === 'unarmed' ? (stA.martial_arts || 55) : (stA.melee_atk || 55)) * ((STANCES[attacker.stance] && STANCES[attacker.stance].atk_mult) || 1);
+    var atkScore = ((link.style === 'unarmed' || link.style === 'arcane') ? (stA.martial_arts || 55) : (stA.melee_atk || 55)) * ((STANCES[attacker.stance] && STANCES[attacker.stance].atk_mult) || 1);
     var defScore = (stD.melee_def || 55) * (stanceD.def_window || 1);
     var dodgeScore = (stD.dodge || 50) * (stanceD.def_window || 1);
     var roll = ((exSeq * 37 + pickCursor * 19) % 100) / 100;
@@ -952,7 +1816,7 @@
     var p = slot.preset || {};
     var stObj = STANCES[slot.stance] || STANCES.balanced;
     var pPct = Math.max(0, Math.min(100, Math.round((slot.poise / Math.max(1, slot.maxPoise)) * 100)));
-    var modLabel = p.four_arms ? '4-ARMS' : (slot.graftedMods.indexOf(CYBER_MOD) >= 0 || p.cyber_arms) ? 'CYBER' : (p.hold && p.hold.R ? p.hold.R.toUpperCase() : 'MA');
+    var modLabel = p.four_arms ? '4-ARMS' : (slot.graftedMods.indexOf(CYBER_MOD) >= 0 || p.cyber_arms) ? 'CYBER' : p.hover ? 'HOVER' : p.style === 'arcane' ? 'ARCANE' : (p.hold && p.hold.R ? p.hold.R.toUpperCase() : 'MA');
     var limbsHtml = ZONES.map(function(z){
       var zm = ZONE_META[z] || { short:z };
       var info = limbClassAndTag(slot.limbs[z]);
@@ -1062,6 +1926,7 @@
     if(kind === 'parry'){
       showCallout('⚡ PERFECT PARRY! · 0 POISE + RIPOSTE', 'parry');
     } else {
+      playSfx('dodge_step');
       showCallout('💨 EVASIVE DODGE! · + COUNTER', 'dodge');
     }
     updateHud(ex);
@@ -1158,24 +2023,52 @@
     // In 2v1 when flanked on Slot 2 and defender dodges with high MA, unleash Anti-Surround `dodge_counter`!
     var isFlankOverlap = (sandboxMode === '2v1' && slotsUsed >= 1);
     var outSpec = link.outcomes[outcome] || link.outcomes.hit;
-    var reactClip = pickClip(outSpec.clips) || 'hit_body';
+    var isHoverSweep = !!(outcome === 'hit' && F[def].preset && F[def].preset.hover && (link.attack === 'leg_sweep' || link.sweep));
+    var reactClip = isHoverSweep ? 'guard_block_3' : (pickClip(outSpec.clips) || 'hit_body');
     var contactT = Math.max(0.08, link.hit_t + contactOffsetMs / 1000);
     var reactT = Math.max(0, contactT - (outSpec.lead_s || 0));
 
     var wantCounter = (opts && opts.counter !== undefined) ? opts.counter : !!(outSpec.counter || outSpec.riposte);
     var counterClip = null;
     if(outcome === 'parry'){
-      counterClip = outSpec.riposte || outSpec.counter || (F[def].preset.style === 'unarmed' ? 'counterstrike' : 'ual_sword_a');
+      counterClip = outSpec.riposte || outSpec.counter || ((F[def].preset.style === 'unarmed' || F[def].preset.style === 'arcane') ? 'counterstrike' : 'ual_sword_a');
     } else if(outcome === 'dodge' && wantCounter){
       counterClip = isFlankOverlap ? 'dodge_counter' : (outSpec.counter || null);
     }
-    var followupClip = (outcome === 'hit' && outSpec.followup) ? outSpec.followup : null;
+    var followupClip = (!isHoverSweep && outcome === 'hit' && outSpec.followup) ? outSpec.followup : null;
     var attackerFollowup = link.attacker_followup || null;
 
-    var rawAtkDur = clipDur(F[atk], link.attack);
+    var animKey = link.clip || link.attack;
+    var rawAtkDur = clipDur(F[atk], animKey);
     var atkDur = Math.max(contactT + 0.48, Math.min(2.15, rawAtkDur));
     var reactDur = Math.max(0.45, Math.min(1.65, clipDur(F[def], reactClip)));
     var chainT = reactT + Math.max(0.32, reactDur - 0.18);
+
+    // True AoE in 2v1 Flank: collect all additional opposing fighters on the other team
+    var extraDefs = [];
+    if(sandboxMode === '2v1' && link.aoe){
+      visibleFighters().forEach(function(opp){
+        if(opp.idx !== atk && opp.idx !== def && opp.team !== F[atk].team){
+          var eOut = forcedOutcome || ((outcomeMode !== 'choreo' && outcomeMode !== 'sim') ? outcomeMode : resolveSimOutcome(F[atk], opp, link));
+          var eSpec = link.outcomes[eOut] || link.outcomes.hit;
+          var eHoverSweep = !!(eOut === 'hit' && opp.preset && opp.preset.hover && (link.attack === 'leg_sweep' || link.sweep));
+          var eReact = eHoverSweep ? 'guard_block_3' : (pickClip(eSpec.clips) || 'hit_body');
+          var eFollow = (!eHoverSweep && eOut === 'hit' && eSpec.followup) ? eSpec.followup : null;
+          var eDur = Math.max(0.45, Math.min(1.65, clipDur(opp, eReact)));
+          extraDefs.push({
+            idx: opp.idx,
+            outcome: eOut,
+            reactClip: eReact,
+            followupClip: eFollow,
+            reacted: false,
+            chained: false,
+            returned: false,
+            chainT: reactT + Math.max(0.32, eDur - 0.18),
+            endT: reactT + eDur - 0.08
+          });
+        }
+      });
+    }
 
     targetDist = spacingOverride > 0 ? spacingOverride : (link.dist_m || 1.18);
     exSeq++;
@@ -1184,7 +2077,9 @@
       id: exSeq,
       attacker: atk,
       defender: def,
+      extraDefs: extraDefs,
       link: link,
+      animKey: animKey,
       outcome: outcome,
       reactClip: reactClip,
       contactT: contactT,
@@ -1212,7 +2107,20 @@
     activeExchanges.push(ex);
     setFighterState(F[atk], 'ATTACK');
     if(!isFlankOverlap) setFighterState(F[def], 'GUARD');
-    playFighterClip(F[atk], link.attack, 0.08);
+    playFighterClip(F[atk], animKey, 0.08);
+
+    // Exchange start (windup) SFX
+    sfxClock += 0.07;
+    if(link.attack === 'energy_burst') playSfx('energy_burst_charge');
+    else if(link.attack === 'lightning_blast') playSfx('lightning_blast');
+    else if(link.attack === 'bow_shot') playSfx('bow_shot');
+    else if(link.attack === 'gun_shot') playSfx('gun_shot');
+    else playSfx('windup_whoosh');
+
+    // Windup Charge VFX (0 -> hit_t) for Singularity Energy Burst!
+    if(link.vfx === 'energy_burst'){
+      spawnEnergyBurstChargeVfx(F[atk], contactT);
+    }
 
     Array.prototype.forEach.call(document.querySelectorAll('.duel-atks button'), function(b){
       b.classList.toggle('firing', b.dataset.attack === link.attack);
@@ -1224,6 +2132,18 @@
   }
 
   function nextAutoStep(){
+    var hasArcane = (F[0].preset && F[0].preset.style === 'arcane') || (F[1].preset && F[1].preset.style === 'arcane');
+    if((extraplanarDemo || (sandboxMode === '1v1' && hasArcane)) && EXTRA_CHOREO.length && outcomeMode === 'choreo'){
+      var eStep = EXTRA_CHOREO[choreoIdx % EXTRA_CHOREO.length];
+      choreoIdx++;
+      var atkSlot = eStep.attacker;
+      if(F[1].preset && F[1].preset.style === 'arcane' && (!F[0].preset || F[0].preset.style !== 'arcane')){
+        atkSlot = eStep.attacker === 0 ? 1 : 0;
+      }
+      var forcedOut = (outcomeMode !== 'choreo' && outcomeMode !== 'sim') ? outcomeMode : eStep.outcome;
+      trigger(eStep.attack, forcedOut, atkSlot, { counter:eStep.counter, note:eStep.note });
+      return;
+    }
     if(sandboxMode === '2v1'){
       // Team A (0 and 2) pressure Defender B (1), with occasional B counter-attack
       var order = [0, 2, 0, 2, 1];
@@ -1253,7 +2173,8 @@
   /* ---- Per-Frame Simulation Tick ---- */
   function tick(dt){
     if(!active) return;
-    updateCues(dt);
+    if(!tacticalPause) hoverClock += dt;
+    updateCues(tacticalPause ? 0 : dt);
 
     if(calloutTimer > 0){
       calloutTimer = Math.max(0, calloutTimer - dt);
@@ -1276,6 +2197,7 @@
     }
 
     var step = dt * duelSpeed;
+    sfxClock += step;
 
     // Tick input buffers & passive Poise regeneration
     if(bufferedDefense){
@@ -1315,14 +2237,72 @@
         ex.reacted = true;
         setFighterState(F[ex.defender], ex.outcome.toUpperCase());
         playFighterClip(F[ex.defender], ex.reactClip, 0.07);
+        var dodgeReacted = (ex.outcome === 'dodge');
+        if(ex.extraDefs && ex.extraDefs.length){
+          ex.extraDefs.forEach(function(ed){
+            ed.reacted = true;
+            if(ed.outcome === 'dodge') dodgeReacted = true;
+            setFighterState(F[ed.idx], ed.outcome.toUpperCase());
+            playFighterClip(F[ed.idx], ed.reactClip, 0.07);
+          });
+        }
+        if(dodgeReacted) playSfx('dodge_step');
       }
 
       if(!ex.contacted && ex.elapsed >= ex.contactT){
         ex.contacted = true;
-        ex.trauma = applyDamageToFighter(F[ex.defender], F[ex.attacker], ex.link, ex.outcome);
+        var dmgRes = applyDamageToFighter(F[ex.defender], F[ex.attacker], ex.link, ex.outcome);
+        ex.trauma = dmgRes;
+        if(ex.outcome === 'parry'){
+          playSfx('parry_ring');
+        } else if(ex.outcome === 'block'){
+          playSfx('block_shield');
+        } else if(ex.outcome === 'hit'){
+          if(ex.link.attack === 'energy_burst') playSfx('energy_burst_boom');
+          else if(ex.link.attack === 'lightning_blast') playSfx('lightning_blast');
+          else if(ex.link.dmg_type === 'cut' || ex.link.dmg_type === 'pierce') playSfx('hit_cut');
+          else playSfx('hit_blunt');
+        }
+        if(dmgRes.guardBroken) playSfx('guard_break');
+        if(dmgRes.severedZone) playSfx('sever_limb');
         var cuePos = F[ex.defender].fig ? F[ex.defender].fig.group.position.clone().lerp(F[ex.attacker].fig.group.position, 0.35) : null;
 
-        if(ex.trauma.severedZone){
+        // Spectacular Extraplanar 3D VFX at contact
+        if(ex.link.vfx === 'lightning_blast'){
+          spawnLightningBlastVfx(F[ex.attacker], F[ex.defender], ex.outcome);
+        } else if(ex.link.vfx === 'energy_burst'){
+          spawnEnergyBurstDetonateVfx(F[ex.attacker]);
+        } else if(ex.link.vfx === 'astral_lance'){
+          spawnAstralLanceVfx(F[ex.attacker], F[ex.defender]);
+        } else if(ex.link.vfx === 'rift_claw'){
+          spawnRiftClawVfx(F[ex.defender]);
+        }
+
+        // True AoE secondary targets in 2v1 Flank
+        if(ex.extraDefs && ex.extraDefs.length){
+          var aoeNames = [];
+          ex.extraDefs.forEach(function(ed){
+            var oppSlot = F[ed.idx];
+            var eTrauma = applyDamageToFighter(oppSlot, F[ex.attacker], ex.link, ed.outcome);
+            var oppPos = oppSlot.fig ? oppSlot.fig.group.position : null;
+            if(ex.link.vfx === 'lightning_blast') spawnLightningBlastVfx(F[ex.attacker], oppSlot, ed.outcome);
+            else spawnCue(ed.outcome, ex.link.hit_y || 1.18, oppPos);
+            if(eTrauma.guardBroken){
+              setFighterState(oppSlot, 'GUARD BREAK');
+              playFighterClip(oppSlot, 'ual_knockback', 0.05);
+              ed.endT = Math.max(ed.endT, ex.elapsed + 0.95);
+            }
+            aoeNames.push((oppSlot.preset.short || oppSlot.side) + ' [' + ed.outcome.toUpperCase() + (eTrauma.hpDelta ? ' ' + eTrauma.hpDelta + ' HP' : '') + ']');
+          });
+          ex.note = (ex.note ? ex.note + ' · ' : '') + 'AoE hit ' + aoeNames.join(', ');
+        }
+
+        if(ex.trauma.hoverImmune){
+          spawnCue('block', 0.45, F[ex.defender].fig ? F[ex.defender].fig.group.position : cuePos);
+          showCallout('✨ HOVER IMMUNE — Sweep Resisted!', 'arcane');
+          ex.note = '✨ HOVER IMMUNE — Sweep Resisted! (light Poise chip)';
+          hitStopTimer = 0.035;
+        } else if(ex.trauma.severedZone){
           var zLbl = (ZONE_META[ex.trauma.severedZone] && ZONE_META[ex.trauma.severedZone].label) || ex.trauma.severedZone;
           spawnCue('sever', ex.link.hit_y || 1.22, cuePos);
           showCallout('🩸 ' + zLbl.toUpperCase() + ' SEVERED!', 'sever');
@@ -1335,7 +2315,13 @@
           ex.defEndT = Math.max(ex.defEndT, ex.elapsed + 0.95);
           hitStopTimer = 0.065;
         } else {
-          spawnCue(ex.outcome, ex.link.hit_y || 1.18, cuePos);
+          if(ex.link.vfx === 'lightning_blast' && ex.outcome === 'hit'){
+            showCallout('⚡ ASTRAL LIGHTNING BLAST!', 'arcane');
+          } else if(ex.link.vfx === 'energy_burst' && ex.outcome === 'hit'){
+            showCallout('💥 SINGULARITY ENERGY BURST!', 'arcane');
+          } else {
+            spawnCue(ex.outcome, ex.link.hit_y || 1.18, cuePos);
+          }
           if(ex.outcome === 'hit' || ex.outcome === 'block' || ex.outcome === 'parry') hitStopTimer = 0.045;
         }
         appendLog(ex);
@@ -1348,6 +2334,7 @@
         F[ex.attacker].reloadTimer = ex.vulnWindow;
         setFighterState(F[ex.attacker], 'RELOAD');
         playFighterClip(F[ex.attacker], ex.attackerFollowup, 0.12);
+        if(ex.attackerFollowup === 'reload_kneel' || ex.link.attack === 'gun_shot') playSfx('gun_reload');
         ex.atkEndT = ex.elapsed + ex.vulnWindow;
         showCallout('⚠ ' + F[ex.attacker].preset.short.toUpperCase() + ' KNEEL-RELOADING (VULNERABLE!)', 'Hit');
       }
@@ -1366,6 +2353,24 @@
           ex.defEndT = ex.elapsed + 1.05;
           ex.counterHitAt = ex.elapsed + 0.36;
         }
+      }
+
+      // AoE secondary defenders followup & recovery
+      if(ex.extraDefs && ex.extraDefs.length){
+        ex.extraDefs.forEach(function(ed){
+          if(ed.reacted && !ed.chained && ed.followupClip && ex.elapsed >= ed.chainT){
+            ed.chained = true;
+            setFighterState(F[ed.idx], 'GET UP');
+            playFighterClip(F[ed.idx], ed.followupClip, 0.12);
+            var efDur = Math.min(1.65, clipDur(F[ed.idx], ed.followupClip));
+            ed.endT = ex.elapsed + efDur - 0.08;
+          }
+          if(ed.reacted && !ed.returned && ex.elapsed >= ed.endT){
+            ed.returned = true;
+            setFighterState(F[ed.idx], 'GUARD');
+            playFighterClip(F[ed.idx], fighterIdleClip(F[ed.idx]), 0.16);
+          }
+        });
       }
 
       if(ex.chained && ex.counterClip && !ex.counterHitDone && ex.elapsed >= ex.counterHitAt){
@@ -1395,7 +2400,8 @@
         playFighterClip(F[ex.defender], fighterIdleClip(F[ex.defender]), 0.16);
       }
 
-      if(ex.atkReturned && ex.defReturned){
+      var allExtrasDone = !ex.extraDefs || ex.extraDefs.every(function(ed){ return ed.returned; });
+      if(ex.atkReturned && ex.defReturned && allExtrasDone){
         activeExchanges.splice(i, 1);
         restTimer = sandboxMode === '2v1' ? 0.28 : 0.42;
         Array.prototype.forEach.call(document.querySelectorAll('.duel-atks button.firing'), function(b){ b.classList.remove('firing'); });
@@ -1538,6 +2544,8 @@
     initFighterStats(slot);
     var selId = slotIdx === 0 ? 'duel-fa' : slotIdx === 1 ? 'duel-fb' : 'duel-fc';
     if($(selId)) $(selId).value = p.id;
+    extraplanarDemo = (F[0].preset && F[0].preset.style === 'arcane') || (F[1].preset && F[1].preset.style === 'arcane');
+    if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', extraplanarDemo);
     populateAttackButtons();
     if(!active || !host){
       refreshHudCards();
@@ -1585,7 +2593,7 @@
     var ld = $('loading');
     if(ld){ ld.hidden = false; ld.textContent = 'Preparing Kenshi+ Combat Sandbox…'; }
 
-    loadingPromise = Promise.all(visibleFighters().map(function(s){ return ensureFighter(s); })).then(function(){
+    loadingPromise = Promise.all(visibleFighters().map(function(s){ return ensureFighter(s); }).concat([ensureSfxBundle()])).then(function(){
       if(!active) return;
       visibleFighters().forEach(function(slot){
         slot.fig.group.visible = true;
@@ -1600,6 +2608,87 @@
       if(ld) ld.textContent = 'Combat Sandbox failed to load: ' + e.message;
     });
     return loadingPromise;
+  }
+
+  function startExtraplanarDemo(opts){
+    extraplanarDemo = true;
+    if(opts && (opts.mode === '2v1' || opts.mode === '1v1')){
+      sandboxMode = opts.mode;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-duel-mode]'), function(b){
+        b.setAttribute('aria-pressed', b.dataset.duelMode === sandboxMode);
+      });
+      var fcWrap = $('duel-fc-wrap'), fGrid = $('duel-fgrid');
+      if(fcWrap) fcWrap.hidden = (sandboxMode !== '2v1');
+      if(fGrid) fGrid.classList.toggle('three', sandboxMode === '2v1');
+    }
+    if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', 'true');
+
+    var pArchon = findPreset('singularity_archon', 0);
+    var pMonk = findPreset('crimson_monk', 0);
+    if(pArchon){
+      F[0].preset = pArchon;
+      F[0].graftedMods = [];
+      initFighterStats(F[0]);
+      if($('duel-fa')) $('duel-fa').value = pArchon.id;
+    }
+    if(pMonk){
+      F[1].preset = pMonk;
+      F[1].graftedMods = [];
+      initFighterStats(F[1]);
+      if($('duel-fb')) $('duel-fb').value = pMonk.id;
+    }
+    if(sandboxMode === '2v1'){
+      F[2].graftedMods = [];
+      initFighterStats(F[2]);
+    }
+
+    tacticalPause = false;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tactical-pause]'), function(b){
+      b.setAttribute('aria-pressed', 'false');
+      b.textContent = '⏸ Pause (Space)';
+    });
+    setOutcomeMode('choreo');
+    setAutoBout(true);
+    manualAttacker = 0;
+    if($('duel-swap')) $('duel-swap').textContent = 'Atk: A → B';
+    choreoIdx = 0;
+    activeExchanges = [];
+    clearCues();
+
+    var boot = active
+      ? (function(){
+          ready = false;
+          var ld = $('loading');
+          if(ld){ ld.hidden = false; ld.textContent = 'Summoning Extraplanar Boss Bout…'; }
+          return Promise.all(visibleFighters().map(function(s){ return ensureFighter(s); }).concat([ensureSfxBundle()])).then(function(){
+            visibleFighters().forEach(function(s){
+              if(s.fig) s.fig.group.visible = true;
+              if(s.tag) s.tag.hidden = false;
+            });
+            ready = true;
+            if(ld) ld.hidden = true;
+          });
+        })()
+      : enter();
+
+    return boot.then(function(){
+      if(!active) return false;
+      curDist = targetDist = 2.15;
+      positionFighters(1);
+      if(host){
+        host.cam.want.yaw = sandboxMode === '2v1' ? 0.32 : 0.22;
+        host.cam.want.pitch = 0.17;
+        host.cam.want.dist = sandboxMode === '2v1' ? 4.75 : 4.35;
+        host.cam.want.ty = 1.02;
+      }
+      populateAttackButtons();
+      refreshHudCards();
+      showCallout('⚡ EXTRAPLANAR BOSS DEMO · SINGULARITY ARCHON', 'arcane');
+      appendSystemLog('⚡ Extraplanar Boss Demo: Singularity Archon [arcane / hover] vs Crimson Monk!');
+      restTimer = 0.12;
+      nextAutoStep();
+      return true;
+    });
   }
 
   function exit(){
@@ -1679,6 +2768,9 @@
         '    <button data-duel-mode="1v1" aria-pressed="true">1v1 Duel</button>',
         '    <button data-duel-mode="2v1" aria-pressed="false">2v1 Flank</button>',
         '  </div>',
+        '  <div class="dhud-pill-grp" role="group" aria-label="Extraplanar Boss Demo">',
+        '    <button id="dhud-extraplanar-btn" aria-pressed="false" title="Launch Singularity Archon vs Crimson Monk Extraplanar Boss Demo">⚡ Extraplanar Demo</button>',
+        '  </div>',
         '  <div class="dhud-pill-grp" role="group" aria-label="Attack Slots">',
         '    <button data-atk-slots="1" aria-pressed="false" title="Kenshi Vanilla: Strict 1-by-1 turn queue">Slots: 1</button>',
         '    <button data-atk-slots="2" aria-pressed="true" title="Krator Default: 2 staggered attackers can flank">Slots: 2</button>',
@@ -1686,6 +2778,7 @@
         '  <div class="dhud-pill-grp">',
         '    <button id="dhud-pause-btn" data-tactical-pause="1" aria-pressed="false">⏸ Pause (Space)</button>',
         '    <button id="dhud-reset-hp" title="Restore 7-limb HP and Poise">↺ Reset HP</button>',
+        '    <button id="dhud-sfx-btn" aria-pressed="true" title="Toggle CC0 Combat SFX">🔊 SFX</button>',
         '  </div>',
         '</div>',
         '<div id="duel-def-banner">',
@@ -1708,9 +2801,11 @@
         var btn = e.target.closest('button');
         if(!btn) return;
         if(btn.dataset.duelMode) setMode(btn.dataset.duelMode);
+        else if(btn.id === 'dhud-extraplanar-btn') startExtraplanarDemo();
         else if(btn.dataset.atkSlots) setAttackSlots(+btn.dataset.atkSlots);
         else if(btn.dataset.tacticalPause) setTacticalPause(!tacticalPause);
         else if(btn.id === 'dhud-reset-hp') resetAllHP();
+        else if(btn.id === 'dhud-sfx-btn') setSfxEnabled(!sfxEnabled);
         else if(btn.id === 'ddb-parry') triggerParry();
         else if(btn.id === 'ddb-dodge') triggerDodge();
         else if(btn.dataset.cycleStance != null){
@@ -1730,7 +2825,7 @@
     dp.id = 'duel-panel';
     dp.innerHTML = [
       '<section class="duel-sec">',
-      '  <h3>Combatants <span style="font:10.5px var(--mono);color:var(--muted)">14 archetypes</span></h3>',
+      '  <h3>Combatants <span style="font:10.5px var(--mono);color:var(--muted)">' + FIGHTERS.length + ' archetypes</span></h3>',
       '  <div class="duel-fighters" id="duel-fgrid">',
       '    <label class="duel-fbox"><b>A · Lead</b><select id="duel-fa"></select></label>',
       '    <label class="duel-fbox"><b>B · Defender</b><select id="duel-fb"></select></label>',
@@ -1768,7 +2863,9 @@
       '  <div class="duel-focus-row">',
       '    <button class="parry-btn" data-focus="parry">🛡 Parry (F)</button>',
       '    <button class="dodge-btn" data-focus="dodge">💨 Dodge (D)</button>',
-      '    <button data-focus-atk="jab_l">⚡ Jab</button>',
+      '    <button class="arcane-btn" data-focus-atk="lightning_blast">⚡ Lightning</button>',
+      '    <button class="arcane-btn" data-focus-atk="energy_burst">💥 Burst</button>',
+      '    <button data-focus-atk="jab_l">🥊 Jab</button>',
       '    <button data-focus-atk="kick_roundhouse">🦵 Roundhouse</button>',
       '    <button data-focus-atk="leg_sweep">🧹 Leg Sweep</button>',
       '    <button data-focus-atk="ual_sword_heavy">🔨 Guard-Break</button>',
@@ -1783,6 +2880,7 @@
       '    <button data-stf="heavy" aria-pressed="false">Heavy</button>',
       '    <button data-stf="polearm" aria-pressed="false">Polearm/Shield</button>',
       '    <button data-stf="ranged" aria-pressed="false">Ranged</button>',
+      '    <button data-stf="arcane" aria-pressed="false">Arcane</button>',
       '  </div>',
       '  <div class="duel-atks" id="duel-atks"></div>',
       '</section>',
@@ -1880,6 +2978,10 @@
       $('duel-log').innerHTML = '';
     });
 
+    // Lazily create/resume WebAudio AudioContext on any pointerdown or keydown
+    window.addEventListener('pointerdown', unlockAudioGesture, { passive:true });
+    window.addEventListener('keydown', unlockAudioGesture, { passive:true });
+
     // Keyboard agency: Space = RTWP Tactical Pause, F = Timed Parry, D = Timed Dodge
     document.addEventListener('keydown', function(e){
       if(!active) return;
@@ -1936,6 +3038,7 @@
       active: active,
       ready: ready,
       mode: sandboxMode,
+      extraplanarDemo: extraplanarDemo,
       attackSlots: attackSlots,
       paused: tacticalPause,
       autoBout: autoBout,
@@ -1945,6 +3048,14 @@
       spacing: curDist,
       queuedManeuver: queuedManeuver,
       defenseWindowOpen: !!winEx,
+      activeCueCount: activeCues.length,
+      activeCueKinds: activeCues.map(function(c){ return c.vfxKind || 'impact'; }),
+      sfxEnabled: sfxEnabled,
+      sfxLoaded: sfxLoaded,
+      sfxClipCount: Object.keys(sfxRawMap).length,
+      lastSfx: lastSfx,
+      lastSfxInfo: lastSfxInfo,
+      sfxHistory: sfxHistory.slice(),
       fighters: visibleFighters().map(function(s){
         return {
           idx: s.idx,
@@ -1952,6 +3063,7 @@
           id: s.preset && s.preset.id,
           label: s.preset && s.preset.label,
           style: s.preset && s.preset.style,
+          hover: !!(s.preset && s.preset.hover),
           hold: (s.preset && s.preset.hold) || {},
           stance: s.stance,
           poise: Math.round(s.poise),
@@ -2000,9 +3112,14 @@
       triggerDodge: triggerDodge,
       resetHP: resetAllHP,
       graftCyberArm: graftCyberArm,
-      severLimb: severLimbNow
+      severLimb: severLimbNow,
+      startExtraplanarDemo: startExtraplanarDemo,
+      playSfx: playSfx,
+      setSfxEnabled: setSfxEnabled
     };
-    if(/[?&]duel=1(?:&|$)/.test(location.search) || /duel=1/.test(location.hash)){
+    if(/[?&]duel=extraplanar(?:&|$)/.test(location.search) || /duel=extraplanar/.test(location.hash)){
+      startExtraplanarDemo();
+    } else if(/[?&]duel=1(?:&|$)/.test(location.search) || /duel=1/.test(location.hash)){
       enter();
     }
   }

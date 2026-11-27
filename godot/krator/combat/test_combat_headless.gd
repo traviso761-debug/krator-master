@@ -3,6 +3,8 @@
 #   Godot_v4*_console.exe --headless --path C:\Users\travi\Documents\krator-garments\godot -s res://krator/combat/test_combat_headless.gd
 extends SceneTree
 
+const KCombatAudioScript = preload("res://krator/combat/kcombat_audio.gd")
+
 var passed := 0
 var failed := 0
 
@@ -31,6 +33,7 @@ func _init() -> void:
 	_test_4_heavy_axe_guard_break()
 	_test_5_limbs_sever_prosthetic_giant_hover_xp()
 	_test_6_hitbox_and_hurtboxes()
+	_test_7_combat_audio_cues_and_streams()
 
 	print("---------------------------------------------------")
 	print("Combat Headless Summary: %d passed, %d failed" % [passed, failed])
@@ -61,11 +64,30 @@ func _test_1_links_and_ma_tiers() -> void:
 	check(ma0.size() < ma30.size() and ma30.size() < ma60.size() and ma60.size() < ma80.size(),
 		"Monotonic tier progression: %d -> %d -> %d -> %d moves" % [ma0.size(), ma30.size(), ma60.size(), ma80.size()])
 
-	var subset_clips := {"attack": true, "block": true, "ual_hit_head": true, "idle": true}
+	var subset_clips := {"attack": true, "block": true, "ual_hit_head": true, "idle": true, "ual_throw": true, "slash_charged": true}
 	check(KCombatLinks.resolve_clip(subset_clips, "jab_l") == "attack"
 		and KCombatLinks.resolve_clip(subset_clips, "guard_block_1") == "block"
 		and KCombatLinks.resolve_clip(subset_clips, "hit_face") == "ual_hit_head",
 		"resolve_clip matches Web CLIP_FALLBACKS for subset animation libraries")
+
+	# Extraplanar / Arcane Special Links parity check
+	check(links.has_link("lightning_blast") and links.has_link("energy_burst")
+		and links.has_link("astral_lance") and links.has_link("rift_claw"),
+		"Loaded all 4 Extraplanar arcane links (lightning_blast, energy_burst, astral_lance, rift_claw)")
+	var lb := links.get_link("lightning_blast")
+	var eb := links.get_link("energy_burst")
+	check(String(lb.get("clip", "")) == "spell_cast"
+		and String(lb.get("vfx", "")) == "lightning_blast"
+		and String(lb.get("dmg_type", "")) == "arcane"
+		and KCombatLinks.resolve_clip(subset_clips, String(lb["clip"])) == "ual_throw",
+		"lightning_blast maps clip='spell_cast' (-> fallback 'ual_throw'), dmg_type='arcane', vfx='lightning_blast'")
+	check(String(eb.get("clip", "")) == "taunt_chest"
+		and bool(eb.get("aoe", false)) == true
+		and String(eb.get("vfx", "")) == "energy_burst"
+		and KCombatLinks.resolve_clip(subset_clips, String(eb["clip"])) == "slash_charged",
+		"energy_burst maps clip='taunt_chest' (-> fallback 'slash_charged'), aoe=true, vfx='energy_burst'")
+	check(links.links_for_style("arcane").size() >= 4 and links.extraplanar_choreography.size() >= 8,
+		"Arcane style links (%d) and extraplanar_choreography (%d steps) loaded cleanly" % [links.links_for_style("arcane").size(), links.extraplanar_choreography.size()])
 
 
 # 2. KCombatDirector 2-slot cap (3rd attacker queued until slot frees!)
@@ -411,3 +433,78 @@ func _test_6_hitbox_and_hurtboxes() -> void:
 	skel.free()
 	atk_node.free()
 	def_node.free()
+
+
+# 7. KCombatAudio CC0 combat-cues.json + AudioStreamMP3 loader & KCombatDirector signal wiring
+func _test_7_combat_audio_cues_and_streams() -> void:
+	print("\n[Suite 7] KCombatAudio CC0 combat-cues.json + MP3 stream pool & KCombatDirector signal cues")
+	var links := KCombatLinks.new()
+	var dir := KCombatDirector.new(links)
+	root.add_child(dir)
+
+	var audio = KCombatAudioScript.new(dir)
+	dir.add_child(audio)
+
+	check(audio.source_path != "" and audio.cues.size() == 14,
+		"Loaded all 14 combat cues from combat-cues.json (%s)" % audio.source_path)
+	check(audio.streams.size() == 24 and audio.get_pool_size() == 8,
+		"Loaded all 24 CC0 AudioStreamMP3 clips (%d) & initialized 8-voice 3D player pool (%d)" % [audio.streams.size(), audio.get_pool_size()])
+
+	var archon := KCombatBrain.new().setup("archon", KCombatStats.new("seraph"), links, dir)
+	var monk := KCombatBrain.new().setup("monk", KCombatStats.new("human"), links, dir)
+	var n_a := Node3D.new()
+	var n_b := Node3D.new()
+	n_a.position = Vector3(-1.6, 0.0, 0.0)
+	n_b.position = Vector3(1.6, 0.0, 0.0)
+	dir.add_child(n_a)
+	dir.add_child(n_b)
+	archon.actor_3d = n_a
+	monk.actor_3d = n_b
+	dir.add_child(archon)
+	dir.add_child(monk)
+
+	# 7a. Arcane lightning_blast exchange -> windup & contact fire 'lightning_blast'
+	audio.cue_history.clear()
+	var ex_lb := dir.begin_exchange(archon, monk, "lightning_blast", "hit")
+	check(bool(ex_lb.get("ok", false)) and audio.last_played_cue == "lightning_blast" and bool(audio.last_played_info.get("has_stream", false)),
+		"Exchange windup for lightning_blast fired 'lightning_blast' stream")
+	for i in 20:
+		dir.tick(0.05)
+	check(audio.last_played_cue == "lightning_blast" and audio.cue_history.count("lightning_blast") >= 2,
+		"Exchange contact for lightning_blast fired 'lightning_blast' (%d total)" % audio.cue_history.count("lightning_blast"))
+
+	# Settle fighters back to IDLE
+	for i in 20:
+		dir.tick(0.05)
+
+	# 7b. Singularity energy_burst exchange -> windup fires 'energy_burst_charge', contact fires 'energy_burst_boom'
+	audio.cue_history.clear()
+	var ex_eb := dir.begin_exchange(archon, monk, "energy_burst", "hit")
+	var charge_cue: String = audio.last_played_cue
+	check(bool(ex_eb.get("ok", false)) and charge_cue == "energy_burst_charge",
+		"Exchange windup for energy_burst fired 'energy_burst_charge'")
+	for i in 24:
+		dir.tick(0.05)
+	check(audio.last_played_cue == "energy_burst_boom"
+		and audio.cue_history.has("energy_burst_charge")
+		and audio.cue_history.has("energy_burst_boom"),
+		"Exchange contact for energy_burst transitioned 'energy_burst_charge' -> 'energy_burst_boom'")
+
+	# Settle fighters back to IDLE
+	for i in 25:
+		dir.tick(0.05)
+
+	# 7c. Sword parry exchange -> windup fires 'windup_whoosh', contact fires 'parry_ring'
+	audio.cue_history.clear()
+	var ex_parry := dir.begin_exchange(monk, archon, "slash_left", "parry")
+	var whoosh_cue: String = audio.last_played_cue
+	for i in 16:
+		dir.tick(0.05)
+	check(bool(ex_parry.get("ok", false)) and whoosh_cue == "windup_whoosh" and audio.last_played_cue == "parry_ring",
+		"Sword parry exchange fired 'windup_whoosh' -> 'parry_ring' (pitch=%.3f, vol=%.2f dB)" % [
+			float(audio.last_played_info.get("pitch_scale", 1.0)),
+			float(audio.last_played_info.get("volume_db", 0.0)),
+		])
+
+	dir.free()
+

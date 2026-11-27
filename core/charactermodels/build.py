@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools')); import build_sources as BSRC   
 SRC = os.path.join(HERE, 'src')
 DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
+AUDIO_CUES = os.path.join(ROOT, 'core', 'audio', '22-core-audio-cues.js')
 CHECKS = '--no-checks' not in sys.argv
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -44,7 +45,7 @@ def read(p, mode='r'):
             return f.read()
     with open(p, mode) as f:
         raw = f.read()
-    return raw if p.endswith(('.glb', '.bin')) else raw.replace(b'\r\n', b'\n')
+    return raw if p.endswith(('.glb', '.bin', '.mp3')) else raw.replace(b'\r\n', b'\n')
 
 
 # the MakeHuman bodies (tools/make_mpfb.py); the earlier Meshy-donor kits (tools/make_kit.py) only with --meshy
@@ -81,9 +82,10 @@ def main():
             'baked_models': saved_state.get('baked', {}),
             'clips': J('clips.json'),
             'combat_links': J('combat-links.json'),
+            'combat_cues': J('combat-cues.json'),
             'props': J('props.json')['props'], 'posture': J('posture.json'), 'fur': J('fur.json'), 'bodies': {}}
     inputs = {'data/%s' % f: read(os.path.join(HERE, 'data', f), 'rb')
-              for f in ('sliders.json', 'peoples.json', 'clips.json', 'combat-links.json', 'props.json', 'posture.json', 'fur.json')}
+              for f in ('sliders.json', 'peoples.json', 'clips.json', 'combat-links.json', 'combat-cues.json', 'props.json', 'posture.json', 'fur.json')}
     for b in BODIES:
         if os.path.exists(os.path.join(HERE, 'data', b, 'kit.json')):
             data['bodies'][b] = {'skeleton': J(b, 'skeleton.json'), 'kit': J(b, 'kit.json')}
@@ -92,6 +94,7 @@ def main():
     shared = sorted(f for f in os.listdir(SRC) if f.endswith('.js') and f < '90')
     js = ['/* core/rand/08-core-rand.js */', read(RAND)]
     inputs['core/rand/08-core-rand.js'] = js[-1].encode()
+    audio_cues_t = read(AUDIO_CUES)
     data_gz_b64 = base64.b64encode(gzip.compress(json.dumps(data, separators=(',', ':')).encode('utf-8'), 9, mtime=0)).decode('ascii')
     js.append('var KCHAR_DATA_GZ = "' + data_gz_b64 + '";')
     for f in shared:
@@ -103,7 +106,7 @@ def main():
     # when a record needs them: dist/pieces/<body>/<name>.txt
     if os.path.isdir(os.path.join(DIST, 'pieces')):           # bodies no longer built
         for b in os.listdir(os.path.join(DIST, 'pieces')):
-            if b not in data['bodies'] and b != 'props':
+            if b not in data['bodies'] and b not in ('props', 'sfx_combat', 'sfx_combat.txt'):
                 q = os.path.join(DIST, 'pieces', b)
                 shutil.rmtree(q) if os.path.isdir(q) else os.remove(q)
     for b in list(data['bodies']) + ['props']:          # each body's pieces, and the hand-held props they share
@@ -118,6 +121,8 @@ def main():
         want_names = {f[:-10] if f.endswith('.morph.bin') else f[:-4]
                       for f in os.listdir(src_dir) if f.endswith(('.glb', '.morph.bin'))}
         for f in os.listdir(out_dir):
+            if f.startswith('anims_') and f.endswith('.txt'):
+                continue
             if repack or not f.endswith('.txt') or f[:-4] not in want_names:
                 os.remove(os.path.join(out_dir, f))
         # one file per piece: its GLB, and on a second line its morph deltas (make_mpfb.py), each gzipped (the page
@@ -139,6 +144,26 @@ def main():
             morph = base64.b64encode(gzip.compress(morph_raw, 9, mtime=0)).decode() if morph_raw else ''
             with open(os.path.join(out_dir, name + '.txt'), 'w', encoding='utf-8', newline='\n') as o:
                 o.write(glb + ('\n' + morph if morph else ''))
+    sfx_src = os.path.join(HERE, 'pieces', 'sfx_combat')
+    if os.path.isdir(sfx_src):
+        os.makedirs(os.path.join(DIST, 'pieces'), exist_ok=True)
+        sfx_out = os.path.join(DIST, 'pieces', 'sfx_combat.txt')
+        repack_sfx = '--repack' in sys.argv or not os.path.isfile(sfx_out)
+        sfx_dict = {}
+        for f in sorted(os.listdir(sfx_src)):
+            if f.endswith('.mp3'):
+                src_p = os.path.join(sfx_src, f)
+                raw = read(src_p, 'rb')
+                inputs['pieces/sfx_combat/%s' % f] = raw
+                sfx_dict[f[:-4]] = base64.b64encode(raw).decode('ascii')
+                if not repack_sfx and os.path.getmtime(src_p) > os.path.getmtime(sfx_out):
+                    repack_sfx = True
+        if sfx_dict and repack_sfx:
+            sfx_gz = gzip.compress(json.dumps(sfx_dict, separators=(',', ':'), sort_keys=True).encode('utf-8'), 9, mtime=0)
+            with open(sfx_out, 'w', encoding='utf-8', newline='\n') as o:
+                o.write(base64.b64encode(sfx_gz).decode('ascii'))
+    else:
+        print('build.py: no pieces/sfx_combat here: the page is built, combat SFX bundle is not')
     os.makedirs(DIST, exist_ok=True)
     for old in ('characters.html', 'characters.artifact.html'):              # the single page before the split
         if os.path.exists(os.path.join(DIST, old)):
@@ -191,7 +216,10 @@ def main():
             head = head.replace('<title>Animation Lab</title>', '<title>%s</title>' % L['title'])
             extra.append('var KCHAR_LAB = ' + json.dumps({'id': spec[2], 'title': L['title'], 'anims': L['anims'], 'groups': L['groups']}) + ';')
         own_chunks = ['/* src/%s */\n%s' % (own, t)]
+        combat_js = []
         if page == 'combat-lab':
+            inputs['core/audio/22-core-audio-cues.js'] = audio_cues_t.encode()
+            combat_js = ['/* core/audio/22-core-audio-cues.js */', audio_cues_t]
             duel_f = '94-combat-duel.js'
             duel_t = read(os.path.join(SRC, duel_f))
             inputs['src/' + duel_f] = duel_t.encode()
@@ -207,7 +235,7 @@ def main():
             '  });\n'
             '})();'
         ) % ('\n'.join(own_chunks),)
-        pjs = extra + js + [boot_own]
+        pjs = extra + js + combat_js + [boot_own]
         body = head + '<script>\n' + '\n'.join(pjs) + '\n</script>\n'
         whole = '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n' \
                 '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n</head>\n<body>\n' + \
@@ -229,7 +257,7 @@ def main():
     old = os.path.join(HERE, 'build-manifest.json')
     if os.path.exists(old):
         kept = {k: v for k, v in json.loads(read(old)).items() if k.startswith('pieces/') and k not in man
-                and not os.path.exists(os.path.join(HERE, k)) and (k.split('/')[1] == 'props' or os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json')))}
+                and not os.path.exists(os.path.join(HERE, k)) and (k.split('/')[1] in ('props', 'sfx_combat') or os.path.isfile(os.path.join(HERE, 'data', k.split('/')[1], 'kit.json')))}
         man.update(kept)
         if kept:
             print('build.py: %d pieces not here keep their last hashes' % len(kept))

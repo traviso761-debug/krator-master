@@ -22,6 +22,7 @@ const SPECIES_LIMB_MULT := {
 	"medusa": 1.30,
 	"revenant": 1.35,
 	"djinn": 1.35,
+	"extraplanar": 1.35,
 }
 
 const HOVER_SPECIES := ["seraph", "archon", "medusa", "revenant", "djinn"]
@@ -132,7 +133,10 @@ func configure_from_kchar(rec: Dictionary, kit: Dictionary = {}) -> void:
 		set_species("giant")
 	elif people_id != "" and SPECIES_LIMB_MULT.has(people_id):
 		set_species(people_id)
-	if HOVER_SPECIES.has(people_id):
+	if HOVER_SPECIES.has(people_id) or bool(rec.get("hover", false)):
+		is_hover_entity = true
+	var tier_id := String(rec.get("tier", "") if rec.get("tier") != null else "").to_lower()
+	if tier_id in ["singularity_archon", "ophanim_seraph", "abyssal_medusa", "censer_revenant", "accretion_djinn"]:
 		is_hover_entity = true
 
 
@@ -259,6 +263,8 @@ func apply_limb_damage(limb: String, raw_dmg: float, dmg_type: String = "blunt",
 			st["bleed_rate"] = float(st["bleed_rate"]) + final_dmg * 0.045
 		elif dmg_type == "pierce":
 			st["bleed_rate"] = float(st["bleed_rate"]) + final_dmg * 0.030
+		elif dmg_type == "arcane":
+			st["bleed_rate"] = float(st["bleed_rate"]) + final_dmg * 0.008
 
 	var now_crippled := float(st["hp"]) < 0.0
 	st["crippled"] = now_crippled

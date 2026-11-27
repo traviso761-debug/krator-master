@@ -423,11 +423,12 @@ func enter_windup(link: Dictionary) -> void:
 	active_parry_used_in_swing = 0
 	var cadence := stance_cadence_mult()
 	var hit_t := maxf(0.05, float(link.get("hit_t", 0.42)) / cadence)
-	var full_dur := maxf(hit_t + 0.28, get_clip_duration(String(link.get("attack", "jab_l"))) / cadence)
+	var anim_clip := String(link.get("clip", link.get("attack", "jab_l")))
+	var full_dur := maxf(hit_t + 0.28, get_clip_duration(anim_clip) / cadence)
 	_swing_active_dur = minf(0.12, maxf(0.06, (full_dur - hit_t) * 0.30))
 	_swing_recovery_dur = maxf(0.16, full_dur - hit_t - _swing_active_dur)
 	_set_state(State.WINDUP, hit_t)
-	play_resolved_clip(String(link.get("attack", "jab_l")))
+	play_resolved_clip(anim_clip)
 
 
 func enter_active_and_recover(link: Dictionary, custom_recovery: float = -1.0) -> void:

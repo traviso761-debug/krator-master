@@ -345,7 +345,7 @@ func _evaluate_outcome(attacker: KCombatBrain, defender: KCombatBrain, link: Dic
 		else:
 			return {"outcome": "hit", "mid_swing": false}
 
-	var atk_skill := attacker.stats.martial_arts if String(link.get("style")) == "martial_arts" else attacker.stats.melee_attack
+	var atk_skill := attacker.stats.martial_arts if String(link.get("style")) in ["martial_arts", "arcane"] else attacker.stats.melee_attack
 	var def_skill := defender.stats.melee_defense
 	var dodge_skill := defender.stats.dodge
 
@@ -371,6 +371,18 @@ func _evaluate_outcome(attacker: KCombatBrain, defender: KCombatBrain, link: Dic
 		return {"outcome": "parry" if rng.randf() < parry_share else "block", "mid_swing": false}
 
 	return {"outcome": "hit", "mid_swing": false}
+
+
+static func attacker_stat_for_link(st: KCombatStats, link: Dictionary, is_ma: bool) -> float:
+	if st == null:
+		return 15.0
+	var dmg_type := String(link.get("dmg_type", "blunt"))
+	if dmg_type == "arcane" or String(link.get("style", "")) == "arcane":
+		return maxf(st.martial_arts, st.dexterity)
+	var base := st.dexterity if (dmg_type == "cut" or dmg_type == "pierce") else st.strength
+	if is_ma:
+		base = maxf(base, st.martial_arts)
+	return base
 
 
 static func _outcome_spec(link: Dictionary, outcome: String) -> Dictionary:
@@ -481,7 +493,7 @@ func _resolve_contact(ex: Dictionary) -> void:
 	var opp_def_skill := maxf(def.stats.melee_defense, def.stats.dodge)
 	var atk_off_skill := atk.stats.martial_arts if is_ma else atk.stats.melee_attack
 
-	var report := {"outcome": out}
+	var report := {"outcome": out, "aoe": bool(link.get("aoe", false)), "vfx": String(link.get("vfx", ""))}
 	var hitstop_hit := float(links.rules.get("hitstop_hit_s", 0.06))
 	var hitstop_block := float(links.rules.get("hitstop_block_s", 0.045))
 	var hitstop_gb := float(links.rules.get("hitstop_guard_break_s", 0.07))
@@ -579,9 +591,7 @@ func _resolve_contact(ex: Dictionary) -> void:
 				report["guard_broken"] = gb
 			else:
 				var dmg_type := String(link.get("dmg_type", "blunt"))
-				var stat_driver := atk.stats.dexterity if dmg_type == "cut" else atk.stats.strength
-				if is_ma:
-					stat_driver = maxf(stat_driver, atk.stats.martial_arts)
+				var stat_driver := attacker_stat_for_link(atk.stats, link, is_ma)
 				var raw_dmg := float(link.get("base_dmg", 18.0)) * (1.0 + stat_driver * 0.012)
 				if bool(ex["used_riposte"]):
 					raw_dmg *= 1.35
