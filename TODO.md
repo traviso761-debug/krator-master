@@ -82,6 +82,27 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 
 ## Ride along with the next all-builds rebuild
 
+- **Promote macrotidal, floating-ward & multikit skirt-stripping extensions** (2026-11-27, Floating City V3 & Arcoforte P0–P7):
+  - Fold `{stripBelowGrade: 0.045}` (`stripBelowGradeFaces` from `settlements/floating-city/src/85-fc-world-scene.js`: strips
+    horizontal `max(y0,y1,y2) <= 0.045 m` foundation skirt/bottom caps that z-fight flat pontoon decks, stone dykes and plinths)
+    and `maxVariants` / `v=0` prototype deduplication (`1,104 -> <= 680` draw calls at `2,630` lots) into
+    `core/city/53-city-host-multikit.js` (`KCITY.flattenProto` / `KCITY.hostMultikit`).
+  - Wire `core/hazard/23-core-hazard-tide.js` (`KHAZ.TIDE`, `KHAZ.STATES['KHAZ.tide']` & `'KHAZ.race'`),
+    `core/city/float/{44-city-float,55-city-host-float}.js` (`KCITY.floatPose`, `KCITY.basculePose`, `KCITY.auditFloatFleet`),
+    and `core/water/ext/{63-core-water-tide,63b-core-water-tide-draw}.js` (`WATER.tideBasins`) into `core/PORT.md` + `godot/tools/sync_core.py`,
+    and connect `KHAZ.TIDE` to `settlements/fleetborn-cove`'s `-11 m` sill & `-6.0 m` causeway, `settlements/arcodiga`, and `settlements/hook`.
+  - Guard `if (!window.onerror)` (or omit `window.onerror=`) inside `core/engine` `kit_bundle.py`, `kits/port`, `kits/ringsea`, and
+    `kits/arcoforte` so multi-kit settlement builds need no `window.onerror=` regex shims (`check_assembly` `CLASH onerror`).
+  - Note on `peoples.json`: `"shore_kin"` is now landed alongside `"cflit_qbon"` (`7dcd33de0`, synced to `godot/data/characters/`);
+    finish `"yonni"` & `"hush_kin"` + rebuild `settlements/longsong` (5 pages) in the all-builds pass.
+  - **All-builds execution order & gotchas (from 13-builder postmortem)**: (1) `git lfs pull` (`tools/lfs_needs.py --pull`) first;
+    never run `port_baseline.py --write --prune` in a partially-pulled tree; (2) apply scale-model edits (`edit_528`) ->
+    `tools/scale-model/model/build.py` -> `tools/scale-model/tides/bake_tides.py` -> `node godot/tools/tide_golden.js`;
+    (3) build producers before consumers (`kits/crops` -> `kits/catalog` -> `kits/interiors` BEFORE `kits/ancients-interiors` ->
+    `core/engine` kits + `fingerprint.py` -> `kits/ancients` targets & `kits/arcoforte` -> `biomes/*` WITH `--all` / `--station` ->
+    `settlements/*` incl. `girder/build_hero.py` & `openworld/*`); (4) run `python3 tools/check_botany.py --update` after biome flora
+    changes, `python3 tools/audit_port.py` after `core/` additions, `make-golden.js` + `godot/tools/sync_core.py`, and
+    `godot --headless --path godot --import` once before `--script` tests when a new `class_name` (`KratorTide`) lands.
 - **Fold `core/hamlet/shorekin/26-hamlet-shorekin.js` into `core/hamlet/20-hamlet-cultures.js`** (2026-11-26, Arcoforte P4;
   `20-hamlet-cultures.js` reaches ~56 builds): register `KHAMLET.shorekinRow()` on `KHAMLET.CULTURES['shore-kin']` alongside
   `shumariRow()` (`core/hamlet/shumari/25-hamlet-shumari.js`), and fold `core/camp/fleet/58-camp-fleet.js` into `core/camp/` once
@@ -94,7 +115,7 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
 - **The skylight recaptures at once on a clock jump** (2026-11-25; `core/atmos/89-atmos-b-skylight.js`, 949 pages): its hook waits
   `every` (30) frames after the hour moves, and `capture()` does not record the hour, so after a jump to night the water and metal
   reflected the old hour's sky (in the Arch cove, the noon sky and the giant's unlit noon face as a dark disc). Fix in the hook:
-  when the hour moved 1 h or more, capture now regardless of `every`; and set `S.hour` in `capture()`. Then drop the Arch's
+  when the hour moved 1 h or more (or `clock.day` changed), update sky uniforms first (`SKY.update(0)`, since `ticks` run before `SUBS.view` in `91-host-loop.js`!) and capture now regardless of `every`; and set `S.hour` in `capture()`. Then drop the Arch's
   stopgap tick in `biomes/arch/src/89w-host-water.js`.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
