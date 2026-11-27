@@ -1,15 +1,109 @@
 {
-  "about": "Engine-neutral linked combat exchange scaffold (attack -> dodge / block / hit) and Martial Arts Monk Duel presets/choreography. [G data]",
+  "about": "Engine-neutral Kenshi+ linked combat rules, stances, 7-limb zones, unarmed/armed/ranged exchanges, and fighter archetypes. [G data]",
   "idle_clip": "unarmed_guard",
+  "style_idles": {
+    "unarmed": "unarmed_guard",
+    "sword": "ual_sword_idle",
+    "heavy": "combat_idle",
+    "polearm": "combat_idle",
+    "shield": "ual_shield_up",
+    "ranged": "walk_shoot"
+  },
+  "rules": {
+    "default_attack_slots": 2,
+    "attack_slot_options": [1, 2, 3],
+    "poise_base": 100,
+    "parry_window_ms": [80, 220],
+    "input_buffer_ms": 150,
+    "sever_threshold": -1.0,
+    "limb_severing": true,
+    "cyber_graft_mod": "mod_arms_cyber_up",
+    "stances": {
+      "aggressive": {
+        "label": "Aggressive",
+        "short": "AGG",
+        "atk_mult": 1.2,
+        "poise_dmg": 1.25,
+        "def_window": 0.75
+      },
+      "balanced": {
+        "label": "Balanced",
+        "short": "BAL",
+        "atk_mult": 1.0,
+        "poise_dmg": 1.0,
+        "def_window": 1.0
+      },
+      "guard": {
+        "label": "Guard",
+        "short": "GRD",
+        "atk_mult": 0.75,
+        "poise_dmg": 0.85,
+        "def_window": 1.35,
+        "block_prio": true
+      },
+      "evasive": {
+        "label": "Evasive",
+        "short": "EVA",
+        "atk_mult": 1.0,
+        "poise_dmg": 0.9,
+        "def_window": 1.25,
+        "dodge_prio": true
+      }
+    },
+    "zones": [
+      "head",
+      "chest",
+      "stomach",
+      "left_arm",
+      "right_arm",
+      "left_leg",
+      "right_leg"
+    ],
+    "zone_weights": {
+      "head": 0.10,
+      "chest": 0.25,
+      "stomach": 0.20,
+      "left_arm": 0.12,
+      "right_arm": 0.13,
+      "left_leg": 0.10,
+      "right_leg": 0.10
+    },
+    "zone_meta": {
+      "head":      { "short": "HD", "label": "Head",      "hp": 100, "weight": 0.10, "vital": true,  "severable": false },
+      "chest":     { "short": "CH", "label": "Chest",     "hp": 100, "weight": 0.25, "vital": true,  "severable": false },
+      "stomach":   { "short": "ST", "label": "Stomach",   "hp": 100, "weight": 0.20, "vital": true,  "severable": false },
+      "left_arm":  { "short": "LA", "label": "Left Arm",  "hp": 100, "weight": 0.12, "vital": false, "severable": true  },
+      "right_arm": { "short": "RA", "label": "Right Arm", "hp": 100, "weight": 0.13, "vital": false, "severable": true  },
+      "left_leg":  { "short": "LL", "label": "Left Leg",  "hp": 100, "weight": 0.10, "vital": false, "severable": true  },
+      "right_leg": { "short": "RL", "label": "Right Leg", "hp": 100, "weight": 0.10, "vital": false, "severable": true  }
+    },
+    "damage_types": {
+      "cut":    { "label": "Cut",    "bleed": 0.35, "poise_mult": 0.85, "scale_stat": "dexterity", "armor_pen": 0.45, "sever_capable": true  },
+      "blunt":  { "label": "Blunt",  "bleed": 0.05, "poise_mult": 1.35, "scale_stat": "strength",  "armor_pen": 0.80, "sever_capable": false },
+      "pierce": { "label": "Pierce", "bleed": 0.25, "poise_mult": 0.95, "scale_stat": "dexterity", "armor_pen": 0.65, "sever_capable": true  }
+    }
+  },
   "links": [
     {
       "attack": "jab_l",
       "label": "Left Jab",
       "short": "Jab",
+      "style": "unarmed",
+      "skill_min": 0,
+      "base_dmg": 14,
+      "poise_dmg": 12,
+      "dmg_type": "blunt",
+      "target_zone": "head",
       "hit_t": 0.42,
       "hit_y": 1.38,
       "dist_m": 1.06,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_step", "dodge_back", "dodge_spin"],
           "lead_s": 0.14,
@@ -31,10 +125,22 @@
       "attack": "jab_r",
       "label": "Right Cross",
       "short": "Cross",
+      "style": "unarmed",
+      "skill_min": 5,
+      "base_dmg": 18,
+      "poise_dmg": 16,
+      "dmg_type": "blunt",
+      "target_zone": "head",
       "hit_t": 0.48,
       "hit_y": 1.36,
       "dist_m": 1.08,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_step", "dodge_spin"],
           "lead_s": 0.15,
@@ -56,10 +162,22 @@
       "attack": "hook_l",
       "label": "Left Hook",
       "short": "Hook",
+      "style": "unarmed",
+      "skill_min": 25,
+      "base_dmg": 22,
+      "poise_dmg": 20,
+      "dmg_type": "blunt",
+      "target_zone": "head",
       "hit_t": 0.36,
       "hit_y": 1.38,
       "dist_m": 1.02,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_spin", "dodge_step"],
           "lead_s": 0.14,
@@ -81,10 +199,22 @@
       "attack": "hook_l_short",
       "label": "Short Left Hook",
       "short": "Short Hook",
+      "style": "unarmed",
+      "skill_min": 25,
+      "base_dmg": 19,
+      "poise_dmg": 18,
+      "dmg_type": "blunt",
+      "target_zone": "right_arm",
       "hit_t": 0.34,
       "hit_y": 1.34,
       "dist_m": 0.96,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_2"],
+          "lead_s": 0.10,
+          "riposte": "jab_r",
+          "counter": "jab_r"
+        },
         "dodge": {
           "clips": ["dodge_step", "dodge_back"],
           "lead_s": 0.13,
@@ -106,10 +236,22 @@
       "attack": "uppercut_r",
       "label": "Right Uppercut",
       "short": "Uppercut",
+      "style": "unarmed",
+      "skill_min": 30,
+      "base_dmg": 26,
+      "poise_dmg": 26,
+      "dmg_type": "blunt",
+      "target_zone": "head",
       "hit_t": 0.38,
       "hit_y": 1.32,
       "dist_m": 0.96,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_step"],
           "lead_s": 0.14,
@@ -131,10 +273,22 @@
       "attack": "uppercut_l",
       "label": "Left Uppercut",
       "short": "Uppercut L",
+      "style": "unarmed",
+      "skill_min": 30,
+      "base_dmg": 24,
+      "poise_dmg": 24,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
       "hit_t": 0.42,
       "hit_y": 1.32,
       "dist_m": 0.96,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.11,
+          "riposte": "jab_r",
+          "counter": "jab_r"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_spin"],
           "lead_s": 0.14,
@@ -156,10 +310,22 @@
       "attack": "elbow_strike",
       "label": "Elbow Strike",
       "short": "Elbow",
+      "style": "unarmed",
+      "skill_min": 35,
+      "base_dmg": 25,
+      "poise_dmg": 24,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
       "hit_t": 0.56,
       "hit_y": 1.30,
       "dist_m": 0.92,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_spin", "dodge_step", "dodge_back"],
           "lead_s": 0.15,
@@ -181,10 +347,22 @@
       "attack": "knee_strike",
       "label": "Knee Strike",
       "short": "Knee",
+      "style": "unarmed",
+      "skill_min": 40,
+      "base_dmg": 27,
+      "poise_dmg": 28,
+      "dmg_type": "blunt",
+      "target_zone": "stomach",
       "hit_t": 0.58,
       "hit_y": 1.02,
       "dist_m": 0.94,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "jab_r",
+          "counter": "jab_r"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_step"],
           "lead_s": 0.15,
@@ -206,10 +384,22 @@
       "attack": "kick_front",
       "label": "Front Kick",
       "short": "Front Kick",
+      "style": "unarmed",
+      "skill_min": 25,
+      "base_dmg": 24,
+      "poise_dmg": 30,
+      "dmg_type": "blunt",
+      "target_zone": "stomach",
       "hit_t": 0.44,
       "hit_y": 1.08,
       "dist_m": 1.22,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_step", "dodge_spin", "dodge_back"],
           "lead_s": 0.14,
@@ -231,10 +421,22 @@
       "attack": "kick_roundhouse",
       "label": "Roundhouse Kick",
       "short": "Roundhouse",
+      "style": "unarmed",
+      "skill_min": 50,
+      "base_dmg": 34,
+      "poise_dmg": 34,
+      "dmg_type": "blunt",
+      "target_zone": "head",
       "hit_t": 0.52,
       "hit_y": 1.24,
       "dist_m": 1.24,
       "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.13,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_spin", "dodge_step"],
           "lead_s": 0.16,
@@ -256,10 +458,22 @@
       "attack": "leg_sweep",
       "label": "Leg Sweep",
       "short": "Leg Sweep",
+      "style": "unarmed",
+      "skill_min": 55,
+      "base_dmg": 22,
+      "poise_dmg": 42,
+      "dmg_type": "blunt",
+      "target_zone": "right_leg",
       "hit_t": 0.62,
       "hit_y": 0.28,
       "dist_m": 1.18,
       "outcomes": {
+        "parry": {
+          "clips": ["dodge_step", "parry"],
+          "lead_s": 0.14,
+          "riposte": "kick_front",
+          "counter": "kick_front"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_spin"],
           "lead_s": 0.16,
@@ -281,10 +495,22 @@
       "attack": "punch_combo_1",
       "label": "Punch Combo 1",
       "short": "Combo",
+      "style": "unarmed",
+      "skill_min": 35,
+      "base_dmg": 28,
+      "poise_dmg": 26,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
       "hit_t": 0.46,
       "hit_y": 1.28,
       "dist_m": 1.06,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_back", "dodge_step", "dodge_spin"],
           "lead_s": 0.14,
@@ -306,10 +532,22 @@
       "attack": "punch_combo_2",
       "label": "Punch Combo 2",
       "short": "Combo II",
+      "style": "unarmed",
+      "skill_min": 55,
+      "base_dmg": 32,
+      "poise_dmg": 30,
+      "dmg_type": "blunt",
+      "target_zone": "stomach",
       "hit_t": 0.65,
       "hit_y": 1.26,
       "dist_m": 1.08,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.13,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_spin", "dodge_back"],
           "lead_s": 0.15,
@@ -331,10 +569,22 @@
       "attack": "punch_combo_3",
       "label": "Punch & Elbow",
       "short": "Punch & Elbow",
+      "style": "unarmed",
+      "skill_min": 60,
+      "base_dmg": 35,
+      "poise_dmg": 32,
+      "dmg_type": "blunt",
+      "target_zone": "left_arm",
       "hit_t": 0.54,
       "hit_y": 1.28,
       "dist_m": 1.00,
       "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
         "dodge": {
           "clips": ["dodge_step", "dodge_spin"],
           "lead_s": 0.14,
@@ -351,6 +601,748 @@
           "followup": null
         }
       }
+    },
+    {
+      "attack": "dodge_counter",
+      "label": "Anti-Surround Counter",
+      "short": "Flank Counter",
+      "style": "unarmed",
+      "skill_min": 75,
+      "base_dmg": 38,
+      "poise_dmg": 38,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.56,
+      "hit_y": 1.26,
+      "dist_m": 1.12,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "guard_block_3"],
+          "lead_s": 0.12,
+          "riposte": "jab_r",
+          "counter": "jab_r"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_roll"],
+          "lead_s": 0.15,
+          "counter": null
+        },
+        "block": {
+          "clips": ["guard_block_3", "ual_sword_block"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "knock_down"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "attack",
+      "label": "Legion Gladius Cut",
+      "short": "Gladius Cut",
+      "style": "sword",
+      "skill_min": 0,
+      "base_dmg": 28,
+      "poise_dmg": 20,
+      "dmg_type": "cut",
+      "target_zone": "chest",
+      "hit_t": 0.48,
+      "hit_y": 1.24,
+      "dist_m": 1.32,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit", "ual_hit_chest", "hit_body"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "slash_left",
+      "label": "Left Cross-Slash",
+      "short": "Slash L",
+      "style": "sword",
+      "skill_min": 10,
+      "base_dmg": 32,
+      "poise_dmg": 22,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "hit_t": 0.50,
+      "hit_y": 1.22,
+      "dist_m": 1.34,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "slash_right",
+          "counter": "slash_right"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.15,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit", "ual_hit_chest", "hit_2"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "slash_right",
+      "label": "Right Reverse Slash",
+      "short": "Slash R",
+      "style": "sword",
+      "skill_min": 15,
+      "base_dmg": 32,
+      "poise_dmg": 22,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "hit_t": 0.44,
+      "hit_y": 1.22,
+      "dist_m": 1.32,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.14,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit", "hit_2"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "slash_charged",
+      "label": "Charged Limb-Cleaver",
+      "short": "Charged Cut",
+      "style": "sword",
+      "skill_min": 35,
+      "base_dmg": 54,
+      "poise_dmg": 42,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "hit_t": 0.66,
+      "hit_y": 1.28,
+      "dist_m": 1.38,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "ual_sword_combo",
+          "counter": "ual_sword_combo"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_back", "ual_roll"],
+          "lead_s": 0.16,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "hit", "ual_hit_chest"],
+          "lead_s": 0.05,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "combo",
+      "label": "Twin Blade Flurry",
+      "short": "Blade Flurry",
+      "style": "sword",
+      "skill_min": 40,
+      "base_dmg": 38,
+      "poise_dmg": 30,
+      "dmg_type": "cut",
+      "target_zone": "chest",
+      "hit_t": 0.52,
+      "hit_y": 1.24,
+      "dist_m": 1.30,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_step"],
+          "lead_s": 0.15,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "ual_sword_a",
+      "label": "Snap Riposte Slash",
+      "short": "Quick Slash",
+      "style": "sword",
+      "skill_min": 5,
+      "base_dmg": 24,
+      "poise_dmg": 18,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "hit_t": 0.24,
+      "hit_y": 1.24,
+      "dist_m": 1.26,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "ual_sword_block"],
+          "lead_s": 0.10,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block"],
+          "lead_s": 0.10,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit"],
+          "lead_s": 0.03,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "ual_sword_combo",
+      "label": "Triple Sword Combo",
+      "short": "Sword Combo",
+      "style": "sword",
+      "skill_min": 50,
+      "base_dmg": 44,
+      "poise_dmg": 36,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "hit_t": 0.48,
+      "hit_y": 1.26,
+      "dist_m": 1.32,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.13,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "dodge_spin"],
+          "lead_s": 0.15,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "ual_sword_dash",
+      "label": "Lunging Dash Cut",
+      "short": "Dash Cut",
+      "style": "sword",
+      "skill_min": 45,
+      "base_dmg": 42,
+      "poise_dmg": 34,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "hit_t": 0.52,
+      "hit_y": 1.22,
+      "dist_m": 1.56,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.13,
+          "riposte": "slash_right",
+          "counter": "slash_right"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "ual_roll"],
+          "lead_s": 0.15,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "axe_chop",
+      "label": "Overhead Siege Chop",
+      "short": "Axe Chop",
+      "style": "heavy",
+      "skill_min": 20,
+      "base_dmg": 62,
+      "poise_dmg": 54,
+      "dmg_type": "cut",
+      "target_zone": "left_arm",
+      "hit_t": 0.72,
+      "hit_y": 1.32,
+      "dist_m": 1.42,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.15,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_roll", "dodge_step", "ual_roll"],
+          "lead_s": 0.17,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "knock_down"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "axe_spin",
+      "label": "Cleaving Whirlwind",
+      "short": "Axe Spin",
+      "style": "heavy",
+      "skill_min": 45,
+      "base_dmg": 58,
+      "poise_dmg": 50,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "hit_t": 0.68,
+      "hit_y": 1.18,
+      "dist_m": 1.46,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.15,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_back", "ual_roll"],
+          "lead_s": 0.17,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "blunt_swing",
+      "label": "Crushing Armor-Breaker",
+      "short": "Heavy Crush",
+      "style": "heavy",
+      "skill_min": 25,
+      "base_dmg": 46,
+      "poise_dmg": 58,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.60,
+      "hit_y": 1.24,
+      "dist_m": 1.36,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.14,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.16,
+          "counter": "jab_r"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "knock_down"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "ual_sword_heavy",
+      "label": "Executioner Guard-Break",
+      "short": "Heavy Break",
+      "style": "heavy",
+      "skill_min": 40,
+      "base_dmg": 64,
+      "poise_dmg": 62,
+      "dmg_type": "cut",
+      "target_zone": "right_arm",
+      "hit_t": 0.74,
+      "hit_y": 1.28,
+      "dist_m": 1.44,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.15,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["ual_roll", "dodge_roll", "dodge_back"],
+          "lead_s": 0.17,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["block_2", "ual_sword_block"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["knock_down", "ual_knockback"],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "spear_thrust",
+      "label": "Damascened Spear Thrust",
+      "short": "Spear Thrust",
+      "style": "polearm",
+      "skill_min": 15,
+      "base_dmg": 38,
+      "poise_dmg": 28,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "hit_t": 0.46,
+      "hit_y": 1.24,
+      "dist_m": 1.78,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry_2h", "parry"],
+          "lead_s": 0.13,
+          "riposte": "thrust",
+          "counter": "thrust"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_spin"],
+          "lead_s": 0.15,
+          "counter": "ual_sword_dash"
+        },
+        "block": {
+          "clips": ["ual_shield_up", "ual_sword_block", "block"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "ual_knockback", "hit_body"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "thrust",
+      "label": "Piercing Point Lunge",
+      "short": "Point Lunge",
+      "style": "polearm",
+      "skill_min": 10,
+      "base_dmg": 32,
+      "poise_dmg": 22,
+      "dmg_type": "pierce",
+      "target_zone": "stomach",
+      "hit_t": 0.42,
+      "hit_y": 1.16,
+      "dist_m": 1.48,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "parry_2h"],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.14,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["hit_body", "ual_hit_chest"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "shield_push",
+      "label": "Scutum Wall Shove",
+      "short": "Shield Push",
+      "style": "shield",
+      "skill_min": 15,
+      "base_dmg": 14,
+      "poise_dmg": 46,
+      "dmg_type": "blunt",
+      "target_zone": "chest",
+      "hit_t": 0.52,
+      "hit_y": 1.18,
+      "dist_m": 1.06,
+      "outcomes": {
+        "parry": {
+          "clips": ["dodge_step", "parry"],
+          "lead_s": 0.13,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.15,
+          "counter": "slash_right"
+        },
+        "block": {
+          "clips": ["block_2", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "knock_down"],
+          "lead_s": 0.04,
+          "followup": "ual_get_up"
+        }
+      }
+    },
+    {
+      "attack": "ual_shield_bash",
+      "label": "Boss Rim Shield Bash",
+      "short": "Shield Bash",
+      "style": "shield",
+      "skill_min": 20,
+      "base_dmg": 18,
+      "poise_dmg": 52,
+      "dmg_type": "blunt",
+      "target_zone": "head",
+      "hit_t": 0.36,
+      "hit_y": 1.28,
+      "dist_m": 1.04,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "dodge_step"],
+          "lead_s": 0.11,
+          "riposte": "ual_sword_a",
+          "counter": "ual_sword_a"
+        },
+        "dodge": {
+          "clips": ["dodge_step", "dodge_back"],
+          "lead_s": 0.13,
+          "counter": "ual_sword_a"
+        },
+        "block": {
+          "clips": ["ual_sword_block", "block_2"],
+          "lead_s": 0.11,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "ual_hit_head"],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "bow_shot",
+      "label": "Recurve Arrow Loose",
+      "short": "Bow Shot",
+      "style": "ranged",
+      "skill_min": 15,
+      "base_dmg": 36,
+      "poise_dmg": 20,
+      "dmg_type": "pierce",
+      "target_zone": "chest",
+      "hit_t": 1.05,
+      "hit_y": 1.30,
+      "dist_m": 3.20,
+      "outcomes": {
+        "parry": {
+          "clips": ["ual_shield_up", "parry"],
+          "lead_s": 0.14,
+          "riposte": null,
+          "counter": null
+        },
+        "dodge": {
+          "clips": ["ual_roll", "dodge_roll", "dodge_step"],
+          "lead_s": 0.18,
+          "counter": null
+        },
+        "block": {
+          "clips": ["ual_shield_up", "ual_sword_block"],
+          "lead_s": 0.14,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_chest", "hit_body"],
+          "lead_s": 0.03,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "gun_shot",
+      "label": "Voltigeur Rifle Volley",
+      "short": "Rifle Shot",
+      "style": "ranged",
+      "skill_min": 25,
+      "base_dmg": 52,
+      "poise_dmg": 34,
+      "dmg_type": "pierce",
+      "target_zone": "left_arm",
+      "hit_t": 0.62,
+      "hit_y": 1.28,
+      "dist_m": 3.40,
+      "attacker_followup": "reload_kneel",
+      "vuln_window_s": 1.80,
+      "outcomes": {
+        "parry": {
+          "clips": ["ual_shield_up", "dodge_roll"],
+          "lead_s": 0.12,
+          "riposte": null,
+          "counter": null
+        },
+        "dodge": {
+          "clips": ["ual_roll", "dodge_roll", "dodge_step"],
+          "lead_s": 0.16,
+          "counter": null
+        },
+        "block": {
+          "clips": ["ual_shield_up", "block_2"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_knockback", "ual_hit_chest"],
+          "lead_s": 0.02,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "spell_cast",
+      "label": "Reliquary Arc Bolt",
+      "short": "Spell Cast",
+      "style": "ranged",
+      "skill_min": 35,
+      "base_dmg": 42,
+      "poise_dmg": 36,
+      "dmg_type": "cut",
+      "target_zone": "head",
+      "hit_t": 0.36,
+      "hit_y": 1.34,
+      "dist_m": 2.80,
+      "outcomes": {
+        "parry": {
+          "clips": ["parry", "ual_shield_up"],
+          "lead_s": 0.12,
+          "riposte": null,
+          "counter": null
+        },
+        "dodge": {
+          "clips": ["dodge_step", "ual_roll"],
+          "lead_s": 0.15,
+          "counter": null
+        },
+        "block": {
+          "clips": ["ual_shield_up", "guard_block_3"],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": ["ual_hit_head", "ual_knockback"],
+          "lead_s": 0.03,
+          "followup": null
+        }
+      }
     }
   ],
   "fighters": [
@@ -358,6 +1350,9 @@
       "id": "crimson_monk",
       "label": "Crimson Flashing-Eye Monk",
       "short": "Crimson Monk",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 58, "melee_def": 54, "martial_arts": 68, "dodge": 64, "toughness": 52, "strength": 55, "dexterity": 66 },
       "people": "xanadu",
       "tier": "monk_crimson",
       "body": "mpfb_male",
@@ -371,6 +1366,9 @@
       "id": "violet_monk",
       "label": "Violet Storm Tempest Monk",
       "short": "Violet Monk",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 60, "melee_def": 56, "martial_arts": 72, "dodge": 74, "toughness": 48, "strength": 48, "dexterity": 74 },
       "people": "xanadu",
       "tier": "monk_violet_storm",
       "body": "mpfb_female",
@@ -381,9 +1379,114 @@
       "morph": { "muscle": 0.3, "weight": -0.1 }
     },
     {
+      "id": "iziz_legionary",
+      "label": "Iziz Imperial Legionary",
+      "short": "Iziz Legionary",
+      "style": "sword",
+      "hold": { "R": "sword", "L": "shield" },
+      "stats": { "melee_atk": 64, "melee_def": 70, "martial_arts": 30, "dodge": 38, "toughness": 68, "strength": 62, "dexterity": 58 },
+      "people": "izani",
+      "tier": "legionary",
+      "body": "mpfb_male",
+      "skin": "#b5835d",
+      "hair": "short02",
+      "hair_color": "#241b15",
+      "eye_color": "#4f3a24",
+      "morph": { "muscle": 0.4, "weight": 0.05 }
+    },
+    {
+      "id": "shell_siege_guard",
+      "label": "Shell Uruk Siege-Guard",
+      "short": "Siege-Guard",
+      "style": "heavy",
+      "hold": { "R": "axe" },
+      "stats": { "melee_atk": 68, "melee_def": 52, "martial_arts": 35, "dodge": 28, "toughness": 78, "strength": 82, "dexterity": 44 },
+      "people": "izani",
+      "tier": "shl_siege_guard",
+      "body": "mpfb_male",
+      "skin": "#8d6a54",
+      "hair": "short04",
+      "hair_color": "#1a1614",
+      "eye_color": "#6e3820",
+      "morph": { "height": 0.25, "muscle": 0.65, "weight": 0.25 }
+    },
+    {
+      "id": "talia_pass_guard",
+      "label": "Talia Damascened Guard",
+      "short": "Talia Guard",
+      "style": "polearm",
+      "hold": { "R": "spear" },
+      "stats": { "melee_atk": 66, "melee_def": 66, "martial_arts": 34, "dodge": 50, "toughness": 62, "strength": 58, "dexterity": 68 },
+      "people": "izani",
+      "tier": "tal_pass_guard",
+      "body": "mpfb_female",
+      "skin": "#c2926e",
+      "hair": "ponytail01",
+      "hair_color": "#241c17",
+      "eye_color": "#486258",
+      "morph": { "height": 0.1, "muscle": 0.35, "weight": -0.05 }
+    },
+    {
+      "id": "aidol_voltigeur",
+      "label": "Dilihan Aidol Voltigeur",
+      "short": "Aidol Voltigeur",
+      "style": "ranged",
+      "hold": { "R": "rifle" },
+      "stats": { "melee_atk": 46, "melee_def": 48, "martial_arts": 28, "dodge": 58, "toughness": 50, "strength": 48, "dexterity": 76 },
+      "people": "izani",
+      "tier": "dil_aidol_voltigeur",
+      "body": "mpfb_male",
+      "skin": "#ba8a66",
+      "hair": "short01",
+      "hair_color": "#2f241c",
+      "eye_color": "#445a6c",
+      "morph": { "muscle": 0.25, "weight": -0.05 }
+    },
+    {
+      "id": "dalab_giant",
+      "label": "Four-Armed Dalab Giant",
+      "short": "Dalab Giant",
+      "style": "heavy",
+      "hold": { "R": "axe", "L": "shield", "R2": "sword", "L2": "shield" },
+      "mods": ["mod_arms_flesh"],
+      "bonus_slots": 1,
+      "four_arms": true,
+      "stats": { "melee_atk": 76, "melee_def": 74, "martial_arts": 62, "dodge": 34, "toughness": 90, "strength": 92, "dexterity": 52 },
+      "people": "giants",
+      "tier": "temple",
+      "body": "mpfb_giant",
+      "skin": "#6a8a4c",
+      "hair": "short04",
+      "hair_color": "#1a1712",
+      "eye_color": "#6e5a2e",
+      "morph": { "muscle": 0.7, "weight": 0.25 }
+    },
+    {
+      "id": "reliquary_lich",
+      "label": "Reliquary Cyber-Lich",
+      "short": "Cyber-Lich",
+      "style": "sword",
+      "hold": { "R": "sword" },
+      "mods": ["mod_arms_cyber_up"],
+      "bonus_slots": 1,
+      "cyber_arms": true,
+      "stats": { "melee_atk": 74, "melee_def": 72, "martial_arts": 64, "dodge": 56, "toughness": 84, "strength": 74, "dexterity": 72 },
+      "people": "cyber_liches",
+      "tier": "reliquary_lich",
+      "body": "mpfb_male",
+      "skin": "#8c8882",
+      "hair": null,
+      "hair_color": "#1c1c1e",
+      "eye_color": "#5ad4e6",
+      "morph": { "height": 0.18, "muscle": 0.25, "weight": -0.2 }
+    },
+    {
       "id": "lu_tze",
       "label": "Lu-Tze the Melon Monk",
       "short": "Lu-Tze",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 78, "melee_def": 86, "martial_arts": 90, "dodge": 88, "toughness": 72, "strength": 58, "dexterity": 84 },
       "people": "historians",
       "tier": "lu_tze_melon_monk",
       "body": "mpfb_male",
@@ -397,6 +1500,9 @@
       "id": "azure_monk",
       "label": "Azure Dream Silent Monk",
       "short": "Azure Monk",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 56, "melee_def": 64, "martial_arts": 66, "dodge": 70, "toughness": 54, "strength": 50, "dexterity": 68 },
       "people": "xanadu",
       "tier": "monk_azure",
       "body": "mpfb_male",
@@ -410,6 +1516,9 @@
       "id": "viridian_monk",
       "label": "Viridian Thought Tea-Monk",
       "short": "Viridian Monk",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 52, "melee_def": 62, "martial_arts": 64, "dodge": 68, "toughness": 50, "strength": 46, "dexterity": 66 },
       "people": "xanadu",
       "tier": "monk_viridian",
       "body": "mpfb_female",
@@ -423,6 +1532,9 @@
       "id": "chronomonk",
       "label": "Order Chrono-Monk (Master of Arms)",
       "short": "Chrono-Monk",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 72, "melee_def": 74, "martial_arts": 82, "dodge": 76, "toughness": 68, "strength": 66, "dexterity": 75 },
       "people": "historians",
       "tier": "chronomonk",
       "body": "mpfb_male",
@@ -436,6 +1548,11 @@
       "id": "electromonk",
       "label": "Yusar Henge Electro-Monk",
       "short": "Electro-Monk",
+      "style": "unarmed",
+      "hold": {},
+      "mods": ["mod_arms_cyber_up"],
+      "cyber_arms": true,
+      "stats": { "melee_atk": 68, "melee_def": 62, "martial_arts": 76, "dodge": 66, "toughness": 70, "strength": 72, "dexterity": 68 },
       "people": "yusar",
       "tier": "electromonk",
       "body": "mpfb_male",
@@ -449,6 +1566,9 @@
       "id": "white_lily_monk",
       "label": "White Lily Apothecary Monk",
       "short": "White Lily",
+      "style": "unarmed",
+      "hold": {},
+      "stats": { "melee_atk": 50, "melee_def": 60, "martial_arts": 60, "dodge": 72, "toughness": 48, "strength": 44, "dexterity": 70 },
       "people": "xanadu",
       "tier": "monk_white_lily",
       "body": "mpfb_female",
@@ -460,15 +1580,15 @@
     }
   ],
   "choreography": [
-    { "attacker": 0, "attack": "jab_l", "outcome": "block", "note": "Opening probe met with a tight fist guard" },
-    { "attacker": 1, "attack": "kick_front", "outcome": "dodge", "counter": true, "note": "Sidestepped front kick into a crisp counterstrike" },
-    { "attacker": 0, "attack": "hook_l", "outcome": "hit", "note": "Clean left hook lands through the guard" },
+    { "attacker": 0, "attack": "jab_l", "outcome": "block", "note": "Opening probe met with a tight guard" },
+    { "attacker": 1, "attack": "kick_front", "outcome": "dodge", "counter": true, "note": "Sidestepped kick into a crisp counterstrike" },
+    { "attacker": 0, "attack": "hook_l", "outcome": "parry", "note": "Timed deflection drains attacker poise" },
     { "attacker": 1, "attack": "punch_combo_1", "outcome": "block", "note": "Flurry absorbed on the forearms" },
     { "attacker": 0, "attack": "kick_roundhouse", "outcome": "dodge", "counter": false, "note": "High roundhouse evaded with a spin" },
-    { "attacker": 1, "attack": "elbow_strike", "outcome": "hit", "note": "Close-quarters elbow breaks the rhythm" },
-    { "attacker": 0, "attack": "knee_strike", "outcome": "block", "note": "Rising knee checked at the midsection" },
+    { "attacker": 1, "attack": "elbow_strike", "outcome": "hit", "note": "Close-quarters strike breaks the rhythm" },
+    { "attacker": 0, "attack": "knee_strike", "outcome": "block", "note": "Rising strike checked at the midsection" },
     { "attacker": 1, "attack": "uppercut_r", "outcome": "dodge", "counter": true, "note": "Slip back from the uppercut and answer" },
-    { "attacker": 0, "attack": "punch_combo_3", "outcome": "hit", "note": "Punch-and-elbow combination lands" },
-    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low leg sweep scores a knockdown -> kip-up recovery" }
+    { "attacker": 0, "attack": "punch_combo_3", "outcome": "hit", "note": "Combination lands cleanly on the arm" },
+    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low sweep scores a knockdown -> kip-up recovery" }
   ]
 }

@@ -1,7 +1,7 @@
 {
  "core/rand/08-core-rand.js": "4a3aa47f25da4c3f9e0dc101b42fdfb05e7af552",
  "data/clips.json": "364f8c0f6dac2791c81bea553e4b0c45f065990d",
- "data/combat-links.json": "b805fa99f016891e9197050703cbf86f0003611b",
+ "data/combat-links.json": "63e63eae381ad3e6ab8056c611fdcec72de866af",
  "data/fur.json": "7819873a95ef7ba676dad87b3daec893c6438ac4",
  "data/mpfb_female/kit.json": "c2dde44c63cfddac0abee8a49e6c0468090918e5",
  "data/mpfb_female/skeleton.json": "30b158a12ea2eabe49044f01596f2115e842f399",
@@ -13,11 +13,11 @@
  "data/posture.json": "f169c64545c5356626ec79464f2d4b6b5cacb939",
  "data/props.json": "6dff4dc22276c473ba62f6dffc9afcfcd9bbcbba",
  "data/sliders.json": "330f65bf51f78a92904f2b23113fdad0c0feee8c",
- "dist/animation-lab.html": "6628db0e8c45635205c8f38ea37f7c339e154620",
- "dist/arms-lab.html": "f75b65cd9e4aa07d562ee78909f0090af2b79559",
- "dist/combat-lab.html": "faecbf20f2b3e96627d7020a01304e909e95b436",
- "dist/cosmetic-lab.html": "2bc90165bc4e479ab95ca4ba7bac101d4578fc11",
- "dist/trade-lab.html": "aee6072f2e57246d4e29fea5059764cc62cb21ab",
+ "dist/animation-lab.html": "aa19c27691253705318b6a9bb584c920c632f645",
+ "dist/arms-lab.html": "0f0ac8e40f610cb9a356510eecc5e7284e4d6cbc",
+ "dist/combat-lab.html": "6da3ced3180b2d6ba66f316108933aec96c15894",
+ "dist/cosmetic-lab.html": "8e68c2f7370b4d46268f8d13da7ee44d624150d3",
+ "dist/trade-lab.html": "d0b6d0afa75aa2c9454ecca48f77720c5f624bc2",
  "pieces/mpfb_female/AfroPonytail.glb": "3e6a0780360d599c60ece6054a5922bed113df9a",
  "pieces/mpfb_female/AfroPonytail.morph.bin": "33fe464644e615b0bfa8c5643d5453743dcfe519",
  "pieces/mpfb_female/Afro_Ponytail_-_Slick_Down.glb": "ecfcff68b8916247255a061f896fb814646704d8",
@@ -11906,5 +11906,5 @@
  "src/90-editor.js": "e5c8568eff0f5ffc32171a7ef8f9d7d97b36f7da",
  "src/92-animlab.js": "1f1500c9565494f9c5c7d3252362c5f382f21462",
  "src/93-armslab.js": "78eecaec7c8127ffd85891cb6b88db6421837d88",
- "src/94-combat-duel.js": "f56a5067207cc4db581a25f4799d3dab312f765c"
+ "src/94-combat-duel.js": "2de1f7e2d75bbf0185894237e6e0578d5cca779c"
 }
