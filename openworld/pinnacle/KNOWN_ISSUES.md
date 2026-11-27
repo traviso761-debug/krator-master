@@ -1,5 +1,27 @@
 # Pinnacle: known issues
 
+- [ ] **The flora's spacing across tile edges fails once here** (verify, 2026-11-12: 1 of 294 trees inside a stronger
+      tree's keep-clear, at -167295,8241, 49 m from a tile edge). A core/world bug: `85-world-flora.js` places the
+      neighbouring cells only within `MARGIN` (64 m) of a tile, but a cell's tree is jittered up to a whole cell (165 m in
+      the hyperjungle's giant pass) from its corner, so a stronger neighbour 64-165 m out is never seen and both trees
+      survive. The recut for the 5.1e6 moves shifted the tile grid 7 km and put one such pair in the probe's sample. The
+      fix (a margin of a cell plus the reach) reaches every page that takes core/world.
+
+- [x] **The frame's origin stays at the rock** (the line's pin, `origin_px` [1007, 686] in `openworld/SITES.json`, kept
+      when the corridors merged onto claude/integration-4, 2026-11-27): the corridors grew the box round it instead of
+      moving the origin to the box's centre (1091,683) as they first did, so the rock is at 0, 0 again and the relief and
+      `src/43p-world-rock.js` laid in that frame hold. `settlements/pinnacle-rock`'s graph (`15-pr-tune.js`, T.graph) shifts
+      each plan onto the rock either way.
+- [ ] **The far roads' stops are the Beast Riders' own** (their roadside inn and a watch tower) on the coyotemen's and the
+      Dasri's roads: neither people has a kit. `PLAN.md`, "What is left" 6.
+- [ ] **The corridors east of the rock grow nothing** (the crater's east wall, the Nomad Country's sedesert, the Tiers):
+      no kit for them in `src/47-world-kits.js`. `PLAN.md`, "What is left" 7.
+- [ ] **Fort Kreia's road is a guide**, not the network's: the trunk to Kreia starts at the Crescent and crosses the
+      Talon trail. If the network gains a Pinnacle-Kreia leg, switch the corridor to `net`.
+- [ ] **The rasters are a file beside the page** (`dist/pinnacle.land.js`, 8.7 MB): written into the page they took it to
+      98 % of its 16 MB cap. A page opened without that file has no land. Publishing must carry it (as the texture
+      sidecars).
+
 - [ ] **The lakes keep the model's 2 km masks.** The smoothing (2026-11-12, `core/world/README.md`, "Smoothing") took
       the staircases, the streaks and the straight river cuts out of the land. The cross-shaped lake west of the K'etsaal
       Baatar's mouth still has square shores: the land round it lies under its level, so only the mask draws it.

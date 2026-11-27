@@ -156,10 +156,21 @@ T.valley=function(P,o){o=o||{};const K=o.scale==null?5:o.scale,yr=365,win=w=>{co
   factions:[{id:'beast-riders',name:'The Beast Riders'},{id:'iziz',name:'The Empire of Iziz'},{id:'far',name:'The far markets'}],
   relations:[{a:'beast-riders',b:'far',stance:'friendly'},{a:'far',b:'beast-riders',stance:'friendly'},{a:'beast-riders',b:'iziz',stance:'hostile'},{a:'iziz',b:'beast-riders',stance:'hostile'}],
   settlements:S,roads:R,bands:B,attach:!!o.attach,extern:o.attach?{[town]:o.attach.place}:null};};
-/* the far legs as a road graph (core/world 48t KTRAVEL): each leg of PR_LEGS an edge from the rock, marked planned; a
-   region that lays the real links replaces them (pass its plans as o.graph) */
-T.graph=function(){const L=PR_LEGS.legs;return KTRAVEL.graph([],{extra:Object.keys(L).sort().map(id=>({id:'staiytii0y~'+id,a:'staiytii0y',b:id,nodeA:{id:'staiytii0y',name:'Pinnacle Rock',x:0,z:0},
-  nodeB:{id,name:L[id].name,x:L[id].x,z:L[id].z},length_m:L[id].length_m,up_m:L[id].up_m,down_m:L[id].down_m,fwd:L[id].fwd,back:L[id].back,planned:true}))});};
+/* the roads as a graph (core/world 48t KTRAVEL). T.graph(plans): the open world's baked links (openworld/pinnacle's plan
+   first, then any other region's that shares a town with it: the Iziz cluster's, where Girder is), moved into this
+   table's frame (the rock at 0, 0; another plan aligned on the town it shares), so the hub's and the ranges' cross-country
+   legs measure true; a partner no plan links keeps its PR_LEGS leg from the rock, marked planned. T.graph(): every leg
+   from PR_LEGS, planned (the scale model's estimate, before a region laid them) */
+const legEdge=id=>{const L=PR_LEGS.legs[id];return{id:'staiytii0y~'+id,a:'staiytii0y',b:id,nodeA:{id:'staiytii0y',name:'Pinnacle Rock',x:0,z:0},
+  nodeB:{id,name:L.name,x:L.x,z:L.z},length_m:L.length_m,up_m:L.up_m,down_m:L.down_m,fwd:L.fwd,back:L.back,planned:true};};
+const shiftPlan=(P,dx,dz)=>Object.assign({},P,{sites:P.sites.map(S=>Object.assign({},S,{x:S.x-dx,z:S.z-dz})),
+  links:(P.links||[]).map(Lk=>Object.assign({},Lk,{stops:(Lk.stops||[]).map(s=>Object.assign({},s,{x:s.x-dx,z:s.z-dz}))}))});
+T.graph=function(plans){
+ if(!plans||!plans.length)return KTRAVEL.graph([],{extra:Object.keys(PR_LEGS.legs).sort().map(legEdge)});
+ const R=plans[0].sites.find(s=>s.id==='staiytii0y'),out=[shiftPlan(plans[0],R.x,R.z)];
+ plans.slice(1).forEach(P=>{const S=P.sites.find(s=>out[0].sites.some(q=>q.id===s.id));if(!S)return;const Q=out[0].sites.find(q=>q.id===S.id);out.push(shiftPlan(P,S.x-Q.x,S.z-Q.z));});
+ const G0=KTRAVEL.graph(out),miss=Object.keys(PR_LEGS.legs).sort().filter(id=>!G0.nodes[id]);
+ return miss.length?KTRAVEL.graph(out,{extra:miss.map(legEdge)}):G0;};
 /* the bands' world (core/camp): their ranges (eight sites each in its sector, 15-70 km out), the markets and the targets as
    places, the ventures, the culture's assign (the slots turned each season). V the valley spec, host the sim's adapter */
 T.world=function(V,host,o){o=o||{};const world=1027681,Rg=T.range,sites=[],bands=[],place={};

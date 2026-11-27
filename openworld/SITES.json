@@ -5,16 +5,25 @@
  "note": "openworld/PLAN-SITES.md section 2. A site is one settlement of the scale model (its id in tools/scale-model/model/src/60-settlements.js, on the 5.1 canvas) and its hinterland; a region is the cut that holds one or more sites (tools/scale-model/cut_site.py <region>). reach_km is the half-size of a site's square (city 30, village 15, outpost or camp 8 by default); polygons are regions of the model (by id) that join the cut; corridors are strips width_km wide between two of the region's sites (so the roads between them have ground). state: planned | cut | built.",
  "regions": {
   "pinnacle": {
-   "name": "Pinnacle Rock",
+   "name": "Pinnacle Rock and its roads",
    "order": 1,
    "origin_px": [1007, 686],
    "origin_note": "Pinned 2026-11-23 to the origin its cut had, before the re-run's re-cut (the scale-model queue), so the frame and the relief laid in it hold.",
-   "sites": ["staiytii0y"],
+   "sites": ["staiytii0y", "ski7uk8fjc", "sghb3jlsk5", "s1kaqxmg10", "s5c6ysqazg", "skukf2qmmq", "s2199308wr", "soksvzt1h9", "slfozs6c7z"],
    "polygons": [],
+   "corridors": [{"from": "staiytii0y", "to": "ski7uk8fjc", "width_km": 10, "net": "izani.17.22"},
+    {"from": "staiytii0y", "to": "sghb3jlsk5", "width_km": 10, "net": "trail.1.3"},
+    {"from": "staiytii0y", "to": "s1kaqxmg10", "width_km": 10, "guide": [[1007, 686], [1020, 694], [1030, 708], [1036, 714], [1042, 722], [1046, 730], [1049, 736]]},
+    {"from": "sghb3jlsk5", "to": "skukf2qmmq", "width_km": 10, "guide": [[1026, 760], [1028, 766], [1028, 772], [1028, 778], [1026, 784], [1024, 790], [1024, 796], [1032, 816], [1042, 830], [1049, 841]]},
+    {"from": "s1kaqxmg10", "to": "s5c6ysqazg", "width_km": 10, "net": ["r.s1kaqxmg10.sxzzkiwjs1", "r.s5c6ysqazg.sxzzkiwjs1"]},
+    {"from": "s5c6ysqazg", "to": "skukf2qmmq", "width_km": 10, "net": "r.s5c6ysqazg.s2199308wr"},
+    {"from": "skukf2qmmq", "to": "s2199308wr", "width_km": 10, "net": "r.s5c6ysqazg.s2199308wr"},
+    {"from": "staiytii0y", "to": "slfozs6c7z", "width_km": 10, "net": "dirt.coyote"},
+    {"from": "slfozs6c7z", "to": "soksvzt1h9", "width_km": 10, "net": "dirt.coyote"}],
    "upsample": "auto",
    "smooth": true,
    "relief": 1,
-   "note": "the first site (the owner, 2026-11-09): the town on its mesa stays settlements/pinnacle-rock's own; the site holds its countryside, bands and roads planned on the world's ground"
+   "note": "the first site (the owner, 2026-11-09): the town on its mesa stays settlements/pinnacle-rock's own; the site holds its countryside, bands and roads planned on the world's ground. Grown 2026-11-11 into a corridor region (the owner kept the 60 km cut for the rock; core/simulation/PROPOSAL-LONGSONG-PINNACLE.md S5): 10 km corridors to Pinnacle's raid and trade partners along the Ancient network's routes (net: openworld/network-proposal/net51.json), or a guide where it has none (Fort Kreia: the Crescent-Kreia trunk starts at the Crescent and crosses the Talon trail; Mav's Refuge from Talon: the trail reaches its old spot). Since the 5.1e6 moves (2026-11-12) Shade is a waystation on the Coyote road (dirt.coyote passes 3 km from it) and Mav's Refuge stands by the Ordo-Nusidi trunk, which carries its roads to Fort Ordo and to Nusidi"
   },
   "xanadu-oidong-highrift": {
    "name": "Xanadu, Oidong and the High Rift",
@@ -116,6 +125,13 @@
  },
  "sites": {
   "staiytii0y": {"name": "Pinnacle Rock", "type": "city", "region": "pinnacle", "reach_km": 30, "moved": "2026-11-10: 1027,681 -> 1007,686 (the owner: more forest; the savage hyperjungle's north-east edge)", "culture": "beast-rider", "page": "settlements/pinnacle-rock", "state": "built"},
+  "ski7uk8fjc": {"name": "Port Goto", "type": "village", "region": "pinnacle", "reach_km": 15, "culture": "iziz", "page": null, "state": "planned", "notes": "Iziz's nearby port: the Pinnacle bands' raid target to the west (PROPOSAL-LONGSONG-PINNACLE.md section 6)"},
+  "sghb3jlsk5": {"name": "Talon", "type": "village", "region": "pinnacle", "reach_km": 15, "culture": "beast-rider", "page": null, "state": "planned", "notes": "a Beast Rider city, a caravan partner"},
+  "s1kaqxmg10": {"name": "Fort Kreia", "type": "ruin", "region": "pinnacle", "reach_km": 8, "culture": "beast-rider", "page": null, "state": "planned", "notes": "a Beast Rider city in an Ancient fort, a caravan partner"},
+  "s5c6ysqazg": {"name": "Fort Ordo", "type": "ruin", "region": "pinnacle", "reach_km": 8, "culture": "beast-rider", "page": null, "state": "planned", "notes": "a Beast Rider city in an Ancient fort, a caravan partner"},
+  "s2199308wr": {"name": "Nusidi", "type": "ruin", "region": "pinnacle", "reach_km": 8, "culture": null, "page": null, "state": "planned", "notes": "a ruin (lived in?) on the Ring Sea's east isles: the bands' raid target to the south"},
+  "soksvzt1h9": {"name": "Coyote Canyon", "type": "village", "region": "pinnacle", "reach_km": 15, "culture": "coyotemen", "page": null, "state": "planned", "notes": "the coyotemen's village: long-distance trade, a few caravans a year"},
+  "slfozs6c7z": {"name": "Shade", "type": "outpost", "region": "pinnacle", "reach_km": 8, "culture": "dasri", "page": "settlements/shade", "state": "planned", "notes": "the Dasri's oasis at the spring-head of the Wadi al-Bir al-Sharq trough (moved 2026-11-11 by the owner from 1229,885, the sunken basin, to 1085,683: 156 km from Pinnacle Rock), on the Coyote road: long-distance trade until the Dasri's northern village is placed"},
   "s57bkv9741": {"name": "Erehwon", "type": "city", "region": "xanadu-oidong-highrift", "reach_km": 30, "culture": "xanadu", "page": "settlements/xanadu", "state": "built"},
   "sq80bzd7ep": {"name": "Longsong", "type": "village", "region": "oidong-highrift", "reach_km": 15, "moved": "2026-11-11: 1226,1626 -> 1228.88,1621.23, the rock on the south bank of the Bīruk al-Ghaym (r105, ~550 m3/s), 356 m from its centre (the owner, openworld/PLAN-SETTLEMENTS.md answer 10: move the pin onto the 550 m3/s river)", "culture": "xanadu", "page": "settlements/longsong", "state": "built", "also": "xanadu-oidong-highrift recut with it 2026-11-16 (core/world/PLAN-RELIEF.md P8)"},
   "sfgtxw10kr": {"name": "Strongbow", "type": "arcology", "region": "oidong-highrift", "reach_km": 30, "moved": "2026-11-11: 1026,1594 -> 1298,1647 -> 1013,1585 -> 1001,1596 (the owner: a cliff arcology set in the side of a cliff; then: at the other end of the valley, by Qiblai; then: right on the Xanadu-Oidong border, the cliff the cataract is on, so its elevator is a real advantage)", "culture": "xanadu", "page": null, "state": "planned", "notes": "the Ancients' cliff arcology in the scarp between the Oidong Valley and Xanadu, 3 km north of the cataract by which the valley's river leaves: its top on the lip (about 1,400 m), where the valley road from Longsong ends, its foot on the Xanadu floor about 3,100 m below, its elevator the way between; its own build (the cliff and the arcology) is a separate session's"},
