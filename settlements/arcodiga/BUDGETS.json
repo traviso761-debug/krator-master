@@ -1,0 +1,15 @@
+{
+  "what": "Kōpa-Dīga / Arcodiga (settlements/arcodiga): Soleri's Plate 18 dam-arcology ruin + Eternian East Wing enclave + dual-polity Hueru-Kuran & Eternal State charter town on Crookshore North Crater (89, 604).",
+  "pages": {
+    "arcodiga.html": {
+      "bytes": 15204352,
+      "tris": 2650000,
+      "scene_tris": 6800000,
+      "calls": 270,
+      "samplers": 13,
+      "vram_mb": 350,
+      "why": "Arcodiga dam-arcology at yOffset=-95 m (KRUINS western breach + Eternian East Wing interiors), 820+ dense dual-polity lots across 32 HKK rim blocks and 15-cell Eternian Hexagonal Honeycomb on KCITY.hostMultikit DataTexture2DArray, biomes/crook +65 m trimline flora, Ring Sea fleet, KROOMLIGHT & 6,800-citizen SIM; HTML kept small via .tex sidecars and samplers <= 13.",
+      "raised": "2026-11-25"
+    }
+  }
+}
