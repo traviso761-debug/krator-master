@@ -48,24 +48,24 @@
 - [ ] **The shared Ancients MAT takes library sets** (`KMAT.bindMat` with `KMAT.ANCIENT_TILES`; materials.json), except `rust`,
       which stays procedural: the library rusts smear into stripes on the stretched beam and tank UVs. ?mat=proc shows the old look.
 
-## Voth census trades (2026-10-19)
+## Voth census trades (2026-10-19; closed 2026-11-28)
 
-The table `JJ_TRADES` in `src/78-jj-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (15 carried, 2 partly, 13 gaps, 14 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it. Gaps to fill later:
+The table `JJ_TRADES` in `src/78-jj-trades.js` sets each of the Voth city's 44 census trades against this build's buildings (36 carried, 0 gaps, 8 na of 44). `tools/check_trades.py` and verify.py's `voth-trades` assert check it:
 
-- [ ] butchers: a butcher's shop
-- [ ] weavers and dyers: a weaver's and dyer's workshop (the cloth and carpet merchant only sells)
-- [ ] brewers: a brewhouse
-- [ ] tanners: a tannery
-- [ ] shipwrights and boatbuilders: a small boatyard on the lake shore
-- [ ] shrine keepers: a wayside shrine
-- [ ] industrial workers: a works (brick kiln, foundry or press)
-- [ ] guild officers and clerks: a guild hall
-- [ ] healers and nurses: a house of healing (the alchemist's shop only sells)
-- [ ] priests and undertakers: a funerary temple or burial court (partly carried: jj_temple_sun)
-- [ ] fishers: a fishing dock on the lake
-- [ ] market traders: a market square or hall (only the stall frame is drawn) (partly carried: jj_furn_market_stall)
-- [ ] orchardmen: an orchard plot
-- [ ] quarrymen and masons: a stone yard or brick kiln (the marble trim and the brick are drawn, their makers are not)
-- [ ] dairymen: a dairy
+- [x] butchers: `jj_butcher` (butcher & evaporative coolhouse)
+- [x] weavers and dyers: `jj_weaver_dyer` (four-vat humoral weaver-dyeworks)
+- [x] brewers: `jj_brewhouse` (grain-arrack & whiskey brewhouse)
+- [x] tanners: `jj_tannery` (leeward lime & bark tannery)
+- [x] shipwrights and boatbuilders: `jj_boatyard` (25t Great Trough Lake barge slipway)
+- [x] shrine keepers: `jj_shrine_veil`, `jj_shrine_crown`, `jj_shrine_rust_cinder`, `jj_shrine_ash`, `jj_shrine_frost`, `jj_shrine_wanderer`
+- [x] industrial workers: `jj_brick_kiln`, `jj_glassworks`, `jj_almanac_press`, `jj_izani_gov_ruin`
+- [x] guild officers and clerks: `jj_guild_hall`
+- [x] healers and nurses: `jj_healing_house`, `jj_bathhouse`
+- [x] priests and undertakers: `jj_funerary_ghat`, `jj_temple_sun`
+- [x] fishers: `jj_fish_quay`
+- [x] market traders: `jj_market_hall`, `jj_furn_market_stall`
+- [x] orchardmen: `jj_orchard`
+- [x] quarrymen and masons: `jj_masons_yard`, `jj_brick_kiln`
+- [x] dairymen: `jj_dairy`
 
 The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.

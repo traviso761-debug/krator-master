@@ -193,6 +193,33 @@ function buildJjCivAmphitheater(jjG,jjO){reseed(9370+(jjO.v|0));
  jjReg('Amphitheater cavea',0,jjZc-18,22,jjTopY+2,{});jjReg('Amphitheater orchestra',0,jjZc,jjC.r0,1,{});jjReg('Amphitheater stage and scaenae frons',0,jjZc+9,24,16,{});
  for(const jjS of [-1,1])jjReg('Amphitheater spire',jjS*12,jjBk+1.2,3.9,28,{});}
 
+/* HIGH LAW & HANDU LAND-TAX COURT (jj_court, 34.0 x 26.0 m — Week two-hemisphere marble/clinker docket hall) */
+function buildJjCivCourt(jjG,jjO){reseed(9385+(jjO.v|0));
+ const P=1.35,Y1=P+4.8,Y2=Y1+4.4;
+ jjCivPlinth(0,0,0,33.2,P,25.2);jjCivStairs(0,0,13.6,9.2,2.4,P,7,0);
+ // Split Week-hemisphere wings: West (-x) clad in bright cream/marble civil-docket stone, East (+x) in dark clinker brickDeep!
+ jjHouseBlock(-15.6,-.2,-11.4,7.4,P,Y2,'cream',{base:.8,baseMat:'marble',bands:[Y1],bandMat:'marble'});
+ jjHouseBlock(.2,15.6,-11.4,7.4,P,Y2,'brickDeep',{base:.8,baseMat:'brick',bands:[Y1],bandMat:'brickYellow'});
+ // 6-bay judgement loggia across +z front + solar gnomon standard obelisk on the threshold
+ jjHouseColonnade(-7.8,P,9.6,3,4.4,3.3,1.6,0,{r:.32,patterns:['fleur','ogee'],mat:'marble',trimMat:'marble'});
+ jjHouseColonnade(7.8,P,9.6,3,4.4,3.3,1.6,0,{r:.32,patterns:['diamond','chevron'],mat:'brickDeep',trimMat:'brickYellow'});
+ jjBox(0,Y1+.1,8.5,31.2,.28,2.4,'marble');jjHouseParapet(-15.6,15.6,7.4,9.8,Y1+.24,{h:.9,mat:'brick',cope:'marble'});
+ const top=jjHouseCornice(-15.6,15.6,-11.4,7.4,Y2,{});
+ jjHouseParapet(-15.6,15.6,-11.4,7.4,top,{h:1.05,mat:'brick',cope:'marble',merlon:1.3,merlonMat:'brickYellow'});
+ // Central gold-domed High Bench drum + flanking bright-marble (-x) & dark-slate (+x) docket domes
+ jjCylinder(0,top+1.7,-2.0,4.8,3.4,'bandBrick',undefined,32);jjCylinder(0,top+3.5,-2.0,5.05,.28,'marble',undefined,32);
+ jjDome(0,top+3.65,-2.0,4.8,{kind:'gold',shape:'onion',ribs:true});
+ jjCylinder(-10.2,top+1.0,-2.0,2.8,2.0,'marble',undefined,24);jjDome(-10.2,top+2.05,-2.0,2.75,{kind:'gold',shape:'hemi'});
+ jjCylinder(10.2,top+1.0,-2.0,2.8,2.0,'brickDeep',undefined,24);jjDome(10.2,top+2.05,-2.0,2.75,{kind:'slate',shape:'hemi'});
+ // Solar Handu-rod & standard gnomon pillar centered on the front steps
+ jjCylinder(0,P+.9,10.8,.42,1.8,'marble',undefined,16);jjCylinder(0,P+3.1,10.8,.16,2.6,'gold',undefined,16);
+ jjPut('jjciv_gnomon_sun',JJGEO.sphere,JMAT.gold,0,P+4.55,10.8,.34,.34,.14);
+ for(const x of [-11.5,-6.2,6.2,11.5])jjHouseWin(x,Y1+.95,7.4,1.3,2.0,0,{arch:true,lit:true});
+ for(const s of [-1,1])jjBanner(s*13.8,Y2-.5,7.7,0,{w:1.2,h:4.0});
+ jjHouseDoor(-4.4,P,7.4,1.9,3.1,0,{arch:true,lamps:true});jjHouseDoor(4.4,P,7.4,1.9,3.1,0,{arch:true,lamps:true});
+ jjReg('High Law and Handu Court hall',0,-2,15,top+8,{});}
+
+JJ.def({key:'jj_court',name:'High Law & Handu Land-Tax Court',family:'civic',row:'Civic',w:34.0,d:26.0,h:22.5,r:18.5,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},build:buildJjCivCourt});
 JJ.def({key:'jj_library',name:'Library',family:'civic',row:'Civic',w:45.5,d:30.6,h:33,r:23,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},
  plantSpots:[[-18,11],[18,11],[-21.5,-10],[21.5,-10]],views:{'Library — stair':{cam:[-4,1.7,26],tgt:[0,9,4]}},build:buildJjCivLibrary});
 JJ.def({key:'jj_school',name:'School',family:'civic',row:'Civic',w:31,d:29,h:16,r:15.5,cls:'building',tags:{type:['civic'],wealth:'civic',lit:true},

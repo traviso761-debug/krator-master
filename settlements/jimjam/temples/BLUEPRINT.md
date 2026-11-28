@@ -1,0 +1,30 @@
+# The Temples & Observatories of Jimjam: Blueprint
+
+Covers the **Sacred Solar Acropolis** (`jj_temple_sun` in [`src/74-jj-sacred.js`](../src/74-jj-sacred.js), the Four Rival Calendar Schools, and the **Raja's Eye** Observatory), all **Six Astrologically Aligned Moon Temples**, and the **Five (+1) Planetary Shrines** anchored to the exact ephemeris at `px (745, 546)`, `lat = -34.34° S`, `subGiantLon = 56.27°` ([`89-atmos-e-skymodel.js`](../../../core/atmos/sky/89-atmos-e-skymodel.js)).
+
+    python settlements/jimjam/temples/temples_blueprint.py    # writes temples/floors/*.png and temples/FURNITURE.md
+
+---
+
+## 1. Master Schedule of Sheets & Astronomical Alignments
+
+| Sheet | Complex | Footprint (`m`) | Primary Celestial Sightline (`Az` / `Alt`) | Liturgical & Simulation Role |
+|---|---|---|---|---|
+| `floors/T0_acropolis.png` | **Sacred Solar Acropolis Precinct** | `440 × 420` (`+514..+518 m`) | **WSW Solstice `Az 244.04°`**, **`Veil` `±50°` (`294.0°` / `194.0°`)**, **Giant `Az 70.5°`** | Master crown terrace uniting `jj_temple_sun`, New Fire Forecourt, the **Four Calendar Schools** (*Eye*, *Hidden Hand*, *Outside*, shuttered *Eighty-One*), `jj_library`, and the **Raja's Eye** electric-chronograph dome |
+| `floors/T1_sun.png` | **Great Solstice Temple (`jj_temple_sun`) & Undercroft** | `50 × 86 × 48` | **`Az 244.04°` WSW, `Alt +3.00°`** (`day = 350` at `18:51`, clears `+0.89°` headland by `+2.11°`) | Exact match to `src/74-jj-sacred.js`: `PH = 6 m` platform (+ Long-Count Stone-Table Undercroft), `archZ = +16 m` Solstice Arch (`r = 4.5 m`, spring `12 m`), reflecting channel, `SH = 6 m` podium (`eye = +13.7 m` at `obsZ = -8.5 m`), gold-domed *mandapa*, 8-tier *shikhara* New-Fire shrine, 4 staged corner spires |
+| `floors/T2_week.png` | **Two-Faced Temple of the Week (*Vīkku-Kōvil*)** | `56 × 44 × 32` | **West `Az 270.0°`** (White Cut-Marble portal) <-> **ENE `Az 70.5°`** (Black Clinker portal) | Mirrors Iapetus-like *Week* (`7 d`): bright-half oaths & contracts sealed on the white marble side; *Double-Dark* vigils & penances on the vitrified clinker side; 7 weekday law-chambers |
+| `floors/T3_thirteen.png` | **13-Tier Temple of the Thirteen (*Tarṭīn-Mēṭu*)** | `64 × 84 × 42` | **East `Az 90.0°`** moonrise + **ENE `Az 70.5°`** *Double-Dark* shadow reflection | 13-stepped brick pyramid facing a `44 × 18 m` black-clinker **"Tar Sea" Mirror Pool**; 13 day-station cells; Royal Almanac blessing hall (packed by `Serai` pilgrims) |
+| `floors/T4_companion.png` | **Octagonal Dial-Temple of Companion (*Tuṇai-Maṇḍapam*)** | `42 × 48 × 36` | **Fixed `Az 353.3°` N, `Alt +56.1°`** (24/7 vault oculus onto L4 Trojan *Companion*) | Octagonal rotunda whose angled dome tube casts *Companion*'s waxing/waning gleam onto a **13-Sector Brass Birth-Hour Floor Dial**; water-driven 13-Hour Bell Tower |
+| `floors/T5_day.png` | **Pendulum Fan-Temple of Day (*Pakal-Vāsal*)** | `58 × 52 × 29` | **`Az 88.3°` E** (rise/set) <-> **`Az 70.5°` ENE** (Giant transit) <-> **`Az 27.0°` NNE, `Alt +52.1°`** (turnaround) | `61.3°` fan-court between Twin Turnaround Brazier Pylons; Kiln-Guild Sacred Hearth from which `Day District` potters & optical glassmakers take live coals at *Day*'s daily transit (cold on *Double Dark*) |
+| `floors/T6_twoday.png` | **Alabaster Occultation-Temple of Two-Day (*Maṟai-Kōvil*)** | `48 × 54 × 24` | **`Az 70.5° ± 15°` ENE** (`55.5°` ingress / `85.5°` egress across Giant's `30°` limb) | Sunken `Veḷḷai-kal` alabaster-*jali* court with **8 Public Dream-Sibyl Whispering Booths** using separated outer-petitioner and inner-Sibyl corridors |
+| `floors/T7_fourday.png` | **Four-Basin Lotus-Tank Temple of Four-Day (*Nālu-Kuḷam*)** | `96 × 96 × 28` | **Due North `Az 0.0°`, `Alt +55.66°`** (meridian culmination) | Cruciform island sanctuary inside a `96 × 96 m` stepped brick *kuḷam* split into 4 humoral bath basins (*Phlegmatic*, *Sanguine*, *Choleric*, *Melancholic*); beloved by `Hykkousoi` gill-bathers |
+| `floors/T8_planets.png` | **The Five Planetary Shrines & Uncounted Wanderer Circle** | `16×16` to `26×18` | `Veil` (`294°/194°`), `Crown` (`0°`), `Rust & Cinder` (`0°`), `Ash` (`270°`), `Frost` (`0°`), `Wanderer` (open sky) | Comparative blueprint sheet of all six minor intramural planetary/rogue-body shrines |
+| `floors/section.png` | **Axial Section of `jj_temple_sun` & Solstice Ray** | `u = -44..+44 m` | `+3.00°` solar ray from `obsZ = -8.5 m, y = +13.7 m` through `archZ = +16 m` (`y = +19.29 m` inside `18.0..22.5 m` arch head) | Verifies exact optical geometry of `src/74-jj-sacred.js` |
+
+---
+
+## 2. Architectural & Liturgical Rules Across All Temples
+
+1. **Lighting Ethos:** Every temple sanctuary, stepped tank, and cloister is lit exclusively by **traditional `whorl-olive` oil flame** (`jimjam_common_brass_lamp`, `jimjam_poor_diya_stand`, `jimjam_court_new_fire_bowl`) so the entire sacred landscape visibly **darkens to `giantshine` on every 91st-day *Double Dark*** and **re-ignites from the Solstice Arch's *New Fire* on Day 350**. Within the Acropolis, **only the Raja's Eye Observatory (`T0 #14–16`)** runs a shielded electric circuit for its quartz chronograph and micrometer crosshairs.
+2. **Imported White Marble as Sacred Optical Trim:** Because local `marble = 0` (`clay = 230`, `gypsum = 108`, `alabaster = 102`), structural temple mass is always kiln-fired banded red/yellow/dark-clinker rhythmite brick; imported Cut/Eternian/Korona white marble is reserved strictly for **sighting apertures, archivolts, meridian strips, gnomon scales, and threshold sills**.
+3. **Pilgrim Flow & Scholarly Exchange:** During floods, `Serai` crowds pack `T3_thirteen` and `T1_sun`; `Hykkousoi` mariners perform tidal ablutions at `T7_fourday` and `T2_week`; escorted `Eternal State` cohorts visit `T4_companion` and `T1_sun` (barred by their minders from `T8 #6` *Wanderer* and `T0 #11` *Eighty-One*); while `Inner Crater`, `Dalab–Shim`, `Yuni`, and **White-Pass `Yonni` & `Rian`** savants debate perturbations in the **Four Calendar Schools (`T0`)** and `T8 #5` *Frost*.
