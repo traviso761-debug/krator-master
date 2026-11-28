@@ -18,7 +18,7 @@
     if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
-  var raws = {}, cache = {}, _relBase = '';
+  var raws = {}, cache = {}, _relBase = (typeof location !== 'undefined' && location.protocol === 'file:') ? 'http://127.0.0.1:8123/' : '';
   function fetchRel(rel){
     if(_relBase){
       return fetch(_relBase + rel).then(function(r){ if(!r.ok) throw new Error(rel + ': ' + r.status); return r; });
