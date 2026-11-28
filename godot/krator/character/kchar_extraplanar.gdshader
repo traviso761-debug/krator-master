@@ -447,23 +447,31 @@ void fragment() {
 		EMISSION = col;
 		ALPHA = clamp(wisp, 0.0, 0.96);
 	} else if (kx_mode == 19) {
-		// Nightmare Urchin razor-sharp pitch-black needle corona around Head (`spiky_dark_array`)
+		// Nightmare Urchin crimson-backlit multi-tiered pitch-black needle starburst (`spiky_dark_array`)
 		vec2 p = (UV - 0.5) * 2.0;
 		float r = length(p);
 		if (r > 1.0) { discard; }
-		float ang = atan(p.y, p.x) + sin(kx_time * 4.8 + sin(atan(p.y, p.x) * 7.0) * 3.0) * 0.014 + kx_time * 0.08;
-		float id1 = floor((ang + 3.14159265) / 6.2831853 * 32.0);
-		float h1 = kx_hash12(vec2(id1, 3.7));
-		float max_r1 = 0.62 + 0.36 * h1;
-		float sec1 = abs(fract((ang + 3.14159265) / 6.2831853 * 32.0) - 0.5) * 2.0;
-		float w1 = max(0.02, 0.34 * (1.0 - r / max_r1));
-		float spikes1 = smoothstep(w1, w1 * 0.15, sec1) * step(r, max_r1) * smoothstep(0.10, 0.22, r);
-		float dread = exp(-r * 2.8) * 0.58 * (1.0 - smoothstep(0.65, 1.0, r));
-		float a = clamp(max(spikes1 * 0.96, dread), 0.0, 0.96);
+		float ang = atan(p.y, p.x);
+		float tremor = sin(kx_time * 11.0 + sin(ang * 9.0) * 4.0) * 0.006;
+		float u1 = (ang + tremor + 3.14159265) / 6.2831853 * 26.0;
+		float h1 = kx_hash12(vec2(mod(floor(u1), 26.0), 3.7));
+		float max_r1 = 0.54 + 0.44 * pow(h1, 0.65);
+		float w1 = max(0.035, 0.68 * pow(clamp(1.0 - (r - 0.08) / max(max_r1 - 0.08, 0.05), 0.0, 1.0), 1.35));
+		float s1 = step(r, max_r1) * smoothstep(w1, w1 * 0.18, abs(fract(u1) - 0.5) * 2.0);
+		float u2 = (ang - tremor * 0.8 + 0.075 + 3.14159265) / 6.2831853 * 42.0;
+		float h2 = kx_hash12(vec2(mod(floor(u2), 42.0), 11.3));
+		float max_r2 = 0.36 + 0.42 * pow(h2, 0.65);
+		float w2 = max(0.035, 0.56 * pow(clamp(1.0 - (r - 0.08) / max(max_r2 - 0.08, 0.05), 0.0, 1.0), 1.35));
+		float s2 = step(r, max_r2) * smoothstep(w2, w2 * 0.18, abs(fract(u2) - 0.5) * 2.0);
+		float inner_core = smoothstep(0.24, 0.12, r);
+		float spikes = max(inner_core, max(s1, s2));
+		float red_glow = exp(-max(0.0, r - 0.16) * 3.8) * (1.0 - smoothstep(0.62, 0.96, r));
+		float vig = smoothstep(1.0, 0.22, r);
+		float a = clamp(max(spikes * 0.98, vig * 0.72 + red_glow * 0.42), 0.0, 0.99);
 		if (a < 0.008) { discard; }
-		float red_root = spikes1 * exp(-max(0.0, r - 0.18) * 7.5);
-		ALBEDO = mix(vec3(0.006, 0.004, 0.008), vec3(0.62, 0.05, 0.08), red_root * 0.55);
-		EMISSION = vec3(0.35, 0.02, 0.04) * red_root;
+		vec3 bg_col = mix(vec3(0.012, 0.004, 0.008), vec3(0.68, 0.055, 0.095), clamp(red_glow * 1.15, 0.0, 0.82));
+		ALBEDO = mix(bg_col, vec3(0.003, 0.002, 0.005), spikes);
+		EMISSION = vec3(0.42, 0.03, 0.06) * red_glow * (1.0 - spikes);
 		ALPHA = a;
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)

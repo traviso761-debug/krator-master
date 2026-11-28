@@ -591,40 +591,43 @@ def _build_ocular_umbra(sex):
     ent_g['hide_parts'] = ['Human.fingernails']
     entries.append(ent_g)
 
-    # --- 1E. LEGS: ext4_{s}_umbra_tatter (Legless Tapering Pitch-Black Shadow Column + Lower Eyes) ---
+    # --- 1E. LEGS: ext4_{s}_umbra_tatter (Seamless Unlit Pitch-Black Tapering Shadow Root + Lower Eyes) ---
     gid_l = f'ext4_{sex}_umbra_tatter'
     parts_l = []
-    rows_u = 20
-    zs_u = np.linspace(core.WAIST + 0.036, 0.04, rows_u)
-    angs_u = np.linspace(0.0, 2.0 * math.pi, 30, endpoint=False)
+    rows_u = 22
+    zs_u = np.linspace(core.WAIST + 0.020, 0.04, rows_u)
+    angs_u = np.linspace(0.0, 2.0 * math.pi, 32, endpoint=False)
     Q_col = []
     for kr, zv in enumerate(zs_u):
         ur = kr / (rows_u - 1)
-        rad_u = (1.0 - ur) ** 0.72 * 0.168 + 0.032
+        # Anatomical waist-ellipse cross-section tucked flush inside `mono_body` (`ease=0.032`) -> zero waist ledge!
+        rad_x = (1.0 - ur) ** 0.76 * 0.142 + 0.024
+        rad_y = (1.0 - ur) ** 0.76 * 0.106 + 0.022
+        jag = 1.0 + 0.06 * ur * math.sin(ur * 5.0)
         Q_col.append([
-            [math.sin(a) * rad_u * (1.0 + 0.08 * math.sin(9.0 * a + ur * 4.0)),
-             math.cos(a) * rad_u * (1.0 + 0.08 * math.sin(9.0 * a + ur * 4.0)), zv]
+            [math.sin(a) * rad_x * (1.0 + 0.07 * ur * math.sin(9.0 * a + ur * 4.0)) * jag,
+             math.cos(a) * rad_y * (1.0 + 0.07 * ur * math.sin(9.0 * a + ur * 4.0)) * jag, zv]
             for a in angs_u
         ])
     col_vfx = {
-        'kind': 'alpha_erosion', 'no_push': True,
-        'y_top': 0.42, 'y_bot': 0.03,
-        'edge_color': '#100306', 'smoke_color': '#020104', 'swirl': 0.45,
+        'kind': 'alpha_erosion', 'no_push': True, 'unlit': True,
+        'y_top': 0.46, 'y_bot': 0.03,
+        'edge_color': '#0c0204', 'smoke_color': '#020104', 'swirl': 0.45,
     }
     parts_l.append(_part_raw(gid_l + '_monolith_root', Q_col, True, ink_p, rigid_joint='Hips', vfx=col_vfx))
 
-    # 4 Lower Staggered Golden-Crimson Eyes descending toward the monolith tip (Image 1!)
+    # 4 Lower Staggered Golden-Crimson Eyes descending smoothly down the monolith root (Image 1!)
     lower_eyes = [
-        (-0.026, 0.78, 0.026),
-        ( 0.024, 0.56, 0.023),
-        (-0.016, 0.34, 0.020),
-        ( 0.008, 0.16, 0.017),
+        (-0.026, 0.80, 0.026),
+        ( 0.024, 0.58, 0.023),
+        (-0.016, 0.36, 0.020),
+        ( 0.008, 0.18, 0.017),
     ]
     for li, (lx_e, u_l, lw_e) in enumerate(lower_eyes):
         zv = 0.06 + u_l * (core.WAIST - 0.10)
         ur = 1.0 - u_l
-        rad_f = (1.0 - ur) ** 0.72 * 0.168 + 0.034
-        ec = np.array([lx_e, -rad_f, zv])
+        rad_fy = (1.0 - ur) ** 0.76 * 0.106 + 0.025
+        ec = np.array([lx_e, -rad_fy, zv])
         parts_l.extend(build_umbra_eye(
             f'{gid_l}_low_eye_{li}', ec, fwd, left_w, up_w, lw_e, 'Hips', sclera_p, iris_p, pupil_p
         ))
@@ -851,8 +854,62 @@ def _build_astral_pyre(sex):
 
 
 # ===============================================================================================================
-# 3. NIGHTMARE URCHIN — Sleep-Paralysis Urchin-Head Shadow Horror (Image 3)
+# 3. NIGHTMARE URCHIN — Sleep-Paralysis Urchin-Head Shadow Horror (Image 3 — Quality Pass)
 # ===============================================================================================================
+def _build_wicked_claw_hand(prefix, wrist_pt, dir_fwd, dir_spread, dir_hook, sgn, rigid_joint, paint_blk, vfx_blk, scale_h=1.0):
+    """Sculpt a monstrous, skeletal 5-fingered nightmare hand with arched knuckles & crooked scythe-talons."""
+    pts_out = []
+    u_f = np.asarray(dir_fwd, dtype=np.float64)
+    u_f = u_f / max(float(np.linalg.norm(u_f)), 1e-8)
+    u_s = np.asarray(dir_spread, dtype=np.float64)
+    u_s = u_s - u_f * np.dot(u_s, u_f)
+    u_s = u_s / max(float(np.linalg.norm(u_s)), 1e-8)
+    u_h = np.asarray(dir_hook, dtype=np.float64)
+    u_h = u_h / max(float(np.linalg.norm(u_h)), 1e-8)
+
+    # Flattened bony metacarpal palm fan
+    palm_mid = wrist_pt + u_f * (0.068 * scale_h)
+    pts_out.append(sweep_tube(
+        f'{prefix}_palm', [wrist_pt - u_f * 0.008, palm_mid, wrist_pt + u_f * (0.095 * scale_h)],
+        [0.022 * scale_h, 0.036 * scale_h, 0.032 * scale_h], paint_blk, n=8,
+        rigid_joint=rigid_joint, scale_xy=(1.45, 0.42), ref_dir=u_s, vfx=vfx_blk
+    ))
+
+    # 4 Long, Crooked, Multi-Phalanx Scythe-Claw Fingers (Index, Middle, Ring, Pinky)
+    finger_specs = [
+        (-0.85, 0.92, -0.34),
+        (-0.28, 1.08, -0.10),
+        ( 0.30, 1.02,  0.14),
+        ( 0.88, 0.84,  0.38),
+    ]
+    for fi, (sp_k, len_k, fan_ang) in enumerate(finger_specs):
+        knuckle = wrist_pt + u_f * (0.088 * scale_h) + u_s * (sp_k * 0.038 * scale_h)
+        f_dir = u_f * math.cos(fan_ang) + u_s * math.sin(fan_ang)
+        f_dir = f_dir / max(float(np.linalg.norm(f_dir)), 1e-8)
+        L = 0.215 * len_k * scale_h
+        # High arched proximal phalanx -> sharp crooked middle joint -> inward-hooking scythe tip!
+        j1 = knuckle + f_dir * (0.42 * L) - u_h * (0.18 * L)
+        j2 = j1 + f_dir * (0.38 * L) + u_h * (0.26 * L)
+        tip = j2 + f_dir * (0.16 * L) + u_h * (0.48 * L)
+        pts_out.append(sweep_tube(
+            f'{prefix}_finger_{fi}', catmull_spline([knuckle - u_f * 0.012, j1, j2, tip], 11),
+            np.array([0.0115, 0.0105, 0.0095, 0.0088, 0.0082, 0.0072, 0.0058, 0.0044, 0.0030, 0.0018, 0.0007]) * scale_h,
+            paint_blk, n=7, rigid_joint=rigid_joint, scale_xy=(0.75, 1.30), ref_dir=u_s, vfx=vfx_blk
+        ))
+
+    # Opposable Wicked Hooked Inner Thumb-Talon
+    th_Side = -sgn  # inner medial side of hand
+    th_root = wrist_pt + u_f * (0.038 * scale_h) + u_s * (th_Side * 0.036 * scale_h) + u_h * (0.010 * scale_h)
+    th_mid  = th_root + (u_f * 0.68 + u_s * (th_Side * 0.62)) * (0.085 * scale_h) - u_h * (0.012 * scale_h)
+    th_tip  = th_mid + (u_f * 0.45 - u_s * (th_Side * 0.35)) * (0.075 * scale_h) + u_h * (0.068 * scale_h)
+    pts_out.append(sweep_tube(
+        f'{prefix}_thumb', catmull_spline([th_root, th_mid, th_tip], 9),
+        np.linspace(0.0115, 0.0008, 9) * scale_h, paint_blk, n=7,
+        rigid_joint=rigid_joint, scale_xy=(0.78, 1.28), vfx=vfx_blk
+    ))
+    return pts_out
+
+
 def _build_nightmare_urchin(sex):
     entries = []
     urchin_p = _mp('ext4_urchin_black', 'cloth.wool.fulled', 'ext4_urchin_furrow', 'ext4_urchin_dread', grain=0.012)
@@ -865,186 +922,275 @@ def _build_nightmare_urchin(sex):
     up_w = np.array([0.0, 0.0, 1.0])
     left_w = np.array([1.0, 0.0, 0.0])
 
-    urchin_void_vfx = {'kind': 'emissive_blaze', 'color': '#030205', 'gain': 0.03, 'pulse': 0.0}
+    urchin_void_vfx = {'kind': 'emissive_blaze', 'color': '#030205', 'gain': 0.025, 'pulse': 0.0}
     dread_vfx = {
         'kind': 'fresnel_ghost',
-        'core_color': '#030205',
-        'rim_color': '#4c0610',
-        'accent_color': '#120206',
-        'opacity': 0.98,
-        'power': 2.8,
-        'rim_gain': 0.85,
+        'core_color': '#020104',
+        'rim_color': '#560812',
+        'accent_color': '#140206',
+        'opacity': 0.99,
+        'power': 3.0,
+        'rim_gain': 0.72,
         'depth_write': True,
     }
 
-    # --- 3A. HEAD: ext4_{s}_urchin_head (Pitch-Black Orb, Hollow Pinpoint Eyes, Red Needle-Grin, 28 3D Spines & `spiky_dark_array` Aura!) ---
+    # --- 3A. HEAD: ext4_{s}_urchin_head (Imposing Shadow-Orb, Cavernous Pinpoint Eyes, Ear-to-Ear Needle Smile & 36 3D Quills!) ---
     gid_h = f'ext4_{sex}_urchin_head'
     parts_h = []
-    hc = np.array([0.0, float(a_hd[1]) - 0.008, float(a_hd[2]) + 0.092])
+    hc = np.array([0.0, float(a_hd[1]) - 0.010, float(a_hd[2]) + 0.098])
 
-    # Spherical pitch-black shadow-orb cranium
+    # Imposing spherical pitch-black shadow-orb cranium (`0.146 m` radius matching Image 3's proportions!)
     parts_h.append(ellipsoid_part(
-        gid_h + '_orb_head', hc, (0.126, 0.118, 0.126), urchin_p, 'Head',
-        axes=(left_h, bk_h, up_h), n=22, rows=14, vfx=urchin_void_vfx
+        gid_h + '_orb_head', hc, (0.146, 0.132, 0.144), urchin_p, 'Head',
+        axes=(left_h, bk_h, up_h), n=24, rows=15, vfx=urchin_void_vfx
     ))
 
-    # Two huge sunken black eye-sockets + tiny glowing pale-crimson pinpoint pupils (Image 3!)
-    pupil_vfx = {'kind': 'emissive_blaze', 'color': '#ffd0d8', 'gain': 2.75, 'pulse': 0.16}
+    # Two HUGE cavernous sunken pitch-black eye-hollows + razor-tiny glowing pink-white pinpoint pupils (Image 3!)
+    pupil_vfx = {'kind': 'emissive_blaze', 'color': '#ffe0e4', 'gain': 3.10, 'pulse': 0.14}
+    pupil_halo_vfx = {'kind': 'emissive_blaze', 'color': '#ff384c', 'gain': 1.85, 'pulse': 0.20}
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        eye_c = hc + left_h * (sgn * 0.044) - bk_h * 0.106 + up_h * 0.012
+        eye_c = hc + left_h * (sgn * 0.048) - bk_h * 0.122 + up_h * 0.018
+        # Furrowed orbital brow ridge around each huge eye cavity
+        ridge_angs = np.linspace(0.0, 2.0 * math.pi, 16, endpoint=False)
+        ridge_pts = [
+            eye_c + left_h * (math.cos(a) * 0.046) + up_h * (math.sin(a) * 0.046) - bk_h * 0.004
+            for a in list(ridge_angs) + [0.0]
+        ]
+        parts_h.append(sweep_tube(
+            f'{gid_h}_orbital_ridge_{tag}', ridge_pts, 0.0075, urchin_p, n=6, rigid_joint='Head', vfx=urchin_void_vfx
+        ))
         parts_h.append(ellipsoid_part(
-            f'{gid_h}_socket_{tag}', eye_c, (0.038, 0.018, 0.038), sock_p, 'Head',
+            f'{gid_h}_socket_{tag}', eye_c, (0.043, 0.016, 0.043), sock_p, 'Head',
             axes=(left_h, bk_h, up_h), n=14, rows=8, vfx=urchin_void_vfx
         ))
         parts_h.append(ellipsoid_part(
-            f'{gid_h}_pinpoint_{tag}', eye_c - bk_h * 0.018, (0.0075, 0.0055, 0.0075), pupil_p, 'Head',
+            f'{gid_h}_pinpoint_halo_{tag}', eye_c - bk_h * 0.015, (0.0095, 0.005, 0.0095), tooth_p, 'Head',
+            axes=(left_h, bk_h, up_h), n=8, rows=6, vfx=pupil_halo_vfx
+        ))
+        parts_h.append(ellipsoid_part(
+            f'{gid_h}_pinpoint_{tag}', eye_c - bk_h * 0.019, (0.0052, 0.0045, 0.0052), pupil_p, 'Head',
             axes=(left_h, bk_h, up_h), n=8, rows=6, vfx=pupil_vfx
         ))
 
-    # Wide Crescent Grin of 15 Thin Glowing Blood-Salmon Needle-Teeth (Image 3!)
-    tooth_vfx = {'kind': 'emissive_blaze', 'color': '#ff4852', 'gain': 2.35, 'pulse': 0.22}
-    for ti in range(15):
-        ut = (ti / 14.0) * 2.0 - 1.0  # -1..+1 across wide grin
-        tx = ut * 0.088
-        tz_mid = -0.056 + 0.032 * (ut * ut)
-        th_half = 0.022 * (1.0 - 0.68 * ut * ut) + 0.005
-        # Curve forward over the spherical orb surface
-        ty = -math.sqrt(max(0.002, 0.124 * 0.124 - tx * tx * 0.65 - tz_mid * tz_mid * 0.55))
-        t_top = hc + left_h * tx + bk_h * ty + up_h * (tz_mid + th_half)
-        t_bot = hc + left_h * (tx * 0.96) + bk_h * (ty * 0.98) + up_h * (tz_mid - th_half)
+    # Iconic Wide Ear-to-Ear Upturned Crescent Smile of 29 Razor-Sharp Glowing Red-Salmon Needle-Fangs!
+    # 1) Recessed dark blood-crimson mouth fissure curving across the lower face so teeth sit over an eerie red maw
+    grin_ctrl = []
+    for ug in np.linspace(-1.0, 1.0, 13):
+        gx = ug * 0.114
+        gz = -0.068 + 0.062 * (ug * ug)
+        gy = -math.sqrt(max(0.003, 0.132 * 0.132 * (1.0 - (gx / 0.148) ** 2 - (gz / 0.146) ** 2))) - 0.002
+        grin_ctrl.append(hc + left_h * gx + bk_h * gy + up_h * gz)
+    parts_h.append(sweep_tube(
+        gid_h + '_mouth_gash', grin_ctrl,
+        [0.002, 0.009, 0.015, 0.019, 0.021, 0.022, 0.022, 0.022, 0.021, 0.019, 0.015, 0.009, 0.002],
+        sock_p, n=7, rigid_joint='Head', scale_xy=(1.0, 0.35), ref_dir=bk_h,
+        vfx={'kind': 'emissive_blaze', 'color': '#4e0610', 'gain': 0.85, 'pulse': 0.18}
+    ))
+
+    # 2) 29 Individual Splayed Razor-Sharp Needle-Teeth (hot salmon-pink centers + crimson tips, staggered heights!)
+    tooth_hot_vfx = {'kind': 'emissive_blaze', 'color': '#ff7e7c', 'gain': 2.55, 'pulse': 0.18}
+    tooth_red_vfx = {'kind': 'emissive_blaze', 'color': '#ff3644', 'gain': 2.25, 'pulse': 0.24}
+    n_teeth = 29
+    for ti in range(n_teeth):
+        ut = (ti / float(n_teeth - 1)) * 2.0 - 1.0  # -1..+1 ear-to-ear
+        tx = ut * 0.112
+        tz_mid = -0.068 + 0.062 * (ut * ut)
+        # Normal to the smile curve `dz/dx = 2 * 0.062 * ut / 0.112` -> radial splay like Image 3!
+        slope = (2.0 * 0.062 * ut) / 0.112
+        t_axis_2d = left_h * (-slope * 0.38) + up_h * 1.0
+        t_axis_2d = t_axis_2d / np.linalg.norm(t_axis_2d)
+        env = max(0.0, 1.0 - 0.78 * (ut * ut))
+        jag = 1.15 if (ti % 2 == 0) else (0.76 if (ti % 3 == 0) else 0.92)
+        th_half = (0.031 * env + 0.0045) * jag
+        ty = -math.sqrt(max(0.003, 0.132 * 0.132 * (1.0 - (tx / 0.148) ** 2 - (tz_mid / 0.146) ** 2))) - 0.006
+        c_mid = hc + left_h * tx + bk_h * ty + up_h * tz_mid
+        t_top = c_mid + t_axis_2d * th_half + bk_h * 0.003
+        t_bot = c_mid - t_axis_2d * th_half + bk_h * 0.003
         parts_h.append(sweep_tube(
-            f'{gid_h}_tooth_{ti}', [t_top, 0.5 * (t_top + t_bot) - bk_h * 0.004, t_bot],
-            [0.0014, 0.0030, 0.0012], tooth_p, n=5, rigid_joint='Head', vfx=tooth_vfx
+            f'{gid_h}_tooth_{ti}', [t_top, c_mid - bk_h * 0.004, t_bot],
+            [0.0006, 0.0024 if ti % 2 == 0 else 0.0019, 0.0006],
+            pupil_p if ti % 2 == 0 else tooth_p, n=5, rigid_joint='Head',
+            scale_xy=(0.48, 1.35), ref_dir=left_h,
+            vfx=tooth_hot_vfx if ti % 2 == 0 else tooth_red_vfx
         ))
 
-    # 28 Long, Razor-Sharp 3D Pitch-Black Sea-Urchin Needles radiating around the Head!
-    for si in range(28):
-        ang = (si / 28.0) * 2.0 * math.pi
-        z_tilt = 0.18 * math.sin(si * 2.3)  # organic 3D depth variation
+    # 36 Long, Jagged, Uneven 3D Pitch-Black Sea-Urchin Spines radiating in 3D from the orb!
+    for si in range(36):
+        ang = (si / 36.0) * 2.0 * math.pi
+        z_tilt = 0.24 * math.sin(si * 2.7)
         r_dir = left_h * math.cos(ang) + up_h * math.sin(ang) + bk_h * z_tilt
         r_dir = r_dir / np.linalg.norm(r_dir)
-        s_len = 0.24 + 0.15 * ((si * 0.618034) % 1.0)
-        p0 = hc + r_dir * 0.105
-        p1 = hc + r_dir * (0.105 + s_len)
+        s_len = 0.24 + 0.22 * (((si * 0.618034) % 1.0) ** 0.75)
+        p0 = hc + r_dir * 0.115
+        p_mid = hc + r_dir * (0.115 + 0.48 * s_len) + up_h * (0.012 * math.cos(si * 1.9))
+        p1 = hc + r_dir * (0.115 + s_len)
         parts_h.append(sweep_tube(
-            f'{gid_h}_quill_{si}', [p0, 0.5 * (p0 + p1), p1],
-            [0.0085, 0.0042, 0.0008], urchin_p, n=6, rigid_joint='Head', vfx=urchin_void_vfx
+            f'{gid_h}_quill_{si}', [p0, p_mid, p1],
+            [0.0125, 0.0052, 0.0007], urchin_p, n=6, rigid_joint='Head', vfx=urchin_void_vfx
         ))
 
     ent_h = assemble_garment(
         gid_h, 'Nightmare Urchin Spiked Shadow-Orb & Red Needle-Grin', 'head', parts_h,
         covers_hair=True, covers_face=True,
-        auras=[{'kind': 'spiky_dark_array', 'bone': 'Head', 'offset': [0.0, 0.04, 0.0], 'scale': 1.06}]
+        auras=[{'kind': 'spiky_dark_array', 'bone': 'Head', 'offset': [0.0, 0.04, 0.0], 'scale': 1.04}]
     )
     ent_h['hide_parts'] = list(FULL_HEAD_HIDE_PARTS)
     apply_custom_hide(ent_h, select_body_tris(('Head', 'Neck'), weight_thresh=0.20, mode='any'))
     entries.append(ent_h)
 
-    # --- 3B. TORSO: ext4_{s}_urchin_shroud (Gaunt Writhing Pitch-Black Nightmare-Tendril Ribcage) ---
+    # --- 3B. TORSO: ext4_{s}_urchin_shroud (Gaunt Writhing Ribcage + Sinewy Twisted Upper Arms w/ Jagged Elbow Spurs!) ---
     gid_t = f'ext4_{sex}_urchin_shroud'
     parts_t = []
     u_trunk = torso_tube(
-        gid_t + '_shadow_ribcage', core.TOP + 0.008, core.WAIST - 0.006, ease=0.004, ease_bottom=-0.018,
+        gid_t + '_shadow_ribcage', core.TOP + 0.008, core.WAIST - 0.022, ease=-0.004, ease_bottom=-0.022,
         paint=urchin_p, n=32, rows=13
     )
     tag_vfx(u_trunk, dread_vfx, no_conform=True)
     parts_t.append(u_trunk)
 
-    u_slv = sleeves(gid_t + '_spindly_arms', 'elbow', 0.002, urchin_p, ease_end=0.002, rows=8, n=14)
-    tag_vfx(u_slv, dread_vfx, no_conform=True)
-    parts_t.extend(u_slv)
+    # Sculpted gangly, sinewy upper arms with jagged elbow-spurs & wispy black shadow-strands
+    for sgn, side, tag in ((1.0, 'Left', 'L'), (-1.0, 'Right', 'R')):
+        sh, el = J(side + 'Arm'), J(side + 'ForeArm')
+        d_up = el - sh
+        hum_pts = catmull_spline([
+            sh - d_up * 0.06,
+            sh + d_up * 0.45 + np.array([sgn * 0.008, 0.010, 0.0]),
+            el + d_up * 0.05,
+        ], 10)
+        parts_t.append(sweep_tube(
+            f'{gid_t}_humerus_{tag}', hum_pts,
+            [0.042, 0.030, 0.026, 0.024, 0.023, 0.024, 0.026, 0.028, 0.030, 0.022],
+            urchin_p, n=9, rigid_joint=side + 'Arm', twist=0.85 * sgn, vfx=urchin_void_vfx
+        ))
+        # Jagged backward-sweeping shadow elbow spur + trailing wispy strand (Image 3!)
+        spur_end = el + np.array([sgn * 0.022, 0.095, 0.025])
+        parts_t.append(sweep_tube(
+            f'{gid_t}_elbow_spur_{tag}', [el - d_up * 0.08, el + np.array([0.0, 0.035, 0.0]), spur_end],
+            [0.016, 0.011, 0.0012], urchin_p, n=6, rigid_joint=side + 'Arm', vfx=urchin_void_vfx
+        ))
 
     ent_t = assemble_garment(gid_t, 'Nightmare Urchin Gaunt Shadow-Tendril Shroud', 'torso', parts_t)
     hide_full_body(ent_t)
     entries.append(ent_t)
 
-    # --- 3C. BACK: ext4_{s}_urchin_stalkers (Secondary Pair of Gangly Reaching 4-Taloned Shadow-Claw Arms!) ---
+    # --- 3C. BACK: ext4_{s}_urchin_stalkers (Asymmetrical Pair of Gangly Multi-Jointed 5-Clawed Nightmare Stalker Arms!) ---
     gid_b = f'ext4_{sex}_urchin_stalkers'
     parts_b = []
-    for sgn, tag in ((1.0, 'L'), (-1.0, 'R')):
+    stalker_poses = [
+        # Left Stalker Arm: arches HIGH and wide above the shoulder with poised inward-curling talons (Image 3 right side!)
+        ('L',  1.0, np.array([ 0.28, 0.06,  0.22]), np.array([ 0.48, -0.14,  0.04]),
+         np.array([ 0.35, -0.82, -0.45]), np.array([0.0, 0.15, 0.98]), np.array([-0.82, -0.35, -0.45]), 0.0),
+        # Right Stalker Arm: sweeps wide and low-forward with splayed predatory claws (Image 3 left side!)
+        ('R', -1.0, np.array([-0.34, 0.08,  0.02]), np.array([-0.46, -0.20, -0.18]),
+         np.array([-0.22, -0.88, -0.42]), np.array([0.85, 0.0, 0.52]), np.array([ 0.52, -0.25, -0.82]), 2.1),
+    ]
+    for tag, sgn, elb_off, wr_off, f_dir, sp_dir, hk_dir, ph in stalker_poses:
         sh = J(('Left' if sgn > 0 else 'Right') + 'Arm')
-        root_a = sh + np.array([-sgn * 0.03, 0.085, 0.02])
-        elb_a  = sh + np.array([sgn * 0.28, 0.045, 0.12])
-        wr_a   = sh + np.array([sgn * 0.36, -0.145, -0.08])
+        root_a = sh + np.array([-sgn * 0.04, 0.09, 0.01])
+        elb_a  = sh + elb_off
+        wr_a   = sh + wr_off
         kin_st = {
-            'bone': 'Spine2', 'motion': 'chorus_wave', 'speed': 1.45, 'amp': 0.018,
-            'phase': 0.0 if sgn > 0 else 2.2,
-            'center_gl': bl_to_gl_pt(root_a), 'axis_gl': [1.0, 0.0, 0.0],
+            'bone': 'Spine2', 'motion': 'chorus_wave', 'speed': 1.35, 'amp': 0.022,
+            'phase': ph, 'center_gl': bl_to_gl_pt(root_a), 'axis_gl': [1.0, 0.0, 0.0],
         }
         st_vfx = dict(urchin_void_vfx, kinetic=kin_st)
+        # Upper stalker humerus
         parts_b.append(sweep_tube(
-            f'{gid_b}_stalk_arm_{tag}', catmull_spline([root_a, elb_a, wr_a], 12),
-            [0.026, 0.019, 0.014], urchin_p, n=8, rigid_joint='Spine2', vfx=st_vfx
+            f'{gid_b}_humerus_{tag}', catmull_spline([root_a, 0.5 * (root_a + elb_a) + np.array([0.0, 0.03, 0.04]), elb_a], 10),
+            [0.034, 0.024, 0.022, 0.025, 0.028], urchin_p, n=8, rigid_joint='Spine2', twist=0.9 * sgn, vfx=st_vfx
         ))
-        # 4 Wickedly Curved Gangly Shadow-Talons on each dorsal hand!
-        for fi, fx_off in enumerate((-0.032, -0.010, 0.012, 0.034)):
-            f0 = wr_a + np.array([fx_off, 0.0, 0.0])
-            f1 = f0 + np.array([sgn * 0.035 + fx_off * 0.8, -0.075, -0.045])
-            f2 = f1 + np.array([-sgn * 0.025, -0.035, -0.075])
+        # Forearm + jagged elbow spur + 2 trailing wispy forearm tendrils
+        parts_b.append(sweep_tube(
+            f'{gid_b}_forearm_{tag}', catmull_spline([elb_a, 0.5 * (elb_a + wr_a) + np.array([sgn * 0.03, 0.02, 0.02]), wr_a], 10),
+            [0.028, 0.025, 0.021, 0.018, 0.020], urchin_p, n=8, rigid_joint='Spine2', twist=-1.1 * sgn, vfx=st_vfx
+        ))
+        for wi, w_u in enumerate((0.15, 0.55)):
+            wp0 = elb_a * (1.0 - w_u) + wr_a * w_u
+            wp1 = wp0 + np.array([sgn * 0.055, 0.065, -0.085 - 0.03 * wi])
             parts_b.append(sweep_tube(
-                f'{gid_b}_stalk_talon_{tag}_{fi}', catmull_spline([f0, f1, f2], 8),
-                [0.008, 0.005, 0.001], urchin_p, n=6, rigid_joint='Spine2', vfx=st_vfx
+                f'{gid_b}_wisp_{tag}_{wi}', [wp0, 0.5 * (wp0 + wp1) + np.array([sgn * 0.02, 0.02, 0.0]), wp1],
+                [0.011, 0.006, 0.0009], urchin_p, n=5, rigid_joint='Spine2', vfx=st_vfx
             ))
+        # Full 5-fingered crooked scythe-claw hand!
+        parts_b.extend(_build_wicked_claw_hand(
+            f'{gid_b}_hand_{tag}', wr_a, f_dir, sp_dir, hk_dir, sgn, 'Spine2', urchin_p, st_vfx, scale_h=1.12
+        ))
 
     entries.append(assemble_garment(gid_b, 'Nightmare Urchin Dorsal Shadow-Claw Stalker Arms', 'back', parts_b))
 
-    # --- 3D. GLOVES: ext4_{s}_urchin_claws (Spindly Pitch-Black Forearms & Long Curved Nightmare Talons) ---
+    # --- 3D. GLOVES: ext4_{s}_urchin_claws (Twisted Fibrous Forearms & Giant 5-Fingered Scythe-Claw Hands!) ---
     gid_g = f'ext4_{sex}_urchin_claws'
     parts_g = []
-    glv_u = full_gloves(gid_g, urchin_p, urchin_p, sock_p, f0=0.14, ease=0.003)
-    tag_vfx(glv_u, dread_vfx, no_conform=True)
-    parts_g.extend(glv_u)
-    for sgn, side in ((1.0, 'Left'), (-1.0, 'Right')):
+    for sgn, side, tag in ((1.0, 'Left', 'L'), (-1.0, 'Right', 'R')):
         el, wr = J(side + 'ForeArm'), J(side + 'Hand')
         d_fa = wr - el
         u_fa = d_fa / max(float(np.linalg.norm(d_fa)), 1e-6)
+        # Twisted sinewy forearm with trailing wispy shadow-fur strands
+        fa_pts = catmull_spline([
+            el - u_fa * 0.015,
+            el + d_fa * 0.45 + np.array([sgn * 0.008, 0.012, 0.0]),
+            wr + u_fa * 0.010,
+        ], 10)
+        parts_g.append(sweep_tube(
+            f'{gid_g}_forearm_{tag}', fa_pts,
+            [0.029, 0.027, 0.024, 0.021, 0.020, 0.021, 0.022],
+            urchin_p, n=9, rigid_joint=side + 'ForeArm', twist=-1.15 * sgn, vfx=urchin_void_vfx
+        ))
+        for wi, wu in enumerate((0.25, 0.62)):
+            w0 = el + d_fa * wu + np.array([0.0, 0.015, 0.0])
+            w1 = w0 + np.array([sgn * 0.035, 0.075, -0.065])
+            parts_g.append(sweep_tube(
+                f'{gid_g}_fa_wisp_{tag}_{wi}', [w0, 0.5 * (w0 + w1), w1],
+                [0.010, 0.005, 0.0009], urchin_p, n=5, rigid_joint=side + 'ForeArm', vfx=urchin_void_vfx
+            ))
+        # Giant 5-fingered crooked scythe-claw hand rigged to `LeftHand` / `RightHand`!
         side_v = np.cross(u_fa, np.array([0.0, 1.0, 0.0]))
         side_v = side_v / max(float(np.linalg.norm(side_v)), 1e-6)
-        for fi, off_s in enumerate((-0.030, -0.010, 0.010, 0.030)):
-            c0 = wr + u_fa * 0.078 + side_v * off_s
-            c1 = c0 + u_fa * 0.062 + np.array([0.0, -0.016, -0.010])
-            c2 = c1 + u_fa * 0.048 + np.array([-sgn * 0.022, -0.036, -0.024])
-            parts_g.append(sweep_tube(
-                f'{gid_g}_talon_{side}_{fi}', catmull_spline([c0, c1, c2], 8),
-                [0.0075, 0.0045, 0.0009], urchin_p, n=6, rigid_joint=side + 'Hand', vfx=urchin_void_vfx
-            ))
+        hook_v = np.array([-sgn * 0.42, -0.82, -0.38])
+        parts_g.extend(_build_wicked_claw_hand(
+            f'{gid_g}_hand_{tag}', wr, u_fa, side_v, hook_v, sgn, side + 'Hand', urchin_p, urchin_void_vfx, scale_h=1.06
+        ))
+
     ent_g = assemble_garment(gid_g, 'Nightmare Urchin Wicked Shadow-Talons', 'gloves', parts_g)
     ent_g['hide_parts'] = ['Human.fingernails']
+    apply_custom_hide(ent_g, select_body_tris(('LeftForeArm', 'RightForeArm', 'LeftHand', 'RightHand'), weight_thresh=0.18, mode='any'))
     entries.append(ent_g)
 
-    # --- 3E. LEGS: ext4_{s}_urchin_wisps (Legless Writhing Column of Pitch-Black Shadow-Hair Tendrils) ---
+    # --- 3E. LEGS: ext4_{s}_urchin_wisps (Seamless Unlit Void-Black Writhing Shadow-Hair Tendril Trail) ---
     gid_l = f'ext4_{sex}_urchin_wisps'
     parts_l = []
     rows_w = 18
-    zs_w = np.linspace(core.WAIST + 0.042, 0.08, rows_w)
-    angs_w = np.linspace(0.0, 2.0 * math.pi, 26, endpoint=False)
+    zs_w = np.linspace(core.WAIST + 0.018, 0.08, rows_w)
+    angs_w = np.linspace(0.0, 2.0 * math.pi, 28, endpoint=False)
     Q_wisps = []
     for kw_i, zv in enumerate(zs_w):
         uw = kw_i / (rows_w - 1)
-        rad_w = (1.0 - uw) ** 0.85 * 0.132 + 0.020
+        rad_wx = (1.0 - uw) ** 0.85 * 0.112 + 0.018
+        rad_wy = (1.0 - uw) ** 0.85 * 0.086 + 0.018
         Q_wisps.append([
-            [math.sin(a) * rad_w * (1.0 + 0.16 * math.sin(7.0 * a + uw * 6.0)),
-             math.cos(a) * rad_w * (1.0 + 0.16 * math.sin(7.0 * a + uw * 6.0)), zv]
+            [math.sin(a) * rad_wx * (1.0 + 0.18 * uw * math.sin(7.0 * a + uw * 6.0)),
+             math.cos(a) * rad_wy * (1.0 + 0.18 * uw * math.sin(7.0 * a + uw * 6.0)), zv]
             for a in angs_w
         ])
     wisp_vfx = {
-        'kind': 'alpha_erosion', 'no_push': True,
-        'y_top': 0.55, 'y_bot': 0.06,
-        'edge_color': '#2a0408', 'smoke_color': '#020104', 'swirl': 1.55,
+        'kind': 'alpha_erosion', 'no_push': True, 'unlit': True,
+        'y_top': 0.56, 'y_bot': 0.06,
+        'edge_color': '#38040a', 'smoke_color': '#020104', 'swirl': 1.55,
     }
     parts_l.append(_part_raw(gid_l + '_shadow_funnel', Q_wisps, True, urchin_p, rigid_joint='Hips', vfx=wisp_vfx))
 
-    for ti in range(8):
-        a0 = (ti / 8.0) * 2.0 * math.pi
+    for ti in range(10):
+        a0 = (ti / 10.0) * 2.0 * math.pi
         t_pts = []
         for kt in range(14):
             ut = kt / 13.0
-            zv = (core.WAIST + 0.004) * (1.0 - ut) + 0.06 * ut
+            zv = (core.WAIST - 0.010) * (1.0 - ut) + 0.05 * ut
             sw_a = a0 + 0.95 * math.sin(ut * math.pi * 1.8 + ti) * ut
-            rad_t = 0.138 * (1.0 - 0.55 * ut) + 0.025
-            t_pts.append(np.array([math.sin(sw_a) * rad_t, math.cos(sw_a) * rad_t, zv]))
+            rad_tx = 0.116 * (1.0 - 0.55 * ut) + 0.022
+            rad_ty = 0.090 * (1.0 - 0.55 * ut) + 0.022
+            t_pts.append(np.array([math.sin(sw_a) * rad_tx, math.cos(sw_a) * rad_ty, zv]))
         parts_l.append(sweep_tube(
-            f'{gid_l}_strand_{ti}', t_pts, np.linspace(0.018, 0.0025, 14),
+            f'{gid_l}_strand_{ti}', t_pts, np.linspace(0.016, 0.0022, 14),
             urchin_p, n=6, rigid_joint='Hips', cap_ends=False, vfx=wisp_vfx
         ))
 

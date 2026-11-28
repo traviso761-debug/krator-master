@@ -218,6 +218,7 @@
       var yTop = z.y_top == null ? 0.62 : +z.y_top;
       var yBot = z.y_bot == null ? 0.04 : +z.y_bot;
       var swirl = z.swirl == null ? 0.0 : +z.swirl;
+      var unlitVal = z.unlit ? 1.0 : 0.0;
       var matE = new THREE.MeshStandardMaterial({
         map: srcMat ? srcMat.map : null,
         color: 0xffffff,
@@ -237,6 +238,7 @@
         sh.uniforms.kxYTop = { value: yTop };
         sh.uniforms.kxYBot = { value: yBot };
         sh.uniforms.kxSwirl = { value: swirl };
+        sh.uniforms.kxUnlit = { value: unlitVal };
         sh.vertexShader = 'varying vec3 vKxFig;\nuniform float kxTime, kxYTop, kxYBot, kxSwirl;\n' +
           sh.vertexShader.replace('#include <project_vertex>', [
             '\tfloat kxProgV = clamp((kxYTop - transformed.y) / max(kxYTop - kxYBot, 0.05), 0.0, 1.0);',
@@ -250,9 +252,10 @@
             '\tvKxFig = transformed;',
             '#include <project_vertex>'
           ].join('\n'));
-        sh.fragmentShader = 'varying vec3 vKxFig;\nuniform float kxTime, kxYTop, kxYBot;\nuniform vec3 kxEdge, kxSmoke;\n' +
+        sh.fragmentShader = 'varying vec3 vKxFig;\nuniform float kxTime, kxYTop, kxYBot, kxUnlit;\nuniform vec3 kxEdge, kxSmoke;\n' +
           GLSL_NOISE +
           sh.fragmentShader.replace('#include <dithering_fragment>', [
+            '\tvec3 startRgb = kxUnlit > 0.5 ? kxSmoke : gl_FragColor.rgb;',
             '\tfloat prog = clamp((kxYTop - vKxFig.y) / max(kxYTop - kxYBot, 0.05), 0.0, 1.0);',
             '\tif(prog > 0.01){',
             '\t  float az = atan(vKxFig.x, vKxFig.z);',
@@ -263,12 +266,12 @@
             '\t  float er = field - cut;',
             '\t  if(er < -0.02) discard;',
             '\t  float edgeBand = 1.0 - smoothstep(0.0, 0.14, er);',
-            '\t  vec3 baseC = mix(gl_FragColor.rgb, kxSmoke, smoothstep(0.15, 0.85, prog) * 0.78);',
+            '\t  vec3 baseC = mix(startRgb, kxSmoke, smoothstep(0.15, 0.85, prog) * 0.78);',
             '\t  baseC += kxEdge * edgeBand * 1.65 * smoothstep(0.05, 0.35, prog);',
             '\t  float alphaE = smoothstep(-0.02, 0.16, er) * (1.0 - 0.52 * prog * prog);',
             '\t  gl_FragColor = vec4(baseC, clamp(alphaE, 0.0, 1.0) * opacity);',
             '\t} else {',
-            '\t  gl_FragColor.a *= opacity;',
+            '\t  gl_FragColor = vec4(startRgb, gl_FragColor.a * opacity);',
             '\t}',
             '#include <dithering_fragment>'
           ].join('\n'));
@@ -1571,11 +1574,13 @@
       groundMeshRef = pyrePoolMesh;
 
     } else if(kind === 'spiky_dark_array'){
-      // 11. Nightmare Urchin (Image 3): Razor-Sharp Pitch-Black Needle Starburst Corona around Head + Crimson Dread Bleed
-      var spikeDarkMat = makePremultOverMaterial({
+      var urchinScale = spec.scale == null ? 0.96 : +spec.scale;
+
+      // 11a. Oppressive Nightmare Vignette + Sinister Blood-Crimson Backlight Halo (`renderOrder = 2`, silhouettes the black spikes on dark AND light backdrops!)
+      var dreadBackMat = makePremultOverMaterial({
         kxTime: state.uTime,
-        kxScale: { value: spec.scale == null ? 0.82 : +spec.scale },
-        kxZOff: { value: -0.05 }
+        kxScale: { value: urchinScale * 1.08 },
+        kxZOff: { value: -0.11 }
       }, VS_VIEW_HALO, [
         'uniform float kxTime;',
         'varying vec2 vUvA;',
@@ -1585,37 +1590,120 @@
         '  float r = length(p);',
         '  if(r > 1.0) discard;',
         '  float ang = atan(p.y, p.x);',
-        '  // Layer 1: 32 primary long razor-sharp uneven black sea-urchin needles',
-        '  float twitch1 = sin(kxTime * 4.8 + sin(ang * 7.0) * 3.0) * 0.014;',
-        '  float a1 = ang + twitch1 + kxTime * 0.08;',
-        '  float id1 = floor((a1 + 3.14159265) / 6.2831853 * 32.0);',
-        '  float h1 = kxHash12(vec2(id1, 3.7));',
-        '  float maxR1 = 0.62 + 0.36 * h1;',
-        '  float sec1 = abs(fract((a1 + 3.14159265) / 6.2831853 * 32.0) - 0.5) * 2.0;',
-        '  float width1 = max(0.02, 0.34 * (1.0 - r / maxR1));',
-        '  float spikes1 = smoothstep(width1, width1 * 0.15, sec1) * step(r, maxR1) * smoothstep(0.10, 0.22, r);',
-        '  // Layer 2: 46 secondary counter-twitching fine black quills',
-        '  float a2 = ang - kxTime * 0.11 + cos(kxTime * 6.2 + ang * 5.0) * 0.012;',
-        '  float id2 = floor((a2 + 3.14159265) / 6.2831853 * 46.0);',
-        '  float h2 = kxHash12(vec2(id2, 9.1));',
-        '  float maxR2 = 0.44 + 0.38 * h2;',
-        '  float sec2 = abs(fract((a2 + 3.14159265) / 6.2831853 * 46.0) - 0.5) * 2.0;',
-        '  float width2 = max(0.018, 0.26 * (1.0 - r / maxR2));',
-        '  float spikes2 = smoothstep(width2, width2 * 0.12, sec2) * step(r, maxR2) * smoothstep(0.10, 0.20, r);',
-        '  // Dark dread vignette halo behind the needles',
-        '  float dread = exp(-r * 2.8) * 0.58 * (1.0 - smoothstep(0.65, 1.0, r));',
-        '  float needle = max(spikes1, spikes2 * 0.92);',
-        '  float a = clamp(max(needle * 0.96, dread), 0.0, 0.96);',
+        '  float n = kxFbm2(p * 3.2 - vec2(0.0, kxTime * 0.35));',
+        '  // Concentric wavy sleep-paralysis dread rings + inner crimson-maroon backlight',
+        '  float rings = 0.65 + 0.35 * sin(r * 22.0 - kxTime * 1.8 + n * 4.2);',
+        '  float darkVig = smoothstep(1.0, 0.22, r + (n - 0.5) * 0.22) * rings;',
+        '  float redRays = 0.55 + 0.45 * pow(0.5 + 0.5 * sin(ang * 13.0 + n * 4.5 - kxTime * 0.9), 2.0);',
+        '  float redGlow = exp(-max(0.0, r - 0.16) * 3.8) * (1.0 - smoothstep(0.62, 0.96, r)) * redRays;',
+        '  float pulse = 0.84 + 0.16 * sin(kxTime * 2.9);',
+        '  float a = clamp(darkVig * 0.72 + redGlow * 0.42, 0.0, 0.88);',
         '  if(a < 0.008) discard;',
-        '  // Pitch-black needles with sinister faint blood-crimson inner root bleed',
-        '  float redRoot = needle * exp(-max(0.0, r - 0.18) * 7.5) * (0.65 + 0.35 * sin(kxTime * 3.5 + id1));',
-        '  vec3 col = mix(vec3(0.006, 0.004, 0.008), vec3(0.62, 0.05, 0.08), redRoot * 0.55);',
+        '  vec3 cAbyss = vec3(0.012, 0.004, 0.008);',
+        '  vec3 cBlood = vec3(0.68, 0.055, 0.095) * pulse;',
+        '  vec3 col = mix(cAbyss, cBlood, clamp(redGlow * 1.15, 0.0, 0.82));',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var dreadBackMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), dreadBackMat);
+      dreadBackMesh.frustumCulled = false; dreadBackMesh.renderOrder = 2;
+      holder.add(dreadBackMesh);
+
+      // 11b. Dense Multi-Tiered Jagged Pitch-Black Sea-Urchin Needle Starburst (`renderOrder = 5`, rooted seamlessly into Head!)
+      var spikeDarkMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: urchinScale },
+        kxZOff: { value: -0.03 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'float kxUrchinTier(float ang, float r, float count, float seedOff, float rMin, float rSpan, float baseW){',
+        '  float u = (ang + 3.14159265) / 6.2831853 * count;',
+        '  float id = floor(u);',
+        '  float h = kxHash12(vec2(mod(id, count), seedOff));',
+        '  float h2 = kxHash12(vec2(mod(id, count), seedOff + 5.3));',
+        '  float maxR = rMin + rSpan * pow(h, 0.65);',
+        '  if(r > maxR) return 0.0;',
+        '  // Slight angular bend/hook per quill so spikes feel organic & hand-drawn',
+        '  float bend = (h2 - 0.5) * 0.24 * (r * r);',
+        '  float sec = abs(fract(u + bend) - 0.5) * 2.0;',
+        '  float t = clamp((r - 0.08) / max(maxR - 0.08, 0.05), 0.0, 1.0);',
+        '  float w = max(0.035, baseW * pow(1.0 - t, 1.35));',
+        '  return smoothstep(w, w * 0.18, sec);',
+        '}',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  // Subtle high-strung nightmare tremor (no uniform wheel spin)',
+        '  float tremor = sin(kxTime * 11.0 + sin(ang * 9.0) * 4.0) * 0.006 + sin(kxTime * 1.4) * 0.02;',
+        '  // Fuzzy ink-black inner urchin body merging seamlessly with the 3D orb head',
+        '  float fuzz = kxFbm2(vec2(ang * 5.0, r * 8.0 - kxTime * 0.8));',
+        '  float innerCore = smoothstep(0.24 + 0.05 * fuzz, 0.12, r);',
+        '  // Tier 1: 26 long, dagger-based primary black spikes reaching deep across the frame',
+        '  float s1 = kxUrchinTier(ang + tremor, r, 26.0, 3.7, 0.54, 0.44, 0.68);',
+        '  // Tier 2: 42 medium jagged offset quills filling inter-spike angles',
+        '  float s2 = kxUrchinTier(ang - tremor * 0.8 + 0.075, r, 42.0, 11.3, 0.36, 0.42, 0.56);',
+        '  // Tier 3: 68 dense short inner urchin bristles around the head rim',
+        '  float s3 = kxUrchinTier(ang + 0.03, r, 68.0, 23.9, 0.22, 0.24, 0.62);',
+        '  float mask = max(innerCore, max(s1, max(s2, s3)));',
+        '  float a = clamp(mask * 0.98, 0.0, 0.99);',
+        '  if(a < 0.01) discard;',
+        '  // Pure light-drinking pitch-black needles with faint blood-crimson inner root glint',
+        '  float rootBleed = max(s1, s2) * exp(-max(0.0, r - 0.17) * 11.0) * (1.0 - innerCore);',
+        '  vec3 col = mix(vec3(0.003, 0.002, 0.005), vec3(0.75, 0.08, 0.12), rootBleed * 0.45);',
         '  gl_FragColor = vec4(col * a, a);',
         '}'
       ].join('\n'));
       var spikeDarkMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), spikeDarkMat);
       spikeDarkMesh.frustumCulled = false; spikeDarkMesh.renderOrder = 5;
       holder.add(spikeDarkMesh);
+
+      // 11c. Writhing Sleep-Paralysis Black Shadow Tendrils drifting off the Urchin Head (`renderOrder = 4`)
+      var uwGeo = makeBillboardCloudGeo(22, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.16 + 0.42 * ((i * 0.381966) % 1.0);
+        var y0 = -0.45 + 0.82 * ((i * 0.7548776) % 1.0);
+        var sz = 0.14 + 0.12 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.24 + 0.18 * seed, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+      });
+      var uwMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvU;',
+        'varying float vAge, vSeed, vDir;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float ang = aAura0.x + age * 0.45 * aAura1.z;',
+        '  vec3 cPos = vec3(cos(ang) * (aAura0.y + age * 0.18), aAura0.z - age * 0.22, sin(ang) * (aAura0.y + age * 0.18));',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * vec2(0.55, 1.65) * aAura0.w * (1.05 - 0.3 * age);',
+        '  vUvU = uv; vAge = age; vSeed = aAura1.x; vDir = aAura1.z;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvU;',
+        'varying float vAge, vSeed, vDir;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvU - 0.5) * 2.0;',
+        '  float life = smoothstep(0.0, 0.20, vAge) * (1.0 - smoothstep(0.55, 1.0, vAge));',
+        '  float curl = sin(p.y * 3.8 + kxTime * 2.6 + vSeed * 6.28) * 0.35 * vDir;',
+        '  float d = abs(p.x - curl) / max(0.06, 0.28 * (1.0 - abs(p.y) * 0.8));',
+        '  float wisp = smoothstep(1.0, 0.15, d) * (1.0 - smoothstep(0.65, 1.0, abs(p.y))) * life;',
+        '  float a = clamp(wisp * 0.78, 0.0, 0.82);',
+        '  if(a < 0.01) discard;',
+        '  gl_FragColor = vec4(vec3(0.006, 0.003, 0.006) * a, a);',
+        '}'
+      ].join('\n'));
+      var uwMesh = new THREE.Mesh(uwGeo, uwMat);
+      uwMesh.frustumCulled = false; uwMesh.renderOrder = 4;
+      holder.add(uwMesh);
 
     } else if(kind === 'brimstone_aura'){
       // 6a. Dark Sulfurous Crimson-Soot Brimstone Shroud (`makePremultOverMaterial`)
