@@ -3,7 +3,7 @@
     "mpfb_male": [
       {
         "id": "ext3_m_neutrino_cherenkov",
-        "name": "Neutrino Phantom Cherenkov Cone & PMT Singularity",
+        "name": "Neutrino Phantom Cherenkov Crown Array & PMT Singularity",
         "slot": "head",
         "glb": "pieces/mpfb_male/ext3_m_neutrino_cherenkov.glb",
         "culture": "extraplanar",
@@ -28,8 +28,8 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_0",
               "t0": 480,
               "t1": 580,
-              "v0": 0.36328,
-              "v1": 0.36816
+              "v0": 0.81445,
+              "v1": 0.8252
             },
             {
               "kind": "emissive_blaze",
@@ -39,8 +39,8 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_1",
               "t0": 580,
               "t1": 680,
-              "v0": 0.36816,
-              "v1": 0.37305
+              "v0": 0.8252,
+              "v1": 0.83594
             },
             {
               "kind": "emissive_blaze",
@@ -50,8 +50,8 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_2",
               "t0": 680,
               "t1": 780,
-              "v0": 0.37305,
-              "v1": 0.37793
+              "v0": 0.83594,
+              "v1": 0.84668
             },
             {
               "kind": "emissive_blaze",
@@ -61,8 +61,8 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_3",
               "t0": 780,
               "t1": 880,
-              "v0": 0.37793,
-              "v1": 0.38281
+              "v0": 0.84668,
+              "v1": 0.85742
             },
             {
               "kind": "emissive_blaze",
@@ -72,8 +72,8 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_4",
               "t0": 880,
               "t1": 980,
-              "v0": 0.38281,
-              "v1": 0.3877
+              "v0": 0.85742,
+              "v1": 0.86816
             },
             {
               "kind": "emissive_blaze",
@@ -83,19 +83,19 @@
               "name": "ext3_m_neutrino_cherenkov_collar_pmt_5",
               "t0": 980,
               "t1": 1080,
-              "v0": 0.3877,
-              "v1": 0.39258
+              "v0": 0.86816,
+              "v1": 0.87891
             },
             {
               "kind": "emissive_blaze",
-              "color": "#d8ffff",
-              "gain": 2.7,
+              "color": "#dcffff",
+              "gain": 2.65,
               "pulse": 0.24,
               "kinetic": {
                 "bone": "Head",
                 "motion": "bob",
                 "speed": 2.2,
-                "amp": 0.014,
+                "amp": 0.012,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
@@ -106,694 +106,267 @@
               "name": "ext3_m_neutrino_cherenkov_vertex_core",
               "t0": 1080,
               "t1": 1476,
-              "v0": 0.39258,
-              "v1": 0.40234
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_0",
-              "t0": 1476,
-              "t1": 1488,
-              "v0": 0.40234,
-              "v1": 0.41016
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_1",
-              "t0": 1488,
-              "t1": 1500,
-              "v0": 0.41016,
-              "v1": 0.41797
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_2",
-              "t0": 1500,
-              "t1": 1512,
-              "v0": 0.41797,
-              "v1": 0.42578
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_3",
-              "t0": 1512,
-              "t1": 1524,
-              "v0": 0.42578,
-              "v1": 0.43359
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_4",
-              "t0": 1524,
-              "t1": 1536,
-              "v0": 0.43359,
-              "v1": 0.44141
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_vertex_ray_5",
-              "t0": 1536,
-              "t1": 1548,
-              "v0": 0.44141,
-              "v1": 0.44922
-            },
-            {
-              "kind": "neutrino_phase",
-              "core_color": "#061538",
-              "cherenkov_color": "#38f6ff",
-              "muon_color": "#2068ff",
-              "tau_color": "#b04cff",
-              "opacity": 0.46,
-              "power": 2.05,
-              "rim_gain": 2.65,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": 1.35,
-                "amp": 0.01,
-                "precess": 0.07,
-                "phase": 0.4,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.0,
-                  0.94038,
-                  -0.34014
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_cherenkov_cone",
-              "t0": 1548,
-              "t1": 1996,
-              "v0": 0.44922,
-              "v1": 0.79785
-            },
-            {
-              "kind": "standard",
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_ring_outer",
-              "t0": 1996,
-              "t1": 2444,
-              "v0": 0.79785,
-              "v1": 0.87402
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_0",
-              "t0": 2444,
-              "t1": 2544,
-              "v0": 0.87402,
-              "v1": 0.87891
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_1",
-              "t0": 2544,
-              "t1": 2644,
               "v0": 0.87891,
-              "v1": 0.88379
+              "v1": 0.89941
             },
             {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
+              "kind": "light_array",
+              "core_color": "#f2ffff",
+              "primary_color": "#4cf8ff",
+              "secondary_color": "#2c78ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.28,
+              "spin": -1.55,
+              "z_offset": -0.09,
+              "gain": 1.85,
               "kinetic": {
                 "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_2",
-              "t0": 2644,
-              "t1": 2744,
-              "v0": 0.88379,
-              "v1": 0.88867
+              "name": "ext3_m_neutrino_cherenkov_crown_light_array",
+              "t0": 1476,
+              "t1": 1494,
+              "v0": 0.89941,
+              "v1": 0.91406
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_3",
-              "t0": 2744,
-              "t1": 2844,
-              "v0": 0.88867,
-              "v1": 0.89355
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_4",
-              "t0": 2844,
-              "t1": 2944,
-              "v0": 0.89355,
-              "v1": 0.89844
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_5",
-              "t0": 2944,
-              "t1": 3044,
-              "v0": 0.89844,
-              "v1": 0.90332
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_6",
-              "t0": 3044,
-              "t1": 3144,
-              "v0": 0.90332,
-              "v1": 0.9082
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_7",
-              "t0": 3144,
-              "t1": 3244,
-              "v0": 0.9082,
-              "v1": 0.91309
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_8",
-              "t0": 3244,
-              "t1": 3344,
-              "v0": 0.91309,
-              "v1": 0.91797
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.68898,
-                  0.02274
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_outer_9",
-              "t0": 3344,
-              "t1": 3444,
-              "v0": 0.91797,
-              "v1": 0.92285
-            },
-            {
-              "kind": "standard",
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_ring_inner",
-              "t0": 3444,
-              "t1": 3892,
-              "v0": 0.92285,
-              "v1": 0.97559
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_0",
+              "t0": 1494,
+              "t1": 1594,
+              "v0": 0.91406,
+              "v1": 0.9248
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_0",
-              "t0": 3892,
-              "t1": 3992,
-              "v0": 0.97559,
-              "v1": 0.98047
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_1",
+              "t0": 1594,
+              "t1": 1694,
+              "v0": 0.9248,
+              "v1": 0.93555
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_1",
-              "t0": 3992,
-              "t1": 4092,
-              "v0": 0.98047,
-              "v1": 0.98535
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_2",
+              "t0": 1694,
+              "t1": 1794,
+              "v0": 0.93555,
+              "v1": 0.94629
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_2",
-              "t0": 4092,
-              "t1": 4192,
-              "v0": 0.98535,
-              "v1": 0.99023
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_3",
+              "t0": 1794,
+              "t1": 1894,
+              "v0": 0.94629,
+              "v1": 0.95703
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_3",
-              "t0": 4192,
-              "t1": 4292,
-              "v0": 0.99023,
-              "v1": 0.99512
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_4",
+              "t0": 1894,
+              "t1": 1994,
+              "v0": 0.95703,
+              "v1": 0.96777
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_4",
-              "t0": 4292,
-              "t1": 4392,
-              "v0": 0.99512,
-              "v1": 1.0
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_5",
+              "t0": 1994,
+              "t1": 2094,
+              "v0": 0.96777,
+              "v1": 0.97852
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.68898,
                   0.02274
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_m_neutrino_cherenkov_pmt_node_inner_5",
-              "t0": 4392,
-              "t1": 4492,
-              "v0": 0.99902,
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_6",
+              "t0": 2094,
+              "t1": 2194,
+              "v0": 0.97852,
+              "v1": 0.98926
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_7",
+              "t0": 2194,
+              "t1": 2294,
+              "v0": 0.98926,
               "v1": 1.0
             }
           ],
@@ -805,17 +378,17 @@
                 0.1,
                 0.0
               ],
-              "count": 26,
+              "count": 24,
               "rate": 0.44,
-              "size0": 0.065,
-              "size1": 0.21,
+              "size0": 0.06,
+              "size1": 0.195,
               "drift": [
                 0.0,
-                0.34,
+                0.32,
                 -0.08
               ],
-              "spread": 0.055,
-              "opacity": 0.62,
+              "spread": 0.05,
+              "opacity": 0.56,
               "ember_color": "#52f8ff",
               "core_color": "#051332",
               "mist_color": "#2b78c8"
@@ -828,7 +401,7 @@
       },
       {
         "id": "ext3_m_neutrino_shroud",
-        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Lattice",
+        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Portal",
         "slot": "torso",
         "glb": "pieces/mpfb_male/ext3_m_neutrino_shroud.glb",
         "culture": "extraplanar",
@@ -848,7 +421,7 @@
               "t0": 0,
               "t1": 1656,
               "v0": 0.0,
-              "v1": 0.24414
+              "v1": 0.27441
             },
             {
               "kind": "neutrino_phase",
@@ -862,8 +435,8 @@
               "name": "ext3_m_neutrino_shroud_phase_arms_sleeve_L",
               "t0": 1656,
               "t1": 1944,
-              "v0": 0.24414,
-              "v1": 0.39453
+              "v0": 0.27441,
+              "v1": 0.44336
             },
             {
               "kind": "neutrino_phase",
@@ -877,8 +450,8 @@
               "name": "ext3_m_neutrino_shroud_phase_arms_sleeve_R",
               "t0": 1944,
               "t1": 2232,
-              "v0": 0.39453,
-              "v1": 0.54492
+              "v0": 0.44336,
+              "v1": 0.6123
             },
             {
               "kind": "nebula_rift",
@@ -892,74 +465,8 @@
               "name": "ext3_m_neutrino_shroud_cherenkov_portal",
               "t0": 2232,
               "t1": 2672,
-              "v0": 0.54492,
-              "v1": 0.55957
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_0_L",
-              "t0": 2912,
-              "t1": 2992,
-              "v0": 0.86133,
-              "v1": 0.86523
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_0_R",
-              "t0": 3136,
-              "t1": 3216,
-              "v0": 0.88184,
-              "v1": 0.88574
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_1_L",
-              "t0": 3360,
-              "t1": 3440,
-              "v0": 0.90039,
-              "v1": 0.9043
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_1_R",
-              "t0": 3584,
-              "t1": 3664,
-              "v0": 0.91895,
-              "v1": 0.92285
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_2_L",
-              "t0": 3808,
-              "t1": 3888,
-              "v0": 0.93652,
-              "v1": 0.94043
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_shroud_rib_node_2_R",
-              "t0": 4032,
-              "t1": 4112,
-              "v0": 0.9541,
-              "v1": 0.95801
+              "v0": 0.6123,
+              "v1": 0.62793
             }
           ]
         },
@@ -983,7 +490,7 @@
       },
       {
         "id": "ext3_m_neutrino_rings",
-        "name": "Neutrino Phantom Triple Flavor-Oscillation Rings",
+        "name": "Neutrino Phantom Pulsing Rotating Light-Array Halo",
         "slot": "back",
         "glb": "pieces/mpfb_male/ext3_m_neutrino_rings.glb",
         "culture": "extraplanar",
@@ -991,504 +498,59 @@
         "vfx": {
           "zones": [
             {
-              "kind": "accretion_disc",
-              "inner_color": "#e8ffff",
-              "mid_color": "#38f6ff",
-              "outer_color": "#1658ff",
+              "kind": "light_array",
+              "core_color": "#f0ffff",
+              "primary_color": "#38f6ff",
+              "secondary_color": "#2068ff",
+              "accent_color": "#b458ff",
+              "halo_scale": 0.72,
+              "spin": 1.0,
+              "z_offset": -0.2,
+              "gain": 1.95,
               "kinetic": {
                 "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
+                  1.38355,
+                  -0.06
                 ]
               },
-              "name": "ext3_m_neutrino_rings_ring_nu_e",
+              "name": "ext3_m_neutrino_rings_outer_light_array",
               "t0": 0,
-              "t1": 672,
+              "t1": 18,
               "v0": 0.0,
-              "v1": 0.36523
+              "v1": 0.5459
             },
             {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
+              "kind": "light_array",
+              "core_color": "#ffffff",
+              "primary_color": "#5cfaff",
+              "secondary_color": "#4c44ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.5,
+              "spin": -1.38,
+              "z_offset": -0.24,
+              "gain": 1.75,
               "kinetic": {
                 "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
+                  1.38355,
+                  -0.06
                 ]
               },
-              "name": "ext3_m_neutrino_rings_node_nu_e_0",
-              "t0": 672,
-              "t1": 772,
-              "v0": 0.36523,
-              "v1": 0.36914
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_e_1",
-              "t0": 772,
-              "t1": 872,
-              "v0": 0.36914,
-              "v1": 0.37305
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_e_2",
-              "t0": 872,
-              "t1": 972,
-              "v0": 0.37305,
-              "v1": 0.37695
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_e_3",
-              "t0": 972,
-              "t1": 1072,
-              "v0": 0.37695,
-              "v1": 0.38086
-            },
-            {
-              "kind": "accretion_disc",
-              "inner_color": "#cfe8ff",
-              "mid_color": "#2878ff",
-              "outer_color": "#5c34ff",
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_ring_nu_mu",
-              "t0": 1072,
-              "t1": 1744,
-              "v0": 0.38086,
-              "v1": 0.68945
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_mu_0",
-              "t0": 1744,
-              "t1": 1844,
-              "v0": 0.68945,
-              "v1": 0.69336
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_mu_1",
-              "t0": 1844,
-              "t1": 1944,
-              "v0": 0.69336,
-              "v1": 0.69727
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_mu_2",
-              "t0": 1944,
-              "t1": 2044,
-              "v0": 0.69727,
-              "v1": 0.70117
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_mu_3",
-              "t0": 2044,
-              "t1": 2144,
-              "v0": 0.70117,
-              "v1": 0.70508
-            },
-            {
-              "kind": "accretion_disc",
-              "inner_color": "#f6dcff",
-              "mid_color": "#b452ff",
-              "outer_color": "#38f6ff",
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_ring_nu_tau",
-              "t0": 2144,
-              "t1": 2816,
-              "v0": 0.70508,
-              "v1": 0.95996
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_tau_0",
-              "t0": 2816,
-              "t1": 2916,
-              "v0": 0.95996,
-              "v1": 0.96387
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_tau_1",
-              "t0": 2916,
-              "t1": 3016,
-              "v0": 0.96387,
-              "v1": 0.96777
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_tau_2",
-              "t0": 3016,
-              "t1": 3116,
-              "v0": 0.96777,
-              "v1": 0.97168
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.37855,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_m_neutrino_rings_node_nu_tau_3",
-              "t0": 3116,
-              "t1": 3216,
-              "v0": 0.97168,
-              "v1": 0.97559
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_L_0",
-              "t0": 3216,
-              "t1": 3300,
-              "v0": 0.97559,
-              "v1": 0.98633
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_L_1",
-              "t0": 3300,
-              "t1": 3384,
-              "v0": 0.98633,
-              "v1": 0.99609
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b468ff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_L_2",
-              "t0": 3384,
-              "t1": 3468,
-              "v0": 0.99609,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_R_0",
-              "t0": 3468,
-              "t1": 3552,
-              "v0": 0.99902,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_R_1",
-              "t0": 3552,
-              "t1": 3636,
-              "v0": 0.99902,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b468ff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_m_neutrino_rings_track_spine_R_2",
-              "t0": 3636,
-              "t1": 3720,
-              "v0": 0.99902,
+              "name": "ext3_m_neutrino_rings_inner_light_array",
+              "t0": 18,
+              "t1": 36,
+              "v0": 0.5459,
               "v1": 1.0
             }
           ],
@@ -1498,19 +560,19 @@
               "offset": [
                 0.0,
                 0.06,
-                -0.14
+                -0.16
               ],
-              "count": 34,
+              "count": 30,
               "rate": 0.36,
-              "size0": 0.095,
-              "size1": 0.31,
+              "size0": 0.09,
+              "size1": 0.29,
               "drift": [
                 0.0,
-                0.48,
+                0.44,
                 -0.1
               ],
-              "spread": 0.075,
-              "opacity": 0.58,
+              "spread": 0.07,
+              "opacity": 0.48,
               "ember_color": "#3cf6ff",
               "core_color": "#040e28",
               "mist_color": "#3a62c8"
@@ -2040,7 +1102,7 @@
     "mpfb_female": [
       {
         "id": "ext3_f_neutrino_cherenkov",
-        "name": "Neutrino Phantom Cherenkov Cone & PMT Singularity",
+        "name": "Neutrino Phantom Cherenkov Crown Array & PMT Singularity",
         "slot": "head",
         "glb": "pieces/mpfb_female/ext3_f_neutrino_cherenkov.glb",
         "culture": "extraplanar",
@@ -2065,8 +1127,8 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_0",
               "t0": 480,
               "t1": 580,
-              "v0": 0.36328,
-              "v1": 0.36816
+              "v0": 0.81445,
+              "v1": 0.8252
             },
             {
               "kind": "emissive_blaze",
@@ -2076,8 +1138,8 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_1",
               "t0": 580,
               "t1": 680,
-              "v0": 0.36816,
-              "v1": 0.37305
+              "v0": 0.8252,
+              "v1": 0.83594
             },
             {
               "kind": "emissive_blaze",
@@ -2087,8 +1149,8 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_2",
               "t0": 680,
               "t1": 780,
-              "v0": 0.37305,
-              "v1": 0.37793
+              "v0": 0.83594,
+              "v1": 0.84668
             },
             {
               "kind": "emissive_blaze",
@@ -2098,8 +1160,8 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_3",
               "t0": 780,
               "t1": 880,
-              "v0": 0.37793,
-              "v1": 0.38281
+              "v0": 0.84668,
+              "v1": 0.85742
             },
             {
               "kind": "emissive_blaze",
@@ -2109,8 +1171,8 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_4",
               "t0": 880,
               "t1": 980,
-              "v0": 0.38281,
-              "v1": 0.3877
+              "v0": 0.85742,
+              "v1": 0.86816
             },
             {
               "kind": "emissive_blaze",
@@ -2120,19 +1182,19 @@
               "name": "ext3_f_neutrino_cherenkov_collar_pmt_5",
               "t0": 980,
               "t1": 1080,
-              "v0": 0.3877,
-              "v1": 0.39258
+              "v0": 0.86816,
+              "v1": 0.87891
             },
             {
               "kind": "emissive_blaze",
-              "color": "#d8ffff",
-              "gain": 2.7,
+              "color": "#dcffff",
+              "gain": 2.65,
               "pulse": 0.24,
               "kinetic": {
                 "bone": "Head",
                 "motion": "bob",
                 "speed": 2.2,
-                "amp": 0.014,
+                "amp": 0.012,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
@@ -2143,694 +1205,267 @@
               "name": "ext3_f_neutrino_cherenkov_vertex_core",
               "t0": 1080,
               "t1": 1476,
-              "v0": 0.39258,
-              "v1": 0.40234
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_0",
-              "t0": 1476,
-              "t1": 1488,
-              "v0": 0.40234,
-              "v1": 0.41016
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_1",
-              "t0": 1488,
-              "t1": 1500,
-              "v0": 0.41016,
-              "v1": 0.41797
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_2",
-              "t0": 1500,
-              "t1": 1512,
-              "v0": 0.41797,
-              "v1": 0.42578
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_3",
-              "t0": 1512,
-              "t1": 1524,
-              "v0": 0.42578,
-              "v1": 0.43359
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_4",
-              "t0": 1524,
-              "t1": 1536,
-              "v0": 0.43359,
-              "v1": 0.44141
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#78fbff",
-              "gain": 2.35,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "bob",
-                "speed": 2.2,
-                "amp": 0.014,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_vertex_ray_5",
-              "t0": 1536,
-              "t1": 1548,
-              "v0": 0.44141,
-              "v1": 0.44922
-            },
-            {
-              "kind": "neutrino_phase",
-              "core_color": "#061538",
-              "cherenkov_color": "#38f6ff",
-              "muon_color": "#2068ff",
-              "tau_color": "#b04cff",
-              "opacity": 0.46,
-              "power": 2.05,
-              "rim_gain": 2.65,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": 1.35,
-                "amp": 0.01,
-                "precess": 0.07,
-                "phase": 0.4,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.0,
-                  0.94038,
-                  -0.34014
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_cherenkov_cone",
-              "t0": 1548,
-              "t1": 1996,
-              "v0": 0.44922,
-              "v1": 0.79785
-            },
-            {
-              "kind": "standard",
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_ring_outer",
-              "t0": 1996,
-              "t1": 2444,
-              "v0": 0.79785,
-              "v1": 0.87402
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_0",
-              "t0": 2444,
-              "t1": 2544,
-              "v0": 0.87402,
-              "v1": 0.87891
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_1",
-              "t0": 2544,
-              "t1": 2644,
               "v0": 0.87891,
-              "v1": 0.88379
+              "v1": 0.89941
             },
             {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
+              "kind": "light_array",
+              "core_color": "#f2ffff",
+              "primary_color": "#4cf8ff",
+              "secondary_color": "#2c78ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.28,
+              "spin": -1.55,
+              "z_offset": -0.09,
+              "gain": 1.85,
               "kinetic": {
                 "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_2",
-              "t0": 2644,
-              "t1": 2744,
-              "v0": 0.88379,
-              "v1": 0.88867
+              "name": "ext3_f_neutrino_cherenkov_crown_light_array",
+              "t0": 1476,
+              "t1": 1494,
+              "v0": 0.89941,
+              "v1": 0.91406
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_3",
-              "t0": 2744,
-              "t1": 2844,
-              "v0": 0.88867,
-              "v1": 0.89355
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_4",
-              "t0": 2844,
-              "t1": 2944,
-              "v0": 0.89355,
-              "v1": 0.89844
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_5",
-              "t0": 2944,
-              "t1": 3044,
-              "v0": 0.89844,
-              "v1": 0.90332
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_6",
-              "t0": 3044,
-              "t1": 3144,
-              "v0": 0.90332,
-              "v1": 0.9082
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_7",
-              "t0": 3144,
-              "t1": 3244,
-              "v0": 0.9082,
-              "v1": 0.91309
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_8",
-              "t0": 3244,
-              "t1": 3344,
-              "v0": 0.91309,
-              "v1": 0.91797
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
-              "pulse": 0.22,
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": -1.15,
-                "amp": 0.01,
-                "precess": 0.09,
-                "phase": 0.8,
-                "center_gl": [
-                  0.0,
-                  1.51719,
-                  0.02815
-                ],
-                "axis_gl": [
-                  0.23999,
-                  0.40998,
-                  0.87996
-                ]
-              },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_outer_9",
-              "t0": 3344,
-              "t1": 3444,
-              "v0": 0.91797,
-              "v1": 0.92285
-            },
-            {
-              "kind": "standard",
-              "kinetic": {
-                "bone": "Head",
-                "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_ring_inner",
-              "t0": 3444,
-              "t1": 3892,
-              "v0": 0.92285,
-              "v1": 0.97559
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_0",
+              "t0": 1494,
+              "t1": 1594,
+              "v0": 0.91406,
+              "v1": 0.9248
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_0",
-              "t0": 3892,
-              "t1": 3992,
-              "v0": 0.97559,
-              "v1": 0.98047
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_1",
+              "t0": 1594,
+              "t1": 1694,
+              "v0": 0.9248,
+              "v1": 0.93555
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_1",
-              "t0": 3992,
-              "t1": 4092,
-              "v0": 0.98047,
-              "v1": 0.98535
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_2",
+              "t0": 1694,
+              "t1": 1794,
+              "v0": 0.93555,
+              "v1": 0.94629
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_2",
-              "t0": 4092,
-              "t1": 4192,
-              "v0": 0.98535,
-              "v1": 0.99023
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_3",
+              "t0": 1794,
+              "t1": 1894,
+              "v0": 0.94629,
+              "v1": 0.95703
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_3",
-              "t0": 4192,
-              "t1": 4292,
-              "v0": 0.99023,
-              "v1": 0.99512
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_4",
+              "t0": 1894,
+              "t1": 1994,
+              "v0": 0.95703,
+              "v1": 0.96777
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_4",
-              "t0": 4292,
-              "t1": 4392,
-              "v0": 0.99512,
-              "v1": 1.0
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_5",
+              "t0": 1994,
+              "t1": 2094,
+              "v0": 0.96777,
+              "v1": 0.97852
             },
             {
               "kind": "emissive_blaze",
-              "color": "#ffd968",
-              "gain": 2.25,
+              "color": "#ffdc74",
+              "gain": 2.2,
               "pulse": 0.22,
               "kinetic": {
                 "bone": "Head",
                 "motion": "orbit",
-                "speed": 1.65,
-                "amp": 0.01,
+                "speed": -1.25,
+                "amp": 0.008,
                 "precess": 0.08,
-                "phase": 2.1,
+                "phase": 0.8,
                 "center_gl": [
                   0.0,
                   1.51719,
                   0.02815
                 ],
                 "axis_gl": [
-                  -0.82016,
-                  0.46009,
-                  0.34007
+                  0.23999,
+                  0.40998,
+                  0.87996
                 ]
               },
-              "name": "ext3_f_neutrino_cherenkov_pmt_node_inner_5",
-              "t0": 4392,
-              "t1": 4492,
-              "v0": 0.99902,
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_6",
+              "t0": 2094,
+              "t1": 2194,
+              "v0": 0.97852,
+              "v1": 0.98926
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_7",
+              "t0": 2194,
+              "t1": 2294,
+              "v0": 0.98926,
               "v1": 1.0
             }
           ],
@@ -2842,17 +1477,17 @@
                 0.1,
                 0.0
               ],
-              "count": 26,
+              "count": 24,
               "rate": 0.44,
-              "size0": 0.065,
-              "size1": 0.21,
+              "size0": 0.06,
+              "size1": 0.195,
               "drift": [
                 0.0,
-                0.34,
+                0.32,
                 -0.08
               ],
-              "spread": 0.055,
-              "opacity": 0.62,
+              "spread": 0.05,
+              "opacity": 0.56,
               "ember_color": "#52f8ff",
               "core_color": "#051332",
               "mist_color": "#2b78c8"
@@ -2865,7 +1500,7 @@
       },
       {
         "id": "ext3_f_neutrino_shroud",
-        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Lattice",
+        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Portal",
         "slot": "torso",
         "glb": "pieces/mpfb_female/ext3_f_neutrino_shroud.glb",
         "culture": "extraplanar",
@@ -2885,7 +1520,7 @@
               "t0": 0,
               "t1": 1440,
               "v0": 0.0,
-              "v1": 0.2207
+              "v1": 0.24902
             },
             {
               "kind": "neutrino_phase",
@@ -2899,8 +1534,8 @@
               "name": "ext3_f_neutrino_shroud_phase_arms_sleeve_L",
               "t0": 1440,
               "t1": 1728,
-              "v0": 0.2207,
-              "v1": 0.36719
+              "v0": 0.24902,
+              "v1": 0.41504
             },
             {
               "kind": "neutrino_phase",
@@ -2914,8 +1549,8 @@
               "name": "ext3_f_neutrino_shroud_phase_arms_sleeve_R",
               "t0": 1728,
               "t1": 2016,
-              "v0": 0.36719,
-              "v1": 0.51367
+              "v0": 0.41504,
+              "v1": 0.58105
             },
             {
               "kind": "nebula_rift",
@@ -2929,74 +1564,8 @@
               "name": "ext3_f_neutrino_shroud_cherenkov_portal",
               "t0": 2016,
               "t1": 2456,
-              "v0": 0.51367,
-              "v1": 0.5293
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_0_L",
-              "t0": 2696,
-              "t1": 2776,
-              "v0": 0.85254,
-              "v1": 0.85645
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_0_R",
-              "t0": 2920,
-              "t1": 3000,
-              "v0": 0.87402,
-              "v1": 0.87793
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_1_L",
-              "t0": 3144,
-              "t1": 3224,
-              "v0": 0.89355,
-              "v1": 0.89746
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_1_R",
-              "t0": 3368,
-              "t1": 3448,
-              "v0": 0.91309,
-              "v1": 0.91699
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_2_L",
-              "t0": 3592,
-              "t1": 3672,
-              "v0": 0.93164,
-              "v1": 0.93555
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#5cfaff",
-              "gain": 2.2,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_shroud_rib_node_2_R",
-              "t0": 3816,
-              "t1": 3896,
-              "v0": 0.9502,
-              "v1": 0.9541
+              "v0": 0.58105,
+              "v1": 0.59863
             }
           ]
         },
@@ -3020,7 +1589,7 @@
       },
       {
         "id": "ext3_f_neutrino_rings",
-        "name": "Neutrino Phantom Triple Flavor-Oscillation Rings",
+        "name": "Neutrino Phantom Pulsing Rotating Light-Array Halo",
         "slot": "back",
         "glb": "pieces/mpfb_female/ext3_f_neutrino_rings.glb",
         "culture": "extraplanar",
@@ -3028,504 +1597,59 @@
         "vfx": {
           "zones": [
             {
-              "kind": "accretion_disc",
-              "inner_color": "#e8ffff",
-              "mid_color": "#38f6ff",
-              "outer_color": "#1658ff",
+              "kind": "light_array",
+              "core_color": "#f0ffff",
+              "primary_color": "#38f6ff",
+              "secondary_color": "#2068ff",
+              "accent_color": "#b458ff",
+              "halo_scale": 0.72,
+              "spin": 1.0,
+              "z_offset": -0.2,
+              "gain": 1.95,
               "kinetic": {
                 "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
+                  1.26311,
+                  -0.06
                 ]
               },
-              "name": "ext3_f_neutrino_rings_ring_nu_e",
+              "name": "ext3_f_neutrino_rings_outer_light_array",
               "t0": 0,
-              "t1": 672,
+              "t1": 18,
               "v0": 0.0,
-              "v1": 0.36523
+              "v1": 0.5459
             },
             {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
+              "kind": "light_array",
+              "core_color": "#ffffff",
+              "primary_color": "#5cfaff",
+              "secondary_color": "#4c44ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.5,
+              "spin": -1.38,
+              "z_offset": -0.24,
+              "gain": 1.75,
               "kinetic": {
                 "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
                 "phase": 0.0,
                 "center_gl": [
                   0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
+                  1.26311,
+                  -0.06
                 ]
               },
-              "name": "ext3_f_neutrino_rings_node_nu_e_0",
-              "t0": 672,
-              "t1": 772,
-              "v0": 0.36523,
-              "v1": 0.36914
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_e_1",
-              "t0": 772,
-              "t1": 872,
-              "v0": 0.36914,
-              "v1": 0.37305
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_e_2",
-              "t0": 872,
-              "t1": 972,
-              "v0": 0.37305,
-              "v1": 0.37695
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#38f6ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 0.95,
-                "amp": 0.016,
-                "precess": 0.1,
-                "phase": 0.0,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.22009,
-                  0.42017,
-                  -0.88035
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_e_3",
-              "t0": 972,
-              "t1": 1072,
-              "v0": 0.37695,
-              "v1": 0.38086
-            },
-            {
-              "kind": "accretion_disc",
-              "inner_color": "#cfe8ff",
-              "mid_color": "#2878ff",
-              "outer_color": "#5c34ff",
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_ring_nu_mu",
-              "t0": 1072,
-              "t1": 1744,
-              "v0": 0.38086,
-              "v1": 0.68945
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_mu_0",
-              "t0": 1744,
-              "t1": 1844,
-              "v0": 0.68945,
-              "v1": 0.69336
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_mu_1",
-              "t0": 1844,
-              "t1": 1944,
-              "v0": 0.69336,
-              "v1": 0.69727
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_mu_2",
-              "t0": 1944,
-              "t1": 2044,
-              "v0": 0.69727,
-              "v1": 0.70117
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#2878ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": -1.3,
-                "amp": 0.016,
-                "precess": 0.12,
-                "phase": 2.1,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  -0.7597,
-                  0.45982,
-                  -0.45982
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_mu_3",
-              "t0": 2044,
-              "t1": 2144,
-              "v0": 0.70117,
-              "v1": 0.70508
-            },
-            {
-              "kind": "accretion_disc",
-              "inner_color": "#f6dcff",
-              "mid_color": "#b452ff",
-              "outer_color": "#38f6ff",
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_ring_nu_tau",
-              "t0": 2144,
-              "t1": 2816,
-              "v0": 0.70508,
-              "v1": 0.95996
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_tau_0",
-              "t0": 2816,
-              "t1": 2916,
-              "v0": 0.95996,
-              "v1": 0.96387
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_tau_1",
-              "t0": 2916,
-              "t1": 3016,
-              "v0": 0.96387,
-              "v1": 0.96777
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_tau_2",
-              "t0": 3016,
-              "t1": 3116,
-              "v0": 0.96777,
-              "v1": 0.97168
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b452ff",
-              "gain": 2.3,
-              "pulse": 0.2,
-              "kinetic": {
-                "bone": "Spine2",
-                "motion": "orbit",
-                "speed": 1.68,
-                "amp": 0.016,
-                "precess": 0.09,
-                "phase": 4.2,
-                "center_gl": [
-                  0.0,
-                  1.25811,
-                  -0.165
-                ],
-                "axis_gl": [
-                  0.64206,
-                  -0.5618,
-                  -0.52167
-                ]
-              },
-              "name": "ext3_f_neutrino_rings_node_nu_tau_3",
-              "t0": 3116,
-              "t1": 3216,
-              "v0": 0.97168,
-              "v1": 0.97559
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_L_0",
-              "t0": 3216,
-              "t1": 3300,
-              "v0": 0.97559,
-              "v1": 0.98633
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_L_1",
-              "t0": 3300,
-              "t1": 3384,
-              "v0": 0.98633,
-              "v1": 0.99609
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b468ff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_L_2",
-              "t0": 3384,
-              "t1": 3468,
-              "v0": 0.99609,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_R_0",
-              "t0": 3468,
-              "t1": 3552,
-              "v0": 0.99902,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#64faff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_R_1",
-              "t0": 3552,
-              "t1": 3636,
-              "v0": 0.99902,
-              "v1": 1.0
-            },
-            {
-              "kind": "emissive_blaze",
-              "color": "#b468ff",
-              "gain": 2.15,
-              "pulse": 0.22,
-              "name": "ext3_f_neutrino_rings_track_spine_R_2",
-              "t0": 3636,
-              "t1": 3720,
-              "v0": 0.99902,
+              "name": "ext3_f_neutrino_rings_inner_light_array",
+              "t0": 18,
+              "t1": 36,
+              "v0": 0.5459,
               "v1": 1.0
             }
           ],
@@ -3535,19 +1659,19 @@
               "offset": [
                 0.0,
                 0.06,
-                -0.14
+                -0.16
               ],
-              "count": 34,
+              "count": 30,
               "rate": 0.36,
-              "size0": 0.095,
-              "size1": 0.31,
+              "size0": 0.09,
+              "size1": 0.29,
               "drift": [
                 0.0,
-                0.48,
+                0.44,
                 -0.1
               ],
-              "spread": 0.075,
-              "opacity": 0.58,
+              "spread": 0.07,
+              "opacity": 0.48,
               "ember_color": "#3cf6ff",
               "core_color": "#040e28",
               "mist_color": "#3a62c8"

@@ -3176,9 +3176,21 @@ const EYE := [0.42, 0.48, 0.3, 0.22]       # the eyes and the mouth on the face'
 const MOUTH := [0.0, -0.3, 0.4, 0.2]
 
 
+static func _effective_coat_id(rec: Dictionary):
+	if rec.has("coat"):
+		return rec.get("coat")
+	if rec.get("people") == "coyote_men":
+		return "coyote"
+	var mods = rec.get("mods", [])
+	if mods is Array and mods.has("mod_head_coyote"):
+		return "coyote"
+	return null
+
+
 func _coat_hides(rec: Dictionary) -> Dictionary:
 	var out := {}
-	var c = fur.get("coats", {}).get(rec.get("coat") if rec.get("coat") != null else "", null)
+	var cid = _effective_coat_id(rec)
+	var c = fur.get("coats", {}).get(cid if cid != null else "", null)
 	if c != null:
 		for p in c.get("hide_parts", []):
 			out[p] = true
@@ -3327,7 +3339,7 @@ func _coat_static(b: Dictionary, mi: MeshInstance3D, id: String, coat: Dictionar
 
 func _coat(m: Material, b: Dictionary, mi: MeshInstance3D, rec: Dictionary, gain: Dictionary, hide: Image, edge: Image = null) -> void:
 	var coats: Dictionary = fur.get("coats", {})
-	var id = rec.get("coat")
+	var id = _effective_coat_id(rec)
 	if id == null or not coats.has(id) or b.get("joined") == null:
 		return
 	var coat: Dictionary = coats[id]

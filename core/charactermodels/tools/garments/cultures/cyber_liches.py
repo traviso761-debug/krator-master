@@ -125,6 +125,16 @@ CLICH_COLORS = {
     'clich_carbon':    (0.055, 0.062, 0.075),
     'clich_verdigris': (0.200, 0.420, 0.340),
     'clich_chalk':     (0.880, 0.890, 0.900),
+    # Coordinated Meshy `msh_voth_obsidian_moonblade` Royal Gold, Silver-Flaked Obsidian & Imperial Emerald palette
+    'clich_moon_gold':    (0.760, 0.485, 0.085),
+    'clich_moon_gold_hi': (0.980, 0.810, 0.300),
+    'clich_moon_gold_dk': (0.360, 0.205, 0.032),
+    'clich_moon_obs':     (0.038, 0.042, 0.050),
+    'clich_moon_silver':  (0.680, 0.715, 0.765),
+    'clich_moon_em':      (0.022, 0.235, 0.098),
+    'clich_moon_em_hi':   (0.085, 0.560, 0.245),
+    'clich_moon_glow':    (0.240, 0.980, 0.520),
+    'clich_moon_plum':    (0.165, 0.035, 0.105),
 }
 for _ck, _cv in CLICH_COLORS.items():
     C.setdefault(_ck, _cv)
@@ -158,6 +168,8 @@ CLICH_CUSTOM_MOTIFS = {
     'clich_circuit_poncho',
     'clich_jade_chassis',
     'clich_skull_face',
+    'clich_moon_visage',
+    'clich_moon_obs_blade',
 }
 
 
@@ -265,66 +277,142 @@ def _clich_custom_motif(style, w, h, fg, bg, aspect=1.0):
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_reliquary_robe':
-        # Plum-violet & Eternian celadon-bronze cyber-robe with Egyptian Djed / Eternian ancestor circuit column
+        # Royal Moonblade Plum-Burgundy, Flaked Volcanic Obsidian, Burnished Solar-Gold & Imperial Emerald Cyber-Robe
         su = (u - 0.5) * 2.0
         au = np.abs(su)
-        fold = 0.82 + 0.18 * np.sin(u * 2.0 * math.pi * 14.0 + v * 2.5)
+        fold = 0.80 + 0.20 * np.sin(u * 2.0 * math.pi * 14.0 + v * 2.5)
         img[:] = np.asarray(bg)[None, None, :] * fold[:, :, None]
-        # Central Egyptian-Eternian dark obsidian & celadon-jade circuit wedge
+        # Subtle woven gold-brocade geometric lattice across outer royal plum-burgundy skirts
+        brocade = (au >= 0.26) & (v > 0.24) & (v < 0.87) & (
+            (np.abs(((u * 16.0 + v * 8.0) % 1.0) - 0.5) < 0.045)
+            | (np.abs(((u * 16.0 - v * 8.0) % 1.0) - 0.5) < 0.045)
+        )
+        img[brocade] = 0.55 * np.asarray(C['clich_moon_gold_dk']) + 0.45 * np.asarray(bg)
+        # Central Pharaonic Flaked-Obsidian & Royal-Gold Djed Circuit Column
         w_col = 0.27 * (0.48 + 0.62 * v)
         in_col = (au < w_col) & (v > 0.20)
         pleat_bar = in_col & ((((u * 38.0) % 1.0) < 0.22) | (((v * 16.0) % 1.0) < 0.14))
-        img[in_col] = C['clich_obsidian']
-        # Alternating celadon-jade & bronze stepped Eternian/Djed rungs inside the front column
+        obs_sheen = np.clip(0.88 + 0.30 * np.sin(u * 24.0 + v * 11.0), 0.65, 1.25)
+        img[in_col] = np.asarray(C['clich_moon_obs'])[None, :] * obs_sheen[in_col, None]
+        # Alternating Imperial-Emerald & Burnished Solar-Gold stepped Djed rungs inside the front column
         rung = in_col & (~pleat_bar) & (((v * 8.0) % 1.0) > 0.52) & (((v * 8.0) % 1.0) < 0.84)
         jade_rung = rung & ((((v * 4.0) % 1.0) < 0.5))
         bronze_rung = rung & (~jade_rung)
-        img[jade_rung] = C['clich_jade']
-        img[bronze_rung] = C['clich_bronze']
-        # Glowing cyan & lime PCB trace borders framing the column and lower hem
-        col_frame = (np.abs(au - w_col) < 0.020) & (v > 0.20)
-        col_neon = (np.abs(au - (w_col + 0.026)) < 0.008) & (v > 0.22) & (((v * 20.0) % 1.0) < 0.72)
-        hem_band = (v > 0.88) & (v < 0.96)
+        img[jade_rung] = C['clich_moon_em']
+        img[bronze_rung] = C['clich_moon_gold']
+        # Burnished Royal-Gold borders + Silver-Obsidian & Emerald-Glow traces framing column and meander hem
+        col_frame = (np.abs(au - w_col) < 0.022) & (v > 0.20)
+        col_neon = (np.abs(au - (w_col + 0.028)) < 0.009) & (v > 0.22) & (((v * 20.0) % 1.0) < 0.72)
+        hem_band = (v > 0.87) & (v < 0.965)
         hem_meander = hem_band & ((((u * 20.0) % 1.0) < 0.50) ^ (((v * 40.0) % 1.0) < 0.50))
-        img[col_frame] = C['clich_bronze']
-        img[hem_band] = C['clich_obsidian']
-        img[hem_meander] = C['clich_jade']
-        img[col_neon] = C['clich_cybercyan']
-        hem_glow = (np.abs(v - 0.875) < 0.007)
-        img[hem_glow] = C['clich_lime']
+        hem_gold_trim = (np.abs(v - 0.870) < 0.010) | (np.abs(v - 0.965) < 0.010)
+        img[col_frame] = C['clich_moon_gold']
+        img[hem_band] = C['clich_moon_obs']
+        img[hem_meander] = C['clich_moon_em']
+        img[col_neon] = C['clich_moon_silver']
+        img[hem_gold_trim] = C['clich_moon_gold_hi']
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_pharaonic_plaque':
-        # Cybernetic Egyptian Nemes + Eternian Celadon-Jade & Bronze stepped circuit busbars
-        band = (v * 8.0) % 1.0
-        idx_b = np.floor(v * 8.0) % 2
-        groove = (band < 0.18) | (u < 0.07) | (u > 0.93)
-        jade_inlay = (~groove) & (idx_b == 0) & (band > 0.24) & (band < 0.78) & (u > 0.16) & (u < 0.84)
-        bronze_inlay = (~groove) & (idx_b == 1) & (band > 0.22) & (band < 0.82)
-        pcb_line = (np.abs(band - 0.50) < 0.06) & (idx_b == 0) & (((u * 10.0) % 1.0) > 0.22) & (u > 0.18) & (u < 0.82)
-        edge_trim = ((u >= 0.07) & (u <= 0.16)) | ((u >= 0.84) & (u <= 0.93))
-        img[bronze_inlay | edge_trim] = fg
-        img[jade_inlay] = C['clich_jade']
+        # Robotic Pharaonic Nemes & Atef Pylon Armor coordinated with `msh_voth_obsidian_moonblade`:
+        # Burnished royal solar-gold lames, flaked silver-edged volcanic obsidian slats, and deep imperial emerald cartouches
+        band = (v * 10.0) % 1.0
+        idx_b = np.floor(v * 10.0) % 2
+        groove = (band < 0.14) | (u < 0.055) | (u > 0.945)
+        gold_bevel_hi = (~groove) & (idx_b == 1) & (band >= 0.14) & (band < 0.34)
+        gold_body = (~groove) & (idx_b == 1) & (band >= 0.34) & (band <= 0.88)
+        gold_shadow = (~groove) & (idx_b == 1) & (band > 0.88)
+        obs_slat = (~groove) & (idx_b == 0)
+        # Crisp knapped-obsidian silver specular bevels & imperial emerald stepped fret cartouches
+        em_cartouche = obs_slat & (band > 0.24) & (band < 0.78) & (u > 0.18) & (u < 0.82) & (((u * 6.0) % 1.0) > 0.18)
+        em_fret = em_cartouche & (
+            (np.abs(band - 0.28) < 0.05) | (np.abs(band - 0.74) < 0.05)
+            | (np.abs(((u * 6.0) % 1.0) - 0.22) < 0.05) | (np.abs(((u * 6.0) % 1.0) - 0.94) < 0.05)
+        )
+        silver_edge = obs_slat & (~em_cartouche) & ((band > 0.80) | (np.abs(u - 0.16) < 0.018) | (np.abs(u - 0.84) < 0.018))
+        edge_gold = ((u >= 0.055) & (u <= 0.13)) | ((u >= 0.87) & (u <= 0.945))
+        sheen = 0.88 + 0.12 * np.cos((u - 0.5) * math.pi * 2.0)
+        obs_mod = np.clip(0.85 + 0.35 * np.sin(u * 22.0 + v * 9.0), 0.6, 1.3)
+        img[:] = np.asarray(C['clich_moon_obs'])[None, None, :]
+        img[obs_slat] = np.asarray(C['clich_moon_obs'])[None, :] * obs_mod[obs_slat, None]
+        img[em_cartouche] = np.asarray(C['clich_moon_em'])[None, :] * sheen[em_cartouche, None]
+        img[em_fret] = C['clich_moon_gold_hi']
+        img[silver_edge] = 0.55 * np.asarray(C['clich_moon_silver']) + 0.45 * np.asarray(C['clich_moon_obs'])
+        gold_mask = gold_body | edge_gold
+        img[gold_mask] = np.asarray(C['clich_moon_gold'])[None, :] * sheen[gold_mask, None]
+        img[gold_bevel_hi] = C['clich_moon_gold_hi']
+        img[gold_shadow] = C['clich_moon_gold_dk']
         img[groove] = C['clich_obsidian']
-        img[pcb_line] = C['clich_cybercyan']
+        return np.clip(img, 0.0, 1.0)
+
+    elif style == 'clich_moon_visage':
+        # Hard-surface Robotic Pharaonic Mecha-Faceplate: faceted silver-edged obsidian armor plates,
+        # burnished royal-gold nasal keel & cheek actuators, imperial emerald temple inlays, and vertical robotic vox-slits
+        mu = (u - 0.5) * 2.0
+        au = np.abs(mu)
+        # Faceted dark-obsidian & brushed gunmetal base with sharp angular specular planes
+        plane_sh = np.where(au < 0.16, 1.18, np.where(au < 0.48, 0.86, 1.06))
+        v_grad = 1.08 - 0.22 * v
+        img[:] = np.asarray(C['clich_moon_obs'])[None, None, :] * (plane_sh * v_grad)[:, :, None]
+        # Crisp silver-white machined bevel highlights along facial armor facets (matching Moonblade obsidian flakes)
+        facet_silver = (
+            (np.abs(au - 0.16) < 0.016) & (v > 0.22) & (v < 0.72)
+        ) | (
+            (np.abs((v - 0.52) - 0.26 * (au - 0.18)) < 0.015) & (au >= 0.16) & (au < 0.68)
+        )
+        # Burnished Royal-Gold Pharaonic Brow Chevron, Central Nasal Keel & Mandible Frame
+        gold_brow = (np.abs(v - (0.31 + 0.06 * au)) < 0.024) & (au < 0.72)
+        gold_keel = (au < 0.055) & (v >= 0.28) & (v <= 0.64)
+        gold_jaw_frame = (np.abs(v - (0.68 + 0.14 * au)) < 0.020) & (au < 0.56)
+        # Imperial Emerald Temple & Cheek Actuator Panels
+        em_panel = (au > 0.44) & (au < 0.72) & (v > 0.36) & (v < 0.64)
+        em_hi = em_panel & (np.abs(((v * 16.0) % 1.0) - 0.5) < 0.18)
+        # Recessed Angular Robotic Optic Visor Slits & Vertical Machined Vox-Grille (zero organic skull teeth!)
+        visor_recess = (v > 0.35) & (v < 0.46) & (au > 0.11) & (au < 0.44) & (np.abs((v - 0.41) + 0.08 * (au - 0.26)) < 0.038)
+        vox_box = (v >= 0.70) & (v <= 0.86) & (au <= 0.24)
+        vox_slit = vox_box & (np.abs(((mu * 18.0) % 1.0) - 0.5) < 0.28)
+        vox_bar_gold = vox_box & (~vox_slit)
+        seam = (np.abs(au - 0.44) < 0.012) | (np.abs(v - 0.66) < 0.012)
+        img[em_panel] = C['clich_moon_em']
+        img[em_hi] = C['clich_moon_em_hi']
+        img[facet_silver] = C['clich_moon_silver']
+        img[gold_brow | gold_keel | gold_jaw_frame | vox_bar_gold] = C['clich_moon_gold']
+        img[ (au < 0.022) & (v >= 0.30) & (v <= 0.62) ] = C['clich_moon_gold_hi']
+        img[visor_recess | vox_slit | seam] = C['clich_obsidian']
+        return np.clip(img, 0.0, 1.0)
+
+    elif style == 'clich_moon_obs_blade':
+        # Flaked volcanic black-and-silver obsidian surface matching `msh_voth_obsidian_moonblade` blade facets
+        cell_u = np.sin(u * math.pi * 6.0 + 0.8 * np.sin(v * math.pi * 8.0))
+        cell_v = np.cos(v * math.pi * 10.0 - 0.7 * np.cos(u * math.pi * 4.0))
+        ridge = np.exp(-((cell_u * cell_v) ** 2) * 18.0)
+        edge_sheen = np.exp(-(((u - 0.5) ** 2) * 14.0)) * 0.35
+        c_dark = np.asarray(C['clich_moon_obs'])[None, None, :]
+        c_silv = np.asarray(C['clich_moon_silver'])[None, None, :]
+        w_s = np.clip(0.58 * (ridge ** 3.0) + edge_sheen, 0.0, 0.85)[:, :, None]
+        img[:] = c_dark * (1.0 - w_s) + c_silv * w_s
+        gold_border = (u < 0.06) | (u > 0.94) | (v < 0.04) | (v > 0.96)
+        img[gold_border] = C['clich_moon_gold']
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_eg_etn_usekh':
-        # Egyptian Usekh Broad-Collar fused with Eternian Jade & Cyan PCB Traces
+        # Royal Pharaonic Usekh Collar coordinated with Moonblade: Burnished Gold, Imperial Emerald & Flaked Obsidian
         tier = (v * 5.0) % 1.0
         t_idx = np.floor(v * 5.0)
-        bead = ((u * 28.0) % 1.0)
-        seam = (tier < 0.16) | (bead < 0.14)
-        img[:] = C['clich_bronze']
-        jade_row = (~seam) & ((t_idx == 1) | (t_idx == 3))
-        copper_row = (~seam) & (t_idx == 2)
-        img[jade_row] = C['clich_jade']
-        img[copper_row] = C['clich_copper']
+        bead = ((u * 30.0) % 1.0)
+        seam = (tier < 0.14) | (bead < 0.13)
+        img[:] = C['clich_moon_gold']
+        hi_gold = (~seam) & (tier >= 0.14) & (tier < 0.32)
+        em_row = (~seam) & ((t_idx == 1) | (t_idx == 3))
+        obs_row = (~seam) & (t_idx == 2)
+        img[hi_gold] = C['clich_moon_gold_hi']
+        img[em_row] = C['clich_moon_em']
+        img[obs_row] = C['clich_moon_obs']
         img[seam] = C['clich_obsidian']
-        neon_ring = (np.abs(v - 0.39) < 0.016) | (np.abs(v - 0.79) < 0.016)
-        drop_gem = (t_idx == 4) & (tier > 0.35) & (tier < 0.82) & (bead > 0.30) & (bead < 0.72)
-        img[neon_ring] = C['clich_cybercyan']
-        img[drop_gem] = C['clich_lime']
+        neon_ring = (np.abs(v - 0.39) < 0.014) | (np.abs(v - 0.79) < 0.014)
+        drop_gem = (t_idx == 4) & (tier > 0.35) & (tier < 0.84) & (bead > 0.28) & (bead < 0.74)
+        img[neon_ring] = C['clich_moon_gold_hi']
+        img[drop_gem] = C['clich_moon_em_hi']
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_eg_etn_apron':
@@ -338,14 +426,14 @@ def _clich_custom_motif(style, w, h, fg, bg, aspect=1.0):
         djed_bars = (au < 0.48) & (v > 0.22) & (v < 0.54) & (((v * 14.0) % 1.0) < 0.45)
         scarab_dia = (np.abs(au) + np.abs(v - 0.68) * 1.6) < 0.34
         scarab_core = (np.abs(au) + np.abs(v - 0.68) * 1.6) < 0.15
-        img[:] = C['clich_obsidian']
-        img[border] = C['clich_bronze_dk']
-        img[frame1] = C['clich_jade']
-        img[djed_spine | djed_bars] = fg
-        img[scarab_dia] = C['clich_jade']
-        img[scarab_core] = C['clich_lime']
+        img[:] = C['clich_moon_obs']
+        img[border] = C['clich_moon_gold_dk']
+        img[frame1] = C['clich_moon_gold']
+        img[djed_spine | djed_bars] = C['clich_moon_gold_hi']
+        img[scarab_dia] = C['clich_moon_em']
+        img[scarab_core] = C['clich_moon_glow']
         pcb = (np.abs(au - 0.56) < 0.022) & (v > 0.18) & (v < 0.80) & (((v * 18.0) % 1.0) < 0.68)
-        img[pcb] = C['clich_cybercyan']
+        img[pcb] = C['clich_moon_silver']
         return np.clip(img, 0.0, 1.0)
 
     elif style == 'clich_alchemical_tabard':
@@ -1303,6 +1391,76 @@ def _build_voltaic_lich(sex, body_id):
 # Uraeus third-eye sensor, hydraulic Osird chin-piston, Usekh broad-collar, Djed spine, Shendyt apron) with
 # Eternian (celadon-jade Bi-disc cranial halo & joint rings, Art-Deco stepped organ-pipe piers, Bufu circuit-maze)
 # ===============================================================================================================
+def _robotic_pharaonic_visage(gid, mask_p, gold_p, obs_blade_p, em_glow_p, neck_p, left, bk, up, a, b):
+    """Hard-surface faceted Robotic Pharaonic Mecha-Helmet chassis: chiseled angular armor planes,
+    slanted glowing emerald-gold optic visor slits, armored vox-plate jaw, and lateral hydraulic jaw pistons."""
+    parts = []
+    n_az = 32
+    angs = np.linspace(0.0, 2.0 * math.pi, n_az, endpoint=False)
+    vis_rows = []
+    f_vals = np.concatenate([[1.05], np.linspace(1.02, 0.08, 15), [-0.02]])
+    for f_s in f_vals:
+        c_s = a + (b - a) * f_s
+        if f_s >= 1.04:
+            dome_s = 0.010
+        elif f_s <= 0.00:
+            dome_s = 0.56
+        else:
+            dome_s = 1.0 if f_s <= 0.76 else max(0.08, math.cos(math.pi * 0.5 * min(1.0, (f_s - 0.76) / 0.27)) ** 0.72)
+        # Hard-surface robotic angular jaw & cheekbone silhouette
+        jaw_taper = 1.0 - 0.26 * max(0.0, (0.42 - f_s) / 0.34) if f_s > 0.0 else 0.72
+        rx = 0.095 * dome_s * jaw_taper
+        ry = 0.120 * dome_s * (1.0 - 0.12 * max(0.0, (0.38 - f_s) / 0.28)) if f_s > 0.0 else 0.062
+        row_s = []
+        for an in angs:
+            sx_a, cy_a = math.sin(an), math.cos(an)
+            front = max(0.0, -cy_a)
+            # Quantize front facial normals slightly into crisp robotic flat armor facets!
+            sx_fac = math.copysign(abs(sx_a) ** 0.84, sx_a) if front > 0.25 else sx_a
+            feat = 1.0 if (0.04 < f_s < 1.00) else 0.0
+            # Sharp overhanging mechanical brow-hood, central nasal armor keel, angular cheek-actuators, and flat vox-chin
+            brow_hood = feat * 0.020 * math.exp(-(((f_s - 0.57) / 0.055) ** 2)) * (front ** 1.4)
+            visor_trench = feat * -0.020 * math.exp(-(((f_s - 0.48) / 0.048) ** 2)) * (1.0 if 0.10 < abs(sx_a) < 0.58 else 0.2) * front
+            nasal_keel = feat * 0.017 * max(0.0, 1.0 - abs(sx_a) / 0.14) * math.exp(-(((f_s - 0.38) / 0.13) ** 2)) * (front ** 2.0)
+            cheek_plate = feat * 0.015 * math.exp(-(((abs(sx_a) - 0.54) / 0.16) ** 2)) * math.exp(-(((f_s - 0.38) / 0.10) ** 2)) * front
+            chin_prow = feat * 0.014 * max(0.0, 1.0 - abs(sx_a) / 0.28) * math.exp(-(((f_s - 0.14) / 0.09) ** 2)) * (front ** 1.8)
+            row_s.append(c_s + left * (sx_fac * rx) + bk * (cy_a * ry - (brow_hood + visor_trench + nasal_keel + cheek_plate + chin_prow)))
+        vis_rows.append(row_s)
+    parts.append(Part(gid + '_mecha_visage', np.array(vis_rows), True, ['body'] * len(vis_rows), mask_p, rigid_joint='Head'))
+
+    # Segmented armored hydraulic neck column (zero neck pinholes)
+    parts.append(mech_tube(gid + '_servo_neck', [a + (b - a) * 0.32 + bk * 0.010, a - (b - a) * 0.45 + bk * 0.012],
+                           0.053, 0.060, neck_p, n=16, rows=7, rigid_joint='Head', slot_hint='head'))
+    for knk, fnk in enumerate((0.02, -0.14, -0.30)):
+        c_nk = a + (b - a) * fnk + bk * 0.011
+        parts.append(mech_tube(f'{gid}_neck_ring_{knk}', [c_nk + up * 0.008, c_nk - up * 0.008],
+                               0.058, 0.058, gold_p, n=16, rows=4, rigid_joint='Head', slot_hint='head'))
+
+    # Angular Slanted Robotic Optic Visor Blades + Twin Jaw Hydraulic Pistons + Temporal Audio-Servos
+    for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
+        # Slanted fierce emerald-gold mecha optic slit (angled upward-outward like an Anubis/Necron war-mask!)
+        v_in = a + (b - a) * 0.465 + left * (sgn * 0.016) - bk * 0.105
+        v_out = a + (b - a) * 0.505 + left * (sgn * 0.054) - bk * 0.088
+        parts.append(mech_tube(f'{gid}_visor_housing_{tag}', [v_in + bk * 0.004, v_out + bk * 0.004],
+                               0.011, 0.009, gold_p, n=8, rows=5, rigid_joint='Head', slot_hint='head', scale_xy=(0.65, 1.35)))
+        parts.append(mech_tube(f'{gid}_visor_optic_{tag}', [v_in - bk * 0.003, v_out - bk * 0.003],
+                               0.0068, 0.0052, em_glow_p, n=8, rows=5, rigid_joint='Head', slot_hint='head', scale_xy=(0.55, 1.45)))
+
+        # Lateral Jaw Hydraulic Piston & Cheekbone Armor Rail connecting chin prow to temporal servo hub
+        j_chin = a + (b - a) * 0.11 + left * (sgn * 0.036) - bk * 0.092
+        j_hinge = a + (b - a) * 0.42 + left * (sgn * 0.086) - bk * 0.016
+        parts.extend(piston_assembly(f'{gid}_jaw_piston_{tag}', j_hinge, j_chin, 0.011, gold_p, obs_blade_p, 'Head', slot_hint='head'))
+
+        # Temporal Rotary Servo-Ear Hub seated flush on side of cranium
+        ear_c = a + (b - a) * 0.46 + left * (sgn * 0.092) - bk * 0.006
+        parts.append(mech_tube(f'{gid}_temp_servo_{tag}', [ear_c - left * (sgn * 0.010), ear_c + left * (sgn * 0.014)],
+                               0.026, 0.022, gold_p, n=14, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
+        parts.append(mech_tube(f'{gid}_temp_core_{tag}', [ear_c + left * (sgn * 0.006), ear_c + left * (sgn * 0.018)],
+                               0.012, 0.010, em_glow_p, n=12, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
+
+    return parts
+
+
 def _build_reliquary_lich(sex, body_id):
     set_body(body_id)
     entries = []
@@ -1311,121 +1469,153 @@ def _build_reliquary_lich(sex, body_id):
     left_w = np.array([1.0, 0.0, 0.0])
     bk_w = np.array([0.0, 1.0, 0.0])
 
-    # Cyber-Skull (chrome-porcelain with dark panel seams & glowing cyan traces) + Egyptian-Eternian materials
-    skull_p = P('clich_chrome', 0.015, [], [PN(0.0, 1.0, 'clich_cyber_skull', 'clich_steel', 'clich_chrome', 0.22)], fabric='metal.chrome')
-    plaque_p = P('clich_copper', 0.02, [], [PN(0.0, 1.0, 'clich_pharaonic_plaque', 'clich_bronze', 'clich_copper', 0.24)], fabric='metal.bronze')
-    usekh_p = P('clich_bronze', 0.02, [], [PN(0.0, 1.0, 'clich_eg_etn_usekh', 'clich_bronze', 'clich_jade', 0.28)], fabric='metal.gold')
-    apron_p = P('clich_obsidian', 0.02, [], [PN(0.0, 1.0, 'clich_eg_etn_apron', 'clich_bronze', 'clich_obsidian', 0.30)], fabric='metal.brass')
-    bronze_p = P('clich_bronze', 0.025, [B('bottom', 0.0, 0.10, 'solid', 'clich_bronze_dk')], fabric='metal.bronze')
-    jade_p = P('clich_jade', 0.02, [B('bottom', 0.0, 0.12, 'solid', 'clich_jade_dk')], fabric='beads.glass')
-    obs_p = P('clich_obsidian', 0.015, fabric='metal.iron')
-    steel_p = P('clich_gunmetal', 0.02, fabric='metal.iron')
-    lime_p = P('clich_lime', 0.0, [B('top', 0.0, 0.25, 'solid', 'clich_limecore')], fabric='beads.glass')
-    cyan_p = P('clich_cybercyan', 0.0, [B('top', 0.0, 0.25, 'solid', 'clich_cyancore')], fabric='beads.glass')
-    crimson_p = P('clich_crimson', 0.02, [B('bottom', 0.0, 0.12, 'solid', 'clich_crimson_dk')], fabric='cloth.silk')
-    plum_robe_p = P('clich_plum', 0.02, [B('bottom', 0.0, 0.05, 'solid', 'clich_obsidian')],
-                    [PN(0.0, 1.0, 'clich_reliquary_robe', 'clich_violet_hi', 'clich_plum', 0.24)], fabric='cloth.wool')
+    # Coordinated Meshy `msh_voth_obsidian_moonblade` Materials:
+    # Burnished Royal Solar-Gold + Silver-Flaked Volcanic Obsidian + Deep Polished Imperial Emerald + Royal Plum
+    visage_p = P('clich_moon_obs', 0.01, [], [PN(0.0, 1.0, 'clich_moon_visage', 'clich_moon_gold', 'clich_moon_obs', 0.24)], fabric='metal.chrome')
+    obs_blade_p = P('clich_moon_obs', 0.01, [], [PN(0.0, 1.0, 'clich_moon_obs_blade', 'clich_moon_silver', 'clich_moon_obs', 0.22)], fabric='metal.iron')
+    plaque_p = P('clich_moon_gold', 0.012, [], [PN(0.0, 1.0, 'clich_pharaonic_plaque', 'clich_moon_gold', 'clich_moon_obs', 0.24)], fabric='metal.gold')
+    usekh_p = P('clich_moon_gold', 0.015, [], [PN(0.0, 1.0, 'clich_eg_etn_usekh', 'clich_moon_gold', 'clich_moon_em', 0.28)], fabric='metal.gold')
+    apron_p = P('clich_obsidian', 0.015, [], [PN(0.0, 1.0, 'clich_eg_etn_apron', 'clich_moon_gold', 'clich_obsidian', 0.30)], fabric='metal.gold')
+    bronze_p = P('clich_moon_gold', 0.015, [B('bottom', 0.0, 0.12, 'solid', 'clich_moon_gold_dk'), B('top', 0.0, 0.14, 'solid', 'clich_moon_gold_hi')], fabric='metal.gold')
+    jade_p = P('clich_moon_em', 0.012, [B('top', 0.0, 0.18, 'solid', 'clich_moon_em_hi')], fabric='beads.glass')
+    obs_p = P('clich_moon_obs', 0.012, fabric='metal.iron')
+    steel_p = P('clich_gunmetal', 0.015, fabric='metal.iron')
+    lime_p = P('clich_moon_glow', 0.0, [B('top', 0.0, 0.28, 'solid', 'clich_moon_gold_hi')], fabric='beads.glass')
+    cyan_p = P('clich_moon_em_hi', 0.0, [B('top', 0.0, 0.28, 'solid', 'clich_moon_glow')], fabric='beads.glass')
+    crimson_p = P('clich_moon_plum', 0.015, [
+        B('top', 0.0, 0.16, 'solid', 'clich_moon_gold'),
+        B('bottom', 0.0, 0.16, 'solid', 'clich_moon_gold_dk'),
+    ], fabric='cloth.silk')
+    plum_robe_p = P('clich_moon_plum', 0.018, [
+        B('top', 0.0, 0.06, 'solid', 'clich_moon_gold'),
+        B('bottom', 0.0, 0.05, 'solid', 'clich_moon_obs'),
+    ], [PN(0.0, 1.0, 'clich_reliquary_robe', 'clich_moon_gold', 'clich_moon_plum', 0.24)], fabric='cloth.silk')
 
-    # --- 1. HEAD: clich_{s}_reliquary_headdress (Cybernetic Egyptian-Eternian Twin-Pylon Crown, Nemes Wings & Jade Bi-Halo) ---
+    # --- 1. HEAD: clich_{s}_reliquary_headdress (Robotic Pharaonic Mecha-Nemes War-Crown, Obsidian-Gold Twin Pylons & Uraeus Optic) ---
     gid_h = f'clich_{sex}_reliquary_headdress'
-    parts_h = _sculpted_skull_dome(gid_h, skull_p, lime_p, steel_p, left, bk, up, a, b, eye_r=0.015, jaw_drop=False)
+    parts_h = _robotic_pharaonic_visage(gid_h, visage_p, bronze_p, obs_blade_p, lime_p, steel_p, left, bk, up, a, b)
 
-    # Armored Cyber-Brow Diadem Band (celadon-jade & bronze circuit band around skull)
+    # Sculpted Angular Burnished-Gold & Obsidian Pharaonic Brow Diadem Crest
     brow_ring = [
-        a + (b - a) * 0.62 + (bk * math.cos(an) + left * math.sin(an)) * 0.106
-        for an in np.linspace(0.0, 2.0 * math.pi, 17)
+        a + (b - a) * (0.61 - 0.04 * max(0.0, -math.cos(an))) + (bk * math.cos(an) + left * math.sin(an)) * 0.107
+        for an in np.linspace(0.0, 2.0 * math.pi, 25)
     ]
-    parts_h.append(mech_tube(gid_h + '_brow_diadem', brow_ring, 0.013, 0.013, jade_p,
-                             n=8, rows=17, rigid_joint='Head', slot_hint='head', cap_ends=False))
+    parts_h.append(mech_tube(gid_h + '_brow_diadem', brow_ring, 0.015, 0.015, bronze_p,
+                             n=12, rows=25, rigid_joint='Head', slot_hint='head', cap_ends=False, scale_xy=(0.75, 1.35)))
 
-    # Egyptian Uraeus Cyber-Cobra + Eternian Jade Bi-Disc Third-Eye Sensor on Forehead
-    ur_base = a + (b - a) * 0.60 - bk * 0.098
-    ur_mid = ur_base + up * 0.042 - bk * 0.022
-    ur_top = ur_mid + up * 0.036 + bk * 0.010
-    parts_h.append(mech_tube(gid_h + '_uraeus_hood', [ur_base, ur_mid, ur_top], 0.024, 0.014, bronze_p,
-                             n=8, rows=6, rigid_joint='Head', slot_hint='head', scale_xy=(1.45, 0.45)))
-    parts_h.append(mech_tube(gid_h + '_uraeus_bi', [ur_mid + bk * 0.012, ur_mid - bk * 0.010], 0.019, 0.017, jade_p,
+    # Central Flaked-Obsidian Crest Blade + Articulated Burnished-Gold Robotic Uraeus Mecha-Cobra & Emerald Targeting Lens
+    ur_base = a + (b - a) * 0.59 - bk * 0.102
+    ur_mid = ur_base + up * 0.052 - bk * 0.026
+    ur_top = ur_mid + up * 0.046 + bk * 0.012
+    parts_h.append(mech_tube(gid_h + '_uraeus_hood', _catmull_spline([ur_base, ur_mid, ur_top], 8), 0.026, 0.013, bronze_p,
+                             n=12, rows=8, rigid_joint='Head', slot_hint='head', scale_xy=(1.55, 0.42)))
+    parts_h.append(mech_tube(gid_h + '_uraeus_crest_blade', [ur_mid - bk * 0.006, a + (b - a) * 1.12 + bk * 0.045],
+                             0.016, 0.010, obs_blade_p, n=8, rows=8, rigid_joint='Head', slot_hint='head', scale_xy=(0.35, 1.65)))
+    parts_h.append(mech_tube(gid_h + '_uraeus_bezel', [ur_mid + bk * 0.012, ur_mid - bk * 0.012], 0.019, 0.017, jade_p,
+                             n=14, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
+    parts_h.append(mech_tube(gid_h + '_uraeus_optic', [ur_mid + bk * 0.002, ur_mid - bk * 0.018], 0.0095, 0.0080, lime_p,
                              n=12, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
-    parts_h.append(mech_tube(gid_h + '_uraeus_eye', [ur_mid + bk * 0.002, ur_mid - bk * 0.016], 0.0095, 0.0080, cyan_p,
-                             n=10, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
 
-    # Telescoping Hydraulic Osird Cyber-Beard (bronze cylinder + obsidian collar + glowing cyan/lime rod)
-    chin_top = a + (b - a) * 0.08 - bk * 0.092
-    chin_mid = chin_top - up * 0.048 - bk * 0.008
-    chin_bot = chin_mid - up * 0.044 - bk * 0.006
-    parts_h.append(mech_tube(gid_h + '_osird_cyl', [chin_top, chin_mid], 0.020, 0.016, bronze_p,
-                             n=8, rows=5, rigid_joint='Head', slot_hint='head', scale_xy=(1.15, 0.85)))
-    parts_h.append(mech_tube(gid_h + '_osird_ring', [chin_mid + up * 0.008, chin_mid - up * 0.008], 0.021, 0.021, cyan_p,
-                             n=8, rows=4, rigid_joint='Head', slot_hint='head'))
-    parts_h.append(mech_tube(gid_h + '_osird_rod', [chin_mid + up * 0.006, chin_bot], 0.013, 0.009, jade_p,
-                             n=8, rows=5, rigid_joint='Head', slot_hint='head'))
+    # Segmented Rectangular Robotic Pharaonic Postiche (Interlocking Gold & Obsidian Actuator Beard Blocks on Internal Spine)
+    chin_anchor = a + (b - a) * 0.08 - bk * 0.092
+    parts_h.append(mech_tube(gid_h + '_postiche_core', [chin_anchor + up * 0.018, chin_anchor - up * 0.094 - bk * 0.011],
+                             0.012, 0.009, steel_p, n=8, rows=5, rigid_joint='Head', slot_hint='head'))
+    for kb in range(4):
+        z_b0 = chin_anchor - up * (kb * 0.023) - bk * (kb * 0.003)
+        z_b1 = z_b0 - up * 0.021 - bk * 0.002
+        r_b = 0.019 - 0.0020 * kb
+        parts_h.append(mech_tube(f'{gid_h}_postiche_seg_{kb}', [z_b0, z_b1], r_b, r_b * 0.94,
+                                 bronze_p if kb % 2 == 0 else obs_blade_p,
+                                 n=8, rows=4, rigid_joint='Head', slot_hint='head', scale_xy=(0.88, 1.15)))
 
-    # Towering Split Egyptian Atef / Eternian Deco Twin-Pylon Monoliths + Glowing Inner Plasma Busbars
+    # Multi-Plate Robotic Nemes War-Headdress Wings, Flaked-Obsidian Blade-Fins & Towering Gold-Obsidian Twin Pylons
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        p_bot = a + (b - a) * 0.36 + left * (sgn * 0.092) + bk * 0.004
-        p_mid = a + (b - a) * 0.96 + left * (sgn * 0.074) + bk * 0.008
-        p_top = a + (b - a) * 1.66 + left * (sgn * 0.048) + bk * 0.010
-        parts_h.append(mech_tube(f'{gid_h}_pylon_{tag}', [p_bot, p_mid, p_top],
-                                 0.046, 0.034, plaque_p, n=8, rows=9, rigid_joint='Head', slot_hint='head',
-                                 scale_xy=(0.66, 1.38)))
-        # Inner cleft glowing chartreuse/cyan plasma rail along each pylon
-        g_bot = a + (b - a) * 0.68 + left * (sgn * 0.048) - bk * 0.014
-        g_top = a + (b - a) * 1.58 + left * (sgn * 0.026) - bk * 0.008
+        # Towering Chiseled Obsidian-and-Gold Atef Mecha-Pylon with Flaked-Obsidian Outer Fin (matching Moonblade!)
+        p_bot = a + (b - a) * 0.38 + left * (sgn * 0.088) + bk * 0.002
+        p_mid = a + (b - a) * 0.98 + left * (sgn * 0.072) + bk * 0.010
+        p_top = a + (b - a) * 1.68 + left * (sgn * 0.044) + bk * 0.016
+        parts_h.append(mech_tube(f'{gid_h}_pylon_{tag}', _catmull_spline([p_bot, p_mid, p_top], 11),
+                                 0.044, 0.028, plaque_p, n=12, rows=11, rigid_joint='Head', slot_hint='head',
+                                 scale_xy=(0.62, 1.45)))
+        # Razor Flaked-Obsidian Outer Blade-Edge along each Pylon (direct visual twin of the Moonblade's obsidian edge!)
+        parts_h.append(mech_tube(f'{gid_h}_pylon_obs_edge_{tag}',
+                                 _catmull_spline([p_bot + left * (sgn * 0.020), p_mid + left * (sgn * 0.024), p_top + left * (sgn * 0.014)], 10),
+                                 0.018, 0.010, obs_blade_p, n=8, rows=10, rigid_joint='Head', slot_hint='head',
+                                 scale_xy=(0.38, 1.55)))
+        # Recessed Luminous Emerald-Gold Energy Busbar along inner pylon cleft
+        g_bot = a + (b - a) * 0.64 + left * (sgn * 0.050) - bk * 0.012
+        g_top = a + (b - a) * 1.58 + left * (sgn * 0.028) - bk * 0.004
         parts_h.append(mech_tube(f'{gid_h}_pylon_rail_{tag}', [g_bot, g_top],
-                                 0.0085, 0.0065, lime_p, n=6, rows=6, rigid_joint='Head', slot_hint='head'))
+                                 0.0085, 0.0060, lime_p, n=8, rows=7, rigid_joint='Head', slot_hint='head'))
 
-        # 3 Stepped Eternian Art-Deco Organ-Pipe Piers flanking each pylon
-        for kp, (h_sc, l_off) in enumerate(((0.82, 0.104), (0.62, 0.122), (0.44, 0.138))):
-            sp_b = a + (b - a) * (0.44 + 0.04 * kp) + left * (sgn * l_off) + bk * (0.010 + 0.006 * kp)
-            sp_t = sp_b + up * (0.21 * h_sc) - left * (sgn * 0.010)
+        # 3 Stepped Burnished-Gold & Imperial-Emerald Actuator Fins flanking each pylon
+        for kp, (h_sc, l_off) in enumerate(((0.85, 0.104), (0.65, 0.122), (0.46, 0.138))):
+            sp_b = a + (b - a) * (0.44 + 0.04 * kp) + left * (sgn * l_off) + bk * (0.008 + 0.006 * kp)
+            sp_t = sp_b + up * (0.22 * h_sc) - left * (sgn * 0.010)
             parts_h.append(mech_tube(f'{gid_h}_deco_pier_{tag}_{kp}', [sp_b, sp_t],
-                                     0.012, 0.009, jade_p if kp == 1 else bronze_p,
-                                     n=6, rows=5, rigid_joint='Head', slot_hint='head'))
+                                     0.013, 0.009, jade_p if kp == 1 else bronze_p,
+                                     n=8, rows=6, rigid_joint='Head', slot_hint='head', scale_xy=(0.68, 1.32)))
 
-        # Flared Cybernetic Egyptian Nemes Capacitor Side-Wings + Shoulder Lappets
-        w_root = a + (b - a) * 0.52 + left * (sgn * 0.082) + bk * 0.006
-        w_mid = a + (b - a) * 0.24 + left * (sgn * 0.162) + bk * 0.018
-        w_lappet = a - (b - a) * 0.26 + left * (sgn * 0.118) - bk * 0.032
-        parts_h.append(mech_tube(f'{gid_h}_nemes_wing_{tag}', [w_root, w_mid, w_lappet],
-                                 0.042, 0.026, plaque_p, n=8, rows=8, rigid_joint='Head', slot_hint='head',
-                                 scale_xy=(0.52, 1.55)))
-        # Glowing cyan edge-busbar along outer Nemes capacitor wing
-        parts_h.append(mech_tube(f'{gid_h}_nemes_neon_{tag}',
-                                 [w_root + left * (sgn * 0.018), w_mid + left * (sgn * 0.022), w_lappet + left * (sgn * 0.014)],
-                                 0.0068, 0.0052, cyan_p, n=6, rows=7, rigid_joint='Head', slot_hint='head'))
+        # Layered Robotic Nemes Armor Side-Panels (2 overlapping angled hard-surface flares + forward shoulder lappet)
+        w_root = a + (b - a) * 0.62 + left * (sgn * 0.080) - bk * 0.008
+        w_flare = a + (b - a) * 0.30 + left * (sgn * 0.170) + bk * 0.016
+        w_lappet = a - (b - a) * 0.28 + left * (sgn * 0.118) - bk * 0.036
+        parts_h.append(mech_tube(f'{gid_h}_nemes_wing_{tag}', _catmull_spline([w_root, w_flare, w_lappet], 11),
+                                 0.046, 0.028, plaque_p, n=12, rows=11, rigid_joint='Head', slot_hint='head',
+                                 scale_xy=(0.46, 1.65)))
+        # Upper Flaked-Obsidian & Gold Trim Winglet overlapping the Nemes flare
+        w2_root = a + (b - a) * 0.68 + left * (sgn * 0.076) + bk * 0.012
+        w2_tip = a + (b - a) * 0.36 + left * (sgn * 0.184) + bk * 0.032
+        parts_h.append(mech_tube(f'{gid_h}_nemes_blade_{tag}', _catmull_spline([w2_root, w2_tip], 8),
+                                 0.024, 0.012, obs_blade_p, n=10, rows=8, rigid_joint='Head', slot_hint='head',
+                                 scale_xy=(0.40, 1.60)))
+        # Burnished-Gold Outer Rim Bevel & Emerald Telemetry Strip along Nemes Wing
+        parts_h.append(mech_tube(f'{gid_h}_nemes_gold_rim_{tag}',
+                                 _catmull_spline([w_root + left * (sgn * 0.018), w_flare + left * (sgn * 0.024), w_lappet + left * (sgn * 0.015)], 10),
+                                 0.0085, 0.0065, bronze_p, n=8, rows=10, rigid_joint='Head', slot_hint='head'))
 
-        # Twin Occipital Cyber-Cables curving from skull audio/neural jacks into back of Nemes wing
-        for kc, f_c in enumerate((0.46, 0.28)):
+        # Armored Occipital Hydraulic Conduits routing from skull servo-ports into Nemes capacitor bay
+        for kc, f_c in enumerate((0.48, 0.28)):
             c_0 = a + (b - a) * f_c + left * (sgn * 0.072) + bk * 0.055
             c_1 = a + (b - a) * (f_c - 0.10) + left * (sgn * 0.138) + bk * 0.082
-            c_2 = w_mid + bk * 0.024 - up * (0.025 * kc)
-            parts_h.append(mech_tube(f'{gid_h}_neural_cable_{tag}_{kc}', _catmull_spline([c_0, c_1, c_2], 7),
-                                     0.0085, 0.0075, obs_p if kc == 0 else bronze_p,
-                                     n=8, rows=7, rigid_joint='Head', slot_hint='head'))
+            c_2 = w_flare + bk * 0.020 - up * (0.025 * kc)
+            parts_h.append(mech_tube(f'{gid_h}_neural_cable_{tag}_{kc}', _catmull_spline([c_0, c_1, c_2], 8),
+                                     0.0095, 0.0080, obs_blade_p if kc == 0 else bronze_p,
+                                     n=10, rows=8, rigid_joint='Head', slot_hint='head'))
 
-    # Eternian Celadon-Jade Bi-Disc Cranial Halo Arc bridging behind the Twin Pylons
+    # Flaked-Obsidian & Burnished-Gold Robotic Cranial Sensor Halo bridging behind the Twin Pylons
     halo_c = a + (b - a) * 0.78 + bk * 0.058
-    halo_r = 0.175
+    halo_r = 0.176
     halo_pts = [
         halo_c + left * (math.cos(th) * halo_r) + up * (math.sin(th) * halo_r)
-        for th in np.linspace(-0.22 * math.pi, 1.22 * math.pi, 15)
+        for th in np.linspace(-0.22 * math.pi, 1.22 * math.pi, 19)
     ]
-    # Anchor struts tying halo arc directly into occipital skull & pylons (<5mm gap)
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
         h_tie = halo_c + left * (sgn * halo_r * 0.88)
         s_tie = a + (b - a) * 0.72 + left * (sgn * 0.078) + bk * 0.042
         parts_h.append(mech_tube(f'{gid_h}_halo_strut_{tag}', [s_tie, h_tie], 0.015, 0.013, bronze_p,
-                                 n=8, rows=4, rigid_joint='Head', slot_hint='head'))
-    parts_h.append(mech_tube(gid_h + '_etn_jade_halo', halo_pts, 0.015, 0.015, jade_p,
-                             n=8, rows=15, rigid_joint='Head', slot_hint='head', scale_xy=(0.65, 1.35)))
+                                 n=10, rows=4, rigid_joint='Head', slot_hint='head'))
+    parts_h.append(mech_tube(gid_h + '_obs_gold_halo', halo_pts, 0.016, 0.016, obs_blade_p,
+                             n=10, rows=19, rigid_joint='Head', slot_hint='head', scale_xy=(0.60, 1.40)))
     for kn, th_n in enumerate(np.linspace(0.10 * math.pi, 0.90 * math.pi, 5)):
         np_c = halo_c + left * (math.cos(th_n) * halo_r) + up * (math.sin(th_n) * halo_r)
-        parts_h.append(mech_tube(f'{gid_h}_halo_node_{kn}', [np_c + bk * 0.014, np_c - bk * 0.014],
-                                 0.018, 0.015, lime_p if kn == 2 else cyan_p,
+        parts_h.append(mech_tube(f'{gid_h}_halo_bezel_{kn}', [np_c + bk * 0.014, np_c - bk * 0.014],
+                                 0.019, 0.016, bronze_p,
+                                 n=12, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
+        parts_h.append(mech_tube(f'{gid_h}_halo_node_{kn}', [np_c + bk * 0.017, np_c - bk * 0.017],
+                                 0.011, 0.010, lime_p if kn == 2 else jade_p,
                                  n=10, rows=4, rigid_joint='Head', slot_hint='head', ref_dir=up))
 
+    # Tag robotic optic visor slits, Uraeus lens, temporal cores & pylon busbars with live emerald-gold emissive_blaze!
+    for pt_h in parts_h:
+        pnm = pt_h.name or ''
+        if any(k in pnm for k in ('_visor_optic_', '_uraeus_optic', '_temp_core_', '_pylon_rail_')):
+            pt_h.vfx = {'kind': 'emissive_blaze', 'color': '#4eff98', 'gain': 2.30, 'pulse': 0.18}
+        elif '_halo_node_2' in pnm:
+            pt_h.vfx = {'kind': 'emissive_blaze', 'color': '#ffe268', 'gain': 2.20, 'pulse': 0.20}
+
     ent_h = assemble_garment(
-        gid_h, 'Egyptian-Eternian Cyber-Reliquary Twin-Pylon Crown & Jade Bi-Halo', 'head', parts_h,
+        gid_h, 'Pharaonic Cyber-Lich Robotic Nemes War-Crown & Obsidian-Gold Pylons', 'head', parts_h,
         covers_hair=True, covers_face=True,
     )
     ent_h['hide_parts'] = list(FULL_HEAD_HIDE_PARTS)
@@ -1518,7 +1708,14 @@ def _build_reliquary_lich(sex, body_id):
     parts_t.append(tabard(gid_t + '_eg_etn_apron', core.KNEE - 0.10, core.WAIST - 0.015,
                           apron_p, width=0.125, ease=0.048, front=True, back=False))
 
-    ent_t = assemble_garment(gid_t, 'Egyptian-Eternian Cyber-Reliquary Usekh Thorax & Bufu Robes', 'torso', parts_t)
+    for pt_t in parts_t:
+        if not hasattr(pt_t, 'name'):
+            continue
+        pnm = pt_t.name or ''
+        if any(k in pnm for k in ('_djed_core_', '_shoulder_core_', '_clasp_core', '_lime_vent_')):
+            pt_t.vfx = {'kind': 'emissive_blaze', 'color': '#4eff98', 'gain': 2.15, 'pulse': 0.18}
+
+    ent_t = assemble_garment(gid_t, 'Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Usekh Robes', 'torso', parts_t)
     entries.append(ent_t)
 
     # --- 3. BACK: clich_{s}_reliquary_servo_arms (Egyptian Djed Spine + Twin Eternian Bi-Joint Cyber-Arms + Necro-Orb) ---
@@ -1628,31 +1825,44 @@ def _build_reliquary_lich(sex, body_id):
         parts_b.append(mech_tube(f'{gid_b}_thumb_dist_{tag}', [th_mid - (th_mid - th0) * 0.12, th1], 0.011, 0.006, bronze_p,
                                  n=7, rows=5, rigid_joint='Spine2', slot_hint='back'))
 
-    ent_b = assemble_garment(gid_b, 'Egyptian-Eternian Cyber-Reliquary Djed Spine & Bi-Joint Servo-Arms', 'back', parts_b)
+    for pt_b in parts_b:
+        pnm = pt_b.name or ''
+        if any(k in pnm for k in ('_humerus_L', '_humerus_R')):
+            pt_b.paint = obs_blade_p
+        if any(k in pnm for k in ('_djed_reactor', '_sh_core_', '_elbow_node_', '_palm_core_')):
+            pt_b.vfx = {'kind': 'emissive_blaze', 'color': '#4eff98', 'gain': 2.20, 'pulse': 0.18}
+
+    ent_b = assemble_garment(gid_b, 'Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Servo-Arms', 'back', parts_b)
     entries.append(ent_b)
 
-    # --- 4. GLOVES: clich_{s}_reliquary_gauntlets (Finger-Joint-Skinned Metallic Bronze/Gold Gauntlets + Sculpted Vambraces) ---
+    # --- 4. GLOVES: clich_{s}_reliquary_gauntlets (Moonblade-Coordinated Obsidian, Emerald & Royal-Gold Gauntlets) ---
     gid_g = f'clich_{sex}_reliquary_gauntlets'
-    gold_finger_p = P('clich_gold', 0.02, [B('bottom', 0.0, 0.12, 'solid', 'clich_bronze_dk')], fabric='metal.gold')
+    gold_finger_p = P('clich_moon_gold_hi', 0.015, [B('bottom', 0.0, 0.16, 'solid', 'clich_moon_obs')], fabric='metal.gold')
     parts_g = (
         sculpted_vambraces(gid_g, plaque_p, trim_paint=bronze_p, couter=True, ease=0.016)
-        + full_gloves(gid_g, bronze_p, bronze_p, finger_paint=gold_finger_p, f0=0.82, ease=0.012, knuckle_paint=jade_p)
+        + full_gloves(gid_g, obs_blade_p, bronze_p, finger_paint=gold_finger_p, f0=0.82, ease=0.012, knuckle_paint=jade_p)
     )
-    entries.append(assemble_garment(gid_g, 'Egyptian-Eternian Cyber-Reliquary Jade & Bronze Gauntlets', 'gloves', parts_g))
+    entries.append(assemble_garment(gid_g, 'Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Gauntlets', 'gloves', parts_g))
 
-    # --- 5. LEGS: clich_{s}_reliquary_trousers ---
+    # --- 5. LEGS: clich_{s}_reliquary_trousers (Moonblade-Coordinated Flaked-Obsidian & Royal-Gold Under-Greaves) ---
     gid_l = f'clich_{sex}_reliquary_trousers'
-    leg_p = P('clich_plum_dk', 0.02, [B('bottom', 0.0, 0.14, 'solid', 'clich_jade_dk')], fabric='cloth.wool')
+    leg_p = P('clich_moon_obs', 0.018, [
+        B('top', 0.0, 0.12, 'solid', 'clich_moon_plum'),
+        B('bottom', 0.0, 0.16, 'solid', 'clich_moon_gold'),
+    ], [PN(0.0, 1.0, 'clich_moon_obs_blade', 'clich_moon_silver', 'clich_moon_obs', 0.16)], fabric='leather.smooth')
     parts_l = trousers(gid_l, leg_p, ease=0.016)
-    entries.append(assemble_garment(gid_l, 'Egyptian-Eternian Cyber-Reliquary Under-Greaves', 'legs', parts_l, legged=True))
+    entries.append(assemble_garment(gid_l, 'Pharaonic Cyber-Lich Obsidian & Royal-Gold Under-Greaves', 'legs', parts_l, legged=True))
 
-    # --- 6. FEET: clich_{s}_reliquary_boots ---
+    # --- 6. FEET: clich_{s}_reliquary_boots (Moonblade-Coordinated Flaked-Obsidian, Emerald & Royal-Gold Sabatons) ---
     gid_f = f'clich_{sex}_reliquary_boots'
-    boot_p = P('clich_bronze_dk', 0.02, [B('top', 0.0, 0.16, 'solid', 'clich_jade')], fabric='metal.bronze')
+    boot_p = P('clich_moon_obs', 0.015, [
+        B('top', 0.0, 0.18, 'solid', 'clich_moon_gold'),
+        B('bottom', 0.0, 0.12, 'solid', 'clich_moon_gold_dk'),
+    ], [PN(0.0, 1.0, 'clich_moon_obs_blade', 'clich_moon_silver', 'clich_moon_obs', 0.22)], fabric='metal.iron')
     parts_f = boots(gid_f, boot_p, top=0.36) + sculpted_greaves(
         gid_f, plaque_p, trim_paint=bronze_p, poleyn=True, ease=0.016,
     )
-    entries.append(assemble_garment(gid_f, 'Egyptian-Eternian Cyber-Reliquary Jade & Bronze Sabatons', 'feet', parts_f))
+    entries.append(assemble_garment(gid_f, 'Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Sabatons', 'feet', parts_f))
 
     return entries
 

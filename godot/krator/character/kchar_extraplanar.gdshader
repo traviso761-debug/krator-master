@@ -213,6 +213,44 @@ void fragment() {
 		EMISSION = mix(kx_col_b, flavor_c, 0.38) * fres * kx_gain * (0.88 + 0.22 * w_e) + kx_col_b * (streak * 1.85 + v_spark * 1.55);
 		ROUGHNESS = 0.16;
 		ALPHA = clamp(mix(kx_opacity * tunnel, min(0.98, kx_opacity + 0.54), fres) + streak * 0.35, 0.12, 0.98);
+	} else if (kx_mode == 8) {
+		// Pure-light pulsing, counter-rotating silhouette array (`light_array`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0 || r < 0.24) {
+			discard;
+		}
+		float ang = atan(p.y, p.x);
+		float spin = kx_swirl != 0.0 ? kx_swirl : 1.0;
+		float pulse = 0.5 + 0.5 * sin(kx_time * 3.4 + spin * 1.1);
+		float r_b = r / (0.955 + 0.045 * pulse);
+		float a1 = ang - kx_time * 0.72 * spin;
+		float idx1 = floor(a1 * 24.0 / 6.2831853);
+		float sec1 = (fract(a1 * 24.0 / 6.2831853 + 0.5) - 0.5) * (6.2831853 / 24.0) * r_b;
+		float d_bead1 = length(vec2(sec1, r_b - 0.50));
+		float wv1 = 0.35 + 0.65 * pow(0.5 + 0.5 * sin(idx1 * 0.7854 - kx_time * 5.4), 2.0);
+		float beads1 = (exp(-d_bead1 * 105.0) * 2.1 + exp(-d_bead1 * 28.0) * 0.42) * wv1;
+		float a2 = ang + kx_time * 0.52 * spin;
+		float arcs = exp(-abs(r_b - 0.63) * 115.0) * smoothstep(0.05, 0.28, sin(a2 * 8.0)) * (0.75 + 0.45 * pulse);
+		float ticks = exp(-abs(r_b - 0.58) * 85.0) * pow(max(0.0, cos(a2 * 48.0)), 20.0) * (0.55 + 0.45 * pulse);
+		float a3 = ang - kx_time * 0.42 * spin;
+		float idx3 = floor(a3 * 16.0 / 6.2831853);
+		float sec3 = (fract(a3 * 16.0 / 6.2831853 + 0.5) - 0.5) * (6.2831853 / 16.0) * r_b;
+		float d_bead3 = length(vec2(sec3, r_b - 0.76));
+		float wv3 = 0.40 + 0.60 * pow(0.5 + 0.5 * cos(idx3 * 1.178 - kx_time * 4.2), 2.0);
+		float beads3 = (exp(-d_bead3 * 95.0) * 1.75 + exp(-d_bead3 * 26.0) * 0.38) * wv3;
+		float len_mod = 0.84 + 0.11 * sin(a3 * 4.0 + kx_time * 4.4);
+		float fine_rays = exp(-abs(sin(a3 * 16.0)) * 46.0 * r_b) * smoothstep(0.44, 0.54, r_b) * (1.0 - smoothstep(len_mod - 0.14, len_mod, r_b)) * (0.55 + 0.45 * wv3);
+		float main_rays = exp(-abs(sin(a2 * 4.0)) * 62.0 * r_b) * smoothstep(0.40, 0.52, r_b) * (1.0 - smoothstep(0.82, 0.97, r_b)) * (0.65 + 0.55 * pulse);
+		float edge_fade = smoothstep(0.26, 0.42, r) * (1.0 - smoothstep(0.88, 0.99, r));
+		vec3 col = (kx_col_b * (arcs * 1.15 + ticks * 0.95 + fine_rays * 1.05) + kx_col_c * beads3 * 0.55 + kx_col_a * (beads1 * 1.10 + beads3 * 0.85 + main_rays * 1.15)) * edge_fade * kx_gain;
+		float lum = max(col.r, max(col.g, col.b));
+		if (lum < 0.004) {
+			discard;
+		}
+		ALBEDO = vec3(0.0);
+		EMISSION = col;
+		ALPHA = clamp(lum, 0.0, 1.0);
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)
 		float p = 1.0 + 0.18 * sin(kx_time * 3.6 + UV.x * 6.283);

@@ -1147,6 +1147,31 @@ def import_all():
             new_entries[:] = [x for x in new_entries if x['id'] != pid]
         P_d, N_d, UV_d, T_d = decimate_uv_preserving(P, N, UV, T, target_tris=4200)
         P_f, N_f, UV_f, T_f, blade, support = orient_and_place(P_d, N_d, UV_d, T_d, kind, length, is_spliced_shield=is_spliced_shield)
+        if pid == 'msh_coyoteman_lance':
+            shaft_m = P_f[:, 1] < 0.80
+            P_f[:, 0] -= float(np.median(P_f[shaft_m, 0]))
+            P_f[:, 2] -= float(np.median(P_f[shaft_m, 2]))
+            y_l = P_f[:, 1].copy()
+            w_wrap = np.clip((y_l - 0.46) / 0.08, 0.0, 1.0) * (1.0 - np.clip((y_l - 0.83) / 0.06, 0.0, 1.0))
+            w_head = np.clip((y_l - 0.84) / 0.08, 0.0, 1.0)
+            sx_l = (1.0 - w_head) * (0.34 + 0.04 * w_wrap) + w_head * 0.44
+            sz_l = (1.0 - w_head) * (0.34 + 0.04 * w_wrap) + w_head * 0.84
+            P_f[:, 0] *= sx_l
+            P_f[:, 2] *= sz_l
+            below_l = y_l < 0.85
+            P_f[below_l, 1] = 0.85 + (y_l[below_l] - 0.85) * 1.12
+            N_f[:, 0] /= np.maximum(sx_l, 1e-4)
+            N_f[:, 2] /= np.maximum(sz_l, 1e-4)
+            N_f /= np.maximum(np.linalg.norm(N_f, axis=1, keepdims=True), 1e-8)
+        elif pid.startswith('msh_coyoteman_') and kind == 'shield':
+            if pid == 'msh_coyoteman_small_round_shield':
+                x_med = float(np.median(P_f[:, 0]))
+                if abs(P_f[:, 0].min() - x_med) > abs(P_f[:, 0].max() - x_med):
+                    Ry180 = rot_y(180)
+                    P_f = P_f @ Ry180.T; N_f = N_f @ Ry180.T
+                    P_f[:, 0] -= (float(np.percentile(P_f[:, 0], 88)) + 0.042)
+            Rx180 = rot_x(180)
+            P_f = P_f @ Rx180.T; N_f = N_f @ Rx180.T
         glb_path = os.path.join(OUT_PROPS, f"{pid}.glb")
         write_prop_glb(glb_path, pid, P_f, N_f, UV_f, T_f, tex_blobs)
         thumb_path = os.path.join(OUT_THUMBS, f"{pid}.png")

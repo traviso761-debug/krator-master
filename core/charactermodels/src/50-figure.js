@@ -317,17 +317,25 @@ function KCharFigure(body, sliders, load){
     if(!furred.length) return null;
     return KCHAR.hidden(Object.assign({}, rec, { mods:(rec.mods || []).filter(function(id){ return furred.indexOf(id) < 0; }) }), kit).base;
   }
+  function effectiveCoatId(rec){
+    if(!rec) return null;
+    if(rec.coat !== undefined) return rec.coat;
+    if(rec.people === 'coyote_men' || (rec.mods && rec.mods.indexOf('mod_head_coyote') >= 0)) return 'coyote';
+    return null;
+  }
   function coatHides(rec){
-    var F = KCharFigure.fur, c = F && F.coats && rec.coat ? F.coats[rec.coat] : null, out = {};
+    var cid = effectiveCoatId(rec);
+    var F = KCharFigure.fur, c = F && F.coats && cid ? F.coats[cid] : null, out = {};
     ((c && c.hide_parts) || []).forEach(function(p){ out[p] = true; });
     return out;
   }
   function coatShells(m, rec, gain, hide, edge){
-    var F = KCharFigure.fur, coat = F && F.coats && rec.coat ? F.coats[rec.coat] : null, S = m.userData.coat;
+    var cid = effectiveCoatId(rec);
+    var F = KCharFigure.fur, coat = F && F.coats && cid ? F.coats[cid] : null, S = m.userData.coat;
     var K = coat && F.kinds[coat.kind];
-    if(S && (!K || S.id !== rec.coat)){ m.remove(S.group); S = m.userData.coat = null; }
+    if(S && (!K || S.id !== cid)){ m.remove(S.group); S = m.userData.coat = null; }
     if(!K) return;
-    if(!S) S = m.userData.coat = coatBuild(m, rec.coat, coat, K);
+    if(!S) S = m.userData.coat = coatBuild(m, cid, coat, K);
     // the rings from the hidden skin: 0 on a hidden triangle's corners, counting out through what shows
     var i0 = m.userData.index0, d = new Float32Array(S.ns).fill(Infinity), front = [], k, t;
     var sv = function(v){ return S.src ? S.src[v] : v; };

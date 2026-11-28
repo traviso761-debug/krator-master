@@ -401,6 +401,109 @@
       return matNP;
     }
 
+    if(kind === 'light_array'){
+      var cLaCore = colOf(z.core_color, '#eaffff');
+      var cLaPri  = colOf(z.primary_color, '#3cf6ff');
+      var cLaSec  = colOf(z.secondary_color, '#2874ff');
+      var cLaAcc  = colOf(z.accent_color, '#b458ff');
+      var laScale = z.halo_scale == null ? 0.64 : +z.halo_scale;
+      var laSpin  = z.spin == null ? 1.0 : +z.spin;
+      var laZOff  = z.z_offset == null ? -0.18 : +z.z_offset;
+      var laGain  = z.gain == null ? 1.75 : +z.gain;
+      var laV0    = z.v0 == null ? 0.0 : +z.v0;
+      var laV1    = z.v1 == null ? 1.0 : +z.v1;
+      var matLA = new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        depthTest: true,
+        blending: THREE.CustomBlending,
+        blendEquation: THREE.AddEquation,
+        blendSrc: THREE.OneFactor,
+        blendDst: THREE.OneFactor,
+        blendSrcAlpha: THREE.ZeroFactor,
+        blendDstAlpha: THREE.OneFactor,
+        side: THREE.DoubleSide,
+        uniforms: {
+          kxTime:  uTime,
+          kxCore:  { value: cLaCore },
+          kxPri:   { value: cLaPri },
+          kxSec:   { value: cLaSec },
+          kxAcc:   { value: cLaAcc },
+          kxScale: { value: laScale },
+          kxSpin:  { value: laSpin },
+          kxZOff:  { value: laZOff },
+          kxGain:  { value: laGain },
+          kxV0:    { value: laV0 },
+          kxV1:    { value: laV1 }
+        },
+        vertexShader: [
+          'uniform float kxScale, kxZOff, kxV0, kxV1;',
+          'varying vec2 vLaUv;',
+          'void main(){',
+          '  vec2 uvN = vec2(uv.x, clamp((uv.y - kxV0) / max(kxV1 - kxV0, 1e-4), 0.0, 1.0));',
+          '  vLaUv = uvN;',
+          '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+          '  vec2 p2 = (uvN - 0.5) * 2.0 * kxScale;',
+          '  mvOrigin.xy += p2;',
+          '  mvOrigin.z += kxZOff;',
+          '  gl_Position = projectionMatrix * mvOrigin;',
+          '}'
+        ].join('\n'),
+        fragmentShader: [
+          'uniform float kxTime, kxSpin, kxGain;',
+          'uniform vec3 kxCore, kxPri, kxSec, kxAcc;',
+          'varying vec2 vLaUv;',
+          'void main(){',
+          '  vec2 p = (vLaUv - 0.5) * 2.0;',
+          '  float r = length(p);',
+          '  if(r > 1.0 || r < 0.24) discard;',
+          '  float ang = atan(p.y, p.x);',
+          '  float pulse = 0.5 + 0.5 * sin(kxTime * 3.4 + kxSpin * 1.1);',
+          '  float rB = r / (0.955 + 0.045 * pulse);',
+          '  // 1. Inner rotating ring of 24 pulsing photonic star-nodes',
+          '  float a1 = ang - kxTime * 0.72 * kxSpin;',
+          '  float n1 = 24.0;',
+          '  float idx1 = floor(a1 * n1 / 6.2831853);',
+          '  float sec1 = (fract(a1 * n1 / 6.2831853 + 0.5) - 0.5) * (6.2831853 / n1) * rB;',
+          '  float dBead1 = length(vec2(sec1, rB - 0.50));',
+          '  float wv1 = 0.35 + 0.65 * pow(0.5 + 0.5 * sin(idx1 * 0.7854 - kxTime * 5.4), 2.0);',
+          '  float beads1 = (exp(-dBead1 * 105.0) * 2.1 + exp(-dBead1 * 28.0) * 0.42) * wv1;',
+          '  // 2. Counter-rotating segmented interferometer light-arcs & 48 vernier ticks',
+          '  float a2 = ang + kxTime * 0.52 * kxSpin;',
+          '  float arcSeg = smoothstep(0.05, 0.28, sin(a2 * 8.0));',
+          '  float arcs = exp(-abs(rB - 0.63) * 115.0) * arcSeg * (0.75 + 0.45 * pulse);',
+          '  float ticks = exp(-abs(rB - 0.58) * 85.0) * pow(max(0.0, cos(a2 * 48.0)), 20.0) * (0.55 + 0.45 * pulse);',
+          '  // 3. Outer rotating ring of 16 harmonic beacon nodes + pulsing wave-outline',
+          '  float a3 = ang - kxTime * 0.42 * kxSpin;',
+          '  float n3 = 16.0;',
+          '  float idx3 = floor(a3 * n3 / 6.2831853);',
+          '  float sec3 = (fract(a3 * n3 / 6.2831853 + 0.5) - 0.5) * (6.2831853 / n3) * rB;',
+          '  float dBead3 = length(vec2(sec3, rB - 0.76));',
+          '  float wv3 = 0.40 + 0.60 * pow(0.5 + 0.5 * cos(idx3 * 1.178 - kxTime * 4.2), 2.0);',
+          '  float beads3 = (exp(-dBead3 * 95.0) * 1.75 + exp(-dBead3 * 26.0) * 0.38) * wv3;',
+          '  float rimWave = exp(-abs(rB - (0.76 + 0.016 * sin(ang * 8.0 + kxTime * 4.0 * kxSpin))) * 110.0) * (0.45 + 0.40 * sin(ang * 4.0 - kxTime * 3.6));',
+          '  // 4. Pulsing radial array of 32 fine Cherenkov light-lances & 8 harmonic pillars',
+          '  float lenMod = 0.84 + 0.11 * sin(a3 * 4.0 + kxTime * 4.4);',
+          '  float envR = smoothstep(0.44, 0.54, rB) * (1.0 - smoothstep(lenMod - 0.14, lenMod, rB));',
+          '  float fineRays = exp(-abs(sin(a3 * 16.0)) * 46.0 * rB) * envR * (0.55 + 0.45 * wv3);',
+          '  float mainRays = exp(-abs(sin(a2 * 4.0)) * 62.0 * rB) * smoothstep(0.40, 0.52, rB) * (1.0 - smoothstep(0.82, 0.97, rB)) * (0.65 + 0.55 * pulse);',
+          '  // Combine photonic light channels with smooth inner/outer fade (zero polygon boundary)',
+          '  float edgeFade = smoothstep(0.26, 0.42, r) * (1.0 - smoothstep(0.88, 0.99, r));',
+          '  float softHalo = exp(-pow((rB - 0.63) * 6.5, 2.0)) * 0.14 * (0.7 + 0.3 * pulse);',
+          '  vec3 col = kxPri * (arcs * 1.15 + ticks * 0.95 + fineRays * 1.05 + softHalo)',
+          '           + kxSec * (rimWave * 1.10 + softHalo * 0.85)',
+          '           + kxAcc * (beads3 * 0.55 + rimWave * 0.45 * (0.5 + 0.5 * sin(ang * 3.0 + kxTime * 2.5)))',
+          '           + kxCore * (beads1 * 1.10 + beads3 * 0.85 + mainRays * 1.15);',
+          '  col *= edgeFade * kxGain;',
+          '  float lum = max(col.r, max(col.g, col.b));',
+          '  if(lum < 0.004) discard;',
+          '  gl_FragColor = vec4(col, clamp(lum, 0.0, 1.0));',
+          '}'
+        ].join('\n')
+      });
+      return matLA;
+    }
+
     var clone = srcMat ? srcMat.clone() : new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, skinning: !!skinned });
     clone.skinning = !!skinned;
     return clone;

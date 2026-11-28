@@ -1890,6 +1890,7 @@
       // the tier's mods (a temple guard's second pair of arms) and the people's (gills), before the clothes that fit them
       rec.mods = (x.p.mods || []).concat(x.set.mods || []).filter(has);
       rec.people = x.p.id;
+      if(x.p.coat) rec.coat = x.p.coat; else delete rec.coat;
       if(x.p.id === 'lizardmen' || x.p.id === 'frogmen' || x.p.id === 'coyote_men' || x.p.id === 'khaayken' || x.p.id === 'giants' || x.p.id === 'free_giants' || x.p.id === 'extraplanar'){
         if(x.p.skin && x.p.skin.length) rec.skin = x.p.skin[0];
         if(x.p.eyes && x.p.eyes.length) rec.eye_color = x.p.eyes[0];
@@ -2066,10 +2067,11 @@
     // a coat (data/fur.json coats): the body furred, in the hair's colour; a record without one has no 'coat'
     var coats = (D.fur && D.fur.coats) || {};
     if(Object.keys(coats).length){
-      var cs = section(headp, 'Coat', rec.coat && coats[rec.coat] ? coats[rec.coat].name : 'None');
+      var effCoat = rec.coat !== undefined ? rec.coat : ((rec.people === 'coyote_men' || (rec.mods || []).indexOf('mod_head_coyote') >= 0) ? 'coyote' : null);
+      var cs = section(headp, 'Coat', effCoat && coats[effCoat] ? coats[effCoat].name : 'None');
       chips(cs, [{ id:null, name:'None', domId:'chip-coat-none' }].concat(Object.keys(coats).map(function(id){
         return { id:id, name:coats[id].name, domId:'chip-coat-' + id };
-      })), rec.coat || null, function(id){ if(id) rec.coat = id; else delete rec.coat; apply(); buildPanel(); }, true);
+      })), effCoat || null, function(id){ rec.coat = id || null; apply(); buildPanel(); }, true);
       var cn = document.createElement('p'); cn.className = 'hint';
       cn.textContent = 'Fur over the skin, in the hair colour; it stops short of the clothes. The face, palms and soles stay bare.';
       cs.appendChild(cn);

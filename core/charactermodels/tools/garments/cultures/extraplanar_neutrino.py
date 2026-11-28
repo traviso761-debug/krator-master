@@ -354,6 +354,15 @@ def torus_ring(name, center, normal_dir, major_r, minor_rx, minor_ry, paint, rig
     return _part_raw(name, Q, True, paint, rigid_joint=rigid_joint, vfx=vfx)
 
 
+def light_plane(name, center, half_size, paint, rigid_joint, vfx=None, rows=4, cols=4):
+    """Compact planar UV carrier (`closed=False`) anchored on `rigid_joint` for pure-light `light_array` shaders."""
+    c = np.asarray(center, dtype=np.float64)
+    xs = np.linspace(-half_size, half_size, cols)
+    zs = np.linspace(-half_size, half_size, rows)
+    Q = [[[c[0] + xv, c[1], c[2] + zv] for xv in xs] for zv in zs]
+    return _part_raw(name, Q, False, paint, rigid_joint=rigid_joint, vfx=vfx)
+
+
 # ===============================================================================================================
 # THE NEUTRINO PHANTOM (`neutrino_phantom`)
 # ===============================================================================================================
@@ -366,14 +375,10 @@ def _build_neutrino_phantom(sex):
     phase_p    = _mp('ext3_abyss_cobalt', 'cloth.silk', 'ext3_cherenkov_wave', 'ext3_cherenkov', grain=0.005)
     void_p     = _mp('ext3_tank_void', 'patterns/extraplanar/nebula-rift', grain=0.0)
     blaze_p    = _mp('ext3_cherenkov_hot', 'beads.glass', grain=0.0)
-    disc_e_p   = _mp('ext3_abyss_cobalt', 'metal.chrome', 'ext3_flavor_disc', 'ext3_cherenkov')
-    disc_mu_p  = _mp('ext3_tank_void', 'metal.chrome', 'ext3_flavor_disc', 'ext3_muon_blue')
-    disc_tau_p = _mp('ext3_tank_void', 'metal.chrome', 'ext3_flavor_disc', 'ext3_tau_violet')
 
     a_hd, b_hd, up_h, bk_h, left_h = head_frame()
     fwd = np.array([0.0, -1.0, 0.0])
     up_w = np.array([0.0, 0.0, 1.0])
-    left_w = np.array([1.0, 0.0, 0.0])
 
     neutrino_vfx = {
         'kind': 'neutrino_phase',
@@ -388,7 +393,7 @@ def _build_neutrino_phantom(sex):
 
     # -----------------------------------------------------------------------------------------------------------
     # 1. HEAD: ext3_{s}_neutrino_cherenkov
-    #    Headless Cherenkov Radiation Shock-Cone Halo, Weak-Boson Singularity & Orbiting Super-K Golden PMT Rings
+    #    Headless Weak-Boson Singularity Core, Pulsing Cherenkov Crown Light-Array & Orbiting Golden PMT Sensors
     # -----------------------------------------------------------------------------------------------------------
     gid_h = f'ext3_{sex}_neutrino_cherenkov'
     parts_h = []
@@ -397,15 +402,14 @@ def _build_neutrino_phantom(sex):
     collar_z = float(nk[2]) + 0.004
     parts_h.append(torus_ring(
         gid_h + '_containment_collar', np.array([0.0, 0.004, collar_z]), up_w,
-        0.084, 0.019, 0.013, rhod_dk_p, rigid_joint='Neck', n_major=30, n_minor=8
+        0.082, 0.016, 0.011, rhod_dk_p, rigid_joint='Neck', n_major=30, n_minor=8
     ))
-    # 6 golden Super-Kamiokande photomultiplier domes set around the neck containment ring
     for pi in range(6):
         ang_p = pi * (math.pi / 3.0) + (math.pi / 6.0)
         p_dir = np.array([math.sin(ang_p), -math.cos(ang_p), 0.0])
-        pc = np.array([0.0, 0.004, collar_z]) + p_dir * 0.098 + np.array([0.0, 0.0, 0.004])
+        pc = np.array([0.0, 0.004, collar_z]) + p_dir * 0.095 + np.array([0.0, 0.0, 0.004])
         parts_h.append(ellipsoid_part(
-            f'{gid_h}_collar_pmt_{pi}', pc, (0.011, 0.011, 0.009), pmt_eye_p, 'Neck',
+            f'{gid_h}_collar_pmt_{pi}', pc, (0.009, 0.009, 0.008), pmt_eye_p, 'Neck',
             n=10, rows=6,
             vfx={'kind': 'emissive_blaze', 'color': '#ffd86e', 'gain': 2.10, 'pulse': 0.16}
         ))
@@ -414,107 +418,67 @@ def _build_neutrino_phantom(sex):
     head_gl = bl_to_gl_pt(head_c)
 
     # Weak-Boson (Z0) Reaction-Vertex Singularity Core
-    kin_core = {'bone': 'Head', 'motion': 'bob', 'speed': 2.20, 'amp': 0.014, 'phase': 0.0, 'center_gl': head_gl}
+    kin_core = {'bone': 'Head', 'motion': 'bob', 'speed': 2.20, 'amp': 0.012, 'phase': 0.0, 'center_gl': head_gl}
     parts_h.append(ellipsoid_part(
-        gid_h + '_vertex_core', head_c, (0.042, 0.042, 0.042), blaze_p, 'Head',
+        gid_h + '_vertex_core', head_c, (0.038, 0.038, 0.038), blaze_p, 'Head',
         n=18, rows=12,
-        vfx={'kind': 'emissive_blaze', 'color': '#d8ffff', 'gain': 2.70, 'pulse': 0.24, 'kinetic': kin_core}
+        vfx={'kind': 'emissive_blaze', 'color': '#dcffff', 'gain': 2.65, 'pulse': 0.24, 'kinetic': kin_core}
     ))
-    # 6 crisp relativistic collision-vertex rays shooting out of the Z0 core
-    ray_dirs = [
-        np.array([ 0.00, -0.92,  0.39]),
-        np.array([ 0.85,  0.22,  0.48]),
-        np.array([-0.85,  0.22,  0.48]),
-        np.array([ 0.56, -0.35, -0.75]),
-        np.array([-0.56, -0.35, -0.75]),
-        np.array([ 0.00,  0.42,  0.91]),
-    ]
-    for ri, rd in enumerate(ray_dirs):
-        rd = rd / np.linalg.norm(rd)
-        parts_h.append(sweep_tube(
-            f'{gid_h}_vertex_ray_{ri}', [head_c + rd * 0.022, head_c + rd * 0.118],
-            [0.007, 0.0012], blaze_p, n=6, rigid_joint='Head', cap_ends=False,
-            vfx={'kind': 'emissive_blaze', 'color': '#78fbff', 'gain': 2.35, 'pulse': 0.20, 'kinetic': kin_core}
-        ))
 
-    # Hollow Sculpted Cherenkov 41-degree Mach-Cone Wavefront Crown (double-walled thin phase shell)
-    cone_axis = np.array([0.0, 0.34, 0.94])
-    cone_axis /= np.linalg.norm(cone_axis)
-    cx_u, cx_v = core.frame(cone_axis)
-    kin_cone = {
-        'bone': 'Head', 'motion': 'orbit', 'speed': 1.35, 'amp': 0.010,
-        'precess': 0.07, 'phase': 0.4,
-        'center_gl': head_gl, 'axis_gl': bl_to_gl_dir(cone_axis),
-    }
-    n_c = 32
-    angs_c = np.linspace(0.0, 2.0 * math.pi, n_c, endpoint=False)
-    # Build closed thin shell around Cherenkov cone frustum (from apex near vertex core out to flared wake rim)
-    cone_stations = [
-        (-0.045, 0.024),
-        ( 0.010, 0.078),
-        ( 0.075, 0.142),
-        ( 0.135, 0.198),
-        ( 0.138, 0.190),
-        ( 0.075, 0.134),
-        ( 0.010, 0.071),
-        (-0.042, 0.020),
-    ]
-    Q_cone = []
-    for s_d, r_c in cone_stations:
-        sc = head_c + cone_axis * s_d
-        Q_cone.append([
-            sc + (cx_u * math.cos(a) + cx_v * math.sin(a)) * (r_c * (1.0 + 0.06 * math.cos(6.0 * a)))
-            for a in angs_c
-        ])
-    cone_vfx = dict(neutrino_vfx, opacity=0.46, rim_gain=2.65, kinetic=kin_cone)
-    parts_h.append(_part_raw(gid_h + '_cherenkov_cone', Q_cone, True, phase_p, rigid_joint='Head', vfx=cone_vfx))
-
-    # Two Counter-Rotating Orbiting Golden Super-Kamiokande PMT Sensor Rings around the Singularity
-    pmt_ring_specs = [
-        ('outer', 0.156, 0.009, 0.007, np.array([ 0.24, -0.88, 0.41]), -1.15, 0.09, 0.8, 10),
-        ('inner', 0.108, 0.008, 0.006, np.array([-0.82, -0.34, 0.46]),  1.65, 0.08, 2.1, 6),
-    ]
-    for rname, maj_r, rx_m, ry_m, n_vec, spd, prec, ph, n_pmt in pmt_ring_specs:
-        n_ax = n_vec / np.linalg.norm(n_vec)
-        u_ax, v_ax = core.frame(n_ax)
-        kin_r = {
-            'bone': 'Head', 'motion': 'orbit', 'speed': spd, 'amp': 0.010,
-            'precess': prec, 'phase': ph,
-            'center_gl': head_gl, 'axis_gl': bl_to_gl_dir(n_ax),
+    # Pure-light pulsing, counter-rotating Cherenkov Crown Array behind the Singularity Core (zero polygon fins!)
+    parts_h.append(light_plane(
+        gid_h + '_crown_light_array', head_c, 0.04, blaze_p, 'Head',
+        vfx={
+            'kind': 'light_array',
+            'core_color': '#f2ffff',
+            'primary_color': '#4cf8ff',
+            'secondary_color': '#2c78ff',
+            'accent_color': '#ffd86e',
+            'halo_scale': 0.28,
+            'spin': -1.55,
+            'z_offset': -0.09,
+            'gain': 1.85,
+            'kinetic': kin_core,
         }
-        parts_h.append(torus_ring(
-            f'{gid_h}_pmt_ring_{rname}', head_c, n_ax, maj_r, rx_m, ry_m,
-            rhodium_p, rigid_joint='Head', n_major=32, n_minor=7,
-            vfx={'kind': 'standard', 'kinetic': kin_r}
+    ))
+
+    # Delicate Orbiting Constellation of 8 Golden Super-Kamiokande PMT Sensor Points (no thick solid hoops!)
+    n_ax_h = np.array([0.24, -0.88, 0.41])
+    n_ax_h /= np.linalg.norm(n_ax_h)
+    u_ax_h, v_ax_h = core.frame(n_ax_h)
+    kin_pmt = {
+        'bone': 'Head', 'motion': 'orbit', 'speed': -1.25, 'amp': 0.008,
+        'precess': 0.08, 'phase': 0.8,
+        'center_gl': head_gl, 'axis_gl': bl_to_gl_dir(n_ax_h),
+    }
+    for ei in range(8):
+        ang_e = (ei / 8.0) * 2.0 * math.pi
+        r_dir = u_ax_h * math.cos(ang_e) + v_ax_h * math.sin(ang_e)
+        ec = head_c + r_dir * 0.132
+        parts_h.append(ellipsoid_part(
+            f'{gid_h}_pmt_sensor_{ei}', ec, (0.011, 0.011, 0.009), pmt_gold_p, 'Head',
+            axes=(r_dir, n_ax_h, np.cross(r_dir, n_ax_h)), n=10, rows=6,
+            vfx={'kind': 'emissive_blaze', 'color': '#ffdc74', 'gain': 2.20, 'pulse': 0.22, 'kinetic': kin_pmt}
         ))
-        for ei in range(n_pmt):
-            ang_e = (ei / float(n_pmt)) * 2.0 * math.pi
-            r_dir = u_ax * math.cos(ang_e) + v_ax * math.sin(ang_e)
-            ec = head_c + r_dir * maj_r
-            parts_h.append(ellipsoid_part(
-                f'{gid_h}_pmt_node_{rname}_{ei}', ec, (0.013, 0.013, 0.010), pmt_gold_p, 'Head',
-                axes=(r_dir, n_ax, np.cross(r_dir, n_ax)), n=10, rows=6,
-                vfx={'kind': 'emissive_blaze', 'color': '#ffd968', 'gain': 2.25, 'pulse': 0.22, 'kinetic': kin_r}
-            ))
 
     head_emitters = [
         {
             'bone': 'Head',
             'offset': [0.0, 0.10, 0.0],
-            'count': 26,
+            'count': 24,
             'rate': 0.44,
-            'size0': 0.065,
-            'size1': 0.210,
-            'drift': [0.0, 0.34, -0.08],
-            'spread': 0.055,
-            'opacity': 0.62,
+            'size0': 0.060,
+            'size1': 0.195,
+            'drift': [0.0, 0.32, -0.08],
+            'spread': 0.050,
+            'opacity': 0.56,
             'ember_color': '#52f8ff',
             'core_color': '#051332',
             'mist_color': '#2b78c8',
         }
     ]
     ent_h = assemble_garment(
-        gid_h, 'Neutrino Phantom Cherenkov Cone & PMT Singularity', 'head', parts_h,
+        gid_h, 'Neutrino Phantom Cherenkov Crown Array & PMT Singularity', 'head', parts_h,
         emitters=head_emitters, covers_hair=True, covers_face=True
     )
     ent_h['hide_parts'] = list(FULL_HEAD_HIDE_PARTS)
@@ -523,12 +487,11 @@ def _build_neutrino_phantom(sex):
 
     # -----------------------------------------------------------------------------------------------------------
     # 2. TORSO: ext3_{s}_neutrino_shroud
-    #    Quantum Flavor-Oscillating Phase-Body, Deep Cherenkov Tank Rift & Floating Rhodium-PMT Lattice
+    #    Quantum Flavor-Oscillating Phase-Body, Deep Cherenkov Tank Rift & Sleek Detector Ribs
     # -----------------------------------------------------------------------------------------------------------
     gid_t = f'ext3_{sex}_neutrino_shroud'
     parts_t = []
 
-    # Translucent Neutrino-Phase torso phantom (stops cleanly at waist so zero overlap with wake!)
     phase_torso = torso_tube(
         gid_t + '_phase_body', core.TOP + 0.010, core.WAIST - 0.004, ease=0.007,
         paint=phase_p, n=36, rows=14
@@ -536,12 +499,10 @@ def _build_neutrino_phantom(sex):
     tag_vfx(phase_torso, neutrino_vfx, no_conform=True)
     parts_t.append(phase_torso)
 
-    # Translucent Neutrino-Phase upper arms down to elbows
     phase_slv = sleeves(gid_t + '_phase_arms', 'elbow', 0.008, phase_p, ease_end=0.012, rows=9, n=18)
     tag_vfx(phase_slv, neutrino_vfx, no_conform=True)
     parts_t.extend(phase_slv)
 
-    # Deep 3D View-Parallax Cherenkov Detector-Tank Portal recessed in sternum
     tank_c = chest_front(core.CHEST + 0.010, 0.020, x=0.0)
     tank_rift_vfx = {
         'kind': 'nebula_rift',
@@ -554,127 +515,97 @@ def _build_neutrino_phantom(sex):
         'galaxy_scale': 3.4,
     }
     parts_t.append(ellipsoid_part(
-        gid_t + '_cherenkov_portal', tank_c, (0.082, 0.018, 0.105), void_p, 'Spine2',
+        gid_t + '_cherenkov_portal', tank_c, (0.080, 0.018, 0.102), void_p, 'Spine2',
         n=20, rows=12, vfx=tank_rift_vfx
     ))
-    # Brushed rhodium-and-gold hexagonal detector bezel framing the chest Cherenkov portal
     parts_t.append(torus_ring(
         gid_t + '_portal_bezel', tank_c + np.array([0.0, -0.006, 0.0]), fwd,
-        0.094, 0.012, 0.010, rhod_dk_p, rigid_joint='Spine2', n_major=6, n_minor=8
+        0.090, 0.010, 0.008, rhod_dk_p, rigid_joint='Spine2', n_major=6, n_minor=8
     ))
 
-    # 3 Pairs of Floating Rhodium Magnetic-Containment Ribs arcing outside the phase torso
-    rib_zs = [core.CHEST + 0.055, core.CHEST - 0.025, core.WAIST + 0.055]
+    # Sleek close-hugging magnetic containment ribs along the ribcage (no protruding back/shoulder polygons!)
+    rib_zs = [core.CHEST + 0.048, core.CHEST - 0.030]
     for ri_idx, rz in enumerate(rib_zs):
-        w_scale = 1.0 - 0.10 * ri_idx
+        w_scale = 1.0 - 0.08 * ri_idx
         for sgn, tag in ((1.0, 'L'), (-1.0, 'R')):
             rib_pts = catmull_spline([
-                np.array([sgn * 0.098 * w_scale, -0.128 * w_scale, rz + 0.012]),
-                np.array([sgn * 0.168 * w_scale, -0.020,           rz]),
-                np.array([sgn * 0.115 * w_scale,  0.122 * w_scale, rz - 0.010]),
+                np.array([sgn * 0.095 * w_scale, -0.122 * w_scale, rz + 0.008]),
+                np.array([sgn * 0.156 * w_scale, -0.015,           rz]),
+                np.array([sgn * 0.105 * w_scale,  0.110 * w_scale, rz - 0.008]),
             ], 10)
             parts_t.append(sweep_tube(
-                f'{gid_t}_mag_rib_{ri_idx}_{tag}', rib_pts, [0.009, 0.014, 0.009],
-                rhodium_p if ri_idx != 1 else pmt_gold_p, n=8, rigid_joint='Spine2',
-                scale_xy=(0.55, 1.35), ref_dir=up_w
-            ))
-            # Glowing Cherenkov tip-node on anterior end of each containment rib
-            parts_t.append(ellipsoid_part(
-                f'{gid_t}_rib_node_{ri_idx}_{tag}', rib_pts[0], (0.011, 0.011, 0.011), blaze_p, 'Spine2',
-                n=8, rows=6, vfx={'kind': 'emissive_blaze', 'color': '#5cfaff', 'gain': 2.20, 'pulse': 0.22}
+                f'{gid_t}_mag_rib_{ri_idx}_{tag}', rib_pts, [0.007, 0.011, 0.007],
+                rhodium_p if ri_idx == 0 else pmt_gold_p, n=8, rigid_joint='Spine2',
+                scale_xy=(0.50, 1.30), ref_dir=up_w
             ))
 
-    # Floating Shoulder Wave-Guide Epaulette Arcs
-    for sgn, side, tag in ((1.0, 'Left', 'L'), (-1.0, 'Right', 'R')):
-        sh = J(side + 'Arm')
-        arc_c = sh + np.array([sgn * 0.020, 0.0, 0.032])
-        parts_t.append(torus_ring(
-            f'{gid_t}_shoulder_arc_{tag}', arc_c, np.array([0.0, 1.0, 0.25 * sgn]),
-            0.088, 0.011, 0.007, rhodium_p, rigid_joint='Spine2',
-            arc=(-0.25 * math.pi, 1.15 * math.pi), n_major=18, n_minor=7, closed_loop=False
-        ))
-
-    ent_t = assemble_garment(gid_t, 'Neutrino Phantom Flavor-Phase Shroud & Detector Lattice', 'torso', parts_t)
+    ent_t = assemble_garment(gid_t, 'Neutrino Phantom Flavor-Phase Shroud & Detector Portal', 'torso', parts_t)
     hide_full_body(ent_t)
     entries.append(ent_t)
 
     # -----------------------------------------------------------------------------------------------------------
     # 3. BACK: ext3_{s}_neutrino_rings
-    #    Triple Flavor-Oscillation (v_e / v_mu / v_tau) Gyroscopic Wave-Rings & Relativistic Track Spines
+    #    Dual-Layer Pulsing, Counter-Rotating Silhouette Array of Pure Light (ZERO fixed polygons!)
     # -----------------------------------------------------------------------------------------------------------
     gid_b = f'ext3_{sex}_neutrino_rings'
     parts_b = []
 
-    back_c = np.array([0.0, 0.165, core.CHEST + 0.035])
-    back_gl = bl_to_gl_pt(back_c)
+    halo_c = np.array([0.0, 0.06, core.CHEST + 0.04])
+    halo_gl = bl_to_gl_pt(halo_c)
+    kin_halo = {'bone': 'Spine2', 'motion': 'bob', 'speed': 1.60, 'amp': 0.008, 'phase': 0.0, 'center_gl': halo_gl}
 
-    # Three Counter-Rotating Neutrino Flavor-Oscillation Gyroscopic Rings (v_e Cyan, v_mu Cobalt, v_tau Violet)
-    flavor_rings = [
-        ('nu_e',   0.385, 0.015, 0.008, np.array([ 0.22, 0.88,  0.42]),  0.95, 0.10, 0.0, disc_e_p,   '#e8ffff', '#38f6ff', '#1658ff'),
-        ('nu_mu',  0.325, 0.014, 0.007, np.array([-0.76, 0.46,  0.46]), -1.30, 0.12, 2.1, disc_mu_p,  '#cfe8ff', '#2878ff', '#5c34ff'),
-        ('nu_tau', 0.268, 0.013, 0.007, np.array([ 0.64, 0.52, -0.56]),  1.68, 0.09, 4.2, disc_tau_p, '#f6dcff', '#b452ff', '#38f6ff'),
-    ]
-    for fname, maj_r, rx_m, ry_m, n_vec, spd, prec, ph, dp, c_in, c_mid, c_out in flavor_rings:
-        n_ax = n_vec / np.linalg.norm(n_vec)
-        u_ax, v_ax = core.frame(n_ax)
-        kin_f = {
-            'bone': 'Spine2', 'motion': 'orbit', 'speed': spd, 'amp': 0.016,
-            'precess': prec, 'phase': ph,
-            'center_gl': back_gl, 'axis_gl': bl_to_gl_dir(n_ax),
+    # Layer 1: Wide Outer Silhouette Outline Array (pulsing radial lances, 24 star-beads & segmented interferometer arcs)
+    parts_b.append(light_plane(
+        gid_b + '_outer_light_array', halo_c, 0.06, blaze_p, 'Spine2',
+        vfx={
+            'kind': 'light_array',
+            'core_color': '#f0ffff',
+            'primary_color': '#38f6ff',
+            'secondary_color': '#2068ff',
+            'accent_color': '#b458ff',
+            'halo_scale': 0.72,
+            'spin': 1.0,
+            'z_offset': -0.20,
+            'gain': 1.95,
+            'kinetic': kin_halo,
         }
-        parts_b.append(torus_ring(
-            f'{gid_b}_ring_{fname}', back_c, n_ax, maj_r, rx_m, ry_m, dp, rigid_joint='Spine2',
-            n_major=42, n_minor=8,
-            vfx={
-                'kind': 'accretion_disc',
-                'inner_color': c_in,
-                'mid_color': c_mid,
-                'outer_color': c_out,
-                'kinetic': kin_f,
-            }
-        ))
-        # 4 Golden PMT Phase-Nodes locked on each flavor ring
-        for ni in range(4):
-            ang_n = ni * (math.pi / 2.0)
-            r_dir = u_ax * math.cos(ang_n) + v_ax * math.sin(ang_n)
-            nc = back_c + r_dir * maj_r
-            parts_b.append(ellipsoid_part(
-                f'{gid_b}_node_{fname}_{ni}', nc, (0.016, 0.016, 0.012), pmt_gold_p, 'Spine2',
-                n=10, rows=6,
-                vfx={'kind': 'emissive_blaze', 'color': c_mid, 'gain': 2.30, 'pulse': 0.20, 'kinetic': kin_f}
-            ))
+    ))
 
-    # 6 Relativistic Ballistic Vector-Track Spines fanning behind the shoulders
-    for sgn, tag in ((1.0, 'L'), (-1.0, 'R')):
-        for si, (sp_x, r_z, bk_y) in enumerate(((0.40, 0.44, 0.22), (0.50, 0.08, 0.24), (0.34, -0.34, 0.20))):
-            p0 = back_c + np.array([sgn * 0.065, -0.015, 0.02 - 0.04 * si])
-            p2 = p0 + np.array([sgn * sp_x, bk_y, r_z])
-            p1 = 0.5 * (p0 + p2) + np.array([sgn * 0.03, 0.02, 0.02])
-            pts_sp = catmull_spline([p0, p1, p2], 8)
-            parts_b.append(sweep_tube(
-                f'{gid_b}_track_spine_{tag}_{si}', pts_sp, np.linspace(0.011, 0.002, 8),
-                blaze_p, n=6, rigid_joint='Spine2', cap_ends=False,
-                vfx={'kind': 'emissive_blaze', 'color': '#64faff' if si != 2 else '#b468ff', 'gain': 2.15, 'pulse': 0.22}
-            ))
+    # Layer 2: Inner Counter-Rotating Harmonic Resonance Array (golden PMT accents & opposing phase spin)
+    parts_b.append(light_plane(
+        gid_b + '_inner_light_array', halo_c + np.array([0.0, 0.02, 0.0]), 0.05, blaze_p, 'Spine2',
+        vfx={
+            'kind': 'light_array',
+            'core_color': '#ffffff',
+            'primary_color': '#5cfaff',
+            'secondary_color': '#4c44ff',
+            'accent_color': '#ffd86e',
+            'halo_scale': 0.50,
+            'spin': -1.38,
+            'z_offset': -0.24,
+            'gain': 1.75,
+            'kinetic': kin_halo,
+        }
+    ))
 
     back_emitters = [
         {
             'bone': 'Spine2',
-            'offset': [0.0, 0.06, -0.14],
-            'count': 34,
+            'offset': [0.0, 0.06, -0.16],
+            'count': 30,
             'rate': 0.36,
-            'size0': 0.095,
-            'size1': 0.310,
-            'drift': [0.0, 0.48, -0.10],
-            'spread': 0.075,
-            'opacity': 0.58,
+            'size0': 0.090,
+            'size1': 0.290,
+            'drift': [0.0, 0.44, -0.10],
+            'spread': 0.070,
+            'opacity': 0.48,
             'ember_color': '#3cf6ff',
             'core_color': '#040e28',
             'mist_color': '#3a62c8',
         }
     ]
     entries.append(assemble_garment(
-        gid_b, 'Neutrino Phantom Triple Flavor-Oscillation Rings', 'back', parts_b, emitters=back_emitters
+        gid_b, 'Neutrino Phantom Pulsing Rotating Light-Array Halo', 'back', parts_b, emitters=back_emitters
     ))
 
     # -----------------------------------------------------------------------------------------------------------

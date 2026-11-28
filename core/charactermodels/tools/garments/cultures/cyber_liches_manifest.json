@@ -1410,7 +1410,7 @@
     },
     {
       "id": "clich_m_reliquary_headdress",
-      "name": "Egyptian-Eternian Cyber-Reliquary Twin-Pylon Crown & Jade Bi-Halo",
+      "name": "Pharaonic Cyber-Lich Robotic Nemes War-Crown & Obsidian-Gold Pylons",
       "slot": "head",
       "glb": "pieces/mpfb_male/clich_m_reliquary_headdress.glb",
       "culture": "cyber_liches",
@@ -1425,17 +1425,245 @@
         "Human.eyelashes02",
         "Human.low-poly"
       ],
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_visor_optic_R",
+            "t0": 1568,
+            "t1": 1632,
+            "v0": 0.07227,
+            "v1": 0.07617
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_temp_core_R",
+            "t0": 1844,
+            "t1": 1916,
+            "v0": 0.10156,
+            "v1": 0.10547
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_visor_optic_L",
+            "t0": 1980,
+            "t1": 2044,
+            "v0": 0.10938,
+            "v1": 0.11328
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_temp_core_L",
+            "t0": 2256,
+            "t1": 2328,
+            "v0": 0.13867,
+            "v1": 0.14258
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_uraeus_optic",
+            "t0": 3268,
+            "t1": 3340,
+            "v0": 0.23828,
+            "v1": 0.24219
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_pylon_rail_R",
+            "t0": 3980,
+            "t1": 4076,
+            "v0": 0.38379,
+            "v1": 0.39844
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_headdress_pylon_rail_L",
+            "t0": 5504,
+            "t1": 5600,
+            "v0": 0.65332,
+            "v1": 0.66797
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#ffe268",
+            "gain": 2.2,
+            "pulse": 0.2,
+            "name": "clich_m_reliquary_headdress_halo_node_2",
+            "t0": 7460,
+            "t1": 7520,
+            "v0": 0.98633,
+            "v1": 0.99023
+          }
+        ]
+      },
       "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD/P/D/zswAAAMAAADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD/P/P/7cwAAADAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
       "hides": 6751,
       "hide_by": "cyber_custom"
     },
     {
       "id": "clich_m_reliquary_robe",
-      "name": "Egyptian-Eternian Cyber-Reliquary Usekh Thorax & Bufu Robes",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Usekh Robes",
       "slot": "torso",
       "glb": "pieces/mpfb_male/clich_m_reliquary_robe.glb",
       "culture": "cyber_liches",
       "_body": "mpfb_male",
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_djed_core_0",
+            "t0": 8764,
+            "t1": 8824,
+            "v0": 0.40625,
+            "v1": 0.41016
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_djed_core_1",
+            "t0": 8948,
+            "t1": 9008,
+            "v0": 0.4209,
+            "v1": 0.4248
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_djed_core_2",
+            "t0": 9132,
+            "t1": 9192,
+            "v0": 0.43555,
+            "v1": 0.43945
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_djed_core_3",
+            "t0": 9316,
+            "t1": 9376,
+            "v0": 0.4502,
+            "v1": 0.4541
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_R_0",
+            "t0": 9440,
+            "t1": 9476,
+            "v0": 0.4707,
+            "v1": 0.47461
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_R_1",
+            "t0": 9540,
+            "t1": 9576,
+            "v0": 0.49121,
+            "v1": 0.49805
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_R_2",
+            "t0": 9640,
+            "t1": 9676,
+            "v0": 0.51465,
+            "v1": 0.51855
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_L_0",
+            "t0": 9804,
+            "t1": 9840,
+            "v0": 0.55176,
+            "v1": 0.55566
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_L_1",
+            "t0": 9904,
+            "t1": 9940,
+            "v0": 0.57227,
+            "v1": 0.5791
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_lime_vent_L_2",
+            "t0": 10004,
+            "t1": 10040,
+            "v0": 0.5957,
+            "v1": 0.59961
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_shoulder_core_R",
+            "t0": 10592,
+            "t1": 10664,
+            "v0": 0.64355,
+            "v1": 0.64746
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_robe_clasp_core",
+            "t0": 12448,
+            "t1": 12496,
+            "v0": 0.90527,
+            "v1": 0.90918
+          }
+        ]
+      },
       "cloth": {
         "chains": [
           {
@@ -3580,15 +3808,96 @@
     },
     {
       "id": "clich_m_reliquary_servo_arms",
-      "name": "Egyptian-Eternian Cyber-Reliquary Djed Spine & Bi-Joint Servo-Arms",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Servo-Arms",
       "slot": "back",
       "glb": "pieces/mpfb_male/clich_m_reliquary_servo_arms.glb",
       "culture": "cyber_liches",
-      "_body": "mpfb_male"
+      "_body": "mpfb_male",
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_djed_reactor",
+            "t0": 120,
+            "t1": 200,
+            "v0": 0.00781,
+            "v1": 0.0332
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_sh_core_R",
+            "t0": 876,
+            "t1": 976,
+            "v0": 0.16016,
+            "v1": 0.16699
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_elbow_node_R",
+            "t0": 1624,
+            "t1": 1724,
+            "v0": 0.33301,
+            "v1": 0.33887
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_palm_core_R",
+            "t0": 2112,
+            "t1": 2212,
+            "v0": 0.43457,
+            "v1": 0.44043
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_sh_core_L",
+            "t0": 3640,
+            "t1": 3740,
+            "v0": 0.61719,
+            "v1": 0.62402
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_elbow_node_L",
+            "t0": 4388,
+            "t1": 4488,
+            "v0": 0.79004,
+            "v1": 0.7959
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_m_reliquary_servo_arms_palm_core_L",
+            "t0": 4876,
+            "t1": 4976,
+            "v0": 0.8916,
+            "v1": 0.89746
+          }
+        ]
+      }
     },
     {
       "id": "clich_m_reliquary_gauntlets",
-      "name": "Egyptian-Eternian Cyber-Reliquary Jade & Bronze Gauntlets",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Gauntlets",
       "slot": "gloves",
       "glb": "pieces/mpfb_male/clich_m_reliquary_gauntlets.glb",
       "culture": "cyber_liches",
@@ -3602,7 +3911,7 @@
     },
     {
       "id": "clich_m_reliquary_trousers",
-      "name": "Egyptian-Eternian Cyber-Reliquary Under-Greaves",
+      "name": "Pharaonic Cyber-Lich Obsidian & Royal-Gold Under-Greaves",
       "slot": "legs",
       "glb": "pieces/mpfb_male/clich_m_reliquary_trousers.glb",
       "culture": "cyber_liches",
@@ -3614,7 +3923,7 @@
     },
     {
       "id": "clich_m_reliquary_boots",
-      "name": "Egyptian-Eternian Cyber-Reliquary Jade & Bronze Sabatons",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Sabatons",
       "slot": "feet",
       "glb": "pieces/mpfb_male/clich_m_reliquary_boots.glb",
       "culture": "cyber_liches",
@@ -3625,7 +3934,7 @@
     },
     {
       "id": "clich_f_reliquary_headdress",
-      "name": "Egyptian-Eternian Cyber-Reliquary Twin-Pylon Crown & Jade Bi-Halo",
+      "name": "Pharaonic Cyber-Lich Robotic Nemes War-Crown & Obsidian-Gold Pylons",
       "slot": "head",
       "glb": "pieces/mpfb_female/clich_f_reliquary_headdress.glb",
       "culture": "cyber_liches",
@@ -3640,17 +3949,245 @@
         "Human.eyelashes02",
         "Human.low-poly"
       ],
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_visor_optic_R",
+            "t0": 1568,
+            "t1": 1632,
+            "v0": 0.07227,
+            "v1": 0.07617
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_temp_core_R",
+            "t0": 1844,
+            "t1": 1916,
+            "v0": 0.10156,
+            "v1": 0.10547
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_visor_optic_L",
+            "t0": 1980,
+            "t1": 2044,
+            "v0": 0.10938,
+            "v1": 0.11328
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_temp_core_L",
+            "t0": 2256,
+            "t1": 2328,
+            "v0": 0.13867,
+            "v1": 0.14258
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_uraeus_optic",
+            "t0": 3268,
+            "t1": 3340,
+            "v0": 0.23828,
+            "v1": 0.24219
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_pylon_rail_R",
+            "t0": 3980,
+            "t1": 4076,
+            "v0": 0.38379,
+            "v1": 0.39844
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.3,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_headdress_pylon_rail_L",
+            "t0": 5504,
+            "t1": 5600,
+            "v0": 0.65332,
+            "v1": 0.66797
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#ffe268",
+            "gain": 2.2,
+            "pulse": 0.2,
+            "name": "clich_f_reliquary_headdress_halo_node_2",
+            "t0": 7460,
+            "t1": 7520,
+            "v0": 0.98633,
+            "v1": 0.99023
+          }
+        ]
+      },
       "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD/P/D/zswAAAMAAADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD/P/P/7cwAAADAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
       "hides": 6751,
       "hide_by": "cyber_custom"
     },
     {
       "id": "clich_f_reliquary_robe",
-      "name": "Egyptian-Eternian Cyber-Reliquary Usekh Thorax & Bufu Robes",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Usekh Robes",
       "slot": "torso",
       "glb": "pieces/mpfb_female/clich_f_reliquary_robe.glb",
       "culture": "cyber_liches",
       "_body": "mpfb_female",
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_djed_core_0",
+            "t0": 7884,
+            "t1": 7944,
+            "v0": 0.39258,
+            "v1": 0.39648
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_djed_core_1",
+            "t0": 8068,
+            "t1": 8128,
+            "v0": 0.4082,
+            "v1": 0.41211
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_djed_core_2",
+            "t0": 8252,
+            "t1": 8312,
+            "v0": 0.42383,
+            "v1": 0.42773
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_djed_core_3",
+            "t0": 8436,
+            "t1": 8496,
+            "v0": 0.43945,
+            "v1": 0.44336
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_R_0",
+            "t0": 8560,
+            "t1": 8596,
+            "v0": 0.46094,
+            "v1": 0.46484
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_R_1",
+            "t0": 8660,
+            "t1": 8696,
+            "v0": 0.48242,
+            "v1": 0.48633
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_R_2",
+            "t0": 8760,
+            "t1": 8796,
+            "v0": 0.50391,
+            "v1": 0.50781
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_L_0",
+            "t0": 8924,
+            "t1": 8960,
+            "v0": 0.54297,
+            "v1": 0.54688
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_L_1",
+            "t0": 9024,
+            "t1": 9060,
+            "v0": 0.56445,
+            "v1": 0.56836
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_lime_vent_L_2",
+            "t0": 9124,
+            "t1": 9160,
+            "v0": 0.58594,
+            "v1": 0.58984
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_shoulder_core_R",
+            "t0": 9712,
+            "t1": 9784,
+            "v0": 0.63574,
+            "v1": 0.63965
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.15,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_robe_clasp_core",
+            "t0": 11568,
+            "t1": 11616,
+            "v0": 0.88965,
+            "v1": 0.89355
+          }
+        ]
+      },
       "cloth": {
         "chains": [
           {
@@ -5686,15 +6223,96 @@
     },
     {
       "id": "clich_f_reliquary_servo_arms",
-      "name": "Egyptian-Eternian Cyber-Reliquary Djed Spine & Bi-Joint Servo-Arms",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Servo-Arms",
       "slot": "back",
       "glb": "pieces/mpfb_female/clich_f_reliquary_servo_arms.glb",
       "culture": "cyber_liches",
-      "_body": "mpfb_female"
+      "_body": "mpfb_female",
+      "vfx": {
+        "zones": [
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_djed_reactor",
+            "t0": 120,
+            "t1": 200,
+            "v0": 0.00684,
+            "v1": 0.02832
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_sh_core_R",
+            "t0": 876,
+            "t1": 976,
+            "v0": 0.15625,
+            "v1": 0.16309
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_elbow_node_R",
+            "t0": 1624,
+            "t1": 1724,
+            "v0": 0.3291,
+            "v1": 0.33496
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_palm_core_R",
+            "t0": 2112,
+            "t1": 2212,
+            "v0": 0.43164,
+            "v1": 0.4375
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_sh_core_L",
+            "t0": 3640,
+            "t1": 3740,
+            "v0": 0.61816,
+            "v1": 0.625
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_elbow_node_L",
+            "t0": 4388,
+            "t1": 4488,
+            "v0": 0.79102,
+            "v1": 0.79688
+          },
+          {
+            "kind": "emissive_blaze",
+            "color": "#4eff98",
+            "gain": 2.2,
+            "pulse": 0.18,
+            "name": "clich_f_reliquary_servo_arms_palm_core_L",
+            "t0": 4876,
+            "t1": 4976,
+            "v0": 0.89355,
+            "v1": 0.89941
+          }
+        ]
+      }
     },
     {
       "id": "clich_f_reliquary_gauntlets",
-      "name": "Egyptian-Eternian Cyber-Reliquary Jade & Bronze Gauntlets",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Gauntlets",
       "slot": "gloves",
       "glb": "pieces/mpfb_female/clich_f_reliquary_gauntlets.glb",
       "culture": "cyber_liches",
@@ -5708,7 +6326,7 @@
     },
     {
       "id": "clich_f_reliquary_trousers",
-      "name": "Egyptian-Eternian Cyber-Reliquary Under-Greaves",
+      "name": "Pharaonic Cyber-Lich Obsidian & Royal-Gold Under-Greaves",
       "slot": "legs",
       "glb": "pieces/mpfb_female/clich_f_reliquary_trousers.glb",
       "culture": "cyber_liches",
@@ -5720,7 +6338,7 @@
     },
     {
       "id": "clich_f_reliquary_boots",
-      "name": "Egyptian-Eternian Cyber-Reliquary Jade & Bronze Sabatons",
+      "name": "Pharaonic Cyber-Lich Obsidian, Emerald & Royal-Gold Sabatons",
       "slot": "feet",
       "glb": "pieces/mpfb_female/clich_f_reliquary_boots.glb",
       "culture": "cyber_liches",

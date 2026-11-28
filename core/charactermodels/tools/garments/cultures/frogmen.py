@@ -101,30 +101,71 @@ FRG_CUSTOM_MOTIFS = {
 }
 
 _FROG_BVH_CACHE = {}
+_FROG_ANAT_CACHE = {}
 
 
-def _get_frog_head_bvh(body_id: str) -> FastBVH:
-    """Load `mod_head_frog.glb` cranial & eye-turret mesh (excluding `|x| > 0.22` hand webs) as a FastBVH."""
-    if body_id in _FROG_BVH_CACHE:
-        return _FROG_BVH_CACHE[body_id]
+def _get_frog_head_anat(body_id: str) -> dict:
+    """Extract exact Batrachian cranial & dorsal eye-turret geometry from `mod_head_frog.glb`."""
+    if body_id in _FROG_ANAT_CACHE:
+        return _FROG_ANAT_CACHE[body_id]
     glb_p = ROOT / 'pieces' / body_id / 'mod_head_frog.glb'
     j, buf = glbio.read_glb(glb_p.read_bytes())
-    pts, tris = [], []
+    sk_pts, sk_tris = [], []
+    eye_pts = []
     voff = 0
     for m in j['meshes']:
         for pr in m['primitives']:
             if 'POSITION' not in pr['attributes'] or 'indices' not in pr:
                 continue
+            mat_name = j['materials'][pr['material']]['name'] if 'material' in pr and j.get('materials') else ''
             P_bl = arms2.from_gl(glbio.accessor(j, buf, pr['attributes']['POSITION']))
             if float(np.abs(P_bl[:, 0]).max()) > 0.25 or len(P_bl) < 12:
                 continue
             T_arr = glbio.accessor(j, buf, pr['indices']).reshape(-1, 3)
-            pts.append(P_bl)
-            tris.append(T_arr + voff)
-            voff += len(P_bl)
-    bvh = FastBVH(np.vstack(pts), np.vstack(tris))
-    _FROG_BVH_CACHE[body_id] = bvh
-    return bvh
+            if mat_name == 'Mod.head_frog_eye':
+                eye_pts.append(P_bl)
+            elif mat_name in ('Mod.head_frog', 'Mod.head_frog_jaw'):
+                sk_pts.append(P_bl)
+                sk_tris.append(T_arr + voff)
+                voff += len(P_bl)
+    S = np.vstack(sk_pts)
+    ST = np.vstack(sk_tris)
+    E = np.vstack(eye_pts)
+    el = E[E[:, 0] > 0.0]
+    er = E[E[:, 0] < 0.0]
+    el_c = el.mean(axis=0)
+    er_c = er.mean(axis=0)
+    r_el = float(np.linalg.norm(el - el_c[None, :], axis=1).max())
+    r_er = float(np.linalg.norm(er - er_c[None, :], axis=1).max())
+    skull_bvh = FastBVH(S, ST)
+    # Sample nasal inter-orbital bridge height (`x ~ 0, y in [-0.115, -0.075]`)
+    nose_m = (np.abs(S[:, 0]) < 0.018) & (S[:, 1] > -0.115) & (S[:, 1] < -0.075)
+    z_nose = float(S[nose_m, 2].max()) if nose_m.any() else float(E[:, 2].min() + 0.008)
+    # Sample broad post-orbital parietal skull table (`|x| < 0.045, y in [-0.015, +0.065]`)
+    par_m = (np.abs(S[:, 0]) < 0.045) & (S[:, 1] > -0.015) & (S[:, 1] < 0.065)
+    z_parietal = float(S[par_m, 2].max()) if par_m.any() else float(S[:, 2].max())
+    anat = {
+        'skull_bvh': skull_bvh,
+        'skull_pts': S,
+        'skull_tris': ST,
+        'eye_pts': E,
+        'el_c': el_c,
+        'er_c': er_c,
+        'r_el': r_el,
+        'r_er': r_er,
+        'z_eye_min': float(E[:, 2].min()),
+        'z_eye_max': float(E[:, 2].max()),
+        'z_nose': z_nose,
+        'z_parietal': z_parietal,
+        'c_xy': np.array([0.0, -0.015], dtype=np.float64),
+    }
+    _FROG_ANAT_CACHE[body_id] = anat
+    _FROG_BVH_CACHE[body_id] = skull_bvh
+    return anat
+
+
+def _get_frog_head_bvh(body_id: str) -> FastBVH:
+    return _get_frog_head_anat(body_id)['skull_bvh']
 
 
 def _frg_custom_motif(style, w, h, fg, bg, aspect=1.0):
@@ -314,72 +355,170 @@ def _anchor_on_part(host_part: Part, target_pt, sink=0.0025):
     return pt - out * sink, out
 
 
-def _frog_cranial_band(name, paint, f_bot=0.66, f_top=0.82, ease=0.020, flare=0.012, rows=7, n=40):
-    """Batrachian cranial crown/circlet seated outside both `base.glb` and `mod_head_frog.glb`,
-    arching cleanly around/above the anterolateral dorsal eye turrets (`an ~ pi +- 0.30*pi`)."""
-    a, b, up, bk, left = head_frame()
-    frog_bvh = _get_frog_head_bvh(core.BODY_ID)
-    angs = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
-    ds = [bk * math.cos(an) + left * math.sin(an) for an in angs]
-    Q = []
-    for i, f_base in enumerate(np.linspace(f_top, f_bot, rows)):
-        v = i / float(max(rows - 1, 1))
-        row = []
-        for an, d in zip(angs, ds):
-            # Arch over anterolateral eye turrets (`an ~ 0.70*pi` and `1.30*pi`)
-            tur_l = math.exp(-(((an - 0.72 * math.pi) / 0.24) ** 2))
-            tur_r = math.exp(-(((an - 1.28 * math.pi) / 0.24) ** 2))
-            f_ij = f_base + v * 0.11 * max(tur_l, tur_r)
-            c_ij = a + (b - a) * f_ij
-            c_ray = a + (b - a) * min(max(f_ij, 0.56), 0.86)
-            h_hum = first_hit(c_ray, d) or 0.090
-            h_frg = frog_bvh.ray_cast(c_ray, d, maxd=0.26)
-            r_raw = max(float(h_hum), float(h_frg) if h_frg is not None else 0.0)
-            r_use = min(r_raw + ease, float(h_hum) + 0.032) + flare * (1.0 - v)
-            row.append(c_ij + d * r_use)
-        Q.append(row)
-    Q = np.array(Q, dtype=np.float64)
+def _ang_diff(a1: float, a2: float) -> float:
+    return abs((a1 - a2 + math.pi) % (2.0 * math.pi) - math.pi)
+
+
+def _repel_from_frog_eyes(Q: np.ndarray, anat: dict, pad: float = 0.0085) -> np.ndarray:
+    """Guarantee strict clearance around both `Mod.head_frog_eye` spheres & their forward sightlines."""
+    out = Q.copy()
+    for ec, re in ((anat['el_c'], anat['r_el']), (anat['er_c'], anat['r_er'])):
+        r_safe = re + pad
+        dv = out - ec[None, None, :]
+        dist = np.linalg.norm(dv, axis=-1)
+        m = dist < r_safe
+        if np.any(m):
+            # Push downward onto sub-orbital shelf or radially away from eye center
+            u_dir = dv[m] / np.maximum(dist[m, None], 1e-6)
+            u_dir[:, 2] = np.minimum(u_dir[:, 2], -0.35)
+            u_dir /= np.maximum(np.linalg.norm(u_dir, axis=1, keepdims=True), 1e-6)
+            out[m] = ec[None, :] + u_dir * r_safe
+    return out
+
+
+def _dorsal_frog_z(bvh: FastBVH, x: float, y: float, z_Top: float, fallback: float) -> float:
+    h = bvh.ray_cast(np.array([x, y, z_Top], dtype=np.float64), np.array([0.0, 0.0, -1.0], dtype=np.float64), maxd=0.22)
+    return (z_Top - float(h)) if h is not None else fallback
+
+
+def _frog_postorbital_ring(anat: dict, angs: np.ndarray, crown_h: float = 0.026, ease_sk: float = 0.0035, with_prow: bool = True):
+    """Build a true Batrachian Post-Orbital Braincase + Inter-Orbital V-Prow contour seated directly on `Mod.head_frog`:
+    - Centered on the wide parietal braincase BEHIND the eyes (`c_post = (0.0, +0.030)`),
+    - Wraps flush around the occipital & temporal skull (`y_bl in [-0.034 .. +0.112]`),
+    - Stays strictly BEHIND both protruding dorsal eye turrets (`y_bl >= y_eye_back + 0.009` laterally) so it NEVER
+      straps across the frog's cheeks/snout or clips the rear of either eyeball, and
+    - Optionally extends a regal central inter-orbital V-prow (`with_prow=True`) forward between the two eyes (`|x| < 0.024`).
+    """
+    bvh = anat['skull_bvh']
+    z_par = anat['z_parietal']
+    z_emin = anat['z_eye_min']
+    # Posterior boundary of the eye turrets in Blender space (`y_bl` is negative forward; `eye_pts[:, 1].max()` is back of eye)
+    y_eye_back = float(anat['eye_pts'][:, 1].max())  # ~ -0.047
+    c_post = np.array([0.0, 0.032], dtype=np.float64)
+
+    xs_b, ys_b, zs_b = [], [], []
+    xs_t, ys_t, zs_t = [], [], []
+    for an in angs:
+        dx, dy = math.sin(an), math.cos(an)
+        d_vec = np.array([dx, dy, 0.0], dtype=np.float64)
+        w_front = max(0.0, -dy)
+        w_prow = math.exp(-((_ang_diff(an, math.pi) / (0.135 * math.pi)) ** 2)) if with_prow else 0.0
+
+        if dy >= -0.15:
+            # Posterior & lateral braincase: horizontal ray from `c_post` onto `Mod.head_frog`
+            zb = z_emin - 0.016
+            zt = z_par + 0.004 + crown_h * (0.72 + 0.28 * max(0.0, dy))
+            hb = bvh.ray_cast(np.array([c_post[0], c_post[1], min(zb, z_par - 0.018)]), d_vec, maxd=0.22)
+            rb = (float(hb) if hb is not None else 0.082) + ease_sk
+            ht = bvh.ray_cast(np.array([c_post[0], c_post[1], min(zt, z_par - 0.010)]), d_vec, maxd=0.22)
+            rt_raw = (float(ht) if ht is not None else (rb - ease_sk)) + ease_sk
+            rt = max(0.038, rt_raw - 0.28 * max(0.0, zt - (z_par - 0.004)))
+            xb, yb = c_post[0] + dx * rb, c_post[1] + dy * rb
+            xt, yt = c_post[0] + dx * rt, c_post[1] + dy * rt
+        else:
+            # Anterior post-orbital brow rim: rests ON TOP OF the dorsal cranium behind the eyes, with central V-prow between eyes!
+            hb = bvh.ray_cast(np.array([c_post[0], c_post[1], z_emin - 0.016]), d_vec, maxd=0.22)
+            r_side = min((float(hb) if hb is not None else 0.080), 0.082)
+            # Base post-orbital arch stays behind `y_eye_back + 0.010` (~ -0.037), while central V-prow reaches y = -0.082 between eyes!
+            y_target = (y_eye_back + 0.011) * (1.0 - w_prow) + (-0.082) * w_prow
+            x_target = dx * r_side * (1.0 - 0.52 * w_prow)
+            # Ensure lateral points outside the inter-orbital corridor never intrude into eye X/Y footprint
+            xb, yb = x_target, max(y_target, (c_post[1] + dy * r_side))
+            z_surf = _dorsal_frog_z(bvh, xb, yb, z_par + 0.08, anat['z_nose'])
+            zb = z_surf + 0.0022
+            h_front = (0.016 + 0.45 * crown_h) * (1.0 - 0.25 * w_front) + 0.006 * w_prow
+            zt = zb + h_front
+            xt, yt = xb * 0.94, yb + 0.004 * (1.0 - w_prow)
+
+        xs_b.append(xb); ys_b.append(yb); zs_b.append(zb)
+        xs_t.append(xt); ys_t.append(yt); zs_t.append(zt)
+
+    Pb = np.column_stack([xs_b, ys_b, zs_b])
+    Pt = np.column_stack([xs_t, ys_t, zs_t])
     for _ in range(2):
-        Q = 0.50 * Q + 0.25 * (np.roll(Q, 1, axis=1) + np.roll(Q, -1, axis=1))
+        Pb = 0.50 * Pb + 0.25 * (np.roll(Pb, 1, axis=0) + np.roll(Pb, -1, axis=0))
+        Pt = 0.50 * Pt + 0.25 * (np.roll(Pt, 1, axis=0) + np.roll(Pt, -1, axis=0))
+    return Pb, Pt
+
+
+def _frog_cranial_band(name, paint, f_bot=0.66, f_top=0.82, ease=0.020, flare=0.012, rows=8, n=40):
+    """True Batrachian Post-Orbital Crown / Casque / Diadem seated flush on `Mod.head_frog` behind the eyes,
+    with a sculpted central inter-orbital V-prow nestled cleanly between the two protruding golden eyes."""
+    anat = _get_frog_head_anat(core.BODY_ID)
+    angs = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+    crown_h = max(0.016, (float(f_top) - float(f_bot)) * 0.18)
+    ease_sk = max(0.0030, min(0.0050, float(ease) * 0.18))
+    Pb, Pt = _frog_postorbital_ring(anat, angs, crown_h=crown_h, ease_sk=ease_sk, with_prow=True)
+    c_post = np.array([0.0, 0.032, 0.0], dtype=np.float64)
+
+    Q = np.zeros((rows, n, 3), dtype=np.float64)
+    for i in range(rows):
+        v = i / float(max(rows - 1, 1))  # 0 = top rim, 1 = bottom rim
+        pts = Pt * (1.0 - v) + Pb * v
+        rad_xy = pts[:, :2] - c_post[:2][None, :]
+        rn = np.maximum(np.linalg.norm(rad_xy, axis=1, keepdims=True), 1e-6)
+        u_xy = rad_xy / rn
+        # Gentle outward crown flare on upper rows across posterior/lateral braincase only
+        back_w = np.clip((pts[:, 1] - (-0.025)) / 0.05, 0.0, 1.0)[:, None]
+        pts[:, :2] += u_xy * (float(flare) * ((1.0 - v) ** 1.3)) * back_w
+        Q[i] = pts
+
+    Q = _repel_from_frog_eyes(Q, anat, pad=0.010)
     return Part(name, Q, True, ['top'] + ['body'] * (rows - 2) + ['bottom'], paint, rigid_joint='Head')
 
 
-def _frog_canopy_hat(name, paint, r_brim=0.25, h_cone=0.11, droop=0.015, scallop=0.04, n=40):
-    """Single seamless mesh: cranial headband cushion (`f=0.68..0.79`, hugging skull within 18mm)
-    flaring outward above `mod_head_frog` eye-turrets (`f >= 0.79`) into a lotus-leaf or sedge fen-hat."""
-    a, b, up, bk, left = head_frame()
-    frog_bvh = _get_frog_head_bvh(core.BODY_ID)
+def _frog_canopy_hat(name, paint, r_brim=0.25, h_cone=0.11, droop=0.015, scallop=0.04, n=48):
+    """Batrachian Post-Orbital Lotus/Sedge Canopy Hat:
+    - Snug woven inner skull-ring seats strictly on the post-orbital braincase BEHIND the eye turrets (zero nose-chute!),
+    - Wide canopy vaults cleanly ABOVE both golden Frogman eyes (`+10 deg` aft rake + twin orbital brow-arches) so both
+      eyes are 100% open and framed underneath a crisp vaulted brim."""
+    anat = _get_frog_head_anat(core.BODY_ID)
     angs = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
-    ds = [bk * math.cos(an) + left * math.sin(an) for an in angs]
+    Pb, Pt = _frog_postorbital_ring(anat, angs, crown_h=0.012, ease_sk=0.0035, with_prow=False)
 
-    c_seat = a + (b - a) * 0.72
-    seat_rs = []
-    for d in ds:
-        h_hum = first_hit(c_seat, d) or 0.088
-        h_frg = frog_bvh.ray_cast(c_seat, d, maxd=0.25)
-        r_raw = max(float(h_hum), float(h_frg) if h_frg is not None else 0.0)
-        seat_rs.append(min(r_raw + 0.019, float(h_hum) + 0.030))
-    seat_rs = 0.50 * np.array(seat_rs) + 0.25 * (np.roll(seat_rs, 1) + np.roll(seat_rs, -1))
+    c_can_xy = np.array([0.0, 0.026], dtype=np.float64)
+    an_el = math.atan2(float(anat['el_c'][0] - c_can_xy[0]), float(anat['el_c'][1] - c_can_xy[1])) % (2.0 * math.pi)
+    an_er = math.atan2(float(anat['er_c'][0] - c_can_xy[0]), float(anat['er_c'][1] - c_can_xy[1])) % (2.0 * math.pi)
+    z_brim_base = anat['z_eye_max'] + 0.018
+    z_apex = z_brim_base + float(h_cone) * 0.92
 
-    # Top-to-bottom row ordering: apex -> upper cone -> wide brim -> inner skull headband
-    z_brim_f = 0.80
-    c_brim = a + (b - a) * z_brim_f
-    c_apex = c_brim + up * float(h_cone)
     Q = []
-    # Rows 0..5: apex down to outer brim edge
+    # Rows 0..5: apex down to wide vaulted brim (raked aft so front rim floats high above both eyes!)
     for k in range(6):
         u = k / 5.0
-        r_cur = 0.008 + (r_brim - 0.008) * (u ** 0.92)
-        z_cur = c_apex * (1.0 - u) + (c_brim - up * droop * (u * u)) * u
-        Q.append([
-            z_cur + d * (r_cur * (1.0 + scallop * math.cos(8.0 * an) * u))
-            for d, an in zip(ds, angs)
-        ])
-    # Rows 6..8: underside return into snug cranial headband (`f=0.78 -> 0.70`, clearing eye turrets!)
-    for f_hb, r_mul in ((0.79, 1.18), (0.75, 1.03), (0.70, 1.00)):
-        c_hb = a + (b - a) * f_hb
-        Q.append([c_hb + d * (r_s * r_mul) for d, r_s in zip(ds, seat_rs)])
-    return Part(name, np.array(Q, dtype=np.float64), True, ['body'] * len(Q), paint, rigid_joint='Head')
+        row = []
+        for j, an in enumerate(angs):
+            dx, dy = math.sin(an), math.cos(an)
+            d_eye = min(_ang_diff(an, an_el), _ang_diff(an, an_er))
+            w_eye = math.exp(-((d_eye / (0.18 * math.pi)) ** 2))
+            aft_rake = -0.024 * dy * u
+            eye_arch = 0.016 * w_eye * u
+            r_cur = (0.008 + (float(r_brim) - 0.008) * (u ** 0.92)) * (1.0 + float(scallop) * math.cos(8.0 * an) * u)
+            zz = z_apex * (1.0 - u) + (z_brim_base - float(droop) * max(0.0, 0.3 + 0.7 * dy) * (u * u)) * u + aft_rake + eye_arch
+            row.append([c_can_xy[0] + dx * r_cur, c_can_xy[1] + dy * r_cur, zz])
+        Q.append(row)
+
+    # Row 6: flat/vaulted underside return smoothly converging back to the post-orbital crown top ABOVE eye level!
+    outer_brim = Q[-1]
+    row_under = []
+    for j in range(n):
+        p_out = np.asarray(outer_brim[j])
+        p_top = Pt[j].copy()
+        p_top[2] = max(p_top[2] + 0.008, anat['z_eye_max'] + 0.012)
+        p_mid = 0.32 * p_out + 0.68 * p_top
+        p_mid[2] = max(p_mid[2], anat['z_eye_max'] + 0.014)
+        row_under.append(p_mid.tolist())
+    Q.append(row_under)
+
+    # Rows 7..8: snug post-orbital braincase sweatband behind the eyes (`Pt -> Pb`, zero front chute!)
+    Q.append((0.75 * Pt + 0.25 * Pb).tolist())
+    Q.append(Pb.tolist())
+
+    Q_arr = np.array(Q, dtype=np.float64)
+    Q_arr = _repel_from_frog_eyes(Q_arr, anat, pad=0.010)
+    return Part(name, Q_arr, True, ['body'] * len(Q_arr), paint, rigid_joint='Head')
+    Q_arr = _repel_from_frog_eyes(Q_arr, anat, pad=0.0090)
+    return Part(name, Q_arr, True, ['body'] * len(Q_arr), paint, rigid_joint='Head')
 
 
 def _gular_open_vest(name, paint, z_bot, z_top_back=None, ease=0.018, open_arc=0.30):
@@ -648,8 +787,8 @@ def _build_frogmen_tiers(p):
 
     # --- TIER 3: SUMP DIVER (`sump_diver`) ---
     band_dv = _frog_cranial_band(f'{p}_diver_band', _p_sump_alloy(), f_bot=0.67, f_top=0.80, ease=0.019)
-    anch_dv, out_dv = _anchor_on_part(band_dv, band_dv.P[2, band_dv.P.shape[1] // 2], sink=0.002)
-    lamp_dv = blob(f'{p}_diver_cell_lens', anch_dv, (0.046, 0.026, 0.042), P('frg_cell_amber', 0.02, fabric='beads.glass'), n=14, rows=6, out=out_dv, rigid_joint='Head')
+    anch_dv, out_dv = _anchor_on_part(band_dv, band_dv.P[1, band_dv.P.shape[1] // 2], sink=0.002)
+    lamp_dv = blob(f'{p}_diver_cell_lens', anch_dv, (0.036, 0.022, 0.032), P('frg_cell_amber', 0.02, fabric='beads.glass'), n=14, rows=6, out=out_dv, rigid_joint='Head')
     entries.append(_mark_beast_head(assemble_garment(
         f'{p}_diver_lamp_circlet', 'Grrmp-Sump Ancient-Alloy & Cell-Lamp Dive Circlet', 'head', 'frogmen',
         [band_dv, lamp_dv], covers_hair=True, covers_face=False,
@@ -695,7 +834,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 5: THUNDERDOME BRAVE (`thunderdome_brave`) ---
     band_tb = _frog_cranial_band(f'{p}_brave_band', _p_thunder_bronze(), f_bot=0.65, f_top=0.81, ease=0.020)
     parts_tb = [band_tb]
-    for sgn, tag, col_k in ((1.0, 'L', 12), (-1.0, 'R', 28)):
+    for sgn, tag, col_k in ((1.0, 'L', 8), (-1.0, 'R', 32)):
         anch_bh, _ = _anchor_on_part(band_tb, band_tb.P[1, col_k], sink=0.003)
         parts_tb.append(horn(
             f'{p}_brave_horn_{tag}',
@@ -827,7 +966,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 10: TORPOR WARDEN (`torpor_warden` — Karst-Spring Torpor Shaman) ---
     band_tw = _frog_cranial_band(f'{p}_torpor_crown_base', _p_sedge_reed('frg_sphagnum_wet', 'frg_cell_amber'), f_bot=0.66, f_top=0.86, ease=0.021, flare=0.018)
     parts_tw = [band_tw]
-    for k_tw, col_tw in enumerate((5, 13, 20, 27, 35)):
+    for k_tw, col_tw in enumerate((4, 8, 20, 32, 36)):
         anch_tw, _ = _anchor_on_part(band_tw, band_tw.P[0, col_tw], sink=0.003)
         parts_tw.append(horn(
             f'{p}_torpor_reed_spire_{k_tw}',
@@ -855,7 +994,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 11: CHORUS ELDER (`chorus_elder`) ---
     band_ce = _frog_cranial_band(f'{p}_elder_tiara_base', _p_ammolite(), f_bot=0.66, f_top=0.85, ease=0.020, flare=0.020)
     anch_ce, out_ce = _anchor_on_part(band_ce, band_ce.P[1, band_ce.P.shape[1] // 2], sink=0.002)
-    orb_ce = blob(f'{p}_elder_amber_orb', anch_ce, (0.048, 0.024, 0.048), P('frg_cell_amber', 0.02, fabric='beads.glass'), n=14, rows=6, out=out_ce, rigid_joint='Head')
+    orb_ce = blob(f'{p}_elder_amber_orb', anch_ce, (0.036, 0.022, 0.034), P('frg_cell_amber', 0.02, fabric='beads.glass'), n=14, rows=6, out=out_ce, rigid_joint='Head')
     entries.append(_mark_beast_head(assemble_garment(
         f'{p}_elder_chorus_tiara', 'Spawning-Pool Opal-Shell & Cell-Lamp Resonant Tiara', 'head', 'frogmen',
         [band_ce, orb_ce], covers_hair=True, covers_face=False,
@@ -877,7 +1016,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 12: WARCROAK MARSHAL (`warcroak_marshal`) ---
     band_wm = _frog_cranial_band(f'{p}_marshal_helm_bowl', _p_sump_alloy('frg_opal_crimson'), f_bot=0.64, f_top=0.84, ease=0.021, flare=0.010)
     parts_wm = [band_wm]
-    for sgn, tag, col_m in ((1.0, 'L', 10), (-1.0, 'R', 30)):
+    for sgn, tag, col_m in ((1.0, 'L', 8), (-1.0, 'R', 32)):
         anch_wm, _ = _anchor_on_part(band_wm, band_wm.P[1, col_m], sink=0.003)
         parts_wm.append(horn(
             f'{p}_marshal_fin_{tag}',
@@ -921,7 +1060,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 13: PC THUNDERDOME CHAMPION (`pc_thunderdome_champion`) ---
     band_pc = _frog_cranial_band(f'{p}_champ_laurel_band', P('frg_coldkeep_gold', 0.03, fabric='metal.gold'), f_bot=0.65, f_top=0.82, ease=0.020, flare=0.015)
     parts_pc = [band_pc]
-    for sgn, tag, col_c in ((1.0, 'L', 11), (-1.0, 'R', 29)):
+    for sgn, tag, col_c in ((1.0, 'L', 8), (-1.0, 'R', 32)):
         anch_pc, _ = _anchor_on_part(band_pc, band_pc.P[1, col_c], sink=0.003)
         parts_pc.append(horn(
             f'{p}_champ_laurel_{tag}',
@@ -962,7 +1101,7 @@ def _build_frogmen_tiers(p):
     # --- TIER 14: HERO JRRMIAH CHORUS LORD (`hero_jrrmiah_chorus_lord` — Fen-King) ---
     band_fk = _frog_cranial_band(f'{p}_fenking_crown_base', P('frg_coldkeep_gold', 0.02, fabric='metal.gold'), f_bot=0.64, f_top=0.85, ease=0.021, flare=0.022)
     parts_fk = [band_fk]
-    for idx_ar, col_fk in enumerate((20, 12, 28)):
+    for idx_ar, col_fk in enumerate((20, 8, 32)):
         anch_fk, out_fk = _anchor_on_part(band_fk, band_fk.P[0, col_fk], sink=0.003)
         h_ar = 0.145 if idx_ar == 0 else 0.115
         parts_fk.append(horn(
@@ -1281,10 +1420,23 @@ def _self_verify(kit_entries, p_ent):
                 if slot == 'torso':
                     assert 'hide' not in ent, f'{pid} must keep open_torso=True!'
 
+        anat_v = _get_frog_head_anat(body_id)
+        f_eye_tree = cKDTree(anat_v['eye_pts'])
+        f_sk_tree = cKDTree(anat_v['skull_pts'])
+
         for (b_id, gid), ent in by_key.items():
             if b_id != body_id:
                 continue
             j, b, nd, pr, P_arr, T_arr = _read_glb_pos_tris(ROOT / ent['glb'])
+            if ent['slot'] == 'head':
+                P_bl_h = arms2.from_gl(P_arr)
+                d_eye_mm = float(f_eye_tree.query(P_bl_h)[0].min()) * 1000.0
+                d_fsk_mm = float(f_sk_tree.query(P_bl_h)[0].min()) * 1000.0
+                assert d_eye_mm >= 4.5, f'{body_id}/{gid} encroaches on Frogman eye ({d_eye_mm:.2f}mm < 4.5mm)!'
+                assert d_fsk_mm <= 6.0, f'{body_id}/{gid} hovers off Frogman skull ({d_fsk_mm:.2f}mm > 6.0mm)!'
+                for ec, re in ((anat_v['el_c'], anat_v['r_el']), (anat_v['er_c'], anat_v['r_er'])):
+                    in_eye = int(np.sum(np.linalg.norm(P_bl_h - ec[None, :], axis=1) < re + 0.004))
+                    assert in_eye == 0, f'{body_id}/{gid} has {in_eye} verts inside Frogman eye sphere!'
             if ent['slot'] == 'torso':
                 assert not (float(P_arr[:, 1].min()) < y_crotch - 0.065 and 'cloth' not in ent)
             comps = _mesh_components(len(P_arr), T_arr)
