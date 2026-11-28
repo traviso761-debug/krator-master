@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.531,
+    0.512
+   ],
+   "seam_before": [
+    1.854,
+    1.687
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "yusar/cyber-shibuya-conduit",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__yusar__cyber-shibuya-conduit.png",
+  "generator": "Codex image generation, Nov 2026 (yusar_conduit_weave_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Yusar Carcosa-and-Henge dark mechanical-organic conduit weave (`machine-35` Shibuya arcology aesthetic): matte carbon-black ballistic hex-mesh (#16181c) and weathered moss-slate polymer (#2e3832) threaded with bundles of braided bare copper induction wire (#b86432), miniature brass vacuum-tube sockets glowing warm filament-amber (#f09418), and luminous cyan (#38d0f0) and magenta-violet (#c82890) optical data-bus traces forming a six-by-six modular server-bus grid that connects cleanly across every seam. Full colour.",
+  "sha1": "bdd92723d4152ec8a4ca81b6290a12b491ac842b"
+ }
+}

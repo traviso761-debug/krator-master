@@ -3,9 +3,9 @@
 // culture `dzagh-vardzi`. Engine: core/engine read in place.
 // Synthesis (DV2 + DV4 + DV3): warm apricot-rose volcanic tuff & dark charcoal columnar-basalt horizontal ablaq courses,
 // sawn emerald-green nephrite (jade = 200) cross-medallions, golden-skarn arched tympanums, stacked Dagestani stone roof-plazas,
-// clustered 5:1 battered defense needle-towers crowned with gleaming stepped snow-white quartz pyramids, 12-pleat fluted conical
-// Akhtamar umbrella spires (gumbat) in patinated verdigris copper (Cu = 130) & crimson/apricot tuff, and chasm-straddling
-// gravity log-flume keeps & triple overshot waterwheel trip-hammer forges.
+// clustered 5:1 battered defense needle-towers crowned with stepped dark mountain-slate, charcoal-basalt & crimson-tuff corbelled
+// vovnashki/koshki roofs, 12-pleat fluted conical Akhtamar umbrella spires (gumbat) in patinated verdigris copper (Cu = 130) &
+// crimson/apricot tuff, and chasm-straddling gravity log-flume keeps & triple overshot waterwheel trip-hammer forges.
 const KIT={id:'dzagh-vardzi',title:'Dzagh-Vardzi Gorge-Kingdoms Kit',pack:'dzagh-vardzi',culture:'dzagh-vardzi',
  faction:'Petty Gorge-Kingdoms of Dzagh-Vardzi',band:'Vardzieti (Crookwash)',frag:'kits/dzagh-vardzi',
  ground:0x62704b,groundProc:0x576642,fog:0xcad3d8,furnDetail:.65};
@@ -41,7 +41,7 @@ const SV_LIB={
 
 const SV_TILE0={
  tuff:1.8,tuffPolished:1.5,basalt:1.6,colBasalt:2.8,
- jade:.7,jadeInlay:1.1,skarn:1.5,carve:1.3,quartz:1.3,
+ jade:.7,jadeInlay:1.1,skarn:1.5,carve:2,quartz:1.3,
  cobble:1.9,rivercobble:2.2,cliff:4,slate:1.5,flagstone:2,shellrender:2.2,
  verdigris:1.4,bronze:.9,scaleMail:.45,silver:.6,gold:.5,brass:.7,iron:.85,
  cypress:1.5,wood:1.6,planks:1.8,floor:1.8,endgrain:.6,
@@ -53,7 +53,7 @@ const SV_CLOTH={flag:1,kilim:1,wool:1};
 
 /* buckets the X cut-away opens on buildings with cut:true (floors, flagstones, root-skirts & cliff rock stay uncut) */
 const SV_CUT={
- tuff:1,tuffPolished:1,basalt:1,jade:1,jadeInlay:1,skarn:1,carve:1,quartz:1,
+ tuff:1,tuffPolished:1,basalt:1,jade:1,jadeInlay:1,skarn:1,carve:1,
  slate:1,shellrender:1,verdigris:1,bronze:1,scaleMail:1,silver:1,gold:1,brass:1,iron:1,
  cypress:1,wood:1,planks:1,terracotta:1,fleece:1,kilim:1,wool:1,flag:1,rope:1,bone:1,plain:1,glass:1
 };
@@ -70,8 +70,8 @@ const SVPAL={
  basalt:[0x3b3d42,0x33353a,0x44464c],
  colBasalt:[0x32353a,0x2b2e33,0x3b3e44],
  skarn:[0xd8a85a,0xce9e50,0xe2b264],
- carve:[0xdcb292,0xd2a888,0xe5bc9c],
- // DV2/DV4 nephrite jade inlays (jade = 200) & snow-white quartz needle-tower pyramids
+ carve:[0xf6f0ea,0xf0eae2],
+ // DV2/DV4 sawn emerald nephrite jade inlays (jade = 200; snow-white quartz belongs to Hush-Kin, never Dzagh-Vardzi roofs)
  jade:[0x28865a,0x227a50,0x329466],
  jadeBright:[0x38a46e,0x2e9862,0x42b078],
  quartz:[0xf2f0ea,0xeae8e0,0xf8f6f2],

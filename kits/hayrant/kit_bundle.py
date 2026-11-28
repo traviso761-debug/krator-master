@@ -6,12 +6,12 @@ the page's nor another kit's:
 
     bundle(key='HYK') -> (js, files)   var HYK = (function(){ ... })(): core/engine's geometry & building registry,
                                        Stage 5 KMAT_M1, the Hayrant vertical-stack shader hooks, Eternian suzerain
-                                       head/statue/roof helpers, Hayrant nuraghe/loess/cruck toolkit, all 46 hy_*
-                                       building defs, and HY_TRADES.
+                                       head/statue/roof helpers, Hayrant nuraghe/loess/cruck & Kanopi formline/totem
+                                       toolkits, all 52 hy_* building defs, and HY_TRADES.
 
     HYK.proto(key, v)   the def built once at the origin (y=0, front +z) into a new THREE.Group, its material buckets
                         flushed, userData = {key, v, tris, w, d, h, style, doors, fixtures}; null for an unknown key
-    HYK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, cut, variants}} for all 46 defs
+    HYK.dims()          {key: {cls, name, w, d, h, fw, fd, style, wealth, types, role, job, resSource, cut, variants}} for all 52 defs
     HYK.trades          HY_TRADES (all 44 Voth census trades mapped to hy_* keys)
     HYK.tradeDefs(st)   {trade: [keys...]} optionally filtered by style ('bench' | 'hybrid' | 'prefect' | 'sanctuary')
     HYK.seats           HY_SEATS (Mirabilis, Sheritu, Ukor-Tera Divide Pass)
@@ -154,7 +154,7 @@ function hykDims() {
       cls: d.cls, name: d.name, w: d.w, d: d.d, h: d.h, fw: d.w * 0.92, fd: d.d * 0.92,
       style: d.tags.style || null, wealth: d.tags.wealth || null,
       types: d.tags.types || null, role: d.tags.role || null, job: d.tags.job || null,
-      cut: !!d.cut, variants: 1
+      resSource: d.resSource || null, cut: !!d.cut, variants: 1
     };
   }
   return out;

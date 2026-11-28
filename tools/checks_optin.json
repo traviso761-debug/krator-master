@@ -1,5 +1,4 @@
 {
- "what": "The opt-in checks from the survey of 2026-11-11 (CORE-IMPROVEMENTS.md items 25-30). A build listed under a check takes it; \"*\" means every build. New builds list themselves here (README.md, \"Starting a new build\"); the next all-builds ride-along pass sets every list to \"*\" (TODO.md, \"switch on checks 22-31 everywhere\"). KRATOR_CHECKS=all (or a comma list of names) turns them on for one run. tools/buildlib.py opted_in() reads this file.",
  "checks": {
   "recorded": {
    "item": 25,
@@ -49,10 +48,12 @@
     "kits/cascade",
     "kits/hayrant",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "biomes/veiledmountains",
+    "kits/timpar-kuran",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks",
+    "kits/hush-kin"
    ]
   },
   "minset": {
@@ -86,9 +87,10 @@
     "biomes/arcflow",
     "kits/cascade",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "biomes/veiledmountains",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks"
    ]
   },
   "samplers": {
@@ -139,10 +141,12 @@
     "kits/cascade",
     "kits/hayrant",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "biomes/veiledmountains",
+    "kits/timpar-kuran",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks",
+    "kits/hush-kin"
    ]
   },
   "drawn-ground": {
@@ -192,9 +196,13 @@
     "kits/cascade",
     "kits/hayrant",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "biomes/veiledmountains",
+    "kits/timpar-kuran",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks",
+    "kits/hush-kin",
+    "settlements/jimjam"
    ]
   },
   "names": {
@@ -245,10 +253,13 @@
     "kits/cascade",
     "kits/hayrant",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "biomes/veiledmountains",
+    "kits/timpar-kuran",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks",
+    "kits/hush-kin",
+    "settlements/jimjam"
    ]
   },
   "water-mouths": {
@@ -271,9 +282,13 @@
     "kits/cascade",
     "kits/hayrant",
     "settlements/mirabilis",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "biomes/veiledmountains",
+    "kits/timpar-kuran",
+    "kits/painted-men",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks",
+    "kits/hush-kin"
    ]
   },
   "leaf-stems": {
@@ -292,10 +307,12 @@
     "biomes/batteredisle",
     "settlements/battered-port",
     "biomes/arcflow",
-    "settlements/arcodiga",
-    "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "biomes/veiledmountains",
+    "biomes/matronscoast",
+    "biomes/swouterwall",
+    "biomes/ricochetpeaks"
    ]
   }
- }
+ },
+ "what": "The opt-in checks from the survey of 2026-11-11 (CORE-IMPROVEMENTS.md items 25-30). A build listed under a check takes it; \"*\" means every build. New builds list themselves here (README.md, \"Starting a new build\"); the next all-builds ride-along pass sets every list to \"*\" (TODO.md, \"switch on checks 22-31 everywhere\"). KRATOR_CHECKS=all (or a comma list of names) turns them on for one run. tools/buildlib.py opted_in() reads this file."
 }

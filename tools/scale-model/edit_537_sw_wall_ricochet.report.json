@@ -1,0 +1,404 @@
+{
+ "edit": "5.1 edit 37: SW outer wall annealed with Region 177 + 7 northern lakes; Ricochet Peaks 12-crater boreal tuning",
+ "date": "2026-11-27",
+ "sw_lakes": {
+  "Veil-Foot Tarn N": {
+   "centre": [
+    256.0,
+    882.0
+   ],
+   "level_m": 2920,
+   "cells": 37,
+   "km2": 148
+  },
+  "Paternoster Mid": {
+   "centre": [
+    266.0,
+    912.0
+   ],
+   "level_m": 3180,
+   "cells": 37,
+   "km2": 148
+  },
+  "Larch-Fen Tarn S": {
+   "centre": [
+    276.0,
+    944.0
+   ],
+   "level_m": 3460,
+   "cells": 29,
+   "km2": 116
+  },
+  "Moraine Tarn 1": {
+   "centre": [
+    268.0,
+    978.0
+   ],
+   "level_m": 3920,
+   "cells": 21,
+   "km2": 84
+  },
+  "Cirque Tarn 2": {
+   "centre": [
+    296.0,
+    1002.0
+   ],
+   "level_m": 4280,
+   "cells": 21,
+   "km2": 84
+  },
+  "Krummholz Tarn 3": {
+   "centre": [
+    274.0,
+    1026.0
+   ],
+   "level_m": 4680,
+   "cells": 21,
+   "km2": 84
+  },
+  "Trigemini Step 4": {
+   "centre": [
+    306.0,
+    1052.0
+   ],
+   "level_m": 5080,
+   "cells": 21,
+   "km2": 84
+  }
+ },
+ "ricochet_craters": {
+  "Yuni-Gate": {
+   "centre": [
+    1205.0,
+    1482.0
+   ],
+   "target_floor_m": 3250,
+   "across_km": [
+    32,
+    25
+   ],
+   "lake_cells": 68,
+   "rebound_peak": true
+  },
+  "Glass-Pan": {
+   "centre": [
+    1158.0,
+    1522.0
+   ],
+   "target_floor_m": 3580,
+   "across_km": [
+    27,
+    21
+   ],
+   "lake_cells": 0,
+   "rebound_peak": false
+  },
+  "West": {
+   "centre": [
+    1215.0,
+    1535.0
+   ],
+   "target_floor_m": 3350,
+   "across_km": [
+    33,
+    28
+   ],
+   "lake_cells": 39,
+   "rebound_peak": false
+  },
+  "Skipper-W": {
+   "centre": [
+    1272.0,
+    1498.0
+   ],
+   "target_floor_m": 3450,
+   "across_km": [
+    27,
+    22
+   ],
+   "lake_cells": 48,
+   "rebound_peak": true
+  },
+  "North": {
+   "centre": [
+    1298.0,
+    1518.0
+   ],
+   "target_floor_m": 3520,
+   "across_km": [
+    31,
+    26
+   ],
+   "lake_cells": 0,
+   "rebound_peak": false
+  },
+  "South": {
+   "centre": [
+    1335.0,
+    1592.0
+   ],
+   "target_floor_m": 3620,
+   "across_km": [
+    29,
+    24
+   ],
+   "lake_cells": 31,
+   "rebound_peak": false
+  },
+  "Central-Kettle": {
+   "centre": [
+    1352.0,
+    1496.0
+   ],
+   "target_floor_m": 3680,
+   "across_km": [
+    26,
+    20
+   ],
+   "lake_cells": 21,
+   "rebound_peak": false
+  },
+  "Yuni-East": {
+   "centre": [
+    1442.0,
+    1458.0
+   ],
+   "target_floor_m": 3320,
+   "across_km": [
+    30,
+    23
+   ],
+   "lake_cells": 62,
+   "rebound_peak": true
+  },
+  "East Hearth": {
+   "centre": [
+    1450.0,
+    1558.0
+   ],
+   "target_floor_m": 3180,
+   "across_km": [
+    34,
+    30
+   ],
+   "lake_cells": 43,
+   "rebound_peak": false
+  },
+  "Siphon-Lip": {
+   "centre": [
+    1516.0,
+    1554.0
+   ],
+   "target_floor_m": 3750,
+   "across_km": [
+    25,
+    20
+   ],
+   "lake_cells": 0,
+   "rebound_peak": false
+  },
+  "Rim-West": {
+   "centre": [
+    1136.0,
+    1546.0
+   ],
+   "target_floor_m": 4850,
+   "across_km": [
+    18,
+    16
+   ],
+   "lake_cells": 0,
+   "rebound_peak": false
+  },
+  "Old Ice-Bowl": {
+   "centre": [
+    1375.0,
+    1525.0
+   ],
+   "target_floor_m": 5100,
+   "across_km": [
+    22,
+    20
+   ],
+   "lake_cells": 21,
+   "rebound_peak": false
+  }
+ },
+ "ricochet_cols": {
+  "Yuni-N-W->Yuni-Gate": {
+   "col_m": 3841,
+   "col_px": [
+    1207.6,
+    1474.6
+   ]
+  },
+  "Yuni-Gate->Glass-Pan": {
+   "col_m": 4176,
+   "col_px": [
+    1192.6,
+    1489.0
+   ]
+  },
+  "Yuni-Gate->West": {
+   "col_m": 3924,
+   "col_px": [
+    1211.0,
+    1512.1
+   ]
+  },
+  "Yuni-Gate->Skipper-W": {
+   "col_m": 3976,
+   "col_px": [
+    1257.2,
+    1497.1
+   ]
+  },
+  "Skipper-W->North": {
+   "col_m": 3831,
+   "col_px": [
+    1278.0,
+    1500.1
+   ]
+  },
+  "West->Oidong-SW": {
+   "col_m": 4128,
+   "col_px": [
+    1209.4,
+    1551.3
+   ]
+  },
+  "North->South": {
+   "col_m": 4258,
+   "col_px": [
+    1340.8,
+    1548.8
+   ]
+  },
+  "North->Central-Kettle": {
+   "col_m": 4108,
+   "col_px": [
+    1333.9,
+    1495.3
+   ]
+  },
+  "Central-Kettle->Yuni-East": {
+   "col_m": 4237,
+   "col_px": [
+    1399.4,
+    1491.6
+   ]
+  },
+  "Yuni-East->Yuni-N-E": {
+   "col_m": 3959,
+   "col_px": [
+    1447.3,
+    1424.7
+   ]
+  },
+  "Central-Kettle->East Hearth": {
+   "col_m": 4223,
+   "col_px": [
+    1426.4,
+    1556.4
+   ]
+  },
+  "East Hearth->HighRift-SE": {
+   "col_m": 3963,
+   "col_px": [
+    1450.0,
+    1610.8
+   ]
+  },
+  "East Hearth->Siphon-Lip": {
+   "col_m": 4155,
+   "col_px": [
+    1467.5,
+    1564.0
+   ]
+  },
+  "Siphon-Lip->Siphon-NE": {
+   "col_m": 4447,
+   "col_px": [
+    1523.9,
+    1547.1
+   ]
+  },
+  "Central-Kettle->Old Ice-Bowl": {
+   "col_m": 5342,
+   "col_px": [
+    1356.0,
+    1504.6
+   ]
+  },
+  "Glass-Pan->Rim-West": {
+   "col_m": 5043,
+   "col_px": [
+    1135.0,
+    1538.2
+   ]
+  }
+ },
+ "vents_added": 9,
+ "rivers_kept_downhill": [
+  "r431"
+ ],
+ "land_moved_cells": 26668,
+ "reclimate": {
+  "cells": 20881,
+  "class_changed": 12592,
+  "rain_mean_before_mm": 64.0,
+  "rain_mean_after_mm": 216.0,
+  "classes_now": {
+   "BWk": 9,
+   "BSh": 23,
+   "BSk": 358,
+   "Csb": 102,
+   "Cfa": 1,
+   "Cfb": 3,
+   "Dsb": 796,
+   "Dsc": 2455,
+   "Dwc": 15,
+   "Dfa": 3,
+   "Dfb": 422,
+   "Dfc": 877,
+   "ET": 8418,
+   "EF": 5386,
+   "HT": 990,
+   "HF": 1023
+  },
+  "airless_cells_given_air": 9143,
+  "class_O_let_go": 9856
+ },
+ "sw_north_classes": {
+  "Cfa": 2,
+  "Cfb": 2,
+  "Dfb": 321,
+  "Dfc": 397,
+  "ET": 286,
+  "EF": 30
+ },
+ "ricochet_floor_classes": {
+  "BSk": 57,
+  "Cfa": 235,
+  "Cfb": 258,
+  "Cfc": 59,
+  "Dfa": 29,
+  "Dfb": 2142,
+  "Dfc": 1150,
+  "ET": 363,
+  "EF": 18,
+  "HT": 1,
+  "HF": 9,
+  "O": 3
+ },
+ "ricochet_hab_temps_C": {
+  "tm": 3.0,
+  "tw": 15.0,
+  "tc": -10.0
+ },
+ "sw_boreal_temps_C": {
+  "tm": 4.0,
+  "tw": 14.0,
+  "tc": -6.0
+ }
+}

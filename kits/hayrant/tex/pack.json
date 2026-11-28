@@ -27,7 +27,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.8932090468612373,
+    "mean": 0.8932090468612371,
     "sourceMean": 0.8932
    }
   },
@@ -357,7 +357,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.6054724923885569,
+    "mean": 0.605472492388557,
     "sourceMean": 0.6055
    }
   },
@@ -387,7 +387,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.5381980497292912,
+    "mean": 0.5381980497292911,
     "sourceMean": 0.5382
    }
   },
@@ -447,7 +447,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.17061514686734064,
+    "mean": 0.1706151468673407,
     "sourceMean": 0.1706
    }
   },
@@ -509,6 +509,156 @@
     "keep": 0.22,
     "mean": 0.6,
     "sourceMean": 0.4552
+   }
+  },
+  "cyberChassis": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cyberChassis.albedo.webp",
+    "normalMap": "cyberChassis.normal.webp",
+    "roughnessMap": "cyberChassis.rough.webp"
+   },
+   "lib": "metal.totem.cyber",
+   "metal": 0.45,
+   "normalScale": 1.0,
+   "roughLift": 0.12,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "f55401d4e0d5a9f55ae50f3efe4a3c3c5b2df1e4",
+    "normal": "29206379859ce01a8eb6a60e32c251e13ee492ad",
+    "roughness": "8fcee8010690ae59d045e58974402a5914bdb8f9"
+   },
+   "specular": 0.42,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.96,
+    "mean": 0.72,
+    "sourceMean": 0.4755
+   }
+  },
+  "cyberChassisB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cyberChassisB.albedo.webp",
+    "normalMap": "cyberChassisB.normal.webp",
+    "roughnessMap": "cyberChassisB.rough.webp"
+   },
+   "lib": "metal.totem.cyber.b",
+   "metal": 0.45,
+   "normalScale": 1.0,
+   "roughLift": 0.12,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e219662280be3dde7dfda187f68a656dc81307e8",
+    "normal": "8ef57f543e06c579b6a54564a1bea8c88c61e44d",
+    "roughness": "1b97e7ba16607d4b736a2054bda502028fca4006"
+   },
+   "specular": 0.42,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.96,
+    "mean": 0.72,
+    "sourceMean": 0.5432
+   }
+  },
+  "cyberForm": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cyberForm.albedo.webp",
+    "normalMap": "cyberForm.normal.webp",
+    "roughnessMap": "cyberForm.rough.webp"
+   },
+   "lib": "patterns/hayrant/cyber-formline",
+   "metal": 0.15,
+   "normalScale": 1.0,
+   "roughLift": 0.16,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "0a7be19bd967c5815a41336ecece7d3be9248dcc",
+    "normal": "a4161ac5608b01aca55b2f4c251b7cdeace30055",
+    "roughness": "1f07c43571aa71d8208bad7c8e2cd2b3be6b8fc1"
+   },
+   "specular": 0.34,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.96,
+    "mean": 0.74,
+    "sourceMean": 0.2178
+   }
+  },
+  "cyberFormB": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cyberFormB.albedo.webp",
+    "normalMap": "cyberFormB.normal.webp",
+    "roughnessMap": "cyberFormB.rough.webp"
+   },
+   "lib": "patterns/hayrant/cyber-formline.b",
+   "metal": 0.15,
+   "normalScale": 1.0,
+   "roughLift": 0.16,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "c79140027ca41acafe6e0f6ce06352f5fdc003eb",
+    "normal": "28ad36b3ce25c0c280ad484eab1cda4ba4944030",
+    "roughness": "528fc0e23b624ebb2f47c1012905bcf7e35f36c3"
+   },
+   "specular": 0.34,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.96,
+    "mean": 0.74,
+    "sourceMean": 0.223
+   }
+  },
+  "cyberFormC": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "cyberFormC.albedo.webp",
+    "normalMap": "cyberFormC.normal.webp",
+    "roughnessMap": "cyberFormC.rough.webp"
+   },
+   "lib": "patterns/hayrant/cyber-formline.c",
+   "metal": 0.15,
+   "normalScale": 1.0,
+   "roughLift": 0.16,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "6830c7f9d3a95217edd45e66bc3a7cc88354efd3",
+    "normal": "03ef2e1364dcbc0bb0fc2b8f3e55b6f8c267c946",
+    "roughness": "74d5ba280130767397132774586e94035dd6549f"
+   },
+   "specular": 0.34,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.96,
+    "mean": 0.74,
+    "sourceMean": 0.1962
    }
   },
   "earth": {
@@ -1689,7 +1839,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.1947227271106196,
+    "mean": 0.19472272711061964,
     "sourceMean": 0.1947
    }
   },
@@ -1899,7 +2049,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.32471051461014094,
+    "mean": 0.3247105146101409,
     "sourceMean": 0.3247
    }
   },
@@ -2289,7 +2439,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 0.0,
-    "mean": 0.6815174542715033,
+    "mean": 0.6815174542715035,
     "sourceMean": 0.6815
    }
   },
@@ -2707,7 +2857,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.6612774490176929,
+    "mean": 0.661277449017693,
     "sourceMean": 0.6613
    }
   },
@@ -2943,7 +3093,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.4195669502772537,
+    "mean": 0.41956695027725377,
     "sourceMean": 0.4196
    }
   },
@@ -2969,7 +3119,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.4289523314467215,
+    "mean": 0.42895233144672157,
     "sourceMean": 0.429
    }
   },
@@ -3032,7 +3182,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.22546071280685123,
+    "mean": 0.22546071280685126,
     "sourceMean": 0.2255
    }
   },
@@ -3272,7 +3422,7 @@
    "tint": {
     "contrast": 1.0,
     "keep": 1.0,
-    "mean": 0.47812648046156936,
+    "mean": 0.4781264804615694,
     "sourceMean": 0.4781
    }
   },
@@ -3364,6 +3514,36 @@
     "keep": 1.0,
     "mean": 0.6319513411458333,
     "sourceMean": 0.632
+   }
+  },
+  "totemWood": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "totemWood.albedo.webp",
+    "normalMap": "totemWood.normal.webp",
+    "roughnessMap": "totemWood.rough.webp"
+   },
+   "lib": "wood.totem.adzed",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.2,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2300044ce16ff3db018f9ad63bf067f0d4414289",
+    "normal": "1c09aaf74b47bae1254d3861d14ac3a4dab7c7d6",
+    "roughness": "f315886c6b10134cc01e9bd9d16618e48db42365"
+   },
+   "specular": 0.28,
+   "tint": {
+    "contrast": 1.14,
+    "keep": 0.38,
+    "mean": 0.64,
+    "sourceMean": 0.5187
    }
   },
   "turf": {

@@ -263,7 +263,7 @@ defBuilding({key:'dv-smithy-armourer',name:'Abjari-Samchedlo Magnetite & Silver 
 /* 32. Qvevri Apricot-Brandy Distillery & Marani Cellar */
 defBuilding({key:'dv-winery-qvevri',name:'Chacha-Marani Qvevri Apricot-Brandy Distillery',seed:7308,cls:'building',w:13.4,d:11.2,h:11.2,cut:true,
  tags:{types:['industry','farm'],wealth:'middle',style:'flume',role:'qvevri distillery',job:'brewing'},
- note:'Cool tuff-vaulted marani cellar with buried terracotta qvevri fermentation jars, verdigris copper alembic still-hood, and sunny apricot-mashing court.',
+ note:'Cool tuff-vaulted marani cellar with buried terracotta qvevri fermentation jars, century-sealed Mepe-Qvevri elixir rims, verdigris copper alembic still-hood, and sunny apricot-mashing court.',
  build(){
   const w0=10.0,d0=8.2,y0=.26,h0=3.75;
   dvRootSkirt(0,0,w0,d0,5.2,{mk:'colBasalt',plinthH:y0+.22});
@@ -275,11 +275,12 @@ defBuilding({key:'dv-winery-qvevri',name:'Chacha-Marani Qvevri Apricot-Brandy Di
   dvGableRoof(0,0,w0,d0,y0+h0,1.85,{mk:'verdigris'});
   smokeAt(2.8,y0+h0+1.9,-1.5);
   dvFurn([
-   ['dv_qvevri_floor_pit',-2.4,y0,-1.8,0],
-   ['dv_qvevri_floor_pit',2.4,y0,-1.8,0],
+   ['dv_qvevri_floor_pit',-2.85,y0,-1.8,0],
+   ['dv_mepe_qvevri_seal',0,y0,-2.05,0],
+   ['dv_qvevri_floor_pit',2.85,y0,-1.8,0],
    ['dv_qvevri_rack',-3.6,y0,1.2,PI/2],
    ['dv_apricot_drying_tray',2.6,y0,1.6,0],
-   ['dv_brazier_copper',0,y0,.2,0]
+   ['dv_brazier_copper',0,y0,.35,0]
   ]);
  }});
 

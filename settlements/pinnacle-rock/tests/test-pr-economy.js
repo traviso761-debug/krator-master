@@ -10,6 +10,9 @@ const fs=require('fs'),path=require('path'),vm=require('vm');
 global.window=global;
 const ROOT=path.join(__dirname,'..','..','..'),L=f=>vm.runInThisContext(fs.readFileSync(path.join(ROOT,f),'utf8'),{filename:f});
 const PLAN=JSON.parse(fs.readFileSync(path.join(ROOT,'openworld/pinnacle/plan/sites.json'),'utf8'));
+/* the roads the ventures ride (S5): openworld/pinnacle's baked links (its corridors to Goto, Talon, Fort Kreia, Fort Ordo,
+   Mav's Refuge, Nusidi, Shade and Coyote Canyon) joined with the Iziz cluster's (Mav's Refuge to Girder) */
+const IZ=JSON.parse(fs.readFileSync(path.join(ROOT,'openworld/iziz-cluster/plan/sites.json'),'utf8'));
 function load(){L('core/clock/20-core-clock.js');fs.readdirSync(path.join(ROOT,'core','simulation')).filter(f=>/^77-sim-.*\.js$/.test(f)).sort().forEach(f=>L('core/simulation/'+f));
  L('core/region/00-region-core.js');const H={TUNE:{sim:{}}};KREGION.use(H);L('core/region/50-region-valley.js');
  return H;}
@@ -20,7 +23,7 @@ let bad=0;const ok=(name,pass,neg,detail)=>{const r=pass&&!neg;if(!r)bad++;conso
 const t=n=>(n/1000).toFixed(1)+' t',TOWN='staiytii0y';
 const D=(a,b)=>{const r={};Object.keys(a||{}).forEach(g=>{const v=(a[g]||0)-((b||{})[g]||0);if(Math.abs(v)>1e-9)r[g]=v;});return r;};
 function years(o){o=o||{};const H=load(),T=vm.runInThisContext('PR_TUNE'),V=T.valley(PLAN,o);if(o.edit)o.edit(V,T);const S=H.simValley(V),host=H.valleyHost();
- V.bands.forEach(b=>H.valleyAway(b.id,true));const W=T.world(V,host,o.world||{}),trace={};W.order.forEach(id=>trace[id]=[]);
+ V.bands.forEach(b=>H.valleyAway(b.id,true));const W=T.world(V,host,Object.assign({graph:T.graph(o.noRoads?null:[PLAN,IZ])},o.world||{})),trace={};W.order.forEach(id=>trace[id]=[]);
  let a=null,B1=null,R1=null;
  for(let d=0;d<730;d++){if(d===365){a=SIM.ledgerSnap();B1=JSON.parse(JSON.stringify(H.valleyBooks().towns));R1=JSON.parse(JSON.stringify(SIM.tradeReport()));}
   KCAMP.tick(W,d);H.valleyRun(1440,60);if(d>=365)W.order.forEach(id=>trace[id].push({d,loaded:W.bands[id].loaded,state:W.bands[id].state,home:KCAMP.inHome(W,d)}));}
@@ -81,13 +84,16 @@ const T1=Y.B1[TOWN],T2=Y.B2[TOWN],y2=k=>D(T2[k],T1[k]);
  const brought=Y.W.order.map(id=>ge(D(Y.B2[id].imported,Y.B1[id].imported)));
  ok('every band fed at home and away by its own hunt, trade and loot; each brings a haul home',!hungry.length&&brought.every(x=>x>0),false,
   (hungry.join(', ')||'none hungry')+'; brought home '+t(Math.min(...brought))+' to '+t(Math.max(...brought))+' grain-equivalent a band');}
-// 10. the far legs (S5, the owner's answer B): every partner's leg from the scale model's own pins and heights, marked planned,
-//     the ventures' marches booked on them; Shade read from the model, not typed in
-{const L=PR_LEGS.legs,ids=Object.values(T.ids),all=ids.every(id=>L[id]&&L[id].planned&&L[id].length_m>0&&L[id].up_m>=0),
-  marches=Y.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan')),onLegs=marches.length>0&&marches.every(o=>o.args.planned);
- const G=T.graph(),P=KTRAVEL.path(G,'staiytii0y',T.ids['coyote-canyon'],{kmDay:25,hours:8}),Pb=KTRAVEL.path(G,T.ids['coyote-canyon'],'staiytii0y',{kmDay:25,hours:8});
- ok('the far legs: every partner\'s from the scale model\'s pins and heights, marked planned; the ventures marched on them; a climb slows a leg',all&&onLegs&&P.legs[0].planned&&P.moving!==Pb.moving,
-  !(L[T.ids.shade].px>0),ids.length+' legs ('+ids.map(id=>L[id].name+' '+Math.round(L[id].length_m/1000)+' km').join(', ')+'); '+marches.length+' venture marches, all planned; Coyote Canyon '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back');}// 11. the caravans to the granary town (the owner, 2026-11-12): the Beast Rider cities' pack trains top the town's stores up
+// 10. the roads (S5): every partner a node of the open world's baked links (openworld/pinnacle, the Iziz cluster), no
+//     planned leg left in the graph; every raid and caravan march rides them (none planned); Coyote Canyon by way of
+//     Shade, a climb slowing a leg; the negative is the scale model's estimate (PR_LEGS: every venture planned)
+{const G=Y.W.graph,ids=Object.values(T.ids),nodes=ids.every(id=>G.nodes[id]),noPlanned=G.edges.every(e=>!e.planned),
+  marches=Y.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan')),onRoads=marches.length>0&&marches.every(o=>!o.args.planned);
+ const P=KTRAVEL.path(G,'staiytii0y',T.ids['coyote-canyon'],{kmDay:25,hours:8}),Pb=KTRAVEL.path(G,T.ids['coyote-canyon'],'staiytii0y',{kmDay:25,hours:8});
+ const viaShade=P&&P.legs.some(l=>l.b===T.ids.shade||l.a===T.ids.shade),N=years({noRoads:true}),NM=N.W.ops.filter(o=>o.what==='march'&&(o.args.why==='raid'||o.args.why==='caravan'));
+ ok('the roads: every partner on the baked links, none planned; every raid and caravan rides them; Coyote Canyon by way of Shade, a climb slowing a leg',
+  nodes&&noPlanned&&onRoads&&viaShade&&P.moving!==Pb.moving,NM.length&&NM.every(o=>!o.args.planned),
+  ids.length+' partners; '+marches.length+' venture marches, '+marches.filter(o=>o.args.planned).length+' planned; Coyote Canyon '+(P.length_m/1000).toFixed(0)+' km by road ('+P.legs.length+' stretches), '+Math.round(P.moving/60)+' h out, '+Math.round(Pb.moving/60)+' h back; on the model\'s estimate '+NM.filter(o=>o.args.planned).length+' of '+NM.length+' planned');}// 11. the caravans to the granary town (the owner, 2026-11-12): the Beast Rider cities' pack trains top the town's stores up
 //     the year round, staples and fruit in; with the bands' haul gone they carry the town (it does not go short)
 {const cv=(R2,R1,k)=>{const l2=(R2[k]||{}).landed||{},l1=(R1[k]||{}).landed||{},o={};Object.keys(l2).forEach(leg=>{if(!leg.endsWith('>'+TOWN))return;Object.keys(l2[leg]).forEach(g=>o[g]=(o[g]||0)+l2[leg][g]-((l1[leg]||{})[g]||0));});return o;};
  const full=Object.keys(Y.R2).filter(k=>/^caravan\./.test(k)).reduce((s,k)=>s+ge(cv(Y.R2,Y.R1,k)),0);

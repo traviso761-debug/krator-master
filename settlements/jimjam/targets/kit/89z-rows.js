@@ -4,7 +4,7 @@
 // here needs editing. Furniture and placeholder flora get their own rows at the end.
 const TITLE='Jimjam City Kit';
 // The temple row is LAST (southmost): its solstice sightline runs south-west, over open ground.
-const JJ_ROW_ORDER=['Helper gallery','Housing — poor','Housing — middle','Housing — rich','Shops','Hospitality','Civic','Palace and plaza','Military','Walls','Agriculture and storage','Temple'];
+const JJ_ROW_ORDER=['Helper gallery','Housing — poor','Housing — middle','Housing — rich','Shops','Trades and industry','Hospitality','Civic','Palace and plaza','Military','Walls','Harbour and lake','Agriculture and storage','Shrines','Temple'];
 const JJ_ROWS=(()=>{const jjRows={};for(const jjK of JJ.order){const jjD=JJ.defs[jjK];const jjR=jjD.row||'Other';(jjRows[jjR]=jjRows[jjR]||[]).push(jjK);}
  const jjNames=JJ_ROW_ORDER.filter(jjR=>jjRows[jjR]).concat(Object.keys(jjRows).filter(jjR=>JJ_ROW_ORDER.indexOf(jjR)<0));
  return jjNames.map(jjR=>({name:jjR,keys:jjRows[jjR]}));})();

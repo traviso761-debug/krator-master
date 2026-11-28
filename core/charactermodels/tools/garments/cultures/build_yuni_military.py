@@ -217,7 +217,7 @@ def torso_tube(name, z_bot, z_top, paint, ease=0.024, flare=0.0, rows=20, n=36, 
     layer = kw.get('layer', None)
     arc = kw.get('arc', None)
     over_arms = kw.get('over_arms', False)
-    use_cloth = kw.get('cloth', False)
+    use_cloth = kw.get('cloth', z1 < core.CROTCH - 0.04)
     main_part = bio.torso_tube(name, z0, z1, ease, paint, n=n, rows=rows,
                                hang_from=hang_from, flare=flare,
                                group_below=grp_below, hull_from=hull_from,
@@ -282,17 +282,11 @@ def skirt(name, z_bot, z_top, paint, ease=0.028, flare=0.08, rows=12, n=36, jagg
                           group_below=core.CROTCH + 0.02, hull_from=z0, points=pts, layer=layer)
 
 
-def cape(name, z_bot, z_top, paint, arc=1.05, ease=0.056, flare=0.11, rows=20, n=32, jagged=0.0, layer=2, over_arms=False):
+def cape(name, z_bot, z_top, paint, arc=0.88, ease=0.030, flare=0.16, rows=20, n=32, jagged=0.0, layer=2, over_arms=False):
     z0, z1 = max(z_bot, z_top), min(z_bot, z_top)
-    e_top = max(ease, 0.050)
-    e_bot = e_top + 0.024
-    pts = (jagged, 2.0) if jagged else None
-    pt = bio.torso_tube(name, z0, z1, e_top, paint, n=n, rows=rows,
-                        arc=(-arc, arc), hang_from=min(z0 - 0.04, core.WAIST - 0.02),
-                        ease_bottom=e_bot, flare=flare, group_below=core.CROTCH + 0.02,
-                        hull_from=min(z0, core.WAIST),
-                        over_arms=over_arms, points=pts, layer=layer)
-    pt.cloth = None
+    pt = bio.cape(name, z1, paint, flare=max(flare, 0.14), span=min(arc, 0.92),
+                  rows=rows, n=n, ease=min(ease, 0.032), top=min(z0, core.TOP - 0.004))
+    pt.layer = layer
     return pt
 
 
@@ -428,7 +422,7 @@ def crossed_sash(name, paint, width=0.055, ease=0.032, high=math.pi * 0.45):
 def pauldron(name, side, paint, span=0.20, drop=0.16, lift=0.022):
     return bio.pauldron(name, side, paint,
                         reach=min(0.65, max(0.25, drop * 2.6)),
-                        ease=0.026 + lift * 0.5,
+                        ease=0.021 + lift * 0.25,
                         flare_end=1.06,
                         span=max(1.35, min(1.95, span * 7.5)),
                         rows=7, n=16)
@@ -524,20 +518,8 @@ def glove(name, side, hand_paint, cuff_paint=None, finger_paint=None, f0=0.60, e
 
 def _add_pack_harness(parts_k, gid_k, sp1, sp2, strap_p):
     """Add contoured leather shoulder harness straps wrapping cleanly over the shoulders."""
-    x_ax, y_ax = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        s_rows = []
-        for ang_s, z_s in (
-            (sgn * 0.32, sp2[2] + 0.09),
-            (sgn * 0.55, sp2[2] + 0.13),
-            (math.pi - sgn * 0.55, sp2[2] + 0.12),
-            (math.pi - sgn * 0.48, sp2[2] + 0.03),
-            (math.pi - sgn * 0.52, sp1[2] - 0.02),
-            (sgn * 0.42, sp1[2] - 0.03),
-        ):
-            angs_w = np.linspace(ang_s - 0.075, ang_s + 0.075, 4)
-            s_rows.append(ring_points(spine_at(z_s), x_ax, y_ax, angs_w, 0.038, rmin=0.09, rmax=0.26, bvh=core.BVH_T))
-        parts_k.append(Part(f'{gid_k}_harness_{tag}', np.array(s_rows), False, ['body'] * len(s_rows), strap_p))
+    from garments.types.accoutrements import pack_straps
+    parts_k.extend(pack_straps(gid_k, strap_p))
 
 
 # ===============================================================================================================
@@ -636,7 +618,7 @@ def _build_yuni_headgear(sex, body_id):
         B('top', 0.0, 0.04, 'solid', 'leather'),
     ], [
         PN(0.15, 0.85, 'stripes', 'umber', 'sand', 0.025),
-    ], fabric='straw.plaited')
+    ], fabric='straw.reed.plaited')
 
     # Flat-topped low cylindrical crown
     t_crown_rows = []
@@ -681,7 +663,7 @@ def _build_yuni_headgear(sex, body_id):
     # -----------------------------------------------------------------------------------------------------------
     gid_h3 = f'yuni_{sex}_scout_comms_helm'
     parts_h3 = []
-    parts_h3.append(sculpted_cranium(gid_h3 + '_liner', P('charcoal', 0.03, fabric='cloth.quilted'),
+    parts_h3.append(sculpted_cranium(gid_h3 + '_liner', P('charcoal', 0.03, fabric='cloth.quilted.channel'),
                                      f_top=0.96, f_bot=0.12, ease=0.006))
     helm_p = P('olive', 0.03, [
         B('bottom', 0.0, 0.035, 'solid', 'dunesand'),
@@ -745,9 +727,10 @@ def _build_yuni_headgear(sex, body_id):
     ], [
         PN(0.10, 0.90, 'yuni_patchwork', 'olive', 'sage', 0.18),
     ], fabric='cloth.weave.burlap')
-    parts_h4.append(collar(gid_h4 + '_neck_wrap', keff_p, h=0.075, flare=0.038, open_front=0.0, rows=7, n=32, ease_base=0.026))
-    parts_h4.append(torso_tube(gid_h4 + '_shoulder_drape', core.SHOULDER - 0.04, core.TOP + 0.01, keff_p,
-                               ease=0.038, flare=0.05, rows=8, n=34, jagged=0.0, over_arms=True))
+    parts_h4.append(collar(gid_h4 + '_neck_wrap', keff_p, h=0.075, flare=0.028, open_front=0.0, rows=7, n=32, ease_base=0.022))
+    drape_h4 = bio.collar_disc(gid_h4 + '_shoulder_drape', 0.095, keff_p, drop=0.074, rows=7, n=40, scallop=0.03, ease=0.021)
+    drape_h4.cloth = None
+    parts_h4.append(drape_h4)
     entries.append(assemble_garment(gid_h4, 'Yuni Wrapped Desert Turban & Neck-Keffiyeh', 'head', 'yuni', parts_h4, covers_hair=True))
 
     # -----------------------------------------------------------------------------------------------------------
@@ -762,9 +745,10 @@ def _build_yuni_headgear(sex, body_id):
     ], [
         PN(0.0, 1.0, 'yuni_patchwork', 'sage', 'slateblue', 0.20),
     ], fabric='cloth.weave.burlap')
-    parts_h5.append(hood(gid_h5 + '_hood', hood_p, ease=0.034, ease_low=0.056, open_front=0.72, low=-0.52, rows=14, n=34, peak=0.06))
-    parts_h5.append(torso_tube(gid_h5 + '_cowl_capelet', core.CHEST + 0.02, core.TOP + 0.01, hood_p,
-                               ease=0.042, flare=0.06, rows=10, n=36, jagged=0.0, over_arms=True))
+    parts_h5.append(hood(gid_h5 + '_hood', hood_p, ease=0.030, ease_low=0.044, open_front=0.72, low=-0.46, rows=14, n=34, peak=0.06))
+    cowl_h5 = bio.collar_disc(gid_h5 + '_cowl_capelet', 0.112, hood_p, drop=0.088, rows=8, n=42, scallop=0.03, ease=0.022)
+    cowl_h5.cloth = None
+    parts_h5.append(cowl_h5)
     # Stitched leather-and-sand brow visor peak under the front arch of the hood (Row 14)
     v_angs = np.linspace(0.72 * math.pi, 1.28 * math.pi, 18)
     v_base = np.array(ring_points(a + (b - a) * 0.62, bk, left, v_angs, 0.012, rmin=0.075, rmax=0.118, bvh=core.BVH))
@@ -824,12 +808,15 @@ def _build_yuni_torsos(sex, body_id):
     for side in ('Left', 'Right'):
         parts_t1.append(sleeve(f'{gid_t1}_sleeve_{side}', side, shirt_p, f0=0.0, f1=0.88, ease=0.020, flare=0.008, rows=12, n=22))
 
-    # Tailored upper-chest sand-tan patchwork desert poncho & cowl collar above the waist belt
+    # Tailored upper-chest sand-tan patchwork desert poncho & shoulder mantle above the waist belt
     parts_t1.append(torso_tube(gid_t1 + '_poncho_drape', core.WAIST + 0.03, core.TOP + 0.01, poncho_p,
-                               ease=0.030, flare=0.028, rows=12, n=40, jagged=0.0))
-    parts_t1.append(collar(gid_t1 + '_poncho_cowl', poncho_p, h=0.065, flare=0.040, open_front=0.0, rows=6, n=32, ease_base=0.028))
+                               ease=0.025, flare=0.028, rows=12, n=40, jagged=0.0))
+    poncho_yoke = bio.collar_disc(gid_t1 + '_poncho_mantle', 0.138, poncho_p, drop=0.118, rows=8, n=44, scallop=0.04, ease=0.024)
+    poncho_yoke.cloth = None
+    parts_t1.append(poncho_yoke)
+    parts_t1.append(collar(gid_t1 + '_poncho_cowl', poncho_p, h=0.065, flare=0.028, open_front=0.0, rows=6, n=32, ease_base=0.024))
     for side in ('Left', 'Right'):
-        parts_t1.append(pauldron(f'{gid_t1}_poncho_sh_{side}', side, poncho_p, span=0.23, drop=0.19, lift=0.028))
+        parts_t1.append(pauldron(f'{gid_t1}_poncho_sh_{side}', side, poncho_p, span=0.22, drop=0.17, lift=0.018))
 
     # Tactical chest harness + twin front ammo pouches + glowing chest beacon + shoulder walkie-talkie + hip rope coil
     parts_t1.append(crossed_sash(gid_t1 + '_harness', strap_p, width=0.052, ease=0.040))
@@ -852,7 +839,7 @@ def _build_yuni_torsos(sex, body_id):
     # Right-hip coiled climbing rope + left-hip canteen
     hip_r = J('Hips') - left * 0.145 - bk * 0.03 + up * 0.02
     parts_t1.append(rosette(gid_t1 + '_rope_coil', hip_r, -left, -bk, 0.055,
-                            P('oat', 0.04, [B('top', 0.0, 0.02, 'stripes', 'umber', 'oat', 0.02)], fabric='straw.plaited'),
+                            P('oat', 0.04, [B('top', 0.0, 0.02, 'stripes', 'umber', 'oat', 0.02)], fabric='straw.reed.plaited'),
                             n=14, thick=0.024, rigid_joint='Hips'))
     hip_l = J('Hips') + left * 0.145 - bk * 0.03 + up * 0.01
     parts_t1.append(horn(gid_t1 + '_hip_canteen', [hip_l - up * 0.05, hip_l + up * 0.05], 0.028, 0.024,
@@ -873,7 +860,7 @@ def _build_yuni_torsos(sex, body_id):
         B('top', 0.0, 0.04, 'solid', 'leather'),
     ], [
         PN(0.0, 1.0, 'yuni_patchwork', 'khaki', 'dunesand', 0.18),
-    ], fabric='cloth.quilted')
+    ], fabric='cloth.quilted.channel')
     cuirass_p = P('iron', 0.03, [
         B('bottom', 0.0, 0.05, 'solid', 'leather'),
         B('top', 0.0, 0.04, 'solid', 'brass'),
@@ -1012,9 +999,7 @@ def _build_yuni_torsos(sex, body_id):
     parts_t4.append(crossed_sash(gid_t4 + '_crossbelt', strap_p, width=0.052, ease=0.034))
     parts_t4.append(belt_sash(gid_t4 + '_indigo_obi', core.WAIST - 0.03, core.WAIST + 0.07, sash_kilt_p, ease=0.038))
     kilt_panels = tabard(gid_t4 + '_sash_kilt', core.KNEE - 0.06, core.WAIST + 0.03, 0.17, sash_kilt_p,
-                         front=True, back=True, ease=0.038, flare=0.06)
-    for kp in kilt_panels:
-        kp.cloth = None
+                         front=True, back=True, ease=0.034, flare=0.09)
     parts_t4.extend(kilt_panels)
     vial4_pos = chest_front(core.CHEST + 0.03, 0.046) - left * 0.058
     parts_t4.append(horn(gid_t4 + '_vial', [vial4_pos - up * 0.028, vial4_pos + up * 0.028], 0.016, 0.016,
@@ -1056,14 +1041,17 @@ def _build_yuni_torsos(sex, body_id):
                          (0.042, 0.028, 0.055), pouch_p, n=10, rows=5, out=np.array([0.0, -1.0, 0.0]), rigid_joint='Hips'))
 
     # Open-front sweeping desert-sand & slate-indigo border-striped great-cloak (`arc=(-0.70*pi, 0.70*pi)`)
-    parts_t5.append(torso_tube(gid_t5 + '_greatcloak', core.ANKLE + 0.08, core.TOP + 0.01, gcloak_p,
-                               ease=0.036, flare=0.09, rows=24, n=42, jagged=0.0,
+    parts_t5.append(torso_tube(gid_t5 + '_greatcloak', core.ANKLE + 0.08, core.TOP + 0.004, gcloak_p,
+                               ease=0.028, flare=0.14, rows=24, n=42, jagged=0.0,
                                arc=(-math.pi * 0.70, math.pi * 0.70)))
+    gcloak_yoke = bio.collar_disc(gid_t5 + '_cloak_yoke', 0.125, gcloak_p, drop=0.092, rows=8, n=44, scallop=0.03, ease=0.024)
+    gcloak_yoke.cloth = None
+    parts_t5.append(gcloak_yoke)
     parts_t5.append(collar(gid_t5 + '_cloak_cowl', P('sage', 0.04, [B('top', 0.0, 0.03, 'solid', 'dunesand')]),
-                           h=0.075, flare=0.045, open_front=0.0, rows=7, n=32, ease_base=0.028))
+                           h=0.075, flare=0.032, open_front=0.0, rows=7, n=32, ease_base=0.024))
     for side in ('Left', 'Right'):
-        parts_t5.append(pauldron(f'{gid_t5}_cloak_sh_{side}', side, gcloak_p, span=0.24, drop=0.20, lift=0.028))
-        parts_t5.append(sleeve(f'{gid_t5}_cloak_sleeve_{side}', side, gcloak_p, f0=0.0, f1=0.76, ease=0.028, flare=0.028, rows=14, n=24))
+        parts_t5.append(pauldron(f'{gid_t5}_cloak_sh_{side}', side, gcloak_p, span=0.22, drop=0.17, lift=0.018))
+        parts_t5.append(sleeve(f'{gid_t5}_cloak_sleeve_{side}', side, gcloak_p, f0=0.0, f1=0.76, ease=0.026, flare=0.026, rows=14, n=24))
     entries.append(assemble_garment(gid_t5, 'Yuni Border-Striped Desert Greatcloak & Brigandine', 'torso', 'yuni', parts_t5))
 
     return entries
@@ -1244,15 +1232,8 @@ def _build_yuni_backs(sex, body_id):
         PN(0.0, 1.0, 'yuni_patchwork', 'olive', 'dunesand', 0.22),
     ], fabric='cloth.weave.burlap')
 
-    parts_b4.append(cape(gid_b4 + '_main_cloak', core.ANKLE + 0.10, core.SHOULDER + 0.02, sniper_p,
-                         arc=0.86, ease=0.056, flare=0.10, rows=22, n=34, jagged=0.012, layer=2))
-    parts_b4.append(cape(gid_b4 + '_upper_shroud', core.WAIST - 0.04, core.TOP - 0.01, upper_patch_p,
-                         arc=0.82, ease=0.064, flare=0.07, rows=12, n=28, jagged=0.0, layer=2))
-    # Rear waist utility pouch (Rows 01/11/14)
-    rear_pouch = J('Hips') + bk * 0.148 + up * 0.02
-    parts_b4.append(blob(gid_b4 + '_rear_pouch', rear_pouch, (0.068, 0.036, 0.058),
-                         P('saddle', 0.03, [B('top', 0.0, 0.025, 'solid', 'brass')], fabric='leather.polished'),
-                         n=10, rows=5, out=bk, rigid_joint='Hips'))
+    parts_b4.append(cape(gid_b4 + '_main_cloak', core.ANKLE + 0.10, core.TOP - 0.004, sniper_p,
+                         arc=0.86, ease=0.032, flare=0.18, rows=22, n=34, jagged=0.0, layer=2))
     entries.append(assemble_garment(gid_b4, 'Yuni Tattered Patchwork Sniper Cloak', 'back', 'yuni', parts_b4))
 
     # -----------------------------------------------------------------------------------------------------------
@@ -1267,19 +1248,9 @@ def _build_yuni_backs(sex, body_id):
     ], [
         PN(0.0, 1.0, 'yuni_patchwork', 'terracotta', 'saffron', 0.26),
     ], fabric='cloth.weave.burlap')
-    terra_cowl_p = P('terracotta', 0.04, [
-        B('bottom', 0.0, 0.06, 'trencadis', 'cream', 'yuniyellow', 0.04),
-    ], [
-        PN(0.0, 1.0, 'yuni_patchwork', 'ochre', 'terracotta', 0.22),
-    ], fabric='cloth.weave.burlap')
 
-    parts_b5.append(cape(gid_b5 + '_ochre_cape', core.KNEE - 0.02, core.SHOULDER + 0.02, ochre_cape_p,
-                         arc=0.88, ease=0.054, flare=0.09, rows=18, n=32, jagged=0.0, layer=2))
-    parts_b5.append(cape(gid_b5 + '_terra_drape', core.WAIST + 0.02, core.TOP - 0.01, terra_cowl_p,
-                         arc=0.84, ease=0.062, flare=0.06, rows=10, n=28, jagged=0.0, layer=2))
-    parts_b5.append(blob(gid_b5 + '_belt_pouch', J('Hips') + bk * 0.148 - left * 0.055 + up * 0.02, (0.058, 0.034, 0.058),
-                         P('saddle', 0.03, [B('top', 0.0, 0.025, 'solid', 'brass')], fabric='leather.polished'),
-                         n=10, rows=5, out=bk, rigid_joint='Hips'))
+    parts_b5.append(cape(gid_b5 + '_ochre_cape', core.KNEE - 0.02, core.TOP - 0.004, ochre_cape_p,
+                         arc=0.88, ease=0.032, flare=0.16, rows=18, n=32, jagged=0.0, layer=2))
     entries.append(assemble_garment(gid_b5, 'Yuni Saffron-Ochre & Terracotta Desert Mantle', 'back', 'yuni', parts_b5))
 
     return entries
@@ -1387,6 +1358,15 @@ TASKS = [
 def _run_task(task):
     fn, sex, body_id = task
     return fn(sex, body_id)
+
+
+def build_yuni_military_kit():
+    """Build all 36 Yuni Scout/Military pieces (male & female) and reset body to mpfb_male."""
+    kit_entries = []
+    for task in TASKS:
+        kit_entries.extend(_run_task(task))
+    set_body('mpfb_male')
+    return kit_entries
 
 
 def main():

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Verify settlements/mirabilis (Mirabilis / Mirapiris / Sutar-Kotan, px 350, 726):
-runs live WebGL multi-kit (47/47 Hayrant + Eternian suzerain), <= 0.50 m mixed-avenue cornice,
+runs live WebGL multi-kit (55/55 Hayrant + Eternian suzerain), <= 0.50 m mixed-avenue cornice,
 Yut Moon-Bridge & Yut-Ma river hydraulics, counterbalanced cliff-hoist kinematics, KCONS rising lots,
 KCAMP caravan laager, single-component KWALK, and Circuit E6 SIM conservation asserts,
 plus tools/harness.py SURVEY universal checks (--cut and --night optional)."""

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1013,
+    1014
+   ],
+   "seam_after": [
+    0.679,
+    0.654
+   ],
+   "seam_before": [
+    1.82,
+    2.818
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 1.1,
+   "pattern": true,
+   "rough": 0.48,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.totem.cyber.b",
+  "metal": 0.45,
+  "roughness": 0.48,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.totem.cyber.b.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`metal.totem.cyber`, alternate B)",
+  "reuse": "wide ceramic-armour & recessed copper-bus alternate of `metal.totem.cyber` for monumental cyber-totem pedestals and housings",
+  "sha1": "1bd6fd51d94618ece501f70825e15946bbc10228"
+ }
+}

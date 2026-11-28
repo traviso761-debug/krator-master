@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1113,
+    1041
+   ],
+   "seam_after": [
+    1.065,
+    1.049
+   ],
+   "seam_before": [
+    1.675,
+    1.697
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 0.95,
+   "pattern": true,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "armor.linothorax.twill",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.72,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "armor-linothorax-twill-codex.png",
+  "generator": "Codex image generation, Nov 2026 (exec-55e56b30-63a1-4687-b002-f4ac1dc4f013.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Stiff laminated ancient Aegean linothorax armour at 24 cm square scale, fourteen resin-glued layers of heavy herringbone flax-linen canvas quilted with horizontal cord seams every 4 cm, crisp woven bast threads and stitched raw-linen edge binding. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "3617b350c76d93e4c5e3fe1ffce48ab7a8e9cb1a"
+ }
+}

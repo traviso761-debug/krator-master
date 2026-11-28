@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1239
+   ],
+   "seam_after": [
+    1.041,
+    0.749
+   ],
+   "seam_before": [
+    1.128,
+    0.867
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "islander/kautoa-hinggi-ikat",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__islander__kautoa-hinggi-ikat.png",
+  "generator": "Codex image generation, Nov 2026 (exec-9889593b-4486-46c0-a3e6-90c07fed5964.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of East-Islander Kautoa Sumba-style warp-ikat shoulder blanket (hinggi): coarse hand-spun cotton showing characteristic feathered tie-dyed warp-ikat edges in horizontal bands of dark sea-teal (#2a7a7a), red-earth madder (#9a2a1e), charcoal-black (#1e1a18), and ochre (#c8922e), featuring four cream-white (#efe6d2) Island-Moon crescents over stylized double-canoe prows and sea-turtles, whole motifs clear of every seam. Full colour.",
+  "sha1": "2425e4d1095bc8ba4062ad628cfbb521e58b4799"
+ }
+}

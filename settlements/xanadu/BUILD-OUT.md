@@ -104,6 +104,15 @@ Grēṭ-Āil in 1b. The hub is Erehwon for P1 and Phēr for P7.
 | `lk.west-isle` | Wesṭ-Āil (the fishermen's isle) | 831,1499 | 400 | fish | P1 | unplanned |
 | `lk.east-isle` | Lāiṭ-Hāus (the light and the customs) | 864,1503 | 200 | fish | P1 | unplanned |
 
+**Malbari's Qol bridge** (the owner, 2026-11-23: "place bridge on map at open world step"). The lake-towns build
+(`claude/festive-johnson-lp780f`, towns L0-L2) found the Qol Siṭrīm outside Malbari's footprint, so the town page does not
+place the bridge, and the page stays as it is. The bridge goes on the scale model as a map feature where the road crosses the
+Qol (`r272`, near its mouth at 824,1489), in the scale-model session's single re-run. It is drawn by the region that holds the
+crossing (`xanadu-north-shore`) at the open-world step: an `xa_river_span` run (kits/xanadu 87c) on the road's crossing,
+seated on the region's banks, with a region check that the road meets the deck on both banks. When the lake-towns branch
+merges, this note goes into `settlements/xanadu-lake/PLAN.md` section 9 (and Malbari's own plan) as a step L6, "the open-world
+step: the regions draw what the town pages leave to them".
+
 ### 1d. Kirstabal's lake (the Lower Xanadu Lake)
 
 Eight villages (Ōpal-Māuṭh became Gihon, 2026-11-22), all P5, hub Kirstabal (`ll.<key>`, `T.lowerLake`). Their records and layouts exist in Kirstabal's

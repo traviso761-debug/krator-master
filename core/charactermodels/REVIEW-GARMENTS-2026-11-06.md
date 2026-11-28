@@ -562,3 +562,15 @@ The plan takes sections 1 to 3 above whole. What to change before acting on it:
   and "inside" unchanged. Issue 2 (thighs and calves through breeches) does not reproduce: no trousers show skin at
   the legs in the 66-outfit audit. What skin remains there is kilts and skirts in a crouch (the Dalab peasant woman's
   kilt 2711 px, the Chichani noble woman's gown 2402, the Order novices), which is the hull's and the chains' work.
+- **Skin in a crouch, looked at (2026-11-11): masks, not the hull.** The shots: the Chichani noble woman's skin
+  comes through her gown at the shoulder blades (a mask that stops short); the Dalab peasant woman's is her bare back
+  between a breast band and her kilt (the cut, not a fault, though the count takes it); the novices' is the gap a
+  bending trunk opens between shirt hem and skirt waist. `hole_repair.py find --skin` is the reverse of issue 5's
+  finder: rays through the audit's skin patches (ringed 95 % by one garment's surface, so a gap between two garments
+  is left to show; not bare in the A-pose), the triangles seen set in that garment's mask (`apply --hide`), recorded in
+  `tests/hide-repairs.json` under `hide` beside `unhide`. On the men and women it holds: skin on the Xanadu rich man
+  1121 to 0 px (his jama, 12 triangles), the novice woman 1469 to 375, the man 1581 to 990, the Chichani noble woman
+  2402 to 1615, with "hole", "under" and "inside" unchanged on all of them. On the Free Giants it does not: their
+  "hole" rose (the chief 728 to 1073, the clansman 698 to 1192, the warrior 1138 to 1636), the four-armed tops open
+  where the lower arms leave them, so their three repairs were taken back. A repair seen in one pose is applied
+  (`--min-shots 1`) only with the audit after it.

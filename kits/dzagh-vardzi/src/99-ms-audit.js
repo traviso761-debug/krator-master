@@ -292,4 +292,71 @@
   const pairs=Array.from(siteMap.values()).sort((a,b)=>b.count-a.count);
   return {totalTris:T.length,tolMm:+(tol*1000).toFixed(2),overlaps,upstreamResOverlaps,pairs};
  };
+
+ /* 4. Zero White-Quartz Spires & Hooks 2-4 Landmarks Audit (`retconAndHooksAudit`)
+    Proves 0 snow-white `quartz` roof meshes remain on needle-towers (replaced by `slate` / `basalt` / `tuff` / `verdigris`)
+    and verifies `dv-hall-troubadour`, `dv-vault-mepe-qvevri`, and `dv-organ-beacon` are placed, walkable, furnished, and 0-z-fight. */
+ window._api.retconAndHooksAudit=function(o){
+  o=o||{};
+  let quartzBuildingTris=0,resNodeQuartzTris=0,crownMatMeshes=0;
+  const quartzSites=new Set(),qv=new THREE.Vector3();
+  scene.traverse(m=>{
+   if(!m.isMesh||!m.geometry)return;
+   const mats=Array.isArray(m.material)?m.material:[m.material];
+   const mk=m.userData&&m.userData.mk;
+   for(const mt of mats){
+    if(!mt)continue;
+    const fam=mt.userData&&mt.userData.family;
+    if(mk==='quartz'||fam==='quartz'||(typeof MAT!=='undefined'&&MAT.quartz&&mt===MAT.quartz)){
+     const pos=m.geometry.attributes.position,idx=m.geometry.index,nIdx=idx?idx.count:(pos?pos.count:0);
+     for(let i=0;i<nIdx;i+=3){
+      const ia=idx?idx.getX(i):i;
+      qv.fromBufferAttribute(pos,ia).applyMatrix4(m.matrixWorld);
+      const rs=typeof regAt==='function'?regAt(qv):null;
+      if(rs&&rs.kind==='res-node'&&qv.y<3.5)resNodeQuartzTris++;
+      else{quartzBuildingTris++;quartzSites.add(rs?rs.key:(m.name||'world'));}
+     }
+    }
+    if(['slate','basalt','colBasalt','tuff','tuffPolished','verdigris'].includes(mk||fam))crownMatMeshes++;
+   }
+  });
+  const slateCrowns=typeof dvSlateCrowns==='function'?dvSlateCrowns():0;
+  const reqHooks=o.village?['dv-hall-troubadour','dv-organ-beacon']:['dv-hall-troubadour','dv-vault-mepe-qvevri','dv-organ-beacon'];
+  const reqFurn=o.village?['dv_panduri_lute_rack','dv_chasm_organ_console']:['dv_panduri_lute_rack','dv_mepe_qvevri_seal','dv_chasm_organ_console'];
+  const fu=window._api.furniture(true),doors=window._api.doors();
+  const zf=o.zf||window._api.zfightAudit({tol:.0015,pen:.004});
+  const hooks=[],problems=[];
+  for(const k of reqHooks){
+   const d=DEFS[k];
+   if(!d||!d.cut||!d.tags||!d.tags.landmark){problems.push(k+': missing def/cut/landmark');continue;}
+   const sites=REG.filter(r=>r.cls==='building'&&r.key===k);
+   if(!sites.length){problems.push(k+': not placed');continue;}
+   const s0=sites[0];
+   let walkHits=0;
+   if(typeof KWALK!=='undefined'){
+    for(const dx of [-2.5,0,2.5])for(const dz of [-2.5,0,2.5])if(KWALK.floorsAt(s0.x+dx,s0.z+dz).length>0)walkHits++;
+   }
+   const ps=fu.perSite.find(p=>p.key===k);
+   const nPieces=ps?ps.pieces:0;
+   const hasDoor=doors.some(dr=>dr.key===k&&dr.front&&dr.front.source!=='default');
+   const zBad=zf.pairs.filter(p=>p.site===k).reduce((a,b)=>a+b.count,0);
+   if(walkHits===0)problems.push(k+': no walkable floor');
+   if(nPieces<6)problems.push(k+': <6 furniture ('+nPieces+')');
+   if(!hasDoor)problems.push(k+': missing front door');
+   if(zBad>0)problems.push(k+': '+zBad+' z-fight overlaps');
+   hooks.push({key:k,placed:sites.length,walkHits,pieces:nPieces,hasDoor,zOverlaps:zBad});
+  }
+  const bespokeCounts={};
+  const recs=fu.records||[];
+  for(const bk of reqFurn){
+   const c=recs.filter(r=>r.key===bk).length;
+   bespokeCounts[bk]=c;
+   if(c<1)problems.push(bk+': not placed');
+  }
+  return {
+   quartzOk:quartzBuildingTris===0&&slateCrowns>=(o.village?3:12)&&crownMatMeshes>0,
+   hooksOk:problems.length===0,
+   quartzBuildingTris,resNodeQuartzTris,quartzNames:Array.from(quartzSites),slateCrowns,crownMatMeshes,hooks,bespokeCounts,problems
+  };
+ };
 })();

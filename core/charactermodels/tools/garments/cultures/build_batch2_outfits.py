@@ -886,11 +886,14 @@ def build_voth_chosen():
         B('bottom', 0.0, 0.04, 'fret', 'bronze', 'soot', 0.04),
         B('top', 0.0, 0.05, 'solid', 'bronze'),
     ], fabric='metal.iron')
-    parts_h.append(conical_hat(gid_h + '_kasa', 0.62, 1.36, 0.25, hat_p, curve=0.88))
+    kasa_part = conical_hat(gid_h + '_kasa', 0.62, 1.36, 0.25, hat_p, curve=0.88)
+    parts_h.append(kasa_part)
     crest_pts = [a + (b - a) * (0.66 + 0.68 * t) - bk * (0.24 * (1.0 - t) + 0.02) for t in np.linspace(0, 1, 6)]
     parts_h.append(horn(gid_h + '_crest', crest_pts, 0.024, 0.006, P('bronze', 0.02, fabric='metal.bronze'), n=8, rows=6, rigid_joint='Head'))
+    rim_v = kasa_part.P[-1]
     for sgn, tag in ((-1.0, 'L'), (1.0, 'R')):
-        t_top = a + (b - a) * 0.62 + left * (sgn * 0.18) - bk * 0.04
+        target_rim = a + (b - a) * 0.62 + left * (sgn * 0.24) - bk * 0.04
+        t_top = rim_v[int(np.argmin(np.linalg.norm(rim_v - target_rim[None, :], axis=1)))].copy()
         parts_h.append(tassel(f'{gid_h}_tassel_{tag}', t_top, 0.08, 0.010, P('silver', 0.02, fabric='metal.iron'), rigid_joint='Head'))
     e_h = assemble_garment(gid_h, 'Chosen of Tzintzun Porcelain Mask & Kasa', 'head', 'chichani', parts_h, covers_hair=True, covers_face=True)
 
@@ -1517,21 +1520,9 @@ def build_rep_commissar():
     ant_pts = [pack_ctr + left * 0.142 + up * (0.12 + 0.24 * t) for t in np.linspace(0, 1, 5)]
     parts_k.append(horn(gid_k + '_antenna', ant_pts, 0.008, 0.003, P('brass', 0.02, fabric='metal.bronze'), n=8, rows=5, rigid_joint='Spine2'))
     # Contoured leather shoulder harness straps wrapping cleanly over the outside of the coat shoulders
-    x_ax, y_ax = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    strap_p = P('leather', 0.04, [B('top', 0.0, 0.02, 'solid', 'brass'), B('bottom', 0.0, 0.02, 'solid', 'brass')], fabric='leather.polished')
-    for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        s_rows = []
-        for ang_s, z_s in (
-            (sgn * 0.32, sp2[2] + 0.09),
-            (sgn * 0.55, sp2[2] + 0.13),
-            (math.pi - sgn * 0.55, sp2[2] + 0.12),
-            (math.pi - sgn * 0.48, sp2[2] + 0.03),
-            (math.pi - sgn * 0.52, sp1[2] - 0.02),
-            (sgn * 0.42, sp1[2] - 0.03),
-        ):
-            angs_w = np.linspace(ang_s - 0.08, ang_s + 0.08, 4)
-            s_rows.append(bio.ring_points(bio.spine_at(z_s), x_ax, y_ax, angs_w, 0.036, rmin=0.09, rmax=0.25, bvh=bio.BVH_T))
-        parts_k.append(Part(f'{gid_k}_harness_{tag}', np.array(s_rows), False, ['body'] * len(s_rows), strap_p))
+    from garments.types.accoutrements import pack_straps
+    strap_p = P('leather', 0.04, [B('top', 0.0, 0.008, 'solid', 'brass'), B('bottom', 0.0, 0.008, 'solid', 'brass')], fabric='leather.polished')
+    parts_k.extend(pack_straps(gid_k, strap_p))
     e_k = assemble_garment(gid_k, 'Republic Commissar Field Telemetry Backpack', 'back', 'iron_republic', parts_k)
 
     # --- FEET: rep_m_commissar_boots ---
@@ -1608,7 +1599,7 @@ def build_yuni_breacher():
         B('top', 0.0, 0.03, 'solid', 'yuniyellow'),
         B('bottom', 0.0, 0.03, 'dentils', 'repred', 'teal', 0.04),
     ], [
-        PN(0.35, 0.65, 'eternian_icons', 'yuniyellow', 'teal', 0.12),
+        PN(0.35, 0.65, 'caution_legion_stencil', 'yuniyellow', 'teal', 0.12),
     ], fabric='cloth.oiled')
     parts_h.append(collar(gid_h + '_bowl', bowl_p, h=0.14, flare=0.095, open_front=0.0, rows=9, n=36))
     e_h = assemble_garment(gid_h, 'Yuni Vault-Breacher Pressurized Bowl-Collar', 'head', 'yuni', parts_h, covers_hair=False)
@@ -1620,12 +1611,11 @@ def build_yuni_breacher():
         B('bottom', 0.0, 0.10, 'dentils', 'yuniyellow', 'teal', 0.06),
         B('top', 0.0, 0.06, 'solid', 'yuniyellow'),
     ], [
-        PN(0.42, 0.56, 'eternian_icons', 'repred', 'yuniyellow', 0.20),
-        PN(0.18, 0.40, 'circuit_schematic', 'yuniyellow', 'teal', 0.18),
-        PN(0.60, 0.82, 'circuit_schematic', 'yuniyellow', 'teal', 0.18),
+        PN(0.42, 0.56, 'caution_legion_stencil', 'repred', 'yuniyellow', 0.20),
+        PN(0.18, 0.40, 'circuit_strata', 'yuniyellow', 'teal', 0.18),
+        PN(0.60, 0.82, 'circuit_strata', 'yuniyellow', 'teal', 0.18),
     ], fabric='cloth.oiled')
     c_tube = torso_tube(gid_t + '_coat', J('LeftFoot')[2] + 0.10, J('Neck')[2] + 0.01, coat_p, ease=0.028, flare=0.085, rows=26, n=44)
-    c_tube.cloth = None
     parts_t.append(c_tube)
     parts_t.append(crossed_sash(gid_t + '_strap', P('yuniyellow', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'soot')]), width=0.055, ease=0.036))
     for side in ('Left', 'Right'):
@@ -1794,12 +1784,14 @@ def build_yusar_dronemaster():
     for f, rx_p, ry_p in ((1.06, 0.03, 0.03), (0.94, 0.135, 0.148), (0.68, 0.245, 0.168), (0.44, 0.235, 0.165), (0.28, 0.115, 0.148)):
         c = a + (b - a) * f
         pod_rows.append([c + left * (math.sin(an) * rx_p) + bk * (math.cos(an) * ry_p - 0.012) for an in angs_p])
-    parts_h.append(Part(gid_h + '_podhelm', np.array(pod_rows), True, ['body'] * len(pod_rows), helm_p, rigid_joint='Head'))
-    # Multi-eye neon-magenta & cyan optical camera array on the front pod + twin telemetry antennas
+    pod_part = Part(gid_h + '_podhelm', np.array(pod_rows), True, ['body'] * len(pod_rows), helm_p, rigid_joint='Head')
+    parts_h.append(pod_part)
+    # Multi-eye neon-magenta & cyan optical camera array on the front pod + twin telemetry antennas seated flush on pod tips
     parts_h.append(rosette(gid_h + '_lens_cluster', a + (b - a) * 0.52 - bk * 0.174, -bk, left, 0.054, P('neonmagenta', 0.01, [B('top', 0.0, 0.02, 'solid', 'cybercyan')], fabric='beads.glass'), n=14, thick=0.020, rigid_joint='Head'))
-    for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
+    for sgn, tag, pidx in ((-1.0, 'R', 27), (1.0, 'L', 9)):
         parts_h.append(rosette(f'{gid_h}_sub_lens_{tag}', a + (b - a) * 0.54 + left * (sgn * 0.095) - bk * 0.155, -bk, left, 0.026, P('cybercyan', 0.01, fabric='beads.glass'), n=12, thick=0.014, rigid_joint='Head'))
-        ant_pts = [a + (b - a) * (0.68 + 0.42 * t) + left * (sgn * (0.21 + 0.03 * t)) + bk * (0.02 * t) for t in np.linspace(0, 1, 5)]
+        base_pt = pod_part.P[2, pidx].copy()
+        ant_pts = [base_pt + up * (0.11 * t) + left * (sgn * 0.020 * t) + bk * (0.015 * t) for t in np.linspace(0, 1, 5)]
         parts_h.append(horn(f'{gid_h}_antenna_{tag}', ant_pts, 0.010, 0.003, P('cybercyan', 0.01, fabric='metal.iron'), n=8, rows=5, rigid_joint='Head'))
     e_h = assemble_garment(gid_h, 'Yusar Drone-Caller Multi-Lens Transceiver Helm', 'head', 'yusar', parts_h, covers_hair=True, covers_face=True)
 

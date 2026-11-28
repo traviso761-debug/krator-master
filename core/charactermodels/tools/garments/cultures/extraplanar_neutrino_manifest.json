@@ -1,0 +1,2233 @@
+{
+  "items": {
+    "mpfb_male": [
+      {
+        "id": "ext3_m_neutrino_cherenkov",
+        "name": "Neutrino Phantom Cherenkov Crown Array & PMT Singularity",
+        "slot": "head",
+        "glb": "pieces/mpfb_male/ext3_m_neutrino_cherenkov.glb",
+        "culture": "extraplanar",
+        "covers_hair": true,
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly"
+        ],
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_0",
+              "t0": 480,
+              "t1": 580,
+              "v0": 0.81445,
+              "v1": 0.8252
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_1",
+              "t0": 580,
+              "t1": 680,
+              "v0": 0.8252,
+              "v1": 0.83594
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_2",
+              "t0": 680,
+              "t1": 780,
+              "v0": 0.83594,
+              "v1": 0.84668
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_3",
+              "t0": 780,
+              "t1": 880,
+              "v0": 0.84668,
+              "v1": 0.85742
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_4",
+              "t0": 880,
+              "t1": 980,
+              "v0": 0.85742,
+              "v1": 0.86816
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_m_neutrino_cherenkov_collar_pmt_5",
+              "t0": 980,
+              "t1": 1080,
+              "v0": 0.86816,
+              "v1": 0.87891
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#dcffff",
+              "gain": 2.65,
+              "pulse": 0.24,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_vertex_core",
+              "t0": 1080,
+              "t1": 1476,
+              "v0": 0.87891,
+              "v1": 0.89941
+            },
+            {
+              "kind": "light_array",
+              "core_color": "#f2ffff",
+              "primary_color": "#4cf8ff",
+              "secondary_color": "#2c78ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.28,
+              "spin": -1.55,
+              "z_offset": -0.09,
+              "gain": 1.85,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_crown_light_array",
+              "t0": 1476,
+              "t1": 1494,
+              "v0": 0.89941,
+              "v1": 0.91406
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_0",
+              "t0": 1494,
+              "t1": 1594,
+              "v0": 0.91406,
+              "v1": 0.9248
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_1",
+              "t0": 1594,
+              "t1": 1694,
+              "v0": 0.9248,
+              "v1": 0.93555
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_2",
+              "t0": 1694,
+              "t1": 1794,
+              "v0": 0.93555,
+              "v1": 0.94629
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_3",
+              "t0": 1794,
+              "t1": 1894,
+              "v0": 0.94629,
+              "v1": 0.95703
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_4",
+              "t0": 1894,
+              "t1": 1994,
+              "v0": 0.95703,
+              "v1": 0.96777
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_5",
+              "t0": 1994,
+              "t1": 2094,
+              "v0": 0.96777,
+              "v1": 0.97852
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_6",
+              "t0": 2094,
+              "t1": 2194,
+              "v0": 0.97852,
+              "v1": 0.98926
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.68898,
+                  0.02274
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_m_neutrino_cherenkov_pmt_sensor_7",
+              "t0": 2194,
+              "t1": 2294,
+              "v0": 0.98926,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Head",
+              "offset": [
+                0.0,
+                0.1,
+                0.0
+              ],
+              "count": 24,
+              "rate": 0.44,
+              "size0": 0.06,
+              "size1": 0.195,
+              "drift": [
+                0.0,
+                0.32,
+                -0.08
+              ],
+              "spread": 0.05,
+              "opacity": 0.56,
+              "ember_color": "#52f8ff",
+              "core_color": "#051332",
+              "mist_color": "#2b78c8"
+            }
+          ]
+        },
+        "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//9wAAAMAwADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//+wAAAPAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
+        "hides": 6768,
+        "hide_by": "extraplanar_custom"
+      },
+      {
+        "id": "ext3_m_neutrino_shroud",
+        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Portal",
+        "slot": "torso",
+        "glb": "pieces/mpfb_male/ext3_m_neutrino_shroud.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_m_neutrino_shroud_phase_body",
+              "t0": 0,
+              "t1": 1656,
+              "v0": 0.0,
+              "v1": 0.27441
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_m_neutrino_shroud_phase_arms_sleeve_L",
+              "t0": 1656,
+              "t1": 1944,
+              "v0": 0.27441,
+              "v1": 0.44336
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_m_neutrino_shroud_phase_arms_sleeve_R",
+              "t0": 1944,
+              "t1": 2232,
+              "v0": 0.44336,
+              "v1": 0.6123
+            },
+            {
+              "kind": "nebula_rift",
+              "core_color": "#eaffff",
+              "arm_color": "#38f6ff",
+              "nebula_color": "#1854ff",
+              "gold_color": "#ffd25a",
+              "void_color": "#010615",
+              "center_y": 1.344,
+              "galaxy_scale": 3.4,
+              "name": "ext3_m_neutrino_shroud_cherenkov_portal",
+              "t0": 2232,
+              "t1": 2672,
+              "v0": 0.6123,
+              "v1": 0.62793
+            }
+          ]
+        },
+        "tucks": true,
+        "hem": 0.0,
+        "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+        "hides": 24056,
+        "hide_by": "extraplanar_custom",
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly",
+          "Human.nipple",
+          "Human.fingernails",
+          "Human.toenails"
+        ]
+      },
+      {
+        "id": "ext3_m_neutrino_rings",
+        "name": "Neutrino Phantom Pulsing Rotating Light-Array Halo",
+        "slot": "back",
+        "glb": "pieces/mpfb_male/ext3_m_neutrino_rings.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "light_array",
+              "core_color": "#f0ffff",
+              "primary_color": "#38f6ff",
+              "secondary_color": "#2068ff",
+              "accent_color": "#b458ff",
+              "halo_scale": 0.72,
+              "spin": 1.0,
+              "z_offset": -0.2,
+              "gain": 1.95,
+              "kinetic": {
+                "bone": "Spine2",
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.38355,
+                  -0.06
+                ]
+              },
+              "name": "ext3_m_neutrino_rings_outer_light_array",
+              "t0": 0,
+              "t1": 18,
+              "v0": 0.0,
+              "v1": 0.5459
+            },
+            {
+              "kind": "light_array",
+              "core_color": "#ffffff",
+              "primary_color": "#5cfaff",
+              "secondary_color": "#4c44ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.5,
+              "spin": -1.38,
+              "z_offset": -0.24,
+              "gain": 1.75,
+              "kinetic": {
+                "bone": "Spine2",
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.38355,
+                  -0.06
+                ]
+              },
+              "name": "ext3_m_neutrino_rings_inner_light_array",
+              "t0": 18,
+              "t1": 36,
+              "v0": 0.5459,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Spine2",
+              "offset": [
+                0.0,
+                0.06,
+                -0.16
+              ],
+              "count": 30,
+              "rate": 0.36,
+              "size0": 0.09,
+              "size1": 0.29,
+              "drift": [
+                0.0,
+                0.44,
+                -0.1
+              ],
+              "spread": 0.07,
+              "opacity": 0.48,
+              "ember_color": "#3cf6ff",
+              "core_color": "#040e28",
+              "mist_color": "#3a62c8"
+            }
+          ]
+        }
+      },
+      {
+        "id": "ext3_m_neutrino_traces",
+        "name": "Neutrino Phantom Helical Track Forearms & Phase-Talons",
+        "slot": "gloves",
+        "glb": "pieces/mpfb_male/ext3_m_neutrino_traces.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_cuff_L",
+              "t0": 0,
+              "t1": 240,
+              "v0": 0.0,
+              "v1": 0.13281
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_palm_L",
+              "t0": 240,
+              "t1": 440,
+              "v0": 0.13281,
+              "v1": 0.18164
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_L_Thumb",
+              "t0": 440,
+              "t1": 560,
+              "v0": 0.18164,
+              "v1": 0.22559
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_L_Index",
+              "t0": 560,
+              "t1": 680,
+              "v0": 0.22559,
+              "v1": 0.25879
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_L_Middle",
+              "t0": 680,
+              "t1": 800,
+              "v0": 0.25879,
+              "v1": 0.29688
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_L_Ring",
+              "t0": 800,
+              "t1": 920,
+              "v0": 0.29688,
+              "v1": 0.33105
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_L_Pinky",
+              "t0": 920,
+              "t1": 1040,
+              "v0": 0.33105,
+              "v1": 0.36426
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_cuff_R",
+              "t0": 1040,
+              "t1": 1280,
+              "v0": 0.36426,
+              "v1": 0.49707
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_palm_R",
+              "t0": 1280,
+              "t1": 1480,
+              "v0": 0.49707,
+              "v1": 0.5459
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_R_Thumb",
+              "t0": 1480,
+              "t1": 1600,
+              "v0": 0.5459,
+              "v1": 0.58984
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_R_Index",
+              "t0": 1600,
+              "t1": 1720,
+              "v0": 0.58984,
+              "v1": 0.62305
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_R_Middle",
+              "t0": 1720,
+              "t1": 1840,
+              "v0": 0.62305,
+              "v1": 0.66113
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_R_Ring",
+              "t0": 1840,
+              "t1": 1960,
+              "v0": 0.66113,
+              "v1": 0.69531
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_m_neutrino_traces_finger_R_Pinky",
+              "t0": 1960,
+              "t1": 2080,
+              "v0": 0.69531,
+              "v1": 0.72852
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cf8ff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_m_neutrino_traces_helix_Left_0",
+              "t0": 2320,
+              "t1": 2500,
+              "v0": 0.82129,
+              "v1": 0.83789
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#a85cff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_m_neutrino_traces_helix_Left_1",
+              "t0": 2500,
+              "t1": 2680,
+              "v0": 0.83789,
+              "v1": 0.85449
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Left_Index",
+              "t0": 2680,
+              "t1": 2704,
+              "v0": 0.85449,
+              "v1": 0.8584
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Left_Middle",
+              "t0": 2704,
+              "t1": 2728,
+              "v0": 0.8584,
+              "v1": 0.8623
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Left_Ring",
+              "t0": 2728,
+              "t1": 2752,
+              "v0": 0.8623,
+              "v1": 0.86621
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Left_Pinky",
+              "t0": 2752,
+              "t1": 2776,
+              "v0": 0.86621,
+              "v1": 0.87012
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Left_Thumb",
+              "t0": 2776,
+              "t1": 2800,
+              "v0": 0.87012,
+              "v1": 0.87402
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cf8ff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_m_neutrino_traces_helix_Right_0",
+              "t0": 3040,
+              "t1": 3220,
+              "v0": 0.9668,
+              "v1": 0.9834
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#a85cff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_m_neutrino_traces_helix_Right_1",
+              "t0": 3220,
+              "t1": 3400,
+              "v0": 0.9834,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Right_Index",
+              "t0": 3400,
+              "t1": 3424,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Right_Middle",
+              "t0": 3424,
+              "t1": 3448,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Right_Ring",
+              "t0": 3448,
+              "t1": 3472,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Right_Pinky",
+              "t0": 3472,
+              "t1": 3496,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_m_neutrino_traces_talon_Right_Thumb",
+              "t0": 3496,
+              "t1": 3520,
+              "v0": 0.99902,
+              "v1": 1.0
+            }
+          ]
+        },
+        "hide_parts": [
+          "Human.fingernails"
+        ],
+        "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAzDMA8AxPw3P8/fwPAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+////P8///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAOA/AAAAAAAAAAAAAAAAAADA////AAAAgP////////////////////////////////////8AAAAA/////////////////////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAwAMM8ACzz4/A8vw/PMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3//88////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAP0DAAAAAAAAAAAAAAAAAAD///8DAAAA/f///////////////////////////////////wMAAAD8////////////////////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "hides": 7598,
+        "hide_by": "rays"
+      },
+      {
+        "id": "ext3_m_neutrino_wake",
+        "name": "Neutrino Phantom Cherenkov Ionization-Wake Tail",
+        "slot": "legs",
+        "glb": "pieces/mpfb_male/ext3_m_neutrino_wake.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.52,
+              "power": 2.05,
+              "rim_gain": 2.3,
+              "name": "ext3_m_neutrino_wake_phase_wake",
+              "t0": 512,
+              "t1": 1652,
+              "v0": 0.26855,
+              "v1": 0.5498
+            },
+            {
+              "kind": "alpha_erosion",
+              "no_push": true,
+              "y_top": 0.88,
+              "y_bot": 0.06,
+              "edge_color": "#3cf6ff",
+              "smoke_color": "#071b46",
+              "swirl": 1.65,
+              "name": "ext3_m_neutrino_wake_erosion_wake",
+              "t0": 1652,
+              "t1": 2792,
+              "v0": 0.5498,
+              "v1": 0.83203
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cfaff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_m_neutrino_wake_decay_track_0",
+              "t0": 2792,
+              "t1": 2972,
+              "v0": 0.83203,
+              "v1": 0.86523
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#2c78ff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_m_neutrino_wake_decay_track_1",
+              "t0": 2972,
+              "t1": 3152,
+              "v0": 0.86523,
+              "v1": 0.89844
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#b458ff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_m_neutrino_wake_decay_track_2",
+              "t0": 3152,
+              "t1": 3332,
+              "v0": 0.89844,
+              "v1": 0.93262
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cfaff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_m_neutrino_wake_decay_track_3",
+              "t0": 3332,
+              "t1": 3512,
+              "v0": 0.93262,
+              "v1": 0.9668
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_m_neutrino_wake_decay_track_4",
+              "t0": 3512,
+              "t1": 3692,
+              "v0": 0.9668,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Hips",
+              "offset": [
+                0.0,
+                -0.58,
+                -0.05
+              ],
+              "count": 28,
+              "rate": 0.42,
+              "size0": 0.085,
+              "size1": 0.265,
+              "drift": [
+                0.0,
+                0.36,
+                -0.06
+              ],
+              "spread": 0.068,
+              "opacity": 0.56,
+              "ember_color": "#38f6ff",
+              "core_color": "#04102c",
+              "mist_color": "#2064d8"
+            }
+          ]
+        },
+        "loose": true,
+        "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+        "hides": 24056,
+        "hide_by": "extraplanar_custom",
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly",
+          "Human.nipple",
+          "Human.fingernails",
+          "Human.toenails"
+        ]
+      }
+    ],
+    "mpfb_female": [
+      {
+        "id": "ext3_f_neutrino_cherenkov",
+        "name": "Neutrino Phantom Cherenkov Crown Array & PMT Singularity",
+        "slot": "head",
+        "glb": "pieces/mpfb_female/ext3_f_neutrino_cherenkov.glb",
+        "culture": "extraplanar",
+        "covers_hair": true,
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly"
+        ],
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_0",
+              "t0": 480,
+              "t1": 580,
+              "v0": 0.81445,
+              "v1": 0.8252
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_1",
+              "t0": 580,
+              "t1": 680,
+              "v0": 0.8252,
+              "v1": 0.83594
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_2",
+              "t0": 680,
+              "t1": 780,
+              "v0": 0.83594,
+              "v1": 0.84668
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_3",
+              "t0": 780,
+              "t1": 880,
+              "v0": 0.84668,
+              "v1": 0.85742
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_4",
+              "t0": 880,
+              "t1": 980,
+              "v0": 0.85742,
+              "v1": 0.86816
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.1,
+              "pulse": 0.16,
+              "name": "ext3_f_neutrino_cherenkov_collar_pmt_5",
+              "t0": 980,
+              "t1": 1080,
+              "v0": 0.86816,
+              "v1": 0.87891
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#dcffff",
+              "gain": 2.65,
+              "pulse": 0.24,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_vertex_core",
+              "t0": 1080,
+              "t1": 1476,
+              "v0": 0.87891,
+              "v1": 0.89941
+            },
+            {
+              "kind": "light_array",
+              "core_color": "#f2ffff",
+              "primary_color": "#4cf8ff",
+              "secondary_color": "#2c78ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.28,
+              "spin": -1.55,
+              "z_offset": -0.09,
+              "gain": 1.85,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "bob",
+                "speed": 2.2,
+                "amp": 0.012,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_crown_light_array",
+              "t0": 1476,
+              "t1": 1494,
+              "v0": 0.89941,
+              "v1": 0.91406
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_0",
+              "t0": 1494,
+              "t1": 1594,
+              "v0": 0.91406,
+              "v1": 0.9248
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_1",
+              "t0": 1594,
+              "t1": 1694,
+              "v0": 0.9248,
+              "v1": 0.93555
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_2",
+              "t0": 1694,
+              "t1": 1794,
+              "v0": 0.93555,
+              "v1": 0.94629
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_3",
+              "t0": 1794,
+              "t1": 1894,
+              "v0": 0.94629,
+              "v1": 0.95703
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_4",
+              "t0": 1894,
+              "t1": 1994,
+              "v0": 0.95703,
+              "v1": 0.96777
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_5",
+              "t0": 1994,
+              "t1": 2094,
+              "v0": 0.96777,
+              "v1": 0.97852
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_6",
+              "t0": 2094,
+              "t1": 2194,
+              "v0": 0.97852,
+              "v1": 0.98926
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffdc74",
+              "gain": 2.2,
+              "pulse": 0.22,
+              "kinetic": {
+                "bone": "Head",
+                "motion": "orbit",
+                "speed": -1.25,
+                "amp": 0.008,
+                "precess": 0.08,
+                "phase": 0.8,
+                "center_gl": [
+                  0.0,
+                  1.51719,
+                  0.02815
+                ],
+                "axis_gl": [
+                  0.23999,
+                  0.40998,
+                  0.87996
+                ]
+              },
+              "name": "ext3_f_neutrino_cherenkov_pmt_sensor_7",
+              "t0": 2194,
+              "t1": 2294,
+              "v0": 0.98926,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Head",
+              "offset": [
+                0.0,
+                0.1,
+                0.0
+              ],
+              "count": 24,
+              "rate": 0.44,
+              "size0": 0.06,
+              "size1": 0.195,
+              "drift": [
+                0.0,
+                0.32,
+                -0.08
+              ],
+              "spread": 0.05,
+              "opacity": 0.56,
+              "ember_color": "#52f8ff",
+              "core_color": "#051332",
+              "mist_color": "#2b78c8"
+            }
+          ]
+        },
+        "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//9wAAAMAwADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//+wAAAPAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
+        "hides": 6768,
+        "hide_by": "extraplanar_custom"
+      },
+      {
+        "id": "ext3_f_neutrino_shroud",
+        "name": "Neutrino Phantom Flavor-Phase Shroud & Detector Portal",
+        "slot": "torso",
+        "glb": "pieces/mpfb_female/ext3_f_neutrino_shroud.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_f_neutrino_shroud_phase_body",
+              "t0": 0,
+              "t1": 1440,
+              "v0": 0.0,
+              "v1": 0.24902
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_f_neutrino_shroud_phase_arms_sleeve_L",
+              "t0": 1440,
+              "t1": 1728,
+              "v0": 0.24902,
+              "v1": 0.41504
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.56,
+              "power": 2.05,
+              "rim_gain": 2.35,
+              "name": "ext3_f_neutrino_shroud_phase_arms_sleeve_R",
+              "t0": 1728,
+              "t1": 2016,
+              "v0": 0.41504,
+              "v1": 0.58105
+            },
+            {
+              "kind": "nebula_rift",
+              "core_color": "#eaffff",
+              "arm_color": "#38f6ff",
+              "nebula_color": "#1854ff",
+              "gold_color": "#ffd25a",
+              "void_color": "#010615",
+              "center_y": 1.223,
+              "galaxy_scale": 3.4,
+              "name": "ext3_f_neutrino_shroud_cherenkov_portal",
+              "t0": 2016,
+              "t1": 2456,
+              "v0": 0.58105,
+              "v1": 0.59863
+            }
+          ]
+        },
+        "tucks": true,
+        "hem": 0.0,
+        "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+        "hides": 24056,
+        "hide_by": "extraplanar_custom",
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly",
+          "Human.nipple",
+          "Human.fingernails",
+          "Human.toenails"
+        ]
+      },
+      {
+        "id": "ext3_f_neutrino_rings",
+        "name": "Neutrino Phantom Pulsing Rotating Light-Array Halo",
+        "slot": "back",
+        "glb": "pieces/mpfb_female/ext3_f_neutrino_rings.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "light_array",
+              "core_color": "#f0ffff",
+              "primary_color": "#38f6ff",
+              "secondary_color": "#2068ff",
+              "accent_color": "#b458ff",
+              "halo_scale": 0.72,
+              "spin": 1.0,
+              "z_offset": -0.2,
+              "gain": 1.95,
+              "kinetic": {
+                "bone": "Spine2",
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.26311,
+                  -0.06
+                ]
+              },
+              "name": "ext3_f_neutrino_rings_outer_light_array",
+              "t0": 0,
+              "t1": 18,
+              "v0": 0.0,
+              "v1": 0.5459
+            },
+            {
+              "kind": "light_array",
+              "core_color": "#ffffff",
+              "primary_color": "#5cfaff",
+              "secondary_color": "#4c44ff",
+              "accent_color": "#ffd86e",
+              "halo_scale": 0.5,
+              "spin": -1.38,
+              "z_offset": -0.24,
+              "gain": 1.75,
+              "kinetic": {
+                "bone": "Spine2",
+                "motion": "bob",
+                "speed": 1.6,
+                "amp": 0.008,
+                "phase": 0.0,
+                "center_gl": [
+                  0.0,
+                  1.26311,
+                  -0.06
+                ]
+              },
+              "name": "ext3_f_neutrino_rings_inner_light_array",
+              "t0": 18,
+              "t1": 36,
+              "v0": 0.5459,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Spine2",
+              "offset": [
+                0.0,
+                0.06,
+                -0.16
+              ],
+              "count": 30,
+              "rate": 0.36,
+              "size0": 0.09,
+              "size1": 0.29,
+              "drift": [
+                0.0,
+                0.44,
+                -0.1
+              ],
+              "spread": 0.07,
+              "opacity": 0.48,
+              "ember_color": "#3cf6ff",
+              "core_color": "#040e28",
+              "mist_color": "#3a62c8"
+            }
+          ]
+        }
+      },
+      {
+        "id": "ext3_f_neutrino_traces",
+        "name": "Neutrino Phantom Helical Track Forearms & Phase-Talons",
+        "slot": "gloves",
+        "glb": "pieces/mpfb_female/ext3_f_neutrino_traces.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_cuff_L",
+              "t0": 0,
+              "t1": 240,
+              "v0": 0.0,
+              "v1": 0.12207
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_palm_L",
+              "t0": 240,
+              "t1": 440,
+              "v0": 0.12207,
+              "v1": 0.16504
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_L_Thumb",
+              "t0": 440,
+              "t1": 560,
+              "v0": 0.16504,
+              "v1": 0.2041
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_L_Index",
+              "t0": 560,
+              "t1": 680,
+              "v0": 0.2041,
+              "v1": 0.24023
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_L_Middle",
+              "t0": 680,
+              "t1": 800,
+              "v0": 0.24023,
+              "v1": 0.27637
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_L_Ring",
+              "t0": 800,
+              "t1": 920,
+              "v0": 0.27637,
+              "v1": 0.3125
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_L_Pinky",
+              "t0": 920,
+              "t1": 1040,
+              "v0": 0.3125,
+              "v1": 0.34863
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_cuff_R",
+              "t0": 1040,
+              "t1": 1280,
+              "v0": 0.34863,
+              "v1": 0.4707
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_palm_R",
+              "t0": 1280,
+              "t1": 1480,
+              "v0": 0.4707,
+              "v1": 0.51367
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_R_Thumb",
+              "t0": 1480,
+              "t1": 1600,
+              "v0": 0.51367,
+              "v1": 0.55273
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_R_Index",
+              "t0": 1600,
+              "t1": 1720,
+              "v0": 0.55273,
+              "v1": 0.58887
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_R_Middle",
+              "t0": 1720,
+              "t1": 1840,
+              "v0": 0.58887,
+              "v1": 0.625
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_R_Ring",
+              "t0": 1840,
+              "t1": 1960,
+              "v0": 0.625,
+              "v1": 0.66113
+            },
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.62,
+              "power": 2.05,
+              "rim_gain": 2.45,
+              "name": "ext3_f_neutrino_traces_finger_R_Pinky",
+              "t0": 1960,
+              "t1": 2080,
+              "v0": 0.66113,
+              "v1": 0.69727
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cf8ff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_f_neutrino_traces_helix_Left_0",
+              "t0": 2320,
+              "t1": 2500,
+              "v0": 0.7998,
+              "v1": 0.81738
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#a85cff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_f_neutrino_traces_helix_Left_1",
+              "t0": 2500,
+              "t1": 2680,
+              "v0": 0.81738,
+              "v1": 0.83496
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Left_Index",
+              "t0": 2680,
+              "t1": 2704,
+              "v0": 0.83496,
+              "v1": 0.83887
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Left_Middle",
+              "t0": 2704,
+              "t1": 2728,
+              "v0": 0.83887,
+              "v1": 0.84277
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Left_Ring",
+              "t0": 2728,
+              "t1": 2752,
+              "v0": 0.84277,
+              "v1": 0.84668
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Left_Pinky",
+              "t0": 2752,
+              "t1": 2776,
+              "v0": 0.84668,
+              "v1": 0.85059
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Left_Thumb",
+              "t0": 2776,
+              "t1": 2800,
+              "v0": 0.85059,
+              "v1": 0.85449
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cf8ff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_f_neutrino_traces_helix_Right_0",
+              "t0": 3040,
+              "t1": 3220,
+              "v0": 0.95703,
+              "v1": 0.97461
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#a85cff",
+              "gain": 2.25,
+              "pulse": 0.25,
+              "name": "ext3_f_neutrino_traces_helix_Right_1",
+              "t0": 3220,
+              "t1": 3400,
+              "v0": 0.97461,
+              "v1": 0.99219
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Right_Index",
+              "t0": 3400,
+              "t1": 3424,
+              "v0": 0.99219,
+              "v1": 0.99609
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Right_Middle",
+              "t0": 3424,
+              "t1": 3448,
+              "v0": 0.99609,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Right_Ring",
+              "t0": 3448,
+              "t1": 3472,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Right_Pinky",
+              "t0": 3472,
+              "t1": 3496,
+              "v0": 0.99902,
+              "v1": 1.0
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#6cfbff",
+              "gain": 2.2,
+              "pulse": 0.18,
+              "name": "ext3_f_neutrino_traces_talon_Right_Thumb",
+              "t0": 3496,
+              "t1": 3520,
+              "v0": 0.99902,
+              "v1": 1.0
+            }
+          ]
+        },
+        "hide_parts": [
+          "Human.fingernails"
+        ],
+        "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwABwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/DwDP8fA88wPPMz8Pz/w8/M8zf8///H//////////////////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAMD///////////////////////////////////8AAAAAA/////////f//9z//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zAPAsD88zP/A88/PwzM/D/zzz+/zP//v/////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAAP///////////////////////////////////wMAAAAM/P//////7///s///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "hides": 7324,
+        "hide_by": "rays"
+      },
+      {
+        "id": "ext3_f_neutrino_wake",
+        "name": "Neutrino Phantom Cherenkov Ionization-Wake Tail",
+        "slot": "legs",
+        "glb": "pieces/mpfb_female/ext3_f_neutrino_wake.glb",
+        "culture": "extraplanar",
+        "allow_floating": true,
+        "vfx": {
+          "zones": [
+            {
+              "kind": "neutrino_phase",
+              "core_color": "#061538",
+              "cherenkov_color": "#38f6ff",
+              "muon_color": "#2068ff",
+              "tau_color": "#b04cff",
+              "opacity": 0.52,
+              "power": 2.05,
+              "rim_gain": 2.3,
+              "name": "ext3_f_neutrino_wake_phase_wake",
+              "t0": 512,
+              "t1": 1652,
+              "v0": 0.29004,
+              "v1": 0.56152
+            },
+            {
+              "kind": "alpha_erosion",
+              "no_push": true,
+              "y_top": 0.88,
+              "y_bot": 0.06,
+              "edge_color": "#3cf6ff",
+              "smoke_color": "#071b46",
+              "swirl": 1.65,
+              "name": "ext3_f_neutrino_wake_erosion_wake",
+              "t0": 1652,
+              "t1": 2792,
+              "v0": 0.56152,
+              "v1": 0.83496
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cfaff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_f_neutrino_wake_decay_track_0",
+              "t0": 2792,
+              "t1": 2972,
+              "v0": 0.83496,
+              "v1": 0.86719
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#2c78ff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_f_neutrino_wake_decay_track_1",
+              "t0": 2972,
+              "t1": 3152,
+              "v0": 0.86719,
+              "v1": 0.90039
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#b458ff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_f_neutrino_wake_decay_track_2",
+              "t0": 3152,
+              "t1": 3332,
+              "v0": 0.90039,
+              "v1": 0.93359
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#4cfaff",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_f_neutrino_wake_decay_track_3",
+              "t0": 3332,
+              "t1": 3512,
+              "v0": 0.93359,
+              "v1": 0.9668
+            },
+            {
+              "kind": "emissive_blaze",
+              "color": "#ffd86e",
+              "gain": 2.15,
+              "pulse": 0.22,
+              "name": "ext3_f_neutrino_wake_decay_track_4",
+              "t0": 3512,
+              "t1": 3692,
+              "v0": 0.9668,
+              "v1": 1.0
+            }
+          ],
+          "emitters": [
+            {
+              "bone": "Hips",
+              "offset": [
+                0.0,
+                -0.58,
+                -0.05
+              ],
+              "count": 28,
+              "rate": 0.42,
+              "size0": 0.085,
+              "size1": 0.265,
+              "drift": [
+                0.0,
+                0.36,
+                -0.06
+              ],
+              "spread": 0.068,
+              "opacity": 0.56,
+              "ember_color": "#38f6ff",
+              "core_color": "#04102c",
+              "mist_color": "#2064d8"
+            }
+          ]
+        },
+        "loose": true,
+        "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+        "hides": 24056,
+        "hide_by": "extraplanar_custom",
+        "hide_parts": [
+          "Human.lips",
+          "Human.ears",
+          "Human.eyebrow001",
+          "Human.eyebrow002",
+          "Human.eyelashes01",
+          "Human.eyelashes02",
+          "Human.low-poly",
+          "Human.nipple",
+          "Human.fingernails",
+          "Human.toenails"
+        ]
+      }
+    ]
+  },
+  "tier": [
+    "neutrino_phantom",
+    0.0667
+  ],
+  "tier_label": "Neutrino Phantom (Cherenkov Shock-Cone, PMT Array & Quantum Phase-Wake)",
+  "outfits": {
+    "male": {
+      "neutrino_phantom": {
+        "head": "ext3_m_neutrino_cherenkov",
+        "torso": "ext3_m_neutrino_shroud",
+        "back": "ext3_m_neutrino_rings",
+        "gloves": "ext3_m_neutrino_traces",
+        "legs": "ext3_m_neutrino_wake",
+        "feet": null,
+        "hair": null,
+        "beard": null
+      }
+    },
+    "female": {
+      "neutrino_phantom": {
+        "head": "ext3_f_neutrino_cherenkov",
+        "torso": "ext3_f_neutrino_shroud",
+        "back": "ext3_f_neutrino_rings",
+        "gloves": "ext3_f_neutrino_traces",
+        "legs": "ext3_f_neutrino_wake",
+        "feet": null,
+        "hair": null,
+        "beard": null
+      }
+    }
+  }
+}

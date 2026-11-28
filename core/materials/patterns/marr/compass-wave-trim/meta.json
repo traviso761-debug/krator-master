@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2037,
+    2010
+   ],
+   "seam_after": [
+    1.251,
+    1.348
+   ],
+   "seam_before": [
+    1.174,
+    1.27
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.56,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "marr/compass-wave-trim",
+  "metal": 0.1,
+  "pattern": true,
+  "roughness": 0.56,
+  "scale": [
+   0.3,
+   0.3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "porta_marr_galloon_2048.png",
+  "generator": "Codex image generation, Nov 2026 (porta_marr_galloon_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Porta Marr maritime Roman galloon embroidery on salt-weathered deep sea-navy wool (#1d2c3f): three horizontal registers framed by twisted metallic brass cable-rope borders (#c49a45), embroidered with 16-point brass navigator compass-roses alternating with Imperial Sun-Orange (#e07a2a) sun-anchors and sea-verdigris (#3b7a6c) scrolling Vitruvian waves accented in crimson (#9e2a2b); four compass-and-anchor repeats across and three bands down, no motif cut by the seams. Full colour.",
+  "sha1": "b959e46afa9b1d5bcf00c600eb1b4f6a32876405"
+ }
+}

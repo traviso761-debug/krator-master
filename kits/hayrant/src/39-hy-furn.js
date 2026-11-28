@@ -9,9 +9,9 @@
   basalt:0x3a3e44,basaltDark:0x282b30,loess:0xc6ae82,lime:0xe8e0ce,
   larch:0x8a4e34,larchDark:0x563020,tarwood:0x2b2521,willowWhite:0xede6d4,
   nephrite:0x287e58,jadeBright:0x38a272,celadon:0x88b49c,kaenTerra:0xb65a36,porcelain:0xeeeae2,
-  whalebone:0xe8e1cf,bronze:0x9c7a3c,gold:0xd8b24a,iron:0x3c3834,
+  whalebone:0xe8e1cf,bronze:0x9c7a3c,gold:0xd8b24a,iron:0x3c3834,titanium:0x9aa1a8,
   plaidRed:0x94322a,plaidDark:0x2a2426,yakFur:0x584638,hempRope:0xb69862,nitreWhite:0xe6e4dc,
-  emberGlow:0xff7224,lampGlow:0xffbe62
+  mazeGold:0xd8b24a,mazeCyan:0x48dce8,cyberCyan:0x4ef6ff,emberGlow:0xff7224,lampGlow:0xffbe62
  };
  KF.FPAL['hayrant']=Object.assign(KF.FPAL['hayrant']||{},PAL);
  function hyDefFurn(o){
@@ -210,5 +210,74 @@
    for(const sx of [-.62,.62])F.box(sx,.76,-.3,.085,.64,.085,0,F.col('larch'),'wood');
    F.box(0,1.4,-.3,1.38,.07,.09,0,F.col('larchDark'),'wood');
    F.rod(-.48,.94,0,.48,.94,0,.009,F.col('bronze'),'bronze');
+  }});
+
+ /* 13. Indoor cyber-syncretic 2-head ancestor house-post (Sutar-Pira): circuit-maze collar, celadon pin-insulators & cyan status diode */
+ hyDefFurn({key:'hayrant_head_totem_post',name:'Cyber-Syncretic Two-Head Ancestor Totem Post',type:'shrine',tier:'court',
+  setting:'both',rooms:['hall','shrine','office','parlour','tavern','workshop'],variants:2,variantNames:['bronze-celadon','nephrite-kaen'],
+  w:0.74,d:0.64,h:2.24,materials:['stone','timber','bronze','ceramic','jade','cloth','emissive'],task:['praying'],
+  build(F){
+   const mHead1=F.variant===0?F.col('bronze'):F.col('nephrite');
+   const mFam1=F.variant===0?'bronze':'jade';
+   const mHead2=F.variant===0?F.col('celadon'):F.col('kaenTerra');
+   const mFam2=F.variant===0?'ceramic':'clay';
+   /* Octagonal basalt plinth, salvaged arcology busbar collar & circuit-maze ring (f_cloth = cloth.damask.maze) */
+   F.cyl(0,0,0,.30,.12,0,F.col('basaltDark'),'stone');
+   F.cyl(0,.12,0,.24,.11,0,F.col('titanium'),'pewter');
+   F.cyl(0,.23,0,.20,.09,0,F.col('mazeGold'),'cloth');
+   /* Tarwood core shaft & dorsal bronze power conduit */
+   F.cyl(0,.32,0,.145,1.66,0,F.col('tarwood'),'wood');
+   F.rod(0,.23,-.18,0,1.98,-.18,.022,F.col('bronze'),'bronze');
+   /* Lower circuit-maze wing-boards & cyber-wired closed-eye ancestor head */
+   for(const sx of [-.27,.27]){
+    F.box(sx,.54,0,.22,.28,.030,0,F.col('tarwood'),'wood');
+    F.box(sx,.57,.028,.15,.18,.014,0,F.col('mazeGold'),'cloth');
+    F.box(sx,.64,.044,.10,.024,.010,0,F.col('cyberCyan'),'glow');
+   }
+   F.box(0,.42,.08,.24,.44,.22,0,mHead1,mFam1);
+   F.box(0,.64,.205,.18,.026,.020,0,F.col('tarwood'),'wood');
+   F.box(0,.74,.205,.065,.028,.018,0,F.col('cyberCyan'),'glow');
+   for(const sx of [-.145,.145])F.cyl(sx,.66,.08,.026,.04,0,F.col('gold'),'gold');
+   /* High-voltage celadon & porcelain pin-insulator crossarm collar */
+   F.cyl(0,.92,0,.19,.07,0,F.col('celadon'),'ceramic');
+   F.box(0,.99,-.02,.62,.055,.085,0,F.col('bronze'),'bronze');
+   for(const sx of [-.24,.24]){
+    F.cyl(sx,1.045,-.02,.058,.055,0,F.col('celadon'),'ceramic');
+    F.cyl(sx,1.10,-.02,.042,.045,0,F.col('porcelain'),'ceramic');
+    F.cyl(sx,1.145,-.02,.052,.040,0,F.col('celadon'),'ceramic');
+   }
+   /* Upper circuit-maze wing-boards & second closed-eye ancestor head */
+   for(const sx of [-.26,.26]){
+    F.box(sx,1.34,0,.20,.26,.030,0,F.col('tarwood'),'wood');
+    F.box(sx,1.37,.028,.13,.15,.014,0,F.col('mazeCyan'),'cloth');
+   }
+   F.box(0,1.20,.08,.22,.42,.21,0,mHead2,mFam2);
+   F.box(0,1.41,.20,.16,.026,.020,0,F.col('tarwood'),'wood');
+   F.box(0,1.50,.20,.058,.026,.016,0,F.col('cyberCyan'),'glow');
+   /* Crown bronze Faraday collar, glowing cyan status arc-core & celadon cap */
+   F.cyl(0,1.98,0,.19,.07,0,F.col('bronze'),'bronze');
+   F.cyl(0,2.05,0,.12,.12,0,F.col('cyberCyan'),'glow');
+   F.cyl(0,2.17,0,.17,.07,0,F.col('celadon'),'ceramic');
+   F.lamp(0,2.11,.06,.95,7);
+  }});
+
+ /* 14. Steamed kerf-bent fur-larch clan chest inlaid with sleeping-eye madder/tarwood formlines & nephrite studs */
+ hyDefFurn({key:'hayrant_formline_chest',name:'Kerf-Bent Fur-Larch Formline Clan Chest',type:'chest',tier:'common',
+  setting:'indoor',rooms:['bedroom','hall','storage','parlour','office'],variants:2,variantNames:['madder-nephrite','celadon-bronze'],
+  w:1.22,d:0.62,h:0.68,materials:['timber','cloth','jade','bronze'],task:['storage'],
+  build(F){
+   for(const sx of [-.48,.48])F.box(sx,0,0,.12,.08,.54,0,F.col('tarwood'),'wood');
+   F.box(0,.08,0,1.12,.46,.54,0,F.col('larch'),'wood');
+   F.box(0,.54,0,1.18,.11,.58,0,F.col('larchDark'),'wood');
+   F.box(0,.16,.284,.88,.3,.016,0,F.col('tarwood'),'wood');
+   for(const sx of [-.23,.23]){
+    F.box(sx,.21,.304,.28,.2,.016,0,F.col('plaidRed'),'cloth');
+    F.box(sx,.24,.324,.18,.12,.014,0,F.variant===0?F.col('nephrite'):F.col('celadon'),F.variant===0?'jade':'ceramic');
+    F.box(sx,.28,.342,.12,.024,.012,0,F.col('bronze'),'bronze');
+   }
+   F.box(0,.47,.304,.11,.12,.022,0,F.col('bronze'),'bronze');
+   for(const sx of [-.48,.48])for(const sy of [.15,.44]){
+    F.box(sx,sy,.286,.055,.055,.018,0,F.col('jadeBright'),'jade');
+   }
   }});
 })();

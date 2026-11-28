@@ -1,0 +1,25 @@
+{
+ "id": "glasssheet",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Ricochet Peaks — Glass-Pan Impact-Melt Floor & Meteoric Nickel Creek",
+ "out": "ricochetpeaks-glasssheet.html",
+ "px": [1158, 1522],
+ "sky": [886, 1192],
+ "elevM": 3580.0,
+ "pAtm": 1.02,
+ "koppen": "Dfc",
+ "rainMmYr": 610,
+ "strataStack": "obsidian-pancake+secondary-ejecta",
+ "reserves": [
+  { "id": "site:yuni-glass-claim", "x": -88, "z": -108, "r": 32 }
+ ],
+ "modes": ["Day", "Ring-Shadow Dusk", "Winter Snow"],
+ "families": [
+  "ground.suevite", "ground.cladonia", "ground.duff",
+  "bark.spruce", "spruce", "bark.larch", "larch", "larchgold", "bark.pine", "pine", "bark.birch", "birch", "wood.log",
+  "heather", "sedge", "moss",
+  "rock.suevite", "stone.tagamite", "stone.sinter",
+  "ore.iron", "ore.nickel", "ore.gold", "ore.quartz",
+  "earth.yuni", "mosaic.yuni", "roof.shingle"
+ ]
+}

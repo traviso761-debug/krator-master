@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1175,
+    1247
+   ],
+   "seam_after": [
+    0.404,
+    0.728
+   ],
+   "seam_before": [
+    2.858,
+    1.451
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.26,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "shumari/urushi-crimson-lamellar",
+  "metal": 0.05,
+  "pattern": true,
+  "roughness": 0.26,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__shumari__urushi-crimson-lamellar.png",
+  "generator": "Codex image generation, Nov 2026 (exec-eb1675ba-6b1c-4746-8d8f-b5d8340fd2f6.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Shumari Mamluk-Samurai lamellar armour: five overlapping horizontal courses of notched-top rectangular steel lames (twelve lames per row) coated in glossy cave-madder crimson urushi and birch-tar lacquer (#8e2224 shading to #4a1012) alternating every fourth row with dark basalt-blued steel lames (#32353c), densely laced in V-cross patterns with basalt-black wool cord (#1e2024) and burnished bronze-gold (#b8861b) edge-studs, seamless across all edges. Full colour.",
+  "sha1": "83854d6af9660e9b5495f062df683b0b00363543"
+ }
+}

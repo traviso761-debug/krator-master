@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1706,
+    2037
+   ],
+   "seam_after": [
+    0.603,
+    0.074
+   ],
+   "seam_before": [
+    0.707,
+    0.498
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": true,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "screamers/dot-skull-hardwood",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.72,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "screamer-hexahedron-armor-2048.png",
+  "generator": "Codex image generation, Nov 2026 (screamer-hexahedron-armor-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Screamer Hexahedron lashed jungle-ironwood slat armour painted in Amazonian-Melanesian pointillist skull war-paint: twelve vertical dark mahogany-ironwood slats (#3a261a, #241810) bound horizontally with twisted blue nylon paracord (#2268a8) and liana vine, finger-dotted in chalky white kaolin (#ece8de) and urucum blood-red (#bc2020) pointillist dot-matrices forming three grinning stylized skulls alternating with double-pyramid Hexahedron diamonds across, zero text, skulls whole inside seams. Full colour.",
+  "sha1": "da11ce0bafd51526feae25459d1b19cb879cb3ec"
+ }
+}

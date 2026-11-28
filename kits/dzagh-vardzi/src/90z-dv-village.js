@@ -73,9 +73,11 @@ const DV_FLUME_VILLAGE=(function(){
   {key:'dv-flume-forge',       x: -2.2,y: 0.15,z:  0.0,ry:0,    pad:[9.2,7.6]},
   {key:'dv-market-confluence', x:-24.5,y: 3.20,z: 13.5,ry:0,    pad:[9.0,7.8]},
   {key:'dv-sawmill-jade',      x:  0.1,y: 1.45,z: 16.0,ry:0,    pad:[8.0,6.4]},
+  {key:'dv-hall-troubadour',   x: 23.5,y: 3.20,z: 16.5,ry:-PI/2,pad:[7.6,8.6]},
   {key:'dv-customs-bridgehead',x:-10.5,y: 2.85,z: 32.5,ry:0,    pad:[6.8,6.0]},
   {key:'dv-joiner-cypress',    x: 22.5,y: 2.85,z: 42.0,ry:-PI/2,pad:[6.4,7.8]},
-  {key:'dv-bridge-duel',       x:-28.5,y: 2.85,z: 35.0,ry:0,    pad:null}
+  {key:'dv-bridge-duel',       x:-28.5,y: 2.85,z: 35.0,ry:0,    pad:null},
+  {key:'dv-organ-beacon',      x:-11.8,y: 2.85,z: 46.2,ry:PI,   pad:null}
  ];
 
  const INFRA_PLAN=[

@@ -1,7 +1,4 @@
 <title>Cosmetic Lab</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: the figure stands in a lamp-lit tent filling the page; a ledger of slots and sliders runs down the right
    (below the figure on a phone). Moss and ochre from the Beast Rider village; numbers set in mono like a tailor's chit. */
@@ -75,8 +72,10 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px
 .dye input[type=color] { width: 30px; height: 22px; padding: 0; border: 1px solid var(--line); border-radius: 4px; background: none; }
 .dye button { padding: 4px 8px; font-size: 12px; }
 .chips.tags { display: flex; flex-wrap: wrap; gap: 5px; }
-.chips.tags .chip { width: auto; padding: 5px 9px; }
-.chips.tags .chip span { padding: 0; white-space: nowrap; }
+.chips.tags .chip { width: auto; max-width: 100%; padding: 5px 9px; }
+.chips.tags .chip span { padding: 0; white-space: normal; line-height: 1.25; }
+.chips.tags .chip small { color: var(--muted); font-weight: 400; font-size: 11px; }
+.chips.tags .chip[aria-pressed="true"] small { color: inherit; opacity: 0.85; }
 .swatches { flex-wrap: wrap; gap: 5px; }
 .swatches .sw { width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid var(--line); }
 .page > h3 { margin: 14px 0 4px; font-size: 13px; }
@@ -185,5 +184,3 @@ code { font: 12px var(--mono); }
     </section>
   </aside>
 </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>

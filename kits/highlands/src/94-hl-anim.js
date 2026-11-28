@@ -1,6 +1,7 @@
 // ---------------------------------------------------------------- animation: orreries turn, clocks keep time (round 5)
 // Runs after the scene is built. HLANIM (77b) lists groups that turn at w rad/s about their local z (or y);
 // HLCLOCKS (88) lists every clock face in world space.
+if(typeof globalThis.HLANIM==='undefined')globalThis.HLANIM=[];
 const HLHANDS=(function(){const n=HLCLOCKS.length;if(!n)return null;const geo=new THREE.BoxGeometry(1,1,1).translate(0,.5,0),mat=new THREE.MeshStandardMaterial({color:0x1c1a1c,roughness:.5,metalness:.3});
  const hr=new THREE.InstancedMesh(geo,mat,n),mn=new THREE.InstancedMesh(geo,mat,n);hr.frustumCulled=mn.frustumCulled=false;hr.userData.probeSkip=mn.userData.probeSkip=true;scene.add(hr);scene.add(mn);
  return{hr,mn};})();

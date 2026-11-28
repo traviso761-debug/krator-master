@@ -143,9 +143,9 @@ function hnGalleryFace(x,y,z,ry,w,h,dep,kind){const F=hlFrameOf();const nb=Math.
  {const a=P(-w/2,dep-.16),b=P(w/2,dep-.16);rail(a,b,ry,w);for(const s of[-1,1]){const a2=P(s*(w/2-.08),.1),b2=P(s*(w/2-.08),dep-.16);rail(a2,b2,ry+Math.PI/2,dep-.26);}}}
 // ---------------------------------------------------------------- the four overrides
 HLWINS.add('vWinClear');HLWINS.add('vDoorLeaf');HLWINS.add('hArchGlass');   // the real glass and leaves (71c) are windows to the bracket rows too
-const _hlFachFace0=hnFachFace,_hlFachBox0=hnFachBox,_hlVnWin0=vnWin,_hlNal0=hnNal,_hlShut0=hnRAShutters;
+const _hlFachFace0=hnFachFace,_hlFachBox0=hnFachBox,_hlVnWin0=vnWin,_hlNal0=hnNal,_hlShut0=typeof hnRAShutters==='function'?hnRAShutters:null;
 // swinging European shutters go: a lattice window closes with its own inner panels
-hnRAShutters=function(){if(!hlFrameOn())return _hlShut0.apply(null,arguments);};
+if(_hlShut0)hnRAShutters=function(){if(!hlFrameOn())return _hlShut0.apply(null,arguments);};
 hnFachFace=function(x,y,z,ry,w,h,c,wins,kind,winC){if(!hlFrameOn())return _hlFachFace0(x,y,z,ry,w,h,c,wins,kind,winC);return hnFrameFace(x,y,z,ry,w,h,c,wins,kind,winC);};
 hnFachBox=function(x,y,z,w,h,d,ry,wallC,beamC,kind){if(!hlFrameOn())return _hlFachBox0(x,y,z,w,h,d,ry,wallC,beamC,kind);const F=hlFrameOf();
  vB('hPlankB',x,y,z,w-.1,h,d-.1,ry,F.plank.clone().multiplyScalar(.8));                               // the closed core behind the frame
@@ -198,7 +198,7 @@ function hlLift(st,x,y,z,w,d,ry,pitch,over,kind,rise){const C=VERN.cur;const s=s
  C.liftOff=true;vB('hPlankB',st.x,st.top,st.z,st.w-.14,L+.05,st.d-.14,st.ry,hlFrameOf().plank.clone().multiplyScalar(.65));C.liftOff=false;   // the frieze behind the sets
  const ov=over===undefined?.9:over;const r={x,z,y0:y,L,ry,kind,w,d,rise,over:ov};(C.froofs||(C.froofs=[])).push(r);(C.lifts||(C.lifts=[])).push(r);return r;}
 const HHIPOF={hGableSc:'hHipSc',hGableTurf:'hHipTurf',vGableS:'vHipS',vGableT:'vHipT',vGableCu:'vHipCu',vGableC:'vHipC'};
-const _hlGable0=vnGableRoof,_hlHip0=vnHipRoof,_hlBarge0=hnBarge,_hlTower0=hnTower,_hlClock0=hnRBClockTower;
+const _hlGable0=vnGableRoof,_hlHip0=vnHipRoof,_hlBarge0=hnBarge,_hlTower0=hnTower,_hlClock0=typeof hnRBClockTower==='function'?hnRBClockTower:null;
 vnGableRoof=function(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick){const st=hlRoofOn(x,y,z,w,d,ry);
  if(!st)return _hlGable0(x,y,z,w,d,rise,ry,slabItem,slabC,over,endItem,endC,thick);
  const F=hlFrameOf();const dutch=w>=5&&rng()<F.dutch;const r=hlLift(st,x,y,z,w,d,ry||0,rise/(d/2),over,dutch?'dutch':'gable',rise);
@@ -218,7 +218,7 @@ hnBarge=function(x,y,z,w,d,rise,ry,over,c,style,endOver){const C=VERN.cur;const 
  const v=r.kind==='dutch'?_hlBarge0(x,y+r.L+rise*.48,z,w*.62,d*.52,rise*.52,ry,.28,c,style,endOver):_hlBarge0(x,y+r.L,z,w,d,rise,ry,over,c,style,endOver);C.liftOff=o;return v;};
 // towers and clock towers rise THROUGH roofs: nothing of theirs rides a lift
 function hlNoLift(f){return function(){const C=VERN.cur;const o=C&&C.liftOff;if(C)C.liftOff=true;try{return f.apply(null,arguments);}finally{if(C)C.liftOff=o;}};}
-hnTower=hlNoLift(_hlTower0);hnRBClockTower=hlNoLift(_hlClock0);
+hnTower=hlNoLift(_hlTower0);if(_hlClock0)hnRBClockTower=hlNoLift(_hlClock0);
 // the storeys' bracket sets and eave beams, once the roofs are known
 function hlFrameFlush(){const C=VERN.cur;if(!C||!C.fdg)return;C.liftOff=true;
  const roofAt=(x,z,top)=>(C.froofs||[]).find(r=>Math.abs(r.y0-top)<.35&&hlInRect(x,z,r,1.2,1.2));

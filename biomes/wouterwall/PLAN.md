@@ -262,8 +262,7 @@ list reflects.
 
 ## 5. People
 
-- **The Hayrant** (the Eternal State's Outer Wall subjects). `LORE.md` §6.19 gives the State five or six dialects. The
-  **Outer Wall** dialect came to sound like Ainu (the owner, 2026-10-23); the name *Hayrant* is *proposed* there.
+- **The Hayrant** (the Eternal State's Outer Wall subjects; `LORE.md` §6.19, §6.25; `kits/hayrant`). Conquered eastern branch of the **`Utari-Kuran`** complex descended from the destroyed arcology **`Kanopi`** in the **Veiled Mountains**: their Ainu-like speech is mutually intelligible with both the coastal `Hueru-Kuran` (`Crookshore`) and the unconquered, raiding `Timpar-Kuran` who stayed in the Veiled Mountains.
   - *Proposed* here: they live in **cave houses cut into the loess**, as China's *yaodong*: vaulted rooms dug into a gully
     wall, or sunk round a courtyard pit.
   - They farm the terraces and keep the spring line.

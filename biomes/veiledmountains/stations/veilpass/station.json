@@ -1,0 +1,17 @@
+{
+ "id": "veilpass",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Veiled Mountains — Upper Veilpass U-Trough & the White Col",
+ "out": "veiledmountains-veilpass.html",
+ "px": [278, 842],
+ "sky": [6, 512],
+ "elevM": 3520.0,
+ "pAtm": 1.05,
+ "koppen": "Dfc",
+ "rainMmYr": 2680,
+ "strataStack": "megabreccia",
+ "reserves": [
+  {"id": "site:timpar-kuran-veilpass-ambush", "x": -118, "z": -52, "r": 40}
+ ],
+ "modes": ["Veil", "Sun-Break", "Deep Veil"]
+}

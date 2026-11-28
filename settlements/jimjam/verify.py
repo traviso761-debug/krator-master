@@ -102,7 +102,86 @@ const R=[];
 return R;}"""
 
 
+CITY_ASSERT_JS = r"""() => {
+  const A = window._api;
+  if (!A || !A.hostChecks) return [{name: 'hostChecks', ok: false, detail: 'missing _api.hostChecks'}];
+  const R = [];
+  for (const c of A.hostChecks()) R.push(c);
+  for (const n of (A.hostNegatives ? A.hostNegatives() : [])) {
+    R.push({name: 'negative: ' + n.name, ok: !!n.ok, detail: n.ok ? 'fails as it should' : 'did not fail'});
+  }
+  return R;
+}"""
+
+
+async def run_city(a):
+    here = os.path.dirname(os.path.abspath(__file__))
+    os.makedirs(a.out, exist_ok=True)
+    async with verify_page(a.html, here=here, size=a.size, settle_ms=800, checks=_harness.SURVEY) as V:
+        pg, fails = V.page, V.fails
+        try:
+            await pg.wait_for_function("(window._texPending || 0) === 0", timeout=120000)
+        except Exception:
+            fails.append("textures still decoding after 120 s")
+        await pg.wait_for_timeout(250)
+
+        panel = await pg.evaluate("() => { const e = document.getElementById('errs'); return e ? e.textContent.trim() : ''; }")
+        print("ERROR PANEL:", repr(panel) if panel else "clean", flush=True)
+        if panel:
+            fails.append("error panel not clean")
+        for err in V.errs[:8]:
+            print("PAGE ERROR:", err, flush=True)
+
+        info = await pg.evaluate("() => window._api && window._api.jimjam ? window._api.jimjam() : null")
+        print("jimjam:", json.dumps(info), flush=True)
+
+        if a.assert_:
+            print("\n--- city host invariants ---", flush=True)
+            checks = (await pg.evaluate(CITY_ASSERT_JS)) + [_voth_trades()]
+            for c in checks:
+                tag = "  PASS  " if c.get("ok") else "  FAIL  "
+                det = str(c.get("detail") or "")
+                print(tag + c["name"] + (" : " + det[:400] if det else ""), flush=True)
+                if not c.get("ok"):
+                    fails.append(c["name"])
+
+        for ev in (a.eval or []):
+            try:
+                print("eval:", json.dumps(await pg.evaluate(ev), indent=2)[:6000], flush=True)
+            except Exception as e:
+                print("eval failed:", str(e)[:400], flush=True)
+
+        has_api = await pg.evaluate("() => !!(window._api && window._api.go)")
+        if has_api:
+            for i, c in enumerate(a.cam or []):
+                vals = [float(t) for t in c.split(",")]
+                await pg.evaluate("(v) => window._api.setView(...v)", vals)
+                await pg.wait_for_timeout(300)
+                fn = os.path.join(a.out, "%s%d.png" % (a.cam_name, i))
+                await V.shot(fn)
+                print("shot", fn.replace(os.sep, "/"), flush=True)
+
+            known = await pg.evaluate("() => window._api ? window._api.views() : []")
+            views = known if a.all_views else parse_views(a.views, known)
+            for vn in views:
+                await pg.evaluate("(v) => window._api.go(v)", vn)
+                await pg.wait_for_timeout(350)
+                slug = "".join(ch if ch.isalnum() else "_" for ch in vn).strip("_")
+                fn = os.path.join(a.out, "%s.png" % slug)
+                await V.shot(fn, view=vn)
+                print("shot", fn.replace(os.sep, "/"), flush=True)
+
+        if V.samples:
+            print("\n--- view render samples (calls, tris) ---", flush=True)
+            for name, calls, tris in V.samples:
+                print("  %-40s calls=%s  tris=%s" % (name, calls, tris), flush=True)
+
+    return V.exit()
+
+
 async def run(a):
+    if not os.path.basename(a.html).endswith("-kit.html"):
+        return await run_city(a)
     from playwright.async_api import async_playwright
     here = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(a.out, exist_ok=True)
@@ -154,7 +233,8 @@ async def run(a):
                          "   OVER" if v["over"] else ""))
 
         if a.baseline and os.path.exists(a.baseline):
-            base = json.load(open(a.baseline))
+            with open(a.baseline, encoding="utf-8") as bf:
+                base = json.load(bf)
             print("\n--- delta vs %s ---" % os.path.basename(a.baseline))
             shown = 0
             for k in sorted(set(counters) | set(base.get("counters", {}))):
@@ -226,8 +306,9 @@ async def run(a):
                 print("eval failed:", str(e)[:400])
 
         if a.save_baseline:
-            json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
-                      open(a.save_baseline, "w"), indent=1, sort_keys=True)
+            with open(a.save_baseline, "w", encoding="utf-8", newline="\n") as sf:
+                json.dump({"counters": counters, "tris": st["tris"], "calls": st["calls"]},
+                          sf, indent=1, sort_keys=True)
             print("baseline written:", a.save_baseline)
     return V.exit()
 
@@ -247,4 +328,5 @@ if __name__ == "__main__":
     ap.add_argument("--cam-name", default="cam")
     ap.add_argument("--eval", action="append", help="JS arrow function source to evaluate (repeatable)")
     ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--no-cache", action="store_true")
     sys.exit(asyncio.run(run(ap.parse_args())))

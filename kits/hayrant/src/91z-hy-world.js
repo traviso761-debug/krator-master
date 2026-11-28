@@ -140,15 +140,21 @@
 
  function hyOreLinks(){
   const nodes=REG.filter(r=>r.kind==='res-node').map(r=>({id:r.tid||r.key,key:r.key,kind:r.tags.rock,grade:r.tags.level,x:r.x,z:r.z}));
-  const mines=REG.filter(r=>!r.parent&&resWorksOf(r)).map(r=>({id:r.tid||r.key,key:r.key,works:resWorksOf(r),x:r.x,z:r.z}));
-  return {nodes,mines:mines.map(m=>Object.assign({},m,{source:resSource(m,nodes)}))};
+  const mines=REG.filter(r=>!r.parent&&resWorksOf(r)).map(r=>{
+   const d=DEFS[r.key];
+   return {id:r.tid||r.key,key:r.key,works:resWorksOf(r),resSource:d&&d.resSource||null,x:r.x,z:r.z};
+  });
+  return {nodes,mines:mines.map(m=>{
+   const pool=m.resSource?nodes.filter(n=>n.kind===m.resSource):nodes;
+   return Object.assign({},m,{source:resSource(m,pool,{radius:m.resSource?900:undefined})||resSource(m,nodes)});
+  })};
  }
  function hyDims(){
   const out={};
   for(const k in DEFS){
    const d=DEFS[k];if(d.cls!=='building'&&d.kind!=='res-node')continue;
    out[k]={cls:d.cls,kind:d.kind||null,w:d.w,d:d.d,h:d.h,style:d.tags.style||null,wealth:d.tags.wealth||null,
-    types:d.tags.types||null,role:d.tags.role||null,job:d.tags.job||null,cut:!!d.cut};
+    types:d.tags.types||null,role:d.tags.role||null,job:d.tags.job||null,resSource:d.resSource||null,cut:!!d.cut};
   }
   return out;
  }

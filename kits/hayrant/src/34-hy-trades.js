@@ -8,26 +8,26 @@ const HY_TRADES=[
  {trade:'butchers',voth:'voth_bldg_butcher',keys:['hy_smokehouse_butcher'],note:'larch-smoked mutton, yak & braided bench-garlic'},
  {trade:'weavers and dyers',voth:'voth_bldg_weaver',keys:['hy_plaid_weaver'],note:'cave-madder red, larch-bark & birch-tar Hayrant plaid (CROPS.canPlaid)'},
  {trade:'brewers',voth:'voth_bldg_brewery',keys:['hy_buckwheat_brewery'],note:'warm loess-cellar dustmillet mash & spiced highland tea'},
- {trade:'tanners',voth:'voth_bldg_tannery',keys:['hy_pelt_tannery'],note:'birch-tar & larch-tannin yak/sheep hide curriers'},
+ {trade:'tanners',voth:'voth_bldg_tannery',keys:['hy_pelt_tannery','hy_charcoal_tar_kiln'],note:'birch-tar retort distillers & larch-tannin yak/sheep hide curriers'},
  {trade:'shipwrights and boatbuilders',voth:'voth_bldg_shipwright',keys:['hy_larch_flume_yard','hy_trench_fishery'],note:'Sheritu peeled ship-timber log-flumes to Fulcrum & trench-lake larch skiffs'},
  {trade:'innkeepers and grooms',voth:'voth_bldg_caravanserai',keys:['hy_caravanserai_inn'],note:'walled yak & mule pack-train court on the Mirabilis pass road'},
- {trade:'town guard',voth:'voth_bldg_watchhouse',keys:['hy_pass_gate']},
+ {trade:'town guard',voth:'voth_bldg_watchhouse',keys:['hy_pass_gate','hy_censorate_warden']},
  {trade:'coast guard',voth:'voth_bldg_coastguard_berth',na:'inland 3,100-5,500 m Western Outer Wall bench (Circuit E6); ocean coast-watch sits down on Farside (Farport) and Crookshore'},
- {trade:'temple priests and servants',voth:'voth_bldg_temple_ash',keys:['hy_spring_stepwell','hy_ancestor_barrow'],note:'loess-foot spring keyhole sanctuary & closed-eye ancestor exedra'},
- {trade:'shrine keepers',voth:'village shrine',keys:['hy_talking_head','hy_spring_stepwell'],note:'cyan-lit Ancient talking-head stele with willow inau & seismic spring chimes'},
- {trade:'shopkeepers and assistants',voth:'voth_shop_trader',keys:['hy_corner_turret_mid','hy_market_hall']},
- {trade:'smiths and craftsmen',voth:'voth_shop_smithy',keys:['hy_iron_smithy','hy_stoneware_kiln','hy_nephrite_lapidary']},
+ {trade:'temple priests and servants',voth:'voth_bldg_temple_ash',keys:['hy_spring_stepwell','hy_ancestor_barrow','hy_head_totem_court','hy_grand_cyber_totem'],note:'loess-foot spring keyhole sanctuary, Sutar-Pira cyber-totem court & closed-eye ancestor exedra'},
+ {trade:'shrine keepers',voth:'village shrine',keys:['hy_talking_head','hy_spring_stepwell','hy_head_totem_court','hy_grand_cyber_totem','hy_cyber_totem_obelisk'],note:'cyan-lit Ancient talking-head stele, Sutar-Pira cyber-totem pylons with insulator crossarms & seismic spring chimes'},
+ {trade:'shopkeepers and assistants',voth:'voth_shop_trader',keys:['hy_corner_turret_mid','hy_market_hall','hy_pu_chandlery']},
+ {trade:'smiths and craftsmen',voth:'voth_shop_smithy',keys:['hy_iron_smithy','hy_stoneware_kiln','hy_nephrite_lapidary','hy_rare_earth_smelter']},
  {trade:'innkeepers and servers',voth:'voth_tavern_b',keys:['hy_hearth_tavern']},
  {trade:'porters and warehousemen',voth:'voth_warehouse_b',keys:['hy_warehouse_vault']},
- {trade:'industrial workers',voth:'industrial lot',keys:['hy_saltpeter_works','hy_stoneware_kiln','hy_nephrite_lapidary','hy_larch_flume_yard'],note:'Mirabilis b=200 saltpeter leaching, high-voltage porcelain insulators & nephrite wire-saws'},
- {trade:'power-house stokers and engineers',voth:'voth_generator',keys:['hy_tube_relay'],note:'escarpment pneumatic-capsule & porcelain-insulator electric telegraph relay'},
+ {trade:'industrial workers',voth:'industrial lot',keys:['hy_saltpeter_works','hy_stoneware_kiln','hy_nephrite_lapidary','hy_larch_flume_yard','hy_rare_earth_smelter','hy_charcoal_tar_kiln'],note:'Mirabilis saltpeter leaching, rare-earth acid separation, charcoal/birch-tar retorts, porcelain insulators & nephrite wire-saws'},
+ {trade:'power-house stokers and engineers',voth:'voth_generator',keys:['hy_tube_relay','hy_grand_cyber_totem','hy_cyber_totem_obelisk'],note:'escarpment pneumatic-capsule, porcelain-insulator telegraph relay & central-square cyber-totem transformer pylons'},
  {trade:'household service',voth:'rich house, manor, clan compound',keys:['hy_clan_lord_compound','hy_prefect_seat']},
- {trade:'soldiers',voth:'voth_barracks',keys:['hy_nuraghe_fort','hy_wall_segment']},
+ {trade:'soldiers',voth:'voth_barracks',keys:['hy_nuraghe_fort','hy_wall_segment','hy_veilpass_picket']},
  {trade:'teachers and scholars',voth:'voth_school',keys:['hy_examination_school','hy_clock_observatory'],note:'bilingual Eternian sign + Hayrant sound-mark school & Sutar-Tawar observatory'},
- {trade:'guild officers and clerks',voth:'voth_bldg_guild_hall',keys:['hy_assay_registry']},
- {trade:'customs officers and clerks',voth:'customs house',keys:['hy_assay_registry','hy_pass_gate']},
+ {trade:'guild officers and clerks',voth:'voth_bldg_guild_hall',keys:['hy_assay_registry','hy_censorate_warden']},
+ {trade:'customs officers and clerks',voth:'customs house',keys:['hy_assay_registry','hy_pass_gate','hy_censorate_warden','hy_veilpass_picket']},
  {trade:'healers and nurses',voth:'house of healing',keys:['hy_healer_bath'],note:'spring-fed hot-stone soaking bath & goldroot apothecary'},
- {trade:'priests and undertakers',voth:'funerary temple',keys:['hy_ancestor_barrow'],note:'Tomba dei Giganti basalt exedra & Eternian closed-eye mask vault'},
+ {trade:'priests and undertakers',voth:'funerary temple',keys:['hy_ancestor_barrow','hy_head_totem_court'],note:'Tomba dei Giganti basalt exedra, Sutar-Pira cyber-totem riggers & Eternian closed-eye mask vault'},
  {trade:'lighthouse keepers',voth:'lighthouse',keys:['hy_beacon_nuraghe'],note:'blind-base nuraghe pass-beacon & katabatic gale-bell watchtower'},
  {trade:'dockers and stevedores',voth:'harbour pier',keys:['hy_escarpment_hoist'],note:'water-ballast cliff hoist lifting lowland barge freight up the 2 km escarpment'},
  {trade:'river bargemen and quay hands',voth:'river quay',keys:['hy_larch_flume_yard'],note:'Sheritu hydraulic log-chute headworks feeding Līng-Mā / Fulcrum'},
@@ -36,18 +36,18 @@ const HY_TRADES=[
  {trade:'farmhands and ploughmen',voth:'fields',keys:['hy_terrace_farmstead'],note:'contoured loess terraces of dustmillet, redstem buckwheat, lentil & wallhemp'},
  {trade:'chinampa growers',voth:'chinampa bed',keys:['hy_terrace_farmstead'],note:'spring-line irrigated loess contour beds'},
  {trade:'orchardmen',voth:'orchards',keys:['hy_terrace_farmstead','hy_larch_flume_yard'],note:'walled frost-trap cave-date jujube & apricot terraces and managed larch stands'},
- {trade:'miners',voth:'mine',keys:['hy_ore_adit','hy_saltpeter_works'],note:'works nearest iron, tin, gold, silver, rare-earth or saltpeter node via resSource'},
+ {trade:'miners',voth:'mine',keys:['hy_ore_adit','hy_saltpeter_works','hy_rare_earth_smelter'],note:'works nearest iron, tin, gold, silver, rare-earth or saltpeter node via resSource'},
  {trade:'quarrymen and masons',voth:'quarry',keys:['hy_nephrite_lapidary']},
- {trade:'granary keepers and millers',voth:'granary, windmill, watermill',keys:['hy_granary_nuraghe'],note:'frost-proof tholos basalt silo & overshot mountain gristmill'},
+ {trade:'granary keepers and millers',voth:'granary, windmill, watermill',keys:['hy_granary_nuraghe','hy_pu_chandlery'],note:'frost-proof tholos basalt silo, stone-mushroom pu stilt caches & overshot mountain gristmill'},
  {trade:'beetle herders',voth:'beetle ranch',na:'no giant beetles in the cold north-western Outer Wall; Hayrant clans herd yaks, goats and sheep in hy_fell_fold'},
- {trade:'dairymen',voth:'dairy',keys:['hy_fell_fold'],note:'dry-stone megabreccia yak/goat winter byre & turf-roofed cheese cellar'},
+ {trade:'dairymen',voth:'dairy',keys:['hy_fell_fold','hy_pu_chandlery'],note:'dry-stone megabreccia yak/goat winter byre, tallow chandlery & turf-roofed cheese cellar'},
  {trade:'swineherds and duck keepers',voth:'sty, coop',keys:['hy_fell_fold']},
  {trade:'mushroom growers',voth:'mushroom farm',keys:['hy_mushroom_drift'],note:'dark moist loess tunnel cultivating pale-fungi & moon-cap'},
- {trade:'envoys and embassy staff',voth:'embassy',keys:['hy_kuran_legation'],note:'Hueru-Kuran Sister-Clan Legation over the 124,710 pass (twin of hk_embassy_hayrant)'},
+ {trade:'envoys and embassy staff',voth:'embassy',keys:['hy_kuran_legation','hy_veilpass_picket'],note:'Hueru-Kuran Sister-Clan Legation over the 124,710 pass & Veilpass ransom parley post'},
  {trade:'ferrymen',voth:'ferry, stop',keys:['hy_escarpment_hoist','hy_trench_fishery']},
  {trade:'elephant bug handlers and station hands',voth:'bug station',na:'no elephant bugs in the north-west; yak/mule pack-trains, larch log-flumes and water-ballast escarpment hoists carry E6 freight'},
  {trade:'monks and lay brothers',voth:'monastery',keys:['hy_withdrawn_sanctuary'],note:'Sheritu Siru-Hom cliff sanctuary of the Withdrawn True Heirs'},
- {trade:'palace and canton staffs',voth:'the cantons',keys:['hy_prefect_seat','hy_clock_observatory'],note:'Circuit E6 Pepar-Hom Prefectural Seat & Clock-Keepers observatory'}
+ {trade:'palace and canton staffs',voth:'the cantons',keys:['hy_prefect_seat','hy_clock_observatory','hy_grand_cyber_totem','hy_cyber_totem_obelisk'],note:'Circuit E6 Pepar-Hom Prefectural Seat, Sutar-Tawar Observatory & central-square cyber-totems'}
 ];
 globalThis.HY_TRADES=HY_TRADES;
 
@@ -110,6 +110,41 @@ const hyRigMath={
  /* Vassal street cornice-line compatibility rule (VASSAL-KITS.md section 2): eaves/parapet delta <= 0.50 m. */
  corniceDeltaOk(hHayrant,hEternian){
   return Math.abs(hHayrant-hEternian)<=0.50+1e-6;
+ },
+ /* Vertical tier base heights [y0, y1, ...] for nHeads stacked Eternian ancestor heads on a Sutar-Pira head-totem pole. */
+ totemTierY(yBase,nHeads,tierH){
+  const n=Math.max(1,nHeads|0),dh=tierH==null?1.18:tierH,out=[];
+  for(let i=0;i<n;i++)out.push(+(yBase+i*dh).toFixed(4));
+  return out;
+ },
+ /* Stone-mushroom nezumi-gaeshi marmot-baffle disc radius for tapered basalt post radius rPost (>= 2.35 * rPost). */
+ puBaffleRadius(rPost){
+  const r=rPost==null||rPost<=0?0.16:rPost;
+  return +(Math.max(0.12,r)*2.45).toFixed(4);
+ },
+ /* Non-coplanar Kanopi/Hayrant formline relief z-step (>= 0.018 m per layer: 0.020 m step -> zero coplanar face overlap). */
+ formlineLayerZ(zFace,layerIdx){
+  const k=Math.max(1,layerIdx|0);
+  return +(zFace+k*0.020).toFixed(4);
+ },
+ /* Alternating wide shed-skirt & recessed neck radii for Mirabilis high-voltage celadon/white porcelain pin-insulators. */
+ insulatorShedRadii(rBase,nSheds){
+  const r0=rBase==null||rBase<=0?0.075:rBase,n=Math.max(2,nSheds|0),out=[];
+  for(let i=0;i<n;i++){
+   const taper=1-0.08*i;
+   out.push({shed:+(r0*taper).toFixed(4),neck:+(r0*taper*0.62).toFixed(4)});
+  }
+  return out;
+ },
+ /* Parabolic catenary jumper cable point from a=[x,y,z] to b=[x,y,z] at t in [0,1]: exact endpoints at t=0 and t=1. */
+ catenarySagPt(a,b,sag,t){
+  const u=t<=0?0:t>=1?1:t;
+  const s=sag==null?0.24:sag;
+  return [
+   +(a[0]+(b[0]-a[0])*u).toFixed(4),
+   +(a[1]+(b[1]-a[1])*u-4*s*u*(1-u)).toFixed(4),
+   +(a[2]+(b[2]-a[2])*u).toFixed(4)
+  ];
  }
 };
 globalThis.hyRigMath=hyRigMath;

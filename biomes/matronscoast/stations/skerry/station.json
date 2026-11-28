@@ -1,0 +1,15 @@
+{
+ "id": "skerry",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Matrons Coast — Drowned Skerry Sound, Coquina Conch-Middens & Skerry Megachitons",
+ "out": "matronscoast.html",
+ "px": [312, 392],
+ "sky": [40, 62],
+ "elevM": 14.0,
+ "pAtm": 1.59,
+ "koppen": "Af",
+ "rainMmYr": 4000,
+ "reserves": [
+  {"id": "site:yonni-sealime-kiln", "x": -118, "z": 78, "r": 24}
+ ]
+}

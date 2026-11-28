@@ -1,6 +1,6 @@
 {
  "build": "hayrant",
- "note": "The Hayrant vassal kit's adapter onto the material library (core/materials/PLAN.md; kits/hayrant/PLAN.md section 7.1): Western Outer Wall crater-wall megabreccia & golden-buff loess, Sardinian dry-laid cyclopean & columnar basalt, mensoloni corbels, sawn Crookshore emerald-nephrite jade, Jomon kaen-doki flame-rimmed terracotta & celadon glaze, Eternian white lime, buff brick, cast pattern block, bronze tracery over alabaster & onyx, closed-eye ancestor metals (gold, silver, bronze, gunmetal, lead), steamed fur-larch, birch-tarred wood, alpine turf, prized cross-pass whalebone, Hayrant cave-madder plaid, kits/resources ore node sets, and f_* furniture triplanar detail maps.",
+ "note": "The Hayrant vassal kit's adapter onto the material library (core/materials/PLAN.md; kits/hayrant/PLAN.md section 7.1): Western Outer Wall crater-wall megabreccia & golden-buff loess, Sardinian dry-laid cyclopean & columnar basalt, mensoloni corbels, sawn Crookshore emerald-nephrite jade, Jomon kaen-doki flame-rimmed terracotta & celadon glaze, Eternian white lime, buff brick, cast pattern block, bronze tracery over alabaster & onyx, closed-eye ancestor metals (gold, silver, bronze, gunmetal, lead), steamed fur-larch, carved adzed totem timber, Cyber-Hayrant sleeping-eye PCB-trace formlines & dorsal cyber-totem chassis plating, birch-tarred wood, alpine turf, prized cross-pass whalebone, Hayrant cave-madder plaid, kits/resources ore node sets, and f_* furniture triplanar detail maps.",
  "size": 512,
  "families": {
   "megabreccia": {
@@ -196,6 +196,13 @@
    "roughLift": 0.22,
    "specular": 0.25
   },
+  "totemWood": {
+   "lib": "wood.totem.adzed",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.38, "mean": 0.64, "contrast": 1.14 },
+   "roughLift": 0.2,
+   "specular": 0.28
+  },
   "timber": {
    "lib": "wood.timber",
    "scale": [1.6, 1.6],
@@ -345,6 +352,22 @@
    "tint": { "keep": 1, "mean": null },
    "metal": 0.2
   },
+  "cyberChassis": {
+   "lib": "metal.totem.cyber",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.96, "mean": 0.72 },
+   "metal": 0.45,
+   "roughLift": 0.12,
+   "specular": 0.42
+  },
+  "cyberChassisB": {
+   "lib": "metal.totem.cyber.b",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.96, "mean": 0.72 },
+   "metal": 0.45,
+   "roughLift": 0.12,
+   "specular": 0.42
+  },
   "plaid": {
    "size": 256,
    "lib": "patterns/khaayken/applique-hanging",
@@ -443,6 +466,30 @@
    "scale": [3.0, 1.0],
    "tint": { "keep": 0, "mean": 0.5 },
    "metal": 0
+  },
+  "cyberForm": {
+   "lib": "patterns/hayrant/cyber-formline",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.96, "mean": 0.74 },
+   "metal": 0.15,
+   "roughLift": 0.16,
+   "specular": 0.34
+  },
+  "cyberFormB": {
+   "lib": "patterns/hayrant/cyber-formline.b",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.96, "mean": 0.74 },
+   "metal": 0.15,
+   "roughLift": 0.16,
+   "specular": 0.34
+  },
+  "cyberFormC": {
+   "lib": "patterns/hayrant/cyber-formline.c",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.96, "mean": 0.74 },
+   "metal": 0.15,
+   "roughLift": 0.16,
+   "specular": 0.34
   },
   "frieze": {
    "size": 256,

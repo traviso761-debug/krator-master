@@ -145,9 +145,43 @@ function jjWallKitCorner(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{const j
  jjMilSock('banner',jjOx+Math.cos(jjQ)*(jjR*.94+.2),jjS0-1.2,jjOz+Math.sin(jjQ)*(jjR*.94+.2),jjQ,{w:1.3,h:4.2});
  jjReg('Wall corner tower',jjOx,jjOz,jjR,jjT.y+6,{part:'corner tower'});});}
 
+function jjWallKitWaterGate(jjOx,jjOz,jjRy){jjWithYaw(jjOx,0,jjOz,jjRy,()=>{const jjL=JJ_WALL_SEG_LEN*JJ_WALL_GATE_SEGS,jjT=7.6,jjH=13.4,jjOw=9.6,jjS=4.0,jjF=jjOz+jjT/2,jjB=jjOz-jjT/2,jjX=jjOx;
+ const jjWs=jjOw+4.4,jjSw=(jjL-jjWs)/2,jjApex=jjMilArchY(jjOw,jjS,0);
+ // Pierced water-arch slab + side curtain shoulders (leaving x in [-jjOw/2, +jjOw/2] 100% open below for the canal!)
+ jjMesh(jjMilSlabGeo(jjWs,jjH,jjOw,jjS,jjT),JMAT.brick,jjX,0,jjOz,0);
+ for(const jjSg of [-1,1]){
+  jjBox(jjX+jjSg*(jjWs/2+jjSw/2),jjH/2,jjOz,jjSw,jjH,jjT,'brick');
+  // Deep brick & marble cutwater piers plunging 2.8 m down into the canal bed on either bank
+  const jjPx=jjX+jjSg*(jjOw/2+1.85);
+  jjBox(jjPx,-.4,jjOz,3.7,5.2,jjT+2.8,'brickDeep');
+  jjBox(jjPx,2.3,jjOz,3.8,.26,jjT+3.0,'marble');
+  // Pointed upstream & downstream cutwater prows
+  jjCylinder(jjPx,-.4,jjF+1.4,1.65,5.0,'brickDeep',undefined,8);
+  jjCylinder(jjPx,-.4,jjB-1.4,1.65,5.0,'brickDeep',undefined,8);}
+ // Yellow brick courses cut cleanly around the marble water-archivolts
+ for(const jjYY of [4.2,7.2,10.2]){const jjHw=jjYY<jjApex+.8?jjMilArchHalfW(jjOw,jjS,jjYY)+.8:0;if(jjHw<=0){jjBox(jjX,jjYY,jjOz,jjL,.28,jjT+.12,'brickYellow');continue;}const jjLw=jjL/2-jjHw;if(jjLw>.2)for(const jjSg of [-1,1])jjBox(jjX+jjSg*(jjHw+jjLw/2),jjYY,jjOz,jjLw,.28,jjT+.12,'brickYellow');}
+ jjMesh(jjMilArchRingGeo(jjOw,jjS,.76,.56),JMAT.marble,jjX,0,jjF+.22,0);
+ jjMesh(jjMilArchRingGeo(jjOw,jjS,.76,.56),JMAT.marble,jjX,0,jjB-.22,0);
+ // Heavy iron water-portcullis grate dipping down into the canal stream (y = -0.85 m) + bronze windlass chains
+ for(let jjXb=-jjOw/2+.55;jjXb<=jjOw/2-.5;jjXb+=.68){const jjTop=jjMilArchY(jjOw,jjS,jjXb)-.08;jjBeam([jjX+jjXb,-.85,jjOz],[jjX+jjXb,jjTop,jjOz],.06,'iron');}
+ for(const jjYb of [.85,2.25,3.65])jjBeam([jjX-jjOw/2+.2,jjYb,jjOz],[jjX+jjOw/2-.2,jjYb,jjOz],.065,'iron');
+ for(const jjSg of [-1,1])jjBeam([jjX+jjSg*2.6,1.2,jjOz+.35],[jjX+jjSg*2.6,jjH+.4,jjOz+.35],.055,'gold');
+ // Crenellated walkway parapets, end-wall walkway doors & windlass sluice-gallery over the water-arch
+ for(const jjZz of [jjF-.45,jjB+.45]){jjBox(jjX,jjH+.55,jjZz,jjL,1.1,.9,'brick');jjMilMerlons(jjX,jjH+1.1,jjZz,jjL,.9,1.15,'brick');}
+ jjBox(jjX,jjH-.36,jjF+.3,jjL,.48,.6,'marble');jjBox(jjX,jjH-.36,jjB-.3,jjL,.48,.6,'marble');
+ for(const jjSg of [-1,1])jjDoor(jjX+jjSg*(jjL/2),JJ_WALL_H,jjOz,1.25,2.35,jjSg*Math.PI/2,{mat:'dark'});
+ jjBox(jjX,jjH+1.35,jjOz,7.4,2.7,4.2,'bandBrick');jjBox(jjX,jjH+2.82,jjOz,7.8,.26,4.6,'marble');
+ jjDome(jjX,jjH+2.96,jjOz,2.35,{kind:'slate',shape:'ribbed'});
+ jjPut('jjMil_disc',new THREE.CylinderGeometry(1,1,1,24),JMAT.gold,jjX,jjApex+1.05,jjF+.52,.44,.12,.44,undefined,qEuler(Math.PI/2,0,0));
+ // Twin flanking water-bastion turrets
+ for(const jjSg of [-1,1]){const jjSx=jjX+jjSg*7.6,jjSz=jjF-.35;jjMilTower(jjSx,0,jjSz,3.1,{stages:[14.8,5.2],taper:.93,step:.82,cap:'gold',shape:'onion',wins:[[0,Math.PI/2,.58],[1,Math.PI/2]]});
+  jjMilSock('banner',jjSx,12.6,jjSz+3.05,0,{w:1.2,h:4.0});}
+ jjReg('Fortified water-gate portal',jjX,jjOz,jjL/2,jjH+6,{part:'water gate'});});}
+
 function buildJjWallSeg(jjG,jjO){reseed(9530+(jjO.v|0));jjWallKitSeg(0,0,0);}
 function buildJjWallTower(jjG,jjO){reseed(9540+(jjO.v|0));jjWallKitTower(0,0,0);}
 function buildJjWallGate(jjG,jjO){reseed(9550+(jjO.v|0));jjWallKitGate(0,0,0);}
+function buildJjWallWaterGate(jjG,jjO){reseed(9555+(jjO.v|0));jjWallKitWaterGate(0,0,0);}
 function buildJjWallCorner(jjG,jjO){reseed(9560+(jjO.v|0));jjWallKitCorner(0,0,0);}
 // demo run: segment · tower · segment · gate · segment · corner · segment, built ONLY by calling the
 // piece functions at offsets on the join grid (no copied geometry)
@@ -254,4 +288,5 @@ JJ.def({key:'jj_wall_tower',name:'Wall tower',family:'military',row:'Walls',w:10
 JJ.def({key:'jj_wall_run',name:'Wall run (demo)',family:'military',row:'Walls',w:67,d:26,h:33,r:36,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'demo'},
  views:{'Wall run — tower joint':{cam:[-12,16,26],tgt:[-21,10,5.5]},'Wall run — gate joint':{cam:[-2,15,28],tgt:[-9,10,5.5]},'Wall run — corner':{cam:[14,22,30],tgt:[27,10,2]}},build:buildJjWallRun});
 JJ.def({key:'jj_wall_gate',name:'Wall gate (2 segments)',family:'military',row:'Walls',w:JJ_WALL_SEG_LEN*JJ_WALL_GATE_SEGS,d:15,h:31,r:13,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallGate});
+JJ.def({key:'jj_wall_watergate',name:'Fortified water-gate & iron sluice portal',family:'military',row:'Walls',w:JJ_WALL_SEG_LEN*JJ_WALL_GATE_SEGS,d:14,h:27,r:13,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallWaterGate});
 JJ.def({key:'jj_wall_corner',name:'Wall corner tower',family:'military',row:'Walls',w:13,d:13,h:33,r:7,cls:'building',tags:{type:['military','infrastructure'],wealth:'civic',lit:false,role:'wall-piece'},build:buildJjWallCorner});

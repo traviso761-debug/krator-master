@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1240,
+    1144
+   ],
+   "seam_after": [
+    0.748,
+    1.348
+   ],
+   "seam_before": [
+    2.046,
+    1.808
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "lizardmen/shang-leiwen-lamellar",
+  "metal": 0.82,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__lizardmen__shang-leiwen-lamellar.png",
+  "generator": "Codex image generation, Nov 2026 (exec-10e204a5-b6fb-411d-8d08-8f842e6a4ac6.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of archaic Shang-Zhou Lizardman bronze-and-chitin lamellar harness (strictly zero woven cloth, zero iron, zero gold): alternating horizontal courses of cast dark bronze plates (#6d532a) crusted in pale verdigris (#3e7a6d) and deeply cast with squared leiwen thunder-spirals\u2014where every seventh spiral deliberately reverses one corner to mark the Lie\u2014and glossy oxblood-crimson (#5e1418) and black beetle-lacquer (#181414) hexapod chitin plates, bound with raw sinew thongs and carved oracle-bone toggles (#e0d6c0). Full colour.",
+  "sha1": "71a24858ea92ca174725d0a250a116d65dcf0423"
+ }
+}

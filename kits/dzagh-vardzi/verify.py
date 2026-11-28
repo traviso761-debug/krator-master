@@ -82,6 +82,14 @@ ASSERT_JS = r"""()=>{
  R.push({name:'z-fighting',ok:ZA.overlaps===0,
   detail:ZA.overlaps===0?'0 coplanar overlaps across '+ZA.totalTris+' world triangles (tol '+ZA.tolMm+' mm)':
    ZA.overlaps+' coplanar triangle overlaps across '+ZA.totalTris+' tris; worst: '+ZA.pairs.slice(0,10).map(p=>`${p.site} [${p.pair}] x${p.count} @(${p.at})`).join(' | ')});
+ /* Mandate 4: Zero white-quartz needle-spires + Hooks 2-4 Wonders placed, walkable, furnished & 0-z-fight */
+ const RH=A.retconAndHooksAudit({village:false,zf:ZA});
+ R.push({name:'zero-white-quartz-spires',ok:!!RH.quartzOk,
+  detail:RH.quartzOk?`0 building/roof quartz tris (${RH.slateCrowns} stepped slate/basalt/crimson-tuff needle crowns, ${RH.crownMatMeshes} slate/basalt/tuff/verdigris meshes; ${RH.resNodeQuartzTris} kits/resources gold-vein outcrop tris)`:
+   `quartzBuildingTris=${RH.quartzBuildingTris} (${RH.quartzNames.join(',')}), slateCrowns=${RH.slateCrowns}`});
+ R.push({name:'hooks-2-to-4-wonders',ok:!!RH.hooksOk,
+  detail:RH.hooksOk?RH.hooks.map(h=>`${h.key} (${h.pieces} furn, walk=${h.walkHits}, zf=${h.zOverlaps})`).join('; ')+' | bespoke: '+Object.entries(RH.bespokeCounts).map(e=>e.join('=')).join(', '):
+   'PROBLEMS: '+RH.problems.join(' | ')});
  return R;
 }"""
 
@@ -89,7 +97,7 @@ VILLAGE_ASSERT_JS = r"""()=>{
  const A=window._api,FL=window.DV_FLUME_VILLAGE;const R=[];
  const F=A.footprints(),B=F.filter(f=>A.DEFS[f.key]&&A.DEFS[f.key].cls==='building');
  const over=F.filter(f=>f.ex>1.6||f.ez>1.6),hh=F.filter(f=>f.eh>1.5);
- R.push({name:'village-sites',ok:B.length>=10&&B.length<=14&&!over.length&&!hh.length,
+ R.push({name:'village-sites',ok:B.length>=10&&B.length<=16&&!over.length&&!hh.length,
   detail:`${B.length} DV kit buildings (${F.length} total sites) within declared footprint & height`+(over.length?' | over: '+over.map(f=>`${f.key} ${f.bw}x${f.bd} vs ${f.w}x${f.d}`).join(','):'')+(hh.length?' | tall: '+hh.map(f=>`${f.key} ${f.bh} vs ${f.h}`).join(','):'')});
  R.push({name:'no-nan',ok:A.nanSweep()===0,detail:'nan meshes: '+A.nanSweep()});
  const T=A.tags().audit,UV=T.unknownValues||{},uk=Object.keys(UV),onlyDV=uk.every(k=>k==='culture:dzagh-vardzi');
@@ -113,6 +121,13 @@ VILLAGE_ASSERT_JS = r"""()=>{
  R.push({name:'z-fighting',ok:ZA.overlaps===0,
   detail:ZA.overlaps===0?`0 coplanar overlaps across ${ZA.totalTris} world triangles (tol ${ZA.tolMm} mm)`:
    `${ZA.overlaps} overlaps: `+ZA.pairs.slice(0,8).map(p=>`${p.site} [${p.pair}] x${p.count} @(${p.at})`).join(' | ')});
+ const RH=A.retconAndHooksAudit({village:true,zf:ZA});
+ R.push({name:'zero-white-quartz-spires',ok:!!RH.quartzOk,
+  detail:RH.quartzOk?`0 building/roof quartz tris (${RH.slateCrowns} stepped slate/basalt/crimson-tuff needle crowns)`:
+   `quartzBuildingTris=${RH.quartzBuildingTris}, slateCrowns=${RH.slateCrowns}`});
+ R.push({name:'hooks-2-to-4-wonders',ok:!!RH.hooksOk,
+  detail:RH.hooksOk?RH.hooks.map(h=>`${h.key} (${h.pieces} furn, walk=${h.walkHits}, zf=${h.zOverlaps})`).join('; '):
+   'PROBLEMS: '+RH.problems.join(' | ')});
  const FA=FL&&FL.audit?FL.audit():null;
  R.push({name:'gravity-flume-continuity',ok:!!(FA&&FA.ok),
   detail:FA?FA.detail:'DV_FLUME_VILLAGE.audit() missing'});

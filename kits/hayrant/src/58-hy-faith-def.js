@@ -183,6 +183,10 @@ defBuilding({key:'hy_ancestor_barrow',name:'Tomba dei Giganti Ancestor Exedra Ba
     }
    }
   });
+  hyHeadTotemPole(-6.3,G,6.3,0,{h:5.2,heads:4,r:.26,materials:['silver','kaen','basalt','tarwood'],veiledIdx:3,crown:'kaen',seed:341101});
+  hyHeadTotemPole(6.3,G,6.3,0,{h:5.2,heads:4,r:.26,materials:['gunmetal','alabaster','bronze','kaen'],veiledIdx:0,crown:'ibex',seed:341102});
+  hyInauCluster(-2.2,G+2.1,.95,0,{scale:.72});
+  hyInauCluster(2.2,G+2.1,.95,0,{scale:.72});
   hySeismicChimes(0,G+2.95,1.65,0,2.1,1.15,5);
   hyFurnList([
    ['eternian_court_ancestor_niche',0,G,-4.8,0],
@@ -195,6 +199,130 @@ defBuilding({key:'hy_ancestor_barrow',name:'Tomba dei Giganti Ancestor Exedra Ba
   ]);
   hyTarget(0,G,3.8,'exedra-court');
   hyTarget(0,G,-2.4,'barrow-vault');
+ }});
+
+/* 20b. Sutar-Pira Cyber-Totem Court & Totem-Rigging Workshop (seed 34111) */
+defBuilding({key:'hy_head_totem_court',name:'Sutar-Pira Cyber-Totem Court and Rigging Workshop',seed:34111,cut:true,
+ w:18.0,d:16.0,h:11.5,budget:215000,
+ tags:{types:['religious','civic'],wealth:'rich',style:'sanctuary',job:'worship',landmark:true},
+ note:'walled megabreccia precinct framing 5 catenary-linked Sutar-Pira Cyber-Totem Pylons, a central Transformer Shrine Bridge & a Totem-Rigging Workshop',
+ build(){
+  /* Paved polygonal megabreccia & basalt sanctuary court */
+  svNoWalk(()=>box('paving',0,0,0,15.8,.08,13.8,P('paving')));
+  wkPad(0,0,15.8,13.8,.08);
+  hyWallRing(-7.9,-1.0,7.9,6.8,.08,2.25,{
+   mk:'megabreccia',socle:.58,socleMk:'columnar',skip:'n',
+   holes:{s:[{at:7.9,y:0,w:3.2,h:2.25}]}
+  });
+  hyOvoidPortal(0,.08,6.8,2.08,2.24,0,{open:true,headMk:'gold',fullHead:true,headSize:.58});
+
+  /* 5 Monumental Sutar-Pira Cyber-Totem Pylons flanking the sacred walk axis (x=0 clear for KWALK reach!) */
+  hyHeadTotemPole(-5.8,.08,4.3,.22,{h:6.4,heads:4,r:.28,terminal:true,materials:['titanium','tarwood','celadon','bronze'],crown:'faraday',seed:341111});
+  hyHeadTotemPole(-3.0,.08,2.3,.10,{h:8.2,heads:5,r:.32,terminal:true,materials:['nephrite','titanium','silver','bronze','gold'],crown:'halo',seed:341112});
+  hyHeadTotemPole(3.0,.08,2.3,-.10,{h:8.4,heads:5,r:.33,terminal:true,materials:['tarwood','titanium','celadon','silver','gold'],veiledIdx:3,crown:'arrestor',seed:341113});
+  hyHeadTotemPole(5.8,.08,4.3,-.22,{h:6.6,heads:4,r:.28,terminal:true,materials:['alabaster','nephrite','lead','silver'],veiledIdx:2,crown:'ibex',seed:341114});
+  hyHeadTotemPole(-5.8,.08,.6,PI/3,{h:5.4,heads:3,r:.25,terminal:true,materials:['titanium','celadon','bronze'],crown:'faraday',seed:341115});
+
+  /* Central Twin-Pedestal Overhead Transformer & Busbar Shrine Arch at z=1.05 (3.25 m clear headroom over x=0 walk path!) */
+  for(const sx of [-1,1]){
+   hyWallBlock(sx*1.75,.08,1.05,.56,2.5,.60);
+  }
+  svNoWalk(()=>{
+   for(const sx of [-1,1]){
+    box('megabreccia',sx*1.75,.08,1.05,.56,.62,.62,P('megabreccia'));
+    box('titanium',sx*1.75,.70,1.05,.42,2.62,.46,hyTotemMatCol('titanium'));
+    box('white',sx*1.75,1.25,1.05,.50,.72,.52,hyTotemMatCol('white'));
+    hyFormLayerBox('mazeB',sx*1.75,1.34,1.31,1,.36,.52,P('mazeB'));
+   }
+   /* Overhead Transformer Shrine lintel beam & glowing cyan master terminal + Faraday cooling coils */
+   box('titanium',0,3.32,1.05,4.16,.30,.64,hyTotemMatCol('titanium'));
+   box('nephrite',0,3.62,1.05,3.84,.12,.56,P('nephrite'));
+   hyCyberTerminalHousing(0,3.74,1.05,.68,.64,.36,341119,true);
+   for(const sx of [-1,1]){
+    cyl('glow',sx*1.08,3.76,1.05,.16,.54,new THREE.Color(0x4ef6ff),10);
+    hyFaradayScreenCyl(sx*1.08,3.75,1.05,.29,.56,8);
+    cyl('titanium',sx*1.08,4.31,1.05,.32,.08,hyTotemMatCol('titanium'),8);
+   }
+   const bWL=hyPinInsulator(-1.72,3.74,1.05,1.0,0);
+   const bIL=hyPinInsulator(-.62,3.74,.88,.92,1);
+   const bIR=hyPinInsulator(.62,3.74,.88,.92,0);
+   const bWR=hyPinInsulator(1.72,3.74,1.05,1.0,1);
+   /* Overhead catenary jumper cables linking all 5 Cyber-Totem Pylons & Workshop lead-in bushings to Transformer Shrine */
+   sagRope('brass',bWL,[-5.8,5.55,4.3],.32,.014,P('brass'),9);
+   sagRope('iron',bWL,[-5.8,4.75,.6],.24,.013,P('iron'),8);
+   sagRope('brass',bIL,[-3.0,7.15,2.3],.28,.015,P('brass'),9);
+   sagRope('brass',bIR,[3.0,7.35,2.3],.28,.015,P('brass'),9);
+   sagRope('brass',bWR,[5.8,5.75,4.3],.32,.014,P('brass'),9);
+   sagRope('iron',bIL,[-2.2,4.15,-1.5],.22,.012,P('iron'),8);
+   sagRope('iron',bIR,[2.2,4.15,-1.5],.22,.012,P('iron'),8);
+  });
+
+  /* North Gale-Cobbled Totem-Rigging & Mask Workshop */
+  W(0,0,-4.1,0,()=>{
+   const G=.38,LW=13.4,LD=5.2,LH=3.6;
+   hyPlinth(LW+.4,LD+.4,G,{stepW:2.8,stepX:0});
+   hyWallRing(-LW/2,-LD/2,LW/2,LD/2,G,LH,{
+    mk:'lime',socle:.72,socleMk:'basalt',postMk:'tarwood',
+    holes:{
+     s:[{at:LW/2,y:0,w:2.05,h:2.72},{at:2.5,y:.95,w:1.2,h:1.32},{at:LW-2.5,y:.95,w:1.2,h:1.32}],
+     n:[{at:LW/2,y:1.0,w:1.25,h:1.3}]
+    }
+   });
+   hyDoor(0,G,LD/2,0,1.52,2.2,{lintel:'nephrite',maskMk:'gold',maskSize:.52});
+   for(const sx of [-LW/2+2.5,LW/2-2.5])hyWindow(sx,G+.95,LD/2,0,.98,1.12,{light:'alabaster',stepHead:true});
+   hyWindow(0,G+1.0,-LD/2,PI,1.02,1.1,{light:'nephrite'});
+   hyFormlineFrieze(-3.8,G+2.48,LD/2+.25,2.7,.62,0,{backMk:'larch',tertiary:'nephrite'});
+   hyFormlineFrieze(3.8,G+2.48,LD/2+.25,2.7,.62,0,{backMk:'larch',tertiary:'celadon'});
+   hyGaleCobbleRoof(0,G+LH+.24,0,LW+.16,LD+.20,2.35,0,{mk:'larch',gableFill:true,gableMk:'loess',over:.26,overZ:.26});
+   hyInauCluster(-1.85,G,LD/2+.42,0,{scale:.78});
+   hyInauCluster(1.85,G,LD/2+.42,0,{scale:.78});
+
+   /* Eave porcelain lead-in bushings + interior Circuit-Inlay Rigging Bench & Glowing Cyan Calibration Scope */
+   svNoWalk(()=>{
+    for(const sx of [-2.2,2.2])hyPinInsulator(sx,G+LH+.02,LD/2+.16,.82,sx>0?1:0);
+    /* Circuit-Inlay Totem-Rigging Bench at (-3.25, G, -1.35) */
+    W(-3.25,G,-1.35,0,()=>{
+     for(const lx of [-.78,.78])for(const lz of [-.34,.34]){
+      box('titanium',lx,0,lz,.10,.76,.10,hyTotemMatCol('titanium'));
+     }
+     box('tarwood',0,.76,0,1.76,.09,.84,P('tarwood'));
+     /* Stepped gold/cyan PCB circuit-maze inlay surface + closed-eye mask blank under test */
+     box('maze',0,.85,0,1.48,.022,.62,P('maze'));
+     box('brass',0,.872,-.26,1.42,.032,.055,P('brass'));
+     const mp=etHeadParams(341118,{mask:true,eyes:'closed'});
+     etEmitGeo('gold',etHeadGeo(mp),-.22,.89,.04,[.34,.36,.22],-PI*.5,hyTotemMatCol('gold'));
+     hyPinInsulator(.52,.872,.12,.62,0);
+    });
+    /* Glowing Cyan Calibration Scope & Diagnostic CRT Console at (2.35, G, -1.45) */
+    W(2.35,G,-1.45,-.28,()=>{
+     box('basalt',0,0,0,.78,.14,.62,P('basalt'));
+     box('titanium',0,.14,0,.64,.78,.48,hyTotemMatCol('titanium'));
+     hyCyberTerminalHousing(0,.92,.02,.48,.44,.26,341117,true);
+     /* Articulated brass optical/laser calibration scope boom with glowing cyan aperture */
+     pole('brass',[.24,.92,.14],[.54,1.38,.36],.024,P('brass'),6);
+     cyl('gunmetal',.54,1.34,.36,.058,.16,P('gunmetal'),8);
+     box('glow',.54,1.38,.46,.065,.045,.045,new THREE.Color(0x4ef6ff));
+    });
+   });
+   haloAt(2.35,G+1.35,-1.05,0x4ef6ff,false);
+
+   hyFurnList([
+    ['eternian_court_ancestor_niche',0,G,-1.92,0],
+    ['hayrant_head_totem_post',-5.35,G,-1.45,PI/2,0],
+    ['hayrant_insulator_rack',5.25,G,-1.35,-PI/2],
+    ['hayrant_nephrite_saw_bench',4.15,G,.85,PI],
+    ['hayrant_formline_chest',-5.25,G,.95,PI/2,0],
+    ['pa_tool_rack',-1.55,G,-2.02,0]
+   ]);
+   hyTarget(0,G,.5,'carver-lodge');
+  });
+
+  hySeismicChimes(5.8,2.65,.6,-PI/2,1.8,1.15,5);
+  hyFurnList([
+   ['hayrant_jade_lantern_post',-2.0,.08,5.4,0],
+   ['hayrant_jade_lantern_post',2.0,.08,5.4,0]
+  ]);
+  hyTarget(0,.08,4.2,'totem-court');
  }});
 
 /* 21. Frontier Trilobate Nuraghe Garrison Fort */
@@ -410,4 +538,76 @@ defBuilding({key:'hy_beacon_nuraghe',name:'Pass-Beacon Nuraghe and Gale-Bell Wat
   ]);
   hyTarget(0,.06,cz,'beacon-base');
   hyTarget(.6,yDeck,cz,'watch-deck');
+ }});
+
+/* 24b. Veilpass Punitive Muster & Ransom Parley Post (seed 34205) */
+defBuilding({key:'hy_veilpass_picket',name:'Veilpass Punitive Muster and Ransom Parley Post',seed:34205,cut:true,
+ w:16.0,d:14.0,h:10.2,budget:145000,
+ tags:{types:['military','civic'],wealth:'middle',style:'hybrid',job:'customs'},
+ note:'fortified megabreccia and fur-larch log-crib frontier post with watch-nuraghe, truce Sutar-Pira head-totem pole & shaved-willow inau parley fence',
+ build(){
+  svNoWalk(()=>box('paving',0,0,.4,14.2,.08,11.6,P('paving')));
+  wkPad(0,.4,14.2,11.6,.08);
+
+  /* NW Fortified Megabreccia & Heavy Fur-Larch Log-Crib Frontier Post (x in [-6.6..+2.0], 65 cm clear of NE bastion) */
+  W(-2.3,0,-2.0,0,()=>{
+   const G=.34,PW=8.6,PD=6.2,PH=3.5;
+   hyPlinth(PW+.4,PD+.4,G,{stepW:2.4,stepX:0});
+   hyWallRing(-PW/2,-PD/2,PW/2,PD/2,G,PH,{
+    mk:'larch',socle:1.15,socleMk:'megabreccia',postMk:'tarwood',
+    holes:{
+     s:[{at:PW/2,y:0,w:1.85,h:2.62},{at:1.7,y:1.05,w:.94,h:1.12},{at:PW-1.7,y:1.05,w:.94,h:1.12}],
+     n:[{at:PW/2,y:1.1,w:.96,h:1.12}]
+    }
+   });
+   /* Projecting notched fur-larch log-crib corner heads above megabreccia socle */
+   svNoWalk(()=>{
+    for(const sx of [-1,1])for(const sz of [-1,1])for(const ly of [1.45,2.15,2.85]){
+     box('tarwood',sx*(PW/2+.22),G+ly,sz*PD/2,.24,.16,.24,P('tarwood'));
+     box('larch',sx*PW/2,G+ly+.22,sz*(PD/2+.22),.24,.16,.24,P('larchD'));
+    }
+   });
+   hyDoor(0,G,PD/2,0,1.38,2.14,{lintel:'nephrite',maskMk:'bronze'});
+   for(const sx of [-PW/2+1.7,PW/2-1.7])hyWindow(sx,G+1.05,PD/2,0,.76,.92,{light:'steel'});
+   hyWindow(0,G+1.1,-PD/2,PI,.78,.92,{light:'steel'});
+   hyFormlineFrieze(2.4,G+2.36,PD/2+.25,2.2,.56,0,{backMk:'loess',tertiary:'nephrite'});
+   hyBilingualSign(-2.4,G+2.28,PD/2+.34,0,1.28,.76);
+   hyGaleCobbleRoof(0,G+PH+.24,0,PW+.18,PD+.18,2.15,0,{mk:'larch',gableFill:true,gableMk:'larch',over:.24,overZ:.24});
+
+   hyFurnList([
+    ['hayrant_irori_hearth',-1.6,G,-.6,0],
+    ['eternian_common_register_desk',1.8,G,-1.8,0],
+    ['eternian_common_arms_rack',-3.1,G,-2.1,0],
+    ['pa_weapon_rack',3.1,G,-2.1,0],
+    ['eternian_common_bunk',-2.8,G,1.2,PI/2],
+    ['hayrant_formline_chest',2.6,G,1.3,-PI/2,0]
+   ]);
+   hyTarget(0,G,.5,'muster-post');
+  });
+
+  /* NE Corner Megabreccia Watch-Nuraghe Bastion (x in [2.65..6.95]) */
+  hyNuraghe(4.8,-2.4,.08,2.15,1.68,5.4,{
+   celadonCap:true,capH:1.85,smoke:false,
+   doors:[{yaw:0,w:1.08,h:2.0,lintel:'nephrite',maskMk:'gunmetal'}],
+   windows:[{yaw:0,w:.58,h:.86,y:2.8,light:'steel'}]
+  });
+
+  /* SE Truce Head-Totem Pole & Shaved-Willow Inau Ransom Parley Fence */
+  hyHeadTotemPole(4.85,.08,3.6,0,{h:5.0,heads:3,r:.25,materials:['nephrite','bronze','kaen'],crown:'kaen',seed:342051});
+  svNoWalk(()=>{
+   for(let fi=0;fi<4;fi++){
+    const fx=-5.8+fi*1.45;
+    cyl('tarwood',fx,.08,5.35,.065,1.15,P('tarwood'),8);
+    hyInauCluster(fx,.95,5.35,0,{scale:.68,holder:false});
+   }
+   box('larch',-3.62,.78,5.43,4.6,.075,.06,P('larch'));
+  });
+  hyWindHanging(1.8,.08,5.35,0,1.9,2.45,{mk:'plaid',panels:2});
+
+  hyFurnList([
+   ['hayrant_larch_feast_table',1.6,.08,2.6,0],
+   ['generic_strongbox',4.8,.14,-3.2,0]
+  ]);
+  hyTarget(4.8,.14,-2.4,'picket-bastion');
+  hyTarget(0,.08,3.4,'parley-court');
  }});

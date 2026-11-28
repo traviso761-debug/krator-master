@@ -1,0 +1,25 @@
+{
+ "id": "ringlake",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Ricochet Peaks — Yuni-Gate Central-Peak Ring-Lake & Pioneer Clearing",
+ "out": "ricochetpeaks.html",
+ "px": [1205, 1482],
+ "sky": [933, 1152],
+ "elevM": 3250.0,
+ "pAtm": 1.07,
+ "koppen": "Dfb",
+ "rainMmYr": 685,
+ "strataStack": "secondary-ejecta+obsidian-pancake",
+ "reserves": [
+  { "id": "site:yuni-pioneer-homestead", "x": 52, "z": -36, "r": 34 }
+ ],
+ "modes": ["Day", "Ring-Shadow Dusk", "Winter Snow"],
+ "families": [
+  "ground.suevite", "ground.cladonia", "ground.duff",
+  "bark.spruce", "spruce", "bark.larch", "larch", "larchgold", "bark.birch", "birch", "wood.log",
+  "fern", "heather", "sedge", "moss",
+  "rock.suevite", "stone.tagamite", "stone.sinter",
+  "ore.iron", "ore.nickel", "ore.gold", "ore.quartz",
+  "earth.yuni", "mosaic.yuni", "roof.shingle"
+ ]
+}

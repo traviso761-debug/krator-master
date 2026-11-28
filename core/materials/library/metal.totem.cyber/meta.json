@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1017,
+    1017
+   ],
+   "seam_after": [
+    0.804,
+    0.944
+   ],
+   "seam_before": [
+    0.944,
+    1.557
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 1.1,
+   "pattern": true,
+   "rough": 0.48,
+   "rough_var": 0.25,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.totem.cyber",
+  "metal": 0.45,
+  "roughness": 0.48,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.totem.cyber.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`metal.totem.cyber`)",
+  "reuse": "Cyber-Hayrant dorsal totem conduit spines and terminal chassis plating: dark titanium, ceramic armour, braided copper wire, celadon insulator collars, brass grilles and cyan indicator slits (.b is wide-panel alternate)",
+  "sha1": "9f756e105e1682f1372b1fd76fa6d32b5f1a4ff4"
+ }
+}

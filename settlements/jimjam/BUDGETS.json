@@ -1,0 +1,23 @@
+{
+  "what": "Perf & page-size ceilings for Jimjam (50,000-resident Voth-scale metropolis + 99-asset kit sheet); settlements/jimjam/PLAN.md P5",
+  "pages": {
+    "jimjam.html": {
+      "bytes": 16777216,
+      "tris": 48000000,
+      "calls": 3400,
+      "samplers": 12,
+      "vram_mb": 1024,
+      "why": "50,000-resident Voth-scale multi-kit metropolis (9,254 placed buildings/walls, 1,540 NWLOW trees, 12 furnished interiors, 520 SIM citizens & street-level plaza vistas)",
+      "raised": "2026-11-28"
+    },
+    "jimjam-kit.html": {
+      "bytes": 14680064,
+      "tris": 3200000,
+      "calls": 1200,
+      "samplers": 12,
+      "vram_mb": 512,
+      "why": "99-asset Jimjam architectural, celestial temple, trade & harbour kit showcase with inline PBR brick/marble/tile library maps",
+      "raised": "2026-11-28"
+    }
+  }
+}

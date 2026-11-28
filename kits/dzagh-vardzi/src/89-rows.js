@@ -9,11 +9,11 @@ for(const k of Object.keys(RES_ORE.kinds))for(const g of Object.keys(RES_ORE.gra
 
 const FAMILIES=[
  {name:'Poor Terraced Aul Cots (DV4 + DV2)',keys:['dv-aul-cot-shepherd','dv-aul-cot-orchard','dv-aul-cot-quarry']},
- {name:'Middle Roof-Plaza & 5-to-1 Needle Houses',keys:['dv-aul-house-terrace','dv-aul-house-koshki','dv-aul-house-ropeway']},
+ {name:'Middle Roof-Plaza & 5-to-1 Slate-Needle Houses',keys:['dv-aul-house-terrace','dv-aul-house-koshki','dv-aul-house-ropeway']},
  {name:'Rich Chivalric Cousin-Lord Compounds',keys:['dv-manor-cousins','dv-manor-gumbat','dv-manor-envoy']},
- {name:'Valley-King Citadel, 12-Pleat Gumbat Sanctuary & Courts',keys:[
-  'dv-citadel-mepe','dv-sanctuary-gumbat','dv-hall-weregild','dv-tavern-qvevri',
-  'dv-bath-sulfur','dv-scriptorium-lore','dv-shrine-cross','dv-healer-apricot'
+ {name:'Valley-King Citadel, Hall of Seven Strings & Gumbat Courts',keys:[
+  'dv-citadel-mepe','dv-hall-troubadour','dv-vault-mepe-qvevri','dv-sanctuary-gumbat','dv-hall-weregild',
+  'dv-tavern-qvevri','dv-bath-sulfur','dv-scriptorium-lore','dv-shrine-cross','dv-healer-apricot'
  ]},
  {name:'Archaic Gorge Defence & Flume-Tunnel Gatehouse',keys:[
   'dv-wall-curtain','dv-gate-flume','dv-tower-vovnashki','dv-barracks-retinue','dv-beacon-gorge'
@@ -34,9 +34,9 @@ const FAMILIES=[
  {name:'Livestock & Vardzieti Gorge Flora',keys:[
   'dvb-sheep','dvb-goat','dvb-horse','dvb-hen','dvb-apricot-tree','dvb-red-cypress','dvb-gorge-barley','dvb-dyer-madder'
  ]},
- {name:'Resource Nodes (kits/resources)',keys:DV_RES_KEYS},
- {name:'Crookwash Chasm, Duel Sky-Bridge, Flume-Keep & Waterwheel Mills',chasm:true,keys:[
-  {key:'dv-bridge-duel',o:{y:0}},{key:'dv-flume-keep',o:{y:0}},'dv-flume-forge','dv-flume-trestle',
+ {name:'Resource Nodes (kits-resources)',keys:DV_RES_KEYS},
+ {name:'Crookwash Chasm, Duel Sky-Bridge, Chasm-Organ & Waterwheel Mills',chasm:true,keys:[
+  {key:'dv-bridge-duel',o:{y:0}},{key:'dv-flume-keep',o:{y:0}},'dv-organ-beacon','dv-flume-forge','dv-flume-trestle',
   'dv-sawmill-jade','dv-sluice-fleece','dv-ferry-ropeway','dv-boatwright-raft','dv-fishweir-trout'
  ]}
 ];

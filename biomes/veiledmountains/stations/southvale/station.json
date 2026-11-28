@@ -1,0 +1,17 @@
+{
+ "id": "southvale",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Veiled Mountains — The Hush-Edge Moss Labyrinth",
+ "out": "veiledmountains-southvale.html",
+ "px": [228, 948],
+ "sky": [-44, 618],
+ "elevM": 2880.0,
+ "pAtm": 1.14,
+ "koppen": "Dfb",
+ "rainMmYr": 2940,
+ "strataStack": "megabreccia",
+ "reserves": [
+  {"id": "site:timpar-kuran-hush-watch", "x": -108, "z": 68, "r": 40}
+ ],
+ "modes": ["Veil", "Sun-Break", "Deep Veil"]
+}

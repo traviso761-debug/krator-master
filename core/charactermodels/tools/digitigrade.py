@@ -397,7 +397,7 @@ class LegSculpt:
 
 
 class LizardLegSculpt:
-    """SDF + scale paint + recurved talons for one side's saurian/theropod digitigrade leg (mod_legs_lizard, LORE 6.20)."""
+    """SDF + scale paint + heavy talons for one side's theropod (Raptor / T-Rex) digitigrade leg (mod_legs_lizard, LORE 6.20)."""
 
     def __init__(self, sd, chain, BP, BT, BN, leg_mask):
         self.sd = sd
@@ -406,7 +406,7 @@ class LizardLegSculpt:
         self.H = chain['H']
         self.s = self.H / H_REF
         s = self.s
-        self.paw_skin_r = 0.135 * s
+        self.paw_skin_r = 0.168 * s
         self.p_thigh = chain['DigiThigh']
         self.p_shin = chain['DigiShin']
         self.p_hock = chain['DigiHock']
@@ -420,32 +420,35 @@ class LizardLegSculpt:
         self.collar_N = BN[side_sel]
         self.collar_tree = cKDTree(self.collar_P)
 
-        # Powerful reptilian caudofemoralis sweep, monitor gastrocnemius, bony calcaneal heel spur, and sinewy tarso-metatarsus
-        self.p_ham_top = self.p_thigh + np.array([-0.008 * self.sx * s, -0.050 * s, -0.058 * s])
-        self.p_ham_low = self.p_shin + 0.34 * (self.p_hock - self.p_shin) + np.array([-0.005 * self.sx * s, 0.012 * s, -0.044 * s])
-        self.p_calf = self.p_shin + 0.30 * (self.p_hock - self.p_shin) + np.array([0.004 * self.sx * s, 0.0, -0.018 * s])
-        self.p_calc = self.p_hock + np.array([0.0, 0.010 * s, -0.036 * s])
-        self.p_ach_up = self.p_shin + 0.44 * (self.p_hock - self.p_shin) + np.array([0.0, 0.0, -0.026 * s])
+        # Heavy theropod caudofemoralis thigh, drumstick gastrocnemius + anterior tibialis crus, and robust astragalus-calcaneum hock
+        self.p_ham_top = self.p_thigh + np.array([-0.008 * self.sx * s, -0.048 * s, -0.062 * s])
+        self.p_ham_low = self.p_shin + 0.36 * (self.p_hock - self.p_shin) + np.array([-0.005 * self.sx * s, 0.012 * s, -0.048 * s])
+        self.p_calf = self.p_shin + 0.34 * (self.p_hock - self.p_shin) + np.array([0.004 * self.sx * s, 0.0, -0.022 * s])
+        self.p_tib_hi = self.p_shin + np.array([0.002 * self.sx * s, -0.016 * s, 0.015 * s])
+        self.p_tib_lo = self.p_hock + np.array([0.0, 0.038 * s, 0.012 * s])
+        self.p_calc = self.p_hock + np.array([0.0, 0.008 * s, -0.032 * s])
+        self.p_ach_up = self.p_shin + 0.46 * (self.p_hock - self.p_shin) + np.array([0.0, 0.0, -0.028 * s])
 
-        # Backward-projecting theropod/raptor hallux (Digit I) behind and medial to the tarsal crown
-        self.h_a = self.p_paw + np.array([-0.010 * self.sx * s, 0.028 * s, -0.010 * s])
-        self.h_b = self.p_paw + np.array([-0.028 * self.sx * s, 0.011 * s, -0.064 * s])
+        # Prominent medial raptor/theropod dewclaw (Digit I) on inner lower tarsus curving medially & forward-downward
+        self.h_a = self.p_paw + np.array([-0.020 * self.sx * s, 0.048 * s, -0.012 * s])
+        self.h_b = self.p_paw + np.array([-0.052 * self.sx * s, 0.024 * s, 0.010 * s])
 
-        # Three long, lean, wide-splayed theropod/monitor digits (II, III, IV; zero mammal paw cushion!)
+        # Three big, thick, individually separated Raptor / T-Rex weight-bearing toes (Digits II, III, IV)
         self.toes = []
+        # (lateral_root_offset, length, half_width, half_height, splay_rad)
         specs = [
-            (-0.014, 0.116, 0.0120, 0.0152, -0.64),
-            ( 0.000, 0.144, 0.0134, 0.0172,  0.00),
-            ( 0.014, 0.112, 0.0118, 0.0148,  0.64),
+            (-0.024, 0.122, 0.0195, 0.0230, -0.56),  # Digit II (thick medial raptor toe, -32 deg)
+            ( 0.000, 0.148, 0.0220, 0.0260,  0.00),  # Digit III (massive central T-Rex toe, 0 deg)
+            ( 0.024, 0.118, 0.0190, 0.0220,  0.56),  # Digit IV (thick lateral toe, +32 deg)
         ]
         for lat, ln, wd, ht, ang in specs:
             lx = lat * self.sx * s
             ca, sa = math.cos(ang * self.sx), math.sin(ang * self.sx)
-            a = np.array([self.p_paw[0] + lx, 0.0170 * s, self.p_paw[2] + 0.004 * s])
-            b = np.array([self.p_paw[0] + lx + sa * ln * s, 0.0108 * s, self.p_paw[2] + 0.004 * s + ca * ln * s])
+            a = np.array([self.p_paw[0] + lx, 0.0230 * s, self.p_paw[2] + 0.010 * s])
+            b = np.array([self.p_paw[0] + lx + sa * ln * s, 0.0155 * s, self.p_paw[2] + 0.010 * s + ca * ln * s])
             self.toes.append((a, b, wd * s, ht * s, ang * self.sx))
 
-        # Exact angle-bisector V-clefts at the metatarsal fork so the 3 digits split cleanly without gouging toe shafts
+        # Deep interdigital V-clefts right at the knuckle fork so the 3 thick toes split cleanly with zero mitten webbing
         self.clefts = []
         for k in range(2):
             a0, _, _, _, ang0 = self.toes[k]
@@ -453,71 +456,104 @@ class LizardLegSculpt:
             mid_ang = 0.5 * (ang0 + ang1)
             dir_v = np.array([math.sin(mid_ang), 0.0, math.cos(mid_ang)])
             base_m = 0.5 * (a0 + a1)
-            cm0 = base_m + dir_v * (0.005 * s) + np.array([0.0, -0.001 * s, 0.0])
-            cm1 = base_m + dir_v * (0.036 * s) + np.array([0.0, -0.003 * s, 0.0])
+            cm0 = base_m + dir_v * (0.010 * s) + np.array([0.0, -0.002 * s, 0.0])
+            cm1 = base_m + dir_v * (0.068 * s) + np.array([0.0, -0.002 * s, 0.0])
             self.clefts.append((cm0, cm1))
 
     def sdf(self, P):
         s = self.s
-        # 1. Thigh + broad reptilian caudofemoralis tail-pull musculature
-        d = HD.round_cone(P, self.p_thigh + np.array([0.0, -0.02 * s, 0.008 * s]), self.p_shin, 0.080 * s, 0.053 * s)
-        d_ham = HD.round_cone(P, self.p_ham_top, self.p_ham_low, 0.068 * s, 0.038 * s)
-        d = HD.smin(d, d_ham, 0.030 * s)
-        d_stifle = HD.ellipsoid(P, self.p_shin + np.array([0.0, 0.005 * s, 0.012 * s]), (0.046 * s, 0.050 * s, 0.055 * s))
-        d = HD.smin(d, d_stifle, 0.018 * s)
+        # 1. Heavy muscular theropod thigh + deep caudofemoralis tail-pull sweep
+        d = HD.round_cone(P, self.p_thigh + np.array([0.0, -0.02 * s, 0.010 * s]), self.p_shin, 0.086 * s, 0.058 * s)
+        d_ham = HD.round_cone(P, self.p_ham_top, self.p_ham_low, 0.074 * s, 0.042 * s)
+        d = HD.smin(d, d_ham, 0.032 * s)
+        d_stifle = HD.ellipsoid(P, self.p_shin + np.array([0.0, 0.005 * s, 0.014 * s]), (0.052 * s, 0.054 * s, 0.058 * s))
+        d = HD.smin(d, d_stifle, 0.020 * s)
 
-        # 2. Crus + sharp angular calcaneal hock spur
-        d_crus = HD.round_cone(P, self.p_shin, self.p_hock, 0.051 * s, 0.025 * s)
-        d_gastroc = HD.ellipsoid(P, self.p_calf, (0.045 * s, 0.076 * s, 0.052 * s))
-        d_crus = HD.smin(d_crus, d_gastroc, 0.020 * s)
-        d_ach = HD.round_cone(P, self.p_ach_up, self.p_calc, 0.019 * s, 0.016 * s)
-        d_hock = HD.ellipsoid(P, self.p_calc + np.array([0.0, -0.002 * s, -0.002 * s]), (0.021 * s, 0.025 * s, 0.028 * s))
-        d = HD.smin(d, d_crus, 0.020 * s)
-        d = HD.smin(d, d_ach, 0.012 * s)
-        d = HD.smin(d, d_hock, 0.012 * s)
+        # 2. Drumstick crus (gastrocnemius + anterior tibialis) + thick astragalus-calcaneum hock
+        d_crus = HD.round_cone(P, self.p_shin, self.p_hock, 0.058 * s, 0.035 * s)
+        d_gastroc = HD.ellipsoid(P, self.p_calf, (0.053 * s, 0.090 * s, 0.060 * s))
+        d_tib = HD.round_cone(P, self.p_tib_hi, self.p_tib_lo, 0.044 * s, 0.030 * s)
+        d_crus = HD.smin(d_crus, d_gastroc, 0.024 * s)
+        d_crus = HD.smin(d_crus, d_tib, 0.020 * s)
+        d_ach = HD.round_cone(P, self.p_ach_up, self.p_calc, 0.025 * s, 0.023 * s)
+        d_hock = HD.ellipsoid(P, self.p_calc + np.array([0.0, -0.002 * s, 0.002 * s]), (0.032 * s, 0.034 * s, 0.035 * s))
+        d = HD.smin(d, d_crus, 0.022 * s)
+        d = HD.smin(d, d_ach, 0.014 * s)
+        d = HD.smin(d, d_hock, 0.015 * s)
 
-        # 3. Lean, sinewy reptilian tarso-metatarsus + compact bony knuckle fork + rear hallux (Digit I)
-        d_meta = HD.round_cone(P, self.p_hock, self.p_paw + np.array([0.0, -0.002 * s, 0.002 * s]), 0.0235 * s, 0.0185 * s)
-        d_fork = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.006 * s, 0.003 * s]), (0.021 * s, 0.0155 * s, 0.019 * s))
-        d_meta = HD.smin(d_meta, d_fork, 0.008 * s)
-        # Rear hallux with phalangeal swell
+        # 3. Broad, sinewy 3-column theropod arctometatarsus (MT II, III, IV extensor tendons) + weighty T-Rex heel pad
+        d_meta = HD.round_cone(P, self.p_hock, self.p_paw + np.array([0.0, 0.002 * s, 0.006 * s]), 0.034 * s, 0.031 * s)
+        for lat_k, end_x in ((-1.0, -0.024), (0.0, 0.0), (1.0, 0.024)):
+            d_mt = HD.round_cone(
+                P,
+                self.p_hock + np.array([lat_k * 0.009 * self.sx * s, -0.004 * s, 0.003 * s]),
+                self.p_paw + np.array([end_x * self.sx * s, -0.002 * s, 0.012 * s]),
+                0.020 * s,
+                0.021 * s,
+            )
+            d_meta = HD.smin(d_meta, d_mt, 0.008 * s)
+        # Compact, broad knuckle condyle crown & thick T-Rex plantar heel pad behind the fork
+        d_crown = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.005 * s, 0.008 * s]), (0.042 * s, 0.024 * s, 0.028 * s))
+        d_heel_pad = HD.ellipsoid(P, self.p_paw + np.array([0.0, -0.017 * s, -0.020 * s]), (0.034 * s, 0.019 * s, 0.032 * s))
+        d_meta = HD.smin(d_meta, d_crown, 0.011 * s)
+        d_meta = HD.smin(d_meta, d_heel_pad, 0.012 * s)
+
+        # Stout medial dewclaw / hallux (Digit I) with phalangeal knuckle & ungual collar
         hab = self.h_b - self.h_a
         ht_u = np.clip(((P - self.h_a) @ hab) / max(float(hab @ hab), 1e-12), 0.0, 1.0)
         hq = self.h_a + ht_u[:, None] * hab
-        hr = (0.0110 * (1.0 - 0.24 * ht_u) * (1.0 + 0.12 * np.cos(2.0 * math.pi * 1.5 * ht_u))) * s
+        hr = (0.0148 * (1.06 - 0.20 * ht_u) * (1.0 + 0.12 * np.cos(2.0 * math.pi * 1.5 * ht_u))) * s
         d_hal = np.linalg.norm(P - hq, axis=1) - hr
-        d_meta = HD.smin(d_meta, d_hal, 0.0065 * s)
-        d = HD.smin(d, d_meta, 0.013 * s)
+        d_meta = HD.smin(d_meta, d_hal, 0.008 * s)
+        d = HD.smin(d, d_meta, 0.015 * s)
 
-        # Transverse anterior tarsal scutes + posterior keeled tarsal ridge
-        ant_band = sm(0.025 * s, 0.06 * s, P[:, 1]) * (1.0 - sm(0.36 * s, 0.46 * s, P[:, 1])) * sm(-0.005 * s, 0.022 * s, P[:, 2] - self.p_hock[2])
-        d -= 0.0012 * s * ant_band * np.cos(P[:, 1] * (210.0 / max(s, 1e-4)))
+        # Narrow anterior-only tarsal scute strip (strictly on front midline of instep, never wrapping around sides like a hose!)
+        x_mid = np.exp(-(((P[:, 0] - self.p_paw[0]) / (0.020 * s)) ** 2))
+        ant_band = (
+            x_mid
+            * sm(0.030 * s, 0.055 * s, P[:, 1])
+            * (1.0 - sm(0.18 * s, 0.25 * s, P[:, 1]))
+            * sm(0.012 * s, 0.032 * s, P[:, 2] - self.p_hock[2])
+        )
+        d -= 0.0014 * s * ant_band * np.cos(P[:, 1] * (210.0 / max(s, 1e-4)))
 
-        # 4. Three long, splayed, individually articulated theropod toes with dorsal scute ridges
+        # 4. Three big, thick, cleanly separated Raptor / T-Rex toes (np.minimum prevents interdigital mitten fusion!)
         d_toes = np.full(len(P), 1e9)
-        for a, b, wd, ht, _ in self.toes:
+        for k_t, (a, b, wd, ht, ang) in enumerate(self.toes):
             ab = b - a
             L2 = float(ab @ ab)
             t = np.clip(((P - a) @ ab) / max(L2, 1e-12), 0.0, 1.0)
             q = a + t[:, None] * ab
             dp = P - q
-            # Three distinct phalangeal knuckle swells + slight ungual bulb at tip
-            knuckle = 1.0 + 0.15 * np.cos(2.0 * math.pi * 3.0 * t) + 0.09 * np.exp(-(((t - 0.94) / 0.08) ** 2))
-            taper = 1.05 - 0.28 * t
-            r_w = wd * taper * knuckle
-            r_h = ht * taper * knuckle
-            dt = (np.sqrt((dp[:, 0] / r_w) ** 2 + (dp[:, 1] / r_h) ** 2 + (dp[:, 2] / r_w) ** 2) - 1.0) * np.minimum(r_w, r_h)
-            # Dorsal transverse scute armor plates along the top of each toe
-            top_m = np.clip(dp[:, 1] / np.maximum(r_h, 1e-6), 0.0, 1.0) * sm(0.05, 0.18, t) * (1.0 - sm(0.88, 0.98, t))
-            dt -= 0.0012 * s * top_m * np.cos(2.0 * math.pi * 7.5 * t)
-            d_toes = HD.smin(d_toes, dt, 0.0035 * s)
-        for cm0, cm1 in self.clefts:
-            dc = HD.round_cone(P, cm0, cm1, 0.0048 * s, 0.0068 * s)
-            d_toes = HD.smax(d_toes, -dc, 0.003 * s)
-        d = HD.smin(d, d_toes, 0.007 * s)
+            ca, sa = math.cos(ang), math.sin(ang)
+            fwd = np.array([sa, 0.0, ca])
+            side = np.array([ca, 0.0, -sa])
+            dx_loc = dp @ side
+            dy_loc = dp[:, 1]
+            dz_loc = dp @ fwd
 
-        # Flatten plantar sole cleanly onto ground y = 0.000
-        d = HD.smax(d, -P[:, 1], 0.0035 * s)
+            # Bold phalangeal knuckle swells (3 phalanges) + scaly ungual collar hood around the claw base
+            knuckle = 1.0 + 0.14 * np.cos(2.0 * math.pi * 3.0 * t) + 0.15 * np.exp(-(((t - 0.94) / 0.07) ** 2))
+            taper = 1.06 - 0.22 * t
+            # Fleshy plantar digital cushion pads bulging toward the ground under each phalanx
+            sole_flair = 1.0 + 0.16 * np.clip(-dy_loc / max(ht, 1e-6), 0.0, 1.0)
+            r_w = wd * taper * knuckle * sole_flair
+            r_h = ht * taper * knuckle
+            dt = (np.sqrt((dx_loc / r_w) ** 2 + (dy_loc / r_h) ** 2 + (dz_loc / r_w) ** 2) - 1.0) * np.minimum(r_w, r_h)
+
+            # Raised overlapping dorsal scute plates along the top crest of each toe
+            top_m = np.clip(dy_loc / np.maximum(r_h, 1e-6), 0.0, 1.0) * np.exp(-((dx_loc / np.maximum(r_w * 0.62, 1e-6)) ** 2))
+            scute_env = sm(0.04, 0.14, t) * (1.0 - sm(0.90, 0.98, t))
+            dt -= 0.0024 * s * top_m * scute_env * np.cos(2.0 * math.pi * (7.5 if k_t != 1 else 9.0) * t)
+            d_toes = np.minimum(d_toes, dt)
+
+        for cm0, cm1 in self.clefts:
+            dc = HD.round_cone(P, cm0, cm1, 0.0075 * s, 0.0095 * s)
+            d_toes = HD.smax(d_toes, -dc, 0.0035 * s)
+        d = HD.smin(d, d_toes, 0.0085 * s)
+
+        # Flatten plantar sole & fleshy digital cushions cleanly onto ground y = 0.000
+        d = HD.smax(d, -P[:, 1], 0.0040 * s)
 
         # 5. Seamless blend into Human.body upper thigh at y_cut .. y_top
         blend = sm(self.y_cut - 0.085 * s, self.y_cut - 0.005 * s, P[:, 1])
@@ -532,7 +568,7 @@ class LizardLegSculpt:
         return d
 
     def paint(self, V, N):
-        """Reptile COLOR_0 shade (1.0 at collar so Human.body + skin_detail matches seamlessly; monitor mottle & dark dorsal toe scutes below)."""
+        """Theropod COLOR_0 shade (1.0 at collar so Human.body + skin_detail matches seamlessly; mottled raptor hide & dark dorsal scute armor below)."""
         s = self.s
         n = len(V)
         col = np.ones((n, 3), dtype=float)
@@ -545,57 +581,68 @@ class LizardLegSculpt:
         back = np.clip(-N[:, 2], 0.0, 1.0)
         up_n = np.clip(N[:, 1], 0.0, 1.0)
 
-        # Monitor-lizard dorsal/lateral mottle
+        # Theropod / raptor mottled banding along outer thigh, drumstick calf & ankle
         vx, vy, vz = V[:, 0] / max(s, 1e-4), V[:, 1] / max(s, 1e-4), V[:, 2] / max(s, 1e-4)
-        mottle = np.sin(vx * 52.0 + vy * 37.0) * np.cos(vz * 47.0 - vy * 29.0)
-        dark = (0.11 * outer + 0.06 * back + 0.08 * np.clip(mottle, 0.0, 1.0)) * below_collar
+        mottle = np.sin(vx * 46.0 + vy * 34.0) * np.cos(vz * 42.0 - vy * 27.0)
+        stripe = np.clip(np.sin(vy * 28.0 + vz * 16.0), 0.0, 1.0) * (0.55 * outer + 0.35 * back)
+        dark = (0.13 * outer + 0.07 * back + 0.10 * np.clip(mottle, 0.0, 1.0) + 0.09 * stripe) * below_collar
         col *= (1.0 - dark)[:, None]
 
-        # Darker armoured dorsal scutes along top of toes & anterior ankle, paler inner/ventral scales
-        toe_scute = sm(0.86, 0.96, u_y) * up_n * below_collar
-        col = col * (1.0 - 0.22 * toe_scute[:, None]) + np.array([0.66, 0.68, 0.52]) * (0.22 * toe_scute[:, None])
+        # Dark keratinized overlapping dorsal scute plates down the front of the ankle & tops of all 3 toes
+        instep_scute = sm(0.72, 0.88, u_y) * (front ** 1.5) * below_collar
+        toe_scute = sm(0.86, 0.96, u_y) * (up_n ** 1.3) * below_collar
+        scute_mask = np.clip(0.50 * instep_scute + toe_scute, 0.0, 1.0)
+        scute_groove = 0.5 + 0.5 * np.cos(vz * 175.0 + vy * 145.0)
+        scute_amt = scute_mask * (0.30 + 0.18 * scute_groove)
+        col = col * (1.0 - scute_amt[:, None]) + np.array([0.36, 0.37, 0.29]) * scute_amt[:, None]
 
-        pale = (0.10 * inner * (1.0 - sm(0.55, 0.80, u_y)) + 0.08 * front * sm(0.48, 0.78, u_y)) * below_collar
-        col = col * (1.0 - pale[:, None]) + np.array([1.15, 1.13, 0.96]) * pale[:, None]
+        # Warm pale counter-shading on inner thigh & underside wrinkles
+        pale = (0.11 * inner * (1.0 - sm(0.55, 0.82, u_y))) * below_collar
+        col = col * (1.0 - pale[:, None]) + np.array([1.14, 1.12, 0.96]) * pale[:, None]
 
-        # Tough leathery plantar digital pads
-        pad = sm(0.018 * s, 0.005 * s, V[:, 1]) * sm(0.10, 0.55, -N[:, 1]) * below_collar
-        col = col * (1.0 - pad[:, None]) + np.array([0.58, 0.56, 0.48]) * pad[:, None]
+        # Tough, pebbled dark-slate plantar digital cushions & heel pad
+        pad = sm(0.022 * s, 0.006 * s, V[:, 1]) * sm(0.08, 0.52, -N[:, 1]) * below_collar
+        col = col * (1.0 - pad[:, None]) + np.array([0.42, 0.40, 0.34]) * pad[:, None]
         zeros = np.zeros(n, dtype=float)
         return np.clip(col, 0.0, 1.25), zeros, zeros
 
     def claws_mesh(self):
-        """Large, laterally compressed, sickle-curved theropod/monitor talons on digits II..IV + rear hallux I."""
+        """Massive, curved, deep charcoal-black Raptor / T-Rex ungual talons protruding boldly from Digits II..IV + medial dewclaw I."""
         s = self.s
         V, N, C, T = [], [], [], []
-        rings, segs = 10, 10
+        rings, segs = 14, 14
         talons = []
-        lengths = [0.038 * s, 0.046 * s, 0.036 * s]
-        heights = [0.0082 * s, 0.0096 * s, 0.0080 * s]
-        widths = [0.0042 * s, 0.0048 * s, 0.0040 * s]
+        # Protrude cleanly from the distal ungual hood (b + fwd * 0.011*s) so the full 5.0-6.2 cm horn talon is visible!
+        # Digit II has a taller arched Raptor sickle curve; Digit III is the massive central T-Rex ungual
+        lengths = [0.056 * s, 0.064 * s, 0.050 * s]
+        heights = [0.0175 * s, 0.0185 * s, 0.0155 * s]
+        widths = [0.0118 * s, 0.0135 * s, 0.0110 * s]
+        arches = [0.0125 * s, 0.0085 * s, 0.0070 * s]
+        drops = [0.0175 * s, 0.0165 * s, 0.0155 * s]
         for k, (a, b, wd, ht, ang) in enumerate(self.toes):
             ca, sa = math.cos(ang), math.sin(ang)
             fwd = np.array([sa, 0.0, ca])
             side = np.array([ca, 0.0, -sa])
-            talons.append((np.array([b[0] - sa * 0.004 * s, 0.0135 * s, b[2] - ca * 0.004 * s]), fwd, side, lengths[k], widths[k], heights[k], 0.0125 * s))
-        # Rear hallux talon curving backward and down
+            base_pt = np.array([b[0] + sa * 0.009 * s, 0.0180 * s, b[2] + ca * 0.009 * s])
+            talons.append((base_pt, fwd, side, lengths[k], widths[k], heights[k], arches[k], drops[k]))
+
+        # Prominent medial Raptor/Theropod dewclaw talon (Digit I) curving medially, forward & sharply downward
         hd = self.h_b - self.h_a
         hd_h = np.array([hd[0], 0.0, hd[2]])
         hd_h /= max(np.linalg.norm(hd_h), 1e-6)
         h_side = np.array([-hd_h[2], 0.0, hd_h[0]])
-        talons.append((self.h_b + np.array([0.0, 0.001 * s, 0.0]), hd_h, h_side, 0.025 * s, 0.0034 * s, 0.0064 * s, 0.0095 * s))
+        talons.append((self.h_b + hd_h * (0.006 * s) + np.array([0.0, 0.002 * s, 0.0]), hd_h, h_side, 0.040 * s, 0.0092 * s, 0.0135 * s, 0.0055 * s, 0.0195 * s))
 
-        for base_c, fwd, side, cl_len, r0_w, r0_h, drop in talons:
+        for base_c, fwd, side, cl_len, r0_w, r0_h, arch_h, drop in talons:
             v0 = sum(len(x) for x in V)
             pts, nrms = [], []
             for i in range(rings):
                 u = i / (rings - 1)
-                taper = max(0.06, (1.0 - u) ** 0.88)
-                # Arch slightly up out of the ungual sheath, then hook sharply downward like a raptor/monitor talon
-                arch_y = 0.0042 * s * math.sin(math.pi * u) - drop * (u ** 1.85)
+                taper = max(0.06, (1.0 - u) ** 0.80)
+                arch_y = arch_h * math.sin(math.pi * u) - drop * (u ** 1.75)
                 c = base_c + fwd * (u * cl_len) + np.array([0.0, arch_y, 0.0])
-                c[1] = max(c[1], 0.0022 * s + r0_h * taper * 0.45)
-                dy_du = 0.0042 * s * math.pi * math.cos(math.pi * u) - drop * 1.85 * (max(u, 0.04) ** 0.85)
+                c[1] = max(c[1], 0.0022 * s + r0_h * taper * 0.32)
+                dy_du = arch_h * math.pi * math.cos(math.pi * u) - drop * 1.75 * (max(u, 0.04) ** 0.75)
                 tang = fwd * cl_len + np.array([0.0, dy_du, 0.0])
                 tang /= np.linalg.norm(tang)
                 up = np.cross(tang, side)
@@ -604,10 +651,15 @@ class LizardLegSculpt:
                     up = -up
                 for j in range(segs):
                     th = 2.0 * math.pi * j / segs
-                    d = math.sin(th) * side * (r0_w * taper) + math.cos(th) * up * (r0_h * taper)
-                    nrm = math.sin(th) * side / max(r0_w, 1e-6) + math.cos(th) * up / max(r0_h, 1e-6)
+                    st_th, ct_th = math.sin(th), math.cos(th)
+                    flat_bot = 0.70 if ct_th < 0.0 else 1.0
+                    sulcus = 1.0 - 0.16 * (abs(st_th) ** 3) * math.sin(math.pi * min(1.0, max(0.0, (u - 0.10) / 0.80)))
+                    rw = r0_w * taper * sulcus
+                    rh = r0_h * taper * flat_bot
+                    d = st_th * side * rw + ct_th * up * rh
+                    nrm = st_th * side / max(rw, 1e-6) + ct_th * up / max(rh, 1e-6)
                     if i == rings - 1:
-                        d *= 0.14
+                        d *= 0.12
                         nrm = nrm * 0.20 + tang * 0.92
                     nrm /= np.linalg.norm(nrm)
                     pts.append(c + d)
@@ -618,9 +670,9 @@ class LizardLegSculpt:
             nrms.append(fwd)
             V.append(np.array(pts))
             N.append(np.array(nrms))
-            # Warm bone-keratin sheath base grading to dark horn tip so talons read clearly at distance
+            # True linear-RGB dark charcoal-obsidian dinosaur keratin ([0.036, 0.031, 0.024] root -> [0.007, 0.007, 0.006] glossy black tip!)
             u_col = np.array([i / (rings - 1) for i in range(rings) for _ in range(segs)] + [1.0])
-            cc = np.outer(1.0 - 0.84 * (u_col ** 0.85), np.array([0.44, 0.39, 0.27])) + np.outer(0.84 * (u_col ** 0.85), np.array([0.06, 0.052, 0.042]))
+            cc = np.outer(1.0 - 0.82 * (u_col ** 0.72), np.array([0.038, 0.033, 0.025])) + np.outer(0.82 * (u_col ** 0.72), np.array([0.007, 0.007, 0.006]))
             C.append(cc)
             for i in range(rings - 1):
                 for j in range(segs):
@@ -1214,8 +1266,8 @@ def build_species_legs(
         c = chains[sd]
         xs = [c['DigiThigh'][0], c['DigiShin'][0], c['DigiHock'][0], c['DigiPaw'][0]]
         zs = [c['DigiThigh'][2], c['DigiShin'][2], c['DigiHock'][2], c['DigiPaw'][2]]
-        y_ankle_lo = 0.044 * s
-        y_ankle_hi = 0.062 * s
+        y_ankle_lo = (0.064 if is_lizard else 0.044) * s
+        y_ankle_hi = (0.084 if is_lizard else 0.062) * s
         f_leg = lambda P, sc=sc, y0=y_ankle_lo, ss=s: HD.smax(sc.sdf(P), y0 - P[:, 1], 0.004 * ss)
         g_leg = lambda P, f=f_leg, e=2e-4: (lambda g: g / np.maximum(np.linalg.norm(g, axis=1, keepdims=True), 1e-12))(
             np.stack([f(P + np.array(o)) - f(P - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1)
@@ -1228,10 +1280,10 @@ def build_species_legs(
         g_paw = lambda P, f=f_paw, e=1.5e-4: (lambda g: g / np.maximum(np.linalg.norm(g, axis=1, keepdims=True), 1e-12))(
             np.stack([f(P + np.array(o)) - f(P - np.array(o)) for o in ((e, 0, 0), (0, e, 0), (0, 0, e))], 1)
         )
-        paw_wx = 0.135 if is_frog else (0.125 if is_lizard else 0.065)
-        paw_z0 = 0.092 if is_frog else (0.100 if is_lizard else 0.055)
-        paw_z1 = 0.185 if is_frog else (0.180 if is_lizard else 0.115)
-        paw_cell = (0.0028 if is_frog else (0.0034 if is_lizard else PAW_CELL)) * s
+        paw_wx = 0.135 if is_frog else (0.150 if is_lizard else 0.065)
+        paw_z0 = 0.092 if is_frog else (0.095 if is_lizard else 0.055)
+        paw_z1 = 0.185 if is_frog else (0.215 if is_lizard else 0.115)
+        paw_cell = (0.0028 if is_frog else (0.0028 if is_lizard else PAW_CELL)) * s
         parts_spec = [
             (f_leg, g_leg, np.array([min(xs) - 0.14 * s, y_ankle_lo - 0.015 * s, min(zs) - 0.08 * s]),
              np.array([max(xs) + 0.14 * s, sc.y_top + 0.02 * s, max(zs) + 0.12 * s]), LEG_CELL * s, 0.0),
@@ -1328,7 +1380,7 @@ def build_species_legs(
         prims.append({
             'mesh_name': mid + '_claws',
             'mat': 'Mod.%s_claws' % species,
-            'rough': 0.30 if is_lizard else 0.32,
+            'rough': 0.26 if is_lizard else 0.32,
             'V': np.concatenate(cl_Vs),
             'N': np.concatenate(cl_Ns),
             'U': np.concatenate(cl_Us),
@@ -1375,13 +1427,11 @@ def build_species_legs(
         'replaces_feet': True,
         'digitigrade': digi_spec,
     }
-    if is_lizard or is_frog:
-        entry['test'] = True
-        if is_frog:
-            fg_head = next((it for it in kit['items'] if it['id'] == 'mod_head_frog'), None)
-            if fg_head and 'pattern' in fg_head:
-                entry['pattern'] = json.loads(json.dumps(fg_head['pattern']))
-    else:
+    if is_frog:
+        fg_head = next((it for it in kit['items'] if it['id'] == 'mod_head_frog'), None)
+        if fg_head and 'pattern' in fg_head:
+            entry['pattern'] = json.loads(json.dumps(fg_head['pattern']))
+    elif not is_lizard:
         entry['furred'] = True
         entry['fur'] = [[-1000.0, 1000.0, 'brush', 0, 0]]
 

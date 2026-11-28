@@ -229,6 +229,17 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
   `20-hamlet-cultures.js` reaches ~56 builds): register `KHAMLET.shorekinRow()` on `KHAMLET.CULTURES['shore-kin']` alongside
   `shumariRow()` (`core/hamlet/shumari/25-hamlet-shumari.js`), and fold `core/camp/fleet/58-camp-fleet.js` into `core/camp/` once
   all `core/camp` consumers rebuild together.
+- **Move `core/engine/27-mat.js` fallback resets before `SV_LIB` & fold 4 new biome crop zones** (2026-11-28, Utari-Kuran / Painted Men /
+  Hush-Kin wave): `core/engine/27-mat.js` currently resets `MAT.plain`, `MAT.brass`, `MAT.bone`, and `MAT.flag` after its `SV_LIB` loop
+  (requiring `svLibMat(...)` re-binds in `kits/{timpar-kuran,hueru-kuran,painted-men,hush-kin,hayrant}/src/27z-*-matfix.js` so
+  `kits/resources` ore veins stay textured); swap the order in `27-mat.js` during the `core/engine` `fingerprint.py` pass, fold
+  `CROPS.BIOMES` entries for `veiledmountains`, `matronscoast`, `swouterwall`, and `ricochetpeaks` into `kits/crops/src/`, and add
+  `"timpar_kuran"` alongside `"hush_kin"` in `core/charactermodels/data/peoples.json`.
+- **Sync `77-sim-6d-decrees.js`, `77-sim-6p-pilgrims.js` & NE-Rim coupled `JJ_TUNE` + `FC_TUNE` in the all-builds pass** (2026-11-28,
+  Jimjam `P0`–`P5` & 27-Settlement Economy): register `core/simulation/77-sim-6d-decrees.js` (`SIM.observance`) and
+  `core/simulation/77-sim-6p-pilgrims.js` (`SIM.pilgrimage`, `SIM.pilgrimMarket`) in `core/PORT.md` + `godot/tools/sync_core.py` (noting
+  that both must load *after* `77-sim-7-lod.js` so `SIM.level` is wrapped, and callers must never wipe module-load `SIM.stepHooks = []`);
+  re-cut `openworld/north-basin` to `Jimjam`'s Scale Model 5.1 pin `(745, 546, +486.2 m)` when `north-basin` rebuilds.
 - **Move `CROPS.BIOMES.arch` into `kits/crops/src/`** (2026-11-26, Arcoforte P3b; `kits/crops` reaches 61 builds / 150 pages): copy
   `ARCH.CROPS` (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) from `biomes/arch/src/40-biome-arch-chem.js`
   into `kits/crops/src/10-crop-core.js` (`BIOMES.arch`), add `'arch'` to `home` on `taro`, `breadfruit`, `banana`, `coconut`,

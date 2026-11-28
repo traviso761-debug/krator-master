@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.263,
+    1.073
+   ],
+   "seam_before": [
+    1.187,
+    1.207
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.62,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leather",
+  "id": "leather.foundry.pigskin",
+  "metal": 0.0,
+  "roughness": 0.62,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "leather_foundry_pigskin.png",
+  "generator": "Codex image generation, Nov 2026 (exec-3d30ba39-fa34-4503-8085-97607cb98460.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Thick oil-tanned blast-furnace foundry apron pigskin leather at 28 cm garment scale (#6e472b, #4f311c), showing distinct clustered three-pore pigskin follicle grain, heavy waxed linen saddle-stitching along lap joints, small flush-hammered copper and blackened iron washer-rivets (#a87438, #2b2d30), and subtle darkened heat-scorch mottling from molten iron splash, matte oiled finish. Full colour.",
+  "sha1": "ae86cecce1625c399a7903b65350a91b53c5b3e1"
+ }
+}

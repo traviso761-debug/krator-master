@@ -2,7 +2,7 @@
 /* ================================================================= MIRABILIS — Multi-Kit City Plan, Hamlets, Camp & Walk Graph ([G data])
    Built on KRATOR_KITS (core/kits/10-core-kits.js) + KCITY.multikit (core/city/42-city-multikit.js) +
    KHAMLET.village (core/hamlet) + KCAMP.halt (core/camp/50-camp-tents.js) + KSPACE + KMASK.
-   Showcases all 47 non-diorama hy_* pieces from kits/hayrant alongside 38 et_* suzerain pieces from kits/eternian:
+   Showcases all 53 non-diorama hy_* pieces from kits/hayrant alongside 38 et_* suzerain pieces from kits/eternian:
      - W1 Pepar-Hom Citadel & Suzerain Spine (55% Hayrant / 45% Eternian, <= 0.50 m mixed-avenue cornice delta)
      - W2 Sutar-Tawar Star-Spur & Siru-Spring Sanctuary (90% Hayrant / 10% Eternian)
      - W3 Kuran-Kotan & West Pass Gate (88% Hayrant / 12% Eternian + 36-city-covered winter market galleries)
@@ -10,7 +10,7 @@
      - W5 Yut-Ma Mill-Gorge & Kiln Floor (92% Hayrant / 8% Eternian along river & mill-leat)
      - W6 Fulcrum Brow Escarpment Lip (70% Hayrant / 30% Eternian + 5 active KCONS rising construction lots)
      - H1 Madder-Terrace Farming Hamlet (North Yuan across the Yut Moon-Bridge)
-     - H2 Breccia-Adit Mining Hamlet (SW megabreccia scarp + RES_ORE iron/gold/silver/tin/saltpeter nodes)
+     - H2 Breccia-Adit Mining Hamlet (SW megabreccia scarp + RES_ORE iron/gold/silver/tin/saltpeter/rare-earth nodes)
      - C1 Ukor-Tera Whale-Clan Caravan Halt (KCAMP.halt laager outside hy_pass_gate)
    Plain data and pure functions: zero THREE, zero DOM, zero Math.random. */
 
@@ -56,20 +56,21 @@ var MB_CITY = (function () {
     hy_nuraghe_chise_mid: 7.04
   };
 
-  /* All 47 standalone Hayrant pieces expected in Mirabilis (every hy_* def except the kit-sheet hy_mixed_street diorama) */
+  /* All 55 standalone Hayrant pieces expected in Mirabilis (every hy_* def except the kit-sheet hy_mixed_street diorama) */
   var REQUIRED_HY_KEYS = [
     'hy_loess_yaodong', 'hy_larch_chise_poor', 'hy_scarp_cellar_poor', 'hy_terrace_row_poor',
     'hy_bench_house_mid', 'hy_nuraghe_chise_mid', 'hy_courtyard_loess_mid', 'hy_corner_turret_mid',
     'hy_clan_lord_compound', 'hy_merchant_tower_rich',
     'hy_prefect_seat', 'hy_clock_observatory', 'hy_assay_registry', 'hy_examination_school',
-    'hy_tube_relay', 'hy_talking_head', 'hy_kuran_legation',
-    'hy_spring_stepwell', 'hy_withdrawn_sanctuary', 'hy_ancestor_barrow',
-    'hy_nuraghe_fort', 'hy_pass_gate', 'hy_wall_segment', 'hy_beacon_nuraghe',
+    'hy_tube_relay', 'hy_talking_head', 'hy_kuran_legation', 'hy_censorate_warden',
+    'hy_grand_cyber_totem', 'hy_cyber_totem_obelisk',
+    'hy_spring_stepwell', 'hy_withdrawn_sanctuary', 'hy_ancestor_barrow', 'hy_head_totem_court',
+    'hy_nuraghe_fort', 'hy_pass_gate', 'hy_wall_segment', 'hy_beacon_nuraghe', 'hy_veilpass_picket',
     'hy_saltpeter_works', 'hy_ore_adit', 'hy_stoneware_kiln', 'hy_nephrite_lapidary',
-    'hy_larch_flume_yard', 'hy_iron_smithy', 'hy_plaid_weaver',
+    'hy_larch_flume_yard', 'hy_iron_smithy', 'hy_plaid_weaver', 'hy_rare_earth_smelter', 'hy_charcoal_tar_kiln',
     'hy_millet_bakehouse', 'hy_smokehouse_butcher', 'hy_buckwheat_brewery', 'hy_pelt_tannery',
     'hy_granary_nuraghe', 'hy_warehouse_vault', 'hy_escarpment_hoist',
-    'hy_caravanserai_inn', 'hy_hearth_tavern', 'hy_market_hall', 'hy_healer_bath',
+    'hy_caravanserai_inn', 'hy_hearth_tavern', 'hy_market_hall', 'hy_healer_bath', 'hy_pu_chandlery',
     'hy_terrace_farmstead', 'hy_fell_fold', 'hy_mushroom_drift', 'hy_trench_fishery',
     'hy_statuary_ranks'
   ];
@@ -401,10 +402,12 @@ var MB_CITY = (function () {
     var PINNED = [
       /* W1 Pepar-Hom Citadel & Suzerain Spine */
       { id: 'lm.prefect_seat', ward: 'W1', key: 'hayrant:hy_prefect_seat', x: -48, z: 215, ry: 0, cls: 'civic', landmark: true },
+      { id: 'lm.grand_cyber_totem', ward: 'W1', key: 'hayrant:hy_grand_cyber_totem', x: -20.5, z: 282, ry: Math.PI, cls: 'civic', landmark: true },
       { id: 'lm.statuary_ranks', ward: 'W1', key: 'hayrant:hy_statuary_ranks', x: -48, z: 298, ry: Math.PI, cls: 'civic', landmark: true },
       { id: 'lm.assay_registry', ward: 'W1', key: 'hayrant:hy_assay_registry', x: 52, z: 218, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.exam_school', ward: 'W1', key: 'hayrant:hy_examination_school', x: 55, z: 302, ry: Math.PI, cls: 'civic', landmark: true },
       { id: 'lm.tube_relay', ward: 'W1', key: 'hayrant:hy_tube_relay', x: 192, z: 222, ry: 0, cls: 'civic', landmark: true },
+      { id: 'lm.censorate_warden', ward: 'W1', key: 'hayrant:hy_censorate_warden', x: -104, z: 115, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.et_ministry', ward: 'W1', key: 'eternian:et_ministry', x: -52, z: 102, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.et_exam', ward: 'W1', key: 'eternian:et_examination_hall', x: 52, z: 102, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.et_registry', ward: 'W1', key: 'eternian:et_registry', x: -52, z: 425, ry: Math.PI, cls: 'civic', landmark: true },
@@ -417,14 +420,17 @@ var MB_CITY = (function () {
       { id: 'lm.healer_bath', ward: 'W2', key: 'hayrant:hy_healer_bath', x: 376, z: -84, y: 3110.0, ry: 0, cls: 'civic', landmark: true, force: true },
       { id: 'lm.talking_head', ward: 'W2', key: 'hayrant:hy_talking_head', x: 338, z: -34, y: 3115.5, ry: Math.PI, cls: 'civic', landmark: true, allowSteep: true, skipRoad: true },
       { id: 'lm.barrow', ward: 'W2', key: 'hayrant:hy_ancestor_barrow', x: -492, z: 562, ry: 0.4, cls: 'civic', landmark: true, allowSteep: true },
+      { id: 'lm.head_totem_court', ward: 'W2', key: 'hayrant:hy_head_totem_court', x: -432, z: 576, ry: Math.PI, cls: 'civic', landmark: true, allowSteep: true },
 
       /* W3 Kuran-Kotan & West Pass Gate */
       { id: 'lm.pass_gate', ward: 'W3', key: 'hayrant:hy_pass_gate', x: -625, z: 243, ry: 0, cls: 'civic', landmark: true, force: true },
       { id: 'lm.nuraghe_fort', ward: 'W3', key: 'hayrant:hy_nuraghe_fort', x: -565, z: 202, ry: 0, cls: 'civic', landmark: true },
+      { id: 'lm.veilpass_picket', ward: 'W3', key: 'hayrant:hy_veilpass_picket', x: -565, z: 292, ry: Math.PI, cls: 'civic', landmark: true },
       { id: 'lm.wall_seg_n', ward: 'W3', key: 'hayrant:hy_wall_segment', x: -625, z: 222, ry: Math.PI * 0.5, cls: 'civic', landmark: true, force: true },
       { id: 'lm.wall_seg_s', ward: 'W3', key: 'hayrant:hy_wall_segment', x: -625, z: 282, ry: Math.PI * 0.5, cls: 'civic', landmark: true, force: true },
       { id: 'lm.kuran_legation', ward: 'W3', key: 'hayrant:hy_kuran_legation', x: -485, z: 215, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.caravanserai', ward: 'W3', key: 'hayrant:hy_caravanserai_inn', x: -485, z: 306, ry: Math.PI, cls: 'tavern', landmark: true },
+      { id: 'lm.cyber_totem_obelisk', ward: 'W3', key: 'hayrant:hy_cyber_totem_obelisk', x: -386, z: 242, ry: 0, cls: 'civic', landmark: true },
       { id: 'lm.market_hall', ward: 'W3', key: 'hayrant:hy_market_hall', x: -355, z: 218, ry: 0, cls: 'shop', landmark: true },
       { id: 'lm.hearth_tavern', ward: 'W3', key: 'hayrant:hy_hearth_tavern', x: -355, z: 298, ry: Math.PI, cls: 'tavern', landmark: true },
       { id: 'lm.plaid_weaver', ward: 'W3', key: 'hayrant:hy_plaid_weaver', x: -398, z: 122, ry: 0, cls: 'industrial', landmark: true },
@@ -435,6 +441,7 @@ var MB_CITY = (function () {
       { id: 'lm.yaodong_b2w', ward: 'W4', key: 'hayrant:hy_loess_yaodong', x: -355, z: -13, y: 3114.0, ry: Math.PI, cls: 'poor', landmark: true, allowSteep: true },
       { id: 'lm.yaodong_b2e', ward: 'W4', key: 'hayrant:hy_loess_yaodong', x: -185, z: -13, y: 3114.0, ry: Math.PI, cls: 'poor', landmark: true, allowSteep: true },
       { id: 'lm.mushroom_b3', ward: 'W4', key: 'hayrant:hy_mushroom_drift', x: -318, z: -55, y: 3108.5, ry: Math.PI, cls: 'industrial', landmark: true, allowSteep: true },
+      { id: 'lm.pu_chandlery', ward: 'W4', key: 'hayrant:hy_pu_chandlery', x: -205, z: -56, y: 3108.5, ry: Math.PI, cls: 'shop', landmark: true, allowSteep: true },
       { id: 'lm.bakehouse_w4', ward: 'W4', key: 'hayrant:hy_millet_bakehouse', x: -115, z: 29, y: 3119.5, ry: Math.PI, cls: 'shop', allowSteep: true },
       { id: 'lm.brewery_w4', ward: 'W4', key: 'hayrant:hy_buckwheat_brewery', x: -115, z: -14, y: 3114.0, ry: Math.PI, cls: 'industrial', allowSteep: true },
       { id: 'lm.butcher_w4', ward: 'W4', key: 'hayrant:hy_smokehouse_butcher', x: -125, z: -56, y: 3108.5, ry: Math.PI, cls: 'shop', allowSteep: true },
@@ -445,7 +452,9 @@ var MB_CITY = (function () {
       { id: 'lm.saltpeter', ward: 'W5', key: 'hayrant:hy_saltpeter_works', x: -135, z: -133, y: 2943.5, ry: Math.PI, cls: 'industrial', landmark: true, force: true },
       { id: 'lm.gorge_smithy', ward: 'W5', key: 'hayrant:hy_iron_smithy', x: -88, z: -171, y: 2943.5, ry: 0, cls: 'industrial', force: true },
       { id: 'lm.tannery_w5', ward: 'W5', key: 'hayrant:hy_pelt_tannery', x: -190, z: -133, y: 2943.5, ry: Math.PI, cls: 'industrial', force: true },
+      { id: 'lm.rare_earth', ward: 'W5', key: 'hayrant:hy_rare_earth_smelter', x: 84, z: -268, y: 2930.5, ry: 0, cls: 'industrial', landmark: true, allowSteep: true },
       { id: 'lm.dragon_kiln', ward: 'W5', key: 'hayrant:hy_stoneware_kiln', x: 135, z: -268, y: 2930.5, ry: 0, cls: 'industrial', landmark: true, allowSteep: true },
+      { id: 'lm.charcoal_kiln', ward: 'W5', key: 'hayrant:hy_charcoal_tar_kiln', x: 176, z: -268, y: 2930.5, ry: 0, cls: 'industrial', landmark: true, allowSteep: true },
       { id: 'lm.gorge_granary', ward: 'W5', key: 'hayrant:hy_granary_nuraghe', x: 215, z: -268, y: 2930.5, ry: 0, cls: 'industrial', allowSteep: true },
       { id: 'lm.et_porcelain', ward: 'W5', key: 'eternian:et_porcelain', x: 295, z: -268, y: 2930.5, ry: 0, cls: 'industrial', allowSteep: true },
       { id: 'lm.et_kiln', ward: 'W5', key: 'eternian:et_kiln', x: 362, z: -268, y: 2930.5, ry: 0, cls: 'industrial', allowSteep: true },
@@ -684,7 +693,8 @@ var MB_CITY = (function () {
       { id: 'ore.gold.1', kind: 'gold', grade: 'medium', key: 'node-gold-medium', x: -738, z: 742, y: G.h(-738, 742) },
       { id: 'ore.silver.1', kind: 'silver', grade: 'medium', key: 'node-silver-medium', x: -688, z: 734, y: G.h(-688, 734) },
       { id: 'ore.tin.1', kind: 'tin', grade: 'low', key: 'node-tin-low', x: -835, z: 722, y: G.h(-835, 722) },
-      { id: 'ore.nitre.1', kind: 'saltpeter', grade: 'medium', key: 'node-saltpeter-medium', x: -158, z: -133, y: 2943.6 }
+      { id: 'ore.nitre.1', kind: 'saltpeter', grade: 'medium', key: 'node-saltpeter-medium', x: -158, z: -133, y: 2943.6 },
+      { id: 'ore.rare.1', kind: 'rare-earth', grade: 'medium', key: 'node-rare-earth-medium', x: 56, z: -274, y: 2930.6 }
     ];
 
     var h1Spec = KHAMLET.village({
@@ -754,12 +764,12 @@ var MB_CITY = (function () {
       tryAddLot(RURAL_PINS[rpi]);
     }
 
-    /* Bind every mine/saltpeter works to its nearest RES_ORE node via resSource (42r-res-ore.js) */
+    /* Bind every mine, rare-earth smelter & saltpeter works to its nearest RES_ORE node via resSource (42r-res-ore.js) */
     var oreBindings = [];
     if (typeof resSource === 'function') {
       for (var li = 0; li < lots.length; li++) {
         var lt = lots[li];
-        if (lt.rawKey === 'hy_ore_adit' || lt.rawKey === 'hy_saltpeter_works') {
+        if (lt.rawKey === 'hy_ore_adit' || lt.rawKey === 'hy_saltpeter_works' || lt.rawKey === 'hy_rare_earth_smelter') {
           var src = resSource({ x: lt.x, z: lt.z, works: 'mine' }, oreNodes, { radius: 260 });
           if (src) {
             lt.oreSource = src;

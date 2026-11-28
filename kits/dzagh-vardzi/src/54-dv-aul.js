@@ -2,7 +2,7 @@
 // ================================================================= TERRACED CLIFF-AUL DWELLINGS & NEEDLE-TOWER COMPOUNDS (style: 'aul', DV4 + DV2)
 // 9 dwellings (3 poor, 3 middle, 3 rich): stacked Dagestani stone roof-plaza houses where lower flat slate-and-cypress roofs
 // form sunny apricot-drying terraces for stepped-back upper tiers, sprouting razor-slender 5:1 battered defense needle-towers
-// crowned with gleaming stepped snow-white quartz pyramids, mashikul boxes, nephrite cross-medallions, and aerial pulley-baskets.
+// crowned with stepped dark mountain-slate, charcoal-basalt & crimson-tuff roofs, mashikul boxes, nephrite cross-medallions, and aerial pulley-baskets.
 
 /* ---- POOR TERRACED AUL DWELLINGS (3) ---- */
 defBuilding({key:'dv-aul-cot-shepherd',name:'Khai-Sakli Shepherd Roof-Terrace Cot',seed:7101,cls:'building',w:8.8,d:8.2,h:7.2,cut:true,
@@ -98,7 +98,7 @@ defBuilding({key:'dv-aul-house-terrace',name:'Darbazi-Aul Two-Tier Roof-Plaza Ho
 
 defBuilding({key:'dv-aul-house-koshki',name:'Koshki-Sakli Cousin-Knight Needle-Tower House',seed:7105,cls:'building',w:12.6,d:11.2,h:17.2,cut:true,
  tags:{types:['dwelling-single','military'],wealth:'middle',style:'aul',role:'koshki tower-house'},
- note:'Polychrome ablaq hearth-house sprouting a razor-slender 5:1 battered defense needle-tower crowned with a gleaming snow-white quartz pyramid and mashikul boxes.',
+ note:'Polychrome ablaq hearth-house sprouting a razor-slender 5:1 battered defense needle-tower crowned with stepped dark mountain-slate, basalt & crimson-tuff corbels and mashikul boxes.',
  build(){
   const w0=7.6,d0=6.8,cx0=-1.35,y0=.32,h0=3.55;
   dvRootSkirt(cx0,0,w0,d0,5.8,{mk:'colBasalt',plinthH:y0+.24});
@@ -119,7 +119,7 @@ defBuilding({key:'dv-aul-house-koshki',name:'Koshki-Sakli Cousin-Knight Needle-T
 
 defBuilding({key:'dv-aul-house-ropeway',name:'Bagiri-Aul Ropeway Canyon-House',seed:7106,cls:'building',w:13.4,d:11.6,h:16.4,cut:true,
  tags:{types:['dwelling-multi'],wealth:'middle',style:'aul',role:'ropeway canyon-house'},
- note:'Twin stepped ablaq canyon tiers joined by a roof-plaza deck, 5:1 white-quartz watch-needle, and an aerial gorge ropeway pulley-cradle.',
+ note:'Twin stepped ablaq canyon tiers joined by a roof-plaza deck, 5:1 dark-slate & basalt watch-needle, and an aerial gorge ropeway pulley-cradle.',
  build(){
   const y0=.34;
   /* west lower tier */
@@ -131,7 +131,7 @@ defBuilding({key:'dv-aul-house-ropeway',name:'Bagiri-Aul Ropeway Canyon-House',s
   });
   dvExtStair(-2.4,3.7+.9,0,y0,PI,1.22,.9);
   dvRoofTerrace(-2.4,.5,6.3,6.5,y0+3.4,{openRight:true});
-  /* east stepped upper tier (+0.85 m higher) + rear 5:1 quartz needle-tower */
+  /* east stepped upper tier (+0.85 m higher) + rear 5:1 slate-crowned needle-tower */
   const yE=1.15;
   dvRootSkirt(2.85,-.4,5.6,6.0,6.2,{mk:'colBasalt',plinthH:yE+.18});
   dvFloorRect(2.85,-.4,5.5,5.9,yE,'floor',P('floor'));
@@ -152,7 +152,7 @@ defBuilding({key:'dv-aul-house-ropeway',name:'Bagiri-Aul Ropeway Canyon-House',s
 /* ---- RICH CHIVALRIC COUSIN-LORD COMPOUNDS (3) ---- */
 defBuilding({key:'dv-manor-cousins',name:'Aznaur-Dzagh Chivalric Cousin-Retinue Compound',seed:7107,cls:'building',w:17.2,d:14.4,h:18.8,cut:true,
  tags:{types:['dwelling-multi','military'],wealth:'rich',style:'aul',role:'cousin-lord compound'},
- note:'Three-tier Dagestani roof-plaza manor flanked by twin razor-slender 5:1 snow-white quartz needle-towers, housing a royal cousin retinue and heirloom scale hauberks.',
+ note:'Three-tier Dagestani roof-plaza manor flanked by twin razor-slender 5:1 dark-slate & crimson-tuff needle-towers, housing a royal cousin retinue and heirloom scale hauberks.',
  build(){
   const w0=10.4,d0=8.6,y0=.38,h0=3.85;
   dvRootSkirt(0,.8,w0,d0,6.2,{mk:'colBasalt',plinthH:y0+.26});
@@ -175,7 +175,7 @@ defBuilding({key:'dv-manor-cousins',name:'Aznaur-Dzagh Chivalric Cousin-Retinue 
   });
   dvGableRoof(0,cz1,w1,d1,y1+.02+h1,1.75,{mk:'verdigris'});
 
-  /* twin 5:1 snow-white quartz defense needle-towers flanking the rear corners! */
+  /* twin 5:1 dark-slate & basalt defense needle-towers flanking the rear corners! */
   dvNeedleTower(-6.35,-3.2,2.75,0,13.2,{rootD:6.4,doorYaw:0,pulley:true,pulleyYaw:-PI/2,pulleyDrop:3.6});
   dvNeedleTower(6.35,-3.2,2.6,0,12.2,{rootD:6.4,doorYaw:0});
   dvBanner(-2.2,y1,4.85,0,2.8,P('crimson'));
@@ -190,7 +190,7 @@ defBuilding({key:'dv-manor-cousins',name:'Aznaur-Dzagh Chivalric Cousin-Retinue 
 
 defBuilding({key:'dv-manor-gumbat',name:'Vardzi-Darbazi Noble Gumbat & Needle Villa',seed:7108,cls:'building',w:15.6,d:13.6,h:17.8,cut:true,
  tags:{types:['dwelling-single'],wealth:'rich',style:'aul',role:'noble gumbat villa'},
- note:'Polychrome apricot-tuff & basalt noble villa crowned by a 12-pleat patinated verdigris copper gumbat lantern over the central darbazi hall, plus a 5:1 quartz corner tower.',
+ note:'Polychrome apricot-tuff & basalt noble villa crowned by a 12-pleat patinated verdigris copper gumbat lantern over the central darbazi hall, plus a 5:1 slate-crowned koshki corner tower.',
  build(){
   const w0=9.6,d0=8.8,cx0=-1.2,y0=.36,h0=4.25;
   dvRootSkirt(cx0,0,w0,d0,6.0,{mk:'colBasalt',plinthH:y0+.25});
@@ -205,7 +205,7 @@ defBuilding({key:'dv-manor-gumbat',name:'Vardzi-Darbazi Noble Gumbat & Needle Vi
   dvRoofTerrace(cx0,0,w0+.16,d0+.16,y0+h0,{parapet:true});
   /* 12-pleat patinated verdigris copper Akhtamar gumbat lantern rising from the flat slate roof-plaza! */
   dvGumbat(cx0,-.3,2.05,y0+h0,2.45,3.15,{mk:'verdigris',windows:4});
-  /* paired 5:1 quartz-crowned needle-tower on east flank */
+  /* paired 5:1 slate-crowned needle-tower on east flank */
   dvNeedleTower(5.15,-1.8,2.6,0,12.6,{rootD:6.2,doorYaw:0,pulley:true,pulleyYaw:PI/2});
   dvFurnRoom(cx0,0,w0-1.0,d0-1.0,y0,'rich',{ceilingY:y0+h0-.18});
   FURNISH('dv_armour_stand_scale',cx0+3.2,y0,2.4,-PI*.75);

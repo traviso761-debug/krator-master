@@ -23,16 +23,19 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `26k-kit.js` | 7 |  |
 | `27v-hy-vstack.js` | 9 |  |
 | `27z-hy-matfix.js` | 3 |  |
-| `34-hy-trades.js` | 9 |  |
-| `39-hy-furn.js` | 11 |  |
+| `34-hy-trades.js` | 12 |  |
+| `39-hy-furn.js` | 15 |  |
 | `40-hy-kit.js` | 34 **big** |  |
-| `50-hy-dwell.js` | 24 |  |
-| `54-hy-state.js` | 23 |  |
-| `58-hy-faith-def.js` | 19 |  |
-| `62-hy-works.js` | 15 |  |
-| `66-hy-trades-land.js` | 33 **big** |  |
-| `70-hy-street.js` | 7 |  |
-| `89-rows.js` | 2 |  |
+| `41-hy-formline.js` | 28 |  |
+| `41a-hy-portal-pu.js` | 11 |  |
+| `50-hy-dwell.js` | 25 |  |
+| `54-hy-state.js` | 29 |  |
+| `54b-hy-cybertotem.js` | 5 |  |
+| `58-hy-faith-def.js` | 29 |  |
+| `62-hy-works.js` | 22 |  |
+| `66-hy-trades-land.js` | 37 **big** |  |
+| `70-hy-street.js` | 8 |  |
+| `89-rows.js` | 3 |  |
 | `90z-hy-atmos.js` | 3 |  |
 | `91z-hy-world.js` | 7 |  |
-| `99-host-tz-hy.js` | 18 |  |
+| `99-host-tz-hy.js` | 21 |  |

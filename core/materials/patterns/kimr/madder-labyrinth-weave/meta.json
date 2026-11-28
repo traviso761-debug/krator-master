@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.943,
+    1.161
+   ],
+   "seam_before": [
+    0.985,
+    0.58
+   ],
+   "source_size": [
+    1747,
+    1672
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "kimr/madder-labyrinth-weave",
+  "metal": 0.0,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__kimr__madder-labyrinth-weave.png",
+  "generator": "Codex image generation, Nov 2026 (exec-70f037df-05da-4562-b86b-939b9e4f5991.png) [pre-squared 2x1 vertical stack from 1774x887 -> 1747x1672]",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Ancestral Puebloan-meets-Cimmerian Kimr mountain-goat and mammoth-wool tapestry cloth: thick hand-spun cream-kaolin (#ebe5d6) and soot-black (#1c1a18) twill ground woven in red-ochre madder (#982e22) and golden-ochre (#c4882c) with interlocking Chaco-Hopi stepped canyon-labyrinth frets, stylized Aurochs horn pairs, and stamped white kaolin handprints (four repeats across and two registers down, strictly zero metallic thread), seam-aligned. Full colour.",
+  "sha1": "0f6f11b0436ae243cc94649df3875f64f88306da"
+ }
+}

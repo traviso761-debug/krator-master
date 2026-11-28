@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.376,
+    1.324
+   ],
+   "seam_before": [
+    2.661,
+    2.059
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.05,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": false,
+   "rough": 0.52,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "screamers/plastic-rust-mosaic",
+  "metal": 0.25,
+  "roughness": 0.52,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "screamer-cargo-cult-treasure-mantle-2048.png",
+  "generator": "Codex image generation, Nov 2026 (screamer-cargo-cult-treasure-mantle-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Screamer cargo-cult treasure mantle woven onto plaited palm-bast (#b89858) with stripped multi-coloured copper ribbon-cables: densely shingled with prized flaky orange-red oxidized rust-iron washers and hull squares (#a84218, #7c2e12) alternating with vivid scavenged pre-Cataclysm plastic bottle-caps, translucent acrylic reflector shards, and blank keycap tiles in electric cyan (#28ccf0), hazard neon-yellow (#f2dc24), and vivid plastic magenta-coral (#d83268), zero readable letters or numbers. Full colour.",
+  "sha1": "1f46707fa4a4a45af7450619dea590e0d70d033c"
+ }
+}

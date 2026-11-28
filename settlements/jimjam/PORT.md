@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 14 (3%) | 23 (5%) | 10 (2%) | 26 (6%) | 357 (83%) |
+| KB | 236 (26%) | 23 (3%) | 10 (1%) | 78 (9%) | 558 (62%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -28,26 +28,45 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/62-jj-culture.js` | 14.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/63-jj-zfix.js` | 7.4 | [web] | 0 | 0 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
 | `src/70-jj-housing.js` | 56.1 | [draw] | 12 | 0 | 0 | 0 | 0 | 9 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/70b-jj-housing-more.js` | 19.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 9 extra poor/middle/rich housing varieties via jjHouse* |
 | `src/71-jj-shops.js` | 42.3 | [draw] | 12 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/72-jj-hospitality.js` | 29.5 | [draw] | 8 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/73-jj-civic.js` | 23.8 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/73-jj-civic.js` | 26.4 | [draw] | 5 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/73b-jj-work.js` | 32.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 20 Voth-census trade, kiln, glass, harbour, vessel & orchard assets |
+| `src/73c-jj-economy.js` | 16.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 10 SIM.economy smithy, pottery, oil-press, gypsum, tailor, sarraf & hamlet works |
 | `src/74-jj-sacred.js` | 18.2 | [draw] | 11 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/74b-jj-celestial.js` | 23.2 | [draw] | 6 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/75-jj-palace.js` | 22.0 | [draw] | 6 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/76-jj-military.js` | 31.1 | [draw] | 10 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/76-jj-military.js` | 34.4 | [draw] | 11 | 0 | 0 | 0 | 0 | 7 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/77-jj-agri.js` | 25.7 | [draw] | 11 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/78-jj-trades.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
+| `src/78-jj-trades.js` | 7.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the Voth census table: plain data |
 | `src/80-cultures.js` | 15.3 | [draw] | 2 | 1 | 0 | 0 | 0 | 13 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
 | `src/81-sky.js` | 9.5 | [G native] | 23 | 4 | 0 | 0 | 0 | 3 | 6 | 0 | 0 | 0 | 0 | shader hook inside |
 | `src/84-jj-furniture.js` | 5.2 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/85-jj-flora-placeholder.js` | 1.7 | [draw] | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/90-scene.js` | 3.9 | [web] | 9 | 0 | 1 | 0 | 0 | 2 | 1 | 0 | 0 | 0 | 0 | the shadow box follows core/host's orbit target (KHOST.cam.ctl) |
-| `src/91-probe.js` | 6.2 | [web] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 |  |
+| `src/91-probe.js` | 6.4 | [web] | 4 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 |  |
 | `src/91t-jj-tags.js` | 2.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | REG into core/tags before the take (core/tags/README.md); Jimjam's spellings mapped, 0 unknowns |
 | `src/92-camera.js` | 1.4 | [web] | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | what stays of the camera on core/host: ui, uiButton, setView with a view's sky, Labels (2026-10-15) |
 | `src/93-labels.js` | 4.0 | [G shader] | 6 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/99-start.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | KHOST.take: views (a view's sky through onView), ground, records, inspector words, minimap; FRAME_HOOKS before the camera, the sky after it: host shell |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
-| `targets/kit/89z-rows.js` | 2.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/city/00-head.html` | 1.0 | [web] | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `targets/city/28-jj-model.js` | 11.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | baked Scale Model 5.1 elevation/wet grid, 360-deg horizon & geology at (745, 546) |
+| `targets/city/30-jj-ground.js` | 19.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | Catmull-Rom 5.1 ground, Lotus Harbour cove, district/temple pads, canal & KDRAWN |
+| `targets/city/32-jj-layout.js` | 91.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 11-zone 50k metropolis & handu layout, Dilihan/Izani mix, White-Pass compound |
+| `targets/city/34-jj-rules.js` | 15.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | pin, solstice, palace seam, White-Pass, Dilihan mix, overlap & KTAGS rules |
+| `targets/city/45-jj-stage.js` | 22.1 | [web] | 25 | 4 | 1 | 0 | 0 | 2 | 5 | 0 | 0 | 0 | 0 | WebGL stage, KMASK.canvas road/plaza field, KDRAWN-exact near & 30 km lake meshes |
+| `targets/city/78-jj-sim.js` | 74.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/city/82-jj-cityglue.js` | 4.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | dual-kit JJ/VERN socket dispatch, KFURN catalog batch & Veil +-50 deg pylons |
+| `targets/city/89z-jj-sky.js` | 1.7 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | ATMOS.skyBiome (-34.34 deg S, 56.27 deg, 1.506 atm) & ATMOS.bindHost |
+| `targets/city/89zp-jj-place.js` | 70.0 | [draw] | 20 | 0 | 0 | 0 | 2 | 7 | 2 | 5 | 0 | 0 | 0 | JJ/Dilihan/Vernacular placement, KCONS, WATER, KWALK, nwlowlands flora & Double Dark |
+| `targets/city/90-jj-interiors.js` | 29.6 | [draw] | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `targets/city/92-jj-life.js` | 12.1 | [web] | 23 | 0 | 0 | 0 | 1 | 7 | 0 | 2 | 0 | 0 | 0 | split: data inside host code |
+| `targets/city/94-jj-export.js` | 8.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `targets/city/99-jj-host.js` | 14.4 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 8 preset VIEWS (no apostrophes or colons), solstice/Double-Dark clocks & KHOST.take |
+| `targets/city/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
+| `targets/kit/89z-rows.js` | 2.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `targets/kit/91z-views.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 
 ## Notes

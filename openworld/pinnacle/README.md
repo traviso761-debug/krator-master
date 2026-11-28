@@ -1,10 +1,19 @@
-# Pinnacle: the first site at 1:1
+# Pinnacle: the first site at 1:1, and its roads
 
 The first site cut off the scale model into the open world, with a settlement planned on that ground
-(`openworld/PLAN-SITES.md`; the owner, 2026-11-09).
+(`openworld/PLAN-SITES.md`; the owner, 2026-11-09), grown on 2026-11-11 into a corridor region like the Iziz cluster:
+the roads to the bands' raid and trade partners (`core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`, S5: the sim's land
+logistics book these links).
 
-- **The cut:** Pinnacle Rock (`staiytii0y`, map px 1007,686 on map 5.1) and a 60 km square round it. It covers
-  3,600 km² at 500 m cells, with three named rivers and the Crescent ruin 30 km south-west.
+- **The cut:** `tools/scale-model/cut_site.py pinnacle`, from `openworld/SITES.json`, at 500 m cells (1,553 x 1,625 cells,
+  a box of about 770 x 840 km, px 900..1284 x 482..884 on map 5.1). It is the union of:
+  - Pinnacle Rock's 60 km square (`staiytii0y`, map px 1007,686): the owner kept the 60 km cut for the rock;
+  - each partner's own square (its type's reach: a village 15 km, a ruin or outpost 8 km, Mav's Refuge its 30 km);
+  - a 10 km corridor along each road. A corridor follows the Ancient network's route where one joins the two towns (`net`,
+    `openworld/network-proposal/net51.json`), else the region's own guide on the valley floors (`guide`); cut_site.py lays
+    it as a quad a stretch and an octagon a bend, and keeps the line in `region.json`'s `cut.corridors`.
+- **The frame's origin moved** to the box's centre pixel, 1091,683 (it was the rock's pixel while the cut was its square).
+  Every view and check reads a site's own point; Pinnacle Rock is at x -168 km, z +6 km.
   - **Moved 2026-11-10** (the owner: "a spot not too far that's got a bit more forest"): 41 km west of 1027,681, where
     map 5.1 had left the rock in the NE rim's savanna.
   - The new spot is on the **savage hyperjungle's north-east edge**: a knoll 110 m over its 14 km round, at -1,287 m.
@@ -20,28 +29,56 @@ The first site cut off the scale model into the open world, with a settlement pl
     `core/world/43-world-relief.js`.
   - The frame's origin is the site's pixel. Pinnacle Rock's own page still stands on its old cut at the old pixel, until
     it is rebuilt on the new spot (a re-cut tried on 2026-11-12 left it loading past 16 minutes: its `KNOWN_ISSUES.md`).
-- **The site:** the nine Beast Rider bands that camp on the floor round the rock, and a track from each camp's gate to
-  the rock; and **four clearings** 6-8 km out (2026-11-12, phase S7 of `core/simulation/PROPOSAL-LONGSONG-PINNACLE.md`),
-  farming villages of the ground tribes (core/hamlet's `beast-rider` row: the Beast Riders kit's own buildings, 229 people
-  each), with their roads to the rock. Pinnacle Rock's year on the sim reads them (`settlements/pinnacle-rock/tests/test-pr-economy.js`).
+- **The site:** the nine Beast Rider bands that camp on the floor round the rock, a track from each camp's gate to the
+  rock, and four farming clearings 6-8 km out (the sim's S7: core/hamlet's `beast-rider` row, 229 people each), each with
+  its road to the rock.
   - **The bands:** their tribes' `lower` grounds (`kits/beast-riders` `BR_CAMP`), each searched from the spot the rock's
-    page gives its camp. All nine stand there: 147 tents and pens, with 2,177 hedge and rail pieces.
+    page gives its camp.
   - **The tracks:** `core/world` `ROADS`, the grade held to 8 %.
-  - **The plan is records:**
-    - `core/world/48s-world-sites.js` (`KSITES`) plans on the world's land: `WORLD.Hland`, the land without the roads.
-    - `core/world/bake_sites.py pinnacle` bakes it in node to `plan/sites.json` ('krator-site-plan'). Every id starts
-      with the site's scale-model id.
-    - The page draws the bake (`core/world/88s-world-sites.js`). Its verify plans again in the browser and compares the
-      hash.
-  - **The town on the mesa is not here.** It is `settlements/pinnacle-rock`'s own page, and the world's ground has no
-    mesa (`KNOWN_ISSUES.md`).
+- **The links** (`src/48-world-site.js`, each along its corridor's line, laid, held to 8 %, bridged where it crosses a
+  named river, a caravanserai every 25 km of road and a rest stop between):
+
+  | Link | Line | Km | Up / down m | Inns + rests | Bridges | For |
+  |---|---|---|---|---|---|---|
+  | Pinnacle Rock - Port Goto | Izani highway `izani.17.22` | 186 | 1,757 / 1,797 | 7 + 7 | 0 | raids (Iziz's port) |
+  | Pinnacle Rock - Talon | Beast Rider trail `trail.1.3` | 164 | 1,582 / 1,409 | 6 + 6 | 1 | trade |
+  | Pinnacle Rock - Fort Kreia | guide up onto the NE rim | 131 | 2,887 / 578 | 4 + 5 | 2 | trade |
+  | Talon - Mav's Refuge | Beast Rider trail `trail.0.3`, then a guide to the new spot | 176 | 1,155 / 1,346 | 6 + 7 | 2 | trade (Girder beyond: the Iziz cluster) |
+  | Fort Kreia - Fort Ordo | the trunks by the Sleeping City | 210 | 1,782 / 3,972 | 8 + 8 | 7 | trade |
+  | Fort Ordo - Mav's Refuge | the Ordo-Nusidi trunk | 26 | 25 / 324 | 0 + 1 | 0 | trade |
+  | Mav's Refuge - Nusidi | the Ordo-Nusidi trunk | 125 | 636 / 562 | 4 + 5 | 0 | raids |
+  | Pinnacle Rock - Shade | `dirt.coyote`, the trough east of the rock | 156 | 1,994 / 1,137 | 5 + 6 | 3 | long-distance trade (the Dasri) |
+  | Shade - Coyote Canyon | `dirt.coyote`, out of the trough and up by the basin | 566 | 5,555 / 3,626 | 22 + 22 | 0 | long-distance trade (the coyotemen) |
+
+  - Fort Kreia has no network route from the rock: the network's trunk to it starts at the Crescent, 26 km south-west,
+    and crosses the Talon trail.
+  - The scale model's 5.1e6 moves (2026-11-11): Shade went from the sunken basin (1229,885) to the oasis at 1085,683, on
+    the Coyote road (it passes 3 km off), so Shade is that road's waystation: Coyote Canyon is 721 km from the rock by way
+    of it. Mav's Refuge went from 1024,807 to 1049,841, beside the Ordo-Nusidi trunk, which now carries its roads to Fort
+    Ordo and Nusidi; the Talon trail reaches its old spot and a guide carries it on.
+  - Each link leaves its towns from 1.8 km out, beyond the camps' ring round the rock.
+  - The stops: on the Izani highway to Goto the Iziz Vernacular's (`vern_caravanserai`, `vern_rest_stop`), as in
+    the Iziz cluster; on the trails, trunks and far roads the Beast Riders kit's roadside inn (`br_bldg_riders_inn`)
+    and a watch tower for a rider post (`br_bldg_watch_tower`), drawn through core/world 88s's `beast-riders` kit.
+  - The partners' towns are not planned here: a link's end is the town's point.
+- **The plan is records:**
+  - `core/world/48s-world-sites.js` (`KSITES`) plans on the world's land: `WORLD.Hland`, the land without the roads.
+  - `core/world/bake_sites.py pinnacle` bakes it in node to `plan/sites.json` ('krator-site-plan'). Every id starts
+    with a site's scale-model id.
+  - The page draws the bake (`core/world/88s-world-sites.js`, the bridges `88b`). Its verify plans again in the browser
+    and compares the hash.
+  - `core/world/48t-world-travel.js` (`KTRAVEL`, the sim's S5) reads the links, their stops and bridges as its graph.
+- **The town on the mesa is not here.** It is `settlements/pinnacle-rock`'s own page, and the world's ground has no
+  mesa (`KNOWN_ISSUES.md`).
 - **The flora:**
-  - the hyperjungle grows on the savage hyperjungle, in its stands with saplings under them (its pass table as the
-    retired little-demo gave it). Its far level is an octahedral impostor baked at load from its mid tree
-    (`core/world/84i-world-impostors.js`), so the mid hands over at 600 m;
-  - the abyssal savannah's own trees, and the eastern abyss's it borrows, grow over the NE rim. `src/49-world-absav.js`
-    presents that kit to the world as two registries.
-- **Built output:** `dist/pinnacle.html`, with its texture sidecars.
+  - the hyperjungle grows on the savage hyperjungle and hyperjungle N (Port Goto's), in its stands with saplings under
+    them (its pass table as the retired little-demo gave it). Its far level is an octahedral impostor baked at load from
+    its mid tree (`core/world/84i-world-impostors.js`), so the mid hands over at 600 m;
+  - the abyssal savannah's own trees, and the eastern abyss's it borrows, grow over the NE and E rims. `src/49-world-absav.js`
+    presents that kit to the world as two registries;
+  - the corridors east of the rock (the crater's east wall, the Nomad Country, the Tiers) have no kit yet.
+- **Built output:** `dist/pinnacle.html`, `dist/pinnacle.land.js` (the rasters as PNGs, 8.7 MB, beside the page so the
+  page stays inside its 16 MB cap) and its texture sidecars.
 
 ```
 python3 tools/scale-model/cut_site.py pinnacle     # the cut (data/, source/)
@@ -59,27 +96,34 @@ the kits can ask for (every one is grown at load: `core/world/85p-world-pregrow.
 inside one lock: other work on the machine swings the numbers by up to 2x. The numbers of 2026-11-16 are in
 `KNOWN_ISSUES.md`.
 
-On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto -- python3 verify.py ...`.
+On the GPU: `KRATOR_GL=gpu` (verify.py takes a lane itself, under the stall watchdog).
 
 ## Fragments
 
 | Fragment | Tag | What |
 |---|---|---|
-| `src/46-world-config.js` | [G data] | the site's marker, "Go to" (the site, the cut, the floor, each band's camp), the first view |
-| `src/47-world-kits.js` | [G data] | the kits that grow here: the hyperjungle on the savage hyperjungle, the abyssal savannah on the NE rim, and the eastern abyss's species it borrows |
-| `src/48-world-site.js` | [G data] | the site's spec (`SITE_SPEC`): the bands and the spots their camps are searched from, the tracks' reach and width |
+| `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the rock, its partners, the cut, the floor, each band's camp, each caravanserai), the first view |
+| `src/47-world-kits.js` | [G data] | the kits that grow here: the hyperjungle on the savage hyperjungle and hyperjungle N, the abyssal savannah on the NE and E rims, and the eastern abyss's species it borrows; the overlay-list shim (as the Iziz cluster's) |
+| `src/48-world-site.js` | [G data] | the site's spec (`SITE_SPEC`): the bands and the spots their camps are searched from, the tracks' reach and width, the partners, the links along their corridors' lines, their stops and bridges |
 | `src/49-world-absav.js` | [G data] | the savannah kit as the world reads it (`ABSAV_WORLD`): its passes in the world's shape, one entry per registry |
 
-Everything else is `core/world` (the runtime, `KSITES`, the drawing), `core/camp`, `kits/beast-riders` (`BR_CAMP`, and
-the tents through `settlements/isle-demo/bundles.py`'s `cat_bundle`), and the two kits.
+Everything else is `core/world` (the runtime, `KSITES`, the bridges, the drawing), `core/camp`, `kits/beast-riders`
+(`BR_CAMP`, and the tents through `settlements/isle-demo/bundles.py`'s `cat_bundle`), the Iziz Vernacular (`izv_bundle`:
+the stops), and the two kits.
 
 ## Checks (`verify.py --assert`)
 
 Each check has a negative:
-- **The world's checks**, round the site: order-free seeding, the land continuous, nothing in water or outside the cut,
-  spacing across tiles, the rivers, the tracks on the land at their grade, nothing on a track or in a camp, no NaN.
-- **The region:** the site at px 1007,686, on dry land in the savage hyperjungle, with the hyperjungle kit growing there.
+- **The world's checks**, round the rock: order-free seeding, the land continuous, nothing in water or outside the cut,
+  spacing across tiles, the rivers, the tracks and links on the land at their grade, nothing on a track or in a camp, no NaN.
+- **The region:**
+  - the rock at px 1007,686, at its pixel in the frame, on dry land in the savage hyperjungle, with the hyperjungle kit
+    growing there;
+  - every partner at its pixel, inside the cut;
+  - every corridor's link baked along the line it was cut on (no point more than 6 km off it), inside the cut, with its
+    caravanserais.
 - **The sites:**
   - the baked plan is the plan made again in the browser;
-  - every camp is whole, apart and on good ground, inside its hedge, with its track at its gate;
+  - every camp is whole, apart and on good ground, inside its hedge, with its track at its gate; every stop on good
+    ground; every bridge's deck clear of its water;
   - every camp is cleared of flora, tagged, and drawn with the kit's pieces.

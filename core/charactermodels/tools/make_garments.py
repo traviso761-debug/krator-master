@@ -43,17 +43,42 @@ FABRIC = {'cloth.weave.plain': 0.12, 'cloth.weave.twill': 0.15, 'cloth.plain': 0
           'cloth.weave.burlap': 0.2, 'cloth.cotton.coarse': 0.2, 'cloth.wool': 0.2, 'cloth.velvet': 0.2, 'cloth.quilted': 0.3,
           'cloth.bazin': 0.3, 'cloth.oiled': 0.3, 'leather.polished': 0.25, 'leather.buckskin': 0.3, 'fur.short': 0.2,
           'fur.astrakhan': 0.15, 'straw.plaited': 0.2, 'beads.glass': 0.12, 'shell.nacre': 0.3, 'metal.gold': 0.3,
-          'metal.bronze': 0.3, 'metal.iron': 0.3}
-FABRIC_OF = {'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 'sahel': 'cloth.cotton.coarse',
-             'white': 'cloth.cotton.coarse', 'linen': 'cloth.plain', 'sealinen': 'cloth.plain', 'cream': 'cloth.plain',
-             'leather': 'leather.polished', 'saddle': 'leather.polished', 'hide': 'leather.buckskin', 'buck': 'leather.buckskin',
-             'fur': 'fur.short', 'darkfur': 'fur.short', 'felt': 'cloth.felt', 'velvet': 'cloth.velvet',
-             'purple': 'cloth.silk', 'crimson': 'cloth.silk', 'mongolblue': 'cloth.silk', 'saffron': 'cloth.silk', 'maroon': 'cloth.silk',
-             'yuniyellow': 'cloth.bazin', 'drab': 'cloth.quilted', 'repgrey': 'cloth.wool', 'repgreyd': 'cloth.wool',
-             'repblack': 'cloth.wool', 'repred': 'cloth.wool', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
+          'metal.bronze': 0.3, 'metal.iron': 0.3, 'metal.brass.braid': 0.2,
+          'cloth.lead.oiled': 0.28, 'glass.moonglass.leaded': 0.22, 'metal.tin.patchwork': 0.24,
+          'rubber.tyre': 0.26, 'cloth.tent.black': 0.28,
+          'cloth.cotton.muslin': 0.18, 'cloth.linen.sea': 0.22, 'cloth.ramie.stepped': 0.20,
+          'cloth.silk.slub': 0.22, 'cloth.silk.shot': 0.18, 'cloth.silk.spider': 0.20,
+          'cloth.wool.fulled': 0.22, 'cloth.felt.boiled': 0.24, 'cloth.velvet.cut': 0.20,
+          'cloth.bazin.damask': 0.26, 'cloth.quilted.diamond': 0.28, 'cloth.quilted.channel': 0.25,
+          'cloth.canvas.oiled': 0.28, 'cloth.oiled.alkali': 0.30,
+          'cloth.bark.tapa': 0.26, 'cloth.bark.cedar': 0.26, 'straw.reed.plaited': 0.20,
+          'leather.cuir_bouilli': 0.28, 'leather.pteruges.studded': 0.28,
+          'leather.shagreen.rayskin': 0.16, 'leather.reptile.scute': 0.24,
+          'fur.sable.sheared': 0.20, 'fur.wolf': 0.26, 'fur.yak': 0.28, 'fur.caribou': 0.22, 'fur.muskox': 0.25,
+          'armor.mail.hamata': 0.16, 'armor.scale.squamata': 0.22, 'armor.lorica.lames': 0.28,
+          'armor.linothorax.twill': 0.24, 'armor.lamellar.rawhide': 0.24, 'armor.lamellar.horn': 0.24,
+          'cloth.slops.abaca_stripe': 0.30, 'cloth.gansey.sea_knit': 0.26, 'cloth.oilskin.tarred_seams': 0.35,
+          'cloth.silk.beadcone': 0.28, 'cloth.silk.golden_cable': 0.24, 'cloth.wool.hoar_orchil': 0.30,
+          'leather.foundry.pigskin': 0.28, 'hide.sealslick.oiled': 0.26,
+          'skin.amphibian.warty_toad': 0.18, 'plumage.contour.corvid': 0.20, 'keratin.beak.hornbill': 0.16,
+          'armor.lamellar.bronze': 0.24, 'armor.lamellar.iron': 0.24, 'armor.lamellar.urushi': 0.22,
+          'armor.lamellar.chitin': 0.24, 'armor.osteoderm.scute': 0.28,
+          'armor.salvage.tread_plate': 0.30, 'armor.salvage.ark_barnacle': 0.32,
+          'armor.uruk.slab_iron': 0.30, 'armor.ancient.hex_weave': 0.24, 'armor.republic.cuirass_steel': 0.30,
+          'metal.paktong.brushed': 0.24, 'chitin.shroudant.bronze': 0.24,
+          'stone.ammolite.opalshell': 0.20, 'stone.obsidian.pancake_flaked': 0.20}
+FABRIC_OF = {'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 'sahel': 'cloth.cotton.muslin',
+             'white': 'cloth.cotton.coarse', 'linen': 'cloth.plain', 'sealinen': 'cloth.linen.sea', 'cream': 'cloth.plain',
+             'leather': 'leather.polished', 'saddle': 'leather.cuir_bouilli', 'hide': 'leather.buckskin', 'buck': 'leather.buckskin',
+             'fur': 'fur.wolf', 'darkfur': 'fur.sable.sheared', 'felt': 'cloth.felt.boiled', 'velvet': 'cloth.velvet.cut',
+             'purple': 'cloth.silk', 'crimson': 'cloth.silk', 'mongolblue': 'cloth.silk.slub', 'saffron': 'cloth.silk.slub', 'maroon': 'cloth.silk',
+             'yuniyellow': 'cloth.bazin.damask', 'drab': 'cloth.quilted.diamond', 'repgrey': 'cloth.wool.fulled', 'repgreyd': 'cloth.wool.fulled',
+             'repblack': 'cloth.wool.fulled', 'repred': 'cloth.wool.fulled', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
+             'loden': 'cloth.wool.fulled',
              'nacre': 'shell.nacre', 'gold': 'metal.gold', 'bronze': 'metal.bronze', 'copper': 'metal.bronze', 'brass': 'metal.bronze',
-             'iron': 'metal.iron', 'silver': 'metal.iron', 'pomegranate': 'cloth.silk', 'kesar': 'cloth.silk', 'peacock': 'cloth.silk',
-             'lacrose': 'cloth.silk', 'yakbrown': 'cloth.wool', 'osaffron': 'cloth.cotton.coarse', 'omaroon': 'cloth.wool'}
+             'iron': 'metal.iron', 'silver': 'metal.iron', 'pomegranate': 'cloth.silk.slub', 'kesar': 'cloth.silk.slub', 'peacock': 'cloth.silk.shot',
+             'lacrose': 'cloth.silk.slub', 'ribpink': 'cloth.silk.shot', 'ribgreen': 'cloth.silk.shot',
+             'yakbrown': 'fur.yak', 'osaffron': 'cloth.cotton.coarse', 'omaroon': 'cloth.wool.fulled'}
 GRAIN = {}
 
 
@@ -1201,27 +1226,40 @@ def boots(gid, paint_sole, paint_upper, top=0.45, wraps=0, wrap_paint=None, cuff
     return parts
 
 
-def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, rows=14, n=34, peak=0.05):
-    """a hood: rings round the head's axis from below the jaw (low, a fraction of the head below its joint: the cowl
-    over the neck) up over the crown, open at the face (open_front radians either side of the front, narrowing above
-    the brow so it closes over the head), its top drawn back to a peak"""
+def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, rows=14, n=36, peak=0.05, high=1.0):
+    """Continuous 360-degree closed cowl/hood (`closed=True`) with arched brow opening so smooth_push never splits the crown."""
     a, b = J('Head'), J('Head', 'tail')
     t = (b - a) / np.linalg.norm(b - a)
-    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    x = x - t * x.dot(t); x /= np.linalg.norm(x); y = np.cross(t, x)
-    fs = np.linspace(low, 1.0, rows)
-    eases = np.interp(fs, [low, 0.1, 1.0], [ease_low, ease, ease])
-    # Close horizontally across the brow (f 0.48 to 0.62) rather than narrowing in an inverted-V up to the crown
-    opens = np.interp(fs, [low, 0.45, 0.58, 0.92], [open_front, open_front, 0.0, 0.0])
-    Q = np.array([ring_points(a + (b - a) * f, x, y, np.linspace(-(math.pi - o), math.pi - o, n), e, rmin=0.04, rmax=0.22)
-                  for f, e, o in zip(fs, eases, opens)])
-    c = a + (b - a) * 1.0
-    Q[-1] = c + (Q[-1] - c) * 0.2 + t * ease + x * peak
-    Q[-2] = c + (Q[-2] - c) * 0.65 + t * ease * 0.6 + x * peak * 0.5
-    Q = smooth_push(Q, False, ease, iters=2, rows_ease=eases)
-    # closed over the crown: the last ring drawn in to one point (at 20 % of its radius it left a hole on top)
-    Q[-1] = Q[-1].mean(0)
-    return Part(gid, Q, False, ['body'] * rows, paint)
+    x = np.array([0, 1.0, 0]) - t * np.array([0, 1.0, 0]).dot(t)
+    x /= np.linalg.norm(x)
+    y = np.cross(t, x)
+    fs = np.linspace(low, high, rows)
+    eases = np.interp(fs, [low, 0.10, high], [ease_low, ease, ease])
+    angles = np.linspace(-math.pi, math.pi, n, endpoint=False)
+    o_eff = min(max(float(open_front), 0.35), 1.35)
+    f_brow = min(high - 0.16, 0.62)
+    Q = []
+    for f_r, e_r in zip(fs, eases):
+        row = []
+        for ang in angles:
+            u_fr = max(0.0, (abs(ang) - (math.pi - o_eff)) / max(o_eff, 1e-4))
+            u_arch = math.sin(0.5 * math.pi * min(1.0, u_fr)) ** 1.6
+            f_eff = f_brow + (f_r - low) / max(high - low, 1e-4) * (high - f_brow) if f_r < f_brow else f_r
+            f_pt = f_r * (1.0 - u_arch) + f_eff * u_arch
+            c_pt = a + (b - a) * f_pt
+            d_pt = x * math.cos(ang) + y * math.sin(ang)
+            d_pt /= np.linalg.norm(d_pt)
+            h_hit = first_hit(c_pt, d_pt)
+            r_pt = min(max(0.045, (0.095 if h_hit is None else h_hit) + e_r + 0.006 * u_arch), 0.22)
+            row.append(c_pt + d_pt * r_pt)
+        Q.append(row)
+    Q = np.array(Q, dtype=np.float64)
+    c_top = a + (b - a) * high
+    Q[-1] = c_top + (Q[-1] - c_top) * 0.18 + t * ease + x * peak
+    Q[-2] = c_top + (Q[-2] - c_top) * 0.62 + t * (ease * 0.6) + x * (peak * 0.5)
+    Q = smooth_push(Q, True, ease, iters=2, fix_bottom=True, rows_ease=eases)
+    Q[-1] = Q[-1].mean(axis=0)
+    return Part(gid, Q, True, ['body'] * rows, paint)
 
 
 def blob(name, c, size, paint, n=12, rows=5, out=None):

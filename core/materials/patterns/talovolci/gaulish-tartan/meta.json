@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1166,
+    1221
+   ],
+   "seam_after": [
+    1.007,
+    0.867
+   ],
+   "seam_before": [
+    1.27,
+    1.38
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true,
+   "rough": 0.84,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "talovolci/gaulish-tartan",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.84,
+  "scale": [
+   0.3,
+   0.3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__talovolci__gaulish-tartan.png",
+  "generator": "Codex image generation, Nov 2026 (exec-fffc30db-3352-45f0-98fb-7314801ffde6.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Hallstatt and La Tene Gaulish heavy 2/2 diagonal-twill woollen plaid cloth (four complete symmetrical tartan setts across and four down): bold intersecting warp and weft bands of weld-yellow (#d8b838), deep woad-blue (#2c4c7e), and madder-red (#9e2a22) framed by cloud-moss green (#4a5838) and natural cream fleece (#e8e0cc) overcheck lines, showing coarse hand-spun two-ply wool yarn and crisp diagonal twill ribs, exact sett alignment at seams. Full colour.",
+  "sha1": "d29e705e15ed1cbb572cacd4c0047ab6673547f4"
+ }
+}

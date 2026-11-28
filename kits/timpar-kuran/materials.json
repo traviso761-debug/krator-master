@@ -1,0 +1,527 @@
+{
+ "build": "timpar-kuran",
+ "note": "The Timpar-Kuran ('Timber-Clans') building kit adapter onto core/materials/library (kits/timpar-kuran/PLAN.md): straight-grained split red-cypress & cloud-cedar planks, carved totem logs, salmon-egg-tempera black/red/teal formline reliefs, cypress bark, stepped Ainu reed/sedge thatch, Veiled-Mountain tilted impact-megabreccia & river cobbles, cord-marked Jomon kaen-doki flame-ware clay, cold-hammered native copper, salvaged Kanopi arcology titanium-ceramic alloy, raided Eternian bronze & celadon war-loot, pale shaved-willow inau curls, mountain-elm attus & goat-wool Chilkat weaving, bear/goat pelts, nusa skulls, kits/resources ore veins, and f_* furniture triplanar detail maps.",
+ "size": 512,
+ "families": {
+  "cypress": {
+   "lib": "wood.carved.reddish",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.42, "mean": 0.62, "contrast": 1.12 },
+   "roughLift": 0.22,
+   "specular": 0.25,
+   "breakup": { "mix": 0.35, "macro": 0.08, "cell": 7.5 }
+  },
+  "cedar": {
+   "lib": "wood.weathered_brown_planks",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.35, "mean": 0.58, "contrast": 1.1 },
+   "roughLift": 0.26,
+   "specular": 0.22,
+   "breakup": { "mix": 0.38, "macro": 0.09, "cell": 8.0 }
+  },
+  "silverwood": {
+   "lib": "wood.silver",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.45, "mean": 0.66, "contrast": 1.1 },
+   "roughLift": 0.28,
+   "specular": 0.2
+  },
+  "totem": {
+   "lib": "wood.totem.adzed",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.38, "mean": 0.62, "contrast": 1.14 },
+   "roughLift": 0.2,
+   "specular": 0.28
+  },
+  "totemB": {
+   "lib": "wood.totem.adzed.b",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.38, "mean": 0.62, "contrast": 1.14 },
+   "roughLift": 0.2,
+   "specular": 0.28
+  },
+  "inau": {
+   "size": 256,
+   "lib": "wood.softwood",
+   "scale": [0.85, 0.85],
+   "tint": { "keep": 0.22, "mean": 0.82 },
+   "roughLift": 0.26,
+   "specular": 0.2
+  },
+  "tarwood": {
+   "size": 256,
+   "lib": "wood.tarred",
+   "scale": [1.4, 1.4],
+   "tint": { "keep": 0.3, "mean": 0.5 },
+   "roughLift": 0.18,
+   "specular": 0.32
+  },
+  "timber": {
+   "lib": "wood.timber",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.2, "mean": 0.56 },
+   "metal": 0
+  },
+  "wood": {
+   "size": 256,
+   "lib": "wood.carved.reddish",
+   "scale": [1.5, 1.5],
+   "tint": { "keep": 0.35, "mean": 0.62 },
+   "roughLift": 0.22,
+   "specular": 0.25
+  },
+  "formBlack": {
+   "size": 256,
+   "lib": "wood.painted",
+   "scale": [1.1, 1.1],
+   "tint": { "keep": 0.08, "mean": 0.68 },
+   "roughLift": 0.16,
+   "specular": 0.34
+  },
+  "formRed": {
+   "size": 256,
+   "lib": "wood.painted",
+   "scale": [1.1, 1.1],
+   "tint": { "keep": 0.08, "mean": 0.7 },
+   "roughLift": 0.18,
+   "specular": 0.32
+  },
+  "formTeal": {
+   "size": 256,
+   "lib": "wood.painted",
+   "scale": [1.1, 1.1],
+   "tint": { "keep": 0.08, "mean": 0.7 },
+   "roughLift": 0.18,
+   "specular": 0.32
+  },
+  "formCrest": {
+   "lib": "patterns/timpar/formline-crest",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.96, "mean": 0.72 },
+   "roughLift": 0.2,
+   "specular": 0.28
+  },
+  "formCrestB": {
+   "lib": "patterns/timpar/formline-crest.b",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.96, "mean": 0.72 },
+   "roughLift": 0.2,
+   "specular": 0.28
+  },
+  "bark": {
+   "lib": "bark.cedar.red",
+   "scale": [1.4, 1.4],
+   "tint": { "keep": 0.48, "mean": 0.6, "contrast": 1.12 },
+   "roughLift": 0.3,
+   "specular": 0.18,
+   "breakup": { "mix": 0.32, "macro": 0.08, "cell": 6.5 }
+  },
+  "shingle": {
+   "lib": "roof.shingle.cedar",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.42, "mean": 0.58, "contrast": 1.12 },
+   "roughLift": 0.28,
+   "specular": 0.2,
+   "breakup": { "mix": 0.35, "macro": 0.08, "cell": 7.0 }
+  },
+  "reed": {
+   "lib": "roof.thatch.reed",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.38, "mean": 0.64, "contrast": 1.1 },
+   "roughLift": 0.34,
+   "specular": 0.16,
+   "breakup": { "mix": 0.34, "macro": 0.08, "cell": 6.0 }
+  },
+  "thatch": {
+   "size": 256,
+   "lib": "reed.layers",
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.25, "mean": 0.68 },
+   "roughLift": 0.32,
+   "specular": 0.16
+  },
+  "matting": {
+   "size": 256,
+   "lib": "fibre.reedmat",
+   "scale": [1.0, 1.0],
+   "tint": { "keep": 0.25, "mean": 0.74 },
+   "roughLift": 0.3,
+   "specular": 0.18
+  },
+  "megabreccia": {
+   "lib": "rock.megabreccia",
+   "scale": [3.0, 3.0],
+   "tint": { "keep": 0.45, "mean": 0.56, "contrast": 1.15 },
+   "roughLift": 0.28,
+   "specular": 0.22,
+   "breakup": { "mix": 0.4, "macro": 0.1, "cell": 9.0 }
+  },
+  "cobble": {
+   "lib": "ground.wadi.cobble",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.35, "mean": 0.58, "contrast": 1.12 },
+   "roughLift": 0.26,
+   "specular": 0.24
+  },
+  "basalt": {
+   "size": 256,
+   "lib": "rock.basalt.polygonal",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.25, "mean": 0.54, "contrast": 1.14 },
+   "roughLift": 0.26,
+   "specular": 0.22
+  },
+  "stone": {
+   "lib": "stone.cut.b",
+   "scale": [2.2, 2.2],
+   "tint": { "keep": 0.15, "mean": 0.56 },
+   "metal": 0
+  },
+  "earth": {
+   "size": 256,
+   "lib": "ground.warmsoil",
+   "scale": [2.6, 2.6],
+   "tint": { "keep": 0.3, "mean": 0.56 },
+   "roughLift": 0.36,
+   "specular": 0.14
+  },
+  "turf": {
+   "lib": "roof.turf",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.62, "mean": 0.62, "contrast": 1.1 },
+   "roughLift": 0.36,
+   "specular": 0.14
+  },
+  "kaen": {
+   "lib": "ceramic.terracotta.sooty",
+   "scale": [0.95, 0.95],
+   "tint": { "keep": 0.48, "mean": 0.64, "contrast": 1.14 },
+   "roughLift": 0.22,
+   "specular": 0.24
+  },
+  "terracotta": {
+   "size": 256,
+   "lib": "ceramic.terracotta",
+   "scale": [0.65, 0.65],
+   "tint": { "keep": 0.85, "mean": 0.68 },
+   "metal": 0
+  },
+  "celadon": {
+   "size": 256,
+   "lib": "ceramic.celadon.crackle",
+   "scale": [0.6, 0.6],
+   "tint": { "keep": 0.85, "mean": 0.72 },
+   "metal": 0,
+   "roughLift": 0.18
+  },
+  "copper": {
+   "lib": "metal.copper.mantra",
+   "scale": [0.85, 0.85],
+   "tint": { "keep": 0.55, "mean": 0.68 },
+   "metal": 0.68,
+   "roughLift": 0.08,
+   "specular": 0.5
+  },
+  "bronze": {
+   "size": 256,
+   "lib": "metal.bronze.cast",
+   "scale": [0.8, 0.8],
+   "tint": { "keep": 0.6, "mean": 0.66 },
+   "metal": 0.58,
+   "roughLift": 0.08,
+   "specular": 0.48
+  },
+  "brass": {
+   "size": 256,
+   "lib": "metal.bronze",
+   "scale": [0.5, 0.5],
+   "metal": 0.75,
+   "tint": { "keep": 0.2, "mean": 0.72 },
+   "roughLift": 0.06,
+   "specular": 0.5
+  },
+  "verdigris": {
+   "size": 256,
+   "lib": "metal.bronze.verdigris",
+   "scale": [1.0, 1.0],
+   "metal": 0.42,
+   "tint": { "keep": 0.62, "mean": 0.62 },
+   "roughLift": 0.15,
+   "specular": 0.38
+  },
+  "iron": {
+   "size": 256,
+   "lib": "metal.iron.pitted",
+   "scale": [0.8, 0.8],
+   "tint": { "keep": 0.15, "mean": 0.44 },
+   "metal": 0.52
+  },
+  "kanopiAlloy": {
+   "lib": "metal.titanium",
+   "scale": [2.4, 2.4],
+   "tint": { "keep": 0.65, "mean": 0.74 },
+   "metal": 0.55,
+   "roughLift": 0.08,
+   "specular": 0.48
+  },
+  "kanopiWhite": {
+   "size": 256,
+   "lib": "metal.ancient.white",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.85, "mean": 0.82 },
+   "metal": 0.22
+  },
+  "jade": {
+   "size": 256,
+   "lib": "stone.nephrite",
+   "scale": [0.8, 0.8],
+   "tint": { "keep": 0.55, "mean": 0.66, "contrast": 1.1 },
+   "roughLift": 0.06,
+   "specular": 0.48
+  },
+  "chilkat": {
+   "size": 256,
+   "lib": "cloth.rug.temple",
+   "scale": [1.0, 1.0],
+   "tint": { "keep": 0.35, "mean": 0.68 },
+   "roughLift": 0.26,
+   "specular": 0.22
+  },
+  "attus": {
+   "size": 256,
+   "lib": "cloth.weave.twill",
+   "scale": [0.85, 0.85],
+   "tint": { "keep": 0.22, "mean": 0.74 },
+   "roughLift": 0.28,
+   "specular": 0.2
+  },
+  "hide": {
+   "size": 256,
+   "lib": "cloth.hide.canopy",
+   "scale": [1.1, 1.1],
+   "tint": { "keep": 0.28, "mean": 0.68 },
+   "roughLift": 0.22,
+   "specular": 0.28
+  },
+  "pelt": {
+   "size": 256,
+   "lib": "hide.fur.brown",
+   "scale": [0.8, 0.8],
+   "tint": { "keep": 0.4, "mean": 0.62 },
+   "roughLift": 0.34,
+   "specular": 0.16
+  },
+  "netting": {
+   "size": 256,
+   "lib": "fibre.net",
+   "scale": [0.65, 0.65],
+   "tint": { "keep": 0.25, "mean": 0.7 },
+   "roughLift": 0.3,
+   "specular": 0.2
+  },
+  "rope": {
+   "size": 256,
+   "lib": "fibre.rope.twist",
+   "scale": [0.28, 0.28],
+   "tint": { "keep": 0.25, "mean": 0.72 },
+   "roughLift": 0.32,
+   "specular": 0.2
+  },
+  "bone": {
+   "size": 256,
+   "lib": "bone.skull",
+   "scale": [0.6, 0.6],
+   "tint": { "keep": 0.25, "mean": 0.8 },
+   "roughLift": 0.22,
+   "specular": 0.28
+  },
+  "antler": {
+   "size": 256,
+   "lib": "bone.antler",
+   "scale": [0.5, 0.5],
+   "tint": { "keep": 0.25, "mean": 0.78 },
+   "roughLift": 0.22,
+   "specular": 0.28
+  },
+  "flag": {
+   "size": 256,
+   "lib": "cloth.weave.canvas",
+   "scale": [1.0, 1.0],
+   "tint": { "keep": 0.12, "mean": 0.78 },
+   "roughLift": 0.26,
+   "specular": 0.22
+  },
+  "plain": {
+   "size": 256,
+   "lib": "stone.cut",
+   "scale": [1.4, 1.4],
+   "tint": { "keep": 0.1, "mean": 0.72 },
+   "roughLift": 0.25,
+   "specular": 0.2
+  },
+  "ground": {
+   "lib": "ground.moss002",
+   "scale": [3.8, 3.8],
+   "tint": { "keep": 0.52, "mean": 0.56, "contrast": 1.08 },
+   "roughLift": 0.36,
+   "specular": 0.14,
+   "breakup": { "mix": 0.42, "macro": 0.1, "cell": 11.0 }
+  },
+  "sand": {
+   "lib": "ground.damp_beach_sand",
+   "size": 256,
+   "scale": [3.0, 3.0],
+   "tint": { "keep": 0.3, "mean": 0.76 },
+   "roughLift": 0.32,
+   "specular": 0.16
+  },
+  "marble": {
+   "lib": "rock.marble012",
+   "size": 256,
+   "scale": [1.6, 1.6],
+   "roughLift": 0.12,
+   "specular": 0.25
+  },
+  "gossan": {
+   "lib": "rock.gossan",
+   "size": 256,
+   "scale": [2.0, 2.0],
+   "roughLift": 0.12,
+   "specular": 0.2
+  },
+  "malachite": {
+   "lib": "rock.malachite",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.22
+  },
+  "quartz": {
+   "lib": "rock.quartz.vein",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.22
+  },
+  "cassiterite": {
+   "lib": "rock.cassiterite",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.22
+  },
+  "galena": {
+   "lib": "rock.galena",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.22
+  },
+  "pegmatite": {
+   "lib": "rock.pegmatite",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.22
+  },
+  "coal": {
+   "lib": "rock.coal",
+   "size": 256,
+   "scale": [1.5, 1.5],
+   "roughLift": 0.12,
+   "specular": 0.2
+  },
+  "sulphur": {
+   "lib": "ground.sulphur",
+   "size": 256,
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 0.95, "mean": 0.8 },
+   "roughLift": 0.28,
+   "specular": 0.16
+  },
+  "efflor": {
+   "lib": "ground.efflorescence",
+   "size": 256,
+   "scale": [2.0, 2.0],
+   "roughLift": 0.12,
+   "specular": 0.2
+  },
+  "tar": {
+   "lib": "ground.tar.seep",
+   "size": 256,
+   "scale": [3.0, 3.0],
+   "roughLift": 0.1,
+   "specular": 0.22
+  },
+  "potash": {
+   "lib": "ground.salt.ochre",
+   "size": 256,
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 1.0, "mean": null },
+   "roughLift": 0.28,
+   "specular": 0.24
+  },
+  "soda": {
+   "lib": "ground.soda.crust",
+   "size": 256,
+   "scale": [1.6, 1.6],
+   "tint": { "keep": 1.0, "mean": null },
+   "roughLift": 0.28,
+   "specular": 0.24
+  },
+  "schistem": {
+   "lib": "rock.schist.emerald",
+   "size": 256,
+   "scale": [2.0, 2.0],
+   "roughLift": 0.12,
+   "specular": 0.25
+  },
+  "turq": {
+   "lib": "rock.turquoise.vein",
+   "size": 256,
+   "scale": [0.8, 0.8],
+   "roughLift": 0.08,
+   "specular": 0.28
+  },
+  "f_cloth": { "lib": "cloth.rug.temple", "scale": [0.5, 0.5], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.6 } },
+  "f_silk": { "lib": "cloth.silk", "scale": [0.32, 0.32], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.62 } },
+  "f_linen": { "lib": "cloth.weave.twill", "scale": [0.28, 0.28], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.62 } },
+  "f_paper": { "lib": "paper.parchment", "scale": [0.3, 0.3], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.64 } },
+  "f_wood": { "lib": "wood.carved.reddish", "scale": [0.65, 0.65], "size": 256, "mapOnly": true, "tint": { "keep": 0.12, "mean": 0.56 } },
+  "f_plank": { "lib": "wood.weathered_brown_planks", "scale": [0.75, 0.75], "size": 256, "mapOnly": true, "tint": { "keep": 0.12, "mean": 0.56 } },
+  "f_bamboo": { "lib": "wood.bamboo001c", "scale": [0.45, 0.45], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.6 } },
+  "f_lacquer": { "lib": "wood.timber.stringing", "scale": [0.8, 0.8], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.5 } },
+  "f_bark": { "lib": "bark.cedar.red", "scale": [0.45, 0.45], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.56 } },
+  "f_stone": { "lib": "stone.basalt.polished", "scale": [0.65, 0.65], "size": 256, "mapOnly": true, "tint": { "keep": 0.08, "mean": 0.56 } },
+  "f_plaster": { "lib": "plaster.white_stucco_02", "scale": [0.7, 0.7], "size": 256, "mapOnly": true, "tint": { "keep": 0.05, "mean": 0.62 } },
+  "f_ceramic": { "lib": "ceramic.celadon.crackle", "scale": [0.45, 0.45], "size": 256, "mapOnly": true, "tint": { "keep": 0.12, "mean": 0.64 } },
+  "f_clay": { "lib": "ceramic.terracotta.sooty", "scale": [0.45, 0.45], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.56 } },
+  "f_brick": { "lib": "paving.red_brick", "scale": [0.55, 0.55], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.56 } },
+  "f_concrete": { "lib": "stone.corbel.slab", "scale": [0.7, 0.7], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.58 } },
+  "f_roof": { "lib": "roof.shingle.cedar", "scale": [0.6, 0.6], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.58 } },
+  "f_dome": { "lib": "roof.tile.celadon", "scale": [0.6, 0.6], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.58 } },
+  "f_metal": { "lib": "metal.iron", "scale": [0.5, 0.5], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.5 } },
+  "f_bronze": { "lib": "metal.bronze", "scale": [0.35, 0.35], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.6 } },
+  "f_gold": { "lib": "metal.gold", "scale": [0.25, 0.25], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.62 } },
+  "f_rust": { "lib": "metal.rust.fine", "scale": [0.4, 0.4], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.52 } },
+  "f_pewter": { "lib": "metal.pewter", "scale": [0.35, 0.35], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.58 } },
+  "f_jade": { "lib": "stone.nephrite", "scale": [0.32, 0.32], "size": 256, "mapOnly": true, "tint": { "keep": 0.2, "mean": 0.58 } },
+  "f_obsidian": { "lib": "stone.obsidian", "scale": [0.35, 0.35], "size": 256, "mapOnly": true, "tint": { "keep": 0.05, "mean": 0.52 } },
+  "f_nacre": { "lib": "shell.nacre", "scale": [0.25, 0.25], "size": 256, "mapOnly": true, "tint": { "keep": 0.2, "mean": 0.64 } },
+  "f_shell": { "lib": "shell.conch", "scale": [0.25, 0.25], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.62 } },
+  "f_rope": { "lib": "fibre.rope", "scale": [0.2, 0.2], "size": 256, "mapOnly": true, "tint": { "keep": 0.2, "mean": 0.56 } },
+  "f_ropeTwist": { "lib": "fibre.rope.twist", "scale": [0.2, 0.2], "size": 256, "mapOnly": true, "tint": { "keep": 0.2, "mean": 0.56 } },
+  "f_wicker": { "lib": "fibre.wicker", "scale": [0.25, 0.25], "size": 256, "mapOnly": true, "tint": { "keep": 0.2, "mean": 0.56 } },
+  "f_thatch": { "lib": "reed.mat.woven", "scale": [0.6, 0.6], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.64 } },
+  "f_hide": { "lib": "hide.fur.brown", "scale": [0.35, 0.35], "size": 256, "mapOnly": true, "tint": { "keep": 0.12, "mean": 0.55 } },
+  "f_skin": { "lib": "hide.gut", "scale": [0.3, 0.3], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.58 } },
+  "f_bone": { "lib": "bone.skull", "scale": [0.32, 0.32], "size": 256, "mapOnly": true, "tint": { "keep": 0.15, "mean": 0.64 } },
+  "f_food": { "lib": "food.crust", "scale": [0.16, 0.16], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.6 } },
+  "f_plant": { "lib": "leaf.understorey", "scale": [0.4, 0.4], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.55 } },
+  "f_leafy": { "lib": "leaf.understorey", "scale": [0.4, 0.4], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.55 } },
+  "f_plastic": { "lib": "wood.painted", "scale": [0.4, 0.4], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.58 } },
+  "f_paint": { "lib": "wood.painted", "scale": [0.5, 0.5], "size": 256, "mapOnly": true, "tint": { "keep": 0.0, "mean": 0.58 } },
+  "f_wax": { "lib": "wax.candle", "scale": [0.2, 0.2], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.62 } },
+  "f_tallow": { "lib": "wax.tallow", "scale": [0.2, 0.2], "size": 256, "mapOnly": true, "tint": { "keep": 0.1, "mean": 0.62 } }
+ }
+}

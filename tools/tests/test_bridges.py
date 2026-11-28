@@ -88,7 +88,7 @@ def main():
         bad += 0 if c['ok'] else 1
         print(('PASS  ' if c['ok'] else 'FAIL  ') + c['name'] + '  (' + str(c['detail']) + ')' + ('  (its negative passed)' if c['neg'] else ''))
     # 4. a region that does not ask for bridges plans as before
-    for region in ('xanadu-oidong-highrift', 'iziz-cluster', 'pinnacle'):
+    for region in ('xanadu-oidong-highrift', 'iziz-cluster'):   # (pinnacle asks for bridges since its corridors, 2026-11-11)
         P = B.plan(region)
         P.pop('check', None)
         old = json.load(open(os.path.join(ROOT, 'openworld', region, 'plan', 'sites.json'), encoding='utf-8'))

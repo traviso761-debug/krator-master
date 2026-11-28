@@ -8,7 +8,7 @@
 /* 10. Petty Valley-King's Palace-Citadel (`dv-citadel-mepe`) */
 defBuilding({key:'dv-citadel-mepe',name:'Dzagh-Mepe Tsikhe Petty Valley-King Palace-Citadel',seed:7201,cls:'building',w:21.6,d:18.4,h:22.4,cut:true,
  tags:{types:['civic','military'],wealth:'rich',style:'aul',role:'palace-citadel',landmark:true},
- note:'Seat of a Valley-King (Dzagh-Mepe): polychrome apricot-tuff & basalt ablaq palace crowned by a soaring 12-pleat verdigris copper gumbat spire and flanked by three razor-slender 5:1 snow-white quartz needle-towers.',
+ note:'Seat of a Valley-King (Dzagh-Mepe): polychrome apricot-tuff & basalt ablaq palace crowned by a soaring 12-pleat verdigris copper gumbat spire and flanked by three razor-slender 5:1 dark-slate & crimson-tuff needle-towers.',
  build(){
   const w0=13.2,d0=11.2,y0=.46,h0=4.85;
   dvRootSkirt(0,.6,w0,d0,6.8,{mk:'colBasalt',plinthH:y0+.28});
@@ -33,7 +33,7 @@ defBuilding({key:'dv-citadel-mepe',name:'Dzagh-Mepe Tsikhe Petty Valley-King Pal
   dvRoofTerrace(0,.4,7.55,7.35,y1+2.47,{parapet:false,walk:false});
   dvGumbat(0,.4,2.65,y1+2.47,3.15,4.15,{mk:'verdigris',windows:8});
 
-  /* three clustered 5:1 snow-white quartz needle-towers guarding the flanks & rear keep! */
+  /* three clustered 5:1 dark-slate, basalt & crimson-tuff needle-towers guarding the flanks & rear keep! */
   dvNeedleTower(-8.15,-4.2,2.95,0,15.2,{rootD:6.8,doorYaw:0,pulley:true,pulleyYaw:-PI/2,pulleyDrop:4.2});
   dvNeedleTower(8.15,-4.2,2.85,0,14.4,{rootD:6.8,doorYaw:0});
   dvNeedleTower(-8.05,4.45,2.6,0,12.8,{rootD:6.4,doorYaw:0});
@@ -352,7 +352,7 @@ defBuilding({key:'dv-wall-curtain',name:'Dzagh-Kedeli Ablaq Gorge Curtain-Wall',
 defBuilding({key:'dv-gate-flume',name:'Flumi-Kari Chasm Flume-Tunnel & Twin-Needle Gatehouse',seed:7211,cls:'building',w:15.6,d:10.6,h:18.2,cut:true,
  front:{x:-1.5,z:3.2,yaw:0},
  tags:{types:['military','infrastructure'],wealth:'rich',style:'aul',role:'flume-tunnel gatehouse'},
- note:'Fortified polychrome ablaq valley gatehouse flanked by twin 5:1 snow-white quartz needle-towers, combining a road portal with a vaulted timber log-flume culvert.',
+ note:'Fortified polychrome ablaq valley gatehouse flanked by twin 5:1 dark-slate & basalt needle-towers, combining a road portal with a vaulted timber log-flume culvert.',
  build(){
   /* central gatehouse block with road passage at x = -1.5 and log-flume culvert at x = +1.8 */
   const wC=6.6,dC=5.8,y0=.22,hC=6.2;
@@ -371,7 +371,7 @@ defBuilding({key:'dv-gate-flume',name:'Flumi-Kari Chasm Flume-Tunnel & Twin-Need
   dvFloorRect(0,0,wC-.76,dC-.76,yU,'floor',P('floor'));
   svStair(-2.1,-1.8,y0,yU,0,{style:'ladder',w:.76,mk:'cypress',col:P('cypress')});
   dvRoofTerrace(0,0,wC+.14,dC+.14,y0+hC,{footY:yU});
-  /* twin flanking 5:1 snow-white quartz needle-towers */
+  /* twin flanking 5:1 dark-slate, basalt & crimson-tuff needle-towers */
   dvNeedleTower(-5.25,0,2.75,0,13.4,{rootD:6.2,doorYaw:0,pulley:true,pulleyYaw:-PI/2});
   dvNeedleTower(5.25,0,2.75,0,13.4,{rootD:6.2,doorYaw:0});
   dvBanner(-1.8,y0+hC,dC/2-.2,0,2.7,P('crimson'));
@@ -384,11 +384,11 @@ defBuilding({key:'dv-gate-flume',name:'Flumi-Kari Chasm Flume-Tunnel & Twin-Need
   ]);
  }});
 
-/* 21. Clustered 5:1 Quartz-Crowned Vovnashki Watch-Towers */
-defBuilding({key:'dv-tower-vovnashki',name:'Vovnashki-Dzagh Clustered 5:1 Quartz Watch-Towers',seed:7212,cls:'building',w:11.6,d:9.4,h:18.6,cut:true,
+/* 21. Clustered 5:1 Slate-Crowned Vovnashki Watch-Towers */
+defBuilding({key:'dv-tower-vovnashki',name:'Vovnashki-Dzagh Clustered 5:1 Slate Watch-Towers',seed:7212,cls:'building',w:11.6,d:9.4,h:18.6,cut:true,
  front:{x:.1,z:3.8,yaw:0},
  tags:{types:['military'],wealth:'middle',style:'aul',role:'watch-tower',job:'customs'},
- note:'Paired Ingush-style razor-slender 5:1 battered stone needle-towers joined by a high timber sky-plank and aerial gorge pulley-basket.',
+ note:'Paired Ingush-style razor-slender 5:1 battered stone needle-towers crowned with stepped dark mountain-slate & crimson-tuff roofs, joined by a high timber sky-plank and aerial gorge pulley-basket.',
  build(){
   dvNeedleTower(-2.35,0,2.85,0,14.2,{rootD:6.4,doorYaw:-PI/2,pulley:true,pulleyYaw:-PI/2,pulleyDrop:4.0});
   dvNeedleTower(2.55,-.35,2.55,0,12.4,{rootD:6.2,doorYaw:PI/2});
@@ -439,10 +439,10 @@ defBuilding({key:'dv-barracks-retinue',name:'Spaspet-Sakli Royal Cousins Scale-H
   ]);
  }});
 
-/* 23. Crag Signal-Brazier & Quartz Watch-Pinnacle */
+/* 23. Crag Signal-Brazier & Slate Watch-Pinnacle */
 defBuilding({key:'dv-beacon-gorge',name:'Tsikhe-Shukura Crag Signal-Brazier & Watch-Pinnacle',seed:7214,cls:'building',w:8.8,d:8.8,h:16.8,cut:true,
  tags:{types:['infrastructure','military'],wealth:'middle',style:'aul',role:'signal beacon'},
- note:'5:1 quartz-crowned signal needle and keepers lodge lighting copper pitch-cressets along the misty Crookwash canyon bends.',
+ note:'5:1 dark-slate & basalt signal needle and keepers lodge lighting copper pitch-cressets along the misty Crookwash canyon bends.',
  build(){
   dvRootSkirt(0,.8,5.8,5.4,5.6,{mk:'colBasalt',plinthH:.36});
   dvFloorRect(0,.8,5.6,5.2,.26,'flagstone',P('flagstone'));

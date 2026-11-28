@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
 """Build the Pinnacle region of the open world: dist/pinnacle.html (openworld/PLAN-SITES.md, the first site).
 
-The scale model round Pinnacle Rock (openworld/SITES.json 'pinnacle': a 60 km square on map 5.1, cut by
-tools/scale-model/cut_site.py) at 1:1 on core/world, the rock on the savage hyperjungle's north-east edge since the owner's
-move of 2026-11-10, with the hyperjungle and the NE rim's kit (biomes/abyssal-savannah) growing on it, and
-the site planned on that ground (core/world/48s-world-sites.js, baked by core/world/bake_sites.py to plan/sites.json):
-the nine bands that camp on the floor round the rock (core/camp, kits/beast-riders) and a track from each to the rock.
-The town on the mesa is settlements/pinnacle-rock's own page.
+Pinnacle Rock and the roads to its bands' raid and trade partners (openworld/SITES.json 'pinnacle'): the rock's 60 km
+square on map 5.1, the partners' own squares, and a 10 km corridor along each road (the Ancient network's route, or a
+guide on the valley floors), cut by tools/scale-model/cut_site.py at 500 m cells (about 770 x 840 km of box), on
+core/world at 1:1, the rock on the savage hyperjungle's north-east edge since the owner's move of 2026-11-10. The
+hyperjungle grows on the savage hyperjungle and hyperjungle N, the abyssal savannah's kit on the NE and E rims. The site is
+planned on that ground (core/world/48s-world-sites.js, baked by core/world/bake_sites.py to plan/sites.json): the nine
+bands that camp on the floor round the rock (core/camp, kits/beast-riders) and a track from each to the rock; and the
+links to Port Goto, Talon, Fort Kreia, Mav's Refuge, Nusidi, Fort Ordo, Coyote Canyon and Shade, laid, bridged where they
+cross a named river (core/world 42b, 88b), with their caravanserais and rest stops (the Iziz Vernacular's, IZV). The
+town on the mesa is settlements/pinnacle-rock's own page; the partners' towns are not planned here.
 
-  data/         region.json and the rasters (tools/scale-model/cut_site.py pinnacle)
-  plan/         sites.json: the site's plan (python3 core/world/bake_sites.py pinnacle)
-  src/          46-world-config.js (the site, "Go to", the first view), 47-world-kits.js (the kit that grows here),
-                48-world-site.js (the site's spec: what is planned), 49-world-absav.js (the savannah kit as the world reads it)
-  ../../core/   world (the runtime), rand, terrain, biome, space, tags, atmos, water, materials, camp
+  data/         region.json and the rasters (tools/scale-model/cut_site.py pinnacle), embedded as PNGs and decoded in the
+                page (core/world/98-world-start.js), as the Iziz cluster's are (decoded at build time, as the 60 km cut
+                had them, the rasters would be some 80 MB of page)
+  plan/         sites.json (python3 core/world/bake_sites.py pinnacle)
+  src/          46 (config), 47 (kits), 48 (the sites' spec), 49 (the savannah kit as the world reads it)
 
-  python3 build.py            # dist/pinnacle.html
+  python3 build.py
   python3 build.py --no-checks
 """
 import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
 buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
-import json, os, re, subprocess, sys
+import base64, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))
@@ -31,24 +35,22 @@ PLAN = os.path.join(HERE, 'plan', 'sites.json')
 DIST = os.path.join(HERE, 'dist')
 OUT = 'pinnacle.html'
 WORLD_SRC = os.path.join(ROOT, 'core', 'world')   # the world's fragments (core/world, read in place)
-sys.path.insert(0, WORLD_SRC)
-import world_data as WD   # noqa: E402  (core/world/world_data.py: the rasters decoded here, no canvas read in the page)
+RASTERS = ['elev', 'wlev', 'clim', 'rain', 'temp', 'biome', 'mask', 'scarpl', 'scarpu', 'scarpw']
 
 _cp = os.path.join(ROOT, 'tools', 'check_port.py')
 if os.path.isfile(_cp) and '--no-checks' not in sys.argv and \
         subprocess.call([sys.executable, _cp, '--quiet', HERE]) != 0:
     sys.exit('build.py: the port lint failed (tools/check_port.py); fix the fragment or retag it in PORT.md')
 
-# the kits: the eastern abyss's whole (the savannah borrows its species; its fauna fragment closes its registry), then the
-# abyssal savannah's species, trees, floor and its kitEnd (biomes/abyssal-savannah/src 50-70)
+# the kits: the hyperjungle (the savage hyperjungle and hyperjungle N), the eastern abyss's whole (the savannah borrows its
+# species; its fauna fragment closes its registry) and the abyssal savannah's (the NE and E savannah rims)
 KIT_FRAGS = (
-    # the hyperjungle (the savage hyperjungle's overlay: the rock stands on its north-east edge since 2026-11-10)
     [('biomes/hyperjungle/src', f) for f in ('50-biome-hyperjungle-species.js', '52-biome-hyperjungle-library.js', '54-biome-hyperjungle-lands.js',
                                              '55-biome-hyperjungle-trees.js', '56-biome-hyperjungle-savage.js', '57-biome-hyperjungle-north.js',
                                              '58-biome-hyperjungle-fauna.js', '60-biome-hyperjungle-floor.js', '65-biome-hyperjungle-dress.js',
                                              '70-biome-hyperjungle.js')]
-    +     [('biomes/eastabyss/src', f) for f in ('50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
-                                           '65-biome-eastabyss-dress.js', '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js')]
+    + [('biomes/eastabyss/src', f) for f in ('50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
+                                             '65-biome-eastabyss-dress.js', '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js')]
     + [('biomes/abyssal-savannah/src', f) for f in ('50-biome-absav-species.js', '55-biome-absav-trees.js', '60-biome-absav-floor.js',
                                                     '70-biome-absav.js')])
 KIT_LAST = {'hyperjungle': '70-biome-hyperjungle.js', 'eastabyss': '75-biome-eastabyss-fauna.js', 'abyssal-savannah': '70-biome-absav.js'}
@@ -56,13 +58,12 @@ sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
 import matlib_pack as _mp   # noqa: E402
 PACK_KITS = ['hyperjungle', 'eastabyss', 'abyssal-savannah']
 SIDE = None if '--inline-packs' in sys.argv else {}
-def _fams(kit):
-    pj = os.path.join(ROOT, 'biomes', kit, 'tex', 'pack.json')
+def _fams(path):
+    pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
 _DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
-PACK_EXCL = {k: [f for f in _fams(k) if _DROP(f)] for k in PACK_KITS}
+PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 LDF = lambda *fs: [('ld', f) for f in fs]
-# the biome core as the savannah's own page takes it (its leafsets, joints, variants, fire, lean, the env)
 CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
@@ -99,18 +100,19 @@ ORDER = (
     + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
     + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')
     + [('settlements/pinnacle-rock/src', '40-pr-layout.js'), ('src', '43p-world-rock.js')]   # the rock, pinned (core/world/world_data.py PINS)
-    + LDF('41-world-fields.js', '42-world-roads.js', '44c-world-coast.js')   # 40: the region is smoothed (SITES.json "smooth"); 43, 44, 43b: its relief, streams and landforms
+    + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js', '44c-world-coast.js')   # 40: the region is smoothed (SITES.json "smooth"); 43, 44, 43b: its relief, streams and landforms
     + LDF('45-world-host.js') + [('src', '46-world-config.js'), ('src', '47-world-kits.js'),
      ('biomes/hyperjungle/src', '41-hyperjungle-globals.js')]
-    + [('pack', k) for k in PACK_KITS]
+    + [('pack', k) for k in PACK_KITS] + [('izpack', 'iziz')]
     + KIT_FRAGS
-    # the site: the Beast Riders' buildings with the kit's tent set (CAT), the kit-piece instancer the isle demo shares,
-    # core/camp and the Beast Riders' camp table, the site planner and this region's spec
-    + [('bundle', 'cat'), ('settlements/isle-demo/src', '58-isle-protos.js'),
+    # the site: the Beast Riders' buildings with the kit's tent set (CAT: the camps, the clearings, the trails' inns), the
+    # Iziz Vernacular (IZV: the Izani highways' stops), the kit-piece instancer the isle demo shares, core/camp and the
+    # Beast Riders' camp table, core/city's primitives and core/hamlet (the clearings: the spec's `beast-rider` row), the
+    # site planner, this region's spec and the savannah kit as the world reads it
+    + [('bundle', 'cat'), ('bundle', 'izv'), ('settlements/isle-demo/src', '58-isle-protos.js'),
        ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'),
        ('kits/beast-riders/src', '79-br-camp.js'),
-       # the clearings (2026-11-12): core/city's primitives and core/hamlet, as the Oidong region's build takes them
-       ('core/city', '33-city-strategies.js'), ('core/city', '15-city-ground.js'),
+       ('core/city', '33-city-strategies.js'), ('core/city', '15-city-ground.js'),   # 15 after 33, which makes KCITY: the stance 33's strategies name
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
@@ -119,12 +121,13 @@ ORDER = (
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
           '84i-world-impostors.js',   # the hyperjungle's far level as octahedral impostors (47-world-kits.js: impostor)
           '85-world-flora.js', '85p-world-pregrow.js',   # every prototype grown at load: no first-use stalls in flight
-          '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88l-world-landforms.js')
+          '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88l-world-landforms.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '94-world-export.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site; 94: the export
 )
 HEAD = [('<title>Krator Little Demo</title>', '<title>Krator: Pinnacle Rock</title>'),
-        ("<b>Little Demo</b> · the scale model's eastern desert at 1:1", "<b>Pinnacle Rock</b> · the hyperjungle's edge round the rock at 1:1")]
+        ("<b>Little Demo</b> · the scale model's eastern desert at 1:1",
+         "<b>Pinnacle Rock</b> · the hyperjungle's edge round the rock, and its roads, at 1:1")]
 FORBID = ['kdef(', 'kput(', 'kbake(', 'BUCKET[', 'MBK[', 'FAMMAT[', 'PLATS', 'BRIDGES', 'TOWERS', 'RIVER', 'PALISADE', 'KOFF']
 
 
@@ -137,16 +140,44 @@ def find_node():
 
 
 def data_fragment():
-    """the region's rasters decoded here (WORLD_R), its meta, and the baked plan: WORLD_DATA.sites, and its tracks as the
-    world's roads (WORLD_DATA.roads: the ground is shaped to them and the terrain draws them)"""
+    """the region's meta and rasters (PNGs the page decodes), and the baked plan: WORLD_DATA.sites, and its roads (the
+    camps' tracks, the villages' roads and the links between the towns) as the world's roads (the ground is shaped to them
+    and the terrain draws them)"""
     if not os.path.isfile(PLAN):
         sys.exit('build.py: no plan/sites.json: run python3 core/world/bake_sites.py pinnacle')
+    meta = json.load(open(os.path.join(DATA, 'region.json'), encoding='utf-8'))
     P = json.load(open(PLAN, encoding='utf-8'))
-    roads = [dict(r, town=r['to']) for S in P['sites'] for r in S['roads']]
-    extra = {'sites': P, 'roads': {'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}}
-    return WD.fragment(DATA, '', '05-world-data.js (generated by build.py from data/ and plan/: do not edit)',
-                       'openworld/pinnacle/data (tools/scale-model/cut_site.py) decoded by core/world/world_data.py; plan/sites.json (core/world/bake_sites.py)',
-                       extra=extra)
+    # the rasters (8.7 MB of PNG for 1553 x 1625 cells) go in their own file beside the page (land_sidecar), as the
+    # library packs do, and the roads (the camps' tracks, the links) are the plan's own, copied in the page rather than
+    # written twice: together they kept the page inside its 16 MB cap (it was 98 % of it)
+    return ('// ==================== 05-world-data.js (generated by build.py from data/ and plan/: do not edit)\n'
+            'var WORLD_DATA={meta:' + json.dumps(meta, separators=(',', ':'), ensure_ascii=False) + ',png:WORLD_PNG'
+            + ',sites:' + json.dumps(P, separators=(',', ':'), ensure_ascii=False) + '};\n'
+            "WORLD_DATA.roads={format:'krator-openworld-roads',version:1,roads:JSON.parse(JSON.stringify(\n"
+            ' WORLD_DATA.sites.sites.flatMap(S=>S.roads).concat(WORLD_DATA.sites.links||[]).map(r=>Object.assign({},r,{town:r.to}))))};\n')
+
+
+LAND = OUT.replace('.html', '.land.js')
+
+
+def land_sidecar(html):
+    """dist/pinnacle.land.js: the region's rasters as PNGs (WORLD_PNG, which 05-world-data.js hands to WORLD_DATA.png and
+    core/world/98-world-start.js decodes), loaded ahead of the page's first script"""
+    png = {k: base64.b64encode(open(os.path.join(DATA, k + '.png'), 'rb').read()).decode('ascii') for k in RASTERS}
+    with open(os.path.join(DIST, LAND), 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('/* GENERATED by openworld/pinnacle/build.py from data/ (tools/scale-model/cut_site.py pinnacle): the region\'s rasters. Do not edit. */\n'
+                 'var WORLD_PNG=window.WORLD_PNG=' + json.dumps(png) + ';\n')
+    i = html.find('<script')
+    if i < 0:
+        sys.exit('build.py: the page has no <script> to load %s ahead of' % LAND)
+    return html[:i] + '<script src="%s"></script>\n' % LAND + html[i:]
+
+
+def bundles():
+    if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
+        sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
+    import bundles as _bd
+    return _bd
 
 
 def main():
@@ -162,12 +193,15 @@ def main():
             out.append('\n// ==================== the library pack: %s\n' % f)
             out.append(_mp.fragment(os.path.join(ROOT, 'biomes', f), f, exclude=PACK_EXCL[f], side=SIDE))
             continue
-        if where == 'bundle':   # the Beast Riders' buildings and tents (settlements/isle-demo/bundles.py cat_bundle)
-            if os.path.join(ROOT, 'settlements', 'isle-demo') not in sys.path:
-                sys.path.insert(0, os.path.join(ROOT, 'settlements', 'isle-demo'))
-            import bundles as _bd
-            js, _ = _bd.cat_bundle(SIDE, tents=True, trades=True)   # trades: the clearings' buildings
-            out.append('\n// ==================== the CAT bundle (settlements/isle-demo/bundles.py)\n')
+        if where == 'izpack':    # the Iziz pack as the isle demo's pages take it (its Vernacular's families, no fauna, no city)
+            izp = os.path.join(ROOT, 'settlements', 'iziz')
+            out.append('\n// ==================== the library pack: settlements/iziz\n')
+            out.append(_mp.fragment(izp, 'iziz', exclude=[k for k in _fams(izp) if k.startswith(('fauna', 'city'))], side=SIDE))
+            continue
+        if where == 'bundle':   # settlements/isle-demo/bundles.py: CAT (the Beast Riders' buildings and tents), IZV
+            _bd = bundles()
+            js, _ = _bd.izv_bundle() if f == 'izv' else _bd.cat_bundle(SIDE, tents=True, trades=True)   # trades: the clearings' and trails' Beast Rider buildings
+            out.append('\n// ==================== the %s bundle (settlements/isle-demo/bundles.py)\n' % f.upper())
             out.append(js)
             continue
         path = os.path.join(WORLD_SRC, f) if where == 'ld' else os.path.join(ROOT if where != 'src' else HERE, where, f)
@@ -194,6 +228,7 @@ def main():
     os.makedirs(DIST, exist_ok=True)
     if SIDE:
         html = _mp.write_sidecar(SIDE, html, DIST, 'pinnacle.tex.js')
+    html = land_sidecar(html)
     dst = os.path.join(DIST, OUT)
     open(dst, 'w', encoding='utf8', newline='\n').write(html)
     node = find_node()

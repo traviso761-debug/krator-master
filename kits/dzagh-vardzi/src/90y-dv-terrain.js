@@ -134,7 +134,7 @@ terrainH=function(x,z){
  autoViews=function(){
   const V=baseViews(),out={};
   for(const k in V){
-   const cleanK=k.replace(/[':]/g,'');
+   const cleanK=k.replace(/[':/]/g,'');
    const v=V[k].slice();
    const ghCam=Math.max(0,terrainH(v[0],v[2])),ghTgt=Math.max(0,terrainH(v[3],v[5]));
    v[1]=Math.max(v[1]+ghTgt,ghCam+2.15);

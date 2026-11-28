@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1017,
+    1024
+   ],
+   "seam_after": [
+    1.053,
+    3.321
+   ],
+   "seam_before": [
+    1.484,
+    3.2
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": true,
+   "rough": 0.78,
+   "rough_var": 0.22,
+   "seam_axes": "x",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "dzagh-vardzi/tuff-panduri-frieze",
+  "metal": 0,
+  "roughness": 0.78,
+  "scale": [
+   2.0,
+   2.0
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "dzagh-vardzi_tuff-panduri-frieze.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/dzagh-vardzi/tuff-panduri-frieze`)",
+  "reuse": "Dzagh-Vardzi Akhtamar-style apricot volcanic tuff relief frieze of panduri lutes, qvevri amphorae, pomegranates and inlaid emerald-nephrite cross medallions between charcoal basalt interlace mouldings",
+  "sha1": "2446f7909ec8e32a8c31f872403ef5b8d2969253"
+ }
+}

@@ -29,9 +29,22 @@
     return { yearDay:yd, phase:0, summer:0, wet:.5, dry:.5, quarter:q, name:['summer','autumn','winter','spring'][q] };
   }
   function within(yd, w){ var a=w[0], b=w[1]; return a<=b ? yd>=a && yd<b : yd>=a || yd<b; }
+  /* a non-annual or sub-daily cycle (Jimjam's 91-day Kauntu, 7-day Week, 13-day Thirteen, 12 h Day transit, 48 h Two-Day
+     occultation, 434-day Crown opposition; Xanadu's wheel-feasts): {periodD|periodM, phase0?, spanD|spanM} or {test(m,S)} */
+  function inCycle(minute, cy, S){
+    if(!cy) return false;
+    if(typeof cy.test==='function') return !!cy.test(minute, S);
+    var per = cy.periodM!=null ? cy.periodM : (cy.periodD!=null ? cy.periodD*1440 : 0);
+    if(!(per>0)) return false;
+    var ph0 = cy.phase0!=null ? (cy.periodM!=null ? cy.phase0 : cy.phase0*1440) : 0;
+    var sp = cy.spanM!=null ? cy.spanM : (cy.spanD!=null ? cy.spanD*1440 : 1440);
+    var u = ((minute - ph0) % per + per) % per;
+    return u < sp;
+  }
   SIM.calendar = function(o){
     if(o==null){ SIM.CAL=null; last=null; return null; }
-    SIM.CAL = { o:{ year:o.year, latitude:o.latitude, lagD:o.lagD, sharp:o.sharp, wetIn:o.wetIn }, windows:Object.assign({}, o.windows||{}) };
+    SIM.CAL = { o:{ year:o.year, latitude:o.latitude, lagD:o.lagD, sharp:o.sharp, wetIn:o.wetIn },
+                windows:Object.assign({}, o.windows||{}), cycles:Object.assign({}, o.cycles||{}) };
     last=null; return SIM.CAL;
   };
   SIM.season = function(minute){
@@ -40,6 +53,7 @@
     var day=Math.floor(minute/1440), hour=(minute%1440)/60, S=local(day, hour, C), yD=(C.o.year||root.KCLOCK&&root.KCLOCK.YEAR||{ yearD:365 }).yearD;
     S.day=day; S.year=Math.floor(((C.o.year||root.KCLOCK&&root.KCLOCK.YEAR||{ startDay:0 }).startDay+day)/yD);
     S.windows={}; Object.keys(C.windows).forEach(function(k){ if(within(S.yearDay, C.windows[k])) S.windows[k]=true; });
+    Object.keys(C.cycles).forEach(function(k){ if(inCycle(minute, C.cycles[k], S)) S.windows[k]=true; });
     return S;
   };
   SIM.inSeason = function(spec, minute){

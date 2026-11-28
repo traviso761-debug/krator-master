@@ -1,0 +1,17 @@
+{
+ "id": "kanopi",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Veiled Mountains — The Weeping Oculus of Kanopi",
+ "out": "veiledmountains-kanopi.html",
+ "px": [242, 752],
+ "sky": [-30, 422],
+ "elevM": 2650.0,
+ "pAtm": 1.17,
+ "koppen": "Cfc",
+ "rainMmYr": 3260,
+ "strataStack": "megabreccia",
+ "reserves": [
+  {"id": "site:timpar-kuran-kanopi-shrine", "x": 98, "z": -58, "r": 42}
+ ],
+ "modes": ["Veil", "Sun-Break", "Deep Veil"]
+}

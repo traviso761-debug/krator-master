@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.465,
+    1.978
+   ],
+   "seam_before": [
+    2.862,
+    2.565
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": false,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "armor.salvage.ark_barnacle",
+  "metal": 0.65,
+  "roughness": 0.42,
+  "scale": [
+   0.34,
+   0.34
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "armor_salvage_ark_barnacle.png",
+  "generator": "Codex image generation, Nov 2026 (salvaged-catamaran-armour-texture-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Salvaged Ancient marine catamaran hull plate cut into pirate armour at 34 cm scale: smooth matte ghost-white composite alloy (#dfe2e0) meeting a lower band of chipped oxide-red antifouling hull primer (#8f281e), joined by flush hexagonal titanium-brass rivets (#a88a48), scarred by cutlass scratches and encrusted in scattered clusters with small conical chalk-white sea barnacles (#dad6c8) and faint green-teal waterline algae (#367569). Full colour.",
+  "sha1": "e5c22e9cb345d4fa9c8eb626bc2de06b612fba37"
+ }
+}

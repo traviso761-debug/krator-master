@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    1.202,
+    0.967
+   ],
+   "seam_before": [
+    1.245,
+    2.399
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "beast-riders/tiger-sabercat-pelt",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__beast-riders__tiger-sabercat-pelt.png",
+  "generator": "Codex image generation, Nov 2026 (exec-af856976-8720-48c7-9d69-37a4d62e8b30.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a tanned hyperjungle riding-tiger sabercat pelt at 28 cm garment scale: dense short glossy fur lying smoothly downward, rich tawny-orange coat (#d06c28) shading to warm golden-ochre (#d89038) and a narrow cream-ivory flank band (#f2e8d6), crossed by bold branched and forked soot-black (#1a120c) sabercat stripes that continue naturally across left/right and top/bottom edges with crisp individual hair fibres. Full colour.",
+  "sha1": "df7ed96ffdcfcc313b6f0438643164130b7ac60a"
+ }
+}

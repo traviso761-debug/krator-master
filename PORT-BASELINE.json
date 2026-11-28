@@ -2085,8 +2085,12 @@
    "sha256": "10dfa3986b4082e930c36f35b91904365ed6f0b0216101232d6a01be7882495b"
   },
   "settlements/jimjam/dist/jimjam-kit.html": {
-   "bytes": 8995903,
-   "sha256": "c55c2c62f88cd016aeecfc2b6b027e466f63afd1de992e1ad956f1e9b6599cf9"
+   "bytes": 9186997,
+   "sha256": "2b440ca9fafaf1597dc57ffe7368d236964e360ef7f4d25a384eaa5a6db7b1cf"
+  },
+  "settlements/jimjam/dist/jimjam.html": {
+   "bytes": 6419271,
+   "sha256": "e8d71a674c734f63b9811c71f847d500fbe5a9d77f21d094d7360b477769ea00"
   },
   "settlements/kirstabal/dist/kirstabal.html": {
    "bytes": 14299420,

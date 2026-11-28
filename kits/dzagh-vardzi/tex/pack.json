@@ -133,26 +133,26 @@
     "normalMap": "carve.normal.webp",
     "roughnessMap": "carve.rough.webp"
    },
-   "lib": "patterns/korona/hum-carving",
+   "lib": "patterns/dzagh-vardzi/tuff-panduri-frieze",
    "metal": 0,
    "normalScale": 1.0,
-   "roughLift": 0.24,
+   "roughLift": 0.22,
    "scale": [
-    1.3,
-    1.3
+    2.0,
+    2.0
    ],
-   "size": 256,
+   "size": 512,
    "source": {
-    "albedo": "ae9160e9e6807f520c9c077430d92e10557411fe",
-    "normal": "100d66225b801e291058020564a119f5696311c9",
-    "roughness": "c4452c179dfb94d03e736ebfbf85d2bc838b9b44"
+    "albedo": "aa060ae12593c6c38f1bcd7322aa8a638b4a1cde",
+    "normal": "7ef338ba028c6f510f8eabb0a6626ddfa0b98fcd",
+    "roughness": "c6def66ae4d5aab55840fc11c548a04fcd20509a"
    },
-   "specular": 0.24,
+   "specular": 0.26,
    "tint": {
     "contrast": 1.0,
-    "keep": 0.35,
-    "mean": 0.78,
-    "sourceMean": 0.3033
+    "keep": 0.96,
+    "mean": 0.76,
+    "sourceMean": 0.4629
    }
   },
   "cassiterite": {
@@ -1591,6 +1591,36 @@
     "keep": 0.4,
     "mean": 0.76,
     "sourceMean": 0.207
+   }
+  },
+  "flumeWater": {
+   "breakup": null,
+   "card": false,
+   "files": {
+    "map": "flumeWater.albedo.webp",
+    "normalMap": "flumeWater.normal.webp",
+    "roughnessMap": "flumeWater.rough.webp"
+   },
+   "lib": "ice.glacier.verdigris",
+   "metal": 0,
+   "normalScale": 1.0,
+   "roughLift": 0.04,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "size": 256,
+   "source": {
+    "albedo": "39559e3b54e339fb97450d8f3d854f38de82af2a",
+    "normal": "d097bd2fd9122a418b33f6f760a18c051faf8b28",
+    "roughness": "cde062557b73b28d8ca7abc46cd43cfac3ed24ae"
+   },
+   "specular": 0.52,
+   "tint": {
+    "contrast": 1.18,
+    "keep": 0.45,
+    "mean": 0.84,
+    "sourceMean": 0.6419
    }
   },
   "gold": {

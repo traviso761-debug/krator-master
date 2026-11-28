@@ -6,7 +6,47 @@ Consolidates all headgear primitives (`head_rings`, `sculpted_faceplate`, `sculp
 """
 import math
 import numpy as np
+import glbio
+from .. import core
 from ..core import Part, J, first_hit, frame, head_frame, ring_points, smooth_push
+
+
+_HEAD_LM_CACHE = {}
+
+
+def head_landmarks_exact():
+    """Return `(a, b, up, bk, left, f_nose, f_eyes, f_brow, f_crown, x_eye)` calibrated directly to `base.glb` eyelashes & eyebrows."""
+    a, b, up, bk, left = head_frame()
+    h_ab = max(float(np.linalg.norm(b - a)), 1e-6)
+    bid = core.BODY_ID
+    if bid not in _HEAD_LM_CACHE:
+        head_v = core.CO[core.CO[:, 2] > a[2] + 0.01]
+        z_nose = float(head_v[np.argmin(head_v[:, 1]), 2])
+        z_crown = float(head_v[:, 2].max())
+        f_nose = (z_nose - float(a[2])) / h_ab
+        f_crown = (z_crown - float(a[2])) / h_ab
+        f_eyes = f_nose + 0.038 / h_ab
+        f_brow = f_eyes + 0.055
+        x_eye = 0.0328 if 'male' in (bid or '') else 0.0301
+        if core.BASE_GLB is not None and core.BASE_GLB.exists():
+            jb, bb = glbio.read_glb(core.BASE_GLB.read_bytes())
+            for m in jb.get('meshes', []):
+                for pr in m.get('primitives', []):
+                    mn = (jb['materials'][pr['material']].get('name', '') if 'material' in pr else '').lower()
+                    if 'eyelash' in mn:
+                        P_gl = glbio.accessor(jb, bb, pr['attributes']['POSITION'])
+                        L_gl = P_gl[P_gl[:, 0] > 0.005]
+                        if len(L_gl):
+                            f_eyes = (float(L_gl[:, 1].mean()) - float(a[2])) / h_ab
+                            x_eye = float(L_gl[:, 0].mean())
+                    elif 'eyebrow' in mn:
+                        P_gl = glbio.accessor(jb, bb, pr['attributes']['POSITION'])
+                        L_gl = P_gl[P_gl[:, 0] > 0.005]
+                        if len(L_gl):
+                            f_brow = (float(L_gl[:, 1].mean()) - float(a[2])) / h_ab
+        _HEAD_LM_CACHE[bid] = (f_nose, f_eyes, f_brow, f_crown, x_eye)
+    f_nose, f_eyes, f_brow, f_crown, x_eye = _HEAD_LM_CACHE[bid]
+    return a, b, up, bk, left, f_nose, f_eyes, f_brow, f_crown, x_eye
 
 
 def head_rings(name, f0, f1, ease, paint, n=32, rows=4, apex=False, scale=(1.0, 1.0)):
@@ -101,36 +141,47 @@ def sculpted_cranium(name, paint, f_top=1.02, f_bot=-0.04, ease=0.012, rows=12, 
     return Part(name, Q, True, ['body'] * rows, paint, rigid_joint='Head')
 
 
-def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, rows=14, n=34, peak=0.05, high=1.0):
-    a, b = J('Head'), J('Head', 'tail')
-    t = (b - a) / np.linalg.norm(b - a)
-    x, y = np.array([0, 1.0, 0]), np.array([1.0, 0, 0])
-    x = x - t * x.dot(t)
-    x /= np.linalg.norm(x)
-    y = np.cross(t, x)
-    low_eff = min(low, -0.52)
-    fs = np.linspace(low_eff, high, rows)
-    eases = np.interp(fs, [low_eff, 0.1, high], [ease_low, ease, ease])
-    opens = np.interp(fs, [low_eff, 0.45, 0.58, high * 0.92], [open_front, open_front, 0.0, 0.0])
-    Q = np.array([ring_points(a + (b - a) * f, x, y, np.linspace(-(math.pi - o), math.pi - o, n), e, rmin=0.04, rmax=0.22)
-                  for f, e, o in zip(fs, eases, opens)])
-    c = a + (b - a) * high
-    Q[-1] = c + (Q[-1] - c) * 0.2 + t * ease + x * peak
-    Q[-2] = c + (Q[-2] - c) * 0.65 + t * ease * 0.6 + x * peak * 0.5
-    Q = smooth_push(Q, False, ease, iters=2, rows_ease=eases)
-    # the crown's seam: above the face opening the grid's two edges are one line at the front, but the grid is open,
-    # so the smoothing gave each edge one lateral neighbour and drew it back to its own side: a slit of scalp from the
-    # brow to the crown (the recurring "hood open over the crown"). Where the opening is shut, the edges are welded
-    # and the two columns beside them eased back toward the weld, so the seam is a line and not a gap
-    for i in np.nonzero(opens <= 1e-6)[0]:
-        m = (Q[i, 0] + Q[i, -1]) * 0.5
-        gap = Q[i, 0] - m
-        Q[i, 0] = Q[i, -1] = m
-        for k, w in ((1, 0.5), (2, 0.2)):
-            Q[i, k] = Q[i, k] - gap * w
-            Q[i, -1 - k] = Q[i, -1 - k] + gap * w
-    Q[-1] = Q[-1].mean(0)
-    return Part(gid, Q, False, ['body'] * rows, paint)
+def hood(gid, paint, ease=0.035, ease_low=0.055, open_front=0.95, low=-0.45, rows=14, n=36, peak=0.05, high=1.0):
+    """Seamless 360-degree closed cloth hood (`closed=True`) whose lower rim drapes over the neck/shoulders
+    at the back and sides while arching smoothly over the forehead brow in front — topologically immune to
+    forehead/crown bifurcation."""
+    a, b, up, bk, left = head_frame()
+    low_eff = min(float(low), -0.15)
+    angles = np.linspace(0.0, 2.0 * math.pi, n, endpoint=False)
+    ds = [bk * math.cos(an) + left * math.sin(an) for an in angles]
+
+    # Rim height f_rim(an): low_eff around neck/shoulders, arching smoothly up to f_brow across the front face cutout
+    open_eff = max(0.0, float(open_front))
+    f_brow = min(float(high) - 0.16, 0.62)
+    f_rim = np.full(n, low_eff, dtype=np.float64)
+    if open_eff > 0.05:
+        half_span = min(math.pi * 0.85, open_eff * 1.18)
+        for j, an in enumerate(angles):
+            ang_front = abs(an - math.pi)
+            if ang_front < half_span:
+                w = 0.5 + 0.5 * math.cos(math.pi * ang_front / half_span)
+                f_rim[j] = low_eff + (f_brow - low_eff) * (w ** 0.80)
+
+    Q = np.zeros((rows, n, 3), dtype=np.float64)
+    row_eases = np.zeros(rows, dtype=np.float64)
+    for i in range(rows):
+        u = i / float(max(rows - 1, 1))
+        row_eases[i] = ease_low * (1.0 - u) + ease * u
+        for j, (an, d) in enumerate(zip(angles, ds)):
+            f_ij = float(f_rim[j]) + (float(high) - float(f_rim[j])) * u
+            e_ij = float(np.interp(f_ij, [low_eff, 0.15, high], [ease_low, ease, ease]))
+            c_ij = a + (b - a) * f_ij
+            h_hit = first_hit(c_ij, d)
+            r_ij = min(max(0.045, (h_hit if h_hit is not None else 0.092) + e_ij), 0.22)
+            Q[i, j] = c_ij + d * r_ij
+
+    apex_c = a + (b - a) * float(high) + up * float(ease) + bk * float(peak)
+    if rows >= 3:
+        Q[-2] = apex_c * 0.38 + Q[-2] * 0.62
+    Q[-1] = apex_c
+    Q = smooth_push(Q, True, ease, iters=2, fix_bottom=True, rows_ease=row_eases)
+    Q[-1] = apex_c
+    return Part(gid, Q, True, ['body'] * rows, paint)
 
 
 def brim(name, f, width, paint, ease=0.02, rows=5, n=40, droop=0.0, lift=0.0, scallop=0.0):
@@ -190,17 +241,18 @@ def cone_hat(name, paint, r=0.28, h=0.14, f=0.68, rows=9, n=36):
 
 
 def crown_band(name, paint, f0=0.58, f1=0.78, ease=0.016, flare=0.012, rows=6, n=36):
-    """Circlet or diadem band around the brow."""
+    """Circlet, headband, or diadem band conformed per-row around the skull (temples, brow, and occiput)."""
     a, b, up, bk, left = head_frame()
     angs = np.linspace(0, 2 * math.pi, n, endpoint=False)
-    c_mid = a + (b - a) * 0.62
     ds = [bk * math.cos(an) + left * math.sin(an) for an in angs]
-    rs = [(first_hit(c_mid, d) or 0.095) for d in ds]
     Q = []
     for i, f in enumerate(np.linspace(f1, f0, rows)):
         t = 1.0 - i / max(rows - 1, 1)
         c = a + (b - a) * f
-        e_cur = ease + flare * t
+        c_ray = a + (b - a) * min(max(float(f), 0.32), 0.92)
+        rs = np.array([(first_hit(c_ray, d) or 0.096) for d in ds], dtype=np.float64)
+        rs = 0.50 * rs + 0.25 * np.roll(rs, 1) + 0.25 * np.roll(rs, -1)
+        e_cur = max(float(ease), 0.0025) + flare * t
         Q.append([c + d * (r + e_cur) for d, r in zip(ds, rs)])
     return Part(name, np.array(Q), True, ['body'] * rows, paint, rigid_joint='Head')
 
@@ -237,22 +289,73 @@ def fan(name, r0, r1, spread, paint, rows=8, cols=15, tilt=0.22, back=0.05, curl
     return part
 
 
-def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9):
-    """Sagittal helmet crest or horsehair plume from front to back."""
-    a, b, up, bk, _ = head_frame()
+def crest(name, height, paint, rows=5, cols=15, sweep=0.06, a0=-1.1, a1=1.9, base_ease=0.012, thick=0.008, host_part=None):
+    """Volumetric 3D sagittal helmet crest/comb welded flush into the underlying helmet bowl."""
+    a, b, up, bk, left = head_frame()
     c = a + (b - a) * 0.55
+    host_bvh = None
+    hv_rim = None
+    if host_part is not None and getattr(host_part, 'P', None) is not None and host_part.P.ndim == 3:
+        hp = host_part.P
+        Rh, Ch = hp.shape[:2]
+        cols_h = Ch + 1 if getattr(host_part, 'closed', False) else Ch
+        htris = []
+        hverts = hp.reshape(-1, 3)
+        for i_r in range(Rh - 1):
+            for j_c in range(cols_h - 1):
+                j0, j1 = j_c % Ch, (j_c + 1) % Ch
+                v00, v10 = i_r * Ch + j0, (i_r + 1) * Ch + j0
+                v11, v01 = (i_r + 1) * Ch + j1, i_r * Ch + j1
+                htris.append((v00, v10, v11))
+                htris.append((v00, v11, v01))
+        if htris:
+            host_bvh = core.FastBVH(hverts, np.array(htris, dtype=np.int32))
+            hv_rim = hverts[np.abs(hverts[:, 0] - c[0]) <= 0.025]
+            if not len(hv_rim):
+                hv_rim = hverts
+
+    half_t = 0.5 * float(thick)
+    n_arch = max(7, 2 * int(rows) - 1)
     Q = []
-    for i in range(rows):
-        v = 1.0 - i / (rows - 1)
+    base_r_cols = []
+    dirs_cols = []
+    for j in range(cols):
+        phi = a0 + (a1 - a0) * j / max(cols - 1, 1)
+        d = up * math.cos(phi) + bk * math.sin(phi)
+        d /= max(float(np.linalg.norm(d)), 1e-9)
+        r_root = (first_hit(c, d) or 0.100) + float(base_ease)
+        if host_bvh is not None:
+            t_in = host_bvh.ray_cast(c + d * 0.35, -d, maxd=0.33)
+            if t_in is not None:
+                r_root = (0.35 - float(t_in)) - 0.0020
+            elif hv_rim is not None and len(hv_rim):
+                rel = hv_rim - c[None, :]
+                rel_L = np.linalg.norm(rel, axis=1)
+                best_k = int(np.argmax((rel @ d) / np.maximum(rel_L, 1e-6)))
+                L_rim = max(float(rel_L[best_k]), 1e-6)
+                d = rel[best_k] / L_rim
+                r_root = L_rim - 0.0020
+        base_r_cols.append(r_root)
+        dirs_cols.append(d)
+
+    mid_i = n_arch // 2
+    for i in range(n_arch):
+        if i <= mid_i:
+            u_side = 1.0
+            v = i / max(float(mid_i), 1.0)
+        else:
+            u_side = -1.0
+            v = (n_arch - 1 - i) / max(float(mid_i), 1.0)
+        lat_off = u_side * half_t * ((1.0 - 0.82 * (v ** 1.4)) if i != mid_i else 0.0)
         row = []
         for j in range(cols):
-            phi = a0 + (a1 - a0) * j / (cols - 1)
-            d = up * math.cos(phi) + bk * math.sin(phi)
-            base = first_hit(c, d) or 0.1
-            hh = height * math.sin(math.pi * (j + 0.5) / cols) ** 0.6
-            row.append(c + d * (base + 0.03 + hh * v) + bk * sweep * v)
+            d = dirs_cols[j]
+            r_root = float(base_r_cols[j])
+            hh = height * (math.sin(math.pi * (j + 0.35) / (cols - 0.30)) ** 0.65)
+            p_pt = c + d * (r_root + hh * v) + bk * (sweep * (v ** 1.3)) + left * lat_off
+            row.append(p_pt)
         Q.append(row)
-    return Part(name, np.array(Q), False, ['body'] * rows, paint, rigid_joint='Head')
+    return Part(name, np.array(Q), False, ['body'] * n_arch, paint, rigid_joint='Head')
 
 
 def wing(name, side, span, height, paint, rows=6, cols=9, rise=0.04, curl=0.05, f=0.62):

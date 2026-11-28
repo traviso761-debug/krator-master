@@ -28,7 +28,11 @@ string and the string hand at the jaw at 5 s, and no arrow after the loose (6.2 
 the legs in Bow aim and scan; Block 2's blade stays out of the head and neck; Two-handed parry's forearms stay apart;
 Drink brings the cup to the lips in the left hand; and the second round (2026-10-21): the arrow's head stays in front
 of the bow in every bow clip on every body; Two-handed parry's left hand does not flip round the hilt; Drink's cup stands
-upright before it is drunk from; Eat's bowl stands level in front of the belly.
+upright before it is drunk from; Eat's bowl stands level in front of the belly; and the third round (2026-11-26): the
+bucket's bail stays in the fist (the hand never turning more than 20 degrees in a frame) and its body out of the legs in
+Carry bucket and Water plants; the pickaxe in Dig and the
+hammer at the anvil stay out of the head; Chop's left arm stays out of the jaw; Sit and drink brings the cup to the lips;
+Eat's bowl shoulder is not hiked.
 --out writes a screenshot of the default figure, a rolled stranger, and a stranger of every people per body (faces).
 """
 import asyncio, json, os, sys
@@ -445,6 +449,190 @@ LAB_CHECKS = r'''async () => {
   await L.play('ual_consume'); at('ual_consume', 0.7);
   six.forEach((x, i) => { const w = bone(x, 'RightHand').getWorldPosition(V()), sp = bone(x, 'Spine').getWorldPosition(V());
     if (upOf(x, 'R', [1, 0, 0]) < 0.95 || w.z - sp.z < 0.12) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl not level on the palm in front of the belly'); });
+  // the third round (the owner's review of 2026-11-26): the left hand's index side up the haft as the right's (its grip
+  // frame is the right's mirrored, so their +Y point apart), the same on every body and whatever played before; its turn
+  // about the forearm within reach of a wrist (the forearm takes half); no flip between frames
+  const D = KCHAR_DATA, gripQ = (x, s) => { const h = D.bodies[x.kit.body].skeleton.hands[s];
+    return x.bones[h.bone].getWorldQuaternion(Q()).multiply(Q().fromArray(h.grip, 3)); };
+  const axis = (q, a) => V().fromArray(a).applyQuaternion(q);
+  for (const [clip, prop, along] of [['axe_chop', 'axe', [0, 1, 0]], ['blunt_swing', 'mace', [0, 1, 0]], ['parry_2h', 'sword', [0, 1, 0]],
+      ['spear_thrust', 'spear', [0, 1, 0]], ['spear_walk', 'spear', [0, 1, 0]], ['gun_shot', 'rifle', [0, 0, 1]], ['ual_pistol_idle', 'pistol', [0, 1, 0]]]) {
+    await L.play(clip); const hp = document.getElementById('hold-pick'); if (hp.value !== prop) { hp.value = prop; hp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 1500)); }
+    let thumb = -1, twist = 0, flip = 0;
+    for (const x of six) { const d = x.action.getClip().duration, J = D.bodies[x.kit.body].skeleton.joints, hi = x.bones.findIndex(b => b.name === 'LeftHand');
+      x.action.time = 0; x.update(0); let prev = null;
+      // past the cross-fade from the clip before, and short of a one-shot's end (it goes back to the last loop)
+      for (let t = 0; t < d - 1 / 30; t += 1 / 30) { x.update(1 / 30);
+        if (t < 0.3 || x.reach > 0.05) { prev = null; continue; }
+        const ql = gripQ(x, 'L'), qr = gripQ(x, 'R');
+        thumb = Math.max(thumb, axis(ql, [0, 1, 0]).dot(axis(qr, along)));
+        // the hand's turn on the forearm away from its rest turn, about the forearm's line
+        const hq = bone(x, 'LeftHand').getWorldQuaternion(Q()), dq = bone(x, 'LeftForeArm').getWorldQuaternion(Q()).invert().multiply(hq).multiply(Q().fromArray(J[hi].r).invert());
+        const a = bone(x, 'LeftHand').position.clone().normalize();
+        let ang = Math.abs(2 * Math.atan2(dq.x * a.x + dq.y * a.y + dq.z * a.z, dq.w)) * 57.3; if (ang > 180) ang = 360 - ang;
+        twist = Math.max(twist, ang);
+        if (prev) flip = Math.max(flip, prev.angleTo(hq)); prev = hq; } }
+    if (thumb > -0.5) out.push('props: in ' + clip + ' the left hand holds the ' + prop + ' upside down (its index side toward the butt)');
+    if (twist > 100) out.push('props: in ' + clip + ' the left hand is wrung ' + twist.toFixed(0) + ' degrees round the forearm');
+    if (flip > 0.8) out.push('props: in ' + clip + ' the left hand turns ' + (flip * 57.3).toFixed(0) + ' degrees in a frame');
+  }
+  // the empty hand keeps off the other hand's blade (Parry, Thrust / stab: the blade's axis came 1.5 cm from the fingers)
+  for (const [clip, bl] of [['parry', [0.1, 0.91]], ['thrust', [0.07, 0.32]]]) {
+    let near = 9; await run(clip, x => { const h = bone(x, 'RightHand').children.find(c => !c.isBone); if (!h || !h.children.length) return; h.updateMatrixWorld(true);
+      const A = V().set(0, bl[0] - 0.12, 0).applyMatrix4(h.matrixWorld), B = V().set(0, bl[1], 0).applyMatrix4(h.matrixWorld), P = n => bone(x, n).getWorldPosition(V());
+      for (const [a, b] of [['LeftForeArm', 'LeftHand'], ['LeftHand', 'LeftHandMiddle1'], ['LeftHandMiddle1', 'LeftHandMiddle3'], ['LeftHandIndex1', 'LeftHandIndex3']]) near = Math.min(near, segd(P(a), P(b), A, B)); });
+    if (near < 0.04) out.push('props: in ' + clip + ' the blade comes ' + (near * 100).toFixed(1) + ' cm from the empty hand');
+  }
+  // the rifle's stock out of the upper arms (Long gun shot at the hip ran its butt through the right upper arm)
+  let stock = 0; await run('gun_shot', x => { const n = x.stockNeed; if (n.length) stock = Math.max(stock, n[n.length - 1]); });
+  if (stock > 0.01) out.push('props: the rifle\'s stock goes ' + (stock * 100).toFixed(1) + ' cm into an upper arm in Long gun shot');
+  // the pistol clips: both hands on the gun in Pistol shot; in Pistol quick draw only while it aims, off the right forearm
+  await L.play('ual_pistol_shoot'); at('ual_pistol_shoot', 0.3);
+  six.forEach((x, i) => { if (!x.held.both || x.reach > 0.02) out.push('props: Pistol shot at 0.3 s, figure ' + i + ': the left hand not on the gun'); });
+  let fore2 = 9; await run('pistol_draw', (x, t) => { if (t < 2.6 || t > 4.2) return; const P = n => bone(x, n).getWorldPosition(V());
+    fore2 = Math.min(fore2, segd(P('LeftHand'), P('LeftHandMiddle1'), P('RightForeArm'), P('RightHand'))); });
+  if (fore2 < 0.08) out.push('props: in Pistol quick draw the left hand comes ' + (fore2 * 100).toFixed(1) + ' cm from the right forearm');
+  // the bow's string hand at full draw 6-8 cm off the face, not on the chin (Bow shot; the base mesh skinned)
+  await L.play('bow_shot'); at('bow_shot', 3.2);
+  six.forEach((x, i) => {
+    let base = null; x.group.traverse(o => { if (o.isSkinnedMesh && o.visible && (!base || o.geometry.attributes.position.count > base.geometry.attributes.position.count)) base = o; });
+    const g = base.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, nm = base.skeleton.bones.map(b => b.name), head = [], hand = [];
+    base.skeleton.update();
+    for (let k = 0; k < g.attributes.position.count; k++) { let bi = si.getX(k), bw = sw.getX(k);
+      for (const [c, w] of [[si.getY(k), sw.getY(k)], [si.getZ(k), sw.getZ(k)], [si.getW(k), sw.getW(k)]]) if (w > bw) { bw = w; bi = c; }
+      if (nm[bi] === 'Head') head.push(k); else if (/^RightHand/.test(nm[bi])) hand.push(k); }
+    const at3 = k => base.boneTransform(k, V()).applyMatrix4(base.matrixWorld), hp = head.filter((k, j) => j % 2 === 0).map(at3);
+    let gap = 9; hand.map(at3).forEach(a => hp.forEach(b => { gap = Math.min(gap, a.distanceTo(b)); }));
+    if (gap < 0.055 || gap > 0.095) out.push('props: Bow shot at 3.2 s, figure ' + i + ': the string hand ' + (gap * 100).toFixed(1) + ' cm off the face, want 6 to 8');
+  });
+  // the fifth round (2026-11-26, 07:16): the drawing elbow out and back, not up (Bow aim and scan at 4.59 s, Bow shot: it
+  // stood 11-12 cm above the shoulder and 20 cm in front of it); the arrow in the hand from the quiver (Draw from quiver
+  // showed none until it was on the string); the right forearm beside the rifle's butt, not in it (on the skinned arm)
+  for (const [clip, t] of [['bow_scan', 4.59], ['bow_shot', 3.4]]) {
+    await L.play(clip); at(clip, t);
+    six.forEach((x, i) => { const S = bone(x, 'RightArm').getWorldPosition(V()), E = bone(x, 'RightForeArm').getWorldPosition(V()), H = bone(x, 'RightHand').getWorldPosition(V());
+      const back = H.clone().sub(bone(x, 'LeftHand').getWorldPosition(V())).normalize(), up = E.y - S.y, behind = E.clone().sub(H).dot(back);
+      if (up > 0.03 || behind < 0.15) out.push('props: ' + clip + ' at ' + t + ' s, figure ' + i + ': the drawing elbow ' + (up * 100).toFixed(0) + ' cm over the shoulder, ' + (behind * 100).toFixed(0) + ' cm behind the hand along the arrow'); });
+  }
+  await L.play('bow_draw'); at('bow_draw', 1.45);
+  six.forEach((x, i) => { const b = x.bowState(); if (!b || !b.inHand) out.push('props: Draw from quiver at 1.45 s, figure ' + i + ': no arrow in the drawing hand'); });
+  {
+    await L.play('gun_shot'); const gp = document.getElementById('hold-pick'); if (gp.value !== 'rifle') { gp.value = 'rifle'; gp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 1500)); }
+    const ARMB = /^Right(Arm|ForeArm)$/, sets = six.map(x => { const ms = []; x.group.traverse(o => { if (!o.isSkinnedMesh || !o.visible) return;
+      const g = o.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, nm = o.skeleton.bones.map(b => b.name), ks = [];
+      for (let k = 0; k < g.attributes.position.count; k++) { let bi = si.getX(k), bw = sw.getX(k);
+        for (const [c, w] of [[si.getY(k), sw.getY(k)], [si.getZ(k), sw.getZ(k)], [si.getW(k), sw.getW(k)]]) if (w > bw) { bw = w; bi = c; }
+        if (ARMB.test(nm[bi])) ks.push(k); }
+      if (ks.length) ms.push([o, ks]); }); return ms; });
+    let inside = 0, frames = 0;
+    for (const [i, x] of six.entries()) { const d = x.action.getClip().duration; x.action.time = 0; x.update(0);
+      for (let t = 0; t < d - 1 / 30; t += 1 / 30) { x.update(1 / 30); if (Math.round(t * 30) % 2) continue;
+        const h = bone(x, 'RightHand').children.find(c => !c.isBone), m = h && h.children[0]; if (!m) continue; m.updateMatrixWorld(true);
+        const inv = m.matrixWorld.clone().invert(); let n = 0;
+        // the butt from 15 cm behind the grip back (by the wrist the hand wraps the grip, where the butt begins)
+        sets[i].forEach(([o, ks]) => { o.skeleton.update(); ks.forEach(k => { const p = o.boneTransform(k, V()).applyMatrix4(o.matrixWorld).applyMatrix4(inv);
+          if (Math.abs(p.x) < 0.02 && Math.abs(p.y) < 0.06 && p.z < -0.15 && p.z > -0.39) n++; }); });
+        if (n) { inside = Math.max(inside, n); frames++; } } }
+    if (frames > 2) out.push('props: in Long gun shot the right arm\'s skin is in the rifle\'s butt on ' + frames + ' frames (' + inside + ' vertices at most)');
+  }
+  // the owner's review of 2026-11-26. The look pass: Charged slash's head (its clip looked 115 degrees aside, the chest
+  // square on) and eyes toward the target ahead
+  let lookOff = 0, eyeTurn = 0;
+  await run('slash_charged', (x, t) => { if (t < 0.4) return; const f = x.faceForward(V()), T = x.lookTarget(V());
+    lookOff = Math.max(lookOff, f.angleTo(T.sub(x.headBone.getWorldPosition(V()))) * 57.3); eyeTurn = Math.max(eyeTurn, Math.abs(x.lookState.eyes[0])); });
+  if (lookOff > 80 || eyeTurn < 0.1) out.push('look: Charged slash turns the face ' + lookOff.toFixed(0) + ' degrees from the target (want under 80), the eyes ' + eyeTurn.toFixed(2) + ' rad');
+  // Push: the cart's bar at its height over the floor, the left hand on it
+  let cartY = 0, cartReach = 0;
+  await run('push', x => { const g = bone(x, 'RightHand').children.find(c => !c.isBone);
+    cartY = Math.max(cartY, Math.abs(g.getWorldPosition(V()).y - x.group.position.y - KCharFigure.props.cart.ground.height * x.scale)); cartReach = Math.max(cartReach, x.reach); });
+  if (cartY > 0.02 || cartReach > 0.03) out.push('props: Push, the cart\'s bar ' + (cartY * 100).toFixed(1) + ' cm off its height, the left hand ' + (cartReach * 100).toFixed(1) + ' cm short of it');
+  // Pick into basket: the basket hangs plumb under the hand dropping the fruit
+  await L.play('pick_fruit'); at('pick_fruit', 2.4);
+  six.forEach((x, i) => { const g = bone(x, 'LeftHand').children.find(c => !c.isBone), pv = g && g.children[0];
+    if (x.held.L !== 'basket' || !pv) { out.push('props: Pick into basket, figure ' + i + ': no basket'); return; }
+    const mouth = V().set(0, 0, 0.2).applyMatrix4(pv.matrixWorld), r = bone(x, 'RightHand').getWorldPosition(V());
+    const ax = V().set(0, 0, 1).applyQuaternion(pv.getWorldQuaternion(Q()));
+    if (ax.y > -0.999 || Math.hypot(mouth.x - r.x, mouth.z - r.z) > 0.25 * x.scale) out.push('props: Pick into basket at 2.4 s, figure ' + i + ': the basket not plumb under the picking hand (' + Math.hypot(mouth.x - r.x, mouth.z - r.z).toFixed(2) + ' m off)'); });
+  // Block and Block 2: seen from the front the blade crosses the face (it pointed back past the head), in front of it
+  for (const [c, t] of [['block', 1.25], ['block_2', 0.55]]) {
+    await L.play(c); at(c, t);
+    six.forEach((x, i) => { const g = bone(x, 'RightHand').children.find(c => !c.isBone), m = g && g.children[0];
+      const eye = x.headBone.getWorldPosition(V()).add(V().set(0, 0.09 * x.scale, 0)); let best = 9, z = 0;
+      for (let s = 0.1; s <= 0.91; s += 0.03) { const p = V().set(0, s, 0).applyMatrix4(m.matrixWorld), d = Math.hypot(p.x - eye.x, p.y - eye.y); if (d < best) { best = d; z = p.z - eye.z; } }
+      if (best > 0.08 * x.scale || z < 0.05 * x.scale) out.push('props: ' + c + ' at ' + t + ' s, figure ' + i + ': the blade does not cross before the face (' + best.toFixed(2) + ' m off its line, ' + z.toFixed(2) + ' m ahead)'); });
+  }
+  // Walk while shooting: the low aim points the barrel at least 15 degrees lower than the high aim
+  const barrel = x => { const g = bone(x, 'RightHand').children.find(c => !c.isBone); return Math.asin(V().set(0, 0, 1).applyQuaternion(g.getWorldQuaternion(Q())).y) * 57.3; };
+  const aims = {};
+  for (const c of ['walk_shoot_high', 'walk_shoot']) { let s = 0, n = 0; await run(c, x => { s += barrel(x); n++; }); aims[c] = s / n; }
+  if (!(aims.walk_shoot < aims.walk_shoot_high - 15)) out.push('clips: Walk while shooting aims ' + aims.walk_shoot.toFixed(0) + ' degrees, the high aim ' + aims.walk_shoot_high.toFixed(0));
+  // Open door: the hand closes on the handle and pulls it toward the body
+  await L.play('open_door'); at('open_door', 0.1);
+  const open0 = six.map(x => bone(x, 'RightHandIndex2').quaternion.clone());
+  at('open_door', 1.2);
+  const door0 = six.map(x => bone(x, 'RightHand').getWorldPosition(V()));
+  const curl = six.map((x, i) => bone(x, 'RightHandIndex2').quaternion.angleTo(open0[i]));
+  at('open_door', 2.5);
+  six.forEach((x, i) => { const d = door0[i].z - bone(x, 'RightHand').getWorldPosition(V()).z;
+    if (curl[i] < 0.5 || d < 0.15 * x.scale) out.push('clips: Open door, figure ' + i + ': the hand ' + (curl[i] < 0.5 ? 'open on the handle' : 'pulls only ' + d.toFixed(2) + ' m')); });
+  // the fifth round (2026-11-27): the figure steps back as it pulls, and the lab's door (drawn for the clip, placed by
+  // its frame loop) keeps the lever in the hand from the grip to the letting go: paused, stepped, a frame drawn each step
+  const pb = document.getElementById('play'), wasOn = pb.getAttribute('aria-pressed') === 'true';
+  if (wasOn) pb.click();
+  await L.play('open_door');
+  six.forEach(x => { x.action.time = 0; x.update(0); });
+  const hips0 = six.map(x => bone(x, 'Hips').getWorldPosition(V()).z), gap = six.map(() => 0), back = six.map(() => 0);
+  for (let t = 0; t < 3.0; t += 1 / 30) {
+    six.forEach(x => x.update(1 / 30));
+    await new Promise(r => requestAnimationFrame(() => r()));
+    six.forEach((x, i) => { back[i] = Math.max(back[i], hips0[i] - bone(x, 'Hips').getWorldPosition(V()).z);
+      if (t > 1.0 && t < 2.85) gap[i] = Math.max(gap[i], L.doorGap(i) == null ? 9 : L.doorGap(i)); });
+  }
+  if (wasOn) pb.click();
+  six.forEach((x, i) => { if (back[i] < 0.08 * x.scale || gap[i] > 0.08 * x.scale)
+    out.push('clips: Open door, figure ' + i + ': steps back ' + back[i].toFixed(2) + ' m, the hand ' + gap[i].toFixed(2) + ' m off the door\'s lever'); });
+  // Slash left cuts level: its hand rises far less above the shoulder than the up swing's
+  const rise = {};
+  for (const c of ['slash_up', 'slash_left']) { let r = -9; await run(c, (x, t) => { if (t > 0.5 && t < 1.3) r = Math.max(r, bone(x, 'RightHand').getWorldPosition(V()).y - bone(x, 'RightArm').getWorldPosition(V()).y); }); rise[c] = r; }
+  if (!(rise.slash_left < rise.slash_up - 0.1)) out.push('clips: Slash left rises ' + rise.slash_left.toFixed(2) + ' m over the shoulder, the up swing ' + rise.slash_up.toFixed(2));
+  // the fifth round (2026-11-26): the empty hands close into fists in the strikes (clips.json fist)
+  { await L.play('jab_l'); const hp = document.getElementById('hold-pick'); if (hp.value !== '') { hp.value = ''; hp.dispatchEvent(new Event('change')); await new Promise(r => setTimeout(r, 300)); }
+    at('jab_l', 0.3);
+    six.forEach((x, i) => { const k = x.bones.findIndex(b => b.name === 'RightHandIndex2'), J = KCHAR_DATA.bodies[x.kit.body].skeleton.joints;
+      if (k >= 0 && x.bones[k].quaternion.angleTo(Q().fromArray(J[k].r)) < 0.5) out.push('fist: Left jab at 0.3 s, figure ' + i + ': the empty right hand is open'); }); }
+  // the third round (2026-11-26): the bail stays in the fist and the bucket out of the legs; the made dig and hammer keep
+  // their tools out of the head; Chop's left arm out of the jaw; the cup to the lips in Sit and drink; Eat's bowl
+  // shoulder not hiked
+  for (const c of ['walk_bucket', 'ual_water']) {
+    // and the hand does not flip from frame to frame (round 5, 2026-11-27: Water plants' hand snapped half a turn as the
+    // forearm turn that lays the bail level changed sides)
+    let legs = 0, bail = 0, flip = 0; const prevQ = new Map();
+    await run(c, x => { legs = Math.max(legs, x.hangNeed);
+      const pv = bone(x, 'RightHand').children.find(o => !o.isBone).children[0];
+      bail = Math.max(bail, V().set(0, 1, 0).applyQuaternion(pv.quaternion).angleTo(V().set(0, 1, 0)));
+      const q = bone(x, 'RightHand').getWorldQuaternion(Q());
+      if (prevQ.has(x) && x.action.time > 0.05) flip = Math.max(flip, prevQ.get(x).angleTo(q));
+      prevQ.set(x, q); });
+    if (flip > 0.35) out.push('props: in ' + c + ' the bucket hand turns ' + (flip * 57.3).toFixed(0) + ' degrees in a frame');
+    if (legs > 0.015) out.push('props: in ' + c + ' the bucket comes ' + (legs * 100).toFixed(1) + ' cm into the legs (their capsules and the trousers)');
+    if (bail > 0.01) out.push('props: in ' + c + ' the bail turns ' + (bail * 57.3).toFixed(0) + ' degrees out of the fist');
+  }
+  const TOOL = { pickaxe: [[0, 0, 0], [0, 0.15, 0], [0, 0.3, 0], [0, 0.45, 0], [0, 0.6, 0, 0.03], [0, 0.57, 0.13], [0, 0.54, 0.26, 0.012], [0, 0.57, -0.13], [0, 0.54, -0.26, 0.012]],
+                 hammer: [[0, 0, 0], [0, 0.1, 0], [0, 0.2, 0], [0, 0.32, 0.07, 0.035], [0, 0.32, 0.01, 0.035], [0, 0.32, -0.05, 0.035]] };
+  for (const c of [['dig', 'pickaxe'], ['hammer_anvil', 'hammer']]) {
+    let deep = 0; await run(c[0], x => { const hc = V(), r = x.facePoint('head', hc), g = bone(x, 'RightHand').children.find(o => !o.isBone);
+      if (!r || !g || x.held.R !== c[1]) return;
+      TOOL[c[1]].forEach(p => { deep = Math.max(deep, r + (p[3] || 0.02) - V().set(p[0], p[1], p[2]).applyMatrix4(g.matrixWorld).distanceTo(hc)); }); });
+    if (deep > 0.005) out.push('props: in ' + c[0] + ' the ' + c[1] + ' comes ' + (deep * 100).toFixed(1) + ' cm into the head');
+  }
+  let jaw = 0; await run('ual_chop', x => { jaw = Math.max(jaw, x.jawNeed); });
+  if (jaw > 0.015) out.push('props: in Chop the left arm comes ' + (jaw * 100).toFixed(1) + ' cm into the jaw');
+  await L.play('sit_drink'); at('sit_drink', 5.5);
+  six.forEach((x, i) => { if (x.held.R !== 'cup' || x.faceW < 0.99) out.push('props: Sit and drink at 5.5 s, figure ' + i + ': the cup not at the lips'); });
+  await L.play('ual_consume'); at('ual_consume', 0.7);
+  six.forEach((x, i) => { const P = KCHAR.fk(KCHAR_DATA.bodies[x.kit.body].skeleton, x.pose.t).P, ia = x.bones.indexOf(bone(x, 'RightArm')), ic = x.bones.indexOf(bone(x, 'RightShoulder'));
+    const e0 = Math.asin(V().fromArray(P[ia]).sub(V().fromArray(P[ic])).normalize().y), e = Math.asin(bone(x, 'RightArm').getWorldPosition(V()).sub(bone(x, 'RightShoulder').getWorldPosition(V())).normalize().y);
+    if (e - e0 > 6 / 57.3) out.push('props: Eat at 0.7 s, figure ' + i + ': the bowl shoulder hiked ' + ((e - e0) * 57.3).toFixed(0) + ' degrees'); });
   return out;
 }'''
 
@@ -453,6 +641,26 @@ async def run(page_path, do_assert, out_dir):
     # the page fetches its pieces, so verify_page serves it
     async with verify_page(page_path, here=HERE, size='1400x860', routes=ROUTES, settle_ms=0, ready_js='window._kchar||window._lab') as V:
         pg, errs, fails = V.page, V.errs, V.fails
+        if os.path.basename(page_path).startswith(('combat-lab', 'trade-lab')):
+            # a published lab of part of the clips (build.py LAB_PAGES): it loads its own anims piece, plays one of its own
+            # clips on every figure, and holds none of the other lab's (the whole set is checked on animation-lab)
+            await pg.wait_for_function('window._lab', timeout=120000)
+            r = await pg.evaluate('''async () => {
+              const L = window._lab, out = [];
+              await Promise.resolve(typeof L.ready === 'function' ? L.ready() : L.ready);
+              const groups = new Set(KCHAR_LAB.groups), S = KCHAR_DATA.bodies.mpfb_male.skeleton.clips;
+              const own = S.find(c => groups.has(c.group) && c.group !== 'idle' && c.group !== 'move');
+              const other = S.find(c => !groups.has(c.group));
+              await L.play(own.name);
+              L.figs.forEach((f, i) => { if (f.group.visible && (!f.action || f.action.getClip().name !== own.name)) out.push('lab: figure ' + i + ' does not play ' + own.name); });
+              if (other && L.figs[0].clips[other.name]) out.push('lab: ' + other.name + ' (' + other.group + ') is in this lab\\'s anims');
+              return out; }''') if do_assert else []
+            fails += r
+            if out_dir:
+                os.makedirs(out_dir, exist_ok=True)
+                await pg.wait_for_timeout(1500)
+                await pg.screenshot(path=os.path.join(out_dir, os.path.basename(page_path)[:-5] + '.png'))
+            raise Abort(0)
         if 'animation-lab' in os.path.basename(page_path):
             await pg.wait_for_function('window._lab', timeout=120000)
             r = await pg.evaluate(LAB_CHECKS) if do_assert else []

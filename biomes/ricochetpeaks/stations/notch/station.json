@@ -1,0 +1,25 @@
+{
+ "id": "notch",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Ricochet Peaks — Skippers Notch Doublet Breach & Bandit Toll-Eyrie",
+ "out": "ricochetpeaks-notch.html",
+ "px": [1285, 1508],
+ "sky": [1013, 1178],
+ "elevM": 3820.0,
+ "pAtm": 0.99,
+ "koppen": "Dfc",
+ "rainMmYr": 620,
+ "strataStack": "secondary-ejecta+obsidian-pancake",
+ "reserves": [
+  { "id": "site:ricochet-bandit-gate", "x": -8, "z": 42, "r": 30 }
+ ],
+ "modes": ["Day", "Ring-Shadow Dusk", "Winter Snow"],
+ "families": [
+  "ground.suevite", "ground.tundra", "ground.duff",
+  "bark.spruce", "spruce", "bark.larch", "larch", "larchgold", "bark.pine", "pine", "bark.birch", "birch", "wood.log",
+  "heather", "sedge", "moss",
+  "rock.suevite", "stone.tagamite", "stone.sinter",
+  "ore.iron", "ore.nickel", "ore.gold", "ore.quartz",
+  "wood.cedar", "roof.shingle"
+ ]
+}

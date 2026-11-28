@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1059,
+    1091
+   ],
+   "seam_after": [
+    0.597,
+    1.324
+   ],
+   "seam_before": [
+    1.126,
+    0.803
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "republic/streltsy-ryasy-braid",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__republic__streltsy-ryasy-braid.png",
+  "generator": "Codex image generation, Nov 2026 (exec-21dac8ca-c7b3-4bb7-a879-7cfad61ae541.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: 17th-century Russian Streltsy military kaftan chest-frogging (ryasy) laid flat on dark slate-black fulled wool (#26282b): six horizontal parallel rows of twisted crimson-red (#a3241c) and metallic golden-ochre (#d49b35) braided wool-and-brass cord ending in symmetrical three-looped trefoil hussar knots, with small faceted cast-brass toggle buttons down the vertical centre line and narrow crimson placket piping, seam-aligned. Full colour.",
+  "sha1": "f1dc3f4a7e877fd94d14ca06a1ff927b8e719d72"
+ }
+}

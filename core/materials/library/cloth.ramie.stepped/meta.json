@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1707,
+    1711
+   ],
+   "seam_after": [
+    0.457,
+    0.946
+   ],
+   "seam_before": [
+    1.967,
+    2.025
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.66,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.ramie.stepped",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.66,
+  "scale": [
+   0.2,
+   0.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "ramie-linen-tiwanaku-2048.png",
+  "generator": "Codex image generation, Nov 2026 (ramie-linen-tiwanaku-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Crisp hand-loomed bast ramie-linen cloth at 20 cm square garment scale, self-woven in a subtle tone-on-tone float weave of small interlocking Tiwanaku stepped frets and square spirals (eight repeats across and eight down), showing stiff lustrous plant fibres and sharp thread relief. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "ed2be6e0169911240d8ff35e658a716da6453e4b"
+ }
+}

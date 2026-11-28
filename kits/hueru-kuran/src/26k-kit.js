@@ -17,7 +17,7 @@ const SV_LIB={
  basalt:'basalt',columnar:'columnar',ashlar:'ashlar',corbel:'corbel',paving:'paving',
  nephrite:'nephrite',jade:'jade',chime:'chime',
  whalebone:'whalebone',baleen:'baleen',ivory:'ivory',
- turf:'turf',peat:'peat',bark:'bark',cypress:'cypress',driftwood:'driftwood',tarwood:'tarwood',wood:'wood',floor:'floor',
+ turf:'turf',peat:'peat',bark:'bark',cypress:'cypress',driftwood:'driftwood',totemWood:'totemWood',nauticalCrest:'nauticalCrest',nauticalCrestB:'nauticalCrestB',tarwood:'tarwood',wood:'wood',floor:'floor',
  kaen:'kaen',glaze:'glaze',bronze:'bronze',verdigris:'verdigris',iron:'iron',seaglass:'seaglass',
  gutskin:'gutskin',hide:'hide',pelt:'pelt',kelp:'kelp',netting:'netting',banner:'banner',
  rope:'rope',reed:'reed',flag:'flag',plain:'plain',brass:'brass',bone:'bone',
@@ -28,7 +28,7 @@ const SV_TILE0={
  basalt:2,columnar:1.8,ashlar:1.5,corbel:1.6,paving:2.2,
  nephrite:1.1,jade:.75,chime:.65,
  whalebone:1.1,baleen:.65,ivory:.5,
- turf:1.8,peat:1.6,bark:1.3,cypress:1.5,driftwood:1.6,tarwood:1.4,wood:1.5,floor:1.8,
+ turf:1.8,peat:1.6,bark:1.3,cypress:1.5,driftwood:1.6,totemWood:1.2,nauticalCrest:1.8,nauticalCrestB:1.8,tarwood:1.4,wood:1.5,floor:1.8,
  kaen:1,glaze:1.1,bronze:.8,verdigris:.9,iron:.8,seaglass:.7,
  gutskin:.95,hide:1.2,pelt:.8,kelp:.9,netting:.65,banner:1.1,
  rope:.28,reed:1,flag:1,plain:1.4,brass:.5,bone:.5,
@@ -39,7 +39,7 @@ const SV_TILE0={
 const SV_CLOTH={gutskin:1,hide:1,kelp:1,netting:1,banner:1,chime:1,flag:1};
 const SV_CUT=Object.assign({
  basalt:1,columnar:1,ashlar:1,corbel:1,nephrite:1,jade:1,whalebone:1,baleen:1,
- turf:1,peat:1,bark:1,cypress:1,driftwood:1,tarwood:1,wood:1,kaen:1,glaze:1,
+ turf:1,peat:1,bark:1,cypress:1,driftwood:1,totemWood:1,nauticalCrest:1,nauticalCrestB:1,tarwood:1,wood:1,kaen:1,glaze:1,
  bronze:1,verdigris:1,iron:1,seaglass:1,pelt:1,reed:1,plain:1},SV_CLOTH);
 const KIT_FALLBACK=[];
 const SVPAL={
@@ -53,7 +53,7 @@ const SVPAL={
  turf:[0x4c6838,0x425c30,0x567440],turfMoss:[0x5a7a3e,0x4e6e36],
  peat:[0x3a322a,0x322a23],bark:[0x784430,0x6c3c29,0x844c37],
  cypress:[0x8e4c34,0x82442d,0x9a543b],cypressD:[0x5e3322,0x522b1c],
- driftwood:[0x9c9282,0x908676,0xa89e8e],tarwood:[0x2e2824,0x26201d],
+ driftwood:[0x9c9282,0x908676,0xa89e8e],totemWood:[0x968c7c,0x8e4c34,0xa29686],nauticalCrest:[0xf8f4ec],nauticalCrestB:[0xf8f4ec],tarwood:[0x2e2824,0x26201d],
  wood:[0x7a583c,0x6e4e34],floor:[0x886446,0x7c5a3e],
  kaen:[0xb85834,0xaa4e2c,0xc4623c],kaenSoot:[0x7e3e28,0x703622],
  glaze:[0x468878,0x3c7c6c,0x529484],

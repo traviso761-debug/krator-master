@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "timpar-kuran.html": {
+   "tris": 1800000,
+   "calls": 240,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "38 Timpar-Kuran Veiled-Mountain building definitions (10 Jomon/Ainu pit-lodges, stepped cise huts & 18-22 m Tlingit split-cypress Timpar-Cise clan halls with interior daak tiers, 6 Kanopi arcology-rib, iomante bear-court, nusa mortuary & potlatch shrines, 6 chasi-noow ridge forts & Eternian trophy stockades, and 16 salmon-weir, grease-tryworks, dugout-canoe, totem-carving, camas earth-oven, kaen-doki, Chilkat-loom, pony-hound corral & cold-copper trade works) plus 60 kits/resources ore nodes across 10 rows with 290+ furnished pieces, 6 core/water surfaces, and Stage 5 M1-M4 library maps",
+   "raised": "2026-11-28"
+  }
+ }
+}

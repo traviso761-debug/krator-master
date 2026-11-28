@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1741,
+    1700
+   ],
+   "seam_after": [
+    1.245,
+    0.817
+   ],
+   "seam_before": [
+    3.245,
+    4.008
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "yonni/dyad-bronze-slate-scale",
+  "metal": 0.82,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__yonni__dyad-bronze-slate-scale.png",
+  "generator": "Codex image generation, Nov 2026 (yonni_scale_armour_texture_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Yonni imbricated leaf-pointed rain-shedding scale armour: six staggered horizontal courses alternating bands of blue-grey cleaved storm-slate scales (#425264), warm brushed high-tin bronze scales (#9e7b42), and sea-fog verdigris patinated bronze scales (#487a68), riveted onto ironstone-brown leather (#4a372d) with carnelian-red and woad-indigo wool edging, seamless across edges. Full colour.",
+  "sha1": "ade8ad742714a3de2c5a8b4fd18db50c54afabf5"
+ }
+}

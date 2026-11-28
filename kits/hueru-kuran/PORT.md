@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 15 (9%) | 12 (7%) | 0 (0%) | 20 (12%) | 124 (72%) |
+| KB | 16 (8%) | 12 (6%) | 0 (0%) | 21 (10%) | 165 (77%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -16,17 +16,19 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/26k-kit.js` | 5.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/27v-hk-vstack.js` | 8.8 | [G shader] | 4 | 0 | 0 | 0 | 0 | 0 | 8 | 0 | 0 | 0 | 0 |  |
 | `src/27z-hk-matfix.js` | 1.8 | [draw] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/34-hk-trades.js` | 7.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/39-hk-furn.js` | 13.1 | [draw] | 0 | 0 | 0 | 0 | 0 | 91 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/34-hk-trades.js` | 8.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/39-hk-furn.js` | 16.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 121 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/40-hk-kit.js` | 24.3 | [draw] | 2 | 0 | 0 | 0 | 0 | 44 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/50-hk-houses.js` | 17.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | building builders calling 40-hk-kit.js |
-| `src/54-hk-civic.js` | 18.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 27 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/58-hk-works.js` | 26.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 47 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/62-hk-waterfront.js` | 21.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 52 | 0 | 0 | 0 | 0 | 0 |  |
-| `src/89-rows.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/41-hk-totem.js` | 25.3 | [draw] | 0 | 0 | 0 | 0 | 0 | 58 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-hk-houses.js` | 18.6 | [draw] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | building builders calling 40-hk-kit.js |
+| `src/54-hk-civic.js` | 22.9 | [draw] | 0 | 0 | 0 | 0 | 0 | 41 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/54b-hk-totem-quay.js` | 4.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/58-hk-works.js` | 28.7 | [draw] | 0 | 0 | 0 | 0 | 0 | 59 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/62-hk-waterfront.js` | 22.0 | [draw] | 0 | 0 | 0 | 0 | 0 | 52 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/89-rows.js` | 2.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90z-hk-atmos.js` | 3.4 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | live ATMOS wind & gust shader hook on SV_CLOTH gutskin, kelp, nets & nephrite chimes |
 | `src/91z-hk-world.js` | 4.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | core/water step-wells & millraces, KDRAWN ground, furniture detail fallback: host code |
-| `src/99-host-tz-hk.js` | 15.0 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the probe fields for verify.py (window._api): host code |
+| `src/99-host-tz-hk.js` | 16.0 | [web] | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | the probe fields for verify.py (window._api): host code |
 
 ## Notes
 

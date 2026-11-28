@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2004
+   ],
+   "seam_after": [
+    0.641,
+    1.409
+   ],
+   "seam_before": [
+    2.137,
+    1.367
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "tungang/highvis-bead-stencil",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__tungang__highvis-bead-stencil.png",
+  "generator": "Codex image generation, Nov 2026 (tungang_union_cloth.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of subterranean Tungang union coverall and lodge-sash cloth: coal-rubbed dark slate-indigo oilskin canvas (#242c38) stitched with salvaged pre-Cataclysm high-visibility neon-yellow (#e8d828) and hazard-orange (#e07820) reflective chevron tarp strips, a woven row of the Steward's faded-orange (#c8783e) and phosphor-teal (#34d8c0) glass beads, and brass eyelet rings framing four eight-cogged union wheel badges across (no text), clean seam alignment. Full colour.",
+  "sha1": "92e376eba3fb673b6dc9aa39e71d1626dc3a8e5b"
+ }
+}
