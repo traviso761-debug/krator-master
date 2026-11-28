@@ -82,7 +82,7 @@ function mbRunSettlementChecks() {
   var P = MB_PLAN;
   var C = P.census;
 
-  /* 1. Multi-kit census, 47/47 Hayrant pieces, 41/41 Voth-census trades & <= 0.50 m mixed-avenue cornice delta */
+  /* 1. Multi-kit census, 55/55 Hayrant pieces, 41/41 Voth-census trades & <= 0.50 m mixed-avenue cornice delta */
   var kitsOk = C.totalLots >= 450 && C.missingHyKeys.length === 0 && C.unstaffedTrades.length === 0 &&
                C.hayrantShare >= 0.68 && C.hayrantShare <= 0.88 && C.byKit.eternian >= 80;
   var corniceOk = P.avenuePairs.length === 10 && P.maxCorniceDelta <= 0.50;

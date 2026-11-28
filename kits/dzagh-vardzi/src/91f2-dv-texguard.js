@@ -8,6 +8,7 @@
  buildWorld=function(){
   dvSpinnerReset();
   if(typeof dvShellReset==='function')dvShellReset();
+  if(typeof dvSlateCrownReset==='function')dvSlateCrownReset();
   const W0=prevBuildWorld();
   dvSpinnerFlush(W0);
   if(W0&&KMAT.mode==='lib'){

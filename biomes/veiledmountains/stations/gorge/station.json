@@ -1,0 +1,17 @@
+{
+ "id": "gorge",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Veiled Mountains — Sol-Cleft Cataract & Epiphyte Cloud-Slope",
+ "out": "veiledmountains-gorge.html",
+ "px": [214, 742],
+ "sky": [-58, 412],
+ "elevM": 2560.0,
+ "pAtm": 1.18,
+ "koppen": "Cfb",
+ "rainMmYr": 3380,
+ "strataStack": "megabreccia",
+ "reserves": [
+  {"id": "site:timpar-kuran-chasi", "x": 92, "z": -88, "r": 42}
+ ],
+ "modes": ["Veil", "Sun-Break", "Deep Veil"]
+}

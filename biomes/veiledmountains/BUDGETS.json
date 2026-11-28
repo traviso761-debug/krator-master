@@ -1,0 +1,59 @@
+{
+ "what": "Vertical-stack budgets for biomes/veiledmountains (rmwzq1pa88m7q): 5 station HTML pages (< 2.2 MB each via veiledmountains.tex.veiledmountains.js sidecar), max samplers < 15, and estimated VRAM <= 380 MB.",
+ "pages": {
+  "veiledmountains.html": {
+   "bytes": 2202009,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 1 (hall): Hoh-scale stilt-root nurse-log cathedral, 12 m giant tree-ferns, mire spore-spikes & crimson crown epiphytes with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "veiledmountains-gorge.html": {
+   "bytes": 2202009,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 2 (gorge): Sol-Cleft 2-tier mossy megabreccia cataract, wedged KSPAN nurse-logs, split-cedar footbridge & Z3 epiphyte cloud-slope.",
+   "raised": "2026-11-28"
+  },
+  "veiledmountains-kanopi.html": {
+   "bytes": 2202009,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 3 (kanopi): 95 m tilted Ancient Kanopi circular canopy-oculus ruin (KRUINS.watch) pouring a 65 m waterfall into a lily-and-moss tarn.",
+   "raised": "2026-11-28"
+  },
+  "veiledmountains-veilpass.html": {
+   "bytes": 2202009,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 4 (veilpass): Glacial U-trough, braided boulder torrent, lime-green slide-alder avalanche chutes & KSTACKS megabreccia crag spires.",
+   "raised": "2026-11-28"
+  },
+  "veiledmountains-southvale.html": {
+   "bytes": 2202009,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 5 (southvale): Perpetual-fog Hush-Edge cushion-moss boulder moraine labyrinth, writhing cloud-oaks & sunken red-peat trail.",
+   "raised": "2026-11-28"
+  },
+  "*": {
+   "bytes": 12582912,
+   "tris": 6500000,
+   "calls": 150,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Shared veiledmountains.tex.veiledmountains.js texture sidecar pack serving all five Veiled Mountains station pages.",
+   "raised": "2026-11-28"
+  }
+ }
+}

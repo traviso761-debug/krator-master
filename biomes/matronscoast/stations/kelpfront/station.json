@@ -1,0 +1,15 @@
+{
+ "id": "kelpfront",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Matrons Coast — The Southern Kelp-Grazing Front Toward Farside",
+ "out": "matronscoast-kelpfront.html",
+ "px": [298, 476],
+ "sky": [26, 146],
+ "elevM": 32.0,
+ "pAtm": 1.58,
+ "koppen": "Af",
+ "rainMmYr": 3850,
+ "reserves": [
+  {"id": "site:yonni-wrack-watch", "x": 126, "z": -92, "r": 24}
+ ]
+}

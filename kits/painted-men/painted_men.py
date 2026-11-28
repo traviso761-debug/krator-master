@@ -1,45 +1,49 @@
 #!/usr/bin/env python3
-"""The Painted Men (Kwéent'x̱ / Highland Raider Tribes) building kit (kits/painted-men/README.md).
+"""The Painted Men (Payntja-Mana) building kit of the Northeast Danxia & Badland Cliffs (kits/painted-men/PLAN.md).
 
-Split out of `kits/highlands` so the Iron Republic (`republican`) and free alpine cantons (`rustic`) carry pure Slavic /
-Carpathian / Novgorodian woodwork, while the Painted Men retain their Tlingit / Pacific-Northwest black-red-teal formline
-crest panels, ovoid/U-form/trigon painting, Raven/Orca/Bear/Frog totem poles, Chilkat-style house-fronts, stilted bamboo
-huts, arched rib-vault longhouses, cliff-hung cantilever dwellings, and painted salvage roundhouses.
+Rebuilt onto `core/engine` around an Australian Aboriginal (Arnhem Land rarrk cross-hatching, X-ray & Wandjina rock art,
+Yanta-Rringka stencilled open hands, feathered Pukamani & Lorrkon poles) + Amazonian (bent canyon-oak & Stripe-bunchgrass
+maloca halls) + Mesa Verde / Dogon seep-alcove architecture strictly dictated by `biomes/paintedhighlands` (zero bamboo,
+zero kiln-fired brick/pottery, <= 4.20 m juniper viga spans).
 
-A build takes the kit by name:
+For a world or settlement page, prefer the sealed closure bundle (`kit_bundle.bundle('PMK')`), which isolates all
+`core/engine` globals cleanly:
 
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'painted-men'))
-    import painted_men as kpm
-    paths.update({f: p for f, p in kpm.full_paths().items() if f not in paths})
+    import kit_bundle as kpm_bundle
+    js, used_files = kpm_bundle.bundle('PMK')
 
-`paths()` returns this kit's own fragments (`83-pm-tlingit.js`, `84-tri-dwell.js`, `85-tri-village.js`, `85b-tri-salvage.js`);
-`full_paths()` includes the shared base timber, log, bamboo, opening and furnish helpers from `kits/highlands` (`FOUNDATION`
-without its Republican trades or clock/waterwheel animation) so a build can load Painted Men standalone or alongside Highlands.
+`painted_men.py` also retains `path()`, `paths()`, `full_paths()`, and `bundle()` so any caller importing `painted_men`
+works seamlessly.
 """
-import os
+import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, 'src')
 _ROOT = os.path.dirname(os.path.dirname(HERE))
-_HL_SRC = os.path.join(_ROOT, 'kits', 'highlands', 'src')
 
-SHARED_BASE = [
-    '70-hl-tex.js', '71-hl-mat.js', '71b-hl-motif.js', '71c-hl-openings.js',
-    '72-hl-helpers.js', '72c-hl-plan.js', '73-hl-carve.js',
-    '88-hl-dress.js', '89y-hl-furnish.js',
+KIT_ID = 'painted-men'
+CULTURE = 'painted'
+BUNDLE_KEY = 'PMK'
+
+FOUNDATION = [
+    '26k-kit.js',
+    '27v-pm-vstack.js',
+    '27z-pm-matfix.js',
+    '34-pm-trades.js',
+    '39-pm-furn.js',
+    '40-pm-kit.js',
+    '41-pm-rarrk.js',
 ]
-FOUNDATION = ['83-pm-tlingit.js']
-SETS = {
-    'tribal': ['84-tri-dwell.js', '85-tri-village.js', '85b-tri-salvage.js'],
-}
-FILES = sorted(FOUNDATION + [f for s in SETS.values() for f in s])
 
-OPENINGS = {
-    '10-core-door.js': os.path.join(_ROOT, 'core', 'door', '10-core-door.js'),
-    '20-core-glass.js': os.path.join(_ROOT, 'core', 'door', '20-core-glass.js'),
-    '30-core-door-leaf.js': os.path.join(_ROOT, 'core', 'door', '30-core-door-leaf.js'),
-    '69e5-iziz-openings.js': os.path.join(_ROOT, 'kits', 'iziz-vernacular', 'src', '69e5-iziz-openings.js'),
+SETS = {
+    'dwellings': ['50-pm-dwell.js'],
+    'sacred_defence': ['54-pm-sacred-def.js'],
+    'works_salvage': ['62-pm-works-salvage.js'],
+    'showcase': ['70-pm-cliff-alcove.js'],
 }
+
+FILES = FOUNDATION + SETS['dwellings'] + SETS['sacred_defence'] + SETS['works_salvage'] + SETS['showcase']
 
 
 def path(f):
@@ -51,7 +55,15 @@ def paths(names=None):
 
 
 def full_paths():
-    """Shared timber/bamboo/furnish base from kits/highlands plus this kit's Tlingit layer and dwellings."""
-    out = {f: os.path.join(_HL_SRC, f) for f in SHARED_BASE}
+    """Core-engine + Painted Men kit fragments for a standalone core/engine host."""
+    sys.path.insert(0, os.path.join(_ROOT, 'core', 'engine'))
+    import engine as kengine
+    out = dict(kengine.paths())
     out.update(paths())
     return out
+
+
+def bundle(key=BUNDLE_KEY):
+    """Sealed world bundle (`var PMK = (function(){ ... })();`)."""
+    import kit_bundle
+    return kit_bundle.bundle(key)

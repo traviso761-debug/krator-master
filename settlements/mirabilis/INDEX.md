@@ -18,7 +18,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `39e-mb-model.js` | 12 |  |
 | `40-mb-ground.js` | 21 | MIRABILIS — 1:1 Scale Model 5.1 Geomorphology &  (2) |
 | `41-mb-hydraulics.js` | 9 | MIRABILIS — Hydraulics, Hoist/Clock Kinematics & (2) |
-| `42-mb-city.js` | 62 **big** | MIRABILIS — Multi-Kit City Plan, Hamlets, Camp & (2) |
+| `42-mb-city.js` | 63 **big** | MIRABILIS — Multi-Kit City Plan, Hamlets, Camp & (2) |
 | `89-rows.js` | 1 | MIRABILIS — terrainH hook & verified camera view (1) |
 | `90z-mb-world.js` | 73 **big** | MIRABILIS — 3D World Assembly ([web]) (2) |
 | `99-host-z-mb-api.js` | 6 | MIRABILIS — Host API, Live Multi-Kit/Hydraulic/S (2) |

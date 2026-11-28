@@ -19,7 +19,7 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 
 | File | KB | Sections (line) |
 |---|---|---|
-| `dzagh-vardzi_furniture.js` | 27 |  |
+| `dzagh-vardzi_furniture.js` | 29 |  |
 
 ## src/
 
@@ -32,12 +32,12 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `31-alt-takes.js` | <1 |  |
 | `36p-dv-openfix.js` | <1 |  |
 | `40-dv-kit.js` | 16 |  |
-| `41-dv-roof.js` | 9 |  |
+| `41-dv-roof.js` | 10 |  |
 | `42-dv-flume.js` | 12 |  |
-| `53a-dv-vocab.js` | <1 |  |
 | `54-dv-aul.js` | 13 |  |
 | `55-sa-beasts.js` | 3 |  |
 | `56-dv-civic.js` | 25 |  |
+| `56b-dv-wonders.js` | 13 |  |
 | `58-dv-flumeworks.js` | 19 |  |
 | `60-dv-hamlet.js` | 17 |  |
 | `66-dv-flora.js` | 3 |  |
@@ -46,5 +46,5 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | `89v-dv-village-head.js` | <1 |  |
 | `90y-dv-terrain.js` | 7 |  |
 | `90z-dv-village.js` | 27 |  |
-| `91f2-dv-texguard.js` | 1 |  |
-| `99-ms-audit.js` | 14 |  |
+| `91f2-dv-texguard.js` | 2 |  |
+| `99-ms-audit.js` | 17 |  |

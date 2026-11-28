@@ -60,11 +60,32 @@ T.ok('whaleRibArc rises from basalt ring-wall spring to smoke-ring crown',
 T.ok('keyholeHalfWidth narrows smoothly from upper threshold to aquifer mirror pool',
   Math.abs(hkRigMath.keyholeHalfWidth(6.2, 3.7, 0) - 3.1) < 1e-9 &&
   Math.abs(hkRigMath.keyholeHalfWidth(6.2, 3.7, 1) - 1.85) < 1e-9);
-T.ok('Voth census trades table has 44 rows and every active trade names at least one hk_ def',
-  HK_TRADES.length === 44 && HK_TRADES.every(r => r.na || (Array.isArray(r.defs) && r.defs.length > 0 && r.defs.every(d => d.startsWith('hk_')))));
-T.ok('showcase FAMILIES rows have view-safe names and place all 45 hk_ building defs',
+T.ok('totemTierY spaces 3 to 5 nautical totem creature tiers monotonically from plinth top',
+  (() => {
+    const t4 = hkRigMath.totemTierY(0.54, 4, 1.35);
+    return t4.length === 4 && Math.abs(t4[0] - 0.54) < 1e-9 && Math.abs(t4[3] - (0.54 + 3 * 1.35)) < 1e-9;
+  })());
+T.neg('formlineLayerZ enforces >= 0.020 m non-coplanar relief z-step between layers',
+  fn => fn(0.024, 1) - 0.024 >= 0.020 - 1e-9 && fn(0.024, 2) - fn(0.024, 1) >= 0.020 - 1e-9 && fn(0.024, 4) - fn(0.024, 3) >= 0.020 - 1e-9,
+  (zFace, k) => zFace + k * 0.008,
+  hkRigMath.formlineLayerZ);
+T.ok('pelicanPouchSag is exact zero along all four mandible edges and bulges in forward gular belly',
+  hkRigMath.pelicanPouchSag(0, 0.5, 0.36) === 0 &&
+  hkRigMath.pelicanPouchSag(1, 0.5, 0.36) === 0 &&
+  hkRigMath.pelicanPouchSag(0.4, 0, 0.36) === 0 &&
+  hkRigMath.pelicanPouchSag(0.4, 1, 0.36) === 0 &&
+  hkRigMath.pelicanPouchSag(0.4, 0.5, 0.36) > 0.32 &&
+  hkRigMath.pelicanPouchSag(0.35, 0.5, 0.36) > hkRigMath.pelicanPouchSag(0.75, 0.5, 0.36));
+T.ok('Voth census trades table has 44 rows, wires hk_nautical_totem_quay, and every active trade names hk_ defs',
+  HK_TRADES.length === 44 &&
+  HK_TRADES.some(r => r.trade === 'shrine keepers' && r.defs.includes('hk_nautical_totem_quay')) &&
+  HK_TRADES.some(r => r.trade === 'priests and undertakers' && r.defs.includes('hk_nautical_totem_quay')) &&
+  HK_TRADES.some(r => r.trade === 'smiths and craftsmen' && r.defs.includes('hk_nautical_totem_quay')) &&
+  HK_TRADES.every(r => r.na || (Array.isArray(r.defs) && r.defs.length > 0 && r.defs.every(d => d.startsWith('hk_')))));
+T.ok('showcase FAMILIES rows have view-safe names and place all 48 hk_ building defs including hk_nautical_totem_quay',
   FAMILIES.length === 10 &&
   FAMILIES.every(f => !/[':\\/*?"<>|]/.test(f.name)) &&
-  FAMILIES.flatMap(f => f.keys).filter(k => k.startsWith('hk_')).length === 45);
+  FAMILIES.flatMap(f => f.keys).includes('hk_nautical_totem_quay') &&
+  FAMILIES.flatMap(f => f.keys).filter(k => k.startsWith('hk_')).length === 48);
 
 T.done();

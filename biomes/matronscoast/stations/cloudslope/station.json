@@ -1,0 +1,15 @@
+{
+ "id": "cloudslope",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Matrons Coast — Upper Cfb Cloud-Rainforest, Shell-Tufa Cataract & Shag-Shell Mountain Snails",
+ "out": "matronscoast-cloudslope.html",
+ "px": [438, 386],
+ "sky": [166, 56],
+ "elevM": 2150.0,
+ "pAtm": 1.22,
+ "koppen": "Cfb",
+ "rainMmYr": 3480,
+ "reserves": [
+  {"id": "site:yonni-pass-shrine", "x": 112, "z": -68, "r": 22}
+ ]
+}

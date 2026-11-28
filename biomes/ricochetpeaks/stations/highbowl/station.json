@@ -1,0 +1,24 @@
+{
+ "id": "highbowl",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Ricochet Peaks — Old Rim Crater Erebus Steam-Ice Chimneys & Frozen Tarn",
+ "out": "ricochetpeaks-highbowl.html",
+ "px": [1375, 1525],
+ "sky": [1103, 1195],
+ "elevM": 5100.0,
+ "pAtm": 0.82,
+ "koppen": "ET",
+ "rainMmYr": 340,
+ "strataStack": "secondary-ejecta+obsidian-pancake",
+ "reserves": [
+  { "id": "site:erebus-ice-refuge", "x": -118, "z": 38, "r": 28 }
+ ],
+ "modes": ["Day", "Ring-Shadow Dusk", "Winter Snow"],
+ "families": [
+  "ground.snow", "ground.sinter", "ground.tundra",
+  "bark.willow", "willow",
+  "ice.chimney", "rock.suevite", "stone.sinter",
+  "ore.iron", "ore.nickel", "ore.gold", "ore.quartz",
+  "moss", "sedge", "heather"
+ ]
+}

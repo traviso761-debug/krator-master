@@ -1043,4 +1043,19 @@ check('Lāiṭwāl (1028,1653) on its bench (%.0f m, dry): the lake on 1028,1654
       not bool(whas[1653, 1028]) and bool(whas[1654, 1028]) and abs(float(wlev[1654, 1028]) - 1315.05) <= 1.0
       and float(E[1652, 1028]) - float(E[1653, 1028]) >= 1000.0
       and all(float(E[1652, x_]) >= 2600.0 for x_ in range(1026, 1031)))
+# ---- 27. 5.1e38 (2026-11-28): Hayrant Circuit E6 provincial capital Kuran-Horu and towns Kep-Kotan & Cink-Kotan
+et_mask_t = regs_w0['rmvg89rejmqat']
+for hy_sid, hy_name, hy_type, hy_xy, hy_min_e in (
+    ('shykuranhoru', 'Kuran-Horu', 'city', (370, 691), 3000.0),
+    ('shykepkotan1', 'Kep-Kotan', 'town', (312, 581), 2300.0),
+    ('shycinkkotan', 'Cink-Kotan', 'town', (342, 791), 3000.0),
+):
+    s_hy = setts_w0.get(hy_sid)
+    check('5.1e38 Hayrant %s %s (%s) stands on dry Eternal State highland bench at %s' % (hy_type, hy_name, hy_sid, hy_xy),
+          s_hy is not None and s_hy['name'] == hy_name and s_hy['type'] == hy_type
+          and s_hy.get('polity') == 'Eternal State'
+          and (int(s_hy['px']), int(s_hy['py'])) == hy_xy
+          and not bool(whas[hy_xy[1], hy_xy[0]]) and bool(et_mask_t[hy_xy[1], hy_xy[0]])
+          and float(E[hy_xy[1], hy_xy[0]]) >= hy_min_e)
 print('%d checks passed' % ok)
+

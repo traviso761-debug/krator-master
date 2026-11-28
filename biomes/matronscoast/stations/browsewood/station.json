@@ -1,0 +1,15 @@
+{
+ "id": "browsewood",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Matrons Coast — The 2.2 m Browse-Line Snail Cathedral & Opalescent Mucus Silver-Highways",
+ "out": "matronscoast-browsewood.html",
+ "px": [356, 424],
+ "sky": [84, 94],
+ "elevM": 210.0,
+ "pAtm": 1.56,
+ "koppen": "Af",
+ "rainMmYr": 3920,
+ "reserves": [
+  {"id": "site:yonni-spear-plinth", "x": 116, "z": -78, "r": 24}
+ ]
+}

@@ -21,11 +21,11 @@ const SV_LIB={
  loess:'loess',silt:'silt',earth:'earth',lime:'lime',brick:'brick',block:'block',blockB:'blockB',blockC:'blockC',
  stone:'stone',paving:'paving',tile:'tile',celadon:'celadon',glaze:'glaze',kaen:'kaen',terracotta:'terracotta',
  scale:'scale',gilt:'gilt',nephrite:'nephrite',jade:'jade',chime:'chime',alabaster:'alabaster',onyx:'onyx',
- larch:'larch',timber:'timber',planks:'planks',shutter:'shutter',tarwood:'tarwood',bark:'bark',turf:'turf',reed:'reed',puya:'puya',
+ larch:'larch',totemWood:'totemWood',timber:'timber',planks:'planks',shutter:'shutter',tarwood:'tarwood',bark:'bark',turf:'turf',reed:'reed',puya:'puya',
  whalebone:'whalebone',bone:'bone',
- bronze:'bronze',brass:'brass',verdigris:'verdigris',iron:'iron',gold:'gold',silver:'silver',gunmetal:'gunmetal',lead:'lead',titanium:'titanium',white:'white',
+ bronze:'bronze',brass:'brass',verdigris:'verdigris',iron:'iron',gold:'gold',silver:'silver',gunmetal:'gunmetal',lead:'lead',titanium:'titanium',white:'white',cyberChassis:'cyberChassis',cyberChassisB:'cyberChassisB',
  plaid:'plaid',hemp:'hemp',hide:'hide',pelt:'pelt',netting:'netting',rope:'rope',flag:'flag',plain:'plain',
- screen:'screen',screenB:'screenB',maze:'maze',mazeB:'mazeB',mazeC:'mazeC',frieze:'frieze',sign:'sign',faces:'faces',
+ screen:'screen',screenB:'screenB',maze:'maze',mazeB:'mazeB',mazeC:'mazeC',cyberForm:'cyberForm',cyberFormB:'cyberFormB',cyberFormC:'cyberFormC',frieze:'frieze',sign:'sign',faces:'faces',
  sand:'sand',marble:'marble',gossan:'gossan',malachite:'malachite',quartz:'quartz',cassiterite:'cassiterite',
  galena:'galena',pegmatite:'pegmatite',coal:'coal',sulphur:'sulphur',efflor:'efflor',tar:'tar',potash:'potash',soda:'soda',schistem:'schistem',turq:'turq'};
 
@@ -34,11 +34,11 @@ const SV_TILE0={
  loess:3,silt:1.6,earth:2.8,lime:2.4,brick:1.2,block:1.6,blockB:1.6,blockC:1.6,
  stone:2.4,paving:2,tile:1.2,celadon:2.2,glaze:.6,kaen:1,terracotta:.6,
  scale:1.2,gilt:1.2,nephrite:1.1,jade:.75,chime:.65,alabaster:1,onyx:1,
- larch:1.5,timber:1.6,planks:2,shutter:1,tarwood:1.4,bark:1.3,turf:1.8,reed:2,puya:1.1,
+ larch:1.5,totemWood:1.2,timber:1.6,planks:2,shutter:1,tarwood:1.4,bark:1.3,turf:1.8,reed:2,puya:1.1,
  whalebone:1.1,bone:.5,
- bronze:.8,brass:.5,verdigris:1.1,iron:.8,gold:.8,silver:.8,gunmetal:.8,lead:.6,titanium:3,white:2,
+ bronze:.8,brass:.5,verdigris:1.1,iron:.8,gold:.8,silver:.8,gunmetal:.8,lead:.6,titanium:3,white:2,cyberChassis:1.2,cyberChassisB:1.2,
  plaid:1,hemp:.95,hide:1.2,pelt:.8,netting:.65,rope:.28,flag:1,plain:1.4,
- screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,frieze:10,sign:1,faces:1,
+ screen:2,screenB:2,maze:3,mazeB:3,mazeC:3,cyberForm:1.6,cyberFormB:1.6,cyberFormC:1.6,frieze:10,sign:1,faces:1,
  sand:3,marble:1.6,gossan:2,malachite:1.5,quartz:1.5,cassiterite:1.5,galena:1.5,pegmatite:1.5,
  coal:1.5,sulphur:1.6,efflor:2,tar:3,potash:1.6,soda:1.6,schistem:2,turq:.8};
 
@@ -47,9 +47,9 @@ const SV_CLOTH={plaid:1,hemp:1,hide:1,netting:1,chime:1,flag:1,sign:1};
 const SV_CUT=Object.assign({
  megabreccia:1,basalt:1,columnar:1,ashlar:1,corbel:1,loess:1,silt:1,lime:1,brick:1,block:1,blockB:1,blockC:1,
  stone:1,tile:1,celadon:1,glaze:1,kaen:1,terracotta:1,scale:1,gilt:1,nephrite:1,jade:1,alabaster:1,onyx:1,
- larch:1,timber:1,planks:1,shutter:1,tarwood:1,bark:1,turf:1,reed:1,puya:1,whalebone:1,bone:1,
- bronze:1,brass:1,verdigris:1,iron:1,gold:1,silver:1,gunmetal:1,lead:1,titanium:1,white:1,
- pelt:1,plain:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,frieze:1,faces:1,glass:1},SV_CLOTH);
+ larch:1,totemWood:1,timber:1,planks:1,shutter:1,tarwood:1,bark:1,turf:1,reed:1,puya:1,whalebone:1,bone:1,
+ bronze:1,brass:1,verdigris:1,iron:1,gold:1,silver:1,gunmetal:1,lead:1,titanium:1,white:1,cyberChassis:1,cyberChassisB:1,
+ pelt:1,plain:1,screen:1,screenB:1,maze:1,mazeB:1,mazeC:1,cyberForm:1,cyberFormB:1,cyberFormC:1,frieze:1,faces:1,glass:1},SV_CLOTH);
 const KIT_FALLBACK=[];
 const KIT_HAS=k=>typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&!!KMAT.packed(KIT.pack,k);
 
@@ -68,12 +68,13 @@ const SVPAL={
  bronze:[0x9c7a3c,0x94723a,0xa68244],brass:[0xc0943c,0xb08632],verdigris:[0x569680,0x4c8c76],
  gold:[0xd8b24a],silver:[0xc9ccd2,0xc2c6cc],gunmetal:[0x4a5058,0x444a52],pewter:[0x8a8f96,0x82878e],
  lead:[0x6e7278,0x666a70],titanium:[0x9aa1a8],alabaster:[0xefe7d6],onyx:[0xd8cfb8],white:[0xeeebe5],
+ cyberChassis:[0xf6f0ea],cyberChassisB:[0xf6f0ea],
  black:[0x141416],green:[0x3f8a5a,0x387e50],
  // Crookshore cousin nephrite jade, Jomon kaen-doki terracotta, larch crucks, turf & prized whalebone
  nephrite:[0x2a7e58,0x22704d,0x328a62],nephriteBright:[0x3aa272,0x329466],
  jade:[0x348e68,0x2a805c,0x3e9a74],chime:[0x2e8e64,0x267e58,0x389c70],
  kaen:[0xb65a36,0xa8502e,0xc26440],kaenSoot:[0x7c3e28,0x6e3622],terracotta:[0xb06a44,0xa8623e],
- larch:[0x8a4e34,0x7e462e,0x96563b],larchD:[0x583222,0x4e2b1d],
+ larch:[0x8a4e34,0x7e462e,0x96563b],larchD:[0x583222,0x4e2b1d],totemWood:[0x8a5236,0x7e482f,0x965c3e],
  timber:[0x52392a,0x4a3426,0x5a4030],timberL:[0x72533a,0x7a5b40],planks:[0x84684c,0x785e44],
  tarwood:[0x2c2622,0x241f1c],bark:[0x764430,0x6a3c29,0x824c36],
  turf:[0x566c3a,0x4c6032,0x607642],reed:[0xb6a272,0xaa9668],puya:[0xa89a74,0x9c8e68],
@@ -83,5 +84,8 @@ const SVPAL={
  hemp:[0xcabca0,0xbfb094,0xd4c6aa],hide:[0x8a6646,0x7c5a3c],pelt:[0x5c4a3c,0x504034,0x685444],
  netting:[0xa69474,0x9a8868],rope:[0xb69862,0xaa8c56],
  glass:[0x2e3a42,0x34404a],glassLit:[0xe8c890],iron:[0x3c3834,0x322e2b],
+ maze:[0xd8b24a,0xc89e3c],mazeB:[0x48dce8,0x3ac8d6],mazeC:[0xc68a42,0xb67c36],
+ cyberForm:[0xf6f0ea],cyberFormB:[0xf6f0ea],cyberFormC:[0xf6f0ea],
+ cyberCyan:[0x4ef6ff,0x3ce0f0],cyberAmber:[0xffad3b,0xf49b28],
  water:[0x1c484c,0x163c40],flame:[0xffb44e],ember:[0xff7224],leaf:[0x4c6a2e,0x587634]};
 function P(k){return jc(pick(SVPAL[k]||SVPAL.stone),.04);}

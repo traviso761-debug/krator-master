@@ -33,10 +33,28 @@ if(MAT.glaze)MAT.glaze.roughness=.3;
 if(MAT.kaen)MAT.kaen.roughness=.68;
 if(MAT.whalebone)MAT.whalebone.roughness=.54;
 if(MAT.tarwood)MAT.tarwood.roughness=.44;
+if(MAT.totemWood)MAT.totemWood.roughness=.52;
 if(MAT.bronze){MAT.bronze.roughness=.38;MAT.bronze.metalness=.72;}
 if(MAT.gold){MAT.gold.roughness=.32;MAT.gold.metalness=.82;}
 if(MAT.silver){MAT.silver.roughness=.34;MAT.silver.metalness=.78;}
 if(MAT.gunmetal){MAT.gunmetal.roughness=.42;MAT.gunmetal.metalness=.68;}
+if(MAT.lead){MAT.lead.roughness=.48;MAT.lead.metalness=.54;}
+if(MAT.titanium){MAT.titanium.roughness=.32;MAT.titanium.metalness=.76;}
+if(MAT.white){MAT.white.roughness=.30;MAT.white.metalness=.26;}
+for(const hyCc of ['cyberChassis','cyberChassisB']){
+ const m=MAT[hyCc];if(!m)continue;
+ m.roughness=.42;m.metalness=.48;
+}
+for(const hyMz of ['maze','mazeB','mazeC']){
+ const m=MAT[hyMz];if(!m)continue;
+ m.roughness=.36;m.metalness=.56;
+ if(m.map){m.emissive.setHex(0x28565c);m.emissiveMap=m.map;m.emissiveIntensity=.24;}
+}
+for(const hyCf of ['cyberForm','cyberFormB','cyberFormC']){
+ const m=MAT[hyCf];if(!m)continue;
+ m.roughness=.52;m.metalness=.18;
+ if(m.map){m.emissive.setHex(0x1e444a);m.emissiveMap=m.map;m.emissiveIntensity=.16;}
+}
 if(MAT.verdigris){MAT.verdigris.roughness=.52;MAT.verdigris.metalness=.45;}
 if(MAT.water){MAT.water.roughness=.26;MAT.water.metalness=0;MAT.water.opacity=.94;MAT.water.envMapIntensity=.48;MAT.water.needsUpdate=true;}
 for(const hyMk of ['plaid','hemp','hide','netting','chime','flag','sign']){

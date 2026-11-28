@@ -1,0 +1,50 @@
+{
+ "what": "Vertical-stack budgets for biomes/swouterwall (South-Western Outer Wall rmwvsqhhqyk3f annealed with northern Region 177 rmwzq42zszc94 + Trigemini Pass rmwvsmgi8xrro): 4 station HTML pages (< 2.0 MB each via swouterwall.tex.js sidecar), max samplers <= 14 (< 13 on MAT_GROUND), and estimated VRAM <= 380 MB.",
+ "pages": {
+  "swouterwall.html": {
+   "bytes": 2621440,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 14,
+   "vram_mb": 380,
+   "why": "Station 1 (boreallakes, +3,040 m, 1.10 atm): stepped Boreal Paternoster Lakes, boulder riffle, Tarn Spire-Spruce, Fur Larch & Quaking Sphagnum rafts with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "swouterwall-morainetarn.html": {
+   "bytes": 2621440,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 14,
+   "vram_mb": 380,
+   "why": "Station 2 (morainetarn, +4,360 m, 0.91 atm): glacial-flour Turquoise Moraine Tarn, Stone-Pine krummholz, Silver-Peel Moraine Birch & KFROST stone rings with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "swouterwall-trigemini.html": {
+   "bytes": 2621440,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 14,
+   "vram_mb": 380,
+   "why": "Station 3 (trigemini, +5,680 m, 0.76 atm): 3-trough Trigemini Pass junction, half-frozen Cold Tarn with WATER.ice shore shelves, Lungcushion O2 domes & Dalab way-cairns.",
+   "raised": "2026-11-28"
+  },
+  "swouterwall-breathvale.html": {
+   "bytes": 2621440,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 14,
+   "vram_mb": 380,
+   "why": "Station 4 (breathvale, +6,100 m, 0.69->0.58 atm): Southern Hanging Breath-Vale & < 0.60 atm hypoxia headwall ceiling with Sunblood Crust & frozen rime seep.",
+   "raised": "2026-11-28"
+  },
+  "*": {
+   "bytes": 14680064,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 14,
+   "vram_mb": 380,
+   "why": "Shared swouterwall.tex.js texture sidecar pack (swouterwall + nwouterwall & copperglacier kin slices) serving all four station pages.",
+   "raised": "2026-11-28"
+  }
+ }
+}

@@ -59,12 +59,11 @@
    "specular": 0.28
   },
   "carve": {
-   "lib": "patterns/korona/hum-carving",
-   "scale": [1.3, 1.3],
-   "size": 256,
-   "tint": { "keep": 0.35, "mean": 0.78 },
-   "roughLift": 0.24,
-   "specular": 0.24
+   "lib": "patterns/dzagh-vardzi/tuff-panduri-frieze",
+   "scale": [2.0, 2.0],
+   "tint": { "keep": 0.96, "mean": 0.76 },
+   "roughLift": 0.22,
+   "specular": 0.26
   },
   "quartz": {
    "lib": "rock.quartz.vein",

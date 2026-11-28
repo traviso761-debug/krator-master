@@ -1,0 +1,17 @@
+{
+ "id": "morainetarn",
+ "canvas": "5.1 (1821x1723)",
+ "title": "SW Outer Wall — Turquoise Moraine Lake, Krummholz & Sorted Stone Rings",
+ "out": "swouterwall-morainetarn.html",
+ "px": [276, 1024],
+ "sky": [4, 694],
+ "elevM": 4360,
+ "pAtm": 0.91,
+ "koppen": "ET",
+ "rainMmYr": 540,
+ "strataStack": "megabreccia",
+ "reserves": [
+  { "id": "site:fellgang-moraine-camp", "x": 108, "z": -58, "r": 36 }
+ ],
+ "modes": ["Day", "Dawn Frost-Smoke"]
+}

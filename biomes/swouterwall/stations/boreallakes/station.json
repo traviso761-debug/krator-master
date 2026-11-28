@@ -1,0 +1,17 @@
+{
+ "id": "boreallakes",
+ "canvas": "5.1 (1821x1723)",
+ "title": "SW Outer Wall — Paternoster Boreal Lakes & Veil-Spill Larch Fen",
+ "out": "swouterwall.html",
+ "px": [264, 904],
+ "sky": [-8, 574],
+ "elevM": 3040,
+ "pAtm": 1.10,
+ "koppen": "Dfc",
+ "rainMmYr": 980,
+ "strataStack": "megabreccia",
+ "reserves": [
+  { "id": "site:veil-portage-landing", "x": -112, "z": -64, "r": 34 }
+ ],
+ "modes": ["Day", "Dawn Frost-Smoke"]
+}

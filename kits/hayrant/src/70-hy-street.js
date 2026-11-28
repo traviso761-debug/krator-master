@@ -93,16 +93,16 @@ defBuilding({key:'hy_mixed_street',name:'Mirabilis Mixed Eternian-Hayrant Vassal
   }
  }});
 
-/* 48. Ancestor Statuary, Veiled True-Heir Heads & Door-Mask Ranks (cls: 'feature', kind: 'sample') */
-defBuilding({key:'hy_statuary_ranks',name:'Ancestor Statuary and Door-Mask Ranks',seed:34402,
+/* 48. Ancestor Statuary, Sutar-Pira Head-Totem Ranks, Veiled True-Heir Heads & Door-Mask Ranks (cls: 'feature', kind: 'sample') */
+defBuilding({key:'hy_statuary_ranks',name:'Ancestor Statuary and Head-Totem Ranks',seed:34402,
  cls:'feature',kind:'sample',cut:false,
- w:22.4,d:14.4,h:6.6,budget:160000,
+ w:22.4,d:14.4,h:8.2,budget:195000,
  tags:{types:['statue','religious'],style:'prefect'},
- note:'ranked gallery of Eternian-Hayrant ancestor heads in 8 materials, veiled True-Heir busts, 1 rare open-eye judge & all 4 figure poses',
+ note:'ranked gallery of Sutar-Pira Eternian-head totem poles, ancestor heads in 8 materials, veiled True-Heir busts, 1 rare open-eye judge & all 4 poses',
  build(){
   const G=.24;
   svNoWalk(()=>{
-  box('megabreccia',0,0,0,20.4,G*.6,12.2,P('megabreccia'));
+   box('megabreccia',0,0,0,20.4,G*.6,12.2,P('megabreccia'));
    box('paving',0,G*.6,0,20.0,G*.4,11.8,P('paving'));
    /* Rear stepped basalt display bench & nephrite string course */
    box('basalt',0,G,-3.6,18.4,.72,2.2,P('basalt'));
@@ -110,8 +110,9 @@ defBuilding({key:'hy_statuary_ranks',name:'Ancestor Statuary and Door-Mask Ranks
    /* Middle display bench */
    box('basalt',0,G,-.4,18.4,.42,1.8,P('basalt'));
    box('ashlar',0,G+.42,-.4,18.6,.1,1.9,P('ashlar'));
-   /* Back screen wall displaying household & clan door masks */
+   /* Back screen wall displaying household & clan door masks + Kanopi circuit-maze frieze band */
    box('columnar',0,G,-5.1,18.4,2.85,.38,P('columnar'));
+   hyFormLayerBox('maze',0,G+2.36,-4.91,1,17.8,.34,P('maze'));
    box('celadon',0,G+2.85,-5.1,18.8,.18,.48,KIT_HAS('celadon')?new THREE.Color(1,1,1):P('celadon'));
   });
 
@@ -145,13 +146,26 @@ defBuilding({key:'hy_statuary_ranks',name:'Ancestor Statuary and Door-Mask Ranks
    hyAncestorFigure(xx,G+.52,-.4,0,1.85,{pose,mk,plinth:.36,seed:344050+i*19});
   }
 
+  /* Ranked trio of Sutar-Pira Cyber-Totem Pylons linked along a titanium & porcelain-insulator ground busbar duct */
+  hyHeadTotemPole(-8.1,G,1.75,0,{h:4.8,heads:3,r:.25,terminal:true,materials:['titanium','tarwood','celadon'],crown:'faraday',seed:344081});
+  hyHeadTotemPole(0,G,1.75,0,{h:6.0,heads:4,r:.29,terminal:true,materials:['bronze','silver','titanium','gold'],crown:'halo',seed:344082});
+  hyHeadTotemPole(8.1,G,1.75,0,{h:5.2,heads:4,r:.26,terminal:true,materials:['nephrite','alabaster','gunmetal','silver'],veiledIdx:2,crown:'arrestor',seed:344083});
+  svNoWalk(()=>{
+   for(const bx of [-4.05,4.05]){
+    box('titanium',bx,G,1.22,6.4,.14,.22,hyTotemMatCol('titanium'));
+    const cL=hyPinInsulator(bx-2.4,G+.14,1.22,.82,0);
+    const cR=hyPinInsulator(bx+2.4,G+.14,1.22,.82,1);
+    sagRope('brass',cL,cR,.18,.012,P('brass'),8);
+   }
+  });
+
   /* Front rank: seismic chime frame & willow inau shrines */
-  hySeismicChimes(-6.2,G+2.65,3.4,0,2.2,1.25,5);
-  hySeismicChimes(6.2,G+2.65,3.4,0,2.2,1.25,5);
+  hySeismicChimes(-6.2,G+2.65,3.8,0,2.2,1.25,5);
+  hySeismicChimes(6.2,G+2.65,3.8,0,2.2,1.25,5);
   hyFurnList([
-   ['hayrant_inau_ancestor_shelf',-2.2,G,3.2,0,0],
-   ['hayrant_inau_ancestor_shelf',2.2,G,3.2,0,1],
-   ['hayrant_jade_lantern_post',-8.4,G,4.4,0],
-   ['hayrant_jade_lantern_post',8.4,G,4.4,0]
+   ['hayrant_inau_ancestor_shelf',-2.6,G,3.8,0,0],
+   ['hayrant_inau_ancestor_shelf',2.6,G,3.8,0,1],
+   ['hayrant_jade_lantern_post',-8.4,G,4.6,0],
+   ['hayrant_jade_lantern_post',8.4,G,4.6,0]
   ]);
  }});

@@ -12,13 +12,13 @@ const HK_TRADES=[
  {trade:'innkeepers and grooms',voth:'voth_bldg_caravanserai',defs:['hk_inn_terrace']},
  {trade:'town guard',voth:'voth_bldg_watchhouse',defs:['hk_cliff_gatehouse','hk_watch_barracks']},
  {trade:'coast guard',voth:'voth_bldg_coastguard_berth',defs:['hk_prou_torre','hk_wave_splitter']},
- {trade:'temple priests and servants',voth:'voth_bldg_temple_ash',defs:['hk_stepwell_sanctuary']},
- {trade:'shrine keepers',voth:'village shrine',defs:['hk_stepwell_sanctuary','hk_ossuary_barrow']},
+ {trade:'temple priests and servants',voth:'voth_bldg_temple_ash',defs:['hk_stepwell_sanctuary','hk_kanopi_shrine']},
+ {trade:'shrine keepers',voth:'village shrine',defs:['hk_stepwell_sanctuary','hk_ossuary_barrow','hk_kanopi_shrine','hk_nautical_totem_quay']},
  {trade:'shopkeepers and assistants',voth:'voth_shop_trader',defs:['hk_market_terrace','hk_jade_exchange']},
- {trade:'smiths and craftsmen',voth:'voth_shop_smithy',defs:['hk_harpoon_smithy','hk_jade_sawmill','hk_kaen_kiln','hk_kelp_glassworks','hk_baleen_loft']},
+ {trade:'smiths and craftsmen',voth:'voth_shop_smithy',defs:['hk_harpoon_smithy','hk_jade_sawmill','hk_kaen_kiln','hk_kelp_glassworks','hk_baleen_loft','hk_nautical_totem_quay']},
  {trade:'innkeepers and servers',voth:'voth_tavern_b',defs:['hk_tavern_whale']},
  {trade:'porters and warehousemen',voth:'voth_warehouse_b',defs:['hk_warehouse_vault','hk_cliff_hoist']},
- {trade:'industrial workers',voth:'industrial lot',defs:['hk_jade_sawmill','hk_blubber_tryworks','hk_kelp_glassworks','hk_cypress_flume_yard']},
+ {trade:'industrial workers',voth:'industrial lot',defs:['hk_jade_sawmill','hk_blubber_tryworks','hk_kelp_glassworks','hk_brine_kelp_pan','hk_cypress_flume_yard']},
  {trade:'power-house stokers and engineers',voth:'voth_generator',na:'pre-electric maritime clans; gravity waterwheels, cypress log-flumes and water-ballast cliff hoists drive all heavy works'},
  {trade:'household service',voth:'rich house, manor, clan compound',defs:['hk_house_rich_steward','hk_house_rich_whalelord','hk_house_rich_clan','hk_ukor_matron_lodge']},
  {trade:'soldiers',voth:'voth_barracks',defs:['hk_nuraghe_complesso','hk_watch_barracks','hk_cliff_gatehouse']},
@@ -26,7 +26,7 @@ const HK_TRADES=[
  {trade:'guild officers and clerks',voth:'voth_bldg_guild_hall',defs:['hk_ukor_council','hk_jade_exchange']},
  {trade:'customs officers and clerks',voth:'customs house',defs:['hk_crater_quay']},
  {trade:'healers and nurses',voth:'house of healing',defs:['hk_healer_lodge']},
- {trade:'priests and undertakers',voth:'funerary temple',defs:['hk_ossuary_barrow']},
+ {trade:'priests and undertakers',voth:'funerary temple',defs:['hk_ossuary_barrow','hk_nautical_totem_quay']},
  {trade:'lighthouse keepers',voth:'lighthouse',defs:['hk_beacon_nuraghe']},
  {trade:'dockers and stevedores',voth:'harbour pier',defs:['hk_crater_quay','hk_cliff_hoist']},
  {trade:'river bargemen and quay hands',voth:'river quay',defs:['hk_crater_quay','hk_ferry_causeway']},
@@ -36,13 +36,13 @@ const HK_TRADES=[
  {trade:'chinampa growers',voth:'chinampa bed',defs:['hk_terrace_croft'],note:'kelp-mulched basalt wind-terrace beds on +65..+120 m marine benches'},
  {trade:'orchardmen',voth:'orchards',defs:['hk_terrace_croft','hk_cypress_flume_yard'],note:'wind-sheltered sea-berry benches and +690 m red-cypress timber stands'},
  {trade:'miners',voth:'mine',defs:['hk_jade_quarry'],note:'works the nearest nephrite, silica or metal node from kits/resources via resSource'},
- {trade:'quarrymen and masons',voth:'quarry',defs:['hk_jade_quarry','hk_jade_sawmill']},
+ {trade:'quarrymen and masons',voth:'quarry',defs:['hk_jade_quarry','hk_jade_sawmill','hk_brine_kelp_pan']},
  {trade:'granary keepers and millers',voth:'granary, windmill, watermill',defs:['hk_granary_nuraghe','hk_jade_sawmill']},
  {trade:'beetle herders',voth:'beetle ranch',na:'maritime basalt terraces of Crookshore; clans hunt pelagic filter-whales and keep sea-ducks and seals in hk_terrace_croft'},
  {trade:'dairymen',voth:'dairy',defs:['hk_terrace_croft']},
  {trade:'swineherds and duck keepers',voth:'sty, coop',defs:['hk_terrace_croft']},
  {trade:'mushroom growers',voth:'mushroom farm',na:'salt-wind coastal terraces cultivate kelp wrack and sea-kale rather than subterranean dark-fungi'},
- {trade:'envoys and embassy staff',voth:'embassy',defs:['hk_embassy_hayrant']},
+ {trade:'envoys and embassy staff',voth:'embassy',defs:['hk_embassy_hayrant','hk_kanopi_shrine']},
  {trade:'ferrymen',voth:'ferry, stop',defs:['hk_ferry_causeway','hk_cliff_hoist']},
  {trade:'elephant bug handlers and station hands',voth:'bug station',na:'sea-going baidarkas, whale-tenders and gravity cliff-hoists carry all Crookshore freight'},
  {trade:'monks and lay brothers',voth:'monastery',defs:['hk_stepwell_sanctuary']},
@@ -98,6 +98,27 @@ const hkRigMath={
  keyholeHalfWidth(wTop,wPool,f){
   const u=f<0?0:f>1?1:f;
   return 0.5*(wTop+(wPool-wTop)*u);
+ },
+ /* Vertical tier base heights [y0, y1, ...] for nTiers (3..5) stacked coastal creatures on a Hueru-Pira nautical totem pole. */
+ totemTierY(yBase,nTiers,tierH){
+  const n=Math.max(1,nTiers|0),dh=tierH==null?1.24:tierH,out=[];
+  for(let i=0;i<n;i++)out.push(+(yBase+i*dh).toFixed(4));
+  return out;
+ },
+ /* Non-coplanar maritime formline relief z-step (>= 0.020 m per layer: 0.024 m step -> >= 12 mm air gap between 12 mm layers). */
+ formlineLayerZ(zFace,layerIdx){
+  const k=Math.max(1,layerIdx|0);
+  return +(zFace+k*0.024).toFixed(4);
+ },
+ /* Distended gular throat-pouch sag profile (metres) for Kopa-Tori Diving Pouch-Pelican over longitudinal u in [0,1]
+    (throat root 0 -> bill tip 1) and transverse v in [0,1] (mandible rims 0,1 -> exact 0, asymmetric forward bulge near u=0.4). */
+ pelicanPouchSag(u,v,depth){
+  const uu=u<0?0:u>1?1:u,vv=v<0?0:v>1?1:v;
+  if(uu<=1e-5||uu>=1-1e-5||vv<=1e-5||vv>=1-1e-5)return 0;
+  const d=depth==null?0.34:depth;
+  const longProfile=Math.sin(Math.PI*Math.pow(uu,0.78));
+  const crossProfile=Math.sin(Math.PI*vv);
+  return +(d*longProfile*crossProfile).toFixed(5);
  }
 };
 globalThis.hkRigMath=hkRigMath;

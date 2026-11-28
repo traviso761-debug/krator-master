@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "painted-men.html": {
+   "tris": 1800000,
+   "calls": 220,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "34 Painted Men (Payntja-Mana) danxia seep-alcove, songline rock-art gallery, Korona orchil cake press, Stripe-bunchgrass maloca, Dogon granary, hung moat-ledge and rarrk salvage building definitions plus Tiered Seep-Alcove Cliff Settlement showcase, 54 kits/resources mineral nodes, 15 bespoke painted_* furniture pieces, sculpted KDRAWN danxia ground, core/water seeps and Stage 5 M1-M4 library maps",
+   "raised": "2026-11-28"
+  }
+ }
+}

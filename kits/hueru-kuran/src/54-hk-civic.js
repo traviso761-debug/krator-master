@@ -36,10 +36,13 @@ defBuilding({key:'hk_nuraghe_complesso',name:'Quadrilobate Nuraghe Complesso Cla
   hkWall(1.7,5.0,4.6,5.0,py,4.2,{mk:'basalt',t:.95});
   hkJadeDoor(0,py,5.0,0,2.45,2.55,{t:.95,lintelH:.44,open:true});
 
-  /* Leviathan jawbone arch inside court + Whale-Clan banners & nephrite alarm chimes */
+  /* Leviathan jawbone arch inside court + Whale-Clan banners, nephrite alarm chimes & sentinel Hueru-Pira totem poles */
   hkWhaleJawArch(0,py,7.4,0,4.6,4.5);
   hkWindHanging(-4.2,py,7.8,0,2.4,3.1,{mk:'banner',panels:2});
   hkWindHanging(4.2,py,7.8,0,2.4,3.1,{mk:'banner',panels:2});
+  hkNauticalFrieze(0,py+3.55,5.54,4.4,.54,0,{motif:'whale',backMk:'cypress'});
+  hkNauticalTotemPole(-9.8,py,8.4,.15,{h:8.4,tiers:['crab','octopus','pelican','whale'],pelicanChime:true});
+  hkNauticalTotemPole(9.8,py,8.4,-.15,{h:8.4,tiers:['seal','otter','whale','pelican'],pelicanChime:true});
 
   hkTarget(1.2,py+.08,.6,'mastio ground tholos');
   hkTarget(1.2,yUpper,.85,'mastio upper tholos');
@@ -173,6 +176,8 @@ defBuilding({key:'hk_ukor_council',name:'Ukor Tuned-Nephrite Chime-Council Hall'
   hkNephriteChimes(5.6,py+3.2,6.8,0,2.8,1.35,6);
   hkWindHanging(-8.2,py,2.2,PI/2,2.8,3.2,{mk:'banner',panels:2});
   hkWindHanging(8.2,py,2.2,-PI/2,2.8,3.2,{mk:'banner',panels:2});
+  hkNauticalTotemPole(-8.4,py,7.6,.18,{h:7.8,tiers:['crab','whale','otter','pelican'],pelicanChime:true});
+  hkNauticalTotemPole(8.4,py,7.6,-.18,{h:7.8,tiers:['seal','pelican','octopus','whale']});
 
   hkTarget(0,py+.08,-.6,'ukor chime floor');
   hkFurnList([
@@ -221,6 +226,9 @@ defBuilding({key:'hk_ukor_matron_lodge',name:'High Matron Pelagic Whale-Rib Ukor
   hkKaenCrown(-3.8,yR+2.38,-.5,.44,.82,4);
   hkKaenCrown(3.8,yR+2.38,-.5,.44,.82,4);
   hkWhaleJawArch(0,py,5.8,0,4.0,3.9);
+  hkNauticalFrieze(-5.2,py+2.32,4.58,3.2,.68,0,{motif:'pelican',backMk:'cypress'});
+  hkNauticalFrieze(5.2,py+2.32,4.58,3.2,.68,0,{motif:'whale',backMk:'cypress'});
+  hkNauticalTotemPole(-7.8,py,5.8,.12,{h:7.2,tiers:['otter','octopus','pelican','whale'],pelicanChime:true});
 
   hkTarget(-4.2,py,-.5,'west feast bay');
   hkTarget(4.2,py,-.5,'east matron dais');
@@ -230,6 +238,7 @@ defBuilding({key:'hk_ukor_matron_lodge',name:'High Matron Pelagic Whale-Rib Ukor
    ['hueru-kuran_cedar_feast_trough',-3.8,py,-2.6,0],
    ['hueru-kuran_cedar_feast_trough',0,py,-2.6,0],
    ['hueru-kuran_nephrite_chime_rack',6.8,py,-.5,-PI/2],
+   ['hueru_pelican_totem_post',-6.8,py,1.8,PI/2],
    ['hueru-kuran_whalebone_cot',6.6,py,-3.2,-PI/2],
    ['hueru-kuran_seal_pelt_mat',4.6,py,-2.4,0,{v:0}],
    ['hueru-kuran_harpoon_rack',-7.2,py,-2.8,PI/2],
@@ -364,6 +373,8 @@ defBuilding({key:'hk_ossuary_barrow',name:'Leviathan-Rib Tomba dei Giganti Ossua
   });
   hkWhaleJawArch(0,py,2.5,0,3.4,3.8);
   hkNephriteChimes(0,py+2.6,5.2,0,2.4,1.0,5);
+  hkNauticalFrieze(0,py+1.75,-6.62,4.2,.64,PI,{motif:'pelican',backMk:'cypress'});
+  hkNauticalTotemPole(-7.2,py,5.4,.22,{h:5.8,tiers:['crab','pelican','whale'],pelicanChime:true});
 
   hkTarget(0,py,-2.3,'ossuary chamber');
   hkTarget(0,py,4.2,'exedra forecourt');
@@ -374,5 +385,66 @@ defBuilding({key:'hk_ossuary_barrow',name:'Leviathan-Rib Tomba dei Giganti Ossua
    ['hueru-kuran_kaen_storage_jar',1.9,py,-1.2,0,{v:0}],
    ['hueru-kuran_jade_lamp_pedestal',-2.2,py,4.4,0,{setting:'outdoor'}],
    ['hueru-kuran_jade_lamp_pedestal',2.2,py,4.4,0,{setting:'outdoor'}]
+  ]);
+ }});
+
+/* 21. Kanopi Three-Clan Memory Shrine and Veilpass Truce Hall (LORE.md §6.25) */
+defBuilding({key:'hk_kanopi_shrine',name:'Kanopi Three-Clan Memory Shrine and Truce Hall',seed:8209,cut:true,
+ w:20.6,d:17.8,h:9.8,tags:{types:['religious','civic'],wealth:'rich',style:'hueru-kuran',job:'worship'},
+ build(){
+  const py=hkPlinth(18.8,15.2,.52,{stepW:3.4,stepRun:1.05});
+  /* North reliquary chise: battered columnar-basalt ring & pelagic whale-rib vault */
+  hkChise(0,-1.8,py,5.4,1.35,2.9,2.45,{
+   ribs:12,crownH:.86,crownFins:4,
+   doors:[{yaw:0,w:1.56,h:2.18}],
+   windows:[{yaw:PI/2,w:.92,y:1.05,h:.95,seaglass:true},{yaw:-PI/2,w:.92,y:1.05,h:.95,seaglass:true},{yaw:PI,w:.95,y:1.05,h:.95}]
+  });
+  svNoWalk(()=>{
+   /* Salvaged metallic Kanopi arcology canopy-rib arch framing the truce forecourt */
+   for(const sx of [-3.8,3.8]){
+    box('columnar',sx,py,2.65,.92,.34,.92,P('columnar'));
+    box('nephrite',sx,py+.34,2.65,.72,.24,.72,P('nephrite'));
+   }
+   tube('iron',t=>[lerp(-3.75,3.75,t),py+.58+4.85*Math.sin(PI*t),2.65],()=>[.18,.24],18,8,0x9aa4ae,{caps:true});
+   for(const f of [.24,.5,.76]){
+    const ay=py+.58+4.85*Math.sin(PI*f);
+    ring('verdigris',lerp(-3.75,3.75,f),ay,2.65,.26,.042,P('verdigris'),0,PI/2,0,12);
+   }
+   /* Brazier before Sister-Clan Pillar 1 (Hueru-Kuran Whale-and-Pelican Totem Pole) */
+   box('basalt',-6.4,py,3.95,.74,.34,.74,P('basaltD'));
+   box('glow',-6.4,py+.34,3.95,.42,.05,.42,0xff8e36);
+   /* Sister-Clan Pillar 2 (North-East): Hayrant — Outer-Wall loess/celadon stele & kaen crown */
+   box('ashlar',6.4,py,-1.2,.88,.44,.88,P('ashlar'));
+   box('stone',6.4,py+.44,-1.2,.58,2.04,.42,P('stone'));
+   box('glaze',6.4,py+2.48,-1.2,.64,.2,.48,P('glaze'));
+   /* Sister-Clan Pillar 3 (South-East): Timpar-Kuran — carved red-cypress Bear/Storm-Bird post & shaved inau curls */
+   box('columnar',6.4,py,2.6,.88,.42,.88,P('columnar'));
+   cyl('cypress',6.4,py+.42,2.6,.3,2.85,P('cypress'),12);
+   cyl('baleen',6.4,py+1.18,2.6,.328,.64,P('baleen'),12);
+   cyl('kaen',6.4,py+2.05,2.6,.328,.56,P('kaen'),12);
+   box('cypress',6.4,py+2.74,2.6,1.82,.22,.12,P('cypressD'));
+   for(const ix of [5.85,6.95])cyl('ivory',ix,py+1.88,3.55,.07,.24,P('ivory'),8);
+  });
+  /* Sister-Clan Pillar 1 (West): Hueru-Kuran — Hueru-Pira Whale-and-Pelican Nautical Totem Pole! */
+  hkNauticalTotemPole(-6.4,py,2.05,.16,{
+   h:6.4,tiers:['otter','pelican','whale'],pelicanChime:true,wings:'spread'
+  });
+  hkKaenCrown(6.4,py+2.68,-1.2,.32,.66,4,{smoke:true});
+  haloAt(-6.4,py+.55,3.95,0xff9a42,false);
+  /* Shaved-willow inau wands (SV_CLOTH banner) & tuned emerald-nephrite chimes under the Kanopi rib */
+  hkWindHanging(6.4,py,3.55,0,1.35,1.85,{mk:'banner',panels:3,drop:1.22});
+  hkNephriteChimes(0,py+5.12,2.65,0,2.2,1.15,7);
+
+  hkTarget(0,py+.08,-1.6,'kanopi reliquary chise');
+  hkTarget(0,py,3.8,'three-clan truce court');
+  hkFurnList([
+   ['hueru-kuran_whale_oil_hearth',0,py+.08,-1.8,0],
+   ['generic_trade_altar',0,py+.08,-4.2,0],
+   ['hueru-kuran_nephrite_chime_rack',-2.3,py+.08,-2.2,PI/2],
+   ['hueru-kuran_cedar_feast_trough',2.3,py+.08,-2.0,-PI/2],
+   ['hueru-kuran_kaen_storage_jar',-1.8,py+.08,-.2,0,{v:1}],
+   ['hueru-kuran_seal_pelt_mat',1.7,py+.08,-.2,PI,{v:0}],
+   ['hueru-kuran_jade_lamp_pedestal',-3.4,py,4.8,0,{setting:'outdoor'}],
+   ['hueru-kuran_jade_lamp_pedestal',3.4,py,4.8,0,{setting:'outdoor'}]
   ]);
  }});

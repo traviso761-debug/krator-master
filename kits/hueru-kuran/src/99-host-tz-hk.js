@@ -313,6 +313,31 @@
    return {ok:LK.mines.length>=1&&!idle.length&&!bad.length,mines:LK.mines,nodes:LK.nodes.length,bad:bad.concat(idle.map(m=>m.key+' idle'))};
   },
 
+  nauticalTotemAudit(){
+   const reqMotifs=['whale','pelican','otter','octopus','seal','crab'];
+   const motifs={whale:0,pelican:0,otter:0,octopus:0,seal:0,crab:0};
+   let poles=0,sites=0,totalFigures=0,openEyes=0,pelicanChimes=0,friezes=0;
+   for(const r of REG){
+    if(r.parent)continue;
+    if(r.nauticalFriezes)friezes+=r.nauticalFriezes.length;
+    if(!r.nauticalTotems||!r.nauticalTotems.length)continue;
+    sites++;
+    for(const p of r.nauticalTotems){
+     poles++;
+     totalFigures+=p.figures==null?0:p.figures;
+     openEyes+=p.openEyes==null?0:p.openEyes;
+     pelicanChimes+=p.pelicanChimes==null?0:p.pelicanChimes;
+     for(const m of p.tiers||[]){
+      motifs[m]=(motifs[m]==null?0:motifs[m])+1;
+     }
+    }
+   }
+   const allMotifs=reqMotifs.every(m=>(motifs[m]==null?0:motifs[m])>=4);
+   const prominent=motifs.whale>=14&&motifs.pelican>=14;
+   const ok=poles>=18&&totalFigures>=55&&openEyes===totalFigures&&allMotifs&&prominent&&pelicanChimes>=10;
+   return {ok,poles,sites,totalFigures,openEyes,pelicanChimes,friezes,motifs};
+  },
+
   fingerprint:fp,
   rebuild(){buildWorld();return fp();}
  });

@@ -1,0 +1,17 @@
+{
+ "id": "breathvale",
+ "canvas": "5.1 (1821x1723)",
+ "title": "SW Outer Wall — Southern Hanging Breath-Vale at the 0.60 atm Threshold",
+ "out": "swouterwall-breathvale.html",
+ "px": [410, 1213],
+ "sky": [138, 883],
+ "elevM": 6100,
+ "pAtm": 0.685,
+ "koppen": "HT",
+ "rainMmYr": 210,
+ "strataStack": "megabreccia",
+ "reserves": [
+  { "id": "site:dalab-oxygen-cache", "x": 68, "z": 58, "r": 30 }
+ ],
+ "modes": ["Day", "Katabatic Dawn"]
+}

@@ -1,24 +1,40 @@
 // prefix: dv
-// ================================================================= DZAGH-VARDZI NEEDLE-TOWERS, QUARTZ PYRAMIDS & 12-PLEAT GUMBAT SPIRES
+// ================================================================= DZAGH-VARDZI NEEDLE-TOWERS, SLATE-BASALT PYRAMIDS & 12-PLEAT GUMBAT SPIRES
 // DV4: Razor-slender 5:1 battered defense needle-towers (Ingush vovnashki / Svan koshki) built from closed outward-wound
-//      ablaq frustum stages and crowned with gleaming stepped snow-white quartz pyramidal roofs & mashikul boxes.
+//      ablaq frustum stages and crowned with crimson/apricot corbelled tuff cornices, stepped dark mountain-slate & charcoal-basalt
+//      pyramidal roofs, mashikul boxes, and patinated verdigris copper + golden-skarn + emerald-nephrite finials.
 // DV2: 12-pleat star-fluted conical Akhtamar umbrella spires (gumbat) with 24 crisp flat pleat facets & downward soffit.
 
-/* ---------------------------------------------------------------- 1. Gleaming Stepped Snow-White Quartz Pyramidal Roof (DV4) */
-function dvQuartzPyramid(cx,cz,wBase,yBase,rise,steps){
- const n=steps==null?6:steps,rh=rise==null?wBase*1.08:rise,dy=rh/n,qzCol=P('quartz'),bzCol=P('gold'),jdCol=P('jadeBright');
+let dvSlateCrownCount=0;
+function dvSlateCrownReset(){dvSlateCrownCount=0;}
+function dvSlateCrowns(){return dvSlateCrownCount;}
+
+/* ---------------------------------------------------------------- 1. Stepped Dark Mountain-Slate, Basalt & Crimson-Tuff Pyramid (DV4) */
+function dvSlatePyramid(cx,cz,wBase,yBase,rise,steps){
+ const n=steps==null?6:steps,rh=rise==null?wBase*1.08:rise,dy=rh/n;
+ const slCol=P('slate'),cbCol=P('colBasalt'),bsCol=P('basalt'),tfCol=P('tuff'),crCol=P('tuffCrimson');
+ const vdCol=P('verdigris'),skCol=P('skarn'),jdCol=P('jadeBright');
+ if(GTARGET===GB)dvSlateCrownCount++;
  svNoWalk(()=>{
-  box('basalt',cx,yBase+.004,cz,wBase+.18,.085,wBase+.18,P('basalt'));
+  /* corbelled apricot & crimson tuff cornice crown + projecting charcoal-basalt drip eave (>= 6 mm vertical step per course) */
+  box('tuffPolished',cx,yBase+.005,cz,wBase+.1,.052,wBase+.1,tfCol);
+  box('tuffPolished',cx,yBase+.063,cz,wBase+.18,.056,wBase+.18,crCol);
+  box('basalt',cx,yBase+.125,cz,wBase+.25,.054,wBase+.25,bsCol);
+  const y0p=yBase+.185;
   for(let i=0;i<n;i++){
-   const t0=i/n,w=lerp(wBase+.12,.34,t0),ya=yBase+.095+dy*i+.003,yb=yBase+.095+dy*(i+1);
-   box('quartz',cx,ya,cz,w,Math.max(.06,yb-ya),w,qzCol);
+   const t0=i/n,w=lerp(wBase+.12,.36,t0),ya=y0p+dy*i+.004,yb=y0p+dy*(i+1)-.002;
+   const isCr=(i===1),isBas=(i%2===1&&!isCr);
+   const mk=isCr?'tuffPolished':isBas?'colBasalt':'slate';
+   const col=isCr?crCol:isBas?cbCol:slCol;
+   box(mk,cx,ya,cz,w,Math.max(.055,yb-ya),w,col);
   }
-  const yPeak=yBase+.095+rh;
-  cone('quartz',cx,yPeak+.004,cz,.24,.52,qzCol,4);
-  sph('jade',cx,yPeak+.58,cz,.075,jdCol,1,8);
-  cone('gold',cx,yPeak+.66,cz,.045,.26,bzCol,6);
+  const yPeak=y0p+rh;
+  cyl('skarn',cx,yPeak+.006,cz,.19,.068,skCol,8);
+  cone('verdigris',cx,yPeak+.08,cz,.22,.42,vdCol,4);
+  sph('jade',cx,yPeak+.578,cz,.07,jdCol,1,8);
+  cone('verdigris',cx,yPeak+.656,cz,.044,.2,vdCol,6);
  });
- return yBase+.095+rh+.92;
+ return yBase+.185+rh+.856;
 }
 
 /* ---------------------------------------------------------------- 2. Razor-Slender 5:1 Battered Defense Needle-Tower (DV4)
@@ -69,7 +85,7 @@ function dvNeedleTower(cx,cz,wBase,y0,hShaft,o){
    const yp=y0+.14+hs-1.35,wp=lerp(wb,wtTop,(hs-1.35)/hs)/2+.02;
    dvPulleyRig(cx,yp,cz+wp,o.pulleyYaw==null?0:o.pulleyYaw,1.35,o.pulleyDrop==null?2.8:o.pulleyDrop,{cableTo:o.cableTo});
   }
-  peakY=dvQuartzPyramid(cx,cz,wtTop,y0+.14+hs,o.roofRise==null?wtTop*1.18:o.roofRise,o.steps==null?6:o.steps);
+  peakY=dvSlatePyramid(cx,cz,wtTop,y0+.14+hs,o.roofRise==null?wtTop*1.18:o.roofRise,o.steps==null?6:o.steps);
  });
  return peakY;
 }

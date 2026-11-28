@@ -115,6 +115,27 @@
    "roughLift": 0.3,
    "specular": 0.18
   },
+  "totemWood": {
+   "lib": "wood.totem.adzed",
+   "scale": [1.2, 1.2],
+   "tint": { "keep": 0.35, "mean": 0.68, "contrast": 1.14 },
+   "roughLift": 0.22,
+   "specular": 0.26
+  },
+  "nauticalCrest": {
+   "lib": "patterns/hueru/nautical-totem",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.96, "mean": 0.76 },
+   "roughLift": 0.22,
+   "specular": 0.26
+  },
+  "nauticalCrestB": {
+   "lib": "patterns/hueru/nautical-totem.b",
+   "scale": [1.8, 1.8],
+   "tint": { "keep": 0.96, "mean": 0.76 },
+   "roughLift": 0.22,
+   "specular": 0.26
+  },
   "tarwood": {
    "lib": "wood.tarred",
    "scale": [1.4, 1.4],

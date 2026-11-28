@@ -1,5 +1,5 @@
 // ================================================================= BESPOKE HUERU-KURAN FURNITURE (registered on KratorFurniture)
-// Registers culture 'hueru-kuran' palette and 14 bespoke Whale-Clan pieces onto KratorFurniture (38-furniture-bundle.js),
+// Registers culture 'hueru-kuran' palette and 16 bespoke Whale-Clan pieces onto KratorFurniture (38-furniture-bundle.js),
 // alongside the shared generic, generic-goods and jobs pieces. Every part uses palette keys and an explicit material family so
 // core/engine/91f-furnish.js (svfDetail) binds packed f_* library detail maps onto 100% of furniture meshes, and adjacent parts
 // step cleanly by >= 1 cm with zero coplanar overlap.
@@ -240,10 +240,64 @@
     F.box(sx,0,sz,.1,.62,.1,0,F.col('cypressDark'),'wood');
    }
    F.box(0,.62,0,1.66,.16,.56,0,F.col('cypress'),'wood');
-   /* Recurve baleen-and-ivory composite bow clamped on form */
+  /* Recurve baleen-and-ivory composite bow clamped on form */
    F.beam(-.64,.82,-.06,0,.92,.08,.05,.04,F.col('baleen'),'bone');
    F.beam(0,.92,.08,.64,.82,-.06,.05,.04,F.col('baleen'),'bone');
    F.box(0,.78,.08,.14,.12,.14,0,F.col('ivory'),'bone');
    for(const sx of [-.36,.36])F.cyl(sx,.78,0,.035,.14,0,F.col('bronze'),'bronze');
+  }});
+
+ /* 15. Interior carved red-cypress, whalebone & emerald-nephrite Whale-and-Pelican house-post (Hueru-Pira) */
+ hkDefFurn({key:'hueru_pelican_totem_post',name:'Carved Whale-and-Pelican House-Post',type:'shrine',job:'worship',tier:'court',
+  setting:'both',rooms:['hall','shrine','workshop','parlour'],w:0.78,d:0.76,h:2.18,
+  materials:['stone','timber','bone','jade'],task:['praying','socializing'],
+  build(F){
+   F.cyl(0,0,0,.30,.14,0,F.col('basaltDark'),'stone');
+   F.cyl(0,.14,0,.24,.08,0,F.col('nephrite'),'jade');
+   /* Lower Hueru filter-whale drum with baleen mouth-plate, whalebone jaw-arches & wide-open nephrite eyes */
+   F.cyl(0,.22,0,.19,.78,0,F.col('cypress'),'wood');
+   F.box(0,.30,.195,.24,.22,.04,0,F.col('baleen'),'bone');
+   for(const sx of [-1,1]){
+    F.box(sx*.15,.28,.205,.04,.26,.04,0,F.col('whalebone'),'bone');
+    F.box(sx*.085,.64,.205,.09,.11,.024,0,F.col('ivory'),'bone');
+    F.box(sx*.085,.66,.232,.05,.065,.016,0,F.col('jadeBright'),'jade');
+    F.box(sx*.24,.38,0,.10,.34,.18,0,F.col('cypressDark'),'wood');
+   }
+   /* Jomon kaen-doki sea-scroll collar + upper Kopa-Tori diving pouch-pelican with ivory mandible & gutskin pouch */
+   F.cyl(0,1.00,0,.22,.12,0,F.col('kaenTerra'),'clay');
+   F.cyl(0,1.12,0,.18,.82,0,F.col('cypress'),'wood');
+   for(const sx of [-1,1]){
+    F.box(sx*.24,1.20,-.01,.12,.56,.20,0,F.col('baleen'),'wood');
+    F.box(sx*.315,1.28,0,.016,.38,.13,0,F.col('verdigris'),'ceramic');
+    F.box(sx*.078,1.66,.195,.084,.10,.024,0,F.col('ivory'),'bone');
+    F.box(sx*.078,1.68,.222,.046,.06,.016,0,F.col('nephrite'),'jade');
+   }
+   F.box(0,1.54,.26,.10,.07,.28,0,F.col('ivory'),'bone');
+   F.ell(0,1.40,.25,.075,.095,.12,0,F.col('gutskin'),'skin');
+   F.box(0,1.44,.36,.045,.045,.09,0,F.col('jadeBright'),'jade');
+   /* Breaching bleached whalebone tail-fluke summit */
+   F.cyl(0,1.94,0,.14,.08,0,F.col('whalebone'),'bone');
+   for(const sx of [-1,1])F.beam(sx*.02,2.02,0,sx*.28,2.16,0,.06,.11,F.col('whalebone'),'bone');
+  }});
+
+ /* 16. Kerf-bent driftwood & red-cypress sea-chest with z-stepped whale/pelican maritime formline relief */
+ hkDefFurn({key:'hueru_nautical_crest_chest',name:'Kerf-Bent Nautical Formline Sea-Chest',type:'storage',tier:'common',
+  setting:'both',rooms:['hall','bedroom','storage','workshop','shop'],w:1.32,d:0.64,h:0.74,
+  materials:['stone','timber','bone','jade','metal'],task:['storage'],
+  build(F){
+   for(const sx of [-.48,.48])F.box(sx,0,0,.14,.09,.56,0,F.col('basaltDark'),'stone');
+   F.box(0,.09,0,1.22,.45,.52,0,F.col('driftwood'),'plank');
+   F.box(0,.54,0,1.28,.11,.58,0,F.col('cypress'),'wood');
+   F.box(0,.65,0,.52,.06,.10,0,F.col('whalebone'),'bone');
+   for(const sx of [-.54,.54])F.box(sx,.11,0,.06,.41,.55,0,F.col('bronze'),'bronze');
+   /* >= 2.2 cm z-stepped whale & pelican maritime formline front relief with wide-open nephrite eyes */
+   for(const sx of [-1,1]){
+    F.box(sx*.28,.18,.284,.34,.26,.012,0,F.col('baleen'),'wood');
+    F.box(sx*.28,.22,.308,.22,.18,.012,0,F.col('kaenTerra'),'clay');
+    F.box(sx*.28,.25,.332,.11,.11,.012,0,F.col('jadeBright'),'jade');
+   }
+   F.box(0,.22,.284,.14,.20,.012,0,F.col('baleen'),'wood');
+   F.box(0,.26,.308,.10,.12,.012,0,F.col('ivory'),'bone');
+   F.box(0,.28,.332,.06,.07,.012,0,F.col('nephrite'),'jade');
   }});
 })();
