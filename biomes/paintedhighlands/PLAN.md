@@ -211,14 +211,10 @@ The fauna kit owns them all, as `BIO.record` records; the kit only names where t
 
 ## 5. People
 
-- **The Painted Men** (`LORE.md` §6.5) hold 80% of the plateau. They are raider tribes of the high country. Their villages
-  are **cliff settlements hung on rock faces**, of raw logs and bamboo, with whole painted house-fronts, totems,
-  thunderbird finials and stone circles. Their sign is the raven.
+- **The Painted Men** (`LORE.md` §6.5, *Payntja-Mana*; revamped 2026-11-27) hold 80% of the plateau. They are independent raider tribes blending **Australian Aboriginal (Arnhem Land *rarrk* cross-hatching, X-ray & Wandjina-like sandstone rock art, stencilled hands, concentric track-rings, *Pukamani* log poles, woomeras, bullroarers)** and **Amazonian (communal bunchgrass-thatched *maloca* warrior halls, bold ochre/black/white/teal geometric body paint, Korona-bird feather crests)** traditions (their former Tlingit formlines moved to the `Timpar-Kuran` of the Veiled Mountains, `LORE.md` §6.25).
   - They sit on the Inner Wall beside Korona and have long traded and married with its tepui tribes.
-  - Their speech is the pitch-accent highland tongue (`lore/tongues-of-krator.html`, the Republic tab).
-- **They live on the cliff edges, and some are truly cliff-dwelling** (the owner, 2026-11-09). The plateau grows junipers,
-  not timber; the logs and bamboo come up from Korona's moat forest (Cfa, 800-1,500 mm). So their towns stand on the
-  plateau's edges, on the moat's and the canyon's walls, and the plateau is their grazing, raiding and pigment ground.
+  - Their speech is **Payntja-Tuka** ("Paint-Talk": English gone Pama-Nyungan and Amazonian, `lore/tongues-of-krator.html` `#painted`).
+- **They live on the cliff edges, and some are truly cliff-dwelling** (the owner, 2026-11-09; material audit 2026-11-27). **No bamboo or long straight timber grows on the plateau** (nor in neighbouring `biomes/korona`): the plateau grows twisted `paintedjuniper`, `paintedpinyon` and `Stripe bunchgrass`, while canyon/moat seeps (`Cfa`, `800–1,113 mm`) grow `paintedoak`, `paintedmaple`, willow, and mountain mahogany. So their towns stand on the plateau's edges and canyon walls—building in **tabular `danxia` sandstone slabs, sun-dried `badland` bentonite-clay daub, short juniper/oak *vigas*, willow *latilla* mats, cured bark panels, and bunchgrass thatch** (`kits/painted-men/PLAN.md`)—while the open plateau is their grazing, raiding and pigment ground.
 
 ### 5a. The cliff towns (the owner, 2026-11-09; sites *proposed* from the model)
 
@@ -230,25 +226,21 @@ contact leaves below them, as the Dogon do under the Bandiagara escarpment.
 
 | Site | 5.1 px | The model | What stands there |
 |---|---|---|---|
-| **1. The canyon-mouth town** (the chief cliff town; working name) | the north-facing wall at **1098-1104, 622-628**, steepest at 1101,624 | the wall rises from ~1.5 km at its foot to 3,406 m at the rim (1104,626): **2,224 m of relief within 6 km**; 2,061 m at 1101,624, Cfa, 862 mm, 17 °C (27/6); the rim Dsb, 533 mm, 7 °C; the canyon's mouth lake (516 m, 80 km²) at its foot (1091-1100, 622) | **Mesa Verde-style alcove houses** in tiers up the wall's sunny face (Krator is near 40°S: north faces take the sun), at each seep line; ledge gardens and terraces at 2-2.5 km; fields on the lake's fan; the moat forest's timber at hand. The largest and oldest |
-| **2. The canyon ledge villages** | the Painted Canyon's north-facing (south) wall at **1011-1019, 610-612** | 2,983-3,229 m, BSk, 125-141 mm, 10-11 °C (23-24/-2 to -3); ~600 m of relief within 6 km; the canyon floor below at ~2.9 km (station 3, 1034,615, is 15-45 km downstream) | **Bandiagara-style villages**: houses on the talus and the ledges at the wall's foot, granaries and the dead in niches high in the cliff, the fields on the canyon floor watered by the melt stream |
-| **3. The moat-wall villages** | the west wall of Korona's moat at **1054-1062, 598-606** (just outside both polygons, on Korona's side) | 1,199 m at 1058,600, Cfa, 1,113 mm, 20 °C (27/12), 1,756 m of relief within 6 km, over the moat's lakes (y 590-598) | the lore's **hung villages**: log houses on cantilever beams driven into the face, tiers joined by stairs and ladders, the timber-cutters' and the trading town with the tepui tribes. *For the owner*: it stands on Korona's ground |
+| **1. The canyon-mouth town** (the chief cliff town; working name) | the north-facing wall at **1098-1104, 622-628**, steepest at 1101,624 | the wall rises from ~1.5 km at its foot to 3,406 m at the rim (1104,626): **2,224 m of relief within 6 km**; 2,061 m at 1101,624, Cfa, 862 mm, 17 °C (27/6); the rim Dsb, 533 mm, 7 °C; the canyon's mouth lake (516 m, 80 km²) at its foot (1091-1100, 622) | **Mesa Verde-style alcove houses** in tiers up the wall's sunny face (Krator is near 40°S: north faces take the sun), at each seep line; ledge gardens and terraces at 2-2.5 km; fields on the lake's fan; canyon oak/maple/juniper at hand. The largest and oldest |
+| **2. The canyon ledge villages** | the Painted Canyon's north-facing (south) wall at **1011-1019, 610-612** | 2,983-3,229 m, BSk, 125-141 mm, 10-11 °C (23-24/-2 to -3); ~600 m of relief within 6 km; the canyon floor below at ~2.9 km (station 3, 1034,615, is 15-45 km downstream) | **Bandiagara-style villages**: sandstone-and-daub houses on the talus and the ledges at the wall's foot, bunchgrass-thatched *maloca* halls on the fan, granaries and the dead in niches high in the cliff, the fields on the canyon floor watered by the melt stream |
+| **3. The moat-wall villages** | the west wall of Korona's moat at **1054-1062, 598-606** (just outside both polygons, on Korona's side) | 1,199 m at 1058,600, Cfa, 1,113 mm, 20 °C (27/12), 1,756 m of relief within 6 km, over the moat's lakes (y 590-598) | the lore's **hung villages**: oak/juniper-pegged and stone-terraced ledge houses on cantilever *vigas* and raking struts, tiers joined by notched trunk ladders and braided wild-silk/willow spans, trading with the tepui tribes. *For the owner*: it stands on Korona's ground |
 | **4. The hogback eyries** | the east-facing hogback scarps at **977,618** and **954,611** | 3,155 m (BSk, 141 mm, 607 m of relief) and 3,671 m (BSk, 219 mm, 810 m); over the playas at 974,594 and 1008,626 | small, seasonal: lookouts, granaries and a shrine in shallow alcoves, the raiders' watch over the bloom flats and the stone circles |
 
 **What the dwellings look like.**
-- **Alcove houses:** the alcove's mouth walled off with a front of raw logs and split bamboo, two or three storeys under the
-  overhang, the whole front painted in formline (black, red, teal), thunderbird finials on the posts at the lip, a totem
-  at each ledge's end, the raven sign. Where the logs run short (high on the wall), the front is dry-stone and clay daub,
-  still painted. Round towers at the alcove's ends; a sunken stone circle (the shamans' house) in the largest.
-- **Ledge villages:** clustered houses and flat-roofed granaries on the talus and the ledges, the granaries with conical
-  thatch, the cliff above pocked with niche granaries and the dead's caves.
-- **Hung villages:** the Highlands Tribal kit's cliff settlement (below): decks on log cantilevers and raking struts.
+- **Alcove houses:** the alcove's mouth walled off in coursed **tabular `danxia` sandstone slabs and sun-dried polychrome `badland` clay plaster** on projecting peeled juniper *vigas* and willow *latilla* mats, two or three storeys under the overhang, the rock overhang, plastered walls, and cured bark screens painted in **Arnhem-style *rarrk* cross-hatching, X-ray beasts, stencilled ochre hands, and concentric track-rings** (red ochre, yellow ochre, pipeclay white, charcoal black, celadonite teal), with carved and feathered ***Pukamani* clan poles** at each ledge's end. Round watch-towers at the alcove's ends; a sunken stone circle (the shamans' house) in the largest.
+- **Ledge villages:** clustered sandstone-and-daub houses, oval **bunchgrass-thatched *maloca* warrior halls** framed on bent oak/juniper crucks, and conical bunchgrass-capped adobe granaries on the talus and ledges, the cliff above pocked with niche granaries and the dead's caves.
+- **Hung villages:** cliff-ledge walkways and shelters carried on heavy juniper/oak cantilever *vigas* socketed into drilled `danxia` beam-pockets with raking timber struts.
 
 **How they climb.**
-- **Notched-log ladders** (the Dogon's: one trunk, steps cut in it) between ledges, and pole ladders lashed with rawhide;
+- **Notched-log ladders** (the Dogon's: one juniper or oak trunk, steps cut in it) between ledges, and pole ladders lashed with pronghorn rawhide;
   the top ones drawn up at night: the towns are raiders' and fear raiders.
 - **Toeholds:** hand-and-toe holds pecked up the rock between alcoves (Mesa Verde's), the quick way and the secret one.
-- **Log stair-walks** on beams driven into the face along each tier; rope and bamboo bridges across clefts.
+- **Log stair-walks** on juniper/oak beams socketed into the face along each tier; braided willow-rope and Korona wild-silk bridges across clefts.
 - **Calls:** they whistle across the cliffs in the Hum (`LORE.md` §6.5).
 
 **How the biome kit marks the sites.** The kit draws no building. It draws the landform and leaves it ready:

@@ -50,7 +50,7 @@ from ..types.headgear import (
     tower_hat, crown_band, crest, horn
 )
 from ..types.accoutrements import (
-    flap, blob, pouch_belt, button_row, pendants, strap, tube, tassel, rosette
+    flap, blob, pouch_belt, pack_straps, button_row, pendants, strap, tube, tassel, rosette
 )
 
 
@@ -75,19 +75,29 @@ def _build_order_cartographer(sex, body_id):
     ])
     parts_h.append(tower_hat(gid_h + '_kufi', 0.105, lambda s: 1.0 + 0.055 * s, cap_paint, f=0.58, ease=0.014, rows=8, n=40))
 
-    # Round crimson-ruby spectacles with bronze rims & nose-bridge perched clearly in front of the eyes
-    lens_paint = P('holyred', 0.01, [B('top', 0.0, 0.010, 'solid', 'soot')], fabric='metal.bronze')
-    eye_f = 0.36
-    h_eye = first_hit(a + (b - a) * eye_f, -bk) or 0.112
+    # Round crimson-ruby spectacles with bronze rims, nasal saddle-bridge & ear-temples seated directly on the nose
+    lens_paint = P('holyred', 0.01, [B('top', 0.0, 0.010, 'solid', 'brass')], fabric='metal.bronze')
+    frame_paint = P('brass', 0.02, fabric='metal.bronze')
+    eye_f = 0.37
+    c_eye_base = a + (b - a) * eye_f
+    h_nose_br = first_hit(c_eye_base, -bk) or 0.110
+    lens_inners = {}
     for sd in (-1, 1):
-        l_pos = a + (b - a) * eye_f + left * sd * 0.035 - bk * (h_eye + 0.020)
-        parts_h.append(blob(f'{gid_h}_lens_{sd}', l_pos, (0.040, 0.012, 0.038), lens_paint, n=14, rows=5, out=-bk, rigid_joint='Head'))
-        ear_p = a + (b - a) * (eye_f + 0.02) + left * sd * 0.084 - bk * 0.015
-        parts_h.append(horn(f'{gid_h}_temple_{sd}', [l_pos + left * sd * 0.019, ear_p], 0.003, 0.0025, P('soot', 0.02), n=6, rows=4, rigid_joint='Head'))
+        p_ray_e = c_eye_base + left * (sd * 0.032)
+        h_sock = first_hit(p_ray_e, -bk) or (h_nose_br - 0.016)
+        d_lens = max(h_sock + 0.009, h_nose_br - 0.004)
+        l_pos = p_ray_e - bk * d_lens
+        lens_inners[sd] = l_pos - left * (sd * 0.015)
+        parts_h.append(blob(f'{gid_h}_lens_{sd}', l_pos, (0.034, 0.010, 0.032), lens_paint, n=14, rows=5, out=-bk, rigid_joint='Head'))
+        p_outer = l_pos + left * (sd * 0.017)
+        c_ear_s = a + (b - a) * 0.34
+        h_temp = first_hit(c_ear_s - bk * 0.02, left * sd) or 0.078
+        mid_t = 0.5 * (p_outer + (c_ear_s + left * (sd * (h_temp + 0.003)) - bk * 0.025)) + left * (sd * 0.004)
+        ear_p = c_ear_s + left * (sd * (h_temp + 0.002)) + bk * 0.005
+        parts_h.append(horn(f'{gid_h}_temple_{sd}', [p_outer, mid_t, ear_p], 0.0032, 0.0028, frame_paint, n=6, rows=5, rigid_joint='Head'))
 
-    br_l = a + (b - a) * (eye_f + 0.005) - left * 0.018 - bk * (h_eye + 0.022)
-    br_r = a + (b - a) * (eye_f + 0.005) + left * 0.018 - bk * (h_eye + 0.022)
-    parts_h.append(horn(gid_h + '_bridge', [br_l, br_r], 0.0035, 0.0035, P('soot', 0.02), n=6, rows=3, rigid_joint='Head'))
+    br_m = c_eye_base + up * 0.003 - bk * (h_nose_br + 0.0025)
+    parts_h.append(horn(gid_h + '_bridge', [lens_inners[-1], br_m, lens_inners[1]], 0.0035, 0.0035, frame_paint, n=6, rows=5, rigid_joint='Head'))
 
     entries.append(assemble_garment(gid_h, 'Cartographer Labyrinth Kufi & Ruby Spectacles', 'head', 'historians', parts_h,
                                     covers_hair=False, covers_face=False))
@@ -154,11 +164,7 @@ def _build_order_cartographer(sex, body_id):
         parts_b.append(blob(f'{gid_b}_pack_pocket_{sd}', back_c + np.array([sd * 0.115, -0.01, -0.03]), (0.06, 0.09, 0.16),
                             P('clay', 0.05, [B('top', 0.0, 0.02, 'solid', 'brass')]), n=10, rows=5,
                             out=np.array([sd * 1.0, 0, 0]), rigid_joint='Spine2'))
-        st_a = back_c + np.array([sd * 0.075, -0.04, 0.12])
-        st_b = spine_at(core.TOP + 0.005) + np.array([sd * 0.095, -0.01, 0.02])
-        st_c = chest_front(core.CHEST + 0.02, 0.038, x=sd * 0.095)
-        parts_b.append(horn(f'{gid_b}_strap_{sd}', [st_a, st_b, st_c], 0.014, 0.012,
-                            P('leather', 0.05, fabric='leather.polished'), n=8, rows=6, rigid_joint='Spine2'))
+    parts_b.extend(pack_straps(gid_b, P('leather', 0.05, fabric='leather.polished')))
     entries.append(assemble_garment(gid_b, 'Cartographer Leather Codex Rucksack', 'back', 'historians', parts_b))
 
     # --- FEET: Ornate madder-and-cream labyrinth embroidered high boots ---
@@ -251,11 +257,8 @@ def _build_order_listener(sex, body_id):
     ], [
         # Center saffron & order-blue monastic lapel overlap (u=0.44..0.56)
         PN(0.46, 0.54, 'solid', 'osaffron', 'omaroon', 1.0, down=0.45),
-        PN(0.43, 0.46, 'solid', 'orderblue', 'omaroon', 1.0),
-        PN(0.54, 0.57, 'solid', 'orderblue', 'omaroon', 1.0),
-        # Saffron shoulder-cap under-shirt at armholes so shoulder transition to sleeves is seamless
-        PN(0.18, 0.32, 'solid', 'osaffron', 'omaroon', 1.0, down=0.28),
-        PN(0.68, 0.82, 'solid', 'osaffron', 'omaroon', 1.0, down=0.28),
+        PN(0.43, 0.46, 'solid', 'orderblue', 'omaroon', 1.0, down=0.52),
+        PN(0.54, 0.57, 'solid', 'orderblue', 'omaroon', 1.0, down=0.52),
     ], fabric=WOOL)
     sl_p = P('osaffron', 0.04, [
         B('bottom', 0.0, 0.06, 'solid', 'orderblue'),
@@ -264,38 +267,44 @@ def _build_order_listener(sex, body_id):
 
     parts_t.append(torso_tube(gid_t, core.TOP, core.KNEE - 0.08, 0.018, chuba_p,
                               hang_from=core.WAIST - 0.03, flare=0.14, group_below=core.CROTCH + 0.02, hull_from=core.CHEST + 0.02))
-    parts_t.append(stand_collar(gid_t, P('osaffron', 0.04, [B('top', 0.0, 0.012, 'solid', 'orderblue')]), high=0.048))
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.021, sl_p, ease_end=0.036, rows=9))
+    parts_t.append(stand_collar(gid_t, P('osaffron', 0.04, [B('top', 0.0, 0.012, 'solid', 'orderblue')]), high=0.042))
+    parts_t.extend(sleeves(gid_t, 'wrist', 0.018, sl_p, ease_end=0.030, rows=9))
 
-    # Order-blue sash + crossed leather harness straps supporting the Listener's Chest-Desk
+    # Order-blue sash + clavicle-draped leather harness straps supporting the Listener's Chest-Desk
     sash_p = P('orderblue', 0.04, [B('top', 0.0, 0.012, 'solid', 'gold'), B('bottom', 0.0, 0.012, 'solid', 'osaffron')], fabric=WOOL)
-    parts_t.append(torso_tube(gid_t + '_sash', core.WAIST + 0.04, core.WAIST - 0.035, 0.028, sash_p, rows=3, n=40, hull_from=core.WAIST + 0.1))
-    strap_p = P('leather', 0.04, [B('top', 0.0, 0.008, 'solid', 'brass'), B('bottom', 0.0, 0.008, 'solid', 'brass')])
-    parts_t.append(band(gid_t + '_harness_L', core.WAIST, core.SHOULDER - 0.018, 0.040, 0.026, strap_p, high=math.pi * 0.36, rows=5))
-    parts_t.append(band(gid_t + '_harness_R', core.WAIST, core.SHOULDER - 0.018, 0.040, 0.028, strap_p, high=-math.pi * 0.36, rows=5))
+    parts_t.append(torso_tube(gid_t + '_sash', core.WAIST + 0.04, core.WAIST - 0.035, 0.021, sash_p,
+                              rows=4, n=42, hull_from=core.WAIST + 0.08, role='band'))
+    strap_p = P('leather', 0.04, [B('top', 0.0, 0.007, 'solid', 'brass'), B('bottom', 0.0, 0.007, 'solid', 'brass')],
+                fabric='leather.polished')
+    parts_t.append(band(gid_t + '_harness_L', core.WAIST + 0.01, core.TOP - 0.028, 0.036, 0.021,
+                        strap_p, high=math.pi * 0.46, rows=5))
+    parts_t.append(band(gid_t + '_harness_R', core.WAIST + 0.01, core.TOP - 0.028, 0.036, 0.022,
+                        strap_p, high=-math.pi * 0.46, rows=5))
 
     # Brass-bound Slate & Slide-Rule Chest-Desk over the sternum + Parabolic Dish & Three Evidentials Medallion
-    desk_c = chest_front(core.CHEST - 0.03, 0.044)
+    desk_c = chest_front(core.CHEST - 0.025, 0.023)
     desk_p = P('slate', 0.03, [
         B('top', 0.0, 0.02, 'solid', 'brass'),
         B('bottom', 0.0, 0.02, 'solid', 'brass'),
     ], [
         PN(0.12, 0.88, 'circuit_schematic', 'godteal', 'slate', 0.08),
     ], fabric='metal.iron')
-    parts_t.append(blob(gid_t + '_chest_desk', desk_c, (0.15, 0.022, 0.105), desk_p, n=14, rows=5, out=FRONT, rigid_joint='Spine2'))
+    parts_t.append(blob(gid_t + '_chest_desk', desk_c, (0.145, 0.020, 0.100), desk_p, n=14, rows=5, out=FRONT, rigid_joint='Spine2'))
 
     # Parabolic Dish & Evidentials Badge above the chest-desk
-    dish_c = chest_front(core.CHEST + 0.06, 0.042)
-    parts_t.append(rosette(gid_t + '_dish_badge', dish_c, FRONT, np.array([1.0, 0, 0]), 0.038,
+    dish_c = chest_front(core.CHEST + 0.058, 0.023)
+    parts_t.append(rosette(gid_t + '_dish_badge', dish_c, FRONT, np.array([1.0, 0, 0]), 0.034,
                            P('brass', 0.02, [B('top', 0.0, 0.45, 'procrastinator_wheel', 'godteal', 'orderblue', 0.04)], fabric='metal.gold'),
-                           n=14, thick=0.014, rigid_joint='Spine2'))
+                           n=14, thick=0.010, rigid_joint='Spine2'))
 
-    # Twin cylindrical brass-capped wax-cylinder / magnetic-tape log cases at the ribs
+    # Twin cylindrical brass-capped wax-cylinder / magnetic-tape log cases anchored flush at the waist sash
     cyl_p = P('saddle', 0.04, [B('top', 0.0, 0.03, 'solid', 'brass'), B('bottom', 0.0, 0.03, 'solid', 'brass')], fabric='leather.polished')
     for sd, tag in ((-1, 'R'), (1, 'L')):
-        c_pos = chest_front(core.WAIST + 0.05, 0.046, x=sd * 0.095)
-        parts_t.append(tube(f'{gid_t}_logroll_{tag}', [c_pos + np.array([0, 0, 0.055]), c_pos - np.array([0, 0, 0.055])],
-                            0.024, cyl_p, n=12, rigid_joint='Spine1'))
+        d_lr = np.array([sd * 0.72, -0.69, 0.0])
+        d_lr /= np.linalg.norm(d_lr)
+        c_pos = surface_out(spine_at(core.WAIST + 0.015), d_lr, 0.023, bvh=core.BVH_T)
+        parts_t.append(tube(f'{gid_t}_logroll_{tag}', [c_pos + np.array([0, 0, 0.052]), c_pos - np.array([0, 0, 0.052])],
+                            0.021, cyl_p, n=12, rigid_joint='Spine1'))
 
     entries.append(assemble_garment(gid_t, 'Listener of The Ear Chuba, Chest-Desk & Log-Rolls', 'torso', 'historians', parts_t))
     return entries
@@ -329,7 +338,7 @@ def _build_order_keeper(sex, body_id):
         B('bottom', 0.0, 0.04, 'solid', 'slate'),
     ], [
         PN(0.40, 0.60, 'quilt', 'slate', 'omaroon', 0.10),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.canvas.oiled')
     parts_h.append(hood(gid_h + '_hood', cowl_p, ease=0.036, ease_low=0.056, open_front=0.82, low=-0.56, rows=16, n=36, peak=0.05, high=1.06))
 
     # 3. Miniature 8-spoked bronze Procrastinator Seal Wheel mounted on the brow of the cowl
@@ -358,27 +367,27 @@ def _build_order_keeper(sex, body_id):
         # Dorsal containment spine column
         PN(0.0, 0.10, 'quilt', 'orderblue', 'slate', 0.14),
         PN(0.90, 1.0, 'quilt', 'orderblue', 'slate', 0.14),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.lead.oiled')
     mantle_p = P('slate', 0.03, [
         B('bottom', 0.0, 0.03, 'solid', 'brass'),
         B('bottom', 0.03, 0.08, 'dentils', 'osaffron', 'omaroon', 0.04),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.lead.oiled')
     sl_p = P('orderblue', 0.04, [
         B('bottom', 0.0, 0.08, 'quilt', 'brass', 'slate', 0.08),
         B('bottom', 0.08, 0.10, 'solid', 'osaffron'),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.lead.oiled')
 
     parts_t.append(torso_tube(gid_t, core.TOP, core.ANKLE + 0.04, 0.018, robe_p,
                               hang_from=core.WAIST - 0.03, flare=0.18, group_below=core.CROTCH + 0.02, hull_from=core.CHEST + 0.02))
-    parts_t.append(collar_disc(gid_t + '_lead_mantle', 0.16, mantle_p, drop=0.11, rows=7, n=42, scallop=0.04, ease=0.034))
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.038, rows=9))
+    parts_t.append(collar_disc(gid_t + '_lead_mantle', 0.092, mantle_p, drop=0.068, rows=6, n=42, scallop=0.04, ease=0.022))
+    parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.028, rows=9))
 
     # Wide bronze-and-lead containment waist girdle
     belt_p = P('slate', 0.03, [
         B('top', 0.0, 0.015, 'solid', 'brass'),
         B('bottom', 0.0, 0.015, 'solid', 'brass'),
     ], [PN(0.45, 0.55, 'procrastinator_wheel', 'godteal', 'brass', 0.08)], fabric='metal.iron')
-    parts_t.append(torso_tube(gid_t + '_belt', core.WAIST + 0.04, core.WAIST - 0.04, 0.032, belt_p, rows=4, n=42, hull_from=core.WAIST + 0.1))
+    parts_t.append(torso_tube(gid_t + '_belt', core.WAIST + 0.04, core.WAIST - 0.04, 0.022, belt_p, rows=4, n=42, hull_from=core.WAIST + 0.1, role='band'))
 
     # Ring of 7 Engraved Bronze Seal Pass-Plaques (LS-001..LS-007) + 1 Blank Lead Plaque (LS-008) across the chest!
     plaque_bronze = P('brass', 0.02, [B('top', 0.0, 0.008, 'solid', 'osaffron'), B('bottom', 0.0, 0.008, 'solid', 'godteal')], fabric='metal.gold')
@@ -387,22 +396,22 @@ def _build_order_keeper(sex, body_id):
         ang_p = -0.30 * math.pi + 0.60 * math.pi * (idx_p / 7.0)
         z_p = core.CHEST + 0.01 - 0.055 * math.cos(ang_p * 1.3)
         x_p = 0.115 * math.sin(ang_p)
-        pos_p = chest_front(z_p, 0.044, x=x_p)
+        pos_p = chest_front(z_p, 0.025, x=x_p)
         p_mat = plaque_blank if idx_p == 7 else plaque_bronze
-        parts_t.append(blob(f'{gid_t}_seal_plaque_{idx_p}', pos_p, (0.022, 0.012, 0.034), p_mat,
+        parts_t.append(blob(f'{gid_t}_seal_plaque_{idx_p}', pos_p, (0.022, 0.010, 0.032), p_mat,
                             n=8, rows=5, out=FRONT, rigid_joint='Spine2'))
 
     # Handheld Portable Prayer-Wheel Stasis-Meter slung at the right hip (glowing `godteal` cylinder)
-    c_hip = spine_at(core.WAIST - 0.06)
+    c_hip = spine_at(core.WAIST - 0.03)
     d_meter = np.array([-0.82, -0.55, 0.0])
     d_meter /= np.linalg.norm(d_meter)
-    pos_m = surface_out(c_hip, d_meter, 0.058)
+    pos_m = surface_out(c_hip, d_meter, 0.030)
     meter_p = P('brass', 0.02, [
         B('top', 0.0, 0.022, 'solid', 'slate'),
         B('bottom', 0.0, 0.022, 'solid', 'slate'),
     ], [PN(0.0, 1.0, 'procrastinator_wheel', 'godteal', 'orderblue', 0.06)], fabric='metal.gold')
-    parts_t.append(tube(gid_t + '_stasis_meter', [pos_m + np.array([0, 0, 0.065]), pos_m - np.array([0, 0, 0.065])],
-                        0.034, meter_p, n=14, rigid_joint='Hips'))
+    parts_t.append(tube(gid_t + '_stasis_meter', [pos_m + np.array([0, 0, 0.058]), pos_m - np.array([0, 0, 0.058])],
+                        0.028, meter_p, n=14, rigid_joint='Hips'))
 
     entries.append(assemble_garment(gid_t, 'Keeper Lead-Lined Containment Robe & Eight Seal Plaques', 'torso', 'historians', parts_t))
 
@@ -442,12 +451,7 @@ def _build_order_keeper(sex, body_id):
                             n=12, rows=4, out=np.array([0.0, 0.0, 1.0]), rigid_joint='Spine2'))
         parts_b.append(blob(f'{gid_b}_relic_lid_bot_{tag}', t_c + np.array([0, 0, -0.112]), (0.070, 0.018, 0.070), lid_p,
                             n=12, rows=4, out=np.array([0.0, 0.0, -1.0]), rigid_joint='Spine2'))
-        st_a = back_c + np.array([sd * 0.075, -0.05, 0.12])
-        st_b = spine_at(core.TOP + 0.005) + np.array([sd * 0.095, -0.01, 0.025])
-        st_c = chest_front(core.CHEST + 0.02, 0.042, x=sd * 0.095)
-        parts_b.append(horn(f'{gid_b}_strap_{tag}', [st_a, st_b, st_c], 0.015, 0.012,
-                            P('slate', 0.04, [B('top', 0.0, 0.03, 'solid', 'brass')], fabric='leather.polished'),
-                            n=8, rows=6, rigid_joint='Spine2'))
+    parts_b.extend(pack_straps(gid_b, P('slate', 0.04, [B('top', 0.0, 0.008, 'solid', 'brass')], fabric='leather.polished')))
 
     entries.append(assemble_garment(gid_b, 'Keeper Procrastinator Stasis-Drum & Relic Cask', 'back', 'historians', parts_b))
 
@@ -474,25 +478,30 @@ def _build_order_chronomonk(sex, body_id):
     parts_h = []
 
     band_p = P('osaffron', 0.04, [
-        B('top', 0.0, 0.007, 'solid', 'gold'),
-        B('bottom', 0.0, 0.007, 'solid', 'omaroon'),
+        B('top', 0.0, 0.006, 'solid', 'gold'),
+        B('bottom', 0.0, 0.006, 'solid', 'omaroon'),
     ], fabric=COTTON)
-    parts_h.append(crown_band(gid_h + '_browband', band_p, f0=0.52, f1=0.68, ease=0.014, flare=0.004, rows=5, n=36))
+    parts_h.append(crown_band(gid_h + '_browband', band_p, f0=0.56, f1=0.66, ease=0.004, flare=0.001, rows=6, n=44))
 
-    # Cast-bronze & glowing `godteal` Third-Eye Inferred Evidential Medallion on the glabella/brow
-    c_brow = a + (b - a) * 0.59
+    # Cast-bronze & glowing `godteal` Third-Eye Inferred Evidential Medallion flush on the glabella/brow-band
+    c_brow = a + (b - a) * 0.61
     h_brow = first_hit(c_brow, -bk) or 0.102
-    brow_c = c_brow - bk * (h_brow + 0.024)
-    parts_h.append(rosette(gid_h + '_third_eye', brow_c, -bk, left, 0.028,
+    brow_c = c_brow - bk * (h_brow + 0.0065)
+    parts_h.append(rosette(gid_h + '_third_eye', brow_c, -bk, left, 0.022,
                            P('brass', 0.02, [B('top', 0.0, 0.45, 'procrastinator_wheel', 'godteal', 'brass', 0.035)], fabric='metal.gold'),
-                           n=12, thick=0.012, rigid_joint='Head'))
+                           n=12, thick=0.009, rigid_joint='Head'))
 
-    # Twin trailing saffron & gold headband tails behind the occiput
+    # 3D occipital headband knot + twin trailing saffron & gold tails rooted inside the knot
+    c_occ = a + (b - a) * 0.58
+    h_occ = first_hit(c_occ, bk) or 0.102
+    knot_c = c_occ + bk * (h_occ + 0.008)
+    parts_h.append(blob(gid_h + '_knot', knot_c, (0.036, 0.020, 0.030), band_p,
+                        n=12, rows=5, out=bk, rigid_joint='Head'))
     for sd, tag in ((-1, 'R'), (1, 'L')):
-        t0 = a + (b - a) * 0.54 + bk * 0.105 + left * (sd * 0.028)
-        t1 = t0 + bk * 0.055 - up * 0.095 + left * (sd * 0.042)
-        t2 = t1 + bk * 0.035 - up * 0.115 + left * (sd * 0.020)
-        parts_h.append(horn(f'{gid_h}_tail_{tag}', [t0, t1, t2], 0.016, 0.006, band_p, n=8, rows=6, rigid_joint='Head'))
+        t0 = knot_c - bk * 0.005 + left * (sd * 0.012) - up * 0.006
+        t1 = knot_c + bk * 0.038 - up * 0.088 + left * (sd * 0.036)
+        t2 = t1 + bk * 0.028 - up * 0.105 + left * (sd * 0.018)
+        parts_h.append(horn(f'{gid_h}_tail_{tag}', [t0, t1, t2], 0.015, 0.006, band_p, n=8, rows=6, rigid_joint='Head'))
 
     entries.append(assemble_garment(gid_h, 'Chrono-Monk Third-Eye Evidential Brow-Cord', 'head', 'historians', parts_h,
                                     covers_hair=False, covers_face=False))
@@ -515,13 +524,13 @@ def _build_order_chronomonk(sex, body_id):
     ], fabric=WOOL)
 
     hem = core.CROTCH - 0.12 if sex == 'm' else core.CROTCH - 0.15
-    parts_t.append(torso_tube(gid_t, core.TOP, hem, 0.014, tunic_p,
+    parts_t.append(torso_tube(gid_t, core.TOP, hem, 0.016, tunic_p, n=48, rows=20,
                               hang_from=core.WAIST - 0.02, flare=0.11, group_below=core.CROTCH + 0.02, hull_from=core.CHEST + 0.02))
     # Diagonal martial kesa sash across the left shoulder to right hip
     parts_t.append(band(gid_t + '_kesa', core.WAIST + 0.01, core.SHOULDER + 0.03, 0.11, 0.036, zen_p, high=math.pi / 2, rows=5))
-    # Short capped martial shoulder-sleeves leaving elbows bare for lightning strikes
-    parts_t.extend(sleeves(gid_t, 'elbow', 0.018, P('orderblue', 0.04, [B('bottom', 0.0, 0.025, 'solid', 'gold')], fabric=COTTON),
-                           ease_end=0.024, rows=5))
+    # Fitted `orderblue` martial undershirt sleeves tucked seamlessly into forearm lightning-bracers (zero bare elbow gap!)
+    parts_t.extend(sleeves(gid_t, 'wrist', 0.012, P('orderblue', 0.04, [B('bottom', 0.0, 0.025, 'solid', 'gold')], fabric=COTTON),
+                           ease_end=0.012, rows=12, n=24))
 
     # Wide Brass-and-Godteal Prayer-Wheel Kidney Belt + 6 miniature counter-rotating temporal-capacitor cylinders!
     belt_p = P('omaroon', 0.03, [
@@ -538,9 +547,9 @@ def _build_order_chronomonk(sex, body_id):
     for wi in range(6):
         ang_w = math.pi + (wi - 2.5) * 0.36
         d_w = np.array([math.sin(ang_w), math.cos(ang_w), 0.0])
-        pos_w = surface_out(c_w, d_w, 0.048)
-        parts_t.append(tube(f'{gid_t}_pwheel_{wi}', [pos_w + np.array([0, 0, 0.038]), pos_w - np.array([0, 0, 0.038])],
-                            0.022, wheel_p, n=12, rigid_joint='Hips'))
+        pos_w = surface_out(c_w, d_w, 0.024)
+        parts_t.append(tube(f'{gid_t}_pwheel_{wi}', [pos_w + np.array([0, 0, 0.036]), pos_w - np.array([0, 0, 0.036])],
+                            0.019, wheel_p, n=12, rigid_joint='Hips'))
 
     # Bronze-splinted `orderblue` & `godteal` Forearm Lightning-Bracers
     bracer_p = P('orderblue', 0.03, [
@@ -552,7 +561,7 @@ def _build_order_chronomonk(sex, body_id):
     for s in (L, R):
         e_j, h_j = J(s + 'ForeArm'), J(s + 'Hand')
         vb = limb_tube(f'{gid_t}_bracer_{s[0]}', e_j + (h_j - e_j) * 0.14, e_j + (h_j - e_j) * 0.88,
-                       0.016, bracer_p, n=16, rows=6, bvh=core.BVH_A, rmax=0.10)
+                       0.022, bracer_p, n=16, rows=6, bvh=core.BVH_A, rmax=0.10, role='cuff', side=s[0])
         vb.rigid_joint = s + 'ForeArm'
         parts_t.append(vb)
 
@@ -630,7 +639,7 @@ def _build_order_warden(sex, body_id):
         B('top', 0.0, 0.05, 'stripes', 'omaroon', 'osaffron', 0.015),
         B('bottom', 0.0, 0.018, 'solid', 'brass'),
     ], fabric=WOOL)
-    parts_h.append(crest(gid_h + '_plume', 0.085, crest_p, rows=6, cols=15, sweep=0.05, a0=-0.9, a1=1.7))
+    parts_h.append(crest(gid_h + '_plume', 0.085, crest_p, rows=6, cols=15, sweep=0.04, a0=-0.82, a1=1.12, host_part=parts_h[0]))
 
     entries.append(assemble_garment(gid_h, 'Citadel Warden Fluted Iron-Brass Helmet & Plume', 'head', 'historians', parts_h,
                                     covers_hair=True, covers_face=False))
@@ -658,10 +667,10 @@ def _build_order_warden(sex, body_id):
                               n=48, rows=14, hang_from=core.WAIST - 0.02, flare=0.07, group_below=core.CROTCH + 0.02, hull_from=core.CHEST + 0.02))
 
     # Polished round bronze Melong Mirror-Gorget on the sternum
-    melong_c = chest_front(core.CHEST, 0.046)
-    parts_t.append(rosette(gid_t + '_melong', melong_c, FRONT, np.array([1.0, 0, 0]), 0.068,
+    melong_c = chest_front(core.CHEST, 0.030)
+    parts_t.append(rosette(gid_t + '_melong', melong_c, FRONT, np.array([1.0, 0, 0]), 0.062,
                            P('brass', 0.02, [B('top', 0.0, 0.45, 'procrastinator_wheel', 'godteal', 'brass', 0.05)], fabric='metal.gold'),
-                           n=18, thick=0.018, rigid_joint='Spine2'))
+                           n=18, thick=0.014, rigid_joint='Spine2'))
 
     # Lamellar shoulder pauldrons + saffron sleeves + iron-and-brass vambraces
     sh_p = P('orderblue', 0.04, [
@@ -794,21 +803,21 @@ def _build_order_cham(sex, body_id):
     parts_t.append(torso_tube(gid_t, core.TOP, core.ANKLE + 0.04, 0.016, robe_p,
                               hang_from=core.WAIST - 0.03, flare=0.22, group_below=core.CROTCH + 0.02, hull_from=core.CHEST + 0.02))
     # Wide scalloped Tibetan cloud-collar poncho yoke (`dorje` shoulders)
-    parts_t.append(collar_disc(gid_t + '_cloud_yoke', 0.185, yoke_p, drop=0.145, rows=8, n=44, scallop=0.08, ease=0.036))
+    parts_t.append(collar_disc(gid_t + '_cloud_yoke', 0.115, yoke_p, drop=0.088, rows=7, n=44, scallop=0.08, ease=0.022))
     # Wide flaring ceremonial dance sleeves
-    parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.085, rows=10))
+    parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.065, rows=10, wide=True))
 
     # Carved bone-bead belt + circular bronze Melong mirror on the chest
     belt_p = P('bone', 0.02, [
         B('top', 0.0, 0.015, 'solid', 'gold'),
         B('bottom', 0.0, 0.015, 'solid', 'gold'),
     ], [PN(0.0, 1.0, 'beads', 'bone', 'omaroon', 0.04)])
-    parts_t.append(torso_tube(gid_t + '_bone_belt', core.WAIST + 0.04, core.WAIST - 0.04, 0.030, belt_p, rows=4, n=42, hull_from=core.WAIST + 0.1))
+    parts_t.append(torso_tube(gid_t + '_bone_belt', core.WAIST + 0.04, core.WAIST - 0.04, 0.022, belt_p, rows=4, n=42, hull_from=core.WAIST + 0.1, role='band'))
 
-    melong_c = chest_front(core.CHEST - 0.01, 0.046)
-    parts_t.append(rosette(gid_t + '_melong', melong_c, FRONT, np.array([1.0, 0, 0]), 0.062,
+    melong_c = chest_front(core.CHEST - 0.01, 0.025)
+    parts_t.append(rosette(gid_t + '_melong', melong_c, FRONT, np.array([1.0, 0, 0]), 0.056,
                            P('gold', 0.02, [B('top', 0.0, 0.45, 'procrastinator_wheel', 'godteal', 'gold', 0.045)], fabric='metal.gold'),
-                           n=16, thick=0.016, rigid_joint='Spine2'))
+                           n=16, thick=0.012, rigid_joint='Spine2'))
 
     entries.append(assemble_garment(gid_t, 'Festival of the Register Cham Robe & Bone Apron', 'torso', 'historians', parts_t))
     return entries
@@ -833,7 +842,7 @@ def _build_order_servant(sex, body_id):
     ], fabric=WOOL)
     fleece_p = P('yakbrown', 0.07, [
         B('top', 0.0, 0.02, 'solid', 'cream'),
-    ], fabric='fur.short')
+    ], fabric='fur.yak')
     parts_h.append(head_rings(gid_h + '_crown', 0.58, 1.00, 0.018, cap_p, n=32, rows=6, apex=True))
     # Upturned 4-lobed fleece brim band around the temples and brow
     parts_h.append(brim(gid_h + '_fleece_cuff', 0.58, 0.036, fleece_p, ease=0.018, rows=4, n=36, lift=0.032, scallop=0.14))
@@ -879,6 +888,8 @@ def _build_order_servant(sex, body_id):
 # ===========================================================================================================
 def build_historians_kit():
     """Build all Order of Historians (Longsong) cultural wardrobe pieces across male and female bodies."""
+    from .historians_core_high import build_historians_core_high_kit
+    from .historians_outer_nodes import build_historians_outer_nodes_kit
     entries = []
     for sex, body_id in (('m', 'mpfb_male'), ('f', 'mpfb_female')):
         entries.extend(_build_order_cartographer(sex, body_id))
@@ -888,4 +899,6 @@ def build_historians_kit():
         entries.extend(_build_order_warden(sex, body_id))
         entries.extend(_build_order_cham(sex, body_id))
         entries.extend(_build_order_servant(sex, body_id))
+    entries.extend(build_historians_core_high_kit())
+    entries.extend(build_historians_outer_nodes_kit())
     return entries

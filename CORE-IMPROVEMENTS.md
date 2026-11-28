@@ -1019,6 +1019,53 @@ check request here, with its negative control.
   site, and each build's `model_site` window) whose window the edit touches, failing unless the edit names it as allowed.
   Negative: the patera with `PATERA_ON = True` fails on Firebliss station 1.
 
+## Survey of 2026-11-27: macrotidal estuaries, floating capitals, arcologies & 13 parallel builders (check requests)
+
+- **World-space upward-triangle far-view z-fight scanner (`zaudit` in `tools/harness.py`, extending item 11):** At `1–1.8 km`
+  overview range, a 24-bit depth buffer quantizes to `~0.08–0.15 m`, so `2–5 cm` slab/terrace offsets, crossing street boxes,
+  radial wedge rings, and `core/engine` `y <= 0.045 m` `BelowGrade` foundation skirts shimmer visibly (`381` conflicts found and
+  eliminated on `floating-city`). Promote `FC_WORLD.auditSceneZFights` (traverse static + `InstancedMesh` `matrixWorld * instanceMatrix`,
+  bucket `ny > 0.75`, `areaXZ >= 0.25 m²` triangles in a `16 m` grid, clip pairs via 2D Sutherland–Hodgman, fail when overlap
+  `>= 0.35 m²` has `|Δy| < 0.15 m` without distinct `polygonOffset`) into `harness.py` alongside `{stripBelowGrade: 0.045}` in
+  `KCITY.hostMultikit`.
+- **`ATMOS.skylight` immediate clock-jump recapture & frame-order guard (`core/atmos/89-atmos-b-skylight.js`):** Waiting `every`
+  (`30`) frames after a clock jump left night water reflecting the noon sky (rendering the unlit noon giant as a dark disc), and
+  calling `SL.capture()` inside `ticks` ran *before* `SUBS.view` (`SKY.view`) updated sky uniforms (`91-host-loop.js`). Recapture
+  immediately after `SKY.update(0)` whenever `|Δhour| >= 1` or `clock.day` changes, and set `S.hour` inside `capture()`.
+- **Tidal-datum awareness for `dry` flora checks & `submergedNonDivers === 0` life-layer check (`tools/harness.py`):** On a
+  `KTIDE` page, static shore flora is rooted relative to mean datum rather than instantaneous `WATER.seaLevel(t)`, whereas
+  non-diving `SIM`/crowd citizens must relocate dynamically (`submergedNonDivers === 0` across low/high spring extremes) and
+  dynamic `visible = false` nomad fleets must not leave empty static `REGISTER` volumes behind (`registered-volumes-non-empty`).
+- **`EXPORT.sceneReader` automatic section-owner exclusion (`core/export/10-core-export-scene.js`):** Without manual `skipInstanced`
+  / `skipMesh` predicates, `sceneReader` re-serializes `BIO.baked`, `WATER.drawn`, `GROUND`, and `FAR.mesh` already owned by
+  `items`/`water`/`terrain`, inflating `world.glb` `2.3x` (`131 MB -> 305 MB`). Auto-exclude meshes tagged by registered section
+  contributors.
+- **Software-GL (`KRATOR_GL=swiftshader`) lane lock in `tools/harness.py` (extending item 16):** Hardware GPU lanes lock `arc`/`rtx`,
+  but `KRATOR_GL=swiftshader` runs with `lane none`; parallel subagents launching headless Chromium saturate CPU cores with Subzero
+  threads and trigger 25-minute stall-watchdog kills. Acquire `/tmp/krator-swiftshader.lock` inside `harness.py` (configurable
+  concurrency `1`) when running on SwiftShader.
+
+## Survey of 2026-11-28: Utari-Kuran complex, Painted Men revamp, Hush-Kin, Dzagh-Vardzi, 4 biomes & custom totem textures (check requests)
+
+- **Closed `psurf` dome / shell outward-normal check in `tools/harness.py` & `core/engine/30-geo.js` (extending universal `winding`):**
+  In right-handed `(X, Y, Z)`, sweeping `a = u * TAU` via `[cos(a)*r(v), y(v), sin(a)*r(v)]` runs *clockwise* around `+Y`, so when `v`
+  rises eave-to-apex (`dy > 0, dr < 0`) without `{flip: true}`, `psurf()`'s central-difference normal `(∂P/∂u) × (∂P/∂v)` points
+  **inward and downward** (`(-dy, dr)` in `(radial, y)`). Because `fixWind()` reorders triangle indices to agree with that inverted
+  normal, `harness.py`'s universal `winding` check passes while `FrontSide` culls the near half of every dome ("reversed transparency"
+  on `kits/painted-men`'s `pmMalocaHall`). Warn or auto-detect closed `u=0..1` radial loops in `psurf()` (matching `lathe()`'s
+  `flip = (-dy + 0.5*dr) < 0` rule), and check in `harness.py` that convex roof/dome shells above wall height do not have predominantly
+  oblique downward (`-0.99 < ny < -0.05`) triangles without a paired outward shell. Negative: `pmMalocaHall` without `flip: true`
+  (`5,566` oblique downward triangles).
+- **`core/engine/27-mat.js` fallback material reset order:** `27-mat.js` resets `MAT.plain`, `MAT.brass`, `MAT.bone`, and `MAT.flag`
+  *after* its `SV_LIB` loop, stripping packed library detail maps from `kits/resources` ore veins and door hardware unless each kit
+  adds a `27z-*-matfix.js` re-calling `svLibMat(...)`. Initialize fallback `MAT` entries *before* the `SV_LIB` loop in `27-mat.js`
+  during the next `core/engine` rebuild.
+- **Polychrome `"pattern": true` dark vertex-tint guard (`tools/textures/pack.py` / `verify.py`):** Full-colour pattern families
+  (`keep >= 0.90` in `materials.json`, e.g. painted formline crests, PCB cyber-totem boards, *rarrk* bark) multiplied by dark timber
+  or stone palette vertex colours (`luma < 0.25`) crush polychrome artwork into mud, whereas replacing old fallback families (`maze*`)
+  without keeping at least one sampled surface triggers `packUnsampled > 0` across downstream in-place consumers (`PACK_KEY = 'hayrant'`).
+  Warn when a geometry batch on a `keep >= 0.90` family carries mean vertex colour luma `< 0.35`.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

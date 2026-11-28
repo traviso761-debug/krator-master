@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1012,
+    1017
+   ],
+   "seam_after": [
+    0.791,
+    0.954
+   ],
+   "seam_before": [
+    1.522,
+    1.792
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.86,
+   "rough_var": 0.16,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "painted/rarrk-bark",
+  "metal": 0,
+  "roughness": 0.86,
+  "scale": [
+   1.4,
+   1.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "painted_rarrk-bark.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/painted/rarrk-bark`)",
+  "reuse": "Painted Men Arnhem Land rarrk cross-hatched X-ray bark panel and Pukamani/Lorrkon pole wrap in red-ochre, yellow-ochre, pipeclay, charcoal and celadonite",
+  "sha1": "aeff436267ab09986efe72b048ef8e0eb75110af"
+ }
+}

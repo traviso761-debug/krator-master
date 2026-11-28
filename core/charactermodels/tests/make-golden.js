@@ -34,7 +34,19 @@ var golden = { bodies:{} };
                   hidden_parts:Object.keys(KCHAR.hiddenParts(s.record, kit)).sort() });
   });
 });
+// activities (data/activities.json): every id, an unknown one, under no context and under each override kind, two seeds
+var AT = J('activities.json'), ctxs = [{}, { furniture:'anvil' }, { furniture:'bed' }, { trade:'farmhands and ploughmen' }, { trade:'soldiers' },
+  { role:'operative' }, { furniture:'chair', trade:'smiths and craftsmen' }];
+golden.activities = [];
+Object.keys(AT.activities).concat(['NO_SUCH_ACT', '']).forEach(function(id, i){
+  ctxs.forEach(function(cx, k){
+    [3, 1000003].forEach(function(seed){
+      var ctx = Object.assign({ seed:seed + i * 7 + k }, cx);
+      golden.activities.push({ act:id, ctx:ctx, out:KCHAR.activity(AT, id, ctx) });
+    });
+  });
+});
 fs.writeFileSync(path.join(__dirname, 'golden-mpfb.json'), JSON.stringify(golden));
 console.log('golden-mpfb.json: %s', Object.keys(golden.bodies).map(function(b){
   var g = golden.bodies[b]; return b + ' ' + g.morphs.length + ' morphs, ' + g.strangers.length + ' strangers, ' + g.parts.length + ' part lists';
-}).join('; '));
+}).join('; ') + '; ' + golden.activities.length + ' activity cases');

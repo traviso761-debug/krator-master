@@ -87,6 +87,40 @@ T.neg('corniceDeltaOk enforces VASSAL-KITS.md <= 0.50 m eaves delta against Eter
   () => true,
   hyRigMath.corniceDeltaOk);
 
+T.ok('totemTierY spaces stacked Eternian ancestor heads evenly from plinth base',
+  (() => {
+    const ys = hyRigMath.totemTierY(0.52, 4, 1.25);
+    return ys.length === 4 && ys[0] === 0.52 && ys[1] === 1.77 && ys[2] === 3.02 && ys[3] === 4.27;
+  })());
+
+T.neg('puBaffleRadius enforces >= 2.35x basalt post radius for nezumi-gaeshi marmot baffles',
+  fn => [0.14, 0.18, 0.22].every(r => fn(r) >= 2.35 * r),
+  r => 1.5 * r,
+  hyRigMath.puBaffleRadius);
+
+T.neg('formlineLayerZ steps non-coplanar relief layers by >= 0.018 m per layer',
+  fn => fn(0, 1) >= 0.018 && (fn(0, 2) - fn(0, 1)) >= 0.018 && (fn(0, 4) - fn(0, 3)) >= 0.018,
+  (z, k) => z + 0.002 * k,
+  hyRigMath.formlineLayerZ);
+
+T.ok('insulatorShedRadii builds monotonically tapering wide shed skirts and narrower porcelain necks',
+  (() => {
+    const sh = hyRigMath.insulatorShedRadii(0.08, 3);
+    return sh.length === 3 &&
+      sh.every(s => s.shed > s.neck && s.neck > 0.03) &&
+      sh[0].shed > sh[1].shed && sh[1].shed > sh[2].shed;
+  })());
+
+T.neg('catenarySagPt pins exact jumper cable endpoints at t=0 and t=1 and sags at mid-span',
+  fn => {
+    const a = [-2.5, 5.0, 1.0], b = [2.5, 5.0, 1.0];
+    const p0 = fn(a, b, 0.30, 0), pm = fn(a, b, 0.30, 0.5), p1 = fn(a, b, 0.30, 1);
+    return p0[0] === -2.5 && p0[1] === 5.0 && p1[0] === 2.5 && p1[1] === 5.0 &&
+      Math.abs(pm[1] - 4.7) < 1e-4;
+  },
+  (a, b, sag, t) => [a[0] + (b[0] - a[0]) * t, a[1] - sag, a[2]],
+  hyRigMath.catenarySagPt);
+
 T.ok('read-in-place 42-et-head.js generates deterministic closed-eye heads and lintel-bearing ancestors',
   (() => {
     const hClosed = etHeadGeo(etHeadParams(34101, {}));
@@ -95,18 +129,27 @@ T.ok('read-in-place 42-et-head.js generates deterministic closed-eye heads and l
       fLintel.eyes === 'closed' && fLintel.pos.length > 150;
   })());
 
-T.ok('HY_TRADES covers all 44 Voth census rows with 41 active trades, 0 gaps and 3 explicit na reasons',
-  HY_TRADES.length === 44 &&
-  HY_TRADES.filter(r => !r.na).length === 41 &&
-  HY_TRADES.filter(r => r.gap).length === 0 &&
-  HY_TRADES.every(r => r.na ? r.na.length > 20 : (Array.isArray(r.keys) && r.keys.length > 0 && r.keys.every(k => k.startsWith('hy_')))));
+T.ok('HY_TRADES covers all 44 Voth census rows with 41 active trades, 0 gaps, 3 explicit na reasons, and cyber-totem defs',
+  (() => {
+    const allTradeKeys = new Set(HY_TRADES.filter(r => !r.na).flatMap(r => r.keys));
+    const reqNew = [
+      'hy_head_totem_court', 'hy_censorate_warden', 'hy_veilpass_picket',
+      'hy_rare_earth_smelter', 'hy_charcoal_tar_kiln', 'hy_pu_chandlery',
+      'hy_grand_cyber_totem', 'hy_cyber_totem_obelisk'
+    ];
+    return HY_TRADES.length === 44 &&
+      HY_TRADES.filter(r => !r.na).length === 41 &&
+      HY_TRADES.filter(r => r.gap).length === 0 &&
+      reqNew.every(k => allTradeKeys.has(k)) &&
+      HY_TRADES.every(r => r.na ? r.na.length > 20 : (Array.isArray(r.keys) && r.keys.length > 0 && r.keys.every(k => k.startsWith('hy_'))));
+  })());
 
-T.ok('FAMILIES rows use survey-clean view names and place all 46 hy_ buildings plus mixed street and statuary',
+T.ok('FAMILIES rows use survey-clean view names and place all 54 hy_ buildings plus mixed street and statuary (56 total hy_*)',
   (() => {
     const hyKeys = FAMILIES.flatMap(f => f.keys).filter(k => k.startsWith('hy_'));
     return FAMILIES.length === 11 &&
       FAMILIES.every(f => !/[':\\/*?"<>|]/.test(f.name)) &&
-      new Set(hyKeys).size === 48;
+      new Set(hyKeys).size === 56;
   })());
 
 /* HYK sealed world bundle check (kits/hayrant/kit_bundle.py) */
@@ -153,12 +196,23 @@ const allProtosOk = bldgKeys.every(k => {
 });
 const pPrefect = HYK.proto('hy_prefect_seat', 0);
 const pLegation = HYK.proto('hy_kuran_legation', 0);
+const pTotemCourt = HYK.proto('hy_head_totem_court', 0);
+const pGrandTotem = HYK.proto('hy_grand_cyber_totem', 0);
+const pObelisk = HYK.proto('hy_cyber_totem_obelisk', 0);
+const pWarden = HYK.proto('hy_censorate_warden', 0);
 const allTradeMap = HYK.tradeDefs();
 
-T.ok('HYK settlement bundle exports all 46 building dims, 41 trade mappings, and builds all 46 prototypes with zero errors',
-  bldgKeys.length === 46 && allProtosOk && HYK.errors.length === 0 &&
+T.ok('HYK settlement bundle exports all 54 building dims, 41 trade mappings, rare-earth resSource, and builds all 54 prototypes with zero errors',
+  bldgKeys.length === 54 && allProtosOk && HYK.errors.length === 0 &&
   Object.keys(allTradeMap).length === 41 &&
+  hykDims.hy_rare_earth_smelter.resSource === 'rare-earth' &&
+  hykDims.hy_grand_cyber_totem.h >= 20 &&
+  hykDims.hy_cyber_totem_obelisk.h >= 16 &&
   !!(pPrefect && pPrefect.userData.tris > 4000 && pPrefect.userData.doors >= 4) &&
-  !!(pLegation && pLegation.userData.tris > 2000 && pLegation.userData.doors >= 3));
+  !!(pLegation && pLegation.userData.tris > 2000 && pLegation.userData.doors >= 3) &&
+  !!(pTotemCourt && pTotemCourt.userData.tris > 3000 && pTotemCourt.userData.doors >= 2) &&
+  !!(pGrandTotem && pGrandTotem.userData.tris > 4000) &&
+  !!(pObelisk && pObelisk.userData.tris > 2500) &&
+  !!(pWarden && pWarden.userData.tris > 2000 && pWarden.userData.doors >= 2));
 
 T.done();

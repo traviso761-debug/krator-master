@@ -81,5 +81,32 @@ FARSIDE.buildFloor=function(R,q){q=q==null?1:q;const st={},cnt=k=>{st[k]=(st[k]|
  bands('sponge',cq(3.2),Z=>(Z.cloud*.035+Z.rock*Z.fog*.12+Z.front*Z.fog*.03)*(1-Z.sand),(x,y,z,s,k)=>{
   for(let i=0,n=1+Math.floor(s.next()*3);i<n;i++){const a=s.next()*TAU,r=s.next()*.6,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r,H=lerp(.25,.9,s.next())*Math.min(k,1.3);
    BIO.put('spongetower',[px,BIO.terrainH(px,pz)-.04,pz],qLean(0,s.next()*TAU),[H*.9,H,H*.9],sv(s,pk(s,PAL.sponge),.06));cnt('sponge');}});
+ // STRAND DUNE, SPRAY-ROCK & KELP-BENCH DIVERSITY GUILD (naupaka, beach morning-glory, samphire, sea-sandwort, dulse-fan, coralline crust, cordgrass)
+ bands('naupaka',cq(7.5),(Z,x,z)=>Z.sand*(1-Z.strandL*.8)*smooth(.58,.90,Z.spray)*patch(x,z,481,.014)*.55,(x,y,z,s,k)=>{
+  const W=lerp(.85,1.85,s.next())*Math.min(k,1.35),H=W*lerp(.52,.68,s.next());
+  BIO.put('naupaka',[x,y-.06,z],qLean(.12,s.next()*TAU),[W,H,W],sv(s,pk(s,PAL.naupaka),.05),{n:[0,1,0]});
+  if(k===1&&s.next()<.65){const ba=s.next()*TAU;BIO.put('naupakabloom',[x+Math.cos(ba)*W*.26,y+H*.55,z+Math.sin(ba)*W*.26],qLean(.1,ba),[1.2,1.1,1.2],C(pk(s,PAL.naupakaBloom)));}
+  cnt('strandnaupaka');});
+ bands('beachglory',cq(6.2),(Z,x,z)=>Z.sand*(1-Z.strandL*.7)*smooth(.52,.86,Z.spray)*patch(x,z,482,.018)*.62,(x,y,z,s)=>{
+  for(let i=0,n=2+Math.floor(s.next()*2);i<n;i++){const L=lerp(.85,1.9,s.next()),a=s.next()*TAU;
+   BIO.put('beachglory',[x,y-.01,z],new T3.Quaternion().setFromAxisAngle(UP,a),[L,1,L],sv(s,pk(s,PAL.glory),.05));
+   if(s.next()<.6){const t=.35+.5*s.next();BIO.put('glorybloom',[x+Math.cos(a)*L*t,BIO.terrainH(x+Math.cos(a)*L*t,z-Math.sin(a)*L*t),z-Math.sin(a)*L*t],qLean(0,a),[1.15,1.15,1.15],C(pk(s,PAL.gloryBloom)));}}
+  cnt('beachglory');},{nearOnly:true});
+ bands('rocksali',cq(5.4),Z=>Z.rock*smooth(.62,.96,Z.spray)*.58,(x,y,z,s,k)=>{
+  for(let i=0,n=1+Math.floor(s.next()*3);i<n;i++){const a=s.next()*TAU,r=s.next()*.55,px=x+Math.cos(a)*r,pz=z+Math.sin(a)*r,H=lerp(.16,.42,s.next())*Math.min(k,1.25);
+   BIO.put('rocksali',[px,BIO.terrainH(px,pz)-.03,pz],qLean(.14,s.next()*TAU),[H*1.1,H,H*1.1],sv(s,pk(s,PAL.samphire),.06));cnt('rocksali');}},{nearOnly:true});
+ bands('seasandwort',cq(5.8),Z=>(Z.strandL*.65+Z.sand*Z.rock*.45)*smooth(.60,.95,Z.spray),(x,y,z,s)=>{
+  const W=lerp(.35,.75,s.next());
+  BIO.put('seasandwort',[x,y-.015,z],qLean(.08,s.next()*TAU),[W,W*.65,W],sv(s,pk(s,PAL.sandwort),.05));cnt('seasandwort');},{nearOnly:true});
+ bands('crimsonfan',cq(6.8),(Z,x,z)=>(Z.kelpcoast*(1-Z.sand)*(1-Z.graze*.85)*.38+Z.rock*Z.spray*.28)*patch(x,z,485,.016),(x,y,z,s,k)=>{
+  const w=WIND(),a=Math.atan2(w[1],w[0]);
+  for(let i=0,n=1+Math.floor(s.next()*3);i<n;i++){const b=s.next()*TAU,r=s.next()*.65,px=x+Math.cos(b)*r,pz=z+Math.sin(b)*r,H=lerp(.28,.82,s.next())*Math.min(k,1.25);
+   BIO.put('crimsonfan',[px,BIO.terrainH(px,pz)-.03,pz],new T3.Quaternion().setFromAxisAngle(UP,-a+(s.next()-.5)*.8),[H*.95,H,H*.95],sv(s,pk(s,PAL.crimsonfan),.06));cnt('crimsonfan');}});
+ bands('corallinecrust',cq(5.2),Z=>(Z.rock*smooth(.72,.96,Z.spray)*.52+Z.coral*.28)*(1-Z.sand),(x,y,z,s,k)=>{
+  const W=lerp(.38,.92,s.next())*Math.min(k,1.3);
+  BIO.put('corallinecrust',[x,y-.02,z],qLean(.08,s.next()*TAU),[W,W*.55,W],sv(s,pk(s,PAL.coralline),.05));cnt('corallinecrust');},{nearOnly:true});
+ bands('tidalsedge',cq(5.6),(Z,x,z)=>Z.sand*(1-Z.coral)*(1-Z.rock)*smooth(.45,.82,Z.spray)*patch(x,z,487,.015)*.48,(x,y,z,s,k)=>{
+  const H=lerp(.6,1.4,s.next())*Math.min(k,1.35),W=H*lerp(1.1,1.6,s.next());
+  BIO.put('tidalsedge',[x,y-.04,z],qLean(lerp(.22,.55,s.next()),s.next()*TAU),[W,H,W],sv(s,pk(s,PAL.cordgrass),.06));cnt('tidalsedge');});
  BIO.range=null;BIO.minRange=0;return {floor:st};};
 })();

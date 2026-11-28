@@ -33,14 +33,16 @@ const klTradeDefs = vm.runInContext('klTradeDefs', ctx);
 const FAMILIES = vm.runInContext('FAMILIES', ctx);
 
 /* 1. Kit identity, Finnic-Baltic + Rian loanword lexicon & faction metadata (26k-kit.js) */
-T.ok('kit identity is kulanewa with Finnic-Baltic substrate, bidirectional Rian loanwords, and Suurgild/Talku-Kula faction metadata',
+T.ok('kit identity is kulanewa with Finnic-Baltic substrate, bidirectional Rian loanwords, and Karum/Ikki/Suudme faction metadata',
   KIT.id === 'kulanewa' && KIT.culture === 'kulanewa' &&
   KIT.faction === 'The Kulanewa Free-Towns' &&
   KL_FACTIONS.karum.style === 'karum' &&
   KL_FACTIONS.ikki.style === 'ikki' &&
+  KL_FACTIONS.suudme.style === 'suudme' &&
   KL_LEXICON.language === 'Kulaneva-keel' &&
   KL_LEXICON.substrate === 'Finnic-Estonian-Baltic' &&
   !!(KL_LEXICON.rianLoans['ampala-kiri'] && KL_LEXICON.rianLoans.kuluuna && KL_LEXICON.rianLoans.piliika) &&
+  !!(KL_LEXICON.suudmeTerms && KL_LEXICON.suudmeTerms['suudme-kuluuna'] && KL_LEXICON.suudmeTerms['kell-mondop']) &&
   KL_LEXICON.reverseLoansToRia.raha.lowRia === 'laha' &&
   KL_LEXICON.reverseLoansToRia.sampo.highRia === 'sakwo' &&
   KL_LEXICON.reverseLoansToRia['valge-vask'].lowRia === 'walaga-wasa');
@@ -48,15 +50,16 @@ T.ok('kit identity is kulanewa with Finnic-Baltic substrate, bidirectional Rian 
 T.ok('all cloth banner and silk material keys join SV_CLOTH',
   ['silk', 'brocade', 'flag'].every(k => SV_CLOTH[k] === 1));
 
-/* 2. Sheet rows & 42 building keys (89-rows.js) */
+/* 2. Sheet rows & 63 building keys (89-rows.js) */
 const allKeys = FAMILIES.flatMap(f => f.keys);
 const uniqKeys = new Set(allKeys);
 const karumKeys = allKeys.filter(k => k.startsWith('kl_karum_'));
 const ikkiKeys = allKeys.filter(k => k.startsWith('kl_ikki_'));
+const suudmeKeys = allKeys.filter(k => k.startsWith('kl_suudme_'));
 
-T.ok('four Kulanewa sheet rows hold 42 unique buildings (21 karum + 21 ikki)',
-  FAMILIES.length === 4 && allKeys.length === 42 && uniqKeys.size === 42 &&
-  karumKeys.length === 21 && ikkiKeys.length === 21);
+T.ok('six Kulanewa sheet rows hold 63 unique buildings (21 karum + 21 ikki + 21 suudme)',
+  FAMILIES.length === 6 && allKeys.length === 63 && uniqKeys.size === 63 &&
+  karumKeys.length === 21 && ikkiKeys.length === 21 && suudmeKeys.length === 21);
 
 const viewSafe = name => typeof name === 'string' && name.length > 0 && !/[':\\/*?"<>|]/.test(name);
 T.neg('row names reject apostrophes, colons and slashes for check_views',
@@ -69,20 +72,23 @@ const validTradesTable = rows =>
   Array.isArray(rows) && rows.length === 44 &&
   rows.every(r => r.na || (
     Array.isArray(r.karum) && r.karum.length > 0 && r.karum.every(k => uniqKeys.has(k) && k.startsWith('kl_karum_')) &&
-    Array.isArray(r.ikki) && r.ikki.length > 0 && r.ikki.every(k => uniqKeys.has(k) && k.startsWith('kl_ikki_'))
+    Array.isArray(r.ikki) && r.ikki.length > 0 && r.ikki.every(k => uniqKeys.has(k) && k.startsWith('kl_ikki_')) &&
+    Array.isArray(r.suudme) && r.suudme.length > 0 && r.suudme.every(k => uniqKeys.has(k) && k.startsWith('kl_suudme_'))
   ));
 
-T.neg('KL_TRADES covers all 44 Voth census rows in both Karum and Ikki and rejects missing branch defs',
+T.neg('KL_TRADES covers all 44 Voth census rows across Karum, Ikki and Suudme and rejects missing branch defs',
   validTradesTable,
-  KL_TRADES.map((r, i) => i === 0 ? { trade: r.trade, voth: r.voth, karum: r.karum, ikki: [] } : r),
+  KL_TRADES.map((r, i) => i === 0 ? { trade: r.trade, voth: r.voth, karum: r.karum, ikki: r.ikki, suudme: [] } : r),
   KL_TRADES);
 
 const karumMap = klTradeDefs('karum');
 const ikkiMap = klTradeDefs('ikki');
-T.ok('klTradeDefs returns all 40 active Voth trades for both faction styles',
-  Object.keys(karumMap).length === 40 && Object.keys(ikkiMap).length === 40 &&
+const suudmeMap = klTradeDefs('suudme');
+T.ok('klTradeDefs returns all 40 active Voth trades for all three faction styles',
+  Object.keys(karumMap).length === 40 && Object.keys(ikkiMap).length === 40 && Object.keys(suudmeMap).length === 40 &&
   karumMap['guild officers and clerks'].includes('kl_karum_grand_bank') &&
-  ikkiMap['smiths and craftsmen'].includes('kl_ikki_hydro_forge'));
+  ikkiMap['smiths and craftsmen'].includes('kl_ikki_hydro_forge') &&
+  suudmeMap['guild officers and clerks'].includes('kl_suudme_amber_bourse'));
 
 /* 4. Stage 1 BUDGETS.json & Stage 5 KMAT_M1 + mip-variance.json + materials.json */
 const budgets = JSON.parse(fs.readFileSync(path.join(HERE, 'BUDGETS.json'), 'utf8'));
@@ -173,11 +179,12 @@ const KLK = bCtx.KLK;
 const dims = KLK.dims();
 const pKarum = KLK.proto('kl_karum_grand_bank', 0);
 const pIkki = KLK.proto('kl_ikki_covenant_citadel', 0);
+const pSuudme = KLK.proto('kl_suudme_amber_bourse', 0);
 const allProtosOk = allKeys.every(k => {
   const g = KLK.proto(k, 0);
   return !!(g && g.userData.tris > 450);
 });
-const fullMatrixOk = ['karum', 'ikki'].every(st => {
+const fullMatrixOk = ['karum', 'ikki', 'suudme'].every(st => {
   const ds = Object.values(dims).filter(d => d.style === st);
   const dwellOk = ['poor', 'middle', 'rich'].every(w =>
     ['dwelling-single', 'dwelling-multi'].every(t => ds.some(d => d.wealth === w && (d.types || []).includes(t))));
@@ -186,11 +193,12 @@ const fullMatrixOk = ['karum', 'ikki'].every(st => {
   return dwellOk && milN >= 3 && infN >= 5;
 });
 
-T.ok('KLK settlement bundle exports all 42 dims, full 6-cell dwelling/military/logistics matrix, and builds all 42 prototypes with zero errors',
-  Object.keys(dims).length === 42 && allProtosOk && fullMatrixOk && KLK.errors.length === 0 &&
-  !!(KLK.factions && KLK.factions.karum && KLK.factions.ikki) &&
+T.ok('KLK settlement bundle exports all 63 dims, full 6-cell dwelling/military/logistics matrix across all 3 styles, and builds all 63 prototypes with zero errors',
+  Object.keys(dims).length === 63 && allProtosOk && fullMatrixOk && KLK.errors.length === 0 &&
+  !!(KLK.factions && KLK.factions.karum && KLK.factions.ikki && KLK.factions.suudme) &&
   !!(pKarum && pKarum.userData.tris > 1500 && pKarum.userData.doors >= 3) &&
-  !!(pIkki && pIkki.userData.tris > 1500 && pIkki.userData.doors >= 4));
+  !!(pIkki && pIkki.userData.tris > 1500 && pIkki.userData.doors >= 4) &&
+  !!(pSuudme && pSuudme.userData.tris > 1500 && pSuudme.userData.doors >= 3));
 
 /* 7. K1 + M2 + M3 + M4 GLSL shader injection check on THREE.ShaderLib.standard */
 const shTest = {

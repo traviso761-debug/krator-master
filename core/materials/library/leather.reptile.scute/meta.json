@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.408,
+    0.835
+   ],
+   "seam_before": [
+    2.762,
+    2.774
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.18,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 1.1,
+   "pattern": false,
+   "rough": 0.52,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "leather.reptile.scute",
+  "metal": 0.0,
+  "roughness": 0.52,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "saurian-hide-seamless-2048.png",
+  "generator": "Codex image generation, Nov 2026 (saurian-hide-seamless-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy tanned saurian and monitor-lizard hide leather at 24 cm square garment scale, rows of sub-rectangular keeled osteoderm scales (~8 to 14 mm wide) surrounded by rings of tiny pebbly interstitial granules and flexible hinge skin folds. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "17a8c852baf66fc682f472c376d5d1ef5429cda6"
+ }
+}

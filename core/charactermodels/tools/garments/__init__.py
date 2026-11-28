@@ -110,6 +110,7 @@ from .types import (
     pouch_belt,
     izani_belt,
     sash_with_tail,
+    pack_straps,
     izani_sash,
     stacked_belts,
     animal_belts,

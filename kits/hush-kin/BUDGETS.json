@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "hush-kin.html": {
+   "tris": 1800000,
+   "calls": 240,
+   "bytes": 16777216,
+   "samplers": 15,
+   "vram_mb": 320,
+   "why": "35 standalone Hush-Kin Silent-Vales building definitions (10 Handspeak sightline dwellings, 10 snow-white quartz heliograph spires, moot-amphitheatres, bianzhong/nephrite belfries, Ancient Hush-pylon shrines & open-palm border watches, and 15 ribbon-lake underwater-cable ferries, quartz quarries, lithophone lapidaries, bell foundries, felt weavers & Voth census trades) plus hs_lakeside_sanctuary_row sightline diorama and 60 kits/resources ore nodes across 11 rows with 260+ furnished pieces, 6+ core/water surfaces, and Stage 5 M1-M4 library maps",
+   "raised": "2026-11-28"
+  }
+ }
+}

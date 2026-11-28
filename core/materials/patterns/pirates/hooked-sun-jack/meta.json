@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1245,
+    1247
+   ],
+   "seam_after": [
+    0.885,
+    1.941
+   ],
+   "seam_before": [
+    2.142,
+    2.451
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "pirates/hooked-sun-jack",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__pirates__hooked-sun-jack.png",
+  "generator": "Codex image generation, Nov 2026 (exec-6a70b883-5e65-4fe3-936c-ab648a047ceb.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Ring Sea Pirate-Emperor tarred canvas boarding-jack: quartered vertical panels of pitch-black sail-duck (#18181c) and blood-red antifouling canvas (#9e181e) stitched with heavy tarred hemp twine, stencilled and embroidered with three repeats across and two down of the canonical Hooked-Sun emblem\u2014a 16-rayed golden Izani sun (#d8a832) impaled straight through by a barbed iron fish-hook (#7a8086)\u2014bordered along the lower band by crusted pale grey-white calcareous ship-barnacle clusters (#c8c6be), seam-safe. Full colour.",
+  "sha1": "1e28b4396df089b7759f245bb22644e5d6b1dfb8"
+ }
+}

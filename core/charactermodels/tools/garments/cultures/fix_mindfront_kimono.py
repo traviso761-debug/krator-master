@@ -1,4 +1,4 @@
-"""Fix mindfront_kimono.glb midline seam and collar tail on mpfb_male and mpfb_female."""
+"""Fix mindfront_kimono.glb midline seam, chest clearance, and welded shoulder normals on mpfb_male and mpfb_female."""
 import io
 import json
 import math
@@ -39,18 +39,21 @@ def get_panel_grid(comp_indices, P, UV):
     by_u = c[np.argsort(UV[c, 0])].reshape(9, 30)
     for col in range(9):
         by_u[col] = by_u[col, np.argsort(-UV[by_u[col], 1])]
-    return by_u.T  # shape (30, 9): row 0 = hem, row 29 = shoulder/collar
+    return by_u.T  # shape (30, 9): row 0 = hem, row 29 = waist/chest join
 
 
 def recompute_smooth_normals(P, N, tris, vidx, target_verts):
-    """Recompute area-weighted vertex normals across shared _VIDX for target_verts."""
+    """Recompute area-weighted vertex normals across shared _VIDX for all target_verts."""
     target_set = set(int(v) for v in target_verts)
     fn = np.cross(P[tris[:, 1]] - P[tris[:, 0]], P[tris[:, 2]] - P[tris[:, 0]])
     v_accum = {}
     for t_i, (a, b, c) in enumerate(tris):
-        if int(a) in target_set or int(b) in target_set or int(c) in target_set:
+        ia, ib, ic = int(a), int(b), int(c)
+        if ia == ib or ib == ic or ia == ic:
+            continue
+        if ia in target_set and ib in target_set and ic in target_set:
             n_vec = fn[t_i]
-            for v in (int(a), int(b), int(c)):
+            for v in (ia, ib, ic):
                 vid = int(vidx[v])
                 v_accum[vid] = v_accum.get(vid, np.zeros(3, dtype=np.float64)) + n_vec
     for v in target_set:
@@ -62,31 +65,76 @@ def recompute_smooth_normals(P, N, tris, vidx, target_verts):
                 N[v] = (n_vec / norm).astype(np.float32)
 
 
-def flatten_normal_map_seams(gltf, binb):
-    """Flatten vertical normal-map seam bevels at u in [0.185, 0.260] and [0.795, 0.835]."""
+def flatten_normal_map_seams(gltf, binb, UV=None, idx=None, V=None, comps=None):
+    """Flatten normal-map seam bevels at all inter-component UV edges (shoulders, chest, armholes, front/back seams)."""
     bv = gltf['bufferViews'][gltf['images'][0]['bufferView']]
     raw = bytes(binb[bv['byteOffset']:bv['byteOffset'] + bv['byteLength']])
     im = Image.open(io.BytesIO(raw)).convert('RGB')
-    arr = np.array(im, dtype=np.uint8)
+    arr = np.array(im, dtype=np.float32)
     h, w, _ = arr.shape
-    # Neutral tangent-space normal
-    neutral = np.array([128, 127, 254], dtype=np.float32)
+    neutral = np.array([128.0, 127.0, 254.0], dtype=np.float32)
+
+    # 1. Flatten vertical front/back seam bands
     for u0, u1 in ((0.185, 0.260), (0.790, 0.835)):
         x0 = int(round(u0 * w))
         x1 = int(round(u1 * w))
         for x in range(x0, x1 + 1):
-            # Smoothly blend to neutral inside the band
             t = min((x - x0) / 4.0, (x1 - x) / 4.0, 1.0)
-            arr[:, x, :] = np.clip((1.0 - t) * arr[:, x, :].astype(np.float32) + t * neutral, 0, 255).astype(np.uint8)
+            arr[:, x, :] = (1.0 - t) * arr[:, x, :] + t * neutral
+
+    # 2. Flatten normal-map bevels along ALL inter-component seam edges (shoulders, collar-chest, sleeve-shoulder, side seams)
+    if UV is not None and idx is not None and V is not None and comps is not None:
+        obi_set = set(comps[11]) if len(comps) > 11 else set()
+        by_v = {}
+        for i, vid in enumerate(V):
+            if i not in obi_set:
+                by_v.setdefault(int(vid), []).append(i)
+        seam_vids = {vid for vid, vs in by_v.items() if len(vs) > 1}
+        seam_verts = {v for vid in seam_vids for v in by_v[vid]}
+
+        # Collect UV segments of all triangle edges where both endpoints lie on a component seam
+        mask = np.zeros((h, w), dtype=np.float32)
+        rad = max(6, int(round(w * 0.012)))
+        yy, xx = np.mgrid[-rad:rad + 1, -rad:rad + 1]
+        kernel = np.clip(1.0 - np.hypot(xx, yy) / max(rad, 1), 0.0, 1.0)
+
+        edges = set()
+        for a, b, c in idx:
+            ia, ib, ic = int(a), int(b), int(c)
+            if ia == ib or ib == ic or ia == ic:
+                continue
+            for u1_v, u2_v in ((ia, ib), (ib, ic), (ic, ia)):
+                if u1_v in seam_verts and u2_v in seam_verts:
+                    e_key = (min(u1_v, u2_v), max(u1_v, u2_v))
+                    edges.add(e_key)
+
+        for va, vb in edges:
+            ua, va_uv = float(UV[va, 0]), float(UV[va, 1])
+            ub, vb_uv = float(UV[vb, 0]), float(UV[vb, 1])
+            if math.hypot(ua - ub, va_uv - vb_uv) > 0.25:
+                continue
+            n_steps = max(4, int(math.hypot((ua - ub) * w, (va_uv - vb_uv) * h) / 2.0) + 1)
+            for s in range(n_steps + 1):
+                ts = s / float(n_steps)
+                px = int(round((ua + ts * (ub - ua)) * (w - 1)))
+                py = int(round((va_uv + ts * (vb_uv - va_uv)) * (h - 1)))
+                y0_k, y1_k = max(0, py - rad), min(h, py + rad + 1)
+                x0_k, x1_k = max(0, px - rad), min(w, px + rad + 1)
+                ky0, ky1 = y0_k - (py - rad), y1_k - (py - rad)
+                kx0, kx1 = x0_k - (px - rad), x1_k - (px - rad)
+                mask[y0_k:y1_k, x0_k:x1_k] = np.maximum(mask[y0_k:y1_k, x0_k:x1_k], kernel[ky0:ky1, kx0:kx1])
+
+        m3 = mask[:, :, None]
+        arr = (1.0 - m3) * arr + m3 * neutral
+
+    arr_u8 = np.clip(arr, 0, 255).astype(np.uint8)
     out = io.BytesIO()
-    Image.fromarray(arr).save(out, format='PNG', optimize=True)
+    Image.fromarray(arr_u8).save(out, format='PNG', optimize=True)
     new_bytes = out.getvalue()
     if len(new_bytes) <= bv['byteLength']:
         binb[bv['byteOffset']:bv['byteOffset'] + len(new_bytes)] = new_bytes
         bv['byteLength'] = len(new_bytes)
-        print(f'  Updated normal map in-place ({len(new_bytes)} <= {bv["byteLength"]} bytes)')
     else:
-        # Append to end of buffer
         while len(binb) % 4:
             binb.append(0)
         bv['byteOffset'] = len(binb)
@@ -95,7 +143,6 @@ def flatten_normal_map_seams(gltf, binb):
         while len(binb) % 4:
             binb.append(0)
         gltf['buffers'][0]['byteLength'] = len(binb)
-        print(f'  Appended updated normal map ({len(new_bytes)} bytes)')
 
 
 def fix_one(sex_label, src_path, dst_path):
@@ -113,38 +160,33 @@ def fix_one(sex_label, src_path, dst_path):
     comps = get_components(len(P), idx)
     print(f'  Found {len(comps)} connected components; sizes: {[len(c) for c in comps]}')
 
+    # Map original _VIDX -> list of vertex indices so any seam vertices sharing _VIDX ALWAYS move together
+    by_vid = {}
+    for i, vid in enumerate(V):
+        by_vid.setdefault(int(vid), []).append(i)
+
     # 1. Clean up comp 0 (white inner collar band) lower hidden tail strictly below the obi belt
     c0_set = set(comps[0])
     y_collar_cut = 0.960 if sex_label == 'mpfb_male' else 0.840
-    # Only degenerate comp 0 triangles where ALL 3 vertices lie strictly below y_collar_cut
     bad_c0 = set(v for v in comps[0] if P[v, 1] < y_collar_cut)
     deg_count = 0
-    active_c0 = set()
     for t_i in range(len(idx)):
         a, b, c = int(idx[t_i, 0]), int(idx[t_i, 1]), int(idx[t_i, 2])
-        if a in c0_set or b in c0_set or c in c0_set:
-            if a in bad_c0 and b in bad_c0 and c in bad_c0:
-                idx[t_i] = [a, a, a]
-                deg_count += 1
-            else:
-                active_c0.update((a, b, c))
-    dead_c0 = bad_c0 - active_c0
-    for v in dead_c0:
-        P[v] = [0.0, y_collar_cut + 0.05, 0.08]
-    print(f'  Degenerated {deg_count} hidden lower-collar triangles in comp 0 ({len(dead_c0)} dead verts)')
+        if (a in c0_set or b in c0_set or c in c0_set) and (a in bad_c0 and b in bad_c0 and c in bad_c0):
+            idx[t_i] = [a, a, a]
+            deg_count += 1
+    print(f'  Degenerated {deg_count} hidden lower-collar triangles in comp 0')
 
-    # 2. Weld front midline seam between comp 4 (right front panel) and comp 9 (left front panel) strictly below obi belt
+    # 2. Close front midline seam between comp 4 (right front panel) and comp 9 (left front panel) below obi belt
+    #    WITHOUT overwriting _VIDX (so morph deltas stay 100% consistent with .morph.bin!)
     g4 = get_panel_grid(comps[4], P, UV)
     g9 = get_panel_grid(comps[9], P, UV)
 
-    # Rows 0..23 are strictly below the obi belt (y <= 1.013 on male, y <= 0.885 on female).
-    # Leave rows 24..29 untouched so comp 4 and comp 9 stay 100% welded to comp 0 (the white collar) at and above the obi!
     n_weld_rows = 24
     for r in range(n_weld_rows):
         v4 = int(g4[r, 8])  # midline boundary of comp 4
         v9 = int(g9[r, 0])  # midline boundary of comp 9
 
-        # Desired midline position: x = 0.0 (tapered at row 23 just below obi), y = average, z = outer surface + 2mm
         y_mid = 0.5 * (float(P[v4, 1]) + float(P[v9, 1]))
         z_outer = max(float(P[v4, 2]), float(P[v9, 2])) + 0.002
         x_mid = 0.0 if r < 23 else 0.5 * (float(P[v4, 0]) + float(P[v9, 0]))
@@ -152,22 +194,24 @@ def fix_one(sex_label, src_path, dst_path):
         dz9 = max(0.0, z_outer - float(P[v9, 2]))
         dz4 = max(0.0, z_outer - float(P[v4, 2]))
 
-        # Weld v4 and v9 to identical position and shared _VIDX
         P[v4] = [x_mid, y_mid, z_outer]
         P[v9] = [x_mid, y_mid, z_outer]
-        V[v9] = V[v4]
+        old_vid9 = int(V[v9])
+        new_vid4 = int(V[v4])
+        for v_same in by_vid.get(old_vid9, []):
+            V[v_same] = new_vid4
+            if v_same in bad_c0:
+                P[v_same] = [x_mid, y_mid, z_outer]
+        by_vid.setdefault(new_vid4, []).extend(by_vid.pop(old_vid9, []))
 
-        # Smoothly bring adjacent columns of comp 9 (cols 1..5) forward so there is zero trench/step next to x=0
         for col in range(1, 6):
             vc9 = int(g9[r, col])
             w_col = (0.72 ** col)
             P[vc9, 2] += dz9 * w_col
-            # Ensure x is strictly increasing away from x_mid so no column ever folds across x_mid
             min_x = x_mid + 0.022 * col
             if P[vc9, 0] < min_x:
                 P[vc9, 0] = min_x
 
-        # Smoothly bring adjacent columns of comp 4 (cols 7..5) to match z_outer
         for col_offset, col in enumerate((7, 6, 5), start=1):
             vc4 = int(g4[r, col])
             w_col = (0.65 ** col_offset)
@@ -176,77 +220,105 @@ def fix_one(sex_label, src_path, dst_path):
             if P[vc4, 0] > max_x:
                 P[vc4, 0] = max_x
 
-    print(f'  Welded {n_weld_rows} front-midline rows between comp 4 and comp 9')
-
-    # 2b. Guarantee >= 11mm outward (+Z) chest clearance on front collar & lapels above obi so chest skin never pokes through
+    # 3. Guarantee >= 14mm outward chest clearance on front collar & upper chest panels (grouped by _VIDX so seams never split!)
     _, BP, BT = make_mpfb.body_primitive(f'pieces/{sex_label}/base.glb')
-    front_bp = BP[BP[:, 2] > 0.02]
+    front_bp = BP[BP[:, 2] > 0.01]
     y_ch_lo = 1.00 if sex_label == 'mpfb_male' else 0.88
-    y_ch_hi = 1.46 if sex_label == 'mpfb_male' else 1.28
-    y_ch_mid = 0.5 * (y_ch_lo + y_ch_hi)
-    y_ch_half = 0.5 * (y_ch_hi - y_ch_lo)
-    for v in range(len(P)):
-        if v in dead_c0:
+    y_ch_hi = 1.50 if sex_label == 'mpfb_male' else 1.32
+
+    obi_set = set(comps[11]) if len(comps) > 11 else set()
+    for vid, vs in by_vid.items():
+        if any(v in obi_set for v in vs):
             continue
-        px, py, pz = float(P[v, 0]), float(P[v, 1]), float(P[v, 2])
-        if y_ch_lo < py < y_ch_hi and pz > 0.03 and abs(px) < 0.19:
-            wy = math.sin(math.pi * (py - y_ch_lo) / (y_ch_hi - y_ch_lo)) ** 0.75
-            wx = max(0.0, 1.0 - abs(px) / 0.19)
-            wz = min(1.0, max(0.0, (pz - 0.03) / 0.05))
-            pz_new = pz + 0.011 * wy * wx * wz
-            near_skin = front_bp[(np.abs(front_bp[:, 0] - px) < 0.022) & (np.abs(front_bp[:, 1] - py) < 0.022)]
+        p0 = P[vs[0]]
+        px, py, pz = float(p0[0]), float(p0[1]), float(p0[2])
+        if y_ch_lo < py < y_ch_hi and pz > 0.02 and abs(px) < 0.21:
+            wy = math.sin(math.pi * (py - y_ch_lo) / (y_ch_hi - y_ch_lo)) ** 0.70
+            wx = max(0.0, 1.0 - abs(px) / 0.21)
+            wz = min(1.0, max(0.0, (pz - 0.02) / 0.05))
+            pz_new = pz + 0.013 * wy * wx * wz
+            near_skin = front_bp[(np.abs(front_bp[:, 0] - px) < 0.025) & (np.abs(front_bp[:, 1] - py) < 0.025)]
             if len(near_skin):
                 z_skin_max = float(near_skin[:, 2].max())
-                margin = 0.012 if v in c0_set else 0.009
-                pz_new = max(pz_new, z_skin_max + margin)
-            P[v, 2] = pz_new
+                pz_new = max(pz_new, z_skin_max + 0.014)
+            for v in vs:
+                P[v, 2] = pz_new
 
-    # 3. Weld side seams between comp 4 (col 0) <-> comp 5 (right edge) and comp 9 (col 8) <-> comp 5 (left edge)
-    c5 = np.array(comps[5], dtype=np.int32)
-    side_welds = 0
-    for r in range(26):
-        for v_front in (int(g4[r, 0]), int(g9[r, 8])):
-            dists = np.linalg.norm(P[c5] - P[v_front], axis=1)
-            j_min = int(np.argmin(dists))
-            if dists[j_min] < 0.015:
-                v_back = int(c5[j_min])
-                p_avg = 0.5 * (P[v_front] + P[v_back])
-                P[v_front] = p_avg
-                P[v_back] = p_avg
-                V[v_back] = V[v_front]
-                side_welds += 1
-    print(f'  Welded {side_welds} side-seam vertex pairs between comp 4/9 and comp 5')
+        # Guarantee all vertices sharing _VIDX have identical 3D position so zero seam gaps exist anywhere
+        if len(vs) > 1:
+            p_mean = P[vs].mean(axis=0)
+            for v in vs:
+                P[v] = p_mean
 
-    # 4. Smooth back midline ridge on comp 5 (|x| < 0.05) and recompute smooth normals across comp 0, 4, 5, 9
-    target_verts = [v for v in comps[0] if v not in dead_c0] + comps[4] + comps[5] + comps[9]
-    recompute_smooth_normals(P, N, idx, V, target_verts)
+    # 4. Recompute smooth normals across ALL cloth components (comps 0..10, excluding obi comp 11)
+    cloth_verts = []
+    for ci, comp in enumerate(comps):
+        if ci == 11:
+            continue
+        cloth_verts.extend(comp)
+    recompute_smooth_normals(P, N, idx, V, cloth_verts)
 
-    # Write modified P, N, V, idx back into binb
+    # Also average normals across midline welded rows (v4, v9) so front seam has zero normal crease
+    for r in range(n_weld_rows):
+        v4 = int(g4[r, 8])
+        v9 = int(g9[r, 0])
+        nm = N[v4] + N[v9]
+        n_len = np.linalg.norm(nm)
+        if n_len > 1e-8:
+            nm = (nm / n_len).astype(np.float32)
+            N[v4] = nm
+            N[v9] = nm
+
     def write_acc(ai, arr):
         acc = gltf['accessors'][ai]
         bv = gltf['bufferViews'][acc['bufferView']]
+        dt = glbio.CT[acc['componentType']]
         off = bv.get('byteOffset', 0) + acc.get('byteOffset', 0)
-        raw = arr.tobytes()
+        raw = arr.astype(dt).tobytes()
         binb[off:off + len(raw)] = raw
 
-    write_acc(pr['attributes']['POSITION'], P.astype(np.float32))
-    write_acc(pr['attributes']['NORMAL'], N.astype(np.float32))
-    write_acc(pr['attributes']['_VIDX'], V.astype(np.uint16))
-    write_acc(pr['indices'], idx.astype(np.uint16))
+    write_acc(pr['attributes']['POSITION'], P)
+    write_acc(pr['attributes']['NORMAL'], N)
+    write_acc(pr['attributes']['_VIDX'], V)
+    write_acc(pr['indices'], idx)
 
-    # Update POSITION min/max in accessor
     p_acc = gltf['accessors'][pr['attributes']['POSITION']]
     p_acc['min'] = [float(x) for x in P.min(axis=0)]
     p_acc['max'] = [float(x) for x in P.max(axis=0)]
 
-    # 5. Flatten normal map bevels along the front & back seam UVs
-    flatten_normal_map_seams(gltf, binb)
+    # 5. Flatten normal map bevels along all component seam UVs (shoulders, chest, collar, sleeves, front/back)
+    flatten_normal_map_seams(gltf, binb, UV=UV, idx=idx, V=V, comps=comps)
 
-    # 6. Recompute smooth rigid skirt weights so welded midline vertices move identically
+    # 6. Recompute smooth rigid skirt weights, synchronize chest/collar skin weights with the underlying body mesh BP
+    #    (so neck/shoulder rotation in animations never pulls the collar band behind the Spine2-weighted chest skin!),
+    #    and synchronize welded midline rows.
     y_skirt_top = 1.035 if sex_label == 'mpfb_male' else 0.905
     make_mpfb.skirt_weights(gltf, binb, y_skirt_top, rigid=True)
 
-    # Ensure midline JOINTS_0 and WEIGHTS_0 are byte-for-byte identical across all welded rows
+    b_gltf, b_bin = glbio.read_glb(open(f'pieces/{sex_label}/base.glb', 'rb').read())
+    b_prim = next(p for m in b_gltf['meshes'] for p in m['primitives']
+                  if 'material' in p and b_gltf['materials'][p['material']]['name'].endswith('.body'))
+    b_P = glbio.accessor(b_gltf, b_bin, b_prim['attributes']['POSITION']).astype(np.float64)
+    b_J = glbio.accessor(b_gltf, b_bin, b_prim['attributes']['JOINTS_0']).copy()
+    b_W = glbio.accessor(b_gltf, b_bin, b_prim['attributes']['WEIGHTS_0']).astype(np.float64)
+    b_W /= np.maximum(b_W.sum(axis=1, keepdims=True), 1e-9)
+    from scipy.spatial import cKDTree
+    b_tree = cKDTree(b_P)
+    y_vneck_bot = 1.085 if sex_label == 'mpfb_male' else 0.955
+    y_neck_top = 1.485 if sex_label == 'mpfb_male' else 1.310
+
+    chest_sync_v = {}
+    for vid, vs in by_vid.items():
+        if any(v in obi_set for v in vs):
+            continue
+        p0 = P[vs[0]]
+        px, py, pz = float(p0[0]), float(p0[1]), float(p0[2])
+        if (y_vneck_bot - 0.04) < py < (y_neck_top + 0.02) and pz > 0.02 and abs(px) < 0.145:
+            # Query the body vertex directly behind (px, py, pz - 0.018) so collar & chest move 100% in lockstep with chest skin
+            _, b_idx = b_tree.query([px, py, pz - 0.018])
+            for v in vs:
+                chest_sync_v[v] = int(b_idx)
+
     for attr_name in ('JOINTS_0', 'WEIGHTS_0'):
         acc = gltf['accessors'][pr['attributes'][attr_name]]
         bv = gltf['bufferViews'][acc['bufferView']]
@@ -254,13 +326,21 @@ def fix_one(sex_label, src_path, dst_path):
         n = glbio.NC[acc['type']]
         off = bv.get('byteOffset', 0) + acc.get('byteOffset', 0)
         arr = np.frombuffer(binb, dt, acc['count'] * n, off).reshape(acc['count'], n).copy()
+        for v_k, b_idx in chest_sync_v.items():
+            if attr_name == 'JOINTS_0':
+                arr[v_k] = b_J[b_idx].astype(dt)
+            else:
+                w_val = b_W[b_idx]
+                if acc.get('normalized') and np.issubdtype(dt, np.integer):
+                    arr[v_k] = np.round(w_val * np.iinfo(dt).max).astype(dt)
+                else:
+                    arr[v_k] = w_val.astype(dt)
         for r in range(n_weld_rows):
             v4 = int(g4[r, 8])
             v9 = int(g9[r, 0])
             arr[v9] = arr[v4]
         raw = arr.tobytes()
         binb[off:off + len(raw)] = raw
-    print('  Verified midline joint/weight exact match across all welded rows')
 
     while len(binb) % 4:
         binb.append(0)
@@ -272,29 +352,33 @@ def fix_one(sex_label, src_path, dst_path):
         f.write(struct.pack('<II', len(js), 0x4E4F534A) + js + struct.pack('<II', len(binb), 0x004E4942) + bytes(binb))
     print(f'  Wrote {dst_path} ({28 + len(js) + len(binb)} bytes)')
 
-    # 7. Update mindfront_kimono's hide mask in data/{sex_label}/kit.json so the open V-neck chest and neck/shoulders are never hidden
+    # 7. Update mindfront_kimono's hide mask in data/{sex_label}/kit.json:
+    #    Keep the entire V-neck chest skin (down to y_vneck_bot above the obi and extending under the standing collar band
+    #    comp 0) UNHIDDEN so no deleted-triangle staircase edge is ever visible inside or under the standing collar!
     kit_path = f'data/{sex_label}/kit.json'
     kit = json.load(open(kit_path, encoding='utf-8'))
-    _, BP, BT = make_mpfb.body_primitive(f'pieces/{sex_label}/base.glb')
-    # the V-neck's lapels stand off the skin: the chest within 2.2 cm of the open edge stays drawn (opt-in, make_mpfb.covered)
-    tris = make_mpfb.covered(BP, BT, dst_path, out=0.035, inward=0.020, boundary_margin=0.022)
+    base_glb = f'pieces/{sex_label}/base.glb'
+    _, BP, BT = make_mpfb.body_primitive(base_glb)
+    under = make_mpfb.parts_under(base_glb, BP, BT)
+    tris = make_mpfb.covered(BP, BT, dst_path, out=0.075, inward=0.030, enclose=0.45, boundary_margin=0.0)
     tc = BP[BT[tris]].mean(axis=1)
     y_min_body = float(BP[:, 1].min())
     y_span = float(BP[:, 1].max() - y_min_body)
-    y_max_sh = 1.445 if sex_label == 'mpfb_male' else 1.275
-    y_vneck_bot = 1.240 if sex_label == 'mpfb_male' else 1.090
-    # Exclude open V-neck front chest/clavicle between the collar bands and neck/upper trapezius from being hidden
-    in_vneck = (tc[:, 2] > 0.05) & (tc[:, 1] > y_vneck_bot) & (np.abs(tc[:, 0]) < 0.005 + 0.11 * np.maximum(0.0, tc[:, 1] - y_vneck_bot))
-    keep_tri = (tc[:, 1] > y_min_body + 0.36 * y_span) & (tc[:, 1] < y_max_sh) & (~in_vneck)
+    # Un-hide the full V-neck skin zone strictly inside the collar bands (from y_vneck_bot up to the neck)
+    in_vneck = (tc[:, 2] > 0.04) & (tc[:, 1] > y_vneck_bot) & (np.abs(tc[:, 0]) < 0.018 + 0.24 * np.maximum(0.0, tc[:, 1] - y_vneck_bot))
+    in_neck_cyl = (tc[:, 1] > y_neck_top) & (np.abs(tc[:, 0]) < 0.085)
+    keep_tri = (tc[:, 1] > y_min_body + 0.36 * y_span) & (~in_vneck) & (~in_neck_cyl)
     tris = tris[keep_tri]
     for it in kit['items']:
         if it.get('id') == 'mindfront_kimono':
             it['hide'] = make_mpfb.bits(len(BT), tris)
             it['hides'] = int(len(tris))
             it['hide_by'] = 'rays'
+            hp = make_mpfb.hide_parts(it, under, len(BT))
+            if hp:
+                it['hide_parts'] = hp
             break
-    with open(kit_path, 'w', encoding='utf-8', newline='\n') as f:
-        json.dump(kit, f, indent=2)
+    make_mpfb.write_kit(kit_path, kit)
     print(f'  Updated mindfront_kimono hide mask in {kit_path} ({len(tris)} hidden tris)')
 
 

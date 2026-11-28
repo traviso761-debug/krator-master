@@ -13,7 +13,7 @@ const ENV=BIO.env({ground:terrainH,water:WATER_FN,wet:(x,z)=>FIELD.wet(x,z),rock
 if(new URLSearchParams(location.search).get('fields')!=='0'){const W0=FIELD.wet,F0=FIELD.flow;
  FIELD.wet=(x,z)=>{const s=WATER_FN.shore(x,z);if(s!==s)return W0(x,z);return clamp(Math.max(W0(x,z)*smooth(-1,3,s)+(1-smooth(-1,3,s)),.95*smooth(50,5,s)),0,1);};
  FIELD.flow=(x,z)=>{const d=WATER_FN.flow(x,z);return d==null||d!==d?F0(x,z):clamp(Math.max(F0(x,z)*smooth(-1,3,WATER_FN.shore(x,z)),smooth(26,4,d)),0,1);};}
-{const a=GROUND.geometry.attributes.aWet,p=GROUND.geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),w=waterH(x,z);a.setX(i,WET_SHORE(x,z)*(w>-1e8?smooth(2.5,.2,p.getY(i)-w):1));}a.needsUpdate=true;}
+{const a=GROUND.geometry.attributes.aWet,p=GROUND.geometry.attributes.position,wetTop=SKEY==='cove'?7.4:2.5;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),w=waterH(x,z);a.setX(i,WET_SHORE(x,z)*(w>-1e8?smooth(wetTop,.2,p.getY(i)-w):SKEY==='cove'&&L.INTERTIDAL(x,z)?smooth(7.4,1.0,p.getY(i)):1));}a.needsUpdate=true;}
 window._biome=null;
 const IMP_GAIN=2.6;   /* the impostors' gain (eastabyss 3.6, nwlowlands 3.6, swlowlands 2.4, ebadlands 2.4): the bake is ~4x dark; set against the near crowns on 'From afar' */
 const SHADOW_ON=new URLSearchParams(location.search).get('shadow')==='1'&&typeof KSHADOW!=='undefined'&&!!KSHADOW.attach;   /* attached but OFF at load (the owner, 2026-11-03): ?shadow=1 */

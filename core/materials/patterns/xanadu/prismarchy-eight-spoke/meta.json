@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    1722
+   ],
+   "seam_after": [
+    0.598,
+    0.533
+   ],
+   "seam_before": [
+    1.356,
+    0.808
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.68,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "xanadu/prismarchy-eight-spoke",
+  "metal": 0.1,
+  "pattern": true,
+  "roughness": 0.68,
+  "scale": [
+   0.3,
+   0.3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "qiblai_monastery_vestment_frieze_2048.png",
+  "generator": "Codex image generation, Nov 2026 (qiblai_monastery_vestment_frieze_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Qiblai monastery vestment frieze on deep maroon wool (#5a181c), featuring two horizontal registers of four eight-spoked golden wheels (#d8b038) whose eight sectors are embroidered in silk thread in the eight Prismarchy colours\u2014crimson (#a8302a), saffron (#d89020), gold (#d4b040), viridian (#3f7a44), turquoise (#2a8888), azure (#2a4a9a), violet (#5b2e7a), and lily white (#ece8dc)\u2014bordered above and below by square geometric Tocharian sound-grid syllabary cells in gold thread, no wheel touching a seam. Full colour.",
+  "sha1": "71061062c19465e77da76bc71e10379eef9e07cc"
+ }
+}

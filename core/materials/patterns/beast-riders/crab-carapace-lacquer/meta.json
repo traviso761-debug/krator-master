@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1098,
+    1008
+   ],
+   "seam_after": [
+    0.589,
+    0.396
+   ],
+   "seam_before": [
+    2.017,
+    3.908
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.26,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "beast-riders/crab-carapace-lacquer",
+  "metal": 0.05,
+  "pattern": true,
+  "roughness": 0.26,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__beast-riders__crab-carapace-lacquer.png",
+  "generator": "Codex image generation, Nov 2026 (exec-dfb0c3dc-29c0-44f8-9b3a-bbfa4e5ea0bb.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of 13th-Tribe Littoral Land-Crab deel-lorica lamellar armour: five overlapping horizontal courses of thick calcified crustacean carapace plates (ten plates across) alternating natural shell-vermilion (#b82820) and lacquered Imperial Iziz Sun-Orange (#e07a2a) with pale calcified ivory (#e6dcc2) bevelled edges, laced with tarred black mangrove cord (#1e1c1a) and studded every fourth plate with sea-verdigris Imperial brass Sun-Orb bosses (#c89b3c, #2f8f8a). Full colour.",
+  "sha1": "f285e3ab7b7035de7c23266cd707178cb81b2481"
+ }
+}

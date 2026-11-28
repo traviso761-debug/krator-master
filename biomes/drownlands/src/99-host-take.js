@@ -110,10 +110,10 @@ const BUDGET={
 };
 
 const NEED={
- shoal:['verdigrismangrove','tealcoppice','brucitestack','limeshelf','seepcomb','spongecoral','tidefan','shoalkelp','ribbonseagrass'],
- bar:['verdigrismangrove','tealcoppice','spongecoral','tidefan','shoalkelp','ribbonseagrass','stormwrack'],
- drowned:['snaggrove','spongecoral','shoalkelp','ribbonseagrass','stormwrack'],
- skerry:['araucaria','pycnandra','gymnostoma','verdigris','verdigrismangrove','tealcoppice','spongecoral','shoalkelp','ribbonseagrass']
+ shoal:['verdigrismangrove','tealcoppice','brucitestack','limeshelf','seepcomb','spongecoral','tidefan','shoalkelp','ribbonseagrass','coconut','skerrycasuarina','skerrypandan','skerryhibiscus','skerrynaupaka','skerryphyllanthus','greymangrove','byssusmussel','skerryoyster','halimedaturf'],
+ bar:['verdigrismangrove','tealcoppice','spongecoral','tidefan','shoalkelp','ribbonseagrass','stormwrack','coconut','skerrycasuarina','skerrypandan','skerrynaupaka','skerryphyllanthus','skerryoyster','halimedaturf'],
+ drowned:['snaggrove','spongecoral','shoalkelp','ribbonseagrass','stormwrack','coconut','greymangrove','skerrypaperbark','skerryhibiscus','skerrypandan','byssusmussel','halimedaturf'],
+ skerry:['araucaria','refugekauri','pycnandra','gymnostoma','verdigris','skerrysedge','skerrypitcher','verdigrismangrove','tealcoppice','skerryphyllanthus','skerrypaperbark','skerrycasuarina','skerrypandan','spongecoral','shoalkelp','ribbonseagrass','coconut','halimedaturf']
 }[SKEY];
 
 function collectNonShaderMeshes(){
@@ -185,6 +185,14 @@ const HCHK={
    detail:bad.length?bad.length+' shoalkelp placed above -0.5 m or below -28.5 m':kp.length+' submarine shoalkelp fronds all at bedElevM <= -0.5 m'
   };
  },
+ coconutStrand(log){
+  const co=log.filter(e=>e.species==='coconut');
+  const bad=co.filter(e=>!(e.y>=2.2&&e.pH>=5.0&&e.pH<=8.8&&e.clearHighM>=1.4));
+  return{
+   ok:co.length>0&&!bad.length,
+   detail:bad.length?bad.length+' coconut(s) in caustic brucite pool or tidal wash':co.length+' drift-sown coconuts on dry pH 5.0-8.8 leeward strand benches'
+  };
+ },
  noBuildingsAndEscape(recs,site){
   const blds=recs.filter(r=>r&&!r.removed&&r['class']==='building');
   const tsuShoal=DROWN_PHYS.tsunamiAt({px:145,py:520,elevM:6.1,depthM:84,trenchDistM:380,tier:3});
@@ -231,6 +239,7 @@ function hostChecks(){
  if(SKEY==='shoal')add('brucite-pool-z-separation',HCHK.brucitePoolSeparation(BRUCITE_POOL_RECS,0.0));
  if(SKEY==='drowned')add('snag-oyster-collar-ceiling',HCHK.snagCollarCeiling(DROWN.LOG));
  add('submarine-kelp-bathymetry',HCHK.submarineKelp(DROWN.LOG));
+ add('coconut-strand-and-ph-fidelity',HCHK.coconutStrand(DROWN.LOG));
  add('tsunami-escape-and-zero-buildings',HCHK.noBuildingsAndEscape(tagRecs,SITE));
  add('zero-untextured-meshes',HCHK.textured(collectNonShaderMeshes()));
  add('hamlet-gather-contract-valid',HCHK.gatherValid([DROWN.gather(0,0),DROWN.gather(-140,25),DROWN.gather(120,-80)]));
@@ -248,6 +257,7 @@ function hostNegatives(){
  if(SKEY==='shoal')add('coplanar-brucite-pool',HCHK.brucitePoolSeparation([{key:'bad',level:0.02,rimH:0.4}],0.0));
  if(SKEY==='drowned')add('floating-snag-oyster-collar',HCHK.snagCollarCeiling([{species:'snaggrove',collarTopM:3.4}]));
  add('terrestrial-kelp-above-tide',HCHK.submarineKelp([{species:'shoalkelp',bedElevM:2.5}]));
+ add('coconut-in-caustic-brucite-pool',HCHK.coconutStrand([{species:'coconut',y:0.4,pH:11.4,clearHighM:-0.3}]));
  add('permanent-building-in-drownlands',HCHK.noBuildingsAndEscape([{'class':'building',at:[0,5,0]}],SITE));
  add('untextured-mesh-detected',HCHK.textured([{name:'bare-mesh',mat:{map:null}}]));
  add('invalid-gather-key-detected',HCHK.gatherValid([{pasture:0.1,fish:0.8,salt:true,extra:1}]));

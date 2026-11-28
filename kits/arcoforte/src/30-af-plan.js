@@ -61,7 +61,199 @@ const ARCOFORTE = (function () {
     LIN_Y1: 112          /* main roof of Linear City bars (penthouses to 120 m) */
   };
 
-  const STATES = ['refurbished', 'intact', 'ruined'];
+  const ZONES = ['harbour', 'bastions', 'ring', 'towers_upper', 'vaults', 'crown'];
+  const ZONE_STATES = ['intact', 'refurbished', 'ruined'];
+  const STATES = ['refurbished', 'intact', 'ruined', 'marginal'];
+  const SOCKET_CULTURES = ['refurbished', 'ancient', 'scrap', 'iziz', 'xanadu', 'republican', 'fleetborn', 'shorekin'];
+  const SOCKET_ZONES = {
+    fleetborn: ['bastions', 'ring'],
+    shorekin: ['harbour']
+  };
+  const MARGINAL_ZONES = {
+    harbour: 'refurbished',
+    bastions: 'refurbished',
+    ring: 'refurbished',
+    towers_upper: 'ruined',
+    vaults: 'ruined',
+    crown: 'ruined'
+  };
+
+  function uniformZones(st) {
+    const out = {};
+    for (let i = 0; i < ZONES.length; i++) out[ZONES[i]] = st;
+    return out;
+  }
+
+  function isZoneHabitable(zone, zonesMap) {
+    if (ZONES.indexOf(zone) < 0) throw new Error('ARCOFORTE: unknown zone ' + zone);
+    const zm = zonesMap || _zoneStates;
+    const st = zm[zone];
+    return zone === 'vaults' ? st === 'intact' : st !== 'ruined';
+  }
+
+  function parseStateSpec(spec) {
+    if (typeof spec === 'string') {
+      if (ZONE_STATES.indexOf(spec) >= 0) {
+        return { mode: spec, zones: uniformZones(spec) };
+      }
+      if (spec === 'marginal') {
+        return { mode: 'marginal', zones: Object.assign({}, MARGINAL_ZONES) };
+      }
+      throw new Error('ARCOFORTE.state: unknown state ' + spec);
+    }
+    if (spec && typeof spec === 'object' && !Array.isArray(spec)) {
+      const keys = Object.keys(spec);
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (k !== 'default' && ZONES.indexOf(k) < 0) {
+          throw new Error('ARCOFORTE.state: unknown zone ' + k);
+        }
+      }
+      const def = spec.default == null ? 'ruined' : spec.default;
+      if (ZONE_STATES.indexOf(def) < 0) {
+        throw new Error('ARCOFORTE.state: unknown default state ' + def);
+      }
+      const zones = {};
+      for (let i = 0; i < ZONES.length; i++) {
+        const z = ZONES[i];
+        const v = spec[z] == null ? def : spec[z];
+        if (ZONE_STATES.indexOf(v) < 0) {
+          throw new Error('ARCOFORTE.state: unknown state ' + v + ' for zone ' + z);
+        }
+        zones[z] = v;
+      }
+      const first = zones[ZONES[0]];
+      const allSame = ZONES.every(z => zones[z] === first);
+      const isMarg = ZONES.every(z => zones[z] === MARGINAL_ZONES[z]);
+      const mode = allSame ? first : (isMarg ? 'marginal' : 'custom');
+      return { mode: mode, zones: zones };
+    }
+    throw new Error('ARCOFORTE.state: invalid state spec');
+  }
+
+  function resolveSocketZones(spec, zonesMap) {
+    const zm = zonesMap || _zoneStates;
+    if (typeof spec === 'string') {
+      if (SOCKET_CULTURES.indexOf(spec) < 0) {
+        throw new Error('ARCOFORTE.socket: unknown culture ' + spec);
+      }
+      const allowed = SOCKET_ZONES[spec] || null;
+      const out = {};
+      for (let i = 0; i < ZONES.length; i++) {
+        const z = ZONES[i];
+        const okZone = !allowed || allowed.indexOf(z) >= 0;
+        out[z] = (okZone && isZoneHabitable(z, zm)) ? spec : null;
+      }
+      return out;
+    }
+    if (spec && typeof spec === 'object' && !Array.isArray(spec)) {
+      const keys = Object.keys(spec);
+      for (let i = 0; i < keys.length; i++) {
+        const k = keys[i];
+        if (k !== 'default' && ZONES.indexOf(k) < 0) {
+          throw new Error('ARCOFORTE.socket: unknown zone ' + k);
+        }
+      }
+      const def = spec.default == null ? null : spec.default;
+      if (def !== null && SOCKET_CULTURES.indexOf(def) < 0) {
+        throw new Error('ARCOFORTE.socket: unknown default culture ' + def);
+      }
+      const out = {};
+      for (let i = 0; i < ZONES.length; i++) {
+        const z = ZONES[i];
+        const explicit = Object.prototype.hasOwnProperty.call(spec, z) && spec[z] != null;
+        const c = explicit ? spec[z] : (spec[z] === null ? null : def);
+        if (c !== null && SOCKET_CULTURES.indexOf(c) < 0) {
+          throw new Error('ARCOFORTE.socket: unknown culture ' + c + ' for zone ' + z);
+        }
+        if (explicit) {
+          if (!isZoneHabitable(z, zm)) {
+            throw new Error('ARCOFORTE.socket: ruined or sealed zone ' + z + ' rejects socket furnishings (' + c + ')');
+          }
+          const allowed = SOCKET_ZONES[c] || null;
+          if (allowed && allowed.indexOf(z) < 0) {
+            throw new Error('ARCOFORTE.socket: culture ' + c + ' is restricted to ' + allowed.join('/') + ', not ' + z);
+          }
+          out[z] = c;
+        } else if (c !== null) {
+          const allowed = SOCKET_ZONES[c] || null;
+          out[z] = ((!allowed || allowed.indexOf(z) >= 0) && isZoneHabitable(z, zm)) ? c : null;
+        } else {
+          out[z] = null;
+        }
+      }
+      return out;
+    }
+    throw new Error('ARCOFORTE.socket: invalid socket spec');
+  }
+
+  let _stateMode = 'refurbished';
+  let _zoneStates = uniformZones('refurbished');
+  let _socketSpec = 'refurbished';
+  let _hostSocketHook = null;
+
+  function setState(spec) {
+    if (arguments.length === 0) {
+      return { mode: _stateMode, zones: Object.assign({}, _zoneStates) };
+    }
+    const parsed = parseStateSpec(spec);
+    _stateMode = parsed.mode;
+    _zoneStates = parsed.zones;
+    return Object.assign({}, _zoneStates);
+  }
+
+  function zoneState(zone, P) {
+    if (ZONES.indexOf(zone) < 0) {
+      throw new Error('ARCOFORTE.zoneState: unknown zone ' + zone);
+    }
+    if (P && P.zones && P.zones[zone]) return P.zones[zone];
+    return _zoneStates[zone];
+  }
+
+  function setSocket(spec) {
+    if (arguments.length === 0) {
+      return _socketSpec && typeof _socketSpec === 'object' ? Object.assign({}, _socketSpec) : _socketSpec;
+    }
+    const resolved = resolveSocketZones(spec, _zoneStates);
+    _socketSpec = (spec && typeof spec === 'object') ? Object.assign({}, spec) : spec;
+    if (_hostSocketHook) {
+      const hr = _hostSocketHook(_socketSpec, resolved);
+      if (hr) return hr;
+    }
+    return {
+      socket: _socketSpec,
+      zones: resolved
+    };
+  }
+
+  function zoneSocket(zone, zonesMap) {
+    if (ZONES.indexOf(zone) < 0) {
+      throw new Error('ARCOFORTE.zoneSocket: unknown zone ' + zone);
+    }
+    const zm = zonesMap || _zoneStates;
+    const map = resolveSocketZonesForRead(_socketSpec, zm);
+    return map[zone];
+  }
+
+  function resolveSocketZonesForRead(spec, zm) {
+    if (typeof spec === 'string') return resolveSocketZones(spec, zm);
+    const out = {};
+    const def = (spec && spec.default) ? spec.default : null;
+    for (let i = 0; i < ZONES.length; i++) {
+      const z = ZONES[i];
+      const c = (spec && spec[z] != null) ? spec[z] : def;
+      if (!c || !isZoneHabitable(z, zm)) { out[z] = null; continue; }
+      const allowed = SOCKET_ZONES[c] || null;
+      out[z] = (!allowed || allowed.indexOf(z) >= 0) ? c : null;
+    }
+    return out;
+  }
+
+  {
+    const bootOpts = (typeof globalThis !== 'undefined' && globalThis.ARCOFORTE_OPTS) ? globalThis.ARCOFORTE_OPTS : null;
+    if (bootOpts && bootOpts.state != null) setState(bootOpts.state);
+    if (bootOpts && bootOpts.socket != null) setSocket(bootOpts.socket);
+  }
 
   function u01(seed, salt, a, b) {
     return KRAND.unit(KRAND.hash(seed, salt | 0, a == null ? 0 : a | 0, b == null ? 0 : b | 0));
@@ -164,13 +356,18 @@ const ARCOFORTE = (function () {
   function plan(o) {
     o = o || {};
     const seed = o.seed == null ? 14800 : o.seed;
-    const state = STATES.indexOf(o.state) >= 0 ? o.state : 'refurbished';
+    const zInfo = o.state != null ? parseStateSpec(o.state) : { mode: _stateMode, zones: Object.assign({}, _zoneStates) };
+    const state = zInfo.mode;
+    const Z = zInfo.zones;
+    const zHarbour = Z.harbour, zBastions = Z.bastions, zRing = Z.ring;
+    const zTowersUpper = Z.towers_upper, zVaults = Z.vaults, zCrown = Z.crown;
     const D = DIM;
 
     const P = {
       id: 'arcoforte',
       seed: seed,
       state: state,
+      zones: Z,
       dim: D,
       parts: [],
       ways: [],
@@ -185,9 +382,10 @@ const ARCOFORTE = (function () {
       id: 'af.harbour.platform',
       name: 'Multilevel Fishing & Fleet Lift Platform',
       kind: 'harbour',
+      zone: 'harbour',
       sector: 'work',
-      state: state === 'ruined' ? 'ruined' : state,
-      kept: state !== 'ruined',
+      state: zHarbour,
+      kept: zHarbour !== 'ruined',
       box: [-76, 76, -334, -246],
       y0: 0,
       y1: 28,
@@ -197,11 +395,11 @@ const ARCOFORTE = (function () {
         { id: 'af.harbour.deck.2', y: 22.5, h: 5.5, x0: -58, x1: 58, z0: -304, z1: -246, name: 'Gantry & Harbour Control Deck' }
       ],
       lifts: [
-        { id: 'af.harbour.lift.w', x: -34, z0: -332, z1: -286, w: 22, cradleY: state === 'ruined' ? 1.2 : 9.5 },
+        { id: 'af.harbour.lift.w', x: -34, z0: -332, z1: -286, w: 22, cradleY: zHarbour === 'ruined' ? 1.2 : 9.5 },
         { id: 'af.harbour.lift.e', x: 34, z0: -332, z1: -286, w: 22, cradleY: 4.8 }
       ],
       vessels: [
-        { id: 'af.vessel.0', x: -34, z: -308, y: state === 'ruined' ? 0.2 : 9.8, ry: 0, L: 26, B: 6.8, lifted: state !== 'ruined' },
+        { id: 'af.vessel.0', x: -34, z: -308, y: zHarbour === 'ruined' ? 0.2 : 9.8, ry: 0, L: 26, B: 6.8, lifted: zHarbour !== 'ruined' },
         { id: 'af.vessel.1', x: 34, z: -310, y: 0.3, ry: 0.04, L: 24, B: 6.4, lifted: false },
         { id: 'af.vessel.2', x: -96, z: -292, y: 0.2, ry: 0.42, L: 20, B: 5.4, lifted: false },
         { id: 'af.vessel.3', x: -272, z: -206, y: 0.2, ry: PI / 2, L: 15, B: 4.2, lifted: false },
@@ -218,9 +416,9 @@ const ARCOFORTE = (function () {
       }
     };
     P.harbour = harbour;
-    addPart({ id: harbour.id, name: harbour.name, kind: 'harbour', sector: 'work', state: harbour.state, kept: harbour.kept,
+    addPart({ id: harbour.id, name: harbour.name, kind: 'harbour', zone: 'harbour', sector: 'work', state: harbour.state, kept: harbour.kept,
       shape: ['box', -76, 76, -334, -246], y: 4.5, h: 24, st: 3, sheets: ['A0', 'A1'] });
-    addPart({ id: harbour.marina.id, name: harbour.marina.name, kind: 'marina', sector: 'rec', state: harbour.state, kept: harbour.kept,
+    addPart({ id: harbour.marina.id, name: harbour.marina.name, kind: 'marina', zone: 'harbour', sector: 'rec', state: harbour.state, kept: harbour.kept,
       shape: ['box', -328, -212, -248, -156], y: 3.5, h: 4, st: 1, sheets: ['A0', 'A1'] });
 
     const subcliff = {
@@ -228,9 +426,10 @@ const ARCOFORTE = (function () {
         id: 'af.subcliff.works',
         name: 'Fishing Industry, Cold Storage & Boatyard Hall',
         kind: 'works',
+        zone: 'harbour',
         sector: 'work',
-        state: state === 'ruined' ? 'ruined' : state,
-        kept: state !== 'ruined',
+        state: zHarbour,
+        kept: zHarbour !== 'ruined',
         box: [-86, 86, -242, -218],
         y0: D.BENCH,
         y1: D.BENCH + 18,
@@ -240,15 +439,16 @@ const ARCOFORTE = (function () {
         id: 'af.subcliff.auto',
         name: 'Sub-Cliff Automated Industry Vaults & Transit Bore',
         kind: 'vault',
+        zone: 'vaults',
         sector: 'infra',
-        /* Sealed and ruined in refurbished state — preserved as an exploration/salvage delve */
-        state: state === 'intact' ? 'intact' : 'ruined',
-        kept: state === 'intact',
+        /* Sealed and ruined unless vaults are explicitly intact — preserved as an exploration/salvage delve */
+        state: zVaults === 'intact' ? 'intact' : 'ruined',
+        kept: zVaults === 'intact',
         box: [-84, 84, -206, -176],
         y0: D.BENCH,
         y1: D.BENCH + 12,
         st: 2,
-        rubble: state === 'intact' ? [] : [
+        rubble: zVaults === 'intact' ? [] : [
           { id: 'af.auto.rubble.0', x: -34, z: -210, y: D.BENCH, r: 5.2, h: 2.6 },
           { id: 'af.auto.rubble.1', x: 32, z: -211, y: D.BENCH, r: 5.6, h: 2.8 }
         ]
@@ -259,11 +459,11 @@ const ARCOFORTE = (function () {
       ]
     };
     P.subcliff = subcliff;
-    addPart({ id: subcliff.works.id, name: subcliff.works.name, kind: 'industry', sector: 'work', state: subcliff.works.state,
+    addPart({ id: subcliff.works.id, name: subcliff.works.name, kind: 'industry', zone: 'harbour', sector: 'work', state: subcliff.works.state,
       kept: subcliff.works.kept, shape: ['box', -86, 86, -242, -218], y: D.BENCH, h: 18, st: 3, sheets: ['A1'] });
-    addPart({ id: subcliff.autoVaults.id, name: subcliff.autoVaults.name, kind: 'vault', sector: 'infra', state: subcliff.autoVaults.state,
+    addPart({ id: subcliff.autoVaults.id, name: subcliff.autoVaults.name, kind: 'vault', zone: 'vaults', sector: 'infra', state: subcliff.autoVaults.state,
       kept: subcliff.autoVaults.kept, shape: ['box', -84, 84, -206, -176], y: D.BENCH, h: 12, st: 2, sheets: ['A1'],
-      note: state === 'refurbished' ? 'sealed behind gated bulkheads; salvage & delve zone' : '' });
+      note: zVaults !== 'intact' ? 'sealed behind gated bulkheads; salvage & delve zone' : '' });
 
     /* ---------------- 2. HORSESHOE NEOCLIFF RING: 9 BATTERED BASTIONS, CITY CENTER, 13 SKYLIGHTS, 6 BELVEDERES ---------------- */
     /* East wing: -30 deg .. +68 deg (5 bastions, 7 skylights, 3 mushroom-pier belvederes)
@@ -281,6 +481,7 @@ const ARCOFORTE = (function () {
       const arcRec = {
         id: 'af.city.' + W.side,
         name: W.name + ' City Center Vaulted Arcade',
+        zone: 'ring',
         side: W.side,
         a0: W.a0,
         a1: W.a1,
@@ -289,11 +490,11 @@ const ARCOFORTE = (function () {
         y0: D.PLATEAU,
         y1: D.Y_RING_TOP,
         st: 10,
-        state: state === 'ruined' ? 'ruined' : state,
-        kept: state !== 'ruined'
+        state: zRing,
+        kept: zRing !== 'ruined'
       };
       arcades.push(arcRec);
-      addPart({ id: arcRec.id, name: arcRec.name, kind: 'civic', sector: 'work', state: arcRec.state, kept: arcRec.kept,
+      addPart({ id: arcRec.id, name: arcRec.name, kind: 'civic', zone: 'ring', sector: 'work', state: arcRec.state, kept: arcRec.kept,
         shape: ['circ', r2(acx), r2(acz), 54], poly: sectorPoly(D.RING_CX, D.RING_CZ, D.R_IN, D.R_MID, W.a0, W.a1, 18),
         y: D.PLATEAU, h: D.Y_RING_TOP - D.PLATEAU, st: 10, sheets: ['A0', 'A2'] });
 
@@ -304,10 +505,11 @@ const ARCOFORTE = (function () {
         const ba0 = W.a0 + i * (bSpan + gap), ba1 = ba0 + bSpan, bm = (ba0 + ba1) / 2;
         const bcx = D.RING_CX + ((D.R_MID + D.R_OUT0) / 2) * Math.cos(bm);
         const bcz = D.RING_CZ + ((D.R_MID + D.R_OUT0) / 2) * Math.sin(bm);
-        const weathered = state === 'ruined' && (i === 0 || i === W.nb - 1);
+        const weathered = zBastions === 'ruined' && (i === 0 || i === W.nb - 1);
         const bRec = {
           id: 'af.bastion.' + W.side + i,
           name: W.name + ' Neocliff Dwelling Bastion ' + (i + 1),
+          zone: 'bastions',
           side: W.side,
           index: i,
           a0: ba0,
@@ -321,12 +523,12 @@ const ARCOFORTE = (function () {
           st: 12,
           cx: r2(bcx),
           cz: r2(bcz),
-          state: state === 'ruined' ? 'ruined' : state,
-          kept: state !== 'ruined',
+          state: zBastions,
+          kept: zBastions !== 'ruined',
           breach: weathered
         };
         bastions.push(bRec);
-        addPart({ id: bRec.id, name: bRec.name, kind: 'dwelling', sector: 'living', state: bRec.state, kept: bRec.kept,
+        addPart({ id: bRec.id, name: bRec.name, kind: 'dwelling', zone: 'bastions', sector: 'living', state: bRec.state, kept: bRec.kept,
           shape: ['circ', bRec.cx, bRec.cz, 34], poly: sectorPoly(D.RING_CX, D.RING_CZ, D.R_MID, D.R_OUT0, ba0, ba1, 6),
           y: D.PLATEAU, h: D.Y_RING_TOP - D.PLATEAU, st: 12, sheets: ['A0', 'A3'] });
       }
@@ -338,6 +540,7 @@ const ARCOFORTE = (function () {
         const sk = {
           id: 'af.skylight.' + W.side + j,
           name: W.name + ' Oculus Courtyard Well ' + (j + 1),
+          zone: 'ring',
           side: W.side,
           index: j,
           th: sa,
@@ -349,7 +552,7 @@ const ARCOFORTE = (function () {
           y1: D.Y_RING_TOP
         };
         skylights.push(sk);
-        addPart({ id: sk.id, name: sk.name, kind: 'court', sector: 'rec', state: state === 'ruined' ? 'ruined' : state, kept: true,
+        addPart({ id: sk.id, name: sk.name, kind: 'court', zone: 'ring', sector: 'rec', state: zRing, kept: true,
           shape: ['box', sx - 11, sx + 11, sz - 11, sz + 11], y: D.Y_RING_TOP, h: 4, st: 1, sheets: ['A0', 'A3'] });
       }
 
@@ -361,6 +564,7 @@ const ARCOFORTE = (function () {
         const pv = {
           id: 'af.pavilion.' + W.side + k,
           name: W.name + ' Promenade Belvedere — ' + roles[k % roles.length],
+          zone: 'ring',
           side: W.side,
           index: k,
           th: pa,
@@ -373,11 +577,11 @@ const ARCOFORTE = (function () {
           y0: D.Y_BELV0,
           y1: D.Y_BELV1,
           st: 2,
-          state: state === 'ruined' ? 'ruined' : state,
-          kept: state !== 'ruined'
+          state: zRing,
+          kept: zRing !== 'ruined'
         };
         pavilions.push(pv);
-        addPart({ id: pv.id, name: pv.name, kind: 'pavilion', sector: 'rec', state: pv.state, kept: pv.kept,
+        addPart({ id: pv.id, name: pv.name, kind: 'pavilion', zone: 'ring', sector: 'rec', state: pv.state, kept: pv.kept,
           shape: ['box', px - 14, px + 14, pz - 14, pz + 14], y: D.Y_BELV0, h: D.Y_BELV1 - D.Y_BELV0, st: 2, sheets: ['A3'] });
       }
     });
@@ -393,13 +597,14 @@ const ARCOFORTE = (function () {
       amphitheatre: {
         id: 'af.park.amphitheatre',
         name: 'Central Park Ribbed Acoustic Shell & Amphitheatre',
+        zone: 'ring',
         x: 34,
         z: 12,
         r: 26,
         y: r2(groundAt(P, 34, 12)),
         h: 16,
         ry: -0.45,
-        state: state === 'ruined' ? 'ruined' : state
+        state: zRing
       },
       bridges: [
         { id: 'af.park.bridge.north', name: 'North Park Viaduct Bridge', a: [-58, -54], b: [56, -24], y: 81.5, w: 9 },
@@ -421,23 +626,24 @@ const ARCOFORTE = (function () {
       }
     };
     P.park = park;
-    addPart({ id: park.amphitheatre.id, name: park.amphitheatre.name, kind: 'amphitheatre', sector: 'rec',
+    addPart({ id: park.amphitheatre.id, name: park.amphitheatre.name, kind: 'amphitheatre', zone: 'ring', sector: 'rec',
       state: park.amphitheatre.state, kept: true, shape: ['circ', park.amphitheatre.x, park.amphitheatre.z, park.amphitheatre.r],
       y: park.amphitheatre.y, h: 16, st: 1, sheets: ['A0', 'A2'] });
     park.bridges.forEach(br => {
-      addPart({ id: br.id, name: br.name, kind: 'bridge', sector: 'infra', state: state === 'ruined' ? 'ruined' : state, kept: true,
+      addPart({ id: br.id, name: br.name, kind: 'bridge', zone: 'ring', sector: 'infra', state: zRing, kept: true,
         shape: ['box', Math.min(br.a[0], br.b[0]), Math.max(br.a[0], br.b[0]), Math.min(br.a[1], br.b[1]) - 5, Math.max(br.a[1], br.b[1]) + 5],
         y: br.y, h: 4, st: 1, sheets: ['A0', 'A2'] });
     });
 
     /* ---------------- 4. SOUTHERN LINEAR CITY THROAT ---------------- */
     const linearBars = [
-      { id: 'af.linear.west', name: 'Linear City West Spine (Customs, Craft & Flats)', side: 'w', x0: -(D.LIN_GAP + D.LIN_W), x1: -D.LIN_GAP, z0: D.LIN_Z0, z1: D.LIN_Z1, y0: D.PLATEAU, y1: D.LIN_Y1, st: 7 },
-      { id: 'af.linear.east', name: 'Linear City East Spine (Warehouses, Tavern & Flats)', side: 'e', x0: D.LIN_GAP, x1: D.LIN_GAP + D.LIN_W, z0: D.LIN_Z0, z1: D.LIN_Z1, y0: D.PLATEAU, y1: D.LIN_Y1, st: 7 }
+      { id: 'af.linear.west', name: 'Linear City West Spine (Customs, Craft & Flats)', zone: 'bastions', side: 'w', x0: -(D.LIN_GAP + D.LIN_W), x1: -D.LIN_GAP, z0: D.LIN_Z0, z1: D.LIN_Z1, y0: D.PLATEAU, y1: D.LIN_Y1, st: 7 },
+      { id: 'af.linear.east', name: 'Linear City East Spine (Warehouses, Tavern & Flats)', zone: 'bastions', side: 'e', x0: D.LIN_GAP, x1: D.LIN_GAP + D.LIN_W, z0: D.LIN_Z0, z1: D.LIN_Z1, y0: D.PLATEAU, y1: D.LIN_Y1, st: 7 }
     ];
     const linearDrums = [248, 336, 424].map((dz, i) => ({
       id: 'af.linear.drum.' + i,
       name: ['Throat Gate Plaza Drum', 'Mid-Spine Exchange Rotunda', 'Landward Terminus Gate Drum'][i],
+      zone: 'bastions',
       x: 0,
       z: dz,
       r: 18,
@@ -447,18 +653,19 @@ const ARCOFORTE = (function () {
     }));
     P.linearCity = { bars: linearBars, drums: linearDrums };
     linearBars.forEach(lb => {
-      addPart({ id: lb.id, name: lb.name, kind: 'linear', sector: 'living', state: state === 'ruined' ? 'ruined' : state,
-        kept: state !== 'ruined', shape: ['box', lb.x0, lb.x1, lb.z0, lb.z1], y: lb.y0, h: lb.y1 - lb.y0, st: lb.st, sheets: ['A0', 'A2'] });
+      addPart({ id: lb.id, name: lb.name, kind: 'linear', zone: 'bastions', sector: 'living', state: zBastions,
+        kept: zBastions !== 'ruined', shape: ['box', lb.x0, lb.x1, lb.z0, lb.z1], y: lb.y0, h: lb.y1 - lb.y0, st: lb.st, sheets: ['A0', 'A2'] });
     });
     linearDrums.forEach(dr => {
-      addPart({ id: dr.id, name: dr.name, kind: 'gate', sector: 'rec', state: state === 'ruined' ? 'ruined' : state,
-        kept: state !== 'ruined', shape: ['circ', dr.x, dr.z, dr.r], y: dr.y0, h: dr.y1 - dr.y0, st: dr.st, sheets: ['A0', 'A2'] });
+      addPart({ id: dr.id, name: dr.name, kind: 'gate', zone: 'bastions', sector: 'rec', state: zBastions,
+        kept: zBastions !== 'ruined', shape: ['circ', dr.x, dr.z, dr.r], y: dr.y0, h: dr.y1 - dr.y0, st: dr.st, sheets: ['A0', 'A2'] });
     });
 
     /* ---------------- 5. DOMED ROTUNDA ("TOURIST CENTER" & RESIDENTIAL DRUM) ---------------- */
     const rotunda = {
       id: 'af.rotunda',
       name: 'The Domed Rotunda (Grand Concourse & Atrium Dwellings)',
+      zone: 'ring',
       x: D.ROT_X,
       z: D.ROT_Z,
       R: D.ROT_R,
@@ -467,15 +674,15 @@ const ARCOFORTE = (function () {
       y1: D.ROT_Y1,
       top: D.ROT_TOP,
       st: 26,
-      state: state === 'ruined' ? 'ruined' : state,
-      kept: state !== 'ruined',
+      state: zRing,
+      kept: zRing !== 'ruined',
       skybridges: [
         { id: 'af.rotunda.bridge.w', a: [D.ROT_X - 24, D.ROT_Z - 32], b: [-68, -214], y: 144, w: 10 },
         { id: 'af.rotunda.bridge.e', a: [D.ROT_X + 26, D.ROT_Z - 30], b: [42, -230], y: 144, w: 10 }
       ]
     };
     P.rotunda = rotunda;
-    addPart({ id: rotunda.id, name: rotunda.name, kind: 'rotunda', sector: 'rec', state: rotunda.state, kept: rotunda.kept,
+    addPart({ id: rotunda.id, name: rotunda.name, kind: 'rotunda', zone: 'ring', sector: 'rec', state: rotunda.state, kept: rotunda.kept,
       shape: ['circ', rotunda.x, rotunda.z, rotunda.R], y: rotunda.y0, h: rotunda.top - rotunda.y0, st: rotunda.st, sheets: ['A0', 'A2', 'A3', 'A4'] });
 
     /* ---------------- 6. SEVEN SEA-CLIFF SKYSCRAPERS & 300 M COMPLEX SKY-CROWN ---------------- */
@@ -486,15 +693,19 @@ const ARCOFORTE = (function () {
       const tx = r2(D.ARC_CX + D.ARC_R * Math.cos(th));
       const tz = r2(D.ARC_CZ + D.ARC_R * Math.sin(th));
       const gy = r2(Math.max(24, Math.min(54, groundAt(P, tx, tz))));
-      /* In refurbished state, all 7 towers carry the roof; T0 (westernmost windward) has weathered upper louvers */
-      const weathered = (state === 'refurbished' && i === 0) || state === 'ruined';
+      /* All 7 towers carry the roof structurally; upper storeys take zTowersUpper while lower storeys take zRing */
+      const weathered = (zTowersUpper === 'refurbished' && i === 0) || zTowersUpper === 'ruined';
       const trays = [];
       for (let ty = 92; ty <= 236; ty += 36) {
-        trays.push({ y: ty, out: 9.5, w: 26, sector: ty <= 128 ? 'work' : (ty === 164 ? 'rec' : 'living') });
+        trays.push({ y: ty, out: 9.5, w: 26, zone: ty < 148 ? 'ring' : 'towers_upper', sector: ty <= 128 ? 'work' : (ty === 164 ? 'rec' : 'living') });
       }
       const tRec = {
         id: 'af.tower.' + i,
         name: 'Sea-Cliff Skyscraper ' + (i + 1) + (i === 3 ? ' (Central Hub)' : i === 0 ? ' (Windward Watch)' : i === 6 ? ' (Heliport Pier)' : ''),
+        zone: 'towers_upper',
+        lowerZone: 'ring',
+        lowerState: zRing,
+        upperState: zTowersUpper,
         index: i,
         th: th,
         x: tx,
@@ -507,11 +718,11 @@ const ARCOFORTE = (function () {
         st: Math.round((D.CROWN_Y0 - gy) / 4.2),
         trays: trays,
         weathered: weathered,
-        state: state === 'ruined' ? 'ruined' : state,
-        kept: state !== 'ruined'
+        state: zTowersUpper,
+        kept: zRing !== 'ruined' || zTowersUpper !== 'ruined'
       };
       towers.push(tRec);
-      addPart({ id: tRec.id, name: tRec.name, kind: 'tower', sector: i === 1 || i === 5 ? 'work' : 'living',
+      addPart({ id: tRec.id, name: tRec.name, kind: 'tower', zone: 'towers_upper', sector: i === 1 || i === 5 ? 'work' : 'living',
         state: tRec.state, kept: tRec.kept, shape: ['box', tx - 16, tx + 16, tz - 15, tz + 15],
         y: gy, h: D.CROWN_Y0 - gy, st: tRec.st, sheets: ['A0', 'A2', 'A3', 'A4'] });
     }
@@ -520,6 +731,7 @@ const ARCOFORTE = (function () {
     const skyCrown = {
       id: 'af.skycrown',
       name: 'Complex Sky-Crown (Sky-Gardens, Cultural Center, Comms & Heliport)',
+      zone: 'crown',
       a0: -133 * D2R,
       a1: -47 * D2R,
       cx: D.ARC_CX,
@@ -530,12 +742,13 @@ const ARCOFORTE = (function () {
       y1: D.CROWN_Y1,
       top: D.H_MAX,
       st: 5,
-      state: state === 'ruined' ? 'ruined' : state,
-      kept: state !== 'ruined',
+      state: zCrown,
+      kept: zCrown !== 'ruined',
       mast: { x: towers[3].x, z: towers[3].z, y0: D.CROWN_Y1, y1: D.H_MAX },
       heliport: {
         id: 'af.skycrown.heliport',
         name: 'Cantilevered Headland Heliport & Air-Pad',
+        zone: 'crown',
         x: r2(towers[6].x + 38),
         z: r2(towers[6].z + 10),
         r: 22,
@@ -543,11 +756,11 @@ const ARCOFORTE = (function () {
       }
     };
     P.skyCrown = skyCrown;
-    addPart({ id: skyCrown.id, name: skyCrown.name, kind: 'crown', sector: 'rec', state: skyCrown.state, kept: skyCrown.kept,
+    addPart({ id: skyCrown.id, name: skyCrown.name, kind: 'crown', zone: 'crown', sector: 'rec', state: skyCrown.state, kept: skyCrown.kept,
       shape: ['box', towers[0].x - 20, towers[6].x + 20, -262, -142],
       poly: sectorPoly(D.ARC_CX, D.ARC_CZ, skyCrown.rIn, skyCrown.rOut, skyCrown.a0, skyCrown.a1, 18),
       y: skyCrown.y0, h: skyCrown.top - skyCrown.y0, st: skyCrown.st, sheets: ['A4'] });
-    addPart({ id: skyCrown.heliport.id, name: skyCrown.heliport.name, kind: 'pad', sector: 'infra', state: skyCrown.state, kept: skyCrown.kept,
+    addPart({ id: skyCrown.heliport.id, name: skyCrown.heliport.name, kind: 'pad', zone: 'crown', sector: 'infra', state: skyCrown.state, kept: skyCrown.kept,
       shape: ['circ', skyCrown.heliport.x, skyCrown.heliport.z, skyCrown.heliport.r], y: skyCrown.heliport.y, h: 6, st: 1, sheets: ['A0', 'A4'] });
 
     /* ---------------- 7. PARK & PROMENADE PLANTING RECORDS (KRAND-seeded, deterministic) ---------------- */
@@ -754,7 +967,15 @@ const ARCOFORTE = (function () {
   }
 
   const HULL = makeHull(DIM);
-  const API = { DIM, STATES, HULL, hull: p => (p && p.hull) || makeHull(p && p.dim), plan: function (o) { const P = plan(o); P.hull = makeHull(P.dim); return P; }, groundAt, cliffZ, sectorPoly, toWorld, waterRecords };
+  const API = {
+    DIM, ZONES, ZONE_STATES, STATES, SOCKET_CULTURES, HULL,
+    state: setState, zoneState, isZoneHabitable,
+    socket: setSocket, zoneSocket, resolveSocketZones,
+    _bindHostSocket: function (fn) { _hostSocketHook = fn; },
+    hull: p => (p && p.hull) || makeHull(p && p.dim),
+    plan: function (o) { const P = plan(o); P.hull = makeHull(P.dim); return P; },
+    groundAt, cliffZ, sectorPoly, toWorld, waterRecords
+  };
   if (typeof window !== 'undefined') window.ARCOFORTE_HULL = HULL;
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   return API;

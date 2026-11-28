@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1247
+   ],
+   "seam_after": [
+    0.729,
+    0.849
+   ],
+   "seam_before": [
+    0.968,
+    0.33
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.54,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "iziz/agbada-scroll-bazin",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.54,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__iziz__agbada-scroll-bazin.png",
+  "generator": "Codex image generation, Nov 2026 (exec-46929d40-7fdb-4bd0-8090-2711e38f4062.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of deep oxblood-crimson calendered bazin silk (#5e1418) richly chain-stitch embroidered in warm cream (#ede3ce), dusty lac-rose (#b86b78), and antique gold (#d4a838) cord with symmetrical Roman-Yoruba interlocking S-scrolls, heart-volutes, and eight-petalled civic rosettes; exactly three scroll columns across and three rows down, every volute whole inside the frame with clean oxblood ground along the seam edges. Full colour.",
+  "sha1": "24482bdf71bf3d86e2e2137303b57486af37762b"
+ }
+}

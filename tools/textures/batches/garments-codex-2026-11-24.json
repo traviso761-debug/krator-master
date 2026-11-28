@@ -1,0 +1,1486 @@
+[
+ {
+  "src": "cloth-cotton-coarse-codex.png",
+  "out": "core/materials/library/cloth.cotton.coarse",
+  "record": {
+   "id": "cloth.cotton.coarse",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-b1e0259e-ffa1-427d-8095-d8edfa416935.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hand-spun uncombed coarse cotton plain-weave garment cloth at 20 cm square scale, showing slightly irregular two-ply warp and weft threads, natural tiny cotton-seed nep flecks, crisp over-under thread intersections, and a matte breathable surface without creases or folds. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "sunboll_muslin_2048.png",
+  "out": "core/materials/library/cloth.cotton.muslin",
+  "record": {
+   "id": "cloth.cotton.muslin",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0.0,
+   "scale": [
+    0.18,
+    0.18
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (sunboll_muslin_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Ultra-fine gossamer hand-spun Sunboll cotton muslin (malmal) at 18 cm square garment scale, woven in an airy, slightly open plain weave of hair-fine spun threads with delicate natural slubbing and subtle self-woven double-thread selvedge ribs every 3 cm. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.78,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.55
+  }
+ },
+ {
+  "src": "sea-linen-2048.png",
+  "out": "core/materials/library/cloth.linen.sea",
+  "record": {
+   "id": "cloth.linen.sea",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.68,
+   "metal": 0.0,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (sea-linen-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Archaic Aegean sea-linen and silky sea-byssus garment cloth at 22 cm square scale, featuring fine vertical micro-accordion crinkle pleats (2.5 mm pitch) running continuously from top to bottom over a crisp bast-flax plain weave with long lustrous linen fibres and subtle horizontal slubs. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.68,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "ramie-linen-tiwanaku-2048.png",
+  "out": "core/materials/library/cloth.ramie.stepped",
+  "record": {
+   "id": "cloth.ramie.stepped",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.66,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (ramie-linen-tiwanaku-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Crisp hand-loomed bast ramie-linen cloth at 20 cm square garment scale, self-woven in a subtle tone-on-tone float weave of small interlocking Tiwanaku stepped frets and square spirals (eight repeats across and eight down), showing stiff lustrous plant fibres and sharp thread relief. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.66,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "dupioni_silk_tile_2048.png",
+  "out": "core/materials/library/cloth.silk.slub",
+  "record": {
+   "id": "cloth.silk.slub",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.46,
+   "metal": 0.0,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (dupioni_silk_tile_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hand-reeled raw dupioni slub silk cloth at 22 cm square garment scale, tightly woven with fine vertical warp threads and irregular, slightly thickened horizontal wild-silk weft slubs that create crisp horizontal micro-ridges and a soft organic sheen. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.46,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.65,
+   "dark_gloss": 0.15
+  }
+ },
+ {
+  "src": "cross-woven-shot-silk-taffeta-2048.png",
+  "out": "core/materials/library/cloth.silk.shot",
+  "record": {
+   "id": "cloth.silk.shot",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.36,
+   "metal": 0.0,
+   "scale": [
+    0.18,
+    0.18
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (cross-woven-shot-silk-taffeta-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Crisp cross-woven shot-silk taffeta at 18 cm square garment scale, woven with contrasting light-value warp filaments and darker-value weft filaments in a razor-sharp 1/1 plain silk weave, producing a shimmering two-tone micro-checkerboard interference grain and taut papery silk crispness. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.36,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.5,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "spider-silk-tile-2048.png",
+  "out": "core/materials/library/cloth.silk.spider",
+  "record": {
+   "id": "cloth.silk.spider",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.48,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (spider-silk-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Multi-ply ballistic giant-spider dragline silk cloth at 20 cm square garment scale, woven from thick cable-twisted high-tensile silk cords into a dense hexagonal honeycomb-twill ripstop grid (twelve hex cells across) with a tough pearlescent fibre relief. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.48,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "wool_loden_twill_2048.png",
+  "out": "core/materials/library/cloth.wool.fulled",
+  "record": {
+   "id": "cloth.wool.fulled",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0.0,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (wool_loden_twill_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy weatherproof fulled melton and loden woollen broadcloth at 22 cm square garment scale, woven in a tight 2/2 diagonal twill partially felted and napped so soft fuzzy wool fibres interlock over the underlying diagonal twill ribs. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "nomad-wool-qiviut-felt-2048.png",
+  "out": "core/materials/library/cloth.felt.boiled",
+  "record": {
+   "id": "cloth.felt.boiled",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.92,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (nomad-wool-qiviut-felt-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Thick hand-rolled boiled nomad wool and musk-ox qiviut felt at 24 cm square garment scale, dense non-woven matte surface of compressed, randomly swirling fine animal hairs with subtle dimpled fulling texture and occasional coarser kemp fibres pressed flat. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.92,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "cloth-velvet-cut-codex.png",
+  "out": "core/materials/library/cloth.velvet.cut",
+  "record": {
+   "id": "cloth.velvet.cut",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-5ca673ac-ebd5-47a3-8620-a5a91272c280.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Plush Renaissance cut-pile silk velvet at 20 cm square garment scale, ultra-dense sheared upright silk tuft pile with very fine vertical warp-pile rows and subtle nap-direction micro-grain, smooth and uncrushed. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.6,
+   "dark_gloss": 0.18
+  }
+ },
+ {
+  "src": "bazin-riche-damask-seamless-2048.png",
+  "out": "core/materials/library/cloth.bazin.damask",
+  "record": {
+   "id": "cloth.bazin.damask",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.38,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (bazin-riche-damask-seamless-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Malian beetle-beaten calendered cotton bazin riche damask at 26 cm square garment scale, crisp glazed cotton woven with tone-on-tone geometric chevron medallions and feather-scroll diamonds (six repeats across and six down) showing a burnished starch-glazed sheen against fine cotton warp threads. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.38,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 0.75,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "cloth-quilted-diamond-codex.png",
+  "out": "core/materials/library/cloth.quilted.diamond",
+  "record": {
+   "id": "cloth.quilted.diamond",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-a1e994c4-8d33-4b79-b604-d08fe2cf2097.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Padded arming gambeson cloth (ichcahuipilli / alkhalig) at 28 cm square garment scale, heavy herringbone linen-cotton stuffed with raw wool batting and quilted in a regular diagonal diamond grid (six diamonds across and six down), each diamond softly domed with crisp recessed double back-stitched cord seams and tiny pucker gathers at seam crossings. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "cloth-quilted-channel-codex.png",
+  "out": "core/materials/library/cloth.quilted.channel",
+  "record": {
+   "id": "cloth.quilted.channel",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.82,
+   "metal": 0.0,
+   "scale": [
+    0.25,
+    0.25
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-ec5311eb-57cc-49c3-b88b-852a5920cf57.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Vertically channel-quilted padded armour jack textile at 25 cm square garment scale, eight parallel stuffed vertical bolsters of coarse canvas-twill separated by deep straight saddle-stitched quilting channels running continuously from top to bottom, with subtle horizontal wrinkle tension across each padded rib. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.82,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "outback_duck_canvas_tile_2048.png",
+  "out": "core/materials/library/cloth.canvas.oiled",
+  "record": {
+   "id": "cloth.canvas.oiled",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.48,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (outback_duck_canvas_tile_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy linseed-oiled and beeswax-proofed Outback duck-canvas tarpaulin at 28 cm square garment scale, tight double-fill cotton duck weave sealed under a semi-matte waxy skin showing a fine network of lighter crazed wax fold-lines, one vertical double-felled waterproof lap seam, and crisp pore grain. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.48,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9,
+   "dark_gloss": 0.22
+  }
+ },
+ {
+  "src": "cloth-oiled-alkali-codex.png",
+  "out": "core/materials/library/cloth.oiled.alkali",
+  "record": {
+   "id": "cloth.oiled.alkali",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.74,
+   "metal": 0.0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-9e551d3d-958f-4497-8f69-77ed6c30be42.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Weather-beaten hearth-waxed caravan canvas at 30 cm square garment scale, tough twill duck whose micro-creases and thread hollows hold a crusted powdery bloom of pale crystalline alkali-soda and halite salt efflorescence contrasting with smoother dark-waxed high spots. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.74,
+   "rough_var": 0.32,
+   "mute": 0.92,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "lead-canvas-tile-2048.png",
+  "out": "core/materials/library/cloth.lead.oiled",
+  "record": {
+   "id": "cloth.lead.oiled",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.54,
+   "metal": 0.15,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (lead-canvas-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy lead-impregnated linseed-oiled containment canvas at 28 cm square garment scale, dense heavy twill weave coated in dull metallic plumbago-graphite wax, crossed by diagonal overlap seams double-stitched with twisted wire thread and faint chalky oxidation in the seam recesses. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.54,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "tapa-barkcloth-grey-seamless-2048.png",
+  "out": "core/materials/library/cloth.bark.tapa",
+  "record": {
+   "id": "cloth.bark.tapa",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (tapa-barkcloth-grey-seamless-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polynesian beaten paper-mulberry tapa barkcloth at 26 cm square garment scale, felted cross-layered bast-bark sheets showing long organic intersecting phloem fibres, faint parallel wooden-mallet beater watermark grooves (ike), and soft fibrous papery relief. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "cedar-bark-twined-textile-2048.png",
+  "out": "core/materials/library/cloth.bark.cedar",
+  "record": {
+   "id": "cloth.bark.cedar",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (cedar-bark-twined-textile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Pacific Northwest garment textile at 26 cm square scale, woven from beaten, shredded inner red-cedar bark strips running vertically and twined horizontally every 3 cm with crisp two-ply twisted spruce-root cordage, showing overlapping fibrous bark strands and neat horizontal twined rows. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.05
+  }
+ },
+ {
+  "src": "totora-pandanus-herringbone-2048.png",
+  "out": "core/materials/library/straw.reed.plaited",
+  "record": {
+   "id": "straw.reed.plaited",
+   "family": "fibre",
+   "colour": "#ffffff",
+   "roughness": 0.84,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (totora-pandanus-herringbone-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fine garment-scale plaited totora-reed and split pandanus leaf mat-weave at 20 cm square scale, flat 4 mm wide split plant strips woven in a tight diagonal 2/2 herringbone check with fine longitudinal vascular striations along every reed strip. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.84,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.0
+  }
+ },
+ {
+  "src": "leather-buckskin-codex.png",
+  "out": "core/materials/library/leather.buckskin",
+  "record": {
+   "id": "leather.buckskin",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0.0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-b701cb7c-d233-444c-a1df-4a23f116ecc8.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Supple brain-tanned and smoke-cured deer/pronghorn buckskin suede at 30 cm square garment scale, velvety napped flesh-side suede grain with soft organic directional chamois fibres, subtle natural stretch pores, and one neat sinew whip-stitched seam. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "cuir-bouilli-gray-2048.png",
+  "out": "core/materials/library/leather.cuir_bouilli",
+  "record": {
+   "id": "leather.cuir_bouilli",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.44,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (cuir-bouilli-gray-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy wax-hardened boiled armour leather (cuir-bouilli) at 28 cm square scale, thick full-grainsteerhide burnished smooth with tight natural follicle pores, shallow tooled edge-creasing channels, double-row waxed linen saddle stitching, and faint combat scuff scratches. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.44,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9,
+   "dark_gloss": 0.22
+  }
+ },
+ {
+  "src": "pteruges_leather_tile_2048.png",
+  "out": "core/materials/library/leather.pteruges.studded",
+  "record": {
+   "id": "leather.pteruges.studded",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.56,
+   "metal": 0.2,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (pteruges_leather_tile_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Parallel vertical Roman military leather pteruges armour straps arranged side by side (eight straps across the 28 cm frame), vegetable-tanned full-grain leather with bevelled double-stitched border channels and regular rows of small round domed metal stud bosses down each strap. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.56,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.05
+  }
+ },
+ {
+  "src": "shagreen-samegawa-tile-2048.png",
+  "out": "core/materials/library/leather.shagreen.rayskin",
+  "record": {
+   "id": "leather.shagreen.rayskin",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.42,
+   "metal": 0.0,
+   "scale": [
+    0.16,
+    0.16
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (shagreen-samegawa-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished stingray and sharkskin leather (shagreen / samegawa) at 16 cm square scale, tightly packed pavement of smooth ground-down calcified dermal denticle pearls ranging from 1 mm to 3 mm across in organic cellular mosaic clusters with deep interstitial channels. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.0,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "saurian-hide-seamless-2048.png",
+  "out": "core/materials/library/leather.reptile.scute",
+  "record": {
+   "id": "leather.reptile.scute",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.52,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (saurian-hide-seamless-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy tanned saurian and monitor-lizard hide leather at 24 cm square garment scale, rows of sub-rectangular keeled osteoderm scales (~8 to 14 mm wide) surrounded by rings of tiny pebbly interstitial granules and flexible hinge skin folds. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.52,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.1,
+   "dark_gloss": 0.18
+  }
+ },
+ {
+  "src": "karakul-astrakhan-2048.png",
+  "out": "core/materials/library/fur.astrakhan",
+  "record": {
+   "id": "fur.astrakhan",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.65,
+   "metal": 0.0,
+   "scale": [
+    0.15,
+    0.15
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (karakul-astrakhan-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Karakul / Astrakhan lamb fur pelt at 15 cm square hat-and-collar scale, dense glossy short hair coiled into tight brain-like tubular waves and interlocking C-shaped ringlets lying close to the hide with silky strand definition. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.65,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.0,
+   "dark_gloss": 0.15
+  }
+ },
+ {
+  "src": "barguzin-sable-fur-tile-2048.png",
+  "out": "core/materials/library/fur.sable.sheared",
+  "record": {
+   "id": "fur.sable.sheared",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.58,
+   "metal": 0.0,
+   "scale": [
+    0.2,
+    0.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (barguzin-sable-fur-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Luxurious sheared Barguzin sable and marten pelisse fur at 20 cm square garment scale, ultra-dense velvety plush underfur overlaid with sleek, finely tapered silky guard hairs brushed downward in soft natural pelage waves. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.58,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.85,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "timber-wolf-pelt-seamless-2048-v2.png",
+  "out": "core/materials/library/fur.wolf",
+  "record": {
+   "id": "fur.wolf",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.82,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (timber-wolf-pelt-seamless-2048-v2.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Coarse northern timber-wolf winter pelt at 26 cm square mantle scale, layered agouti-banded stiff guard hairs 4 to 6 cm long clumping in rugged V-shaped locks over thick woolly undercoat, all flowing downward with natural wild-fur variation. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.82,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.05
+  }
+ },
+ {
+  "src": "yak_muskox_fleece_2048.png",
+  "out": "core/materials/library/fur.yak",
+  "record": {
+   "id": "fur.yak",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.88,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (yak_muskox_fleece_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Shaggy high-altitude yak and musk-ox winter fleece pelt at 28 cm square garment scale, long wavy locks and crimped woolly tresses hanging in dense overlapping vertical locks with fine frizzy underwool at the roots. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.88,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "caribou-winter-hide-2048.png",
+  "out": "core/materials/library/fur.caribou",
+  "record": {
+   "id": "fur.caribou",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.84,
+   "metal": 0.0,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (caribou-winter-hide-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Arctic caribou winter hide coat at 22 cm square garment scale, extremely dense, crisp hollow tubular hairs packed tightly together and lying flat in one clean direction, creating a smooth weather-tight arctic pelage with subtle hair-parting lines. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.84,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "lorica-hamata-maille-tile-2048.png",
+  "out": "core/materials/library/armor.mail.hamata",
+  "record": {
+   "id": "armor.mail.hamata",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.42,
+   "metal": 0.85,
+   "scale": [
+    0.16,
+    0.16
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (lorica-hamata-maille-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Historical European/Roman 4-in-1 riveted ring-maille armour (lorica hamata) at 16 cm square garment scale, rows of flattened forged wire rings (~9 mm outer diameter) where every alternating course is dome-riveted with tiny raised wedge-rivet heads, hanging naturally in neat horizontal courses. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "lorica-squamata-tile-2048.png",
+  "out": "core/materials/library/armor.scale.squamata",
+  "record": {
+   "id": "armor.scale.squamata",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.38,
+   "metal": 0.85,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (lorica-squamata-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Overlapping Roman-Byzantine scale armour (lorica squamata) at 22 cm square scale, ten staggered horizontal courses of small shield-shaped metal scales (~2.5 cm wide) with subtle central medial ridges, bevelled lower rims, and paired wire-stitching staples linking adjacent scales side to side. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.38,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "lorica-segmentata-tile-2048.png",
+  "out": "core/materials/library/armor.lorica.lames",
+  "record": {
+   "id": "armor.lorica.lames",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.35,
+   "metal": 0.9,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (lorica-segmentata-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Articulated Roman lorica segmentata overlapping horizontal metal armour lames at 28 cm square scale, six horizontal brushed-metal bands overlapping downward with crisp rolled bevelled lower edges, small flush lobate hinge-plates, and dome-headed rivets set at regular intervals, fine hammer-planished metal micro-grain. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.35,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "armor-linothorax-twill-codex.png",
+  "out": "core/materials/library/armor.linothorax.twill",
+  "record": {
+   "id": "armor.linothorax.twill",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-55e56b30-63a1-4687-b002-f4ac1dc4f013.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Stiff laminated ancient Aegean linothorax armour at 24 cm square scale, fourteen resin-glued layers of heavy herringbone flax-linen canvas quilted with horizontal cord seams every 4 cm, crisp woven bast threads and stitched raw-linen edge binding. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "steppe-boiled-rawhide-lamellar-seamless-2048.png",
+  "out": "core/materials/library/armor.lamellar.rawhide",
+  "record": {
+   "id": "armor.lamellar.rawhide",
+   "family": "hide",
+   "colour": "#ffffff",
+   "roughness": 0.64,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (steppe-boiled-rawhide-lamellar-seamless-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Steppe boiled-rawhide lamellar armour at 24 cm square scale, five horizontal rows of thick round-topped rectangular cured rawhide lames (each 3 cm wide by 6 cm tall, twelve lames per row) tightly cross-laced upward and sideways with twisted rawhide thongs through six punched holes per lame. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.64,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "chukchi-steppe-horn-bone-lamellar-2048.png",
+  "out": "core/materials/library/armor.lamellar.horn",
+  "record": {
+   "id": "armor.lamellar.horn",
+   "family": "bone",
+   "colour": "#ffffff",
+   "roughness": 0.42,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (chukchi-steppe-horn-bone-lamellar-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Chukchi and Steppe horn-and-bone lamellar armour at 24 cm square scale, five overlapping horizontal courses of narrow polished keratin-horn and carved bone plates showing fine longitudinal fibrous horn striations, bevelled edges, and braided sinew cross-lacings through paired drilled holes. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "mute": 0.92,
+   "pattern": true,
+   "normal_strength": 1.15,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "opal_moonglass_lattice_2048.png",
+  "out": "core/materials/library/glass.moonglass.leaded",
+  "record": {
+   "id": "glass.moonglass.leaded",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.24,
+   "metal": 0.15,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (opal_moonglass_lattice_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of ceremonial Lightwall moonglass and Gihon precious-opal pectoral inlay: a diamond-quarry lattice (six diamonds across and six down) of milky-cyan potch opal glass panes (#a8ccd4 to #78a8b8) set in slender gilded-copper leading ribs (#b89038) stitched onto peacock silk (#145864), with central cabochon roundels of fiery precious crystal opal flashing viridian (#3f7a44), violet (#6a3c9c), and flame-orange (#e86824), diamond seams aligning edge to edge. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.24,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.05,
+   "normal_strength": 0.8,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "porta_marr_galloon_2048.png",
+  "out": "core/materials/patterns/marr/compass-wave-trim",
+  "record": {
+   "id": "marr/compass-wave-trim",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.56,
+   "metal": 0.1,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (porta_marr_galloon_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Porta Marr maritime Roman galloon embroidery on salt-weathered deep sea-navy wool (#1d2c3f): three horizontal registers framed by twisted metallic brass cable-rope borders (#c49a45), embroidered with 16-point brass navigator compass-roses alternating with Imperial Sun-Orange (#e07a2a) sun-anchors and sea-verdigris (#3b7a6c) scrolling Vitruvian waves accented in crimson (#9e2a2b); four compass-and-anchor repeats across and three bands down, no motif cut by the seams. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.56,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "xanadu-khalat-wheel-brocade-codex.png",
+  "out": "core/materials/patterns/xanadu/khalat-wheel-brocade",
+  "record": {
+   "id": "xanadu/khalat-wheel-brocade",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.46,
+   "metal": 0.15,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-71c4516d-ba42-46cc-90bd-b8c4c4314a38.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of heavy Persian-Tibetan court silk lampas brocade woven with raised metallic gold thread (#d4a838) on a deep royal violet (#3b1c54) and peacock-teal (#145864) satin ground, patterned with a repeating ogival lattice (four medallions across and four down, whole inside the edges) of eight-spoked Dharma sun-wheels alternating with lotus palmettes and small cabochon opal roundels in flame-crimson (#b82828) and turquoise (#28a4a8), crisp diagonal silk twill visible between gold threads. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.46,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "highland-wool-apron-seamless.png",
+  "out": "core/materials/patterns/xanadu/cholet-pangden-stripe",
+  "record": {
+   "id": "xanadu/cholet-pangden-stripe",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (highland-wool-apron-seamless.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of hand-loomed highland wool apron cloth combining Tibetan pangden horizontal warp stripes with Andean cholet stepped-diamond fret bands (six stepped diamonds across and four stripe cycles down, aligning cleanly across every edge), woven in saffron yellow (#e08818), pomegranate crimson (#982030), peacock teal (#166874), rose-pink (#c84474), and natural cream wool (#e8dec8), coarse two-ply wool yarn clearly visible. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "qiblai_monastery_vestment_frieze_2048.png",
+  "out": "core/materials/patterns/xanadu/prismarchy-eight-spoke",
+  "record": {
+   "id": "xanadu/prismarchy-eight-spoke",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.68,
+   "metal": 0.1,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (qiblai_monastery_vestment_frieze_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Qiblai monastery vestment frieze on deep maroon wool (#5a181c), featuring two horizontal registers of four eight-spoked golden wheels (#d8b038) whose eight sectors are embroidered in silk thread in the eight Prismarchy colours\u2014crimson (#a8302a), saffron (#d89020), gold (#d4b040), viridian (#3f7a44), turquoise (#2a8888), azure (#2a4a9a), violet (#5b2e7a), and lily white (#ece8dc)\u2014bordered above and below by square geometric Tocharian sound-grid syllabary cells in gold thread, no wheel touching a seam. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.68,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "indo-persian-wootz-tile-2048.png",
+  "out": "core/materials/patterns/xanadu/chahar-aina-damascened",
+  "record": {
+   "id": "xanadu/chahar-aina-damascened",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.34,
+   "metal": 0.85,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (indo-persian-wootz-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Indo-Persian and Tibetan Dzong chahar-aina mirror-steel armour: watered crucible wootz steel panels (#4a5058, #68707a) inlaid in flush gold-wire koftgari (#d4a834) with arabesque borders and eight-spoked Xanadu wheel bosses (two octagonal mirror plates across and two down), framed between courses of small round gilded-steel coin scales laced with crimson silk cord (#8c1c22) over diamond-quilted pomegranate velvet. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "opal_moonglass_lattice_2048.png",
+  "out": "core/materials/patterns/xanadu/moonglass-opal",
+  "record": {
+   "id": "xanadu/moonglass-opal",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.24,
+   "metal": 0.15,
+   "scale": [
+    0.22,
+    0.22
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (opal_moonglass_lattice_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of ceremonial Lightwall moonglass and Gihon precious-opal pectoral inlay: a diamond-quarry lattice (six diamonds across and six down) of milky-cyan potch opal glass panes (#a8ccd4 to #78a8b8) set in slender gilded-copper leading ribs (#b89038) stitched onto peacock silk (#145864), with central cabochon roundels of fiery precious crystal opal flashing viridian (#3f7a44), violet (#6a3c9c), and flame-orange (#e86824), diamond seams aligning edge to edge. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.24,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.8,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "kesa-textile-2048.png",
+  "out": "core/materials/patterns/historians/saffron-kesa-patchwork",
+  "record": {
+   "id": "historians/saffron-kesa-patchwork",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0.0,
+   "scale": [
+    0.32,
+    0.32
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (kesa-textile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a monastic patchwork kesa robe sewn from rectangular brick-bond panels (four columns by four rows) of hand-spun saffron-dyed cotton (#d4881c, #c07414) and deep maroon yak wool (#681a20) joined by raised indigo-blue sashiko running stitches (#244878), crossed by a horizontal woven border repeating the Order's Hourglass-inside-an-Eight-Spoked-Wheel emblem in burnished gold (#c8a030) and glowing temporal teal (#20a8b4), whole wheels inside seams. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.78,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "procrastinator_clockwork_texture_2048.png",
+  "out": "core/materials/patterns/historians/procrastinator-bronze-etched",
+  "record": {
+   "id": "historians/procrastinator-bronze-etched",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.38,
+   "metal": 0.85,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (procrastinator_clockwork_texture_2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of aged cast tin-bronze Procrastinator armour and instrument casing (#6e522c, #8c6a38) deeply engraved with four interlocking clockwork prayer-wheel gear-trains, concentric Vernier degree ticks, and Tibetan-bookhand containment rings whose recessed channels are inlaid with luminous verdigris-teal stasis enamel (#24b8c4) and matte dark lead solder (#2c3038), fastened with countersunk brass rivets along continuous horizontal bands. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.38,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "saffron-monastic-labyrinth-tile-2048.png",
+  "out": "core/materials/patterns/historians/labyrinth-panel",
+  "record": {
+   "id": "historians/labyrinth-panel",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (saffron-monastic-labyrinth-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a hand-loomed coarse goat-wool and sun-faded saffron cotton monastic sash: natural unbleached cream wool ground (#e8dec8) framed by cave-madder crimson (#982820) and soot-black (#1e1a18) guard rails, enclosing a continuous orthogonal key-labyrinth maze (four complete labyrinth squares across and four down) accented with faded melon-saffron (#d89024) corner steps, crisp warp-faced tapestry weave, seam-aligned. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "hykkousoi-wind-wave-border-codex.png",
+  "out": "core/materials/patterns/hykkousoi/wind-wave-border",
+  "record": {
+   "id": "hykkousoi/wind-wave-border",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.62,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-4a9108c7-a3d3-4c30-8034-9ea2f4c420b3.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of royal Hykkousoi woven sea-linen tapestry border on deep murex bay-purple (#4c183d) and slate aril-blue (#2f6288) bands: three horizontal registers depicting the canonical League of Amphitriton emblem\u2014three stylized weld-gold (#dfb13b) spiral wind-curls poised above a continuous ivory (#f0ece1) and seafoam-teal (#58b4a8) cresting Vitruvian wave meander, framed by narrow Greek key pinstripes, with strictly zero sun discs anywhere; four wind-and-wave repeats across, continuous across left and right seams. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.62,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "screamer-hexahedron-armor-2048.png",
+  "out": "core/materials/patterns/screamers/dot-skull-hardwood",
+  "record": {
+   "id": "screamers/dot-skull-hardwood",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (screamer-hexahedron-armor-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Screamer Hexahedron lashed jungle-ironwood slat armour painted in Amazonian-Melanesian pointillist skull war-paint: twelve vertical dark mahogany-ironwood slats (#3a261a, #241810) bound horizontally with twisted blue nylon paracord (#2268a8) and liana vine, finger-dotted in chalky white kaolin (#ece8de) and urucum blood-red (#bc2020) pointillist dot-matrices forming three grinning stylized skulls alternating with double-pyramid Hexahedron diamonds across, zero text, skulls whole inside seams. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.05,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "screamer-cargo-cult-treasure-mantle-2048.png",
+  "out": "core/materials/patterns/screamers/plastic-rust-mosaic",
+  "record": {
+   "id": "screamers/plastic-rust-mosaic",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.52,
+   "metal": 0.25,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (screamer-cargo-cult-treasure-mantle-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Screamer cargo-cult treasure mantle woven onto plaited palm-bast (#b89858) with stripped multi-coloured copper ribbon-cables: densely shingled with prized flaky orange-red oxidized rust-iron washers and hull squares (#a84218, #7c2e12) alternating with vivid scavenged pre-Cataclysm plastic bottle-caps, translucent acrylic reflector shards, and blank keycap tiles in electric cyan (#28ccf0), hazard neon-yellow (#f2dc24), and vivid plastic magenta-coral (#d83268), zero readable letters or numbers. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.52,
+   "rough_var": 0.2,
+   "pattern": false,
+   "band": 0.06,
+   "delight": 0.25,
+   "lift": 0.05,
+   "normal_strength": 0.95
+  }
+ },
+ {
+  "src": "outlands-coyote-runner-basketweave-2048.png",
+  "out": "core/materials/patterns/coyote/turquoise-runner-weave",
+  "record": {
+   "id": "coyote/turquoise-runner-weave",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.1,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (outlands-coyote-runner-basketweave-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Outlands Coyote-Men Basketmaker reed-and-veilcap fibre weave inlaid with gem-hill turquoise: warm sand-bone (#e6dec8) and ember-scrub rust (#9e4422) twined basketweave crossed by continuous rising-and-falling Barked-Hum pitch-contour wave lines in soot-black (#1c1a18) and veilcap-violet (#6a4484), framing three sprinting crested Trickster Runner-Bird silhouettes across above dashed God's-Road paw-tracks, bordered with hammered bronze (#a87d3e) and cabochon Outlands turquoise (#289e9e) and green emerald (#186e48) beadwork (strictly zero golden Phoenix feathers), whole birds clear of seams. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.8
+  }
+ },
+ {
+  "src": "korona-nepenthes-tile-2048.png",
+  "out": "core/materials/patterns/korona/hum-contour-pitcher",
+  "record": {
+   "id": "korona/hum-contour-pitcher",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (korona-nepenthes-tile-2048.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Korona tepui sundew-bast weave combined with cured carnivorous Nepenthes pitcher-plant leather: upper and central registers of braided moss-olive (#445834) and gas-giant sky-blue (#5898c4) plant-fibre cloth embroidered in gold (#d8a834) and turquoise (#2ca4a0) with horizontal 6-Tone Hum (Ham) guide-lines carrying level, rising, and falling pitch-contour bars, vowel dots, and nasal hooks, bordered below by mottled crimson-and-chartreuse Nepenthes trap-skin (#8e2028, #68a848) edged with marginal Pai-ta flytrap trigger-spines, seamless left to right. Full colour."
+   },
+   "pattern": true
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.04,
+   "normal_strength": 0.8
+  }
+ }
+]

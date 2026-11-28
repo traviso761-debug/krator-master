@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1096,
+    1181
+   ],
+   "seam_after": [
+    1.114,
+    0.794
+   ],
+   "seam_before": [
+    3.07,
+    9.884
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "iziz/lamellar-ancient-watch",
+  "metal": 0.65,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__iziz__lamellar-ancient-watch.png",
+  "generator": "Codex image generation, Nov 2026 (exec-d4717261-b373-48cc-9bcf-1ca4fa67d9ac.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Izani Watch Auxilia hybrid scale-lamellar armour: six staggered horizontal courses of arched D-shaped scales (ten scales per row) alternating warm hammered bronze (#a87d3e) and reddish copper (#b8683c) with every fifth scale crafted from salvaged ghost-white pre-Cataclysm Ancient ceramic-composite plate (#eeebe5) stamped with a tiny turquoise node (#28a4a8), all tightly laced together with crimson silk-leather thongs (#9e2a2b) over dark soot leather (#1e1a18); whole scale rows align cleanly across left/right and top/bottom seams. Full colour.",
+  "sha1": "a75b6a39902f84bd40a16bc51c1f2f303eb20e44"
+ }
+}

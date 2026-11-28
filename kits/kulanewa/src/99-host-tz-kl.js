@@ -25,6 +25,8 @@
   if(ROWS[1])addView('Kaarum Quays Fortifications and Dwellings Row',[ROWS[1].w*.1,34,ROWS[1].z+70,0,5,ROWS[1].z]);
   if(ROWS[2])addView('Ilma-Kuluuna Covenant Citadels and Sampo Forges Row',[ROWS[2].w*.1,36,ROWS[2].z+74,0,6,ROWS[2].z]);
   if(ROWS[3])addView('Maleva Militia Gates and Dwellings Row',[ROWS[3].w*.1,34,ROWS[3].z+70,0,5,ROWS[3].z]);
+  if(ROWS[4])addView('Suudme-Kaarum Bourses Shrines and Treaty Pontoons Row',[ROWS[4].w*.1,35,ROWS[4].z+72,0,6,ROWS[4].z]);
+  if(ROWS[5])addView('Suudme-Kaarum Tidal Quays Water-Gates and Dwellings Row',[ROWS[5].w*.1,35,ROWS[5].z+72,0,5.5,ROWS[5].z]);
   const byKey=k=>SITES.find(s=>s.key===k);
   const pBank=byKey('kl_karum_grand_bank');
   if(pBank)addView('Grand Suurgild Kaarum Banking House and Strongtower',[pBank.x+16,14,pBank.z+30,pBank.x,7.5,pBank.z-1]);
@@ -52,6 +54,24 @@
   if(pDrum)addView('Twin Hooped-Cedar Maleva Drum-Frustum Gate',[pDrum.x+15,13,pDrum.z+28,pDrum.x,6.8,pDrum.z]);
   const pBro=byKey('kl_ikki_brotherhood_hall');
   if(pBro)addView('Master-Smith and Regilaul Preacher Talku-Kula Court',[pBro.x+14,13,pBro.z+27,pBro.x,6.0,pBro.z-1]);
+  const pBourse=byKey('kl_suudme_amber_bourse');
+  if(pBourse)addView('Tooka-Suurgild Amber Bourse and Four-Tier Bell-Mondop',[pBourse.x+16,15,pBourse.z+31,pBourse.x,8.0,pBourse.z-1]);
+  const pSauna=byKey('kl_suudme_sauna_thermae');
+  if(pSauna)addView('Saunakoda-Sala Lotus Peristyle and Steam-Brokerage',[pSauna.x+14,13,pSauna.z+27,pSauna.x,6.5,pSauna.z]);
+  const pShrine=byKey('kl_suudme_uktena_bell_shrine');
+  if(pShrine)addView('Uktena-Kell Porcelain Prang and Twin Bell Shrine',[pShrine.x+15,14,pShrine.z+29,pShrine.x,7.5,pShrine.z]);
+  const pPont=byKey('kl_suudme_pontoon_factor');
+  if(pPont)addView('Tooka-Hoov Amphibious Pontoon Factor',[pPont.x+14,12,pPont.z+26,pPont.x,6.2,pPont.z]);
+  const pSouk=byKey('kl_suudme_covered_bazaar');
+  if(pSouk)addView('Ishtar-Glazed Arcade and Covered Canal-Bridge Souk',[pSouk.x+15,13,pSouk.z+27,pSouk.x,6.5,pSouk.z]);
+  const pWharf=byKey('kl_suudme_tidal_wharf');
+  if(pWharf)addView('Kiyomizu-Travertine Macrotidal Bluff Wharf',[pWharf.x+15,12,pWharf.z+27,pWharf.x,5.8,pWharf.z]);
+  const pWGate=byKey('kl_suudme_ishtar_watergate');
+  if(pWGate)addView('Glazed-Arch and Hooped-Pylon Canal Lock Water-Gate',[pWGate.x+15,14,pWGate.z+28,pWGate.x,7.0,pWGate.z]);
+  const pMand=byKey('kl_suudme_mandarin_court');
+  if(pMand)addView('Tooka-Vanem Patrician Peristyle and Ruan-Thai Court',[pMand.x+15,13,pMand.z+28,pMand.x,6.2,pMand.z-1]);
+  const pPalz=byKey('kl_suudme_patrician_palazzo');
+  if(pPalz)addView('Three-Storey Travertine Arcade and Bell-Mondop Palazzo',[pPalz.x+15,14,pPalz.z+29,pPalz.x,7.5,pPalz.z-1]);
  }
 
  const settle=n=>{for(let i=0;i<(n==null?40:n);i++)KDOOR.step(.1);};
@@ -310,16 +330,14 @@
    if(KL_TRADES.length!==44)bad.push('rows:'+KL_TRADES.length);
    for(const row of KL_TRADES){
     if(row.na)continue;
-    if(!Array.isArray(row.karum)||!row.karum.length)bad.push(row.trade+':no-karum');
-    if(!Array.isArray(row.ikki)||!row.ikki.length)bad.push(row.trade+':no-ikki');
-    for(const k of (row.karum||[])){
-     if(!DEFS[k]||DEFS[k].tags.style!=='karum')bad.push(row.trade+':bad-karum:'+k);
-    }
-    for(const k of (row.ikki||[])){
-     if(!DEFS[k]||DEFS[k].tags.style!=='ikki')bad.push(row.trade+':bad-ikki:'+k);
+    for(const st of ['karum','ikki','suudme']){
+     if(!Array.isArray(row[st])||!row[st].length)bad.push(row.trade+':no-'+st);
+     for(const k of (row[st]||[])){
+      if(!DEFS[k]||DEFS[k].tags.style!==st)bad.push(row.trade+':bad-'+st+':'+k);
+     }
     }
    }
-   for(const st of ['karum','ikki']){
+   for(const st of ['karum','ikki','suudme']){
     for(const wt of ['poor','middle','rich']){
      for(const dt of ['dwelling-single','dwelling-multi']){
       const has=Object.keys(DEFS).some(k=>DEFS[k].cls==='building'&&DEFS[k].tags.style===st&&DEFS[k].tags.wealth===wt&&(DEFS[k].tags.types||[]).indexOf(dt)>=0);
@@ -368,7 +386,7 @@
     }
     const cornerAO=KROOMLIGHT.vertexCornerAO(0,0.02,2.0,1,0,0,[0,0,0,4,3.5,4],0.85);
     const midAO=KROOMLIGHT.vertexCornerAO(0,1.8,2.0,1,0,0,[0,0,0,4,3.5,4],0.85);
-    roomlightOk=roomsN>=42&&dayRooms>=30&&pickN>=1&&rl.pool.length===6&&cornerAO<0.85&&midAO>0.95;
+    roomlightOk=roomsN>=63&&dayRooms>=45&&pickN>=1&&rl.pool.length===6&&cornerAO<0.85&&midAO>0.95;
    }
 
    const cacheKeys=new Set();

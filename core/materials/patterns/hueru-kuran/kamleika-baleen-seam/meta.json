@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1244,
+    1006
+   ],
+   "seam_after": [
+    0.859,
+    1.463
+   ],
+   "seam_before": [
+    1.702,
+    3.78
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.22,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "leather",
+  "id": "hueru-kuran/kamleika-baleen-seam",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__hueru-kuran__kamleika-baleen-seam.png",
+  "generator": "Codex image generation, Nov 2026 (exec-ee21ea5c-4adf-40b8-bacf-fc7302ea614e.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cured translucent warm honey-amber sea-mammal gutskin parchment (#c88a36 to #dfc28b) in five horizontal strips joined by narrow waterproof welted seams stitched with glossy black whale-baleen sinew (#1c1816) and tiny spaced tufts of oxblood-red (#7e2418) and whale-ivory (#ece3cf) auklet-plume yarn, subtle collagen fibre grain, seamless across edges. Full colour.",
+  "sha1": "447a01df0fe96a16797e508e267953657ab5fc80"
+ }
+}

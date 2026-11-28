@@ -1747,14 +1747,24 @@
    "label": "Walk",
    "group": "move",
    "seconds": 1.03,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    1.603
+   ]
   },
   {
    "name": "run",
    "label": "Run",
    "group": "move",
    "seconds": 0.67,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    5.025
+   ]
   },
   {
    "name": "stretch",
@@ -1775,13 +1785,6 @@
    "label": "Idle 1",
    "group": "idle",
    "seconds": 1.87,
-   "loop": true
-  },
-  {
-   "name": "idle_2",
-   "label": "Idle 2",
-   "group": "idle",
-   "seconds": 4.27,
    "loop": true
   },
   {
@@ -1903,7 +1906,7 @@
   },
   {
    "name": "ual_harvest",
-   "label": "Harvest (kneeling)",
+   "label": "Harvest (bending)",
    "group": "work",
    "seconds": 2.5,
    "loop": false
@@ -1938,7 +1941,7 @@
   },
   {
    "name": "ual_interact",
-   "label": "Work at bench / use",
+   "label": "Push button",
    "group": "work",
    "seconds": 2.0,
    "loop": false
@@ -2158,7 +2161,12 @@
    "label": "Crouch walk 2",
    "group": "move",
    "seconds": 2.0,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    0.866
+   ]
   },
   {
    "name": "ual_jump",
@@ -2172,7 +2180,12 @@
    "label": "Jog",
    "group": "move",
    "seconds": 0.93,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    3.033
+   ]
   },
   {
    "name": "ual_sit_down",
@@ -2231,6 +2244,76 @@
    "loop": true
   },
   {
+   "name": "ual_jab",
+   "label": "Jab",
+   "group": "unarmed",
+   "seconds": 0.87,
+   "loop": false
+  },
+  {
+   "name": "ual_cross",
+   "label": "Cross",
+   "group": "unarmed",
+   "seconds": 1.0,
+   "loop": false
+  },
+  {
+   "name": "ual_hook_rec",
+   "label": "Hook, recover to guard",
+   "group": "unarmed",
+   "seconds": 0.93,
+   "loop": false
+  },
+  {
+   "name": "claw_swipe",
+   "label": "Clawing swipe",
+   "group": "unarmed",
+   "seconds": 1.8,
+   "loop": false
+  },
+  {
+   "name": "dance",
+   "label": "Dance",
+   "group": "life",
+   "seconds": 1.0,
+   "loop": true
+  },
+  {
+   "name": "spell_cast",
+   "label": "Cast a spell",
+   "group": "ranged",
+   "seconds": 0.5,
+   "loop": false
+  },
+  {
+   "name": "spell_ready",
+   "label": "Spell held ready",
+   "group": "ranged",
+   "seconds": 2.1,
+   "loop": true
+  },
+  {
+   "name": "walk_formal",
+   "label": "Formal walk",
+   "group": "move",
+   "seconds": 1.33,
+   "loop": true
+  },
+  {
+   "name": "lean_rail",
+   "label": "Lean on a rail",
+   "group": "idle",
+   "seconds": 2.5,
+   "loop": true
+  },
+  {
+   "name": "nod",
+   "label": "Nod yes",
+   "group": "life",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
    "name": "walk_back",
    "label": "Walk backward",
    "group": "move",
@@ -2247,7 +2330,12 @@
    "label": "Injured walk",
    "group": "move",
    "seconds": 8.67,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    0.78
+   ]
   },
   {
    "name": "walk_limp",
@@ -2319,6 +2407,13 @@
    "loop": false
   },
   {
+   "name": "slash_up",
+   "label": "Up swing (left)",
+   "group": "melee",
+   "seconds": 3.17,
+   "loop": false
+  },
+  {
    "name": "slash_left",
    "label": "Slash left",
    "group": "melee",
@@ -2357,7 +2452,7 @@
    "name": "axe_spin",
    "label": "Spinning axe attack",
    "group": "melee",
-   "seconds": 2.5,
+   "seconds": 2.57,
    "loop": false
   },
   {
@@ -2438,8 +2533,15 @@
    "loop": false
   },
   {
+   "name": "walk_shoot_high",
+   "label": "Walk while shooting (high aim)",
+   "group": "ranged",
+   "seconds": 3.27,
+   "loop": true
+  },
+  {
    "name": "walk_shoot",
-   "label": "Walk while shooting",
+   "label": "Walk while shooting (low aim)",
    "group": "ranged",
    "seconds": 3.27,
    "loop": true
@@ -2766,6 +2868,354 @@
    ]
   },
   {
+   "name": "shadow_box",
+   "label": "Shadow boxing (punch flurry)",
+   "group": "unarmed",
+   "seconds": 6.83,
+   "loop": true,
+   "root_speed": [
+    -0.063,
+    -0.0,
+    0.02
+   ]
+  },
+  {
+   "name": "fight_step_l",
+   "label": "Fight step, forward left",
+   "group": "unarmed",
+   "seconds": 0.57,
+   "loop": true
+  },
+  {
+   "name": "fight_step_r",
+   "label": "Fight step, forward right",
+   "group": "unarmed",
+   "seconds": 0.57,
+   "loop": true
+  },
+  {
+   "name": "taunt_chest",
+   "label": "Chest-pound taunt",
+   "group": "unarmed",
+   "seconds": 4.83,
+   "loop": false
+  },
+  {
+   "name": "jab_l",
+   "label": "Left jab",
+   "group": "unarmed",
+   "seconds": 1.73,
+   "loop": false
+  },
+  {
+   "name": "jab_r",
+   "label": "Right jab (cross)",
+   "group": "unarmed",
+   "seconds": 2.0,
+   "loop": false
+  },
+  {
+   "name": "hook_l",
+   "label": "Left hook",
+   "group": "unarmed",
+   "seconds": 1.0,
+   "loop": false
+  },
+  {
+   "name": "hook_l_short",
+   "label": "Short left hook",
+   "group": "unarmed",
+   "seconds": 1.3,
+   "loop": false
+  },
+  {
+   "name": "uppercut_r",
+   "label": "Right uppercut",
+   "group": "unarmed",
+   "seconds": 1.0,
+   "loop": false
+  },
+  {
+   "name": "uppercut_l",
+   "label": "Left uppercut",
+   "group": "unarmed",
+   "seconds": 1.33,
+   "loop": false
+  },
+  {
+   "name": "hook_r_upper",
+   "label": "Right upper hook",
+   "group": "unarmed",
+   "seconds": 1.73,
+   "loop": false
+  },
+  {
+   "name": "punch_combo_1",
+   "label": "Punch combo 1",
+   "group": "unarmed",
+   "seconds": 2.2,
+   "loop": false
+  },
+  {
+   "name": "punch_combo_2",
+   "label": "Punch combo 2",
+   "group": "unarmed",
+   "seconds": 5.0,
+   "loop": false
+  },
+  {
+   "name": "punch_combo_3",
+   "label": "Punch and elbow",
+   "group": "unarmed",
+   "seconds": 3.27,
+   "loop": false
+  },
+  {
+   "name": "dodge_counter",
+   "label": "Dodge and counter (surrounded)",
+   "group": "unarmed",
+   "seconds": 9.33,
+   "loop": false
+  },
+  {
+   "name": "counterstrike",
+   "label": "Counterstrike",
+   "group": "unarmed",
+   "seconds": 6.5,
+   "loop": false
+  },
+  {
+   "name": "elbow_strike",
+   "label": "Elbow strike",
+   "group": "unarmed",
+   "seconds": 2.47,
+   "loop": false
+  },
+  {
+   "name": "knee_strike",
+   "label": "Knee strike",
+   "group": "unarmed",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
+   "name": "kick_front",
+   "label": "Front kick",
+   "group": "unarmed",
+   "seconds": 1.4,
+   "loop": false
+  },
+  {
+   "name": "kick_roundhouse",
+   "label": "Roundhouse kick",
+   "group": "unarmed",
+   "seconds": 2.67,
+   "loop": false
+  },
+  {
+   "name": "leg_sweep",
+   "label": "Leg sweep",
+   "group": "unarmed",
+   "seconds": 2.47,
+   "loop": false
+  },
+  {
+   "name": "throw_shoulder",
+   "label": "Over-the-shoulder throw",
+   "group": "unarmed",
+   "seconds": 4.3,
+   "loop": false
+  },
+  {
+   "name": "throw_grip",
+   "label": "Grab and throw down",
+   "group": "unarmed",
+   "seconds": 4.67,
+   "loop": false
+  },
+  {
+   "name": "guard_block_1",
+   "label": "Fist guard block 1",
+   "group": "unarmed",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "guard_block_2",
+   "label": "Fist guard block 2",
+   "group": "unarmed",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "guard_block_3",
+   "label": "Fist guard block 3",
+   "group": "unarmed",
+   "seconds": 2.5,
+   "loop": false
+  },
+  {
+   "name": "hit_face",
+   "label": "Punched in the face",
+   "group": "hurt",
+   "seconds": 2.83,
+   "loop": false
+  },
+  {
+   "name": "hit_face_2",
+   "label": "Punched in the face 2",
+   "group": "hurt",
+   "seconds": 4.5,
+   "loop": false
+  },
+  {
+   "name": "hit_slap",
+   "label": "Slapped",
+   "group": "hurt",
+   "seconds": 4.83,
+   "loop": false
+  },
+  {
+   "name": "hit_flyup",
+   "label": "Knocked flying",
+   "group": "hurt",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "bow_formal",
+   "label": "Formal bow",
+   "group": "social",
+   "seconds": 7.67,
+   "loop": false
+  },
+  {
+   "name": "bow_court",
+   "label": "Courtly bow",
+   "group": "social",
+   "seconds": 7.27,
+   "loop": false
+  },
+  {
+   "name": "kneel",
+   "label": "Kneel on one knee and rise",
+   "group": "social",
+   "seconds": 2.53,
+   "loop": false
+  },
+  {
+   "name": "agree",
+   "label": "Agree",
+   "group": "social",
+   "seconds": 13.0,
+   "loop": false
+  },
+  {
+   "name": "shrug",
+   "label": "Shrug",
+   "group": "social",
+   "seconds": 2.0,
+   "loop": false
+  },
+  {
+   "name": "wave",
+   "label": "Wave",
+   "group": "social",
+   "seconds": 4.1,
+   "loop": false
+  },
+  {
+   "name": "wave_big",
+   "label": "Big wave hello",
+   "group": "social",
+   "seconds": 5.33,
+   "loop": false
+  },
+  {
+   "name": "orate",
+   "label": "Talk passionately (orate, preach)",
+   "group": "social",
+   "seconds": 10.27,
+   "loop": true
+  },
+  {
+   "name": "talk_open",
+   "label": "Talk with open hands",
+   "group": "social",
+   "seconds": 3.97,
+   "loop": true
+  },
+  {
+   "name": "argue",
+   "label": "Argue angrily",
+   "group": "social",
+   "seconds": 20.8,
+   "loop": true
+  },
+  {
+   "name": "shout",
+   "label": "Shout angrily",
+   "group": "social",
+   "seconds": 7.17,
+   "loop": false
+  },
+  {
+   "name": "cheer",
+   "label": "Victory cheer",
+   "group": "social",
+   "seconds": 9.33,
+   "loop": false
+  },
+  {
+   "name": "cheer_hands_up",
+   "label": "Cheer, both hands up",
+   "group": "social",
+   "seconds": 1.87,
+   "loop": false
+  },
+  {
+   "name": "cheer_rally",
+   "label": "Rallying cheer",
+   "group": "social",
+   "seconds": 9.0,
+   "loop": false
+  },
+  {
+   "name": "clap_sit",
+   "label": "Clap, seated",
+   "group": "social",
+   "seconds": 3.33,
+   "loop": true
+  },
+  {
+   "name": "fist_pump",
+   "label": "Fist pump",
+   "group": "social",
+   "seconds": 1.5,
+   "loop": false
+  },
+  {
+   "name": "dance_joyful",
+   "label": "Joyful dance",
+   "group": "social",
+   "seconds": 6.53,
+   "loop": true
+  },
+  {
+   "name": "sit_answer",
+   "label": "Answer questions, seated",
+   "group": "social",
+   "seconds": 9.67,
+   "loop": true
+  },
+  {
+   "name": "stomp",
+   "label": "Angry stomp",
+   "group": "social",
+   "seconds": 8.0,
+   "loop": false
+  },
+  {
    "name": "thrust",
    "label": "Thrust / stab",
    "group": "melee",
@@ -2787,6 +3237,13 @@
    "loop": true
   },
   {
+   "name": "craft_bench",
+   "label": "Craft at a bench",
+   "group": "work",
+   "seconds": 3.6,
+   "loop": true
+  },
+  {
    "name": "dig",
    "label": "Dig (hoe, pickaxe)",
    "group": "work",
@@ -2798,6 +3255,139 @@
    "label": "Hammer at anvil",
    "group": "work",
    "seconds": 1.1,
+   "loop": true
+  },
+  {
+   "name": "unarmed_guard",
+   "label": "Guard (fists)",
+   "group": "unarmed",
+   "seconds": 2.6,
+   "loop": true
+  },
+  {
+   "name": "cook_stir",
+   "label": "Cook: stir a pot",
+   "group": "work",
+   "seconds": 2.4,
+   "loop": true
+  },
+  {
+   "name": "walk_sack",
+   "label": "Carry a sack on the shoulder",
+   "group": "move",
+   "seconds": 1.03,
+   "loop": true
+  },
+  {
+   "name": "give",
+   "label": "Give (hand over)",
+   "group": "life",
+   "seconds": 2.6,
+   "loop": false
+  },
+  {
+   "name": "take",
+   "label": "Take (receive)",
+   "group": "life",
+   "seconds": 2.6,
+   "loop": false
+  },
+  {
+   "name": "write",
+   "label": "Write at a desk",
+   "group": "work",
+   "seconds": 3.0,
+   "loop": true
+  },
+  {
+   "name": "read",
+   "label": "Read a book",
+   "group": "life",
+   "seconds": 6.0,
+   "loop": true
+  },
+  {
+   "name": "kneel_pray",
+   "label": "Kneel and pray",
+   "group": "social",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "row",
+   "label": "Row (oars)",
+   "group": "work",
+   "seconds": 2.2,
+   "loop": true
+  },
+  {
+   "name": "paddle",
+   "label": "Paddle a canoe",
+   "group": "work",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "sweep",
+   "label": "Sweep (broom)",
+   "group": "work",
+   "seconds": 1.6,
+   "loop": true
+  },
+  {
+   "name": "saw",
+   "label": "Saw a board",
+   "group": "work",
+   "seconds": 1.0,
+   "loop": true
+  },
+  {
+   "name": "weave",
+   "label": "Weave at a loom",
+   "group": "work",
+   "seconds": 3.2,
+   "loop": true
+  },
+  {
+   "name": "cast_net",
+   "label": "Cast a net",
+   "group": "work",
+   "seconds": 3.4,
+   "loop": false
+  },
+  {
+   "name": "feed",
+   "label": "Scatter feed",
+   "group": "work",
+   "seconds": 1.8,
+   "loop": true
+  },
+  {
+   "name": "walk_lead",
+   "label": "Lead a beast (halter)",
+   "group": "move",
+   "seconds": 1.03,
+   "loop": true
+  },
+  {
+   "name": "milk",
+   "label": "Milk",
+   "group": "work",
+   "seconds": 1.0,
+   "loop": true
+  },
+  {
+   "name": "fish_rod",
+   "label": "Fish with a rod",
+   "group": "work",
+   "seconds": 4.0,
+   "loop": true
+  },
+  {
+   "name": "beat_rug",
+   "label": "Beat a rug",
+   "group": "work",
+   "seconds": 1.2,
    "loop": true
   }
  ],

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1078
+   ],
+   "seam_after": [
+    0.827,
+    0.635
+   ],
+   "seam_before": [
+    1.564,
+    2.434
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "scyvoi/borunsa-tamga-felt",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__scyvoi__borunsa-tamga-felt.png",
+  "generator": "Codex image generation, Nov 2026 (exec-078d645b-c7de-4899-a38d-b66570d75c3b.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Borunsa wildfire-nomad felt and theropod-scute saddle-coat trim: char-ash blackened wool felt (#242220) and smoked tan buckskin (#b89664) appliqued with jagged wildfire pyre-chevrons in post-burn bloom-crimson (#a82024) and saffron-flame (#df9c28), framing four heat-branded Old Turkic-Jurchen angular clan tamga seals across above a lower course of overlapping rust-brown keeled theropod-lizard osteoderm scutes (#9a4422) riveted with bronze studs, whole tamgas clear of seams. Full colour.",
+  "sha1": "a87fcae240b07766d314d71c3b94f0fc19b42b5d"
+ }
+}

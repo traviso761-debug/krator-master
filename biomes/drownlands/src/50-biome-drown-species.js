@@ -48,7 +48,11 @@ var DROWNLANDS=DROWN;
   serpRock:[0x283e36,0x324a40,0x22342e],
   jadeRock:[0x2e8a68,0x389a76,0x26785a],
   basaltRock:[0x3a3e44,0x444850,0x32363c],
-  coalRock:[0x1c1c20,0x242428,0x16161a]
+  coalRock:[0x1c1c20,0x242428,0x16161a],
+  palm:[0x4c7832,0x58863a,0x426c2c,0x649042],
+  palmOld:[0x7e7838,0x8c8240],
+  palmtrunk:[0x8a7a62,0x7e705a,0x94846c],
+  coconutNut:[0x6c7a36,0x867238,0x5e6e30]
  };
 
  /* ==================== species roster (verified by check_botany.py) ==================== */
@@ -97,6 +101,10 @@ var DROWNLANDS=DROWN;
    how:'Stranded crimson seaweed ribbons and salt-bleached tsunami drift logs lining boulder-bars and snag booms.',
    items:['dl_wrack','dl_driftlog'],gather:'storm-wrack',
    tags:KT('tropical','wet','both',['Am','Cfa'],'boulderbar',{kin:'crook.stormwrack'})},
+  {key:'coconut',name:'Drift-Sown Coconut Palm (Cocos nucifera)',
+   how:'6.5-14.5 m leaning ringed monocot strand palm sprouting from sea-dispersed drift nuts on sheltered leeward skerry strand pockets, sedimentary lagoon levee benches and above-scour horst shoulders (pH 5.0-8.8, strictly outside caustic brucite pools).',
+   items:['dl_palmtrunk','dl_palm','dl_coconut_nut'],crop:'coconut',
+   tags:ET('tropical','wet','both',['Am','Cfa'],'boulderbar',{strand:true,ph:[5.0,8.8]})},
   {key:'araucaria',name:'Refuge-Crown Candelabra Araucaria (Araucaria rulei)',
    how:'8.0-20.0 m straight-boled ultramafic conifer with upturned scale-leaf candelabra arms standing strictly above the +48 m megatsunami trimline on high laterite skerry crowns.',
    items:['dl_arch_scale'],woodyRefuge:true,
@@ -112,7 +120,59 @@ var DROWNLANDS=DROWN;
   {key:'verdigris',name:'Nickel-Crust Verdigris Cap',
    how:'0.35-1.5 m turquoise-crusted fungoid dome growing on high-nickel ultramafic laterite.',
    items:['dl_verdigris_cap','dl_verdigris_stalk'],gather:'nickel-bio-ash',
-   tags:KT('tropical','wet','no',['Am'],'refugeskerry',{kin:'arch.verdigris',ultramafic:true,nickel:'hyper'})}
+   tags:KT('tropical','wet','no',['Am'],'refugeskerry',{kin:'arch.verdigris',ultramafic:true,nickel:'hyper'})},
+  {key:'refugekauri',name:'Refuge-Crown Maquis Kauri (Agathis ovata)',
+   how:'7.5-17.5 m stout columnar ultramafic conifer strictly above the +48 m megatsunami trimline on high laterite skerry crowns, weeping golden kauri-gum stalactites.',
+   items:['dl_kauri_fol','dl_kauri_gum'],woodyRefuge:true,
+   tags:ET('tropical','wet','no',['Am','Cfa'],'refugeskerry',{ultramafic:true})},
+  {key:'skerrypaperbark',name:'Skerry Niaouli Paperbark (Melaleuca quinquenervia)',
+   how:'3.8-8.5 m twisted cream-barked tree on wet skerry benches and lagoon shoulders shedding thick waterproof sheets of papery caulking bark.',
+   items:['dl_paperbark_fol'],
+   tags:ET('tropical','wet','both',['Am','Cfa'],'boulderbar',{strand:true})},
+  {key:'skerryphyllanthus',name:'Jade-Phloem Nickel Shrub (Phyllanthus balgooyi)',
+   how:'1.2-3.0 m multi-stemmed ultramafic hyperaccumulator shrub with vivid emerald nickel-bearing phloem on garnierite skerries.',
+   items:['dl_phyllanthus_fol'],gather:'nickel-bio-ash',
+   tags:ET('tropical','wet','no',['Am','Cfa'],'propwood',{ultramafic:true,nickel:'hyper'})},
+  {key:'skerrysedge',name:'Laterite Tussock-Sedge (Costularia stagnalis)',
+   how:'0.5-1.3 m stiff ochre-olive silica sedge tussocks binding wet ultramafic benches and skerry crowns.',
+   items:['dl_skerrysedge'],
+   tags:ET('tropical','wet','both',['Am','Cfa'],'refugeskerry',{ultramafic:true})},
+  {key:'skerrypitcher',name:'Laterite Seep Pitcher-Vine (Nepenthes vieillardii)',
+   how:'0.35-0.95 m crimson-olive insectivorous pitchers on nitrogen-poor freshwater ultramafic seeps outside caustic brucite pools.',
+   items:['dl_pitcher_rosette','dl_pitcher_cup'],
+   tags:ET('tropical','wet','yes',['Am'],'refugeskerry',{ultramafic:true})},
+  {key:'skerrycasuarina',name:'Leeward Strand Ironwood (Casuarina equisetifolia)',
+   how:'5.5-12.5 m drooping grey-green needle-clad shelterbelt tree fixing nitrogen along sheltered skerry strand berms.',
+   items:['dl_casuarina_fol','dl_casuarina_drape'],
+   tags:ET('tropical','wet','no',['Am','Cfa'],'boulderbar',{strand:true})},
+  {key:'skerrypandan',name:'Prop-Rooted Skerry Screwpine (Pandanus tectorius)',
+   how:'3.2-7.2 m stilt-rooted coastal screwpine crowned with spiral keeled strap rosettes and orange fruit keys.',
+   items:['dl_pandan_fol','dl_pandan_fruit'],crop:'pandan',
+   tags:ET('tropical','wet','both',['Am','Cfa'],'boulderbar',{strand:true})},
+  {key:'skerryhibiscus',name:'Tide-Margin Sea-Hibiscus (Hibiscus tiliaceus)',
+   how:'2.4-5.2 m scrambling bast-cordage thicket tree with broad heart leaves and yellow cup blooms on sheltered lagoon levees.',
+   items:['dl_hibiscus_fol','dl_hibiscus_bloom'],
+   tags:ET('tropical','wet','both',['Am','Cfa'],'boulderbar',{strand:true})},
+  {key:'skerrynaupaka',name:'Strand Salt-Naupaka (Scaevola taccada)',
+   how:'0.8-2.0 m fleshy bright-green rounded strand cushion shrub above high-libration swash.',
+   items:['dl_naupaka_fol'],
+   tags:ET('tropical','wet','no',['Am','Cfa'],'boulderbar',{strand:true})},
+  {key:'greymangrove',name:'Pneumatophore Grey-Mangrove (Avicennia marina)',
+   how:'3.0-7.5 m silvery-olive intertidal mangrove ringed by carpets of erect pencil pneumatophores in sheltered lagoons and shoal margins.',
+   items:['dl_avicennia_fol','dl_pneumatophore'],
+   tags:ET('tropical','wet','yes',['Am','Cfa'],'snaglagoon',{tidal:true})},
+  {key:'byssusmussel',name:'Golden Sea-Byssus Fan-Mussel (Pinna pectinata)',
+   how:'0.5-1.2 m upright bronze-violet triangular shell anchored in subtidal sand/shell guts by gleaming golden sea-silk byssus beards.',
+   items:['dl_byssus_shell','dl_byssus_beard'],gather:'sea-byssus',
+   tags:ET('tropical','wet','yes',['Am','Cfa'],'kelpchannel',{submarine:true})},
+  {key:'skerryoyster',name:'Libration Visor Rock-Oyster (Saccostrea librata)',
+   how:'Cemented rose-chalk oyster and barnacle cushions banding intertidal shoal ledges (-0.8 to +1.75 m).',
+   items:['dl_rock_oyster'],
+   tags:ET('tropical','wet','yes',['Am','Cfa'],'boulderbar',{tidal:true})},
+  {key:'halimedaturf',name:'Calcifying Coin-Alga Turf (Halimeda opuntia)',
+   how:'0.25-0.75 m emerald-jade segmented calcareous green shoal-alga carpeting sunlit shallow shoals and shedding white aragonite sand.',
+   items:['dl_halimeda'],
+   tags:ET('tropical','wet','yes',['Am','Cfa'],'kelpchannel',{submarine:true})}
  ];
  SPECIES.forEach((S,i)=>{S.i=i;});
 
@@ -128,10 +188,24 @@ var DROWNLANDS=DROWN;
   limeshelf:HV('none',[],false,'Calcined into pure slaked lime mortar and flux reagent.'),
   seepcomb:HV('none',[],false,'Prospector indicator marking H2-bearing serpentinization fault seeps.'),
   stormwrack:HV('timber (seasoned driftwood)',['dried wrack sheet'],false,'Tsunami-seasoned Crookshore drift logs salvaged at harvest booms; crimson wrack boiled for agar sizing.'),
+  coconut:HV('timber (monocot posts), thatch, coir, cordage',['coconuts'],false,'Drift-sown along sheltered leeward beaches and lagoon levees; yields potable coconut water on brackish skerries, plaited frond thatch, and rot-proof coir mooring warps.'),
   araucaria:HV('timber (straight mastwood), resin',[],false,'Storm-safe refuge crown spar timber strictly above +48 m megatsunami trimline.'),
   pycnandra:HV('none',[],false,'Tapped and calcined for 25% nickel bio-ore latex.'),
   gymnostoma:HV('fuel (dense, hot)',[],false,'Hot-burning ironwood fuel; Frankia root nodules enrich laterite.'),
-  verdigris:HV('none',[],false,'Calcined into 15% nickel bio-ore ash.')
+  verdigris:HV('none',[],false,'Calcined into 15% nickel bio-ore ash.'),
+  refugekauri:HV('timber (spars), gum, pitch',[],false,'Storm-safe >= +48 m refuge spar wood; golden kauri gum boiled into waterproof Ark-Ward hull pitch and varnish.'),
+  skerrypaperbark:HV('bark (waterproof caulking sheets), fuel',[],true,'Thick spongy paperbark stripped in sheets to caulk twin-hull seams; aromatic cajeput leaf oil.'),
+  skerryphyllanthus:HV('fuel',[],false,'Coppiced ultramafic hyperaccumulator calcined into 16% nickel-oxide bio-ore ash reagent for Paktong charges.'),
+  skerrysedge:HV('thatch, weaving',[],false,'Silica-edged tussock blades bundled for shed thatch and plaited into dry stowage baskets.'),
+  skerrypitcher:HV('cordage (vine lashing), water reservoir',['filtered pitcher fluid'],false,'Tough woody stems twisted into rough lashing; unopened pitchers hold emergency rainwater.'),
+  skerrycasuarina:HV('fuel (smelter charcoal), timber',[],false,'Dense slow-burning charcoal wood prized for Paktong crucible furnaces; nitrogen-fixing strand roots.'),
+  skerrypandan:HV('weaving, thatch, cordage',['cooked pandan key'],false,'Keeled strap leaves cured and plaited into twin-hull lateen sail-mats and mooring fenders.'),
+  skerryhibiscus:HV('bast, cordage, knees',[],false,'Retted inner bark yields rot-proof diving-line cordage and net twine; curved limbs frame outrigger floats.'),
+  skerrynaupaka:HV('none',[],true,'Salt-succulent leaves crushed as a soothing poultice for alkali-sinter and salt burns.'),
+  greymangrove:HV('knees, fuel, tannin',['leached propagule'],false,'Elastoplastic intertidal boat-rib knees and smokehouse fuel; bark yields astringent net preservative.'),
+  byssusmussel:HV('spinning (sea-silk byssus)',['adductor meat'],false,'Combed golden holdfast fibres spun into prized iridescent sea-silk cloth; valves burned for shell lime.'),
+  skerryoyster:HV('none',['rock oyster'],false,'Harvested at low libration water; shells calcined in shore clamps for hydraulic limewash and flux.'),
+  halimedaturf:HV('fertiliser, reagent (lime sand)',[],false,'Calcified segments break down into white aragonite lagoon sand; dredged to sweeten garden beds.')
  };
  SPECIES.forEach(S=>{
   S.tags.harvest=DROWN.HARVEST[S.key];
@@ -231,7 +305,30 @@ var DROWNLANDS=DROWN;
   kelpBlade:BIO.leafMat(cardFallback(33),'dl-kelp',{aN:false,swayW:'(position.y)',swayA:0.22}),
   seagrassBlade:BIO.leafMat(cardFallback(34),'dl-seagrass',{aN:false,swayW:'(position.y)',swayA:0.16}),
   fanCard:BIO.leafMat(cardFallback(35),'dl-fan',{aN:false,swayW:'(position.y)',swayA:0.14}),
-  wrackCard:BIO.leafMat(cardFallback(36),'dl-wrack',{aN:false,swayW:'0.35',swayA:0.03})
+  wrackCard:BIO.leafMat(cardFallback(36),'dl-wrack',{aN:false,swayW:'0.35',swayA:0.03}),
+  palmFrond:BIO.leafMat((function(){
+   const t=BIO.alphaTex(512,(g,S)=>{
+    g.lineCap='round';
+    const nPairs=38;
+    for(let i=1;i<=nPairs;i++){
+     const u=i/(nPairs+1),ry=S*(0.05+0.88*u);
+     const env=Math.sin(Math.pow(u,0.68)*Math.PI)*(1-0.12*u),pLen=S*0.40*env;
+     if(pLen<4)continue;
+     for(const side of [-1,1]){
+      const sweep=0.34+0.26*u,ang=side*(Math.PI*0.5-sweep)+(H(0x5d1095,i,side+2,95)-0.5)*0.05;
+      const mx=S*0.5+Math.cos(ang)*pLen*0.56,my=ry+Math.sin(Math.abs(sweep))*pLen*0.42;
+      const tx=clamp(S*0.5+Math.cos(ang)*pLen,0.04*S,0.96*S),ty=clamp(ry+Math.sin(Math.abs(sweep))*pLen*0.88,0.04*S,0.96*S);
+      const hw=S*0.0078*(0.6+0.5*env),lum=Math.round(168+64*env+22*(H(0x5d1095,i,side+5,95)-0.5));
+      g.fillStyle='rgb('+Math.round(lum*0.92)+','+Math.min(255,Math.round(lum*1.05))+','+Math.round(lum*0.74)+')';
+      g.beginPath();g.moveTo(S*0.5,ry-hw);g.quadraticCurveTo(mx,my-hw*0.7,tx,ty);g.quadraticCurveTo(mx,my+hw*0.9,S*0.5,ry+hw);g.closePath();g.fill();
+     }
+    }
+    g.strokeStyle='rgba(168,176,112,0.96)';g.lineWidth=S*0.012;
+    g.beginPath();g.moveTo(S*0.5,S*0.03);g.lineTo(S*0.5,S*0.94);g.stroke();
+   },[154,182,112]);
+   t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+   return t;
+  })(),'dl-palmfrond',{aN:false,swayW:'(position.x)',swayA:0.085,alphaTest:0.36})
  };
  DROWN.SWAP=BIO.libSwap('drownlands',M);
 
@@ -563,5 +660,224 @@ var DROWNLANDS=DROWN;
    BIO.owner=ownPrev;
   }
   return{tris,H:H0};
+ };
+
+ /* 5. Drift-Sown Coconut Palm (coconut, sheltered leeward strand pockets & lagoon levees, pH 5.0-8.8) */
+ function makePalmSegGeo(){
+  const seg=8,rings=5,pos=[],nor=[],uv=[],col=[],idx=[];
+  for(let r=0;r<=rings;r++){
+   const t=r/rings,yy=-0.5+t,taper=lerp(0.54,0.46,t),rib=1+0.065*Math.cos(t*TAU*5),rad=taper*rib;
+   const sh=0.82+0.14*t+0.05*Math.cos(t*TAU*5);
+   for(let s=0;s<=seg;s++){
+    const u=s/seg,ang=u*TAU;
+    pos.push(Math.cos(ang)*rad,yy,Math.sin(ang)*rad);
+    nor.push(Math.cos(ang),0.06,Math.sin(ang));
+    uv.push(u*1.6,t*1.8);
+    col.push(sh,sh*0.98,sh*0.94);
+   }
+  }
+  for(let r=0;r<rings;r++)for(let s=0;s<seg;s++){
+   const a=r*(seg+1)+s,b=a+seg+1;
+   idx.push(a,b,a+1,a+1,b,b+1);
+  }
+  const g=new T3.BufferGeometry();
+  g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+  g.setIndex(idx);
+  g.computeVertexNormals();
+  return g;
+ }
+ function makeDroopFrondGeo(nSeg,arch,droop,halfW,vFold){
+  const pos=[],nor=[],uv=[],L0=[],C0=[],R0=[];
+  for(let i=0;i<=nSeg;i++){
+   const t=i/nSeg,x=t*(1-0.14*t*t),y=arch*Math.sin(t*1.95)-droop*t*t*t;
+   const env=Math.sin(Math.pow(t,0.62)*Math.PI*0.96)*(0.88+0.12*(1-t)),w=halfW*(0.08+0.92*env),vf=vFold*env;
+   L0.push([x,y-vf,-w,0,t]);C0.push([x,y,0,0.5,t]);R0.push([x,y-vf,w,1,t]);
+  }
+  for(let i=0;i<nSeg;i++){
+   [[L0[i],C0[i],L0[i+1],C0[i+1],-0.28],[C0[i],R0[i],C0[i+1],R0[i+1],0.28]].forEach(s=>{
+    const a=s[0],b=s[1],c=s[2],d=s[3],nz=s[4],nl=Math.hypot(0.15,0.94,nz);
+    [a,b,c,b,d,c].forEach(q=>{pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);nor.push(0.15/nl,0.94/nl,nz/nl);});
+   });
+  }
+  const g=BIO.geo._make(pos,nor,uv);
+  g.userData.card={base:'top',kind:'frond'};
+  return g;
+ }
+ function makeCoconutClusterGeo(){
+  const pos=[],nor=[],uv=[],col=[],idx=[],offs=[[0.14,-0.10,0],[-0.12,-0.12,0.09],[0.02,-0.14,-0.13],[0,-0.24,0.02]];
+  offs.forEach(o=>{
+   const s=new T3.IcosahedronGeometry(0.13,1),p=s.attributes.position,n=s.attributes.normal,u=s.attributes.uv,b=pos.length/3;
+   for(let i=0;i<p.count;i++){
+    pos.push(p.getX(i)+o[0],p.getY(i)*1.22+o[1],p.getZ(i)+o[2]);
+    nor.push(n.getX(i),n.getY(i),n.getZ(i));
+    uv.push(u?u.getX(i):0.5,u?u.getY(i):0.5);
+    const sh=0.76+0.24*clamp(p.getY(i)/0.13*0.5+0.5,0,1);
+    col.push(sh,sh,sh*0.92);
+   }
+   if(s.index){const ix=s.index.array;for(let i=0;i<ix.length;i++)idx.push(b+ix[i]);}
+   else for(let i=0;i<p.count;i++)idx.push(b+i);
+  });
+  const g=new T3.BufferGeometry();
+  g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+  g.setIndex(idx);
+  return g;
+ }
+ const DL_PALM_FROND_GEO=makeDroopFrondGeo(5,0.34,0.42,0.28,0.075);
+ BIO.def('dl_palmtrunk',makePalmSegGeo(),M.archBark,{label:'Drift-Sown Coconut Palm (ringed trunk)'});
+ BIO.def('dl_palm',DL_PALM_FROND_GEO,M.palmFrond,{label:'Drift-Sown Coconut Palm (drooping pinnate frond)'});
+ BIO.def('dl_coconut_nut',makeCoconutClusterGeo(),M.sponge,{label:'Drift-Sown Coconut Palm (nut cluster)'});
+
+ const recTree=(key,x,y,z,r,h)=>{const S=byKey[key];if(S&&BIO.record)BIO.record({name:S.name,key:S.key,kind:'tree',x,y,z,r,h,tags:S.tags});};
+ DROWN.recTree=recTree;
+
+ DROWN.growCoconut=function(x,y,z,H0,yaw,lean,tSeed,lv){
+  const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const r0=clamp(0.22+H0*0.006,0.22,0.34);
+  const dx=-Math.cos(yaw)*Math.sin(lean)*H0,dz=Math.sin(yaw)*Math.sin(lean)*H0;
+  const baseY=y-0.26,ty=y+H0*Math.cos(lean)*0.97,tx=x+dx,tz=z+dz;
+  /* Register in KTAGS strictly before drawing */
+  recTree('coconut',x,y,z,Math.max(3.6,Math.hypot(dx,dz)+2.0),H0+2.4);
+  const trunkCol=C(PAL.palmtrunk[(tSeed>>>0)%PAL.palmtrunk.length]);
+  const rSeg=[r0*1.08,r0*0.88,r0*0.73];
+  const pts=[];
+  for(let i=0;i<=3;i++){
+   const t=i/3,ht=Math.pow(t,0.78);
+   pts.push([x+dx*ht,baseY+(ty+0.04-baseY)*t,z+dz*ht]);
+  }
+  BIO.tree(x,z,()=>{
+   for(let i=0;i<3;i++){
+    const a=pts[i],b=pts[i+1];
+    const ex=i>0?[a[0]-(b[0]-a[0])*0.05,a[1]-(b[1]-a[1])*0.05,a[2]-(b[2]-a[2])*0.05]:a;
+    BIO.beam('dl_palmtrunk',ex,b,rSeg[i],rSeg[i],trunkCol);
+   }
+   const nutS=0.95+0.25*h(1,2);
+   BIO.put('dl_coconut_nut',[tx,ty-0.10,tz],qEuler(0,yaw+1.1,0),[nutS,nutS,nutS],C(PAL.coconutNut[(tSeed>>>0)%PAL.coconutNut.length]));
+   const nF=lv!=null&&lv<1?9:13,gold=2.399963,fLen=clamp(2.5+H0*0.11,2.8,4.3);
+   for(let k=0;k<nF;k++){
+    const age=k/(nF-1),az=yaw+k*gold+0.16*(h(k+3,1)-0.5);
+    const pitch=lerp(0.78,-0.32,Math.pow(age,0.88))+0.08*(h(k+3,2)-0.5);
+    const Lf=fLen*(age<0.2?0.82:age>0.82?0.88:1)*(0.92+0.16*h(k+3,3));
+    const cHex=age>0.80?PAL.palmOld[k%PAL.palmOld.length]:PAL.palm[(k+(tSeed>>>0))%PAL.palm.length];
+    BIO.put('dl_palm',[tx,ty+0.04-0.14*age,tz],qEuler((h(k+3,4)-0.5)*0.14,-az,pitch),[Lf,Lf*0.95,Lf*1.08],C(cHex));
+   }
+  },{range:580});
+  return{H:H0};
+ };
+
+ /* ==================== 13-species diversity pass: refuge kauri, skerry/strand shrubs, grey mangrove & shoal bivalves/algae ==================== */
+ M.broadCard=BIO.leafMat(cardFallback(41),'dl-broad',{aN:true,swayW:'0.75',swayA:0.06});
+ M.needleCard=BIO.leafMat(cardFallback(42),'dl-needle',{aN:false,swayW:'(-position.y)',swayA:0.09});
+ M.bloomCard=BIO.leafMat(cardFallback(43),'dl-bloom',{aN:false,swayW:'0.65',swayA:0.06});
+ M.strapCard=BIO.leafMat(cardFallback(44),'dl-strap',{aN:false,swayW:'(position.y)',swayA:0.08});
+
+ BIO.def('dl_kauri_fol',BIO.geo.clump(),M.broadCard,{attrs:['aN'],label:'Refuge-Crown Maquis Kauri foliage'});
+ BIO.def('dl_kauri_gum',BIO.fung.stalk({r0:0.09,r1:0.03,seg:6,rings:3,bend:0.12}),M.sponge,{label:'Golden Kauri-Gum resin stalactite'});
+ BIO.def('dl_paperbark_fol',BIO.geo.clump(),M.broadCard,{attrs:['aN'],label:'Skerry Niaouli Paperbark crown'});
+ BIO.def('dl_phyllanthus_fol',BIO.geo.clump(),M.coppiceLeaf,{attrs:['aN'],label:'Jade-Phloem Nickel Shrub spray'});
+ BIO.def('dl_skerrysedge',BIO.geo.clump(),M.strapCard,{label:'Laterite Tussock-Sedge clump'});
+ BIO.def('dl_pitcher_rosette',BIO.geo.mat(0.85,0.28),M.strapCard,{label:'Laterite Seep Pitcher-Vine rosette'});
+ BIO.def('dl_pitcher_cup',BIO.fung.bladder({swell:0.68,neck:0.32,h:0.42,pleats:5,pleatA:0.05,seg:7,rings:3,seed:57121}),M.sponge,{label:'Nepenthes insectivorous pitcher'});
+ BIO.def('dl_casuarina_fol',BIO.geo.clump(),M.needleCard,{label:'Leeward Strand Ironwood crown'});
+ BIO.def('dl_casuarina_drape',BIO.geo.hang(4,0.34,0.22),M.needleCard,{label:'Leeward Strand Ironwood drooping needles'});
+ BIO.def('dl_pandan_fol',BIO.geo.clump(),M.strapCard,{label:'Prop-Rooted Skerry Screwpine strap rosette'});
+ BIO.def('dl_pandan_fruit',BIO.fung.cap({form:'dome',h:0.38,seg:8,rings:3,lump:0.22,under:'none',uv:'planar',seed:57122}),M.sponge,{label:'Pandanus compound fruit key'});
+ BIO.def('dl_hibiscus_fol',BIO.geo.clump(),M.broadCard,{attrs:['aN'],label:'Tide-Margin Sea-Hibiscus heart leaves'});
+ BIO.def('dl_hibiscus_bloom',BIO.geo.clump(),M.bloomCard,{label:'Tide-Margin Sea-Hibiscus yellow cup flowers'});
+ BIO.def('dl_naupaka_fol',BIO.geo.clump(),M.broadCard,{attrs:['aN'],label:'Strand Salt-Naupaka fleshy shrub'});
+ BIO.def('dl_avicennia_fol',BIO.geo.clump(),M.coppiceLeaf,{attrs:['aN'],label:'Pneumatophore Grey-Mangrove crown'});
+ BIO.def('dl_pneumatophore',BIO.fung.stalk({r0:0.032,r1:0.014,seg:5,rings:3,bend:0.06}),M.bark,{label:'Avicennia erect pencil pneumatophore'});
+ BIO.def('dl_byssus_shell',BIO.fung.stalk({r0:0.045,r1:0.19,seg:6,rings:4,bend:0.08,ribs:7,ribA:0.12}),M.oyster,{label:'Golden Sea-Byssus Fan-Mussel valve'});
+ BIO.def('dl_byssus_beard',BIO.fung.cap({form:'disc',h:0.14,seg:8,rings:2,lump:0.26,under:'none',uv:'planar',seed:57123}),M.sponge,{label:'Golden sea-silk byssus anchor beard'});
+ BIO.def('dl_rock_oyster',BIO.fung.crust({lobes:6,lobeA:0.22,seg:10,rings:2,seed:57124}),M.oyster,{label:'Libration Visor Rock-Oyster reef cushion'});
+ BIO.def('dl_halimeda',BIO.geo.clump(),M.seagrassBlade,{label:'Calcifying Coin-Alga Turf'});
+
+ DROWN.growRefugeKauri=function(x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale;
+  const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const H0=(8.5+7.5*h(1,1))*sc,r0=0.26*sc;
+  recTree('refugekauri',x,y,z,3.6*sc,H0+2.0);
+  const barkCol=PAL.archBark[(tSeed>>>0)%PAL.archBark.length];
+  const leafCol=C(0x365c3a);
+  BIO.tree(x,z,()=>{
+   const bole=[];
+   for(let i=0;i<=4;i++){
+    const t=i/4;
+    bole.push({x:x+0.08*(h(i+2,1)-0.5),y:y-0.35+(H0+0.35)*t,z:z+0.08*(h(i+2,2)-0.5),r:Math.max(0.08,r0*(1-0.46*t))});
+   }
+   BIO.tube('dl_arch_wood',bole,barkCol,{seg:7});
+   for(let b=0;b<4;b++){
+    const az=(b/4)*TAU+0.4*h(b+8,1),span=H0*(0.18+0.07*h(b+8,2));
+    const sy=y+H0*(0.62+0.07*b),ey=sy+H0*0.16;
+    const ex=x+Math.cos(az)*span,ez=z+Math.sin(az)*span;
+    BIO.tube('dl_arch_wood',[{x:x,y:sy,z:z,r:r0*0.42},{x:ex,y:ey,z:ez,r:0.05}],barkCol,{seg:5});
+    const cSz=(1.45+0.45*h(b+8,3))*sc;
+    BIO.put('dl_kauri_fol',[ex,ey,ez],qEuler(0,az,0),[cSz,cSz*0.76,cSz],leafCol,{n:[0,1,0]});
+    if(b%2===0)BIO.put('dl_kauri_gum',[x+Math.cos(az)*r0*0.8,sy-0.18,z+Math.sin(az)*r0*0.8],qEuler(Math.PI,az,0),[0.55*sc,0.55*sc,0.55*sc],C(0xdca02c));
+   }
+   BIO.put('dl_kauri_fol',[bole[4].x,bole[4].y,bole[4].z],qEuler(0,h(20,1)*TAU,0),[1.85*sc,1.35*sc,1.85*sc],leafCol,{n:[0,1,0]});
+  },{range:580});
+  return{H:H0};
+ };
+
+ DROWN.growStrandWoody=function(kind,x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale;
+  const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const isCas=kind==='skerrycasuarina',isPap=kind==='skerrypaperbark',isPan=kind==='skerrypandan',isHib=kind==='skerryhibiscus',isNaup=kind==='skerrynaupaka';
+  const H0=(isCas?6.2+5.2*h(1,1):isPap?4.2+3.6*h(1,1):isPan?3.4+3.0*h(1,1):isHib?2.5+2.2*h(1,1):isNaup?0.9+0.9*h(1,1):1.3+1.4*h(1,1))*sc;
+  recTree(kind,x,y,z,(isCas||isPap?2.6:1.6)*sc,H0+1.2);
+  const stemCol=C(isPap?0xd8d2c4:0x7c6e5c);
+  const folItem=isCas?'dl_casuarina_fol':isPap?'dl_paperbark_fol':isPan?'dl_pandan_fol':isHib?'dl_hibiscus_fol':isNaup?'dl_naupaka_fol':'dl_phyllanthus_fol';
+  const leafCol=C(isCas?0x506c4c:isPap?0x627e60:isPan?0x4c8038:isHib?0x4a883a:isNaup?0x5a9c48:0x387448);
+  const nStems=isCas||isPap?3:(isNaup?2:3);
+  BIO.tree(x,z,()=>{
+   if(isPan){
+    for(let p=0;p<3;p++){
+     const pa=(p/3)*TAU+0.3*h(p+2,1);
+     BIO.beam('dl_palmtrunk',[x,y+H0*0.28,z],[x+Math.cos(pa)*0.55*sc,y-0.18,z+Math.sin(pa)*0.55*sc],0.055*sc,0.04*sc,stemCol);
+    }
+   }
+   for(let s=0;s<nStems;s++){
+    const az=(s/nStems)*TAU+0.4*(h(s+5,1)-0.5);
+    const sp=(isCas||isPap?0.55+0.55*h(s+5,2):0.35+0.45*h(s+5,2))*sc;
+    const tx=x+Math.cos(az)*sp,tz=z+Math.sin(az)*sp,ty=y+H0*(0.78+0.22*(s/nStems));
+    BIO.beam('dl_palmtrunk',[x,y-0.16,z],[tx,ty,tz],(isCas||isPap?0.12:0.065)*sc,0.035*sc,stemCol);
+    const sz=(isCas||isPap?1.45+0.55*h(s+5,3):isNaup?0.78+0.32*h(s+5,3):1.05+0.45*h(s+5,3))*sc;
+    BIO.put(folItem,[tx,ty-0.04,tz],qEuler(0,h(s+5,4)*TAU,0),[sz,sz*0.80,sz],leafCol,isCas||isPan?undefined:{n:[0,1,0]});
+    if(isCas)BIO.put('dl_casuarina_drape',[tx,ty-0.02,tz],qEuler(0,az,0),[sz*0.52,sz*0.92,sz*0.52],leafCol);
+    if(isPan&&s===0)BIO.put('dl_pandan_fruit',[tx,ty-0.14,tz],qEuler(0,az,0),[0.34*sc,0.38*sc,0.34*sc],C(0xdc7224));
+    if(isHib)BIO.put('dl_hibiscus_bloom',[tx,ty-0.02,tz],qEuler(0,az+1.0,0),[sz*0.52,sz*0.44,sz*0.52],C(0xf0cc32));
+   }
+  },{range:520});
+  return{H:H0};
+ };
+
+ DROWN.growGreyMangrove=function(x,y,z,tSeed,scale){
+  const sc=scale==null?1:scale;
+  const h=(i,k)=>KRAND.unit(KRAND.hash(tSeed>>>0,i|0,k|0));
+  const H0=(3.4+3.6*h(1,1))*sc,r0=0.14*sc;
+  recTree('greymangrove',x,y,z,2.6*sc,H0+1.2);
+  const barkCol=PAL.mangroveBark[(tSeed>>>0)%PAL.mangroveBark.length];
+  const leafCol=C(0x5c765a);
+  BIO.tree(x,z,()=>{
+   for(let b=0;b<3;b++){
+    const az=(b/3)*TAU+0.45*(h(b+2,1)-0.5),span=(0.65+0.55*h(b+2,2))*sc;
+    const tx=x+Math.cos(az)*span,tz=z+Math.sin(az)*span,ty=y+H0*(0.76+0.20*h(b+2,3));
+    BIO.tube('dl_mangrove_wood',[{x:x,y:y-0.25,z:z,r:r0},{x:tx,y:ty,z:tz,r:0.045}],barkCol,{seg:6});
+    const sz=(1.35+0.45*h(b+2,4))*sc;
+    BIO.put('dl_avicennia_fol',[tx,ty-0.04,tz],qEuler(0,az,0),[sz,sz*0.74,sz],leafCol,{n:[0,1,0]});
+   }
+   for(let p=0;p<6;p++){
+    const pa=(p/6)*TAU+0.3*h(p+9,1),pr=(0.85+1.15*h(p+9,2))*sc;
+    const px=x+Math.cos(pa)*pr,pz=z+Math.sin(pa)*pr,py=BIO.host.terrainH(px,pz);
+    BIO.put('dl_pneumatophore',[px,py-0.05,pz],qEuler(0,pa,0),[1.0,0.32+0.26*h(p+9,3),1.0],C(barkCol));
+   }
+  },{range:520});
+  return{H:H0};
  };
 })();

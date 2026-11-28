@@ -34,7 +34,7 @@ from ..types.limbs import limb_tube, sleeve, sleeves, trousers
 from ..types.footwear import boots, sandal
 from ..types.headgear import head_rings, brim, tower_hat, fan, crest, horn
 from ..types.accoutrements import (
-    flap, blob, pouch_belt, button_row, pendants, strap, tube, tassel, rosette
+    flap, blob, pouch_belt, pack_straps, button_row, pendants, strap, tube, tassel, rosette
 )
 
 
@@ -155,9 +155,8 @@ def _build_yuni_peasant(sex, body_id):
     ])
 
     hem = core.CROTCH - 0.10 if sex == 'm' else core.CROTCH - 0.14
-    shirt_tube = torso_tube(gid_t, core.TOP, hem, 0.014, shirt_p, hang_from=core.WAIST - 0.02, flare=0.06,
+    shirt_tube = torso_tube(gid_t, core.TOP, hem, 0.018, shirt_p, hang_from=core.WAIST - 0.02, flare=0.09,
                             group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    shirt_tube.cloth = None
     parts_t.append(shirt_tube)
     parts_t.extend(sleeves(gid_t, 'elbow', 0.024, sl_p, ease_end=0.034, rows=6))
     parts_t.append(collar(gid_t + '_bandana', bandana_p, height=0.045, flare=0.016, ease=0.022))
@@ -172,7 +171,7 @@ def _build_yuni_peasant(sex, body_id):
     d_cant = np.array([0.85, -0.45, 0.0])
     d_cant /= np.linalg.norm(d_cant)
     parts_t.append(rosette(gid_t + '_canteen', surface_out(c_hip, d_cant, 0.055), d_cant, FRONT, 0.058,
-                           P('khaki', 0.05, [B('top', 0.0, 0.25, 'solid', 'brass')], fabric='cloth.oiled'),
+                           P('khaki', 0.05, [B('top', 0.0, 0.25, 'solid', 'brass')], fabric='cloth.canvas.oiled'),
                            n=14, thick=0.028, rigid_joint='Hips'))
     entries.append(assemble_garment(gid_t, 'Outback Bush-Shirt, Vest & Canteen', 'torso', 'yuni', parts_t))
 
@@ -200,8 +199,8 @@ def _build_yuni_peasant(sex, body_id):
 
     # --- HEAD: Outback Cork-Hat / Bush Akubra ---
     gid_h = f'yuni_{sex}_peasant_akubra'
-    crown_p = P('sand', 0.06, fabric='cloth.felt')
-    brim_p = P('sand', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'saddle')], fabric='cloth.felt')
+    crown_p = P('sand', 0.06, fabric='cloth.felt.boiled')
+    brim_p = P('sand', 0.06, [B('bottom', 0.0, 0.02, 'solid', 'saddle')], fabric='cloth.felt.boiled')
     band_p = P('saddle', 0.04, [B('top', 0.0, 0.3, 'diamonds', 'yuniyellow', 'saddle', 0.035)], fabric='leather.polished')
     parts_h = _akubra_hat(gid_h, crown_p, brim_p, band_p, corks=True)
     entries.append(assemble_garment(gid_h, 'Outback Bush Akubra & Cork-Brim Hat', 'head', 'yuni', parts_h, covers_hair=True))
@@ -225,27 +224,26 @@ def _build_yuni_trade(sex, body_id):
         PN(0.45, 0.55, 'diamonds', 'yuniyellow', 'tileblue', 0.08, down=core.TOP - core.WAIST + 0.02),
         PN(0.43, 0.45, 'solid', 'saddle', 'ochre', 1.0),
         PN(0.55, 0.57, 'solid', 'saddle', 'ochre', 1.0),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.canvas.oiled')
     cape_p = P('saddle', 0.04, [
         B('bottom', 0.0, 0.025, 'solid', 'yuniyellow'),
         B('top', 0.0, 0.02, 'solid', 'leather'),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.canvas.oiled')
     sl_p = P('ochre' if sex == 'm' else 'dunesand', 0.04, [
         B('bottom', 0.0, 0.04, 'solid', 'saddle'),
         B('bottom', 0.04, 0.055, 'solid', 'yuniyellow'),
-    ], fabric='cloth.oiled')
+    ], fabric='cloth.canvas.oiled')
 
     duster_tube = torso_tube(gid_t, core.TOP, core.KNEE - 0.14, 0.018, duster_p, hang_from=core.WAIST - 0.02,
-                             flare=0.09, group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    duster_tube.cloth = None
+                             flare=0.11, group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
     parts_t.append(duster_tube)
-    # Overlapping Drover's Shoulder Weather-Cape (radial pelerine cape over the shoulders and upper chest)
-    sh_cape = collar_disc(gid_t + '_shoulder_cape', 0.165, cape_p, drop=0.135, rows=8, n=44, scallop=0.05, ease=0.036)
+    # Overlapping Drover's Shoulder Weather-Cape (radial pelerine cape resting flush over the shoulders and upper chest)
+    sh_cape = collar_disc(gid_t + '_shoulder_cape', 0.145, cape_p, drop=0.115, rows=8, n=44, scallop=0.04, ease=0.022)
     sh_cape.cloth = None
     parts_t.append(sh_cape)
     parts_t.append(stand_collar(gid_t, P('leather', 0.04, [B('top', 0.0, 0.01, 'solid', 'yuniyellow')]), high=0.055))
     parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.032, rows=9))
-    parts_t.extend(button_row(gid_t, core.CHEST + 0.02, core.WAIST - 0.04, n_buttons=5, ease=0.026, double=True))
+    parts_t.extend(button_row(gid_t, core.CHEST + 0.02, core.WAIST - 0.04, n_buttons=5, ease=0.020, double=True))
     # Cross-body leather factor's strap + waist belt
     strap_p = P('leather', 0.04, [B('top', 0.0, 0.01, 'solid', 'brass'), B('bottom', 0.0, 0.01, 'solid', 'brass')])
     parts_t.append(band(gid_t + '_satchel_strap', core.WAIST - 0.02, core.SHOULDER + 0.03, 0.045, 0.036, strap_p, high=math.pi / 2, rows=4))
@@ -264,13 +262,13 @@ def _build_yuni_trade(sex, body_id):
     parts_f = boots(gid_f, P('soot', 0.08),
                     P('leather', 0.04, [B('top', 0.0, 0.03, 'solid', 'brass')]),
                     top=0.52, ease_top=0.032,
-                    cuff_paint=P('khaki', 0.05, [B('top', 0.0, 0.02, 'solid', 'yuniyellow')], fabric='cloth.oiled'))
+                    cuff_paint=P('khaki', 0.05, [B('top', 0.0, 0.02, 'solid', 'yuniyellow')], fabric='cloth.canvas.oiled'))
     entries.append(assemble_garment(gid_f, 'Gaitered Drover Riding Boots', 'feet', 'yuni', parts_f))
 
     # --- HEAD: Drover's Oilskin Akubra with Brass Dust-Goggles ---
     gid_h = f'yuni_{sex}_trade_akubra'
-    crown_p = P('saddle', 0.04, fabric='cloth.oiled')
-    brim_p = P('saddle', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'yuniyellow')], fabric='cloth.oiled')
+    crown_p = P('saddle', 0.04, fabric='cloth.canvas.oiled')
+    brim_p = P('saddle', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'yuniyellow')], fabric='cloth.canvas.oiled')
     band_p = P('tileblue', 0.03, [B('top', 0.0, 0.35, 'diamonds', 'yuniyellow', 'tileblue', 0.035)])
     parts_h = _akubra_hat(gid_h, crown_p, brim_p, band_p, corks=False, goggles=True)
     entries.append(assemble_garment(gid_h, 'Drover Oilskin Akubra & Brass Dust-Goggles', 'head', 'yuni', parts_h, covers_hair=True))
@@ -310,27 +308,30 @@ def _build_yuni_noble(sex, body_id):
         B('bottom', 0.03, 0.16, 'trencadis', 'tilegreen', 'yuniyellow', 0.06),
     ], fabric='cloth.silk')
 
-    gown_tube = torso_tube(gid_t, core.TOP, core.ANKLE + 0.04, 0.015, gown_p,
-                           hang_from=core.WAIST - 0.02, hang_side=core.WAIST, flare=0.095,
+    gown_tube = torso_tube(gid_t, core.TOP, core.ANKLE + 0.04, 0.016, gown_p,
+                           hang_from=core.WAIST - 0.02, hang_side=core.WAIST, flare=0.12,
                            group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    gown_tube.cloth = None
     parts_t.append(gown_tube)
-    # Gaudi Trencadis Academic Degree Hood & Shoulder Epitoge
-    deg_hood = collar_disc(gid_t + '_degree_hood', 0.125, hood_p, drop=0.052, scallop=0.04, ease=0.022)
+    # Gaudi Trencadis Academic Degree Hood & Shoulder Epitoge (contoured flush onto shoulders)
+    deg_hood = collar_disc(gid_t + '_degree_hood', 0.115, hood_p, drop=0.072, scallop=0.04, ease=0.020)
     deg_hood.cloth = None
     parts_t.append(deg_hood)
-    conv_cape = cape(gid_t + '_convocation_cape', core.KNEE - 0.06, cape_p, flare=0.14, span=1.10, ease=0.038, top=core.TOP - 0.02)
-    conv_cape.cloth = None
+    conv_cape = cape(gid_t + '_convocation_cape', core.KNEE - 0.06, cape_p, flare=0.16, span=0.92, ease=0.030, top=core.TOP - 0.004)
     parts_t.append(conv_cape)
     parts_t.extend(sleeves(gid_t, 'wrist', 0.018, sl_p, ease_end=0.075, rows=10))
-    # Chancellor's Chain of Office + Golden Hyperboloid Medallion on chest
+    # Chancellor's Chain of Office + Golden Hyperboloid Medallion seated flush on chest
     gold_p = P('gold', 0.02, fabric='metal.gold')
-    parts_t.append(rosette(gid_t + '_univ_medallion', chest_front(core.CHEST - 0.01, 0.028), FRONT, np.array([1.0, 0, 0]),
-                           0.038, P('yuniyellow', 0.02, [B('top', 0.0, 0.4, 'trencadis', 'tileblue', 'yuniyellow', 0.03)], fabric='metal.gold'),
-                           n=14, thick=0.012, rigid_joint='Spine2'))
+    parts_t.append(rosette(gid_t + '_univ_medallion', chest_front(core.CHEST - 0.01, 0.021), FRONT, np.array([1.0, 0, 0]),
+                           0.036, P('yuniyellow', 0.02, [B('top', 0.0, 0.4, 'trencadis', 'tileblue', 'yuniyellow', 0.03)], fabric='metal.gold'),
+                           n=14, thick=0.010, rigid_joint='Spine2'))
+    chain_pts = [
+        chest_front(core.CHEST + 0.018 + 0.045 * (ang ** 2 / 0.30), 0.020, x=ang * 0.15)
+        for ang in np.linspace(-0.55, 0.55, 15)
+    ]
+    parts_t.append(horn(f'{gid_t}_chain_cord', chain_pts, 0.0055, 0.0055, gold_p, n=8, rows=15, rigid_joint='Spine2', role='trinket'))
     for k, ang in enumerate(np.linspace(-0.55, 0.55, 7)):
-        z_link = core.CHEST + 0.02 + 0.045 * (ang ** 2 / 0.30)
-        parts_t.append(blob(f'{gid_t}_chain{k}', chest_front(z_link, 0.025, x=ang * 0.16), (0.018, 0.010, 0.018), gold_p, n=8, rows=4, rigid_joint='Spine2'))
+        z_link = core.CHEST + 0.018 + 0.045 * (ang ** 2 / 0.30)
+        parts_t.append(blob(f'{gid_t}_chain{k}', chest_front(z_link, 0.020, x=ang * 0.15), (0.016, 0.009, 0.016), gold_p, n=8, rows=4, rigid_joint='Spine2', role='trinket'))
     entries.append(assemble_garment(gid_t, 'UNIV. Academic Convocation Gown & Trencadis Hood', 'torso', 'yuni', parts_t))
 
     # --- LEGS: Academic Court Trousers ---
@@ -362,7 +363,7 @@ def _build_yuni_noble(sex, body_id):
     board_p = P('charcoal', 0.03, [
         B('bottom', 0.0, 0.03, 'solid', 'yuniyellow'),
         B('top', 0.0, 0.03, 'trencadis', 'tileblue', 'yuniyellow', 0.04),
-    ], fabric='cloth.velvet')
+    ], fabric='cloth.velvet.cut')
     n_sq, rows_sq = 40, 5
     angs_sq = np.linspace(0, 2 * math.pi, n_sq, endpoint=False)
     Q_sq = []
@@ -431,16 +432,15 @@ def _build_yuni_trooper(sex, body_id):
         B('top', 0.0, 0.25, 'stripes', 'yuniyellow', 'khaki', 0.02),
     ], fabric='cloth.weave.twill')
 
-    tunic_tube = torso_tube(gid_t, core.TOP, core.CROTCH - 0.08, 0.018, tunic_p,
-                            hang_from=core.WAIST - 0.02, flare=0.07,
+    tunic_tube = torso_tube(gid_t, core.TOP, core.CROTCH - 0.08, 0.019, tunic_p,
+                            hang_from=core.WAIST - 0.02, flare=0.085,
                             group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    tunic_tube.cloth = None
     parts_t.append(tunic_tube)
     parts_t.append(stand_collar(gid_t, P('khaki', 0.04, [B('top', 0.0, 0.01, 'solid', 'brass')]), high=0.05))
     parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.024, rows=9))
-    parts_t.append(pauldron(gid_t + '_epL', L, ep_p, reach=0.26, ease=0.036))
-    parts_t.append(pauldron(gid_t + '_epR', R, ep_p, reach=0.26, ease=0.036))
-    parts_t.extend(button_row(gid_t, core.TOP - 0.04, core.WAIST - 0.02, n_buttons=5, ease=0.025))
+    parts_t.append(pauldron(gid_t + '_epL', L, ep_p, reach=0.26, ease=0.026))
+    parts_t.append(pauldron(gid_t + '_epR', R, ep_p, reach=0.26, ease=0.026))
+    parts_t.extend(button_row(gid_t, core.TOP - 0.04, core.WAIST - 0.02, n_buttons=5, ease=0.021))
     # Sam Browne Cross-Belt + 5 3D Leather Ammo-Clip Pouches across the chest
     parts_t.append(band(gid_t + '_bandolier', core.WAIST - 0.01, core.SHOULDER + 0.035, 0.055, 0.030, leather_p, high=math.pi / 2, rows=4))
     pouch_p = P('saddle', 0.04, [B('top', 0.0, 0.25, 'solid', 'brass')], fabric='leather.polished')
@@ -475,8 +475,8 @@ def _build_yuni_trooper(sex, body_id):
 
     # --- HEAD: Pinned-Brim Australian WWI Slouch Hat with Marsh-Emu Plume ---
     gid_h = f'yuni_{sex}_trooper_slouch'
-    crown_p = P('khaki', 0.05, fabric='cloth.felt')
-    brim_p = P('khaki', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')], fabric='cloth.felt')
+    crown_p = P('khaki', 0.05, fabric='cloth.felt.boiled')
+    brim_p = P('khaki', 0.05, [B('bottom', 0.0, 0.02, 'solid', 'ochre')], fabric='cloth.felt.boiled')
     puggaree_p = P('sand', 0.04, [B('top', 0.0, 0.5, 'stripes', 'ochre', 'sand', 0.015)], fabric='cloth.plain')
     parts_h = _akubra_hat(gid_h, crown_p, brim_p, puggaree_p, slouch_left=True)
     entries.append(assemble_garment(gid_h, 'Light-Horse Pinned Slouch Hat & Emu Plume', 'head', 'yuni', parts_h, covers_hair=True))
@@ -511,15 +511,14 @@ def _build_yuni_geomancer(sex, body_id):
         B('bottom', 0.0, 0.015, 'solid', 'brass'),
     ], fabric='leather.polished')
 
-    safari_tube = torso_tube(gid_t, core.TOP, core.CROTCH - 0.10, 0.018, safari_p,
-                             hang_from=core.WAIST - 0.02, flare=0.08,
+    safari_tube = torso_tube(gid_t, core.TOP, core.CROTCH - 0.10, 0.019, safari_p,
+                             hang_from=core.WAIST - 0.02, flare=0.09,
                              group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    safari_tube.cloth = None
     parts_t.append(safari_tube)
     parts_t.append(collar(gid_t + '_cravat', P('tileblue', 0.03, [B('top', 0.0, 0.02, 'solid', 'yuniyellow')]), height=0.048, flare=0.015, ease=0.022))
     parts_t.extend(sleeves(gid_t, 'wrist', 0.020, sl_p, ease_end=0.026, rows=9))
-    parts_t.append(pauldron(gid_t + '_patchL', L, patch_p, reach=0.32, ease=0.036))
-    parts_t.append(pauldron(gid_t + '_patchR', R, patch_p, reach=0.32, ease=0.036))
+    parts_t.append(pauldron(gid_t + '_patchL', L, patch_p, reach=0.32, ease=0.026))
+    parts_t.append(pauldron(gid_t + '_patchR', R, patch_p, reach=0.32, ease=0.026))
     # Alchemical Bandolier with 6 Glowing `godteal` & `yuniyellow` Reagent Phials
     parts_t.append(band(gid_t + '_alch_band', core.WAIST - 0.01, core.SHOULDER + 0.035, 0.052, 0.030, band_p, high=-math.pi / 2, rows=4))
     phial_teal = P('godteal', 0.02, [B('top', 0.0, 0.25, 'solid', 'brass'), B('bottom', 0.0, 0.20, 'solid', 'brass')], fabric='shell.nacre')
@@ -557,6 +556,7 @@ def _build_yuni_geomancer(sex, body_id):
     parts_b.append(rosette(gid_b + '_scanner_dish', mast_top, FRONT, np.array([1.0, 0, 0]), 0.068,
                            P('brass', 0.02, [B('top', 0.0, 0.4, 'rays', 'godteal', 'brass', 0.03)], fabric='metal.gold'),
                            n=16, thick=0.018, rigid_joint='Spine2'))
+    parts_b.extend(pack_straps(gid_b, P('saddle', 0.05, [B('top', 0.0, 0.008, 'solid', 'brass')], fabric='leather.polished')))
     entries.append(assemble_garment(gid_b, 'Geomancer Ley-Line & Alchemical Scanner Pack', 'back', 'yuni', parts_b))
 
     # --- LEGS: Expedition Breeches ---
@@ -621,10 +621,14 @@ def _build_rehomed_abyssal(sex, body_id):
         B('top', 0.0, 0.015, 'solid', 'gold'),
         B('top', 0.03, 0.09, 'steps', 'gold', 'teal', 0.06),
     ])
-    hem = core.CROTCH - 0.16 if sex == 'm' else core.HIPS[2] - 0.06
-    p_boubou = torso_tube(gid_pt, core.TOP, hem, 0.016, marsh_cloth, hang_from=core.WAIST - 0.02, hang_side=core.WAIST,
-                          flare=0.07, group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    p_boubou.cloth = None
+    if sex == 'm':
+        p_boubou = torso_tube(gid_pt, core.TOP, core.CROTCH - 0.16, 0.018, marsh_cloth,
+                              hang_from=core.WAIST - 0.02, hang_side=core.WAIST,
+                              flare=0.085, group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
+    else:
+        p_boubou = torso_tube(gid_pt, core.TOP, core.WAIST - 0.034, 0.015, marsh_cloth,
+                              hull_from=core.CHEST + 0.02)
+        p_boubou.cloth = None
     parts_pt = [p_boubou] + \
                sleeves(gid_pt, 'elbow', 0.024, P('teal', 0.05, [B('bottom', 0.0, 0.035, 'steps', 'gold', 'holyred', 0.04)]), ease_end=0.05, rows=6, wide=True)
     entries.append(assemble_garment(gid_pt, 'Abyssal Marsh-Weaver Boubou' if sex == 'm' else 'Abyssal Marsh-Weaver Blouse',
@@ -642,9 +646,8 @@ def _build_rehomed_abyssal(sex, body_id):
             B('bottom', 0.0, 0.02, 'solid', 'gold'),
             B('bottom', 0.025, 0.12, 'bogolan', 'cream', 'teal', 0.07),
         ])
-        w_tube = torso_tube(gid_pl, core.WAIST + 0.01, core.ANKLE + 0.06, 0.008, wrap_p,
-                            hang_from=core.WAIST - 0.02, flare=0.08, group_below=core.CROTCH + 0.04, rows=22, hull_from=core.WAIST)
-        w_tube.cloth = None
+        w_tube = torso_tube(gid_pl, core.WAIST + 0.01, core.ANKLE + 0.06, 0.014, wrap_p,
+                            hang_from=core.WAIST - 0.02, flare=0.11, group_below=core.CROTCH + 0.04, rows=22, hull_from=core.WAIST)
         parts_pl = [w_tube]
         entries.append(assemble_garment(gid_pl, 'Abyssal Lacquer-Red & Teal Wrapper', 'legs', 'abyssal', parts_pl, legged=False))
 
@@ -658,7 +661,7 @@ def _build_rehomed_abyssal(sex, body_id):
             brim(gid_ph, 0.74, 0.20, P('sand', 0.07, [
                 B('top', 0.0, 0.3, 'rays', 'teal', 'sand', 0.025),
                 B('bottom', 0.0, 0.018, 'solid', 'holyred'),
-            ], fabric='straw.plaited'), droop=0.06, rows=6, n=40, ease=0.012),
+            ], fabric='straw.reed.plaited'), droop=0.06, rows=6, n=40, ease=0.012),
             head_rings(gid_ph + '_crown', 0.74, 1.0, 0.016, P('holyred', 0.04, [B('bottom', 0.0, 0.02, 'solid', 'gold')]), n=32, rows=5, apex=True),
             horn(gid_ph + '_tip', [J('Head', 'tail'), J('Head', 'tail') + np.array([0, 0, 0.17])], 0.05, 0.006,
                  P('gold', 0.03, [B('top', 0.0, 0.3, 'stripes', 'holyred', 'gold', 0.0)], fabric='metal.gold'), n=16, rows=6),
@@ -682,15 +685,14 @@ def _build_rehomed_abyssal(sex, body_id):
         PN(0.40, 0.56, 'fluted', 'indigo', 'charcoal', 0.09),
         PN(0.35, 0.41, 'fret', 'gold', 'godteal', 0.06),
         PN(0.55, 0.62, 'diamonds', 'gold', 'teal', 0.06),
-    ], fabric='cloth.bazin')
+    ], fabric='cloth.bazin.damask')
     bou_sl_p = P(base_c, 0.03, [
         B('bottom', 0.0, 0.02, 'solid', 'gold'),
         B('bottom', 0.025, 0.085, 'fret', 'gold', 'godteal', 0.05),
-    ], fabric='cloth.bazin')
+    ], fabric='cloth.bazin.damask')
     t_boubou = torso_tube(gid_tt, core.TOP + 0.005, core.ANKLE + 0.10, 0.020, bou_p, n=48,
-                          hang_from=core.WAIST - 0.02, hang_side=core.WAIST, flare=0.075,
+                          hang_from=core.WAIST - 0.02, hang_side=core.WAIST, flare=0.11,
                           group_below=core.CROTCH + 0.02, hull_from=core.WAIST)
-    t_boubou.cloth = None
     parts_tt = [
         t_boubou,
         sleeve(gid_tt + '_under_L', L, P('indigo', 0.04, [B('bottom', 0.0, 0.03, 'solid', 'gold')]), f0=0.42, f1=0.92, ease=0.014, flare=0.006, rows=6),

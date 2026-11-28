@@ -34,6 +34,8 @@ defBuilding({key:'hy_prefect_seat',name:'Pepar-Hom Prefectural Seat',seed:34101,
    windows:[{yaw:0,w:.78,h:.86,y:1.0,light:'alabaster'},{yaw:PI,w:.78,h:.86,y:1.0,light:'nephrite'}]
   });
   hyWhaleJawArch(9.2,.08,9.4,PI/2,3.8,4.1);
+  hyHeadTotemPole(9.2,.08,5.8,-PI/2,{h:6.6,heads:4,r:.30,materials:['gold','silver','nephrite','tarwood'],crown:'eagle',seed:341011});
+  hyHeadTotemPole(9.2,.08,13.0,-PI/2,{h:6.6,heads:4,r:.30,materials:['silver','celadon','bronze','kaen'],crown:'kaen',seed:341012});
 
   /* Domain 2 (SW Outer Court): Tribute, Saltpeter & Ore Assay Wing */
   W(-14.8,0,8.2,PI/2,()=>{
@@ -362,11 +364,19 @@ defBuilding({key:'hy_tube_relay',name:'Pneumatic Tube and Porcelain-Insulator Re
      cyl('celadon',ix,ya+.36,0,.07,.12,P('celadon'),10);
     }
    }
+   /* Front wall Kanopi circuit-maze switchgear & cyan CRT line-telemetry monitor (cleanly between door & east window) */
+   hyCyberTerminalHousing(1.82,G+.96,D/2+.38,.52,.54,.22,341052,true);
   });
-  /* Wind-rigged katabatic telegraph span cables between the cross-arm insulators and front anchor mast */
+  /* Wind-rigged katabatic telegraph span cables + east Cyber-Totem Relay Pylon linked by HV brass jumpers */
+  hyHeadTotemPole(4.25,0,5.45,0,{
+   h:5.4,heads:3,r:.25,crown:'arrestor',terminal:true,seed:341051,
+   materials:['titanium','celadon','bronze']
+  });
   svNoWalk(()=>{
    cyl('iron',-3.8,0,4.2,.11,5.6,P('iron'),8);
-   cyl('white',-3.8,5.6,4.2,.09,.2,P('white'),8);
+   cyl('white',-3.8,5.6,4.2,.09,.2,hyTotemMatCol('white'),8);
+   sagRope('brass',[2.10,G+H+3.95,0],[4.25,4.85,5.45],.34,.014,P('brass'),9);
+   sagRope('iron',[1.05,G+H+4.70,0],[4.25,5.25,5.45],.30,.012,P('iron'),9);
    withCloth((lp,out)=>{
     const u=clamp((lp.z+0)/4.2,0,1),pw=hyRigMath.spanPin(u)*.12;
     out.set(pw,pw*.3,0);
@@ -390,9 +400,9 @@ defBuilding({key:'hy_tube_relay',name:'Pneumatic Tube and Porcelain-Insulator Re
 /* 16. Cyan-Lit Ancient Talking-Head Stele Pavilion */
 defBuilding({key:'hy_talking_head',name:'Ancient Talking-Head Stele Pavilion',seed:34106,cut:false,
  front:{x:0,z:4.4,yaw:0},
- w:11.8,d:11.8,h:9.2,budget:95000,
+ w:11.8,d:11.8,h:9.2,budget:110000,
  tags:{types:['religious','civic'],wealth:'middle',style:'hybrid',job:'worship'},
- note:'colossal salvage titanium-and-gunmetal Ancient head with glowing cyan visor under a celadon hex baldachin, willow inau & nephrite chimes',
+ note:'colossal salvage titanium Ancient head with glowing cyan visor, arcology busbar stele, catenary-linked cyber-totems, willow inau & nephrite chimes',
  build(){
   const G=.42;
   hyPlinth(8.4,8.4,G,{stepW:2.6,stepX:0});
@@ -406,15 +416,26 @@ defBuilding({key:'hy_talking_head',name:'Ancient Talking-Head Stele Pavilion',se
    box('basalt',0,G+4.05,0,6.4,.26,6.4,P('basalt'));
    etHexHip(4.2,G+4.31,2.95,{mk:'celadon',ov:.45,under:P('larchD'),cap:P('celadon')});
    hyKaenCrown(0,G+7.3,0,.3,.52,4,{celadon:true,smoke:false});
-   /* Stepped megabreccia stele & colossal titanium Ancient head with cyan visor slit */
+   /* Stepped megabreccia stele, Kanopi arcology busbar cheeks & colossal titanium Ancient head with cyan visor */
    box('megabreccia',0,G,-.6,2.35,.78,1.95,P('megabreccia'));
    box('nephrite',0,G+.78,-.6,1.95,.18,1.65,P('nephrite'));
+   for(const sx of [-1,1]){
+    box('white',sx*1.36,G,-.6,.28,.66,1.46,hyTotemMatCol('white'));
+    hyFormLayerBox('mazeB',sx*1.36,G+.10,.13,1,.20,.46,P('mazeB'));
+    const cap=hyPinInsulator(sx*1.36,G+.66,-.6,.92,sx>0?1:0);
+    sagRope('brass',cap,[sx*4.85,4.15,1.6],.28,.014,P('brass'),8);
+   }
    const p=etHeadParams(341060,{eyes:'closed',headdress:'band'});
-   etEmitGeo('titanium',etHeadGeo(p),0,G+1.22,-.55,[1.95,2.25,1.95],0,P('titanium'));
+   etEmitGeo('titanium',etHeadGeo(p),0,G+1.22,-.55,[1.95,2.25,1.95],0,hyTotemMatCol('titanium'));
+   ring('titanium',0,G+2.42,-.82,1.24,.036,hyTotemMatCol('titanium'),.28,0,0,20);
    /* Glowing cyan Ancient speech-visor bar stepped 4 cm forward of brow */
    box('glow',0,G+2.36,.36,.92,.09,.06,new THREE.Color(0x4ef6ff));
   });
   haloAt(0,G+2.36,.52,0x4ef6ff,true);
+  hyHeadTotemPole(-4.85,0,1.6,0,{h:4.8,heads:3,r:.25,terminal:true,materials:['titanium','celadon','bronze'],crown:'faraday',seed:341061});
+  hyHeadTotemPole(4.85,0,1.6,0,{h:4.8,heads:3,r:.25,terminal:true,materials:['nephrite','silver','titanium'],crown:'halo',seed:341062});
+  hyInauCluster(-2.8,G,-.4,PI/4,{scale:.75});
+  hyInauCluster(2.8,G,-.4,-PI/4,{scale:.75});
   hySeismicChimes(-2.8,G+3.8,2.85,0,1.65,1.15,5);
   hySeismicChimes(2.8,G+3.8,2.85,0,1.65,1.15,5);
   if(CURREC&&!PLACE_DRY){
@@ -433,9 +454,9 @@ defBuilding({key:'hy_talking_head',name:'Ancient Talking-Head Stele Pavilion',se
 
 /* 17. Hueru-Kuran Sister-Clan Legation (Cross-Pass 124,710 Envoy Compound) */
 defBuilding({key:'hy_kuran_legation',name:'Hueru-Kuran Sister-Clan Legation',seed:34107,cut:true,
- w:23.2,d:19.8,h:13.2,budget:175000,
+ w:23.2,d:19.8,h:13.2,budget:195000,
  tags:{types:['civic'],wealth:'rich',style:'hybrid',landmark:true},
- note:'sister-clan embassy over the 124,710 Ukor-Tera pass: bleached Leviathan whale-jaw arch, 3-ton Crookshore nephrite gate, envoy nuraghe & feast chise',
+ note:'sister-clan embassy over the 124,710 Ukor-Tera pass: Sutar-Pira head-totems, Leviathan whale-jaw arch, 3-ton nephrite gate, nuraghe & feast chise',
  build(){
   /* Paved embassy compound court at y = 0.08 */
   svNoWalk(()=>box('paving',0,0,0,20.4,.08,16.8,P('paving')));
@@ -447,6 +468,8 @@ defBuilding({key:'hy_kuran_legation',name:'Hueru-Kuran Sister-Clan Legation',see
   /* 3-ton Crookshore sawn emerald-nephrite lintel gate + monumental bleached Leviathan whale-jawbone arch */
   hyDoor(0,.08,8.4,0,2.1,2.45,{lintel:'nephrite',lintelH:.44,maskMk:'nephrite',maskSize:.52});
   hyWhaleJawArch(0,.08,6.75,0,5.2,5.35);
+  hyHeadTotemPole(-8.2,.08,6.4,0,{h:5.6,heads:4,r:.27,materials:['nephrite','celadon','bronze','tarwood'],crown:'eagle',seed:341071});
+  hyHeadTotemPole(8.2,.08,6.4,0,{h:5.6,heads:4,r:.27,materials:['nephrite','alabaster','silver','kaen'],crown:'kaen',seed:341072});
   hyBilingualSign(-2.6,1.15,8.76,0,1.45,.86);
 
   /* West Crookshore Cyclopean Nuraghe Envoy Keep */
@@ -473,6 +496,7 @@ defBuilding({key:'hy_kuran_legation',name:'Hueru-Kuran Sister-Clan Legation',see
    ['hayrant_seismic_chime_rack',-6.6,.14,-2.1,PI/2],
    ['hayrant_irori_hearth',4.7,.14,-1.8,0],
    ['hayrant_larch_feast_table',4.7,.14,.1,0],
+   ['hayrant_formline_chest',6.4,.14,-.2,-PI/2,0],
    ['hayrant_inau_ancestor_shelf',4.7,.14,-4.2,0,0],
    ['hayrant_kaen_jar',6.6,.14,-1.8,0,1],
    ['hayrant_nephrite_saw_bench',-5.4,.08,3.4,0],
@@ -481,4 +505,96 @@ defBuilding({key:'hy_kuran_legation',name:'Hueru-Kuran Sister-Clan Legation',see
   hyTarget(0,.08,3.4,'legation-court');
   hyTarget(-5.1,.14,-2.1,'envoy-nuraghe');
   hyTarget(4.7,.14,-1.8,'feast-chise');
+ }});
+
+/* 17b. Wartan-Hom Censorate Anti-Unification Watch & Seal-House (seed 34112) */
+defBuilding({key:'hy_censorate_warden',name:'Wartan-Hom Censorate Watch and Seal-House',seed:34112,cut:true,
+ w:16.0,d:14.0,h:12.4,budget:165000,
+ tags:{types:['civic','military'],wealth:'rich',style:'prefect',job:'customs',landmark:true},
+ note:'battered black-basalt nuraghe docket-vault, pale-brick Deco-Gothic seal-house, veiled Censorate heads, tally board, bronze-lead totem & raid-gear evidence rack',
+ build(){
+  /* Paved forecourt & seal-yard across south half [z: -0.6..5.6] */
+  svNoWalk(()=>box('paving',0,0,2.5,14.2,.08,6.2,P('paving')));
+  wkPad(0,2.5,14.2,6.2,.08);
+
+  /* West battered black-basalt nuraghe docket-vault (x in [-7.0..-1.5], 65 cm clear of east seal-house) */
+  hyNuraghe(-4.25,-1.65,.08,2.75,2.08,6.1,{
+   celadonCap:true,capH:2.2,smoke:false,
+   doors:[{yaw:0,w:1.22,h:2.08,lintel:'nephrite',maskMk:'gunmetal'}],
+   windows:[{yaw:-PI/2,w:.62,h:.94,y:3.0,light:'steel'},{yaw:PI,w:.62,h:.94,y:3.0,light:'alabaster'}]
+  });
+
+  /* East stern two-storey pale-brick & basalt Censorate Seal-House (x in [-0.85..+6.35]) */
+  W(2.75,0,-1.1,0,()=>{
+   const G=.44,F1=3.74,E=6.92,BW=7.2,BD=7.0;
+   hyPlinth(BW+.4,BD+.4,G,{stepW:2.4,stepX:0});
+   hyWallRing(-BW/2,-BD/2,BW/2,BD/2,G,F1-G,{
+    mk:'basalt',socle:.72,socleMk:'megabreccia',postMk:'columnar',
+    holes:{
+     s:[{at:BW/2,y:0,w:1.95,h:2.85},{at:1.55,y:1.0,w:1.05,h:1.35},{at:BW-1.55,y:1.0,w:1.05,h:1.35}],
+     n:[{at:BW/2,y:1.05,w:1.15,h:1.35}]
+    }
+   });
+   hyDoor(0,G,BD/2,0,1.44,2.24,{lintel:'civic',ancestorMk:'silver'});
+   for(const sx of [-BW/2+1.55,BW/2-1.55])hyWindow(sx,G+1.0,BD/2,0,.84,1.15,{light:'steel',stepHead:true});
+   hyWindow(0,G+1.05,-BD/2,PI,.92,1.14,{light:'steel'});
+
+   const SF=svStair(-2.25,1.85,G,F1,PI,{w:.86,mk:'larch',col:P('larch'),smk:'larch',scol:P('larchD'),rail:'right'});
+   svWell('planks',0,F1-.18,0,BW-.64,.18,BD-.64,P('planks'),SF);
+   svNoWalk(()=>box('nephrite',0,F1-.05,0,BW+.24,.12,BD+.24,P('nephrite')));
+   hyWallRing(-BW/2,-BD/2,BW/2,BD/2,F1+.07,E-(F1+.07),{
+    mk:'brick',socle:0,postMk:'ashlar',
+    holes:{n:[{at:BW/2,y:.95,w:1.15,h:1.4}]}
+   });
+   for(const sx of [-1.85,1.85])hyDualLancets(sx,F1+.58,BD/2+.24,0,3,.44,2.05,{step:.24,oculus:true,oculusR:.26});
+   hyWindow(0,F1+.95,-BD/2,PI,.92,1.2,{light:'alabaster',stepHead:true});
+   hySteppedPierFront(0,E+.24,BD/2+.16,0,4.8,1.2,.32,5,{mk:'brick',centreMetal:'silver',sideMetal:'gunmetal'});
+   hyRoofHip(0,E+.24,0,BW+.2,BD+.2,2.95,{mk:'celadon',smoke:true});
+   hyBilingualSign(-2.2,G+2.35,BD/2+.34,0,1.3,.78);
+
+   hyFurnList([
+    ['eternian_common_register_desk',1.2,G,-1.8,0],
+    ['eternian_common_weighing_scale',1.8,G,.6,-PI/2],
+    ['generic_strongbox',2.2,G,-2.4,0],
+    ['eternian_common_archive_shelf',1.4,F1,-2.2,0],
+    ['hayrant_formline_chest',1.6,F1,1.2,PI,1],
+    ['hayrant_head_totem_post',-2.2,F1,-2.2,0,0]
+   ]);
+   hyTarget(.6,G,.6,'seal-hall');
+   hyTarget(.8,F1,.4,'censorate-loft');
+  });
+
+  /* Veiled Censorate gunmetal/silver heads, bronze/lead Sutar-Pira totem pole, black-iron tally board & confiscated Timpar-Kuran raid gear rack */
+  hyHeadTotemPole(-5.7,.08,4.1,0,{h:5.2,heads:4,r:.25,materials:['gunmetal','bronze','lead','silver'],veiledIdx:3,crown:'sundisc',seed:341121});
+  hyAncestorHead(-1.35,.08,4.35,0,.74,{mk:'gunmetal',plinth:.68,veiled:true,seed:341122});
+  hyAncestorHead(6.05,.08,4.35,0,.74,{mk:'silver',plinth:.68,veiled:true,seed:341123});
+
+  svNoWalk(()=>{
+   /* Black-iron pass-movement tally board */
+   for(const sx of [-3.3,-1.9])cyl('iron',sx,.08,2.15,.055,2.15,P('iron'),8);
+   box('tarwood',-2.6,.92,2.15,1.28,1.12,.06,P('tarwood'));
+   for(let ti=0;ti<4;ti++){
+    box(ti%2===0?'gold':'bronze',-2.6,1.08+ti*.24,2.195,1.04,.055,.018,hyTotemMatCol(ti%2===0?'gold':'bronze'));
+   }
+   /* Confiscated Timpar-Kuran raid shields & war-gear under Censorate lead/gold seal */
+   W(-5.75,.08,1.85,PI/2,()=>{
+    for(const sx of [-.72,.72])box('iron',sx,0,0,.09,1.52,.36,P('iron'));
+    box('iron',0,1.44,0,1.58,.08,.12,P('iron'));
+    for(const sx of [-.34,.34]){
+     box('larch',sx,.28,.04,.52,.92,.045,P('larchD'));
+     box('kaen',sx,.44,.074,.34,.56,.018,P('plaid'));
+    }
+    /* Iron locking bar & Censorate lead seal medallion */
+    box('iron',0,.74,.105,1.48,.055,.022,P('iron'));
+    cyl('lead',0,.74,.13,.11,.028,P('lead'),10);
+   });
+  });
+
+  hyFurnList([
+   ['eternian_common_arms_rack',-4.25,.14,-2.9,0],
+   ['pa_weapon_rack',-5.4,.14,-1.6,PI/2],
+   ['eternian_common_register_desk',-3.1,.14,-1.6,-PI/2]
+  ]);
+  hyTarget(-4.25,.14,-1.65,'docket-nuraghe');
+  hyTarget(0,.08,3.6,'censorate-court');
  }});

@@ -1,0 +1,17 @@
+{
+ "id": "hall",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Veiled Mountains — The Hall of Veils & Giant Tree-Fern Floor",
+ "out": "veiledmountains.html",
+ "px": [252, 668],
+ "sky": [-20, 338],
+ "elevM": 2380.0,
+ "pAtm": 1.21,
+ "koppen": "Cfb",
+ "rainMmYr": 3420,
+ "strataStack": "megabreccia",
+ "reserves": [
+  {"id": "site:timpar-kuran-hall", "x": 116, "z": -64, "r": 44}
+ ],
+ "modes": ["Veil", "Sun-Break", "Deep Veil"]
+}

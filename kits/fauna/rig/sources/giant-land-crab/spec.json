@@ -1,0 +1,19 @@
+{
+ "legs": 8,
+ "contacts": 8,
+ "wings": 0,
+ "segments": 3,
+ "raptorial": 2,
+ "open": 18.0,
+ "note": "Ring-Sea giant land crab: domed carapace (thorax), stalked-eye front (head), tucked pleon apron (abd), 8 arched walking legs (leg0..leg3 L/R), and 2 jointed cheliped arms (armL/armLt/pincerL, armR/armRt/pincerR) with hinged movable pincer dactyls.",
+ "budget": {
+  "thorax": 1950,
+  "head": 480,
+  "abd": 340,
+  "arm": 460,
+  "armt": 540,
+  "pincer": 270,
+  "femur": 155,
+  "tibia": 145
+ }
+}

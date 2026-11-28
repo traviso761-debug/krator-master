@@ -94,9 +94,9 @@ const BUDGET={
 };
 
 const NEED={
- bioherm:['chimneysponge','brainsponge','glassbasket','seapen','whippen','snaphydroid','penshell','visoroyster','bellowsreed','bamboorice','tetherpad','driftwrack','driftwood'],
- bitumen:['tarfelt','riaamber','brimreed','fensedge','brainsponge','chimneysponge','bellowsreed','driftwood'],
- throat:['chimneysponge','brainsponge','seapen','visoroyster','bellowsreed','wildrice','bluffoak','bluffcedar','bluffcypress','bluffpine','bluffbamboo']
+ bioherm:['chimneysponge','brainsponge','glassbasket','seapen','whippen','snaphydroid','penshell','visoroyster','bellowsreed','bamboorice','tetherpad','driftwrack','driftwood','coconut','chenierpandan','bayouhibiscus','bayoufanpalm','bayoutupelo','bayoulily','chenierglory','deltalotus','redwaterfern','bayoucattail','silicarush'],
+ bitumen:['tarfelt','riaamber','brimreed','fensedge','brainsponge','chimneysponge','bellowsreed','driftwood','coconut','chenierpandan','bayouhibiscus','bayoufanpalm','bayoutupelo','bayoulily','bayoucattail','silicarush'],
+ throat:['chimneysponge','brainsponge','seapen','visoroyster','bellowsreed','wildrice','coconut','chenierpandan','bayouhibiscus','bayoufanpalm','bayoutupelo','bayoulily','chenierglory','bayoucattail','silicarush','bluffoak','bluffcedar','bluffcypress','bluffpine','bluffbamboo']
 }[SKEY];
 
 function collectNonShaderMeshes(){
@@ -170,6 +170,14 @@ const HCHK={
    detail:bad.length?bad.length+' ria-amber nodules outside scoured blue-clay lag':am.length+' ria-amber nodules all on scoured blue-clay lag > 0.35'
   };
  },
+ coconutStrand(log){
+  const co=log.filter(e=>e.species==='coconut');
+  const bad=co.filter(e=>!(e.y>=2.45&&e.clearM>1.2&&e.bitumen01<0.10));
+  return{
+   ok:co.length>0&&!bad.length,
+   detail:bad.length?bad.length+' coconut(s) submerged or in bitumen seep':co.length+' drift-sown chenier coconuts all > water + 1.2 m'
+  };
+ },
  textured(list){
   const bad=list.filter(e=>!(e.mat&&e.mat.map));
   return{
@@ -226,6 +234,7 @@ function hostChecks(){
  if(SKEY==='throat')add('ria-sound-reserve-safe-elevation',HCHK.riaReserve(tagRecs));
  add('zero-interior-basalt-islands',HCHK.noBasaltIslands(SITE));
  add('sponge-silica-and-salinity-fidelity',HCHK.spongeFidelity(DOUBLEDELTA.LOG));
+ add('coconut-chenier-strand-fidelity',HCHK.coconutStrand(DOUBLEDELTA.LOG));
  if(SKEY==='bitumen')add('amber-nodules-strictly-in-scour',HCHK.amberFidelity(DOUBLEDELTA.LOG));
  add('water-flows-terminate-at-shoreline',HCHK.waterMouths(WATER.surfaces.filter(s=>s.kind==='flow'),WATER.surfaces.filter(s=>s.kind==='open'),terrainH));
  add('zero-untextured-meshes',HCHK.textured(collectNonShaderMeshes()));
@@ -243,6 +252,7 @@ function hostNegatives(){
  if(SKEY==='throat')add('ria-reserve-placed-too-low',HCHK.riaReserve([{key:'site:ria-sound',at:[400,18.0,-100]}]));
  add('basalt-island-in-sedimentary-bowl',HCHK.noBasaltIslands({province:'ultramafic',geology:{ultramafic:255}}));
  add('sponge-in-silica-starved-water',HCHK.spongeFidelity([{species:'chimneysponge',silicaMgL:4.0,psu:12}]));
+ add('submerged-or-tar-coconut',HCHK.coconutStrand([{species:'coconut',y:0.4,clearM:-0.5,bitumen01:0.5}]));
  if(SKEY==='bitumen')add('amber-nodule-on-unscoured-peat',HCHK.amberFidelity([{species:'riaamber',amberLag01:0.05}]));
  add('river-running-into-open-ocean',HCHK.waterMouths([{kind:'flow',name:'bad-river',pts:[{x:-1500,z:0},{x:-1800,z:0}]}],[{kind:'open',levelAt:()=>0,contains:()=>true}],()=>-3.0));
  add('untextured-mesh-detected',HCHK.textured([{name:'bare-mesh',mat:{map:null}}]));

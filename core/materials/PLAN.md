@@ -2158,6 +2158,16 @@ colours); the Islanders' variant keys `patGableW2`, `patGableE2` and `patHinggi`
 aliases onto three `city*` families (Verge leaves them out); Ys gives `pipeRust` world UVs (2 m) in 79z, not in the
 vendored files.
 
+#### Delivered 2026-11-28 and processed: Utari-Kuran totem triad, Cyber-Hayrant, Painted Men & Dzagh-Vardzi (15 sets, 1024 px PNG)
+
+Supplied by the owner (`tools/textures/batches/totem-kits-2026-11-28.json`, 8 prompts from section 72 plus 7 `.b`/`.c` alternates = 15 sets, processed via `tools/textures/process.py` and wired + packed into their five kits):
+- `wood.totem.adzed`, `wood.totem.adzed.b` (tint): elbow-adzed conifer totem-pole shafts with PNW ovoids, feather-scales & Jomon spirals (`kits/timpar-kuran`, `kits/hueru-kuran`, `kits/hayrant`).
+- `patterns/hayrant/cyber-formline`, `.b`, `.c` and `metal.totem.cyber`, `.b`: Cyber-Hayrant sleeping-eye PCB-trace wood reliefs and dorsal titanium/ceramic/celadon-insulator conduit spines (`kits/hayrant`, `settlements/mirabilis`).
+- `patterns/timpar/formline-crest`, `.b`: split red-cypress Tlingit open-eyed formline & Ainu *moreu* thorn-spiral screens (`kits/timpar-kuran`).
+- `patterns/hueru/nautical-totem`, `.b`: driftwood, whalebone & baleen relief of whale flukes, pelicans & octopi with emerald-nephrite eyes (`kits/hueru-kuran`).
+- `patterns/painted/rarrk-bark` and `rock.danxia.handstencils`, `.b`: Arnhem Land *rarrk* X-ray bark wrap and *Yanta-Rringka* hand-stencil danxia rock-art (`kits/painted-men`).
+- `patterns/dzagh-vardzi/tuff-panduri-frieze`: Caucasian *Akhtamar* apricot-tuff relief of *panduri* lutes, *qvevri* amphorae & nephrite crosses (`kits/dzagh-vardzi`).
+
 #### Delivered 2026-11-23 and processed: the Coyote kit, the Marr kit, Kirstabal's wall, the works pieces, the azurite, the beech (13 sets)
 
 The owner's Codex batch of 2026-11-23 (`~/.codex/generated_images`, 14 threads, 25 images), each thread matched to its prompt in

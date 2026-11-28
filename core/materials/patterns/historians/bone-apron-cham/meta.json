@@ -1,0 +1,43 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "choke": 1,
+   "key": "#ff00ff",
+   "key_hi": 148,
+   "key_lo": 55,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "edge"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "bone",
+  "id": "historians/bone-apron-cham",
+  "kind": "card",
+  "metal": 0.0,
+  "roughness": 0.42,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__historians__bone-apron-cham.png",
+  "generator": "Codex image generation, Nov 2026 (exec-fc606e5c-c6e8-43a0-bedb-511321542c93.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Tibetan Cham ritual carved bone-bead apron lattice (rgyan drug) in a four-by-four diagonal diamond net: round carved ivory-bone wheel-rosette junction plaques (#ebe4d2) accented with tiny gilded brass (#d4a838) and dark maroon-cord (#581418) knots, linked by diagonal double strands of turned cylindrical bone beads; every diamond opening between the bone strands shows only the solid flat bright magenta background (#ff00ff). Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.",
+  "sha1": "fbbdaf8ab940dcc848811d6ea4b3227246700717"
+ }
+}

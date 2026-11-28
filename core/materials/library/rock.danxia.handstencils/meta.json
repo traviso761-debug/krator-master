@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1016,
+    1016
+   ],
+   "seam_after": [
+    0.867,
+    0.899
+   ],
+   "seam_before": [
+    1.359,
+    1.106
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.85,
+   "rough_var": 0.16,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "rock",
+  "id": "rock.danxia.handstencils",
+  "metal": 0,
+  "roughness": 0.85,
+  "scale": [
+   2.4,
+   2.4
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "rock.danxia.handstencils.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`rock.danxia.handstencils`)",
+  "reuse": "Painted Men Yanta-Rringka blown-ochre negative hand-stencil & concentric waterhole-ring danxia sandstone rock-art face (.b is dense track-and-stencil alternate)",
+  "sha1": "628fd5c6aeae09688117345de1184e6b8e68fac3"
+ }
+}

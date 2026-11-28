@@ -19,6 +19,7 @@ SHROUDHILLS.setupKit();
  SHROUDHILLS.LOD = { tree: 420, mid: 650, bridge: 390, epiphyte: 360, floor: 300, tor: 620 };
  SHROUDHILLS.TREES = [];
  SHROUDHILLS.TREE_FERNS = [];
+ SHROUDHILLS.COCONUTS = [];
  SHROUDHILLS.BRIDGE_ANCHORS = [];
  SHROUDHILLS.CUP_FORKS = [];
  SHROUDHILLS.GALL_SPOTS = [];
@@ -360,6 +361,131 @@ SHROUDHILLS.setupKit();
   }
  };
 
+ // ---- 4. Drift-Sown Cove Coconut Palm (coconut, 8.0-15.5 m): J-curved ringed trunk, nut cluster & drooping fronds
+ var buildCoconutPalm = function(P, st){
+  var h = function(i, k){ return KRAND.unit(KRAND.hash(P.seed >>> 0, i | 0, k | 0)); };
+  var H = P.H, r0 = clamp(0.24 + H * 0.006, 0.24, 0.35), az = P.yaw, lean = P.lean;
+  var barkCol = vary(PAL.palmBark[(P.seed >>> 0) % PAL.palmBark.length], 0.01, 0.04, 0.04);
+  var nSeg = 8, pts = [], riseH = H * (1 - 0.14 * lean * lean);
+  for (var i = 0; i <= nSeg; i++) {
+   var t = i / nSeg;
+   var rad = H * lean * (0.68 * t + 0.32 * t * t);
+   var fl = i === 0 ? 1.38 : i === 1 ? 1.14 : 1.0;
+   pts.push({
+    x: P.x + Math.cos(az) * rad,
+    y: P.y0 - 0.35 + (riseH + 0.35) * t,
+    z: P.z + Math.sin(az) * rad,
+    r: mix(r0, r0 * 0.52, Math.pow(t, 0.85)) * fl
+   });
+  }
+  st.tris += BIO.tube('kauri', pts, barkCol, { seg: P.lv === 2 ? 7 : 5, cap: true });
+  var top = pts[nSeg];
+  var nutS = 0.95 + 0.24 * h(1, 2);
+  BIO.put('coconut_nut', [top.x, top.y - 0.12, top.z], qEuler(0, az + 1.1, 0), [nutS, nutS, nutS], C(PAL.coconutNut[(P.seed >>> 0) % PAL.coconutNut.length]));
+  var nF = P.lv === 2 ? 13 : 9, gold = 2.399963, fLen = clamp(2.5 + H * 0.11, 2.8, 4.2);
+  for (var k = 0; k < nF; k++) {
+   var age = k / (nF - 1), faz = az + k * gold + 0.15 * (h(k + 3, 1) - 0.5);
+   var pitch = lerp(0.76, -0.30, Math.pow(age, 0.88)) + 0.07 * (h(k + 3, 2) - 0.5);
+   var Lf = fLen * (age < 0.2 ? 0.82 : age > 0.82 ? 0.88 : 1.0) * (0.92 + 0.16 * h(k + 3, 3));
+   var cHex = age > 0.80 ? PAL.palmOld[k % PAL.palmOld.length] : PAL.palmLeaf[(k + (P.seed >>> 0)) % PAL.palmLeaf.length];
+   BIO.put('palm_frond', [top.x, top.y + 0.02 - 0.12 * age, top.z], qEuler((h(k + 3, 4) - 0.5) * 0.12, -faz, pitch), [Lf, Lf * 0.95, Lf * 1.08], C(cHex));
+   st.fronds++;
+  }
+ };
+
+ // ---- 4b. Weeping Rimu-Podocarp (amberpodocarp, 22-36 m): bronze-olive podocarp with weeping foliage curtains
+ var buildRimuPodocarp = function(T, st){
+  buildAmberKauri(T, st);
+  reseed(KRAND.hash(T.seed, 31));
+  var nD = T.lv === 2 ? 6 : 3, a0 = rr(0, TAU);
+  for (var d = 0; d < nD; d++) {
+   var ang = a0 + d / nD * TAU + rr(-0.2, 0.2);
+   var rch = T.crownR * rr(0.45, 0.78);
+   var py = T.y0 + T.H * rr(0.62, 0.80);
+   var px = T.x + Math.cos(ang) * rch, pz = T.z + Math.sin(ang) * rch;
+   st.tris += BIO.tube('kauri', [{ x: T.x, y: py + 0.6, z: T.z, r: 0.16 }, { x: px, y: py, z: pz, r: 0.08 }], vary(pick(PAL.kauriBark), 0.01, 0.04, 0.04), { seg: 4, cap: true });
+   BIO.put('rimu_drape', [px, py, pz], qEuler(0, rr(0, TAU), 0), [rr(1.3, 2.2), rr(2.2, 3.8), 1], vary(pick(PAL.rimuLeaf), 0.02, 0.06, 0.05));
+   st.fronds++;
+  }
+ };
+
+ // ---- 4c. Shroud Nikau Feather-Palm (shroudnikau, 5.5-11.5 m): green-ringed trunk, bulbous crownshaft & stiff ascending fronds
+ var buildNikauPalm = function(N, st){
+  var h = function(i, k){ return KRAND.unit(KRAND.hash(N.seed >>> 0, i | 0, k | 0)); };
+  var H = N.H, r0 = clamp(0.16 + H * 0.008, 0.17, 0.27);
+  var barkCol = vary(PAL.nikauBark[(N.seed >>> 0) % PAL.nikauBark.length], 0.01, 0.05, 0.04);
+  var pts = [];
+  for (var i = 0; i <= 6; i++) {
+   var t = i / 6;
+   pts.push({
+    x: N.x + Math.cos(N.yaw) * H * 0.06 * t * t,
+    y: N.y0 - 0.3 + (H - 0.55 + 0.3) * t,
+    z: N.z + Math.sin(N.yaw) * H * 0.06 * t * t,
+    r: mix(r0 * 1.18, r0 * 0.72, t)
+   });
+  }
+  st.tris += BIO.tube('kauri', pts, barkCol, { seg: 6, cap: true });
+  var top = pts[6];
+  BIO.put('nikau_shaft', [top.x, top.y - 0.12, top.z], qEuler(0, N.yaw, 0), [1.05, 0.92, 1.05], C(PAL.nikauShaft[(N.seed >>> 0) % PAL.nikauShaft.length]));
+  var topY = top.y + 0.72, nF = N.lv === 2 ? 10 : 7, fLen = clamp(1.9 + H * 0.12, 2.1, 3.3);
+  st.tris += BIO.tube('kauri', [{ x: top.x, y: top.y, z: top.z, r: r0 * 0.78 }, { x: top.x, y: topY + 0.06, z: top.z, r: r0 * 0.55 }], C(PAL.nikauShaft[0]), { seg: 5, cap: true });
+  for (var k = 0; k < nF; k++) {
+   var faz = N.yaw + k * 2.399963, pitch = lerp(0.88, 0.24, k / (nF - 1));
+   var Lf = fLen * (0.9 + 0.18 * h(k + 2, 1));
+   BIO.put('nikau_frond', [top.x, topY, top.z], qEuler(0, -faz, pitch), [Lf, Lf * 0.95, Lf * 0.85], C(PAL.palmLeaf[(k + (N.seed >>> 0)) % PAL.palmLeaf.length]));
+   st.fronds++;
+  }
+ };
+
+ // ---- 4d. Raid-Cove Screwpine (covepandan, 3.5-7.5 m) & Matron's Bast-Hibiscus (covehibiscus, 3.0-6.8 m)
+ var buildCovePandan = function(P, st){
+  var h = function(i, k){ return KRAND.unit(KRAND.hash(P.seed >>> 0, i | 0, k | 0)); };
+  var H = P.H, rb = clamp(H * 0.024, 0.10, 0.18), la = P.yaw;
+  var barkCol = vary(PAL.palmBark[(P.seed >>> 0) % PAL.palmBark.length], 0.01, 0.04, 0.04);
+  var hubY = P.y0 + 0.55 + H * 0.08, nPr = P.lv === 2 ? 5 : 3;
+  for (var k = 0; k < nPr; k++) {
+   var az = (k / nPr) * TAU + 0.28 * (h(k + 4, 1) - 0.5), sp = 0.65 + 0.52 * h(k + 4, 2);
+   var rx = P.x + Math.cos(az) * sp, rz = P.z + Math.sin(az) * sp, fy = Math.min(P.y0 + 0.15, Y(rx, rz)) - 0.25;
+   st.tris += BIO.tube('kauri', [{ x: P.x, y: hubY, z: P.z, r: rb * 0.38 }, { x: lerp(P.x, rx, 0.55), y: lerp(hubY, fy, 0.45), z: lerp(P.z, rz, 0.55), r: rb * 0.30 }, { x: rx, y: fy, z: rz, r: rb * 0.22 }], barkCol, { seg: 4, cap: true });
+  }
+  var topX = P.x + Math.cos(la) * H * 0.18, topZ = P.z + Math.sin(la) * H * 0.18, topY = P.y0 + H * 0.56;
+  st.tris += BIO.tube('kauri', [{ x: P.x, y: P.y0 - 0.25, z: P.z, r: rb * 1.18 }, { x: lerp(P.x, topX, 0.5), y: lerp(hubY, topY, 0.5), z: lerp(P.z, topZ, 0.5), r: rb * 0.86 }, { x: topX, y: topY, z: topZ, r: rb * 0.74 }], barkCol, { seg: 5, cap: true });
+  var nHeads = P.lv === 2 ? 3 : 2;
+  for (var hd = 0; hd < nHeads; hd++) {
+   var haz = la + (hd - (nHeads - 1) * 0.5) * 1.6 + 0.26 * (h(20 + hd, 1) - 0.5), hLen = H * (0.28 + 0.11 * h(20 + hd, 2));
+   var hx = topX + Math.cos(haz) * hLen * 0.64, hy = topY + hLen * 0.76, hz = topZ + Math.sin(haz) * hLen * 0.64;
+   st.tris += BIO.tube('kauri', flare([{ x: topX, y: topY, z: topZ, r: rb * 0.60 }, { x: hx, y: hy, z: hz, r: rb * 0.40 }], rb * 0.74), barkCol, { seg: 4, cap: true });
+   var nS = P.lv === 2 ? 11 : 7, sL = clamp(H * 0.28, 1.15, 2.2);
+   for (var s = 0; s < nS; s++) {
+    var age = s / (nS - 1), saz = s * 2.399963 + hd * 1.1, pitch = lerp(0.92, -0.36, age);
+    BIO.put('cove_pandan_strap', [hx, hy - 0.03 * age, hz], qEuler(0, -saz, pitch), [sL * (age < 0.22 ? 0.76 : 1), sL * 0.85, sL * 0.55], C(PAL.pandanLeaf[(s + hd) % PAL.pandanLeaf.length]));
+    st.fronds++;
+   }
+   if (hd === 0) {
+    var fs = 0.20 + 0.06 * h(60, 2);
+    BIO.put('cove_pandan_fruit', [hx + Math.cos(haz) * 0.12, hy - 0.16, hz + Math.sin(haz) * 0.12], qEuler(0.14, haz, 0), [fs, fs * 1.25, fs], C(PAL.pandanFruit[(P.seed >>> 0) % PAL.pandanFruit.length]));
+   }
+  }
+ };
+
+ var buildCoveHibiscus = function(B, st){
+  var h = function(i, k){ return KRAND.unit(KRAND.hash(B.seed >>> 0, i | 0, k | 0)); };
+  var H = B.H, barkCol = vary(PAL.mahoganyBark[(B.seed >>> 0) % PAL.mahoganyBark.length], 0.01, 0.04, 0.04);
+  var nSt = 3 + ((B.seed >>> 0) % 2);
+  for (var s = 0; s < nSt; s++) {
+   var az = B.yaw + (s / nSt) * TAU + 0.35 * (h(s + 2, 1) - 0.5);
+   var sp = H * (0.34 + 0.18 * h(s + 2, 2)), sh = H * (0.68 + 0.24 * h(s + 2, 3)), r0 = clamp(H * 0.028, 0.08, 0.16);
+   var mx = B.x + Math.cos(az) * sp * 0.56, my = B.y0 + sh * 0.38, mz = B.z + Math.sin(az) * sp * 0.56;
+   var ex = B.x + Math.cos(az) * sp, ey = B.y0 + sh, ez = B.z + Math.sin(az) * sp;
+   st.tris += BIO.tube('mahogany', [{ x: B.x, y: B.y0 - 0.22, z: B.z, r: r0 }, { x: mx, y: my, z: mz, r: r0 * 0.72 }, { x: ex, y: ey, z: ez, r: r0 * 0.36 }], barkCol, { seg: 5, cap: true });
+   var fS = clamp(H * 0.44, 1.35, 2.75);
+   BIO.put('hibiscus_fol', [ex, ey - 0.04, ez], qEuler(0, az, 0), [fS, fS * 0.64, fS], C(PAL.hibiscusLeaf[(s + (B.seed >>> 0)) % PAL.hibiscusLeaf.length]));
+   if (s < 2) {
+    BIO.put('hibiscus_bloom', [ex + Math.cos(az) * 0.22, ey + fS * 0.22, ez + Math.sin(az) * 0.22], qEuler(0.15, az, 0), [1.25, 1.25, 1.25], C(PAL.hibiscusBloom[s % PAL.hibiscusBloom.length]));
+   }
+  }
+ };
+
  // ---- Register 34-core-impostor octahedral impostors for far-range 80-85% cloud rainforest
  var IMP_SET = BIO.impostorSet ? BIO.impostorSet('shroudhills_imp', { grid: 6, cell: 64, slots: 2, label: 'Shroudhills cloud-rainforest crowns' }) : null;
  var IMP_KOHE = IMP_SET ? BIO.impostor('imp_kohekohe', function(){
@@ -377,10 +503,12 @@ SHROUDHILLS.setupKit();
   opt = opt || {};
   q = q == null ? 1 : q;
   SHROUDHILLS._R = R;
-  var st = { tris: 0, clumps: 0, amber: 0, fronds: 0, kohe: 0, kauri: 0, ferns: 0, heroes: 0, fars: 0 };
+  var st = { tris: 0, clumps: 0, amber: 0, fronds: 0, kohe: 0, kauri: 0, rimu: 0, ferns: 0, nikaus: 0, coconuts: 0, pandans: 0, hibiscus: 0, heroes: 0, fars: 0 };
 
   SHROUDHILLS.TREES.length = 0;
   SHROUDHILLS.TREE_FERNS.length = 0;
+  SHROUDHILLS.COCONUTS.length = 0;
+  var NIKAUS = [], COVE_PANDANS = [], COVE_HIBISCUS = [];
   SHROUDHILLS.BRIDGE_ANCHORS.length = 0;
   SHROUDHILLS.CUP_FORKS.length = 0;
   SHROUDHILLS.GALL_SPOTS.length = 0;
@@ -400,20 +528,21 @@ SHROUDHILLS.setupKit();
 
   var nextId = 1;
 
-  // 1. Emergent Weeping Amber-Podocarps (shroud_amber_kauri) on cove bluffs & upper ravine shoulders (never on bare Cloak-Tors or safe trails!)
+  // 1. Emergent Weeping Amber-Kauri & Weeping Rimu-Podocarps on cove bluffs & upper ravine shoulders
   SHROUDHILLS.kgrid('amber_kauri', 32 / Math.sqrt(q), function(Z){
    if (Z.tor > 0.32 || Z.granite > 0.55 || Z.path > 0.25 || Z.cobble > 0.45) return 0;
    return clamp((Z.shroud_cove * 0.78 + Z.canopy_sea * 0.46) * (1 - Z.ravine * 0.55), 0, 0.85);
   }, function(x, y, z, seed, Z){
    var s = KRAND.stream(seed);
-   var H = lerp(30, 44, s.next()) * lerp(1.0, 0.82, Z.coast * 0.5);
-   var rb = lerp(1.02, 1.48, (H - 30) / 14);
-   var crownR = lerp(8.2, 11.4, s.next());
+   var isRimu = s.next() < 0.34;
+   var H = (isRimu ? lerp(24, 36, s.next()) : lerp(30, 44, s.next())) * lerp(1.0, 0.82, Z.coast * 0.5);
+   var rb = lerp(0.92, 1.48, clamp((H - 26) / 18, 0, 1));
+   var crownR = lerp(7.8, 11.4, s.next());
    var keepR = 5.4;
    if (!clearAt(x, z, keepR)) return;
    var T = {
     id: nextId++,
-    key: 'shroud_amber_kauri',
+    key: isRimu ? 'amberpodocarp' : 'shroud_amber_kauri',
     x: x, z: z, y0: y,
     H: H, rb: rb, crownR: crownR,
     lean: Z.coast > 0.35 ? lerp(0.04, 0.09, s.next()) : lerp(0.01, 0.035, s.next()),
@@ -425,8 +554,7 @@ SHROUDHILLS.setupKit();
    SHROUDHILLS.TREES.push(T);
   }, { pad: 2.5 });
 
-  // 2. Buttressed Shroud-Mahogany (shroud_kohekohe) forming the dense 80-85% cloud-forest matrix & Root-Hammock bough network!
-  // Tighter spacing along ravine walls so neighboring crowns stand 7-14 m apart for KSPACE Root-Hammocks (B)!
+  // 2. Buttressed Shroud-Mahogany (shroud_kohekohe) forming the dense 80-85% cloud-forest matrix & Root-Hammock bough network
   SHROUDHILLS.kgrid('kohekohe', 16.5 / Math.sqrt(q), function(Z){
    if (Z.tor > 0.30 || Z.granite > 0.52 || Z.path > 0.22 || Z.cobble > 0.45) return 0;
    return clamp((Z.canopy_sea * 0.92 + Z.shroud_cove * 0.82) * (1 - Z.ravine * 0.12), 0, 0.95);
@@ -451,34 +579,90 @@ SHROUDHILLS.setupKit();
    SHROUDHILLS.TREES.push(T);
   }, { pad: 2.2 });
 
-  // 3. Ironstone Ravine Tree-Ferns (shroud_tree_fern) in shadowy ravine floors & stream margins
+  // 3. Ironstone Ravine Tree-Ferns (shroud_tree_fern) & Shroud Nikau Feather-Palms (shroudnikau) in damp gullies
   SHROUDHILLS.kgrid('tree_fern', 11.0 / Math.sqrt(q), function(Z){
    if (Z.tor > 0.25 || Z.granite > 0.48 || Z.path > 0.28 || Z.cobble > 0.55) return 0;
    return clamp(Z.ravine * 0.85 + Z.canopy_sea * 0.34 + Z.shroud_cove * 0.28, 0, 0.82);
-  }, function(x, y, z, seed){
+  }, function(x, y, z, seed, Z){
    if (!clearAt(x, z, 1.8)) return;
    var s = KRAND.stream(seed);
-   var F = {
+   var lv = lvOf(x, z);
+   if (lv === 0) return;
+   if (Z.elev < 820 && s.next() < 0.22) {
+    NIKAUS.push({ key: 'shroudnikau', x: x, z: z, y0: y, H: lerp(5.8, 11.2, s.next()), yaw: s.next() * TAU, seed: seed, lv: lv });
+    SPX.insert({ x: x, z: z, r: 2.1 }, x, z, 2.1);
+    return;
+   }
+   SHROUDHILLS.TREE_FERNS.push({
     key: 'shroud_tree_fern',
     x: x, z: z, y0: y,
     H: lerp(3.5, 7.5, s.next()),
     seed: seed,
+    lv: lv
+   });
+  }, { pad: 1.4 });
+
+  // 4. Drift-Sown Cove Coconut Palms (coconut), Raid-Cove Screwpines (covepandan) & Bast-Hibiscus (covehibiscus) on Station 1 cove
+  SHROUDHILLS.kgrid('coconut', 21.0 / Math.sqrt(q), function(Z, x, z){
+   var y = Y(x, z), w = BIO.waterH(x, z);
+   if (w > -1e8 && y < w + 1.25) return 0;
+   var slp = Math.hypot(Y(x + 2, z) - Y(x - 2, z), Y(x, z + 2) - Y(x, z - 2)) / 4;
+   if (!SHROUDHILLS.coveStrandPalmOk({
+    coast: Z.coast, elevASL: Z.elev, y: y, seaLevel: 0,
+    tor: Z.tor, granite: Z.granite, path: Z.path, slope: slp
+   })) return 0;
+   return clamp((Z.cobble * 0.55 + Z.shroud_cove * 0.72) * smooth(108, 52, Z.elev), 0, 0.78);
+  }, function(x, y, z, seed){
+   if (!clearAt(x, z, 2.8)) return;
+   var s = KRAND.stream(seed);
+   var gx = Y(x - 2, z) - Y(x + 2, z), gz = Y(x, z - 2) - Y(x, z + 2);
+   var seaAz = (Math.abs(gx) + Math.abs(gz) > 0.02) ? Math.atan2(gz, gx) : s.next() * TAU;
+   var P = {
+    key: 'coconut',
+    x: x, z: z, y0: y,
+    H: lerp(8.2, 15.2, s.next()),
+    lean: lerp(0.16, 0.34, s.next()),
+    yaw: seaAz + (s.next() - 0.5) * 0.45,
+    seed: seed,
     lv: lvOf(x, z)
    };
-   if (F.lv === 0) return;
-   SHROUDHILLS.TREE_FERNS.push(F);
-  }, { pad: 1.4 });
+   SPX.insert({ x: x, z: z, r: 2.8, palm: P }, x, z, 2.8);
+   SHROUDHILLS.COCONUTS.push(P);
+  }, { pad: 2.4 });
+
+  SHROUDHILLS.kgrid('cove_littoral', 24.0 / Math.sqrt(q), function(Z, x, z){
+   var y = Y(x, z), w = BIO.waterH(x, z);
+   if (w > -1e8 && y < w + 1.15) return 0;
+   var slp = Math.hypot(Y(x + 2, z) - Y(x - 2, z), Y(x, z + 2) - Y(x, z - 2)) / 4;
+   if (!SHROUDHILLS.coveStrandPalmOk({
+    coast: Z.coast, elevASL: Z.elev, y: y, seaLevel: 0,
+    tor: Z.tor, granite: Z.granite, path: Z.path, slope: slp
+   })) return 0;
+   return clamp((Z.cobble * 0.5 + Z.shroud_cove * 0.65) * smooth(104, 50, Z.elev), 0, 0.68);
+  }, function(x, y, z, seed){
+   var lv = lvOf(x, z);
+   if (lv === 0 || !clearAt(x, z, 2.3)) return;
+   var s = KRAND.stream(seed);
+   var yaw = s.next() * TAU;
+   if (s.next() < 0.54) {
+    COVE_PANDANS.push({ key: 'covepandan', x: x, z: z, y0: y, H: lerp(3.8, 7.2, s.next()), yaw: yaw, seed: seed, lv: lv });
+   } else {
+    COVE_HIBISCUS.push({ key: 'covehibiscus', x: x, z: z, y0: y, H: lerp(3.2, 6.4, s.next()), yaw: yaw, seed: seed, lv: lv });
+   }
+   SPX.insert({ x: x, z: z, r: 2.3 }, x, z, 2.3);
+  }, { pad: 2.0 });
 
   // Register BEFORE drawing and build host trees + octahedral impostors
   for (var i = 0; i < SHROUDHILLS.TREES.length; i++) {
    var T = SHROUDHILLS.TREES[i];
    var spRec = SHROUDHILLS.byKey[T.key];
    BIO.owner = [T.x, T.z];
+   var isPodocarp = T.key === 'shroud_amber_kauri' || T.key === 'amberpodocarp';
    if (T.lv === 0) {
     if (IMP_SET) {
      BIO.range = null; BIO.minRange = 0;
-     var imp = T.key === 'shroud_amber_kauri' ? IMP_KAURI : IMP_KOHE;
-     BIO.impostorPut('imp_trees', imp, [T.x, T.y0 - 0.6, T.z], (T.seed % 628) / 100, T.H / (T.key === 'shroud_amber_kauri' ? 37 : 30), null);
+     var imp = isPodocarp ? IMP_KAURI : IMP_KOHE;
+     BIO.impostorPut('imp_trees', imp, [T.x, T.y0 - 0.6, T.z], (T.seed % 628) / 100, T.H / (isPodocarp ? 37 : 30), null);
      st.fars++;
     }
     continue;
@@ -498,7 +682,10 @@ SHROUDHILLS.setupKit();
    BIO.host.obstacles.push({ x: T.x, z: T.z, r: T.rb * 1.45 + 0.8, y0: T.y0 - 3, y1: T.y0 + T.H });
 
    BIO.range = L.tree; BIO.minRange = 0;
-   if (T.key === 'shroud_amber_kauri') {
+   if (T.key === 'amberpodocarp') {
+    buildRimuPodocarp(T, st);
+    st.rimu++;
+   } else if (T.key === 'shroud_amber_kauri') {
     buildAmberKauri(T, st);
     st.kauri++;
    } else {
@@ -509,8 +696,8 @@ SHROUDHILLS.setupKit();
 
    if (IMP_SET) {
     BIO.range = 1e9; BIO.minRange = L.tree;
-    var impFar = T.key === 'shroud_amber_kauri' ? IMP_KAURI : IMP_KOHE;
-    BIO.impostorPut('imp_trees', impFar, [T.x, T.y0 - 0.6, T.z], (T.seed % 628) / 100, T.H / (T.key === 'shroud_amber_kauri' ? 37 : 30), null);
+    var impFar = isPodocarp ? IMP_KAURI : IMP_KOHE;
+    BIO.impostorPut('imp_trees', impFar, [T.x, T.y0 - 0.6, T.z], (T.seed % 628) / 100, T.H / (isPodocarp ? 37 : 30), null);
    }
 
    for (var cf = 0; cf < T.cupForks.length; cf++) SHROUDHILLS.CUP_FORKS.push(T.cupForks[cf]);
@@ -539,13 +726,84 @@ SHROUDHILLS.setupKit();
    st.ferns++;
   }
 
+  // Build Shroud Nikau Feather-Palms (register BEFORE drawing)
+  var spNikau = SHROUDHILLS.byKey.shroudnikau;
+  for (var ni = 0; ni < NIKAUS.length; ni++) {
+   var N = NIKAUS[ni];
+   BIO.owner = [N.x, N.z];
+   if (N.lv === 2) {
+    BIO.register({
+     name: spNikau.name, key: 'shroudnikau', kind: 'tree',
+     x: N.x, z: N.z, y: N.y0 - 0.5, r: 2.8, h: N.H + 1.6,
+     tags: { harvest: spNikau.tags.harvest }
+    });
+   }
+   BIO.range = L.mid; BIO.minRange = 0;
+   buildNikauPalm(N, st);
+   st.nikaus++;
+  }
+
+  // Register BEFORE drawing and build Drift-Sown Cove Coconut Palms, Screwpines & Bast-Hibiscus
+  var spCoco = SHROUDHILLS.byKey.coconut;
+  for (var m = 0; m < SHROUDHILLS.COCONUTS.length; m++) {
+   var P = SHROUDHILLS.COCONUTS[m];
+   BIO.owner = [P.x, P.z];
+   BIO.register({
+    name: spCoco.name,
+    key: 'coconut',
+    kind: 'tree',
+    x: P.x, z: P.z, y: P.y0 - 0.5,
+    r: 3.6,
+    h: P.H + 2.2,
+    tags: { strand: true, harvest: spCoco.tags.harvest }
+   });
+   BIO.host.obstacles.push({ x: P.x, z: P.z, r: 1.5, y0: P.y0 - 2, y1: P.y0 + P.H + 1.5 });
+   BIO.range = P.lv === 0 ? 950 : L.mid;
+   BIO.minRange = 0;
+   buildCoconutPalm(P, st);
+   st.coconuts++;
+  }
+
+  var spPandan = SHROUDHILLS.byKey.covepandan;
+  for (var pi = 0; pi < COVE_PANDANS.length; pi++) {
+   var CP = COVE_PANDANS[pi];
+   BIO.owner = [CP.x, CP.z];
+   BIO.register({
+    name: spPandan.name, key: 'covepandan', kind: 'tree',
+    x: CP.x, z: CP.z, y: CP.y0 - 0.4, r: 2.6, h: CP.H + 1.4,
+    tags: { strand: true, harvest: spPandan.tags.harvest }
+   });
+   BIO.range = L.mid; BIO.minRange = 0;
+   buildCovePandan(CP, st);
+   st.pandans++;
+  }
+
+  var spHib = SHROUDHILLS.byKey.covehibiscus;
+  for (var hi = 0; hi < COVE_HIBISCUS.length; hi++) {
+   var CH = COVE_HIBISCUS[hi];
+   BIO.owner = [CH.x, CH.z];
+   BIO.register({
+    name: spHib.name, key: 'covehibiscus', kind: 'flora',
+    x: CH.x, z: CH.z, y: CH.y0 - 0.3, r: 2.6, h: CH.H + 1.0,
+    tags: { strand: true, harvest: spHib.tags.harvest }
+   });
+   BIO.range = L.mid; BIO.minRange = 0;
+   buildCoveHibiscus(CH, st);
+   st.hibiscus++;
+  }
+
   BIO.owner = null; BIO.range = null; BIO.minRange = 0;
   return {
    trees: SHROUDHILLS.TREES.length,
    kohekohe: st.kohe,
    amberKauri: st.kauri,
+   rimuPodocarp: st.rimu,
    amberDrips: st.amber,
    treeFerns: st.ferns,
+   nikauPalms: st.nikaus,
+   coconuts: st.coconuts,
+   covePandans: st.pandans,
+   coveHibiscus: st.hibiscus,
    heroes: st.heroes,
    farImpostors: st.fars
   };

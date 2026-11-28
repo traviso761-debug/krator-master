@@ -572,3 +572,50 @@ defBuilding({key:'hk_jade_quarry',name:'Nephrite-Boulder and Columnar-Basalt Qua
    ['hueru-kuran_jade_lamp_pedestal',-1.8,py,5.2,0,{setting:'outdoor'}]
   ]);
  }});
+
+/* 37. Sea-Spray Brine Evaporation and Kelp-Potash Kiln */
+defBuilding({key:'hk_brine_kelp_pan',name:'Sea-Spray Brine Evaporation and Kelp-Potash Kiln',seed:8317,cut:true,
+ w:20.2,d:16.2,h:7.8,tags:{types:['industry'],wealth:'poor',style:'hueru-kuran',job:'salt'},
+ build(){
+  const py=hkPlinth(18.6,13.8,.44,{stepW:2.8,stepRun:.9});
+  /* West salt-basket & soda-potash store-chise */
+  hkChise(-4.6,-.6,py,4.05,1.95,2.45,1.95,{
+   ribs:8,crownH:.66,crownFins:4,
+   doors:[{yaw:0,w:1.3,h:2.0}],
+   windows:[{yaw:-PI/2,w:.74,y:.92,h:.82}]
+  });
+  svNoWalk(()=>{
+   /* Stepped columnar-basalt tidal spray-settling pans crusted with white sea-salt efflorescence */
+   box('columnar',4.4,py,-3.8,6.2,.44,2.1,P('columnar'));
+   box('efflor',4.4,py+.44,-3.8,5.5,.07,1.45,0xeae6dc);
+   box('columnar',4.4,py,-1.2,6.2,.26,2.1,P('columnar'));
+   box('soda',4.4,py+.26,-1.2,5.5,.07,1.45,0xdcdad2);
+   /* Twin iron brine-boiling cauldrons over peat & driftwood hearth */
+   box('basalt',2.2,py,2.6,2.6,.48,1.5,P('basaltD'));
+   box('glow',2.2,py+.48,2.6,1.8,.05,.85,0xff6e20);
+   for(const cx of [1.55,2.85]){
+    cyl('iron',cx,py+.54,2.6,.46,.42,P('iron'),12);
+    cyl('efflor',cx,py+.96,2.6,.4,.04,0xf0ede4,12);
+   }
+   /* Calcining kelp-ash clamp kiln with white soda/potash crusts for hk_kelp_glassworks */
+   cyl('columnar',6.3,py,2.6,1.35,.6,P('columnar'),14);
+   cyl('kelp',6.3,py+.6,2.6,1.06,.34,P('kelp'),12,.72);
+   cyl('potash',6.3,py+.94,2.6,.72,.18,0xd8d2c6,12,.48);
+   cyl('glow',6.3,py+1.12,2.6,.28,.04,0xff7a28,10);
+  });
+  haloAt(2.2,py+.72,2.6,0xff8632,true);
+  smokeAt(2.2,py+1.1,2.6,{r:.4,kind:'steam'});
+  smokeAt(6.3,py+1.25,2.6,{r:.36,kind:'fire'});
+  hkWindHanging(4.4,py,-5.4,0,3.6,2.3,{mk:'kelp',panels:3});
+
+  hkTarget(-4.6,py+.08,-.6,'salt store chise');
+  hkTarget(2.2,py,4.6,'brine pan yard');
+  hkFurnList([
+   ['hueru-kuran_whale_oil_hearth',-4.6,py+.08,-.6,0],
+   ['hueru-kuran_kaen_storage_jar',-5.6,py+.08,-1.3,0,{v:0}],
+   ['generic_sack',-3.5,py+.08,-1.2,0],
+   ['generic_barrel',-4.6,py+.08,.8,0],
+   ['hueru-kuran_blubber_kettle',-.4,py,2.6,0,{setting:'outdoor'}],
+   ['generic_trade_bin',5.2,py,4.7,0,{setting:'outdoor'}]
+  ]);
+ }});

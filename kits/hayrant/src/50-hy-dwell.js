@@ -22,6 +22,9 @@ defBuilding({key:'hy_loess_yaodong',name:'Loess-Bank Yaodong Vault',seed:34001,c
   pushM(TF(0,0,-.45));
   hyPlinth(9.0,7.2,G,{baseMk:'megabreccia',midMk:'basalt',topMk:'paving'});
   hyLoessVault(0,-.2,G,8.2,6.2,3.05,{frontMk:'loess',lintel:'larch',maskMk:'kaen',winLight:'nephrite'});
+  hyFormlineTympanum(0,G+3.36,2.92,5.0,.62,0,{arch:true,backMk:'loess',tertiary:'nephrite'});
+  hyInauCluster(-1.32,G+2.12,3.16,0,{scale:.72});
+  hyInauCluster(1.32,G+2.12,3.16,0,{scale:.72});
   hyEavesBraid(0,G+2.85,3.22,0,5.2,{sag:.22});
   hyWindHanging(-3.4,G,3.45,.18,1.5,2.15,{mk:'plaid',panels:2});
   svNoWalk(()=>{
@@ -46,13 +49,15 @@ defBuilding({key:'hy_loess_yaodong',name:'Loess-Bank Yaodong Vault',seed:34001,c
 defBuilding({key:'hy_larch_chise_poor',name:'Fur-Larch Cruck-Rib Chise Hut',seed:34002,cut:true,
  w:11.4,d:11.6,h:7.2,budget:70000,
  tags:{types:['dwelling-single'],wealth:'poor',style:'bench'},
- note:'megabreccia ring-wall under steamed fur-larch and century-puya cruck-ribs, birch-tar bark and turf dome, kaen-doki crown & lead door mask',
+ note:'megabreccia ring-wall under steamed fur-larch and century-puya cruck-ribs, gale-cobble threshold hood, kaen-doki crown & lead door mask',
  build(){
   hyChise(0,-.45,0,4.35,.66,2.22,2.52,{
    ribs:10,
    doors:[{yaw:0,w:1.3,h:2.04,lintel:'larch',maskMk:'lead'}],
    windows:[{yaw:1.45,w:.72,h:.76,y:.92,light:'nephrite'},{yaw:-1.45,w:.72,h:.76,y:.92,light:'nephrite'}]
   });
+  hyGaleCobbleRoof(0,2.42,4.68,2.55,1.00,.48,0,{posts:true,postY0:.06,mk:'larch',overZ:.18});
+  hyInauCluster(-1.26,1.88,5.08,0,{scale:.66});
   hyWindHanging(3.1,0,3.55,-.35,1.65,2.2,{mk:'plaid',panels:2});
   hyEavesBraid(-2.8,1.95,3.4,.35,1.8,{sag:.18});
   hyFurnList([
@@ -71,12 +76,14 @@ defBuilding({key:'hy_larch_chise_poor',name:'Fur-Larch Cruck-Rib Chise Hut',seed
 defBuilding({key:'hy_scarp_cellar_poor',name:'Basalt Scarp Winter Cellar',seed:34003,cut:true,
  w:11.2,d:10.4,h:6.2,budget:65000,
  tags:{types:['dwelling-single'],wealth:'poor',style:'bench'},
- note:'battered basalt and loess winter cellar with lead ancestor mask, braided garlic eaves and katabatic plaid wind-shelter',
+ note:'battered basalt and loess winter cellar with gale-cobble threshold hood, lead ancestor mask, braided garlic eaves & plaid wind-shelter',
  build(){
   const G=.3;
   pushM(TF(-.85,0,-.4));
   hyPlinth(7.8,6.8,G,{stepX:0});
   hyLoessVault(0,-.15,G,7.0,5.6,2.85,{frontMk:'basalt',lintel:'larch',maskMk:'lead',relieving:false});
+  hyGaleCobbleRoof(0,G+2.68,3.65,2.5,.96,.46,0,{posts:true,postY0:G,mk:'larch',overZ:.18});
+  hyInauCluster(-1.22,G+1.95,4.05,0,{scale:.64});
   /* Side madder-plaid wind-rigged work shelter on +x, clear of vault wall */
   svNoWalk(()=>box('paving',5.15,0,.1,2.3,.12,4.4,P('paving')));
   wkPad(5.15,.1,2.3,4.4,.12);
@@ -98,7 +105,7 @@ defBuilding({key:'hy_scarp_cellar_poor',name:'Basalt Scarp Winter Cellar',seed:3
 defBuilding({key:'hy_terrace_row_poor',name:'Loess and Block Vassal Terrace Row',seed:34004,cut:true,
  w:16.6,d:10.8,h:7.4,budget:95000,
  tags:{types:['dwelling-multi'],wealth:'poor',style:'bench'},
- note:'three-door vassal workers row in golden loess and cast block under a turf-and-tile winter brow with twin kaen-doki smoke-pots',
+ note:'three-door vassal workers row in golden loess and cast block with sleeping-eye formline tympanums, willow inau & twin kaen-doki smoke-pots',
  build(){
   const G=.36,W=14.4,D=6.6,H=3.25;
   pushM(TF(0,0,-.5));
@@ -122,6 +129,10 @@ defBuilding({key:'hy_terrace_row_poor',name:'Loess and Block Vassal Terrace Row'
   hyDoor(W/2-2.4,G,D/2,0,1.18,2.04,{lintel:'larch',maskMk:'lead'});
   for(const wx of [-W/2+4.8,W/2-4.8])hyWindow(wx,G+.95,D/2,0,.78,.86,{light:'nephrite'});
   for(const wx of [-W/2+3.6,W/2-3.6])hyWindow(wx,G+1.0,-D/2,PI,.76,.82,{light:'steel'});
+  hyFormlineTympanum(-2.4,G+2.14,D/2+.24,2.4,.68,0,{arch:true,backMk:'loess',tertiary:'nephrite'});
+  hyFormlineTympanum(2.4,G+2.14,D/2+.24,2.4,.68,0,{arch:true,backMk:'loess',tertiary:'nephrite'});
+  hyInauCluster(-6.4,G+2.05,D/2+.26,0,{scale:.68});
+  hyInauCluster(6.4,G+2.05,D/2+.26,0,{scale:.68});
   /* Stepped loess parapet & snow-shedding slate-grey tile hip with twin kaen-doki crowns */
   svNoWalk(()=>{
    box('lime',0,G+H+.23,0,W+.36,.24,D+.36,P('limeShade'));
@@ -236,12 +247,13 @@ defBuilding({key:'hy_nuraghe_chise_mid',name:'Nuraghe Keep and Chise Hearth Comp
    doors:[{yaw:0,w:1.28,h:2.08,lintel:'nephrite',maskMk:'kaen'}],
    windows:[{yaw:1.4,w:.74,h:.82,y:.95,light:'nephrite'}]
   });
-  /* Covered larch & madder-plaid breezeway awning over the central court */
+   /* Covered larch & madder-plaid breezeway awning over the central court */
   hyPlaidAwning(-1.3,1.2,1.4,3.8,.055,2.65,{mk:'plaid',sag:.2});
+  hyFormlineFrieze(0,2.74,3.92,2.7,.56,0,{backMk:'larch',tertiary:'celadon'});
   hySeismicChimes(0,2.58,3.85,0,1.4,1.05,5);
   hyFurnList([
    ['hayrant_larch_cruck_bed',-4.1,.06,-1.6,0],
-   ['eternian_common_chest',-5.1,.06,-.2,PI/2],
+   ['hayrant_formline_chest',-5.1,.06,-.2,PI/2,0],
    ['hayrant_inau_ancestor_shelf',-4.1,.06,-2.4,0,0],
    ['hayrant_irori_hearth',3.8,.06,-.5,0],
    ['hayrant_larch_feast_table',3.8,.06,1.1,0],
@@ -257,7 +269,7 @@ defBuilding({key:'hy_nuraghe_chise_mid',name:'Nuraghe Keep and Chise Hearth Comp
 defBuilding({key:'hy_courtyard_loess_mid',name:'Walled Forecourt and Loess Vault House',seed:34007,cut:true,
  w:15.6,d:14.6,h:8.8,budget:115000,
  tags:{types:['dwelling-single'],wealth:'middle',style:'hybrid'},
- note:'walled basalt and cast-block forecourt with nephrite gate, seismic chime rack, and limewashed loess cliff-vault with celadon kaen-doki crown',
+ note:'walled basalt and cast-block forecourt with ovoid ancestor-collar nephrite gate, sleeping-eye friezes, chime rack & limewashed loess vault',
  build(){
   const G=.38;
   hyPlinth(12.8,11.4,G,{stepW:2.6,stepX:0});
@@ -270,7 +282,10 @@ defBuilding({key:'hy_courtyard_loess_mid',name:'Walled Forecourt and Loess Vault
    mk:'block',socle:.48,socleMk:'basalt',skip:'n',
    holes:{s:[{at:5.8,y:0,w:2.05,h:2.35}]}
   });
-  hyDoor(0,G,5.3,0,1.56,2.18,{lintel:'nephrite',maskMk:'bronze',relieving:false});
+  hyDoor(0,G,5.3,0,1.56,2.18,{lintel:'nephrite',mask:false,relieving:false});
+  hyOvoidPortal(0,G,5.63,2.14,2.42,0,{surroundOnly:true,headMk:'bronze'});
+  hyFormlineFrieze(-3.6,G+1.35,5.55,2.6,.66,0,{backMk:'loess',tertiary:'celadon'});
+  hyFormlineFrieze(3.6,G+1.35,5.55,2.6,.66,0,{backMk:'loess',tertiary:'celadon'});
   hyPlaidAwning(-4.8,1.4,-1.6,4.6,G,2.6,{mk:'hemp',sag:.22});
   hyFurnList([
    ['hayrant_seismic_chime_rack',3.6,G,2.8,PI],
@@ -278,6 +293,7 @@ defBuilding({key:'hy_courtyard_loess_mid',name:'Walled Forecourt and Loess Vault
    ['hayrant_irori_hearth',0,G,-2.2,0],
    ['hayrant_larch_feast_table',-2.8,G,-2.0,PI/2],
    ['hayrant_larch_cruck_bed',3.2,G,-2.6,-PI/2],
+   ['hayrant_formline_chest',3.2,G,-.7,PI,1],
    ['hayrant_inau_ancestor_shelf',0,G,-4.4,0,0],
    ['hayrant_kaen_jar',-4.2,G,-4.0,0,1]
   ]);
@@ -351,9 +367,9 @@ defBuilding({key:'hy_corner_turret_mid',name:'Corner Nuraghe Turret Shop and Fla
 
 /* 9. Rich Utari Clan-Lord Walled Compound (Household Service, 3-ton Nephrite Gate & Whalebone Heirloom) */
 defBuilding({key:'hy_clan_lord_compound',name:'Utari Clan-Lord Walled Compound',seed:34009,cut:true,
- w:25.6,d:22.0,h:14.2,budget:175000,
+ w:25.6,d:22.0,h:14.2,budget:195000,
  tags:{types:['dwelling-single'],wealth:'rich',style:'prefect'},
- note:'walled vassal clan compound: cross-pass Leviathan whalebone arch and 3-ton nephrite gate, organ-pipe Deco hall, servants wing & heirloom chise',
+ note:'walled vassal clan compound: Sutar-Pira head-totem poles, cross-pass Leviathan whalebone arch, 3-ton nephrite gate, Deco hall & heirloom chise',
  build(){
   /* Paved courtyard deck at y = 0.08 */
   svNoWalk(()=>box('paving',0,0,0,22.8,.08,18.4,P('paving')));
@@ -364,6 +380,9 @@ defBuilding({key:'hy_clan_lord_compound',name:'Utari Clan-Lord Walled Compound',
    holes:{s:[{at:11.4,y:0,w:3.6,h:2.75}]}
   });
   hyDoor(0,.08,9.2,0,2.05,2.52,{lintel:'civic',ancestorMk:'silver'});
+  /* Flanking syncretic Sutar-Pira Eternian-head totem poles on the outer gate apron */
+  hyHeadTotemPole(-5.6,0,10.05,0,{h:5.8,heads:4,r:.28,materials:['gold','nephrite','celadon','tarwood'],crown:'eagle',seed:340091});
+  hyHeadTotemPole(5.6,0,10.05,0,{h:5.8,heads:4,r:.28,materials:['silver','alabaster','bronze','kaen'],crown:'sundisc',seed:340092});
   /* Prized cross-pass Hueru-Kuran Leviathan whale-jawbone arch standing 1.1 m inside the gate */
   hyWhaleJawArch(0,.08,7.6,0,4.5,4.7);
 
@@ -387,8 +406,10 @@ defBuilding({key:'hy_clan_lord_compound',name:'Utari Clan-Lord Walled Compound',
     ['eternian_court_ancestor_niche',0,G,-2.3,0],
     ['eternian_court_alabaster_lamp',-2.2,G,-2.1,0],
     ['eternian_court_alabaster_lamp',2.2,G,-2.1,0],
+    ['hayrant_head_totem_post',-5.4,G,-1.8,PI/2,0],
     ['hayrant_larch_feast_table',-3.4,G,.4,0],
     ['eternian_court_canopy_bed',4.2,G,-1.4,0],
+    ['hayrant_formline_chest',4.2,G,.5,-PI/2,0],
     ['hayrant_seismic_chime_rack',4.8,G,1.8,PI]
    ]);
    hyTarget(0,G,.4,'clan-hall');

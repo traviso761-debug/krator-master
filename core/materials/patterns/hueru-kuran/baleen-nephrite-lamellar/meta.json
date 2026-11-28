@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1020,
+    1067
+   ],
+   "seam_after": [
+    1.049,
+    1.793
+   ],
+   "seam_before": [
+    1.145,
+    5.089
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.28,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.32,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "hueru-kuran/baleen-nephrite-lamellar",
+  "metal": 0.05,
+  "pattern": true,
+  "roughness": 0.32,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__hueru-kuran__baleen-nephrite-lamellar.png",
+  "generator": "Codex image generation, Nov 2026 (exec-03de48e3-ea71-46e9-a942-8704d461b0ce.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hueru-Kuran marine lamellar armour: six overlapping horizontal rows of narrow round-topped rectangular lamellar plates cut from satin-dark black whale baleen (#1c1816) with fine longitudinal horn striations, alternating every fourth row with water-sawn deep emerald nephrite jade plates (#1f5e43), tightly laced with bleached rawhide and whalebone thongs (#ece3cf), seamless across all four edges. Full colour.",
+  "sha1": "f77a237ce0a926a199fdf1f2ba1b5c3e6117f95a"
+ }
+}

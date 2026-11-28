@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1087,
+    1204
+   ],
+   "seam_after": [
+    0.977,
+    0.48
+   ],
+   "seam_before": [
+    2.516,
+    1.617
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true,
+   "rough": 0.76,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "talovolci/ogham-stave-hem",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.76,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__talovolci__ogham-stave-hem.png",
+  "generator": "Codex image generation, Nov 2026 (exec-77251526-dc6f-45d5-9d8c-628ef51de20d.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Talovolci stave-script woven tablet-braid hem band on undyed cream cloud-wool (#e8e0cc): three horizontal tablet-woven stemlines in dark woad-indigo (#223b63) crossed perpendicularly and diagonally by bundles of one to five crisp madder-red (#9e2a22) and weld-gold (#d8b838) Ogham-like stave notches, each register bookended inside the left and right margins by a small clockwise bronze-thread spiral, crisp card-woven warp cords. Full colour.",
+  "sha1": "7db367ba2f8b736c1743b18fe55440c65b0f3828"
+ }
+}

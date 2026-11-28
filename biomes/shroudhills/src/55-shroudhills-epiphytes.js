@@ -390,7 +390,15 @@
    myrtles++;
   }, { pad: 1.0 });
 
-  // 2. Twist E: Scarlet, Saffron & Silver-Velvet Lithophyte Cloak-Tor tapestries (shroud_cloak_bromeliad) on bare granite tors & coastal ribs
+  // 2. Twist E: Scarlet Tor-Cloak, Saffron Spine-Puya & Silver Cushion-Celmisia tapestries on bare granite tors & coastal ribs
+  var spSaffron = SHROUDHILLS.byKey.saffroncloak;
+  var spCushion = SHROUDHILLS.byKey.torcushion;
+  var spButter = SHROUDHILLS.byKey.torbutterwort;
+  var spBlech = SHROUDHILLS.byKey.ravineblechnum;
+  var spGiant = SHROUDHILLS.byKey.giantleaf;
+  var spKiekie = SHROUDHILLS.byKey.kiekievine;
+  var butterworts = 0, giantLeaves = 0, kiekies = 0;
+
   SHROUDHILLS.kgrid('tor_cloak', 5.8 / Math.sqrt(q), function(Z){
    if (Z.path > 0.45) return 0;
    return clamp(Z.cloak_tor * 0.88 + Z.granite * 0.68 + Z.tor * 0.75, 0, 0.92);
@@ -399,37 +407,68 @@
    reseed(seed);
    var sz = rr(0.95, 2.25);
    var band = (BIO.fn.fbm(x * 0.022, z * 0.022, 719, 2) - 0.5) * 2.0;
-   var col = band < -0.12 ? vary(pick(PAL.torCloakScarlet), 0.015, 0.06, 0.05) :
-             band < 0.22 ? vary(pick(PAL.torCloakSaffron), 0.015, 0.06, 0.05) :
+   var isScarlet = band < -0.10;
+   var isSaffron = !isScarlet && band < 0.24;
+   var col = isScarlet ? vary(pick(PAL.torCloakScarlet), 0.015, 0.06, 0.05) :
+             isSaffron ? vary(pick(PAL.torCloakSaffron), 0.015, 0.06, 0.05) :
              vary(pick(PAL.torCloakSilver), 0.01, 0.04, 0.04);
 
-   if (cloaks < 44 && (cloaks % 4 === 0)) {
+   if (cloaks < 54 && (cloaks % 3 === 0)) {
+    var regSp = isScarlet ? spCloak : isSaffron ? spSaffron : spCushion;
     BIO.register({
-     name: spCloak.name,
-     key: 'shroud_cloak_bromeliad',
+     name: regSp.name,
+     key: regSp.key,
      kind: 'flora',
      x: x, z: z, y: y - 0.5,
      r: sz * 0.95 + 0.6,
      h: 1.8,
-     tags: { harvest: spCloak.tags.harvest }
+     tags: { harvest: regSp.tags.harvest }
     });
    }
 
    BIO.owner = [x, z];
    BIO.range = L.tor; BIO.minRange = 0;
-   // Surface slope normal for granite dome hugging
    var gx = (Y(x + 1.2, z) - Y(x - 1.2, z)) / 2.4;
    var gz = (Y(x, z + 1.2) - Y(x, z - 1.2)) / 2.4;
    var qSlope = qSurfacePose([1, -gx, 0], [-gx, 1, -gz]);
 
-   BIO.put('tor_cloak_mat', [x, y + 0.03, z], qSlope, [sz, sz * 0.68, sz], col);
-   BIO.put('tor_bromeliad', [x, y + sz * 0.22, z], qSlope, [sz * 0.92, sz * 0.55, sz * 0.92], col);
-   if (band >= 0.18 || Z.tor > 0.5) {
-    BIO.put('tor_silver_orchid', [x + rr(-0.3, 0.3), y + 0.08, z + rr(-0.3, 0.3)], qSlope, [sz * 0.55, sz * 0.52, sz * 0.55], vary(pick(PAL.torCloakSilver), 0.01, 0.04, 0.04));
+   if (isScarlet) {
+    BIO.put('tor_cloak_mat', [x, y + 0.03, z], qSlope, [sz, sz * 0.68, sz], col);
+    BIO.put('tor_bromeliad', [x, y + sz * 0.22, z], qSlope, [sz * 0.92, sz * 0.55, sz * 0.92], col);
+   } else if (isSaffron) {
+    BIO.put('tor_cloak_mat', [x, y + 0.03, z], qSlope, [sz * 0.9, sz * 0.62, sz * 0.9], col);
+    BIO.put('saffron_puya', [x, y + sz * 0.22, z], qSlope, [sz * 0.98, sz * 0.62, sz * 0.98], col);
+   } else {
+    BIO.put('tor_celmisia', [x, y + 0.03, z], qSlope, [sz * 1.05, sz * 0.64, sz * 1.05], col);
+    BIO.put('tor_silver_orchid', [x + rr(-0.25, 0.25), y + 0.08, z + rr(-0.25, 0.25)], qSlope, [sz * 0.55, sz * 0.52, sz * 0.55], vary(pick(PAL.torCloakSilver), 0.01, 0.04, 0.04));
    }
    SHROUDHILLS.CLOAK_MATS.push({ x: x, y: y, z: z, sz: sz });
    cloaks++;
   }, { pad: 1.2 });
+
+  // 2B. Tor Midge-Butterwort (torbutterwort) along wet granite seepage ledges & gnamma rims
+  SHROUDHILLS.kgrid('tor_butterwort', 8.5 / Math.sqrt(q), function(Z){
+   if (Z.path > 0.45) return 0;
+   return clamp((Z.cloak_tor * 0.62 + Z.tor * 0.55 + Z.granite * 0.35) * (0.4 + 0.6 * Z.moss), 0, 0.68);
+  }, function(x, y, z, seed){
+   if (BIO.lodD(x, z) > L.epiphyte) return;
+   reseed(seed);
+   var sz = rr(0.55, 0.95);
+   if (butterworts < 24 && (butterworts % 3 === 0)) {
+    BIO.register({
+     name: spButter.name,
+     key: 'torbutterwort',
+     kind: 'flora',
+     x: x, z: z, y: y - 0.2,
+     r: 0.9, h: 0.6,
+     tags: { harvest: spButter.tags.harvest }
+    });
+   }
+   BIO.owner = [x, z];
+   BIO.range = L.epiphyte; BIO.minRange = 0;
+   BIO.put('tor_butterwort', [x, y + 0.01, z], qEuler(0, rr(0, TAU), 0), [sz, sz, sz], vary(pick(PAL.torButterwort), 0.02, 0.06, 0.05));
+   butterworts++;
+  }, { pad: 1.0 });
 
   // 3. Twist E: Silver Mist-Sundew Curtains (shroud_dew_strand) fluttering down windward granite scarps & ledges
   SHROUDHILLS.kgrid('dew_strand', 7.4 / Math.sqrt(q), function(Z){
@@ -457,28 +496,105 @@
    dews++;
   }, { pad: 1.2 });
 
-  // 4. Shady cloud-rainforest & ironstone ravine floor fern carpet
+  // 3B. Climbing Kiekie Pandan-Vines (kiekievine) clasping lower cloud-forest host boles
+  var gSpots = SHROUDHILLS.GALL_SPOTS || [];
+  for (var ki = 0; ki < gSpots.length; ki += 2) {
+   var K = gSpots[ki];
+   if (BIO.lodD(K.x, K.z) > L.floor) continue;
+   var sK = KRAND.stream(KRAND.hash(K.seed, 91));
+   if (sK.next() > 0.48) continue;
+   var ka = K.ang + 2.35;
+   var kx = K.x + Math.cos(ka) * (K.r + 0.02);
+   var kz = K.z + Math.sin(ka) * (K.r + 0.02);
+   var ky = K.y - 1.6;
+   if (ky < Y(kx, kz) + 0.8) continue;
+   if (kiekies < 20 && (kiekies % 3 === 0)) {
+    BIO.register({
+     name: spKiekie.name,
+     key: 'kiekievine',
+     kind: 'flora',
+     x: kx, z: kz, y: ky - 0.5,
+     r: 1.6, h: 2.2,
+     tags: { harvest: spKiekie.tags.harvest }
+    });
+   }
+   BIO.owner = [K.x, K.z];
+   BIO.range = L.floor; BIO.minRange = 0;
+   for (var kt = 0; kt < 5; kt++) {
+    var taz = ka + (kt - 2) * 0.42;
+    var sl = 0.85 + 0.35 * sK.next();
+    BIO.put('kiekie_tuft', [kx, ky + kt * 0.22, kz], qEuler(0, -taz, 0.35 - kt * 0.14), [sl, sl * 0.85, sl * 0.65], C(PAL.kiekieLeaf[kt % PAL.kiekieLeaf.length]));
+   }
+   kiekies++;
+  }
+
+  // 4. Shady cloud-rainforest & ironstone ravine Bronze Crown-Fern (ravineblechnum) carpet
   SHROUDHILLS.kgrid('floor_fern', 6.8 / Math.sqrt(q), function(Z){
    if (Z.tor > 0.35 || Z.granite > 0.55 || Z.path > 0.35 || Z.cobble > 0.5) return 0;
    return clamp(Z.ravine * 0.85 + Z.canopy_sea * 0.65 + Z.shroud_cove * 0.55, 0, 0.84);
   }, function(x, y, z, seed){
    if (BIO.lodD(x, z) > L.floor) return;
    reseed(seed);
+   if (floorFerns < 28 && (floorFerns % 12 === 0)) {
+    BIO.register({
+     name: spBlech.name,
+     key: 'ravineblechnum',
+     kind: 'flora',
+     x: x, z: z, y: y - 0.2,
+     r: 1.5, h: 1.3,
+     tags: { harvest: spBlech.tags.harvest }
+    });
+   }
    BIO.owner = [x, z];
    BIO.range = L.floor; BIO.minRange = 0;
    var nF = ri(3, 5), fL = rr(0.9, 1.75), a0 = rr(0, TAU);
    for (var k = 0; k < nF; k++) {
-    BIO.put('ravine_fern', [x, y + 0.04, z], qEuler(rr(-0.08, 0.14), a0 + k / nF * TAU + rr(-0.2, 0.2), 0), [fL * 0.58, fL * 0.65, fL], vary(pick(PAL.fernLeaf), 0.02, 0.08, 0.06));
+    var fPalette = (k === 0) ? PAL.blechnumFlush : PAL.fernLeaf;
+    BIO.put('ravine_fern', [x, y + 0.04, z], qEuler(rr(-0.08, 0.14), a0 + k / nF * TAU + rr(-0.2, 0.2), 0), [fL * 0.58, fL * 0.65, fL], vary(pick(fPalette), 0.02, 0.08, 0.06));
     floorFerns++;
    }
   }, { pad: 0.8 });
+
+  // 5. Ravine Giant Rain-Rhubarb (giantleaf) overhanging cobble stream margins & wet ravine splash-zones
+  SHROUDHILLS.kgrid('giant_leaf', 9.2 / Math.sqrt(q), function(Z, x, z){
+   if (Z.tor > 0.2 || Z.granite > 0.45 || Z.path > 0.3) return 0;
+   var w = BIO.waterH(x, z);
+   if (w > -1e8 && y0Under(x, z, w)) return 0;
+   return clamp(Z.ravine * 0.68 + Z.cobble * 0.48, 0, 0.66);
+  }, function(x, y, z, seed){
+   if (BIO.lodD(x, z) > L.floor) return;
+   reseed(seed);
+   if (giantLeaves < 22 && (giantLeaves % 3 === 0)) {
+    BIO.register({
+     name: spGiant.name,
+     key: 'giantleaf',
+     kind: 'flora',
+     x: x, z: z, y: y - 0.2,
+     r: 1.8, h: 2.0,
+     tags: { harvest: spGiant.tags.harvest }
+    });
+   }
+   BIO.owner = [x, z];
+   BIO.range = L.floor; BIO.minRange = 0;
+   var nL = ri(2, 4), a0 = rr(0, TAU);
+   for (var k = 0; k < nL; k++) {
+    var sz = rr(1.15, 2.05);
+    BIO.put('giant_leaf', [x, y - 0.03, z], qEuler(0, a0 + k / nL * TAU + rr(-0.2, 0.2), 0), [sz, sz, sz], vary(pick(PAL.giantLeaf), 0.02, 0.06, 0.05));
+   }
+   giantLeaves++;
+  }, { pad: 1.1 });
+
+  function y0Under(px, pz, w){ return Y(px, pz) < w + 0.18; }
 
   BIO.owner = null; BIO.range = null; BIO.minRange = 0;
   return {
    smudgeMyrtles: myrtles,
    cloakMats: cloaks,
+   butterworts: butterworts,
    dewStrands: dews,
-   floorFerns: floorFerns
+   kiekieVines: kiekies,
+   floorFerns: floorFerns,
+   giantLeaves: giantLeaves
   };
  };
 })();

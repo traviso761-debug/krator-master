@@ -148,7 +148,8 @@ FURN_CULTURES = ['eternian', 'generic', 'generic-goods', 'jobs', 'scrap', 'arms'
 
 HY_READ = (
     '26k-kit.js', '27v-hy-vstack.js', '27z-hy-matfix.js', '34-hy-trades.js',
-    '39-hy-furn.js', '40-hy-kit.js', '50-hy-dwell.js', '54-hy-state.js',
+    '39-hy-furn.js', '40-hy-kit.js', '41-hy-formline.js', '41a-hy-portal-pu.js',
+    '50-hy-dwell.js', '54-hy-state.js', '54b-hy-cybertotem.js',
     '58-hy-faith-def.js', '62-hy-works.js', '66-hy-trades-land.js', '70-hy-street.js',
 )
 ET_READ = (

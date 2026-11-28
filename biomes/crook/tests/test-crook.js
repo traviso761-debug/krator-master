@@ -121,4 +121,48 @@ const SITES = require('../src/41-biome-crook-sites.js');
   T.ok('all 7 Crook fauna & pollinator records carry continuous 0..24h schedules and yields', fullSched);
 }
 
+// 8. Drift-sown coastal coconut niche gating & CROPS.BIOMES.crook registration
+{
+  const fs = require('fs');
+  const vm = require('vm');
+  const ROOT = path.resolve(__dirname, '..', '..', '..');
+  const cctx = { globalThis: null };
+  cctx.globalThis = cctx;
+  vm.createContext(cctx);
+  for (const rel of [
+    'core/rand/08-core-rand.js',
+    'kits/crops/src/10-crop-core.js',
+    'kits/crops/src/20-crop-records.js',
+    'kits/crops/src/21-crop-termites.js',
+    'kits/crops/src/22-crop-material.js',
+    'kits/crops/src/24-crop-vale-wild.js',
+    'kits/crops/src/40-crop-query.js'
+  ]) {
+    vm.runInContext(fs.readFileSync(path.join(ROOT, rel), 'utf8'), cctx, { filename: rel });
+  }
+  const fits = PHYS.registerCrops(cctx.CROPS) || [];
+  const cocoFit = fits.find(r => r.crop && r.crop.id === 'coconut');
+  const cfHow = cocoFit ? cctx.CROPS.fitZone(cocoFit.crop, PHYS.CROPS.zones.cloudforest, 2, 'crook') : 'no';
+  T.ok('CROOK_PHYS.registerCrops enables coconut in warm coastal crookshore/cloudforest zones',
+    !!cocoFit && cfHow === 'rain');
+
+  const okCaldera = PHYS.coconutAt({station: 'shore', elevM: 76, slope: 0.22, nx: 0.15, nz: 0.45, calderaShelter01: 0.65, wnwExposure01: 0.4});
+  const okBench = PHYS.coconutAt({station: 'crater', elevM: 84, slope: 0.14, nx: 0.2, nz: 0.55, calderaShelter01: 0.15, reserveNear01: 0.75});
+  T.ok('frost-free Crookshore/crater benches (+65.5..+116 m) accept drift-sown coconut palms', okCaldera.ok === true && okBench.ok === true);
+  T.neg('coconuts are rejected below +65 m tsunami trimline on exposed basalt spray-benches',
+    inp => PHYS.coconutAt(inp).ok === true,
+    {station: 'shore', elevM: 28, slope: 0.12, nx: 0.1, nz: 0.5, calderaShelter01: 0.0, wnwExposure01: 0.9},
+    {station: 'shore', elevM: 78, slope: 0.18, nx: 0.1, nz: 0.55, calderaShelter01: 0.5, wnwExposure01: 0.5});
+  T.neg('coconuts are rejected on cold montane/alpine gorge, skarn, tarn, and hushpass stations',
+    inp => PHYS.coconutAt(inp).ok === true,
+    {station: 'head', elevM: 80, slope: 0.12, nx: 0.1, nz: 0.6, calderaShelter01: 0.8},
+    {station: 'shore', elevM: 80, slope: 0.12, nx: 0.1, nz: 0.6, calderaShelter01: 0.8});
+
+  const spSrc = fs.readFileSync(path.join(ROOT, 'biomes/crook/src/50-biome-crook-species.js'), 'utf8');
+  const spKeys = Array.from(spSrc.matchAll(/\{key:'([a-z0-9_]+)',name:'([^']+)'/g)).map(m => m[1]);
+  T.ok('50-biome-crook-species.js defines 35 distinct species including coconut and regional diversity guild',
+    spKeys.length === 35 && spKeys.includes('coconut') && spKeys.includes('calderapalm') &&
+    spKeys.includes('canyonyew') && spKeys.includes('cobaltgentian') && spKeys.includes('calderaseagrass'));
+}
+
 T.done();

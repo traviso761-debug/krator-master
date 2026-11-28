@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.127,
+    1.06
+   ],
+   "seam_before": [
+    1.886,
+    1.078
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.22,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 0.9,
+   "pattern": false,
+   "rough": 0.48,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.canvas.oiled",
+  "metal": 0.0,
+  "roughness": 0.48,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "outback_duck_canvas_tile_2048.png",
+  "generator": "Codex image generation, Nov 2026 (outback_duck_canvas_tile_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Heavy linseed-oiled and beeswax-proofed Outback duck-canvas tarpaulin at 28 cm square garment scale, tight double-fill cotton duck weave sealed under a semi-matte waxy skin showing a fine network of lighter crazed wax fold-lines, one vertical double-felled waterproof lap seam, and crisp pore grain. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "c4253c2d66b2fdfe50b93d2165389b68beef558d"
+ }
+}

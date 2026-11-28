@@ -100,7 +100,8 @@ def _geo_motif(style, w, h, fg, bg, aspect=1.0):
         is_line = np.abs(phase - 0.5) < 0.085
         is_major = np.abs(((elev * 0.95) % 1.0) - 0.5) < 0.055
         img[is_line | is_major] = fg
-        return img
+        tex_geo = gpaint.sample_cultural_tex('tex.geomancers_circuit_strata', max(w, 2), max(h, 2), fg, bg, pal_blend=0.24)
+        return 0.48 * img + 0.52 * tex_geo
 
     elif style == 'opal_lens':
         # Iridescent mother-of-pearl / opal crystal lens with cyan, rose, mint & cream facets
@@ -121,8 +122,8 @@ def _geo_motif(style, w, h, fg, bg, aspect=1.0):
         img[facet] = C['white']
         glint = ((dx + 0.24) ** 2 + (dy + 0.24) ** 2) < 0.06
         img[glint] = C['white']
-        tex_nacre = gpaint.sample_cultural_tex('tex.ys_band', max(w, 2), max(h, 2), C['geo_cyan'], C['geo_opal'], pal_blend=0.25)
-        img = 0.60 * img + 0.40 * tex_nacre
+        tex_nacre = gpaint.sample_cultural_tex('tex.ammolite_opalshell', max(w, 2), max(h, 2), C['geo_cyan'], C['geo_opal'], pal_blend=0.28)
+        img = 0.58 * img + 0.42 * tex_nacre
         img[r > 0.84] = fg
         return img
 
@@ -324,8 +325,9 @@ def build_glove_side(name, side, hand_paint, cuff_paint=None, finger_paint=None,
 # ---------------------------------------------------------------------------------------------------------------
 # 3. 3D Goggles & Face-Mask Helper Primitives (Head-Space Raycast Contoured)
 # ---------------------------------------------------------------------------------------------------------------
-def goggle_head_strap(name, f_center=0.40, band_h=0.08, ease=0.012, paint=None):
+def goggle_head_strap(name, f_center=0.40, band_h=0.08, ease=0.010, paint=None):
     """Snug 360-degree leather/cloth strap around the cranium at goggle level with side brass buckles."""
+    ease = min(float(ease), 0.010)
     a, b, up, bk, left = head_frame()
     st_p = paint or P('geo_leather', 0.04, [
         B('top', 0.0, 0.008, 'solid', 'geo_brass'),
@@ -909,7 +911,7 @@ def build_geo_07_exo_rig_engineer():
 
     # HEAD: Brow goggles perched on forehead
     gid_h = 'geo_07_exo_rig_engineer_head'
-    parts_h = goggle_head_strap(gid_h, f_center=0.58, band_h=0.06, ease=0.014)
+    parts_h = goggle_head_strap(gid_h, f_center=0.58, band_h=0.06, ease=0.009)
     for sd, tag in ((-1, 'R'), (1, 'L')):
         parts_h.extend(goggle_eye_cup(f'{gid_h}_cup_{tag}', sd * 0.036, f_eye=0.58, r_cup=0.026, depth=0.018,
                                       bezel_paint=P('geo_brass', 0.02), lens_paint=P('geo_opal', 0.02)))
@@ -991,7 +993,7 @@ def build_geo_08_calcified_nomad():
 
     # HEAD: Brow goggles & rust-red neck scarf
     gid_h = 'geo_08_calcified_nomad_head'
-    parts_h = goggle_head_strap(gid_h, f_center=0.56, band_h=0.06, ease=0.014)
+    parts_h = goggle_head_strap(gid_h, f_center=0.56, band_h=0.06, ease=0.009)
     for sd, tag in ((-1, 'R'), (1, 'L')):
         parts_h.extend(goggle_eye_cup(f'{gid_h}_gog_{tag}', sd * 0.035, f_eye=0.56, r_cup=0.025, depth=0.018,
                                       bezel_paint=P('geo_brass', 0.02), lens_paint=P('geo_amber', 0.02)))
@@ -1127,12 +1129,12 @@ def build_geo_10_basalt_veteran():
         B('top', 0.0, 0.012, 'solid', 'geo_brass'),
         B('bottom', 0.0, 0.012, 'solid', 'geo_brass'),
     ], fabric='leather.polished')
-    parts_h = [crown_band(gid_h + '_band', hb_p, f0=0.54, f1=0.72, ease=0.016, flare=0.006, rows=5, n=36)]
-    c_mid = a + (b - a) * 0.63
+    parts_h = [crown_band(gid_h + '_band', hb_p, f0=0.56, f1=0.68, ease=0.005, flare=0.001, rows=5, n=36)]
+    c_mid = a + (b - a) * 0.62
     for an in np.linspace(-0.65 * math.pi, 0.65 * math.pi, 7):
         d = -bk * math.cos(an) + left * math.sin(an)
         h = first_hit(c_mid, d) or 0.098
-        parts_h.append(blob(f'{gid_h}_gem_{an:.2f}', c_mid + d * (h + 0.022), (0.024, 0.014, 0.020),
+        parts_h.append(blob(f'{gid_h}_gem_{an:.2f}', c_mid + d * (h + 0.009), (0.022, 0.012, 0.018),
                             P('geo_opal', 0.02, [B('top', 0.0, 0.008, 'solid', 'geo_cyan')]), n=8, rows=4, out=d, rigid_joint='Head'))
     entries.append(make_geo_garment(gid_h, 'Basalt Veteran Quartz-Studded Headband', 'head', parts_h,
                                     role='military', covers_hair=False))
@@ -1550,7 +1552,7 @@ def build_geo_23_aether_scout():
 
     # HEAD: Brow goggles perched on forehead
     gid_h = 'geo_23_aether_scout_head'
-    parts_h = goggle_head_strap(gid_h, f_center=0.58, band_h=0.06, ease=0.014)
+    parts_h = goggle_head_strap(gid_h, f_center=0.58, band_h=0.06, ease=0.009)
     for sd, tag in ((-1, 'R'), (1, 'L')):
         parts_h.extend(goggle_eye_cup(f'{gid_h}_gog_{tag}', sd * 0.036, f_eye=0.58, r_cup=0.026, depth=0.018,
                                       bezel_paint=P('geo_brass', 0.02), lens_paint=P('geo_jade', 0.02)))

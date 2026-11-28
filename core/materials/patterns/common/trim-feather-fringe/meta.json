@@ -1,0 +1,42 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 155,
+   "key_lo": 55,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   2048,
+   2048
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plumage",
+  "id": "common/trim-feather-fringe",
+  "kind": "card",
+  "metal": 0.0,
+  "roughness": 0.56,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "patterns__common__trim-feather-fringe.png",
+  "generator": "Codex image generation, Nov 2026 (feather-fringe-panel-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Two horizontal garment hem-fringe courses of overlapping contour and tail feathers bound along a narrow twined cord header at the top of each register and hanging downward with crisp central quills, individual barbs, and separated V-notched feather tips; the space below and between the feather tips shows only the solid flat bright magenta background (#ff00ff). Neutral mid-grey (#8a8a8a), fully desaturated, for palette tinting. Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.",
+  "sha1": "14426b631a861127991a5b0080a61c7a01006cea"
+ }
+}

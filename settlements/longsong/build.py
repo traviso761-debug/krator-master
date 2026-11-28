@@ -241,7 +241,8 @@ def _kchar():
             os.remove(os.path.join(kd, f))
     if missing:
         sys.exit('KCHAR PIECES MISSING (build core/charactermodels, or fetch them from its published lab): ' + ', '.join(missing))
-    data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'peoples': peoples, 'bodies': bodies}
+    data = {'sliders': J('sliders.json'), 'posture': J('posture.json'), 'activities': J('activities.json'), 'peoples': peoples,
+            'bodies': bodies}
     return 'var LS_KCHAR=%s;\nLS_KCHAR.pieces=%s;\n' % (json.dumps(data, separators=(',', ':')), json.dumps(need))
 # the Xanadu kit (kits/xanadu/kit_bundle.py; its texture pack is still settlements/xanadu's) and the isle demo's kit-piece flattener (isleFlatten, read in place)
 XA = os.path.join(ROOT, 'settlements', 'xanadu')

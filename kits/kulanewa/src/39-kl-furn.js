@@ -10,6 +10,7 @@
   nickel:0xdce2e8,paktong:0xc8c6be,iron:0x34383e,bronze:0x9e743c,copper:0x4c8a76,
   amber:0xd89a32,barkPaper:0xebe2ce,
   silkSaffron:0xe6a628,silkIndigo:0x28467e,silkCrimson:0xb22826,
+  travertine:0xded3ba,gilt:0xe8ba3c,emerald:0x28926c,teak:0x5a361e,
   hemp:0xc4ac72,flameGlow:0xffc460
  };
  KF.FPAL.kulanewa=Object.assign(KF.FPAL.kulanewa||{},PAL);
@@ -236,5 +237,49 @@
    F.cyl(0,1.53,0,.1,.19,0,F.col('flameGlow'),'glow');
    F.cone(0,1.72,0,.17,.18,0,F.col('bronze'),'bronze');
    F.lamp(0,1.62,0,1.05,8);
+  }});
+
+ /* 16. Suudme Bimetallic Paktong & Gilt Uktena Serpent Brazier */
+ klDefFurn({key:'kulanewa_uktena_brazier',name:'Bimetallic Paktong and Gilt Uktena Brazier',type:'brazier',tier:'court',
+  setting:'both',rooms:['hall','shrine','yard','parlour'],w:0.92,d:0.92,h:1.14,materials:['stone','metal','emissive'],task:[],
+  build(F){
+   F.cyl(0,0,0,.42,.14,0,F.col('travertine'),'concrete');
+   F.cyl(0,.142,0,.3,.138,0,F.col('cobalt'),'tile');
+   F.cyl(0,.282,0,.16,.438,0,F.col('paktong'),'pewter');
+   for(let k=0;k<3;k++){
+    const a=k/3*Math.PI*2,rx=Math.cos(a)*.27,rz=Math.sin(a)*.27;
+    F.cyl(rx,.44,rz,.045,.24,0,F.col('paktong'),'pewter');
+    F.cone(rx,.682,rz,.055,.12,0,F.col('gilt'),'gold');
+   }
+   F.cyl(0,.722,0,.38,.178,0,F.col('gilt'),'gold');
+   F.cyl(0,.902,0,.28,.045,0,F.col('flameGlow'),'glow');
+   F.lamp(0,1.0,0,1.15,8.8);
+  }});
+
+ /* 17. Suudme Ruan-Teak & Saffron-Silk Mandarin-Elder Divan */
+ klDefFurn({key:'kulanewa_lotus_divan',name:'Ruan-Teak and Saffron-Silk Patrician Divan',type:'seating',tier:'court',
+  setting:'both',rooms:['hall','parlour','bedroom','study'],w:1.88,d:0.86,h:0.94,materials:['timber','cloth','metal'],task:['resting','socializing'],
+  build(F){
+   for(const sx of [-.82,.82])for(const sz of [-.34,.34]){
+    F.box(sx,0,sz,.09,.32,.09,0,F.col('teak'),'wood');
+   }
+   F.box(0,.322,0,1.82,.095,.82,0,F.col('teak'),'wood');
+   F.box(0,.35,.43,1.68,.038,.025,0,F.col('gilt'),'gold');
+   F.pillow(0,.475,.02,1.66,.11,.66,0,F.col('silkSaffron'),'silk');
+   F.bolster(-.68,.585,.02,.58,.085,Math.PI/2,F.col('silkCrimson'),'silk');
+   F.box(0,.42,-.37,1.76,.44,.07,0,F.col('teak'),'wood');
+   F.box(0,.862,-.37,1.84,.048,.09,0,F.col('gilt'),'gold');
+  }});
+
+ /* 18. Suudme Paktong & Amber-Seal Flux-Compass Binnacle */
+ klDefFurn({key:'kulanewa_flux_binnacle',name:'Paktong and Amber-Seal Flux-Compass Binnacle',type:'workstation',job:'lampmaking',
+  setting:'both',rooms:['study','shop','hall','yard'],w:0.74,d:0.74,h:1.28,materials:['stone','metal','ceramic'],task:[],
+  build(F){
+   F.cyl(0,0,0,.34,.14,0,F.col('travertine'),'concrete');
+   F.cyl(0,.142,0,.14,.68,0,F.col('paktong'),'pewter');
+   F.cyl(0,.824,0,.26,.08,0,F.col('cobalt'),'tile');
+   F.cyl(0,.906,0,.29,.18,0,F.col('gilt'),'gold');
+   F.cyl(0,1.088,0,.22,.04,0,F.col('amber'),'clay');
+   F.cone(0,1.13,0,.06,.12,0,F.col('nickel'),'pewter');
   }});
 })();

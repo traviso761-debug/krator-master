@@ -343,6 +343,22 @@ site grown back while nobody worked it and books it `regrown` (as the nightly `r
 recipe has its take booked when the batch starts and its out made when it ends: the ledger holds the take less the batches in hand (`wip`) to
 what was made.
 
+**Sea-nomad `fleet` bands (`core/camp/fleet/58-camp-fleet.js`, 2026-11-26; opt-in `[G data]`).** A pelagic band of kind `fleet`
+(`KCAMP.CULTURES.fleetborn` and `KCAMP.CULTURES['fleetborn-whaler']`, `KCAMP.DEFAULT_FLEETS`) carries `{id, kind: 'fleet', name, culture,
+homePort, people, kmPerDay, hulls: [{id, key, name, draft_m, deepCareen, pop, cargoCap, careenInterval_d, daysSinceCareen, careenCount,
+lastCareenDay}], route: [portId, ...], tradeProfile: {brings: [good], takes: [good]}, state: 'moored' | 'sailing', port, leg:
+{from, to, d0, d1, dist_km, why}}`. Scale-model roadsteads live in `KCAMP.PORTS` (`{id, name, settlementId?, px: [x, y], tideRange_m,
+diurnal?, canCareenDeep, role}`): `deep_ward` (`px [148, 492]`, ~530 km SSW at `199°`, `1.9 m` diurnal `D1` tide, `canCareenDeep: false`)
+is the calm storm roadstead; `arcoforte` (`px [236, 242]`, `11.0 m` mean / `14.3 m` spring tide, `canCareenDeep: true`) is the tidal
+drydock and moot. `KCAMP.fleetWorld({world, ports, fleets, caretakerPop, tideGate})` stepped by `KCAMP.fleetTick(W, day)` /
+`KCAMP.fleetRun(W, d0, d1)` enforces three laws: (1) non-careening ports (`canCareenDeep: false`) cannot careen deep hulls (`draft_m > 2.2`),
+sending overdue fleets to `arcoforte`; (2) at `arcoforte`, deep hulls careen only when `tideGate(day).deepCradleOpen === true`
+(`dayHighest >= 5.6 m` on springs), stretching neap arrivals until the next spring window and logging `{day, fleetId, hullId, draft_m,
+dayHighest, dayRange}` in `W.careenLog`; (3) `tideGate(day).isMoot` around the Double Dark (`0..2`, `89..91`) and Double Full (`43..46`)
+converges all 5 fleets into `arcoforte` (`KCAMP.fleetsAt(W, 'arcoforte', day)`). In harbour, `KCAMP.fleetMooring({world, fleets, center,
+rx, rz, minClear_m, avoidFn})` pitches deterministic non-overlapping berths (`{berths: [{fleetId, hullId, key, x, z, rot, draft_m, pop}],
+totalHulls, totalPop}`) with `89g` Chained Ark-Wards in inner calm water and tenders/trimarans outerward.
+
 **Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
 seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better
 good, so its want shows where nobody could buy it. A better tool bought in place of another remembers it (`a.tool.base`) and, worn out, is sought as that one again (a

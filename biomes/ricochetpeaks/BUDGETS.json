@@ -1,0 +1,59 @@
+{
+ "what": "Vertical-stack budgets for biomes/ricochetpeaks (Ricochet Peaks Boreal Crater-Archipelago, rmwvsvyf1iqzg): 5 station HTML pages (< 2.0 MB each via ricochetpeaks.tex.js sidecar), max samplers <= 15, and estimated VRAM <= 380 MB.",
+ "pages": {
+  "ricochetpeaks.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 1 (ringlake): Yuni-Gate central rebound island, annular moat-lake, shatter-cone tors & Yuni Gaudi-mosaic snow-shingle shrine with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "ricochetpeaks-notch.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 2 (notch): Skippers Notch 180 m doublet breach, twin crater lakes, KCARVE eyrie & bandit timber abatis with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "ricochetpeaks-vents.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 3 (vents): East Hearth 6 boiling fumaroles, silica sinter terraces, emerald hot lake & snowBare oasis ring with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "ricochetpeaks-glasssheet.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 4 (glasssheet): Glass-Pan jet-black tagamite floor, bonsai melt-pines, blue nickel-heather & meteoric iron/nickel/gold nodes with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "ricochetpeaks-highbowl.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 5 (highbowl): Old Rim +5,100 m ET Erebus steam-ice chimneys, warm steam-cave & frozen WATER.ice tarn with sidecar textures.",
+   "raised": "2026-11-28"
+  },
+  "*": {
+   "bytes": 12582912,
+   "tris": 6500000,
+   "calls": 150,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Shared ricochetpeaks.tex.js texture sidecar pack serving all five Ricochet Peaks station pages.",
+   "raised": "2026-11-28"
+  }
+ }
+}

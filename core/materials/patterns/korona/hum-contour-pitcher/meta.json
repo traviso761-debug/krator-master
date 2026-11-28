@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2039,
+    1638
+   ],
+   "seam_after": [
+    0.545,
+    0.231
+   ],
+   "seam_before": [
+    1.051,
+    1.829
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.6,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "korona/hum-contour-pitcher",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.6,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "korona-nepenthes-tile-2048.png",
+  "generator": "Codex image generation, Nov 2026 (korona-nepenthes-tile-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Korona tepui sundew-bast weave combined with cured carnivorous Nepenthes pitcher-plant leather: upper and central registers of braided moss-olive (#445834) and gas-giant sky-blue (#5898c4) plant-fibre cloth embroidered in gold (#d8a834) and turquoise (#2ca4a0) with horizontal 6-Tone Hum (Ham) guide-lines carrying level, rising, and falling pitch-contour bars, vowel dots, and nasal hooks, bordered below by mottled crimson-and-chartreuse Nepenthes trap-skin (#8e2028, #68a848) edged with marginal Pai-ta flytrap trigger-spines, seamless left to right. Full colour.",
+  "sha1": "b8edb3080d9cc2a46541b16c524ace857face354"
+ }
+}

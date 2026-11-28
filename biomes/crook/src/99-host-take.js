@@ -167,10 +167,10 @@ function collectUntexturedLitMeshes(extraList){
 const HCHK={
  stationSpecies(st,skey){
   const req=skey==='shore'
-   ?['coastspruce','westernredcedar','redcypress','bigleafmaple','cloudtreefern','gorgerhodo','devilsclub','basaltchimney','spraycushion','canopycup','spongebeard']
+   ?['coastspruce','westernredcedar','redcypress','bigleafmaple','gorgealder','cloudtreefern','coconut','calderapalm','salmonberry','swamplantern','calderaseagrass','gorgeswordfern','gorgerhodo','devilsclub','basaltchimney','spraycushion','canopycup','spongebeard']
    :skey==='wash'
-   ?['redcypress','silverfir','westernredcedar','gorgerhodo','rustcedar','skarnfern','jadeequisetum','rimstonemoss','chamberbamboo','morainesedge']
-   :['furlarch','malachitecushion','frostsedge','hearthring','cryosnow','seedchimney','morainesedge'];
+   ?['redcypress','silverfir','westernredcedar','canyonyew','gorgealder','gorgerhodo','salmonberry','gorgeswordfern','ironsaxifrage','rustcedar','skarnfern','jadeequisetum','rimstonemoss','chamberbamboo','morainesedge']
+   :['furlarch','malachitecushion','frostsedge','tarncottongrass','cobaltgentian','hearthring','cryosnow','seedchimney','morainesedge'];
   const miss=req.filter(k=>!(st&&st[k]>0));
   return{
    ok:!miss.length,
@@ -178,15 +178,20 @@ const HCHK={
   };
  },
  trimlinePartition(placed,skey){
-  if(skey!=='shore')return{ok:true,detail:'inland station ('+skey+')'};
-  const woody={coastspruce:1,westernredcedar:1,redcypress:1,bigleafmaple:1,cloudtreefern:1,gorgerhodo:1,devilsclub:1};
+  if(skey!=='shore'){
+   const coldPalms=(placed||[]).filter(r=>r[0]==='coconut'||r[0]==='calderapalm');
+   return{ok:!coldPalms.length,detail:coldPalms.length?coldPalms.length+' coastal palms on cold montane/alpine '+skey:'inland station ('+skey+'), 0 cold-intolerant palms'};
+  }
+  const woody={coastspruce:1,westernredcedar:1,redcypress:1,bigleafmaple:1,gorgealder:1,cloudtreefern:1,coconut:1,calderapalm:1,salmonberry:1,gorgerhodo:1,devilsclub:1};
   const lowTrees=(placed||[]).filter(r=>woody[r[0]]&&r[4]<65.0);
+  const highPalms=(placed||[]).filter(r=>r[0]==='coconut'&&r[4]>120.0);
+  const palms=(placed||[]).filter(r=>r[0]==='coconut');
   const highBasalt=(placed||[]).filter(r=>(r[0]==='basaltchimney'||r[0]==='spraycushion')&&r[4]>=65.0);
   const sponges=(placed||[]).filter(r=>r[0]==='basaltchimney'||r[0]==='spraycushion');
-  const ok=!lowTrees.length&&!highBasalt.length&&sponges.length>=25;
+  const ok=!lowTrees.length&&!highPalms.length&&palms.length>=5&&!highBasalt.length&&sponges.length>=25;
   return{
    ok:ok,
-   detail:ok?sponges.length+' < +65 m lithistid sponges, 0 woody trees below +65 m':'violations: lowTrees='+lowTrees.length+', highBasalt='+highBasalt.length+', sponges='+sponges.length
+   detail:ok?sponges.length+' < +65 m lithistid sponges, '+palms.length+' +65..+116 m coastal coconuts, 0 woody trees below +65 m':'violations: lowTrees='+lowTrees.length+', highPalms='+highPalms.length+', palms='+palms.length+', highBasalt='+highBasalt.length+', sponges='+sponges.length
   };
  },
  allTextured(extraList){

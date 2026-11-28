@@ -453,6 +453,7 @@ defBuilding({key:'hy_hearth_tavern',name:'Great Cruck-Rib Irori Hearth Tavern',s
   wkPad(0,5.45,4.2,3.0,.08);
   hyDoor(0,.08,5.62,0,1.56,2.2,{lintel:'nephrite',maskMk:'bronze'});
   hyRoofHip(0,2.86,5.35,4.28,3.08,1.34,{mk:'celadon',over:.38,kaenFinial:true,smoke:false});
+  hyFormlineFrieze(0,2.74,7.34,2.5,.46,0,{backMk:'larch',tertiary:'celadon'});
   hyWindHanging(0,.12,6.62,0,3.25,2.52,{mk:'plaid',panels:3,drop:1.05,posts:false});
   hyBilingualSign(-2.28,1.58,6.72,0,1.32,.82);
   hyEavesBraid(2.22,2.42,6.68,-.2,1.65,{sag:.16});
@@ -476,6 +477,8 @@ defBuilding({key:'hy_hearth_tavern',name:'Great Cruck-Rib Irori Hearth Tavern',s
    ['hayrant_larch_feast_table',2.3,.06,-.6,-PI/2],
    ['hayrant_yak_pelt_mat',-3.4,.06,-.6,PI/2,1],
    ['hayrant_yak_pelt_mat',3.4,.06,-.6,-PI/2,1],
+   ['hayrant_head_totem_post',-3.5,.06,2.0,PI/4,0],
+   ['hayrant_formline_chest',3.5,.06,2.0,-3*PI/4,0],
    ['generic_keg',-1.8,.06,-3.6,0],
    ['generic_keg',-5.75,.08,-1.35,PI/2],
    ['generic_ale',2.3,.6,-.6,0],
@@ -519,11 +522,11 @@ defBuilding({key:'hy_market_hall',name:'Hexagonal Dust-Sheltered Highland Market
   hyBilingualSign(-2.6,G+2.5,R-.2,0,1.4,.82);
 
   hyFurnList([
-   ['pa_market_table',-2.2,G,-.8,PI/4],
-   ['pa_market_table',2.2,G,-.8,-PI/4],
+   ['pa_shop_counter',-2.2,G,-.8,PI/4],
+   ['pa_shop_counter',2.2,G,-.8,-PI/4],
    ['eternian_common_weighing_scale',0,G,-2.8,0],
-   ['generic_produce',-2.2,G+.8,-.8,0],
-   ['generic_spice_box',2.2,G+.8,-.8,0],
+   ['generic_floor_basket',-2.2,G+.92,-.8,0],
+   ['hayrant_kaen_jar',2.2,G+.92,-.8,0,0],
    ['generic_cheese',2.6,G,.8,0],
    ['hayrant_kaen_jar',-3.4,G,1.6,0,1],
    ['hayrant_jade_lantern_post',3.4,G,2.8,0]
@@ -593,8 +596,11 @@ defBuilding({key:'hy_terrace_farmstead',name:'Contoured Loess Terrace and Jujube
   W(-2.6,0,-3.2,0,()=>{
    hyPlinth(10.8,7.4,G,{stepW:2.6,stepX:0});
    hyLoessVault(0,-.15,G,9.6,6.2,3.15,{frontMk:'loess',lintel:'larch',maskMk:'kaen',smoke:true});
+   hyFormlineTympanum(0,G+3.46,2.92,5.2,.60,0,{arch:true,backMk:'loess',tertiary:'nephrite'});
    hyEavesBraid(0,G+2.9,3.25,0,5.6,{sag:.22});
   });
+  /* Compact stone-mushroom pu grain cache beside the threshing yard (clear of farmhouse, terraces & walk paths) */
+  hyPuCache(-7.35,0,4.15,2.30,2.10,PI/2,{legH:1.18,rPost:.15,boxH:1.30,rise:.70,maskMk:'lead'});
   /* South & East stepped megabreccia-retained contoured loess cultivation & frost-trap orchard beds */
   svNoWalk(()=>{
    for(let i=0;i<2;i++){
@@ -631,7 +637,7 @@ defBuilding({key:'hy_terrace_farmstead',name:'Contoured Loess Terrace and Jujube
 defBuilding({key:'hy_fell_fold',name:'Megabreccia Yak Byre and Cheese Cellar',seed:34320,cut:true,
  w:19.4,d:16.4,h:8.6,budget:105000,
  tags:{types:['farm'],wealth:'poor',style:'bench',job:'dairy'},
- note:'cruck-ribbed fur-larch winter yak and sheep byre, turf-roofed cheese cellar & dry-stone megabreccia windbreak kraal',
+ note:'cruck-ribbed fur-larch winter yak and sheep byre, gale-cobble threshold hood, turf-roofed cheese cellar & megabreccia windbreak kraal',
  build(){
   svNoWalk(()=>box('paving',0,0,1.2,15.6,.06,10.8,P('paving')));
   wkPad(0,1.2,15.6,10.8,.06);
@@ -640,6 +646,8 @@ defBuilding({key:'hy_fell_fold',name:'Megabreccia Yak Byre and Cheese Cellar',se
    doors:[{yaw:0,w:1.34,h:2.06,lintel:'larch',maskMk:'lead'}],
    windows:[{yaw:1.4,w:.72,h:.78,y:.92,light:'nephrite'}]
   });
+  hyGaleCobbleRoof(-4.2,2.44,3.12,2.40,.92,.44,0,{posts:true,postY0:.06,mk:'larch',overZ:.16});
+  hyInauCluster(-5.48,1.92,3.48,0,{scale:.64});
   /* East Dry-Stone Megabreccia Winter Kraal & Bark Shelter */
   hyWallRing(.8,-4.2,7.8,4.6,.06,1.65,{
    mk:'megabreccia',socle:.45,socleMk:'columnar',eavesRing:false,
@@ -751,4 +759,73 @@ defBuilding({key:'hy_trench_fishery',name:'Sag-Pond Trench-Lake Fishery and Skif
   ]);
   hyTarget(-3.2,G,2.8,'fishery-shed');
   hyTarget(4.2,G+.06,-3.4,'lake-jetty');
+ }});
+
+/* 46b. Stone-Mushroom Pu Stilt-Cache Yard & Yak-Tallow Chandlery (seed 34325) */
+defBuilding({key:'hy_pu_chandlery',name:'Stone-Mushroom Pu Cache Yard and Tallow Chandlery',seed:34325,cut:true,
+ w:14.0,d:12.0,h:7.8,budget:120000,
+ tags:{types:['shop','farm'],wealth:'poor',style:'bench',job:'trading'},
+ note:'pair of elevated fur-larch pu store-caches on tapered basalt posts with megabreccia nezumi-gaeshi marmot baffles beside a yak-tallow chandlery',
+ build(){
+  /* West paved pu stilt-cache yard */
+  svNoWalk(()=>box('paving',-3.6,0,.2,5.6,.06,9.8,P('paving')));
+  wkPad(-3.6,.2,5.6,9.8,.06);
+
+  /* Pair of elevated fur-larch pu caches on basalt posts with stone-mushroom marmot-baffle discs (2.0 m clear between!) */
+  hyPuCache(-4.0,.06,-2.45,2.40,2.20,0,{legH:1.24,rPost:.16,boxH:1.36,rise:.74,maskMk:'kaen'});
+  hyPuCache(-4.0,.06,2.05,2.30,2.10,PI/2,{legH:1.24,rPost:.16,boxH:1.36,rise:.74,maskMk:'lead'});
+
+  /* East loess-and-larch yak-tallow chandlery & lye-soap house (x in [-1.3..+5.7]) */
+  W(2.2,0,-.45,0,()=>{
+   const G=.32,CW=6.6,CD=7.2,CH=3.15;
+   hyPlinth(CW+.4,CD+.4,G,{stepW:2.2,stepX:-1.0});
+   hyWallRing(-CW/2,-CD/2,CW/2,CD/2,G,CH,{
+    mk:'loess',socle:.56,socleMk:'megabreccia',postMk:'tarwood',
+    holes:{
+     s:[{at:CW/2-1.0,y:0,w:1.65,h:2.48},{at:CW/2+1.45,y:.9,w:1.2,h:1.25}],
+     n:[{at:CW/2,y:1.0,w:.90,h:1.02}]
+    }
+   });
+   hyDoor(-1.0,G,CD/2,0,1.24,2.06,{lintel:'larch',maskMk:'kaen'});
+   hyWindow(1.45,G+.9,CD/2,0,.98,1.04,{light:'nephrite'});
+   hyWindow(0,G+1.0,-CD/2,PI,.72,.84,{light:'steel'});
+   WX(0,G+CH+.24,-CD/2+.08,0,PI/2,0,()=>prism('loess',[[-CW/2+.08,0],[0,-1.48],[CW/2-.08,0]],-.06,.06,P('loess')));
+   hyFormlineTympanum(0,G+CH+.25,CD/2+.04,CW-.16,1.48,0,{backMk:'loess',tertiary:'nephrite'});
+   hyGaleCobbleRoof(0,G+CH+.24,0,CW+.16,CD+.18,1.60,0,{mk:'larch',gableFill:false,over:.24,overZ:.24});
+   hyEavesBraid(.5,G+2.9,CD/2+.28,0,3.6,{sag:.18});
+   hyInauCluster(-2.2,G+1.95,CD/2+.26,0,{scale:.64});
+
+   /* Yak-tallow & wood-ash lye soap boiling cauldron + suspended mine/yaodong candle-dipping wheel */
+   svNoWalk(()=>{
+    cyl('basalt',-1.7,G,-2.0,.72,.44,P('basaltD'),12);
+    cyl('iron',-1.7,G+.44,-2.0,.62,.42,P('iron'),12);
+    cyl('bone',-1.7,G+.86,-2.0,.54,.04,P('bone'),12);
+    /* Suspended larch candle-dipping wheel & 8 dipped yak-tallow tapers */
+    pole('rope',[-1.7,G+2.35,-2.0],[-1.7,G+2.95,-2.0],.012,P('rope'),6);
+    ring('larch',-1.7,G+2.32,-2.0,.46,.032,P('larchD'),0,0,0,14);
+    for(let ci=0;ci<8;ci++){
+     const ca=ci*TAU/8;
+     cyl('bone',-1.7+Math.cos(ca)*.44,G+1.84,-2.0+Math.sin(ca)*.44,.018,.44,P('bone'),6);
+    }
+    /* Stacked highland yak-tallow soap cakes on north shelf */
+    box('larch',1.5,G+.82,-2.9,1.6,.06,.44,P('larch'));
+    for(let si=-2;si<=2;si++)box('alabaster',1.5+si*.28,G+.88,-2.9,.20,.12,.28,new THREE.Color(1,1,1));
+   });
+   hyKaenCrown(-1.7,G+CH+1.84,-2.0,.32,.56,4,{celadon:false,smoke:true});
+
+   hyFurnList([
+    ['pa_shop_counter',1.3,G,1.5,PI],
+    ['eternian_common_weighing_scale',1.4,G,-.5,0],
+    ['generic_churn',1.9,G,-1.8,-PI/2],
+    ['hayrant_kaen_jar',2.3,G,.4,0,0]
+   ]);
+   hyTarget(-.4,G,.8,'chandlery-shop');
+  });
+
+  hyPlaidAwning(.4,3.4,4.2,4.8,0,2.45,{mk:'plaid',sag:.18});
+  hyFurnList([
+   ['generic_crate',-2.0,.06,4.0,0],
+   ['hayrant_kaen_jar',-2.0,.06,-4.0,0,0]
+  ]);
+  hyTarget(-2.1,.06,3.6,'pu-cache-yard');
  }});

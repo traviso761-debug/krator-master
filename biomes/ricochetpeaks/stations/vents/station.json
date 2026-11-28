@@ -1,0 +1,26 @@
+{
+ "id": "vents",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Ricochet Peaks — East Hearth Hydrothermal Boreal Oasis",
+ "out": "ricochetpeaks-vents.html",
+ "px": [1450, 1558],
+ "sky": [1178, 1228],
+ "elevM": 3180.0,
+ "pAtm": 1.08,
+ "koppen": "Dfb",
+ "rainMmYr": 740,
+ "strataStack": "secondary-ejecta+evaporite-strand+obsidian-pancake",
+ "reserves": [
+  { "id": "site:yuni-bath-claim", "x": 28, "z": -164, "r": 34 },
+  { "id": "site:bandit-shore-camp", "x": 178, "z": 54, "r": 32 }
+ ],
+ "modes": ["Day", "Ring-Shadow Dusk", "Winter Snow"],
+ "families": [
+  "ground.sinter", "ground.suevite", "ground.duff",
+  "bark.spruce", "spruce", "bark.larch", "larch", "larchgold", "bark.birch", "birch", "bark.willow", "willow", "wood.log",
+  "fern", "heather", "sedge", "moss",
+  "rock.suevite", "stone.tagamite", "stone.sinter",
+  "ore.iron", "ore.nickel", "ore.gold", "ore.quartz",
+  "earth.yuni", "mosaic.yuni", "wood.cedar", "roof.shingle"
+ ]
+}

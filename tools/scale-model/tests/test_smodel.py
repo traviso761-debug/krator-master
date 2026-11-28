@@ -87,7 +87,7 @@ import shutil, tempfile   # noqa: E402
 with tempfile.TemporaryDirectory() as tmp:
     tmp = shutil.copytree(P.DATA_DIR, os.path.join(tmp, 'data'))
     for f in os.listdir(tmp):
-        if f != 'model.json':
+        if f not in ('model.json', 'tides.json'):
             os.remove(os.path.join(tmp, f))
     P.save(D, tmp)
     names = sorted(os.listdir(P.DATA_DIR))
@@ -1043,4 +1043,40 @@ check('Lāiṭwāl (1028,1653) on its bench (%.0f m, dry): the lake on 1028,1654
       not bool(whas[1653, 1028]) and bool(whas[1654, 1028]) and abs(float(wlev[1654, 1028]) - 1315.05) <= 1.0
       and float(E[1652, 1028]) - float(E[1653, 1028]) >= 1000.0
       and all(float(E[1652, x_]) >= 2600.0 for x_ in range(1026, 1031)))
+# ---- 27. 5.1 edit 28 (edit_528_ria_sound.py, 2026-11-24): Ria Sound natural 3-river dendritic ria & East Bluff Kuruneva seat
+_oc_lbl = int(w_lbl4_t[100, 100])
+_rs_rivs = {str(r['id']): r for r in D['rivers'] if str(r.get('id')) in ('9101', '9107', '9108')}
+_rs_pin = setts_w0.get('sriasound1')
+check('Ria Sound dendritic ria is 4-connected to the NW Ocean across S-bend narrows (622,141, %.0f m) and Floating City bay (635,138, %.0f m)'
+      % (float(E[141, 622]), float(E[138, 635])),
+      _oc_lbl > 0 and int(w_lbl4_t[141, 622]) == _oc_lbl and int(w_lbl4_t[138, 635]) == _oc_lbl
+      and float(E[141, 622]) <= -25.0 and float(E[138, 635]) <= -40.0)
+check('Ria Sound rivers 9101 (Rīwa-Wāta), 9107 (Suur-Neva) & 9108 (Musta-Jõgi) each reach 4-connected ocean water at 0 m',
+      set(_rs_rivs.keys()) == {'9101', '9107', '9108'}
+      and all(r['to'].get('sea') == 'ocean' and r.get('mouth_m') == 0.0
+              and int(w_lbl4_t[int(round(r['px'][-1][1])), int(round(r['px'][-1][0]))]) == _oc_lbl
+              for r in _rs_rivs.values()))
+check('East Bluff Kuruneva pin sriasound1 (649,141) stands dry at %.0f m inside r27arcflow1, 1 cell south of %.0f m harbor water'
+      % (float(E[141, 649]), float(E[140, 649])),
+      _rs_pin is not None and (int(_rs_pin['px']), int(_rs_pin['py'])) == (649, 141)
+      and _rs_pin.get('polity') == 'Arcflow Republics'
+      and not bool(whas[141, 649]) and float(E[141, 649]) >= 80.0
+      and bool(whas[140, 649]) and float(E[140, 649]) <= -12.0
+      and bool(regs_w0['r27arcflow1'][141, 649]) and not bool(regs_w0['r27lowria01'][141, 649]))
+# ---- 28. 5.1e38 (2026-11-28): Hayrant Circuit E6 provincial capital Kuran-Horu and towns Kep-Kotan & Cink-Kotan
+et_mask_t = regs_w0['rmvg89rejmqat']
+for hy_sid, hy_name, hy_type, hy_xy, hy_min_e in (
+    ('shykuranhoru', 'Kuran-Horu', 'city', (370, 691), 3000.0),
+    ('shykepkotan1', 'Kep-Kotan', 'town', (312, 581), 2300.0),
+    ('shycinkkotan', 'Cink-Kotan', 'town', (342, 791), 3000.0),
+):
+    s_hy = setts_w0.get(hy_sid)
+    check('5.1e38 Hayrant %s %s (%s) stands on dry Eternal State highland bench at %s' % (hy_type, hy_name, hy_sid, hy_xy),
+          s_hy is not None and s_hy['name'] == hy_name and s_hy['type'] == hy_type
+          and s_hy.get('polity') == 'Eternal State'
+          and (int(s_hy['px']), int(s_hy['py'])) == hy_xy
+          and not bool(whas[hy_xy[1], hy_xy[0]]) and bool(et_mask_t[hy_xy[1], hy_xy[0]])
+          and float(E[hy_xy[1], hy_xy[0]]) >= hy_min_e)
 print('%d checks passed' % ok)
+
+

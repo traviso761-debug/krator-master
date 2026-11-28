@@ -19,7 +19,7 @@ function rd(rel) {
 function extractDefs() {
   const defs = {};
   const scanDirs = [
-    ['kits/hayrant/src', ['50-hy-dwell.js', '54-hy-state.js', '58-hy-faith-def.js', '62-hy-works.js', '66-hy-trades-land.js', '70-hy-street.js']],
+    ['kits/hayrant/src', ['50-hy-dwell.js', '54-hy-state.js', '54b-hy-cybertotem.js', '58-hy-faith-def.js', '62-hy-works.js', '66-hy-trades-land.js', '70-hy-street.js']],
     ['kits/eternian/src', ['50-et-dwell.js', '51-et-dwell-mid.js', '52-et-dwell-rich.js', '53-et-court.js', '60-et-state.js', '61-et-defence.js', '64-et-trade-kit.js', '65-et-works.js', '66-et-trades.js']]
   ];
   const rx = /defBuilding\(\{([\s\S]*?)\bbuild\s*\(/g;
@@ -170,8 +170,8 @@ console.log('  INFO  census:', JSON.stringify({
 }));
 
 check('City places substantial multi-ward urban fabric (>= 260 lots)', C.totalLots >= 260, 'lots=' + C.totalLots);
-check('All 47/47 standalone Hayrant pieces placed', C.missingHyKeys.length === 0,
-  C.missingHyKeys.length ? 'missing: ' + C.missingHyKeys.join(', ') : '47/47 hy_* keys');
+check('All 55/55 standalone Hayrant pieces placed', C.missingHyKeys.length === 0 && C.hyRequiredTotal === 55,
+  C.missingHyKeys.length ? 'missing: ' + C.missingHyKeys.join(', ') : '55/55 hy_* keys');
 check('All 41/41 active Voth-census trades staffed', C.unstaffedTrades.length === 0,
   C.unstaffedTrades.length ? 'unstaffed: ' + C.unstaffedTrades.join(', ') : C.staffedTrades + '/' + C.activeTradesTotal);
 check('Mixed suzerain-vassal avenue pairs obey <= 0.50 m cornice delta',
@@ -196,7 +196,7 @@ check('Zero OBB building-to-building overlaps', obbHits === 0, 'overlaps=' + obb
 check('Zero lots intruding into Yut-Ma river or mill-leat', gorgeHits === 0, 'gorgeHits=' + gorgeHits);
 check('5 active KCONS rising construction lots in W6', C.constructingLots === 5, 'constructing=' + C.constructingLots);
 check('H1 & H2 KHAMLET villages populated', C.byWard.H1 >= 6 && C.byWard.H2 >= 5, 'H1=' + C.byWard.H1 + ', H2=' + C.byWard.H2);
-check('RES_ORE mines & saltpeter works bound via resSource', plan.oreBindings.length >= 3, 'bound=' + plan.oreBindings.length);
+check('RES_ORE mines, rare-earth smelter & saltpeter works bound via resSource', plan.oreBindings.length >= 4, 'bound=' + plan.oreBindings.length);
 check('C1 Ukor-Tera caravan laager pitched via KCAMP.halt', C.campRecords >= 6, 'tents/wagons=' + C.campRecords);
 check('Single-component KWALK graph across Moon-Bridge, all 6 wards & hamlets',
   plan.walk.connected, plan.walk.reachable + '/' + plan.walk.total + ' nodes');

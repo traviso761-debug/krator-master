@@ -39,6 +39,17 @@ const VIEWS = {};
      moved = true;
     }
    }
+   const palms = SHROUDHILLS.COCONUTS || [];
+   for (let p = 0; p < palms.length; p++) {
+    const P = palms[p];
+    const dp = Math.hypot(x - P.x, z - P.z);
+    if (dp < 4.2 && y > P.y0 - 2 && y < P.y0 + P.H + 3.8) {
+     const ap = Math.atan2(z - P.z, x - P.x);
+     x = P.x + Math.cos(ap) * 4.8;
+     z = P.z + Math.sin(ap) * 4.8;
+     moved = true;
+    }
+   }
    for (let w = 0; w < WORKS.length; w++) {
     const W = WORKS[w];
     const dw = Math.hypot(x - W.x, z - W.z);
@@ -169,13 +180,37 @@ const HCHK = {
  },
 
  speciesHarvest: function(spList){
-  const wantGather = ['amber', 'peat-fibre', 'reed-wax', 'saltpeter', 'smudge-resin', 'crimson-dye', 'mucilage', 'fiddlehead'];
+  const wantGather = [
+   'amber', 'rimu-gum', 'peat-fibre', 'reed-wax', 'saltpeter', 'smudge-resin',
+   'crimson-dye', 'saffron-lake', 'silver-felt', 'curd-rennet', 'mucilage',
+   'fiddlehead', 'fern-rhizome', 'stalk-dye', 'coir', 'pandan-plaits',
+   'bast-cordage', 'palm-sheath', 'orchid-cane', 'usnea-moss', 'kiekie-fibre', 'wax-berry'
+  ];
   const miss = spList.filter(function(s){ return !s.tags || !s.tags.harvest; }).map(function(s){ return s.key; });
   const gotGather = spList.map(function(s){ return s.tags && s.tags.harvest && s.tags.harvest.gather; }).filter(Boolean);
   const missG = wantGather.filter(function(g){ return gotGather.indexOf(g) < 0; });
   return {
-   ok: spList.length === 9 && miss.length === 0 && missG.length === 0,
-   detail: miss.length || missG.length ? 'missing harvest: ' + miss.join(',') + '; missing gather: ' + missG.join(',') : '9 canonical species, all harvest and gather tags valid'
+   ok: spList.length === 23 && miss.length === 0 && missG.length === 0,
+   detail: miss.length || missG.length ? 'missing harvest: ' + miss.join(',') + '; missing gather: ' + missG.join(',') : '23 canonical species, all harvest and gather tags valid'
+  };
+ },
+
+ coveCoconuts: function(coconuts, station){
+  const list = coconuts || [];
+  if (station !== 'cove') {
+   return {
+    ok: list.length === 0,
+    detail: list.length ? list.length + ' strand coconuts misplaced on inland/montane ' + station : '0 strand coconuts on ' + station
+   };
+  }
+  const seaY = SEA ? SEA.level : 0;
+  const badWave = list.filter(function(P){ return P.y0 <= seaY + 1.2; });
+  const badTor = list.filter(function(P){ return STAGE.fields.tor(P.x, P.z) > 0.30 || STAGE.fields.elevASL(P.x, P.z) > 110; });
+  return {
+   ok: list.length >= 6 && badWave.length === 0 && badTor.length === 0,
+   detail: badWave.length ? badWave.length + ' coconuts below high-water strand' :
+           badTor.length ? badTor.length + ' coconuts on tor or high montane bluff' :
+           list.length + ' drift-sown Cocos nucifera palms along sheltered Spear-Queen cove strand'
   };
  },
 
@@ -276,7 +311,8 @@ function hostChecks(){
  const add = function(name, res){ R.push(Object.assign({ name: name }, res)); };
  const mode = (typeof KMAT !== 'undefined' && KMAT.mode) || 'proc';
  add('all lit meshes use genuine library textures', HCHK.texturedMeshes(collectSceneMeshes(), mode));
- add('all nine species carry harvest and gather records', HCHK.speciesHarvest(SHROUDHILLS.SPECIES));
+ add('all ten species carry harvest and gather records', HCHK.speciesHarvest(SHROUDHILLS.SPECIES));
+ add('drift-sown coconuts stay on warm Spear-Queen cove strand above high water', HCHK.coveCoconuts(SHROUDHILLS.COCONUTS || [], STAGE.key));
  add('Paired Sister-Cups hold dual elevated WATER.still lenses', HCHK.sisterCups(SHROUDHILLS.SISTER_CUPS, SKY_POND_SURFACES, STAGE.key));
  add('KSPACE Root-Hammocks bridge neighbor crowns overhead', HCHK.rootHammocks(SHROUDHILLS.HAMMOCKS, STAGE.key));
  add('Drum-Galls and cat-sized Shroud-Ants tagged off safe trail', HCHK.shroudAnts(SHROUDHILLS.COLONIES, SHROUDHILLS.ANTS, REG, STAGE.key));
@@ -292,6 +328,7 @@ function hostNegatives(){
  const dummyUntex = { isMesh: true, name: 'untex_dummy', userData: {}, material: new THREE.MeshStandardMaterial({ color: 0x888888 }) };
  add('untextured lit mesh injected', HCHK.texturedMeshes([dummyUntex], 'lib'));
  add('species missing gather tag', HCHK.speciesHarvest(SHROUDHILLS.SPECIES.slice(0, 5)));
+ add('coconut misplaced on high montane Cloak-Tor', HCHK.coveCoconuts([{ x: 0, z: 0, y0: 25 }], 'cloaktor'));
  add('Sister-Cup water lens floating outside cup', HCHK.sisterCups([{ x: 0, y: 15, z: 0 }], [{ level: 30, _sisterCup: { cupY: 15, cupH: 0.8 } }], 'cove'));
  add('Root-Hammock self-looping on same tree', HCHK.rootHammocks([{ a: { treeId: 1 }, b: { treeId: 1 }, spanM: 9, mid: { x: 0, y: 20, z: 0 } }], 'canopy'));
  add('oversized 2 m ant violating cat-sized contract', HCHK.shroudAnts(SHROUDHILLS.COLONIES, [{ sizeM: 2.0 }], REG, 'canopy'));

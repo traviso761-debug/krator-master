@@ -1,0 +1,50 @@
+{
+ "what": "Vertical-stack budgets for biomes/matronscoast (Matron's Coast / The Snail Coast, rmwvqchv37nh0): 4 station HTML pages (< 2.0 MB each via matronscoast.tex.js sidecar), max samplers <= 13, and estimated VRAM <= 380 MB.",
+ "pages": {
+  "matronscoast.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 13,
+   "vram_mb": 380,
+   "why": "Station 1 (skerry): Drowned 16-island skerry sound, KCOAST shores, cemented Coquina Conch-Middens, Skerry Megachitons & Yonni sealime reserve.",
+   "raised": "2026-11-28"
+  },
+  "matronscoast-browsewood.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 13,
+   "vram_mb": 380,
+   "why": "Station 2 (browsewood): 2.2 m Browse-Line Snail Cathedral, opalescent Mucus Silver-Highways, gliding Matron's Tower-Snails & Sister-Cup sky-ponds.",
+   "raised": "2026-11-28"
+  },
+  "matronscoast-kelpfront.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 13,
+   "vram_mb": 380,
+   "why": "Station 3 (kelpfront): Southern Kelp-Grazing Front where giant snails & Megachitons rasp back Farside alien landkelp holdfasts.",
+   "raised": "2026-11-28"
+  },
+  "matronscoast-cloudslope.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 140,
+   "samplers": 13,
+   "vram_mb": 380,
+   "why": "Station 4 (cloudslope): Upper +2,150 m Cfb cloud-rainforest, 6-step Shell-Cemented Tufa Cataract, Shag-Shell Mountain Snails & Painted Lantern-Snails.",
+   "raised": "2026-11-28"
+  },
+  "*": {
+   "bytes": 12582912,
+   "tris": 6500000,
+   "calls": 145,
+   "samplers": 13,
+   "vram_mb": 380,
+   "why": "Shared matronscoast.tex.js texture sidecar pack serving all four Matron's Coast station pages.",
+   "raised": "2026-11-28"
+  }
+ }
+}

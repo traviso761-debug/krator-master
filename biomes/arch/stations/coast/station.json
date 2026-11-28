@@ -1,0 +1,7 @@
+{
+  "core": {
+    "24-core-hazard-tsunami.js": "core/hazard/24-core-hazard-tsunami.js",
+    "64-core-water-tsunami.js": "core/water/ext/64-core-water-tsunami.js",
+    "64b-core-water-tsunami-draw.js": "core/water/ext/64b-core-water-tsunami-draw.js"
+  }
+}

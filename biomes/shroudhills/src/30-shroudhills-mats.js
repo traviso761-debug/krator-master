@@ -88,8 +88,105 @@
    heath: leaf(frondAlpha(165), 'heath', { swayW: '(position.y)', swayA: 0.06 }),
    sundew: leaf(hangAlpha(190), 'sundew', { swayW: '(-position.y)', swayA: 0.24, axis: 1 }),
    mosshang: leaf(hangAlpha(160), 'mosshang', { swayW: '(-position.y)', swayA: 0.14, axis: 1 }),
-   myrtle: leaf(discAlpha(170), 'myrtle', { swayW: '(position.y)', swayA: 0.06 })
+   myrtle: leaf(discAlpha(170), 'myrtle', { swayW: '(position.y)', swayA: 0.06 }),
+   palmfrond: leaf((function(){
+    var H01 = function(a, b, c){ return KRAND.unit(KRAND.hash(0x6b4d31, a | 0, b | 0, c | 0)); };
+    var t = BIO.alphaTex(512, function(g, S){
+     g.lineCap = 'round';
+     var nPairs = 38;
+     for (var i = 1; i <= nPairs; i++) {
+      var f = i / (nPairs + 1), ry = S * (0.05 + 0.88 * f);
+      var env = Math.sin(Math.pow(f, 0.68) * Math.PI) * (1 - 0.12 * f);
+      var pLen = S * 0.40 * env;
+      if (pLen < 4) continue;
+      [-1, 1].forEach(function(side){
+       var sweep = 0.34 + 0.26 * f, ang = side * (Math.PI * 0.5 - sweep) + (H01(i, side + 2, 95) - 0.5) * 0.05;
+       var mx = S * 0.5 + Math.cos(ang) * pLen * 0.56, my = ry + Math.sin(Math.abs(sweep)) * pLen * 0.42;
+       var tx = clamp(S * 0.5 + Math.cos(ang) * pLen, 0.04 * S, 0.96 * S);
+       var ty = clamp(ry + Math.sin(Math.abs(sweep)) * pLen * 0.88, 0.04 * S, 0.96 * S);
+       var hw = S * 0.0078 * (0.6 + 0.5 * env);
+       var lum = Math.round(168 + 64 * env + 22 * (H01(i, side + 5, 95) - 0.5));
+       g.fillStyle = 'rgb(' + Math.round(lum * 0.92) + ',' + Math.min(255, Math.round(lum * 1.05)) + ',' + Math.round(lum * 0.74) + ')';
+       g.beginPath();
+       g.moveTo(S * 0.5, ry - hw);
+       g.quadraticCurveTo(mx, my - hw * 0.7, tx, ty);
+       g.quadraticCurveTo(mx, my + hw * 0.9, S * 0.5, ry + hw);
+       g.closePath();
+       g.fill();
+      });
+     }
+     g.strokeStyle = 'rgba(168,176,112,0.96)';
+     g.lineWidth = S * 0.012;
+     g.beginPath();
+     g.moveTo(S * 0.5, S * 0.03);
+     g.lineTo(S * 0.5, S * 0.94);
+     g.stroke();
+    }, [154, 182, 112]);
+    t.wrapS = t.wrapT = T3.ClampToEdgeWrapping;
+    return t;
+   })(), 'sh-palmfrond', { aN: false, swayW: '(position.x)', swayA: 0.085, alphaTest: 0.36 }),
+   pandanstrap: leaf((function(){
+    var t = BIO.alphaTex(256, function(g, S){
+     var grd = g.createLinearGradient(0, S * 0.04, 0, S * 0.96);
+     grd.addColorStop(0, 'rgb(154,182,112)');
+     grd.addColorStop(0.55, 'rgb(184,210,132)');
+     grd.addColorStop(1, 'rgb(142,166,96)');
+     g.fillStyle = grd;
+     g.beginPath();
+     g.moveTo(S * 0.34, S * 0.04);
+     g.quadraticCurveTo(S * 0.26, S * 0.48, S * 0.48, S * 0.96);
+     g.quadraticCurveTo(S * 0.74, S * 0.48, S * 0.66, S * 0.04);
+     g.closePath();
+     g.fill();
+     g.strokeStyle = 'rgba(220,232,168,0.75)';
+     g.lineWidth = 2.2;
+     g.beginPath();
+     g.moveTo(S * 0.5, S * 0.04);
+     g.lineTo(S * 0.49, S * 0.94);
+     g.stroke();
+    }, [158, 186, 114]);
+    t.wrapS = t.wrapT = T3.ClampToEdgeWrapping;
+    return t;
+   })(), 'sh-pandanstrap', { aN: false, swayW: '(position.x)', swayA: 0.065, alphaTest: 0.36 }),
+   rimudrape: leaf((function(){
+    var H01 = function(a, b){ return KRAND.unit(KRAND.hash(0x3f6b29, a | 0, b | 0)); };
+    var t = BIO.alphaTex(256, function(g, S){
+     g.lineCap = 'round';
+     for (var i = 0; i < 24; i++) {
+      var x0 = S * (0.16 + 0.68 * (i / 23));
+      var len = S * (0.58 + 0.34 * H01(i, 1));
+      var wob = (H01(i, 2) - 0.5) * S * 0.08;
+      var v = Math.round(150 + 62 * H01(i, 3));
+      g.strokeStyle = 'rgba(' + v + ',' + Math.min(255, v + 12) + ',' + Math.round(v * 0.72) + ',0.92)';
+      g.lineWidth = 2.8;
+      g.beginPath();
+      g.moveTo(x0, S * 0.04);
+      g.quadraticCurveTo(x0 + wob, S * 0.04 + len * 0.52, clamp(x0 + wob * 1.4, S * 0.06, S * 0.94), clamp(S * 0.04 + len, S * 0.06, S * 0.95));
+      g.stroke();
+     }
+    }, [156, 174, 110]);
+    t.wrapS = t.wrapT = T3.ClampToEdgeWrapping;
+    return t;
+   })(), 'sh-rimudrape', { aN: false, swayW: '(-position.y)', swayA: 0.14, axis: 1, alphaTest: 0.36 }),
+   hibiscusleaf: leaf((function(){
+    var H01 = function(a, b){ return KRAND.unit(KRAND.hash(0x4c7a33, a | 0, b | 0)); };
+    var t = BIO.alphaTex(256, function(g, S){
+     for (var i = 0; i < 26; i++) {
+      var r = S * (0.08 + 0.33 * Math.sqrt(H01(i, 1))), a = H01(i, 2) * TAU;
+      var cx = S * 0.5 + Math.cos(a) * r * 0.86, cy = S * 0.48 + Math.sin(a) * r;
+      var sz = S * (0.065 + 0.045 * H01(i, 3)), v = Math.round(154 + 68 * H01(i, 4));
+      g.fillStyle = 'rgb(' + Math.round(v * 0.84) + ',' + Math.min(255, Math.round(v * 1.06)) + ',' + Math.round(v * 0.72) + ')';
+      g.beginPath();
+      g.arc(cx, cy, sz, 0, TAU);
+      g.fill();
+     }
+    }, [146, 182, 120]);
+    t.wrapS = t.wrapT = T3.ClampToEdgeWrapping;
+    return t;
+   })(), 'sh-hibiscusleaf', { aN: false, swayA: 0.055, alphaTest: 0.36 })
   };
+
+  if (SHROUDHILLS.registerCrops) SHROUDHILLS.registerCrops();
 
   M.tank.userData.bio = { kind: 'solid' };
   M.saltpeter.userData.bio = { kind: 'solid' };
@@ -516,7 +613,7 @@
   IT('amber_drip1', G.amberStalactite(KRAND.hash(KS, 1, 1)), M.amber, 'Weeping Amber-Podocarp resin stalactites (amber = 120)', 'shroud_amber_kauri');
 
   IT('treefern_frond', G.archFrond(0.34, 0.24), M.treefern, 'Ironstone Ravine Tree-Fern frond', 'shroud_tree_fern');
-  IT('ravine_fern', G.archFrond(0.26, 0.16), M.fern, 'Ravine understorey fern', 'shroud_tree_fern');
+  IT('ravine_fern', G.archFrond(0.26, 0.16), M.fern, 'Bronze Crown-Fern ravine frond', 'ravineblechnum');
 
   IT('sister_cups0', G.sisterCups(KRAND.hash(KS, 2, 0)), M.tank, 'Paired Sister-Cup Cistern Sky-Pond', 'shroud_sister_cups');
   IT('sister_cups1', G.sisterCups(KRAND.hash(KS, 2, 1)), M.tank, 'Paired Sister-Cup Cistern Sky-Pond', 'shroud_sister_cups');
@@ -524,9 +621,9 @@
   IT('sister_drip', G.streamer(4, 0.35, 0.3), M.sundew, 'Sister-Cup overflow rainwater ribbon', 'shroud_sister_cups');
 
   IT('turf_pad', G.lobe, M.turf, 'Suspended 50 cm Canopy Peat Turf cushion', 'shroud_rata_bridge');
-  IT('sky_orchid', G.tuft(), M.orchid, 'Crimson Sky-Orchid on Root-Hammock turf', 'shroud_rata_bridge');
-  IT('sky_heath', G.tuft(), M.heath, 'Canopy Berry-Heath on Root-Hammock turf', 'shroud_rata_bridge');
-  IT('moss_curtain', G.streamer(5, 0.45, 0.4), M.mosshang, 'Dripping cloud-moss curtain', 'shroud_rata_bridge');
+  IT('sky_orchid', G.tuft(), M.orchid, 'Crimson Cloud-Orchid Spray on Root-Hammock turf', 'crimsonorchid');
+  IT('sky_heath', G.tuft(), M.heath, 'Epiphytic Sky-Berry Heath on Root-Hammock turf', 'canopyberry');
+  IT('moss_curtain', G.streamer(5, 0.45, 0.4), M.mosshang, 'Bearded Mist-Usnea curtain', 'shroudlichen');
 
   IT('drum_gall0', G.drumGall(KRAND.hash(KS, 3, 0)), M.gall, 'Myrmecophyte Drum-Gall (chambered Shroud-Ant tuber)', 'shroud_drum_gall');
   IT('drum_gall1', G.drumGall(KRAND.hash(KS, 3, 1)), M.gall, 'Myrmecophyte Drum-Gall (chambered Shroud-Ant tuber)', 'shroud_drum_gall');
@@ -537,10 +634,125 @@
   IT('myrtle_lobe', G.lobe, M.shrub, 'Calming Smudge-Myrtle trail shrub', 'shroud_myrtle_smudge');
   IT('myrtle_sprig', G.tuft(), M.myrtle, 'Calming Smudge-Myrtle aromatic flower sprigs', 'shroud_myrtle_smudge');
 
-  IT('tor_cloak_mat', G.torMat(KRAND.hash(KS, 5, 0)), M.shrub, 'Lithophyte Tor-Cloak cushion mat', 'shroud_cloak_bromeliad', { cliff: true });
-  IT('tor_bromeliad', G.crownClump(0.42), M.bromeliad, 'Scarlet and Saffron Tor-Cloak bromeliad rosette', 'shroud_cloak_bromeliad', { cliff: true });
-  IT('tor_silver_orchid', G.tuft(), M.orchid, 'Silver-velvet Tor-Cloak cushion orchid', 'shroud_cloak_bromeliad', { cliff: true });
+  IT('tor_cloak_mat', G.torMat(KRAND.hash(KS, 5, 0)), M.shrub, 'Scarlet Tor-Cloak cushion mat', 'shroud_cloak_bromeliad', { cliff: true });
+  IT('tor_bromeliad', G.crownClump(0.42), M.bromeliad, 'Scarlet Tor-Cloak bromeliad rosette', 'shroud_cloak_bromeliad', { cliff: true });
+  IT('saffron_puya', G.crownClump(0.44), M.bromeliad, 'Saffron Spine-Puya rock rosette', 'saffroncloak', { cliff: true });
+  IT('tor_celmisia', G.torMat(KRAND.hash(KS, 6, 0)), M.shrub, 'Silver Cushion-Celmisia dome', 'torcushion', { cliff: true });
+  IT('tor_silver_orchid', G.tuft(), M.orchid, 'Silver Cushion-Celmisia velvet flowerheads', 'torcushion', { cliff: true });
   IT('dew_strand', G.streamer(5, 0.38, 0.55), M.sundew, 'Silver Mist-Sundew carnivorous squall-curtain', 'shroud_dew_strand', { cliff: true });
+
+  G.palmFrond = function(nSeg, arch, droop, halfW, vFold){
+   var pos = [], nor = [], uv = [], L = [], C0 = [], R0 = [];
+   for (var i = 0; i <= nSeg; i++) {
+    var t = i / nSeg, x = t * (1 - 0.14 * t * t), y = arch * Math.sin(t * 1.95) - droop * t * t * t;
+    var env = Math.sin(Math.pow(t, 0.62) * Math.PI * 0.96) * (0.88 + 0.12 * (1 - t));
+    var w = halfW * (0.08 + 0.92 * env), vf = vFold * env;
+    L.push([x, y - vf, -w, 0, t]); C0.push([x, y, 0, 0.5, t]); R0.push([x, y - vf, w, 1, t]);
+   }
+   for (var j = 0; j < nSeg; j++) {
+    [[L[j], C0[j], L[j + 1], C0[j + 1], -0.28], [C0[j], R0[j], C0[j + 1], R0[j + 1], 0.28]].forEach(function(s){
+     var a = s[0], b = s[1], c = s[2], d = s[3], nz = s[4], nl = Math.hypot(0.15, 0.94, nz);
+     [a, b, c, b, d, c].forEach(function(q){
+      pos.push(q[0], q[1], q[2]); uv.push(q[3], q[4]); nor.push(0.15 / nl, 0.94 / nl, nz / nl);
+     });
+    });
+   }
+   return BIO.geo._make(pos, nor, uv);
+  };
+
+  G.coconutCluster = function(){
+   var pos = [], nor = [], uv = [], col = [], idx = [];
+   var offs = [[0.14, -0.10, 0], [-0.12, -0.12, 0.09], [0.02, -0.14, -0.13], [0, -0.24, 0.02]];
+   offs.forEach(function(o){
+    var s = new T3.IcosahedronGeometry(0.13, 1), p = s.attributes.position, n = s.attributes.normal, u = s.attributes.uv, b = pos.length / 3;
+    for (var i = 0; i < p.count; i++) {
+     pos.push(p.getX(i) + o[0], p.getY(i) * 1.22 + o[1], p.getZ(i) + o[2]);
+     nor.push(n.getX(i), n.getY(i), n.getZ(i));
+     uv.push(u ? u.getX(i) : 0.5, u ? u.getY(i) : 0.5);
+     var sh = 0.76 + 0.24 * clamp(p.getY(i) / 0.13 * 0.5 + 0.5, 0, 1);
+     col.push(sh, sh, sh * 0.92);
+    }
+    if (s.index) { var ix = s.index.array; for (var k = 0; k < ix.length; k++) idx.push(b + ix[k]); }
+    else { for (var m = 0; m < p.count; m++) idx.push(b + m); }
+   });
+   var g = new T3.BufferGeometry();
+   g.setAttribute('position', new T3.Float32BufferAttribute(pos, 3));
+   g.setAttribute('normal', new T3.Float32BufferAttribute(nor, 3));
+   g.setAttribute('uv', new T3.Float32BufferAttribute(uv, 2));
+   g.setAttribute('color', new T3.Float32BufferAttribute(col, 3));
+   g.setIndex(idx);
+   return g;
+  };
+
+  G.pandanFruit = function(){
+   var s = new T3.IcosahedronGeometry(1, 1);
+   s.scale(1, 1.26, 1);
+   return mergeParts([[s, 0.95]]);
+  };
+
+  G.nikauShaft = function(){
+   var c = new T3.CylinderGeometry(0.17, 0.23, 0.96, 8, 2);
+   c.translate(0, 0.42, 0);
+   return mergeParts([[c, [0.92, 1.02, 0.84]]]);
+  };
+
+  G.cupBloom = function(){
+   var c = new T3.ConeGeometry(0.14, 0.18, 7, 1, true);
+   c.rotateX(Math.PI);
+   c.translate(0, 0.12, 0);
+   return mergeParts([[c, [1.04, 0.98, 0.62]]]);
+  };
+
+  G.giantLeaf = function(){
+   var parts = [[rodGeo([0, 0, 0], [0.18, 0.72, 0], 0.045, 0.028, 5), [0.68, 0.78, 0.52]]];
+   var disc = new T3.CylinderGeometry(0.58, 0.12, 0.08, 10, 1, false);
+   var dp = disc.attributes.position;
+   for (var i = 0; i < dp.count; i++) {
+    var ang = Math.atan2(dp.getZ(i), dp.getX(i));
+    var r = Math.hypot(dp.getX(i), dp.getZ(i));
+    if (r > 0.18) {
+     var lob = 1 + 0.14 * Math.cos(ang * 7);
+     dp.setX(i, dp.getX(i) * lob);
+     dp.setZ(i, dp.getZ(i) * lob);
+     dp.setY(i, dp.getY(i) + 0.04 * Math.sin(ang * 7));
+    }
+   }
+   disc.computeVertexNormals();
+   disc.rotateZ(-0.26);
+   disc.translate(0.22, 0.74, 0);
+   parts.push([disc, [0.84, 0.98, 0.72]]);
+   return mergeParts(parts);
+  };
+
+  G.butterwort = function(){
+   var parts = [];
+   for (var k = 0; k < 7; k++) {
+    var a = k / 7 * TAU;
+    var lf = new T3.BoxGeometry(0.12, 0.022, 0.28, 1, 1, 2);
+    lf.rotateX(-0.18);
+    lf.rotateY(-a);
+    lf.translate(Math.cos(a) * 0.12, 0.03, Math.sin(a) * 0.12);
+    parts.push([lf, [0.86, 1.04, 0.64]]);
+   }
+   parts.push([rodGeo([0, 0.02, 0], [0.03, 0.34, 0], 0.014, 0.008, 4), [0.68, 0.56, 0.88]]);
+   var fl = new T3.SphereGeometry(0.036, 6, 5);
+   fl.translate(0.03, 0.35, 0);
+   parts.push([fl, [0.92, 0.68, 1.08]]);
+   return mergeParts(parts);
+  };
+
+  IT('palm_frond', G.palmFrond(5, 0.34, 0.42, 0.28, 0.075), M.palmfrond, 'Drift-Sown Cove Coconut Palm drooping frond', 'coconut');
+  IT('coconut_nut', G.coconutCluster(), M.tank, 'Drift-Sown Cove Coconut Palm nut cluster', 'coconut');
+  IT('rimu_drape', G.streamer(5, 0.42, 0.35), M.rimudrape, 'Weeping Rimu-Podocarp pendulous foliage curtain', 'amberpodocarp');
+  IT('nikau_shaft', G.nikauShaft(), M.tank, 'Shroud Nikau Feather-Palm bulbous crownshaft', 'shroudnikau');
+  IT('nikau_frond', G.palmFrond(4, 0.48, 0.14, 0.24, 0.09), M.palmfrond, 'Shroud Nikau Feather-Palm ascending frond', 'shroudnikau');
+  IT('cove_pandan_strap', G.palmFrond(4, 0.22, 0.46, 0.085, 0.035), M.pandanstrap, 'Raid-Cove Screwpine keeled strap leaf', 'covepandan');
+  IT('cove_pandan_fruit', G.pandanFruit(), M.tank, 'Raid-Cove Screwpine syncarp fruit key', 'covepandan');
+  IT('hibiscus_fol', BIO.geo.clump(7, 801), M.hibiscusleaf, 'Matron\'s Bast-Hibiscus heart-leaf crown', 'covehibiscus');
+  IT('hibiscus_bloom', G.cupBloom(), M.tank, 'Matron\'s Bast-Hibiscus sulfur-gold blossom', 'covehibiscus');
+  IT('kiekie_tuft', G.palmFrond(3, 0.28, 0.32, 0.075, 0.03), M.pandanstrap, 'Climbing Kiekie Pandan-Vine strap rosette', 'kiekievine');
+  IT('giant_leaf', G.giantLeaf(), M.tank, 'Ravine Giant Rain-Rhubarb umbrella leaf', 'giantleaf');
+  IT('tor_butterwort', G.butterwort(), M.tank, 'Tor Midge-Butterwort mucilage rosette', 'torbutterwort', { cliff: true });
 
   var ITEM_MAP = {
    kohe_clump: 'shroud_kohekohe',
@@ -548,16 +760,21 @@
    kauri_clump: 'shroud_amber_kauri',
    amber_drip0: 'shroud_amber_kauri',
    amber_drip1: 'shroud_amber_kauri',
+   rimu_drape: 'amberpodocarp',
+   nikau_shaft: 'shroudnikau',
+   nikau_frond: 'shroudnikau',
    treefern_frond: 'shroud_tree_fern',
-   ravine_fern: 'shroud_tree_fern',
+   ravine_fern: 'ravineblechnum',
+   giant_leaf: 'giantleaf',
    sister_cups0: 'shroud_sister_cups',
    sister_cups1: 'shroud_sister_cups',
    sister_bract: 'shroud_sister_cups',
    sister_drip: 'shroud_sister_cups',
    turf_pad: 'shroud_rata_bridge',
-   sky_orchid: 'shroud_rata_bridge',
-   sky_heath: 'shroud_rata_bridge',
-   moss_curtain: 'shroud_rata_bridge',
+   sky_orchid: 'crimsonorchid',
+   sky_heath: 'canopyberry',
+   moss_curtain: 'shroudlichen',
+   kiekie_tuft: 'kiekievine',
    drum_gall0: 'shroud_drum_gall',
    drum_gall1: 'shroud_drum_gall',
    saltpeter_crust: 'shroud_drum_gall',
@@ -567,8 +784,17 @@
    myrtle_sprig: 'shroud_myrtle_smudge',
    tor_cloak_mat: 'shroud_cloak_bromeliad',
    tor_bromeliad: 'shroud_cloak_bromeliad',
-   tor_silver_orchid: 'shroud_cloak_bromeliad',
-   dew_strand: 'shroud_dew_strand'
+   saffron_puya: 'saffroncloak',
+   tor_celmisia: 'torcushion',
+   tor_silver_orchid: 'torcushion',
+   tor_butterwort: 'torbutterwort',
+   dew_strand: 'shroud_dew_strand',
+   palm_frond: 'coconut',
+   coconut_nut: 'coconut',
+   cove_pandan_strap: 'covepandan',
+   cove_pandan_fruit: 'covepandan',
+   hibiscus_fol: 'covehibiscus',
+   hibiscus_bloom: 'covehibiscus'
   };
   SHROUDHILLS.speciesOfItem = function(it){ return SHROUDHILLS.byKey[ITEM_MAP[it]] || null; };
  };

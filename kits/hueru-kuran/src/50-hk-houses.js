@@ -95,6 +95,7 @@ defBuilding({key:'hk_house_mid_carver',name:'Nephrite-Carver Chise and Sawing Co
   });
   hkGutskinAwning(2.9,-3.8,7.1,3.8,py,py+2.95,{sag:.28});
   hkNephriteChimes(5.0,py+2.85,3.85,0,2.0,.95,5);
+  hkNauticalTotemPole(6.2,py,4.9,-.18,{h:5.2,tiers:['otter','pelican','whale'],pelicanChime:true});
   hkTarget(-2.4,py+.08,-.3,'carver lodge');
   hkTarget(5.0,py,0,'jade sawing court');
   hkFurnList([
@@ -126,6 +127,7 @@ defBuilding({key:'hk_house_mid_harpooneer',name:'Harpooneer Chise and Baidarka P
    for(const sz of [-1.6,1.2])box('cypress',5.1,py,sz,1.5,.48,.18,P('cypressD'));
   });
   hkWhaleJawArch(-2.2,py,5.4,0,3.2,3.4);
+  hkNauticalTotemPole(-6.3,py,4.7,.22,{h:5.4,tiers:['seal','whale','pelican'],pelicanChime:true});
   hkTarget(-2.2,py+.08,-.2,'harpooneer hall');
   hkTarget(5.1,py,3.8,'baidarka porch');
   hkFurnList([
@@ -133,7 +135,7 @@ defBuilding({key:'hk_house_mid_harpooneer',name:'Harpooneer Chise and Baidarka P
    ['hueru-kuran_whalebone_cot',-3.9,py+.08,-.8,PI/2],
    ['hueru-kuran_harpoon_rack',-.6,py+.08,-1.5,0],
    ['hueru-kuran_cedar_feast_trough',-2.2,py+.08,1.35,0],
-   ['hueru-kuran_driftwood_chest',-3.6,py+.08,1.1,PI/2],
+   ['hueru_nautical_crest_chest',-3.6,py+.08,1.1,PI/2],
    ['job_net_frame',5.2,py,3.9,0,{setting:'outdoor'}]
   ]);
  }});
@@ -155,6 +157,7 @@ defBuilding({key:'hk_house_mid_skipper',name:'Whale-Skipper Nuraghe and Chise Lo
    windows:[{yaw:PI/2,w:.72,y:3.2,h:.85}]
   });
   hkWindHanging(0.8,py,4.4,0,2.2,2.5,{mk:'banner',panels:2});
+  hkNauticalTotemPole(6.6,py,4.6,-.2,{h:6.0,tiers:['crab','pelican','whale'],pelicanChime:true});
   hkTarget(-2.9,py+.08,-.2,'skipper chise');
   hkTarget(4.4,py+.08,-.4,'nuraghe store');
   hkFurnList([
@@ -229,6 +232,8 @@ defBuilding({key:'hk_house_rich_whalelord',name:'Whale-Lord Nuraghe Keep and Chi
   svWell('floor',4.8,yLoft-.2,-.6,3.8,.2,3.8,P('floor'),st.wells[0]);
   hkWhaleJawArch(-3.8,py,6.1,0,3.6,3.8);
   hkWindHanging(1.0,py,5.4,0,2.4,2.8,{mk:'banner',panels:2});
+  hkNauticalTotemPole(8.2,py,5.4,-.16,{h:7.4,tiers:['crab','octopus','pelican','whale'],pelicanChime:true});
+  hkNauticalTotemPole(-8.4,py,5.4,.16,{h:6.4,tiers:['seal','otter','whale','pelican']});
   hkTarget(-3.8,py+.08,-.6,'feast chise');
   hkTarget(5.6,py+.08,.4,'nuraghe ground');
   hkTarget(5.6,yLoft,.65,'nuraghe upper chamber');
@@ -238,7 +243,7 @@ defBuilding({key:'hk_house_rich_whalelord',name:'Whale-Lord Nuraghe Keep and Chi
    ['hueru-kuran_seal_pelt_mat',-5.6,py+.08,-.6,PI/2,{v:0}],
    ['hueru-kuran_nephrite_chime_rack',-2.0,py+.08,-1.8,-PI/4],
    ['hueru-kuran_harpoon_rack',5.8,py+.08,-1.5,-PI/2],
-   ['hueru-kuran_driftwood_chest',5.8,py+.08,.4,-PI/2],
+   ['hueru_nautical_crest_chest',5.8,py+.08,.4,-PI/2],
    ['hueru-kuran_whalebone_cot',5.5,yLoft,-.6,-PI/2],
    ['hueru-kuran_jade_lamp_pedestal',1.0,py,6.2,0,{setting:'outdoor'}]
   ]);
@@ -266,6 +271,7 @@ defBuilding({key:'hk_house_rich_clan',name:'Villaggio Nuragico Three-Chise Clan 
    windows:[{yaw:PI/2,w:.8,y:.98,h:.86}]
   });
   hkNephriteChimes(0,py+2.95,6.8,0,2.8,1.15,6);
+  hkNauticalTotemPole(-8.5,py,6.9,.2,{h:6.8,tiers:['otter','seal','pelican','whale'],pelicanChime:true});
   hkTarget(0,py+.08,-3.2,'elder chise');
   hkTarget(-5.6,py+.08,2.4,'west kin chise');
   hkTarget(5.6,py+.08,2.4,'east kin chise');
@@ -334,6 +340,7 @@ defBuilding({key:'hk_tavern_whale',name:'Leviathan-Jawbone Blubber-Lamp Tavern',
   hkWhaleJawArch(0,py,5.6,0,4.2,4.15);
   hkGutskinAwning(-7.2,2.8,-3.2,6.0,py,py+2.75,{sag:.24});
   hkWindHanging(5.6,py,4.4,0,2.4,2.55,{mk:'kelp',panels:3});
+  hkNauticalTotemPole(7.0,py,5.7,-.22,{h:5.8,tiers:['octopus','pelican','whale'],pelicanChime:true});
   hkTarget(0,py+.08,-.8,'whale tavern hall');
   hkFurnList([
    ['hueru-kuran_whale_oil_hearth',0,py+.08,-.8,0],
@@ -365,6 +372,7 @@ defBuilding({key:'hk_embassy_hayrant',name:'Hayrant Sister-Clan Diplomatic Legat
   });
   hkWindHanging(-6.6,py,4.8,0,2.4,2.95,{mk:'banner',panels:2});
   hkNephriteChimes(1.2,py+3.05,4.8,0,2.6,1.15,5);
+  hkNauticalTotemPole(7.2,py,4.8,-.18,{h:6.6,tiers:['whale','otter','pelican','whale'],pelicanChime:true});
   hkTarget(-2.6,py+.08,-.4,'legation council chise');
   hkTarget(4.8,py+.08,-.4,'treaty archive nuraghe');
   hkFurnList([

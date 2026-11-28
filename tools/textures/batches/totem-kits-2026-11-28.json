@@ -1,0 +1,455 @@
+[
+ {
+  "src": "wood.totem.adzed.png",
+  "out": "core/materials/library/wood.totem.adzed",
+  "record": {
+   "id": "wood.totem.adzed",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`wood.totem.adzed`)",
+    "reuse": "carved elbow-adzed conifer totem-pole shaft timber with Pacific-Northwest ovoids, feather-scales and Jomon spiral cord-ribs (Timpar-Kuran, Hueru-Kuran, Hayrant; tintable, 1.2 m a tile; .b is vertical-flowing alternate)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "mute": 0.25,
+   "delight": 0.3,
+   "lift": 0.12,
+   "rough": 0.78,
+   "rough_var": 0.22,
+   "normal_strength": 1.25
+  }
+ },
+ {
+  "src": "wood.totem.adzed.b.png",
+  "out": "core/materials/library/wood.totem.adzed.b",
+  "record": {
+   "id": "wood.totem.adzed.b",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`wood.totem.adzed`, alternate B)",
+    "reuse": "vertical-flowing alternate of `wood.totem.adzed` for carved totem-pole shafts, houseposts and lintel timbers"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "mute": 0.25,
+   "delight": 0.3,
+   "lift": 0.12,
+   "rough": 0.78,
+   "rough_var": 0.22,
+   "normal_strength": 1.25
+  }
+ },
+ {
+  "src": "hayrant_cyber-formline.png",
+  "out": "core/materials/patterns/hayrant/cyber-formline",
+  "record": {
+   "id": "hayrant/cyber-formline",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.62,
+   "metal": 0.15,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hayrant/cyber-formline`)",
+    "reuse": "Cyber-Hayrant birch-tarred larch totem wing-boards and yaodong gable friezes with closed sleeping-eye slits, Ainu thorn-spirals, cave-madder lacquer, gold PCB traces, celadon insulator bosses and cyan phosphor bars (.b, .c are alternates)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.08,
+   "rough": 0.62,
+   "rough_var": 0.28,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "hayrant_cyber-formline.b.png",
+  "out": "core/materials/patterns/hayrant/cyber-formline.b",
+  "record": {
+   "id": "hayrant/cyber-formline.b",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.62,
+   "metal": 0.15,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hayrant/cyber-formline`, alternate B)",
+    "reuse": "frontal monumental ancestor-mask alternate of `patterns/hayrant/cyber-formline` for central-square cyber-totem faces and lintels"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.08,
+   "rough": 0.62,
+   "rough_var": 0.28,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "hayrant_cyber-formline.c.png",
+  "out": "core/materials/patterns/hayrant/cyber-formline.c",
+  "record": {
+   "id": "hayrant/cyber-formline.c",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.62,
+   "metal": 0.15,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hayrant/cyber-formline`, alternate C)",
+    "reuse": "diagonal interlocking sleeping-eye & PCB-trace alternate of `patterns/hayrant/cyber-formline` for cyber-totem wings and friezes"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.08,
+   "rough": 0.62,
+   "rough_var": 0.28,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "metal.totem.cyber.png",
+  "out": "core/materials/library/metal.totem.cyber",
+  "record": {
+   "id": "metal.totem.cyber",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.48,
+   "metal": 0.45,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`metal.totem.cyber`)",
+    "reuse": "Cyber-Hayrant dorsal totem conduit spines and terminal chassis plating: dark titanium, ceramic armour, braided copper wire, celadon insulator collars, brass grilles and cyan indicator slits (.b is wide-panel alternate)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.48,
+   "rough_var": 0.25,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "metal.totem.cyber.b.png",
+  "out": "core/materials/library/metal.totem.cyber.b",
+  "record": {
+   "id": "metal.totem.cyber.b",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.48,
+   "metal": 0.45,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`metal.totem.cyber`, alternate B)",
+    "reuse": "wide ceramic-armour & recessed copper-bus alternate of `metal.totem.cyber` for monumental cyber-totem pedestals and housings"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.48,
+   "rough_var": 0.25,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "timpar_formline-crest.png",
+  "out": "core/materials/patterns/timpar/formline-crest",
+  "record": {
+   "id": "timpar/formline-crest",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.76,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/timpar/formline-crest`)",
+    "reuse": "Timpar-Kuran split red-cypress plank-house and totem-wing screen painted with open-eyed Tlingit formlines, cinnabar U-forms, Ainu moreu thorn-spirals and celadonite trigons (.b is diagonal-flowing alternate)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.08,
+   "rough": 0.76,
+   "rough_var": 0.2,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "timpar_formline-crest.b.png",
+  "out": "core/materials/patterns/timpar/formline-crest.b",
+  "record": {
+   "id": "timpar/formline-crest.b",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.76,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/timpar/formline-crest`, alternate B)",
+    "reuse": "diagonal-flowing open-eyed Tlingit & Ainu moreu alternate of `patterns/timpar/formline-crest`"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.08,
+   "rough": 0.76,
+   "rough_var": 0.2,
+   "normal_strength": 0.9
+  }
+ },
+ {
+  "src": "hueru_nautical-totem.png",
+  "out": "core/materials/patterns/hueru/nautical-totem",
+  "record": {
+   "id": "hueru/nautical-totem",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hueru/nautical-totem`)",
+    "reuse": "Hueru-Kuran maritime driftwood, whalebone & baleen relief frieze of whale flukes, pelicans, octopi and wave-scrolls with emerald-nephrite and nacre eyes (.b is symmetrical alternate)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.72,
+   "rough_var": 0.24,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "hueru_nautical-totem.b.png",
+  "out": "core/materials/patterns/hueru/nautical-totem.b",
+  "record": {
+   "id": "hueru/nautical-totem.b",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hueru/nautical-totem`, alternate B)",
+    "reuse": "symmetrical whale-fluke, pelican & octopus crest alternate of `patterns/hueru/nautical-totem`"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.72,
+   "rough_var": 0.24,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "painted_rarrk-bark.png",
+  "out": "core/materials/patterns/painted/rarrk-bark",
+  "record": {
+   "id": "painted/rarrk-bark",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.86,
+   "metal": 0,
+   "scale": [
+    1.4,
+    1.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/painted/rarrk-bark`)",
+    "reuse": "Painted Men Arnhem Land rarrk cross-hatched X-ray bark panel and Pukamani/Lorrkon pole wrap in red-ochre, yellow-ochre, pipeclay, charcoal and celadonite"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.2,
+   "lift": 0.06,
+   "rough": 0.86,
+   "rough_var": 0.16,
+   "normal_strength": 0.75
+  }
+ },
+ {
+  "src": "rock.danxia.handstencils.png",
+  "out": "core/materials/library/rock.danxia.handstencils",
+  "record": {
+   "id": "rock.danxia.handstencils",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`rock.danxia.handstencils`)",
+    "reuse": "Painted Men Yanta-Rringka blown-ochre negative hand-stencil & concentric waterhole-ring danxia sandstone rock-art face (.b is dense track-and-stencil alternate)"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.85,
+   "rough_var": 0.16,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "rock.danxia.handstencils.b.png",
+  "out": "core/materials/library/rock.danxia.handstencils.b",
+  "record": {
+   "id": "rock.danxia.handstencils.b",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`rock.danxia.handstencils`, alternate B)",
+    "reuse": "dense polychrome hand-stencil and animal-track alternate of `rock.danxia.handstencils`"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.85,
+   "rough_var": 0.16,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "dzagh-vardzi_tuff-panduri-frieze.png",
+  "out": "core/materials/patterns/dzagh-vardzi/tuff-panduri-frieze",
+  "record": {
+   "id": "dzagh-vardzi/tuff-panduri-frieze",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+    "licence": "generated for this project by its owner",
+    "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/dzagh-vardzi/tuff-panduri-frieze`)",
+    "reuse": "Dzagh-Vardzi Akhtamar-style apricot volcanic tuff relief frieze of panduri lutes, qvevri amphorae, pomegranates and inlaid emerald-nephrite cross medallions between charcoal basalt interlace mouldings"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "seam_axes": "x",
+   "delight": 0.25,
+   "lift": 0.06,
+   "rough": 0.78,
+   "rough_var": 0.22,
+   "normal_strength": 1.2
+  }
+ }
+]

@@ -66,13 +66,24 @@ function afChecks() {
     detail: TA.records + ' records, unknown ' + TA.unknown + ', missingCulture ' + TA.missingCulture + ', missingTypes ' + TA.missingTypes
   });
 
+  const zOk = Array.isArray(ARCOFORTE.ZONES) && ARCOFORTE.ZONES.length === 6 &&
+    ARCOFORTE.ZONES.every(z => ARCOFORTE.ZONE_STATES.indexOf(ARCOFORTE.zoneState(z, AF_PLAN)) >= 0);
+  R.push({
+    name: 'zone-states-contract',
+    ok: zOk,
+    detail: ARCOFORTE.ZONES.map(z => z + '=' + ARCOFORTE.zoneState(z, AF_PLAN)).join(', ')
+  });
+
   const fu = AF_INT_HOST.furnSummary();
   const miss = Object.keys(fu.missing || {});
-  const minFurn = AF_STATE === 'ruined' ? 0 : 4000;
+  const zs = AF_INT_HOST.zoneSockets();
+  const sockZones = ARCOFORTE.ZONES.filter(z => zs[z] && ARCOFORTE.isZoneHabitable(z, AF_PLAN.zones));
+  const hasMainZones = sockZones.indexOf('ring') >= 0 || sockZones.indexOf('bastions') >= 0;
+  const minFurn = sockZones.length === 0 ? 0 : (hasMainZones ? 3500 : 180);
   R.push({
     name: 'furniture-keys-and-placement',
     ok: miss.length === 0 && fu.placed >= minFurn,
-    detail: miss.length ? ('missing keys ' + miss.join(', ')) : (fu.placed + ' pieces placed across ' + fu.keys + ' catalog keys (' + AF_INT_HOST.getSocket() + ')')
+    detail: miss.length ? ('missing keys ' + miss.join(', ')) : (fu.placed + ' pieces placed across ' + fu.keys + ' catalog keys (' + AF_INT_HOST.formatSocket() + ')')
   });
 
   const wp = WATER.checkPrograms ? WATER.checkPrograms(renderer, scene) : [];
@@ -99,7 +110,12 @@ function afChecks() {
 
   const sp = AF_INT_HOST.simPlaces();
   const acts = new Set(sp.map(p => p.activity));
-  const simOk = AF_STATE === 'ruined' ? sp.length >= 1 : (sp.length >= 40 && acts.has('SLEEP') && acts.has('WORK') && acts.has('LEISURE'));
+  const anyHab = ARCOFORTE.ZONES.some(z => ARCOFORTE.isZoneHabitable(z, AF_PLAN.zones));
+  const hasLivingHab = ARCOFORTE.isZoneHabitable('bastions', AF_PLAN.zones) ||
+    ARCOFORTE.isZoneHabitable('ring', AF_PLAN.zones) ||
+    ARCOFORTE.isZoneHabitable('towers_upper', AF_PLAN.zones);
+  const simOk = !anyHab ? sp.length >= 1
+    : (hasLivingHab ? (sp.length >= 25 && acts.has('SLEEP') && acts.has('WORK') && acts.has('LEISURE')) : sp.length >= 2);
   R.push({
     name: 'sim-places-ready',
     ok: simOk,
@@ -150,6 +166,20 @@ function afNegatives() {
 
   const st = KRUINS.selfTest();
   R.push({ name: 'ruins-self-test-catches-floating-and-buried', ok: !!st.ok, detail: st.detail });
+
+  let badStateCaught = false, badStateDetail = '';
+  try { ARCOFORTE.state('atlantis'); } catch (err) { badStateCaught = true; badStateDetail = err.message; }
+  R.push({ name: 'unknown-state-rejected', ok: badStateCaught, detail: badStateDetail });
+
+  let ruinCrownCaught = false, ruinCrownDetail = '';
+  try {
+    ARCOFORTE.resolveSocketZones({ crown: 'fleetborn' }, {
+      harbour: 'refurbished', bastions: 'refurbished', ring: 'refurbished',
+      towers_upper: 'ruined', vaults: 'ruined', crown: 'ruined'
+    });
+  } catch (err) { ruinCrownCaught = true; ruinCrownDetail = err.message; }
+  R.push({ name: 'ruined-crown-rejects-socket', ok: ruinCrownCaught, detail: ruinCrownDetail });
+
   return R;
 }
 
@@ -157,6 +187,7 @@ const stateCtrl = {
   id: 'af-state-sel',
   select: [
     ['refurbished', 'State - Refurbished'],
+    ['marginal', 'State - Marginal (Lower Kept, Crown Ruined)'],
     ['intact', 'State - Intact Ancient'],
     ['ruined', 'State - Unreclaimed Ruin']
   ],
@@ -175,6 +206,7 @@ const socketCtrl = {
 
 window._build = {
   state: AF_STATE,
+  zones: Object.assign({}, AF_PLAN.zones),
   socket: AF_INT_HOST.getSocket(),
   parts: AF_PLAN.parts.length,
   archTris: Math.round(AF_DRAWN.archTris),
@@ -229,7 +261,7 @@ KHOST.take(KHOST.standard({
   records: () => AF_TAGS.query({}),
   stats: () => {
     const fu = AF_INT_HOST.furnSummary();
-    return 'state ' + AF_STATE + ' (' + AF_INT_HOST.getSocket() + ')\n' +
+    return 'state ' + AF_STATE + ' (' + AF_INT_HOST.formatSocket() + ')\n' +
       'parts ' + AF_PLAN.parts.length + ' · furn ' + fu.placed + '\n' +
       'pop ~' + AF_INT_HOST.area.refurbishedPopulation + ' / ' + AF_INT_HOST.area.peakPopulation;
   },
@@ -251,10 +283,12 @@ KHOST.take(KHOST.standard({
     hull: () => ARCOFORTE.HULL,
     arcoforte: () => ({
       plan: AF_PLAN,
+      zones: Object.assign({}, AF_PLAN.zones),
       hull: ARCOFORTE.HULL,
       area: AF_INT_HOST.area,
       furnish: AF_INT_HOST.furnSummary(),
       socket: AF_INT_HOST.getSocket(),
+      zoneSockets: AF_INT_HOST.zoneSockets(),
       simPlaces: AF_INT_HOST.simPlaces()
     }),
     socket: c => AF_INT_HOST.socket(c)
@@ -262,4 +296,4 @@ KHOST.take(KHOST.standard({
 }));
 
 if (stateCtrl.el) stateCtrl.el.value = AF_STATE;
-if (socketCtrl.el) socketCtrl.el.value = AF_INT_HOST.getSocket();
+if (socketCtrl.el && typeof AF_INT_HOST.getSocket() === 'string') socketCtrl.el.value = AF_INT_HOST.getSocket();

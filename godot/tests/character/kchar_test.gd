@@ -92,6 +92,17 @@ func _init() -> void:
 			hp.sort()
 			ok(hp == pl.get("hidden_parts", []), "hidden parts %s vs %s" % [hp, pl.get("hidden_parts", [])])
 
+	# activities (data/activities.json): KChar.activity against KCHAR.activity
+	var at = j("activities.json")
+	var bad := 0
+	for c in golden.get("activities", []):
+		var got := KChar.activity(at, c["act"], c["ctx"])
+		if not same(JSON.parse_string(JSON.stringify(got)), c["out"]):
+			bad += 1
+			if bad <= 3:
+				print("activity %s %s: %s vs %s" % [c["act"], JSON.stringify(c["ctx"]), JSON.stringify(got), JSON.stringify(c["out"])])
+	ok(bad == 0 and golden.get("activities", []).size() > 0, "activities: %d of %d differ" % [bad, golden.get("activities", []).size()])
+
 	# 4. a figure from the pieces
 	if not DirAccess.dir_exists_absolute(DIR + "/pieces/mpfb_male"):
 		print("kchar_test: no pieces (run godot/tools/sync_core.py after make_mpfb.py): figure checks skipped")
@@ -164,6 +175,15 @@ func _init() -> void:
 		fig.apply(rec)
 		var hips1 := glob(fig.skeleton, fig._hips).origin.y
 		ok(hips1 < hips0 - 0.03, "height -0.8 lowers the hips: %f -> %f" % [hips0, hips1])
+		# a prop textured from the material library (make_props.py TEX): its mesh carries the texture
+		if FileAccess.file_exists(DIR + "/pieces/props/ladle.glb"):
+			fig.hold({"R": "ladle", "L": null})
+			var tex_ok := false
+			for n in fig._holders["R"].find_children("*", "MeshInstance3D", true, false):
+				var mat = (n as MeshInstance3D).get_active_material(0)
+				if mat is BaseMaterial3D and mat.albedo_texture != null:
+					tex_ok = true
+			ok(tex_ok, "the ladle is drawn with its library texture")
 		# props: a sword in the right hand under its bone, and that hand's fingers closed
 		fig.hold({"R": "sword", "L": "shield"})
 		ok(fig._holders.has("R") and fig._holders["R"].get_child_count() == 1 and fig._holders["L"].get_child_count() == 1, "sword and shield held")
@@ -186,6 +206,26 @@ func _init() -> void:
 			var hl: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("LeftHand")).origin
 			var hr: Vector3 = glob(fig.skeleton, fig.skeleton.find_bone("RightHand")).origin
 			ok(worst2 < 0.03 and hl.distance_to(hr) > 0.08, "%s: the left hand holds the %s (short by %.3f m, hands %.2f m apart)" % [c[0], c[1], worst2, hl.distance_to(hr)])
+		# contact (data/clips.json contact): the left jab passes its one moment of touch, the left hand to the head
+		ok(fig.player.has_animation("jab_l"), "the hand-to-hand clips are in anims.glb")
+		if fig.player.has_animation("jab_l"):
+			var hits := []
+			fig.contact.connect(func(c, t, e, g): hits.append([c, t, e, g]))
+			fig.hold({"R": null, "L": null})
+			fig.play("jab_l")
+			for k in 60:
+				fig._process(1.0 / 30.0)
+			ok(hits.size() == 1 and hits[0][2] == "LeftHand" and hits[0][3] == "Head", "jab_l: one contact, the left hand to the head: %s" % [hits])
+			# fist (data/clips.json fist): the empty hands close in a strike, and stay open in a wave (a clip without it)
+			fig.play("jab_l")
+			for k in 9:
+				fig._process(1.0 / 30.0)
+			ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) > 0.5, "jab_l: the empty right hand is a fist")
+			if fig.player.has_animation("wave"):
+				fig.play("wave")
+				for k in 15:
+					fig._process(1.0 / 30.0)
+				ok(fig.skeleton.get_bone_pose_rotation(idx2).angle_to(rest_q) < 0.5, "wave: the hand stays open")
 		# the bow: drawn in the aim-and-scan loop, its arrow shown
 		fig.hold({"R": null, "L": "bow"})
 		fig.play("bow_scan")
@@ -225,6 +265,40 @@ func _init() -> void:
 			if fig.blade_need.size() > 0:
 				need = maxf(need, fig.blade_need[-1])
 		ok(need < 0.01, "block_2: the blade keeps out of the head and neck (%.3f m in)" % need)
+		# the owner's review of 2026-11-26: the new and renamed clips; the head and eyes toward the target ahead in
+		# Charged slash (its clip looked 115 degrees aside, the chest square on); the cart's wheels on the ground
+		for c in ["slash_up", "slash_left", "walk_shoot_high", "walk_shoot", "craft_bench"]:
+			ok(fig.player.has_animation(c), "the clip %s (data/clips.json)" % c)
+		var looks := {}
+		for on in [false, true]:
+			var keep: Dictionary = fig.look
+			if not on:
+				fig.look = {}
+			fig.play("slash_charged")
+			fig.player.seek(0.0, true)          # the same clip again does not restart on its own
+			var off2 := 0.0
+			var eyes2 := 0.0
+			for k in 60:
+				fig._process(1.0 / 30.0)
+				if k > 12:
+					off2 = maxf(off2, rad_to_deg(fig.face_forward().angle_to(fig.look_target() - (fig._look_from()[0] as Vector3))))
+					eyes2 = maxf(eyes2, absf(float(fig.look_state["eyes"][0])))
+			fig.look = keep
+			looks[on] = [off2, eyes2]
+		ok(looks[true][0] < 75.0 and looks[false][0] > 100.0 and looks[true][1] > 0.1,
+			"slash_charged: the face within 75 degrees of the target with the look pass (%.0f; %.0f without), the eyes turned (%.2f rad)" % [looks[true][0], looks[false][0], looks[true][1]])
+		fig.hold({"R": "cart", "L": null, "both": true})
+		fig.play("push")
+		var ground_err := 0.0
+		var short := 0.0
+		for k in 90:
+			fig._process(1.0 / 30.0)
+			var gy := (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).origin.y
+			# (the first frames after the change of clip ease the two-hand hold in from the clip before: 1.6 cm at frame 0)
+			if k >= 3:
+				ground_err = maxf(ground_err, absf(gy - (-fig.skeleton.position.y / fig.size + float(fig.props["cart"]["ground"]["height"]))))
+			short = maxf(short, fig.reach)
+		ok(ground_err < 0.01 and short < 0.03, "push: the cart's bar %.3f m off its height over the ground, the left hand %.3f m short of it" % [ground_err, short])
 		fig.hold({"R": "sword", "L": null, "both": true})
 		fig.play("parry_2h")
 		var fore := 9.0
@@ -260,6 +334,60 @@ func _init() -> void:
 				if bs["arrow"] and bs["ahead"] != null:
 					ahead = minf(ahead, bs["ahead"])
 			ok(ahead > 0.03, "%s: the arrow's head stays in front of the bow (%.3f m)" % [clip, ahead])
+		# the third round (2026-11-26): the left hand's index side up the haft as the right's (their grip frames' +Y point
+		# apart), whatever played before; a gun's stock out of the upper arms; the empty hand off the other hand's blade
+		for c in [["axe_chop", "axe", Vector3.UP], ["parry_2h", "sword", Vector3.UP], ["spear_walk", "spear", Vector3.UP], ["gun_shot", "rifle", Vector3.BACK]]:
+			fig.hold({"R": c[1], "L": null, "both": true})
+			fig.play(c[0])
+			var thumb := -1.0
+			for k in mini(40, int(fig.player.current_animation_length * 30.0) - 1):    # the clip alone, not the loop after a one-shot
+				fig._process(1.0 / 30.0)
+				if k < 9 or fig.reach > 0.05 or fig._hold2 < 0.99:   # past the cross-fade from the clip before, both hands holding
+					continue
+				var ql: Quaternion = (fig._gp(int(fig.skel["hands"]["L"]["bone"])) * fig._grip_t("L")).basis.get_rotation_quaternion()
+				var qr: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
+				thumb = maxf(thumb, (ql * Vector3.UP).dot(qr * (c[2] as Vector3)))
+			ok(thumb < -0.5, "%s: the left hand's index side up the %s (%.2f)" % [c[0], c[1], thumb])
+		fig.hold({"R": "rifle", "L": null, "both": true})
+		fig.play("gun_shot")
+		var stock := 0.0
+		for k in 119:
+			fig._process(1.0 / 30.0)
+			if fig.stock_need.size() > 0:
+				stock = maxf(stock, fig.stock_need[-1])
+		ok(stock < 0.01, "gun_shot: the rifle's stock keeps out of the upper arms (%.3f m in)" % stock)
+		fig.hold({"R": "dagger", "L": null})
+		fig.play("thrust")
+		var offn := 0.0
+		for k in 38:
+			fig._process(1.0 / 30.0)
+			offn = maxf(offn, fig.off_need)
+		ok(offn < 0.01, "thrust: the empty hand keeps off the dagger (%.3f m in)" % offn)
+		# the fifth round (2026-11-26, 07:16): the drawing elbow out and back, not up; the arrow in the hand from the quiver;
+		# the right forearm beside the rifle's butt
+		fig.hold({"R": null, "L": "bow"})
+		for c in [["bow_scan", 4.59], ["bow_shot", 3.4]]:
+			fig.play(c[0])
+			fig.player.seek(float(c[1]) - 1.0, true)
+			for k in 30:
+				fig._process(1.0 / 30.0)
+			var S: Vector3 = fig._gp(fig.skeleton.find_bone("RightArm")).origin
+			var E: Vector3 = fig._gp(fig.skeleton.find_bone("RightForeArm")).origin
+			var H: Vector3 = fig._gp(fig.skeleton.find_bone("RightHand")).origin
+			var back: Vector3 = (H - fig._gp(fig.skeleton.find_bone("LeftHand")).origin).normalized()
+			ok(E.y - S.y < 0.03 and (E - H).dot(back) > 0.15, "%s at %.2f s: the drawing elbow out and back (%.2f m over the shoulder, %.2f behind the hand)" % [c[0], c[1], E.y - S.y, (E - H).dot(back)])
+		fig.play("bow_draw")
+		fig.player.seek(0.45, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.bow_state().get("in_hand", false), "bow_draw at 1.45 s: an arrow in the drawing hand")
+		fig.hold({"R": "rifle", "L": null, "both": true})
+		fig.play("gun_shot")
+		var sarm := 0.0
+		for k in 119:
+			fig._process(1.0 / 30.0)
+			sarm = maxf(sarm, fig.stock_arm_need)
+		ok(sarm < 0.03, "gun_shot: the right forearm beside the butt (%.3f m in)" % sarm)
 		fig.hold({"R": null, "L": "cup"})
 		fig.play("drink")
 		for k in 30:
@@ -273,6 +401,46 @@ func _init() -> void:
 		var bq: Quaternion = (fig._gp(int(fig.skel["hands"]["R"]["bone"])) * fig._grip_t("R")).basis.get_rotation_quaternion()
 		var wz: float = fig._gp(fig.skeleton.find_bone("RightHand")).origin.z - fig._gp(fig.skeleton.find_bone("Spine")).origin.z
 		ok((bq * Vector3.RIGHT).y > 0.95 and wz > 0.12, "ual_consume: the bowl level on the palm in front of the belly")
+		# the third round (2026-11-26), as verify.py checks the page: the bowl's shoulder not hiked; the bucket's bail in
+		# the fist and its body out of the legs; Chop's left arm out of the jaw; Sit and drink's cup at the lips
+		var ia := fig.skeleton.find_bone("RightArm")
+		var ic := fig.skeleton.find_bone("RightShoulder")
+		var rp: Array = KChar.fk(fig.skel, fig.morph["t"])["P"]
+		var e0 := asin(((rp[ia] as Vector3) - (rp[ic] as Vector3)).normalized().y)
+		var e1 := asin((fig._gp(ia).origin - fig._gp(ic).origin).normalized().y)
+		ok(e1 - e0 < deg_to_rad(6.0), "ual_consume: the bowl's shoulder not hiked (%.0f degrees over its rest)" % rad_to_deg(e1 - e0))
+		for c in ["walk_bucket", "ual_water"]:
+			fig.hold({"R": "bucket", "L": null})
+			fig.play(c)
+			var legs2 := 0.0
+			var bail := 0.0
+			var flip2 := 0.0
+			var prev_h := Quaternion()
+			var rh := fig.skeleton.find_bone("RightHand")
+			for k in int(fig.player.current_animation_length * 30.0) - 1:
+				fig._process(1.0 / 30.0)
+				legs2 = maxf(legs2, fig.hang_need)
+				bail = maxf(bail, ((fig._hangs["R"]["pivot"] as Node3D).quaternion * Vector3.UP).angle_to(Vector3.UP))
+				var qh: Quaternion = fig._gp(rh).basis.get_rotation_quaternion()
+				if k > 1:
+					flip2 = maxf(flip2, prev_h.angle_to(qh))
+				prev_h = qh
+			ok(legs2 < 0.015 and bail < 0.01, "%s: the bail in the fist (%.3f rad), the bucket out of the legs (%.3f m in)" % [c, bail, legs2])
+			# round 5 (2026-11-27): the hand does not flip from frame to frame
+			ok(flip2 < 0.35, "%s: the bucket hand turns at most %.2f rad in a frame" % [c, flip2])
+		fig.hold({"R": "axe", "L": null, "both": true})
+		fig.play("ual_chop")
+		var jaw2 := 0.0
+		for k in int(fig.player.current_animation_length * 30.0) - 1:
+			fig._process(1.0 / 30.0)
+			jaw2 = maxf(jaw2, fig.jaw_need)
+		ok(jaw2 < 0.015, "ual_chop: the left arm out of the jaw (%.3f m in)" % jaw2)
+		fig.hold({"R": "cup", "L": null})
+		fig.play("sit_drink")
+		fig.player.seek(4.5, true)
+		for k in 30:
+			fig._process(1.0 / 30.0)
+		ok(fig.face_w > 0.99, "sit_drink at 5.5 s: the cup at the lips (%.2f)" % fig.face_w)
 		fig.hold({"R": null, "L": null})
 		# cloth: the court skirt's chains are bones of the skeleton, hang at rest, and swing in a walk
 		var rec2 := rec.duplicate(true)

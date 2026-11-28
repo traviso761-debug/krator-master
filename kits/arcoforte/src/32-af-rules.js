@@ -108,18 +108,34 @@ const AF_RULES = (function () {
     /* 7. Interior plans (when supplied): all 3 settlement sectors (living, work, rec) planned, valid sectors, peak ~20,000 */
     if (built && built.units) {
       const A = AF_INT.areaSummary(P, built);
-      const badSec = [];
-      built.units.forEach(u => u.storeys.forEach(st => st.rooms.forEach(r => {
-        if (!VALID_SECTORS[r.sector]) badSec.push(r.id + ':' + r.sector);
-      })));
+      const badSec = [], badZoneKept = [];
+      const Z = (P && P.zones) || {};
+      built.units.forEach(u => {
+        if (u.id === 'auto_vaults') {
+          const wantAuto = Z.vaults === 'intact';
+          if (!!u.kept !== wantAuto) badZoneKept.push('auto_vaults kept=' + u.kept + ' vs vaults=' + Z.vaults);
+        } else if (u.id === 'tower_central') {
+          u.storeys.forEach(st => {
+            const zn = st.zone || 'towers_upper';
+            const want = Z[zn] ? (Z[zn] !== 'ruined') : true;
+            if (!!st.kept !== want) badZoneKept.push(st.id + ' kept=' + st.kept);
+          });
+        } else {
+          const zn = u.zone || 'ring';
+          const want = Z[zn] ? (Z[zn] !== 'ruined') : true;
+          if (!!u.kept !== want) badZoneKept.push(u.id + ' kept=' + u.kept);
+        }
+        u.storeys.forEach(st => st.rooms.forEach(r => {
+          if (!VALID_SECTORS[r.sector]) badSec.push(r.id + ':' + r.sector);
+        }));
+      });
       const hasSectors = A.bySectorM2.living > 120000 && A.bySectorM2.work > 60000 && A.bySectorM2.rec > 25000;
       const popInBand = A.peakPopulation >= 16000 && A.peakPopulation <= 24500;
-      const refurbVaultSealed = P.state !== 'refurbished' || (built.units.find(u => u.id === 'auto_vaults') && !built.units.find(u => u.id === 'auto_vaults').kept &&
-        built.units.filter(u => u.id !== 'auto_vaults').every(u => u.kept));
       push('interiors cover living, work, and rec in Soleri 20k population band with refurbished sealing rule',
-        badSec.length === 0 && hasSectors && popInBand && refurbVaultSealed && built.units.length === 12,
+        badSec.length === 0 && badZoneKept.length === 0 && hasSectors && popInBand && built.units.length === 12,
         'gross ' + A.grossM2 + ' m2 (living ' + A.bySectorM2.living + ', work ' + A.bySectorM2.work + ', rec ' + A.bySectorM2.rec +
-        '), peak pop ' + A.peakPopulation + ', refurb pop ' + A.refurbishedPopulation);
+        '), peak pop ' + A.peakPopulation + ', refurb pop ' + A.refurbishedPopulation +
+        (badZoneKept.length ? '; bad kept: ' + badZoneKept.join(', ') : ''));
     }
 
     return out;

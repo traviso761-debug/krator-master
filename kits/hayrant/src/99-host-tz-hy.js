@@ -97,7 +97,43 @@
     }
    }
    const total=closed+veiled+open,openRatio=total?open/total:1;
-   return {ok:total>=60&&closed>=45&&veiled>=6&&openRatio<0.10,total,closed,veiled,open,openRatio:+openRatio.toFixed(4)};
+   return {ok:total>=100&&closed>=80&&veiled>=8&&openRatio<0.10,total,closed,veiled,open,openRatio:+openRatio.toFixed(4)};
+  },
+
+  headTotemAudit(){
+   let poles=0,monumentalTotems=0,maxHeight=0,totemHeads=0,openTotemHeads=0,veiledTotemHeads=0;
+   let cyberSpines=0,insulators=0,circuitWings=0,terminalScreens=0;
+   const mats=new Set(),sites=[];
+   for(const r of REG){
+    if(r.totemPoles&&r.totemPoles.length){
+     poles+=r.totemPoles.length;
+     sites.push(r.key+'x'+r.totemPoles.length);
+     for(const p of r.totemPoles){
+      openTotemHeads+=p.openEyes||0;
+      if(p.monumental)monumentalTotems++;
+      if((p.h||0)>maxHeight)maxHeight=p.h;
+      cyberSpines+=p.cyberSpines||0;
+      insulators+=p.insulators||0;
+      circuitWings+=p.circuitWings||0;
+      terminalScreens+=p.terminalScreens||0;
+      for(const m of p.materials||[])mats.add(m);
+     }
+    }
+    for(const h of r.heads||[]){
+     if(!h.totem)continue;
+     totemHeads++;
+     if(h.eyes==='open')openTotemHeads++;
+     if(h.veiled||h.eyes==='veiled')veiledTotemHeads++;
+    }
+   }
+   return {
+    ok:poles>=18&&monumentalTotems>=2&&maxHeight>=18.0&&totemHeads>=60&&openTotemHeads===0&&
+       cyberSpines>=50&&insulators>=80&&circuitWings>=100&&terminalScreens>=18&&mats.size>=7,
+    poles,monumentalTotems,maxHeight:+maxHeight.toFixed(2),
+    totemHeads,openTotemHeads,veiledTotemHeads,
+    cyberSpines,insulators,circuitWings,terminalScreens,
+    materials:[...mats].sort(),sites
+   };
   },
 
   statuePosesAudit(){
@@ -365,12 +401,56 @@
    const n=(id,kind,grade,x,z)=>({id,kind,grade,x,z}),M={x:0,z:0,works:'mine'};
    if((resSource(M,[n('a','iron','low',50,0),n('b','copper','high',100,0)])||{}).node!=='a')bad.push('nearest first');
    if((resSource(M,[n('o','oil','high',10,0),n('m','marble','medium',60,0)])||{}).node!=='m')bad.push('mine skips oil');
+   const reSmelt=LK.mines.find(m=>m.key==='hy_rare_earth_smelter');
+   if(!reSmelt||!reSmelt.source||reSmelt.source.kind!=='rare-earth')bad.push('hy_rare_earth_smelter not linked to rare-earth');
    const expected=Object.keys(RES_ORE.kinds).length*Object.keys(RES_ORE.grades).length;
    if(LK.nodes.length!==expected)bad.push('nodes '+LK.nodes.length+'/'+expected);
-   return {ok:LK.mines.length>=2&&!idle.length&&!bad.length,mines:LK.mines,nodes:LK.nodes.length,bad:bad.concat(idle.map(m=>m.key+' idle'))};
+   return {ok:LK.mines.length>=3&&!idle.length&&!bad.length,mines:LK.mines,nodes:LK.nodes.length,bad:bad.concat(idle.map(m=>m.key+' idle'))};
   },
 
   fingerprint:fp,
-  rebuild(){buildWorld();return fp();}
+  rebuild(){_hyLastDrawSig='';buildWorld();return fp();}
  });
+
+ const _hyGlCtx=typeof renderer!=='undefined'&&renderer&&renderer.getContext?renderer.getContext():null;
+ const _hyDbg=_hyGlCtx&&_hyGlCtx.getExtension?_hyGlCtx.getExtension('WEBGL_debug_renderer_info'):null;
+ const _hyRenStr=(_hyDbg&&_hyGlCtx.getParameter(_hyDbg.UNMASKED_RENDERER_WEBGL))||'';
+ const _hyIsSoftGL=/SwiftShader|llvmpipe|Software/i.test(String(_hyRenStr));
+ let _hyLastDrawSig='',_hySoftDraws=0,_hySkipFrame=false;
+ if(_hyIsSoftGL&&typeof renderer!=='undefined'&&renderer&&renderer.render&&renderer.clear){
+  const _hyOrigClear=renderer.clear.bind(renderer);
+  const _hyOrigRender=renderer.render.bind(renderer);
+  renderer.clear=function(){
+   camera.updateMatrixWorld();
+   const e=camera.matrixWorld.elements;
+   const tp=window._texPending==null?0:window._texPending;
+   const sig=e[0].toFixed(4)+','+e[5].toFixed(4)+','+e[10].toFixed(4)+','+
+             e[12].toFixed(2)+','+e[13].toFixed(2)+','+e[14].toFixed(2)+'|'+
+             (tp>0?'p':'0')+'|'+(typeof NIGHT!=='undefined'&&NIGHT&&NIGHT.on?1:0)+'|'+
+             (typeof ANIMU!=='undefined'&&ANIMU&&ANIMU.uCut?ANIMU.uCut.value:0);
+   if((_hySoftDraws>=1&&tp>0)||(_hySoftDraws>=2&&sig===_hyLastDrawSig)){
+    _hySkipFrame=true;
+    return;
+   }
+   _hySkipFrame=false;
+   _hyLastDrawSig=sig;
+   _hySoftDraws++;
+   return _hyOrigClear.apply(renderer,arguments);
+  };
+  renderer.render=function(){
+   if(_hySkipFrame)return;
+   return _hyOrigRender.apply(renderer,arguments);
+  };
+  if(typeof setView==='function'){
+   const _hyOrigSetView=setView;
+   setView=function(){
+    const out=_hyOrigSetView.apply(this,arguments);
+    _hyLastDrawSig='';
+    renderer.clear();
+    renderer.render(skyScene,skyCam);
+    renderer.render(scene,camera);
+    return out;
+   };
+  }
+ }
 })();

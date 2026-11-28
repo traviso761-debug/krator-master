@@ -107,11 +107,38 @@ T.ok('station records enforce 95.3% sedimentary bowl on bioherm, bitumen and thr
   S.bioherm.geology.ultramafic === 0 && S.bitumen.geology.bitumen === 118 &&
   S.throat.settlementReserve.minElevM >= 65.0 && S.FAUNA === undefined && P.FAUNA.length === 6);
 
-/* 7. kits/crops integration on doubledelta */
+/* 7. Drift-sown coconut chenier strand gate & kits/crops integration on doubledelta */
+const coGood = P.coconutStrandAt({ elevM: 3.8, waterM: -1e9, nearWaterM: 1.35, chenier01: 0.55, bitumen01: 0.0, mire01: 0.0, slope: 0.06, psu: 16 });
+const coSub = P.coconutStrandAt({ elevM: 1.5, waterM: 1.2, nearWaterM: 1.2, chenier01: 0.65, bitumen01: 0.0, mire01: 0.0, slope: 0.04, psu: 16 });
+const coTar = P.coconutStrandAt({ elevM: 4.2, waterM: -1e9, nearWaterM: 0.75, chenier01: 0.5, bitumen01: 0.45, mire01: 0.0, slope: 0.04, psu: 12 });
+T.ok('coconutStrandAt accepts elevated chenier/levee ridges (> water + 1.2 m) and rejects submerged or tar-seep cells',
+  coGood.strandOk === true && coGood.clearM > 1.2 && coGood.suitability01 > 0.3 &&
+  coSub.strandOk === false && coTar.strandOk === false,
+  JSON.stringify({ coGood, coSub, coTar }));
+
+T.neg('coconutStrandAt rejects low channel-awash bar (<= water + 1.2 m) and accepts elevated shell chenier',
+  cfg => P.coconutStrandAt(cfg).strandOk === true,
+  { elevM: 2.1, waterM: -1e9, nearWaterM: 1.35, chenier01: 0.6, bitumen01: 0, mire01: 0, slope: 0.05, psu: 18 },
+  { elevM: 3.9, waterM: -1e9, nearWaterM: 1.35, chenier01: 0.6, bitumen01: 0, mire01: 0, slope: 0.05, psu: 18 });
+
 const ddCrops = CROPS.forBiome('doubledelta');
 const cropIds = ddCrops.map(r => r.crop.id);
-T.ok('CROPS.forBiome(doubledelta) includes rice, taro, wineweed, mat-reed and tea across marsh and bluff zones',
-  ddCrops.length >= 25 && cropIds.indexOf('rice') >= 0 && cropIds.indexOf('taro') >= 0 && cropIds.indexOf('tea') >= 0,
-  'count=' + ddCrops.length);
+const coCrop = ddCrops.find(r => r.crop.id === 'coconut');
+T.ok('CROPS.forBiome(doubledelta) includes wild coconut, rice, taro, wineweed, mat-reed and tea across chenier, marsh and bluff zones',
+  ddCrops.length >= 25 && cropIds.indexOf('coconut') >= 0 && coCrop && coCrop.how === 'wild' &&
+  cropIds.indexOf('rice') >= 0 && cropIds.indexOf('taro') >= 0 && cropIds.indexOf('tea') >= 0,
+  'count=' + ddCrops.length + ', coconut=' + (coCrop && coCrop.how));
+
+const spSrc = fs.readFileSync(path.join(ROOT, 'biomes/doubledelta/src/50-biome-ddelta-species.js'), 'utf8');
+const reqDd = [
+ 'chimneysponge','brainsponge','glassbasket','tarfelt','seapen','whippen','snaphydroid','penshell','visoroyster',
+ 'bellowsreed','bamboorice','tetherpad','wildrice','brimreed','fensedge','driftwrack','riaamber','coconut',
+ 'chenierpandan','bayouhibiscus','bayoufanpalm','bayoutupelo','bayoulily','chenierglory','deltalotus','redwaterfern','bayoucattail','silicarush',
+ 'bluffoak','bluffcedar','bluffcypress','bluffpine','bluffbamboo'
+];
+const missDd = reqDd.filter(k => spSrc.indexOf("key:'" + k + "'") < 0);
+T.ok('50-biome-ddelta-species.js registers all 33 canonical species including coconut (Cocos nucifera) with HV tags',
+  missDd.length === 0 && spSrc.indexOf("coconut:HV(") >= 0 && spSrc.indexOf("['coconuts']") >= 0 && spSrc.indexOf('BIO.alphaTex(512') >= 0,
+  'missing=' + missDd.join(','));
 
 T.done();

@@ -325,6 +325,7 @@ defBuilding({key:'hy_plaid_weaver',name:'Cave-Madder Highland Plaid Weaving Hous
   for(const sx of [-W/2+2.4,W/2-2.4])hyWindow(sx,G+.95,-D/2,PI,1.16,1.28,{light:'alabaster',stepHead:true});
   hyRoofHip(0,G+H+.24,0,W+.2,D+.2,2.4,{mk:'celadon',smoke:true});
   hyBilingualSign(-2.4,G+2.3,D/2+.34,0,1.35,.8);
+  hyFormlineFrieze(2.4,G+2.42,D/2+.25,2.7,.60,0,{backMk:'larch',tertiary:'celadon'});
 
   /* East dye-vat court & 3 katabatic wind-rigged Hayrant plaid drying frames */
   svNoWalk(()=>{
@@ -345,8 +346,157 @@ defBuilding({key:'hy_plaid_weaver',name:'Cave-Madder Highland Plaid Weaving Hous
    ['generic_sewing',0,G,-2.6,0],
    ['eternian_common_table',0,G,.4,0],
    ['eternian_common_bench',0,G,1.4,PI],
+   ['hayrant_formline_chest',3.4,G,-.1,-PI/2,0],
    ['hayrant_kaen_jar',3.4,G,1.6,0,1]
   ]);
   hyTarget(0,G,1.4,'loom-hall');
   popM();
+ }});
+
+/* 31b. Mirabilis Rare-Earth Acid Separator & Cupellation Smelter (seed 34323, resSource: 'rare-earth') */
+defBuilding({key:'hy_rare_earth_smelter',name:'Mirabilis Rare-Earth Separator and Cupellation Smelter',seed:34323,cut:true,
+ resSource:'rare-earth',
+ w:16.0,d:14.0,h:9.8,budget:135000,
+ tags:{types:['industry'],wealth:'middle',style:'hybrid',role:'mine',job:'alchemy'},
+ note:'battered basalt cupellation hearth with celadon kaen fume-hood, stepped stoneware acid-leaching carboy cascades & rare-earth oxide settling vats',
+ build(){
+  const G=.36;
+  hyPlinth(13.6,10.6,G,{stepW:2.6,stepX:-2.4});
+
+  /* West battered basalt reverberatory & silver/gold cupellation smelter hall */
+  W(-2.4,0,-.6,0,()=>{
+   const SW=7.8,SD=7.4,SH=3.55;
+   hyWallRing(-SW/2,-SD/2,SW/2,SD/2,G,SH,{
+    mk:'basalt',socle:.68,socleMk:'megabreccia',
+    holes:{
+     s:[{at:SW/2,y:0,w:1.85,h:2.65},{at:1.6,y:1.0,w:.98,h:1.22}],
+     n:[{at:SW/2,y:1.05,w:1.05,h:1.22}]
+    }
+   });
+   hyDoor(0,G,SD/2,0,1.38,2.16,{lintel:'nephrite',maskMk:'silver'});
+   hyWindow(-SW/2+1.6,G+1.0,SD/2,0,.80,1.02,{light:'steel'});
+   hyWindow(0,G+1.05,-SD/2,PI,.84,1.02,{light:'steel'});
+   hyFormlineFrieze(2.1,G+2.38,SD/2+.25,2.2,.56,0,{backMk:'loess',tertiary:'celadon'});
+   hyBilingualSign(-2.1,G+2.3,SD/2+.34,0,1.28,.76);
+   hyRoofHip(0,G+SH+.24,0,SW+.2,SD+.2,2.2,{mk:'celadon',kaenFinial:false});
+
+   /* Interior cupellation furnace dome & NW celadon-glazed kaen-doki fume-hood chimney */
+   svNoWalk(()=>{
+    cyl('basalt',-2.1,G,-1.9,1.08,.74,P('basaltD'),14);
+    lathe('kaen',-2.1,-1.9,[[1.02,G+.74],[.74,G+1.55],[.42,G+2.25]],14,P('kaen'));
+    box('glow',-2.1,G+.82,-.86,.36,.28,.06,new THREE.Color(0xff8428));
+    box('brick',-2.1,G+SH+.24,-1.9,1.35,1.85,1.35,P('brick'));
+    hyKaenCrown(-2.1,G+SH+2.09,-1.9,.44,.82,4,{celadon:true,smoke:true});
+   });
+
+   hyFurnList([
+    ['eternian_common_weighing_scale',1.8,G,-2.2,0],
+    ['eternian_common_table',1.6,G,.2,0],
+    ['generic_strongbox',2.4,G,-2.9,0],
+    ['pa_anvil',-.2,G,-1.8,0],
+    ['pa_tool_rack',2.9,G,1.4,-PI/2]
+   ]);
+   hyTarget(.4,G,1.2,'cupellation-hall');
+  });
+
+  /* East stepped stoneware acid-leaching carboy cascade & yellow/emerald rare-earth oxide settling vats */
+  svNoWalk(()=>{
+   for(let s=0;s<3;s++){
+    const zz=-3.0+s*1.65,sh=.84-s*.26;
+    box('ashlar',4.1,G,zz,3.4,sh,1.35,P('ashlar'));
+    for(const cx of [3.2,5.0]){
+     const cbMk=s%2===0?'celadon':'kaen';
+     const cbCol=cbMk==='celadon'&&KIT_HAS('celadon')?new THREE.Color(1,1,1):P(cbMk);
+     cyl(cbMk,cx,G+sh,zz,.32,.52,cbCol,12);
+     cyl('lead',cx,G+sh+.52,zz,.16,.14,P('lead'),10);
+     if(s<2){
+      beam('bronze',[cx,G+sh+.38,zz+.28],[cx,G+(sh-.26)+.48,zz+1.37],.032,P('bronze'),true,6);
+     }
+    }
+   }
+   /* Twin rare-earth oxide precipitation vats: yellow cerium/lanthanum carbonate & emerald neodymium/praseodymium salt */
+   box('basalt',3.2,G,2.35,1.55,.46,1.55,P('basaltD'));
+   box('sulphur',3.2,G+.46,2.35,1.28,.08,1.28,new THREE.Color(0xe4be38));
+   box('basalt',5.1,G,2.35,1.55,.46,1.55,P('basaltD'));
+   box('turq',5.1,G+.46,2.35,1.28,.08,1.28,new THREE.Color(0x36b87c));
+  });
+  hyPlaidAwning(2.1,-3.8,6.2,3.4,G,2.85,{mk:'hemp',sag:.20});
+
+  hyFurnList([
+   ['hayrant_saltpeter_vat',2.1,G,3.8,0],
+   ['hayrant_kaen_jar',5.8,G,3.9,0,1]
+  ]);
+  hyTarget(2.4,G,3.8,'leaching-cascade');
+ }});
+
+/* 31c. Fur-Larch Charcoal Clamp & Birch-Tar Retort Kiln (seed 34324) */
+defBuilding({key:'hy_charcoal_tar_kiln',name:'Fur-Larch Charcoal Clamp and Birch-Tar Retort Kiln',seed:34324,cut:true,
+ w:14.0,d:12.0,h:7.4,budget:115000,
+ tags:{types:['industry'],wealth:'poor',style:'bench',job:'tanning'},
+ note:'domed loess-and-megabreccia beehive charcoal clamp, stacked fur-larch cordwood, birch-bark tar retorts & gale-cobbled potash cooper shed',
+ build(){
+  const G=.30;
+  hyPlinth(11.8,9.2,G,{stepW:2.4,stepX:2.4});
+
+  /* West domed loess-and-megabreccia beehive charcoal clamp (Mirabilis local metallurgical fuel, coal = 0) */
+  svNoWalk(()=>{
+   cyl('megabreccia',-3.3,G,-1.5,2.1,.56,P('megabreccia'),16);
+   lathe('loess',-3.3,-1.5,[[2.02,G+.56],[1.72,G+1.48],[1.06,G+2.28],[.42,G+2.72]],16,P('loess'));
+   box('basalt',-3.3,G,.58,.68,.52,.22,P('basaltD'));
+   box('glow',-3.3,G+.14,.70,.36,.28,.04,new THREE.Color(0xff6e20));
+   /* Stacked fur-larch cordwood ranks */
+   for(let r=0;r<3;r++){
+    pole('larch',[-4.8,G+.18+r*.28,2.4],[-2.6,G+.18+r*.28,2.4],.14,P('larch'),8);
+    pole('larch',[-4.8,G+.18+r*.28,2.72],[-2.6,G+.18+r*.28,2.72],.14,P('larchD'),8);
+   }
+   /* Central stone-channelled birch-bark tar distillation retorts dripping into kaen jars */
+   box('ashlar',-.65,G,.8,1.65,.48,2.6,P('ashlar'));
+   for(const rz of [.1,1.5]){
+    cyl('kaen',-.65,G+.48,rz,.44,.62,P('kaenSoot'),12);
+    cyl('iron',-.65,G+1.10,rz,.26,.14,P('iron'),10);
+    beam('bronze',[-.65,G+.62,rz+.40],[-.65,G+.38,rz+.88],.032,P('bronze'),true,6);
+    cyl('tarwood',-.65,G,rz+.96,.22,.34,P('tarwood'),10);
+   }
+  });
+  hyKaenCrown(-3.3,G+2.72,-1.5,.38,.62,4,{celadon:false,smoke:true});
+
+  /* East gale-cobbled cooper & wood-ash potash shed */
+  W(2.65,0,-.4,0,()=>{
+   const CW=5.4,CD=6.4,CH=3.0;
+   hyWallRing(-CW/2,-CD/2,CW/2,CD/2,G,CH,{
+    mk:'basalt',socle:.52,socleMk:'megabreccia',
+    holes:{
+     s:[{at:CW/2,y:0,w:1.65,h:2.45},{at:1.25,y:.95,w:.86,h:1.02}],
+     n:[{at:CW/2,y:1.0,w:.88,h:1.0}]
+    }
+   });
+   hyDoor(0,G,CD/2,0,1.22,2.04,{lintel:'larch',maskMk:'lead'});
+   hyWindow(-CW/2+1.25,G+.95,CD/2,0,.68,.84,{light:'nephrite'});
+   hyWindow(0,G+1.0,-CD/2,PI,.70,.82,{light:'steel'});
+   WX(0,G+CH+.24,-CD/2+.08,0,PI/2,0,()=>prism('loess',[[-CW/2+.08,0],[0,-1.42],[CW/2-.08,0]],-.06,.06,P('loess')));
+   hyFormlineTympanum(0,G+CH+.25,CD/2+.04,CW-.16,1.42,0,{backMk:'loess',tertiary:'nephrite'});
+   hyGaleCobbleRoof(0,G+CH+.24,0,CW+.16,CD+.18,1.54,0,{mk:'larch',gableFill:false,over:.24,overZ:.24});
+   hyInauCluster(1.85,G+1.95,CD/2+.26,0,{scale:.64});
+
+   /* Wood-ash potash bin inside NW corner (supplying hy_saltpeter_works) */
+   svNoWalk(()=>{
+    box('ashlar',-1.45,G,-2.1,1.35,.42,1.15,P('ashlar'));
+    box('potash',-1.45,G+.42,-2.1,1.12,.08,.92,P('white'));
+   });
+
+   hyFurnList([
+    ['eternian_poor_hearth',1.4,G,-2.0,0],
+    ['hayrant_kaen_jar',1.6,G,.4,0,0],
+    ['generic_barrel',-1.5,G,-.4,0],
+    ['pa_tool_rack',1.9,G,1.5,-PI/2]
+   ]);
+   hyTarget(0,G,.8,'cooper-shed');
+  });
+
+  hyWindHanging(-.65,G,3.6,0,1.75,2.25,{mk:'hide',panels:2});
+  hyFurnList([
+   ['hayrant_kaen_jar',-1.8,G,3.4,0,0],
+   ['generic_fuel',-4.8,G,1.1,0]
+  ]);
+  hyTarget(-.6,G,3.2,'retort-yard');
  }});

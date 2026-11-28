@@ -1,0 +1,249 @@
+{
+ "build": "matronscoast",
+ "note": "Matron's Coast / The Snail Coast (rmwvqchv37nh0, Kande-Sakhil) biome kit adapter onto core/materials/library (biomes/matronscoast/PLAN.md). Covers <= 3 KGROUND layers (ground.coquina crushed nacre-shell sand, ground.granite mossy granite/ironstone, ground.mucus iridescent dried mucin silver-highway, over ground.litter wet leaf-mould), PBR spiralled gastropod conch & nacre shells, 8-plated chiton valves, biogenic coquina conch-middens, opaline silica spines, and stem-anchored botanical cutouts. Run python3 tools/textures/pack.py biomes/matronscoast after any change.",
+ "size": 512,
+ "families": {
+  "ground.coquina": {
+   "lib": "ground.lakebed.shells",
+   "scale": [2.2, 2.2],
+   "tint": {"keep": 0.85, "mean": 0.82},
+   "roughLift": 0.24,
+   "specular": 0.34,
+   "height": true,
+   "mapOnly": true
+  },
+  "ground.granite": {
+   "lib": "rock.granite.tor",
+   "scale": [2.8, 2.8],
+   "tint": {"keep": 0.88, "mean": null},
+   "roughLift": 0.26,
+   "specular": 0.28,
+   "height": true,
+   "mapOnly": true
+  },
+  "ground.mucus": {
+   "lib": "ground.sinter.opaline",
+   "scale": [2.0, 2.0],
+   "tint": {"keep": 0.45, "mean": 0.78, "colour": "#d8d4ec"},
+   "roughLift": 0.08,
+   "specular": 0.56,
+   "height": true,
+   "mapOnly": true
+  },
+  "bark.nacre": {
+   "lib": "bark.baobab",
+   "size": 256,
+   "scale": [2.2, 3.6],
+   "tint": {"keep": 0.45, "mean": 0.62},
+   "roughLift": 0.26,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "bark.palm": {
+   "lib": "bark.palm.spined",
+   "size": 256,
+   "scale": [1.8, 3.0],
+   "tint": {"keep": 0.45, "mean": 0.50},
+   "roughLift": 0.28,
+   "specular": 0.20,
+   "mapOnly": true
+  },
+  "bark.yew": {
+   "lib": "bark.cedar.red",
+   "size": 256,
+   "scale": [2.4, 3.8],
+   "tint": {"keep": 0.40, "mean": 0.46},
+   "roughLift": 0.30,
+   "specular": 0.18,
+   "mapOnly": true
+  },
+  "bark.kelp": {
+   "lib": "bark.kelp.stipe",
+   "size": 256,
+   "scale": [1.6, 2.6],
+   "tint": {"keep": 0.55, "mean": 0.56},
+   "roughLift": 0.24,
+   "specular": 0.26,
+   "mapOnly": true
+  },
+  "rock.granite": {
+   "lib": "rock.granite.tor",
+   "size": 512,
+   "scale": [2.8, 2.8],
+   "tint": {"keep": 0.85, "mean": null},
+   "roughLift": 0.18,
+   "specular": 0.38
+  },
+  "rock.ironstone": {
+   "lib": "ground.ironstone",
+   "size": 512,
+   "scale": [2.6, 2.6],
+   "tint": {"keep": 0.82, "mean": null},
+   "roughLift": 0.22,
+   "specular": 0.32
+  },
+  "stone.coquina": {
+   "lib": "paving.shell.terrazzo",
+   "size": 512,
+   "scale": [2.0, 2.0],
+   "tint": {"keep": 0.65, "mean": 0.84, "colour": "#f2ece0"},
+   "roughLift": 0.18,
+   "specular": 0.44
+  },
+  "shell.tower": {
+   "lib": "shell.conch",
+   "size": 512,
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.55, "mean": 0.68},
+   "roughLift": 0.10,
+   "specular": 0.54
+  },
+  "shell.nacre": {
+   "lib": "shell.nacre",
+   "size": 512,
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.55, "mean": 0.86},
+   "roughLift": 0.06,
+   "specular": 0.62
+  },
+  "shell.chiton": {
+   "lib": "organic.chitin.shingle",
+   "size": 512,
+   "scale": [1.4, 1.4],
+   "tint": {"keep": 0.55, "mean": 0.42},
+   "roughLift": 0.14,
+   "specular": 0.52
+  },
+  "shell.lantern": {
+   "lib": "shell.abalone.waves",
+   "size": 256,
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.45, "mean": 0.74},
+   "roughLift": 0.08,
+   "specular": 0.58
+  },
+  "shell.shag": {
+   "lib": "bark.coir",
+   "size": 256,
+   "scale": [1.4, 1.4],
+   "tint": {"keep": 0.50, "mean": 0.52},
+   "roughLift": 0.34,
+   "specular": 0.18
+  },
+  "skin.mollusc": {
+   "lib": "skin.marine",
+   "size": 256,
+   "scale": [1.4, 1.4],
+   "tint": {"keep": 0.35, "mean": 0.56},
+   "roughLift": 0.10,
+   "specular": 0.52
+  },
+  "organic.pitcher": {
+   "lib": "organic.pitcher.throat",
+   "size": 256,
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.40, "mean": 0.68},
+   "roughLift": 0.16,
+   "specular": 0.44
+  },
+  "organic.lichen": {
+   "lib": "organic.lichen.plates",
+   "size": 256,
+   "scale": [1.4, 1.4],
+   "tint": {"keep": 0.35, "mean": 0.66},
+   "roughLift": 0.28,
+   "specular": 0.24
+  },
+  "mineral.opaline": {
+   "lib": "mineral.selenite",
+   "size": 256,
+   "scale": [1.2, 1.2],
+   "tint": {"keep": 0.40, "mean": 0.88, "colour": "#e6f2f6"},
+   "roughLift": 0.05,
+   "specular": 0.64
+  },
+  "works.lime": {
+   "lib": "stone.travertine.tufa",
+   "size": 256,
+   "scale": [1.8, 1.8],
+   "tint": {"keep": 0.55, "mean": 0.86, "colour": "#f4f0e6"},
+   "roughLift": 0.24,
+   "specular": 0.32
+  },
+  "works.wicker": {
+   "lib": "reed.mat.woven",
+   "size": 256,
+   "scale": [1.6, 1.6],
+   "tint": {"keep": 0.65, "mean": 0.58},
+   "roughLift": 0.32,
+   "specular": 0.20,
+   "mapOnly": true
+  },
+  "nacrefol": {
+   "lib": "card.broadleaf",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.20, "mean": 0.66},
+   "size": 512,
+   "cell": [0.028, 0.022, 0.972, 0.972],
+   "base": "centre"
+  },
+  "palmfrond": {
+   "lib": "card.palm",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.25, "mean": 0.68},
+   "size": 512,
+   "stems": [
+    {"cell": [0.015, 0.018, 0.337, 0.339], "stem": [0.3271, 0.3389], "tip": [0.1118, 0.0997], "w": [-0.157, 0.1668]},
+    {"cell": [0.329, 0.339, 0.648, 0.659], "stem": [0.4912, 0.6533], "tip": [0.5015, 0.3423], "w": [-0.1203, 0.1188]},
+    {"cell": [0.661, 0.661, 0.982, 0.984], "stem": [0.667, 0.9775], "tip": [0.9541, 0.653], "w": [-0.0787, 0.0844]}
+   ]
+  },
+  "yewfol": {
+   "lib": "card.spruce",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.15, "mean": 0.66},
+   "size": 512,
+   "stems": [
+    {"cell": [0.015, 0.016, 0.339, 0.339], "stem": [0.032, 0.025], "tip": [0.3008, 0.3225], "w": [-0.1086, 0.1019]},
+    {"cell": [0.329, 0.335, 0.653, 0.671], "stem": [0.508, 0.344], "tip": [0.5154, 0.6693], "w": [-0.1149, 0.1324]},
+    {"cell": [0.684, 0.661, 0.968, 0.974], "stem": [0.968, 0.656], "tip": [0.7043, 0.9696], "w": [-0.0986, 0.1166]}
+   ],
+   "rise": -0.25
+  },
+  "fern": {
+   "lib": "card.fern",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.22, "mean": 0.65},
+   "size": 512,
+   "cell": [0.089, 0.046, 0.911, 0.995],
+   "base": "bottom"
+  },
+  "orchid": {
+   "lib": "card.orchid.dendrobium",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.25, "mean": 0.74},
+   "size": 512,
+   "cell": [0.665, 0.343, 0.96, 0.653],
+   "base": "bottom"
+  },
+  "sedge": {
+   "lib": "card.heath",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.25, "mean": 0.66},
+   "size": 512,
+   "stems": [
+    {"cell": [0.015, 0.026, 0.335, 0.323], "stem": [0.1699, 0.3193], "tip": [0.1699, 0.0322], "w": [-0.124, 0.1435]},
+    {"cell": [0.347, 0.35, 0.661, 0.648], "stem": [0.518, 0.6416], "tip": [0.518, 0.3545], "w": [-0.1421, 0.1177]},
+    {"cell": [0.673, 0.679, 0.982, 0.972], "stem": [0.8471, 0.9658], "tip": [0.8471, 0.6826], "w": [-0.1449, 0.1129]}
+   ]
+  },
+  "kelpstub": {
+   "lib": "card.kelp.0",
+   "scale": [1.0, 1.0],
+   "tint": {"keep": 0.35, "mean": 0.64},
+   "size": 512,
+   "cell": [0.165, 0.003, 0.835, 0.958],
+   "base": "top"
+  }
+ }
+}

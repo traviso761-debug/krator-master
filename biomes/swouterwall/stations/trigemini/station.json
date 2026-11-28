@@ -1,0 +1,17 @@
+{
+ "id": "trigemini",
+ "canvas": "5.1 (1821x1723)",
+ "title": "SW Outer Wall — Trigemini Pass Junction & the +5,680 m Cold Tarn",
+ "out": "swouterwall-trigemini.html",
+ "px": [279, 1120],
+ "sky": [7, 790],
+ "elevM": 5680,
+ "pAtm": 0.76,
+ "koppen": "ET",
+ "rainMmYr": 310,
+ "strataStack": "megabreccia",
+ "reserves": [
+  { "id": "site:dalab-trigemini-waypost", "x": 94, "z": -72, "r": 38 }
+ ],
+ "modes": ["Day", "Katabatic Dawn"]
+}

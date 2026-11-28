@@ -17,10 +17,13 @@ Runs on `core/engine` (`engine.py`), `core/atmos`, `core/materials`, `core/tags`
   - `nuragheRadius(rBase, rTop, t)` -> Sardinian concave-battered *nuraghe* outer radius
   - `whaleRibArc(rSpring, ySpring, rCrown, yCrown, s)` -> pelagic whale-rib vault curve `[r, y]`
   - `keyholeHalfWidth(wTop, wPool, f)` -> *Santa Cristina* inverted-keyhole step-well half-width
-- `hkDims()` (`91z-hk-world.js`): `{[key]: {cls, kind, w, d, h, style, wealth, types, role, job, cut}}` for `core/city` and `core/hamlet` lot placement.
+  - `totemTierY(yBase, nTiers, tierH)` -> vertical tier base heights `[y0, y1, ...]` for `3–5` stacked coastal creatures
+  - `formlineLayerZ(zFace, layerIdx)` -> `>= 0.020 m` (`2.4 cm`) non-coplanar maritime relief z-step
+  - `pelicanPouchSag(u, v, depth)` -> distended gular throat-pouch curve (`0` along mandible rims, forward bulge)
+- `hkDims()` (`91z-hk-world.js`): `{[key]: {cls, kind, w, d, h, style, wealth, types, role, job, cut}}` for all `48` `hk_*` building defs (`8101–8409`) for `core/city` and `core/hamlet` lot placement.
 - `hkOreLinks()` (`91z-hk-world.js`): `{nodes, mines}` linking placed `role: 'mine'` works (`hk_jade_quarry`) to `kits/resources` nodes via `resSource`.
 
-## Architectural Toolkit (`40-hk-kit.js`)
+## Architectural & Nautical Totem Toolkit (`40-hk-kit.js`, `41-hk-totem.js`)
 
 - `hkPlinth(w, d, h, o)` — stepped columnar & cyclopean basalt terrace plinth and walkable entrance stair (`svStripWalk`).
 - `hkJadeDoor(x, y, z, yaw, w, h, o)` — battered basalt doorway spanned by a massive 3-ton sawn emerald-nephrite (`jade = 200`) lintel block over a triangular relieving slit, with operable red-cypress leaf (`svLeaf`).
@@ -30,16 +33,19 @@ Runs on `core/engine` (`engine.py`), `core/atmos`, `core/materials`, `core/tags`
 - `hkWall(x0, z0, x1, z1, y0, h, o)` / `hkWallRing(...)` / `hkTurfRoof(...)` — rectangular hall masonry with columnar corner piers and whalebone-ridged turf/bark roofs.
 - `hkGutskinAwning(...)` / `hkWindHanging(...)` / `hkNephriteChimes(...)` — wind-rigged gutskin sails, drying kelp curtains, whale-nets, banners, and tuned emerald-nephrite wind/tide-chimes (`SV_CLOTH`).
 - `hkWhaleJawArch(x, y0, z, yaw, span, h)` / `hkBaidarka(x, y0, z, yaw, len)` — monumental bleached Leviathan jawbone arch and bifid-bow oiled-hide *baidarka* / *umiak* watercraft.
+- `hkNauticalTotemPole(x, y, z, yaw, o)` (`41-hk-totem.js`) — `4.0–9.2 m` *Hueru-Pira* / *Kōpa-Pira* coastal totem poles rising from hexagonal `columnar` basalt & `ashlar` plinths, stacking `3–5` sculpted `'whale'`, `'pelican'`, `'otter'`, `'octopus'`, `'seal'`, and `'crab'` tiers with `100%` wide-open `nephrite`/`jade` & `ivory`/`seaglass` horizon-watching eyes and optional bill-hung `chime` nephrite tide-chimes (`CURREC.nauticalTotems`).
+- `hkNauticalFrieze(x, y, z, w, h, yaw, o)` / `hkWhaleFlukeFinial(x, y, z, span, yaw, o)` (`41-hk-totem.js`) — `>= 2.4 cm` z-stepped maritime whale-and-pelican formline lintel boards and rooftop/headland whale-fluke or pelican-head finials.
 
 ## Bespoke `hueru-kuran` Furniture (`39-hk-furn.js`)
 
 Registered on `KratorFurniture.def` under culture `'hueru-kuran'`:
-`hueru-kuran_whale_oil_hearth`, `hueru-kuran_nephrite_chime_rack`, `hueru-kuran_whalebone_cot`, `hueru-kuran_jade_saw_bench`, `hueru-kuran_kaen_storage_jar`, `hueru-kuran_blubber_kettle`, `hueru-kuran_baleen_loom`, `hueru-kuran_harpoon_rack`, `hueru-kuran_cedar_feast_trough`, `hueru-kuran_seal_pelt_mat`, `hueru-kuran_jade_lamp_pedestal`, `hueru-kuran_driftwood_chest`, `hueru-kuran_tide_gauge_plinth`, `hueru-kuran_baleen_bow_trough`.
+`hueru-kuran_whale_oil_hearth`, `hueru-kuran_nephrite_chime_rack`, `hueru-kuran_whalebone_cot`, `hueru-kuran_jade_saw_bench`, `hueru-kuran_kaen_storage_jar`, `hueru-kuran_blubber_kettle`, `hueru-kuran_baleen_loom`, `hueru-kuran_harpoon_rack`, `hueru-kuran_cedar_feast_trough`, `hueru-kuran_seal_pelt_mat`, `hueru-kuran_jade_lamp_pedestal`, `hueru-kuran_driftwood_chest`, `hueru-kuran_tide_gauge_plinth`, `hueru-kuran_baleen_bow_trough`, `hueru_pelican_totem_post`, `hueru_nautical_crest_chest`.
 
 ## Verification Probe (`window._api`, `99-host-tz-hk.js`)
 
+- `_api.nauticalTotemAudit()` — verifies `>= 18` placed `hkNauticalTotemPole`s, `>= 55` stacked coastal creature tiers across all 6 motifs (`whale`, `pelican`, `otter`, `octopus`, `seal`, `crab`) with strong `whale` & `pelican` prominence, bill-hung `chime` tide-chimes, and `100%` open horizon-watching eyes (`openEyes === totalFigures`).
 - `_api.waterAudit()` — verifies `WATER.still` (*Santa Cristina* drawdown mirror pool, healer pool, cliff-hoist cistern) and `WATER.flow` (pendulum sawmill race, cypress flume, caldera weir channel) on `core/water`.
 - `_api.atmosWindAudit()` — `KHOOK.checkPrograms`, `ATMOS.U` uniform bindings, `0.0` drift at pinned vertices, downwind & gust displacement.
 - `_api.texturesAudit()` — verifies 100% of opaque/lit world, door, resource-node, and furniture meshes carry decoded library textures.
-- `_api.zfightAudit()` — 3D world-space coplanar triangle overlap audit across *nuraghi*, whale-ribs, lintels, hoists, doors, and furniture.
+- `_api.zfightAudit()` — 3D world-space coplanar triangle overlap audit across *nuraghi*, whale-ribs, totem poles, lintels, hoists, doors, and furniture.
 - `_api.doorsAudit()`, `_api.reachAudit()`, `_api.tradesAudit()`, `_api.oreAudit()`, `_api.fingerprint()`, `_api.rebuild()`.

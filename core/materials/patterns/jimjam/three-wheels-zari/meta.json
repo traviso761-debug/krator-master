@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1174
+   ],
+   "seam_after": [
+    1.027,
+    1.259
+   ],
+   "seam_before": [
+    0.615,
+    0.645
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.54,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "jimjam/three-wheels-zari",
+  "metal": 0.08,
+  "pattern": true,
+  "roughness": 0.54,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__jimjam__three-wheels-zari.png",
+  "generator": "Codex image generation, Nov 2026 (exec-a7e95cf7-a298-4d52-82c1-a845162bd83a.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of opulent South Indian Kanchipuram-style heavy shot-silk zari sari brocade on a rich Rust kiln-crimson (#9c202e) ground: woven in raised saffron-gold metallic zari (#e6a92c), vitrified Ash-black (#1e1c1e), and Veil alabaster-ivory (#f3f0e8) with four medallions across and two registers down of Jimjam's royal sign\u2014three interlocking spoked calendar wheels (Sun wheel, 7-spoke Week wheel, 13-spoke Thirteen wheel)\u2014framed by stepped Maya-Vijayanagara brick-ogee arches, whole medallions inside seams. Full colour.",
+  "sha1": "0bf63468191f5600ab26ec770548691f8f3d18a1"
+ }
+}

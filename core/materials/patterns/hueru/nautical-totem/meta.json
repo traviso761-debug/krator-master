@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1017,
+    1017
+   ],
+   "seam_after": [
+    0.829,
+    0.998
+   ],
+   "seam_before": [
+    1.742,
+    1.22
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.25,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.06,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": true,
+   "rough": 0.72,
+   "rough_var": 0.24,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "hueru/nautical-totem",
+  "metal": 0,
+  "roughness": 0.72,
+  "scale": [
+   1.8,
+   1.8
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "hueru_nautical-totem.png",
+  "generator": "supplied by the owner (pasted, 2026-11-28, PNG, 1024 px), generated from core/materials/PROMPTS-NEEDED.md section 72",
+  "licence": "generated for this project by its owner",
+  "prompt_where": "core/materials/PROMPTS-archived.md section 72 (`patterns/hueru/nautical-totem`)",
+  "reuse": "Hueru-Kuran maritime driftwood, whalebone & baleen relief frieze of whale flukes, pelicans, octopi and wave-scrolls with emerald-nephrite and nacre eyes (.b is symmetrical alternate)",
+  "sha1": "b349e3ab4f7782baec0edca019d859f2f5006179"
+ }
+}

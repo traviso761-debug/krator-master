@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1245
+   ],
+   "seam_after": [
+    0.905,
+    0.55
+   ],
+   "seam_before": [
+    1.161,
+    1.268
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "hayrant/ainu-silver-applique",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__hayrant__ainu-silver-applique.png",
+  "generator": "Codex image generation, Nov 2026 (exec-f30267f0-3481-4c67-b321-ba36aff7f63c.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of northern Hayrant quilted white silk-cotton and golden-tan elm-bark attus applique: diamond-quilted snow-white cotton ground (#f0eee8) appliqued with wide bands of charcoal-slate (#262a30) and pale celadon-blue (#86a8b0) cloth cut into Hokkaido Ainu-inspired moreunoka swirling bracket-spirals and protective thorn points (aiushi), couched with tarnished silver-wire embroidery (#c4c8ce) and small hammered silver tamasai roundels (four spiral medallions across, two registers down), zero red, seam-safe. Full colour.",
+  "sha1": "e8e8007e51d0ef7677d75d5b577381f87d55dda5"
+ }
+}

@@ -34,8 +34,9 @@ defBuilding({key:'hk_wave_splitter',name:'Columnar-Basalt Lagoon Wave-Splitter a
   wkPad(0,1.8,6.8,7.2,3.05);
   svStripWalk([0,0,8.5],[0,3.05,5.3],2.8);
 
-  /* Monumental bleached Leviathan Whale-Jawbone Arch + tuned nephrite bore-warning chimes crowning the splitter! */
+  /* Monumental bleached Leviathan Whale-Jawbone Arch + seaward-watching Hueru-Pira totem pole & bore-warning chimes! */
   hkWhaleJawArch(0,3.05,.8,0,5.6,6.2);
+  hkNauticalTotemPole(0,3.05,-1.15,PI,{h:5.2,tiers:['crab','whale','pelican'],pelicanChime:true});
   hkWindHanging(-2.8,3.05,4.2,0,1.8,2.6,{mk:'banner',panels:2});
   hkWindHanging(2.8,3.05,4.2,0,1.8,2.6,{mk:'banner',panels:2});
   haloAt(0,7.8,.8,0xffb454,true);
@@ -242,6 +243,7 @@ defBuilding({key:'hk_baidarka_yard',name:'Perched Tsunami-Safe Slipway and Baida
    windows:[{yaw:-PI/2,w:.84,y:1.0,h:.88}]
   });
   hkGutskinAwning(1.8,-2.8,8.6,4.2,py,py+3.55,{sag:.26});
+  hkNauticalTotemPole(7.8,py,5.4,-.2,{h:5.8,tiers:['otter','pelican','whale'],pelicanChime:true});
 
   hkTarget(-4.8,py+.08,.8,'skin-boat loft');
   hkTarget(4.8,py,4.8,'slipway stage');
@@ -279,6 +281,7 @@ defBuilding({key:'hk_crater_quay',name:'Caldera-Throat Columnar Quay and Customs
   });
   hkGutskinAwning(1.2,-1.4,7.8,4.8,py,py+3.25,{sag:.26});
   hkNephriteChimes(4.5,py+3.15,-1.4,0,2.6,1.05,5);
+  hkNauticalTotemPole(8.3,py,5.5,-.22,{h:6.4,tiers:['octopus','seal','pelican','whale'],pelicanChime:true});
 
   hkTarget(-4.6,py+.08,1.8,'customs nuraghe');
   hkTarget(4.5,py,1.6,'cargo berth');
@@ -369,6 +372,7 @@ defBuilding({key:'hk_beacon_nuraghe',name:'Whale-Oil Beacon Nuraghe Lighthouse',
   });
   haloAt(1.2,yDeck+1.0,1.2,0xffba54,true);
   smokeAt(1.2,yDeck+1.45,1.2,{r:.36,kind:'fire'});
+  hkNauticalTotemPole(4.6,py,4.6,-.25,{h:6.2,tiers:['crab','pelican','whale'],pelicanChime:true});
 
   hkTarget(-1.8,py+.08,1.4,'keeper room');
   hkTarget(-1.6,yMid,1.2,'watch landing');

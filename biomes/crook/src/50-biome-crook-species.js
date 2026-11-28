@@ -56,12 +56,27 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   nephrite:[0x4e8468,0x5c9476,0x42745a],
   malachiteRock:[0xd8ece0,0xcce4d6,0xe2f0e8],
   gossanRock:[0xe8d4c4,0xdcc6b4,0xf0dcd0],
-  granite:[0xa29e96,0xb0aca4,0x928e86]
+  granite:[0xa29e96,0xb0aca4,0x928e86],
+  palm:[0x4c7832,0x58863a,0x426c2c,0x649042],
+  palmOld:[0x7e7838,0x8c8240],
+  palmTrunk:[0x8c7c64,0x7e705a,0x96866e],
+  coconutNut:[0x6c7a36,0x867238,0x5e6e30],
+  cabbageLeaf:[0x487638,0x548442,0x3c682e,0x628e4a],
+  cabbagePanicle:[0xf0ece0,0xe6e0d2],
+  alder:[0x426c34,0x4e7a3e,0x38602c,0x5a8646],
+  yew:[0x1e4032,0x254a3a,0x19362a],
+  salmonLeaf:[0x4a7c36,0x588a42,0x3e6e2e],
+  salmonBerry:[0xd8462c,0xe68428,0xc83424],
+  lanternLeaf:[0x467e34,0x548c3e,0x3a6e2c],
+  lanternSpathe:[0xecc428,0xf4d236,0xdcb220],
+  eelgrass:[0x2c7848,0x368852,0x246a3e],
+  ironsax:[0x9cb438,0xacc242,0x88a230],
+  gentian:[0x1e4ed8,0x285ce8,0x1840c2]
  };
 
- // ---------------------------------------------------------------- 24 botanical & sponge species (verified by check_botany.py)
+ // ---------------------------------------------------------------- 35 botanical & sponge species (verified by check_botany.py)
  const SPECIES=CROOK.SPECIES=[
-  // A. 85-90% Earthlike Coastal-to-Alpine Montane Matrix (10 species)
+  // A. Coastal-to-Alpine Montane Matrix & Caldera/Gorge Diversity (21 species)
   {key:'coastspruce',name:'Crookshore Sitka Spruce',how:'Towering 35-58 m salt-fog tolerant coastal conifer crowning the +65 m megatsunami bluff with plated bark and blue-green whorled boughs.',
    items:['ck_spruce_fol'],tags:K('temperate','humid','both',['Cfa','Am','Cfb'],'cloudforest')},
   {key:'westernredcedar',name:'Cathedral Western Redcedar',how:'Fluted, buttressed 30-54 m coastal and gorge giant with sweeping scale-leaf sprays and rot-proof red heartwood.',
@@ -70,18 +85,40 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
    items:['ck_cypress_fol'],tags:K('temperate','humid','both',['Cfa','Cfb','Dfb'],'gorge')},
   {key:'bigleafmaple',name:'Moss-Sleeved Bigleaf Maple',how:'Spreading 14-26 m canyon and rainforest broadleaf with lichen-crusted limbs draped in hanging moss and fog-sponges.',
    items:['ck_maple_fol','ck_mossbeard'],tags:K('temperate','humid','yes',['Cfa','Cfb','Dfb'],'cloudforest')},
+  {key:'gorgealder',name:'Riparian Red Alder (Alnus rubra)',how:'Fast-growing 12-22 m nitrogen-fixing pioneer broadleaf with silver-mottled bark colonizing Crookshore caldera benches above +65 m and Crookwash gravel terraces.',
+   items:['ck_alder_fol'],tags:K('temperate','humid','yes',['Cfa','Cfb','Dfb'],'cloudforest')},
   {key:'silverfir',name:'Vardzieti Silver Fir',how:'Symmetrical 24-42 m upper-montane conifer with smooth pale bark and dense silver-backed needles framing steep V-gorges.',
    items:['ck_fir_fol'],tags:K('cold','humid','no',['Dfb','Cfb','Dfc'],'gorge')},
+  {key:'canyonyew',name:'Vardzieti Canyon Yew (Taxus)',how:'Slow-grown 6-14 m shaded canyon understory conifer with fluted rose-purple bark and dark flat needle sprays over nephrite-gorge walls.',
+   items:['ck_yew_fol'],tags:K('temperate','humid','both',['Cfb','Dfb'],'gorge')},
   {key:'gorgerhodo',name:'Chasm Rhododendron',how:'Twisted 2.5-7 m canyon-wall evergreen understory thicket bursting with rose-magenta, coral, and cream flower trusses.',
    items:['ck_rhodo_fol','ck_rhodo_bloom'],tags:K('temperate','humid','both',['Cfa','Cfb','Dfb'],'gorge')},
+  {key:'salmonberry',name:'Cascade Salmonberry (Rubus spectabilis)',how:'Arching 1.6-3.2 m cane thicket in damp Crookshore and lower Crookwash forest gaps above +65 m, hung with ruby-and-amber aggregate berries.',
+   items:['ck_salmon_fol','ck_salmon_berry'],tags:K('temperate','humid','yes',['Cfa','Cfb'],'cloudforest')},
   {key:'cloudtreefern',name:'Fiordland Plume Tree-Fern',how:'Frost-free 3-8 m fibrous trunk crowned by an arching rosette of lacy emerald fronds in sheltered caldera gullies above +65 m.',
    items:['ck_treefern_stem','ck_treefern_frond'],tags:K('temperate','humid','yes',['Cfa','Am'],'cloudforest')},
+  {key:'coconut',name:'Drift-Sown Coconut Palm (Cocos nucifera)',how:'Salt-hardy ringed coastal palm (8-16 m) leaning from warm +65..+115 m post-trimline coastal sun-benches, sheltered Cascade-Caldera lagoon rims, and Hueru-Kuran terrace fringes in frost-free 1.60 atm Crookshore.',
+   items:['ck_palm_frond','ck_coconut_nut'],tags:K('tropical','humid','both',['Am','Cfa'],'cloudforest',{strand:true})},
+  {key:'calderapalm',name:'Cascade-Caldera Cabbage-Palm (Cordyline)',how:'Forked ringed 4.5-9.5 m cabbage-palm on sheltered Crookshore caldera collars above +65 m, bearing fountain tufts of fibrous sword leaves and creamy flower panicles.',
+   items:['ck_cabbage_strap','ck_cabbage_panicle'],tags:K('temperate','humid','both',['Cfa','Am'],'cloudforest')},
   {key:'devilsclub',name:'Thorny Gorge-Panax',how:'Wet seep-hollow understory shrub with arching pale stems and broad palmate leaf umbrellas.',
    items:['ck_palmate'],tags:K('temperate','humid','yes',['Cfa','Cfb','Dfb'],'cloudforest')},
+  {key:'swamplantern',name:'Golden Swamp-Lantern (Lysichiton)',how:'Bog-hollow rosette herb in wet Crookshore benches above +65 m sending up luminous canary-gold hood spathes and huge glossy leaves.',
+   items:['ck_lantern_leaf','ck_lantern_spathe'],tags:K('temperate','humid','yes',['Cfa','Cfb'],'cloudforest')},
+  {key:'calderaseagrass',name:'Caldera Nursery Eelgrass (Zostera)',how:'Submerged emerald ribbon-grass meadows carpeting shallow sheltered Whale-Haven and Cascade-Caldera lagoon shoals.',
+   items:['ck_eelgrass'],tags:K('temperate','humid','yes',['Cfa','Am'],'spraybench',{submarine:true})},
+  {key:'gorgeswordfern',name:'Nephrite-Bench Sword-Fern (Polystichum)',how:'Stout evergreen rosettes of leathery imbricated sword-fronds clothing shaded nephrite-gorge walls and Sitka-spruce floors.',
+   items:['ck_swordfern'],tags:K('temperate','humid','both',['Cfa','Cfb','Dfb'],'gorge')},
+  {key:'ironsaxifrage',name:'Iron-Seep Golden Saxifrage (Chrysosplenium)',how:'Succulent chartreuse-gold cushion mats edging cold iron-rich rimstone seeps and wet skarn ledges in Crookwash.',
+   items:['ck_ironsax'],tags:K('temperate','humid','yes',['Cfb','Dfb'],'gorge')},
   {key:'furlarch',name:'Subalpine Krummholz Larch',how:'Wind-flagged 4-13 m treeline larch around Crookhead moraine tarns with golden-green deciduous needle tufts.',
    items:['ck_larch_fol'],tags:K('cold','humid','both',['Dfc','ET','Dfb'],'tarn')},
-  {key:'morainesedge',name:'Montane Sword-Fern and Tarn Tuft-Sedge',how:'Lush forest floor ferns in the gorges grading into olive-gold sedge and cottongrass tussocks around alpine tarns and sunny rain-shadow rims.',
-   items:['ck_floorfern','ck_sedge','ck_cotton','ck_mossmat'],tags:K('cold','humid','both',['Dfb','Dfc','ET','Csa'],'tarn')},
+  {key:'morainesedge',name:'Montane Tarn Tuft-Sedge',how:'Olive-gold sedge tussocks and forest moss mats carpeting sunny rain-shadow rims and alpine moraines.',
+   items:['ck_floorfern','ck_sedge','ck_mossmat'],tags:K('cold','humid','both',['Dfb','Dfc','ET','Csa'],'tarn')},
+  {key:'tarncottongrass',name:'Moraine Plume-Cottongrass (Eriophorum)',how:'Silky white cotton-plume sedge stands fringing cold glacial Crookhead moraine tarn shallows and boggy snow-melt aprons.',
+   items:['ck_cotton'],tags:K('cold','humid','yes',['Dfc','ET'],'tarn')},
+  {key:'cobaltgentian',name:'Alpine Cobalt Snow-Gentian (Gentiana)',how:'Low star-trumpets of intense cobalt blue blooming along Crookhead snow-melt rims and Silent Vales Hush turf.',
+   items:['ck_gentian'],tags:K('cold','humid','both',['ET','Dfc'],'tarn')},
 
   // B. Crookshore (< +65 m Spray-Bench Lithistids & >= +65 m Canopy Fog-Sponges, 4 species)
   {key:'basaltchimney',name:'Lithistid Basalt Chimney-Sponge',how:'Rock-hard fused-silica oscular chimneys (0.35-1.35 m) in ochre, slate-blue, and rust-orange anchored to < +65 m tsunami-scoured columnar basalt benches.',
@@ -124,12 +161,23 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   westernredcedar:HV('timber, cordage',[],false,'Rot-proof hull planking and fibrous inner bast cordage.'),
   redcypress:HV('timber',[],true,'Aromatic rot-proof benihi heartwood shot down mountain flumes for Hueru-Kuran and Ark-Fleet hulls; distilled leaf incense.'),
   bigleafmaple:HV('timber, carving',['maple sap'],false,'Close-grained paddle and lute wood; spring sap boiled to syrup.'),
+  gorgealder:HV('fuel, carving, dye',[],true,'Sweet smokehouse wood for curing fish; inner bark steeped for red-orange net dye and astringent wash.'),
   silverfir:HV('timber, resin',[],true,'Straight flume-trestle timber and clear antiseptic blister resin.'),
+  canyonyew:HV('carving, bowwood',['sweet red-arils'],true,'Dense elastic heartwood prized by Vardzieti bowyers for composite canyon bows and instrument pegs.'),
   gorgerhodo:HV('fuel, carving',[],false,'Dense tool-handle wood; spring blossoms yield cliff-honey.'),
+  salmonberry:HV('none',['salmonberries','peeled spring-sprout'],true,'Early-summer ruby-and-gold berries eaten fresh or dried into berry-cakes; astringent leaf tea.'),
   cloudtreefern:HV('none',['fiddlehead','steamed pith'],false,'Fibrous trunk slabs line root-storage pits.'),
+  coconut:HV('timber, thatch, cordage',['coconuts'],false,'Drift-sown and Hueru-Kuran tended on frost-free Crookshore benches above +65 m; ringed posts, plaited frond thatch, and salt-proof coir mooring warps.'),
+  calderapalm:HV('cordage, fibre',['baked rhizome-sugar'],false,'Rot-resistant strap leaves braided into Hueru-Kuran anchor cables, sandals, and rain-capes.'),
   devilsclub:HV('none',[],true,'Peeled root-bark prized by Hueru-Kuran and Dzagh-Vardzi healers as a wound poultice and fever remedy.'),
+  swamplantern:HV('none',['roasted rootstock'],true,'Waxy broad leaves wrap fish in earth-ovens; dried rootstock ground in famine and used as a poultice.'),
+  calderaseagrass:HV('thatch, insulation',['sweet rhizome'],false,'Cured salt-resistant lagoon eelgrass quilted into sound-dampening wall mats and winter bedding.'),
+  gorgeswordfern:HV('thatch, bedding',['baked rhizome'],true,'Tough evergreen fronds layer Hueru-Kuran steam-pits; spore-poultice soothes nettle and burn stings.'),
+  ironsaxifrage:HV('none',['peppery greens'],true,'Crisp iron-rich spring greens gathered along rimstone seeps as an antiscorbutic salad.'),
   furlarch:HV('timber, tannin',[],false,'Tough rot-resistant snow-stake timber and tanbark.'),
   morainesedge:HV('thatch, weaving',[],false,'Dried boot-insulation hay, basketry sedge, and pack-saddle stuffing.'),
+  tarncottongrass:HV('weaving, tinder',[],false,'Silky white seed-plumes twisted into slow-burning stone-lamp wicks and warm parka down.'),
+  cobaltgentian:HV('none',[],true,'Intensely bitter alpine root steeped by pass drovers as a digestive tonic and fever physic.'),
   basaltchimney:HV('none',[],false,'Ground siliceous desma-grit used as abrasive paste for nephrite wire saws; alchemical reagent.'),
   spraycushion:HV('none',[],true,'Boiled elastic spongin core used for boat-bailing pads and wound sponges.'),
   canopycup:HV('none',[],true,'Soft sterile rainwater sponge harvested from windfall limbs for surgical dressing.'),
@@ -146,6 +194,7 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   seedchimney:HV('fuel, instrument',['parched oily seed'],false,'Hollow bone-white stalks set on pass cairns as wind-flutes and Silent Vales hush boundary markers.')
  };
  SPECIES.forEach(S=>{S.tags.harvest=CROOK.HARVEST[S.key];});
+ if(CROOK_PHYS.registerCrops)CROOK_PHYS.registerCrops();
  const byKey={};SPECIES.forEach(S=>{byKey[S.key]=S;});
  CROOK.byKey=byKey;
  CROOK.speciesOfItem=it=>{for(let i=0;i<SPECIES.length;i++)if(SPECIES[i].items.indexOf(it)>=0)return SPECIES[i];return null;};
@@ -239,7 +288,55 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   frostsedge:BIO.leafMat(cardFallback(55),'ck-frostsedge',{aN:false,swayW:'(position.y)',swayA:0.07,irid:true}),
   cotton:BIO.leafMat(cardFallback(56),'ck-cotton',{aN:false,swayW:'(position.y)',swayA:0.09}),
   rosette:BIO.leafMat(cardFallback(57),'ck-rosette',{aN:false,swayW:'(position.y)',swayA:0.02}),
-  moss:BIO.leafMat(cardFallback(58),'ck-moss',{aN:false,swayW:'0.0',swayA:0.0,alphaTest:0.32})
+  moss:BIO.leafMat(cardFallback(58),'ck-moss',{aN:false,swayW:'0.0',swayA:0.0,alphaTest:0.32}),
+  palmFrond:BIO.leafMat((function(){
+   const t=BIO.alphaTex(512,(g,S)=>{
+    g.lineCap='round';
+    const nPairs=38;
+    for(let i=1;i<=nPairs;i++){
+     const f=i/(nPairs+1),ry=S*(0.05+0.88*f);
+     const env=Math.sin(Math.pow(f,0.68)*Math.PI)*(1-0.12*f);
+     const pLen=S*0.40*env;
+     if(pLen<4)continue;
+     for(const side of [-1,1]){
+      const sweep=0.34+0.26*f,ang=side*(Math.PI*0.5-sweep)+(H(95,i,side+2,0x85)-0.5)*0.05;
+      const mx=S*0.5+Math.cos(ang)*pLen*0.56,my=ry+Math.sin(Math.abs(sweep))*pLen*0.42;
+      const tx=clamp(S*0.5+Math.cos(ang)*pLen,0.04*S,0.96*S),ty=clamp(ry+Math.sin(Math.abs(sweep))*pLen*0.88,0.04*S,0.96*S);
+      const hw=S*0.0078*(0.6+0.5*env);
+      const lum=Math.round(168+64*env+22*(H(95,i,side+5,0x85)-0.5));
+      g.fillStyle='rgb('+Math.round(lum*0.92)+','+Math.min(255,Math.round(lum*1.05))+','+Math.round(lum*0.74)+')';
+      g.beginPath();g.moveTo(S*0.5,ry-hw);g.quadraticCurveTo(mx,my-hw*0.7,tx,ty);g.quadraticCurveTo(mx,my+hw*0.9,S*0.5,ry+hw);g.closePath();g.fill();
+     }
+    }
+    g.strokeStyle='rgba(168,176,112,0.96)';g.lineWidth=S*0.012;
+    g.beginPath();g.moveTo(S*0.5,S*0.03);g.lineTo(S*0.5,S*0.94);g.stroke();
+   },[154,182,112]);
+   t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+   return t;
+  })(),'ck-palmfrond',{aN:false,swayW:'(position.x)',swayA:0.085,alphaTest:0.36}),
+  cabbageStrap:BIO.leafMat((function(){
+   const t=BIO.alphaTex(256,(g,S)=>{
+    const grd=g.createLinearGradient(0,S*0.04,0,S*0.96);
+    grd.addColorStop(0,'rgb(148,180,108)');grd.addColorStop(0.55,'rgb(178,206,128)');grd.addColorStop(1,'rgb(136,162,94)');
+    g.fillStyle=grd;g.beginPath();g.moveTo(S*0.35,S*0.04);g.quadraticCurveTo(S*0.28,S*0.48,S*0.49,S*0.96);g.quadraticCurveTo(S*0.72,S*0.48,S*0.65,S*0.04);g.closePath();g.fill();
+    g.strokeStyle='rgba(218,230,164,0.72)';g.lineWidth=2.0;g.beginPath();g.moveTo(S*0.5,S*0.04);g.lineTo(S*0.49,S*0.94);g.stroke();
+   },[154,184,112]);
+   t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+   return t;
+  })(),'ck-cabbage',{aN:false,swayW:'(position.x)',swayA:0.06,alphaTest:0.36}),
+  eelgrassRibbon:BIO.leafMat((function(){
+   const t=BIO.alphaTex(256,(g,S)=>{
+    g.lineCap='round';
+    for(let i=0;i<15;i++){
+     const x0=S*(0.24+0.52*(i/14)),lean=(i-7)*S*0.026+(H(96,i,1,0x86)-0.5)*S*0.05,h=S*(0.58+0.34*H(96,i,2,0x86));
+     const v=Math.round(148+64*H(96,i,3,0x86));
+     g.strokeStyle='rgb('+Math.round(v*0.74)+','+Math.min(255,Math.round(v*1.08))+','+Math.round(v*0.84)+')';
+     g.lineWidth=4.2;g.beginPath();g.moveTo(x0,S*0.04);g.quadraticCurveTo(x0+lean*0.45,S*0.04+h*0.55,clamp(x0+lean,S*0.06,S*0.94),clamp(S*0.04+h,S*0.06,S*0.95));g.stroke();
+    }
+   },[118,176,136]);
+   t.wrapS=t.wrapT=T3.ClampToEdgeWrapping;
+   return t;
+  })(),'ck-eelgrass',{aN:false,swayW:'(position.y)',swayA:0.12,alphaTest:0.36})
  };
 
  // Opalescent milk-jade porcelain margin hook on skarnfern (wraps BIO.foliageHook cleanly without cameraPosition)
@@ -261,11 +358,49 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
  BIO.bucket('ck_cypress',M['bark.cypress'],{label:'Benihi red-cypress buttressed trunks'});
  BIO.bucket('ck_maple',M['bark.maple'],{label:'Moss-sleeved bigleaf maple limbs'});
  BIO.bucket('ck_fir',M['bark.fir'],{label:'Silver fir & chasm rhododendron stems'});
+ BIO.bucket('ck_palm',M['bark.fir'],{label:'Drift-sown coconut palm ringed trunks'});
  BIO.bucket('ck_larch',M['bark.larch'],{label:'Krummholz larch trunks'});
  BIO.bucket('ck_rust',M['bark.rust'],{label:'Burnished metallic-scale skarn-cedar trunks'});
  BIO.bucket('ck_wood',M['wood.log'],{label:'Mossy nurse logs & tsunami driftwood'});
 
- // ---------------------------------------------------------------- rock & boulder geometries (closed icosahedra with vertex UVs)
+ // ---------------------------------------------------------------- rock, boulder & palm geometries (closed meshes with vertex UVs)
+ function makeDroopFrondGeo(nSeg,arch,droop,halfW,vFold){
+  const pos=[],nor=[],uv=[],L=[],C0=[],R0=[];
+  for(let i=0;i<=nSeg;i++){
+   const t=i/nSeg,x=t*(1-0.14*t*t),y=arch*Math.sin(t*1.95)-droop*t*t*t;
+   const env=Math.sin(Math.pow(t,0.62)*Math.PI*0.96)*(0.88+0.12*(1-t)),w=halfW*(0.08+0.92*env),vf=vFold*env;
+   L.push([x,y-vf,-w,0,t]);C0.push([x,y,0,0.5,t]);R0.push([x,y-vf,w,1,t]);
+  }
+  for(let i=0;i<nSeg;i++){
+   [[L[i],C0[i],L[i+1],C0[i+1],-0.28],[C0[i],R0[i],C0[i+1],R0[i+1],0.28]].forEach(s=>{
+    const a=s[0],b=s[1],c=s[2],d=s[3],nz=s[4],nl=Math.hypot(0.15,0.94,nz);
+    [a,b,c,b,d,c].forEach(q=>{pos.push(q[0],q[1],q[2]);uv.push(q[3],q[4]);nor.push(0.15/nl,0.94/nl,nz/nl);});
+   });
+  }
+  return BIO.geo._make(pos,nor,uv);
+ }
+ function makeCoconutClusterGeo(){
+  const pos=[],nor=[],uv=[],col=[],idx=[],offs=[[0.14,-0.10,0],[-0.12,-0.12,0.09],[0.02,-0.14,-0.13],[0,-0.24,0.02]];
+  offs.forEach(o=>{
+   const s=new T3.IcosahedronGeometry(0.13,1),p=s.attributes.position,n=s.attributes.normal,u=s.attributes.uv,b=pos.length/3;
+   for(let i=0;i<p.count;i++){
+    pos.push(p.getX(i)+o[0],p.getY(i)*1.22+o[1],p.getZ(i)+o[2]);
+    nor.push(n.getX(i),n.getY(i),n.getZ(i));
+    uv.push(u?u.getX(i):0.5,u?u.getY(i):0.5);
+    const sh=0.76+0.24*clamp(p.getY(i)/0.13*0.5+0.5,0,1);
+    col.push(sh,sh,sh*0.92);
+   }
+   if(s.index){const ix=s.index.array;for(let i=0;i<ix.length;i++)idx.push(b+ix[i]);}
+   else for(let i=0;i<p.count;i++)idx.push(b+i);
+  });
+  const g=new T3.BufferGeometry();
+  g.setAttribute('position',new T3.Float32BufferAttribute(pos,3));
+  g.setAttribute('normal',new T3.Float32BufferAttribute(nor,3));
+  g.setAttribute('uv',new T3.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new T3.Float32BufferAttribute(col,3));
+  g.setIndex(idx);
+  return g;
+ }
  function makeRockGeo(seed,flatY,angular){
   const g=new T3.IcosahedronGeometry(1,angular?1:2),p=g.attributes.position,J={};
   for(let i=0;i<p.count;i++){
@@ -303,13 +438,27 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
  BIO.def('ck_palmate',BIO.geo.clump(),M.palmate,{label:'Thorny gorge-panax umbrellas'});
  BIO.def('ck_treefern_stem',BIO.fung.stalk({r0:0.14,r1:0.09,bend:0.12,ribs:7,ribA:0.08,seg:7,rings:5}),M['bark.cypress'],{label:'Fiordland tree-fern fibrous trunk'});
  BIO.def('ck_treefern_frond',BIO.geo.frond(4),M.treefern,{label:'Fiordland tree-fern arching frond'});
+ BIO.def('ck_palm_frond',makeDroopFrondGeo(5,0.34,0.42,0.28,0.075),M.palmFrond,{label:'Drift-sown coconut palm drooping pinnate frond'});
+ BIO.def('ck_coconut_nut',makeCoconutClusterGeo(),M.spongeCushion,{label:'Drift-sown coconut palm nut cluster'});
  BIO.def('ck_skarnfern',BIO.geo.frond(4),M.skarnfern,{attrs:['aC2'],label:'Porcelain-margin jade-fern frond'});
- BIO.def('ck_floorfern',BIO.geo.clump(),M.floorfern,{label:'Montane sword-fern clump'});
+ BIO.def('ck_floorfern',BIO.geo.clump(),M.floorfern,{label:'Montane fern clump'});
+ BIO.def('ck_swordfern',BIO.geo.clump(),M.floorfern,{label:'Nephrite-bench sword-fern rosette'});
+ BIO.def('ck_alder_fol',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Riparian red alder crown foliage'});
+ BIO.def('ck_yew_fol',BIO.geo.clump(),M.spruce,{attrs:['aN'],label:'Vardzieti canyon yew flat needle sprays'});
+ BIO.def('ck_salmon_fol',BIO.geo.clump(),M.maple,{attrs:['aN'],label:'Cascade salmonberry cane leaves'});
+ BIO.def('ck_salmon_berry',BIO.fung.bladder({swell:0.55,neck:0.35,h:0.85,pleats:6,pleatA:0.08,seg:8,rings:4,seed:52112}),M.spongeCup,{label:'Cascade salmonberry ruby-amber cluster'});
+ BIO.def('ck_cabbage_strap',makeDroopFrondGeo(4,0.26,0.44,0.085,0.035),M.cabbageStrap,{label:'Cascade-caldera cabbage-palm strap leaf'});
+ BIO.def('ck_cabbage_panicle',BIO.geo.bloom(),M.blossom,{label:'Cascade-caldera cabbage-palm cream panicle'});
+ BIO.def('ck_lantern_leaf',BIO.geo.clump(),M.rosette,{label:'Golden swamp-lantern glossy bog rosette'});
+ BIO.def('ck_lantern_spathe',BIO.fung.cap({form:'funnel',h:0.95,seg:9,rings:4,wav:3,wavA:0.06,lump:0.12,under:'none',stem:{h:0.18,r:0.12,seg:5},seed:52113}),M.spongeCup,{label:'Golden swamp-lantern canary spathe'});
+ BIO.def('ck_eelgrass',BIO.geo.clump(),M.eelgrassRibbon,{label:'Caldera nursery eelgrass meadow'});
+ BIO.def('ck_ironsax',BIO.geo.clump(),M.rosette,{label:'Iron-seep golden saxifrage mat'});
+ BIO.def('ck_gentian',BIO.geo.bloom(),M.blossom,{label:'Alpine cobalt snow-gentian trumpets'});
  BIO.def('ck_mossbeard',BIO.geo.hang(),M.beard,{label:'Epiphytic rain-moss skein'});
  BIO.def('ck_spongebeard',BIO.geo.hang(),M.beard,{label:'Amber & celadon fog-beard sponge'});
  BIO.def('ck_sedge',BIO.geo.clump(),M.sedge,{label:'Tarn tuft-sedge tussock'});
  BIO.def('ck_frostsedge',BIO.geo.clump(),M.frostsedge,{attrs:['aC2'],label:'Spun frost-glass silica sedge'});
- BIO.def('ck_cotton',BIO.geo.clump(),M.cotton,{label:'Moraine cottongrass tuft'});
+ BIO.def('ck_cotton',BIO.geo.clump(),M.cotton,{label:'Moraine plume-cottongrass tuft'});
  BIO.def('ck_hearth_bract',BIO.geo.clump(),M.rosette,{label:'Thermogenic hearth-ring rosette bracts'});
  BIO.def('ck_mossmat',BIO.geo.mat(),M.moss,{label:'Forest & moraine moss mat'});
  BIO.def('ck_cryoalgae',BIO.geo.mat(),M.moss,{label:'Malachite-teal cryo-snow algae ring'});
@@ -369,7 +518,9 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   westernredcedar:{bucket:'ck_cedar',fol:'ck_cedar_fol',pal:PAL.cedar,barkCol:0x7c5442,H:[30,50],rK:0.025,tiers:8,droop:0.22,buttress:true,conifer:true,spongeHost:true},
   redcypress:{bucket:'ck_cypress',fol:'ck_cypress_fol',pal:PAL.cypress,barkCol:0x865640,H:[28,48],rK:0.029,tiers:7,droop:0.05,buttress:true,flatCrown:true,conifer:false,spongeHost:true},
   bigleafmaple:{bucket:'ck_maple',fol:'ck_maple_fol',pal:PAL.maple,barkCol:0x8e9284,H:[14,24],rK:0.026,tiers:5,droop:0.08,broad:true,spongeHost:true},
+  gorgealder:{bucket:'ck_maple',fol:'ck_alder_fol',pal:PAL.alder,barkCol:0xa8aca2,H:[12,21],rK:0.022,tiers:5,droop:0.06,broad:true,spongeHost:true},
   silverfir:{bucket:'ck_fir',fol:'ck_fir_fol',pal:PAL.fir,barkCol:0x848682,H:[24,40],rK:0.018,tiers:8,droop:0.08,conifer:true,spongeHost:false},
+  canyonyew:{bucket:'ck_cypress',fol:'ck_yew_fol',pal:PAL.yew,barkCol:0x74443e,H:[6,13],rK:0.028,tiers:5,droop:0.10,gnarled:true,conifer:true,spongeHost:false},
   rustcedar:{bucket:'ck_rust',fol:'ck_rustcedar_fol',pal:PAL.cedar,barkCol:0x9c6244,H:[15,28],rK:0.028,tiers:6,droop:0.14,buttress:true,gnarled:true,spongeHost:false},
   furlarch:{bucket:'ck_larch',fol:'ck_larch_fol',pal:PAL.larch,barkCol:0x766254,H:[5,13],rK:0.028,tiers:5,droop:0.15,krummholz:true,spongeHost:false}
  };
@@ -530,12 +681,101 @@ var CROOK={PHYS:CROOK_PHYS,SITES:CROOK_SITES,FAUNA:CROOK_PHYS.FAUNA,CROPS:CROOK_
   }
  };
 
+ // Drift-Sown Coconut Palm (Cocos nucifera, 8.5-15.5 m): J-curved ringed trunk, 4-nut cluster & 12 spiralling drooping fronds
+ CROOK.growCoconut=function(x,y,z,seed,scale,leanAz){
+  const sc=scale==null?1:scale;
+  const H0=(8.6+6.6*H(seed,1,0,0x331))*sc;
+  const r0=clamp(0.24+H0*0.006,0.24,0.35);
+  const az=leanAz==null?H(seed,2,0,0x331)*TAU:leanAz+0.28*(H(seed,2,1,0x331)-0.5);
+  const lean=0.16+0.18*H(seed,3,0,0x331);
+  const barkHex=PAL.palmTrunk[(seed>>>0)%PAL.palmTrunk.length];
+  let tris=0;
+  const ownPrev=BIO.owner;
+  BIO.owner=[x,z];
+  try{
+   const nSeg=8,pts=[];
+   const riseH=H0*(1-0.14*lean*lean);
+   for(let i=0;i<=nSeg;i++){
+    const t=i/nSeg;
+    const rad=H0*lean*(0.68*t+0.32*t*t);
+    const flare=i===0?1.38:i===1?1.14:1.0;
+    pts.push({
+     x:x+Math.cos(az)*rad,
+     y:y-0.35+(riseH+0.35)*t,
+     z:z+Math.sin(az)*rad,
+     r:lerp(r0,r0*0.52,Math.pow(t,0.85))*flare
+    });
+   }
+   tris+=BIO.tube('ck_palm',pts,barkHex,{seg:7,rfn:q=>1+0.055*((q%2)?1:-1)});
+   const top=pts[nSeg];
+   const nutS=0.95+0.24*H(seed,4,0,0x331);
+   BIO.put('ck_coconut_nut',[top.x,top.y-0.12,top.z],qEuler(0,az+1.1,0),[nutS,nutS,nutS],C(PAL.coconutNut[(seed>>>0)%PAL.coconutNut.length]));
+   const nF=12,gold=2.399963,fLen=clamp(2.5+H0*0.11,2.8,4.2);
+   for(let k=0;k<nF;k++){
+    const age=k/(nF-1),faz=az+k*gold+0.15*(H(seed,10+k,1,0x332)-0.5);
+    const pitch=lerp(0.76,-0.30,Math.pow(age,0.88))+0.07*(H(seed,10+k,2,0x332)-0.5);
+    const Lf=fLen*(age<0.2?0.82:age>0.82?0.88:1.0)*(0.92+0.16*H(seed,10+k,3,0x332));
+    const cHex=age>0.80?PAL.palmOld[k%PAL.palmOld.length]:PAL.palm[(k+(seed>>>0))%PAL.palm.length];
+    BIO.put('ck_palm_frond',[top.x,top.y+0.02-0.12*age,top.z],qEuler((H(seed,10+k,4,0x332)-0.5)*0.12,-faz,pitch),[Lf,Lf*0.95,Lf*1.08],C(cHex));
+   }
+  }finally{
+   BIO.owner=ownPrev;
+  }
+  return{tris:tris,H:H0,r0:r0};
+ };
+
+ // Cascade-Caldera Cabbage-Palm (Cordyline, 4.5-9.5 m): forked ringed trunk, fountain strap rosettes & cream flower panicles
+ CROOK.growCalderaPalm=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale,H0=(4.6+4.6*H(seed,1,0,0x341))*sc,r0=clamp(0.14+H0*0.012,0.14,0.24);
+  const yaw=H(seed,2,0,0x341)*TAU,barkHex=PAL.palmTrunk[(seed>>>0)%PAL.palmTrunk.length];
+  let tris=0;
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   const forkY=y+H0*0.56;
+   tris+=BIO.tube('ck_palm',[{x:x,y:y-0.3,z:z,r:r0*1.25},{x:x+Math.cos(yaw)*0.18,y:lerp(y,forkY,0.5),z:z+Math.sin(yaw)*0.18,r:r0*0.88},{x:x+Math.cos(yaw)*0.28,y:forkY,z:z+Math.sin(yaw)*0.28,r:r0*0.72}],barkHex,{seg:6});
+   const nHd=2+(seed%2);
+   for(let hd=0;hd<nHd;hd++){
+    const haz=yaw+(hd-(nHd-1)*0.5)*1.45+0.25*(H(seed,hd+4,1,0x341)-0.5),hL=H0*(0.32+0.12*H(seed,hd+4,2,0x341));
+    const hx=x+Math.cos(yaw)*0.28+Math.cos(haz)*hL*0.58,hy=forkY+hL*0.82,hz=z+Math.sin(yaw)*0.28+Math.sin(haz)*hL*0.58;
+    const hPts=BIO.flareJoin([{x:x+Math.cos(yaw)*0.28,y:forkY,z:z+Math.sin(yaw)*0.28,r:r0*0.56},{x:hx,y:hy,z:hz,r:r0*0.36}],{parentR:r0*0.72,k:1.35,sink:0.4,len:1.2});
+    tris+=BIO.tube('ck_palm',hPts,barkHex,{seg:5});
+    const nS=11,sL=clamp(H0*0.24,1.05,1.95);
+    for(let s=0;s<nS;s++){
+     const age=s/(nS-1),saz=s*2.399963+hd*1.1,pitch=lerp(0.92,-0.34,age);
+     BIO.put('ck_cabbage_strap',[hx,hy-0.03*age,hz],qEuler(0,-saz,pitch),[sL*(age<0.22?0.76:1),sL*0.85,sL*0.55],C(PAL.cabbageLeaf[(s+hd)%PAL.cabbageLeaf.length]));
+    }
+    if(hd===0&&H(seed,19,0,0x341)<0.72){
+     BIO.put('ck_cabbage_panicle',[hx,hy+0.05,hz],qEuler(0.18,haz,0),[0.58,0.68,0.58],PAL.cabbagePanicle[seed%2]);
+    }
+   }
+  }finally{BIO.owner=ownPrev;}
+  return{tris:tris,H:H0};
+ };
+
+ // Cascade Salmonberry (Rubus spectabilis, 1.6-3.2 m): arching canes with leaf sprays & ruby-amber berries
+ CROOK.growSalmonberry=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale,H0=(1.7+1.4*H(seed,1,0,0x351))*sc,nC=3+(seed%2);
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   for(let k=0;k<nC;k++){
+    const az=(k/nC)*TAU+0.4*H(seed,k+2,1,0x351),sp=H0*(0.42+0.20*H(seed,k+2,2,0x351)),ey=y+H0*(0.68+0.22*H(seed,k+2,3,0x351));
+    const mx=x+Math.cos(az)*sp*0.52,mz=z+Math.sin(az)*sp*0.52,ex=x+Math.cos(az)*sp,ez=z+Math.sin(az)*sp;
+    BIO.tube('ck_maple',[{x:x,y:y-0.18,z:z,r:0.045*sc},{x:mx,y:lerp(y,ey,0.68),z:mz,r:0.032*sc},{x:ex,y:ey,z:ez,r:0.018*sc}],0x8c6e4c,{seg:4});
+    const ps=H0*0.48;
+    BIO.put('ck_salmon_fol',[ex,ey-0.03,ez],qEuler(0,az,0),[ps,ps*0.66,ps],PAL.salmonLeaf[(seed+k)%PAL.salmonLeaf.length],{n:[0,1,0]});
+    if(k<2){
+     BIO.put('ck_salmon_berry',[ex+Math.cos(az)*0.08,ey-0.12,ez+Math.sin(az)*0.08],qEuler(0,az,0),[0.12,0.14,0.12],PAL.salmonBerry[(seed+k)%PAL.salmonBerry.length]);
+    }
+   }
+  }finally{BIO.owner=ownPrev;}
+ };
+
  // Octahedral impostors (34-core-impostor.js) scoped to active station tree species
  if(BIO.impostorSet&&BIO.impostor&&BIO.impostorItem){
   const impKeys=SKEY==='shore'
-   ?['coastspruce','westernredcedar','redcypress','bigleafmaple']
+   ?['coastspruce','westernredcedar','redcypress','bigleafmaple','gorgealder']
    :SKEY==='wash'
-   ?['redcypress','silverfir','westernredcedar','bigleafmaple','rustcedar']
+   ?['redcypress','silverfir','westernredcedar','bigleafmaple','gorgealder','canyonyew','rustcedar']
    :['furlarch'];
   const IMP_SET=CROOK.IMP_SET=BIO.impostorSet('crook-trees',{grid:4,cell:48,slots:impKeys.length});
   CROOK.IMP={};

@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.468,
+    1.365
+   ],
+   "seam_before": [
+    1.059,
+    0.948
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": false,
+   "rough": 0.24,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "stone.ammolite.opalshell",
+  "metal": 0.0,
+  "roughness": 0.24,
+  "scale": [
+   0.22,
+   0.22
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "stone_ammolite_opalshell.png",
+  "generator": "Codex image generation, Nov 2026 (ammolite-karst-seamless-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Polished fossil ammolite opal-shell mosaic set in dark grey karst limestone matrix (#2c2e30) at 22 cm scale, interlocking tabular aragonite shell platelets flashing saturated crimson-red (#b8372a), emerald-green (#239468), and amber-gold (#d89a2b) iridescence along natural crazed fracture lines. Full colour.",
+  "sha1": "c672f1b01cc4af55599617b5044a7b516bc22ff6"
+ }
+}
