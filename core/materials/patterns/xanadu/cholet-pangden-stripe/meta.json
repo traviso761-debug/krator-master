@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2024,
+    1813
+   ],
+   "seam_after": [
+    1.228,
+    0.887
+   ],
+   "seam_before": [
+    3.401,
+    2.395
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "xanadu/cholet-pangden-stripe",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "highland-wool-apron-seamless.png",
+  "generator": "Codex image generation, Nov 2026 (highland-wool-apron-seamless.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of hand-loomed highland wool apron cloth combining Tibetan pangden horizontal warp stripes with Andean cholet stepped-diamond fret bands (six stepped diamonds across and four stripe cycles down, aligning cleanly across every edge), woven in saffron yellow (#e08818), pomegranate crimson (#982030), peacock teal (#166874), rose-pink (#c84474), and natural cream wool (#e8dec8), coarse two-ply wool yarn clearly visible. Full colour.",
+  "sha1": "903b965e0a444cdce1ecf25848142a69a9a68d85"
+ }
+}

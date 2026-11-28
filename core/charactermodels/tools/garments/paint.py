@@ -54,27 +54,90 @@ C = {
     'ivory': (0.92, 0.89, 0.80), 'sage': (0.48, 0.56, 0.44), 'scarlet': (0.78, 0.12, 0.12),
     'khaki': (0.68, 0.62, 0.46), 'olivegrey': (0.38, 0.40, 0.34), 'steel': (0.52, 0.55, 0.58),
     'plum': (0.36, 0.14, 0.28), 'wine': (0.38, 0.08, 0.14),
+    'viridian': (0.14, 0.42, 0.22), 'pine': (0.06, 0.16, 0.09), 'celadon': (0.52, 0.68, 0.56),
+    'lilywhite': (0.91, 0.89, 0.82), 'azure': (0.12, 0.24, 0.62), 'midnight': (0.06, 0.10, 0.26),
+    'bamboo': (0.68, 0.60, 0.36), 'basalt': (0.18, 0.19, 0.21), 'speculum': (0.72, 0.66, 0.54),
+    'snowleopard': (0.82, 0.79, 0.73),
+    # Dasri (Bedouin + Chiricahua/Mescalero Apache)
+    'jusschalk': (0.86, 0.83, 0.76), 'dragoncrimson': (0.50, 0.04, 0.04), 'ebadindigo': (0.04, 0.07, 0.22),
+    'rabbitgold': (0.68, 0.44, 0.06), 'smokebuck': (0.48, 0.28, 0.11), 'goatblack': (0.04, 0.035, 0.035),
+    'nahhascopper': (0.58, 0.28, 0.12), 'oasisturq': (0.08, 0.46, 0.44),
+    # Tabisti / Ibisen (Maghrebi Amazigh + Andean / Reed Lake)
+    'saltlime': (0.88, 0.86, 0.80), 'abysslac': (0.48, 0.035, 0.06), 'atlasindigo': (0.04, 0.08, 0.28),
+    'liikofiteal': (0.05, 0.34, 0.29), 'tinmirror': (0.78, 0.81, 0.85), 'peatumber': (0.14, 0.09, 0.06),
+    'totorareed': (0.66, 0.52, 0.20), 'altarcerulean': (0.10, 0.42, 0.74),
+    # Catch/Twins Caravaneers & Glaziers
+    'halitepink': (0.82, 0.56, 0.58), 'alecappurple': (0.18, 0.06, 0.22), 'stewardorange': (0.62, 0.24, 0.06),
+    'brucitewhite': (0.84, 0.86, 0.82), 'moonglass': (0.72, 0.80, 0.82),
 }
 
 FABRIC = {
+    'metal.steel.hammered': 0.25,
+    'cloth.brocade.damask': 0.26,
+    'cloth.mylar.foil': 0.24,
+    'cloth.cryo.elastomer': 0.24,
+    'armor.biogel.vat': 0.26,
+    'ceramic.mask.porcelain': 0.22,
+    'cloth.voidsuit.mlis': 0.28,
+    'cloth.fungal.mycelium': 0.26,
+    'leather.chitin.carapace': 0.24,
+    'cloth.kelp.oilskin': 0.28,
+    'plumage.feathers.raptor': 0.22,
+    'skin.keratin.beak': 0.2,
+
     'cloth.weave.plain': 0.12, 'cloth.weave.twill': 0.15, 'cloth.plain': 0.25, 'cloth.silk': 0.3, 'cloth.felt': 0.3,
     'cloth.weave.burlap': 0.2, 'cloth.cotton.coarse': 0.2, 'cloth.wool': 0.2, 'cloth.velvet': 0.2, 'cloth.quilted': 0.3,
     'cloth.bazin': 0.3, 'cloth.oiled': 0.3, 'leather.polished': 0.25, 'leather.buckskin': 0.3, 'fur.short': 0.2,
     'fur.astrakhan': 0.15, 'straw.plaited': 0.2, 'beads.glass': 0.12, 'shell.nacre': 0.3, 'metal.gold': 0.3,
-    'metal.bronze': 0.3, 'metal.iron': 0.3, 'metal.brass.braid': 0.2
+    'metal.bronze': 0.3, 'metal.iron': 0.3, 'metal.brass.braid': 0.2,
+    'cloth.lead.oiled': 0.28, 'glass.moonglass.leaded': 0.22,
+    'metal.tin.patchwork': 0.24, 'rubber.tyre': 0.26, 'cloth.tent.black': 0.28,
+    # Newly delivered 2026-11-24 clothing-scale weaves, leathers, furs & armours:
+    'cloth.cotton.muslin': 0.18, 'cloth.linen.sea': 0.22, 'cloth.ramie.stepped': 0.20,
+    'cloth.silk.slub': 0.22, 'cloth.silk.shot': 0.18, 'cloth.silk.spider': 0.20,
+    'cloth.wool.fulled': 0.22, 'cloth.felt.boiled': 0.24, 'cloth.velvet.cut': 0.20,
+    'cloth.bazin.damask': 0.26, 'cloth.quilted.diamond': 0.28, 'cloth.quilted.channel': 0.25,
+    'cloth.canvas.oiled': 0.28, 'cloth.oiled.alkali': 0.30,
+    'cloth.bark.tapa': 0.26, 'cloth.bark.cedar': 0.26, 'straw.reed.plaited': 0.20,
+    'leather.cuir_bouilli': 0.28, 'leather.pteruges.studded': 0.28,
+    'leather.shagreen.rayskin': 0.16, 'leather.reptile.scute': 0.24,
+    'fur.sable.sheared': 0.20, 'fur.wolf': 0.26, 'fur.yak': 0.28, 'fur.caribou': 0.22, 'fur.muskox': 0.25,
+    'armor.mail.hamata': 0.16, 'armor.scale.squamata': 0.22, 'armor.lorica.lames': 0.28,
+    'armor.linothorax.twill': 0.24, 'armor.lamellar.rawhide': 0.24, 'armor.lamellar.horn': 0.24,
+    # Wave-2 2026-11-24 clothing-scale weaves, leathers, skins, metals, stones & armours:
+    'cloth.slops.abaca_stripe': 0.30, 'cloth.gansey.sea_knit': 0.26, 'cloth.oilskin.tarred_seams': 0.35,
+    'cloth.silk.beadcone': 0.28, 'cloth.silk.golden_cable': 0.24, 'cloth.wool.hoar_orchil': 0.30,
+    'leather.foundry.pigskin': 0.28, 'hide.sealslick.oiled': 0.26,
+    'skin.amphibian.warty_toad': 0.18, 'plumage.contour.corvid': 0.20, 'keratin.beak.hornbill': 0.16,
+    'armor.lamellar.bronze': 0.24, 'armor.lamellar.iron': 0.24, 'armor.lamellar.urushi': 0.22,
+    'armor.lamellar.chitin': 0.24, 'armor.osteoderm.scute': 0.28,
+    'armor.salvage.tread_plate': 0.30, 'armor.salvage.ark_barnacle': 0.32,
+    'armor.uruk.slab_iron': 0.30, 'armor.ancient.hex_weave': 0.24, 'armor.republic.cuirass_steel': 0.30,
+    'metal.paktong.brushed': 0.24, 'chitin.shroudant.bronze': 0.24,
+    'stone.ammolite.opalshell': 0.20, 'stone.obsidian.pancake_flaked': 0.20,
+    # Additional synced library grains:
+    'hide.gut': 0.25, 'hide.panels.sewn': 0.30, 'metal.bronze.verdigris': 0.28,
+    'metal.steel.brushed': 0.25, 'cloth.canvas.duck.army': 0.25, 'cloth.seaweed': 0.24,
 }
 FABRIC_OF = {
-    'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 'sahel': 'cloth.cotton.coarse',
-    'white': 'cloth.cotton.coarse', 'linen': 'cloth.plain', 'sealinen': 'cloth.plain', 'cream': 'cloth.plain',
-    'leather': 'leather.polished', 'saddle': 'leather.polished', 'hide': 'leather.buckskin', 'buck': 'leather.buckskin',
-    'fur': 'fur.short', 'darkfur': 'fur.short', 'felt': 'cloth.felt', 'velvet': 'cloth.velvet',
-    'purple': 'cloth.silk', 'crimson': 'cloth.silk', 'mongolblue': 'cloth.silk', 'saffron': 'cloth.silk', 'maroon': 'cloth.silk',
-    'yuniyellow': 'cloth.bazin', 'drab': 'cloth.quilted', 'repgrey': 'cloth.wool', 'repgreyd': 'cloth.wool',
-    'repblack': 'cloth.wool', 'repred': 'cloth.wool', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
+    'maguey': 'cloth.weave.burlap', 'cotton': 'cloth.cotton.coarse', 'sahel': 'cloth.cotton.muslin',
+    'white': 'cloth.cotton.coarse', 'linen': 'cloth.plain', 'sealinen': 'cloth.linen.sea', 'cream': 'cloth.plain',
+    'leather': 'leather.polished', 'saddle': 'leather.cuir_bouilli', 'hide': 'leather.buckskin', 'buck': 'leather.buckskin',
+    'smokebuck': 'leather.buckskin',
+    'fur': 'fur.wolf', 'darkfur': 'fur.sable.sheared', 'sable': 'fur.sable.sheared',
+    'felt': 'cloth.felt.boiled', 'velvet': 'cloth.velvet.cut',
+    'purple': 'cloth.silk', 'crimson': 'cloth.silk', 'mongolblue': 'cloth.silk.slub', 'saffron': 'cloth.silk.slub', 'maroon': 'cloth.silk',
+    'plum': 'cloth.wool.hoar_orchil', 'ancient': 'armor.ancient.hex_weave', 'speculum': 'metal.paktong.brushed',
+    'yuniyellow': 'cloth.bazin.damask', 'drab': 'cloth.quilted.diamond', 'drabd': 'cloth.quilted.diamond',
+    'repgrey': 'cloth.wool.fulled', 'repgreyd': 'cloth.wool.fulled',
+    'repblack': 'cloth.wool.fulled', 'repred': 'cloth.wool.fulled', 'repochre': 'cloth.wool', 'repcream': 'cloth.plain',
+    'loden': 'cloth.wool.fulled',
     'nacre': 'shell.nacre', 'gold': 'metal.gold', 'bronze': 'metal.bronze', 'copper': 'metal.bronze', 'brass': 'metal.bronze',
-    'iron': 'metal.iron', 'silver': 'metal.iron', 'yakbrown': 'cloth.wool', 'earth': 'cloth.wool', 'umber': 'cloth.wool',
-    'pomegranate': 'cloth.silk', 'kesar': 'cloth.silk', 'peacock': 'cloth.silk', 'lacrose': 'cloth.silk',
-    'osaffron': 'cloth.cotton.coarse', 'omaroon': 'cloth.wool',
+    'iron': 'metal.iron', 'silver': 'metal.iron', 'yakbrown': 'fur.yak', 'earth': 'cloth.wool', 'umber': 'cloth.wool',
+    'pomegranate': 'cloth.silk.slub', 'kesar': 'cloth.silk.slub', 'peacock': 'cloth.silk.shot', 'lacrose': 'cloth.silk.slub',
+    'ribpink': 'cloth.silk.shot', 'ribgreen': 'cloth.silk.shot',
+    'totorareed': 'straw.reed.plaited', 'moonglass': 'glass.moonglass.leaded',
+    'osaffron': 'cloth.cotton.coarse', 'omaroon': 'cloth.wool.fulled',
     'dunesand': 'cloth.cotton.coarse', 'duneumber': 'cloth.wool', 'shroudtaupe': 'cloth.cotton.coarse',
     'shroudoat': 'cloth.weave.burlap', 'ashrobe': 'cloth.weave.burlap'
 }
@@ -153,6 +216,30 @@ CULTURAL_TEX_PATHS = {
     'tex.xanadu_sun':       REPO_ROOT / 'settlements/xanadu/tex/xSun.albedo.webp',
     'tex.xanadu_mosaic':    REPO_ROOT / 'settlements/xanadu/tex/xMosC.albedo.webp',
     'tex.xanadu_twig':      LIB / 'band.xanadu.twig/albedo.jpg',
+    'tex.xanadu_khalat_brocade': REPO_ROOT / 'core/materials/patterns/xanadu/khalat-wheel-brocade/albedo.jpg',
+    'tex.xanadu_cholet_pangden': REPO_ROOT / 'core/materials/patterns/xanadu/cholet-pangden-stripe/albedo.jpg',
+    'tex.xanadu_prismarchy':     REPO_ROOT / 'core/materials/patterns/xanadu/prismarchy-eight-spoke/albedo.jpg',
+    'tex.xanadu_chahar_aina':    REPO_ROOT / 'core/materials/patterns/xanadu/chahar-aina-damascened/albedo.jpg',
+    'tex.xanadu_moonglass':      REPO_ROOT / 'core/materials/patterns/xanadu/moonglass-opal/albedo.jpg',
+    'tex.historians_kesa':       REPO_ROOT / 'core/materials/patterns/historians/saffron-kesa-patchwork/albedo.jpg',
+    'tex.historians_procrastinator': REPO_ROOT / 'core/materials/patterns/historians/procrastinator-bronze-etched/albedo.jpg',
+    'tex.historians_labyrinth':  REPO_ROOT / 'core/materials/patterns/historians/labyrinth-panel/albedo.jpg',
+    'tex.cloth_lead_oiled':      LIB / 'cloth.lead.oiled/albedo.jpg',
+    'tex.marr_compass_wave':     REPO_ROOT / 'core/materials/patterns/marr/compass-wave-trim/albedo.jpg',
+    'tex.hykkousoi_wind_wave':   REPO_ROOT / 'core/materials/patterns/hykkousoi/wind-wave-border/albedo.jpg',
+    'tex.screamers_dot_skull':   REPO_ROOT / 'core/materials/patterns/screamers/dot-skull-hardwood/albedo.jpg',
+    'tex.screamers_plastic_mosaic': REPO_ROOT / 'core/materials/patterns/screamers/plastic-rust-mosaic/albedo.jpg',
+    'tex.coyote_runner_weave':   REPO_ROOT / 'core/materials/patterns/coyote/turquoise-runner-weave/albedo.jpg',
+    'tex.korona_hum_pitcher':    REPO_ROOT / 'core/materials/patterns/korona/hum-contour-pitcher/albedo.jpg',
+    'tex.trim_lace_filigree':    REPO_ROOT / 'core/materials/patterns/common/trim-lace-filigree/albedo.png',
+    'tex.pylon_hex_grille':      REPO_ROOT / 'core/materials/patterns/pylon/hex-grille/albedo.png',
+    'tex.quilted_diamond':       LIB / 'cloth.quilted.diamond/albedo.jpg',
+    'tex.lorica_lames':          LIB / 'armor.lorica.lames/albedo.jpg',
+    'tex.lamellar_horn':         LIB / 'armor.lamellar.horn/albedo.jpg',
+    'tex.lamellar_rawhide':      LIB / 'armor.lamellar.rawhide/albedo.jpg',
+    'tex.mail_hamata':           LIB / 'armor.mail.hamata/albedo.jpg',
+    'tex.scale_squamata':        LIB / 'armor.scale.squamata/albedo.jpg',
+    'tex.pteruges_studded':      LIB / 'leather.pteruges.studded/albedo.jpg',
     'tex.iziz_brocade':     REPO_ROOT / 'settlements/iziz/tex/courtBrocade.albedo.webp',
     'tex.iziz_carpet_a':    REPO_ROOT / 'settlements/iziz/tex/courtCarpetA.albedo.webp',
     'tex.iziz_carpet_b':    REPO_ROOT / 'settlements/iziz/tex/courtCarpetB.albedo.webp',
@@ -177,6 +264,14 @@ CULTURAL_TEX_PATHS = {
     'tex.reedlake_band':    REPO_ROOT / 'settlements/reedlake/tex/rlBand.albedo.webp',
     'tex.reedlake_cloth':   REPO_ROOT / 'settlements/reedlake/tex/rlClothT.albedo.webp',
     'tex.reedlake_fringe':  REPO_ROOT / 'settlements/reedlake/tex/rlFringe.albedo.webp',
+    'tex.nomad_sadu':       REPO_ROOT / 'core/materials/patterns/nomad/sadu-band/albedo.jpg',
+    'tex.nomad_sadu_green': REPO_ROOT / 'core/materials/patterns/nomad/sadu-band.green/albedo.jpg',
+    'tex.nomad_lining':     REPO_ROOT / 'core/materials/patterns/nomad/lining-muted/albedo.jpg',
+    'tex.reedlake_awayo':   REPO_ROOT / 'core/materials/patterns/reedlake/awayo/albedo.jpg',
+    'tex.reedlake_chakana': REPO_ROOT / 'core/materials/patterns/reedlake/chakana/albedo.jpg',
+    'tex.reedlake_chakana_red': REPO_ROOT / 'core/materials/patterns/reedlake/chakana-textile-red/albedo.jpg',
+    'tex.reedlake_chakana_terra': REPO_ROOT / 'core/materials/patterns/reedlake/chakana-textile-terracotta/albedo.jpg',
+    'tex.tin_patchwork':    LIB / 'metal.tin.patchwork/albedo.jpg',
     'tex.yuni_rug':         REPO_ROOT / 'settlements/yuni/tex/rug.albedo.webp',
     'tex.yuni_mosaic':      REPO_ROOT / 'settlements/yuni/tex/mosaic.albedo.webp',
     'tex.yuni_paint':       REPO_ROOT / 'settlements/yuni/tex/paintcol.albedo.webp',
@@ -188,37 +283,281 @@ CULTURAL_TEX_PATHS = {
     'tex.damask_maze':      LIB / 'cloth.damask.maze/albedo.jpg',
     'tex.embroidery_cross': LIB / 'embroidery.cross/albedo.jpg',
     'tex.embroidery_saxon': LIB / 'embroidery.saxon/albedo.jpg',
+    # Wave-2 2026-11-24 library armours/stones & 79 cultural pattern/card sheets:
+    'tex.lamellar_bronze':       LIB / 'armor.lamellar.bronze/albedo.jpg',
+    'tex.lamellar_iron':         LIB / 'armor.lamellar.iron/albedo.jpg',
+    'tex.lamellar_urushi':       LIB / 'armor.lamellar.urushi/albedo.jpg',
+    'tex.lamellar_chitin':       LIB / 'armor.lamellar.chitin/albedo.jpg',
+    'tex.osteoderm_scute':       LIB / 'armor.osteoderm.scute/albedo.jpg',
+    'tex.salvage_tread_plate':   LIB / 'armor.salvage.tread_plate/albedo.jpg',
+    'tex.salvage_ark_barnacle':  LIB / 'armor.salvage.ark_barnacle/albedo.jpg',
+    'tex.uruk_slab_iron':        LIB / 'armor.uruk.slab_iron/albedo.jpg',
+    'tex.ancient_hex_weave':     LIB / 'armor.ancient.hex_weave/albedo.jpg',
+    'tex.republic_cuirass_steel': LIB / 'armor.republic.cuirass_steel/albedo.jpg',
+    'tex.ammolite_opalshell':    LIB / 'stone.ammolite.opalshell/albedo.jpg',
+    'tex.obsidian_flaked':       LIB / 'stone.obsidian.pancake_flaked/albedo.jpg',
+    'tex.trim_bead_fringe':      REPO_ROOT / 'core/materials/patterns/common/trim-bead-fringe/albedo.png',
+    'tex.trim_feather_fringe':   REPO_ROOT / 'core/materials/patterns/common/trim-feather-fringe/albedo.png',
+    'tex.eternian_pierced_collar': REPO_ROOT / 'core/materials/patterns/eternian/screen-pierced-collar/albedo.png',
+    'tex.historians_bone_apron_cham': REPO_ROOT / 'core/materials/patterns/historians/bone-apron-cham/albedo.png',
+    'tex.jimjam_zenana_coin_veil': REPO_ROOT / 'core/materials/patterns/jimjam/zenana-coin-veil/albedo.png',
+    'tex.andaru_brimstone_weave': REPO_ROOT / 'core/materials/patterns/andaru/brimstone-plume-weave/albedo.jpg',
+    'tex.andaru_obsidian_scale': REPO_ROOT / 'core/materials/patterns/andaru/obsidian-tachylite-scale/albedo.jpg',
+    'tex.bandits_desert_mudcloth': REPO_ROOT / 'core/materials/patterns/bandits/desert-bandolier-mudcloth/albedo.jpg',
+    'tex.bandits_shipbreaker_patch': REPO_ROOT / 'core/materials/patterns/bandits/shipbreaker-riveted-patchwork/albedo.jpg',
+    'tex.beastriders_crab_carapace': REPO_ROOT / 'core/materials/patterns/beast-riders/crab-carapace-lacquer/albedo.jpg',
+    'tex.beastriders_pazyryk_felt': REPO_ROOT / 'core/materials/patterns/beast-riders/scythian-pazyryk-felt/albedo.jpg',
+    'tex.beastriders_tiger_pelt': REPO_ROOT / 'core/materials/patterns/beast-riders/tiger-sabercat-pelt/albedo.jpg',
+    'tex.coyote_jasper_brigandine': REPO_ROOT / 'core/materials/patterns/coyote/impactite-jasper-brigandine/albedo.jpg',
+    'tex.dalab_cahokia_copper':  REPO_ROOT / 'core/materials/patterns/dalab/cahokia-copper-repousse/albedo.jpg',
+    'tex.dalab_god_eye_tiwanaku': REPO_ROOT / 'core/materials/patterns/dalab/god-eye-tiwanaku/albedo.jpg',
+    'tex.dasri_juss_qamariya':   REPO_ROOT / 'core/materials/patterns/dasri/juss-qamariya-hirz/albedo.jpg',
+    'tex.dasri_sadu_desert_horn': REPO_ROOT / 'core/materials/patterns/dasri/sadu-desert-horn/albedo.jpg',
+    'tex.stalker_alkali_patchwork': REPO_ROOT / 'core/materials/patterns/desert-bandits/stalker-alkali-patchwork/albedo.jpg',
+    'tex.dilihan_aegean_silk':   REPO_ROOT / 'core/materials/patterns/dilihan/aegean-jimjam-silk/albedo.jpg',
+    'tex.eternian_circuit_maze': REPO_ROOT / 'core/materials/patterns/eternian/circuit-maze-rank/albedo.jpg',
+    'tex.eternian_ancestor_damask': REPO_ROOT / 'core/materials/patterns/eternian/closed-eye-ancestor-damask/albedo.jpg',
+    'tex.eternian_fish_scale':   REPO_ROOT / 'core/materials/patterns/eternian/fish-scale-court/albedo.jpg',
+    'tex.fellgang_roadsign_plaid': REPO_ROOT / 'core/materials/patterns/fellgang/roadsign-plaid-salvage/albedo.jpg',
+    'tex.fleetborn_catechu_ring': REPO_ROOT / 'core/materials/patterns/fleet-born/catechu-three-ring-border/albedo.jpg',
+    'tex.freeclans_falu_check':  REPO_ROOT / 'core/materials/patterns/free-clans/falu-fir-check/albedo.jpg',
+    'tex.geomancers_circuit_strata': REPO_ROOT / 'core/materials/patterns/geomancers/circuit-strata-trim/albedo.jpg',
+    'tex.glazier_vein_register': REPO_ROOT / 'core/materials/patterns/glazier/vein-register/albedo.jpg',
+    'tex.hayrant_ainu_applique': REPO_ROOT / 'core/materials/patterns/hayrant/ainu-silver-applique/albedo.jpg',
+    'tex.historians_longsong_mandala': REPO_ROOT / 'core/materials/patterns/historians/longsong-mandala-brocade/albedo.jpg',
+    'tex.huerukuran_moreu_orca': REPO_ROOT / 'core/materials/patterns/hueru-kuran/moreu-orca-border/albedo.jpg',
+    'tex.hykkousoi_nacre_scale': REPO_ROOT / 'core/materials/patterns/hykkousoi/nacre-bronze-scale/albedo.jpg',
+    'tex.hykkousoi_nacre_meander': REPO_ROOT / 'core/materials/patterns/hykkousoi/nacre-meander-inlay/albedo.jpg',
+    'tex.islander_hukoa_tapa':   REPO_ROOT / 'core/materials/patterns/islander/hukoa-tapa-bark/albedo.jpg',
+    'tex.islander_kautoa_ikat':  REPO_ROOT / 'core/materials/patterns/islander/kautoa-hinggi-ikat/albedo.jpg',
+    'tex.iziz_agbada_scroll':    REPO_ROOT / 'core/materials/patterns/iziz/agbada-scroll-bazin/albedo.jpg',
+    'tex.iziz_clavus_sun_orb':   REPO_ROOT / 'core/materials/patterns/iziz/clavus-sun-orb/albedo.jpg',
+    'tex.iziz_lamellar_watch':   REPO_ROOT / 'core/materials/patterns/iziz/lamellar-ancient-watch/albedo.jpg',
+    'tex.jimjam_jamtokku_stole': REPO_ROOT / 'core/materials/patterns/jimjam/jamtokku-palm-stole/albedo.jpg',
+    'tex.jimjam_kavacha_scale':  REPO_ROOT / 'core/materials/patterns/jimjam/kavacha-clinker-scale/albedo.jpg',
+    'tex.jimjam_three_wheels_zari': REPO_ROOT / 'core/materials/patterns/jimjam/three-wheels-zari/albedo.jpg',
+    'tex.khaayken_amur_mosaic':  REPO_ROOT / 'core/materials/patterns/khaayken/amur-scroll-fur-mosaic/albedo.jpg',
+    'tex.khaayken_ivory_lamellar': REPO_ROOT / 'core/materials/patterns/khaayken/ivory-bog-iron-lamellar/albedo.jpg',
+    'tex.kimr_madder_labyrinth': REPO_ROOT / 'core/materials/patterns/kimr/madder-labyrinth-weave/albedo.jpg',
+    'tex.kimr_spondylus_mosaic': REPO_ROOT / 'core/materials/patterns/kimr/turquoise-spondylus-mosaic/albedo.jpg',
+    'tex.lizardmen_shang_leiwen': REPO_ROOT / 'core/materials/patterns/lizardmen/shang-leiwen-lamellar/albedo.jpg',
+    'tex.maritime_lanong_prize': REPO_ROOT / 'core/materials/patterns/maritime/lanong-patched-prize/albedo.jpg',
+    'tex.maritime_mira_signal':  REPO_ROOT / 'core/materials/patterns/maritime/mira-truce-signal/albedo.jpg',
+    'tex.maritime_ruephus_jack': REPO_ROOT / 'core/materials/patterns/maritime/ruephus-blood-jack/albedo.jpg',
+    'tex.maritime_smuggler_tapa': REPO_ROOT / 'core/materials/patterns/maritime/smuggler-cove-tapa/albedo.jpg',
+    'tex.paintedmen_formline_slats': REPO_ROOT / 'core/materials/patterns/painted-men/tlingit-formline-slats/albedo.jpg',
+    'tex.pirates_hooked_sun':    REPO_ROOT / 'core/materials/patterns/pirates/hooked-sun-jack/albedo.jpg',
+    'tex.pylon_caution_stencil': REPO_ROOT / 'core/materials/patterns/pylon/caution-legion-stencil/albedo.jpg',
+    'tex.pylon_tombstone_bezel': REPO_ROOT / 'core/materials/patterns/pylon/tombstone-bezel-trim/albedo.jpg',
+    'tex.republic_saxon_borten': REPO_ROOT / 'core/materials/patterns/republic/saxon-borten-festive/albedo.jpg',
+    'tex.republic_streltsy_braid': REPO_ROOT / 'core/materials/patterns/republic/streltsy-ryasy-braid/albedo.jpg',
+    'tex.republic_sword_triskelion': REPO_ROOT / 'core/materials/patterns/republic/sword-triskelion-wool/albedo.jpg',
+    'tex.scyvoi_borunsa_tamga':  REPO_ROOT / 'core/materials/patterns/scyvoi/borunsa-tamga-felt/albedo.jpg',
+    'tex.scyvoi_ebon_lamellar':  REPO_ROOT / 'core/materials/patterns/scyvoi/ebon-salvage-lamellar/albedo.jpg',
+    'tex.shell_foundry_mark':    REPO_ROOT / 'core/materials/patterns/shell/foundry-vermilion-mark/albedo.jpg',
+    'tex.shumari_ablaq_silk':    REPO_ROOT / 'core/materials/patterns/shumari/ablaq-mamluk-silk/albedo.jpg',
+    'tex.shumari_shamshir_steel': REPO_ROOT / 'core/materials/patterns/shumari/shamshir-watered-steel/albedo.jpg',
+    'tex.shumari_sumaru_tiraz':  REPO_ROOT / 'core/materials/patterns/shumari/sumaru-kattu-tiraz/albedo.jpg',
+    'tex.shumari_urushi_lamellar': REPO_ROOT / 'core/materials/patterns/shumari/urushi-crimson-lamellar/albedo.jpg',
+    'tex.tabisti_chakana_tocapu': REPO_ROOT / 'core/materials/patterns/tabisti/chakana-tocapu-uncu/albedo.jpg',
+    'tex.tabisti_tin_tizerzai':  REPO_ROOT / 'core/materials/patterns/tabisti/tin-mirror-tizerzai/albedo.jpg',
+    'tex.talia_loros_sun':       REPO_ROOT / 'core/materials/patterns/talia/loros-sun-giant/albedo.jpg',
+    'tex.tungang_highvis_bead':  REPO_ROOT / 'core/materials/patterns/tungang/highvis-bead-stencil/albedo.jpg',
+    'tex.voth_blitrit_brocade':  REPO_ROOT / 'core/materials/patterns/voth/blitrit-diamond-brocade/albedo.jpg',
+    'tex.voth_dunmer_bonemold':  REPO_ROOT / 'core/materials/patterns/voth/dunmer-chitin-bonemold/albedo.jpg',
+    'tex.voth_ordinator_frieze': REPO_ROOT / 'core/materials/patterns/voth/ordinator-emerald-frieze/albedo.jpg',
+    'tex.xanadu_two_horns':      REPO_ROOT / 'core/materials/patterns/xanadu/two-horns-brocade/albedo.jpg',
+    'tex.xanadu_mosaic_brocade': REPO_ROOT / 'core/materials/patterns/xanadu/xanadu-mosaic-brocade/albedo.jpg',
+    'tex.yonni_dyad_scale':      REPO_ROOT / 'core/materials/patterns/yonni/dyad-bronze-slate-scale/albedo.jpg',
+    'tex.yonni_sister_kilim':    REPO_ROOT / 'core/materials/patterns/yonni/sister-cup-kilim/albedo.jpg',
+    'tex.yuni_eucalyptus_bazin': REPO_ROOT / 'core/materials/patterns/yuni/eucalyptus-opal-bazin/albedo.jpg',
+    'tex.yuni_trencadis_mosaic': REPO_ROOT / 'core/materials/patterns/yuni/trencadis-academic-mosaic/albedo.jpg',
+    'tex.yusar_cyber_conduit':   REPO_ROOT / 'core/materials/patterns/yusar/cyber-shibuya-conduit/albedo.jpg',
+    'tex.zeijani_alecap_velvet': REPO_ROOT / 'core/materials/patterns/zeijani/alecap-labyrinth-velvet/albedo.jpg',
+    'tex.zeijani_tablita_painted': REPO_ROOT / 'core/materials/patterns/zeijani/tablita-spirit-painted/albedo.jpg',
+    # Wave-3 2026-11-25 Codex cultural pattern sheets (17 sets):
+    'tex.beastriders_quillwork_yoke':   REPO_ROOT / 'core/materials/patterns/beast-riders/lakota-quillwork-yoke/albedo.jpg',
+    'tex.beastriders_hairpipe_bone':    REPO_ROOT / 'core/materials/patterns/beast-riders/hairpipe-bone-breastplate/albedo.jpg',
+    'tex.beastriders_quetzal_lamellar': REPO_ROOT / 'core/materials/patterns/beast-riders/quetzal-saurian-lamellar/albedo.jpg',
+    'tex.coyote_runner_feather':        REPO_ROOT / 'core/materials/patterns/coyote/runner-feather-band/albedo.jpg',
+    'tex.fleetborn_seve_batik':         REPO_ROOT / 'core/materials/patterns/fleet-born/seve-bleue-batik/albedo.jpg',
+    'tex.fleetborn_paktong_scale':      REPO_ROOT / 'core/materials/patterns/fleet-born/paktong-wave-scale/albedo.jpg',
+    'tex.guari_tiguantin_weave':        REPO_ROOT / 'core/materials/patterns/guari/tiguantin-puna-weave/albedo.jpg',
+    'tex.huerukuran_kamleika_seam':     REPO_ROOT / 'core/materials/patterns/hueru-kuran/kamleika-baleen-seam/albedo.jpg',
+    'tex.huerukuran_baleen_lamellar':   REPO_ROOT / 'core/materials/patterns/hueru-kuran/baleen-nephrite-lamellar/albedo.jpg',
+    'tex.khaayken_gutskin_parka':       REPO_ROOT / 'core/materials/patterns/khaayken/gutskin-sewn-parka/albedo.jpg',
+    'tex.paintedmen_chilkat_weave':     REPO_ROOT / 'core/materials/patterns/painted-men/chilkat-raven-weave/albedo.jpg',
+    'tex.paintedmen_woad_spirals':      REPO_ROOT / 'core/materials/patterns/painted-men/pictish-woad-spirals/albedo.jpg',
+    'tex.talia_damascene_niello':       REPO_ROOT / 'core/materials/patterns/talia/damascene-niello/albedo.jpg',
+    'tex.talovolci_gaulish_tartan':     REPO_ROOT / 'core/materials/patterns/talovolci/gaulish-tartan/albedo.jpg',
+    'tex.talovolci_spiral_triskele':    REPO_ROOT / 'core/materials/patterns/talovolci/right-spiral-triskele/albedo.jpg',
+    'tex.talovolci_ogham_hem':          REPO_ROOT / 'core/materials/patterns/talovolci/ogham-stave-hem/albedo.jpg',
+    'tex.yonni_loni_amber':             REPO_ROOT / 'core/materials/patterns/yonni/loni-amber-brocade/albedo.jpg',
 }
 CULTURAL_TEX_CACHE = {}
 
 # Cultural procedural motifs automatically accented with authentic settlement/library texture-pack patterns
 CULTURAL_MOTIF_PACK_MAP = {
-    'peony_brocade':       ('tex.highlands_folk',   0.65, 0.25),
-    'dalab_solar_weave':   ('tex.dalab_deco',       0.52, 0.30),
-    'ordinator_cuirass':   ('tex.voth_ordinator',   0.52, 0.28),
-    'voth_glyphs':         ('tex.voth_solar',       0.50, 0.30),
-    'xanadu_sun_wheel':    ('tex.xanadu_band',      0.48, 0.30),
-    'tocharian_wheel':     ('tex.longsong_glyph',   0.45, 0.35),
-    'gold_chain_frieze':   ('tex.voth_damask',      0.58, 0.30),
-    'patchwork_harlequin': ('tex.highlands_caihua', 0.50, 0.28),
-    'bogolan':             ('tex.bogolan',          0.62, 0.35),
-    'islamic_star':        ('tex.iziz_carpet_a',    0.52, 0.32),
-    'paisley_vine':        ('tex.iziz_brocade',     0.58, 0.30),
-    'nomad_diamond':       ('tex.reedlake_band',    0.55, 0.32),
-    'diamonds':            ('tex.voth_kilim',       0.46, 0.35),
-    'chevron':             ('tex.reedlake_band',    0.42, 0.35),
-    'chevrons':            ('tex.reedlake_band',    0.42, 0.35),
-    'zigzag':              ('tex.reedlake_band',    0.42, 0.35),
-    'fret':                ('tex.voth_solar',       0.46, 0.38),
-    'steps':               ('tex.voth_kilim',       0.48, 0.35),
-    'rose':                ('tex.embroidery_saxon', 0.52, 0.32),
-    'knot':                ('tex.girder_tapestry',  0.45, 0.35),
-    'wave':                ('tex.ys_band',          0.42, 0.35),
+    'peony_brocade':       ('tex.highlands_folk',            0.65, 0.25),
+    'dalab_solar_weave':   ('tex.dalab_god_eye_tiwanaku',    0.66, 0.20),
+    'heliophant_pectoral': ('tex.dalab_cahokia_copper',      0.58, 0.22),
+    'sun_burst_ikat':      ('tex.dalab_god_eye_tiwanaku',    0.58, 0.24),
+    'ordinator_cuirass':   ('tex.voth_ordinator_frieze',     0.64, 0.22),
+    'tzintzun_emerald_stole': ('tex.voth_ordinator_frieze',  0.62, 0.22),
+    'tzintzun_tapestry':   ('tex.voth_blitrit_brocade',      0.52, 0.26),
+    'voth_glyphs':         ('tex.voth_blitrit_brocade',      0.64, 0.22),
+    'chosen_tapestry':     ('tex.voth_blitrit_brocade',      0.68, 0.20),
+    'dunmer_bonemold':     ('tex.voth_dunmer_bonemold',      0.80, 0.20),
+    'xanadu_sun_wheel':      ('tex.xanadu_khalat_brocade',     0.58, 0.24),
+    'xanadu_mosaic':         ('tex.xanadu_mosaic_brocade',     0.68, 0.20),
+    'two_horns_brocade':     ('tex.xanadu_two_horns',          0.75, 0.18),
+    'tocharian_wheel':       ('tex.xanadu_prismarchy',         0.62, 0.20),
+    'chahar_aina':           ('tex.xanadu_chahar_aina',        0.62, 0.22),
+    'cholet_pangden':        ('tex.xanadu_cholet_pangden',     0.68, 0.18),
+    'moonglass_opal':        ('tex.xanadu_moonglass',          0.65, 0.20),
+    'procrastinator_wheel':  ('tex.historians_procrastinator', 0.65, 0.18),
+    'saffron_kesa':          ('tex.historians_kesa',           0.68, 0.18),
+    'labyrinth_panel':       ('tex.historians_labyrinth',      0.68, 0.20),
+    'bone_apron':            ('tex.historians_bone_apron_cham', 0.80, 0.18),
+    'longsong_glyph':        ('tex.longsong_glyph',            0.58, 0.24),
+    'longsong_mandala':      ('tex.historians_longsong_mandala', 0.72, 0.18),
+    'longsong_thangka':      ('tex.longsong_thangka',          0.58, 0.26),
+    'gold_chain_frieze':     ('tex.talia_loros_sun',           0.62, 0.24),
+    'patchwork_harlequin': ('tex.highlands_caihua',          0.50, 0.28),
+    'bogolan':             ('tex.bandits_desert_mudcloth',   0.68, 0.26),
+    'islamic_star':        ('tex.shumari_ablaq_silk',        0.62, 0.24),
+    'agbada_scroll':       ('tex.iziz_agbada_scroll',        0.68, 0.20),
+    'fila_embroidery':     ('tex.iziz_agbada_scroll',        0.58, 0.24),
+    'lamellar_scale':      ('tex.scale_squamata',            0.62, 0.58),
+    'iziz_lamellar_watch': ('tex.iziz_lamellar_watch',       0.72, 0.20),
+    'iziz_clavus_sun_orb': ('tex.iziz_clavus_sun_orb',       0.72, 0.20),
+    'paisley_vine':        ('tex.yuni_eucalyptus_bazin',     0.64, 0.22),
+    'eucalyptus_bazin':    ('tex.yuni_eucalyptus_bazin',     0.78, 0.18),
+    'trencadis':           ('tex.yuni_trencadis_mosaic',     0.70, 0.20),
+    'cyber_hex_neon':      ('tex.yusar_cyber_conduit',       0.65, 0.24),
+    'eternian_icons':      ('tex.eternian_ancestor_damask',  0.62, 0.22),
+    'eternian_circuit_maze': ('tex.eternian_circuit_maze',   0.72, 0.20),
+    'circuit_schematic':   ('tex.geomancers_circuit_strata', 0.62, 0.22),
+    'ancient_hex':         ('tex.ancient_hex_weave',         0.58, 0.62),
+    'screen_pierced_collar': ('tex.eternian_pierced_collar', 0.85, 0.18),
+    'eternian_fish_scale': ('tex.eternian_fish_scale',       0.78, 0.18),
+    'coin_veil':           ('tex.jimjam_zenana_coin_veil',   0.82, 0.16),
+    'pelagic_stole':       ('tex.jimjam_jamtokku_stole',     0.62, 0.22),
+    'star_stole':          ('tex.jimjam_three_wheels_zari',  0.64, 0.20),
+    'brocade_skirt':       ('tex.jimjam_three_wheels_zari',  0.66, 0.20),
+    'kavacha_scale':       ('tex.jimjam_kavacha_scale',      0.78, 0.18),
+    'nacre_meander':       ('tex.hykkousoi_nacre_meander',   0.80, 0.16),
+    'nacre_bronze_scale':  ('tex.hykkousoi_nacre_scale',     0.78, 0.18),
+    'aegean_jimjam_silk':  ('tex.dilihan_aegean_silk',       0.80, 0.16),
+    'tiger_pelt':          ('tex.beastriders_tiger_pelt',    0.72, 0.16),
+    'tiger':               ('tex.beastriders_tiger_pelt',    0.68, 0.18),
+    'pazyryk_felt':        ('tex.beastriders_pazyryk_felt',  0.78, 0.18),
+    'crab_carapace':       ('tex.beastriders_crab_carapace', 0.78, 0.18),
+    'tlingit_formline_slats': ('tex.paintedmen_formline_slats', 0.78, 0.18),
+    'formline_eye':        ('tex.paintedmen_formline_slats', 0.55, 0.24),
+    'chakana_tocapu':      ('tex.tabisti_chakana_tocapu',    0.78, 0.16),
+    'tin_mirror_tizerzai': ('tex.tabisti_tin_tizerzai',      0.78, 0.18),
+    'zellij_star':         ('tex.tabisti_tin_tizerzai',      0.58, 0.20),
+    'sadu_desert_horn':    ('tex.dasri_sadu_desert_horn',    0.78, 0.16),
+    'juss_qamariya':       ('tex.dasri_juss_qamariya',       0.76, 0.16),
+    'sadu_band':           ('tex.nomad_sadu',                0.68, 0.18),
+    'sadu_green':          ('tex.nomad_sadu_green',          0.68, 0.18),
+    'awayo_stripe':        ('tex.reedlake_awayo',            0.68, 0.18),
+    'chakana_red':         ('tex.reedlake_chakana_red',      0.68, 0.18),
+    'chakana_terra':       ('tex.reedlake_chakana_terra',    0.68, 0.18),
+    'tin_patchwork':       ('tex.tin_patchwork',             0.65, 0.22),
+    'glazier_vein_register': ('tex.glazier_vein_register',   0.78, 0.16),
+    'circuit_strata':      ('tex.geomancers_circuit_strata', 0.78, 0.18),
+    'highvis_bead_stencil': ('tex.tungang_highvis_bead',     0.78, 0.16),
+    'caution_legion_stencil': ('tex.pylon_caution_stencil',  0.78, 0.16),
+    'tombstone_bezel':     ('tex.pylon_tombstone_bezel',     0.78, 0.18),
+    'diamond_quilt':       ('tex.quilted_diamond',           0.52, 0.72),
+    'lorica_lames':        ('tex.lorica_lames',              0.56, 0.68),
+    'bone_lamellar':       ('tex.lamellar_horn',             0.56, 0.64),
+    'ancient_visor':       ('tex.pylon_hex_grille',          0.44, 0.68),
+    'marr_compass_wave':   ('tex.marr_compass_wave',         0.75, 0.16),
+    'hykkousoi_wind_wave': ('tex.hykkousoi_wind_wave',       0.75, 0.16),
+    'dot_skull':           ('tex.screamers_dot_skull',       0.75, 0.16),
+    'plastic_mosaic':      ('tex.screamers_plastic_mosaic',  0.75, 0.16),
+    'coyote_runner_weave': ('tex.coyote_runner_weave',       0.75, 0.16),
+    'coyote_jasper_brigandine': ('tex.coyote_jasper_brigandine', 0.78, 0.18),
+    'korona_hum_pitcher':  ('tex.korona_hum_pitcher',        0.75, 0.16),
+    'lace_filigree':       ('tex.trim_lace_filigree',        0.85, 0.82),
+    'trim_bead_fringe':    ('tex.trim_bead_fringe',          0.85, 0.80),
+    'trim_feather_fringe': ('tex.trim_feather_fringe',       0.85, 0.80),
+    'pylon_hex_grille':    ('tex.pylon_hex_grille',          0.82, 0.75),
+    'andaru_brimstone_weave': ('tex.andaru_brimstone_weave', 0.78, 0.18),
+    'andaru_obsidian_scale': ('tex.andaru_obsidian_scale',   0.78, 0.18),
+    'bandits_shipbreaker_patch': ('tex.bandits_shipbreaker_patch', 0.78, 0.18),
+    'stalker_alkali_patchwork': ('tex.stalker_alkali_patchwork', 0.78, 0.18),
+    'fellgang_roadsign_plaid': ('tex.fellgang_roadsign_plaid', 0.78, 0.18),
+    'fleetborn_catechu_ring': ('tex.fleetborn_catechu_ring', 0.78, 0.18),
+    'hayrant_ainu_applique': ('tex.hayrant_ainu_applique',   0.78, 0.18),
+    'huerukuran_moreu_orca': ('tex.huerukuran_moreu_orca',   0.78, 0.18),
+    'islander_hukoa_tapa': ('tex.islander_hukoa_tapa',       0.78, 0.18),
+    'islander_kautoa_ikat': ('tex.islander_kautoa_ikat',     0.78, 0.18),
+    'khaayken_amur_mosaic': ('tex.khaayken_amur_mosaic',     0.78, 0.18),
+    'khaayken_ivory_lamellar': ('tex.khaayken_ivory_lamellar', 0.78, 0.18),
+    'kimr_madder_labyrinth': ('tex.kimr_madder_labyrinth',   0.78, 0.18),
+    'kimr_spondylus_mosaic': ('tex.kimr_spondylus_mosaic',   0.78, 0.18),
+    'osteoderm_scute':     ('tex.osteoderm_scute',           0.78, 0.18),
+    'lizardmen_shang_leiwen': ('tex.lizardmen_shang_leiwen', 0.78, 0.18),
+    'maritime_lanong_prize': ('tex.maritime_lanong_prize',   0.78, 0.18),
+    'maritime_mira_signal': ('tex.maritime_mira_signal',     0.78, 0.18),
+    'maritime_ruephus_jack': ('tex.maritime_ruephus_jack',   0.78, 0.18),
+    'maritime_smuggler_tapa': ('tex.maritime_smuggler_tapa', 0.78, 0.18),
+    'pirates_hooked_sun':  ('tex.pirates_hooked_sun',        0.78, 0.18),
+    'scyvoi_borunsa_tamga': ('tex.scyvoi_borunsa_tamga',     0.78, 0.18),
+    'scyvoi_ebon_lamellar': ('tex.scyvoi_ebon_lamellar',     0.78, 0.18),
+    'shell_foundry_mark':  ('tex.shell_foundry_mark',        0.78, 0.18),
+    'shumari_ablaq_silk':  ('tex.shumari_ablaq_silk',        0.78, 0.18),
+    'shumari_shamshir_steel': ('tex.shumari_shamshir_steel', 0.78, 0.18),
+    'shumari_sumaru_tiraz': ('tex.shumari_sumaru_tiraz',     0.78, 0.18),
+    'shumari_urushi_lamellar': ('tex.shumari_urushi_lamellar', 0.78, 0.18),
+    'yonni_dyad_scale':    ('tex.yonni_dyad_scale',          0.78, 0.18),
+    'yonni_sister_kilim':  ('tex.yonni_sister_kilim',        0.78, 0.18),
+    'zeijani_alecap_velvet': ('tex.zeijani_alecap_velvet',   0.78, 0.18),
+    'zeijani_tablita_painted': ('tex.zeijani_tablita_painted', 0.78, 0.18),
+    # Wave-3 2026-11-25 cultural motifs & procedural upgrades:
+    'lakota_quillwork':          ('tex.beastriders_quillwork_yoke',   0.78, 0.18),
+    'hairpipe_breastplate':      ('tex.beastriders_hairpipe_bone',    0.80, 0.16),
+    'quetzal_scale':             ('tex.beastriders_quetzal_lamellar', 0.76, 0.18),
+    'quetzal_saurian_lamellar':  ('tex.beastriders_quetzal_lamellar', 0.82, 0.16),
+    'coyote_runner_feather':     ('tex.coyote_runner_feather',        0.80, 0.16),
+    'fleetborn_seve_batik':      ('tex.fleetborn_seve_batik',         0.80, 0.16),
+    'fleetborn_paktong_scale':   ('tex.fleetborn_paktong_scale',      0.80, 0.16),
+    'tiguantin_puna_weave':      ('tex.guari_tiguantin_weave',        0.80, 0.16),
+    'huerukuran_kamleika_seam':  ('tex.huerukuran_kamleika_seam',     0.80, 0.16),
+    'huerukuran_baleen_lamellar': ('tex.huerukuran_baleen_lamellar',  0.80, 0.16),
+    'khaayken_gutskin_parka':    ('tex.khaayken_gutskin_parka',       0.80, 0.16),
+    'chilkat_raven_weave':       ('tex.paintedmen_chilkat_weave',     0.82, 0.16),
+    'pictish_woad_spirals':      ('tex.paintedmen_woad_spirals',      0.80, 0.16),
+    'talia_damascene_niello':    ('tex.talia_damascene_niello',       0.82, 0.16),
+    'gaul_plaid':                ('tex.talovolci_gaulish_tartan',     0.78, 0.18),
+    'gaulish_tartan':            ('tex.talovolci_gaulish_tartan',     0.82, 0.16),
+    'right_spiral':              ('tex.talovolci_spiral_triskele',    0.78, 0.18),
+    'talovolci_spiral_triskele': ('tex.talovolci_spiral_triskele',    0.82, 0.16),
+    'ogham_stave_hem':           ('tex.talovolci_ogham_hem',          0.80, 0.16),
+    'yonni_loni_amber':          ('tex.yonni_loni_amber',             0.80, 0.16),
+    'tartan':              ('tex.freeclans_falu_check',      0.64, 0.24),
+    'triskele':            ('tex.republic_sword_triskelion', 0.64, 0.24),
+    'baroque_scroll':      ('tex.republic_streltsy_braid',   0.62, 0.24),
+    'feather':             ('tex.trim_feather_fringe',       0.72, 0.76),
+    'beads':               ('tex.trim_bead_fringe',          0.70, 0.76),
+    'diamonds':            ('tex.voth_kilim',                0.46, 0.35),
+    'chevron':             ('tex.reedlake_band',             0.42, 0.35),
+    'chevrons':            ('tex.reedlake_band',             0.42, 0.35),
+    'zigzag':              ('tex.reedlake_band',             0.42, 0.35),
+    'fret':                ('tex.voth_solar',                0.46, 0.38),
+    'steps':               ('tex.voth_kilim',                0.48, 0.35),
+    'rose':                ('tex.republic_saxon_borten',     0.64, 0.22),
+    'knot':                ('tex.hayrant_ainu_applique',     0.55, 0.32),
+    'wave':                ('tex.hykkousoi_wind_wave',       0.54, 0.30),
 }
 
 
 def sample_cultural_tex(key, w, h, fg, bg, pal_blend=0.30):
-    """Sample a linear-RGB cultural fabric/pattern texture from the repo texture pack and harmonize with (fg, bg)."""
+    """Sample a linear-RGB (or RGBA cut-out card) cultural fabric/pattern texture and harmonize with (fg, bg)."""
     if key not in CULTURAL_TEX_CACHE:
         arr = None
         p = CULTURAL_TEX_PATHS.get(key)
@@ -226,9 +565,14 @@ def sample_cultural_tex(key, w, h, fg, bg, pal_blend=0.30):
             rp = _resolve_lfs(p)
             if rp.exists() and rp.stat().st_size > 500:
                 try:
-                    im = Image.open(rp).convert('RGB')
-                    px = np.asarray(im, dtype=np.float32) / 255.0
-                    arr = np.power(np.clip(px, 0.0, 1.0), 2.2)
+                    raw_im = Image.open(rp)
+                    if raw_im.mode in ('RGBA', 'LA') or (raw_im.mode == 'P' and 'transparency' in raw_im.info):
+                        rgba = np.asarray(raw_im.convert('RGBA'), dtype=np.float32) / 255.0
+                        rgb_lin = np.power(np.clip(rgba[..., :3], 0.0, 1.0), 2.2)
+                        arr = np.concatenate([rgb_lin, rgba[..., 3:4]], axis=-1)
+                    else:
+                        px = np.asarray(raw_im.convert('RGB'), dtype=np.float32) / 255.0
+                        arr = np.power(np.clip(px, 0.0, 1.0), 2.2)
                 except Exception:
                     arr = None
         CULTURAL_TEX_CACHE[key] = arr
@@ -237,20 +581,44 @@ def sample_cultural_tex(key, w, h, fg, bg, pal_blend=0.30):
         out = np.empty((max(h, 1), max(w, 1), 3), dtype=np.float64)
         out[:] = fg
         return out
-    sh, sw, _ = src.shape
+    sh, sw = src.shape[:2]
     yy = (np.linspace(0.0, 1.0, h, endpoint=False) * sh).astype(int) % sh
     xx = (np.linspace(0.0, 1.0, w, endpoint=False) * sw).astype(int) % sw
-    samp = src[np.ix_(yy, xx)].astype(np.float64)
+    samp_all = src[np.ix_(yy, xx)].astype(np.float64)
+    fg_a = np.asarray(fg, dtype=np.float64).reshape(1, 1, 3)
+    bg_a = np.asarray(bg, dtype=np.float64).reshape(1, 1, 3)
+    if samp_all.shape[2] == 4:
+        samp = samp_all[..., :3]
+        alpha = samp_all[..., 3:4]
+        lum = 0.299 * samp[..., 0] + 0.587 * samp[..., 1] + 0.114 * samp[..., 2]
+        vis = lum[alpha[..., 0] > 0.15]
+        p10, p90 = (float(np.percentile(vis, 10)), float(np.percentile(vis, 90))) if vis.size > 8 else (0.15, 0.85)
+        t_lum = np.clip((lum - p10) / max(p90 - p10, 0.06), 0.0, 1.0)[..., None]
+        fg_tinted = fg_a * (0.42 + 0.72 * t_lum)
+        fg_harm = (1.0 - pal_blend) * samp + pal_blend * fg_tinted
+        return np.clip(bg_a * (1.0 - alpha) + fg_harm * alpha, 0.0, 1.0)
+    samp = samp_all
     lum = 0.299 * samp[..., 0] + 0.587 * samp[..., 1] + 0.114 * samp[..., 2]
     p10, p90 = float(np.percentile(lum, 10)), float(np.percentile(lum, 90))
     t_lum = np.clip((lum - p10) / max(p90 - p10, 0.06), 0.0, 1.0)[..., None]
-    fg_a = np.asarray(fg, dtype=np.float64).reshape(1, 1, 3)
-    bg_a = np.asarray(bg, dtype=np.float64).reshape(1, 1, 3)
     pal_img = bg_a * (1.0 - t_lum) + fg_a * t_lum
     return np.clip((1.0 - pal_blend) * samp + pal_blend * pal_img, 0.0, 1.0)
 
 
+FABRIC_ALIASES = {
+    'cloth.canvas': 'cloth.canvas.oiled',
+    'cloth.cotton': 'cloth.cotton.coarse',
+    'cloth.brocade': 'cloth.bazin.damask',
+    'leather.matte': 'leather.buckskin',
+    'leather.smooth': 'leather.polished',
+    'straw.woven': 'straw.reed.plaited',
+    'fur.calf': 'fur.caribou',
+    'silk': 'cloth.silk',
+}
+
+
 def grain(fid):
+    fid = FABRIC_ALIASES.get(fid, fid)
     if fid not in GRAIN:
         path = _resolve_lfs(LIB / fid / 'albedo.jpg')
         g = None
@@ -1286,6 +1654,38 @@ def motif(style, w, h, fg, bg, aspect=1.0):
         img[hex_rim] = np.array(bg) * 1.45 + 0.04
         img[trace_v | trace_h] = np.array(fg) * 0.85
         img[node_dot] = np.minimum(1.0, np.array(fg) * 1.25 + 0.15)
+    elif style == 'tifinagh_lime':
+        # Authentic Amazigh / Tabisti Tifinagh geometric salt-lime script (yaz cross-bars, concentric lozenges & dots)
+        img[:] = bg
+        border = (np.abs(u - 0.07) < 0.024) | (np.abs(u - 0.93) < 0.024)
+        img[border] = fg
+        n_gv = max(2.0, round(2.8 / max(aspect, 0.20)))
+        nx_gv = max(1.0, round(aspect * n_gv * 0.85))
+        sub_asp = (aspect * n_gv) / nx_gv
+        gv = ((v * n_gv) % 1.0 - 0.5) * max(1.0, 0.9 / max(sub_asp, 0.15))
+        gu = ((u * nx_gv) % 1.0 - 0.5) * 2.2 * max(0.85, sub_asp * 1.1)
+        yaz_stem = (np.abs(gu) < 0.065) & (np.abs(gv) < 0.44)
+        yaz_arms = (np.abs(np.abs(gu) - 0.28) < 0.06) & (np.abs(gv) < 0.34)
+        yaz_bar = (np.abs(gv) < 0.06) & (np.abs(gu) < 0.32)
+        loz = np.abs((np.abs(gu) + np.abs(gv * 1.35)) - 0.42) < 0.055
+        row_alt = (np.floor(v * n_gv).astype(int) + np.floor(u * nx_gv).astype(int)) % 2 == 0
+        glyph_m = np.where(row_alt, yaz_stem | yaz_arms | yaz_bar, loz | (np.hypot(gu, gv) < 0.08))
+        img[glyph_m] = fg
+    elif style == 'zellij_star':
+        # Maghrebi / Tabisti eight-pointed tin-and-tile zellij star tessellation
+        img[:] = bg
+        nx_z = max(2.0, round(3.0 * max(aspect, 0.5)))
+        ny_z = 3.0
+        zx = ((u * nx_z) % 1.0 - 0.5) * 2.0
+        zy = ((v * ny_z) % 1.0 - 0.5) * 2.0
+        sq1 = np.maximum(np.abs(zx), np.abs(zy))
+        sq2 = (np.abs(zx) + np.abs(zy)) * 0.7071
+        star8 = np.minimum(sq1, sq2)
+        rim = (star8 >= 0.48) & (star8 <= 0.62)
+        core_s = star8 < 0.24
+        cross_g = (np.abs(np.abs(zx) - 0.88) < 0.08) | (np.abs(np.abs(zy) - 0.88) < 0.08)
+        img[rim | cross_g] = fg
+        img[core_s] = 0.65 * np.asarray(fg) + 0.35 * np.asarray(C.get('tinmirror', (0.78, 0.80, 0.82)))
     elif style.startswith(('stencil:', 'stencil<:')):
         # a stencilled number (the Tungangs' berth numbers, 'stencil:47'): the digits after the colon on a 5 x 7 grid,
         # in the lower half of the cell, so a panel of one repeat puts the number a hand below the panel's top.
@@ -1305,6 +1705,9 @@ def motif(style, w, h, fg, bg, aspect=1.0):
             m = np.zeros(ok.shape, bool)
             m[ok] = ga[(vv[ok] * 7).astype(int).clip(0, 6), (uu[ok] * 5).astype(int).clip(0, 4)]
             img[m] = fg
+    elif style in CULTURAL_MOTIF_PACK_MAP:
+        tex_key, _, pal_b = CULTURAL_MOTIF_PACK_MAP[style]
+        return sample_cultural_tex(tex_key, w, h, fg, bg, pal_blend=pal_b)
     if style in CULTURAL_MOTIF_PACK_MAP:
         tex_key, tex_w, pal_b = CULTURAL_MOTIF_PACK_MAP[style]
         tex_acc = sample_cultural_tex(tex_key, w, h, fg, bg, pal_blend=pal_b)
@@ -1319,7 +1722,7 @@ def paint_strip(spec, W, H, circ, length, circ_rows=None):
     img = np.empty((H, W, 3), dtype=np.float64)
     img[:] = spec['base']
     g = spec.get('weave', 0.06)
-    fab = spec.get('fabric')
+    fab = FABRIC_ALIASES.get(spec.get('fabric'), spec.get('fabric'))
     gr = grain(fab) if fab in FABRIC else None
     if g and gr is None:
         n = rng.normal(0, g * 0.5, (H, W, 1))
@@ -1392,7 +1795,7 @@ def paint_strip(spec, W, H, circ, length, circ_rows=None):
         iy = (np.arange(H) * (length / max(H, 1)) / tile * n).astype(int) % n
         k = min(1.0, max(g, 0.02) / 0.07)
         img = img * (1 + (gr[np.ix_(iy, ix)][:, :, None] - 1) * k)
-    if fab and fab.startswith('metal.'):
+    if fab and (fab.startswith('metal.') or fab in ('armor.mail.hamata', 'armor.scale.squamata', 'armor.lorica.lames')):
         u_an = np.linspace(0, 2 * np.pi, W, endpoint=False)[None, :, None]
         v_an = np.linspace(0, 1, H)[:, None, None]
         # Anisotropic cylindrical specular highlights + polished bevel rim & subtle shadow troughs for unmistakable metallic read
@@ -1406,3 +1809,155 @@ def paint_strip(spec, W, H, circ, length, circ_rows=None):
         tint = np.array([1.0, 0.96, 0.84])[None, None, :] if 'gold' in fab or 'bronze' in fab or 'brass' in fab else np.array([0.94, 0.97, 1.0])[None, None, :]
         img = img * (1.08 - trough) + (spec_lobe + bevel) * (0.55 * img + 0.45 * tint)
     return img.clip(0, 1)
+
+
+# Compile-time Cross-Cultural Motif Isolation Table (Check #19):
+# Maps culture-specific iconography/glyphs/patterns to their owning culture IDs so one culture's sacred/civic
+# script or blazon (e.g. 'eternian_icons', 'voth_glyphs', 'dasri_horns_blazon') can never bleed onto another.
+EXCLUSIVE_MOTIF_OWNERS = {
+    # Eternal State
+    'eternian_icons':        ('eternian',),
+    'eternian_circuit_maze': ('eternian',),
+    'eternian_fish_scale':   ('eternian',),
+    'screen_pierced_collar': ('eternian',),
+    # Chichani / Voth
+    'voth_glyphs':           ('chichani',),
+    'chosen_kabuki_mask':    ('chichani',),
+    'chosen_tapestry':       ('chichani',),
+    'ordinator_cuirass':     ('chichani',),
+    'tzintzun_emerald_stole': ('chichani',),
+    'tzintzun_tapestry':     ('chichani',),
+    'dunmer_bonemold':       ('chichani',),
+    # Dasri
+    'dasri_horns_blazon':    ('dasri', 'eastern_nomads'),
+    'sadu_desert_horn':      ('dasri', 'eastern_nomads'),
+    'sadu_apache_chevron':   ('dasri', 'eastern_nomads'),
+    'sadu_band':             ('dasri', 'eastern_nomads'),
+    'sadu_green':            ('dasri', 'eastern_nomads'),
+    'juss_qamariya':         ('dasri', 'eastern_nomads'),
+    'hirz_filigree':         ('dasri', 'eastern_nomads'),
+    'horned_sun_shield':     ('dasri', 'eastern_nomads'),
+    'buckskin_concho':       ('dasri', 'eastern_nomads'),
+    # Tabisti / Abyssal
+    'chakana_tocapu':        ('tabisti', 'abyssal'),
+    'chakana_red':           ('tabisti', 'abyssal'),
+    'chakana_terra':         ('tabisti', 'abyssal'),
+    'awayo_stripe':          ('tabisti', 'abyssal'),
+    'tin_mirror_tizerzai':   ('tabisti', 'abyssal'),
+    'tifinagh_lime':         ('tabisti', 'abyssal'),
+    'zellij_star':           ('tabisti', 'abyssal'),
+    # Xanadu
+    'xanadu_mosaic':         ('xanadu', 'xanadu_expats'),
+    'xanadu_sun_wheel':      ('xanadu', 'xanadu_expats'),
+    'two_horns_brocade':     ('xanadu', 'xanadu_expats', 'catch_twins_caravaneers'),
+    'tocharian_wheel':       ('xanadu', 'xanadu_expats'),
+    'chahar_aina':           ('xanadu', 'xanadu_expats'),
+    'cholet_pangden':        ('xanadu', 'xanadu_expats', 'historians'),
+    'moonglass_opal':        ('xanadu', 'xanadu_expats'),
+    # Yuni & Geomancers
+    'trencadis':             ('yuni', 'geomancers'),
+    'eucalyptus_bazin':      ('yuni', 'geomancers'),
+    # Kimr (Labyrinth Canyon Megafauna Herders)
+    'kimr_madder_labyrinth': ('kimr',),
+    'kimr_spondylus_mosaic': ('kimr',),
+    # Fellgangs (Blakhed, West Rift, Wildcat, Travellers & Kradz)
+    'fellgang_roadsign_plaid': ('fellgangs',),
+    'yuni_patchwork':        ('yuni', 'geomancers'),
+    'yuni_med_cross':        ('yuni', 'geomancers'),
+    'yuni_ballistic_plate':  ('yuni', 'geomancers'),
+    'yuni_brigandine_vest':  ('yuni', 'geomancers'),
+    'yuni_indigo_sash':      ('yuni', 'geomancers'),
+    'yuni_radio_face':       ('yuni', 'geomancers'),
+    # Izani / Hykkousoi / Dalabites
+    'heliarch_solar':        ('izani', 'hykkousoi'),
+    'iziz_lamellar_watch':   ('izani',),
+    'iziz_clavus_sun_orb':   ('izani',),
+    'dalab_solar_weave':     ('dalabites', 'izani'),
+    'heliophant_pectoral':   ('dalabites', 'izani'),
+    # Yusar
+    'cyber_hex_neon':        ('yusar', 'ancient_valley', 'ancients_valley', 'valley_mutants'),
+    # Painted Men
+    'formline_eye':          ('painted_men',),
+    'tlingit_formline_slats': ('painted_men',),
+    'chilkat_raven_weave':   ('painted_men',),
+    'pictish_woad_spirals':  ('painted_men',),
+    # Beast Riders
+    'lakota_quillwork':          ('beast_riders',),
+    'hairpipe_breastplate':      ('beast_riders',),
+    'quetzal_saurian_lamellar':  ('beast_riders',),
+    # Talovolci & Talia
+    'gaulish_tartan':            ('talovolci', 'free_clans', 'rustic_clansmen', 'izani'),
+    'talovolci_spiral_triskele': ('talovolci', 'free_clans', 'rustic_clansmen', 'izani'),
+    'ogham_stave_hem':           ('talovolci', 'free_clans', 'rustic_clansmen'),
+    'talia_damascene_niello':    ('talia', 'izani'),
+    # Guari / High-Puna, Coyote, Fleet-Born, Hueru-Kuran, Khaayken & Yonni
+    'tiguantin_puna_weave':      ('guari', 'tiguantin', 'tabisti'),
+    'coyote_runner_feather':     ('coyote', 'coyote_men'),
+    'fleetborn_seve_batik':      ('fleet_born',),
+    'fleetborn_paktong_scale':   ('fleet_born',),
+    'huerukuran_kamleika_seam':  ('hueru_kuran',),
+    'huerukuran_baleen_lamellar': ('hueru_kuran',),
+    'khaayken_gutskin_parka':    ('khaayken',),
+    'yonni_loni_amber':          ('yonni',),
+    # Historians
+    'saffron_kesa':          ('historians', 'xanadu', 'xanadu_expats'),
+    'procrastinator_wheel':  ('historians',),
+    'labyrinth_panel':       ('historians',),
+    'bone_apron':            ('historians',),
+    'longsong_glyph':        ('historians',),
+    'longsong_mandala':      ('historians',),
+    'longsong_thangka':      ('historians',),
+}
+
+# Explicit diaspora/caravan/embassy sub-faction allowances for multi-culture umbrella groups
+_UMBRELLA_SUBFACTION_ALLOW = {
+    'catch_twins_caravaneers': {
+        'twohorns':   ('xanadu', 'dasri'),
+        'syndic':     ('dasri',),
+        'packmaster': ('izani',),
+        'outrider':   ('beast_riders', 'dasri'),
+        'wagon':      ('yuni',),
+        'blaster':    ('geomancers', 'yuni'),
+        'diver':      ('tabisti',),
+        'peddler':    ('tabisti',),
+    },
+    'xanadu_expats': {
+        'citadel':    ('xanadu', 'eternian'),
+        'yuni':       ('xanadu', 'yuni'),
+        'geocon':     ('xanadu', 'geomancers', 'yuni'),
+        'dalab':      ('xanadu', 'dalabites', 'izani'),
+        'glazier':    ('xanadu', 'historians'),
+    },
+    'historians': {
+        'lux':        ('historians', 'eternian'),
+        'tethis':     ('historians', 'dalabites', 'izani'),
+        'voth':       ('historians', 'chichani'),
+        'puna':       ('historians', 'guari', 'tabisti'),
+    },
+}
+
+
+def validate_cultural_motifs(gid, culture, paint_spec):
+    """Raise AssertionError if paint_spec uses a motif owned exclusively by another culture."""
+    if not paint_spec or not culture:
+        return
+    gid_l = (gid or '').lower()
+    allowed_cultures = {culture}
+    for tok, extras in _UMBRELLA_SUBFACTION_ALLOW.get(culture, {}).items():
+        if f'_{tok}_' in gid_l or gid_l.endswith(f'_{tok}'):
+            allowed_cultures.update(extras)
+    styles = []
+    for b in paint_spec.get('bands', []):
+        if len(b) >= 4 and isinstance(b[3], str):
+            styles.append(b[3])
+    for pn in paint_spec.get('panels', []):
+        if len(pn) >= 3 and isinstance(pn[2], str):
+            styles.append(pn[2])
+    for st in styles:
+        owners = EXCLUSIVE_MOTIF_OWNERS.get(st)
+        if owners and not (allowed_cultures & set(owners)):
+            raise AssertionError(
+                f"[CROSS-CULTURAL MOTIF FAIL] {gid} (culture='{culture}') uses exclusive motif "
+                f"'{st}' owned by {owners}!"
+            )
+

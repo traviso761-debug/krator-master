@@ -273,18 +273,24 @@ def iris_texture(pupil='horizontal', px=512):
     cg, ch, cv = d[:, 0], d[:, 1], d[:, 2]
     if pupil == 'horizontal':
         pe = (np.abs(ch) / 0.36) ** 1.7 + (np.abs(cv) / 0.19) ** 2
+    elif pupil == 'vertical':
+        # a monitor/viper vertical spindle slit: sharp dorsal/ventral points, bright golden-amber collarette rim
+        taper = 1.0 - 0.55 * np.clip(np.abs(cv) / 0.42, 0, 1) ** 1.4
+        pe = (np.abs(ch) / np.maximum(0.095 * taper, 0.025)) ** 1.55 + (np.abs(cv) / 0.42) ** 2.2
     else:
         pe = (np.hypot(ch, cv) / 0.24) ** 2
-    lum = np.full(len(d), 0.86)
-    fib = RP._noise(np.stack([ph.ravel() * 6.0, th.ravel() * 1.5, np.zeros(len(d))], 1), 0.06, 31)
-    lum *= 0.88 + 0.24 * fib
+    lum = np.full(len(d), 0.88 if pupil == 'vertical' else 0.86)
+    fib = RP._noise(np.stack([ph.ravel() * (8.0 if pupil == 'vertical' else 6.0), th.ravel() * 1.5, np.zeros(len(d))], 1), 0.055, 31)
+    lum *= 0.86 + 0.28 * fib
     f1, f2 = worley(d, 0.09, 33)
     lum *= 1 - 0.45 * (1 - sm(0.02, 0.07, f2 - f1)) * sm(1.3, 2.0, pe)
     lum *= 1 - 0.35 * (1 - sm(1.0, 1.35, pe))                       # the pupil's margin
-    lum *= 1 + 0.12 * np.exp(-((pe - 1.9) / 0.35) ** 2)               # the collarette
+    lum *= 1 + (0.22 if pupil == 'vertical' else 0.12) * np.exp(-((pe - (1.48 if pupil == 'vertical' else 1.9)) / 0.32) ** 2)
     if pupil == 'horizontal':
         lum *= 1 - 0.3 * np.exp(-(cv / 0.07) ** 2) * sm(1.0, 1.6, pe)   # the dark band through the pupil
         lum *= 1 + 0.08 * np.clip(cv / 0.6, -1, 1)
+    elif pupil == 'vertical':
+        lum *= 1 - 0.18 * np.clip(cv / 0.52, 0, 1)                      # subtle brow shadow over upper iris
     lum *= 1 - 0.75 * sm(np.cos(np.radians(52)), np.cos(np.radians(64)), cg)   # the limbus, then the ball's back
     lum = lum * sm(0.88, 1.0, pe) + 0.012 * (1 - sm(0.88, 1.0, pe))
     img = np.clip(lum.reshape(px, px) * 255, 0, 255).astype(np.uint8)

@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.122,
+    1.318
+   ],
+   "seam_before": [
+    0.848,
+    0.82
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": false,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "chitin",
+  "id": "chitin.shroudant.bronze",
+  "metal": 0.25,
+  "roughness": 0.34,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "chitin_shroudant_bronze.png",
+  "generator": "Codex image generation, Nov 2026 (shroud-ant-chitin-tile-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Dense overlapping plates of giant eusocial Shroud-Ant exoskeleton chitin at 24 cm armour scale in deep bronze-black (#28211b to #3e3124) with subtle warm dark-bronze micro-pits, fine sensory seta pores, and matte waxy myrtle-resin sheen. Full colour.",
+  "sha1": "259180705d57aa9a4ac90493c82841ec08d2393b"
+ }
+}

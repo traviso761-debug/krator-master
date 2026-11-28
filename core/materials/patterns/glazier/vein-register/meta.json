@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1234
+   ],
+   "seam_after": [
+    0.795,
+    0.374
+   ],
+   "seam_before": [
+    0.926,
+    3.195
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "glazier/vein-register",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__glazier__vein-register.png",
+  "generator": "Codex image generation, Nov 2026 (exec-c66b4500-7991-4e48-ba3e-41f5744df8ad.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Laitwal Mara glazier-steward silk damask: alecap-purple (#5a3a5e) and Tungang indigo (#2e3a6a) woven silk patterned with four columns of eight-cogged gilded click-wheels (#d4a838) alternating with Order-Blue (#2a4f8a) diamond opal-vein cartouches, bordered horizontally by cholet cusped arches in rose (#c8607a) and teal (#2a8a88) and a narrow Tungang steward's faded-orange (#c8783e) glass-seed-bead stripe; exact four-by-three repeat, seam-safe. Full colour.",
+  "sha1": "4b45ebe3b9a512d81c3bd3e3277f53a24fade7e1"
+ }
+}

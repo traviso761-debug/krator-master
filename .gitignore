@@ -77,3 +77,6 @@ tools/scale-model/scale-model-*.html
 # per-kit Godot prototype libraries (generated headlessly by python3 tools/kit_pack.py --export-glb)
 godot/data/kits/*.glb
 godot/data/kits/*.glb.json
+
+# Local append-only sync history logs (>100 MB; canonical state is in comments.json & anim_reviews.json)
+core/charactermodels/data/*_history.jsonl

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1238,
+    1187
+   ],
+   "seam_after": [
+    0.743,
+    0.908
+   ],
+   "seam_before": [
+    1.636,
+    5.91
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.62,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "hykkousoi/wind-wave-border",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.62,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "hykkousoi-wind-wave-border-codex.png",
+  "generator": "Codex image generation, Nov 2026 (exec-4a9108c7-a3d3-4c30-8034-9ea2f4c420b3.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of royal Hykkousoi woven sea-linen tapestry border on deep murex bay-purple (#4c183d) and slate aril-blue (#2f6288) bands: three horizontal registers depicting the canonical League of Amphitriton emblem\u2014three stylized weld-gold (#dfb13b) spiral wind-curls poised above a continuous ivory (#f0ece1) and seafoam-teal (#58b4a8) cresting Vitruvian wave meander, framed by narrow Greek key pinstripes, with strictly zero sun discs anywhere; four wind-and-wave repeats across, continuous across left and right seams. Full colour.",
+  "sha1": "f30f6af864b1e762e541d01c87ba0e5cded73163"
+ }
+}

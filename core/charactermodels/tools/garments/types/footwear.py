@@ -102,15 +102,17 @@ def boot(gid, side, paint, top_f=0.45, ease=0.020, sole_paint=None, cuff_paint=N
         zj = 0.009 + arch * (max(z_ank_top, zmax_j) - 0.009)
         R_ank[j] = [xc_j + sin_t[j] * hw_j, yj, zj]
 
-    # 1. Contoured shin shaft (rows 0..8): horizontal rings down to z_ank_top, then smooth heel counter into R_ank
+    # 1. Contoured shin shaft (rows 0..8): tailored top cuff with natural gastrocnemius swell (respects snug bare-leg ease)
     rows_sh = 9
     Q_sh = np.zeros((rows_sh, n, 3), dtype=np.float64)
-    e_sh_top = max(ease + 0.014, 0.032)
-    e_sh_bot = max(ease_foot + 0.005, 0.018)
+    e_sh_top = max(min(float(ease), 0.017), 0.006)
+    e_sh_bot = max(min(float(ease) + 0.002, 0.015), 0.009) if float(ease) < 0.012 else max(ease_foot + 0.002, 0.015)
+    swell_amp = 0.0020 if float(ease) < 0.012 else 0.0045
     for r in range(6):
         u_r = r / 5.0
         z_r = float(up[2] * (1.0 - u_r) + z_ank_top * u_r)
-        e_r = e_sh_top * (1.0 - u_r) + e_sh_bot * u_r
+        calf_swell = swell_amp * math.sin(u_r * math.pi)
+        e_r = e_sh_top * (1.0 - u_r) + e_sh_bot * u_r + calf_swell
         ring_r, _, _, _, _ = _leg_skin_ring(leg_v, z_r, e_r, thetas)
         Q_sh[r] = ring_r
     for r in range(6, rows_sh):
@@ -208,15 +210,16 @@ def boots(gid, paint_sole, paint_upper=None, top=0.45, wraps=0, wrap_paint=None,
             up = foot + (knee - foot) * top
             leg_v = core.CO[(core.CO[:, 0] * sgn > 0.01) & (core.CO[:, 2] >= 0.0) & (core.CO[:, 2] <= up[2] + 0.06)]
             wp = leathery(wrap_paint or paint_upper)
-            e_sh_top = max(ease_base + 0.014, 0.032)
-            e_sh_bot = 0.018
+            e_sh_top = max(min(float(ease_base), 0.017), 0.014)
+            e_sh_bot = max(0.013 + 0.002, 0.015)
+            z_ank_w = float(foot[2]) + 0.014
             for i in range(wraps):
                 f = 0.12 + (top - 0.10) * i / max(1, wraps - 1)
                 c = foot + (knee - foot) * f
-                # Interpolate shaft ease at height c[2] and sit +5.5mm strictly outside the shaft
-                u_sh = float(np.clip((up[2] - c[2]) / max(up[2] - (foot[2] + 0.014), 0.02), 0.0, 1.0))
-                e_shaft = e_sh_top * (1.0 - u_sh) + e_sh_bot * u_sh
-                e_wrap = max(e_shaft + 0.0055, (ease_top + 0.016) if (wrap_over is not None and f >= wrap_over) else (e_shaft + 0.0055))
+                # Interpolate shaft ease (including calf swell) at height c[2] and sit +4.5mm strictly outside the shaft
+                u_sh = float(np.clip((up[2] - c[2]) / max(up[2] - z_ank_w, 0.02), 0.0, 1.0))
+                e_shaft = e_sh_top * (1.0 - u_sh) + e_sh_bot * u_sh + 0.0045 * math.sin(u_sh * math.pi)
+                e_wrap = e_shaft + 0.0045
                 Q_w = np.zeros((3, n, 3), dtype=np.float64)
                 for rw, zw in enumerate(np.linspace(float(c[2]) + 0.022, float(c[2]), 3)):
                     ring_w, _, _, _, _ = _leg_skin_ring(leg_v, float(zw), e_wrap, thetas)
@@ -255,29 +258,57 @@ def sandal(gid, paint_sole, paint_strap, guard=False, laces=0, greave=None, stra
                 Q[k, j] = [xc_s + math.cos(a) * w_s, ys + dy_cap, 0.007 + 0.007 * math.sin(a)]
         parts.append(Part('%s_sole_%s' % (gid, s[0]), Q, True, ['body'] * rows, paint_sole, role='sole', side=s[0]))
 
-        # Contoured dorsal straps that arch cleanly over the foot and seat into the sole at z=0.008 (never below z=0.007)
-        n_st = 16
+        # Contoured dorsal straps that arch cleanly over the bare foot (+4.5mm skin clearance) and tuck into the sole welt at z=0.009
+        n_st = 20
         th_st = np.linspace(0.0, 2.0 * math.pi, n_st, endpoint=False)
-        for tag, f in (('toe', 0.18), ('instep', 0.68)):
+        for tag, f in (('toe', 0.20), ('instep', 0.66)):
             y_c0 = float(toe[1] + (foot[1] - toe[1]) * f)
-            y_c1 = float(y_c0 + (foot[1] - toe[1]) * 0.18)
+            y_c1 = float(y_c0 + (foot[1] - toe[1]) * 0.17)
             Q_st = np.zeros((3, n_st, 3), dtype=np.float64)
             for rk, y_st in enumerate(np.linspace(y_c1, y_c0, 3)):
-                xc_k, hw_k, zmax_k = _foot_skin_slice(fv, float(y_st), 0.009)
+                xc_k, hw_k, zmax_k = _foot_skin_slice(fv, float(y_st), 0.0055)
+                sub_f = fv[np.abs(fv[:, 1] - float(y_st)) < 0.022]
                 for j, a in enumerate(th_st):
-                    arch = max(0.0, math.cos(a)) ** 0.65
-                    z_st = (0.008 if math.cos(a) >= 0.0 else 0.007) + arch * (max(0.026, zmax_k) - 0.008)
-                    Q_st[rk, j] = [xc_k + math.sin(a) * hw_k, float(y_st), z_st]
+                    xj = xc_k + math.sin(a) * hw_k
+                    if math.cos(a) >= 0.0:
+                        arch = math.cos(a) ** 0.58
+                        z_loc = zmax_k
+                        if len(sub_f) >= 3:
+                            near_x = sub_f[np.abs(sub_f[:, 0] - xj) < 0.018]
+                            if len(near_x):
+                                z_loc = max(z_loc, float(near_x[:, 2].max()) + 0.0055)
+                        z_st = 0.009 + arch * (max(0.028, z_loc) - 0.009)
+                    else:
+                        z_st = 0.0085
+                    Q_st[rk, j] = [xj, float(y_st), z_st]
             parts.append(Part('%s_%s_%s' % (gid, tag, s[0]), Q_st, True, ['top', 'body', 'bottom'], paint_strap))
 
         if guard:
-            parts.append(limb_tube('%s_heel_%s' % (gid, s[0]), foot + np.array([0, 0, 0.06]),
-                                   np.array([foot[0], foot[1], 0.012]), 0.011, paint_strap, n=14, rows=5,
-                                   arc=(-0.45 * math.pi, 0.45 * math.pi)))
+            # True anatomical posterior heel counter cupping the calcaneus & Achilles (never projecting forward over the instep!)
+            leg_hv = core.CO[(core.CO[:, 0] * sgn > 0.01) & (core.CO[:, 2] >= 0.0) & (core.CO[:, 2] <= foot[2] + 0.06)]
+            angs_h = np.linspace(-0.46 * math.pi, 0.46 * math.pi, 13)
+            z_h_rows = np.linspace(float(foot[2]) + 0.036, 0.010, 5)
+            Q_h = np.zeros((len(z_h_rows), len(angs_h), 3), dtype=np.float64)
+            for rh, zh in enumerate(z_h_rows):
+                sl_h = leg_hv[np.abs(leg_hv[:, 2] - float(zh)) < 0.022]
+                if len(sl_h) < 4:
+                    sl_h = fv
+                xc_h = 0.5 * (float(sl_h[:, 0].min()) + float(sl_h[:, 0].max()))
+                hw_h = 0.5 * (float(sl_h[:, 0].max()) - float(sl_h[:, 0].min())) + 0.0055
+                y_back_h = float(sl_h[:, 1].max()) + 0.0055
+                y_mid_h = float(foot[1]) + 0.004
+                for jh, ah in enumerate(angs_h):
+                    # ah=0 is straight back (+Y heel), ah=+-0.46*pi is lateral/medial malleolus
+                    Q_h[rh, jh] = [
+                        xc_h + math.sin(ah) * hw_h,
+                        y_mid_h + math.cos(ah) * max(0.022, y_back_h - y_mid_h),
+                        float(zh),
+                    ]
+            parts.append(Part('%s_heel_%s' % (gid, s[0]), Q_h, False, ['top', 'body', 'body', 'body', 'bottom'], paint_strap))
         for i in range(laces):
             f = 0.14 + 0.11 * i
             c = foot + (knee - foot) * f
-            parts.append(limb_tube('%s_lace%d_%s' % (gid, i, s[0]), c, c + np.array([0, 0, 0.018]), 0.010,
+            parts.append(limb_tube('%s_lace%d_%s' % (gid, i, s[0]), c, c + np.array([0, 0, 0.018]), 0.0045,
                                    strap_paint2 or paint_strap, n=16, rows=2))
         if greave is not None:
             a = foot + (knee - foot) * 0.22

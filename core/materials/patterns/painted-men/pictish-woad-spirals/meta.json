@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1213,
+    1247
+   ],
+   "seam_after": [
+    0.948,
+    0.8
+   ],
+   "seam_before": [
+    1.172,
+    1.42
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.78,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "painted-men/pictish-woad-spirals",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.78,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__painted-men__pictish-woad-spirals.png",
+  "generator": "Codex image generation, Nov 2026 (exec-8e20c330-aeb7-4a36-b20f-ec7ebc084808.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of unbleached highland buckskin-linen (#dfd4be) and woad-check border hand-painted in Caledonian Pictish and Tlingit fusion war-art: a three-by-three grid of interlocking woad-indigo (#1d355d, #355c96) trumpet-spirals, triple triskeles, Pictish double-disc and Z-rod symbols, and stylized lignite-black (#141619) and celadonite-teal (#1f6e6c) bristling boar and raven silhouettes (strictly zero human faces) accented with falu-red (#b63124) dot clusters, matte mineral pigment soaked into the fibre, seam-safe. Full colour.",
+  "sha1": "5b9404a57c960f3a5ce74e91260783825c9d7d89"
+ }
+}

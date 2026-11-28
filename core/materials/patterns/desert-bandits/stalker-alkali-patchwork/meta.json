@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.662,
+    0.575
+   ],
+   "seam_before": [
+    2.479,
+    2.594
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.48,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "desert-bandits/stalker-alkali-patchwork",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.48,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__desert-bandits__stalker-alkali-patchwork.png",
+  "generator": "Codex image generation, Nov 2026 (catch-and-bowl-scavenger-armor-tile-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Catch and Bowl outlaw scavenger armour stitched over alkali-crusted yardang burlap (#c4a26e, white carbonate crust #e8e4dc): lashed curved plates of salvaged Hub-01 robotic Stalker ghost-white hull carapace (#eeebe5) scored by harpoon scratches, paired with serrated pale olive-ochre Bowl-mantis chitin lames (#8ea878, #b88a3c), dried crimson glasswort sprigs (#8e1c24), and glittering geometric brine-salt crystals, bound with rawhide and copper wire. Full colour.",
+  "sha1": "725b863c6f64dc57700dc45e5ed5ccf26e538a9c"
+ }
+}

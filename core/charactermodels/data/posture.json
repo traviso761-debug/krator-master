@@ -1,65 +1,389 @@
 {
- "about": "The posture pass after every clip (50-figure.js posture, kchar_figure.gd _posture), per body: Spine, Spine1, Spine2, Neck and Head pitched by these degrees in the figure's frame (negative forward, positive back), then the shoulders dropped (drop) and drawn back (back, negative rolls them forward). 'frame': 'joint' takes each spine joint's side axis as the clip has turned its parent from rest (a twisted or side-leaning torso bends forward along its own facing; it is the figure's axis on an upright one), 'figure' the figure's own side axis (before 2026-10-20: the man's ribs kinked sideways in twisted idles); the shoulders always turn in the figure's frame. The upper arms keep the way the clip points them. A body without an entry takes mpfb_male's (the giant). 'clips': per clip key, per body, degrees added to the body's values while that clip plays (blended through a cross-fade); kept under the body whose values a body takes (the giant: mpfb_male). The Animation Lab's Posture panel edits both live ('Every clip' and 'This clip') and copies them as this object.",
+ "about": "The posture pass after every clip (50-figure.js posture, kchar_figure.gd _posture), per body: Spine, Spine1, Spine2, Neck and Head pitched by these degrees in the figure's frame (negative forward, positive back), 'lean' tips everything above the legs about the hip joints first (negative forward), the thighs keeping the way the clip points them and the hip joints where they were; then 'pelvis' tilts the pelvis alone (negative forward: its top to the front), the thighs keeping the way the clip points them and the lumbar the way it faced; then the neck turned (nTurn: positive to the figure's left) and tilted to the side (nSide: positive, the left ear to the left shoulder) in the same frame; then the shoulders dropped (drop) and drawn back (back, negative rolls them forward). 'frame' (the default) and 'clipFrames' (per clip): 'self' takes each spine joint's (Spine, Spine1, Spine2) own side axis as the clip has turned it from rest, so a joint the clip twists about its length bends along its own facing and gains no sideways roll (with 'joint', the parent's axis, a sword's wind-up went crooked sideways, so the two sword clips take 'self'), and the neck and head the parent's as 'joint' does; 'joint' is the default, the owner having tuned every clip on it (2026-10-26); 'joint' the parent's (from 2026-10-20; it fixed the man's ribs kinking sideways in twisted idles, which 'self' keeps fixed); 'figure' the figure's own side axis; the shoulders always turn in the figure's frame. Last, fSpine, fSpine1, fSpine2 and fNeck move that joint forward (positive) or back by centimetres of the body's own size, in the figure's frame, the joints above it held where they were, so only its own stretch of the body moves; fHead and uHead move the whole head forward or up, the neck stretching to it. The upper arms keep the way the clip points them. A body without an entry takes mpfb_male's (the giant). 'clips': per clip key, per body, degrees added to the body's values while that clip plays (blended through a cross-fade); kept under the body whose values a body takes (the giant: mpfb_male). The Animation Lab's Posture panel edits both live ('Every clip' and 'This clip') and copies them as this object.",
  "frame": "joint",
+ "clipFrames": {"ual_sword_combo": "self", "ual_sword_heavy": "self"},
  "bodies": {
   "mpfb_male": {
-   "Spine": 21.5,
-   "Spine1": -40,
-   "Spine2": -21.5,
+   "lean": -13,
+   "pelvis": -2,
+   "Spine": 36.5,
+   "Spine1": -38.5,
+   "Spine2": -8.5,
    "Neck": 40,
-   "Head": 1.5,
+   "nTurn": 0,
+   "nSide": 0,
+   "Head": 10.5,
    "drop": 30,
-   "back": 8.5
+   "back": 8.5,
+   "fSpine": 5.5,
+   "fSpine1": 8,
+   "fSpine2": -8,
+   "fNeck": -6,
+   "fHead": -4,
+   "uHead": 0
   },
   "mpfb_female": {
+   "lean": 0,
+   "pelvis": 0,
    "Spine": -6,
    "Spine1": -8,
    "Spine2": -8,
    "Neck": 11,
+   "nTurn": 0,
+   "nSide": 0,
    "Head": 0,
-   "drop": 9,
-   "back": 10
+   "drop": 32.5,
+   "back": 10,
+   "fSpine": 0,
+   "fSpine1": 0,
+   "fSpine2": 0,
+   "fNeck": 0,
+   "fHead": 0,
+   "uHead": 0
   }
  },
  "clips": {
+  "combat_idle": {
+   "mpfb_male": {
+    "Spine2": -12.5,
+    "nTurn": 34.5,
+    "Head": 29.5,
+    "back": -16
+   },
+   "mpfb_female": {
+    "nTurn": 25,
+    "Head": 21
+   }
+  },
   "crouch_walk": {
    "mpfb_male": {
     "Spine": -12,
     "Spine1": -6,
-    "Neck": 8
+    "Spine2": -2.5,
+    "Neck": 8.5,
+    "nTurn": 38.5,
+    "nSide": -12,
+    "Head": 29.5,
+    "fNeck": 14,
+    "fHead": -4,
+    "uHead": 2.5
+   },
+   "mpfb_female": {
+    "nTurn": 22,
+    "Head": 39.5
+   }
+  },
+  "idle": {
+   "mpfb_male": {
+    "pelvis": -2.5,
+    "Spine1": 31,
+    "Spine2": -51.5,
+    "Head": 26,
+    "fSpine": -5.5,
+    "fSpine2": 2.5,
+    "fNeck": -2,
+    "fHead": -4
+   }
+  },
+  "idle_1": {
+   "mpfb_male": {
+    "lean": 4,
+    "pelvis": -18,
+    "Spine": -38,
+    "Spine1": 41,
+    "Head": 41.5,
+    "fSpine": -4.5,
+    "fSpine1": -16
+   }
+  },
+  "idle_10": {
+   "mpfb_male": {
+    "pelvis": 14.5,
+    "Spine": -5
+   }
+  },
+  "idle_11": {
+   "mpfb_male": {
+    "lean": 13.5,
+    "Spine2": -19.5
+   }
+  },
+  "idle_12": {
+   "mpfb_male": {
+    "Spine2": -14.5,
+    "nSide": 14.5,
+    "back": 26.5
+   }
+  },
+  "idle_13": {
+   "mpfb_male": {
+    "lean": 18.5,
+    "Spine1": -5,
+    "Spine2": -29,
+    "Neck": 3.5,
+    "Head": 15,
+    "back": 36.5,
+    "fNeck": -2,
+    "fHead": -4
+   }
+  },
+  "idle_14": {
+   "mpfb_male": {
+    "Spine1": 1,
+    "Spine2": -30,
+    "nSide": 32,
+    "Head": 29.5,
+    "fHead": -4
+   }
+  },
+  "idle_15": {
+   "mpfb_male": {
+    "Spine1": -21.5,
+    "drop": 4.5,
+    "back": 25
+   }
+  },
+  "idle_3": {
+   "mpfb_male": {
+    "lean": 18,
+    "Spine1": -21.5,
+    "Spine2": -20.5,
+    "Neck": 20,
+    "nTurn": 1.5,
+    "nSide": 9,
+    "Head": -3.5,
+    "drop": -1.5,
+    "back": 36.5
+   },
+   "mpfb_female": {
+    "drop": 48.5
+   }
+  },
+  "idle_4": {
+   "mpfb_male": {
+    "Spine2": -29,
+    "Neck": 20,
+    "nSide": 15.5,
+    "Head": 4,
+    "drop": 14.5,
+    "back": 27.5
+   },
+   "mpfb_female": {
+    "drop": 35
+   }
+  },
+  "idle_5": {
+   "mpfb_male": {
+    "Spine2": -25,
+    "nSide": -10,
+    "Head": 29.5,
+    "back": 36.5
+   },
+   "mpfb_female": {
+    "Head": 25,
+    "drop": 40
+   }
+  },
+  "idle_6": {
+   "mpfb_male": {
+    "Spine1": -21.5,
+    "Neck": 4.5,
+    "nSide": 13.5,
+    "Head": 22,
+    "drop": 20,
+    "back": 36.5,
+    "fNeck": -2,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "nSide": 8.5,
+    "Head": 15.5,
+    "drop": 10.5,
+    "back": 35
+   }
+  },
+  "idle_7": {
+   "mpfb_male": {
+    "lean": 22.5,
+    "Spine": -24.5,
+    "Spine1": -11,
+    "Spine2": -5.5,
+    "nSide": 15.5
+   },
+   "mpfb_female": {
+    "Spine1": 5.5,
+    "nSide": 10
+   }
+  },
+  "idle_8": {
+   "mpfb_female": {
+    "Head": 14
+   }
+  },
+  "idle_9": {
+   "mpfb_male": {
+    "lean": 8.5,
+    "Spine1": -21.5,
+    "Spine2": -11.5
+   },
+   "mpfb_female": {
+    "Spine1": -0.5
+   }
+  },
+  "mirror": {
+   "mpfb_male": {
+    "Spine2": -19.5,
+    "nSide": 19
    }
   },
   "run": {
-   "mpfb_female": {
-    "Neck": -6,
-    "Head": -3
-   },
    "mpfb_male": {
     "Neck": -16,
-    "Head": -6
+    "Head": -26.5,
+    "fNeck": -2
+   },
+   "mpfb_female": {
+    "Neck": 7,
+    "Head": -40
    }
   },
   "sprint": {
    "mpfb_male": {
-    "Spine1": 15,
-    "Neck": -10
+    "Spine1": 31,
+    "Spine2": -47.5,
+    "Neck": -10,
+    "Head": 29.5,
+    "drop": -32.5,
+    "back": 36.5
+   },
+   "mpfb_female": {
+    "Head": 20
+   }
+  },
+  "stretch": {
+   "mpfb_male": {
+    "pelvis": -5,
+    "fSpine": -1.5
    }
   },
   "ual_crouch": {
    "mpfb_male": {
     "Spine1": 10,
     "Spine2": 8,
-    "Neck": -8
+    "Neck": -8,
+    "fNeck": 5,
+    "uHead": -3.5
+   },
+   "mpfb_female": {
+    "Head": 23
+   }
+  },
+  "ual_crouch_walk": {
+   "mpfb_female": {
+    "Head": 14,
+    "uHead": 1
+   }
+  },
+  "ual_punch": {
+   "mpfb_male": {
+    "Spine1": 10.5,
+    "drop": 21.5,
+    "uHead": -5
+   }
+  },
+  "ual_shield_bash": {
+   "mpfb_male": {
+    "Head": -24,
+    "fSpine2": 10.5,
+    "fNeck": 6,
+    "fHead": 8.5,
+    "uHead": -2
+   }
+  },
+  "ual_sword_combo": {
+   "mpfb_male": {
+    "pelvis": -4
+   }
+  },
+  "ual_sword_idle": {
+   "mpfb_male": {
+    "Spine1": 6,
+    "Spine2": -5.5
    }
   },
   "walk": {
-   "mpfb_female": {
-    "Neck": -6,
-    "Head": -3
-   },
    "mpfb_male": {
     "Neck": -16,
-    "Head": -6
+    "Head": -19.5,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -13.5
+   }
+  },
+  "walk_lead": {
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -19.5,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -13.5
+   }
+  },
+  "walk_sack": {
+   "mpfb_male": {
+    "Neck": -16,
+    "Head": -19.5,
+    "fHead": -4
+   },
+   "mpfb_female": {
+    "Neck": -6,
+    "Head": -13.5
+   }
+  },
+  "walk_back": {
+   "mpfb_male": {
+    "lean": 25.5,
+    "Spine1": -18.5,
+    "Spine2": -19.5,
+    "nSide": 13.5
+   },
+   "mpfb_female": {
+    "nSide": 8
+   }
+  },
+  "walk_bucket": {
+   "mpfb_male": {
+    "lean": 18.5,
+    "Spine2": -33,
+    "Neck": 20,
+    "Head": 29.5
+   }
+  },
+  "walk_carry": {
+   "mpfb_male": {
+    "Spine2": -14.5,
+    "Head": -15.5
+   }
+  },
+  "walk_injured": {
+   "mpfb_male": {
+    "Spine2": -30,
+    "Head": 24
+   }
+  },
+  "walk_limp": {
+   "mpfb_male": {
+    "lean": 23,
+    "Spine1": -21.5,
+    "Spine2": -34,
+    "Head": 13
+   },
+   "mpfb_female": {
+    "Spine1": -1.5
    }
   }
  }

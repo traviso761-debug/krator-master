@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1230
+   ],
+   "seam_after": [
+    1.11,
+    0.903
+   ],
+   "seam_before": [
+    0.524,
+    0.664
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "republic/sword-triskelion-wool",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__republic__sword-triskelion-wool.png",
+  "generator": "Codex image generation, Nov 2026 (exec-4e82ddd3-5cab-490f-b097-661323aa9b08.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of austere Roketstad citizen-army shinel broadcloth wool in Republican field-grey (#5e605c) and iron-black (#1c1c20) divided by strict narrow crimson-red piping (#ad1818): embroidered in crimson, cream (#ebe0c8), and brass thread (#c49c44) with three medallions across and two registers down alternating the canonical Iron Republic sign\u2014three armoured arms radiating at 120 degrees, each fist gripping a straight sword at a 90-degree angle\u2014with finned Roketstad rockets framed in Norse interlace knots, seam-safe. Full colour.",
+  "sha1": "4b0fad328971fd14a72893c489065fe0c8840abc"
+ }
+}

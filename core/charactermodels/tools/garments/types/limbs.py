@@ -108,16 +108,19 @@ def trousers(gid, paint, ease=0.018, ease_end=None, cuff=None, seat_paint=None, 
     """Unified trousers builder supporting both cuff height (`cuff=...`) and shin fraction (`ankle_f=...`)."""
     out = [torso_tube(gid + '_seat', core.WAIST + 0.01, core.CROTCH + 0.01, ease, seat_paint or paint,
                       n=36, rows=6, hull_from=core.WAIST, role='trunk')]
-    ee = ease_end if ease_end is not None else (ease + bag * 0.5)
+    ee_raw = ease_end if ease_end is not None else (ease + bag * 0.5)
     for s in (L, R):
         hip, knee, foot = J(s + 'UpLeg'), J(s + 'Leg'), J(s + 'Foot')
         if ankle_f is not None:
-            end = knee + (foot - knee) * min(1.0, float(ankle_f))
+            f_use = min(1.0, float(ankle_f))
+            end = knee + (foot - knee) * f_use
         else:
             z = cuff if cuff is not None else core.ANKLE + 0.05
-            f = (knee[2] - z) / max(1e-6, knee[2] - foot[2])
-            end = knee + (foot - knee) * min(1.0, f)
-        out.append(limb_tube('%s_leg_%s' % (gid, s[0]), None, None, ease + 0.004, paint, n=n, rows=rows,
+            f_use = min(1.0, (knee[2] - z) / max(1e-6, knee[2] - foot[2]))
+            end = knee + (foot - knee) * f_use
+        # Taper lower shin cleanly (<= 16mm) when trousers extend below mid-calf so they tuck inside boots without calf bulge
+        ee = min(float(ee_raw), 0.016) if f_use >= 0.55 else float(ee_raw)
+        out.append(limb_tube('%s_leg_%s' % (gid, s[0]), None, None, ease + 0.003, paint, n=n, rows=rows,
                              ease_end=ee, start_back=0.06, path=[hip, knee, end], rmax=0.22, role='leg', side=s[0]))
     return out
 
@@ -128,3 +131,133 @@ def skirt(name, z_bot, z_top, paint, ease=0.024, flare=0.08, rows=18, n=40):
     return torso_tube(name, z0, z1, ease, paint, n=n, rows=rows,
                       hang_from=z0 - 0.02, flare=flare,
                       group_below=core.CROTCH + 0.02, hull_from=z0)
+
+
+def full_gloves(gid, cuff_paint, hand_paint, finger_paint=None, f0=0.62, ease=0.014, knuckle_paint=None, ring_paint=None):
+    """Closed 5-finger articulated gauntlets/gloves with forearm cuff, contoured metacarpal shell, and phalanx-bound finger sheaths."""
+    from .accoutrements import blob, tube
+    out = []
+    f_paint = finger_paint or hand_paint
+    for side in (L, R):
+        out.append(sleeve(f'{gid}_cuff_{side[0]}', side, cuff_paint or hand_paint, f0=f0, f1=1.00, ease=ease + 0.002, flare=0.008, rows=7, n=20))
+        w_pt = J(side + 'Hand')
+        idx1 = J(side + 'HandIndex1')
+        mid1 = J(side + 'HandMiddle1')
+        rng1 = J(side + 'HandRing1')
+        pnk1 = J(side + 'HandPinky1')
+        knuckle_ctr = 0.25 * (idx1 + mid1 + rng1 + pnk1)
+        d_hand = knuckle_ctr - w_pt
+        u_ax = d_hand / max(np.linalg.norm(d_hand), 1e-6)
+        span_vec = idx1 - pnk1
+        x_ax = span_vec - u_ax * np.dot(span_vec, u_ax)
+        x_ax = x_ax / max(np.linalg.norm(x_ax), 1e-6)
+        y_ax = np.cross(u_ax, x_ax)
+        if np.linalg.norm(y_ax) > 1e-6:
+            y_ax = y_ax / np.linalg.norm(y_ax)
+        # Ensure y_ax points dorsally (back of hand)
+        if y_ax[2] < 0:
+            y_ax = -y_ax
+        angs_p = np.linspace(0, 2 * math.pi, 20, endpoint=False)
+        palm_s_vals = (-0.32, -0.14, 0.0, 0.34, 0.68, 1.02)
+        palm_rows = []
+        for s_t in palm_s_vals:
+            c = w_pt + d_hand * s_t
+            if s_t < 0.0:
+                rx = 0.041 + 0.018 * s_t
+                ry = 0.022 - 0.008 * s_t
+            else:
+                rx = 0.041 + 0.007 * s_t
+                ry = 0.022 * (1.0 - 0.10 * s_t)
+            palm_rows.append([c + x_ax * (math.cos(an) * rx) + y_ax * (math.sin(an) * ry) for an in angs_p])
+        pt_palm = Part(f'{gid}_palm_{side[0]}', np.array(palm_rows), True, ['helper-tights'] * len(palm_s_vals),
+                       hand_paint, role='cuff', side=side[0])
+        pt_palm.row_joints = [
+            side + 'ForeArm',
+            side + 'ForeArm',
+            side + 'Hand',
+            side + 'Hand',
+            side + 'Hand',
+            side + 'Hand',
+        ]
+        pt_palm.is_arm = True
+        out.append(pt_palm)
+
+        if knuckle_paint is not None:
+            k_joints_pos = [pnk1, rng1, mid1, idx1]
+            span_dir = idx1 - pnk1
+            span_len = max(float(np.linalg.norm(span_dir)), 1e-6)
+            span_u = span_dir / span_len
+            p_start = pnk1 - span_u * 0.007
+            p_end = idx1 + span_u * 0.007
+            n_krows, n_kring = 9, 10
+            angs_k = np.linspace(0.0, 2.0 * math.pi, n_kring, endpoint=False)
+            k_grid = []
+            for ri_k in range(n_krows):
+                tk = ri_k / float(n_krows - 1)
+                base_k = p_start * (1.0 - tk) + p_end * tk
+                # Subtle knuckle boss bump over each of the 4 metacarpophalangeal joints
+                boss = max(math.exp(-(((float(np.linalg.norm(base_k - kj))) / 0.009) ** 2)) for kj in k_joints_pos)
+                taper = 0.50 if ri_k in (0, n_krows - 1) else (0.90 if ri_k in (1, n_krows - 2) else 1.0)
+                ru_k = (0.0135 + 0.0018 * boss) * taper
+                ry_k = (0.0060 + 0.0024 * boss) * taper
+                # `palm_rows` dorsal surface reaches `y_ax * 0.020`; seat knuckle plate at `y_ax * 0.0195` so its inner face
+                # welds 3mm into the dorsal leather while its armored outer ridge stands +6mm proud across all 4 knuckles!
+                ck = base_k + y_ax * (0.0195 + 0.0015 * boss) - u_ax * 0.008
+                k_grid.append([
+                    ck + u_ax * (math.cos(ak) * ru_k) + y_ax * (max(-0.45, math.sin(ak)) * ry_k)
+                    for ak in angs_k
+                ])
+            kp = Part(f'{gid}_knuckle_{side[0]}', np.array(k_grid), True, ['helper-tights'] * n_krows,
+                      knuckle_paint, rigid_joint=side + 'Hand', role='cuff', side=side[0])
+            kp.is_arm = True
+            out.append(kp)
+
+        for fg, r_base in (('Thumb', 0.0116), ('Index', 0.0104), ('Middle', 0.0108), ('Ring', 0.0102), ('Pinky', 0.0094)):
+            p1 = J(f'{side}Hand{fg}1')
+            p2 = J(f'{side}Hand{fg}2')
+            p3 = J(f'{side}Hand{fg}3')
+            tip_dir = p3 - p2
+            root_pt = p1 - 0.36 * (p2 - p1)
+            mid12 = 0.5 * (p1 + p2)
+            tip1 = p3 + 0.80 * tip_dir
+            tip2 = p3 + 1.08 * tip_dir
+            f_pts = [root_pt, p1, mid12, p2, p3, tip1, tip2]
+            f_rads = [r_base * 1.18, r_base * 1.05, r_base * 0.97, r_base * 0.92, r_base * 0.85, r_base * 0.68, 0.0024]
+            f_joints = [
+                f'{side}Hand',
+                f'{side}Hand{fg}1',
+                f'{side}Hand{fg}1',
+                f'{side}Hand{fg}2',
+                f'{side}Hand{fg}3',
+                f'{side}Hand{fg}3',
+                f'{side}Hand{fg}3',
+            ]
+            angs_f = np.linspace(0, 2 * math.pi, 10, endpoint=False)
+            f_rows = []
+            for idx_r, (cp, rad) in enumerate(zip(f_pts, f_rads)):
+                seg_d = f_pts[min(idx_r + 1, len(f_pts) - 1)] - f_pts[max(idx_r - 1, 0)]
+                t_v = seg_d / max(np.linalg.norm(seg_d), 1e-6)
+                ref_v = np.array([0.0, 0.0, 1.0]) if abs(t_v[2]) < 0.9 else np.array([1.0, 0.0, 0.0])
+                u_v = np.cross(t_v, ref_v)
+                u_v /= np.linalg.norm(u_v) + 1e-12
+                v_v = np.cross(t_v, u_v)
+                v_v /= np.linalg.norm(v_v) + 1e-12
+                f_rows.append([cp + (u_v * math.cos(an) + v_v * math.sin(an)) * rad for an in angs_f])
+            pt_f = Part(f'{gid}_finger_{side[0]}_{fg}', np.array(f_rows), True, ['helper-tights'] * len(f_rows),
+                        f_paint, role='cuff', side=side[0])
+            pt_f.row_joints = f_joints
+            pt_f.is_arm = True
+            out.append(pt_f)
+
+        if ring_paint is not None and side == R:
+            rg1 = J(f'{side}HandRing1')
+            rg2 = J(f'{side}HandRing2')
+            rc1 = rg1 + (rg2 - rg1) * 0.35
+            rc2 = rg1 + (rg2 - rg1) * 0.58
+            rg_pt = tube(f'{gid}_signet_ring', [rc1, rc2], 0.0118, ring_paint, n=12,
+                         rigid_joint=f'{side}HandRing1')
+            rg_pt.role = 'cuff'
+            rg_pt.side = 'R'
+            rg_pt.is_arm = True
+            out.append(rg_pt)
+    return out

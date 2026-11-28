@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1121,
+    1208
+   ],
+   "seam_after": [
+    1.12,
+    0.581
+   ],
+   "seam_before": [
+    1.037,
+    1.013
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "armor.ancient.hex_weave",
+  "metal": 0.65,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.22,
+   0.22
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "armor_ancient_hex_weave.png",
+  "generator": "Codex image generation, Nov 2026 (exec-ece1d9b0-54f6-4a41-9e1d-619166421883.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Pre-Cataclysm Ancient hexagonal ballistic ceramic-polymer composite armour surface at 22 cm square scale, precision-interlocked chamfered hexagonal tiles (ten hexagons across) with hair-thin recessed expansion seams, micro-woven carbon-ceramic grain on each facet, and tiny flush tri-lobe fastener sockets at every third vertex. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "81a0e0074828cd9b889377831f304a2c769b646e"
+ }
+}

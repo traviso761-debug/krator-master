@@ -681,9 +681,11 @@ def build_pc_relic_lancer(body_id, sex_tag):
     parts_h = []
     # Crimson upper-face visor + steel cranial dome
     visor_p = P('lancer_red', 0.03, [B('top', 0.0, 0.03, 'solid', 'lancer_steel')], fabric='leather.matte')
-    parts_h.append(bio.sculpted_faceplate(gid_h + '_visor', visor_p, f_top=0.76, f_bot=0.22, ease=0.012, jaw_narrow=0.25))
+    visor_pt = bio.sculpted_faceplate(gid_h + '_visor', visor_p, f_top=0.76, f_bot=0.22, ease=0.012, jaw_narrow=0.25)
+    parts_h.append(visor_pt)
     steel_p = P('lancer_steel', 0.03, [B('bottom', 0.0, 0.03, 'solid', 'soot')], fabric='metal.iron')
-    parts_h.append(bio.sculpted_cranium(gid_h + '_dome', steel_p, f_top=1.04, f_bot=0.14, ease=0.010))
+    dome_pt = bio.sculpted_cranium(gid_h + '_dome', steel_p, f_top=1.04, f_bot=0.14, ease=0.010)
+    parts_h.append(dome_pt)
     # Cream-and-crimson striped turban band with red rivets around the brow
     turban_p = P('lancer_cream', 0.03, [
         B('top', 0.0, 0.025, 'solid', 'lancer_red'),
@@ -699,19 +701,36 @@ def build_pc_relic_lancer(body_id, sex_tag):
     ], [
         PN(0.44, 0.56, 'stripes', 'lancer_cyan', 'gold', 0.018),
     ], fabric='metal.iron')
-    parts_h.append(bio.hood(gid_h + '_gorget', gorget_p, ease=0.026, ease_low=0.044, open_front=0.0, low=-0.42, rows=10, n=32, peak=0.0))
-    # Twin curved yellow ribbed breather tubes from cheeks to gorget + 4 tall golden crown lightning-rod spikes
+    gorget_pt = bio.hood(gid_h + '_gorget', gorget_p, ease=0.026, ease_low=0.044, open_front=0.0, low=-0.42, rows=10, n=32, peak=0.0)
+    parts_h.append(gorget_pt)
+    # Twin curved yellow ribbed breather tubes rooted inside cheek visor & gorget + 4 crown spikes seated inside dome
+    V_vis = visor_pt.P.reshape(-1, 3)
+    V_gor = gorget_pt.P.reshape(-1, 3)
+    V_dom = dome_pt.P.reshape(-1, 3)
     tube_p = P('lancer_cream', 0.02, [B('top', 0.0, 0.04, 'stripes', 'soot', 'lancer_cream', 0.015)], fabric='metal.gold')
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        t_pts = [
-            a + (b - a) * (0.48 - 0.36 * t) + left * (sgn * (0.095 + 0.032 * math.sin(math.pi * t))) - bk * (0.045 + 0.045 * t)
-            for t in np.linspace(0, 1, 6)
-        ]
-        parts_h.append(horn(f'{gid_h}_tube_{tag}', t_pts, 0.018, 0.014, tube_p, n=8, rows=6, rigid_joint='Head'))
-    for idx_s, (sx, sy) in enumerate([(-0.038, -0.02), (0.038, -0.02), (-0.025, 0.03), (0.025, 0.03)]):
-        sp_base = a + (b - a) * 0.96 + left * sx + bk * sy
-        sp_pts = [sp_base + up * (0.115 * t) + left * (sx * 0.25 * t) for t in np.linspace(0, 1, 5)]
-        parts_h.append(horn(f'{gid_h}_spike_{idx_s}', sp_pts, 0.009, 0.0015, P('gold', 0.01, fabric='metal.gold'), n=6, rows=5, rigid_joint='Head'))
+        q_top = a + (b - a) * 0.42 + left * (sgn * 0.068) - bk * 0.088
+        p_top_s = V_vis[int(np.argmin(np.linalg.norm(V_vis - q_top[None, :], axis=1)))]
+        q_bot = a + (b - a) * 0.06 + left * (sgn * 0.058) - bk * 0.082
+        p_bot_s = V_gor[int(np.argmin(np.linalg.norm(V_gor - q_bot[None, :], axis=1)))]
+        p_t0 = p_top_s + bk * 0.006 - left * (sgn * 0.004)
+        p_t5 = p_bot_s + bk * 0.006 - left * (sgn * 0.004)
+        t_pts = []
+        for t in np.linspace(0.0, 1.0, 6):
+            bow = math.sin(math.pi * t)
+            t_pts.append((1.0 - t) * p_t0 + t * p_t5 + left * (sgn * 0.022 * bow) - bk * (0.012 * bow))
+        parts_h.append(rosette(f'{gid_h}_tube_port_{tag}', p_top_s, left * (sgn * 0.65) - bk * 0.76, up,
+                               0.018, P('lancer_steel', 0.02, fabric='metal.iron'), n=10, thick=0.008, rigid_joint='Head'))
+        parts_h.append(horn(f'{gid_h}_tube_{tag}', t_pts, 0.015, 0.013, tube_p, n=10, rows=6, rigid_joint='Head'))
+    for idx_s, (sx, sy) in enumerate([(-0.036, -0.022), (0.036, -0.022), (-0.026, 0.028), (0.026, 0.028)]):
+        q_sp = a + (b - a) * 0.98 + left * sx + bk * sy
+        p_dom = V_dom[int(np.argmin(np.linalg.norm(V_dom - q_sp[None, :], axis=1)))]
+        d_sp = up + left * (sx * 2.2) + bk * (sy * 1.2)
+        d_sp /= np.linalg.norm(d_sp)
+        parts_h.append(rosette(f'{gid_h}_spike_base_{idx_s}', p_dom, d_sp, left, 0.013,
+                               P('gold', 0.01, fabric='metal.gold'), n=8, thick=0.006, rigid_joint='Head'))
+        sp_pts = [p_dom - d_sp * 0.008 + d_sp * (0.115 * t) for t in np.linspace(0, 1, 5)]
+        parts_h.append(horn(f'{gid_h}_spike_{idx_s}', sp_pts, 0.009, 0.0015, P('gold', 0.01, fabric='metal.gold'), n=8, rows=5, rigid_joint='Head'))
     e_h = assemble_garment(gid_h, 'Order Relic-Lancer Respirator Helm & Spikes', 'head', 'historians', parts_h, covers_hair=True, covers_face=True)
     e_h['type'] = 'pc'
     entries.append(e_h)
@@ -719,36 +738,48 @@ def build_pc_relic_lancer(body_id, sex_tag):
     # 2. TORSO: order_{m/f}_pc_lancer_armor
     gid_t = f'order_{sex_tag}_pc_lancer_armor'
     parts_t = []
-    # Grey steel plate cuirass + 2 glowing cyan oval chest lenses
+    # Grey steel plate cuirass + 2 glowing cyan oval chest lenses seated flush onto cuirass
     cuirass_p = P('lancer_steel', 0.03, [
         B('bottom', 0.0, 0.03, 'solid', 'soot'),
         B('top', 0.0, 0.03, 'solid', 'soot'),
     ], fabric='metal.iron')
-    parts_t.append(bio.torso_tube(gid_t + '_cuirass', bio.WAIST - 0.02, bio.TOP + 0.01, cuirass_p, ease=0.026, flare=0.015, rows=14, n=38))
+    parts_t.append(bio.torso_tube(gid_t + '_cuirass', bio.WAIST - 0.02, bio.TOP + 0.005, cuirass_p, ease=0.024, flare=0.012, rows=14, n=38))
     cyan_lens_p = P('lancer_cyan', 0.01, [B('top', 0.0, 0.015, 'solid', 'lancer_steel')], fabric='beads.glass')
     for sgn, tag in ((-1.0, 'R'), (1.0, 'L')):
-        l_pos = bio.chest_front(bio.CHEST + 0.01, 0.036, x=sgn * 0.078)
-        parts_t.append(rosette(f'{gid_t}_chest_lens_{tag}', l_pos, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]), 0.028, cyan_lens_p, n=12, thick=0.012, rigid_joint='Spine2'))
+        l_pos = bio.chest_front(bio.CHEST + 0.01, 0.027, x=sgn * 0.072)
+        parts_t.append(rosette(f'{gid_t}_chest_lens_{tag}', l_pos, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]), 0.027, cyan_lens_p, n=12, thick=0.010, rigid_joint='Spine2'))
 
-    # Draped cream-and-crimson striped shoulder mantle (`collar_disc` + `pauldron`) + 2 tall golden spikes on the left shoulder
+    # Draped cream-and-crimson striped shoulder mantle (`collar_disc` + `pauldron`) + 2 golden spikes rooted into `_pauldron_Left` (`LeftArm`)
     mantle_p = P('lancer_cream', 0.03, [
         B('bottom', 0.0, 0.035, 'dentils', 'lancer_red', 'lancer_cream', 0.03),
     ], [
         PN(0.0, 1.0, 'stripes', 'lancer_red', 'lancer_cream', 0.075),
     ], fabric='cloth.wool')
-    parts_t.append(bio.collar_disc(gid_t + '_mantle', 0.16, mantle_p, drop=0.11, rows=7, n=40, scallop=0.08, ease=0.034, z_off=0.008))
+    parts_t.append(bio.collar_disc(gid_t + '_mantle', 0.11, mantle_p, drop=0.095, rows=9, n=44, scallop=0.06, ease=0.023, z_off=-0.001))
+    pauld_by_side = {}
     for side in ('Left', 'Right'):
-        parts_t.append(bio.pauldron(f'{gid_t}_pauldron_{side}', side, mantle_p, span=0.22, drop=0.16, lift=0.024))
-    for idx_sp, dx in enumerate((0.145, 0.185)):
-        sh_base = J('LeftShoulder') + left * (dx - 0.06) + up * 0.045
-        sh_pts = [sh_base + up * (0.14 * t) + left * (0.02 * t) for t in np.linspace(0, 1, 5)]
-        parts_t.append(horn(f'{gid_t}_sh_spike_{idx_sp}', sh_pts, 0.011, 0.002, P('gold', 0.01, fabric='metal.gold'), n=6, rows=5, rigid_joint='LeftShoulder'))
+        p_pld = bio.pauldron(f'{gid_t}_pauldron_{side}', side, mantle_p, span=0.22, drop=0.16, lift=0.022)
+        pauld_by_side[side] = p_pld
+        parts_t.append(p_pld)
+    V_pld_l = pauld_by_side['Left'].P.reshape(-1, 3)
+    arm_l_piv = J('LeftArm')
+    for idx_sp, x_off_arm in enumerate((0.028, 0.062)):
+        q_sh = arm_l_piv + np.array([x_off_arm, 0.0, 0.055])
+        p_surf_sh = V_pld_l[int(np.argmin(np.linalg.norm(V_pld_l - q_sh[None, :], axis=1)))]
+        d_sh_sp = np.array([0.32, 0.0, 0.947])
+        d_sh_sp /= np.linalg.norm(d_sh_sp)
+        sock_r = rosette(f'{gid_t}_sh_socket_{idx_sp}', p_surf_sh, d_sh_sp, np.array([0.0, 1.0, 0.0]),
+                         0.016, P('gold', 0.01, fabric='metal.gold'), n=10, thick=0.008, rigid_joint='LeftArm')
+        parts_t.append(sock_r)
+        sh_pts = [p_surf_sh - d_sh_sp * 0.010 + d_sh_sp * (0.125 * t) for t in np.linspace(0, 1, 5)]
+        parts_t.append(horn(f'{gid_t}_sh_spike_{idx_sp}', sh_pts, 0.011, 0.002, P('gold', 0.01, fabric='metal.gold'),
+                            n=8, rows=5, rigid_joint='LeftArm'))
 
-    # Pleated orange waist sash + articulated grey steel waist belt with central glowing cyan lens & hip tassets
-    parts_t.append(bio.band(gid_t + '_orange_sash', bio.WAIST - 0.01, bio.WAIST + 0.05, P('lancer_orange', 0.04, fabric='cloth.cotton'), ease=0.032))
-    parts_t.append(bio.band(gid_t + '_steel_belt', bio.WAIST - 0.06, bio.WAIST + 0.005, cuirass_p, ease=0.038))
-    belt_lens = bio.chest_front(bio.WAIST - 0.028, 0.046)
-    parts_t.append(rosette(gid_t + '_belt_lens', belt_lens, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]), 0.030, cyan_lens_p, n=12, thick=0.014, rigid_joint='Hips'))
+    # Pleated orange waist sash + articulated grey steel waist belt with central glowing cyan lens
+    parts_t.append(bio.band(gid_t + '_orange_sash', bio.WAIST - 0.01, bio.WAIST + 0.05, P('lancer_orange', 0.04, fabric='cloth.cotton'), ease=0.028))
+    parts_t.append(bio.band(gid_t + '_steel_belt', bio.WAIST - 0.055, bio.WAIST + 0.005, cuirass_p, ease=0.032))
+    belt_lens = bio.chest_front(bio.WAIST - 0.025, 0.036)
+    parts_t.append(rosette(gid_t + '_belt_lens', belt_lens, np.array([0.0, -1.0, 0.0]), np.array([1.0, 0.0, 0.0]), 0.028, cyan_lens_p, n=12, thick=0.012, rigid_joint='Hips'))
 
     # Split floor-length cream-and-crimson jagged-border coat-tails + central pointed blood-drop tabard
     tail_p = P('lancer_cream', 0.03, [
@@ -865,6 +896,7 @@ def main():
         'female_entries': female_entries,
         'social_types': social_types,
     }
+    bio.core.register_entries(manifest['kit_entries'])
     out_path = SCRATCH / 'pc_outfits_manifest.json'
     out_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
     dt = time.perf_counter() - t0

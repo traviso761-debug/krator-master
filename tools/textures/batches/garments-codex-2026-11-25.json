@@ -1,0 +1,520 @@
+[
+ {
+  "src": "patterns__beast-riders__lakota-quillwork-yoke.png",
+  "out": "core/materials/patterns/beast-riders/lakota-quillwork-yoke",
+  "record": {
+   "id": "beast-riders/lakota-quillwork-yoke",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.62,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-94947a7e-59fd-44ea-a9dd-6433c69abd11.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Lakota-inspired flattened porcupine-quillwork and lazy-stitch lane beadwork over smoked tan buckskin (#b88f61): six horizontal lane-stitched bands of glossy dyed flattened quills and tiny 2 mm glass/turquoise beads in Coyote turquoise (#289898), bleached bone-ivory (#e8e0cc), claw-green (#3f7a3a), saffron-yellow (#d89a28), and bloodwood-crimson (#9a2e22) forming stepped tipi triangles, forked feather-tracks, and three-slash talon motifs, continuous across left/right edges. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.62,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__beast-riders__hairpipe-bone-breastplate.png",
+  "out": "core/materials/patterns/beast-riders/hairpipe-bone-breastplate",
+  "record": {
+   "id": "beast-riders/hairpipe-bone-breastplate",
+   "family": "armor",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.05,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-2cb09bd6-f60f-4802-92d2-befd6182b701.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Lakota-style saurian-bone hairpipe warrior breastplate over bloodwood-crimson buckskin (#9a2e22): four vertical columns of horizontal tapered polished ivory-bone hairpipe tubes (#e8e0cc to #cfc4ac, sixteen stacked rows down) separated between columns by thick vertical rawhide spacer strips (#6e4a2e) studded with round Coyote-turquoise (#289898) and Talon-brass (#c08c38) trade beads on sinew thongs, columns aligning cleanly top to bottom and left to right. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "dark_gloss": 0.12
+  }
+ },
+ {
+  "src": "patterns__beast-riders__quetzal-saurian-lamellar.png",
+  "out": "core/materials/patterns/beast-riders/quetzal-saurian-lamellar",
+  "record": {
+   "id": "beast-riders/quetzal-saurian-lamellar",
+   "family": "armor",
+   "colour": "#ffffff",
+   "roughness": 0.34,
+   "metal": 0.1,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-118df198-5602-4dec-b99a-c05b717b78cb.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of royal K'etsaal Sky-Cataphract armour: six staggered horizontal courses alternating iridescent emerald-and-turquoise quetzal carapace/feather-sheath scales (#2f7a5a, #249688, with central golden-saffron quill ridges #d89a28) and carved ivory saurian-bone lames (#e8e0cc) incised with green three-talon Claw glyphs, cross-laced with crest-vermilion (#d86a3a) and maroon (#6e1c20) spider-silk cords, whole scale rows across seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "dark_gloss": 0.25
+  }
+ },
+ {
+  "src": "patterns__coyote__runner-feather-band.png",
+  "out": "core/materials/patterns/coyote/runner-feather-band",
+  "record": {
+   "id": "coyote/runner-feather-band",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0.0,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-f39c6e07-e76f-44e3-916c-51c84a6873bb.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Sacred Outlands Coyote-Men priest trim: two horizontal courses of barred dark-umber (#36261c), desert-taupe (#8c7862), and chalk-white (#ebe6da) roadrunner tail feathers neatly bound at the quills into a woven white cotton and Outlands turquoise-bead (#2e9e92) header band, strictly zero yellow or golden feathers anywhere, continuous left to right. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__fleet-born__seve-bleue-batik.png",
+  "out": "core/materials/patterns/fleet-born/seve-bleue-batik",
+  "record": {
+   "id": "fleet-born/seve-bleue-batik",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.74,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-17c478ea-5d96-44c4-a86a-24ba3dbb8162.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Alkali whale-soap bleached chalk-white sea-linen (#dce6e2) resist-dyed with natural blue-green hyperaccumulator nickel-mangrove seve-bleue latex (#1f6f68 and #264544) in four-by-four repeating echolocation sound-wave arcs, porpoise-fluke chevrons, and hydrothermal vent-plume spirals, crisp batik wax-crackle veins, seam-aligned. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.74,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.8,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__fleet-born__paktong-wave-scale.png",
+  "out": "core/materials/patterns/fleet-born/paktong-wave-scale",
+  "record": {
+   "id": "fleet-born/paktong-wave-scale",
+   "family": "armor",
+   "colour": "#ffffff",
+   "roughness": 0.28,
+   "metal": 0.88,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-d9ee2470-fdba-4d91-b821-0a359de38214.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fleet-Born marine scale armour: six staggered ocean-swell rows of tarnish-proof silver-white Paktong cupronickel crescent scales (#d4dad8 and #9ea8a5) laced with waterproof teal-green seve-bleue cord (#1f6f68) over dark oiled seal-leather (#394247), zero rust, seamless across all four edges. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.28,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "dark_gloss": 0.15
+  }
+ },
+ {
+  "src": "patterns__guari__tiguantin-puna-weave.png",
+  "out": "core/materials/patterns/guari/tiguantin-puna-weave",
+  "record": {
+   "id": "guari/tiguantin-puna-weave",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.82,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-55ac584a-0ed2-4789-a59d-35ffe94c69e7.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of high-puna Guari Tiguantin camelid-alpaca warp-faced poncho cloth: warm ignimbrite ash-cream (#dfd8c8) and dark camelid umber (#4a3628) bands alternating with brucite white-teal (#78b8b0), puna ochre (#c8922e), and cochineal crimson (#8e2226) registers woven with four stepped cloud-terrace frets and concentric Breath-Pipe day-ring medallions across, tight thick high-altitude wool yarn, seam-aligned. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.82,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__hueru-kuran__kamleika-baleen-seam.png",
+  "out": "core/materials/patterns/hueru-kuran/kamleika-baleen-seam",
+  "record": {
+   "id": "hueru-kuran/kamleika-baleen-seam",
+   "family": "leather",
+   "colour": "#ffffff",
+   "roughness": 0.42,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-ee21ea5c-4adf-40b8-bacf-fc7302ea614e.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Cured translucent warm honey-amber sea-mammal gutskin parchment (#c88a36 to #dfc28b) in five horizontal strips joined by narrow waterproof welted seams stitched with glossy black whale-baleen sinew (#1c1816) and tiny spaced tufts of oxblood-red (#7e2418) and whale-ivory (#ece3cf) auklet-plume yarn, subtle collagen fibre grain, seamless across edges. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "dark_gloss": 0.22
+  }
+ },
+ {
+  "src": "patterns__hueru-kuran__baleen-nephrite-lamellar.png",
+  "out": "core/materials/patterns/hueru-kuran/baleen-nephrite-lamellar",
+  "record": {
+   "id": "hueru-kuran/baleen-nephrite-lamellar",
+   "family": "armor",
+   "colour": "#ffffff",
+   "roughness": 0.32,
+   "metal": 0.05,
+   "scale": [
+    0.24,
+    0.24
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-03de48e3-ea71-46e9-a942-8704d461b0ce.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hueru-Kuran marine lamellar armour: six overlapping horizontal rows of narrow round-topped rectangular lamellar plates cut from satin-dark black whale baleen (#1c1816) with fine longitudinal horn striations, alternating every fourth row with water-sawn deep emerald nephrite jade plates (#1f5e43), tightly laced with bleached rawhide and whalebone thongs (#ece3cf), seamless across all four edges. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.32,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "dark_gloss": 0.28
+  }
+ },
+ {
+  "src": "patterns__khaayken__gutskin-sewn-parka.png",
+  "out": "core/materials/patterns/khaayken/gutskin-sewn-parka",
+  "record": {
+   "id": "khaayken/gutskin-sewn-parka",
+   "family": "leather",
+   "colour": "#ffffff",
+   "roughness": 0.44,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-8b350b81-251b-4a12-8671-865f53fa9bf4.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Arctic Yup'ik and Chukchi waterproof sea-mammal gutskin kamleika parchment at 28 cm garment scale: five horizontal translucent warm amber-ochre membrane strips (#c89448 to #e0c48e) whip-stitched horizontally with dark braided sinew (#221c18) and punctuated every 4 cm by tiny tufts of dyed crimson (#9a2420) and slate (#3c4856) qiviut yarn caught in the waterproof seams, subtle natural collagen crinkle grain. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.44,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "patterns__painted-men__chilkat-raven-weave.png",
+  "out": "core/materials/patterns/painted-men/chilkat-raven-weave",
+  "record": {
+   "id": "painted-men/chilkat-raven-weave",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0.0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-1f7a73d5-2ec6-4393-88fb-d1787999f433.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of twined Chilkat and Ravenstail ceremonial blanket textile woven from mountain-goat wool and shredded yellow-cedar bark yarn: tactile raised twined cords forming two columns of stylized zoomorphic Raven and Orca ovoids and split-U wing-boxes (strictly zero human faces) interlocked with horizontal borders of Pictish La Tene double-spirals, dyed in lignite-black (#141619), celadonite-teal (#2e9488), rabbitbrush weld-gold (#d19a3a), falu-red (#b63124), slickrock-orchil purple (#5e2750), and cream wool (#efe7d6), whole crests inside seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__painted-men__pictish-woad-spirals.png",
+  "out": "core/materials/patterns/painted-men/pictish-woad-spirals",
+  "record": {
+   "id": "painted-men/pictish-woad-spirals",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.78,
+   "metal": 0.0,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-8e20c330-aeb7-4a36-b20f-ec7ebc084808.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of unbleached highland buckskin-linen (#dfd4be) and woad-check border hand-painted in Caledonian Pictish and Tlingit fusion war-art: a three-by-three grid of interlocking woad-indigo (#1d355d, #355c96) trumpet-spirals, triple triskeles, Pictish double-disc and Z-rod symbols, and stylized lignite-black (#141619) and celadonite-teal (#1f6e6c) bristling boar and raven silhouettes (strictly zero human faces) accented with falu-red (#b63124) dot clusters, matte mineral pigment soaked into the fibre, seam-safe. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.78,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__talia__damascene-niello.png",
+  "out": "core/materials/patterns/talia/damascene-niello",
+  "record": {
+   "id": "talia/damascene-niello",
+   "family": "armor",
+   "colour": "#ffffff",
+   "roughness": 0.32,
+   "metal": 0.88,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-bac29775-7f7a-41db-93dd-11063b4f754f.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Talia parade steel armour richly inlaid with niello and damascening: smooth blued-black nielloed steel ground (#1f232a) chased with fine flush metallic gold (#ddb34b) and bright silver (#d8dde6) Roman-Baroque acanthus scrollwork framing circular medallions that pair a radiant gold Sun above a four-armed Mountain Giant silhouette, bordered top and bottom by burgundy cloisonne enamel (#6e1d2a) Greek-meander strips; exactly three medallions across and two registers down, clear of the seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.32,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "dark_gloss": 0.2
+  }
+ },
+ {
+  "src": "patterns__talovolci__gaulish-tartan.png",
+  "out": "core/materials/patterns/talovolci/gaulish-tartan",
+  "record": {
+   "id": "talovolci/gaulish-tartan",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.84,
+   "metal": 0.0,
+   "scale": [
+    0.3,
+    0.3
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-fffc30db-3352-45f0-98fb-7314801ffde6.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Hallstatt and La Tene Gaulish heavy 2/2 diagonal-twill woollen plaid cloth (four complete symmetrical tartan setts across and four down): bold intersecting warp and weft bands of weld-yellow (#d8b838), deep woad-blue (#2c4c7e), and madder-red (#9e2a22) framed by cloud-moss green (#4a5838) and natural cream fleece (#e8e0cc) overcheck lines, showing coarse hand-spun two-ply wool yarn and crisp diagonal twill ribs, exact sett alignment at seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.84,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__talovolci__right-spiral-triskele.png",
+  "out": "core/materials/patterns/talovolci/right-spiral-triskele",
+  "record": {
+   "id": "talovolci/right-spiral-triskele",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.56,
+   "metal": 0.15,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-5914259d-0d85-4553-94b3-26d3e096fe47.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Daridel Spirladunon sacred embroidered wool cloak-border on deep woad-blue (#2c4c7e) and madder-crimson (#9e2a22) bands: couched in twisted bronze-gold (#d4a638) and weld-yellow (#d8b838) cord with four circular La Tene trumpet-scroll triskele medallions across and two bands down, every spiral winding strictly clockwise (right-handed, turning inward clockwise from outer rim to hub), framed by twisted-torc cable borders, whole medallions inside seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.56,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__talovolci__ogham-stave-hem.png",
+  "out": "core/materials/patterns/talovolci/ogham-stave-hem",
+  "record": {
+   "id": "talovolci/ogham-stave-hem",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.76,
+   "metal": 0.0,
+   "scale": [
+    0.26,
+    0.26
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-77251526-dc6f-45d5-9d8c-628ef51de20d.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of a Talovolci stave-script woven tablet-braid hem band on undyed cream cloud-wool (#e8e0cc): three horizontal tablet-woven stemlines in dark woad-indigo (#223b63) crossed perpendicularly and diagonally by bundles of one to five crisp madder-red (#9e2a22) and weld-gold (#d8b838) Ogham-like stave notches, each register bookended inside the left and right margins by a small clockwise bronze-thread spiral, crisp card-woven warp cords. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.76,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true
+  }
+ },
+ {
+  "src": "patterns__yonni__loni-amber-brocade.png",
+  "out": "core/materials/patterns/yonni/loni-amber-brocade",
+  "record": {
+   "id": "yonni/loni-amber-brocade",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0.05,
+   "scale": [
+    0.28,
+    0.28
+   ],
+   "tint": false,
+   "pattern": true,
+   "_source": {
+    "generator": "Codex image generation, Nov 2026 (exec-ccd7577a-70b0-4b85-bde4-17ddb84c67ea.png)",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Yonni Loni-Borna oracle ceremonial linen-silk brocade on sea-lime bleached linen (#e8e2d4) and mist-slate (#425264): a three-by-three grid of strictly singular, un-paired concentric solar-labyrinth mandalas surrounding cabochon-like woven medallions of warm golden Blue-Earth amber (#d48824) and pale saltpeter-white (#dcd8ce) geometric rays, whole mandalas clear of seams. Full colour."
+   }
+  },
+  "options": {
+   "size": 1024,
+   "rough": 0.5,
+   "rough_var": 0.2,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "dark_gloss": 0.1
+  }
+ }
+]

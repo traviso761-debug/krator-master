@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.979,
+    1.199
+   ],
+   "seam_before": [
+    2.016,
+    4.215
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 1.05,
+   "pattern": false,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "cloth.bark.cedar",
+  "metal": 0.0,
+  "roughness": 0.9,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "cedar-bark-twined-textile-2048.png",
+  "generator": "Codex image generation, Nov 2026 (cedar-bark-twined-textile-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Pacific Northwest garment textile at 26 cm square scale, woven from beaten, shredded inner red-cedar bark strips running vertically and twined horizontally every 3 cm with crisp two-ply twisted spruce-root cordage, showing overlapping fibrous bark strands and neat horizontal twined rows. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "7826fa7f9f087f7ed295a0975c13eb7d06a3c72b"
+ }
+}

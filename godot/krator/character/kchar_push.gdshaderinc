@@ -47,9 +47,9 @@ uniform mat3 kcTl = mat3(1.0);
 void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 	// behind the hips: the seat's capsules (14, 15) lie behind them
 	vec3 bk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH;
-	bk.y = 0.0;
+	bk -= kcU * dot(bk, kcU);
 	bk *= kcA[14].w > 0.0 ? 1.0 / max(length(bk), 1e-5) : 0.0;
-	vec3 clat = vec3(bk.z, 0.0, -bk.x);
+	vec3 clat = cross(kcU, bk);
 	float cflap = kcL > 0.1 && kcL < 0.5 && kcS > 0.0 && kcSH < 1.0 && rr > 0.142 && ry > 0.45 && abs(dot(kv - kcH, bk)) > abs(dot(kv - kcH, clat)) * 1.1 ? 1.0 : 0.0;
 	float cloose = (kcL > 0.5 && !(kcS > 0.0 && kcSH > 10.0)) || cflap > 0.5 ? 1.0 : 0.0;
 	float ceo = kcEO > 0.5 && cloose > 0.5 && (rr < 0.22 || ry < 0.88) ? 1.0 : 0.0;
@@ -92,6 +92,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			vec3 d = kv - q;
 			float l = length(d);
 			float ccr = i < 2 ? smoothstep(0.42, 0.68, 1.0 - abs(ab.y) / max(length(ab), 1e-5)) * smoothstep(-0.04, 0.03, d.y) : (i >= 10 && kcB[i].w < 0.5 ? smoothstep(-0.02, 0.04, ry - 0.88) : 0.0);
+			float csup = i < 4 ? smoothstep(0.42, 0.68, 1.0 - abs(ab.y) / max(length(ab), 1e-5)) * smoothstep(-0.04, 0.03, d.y) : ccr;
 			float pd = sh > 0.0 ? kcP + cflap * 0.035 + kcPO * kcM + (i >= 14 ? (ctier + cflap * 0.035) * 0.9 * kcM : 0.0) + smoothstep(0.03, 0.04, kcP) * 0.075 * ccr : 0.0;
 			float r = mix(kcA[i].w, kcR[i] > 0.0 ? kcR[i] : kcA[i].w, t) + pd;
 			if (i < 4 && sh > 0.0) {
@@ -103,13 +104,14 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			float R = r + sh;
 			if (l < R && l > 1e-5) {
 				float cmid = i < 6 ? 1.0 - smoothstep(0.03, 0.11, abs(dot(kv - kcH, clat))) : 0.0;
-				vec3 o = vec3(q.x - kcH.x, 0.0, q.z - kcH.z);
+				vec3 o = (q - kcH) - kcU * dot(q - kcH, kcU);
+				o -= ab * (dot(o, ab) / max(dot(ab, ab), 1e-8));
 				o -= clat * dot(o, clat) * cmid * 0.85;
 				float ol = length(o);
 				float r0 = r - pd * (1.0 - lift);
 				if (l < r0 && sh > 0.0 && ol > 1e-4) {
-					o = normalize(mix(o / ol, vec3(0.0, 1.0, 0.0), ccr));
-					if (i < 14 && dot(kn, o) < 0.0 && ccr < 0.5) {
+					o = normalize(mix(o / ol, vec3(0.0, 1.0, 0.0), csup));
+					if (i < 14 && dot(kn, o) < 0.0 && csup < 0.5) {
 						o = -o;          // the side the cloth faces (pushOut in 50-figure.js)
 					}
 					float s = dot(d, o);
@@ -166,7 +168,7 @@ void kc_push(inout vec3 kv, vec3 kn, float ry, float rr) {
 			}
 		}
 	}
-	if (kcS > 0.0 && cflap < 0.5 && kv.y < max(kcH.y + 0.08, max(kcB[0].y, kcB[1].y) + 0.08)) {
+	if (kcS > 0.0 && cflap < 0.5 && min(kv.y - kcH.y, dot(kv - kcH, kcU)) < max(0.08, max(kcB[0].y, kcB[1].y) - kcH.y + 0.08)) {
 		// to the nearest capsule only (to all six, a shin was pulled into a ball round the knee)
 		float best = 1e9;
 		vec3 bq = vec3(0.0);

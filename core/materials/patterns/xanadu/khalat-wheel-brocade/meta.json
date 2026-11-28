@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1051
+   ],
+   "seam_after": [
+    0.713,
+    0.542
+   ],
+   "seam_before": [
+    0.95,
+    1.731
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.2,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.04,
+   "mute": 0.0,
+   "normal_strength": 0.75,
+   "pattern": true,
+   "rough": 0.46,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "xanadu/khalat-wheel-brocade",
+  "metal": 0.15,
+  "pattern": true,
+  "roughness": 0.46,
+  "scale": [
+   0.3,
+   0.3
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "xanadu-khalat-wheel-brocade-codex.png",
+  "generator": "Codex image generation, Nov 2026 (exec-71c4516d-ba42-46cc-90bd-b8c4c4314a38.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of heavy Persian-Tibetan court silk lampas brocade woven with raised metallic gold thread (#d4a838) on a deep royal violet (#3b1c54) and peacock-teal (#145864) satin ground, patterned with a repeating ogival lattice (four medallions across and four down, whole inside the edges) of eight-spoked Dharma sun-wheels alternating with lotus palmettes and small cabochon opal roundels in flame-crimson (#b82828) and turquoise (#28a4a8), crisp diagonal silk twill visible between gold threads. Full colour.",
+  "sha1": "316aa1effa113cd8b75b299538677bacbd66bb38"
+ }
+}

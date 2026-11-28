@@ -31,6 +31,7 @@ import make_kit
 import make_mpfb
 import make_pieces as mp
 # the package's own functions (2026-11-10: this file carried copies of them, some from an older core)
+from garments import paint as _gpaint
 from garments.core import J, spine_at, first_hit, nearest, frame, head_frame, ring_points, smooth_push, hang, hull2, hull_rows, register_entries
 from garments.types.torso import torso_tube, collar_disc, band, pauldron
 from garments.types.limbs import limb_tube, sleeves
@@ -1148,6 +1149,13 @@ def motif(style, w, h, fg, bg, aspect=1.0):
         curl = np.abs(np.hypot(su - 0.25 * np.cos(sv), ((v * 4.0) % 1.0 - 0.5) * 1.6) - 0.34) < 0.08
         border = (np.abs(su) > 0.84)
         img[wave1 | wave2 | curl | border] = fg
+    elif style in _gpaint.CULTURAL_MOTIF_PACK_MAP:
+        tex_k, _, pal_b = _gpaint.CULTURAL_MOTIF_PACK_MAP[style]
+        return _gpaint.sample_cultural_tex(tex_k, w, h, fg, bg, pal_blend=pal_b)
+    if style in _gpaint.CULTURAL_MOTIF_PACK_MAP:
+        tex_k, tex_w, pal_b = _gpaint.CULTURAL_MOTIF_PACK_MAP[style]
+        tex_acc = _gpaint.sample_cultural_tex(tex_k, w, h, fg, bg, pal_blend=pal_b)
+        img = (1.0 - tex_w) * img + tex_w * tex_acc
     return img
 
 
@@ -2438,23 +2446,25 @@ def build_painted_warden():
     gid_t = 'painted_m_warden_cuirass'
     parts_t = []
 
-    # 1. Fringed buckskin upper tunic & formline-painted sleeves
+    # 1. Fringed buckskin upper tunic & Chilkat/Pictish-painted sleeves
     tunic_paint = P('buck', 0.07, [
         B('bottom', 0.0, 0.045, 'rays', 'buck', 'earth', 0.016),
         B('top', 0.0, 0.025, 'solid', 'cream'),
+    ], [
+        PN(0.0, 1.0, 'pictish_woad_spirals', 'indigo', 'buck', 0.24),
     ])
     parts_t.append(torso_tube(gid_t + '_tunic', TOP, WAIST - 0.05, 0.015, tunic_paint, n=42, rows=10))
 
     sl_paint = P('buck', 0.06, [
-        B('bottom', 0.0, 0.09, 'formline_eye', 'madder', 'turq', 0.09),
+        B('bottom', 0.0, 0.09, 'chilkat_raven_weave', 'madder', 'turq', 0.14),
         B('bottom', 0.09, 0.11, 'dentils', 'bone', 'soot', 0.02),
-        B('top', 0.04, 0.14, 'formline_eye', 'madder', 'buck', 0.10),
+        B('top', 0.04, 0.14, 'chilkat_raven_weave', 'madder', 'buck', 0.16),
     ])
     parts_t += sleeves(gid_t, 'wrist', 0.020, sl_paint, ease_end=0.032, rows=9, n=20)
 
     ep_paint = P('buck', 0.07, [
         B('bottom', 0.0, 0.045, 'rays', 'cream', 'earth', 0.016),
-        B('top', 0.0, 0.05, 'formline_eye', 'madder', 'buck', 0.08),
+        B('top', 0.0, 0.05, 'chilkat_raven_weave', 'madder', 'buck', 0.12),
     ])
     parts_t.append(pauldron(gid_t + '_fringeL', L, ep_paint, reach=0.36, ease=0.036, flare_end=0.95))
     parts_t.append(pauldron(gid_t + '_fringeR', R, ep_paint, reach=0.36, ease=0.036, flare_end=0.95))
@@ -3290,13 +3300,12 @@ def build_yuni_sentinel():
     ], [
         # Right & back tiered verdigris-and-brass armor tassets + center-front narrow verdigris lappet
         PN(0.0, 0.52, 'fret', 'brass', 'teal', 0.12),
-        # Left-side long golden-ochre asymmetric mantle drape with white solar arc lines
+        # Left-side long golden-ochre asymmetric mantle drape with Yuni trencadis mosaic accents
         PN(0.52, 0.92, 'fluted', 'ochre', 'saffron', 0.14),
-        PN(0.58, 0.84, 'heliarch_solar', 'cream', 'ochre', 0.22),
+        PN(0.58, 0.84, 'trencadis', 'cream', 'ochre', 0.12),
     ], fabric='metal.bronze')
     kilt_tube = torso_tube(gid_t + '_kilt', WAIST - 0.02, KNEE - 0.04, 0.024, kilt_paint,
                            n=48, hang_from=WAIST - 0.02, flare=0.075, group_below=CROTCH + 0.02, hull_from=WAIST)
-    kilt_tube.cloth = None
     parts_t.append(kilt_tube)
 
     # 3. Massive layered verdigris-and-gold domed right shoulder pauldron + circular rondel boss!
@@ -3318,13 +3327,15 @@ def build_yuni_sentinel():
     ], [
         PN(0.0, 1.0, 'fluted', 'saffron', 'ochre', 0.14),
     ], fabric='cloth.bazin')
-    cowl_sc = collar_disc(gid_t + '_cowl_scarf', 0.145, cloak_paint, drop=0.085, rows=7, n=44, scallop=0.03, ease=0.026, z_off=0.008)
+    cowl_sc = collar_disc(gid_t + '_cowl_scarf', 0.125, cloak_paint, drop=0.088, rows=8, n=44, scallop=0.03, ease=0.022)
     cowl_sc.cloth = None
     parts_t.append(cowl_sc)
-    parts_t.append(pauldron(gid_t + '_shoulder_drape_L', L, cloak_paint, reach=0.54, ease=0.042, flare_end=1.15))
-    parts_t.append(torso_tube(gid_t + '_cloak', TOP + 0.005, WAIST - 0.02, 0.028, cloak_paint,
-                              n=32, arc=(-0.05 * math.pi, 0.82 * math.pi), over_arms=False))
-    fib_c = _front(SHOULDER - 0.01, 0.038, x=0.068)
+    parts_t.append(pauldron(gid_t + '_shoulder_drape_L', L, cloak_paint, reach=0.46, ease=0.030, flare_end=1.08))
+    parts_t.append(torso_tube(gid_t + '_cloak', TOP, KNEE - 0.06, 0.028, cloak_paint,
+                              n=32, arc=(-0.05 * math.pi, 0.82 * math.pi),
+                              hang_from=WAIST - 0.02, flare=0.11, group_below=CROTCH + 0.02,
+                              hull_from=CHEST + 0.02, over_arms=False, role='drape'))
+    fib_c = _front(SHOULDER - 0.015, 0.028, x=0.068)
     parts_t.append(blob(gid_t + '_fibula_L', fib_c, (0.038, 0.015, 0.038),
                         P('brass', 0.02, fabric='metal.gold'), n=12, rows=5, out=FRONT, rigid_joint='Spine2'))
 
@@ -4210,7 +4221,7 @@ def build_iziz_watch():
         c = a + (b - a) * f
         W_grid.append([p + (c - c_ray) + bk * (0.014 * (1.0 - k_w / 6.0))
                        for p in ring_points(c_ray, bk, left, angs_w, 0.022 + 0.020 * (1.0 - k_w / 6.0), rmin=0.05, rmax=0.20)])
-    parts_h.append(Part(gid_h + '_wrap', np.array(W_grid), False, ['body'] * len(fs_w), wrap_paint, rigid_joint='Head'))
+    parts_h.append(Part(gid_h + '_aventail', np.array(W_grid), False, ['body'] * len(fs_w), wrap_paint, rigid_joint='Head'))
 
     # 2. Copper-and-iron Watch kettle-sallet dome & wide sloped sun/shrapnel brim
     sallet_paint = P('copper', 0.04, [
@@ -4393,7 +4404,8 @@ def build_iziz_skirmisher():
     parts_t.append(blob(gid_t + '_pectoral_gem', f_mir + np.array([0.0, -0.008, 0.0]), (0.068, 0.020, 0.068),
                         P('turq', 0.02), n=14, rows=5, out=FRONT, rigid_joint='Spine2'))
 
-    b_mir = spine_at(CHEST - 0.01) + np.array([0.0, 0.135, 0.0])
+    from garments import core as _gc
+    b_mir = _gc.surface_out(spine_at(CHEST - 0.01), np.array([0.0, 1.0, 0.0]), 0.016)
     parts_t.append(blob(gid_t + '_back_disc', b_mir, (0.145, 0.022, 0.145), mirror_paint,
                         n=16, rows=5, out=np.array([0, 1.0, 0]), rigid_joint='Spine2'))
 
@@ -4558,12 +4570,12 @@ def build_beast_cataphract():
     parts_t.append(torso_tube(gid_t + '_cuirass', TOP + 0.005, CROTCH + 0.04, 0.028, cuirass_paint,
                               n=48, rows=14, hang_from=WAIST - 0.02, flare=0.07, group_below=CROTCH + 0.02, hull_from=CHEST + 0.02))
 
-    # 3. Rigid 3D carved Saurian-Skull sternum breastplate & dorsal bone carapace (locked 100% to Spine2!)
+    # 3. Rigid 3D carved Saurian-Skull sternum hairpipe breastplate & dorsal bone carapace (locked 100% to Spine2!)
     bone_plate_paint = P('bone', 0.03, [
-        B('top', 0.0, 0.025, 'solid', 'turq'),
+        B('top', 0.0, 0.025, 'lakota_quillwork', 'turq', 'buck', 0.12),
         B('bottom', 0.0, 0.025, 'solid', 'maroon'),
     ], [
-        PN(0.0, 1.0, 'bone_lamellar', 'bone', 'maroon', 0.14),
+        PN(0.0, 1.0, 'hairpipe_breastplate', 'bone', 'maroon', 0.22),
     ])
     zs_pl = np.linspace(TOP - 0.015, WAIST + 0.04, 8)
     for tag, ang_span, out_sign in (('chestplate', (0.64 * math.pi, 1.36 * math.pi), -1.0),

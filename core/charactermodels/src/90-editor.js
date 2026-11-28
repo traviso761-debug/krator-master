@@ -12,13 +12,15 @@
   KCharFigure.posture = (D.posture && D.posture.bodies) || {};     // data/posture.json, before any figure
   KCharFigure.postureClips = (D.posture && D.posture.clips) || {};
   KCharFigure.postureFrame = (D.posture && D.posture.frame) || 'figure';
+  KCharFigure.postureClipFrames = (D.posture && D.posture.clipFrames) || {};
   KCharFigure.fur = D.fur || null;                                   // data/fur.json: garments' fur shells
   KCharFigure.clipData = {}; ((D.clips && D.clips.clips) || []).forEach(function(c){ KCharFigure.clipData[c.key] = c; });   // data/clips.json
   KCharFigure.faces = (D.clips && D.clips.faces) || {};
+  KCharFigure.look = (D.clips && D.clips.look) || null;
   var SLOT_LABEL = { head:'Headgear', implant:'Cybernetic implants', torso:'Torso & arms', gloves:'Gloves & gauntlets', back:'Backpacks & gear', legs:'Legs', feet:'Feet' };
   var BASE_HEIGHT = { male:1.75, female:1.68, mpfb_male:1.78, mpfb_female:1.66 };
   var BODY_LABEL = { male:'Meshy male', female:'Meshy female', mpfb_male:'Man', mpfb_female:'Woman', mpfb_giant:'Giant' };
-  var rec, fig, renderer, scene, camera, clock = new THREE.Clock(), body = 'male';
+  var rec, fig, renderer, scene, camera, clock, hv, body = 'male';
   var start = {
     male:   { body:'male', head:'base_m', hair:'hair_m_long', beard:null, armour:{ torso:'bronze', legs:'scout', feet:'bone' }, sliders:{}, dye:{} },
     female: { body:'female', head:'base_f', hair:'hair_f_braids', beard:null, armour:{ torso:'f_hide', legs:'f_scout', feet:'f_bone' }, sliders:{}, dye:{} }
@@ -71,30 +73,67 @@
 
   /* ---- pieces ---- */
   function b64(s){ var bin = atob(s), u = new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i); return u.buffer; }
+  function b64Async(s){
+    if(typeof fetch === 'function' && s.length > 8192){
+      return fetch('data:application/octet-stream;base64,' + s).then(function(r){ return r.arrayBuffer(); }).catch(function(){ return b64(s); });
+    }
+    return Promise.resolve(b64(s));
+  }
   // build.py gzips each piece before base64: unzip it in the browser (a plain one passes through)
   function gunzip(buf){
     var u = new Uint8Array(buf);
     if(u[0] !== 0x1f || u[1] !== 0x8b) return Promise.resolve(buf);
     return new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer();
   }
-  // a piece's file: its GLB, and on a second line its morph deltas (build.py); key + '.morph' asks for the second
-  var texts = {};
-  function fetchPiece(key){
-    var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
-    if(!texts[base]) texts[base] = fetch('pieces/' + base + '.txt').then(function(r){ if(!r.ok) throw new Error(base + ': ' + r.status); return r.text(); });
-    return texts[base].then(function(t){
-      var s = t.split('\n')[line];
-      if(s) return gunzip(b64(s));
-      // a piece published before the two were one file: its deltas in a file of their own
-      return fetch('pieces/' + key + '.txt').then(function(r){ if(!r.ok) throw new Error(key + ': ' + r.status); return r.text(); }).then(b64).then(gunzip);
+  var _relBase = '';
+  function fetchRel(rel, opts){
+    if(_relBase){
+      return fetch(_relBase + rel, opts).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        r._fallbackBase = _relBase;
+        return r;
+      });
+    }
+    return fetch(rel, opts).then(function(r){
+      if(!r.ok) throw new Error(rel + ': ' + r.status);
+      return r;
+    }).catch(function(){
+      return fetch('http://127.0.0.1:8123/' + rel, opts).then(function(r){
+        if(!r.ok) throw new Error(rel + ': ' + r.status);
+        _relBase = 'http://127.0.0.1:8123/';
+        r._fallbackBase = _relBase;
+        return r;
+      });
     });
+  }
+  // a piece's file: its GLB, and on a second line its morph deltas (build.py); key + '.morph' asks for the second
+  var texts = {}, raws = {}, _pageTs = Date.now();
+  function fetchPiece(key){
+    if(raws[key]) return raws[key];
+    if(typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]){
+      raws[key] = b64Async(KCHAR_GLB[key]).then(gunzip);
+      return raws[key];
+    }
+    var base = key.replace(/\.morph$/, ''), line = base === key ? 0 : 1;
+    if(!texts[base]){
+      texts[base] = fetchRel('pieces/' + base + '.txt?v=' + _pageTs, { cache:'no-cache' }).then(function(r){ return r.text(); }).then(function(t){
+        var nl = t.indexOf('\n');
+        return nl < 0 ? [t, ''] : [t.slice(0, nl), t.slice(nl + 1)];
+      });
+    }
+    raws[key] = texts[base].then(function(parts){
+      var s = parts[line];
+      parts[line] = '';
+      if(s) return b64Async(s).then(gunzip);
+      // a piece published before the two were one file: its deltas in a file of their own
+      return fetchRel('pieces/' + key + '.txt?v=' + _pageTs, { cache:'no-cache' }).then(function(r){ return r.text(); }).then(b64Async).then(gunzip);
+    });
+    return raws[key];
   }
   var cache = {};
   function load(key){
     if(!cache[key]){
-      var bytes = (typeof KCHAR_GLB !== 'undefined' && KCHAR_GLB[key]) ? Promise.resolve(b64(KCHAR_GLB[key])) :
-        fetchPiece(key);
-      cache[key] = bytes.then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
+      cache[key] = fetchPiece(key).then(function(buf){ return new Promise(function(ok, no){ new THREE.GLTFLoader().parse(buf, '', ok, no); }); });
     }
     return cache[key];
   }
@@ -102,26 +141,61 @@
     return fetchPiece(key);
   };
   /* a chip's picture: its cell of the body's thumbnail atlas (build.py pack_thumbs: thumbs/<body>.png and .json). The
-     index is fetched the first time a body's chip asks, and the panel is drawn again when it comes */
+     index is fetched the first time a body's chip asks, and applied in-place when it arrives */
   var THUMBS = (typeof KCHAR_THUMBS !== 'undefined' && KCHAR_THUMBS) ? KCHAR_THUMBS : {};
-  function thumb(key, mesh){
-    var body = key.split('/')[0], name = key.slice(body.length + 1) + '__' + mesh, t = THUMBS[body];
-    if(t === undefined){
-      THUMBS[body] = null;
-      fetch('thumbs/' + body + '.json', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : false; })
-        .then(function(j){ THUMBS[body] = j || false; if(j && rec) buildPanel(); }, function(){ THUMBS[body] = false; });
-      return null;
+  function thumbStyleFor(t, body, name){
+    if(!t || !t.keys || t.keys[name] === undefined) return null;
+    if(!t._url && !t._probed && typeof Image !== 'undefined'){
+      t._probed = true;
+      var probe = new Image();
+      probe.onerror = function(){
+        if(t._base !== 'http://127.0.0.1:8123/'){
+          t._base = 'http://127.0.0.1:8123/';
+          applyLoadedThumbs(body);
+        }
+      };
+      probe.src = (t._base || '') + 'thumbs/' + body + '.png' + (t.v ? '?v=' + t.v : '');
     }
-    if(!t || t.keys[name] === undefined) return null;
     var i = t.keys[name], c = i % t.cols, r = Math.floor(i / t.cols);
     var q = t.v ? '?v=' + t.v : '';
-    return { atlas:(t._base || '') + 'thumbs/' + body + '.png' + q, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
+    var url = t._url || ((t._base || '') + 'thumbs/' + body + '.png' + q);
+    return { body:body, name:name, atlas:url, size:t.cols * 100 + '% ' + t.rows * 100 + '%',
              at:(t.cols > 1 ? c / (t.cols - 1) * 100 : 0) + '% ' + (t.rows > 1 ? r / (t.rows - 1) * 100 : 0) + '%' };
+  }
+  function applyLoadedThumbs(b){
+    var t = THUMBS[b];
+    if(!t) return;
+    Array.prototype.forEach.call(document.querySelectorAll('i.th[data-th-body="' + b + '"]'), function(el){
+      var st = thumbStyleFor(t, b, el.getAttribute('data-th-name'));
+      if(st){
+        el.style.backgroundImage = 'url(' + st.atlas + ')';
+        el.style.backgroundSize = st.size;
+        el.style.backgroundPosition = st.at;
+      }
+    });
+  }
+  function thumb(key, mesh){
+    var b = key.split('/')[0], name = key.slice(b.length + 1) + '__' + mesh, t = THUMBS[b];
+    if(t === undefined){
+      THUMBS[b] = null;
+      fetchRel('thumbs/' + b + '.json').then(function(r){
+        var fb = r._fallbackBase || '';
+        return r.json().then(function(j){ if(j && fb) j._base = fb; return j; });
+      }).then(function(j){
+        THUMBS[b] = j || false;
+        if(j) applyLoadedThumbs(b);
+      }, function(){ THUMBS[b] = false; });
+      return { body:b, name:name, pending:true };
+    }
+    if(t === null) return { body:b, name:name, pending:true };
+    return thumbStyleFor(t, b, name);
   }
 
   /* ---- stage ---- */
   var cam = { yaw:0.35, pitch:0.1, dist:4.5, ty:0.68, want:{ dist:4.5, ty:0.68, pitch:0.1 }, spin:false, face:false };
   function boot(){
+    clock = new THREE.Clock();
+    hv = new THREE.Vector3();
     var stage = $('stage');
     renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, preserveDrawingBuffer:true });
     renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
@@ -136,6 +210,31 @@
     key.shadow.mapSize.set(1024, 1024); key.shadow.camera.left = key.shadow.camera.bottom = -1.2; key.shadow.camera.right = key.shadow.camera.top = 1.2;
     key.shadow.bias = -0.0003; key.shadow.normalBias = 0.01; scene.add(key);
     var rim = new THREE.DirectionalLight(0x9fc3ff, 0.4); rim.position.set(-2, 2.5, -2.5); scene.add(rim);
+    // Procedural studio reflection dome (PMREM) so realistic metallicFactor=1.0 armor gleams with sky & softbox highlights
+    if(THREE.PMREMGenerator){
+      try {
+        var pmrem = new THREE.PMREMGenerator(renderer);
+        pmrem.compileEquirectangularShader();
+        var envSc = new THREE.Scene();
+        envSc.background = new THREE.Color(0x5a636e);
+        var eDome = new THREE.Mesh(
+          new THREE.SphereGeometry(20, 24, 16),
+          new THREE.MeshBasicMaterial({ color:0x788492, side:THREE.BackSide })
+        );
+        envSc.add(eDome);
+        var addSoftbox = function(col, x, y, z, sx, sy){
+          var sb = new THREE.Mesh(new THREE.PlaneGeometry(sx, sy), new THREE.MeshBasicMaterial({ color:col, side:THREE.DoubleSide }));
+          sb.position.set(x, y, z); sb.lookAt(0, 0, 0); envSc.add(sb);
+        };
+        addSoftbox(0xfff5e4,  6, 10,  7, 9, 9);
+        addSoftbox(0xdcebff, -8,  7, -6, 10, 8);
+        addSoftbox(0xffffff,  0, 14,  1, 12, 12);
+        addSoftbox(0xffe6c2, -6,  4,  8, 6, 5);
+        addSoftbox(0x282b30,  0, -9,  0, 22, 22);
+        scene.environment = pmrem.fromScene(envSc, 0.04).texture;
+        pmrem.dispose();
+      } catch(_e){}
+    }
     var floor = new THREE.Mesh(new THREE.CircleGeometry(1.1, 48), new THREE.ShadowMaterial({ opacity:0.28 }));
     floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
     var ring = new THREE.Mesh(new THREE.RingGeometry(0.62, 0.64, 64), new THREE.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:0.12 }));
@@ -147,27 +246,61 @@
     setBody(D.bodies.mpfb_male ? 'mpfb_male' : Object.keys(D.bodies)[0]);
   }
 
-  function setBody(b){
+  function isPanelHidden(){
+    var p = $('panel');
+    return !p || p.hidden || (typeof getComputedStyle === 'function' && getComputedStyle(p).display === 'none');
+  }
+  var _panelDirty = false, _panelTimer = 0;
+  function scheduleBuildPanel(){
+    if(isPanelHidden()){ _panelDirty = true; return; }
+    if(_panelTimer) clearTimeout(_panelTimer);
+    _panelTimer = setTimeout(function(){
+      _panelTimer = 0;
+      buildPanel();
+    }, 16);
+  }
+
+  function setBody(b, nextRec, skipPanel){
+    if(b === body && fig && !nextRec){
+      return window._kchar ? window._kchar.ready : Promise.resolve();
+    }
     if(rec) saved[body] = rec;
     body = b;
     if(fig) fig.dispose();
     fig = new KCharFigure(D.bodies[b], D.sliders, load);
     scene.add(fig.group);
-    rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
-    if(!saved[b] && LIZARD_START) lizard(rec, D.bodies[b].kit);
-    if(!saved[b] && FROG_START) frog(rec, D.bodies[b].kit);
+    if(nextRec){
+      rec = nextRec;
+      saved[b] = rec;
+    } else {
+      rec = saved[b] || JSON.parse(JSON.stringify(start[b] || KCHAR.blank(D.bodies[b].kit)));
+      if(!saved[b] && LIZARD_START) lizard(rec, D.bodies[b].kit);
+      if(!saved[b] && FROG_START) frog(rec, D.bodies[b].kit);
+    }
     Object.keys(D.bodies).forEach(function(x){ $('body-' + x).setAttribute('aria-pressed', x === b); });
-    buildPanel();
     view(cam.face);                 // a giant's camera stands further back
     var clip = document.querySelector('[data-clip][aria-pressed="true"]');
     $('loading').hidden = false;
-    var done = apply().then(function(){
+    var applied = apply();
+    if(skipPanel || isPanelHidden()) _panelDirty = true;
+    else buildPanel();
+    var done = applied.then(function(){
       $('loading').hidden = true;
       return fig.play(clip ? clip.dataset.clip || null : 'idle');
     });
-    window._kchar = { fig:fig, ready:done, record:function(){ return rec; }, cam:cam, still:!!(window._kchar && window._kchar.still),
-                      set:function(r){ rec = r; buildPanel(); return apply(); }, body:setBody,
-                      comments:{ getAll:loadComments, list:commentList, save:saveComments, setFilter:function(f){ filterComments = f || 'all'; buildPanel(); } } };
+    window._kchar = {
+      fig:fig, ready:done, record:function(){ return rec; }, bodyId:function(){ return body; }, cam:cam,
+      still:!!(window._kchar && window._kchar.still),
+      set:function(r, fast){ rec = r; saved[body] = r; if(fast || isPanelHidden()) _panelDirty = true; else scheduleBuildPanel(); return apply(); },
+      equip:function(targetBody, r){
+        if(targetBody && targetBody !== body && D.bodies[targetBody]) return setBody(targetBody, r, true);
+        rec = r; saved[body] = r; _panelDirty = true;
+        return apply();
+      },
+      refreshPanel:function(force){ if(force || _panelDirty){ _panelDirty = false; buildPanel(); } },
+      body:setBody,
+      comments:{ getAll:loadComments, list:commentList, save:saveComments, setFilter:function(f){ filterComments = f || 'all'; buildPanel(); } }
+    };
     return done;
   }
 
@@ -177,7 +310,6 @@
     camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
   }
 
-  var hv = new THREE.Vector3();
   function frame(){
     var dt = Math.min(0.05, clock.getDelta());
     if(fig && !(window._kchar && window._kchar.still)) fig.update(dt);   // still: tools/shots.py steps the figure itself
@@ -221,11 +353,18 @@
     var grid = document.createElement('div'); grid.className = 'chips' + (compact ? ' tags' : '');
     items.forEach(function(it){
       var b = document.createElement('button'); b.className = 'chip' + (it.comment ? ' has-comment' : ''); b.id = it.domId;
-      if(it.comment) b.title = '💬 ' + it.comment;
+      if(it.comment) b.title = (it.title ? it.title + ' — ' : '') + '💬 ' + it.comment;
       else if(it.title) b.title = it.title;
       b.setAttribute('aria-pressed', it.id === current);
-      b.innerHTML = (it.img ? '<i class="th" style="background-image:url(' + it.img.atlas + ');background-size:' + it.img.size +
-                     ';background-position:' + it.img.at + '"></i>' : compact ? '' : '<span class="none"></span>') + '<span>' + it.name + '</span>';
+      var icon = '';
+      if(it.img){
+        var attr = it.img.body ? ' data-th-body="' + it.img.body + '" data-th-name="' + it.img.name + '"' : '';
+        var st = it.img.atlas ? ' style="background-image:url(' + it.img.atlas + ');background-size:' + it.img.size + ';background-position:' + it.img.at + '"' : '';
+        icon = '<i class="th"' + attr + st + '></i>';
+      } else if(!compact){
+        icon = '<span class="none"></span>';
+      }
+      b.innerHTML = icon + '<span>' + (it.html || it.name) + '</span>';
       b.addEventListener('click', function(){ onPick(it.id); });
       grid.appendChild(b);
     });
@@ -247,12 +386,18 @@
     box.appendChild(row);
   }
 
-  var sliderEls = {};
+  var sliderEls = {}, sliderBody = null;
+  function ensureSliders(){
+    if(sliderBody !== body){ sliderBody = body; buildSliders(); }
+    else syncPanel();
+  }
   function buildPanel(){
+    if(isPanelHidden()){ _panelDirty = true; return; }
+    _panelDirty = false;
     var kit = D.bodies[body].kit;
     var gear = $('page-gear'), headp = $('page-head');
     gear.innerHTML = ''; headp.innerHTML = '';
-    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); buildSliders(); return; }
+    if(kit.style === 'mpfb'){ buildMpfb(kit, gear, headp); ensureSliders(); return; }
     ['torso', 'legs', 'feet'].forEach(function(slot){
       var a = kit.armour.filter(function(x){ return x.slots[slot]; });
       var cur = rec.armour[slot] || null, it = a.filter(function(x){ return x.id === cur; })[0];
@@ -287,11 +432,95 @@
       if(kind === 'hair') dyeRow(s, 'hair');
     });
 
-    buildSliders();
+    ensureSliders();
   }
 
   /* a MakeHuman body: library items per slot, MPFB's own fitting; the head is the base's, shaped by the morphs */
   var PEOPLE = {}; (D.peoples || []).forEach(function(p){ PEOPLE[p.id] = p; });
+  var SHORT_CULTURE = {
+    chichani: 'Chichani',
+    rustic_clansmen: 'Free Clans',
+    tabisti: 'Tabisti',
+    islanders: 'Islanders',
+    eternian: 'Eternian',
+    yusar: 'Yusar',
+    giants: 'Dalab Giants',
+    free_giants: 'Free Giants',
+    historians: 'Historians',
+    geomancers: 'Geomancers',
+    catch_twins_caravaneers: 'Caravaneers',
+    glaziers: 'Glaziers',
+    xanadu_expats: 'Xanadu Expats',
+    ancients_valley: 'Valley Thralls',
+    kimr: 'Kimr',
+    cyber_liches: 'Cyber-Liches',
+    fellgangs: 'Fellgangs',
+    extraplanar: 'Extraplanar',
+    voth_arcologies: 'Drum & Torus',
+    khaayken: 'Khaayken Yeti',
+    coyote_men: 'Coyote Men',
+    jimjam: 'Jimjam',
+    painted_men: 'Painted Men',
+    bandits: 'Bandits',
+    ring_sea_mariners: 'Mariners & Pirates',
+    screamers: 'Screamers',
+    lizardmen: 'Lizardmen',
+    frogmen: 'Frogmen',
+    captives_and_arena: 'Captives & Arena',
+    hazmat_and_trades: 'Hazmat & Trades',
+    valley_mutants: 'Mutants & Cults'
+  };
+  function escHtml(s){
+    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function shortCultureName(p){
+    if(!p) return '';
+    if(SHORT_CULTURE[p.id]) return SHORT_CULTURE[p.id];
+    return String(p.name || p.id || '').replace(/\s*\([^)]*\)\s*$/, '').trim();
+  }
+  function formatOutfitRoleFirst(rawRole, p){
+    var sc = shortCultureName(p);
+    var r = String(rawRole || '').trim()
+      .replace(/^HM-\d+[A-Z]?(?:\/\d+)?\s+/i, '')
+      .replace(/^Geomancer\s+/i, '')
+      .replace(/^Ancient's Valley\s+/i, '')
+      .replace(/^Free Clans\s+/i, '')
+      .replace(/^Laitwal Mara\s+/i, '')
+      .replace(/\s*\((?:0\.94 Scale|[a-z_]+\.[a-z0-9_]+)\)\s*$/i, '')
+      .trim();
+    if(r) r = r.charAt(0).toUpperCase() + r.slice(1);
+    var plain = sc ? (r + ' · ' + sc) : r;
+    var html = sc ? (escHtml(r) + ' <small>· ' + escHtml(sc) + '</small>') : escHtml(r);
+    var full = (p && p.name) ? (r + ' — ' + p.name + (rawRole && rawRole !== r ? ' (' + rawRole + ')' : '')) : plain;
+    return { role:r, culture:sc, plain:plain, html:html, full:full };
+  }
+  function formatCommentEntryDisplay(e, kit){
+    if(!e) return { plain:'', html:'', full:'' };
+    var nid = e.namedId || (/^named:/.test(e.key || '') ? e.key.slice(6) : null);
+    var oid = e.outfitId || (/^outfit:/.test(e.key || '') ? e.key.slice(7) : null);
+    if(nid){
+      var nm = getNamedModels().filter(function(m){ return m.id === nid; })[0];
+      var nmName = (nm && nm.name) || e.label || nid;
+      nmName = nmName.replace(/^Valley Cyber-Thrall:\s*/i, '') + (/^Valley Cyber-Thrall:/i.test(nmName) ? ' (Valley Thrall)' : '');
+      return { plain:nmName, html:escHtml(nmName), full:(nm && nm.name) || e.label || nid };
+    }
+    if(oid){
+      var xo = getAllOutfits(kit, false).filter(function(y){ return y.id === oid; })[0];
+      if(!xo){
+        var otherBody = body === 'mpfb_female' ? 'mpfb_male' : 'mpfb_female';
+        if(D.bodies[otherBody]) xo = getAllOutfits(D.bodies[otherBody].kit, false).filter(function(y){ return y.id === oid; })[0];
+      }
+      if(xo) return { plain:xo.name, html:xo.chipHtml || escHtml(xo.name), full:xo.fullTitle || xo.name };
+      var dot = oid.indexOf('.');
+      if(dot > 0 && PEOPLE[oid.slice(0, dot)]){
+        var pp = PEOPLE[oid.slice(0, dot)], tier = oid.slice(dot + 1);
+        var rl = ((pp.tier_labels || {})[tier]) || tier;
+        return formatOutfitRoleFirst(rl, pp);
+      }
+    }
+    var lbl = String(e.label || e.key || '');
+    return { plain:lbl, html:escHtml(lbl), full:lbl };
+  }
   var SKIN_ANY = ['#f3d9c6', '#e2b897', '#c99a74', '#a8764f', '#835735', '#5e3c25', '#3e271a'];
   var EYES_ANY = ['#1e140c', '#3b2414', '#5a3a22', '#7a5a2a', '#4a5a3a', '#4e6a80', '#6a7a86', '#8a3a1c'];
   // an animal's eyes (a frog's or a lizard's: role 'iris'), and the poison dart frogs' colours for a patterned skin
@@ -355,7 +584,7 @@
     askari:'martial', icewarden:'martial', trooper:'martial', sentinel:'martial', breacher:'martial', corsair:'martial', warrior:'martial',
     agent:'martial', chronomonk:'martial', temple:'martial',
     heir_juggernaut:'martial', heir_sentinel:'martial', heir_stalker:'martial',
-    gilded_sentinel:'martial', crescent_vigilant:'clergy', crimson_technomancer:'clergy', crested_guardian:'martial',
+    gilded_sentinel:'martial', crescent_vigilant:'clergy', crimson_technomancer:'clergy',
     yuni_outback_scout:'martial', yuni_tassel_heavy:'martial', yuni_field_medic:'clergy', yuni_comms_ranger:'martial', yuni_desert_elder:'clergy',
     pc_hanbok:'noble', pc_ronin:'martial', pc_corsair:'martial', pc_geomancer:'clergy', pc_valkyrie:'sovereign',
     pc_floral_envoy:'noble', pc_patchwork_sheriff:'martial', pc_torgo_couture:'noble', pc_azure_emir:'noble', pc_relic_lancer:'martial',
@@ -363,14 +592,21 @@
     shaman:'clergy', lightkeeper:'clergy', dronemaster:'clergy', electropriest:'clergy', electromonk:'clergy', monk:'clergy', keeper:'clergy', cham:'clergy',
     noble:'noble', noble_fest:'noble', aedile:'noble', magistrate:'noble', envoy:'noble', patriarch:'noble', rich:'noble',
     magnate:'noble', pleasure:'noble', vizier:'noble', emmo:'noble', prefect:'noble', censor:'noble', archivist:'noble', minister:'noble', elder:'noble', chief:'noble',
-    tzintzun:'sovereign', heliophant:'sovereign'
+    tzintzun:'sovereign', heliophant:'sovereign', sultan_court:'sovereign', arch_biologist:'sovereign',
+    monk_crimson:'clergy', monk_beacon:'clergy', monk_viridian:'clergy', monk_iridescent:'clergy', monk_azure:'clergy', monk_violet_storm:'martial', monk_white_lily:'clergy',
+    house_golden_tears:'martial', house_rare_devisers:'trade', house_two_horns:'trade', mint_assessor:'noble', hired_musketeer:'martial',
+    glazier_mara:'trade', lake_boatman:'commoner', koldlod_miner:'commoner',
+    abbot_chronicler:'clergy', printer_artisan:'trade', oidong_courier:'trade', rc6_inquisitor:'martial', puna_excavator:'trade', verge_chronicler:'clergy',
+    maritime_almanacker:'trade', astronomer_monk:'clergy', ria_expeditionary:'martial', lux_envoy:'noble', tethis_diver:'trade', lu_tze_melon_monk:'clergy', voth_underground:'clergy',
+    yuni_hero_qiblai_legate:'noble', wildcat_boast_hero:'martial',
+    singularity_archon:'sovereign', censer_revenant:'martial', vox_solus:'clergy', accretion_djinn:'sovereign', chorus_of_masks:'clergy'
   };
   var TIER_ROLE = {
     ordinator:'military', chosen:'military', lancer:'military', cataphract:'military', skirmisher:'military', watch:'military',
     praetorian:'military', commissar:'military', axeman:'military', warden:'military', askari:'military', trooper:'military',
     sentinel:'military', warrior:'military', chronomonk:'military', temple:'military', patrol:'military',
     heir_juggernaut:'military', heir_sentinel:'military', heir_stalker:'scout',
-    gilded_sentinel:'military', crescent_vigilant:'scholar', crimson_technomancer:'scholar', crested_guardian:'military',
+    gilded_sentinel:'military', crescent_vigilant:'scholar', crimson_technomancer:'scholar',
     yuni_outback_scout:'scout', yuni_tassel_heavy:'military', yuni_field_medic:'priest', yuni_comms_ranger:'scout', yuni_desert_elder:'priest',
     pc_hanbok:'court', pc_ronin:'military', pc_corsair:'maritime', pc_geomancer:'scholar', pc_valkyrie:'military',
     pc_floral_envoy:'court', pc_patchwork_sheriff:'military', pc_torgo_couture:'court', pc_azure_emir:'court', pc_relic_lancer:'military',
@@ -382,14 +618,24 @@
     scout:'scout', amazon:'scout', stalker:'scout', walker:'scout', icewarden:'scout', breacher:'scout', agent:'scout',
     phil:'maritime', corsair:'maritime',
     noble:'court', noble_fest:'court', aedile:'court', magistrate:'court', envoy:'court', patriarch:'court',
-    rich:'court', pleasure:'court', vizier:'court', prefect:'court', minister:'court', chief:'court'
+    rich:'court', pleasure:'court', vizier:'court', prefect:'court', minister:'court', chief:'court',
+    monk_crimson:'scout', monk_beacon:'scholar', monk_viridian:'priest', monk_iridescent:'priest', monk_azure:'priest', monk_violet_storm:'military', monk_white_lily:'scholar',
+    house_golden_tears:'scout', house_rare_devisers:'scholar', house_two_horns:'trade', sultan_court:'court', mint_assessor:'court', hired_musketeer:'military',
+    glazier_mara:'trade', lake_boatman:'maritime', koldlod_miner:'trade',
+    abbot_chronicler:'priest', printer_artisan:'scholar', oidong_courier:'scout', rc6_inquisitor:'military', puna_excavator:'scholar', verge_chronicler:'scout',
+    maritime_almanacker:'maritime', astronomer_monk:'scholar', ria_expeditionary:'scout', lux_envoy:'court', tethis_diver:'maritime', lu_tze_melon_monk:'priest', voth_underground:'scout',
+    yuni_hero_qiblai_legate:'scholar', arch_biologist:'priest', wildcat_boast_hero:'military',
+    singularity_archon:'scholar', censer_revenant:'military', vox_solus:'scholar', accretion_djinn:'priest', chorus_of_masks:'priest'
   };
   var IMPORTANT_NPC_TIERS = {
     tzintzun:1, phil:1, heir_juggernaut:1, heir_sentinel:1, heir_stalker:1,
-    gilded_sentinel:1, crescent_vigilant:1, crimson_technomancer:1, crested_guardian:1,
+    gilded_sentinel:1, crescent_vigilant:1, crimson_technomancer:1,
     heliophant:1, hierophant:1, heliarch:1, patriarch:1, elder:1, yuni_desert_elder:1, chief:1,
     vizier:1, magnate:1, aedile:1, praetorian:1, magistrate:1, commissar:1, emmo:1, confessor:1,
-    ordinator:1, chosen:1, minister:1, censor:1, cataphract:1, sibyl:1, shaman:1, sentinel:1, breacher:1
+    ordinator:1, chosen:1, minister:1, censor:1, cataphract:1, sibyl:1, shaman:1, sentinel:1, breacher:1,
+    sultan_court:1, abbot_chronicler:1, lu_tze_melon_monk:1, rc6_inquisitor:1,
+    yuni_hero_qiblai_legate:1, arch_biologist:1, wildcat_boast_hero:1,
+    singularity_archon:1, censer_revenant:1, vox_solus:1, accretion_djinn:1, chorus_of_masks:1
   };
   function tierTypes(tier, set){
     var t = {};
@@ -470,120 +716,261 @@
       window.name = JSON.stringify({ __kchar:1, comments:MEM_COMMENTS || {}, baked:MEM_BAKED || {} });
     } catch(e){}
   }
-  function _syncToDisk(){
+  var _pendingDeletedComments = [];
+  var _hasAuthoritativeLocal = false;
+  var _syncUnsent = false;
+  function _syncToDisk(deletedKeys){
+    if(deletedKeys && deletedKeys.length){
+      deletedKeys.forEach(function(k){ if(_pendingDeletedComments.indexOf(k) < 0) _pendingDeletedComments.push(k); });
+    }
+    _syncUnsent = true;
     if(_syncTimer) clearTimeout(_syncTimer);
     _syncTimer = setTimeout(function(){
+      var delList = _pendingDeletedComments.slice();
+      var postPayload = JSON.stringify({
+        comments:MEM_COMMENTS || {},
+        deleted_comments:delList,
+        authoritative_local:_hasAuthoritativeLocal,
+        baked:MEM_BAKED || {}
+      });
+      var slimComments = {};
+      Object.keys(MEM_COMMENTS || {}).forEach(function(ck){
+        var cv = MEM_COMMENTS[ck];
+        if(cv && typeof cv === 'object'){
+          slimComments[ck] = {
+            key:cv.key || ck, label:cv.label, text:cv.text,
+            namedId:cv.namedId, outfitId:cv.outfitId, torso:cv.torso,
+            body:cv.body, updated:cv.updated
+          };
+        }
+      });
+      var getPayload = JSON.stringify({
+        comments:slimComments,
+        deleted_comments:delList,
+        authoritative_local:_hasAuthoritativeLocal
+      });
+      var markSynced = function(ok){
+        var b = typeof document !== 'undefined' && document.getElementById('comment-status-badge');
+        if(!b) return;
+        if(ok){
+          var cnt = Object.keys(MEM_COMMENTS || {}).length;
+          if(b.textContent && b.textContent.indexOf('No comment') < 0){
+            b.textContent = '✓ Synced to disk (' + cnt + ')';
+          }
+        } else {
+          b.textContent = '⚠ Disk sync offline — use Copy JSON';
+        }
+      };
+      var pushFallback = function(){
+        try {
+          if(typeof Image !== 'undefined' && getPayload.length < 200000){
+            var im = new Image();
+            im.src = STATE_SYNC_URL + '?push=' + encodeURIComponent(getPayload) + '&_t=' + Date.now();
+            im.onload = function(){ markSynced(true); };
+            im.onerror = function(){ markSynced(false); };
+          } else {
+            markSynced(false);
+          }
+        } catch(e){ markSynced(false); }
+      };
       try {
         fetch(STATE_SYNC_URL, {
           method:'POST',
           mode:'cors',
           headers:{ 'Content-Type':'application/json' },
-          body:JSON.stringify({ comments:MEM_COMMENTS || {}, baked:MEM_BAKED || {} })
-        }).catch(function(){});
-      } catch(e){}
-    }, 80);
+          body:postPayload
+        }).then(function(r){
+          if(r && r.ok){
+            _syncUnsent = false;
+            _pendingDeletedComments = _pendingDeletedComments.filter(function(k){ return delList.indexOf(k) < 0; });
+            markSynced(true);
+          } else {
+            pushFallback();
+          }
+        }).catch(function(){ pushFallback(); });
+      } catch(e){ pushFallback(); }
+    }, 50);
   }
+  if(typeof window !== 'undefined'){
+    window.addEventListener('focus', function(){ if(_hasAuthoritativeLocal || _syncUnsent) _syncToDisk(); });
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden && (_hasAuthoritativeLocal || _syncUnsent)) _syncToDisk();
+    });
+    setInterval(function(){ if(_syncUnsent && _hasAuthoritativeLocal) _syncToDisk(); }, 4000);
+  }
+  function kitById(kit){
+    if(!kit) return {};
+    if(!kit._byId){
+      var m = {};
+      (kit.items || []).forEach(function(it){ m[it.id] = it; });
+      kit._byId = m;
+    }
+    return kit._byId;
+  }
+  function kitHas(kit, id){
+    return !!(id && kitById(kit)[id]);
+  }
+  var _commentIdx = null;
+  function _invalidateCommentIdx(){ _commentIdx = null; }
   function _initPersist(){
     if(MEM_COMMENTS !== null && MEM_BAKED !== null) return;
     var wn = _readWinName();
+    var lsRaw = null;
     var lsC = {}, lsB = {};
-    try { lsC = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '{}') || {}; } catch(e){}
+    try {
+      lsRaw = localStorage.getItem(COMMENTS_KEY);
+      if(lsRaw !== null) lsC = JSON.parse(lsRaw || '{}') || {};
+    } catch(e){}
     try { lsB = JSON.parse(localStorage.getItem(NAMED_KEY) || '{}') || {}; } catch(e){}
-    MEM_COMMENTS = Object.assign({}, D.comments || {}, wn.comments || {}, lsC);
+    var hasLocal = (lsRaw !== null) || !!(wn && wn.__kchar);
+    _hasAuthoritativeLocal = hasLocal;
+    if(hasLocal){
+      MEM_COMMENTS = Object.assign({}, wn.comments || {}, lsC);
+    } else {
+      MEM_COMMENTS = Object.assign({}, D.comments || {});
+    }
     MEM_BAKED = Object.assign({}, D.baked_models || {}, wn.baked || {}, lsB);
     ['dalab_heliophant', 'hykk_hierophant', 'hykk_heliarch'].forEach(function(id){
       if(MEM_BAKED[id] && MEM_BAKED[id].people !== 'izani') MEM_BAKED[id].people = 'izani';
     });
-    _writeWinName();
-    try {
-      fetch(STATE_SYNC_URL, { mode:'cors', cache:'no-store' })
-        .then(function(r){ return r.ok ? r.json() : null; })
-        .then(function(st){
-          if(!st || typeof st !== 'object') return;
-          var changed = false;
-          if(st.comments && typeof st.comments === 'object'){
-            Object.keys(st.comments).forEach(function(k){
-              if(!MEM_COMMENTS[k] || (st.comments[k].updated && (!MEM_COMMENTS[k].updated || st.comments[k].updated > MEM_COMMENTS[k].updated))){
-                MEM_COMMENTS[k] = st.comments[k];
-                changed = true;
+    _invalidateCommentIdx();
+    if(hasLocal){
+      _writeWinName();
+      _syncToDisk();
+    }
+    setTimeout(function(){
+      try {
+        var ac = typeof AbortController !== 'undefined' ? new AbortController() : null;
+        var tm = ac ? setTimeout(function(){ ac.abort(); }, 800) : null;
+        fetch(STATE_SYNC_URL, { mode:'cors', cache:'no-store', signal:ac ? ac.signal : undefined })
+          .then(function(r){ if(tm) clearTimeout(tm); return r.ok ? r.json() : null; })
+          .then(function(st){
+            if(!st || typeof st !== 'object') return;
+            var changed = false;
+            var maxLocalTs = '';
+            Object.keys(MEM_COMMENTS || {}).forEach(function(lk){
+              var u = MEM_COMMENTS[lk] && MEM_COMMENTS[lk].updated;
+              if(u && u > maxLocalTs) maxLocalTs = u;
+            });
+            if(st.comments && typeof st.comments === 'object'){
+              Object.keys(st.comments).forEach(function(k){
+                var sv = st.comments[k];
+                if(!sv || !sv.text) return;
+                if(!MEM_COMMENTS[k]){
+                  if(hasLocal && maxLocalTs && sv.updated && sv.updated < maxLocalTs) return;
+                  MEM_COMMENTS[k] = sv;
+                  changed = true;
+                } else if(sv.updated && (!MEM_COMMENTS[k].updated || sv.updated > MEM_COMMENTS[k].updated)){
+                  if(!sv.record && MEM_COMMENTS[k].record) sv = Object.assign({}, sv, { record:MEM_COMMENTS[k].record });
+                  MEM_COMMENTS[k] = sv;
+                  changed = true;
+                } else if(!MEM_COMMENTS[k].record && sv.record){
+                  MEM_COMMENTS[k] = Object.assign({}, MEM_COMMENTS[k], { record:sv.record });
+                  changed = true;
+                }
+              });
+            }
+            if(st.baked && typeof st.baked === 'object'){
+              Object.keys(st.baked).forEach(function(k){
+                if(!MEM_BAKED[k]){ MEM_BAKED[k] = st.baked[k]; changed = true; }
+              });
+            }
+            if(changed){
+              _invalidateCommentIdx();
+              if(hasLocal){
+                _writeWinName();
+                try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
+                try { localStorage.setItem(NAMED_KEY, JSON.stringify(MEM_BAKED)); } catch(e){}
               }
-            });
-          }
-          if(st.baked && typeof st.baked === 'object'){
-            Object.keys(st.baked).forEach(function(k){
-              if(!MEM_BAKED[k]){ MEM_BAKED[k] = st.baked[k]; changed = true; }
-            });
-          }
-          if(changed){
-            _writeWinName();
-            try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
-            try { localStorage.setItem(NAMED_KEY, JSON.stringify(MEM_BAKED)); } catch(e){}
-            if(rec) buildPanel();
-          }
-        }).catch(function(){});
-    } catch(e){}
+              if(rec) buildPanel();
+            }
+          }).catch(function(){ if(tm) clearTimeout(tm); });
+      } catch(e){}
+    }, 250);
   }
   function loadComments(){
     _initPersist();
     return MEM_COMMENTS;
   }
-  function saveComments(map){
+  function saveComments(map, deletedKeys){
     _initPersist();
+    _hasAuthoritativeLocal = true;
     MEM_COMMENTS = map || {};
+    _invalidateCommentIdx();
     _writeWinName();
     try { localStorage.setItem(COMMENTS_KEY, JSON.stringify(MEM_COMMENTS)); } catch(e){}
-    _syncToDisk();
+    _syncToDisk(deletedKeys);
   }
   function commentList(comments){
     var map = comments || loadComments();
+    if(!comments && _commentIdx) return _commentIdx.list;
     return Object.keys(map).map(function(k){
       var v = map[k];
       if(typeof v === 'string') return { key:k, text:v, label:k };
       return v && v.text ? Object.assign({ key:k }, v) : null;
     }).filter(Boolean);
   }
+  function _getCommentIndex(comments){
+    var map = comments || loadComments();
+    if(!comments && _commentIdx) return _commentIdx;
+    var list = Object.keys(map).map(function(k){
+      var v = map[k];
+      if(typeof v === 'string') return { key:k, text:v, label:k };
+      return v && v.text ? Object.assign({ key:k }, v) : null;
+    }).filter(Boolean);
+    var byNamed = {}, byOutfit = {}, byTorso = {}, bySlotItem = {};
+    for(var i = 0; i < list.length; i++){
+      var c = list[i];
+      if(c.namedId && !byNamed[c.namedId]) byNamed[c.namedId] = c;
+      if(c.outfitId && !byOutfit[c.outfitId]) byOutfit[c.outfitId] = c;
+      if(c.torso && !byTorso[c.torso]) byTorso[c.torso] = c;
+      if(c.record){
+        if(c.record.armour){
+          Object.keys(c.record.armour).forEach(function(sl){
+            var id = c.record.armour[sl];
+            if(id && !bySlotItem[sl + ':' + id]) bySlotItem[sl + ':' + id] = c;
+          });
+        }
+        ['hair', 'beard'].forEach(function(sl){
+          var id = c.record[sl];
+          if(id && !bySlotItem[sl + ':' + id]) bySlotItem[sl + ':' + id] = c;
+        });
+      }
+    }
+    var idx = { map:map, list:list, byNamed:byNamed, byOutfit:byOutfit, byTorso:byTorso, bySlotItem:bySlotItem };
+    if(!comments) _commentIdx = idx;
+    return idx;
+  }
   function getCommentForNamed(m, comments){
     if(!m) return null;
-    var map = comments || loadComments();
+    var idx = _getCommentIndex(comments), map = idx.map;
     if(m.id && map['named:' + m.id] && map['named:' + m.id].text) return map['named:' + m.id];
     if(m.outfit_id && map['outfit:' + m.outfit_id] && map['outfit:' + m.outfit_id].text) return map['outfit:' + m.outfit_id];
     var torso = m.armour && m.armour.torso;
     if(torso && map['torso:' + torso] && map['torso:' + torso].text) return map['torso:' + torso];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(m.id && c.namedId === m.id) return c;
-      if(m.outfit_id && c.outfitId === m.outfit_id) return c;
-      if(torso && c.torso === torso) return c;
-    }
+    if(m.id && idx.byNamed[m.id]) return idx.byNamed[m.id];
+    if(m.outfit_id && idx.byOutfit[m.outfit_id]) return idx.byOutfit[m.outfit_id];
+    if(torso && idx.byTorso[torso]) return idx.byTorso[torso];
     return null;
   }
   function getCommentForOutfit(x, comments){
     if(!x) return null;
-    var map = comments || loadComments();
+    var idx = _getCommentIndex(comments), map = idx.map;
     if(x.id && map['outfit:' + x.id] && map['outfit:' + x.id].text) return map['outfit:' + x.id];
     var torso = x.set && x.set.torso;
     if(torso && map['torso:' + torso] && map['torso:' + torso].text) return map['torso:' + torso];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(x.id && c.outfitId === x.id) return c;
-      if(torso && c.torso === torso) return c;
-    }
+    if(x.id && idx.byOutfit[x.id]) return idx.byOutfit[x.id];
+    if(torso && idx.byTorso[torso]) return idx.byTorso[torso];
     return null;
   }
   function getCommentForItem(it, comments){
     if(!it || !it.id) return null;
-    var map = comments || loadComments();
-    if(it.slot === 'torso' && map['torso:' + it.id] && map['torso:' + it.id].text) return map['torso:' + it.id];
-    var list = commentList(map);
-    for(var i = 0; i < list.length; i++){
-      var c = list[i];
-      if(it.slot === 'torso' && c.torso === it.id) return c;
-      if(c.record && c.record.armour && c.record.armour[it.slot] === it.id) return c;
-      if(c.record && (it.slot === 'hair' || it.slot === 'beard') && c.record[it.slot] === it.id) return c;
+    var idx = _getCommentIndex(comments), map = idx.map;
+    if(it.slot === 'torso'){
+      if(map['torso:' + it.id] && map['torso:' + it.id].text) return map['torso:' + it.id];
+      if(idx.byTorso[it.id]) return idx.byTorso[it.id];
     }
-    return null;
+    return idx.bySlotItem[it.slot + ':' + it.id] || null;
   }
   function inWardrobe(x){
     if(filterComments === 'commented') return !!getCommentForItem(x);
@@ -621,10 +1008,10 @@
     }, true);
     var have = {}; kit.items.forEach(function(x){ if(x.culture) have[x.culture] = true; });
     var list = [{ id:null, name:'All' }, { id:'library', name:'Library' }].concat((D.peoples || []).filter(function(p){ return have[p.id]; })
-      .map(function(p){ return { id:p.id, name:p.name }; }));
+      .map(function(p){ return { id:p.id, name:shortCultureName(p), fullTitle:p.name }; }));
     var cur = list.filter(function(x){ return x.id === wardrobe; })[0];
     var s = section(gear, 'Wardrobe (Culture)', cur ? cur.name : 'All');
-    chips(s, list.map(function(x){ return { id:x.id, name:x.name, domId:'chip-wardrobe-' + (x.id || 'all') }; }), wardrobe, function(id){
+    chips(s, list.map(function(x){ return { id:x.id, name:x.name, title:x.fullTitle || x.name, domId:'chip-wardrobe-' + (x.id || 'all') }; }), wardrobe, function(id){
       wardrobe = id; buildPanel();
     }, true);
     var curCl = CLASS_LIST.filter(function(x){ return x.id === filterClass; })[0] || CLASS_LIST[0];
@@ -646,19 +1033,60 @@
   /* what the hands hold (data/props.json, fig.hold): a prop per hand, kept in the record as hold {R, L}. A named
      character's own props (props.json owner: Tzintzun's weapons, tools/import_props.py) come first when it is that
      character; the Animation Lab picks props by clip instead (data/clips.json hold) */
-  var HAND_LABEL = { R:'Right hand', L:'Left hand' };
+  var HAND_LABEL = { R:'Right hand', L:'Left hand', R2:'Lower right hand', L2:'Lower left hand' }, showAllProps = false;
+  var WARDROBE_PROP_CULTURES = {
+    rustic_clansmen: ['talovolci', 'dalabites'],
+    painted_men: ['talovolci'],
+    kimr: ['talovolci', 'eternian'],
+    fellgangs: ['talovolci'],
+    giants: ['dalabites', 'izani'],
+    free_giants: ['dalabites', 'talovolci'],
+    voth_arcologies: ['chichani', 'scyvoi', 'hykkousoi'],
+    beast_riders: ['scyvoi', 'xanadu', 'chichani'],
+    dasri: ['xanadu', 'tabisti'],
+    xanadu_expats: ['xanadu', 'coyote_men', 'yuni'],
+    frogmen: ['lizardmen', 'chichani', 'tabisti'],
+    screamers: ['chichani', 'eternian', 'khaayken'],
+    islanders: ['hykkousoi', 'tabisti', 'chichani'],
+    ring_sea_mariners: ['hykkousoi', 'izani', 'xanadu'],
+    captives_and_arena: ['izani', 'dalabites', 'chichani']
+  };
   function handChips(gear){
     var all = D.props || [];
     if(!all.length) return;
     var hold = rec.hold || {};
-    ['R', 'L'].forEach(function(side){
-      var list = all.filter(function(p){ return p.hand === side; }).slice();
-      list.sort(function(a, b){ return (b.owner === rec.id ? 1 : 0) - (a.owner === rec.id ? 1 : 0); });
-      var cur = list.filter(function(p){ return p.id === hold[side]; })[0];
-      var s = section(gear, HAND_LABEL[side], cur ? cur.label : 'Empty');
-      chips(s, [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
-        return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:p.owner ? 'Made for ' + p.owner : '' };
-      })), hold[side] || null, function(id){ rec.hold = rec.hold || {}; rec.hold[side] = id; apply(); buildPanel(); }, true);
+    var kitNow = D.bodies[body] && D.bodies[body].kit;
+    var sides = (kitNow && KCHAR.arms(rec, kitNow) >= 4) ? ['R', 'L', 'R2', 'L2'] : ['R', 'L'];
+    var mappedCults = (wardrobe && WARDROBE_PROP_CULTURES[wardrobe]) || [];
+    sides.forEach(function(side){
+      var baseSide = side.charAt(0);
+      var full = all.filter(function(p){ return p.hand === baseSide && p.kind !== 'sheath' && p.kind !== 'arrow'; });
+      var list = full;
+      var canCollapse = !showAllProps && !wardrobe && full.length > 32;
+      if(wardrobe && wardrobe !== 'library'){
+        list = full.filter(function(p){
+          return !p.src || p.people === wardrobe || mappedCults.indexOf(p.people) >= 0 || p.owner === rec.id || p.id === hold[side];
+        });
+      } else if(canCollapse){
+        list = full.filter(function(p){ return !p.src || p.owner === rec.id || p.id === hold[side]; });
+      }
+      list = list.slice().sort(function(a, b){
+        var ao = (a.owner === rec.id ? 4 : 0) + (a.people === wardrobe ? 2 : mappedCults.indexOf(a.people) >= 0 ? 1 : 0);
+        var bo = (b.owner === rec.id ? 4 : 0) + (b.people === wardrobe ? 2 : mappedCults.indexOf(b.people) >= 0 ? 1 : 0);
+        return bo - ao;
+      });
+      var cur = full.filter(function(p){ return p.id === hold[side]; })[0];
+      var s = section(gear, HAND_LABEL[side], cur ? (cur.label + (cur.sheath ? ' + Scabbard' : '')) : 'Empty');
+      var items = [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
+        return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:(p.culture_label ? p.culture_label + ' · ' : '') + (p.kind || '') + (p.sheath ? ' (+ hip scabbard)' : '') };
+      }));
+      if(list.length < full.length){
+        items.push({ id:'__expand__', name:'+' + (full.length - list.length) + ' cultural arms…', domId:'chip-hold-' + side + '-more' });
+      }
+      chips(s, items, hold[side] || null, function(id){
+        if(id === '__expand__'){ showAllProps = true; buildPanel(); return; }
+        rec.hold = rec.hold || {}; rec.hold[side] = id; apply(); buildPanel();
+      }, true);
     });
   }
   /* body mods (tools/mods.py): a genetic or cybernetic second pair of arms, rib gills; on or off, one pair of arms at
@@ -736,16 +1164,33 @@
     } else if(slot !== 'beard' && slot !== 'implant'){
       list = sortItems(list);
     }
-    chips(s, [{ id:null, name:'None', domId:'chip-' + slot + '-none' }].concat(list.map(function(x){
+    var expandedSlots = window._kcharExpandedSlots || (window._kcharExpandedSlots = {});
+    var canCapSlot = (slot !== 'hair' && slot !== 'beard' && slot !== 'implant') && !wardrobe &&
+                     filterType === 'all' && filterClass === 'all' && filterRole === 'all' && filterComments === 'all' &&
+                     !expandedSlots[slot] && list.length > 48;
+    var displayList = list;
+    if(canCapSlot){
+      displayList = list.slice(0, 36);
+      if(cur && !displayList.some(function(x){ return x.id === cur; })){
+        var wornItem = list.filter(function(x){ return x.id === cur; })[0];
+        if(wornItem) displayList = [wornItem].concat(displayList);
+      }
+    }
+    var chipItems = [{ id:null, name:'None', domId:'chip-' + slot + '-none' }].concat(displayList.map(function(x){
       var cm = getCommentForItem(x);
       return { id:x.id, name:x.name, img:thumb(KCHAR.key(x.glb), 'all'), domId:'chip-' + slot + '-' + x.id, comment:cm ? cm.text : null };
-    })), cur || null, function(id){
+    }));
+    if(canCapSlot && displayList.length < list.length){
+      chipItems.push({ id:'__expand_slot__', name:'+' + (list.length - displayList.length) + ' more (or pick a Wardrobe)…', domId:'chip-' + slot + '-more' });
+    }
+    chips(s, chipItems, cur || null, function(id){
+      if(id === '__expand_slot__'){ expandedSlots[slot] = true; buildPanel(); return; }
       if(slot === 'hair' || slot === 'beard') rec[slot] = id;
       else {
         rec.armour[slot] = id;
         if(slot === 'torso'){ delete rec.id; delete rec.name; delete rec.outfit_id; delete rec.outfit_name; }
       }
-      apply(); buildPanel();
+      apply(); scheduleBuildPanel();
     });
     return s;
   }
@@ -774,7 +1219,7 @@
     });
     var BUILTIN_LIST = [
       // Sovereign & Important NPCs
-      { id:'tzintzun', name:'Tzintzun (High Sovereign)', char_type:'important_npc', people:'chichani', tier:'tzintzun', body:'mpfb_male', seed:101,
+      { id:'tzintzun', name:'Tzintzun (High Sovereign)', char_type:'important_npc', people:'chichani', tier:'tzintzun_sovereign', body:'mpfb_male', seed:101,
         morph:{ stature:0.35, muscle:0.42, proportions:0.25, age:0.15, nose_size:0.18, chin_prominence:0.25 }, hold:{ R:'tz_scepter' } },
       { id:'phil', name:'Phil (Izani Corsair Lord)', char_type:'important_npc', people:'izani', tier:'phil', body:'mpfb_male', seed:202,
         morph:{ stature:0.18, muscle:0.32, weight:0.12, age:0.22, jaw_width:0.24 } },
@@ -784,29 +1229,33 @@
         morph:{ stature:0.20, muscle:0.26, proportions:0.25 } },
       { id:'crimson_technomancer', name:'Crimson Technomancer (Arc-Furnace Magus)', char_type:'important_npc', people:'iron_republic', tier:'crimson_technomancer', body:'mpfb_male', seed:205,
         morph:{ stature:0.24, muscle:0.32, age:0.20 } },
-      { id:'crested_guardian', name:'Crested Guardian (Pelagic Hoplite Champion)', char_type:'important_npc', people:'hykkousoi', tier:'crested_guardian', body:'mpfb_male', seed:206,
-        morph:{ stature:0.36, muscle:0.55, chest_size:0.30 } },
       { id:'heir_juggernaut', name:'True Heir Juggernaut', char_type:'important_npc', people:'eternian', tier:'heir_juggernaut', body:'mpfb_male', seed:303,
         morph:{ stature:0.48, muscle:0.65, weight:0.28, chest_size:0.45 } },
       { id:'heir_sentinel', name:'True Heir Sentinel', char_type:'important_npc', people:'eternian', tier:'heir_sentinel', body:'mpfb_male', seed:304,
         morph:{ stature:0.28, muscle:0.40, proportions:0.20 } },
       { id:'heir_stalker', name:'True Heir Blade-Stalker', char_type:'important_npc', people:'eternian', tier:'heir_stalker', body:'mpfb_female', seed:305,
         morph:{ stature:0.22, muscle:0.35, proportions:0.28 } },
-      { id:'dalab_heliophant', name:'Heliophant Sol-Vara (Izani)', char_type:'important_npc', people:'izani', tier:'heliophant', body:'mpfb_male', seed:306,
+      { id:'valley_thrall_harvester', name:'Harvester (Valley Cyber-Thrall)', char_type:'important_npc', people:'ancients_valley', tier:'valley_thrall_harvester', body:'mpfb_male', seed:341,
+        morph:{ height:0.22, muscle:0.55, weight:-0.15 } },
+      { id:'valley_thrall_crusher', name:'Crusher Brute (Valley Cyber-Thrall)', char_type:'important_npc', people:'ancients_valley', tier:'valley_thrall_crusher', body:'mpfb_male', seed:342,
+        morph:{ height:0.65, muscle:0.95, weight:0.70 } },
+      { id:'valley_thrall_revenant', name:'True-Heir Revenant (Valley Cyber-Thrall)', char_type:'important_npc', people:'ancients_valley', tier:'valley_thrall_revenant', body:'mpfb_male', seed:343,
+        morph:{ height:0.45, muscle:0.35, weight:-0.60 } },
+      { id:'dalab_heliophant', name:'Pontifex Sol-Vara (Izani)', char_type:'important_npc', people:'izani', tier:'pontifex', body:'mpfb_male', seed:306,
         morph:{ stature:0.30, muscle:0.22, proportions:0.24, age:0.35 } },
-      { id:'dalab_genepriest', name:'Arch-Biologist Meren (Dalab)', char_type:'important_npc', people:'dalabites', tier:'noble', body:'mpfb_female', seed:307,
+      { id:'dalab_genepriest', name:'Arch-Biologist Meren (Dalab)', char_type:'important_npc', people:'dalabites', tier:'arch_biologist', body:'mpfb_female', seed:307,
         morph:{ stature:0.16, muscle:0.18, age:0.20 } },
-      { id:'voth_ordinator', name:'High Ordinator Malakor (Chichani)', char_type:'important_npc', people:'chichani', tier:'ordinator', body:'mpfb_male', seed:308,
+      { id:'voth_ordinator', name:'High Ordinator Malakor (Chichani)', char_type:'important_npc', people:'chichani', tier:'temple_ordinator', body:'mpfb_male', seed:308,
         morph:{ stature:0.34, muscle:0.50, jaw_width:0.25, age:0.18 } },
-      { id:'voth_chosen', name:'Solar Chosen Aureon (Chichani)', char_type:'important_npc', people:'chichani', tier:'chosen', body:'mpfb_male', seed:309,
+      { id:'voth_chosen', name:'Solar Chosen Aureon (Chichani)', char_type:'important_npc', people:'chichani', tier:'chosen_janissary', body:'mpfb_male', seed:309,
         morph:{ stature:0.26, muscle:0.42, proportions:0.25 } },
-      { id:'voth_confessor', name:'Grand Confessor Severin (Chichani)', char_type:'important_npc', people:'chichani', tier:'confessor', body:'mpfb_male', seed:310,
+      { id:'voth_confessor', name:'High Sun-Hierophant Severin (Chichani)', char_type:'important_npc', people:'chichani', tier:'sun_high_priest', body:'mpfb_male', seed:310,
         morph:{ stature:0.22, muscle:0.20, age:0.42 } },
       { id:'iziz_aedile', name:'Grand Aedile Qasim (Izani)', char_type:'important_npc', people:'izani', tier:'aedile', body:'mpfb_male', seed:311,
         morph:{ stature:0.18, weight:0.22, age:0.30 } },
       { id:'iziz_praetorian', name:'Praetorian Legate Tariq (Izani)', char_type:'important_npc', people:'izani', tier:'praetorian', body:'mpfb_male', seed:312,
         morph:{ stature:0.30, muscle:0.48, age:0.15 } },
-      { id:'hykk_hierophant', name:'Port-Sun Hierophant Nereus (Izani)', char_type:'important_npc', people:'izani', tier:'hierophant', body:'mpfb_male', seed:313,
+      { id:'hykk_hierophant', name:'Solar Flamen Nereus (Izani)', char_type:'important_npc', people:'izani', tier:'flamen', body:'mpfb_male', seed:313,
         morph:{ stature:0.24, muscle:0.28, age:0.32 } },
       { id:'hykk_heliarch', name:'Temple-Hill Heliarch Thalassos (Izani)', char_type:'important_npc', people:'izani', tier:'heliarch', body:'mpfb_male', seed:314,
         morph:{ stature:0.20, muscle:0.25, proportions:0.24 } },
@@ -818,8 +1267,16 @@
         morph:{ stature:0.20, proportions:0.22, age:0.25 } },
       { id:'xan_magnate', name:'Silk Magnate Mei-Zhen (Xanadu)', char_type:'important_npc', people:'xanadu', tier:'magnate', body:'mpfb_female', seed:318,
         morph:{ stature:0.14, proportions:0.25, age:0.05 } },
-      { id:'nomad_patriarch', name:'Steppe Patriarch Temur (Nomads)', char_type:'important_npc', people:'eastern_nomads', tier:'patriarch', body:'mpfb_male', seed:319,
+      { id:'nomad_patriarch', name:'Shaykh al-Hurn (Dasri Majlis Patriarch)', char_type:'important_npc', people:'dasri', tier:'patriarch', body:'mpfb_male', seed:319,
         morph:{ stature:0.28, muscle:0.45, weight:0.18, age:0.35 } },
+      { id:'dsr_oracle', name:'Gaan Spirit-Oracle (Dasri)', char_type:'important_npc', people:'dasri', tier:'oracle', body:'mpfb_female', seed:344,
+        morph:{ height:0.18, muscle:0.32 } },
+      { id:'tab_altar_priest', name:'Yaz Crystal-Altar Priest (Tabisti)', char_type:'important_npc', people:'tabisti', tier:'altar_priest', body:'mpfb_male', seed:345,
+        morph:{ height:0.16, muscle:0.26 } },
+      { id:'car_two_horns_guide', name:'Two Horns Pass-Master (Caravaneers)', char_type:'important_npc', people:'catch_twins_caravaneers', tier:'two_horns_guide', body:'mpfb_male', seed:346,
+        morph:{ height:0.20, muscle:0.42 } },
+      { id:'xexp_glazier_steward', name:'Mara Loj Steward (Glaziers)', char_type:'important_npc', people:'glaziers', tier:'xan_glazier_steward', body:'mpfb_female', seed:347,
+        morph:{ height:-0.35, weight:-0.20 } },
       { id:'beast_cataphract', name:'Horned Cataphract Drak (Beast Riders)', char_type:'important_npc', people:'beast_riders', tier:'cataphract', body:'mpfb_male', seed:320,
         morph:{ stature:0.42, muscle:0.60, weight:0.25 } },
       { id:'beast_amazon', name:'War-Amazon Penthesilea (Beast Riders)', char_type:'important_npc', people:'beast_riders', tier:'amazon', body:'mpfb_female', seed:331,
@@ -844,8 +1301,48 @@
         morph:{ stature:0.12, proportions:0.24, age:-0.10 } },
       { id:'island_shaman', name:'Coral Shaman Tane (Islanders)', char_type:'important_npc', people:'islanders', tier:'shaman', body:'mpfb_male', seed:330,
         morph:{ stature:0.28, muscle:0.44, age:0.26 } },
+      { id:'ext_singularity_archon', name:'Singularity Archon (Extraplanar)', char_type:'important_npc', people:'extraplanar', tier:'singularity_archon', body:'mpfb_male', seed:351,
+        morph:{ height:0.35, muscle:0.15, weight:-0.25 } },
+      { id:'ext_censer_revenant', name:'Censer Revenant (Extraplanar)', char_type:'important_npc', people:'extraplanar', tier:'censer_revenant', body:'mpfb_male', seed:352,
+        morph:{ height:0.40, muscle:0.45, weight:0.05 }, hold:{ R:'warhammer' } },
+      { id:'ext_vox_solus', name:'Vox Solus (Extraplanar)', char_type:'important_npc', people:'extraplanar', tier:'vox_solus', body:'mpfb_female', seed:353,
+        morph:{ height:0.32, muscle:0.10, weight:-0.45 } },
+      { id:'ext_accretion_djinn', name:'Accretion Djinn (Extraplanar)', char_type:'important_npc', people:'extraplanar', tier:'accretion_djinn', body:'mpfb_male', seed:354,
+        morph:{ height:0.45, muscle:0.55, weight:-0.25 } },
+      { id:'ext_chorus_of_masks', name:'Chorus of Seven Masks (Extraplanar)', char_type:'important_npc', people:'extraplanar', tier:'chorus_of_masks', body:'mpfb_female', seed:355,
+        morph:{ height:0.30, muscle:0.15, weight:-0.35 } },
+      { id:'lu_tze_melon_monk', name:'Lu-Tze (The Melon Monk · Historians)', char_type:'important_npc', people:'historians', tier:'lu_tze_melon_monk', body:'mpfb_male', seed:356,
+        morph:{ height:-0.22, muscle:0.25, age:0.62 } },
+      { id:'the_wildcat_boss', name:'The Wildcat (BF-08 Fellgang Boast-Hero)', char_type:'important_npc', people:'fellgangs', tier:'wildcat_boast_hero', body:'mpfb_male', seed:357,
+        morph:{ height:0.36, muscle:0.62, weight:0.18 } },
+      { id:'kimr_hawrog_leader', name:'Hawrog War-Leader (Kimr)', char_type:'important_npc', people:'kimr', tier:'hawrog', body:'mpfb_male', seed:358,
+        morph:{ height:0.28, muscle:0.55 } },
+      { id:'yuni_qiblai_legate', name:'Legate Mansur (Yuni Qiblai Envoy)', char_type:'important_npc', people:'yuni', tier:'yuni_hero_qiblai_legate', body:'mpfb_male', seed:359,
+        morph:{ height:0.20, muscle:0.32, age:0.28 } },
+      { id:'raja_of_jimjam', name:'The Raja of Jimjam (Concordance Sovereign)', char_type:'important_npc', people:'jimjam', tier:'raja_concordance', body:'mpfb_male', seed:360,
+        morph:{ height:0.22, weight:0.16, age:0.32 } },
+      { id:'first_citizen_roketstad', name:'First Citizen of Roketstad (Iron Republic)', char_type:'important_npc', people:'iron_republic', tier:'first_citizen', body:'mpfb_male', seed:361,
+        morph:{ height:0.24, muscle:0.30, age:0.44 } },
+      { id:'bloody_ruephus', name:'Dread Admiral Bloody Ruephus (Noah\'s Regret)', char_type:'important_npc', people:'ring_sea_mariners', tier:'hero_bloody_ruephus', body:'mpfb_male', seed:362,
+        morph:{ height:0.32, muscle:0.52, weight:0.18, age:0.36 } },
+      { id:'admiral_vasko_marxal', name:'Tax-Admiral Vasko Marxal (PF-01 Pirate-Emperor)', char_type:'important_npc', people:'ring_sea_mariners', tier:'pf_marxal_restorationist', body:'mpfb_male', seed:363,
+        morph:{ height:0.26, muscle:0.34, age:0.38 } },
+      { id:'great_khaay_khan', name:'Great Khaay-Khan of Qoold Lheek (Yeti)', char_type:'important_npc', people:'khaayken', tier:'great_khaay_khan', body:'mpfb_male', seed:364,
+        morph:{ height:0.65, muscle:0.85, weight:0.55 } },
+      { id:'king_of_kautoa', name:'Ariki Nui (King of Kautoa · Islanders)', char_type:'important_npc', people:'islanders', tier:'isl_hero_ariki', body:'mpfb_male', seed:365,
+        morph:{ height:0.38, muscle:0.58, weight:0.22 } },
+      { id:'coyote_king', name:'Five-Fires Warleader (Coyote Men)', char_type:'important_npc', people:'coyote_men', tier:'five_fires_council_warleader', body:'mpfb_male', seed:366,
+        morph:{ height:0.28, muscle:0.48 } },
+      { id:'jrrmiah_chorus_lord', name:'Chorus-Lord of Jrrmiah (Frogmen)', char_type:'important_npc', people:'frogmen', tier:'hero_jrrmiah_chorus_lord', body:'mpfb_male', seed:367,
+        morph:{ height:0.10, weight:0.30 } },
 
       // Recruitable PCs
+      { id:'pc_izani_legatus', name:'Aurelius (Izani Solar Legatus)', char_type:'pc', people:'izani', tier:'pc_legatus', body:'mpfb_male', seed:408,
+        morph:{ height:0.26, muscle:0.46, age:-0.05 } },
+      { id:'pc_raven_reiver', name:'Kaa-Tl\'aaw (Painted Men Raven Reiver)', char_type:'pc', people:'painted_men', tier:'pc_raven_reiver', body:'mpfb_female', seed:409,
+        morph:{ height:0.20, muscle:0.45, age:-0.08 } },
+      { id:'pc_thunderdome_frog', name:'Krrk-Tlan (Thunderdome Brave · Frogmen)', char_type:'pc', people:'frogmen', tier:'pc_thunderdome_champion', body:'mpfb_male', seed:410,
+        morph:{ height:0.15, muscle:0.55 } },
       { id:'pc_floral_envoy', name:'Sora (Xanadu Peony Envoy)', char_type:'pc', people:'xanadu', tier:'pc_floral_envoy', body:'mpfb_female', seed:401,
         morph:{ stature:0.08, muscle:0.18, proportions:0.22, age:-0.25 },
         makeup:{ lips_color:'#a82438', lips_amount:0.80, eyes_style:'winged', eyes_color:'#18141c', eyes_amount:0.75, blush_color:'#c85a64', blush_amount:0.45 } },
@@ -854,8 +1351,12 @@
       { id:'pc_torgo_couture', name:'Altani (Torgo Gold-Brocade)', char_type:'pc', people:'rustic_clansmen', tier:'pc_torgo_couture', body:'mpfb_female', seed:403,
         morph:{ stature:0.16, muscle:0.22, proportions:0.26, age:-0.15 },
         makeup:{ lips_color:'#7a1c28', lips_amount:0.75, eyes_style:'smoky', eyes_color:'#121014', eyes_amount:0.80 } },
-      { id:'pc_azure_emir', name:'Zahir (Abyssal Azure Emir)', char_type:'pc', people:'abyssal', tier:'pc_azure_emir', body:'mpfb_male', seed:404,
+      { id:'pc_azure_emir', name:'Zahir (Tabisti Azure Emir)', char_type:'pc', people:'tabisti', tier:'pc_azure_emir', body:'mpfb_male', seed:404,
         morph:{ stature:0.24, muscle:0.28, age:0.05 } },
+      { id:'pc_scarp_warden', name:'Tiziri (Tabisti Scarp Warden)', char_type:'pc', people:'tabisti', tier:'pc_scarp_warden', body:'mpfb_female', seed:406,
+        morph:{ height:0.18, muscle:0.44, age:-0.05 } },
+      { id:'pc_mezcalero_corsair', name:'Tariq al-Ndee (Dasri Mezcalero Corsair)', char_type:'pc', people:'dasri', tier:'pc_mezcalero_corsair', body:'mpfb_male', seed:407,
+        morph:{ height:0.22, muscle:0.42, age:-0.08 } },
       { id:'pc_relic_lancer', name:'Remius (Order Relic-Lancer)', char_type:'pc', people:'historians', tier:'pc_relic_lancer', body:'mpfb_male', seed:405,
         morph:{ stature:0.28, muscle:0.44, proportions:0.22, age:0.10 } },
 
@@ -908,7 +1409,7 @@
                 (D.geomancers && D.geomancers.outfits && D.geomancers.outfits[sex] && D.geomancers.outfits[sex][def.tier]);
       if(!set) return;
       var r = KCHAR.stranger(def.seed * 7919 + 31, k, p || null, 0.25);
-      var has = function(id){ return k.items.some(function(it){ return it.id === id; }); };
+      var has = function(id){ return kitHas(k, id); };
       r.mods = ((p && p.mods) || []).concat(set.mods || []).filter(has);
       ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'].forEach(function(sl){
         r.armour[sl] = set[sl] && has(set[sl]) ? set[sl] : null;
@@ -919,15 +1420,18 @@
       if(def.facepaint) r.facepaint = JSON.parse(JSON.stringify(def.facepaint));
       if(def.makeup) r.makeup = JSON.parse(JSON.stringify(def.makeup));
       if(def.hold) r.hold = JSON.parse(JSON.stringify(def.hold));
+      else if(set.hold) r.hold = JSON.parse(JSON.stringify(set.hold));
       r.id = def.id; r.name = def.name; r.char_type = def.char_type;
       r.tier = def.tier; r.outfit_id = def.people + '.' + def.tier;
       seen[def.id] = 1;
       out.push(r);
     });
+    _defaultNamedCache = out;
     return out;
   }
+  var _defaultNamedCache = null, _allOutfitsCache = {};
   function getNamedModels(){
-    var base = buildDefaultNamedModels(), baked = loadBakedModels(), byId = {}, list = [];
+    var base = _defaultNamedCache || buildDefaultNamedModels(), baked = loadBakedModels(), byId = {}, list = [];
     base.forEach(function(m){ byId[m.id] = m; list.push(m); });
     Object.keys(baked).forEach(function(id){
       var m = baked[id];
@@ -944,6 +1448,7 @@
   }
   function getAllOutfits(kit, applyFilters){
     var curBody = (kit && kit.body) || body;
+    if(!applyFilters && _allOutfitsCache[curBody]) return _allOutfitsCache[curBody];
     var sex = curBody.replace(/^mpfb_/, ''), list = [], seenKey = {};
     var cOrder = {}; CLASS_LIST.forEach(function(c, i){ cOrder[c.id] = i; });
     var rOrder = {}; ROLE_LIST.forEach(function(r, i){ rOrder[r.id] = i; });
@@ -964,7 +1469,8 @@
         var tp = tierTypes(tier, set);
         var key = p.id + '.' + tier;
         var label = ((p.tier_labels || {})[tier] || set.label || tier);
-        var item = { id:key, tier:tier, name:p.name + ' ' + label.toLowerCase(), set:set, p:p, cl:cl, rl:rl, tp:tp };
+        var fmt = formatOutfitRoleFirst(label, p);
+        var item = { id:key, tier:tier, name:fmt.plain, roleName:fmt.role, chipHtml:fmt.html, fullTitle:fmt.full, set:set, p:p, cl:cl, rl:rl, tp:tp };
         if(applyFilters){
           if(onlyCommented){
             if(!getCommentForOutfit(item, comments)) return;
@@ -983,10 +1489,11 @@
       var go = D.geomancers.outfits[sex];
       Object.keys(go).forEach(function(tier){
         if(seenKey[tier]) return;
-        var set = go[tier], p = PEOPLE[set.culture] || { id:set.culture || 'dalabites', name:'Geomancer', mods:[] };
+        var set = go[tier], p = PEOPLE[set.culture] || { id:set.culture || 'geomancers', name:'Geomancers', mods:[] };
         if(applyFilters && !onlyCommented && wardrobe && wardrobe !== p.id) return;
         var tp = { geomancer:1, pc:1 };
-        var item = { id:'geomancers.' + tier, tier:tier, name:(set.label || ('Geomancer ' + tier)), set:set, p:p, cl:'trade', rl:'scholar', tp:tp };
+        var gFmt = formatOutfitRoleFirst(set.label || tier, { id:'geomancers', name:'Geomancers (Lithomancer Guild)' });
+        var item = { id:'geomancers.' + tier, tier:tier, name:gFmt.plain, roleName:gFmt.role, chipHtml:gFmt.html, fullTitle:gFmt.full, set:set, p:p, cl:'trade', rl:'scholar', tp:tp };
         if(applyFilters){
           if(onlyCommented){
             if(!getCommentForOutfit(item, comments)) return;
@@ -1008,12 +1515,13 @@
         return a.name.localeCompare(b.name);
       });
     }
+    if(!applyFilters) _allOutfitsCache[curBody] = list;
     return list;
   }
   function findActiveOutfit(kit, r){
     var target = r || rec;
     var allOutfits = getAllOutfits(kit, false);
-    var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
+    var has = function(id){ return kitHas(kit, id); };
     var OUTFIT_SLOTS = ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'];
     return allOutfits.filter(function(x){
       return OUTFIT_SLOTS.every(function(sl){
@@ -1072,9 +1580,12 @@
     }, true);
     if(allEntries.length){
       var jumpItems = allEntries.map(function(e){
+        var d = formatCommentEntryDisplay(e, kit);
         return {
           id: e.key,
-          name: (e.label || e.key),
+          name: d.plain || e.label || e.key,
+          html: d.html || escHtml(e.label || e.key),
+          title: d.full || e.label || e.key,
           comment: e.text,
           domId: 'chip-cjump-' + e.key.replace(/[^a-zA-Z0-9_-]/g, '_')
         };
@@ -1082,14 +1593,62 @@
       chips(s, jumpItems, target.entry ? target.entry.key : target.key, function(key){
         var e = comments[key];
         if(!e) return;
+        var targetBody = (e.record && e.record.body) || e.body || body;
+        if(!D.bodies[targetBody]) targetBody = body;
+        var targetKit = D.bodies[targetBody].kit;
+        var copy = null;
         if(e.record && typeof e.record === 'object'){
-          var copy = JSON.parse(JSON.stringify(e.record));
-          copy.armour = copy.armour || {}; copy.sliders = copy.sliders || {}; copy.dye = copy.dye || {}; copy.morph = copy.morph || {};
-          saved[copy.body || body] = copy;
-          if(copy.body && copy.body !== body && D.bodies[copy.body]) setBody(copy.body);
-          else { rec = copy; buildPanel(); apply(); }
-          note('Loaded commented model: ' + (e.label || key) + ' — "' + e.text + '"');
+          copy = JSON.parse(JSON.stringify(e.record));
+        } else {
+          var nid = e.namedId || (/^named:/.test(key) ? key.slice(6) : null);
+          var oid = e.outfitId || (/^outfit:/.test(key) ? key.slice(7) : null);
+          var tid = e.torso || (/^torso:/.test(key) ? key.slice(6) : null);
+          if(nid){
+            var nm = getNamedModels().filter(function(m){ return m.id === nid; })[0];
+            if(nm){
+              copy = JSON.parse(JSON.stringify(nm));
+              if(copy.body && D.bodies[copy.body]){ targetBody = copy.body; targetKit = D.bodies[targetBody].kit; }
+            }
+          }
+          if(!copy && oid){
+            var xo = getAllOutfits(targetKit, false).filter(function(y){ return y.id === oid; })[0];
+            if(xo){
+              var hasItem = function(id){ return kitHas(targetKit, id); };
+              copy = JSON.parse(JSON.stringify((targetBody === body && rec) ? rec : (saved[targetBody] || start[targetBody] || KCHAR.blank(targetKit))));
+              copy.body = targetBody;
+              copy.people = xo.p ? xo.p.id : (copy.people || null);
+              copy.mods = ((xo.p && xo.p.mods) || []).concat(xo.set.mods || []).filter(hasItem);
+              copy.armour = copy.armour || {};
+              ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'].forEach(function(sl){
+                copy.armour[sl] = xo.set[sl] && hasItem(xo.set[sl]) ? xo.set[sl] : null;
+              });
+              if(xo.set.beard !== undefined) copy.beard = xo.set.beard && hasItem(xo.set.beard) ? xo.set.beard : null;
+              if(xo.set.hair !== undefined) copy.hair = xo.set.hair && hasItem(xo.set.hair) ? xo.set.hair : null;
+              copy.facepaint = xo.set.facepaint ? JSON.parse(JSON.stringify(xo.set.facepaint)) : null;
+              copy.makeup = xo.set.makeup ? JSON.parse(JSON.stringify(xo.set.makeup)) : null;
+              copy.hold = xo.set.hold ? JSON.parse(JSON.stringify(xo.set.hold)) : {};
+              copy.outfit_id = xo.id;
+              copy.outfit_name = xo.name;
+              delete copy.id;
+              delete copy.name;
+              copy.morph = {};
+            }
+          }
+          if(!copy && tid){
+            copy = JSON.parse(JSON.stringify((targetBody === body && rec) ? rec : (saved[targetBody] || start[targetBody] || KCHAR.blank(targetKit))));
+            copy.body = targetBody;
+            copy.armour = copy.armour || {};
+            copy.armour.torso = tid;
+            delete copy.id; delete copy.name; delete copy.outfit_id; delete copy.outfit_name;
+          }
         }
+        if(!copy) return;
+        copy.body = targetBody;
+        copy.armour = copy.armour || {}; copy.sliders = copy.sliders || {}; copy.dye = copy.dye || {}; copy.morph = copy.morph || {};
+        saved[targetBody] = copy;
+        if(targetBody !== body) setBody(targetBody, copy);
+        else { rec = copy; buildPanel(); apply(); }
+        note('Loaded commented model: ' + (e.label || key) + ' — "' + e.text + '"');
       }, true);
     }
     var box = document.createElement('div');
@@ -1113,10 +1672,11 @@
       var map = loadComments();
       var t = getActiveCommentTarget(kit, map);
       if(!txt){
+        var delKeys = [t.key];
         delete map[t.key];
-        if(t.namedId) delete map['named:' + t.namedId];
-        if(t.outfitId) delete map['outfit:' + t.outfitId];
-        saveComments(map);
+        if(t.namedId){ delete map['named:' + t.namedId]; delKeys.push('named:' + t.namedId); }
+        if(t.outfitId){ delete map['outfit:' + t.outfitId]; delKeys.push('outfit:' + t.outfitId); }
+        saveComments(map, delKeys);
         box.classList.remove('active-comment');
         badge.textContent = 'No comment';
         if(!silent){ buildPanel(); note('Cleared comment on ' + t.label + '.'); }
@@ -1174,10 +1734,47 @@
         };
       });
       var payload = JSON.stringify(list, null, 2);
-      $('rec-text').value = payload;
-      (navigator.clipboard ? navigator.clipboard.writeText(payload) : Promise.reject())
-        .then(function(){ note('Copied ' + list.length + ' model/outfit review comment(s) JSON to clipboard.'); },
-              function(){ $('rec-text').select(); note('Placed ' + list.length + ' review comment(s) JSON in Record tab.'); });
+      var recEl = $('rec-text');
+      if(recEl) recEl.value = payload;
+      function fallbackCopy(txt){
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = txt;
+          ta.setAttribute('readonly', '');
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          ta.style.top = '0';
+          ta.style.opacity = '0.01';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          ta.setSelectionRange(0, txt.length);
+          var ok = document.execCommand('copy');
+          document.body.removeChild(ta);
+          return !!ok;
+        } catch(err){
+          return false;
+        }
+      }
+      function onCopied(){
+        var orig = 'Copy All Comments JSON (' + list.length + ')';
+        expBtn.textContent = '✓ Copied (' + list.length + ')';
+        setTimeout(function(){ expBtn.textContent = orig; }, 2000);
+        note('Copied ' + list.length + ' model/outfit review comment(s) JSON to clipboard.');
+      }
+      function onFailed(){
+        if(recEl) recEl.select();
+        note('Clipboard blocked by browser — placed ' + list.length + ' review comment(s) JSON in Record tab.');
+      }
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(payload).then(onCopied, function(){
+          if(fallbackCopy(payload)) onCopied();
+          else onFailed();
+        });
+      } else {
+        if(fallbackCopy(payload)) onCopied();
+        else onFailed();
+      }
     });
     s.appendChild(box);
   }
@@ -1278,7 +1875,7 @@
       return;
     }
     var comments = loadComments();
-    var has = function(id){ return kit.items.some(function(it){ return it.id === id; }); };
+    var has = function(id){ return kitHas(kit, id); };
     var OUTFIT_SLOTS = ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'];
     var cur = list.filter(function(x){ return OUTFIT_SLOTS.every(function(sl){
       if(sl === 'implant' && !x.set.implant) return true;
@@ -1287,11 +1884,21 @@
     var s = section(gear, 'Outfits (' + list.length + ')', cur ? cur.name : 'Mixed');
     chips(s, list.map(function(x){
       var cm = getCommentForOutfit(x, comments);
-      return { id:x.id, name:x.name, domId:'chip-outfit-' + x.id.replace('.', '-'), comment:cm ? cm.text : null };
+      return { id:x.id, name:x.name, html:x.chipHtml || escHtml(x.name), title:x.fullTitle || x.name, domId:'chip-outfit-' + x.id.replace('.', '-'), comment:cm ? cm.text : null };
     }), cur ? cur.id : null, function(id){
       var x = list.filter(function(y){ return y.id === id; })[0];
       // the tier's mods (a temple guard's second pair of arms) and the people's (gills), before the clothes that fit them
       rec.mods = (x.p.mods || []).concat(x.set.mods || []).filter(has);
+      rec.people = x.p.id;
+      if(x.p.coat) rec.coat = x.p.coat; else delete rec.coat;
+      if(x.p.id === 'lizardmen' || x.p.id === 'frogmen' || x.p.id === 'coyote_men' || x.p.id === 'khaayken' || x.p.id === 'giants' || x.p.id === 'free_giants' || x.p.id === 'extraplanar'){
+        if(x.p.skin && x.p.skin.length) rec.skin = x.p.skin[0];
+        if(x.p.eyes && x.p.eyes.length) rec.eye_color = x.p.eyes[0];
+        if(x.p.hair && x.p.hair.length) rec.hair_color = x.p.hair[0];
+        if(x.p.id === 'lizardmen' || x.p.id === 'frogmen' || x.p.id === 'coyote_men' || x.p.id === 'extraplanar'){
+          rec.hair = null; rec.beard = null;
+        }
+      }
       OUTFIT_SLOTS.forEach(function(sl){
         rec.armour[sl] = x.set[sl] && has(x.set[sl]) ? x.set[sl] : null;
       });
@@ -1299,6 +1906,7 @@
       if(x.set.hair !== undefined) rec.hair = x.set.hair && has(x.set.hair) ? x.set.hair : null;
       rec.facepaint = x.set.facepaint ? JSON.parse(JSON.stringify(x.set.facepaint)) : null;
       rec.makeup = x.set.makeup ? JSON.parse(JSON.stringify(x.set.makeup)) : null;
+      rec.hold = x.set.hold ? JSON.parse(JSON.stringify(x.set.hold)) : {};
       rec.outfit_id = x.id;
       rec.outfit_name = x.name;
       var matchNamed = getNamedModels().filter(function(m){ return m.outfit_id === x.id && m.body === curBody; })[0];
@@ -1312,7 +1920,10 @@
       if(x.tp.important_npc) rec.char_type = 'important_npc';
       else if(x.tp.geomancer) rec.char_type = 'geomancer';
       else if(x.tp.pc) rec.char_type = 'pc';
-      apply(); buildPanel();
+      Array.prototype.forEach.call(s.querySelectorAll('.chip'), function(btn){
+        btn.setAttribute('aria-pressed', btn.id === ('chip-outfit-' + x.id.replace('.', '-')));
+      });
+      apply(); scheduleBuildPanel();
     }, true);
   }
   var FP_STYLES = [
@@ -1424,9 +2035,9 @@
   function buildMpfb(kit, gear, headp){
     reviewCommentsUI(kit, gear);
     wardrobeChips(kit, gear);
+    outfitChips(kit, gear);
     namedModelChips(kit, gear);
     modChips(kit, gear);
-    outfitChips(kit, gear);
     ['head', 'implant', 'torso', 'gloves', 'back', 'legs', 'feet'].forEach(function(slot){ var s = itemChips(gear, kit, slot, SLOT_LABEL[slot]); if(s) dyeRow(s, slot); });
     handChips(gear);
     var gh = document.createElement('p'); gh.className = 'hint';
@@ -1456,10 +2067,11 @@
     // a coat (data/fur.json coats): the body furred, in the hair's colour; a record without one has no 'coat'
     var coats = (D.fur && D.fur.coats) || {};
     if(Object.keys(coats).length){
-      var cs = section(headp, 'Coat', rec.coat && coats[rec.coat] ? coats[rec.coat].name : 'None');
+      var effCoat = rec.coat !== undefined ? rec.coat : ((rec.people === 'coyote_men' || (rec.mods || []).indexOf('mod_head_coyote') >= 0) ? 'coyote' : null);
+      var cs = section(headp, 'Coat', effCoat && coats[effCoat] ? coats[effCoat].name : 'None');
       chips(cs, [{ id:null, name:'None', domId:'chip-coat-none' }].concat(Object.keys(coats).map(function(id){
         return { id:id, name:coats[id].name, domId:'chip-coat-' + id };
-      })), rec.coat || null, function(id){ if(id) rec.coat = id; else delete rec.coat; apply(); buildPanel(); }, true);
+      })), effCoat || null, function(id){ rec.coat = id || null; apply(); buildPanel(); }, true);
       var cn = document.createElement('p'); cn.className = 'hint';
       cn.textContent = 'Fur over the skin, in the hair colour; it stops short of the clothes. The face, palms and soles stay bare.';
       cs.appendChild(cn);
@@ -1586,7 +2198,7 @@
       $('bodies').appendChild(btn);
     });
     var pick = $('idle-pick');
-    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle'; }).forEach(function(c){
+    D.bodies[Object.keys(D.bodies)[0]].skeleton.clips.filter(function(c){ return c.group === 'idle' && ((D.clips && D.clips.dropped) || []).indexOf(c.name) < 0; }).forEach(function(c){
       var o = document.createElement('option'); o.value = c.name; o.textContent = c.label + ' · ' + c.seconds.toFixed(1) + ' s';
       pick.appendChild(o);
     });
@@ -1662,18 +2274,34 @@
   function apply(){
     syncPanel();
     return fig.apply(rec).then(function(){
-      var h = rec.hold || {};
-      fig.hold({ R:h.R || null, L:h.L || null });
-      var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
-      if(p.stature){
-        var who = rec.people && PEOPLE[rec.people];
-        $('stats').innerHTML = 'Height <b>' + Math.round(p.stature * 100) + ' cm</b>' + (who ? ' · <b>' + who.name + '</b>' : '') + '<br>Meshes <b>' + n + '</b>';
-        return;
+      $('loading').hidden = true;
+      var h = rec.hold || {}, propsById = KCharFigure.props || {};
+      var rPropId = h.R || null, lPropId = h.L || null;
+      if(lPropId && propsById[lPropId] && propsById[lPropId].kind === 'bow' && !rPropId){
+        rPropId = propsById[lPropId].arrow || 'arrow';
       }
-      var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
-      $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
-        'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
-    }).catch(function(e){ note('A piece failed to load: ' + e.message); });
+      var rKind = rPropId && propsById[rPropId] && propsById[rPropId].kind;
+      return fig.hold({
+        R: rPropId,
+        L: lPropId,
+        R2: h.R2 || null,
+        L2: h.L2 || null,
+        both: !!(rPropId && !lPropId && (rKind === 'rifle' || rKind === 'crossbow'))
+      }).then(function(){
+        var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
+        if(p.stature){
+          var who = rec.people && PEOPLE[rec.people];
+          $('stats').innerHTML = 'Height <b>' + Math.round(p.stature * 100) + ' cm</b>' + (who ? ' · <b>' + who.name + '</b>' : '') + '<br>Meshes <b>' + n + '</b>';
+          return;
+        }
+        var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
+        $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
+          'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
+      });
+    }).catch(function(e){
+      $('loading').hidden = true;
+      note('A piece failed to load: ' + e.message);
+    });
   }
 
   window.__KCHAR_STAGE = {
@@ -1689,5 +2317,22 @@
     loadComments: loadComments,
     saveComments: saveComments
   };
-  boot();
+  function waitAndBoot(tries){
+    if(typeof THREE !== 'undefined' && THREE.GLTFLoader){ boot(); return; }
+    if(tries === 25 && typeof document !== 'undefined'){
+      var s1 = document.createElement('script'); s1.src = 'http://127.0.0.1:8123/three.min.js';
+      s1.onload = function(){
+        var s2 = document.createElement('script'); s2.src = 'http://127.0.0.1:8123/GLTFLoader.js';
+        document.head.appendChild(s2);
+      };
+      document.head.appendChild(s1);
+    }
+    if(tries > 120){
+      var ld = $('loading');
+      if(ld) ld.textContent = 'Three.js failed to load.';
+      return;
+    }
+    setTimeout(function(){ waitAndBoot((tries || 0) + 1); }, 50);
+  }
+  waitAndBoot(0);
 })();

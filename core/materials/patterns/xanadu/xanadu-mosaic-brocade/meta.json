@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1246,
+    1247
+   ],
+   "seam_after": [
+    1.508,
+    1.087
+   ],
+   "seam_before": [
+    1.187,
+    1.419
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "xanadu/xanadu-mosaic-brocade",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__xanadu__xanadu-mosaic-brocade.png",
+  "generator": "Codex image generation, Nov 2026 (exec-fa5241fc-d18e-46cc-939f-5b80cc281b42.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Safavid-Xanadui haft-rangi and banna'i inspired silk-and-silver tapestry brocade: deep lapis-cobalt silk ground (#1f3f8a) inlaid in woven satin threads with an interlocking star-and-cross lattice (four eight-pointed stars across and four down) of bright turquoise (#2aa3a0) outer stars, warm cream (#e8dec8) inner stars and cross-tiles, pomegranate-rose (#c84474) pinwheels, and raised metallic gold (#d4a838) central bosses, seams falling symmetrically on cross-tile centres. Full colour.",
+  "sha1": "89087a0c6462b9f85b6c5a221b315e83c4fbe63b"
+ }
+}

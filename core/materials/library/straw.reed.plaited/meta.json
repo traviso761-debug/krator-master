@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1940,
+    1975
+   ],
+   "seam_after": [
+    1.135,
+    0.789
+   ],
+   "seam_before": [
+    2.276,
+    2.125
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 1.0,
+   "pattern": true,
+   "rough": 0.84,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "fibre",
+  "id": "straw.reed.plaited",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.84,
+  "scale": [
+   0.2,
+   0.2
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "totora-pandanus-herringbone-2048.png",
+  "generator": "Codex image generation, Nov 2026 (totora-pandanus-herringbone-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Fine garment-scale plaited totora-reed and split pandanus leaf mat-weave at 20 cm square scale, flat 4 mm wide split plant strips woven in a tight diagonal 2/2 herringbone check with fine longitudinal vascular striations along every reed strip. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "c6cbab77372c44b43b387b155f012b79ebcb5b8a"
+ }
+}
