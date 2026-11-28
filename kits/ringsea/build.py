@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Ring Sea watercraft kit.
+"""Concatenate src/* (+ core/materials/*, core/atmos, core/water) into dist/ringsea.html: the Boats, Ships, and Vessels Kit.
 
 Rules it enforces (the same ones the Ancients-lineage builds use):
 
@@ -26,6 +26,9 @@ Usage:  python3 build.py [--no-checks]
 Syntax: node --check runs when node is installed; otherwise run
         python3 jscheck.py .syntax-ringsea.js (headless Chromium's parser).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -157,7 +160,9 @@ def main():
             for e in errs:
                 print('  -', e)
             sys.exit(1)
-    html = ''.join(bodies[f] for f in order)
+    html = ''.join(bodies[f] for f in order).replace(
+        '<title>Ring Sea Watercraft</title>', '<title>Boats, Ships, and Vessels Kit</title>').replace(
+        '<div id="cap">Ring Sea Watercraft</div>', '<div id="cap">Boats, Ships, and Vessels Kit</div>')
     BSRC.report(vendored=[os.path.join(ANCIENTS, r) for r in VENDORED] + [SOCKETS, SYMBOLS])   # --list-sources: every file read so far is what the page is made of (and what --vendor-check compares); then exit
     os.makedirs(DIST, exist_ok=True)
     out = os.path.join(DIST, OUT + '.html')

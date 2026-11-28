@@ -13,6 +13,9 @@ core/materials) with the kit's fragments (highlands.py FILES: the foundation and
 kit_bundle.py: the interiors core and the Highlands set), and targets/sheet/ (89z-rows.js, 88y-hlsheet-matlib.js on the kit's
 tex/, 91t-hlsheet-tags.js). No settlement is read; Highlands' `highlands` target stays (README.md, "Its own sheet").
 Core modules taken: core/rand, core/tags, core/walk, core/door, core/host, core/atmos (placeholder), core/materials, core/furnish."""
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +35,7 @@ FURNISH_FILES = ['50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furni
 VERN = os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src')
 VERNACULAR = ['69b-vern-mat.js', '69c-vern-helpers.js', '69e5-iziz-openings.js']   # what the kit draws through, read in place
 # the catalog cultures the kit's furniture comes from, as Highlands' page bundles them (settlements/highlands/build.py FURN_CULTURES)
-FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc']
+FURN_CULTURES = ['republican', 'rustic', 'painted', 'iziz', 'generic', 'scrap', 'post-apoc', 'arms']   # arms: the garrison's racks and stands (Stage 8 D27, O5)
 FURN_BUNDLE = '69d-furniture-bundle.js'
 
 

@@ -21,6 +21,8 @@ What reaches over, by kind:
   14 m depth): the def's `w` and `d` want swapping, which moves Erewhon's placement of it;
 - **held** (the citadel, other sessions' work): `xa_pleasure_dome_bay`;
 - the `_palopo` defs repeat their base def's builder in the Palopó paint.
+- the dress twins in `extra/` (88f's `xa_monastery_white`, 88h's `xa_grand_temple_gold` and `xa_monastery_violet`, Gihon's,
+  2026-11-23) draw their base def's builder in another dress: each carries its base's overhang, and goes back inside with it.
 
 | Def | Family | Lot | Box (worst variant) | Past (m) | Furthest |
 |---|---|---|---|---|---|
@@ -67,6 +69,82 @@ What reaches over, by kind:
 | `xa_temple_palopo` | Palopó paint | 34 x 32 | x -20.82..20.82, z -7.75..19.68 (v2) | 3.82 | vRope 3.82 |
 | `xa_house_turk_a_palopo` | Palopó paint | 22 x 20 | x -9.20..9.20, z -7.05..10.79 (v0) | 0.79 | vDoorLeaf 0.79, vStone 0.70 |
 | `xa_shop_turk_b_palopo` | Palopó paint | 20 x 18 | x -6.75..9.25, z -6.25..9.28 (v0) | 0.28 | vRope 0.28 |
+| `xa_grand_temple_gold` | Gihon (src/88h) | 60 x 64 | x -26.00..26.00, z -24.00..34.11 (v0) | 2.11 | vStone 2.11, xDomeG 1.78, xWashB 1.48, xPaint 0.79 (the Grand Temple's own) |
+| `xa_monastery_violet` | Gihon (src/88h) | 50 x 50 | x -26.69..26.69, z -21.82..23.47 (v0) | 1.69 | vRope 1.69 (the monastery's own) |
+| `xa_serai` | Lake trades (src/87k; measured 2026-11-24, Stage 8 B9) | 46 x 46 | x -20.30..20.30, z -20.36..23.27 (v0) | 0.27 | vIron 0.27 |
+| `xa_fish_racks` | Lake trades (src/87k; measured 2026-11-24, Stage 8 B9) | 16 x 11 | x -4.56..9.00, z -3.04..2.41 (v0) | 1.00 | vPost 1.00 |
 
 `xa_lighthouse` throws in `XAK` (`FRAME_HOOKS`, the lamp's turn hook, is a page global the sheet and Erewhon carry): the test
 skips it (`BUILD_FAILS`); measured on the page it is unchecked.
+
+## The Xanadui fort (2026-11-16, `src/80f`-`80g`; `settlements/strongwall/PLAN.md` section 5)
+
+- **Interiors only where a page takes them, and only for a KEPT fort** (F4, 2026-11-22). The interior set `xanadu-fort` is written
+  in `src/80g-xa-fort.js` from the plans (not in `kits/interiors/sets/xanadu.js`: XFORT loads after the interiors bundle), and is
+  registered only on a page with the interiors core (settlements/xanadu's 69d: Strongwall's page, on by default there). The kit
+  sheet has no interiors core, so on it every fort building stays solid and every door locked, as before. A damaged or ruined fort's
+  item is a skip (its keep has lost storeys, its ranges their roofs, or it stands as low walls), so its buildings stay solid too.
+- **Still solid in a kept fort**: the towers, the gatehouses and the barbican (their tops are walked, their insides are not: no
+  chamber is drawn in them), the keep's chapel on its roof (no stair to the roof), the granary (no door), and the stables and ore
+  shed (open sheds). The watch fort's keep, magazine and barracks are planned like Strongwall's; the gate works have no building
+  with a door.
+- **The walks (F4b, 2026-11-23; `XFORT.walks` in 80f)**: the walk no longer runs through the towers and gatehouses. It runs between
+  them and climbs each kept tower it meets by a flight up the walk onto its top (the parapet opened there), and the tops are walk
+  floors. Where an ordinary flight (0.17 m risers) has no room, a **steep stair** (0.20 m on 0.25 m treads, slope 0.8, within
+  core/walk's step) climbs instead: Strongwall's gate towers and the towers on its short back walls (2026-11-23). Every standing
+  tower of every fort is climbed and every piece of walk is reached (`test-fort.js` holds both). What is left: a **gate block is
+  not crossed** (its gatehouse roof carries the main gate's pavilion; each gate tower is climbed from its own side, and the
+  gatehouse roof is not walked); a fallen tower ends the walk at its face; a curtain's last metre past a gate tower at a free end
+  (the gate works' stubs) is the wall's cap, not walk. The flights stand on the walk, so a walker on the walk steps up them; the
+  plan's stairs are kept where they land on plain walk, and stairs are added where a piece of walk had none (`extra: true`).
+- **A breach's broken ends and a burnt gate** (2026-11-23): the wall steps down into a breach in three or four ragged courses from
+  each side (hashed per breach, each side within its third of the gap); a burnt gate keeps a charred stump at each jamb and a leaf
+  fallen flat on its approach (seated on its lowest points), the passage behind still its dim back. The courses are whole blocks of
+  the wall's body (no broken stone faces), and the burnt wood and walls are tints, not textures, until `wall.limewash.scorched` and
+  `wood.gate.studded` are wired (delivered 2026-11-17, in the library; their prompts in `core/materials/PROMPTS-archived.md`,
+  section 61 on the integration line, with `wall.rubble.limewash`).
+- **What a placement can ask of a fort** (2026-11-23, for `settlements/marches`): `o.outline` (a watch fort's convex ward) and
+  `o.gateEdge` draw `XFORT.plan(o)` instead of the size's fixed plan (such a fort gets no interiors: the set's item is planned on
+  the fixed plan); `o.seed` is the fort's look and `o.damageSeed`, when given, what its damage is hashed from, so one fort keeps its
+  look through its three states; a damaged fort's gun whose wall was breached or whose gate burnt lies wrecked inside, its barrel,
+  carriage and a wheel seated on the ground (a ruined fort's guns were carried off); `xa_fort_post` takes `o.fort` (the fort it
+  answers to) and `o.rota` (4 by default), on its group (`userData.post`) and in `window._xaPosts` with its place (not on its core/tags volume: the vocabulary has no such key). The interior set
+  is not planned for a custom outline, and a custom fort's lot (the def's `w`, `d`) is still the fixed plan's.
+- **The beacon fort** (`beacon:'ancient'`, 2026-11-23, the Beacon's B6; `xa_fort_beacon` is the watch fort with it, or a page passes
+  it to `xa_fort_watch`): the Ancient lamp's plinth in the keep's place (three white storeys, the yellow Chapel of the Beacon with
+  gilt corners and finial, the slewing ring and yoke, the lamp's centre at 22 m: `window._xaBeacons`), the keep's fire basket gone,
+  a stone cable cover in the main gate's passage; ruined, the plinth is the ruined keep and the lamp head lies thrown down by it.
+  The **lamp head** is the Ancients' piece (`kits/ancients/pieces/89p-anc-beacon-lamp.js`, B5, 2026-11-23), mounted on the yoke
+  where a page has it (the kit sheet does: `build.py`; Strongwall's page does not, and draws no beacon fort): live meshes sweeping
+  once a minute, `window._xaBeacons[i].lamp` the handle a page drives (bearing, shutters, on); ruined, its wreck lies seated by the
+  plinth. Its beam shows only where `xLit()` (a lit page). Not here: **the generator house** (outside the fort, the Beacon's page), a damaged
+  plinth's dark lamp and cut cable (the page's), and **the plinth's rooms** (the Beacon's sheet P: the switch room, the signal room,
+  the Lamp Watch, the chapel): a beacon fort gets no interiors yet, its keep's item being the three-storey keep's.
+- **The kit's flat roofs are lidded** (found 2026-11-23 on the beacon fort): 72's `xnParapet` draws its cap as one slab over the
+  whole roof at the parapet's height (`vB('xPaint', x, y+h, z, w+.04, .08, d+.04)`), not a coping on the walls, so every parapeted
+  roof in the kit is closed at parapet height and anything set on the roof below it is hidden. The plinth stands its lamp's ring
+  on that cap (`xnFlatRoof`'s returned top). Fixing the helper changes every Xanadu page: it waits for the all-builds rebuild.
+- **What a host plan can ask** (2026-11-23, the House of the Tempest's asks): `xfDrawPlan(P, G, o)` draws a plan handed in (XFORT's
+  record shape) with the fort's states, burnt gates, guns, walks and records; `o.skip` leaves a piece to the host, `o.drawBuilding`
+  draws a host's own, `o.burnt` burns more roofs, `o.mainGate` names the gilt gate. A record's height is its own `y`, else its
+  ward's (`XFORT.recY`): a raised ward's curtains, towers, gates, buildings, guns, heaps, stairs and walks stand at its height
+  (but **nothing is drawn under it**: the host draws its talus; and a wall of a lower ward that meets it needs a stair of its own).
+  A keep takes `b.doors` (a door on any face at any height) and `b.passage` (a gate passage, rising): the passage is **portals and a
+  walk strip, not a carved tunnel** (the keep's battered storeys would lose their faces), so a walker passes the solid foot as
+  through a gatehouse, and a keep with a passage gets no interior body. A tower of kind `great` or with `signal` carries the
+  fire's basket and four bronze signal mirrors. `xfIxHost(key, P, name)` gives a host's def its interior item from its plan
+  (`range`, `stable-range` among the ranges); a host still drawing its keep or towers itself gets no rooms in them, and **a raised
+  ward's buildings get no rooms within one def**: the kits' auto bodies (kits/iziz-vernacular 69e6) match a block in the builder's
+  frame, which a ward's raise (`xfAt`, through `KOFF`) is not in, so their rooms would be sealed in solid blocks. A host keeps a
+  raised ward its own def placed at its height (the House's inner ward is), where it stands at 0 and is furnished.
+- **The Marches' outside works** (the wayside shrine, the stable yard's cistern and trough, the road: `settlements/marches`
+  `src/80m-mr-works.js`, keys `mr_*`) are the kit's to take when that build is merged; they are not here yet.
+- **The monastery size** (`size:'monastery'`, the House of the Tempest round the Qiblai kit's violet monastery) is not built: its
+  blueprint is another session's (`settlements/strongwall/tempest/`), and the Qiblai kit is not on this sheet.
+- **The sheet is over its showcase budget**: 6.71 M triangles against 6.0 M (`targets/sheet/89z-rows.js`; reported, a failure
+  only with `--strict-budget`). The forts are about 0.44 M of it (a page of the four fort defs alone), so the sheet was near
+  6.27 M, already over, before them.
+
+- **`xa_ghat`'s wet steps are a stand-in** (`extra/88k-xa-landing.js`, 2026-11-23): the library's `stone.cut` (the kit's `vStone`)
+  darkened to 55 % until `stone.ghat.wet` is delivered (`core/materials/PROMPTS-NEEDED.md` section 59); then the wet steps,
+  the weed line and the washing slabs take it.

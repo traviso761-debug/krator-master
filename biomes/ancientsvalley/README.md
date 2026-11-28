@@ -245,7 +245,10 @@ inside. So a blocked tower is blocked everywhere, and a hero's other doors are s
 round the stair's box and round it to the stair (a Spindle's portal stands up to 60 degrees off the street's normal), and a tower whose own
 inner lobby rings cut it (the Swell's lobes, the Terrarium's dome, known only off the hero) is shut at its door instead. The families of several bodies (the Organ's pipes, the
 Pods, the Crescent) are never climbed (their floors would hang between the parts), intact towers never open (their glass stands), and a flight
-down to a sunk plinth keeps its cheeks at the pavement's level as retaining walls of a sunken court.
+down to a sunk plinth keeps its cheeks at the pavement's level as retaining walls of a sunken court. **Sunken courts (2026-11-15):** the ground
+mesh is a 14 m grid, so a plinth below the ground round it sits in a smooth bowl; the bowl round every door tower's plinth is now paved in tiers
+that hug the drawn ground (`AVL.drawCourt` on `GROUND.meshH`: rings 1.4 m deep and about 2.2 m along the plinth's ellipse out to 14 m, 0.4 m
+risers, clear of the streets, other plinths and the approach), about 400 tiles a tower, built and freed with the door's group near the eye.
 
 ## Station 2a: the Yards (2026-11-10; `stations/yards/`, `dist/ancientsvalley-yards.html`)
 
@@ -406,6 +409,24 @@ the kit's materials (`70`, `avTwoSided`). A ruined farm building keeps no piece 
 remnants, and the crown water tower's gallery hung in the air with palms on it). And the Terraces' towers were turned in three.js's sense while the
 page draws the plan's since the lobbies' finding (the yaw's sign): every farm building and aqueduct module drew mirrored, the aqueduct's modules
 skewed off their line ("aqueduct does not align segments properly"); `41d` stores the plan's yaw now.
+
+## Station 1: the Stilled Ground (S0-S1, 2026-11-15; `stations/stilled/`, `dist/ancientsvalley-stilled.html`)
+
+`python3 tools/build.py biomes/ancientsvalley --station stilled`. PLAN.md section 17 (the owner, 2026-11-15: the first anomaly station, its core a
+frozen moment inside rings of decay, the page on the basin's inner slope looking in). The time weapon's basin at px 398,966 (5.5 km, a dry glass
+floor at -26 m, Csa); the page's centre a pixel north of the basin's, so the basin's centre is at page (0, 2000) and the view looks south.
+
+- **The hold** (`46z`, `53z`): one `core/anomaly` time record over the basin's centre (r 3.6 km, ramped over 3.3 km, a held core of 300 m),
+  registered in core/tags with its `time` hazard before the kits draw. `elapsed(x, z)` = 1 minus its strength: the share of the war's age passed.
+- **The rings of decay, by elapsed:** each tower's ruin draw scaled toward intact (`AV.plan`'s `age`); the basin floor's glass, the foul half's
+  ash, the taint, the overgrowth and the forest all by the years they have had; the held core keeps the Ancients' pavement. Measured: the towers'
+  mean ruin severity by band, from the core out, 0.00, 0.00, 0.11, 0.91, 1.65, 2.77, 3.00, 3.74 (AV.RUINS' index; 1,056 towers).
+- **No lake** on this page: the valley lake's level stands 43 m over the dry floor, so the stage sets it far under. No extraplanars, House, cosmetic
+  distortions or oily rain here (the stations' stubs).
+- **Checks** (`98s`): the hold registered, zero outside, held at its core; the rings age outward band by band and the core is whole; no ash,
+  glass or growth in the core, glass on the outer floor; nothing whole on the glass; each with a negative. **Verified** 2026-11-15 on the cloud lane
+  (RTX A4000): 58 asserts, no failures; the worst view "The core looking out" at 1,116 calls, 5.45 M triangles.
+- **Next (PLAN.md 17):** the owner's eye on the gradient (S1's stop), then S2 the held moment, S3 the effects, the walk and the time owed.
 
 ## Read next
 

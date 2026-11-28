@@ -69,6 +69,15 @@ linear for instances, vertices and materials (three's working values as hex: do 
 and the atmosphere; typed arrays `{type, n, b64}` (little-endian bytes); ids as core/tags makes them; the box rule
 (an instance by its origin, `x0 <= x < x1`; a bucket piece by its foot).
 
+**`origin` (optional, 2026-11-16: a floating origin).** A container may carry `origin: [x, y, z]`, in the page's frame. Then
+the meshes (the items' instance translations, the buckets' vertices, in `world.glb` and in the JSON form) are written
+less it, taken off in double precision before the float32 pack, so a case far from its page's origin keeps its
+millimetres (a float32 600 km out keeps 6 cm). Everything else stays in the page's frame: the box, the terrain's grid and
+field, the records' positions, the owners. A reader puts the case's node at `origin` (less its own floating origin) and
+builds the ground about `origin` too. `EXPORT.sceneReader({origin})` does the subtraction; a contributor that sets it
+writes `ctx.out.origin` (core/world 94 does both: the box's centre in whole metres, for an open-world region). A
+container without it is in the page's frame, as before.
+
 #### LOD
 
 `convention.lod = {cell: 150, widen: 'half-diagonal', copies: 'none'}` is the one declared LOD policy (ROADMAP.md
@@ -113,6 +122,7 @@ section 11 item 4; GODOT-PLAN.md finding 16).
 | `buckets` | the biome core | `BIO.export`'s bucket plus `id`; a tile's `geometry` keeps only the vertices its triangles use (`compacted: {vertices, dropped}`; ROADMAP.md finding 10); `records`, `recordIds`, `pieces` |
 | (items) `labels` | the biome core | per-instance inspector labels (`BIO.put`'s `extra.label`, baked as `userData.instLabels`): `{names: [the item's label table], index: Uint16Array (a row's entry in names, aligned with the matrices)}`; absent on an item that gives none. `world_import.gd` keeps it as node meta `krator_labels` (merged with the node's other ranges) |
 | `materials` | the biome core, the KMAT adapter | one vocabulary: core/materials/record's fields (`family, colour, map, normalMap, roughnessMap, roughness, metal, specular, emissive, doubleSided, alphaTest, scale, tint, hook, lib`) beside the source's own (a biome material's `kind, key, type, options, sway, hooked, vertexColours, transparent`). The adapter's records are `kmat:<build>:<name>`, maps by library reference. `hook` selects the Godot shader library's includes (`godot/README.md`, "The shader library": several joined by `+`; the biome kinds `leaf`, `irid`, `gloss`, `far`, `hang` are aliases of `foliage` and `bark`). A ground's layers are one record with `role: 'ground'`, `hook: 'world-uv'`, `layers` and `weights` ("Ground layers" below) |
+| sides and solids (2026-11-24, `EXPORT.sceneReader`: `10-core-export-scene.js`, `test-export-scene.js`) | a page's scene | three fields a reader needs to cull back faces safely (`GODOT-LOOK-PLAN.md` section 13). A material's `side`: `front`, `back` or `double` (`doubleSided` stays beside it, as it was). A bucket's triangles are **turned over where the mesh they came from is mirrored** (a negative determinant: three flips such a mesh's winding when it draws, and the bake did not), counted in the bucket's `mirrored`. A bucket's and an item's `closed`: true when its mesh is a closed solid (every edge, by where its ends are, met by two triangles running it opposite ways), so a double-sided material on it can be drawn single-sided |
 | `textures` | the biome core | `{id, from, wrap, repeat, offset, flipY, size}`; `from: 'png'` with `png` (a data URL: canvases, DataTextures), `'library'` with `lib, pack, family, slot`: a library map **by reference** (the build's `tex/pack.json` names the file; the harness copies the pack beside the case), `'none'` with `error` |
 | `registry` | the core/tags adapter | `KTAGS.page.export()` (`krator-tags`); in a tile, cropped to the records an item or bucket names, the records whose `at` lies in the box (not item sets), and their parents (`cropped: {from, kept, rule}`) |
 | `hazards` | the core/hazard adapter | **optional**: present only when the tile holds a hazard (`EXPORT.OPTIONAL`: a page without them exports what it did before the section existed). `KHAZ.export` (`krator-hazard`, `core/hazard/GODOT.md`): `kinds`, `layers`, `records: [{id, uid, at, ry, hazard (filled from its kind), shape (type cyl, sphere, box or poly; r, h, w, d, pts, y0, y1)}]`, cropped to the tile by `at`. Until 2026-10-26 it rode in `registry.hazards`. `world_import.gd` builds an `Area3D` a record under `Hazards`; `stats.hazards` counts them |

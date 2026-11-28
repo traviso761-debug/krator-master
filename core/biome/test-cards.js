@@ -18,6 +18,7 @@ function page(pack) {
     vm.runInContext(read(f) + (f.endsWith('10-core-head.js') ? '\nthis.BIO=BIO;' : ''), ctx, { filename: f });
   const BIO = ctx.BIO, errs = [];
   BIO.init({ THREE, scene: new THREE.Scene(), seed: 3, err: m => errs.push(m) });
+  BIO.INDEX_ITEMS = false;   /* these checks read the card's triangle soup; the weld (on by default since B4) is test-lod's */
   ctx.KMAT = { mode: 'lib', packed: (kit, slot) => pack[slot] || null, textures: () => ({ map: new THREE.Texture() }) };
   const card = () => new THREE.MeshLambertMaterial({ map: new THREE.DataTexture(new Uint8Array(4), 1, 1, THREE.RGBAFormat) });
   return { BIO, errs, card };

@@ -1,0 +1,314 @@
+[
+ {
+  "src": "brick.hazarbaf.buff_rose.png",
+  "out": "core/materials/library/brick.hazarbaf.buff_rose",
+  "record": {
+   "id": "brick.hazarbaf.buff_rose",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on brick wall surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no directional sun shadows, no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Central Asian hazarbaf embossed basketweave brickwork built of narrow fired marl buff bricks (#d5ba92 to #c7a97e) and warm terracotta-rose bricks (#b95b45 to #a44935) laid in tight horizontal and vertical groups to form a repeating geometric weave of stepped lozenges and interlocking chevrons, alternate brick groups recessed by 12 mm in pale sandy alkaline lime mortar (#dfd4be), with small square turquoise-glazed ceramic plug inlays (#1e8c86) set at the centers of the diamond motifs, fine sandy clay grain and slight weathered chips on brick arrises. Full colour, matte brick with satin glazed plugs.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti hazarbaf walls (kits/tabisti, buffbrick, 1.6 m); any Persian or Central Asian banna'i / hazarbaf brick weave"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.72,
+   "rough_var": 0.22,
+   "lift": 0.1,
+   "normal_strength": 1.25
+  }
+ },
+ {
+  "src": "brick.band.capricho.png",
+  "out": "core/materials/library/brick.band.capricho",
+  "record": {
+   "id": "brick.band.capricho",
+   "family": "brick",
+   "colour": "#ffffff",
+   "roughness": 0.68,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on masonry wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gaudí El Capricho polychrome banded brick and relief-tile masonry in strict horizontal courses continuing cleanly across left and right edges: three courses of warm sun-baked sandy buff brick (#d6bc94) alternating with two courses of rich rose-terracotta brick (#b4523d) and one narrow horizontal frieze course of square moulded ceramic relief tiles glazed in deep alkaline emerald-teal (#1b867e) embossed with raised stylized golden-ochre rosette bosses (#d49b35), thin pale cream lime mortar joints (#dfd5c2), crisp fired clay texture and fine glaze crazing on the tile band. Full colour, do not mute.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti banded masonry (kits/tabisti, bandbrick, 1.5 m); polychrome Moorish-Modernisme brick courses"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.025,
+   "rough": 0.68,
+   "rough_var": 0.24,
+   "lift": 0.1,
+   "normal_strength": 1.2
+  }
+ },
+ {
+  "src": "tile.kashi.teal_relief.png",
+  "out": "core/materials/library/tile.kashi.teal_relief",
+  "record": {
+   "id": "tile.kashi.teal_relief",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.22,
+   "metal": 0,
+   "scale": [
+    1.15,
+    1.15
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on ceramic tile panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no specular glare, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Samarkand Shah-i-Zinda deeply carved high-relief glazed terracotta kashi tiles fitted in a seamless repeating grid, moulded with crisp two-level geometric eight-pointed star strapwork and scrolling split-palmette vine arabesques; coated in rich translucent alkaline turquoise-teal soda glaze (#188d88 to #2caaa2) that pools dark peacock-emerald (#0d5558) in the deep carved background recesses and thins to pale celadon-cream (#8fd2c8) along the sharp raised relief ridges, with occasional small cobalt-blue (#1d4284) and warm buff unglazed terracotta (#c89e74) inlays, fine kiln crackle crazing across the glaze and hair-thin lime joints. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti pishtaq jambs, wind-minarets and friezes (kits/tabisti, kashi, 1.15 m); carved turquoise glazed relief tile"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.03,
+   "rough": 0.22,
+   "rough_var": 0.16,
+   "dark_gloss": 0.08,
+   "lift": 0.08,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "roof.tile.zsolnay.teal.png",
+  "out": "core/materials/library/roof.tile.zsolnay.teal",
+  "record": {
+   "id": "roof.tile.zsolnay.teal",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    1.25,
+    1.25
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px, bold 8-course take), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on pitched roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright sun reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hungarian Secessionist Zsolnay pyrogranite glazed ceramic beaver-tail roof tiles laid in neat overlapping imbricated horizontal courses (eight courses per tile), predominantly rich alkaline turquoise-teal (#158780) and deep emerald-jade (#1b7a6e) with subtle tile-to-tile kiln variation into seafoam teal (#32a69c), deep peacock blue-green (#0f5c60), and an occasional warm honey-amber (#c9872e) accent tile; thick pooled vitreous glaze along the rounded lower drip edge of each scale, fine ceramic crazing, and subtle weathering in the overlaps. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti monsoon-shedding glazed roofs (kits/tabisti, zsolnay, 1.25 m); Secessionist Zsolnay pyrogranite roofs"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "rough": 0.25,
+   "rough_var": 0.16,
+   "dark_gloss": 0.06,
+   "lift": 0.1,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "roof.tile.zsolnay.fine.png",
+  "out": "core/materials/library/roof.tile.zsolnay.fine",
+  "record": {
+   "id": "roof.tile.zsolnay.fine",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.25,
+   "metal": 0,
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px, fine-scale take), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on pitched roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright sun reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hungarian Secessionist Zsolnay pyrogranite glazed ceramic beaver-tail roof tiles laid in neat overlapping imbricated horizontal courses (eight courses per tile), predominantly rich alkaline turquoise-teal (#158780) and deep emerald-jade (#1b7a6e) with subtle tile-to-tile kiln variation into seafoam teal (#32a69c), deep peacock blue-green (#0f5c60), and an occasional warm honey-amber (#c9872e) accent tile; thick pooled vitreous glaze along the rounded lower drip edge of each scale, fine ceramic crazing, and subtle weathering in the overlaps. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Fine-course Zsolnay glazed beaver-tail roof variant for domes, oriels and kiosks (kits/tabisti, zsolnay_fine, 1.5 m)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.035,
+   "rough": 0.25,
+   "rough_var": 0.16,
+   "dark_gloss": 0.06,
+   "lift": 0.1,
+   "normal_strength": 1.1
+  }
+ },
+ {
+  "src": "roof.scale.escata.polychrome.png",
+  "out": "core/materials/library/roof.scale.escata.polychrome",
+  "record": {
+   "id": "roof.scale.escata.polychrome",
+   "family": "roof",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on ceramic roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Catalan Modernisme imbricated fish-scale (escata) glazed ceramic cupola tiles with rounded lower noses laid in tight overlapping courses arranged in repeating horizontal chevron bands of warm golden-amber (#d48a2c), burnt terracotta-rose (#b84e38), pale cream-ivory (#eadcc4), and alkaline turquoise-teal (#1d8b84); vitreous lead glaze pooling slightly darker near each rounded tile lip with tiny kiln pinholes and fine crazing, thin pale mortar shadow at the overlaps. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti escata ceramic spires, cupolas and polychrome roofs (kits/tabisti, escata, 1.2 m)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.03,
+   "rough": 0.3,
+   "rough_var": 0.18,
+   "lift": 0.08,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "mosaic.trencadis.tabisti.png",
+  "out": "core/materials/library/mosaic.trencadis.tabisti",
+  "record": {
+   "id": "mosaic.trencadis.tabisti",
+   "family": "tile",
+   "colour": "#ffffff",
+   "roughness": 0.24,
+   "metal": 0,
+   "scale": [
+    1.1,
+    1.1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on mosaic surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no glare, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gaudí trencadís broken-tile mosaic made of irregular hand-nipped polygonal shards of glazed ceramic plates and tiles (2 to 6 cm across) bedded flush in pale warm lime-pozzolana mortar (#e4ddd0): a luminous field of milk-white (#f2ece2) and pale blush-cream (#e2bfb0) shards woven with sinuous geometric medallions and wave bands of vivid alkaline turquoise (#1b8c86), deep cobalt blue (#1d3f84), and warm saffron-ochre (#d49b30) ceramic fragments, each shard showing fine ceramic crackle and crisp nipped edges separated by 3 to 5 mm mortar joints. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti trencadís ventilation lanterns, domes and pishtaq tympanums (kits/tabisti, trencadis, 1.1 m)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.03,
+   "rough": 0.24,
+   "rough_var": 0.18,
+   "lift": 0.06,
+   "normal_strength": 0.85
+  }
+ },
+ {
+  "src": "plaster.ganch.carved.png",
+  "out": "core/materials/library/plaster.ganch.carved",
+  "record": {
+   "id": "plaster.ganch.carved",
+   "family": "plaster",
+   "colour": "#ffffff",
+   "roughness": 0.72,
+   "metal": 0,
+   "scale": [
+    1.15,
+    1.15
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on carved plaster wall panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no directional shadows, no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Bukhara and Khiva carved ganch (gypsum stucco) architectural wall relief: a crisp two-plane geometric girih lattice of interlocking ten-pointed stars, polygons and fine double-fillet strapwork enclosing delicate carved palmette scrolls and stippled honeycomb backgrounds cut 10 mm deep with sharp gouge and knife tool marks, matte chalky gypsum texture. Keep colours very muted, chalky ivory-white to pale warm grey (#eee9df on raised bands, #c6bfb2 in recessed grounds), near-colourless and even so a palette tint can colour it cleanly.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti roof-sheltered white ganch veranda panels (kits/tabisti, ganch, 1.15 m); carved Central Asian or Moorish gypsum stucco"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "mute": 0.45,
+   "rough": 0.72,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "normal_strength": 1.3
+  }
+ },
+ {
+  "src": "wood.kundal.abysslac.png",
+  "out": "core/materials/library/wood.kundal.abysslac",
+  "record": {
+   "id": "wood.kundal.abysslac",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.3,
+   "metal": 0.06,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative wooden ceiling panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no specular hot-spots, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Central Asian kundal polychrome painted and lacquered cedar ceiling coffers finished in rich Liikofi abyss-lac resin: a repeating geometric grid of shallow recessed octagonal and star coffers framed by moulded timber ribs, the recessed panels coated in deep lustrous vermilion-crimson lacquer (#8e2226 to #ad312d) alternating with deep alkaline Prussian-teal panels (#155d62), richly ornamented with fine raised gesso-and-gold-leaf (#d4a642) scrolling lotus vines, central gilded rosettes and thin ivory (#ece2cc) outline fillets, subtle aged lacquer craquelure and wood grain beneath. Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti kundal coffered ayvan and hall ceilings in Liikofi abyss-lac (kits/tabisti, kundal, 1.2 m)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.03,
+   "rough": 0.3,
+   "rough_var": 0.18,
+   "dark_gloss": 0.08,
+   "lift": 0.1,
+   "normal_strength": 1.15
+  }
+ },
+ {
+  "src": "metal.bronze.leafscale.png",
+  "out": "core/materials/library/metal.bronze.leafscale",
+  "record": {
+   "id": "metal.bronze.leafscale",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.34,
+   "metal": 0.64,
+   "scale": [
+    0.75,
+    0.75
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+    "licence": "generated for this project by its owner",
+    "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on embossed metal surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: cast architectural bronze cladding of overlapping imbricated laurel and oak-leaf scales pointing downward in regular staggered rows, each scale embossed with a crisp central midrib, herringbone veins and a tiny beaded acorn boss at the cusp; heavily patinated in chalky turquoise-malachite verdigris (#3b8c78 to #58a894) in the recessed pockets and overlaps, while the raised leaf midribs, rims and acorn bosses are rubbed back to warm dark antique bronze (#58442e) and subtle burnished gilt-brass (#b89240). Full colour.",
+    "prompt_where": "kits/tabisti/PROMPTS.md",
+    "reuse": "Urban Tabisti imbricated verdigris-bronze columns and kiosk shafts (kits/tabisti, leafscale, 0.75 m)"
+   }
+  },
+  "options": {
+   "pattern": false,
+   "band": 0.03,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "lift": 0.1,
+   "normal_strength": 1.25
+  }
+ }
+]

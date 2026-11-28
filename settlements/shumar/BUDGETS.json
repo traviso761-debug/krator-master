@@ -1,0 +1,12 @@
+{
+ "what": "Amaro (canyon-lip capital of the Kingdom of Shumar, settlements/shumar/PLAN.md) ceilings.",
+ "pages": {
+  "shumar.html": {
+   "bytes": 16777216,
+   "tris": 21500000,
+   "calls": 1850,
+   "why": "Full 2,125-building canyon-lip capital (52 furnished/cutaway hero landmarks, 2,041 instanced Mamluk buildings + 2,093 battered basalt plinths across 6 KCITY tiers and 6 KHAMLET ring villages, 4-patch high-res cliff & plateau terrain, meshH-anchored Sullam al-Gedu stair & Darb al-Kir eastern switchback retaining walls, 4 core/water flows + sabil pool, 12 active KCONS construction sites, and Station 4 Shumar canyon/riparian flora).",
+   "raised": "2026-11-19"
+  }
+ }
+}

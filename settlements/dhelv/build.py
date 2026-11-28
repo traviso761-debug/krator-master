@@ -15,6 +15,9 @@ The page is one <script> made of, in filename order:
   38-furniture-bundle.js, 39-interiors-bundle.js   GENERATED, as the kit's
 Checks: the kit's (one scope: no name declared twice; building fragments keep their prefix; unique def seeds; node --check).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -99,7 +102,7 @@ CLOSED |= set(CORE_HOST)   # core/host: each file one closure (KHOST), its names
 SIDE = {}   # the hyperjungle's library maps, written beside the page (dist/dhelv.tex.js: tools/textures/matlib_pack.py)
 VENDORED = {}
 # GENERATED fragments, never written to src/
-FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods
+FURN_CULTURES = ['zeijani', 'nomad', 'generic', 'generic-goods', 'arms']   # the Zeijani pieces, the Eastern Nomads' (pueblo) for fallbacks, the shared goods; arms: the guardroom's weapon rack (Stage 8 D27, O5)
 VIRTUAL = {'26-matlib-pack.js', '38-furniture-bundle.js', '39-interiors-bundle.js', '46y-throne-matlib-pack.js', '46z-bio-matlib-pack.js', '47-hyperjungle.js', '47t-throne.js'}
 BUNDLE_GLOBALS = ('KratorFurniture', 'KratorInteriors', 'ROOM', 'furnishRoom')
 INTERIOR_SETS = ['zeijani']   # kits/interiors/sets/zeijani.js: the defs' rooms, and the carved defs' void plans

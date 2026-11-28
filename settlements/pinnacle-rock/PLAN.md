@@ -28,6 +28,11 @@ Pinnacle Rock is a settlement and goes in the gallery when it first reaches `mai
 
 ## 1. The site
 
+**Moved (2026-11-10, the owner).** The rock's open-world spot is map 5.1 px 1007,686, on the savage hyperjungle's north-east
+edge (`openworld/SITES.json` `staiytii0y`; `openworld/pinnacle`): a knoll about 110 m over its 14 km round at about
+-1,290 m, about 1,500 mm of rain. The page still stands on the first site below: a re-cut at the new spot (2026-11-12) left it
+loading past 16 minutes (`KNOWN_ISSUES.md`).
+
 **Settled 2026-10-18.** The owner's point (px 737,354, `staiytii0y`) was approximate, so the model's heights within
 50 km of it were scanned for mesa candidates (a cell standing above its eight neighbours, ranked by its height over
 the ring 8 km out) and canyon candidates (the extractor's `CANYON_MIN` rule). No cell met the canyon rule; six stood

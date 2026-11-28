@@ -305,7 +305,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.356,
+    0.358,
+    0.646,
+    0.657
+   ]
   },
   "c_bean": {
    "lib": "card.crop.bean",
@@ -319,7 +325,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.431,
+    0.339,
+    0.564,
+    0.663
+   ]
   },
   "c_clover": {
    "lib": "card.crop.clover",
@@ -333,7 +345,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.345,
+    0.403,
+    0.655,
+    0.616
+   ]
   },
   "c_flax": {
    "lib": "card.crop.flax",
@@ -347,7 +365,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.358,
+    0.356,
+    0.632,
+    0.655
+   ]
   },
   "c_plume": {
    "lib": "card.crop.plume",
@@ -361,7 +385,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.374,
+    0.345,
+    0.622,
+    0.657
+   ]
   },
   "c_saffron": {
    "lib": "card.crop.saffron",
@@ -375,7 +405,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.368,
+    0.358,
+    0.638,
+    0.646
+   ]
   },
   "c_woad": {
    "lib": "card.crop.woad",
@@ -389,7 +425,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.352,
+    0.349,
+    0.636,
+    0.671
+   ]
   },
   "c_tea": {
    "lib": "card.crop.tea",
@@ -403,7 +445,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.329,
+    0.329,
+    0.669,
+    0.642
+   ]
   },
   "c_greens": {
    "lib": "card.broadleaf",
@@ -431,7 +479,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.352,
+    0.36,
+    0.65,
+    0.638
+   ]
   },
   "c_orchard": {
    "lib": "card.orchard.broad",
@@ -445,7 +499,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.36,
+    0.356,
+    0.644,
+    0.661
+   ]
   },
   "c_blossom": {
    "lib": "card.blossom.cherry",
@@ -473,7 +533,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.405,
+    0.329,
+    0.595,
+    0.671
+   ]
   },
   "c_juniper": {
    "lib": "card.juniper",
@@ -487,7 +553,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 512
+   "size": 512,
+   "cell": [
+    0.329,
+    0.331,
+    0.671,
+    0.671
+   ]
   },
   "c_sage": {
    "lib": "card.sage",
@@ -501,7 +573,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.333,
+    0.329,
+    0.644,
+    0.671
+   ]
   },
   "c_broom": {
    "lib": "card.broom",
@@ -515,7 +593,13 @@
    },
    "roughLift": 0,
    "specular": 0.2,
-   "size": 256
+   "size": 256,
+   "cell": [
+    0.329,
+    0.329,
+    0.667,
+    0.661
+   ]
   },
   "thangka": {
    "lib": "patterns/order/thangka-register",

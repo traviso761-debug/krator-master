@@ -20,7 +20,8 @@
    The entry (data first; only build and wheel draw):
      VEHICLE({
        key, name, culture,                 culture: a key of VEHICLE_CULTURES (register with VEHICLE_CULTURE)
-       tags: { class:'motor vehicle', type:[...], drive, seats, fuel, terrain:[...] },
+       tags: { type:[...], drive, seats, fuel, terrain:[...] },   no class tag: a placed vehicle's core/tags record has the
+                                           class 'vehicle' (KratorVehicles.record; Stage 8 T9, 2026-11-24)
        variants, variantNames: [...],
        w, d, h,                            overall box in metres (x across, z along, y up), aerials included
        data: { speed, accel, turnRadius, maxSteer, seats, cargo, mass, fuel, tank, range,
@@ -40,7 +41,9 @@
    ====================================================================== */
 
 /* the classes and vocabularies a vehicle's tags are checked against (verify.py --assert) */
-const VEHICLE_CLASSES = ['motor vehicle'];
+/* the core/tags class of every vehicle's record (core/tags/52-core-tags-vocab.js; KratorVehicles.record). Until Stage 8 B9
+   (2026-11-24, T9) the defs carried tags.class 'motor vehicle', a key core/tags does not know */
+const VEHICLE_CLASSES = ['vehicle'];
 const VEHICLE_TYPES = ['vehicle', 'transport', 'cargo', 'utility', 'patrol', 'survey'];
 const VEHICLE_DRIVES = ['wheeled', 'tracked', 'half-track'];
 const VEHICLE_FUELS = ['refined oil', 'crude oil', 'battery', 'wood gas', 'alcohol'];
@@ -60,7 +63,7 @@ const VEHICLES = [], VEHICLE_BY_KEY = {};
 function VEHICLE(o) {
   if (VEHICLE_BY_KEY[o.key]) { console.error('duplicate vehicle key', o.key); return; }
   if (!VEHICLE_CULTURES[o.culture]) { console.error('vehicle ' + o.key + ': unregistered culture ' + o.culture); return; }
-  o.variants = o.variants || 1;
+  o.variants = o.variants == null ? 1 : o.variants;
   o.variantNames = o.variantNames || [];
   o.variantData = o.variantData || [];
   o.data = o.data || {};
@@ -283,7 +286,7 @@ function vehicleFrame(opt) {
   F.tub = function (secs, segs, color, family, caps, inside) {
     const S = _seg(segs || 20, 8), pos = [], idx = [];
     const pt = function (s, i) {
-      const th = i * TAU / S, c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n || 2);
+      const th = i * TAU / S, c = Math.cos(th), sn = Math.sin(th), e = 2 / (s.n == null ? 2 : s.n);
       return [s.a * Math.sign(c) * Math.pow(Math.abs(c), e), s.y, (s.z || 0) + s.b * Math.sign(sn) * Math.pow(Math.abs(sn), e)];
     };
     for (const s of secs) for (let i = 0; i < S; i++) pos.push.apply(pos, pt(s, i));
@@ -365,8 +368,8 @@ function vehicleBeltShoe(B, s) {
    o: { r (overall, lugs included), w (tread width), lugs (per row), lugH, rim (radius), side (+1 left / -1 right),
         tyre, rimCol, hubCol, nutCol: colours; nuts (count, default none); segs (around the tyre) }                                         */
 function vehicleBalloonTyre(o) {
-  const r = o.r, w = o.w, lh = o.lugs ? o.lugH : 0, rt = r - lh, hw = w / 2, side = o.side || 1;
-  const segs = _seg(o.segs || 16, 8);
+  const r = o.r, w = o.w, lh = o.lugs ? o.lugH : 0, rt = r - lh, hw = w / 2, side = o.side == null ? 1 : o.side;
+  const segs = _seg(o.segs == null ? 16 : o.segs, 8);
   /* the tyre: a lathe profile (radius, axial position), round-shouldered like a low-pressure sand tyre */
   const P = [], rb = o.rim * 1.04;
   const prof = [[rb, -hw * 0.86], [rt - w * 0.28, -hw * 1.0], [rt - w * 0.06, -hw * 0.9],

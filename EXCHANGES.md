@@ -668,7 +668,7 @@ the cherry as `BIO.kin('oidong.cherry')` keyed `cloudcherry`, a deeper rose. The
 **Existing exchanges.**
 - **throne→ringisles: yes, read in place.** The lehua, tree fern, arch palm, palm frill, mangrove, coconut and star aloe
   (`ringisles/build.py:16,85,167`).
-- **ringisles→throne: none.** The only hit is a water-gap note (`throne/KNOWN_ISSUES.md:211`).
+- **ringisles→throne: yes, read in place (2026-11-24).** The strand pandanus on the geyser isle's beaches (`throne/stations/isle/station.json` `kits` and `packs`, `88p-host-pandan.js`, `RINGISLES.treeAt`).
 
 | direction | vendor key | name | carried by | taken as | where in receiver | why it fits |
 |---|---|---|---|---|---|---|

@@ -69,7 +69,8 @@ K.inject=function(src,e,who,stage){var one=function(at,x){var a=inc(at);if(src.i
  st={names:[],layers:[],seq:0,pages:null,depth:0};
  var d=Object.getOwnPropertyDescriptor(mat,'onBeforeCompile');
  if(d&&d.get){st.page=function(){return d.get.call(mat);};st.setPage=d.set?function(v){d.set.call(mat,v);}:function(){};}   /* a hook from before KHOOK that kept its own accessor: it is the page's slot */
- else{st.pages=[mat.onBeforeCompile];st.page=function(){return st.pages[st.pages.length-1];};st.setPage=function(v){st.pages.push(v);};}
+ else{var p0=mat.onBeforeCompile,S0=p0&&p0.__khst;   /* a clone handed another material's composed hook: that one's page, its layers copied below */
+  st.pages=[S0?S0.page():p0];st.page=function(){return st.pages[st.pages.length-1];};st.setPage=function(v){st.pages.push(v);};}
  st.hook=function(sh,r){if(r)K.watch(r);
   if(st.depth>0){var P=st.pages?st.pages[st.pages.length-1-st.depth]:null;if(P){st.depth++;try{P.call(this,sh,r);}finally{st.depth--;}}return;}   /* a page hook calling the hook it read: the one before it */
   st.depth=1;var was={layer:cur.layer,mat:cur.mat};cur.mat=mat;
@@ -78,9 +79,16 @@ K.inject=function(src,e,who,stage){var one=function(at,x){var a=inc(at);if(src.i
    for(var i=0;i<L.length;i++){cur.layer=L[i].name;L[i].run.call(this,sh,r);}
    if(K.warp){cur.layer='(the warp)';K.warp.run.call(this,sh,r);}}
   finally{st.depth=0;cur.layer=was.layer;cur.mat=was.mat;}};
- Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:function(){return st.hook;},set:function(v){st.setPage(v);}});
+ st.hook.__khst=st;   /* the composed hook knows its state: assigned to another material (c.onBeforeCompile=m.onBeforeCompile, a clone's habit) it is
+   m's page and m's layers, never a page of its own, or every layer would run twice (T16) */
+ Object.defineProperty(mat,'onBeforeCompile',{configurable:true,enumerable:true,get:function(){return st.hook;},
+  set:function(v){var S=v&&v.__khst;if(S&&S!==st){st.setPage(S.page());copyState(S,mat);}else if(!S)st.setPage(v);}});
  if(KLAYERS)KLAYERS.set(mat,st);else Object.defineProperty(mat,'__khook',{value:st});
+ if(typeof S0!=='undefined'&&S0&&S0!==st)copyState(S0,mat);
  return st;};
+ /* another material's layers onto this one, by name, in the order they were added (K.add skips a name the material has) */
+ var copyState=function(S,to){if(to.userData&&to.userData.atmHooks)to.userData.atmHooks=to.userData.atmHooks.filter(function(n){return S.names.indexOf(n)<0;});
+  S.layers.slice().sort(function(a,b){return a.seq-b.seq;}).forEach(function(L){K.add(to,L.name,L.run,{order:L.order,key:L.key});});return to;};
 /* the material's own key: one set on the material itself (a page's, or a layer's before), never three's default */
  var ownKey=function(mat){var k=mat.customProgramCacheKey,T=root.THREE,d=T&&T.Material&&T.Material.prototype.customProgramCacheKey;
  return k&&Object.prototype.hasOwnProperty.call(mat,'customProgramCacheKey')&&k!==d?k:null;};
@@ -94,9 +102,7 @@ K.add=function(mat,name,fn,o){if(!mat)return mat;
  mat.needsUpdate=true;return mat;};
 K.has=function(mat,name){var st=mat&&(KLAYERS?KLAYERS.get(mat):mat.__khook);return !!st&&st.names.indexOf(name)>=0;};
 K.names=function(mat){var st=mat&&(KLAYERS?KLAYERS.get(mat):mat.__khook);return st?st.names.slice():[];};
-K.copy=function(from,to){var st=from&&(KLAYERS?KLAYERS.get(from):from.__khook);if(!st||!to)return to;
- if(to.userData&&to.userData.atmHooks)to.userData.atmHooks=to.userData.atmHooks.filter(function(n){return st.names.indexOf(n)<0;});
- st.layers.slice().sort(function(a,b){return a.seq-b.seq;}).forEach(function(L){K.add(to,L.name,L.run,{order:L.order,key:L.key});});return to;};
+K.copy=function(from,to){var st=from&&(KLAYERS?KLAYERS.get(from):from.__khook);if(!st||!to)return to;return copyState(st,to);};
 // the programs three could not link, and the anchors missed
 K.checkPrograms=function(r,scene,only){var rs=r?[r]:K.renderers,out=[],by=new Map();
  rs.forEach(function(R){var P=R&&R.info&&R.info.programs||[];

@@ -67,12 +67,21 @@ var ARCH=(function(){
     hybanthus:{role:'hyper',max:14000,k:35,earth:true},
     berkheya:{role:'hyper',max:38000,k:60,earth:true},
     odontarrhena:{role:'hyper',max:30000,k:50,earth:true},
+    verdigrismangrove:{role:'hyper',max:19500,k:38,latex:210000,earth:true},
     araucaria:{role:'excluder',max:60,k:80,earth:true},
     agathis:{role:'excluder',max:50,k:80,earth:true},
     gymnostoma:{role:'indicator',max:400,k:120,earth:true},
     costularia:{role:'excluder',max:80,k:80,earth:true},
+    lepidosperma:{role:'excluder',max:75,k:80,earth:true},
+    dracophyllum:{role:'excluder',max:65,k:80,earth:true},
+    codia:{role:'excluder',max:85,k:85,earth:true},
+    grevillea:{role:'excluder',max:70,k:85,earth:true},
+    melaleuca:{role:'excluder',max:55,k:80,earth:true},
+    pandanus:{role:'excluder',max:45,k:80,earth:true},
+    cyathea:{role:'excluder',max:60,k:80,earth:true},
     metrosideros:{role:'excluder',max:40,k:80,earth:true},
     nepenthes:{role:'excluder',max:70,k:80,earth:true},
+    drosera:{role:'excluder',max:65,k:80,earth:true},
     verdigris:{role:'hyper',max:50000,k:40,earth:false}
   };
   var available=function(s){var f=cl(0.02*P10(0.3*(6.5-(s.pH==null?6.5:s.pH))),0.002,0.2);return (s.ni||0)*f;};
@@ -94,6 +103,14 @@ var ARCH=(function(){
     var p=((year+off)%recur+recur)%recur,since=p,next=recur-p,st='quiet';
     if(p<dur){var q=p/dur;st=q<0.3?'inflation':q<0.6?'intrusion':q<0.8?'eruption':'quiet';}
     return {state:st,since:since,next:next,recur:recur,dur:dur,opening:open};};
+  // ---- crops (kits/crops runtime registration; parked in TODO.md for the all-builds rebuild)
+  var CROPS_DEF={atm:2,zones:{coast:{warmth:[4,4],arid:[3,4],wet:true,salt:true},headland:{warmth:[4,4],arid:[3,4]},
+    gully:{warmth:[4,4],arid:[3,4],wet:true},barrens:{warmth:[4,4],arid:[2,3]},warmground:{warmth:[4,5],arid:[3,4],heated:true}},
+    staples:['taro','breadfruit','banana','coconut','ramie','rope-banana','pandan','kelp','eelgrass']};
+  var registerCrops=function(C){var K=C||(typeof CROPS!=='undefined'?CROPS:null);
+    if(K&&K.BIOMES)K.BIOMES.arch=CROPS_DEF;
+    return K&&typeof K.forBiome==='function'?K.forBiome('arch'):null;};
+  registerCrops();
   return {KW25:KW25,NERNST:NERNST,SPRINGS:SPRINGS,spring:spring,anc:anc,pHof:pHof,mix:mix,gradient:gradient,canStand:canStand,curtainMass:curtainMass,
-    NI:NI,available:available,uptake:uptake,syndrome:syndrome,stunt:stunt,lifeAt:lifeAt,earthOk:earthOk,episode:episode};
+    NI:NI,available:available,uptake:uptake,syndrome:syndrome,stunt:stunt,lifeAt:lifeAt,earthOk:earthOk,episode:episode,CROPS:CROPS_DEF,registerCrops:registerCrops};
 })();

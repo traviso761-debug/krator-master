@@ -13,7 +13,9 @@
 //               lifts), field {at: (x,z) -> 0..1, extent [x0,z0,x1,z1] or centre [x,z] + radius (default
 //               6 km round the camera), res (default 128)} (opt-in: the mist's density by place, a texture built once: the smog
 //               universal in a city, thin on its terraces; F.field.at(x,z) reads what the shader reads), samples (the ray's
-//               samples of the field, default 6, at most 8)}: thicker in the weather's fog (W.fog), thinner in a gale
+//               samples of the field, default 6, at most 8), colour (opt-in: the mist's own colour, in the space scene.fog.color
+//               holds: a hex, a CSS string, a THREE.Color or [r,g,b]; without it the mist is the fog's colour), mix (its share
+//               over the fog's colour, default 1)}: thicker in the weather's fog (W.fog), thinner in a gale
 //     band      {density (1/m), y [bottom, top] (m), cover (0..1), noise (0..1)}: a cloud layer at mid-height; the rain and
 //               the fog thicken it
 //     ride      how fast the patches drift on the wind (default 1: the wind's own speed, gusts and all)
@@ -37,6 +39,10 @@
    const tex=new T.DataTexture(MF.half,n,n,T.RGBAFormat,T.HalfFloatType);tex.minFilter=tex.magFilter=T.LinearFilter;tex.wrapS=tex.wrapT=T.ClampToEdgeWrapping;tex.generateMipmaps=false;tex.needsUpdate=true;
    U.fogMistE={value:new T.Vector4().set(e[0],e[1],1/(e[2]-e[0]),1/(e[3]-e[1]))};U.fogMistK={value:new T.Vector2().set(n,Math.max(1,Math.min(8,M.samples==null?6:M.samples)))};U.fogMistT={value:tex};
    MF.texture=tex;A.fogMistFieldOn=true;}
+  // the mist's own colour (2026-11-24, T41): in the space scene.fog.color holds (the fog colour it mixes from), mix its share; the chunk takes
+  // its line when a material compiles. A page may set A.U.fogMistC.value (rgb, w the share) per frame
+  const MC=M.colour==null?null:Array.isArray(M.colour)?M.colour.slice(0,3):(c=>[c.r,c.g,c.b])(M.colour.isColor?M.colour:new T.Color(M.colour));
+  if(MC){U.fogMistC=U.fogMistC||{value:new T.Vector4()};U.fogMistC.value.set(MC[0],MC[1],MC[2],M.mix==null?1:M.mix);A.fogMistColOn=true;}
   F.step=(t,hour,dt)=>{const W=A.W||{},S=A.skyUniforms;
    // the reference height: the ground under the eye, eased (a cliff's edge does not pop the fog)
    const g=typeof o.ref==='number'?o.ref:(cam?A.ground(cam.position.x,cam.position.z):0)+F.lift;F.ref=F.ref==null||dt<=0?g:F.ref+(g-F.ref)*Math.min(1,dt*1.5);
@@ -51,7 +57,7 @@
    // the drift: the patches ride the wind at the eye, gusts and all (atmGust's JS twin)
    if(dt>0&&U.wind){const w=U.wind.value,k=(1+U.gustAmp.value*A.gust(t,cam?cam.position.x:0,cam?cam.position.z:0))*F.ride*dt;U.fogDrift.value.x-=w.x*k;U.fogDrift.value.y-=w.y*k;}};
   F.step(0,h.hour?h.hour():12,0);A.hook(F.step);
-  const mistRec=o.mist?Object.assign({},o.mist,F.field?{field:{extent:F.field.extent,res:F.field.n,samples:U.fogMistK.value.y}}:{}):null;   /* the field as data: its grid, not its function */
+  const mistRec=o.mist?Object.assign({},o.mist,F.field?{field:{extent:F.field.extent,res:F.field.n,samples:U.fogMistK.value.y}}:{},MC?{colour:MC}:{}):null;   /* the field as data: its grid, not its function */
   A.rec('heightfog',{falloff:F.falloff,ref:typeof o.ref==='number'?o.ref:'ground',lift:F.lift,sun:F.sun,sky:F.sky,shape:F.shape,compress:F.compress,mist:mistRec,band:o.band||null,
    note:'fog = 1 - exp(-(air^shape + mist + band)); air = scene fog density * the pool integral of exp(-falloff (y - ref)); the mist pools below mist.y at dawn, scaled by its field where one is given (a texture, R the field 0..1); the band is a slab of cloud (sky/89-atmos-j-fog.js)'});
   return F;};
@@ -62,6 +68,7 @@
    sh.uniforms.atmFogSunDir=U.fogSunDir;sh.uniforms.atmFogSunC=U.fogSunC;sh.uniforms.atmFogZen=U.fogZen;sh.uniforms.atmFogDrift=U.fogDrift;
    if(A.fogBeltOn){sh.uniforms.atmFogBelt=U.fogBelt;sh.uniforms.atmFogBeltK=U.fogBeltK;sh.uniforms.atmFogBeltE=U.fogBeltE;sh.uniforms.atmFogBeltT=U.fogBeltT;}
    if(A.fogMistFieldOn){sh.uniforms.atmFogMistE=U.fogMistE;sh.uniforms.atmFogMistK=U.fogMistK;sh.uniforms.atmFogMistT=U.fogMistT;}
+   if(A.fogMistColOn)sh.uniforms.atmFogMistC=U.fogMistC;
    /* the eye from the view matrix, in the vertex shader: three r128 sets the fragment's cameraPosition only for Phong, Standard,
       Toon, ShaderMaterial or an envMap, so a Lambert ground read (0,0,0) there (the first pilot run's dawn white-out) */
    sh.vertexShader='varying vec3 vAtmFogP;varying vec3 vAtmFogC;\n'+K.rep(sh.vertexShader,'#include <fog_vertex>','#include <fog_vertex>\n{vec4 atmFP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmFP=instanceMatrix*atmFP;\n#endif\nvAtmFogP=(modelMatrix*atmFP).xyz;vAtmFogC=-(transpose(mat3(viewMatrix))*viewMatrix[3].xyz);}');

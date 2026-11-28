@@ -1019,6 +1019,32 @@ check request here, with its negative control.
   site, and each build's `model_site` window) whose window the edit touches, failing unless the edit names it as allowed.
   Negative: the patera with `PATERA_ON = True` fails on Firebliss station 1.
 
+## Survey of 2026-11-27: macrotidal estuaries, floating capitals, arcologies & 13 parallel builders (check requests)
+
+- **World-space upward-triangle far-view z-fight scanner (`zaudit` in `tools/harness.py`, extending item 11):** At `1–1.8 km`
+  overview range, a 24-bit depth buffer quantizes to `~0.08–0.15 m`, so `2–5 cm` slab/terrace offsets, crossing street boxes,
+  radial wedge rings, and `core/engine` `y <= 0.045 m` `BelowGrade` foundation skirts shimmer visibly (`381` conflicts found and
+  eliminated on `floating-city`). Promote `FC_WORLD.auditSceneZFights` (traverse static + `InstancedMesh` `matrixWorld * instanceMatrix`,
+  bucket `ny > 0.75`, `areaXZ >= 0.25 m²` triangles in a `16 m` grid, clip pairs via 2D Sutherland–Hodgman, fail when overlap
+  `>= 0.35 m²` has `|Δy| < 0.15 m` without distinct `polygonOffset`) into `harness.py` alongside `{stripBelowGrade: 0.045}` in
+  `KCITY.hostMultikit`.
+- **`ATMOS.skylight` immediate clock-jump recapture & frame-order guard (`core/atmos/89-atmos-b-skylight.js`):** Waiting `every`
+  (`30`) frames after a clock jump left night water reflecting the noon sky (rendering the unlit noon giant as a dark disc), and
+  calling `SL.capture()` inside `ticks` ran *before* `SUBS.view` (`SKY.view`) updated sky uniforms (`91-host-loop.js`). Recapture
+  immediately after `SKY.update(0)` whenever `|Δhour| >= 1` or `clock.day` changes, and set `S.hour` inside `capture()`.
+- **Tidal-datum awareness for `dry` flora checks & `submergedNonDivers === 0` life-layer check (`tools/harness.py`):** On a
+  `KTIDE` page, static shore flora is rooted relative to mean datum rather than instantaneous `WATER.seaLevel(t)`, whereas
+  non-diving `SIM`/crowd citizens must relocate dynamically (`submergedNonDivers === 0` across low/high spring extremes) and
+  dynamic `visible = false` nomad fleets must not leave empty static `REGISTER` volumes behind (`registered-volumes-non-empty`).
+- **`EXPORT.sceneReader` automatic section-owner exclusion (`core/export/10-core-export-scene.js`):** Without manual `skipInstanced`
+  / `skipMesh` predicates, `sceneReader` re-serializes `BIO.baked`, `WATER.drawn`, `GROUND`, and `FAR.mesh` already owned by
+  `items`/`water`/`terrain`, inflating `world.glb` `2.3x` (`131 MB -> 305 MB`). Auto-exclude meshes tagged by registered section
+  contributors.
+- **Software-GL (`KRATOR_GL=swiftshader`) lane lock in `tools/harness.py` (extending item 16):** Hardware GPU lanes lock `arc`/`rtx`,
+  but `KRATOR_GL=swiftshader` runs with `lane none`; parallel subagents launching headless Chromium saturate CPU cores with Subzero
+  threads and trigger 25-minute stall-watchdog kills. Acquire `/tmp/krator-swiftshader.lock` inside `harness.py` (configurable
+  concurrency `1`) when running on SwiftShader.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

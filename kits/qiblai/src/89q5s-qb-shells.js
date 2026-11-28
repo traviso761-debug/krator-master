@@ -82,7 +82,22 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  const fp=(off,t)=>side?W(Dr.n[0]*off,t):W(t,Dr.n[1]*off);   /* a point off the shell's centre along the door's normal, t along its face */
  const poly=[W(-hw,-hd),W(hw,-hd),W(hw,hd),W(-hw,hd)],y=shell.y+.06,SL=.2,hs=shell.hs||[shell.h],levels=hs.map(v=>({h:Math.max(2.2,v-SL)}));
  let B=null;try{B=IX.planBuilding({id:'qiblai.type.'+key+'.'+IX.hash(shell.sig),poly,y,levels,doors:[{at:fp(side?hw:hd,tt),w:dw}],culture:'xanadu',wealth:P.wealth,
-  wall:.2,partition:.12,slab:.2,roof:'flat',windows:false},P.program,{seed:seed|0});}catch(e){return{error:'plan: '+(e&&e.message||e)};}
+  wall:.2,partition:.12,slab:.2,roof:'flat',windows:false},P.program,P.stair?{seed:seed|0,stair:P.stair}:{seed:seed|0});}   /* prog.stair: the planner's stair (a tower's steep one) */catch(e){return{error:'plan: '+(e&&e.message||e)};}
+ /* prog.doors: more ways in, each {level, n, t, w, h} in the shell's frame as `door` is (a storey above the ground's: the Flashing
+    Eye's Lip Range, entered at the bench two storeys over its rock-cut floors). Each is an opening in that storey's outer wall
+    (core/walk gaps it), a fixture in its room that keeps the floor before it clear, and a doorway drawn as the street door's,
+    with its portal pane on the face; returned in T.more. prog.bulbs false: no electric light (a house with none). prog.stair
+    {w, riser, tread}: kits/interiors' stair for every flight (a tower's steep stair, whose run fits a narrow storey) */
+ const more=[],inP=(Q,x,z)=>{let c=false;for(let i=0,j=Q.length-1;i<Q.length;j=i++){const a=Q[i],b=Q[j];if((a[1]>z)!==(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])c=!c;}return c;};
+ for(const E of P.doors||[]){const lv=B.levels[E.level|0],sd=E.n[0]!==0,ex=sd?hd:hw,fo=sd?hw:hd;if(!lv)continue;
+  const ew=Math.max(.95,Math.min(E.w+.1,2*ex-1)),et=Math.max(-ex+ew/2+.35,Math.min(ex-ew/2-.35,E.t)),eh=Math.max(2,Math.min(E.h==null?2.2:E.h,lv.h-.1));
+  const f2=(off,t)=>sd?W(E.n[0]*off,t):W(t,E.n[1]*off),at=f2(fo,et),ins=f2(fo-.55,et);let hit=null;
+  for(const Wl of B.walls){if(Wl.kind!=='exterior'||Wl.level!==lv.k)continue;const dx=Wl.b[0]-Wl.a[0],dz=Wl.b[1]-Wl.a[1],L=Math.hypot(dx,dz);if(L<ew)continue;
+   const u=((at[0]-Wl.a[0])*dx+(at[1]-Wl.a[1])*dz)/L,off=Math.abs((at[0]-Wl.a[0])*dz-(at[1]-Wl.a[1])*dx)/L;if(off<.3&&u>ew/2&&u<L-ew/2){hit={Wl,u};break;}}
+  if(!hit)continue;const k=more.length;hit.Wl.openings.push({u:hit.u,w:ew,y0:0,y1:eh,door:'more.'+k});
+  const R=B.rooms.find(r=>r.level===lv.k&&inP(r.poly,ins[0],ins[1]));
+  if(R)R.fixtures.push({i:R.fixtures.length,id:R.id+'.door.more.'+k,kind:'doorway',x:ins[0],z:ins[1],ry:Math.atan2(ins[0]-at[0],ins[1]-at[1]),w:ew,d:.5,h:eh,clearance:{front:1.2},reach:true,stair:null,end:null,bed:0});
+  more.push({level:lv.k,y:lv.y,at,w:ew,h:eh,n:E.n.slice(),t:et,room:R?R.id:null});}
  const G=new THREE.Group();G.name='interior-type:'+key;
  // the shell drawn with the kit's items into G (kput's frame is the world's: none is set here, so G's frame is the building's)
  const saveK=KXF;KXF=null;const w0=xC(0xece4d6);   /* fixed colours: this runs on demand, after the page's draws */
@@ -96,7 +111,10 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  const fw=side?shell.w/2:shell.d/2,dep=fw-(side?hw:hd)+.02,mid=(fw+(side?hw:hd))/2,bry=shell.ry+(side?Math.PI/2:0),dh=Math.max(2,Math.min(Dr.h,hs[0]-.3));
  if(door&&!door.noPortal)for(const e of[-1,1]){const q=fp(mid,tt+e*(dw/2+.06));vB('xWashB',q[0],shell.y,q[1],.12,dh+.05,dep,bry,w0);}
  if(door&&!door.noPortal){const q=fp(mid,tt);vB('xWashB',q[0],shell.y+dh,q[1],dw+.24,.25,dep,bry,w0);vB('qPlankB',q[0],shell.y,q[1],dw,.06,dep,bry,xC(0xf0e8dc));}
- const bulbs=[];QB_BULB_SINK=bulbs;if(P.wealth>=.5)for(const R of B.rooms){const lv=Lv[R.level]||Lv[0];qnIxBulbs(R.poly,lv.y,lv.h);}QB_BULB_SINK=null;   /* electric light, but not in the poor's houses */
+ for(const M of more){const sd=M.n[0]!==0,fw2=sd?shell.w/2:shell.d/2,fi=sd?hw:hd,dp=fw2-fi+.02,md=(fw2+fi)/2,yb=M.y-.06,by=shell.ry+(sd?Math.PI/2:0);
+  const f3=(off,t)=>sd?W(M.n[0]*off,t):W(t,M.n[1]*off);for(const e of[-1,1]){const q=f3(md,M.t+e*(M.w/2+.06));vB('xWashB',q[0],yb,q[1],.12,M.h+.05,dp,by,w0);}
+  const q=f3(md,M.t);vB('xWashB',q[0],yb+M.h,q[1],M.w+.24,.25,dp,by,w0);vB('qPlankB',q[0],yb,q[1],M.w,.06,dp,by,xC(0xf0e8dc));}
+ const bulbs=[];QB_BULB_SINK=bulbs;if(P.wealth>=.5&&P.bulbs!==false)for(const R of B.rooms){const lv=Lv[R.level]||Lv[0];qnIxBulbs(R.poly,lv.y,lv.h);}QB_BULB_SINK=null;   /* electric light, but not in the poor's houses */
  KXF=saveK;kbake(G);for(const k in KIT.items)KIT.items[k].length=0;
  /* the upper floors: a plank slab over a lacquered ceiling, each with its stair's well cut out */
  if(Lv.length>1){const mC=qnIxCeilMat(ceilC.getHex());for(const F of B.floors||[]){if(!F.level)continue;
@@ -107,7 +125,9 @@ function qnIxType(shell,key,seed,door,prog){const P=prog||qnIxProgram(key),IX=ty
  G.traverse(o=>{if(o.isMesh)o.renderOrder=-2;});
  if(door&&!door.noPortal){const q=fp(fw+.012,tt),m=new THREE.Mesh(new THREE.PlaneGeometry(dw,dh),QB_IX_PORTAL);m.position.set(q[0],shell.y+dh/2,q[1]);
   m.rotation.y=shell.ry+Math.atan2(Dr.n[0],Dr.n[1]);m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal';G.add(m);}
- return{G,plan:B,F,bulbs,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
+ for(const M of more){const sd=M.n[0]!==0,off=(sd?shell.w/2:shell.d/2)+.012,q=sd?W(M.n[0]*off,M.t):W(M.t,M.n[1]*off),m=new THREE.Mesh(new THREE.PlaneGeometry(M.w,M.h),QB_IX_PORTAL);
+  m.position.set(q[0],M.y-.06+M.h/2,q[1]);m.rotation.y=shell.ry+Math.atan2(M.n[0],M.n[1]);m.renderOrder=-1;m.castShadow=m.receiveShadow=false;m.raycast=()=>{};m.userData.probeSkip=true;m.name='portal.more';G.add(m);}
+ return{G,plan:B,F,bulbs,more,program:P.name||P.program,door:{at:fp(side?hw:hd,tt),w:dw,h:dh},ms:Math.round(performance.now()-t0)};}
 // the Xanadu kit's houses whose way in is no door record (core/door) but an archway: the merchant's konak's arch with its two
 // timber leaves ajar (u 3.2 on its front). door.noPortal: a doorway walked through with no pane drawn in it
 const QB_IX_ARCH={xa_rich_c:{n:[0,1],t:3.2,w:2.4,h:3.2}};

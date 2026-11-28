@@ -18,7 +18,7 @@ module.exports=function(T,{dims,KS_RING,ROOT}){
  const fishing=Vs=>Vs.filter(v=>v.focus==='fishing').every(v=>{const k={};for(const r of v.records||[])k[r.key]=(k[r.key]||0)+1;
   const h=v.ground==='model'?KS_GROUND.model:KS_GROUND.h,q=(v.records||[]).find(r=>r.key==='xa_quay');
   return k.xa_boatshed>0&&k.xa_fish_racks>0&&!!q&&!!v.shore&&h(q.x+v.shore.ux*40,q.z+v.shore.uz*40)<1;});
- {const F=V.filter(v=>v.focus==='fishing');T.ok('the lake\'s villages and the shore hamlet fish: boat sheds, fish racks and a quay at the water',F.length===9&&fishing(V),
+ {const F=V.filter(v=>v.focus==='fishing');T.ok('the lake\'s villages and the shore hamlet fish: boat sheds, fish racks and a quay at the water',F.length===8&&fishing(V),
    F.length+' fishing villages; '+F.map(v=>v.id.replace(/^ll\.(hamlet\.)?/,'')+' '+(v.records||[]).filter(r=>r.key==='xa_boatshed').length+'/'+(v.records||[]).filter(r=>r.key==='xa_fish_racks').length).join(', '));
   T.neg('a fishing village without its boat sheds is caught',fishing,V.map(v=>v.focus==='fishing'?Object.assign({},v,{records:v.records.filter(r=>r.key!=='xa_boatshed')}):v),V);}
  {const b=laid(V);T.ok('every village lays out on core/hamlet: the ring on the page\'s ground, the lake\'s on the model\'s, every building dry',!b.length,

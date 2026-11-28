@@ -62,7 +62,11 @@ float kg_glint(vec3 wp, vec3 cam, vec3 sun, float gs, float spread, float sharp,
 	vec2 c = wp.xz / gs; vec2 ci = floor(c); vec3 h = kg_hash3(vec3(ci, sd + 3.7)); vec3 h2 = kg_hash3(vec3(ci.yx, sd + 8.9));
 	float d = length(fract(c) - 0.25 - 0.5 * h.xy);
 	vec3 n = normalize(vec3((h2.x - 0.5) * spread, 1.0, (h2.y - 0.5) * spread));
-	return pow(max(dot(reflect(-normalize(cam - wp), n), sun), 0.0), sharp) * step(h.z, dens) * (1.0 - smoothstep(0.15, 0.3, d))
+	vec3 v = cam - wp;
+	vec3 vdir = length(v) > 1e-4 ? normalize(v) : vec3(0.0, 1.0, 0.0);
+	float spec_d = dot(reflect(-vdir, n), sun);
+	float sp = spec_d > 1e-4 ? pow(spec_d, sharp) : 0.0;
+	return sp * step(h.z, dens) * (1.0 - smoothstep(0.15, 0.3, d))
 		* (1.0 - smoothstep(0.5 * gs, 1.5 * gs, fp));
 }
 #endif

@@ -28,8 +28,22 @@
   const srcOf = (A) => A.source || 'voth-registry-v1';
   /* sheet order: the new work first, the first-generation registry, then
      the structures captured from the city */
-  const ORDER = ['voth-housing', 'voth-manors', 'voth-shops', 'voth-taverns', 'voth-warehouses',
+  const ORDER = ['voth-scrap', 'voth-housing', 'voth-manors', 'voth-shops', 'voth-taverns', 'voth-warehouses',
     'voth-civic', 'voth-military', 'voth-registry-v1', 'voth-city-captured'];
+  /* scrap Voth's detail maps (PLAN-SCRAP.md; materials.json -> tex/ -> tex/kf-tex.js): its entries are built unmerged
+     (they are small) and given the library's grain by core/catalog's KF_API.detailize; every other entry is built as
+     before. Without KF_TEX or the detail module the scrap entries build merged and plain, as they did */
+  const TEXSRC = { 'voth-scrap': true };
+  function buildEntry(key, x, z, ry, opt) {
+    const A = ASSET_BY_KEY[key];
+    const tex = !!(A && TEXSRC[srcOf(A)] && typeof KF_TEX !== 'undefined' && typeof KF_API !== 'undefined' && KF_API.detailize);
+    const was = KratorLOD.enabled;
+    if (tex) KratorLOD.enabled = false;
+    let g;
+    try { g = buildAsset(key, x, z, ry, opt); } finally { KratorLOD.enabled = was; }
+    if (tex && g) { g.traverse(function (m) { if (m.isMesh) m.userData.furniture = true; }); KF_API.detailize(g); }
+    return g;
+  }
   const srcRank = (A) => { const i = ORDER.indexOf(srcOf(A)); return i < 0 ? ORDER.length : i; };
   const only = Q.get('only') ? Q.get('only').split(',') : null;
   const srcF = Q.get('src'), famF = Q.get('fam');
@@ -55,7 +69,7 @@
       for (let v = 0; v < A.variants; v++) {
         const d = entryDims(A, v);
         x += d.w / 2;
-        buildAsset(A.key, x, z - d.d / 2, 0, { variant: v, seed: 7 + v * 13, wealth: 0.5 });
+        buildEntry(A.key, x, z - d.d / 2, 0, { variant: v, seed: 7 + v * 13, wealth: 0.5 });
         x += d.w / 2 + Math.max(8, d.w * 0.25);
         deep = Math.max(deep, d.d);
       }
@@ -155,7 +169,7 @@
     opt = opt || {};
     clearInstances();
     KratorLOD.force = 0;
-    const g = buildAsset(key, 0, 0, 0, { variant: variant || 0, seed: opt.seed || 7, wealth: opt.wealth == null ? 0.5 : opt.wealth });
+    const g = buildEntry(key, 0, 0, 0, { variant: variant || 0, seed: opt.seed || 7, wealth: opt.wealth == null ? 0.5 : opt.wealth });
     if (!g) return null;
     if (g.userData.lod) { g.userData.lod.autoUpdate = false; g.userData.lod.levels.forEach((L, i) => { L.object.visible = i === 0; }); }
     const { m, c, R } = frame(g);
@@ -170,7 +184,7 @@
   };
   window._shotLOD = function (key, variant) {
     clearInstances();
-    const g = buildAsset(key, 0, 0, 0, { variant: variant || 0, seed: 7, wealth: 0.5 });
+    const g = buildEntry(key, 0, 0, 0, { variant: variant || 0, seed: 7, wealth: 0.5 });
     if (!g || !g.userData.lod) return null;
     const lod = g.userData.lod; lod.autoUpdate = false;
     const { c, R } = frame(g);
@@ -182,7 +196,7 @@
     for (const A of list) for (let v = 0; v < A.variants; v++) {
       clearInstances();
       const t0 = performance.now();
-      const g = buildAsset(A.key, 0, 0, 0, { variant: v, seed: 7, wealth: 0.5 });
+      const g = buildEntry(A.key, 0, 0, 0, { variant: v, seed: 7, wealth: 0.5 });
       const ms = performance.now() - t0;
       const m = measureInstance(g);
       const d = entryDims(A, v);

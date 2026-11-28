@@ -1,0 +1,49 @@
+{
+ "what": "Vertical-stack budgets for biomes/batteredisle across all four stations (cove, rampart, strait, plug); HTML pages keep packed library maps in dist/batteredisle.tex.*.js sidecars (< 2.38 MB HTML) with <= 13 active samplers and <= 380 MB VRAM.",
+ "pages": {
+  "batteredisle.html": {
+   "bytes": 2490368,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Default cove station HTML expanded from 8 to 25 canonical 3D species (drift coconut, sea-tamanu, sea-hibiscus, ravine tree-fern, strand ironwood, spring sundew, collar horsetail) while keeping .tex.batteredisle.js sidecar, <= 13 samplers, and 380 MB VRAM.",
+   "raised": "2026-11-27"
+  },
+  "batteredisle-rampart.html": {
+   "bytes": 2490368,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "WNW tsunami rampart station HTML expanded to 25 canonical 3D species (wave-flex sea-palm, coralline tidepool crust, spray-cliff sea-fennel, olivine she-oak) with shared .tex.batteredisle.js sidecar under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-27"
+  },
+  "batteredisle-strait.html": {
+   "bytes": 2490368,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Leeward strait station HTML expanded to 25 canonical 3D species across sheltered wave-shadow coves and upturned coal collar seeps with shared .tex.batteredisle.js sidecar under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-27"
+  },
+  "batteredisle-plug.html": {
+   "bytes": 2490368,
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Summit volcanic plug station HTML expanded to 25 canonical 3D species (summit cloud-moss Metrosideros ohia, rainwater cloud-cushions, emerald-sap nickel phyllanthus) with shared .tex.batteredisle.js sidecar under 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-27"
+  },
+  "*": {
+   "tris": 12000000,
+   "calls": 360,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Shared sidecar bundles (.tex.*.js) stay under the 16 MB gallery cap while station HTML pages enforce 15 samplers and 380 MB VRAM.",
+   "raised": "2026-11-23"
+  }
+ }
+}

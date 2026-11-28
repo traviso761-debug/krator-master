@@ -22,7 +22,8 @@ vec3 fol_sway(vec3 local, vec3 origin, float sc, float wg, float t, vec2 wind, f
 
 // a card's lighting normal without the clump's own (aN): its face normal pulled 45% toward up, so a clump reads as a mass
 vec3 fol_card_normal(vec3 n_world) {
-	return normalize(mix(normalize(n_world), vec3(0.0, 1.0, 0.0), 0.45));
+	vec3 nw = length(n_world) > 1e-5 ? normalize(n_world) : vec3(0.0, 1.0, 0.0);
+	return normalize(mix(nw, vec3(0.0, 1.0, 0.0), 0.45));
 }
 
 // the prism gum (o.irid): 0 shows the second colour, 1 the first, by the sun on the face, the view's grazing and a slow shimmer
@@ -36,5 +37,34 @@ float fol_irid(vec3 n, vec3 v, vec3 sun, vec3 wp, float t) {
 // far cards keep more of their cut-out (three: diffuseColor.a *= 1 + clamp(d / 650, 0, 1.1)), depth in metres
 float fol_far_alpha(float a, float depth) {
 	return a * (1.0 + clamp(depth / 650.0, 0.0, 1.1));
+}
+
+// M5 chlorophyll-saturated leaf transmittance: shifts transmitted sun toward warm yellow-green weighted by leaf pigment
+// instead of flat grey vec3(back_light), while preserving seasonal/alien tints in lin_albedo
+vec3 fol_transmittance(vec3 lin_albedo, float strength) {
+	vec3 pig = clamp(lin_albedo, vec3(0.02), vec3(1.5));
+	vec3 chloro = vec3(0.72, 1.18, 0.24) * dot(pig, vec3(0.28, 0.58, 0.14));
+	return mix(chloro, pig * vec3(1.12, 1.18, 0.62), 0.45) * (strength * 1.55);
+}
+
+// M5 crown and understory self-occlusion from local clump position: interior stem base occludes sky and direct sun
+float fol_crown_ao(vec3 local_p) {
+	float up = clamp(local_p.y * 0.38 + 0.52, 0.0, 1.0);
+	float rad = clamp(length(local_p.xz) * 0.42, 0.0, 1.0);
+	return clamp(0.46 + 0.34 * up + 0.24 * rad, 0.46, 1.0);
+}
+
+// M5 close-up midrib and lateral chevron vein relief (< 45 m, view space, derivative-free so alpha-scissor quads never shimmer)
+vec3 fol_vein_normal(vec3 view_n, vec2 uv, float depth) {
+	float fade = 1.0 - smoothstep(14.0, 45.0, depth);
+	if (fade <= 0.001) {
+		return view_n;
+	}
+	float cx = uv.x - 0.5;
+	float rib = exp(-abs(cx) * 18.0) * sign(cx) * 0.16;
+	float lat = sin((uv.y * 22.0 - abs(cx) * 14.0) * 3.14159265) * 0.065 * (1.0 - smoothstep(0.35, 0.5, abs(cx)));
+	vec3 t1 = normalize(cross(view_n, abs(view_n.y) < 0.92 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
+	vec3 t2 = cross(view_n, t1);
+	return normalize(view_n + (t1 * rib + t2 * lat) * fade);
 }
 #endif

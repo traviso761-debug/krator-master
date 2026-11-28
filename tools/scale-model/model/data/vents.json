@@ -105,5 +105,14 @@
 {"px": [842.02, 1394.06], "floor": 3642.6, "scale": 0.2, "radius": 1.0, "kind": "geyser", "name": "Godshearth: the shore geyser field", "region": "rmw4wou2y1hhc", "T": 94, "reach_m": 430},
 {"px": [842.34, 1393.77], "floor": 3646.7, "scale": 0.12, "radius": 0.6, "kind": "fumarole", "name": "Godshearth: the shore vent line (station 1's hearth grove)", "region": "rmw4wou2y1hhc", "T": 92, "reach_m": 100, "line": [[842.19, 1393.62], [842.35, 1393.765], [842.48, 1393.925]]},
 {"px": [836.033, 1388.033], "floor": 3739.7, "scale": 0.15, "radius": 0.7, "kind": "fumarole", "name": "Godshearth: the grove's vent line (station 2)", "region": "rmw4wou2y1hhc", "T": 92, "reach_m": 140, "line": [[835.4, 1387.4], [836.0, 1388.0], [836.7, 1388.7]]},
-{"px": [845.0, 1396.5], "floor": 3619.0, "scale": 0.12, "radius": 0.6, "kind": "fumarole", "name": "Godshearth: the spillway's head", "region": "rmw4wou2y1hhc", "T": 90, "reach_m": 120}
+{"px": [845.0, 1396.5], "floor": 3619.0, "scale": 0.12, "radius": 0.6, "kind": "fumarole", "name": "Godshearth: the spillway's head", "region": "rmw4wou2y1hhc", "T": 90, "reach_m": 120},
+{"px": [1375.0, 1525.0], "floor": 6880.0, "scale": 0.22, "radius": 6.0, "kind": "fumarole", "T": 78, "reach_m": 1200, "name": "Tharn Cryo-Fumarole Cauldron", "region": "seouterwall"},
+{"px": [1375.0, 1525.0], "floor": 6880.0, "scale": 0.22, "radius": 6.0, "kind": "fumarole", "T": 78, "reach_m": 1200, "name": "Tharn Cryo-Fumarole Cauldron", "region": "seouterwall"},
+{"px": [1453.32, 1559.4], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1451.14, 1563.07], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1447.59, 1561.31], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1444.27, 1557.09], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1448.8, 1554.29], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1453.36, 1554.3], "floor": 5300.0, "scale": 0.12, "radius": 0.9, "kind": "fumarole", "region": "Ricochet Peaks", "name": "East crater fumaroles"},
+{"px": [1520.0, 128.0], "floor": 6250.0, "scale": 0.6, "radius": 3.0, "name": "the half-dome (to be named)", "region": "the half-dome (to be named)"}
 ]

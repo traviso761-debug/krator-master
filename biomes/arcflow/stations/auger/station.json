@@ -1,0 +1,19 @@
+{
+ "id": "auger",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arcflow — NE Ecocide Bleach-Seam & Stalled Lime-Phosphate Auger Oasis",
+ "out": "arcflow-auger.html",
+ "px": [885, 108],
+ "sky": [613, -222],
+ "elevM": 1265.4,
+ "pAtm": 1.37,
+ "koppen": "Cfa",
+ "rainMmYr": 894,
+ "riverId": 9107,
+ "riverName": "Upper Suur-Neva",
+ "strataStack": "outland-redbeds+arch-ophiolite",
+ "reserves": [
+  { "id": "site:kulanewa-watch-post", "x": -138, "z": -96, "r": 42 }
+ ],
+ "modes": ["Day", "Low-Sun Carnelian Glow"]
+}

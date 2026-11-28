@@ -2,6 +2,20 @@
  "name": "The geyser isle (station 4): one of the Throne's inner isles, its crown a geyser basin (geysers, banded hot springs, mud pots, sinter), the warm ground where wild Ranj bears and the natives tap it, an island's smaller forest, coconut palms and palm frill trees over black-sand beaches, hyper-mangroves in the warm lagoon, kelp in the shallows",
  "out": "throne-isle.html",
  "core": [],
+ "kits": {
+  "48p1-ri-species.js": "../ringisles/src/50-biome-ringisles-species.js",
+  "48p2-ri-look.js": "../ringisles/src/52-biome-ringisles-look.js",
+  "48p3-ri-trees.js": "../ringisles/src/55-biome-ringisles-trees.js"
+ },
+ "packs": {
+  "ringisles": {
+   "dir": "../ringisles",
+   "keep": [
+    "bark3",
+    "strap"
+   ]
+  }
+ },
  "atmos": [
   "89-atmos-0-core.js",
   "89-atmos-0p-presets.js",
@@ -19,6 +33,7 @@
   "50-core-water-draw.js",
   "51-core-water-kinds.js",
   "geyser/52-core-water-geyser.js",
-  "geyser/52b-core-water-geyser-draw.js"
+  "geyser/52b-core-water-geyser-draw.js",
+  "ext/61-core-water-plume.js"
  ]
 }

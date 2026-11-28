@@ -11,7 +11,18 @@ function scarAt(x,z){const dx=x-BLAST.x,dz=z-BLAST.z,d=Math.hypot(dx,dz),c=d>1?(
  const bowl=smooth(BLAST.r*1.05,BLAST.r*.55,d)*(1-open*.85),rim=Math.exp(-Math.pow((d-BLAST.r*1.08)/(BLAST.r*.16),2))*(1-open);return{bowl,rim,open};}
 function plainAt(x,z){const dx=x-BLAST.x,dz=z-BLAST.z,along=dx*AX[0]+dz*AX[1],across=Math.abs(dx*AX[1]-dz*AX[0]);
  return smooth(150,BLAST.r*.6,along)*smooth(1900,1400,along)*smooth(BLAST.r*1.5+.25*along,BLAST.r*.9+.15*along,across);}
-function terrainH0(x,z){const u=uOf(x,z),S=scarAt(x,z),pl=plainAt(x,z);
+// THE SCAR'S BEDS (core/terrain KSTRATA, the obsidian-pancake recipe; PLAN.md "the row's terrain" and the 5.1 dome strata note, 2026-11-24): the
+// collapsed cryptodome's carapace laid open in the horseshoe's walls: flow-banded glassy dacite in 2-6 m sheets, frothy pumice between, perlitic
+// breccia. The ledge pass stands the glassy sheets steep and the pumice eases into benches where the walls show rock; 84 draws each bed's
+// colour on the steep (shared/84s). ?strata=0 the scar as before
+const STRATA=new URLSearchParams(location.search).get('strata')==='0'||typeof KSTRATA==='undefined'?null:(function(){const yc=BLAST.base+BLAST.slope*uOf(BLAST.x,BLAST.z);
+ return KSTRATA.create({seed:KRAND.hash(571,513,0x57A7),formations:[{recipe:'obsidian-pancake'}],range:[yc-260,yc+180],dip:[AX[0],AX[1],.04],warp:[4,1.2],regolith:.3,dust:0x8a8378});})();
+const STRATA_LEDGE={k:.6,bench:1.5};
+const nearScar=(x,z)=>Math.hypot(x-BLAST.x,z-BLAST.z)<BLAST.r*1.6;
+function terrainH0(x,z){let h=terrainH0b(x,z);
+ if(STRATA&&nearScar(x,z)){const e=2,gx=(terrainH0b(x+e,z)-terrainH0b(x-e,z))/(2*e),gz=(terrainH0b(x,z+e)-terrainH0b(x,z-e))/(2*e);h=STRATA.ledge(x,z,h,Math.sqrt(gx*gx+gz*gz),STRATA_LEDGE);}
+ return h;}
+function terrainH0b(x,z){const u=uOf(x,z),S=scarAt(x,z),pl=plainAt(x,z);
  let h=BLAST.base+BLAST.slope*u+30*(fbm(x*.0011,z*.0011,1311,3)-.5)+6*(fbm(x*.008,z*.008,1312,2)-.5);
  h+=-150*S.bowl+70*S.rim;   /* the horseshoe: the dome's place, hollowed; its walls standing */
  const fill=BLAST.base+BLAST.slope*uOf(BLAST.x,BLAST.z)-150+(uOf(x,z)-uOf(BLAST.x,BLAST.z))*.025;   /* the plain's own gentle fall */

@@ -15,11 +15,15 @@ up the Qol valley with its hans, bridged where it crosses a named river. The tow
   data/         region.json and the rasters (tools/scale-model/cut_site.py xanadu-north-shore), embedded as PNGs and
                 decoded in the page (core/world/98-world-start.js)
   plan/         sites.json (python3 core/world/bake_sites.py xanadu-north-shore), resources.json (--resources)
+  towns         Phēr's own ground (openworld/towns/pher: python3 core/world/bake_towns.py pher) inside its footprint (P7)
   src/          46 (config), 47 (kits), 48 (the sites' spec)
 
   python3 tools/build.py openworld/xanadu-north-shore
   python3 build.py --no-checks
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -51,7 +55,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(path):
     pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 # the Xanadu building kit's library pack (still settlements/xanadu's), only the families the village buildings draw
 # (settlements/longsong/build.py XA_FAMS, the same villages)
@@ -66,15 +70,26 @@ CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-co
 _wds = importlib.util.spec_from_file_location('core_world_data', os.path.join(ROOT, 'core', 'world', 'world_data.py'))
 _WD = importlib.util.module_from_spec(_wds); _wds.loader.exec_module(_WD)
 RES_FRAGS = _WD.RES_FRAGS
+sys.path.insert(0, WORLD_SRC); import bake_sites as _BS   # the towns' records (towns_data), as the bake plans on them
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
-     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
+       # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+       ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+       ('core/atmos/fx', '89-atmos-fx-raincover.js'),
+       # the shared sky (W8, STAGE-8/G-weather.md section 6): core/world's SKY_SHARED (80) draws it, with the moving cells (W5: the
+       # region opens 'live'), their lightning and the volumetric clouds (W6)
+       ('core/atmos/sky', '89-atmos-e-skymodel.js'), ('core/atmos/sky', '89-atmos-f-skypresets.js'), ('core/atmos/sky', '89-atmos-g-sky.js'),
+       ('core/atmos/host', '89-atmos-h-skyhost.js'), ('core/atmos/sky', '89-atmos-m-volclouds.js'), ('core/atmos/host', '89-atmos-m-volhost.js'),
+       ('core/atmos/wx', '89-atmos-wx-cells.js'), ('core/atmos/wx', '89-atmos-wx-host.js'), ('core/atmos/fx', '89-atmos-fx-lightning.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
@@ -94,9 +109,10 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), (XOH, '49-world-xanadu.js')]
+       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('ld', '48v-world-sample.js'),   # 48v: the countryside sample (HAMLETS-PLAN 3, A9)
+        (XOH, '49-world-xanadu.js')]
     + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
-          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js')
+          '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88r-world-sample.js', '88s-world-sites.js', '88b-world-bridges.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
@@ -124,10 +140,14 @@ def data_fragment():
     png = {k: base64.b64encode(open(os.path.join(DATA, k + '.png'), 'rb').read()).decode('ascii') for k in RASTERS}
     P = json.load(open(PLAN, encoding='utf-8'))
     roads = [dict(r, town=r['to']) for S in P['sites'] for r in S['roads']] + [dict(L, town=L['to']) for L in P.get('links', [])]
+    # the towns' own ground (openworld/SITES.json's "towns": Phēr's page, core/world/bake_towns.py; 41 takes it inside the
+    # footprint, and its water and stream: 41's WTOWN): the same records core/world/bake_sites.py plans on
+    towns = _BS.towns_data(NAME)
     return ('// ==================== 05-world-data.js (generated by build.py from data/ and plan/: do not edit)\n'
             'var WORLD_DATA={meta:' + json.dumps(meta, separators=(',', ':'), ensure_ascii=False) + ',png:' + json.dumps(png)
             + ',sites:' + json.dumps(P, separators=(',', ':'), ensure_ascii=False)
-            + ',roads:' + json.dumps({'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}, separators=(',', ':')) + '};\n'
+            + ',roads:' + json.dumps({'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}, separators=(',', ':'))
+            + ',towns:' + json.dumps(towns, separators=(',', ':'), ensure_ascii=False) + '};\n'
             + _WD.net_fragment(os.path.join(SRC, '48-world-site.js')))   # the network routes the links follow (the page plans again)
 
 

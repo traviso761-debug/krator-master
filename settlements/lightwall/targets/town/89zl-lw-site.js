@@ -2,7 +2,8 @@
 // Runs after every kit def is registered (the Xanadu and Qiblai kits' VERN.defs, the Tungang kit's TG) and before the scene.
 // This fragment makes records only; 90l draws the ground and the lake, 90m the wall, 90r the bench's buildings.
 // THE FRAME (PLAN.md 8): metres; x east along the shore, z south toward the lake; the origin is the Stair Foot on the bench;
-// heights are the scale model's less 1,330 m: the lake at -30 (1,300 m), the bench from the shore (-28) to the wall's foot (+90).
+// heights are the open world's less LW.Y_W (1,345.05 m): the lake at -30 (the world's water), the bench from the shore (-28) to the
+// wall's foot (+90). The ground is the world's (LW_WORLD, baked from the region), the town's own seated on it (terrainH below).
 //   LW            the site's numbers: the lake, the shore, the wall's line, its four bands (each a gz-stair of three flights
 //                 high, 10.2 m, set back 9 m), each band's reach along the shore, the carved quarter
 //   terrainH      the ground every builder and the camera read: the lake bed, the bench's profile, the wall's foot and the
@@ -19,6 +20,39 @@
 // [G data] records, no drawing.
 const LW={SEED:9450,LAKE:-30,SHORE:430,FOOT:-270,WALL:-280,Y0:90,BAND_H:10.2,BAND_SET:9,BANDS:4,HALF:[700,600,480,340],CARVE:230};
 const lwD=(x,d)=>x==null?d:x;   /* a numeric default: 0 is a value */
+/* THE OPEN WORLD UNDER THE PAGE (the owner, 2026-11-23: "change the world"; KNOWN_ISSUES.md, "two grounds"). The page's x, z are
+   the open world's, moved to the pin (slaitwal0001, px 1028,1653: x east, z south, no turn); its y is the world's less Y_W, set
+   so the world's lake (WORLD.water, 1,315 m) is the page's LAKE. LW_WORLD (gen/41w-lw-world-ground.js, core/world/bake_ground.py)
+   is the region's own WORLD.H, baked round the pin */
+LW.Y_W=LW_WORLD.water[0].level-LW.LAKE;
+const lwWorld=(x,z)=>LW_WORLD.H(x,z)-LW.Y_W;
+/* THE MODEL EDIT OWED (PLAN.md, step L6): the scale model has the lake's north shore 4-5 km south of the pin and no cliff north
+   of it (the ground climbs ~15 % for 3 km and steepens only 6-9 km north). Until the edit brings the shore up to the bench and
+   stamps the fault's scarp behind the bands, the page carries both as one layer over the world's ground, written as a min (the
+   bay) and a max (the scarp) so that once the world holds them the layer changes nothing:
+     bay    the lake's bed (the bench's 9 % shelf to 16 m deep) cut into the world in front of the town, x +-1,800 m eased to
+            2,500, from a 25 % bank above the shore out to the world's own lake (eased out from 5.2 to 6 km south)
+     scarp  behind the wall's line: the bands' toe (1.2 down from their top's lip), then the fault's face as the page drew it
+            (1.1, its gullies and buttresses), its top at 2,600 m (PLAN.md 2) easing into a block rising 6 % that the world's
+            range takes over 6-7 km north; full over x +-4,000 m, gone by 6,500, and the block's lift gone 6 to 8.2 km north of
+            the wall's line (where a valley of the range lies under the block's 6 %, the block slopes down into it) */
+const LW_PEND={bayX:1800,bayEase:700,bayZ:5200,bayZEase:800,scarpX:4000,scarpEase:2500,top:2600,blockD:6000,blockEase:2200};
+const lwSmin=(a,b,k)=>{const h=Math.max(0,Math.min(1,.5+.5*(b-a)/k));return b+(a-b)*h-k*h*(1-h);};
+const lwSmax=(a,b,k)=>-lwSmin(-a,-b,k);
+function lwBayBed(z){return z>=LW.SHORE?Math.max(-46,-28-(z-LW.SHORE)*.09):-28+(LW.SHORE-z)*.25;}
+function lwScarp(x,z){const e=LW.WALL-z-40;if(e<=0)return LW_TOP+6+1.2*e;
+ const rise=LW_TOP+6+1.1*e-.00006*e*e+40*Math.sin(x/310+e/520)*Math.min(1,e/200)+lwFace(x,e);
+ return lwSmin(rise,LW_PEND.top-LW.Y_W+.06*Math.max(0,e-1000),80);}
+function lwPending(x,z,h){const ax=Math.abs(x);
+ const bw=lwSm((LW_PEND.bayX+LW_PEND.bayEase-ax)/LW_PEND.bayEase)*lwSm((LW_PEND.bayZ+LW_PEND.bayZEase-z)/LW_PEND.bayZEase)*lwSm((z-LW.WALL)/60);
+ if(bw>0)h+=bw*(Math.min(h,lwBayBed(z))-h);
+ const sw=lwSm((LW_PEND.scarpX+LW_PEND.scarpEase-ax)/LW_PEND.scarpEase)*lwSm((LW_PEND.blockD+LW_PEND.blockEase-(LW.WALL-z))/LW_PEND.blockEase);
+ if(sw>0&&z<LW.WALL+120)h+=sw*(lwSmax(h,lwScarp(x,z),30)-h);
+ return h;}
+/* the town's own ground (the bench, the foot street, the band block) is the page's inside x +-1,150 m from the wall's line to
+   300 m out on the lake, eased into the world over 550 m east and west and 400 m south */
+const LW_PATCH={x:1150,ease:550,z1:LW.SHORE+300,zEase:400};
+function lwPatchW(x,z){return lwSm((LW_PATCH.x+LW_PATCH.ease-Math.abs(x))/LW_PATCH.ease)*lwSm((LW_PATCH.z1+LW_PATCH.zEase-z)/LW_PATCH.zEase);}
 const lwU=(a,b,c)=>KRAND.unit(KRAND.hash(LW.SEED,a|0,b|0,c|0));
 const lwSm=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 /* the bench: gentle by the shore (9 %), steeper toward the wall (24 %), a little roll along the shore; the east spur the
@@ -26,10 +60,20 @@ const lwSm=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 function lwBench(x,z){const t=Math.max(0,Math.min(1,(LW.SHORE-z)/(LW.SHORE-LW.FOOT)));
  return -28+118*(.55*t+.45*t*t)+3*Math.sin(x/170)*t+16*lwSm((x-820)/140)*lwSm((z+40)/80)*lwSm((380-z)/120);}
 const LW_TOP=LW.Y0+LW.BANDS*LW.BAND_H;
-terrainH=function(x,z){
+/* the foot street (the owner, 2026-11-22: "the street in front of the glazier entrances is weirdly raised and blocks off the
+   entrances partly"): the bench's roll along the shore made the wall's foot 3 m above the first band's floor in the east and 3 m
+   under it in the west. The street along the foot is level with that floor (the band's y, less 4 cm) from the face out to the
+   dirt's edge (FOOT + 4), then eases down into the bench over 24 m, never above the floor (where the roll is highest the bench
+   is still over it 10 m out); the ramp behind the wall's line starts at the same height */
+function lwFootH(x,z){const f=LW.Y0-.04,b=Math.min(f,lwBench(x,Math.max(z,LW.FOOT)));return f+(b-f)*lwSm((z-LW.FOOT-4)/24);}
+/* terrainH: the world's ground with the model edit owed (lwPending), the town's own ground over it in the patch (lwNear: NaN
+   where the page draws none of its own, north of the band block, where the scarp is the layer's) */
+terrainH=function(x,z){const g=lwPending(x,z,lwWorld(x,z)),w=lwPatchW(x,z);if(!(w>0))return g;
+ const n=lwNear(x,z);return n===n?g+w*(n-g):g;};
+function lwNear(x,z){
  if(z>LW.SHORE)return Math.max(-46,lwBench(x,LW.SHORE)-(z-LW.SHORE)*.09);
- if(z>=LW.WALL)return lwBench(x,Math.max(z,LW.FOOT));
- /* behind the wall's line: a ramp under the bands (their blocks stand on it), then the north wall to the far field */
+ if(z>=LW.WALL)return lwFootH(x,z);
+ /* behind the wall's line: a ramp under the bands (their blocks stand on it); the north wall beyond is the scarp's (lwPending) */
  const d=LW.WALL-z;
  /* across the carved quarter the ramp stays a metre under the floor of every band whose rooms run over it (19 m back from its
     face: the rooms' 13 m and a 6 m ground cell), so the bench's mesh never shows inside a carved room; the step it makes at the
@@ -37,7 +81,7 @@ terrainH=function(x,z){
  if(Math.abs(x)<LW.CARVE+12&&d<LW.BANDS*LW.BAND_SET+19){let lo=1e9;for(let k=0;k<LW.BANDS;k++){const dk=d-k*LW.BAND_SET;if(dk>-1&&dk<19)lo=Math.min(lo,LW.Y0+k*LW.BAND_H-1);}
   if(lo<1e9)return Math.min(lo,d<40?LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40):1e9);}
  if(d<40)return LW.Y0+(LW_TOP+6-LW.Y0)*lwSm(d/40);
- const e=d-40;return LW_TOP+6+1.1*e-.00006*e*e+40*Math.sin(x/310+e/520)*Math.min(1,e/200)+lwFace(x,e);};
+ return NaN;}
 /* the north fault's face (KNOWN_ISSUES.md: "ridges, buttresses and gullies"): gullies cut down it (a ridged value noise across x,
    stretched along the slope, the ridges between them the buttresses), a rougher grain over it, both growing in from the band
    top's lip (0 at the lip, whole 300 m up); core/rand's KRAND.vnoise, so every machine draws the same face */

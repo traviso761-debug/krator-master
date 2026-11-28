@@ -10,10 +10,12 @@
 const ATMOS={};
 (function(){const A=ATMOS;
  A.init=function(h){A.h=h;const T=A.T=h.THREE,P=A.PRESETS,PW=P.wind,PC=P.clock;A.root=new T.Group();A.root.name='atmos';h.scene.add(A.root);
-  A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];A.hooks=[];A.stats={};A.seed(h.seed||1);
+  A.sets={};A.glow=[];A.lamps=[];A.lampGlow=[];A.fx=[];if(A._early){for(const r of A._early){r.id=r.type+'_'+A.fx.length;A.fx.push(r);}A._early=null;}A.hooks=[];A.stats={};A.seed(h.seed||1);
   // THE UNIFORMS every shader shares (a game engine's global shader parameters; GODOT.md lists them as atm_*)
+  const U0=A.U;   /* shared objects a host made before init (a page that draws ATMOS.sky first: the cells' map, the volumes' switch, the flash) are kept: shaders already hold them */
   A.U={hour:{value:0},night:{value:0},time:{value:0},rain:{value:0},fog:{value:0},flash:{value:0},wind:{value:new T.Vector2(PW.base[0],PW.base[1])},gustAmp:{value:PW.gustAmp},
    windOff:{value:new T.Vector2()},light:{value:1},px:{value:600},ash:{value:0},snow:{value:0}};   // ash, snow: the opt-in ash and snow weathers (4-weather)
+  if(U0)for(const k in U0)if(!(k in A.U)||(k==='flash'&&U0.flash&&typeof U0.flash.value==='number'))A.U[k]=U0[k];
   A.windBase=new T.Vector2(PW.base[0],PW.base[1]);A.windScale=1;let warned=false;
   // the shared GLSL, written from the presets so JS and shaders agree
   const f=A.glf;
@@ -51,7 +53,8 @@ const ATMOS={};
  A.hook=fn=>A.hooks.push(fn);   // fn(t, hour, dt): t and dt are the module clock's seconds
  A.ground=(x,z)=>A.h.ground?A.h.ground(x,z):0;
  // EFFECT RECORDS: every placing call also records what it placed, as plain data (ATMOS.export() writes them out)
- A.rec=(type,o)=>{const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
+ A.rec=(type,o)=>{if(!A.fx){const r=Object.assign({id:type+'_early',type},o);(A._early=A._early||[]).push(r);return r;}   /* made before ATMOS.init (a page that draws its sky first): init files it */
+  const r=Object.assign({id:type+'_'+A.fx.length,type},o);A.fx.push(r);return r;};
  // the clock: night factor, and a light's on/off window (on in the evening, off next morning; off may be past 24)
  A.ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
  // core/hazard's ambient bridge: register a field (KHAZ.provide(field, fn(x, y, z, t))) when the page has a KHAZ that takes

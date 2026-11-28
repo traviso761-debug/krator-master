@@ -28,7 +28,7 @@ FURN_CULTURE('hykkousoi', { name: 'Hykkousoi', pack: 'hykkousoi', influences: 'G
    'cloth' (drawn double-sided), lens -> 'glass', barn and dark -> 'stone'. */
 const HYK_FAM = { shell: 'shell', nacre: 'nacre', bone: 'bone', weed: 'cloth', lens: 'glass', barn: 'stone', dark: 'stone' };
 function hykFurnLathe(F, x, z, prof, col, m, o) { o = o || {}; F.lathe(x, 0, z, prof, 0, col, HYK_FAM[m || 'shell'], { nu: o.nu, nv: o.nv, lobes: o.lobes, flute: o.flute, double: m === 'weed' || m === 'lens' }); }
-function hykFurnTube(F, pts, r, col, m, o) { o = o || {}; F.tube(pts, r, col, HYK_FAM[m || 'shell'], { seg: o.seg || 8 }); }
+function hykFurnTube(F, pts, r, col, m, o) { o = o || {}; F.tube(pts, r, col, HYK_FAM[m || 'shell'], { seg: o.seg == null ? 8 : o.seg }); }
 function hykFurnEll(F, x, y, z, rx, ry, rz, col, m, rot) { F.ell(x, y, z, rx, ry, rz, rot || 0, col, HYK_FAM[m || 'shell']); }
 /* a lit pearl or coal: a glowing ball (no point light, a sheet of a thousand pieces would not compile), on a bone bracket when o.bracket is given */
 function hykFurnLight(F, x, y, z, o) { o = o || {};
@@ -43,31 +43,31 @@ function hykFurnLight(F, x, y, z, o) { o = o || {};
 function hykFurnOval(rx,rz){const k=rx/rz,p=(k-1)/(k+1),b=rz/rx;const R=rx*b/Math.sqrt(.5*b*b+.5);const A=rx/(R*(1+p))-1;
  return {R,rx,rz,lobes:{n:2,amp:p},flute:{n:4,amp:A,sharp:1},at:a=>R*(1+p*Math.cos(2*a))*(1+A*.5+A*.5*Math.cos(4*a))};}
 // an ellipsoid of revolution about a vertical axis: r across, ry up, centre (x,yc,z); o:{lobes,flute,n,nu} (an oval's lobes and flute make it an oval)
-function hykFurnBlob(F,x,yc,z,r,ry,col,m,o){o=o||{};const n=o.n||8;const prof=[];
+function hykFurnBlob(F,x,yc,z,r,ry,col,m,o){o=o||{};const n=o.n == null ? 8 : o.n;const prof=[];
  for(let i=0;i<=n;i++){const a=-Math.PI/2+Math.PI*i/n;prof.push([Math.max(0,r*Math.cos(a)),yc+ry*Math.sin(a)]);}
- hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu||18,nv:o.nv||n*2,lobes:o.lobes,flute:o.flute,inside:true});}
+ hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu == null ? 18 : o.nu,nv:o.nv||n*2,lobes:o.lobes,flute:o.flute,inside:true});}
 // a body about a vertical axis at (x,z) from a profile [[r,y],...] (y increasing), into the interior bucket
-function hykFurnBody(F,x,z,prof,col,m,o){o=o||{};hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu||24,nv:o.nv||Math.max(6,prof.length*2),lobes:o.lobes,flute:o.flute,inside:true});}
+function hykFurnBody(F,x,z,prof,col,m,o){o=o||{};hykFurnLathe(F,x,z,prof,col,m,{nu:o.nu == null ? 24 : o.nu,nv:o.nv||Math.max(6,prof.length*2),lobes:o.lobes,flute:o.flute,inside:true});}
 // a lip: a tube round a horizontal ring at height y, ring radius R modulated like a lathe (o.lobes, o.flute), tube radius r
-function hykFurnRing(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n||28;const pts=[];
+function hykFurnRing(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n == null ? 28 : o.n;const pts=[];
  for(let i=0;i<=n;i++){const a=i/n*F.TAU;let R1=R;if(o.lobes)R1*=1+o.lobes.amp*Math.cos(o.lobes.n*a+(o.lobes.ph||0));
-  if(o.flute)R1*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*a),o.flute.sharp||2);
-  pts.push([x+R1*Math.cos(a),y+(o.wave?o.wave*Math.sin(a*(o.waveN||3)):0),z+R1*Math.sin(a)]);}
- hykFurnTube(F,pts,r,col,m,{seg:o.seg||7});}
+  if(o.flute)R1*=1+o.flute.amp*Math.pow(.5+.5*Math.cos(o.flute.n*a),o.flute.sharp == null ? 2 : o.flute.sharp);
+  pts.push([x+R1*Math.cos(a),y+(o.wave?o.wave*Math.sin(a*(o.waveN == null ? 3 : o.waveN)):0),z+R1*Math.sin(a)]);}
+ hykFurnTube(F,pts,r,col,m,{seg:o.seg == null ? 7 : o.seg});}
 // the same ring stood up about the z axis (a scroll's tie, a loupe's rim seen edge-on)
-function hykFurnRingZ(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n||16;const pts=[];
- for(let i=0;i<=n;i++){const a=i/n*F.TAU;pts.push([x+R*Math.cos(a),y+R*Math.sin(a),z]);}hykFurnTube(F,pts,r,col,m,{seg:o.seg||5});}
+function hykFurnRingZ(F,x,y,z,R,r,col,m,o){o=o||{};const n=o.n == null ? 16 : o.n;const pts=[];
+ for(let i=0;i<=n;i++){const a=i/n*F.TAU;pts.push([x+R*Math.cos(a),y+R*Math.sin(a),z]);}hykFurnTube(F,pts,r,col,m,{seg:o.seg == null ? 5 : o.seg});}
 // a knuckle: the ball that closes a tube's end
 function hykFurnKnob(F,x,y,z,r,col,m){hykFurnBlob(F,x,y,z,r,r*.92,col,m,{n:5,nu:10});}
 // a stalk from a to b, bowed sideways along o.dir by o.bow, radius r0 at a tapering to r1 at b, knuckled at each end
 // that is not buried (o.noA, o.noB)
-function hykFurnStalk(F,a,b,r0,r1,col,m,o){o=o||{};const n=o.n||6;const pts=[];const bow=o.bow||0;const dir=o.dir||[1,0,0];
+function hykFurnStalk(F,a,b,r0,r1,col,m,o){o=o||{};const n=o.n == null ? 6 : o.n;const pts=[];const bow=o.bow||0;const dir=o.dir||[1,0,0];
  for(let i=0;i<=n;i++){const t=i/n;const s=Math.sin(t*Math.PI)*bow;pts.push([a[0]+(b[0]-a[0])*t+dir[0]*s,a[1]+(b[1]-a[1])*t+dir[1]*s,a[2]+(b[2]-a[2])*t+dir[2]*s]);}
- hykFurnTube(F,pts,t=>r0+(r1-r0)*t,col,m,{seg:o.seg||7});
+ hykFurnTube(F,pts,t=>r0+(r1-r0)*t,col,m,{seg:o.seg == null ? 7 : o.seg});
  if(!o.noA)hykFurnKnob(F,a[0],a[1],a[2],r0*1.25,col,m);if(!o.noB)hykFurnKnob(F,b[0],b[1],b[2],r1*1.25,col,m);}
 // a sealed shell jar: a fluted belly drawn in to a neck, a nacre lid dished over the mouth, a weed binding at the seal
 function hykFurnJar(F,x,y,z,r,h,col,lid,o){o=o||{};
- hykFurnBody(F,x,z,[[r*.45,y],[r*.8,y+h*.06],[r,y+h*.3],[r*.95,y+h*.55],[r*.6,y+h*.74],[r*.5,y+h*.8],[r*.55,y+h*.84]],col,'shell',{nu:16,nv:14,flute:{n:o.fl||9,amp:.06,sharp:1.5}});
+ hykFurnBody(F,x,z,[[r*.45,y],[r*.8,y+h*.06],[r,y+h*.3],[r*.95,y+h*.55],[r*.6,y+h*.74],[r*.5,y+h*.8],[r*.55,y+h*.84]],col,'shell',{nu:16,nv:14,flute:{n:o.fl == null ? 9 : o.fl,amp:.06,sharp:1.5}});
  hykFurnBody(F,x,z,[[r*.5,y+h*.84],[r*.68,y+h*.86],[r*.6,y+h*.93],[r*.2,y+h*.98],[0,y+h]],lid,'nacre',{nu:14,nv:6});
  hykFurnRing(F,x,y+h*.845,z,r*.6,r*.05,F.col('weedGreen'),'weed',{n:16,seg:5});}
 // a dish: the wall climbs to the rim at (R, yr) and caps flush over it (F.lathe winds outward only, so a hollow has no
@@ -76,14 +76,14 @@ function hykFurnJar(F,x,y,z,r,h,col,lid,o){o=o||{};
 // o.lip the lip's tube radius; o.fill its colour
 function hykFurnDish(F,x,z,R,yr,col,m,o){o=o||{};const y0=o.y0||0;const H=yr-y0;const O=o.oval;const lob=O?O.lobes:o.lobes,fl=O?O.flute:o.flute;
  const prof=o.prof||[[R*.3,y0],[R*.55,y0+H*.2],[R*.85,y0+H*.55],[R,y0+H*.9],[R*.98,yr],[R*.9,yr+.012],[0,yr+.02]];
- hykFurnBody(F,x,z,prof,col,m,{nu:o.nu||28,nv:o.nv||16,lobes:lob,flute:fl});
+ hykFurnBody(F,x,z,prof,col,m,{nu:o.nu == null ? 28 : o.nu,nv:o.nv == null ? 16 : o.nv,lobes:lob,flute:fl});
  const fx=O?O.rx*.9:R*.9*(1+(fl?fl.amp*.5:0)),fz=O?O.rz*.9:fx;
  hykFurnEll(F,x,yr+.02,z,fx,.012,fz,o.fill||F.col('crustBlack'),'dark');
  hykFurnRing(F,x,yr+.01,z,R*.97,o.lip||R*.06,o.lipCol||col,o.lipM||m,{lobes:lob,flute:fl,n:O?40:28});}
 // a bone upright for a rack: a flattened shell pad for a foot, the stalk bowed outward, knuckled at the head
 function hykFurnUpright(F,x,z,hx,hy,hz,r,col,o){o=o||{};
  hykFurnBlob(F,x,.05,z,r*2.6,.05,F.pick(['shellWarm','shellWarmDeep']),'shell',{n:4,nu:12,lobes:{n:3,amp:.06}});
- hykFurnStalk(F,[x,.03,z],[hx,hy,hz],r,r*.7,col,'bone',{bow:o.bow||.05,dir:o.dir||[1,0,0],noA:true,n:7});}
+ hykFurnStalk(F,[x,.03,z],[hx,hy,hz],r,r*.7,col,'bone',{bow:o.bow == null ? .05 : o.bow,dir:o.dir||[1,0,0],noA:true,n:7});}
 // a salt fish hung by the tail: a flat lathe (lobes n 2) from the snout at y up to the tail fan at y+L, flat side to +z
 function hykFurnFish(F,x,y,z,L,col){const r=L*.17;
  hykFurnBody(F,x,z,[[r*.15,y],[r*.7,y+L*.12],[r,y+L*.4],[r*.8,y+L*.62],[r*.3,y+L*.78],[r*.65,y+L*.92],[0,y+L]],col,'shell',{nu:12,nv:12,lobes:{n:2,amp:.55}});}

@@ -1,0 +1,121 @@
+{
+ "targets": {
+  "cone": "flashing-eye.html"
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "external": [
+  "core/terrain/37c-core-rubble.js",
+  "core/terrain/38-core-relief.js",
+  "core/world/41-world-fields.js",
+  "settlements/flashing-eye/gen/39fe-world-data.js",
+  "core/charactermodels/src/10-rig.js",
+  "core/charactermodels/src/50-figure.js",
+  "core/charactermodels/src/60-crowd.js",
+  "settlements/flashing-eye/gen/47j-fe-kchar-gltf.js",
+  "settlements/flashing-eye/gen/47n-fe-kchar-data.js"
+ ],
+ "scoped": [
+  "37c-core-rubble.js",
+  "41-world-fields.js",
+  "39fe-world-data.js",
+  "10-rig.js",
+  "50-figure.js",
+  "60-crowd.js",
+  "47j-fe-kchar-gltf.js",
+  "47n-fe-kchar-data.js"
+ ],
+ "files": {
+  "cone": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-3-particles.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/atmos/fx",
+    [
+     "89-atmos-fx-ashplume.js"
+    ]
+   ],
+   [
+    "core/sched",
+    [
+     "20-core-sched.js"
+    ]
+   ],
+   [
+    "core/drawn",
+    [
+     "10-core-drawn.js"
+    ]
+   ],
+   [
+    "core/biome",
+    [
+     "37-core-traps.js"
+    ]
+   ],
+   [
+    "core/hazard",
+    [
+     "20-core-hazard.js"
+    ]
+   ]
+  ]
+ },
+ "pack": "qiblai",
+ "packSide": true,
+ "deterministic": [
+  "20-core-walk.js",
+  "20-core-sched.js",
+  "20-core-hazard.js",
+  "37-core-traps.js",
+  "30-fe-layout.js",
+  "31-fe-rules.js",
+  "32-fe-rooms.js",
+  "37c-core-rubble.js",
+  "38-core-relief.js",
+  "39fe-world-data.js",
+  "40-fe-watch.js",
+  "41-fe-people.js",
+  "10-rig.js",
+  "50-figure.js",
+  "60-crowd.js",
+  "47j-fe-kchar-gltf.js",
+  "47n-fe-kchar-data.js",
+  "41-world-fields.js",
+  "89q0-qb-helpers.js",
+  "89q0w-fe-mats.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89qf-fe-buildings.js",
+  "89zfe-site.js",
+  "90fe-world.js",
+  "90fg-build.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "10-core-drawn.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-3-particles.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "89-atmos-fx-ashplume.js",
+  "89qe-fe-roofs.js",
+  "90fh-vent.js",
+  "90fi-bridges.js",
+  "90fj-face.js",
+  "90fk-fe-interiors.js",
+  "90fl-stair.js",
+  "90fm-fe-people.js"
+ ],
+ "interiorSets": []
+}

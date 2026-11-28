@@ -19,6 +19,9 @@ Also enforces the rules that make subagent work safe:
 
 Usage:  python3 build.py [--no-checks]
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 try:                                   # the docs are UTF-8; a Windows console defaults to cp1252 (as iziz/build.py)
     sys.stdout.reconfigure(encoding='utf-8')
@@ -100,11 +103,17 @@ DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js',
                  '54-openings.js',     # the doors and the glass on core/door (no rnd())
                  '44-core-ports.js',   # core/ports: the buildings' marks (no rnd())
                  '90-atmos-host.js',   # binds core/atmos
+                 '90s-host-sky.js',    # the shared sky (W7: ATMOS.sky, no rnd())
+                 '89r-host-far.js',    # the far land's data (W7: region/far.json)
                  '98-start.js'}        # the take (KHOST.take)
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
+DETERMINISTIC.add('56r-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
+DETERMINISTIC.add('27-matlib-m1.js')   # core/materials/record's M1 packing (Stage 5; plain functions, no rnd())
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 DETERMINISTIC |= set(CORE_WATER) | {'90w-brook-water.js'}   # core/water: IIFE-scoped, its own PRNG, nothing placed
 DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}   # core/atmos: IIFE-scoped, its own PRNG
+DETERMINISTIC |= {'89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js', '89-atmos-h-skyhost.js'}   # the shared sky (W7): IIFE-scoped
 # GENERATED fragment, never written to src/: the catalog's furniture (kits/catalog/furniture_bundle.py: one
 # closure exposing KratorFurniture) and the interiors core with the Beast Rider interior set
 # (kits/interiors/kit_bundle.py: KratorInteriors, ROOM, furnishRoom). It sits between the textures (47) and
@@ -112,7 +121,7 @@ DETERMINISTIC |= {f for f in os.listdir(ATMOS_DIR) if f.startswith('89-atmos-')}
 # do not apply to them. The furniture cultures: beast-rider and its fallback chain (IX.CULTURE_FAMILY).
 FURN_CULTURES = ['beast-rider', 'lizardmen', 'generic', 'generic-goods', 'generic-fruit']   # generic-fruit: the fruit-seller stalls (55-arch.js); generic-goods holds the fruit colours (FPAL generic)
 INTERIOR_SETS = ['beast-rider']
-VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'51-furniture-bundle.js', '46-matlib-pack.js', khost.EDITS_JS, '89r-host-far.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py); 89r: region/far.json as GIRDER_FAR (W7)
 
 
 def virtual_bodies():
@@ -121,7 +130,10 @@ def virtual_bodies():
     import furniture_bundle, kit_bundle
     return {'51-furniture-bundle.js': furniture_bundle.bundle(FURN_CULTURES) + kit_bundle.bundle(INTERIOR_SETS),
             '46-matlib-pack.js': matlib_pack(),
-            khost.EDITS_JS: khost.edits_js(HERE, 'girder')}
+            khost.EDITS_JS: khost.edits_js(HERE, 'girder'),
+            # the far land, cast from the scale model at Girder's pixel (region/far.py; the owner: "real terrain only")
+            '89r-host-far.js': '/* ==================== the far land, cast from the scale model (region/far.py) */\nconst GIRDER_FAR=' +
+                               open(os.path.join(HERE, 'region', 'far.json'), encoding='utf-8').read().strip() + ';\n'}
 
 
 # the library pack beside the page (<build>.tex.<key>.js); --inline-packs puts it back in the page (2026-10-14: the
@@ -255,7 +267,13 @@ def main():
             if f[0].isdigit() and f.endswith('.js') and f not in paths:
                 paths[f] = os.path.join(d, f)
     paths.setdefault('56-core-water-breakup.js', os.path.join(WATER_DIR, 'ext', '56-core-water-breakup.js'))   # the breakup (core/water ext/56)
+    # the shared sky (W7, 2026-11-24; core/atmos/SKY-PLAN.md section 9): its model, presets, shader and host (90s-host-sky.js calls ATMOS.sky)
+    for _f in ('89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js'):
+        paths.setdefault(_f, os.path.join(ATMOS_DIR, 'sky', _f))
+    paths.setdefault('89-atmos-h-skyhost.js', os.path.join(ATMOS_DIR, 'host', '89-atmos-h-skyhost.js'))
     khost.resolve(paths, CORE_HOST)        # a src/ copy with a shell file's name would override it (none today)
+    # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
+    paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(list(paths) + list(vb))
     bodies = dict(vb)
     for f in order:

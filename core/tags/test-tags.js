@@ -30,7 +30,7 @@ for (const m of core.matchAll(/'([a-z-]+)': \{ name: '([^']+)'/g)) srcNames[m[1]
 for (const f of fs.readdirSync(CAT).filter(f => /^krator-master-furniture-.*\.js$/.test(f)))
   for (const m of fs.readFileSync(path.join(CAT, f), 'utf8').matchAll(/FURN_CULTURE\('([a-z-]+)', \{ name: '([^']+)'/g)) srcNames[m[1]] = m[2];
 const nameBad = V.cultures.filter(c => V.noCatalog.indexOf(c) < 0 && V.cultureNames[c] !== srcNames[c === 'yuni' ? 'yuni-common' : c]);
-ok(V.cultures.length === 30 && !nameBad.length, '30 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
+ok(V.cultures.length === 44 && !nameBad.length, '44 cultures, display names from FURN_CULTURE_INFO' + (nameBad.length ? ' (differ: ' + nameBad + ')' : ''));
 const covered = new Set(V.catalog.cultures.map(c => V.cultureAlias[c] ? V.cultureAlias[c].culture : c).filter(c => c));
 ok(covered.size + V.noCatalog.length === V.cultures.length && V.cultures.every(c => covered.has(c) !== (V.noCatalog.indexOf(c) >= 0)), 'every catalog culture is a culture or an alias of one, and the only others are the listed noCatalog cultures (Jimjam, Dalab)');
 ok(V.noCatalog.every(c => V.cultures.indexOf(c) >= 0 && V.catalog.cultures.indexOf(c) < 0), 'noCatalog cultures are vocabulary cultures and not catalog ones');
@@ -215,12 +215,26 @@ ok(exs.records[0].count === 3 && exs.records[0].table === undefined && exi.recor
   exi.records[1].table === undefined && exs.records[0] === fern && exi.records[0] !== fern,
   'export: a set carries its count; with {instances: true} its table as plain arrays, on a copy');
 
+// a vessel and a vehicle (2026-11-17): their classes, their order ids, the Ring Sea's and the Motor Vehicles kit's tags clean
+{const V2=KTAGS.create({build:'vessels'}),bo=V2.add({'class':'vessel',key:'xa_lake_boat',at:[0,0,0],tags:{culture:'xanadu',type:['fishing'],propulsion:['sail','oar'],hull:'monohull',wealth:'poor',crew:2,role:'fishes the lake'}}),
+  ca=V2.add({'class':'vehicle',key:'geo_buggy',at:[4,0,0],tags:{type:['vehicle','transport'],drive:'wheeled',seats:2,fuel:'refined oil'}});
+ ok(bo.id==='ves_00000'&&ca.id==='veh_00000'&&!KTAGS.norm(bo.tags).problems.length&&!KTAGS.norm(ca.tags).problems.length,'a vessel and a vehicle: their classes, ids and tags');
+ ok(KTAGS.norm({propulsion:['jet']}).problems.length===1&&KTAGS.norm({drive:'flying'}).problems.length===1,'a vessel\'s propulsion and a vehicle\'s drive outside their lists are problems');}
+// a walker (Stage 8 T9, 2026-11-24, the owner: make new tags): kits/mechs' types, drives, pilots, weapons and guild clean; the kits'
+// culture names stalker, republic and geomancer aliased; a pilot or weapon outside its list a problem (kits/mechs/tests/test-tags.js
+// checks every mech)
+{const w=KTAGS.norm({culture:'stalker',types:['war machine','scout'],drive:'hexapod',crew:0,pilot:'cab',weapon:['twin ballista','none'],role:'feigner',setting:'outdoor',guild:'Forgemasters'}),
+  g=KTAGS.norm({culture:'geomancer'}).tags,r=KTAGS.norm({culture:'republic',types:['utility']});
+ ok(!w.problems.length&&w.tags.culture==='ancient'&&w.tags.style==='stalker'&&g.culture==='yuni'&&g.guild==='Geomancers'&&r.tags.culture==='republican'&&!r.problems.length,
+  'a walker\'s tags are clean; stalker, geomancer and republic are aliases');
+ ok(KTAGS.norm({pilot:'roof'}).problems.length===1&&KTAGS.norm({weapon:['flamer']}).problems.length===1&&KTAGS.norm({drive:'octopod'}).problems.length===1,
+  'negative: a pilot, weapon or drive outside its list is a problem');}
 // the export, and its digest
 const ex = T.export();
-ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 30, 'export shape');
+ok(ex.format === 'krator-tags' && ex.version === 1 && ex.build === 'test' && ex.records.length === 13 && ex.vocab.cultures.length === 44, 'export shape');
 const s = JSON.stringify(ex);
 let h = 2166136261 >>> 0; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-const DIGEST = 'f4072dea';   // 2026-11-03: the modularity merge (the shared culture rebuild on the final biome rebuild's mine kind and emp); before it 93dde0de: the shared culture rebuild (30 cultures; noCatalog empty); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
+const DIGEST = '254f9d52';   // 2026-11-24 (Stage 8, T9): the mech vocabulary, the owner's word (types war machine..heavy and utility; drives half-track and biped..hexapod; pilots, weapons; keys pilot, weapon, guild; aliases republic, geomancer, stalker); before it 1daf3d6a, 2026-11-24 (Stage 8, D14): fourteen cultures folded into the vocabulary; before it 8547739e, 2026-11-17: the vessel and vehicle classes and their keys (propulsion, hull, crew; drive, seats, fuel); before it f4072dea, 2026-11-03: the modularity merge (the shared culture rebuild on the final biome rebuild's mine kind and emp); before it 93dde0de: the shared culture rebuild (30 cultures; noCatalog empty); before it 794c58fc, 2026-10-23: merged with the Eternians (24 cultures); before it ec80484b, 2026-10-20: the Jimjam and Dalab cultures (23; VOCAB.noCatalog); before it 803f4891, 2026-10-12: the biome kits (stage 2c): the flora and fauna keys (climate, aridity, abyssal, riparian, diet, the kits' traits) and the Köppen classes XA XV HF O Cwa Cwb; before it, 1aa3363 (2026-10-08: the Zeijani branch merged (the Zeijani culture, their jobs, rock/level/district keys and light kinds: 617a177c on the branch); main's before it: ad3297ba, the jobs took 'alchemy' (main's FURN_JOBS); before it, the Ash Nomads: e17a6622 (the Scyvoi culture: 2670333f; step 4, Iziz's aliases: b93dacd3; step 1: 4d836bbd))
 ok(h.toString(16) === DIGEST, 'export digest ' + h.toString(16) + (h.toString(16) === DIGEST ? '' : ' (expected ' + DIGEST + ')'));
 console.log(fails ? fails + ' failed' : 'all passed');
 process.exit(fails ? 1 : 0);

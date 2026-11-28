@@ -1,0 +1,72 @@
+# settlements/xanadu-lake: the lake towns of Erewhon's lake
+
+One shared target for the twenty lake towns (`PLAN.md`; the owner, 2026-11-22: "Shared target + regions"). One build makes
+each town's records from its tune row (`XAN_TUNE.lake`, read in place) and its design row (`XL.SPECS[key]`); one page,
+`dist/xanadu-lake.html`, draws the town its query names: `?town=<key>`, the default `mouth`. The open-world regions take the
+same ground (`core/world/bake_towns.py`). Built so far: **Māuṭh** (`mouth`, step L0: `mouth/PLAN.md`); **Ōlḍ-Thalaba**
+(`old-thalaba`, step L1: the village and its empty old town, `old-thalaba/PLAN.md`) and **Ḍāiyar** (`dyer`, step L1: the dyers'
+town, `dyer/PLAN.md`); Phēr's north-west round, step L2: **Qōqō** (`cocoa`), **Nēṭ** (`net`), **Malbari** (`mulberry`) and
+**Hāibh** (`hive`), their sites added to `openworld/SITES.json` and the region re-cut. Erehwon's south-east round, step L3, on `openworld/xanadu-lake-shore`: **Boṭ-Yārḍ** (`boatyard`), **Wībhar** (`weaver`), **Saphran** (`saffron`), **Pāṭari** (`pottery`), **Ṭī-Ṭeras** (`tea-terraces`) and **Ālph-Hēḍ** (`alph-head`); **Hoṭ-Bāṭh** (`hot-bath`) has its spec but is held (`KNOWN_ISSUES.md`). Erehwon's west round, step L4: **Gārḍan** (`garden`), **Qorī** (`quarry`), **Ōrcharḍ** (`orchard`), **Lōṭas** (`lotus`), **Phīsh-Mārkiṭ** (`fish-market`) and **Siṭāq** (`stack`); the three small isles are villages of the region's spec (`settlements/xanadu/HAMLETS-PLAN.md` H1).
+
+## Core adoption
+
+Written before the first fragment (CLAUDE.md, "Start a new build from the nearest finished one"; `PLAN.md` section 7).
+`tools/check_core_use.py` passes on it.
+
+| Need | Module | How |
+|---|---|---|
+| The ground at 1:1 | `core/world` (`WORLD.Hbare`) | `tools/fit_lake_town.py` reads the region's land round the town's pin in node (the rasters, the world's fields, the coast) and fits the closed form `89zp-xl-site.js` draws (`89zm-xl-fit.js`); `core/world/bake_towns.py` carries the page's ground back into the region |
+| The shore | `core/coast` (`KCOAST`, through `core/world/44c`) | The coast class at the landing is the region's (`WORLD.coast.at`), recorded by the fit: Māuṭh's reads `sand` (the plan proposed shingle) |
+| The lake and the stream | `core/water` | The lake: `WATER.open` at the level, its bed baked round the town; the stream: `WATER.flow` down its ravine (`90q-xl-world.js`), through kit.json `files` |
+| The streets and lots | `core/city` (`KCITY`), `core/space` (`KSPACE`) | One `KCITY.create` instance a town (`rand:'krand'`, `index:{order:'insertion'}`), sealed in `gen/69p-kcity-bundle.js` as Phēr's; the blocks filled by core/city's `frontage-courts`; the flora mask's indexes are `KSPACE`'s. No spatial hash or occupancy grid of the build's own |
+| Placement | `core/rand` (`KRAND`), `core/tags` | Every town's seed `KRAND.child(XL.SEED, 'xanadu-lake:' + key)`; the blocks from their own cells (core/city), the boats and stalls from named streams and hashes; the kit's `XA.def` records registered in `core/tags` (through Xanadu's page) before the page draws them |
+| Masks | `core/mask` | None yet: the benches' fields and the flora's mask are polygons and indexes of the plan's records (no canvas is read back); `KMASK` comes in with the reed beds (L1-L4) |
+| The drawn ground | `core/drawn` (`KDRAWN`) | Both ground meshes registered (`KDRAWN.grid`), through kit.json `files` |
+| The buildings | `kits/xanadu` | The kit through Xanadu's page; its opt-in pieces read in place (kit.json `external`): `extra/69dz, 88c, 88d, 88e, 88f, 88g, 88h` (88h: the landing stair `xa_ghat` and the governor's house `xa_governor`, L0; the ruins, L1; the net loft `xa_net_loft` and the orchard plot `xa_orchard_plot`, L2; 88i: the timber yard `xa_timber_yard`, L3) and `src/87k-xa-lake-trades.js` (the fish racks) |
+| The ruins | `core/ruins` (`KRUINS`) | Ōlḍ-Thalaba's old town (L1): the ruined houses and the caravan market are the kit's ruin pieces (`kits/xanadu/extra/88h`: roofless shells whose every wall section and heap sits on the page's ground), each ruin chunk `KRUINS.watch`ed once baked (`90r-xl-build.js`); the harness asserts them. `core/ruins` through kit.json `files` |
+| Interiors | `kits/interiors`, `kits/catalog` | kit.json `interiors` as Phēr's (the furniture bundle, the `xanadu` sets); the towns' rooms are L5 |
+| The sky and hour | `core/atmos`, `core/host`, `core/door` | Through Xanadu's build and kit.json `files` |
+| Life | `core/charactermodels` | L5 (the crowds by the tune's census) |
+| The crops | `kits/crops` (`CROPS`) | A spec naming a bucket (`layout.fields.bucket`: Ḍāiyar's `dye`) sows its benches from what the Vale of Xanadu grows by rain (`CROPS.forBiome('xanadu')`), the field plants of that bucket, a seeded pick a field; read in place at every build, sealed in one closure (`gen/89zc-crops-bundle.js`) |
+| The economy | `core/region` | `XAN_TUNE` read in place at every build (`gen/89zk-xl-tune.js`), never copied: the people, px, trade, hub and province, and the household size (`T.farm.hh`) |
+
+## The fragments (`targets/town/`)
+
+| Fragment | Tag | What |
+|---|---|---|
+| `89z-rows.js` | `[G data]` | The target's switch (no sheet rows) |
+| `89zl-xl-specs.js` | `[G data]` | `XL.SPECS[key]`: the town's design row (PLAN.md section 4) and its layout; `XL.tune(key)`, `XL.households(key)` |
+| `89zm-xl-fit.js` | `[G data]` | GENERATED by `tools/fit_lake_town.py`: each town's ground fitted to its region's |
+| `89zn-xl-days.js` | `[G data]` | The week (step L5): the page's day (`?day=N`, else 122), each town's market day from its round (`XAN_TUNE.rounds`), the fair's days (`T.fairDays`, `T.loops`): `XL_DAYS` |
+| `89zp-xl-site.js` | `[G data]` | The ground in closed form: `xlH(key, x, z)`, `xlShoreZ`, `xlStream`, `xlWorldFrame`, `xlToWorld` |
+| `89zq-xl-plan.js` | `[G data]` | One core/city instance a town: the landing, the beach's works, the landmarks (by the landing, or hosts of their quarter's block on the slope), the streets, the quarters' blocks and their houses (a ruined quarter's ruins), the fields and their crops, the boats (`XL_TOWN`) |
+| `90q-xl-world.js` | `[web]` | The sky, the painted ground and the far ground, the lake and the stream |
+| `90r-xl-build.js` | `[web]` | The records drawn with the kit, chunk by chunk; the flora; the entry flights |
+| `90s-xl-boats.js` | `[draw]` | The boats |
+| `89zu-xl-people.js` | `[G data]` | The people for core/simulation (step L5, as Thalaba's): every house's household, the tune's crews, the roles and their week, the walk graph from the plan's ways, the places: `xlPeople(T)`, `XLL` |
+| `90t-xl-life.js` | `[web]` | The people drawn from `SIM.pose` (placeholder figures); `window._life` |
+| `91z-views.js` | `[G data]` | The views and the budget |
+
+## Build and verify
+
+```
+python3 tools/lfs_needs.py settlements/xanadu-lake --pull
+python3 tools/build.py settlements/xanadu-lake
+node settlements/xanadu-lake/tests/test-xl-towns.js
+node settlements/xanadu-lake/tests/test-xl-site.js
+node settlements/xanadu-lake/tests/test-xl-life.js
+python3 tools/fit_lake_town.py mouth --check
+KRATOR_GL=gpu python3 settlements/xanadu-lake/verify.py "settlements/xanadu-lake/dist/xanadu-lake.html?town=mouth" --assert   # &day=N for another weekday
+```
+
+The node tests check the specs against the tune and each town's plan and ground (`tests/`, their headers); the verify runs
+Xanadu's page checks and the town's own (`verify.py`'s docstring).
+
+## Adding a town (L1 to L4)
+
+1. Its row in `89zl-xl-specs.js` under its tune key (its plan's quarters, landmarks, works, craft and layout; `world` its
+   region and site).
+2. `python3 tools/fit_lake_town.py <key>`; `node tests/test-xl-site.js <key>` until it passes.
+3. `node tests/test-xl-towns.js` (the census, the footprints, the shore); the page with `?town=<key>`.
+4. Its entry in `core/world/bake_towns.py` comes from the spec (`LAKE_TOWNS`); list it under `towns` in `openworld/SITES.json`'s
+   region row, bake it (`python3 core/world/bake_towns.py <key>`) and rebuild the region.

@@ -32,8 +32,15 @@ async function start(){
   const ok=await fetch(u,{method:'HEAD'}).then(r=>r.ok).catch(()=>false)||await fetch(u+'.0.txt',{method:'HEAD'}).then(r=>r.ok).catch(()=>false);
   if(!ok){const keep=T.filter(t=>!t.tile);if(keep.length)WORLD_DATA.towns.towns=keep;else WORLD_DATA.towns=null;
    console.warn('town tiles cannot be fetched here: the world runs without its tiled towns');}}
+ if(typeof window.KRATOR_MICRO==='undefined'&&typeof location!=='undefined'&&location.search){
+  const qm=new URLSearchParams(location.search).get('micro');
+  if(qm!=null)window.KRATOR_MICRO=qm==='0'||qm==='false'?false:qm==='2'?2:1;}
+ if(typeof window.KRATOR_ALPINE==='undefined'&&typeof location!=='undefined'&&location.search){
+  const qa=new URLSearchParams(location.search).get('alpine');
+  if(qa!=null)window.KRATOR_ALPINE=qa==='0'||qa==='false'?false:qa==='2'?2:1;}
  WORLD.init(R);
  msg('laying out the land');for(const f of LATE)f();
+ if(HOST.weather)HOST.weather();   /* the weather, once, where the build lists it (45: after ATMOS.init and the terrain's material) */
  CAM.paintBase(R);
  // the first view: the region's own WORLD_CONFIG.start, either {view: [x, z, height above ground, yaw, pitch], look?: [x, z, height above
  // ground]} or the name of a place (framed as "Go to" frames it; the probe's flora checks run round it: the isle demo), else little-demo's:
@@ -48,7 +55,7 @@ async function start(){
 let last=performance.now(),fpsN=0,fpsT=performance.now(),fps=0,lastDraw=null;
 const camera=HOST.camera,renderer=HOST.renderer,scene=HOST.scene;
 // one step of the streaming; big=true while the curtain is down
-function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);}
+function pump(big){TERRAIN.update(big?60:5);FLORA.residency(camera.position,big?40:3);NURSERY.update(big?120:7);FLOOR.update(big?40:2);SEAS.update(big?60:3);if(typeof STREAMW!=='undefined'&&STREAMW)STREAMW.update(big?60:3);}   /* the small streams' water (83s), where a build draws it */
 START.pump=pump;
 function frame(){requestAnimationFrame(frame);
  const now=performance.now(),dt=Math.min(.1,(now-last)/1000);last=now;START.frames++;
@@ -59,7 +66,7 @@ function frame(){requestAnimationFrame(frame);
   {const agl=Math.max(0,P.y-WORLD.H(P.x,P.z,400));scene.fog.density=1/(90000+agl*12);}
   for(const f of HOST.TICKS)f(dt,now/1000);
   SKY.follow();PLACES.update();TOWNS_DRAW.update();if(START.frames%8===0)CAM.drawMap();
-  renderer.render(scene,camera);}
+  if(SKY.render)SKY.render();else renderer.render(scene,camera);}   /* the shared sky (80, W8) draws its pass, the volumes and the world */
  catch(e){reportErr('frame: '+(e.stack||e));throw e;}
  fpsN++;if(now-fpsT>1000){fps=fpsN*1000/(now-fpsT);fpsN=0;fpsT=now;hud();}
  if(!START.ready&&(TERRAIN.pending()===0&&NURSERY.queued()===0||now-START.t0>45000)){START.ready=true;$('load').style.display='none';}

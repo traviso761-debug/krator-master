@@ -1747,14 +1747,24 @@
    "label": "Walk",
    "group": "move",
    "seconds": 1.03,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    1.802
+   ]
   },
   {
    "name": "run",
    "label": "Run",
    "group": "move",
    "seconds": 0.67,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    5.65
+   ]
   },
   {
    "name": "stretch",
@@ -2151,7 +2161,12 @@
    "label": "Crouch walk 2",
    "group": "move",
    "seconds": 2.0,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    0.974
+   ]
   },
   {
    "name": "ual_jump",
@@ -2165,7 +2180,12 @@
    "label": "Jog",
    "group": "move",
    "seconds": 0.93,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    3.409
+   ]
   },
   {
    "name": "ual_sit_down",
@@ -2310,7 +2330,12 @@
    "label": "Injured walk",
    "group": "move",
    "seconds": 8.67,
-   "loop": true
+   "loop": true,
+   "root_speed": [
+    0.0,
+    0.0,
+    0.877
+   ]
   },
   {
    "name": "walk_limp",

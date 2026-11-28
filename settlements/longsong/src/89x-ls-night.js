@@ -37,28 +37,50 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
  // the valley's villages: a lamp at each house's door after dusk (85h: LSHAMLETS.glows)
  if(typeof LSHAMLETS!=='undefined')LSHAMLETS.glows.forEach(g=>ATMOS.glowAdd(g[0],g[1],g[2],[1,.7,.36],2.2,LH.windows[0],LH.windows[1]));
  const glow=ATMOS.buildGlow();
- // ---------------------------------------------------------------- the rooms' lamps: a pool of point lights round the eye
+ // ---------------------------------------------------------------- the rooms' lamps & portal daylight (Stage 7 I2/I3: KROOMLIGHT)
  const POOL=[];for(let i=0;i<6;i++){const l=new T.PointLight(0xffc070,0,9,2);scene.add(l);POOL.push(l);}
  const PANE_DAY=C(0xdde6f2),PANE_DUSK=C(0xf0b890),PANE_NIGHT=C(0x0b1020);let paneDusk=0;
- let lastScan=-1,roomNow=null,nightK=0;
- function roomLights(){const c=camera.position,r=LS.ROOMS.at(c.x,c.y,c.z);
-  roomNow=r&&r.furnish===true&&!r.outdoor?r:null;const L=[];
-  if(roomNow&&LSIX.on)LS.ROOMS.list.forEach(q=>{if(q.furnish!==true||q.outdoor||Math.abs(q.y-roomNow.y)>.05)return;
-   if(Math.max(q.x0-c.x,c.x-q.x1,q.z0-c.z,c.z-q.z1)>20)return;const R=LSIX.record(q.id);if(R)R.lights.forEach(l=>L.push(l));});
-  L.sort((a,b)=>Math.hypot(a[0]-c.x,a[2]-c.z)-Math.hypot(b[0]-c.x,b[2]-c.z));
-  // the day at the windows: any room the eye stands in (furnished or not), the nearest windows of the rooms round it.
-  // The same six lights serve both (another pool would cost every lit surface of the page its share, indoors or not):
-  // by day up to four stand inside the nearest windows, the rest at the nearest lamps; by night all six at the lamps
-  const ri=r&&!r.outdoor?r:null;LS_INDOOR.want=ri?1:0;const Wn=[];
-  if(ri&&typeof LSIXD!=='undefined'&&state.day>.3)LS.ROOMS.list.forEach(q=>{if(q.outdoor||Math.abs(q.y-ri.y)>.05||Math.max(q.x0-c.x,c.x-q.x1,q.z0-c.z,c.z-q.z1)>16)return;LSIXD.windowsOf(q).forEach(w=>Wn.push(w));});
-  Wn.sort((a,b)=>Math.hypot(a.x-c.x,a.z-c.z)-Math.hypot(b.x-c.x,b.z-c.z));
-  const nw=Math.min(4,Wn.length);let li=0;
-  POOL.forEach((p,i)=>{if(i<nw){const w=Wn[i];p.position.set(w.x+w.nx*1.4,w.y,w.z+w.nz*1.4);p.distance=14;p.color.copy(DAYLIGHT);p.userData.base=0;p.userData.win=1;return;}
-   p.userData.win=0;p.color.copy(LAMPLIGHT);const l=L[li++];if(!l){p.userData.base=0;return;}p.position.set(l[0],l[1],l[2]);p.distance=Math.max(6,l[4]||8);p.userData.base=Math.min(1.6,l[3]||1);});}
+ let lastScan=-1,roomNow=null,eyeRoomId='',nightK=0,RTAB=null,WIN_RECS=[],LAMP_RECS=[];
+ function ensureRoomTable(){
+  if(RTAB||typeof KROOMLIGHT==='undefined'||typeof LSIXD==='undefined')return RTAB;
+  WIN_RECS=[];LAMP_RECS=[];
+  const list=LS.ROOMS.list.filter(r=>!r.roof&&r.furnish!=='vault');
+  list.forEach(r=>{
+   if(!r.outdoor){
+    LSIXD.windowsOf(r).forEach(w=>WIN_RECS.push({room:r.id,x:w.x+w.nx*1.35,y:w.y,z:w.z+w.nz*1.35}));
+    if(typeof LSIX!=='undefined'&&LSIX.on){const rec=LSIX.record(r.id);if(rec&&rec.lights)rec.lights.forEach(l=>LAMP_RECS.push({room:r.id,x:l[0],y:l[1],z:l[2],amp:l[3]==null?1:l[3],r:l[4]==null?8:l[4]}));}
+   }
+  });
+  RTAB=KROOMLIGHT.buildTable({
+   rooms:LS_ROOMLIGHT.rooms(list),   /* the skylit rooms flagged (40g) */
+   windowsOf:r=>r.outdoor?[]:LSIXD.windowsOf(r),
+   lampsOf:r=>(!r.outdoor&&typeof LSIX!=='undefined'&&LSIX.on&&LSIX.record(r.id))?LSIX.record(r.id).lights:[]
+  });
+  return RTAB;}
  const DAYLIGHT=C(0xe4ecff),LAMPLIGHT=C(0xffc070);
- // a light's strength: a window's the day's (indoors, the weather's share off it), a lamp's the night's
- function poolLights(){const d=state.day;let W={rain:0,fog:0};try{if(LSAIR.W)W=LSAIR.W;}catch(e){}   // (89z's LSAIR: not yet declared on the first call)
-  POOL.forEach(p=>{p.intensity=p.userData.win?LS_INDOOR.k*d*1.5*(1-.5*W.rain-.3*W.fog):roomNow?(p.userData.base||0)*(.35+1.25*nightK):0;});}
+ function roomLights(){const c=camera.position,r=LS.ROOMS.at(c.x,c.y,c.z);
+  roomNow=r&&r.furnish===true&&!r.outdoor?r:null;
+  const ri=r&&!r.outdoor?r:null;eyeRoomId=ri?ri.id:'';LS_INDOOR.want=ri?1:0;
+  const tb=ensureRoomTable();
+  if(!ri||!tb){POOL.forEach(p=>{p.userData.win=0;p.userData.base=0;p.userData.pickAmp=0;});return;}
+  const picks=KROOMLIGHT.pickPool({eye:[c.x,c.y,c.z],eyeRoom:ri.id,table:tb,count:POOL.length,maxWindows:state.day>.08?4:0,heroShadows:2,sunUp:state.day,windows:WIN_RECS,lamps:LAMP_RECS});
+  POOL.forEach((p,i)=>{const pk=picks[i];if(!pk){p.userData.win=0;p.userData.base=0;p.userData.pickAmp=0;return;}
+   p.position.set(pk.at[0],pk.at[1],pk.at[2]);p.distance=pk.range;
+   if(pk.kind==='window'){p.color.copy(DAYLIGHT);p.userData.win=1;p.userData.pickAmp=pk.amp;p.userData.base=0;}
+   else{p.color.copy(LAMPLIGHT);p.userData.win=0;p.userData.pickAmp=pk.amp;p.userData.base=pk.amp;}});}
+ function poolLights(){const d=state.day;let W={rain:0,fog:0};try{if(LSAIR.W)W=LSAIR.W;}catch(e){}
+  const wScale=1-.5*W.rain-.3*W.fog;
+  POOL.forEach(p=>{p.intensity=p.userData.win?LS_INDOOR.k*(p.userData.pickAmp||0)*wScale:(eyeRoomId?(p.userData.pickAmp||0):0);});
+  if(typeof LSIXD!=='undefined'&&LSIXD.INDOOR_UNI){
+   const tb=ensureRoomTable(),row=tb&&eyeRoomId?tb.byId[eyeRoomId]:null,amb=LSIXD.INDOOR_UNI.uRoomAmb.value;
+   if(row){
+    const dk=row.daylight*d*wScale,lk=row.lampAmbience*(.55+.85*nightK),dt=row.daylightTint,lc=row.lampColor;
+    amb.set(dk*dt[0]+lk*lc[0],dk*dt[1]+lk*lc[1],dk*dt[2]+lk*lc[2]);
+   }else{
+    const cd=.34*d*wScale,cl2=.09*(.55+.85*nightK);
+    amb.set(cd*.84+cl2,cd*.90+cl2*.75,cd*.98+cl2*.43);
+   }
+  }}
  // ---------------------------------------------------------------- the hour
  const ss=(a,b,x)=>{const t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t);};
  const SUN0=C(0xfff4e4),SUNDUSK=C(0xffa868),SKYDAY=C(0xffffff),SKYNIGHT=C(0x1a2238),SKYDUSK=C(0xffc0a0),HAZEN=C(0x1c2232),_c=new T.Color(),_v=new T.Vector3();
@@ -78,7 +100,7 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
   sunSpr.visible=alt>-4;sunSpr.material.color.copy(SUN0).lerp(SUNDUSK,dusk);
   paneMat.opacity=.92*ss(.2,.75,1-day);paneDusk=dusk;
   if(typeof LSIXD!=='undefined')LSIXD.PANE.color.copy(PANE_NIGHT).lerp(PANE_DAY,day).lerp(PANE_DUSK,dusk*.5);
-  poolLights();}
+  roomLights();poolLights();}
  // the sky follows the eye: the sun and the stars with it
  TICKS.push(()=>{const c=camera.position;stars.position.copy(c);const S=LS.sunAt(state.hour);
   sunSpr.position.set(c.x+S.dir[0]*7600,c.y+S.dir[1]*7600,c.z+S.dir[2]*7600);
@@ -96,6 +118,7 @@ const LSNIGHT=(function(){const T=THREE,C=c=>new T.Color(c);
  window.nightChecks=function(add){add('the sun crosses the north by day and is down at night',NCHK.arc(LS.sunAt));add('the lamps are lit at night, dark by day',NCHK.lamps(LS.LIGHT_HOURS));};
  window.nightNegatives=function(add){add('a sun that stands at noon all night',NCHK.arc(()=>LS.sunAt(12)));add('lamps that burn all day',NCHK.lamps({bulbs:[0,30],windows:[0,30]}));};
  window._night={get state(){return Object.assign({},state);},apply,glow:!!glow,panes:LS_WINLIT.length,windowLamps:nWin,windows:LS_WINS.length,
-  get indoor(){return {k:+LS_INDOOR.k.toFixed(3),daylights:POOL.filter(p=>p.userData.win&&p.intensity>0).length,sun:+sun.intensity.toFixed(3),hemi:+hemi.intensity.toFixed(3)};}};
+  roomTable:ensureRoomTable,
+  get indoor(){return {k:+LS_INDOOR.k.toFixed(3),room:eyeRoomId,daylights:POOL.filter(p=>p.userData.win&&p.intensity>0).length,sun:+sun.intensity.toFixed(3),hemi:+hemi.intensity.toFixed(3)};}};
  return {apply,state};})();
 _mark('night');

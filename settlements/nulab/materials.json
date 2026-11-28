@@ -1,0 +1,13 @@
+{
+ "build": "nulab",
+ "note": "Nulab's ground (settlements/nulab/targets/town/90n-nl-world.js samples their maps in world metres, blended by a zone mask painted from the town's records; no kit piece draws them). The buildings are the Dalab set's, on the Xanadu pack's shared keys and the trimmed Dalab pack. Reused sets, none new: nlGrass (ground.grass_ground, the basin's Csa grass, as Thalaba's tGrass), nlDirt (ground.dirt, the wards' yards and made ground), nlEarth (earth.floor.packed, the beaten-earth streets of a Dalab town), nlFlag (paving.flagstone, the mound's plaza, the quays and the market), nlSand (ground.damp_beach_sand, the bay's shore and the river's banks), nlTilled (ground.tilled, the fields); keep 1: the sets' own colours.",
+ "size": 512,
+ "families": {
+  "nlGrass": {"lib": "ground.grass_ground", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "nlDirt": {"lib": "ground.dirt", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "nlEarth": {"lib": "earth.floor.packed", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "nlFlag": {"lib": "paving.flagstone", "scale": [3.2, 3.2], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "nlSand": {"lib": "ground.damp_beach_sand", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "nlTilled": {"lib": "ground.tilled", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1}
+ }
+}

@@ -152,29 +152,29 @@
      the plan when the plan's rooms or doors change. */
   add({ key: 'xa_pleasure_dome', name: 'Garden Pleasure Dome', wealth: 0.9, types: ['civic'], lot: [106, 112],
     rooms: [
-      { id: 'hall', kind: 'hall', poly: rect(19, 19, 0, -20), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-9.5, -14], w: 2.4, swing: 'none' }, { at: [9.5, -17], w: 1.5, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -29.5], w: 2.4, swing: 'none' }] },   // E3.4 The Dome: Hall of Feasts
-      { id: 'music', kind: 'hall', poly: rect(12.36, 6.36, -13.5, -49.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-7.32, -50], w: 1.3, swing: 'none' }, { at: [-15, -52.68], w: 1.1, swing: 'none' }] },   // E3.5 Hall of the Musicians
+      { id: 'hall', kind: 'xc_feast', poly: rect(19, 19, 0, -20), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-9.5, -14], w: 2.4, swing: 'none' }, { at: [9.5, -17], w: 1.5, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -10.5], w: 2.4, swing: 'none' }, { at: [0, -29.5], w: 2.4, swing: 'none' }] },   // E3.4 The Dome: Hall of Feasts
+      { id: 'music', kind: 'xc_music', poly: rect(12.36, 6.36, -13.5, -49.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-7.32, -50], w: 1.3, swing: 'none' }, { at: [-15, -52.68], w: 1.1, swing: 'none' }] },   // E3.5 Hall of the Musicians
       { id: 'kitchen', kind: 'kitchen', poly: rect(12.36, 6.36, 13.5, -49.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [19.68, -50], w: 1.3, swing: 'none' }, { at: [7.32, -50], w: 1.3, swing: 'none' }] },   // E3.6 Harem Kitchens and Confectionery
-      { id: 'treasury', kind: 'store', poly: rect(9.36, 3.36, -15, -55), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-15, -53.32], w: 1.1, swing: 'none' }] },   // E3.20 Harem Treasury and Wardrobe
-      { id: 'cage', kind: 'bedroom', poly: rect(30.36, 24.36, -35.5, -40.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -34], w: 1.5, swing: 'none' }, { at: [-38, -28.32], w: 1.5, swing: 'none' }] },   // E3.11 Cage of the Princes
-      { id: 'valide', kind: 'bedroom', poly: rect(7.36, 27.36, -24, -14), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -14], w: 2.4, swing: 'none' }, { at: [-27.68, -14], w: 2.4, swing: 'none' }] },   // E3.10 Valide's Apartments
-      { id: 'consorts', kind: 'bedroom', poly: rect(30.36, 17.36, -35.5, 9), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, 10], w: 1.7, swing: 'none' }, { at: [-38, 0.32], w: 1.5, swing: 'none' }, { at: [-44, 17.68], w: 2.4, swing: 'none' }] },   // E3.8 Consorts' Apartments
+      { id: 'treasury', kind: 'xc_treasury', poly: rect(9.36, 3.36, -15, -55), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-15, -53.32], w: 1.1, swing: 'none' }] },   // E3.20 Harem Treasury and Wardrobe
+      { id: 'cage', kind: 'xc_cage', poly: rect(30.36, 24.36, -35.5, -40.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -34], w: 1.5, swing: 'none' }, { at: [-38, -28.32], w: 1.5, swing: 'none' }] },   // E3.11 Cage of the Princes
+      { id: 'valide', kind: 'xc_harem', poly: rect(7.36, 27.36, -24, -14), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, -14], w: 2.4, swing: 'none' }, { at: [-27.68, -14], w: 2.4, swing: 'none' }] },   // E3.10 Valide's Apartments
+      { id: 'consorts', kind: 'xc_harem', poly: rect(30.36, 17.36, -35.5, 9), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, 10], w: 1.7, swing: 'none' }, { at: [-38, 0.32], w: 1.5, swing: 'none' }, { at: [-44, 17.68], w: 2.4, swing: 'none' }] },   // E3.8 Consorts' Apartments
       { id: 'hospital', kind: 'dormitory', poly: rect(30.36, 17.36, -35.5, 41), y: 0.3, h: 7.5, level: 0, doors: [{ at: [-20.32, 41], w: 1.7, swing: 'none' }, { at: [-44, 32.32], w: 2.4, swing: 'none' }] },   // E3.7 Hospital of the Harem
       { id: 'eunuchs', kind: 'dormitory', poly: rect(9.36, 27.36, 45, -39), y: 0.3, h: 7.5, level: 0, doors: [{ at: [40.32, -40], w: 1.3, swing: 'none' }] },   // E3.16 Eunuchs' Dormitory and the Chief Eunuch
       { id: 'school', kind: 'school', poly: rect(29.36, 14.36, 35, -17.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [20.32, -17], w: 1.5, swing: 'none' }, { at: [35, -10.32], w: 1.3, swing: 'none' }, { at: [30, -24.68], w: 1.3, swing: 'none' }] },   // E3.14 Harem School
-      { id: 'concubines', kind: 'dormitory', poly: rect(29.36, 12.36, 35, -3.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [20.32, -4], w: 1.5, swing: 'none' }, { at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [26, 2.68], w: 2.2, swing: 'none' }] },   // E3.13 Concubines' Dormitories
-      { id: 'baths', kind: 'bath', poly: rect(28, 12, 35, 22), y: 0.3, h: 7.5, level: 0, doors: [{ at: [26, 16], w: 2.2, swing: 'none' }, { at: [35, 28], w: 2.4, swing: 'none' }] },   // E3.12 Baths of the Dome: warm and hot rooms
-      { id: 'box', kind: 'hall', poly: rect(12.36, 6.36, -13.5, -49.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-10.5, -46.32], w: 2.4, swing: 'none' }] },   // E4.3 Musicians' Box
+      { id: 'concubines', kind: 'xc_dorm', poly: rect(29.36, 12.36, 35, -3.5), y: 0.3, h: 7.5, level: 0, doors: [{ at: [20.32, -4], w: 1.5, swing: 'none' }, { at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [26, 2.68], w: 2.2, swing: 'none' }] },   // E3.13 Concubines' Dormitories
+      { id: 'baths', kind: 'xc_bath', poly: rect(28, 12, 35, 22), y: 0.3, h: 7.5, level: 0, doors: [{ at: [26, 16], w: 2.2, swing: 'none' }, { at: [35, 28], w: 2.4, swing: 'none' }] },   // E3.12 Baths of the Dome: warm and hot rooms
+      { id: 'box', kind: 'xc_musicbox', poly: rect(12.36, 6.36, -13.5, -49.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-10.5, -46.32], w: 2.4, swing: 'none' }] },   // E4.3 Musicians' Box
       { id: 'stores', kind: 'store', poly: rect(12.36, 6.36, 13.5, -49.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [10.5, -46.32], w: 2.4, swing: 'none' }] },   // E4.4 Confectionery Stores
-      { id: 'cageU', kind: 'bedroom', poly: rect(30.36, 24.36, -35.5, -40.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, -28.32], w: 1.2, swing: 'none' }] },   // E4.8 Cage: upper apartments
-      { id: 'valideU', kind: 'study', poly: rect(7.36, 27.36, -24, -14), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-20.32, -14], w: 1.4, swing: 'none' }, { at: [-24, -27.68], w: 1.2, swing: 'none' }, { at: [-24, -0.32], w: 1.3, swing: 'none' }] },   // E4.7 Valide's Upper Rooms
-      { id: 'favourites', kind: 'bedroom', poly: rect(30.36, 17.36, -35.5, 9), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, 0.32], w: 1.3, swing: 'none' }] },   // E4.5 Favourites' Apartments
+      { id: 'cageU', kind: 'xc_cage', poly: rect(30.36, 24.36, -35.5, -40.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, -28.32], w: 1.2, swing: 'none' }] },   // E4.8 Cage: upper apartments
+      { id: 'valideU', kind: 'xc_harem', poly: rect(7.36, 27.36, -24, -14), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-20.32, -14], w: 1.4, swing: 'none' }, { at: [-24, -27.68], w: 1.2, swing: 'none' }, { at: [-24, -0.32], w: 1.3, swing: 'none' }] },   // E4.7 Valide's Upper Rooms
+      { id: 'favourites', kind: 'xc_harem', poly: rect(30.36, 17.36, -35.5, 9), y: 8.3, h: 6.5, level: 1, doors: [{ at: [-24, 0.32], w: 1.3, swing: 'none' }] },   // E4.5 Favourites' Apartments
       { id: 'eunuchsU', kind: 'dormitory', poly: rect(9.36, 27.36, 45, -39), y: 8.3, h: 6.5, level: 1, doors: [{ at: [45, -25.32], w: 1.2, swing: 'none' }] },   // E4.12 Eunuchs (upper)
-      { id: 'mistress', kind: 'study', poly: rect(29.36, 14.36, 35, -17.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [20.32, -17], w: 1.4, swing: 'none' }, { at: [35, -10.32], w: 1.3, swing: 'none' }, { at: [45, -24.68], w: 1.2, swing: 'none' }] },   // E4.11 Mistress of the Harem
-      { id: 'concubinesU', kind: 'dormitory', poly: rect(29.36, 12.36, 35, -3.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [47.5, 2.68], w: 1.4, swing: 'none' }] },   // E4.10 Concubines' Dormitories (upper)
-      { id: 'rest', kind: 'living', poly: rect(29.36, 14.36, 35, 22.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [47.5, 15.32], w: 1.4, swing: 'none' }] },   // E4.9 Baths: rest rooms
+      { id: 'mistress', kind: 'xc_study', poly: rect(29.36, 14.36, 35, -17.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [20.32, -17], w: 1.4, swing: 'none' }, { at: [35, -10.32], w: 1.3, swing: 'none' }, { at: [45, -24.68], w: 1.2, swing: 'none' }] },   // E4.11 Mistress of the Harem
+      { id: 'concubinesU', kind: 'xc_dorm', poly: rect(29.36, 12.36, 35, -3.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [35, -9.68], w: 1.3, swing: 'none' }, { at: [47.5, 2.68], w: 1.4, swing: 'none' }] },   // E4.10 Concubines' Dormitories (upper)
+      { id: 'rest', kind: 'xc_harem', poly: rect(29.36, 14.36, 35, 22.5), y: 8.3, h: 6.5, level: 1, doors: [{ at: [47.5, 15.32], w: 1.4, swing: 'none' }] },   // E4.9 Baths: rest rooms
     ],
-    note: 'the harem palace of Erewhon\'s citadel (BLUEPRINT.md E3, E4), drawn hollow by its own builder in the black-and-white pattern system; the rooms here are for the furniture (FURNITURE.md), which is still the court set\'s own colours' });
+    note: 'the harem palace of Erewhon\'s citadel (BLUEPRINT.md E3, E4), drawn hollow by its own builder in the black-and-white pattern system; the rooms here are for the furniture, on the citadel\'s room kinds xc_* (sets/xanadu-citadel.js; settlements/xanadu/citadel/FURNISHING.md, 2026-11-16)' });
   skip('xa_pleasure_dome_bay', 'Pleasure Dome of the Bay', ['civic'], 'one rotunda round a pool, drawn hollow by its own builder (kits/xanadu 78d xbayBuild): its few objects are the builder\'s, no catalog furniture');
   skip('xa_vizier', "Grand Vizier's palace", ['civic', 'single-family dwelling'], 'the kit\'s solid palace; Erewhon\'s citadel stands on xa_cit_vizier (sets/xanadu-citadel.js)');
   skip('xa_palace_gate', 'Palace gate', ['military', 'civic'], HELD);
@@ -273,6 +273,28 @@
   skip('xa_teahouse', 'Teahouse', ['tavern/inn'], 'an open garden pavilion');
   skip('xa_ice_cave', 'The Caves of Ice', ['religious', 'infrastructure'], 'a cave');
   skip('xa_bridge', 'Street bridge', ['infrastructure'], 'a bridge');
+
+  /* ================================================================ the caravanserai (88c-xa-caravanserai.js)
+     Until Stage 8 B9 (2026-11-24; T7) the set 'xanadu-extra' (kits/xanadu/extra/69dz-ix-xanadu-extra.js), moved here with its
+     piece into the kit's src/. Each of the five ranges a body of two battered storeys (xnStack 3.8 + 3.2 m on a 0.6 m plinth),
+     planned INSET on the top storey's footprint, its door on the court face. Below, the stores and the common room with its
+     kitchen (the stables are the arcade's lean-to, outside the body); above, the travellers' rooms. The gate block and the four
+     corner towers stay solid. range(): a battered range of storeys hs at (cx, cz), base w x d, its door moved onto its top
+     footprint's court face (toward the court's middle, the plot's origin) */
+  function range(id, cx, cz, w, d, hs, program) {
+    let ww = w, dd = d; hs.forEach(function (h) { const k = batK(ww, h, dd); ww *= k; dd *= k; });
+    const alongX = w > d, door = alongX ? [cx, r3(cz - Math.sign(cz) * dd / 2)] : [r3(cx - Math.sign(cx) * ww / 2), cz];
+    return { id: id, poly: rect(r3(ww), r3(dd), cx, cz), y: 0.6, levels: hs.map(function (h) { return { h: h }; }), wall: 0.45, roof: 'flat',
+      doors: [{ at: door, w: 1.4 }], program: program, inset: true };
+  }
+  const SERAI_HS = [3.8, 3.2];
+  add({ key: 'xa_caravanserai', name: 'Caravanserai', wealth: MID, types: ['tavern/inn', 'market/shop'], lot: [54, 56],
+    bodies: [range('back', 0, -20.5, 34, 7, SERAI_HS, [['tavern', 'kitchen', 'store'], ['bedroom', 'bedroom', 'bedroom', 'bedroom']]),
+      range('east', 20.5, 0, 7, 34, SERAI_HS, [['store', 'store'], ['bedroom', 'bedroom', 'bedroom']]),
+      range('west', -20.5, 0, 7, 34, SERAI_HS, [['store', 'store'], ['bedroom', 'bedroom', 'bedroom']]),
+      range('front_e', 11.5, 20.5, 11, 7, SERAI_HS, [['store'], ['bedroom']]),
+      range('front_w', -11.5, 20.5, 11, 7, SERAI_HS, [['store'], ['bedroom']])],
+    note: 'five ranges round the court: the common room, its kitchen and the stores below, the travellers\' rooms above; the gate block and the corner towers solid' });
 
   /* ================================================================ the Palopó repaints (88-xa-dress.js): the base's rooms */
   ['xa_poor_a', 'xa_poor_b', 'xa_poor_c', 'xa_mid_a', 'xa_mid_b', 'xa_mid_c', 'xa_rich_a', 'xa_rich_b', 'xa_rich_c', 'xa_shops', 'xa_bath', 'xa_temple',

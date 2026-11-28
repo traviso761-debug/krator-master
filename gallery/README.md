@@ -599,3 +599,16 @@ moves to Biomes and Objects as **Mechs and Robots** (`worlds/mechs.html`, 1.7 MB
 war-walkers and the two Stalkers of the Catch) under Objects; `worlds/iziz-mechs.html` and its card are removed from I–S.
 Both live indexes were edited in place (one card each, as in `build_gallery.py`, where the entry is now `('objects',
 'mechs', ...)`); every other file is as it was.
+
+## The page-cap splits (Stage 8 B10, 2026-11-24)
+
+The pages that were over the 16 MB a file now keep their maps beside them, as Scyvoi's does
+(`tools/textures/matlib_pack.py` `write_sidecar`; each build's `--inline-packs` puts them back): `worlds/desert-nomads.html`
+(1.6 MB, with `desert-nomads.tex.desert-nomads.js` and `-2.js`), `worlds/ash-nomads.html` (1.5 MB, with
+`ash-nomads.tex.ash-nomads.js` and `-2.js`) and `worlds/beast-riders.html` (3.6 MB, with `beast-riders.tex.brtowns.js`, the
+towns' maps, and `beast-riders.tex.kftex.js`, the catalog's and the kit's detail maps). `bundle()` copies every
+`.tex.<key>.js` a page loads into `worlds/` with it, so the parts take them with no change here: publish the new files with
+their pages, and the two nomad kits can replace the earlier live copies Krator Worlds A–H kept. Voth's city plan, its own
+artifact, is now its page (9.6 MB) and `voth-city.tex.voth.js` (9.5 MB): publish both to the Voth City Plan, side by side;
+its card's size counts both (`LINKED`). The fauna sheet already loaded its models beside it; `kits/fauna/dist/krator-fauna.js`
+(the bundle alone, which no part publishes) now reads the same `fauna.tex.models*.js` files.

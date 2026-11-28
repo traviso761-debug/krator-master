@@ -92,8 +92,27 @@ AVL.drawClimb=function(acc,D,G){const T=STAGE.plan.towers[D.ti],C=D.climb,S=C.st
   for(let i=0;i<n;i++){const s0=i*L/n,s1=(i+1)*L/n,y=T.y+Fl.a[2]+rise*(i+1)/n,cx=a[0]+ux*(s0+s1)/2,cz=a[1]+uz*(s0+s1)/2;avlBox(acc.concrete,cx,cz,ux,uz,(s1-s0)/2+.01,Fl.w/2,y-rise/n-.28,y,AVL_COL.stair);}});
  const top=T.y+C.floors[nF-1].y+(D.mode==='open'?1.1:3);[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(s=>{const u=S.su+(S.ax===0?S.L/2:S.W/2)*s[0]*1.02,v=S.sv+(S.ax===0?S.W/2:S.L/2)*s[1]*1.02,w=W(u,v);
   avlBox(acc.concrete,w[0],w[1],Math.cos(T.yaw||0),Math.sin(T.yaw||0),.2,.2,T.y-.1,top,AVL_COL.post);});};
-AVL.build=function(D){const acc=avlAcc(),G=new THREE.Group();G.name=D.id;
+/* a sunk plinth's court (2026-11-10, the owner's "yes, try it" after the sunk Spindle read as steps lost in a bowl): the ground mesh is a 14 m grid
+   (47, 440 cells over 6.2 km), so no sharp step can be drawn at a plinth's edge, and the plinth's 14 m ease reads as a bowl. Instead the bowl is
+   paved in tiers that hug the DRAWN ground (GROUND.meshH): rings 1.4 m deep and about 2.2 m along the plinth's ellipse (46z padD's frame) from its
+   edge out to 14 m, each tile's top the highest drawn ground under it rounded up to a 0.4 m riser over the plinth, its body down past the lowest;
+   none on a street or its pavement, on another plinth, in the approach's own corridor, nor where the ground is at the plinth's level. Seen, the
+   bowl is a stepped sunken court; walked, the ground is terrainH as everywhere on the page */
+AVL.drawCourt=function(acc,D){const T=STAGE.plan.towers[D.ti],A=D.approach;if(T.rx==null||!(GROUND&&GROUND.meshH))return 0;
+ const c=T.c==null?Math.cos(T.yaw||0):T.c,s=T.s==null?Math.sin(T.yaw||0):T.s,mn=Math.min(T.rx,T.rz),N=Math.max(24,Math.ceil(2*Math.PI*mn/2.2)),DR=1.4,NR=10,RIS=.4;
+ const E=(a,d)=>{const k=1+d/mn,u=T.rx*Math.cos(a)*k,v=T.rz*Math.sin(a)*k;return[T.x+u*c-v*s,T.z+u*s+v*c];};
+ const L=Math.max(.1,Math.hypot(A.b[0]-A.a[0],A.b[1]-A.a[1])),ux=(A.b[0]-A.a[0])/L,uz=(A.b[1]-A.a[1])/L,inLane=(x,z)=>{const t=(x-A.a[0])*ux+(z-A.a[1])*uz;if(t<-1||t>L+1)return false;return Math.abs(-(x-A.a[0])*uz+(z-A.a[1])*ux)<A.w/2+.8;};
+ const otherPad=(x,z)=>{const q=[];STAGE.pads.query(x,z,0,q);for(const P of q){if(P===T||P.rx==null)continue;const dx=x-P.x,dz=z-P.z,pc=P.c==null?1:P.c,ps=P.s==null?0:P.s;if(Math.hypot((dx*pc+dz*ps)/P.rx,(-dx*ps+dz*pc)/P.rz)<1.05)return true;}return false;};
+ let n=0;for(let i=0;i<N;i++){const a0=2*Math.PI*i/N,a1=2*Math.PI*(i+1)/N;for(let k=0;k<NR;k++){const P=[E(a0,k*DR),E(a1,k*DR),E(a1,(k+1)*DR),E(a0,(k+1)*DR)],cx=(P[0][0]+P[2][0])/2,cz=(P[0][1]+P[2][1])/2;
+   if(STAGE.streetK(cx,cz)>.02||inLane(cx,cz)||otherPad(cx,cz))continue;
+   const hs=P.map(p=>GROUND.meshH(p[0],p[1])).concat([GROUND.meshH(cx,cz)]),hx=Math.max(...hs),hn=Math.min(...hs);if(hx<T.y+.2||hx-T.y>8)continue;
+   const top=T.y+Math.ceil((hx-T.y+.05)/RIS)*RIS,sh=.92+.08*KRAND.unit(KRAND.hash(D.ti|0,i,k,631));avlPrism(acc.concrete,P,top,hn-.5,[.54*sh,.51*sh,.47*sh],AVL_COL.edge);n++;}}
+ return n;};
+AVL.courts=0;AVL.build=function(D){const acc=avlAcc(),G=new THREE.Group();G.name=D.id;
  AVL.drawApproach(acc,D);
+ /* the court wherever the plinth sits below the ground round it (not only where its approach goes down: the open Spindle by the Overlook has a
+    gentle ramp at its door and a bowl 1 to 3.7 m deep on its uphill side) */
+ {const n=AVL.drawCourt(acc,D);if(n)AVL.courts++;G.userData.court=n;}
  if(D.approach.kind==='rubble'){const A=D.approach,L=Math.hypot(A.b[0]-A.a[0],A.b[1]-A.a[1])||1,id=D.id+'.ramp';
   const H=AVL.heaps[id]||(AVL.heaps[id]=KRUBBLE.heap({id,x:(A.a[0]+A.b[0])/2,z:(A.a[1]+A.b[1])/2,y0:A.a[2],rx:L/2+1.5,rz:3.2,ry:Math.atan2(A.b[1]-A.a[1],A.b[0]-A.a[0]),h:Math.max(1.5,A.b[2]-A.a[2]),lumps:4,blocks:8,size:[.8,2.6],cover:1.2,seed:KRAND.hash(STAGE.seed|0,611,D.ti,0)}));
   AVL.drawHeap(acc,H);}

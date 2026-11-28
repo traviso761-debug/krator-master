@@ -8,7 +8,9 @@ function STATION_VIEWS(VIEWS){const G=(x,z)=>terrainH(x,z),add=(k,v,mode,o)=>{if
  add('The Red Gill',[95,G(95,-760)+3,-760,-10,G(-10,300)+40,300],'day',day);
  add('Into the gill',[40,G(40,60)+2,60,-20,G(0,80)-160,120],'day',day);
  // the pipes close, on the east lip
- {const P=(GILLS_DRAW.pipes||[]).filter(o=>o.p.state==='standing'&&o.p.x>0&&Math.abs(o.p.z)<300);if(P.length){const p=P[0].p;add('The red pipes',[p.x+28,p.y0+6,p.z+22,p.x,p.y0+p.H*.6,p.z]);}}
+ {const P=(GILLS_DRAW.pipes||[]).filter(o=>o.p.state==='standing'&&o.p.x>0&&Math.abs(o.p.z)<300);if(P.length){const p=P[0].p;add('The red pipes',[p.x+28,p.y0+6,p.z+22,p.x,p.y0+p.H*.6,p.z]);
+  /* a rust collar close, a little under the lip (2026-11-15: the collars fitted to the Red pipe's lip, KSTACKS.ring) */
+  const c=(GILLS_DRAW.life&&GILLS_DRAW.life.collars||[]).find(q=>P.some(o=>o.p.id===q.pipe));if(c)add('A rust collar',[c.x+c.r*2.6,c.y-c.r*.5,c.z+c.r*2.2,c.x,c.y+c.r*.1,c.z],'day',{hour:11});}}   /* at 11:00, lit from the side (the out-breath's dawn backlights it into a silhouette) */
  // downwind over the meadow (south-east): the stained ice, the steam tipping over it
  add('The breath meadow',[-200,G(-200,-400)+25,-400,1500,G(1500,1800),1800],'day',day);
  // the ice belt's cliff and the bloodfalls 11 km south-east, from the gill's south end

@@ -42,7 +42,7 @@ VEHICLE_CULTURE('geomancer', {
 
 VEHICLE({
   key: 'geo_dune_buggy', name: 'Geomancer dune buggy', culture: 'geomancer',
-  tags: { class: 'motor vehicle', type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'refined oil',
+  tags: { type: ['vehicle', 'transport'], drive: 'wheeled', seats: 2, fuel: 'refined oil',
     terrain: ['sand', 'salt flat', 'track'], setting: 'outdoor', guild: 'Geomancers' },
   variants: 3, variantNames: ['Scout', 'Crew', 'Drill rig'],
   /* overall box: 2.1 wide, 3.6 long; the cage top is 1.8 (data.cageH), the whip aerial reaches 3.05 */

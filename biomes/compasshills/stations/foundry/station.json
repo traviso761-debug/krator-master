@@ -1,0 +1,20 @@
+{
+ "id": "foundry",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Compass Hills — Lodestone Quench-Ring and Toroidal Vent Rim",
+ "name": "Lodestone Toroidal Flux-Quench Rim & Swirling Compass-Leaf Whorls (default station): arcuate subsided cryo-magnet ring trench, 360-deg swirling compassbush vector-field streamlines, tangent-steered Fe3O4 iron-sand ripples, and zero-iron bronze/nephrite delver approach trail",
+ "out": "compasshills.html",
+ "px": [1058, 224],
+ "elevM": 876.5,
+ "pAtm": 1.43,
+ "koppen": "Cfa",
+ "rainMmYr": 847,
+ "toroidRadiusM": 225.0,
+ "peakFieldMt": 85.0,
+ "strataStack": "banded-ironstone",
+ "kin": ["swlowlands", "wouterwall"],
+ "reserves": [
+  { "id": "site:lodestone-arcology", "x": 0, "z": 0, "r": 96 }
+ ],
+ "modes": ["Clear sky", "Thunder squall", "Field overlay"]
+}

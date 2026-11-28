@@ -116,6 +116,26 @@ push (`.github/workflows/checks.yml`, which also fails if a committed page is no
 nightly (`nightly.yml`). A verify.py takes its harness from `tools/harness.py`; `python3 tools/harness.py smoke <pages>`
 loads any pages headless and reports their error panels.
 
+**Verifying every page: `tools/verify_all.py`** (Stage 8's driver, STAGE-8/PLAN.md D5 and step 29). It lists every built
+page (`port_baseline.py`'s pages plus the targets `tools/build.py --all` skips) with its `verify.py --assert` command
+(biome and station pages `--all-views`; an override in `tools/verify_all.json`; else the gate its README or verify.py
+documents; else `--assert`) and runs them, longest first, through the harness's lanes (arc, rtx, and the cloud lanes when
+`harness.py cloud status` says a machine is on), with the lock, the queue, the watchdog and the verify cache, KRATOR_GL=gpu.
+```powershell
+python tools/verify_all.py --dry-run                 # the pages that differ from PORT-BASELINE.json, each command and where it came from
+python tools/verify_all.py --all --workers 1 biomes/rift kits/crops   # run some (one headless Chrome at a time)
+python tools/verify_all.py --detach                  # the whole run, detached; --resume carries it on after a crash
+python tools/verify_all.py --resume --retry-failed   # rerun what failed, stalled or crashed
+```
+Tiering (`--tier auto`, the default): a page whose only moved inputs (its build manifest at `--since` and now) are proven
+no-look core items (`tools/verify_all.json` "no_look", each with its proof) runs its main view only; every other page runs
+its full command. A run lives in `%LOCALAPPDATA%/krator-verify-all/runs/<name>/`: `report.md` (pass, cached, known, fail,
+and the owner's D30 list row by row), `report.json`, `results.tsv`, a log per job. A known failure is one whose every
+failed item matches `verify_all.json` "known" (D30, STAGE-8/PLAN.md section 5; the HANDOFF-REBUILD carried list shown apart);
+`STALE PASS` and a GPU pass with no renderer line do not count. The driver never starts, stops or prewarms a cloud
+machine (the owner's priced yes); when a cloud lane ran a job its report says to tell the owner the queue is empty.
+`tools/tests/test_verify_all.py` tests the page list, the arguments, the log reading and a resume.
+
 **Built pages and texture packs are in Git LFS** (2026-10-08, like the texture library): every `dist/*.html` and
 `dist/*.js`, the pages the Voth lineage writes beside `build.py`, and every packed `tex/*.webp`. A clone needs `git lfs`
 to open a page; `GIT_LFS_SKIP_SMUDGE=1` plus `git lfs pull --include='*/*/tex/*'` is enough to build. LFS stores a

@@ -118,9 +118,29 @@ const BEACON = (function () {
       return out;
     },
     'the lamp sees every place the order must reach, by 10 m or more': L => L.lamp.sights.filter(s => s.must && !(s.clear >= 10)).map(s => s.name + ' clear by ' + s.clear + ' m'),
+    'a station the lamp cannot see is reached through a relay or a station it sees': L => {
+      const out = [], sight = id => L.lamp.sights.find(s => s.id === id), relay = id => (L.lamp.relays == null ? [] : L.lamp.relays).find(r => r.id === id);
+      L.lamp.sights.filter(s => s.via != null).forEach(s => {
+        const r = relay(s.via), v = sight(s.via);
+        if (r) { if (!(r.seeLamp >= 10 && r.seeFar >= 10) || r.to !== s.id) out.push(s.name + ': its relay ' + r.id + ' does not see both ends by 10 m'); }
+        else if (v) { if (!(v.clear >= 10) && !v.via) out.push(s.name + ': its relay ' + v.id + ' is not seen'); }
+        else out.push(s.name + ': no relay ' + s.via);
+      });
+      return out;
+    },
     "the lamp's year fits the oil the tune sends": L => {
       const have = L.power.oilKgYr * L.power.kWhPerKg, need = L.lamp.kw * L.lamp.nightHours * 365;
       return need <= have ? [] : ['the lamp draws ' + Math.round(need) + ' kWh a year against ' + Math.round(have)];
+    },
+    'the lamp stands on the plinth\'s roof, the plinth in the keep\'s place': L => {
+      const D = L.draw, P = D.plinth, out = [], pl = L.parts.find(p => p.id === 'plinth');
+      const sum = P.storeys.reduce((a, b) => a + b, 0) + P.chapel;
+      if (Math.abs(sum - P.h) > 0.01) out.push('the plinth\'s storeys and chapel make ' + sum + ' m, not its ' + P.h);
+      if (!pl || pl.h !== P.h || JSON.stringify(pl.box) !== JSON.stringify(P.box)) out.push('the plinth part and the draw record disagree');
+      const c = P.h + D.mount.h + D.mount.yoke;
+      if (Math.abs(c - L.lamp.h) > 0.25) out.push('the lamp\'s centre at ' + c + ' m, the sights taken at ' + L.lamp.h);
+      if (!(L.lamp.at[0] >= P.box[0] && L.lamp.at[0] <= P.box[1] && L.lamp.at[1] >= P.box[2] && L.lamp.at[1] <= P.box[3])) out.push('the lamp is off the plinth');
+      return out;
     },
     'gold only on the gate pavilion, the chapel and the holy crown': L => L.parts.filter(p => p.gold && GOLD[p.gold] !== p.kind).map(p => p.id + ' is gilt (' + p.gold + ')'),
     'everyone has a bed: the census sleeps where the parts say': L => {

@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.44,
+    0.533
+   ],
+   "seam_before": [
+    1.462,
+    1.786
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.25,
+   "pattern": false,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "metal.bronze.leafscale",
+  "metal": 0.64,
+  "roughness": 0.34,
+  "scale": [
+   0.75,
+   0.75
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "metal.bronze.leafscale.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on embossed metal surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: cast architectural bronze cladding of overlapping imbricated laurel and oak-leaf scales pointing downward in regular staggered rows, each scale embossed with a crisp central midrib, herringbone veins and a tiny beaded acorn boss at the cusp; heavily patinated in chalky turquoise-malachite verdigris (#3b8c78 to #58a894) in the recessed pockets and overlaps, while the raised leaf midribs, rims and acorn bosses are rubbed back to warm dark antique bronze (#58442e) and subtle burnished gilt-brass (#b89240). Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti imbricated verdigris-bronze columns and kiosk shafts (kits/tabisti, leafscale, 0.75 m)",
+  "sha1": "ce8903eb76c3a01992ecab727513beb3666b5d2d"
+ }
+}

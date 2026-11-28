@@ -10,7 +10,7 @@ The checks, each with a negative:
     continuous, nothing in water or outside the region, spacing across tiles, the rivers that carry water (a dry course
     and a river's stations outside the polygon are not judged), the villages' roads on the land at their grade, nothing
     growing on a road or a village, no NaN;
-  - the region: each site where the cut put it (Erehwon px 805,1516 (on its caldera lake's south shore since edit 5.1-512) and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
+  - the region: each site where the cut put it (Erehwon px 841,1507.9 (on its caldera lake's south shore; re-seated 2026-11-23 on the re-run's dry shore) and Qiblai 922,1595 (at the cataracts since 2026-11-11) in the 'xanadu' overlay, Longsong
     1228.88,1621.23 in the 'oidong valley' since the 2026-11-16 recut), on dry land, its kit growing there (the negative reads Erehwon at Longsong's spot,
     in the Oidong Valley, where the Xanadu kit does not grow); Thalaba 840,1463 (since 2026-11-16, scale model 5.1e12) in the 'xanadu' overlay;
   - the lake's small islands (src/44-world-landforms.js, the scale model's landform records): each over its lake at its
@@ -20,6 +20,10 @@ The checks, each with a negative:
     negative changes the world seed), every village whole, its buildings apart and on good ground, every road at its lane
     end (the negative stacks two buildings), every village cleared of flora, tagged and drawn with the kit's pieces (the
     negative reads the world without the villages' clearing).
+  - the pitched camps (core/world 48w KWCAMPS, 88s; settlements/xanadu/WORKS-PLAN.md W2: _worldCamps.checks): each camp pitched whole on the
+    world's ground, its form (the Tears' ring: one gate, the gold room, the sluices in the bed; the caravan's laager: its wagons and
+    the escort's ring), pitched in its season and struck out of it, with the negatives `plan` and `season`; a camp whose site the
+    cut does not hold yet is n/a (awaiting the region's recut);
   - the caverns (core/world 42k, 88k: Route A's tubes, src/48k-world-tubes.js):
     - the plan's checks on the drawn ground (WTUBES.check: every tube meets the surface, each opening where the spec puts it,
       the floor and the roof under the ground but at the openings, the grade); negatives: a tube with its openings taken
@@ -50,7 +54,7 @@ APPLIES = {'flora placement is seeded by cell (order-free)': 'kits', 'nothing ro
            'the highways lie on the land and keep their grade': 'roads', 'nothing grows on a highway or in a town': 'kits'}
 HAS = "({kits:WORLD_KITS.length>0,rivers:(WORLD_DATA.meta.rivers||[]).length>0,roads:!!WORLD_DATA.roads,towns:!!WORLD_DATA.towns})"
 REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
- const want={s57bkv9741:{px:[805,1516],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1228.88,1621.23],biome:'oidong valley',kit:'oidong'},shvo49k0y2:{px:[840,1463],biome:'xanadu',kit:'xanadu'}};   /* Longsong at its 2026-11-11 pin since the 2026-11-16 recut */
+ const want={s57bkv9741:{px:[841,1507.9],biome:'xanadu',kit:'xanadu'},skm4jjo2vl:{px:[922,1595],biome:'xanadu',kit:'xanadu'},sq80bzd7ep:{px:[1228.88,1621.23],biome:'oidong valley',kit:'oidong'},shvo49k0y2:{px:[840,1463],biome:'xanadu',kit:'xanadu'}};   /* Longsong at its 2026-11-11 pin since the 2026-11-16 recut */
  for(const id in want){const S=(M.sites||[]).find(s=>s.id===id),W=want[id];if(!S){bad.push('no site '+id);continue;}
   const L=(M.sites||[]).find(s=>s.id==='sq80bzd7ep'),moved=neg==='site'&&id==='s57bkv9741'&&L;   /* the negative: Erehwon read at Longsong's spot, in the Oidong Valley */
   const x=moved?L.x:S.x,z=moved?L.z:S.z,k=WORLD_KITS.findIndex(q=>q.name===W.kit);
@@ -64,7 +68,7 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
     boundary fault's wall rising behind it (Opal Valley grows no kit here yet: KNOWN_ISSUES.md). The negative reads it 40 km out
     in the lake's middle */
  {const S=(M.sites||[]).find(s=>s.id==='slaitwal0001');if(!S)R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:false,detail:'no site slaitwal0001'});
-  else{const x=S.x,z=S.z+(neg==='site'?14000:0),dry=WORLD.at(x,z).depth<0,h=WORLD.H(x,z);   /* WORLD.at's record is shared: read it at once */let lake=null;for(let d=500;d<=8000&&lake==null;d+=250){const B=WORLD.at(x,z+d);if(B.depth>0)lake=d;}
+  else{const x=S.x,z=S.z+(neg==='site'?14000:0),dry=WORLD.at(x,z).depth<0,h=WORLD.H(x,z);let lake=null;for(let d=500;d<=8000&&lake==null;d+=250){const B=WORLD.at(x,z+d);if(B.depth>0)lake=d;}
    const wall=Math.max(...[3000,6000,9000].map(d=>WORLD.H(x,z-d)))-h;
    R.push({name:'Lāiṭwāl on its bench under the wall, the lake at its feet',ok:S.px===1028&&S.py===1653&&dry&&lake!=null&&wall>1500,
     detail:'px '+S.px+','+S.py+', ground '+Math.round(h)+' m'+(dry?' (dry)':' (in water)')+', the lake '+(lake==null?'not within 8 km south':(lake/1000).toFixed(2)+' km south')+', the wall '+Math.round(wall)+' m higher within 9 km north'});}}
@@ -85,6 +89,27 @@ REGION = r"""(neg)=>{const R=[],M=WORLD_DATA.meta,bad=[],lines=[];
  if(!PD||!E)bad2.push('no Pleasure Dome isle or no Erehwon');else{const d=Math.hypot(PD.x-(E.x+70),PD.z-(E.z-613));if(d>10)bad2.push('the Pleasure Dome isle '+d.toFixed(0)+' m off the page\'s island');else l2.push('the Pleasure Dome isle '+d.toFixed(1)+' m off the page\'s island');}
  LF.off=false;
  R.push({name:'the lake\'s small islands stand over the water at their records, the Pleasure Dome\'s at the page\'s island',ok:!bad2.length,detail:bad2.length?bad2.join('; '):l2.join('; ')});
+ /* Gihon (settlements/gihon G3 on this region, 2026-11-22): the site at the tune's place with its ring of five; the Landing
+    (core/world 48s laidVillage) on both banks of the outlet, over 50 lots a bank on dry ground, a pier of three runs or more into
+    the lake each side with its light over the water; the Alph's five; each of them among the villages 88s draws. The
+    negative reads the Landing without its south bank and pier */
+ {const P=WORLD_DATA.sites,b3=[],l3=[],G=(M.sites||[]).find(s=>s.id==='sgihon000001'),K=P.sites.find(s=>s.id==='sl758m2396'),Gs=P.sites.find(s=>s.id==='sgihon000001');
+  const drawn=new Set(_sites.villages.map(v=>v.id));
+  if(!G||!Gs)b3.push('no site sgihon000001');else{if(G.px!==955.7||G.py!==1607.9)b3.push('Gihon at px '+G.px+','+G.py);
+   const ring=(Gs.hamlets||[]).filter(h=>/gh\.ring\./.test(h.id));if(ring.length!==5)b3.push(ring.length+' ring villages');
+   ring.forEach(h=>{if(!drawn.has(h.id))b3.push(h.id+' not drawn');});l3.push(ring.length+' in the ring ('+ring.reduce((n,h)=>n+h.census.pop,0)+' people)');}
+  const Ld=K&&(K.hamlets||[]).find(h=>h.id==='sl758m2396/hamlet/landing');
+  if(!Ld)b3.push('no Landing');else{const R0=neg==='site'?Ld.records.filter(r=>!/\/gl\.(south|pier\.south)\./.test(r.id)):Ld.records,has=(r,p)=>r.id.indexOf('/gl.'+p)>0;
+   const lots=b=>R0.filter(r=>!r.on&&has(r,b+'.')),runs=b=>R0.filter(r=>r.kind==='pier'&&has(r,'pier.'+b+'.')),light=b=>R0.find(r=>r.kind==='lighthouse'&&has(r,'pier.'+b+'.'));
+   for(const b of ['north','south']){const n=lots(b).length,rs=runs(b),L=light(b);if(n<50)b3.push('the '+b+' bank: '+n+' lots');
+    if(rs.length<3)b3.push('the '+b+' pier: '+rs.length+' runs');
+    if(!L)b3.push('no light on the '+b+' pier');else if(!(WORLD.water(L.x,L.z)>WORLD.H(L.x,L.z)+1))b3.push('the '+b+' pier\'s light not over the lake');
+    const wet=lots(b).find(r=>!(WORLD.water(r.x,r.z)<WORLD.H(r.x,r.z)-1));if(wet)b3.push(wet.id+' in the water');}
+   if(!drawn.has(Ld.id))b3.push('the Landing not drawn');
+   l3.push('the Landing: '+lots('north').length+' and '+lots('south').length+' lots, piers of '+runs('north').length+' and '+runs('south').length+' runs, '+Ld.census.pop+' people, '+Ld.dropped.length+' laid records the world has no ground or water for ('+Ld.dropped.join(', ')+')');}
+  const alph=K?(K.hamlets||[]).filter(h=>/\/alph\./.test(h.id)):[];if(alph.length!==5)b3.push(alph.length+' Alph hamlets');
+  alph.forEach(h=>{if(!drawn.has(h.id))b3.push(h.id+' not drawn');});l3.push(alph.length+' on the Alph ('+alph.reduce((n,h)=>n+h.census.pop,0)+' people)');
+  R.push({name:'Gihon on the region: its ring of five, the Landing on both banks with a pier into the lake each side, the Alph\'s five',ok:!b3.length,detail:b3.length?b3.join('; '):l3.join('; ')});}
  return R;}"""
 
 
@@ -124,8 +149,11 @@ TUBE_WALK = r"""(o)=>{const TB=_tubes,T=TB.plan.tubes.find(t=>t.id===o.tube),GD=
  let steps=0,kinds='',maxDy=0,inRock=0,lastY=p.y,s=0,best=0,since=0,maxOff=0,next=0;const samples=[];
  try{while(steps<o.max){const q=proj();s=q.s;maxOff=Math.max(maxOff,q.off);if(s>=LEN-3)break;if(s>best+.5){best=s;since=0;}else if(++since>60)break;
    /* near either end and each portal the terrain streams round the walker, as the frame loop would (the ground it steps onto is
-      the drawn one) */
+      the drawn one); between them the terrain alone, every 100 steps (220 m), so the ground read over the tube is drawn round the
+      walker, not a far, coarse chunk left from the last settle (2026-11-23: on the re-run's ground such a chunk dipped under the
+      feeder's floor about 600 m short of the Hall, and the walker stepped up onto it, 54 m, and walked the rest on the ground) */
    if((s<300||s>LEN-300||ps.some(c=>Math.abs(c-s)<300))&&steps%15===0)_api.settle(20000);
+   else if(steps%100===0)for(let k=0;k<60&&(k<2||TERRAIN.pending());k++)TERRAIN.update(60);
    const t=at(s+8);CAM.st.yaw=Math.atan2(-(t[0]-p.x),-(t[1]-p.z));CAM.st.pitch=0;CAM.update(o.dt);steps++;
    const gy=GD(p.x,p.z),k=TB.stats().walk.last;if(k&&kinds.slice(-1)!==k[0])kinds+=k[0];maxDy=Math.max(maxDy,Math.abs(p.y-lastY));lastY=p.y;
    if(p.y-1.7<gy-2&&TB.voidAt(p.x,p.y,p.z)>=0)inRock++;
@@ -288,7 +316,7 @@ def say(r, neg=None):
 async def run(a):
     os.makedirs(a.out, exist_ok=True)
     async with verify_page(a.html, here=HERE, size=a.size, settle_ms=0,
-                           ready_js="typeof CAM==='object'&&CAM&&window._api&&window._sites") as V:
+                           ready_js="typeof CAM==='object'&&CAM&&window._api&&window._sites&&window._worldCamps") as V:
         pg, errs, fails = V.page, V.errs, V.fails
         pg.set_default_timeout(900000)
         if not V.ready:
@@ -310,10 +338,12 @@ async def run(a):
                 if need and not has[need]:
                     print('  n/a   ' + r['name'] + ' : this region has no ' + need + ' yet'); continue
                 if say(r): fails.append(r['name'])
+            await VW.negatives(pg, has, fails)   # the world's negatives, each must fail (core/world verify_world.py; S3-26)
             print('--- the region ---')
             for neg in (None, 'site', 'landforms'):
                 for r in await pg.evaluate(REGION, neg):
-                    # a negative is judged on the check it breaks: the site's on the region, the stamp's on the islands
+                    # a negative is judged on the check it breaks: the site's on the region (and Gihon's: its Landing read
+                    # without the south bank), the stamp's on the islands
                     if neg and (neg == 'landforms') != ('islands' in r['name']):
                         continue
                     if say(r, neg): fails.append(('negative ' + neg + ' ' if neg else '') + r['name'])
@@ -323,6 +353,15 @@ async def run(a):
             for neg, key in (('plan', 'the baked plan'), ('ground', "on the world's ground"), ('clear', 'cleared of flora')):
                 r = [x for x in await pg.evaluate('_sites.checks(%r)' % neg) if key in x['name']][0]
                 if say(r, neg): fails.append('negative ' + neg)
+            # the pitched camps (core/world 48w KWCAMPS, 88s; settlements/xanadu/WORKS-PLAN.md W2): baked or planned at load, each with its negatives
+            print('--- the pitched camps (core/world 48w KWCAMPS, 88s: core/camp) ---')
+            for r in await pg.evaluate('_worldCamps.checks()'):
+                if r.get('na'):
+                    print('  n/a   ' + r['name'] + ' : ' + r['detail']); continue
+                if say(r): fails.append(r['name'])
+            for neg, key in (('plan', 'pitched whole'), ('season', 'pitched in its season')):
+                rs = [x for x in await pg.evaluate('_worldCamps.checks(%r)' % neg) if key in x['name']]
+                if rs and say(rs[0], neg): fails.append('negative ' + neg)
         if a.assert_:
             await VW.resources(pg, V, a.out, fails)
         if a.assert_ or a.tubes:

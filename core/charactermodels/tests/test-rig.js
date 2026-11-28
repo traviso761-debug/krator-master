@@ -292,6 +292,14 @@ if(fs.existsSync(path.join(HERE, 'data', 'mpfb_giant', 'kit.json'))) (function()
     }
     return true;
   }), b + ': only lizardmen/frogmen draw their digitigrade legs');
+  var PF = peoples.filter(function(p){ return p.id === 'frogmen'; })[0];
+  for(var sf = 1; sf <= 15; sf++){
+    var stf = KCHAR.stranger(sf, k, PF);
+    ok(JSON.stringify(stf.mods) === '["mod_head_frog","mod_legs_frog"]' &&
+       (!stf.armour.feet || KCHAR.fits(k.items.filter(function(it){ return it.id === stf.armour.feet; })[0], stf, k)) &&
+       (!stf.armour.legs || KCHAR.fits(k.items.filter(function(it){ return it.id === stf.armour.legs; })[0], stf, k)),
+       b + ': frogmen stranger seed ' + sf + ' wears frog head+digitigrade webbed legs and only compatible digitigrade footwear/legwear');
+  }
   if(b === 'mpfb_giant') return;
   var dg = k.items.filter(function(it){ return it.id === 'mod_legs_coyote'; })[0];
   ok(!!dg && dg.replaces_feet && dg.furred && dg.digitigrade && dg.hides > 5000, b + ': mod_legs_coyote entry present and hides lower leg skin');

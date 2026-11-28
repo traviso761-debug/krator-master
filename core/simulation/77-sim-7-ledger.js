@@ -21,7 +21,9 @@
 // used - bought + eaten - spoiled: `used` counts a household's purchase, which only moves food into its store, and the
 // spoilage booked used so older books still balance. Inbound, outbound and ordered stand beside the balance: they are in
 // no settlement's closing.
-// THE ROUTES. For each leg a>b and good: shipped = landed + the change at sea. A sender's exports are its shipped loads and
+// THE ROUTES. For each leg a>b and good: shipped = landed + what was LOST in flight + the change at sea. A loss
+// (SIM.tradeLose: an ambush reaching into a hold) is off the map from the route's side; if it lands in an outlaw's
+// cache that settlement books it as an import from abroad, which abroadIn already allows. A sender's exports are its shipped loads and
 // what went abroad (abroadOut, off the map: never negative); a receiver's imports its landed loads and what came from
 // abroad (abroadIn: a timer's import or a carrier's lot). So a load is in one settlement, on a route, or off the map,
 // once. Deterministic: no draws.
@@ -29,8 +31,33 @@
   'use strict';
   var SIM = root.SIM;
   SIM.LEDGER_VERSION = 1;
+  /* Canonical 10 settlement pin stages (scale model 5.1): `town`, `inhabited ruin` and `fort` are active living settlements;
+     only `ruin` and `ruined arcology` are uninhabited and skipped when enumerating active settlement economies. */
+  SIM.SETT_STAGES = {
+    city:             { living:true,  pop:10000, reachKm:25, glyph:'city' },
+    town:             { living:true,  pop:2800,  reachKm:20, glyph:'town' },
+    village:          { living:true,  pop:750,   reachKm:15, glyph:'village' },
+    fort:             { living:true,  pop:800,   reachKm:15, glyph:'fort' },
+    outpost:          { living:true,  pop:300,   reachKm:12, glyph:'outpost' },
+    cavern:           { living:true,  pop:1200,  reachKm:15, glyph:'cavern' },
+    arcology:         { living:true,  pop:8000,  reachKm:22, glyph:'arcology' },
+    'inhabited ruin': { living:true,  pop:1200,  reachKm:15, glyph:'inhabited ruin' },
+    ruin:             { living:false, pop:0,     reachKm:0,  glyph:'ruin' },
+    'ruined arcology':{ living:false, pop:0,     reachKm:0,  glyph:'ruined arcology' }
+  };
+  SIM.settStage = function(type){
+    var k = typeof type === 'string' ? type.trim().toLowerCase() : '';
+    return SIM.SETT_STAGES[k] || SIM.SETT_STAGES.village;
+  };
+  SIM.isLivingStage = function(type){
+    var k = typeof type === 'string' ? type.trim().toLowerCase() : '';
+    return SIM.SETT_STAGES[k] ? SIM.SETT_STAGES[k].living : true;
+  };
   var FLOWS = ['made', 'imported', 'exported', 'used', 'short'];
-  function keys(){ return SIM.ECONS ? SIM.ECON_ORDER.slice() : (SIM.ECON ? ['_'] : []); }
+  function keys(){
+    var ks = SIM.ECONS ? SIM.ECON_ORDER.slice() : (SIM.ECON ? ['_'] : []);
+    return ks.filter(function(k){ var E = k==='_' ? SIM.ECON : SIM.econ(k); return !(E && E.stage && !SIM.isLivingStage(E.stage)); });
+  }
   function econOf(k){ return k==='_' ? SIM.ECON : SIM.econ(k); }
   function snapTown(k){
     var E=econOf(k), I=SIM.ITEMS, keyed=k!=='_', St=keyed ? SIM.stocks(k) : SIM.stocks(), B=I ? (keyed ? ((I.statsBy||{})[k]||{}) : I.stats) : {}, out={};
@@ -51,7 +78,8 @@
           C.cargo.forEach(function(c){ var k2=R.stops[C.orig].settlement+'>'+R.stops[c.at!=null ? c.at : C.dest].settlement, o2=sea[k2]||(sea[k2]={}); o2[c.good]=(o2[c.good]||0)+c.n; }); return; }
         if(C.to==null || !C.cargo.length) return; var key=R.stops[C.from].settlement+'>'+R.stops[C.to].settlement, o=sea[key]||(sea[key]={});
         C.cargo.forEach(function(c){ o[c.good]=(o[c.good]||0)+c.n; }); });
-      out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)) }; });
+      out.routes[id]={ shipped:JSON.parse(JSON.stringify(R.shipped)), landed:JSON.parse(JSON.stringify(R.landed)),
+        lost:JSON.parse(JSON.stringify(R.lost||{})) }; });
     if(SIM.MONEY && SIM.moneySnap) out.money=SIM.moneySnap();   /* money's accounts and books (77-sim-6-money.js), when a world keeps money */
     return out;
   };
@@ -60,13 +88,14 @@
     var tol=opt && opt.tol!=null ? opt.tol : 0.5, out={ ok:true, problems:[], towns:{}, routes:{} }, bad=function(m){ out.ok=false; out.problems.push(m); }, shipOut={}, landIn={};
     if(!a || !b || a.version!==b.version){ bad('the snapshots are of different versions'); return out; }
     Object.keys(b.routes).forEach(function(id){ var Rb=b.routes[id], Ra=a.routes[id]||{}, L=out.routes[id]={}, pairs={};
-      [Rb.shipped, Rb.landed, b.sea[id]||{}, a.sea[id]||{}].forEach(function(o){ Object.keys(o).forEach(function(k){ pairs[k]=1; }); });
+      [Rb.shipped, Rb.landed, Rb.lost||{}, b.sea[id]||{}, a.sea[id]||{}].forEach(function(o){ Object.keys(o).forEach(function(k){ pairs[k]=1; }); });
       Object.keys(pairs).forEach(function(k){ var gs={}, leg=L[k]={};
-        [Rb.shipped[k], Rb.landed[k], (b.sea[id]||{})[k], (a.sea[id]||{})[k]].forEach(function(o){ Object.keys(o||{}).forEach(function(g){ gs[g]=1; }); });
+        [Rb.shipped[k], Rb.landed[k], (Rb.lost||{})[k], (b.sea[id]||{})[k], (a.sea[id]||{})[k]].forEach(function(o){ Object.keys(o||{}).forEach(function(g){ gs[g]=1; }); });
         var from=k.split('>')[0], to=k.split('>')[1];
-        Object.keys(gs).forEach(function(g){ var sh=v(Rb.shipped, k, g)-v(Ra.shipped, k, g), la=v(Rb.landed, k, g)-v(Ra.landed, k, g), s0=v(a.sea[id], k, g), s1=v(b.sea[id], k, g);
-          leg[g]={ shipped:sh, landed:la, seaFrom:s0, seaTo:s1 };
-          if(Math.abs(s0+sh-la-s1)>tol) bad(id+' '+k+' '+g+': '+s0+' at sea + '+sh+' shipped - '+la+' landed is not the '+s1+' at sea');
+        Object.keys(gs).forEach(function(g){ var sh=v(Rb.shipped, k, g)-v(Ra.shipped, k, g), la=v(Rb.landed, k, g)-v(Ra.landed, k, g),
+            lo=v(Rb.lost||{}, k, g)-v(Ra.lost||{}, k, g), s0=v(a.sea[id], k, g), s1=v(b.sea[id], k, g);
+          leg[g]={ shipped:sh, landed:la, lost:lo, seaFrom:s0, seaTo:s1 };
+          if(Math.abs(s0+sh-la-lo-s1)>tol) bad(id+' '+k+' '+g+': '+s0+' at sea + '+sh+' shipped - '+la+' landed'+(lo ? ' - '+lo+' lost' : '')+' is not the '+s1+' at sea');
           var so=shipOut[from]||(shipOut[from]={}), li=landIn[to]||(landIn[to]={}); so[g]=(so[g]||0)+sh; li[g]=(li[g]||0)+la; }); }); });
     Object.keys(b.towns).forEach(function(k){ var B=b.towns[k], A=a.towns[k]||{}, T=out.towns[k]={};
       Object.keys(B).forEach(function(g){ var r=B[g], o=A[g]||{}, d=function(f){ return r[f]-(o[f]||0); };

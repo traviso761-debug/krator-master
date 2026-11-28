@@ -7,7 +7,7 @@ R('cotton', 'Sunboll cotton', 'spinning', [3, 4], [1, 3], {card: 'card.crop.cott
 R('flax', 'Sea-linen flax', 'spinning', [1, 3], [2, 3], {also: ['oil'], atm: [0, 2], card: 'card.crop.flax', home: ['nhighlands', 'shighlands'], stores: ['dried'], note: 'the Hykkousoi sea-linen'});
 R('cairn-nettle', 'Cairn nettle', 'spinning', [0, 2], [2, 3], {atm: [0, 1], reach: 0, card: 'card.crop.nettle', home: ['ehighlands']});
 R('ramie', 'Silk-nettle ramie', 'spinning', [4, 4], [3, 4], {card: 'card.crop.nettle', home: ['eastabyss', 'nwbay']});
-R('mulberry', 'Vale mulberry', 'spinning', [1, 3], [2, 3], {form: 'tree', card: 'card.orchard.broad', home: ['xanadu'], note: 'silk: the leaf feeds the silkworm'});
+R('mulberry', 'Vale mulberry', 'spinning', [1, 3], [2, 3], {form: 'tree', card: 'card.orchard.broad', home: ['xanadu', 'nwlowlands', 'spiderlake'], note: 'silk: the leaf feeds the silkworm'});
 
 /* ---- cordage, weaving, sheet, thatch (the existing wild fibres and the proposals) */
 R('rope-banana', 'Rope banana', 'cordage', [4, 4], [3, 4], {card: 'card.paddle', home: ['hyperjungle', 'geyser', 'ringisles']});
@@ -16,7 +16,7 @@ R('baobab-bark', 'Baobab bark', 'cordage', [4, 4], [1, 2], {form: 'tree', card: 
 R('rope-puff', 'Rope-puff fibre', 'cordage', [2, 4], [2, 3], {form: 'tree', home: ['throne'], src: 'throne'});
 R('mat-reed', 'Mat reed', 'weaving', [3, 4], [3, 4], {also: ['cordage', 'thatch'], water: 'aquatic', card: 'card.reed', home: ['eastabyss', 'nwbay'], src: 'eastabyss'});
 R('willow', 'Willow withies', 'weaving', [1, 3], [2, 4], {form: 'tree', card: 'card.weeper', home: ['swlowlands', 'xanadu', 'nwlowlands'], src: 'swlowlands'});
-R('pandan', 'Pandanus', 'thatch', [4, 4], [2, 4], {also: ['weaving'], form: 'tree', card: 'card.screwpine', home: ['geyser', 'ringisles', 'nwbay', 'shighlands'], src: 'geyser'});
+R('pandan', 'Pandanus', 'thatch', [4, 4], [2, 4], {also: ['weaving'], form: 'tree', card: 'card.screwpine', home: ['geyser', 'ringisles', 'nwbay', 'shighlands', 'nwlowlands'], src: 'geyser'});
 R('ichu', 'Ichu', 'thatch', [0, 1], [1, 2], {atm: [0, 1], also: ['cordage'], card: 'card.ichu', home: ['ehighlands'], src: 'ehighlands'});
 R('thatch-grass', 'Thatch grass', 'thatch', [4, 4], [1, 2], {also: ['weaving'], card: 'card.grass.dry', src: 'abyssal-savannah', home: ['abyssal-savannah'], note: 'the tall grass of the abyssal savannah, to 3 m in the dense air; cut after the rains, before the burns'});
 R('mat', 'The mat', 'sheet', [0, 5], [0, 4], {also: ['weaving'], form: 'fungus', grown: 'underground', water: 'bed', works: 'sealed-beds', hazard: 'digests what sleeps on it', home: ['throne'], src: 'throne', stores: ['pressed'], note: 'a slime mould, dried and pressed to a felt-like sheet'});
@@ -24,17 +24,17 @@ R('mat', 'The mat', 'sheet', [0, 5], [0, 4], {also: ['weaving'], form: 'fungus',
 /* ---- utility: dye */
 R('annatto', 'Sunseed annatto', 'dye', [4, 4], [3, 4], {form: 'shrub', card: 'card.crop.annatto', colour: 'orange', home: ['hyperjungle']});
 R('indigo', 'Jungle indigo', 'dye', [4, 4], [2, 4], {form: 'shrub', card: 'card.crop.indigo', colour: 'blue', home: ['hyperjungle']});
-R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands'], note: 'also Clan woad: the northern clans'});
+R('woad', 'Valley woad', 'dye', [1, 3], [1, 3], {atm: [0, 2], card: 'card.crop.woad', colour: 'blue', home: ['ebadlands', 'nhighlands', 'nwlowlands', 'westrift', 'riftrim'], note: 'also Clan woad: the northern clans'});
 R('broom', 'Heath broom', 'dye', [0, 2], [1, 3], {atm: [0, 2], form: 'shrub', card: 'card.broom', colour: 'yellow', home: ['nhighlands']});
-R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'sedesert', 'nwouterwall', 'wouterwall', 'siphon-pits', 'midbasin', 'loom-chasms'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
-R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands', 'paintedhighlands'], src: 'ebadlands'});
-R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands']});
-R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands'], src: 'nhighlands', note: 'red and black'});
+R('lichen', 'Rosette lichen', 'dye', [0, 3], [1, 3], {atm: [0, 2], colour: 'brown', home: ['shighlands', 'swhighlands', 'sedesert', 'nwouterwall', 'neouterwall', 'wouterwall', 'siphon-pits', 'midbasin', 'loom-chasms', 'gills', 'westrift', 'riftrim', 'greenstep', 'labyrinth', 'firebliss', 'godshearth', 'crook', 'outlands', 'spiderlake', 'catch', 'korona', 'opalvalley'], src: 'shighlands', note: 'a lichen dye (the colour is not named in the kits)'});
+R('rabbitbrush', 'Rabbitbrush flowers', 'dye', [2, 4], [0, 1], {form: 'shrub', colour: 'yellow', home: ['ebadlands', 'paintedhighlands', 'nsemiarid'], src: 'ebadlands'});
+R('ghost-gum', 'Ghost-gum leaf', 'dye', [2, 4], [0, 2], {form: 'tree', card: 'card.ghostwood', colour: 'gold', home: ['nwlowlands', 'ancientsvalley', 'dambasins', 'riavalley', 'guilin', 'k-guilin']});
+R('alder-bark', 'Grey alder bark', 'dye', [1, 2], [3, 3], {form: 'tree', colour: 'red', also: [], home: ['nhighlands', 'nwlowlands', 'crook', 'riavalley'], src: 'nhighlands', note: 'red and black'});
 R('bloodwood', 'Bloodwood sap', 'dye', [4, 4], [2, 4], {form: 'tree', colour: 'red', home: ['hyperjungle'], homeOnly: true, src: 'hyperjungle', stores: ['dried'], note: 'the red of the Screamers\' painted dots (LORE.md 6.6); the north hyperjungle\'s bloodwood (biomes/hyperjungle 57), tapped, not planted: Screamer Country\'s one export no other polity has (the owner, 2026-11-12; openworld/TRADE-GOODS.md)'});
 R('ironbark-tannin', 'Ironbark bark', 'dye', [4, 4], [2, 3], {form: 'tree', colour: 'brown', home: ['nwbay', 'swbay'], src: 'swbay'});
 R('purple-fan', 'Purple fan leaves', 'dye', [3, 4], [1, 2], {colour: 'purple', home: ['rift'], src: 'rift'});
 R('aril-blue', 'Aril blue', 'dye', [3, 4], [2, 3], {homeOnly: true, colour: 'pale blue', home: ['nwbay'], src: 'nwbay', note: 'the traveller\'s fan arils; the Hykkousoi pale blue, slate with ironbark tannin'});
-R('mangrove-red', 'Mangrove bark', 'dye', [4, 4], [3, 4], {form: 'tree', colour: 'red-brown', home: ['swlowlands'], src: 'swlowlands'});
+R('mangrove-red', 'Mangrove bark', 'dye', [4, 4], [3, 4], {form: 'tree', colour: 'red-brown', home: ['swlowlands', 'ancientsvalley'], src: 'swlowlands'});
 R('flame-streamer', 'Flame-streamer orange', 'dye', [4, 5], [3, 4], {homeOnly: true, water: 'aquatic', colour: 'orange', home: ['geyser'], note: 'the run-off mat pigment'});
 R('dragons-blood', 'Dragon\'s blood resin', 'dye', [3, 5], [0, 2], {homeOnly: true, form: 'tree', colour: 'red', home: ['nwbay', 'rift', 'sedesert', 'swbay'], src: 'sedesert'});
 R('bay-purple', 'Bay purple', 'dye', [3, 4], [2, 4], {homeOnly: true, colour: 'purple', home: ['swbay'], note: 'a murex-like bay snail: Voth\'s deep purple'});
@@ -77,12 +77,12 @@ R('dried-reed', 'Dried warm reed', 'fuel', [4, 5], [3, 4], {water: 'aquatic', ca
 /* ---- the Oidong Valley (biomes/oidong, 2026-10-19): the holy plants, the monks' physic and the valley's fibres and dyes. Medicinal
    plants and reagents are common there (the owner); `herb` is their bucket when they are eaten or steeped, `reagent` when they are the
    monks' rites' stuff. The dye is the Order's own blue. */
-R('lotus-root', 'Giant lotus root', 'tuber', [1, 3], [3, 4], {also: ['nut'], water: 'aquatic', card: 'card.lotus', src: 'oidong', home: ['oidong', 'xanadu'], stores: ['fresh', 'dried'], note: 'the giant lotus: its root the staple starch, its seeds dried'});
+R('lotus-root', 'Giant lotus root', 'tuber', [1, 3], [3, 4], {also: ['nut'], water: 'aquatic', card: 'card.lotus', src: 'oidong', home: ['oidong', 'xanadu', 'nwlowlands'], stores: ['fresh', 'dried'], note: 'the giant lotus: its root the staple starch, its seeds dried'});
 R('lotus-silk', 'Lotus silk', 'spinning', [1, 3], [3, 4], {water: 'aquatic', card: 'card.lotus', src: 'oidong', home: ['oidong'], stores: ['dried'], note: 'the fibre drawn from the giant lotus stems, spun fine: the monks\' cloth'});
 R('cherry', 'Valley cherry', 'fruit', [1, 3], [2, 3], {form: 'tree', card: 'card.blossom', src: 'oidong', home: ['oidong'], stores: ['fresh', 'dried']});
 R('bodhi-fig', 'Sacred fig', 'fruit', [1, 3], [2, 4], {form: 'tree', card: 'card.broadleaf', src: 'oidong', home: ['oidong'], note: 'small purple figs; the tree is never felled'});
 R('bell-pod', 'Bell-pod beads', 'berry', [1, 2], [3, 4], {also: ['reagent'], form: 'tree', src: 'oidong', home: ['oidong'], stores: ['fresh', 'dried'], hazard: 'the bells: one is sleep, two is a day lost', note: 'the beads sweet; the coral bells dried, the monks\' sleeping draught'});
-R('bamboo', 'Jade bamboo', 'weaving', [1, 3], [3, 4], {also: ['cordage', 'sheet', 'vegetable'], card: 'fibre.bamboo.lattice', src: 'oidong', home: ['oidong'], note: 'canes, baskets, pipes and pens; pulped for paper; the shoots boiled'});
+R('bamboo', 'Jade bamboo', 'weaving', [1, 3], [3, 4], {also: ['cordage', 'sheet', 'vegetable'], card: 'fibre.bamboo.lattice', src: 'oidong', home: ['oidong', 'nwlowlands'], note: 'canes, baskets, pipes and pens; pulped for paper; the shoots boiled'});
 R('chalice-grass', 'Chalice-rim grass', 'sheet', [1, 2], [3, 4], {homeOnly: true, form: 'tree', src: 'oidong', home: ['oidong'], note: 'the pale grass of the chalice trees\' rims, cut for the finest paper'});
 R('maple-syrup', 'Paper-maple syrup', 'sweetener', [1, 2], [3, 4], {form: 'tree', src: 'oidong', home: ['oidong'], stores: ['pressed']});
 R('peyote', 'Peyote buttons', 'reagent', [1, 2], [1, 2], {atm: [0, 2], src: 'oidong', home: ['oidong'], stores: ['dried'], hazard: 'the seeing: a day of visions', note: 'dried buttons from the gravel flats; the monks\' seeing reagent'});
@@ -122,3 +122,9 @@ R('wallhemp', 'Wallhemp', 'cordage', [1, 2], [1, 3], {also: ['spinning', 'oil'],
 /* ---- the Cut (biomes/cut, PLAN.md section 7, 2026-10-26) */
 R('rankgrass', 'Rankgrass', 'thatch', [4, 5], [0, 1], {needs: 'salt', form: 'grass', card: 'card.rankgrass', src: 'cut', home: ['cut'], note: 'a salt grass seeding in straight lines along the field of the warp; grazing on the flats, salt-tolerant thatch'});
 R('circlelichen', 'Circle lichen', 'herb', [1, 2], [0, 4], {also: ['medicine', 'dye'], colour: 'orange', atm: [0, 2], form: 'lichen', src: 'cut', home: ['cut', 'siphon-pits'], stores: ['dried'], note: 'perfect circles on the bare cut faces; scraped and steeped as an antiseptic wash (as Usnea); boiled, the orange circles dye wool yellow to orange (as Xanthoria)'});
+/* ---- Xanadu and Eternian true lacquer (openworld/TRADE-SCOPE.md section 7.6) and the Tiers' natives (biomes/tiers/PLAN.md section 4) */
+R('lacquer-tree', 'Lacquer sumac', 'reagent', [2, 3], [2, 3], {homeOnly: true, form: 'tree', src: 'proposed', home: ['xanadu', 'nwlowlands'], stores: ['cured'], note: 'Toxicodendron vernicifluum: the sap bled from scored bark and cured in damp cellars into true lacquer for Xanadui and Eternian lacquerware (openworld/TRADE-SCOPE.md section 7.6)'});
+R('steppalm-fibre', 'Step palm fibre', 'cordage', [3, 3], [1, 2], {homeOnly: true, also: ['thatch'], form: 'tree', src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the collar skirts\' fibre (each year\'s dead crown): rope, and the fronds for thatch'});
+R('bandlichen-orchil', 'Band lichen orchil', 'dye', [1, 3], [0, 2], {homeOnly: true, colour: 'purple', src: 'tiers', home: ['tiers'], note: 'the risers\' band lichen scraped from the beds and steeped in stale urine: the Kingdom\'s trade purple'});
+R('shelfoak-tannin', 'Shelf oak tannin', 'dye', [2, 3], [1, 2], {homeOnly: true, also: ['reagent'], colour: 'brown', form: 'tree', src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the grey bark\'s inner layer, boiled: a warm brown, and the tanners\' bark'});
+R('stepmoss-lime', 'Step moss lime', 'reagent', [2, 3], [1, 3], {homeOnly: true, src: 'tiers', home: ['tiers'], stores: ['dried'], note: 'the tufa the step moss lays down, burned: quicklime for mortar, tanning and the dyers\' mordant'});

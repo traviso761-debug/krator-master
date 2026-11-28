@@ -129,21 +129,42 @@ def build_reads(build, root=ROOT, use_list=True, pages=False):
     return out
 
 
-def test_reads(test, root=ROOT):
-    """{repo path: why} of the dist/ bundles a node test requires."""
-    test = test.replace(os.sep, '/')
+def _test_wants(test, root):
+    """(the test's own build folder, [(folders named before 'dist', file name)]) for a node test."""
     with open(os.path.join(root, test), encoding='utf-8', errors='replace') as fh:
         text = fh.read()
     here = os.path.dirname(test)
     own = here[:-len('/tests')] if here.endswith('/tests') else here
-    out = {}
-    wants = []   # (folders named before 'dist', file name)
+    wants = []
     for args in JOIN_RE.findall(text):
         s = STR_RE.findall(args)
         wants.append(([x for x in s[:-2] if x not in ('..', '.')], s[-1]))
     for s in SLASH_RE.findall(text):
         parts = s.split('/')
         wants.append(([x for x in parts[:-2] if x not in ('..', '.')], parts[-1]))
+    return own, wants
+
+
+def test_missing(test, root=ROOT):
+    """The test's own dist/ bundles (named with no other folder) that no checkout file stands for: not committed, so a
+    build writes them first (the isle demo's dist/isle-city.plan.js). Sorted repo paths; [] when all are there."""
+    test = test.replace(os.sep, '/')
+    own, wants = _test_wants(test, root)
+    out = set()
+    for folders, name in wants:
+        if folders or os.path.isfile(os.path.join(root, own, 'dist', name)):
+            continue
+        if any(glob.glob(os.path.join(root, top, '**', 'dist', name), recursive=True) for top in TOPS):
+            continue   # another build's bundle of that name: test_reads takes it
+        out.add(own + '/dist/' + name)
+    return sorted(out)
+
+
+def test_reads(test, root=ROOT):
+    """{repo path: why} of the dist/ bundles a node test requires."""
+    test = test.replace(os.sep, '/')
+    own, wants = _test_wants(test, root)
+    out = {}
     for folders, name in wants:
         cands = [own + '/dist/' + name] if os.path.isfile(os.path.join(root, own, 'dist', name)) else []
         if folders or not cands:

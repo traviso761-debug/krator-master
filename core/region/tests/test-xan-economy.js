@@ -26,8 +26,8 @@ console.log('a year of the Sultanate in '+secs.toFixed(1)+' s: '+Y.S.order.lengt
 const people=Y.V.settlements.filter(s=>s.people>0);
 // 1. declared: the towns, the eight countrysides, the lake towns and islands, the rings, the camps, the forts, the gateways
 {const ids=Y.S.order,cnt=re=>ids.filter(s=>re.test(s)).length;
- T.ok('the Sultanate declared: 8 countrysides, 24 lake towns and islands, 12 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
-  cnt(/^prov\./)===8&&cnt(/^lk\./)===24&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
+ T.ok('the Sultanate declared: 8 countrysides, 27 lake towns and islands, 19 ring villages, 4 gateways and the Great Caravan\'s 3 Dalab towns, no problems',
+  cnt(/^prov\./)===8&&cnt(/^lk\./)===27&&cnt(/hamlet|\/|farm-|ranch-/)>=0&&cnt(/^gate\./)===7&&!Y.S.problems.length,
   ids.length+' settlements; problems: '+(Y.S.problems.slice(0,3).join('; ')||'none'));
  T.neg('a road to a settlement that is not declared is a problem the host reports',
   V=>{const H=load();return H.simValley(V).problems.length===0;},
@@ -43,14 +43,18 @@ const fedCheck=Bk=>{const bad=[];Object.keys(Bk).forEach(s=>{const x=Bk[s];if(!x
   run(75,V=>{V.roads=V.roads.filter(r=>!((r.to===E&&r.share&&/^tithe\./.test(r.id))||r.id==='road.er-th'||r.id==='road.er-qb'));V.settlements.find(s=>s.id===E).start.grain=25000*.41*30;}).B.towns,B);}
 // 3b. the first stores are last year's harvest: they last to the first harvest's end, which needs core/clock's day 0 at year day 259
 T.ok('the clock\'s day 0 is year day '+XAN_TUNE.yearDay0+' (the first stores are sized to the first harvest from it)',Math.round(SIM.season(0).yearDay)===XAN_TUNE.yearDay0,'year day '+SIM.season(0).yearDay.toFixed(1));
-// 4. the gold: the mines' ore assayed at Strongwall, the Fifth to the Treasury, goldwork at Erehwon and Qiblai, coin at the Mint
+// 4. the gold: the mines' ore assayed at Strongwall, the bullion down to Gihon (G1, settlements/gihon/PLAN.md: "Assay at
+//    Strongwall, mint at Gihon"), the assessors' Fifth taken where it lands and struck into qud at the Sultan's Mint there,
+//    goldwork at Erehwon and Qiblai, the court's own coin at the citadel's court mint ("Keeps a court mint")
 const fifthOf=(made,tithed)=>made>0?tithed/made:0;
-{const sw=B.sxan7r1sln,made=sw.made.gold||0,ft=Y.trade.fifth,tithed=Object.values(ft.tithed||{}).reduce((n,o)=>n+(o.gold||0),0),r=fifthOf(made,tithed);
- const gw=(B[E].made.goldwork||0)+(B.skm4jjo2vl.made.goldwork||0),coin=B['xan.citadel'].made.coin||0;
- T.ok('the gold: ore assayed at Strongwall, the Sultan\'s Fifth to the Treasury, goldwork at Erehwon and Qiblai, coin at the Mint',
-  made>100&&Math.abs(r-XAN_TUNE.fifth)<.03&&gw>0&&coin>0,
-  'gold '+made.toFixed(0)+' kg, the Fifth '+tithed.toFixed(1)+' kg ('+(100*r).toFixed(1)+' %), goldwork '+Math.round(gw)+' pieces, coin '+Math.round(coin));
- T.neg('the Fifth is a fifth: a road that took two fifths is caught',x=>Math.abs(fifthOf(x.made,x.tithed)-XAN_TUNE.fifth)<.03,{made,tithed:tithed*2},{made,tithed});}
+const GH='xan.gihon',GF='xan.gihon.fort';
+{const sw=B.sxan7r1sln,made=sw.made.gold||0,landedGh=((((Y.trade['road.sw-gh']||{}).landed||{})['sxan7r1sln>'+GH])||{}).gold||0;
+ const tithed=((Y.cuts['road.sw-gh']||{taken:{}}).taken[GF+':gold'])||0,r=fifthOf(landedGh,tithed);
+ const gw=(B[E].made.goldwork||0)+(B.skm4jjo2vl.made.goldwork||0),coin=B[GF].made.coin||0,court=B['xan.citadel'].made.coin||0;
+ T.ok('the gold: ore assayed at Strongwall, the bullion to Gihon, the assessors\' Fifth struck into qud at the Mint there, goldwork at Erehwon and Qiblai, the court mint\'s coin',
+  made>100&&landedGh>made*.8&&Math.abs(r-XAN_TUNE.fifth)<.03&&gw>0&&coin>0&&court>0,
+  'gold '+made.toFixed(0)+' kg, landed at Gihon '+landedGh.toFixed(0)+' kg, the Fifth '+tithed.toFixed(1)+' kg ('+(100*r).toFixed(1)+' %), goldwork '+Math.round(gw)+' pieces, qud struck at Gihon '+Math.round(coin)+', at the court mint '+Math.round(court));
+ T.neg('the Fifth is a fifth: a road that took two fifths is caught',x=>Math.abs(fifthOf(x.made,x.tithed)-XAN_TUNE.fifth)<.03,{made:landedGh,tithed:tithed*2},{made:landedGh,tithed});}
 // 5. the dues and the grants: each once a year, its bill sent or owed
 const duesCheck=X=>Object.keys(X).every(id=>{const x=X[id],tr=Y.V.transfers.find(q=>q.id===id);return x.times===1&&Object.keys(tr.goods).every(g=>Math.abs((x.sent[g]||0)+(x.owed[g]||0)-tr.goods[g])<1e-6);});
 {const X=Y.xfer,owed=Object.keys(X).filter(id=>Object.values(X[id].owed||{}).some(n=>n>0));
@@ -254,9 +258,9 @@ const lowerCheck=(Bk,Tr)=>{const ll=Object.keys(Bk).filter(s=>/^ll\./.test(s)),r
  const hungry=ll.concat(ring).filter(s=>(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01),fishers=ll.filter(s=>(Bk[s].exported.fish||0)>0).length;
  const rounds=XAN_TUNE.lowerRounds.every(([id,hub,keys])=>{const R=Tr[id];return !!R&&R.stops.length===keys.length+1&&Object.keys(R.landed||{}).length>=R.stops.length-1;});
  const farms=ring.filter(s=>/mil|kanal|grenz/.test(s)).every(s=>(Bk[s].exported.grain||0)>0);
- return{ok:ll.length===9&&ring.length===4&&!hungry.length&&(Bk[KS].imported.fish||0)>0&&fishers>=7&&rounds&&farms,ll,ring,hungry,fish:Bk[KS].imported.fish||0,fishers,rounds,farms};};
+ return{ok:ll.length===8&&ring.length===4&&!hungry.length&&(Bk[KS].imported.fish||0)>0&&fishers>=6&&rounds&&farms,ll,ring,hungry,fish:Bk[KS].imported.fish||0,fishers,rounds,farms};};   /* G1: eight villages (Ōpal-Māuṭh is now Gihon) */
 {const L=lowerCheck(B,Y.trade);
- T.ok('Kirstabal\'s lake: its nine villages and its ring fed, the villages\' fish landed at Kirstabal, both market-boat rounds calling at every stop, the ring\'s grain tithed to the town',L.ok,
+ T.ok('Kirstabal\'s lake: its eight villages and its ring fed, the villages\' fish landed at Kirstabal, both market-boat rounds calling at every stop, the ring\'s grain tithed to the town',L.ok,
   L.ll.length+' villages, '+L.ring.length+' in the ring; fish into Kirstabal '+t(L.fish)+' from '+L.fishers+' fishing villages; rounds '+
   XAN_TUNE.lowerRounds.map(([id])=>id+' '+((Y.trade[id]||{}).voyages||0)+' calls').join(', ')+(L.hungry.length?'; hungry: '+L.hungry.join(', '):''));
  T.neg('a village on Kirstabal\'s lake that went hungry is caught',Bk=>lowerCheck(Bk,Y.trade).ok,Object.assign({},B,{'ll.rid':Object.assign({},B['ll.rid'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
@@ -289,31 +293,36 @@ const swCheck=(Bk,Tr,X)=>{const bad=[],op=(((Tr['mine.opal']||{}).landed||{})['s
  if(!((Bk['march.e'].eaten.power||0)>0))bad.push('the beacon fort dark');
  const tpIn=Object.values(((Tr['road.sw-tempest']||{}).landed||{})['sxan7r1sln>xan.tempest']||{}).reduce((n,v)=>n+v,0);   /* its first year's grain is in its stores: the road lands its salt, tea and tools */
  if(!((tp.made.grain||0)>0&&tpIn>0))bad.push('the Tempest\'s terraces or its road from Strongwall');
- if(th[2]!=='sxan7r1sln'||th[3]!==912||th[4]!==1640)bad.push('the Tears\' house outside the fort');
+ if(!((tp.made.fodder||0)>0&&(tp.eaten.fodder||0)>0)||((tp.hungry||{}).fodder||0)>1)bad.push('the Tempest\'s horses unfed (its meadows\' hay)');   /* the owner, 2026-11-16: "add fodder" */
+ const ct=XAN_TUNE.tears.houses.find(h=>h[0]===XAN_TUNE.tears.court);   /* G1 ("Move HQ, keep a court"): the court stays in the fort, the head house is Gihon's */
+ if(!ct||ct[2]!=='sxan7r1sln'||ct[3]!==912||ct[4]!==1640)bad.push('the Tears\' court outside the fort');
+ if(th[2]!=='xan.gihon')bad.push('the Tears\' head house not at Gihon');
  return{ok:!bad.length,bad,op,inward,tp,pay};};
 {const C=swCheck(B,Y.trade,Y.xfer);
- T.ok('Strongwall\'s W1: the mines\' opal by Lāiṭwāl\'s ferry and inward, never by Strongwall; powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears inside the fort',C.ok,
+ T.ok('Strongwall\'s W1: the mines\' opal by Lāiṭwāl\'s ferry and inward, never by Strongwall; powder at the fort, the musketeers paid, the beacon fort lit, the House of the Tempest fed, the Tears\' court inside the fort and their head house at Gihon',C.ok,
   C.bad.join(', ')||('the mines\' opal ferried to Lāiṭwāl '+Math.round(C.op*1000)/1000+' kg, at Qiblai and the capital '+Math.round(C.inward*1000)/1000+' kg; Strongbow imported opal '+Math.round((B.sfgtxw10kr.imported.opal||0)*1000)/1000+
   ', Kirstabal '+Math.round((B.sl758m2396.imported.opal||0)*1000)/1000+'; powder eaten at Strongwall '+Math.round(B.sxan7r1sln.eaten.powder||0)+' kg; pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)+
-  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate'));
+  '; the Tempest made grain '+t(C.tp.made.grain||0)+' of the '+t(C.tp.eaten.grain||0)+' it ate, hay '+t(C.tp.made.fodder||0)+' and its horses ate '+t(C.tp.eaten.fodder||0)));
+ T.neg('a House of the Tempest whose horses went hungry is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{'xan.tempest':Object.assign({},B['xan.tempest'],{hungry:Object.assign({},B['xan.tempest'].hungry||{},{fodder:1e5})})}),B);
  T.neg('opal that never reached Qiblai or the capital is caught',x=>swCheck(x,Y.trade,Y.xfer).ok,Object.assign({},B,{skm4jjo2vl:Object.assign({},B.skm4jjo2vl,{imported:Object.assign({},B.skm4jjo2vl.imported,{opal:0})}),[E]:Object.assign({},B[E],{imported:Object.assign({},B[E].imported,{opal:0})})}),B);}
 // 30. L1 (settlements/lightwall/PLAN.md 4; the owner, 2026-11-16): Lāiṭwāl, the seat of Ōpal-Bhālī, fed all year; the Great
-//     Potch Line's opal and the glass shops' moonglass made; the Glaziers' Fifth in opals a fifth, to the Treasury; the
-//     Sultan's mines across the lake fed by its ferry; the opal and moonglass down the valley by Kirstabal to Qiblai; the
-//     Line a field of veins
+//     Potch Line's opal and the glass shops' moonglass made; the Sultan's mines across the lake fed by its ferry; the Line a
+//     field of veins. G1 (settlements/gihon/PLAN.md): the opal and moonglass down the gorge to Gihon, where the assessors take
+//     the Fifth in opals (a fifth of what lands there), and on to Qiblai
 const lwFed=x=>{const e=x.eaten.grain||0,h=x.hungry.grain||0;return h<=(e+h)*.01;};
-const lwCheck=(Bk,Tr)=>{const L=Bk['slaitwal0001'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2vl,W=XAN_TUNE.laitwal;if(!L||!M||!Q)return{ok:false};
- const op=L.made.opal||0,mg=L.made.moonglass||0,ft=Tr['fifth.opal.lw']||{},tith=Object.values(ft.tithed||{}).reduce((n,o)=>n+(o.opal||0),0),r=fifthOf(op,tith);
+const lwCheck=(Bk,Tr,Cu)=>{const L=Bk['slaitwal0001'],M=Bk.sjuarjbku0,Q=Bk.skm4jjo2vl,W=XAN_TUNE.laitwal;if(!L||!M||!Q)return{ok:false};
+ const op=((((Tr['road.lw-gh']||{}).landed||{})['slaitwal0001>'+GH])||{}).opal||0,tith=((Cu['road.lw-gh']||{taken:{}}).taken[GF+':opal'])||0,r=fifthOf(op,tith),mg=L.made.moonglass||0;
  const F=XAN_TUNE.field('opal-diggings',W.make.opal,XAN_TUNE.fieldYears);F.make=W.make.opal;
  const qo=Q.imported.opal||0,qm=Q.imported.moonglass||0,mf=M.imported.grain||0;
- return{ok:lwFed(L)&&lwFed(M)&&op>W.make.opal*.8&&mg>W.make.moonglass*.8&&Math.abs(r-XAN_TUNE.fifth)<.03&&mf>0&&qo>50&&qm>1000&&fieldCheck(F),
-  op,mg,tith,r,qo,qm,mf,fedL:lwFed(L),fedM:lwFed(M),veins:F.veins.length};};
-{const C=lwCheck(B,Y.trade);
- T.ok('Lāiṭwāl: the seat of Ōpal-Bhālī fed, the Great Potch Line\'s opal and the moonglass made, the Glaziers\' Fifth to the Treasury, the mines fed over the lake, the opal and moonglass on to Qiblai',C.ok,
-  'opal '+Math.round(C.op)+' kg, moonglass '+t(C.mg)+', the Fifth '+(C.tith||0).toFixed(1)+' kg ('+(100*(C.r||0)).toFixed(1)+' %); fed: the town '+C.fedL+', the mines '+C.fedM+' (grain over the lake '+t(C.mf||0)+'); into Qiblai: opal '+Math.round(C.qo||0)+' kg, moonglass '+t(C.qm||0)+'; the Line '+C.veins+' veins');
- T.neg('an assay house that took two fifths of the town\'s opal is caught',Tr=>lwCheck(B,Tr).ok,
-  Object.assign({},Y.trade,{'fifth.opal.lw':{tithed:Object.fromEntries(Object.entries((Y.trade['fifth.opal.lw']||{}).tithed||{}).map(([k,o])=>[k,{opal:(o.opal||0)*2}]))}}),Y.trade);
- T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade).ok,Object.assign({},B,{'slaitwal0001':Object.assign({},B['slaitwal0001'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
+ const made=L.made.opal||0;
+ return{ok:lwFed(L)&&lwFed(M)&&made>W.make.opal*.8&&op>W.make.opal*.5&&mg>W.make.moonglass*.8&&Math.abs(r-XAN_TUNE.fifth)<.03&&mf>0&&qo>50&&qm>1000&&fieldCheck(F),
+  op:made,landed:op,mg,tith,r,qo,qm,mf,fedL:lwFed(L),fedM:lwFed(M),veins:F.veins.length};};
+{const C=lwCheck(B,Y.trade,Y.cuts);
+ T.ok('Lāiṭwāl: the seat of Ōpal-Bhālī fed, the Great Potch Line\'s opal and the moonglass made, the mines fed over the lake; the opal down the gorge to Gihon, the assessors\' Fifth taken there, the opal and moonglass on to Qiblai',C.ok,
+  'opal '+Math.round(C.op)+' kg, moonglass '+t(C.mg)+'; landed at Gihon '+Math.round(C.landed||0)+' kg, the Fifth '+(C.tith||0).toFixed(1)+' kg ('+(100*(C.r||0)).toFixed(1)+' %); fed: the town '+C.fedL+', the mines '+C.fedM+' (grain over the lake '+t(C.mf||0)+'); into Qiblai: opal '+Math.round(C.qo||0)+' kg, moonglass '+t(C.qm||0)+'; the Line '+C.veins+' veins');
+ T.neg('assessors who took two fifths of the opal at Gihon are caught',Cu=>lwCheck(B,Y.trade,Cu).ok,
+  Object.assign({},Y.cuts,{'road.lw-gh':{taken:Object.fromEntries(Object.entries((Y.cuts['road.lw-gh']||{taken:{}}).taken).map(([k,n])=>[k,n*2]))}}),Y.cuts);
+ T.neg('a Lāiṭwāl that went hungry is caught',Bk=>lwCheck(Bk,Y.trade,Y.cuts).ok,Object.assign({},B,{'slaitwal0001':Object.assign({},B['slaitwal0001'],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
 // 31. B4 (settlements/beacon/PLAN.md; the owner, 2026-11-16): the Order of the Beacon's head house beside the beacon fort,
 //     its terraces' grain and the capital's road landed, its monks taking no arms and no powder, the fort's lamp still lit
 const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find(s=>s.id===Bc.fort),me=Ss.find(s=>s.id===Bc.id);
@@ -329,7 +338,63 @@ const bcCheck=(Bk,Tr,Ss)=>{const bad=[],Bc=XAN_TUNE.beacon,h=Bk[Bc.id],f=Ss.find
  T.ok('the Order of the Beacon\'s head house: beside the beacon fort, fed by its terraces and the capital\'s road, no arms or powder, the lamp lit',C.ok,
   C.bad.join(', ')||('made grain '+t(C.h.made.grain||0)+' of the '+t(C.h.eaten.grain||0)+' it ate; landed from the capital '+t(C.lt)+'; the fort\'s power '+Math.round(B['march.e'].eaten.power||0)+' kWh'));
  T.neg('a head house drawn off to another place is caught',Ss=>bcCheck(B,Y.trade,Ss).ok,Y.V.settlements.map(s=>s.id===XAN_TUNE.beacon.id?Object.assign({},s,{x:s.x+5000}):s),Y.V.settlements);}
+// 32. the records the tune lacked (the owner, 2026-11-16: "give economy Sim records"): the Order of the Flashing Eye's head
+//     house on the east volcano's south flank, fed by its terraces and the capital's road, its tea from Ṭī-Ṭeras, no arms or
+//     powder; Thalaba's and Lāiṭwāl's ring hamlets tithing to their towns; Grēṭ-Āil's three villages declared and fed
+const recCheck=(Bk,Tr,Tn)=>{const bad=[],Fe=Tn.flashingeye,h=Bk[Fe.id],land=(r,k)=>Object.values(((Tr[r]||{}).landed||{})[k]||{}).reduce((n,v)=>n+v,0);
+ if(!h)return{ok:false,bad:['no Flashing Eye'],rings:{}};
+ if(!(Math.hypot(Fe.px[0]-881,Fe.px[1]-1526)<=1.5&&Fe.px[1]>1526))bad.push('the house is not on the cone\'s south flank');
+ if(!((h.made.grain||0)>0))bad.push('its terraces made no grain');
+ const lc=land('road.er-eye',E+'>'+Fe.id),lt=land('road.eye-tea','lk.tea-terraces>'+Fe.id);
+ if(!(lc>0))bad.push('nothing landed from the capital');
+ if(!(lt>0))bad.push('no tea landed from Ṭī-Ṭeras');
+ const starved=s=>(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01;   /* the lake check's rule: short of a hundredth of its grain */
+ if(starved(Fe.id))bad.push('the house went hungry');
+ if((h.eaten.powder||0)>0||(h.eaten.arms||0)>0)bad.push('the monks took arms or powder');
+ const rings={};Object.keys(Tn.ringSites).forEach(sid=>{const ids=Object.keys(Bk).filter(s=>s.indexOf(Tn.ringSites[sid].site+'.hamlet.')===0);
+  rings[sid]=ids.length;if(!ids.length)bad.push(sid+' has no ring');
+  ids.forEach(id=>{if(!(land('tithe.'+id,id+'>'+sid)>0))bad.push(id+' tithed nothing');});});
+ ['lk.great-isle-west','lk.great-isle-north','lk.great-isle-east'].forEach(id=>{if(!Bk[id])bad.push(id+' not declared');
+  else if(starved(id))bad.push(id+' went hungry');});
+ return{ok:!bad.length,bad,h,lc,lt,rings};};
+{const C=recCheck(B,Y.trade,XAN_TUNE);
+ T.ok('the records the tune lacked: the Flashing Eye fed on its south flank with its tea, Thalaba\'s and Lāiṭwāl\'s rings tithing, Grēṭ-Āil\'s villages fed',C.ok,
+  C.bad.join(', ')||('the Eye made grain '+t(C.h.made.grain||0)+', landed from the capital '+t(C.lc)+', tea '+t(C.lt)+'; rings '+JSON.stringify(C.rings)));
+ T.neg('a tea road that landed nothing is caught',Tr=>recCheck(B,Tr,XAN_TUNE).ok,Object.assign({},Y.trade,{'road.eye-tea':{landed:{}}}),Y.trade);
+ T.neg('a house moved to the cone\'s north flank is caught',Tn=>recCheck(B,Y.trade,Tn).ok,Object.assign({},XAN_TUNE,{flashingeye:Object.assign({},XAN_TUNE.flashingeye,{px:[881,1525]})}),XAN_TUNE);}
+// ---- G1 (settlements/gihon/PLAN.md; the owner, 2026-11-17 and 22): Gihon, the Lower Lake's garrison town at the Opal River's mouth
+// 33. Gihon (8,500 with its forbidden city and houses) fed by its ring and Qiblai's barges; the bullion landed from Strongwall
+//     and the opal from Lāiṭwāl; the assessors' Fifth taken of both into the forbidden city; the qud struck there and sent to
+//     the Treasury with the opal Fifth; the garrison's musketeers paid; the Golden Tears' head house at Gihon (their court at
+//     Strongwall still the camp's home); the White's and the Violet's houses fed; Ōpal-Māuṭh gone from the lake, the Landing
+//     at 2,500 and on the south round; the ring and the Alph's hamlets tithing
+const ghCheck=(Bk,Tr,Cu,X,Vs)=>{const bad=[],G=XAN_TUNE.gihon,land=(r,k,g)=>{const o=((Tr[r]||{}).landed||{})[k]||{};return g?(o[g]||0):Object.values(o).reduce((n,v)=>n+v,0);};
+ const starved=s=>!Bk[s]||(Bk[s].hungry.grain||0)>(Bk[s].eaten.grain||1)*.01;
+ const people=[GH,GF].concat(G.houses.map(h=>h[0]),[XAN_TUNE.tears.houses[0][0]]).reduce((n,id)=>n+((Vs.find(s=>s.id===id)||{}).people||0),0);
+ if(people!==8500)bad.push('Gihon holds '+people+', not 8,500');
+ [GH,GF].concat(G.houses.map(h=>h[0]),['tears.gihon']).forEach(s=>{if(starved(s))bad.push(s+' went hungry');});
+ const gold=land('road.sw-gh','sxan7r1sln>'+GH,'gold'),opal=land('road.lw-gh','slaitwal0001>'+GH,'opal');
+ if(!(gold>100))bad.push('no bullion landed from Strongwall');if(!(opal>100))bad.push('no opal landed from Lāiṭwāl');
+ const tg=((Cu['road.sw-gh']||{taken:{}}).taken[GF+':gold'])||0,to=((Cu['road.lw-gh']||{taken:{}}).taken[GF+':opal'])||0;
+ if(Math.abs(fifthOf(gold,tg)-XAN_TUNE.fifth)>.03)bad.push('the gold Fifth '+(100*fifthOf(gold,tg)).toFixed(1)+' %');
+ if(Math.abs(fifthOf(opal,to)-XAN_TUNE.fifth)>.03)bad.push('the opal Fifth '+(100*fifthOf(opal,to)).toFixed(1)+' %');
+ const coin=(Bk[GF].made.coin||0),sent=land('treasury.gihon',GF+'>xan.citadel','coin'),op5=land('treasury.gihon.opal',GF+'>xan.citadel','opal');
+ if(!(coin>tg*250*.8))bad.push('the Mint struck '+Math.round(coin)+' qud of '+tg.toFixed(1)+' kg');if(!(sent>coin*.5))bad.push('the qud not sent to the Treasury');if(!(op5>0))bad.push('no opal Fifth at the Treasury');
+ const pay=X['pay.muskets.'+GF]||{sent:{},owed:{}};if(!(((pay.sent||{}).coin||0)+((pay.owed||{}).coin||0)>0))bad.push('the garrison unpaid and not owed');
+ const head=XAN_TUNE.tears.houses[0];if(head[0]!=='tears.gihon'||head[2]!==GH)bad.push('the Tears\' head house not at Gihon');
+ if(Bk['ll.opal-mouth'])bad.push('Ōpal-Māuṭh still a village');
+ if(((Vs.find(s=>s.id==='ll.landing')||{}).people)!==2500)bad.push('the Landing not 2,500');
+ if(!(XAN_TUNE.lowerRounds.find(r=>r[0]==='round.lower-south')[2].indexOf(GH)>=0))bad.push('Gihon not on the south round');
+ const rings=XAN_TUNE.ghRing.concat(XAN_TUNE.alph);rings.forEach(([id,,,,focus,,,seat])=>{const to=seat||GH;if(starved(id))bad.push(id+' went hungry');
+  if(!(land('tithe.'+id,id+'>'+to)>0))bad.push(id+' tithed nothing to '+to);});
+ if(!((Bk[GF].eaten.powder||0)>0))bad.push('no powder in the forbidden city');
+ return{ok:!bad.length,bad,gold,opal,tg,to,coin,sent,op5,pay,people};};
+{const C=ghCheck(B,Y.trade,Y.cuts,Y.xfer,Y.V.settlements);
+ T.ok('Gihon: 8,500 fed, the bullion and the opal landed, the assessors\' Fifth of both, the qud struck and sent to the Treasury with the opal Fifth, the garrison paid, the Tears\' head house, the Landing at 2,500, its ring and the Alph\'s hamlets tithing',C.ok,
+  C.bad.join(', ')||('bullion landed '+Math.round(C.gold)+' kg, opal '+Math.round(C.opal)+' kg; the Fifth '+C.tg.toFixed(1)+' kg of gold, '+C.to.toFixed(1)+' kg of opal; qud struck '+Math.round(C.coin)+', to the Treasury '+Math.round(C.sent)+' with '+C.op5.toFixed(1)+' kg of opal; the garrison\'s pay sent '+((C.pay.sent||{}).coin||0)+', owed '+((C.pay.owed||{}).coin||0)));
+ T.neg('assessors who took no Fifth of the bullion are caught',Cu=>ghCheck(B,Y.trade,Cu,Y.xfer,Y.V.settlements).ok,Object.assign({},Y.cuts,{'road.sw-gh':{taken:{}}}),Y.cuts);
+ T.neg('a Gihon that went hungry is caught',Bk=>ghCheck(Bk,Y.trade,Y.cuts,Y.xfer,Y.V.settlements).ok,Object.assign({},B,{[GH]:Object.assign({},B[GH],{hungry:{grain:1e6},eaten:{grain:1}})}),B);}
 // the year's books, for the reader
 const line=(s,k)=>Object.entries(B[s][k]||{}).filter(([g,n])=>n>=1).map(([g,n])=>g+' '+(n>=1000?t(n):Math.round(n))).join(', ');
-['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
+['s57bkv9741','xan.citadel','skm4jjo2vl','s4zvgepuru','sxan7r1sln','slaitwal0001','sjuarjbku0','sl758m2396','xan.gihon','xan.gihon.fort','ll.landing'].forEach(s=>console.log('\n'+s+': made '+line(s,'made')+'\n  imported '+line(s,'imported')+'\n  exported '+line(s,'exported')));
 T.done();

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Krator — Battered Isle (Worn Extinct Cinder &amp; Scoria Cone)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0d1418; color: #e6eaee; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #errs {
+    display: none; position: fixed; top: 8px; left: 8px; right: 8px; z-index: 9999;
+    max-height: 36vh; overflow: auto; padding: 10px 12px;
+    background: rgba(120, 18, 18, 0.92); border: 1px solid #f27474; border-radius: 4px;
+    color: #fff2f2; font-size: 12px; white-space: pre-wrap;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+<div id="errs"></div>
+<script>
+window._marks = [];
+function _mark(name){ window._marks.push([name, Math.round(performance.now())]); }
+_mark('start');

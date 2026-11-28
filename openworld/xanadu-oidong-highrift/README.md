@@ -27,7 +27,11 @@ The second region of sites cut off the scale model into the open world (`openwor
     south, and a ranching village 14 km out on the uplands. The city's page stands with its centre on the pin, unturned
     (its `ER_WORLD`); its island, the Pleasure Dome's, is stamped here (`src/44-world-landforms.js`).
   - **Qiblai** (`skm4jjo2vl`, px 922,1595 since 2026-11-11, moved from 963,1566 to the cataracts of Nahr ash-Shalālāt:
-    by a river, near rock salt and ore; the owner's word), with no page yet: the same ring, re-planned on the new ground.
+    by a river, near rock salt and ore; the owner's word). Its page is `settlements/qiblai` (the town stays the page's
+    until `PLAN-SITES.md` step 3; the hand-over is `settlements/qiblai/WORLD.md`). Its ring is the great Orders' temple
+    estates (2026-11-16, `QIBLAI_ESTATES` in `src/48-world-site.js`; the owner: "Grow the estates"): 128 villages, sixteen in
+    each Order's sector round its spoke, in seven rings from 7 to 27.5 km: 80 rice farms, 24 buffalo dairies and 24 apiaries,
+    29,584 people (the ~30,000 the city's food needs).
   - **Longsong** (`sq80bzd7ep`, px 1226,1626): the History Monks' monastery (`settlements/longsong`). Its three villages
     stand where its page lays them: Shar and Nub (farming) and Dzo-ling (the herders), 585 people in 110 buildings.
     Recut 2026-11-16 at its 2026-11-11 pin (1228.88,1621.23), so its three villages now stand round the moved monastery.
@@ -41,12 +45,45 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **Bridges** (core/world 42b and 88b, since 2026-11-16): every road and link the region lays is bridged where it crosses a
   named river, in the Xanadu kit's stone (`SITE_SPEC.bridges`): Thalaba's north road over the Solṭ Siṭrīm, a Qiblai village
   road and the Qiblai-Longsong link.
+- **The expedition road** (`SITE_SPEC.ways`, core/world 48s, since 2026-11-16; the owner: "Grow the cut up the gorge"): Thalaba's
+  road goes on from Salphar up Godshearth's gorge, past the Spillway (the gorge's station 4, `xanaduspill`, px 845,1422), to the
+  Rare Devisers' camp at the hot lake's outlet (px 839,1398, the owner's choice; `settlements/devisers-camp`): 35.8 km at 8 % with
+  one more bridge so far, laid like the villages' roads. It ends at the cut's edge (px 842.8,1437.7, `short`) until the region's
+  recut takes a corridor up the gorge to the camp.
   - **Lāiṭwāl** (`slaitwal0001`, px 1028,1653, added 2026-11-16: `settlements/lightwall`, its step L5): the Light Wall on the
     north shore of Opal Valley's great lake, under the north boundary fault. Its id is `model: false` in `SITES.json` until
     the scale model lists it (the pin is queued with the scale-model edits). Three farming villages on the shore's bench,
     east and west, and a ranch at its western end. Opal Valley grows no kit yet, so they stand on bare ground. Its square was
     added to the cut by hand from a re-cut (the site's row, its polygon, its added area, its mask square); the re-cut's other
     changes (the model's drift since this region's cut: Longsong's move, the rivers) were left for the region's own re-cut.
+  - **Kirstabal** (`sl758m2396`, px 989,1600, added 2026-11-16: `settlements/kirstabal`, its step K6): the barge port at the
+    head of the Lower Xanadu Lake, reach 20 km; the town is its own page's (a target on Xanadu's page). Its ring stands at
+    the tune's places (`core/region/data/xan-tune.js` `T.ksRing`): Mil, Kanāl and Grēnz (farming) on the apron south of the
+    town and Bāiyar (ranch) beyond. The lake's nine (`T.lowerLake`) stand on the shore round the whole lake: eight fishing
+    villages on the fishers' row (`xanadu-fishing` in `src/48-world-site.js`: boat sheds, and fish racks as pending boxes
+    under `xh_fish_racks`: kits/xanadu's `xa_fish_racks` is opt-in and not in `XAK`, and the bake, which reads every kit file,
+    would size it while the page could not) and the Landing at the outlet, 114 km west (since 2026-11-22 laid by Gihon's page:
+    below). Each is searched from the
+    model's lake cell nearest the tune's place, so it stands at the water. Two links: to **Strongbow's foot** (5.3 km over
+    Keb Riwā's mouth) and along the lake to Qiblai (143 km).
+  - **Gihon** (`sgihon000001`, px 955.7,1607.9, `model: false`, added 2026-11-22: `settlements/gihon`, its step G3): the Lower
+    Lake's garrison town at the Opal River's mouth (Ōpal-Māuṭh was a fishing village of Kirstabal's lake), its own page's. The pin
+    is the tune's place (`T.gihon`), a lake cell: the town's square stands about 1.5 km south-west of it, so its roads end 2.2 km
+    out. Its ring at the tune's places (`T.ghRing`) on core/hamlet's Xanadu row by name (`KHAMLET.xanaduRow`, registered as
+    `xanadu-row`): Paḍī, Bārlī, Bīnz and Ōṭs (farming) and Bulak (ranch), 1,105 people. With Kirstabal's lake: **the Landing**
+    at the outlet, laid by Gihon's page on core/city (two banks, a stone pier into the lake each side, about 2,760 people;
+    `src/47g-site-gihon-landing.js`, written by `settlements/gihon/bake_landing.js`) and put on the world as it is (core/world
+    48s `laidVillage`: turned 27 degrees, moved 360 m north-west onto the world's shore; what the world has no ground or water for
+    is left out, `KNOWN_ISSUES.md`), its piers and lights on the lake and the kit's harbour and lake craft drawing them (the
+    page's XAK takes `kits/xanadu/extra` 88d and 88f); and **the Alph's five** (`T.alph`: Wēyar, Mēḍō, Gōrj-Phuṭ the orchard,
+    Hil-Ṭī the tea, Phērī) up the valley toward Theodiga, Wēyar's and Mēḍō's roads joined to the lake's; the upper three
+    have no road until the Alph's trench is fixed (`KNOWN_ISSUES.md`). Added to the cut by hand as
+    Kirstabal was (`data/region.json`: a site row, a polygon row; inside the Xanadu polygon, so the mask did not change).
+  - **Strongbow's foot** (`sstrongbowft`, px 991.14,1596.84, `model: false`): *proposed* by `settlements/kirstabal` K6, the
+    bottom of Strongbow's lift where Kirstabal's page ends its Strongbow road (69 m over the lake). Strongbow's own session
+    places its foot town and replaces this point; nothing else is planned there. Kirstabal and the foot were added to the cut
+    by hand (`data/region.json`: two site rows, two polygon rows), as Lāiṭwāl was: both stand inside the Xanadu polygon, so
+    the mask did not change.
 - **The roads:**
   - **Village roads:** each village's lane end has a road to its town (`core/world` `ROADS`, the grade held to 8 %).
     They join the roads already laid where those are nearer than the town, so they share a trunk.
@@ -64,7 +101,7 @@ The second region of sites cut off the scale model into the open world (`openwor
 - **The lava tubes** (2026-11-16, step W3 of `PLAN-TWINS-CROSSING.md`; core/world `42k`, `88k`, its README "Caverns"): Route A
   of the Twins crossing, the Dark-Tube Road, under the ground: A1 from the Vale's portal at the Alph's chasm (938,1496) to the
   First Skylight Break, A2, A3 with the Hall of the Tally-Marks and its roof crack, A4 to the 18 m arch, and the south feeder
-  (the Strongbow branch: `tube_xanadu_se_10`'s lower galleries 1010,1517 > 1028,1506, a gasp up onto Route B under the SE Twin,
+  (the Strongbow branch: `tube_xanadu_se_10`'s lower galleries 1010,1517 > 1028,1506.5 (1028,1506 until the 2026-11-23 re-run's ground), a gasp up onto Route B under the SE Twin,
   then the model's Saddle dike conduit 1024,1485 > the Hall at 1014,1464, where it joins A3 underground: WTUBES `join`, the
   owner, 2026-11-16, "Join the branch to the main line"): 244 km of Route A at the plan's pixels and the feeder's ~131, 10 portals,
   17 skylights, 14 chokes of 3.5 m. All of it lies inside the present box; only A1's first ~15 km are inside the cut's polygons.
@@ -89,6 +126,7 @@ On the GPU: `KRATOR_GL=gpu` and `python3 ../../tools/harness.py lock --lane auto
 | `src/44-world-landforms.js` | [G data] | the lake's small islands at 1:1: the scale model's landform records inside the cut (`tools/scale-model/model/data/landforms.json`, copied into `WORLD_DATA.landforms` by `build.py`) stamped into the land, chained on `WORLD.landHook`: the Pleasure Dome's isle (the Erewhon page's island, 14 m over the lake) and the west stack (42 m) |
 | `src/46-world-config.js` | [G data] | the sites' markers, "Go to" (the region, each site, each village, each island), the first view over Erehwon's villages |
 | `src/47-world-kits.js` | [G data] | the kits that grow here: Xanadu on its overlay, Oidong on the valley |
+| `src/47g-site-gihon-landing.js` | [G data] | GENERATED (`settlements/gihon/bake_landing.js`): the Landing's records and lanes as Gihon's page lays them on core/city (`GH_LANDING_LAID`), which the spec puts on the world (core/world/bake_sites.py loads `src/NN-site-*.js` before the spec) |
 | `src/48-world-site.js` | [G data] | the sites' spec (`SITE_SPEC`): each site's villages (focus, spot, population), its roads, the links between the towns |
 | `src/48k-world-tubes.js` | [G data] | the lava tubes' spec (`SITE_SPEC.tubes`): Route A's four tubes and the south feeder, their widths, depths, portals, the Hall, chokes and skylights by cell (core/world 42k plans them, 88k draws them) |
 | `src/49-world-xanadu.js` | [G data] | the Xanadu kit's pass table as data (`XANADU_WORLD`) |
@@ -105,6 +143,9 @@ Each check has a negative:
 - **The sites:**
   - Lāiṭwāl on its bench (dry, the lake within 8 km south, the wall over 1,500 m higher within 9 km north); a negative
     reads it 14 km out in the lake;
+  - Gihon: its ring of five, the Landing on both banks (over 50 lots a bank on dry ground) with a pier of three runs or more into
+    the lake each side and its light over the water, the Alph's five, each drawn; the negative reads the Landing without its south
+    bank and pier;
   - the baked plan is the plan made again in the browser;
   - every village is whole, its buildings apart and on good ground, with every road at its lane end;
   - every village is cleared of flora, tagged, and drawn with the kit's pieces.

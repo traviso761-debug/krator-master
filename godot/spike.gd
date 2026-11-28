@@ -11,6 +11,7 @@
 extends Node3D
 
 const CASES := ["hyperjungle", "rift", "girder", "iziz", "yuni", "verge", "dhelv", "sedesert", "world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "qiblai"]   # keys 1-9; world-iziz, world-sedesert-falls and world-yuni by name (tools/shot.sh world-iziz)
+const LEGACY_WORLDS := ["world-nhighlands", "world-nhighlands-wide", "world-rift-jungle"]   # framed as before (140 m)
 const ABOUT := {
 	"hyperjungle": "krator-biome JSON: one hyperjungle tile (canvas textures, foliage hook, no LOD chunks)",
 	"rift": "krator-biome JSON: one rift tile (every mesh LOD-chunked; irid bark and far impostors are hooked)",
@@ -43,6 +44,14 @@ var case_focus := Vector3.ZERO   # the loaded case's focus (the box centre on th
 var driven := false   # set by a driver before add_child (tests/perf/perf_capture.gd): _ready builds the stage and loads no case of its own
 
 
+var ui: KratorHostUI = null   # the Host UI (krator/host_ui.gd) in an interactive run; null under --check, --shot, --nohud, driven
+var _from_gallery := false
+var _pin_node: MeshInstance3D
+var _has_pin := false
+var _pin_pos := Vector3.ZERO
+var _case_box := [0.0, 0.0, 0.0, 0.0]
+
+
 func _ready() -> void:
 	_build_stage()
 	var args := _args()
@@ -51,9 +60,19 @@ func _ready() -> void:
 		return
 	if driven:
 		return
+	var pend := KratorGalleryNav.pending_entry
+	var pend_case := str(pend.get("case_id", "")) if not pend.is_empty() else ""
+	if not args.has("case") and not args.has("shot") and pend_case == "" and not args.has("spike"):
+		# A bare launch opens the Gallery (--spike keeps the old start on hyperjungle)
+		if FileAccess.file_exists("res://gallery.tscn"):
+			get_tree().change_scene_to_file.call_deferred("res://gallery.tscn")
+			return
 	if args.has("shot"):
 		_shot = args["shot"]
-	_load_case(args.get("case", "hyperjungle"))
+	if _shot == "" and not args.has("nohud"):
+		_mount_ui()
+	_from_gallery = pend_case != ""
+	_load_case(pend_case if pend_case != "" else str(args.get("case", "hyperjungle")))
 
 
 func _args() -> Dictionary:
@@ -62,6 +81,200 @@ func _args() -> Dictionary:
 		var kv := s.trim_prefix("--").split("=", true, 1)
 		a[kv[0]] = kv[1] if kv.size() > 1 else true
 	return a
+
+
+# Every case this checkout can load: the spike's own list, then any res://data/<dir> with world.json, biome.json or
+# region.glb, then the Oidong place boxes.
+static func all_cases() -> Array:
+	var out: Array = []
+	var seen := {}
+	for c in CASES:
+		if DirAccess.dir_exists_absolute("res://data/" + c):
+			out.append(c)
+			seen[c] = true
+	var d := DirAccess.open("res://data")
+	var extra := PackedStringArray()
+	if d != null:
+		d.list_dir_begin()
+		var nm := d.get_next()
+		while nm != "":
+			if d.current_is_dir() and not nm.begins_with(".") and not seen.has(nm):
+				var dir := "res://data/%s/" % nm
+				if FileAccess.file_exists(dir + "world.json") or FileAccess.file_exists(dir + "biome.json") or FileAccess.file_exists(dir + "region.glb"):
+					extra.append(nm)
+			nm = d.get_next()
+		d.list_dir_end()
+	extra.sort()
+	out.append_array(extra)
+	var pd := DirAccess.open("res://data/world-oidong-highrift/places")
+	var pl := PackedStringArray()
+	if pd != null:
+		pd.list_dir_begin()
+		var pn := pd.get_next()
+		while pn != "":
+			if pd.current_is_dir() and not pn.begins_with(".") and FileAccess.file_exists("res://data/world-oidong-highrift/places/%s/world.json" % pn):
+				pl.append("world-oidong-highrift/places/" + pn)
+			pn = pd.get_next()
+		pd.list_dir_end()
+	pl.sort()
+	out.append_array(pl)
+	return out
+
+
+# Which importer a case takes: by name for the spike's own cases, else by the files in its folder
+static func route_for(name: String, dir: String) -> String:
+	match name:
+		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "world-nhighlands", "world-nhighlands-wide", "world-rift-jungle":
+			return "world"
+		"hyperjungle", "rift", "sedesert":
+			return "biome"
+		"girder", "iziz", "qiblai":
+			return "gltf"
+		"verge", "dhelv", "yuni":
+			return name
+	if FileAccess.file_exists(dir + "world.json"):
+		return "world"
+	if FileAccess.file_exists(dir + "biome.json"):
+		return "biome"
+	if FileAccess.file_exists(dir + "region.glb"):
+		return "gltf"
+	return ""
+
+
+# The file an importer opens first; if it is still a Git LFS pointer the case cannot load
+static func _key_files(route: String, dir: String) -> PackedStringArray:
+	match route:
+		"world":
+			return PackedStringArray([dir + "world.json", dir + "world.glb"])
+		"biome":
+			return PackedStringArray([dir + "biome.json"])
+		"gltf":
+			return PackedStringArray([dir + "region.glb"])
+		"verge":
+			return PackedStringArray([dir + "sim.json", dir + "place.json"])
+		"yuni":
+			return PackedStringArray([dir + "fixtures.json", dir + "building.json"])
+	return PackedStringArray()
+
+
+func _mount_ui() -> void:
+	ui = KratorHostUI.new()
+	ui.name = "HostUI"
+	add_child(ui)
+	ui.set_standalone_mode(true)
+	ui.btn_inspect.visible = false
+	ui.btn_poly.visible = false
+	ui.btn_flora.visible = false
+	ui.btn_builds.visible = false
+	ui.btn_copy_xz.visible = false
+	var list: Array = []
+	for c in all_cases():
+		list.append({"label": c, "path": c})
+	ui.set_custom_cases(list, "")
+	ui.gallery_requested.connect(func(): KratorGalleryNav.return_to_gallery(get_tree()))
+	ui.case_selected.connect(func(p: String): _load_case(p))
+	ui.poi_selected.connect(func(poi: Dictionary): cam.look_from(poi["eye"], poi["target"]))
+	ui.hour_changed.connect(func(h: float): Atmos.hour = h)
+	ui.clock_rate_selected.connect(func(rv: float): Atmos.hour_rate = rv / 60.0)   # sim minutes a second -> hours a second
+	ui.gi_toggled.connect(func(on: bool): env.sdfgi_enabled = on)
+	ui.tool_changed.connect(func(_t: String): pass)
+	ui.pin_action.connect(func(act: String):
+		if act == "fly" and _has_pin:
+			_fly_to(_pin_pos, 60.0)
+		elif act == "clear":
+			_set_pin(false)
+	)
+	ui.minimap_picked.connect(func(xz: Vector2, _shift: bool, _rec: Dictionary):
+		_fly_to(Vector3(xz.x, _ground_y(xz.x, xz.y), xz.y), -1.0)
+	)
+	ui.btn_copy_cam.pressed.connect(func():
+		var p := cam.global_position
+		var f := -cam.global_transform.basis.z
+		DisplayServer.clipboard_set(JSON.stringify({"case": current, "eye": [snappedf(p.x, 0.1), snappedf(p.y, 0.1), snappedf(p.z, 0.1)],
+			"look": [snappedf(p.x + f.x * 50.0, 0.1), snappedf(p.y + f.y * 50.0, 0.1), snappedf(p.z + f.z * 50.0, 0.1)]}))
+		ui.flash_copied("Copied View!")
+	)
+	ui.hour_slider.value = Atmos.hour
+	ui.clock_lbl.text = "%02d:00" % int(Atmos.hour)
+	ui._select_rate_btn(0.0)
+	hud.visible = false
+	_pin_node = MeshInstance3D.new()
+	var cyl := CylinderMesh.new()
+	cyl.top_radius = 0.6
+	cyl.bottom_radius = 0.15
+	cyl.height = 12.0
+	var pm := StandardMaterial3D.new()
+	pm.albedo_color = Color(1.0, 0.78, 0.25)
+	pm.emission_enabled = true
+	pm.emission = Color(1.0, 0.7, 0.2)
+	pm.emission_energy_multiplier = 2.0
+	pm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	cyl.material = pm
+	_pin_node.mesh = cyl
+	_pin_node.visible = false
+	add_child(_pin_node)
+
+
+func _ground_y(x: float, z: float) -> float:
+	if ground:
+		var h := KData.height_at(ground, x, z)
+		if is_finite(h):
+			return h
+	return case_focus.y
+
+
+# Keep the camera's heading and pitch, frame `pt` from `dist` metres (dist < 0: keep the current distance to the ground)
+func _fly_to(pt: Vector3, dist: float) -> void:
+	var f := -cam.global_transform.basis.z
+	if f.y > -0.15:
+		f = Vector3(f.x, -0.5, f.z).normalized()
+	var d := dist
+	if d < 0.0:
+		d = clampf(cam.global_position.y - _ground_y(cam.global_position.x, cam.global_position.z), 30.0, 900.0) * 1.4
+	cam.look_from(pt - f * d, pt)
+
+
+func _set_pin(on: bool, p := Vector3.ZERO) -> void:
+	_has_pin = on
+	_pin_pos = p
+	if _pin_node:
+		_pin_node.visible = on
+		_pin_node.position = p + Vector3(0, 6.0, 0)
+
+
+# A screen point onto the case's ground: a ray marched against KData.height_at (no colliders needed)
+func _ground_hit(screen_pos: Vector2) -> Variant:
+	var o := cam.project_ray_origin(screen_pos)
+	var dv := cam.project_ray_normal(screen_pos)
+	var step := 2.0
+	var t := 0.0
+	var prev := o
+	while t < cam.far:
+		var p := o + dv * t
+		if p.y <= _ground_y(p.x, p.z):
+			for _i in 8:   # bisect between the last point above and this one
+				var mid := (prev + p) * 0.5
+				if mid.y <= _ground_y(mid.x, mid.z):
+					p = mid
+				else:
+					prev = mid
+			return Vector3(p.x, _ground_y(p.x, p.z), p.z)
+		prev = p
+		t += step
+		step = minf(step * 1.04, 40.0)
+	return null
+
+
+func _views_for(focus: Vector3, span: float) -> Array:
+	var v: Array = [{"label": "Overview", "eye": focus + Vector3(span * 0.6, span * 0.45, span * 0.8), "target": focus}]
+	for q in [["North", Vector3(0, 0, -1)], ["East", Vector3(1, 0, 0)], ["South", Vector3(0, 0, 1)], ["West", Vector3(-1, 0, 0)]]:
+		var dirv: Vector3 = q[1]
+		v.append({"label": "From the %s" % q[0], "eye": focus + dirv * span * 0.9 + Vector3(0, span * 0.35, 0), "target": focus})
+	v.append({"label": "Top down", "eye": focus + Vector3(0.0, span * 1.6, span * 0.08), "target": focus})
+	var w := maxf(0.0, float(_case_box[2]) - float(_case_box[0]))
+	if w > 0.0:
+		v.append({"label": "Street level", "eye": Vector3(focus.x - span * 0.15, _ground_y(focus.x - span * 0.15, focus.z + span * 0.2) + 1.7, focus.z + span * 0.2), "target": focus + Vector3(0, 2.0, 0)})
+	return v
 
 
 func _build_stage() -> void:
@@ -118,7 +331,7 @@ func _load_case(name: String) -> Dictionary:
 	if world:
 		world.queue_free()
 	world = Node3D.new()
-	world.name = "World_" + name
+	world.name = "World_" + name.replace("/", "_")
 	add_child(world)
 	current = name
 	Atmos.reset_defaults()
@@ -128,16 +341,27 @@ func _load_case(name: String) -> Dictionary:
 	var focus := Vector3.ZERO
 	var report := {}
 	var terrain: Node3D = null
-	var stage = KData.read_json(dir + "stage.json") if FileAccess.file_exists(dir + "stage.json") else null
-	if FileAccess.file_exists(dir + "terrain.json"):
+	_case_box = [0.0, 0.0, 0.0, 0.0]
+	_set_pin(false)
+	var route := route_for(name, dir)
+	var lfs := PackedStringArray()
+	for kf in _key_files(route, dir):
+		if KratorGalleryNav.is_lfs_pointer(kf):
+			lfs.append(kf)
+	if not lfs.is_empty():
+		report = {"route": "unpulled", "counts": {}, "gaps": {"load": "Git LFS pointer, not data: %s (git lfs pull --include=\"%s**\")" % [", ".join(lfs), dir.replace("res://", "godot/")]}}
+		route = "lfs"
+	var stage = KData.read_json(dir + "stage.json") if FileAccess.file_exists(dir + "stage.json") and route != "lfs" else null
+	if FileAccess.file_exists(dir + "terrain.json") and route != "lfs" and not KratorGalleryNav.is_lfs_pointer(dir + "terrain.json"):
 		terrain = KData.heightfield(dir + "terrain.json", stage.get("ground") if stage is Dictionary else null)
 		world.add_child(terrain)
-	match name:
-		"world-sedesert", "world-iziz", "world-sedesert-falls", "world-yuni", "world-nhighlands", "world-nhighlands-wide", "world-rift-jungle":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
+	match route:
+		"world":   # core/export's krator-world (krator/world_import.gd): the M4 tile, the M5 district, Yuni's records
 			var wv := KratorWorld.build(dir + "world.json")
 			world.add_child(wv)
 			report = wv.get_meta("report")
 			var wbox: Array = wv.get_meta("krator", {}).get("box", [0, 0, 0, 0])
+			_case_box = wbox.duplicate()
 			focus = Vector3((wbox[0] + wbox[2]) * 0.5, 0, (wbox[1] + wbox[3]) * 0.5)
 			if wv.has_meta("stage"):
 				stage = wv.get_meta("stage")
@@ -145,11 +369,12 @@ func _load_case(name: String) -> Dictionary:
 				if terrain:
 					terrain.queue_free()
 				terrain = wv.get_meta("ground")
-		"hyperjungle", "rift", "sedesert":
+		"biome":
 			var b := KratorBiome.build(dir + "biome.json")
 			world.add_child(b)
 			report = b.get_meta("report")
 			var box: Array = b.get_meta("krator", {}).get("box", [0, 0, 0, 0])
+			_case_box = box.duplicate()
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
 			if b.has_meta("stage"):
 				stage = b.get_meta("stage")
@@ -157,7 +382,7 @@ func _load_case(name: String) -> Dictionary:
 				if terrain:
 					terrain.queue_free()
 				terrain = b.get_meta("ground")
-		"girder", "iziz", "qiblai":
+		"gltf":
 			if terrain:
 				terrain.position.y = -0.25   # the region carries its own ground: keep the sampled one just under it
 			if name == "iziz" and FileAccess.file_exists(dir + "atmos.json"):
@@ -170,6 +395,7 @@ func _load_case(name: String) -> Dictionary:
 			world.add_child(g)
 			report = g.get_meta("report")
 			var box: Array = g.get_meta("krator", {}).get("box", [0, 0, 0, 0])
+			_case_box = box.duplicate()
 			focus = Vector3((box[0] + box[2]) * 0.5, 0, (box[1] + box[3]) * 0.5)
 			if FileAccess.file_exists(dir + "lamps.json"):   # the page's flames and halos as data (krator/lamps_import.gd)
 				var lp := KratorLamps.build(dir + "lamps.json", focus, name == "qiblai")   # Qiblai: the pool that follows the eye (krator/lamp_pool.gd)
@@ -212,6 +438,10 @@ func _load_case(name: String) -> Dictionary:
 	env.volumetric_fog_enabled = not world.find_children("*", "FogVolume", true, false).is_empty()
 	env.volumetric_fog_density = 0.0
 	var span := 60.0 if name in ["girder", "yuni"] else 900.0 if name == "verge" else 160.0 if name == "dhelv" else 140.0
+	var bw := maxf(absf(float(_case_box[2]) - float(_case_box[0])), absf(float(_case_box[3]) - float(_case_box[1])))
+	if not (name in CASES or name in LEGACY_WORLDS) and bw > 1.0:   # a case found by folder: frame its box
+		span = clampf(bw * 0.75, 60.0, 2500.0)
+		cam.far = maxf(8000.0, span * 6.0)
 	cam.look_from(focus + Vector3(span * 0.6, span * 0.45, span * 0.8), focus)
 	cam.set("speed", span * 0.25)
 	var args := _args()
@@ -238,7 +468,23 @@ func _load_case(name: String) -> Dictionary:
 	reports[name] = report
 	_print_report(name, report)
 	_update_hud()
+	if ui:
+		_refresh_ui_case(name, dir, focus, span, report)
 	return report
+
+
+func _refresh_ui_case(name: String, dir: String, focus: Vector3, span: float, report: Dictionary) -> void:
+	ui.set_custom_cases(ui.cases, name)
+	ui.set_custom_pois(_views_for(focus, span))
+	ui.minimap.populate_from_case(name, dir, world, ground)
+	ui.minimap_title.text = "MAP — %s" % name.get_file().to_upper()
+	ui.minimap.set_viewer(Vector2(focus.x, focus.z), Vector2(0, -1))
+	var gaps: Dictionary = report.get("gaps", {})
+	if gaps.has("load"):
+		ui.set_detail_text("CASE DID NOT LOAD", str(gaps["load"]))
+		ui.detail_panel.visible = true
+	else:
+		ui.detail_panel.visible = false
 
 
 func _print_report(name: String, r: Dictionary) -> void:
@@ -333,6 +579,24 @@ func _process(_d: float) -> void:
 			get_tree().quit()
 	if Engine.get_frames_drawn() % 15 == 0:
 		_update_hud()
+	if ui:
+		_update_ui()
+
+
+func _update_ui() -> void:
+	ui.sync_standalone_state(current.get_file(), Atmos.hour, Atmos.hour_rate * 60.0, env.sdfgi_enabled, _has_pin)
+	if ui.chrome_visible:
+		var p := cam.global_position
+		var r: Dictionary = reports.get(current, {})
+		var extra := "Case:   %s  [%s]\n        %s\nImport: %s\nGaps:   %d%s" % [current, str(r.get("route", "?")), ABOUT.get(current, "core/export krator-world"),
+			JSON.stringify(r.get("counts", {})).left(150), r.get("gaps", {}).size(),
+			("  (F4 prints them)" if r.get("gaps", {}).size() > 0 else "")]
+		extra += "\nWeather: %s  rain %.2f  fog %.2f" % [Atmos.W["mode"] if Atmos.weather_on else "off", Atmos.rain, Atmos.fog]
+		ui.coords_lbl.text = KratorHostUI.format_standalone_coords(cam, _ground_y(p.x, p.z), _pin_pos if _has_pin else null, extra)
+		if ui.minimap_open:
+			var f := -cam.global_transform.basis.z
+			ui.minimap.set_viewer(Vector2(p.x, p.z), Vector2(f.x, f.z))
+			ui.minimap.set_pin(_has_pin, Vector2(_pin_pos.x, _pin_pos.z))
 
 
 func _update_hud() -> void:
@@ -348,15 +612,40 @@ func _update_hud() -> void:
 
 
 func _unhandled_input(e: InputEvent) -> void:
+	if ui and e is InputEventMouseButton and e.pressed and (e as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT \
+			and ((e as InputEventMouseButton).double_click or ui.active_tool == "pin"):
+		var hit = _ground_hit((e as InputEventMouseButton).position)
+		if hit is Vector3:
+			_set_pin(true, hit)
+		return
 	if not (e is InputEventKey and e.pressed and not e.echo):
 		return
 	var k := (e as InputEventKey).keycode
 	if k >= KEY_1 and k <= KEY_9 and k - KEY_1 < CASES.size():
 		_load_case(CASES[k - KEY_1])
-	elif k == KEY_F1:
-		help_on = not help_on
+	elif k == KEY_F1 or (ui and k == KEY_H):
+		if ui:
+			ui.set_chrome_visible(not ui.chrome_visible)
+		else:
+			help_on = not help_on
 	elif k == KEY_F2:
+		if ui:   # the Host UI's F2: back to the Gallery (F4 prints the report)
+			KratorGalleryNav.return_to_gallery(get_tree())
+		else:
+			_print_report(current, reports.get(current, {}))
+	elif k == KEY_F4:
 		_print_report(current, reports.get(current, {}))
+	elif ui and k == KEY_M:
+		ui.toggle_minimap()
+	elif ui and k == KEY_C:
+		ui.set_active_tool("" if ui.active_tool == "pin" else "pin")
+	elif ui and k == KEY_G and _has_pin:
+		_fly_to(_pin_pos, 60.0)
+	elif ui and k == KEY_ESCAPE:
+		if ui.active_tool != "":
+			ui.set_active_tool("")
+		elif _has_pin:
+			_set_pin(false)
 	elif k == KEY_BRACKETLEFT:
 		Atmos.hour = fmod(Atmos.hour + 23.0, 24.0)
 	elif k == KEY_BRACKETRIGHT:

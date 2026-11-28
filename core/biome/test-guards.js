@@ -31,31 +31,54 @@ function page(pack) {
     crown: { lib: 'card.pine', plants: 9 },                                          /* a crown sheet, no stems: refused */
     crowncells: { lib: 'card.pine', plants: 9 },                                     /* ...unless cut by BIO.geo.cells */
     moss: { lib: 'card.moss', plants: 1, anchor: 'center' },                         /* a spray seen from above: fine */
-    old: { lib: 'card.fern' }                                                        /* a pack before the guard: never refused */
+    onecut: { lib: 'card.broadleaf', plants: 1, anchor: 'center', sheet: 'geometry' }, /* ONE spray cut into nine cells: refused (ehighlands' beech) */
+    onecells: { lib: 'card.broadleaf', plants: 1, anchor: 'center' },               /* ...the same cut by BIO.geo.cells in the code: refused */
+    old: { lib: 'card.fern' }                                                        /* a pack before the guard: never refused, but reported */
   });
-  const M = {}; for (const k of ['fern', 'fernok', 'sheet', 'sheetcut', 'crown', 'crowncells', 'moss', 'old']) M[k] = card();
+  const M = {}; for (const k of ['fern', 'fernok', 'sheet', 'sheetcut', 'crown', 'crowncells', 'moss', 'onecut', 'onecells', 'old']) M[k] = card();
   BIO.libSwap('k', M);
   BIO.def('fern', BIO.geo.frond(4), M.fern); BIO.def('fernok', BIO.geo.frond(4), M.fernok);
   BIO.def('sheet', new THREE.PlaneGeometry(1, 1), M.sheet); BIO.def('sheetcut', new THREE.PlaneGeometry(1, 1), M.sheetcut);
   BIO.def('crown', BIO.geo.clump(), M.crown); BIO.def('crowncells', BIO.geo.cells(BIO.geo.clump(), { n: 3 }), M.crowncells);
   BIO.def('moss', BIO.geo.clump(), M.moss); BIO.def('old', BIO.geo.frond(4), M.old);
+  BIO.def('onecut', BIO.geo.clump(), M.onecut); BIO.def('onecells', BIO.geo.cells(BIO.geo.clump(), { n: 3, scale: .75 }), M.onecells);
   const refused = new Set(BIO.cardFaults.map(f => f.item));
   ok('a library fern on a frond with no base is refused, through the error panel', refused.has('fern') && errs.some(e => /card fern/.test(e)), [...refused]);
   ok('a sheet drawn whole is refused; a crown sheet with no stems is refused', refused.has('sheet') && refused.has('crown'));
-  ok('negative: a cut, a base, cells, a centre spray and a pack that says nothing all pass', !refused.has('fernok') && !refused.has('sheetcut') && !refused.has('crowncells') && !refused.has('moss') && !refused.has('old'), [...refused]);
-  ok('each slot is refused once', BIO.cardFaults.length === 3, BIO.cardFaults.length);
+  ok('a ONE-plant card cut into cells is refused, by "sheet": "geometry" or by BIO.geo.cells', refused.has('onecut') && refused.has('onecells'), [...refused]);
+  ok('negative: a cut, a base, cells on a sheet, a whole centre spray and a pack that says nothing all pass', !refused.has('fernok') && !refused.has('sheetcut') && !refused.has('crowncells') && !refused.has('moss') && !refused.has('old'), [...refused]);
+  ok('each slot is refused once', BIO.cardFaults.length === 5, BIO.cardFaults.length);
+  ok('a slot whose pack says nothing of its image is listed as mute (and only it)', BIO.cardMute.length === 1 && BIO.cardMute[0] === 'old', BIO.cardMute);
   const gc = BIO.guardChecks({}), gn = BIO.guardNegatives({});
-  ok('guardChecks reports the faults; its negative (a made-up fern with no base) fails as it must', gc[0].ok === false && gn[0].failed === true);
+  ok('guardChecks reports the faults and the mute slot; its negatives (a fern with no base, one plant in cells) fail as they must',
+    gc[0].ok === false && gc[1].ok === false && /old/.test(gc[1].detail) && gn[0].failed === true && gn[1].failed === true, [gc[1], gn[1]]);
+}
+
+// 1b. point to segment, and the inside-out probe
+{
+  const { BIO } = page();
+  const a = { x: 0, y: 0, z: 0 }, b = { x: 4, y: 0, z: 0 };
+  ok('segDist: the middle of a segment, past its end, and on it', Math.abs(BIO.segDist(2, 1, 0, a, b) - 1) < 1e-9 && Math.abs(BIO.segDist(7, 0, 4, a, b) - 5) < 1e-9 && BIO.segDist(1, 0, 0, a, b) === 0);
+  const ground = () => 0, mk = (flip) => { const g = new THREE.PlaneGeometry(4, 4); g.rotateX(flip ? Math.PI / 2 : -Math.PI / 2); const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial()); m.position.set(0, 2, 0); return m; };
+  const roof = mk(true); roof.position.y = -3;   /* faces down, but under the ground: a cave's roof, not counted */
+  const io = BIO.insideOut({ ground, meshes: [mk(true), mk(false), roof] });
+  ok('insideOut: a disc 2 m up wound toward the ground is found; one wound up, and a down-facing roof under the ground, are not', io.length === 1 && io[0].share === 1, io);
+  const dbl = mk(true); dbl.material.side = THREE.DoubleSide;
+  ok('negative: a double-sided disc is never inside out', BIO.insideOut({ ground, meshes: [dbl] }).length === 0);
 }
 
 // a small forest: rods and leaf cards, one tree owned and keyed, one with leaves off its branch
+const SPRIGS = [{ cell: [0, 0, .33, .33], stem: [.02, .03], tip: [.3, .32], w: [-.1, .1] }];
 function forest(o) {
-  const { BIO, card } = page();
+  const { BIO, card } = page(o.twig != null ? { twig: { lib: 'card.spruce', plants: 9, anchor: 'center', stems: SPRIGS } } : null);
   if (o.ownBox) BIO.LOD.ownBox = true;
   const leaf = BIO.leafMat(new THREE.DataTexture(new Uint8Array(4), 1, 1, THREE.RGBAFormat), 'leaf', {});
   BIO.def('rod', new THREE.CylinderGeometry(.5, .5, 1, 6), new THREE.MeshLambertMaterial());
   BIO.def('clump', BIO.geo.clump(), leaf);
   BIO.def('raft', BIO.geo.clump(), leaf, { free: true });
+  /* a crown held by its stems (o.twig: the clump's origin, its stems, o.twig m above the bough's axis at x 11, a metre from the 2 m points
+     the audit sampled rods at before 2026-11-15) */
+  if (o.twig != null) { const tm = BIO.leafMat(new THREE.DataTexture(new Uint8Array(4), 1, 1, THREE.RGBAFormat), 'twig', {}); BIO.libSwap('k', { twig: tm }); BIO.def('twig', BIO.geo.clump(), tm); }
   const Q = new THREE.Quaternion();
   // tree A at (10, 10): a bole from 0 to 8 m and a bough out to (14, 8, 10); cards at the bough's tip and on the bole
   BIO.owner = [10, 10]; BIO.range = o.rodRange || 300;
@@ -65,6 +88,7 @@ function forest(o) {
   if (o.unowned) { BIO.owner = null; BIO.put('clump', [10.2, 7.5, 10], Q, [1.5, 1.5, 1.5], 0x336622); BIO.owner = [10, 10]; }
   // a card hung 6 m beside the bough, held by nothing
   if (o.floating) BIO.put('clump', [14, 8, 16], Q, [1.5, 1.5, 1.5], 0x336622);
+  if (o.twig != null) BIO.put('twig', [11, 8 + o.twig, 10], Q, [1.5, 1.5, 1.5], 0x336622);
   BIO.put('raft', [30, 3, 30], Q, [1, 1, 1], 0x336622);   /* free: never audited */
   BIO.owner = null; BIO.range = null;
   BIO.bake();
@@ -99,7 +123,24 @@ const ground = () => 0;
   ok('with no ground function it audits nothing and says so', N.audited === 0 && /ground/.test(N.note), N.note);
   const B = forest({ floating: true });
   const gc = B.guardChecks({ ground }), gn = B.guardNegatives({ ground });
-  ok('guardChecks fails the floating card; its negatives (lifted, four times the range) fail as they must',
-    gc.find(c => /attach audit/.test(c.name)).ok === false && gn.filter(n => /lifted|four times/.test(n.name)).every(n => n.failed) && gn.length === 3, gn);
+  ok('guardChecks fails the floating card; its negatives (lifted, four times the range, the inside-out disc) fail as they must',
+    gc.find(c => /attach audit/.test(c.name)).ok === false && gn.filter(n => /lifted|four times|inside|cells|0x161618|nothing samples/.test(n.name)).every(n => n.failed) && gn.length === 7, gn);
+  /* T29d (D10): the two guards (soot; a packed family nothing samples) are among the checks, and on this page, with no near-black
+     unmapped item and no pack, they pass */
+  ok('guardChecks has the soot and unsampled-pack guards, and they pass on a page without either fault',
+    ['under soot', 'packed texture family'].every(k => { const c = gc.find(x => x.name.indexOf(k) >= 0); return c && c.ok === true; }), gc.map(c => c.name));
+  ok('guardChecks on a page with nothing inside out passes that check', gc.find(c => /inside out/.test(c.name)).ok === true);
+}
+
+// 4. a crown held by its stems: the stem on its twig, measured point to segment
+{
+  const H = forest({ twig: .1 }).attachAudit({ ground });
+  ok('a stem-held clump 0.1 m off the bough\'s axis, between two of the old sample points, is held', H.stemmed === 1 && H.stemFloat === 0, H);
+  const L = forest({ twig: .5 }).attachAudit({ ground });
+  ok('negative: the same clump 0.5 m off its twig misses (the old tolerance, .25 x 1.5 + .5 = 0.875 m, held it)', L.stemmed === 1 && L.stemFloat === 1, L);
+  const B = forest({ twig: .1 }), gn = B.guardNegatives({ ground });
+  const n = gn.find(x => /stem-held/.test(x.name));
+  ok('guardNegatives lifts every stem-held clump 0.4 m: it fails as it must', n && n.failed, gn);
+  ok('guardChecks lists the stem check and it passes on the held clump', B.guardChecks({ ground }).some(c => /stems sit on their twigs/.test(c.name) && c.ok));
 }
 console.log(fails ? fails + ' FAILED' : 'all passed'); process.exit(fails ? 1 : 0);

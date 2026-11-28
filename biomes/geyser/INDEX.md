@@ -52,4 +52,4 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | field | 45-host-stage.js, 47-host-land.js, 75-biome-geyserfield-flora.js, 85-host-far.js, 88-host-build.js, 89-host-sky.js, 89w-host-sea.js, 89w-host-water.js, 98-host-field-take.js | 30 |
 | ice | 44s-host-site.js, 87-host-ice.js | 9 |
 | puna | 44s-host-site.js | 6 |
-| stills | 87-host-stills.js | 6 |
+| stills | 87-host-stills.js | 7 |

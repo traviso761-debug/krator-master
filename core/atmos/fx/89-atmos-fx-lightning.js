@@ -9,7 +9,7 @@
 //   ATMOS.thunder       the pending events [{at (module clock s), dist, power}]; ATMOS.onThunder(fn(ev)): fn is called when
 //                       one is due (the host plays its sound: power 1 near, falling with distance; a far one rumbles)
 //   PRESETS.lightning   {depth, rough, fork, width (m at the base of the main channel), colour, ashColour, cloud}
-//   ATMOS.boltFx(s)     a strike drawn now: s = {x, z, top, base, dist, t, ash}; its brightness is the weather's flash (ATMOS.W.flash)
+//   ATMOS.boltFx(s)     a strike drawn now: s = {x, z, top, base, dist, t, ash, seed (optional: the bolt's shape; the weather cells' strikes carry their own)}; its brightness is the weather's flash (ATMOS.W.flash)
 //                       or ATMOS.boltGlow (the clouds' mood's lightning, host/89-atmos-h-skyhost.js cloudMood), whichever is higher
 // The bolt is drawn as camera-facing ribbons (one mesh, rebuilt at each strike: under 1k triangles), additive, at the
 // weather's flash. Recorded as {type:'lightning'} for the export. Godot: an ImmediateMesh from the same segments and an
@@ -36,7 +36,7 @@
   let glowMap=null;if(T.DataTexture){const n=64,d=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const r=Math.hypot((x+.5)/n-.5,(y+.5)/n-.5)*2,a=Math.max(0,1-r);const i=(y*n+x)*4;d[i]=d[i+1]=d[i+2]=255;d[i+3]=Math.round(255*a*a*(3-2*a));}
    glowMap=new T.DataTexture(d,n,n,T.RGBAFormat);glowMap.minFilter=glowMap.magFilter=T.LinearFilter;glowMap.needsUpdate=true;}
   const cm=new T.SpriteMaterial({color:P.colour,map:glowMap,transparent:true,opacity:0,blending:T.AdditiveBlending,depthWrite:false,fog:false});const cloud=new T.Sprite(cm);cloud.visible=false;cloud.name='atmos:lightning-cloud';A.add(cloud);A.noRay(cloud);
-  A.boltFx=s=>{n++;const cam=A.h.camera.position,segs=A.boltPath((A.h.seed||1)*7919+n*104729,[s.x,s.top,s.z],[s.x,s.base,s.z]);
+  A.boltFx=s=>{n++;const cam=A.h.camera.position,segs=A.boltPath(s.seed!=null?s.seed:(A.h.seed||1)*7919+n*104729,[s.x,s.top,s.z],[s.x,s.base,s.z]);
    const pos=new Float32Array(segs.length*12),idx=[];segs.forEach((g,i)=>{const mx=(g.a[0]+g.b[0])/2-cam.x,mz=(g.a[2]+g.b[2])/2-cam.z,ml=Math.hypot(mx,mz)||1,sx=-mz/ml*g.w,sz=mx/ml*g.w;
     pos.set([g.a[0]-sx,g.a[1],g.a[2]-sz,g.a[0]+sx,g.a[1],g.a[2]+sz,g.b[0]-sx,g.b[1],g.b[2]-sz,g.b[0]+sx,g.b[1],g.b[2]+sz],i*12);const q=i*4;idx.push(q,q+1,q+2,q+1,q+3,q+2);});
    geo.setAttribute('position',new T.BufferAttribute(pos,3));geo.setIndex(idx);geo.computeBoundingSphere();

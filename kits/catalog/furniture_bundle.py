@@ -81,6 +81,28 @@ def textures(side=None):
     return 'const KF_TEX = %s;\n' % json.dumps(out, sort_keys=True)
 
 
+def decal_table(cultures=None):
+    """The delivered pictures for painted panels (core/catalog/krator-furniture-core.js mkDecal): the catalog's materials.json
+    "decals", packed into tex/ by tools/textures/pack.py kits/catalog, as { texture id: data URL }, only those whose culture
+    is bundled (cultures None: all). Empty until a decal's set is delivered and packed."""
+    pj = os.path.join(TEX, 'pack.json')
+    if not os.path.isfile(pj):
+        return {}
+    out = {}
+    for tid, e in sorted(json.load(open(pj, encoding='utf-8')).get('decals', {}).items()):
+        if cultures is not None and e.get('culture') and e['culture'] not in cultures:
+            continue
+        out[tid] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX, e['files']['map']), 'rb').read()).decode()
+    return out
+
+
+def decals_js(cultures=None):
+    """The decal table registered inside the bundle's closure; '' when none is packed (the bundle as before, byte for byte)."""
+    t = decal_table(cultures)
+    return ('/* ---- the delivered decal pictures (materials.json "decals", tex/) ---- */\nObject.assign(FURN_DECAL_IMG, %s);\n'
+            % json.dumps(t, sort_keys=True)) if t else ''
+
+
 PLANTS_FILE = 'krator-master-plants.js'
 # the plants as pieces: each PLANT() entry joins FURN_BY_KEY under its own key (type 'plant'), so a batch places a palm or a
 # heliconia as it places a chair (FURNS, the catalog's list, is left alone)
@@ -88,16 +110,20 @@ PLANTS_ADAPTER = ('/* ---- the plants as pieces (furniture_bundle.py plants=True
                   'PLANTS.forEach(function (p) { if (!FURN_BY_KEY[p.key]) { if (!p.type) p.type = \'plant\'; FURN_BY_KEY[p.key] = p; } });\n')
 
 
-def bundle(cultures=None, harvested=False, tex=False, plants=False, side=None):
+def bundle(cultures=None, harvested=False, tex=False, plants=False, side=None, decals=False):
     """tex=True adds the library detail maps (KF_TEX and krator-furniture-detail.js): a batch's flush then gives each
     family's mesh its set as a triplanar detail map. tex=False is the bundle as before, byte for byte. plants=True adds
     the plant registry (krator-master-plants.js) as pieces a batch can place; plants=False changes nothing. side (a dict,
     with tex=True): the maps go into side['catalog-furniture'] for a sidecar file beside the page (matlib_pack.write_sidecar)
-    and the bundle reads them from KMAT_SIDE; side=None is the bundle as before, byte for byte."""
+    and the bundle reads them from KMAT_SIDE; side=None is the bundle as before, byte for byte. decals=True inlines the
+    delivered decal pictures of the bundled cultures (decal_table): a painted panel whose key is one shows the image; while
+    none is packed it adds nothing."""
     fs = files(cultures, harvested)
     if plants:
         fs = fs[:-1] + [PLANTS_FILE] + fs[-1:]
     body = ''.join('/* ---- %s ---- */\n%s\n' % (kcat.rel(f), read(f)) + (PLANTS_ADAPTER if f == PLANTS_FILE else '') for f in fs)
+    if decals:
+        body += decals_js(cultures)
     if tex:
         fs = fs + [DETAIL]
         body += '/* ---- the packed detail maps (tex/) ---- */\n' + textures(side)

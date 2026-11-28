@@ -2,6 +2,8 @@
 // The follow camera (V) on the cavern's own distance field and the crates as boxes (the ropes are thin: left out); the deck cut (X, ]
 // [) with caps, the decks above hidden and the ones below darkened; the soft band (U); the section (C) and the slab (Shift+C); the
 // map's deck band and the line map (L). The ground is far below everything: the walker stands on the KWALK floors the cavern wrote.
+// It is a constant fallback (Loj Twenny's case), read through UG.ground so check.py can make it the surface (a cave page's case).
+UG.ground=()=>-50;
 const UG_SOLID=KHOST.solidFrom({cavern:UGC,walk:KWALK});
 const UG_VIEWS={
  'The gallery':[-46,2.4,3,-20,1.6,-1],
@@ -12,7 +14,7 @@ const UG_VIEWS={
  'The shaft foot':[22,1.7,-4,25,8,-9]};
 const H=KHOST.take({build:'underground',title:'Underground camera test',
  hint:'core/host underground pieces: V follow (wheel: the arm) · X deck cut, ] [ deck · H rock cut · U band cut · C section, Shift+C slab · M map · L line map · F walk',
- scene,camera,renderer,ground:()=>-50,clear:.3,minR:.5,maxR:400,
+ scene,camera,renderer,ground:(x,z)=>UG.ground(x,z),clear:.3,minR:.5,maxR:400,
  walk:KWALK,walker:{step:.6,r:.3,h:1.7},eye:1.7,
  views:UG_VIEWS,start:'The gallery',
  solid:UG_SOLID,follow:{dist:4},

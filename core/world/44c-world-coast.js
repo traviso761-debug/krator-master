@@ -9,7 +9,7 @@
 //  * a town's coast is its own (keep): inside a town's ground and its band the land is not moved and the warp fades
 //    out, so a port's waterfront stays where its build put it;
 //  * the fields 'coast', 'coastC' and 'coast:<class>' (not 'shore': core/biome's BIO.ENV.shore is the water's distance in m) (KCOAST.FIELDS) join WORLD.FIELDS, so the biome kits can grow shore
-//    species on them; WORLD.at / fieldsFrom are wrapped (the 43-world-isles.js pattern);
+//    species on them; WORLD.atShared / fieldsFrom are wrapped (the 43-world-isles.js pattern; WORLD.at copies atShared);
 //  * WORLD.ground is wrapped: the coast's colour bands (wet and dry sand, shingle, rock, the cliff's face, marsh mud);
 //  * WORLD.coast {list, at(x, z), stats(), check(n)} for the probe, the verify and the inspector.
 // Listed by an open-world build after its own fields fragment (43-*) and before 45; needs core/rand, core/mask
@@ -71,7 +71,7 @@ W.init=function(R){init0(R);build();};
 function build(){const t0=Date.now();keeps();   /* first: a region's own shaping reads keepAt, and the bodies' old masks are flooded on it */
  const B=W.waterBodies();on=false;LIST.length=0;
  const HD=M.heights,cellM=Math.max(2000,Math.sqrt((2000/HD.su)*(2000/HD.sv)));   /* the cells the coast came from: the height grid's (4 km on the isles) or the scale model's 2 km pixel the finer grids were drawn up from */
- for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM,islands:islandsOf(b)});
+ for(const b of B){const C=KCOAST.build({id:b.id,level:b.level,mask:b.mask,seed:SEED,salt:b.salt>.5,sample:SAMPLE,frame:{ox:OX,oz:OZ},sourceCell:cellM,islands:islandsOf(b),stampLand:!W.LANDFORMS});   /* a region with its own landform stamp (WORLD.LANDFORMS) raises the islands' ground itself */
   C.body=b;LIST.push(C);}
  on=true;
  for(const C of LIST){const b=C.body,nm=KCOAST.mask(C);b.oldMask=b.mask;b.mask=nm;
@@ -83,8 +83,8 @@ function addFields(A){const x=A.x,z=A.z;let best=null;
  for(let i=0;i<LIST.length;i++){const C=LIST[i];if(!inBox(C,x,z))continue;KCOAST.fields(C,x,z,FT);if(!best||FT.coast>best.coast||(best.coast===0&&Math.abs(FT.coastC)<Math.abs(best.coastC))){best=best||{};Object.assign(best,FT);}}
  if(best){for(const k of KCOAST.FIELDS)A[k]=best[k];}else KCOAST.blank(A);
  return A;}
-const at0=W.at,from0=W.fieldsFrom;
-W.at=(x,z)=>addFields(at0(x,z));
+const at0=W.atShared,from0=W.fieldsFrom;
+W.atShared=(x,z)=>addFields(at0(x,z));   /* W.at copies it (41) */
 W.fieldsFrom=(x,z,h,tanS,P,out)=>addFields(from0(x,z,h,tanS,P,out));
 // ---------------------------------------------------------------- the colour bands (linear RGB)
 const lin=hx=>{const f=c=>{c/=255;return c<.04045?c/12.92:Math.pow((c+.055)/1.055,2.4);};return[f(hx>>16&255),f(hx>>8&255),f(hx&255)];};

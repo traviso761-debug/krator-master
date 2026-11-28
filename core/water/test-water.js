@@ -334,4 +334,12 @@ const GP=(text,t,extra)=>glslProgram(A.waveGLSL()+'\n'+text,Object.assign({atmWa
   eS<1e-8&&eF<1e-12&&eP<1e-9&&neg>.01,false);
  W.surfaces.pop();}
 
+// ---- S3-A1e (2026-11-24): a page that never ran ATMOS.init (a --kit sheet) got "Cannot read properties of undefined (reading 'scene')" from
+// WATER.draw; every drawing now says what is missing. This file never binds core/atmos, so A.h is unset here
+{const h0=A.h;A.h=undefined;const msg=fn=>{try{fn();return'';}catch(e){return e.message;}};
+ const m1=msg(()=>W.draw(SEA,{})),m2=msg(()=>W.drawFlow(W.flow({name:'unbound',pts:[[0,0,1],[40,0,.9]],width:6}),{})),m3=msg(()=>W.drawStill(W.still({name:'unbound pool',level:0,bounds:[0,0,9,9]}),{}));
+ ok('WATER.draw, drawFlow and drawStill before ATMOS.init: a clear error naming the call and ATMOS.init ("'+m1+'")',
+  /core\/water: WATER\.draw needs ATMOS\.init/.test(m1)&&/WATER\.drawFlow needs ATMOS\.init/.test(m2)&&/WATER\.drawStill needs ATMOS\.init/.test(m3),/reading 'scene'/.test(m1+m2+m3));
+ for(const n of['unbound','unbound pool']){const i=W.surfaces.findIndex(s=>s.name===n);if(i>=0)W.surfaces.splice(i,1);}A.h=h0;}
+
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

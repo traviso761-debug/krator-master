@@ -17,10 +17,17 @@ invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on 
   ix-glazier          L4: from each carved home's front room a walker reaches its first carved room (core/walk: the front's
                       floor from the walked draw, the doorway, the cavern's floor); the carved rooms furnished
   bench-ground        the blocks' open ground is kitchen gardens, orchards and yards, not bare (the owner, 2026-11-16)
+  opal-lode           the Great Potch Line (L0): opal nodes (kits/resources, TG.res) at the wall's foot, registered and drawn,
+                      on dry ground, some of high grade; every adit, dark adit and vein gallery of the wall takes one by the
+                      kit's nearest-node rule (a mine, 400 m)
   wall-scree          the wall's screes (core/terrain KRUBBLE): a talus cone at each band's two ends and heaps in the gaps on
                       the ledges, each on its ground (the bench or the ledge), the ledges' heaps walkable (core/walk)
   opal-flora          the bench grows Opal Valley's middle terrace (biomes/opalvalley 'middlebed', sealed in LW_FLORA): its kin
                       trees in the orchards and yards, its own floor plants, every species found, none on a street or a building
+  world-ground        the page stands on the open world (core/world/bake_ground.py: the region's WORLD.H baked round the pin):
+                      at the far ground's edge its ground is the world's, past the town's patch the world's with the model
+                      edit owed (PLAN.md L6), its lake at the world's water; the bake holds WORLD.H (16 m grid: mean under
+                      0.5 m); it reports what the owed edit still moves (0 once the scale model has the bay and the scarp)
   lake-water          the great lake is core/water's open water with its shore grid: wet out on the lake and at the quays'
                       heads, dry on the bench above the shore; WATER.heightAt within a metre of the lake's level there
   bench-stairs        every building on the bench whose floor stands over the street has a podium and a flight of steps
@@ -61,6 +68,11 @@ TOWN_JS = r"""
  let n=0,bare=0,kinds={};for(const b of (typeof LW_BLOCKS!=='undefined'?LW_BLOCKS:[]))if(b.kind!=='field'){const xs=b.poly.map(p=>p[0]),zs=b.poly.map(p=>p[1]);
   for(let x=Math.min(...xs)+2;x<Math.max(...xs);x+=9)for(let z=Math.min(...zs)+2;z<Math.max(...zs);z+=9){const pl=lwPlot(x,z);if(pl==null)continue;n++;kinds[pl]=(kinds[pl]||0)+1;if(pl==='dooryard')bare++;}}
  R.push({name:'bench-ground',ok:n>500&&bare<n*.35&&(kinds.garden||0)>n*.15&&(kinds.orchard||0)>n*.15,detail:n+' samples of the blocks\' open ground: '+JSON.stringify(kinds)});
+ {const N=typeof LW_OPAL!=='undefined'?LW_OPAL:[],Lk=typeof LW_OPAL_LINKS!=='undefined'?LW_OPAL_LINKS:[],Dw=window._lightwallOpalDraw||{};
+  const reg=KTAGS.page?KTAGS.page.query({'class':'prop',kind:'res-node'}).length:0,wet=N.filter(n=>!(terrainH(n.x,n.z)>LW.LAKE+1)).length,unl=Lk.filter(w=>!w.link);
+  R.push({name:'opal-lode',ok:N.length>=8&&N.some(n=>n.grade==='high')&&reg===N.length&&Dw.recs===N.length&&!Object.keys(Dw.missing||{}).length&&!wet&&Lk.length>=10&&!unl.length,
+   detail:N.length+' opal nodes ('+JSON.stringify(N.reduce((a,n)=>{a[n.grade]=(a[n.grade]||0)+1;return a;},{}))+'), '+reg+' registered, '+(Dw.recs||0)+' drawn; on the water '+wet+'; '+(Lk.length-unl.length)+' of '+Lk.length+' workings take a node'
+    +(Lk.length?' (nearest '+Math.round(Math.max(...Lk.filter(w=>w.link).map(w=>w.link.dist)))+' m at most)':'')});}
  {const SC=typeof LW_SCREE!=='undefined'?LW_SCREE:[],off=SC.filter(H=>{const g=H.walk?null:terrainH(H.x,H.z);return g!=null&&Math.abs(g-H.y0)>.6;}),
    unwalked=SC.filter(H=>H.walk&&!KWALK.floorsAt(H.x,H.z).some(f=>f[1].tag==='lightwall:scree'));
   R.push({name:'wall-scree',ok:SC.length>=15&&SC.filter(H=>/end/.test(H.id)).length===2*LW.BANDS&&!off.length&&!unwalked.length,
@@ -72,9 +84,28 @@ TOWN_JS = r"""
    for(let i=0;i<c;i+=st){const x=A[i*16+12],z=A[i*16+14];if(z>LW.SHORE-2)continue;n++;if(lwBioMask(x,z)<=0)bad++;}}
   R.push({name:'opal-flora',ok:!!FL.on&&(K.trees||0)>150&&(FL.stats.orchard||0)>300&&!(K.missing||[]).length&&!K.errors&&own>5000&&!bad,
    detail:'kin trees '+(K.trees||0)+', orchard and yard trees '+((FL.stats&&FL.stats.orchard)||0)+'; '+' '+JSON.stringify(Object.fromEntries(Object.entries(K).filter(([k])=>!/^(trees|errors|missing)$/.test(k))))+'; floor plants '+own+'; trees off the mask '+bad+' of '+n+' read; '+(FL.ms||0)+' ms'});}
+ /* the open world under the page (gen/41w-lw-world-ground.js, core/world/bake_ground.py): at the far ground's edge the page's
+    ground is the world's (no layer, no patch), past the patch it is the world's with the model edit owed, the lake's level is the
+    world's water, the bake holds WORLD.H; and what the owed edit still moves (zero once the scale model has it) */
+ {const WG=typeof LW_WORLD!=='undefined'?LW_WORLD:null,FB=(window._lightwallFar||{}).box||[-8000,-9000,8000,9000],edge=[],ring=[];
+  if(WG){for(let t=0;t<=1;t+=.05){const x=FB[0]+100+(FB[2]-FB[0]-200)*t,z=FB[1]+100+(FB[3]-FB[1]-200)*t;edge.push([x,FB[1]+100],[x,FB[3]-100],[FB[0]+100,z],[FB[2]-100,z]);}
+   for(let z=-2000;z<=3000;z+=250)ring.push([-1750,z],[1750,z]);}
+  const dE=edge.reduce((m,p)=>Math.max(m,Math.abs(terrainH(p[0],p[1])-lwWorld(p[0],p[1]))),0),dR=ring.reduce((m,p)=>Math.max(m,Math.abs(terrainH(p[0],p[1])-lwPending(p[0],p[1],lwWorld(p[0],p[1])))),0);
+  const lv=WG?WG.water.map(w=>w.level):[],lvOk=lv.length&&lv.every(l=>l!=null&&Math.abs(l-(LW.LAKE+LW.Y_W))<.01),st=WG?WG.stats:[];
+  let lift=0,cut=0,moved=0;if(WG)for(let x=-6500;x<=6500;x+=100)for(let z=-8000;z<=6000;z+=100){const w0=lwWorld(x,z),d=lwPending(x,z,w0)-w0;if(d>lift)lift=d;if(-d>cut)cut=-d;if(Math.abs(d)>1)moved++;}
+  R.push({name:'world-ground',ok:!!WG&&dE<.01&&dR<.01&&lvOk&&st.length&&st[0].mean<.5&&st[0].max<3,
+   detail:WG?('the world: '+WG.region+' at '+WG.site.id+' (px '+WG.site.px+','+WG.site.py+'), page 0 = '+LW.Y_W.toFixed(2)+' m; the far ground\'s edge off the world by '+dE.toFixed(3)+' m, past the patch off the world with the owed edit by '+dR.toFixed(3)+
+    ' m; the lake '+(LW.LAKE+LW.Y_W).toFixed(2)+' m, the world\'s water '+lv.join(', ')+'; the bake vs WORLD.H '+st.map(s=>s.cell+' m: max '+s.max+', mean '+s.mean).join('; ')+
+    '; THE MODEL EDIT OWED moves '+(moved/100).toFixed(1)+' km2 by over a metre (the scarp lifts up to '+lift.toFixed(0)+' m, the bay cuts up to '+cut.toFixed(0)+' m)'):'no LW_WORLD (gen/41w-lw-world-ground.js)'});}
  {const LK=typeof LW_LAKE!=='undefined'?LW_LAKE:null,wet=(x,z)=>!!(LK&&LK.wetAt&&LK.wetAt(x,z)),out=[0,LW.SHORE+400],bench=[0,LW.SHORE-40],h=LK?WATER.heightAt(out[0],out[1],0):null;
   R.push({name:'lake-water',ok:!!LK&&!!LK.bed&&wet(...out)&&!wet(...bench)&&h!=null&&Math.abs(h-LW.LAKE)<1,
    detail:LK?('level '+LW.LAKE+'; heightAt out on the lake '+(h==null?'none':h.toFixed(2))+'; wet out on the lake '+wet(...out)+', on the bench '+wet(...bench)+'; shore grid '+(LK.bed&&LK.bed.nx)+' x '+(LK.bed&&LK.bed.nz)):'no core/water lake'});}
+ /* the foot street: level with the first band's floor before every front at the wall's foot (the owner, 2026-11-22), from the
+    face out to 6 m, and no higher than the floor for 20 m out (the street never rises in front of a door) */
+ {const F0=LW_WALL.filter(s=>s.band===0),hi=[],lo=[];for(const s of F0){const B=TG.gz.BOX[s.key];for(const dz of [.5,2,4,6]){const g=terrainH(s.x,s.z+B.out+dz);if(g>s.y+.05)hi.push(s.id);if(g<s.y-.3)lo.push(s.id);}
+   for(let dz=6;dz<=20;dz+=2)if(terrainH(s.x,s.z+B.out+dz)>s.y+.05)hi.push(s.id);}
+  const uniq=a=>[...new Set(a)];
+  R.push({name:'wall-foot',ok:F0.length>50&&!hi.length&&!lo.length,detail:F0.length+' fronts at the foot; the street above the floor before '+uniq(hi).length+(hi.length?' ('+uniq(hi).slice(0,4).join(', ')+')':'')+', below it before '+uniq(lo).length+(lo.length?' ('+uniq(lo).slice(0,4).join(', ')+')':'')});}
  const bsSP=(typeof LW_PLACE!=='undefined'?LW_PLACE:[]).filter(p=>p.kind!=='quay'&&VERN.defs[p.key]),bsFlights=bsSP.filter(p=>p.stair);
  const bsDoorH=p=>{const D=VERN.defs[p.key],n=D.d/2+.15+.7;return p.o.y-terrainH(p.x+Math.sin(p.ry)*n,p.z+Math.cos(p.ry)*n);};
  const bsOwed=bsSP.filter(p=>!p.stair&&bsDoorH(p)>=.3),bsNoPod=bsSP.filter(p=>p.o.y-lwPodiumLo(p,VERN.defs[p.key])>.25&&!p.podium);

@@ -416,6 +416,8 @@ at px 294,588) across the sea to the south-east. No kit borders the Arch on land
 | `barrens` | **258,246**, the south-eastern horst's lee | 155 m | 1.57 | 1,427 mm | +27 (+32 / +22) | Aw | 21.6 S |
 | `sound` | **299,220**, the graben floor on the sound's shore | 7 m | 1.60 | 1,804 mm | +30 (+34 / +26) | Am | 21.0 S |
 | `coast` | **167,336**, the seamount island's south-west shore, the Surtseyan caldera 3 km off | 2 m | 1.60 | 1,710 mm | +28 (+33 / +23) | Am | 23.7 S |
+| `cove` | **236,242** (`5.1e23`), Fleetborn Cove sinuous drowned-gjár pocket fjord & `-11 m` sill, 44 km W of `barrens` | 0 m (`-59..+246 m`) | 1.60 | 1,750 mm | +28 (+33 / +24) | Am | 21.5 S |
+| `lakes` | **403,170**, interior alluvial rift-valley neck between enclosed freshwater Axial Rift Lakes 3 (`+14.5 m`) and 4 (`+6.0 m`), linked by the Arch Axial River (`9103` *Mere-Upe* headwater chain) | +18 m (`-38..+247 m`) | 1.59 | 1,976 mm | +28 (+32 / +23) | Am | 19.6 S |
 
 The dome's profile from the summit (px 314,168) to the sound's shore (329,188): 1,456, 1,265, 896, 749, 591, 444, 271, 275,
 218, 76, 8 m: a 1,450 m fall over 50 km, the springs at its foot.
@@ -449,24 +451,29 @@ barrens, the horsts and the shores; native life holds the springs, the confluenc
 the two share the barrens. The pioneers on fresh lava are Earth's (the wet tropics close a flow in decades) once a flow is
 older than its lag; before that it is bare.
 
-### Earth (New Caledonia's maquis; Hawaii's lava; the tropical shore)
+### Earth (New Caledonia's maquis; Hawaii's lava; the tropical shore and 14 m intertidal; 32 built + 7 native = 39 species)
 
-| Species | Where | Why it is here |
-|---|---|---|
-| *Araucaria* (*A. rulei*, *A. muelleri*: the candelabra araucarias of the ultramafic maquis) | the barrens, the horsts' crests | New Caledonia's emblem on exactly this rock; the silhouette that says "serpentine" |
-| *Agathis ovata* (the maquis kauri) | the barrens | a stunted kauri of the ultramafic maquis |
-| *Gymnostoma deplancheanum* (a she-oak) | everywhere on the laterite | fixes nitrogen through *Frankia*: the answer to the N-poor ground |
-| *Pycnandra acuminata* (sève bleue) | the barrens' wetter gullies | the 25% nickel latex: the blue-green bleed |
-| *Phyllanthus balgooyi* | the barrens | a hyperaccumulator shrub, green sap |
-| *Geissois pruinosa*, *Hybanthus austrocaledonicus* | the barrens | New Caledonia's other nickel hyperaccumulators: the maquis's mid layer |
-| *Berkheya coddii* | the Aw lee only | a nickel hoarder of summer-rain grassland |
-| *Costularia*, *Lepidosperma* (sedges) | the barrens' floor | the maquis's ground cover on laterite |
-| *Dracophyllum*, *Grevillea exul*, *Codia* | the barrens | the maquis's flowering shrubs |
-| *Nepenthes vieillardii*, *Drosera* | the seeps on the barrens | carnivory on poor wet warm ground |
-| *Metrosideros polymorpha* (ʻōhiʻa), *Dicranopteris linearis* (uluhe), *Stereocaulon* lichen, *Nephrolepis* | fresh lava, by age | the wet tropics' lava pioneers (Hawaii) |
-| *Rhizophora*, *Avicennia* | the sound's shores | mangroves in the sheltered graben |
-| *Casuarina equisetifolia*, *Scaevola taccada* (naupaka), *Ipomoea pes-caprae*, *Spinifex* | black sand | the tropical strand |
-| *Cocos nucifera* | the strand, the sound | drift-sown; default taken, owner to confirm (an Earth crop on an uninhabited coast) |
+Every species carries `ARCHB.HARVEST` (`wood`, `fruit`, `sap`, `note`, compatible with `KHAMLET.woodUse`) plus canonical Shore-kin material tags on `S.tags.harvest.tags` (`timber`, `gum`, `pitch`, `fibre`, `bast`, `thatch`, `knees`, `tannin`, `ash`, `lime`, `byssus`, `caulking`).
+
+| Species | Key | Where | Shore-kin harvest & why it is here |
+|---|---|---|---|
+| *Araucaria* (*A. rulei*, *A. muelleri*: candelabra araucarias) | `araucaria` | the barrens, the horsts' crests | `timber`, `gum`, `pitch` — New Caledonia's emblem on ultramafic laterite |
+| *Agathis ovata* (maquis kauri) | `arkauri` | laterite ridges and benches | `timber`, `gum`, `pitch` — straight resinous spars and weeping golden kauri-gum for caulking |
+| *Gymnostoma deplancheanum* (maquis she-oak) | `gymnostoma` | everywhere on the laterite | `timber` — fixes nitrogen through *Frankia*; dense ironwood |
+| *Pycnandra acuminata* (sève bleue) | `pycnandra` | wetter laterite gullies & garnierite hollows | `ash` — 25% nickel blue-green latex (`ARCH.uptake` > 1,000 ug/g) |
+| *Phyllanthus balgooyi* | `arphyllanthus` | garnierite rims (`ni >= 2,200`) | `ash` — hyperaccumulator shrub with emerald sap for paktong bio-ore |
+| *Costularia*, *Lepidosperma* (`arlepidosperma`) | `sedge`, `arlepidosperma` | bare laterite & wet drainage rims | `thatch`, `fibre` — coarse maquis ground cover and plaited roof-thatch / cordage |
+| *Dracophyllum ramosum*, *Codia montana*, *Grevillea exul* | `ardracophyllum`, `arcodia`, `argrevillea` | ultramafic maquis | `thatch`, `tannin`, `timber` — candelabrum rosettes, white puff-heads and creamy toothbrush racemes |
+| *Nepenthes vieillardii*, *Drosera neocaledonica* | `pitcher`, `ardrosera` | wet poor laterite seeps | `fibre` — carnivory (`ARCHB.TRAP`, `ARCHB.SUNDEW_TRAP`) on N/P-starved ground |
+| *Cyathea intermedia* (gully tree-fern) | `artreefern` | wet laterite gullies & basalt ravines | `timber`, `thatch` — rot-resistant fibrous caudex posts and broad bipinnate fronds |
+| *Melaleuca quinquenervia* (niaouli paperbark) | `arpaperbark` | wet laterite hollows (`bark.paperbark`) | `caulking`, `thatch`, `timber` — layered cream-white bark sheets for hull seam caulking and roof lining |
+| *Metrosideros nautica* (gorge rata) | `arrata` | steep rocky gorges, mullions & headlands | `timber`, `knees` — J-curved reaction-wood boughs for naturally grown ship knees and sternposts |
+| *Metrosideros polymorpha* (ʻōhiʻa), *Dicranopteris linearis* (uluhe), *Nephrolepis* | `ohia`, `uluhe`, `arnephrolepis` | fresh lava flows past pioneer lag, basalt bluffs | `timber`, `knees`, `fibre`, `thatch` — wet-tropics lava pioneers |
+| *Rhizophora*, *Avicennia marina*, *Rhizophora pycnandroides* (teal-sap prop-wood) | `mangrove`, `aravicennia`, `arverdigrismangrove` | sound tidal mud & cove gjár seep stream (`bark.mangrove`) | `knees`, `tannin`, `ash`, `gum` — worm-proof ship knees, red tanbark for sails/nets, and Ni-rich coppice ash + 20% Ni teal latex for paktong |
+| *Casuarina equisetifolia*, *Calophyllum inophyllum* (tamanu) | `casuarina`, `artamanu` | black-sand strand & cove western basalt headland | `timber`, `knees`, `tannin`, `gum` — ironwood piles and curved coastal hardwood hull ribs |
+| *Pandanus tectorius* (`card.strap.pandan`), *Hibiscus tiliaceus* | `arpandan`, `arhibiscus` | strand, dunes, basalt bluffs & gjár banks | `fibre`, `thatch`, `bast` — split pandan strap leaves for crab-claw sails and water-retted sea-hibiscus bast for anchor hawsers |
+| *Scaevola taccada* (naupaka), *Ipomoea pes-caprae*, *Cocos nucifera* (`arcoconut`) | `naupaka`, `ipomoea`, `coconut` | black-sand strand & coastal bluffs | `fibre`, `thatch`, `timber` — drooping 5-segment V-cambered pinnate palm crowns + coir nut clusters |
+| *Laminaria* / *Ecklonia* (`arkelp`), *Zostera* (`arseagrass`), *Atrina* / *Pinna* (`arbyssus`), *Crassostrea* (`aroyster`) | `arkelp`, `arseagrass`, `arbyssus`, `aroyster` | Fleetborn Cove 14 m macrotidal band (`[-7, +7 m]`) | `ash`, `thatch`, `fibre`, `byssus`, `lime` — potash/soda kelp ash, rot-resistant seagrass thatch, golden sea-silk anchor threads, and burnt shell-lime hydraulic mortar |
 
 ### Native (fungoid hosts; three partners)
 
@@ -520,7 +527,7 @@ confirm). All data first: `kits/fauna` records with biome tags, traits, diet, sc
 | Alkali burn (pH 11-12) | the Type II pools | by contact time |
 | Acid burn (pH 1-3), scald | the solfatara, mud pots | `KHAZ` heat and acid |
 | Asbestos dust | the dome's shear zones, dry season | dust on disturbance |
-| Base surge, tsunami, steam explosions | the seamounts, the coast | the seamounts' state (later; the tsunami coast's physics is `DATA.tsunami_farside`) |
+| Base surge, tsunami, steam explosions | the seamounts, the coast, Fleetborn Cove | `WATER.tsunami` (`core/water/ext/64*`) + `KHAZ.TSUNAMI` (`core/hazard/24*`): near-field `'seamount'` regime on `coast` (`-5.8 m` drawdown, `14.5 m` curling bore, `+26 m` run-up vs `+70 m` tuff-cone refuge) and sill-damped `'ghost'` regime composed with `KTIDE` on `cove` (`8.2 m` sill bore, `+12.5 m` throat run-up vs `+76 m` Arcoforte refuge) |
 | Laze | where an episode's lava meets the sound | HCl and glass in the steam |
 | Monsoon flash flood | the gullies and the gjár | the wet season |
 
@@ -554,7 +561,9 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `dome` | `dist/arch-dome.html` | the corrugated whaleback of serpentinite, its springs and white terraces stepping down, the eternal flames in the clefts, a chrysotile shear zone, the red laterite plateau with candelabra araucarias |
 | `barrens` | `dist/arch-barrens.html` | the nickel maquis in the Aw lee: red earth, green rock, Earth hoarders and native verdigris caps, pitcher seeps, lavaka gullies, the verdigris browser |
 | `sound` | `dist/arch-sound.html` | the graben floor: gjár with blue water, the last episode's fissure flow with spatter ramparts and rootless cones on the mangrove flats, a gas hollow, the White Stacks in the sound |
-| `coast` | `dist/arch-coast.html` | the seamount island: black sand, a tuff ring's cliff, a pillow-lava platform with tide pools, the Surtseyan caldera steaming offshore, the ash brooders' warm ground |
+| `coast` | `dist/arch-coast.html` | the seamount island: black sand, a `+70 m` tuff ring refuge, a pillow-lava platform with tide pools, drift-sown coconuts, the Surtseyan caldera steaming offshore, the ash brooders' warm ground, and triggerable Surtseyan tsunami (`drawdown` -> `14.5 m` curling `bore` -> `+26 m` `runup` -> `backwash`) |
+| `cove` | `dist/arch-cove.html` | Fleetborn Cove (`settlements/fleetborn-cove/PLAN.md` §1): sinuous drowned-gjár pocket fjord opening NNW across a `-9..-14 m` pillow-lava & serpentinite sill (`5.2 m/s` reversible tidal race, `14 m` macrotidal band `[-7, +7 m]`, and sill-damped tsunami surge composed with `KTIDE`) into a calm `-45..-59 m` inner sanctuary basin; `+246 m` eastern ophiolite gorge wall (pillow basalt, sheeted dykes, green serpentinite fault bench with Type II `pH > 11` white travertine cliff curtains, red nickel-laterite maquis crown) with the `+76 m` `Arcoforte` cliff-prow spur reserved in `KTAGS` as `site:fleetborn-arcoforte`; `+150 m` western basalt coastal headland with Chimaera `H2`/`CH4` cleft-flames overlooking the sill; Lost-City brucite-carbonate White Stacks on shallow fault ledges; narrow `+7..+22 m` southern gjár fissure neck |
+| `lakes` | `dist/arch-lakes.html` | Interior Axial Rift Lakes & River (`nw_expansion.py` §3B, `px 403,170`): zero-tide, zero-marine-salt alluvial rift neck between enclosed freshwater Axial Rift Lakes 3 (`+14.5 m`, `52 m` deep) and 4 (`+6.0 m`, `40 m` deep), linked by the winding Arch Axial River (`8.5 m` drop over `1.34 km`, nephrite/awaruite cobble point-bars, swirling carbonate-and-laterite river plume `ext/61`) beneath a dense freshwater riparian gallery (niaouli paperbark, maquis kauri, ironwood casuarina, pandanus, tamanu, tree-ferns), beside an oxbow sedge-fen tarn with *Nepenthes* pitchers, a Type II fault-foot travertine staircase, and Chimaera cleft-flames |
 
 ## 12. Core adoption (written before the first fragment, as `CLAUDE.md` asks)
 
@@ -567,11 +576,11 @@ no one on Krator has followed home (`LORE.md` 6.19). Proposals, each for the own
 | `core/space` (`KSPACE`) | on the page (the biome core's binding) | the kit's own placement does not call it yet: curtains are spaced by walking the meeting's line, plants by KRAND cells (as highrift's). Wanted when the stations grow obstacles |
 | `core/mask` (`KMASK`) | **no** | no canvas is read for placement at all: every plant asks the data functions (`ARCH.lifeAt`, `ARCH.earthOk`, the stage's `PH_AT`) directly |
 | `core/terrain` | yes | `KGROUND` kinds, `KSTRATA` (new recipes), `KRELIEF` (dome, graben), `KLAVA` (the fissure flow), `KTHERM` (the hot ground and vents), `KFAR`, `KHORIZON` |
-| `core/water` | yes | the springs' pools (`still`), the streams (`flow`), the meeting (`ext/55` confluence), the terraces (`ext/53`), looks (`ext/54`: the kit adds its looks to `WATER.LOOKS` from its own fragment), the sea (`open`) at the coast and the sound |
+| `core/water` | yes | the springs' pools (`still`), the streams (`flow`), the meeting (`ext/55` confluence), the terraces (`ext/53`), looks (`ext/54`: the kit adds its looks to `WATER.LOOKS` from its own fragment), the river plume (`ext/61` at `lakes`), the scale model's tide (`tide/23` `KTIDE` at `cove`), the tsunami wave & bore (`ext/64`, `ext/64b` at `coast` and `cove`), the sea (`open`) at the coast and the sound |
 | `core/water/geyser` | yes | `WATER.spring` for the springs' boils and the mud pots |
 | `core/atmos` | yes | the standard sky, the monsoon weather, the steam (particles), height fog in the graben. The eternal flames are the kit's own cones (89b): core has no flame module but the brazier's (KNOWN_ISSUES.md) |
 | `core/host` (`KHOST`), `core/walk` | yes | the page, camera, probe, inspector, polygon tool |
-| `core/hazard` (`KHAZ`) | yes | the gas hollows, the flames, alkali and acid, heat, asbestos |
+| `core/hazard` (`KHAZ`) | yes | the gas hollows, the flames, alkali and acid, heat, asbestos, and tsunami inundation/backwash (`24-core-hazard-tsunami.js`) |
 | `core/shadow` | yes | the sun's shadows |
 | `core/materials` | yes | `materials.json`, `tools/textures/pack.py`, `KMAT`, `TEX` |
 | `core/export` | yes | the export profile |

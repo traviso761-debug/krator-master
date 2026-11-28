@@ -151,7 +151,13 @@
  W.pickRay=(S,mesh,T,level)=>(rc,hits)=>{const r=rc.ray,dy=r.direction.y;if(Math.abs(dy)<1e-9)return;const A=AT(),t=A&&A.clock?A.clock.t:0;let d=(level()-r.origin.y)/dy,y=0;
   for(let k=0;k<3;k++){const h=S.heightAt(r.origin.x+r.direction.x*d,r.origin.z+r.direction.z*d,t);if(h==null)return;y=h;d=(y-r.origin.y)/dy;}
   if(d<rc.near||d>rc.far)return;const x=r.origin.x+r.direction.x*d,z=r.origin.z+r.direction.z*d;if(!S.contains(x,z))return;hits.push({distance:d,point:new T.Vector3(x,y,z),object:mesh});};
- W.draw=(S,o)=>{o=o||{};const A=ATMOS,T=o.THREE||A.T,scene=o.scene||A.h.scene,C=Object.assign({},W.PRESETS.cdlod,o.cdlod||{}),F=W.PRESETS.foam,f=glf,N=C.grid;
+ /* every drawing asks here first (2026-11-24, S3-A1e): core/atmos bound by ATMOS.init (or bindHost), whose scene, THREE, clock and wave uniforms the
+    water draws with. A page that skipped it (a --kit sheet) threw "reading 'scene'"; it now says what is missing */
+ W.atmosBound=who=>{const A=AT();
+  if(!A)throw new Error('core/water: '+who+' needs core/atmos on the page (core/atmos/89-atmos-0-core.js, 0p-presets and a-waves) bound with ATMOS.init');
+  if(!A.h)throw new Error('core/water: '+who+' needs ATMOS.init({THREE, scene, camera, ...}) (or ATMOS.bindHost) to have run first: the water draws into its scene, on its clock and wave uniforms');
+  return A;};
+ W.draw=(S,o)=>{o=o||{};const A=W.atmosBound('WATER.draw'),T=o.THREE||A.T,scene=o.scene||A.h.scene,C=Object.assign({},W.PRESETS.cdlod,o.cdlod||{}),F=W.PRESETS.foam,f=glf,N=C.grid;
   // the node: (N+1)^2 vertices on [0,1]^2 in x,z
   const pos=[],uv=[],idx=[];for(let j=0;j<=N;j++)for(let i=0;i<=N;i++){pos.push(i/N,0,j/N);uv.push(i/N,j/N);}
   // one diagonal direction everywhere: a node fully morphed is then exactly the next level's triangles (no flip when it swaps)

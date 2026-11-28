@@ -126,9 +126,26 @@
   function strHash(s){ var h=0; s=String(s); for(var i=0;i<s.length;i++) h=Math.imul(h, 31)+s.charCodeAt(i)|0; return h; }
   function daysOf(H){ var I=SIM.ITEMS; if(!I.stagger || !H) return I.days; if(H.stagF==null) H.stagF=1+I.stagger*(2*hash(strHash(H.id), 0, 17)-1); return I.days*H.stagF; }
   SIM.itemsDiet = function(town, shares){ var I=SIM.ITEMS; if(!I) return; (I.diet||(I.diet={}))[town==null ? '_' : town]=shares; };
+  /* THE BALANCED BASKET (2026-11-12, the owner: "fix it in core"): a meal is two foods, so a household buying by the
+     warehouses' stock in a town that keeps a great store of one staple (a granary town: Pinnacle Rock after its bands'
+     haul) bought nearly all of it, ate one-food meals and went hungry with the granary full. Bought by stock, no food takes
+     more than `maxShare` (0.5) of the purchase while another food is on the shelf: the excess goes to the others by their
+     stock. A planned diet (SIM.itemsDiet) is left as it is; one food out, the lack is made up as ever. `maxShare: 1` keeps
+     the old share by stock */
+  function balance(sh, st, need){ var I=SIM.ITEMS, mx=I.maxShare==null ? 0.5 : I.maxShare; if(mx>=1 || sh.length<2) return sh;
+    var cap=Math.ceil(need*mx), over=0, room=0, cut={};
+    sh.forEach(function(n, i){ if(n>cap){ over+=n-cap; cut[i]=n-cap; sh[i]=cap; } });
+    if(!over) return sh;
+    /* the excess to the others, by their stock, never past the cap nor past what is on the shelf (st is stock + 1): asking a
+       scarce food for more than it holds would book a shortage the others then cover */
+    var others=sh.map(function(n, i){ return n<cap && st[i]-1>n ? i : -1; }).filter(function(i){ return i>=0; });
+    others.forEach(function(i){ room+=st[i]; });
+    var given=0; others.forEach(function(i, k){ var add=k===others.length-1 ? over-given : Math.floor(over*st[i]/room); add=Math.max(0, Math.min(add, cap-sh[i], st[i]-1-sh[i])); sh[i]+=add; given+=add; });
+    var left=over-given; Object.keys(cut).forEach(function(i){ if(left<=0) return; var back=Math.min(left, cut[i]); sh[i]+=back; left-=back; });   /* what the others cannot take stays where it fell */
+    return sh; }
   function split(foods, town, need){ var I=SIM.ITEMS, D=I.diet && I.diet[town==null ? '_' : town], cut=0;
     var st=foods.map(function(f){ return SIM.ECON ? SIM.stockOf(f)+1 : 1; });
-    if(!D){ var ws=st.reduce(function(x, y){ return x+y; }, 0), sh=foods.map(function(f, i){ var n=Math.floor(need*st[i]/ws); cut+=n; return n; }); sh[0]+=need-cut; return sh; }
+    if(!D){ var ws=st.reduce(function(x, y){ return x+y; }, 0), sh=foods.map(function(f, i){ var n=Math.floor(need*st[i]/ws); cut+=n; return n; }); sh[0]+=need-cut; return balance(sh, st, need); }
     var named=0, rest=0; foods.forEach(function(f, i){ if(D[f]!=null) named+=D[f]; else rest+=st[i]; });
     var x=foods.map(function(f, i){ return need*(D[f]!=null ? D[f] : rest>0 ? Math.max(0, 1-named)*st[i]/rest : 0); });
     var out=x.map(function(v){ var n=Math.floor(v); cut+=n; return n; }), ord=x.map(function(v, i){ return i; }).sort(function(p, q){ return (x[q]-Math.floor(x[q]))-(x[p]-Math.floor(x[p])) || p-q; });

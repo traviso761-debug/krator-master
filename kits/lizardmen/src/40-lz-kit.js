@@ -40,25 +40,45 @@ function lzArchRib(x,z0,z1,h,o){o=o||{};const r=o.r||.12,mk=o.mk||'bones',col=o.
    them from eaveY up to ridgeY; the skin is a shell (two sheets). o.over the eave's overhang; o.ends closes the gables
    (triangles in o.endMk); o.past how far the ribs run on past the ridge */
 /* roofs and gables take the solid key of a cloth set: single-sided, so the sun casts no acne on them */
-const LZ_SOLID={mat:'matW',hide:'hideW',hideP:'hidePW'};function lzSolid(k){return LZ_SOLID[k]||k;}
-function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5:o.over,mk=lzSolid(o.mk||'hide'),col=o.col||P(mk==='hide'?'hide':mk==='hideP'?'hideP':mk==='reed'||mk==='thatch'?'reed':'reedL'),hz=Wd/2+ov,ex=o.ext===undefined?.4:o.ext;
- const bend=o.bend===undefined?.95:o.bend;
- /* the skin: a pointed vault, its section the rib's curve (a little inside the ribs) */
- const drop=o.drop===undefined?.4:o.drop;eaveY-=drop;const AR=lzArch(hz*.96,ridgeY-.3-eaveY);const sec=(s,v)=>{const p=AR.at(s,v);return [0,eaveY+p[1],p[2]];};
+const LZ_SOLID={mat:'matW',hide:'hideW',hidePW:'hidePW',hideP:'hidePW'};function lzSolid(k){return LZ_SOLID[k]||k;}
+let LZ_LAST_ROOM=null;
+function lzRibRoof(L,Wd,eaveY,ridgeY,n,o){o=o||{};const ov=o.over===undefined?.5:o.over,mk=lzSolid(o.mk||'hide'),col=o.col||P(mk==='hide'||mk==='hideW'?'hide':mk==='hideP'||mk==='hidePW'?'hideP':mk==='reed'||mk==='thatch'?'reed':'reedL'),hz=Wd/2+ov,ex=o.ext===undefined?.4:o.ext;
+ const rm=LZ_LAST_ROOM;LZ_LAST_ROOM=null;
+ const drop=o.drop===undefined?.4:o.drop;eaveY-=drop;
+ /* tall portals under low eaves automatically vault a pointed cross-gable dormer so the roof never cuts across the doorway inside */
+ const dorms=o.dormers===false||o.ends===false?[]:(o.dormers||(rm&&Math.abs(rm.w-L)<.06&&Math.abs(rm.d-Wd)<.06?rm.doors:[])).filter(d=>d.topY>eaveY+.06);
+ const AR=lzArch(hz*.96,ridgeY-.3-eaveY);
+ const dLift=(s,x,v,baseY)=>{let y=baseY;for(const d of dorms){if(d.side!==s)continue;const hw=d.w*.72+.4,tx=1-Math.abs(x-d.x)/hw;if(tx<=0)continue;
+   const arch=1-Math.pow(1-tx,.76),yd=Math.min(ridgeY-.22,eaveY+(d.topY+.16-eaveY)*arch+.16*v);
+   y=Math.max(y,v>.8?lerp(Math.max(baseY,yd),baseY,(v-.8)/.2):yd);}return y;};
+ const sec=(s,v)=>{const p=AR.at(s,v);return [0,eaveY+p[1],p[2]];};
+ const nu=dorms.length?Math.max(o.nu||8,Math.min(46,Math.round((L+2*ex)/.42))):o.nu||8,nv=o.nv||7;
  /* the inner sheet lies a thickness INSIDE the outer along its normal (an offset straight down pokes through on the steep sides) */
- for(const s of [-1,1]){const f=(u,v)=>{const p=sec(s,v);return [-L/2-ex+(L+2*ex)*u,p[1],p[2]];};
-  const inner=(u,v)=>{const p=f(u,v),a=sec(s,Math.min(1,v+.02)),b=sec(s,Math.max(0,v-.02));let ny=a[2]-b[2],nz=-(a[1]-b[1]);const n=Math.hypot(ny,nz)||1;ny/=n;nz/=n;if(ny+s*nz<0){ny=-ny;nz=-nz;}return [p[0],p[1]-ny*.09,p[2]-nz*.09];};
+ for(const s of [-1,1]){const f=(u,v)=>{const x=-L/2-ex+(L+2*ex)*u,p=sec(s,v);return [x,dLift(s,x,v,p[1]),p[2]];};
+  const inner=(u,v)=>{const p=f(u,v),a=f(u,Math.min(1,v+.02)),b=f(u,Math.max(0,v-.02));let ny=a[2]-b[2],nz=-(a[1]-b[1]);const m=Math.hypot(ny,nz)||1;ny/=m;nz/=m;if(ny+s*nz<0){ny=-ny;nz=-nz;}return [p[0],p[1]-ny*.09,p[2]-nz*.09];};
   /* continuous UVs (x along, the arc up): the per-column arc-length UVs alias into stripes at a distance */
   const La=Math.hypot(hz,ridgeY-eaveY)*1.15,uvf=(u,v)=>[(L+2*ex)*u,v*La];
-  psurf(mk,f,o.nu||8,o.nv||7,col,{flip:s<0,uvf});psurf(mk,inner,o.nu||8,o.nv||7,o.underCol||col,{flip:s>0,uvf});}
+  psurf(mk,f,nu,nv,col,{flip:s<0,uvf});psurf(mk,inner,nu,nv,o.underCol||col,{flip:s>0,uvf});}
  /* the end gables stand on the walls' ends, 3 cm proud, and LEAN WITH THEM (o.leanEnds {left, right}: metres in per metre of
     height, lzBatterRoom's convention; o.y0 the wall base): a vertical gable parts from a leaning wall near the top */
  const LE=o.leanEnds||{},wy0=o.y0||0,gxAt=(s,y)=>s*(L/2+.03-((s<0?LE.left:LE.right)||0)*(y-wy0));
  if(o.ends!==false)for(const s of [-1,1]){const pts=[];for(let k=0;k<=12;k++){const p=sec(1,k/12);pts.push([gxAt(s,p[1]),p[1],p[2]]);}for(let k=12;k>=0;k--){const p=sec(-1,k/12);pts.push([gxAt(s,p[1]),p[1],p[2]]);}
   poly(lzSolid(o.endMk||'mat'),pts,o.endCol||P('reedL'),true);}
- const xs=lzSpan(-L/2,L/2,n);for(const x of xs)W(0,eaveY,0,0,()=>lzArchRib(x,-hz*1.06,hz*1.06,ridgeY-eaveY+.08,{r:o.ribR||.16,mk:o.ribMk||'bones',past:o.past===undefined?.2:o.past,col:o.ribCol}));
+ const rmk=o.ribMk||'bones',rcol=o.ribCol||(rmk==='bones'||rmk==='ivory'?P('bone'):rmk==='horn'?P('horn'):rmk==='bronzeC'?P('verd'):P('reed')),rr0=o.ribR||.16,past=o.past===undefined?.2:o.past;
+ const xs=lzSpan(-L/2,L/2,n),Arib=lzArch(hz*1.06,ridgeY-eaveY+.08);
+ for(const x of xs)for(const s of [1,-1]){
+  const hit=dorms.find(d=>d.side===s&&Math.abs(x-d.x)<d.w*.58);
+  if(hit){/* fork over the portal dormer instead of planting a rib foot dead-centre in front of the doorway */
+   const v0=clamp((hit.topY+.18-eaveY)/Math.max(.4,ridgeY-eaveY),0,.78);
+   tube(rmk,t=>{const v=v0+(1+past-v0)*t,p=Arib.at(s,v);return [x,eaveY+p[1],p[2]];},t=>{const q=rr0*(1-.5*t);return [q,q];},9,7,rcol,{caps:true});
+  }else{
+   tube(rmk,t=>{const p=Arib.at(s,t*(1+past));return [x,eaveY+p[1],p[2]];},t=>{const q=rr0*(1-.55*t);return [q,q];},12,7,rcol,{caps:true});
+  }}
+ /* crossed exoskeleton arch-ribs framing each portal dormer's mouth */
+ for(const d of dorms){const hw=d.w*.72+.4,dhR=Math.min(ridgeY-.18,d.topY+.22)-eaveY,AD=lzArch(hw,dhR),zf=d.side*hz*.97;
+  for(const ks of [-1,1])tube(rmk,t=>{const p=AD.at(ks,t*1.16);return [d.x+p[2],eaveY+p[1],zf-d.side*.06*t];},t=>{const q=rr0*.78*(1-.48*t);return [q,q];},10,6,rcol,{caps:true});}
  /* a ridge pole along the crossing, lashed */
- beam(o.ribMk||'bones',[-L/2-ex,ridgeY+.02,0],[L/2+ex,ridgeY+.02,0],.09,o.ribCol||P('boneO'),true,7);
+ beam(rmk,[-L/2-ex,ridgeY+.02,0],[L/2+ex,ridgeY+.02,0],.09,o.ribCol||P('boneO'),true,7);
  for(const x of xs)ring('rope',x,ridgeY+.02,0,.16,.03,P('reedD'),0,0,PI/2,10);}
 /* a tusk vault over a room L (x) by Wd (z): pairs of great tusks (odd count) rising from both sides, curling over the ridge
    and crossing (the warriors' lodge, the owner's tusk-hall references), a hide skin hung between them on cords, low battered
@@ -78,13 +98,16 @@ function lzTuskVault(L,Wd,h,n,o){o=o||{};const hz=Wd/2,xs=lzSpan(-L/2,L/2,n),r=o
  /* the gables: one sheet each, its top the skin's section, its bottom the floor except where a door triangle rises */
  const gmk=o.wallMk||'cyclo',gcol=o.wallCol||P('basalt');
  for(const s of [-1,1]){const gx=s*(L/2+.12),doors=s>0?(o.doors||[]):[];
-  const yb=u=>{const z=hz2-2*hz2*u;let y=y0;for(const d of doors){const dh=lzDoorH(d.c),dw=dh*.62,t=1-Math.abs(z-d.z)/(dw/2);if(t>0)y=Math.max(y,y0+dh*t);}return y;};
-  const yt=u=>topY(1-Math.abs(1-2*u));
+  const yb=u=>{const z=hz2-2*hz2*u;let y=y0;for(const d of doors){const dh=lzDoorH(d.c),dw=dh*LZ_DW,t=1-Math.abs(z-d.z)/(dw/2);if(t>0)y=Math.max(y,y0+dh*t);}return y;};
+  const yt=u=>Math.max(yb(u)+.28,topY(1-Math.abs(1-2*u)));
   const g=off=>(u,v)=>{const z=hz2-2*hz2*u,b=yb(u),t=yt(u);return [gx+off,lerp(b,t,v),z];};
-  psurf(gmk,g(0),48,4,gcol,{flip:s<0});psurf(gmk,g(-s*.3),48,4,gcol,{flip:s>0});
-  for(const d of doors){const dh=lzDoorH(d.c),dw=dh*.62;for(const k of [-1,1]){const p0=[gx,y0,d.z+k*dw/2],p1=[gx,y0+dh,d.z],p2=[gx-s*.3,y0,d.z+k*dw/2];plane4(gmk,p0,p1,p2,.02,gcol);}
-   door(gx-s*.15,y0,d.z,s>0?PI/2:-PI/2,dw);{let hh=dh,n=0;while(hh>=1.15&&n<7){hh/=LZ_RATIO;n++;}const hi=dh/Math.pow(LZ_RATIO,Math.max(0,n-1)),dz=Math.max(0,n-1)*.14+.08;   /* the leaf behind the portal's innermost frame, its size */
-    lzLeaf(gx-s*(dz-.02),y0,d.z,s>0?PI/2:-PI/2,hi*.62,hi);}lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,s>0?PI/2:-PI/2,dh,{mk:d.c>=6?'bronze':'lacq'});W(gx+s*.3,0,d.z,s>0?PI/2:-PI/2,()=>box('basalt',0,y0,.1,dw+.4,.18,.5,P('basaltD')));});}
+  psurf(gmk,g(0),56,4,gcol,{flip:s<0});psurf(gmk,g(-s*.3),56,4,gcol,{flip:s>0});
+  for(const d of doors){const dh=lzDoorH(d.c),dw=dh*LZ_DW,yaw=s>0?PI/2:-PI/2;
+   for(const k of [-1,1]){const p0=[gx,y0,d.z+k*dw/2],p1=[gx,y0+dh,d.z],p2=[gx-s*.3,y0,d.z+k*dw/2];plane4(gmk,p0,p1,p2,.02,gcol);}
+   door(gx-s*.12,y0,d.z,yaw,dw);
+   lzLeaf(gx-s*.02,y0,d.z,yaw,dw,dh,{mk:d.c>=5?'lacqR':'lacq'});
+   lzNoCut(()=>{lzPortal(gx+s*.02,y0,d.z,yaw,dh,{mk:d.c>=6?'bronze':'lacqR',shared:d.c>=6});
+    W(gx+s*.24,0,d.z,yaw,()=>box('basalt',0,y0-.14,.08,dw+.48,.18,.48,P('basaltD')));});}
   if(s>0)for(const [ez,ey] of o.eyes||[])lzNoCut(()=>lzEye(gx+.02,ey,ez,PI/2,.45,{mk:'bronze'}));}}
 /* a domed cell: a lathe of `prof` ([[r, y], ...] from the foot up) with an INNER shell, and real triangular doorways
    cut through both: o.door (one, facing +z of a frame turned o.ry) or o.doors [{dh, ry}] (several, ry the way each faces,
@@ -94,11 +117,11 @@ function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth')
  const R=y=>{for(let i=1;i<prof.length;i++)if(y<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(y-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
  /* a door is a STRAIGHT-EDGED triangle in metres (dw at the floor, the apex at dh), whatever the shell's bulge: its half-angle at
     height y is asin(w(y) / 2 / R(y)); the sector it needs is the widest of those (near the floor) */
- const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.7),dw=dh*.62,ha=y=>Math.asin(Math.min(.95,dw/2*(1-y/dh)/Math.max(.05,R(y))));
+ const doors=(o.doors||(o.door?[{dh:o.door,ry:0}]:[])).map(d=>{const dh=Math.min(d.dh,top*.74),dw=Math.min(dh*LZ_DW,r0*1.42),ha=y=>Math.asin(Math.min(.92,dw/2*(1-y/dh)/Math.max(.05,R(y))));
   let aw=0;for(let y=0;y<dh;y+=dh/12)aw=Math.max(aw,ha(y));
   /* the edge's height at a half-angle da (bisection on y: the edge is where ha(y) = da) */
   const yAt=da=>{if(da>=aw)return 0;let lo=0,hi=dh;for(let n=0;n<18;n++){const m=(lo+hi)/2;if(ha(m)>da)lo=m;else hi=m;}return (lo+hi)/2;};
-  return {dh,dw,ha,aw,yAt,ry:d.ry||0,ac:PI/2-(d.ry||0)};}).sort((a,b)=>a.ac-b.ac);
+  return {dh,dw,ha,aw,yAt,ry:d.ry||0,ac:PI/2-(d.ry||0),leaf:d.leaf!==false};}).sort((a,b)=>a.ac-b.ac);
  const S=(sc,ysc)=>(a,y)=>{const r=R(y)*sc;return [Math.cos(a)*r,y*ysc,Math.sin(a)*r];};
  const nv=Math.max(6,prof.length*2);
  const panel=(a0,a1,yb,sc,ysc,inward)=>{const f=(u,v)=>{const a=a0+(a1-a0)*u,b=yb(a),y=lerp(b,top,v);return S(sc,ysc)(a,y);};
@@ -112,7 +135,7 @@ function lzDome(x,z,prof,o){o=o||{};const mk=o.mk||'earth',col=o.col||P('earth')
    for(const d of doors)panel(d.ac-d.aw,d.ac+d.aw,a=>d.yAt(Math.abs(a-d.ac)),sc,ysc,inw);}
   /* the reveals along each door's straight slanted edges, between the two shells */
   for(const d of doors){for(const kk of [-1,1])psurf(mk,(u,v)=>{const y=d.dh*u,a=d.ac+kk*d.ha(y),rr0=R(y)*lerp(.88,1,v);return [Math.cos(a)*rr0,y*lerp(.97,1,v),Math.sin(a)*rr0];},6,2,col,{flip:kk<0});
-   W(0,0,0,d.ry,()=>{door(0,0,r0*.94,0,d.dw);lzLeaf(0,0,r0*.94,0,d.dw,d.dh);});}});}
+   W(0,0,0,d.ry,()=>{door(0,0,r0*.96,0,d.dw);if(d.leaf)lzLeaf(0,0,r0*.985,0,d.dw,d.dh);});}});}
 /* an eye on a dome's slope: at height y on the +z face of a dome of profile prof, the disc laid on the surface (tilted to its slope) */
 function lzDomeEye(prof,y,R,o){const Rf=yy=>{for(let i=1;i<prof.length;i++)if(yy<=prof[i][1]){const a=prof[i-1],b=prof[i],t=(yy-a[1])/Math.max(1e-6,b[1]-a[1]);return lerp(a[0],b[0],t);}return 0;};
  const r=Rf(y),dr=Rf(y+.05)-Rf(y-.05),slope=Math.atan2(-dr,.1);   /* the surface leans back by `slope` above the vertical */
@@ -125,26 +148,54 @@ function lzPassage(p,q,dh,dw,mk,col){/* p, q: [x, z, r] with r each dome's foot 
  for(const k of [-1,1]){const f=(u,v)=>{const x=lerp(a[0],b[0],u),z=lerp(a[1],b[1],u);return [x+k*sx*dw/2*(1-v),dh*v,z+k*sz*dw/2*(1-v)];};
   psurf(mk,f,2,2,col,{});psurf(mk,f,2,2,col,{flip:true});}}
 /* ---------------------------------------------------------------- walls that lean wrong */
+/* multi-course doorway helper for hollow twisted towers (lk-watchtower, lk-tower): slices a full dh x dw triangular doorway cleanly
+   across course i (height ch), emitting an open-top trapezoidal cut on lower courses and the upper triangular apex on the top course */
+function lzCourseDoor(c,s,i,ch){const dh=lzDoorH(c),dw=+(dh*LZ_DW).toFixed(2),y0=i*ch,y1=(i+1)*ch;
+ if(y0>=dh-.02)return null;
+ const w0=dw*(1-y0/dh);
+ if(dh<=y1+.02)return {s,w:w0,h:dh-y0,openOnly:true,courseClip:true};
+ const w1=dw*(1-y1/dh);
+ return {s,w:w0,wTop:w1,h:ch+.02,fullW:dw,fullH:dh,door:i===0,openOnly:i>0,courseClip:true};}
 /* one wall face from bottom edge B0->B1 ([x,z]) to top edge T0->T1 at height y0..y0+h (a battered face when T differs from B),
-   facing out to the left of B0->B1 seen from above with +y up... (front: B0 west, B1 east). opens: [{s, w, h, door}] with s
-   the distance along the bottom edge from B0; every opening is a TRIANGLE (apex up). Two sheets: the face and, LZ_T behind
-   it, the inside (o.inner false: none). A door() is declared per door, facing out. o.mk, o.col */
+   facing out to the left of B0->B1 seen from above with +y up... (front: B0 west, B1 east). opens: [{s, w, h, door, openOnly}]
+   with s the distance along the bottom edge from B0; every opening is a TRIANGLE (apex up). When a doorway is taller than h,
+   the wall automatically rises in a pointed gable hood over the portal so neither outer nor inner sheet ever folds downward. */
 function lzWall(B0,B1,T0,T1,y0,h,mk,col,opens,o){o=o||{};const L=Math.hypot(B1[0]-B0[0],B1[1]-B0[1]);if(L<.05)return;
  const nx=-(B1[1]-B0[1])/L,nz=(B1[0]-B0[0])/L;   /* the outward normal (x,z): the front wall runs west to east and faces +z */
- const at=(u,v,off)=>{const bx=lerp(B0[0],B1[0],u),bz=lerp(B0[1],B1[1],u),tx=lerp(T0[0],T1[0],u),tz=lerp(T0[1],T1[1],u);return [lerp(bx,tx,v)+nx*off,y0+h*v,lerp(bz,tz,v)+nz*off];};
- const sheet=(u0,u1,ybot)=>{if(u1-u0<1e-3)return;const f=off=>(u,v)=>{const uu=u0+(u1-u0)*u,yb=ybot?ybot(uu):0,vv=yb/h+(1-yb/h)*v;return at(uu,vv,off);};
-  const nv=ybot?3:2,nu=ybot?6:Math.max(1,Math.round((u1-u0)*L/2));psurf(mk,f(0),nu,nv,col,{});if(o.inner!==false)psurf(mk,f(-LZ_T),nu,nv,o.innerCol||col,{flip:true});};
- const ops=(opens||[]).filter(q=>q.door).sort((a,b)=>a.s-b.s);let u=0;
+ const atY=(u,yL,off)=>{const vb=Math.min(1.12,yL/Math.max(.05,h)),bx=lerp(B0[0],B1[0],u),bz=lerp(B0[1],B1[1],u),tx=lerp(T0[0],T1[0],u),tz=lerp(T0[1],T1[1],u);
+  return [lerp(bx,tx,vb)+nx*off,y0+yL,lerp(bz,tz,vb)+nz*off];};
+ const ops=(opens||[]).filter(q=>q&&(q.door||q.openOnly)).sort((a,b)=>a.s-b.s);
+ const yTop=uu=>{let yt=h;for(const q of ops){if(q.courseClip||q.h+.28<=h)continue;const uc=q.s/L,hw=(q.w*.72+.36)/L,t=1-Math.abs(uu-uc)/hw;if(t>0)yt=Math.max(yt,h+(q.h+.34-h)*t);}return yt;};
+ const sheet=(u0,u1,ybot,nuMin)=>{if(u1-u0<1e-3)return;
+  const f=off=>(u,v)=>{const uu=u0+(u1-u0)*u,yb=ybot?ybot(uu):0,yt=Math.max(yb+.04,yTop(uu));return atY(uu,lerp(yb,yt,v),off);};
+  const uvf=(u,v)=>{const uu=u0+(u1-u0)*u,yb=ybot?ybot(uu):0,yt=Math.max(yb+.04,yTop(uu));return [uu*L,lerp(yb,yt,v)];};
+  const nv=ybot?3:2,nu=Math.max(nuMin||1,ybot?6:Math.max(1,Math.round((u1-u0)*L/1.6)));
+  psurf(mk,f(0),nu,nv,col,{uvf});if(o.inner!==false)psurf(mk,f(-LZ_T),nu,nv,o.innerCol||col,{flip:true,uvf});};
  /* a vent (an opening with a sill y) is not cut: the room card (core/door: the room's dim back, not a dark void) set a little
     proud of the face, high under the eave */
- for(const q of (opens||[]).filter(q=>!q.door)){const uc=q.s/L,yv=(q.y||h*.6)/h;const p0=at(uc-q.w/2/L,yv,.03),p1=at(uc+q.w/2/L,yv,.03),p2=at(uc,Math.min(1,yv+q.h/h),.03);svPanePoly([p0,p1,p2],{glass:false,depth:0});}
- for(const q of ops){const ua=(q.s-q.w/2)/L,ub=(q.s+q.w/2)/L,uc=q.s/L;sheet(u,ua);
-  /* over the triangle: the bottom edge rises to the apex and falls again */
-  sheet(ua,ub,uu=>q.h*(1-Math.abs(uu-uc)/(ub-uc)));
-  /* the reveal: two slabs along the slanted sides */
-  for(const [ux,uy] of [[ua,ub],[ub,ua]]){const p0=at(ux,0,0),p1=at(uy>ux?uc:uc,q.h/h,0),p2=at(ux,0,-LZ_T);plane4(mk,p0,p1,p2,.02,o.revealCol||col);}
-  if(q.door){const p=at(uc,0,-LZ_T/2);door(p[0],p[1],p[2],Math.atan2(nx,nz),q.w);lzLeaf(p[0],p[1],p[2],Math.atan2(nx,nz),q.w,q.h);}
-  u=ub;}
+ for(const q of (opens||[]).filter(q=>q&&!q.door&&!q.openOnly)){const uc=q.s/L,yv=q.y||h*.6;
+  const p0=atY(uc-q.w/2/L,yv,.03),p1=atY(uc+q.w/2/L,yv,.03),p2=atY(uc,Math.min(h,yv+q.h),.03);svPanePoly([p0,p1,p2],{glass:false,depth:0});}
+ let u=0;
+ for(const q of ops){const ua=clamp((q.s-q.w/2)/L,0,1),ub=clamp((q.s+q.w/2)/L,0,1),uc=q.s/L;
+  const hwG=!q.courseClip&&q.h+.28>h?(q.w*.72+.36)/L:0,uaG=hwG?Math.max(u,uc-hwG):ua;
+  if(uaG>u+1e-3)sheet(u,uaG);
+  if(ua>uaG+1e-3)sheet(uaG,ua,null,3);
+  if(q.wTop!==undefined){/* open-top trapezoidal lower course of a multi-course tower doorway */
+   const uai=clamp((q.s-q.wTop/2)/L,ua,uc),ubi=clamp((q.s+q.wTop/2)/L,uc,ub);
+   if(uai>ua+1e-4)sheet(ua,uai,uu=>q.h*(uu-ua)/(uai-ua),3);
+   if(ub>ubi+1e-4)sheet(ubi,ub,uu=>q.h*(ub-uu)/(ub-ubi),3);
+   for(const [ux0,ux1] of [[ua,uai],[ub,ubi]]){const p0=atY(ux0,0,0),p1=atY(ux1,q.h,0),p2=atY(ux0,0,-LZ_T);plane4(mk,p0,p1,p2,.02,o.revealCol||col);}
+  }else{
+   /* over the triangle: the bottom edge rises to the apex and falls again, while yTop rises in a pointed gable if q.h > h */
+   sheet(ua,uc,uu=>q.h*(1-(uc-uu)/Math.max(1e-5,uc-ua)),4);
+   sheet(uc,ub,uu=>q.h*(1-(uu-uc)/Math.max(1e-5,ub-uc)),4);
+   for(const ux of [ua,ub]){const p0=atY(ux,0,0),p1=atY(uc,q.h,0),p2=atY(ux,0,-LZ_T);plane4(mk,p0,p1,p2,.02,o.revealCol||col);}
+  }
+  if(q.door){const dw=q.fullW||q.w,dh=q.fullH||q.h,p=atY(uc,0,-LZ_T/2),pf=atY(uc,0,-.015),yaw=Math.atan2(nx,nz);
+   door(p[0],p[1],p[2],yaw,dw);lzLeaf(pf[0],pf[1],pf[2],yaw,dw,dh,{mk:dh>=3.4?'lacqR':'lacq'});}
+  u=ub;
+  if(hwG){const nextOp=ops[ops.indexOf(q)+1],lim=nextOp?clamp((nextOp.s-nextOp.w/2)/L,0,1):1,ubG=Math.min(lim,uc+hwG);
+   if(ubG>u+1e-3){sheet(u,ubG,null,3);u=ubG;}}}
  sheet(u,1);}
 /* a room of four leaning walls: w (x) by d (z) at the ground, y0 up h. o.lean {front, back, left, right}: metres the top
    edge moves IN per metre of height (negative leans out). opens per side as lzWall's. Returns the top corners. o.mkf(side),
@@ -153,33 +204,114 @@ function lzBatterRoom(w,d,y0,h,mk,col,o){o=o||{};const Ln=Object.assign({front:.
  const B={fl:[-w/2,d/2],fr:[w/2,d/2],br:[w/2,-d/2],bl:[-w/2,-d/2]};
  const xl=-w/2+Ln.left*h,xr=w/2-Ln.right*h,zf=d/2-Ln.front*h,zb=-d/2+Ln.back*h;const T={fl:[xl,zf],fr:[xr,zf],br:[xr,zb],bl:[xl,zb]};
  const S=[['front',B.fl,B.fr,T.fl,T.fr],['right',B.fr,B.br,T.fr,T.br],['back',B.br,B.bl,T.br,T.bl],['left',B.bl,B.fl,T.bl,T.fl]];
- for(const [side,b0,b1,t0,t1] of S){if(o.skip&&o.skip.includes(side))continue;lzWall(b0,b1,t0,t1,y0,h,o.mkf?o.mkf(side):mk,o.colf?o.colf(side):col,o[side],o);}
- return {T,B,xl,xr,zf,zb};}
+ const rDoors=[];
+ for(const [side,b0,b1,t0,t1] of S){if(o.skip&&o.skip.includes(side))continue;
+  const ops=o[side];lzWall(b0,b1,t0,t1,y0,h,o.mkf?o.mkf(side):mk,o.colf?o.colf(side):col,ops,o);
+  if((side==='front'||side==='back')&&ops)for(const q of ops)if(q&&(q.door||q.openOnly)&&!q.courseClip)
+   rDoors.push({side:side==='front'?1:-1,x:side==='front'?q.s-w/2:w/2-q.s,w:q.w,topY:y0+q.h+.34});}
+ LZ_LAST_ROOM={w,d,y0,h,doors:rDoors};
+ return {T,B,xl,xr,zf,zb,doors:rDoors};}
 /* a ring of stone along the top of a battered room's walls (T its top corners), `wide` metres in, th thick: a hollow
-   course under a course turned past it shows a wedge into the room at each corner, and the ring closes it */
-function lzCourseRing(T,y,th,wide,mk,col){const xl=T.fl[0],xr=T.fr[0],zf=T.fl[1],zb=T.bl[1];
- box(mk,(xl+xr)/2,y,zf-wide/2,xr-xl,th,wide,col);box(mk,(xl+xr)/2,y,zb+wide/2,xr-xl,th,wide,col);box(mk,xl+wide/2,y,(zf+zb)/2,wide,th,zf-zb,col);box(mk,xr-wide/2,y,(zf+zb)/2,wide,th,zf-zb,col);}
+   course under a course turned past it shows a wedge into the room at each corner, and the ring closes it; gapFront leaves
+   the +z front doorway clear when a tall portal rises past the course ring */
+function lzCourseRing(T,y,th,wide,mk,col,gapFront){const xl=T.fl[0],xr=T.fr[0],zf=T.fl[1],zb=T.bl[1];
+ if(gapFront>0){const gx0=Math.max(xl,-gapFront/2),gx1=Math.min(xr,gapFront/2);
+  if(gx0-xl>.08)box(mk,(xl+gx0)/2,y,zf-wide/2,gx0-xl,th,wide,col);
+  if(xr-gx1>.08)box(mk,(gx1+xr)/2,y,zf-wide/2,xr-gx1,th,wide,col);
+ }else box(mk,(xl+xr)/2,y,zf-wide/2,xr-xl,th,wide,col);
+ box(mk,(xl+xr)/2,y,zb+wide/2,xr-xl,th,wide,col);box(mk,xl+wide/2,y,(zf+zb)/2,wide,th,zf-zb,col);box(mk,xr-wide/2,y,(zf+zb)/2,wide,th,zf-zb,col);}
 /* a flat roof slab on the top corners of a battered room, th thick, over the edge by ov */
 function lzSlab(T,y,th,mk,col,ov){ov=ov||0;/* prism wants its outline anticlockwise seen from above: back-left, back-right, front-right, front-left */
  const pts=[[T.bl[0]-ov,T.bl[1]-ov],[T.br[0]+ov,T.br[1]-ov],[T.fr[0]+ov,T.fr[1]+ov],[T.fl[0]-ov,T.fl[1]+ov]];prism(mk,pts,y,y+th,col);}
 /* ---------------------------------------------------------------- openings: triangles, sized by caste, nested on shared buildings */
-/* a caste door's leaf (core/door, the owner's 2026-11-03 doors): a lacquered triangle in the opening, pivoting on the line
-   through its apex so it never meets the slanted reveals; it opens on E or an NPC (KDOOR). (x,y,z) the opening's foot in the
-   wall's middle, ry the way out, w x h the triangle */
-function lzLeaf(x,y,z,ry,w,h){return svLeaf(x,y,z,ry,w*.9,h*.92,{shape:'tri',pivot:true,split:false,mk:'lacq',col:P('lacq'),t:.06,name:'caste door'});}
-/* the door of caste c, as an lzWall opening at s along the wall: a triangle doorH(c) high, 0.62 of that wide at the floor */
-function lzDoor(c,s){const h=lzDoorH(c);return {s,w:+(h*.62).toFixed(2),h,door:true};}
+/* slanted-jamb biparting carapace door valves (replaces the old centre-pivoting single leaf): two mirrored right-triangular
+   lacquer/oxblood valves framed in cast Shang bronze with a twin vertical meeting spine and non-orthogonal brace ribs, hinged
+   along the OUTER slanted jambs (`DESIGN.md`: nothing meets at 90 degrees). Pressing E folds both valves smoothly outward and
+   slightly upward (~103 deg) like beetle/reptile carapace plates, leaving 100% of the triangular doorway unobstructed */
+const LZ_VALVES=[],LZ_VGEO={};
+function lzPrism2D(pos,nor,uv,idx,pts,z0){const n=pts.length;
+ for(const zz of [-z0,z0]){const st=pos.length/3;for(const p of pts){pos.push(p[0],p[1],zz);nor.push(0,0,zz>0?1:-1);uv.push(p[0]+.5,p[1]);}
+  for(let i=1;i<n-1;i++){if(zz>0)idx.push(st,st+i,st+i+1);else idx.push(st,st+i+1,st+i);}}
+ for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n],dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy)||1,nx=dy/L,ny=-dx/L,st=pos.length/3;
+  for(const [p,zz] of [[a,-z0],[b,-z0],[b,z0],[a,z0]]){pos.push(p[0],p[1],zz);nor.push(nx,ny,0);}
+  uv.push(0,0,L,0,L,z0*2,0,z0*2);idx.push(st,st+1,st+2,st,st+2,st+3);}}
+function lzTriValveGeo(s){const k='p'+s;if(LZ_VGEO[k])return LZ_VGEO[k];
+ const pos=[],nor=[],uv=[],idx=[],pts=s<0?[[-.494,.005],[-.005,.005],[-.005,.990]]:[[.005,.005],[.494,.005],[.005,.990]];
+ lzPrism2D(pos,nor,uv,idx,pts,.36);return LZ_VGEO[k]=fixWind(mkGeo(pos,nor,uv,idx));}
+function lzTriTrimGeo(s){const k='t'+s;if(LZ_VGEO[k])return LZ_VGEO[k];
+ const pos=[],nor=[],uv=[],idx=[];
+ const P0=s<0?[[-.496,.003],[-.004,.003],[-.004,.993]]:[[.004,.003],[.496,.003],[.004,.993]];
+ const Q0=s<0?[[-.422,.044],[-.043,.044],[-.043,.856]]:[[.043,.044],[.422,.044],[.043,.856]];
+ for(let i=0;i<3;i++){const j=(i+1)%3;lzPrism2D(pos,nor,uv,idx,[P0[i],P0[j],Q0[j],Q0[i]],.54);}
+ /* two angled carapace ribs (slanted upward toward the jamb: no 90-degree rails) and a cast latch-plate on the meeting stile */
+ for(const [vIn,vOut] of [[.24,.40],[.50,.63]]){
+  const xIn=s*.040,xOut1=s*(.494*(1-vOut)),xOut2=s*(.494*(1-(vOut+.034)));
+  const rPts=s<0?[[xOut1,vOut],[xIn,vIn],[xIn,vIn+.034],[xOut2,vOut+.034]]:[[xIn,vIn],[xOut1,vOut],[xOut2,vOut+.034],[xIn,vIn+.034]];
+  lzPrism2D(pos,nor,uv,idx,rPts,.48);}
+ const lPts=s<0?[[-.072,.35],[-.003,.35],[-.003,.45],[-.072,.42]]:[[.003,.35],[.072,.35],[.072,.42],[.003,.45]];
+ lzPrism2D(pos,nor,uv,idx,lPts,.62);
+ return LZ_VGEO[k]=fixWind(mkGeo(pos,nor,uv,idx));}
+const LZ_VTMP={p:new THREE.Vector3(),v:new THREE.Vector3(),ax:new THREE.Vector3(),qH:new THREE.Quaternion(),qW:new THREE.Quaternion(),s:new THREE.Vector3(),m:new THREE.Matrix4(),up:new THREE.Vector3(0,1,0)};
+function lzPoseValve(V){const D=V.D,o=D.open||0,e=o*o*(3-2*o),T=LZ_VTMP;T.s.set(V.w,V.h,V.t);
+ for(let si=0;si<2;si++){const s=si===0?-1:1,Hx=s*.495*V.w,Hz=.46*V.t,kx=-s*.490*V.w,ky=.987*V.h,L=Math.hypot(kx,ky)||1;
+  T.ax.set(kx/L,ky/L,0);T.qH.setFromAxisAngle(T.ax,s*e*1.80);
+  T.v.set(-Hx,0,-Hz).applyQuaternion(T.qH);T.v.x+=Hx;T.v.z+=Hz;T.v.applyQuaternion(V.qYaw);
+  T.p.set(D.at[0]+T.v.x,D.at[1]+T.v.y,D.at[2]+T.v.z);
+  T.qW.copy(V.qYaw).multiply(T.qH);T.m.compose(T.p,T.qW,T.s);
+  const g=V.ims[si];g.imP.setMatrixAt(g.idxP,T.m);g.imT.setMatrixAt(g.idxT,T.m);
+  g.imP.instanceMatrix.needsUpdate=true;g.imT.instanceMatrix.needsUpdate=true;}}
+function lzFlushValves(parent){if(!LZ_VALVES.length)return;
+ for(const cutFlag of [false,true]){const sub=LZ_VALVES.filter(v=>v.cut===cutFlag);if(!sub.length)continue;
+  for(const si of [0,1]){const s=si===0?-1:1;
+   /* group panels by material key (lacq / lacqR / bronzeC), while all bronze exoskeleton frames share one bronzeC InstancedMesh */
+   const imT=new THREE.InstancedMesh(lzTriTrimGeo(s),svLeafMat('bronzeC'),sub.length);
+   imT.name='lz-door-trim-'+(s<0?'L':'R')+(cutFlag?'-cut':'');imT.userData.doorLeaves=true;
+   imT.castShadow=true;imT.receiveShadow=true;imT.frustumCulled=false;
+   const byMk=new Map();sub.forEach(V=>{if(!byMk.has(V.mk))byMk.set(V.mk,[]);byMk.get(V.mk).push(V);});
+   let ti=0;
+   for(const [mk,arr] of byMk){
+    const imP=new THREE.InstancedMesh(lzTriValveGeo(s),svLeafMat(mk),arr.length);
+    imP.name='lz-door-panel-'+mk+'-'+(s<0?'L':'R')+(cutFlag?'-cut':'');imP.userData.doorLeaves=true;
+    imP.castShadow=true;imP.receiveShadow=true;imP.frustumCulled=false;
+    arr.forEach((V,pi)=>{imP.setColorAt(pi,V.col);imT.setColorAt(ti,V.trimCol);V.ims[si]={imP,idxP:pi,imT,idxT:ti++};});
+    imP.instanceColor.needsUpdate=true;parent.add(imP);SV_OPEN.meshes.push(imP);if(cutFlag)SV_OPEN.cutMeshes.push(imP);}
+   imT.instanceColor.needsUpdate=true;parent.add(imT);SV_OPEN.meshes.push(imT);if(cutFlag)SV_OPEN.cutMeshes.push(imT);}}
+ for(const V of LZ_VALVES){lzPoseValve(V);KDOORHOST.posed(V.D,()=>lzPoseValve(V));}}
+{const lzPrevBuild=buildWorld;buildWorld=function(){LZ_VALVES.length=0;const r=lzPrevBuild();lzFlushValves(WORLD);return r;};}
+function lzLeaf(x,y,z,ry,w,h,o){o=o||{};const mk=o.mk||'lacq',col=o.col||P(mk==='lacqR'?'oxblood':'lacq'),trimCol=P('bronze'),t=o.t||.07;
+ const ww=w*.985,hh=h*.985,slope=Math.atan2(ww/2,hh);
+ /* three cast-bronze knuckle collars anchored along each slanted jamb outside the moving valves */
+ W(x,y,z,ry,()=>{for(const s of [-1,1])for(const f of [.16,.48,.80]){
+  WX(s*ww*.495*(1-f),hh*f,t*.46,0,0,s*slope,()=>cyl('bronzeC',0,-.03,0,.028,.06,trimCol,8));}});
+ if(PLACE_DRY||GTARGET!==GB||typeof KDOOR==='undefined'){
+  W(x,y,z,ry,()=>{_svM.compose(_svP.set(0,0,0),_svQ.identity(),_svS.set(ww,hh,t));
+   for(const s of [-1,1]){emit(mk,lzTriValveGeo(s),_svM.clone(),col);emit('bronzeC',lzTriTrimGeo(s),_svM.clone(),trimCol);}});
+  return null;}
+ const at=svW(x,y,z),p0=svW(x,y+hh/2,z),wy=svYaw(ry),e=CM.elements,sc=Math.hypot(e[0],e[1],e[2])||1;
+ const base=svDefIndex(),id=o.id==null?base+'.d'+(CURREC?CURREC._doorN++:LZ_VALVES.length):o.id;
+ const D=KDOOR.add({id,at,p0,yaw:wy,w:ww*sc,h:hh*sc,t:t*sc,pair:true,swing:1.80,rate:.95,locked:!!o.locked,open:o.open||0,
+  key:CURREC?CURREC.key:null,name:o.name||'caste door'});
+ LZ_VALVES.push({D,mk,col:typeof col==='number'?hc(col):col.clone(),trimCol:typeof trimCol==='number'?hc(trimCol):trimCol.clone(),
+  cut:CUTC[3]>.5,wy,qYaw:new THREE.Quaternion().setFromAxisAngle(LZ_VTMP.up,wy),w:ww*sc,h:hh*sc,t:t*sc,ims:[null,null]});
+ return D;}
+/* the door of caste c, as an lzWall opening at s along the wall: a triangle doorH(c) high, LZ_DW of that wide at the floor */
+function lzDoor(c,s){const h=lzDoorH(c);return {s,w:+(h*LZ_DW).toFixed(2),h,door:true};}
 /* a slit vent for caste c (no window at a human's eye height: the vents sit high, under the eave) */
 function lzVent(c,s,y){const h=lzDoorH(c)*.3;return {s,w:h*.5,h,y};}
-/* nested portal frames on a wall face: triangles sharing the floor line, from H down by 1/1.25 to 1.2 m (DESIGN.md 3): each
-   frame two jambs in o.mk (lacq | bronze | ivory), each a step deeper (-z of the frame turned ry at (x,y,z)); the inmost is
-   the real opening (declare it with lzDoor on the wall). o.eye puts a spiral eye at the outer apex */
-function lzPortal(x,y,z,ry,H,o){o=o||{};const mk=o.mk||'lacq',col=o.col||(mk==='bronze'?P('bronze'):mk==='ivory'?P('tusk'):P('lacq')),step=o.step||.14;let h=H,i=0;
- W(x,y,z,ry,()=>{while(h>=1.15&&i<7){const w=h*.62,zz=-i*step,t=.1+.03*(6-i);
-   for(const s of [-1,1])beam(mk,[s*w/2,0,zz],[s*0,h,zz],t,col,false,undefined,Math.min(t*1.4,step*.85));
-   box(mk,0,-.02,zz,w+.3,.12,t*1.5,col);   /* the raised threshold */
-   h/=LZ_RATIO;i++;}
-  if(o.eye)lzEye(0,H+.45,-.02,0,.32,{mk:'bronze'});});}
+/* stepped exterior portal hood around a clear triangular opening H high (w = H * LZ_DW): all nested frames step OUTWARD in size
+   and proud in +z on the exterior face so NOTHING ever protrudes smaller than H into the room or chokes interior headroom!
+   Shared ('all'-caste) portals additionally carry stepped bronze caste-tier lug markers along the outer slanted cheeks */
+function lzPortal(x,y,z,ry,H,o){o=o||{};const mk=o.mk||'lacq',col=o.col||(mk==='bronze'?P('bronze'):mk==='ivory'?P('tusk'):mk==='lacqR'?P('oxblood'):P('lacq'));
+ const nF=o.frames||(H>=4?4:3),step=Math.min(o.step||.05,.065),w0=H*LZ_DW;
+ W(x,y,z,ry,()=>{
+  for(let k=0;k<nF;k++){const u=nF-1-k,hk=H+.11+.15*u,wk=w0+.14+.22*u,zz=.015+k*step,t=.085+.018*u;
+   for(const s of [-1,1])beam(mk,[s*wk/2,0,zz],[0,hk,zz],t,col,false,undefined,Math.min(t*1.25,step*1.35));}
+  /* on shared portals (H >= 4 m), mark the lower castes' heights with angled bronze lugs on the OUTSIDE of the slanted cheeks */
+  if(o.shared||H>=4.0){const wOut=w0+.14+.22*(nF-1),hOut=H+.11+.15*(nF-1),mCol=P('verd');
+   for(let c=1;c<=5;c++){const hc0=lzDoorH(c);if(hc0>=H-.25)continue;const xc=wOut/2*(1-hc0/hOut);
+    for(const s of [-1,1])beam('bronzeC',[s*(xc+.02),hc0,.04],[s*(xc+.22),hc0+.09,.05],.045,mCol,false,undefined,.06);}}
+  box('basalt',0,-.09,.06,w0+.52,.14,.28,P('basaltD'));   /* low flush threshold sill */
+  if(o.eye)lzEye(0,H+.26+.15*(nF-1),.06+.04*nF,0,.32,{mk:'bronze'});});}
 /* ---------------------------------------------------------------- the ornament */
 /* a leiwen panel: w by h, its face +z at z = 0 from y = 0 up, cells of o.cell (m): each cell a squared spiral in raised strokes
    of o.mk (bronze | lacq | lacqR | ivory | basalt) on a backing of o.back (false: none). Chirality: the left half winds one way, the
@@ -266,6 +398,6 @@ function lzBellRack(x,z,ry,L,h,n){W(x,0,z,ry,()=>{const lean=.35;
    const nx=du[1]*dv[2]-du[2]*dv[1],nz=du[0]*dv[1]-du[1]*dv[0];const out=(pm[0]-bx)*nx+pm[2]*nz;
    psurf('leiwenS',f,24,2,WHITE,{flip:out<0,uvf:(u,v)=>[u*tl,v*tl/4]});}}});}   /* two cast bands round each bell */
 /* the raised threshold and the stone footing every door has */
-function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.05,.1,w+.4,.25,.5,P('basaltD')));}   /* sunk 5 cm, so no floor slab's top shares its face */
+function lzThreshold(x,z,ry,w){W(x,0,z,ry,()=>box('basalt',0,-.16,.14,w+.46,.22,.52,P('basaltD')));}   /* low 6 cm bevelled sill step */
 /* a pool of dust: the ground round a monument, trodden */
 function lzDust(x,z,R){cyl('earthR',x,-.04,z,R,.12,P('earthP'),24);}   /* 8 cm proud of the ground: a thinner disc fights it at a distance */

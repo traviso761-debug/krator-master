@@ -11,8 +11,10 @@ own so its globals (MAT, REG, TAU, clamp, terrainH, WORLD, KIT...) meet neither 
     ringsea_fragment() RINGSEA: the Ring Sea watercraft (kits/ringsea) through settlements/voth/ringsea.py, read in
                        place, with the isle demo's own vessel list (PLAN.md section 8a)
 
-A kit's furniture is left out of the city page: FURNISH places nothing (the city is drawn from outside; interiors and
-their catalog pieces come with the export profile, P6b). The files are read live at build time, never copied."""
+isk_bundle(furniture=True) (the city page's, S2-C24) furnishes each ISK.proto piece as the kit's sheet does: the catalog's
+pieces sealed in, the engine's dry queue (core/engine/91f-furnish.js svfDryBegin, svfDryFlush) flushed into the piece.
+Without it (the default: Hook, the open world, the Construction kit) FURNISH places nothing, as before. The files are read
+live at build time, never copied."""
 import glob, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -40,7 +42,8 @@ def body(files):
 
 # ---------------------------------------------------------------- core/city
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 
 
 def city_files():
@@ -67,12 +70,14 @@ ISK_SKIP = ('00-head.html', '81-sky.js', '90-scene.js', '90h-is-shore.js', '91-p
             '92-camera.js', '92-world.js', '93-anim.js', '99-host-take.js', '99-tail.html')
 
 
-def isk_files():
-    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them
+def isk_files(furniture=False):
+    # the engine from core/engine (MODULARITY-PLAN.md step 2), the kit's own src/ winning, as kits/islanders/build.py takes them;
+    # furniture=True takes the engine's furniture adapter too (91f-furnish.js: the dry queue, S2-C24)
     sys.path.insert(0, os.path.join(ROOT, 'core', 'engine'))
     import engine as kengine
-    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in ISK_SKIP}
-    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in ISK_SKIP})
+    skip = tuple(f for f in ISK_SKIP if not (furniture and f == '91f-furnish.js'))
+    fs = {f: p for f, p in kengine.paths().items() if f.endswith('.js') and f not in skip}
+    fs.update({f: os.path.join(ISL, f) for f in os.listdir(ISL) if f[0].isdigit() and f.endswith('.js') and f not in skip})
     for f in ('42r-res-ore.js', '44r-res-nodes.js'):      # kits/resources, read in place (kits/islanders/build.py RESOURCES)
         fs[f] = os.path.join(ROOT, 'kits', 'resources', 'src', f)
     return [fs[f] for f in sorted(fs)]
@@ -87,18 +92,22 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 var buildWorld = function () { return null; }, WORLD = null;
 /* the harbour defs' water (kits/islanders/src/90h-is-shore.js, its sheet's shore): the waterline 0.9 m under the land */
 var IS_SEA = { level: -0.9, floor: -3.8, shoreZ: null, beach: 5, slope: 9 };
-/* no furniture on the city page (bundles.py): the builders' FURNISH calls place nothing */
+'''
+ISK_STUB_FURN = r'''/* no furniture on the city page (bundles.py): the builders' FURNISH calls place nothing */
 var SVF = { WEALTH: {}, missing: {}, placed: [] };
 function svfNewBatch() {}
 function FURNISH() { return null; }
 function FURNISH_HANG() { return null; }
+function FURNISH_WALL() { return null; }
 function svfH(key, v, dflt) { return dflt; }
 /* ...and no catalog: the dresser (42-is-dress.js isDim) asks a piece's size only to place it */
 var KratorFurniture = { FURN_BY_KEY: {}, has: function () { return false; }, entryDims: function () { return { w: 1, d: 1, h: 1 }; }, setDetail: function () {} };
 '''
 
 ISK_TAIL = r'''
-reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('ISK: ' + m); };
+/* logged with console.warn, never console.error: the engine's 10-core.js wraps console.error and hands a message that names a
+   shader back to reportErr, which logged it again with console.error, round and round until the stack overflowed (T21) */
+reportErr = function (m) { ISK_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('ISK: ' + m); };
 /* the material records for the export (core/materials/record), as the kit's own page registers them (93-anim.js, which the
    bundle skips): every MAT key as one record on the page's KMAT; core/export's materials section reads every adapter */
 (function () { var recs = {}; for (var k in MAT) { var fam = SV_LIB[k], L = fam && KMAT.mode === 'lib' ? KMAT.packed(KIT.pack, fam) : null;
@@ -139,14 +148,43 @@ return { proto: iskProto, dims: isDims, DEFS: DEFS, MAT: MAT, KIT: KIT, IS_TRADE
 '''
 
 
-def isk_bundle():
+# isk_bundle(furniture=True) (S2-C24): the catalog's pieces sealed in (the kit's own FURN_CULTURES, read from
+# kits/islanders/build.py) with core/furnish and the engine's 91f-furnish.js, and ISK.proto opens the engine's dry queue
+# round its draw and flushes it into the piece's group, so each piece is furnished as the kit's sheet furnishes it
+# (G.userData.furniture: the pieces placed; their lamps and fires join its fixtures' lamps). Off: the stubs above, byte for byte.
+ISK_DRY_BEGIN = ('  var dry = PLACE_DRY; PLACE_DRY = 1; var rec = null;',
+                 '  svfDryBegin(); var dry = PLACE_DRY; PLACE_DRY = 1; var rec = null;')
+ISK_DRY_FLUSH = ("  if (typeof saFlush === 'function') saFlush(G);" + NL,
+                 "  if (typeof saFlush === 'function') saFlush(G);" + NL + '  var FUR = svfDryFlush(G);' + NL)
+ISK_DRY_COUNT = ('fixtures: iskFixtures(rec) };', 'fixtures: iskFixtures(rec), furniture: FUR.placed };')
+
+
+def isk_furn_cultures():
+    import ast, re
+    m = re.search(r'^FURN_CULTURES = (\[[^\]]*\])', rd(os.path.join(ROOT, 'kits', 'islanders', 'build.py')), re.M)
+    if not m:
+        raise SystemExit('bundles.py: kits/islanders/build.py has no FURN_CULTURES list')
+    return ast.literal_eval(m.group(1))
+
+
+def isk_bundle(furniture=False):
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'fauna'))
     import fauna_bundle
-    fs = isk_files()
+    fs = isk_files(furniture)
+    tail, extra = ISK_TAIL, []
+    if furniture:
+        import engine as kengine   # core/engine (isk_files put it on the path)
+        furn, extra = kengine.host_furniture(isk_furn_cultures())
+        for a, b in (ISK_DRY_BEGIN, ISK_DRY_FLUSH, ISK_DRY_COUNT):
+            if tail.count(a) != 1:
+                raise SystemExit('bundles.py: ISK_TAIL no longer reads %r exactly once: fix isk_bundle(furniture=True)' % a)
+            tail = tail.replace(a, b)
+    else:
+        furn = ISK_STUB_FURN
     return safe('/* ISK: the Islanders kit in one closure (settlements/isle-demo/bundles.py). GENERATED: edit kits/islanders/src, '
-                'kits/resources/src or kits/fauna. */' + NL + 'var ISK = (function(){' + NL + ISK_HEAD +
+                'kits/resources/src or kits/fauna. */' + NL + 'var ISK = (function(){' + NL + ISK_HEAD + furn +
                 '/* ---- kits/fauna (fauna_bundle.py: the farm animals) ---- */' + NL + fauna_bundle.bundle(['farm']) + NL +
-                body(fs) + ISK_TAIL + '})();' + NL), [rel(f) for f in fs] + ['kits/fauna (farm)']
+                body(fs) + tail + '})();' + NL), [rel(f) for f in fs] + ['kits/fauna (farm)'] + extra
 
 
 # ---------------------------------------------------------------- the Iziz Vernacular
@@ -170,7 +208,8 @@ var scene = new THREE.Group(), renderer = { capabilities: { getMaxAnisotropy: fu
 '''
 
 IZV_TAIL = r'''
-reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('IZV: ' + m); };
+/* console.warn, as ISK's: a console.error naming a shader would pass through ISK's wrapper (core/engine 10-core.js) into ISK.errors (T21) */
+reportErr = function (m) { IZV_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('IZV: ' + m); };
 /* IZV.proto(key, v, w): the def built once at the origin on flat ground into a new group, its kit items baked. The kit's
    items are emptied before and after (30-kit.js kbake bakes every item put so far and keeps them: without this each piece
    carried every piece built before it, so a piece depended on the order the page built them in; fixed 2026-10-20) */
@@ -254,7 +293,7 @@ HYK_SHIM = r'''
 if (typeof portSkiff === 'undefined') var portSkiff = function () {};
 '''
 HYK_TAIL = r'''
-reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.error('HYKB: ' + m); };
+reportErr = function (m) { HYKB_ERRS.push(String(m).slice(0, 600)); if (typeof console !== 'undefined') console.warn('HYKB: ' + m); };   /* as IZV's (T21) */
 /* HYKB.proto(key, v): a free-standing def built once at the origin on flat ground into a new group, its kit items baked
    (as IZV's: the kit's items emptied before and after, so a piece never carries another's) */
 function hykKitClear() { KIT.order.forEach(function (n) { KIT.items[n].length = 0; }); }
@@ -294,6 +333,9 @@ CAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), 
 CAT_PORTS = os.path.join(BR, 'src', '60-br-ports.js')
 # the kit's tent set (src/70-75: the bands' tents, pens and boundaries), for a page that pitches camps (core/camp): the
 # open world takes it (cat_bundle(tents=True)); the city page does not, so its bundle is as it was
+# the kit's trades and houses (51-54): the villages core/hamlet's `beast-rider` row lays (openworld/pinnacle's clearings,
+# 2026-11-12), taken only by a page that asks (cat_bundle(trades=True)), so every other bundle is as it was
+CAT_TRADES = [os.path.join(BR, 'src', f) for f in ('51-br-trades.js', '52-br-trades-b.js', '53-br-trades-c.js', '54-br-houses.js')]
 CAT_TENTS = [os.path.join(BR, 'src', f) for f in ('70-br-tent-kit.js', '71-br-tents-dwell.js', '72-br-tents-trade.js',
                                                   '73-br-tents-pens.js', '74-br-tents-bands.js', '75-br-tents-bounds.js')]
 # the kit's DETAIL MAPS (2026-10-20: its own buildings read flat and washed out here next to its page): the kit's page draws
@@ -337,7 +379,7 @@ var window = new Proxy(globalThis.window || globalThis, { get: function (t, k) {
 '''
 
 
-def cat_bundle(side=None, tents=False):
+def cat_bundle(side=None, tents=False, trades=False):
     """CAT: the catalog's geometry kit, the Beast Riders kit's own buildings and its ports (the two towns sealed, their
     maps BR_TOWN_IMG: in side['brtowns'] when side is given, a sidecar file), sealed; CAT.proto(key, v) builds one at the
     origin into a new group (no furniture: the catalog's pieces are not on this page; a port keeps the furniture its
@@ -347,7 +389,7 @@ def cat_bundle(side=None, tents=False):
     import towns
     tjs, tfiles = towns.bundle(side)
     kf = _kf_tex()
-    files = CAT_FILES + (CAT_TENTS if tents else [])
+    files = CAT_FILES + (CAT_TRADES if trades else []) + (CAT_TENTS if tents else [])
     if side is None:
         kfjs = 'var KF_TEX = ' + kf + ';' + NL
     else:

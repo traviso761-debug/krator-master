@@ -2,7 +2,7 @@
 const qcEye=(x,z,tx,tz,dy)=>[x,terrainH(x,z)+1.7+qcD(dy,0),z,tx,terrainH(tx,tz)+4,tz];
 const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  V['Overview']=[E+520,820,S+760,L.x,0,L.z];
- V['From the south gate']=qcEye(6,S+40,0,L.z+160,0);
+ V['From the south gate']=qcEye(-9,S+95,0,L.z+160,3);   /* off the terrace stair (to ~S+60) and its side walls */
  V['The Rainbow Temple']=qcEye(L.x+18,L.z+95,L.x,L.z,0);
  // the kora: down one side from a third of its length, on the street's outer half, the arcades on the left
  const K=QC_KORA;if(K){const a=K.pts[0],b=K.pts[1],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.hypot(dx,dz),ux=dx/L,uz=dz/L;let nx=-uz,nz=ux;if(nx*(QC_LM.x-a[0])+nz*(QC_LM.z-a[1])>0){nx=-nx;nz=-nz;}
@@ -61,6 +61,9 @@ const VIEWS=(function(){const V={},S=QC_B.z1,E=QC_B.x1,L=QC_LM,L0=QC_LM;
  const gm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].tea);if(gm){const e=loc(gm.x,gm.z,-6,4,gm.ry),g=loc(gm.x,gm.z,13.5,10,gm.ry),y=qcD(gm.o.y,0);V['The Viridian monastery court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];   /* from above the court, down at the east bed of tea */}
  // the Order of the White Lily's house, its hospital: its physic garden from above
  const wm=QC_PLACE.find(p=>p.kind==='monastery'&&QSPOKE[p.o.v%8].hospital);if(wm){const e=loc(wm.x,wm.z,-6,4,wm.ry),g=loc(wm.x,wm.z,13.5,10,wm.ry),y=qcD(wm.o.y,0);V['The White Lily hospital court']=[e[0],y+20,e[1],g[0],y+1.2,g[1]];}
+ // the life (91l, Q7e): the west gate market on its avenue, eye height, looking out toward the gate
+ const wk=QC_S.markets.find(M=>M.dir==='w');if(wk){const bl=wk.blocks.map(id=>qcBlock[id]).filter(Boolean);if(bl.length){const x1=Math.max(...bl.map(b=>b.box[2])),x0=Math.min(...bl.map(b=>b.box[0])),z=L.z+3;
+  V['The west gate market']=[x1-6,terrainH(x1-6,z)+2.2,z,x0+10,terrainH(x0+10,L.z)+1.2,L.z];}}
  // a wheel house nearest the Temple Mountain, from its open front: the wheel, the hangings, the lamps
  const wh=QC_PLACE.filter(p=>p.key==='qb_wheel_house').sort((a,b)=>Math.hypot(a.x-L0.x,a.z-L0.z)-Math.hypot(b.x-L0.x,b.z-L0.z))[0];
  if(wh){const y=qcD(wh.o.y,0),e=loc(wh.x,wh.z,2.2,5.2,wh.ry),g=loc(wh.x,wh.z,-1.5,-4.8,wh.ry);V['Inside a wheel house']=[e[0],y+.8+1.6,e[1],g[0],y+.8+1.8,g[1]];}

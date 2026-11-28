@@ -27,6 +27,11 @@ function stationBuild(){const SG=STATION_GILLS,D=GILLS.dress('red'),T3=THREE,t0=
    flare:{from:.8,k:1.35,p:1.5},mouths:1,fork:.62,spread:.38,lean:p.lean,toward:p.toward,state:p.state,ice:p.ice?{from:0,thick:.45}:undefined,fan:p.state==='standing'?false:undefined});}catch(e){return;}
   BIO.record({name:(p.state==='standing'?GILLS.NAMES.pipe:GILLS.NAMES.dead)+' '+p.id,kind:'chimney',x:p.x,z:p.z,y:p.y0,r:B.R,h:B.top-p.y0});recs.push({p,B});});
  GILLS_DRAW.pipes=recs;
+ // ---- THE MOUTH'S LIFE FITTED TO THE DRAWN PIPE (the owner, 2026-11-15: "gill ring almost but doesn't quite touch so it looks like it floats").
+ // GILLS.life sized and placed the collars, fringes and steam for its own pipe; the Red form above is 1.7 times as tall and .72 as wide, so every
+ // collar hung part way up the shaft, off the leaning pipe's centre, 0.5-2.4 m clear. GILLS.fitMouths (biomes/gills 44, shared with xanadu's White
+ // host) fits them to the record drawn here by KSTACKS.ring (the drawn mesh follows it within 0.1 m)
+ GILLS_DRAW.collars0=L.collars.map(c=>Object.assign({},c));GILLS_DRAW.fit=GILLS.fitMouths(L,recs,KSTACKS.ring);   /* collars0: the life's own, the check's negative */
  // ---- their meshes, merged by chunk (the record's own mesh: what the eye sees is what at() and surface() answer)
  const lin=c=>{const q=new T3.Color(c[0],c[1],c[2]);return q.convertSRGBToLinear();},cW=lin(D.pipe),cB=lin(D.band),cI=lin([.82,.9,.96]);
  /* THE LAMINAE (core/terrain 35b, KSTRATA.lamina; LAMINA.md "Adopting it"): four columns, one per variant (a pipe keeps its variant), the White
@@ -138,6 +143,10 @@ const GCHK={
  steam(fn,day){day=typeof GDAY==='function'?GDAY():day;const tp=day+GILLS.peakHour(day)/24,out=gillsSteamOn(fn(tp)),inn=gillsSteamOn(fn(tp+.5)),n=GILLS_DRAW.life?GILLS_DRAW.life.steam.length:0;
   return{ok:n>0&&out&&!inn,detail:n+' steaming mouths; at the Bhlo ('+GILLS.peakHour(day).toFixed(2)+' h) '+(out?'on':'OFF')+', twelve hours on '+(inn?'ON':'off')};},
  gill(g,drop){const ok=Math.abs(g.w-60)<1&&Math.abs(g.d-300)<1&&Math.abs(g.r*(g.a1-g.a0)-1600)<5&&drop>200;return{ok,detail:'the great gill: '+(g.r*(g.a1-g.a0)).toFixed(0)+' m long, '+g.w+' m across, '+g.d+' m deep on its record; the drawn floor '+drop.toFixed(0)+' m under its lips'};},
+ /* every collar bears on its mouth (GILLS.collarFit: round the drawn outline at its foot, its inner rim nowhere more than 5 cm clear and not sunk a
+    quarter of its r all round, its top within 2 m under the lip; the gap from the collar's own centre, so one centred on a leaning foot fails) */
+ collars(C){const F=GILLS.collarFit(C,GILLS_DRAW.pipes,KSTACKS.ring);
+  return{ok:C.length>0&&F.n===C.length&&!F.gap&&!F.deep&&!F.off,detail:F.n+' collars: '+F.gap+' clear of their pipe by over 5 cm (the worst '+F.worst.toFixed(2)+' m), '+F.deep+' sunk in it, '+F.off+' not under their lip'};},
  live(R,ice){const bad=R.filter(o=>(o.p.live&&(o.p.ice||!SG.L.gills.find(g=>g.id===o.p.gill).alive))||(o.p.ice&&o.p.y0<=ice));return{ok:!bad.length,detail:bad.length+' pipes alive where they cannot be (on ice, on a closed gill), or iced under '+ice+' m'};}};
 const gillDrop=()=>{let lip=0,fl=1e9;for(let z=-500;z<=500;z+=100){lip=Math.max(lip,terrainH(70,z),terrainH(-70,z));fl=Math.min(fl,terrainH(0,z));}return lip-fl;};
 function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r));
@@ -145,7 +154,8 @@ function STATION_CHECKS(){const R=[],add=(n,r)=>R.push(Object.assign({name:n},r)
  add('the breath pipes stand under 90 m (KSTACKS chimney records)',GCHK.tall(GILLS_DRAW.pipes));
  add('the Red form: tall, one mouth',GCHK.red(GILLS_DRAW.pipes));
  if(GILLS_DRAW.life&&GILLS_DRAW.life.steam.length)add('steam at the live mouths on the out-breath (Bhlo), none on the in-breath (Suq)',GCHK.steam(GILLS.breath,0));
- add('no live pipe on ice or on a closed gill',GCHK.live(GILLS_DRAW.pipes,LAND.snowH));}
+ add('no live pipe on ice or on a closed gill',GCHK.live(GILLS_DRAW.pipes,LAND.snowH));
+ if(GILLS_DRAW.collars0&&GILLS_DRAW.collars0.length)add('the rust collars bear on their pipes all round, under the lip',GCHK.collars(GILLS_DRAW.life.collars));}
  if(STN.key==='gills')add('the great gill: 1.6 km, 60 m, 300 m (its record) and drawn deep',GCHK.gill(SG.big,gillDrop()));
  if(typeof SOUTH_CHECKS==='function')SOUTH_CHECKS().forEach(c=>R.push(c));
  return R;}
@@ -154,7 +164,8 @@ function STATION_NEGATIVES(){const R=[],add=(n,r)=>R.push({name:n,failed:!r.ok,d
  add('a pipe of 120 m',GCHK.tall(GILLS_DRAW.pipes.concat([{p:{y0:0},B:{top:120}}])));
  add('the White form (three mouths)',GCHK.red(GILLS_DRAW.pipes.map(o=>({p:Object.assign({},o.p,{mouths:3}),B:o.B}))));
  if(GILLS_DRAW.life&&GILLS_DRAW.life.steam.length)add('the breath a half day out (steam on the in-breath)',GCHK.steam(t=>GILLS.breath(t+.5),0));
- add('a live pipe on a closed gill',GCHK.live(GILLS_DRAW.pipes.concat([{p:{live:true,ice:false,gill:(SG.L.gills.find(g=>!g.alive)||{}).id,y0:0}}]),LAND.snowH));}
+ add('a live pipe on a closed gill',GCHK.live(GILLS_DRAW.pipes.concat([{p:{live:true,ice:false,gill:(SG.L.gills.find(g=>!g.alive)||{}).id,y0:0}}]),LAND.snowH));
+ if(GILLS_DRAW.collars0&&GILLS_DRAW.collars0.length)add('the collars where the White life put them (part way up, at the White radius)',GCHK.collars(GILLS_DRAW.collars0));}
  if(STN.key==='gills')add('a gill of 40 m',GCHK.gill(Object.assign({},SG.big,{d:40}),gillDrop()));
  if(typeof SOUTH_NEGATIVES==='function')SOUTH_NEGATIVES().forEach(c=>R.push(c));
  return R;}

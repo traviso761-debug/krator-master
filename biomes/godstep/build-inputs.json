@@ -637,7 +637,7 @@
     "biomes/shighlands/tex/fern.albedo.webp": "5c7a491e98a57ca7b39aa256dfe701e43c49a517fdf02738288b3458f1eead2c",
     "biomes/shighlands/tex/leaf.moss.albedo.webp": "4b40a1264b3e63c39662a0f5958c759b523e1a2941702029e03b7a24ab216eb1",
     "biomes/shighlands/tex/leaf.small.albedo.webp": "f84da6784d649faaa8228c2fcd082c2afbb03daf24f8c38aeb37b81389ec7b2e",
-    "biomes/shighlands/tex/pack.json": "d03e9e84d53084a1b1a8b4c66786768eda2b1e8a484a6c4c56f050da307bebf4",
+    "biomes/shighlands/tex/pack.json": "d250aadae7e3e993ce04eb7c3f4bc5681ca581d7abc74d231cd59b0b303ede84",
     "biomes/shighlands/tex/strap.albedo.webp": "da1d7d120e2e628d8f7129f06aab568e84aaa6172635a028dbaa98cebc08dc49",
     "core/atmos/89-atmos-0-core.js": "d7207293ab01d6a6e3cf3440fd6f83febaddabff7f0e753c10284fa11ec881be",
     "core/atmos/89-atmos-0p-presets.js": "1b55a3fc68023876348af4fcca6c19eafb623657a906089694c89767ea47abc0",
@@ -725,6 +725,7 @@
     "tools/check_port.py": "18958ffcff3faf2119cca97e25f4c3f4df2e97c96833fa0813681436e6b5aa47"
    },
    "listings": {
+    "biomes/godstep": "ac14134db8000c9f33c1d30adb92e1964d42b56fb749507cd5568cbe793e5eb5",
     "biomes/godstep/src": "79267fa706ef32bee771e25cd476c14b83c0f453f05e76fad52d6040dc85b403",
     "biomes/godstep/stations/wall": "130de02295524b93bec947144c81cd1e1658f87cf20e5984f7c92ad6afe0ede9",
     "core/host": "d729ffbc0ed36e68e9036bd9c454abc6462a27b22a4bc16b88c38d836e6f4a37",

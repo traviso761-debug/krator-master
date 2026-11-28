@@ -1,0 +1,1534 @@
+{
+  "cliffRockNormalError": {
+    "oct8": {
+      "maxDeg": 0.5504,
+      "meanDeg": 0.2083,
+      "p95Deg": 0.3758,
+      "p99Deg": 0.4403,
+      "specP99Err": 0.00217,
+      "specRmse": 0.00088,
+      "uniqueNormals": 27394
+    },
+    "xy6": {
+      "maxDeg": 3.4749,
+      "meanDeg": 0.7864,
+      "p95Deg": 1.344,
+      "p99Deg": 1.607,
+      "specP99Err": 0.00778,
+      "specRmse": 0.00316,
+      "uniqueNormals": 2639
+    },
+    "xy8": {
+      "maxDeg": 0.7218,
+      "meanDeg": 0.1668,
+      "p95Deg": 0.2916,
+      "p99Deg": 0.3463,
+      "specP99Err": 0.00168,
+      "specRmse": 0.0007,
+      "uniqueNormals": 34155
+    }
+  },
+  "format": "krator-m1-slice",
+  "gate1NegativeSelfTest": {
+    "cutoutHeightRejected": true,
+    "declaredFlatAccepted": true,
+    "nanRejected": true,
+    "unflaggedFlatRejected": true
+  },
+  "glazedCeramicBanding": {
+    "oct8": {
+      "maxDeg": 0.4216,
+      "meanDeg": 0.1793,
+      "p95Deg": 0.2265,
+      "p99Deg": 0.2429,
+      "specP99Err": 0.76646,
+      "specRmse": 0.26477,
+      "uniqueNormals": 4645
+    },
+    "xy6": {
+      "maxDeg": 1.6161,
+      "meanDeg": 0.7276,
+      "p95Deg": 1.2687,
+      "p99Deg": 1.2853,
+      "specP99Err": 4.68669,
+      "specRmse": 1.31795,
+      "uniqueNormals": 623
+    },
+    "xy8": {
+      "maxDeg": 0.3284,
+      "meanDeg": 0.0176,
+      "p95Deg": 0.0733,
+      "p99Deg": 0.1717,
+      "specP99Err": 0.16253,
+      "specRmse": 0.12285,
+      "uniqueNormals": 4272
+    }
+  },
+  "litOrder": [
+    "ground_grass",
+    "ground_moss",
+    "ground_gravel",
+    "masonry_wall",
+    "ashlar_wall",
+    "cliff_rock",
+    "glazed_ceramic"
+  ],
+  "size": 512,
+  "variants": {
+    "v1": {
+      "decodedCpuMB": 21.0,
+      "families": {
+        "ashlar_wall": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__ashlar_wall.albedo.webp",
+            "normalMap": "tex/v1__ashlar_wall.normal.webp",
+            "roughnessMap": "tex/v1__ashlar_wall.rough.webp"
+          },
+          "lib": "stone.chiselled",
+          "metal": 0,
+          "normalScale": 1.0,
+          "pomDepth": 0.024,
+          "role": "hero_ashlar_pom",
+          "roughLift": 0.28,
+          "scale": [
+            2.5,
+            2.5
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 422682
+        },
+        "cliff_rock": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__cliff_rock.albedo.webp",
+            "normalMap": "tex/v1__cliff_rock.normal.webp",
+            "roughnessMap": "tex/v1__cliff_rock.rough.webp"
+          },
+          "lib": "rock.granite.tor",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "rock",
+          "roughLift": 0.25,
+          "scale": [
+            6.5,
+            6.5
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 554978
+        },
+        "cutout_themeda": {
+          "breakup": null,
+          "card": true,
+          "files": {
+            "map": "tex/v1__cutout_themeda.albedo.webp"
+          },
+          "lib": "card.grass.themeda",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "cutout_guard",
+          "roughLift": 0.0,
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "size": 512,
+          "specular": 0.5,
+          "webpBytes": 91414
+        },
+        "glazed_ceramic": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__glazed_ceramic.albedo.webp",
+            "normalMap": "tex/v1__glazed_ceramic.normal.webp",
+            "roughnessMap": "tex/v1__glazed_ceramic.rough.webp"
+          },
+          "lib": "ceramic.celadon.crackle",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "glazed_curved",
+          "roughLift": 0.0,
+          "scale": [
+            1.2,
+            1.2
+          ],
+          "size": 512,
+          "specular": 0.65,
+          "webpBytes": 183730
+        },
+        "ground_grass": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__ground_grass.albedo.webp",
+            "normalMap": "tex/v1__ground_grass.normal.webp",
+            "roughnessMap": "tex/v1__ground_grass.rough.webp"
+          },
+          "lib": "ground.grass.lush",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "ground_layer_0",
+          "roughLift": 0.22,
+          "scale": [
+            2.6,
+            2.6
+          ],
+          "size": 512,
+          "specular": 0.25,
+          "webpBytes": 620516
+        },
+        "ground_gravel": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__ground_gravel.albedo.webp",
+            "normalMap": "tex/v1__ground_gravel.normal.webp",
+            "roughnessMap": "tex/v1__ground_gravel.rough.webp"
+          },
+          "lib": "ground.gravel019",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "ground_layer_2",
+          "roughLift": 0.2,
+          "scale": [
+            2.4,
+            2.4
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 612542
+        },
+        "ground_moss": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__ground_moss.albedo.webp",
+            "normalMap": "tex/v1__ground_moss.normal.webp",
+            "roughnessMap": "tex/v1__ground_moss.rough.webp"
+          },
+          "lib": "ground.moss001",
+          "metal": 0,
+          "normalScale": 1.0,
+          "role": "ground_layer_1",
+          "roughLift": 0.25,
+          "scale": [
+            2.2,
+            2.2
+          ],
+          "size": 512,
+          "specular": 0.22,
+          "webpBytes": 525022
+        },
+        "masonry_wall": {
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v1__masonry_wall.albedo.webp",
+            "normalMap": "tex/v1__masonry_wall.normal.webp",
+            "roughnessMap": "tex/v1__masonry_wall.rough.webp"
+          },
+          "lib": "brick.red",
+          "metal": 0,
+          "normalScale": 1.0,
+          "pomDepth": 0.028,
+          "role": "hero_masonry_pom",
+          "roughLift": 0.25,
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 413948
+        }
+      },
+      "godotBptcMipMB": 7.0,
+      "godotRgbaMipMB": 16.33,
+      "godotS3tcMipMB": 4.67,
+      "inlineBase64KB": 4340.9,
+      "litFamilies": 7,
+      "mapsPerLitFamily": 3,
+      "normalEncoding": "xy6",
+      "packFormat": 1,
+      "packMs": 0.8,
+      "totalLitTextures": 21,
+      "webglRgbaMipMB": 28.0,
+      "webpBytesLit": 3333418,
+      "webpKB": 3255.3
+    },
+    "v2_oct8": {
+      "decodedCpuMB": 14.0,
+      "families": {
+        "ashlar_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__ashlar_wall.albedo.webp",
+            "nrcMap": "tex/v2_oct8__ashlar_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "stone.chiselled",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0377,
+            0.0594,
+            0.06436,
+            0.06501,
+            0.06503,
+            0.06499,
+            0.06496,
+            0.06496,
+            0.06495
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.5402,
+            "meanDeg": 0.1914,
+            "p95Deg": 0.3403,
+            "p99Deg": 0.4106
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.024,
+          "role": "hero_ashlar_pom",
+          "roughLift": 0.28,
+          "scale": [
+            2.5,
+            2.5
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 1004442
+        },
+        "cliff_rock": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__cliff_rock.albedo.webp",
+            "nrcMap": "tex/v2_oct8__cliff_rock.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "rock.granite.tor",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.06093,
+            0.10339,
+            0.11427,
+            0.11616,
+            0.11625,
+            0.11613,
+            0.11601,
+            0.11596,
+            0.11594
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.5504,
+            "meanDeg": 0.2083,
+            "p95Deg": 0.3758,
+            "p99Deg": 0.4403
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "rock",
+          "roughLift": 0.25,
+          "scale": [
+            6.5,
+            6.5
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 1100118
+        },
+        "cutout_themeda": {
+          "alphaMode": "cutout",
+          "breakup": null,
+          "card": true,
+          "files": {
+            "map": "tex/v2_oct8__cutout_themeda.albedo.webp"
+          },
+          "lib": "card.grass.themeda",
+          "metal": 0,
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "cutout_guard",
+          "roughLift": 0.0,
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "size": 512,
+          "specular": 0.5,
+          "webpBytes": 91414
+        },
+        "glazed_ceramic": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__glazed_ceramic.albedo.webp",
+            "nrcMap": "tex/v2_oct8__glazed_ceramic.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ceramic.celadon.crackle",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.00125,
+            0.002,
+            0.00221,
+            0.00225,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.4216,
+            "meanDeg": 0.1793,
+            "p95Deg": 0.2265,
+            "p99Deg": 0.2429
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "glazed_curved",
+          "roughLift": 0.0,
+          "scale": [
+            1.2,
+            1.2
+          ],
+          "size": 512,
+          "specular": 0.65,
+          "webpBytes": 735260
+        },
+        "ground_grass": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__ground_grass.albedo.webp",
+            "nrcMap": "tex/v2_oct8__ground_grass.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.grass.lush",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.09647,
+            0.17365,
+            0.19118,
+            0.19374,
+            0.19371,
+            0.19348,
+            0.19334,
+            0.19331,
+            0.19329
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.5504,
+            "meanDeg": 0.223,
+            "p95Deg": 0.4056,
+            "p99Deg": 0.4645
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_0",
+          "roughLift": 0.22,
+          "scale": [
+            2.6,
+            2.6
+          ],
+          "size": 512,
+          "specular": 0.25,
+          "webpBytes": 1149316
+        },
+        "ground_gravel": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__ground_gravel.albedo.webp",
+            "nrcMap": "tex/v2_oct8__ground_gravel.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.gravel019",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.10416,
+            0.20826,
+            0.27954,
+            0.31012,
+            0.31416,
+            0.31459,
+            0.31451,
+            0.3145,
+            0.31449
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.5504,
+            "meanDeg": 0.2371,
+            "p95Deg": 0.4216,
+            "p99Deg": 0.474
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_2",
+          "roughLift": 0.2,
+          "scale": [
+            2.4,
+            2.4
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 1036068
+        },
+        "ground_moss": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__ground_moss.albedo.webp",
+            "nrcMap": "tex/v2_oct8__ground_moss.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.moss001",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0477,
+            0.07769,
+            0.09193,
+            0.09679,
+            0.09803,
+            0.09836,
+            0.0985,
+            0.09859,
+            0.09865
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.547,
+            "meanDeg": 0.2058,
+            "p95Deg": 0.3656,
+            "p99Deg": 0.4267
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_1",
+          "roughLift": 0.25,
+          "scale": [
+            2.2,
+            2.2
+          ],
+          "size": 512,
+          "specular": 0.22,
+          "webpBytes": 1011822
+        },
+        "masonry_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_oct8__masonry_wall.albedo.webp",
+            "nrcMap": "tex/v2_oct8__masonry_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "brick.red",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.02376,
+            0.04352,
+            0.05349,
+            0.05529,
+            0.05538,
+            0.0554,
+            0.0554,
+            0.05541,
+            0.05541
+          ],
+          "normalEncoding": "oct8",
+          "normalError": {
+            "maxDeg": 0.5358,
+            "meanDeg": 0.1778,
+            "p95Deg": 0.3176,
+            "p99Deg": 0.3914
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.028,
+          "role": "hero_masonry_pom",
+          "roughLift": 0.25,
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 999790
+        }
+      },
+      "godotBptcMipMB": 4.67,
+      "godotRgbaMipMB": 18.67,
+      "godotS3tcMipMB": 4.67,
+      "inlineBase64KB": 9162.9,
+      "litFamilies": 7,
+      "mapsPerLitFamily": 2,
+      "normalEncoding": "oct8",
+      "packFormat": 2,
+      "packMs": 540.9,
+      "totalLitTextures": 14,
+      "webglRgbaMipMB": 18.67,
+      "webpBytesLit": 7036816,
+      "webpKB": 6871.9
+    },
+    "v2_xy6": {
+      "decodedCpuMB": 14.0,
+      "families": {
+        "ashlar_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__ashlar_wall.albedo.webp",
+            "nrcMap": "tex/v2_xy6__ashlar_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "stone.chiselled",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0377,
+            0.0594,
+            0.06436,
+            0.06501,
+            0.06503,
+            0.06499,
+            0.06496,
+            0.06496,
+            0.06495
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 2.8718,
+            "meanDeg": 0.7601,
+            "p95Deg": 1.2841,
+            "p99Deg": 1.5013
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.024,
+          "role": "hero_ashlar_pom",
+          "roughLift": 0.28,
+          "scale": [
+            2.5,
+            2.5
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 831894
+        },
+        "cliff_rock": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__cliff_rock.albedo.webp",
+            "nrcMap": "tex/v2_xy6__cliff_rock.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "rock.granite.tor",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.06093,
+            0.10339,
+            0.11427,
+            0.11616,
+            0.11625,
+            0.11613,
+            0.11601,
+            0.11596,
+            0.11594
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 3.4749,
+            "meanDeg": 0.7864,
+            "p95Deg": 1.344,
+            "p99Deg": 1.607
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "rock",
+          "roughLift": 0.25,
+          "scale": [
+            6.5,
+            6.5
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 930396
+        },
+        "cutout_themeda": {
+          "alphaMode": "cutout",
+          "breakup": null,
+          "card": true,
+          "files": {
+            "map": "tex/v2_xy6__cutout_themeda.albedo.webp"
+          },
+          "lib": "card.grass.themeda",
+          "metal": 0,
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "cutout_guard",
+          "roughLift": 0.0,
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "size": 512,
+          "specular": 0.5,
+          "webpBytes": 91414
+        },
+        "glazed_ceramic": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__glazed_ceramic.albedo.webp",
+            "nrcMap": "tex/v2_xy6__glazed_ceramic.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ceramic.celadon.crackle",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.00125,
+            0.002,
+            0.00221,
+            0.00225,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 1.6161,
+            "meanDeg": 0.7276,
+            "p95Deg": 1.2687,
+            "p99Deg": 1.2853
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "glazed_curved",
+          "roughLift": 0.0,
+          "scale": [
+            1.2,
+            1.2
+          ],
+          "size": 512,
+          "specular": 0.65,
+          "webpBytes": 551398
+        },
+        "ground_grass": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__ground_grass.albedo.webp",
+            "nrcMap": "tex/v2_xy6__ground_grass.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.grass.lush",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.09647,
+            0.17365,
+            0.19118,
+            0.19374,
+            0.19371,
+            0.19348,
+            0.19334,
+            0.19331,
+            0.19329
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 3.4772,
+            "meanDeg": 0.8264,
+            "p95Deg": 1.4572,
+            "p99Deg": 1.8343
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_0",
+          "roughLift": 0.22,
+          "scale": [
+            2.6,
+            2.6
+          ],
+          "size": 512,
+          "specular": 0.25,
+          "webpBytes": 981890
+        },
+        "ground_gravel": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__ground_gravel.albedo.webp",
+            "nrcMap": "tex/v2_xy6__ground_gravel.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.gravel019",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.10416,
+            0.20826,
+            0.27954,
+            0.31012,
+            0.31416,
+            0.31459,
+            0.31451,
+            0.3145,
+            0.31449
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 12.2776,
+            "meanDeg": 0.9047,
+            "p95Deg": 1.7182,
+            "p99Deg": 2.5059
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_2",
+          "roughLift": 0.2,
+          "scale": [
+            2.4,
+            2.4
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 885448
+        },
+        "ground_moss": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__ground_moss.albedo.webp",
+            "nrcMap": "tex/v2_xy6__ground_moss.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.moss001",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0477,
+            0.07769,
+            0.09193,
+            0.09679,
+            0.09803,
+            0.09836,
+            0.0985,
+            0.09859,
+            0.09865
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 10.7902,
+            "meanDeg": 0.7798,
+            "p95Deg": 1.3233,
+            "p99Deg": 1.5525
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_1",
+          "roughLift": 0.25,
+          "scale": [
+            2.2,
+            2.2
+          ],
+          "size": 512,
+          "specular": 0.22,
+          "webpBytes": 836694
+        },
+        "masonry_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy6__masonry_wall.albedo.webp",
+            "nrcMap": "tex/v2_xy6__masonry_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "brick.red",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.02376,
+            0.04352,
+            0.05349,
+            0.05529,
+            0.05538,
+            0.0554,
+            0.0554,
+            0.05541,
+            0.05541
+          ],
+          "normalEncoding": "xy6",
+          "normalError": {
+            "maxDeg": 2.9846,
+            "meanDeg": 0.7531,
+            "p95Deg": 1.2765,
+            "p99Deg": 1.4851
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.028,
+          "role": "hero_masonry_pom",
+          "roughLift": 0.25,
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 811892
+        }
+      },
+      "godotBptcMipMB": 4.67,
+      "godotRgbaMipMB": 18.67,
+      "godotS3tcMipMB": 4.67,
+      "inlineBase64KB": 7591.0,
+      "litFamilies": 7,
+      "mapsPerLitFamily": 2,
+      "normalEncoding": "xy6",
+      "packFormat": 2,
+      "packMs": 516.9,
+      "totalLitTextures": 14,
+      "webglRgbaMipMB": 18.67,
+      "webpBytesLit": 5829612,
+      "webpKB": 5693.0
+    },
+    "v2_xy8": {
+      "decodedCpuMB": 14.0,
+      "families": {
+        "ashlar_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__ashlar_wall.albedo.webp",
+            "nrcMap": "tex/v2_xy8__ashlar_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "stone.chiselled",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0377,
+            0.0594,
+            0.06436,
+            0.06501,
+            0.06503,
+            0.06499,
+            0.06496,
+            0.06496,
+            0.06495
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 0.5939,
+            "meanDeg": 0.1503,
+            "p95Deg": 0.2749,
+            "p99Deg": 0.3132
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.024,
+          "role": "hero_ashlar_pom",
+          "roughLift": 0.28,
+          "scale": [
+            2.5,
+            2.5
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 1011492
+        },
+        "cliff_rock": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__cliff_rock.albedo.webp",
+            "nrcMap": "tex/v2_xy8__cliff_rock.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "rock.granite.tor",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.06093,
+            0.10339,
+            0.11427,
+            0.11616,
+            0.11625,
+            0.11613,
+            0.11601,
+            0.11596,
+            0.11594
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 0.7218,
+            "meanDeg": 0.1668,
+            "p95Deg": 0.2916,
+            "p99Deg": 0.3463
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "rock",
+          "roughLift": 0.25,
+          "scale": [
+            6.5,
+            6.5
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 1107960
+        },
+        "cutout_themeda": {
+          "alphaMode": "cutout",
+          "breakup": null,
+          "card": true,
+          "files": {
+            "map": "tex/v2_xy8__cutout_themeda.albedo.webp"
+          },
+          "lib": "card.grass.themeda",
+          "metal": 0,
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "cutout_guard",
+          "roughLift": 0.0,
+          "scale": [
+            1.0,
+            1.0
+          ],
+          "size": 512,
+          "specular": 0.5,
+          "webpBytes": 91414
+        },
+        "glazed_ceramic": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__glazed_ceramic.albedo.webp",
+            "nrcMap": "tex/v2_xy8__glazed_ceramic.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ceramic.celadon.crackle",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.00125,
+            0.002,
+            0.00221,
+            0.00225,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227,
+            0.00227
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 0.3284,
+            "meanDeg": 0.0176,
+            "p95Deg": 0.0733,
+            "p99Deg": 0.1717
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "glazed_curved",
+          "roughLift": 0.0,
+          "scale": [
+            1.2,
+            1.2
+          ],
+          "size": 512,
+          "specular": 0.65,
+          "webpBytes": 719102
+        },
+        "ground_grass": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__ground_grass.albedo.webp",
+            "nrcMap": "tex/v2_xy8__ground_grass.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.grass.lush",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.09647,
+            0.17365,
+            0.19118,
+            0.19374,
+            0.19371,
+            0.19348,
+            0.19334,
+            0.19331,
+            0.19329
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 0.7814,
+            "meanDeg": 0.1811,
+            "p95Deg": 0.3188,
+            "p99Deg": 0.4054
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_0",
+          "roughLift": 0.22,
+          "scale": [
+            2.6,
+            2.6
+          ],
+          "size": 512,
+          "specular": 0.25,
+          "webpBytes": 1160026
+        },
+        "ground_gravel": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__ground_gravel.albedo.webp",
+            "nrcMap": "tex/v2_xy8__ground_gravel.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.gravel019",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.10416,
+            0.20826,
+            0.27954,
+            0.31012,
+            0.31416,
+            0.31459,
+            0.31451,
+            0.3145,
+            0.31449
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 2.0257,
+            "meanDeg": 0.2042,
+            "p95Deg": 0.3842,
+            "p99Deg": 0.5583
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_2",
+          "roughLift": 0.2,
+          "scale": [
+            2.4,
+            2.4
+          ],
+          "size": 512,
+          "specular": 0.28,
+          "webpBytes": 1046242
+        },
+        "ground_moss": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__ground_moss.albedo.webp",
+            "nrcMap": "tex/v2_xy8__ground_moss.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "ground.moss001",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.0477,
+            0.07769,
+            0.09193,
+            0.09679,
+            0.09803,
+            0.09836,
+            0.0985,
+            0.09859,
+            0.09865
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 1.2178,
+            "meanDeg": 0.174,
+            "p95Deg": 0.2875,
+            "p99Deg": 0.33
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "role": "ground_layer_1",
+          "roughLift": 0.25,
+          "scale": [
+            2.2,
+            2.2
+          ],
+          "size": 512,
+          "specular": 0.22,
+          "webpBytes": 1019176
+        },
+        "masonry_wall": {
+          "alphaMode": "height",
+          "breakup": null,
+          "card": false,
+          "files": {
+            "map": "tex/v2_xy8__masonry_wall.albedo.webp",
+            "nrcMap": "tex/v2_xy8__masonry_wall.nrc.webp"
+          },
+          "height": true,
+          "heightSource": "normalPoisson",
+          "lib": "brick.red",
+          "metal": 0,
+          "mipVariance": [
+            0.0,
+            0.02376,
+            0.04352,
+            0.05349,
+            0.05529,
+            0.05538,
+            0.0554,
+            0.0554,
+            0.05541,
+            0.05541
+          ],
+          "normalEncoding": "xy8",
+          "normalError": {
+            "maxDeg": 0.5943,
+            "meanDeg": 0.1202,
+            "p95Deg": 0.263,
+            "p99Deg": 0.3114
+          },
+          "normalScale": 1.0,
+          "packVersion": 2,
+          "pomDepth": 0.028,
+          "role": "hero_masonry_pom",
+          "roughLift": 0.25,
+          "scale": [
+            2.0,
+            2.0
+          ],
+          "size": 512,
+          "specular": 0.32,
+          "webpBytes": 992548
+        }
+      },
+      "godotBptcMipMB": 4.67,
+      "godotRgbaMipMB": 18.67,
+      "godotS3tcMipMB": 4.67,
+      "inlineBase64KB": 9188.5,
+      "litFamilies": 7,
+      "mapsPerLitFamily": 2,
+      "normalEncoding": "xy8",
+      "packFormat": 2,
+      "packMs": 521.0,
+      "totalLitTextures": 14,
+      "webglRgbaMipMB": 18.67,
+      "webpBytesLit": 7056546,
+      "webpKB": 6891.2
+    }
+  },
+  "version": 2,
+  "webBenchmark": {
+    "v1_three_maps": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.9,
+        "topMinusBottom": 133.9
+      },
+      "linkedPrograms": 3,
+      "loadMs": 571.5,
+      "maxSamplersPerProgram": 9,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 0.9,
+      "pageBytes": 5081690,
+      "pageMB": 4.85,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 9
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 3
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 28,
+        "texN": 21,
+        "totalMB": 28.1
+      }
+    },
+    "v2_two_maps_oct8": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.8,
+        "topMinusBottom": 133.8
+      },
+      "linkedPrograms": 3,
+      "loadMs": 438,
+      "maxSamplersPerProgram": 6,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 1.4,
+      "pageBytes": 10019539,
+      "pageMB": 9.56,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 6
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 2
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 18.67,
+        "texN": 14,
+        "totalMB": 18.77
+      }
+    },
+    "v2_two_maps_xy6": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.9,
+        "topMinusBottom": 133.9
+      },
+      "linkedPrograms": 3,
+      "loadMs": 369.4,
+      "maxSamplersPerProgram": 6,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 1.3,
+      "pageBytes": 8409927,
+      "pageMB": 8.02,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 6
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 2
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 18.67,
+        "texN": 14,
+        "totalMB": 18.77
+      }
+    },
+    "v2_two_maps_xy8": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.9,
+        "topMinusBottom": 133.9
+      },
+      "linkedPrograms": 3,
+      "loadMs": 418.4,
+      "maxSamplersPerProgram": 6,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 0.6,
+      "pageBytes": 10045843,
+      "pageMB": 9.58,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 6
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 2
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 18.67,
+        "texN": 14,
+        "totalMB": 18.77
+      }
+    },
+    "v3_arrays_three_maps": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.9,
+        "topMinusBottom": 133.9
+      },
+      "linkedPrograms": 3,
+      "loadMs": 441.3,
+      "maxSamplersPerProgram": 3,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 0.6,
+      "pageBytes": 5081710,
+      "pageMB": 4.85,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 3
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 3
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 28,
+        "texN": 3,
+        "totalMB": 28.1
+      }
+    },
+    "v4_arrays_two_maps": {
+      "calls": 5,
+      "gate2SamplersOk": true,
+      "gate3Handedness": {
+        "ok": true,
+        "rightMinusLeft": 133.8,
+        "topMinusBottom": 133.8
+      },
+      "linkedPrograms": 3,
+      "loadMs": 415.3,
+      "maxSamplersPerProgram": 2,
+      "maxTexUnitsAllowed": 32,
+      "medianMs": 0.1,
+      "p95Ms": 0.8,
+      "pageBytes": 10019544,
+      "pageMB": 9.56,
+      "programTopSamplers": [
+        {
+          "name": "ShaderMaterial",
+          "samplers": 2
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 2
+        },
+        {
+          "name": "ShaderMaterial",
+          "samplers": 1
+        }
+      ],
+      "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+      "tris": 2702,
+      "vram": {
+        "geomMB": 0.1,
+        "geomN": 5,
+        "texMB": 18.67,
+        "texN": 2,
+        "totalMB": 18.77
+      }
+    }
+  }
+}

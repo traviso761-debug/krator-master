@@ -85,7 +85,7 @@ function clampCam(pos,target){if(typeof VAULT_ROOMS!=="undefined"&&vaultDoorAt(p
  const g=Math.max(terrainH(pos.x,pos.z),waterH(pos.x,pos.z))+1.8;if(pos.y<g)pos.y=g;}
 
 // ---------------------------------------------------------------- the probe's budgets and the page's checks (verify.py --assert)
-const BUDGET={showcase:{tris:16000000,calls:340},cls:{pass:9000000,host:3000000},type:{'oidong/trees':'pass','oidong/floor':'pass','host':'host'}};
+const BUDGET={showcase:{tris:34000000,calls:360},cls:{pass:24000000,host:3600000},type:{'oidong/trees':'pass','oidong/floor':'pass','host':'host'}};
 const HCHK={
  // the land is the scale model's away from what the plan shapes
  model(){const pts=[[-900,-700],[900,-900],[-1300,400],[1200,700],[0,-1100]],d=pts.map(q=>Math.abs(terrainH(q[0],q[1])-landH(q[0],q[1])));

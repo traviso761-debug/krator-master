@@ -1,0 +1,59 @@
+{
+ "what": "Stage 1 vertical-stack budgets for biomes/springhollows (Sikwingi-Khaloyi): 4 station HTML pages (< 2.0 MB each via .tex.springhollows.js sidecar), max samplers <= 15, and estimated VRAM <= 380 MB.",
+ "pages": {
+  "springhollows.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 135,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 1 (spring): Cav Ozarks Resurgence 24 m cave mouth, sapphire mammoth-spring boil, bald-cypress gallery & tufabryum curtains with sidecar textures.",
+   "raised": "2026-11-23"
+  },
+  "springhollows-shutin.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 135,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 2 (shutin): Tlila-Wada purple-red rhyolite porphyry shut-in gorge, whitewater chutes, dolomite benches & boat-lift reserve with sidecar textures.",
+   "raised": "2026-11-23"
+  },
+  "springhollows-fenestre.html": {
+   "bytes": 2097152,
+   "tris": 7000000,
+   "calls": 140,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 3 (fenestre): Collapsed 18 m sinkhole skylight & walk-in KSPELEO.CALCITE 14 m celestine/calcite/onyx crystal cavern with sidecar textures.",
+   "raised": "2026-11-23"
+  },
+  "springhollows-glade.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 135,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 4 (glade): Cherty-dolomite & red-porphyry glade, saffron/whorl-olive terraces, onyx chert-bridge hollow & Ancient bleach-scar with sidecar textures.",
+   "raised": "2026-11-23"
+  },
+  "springhollows-porphyryrelict.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 135,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 5 (porphyryrelict): +2,570 m purple-red rhyolite porphyry knob crowned in Carnelian Erythrophyll clades above chinkapin-oak dolomite hollows & inert ecof_mist_pylon.",
+   "raised": "2026-11-24"
+  },
+  "*": {
+   "bytes": 12582912,
+   "tris": 7000000,
+   "calls": 140,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Shared .tex.springhollows.js texture sidecar pack serving all four Springhollows station pages.",
+   "raised": "2026-11-23"
+  }
+ }
+}

@@ -90,6 +90,14 @@
     groundLabel(R.title, -18, z + depth / 2, true);
     z += depth + 30;
   });
+  /* --- the pieces' lamps: every catalog lamp is a PointLight, and the sheet's 185 of them (2026-11-12, the merged catalog) made a
+     lit material's shader too big to compile on either GPU lane (the first trades row never drew). The catalog's lamp cap
+     (core/catalog/krator-furniture-core.js furnLampCap) keeps the 24 nearest the camera on, picked once the camera stands on the
+     first row (below) and re-picked every half second */
+  const LAMPS = furnLampCap(scene);
+  let lightTick = 0;
+  (window._frameHooks = window._frameHooks || []).push(function () { if (++lightTick % 30 === 0) LAMPS.pick(camera.position); });
+  out.lights = { total: LAMPS.total, max: LAMPS.max };
   out.tris = tris;
   out.detail = KF_API.textureInfo();
   out.ports = { girder: BR_GIRDER.info, mavs: BR_MAVS.info };
@@ -111,6 +119,7 @@
   const goto = function (i) { const R = out.rows[i]; ctl.target.set((R.x0 + R.x1) / 2, 6, R.z + 12); ctl.dist = Math.max(80, (R.x1 - R.x0) * 0.6); updateCamera(); };
   rs.onchange = function () { if (rs.value !== '') goto(+rs.value); };
   goto(0);
+  LAMPS.pick(camera.position);
   const tb = document.getElementById('texBtn');
   tb.classList.toggle('on', KF_API.textureInfo().on);
   tb.onclick = function () { location.search = KF_API.textureInfo().on ? '?tex=0' : ''; };

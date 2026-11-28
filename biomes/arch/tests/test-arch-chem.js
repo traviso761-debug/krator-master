@@ -43,18 +43,19 @@ ok('2.7-3.6 times a cell\'s 150-200 mV',A.gradient(11.5,2.5,30)/200>2.6&&A.gradi
  ok('the mass scales with the flow',near(A.curtainMass(10,11.5,2.5).kg,10*c.kg,1e-6),false);}
 // ---- nickel uptake (PLAN.md 3.3)
 {const soil={ni:3000,pH:6,caMg:0.1,n:0.2,p:0.2},rich={ni:5000,pH:5.5,caMg:0.05};
- const hy=['pycnandra','phyllanthus','geissois','hybanthus','berkheya','verdigris'].map(s=>[s,A.uptake(s,soil)]);
+ const hy=['pycnandra','phyllanthus','verdigrismangrove','geissois','hybanthus','berkheya','verdigris'].map(s=>[s,A.uptake(s,soil)]);
  ok('every hyperaccumulator passes 1,000 ug/g on serpentine laterite: '+hy.map(([s,u])=>s+' '+u.leaf.toFixed(0)).join(', '),hy.every(([s,u])=>u.hyper),false);
- const ex=['araucaria','agathis','costularia','metrosideros','nepenthes'].map(s=>A.uptake(s,rich).leaf);
+ const ex=['araucaria','agathis','costularia','lepidosperma','dracophyllum','codia','grevillea','melaleuca','pandanus','cyathea','metrosideros','nepenthes','drosera'].map(s=>A.uptake(s,rich).leaf);
  ok('no excluder passes 100 ug/g even on the richest ground (worst '+Math.max(...ex).toFixed(0)+')',Math.max(...ex)<100,A.uptake('pycnandra',rich).leaf<100);
  ok('Pycnandra\'s latex reaches about a fifth nickel on rich ground ('+(A.uptake('pycnandra',rich).latex/1e4).toFixed(1)+'%)',A.uptake('pycnandra',rich).latex>150000,A.uptake('pycnandra',{ni:30,pH:7}).latex>150000);
+ ok('Teal-Sap Prop-Wood (verdigrismangrove) stores > 15% nickel in latex on rich ground ('+(A.uptake('verdigrismangrove',rich).latex/1e4).toFixed(1)+'%)',A.uptake('verdigrismangrove',rich).latex>150000,A.uptake('verdigrismangrove',{ni:30,pH:7}).latex>150000);
  ok('on ordinary ground (ni 30 mg/kg) a hoarder is not a hyperaccumulator',!A.uptake('pycnandra',{ni:30,pH:7}).hyper,A.uptake('pycnandra',{ni:30,pH:7}).hyper);
  let threw=false;try{A.uptake('oak',soil);}catch(e){threw=true;}ok('an unknown species throws',threw,false);}
 {const s=A.syndrome({ni:4000,caMg:0.05,n:0.1,p:0.1}),o=A.syndrome({ni:40,caMg:3,n:1,p:1});
  ok('serpentine ground scores high on the syndrome ('+s.toFixed(2)+'), ordinary ground low ('+o.toFixed(2)+')',s>0.7&&o<0.1,o>0.7);
  ok('the stunt follows it (maquis to a quarter of the height)',A.stunt({ni:5000,caMg:0,n:0,p:0})<0.3&&A.stunt({ni:0,caMg:3,n:1,p:1})===1,false);}
 // ---- where life stops, Earth or native (PLAN.md 3.4, 3.5)
-ok('pH 0.5 holds nothing',A.lifeAt({pH:0.5,T:40})==='none',A.lifeAt({pH:2,T:40})==='none');
+ok('pH 0.5 holds nothing',A.lifeAt({pH:0.5,T:40})==='none',A.lifeAt({pH:0.5,T:40})!=='none'?false:A.lifeAt({pH:2,T:40})==='none');
 ok('95 C holds nothing; 60 C holds native life',A.lifeAt({pH:6,T:95})==='none'&&A.lifeAt({pH:6,T:60})==='native',A.lifeAt({pH:6,T:60})==='earth');
 ok('a pH 11.5 apron is native ground, pH 6 laterite Earth ground',A.lifeAt({pH:11.5,T:30})==='native'&&A.lifeAt({pH:6,T:28})==='earth',A.lifeAt({pH:11.5,T:30})==='earth');
 ok('flowing spring water is native ground whatever its pH',A.lifeAt({pH:8.5,T:28,spring:true})==='native',false);
@@ -81,4 +82,10 @@ ok('a Ca:Mg of .01 refuses Earth life; .05 allows it',!A.earthOk({pH:6.5,caMg:0.
  const fast=Object.assign({},S,{profile:Object.assign({},S.profile,{bench:.08})});
  ok('on a steeper bench (8%) no curtain can stand at all',ARCH.meeting(fast).end===0,ARCH.meeting(S).end===0);
  ok('the profile falls south-east and steps down the fault by its drop',ARCH.profile(S,-500)>ARCH.profile(S,0)&&ARCH.profile(S,S.profile.scarpU[0])-ARCH.profile(S,S.profile.scarpU[1])>S.profile.scarpDrop-1,false);}
+// ---- runtime CROPS.BIOMES.arch registration
+{const crDir=path.join(ROOT,'kits','crops','src'),crCode=fs.readdirSync(crDir).filter(f=>/^\d\d-crop-.*\.js$/.test(f)).sort().map(f=>fs.readFileSync(path.join(crDir,f),'utf8')).join('\n');
+ eval(crCode+';global.CROPS=CROPS;');
+ const list=A.registerCrops(global.CROPS)||[],ids=list.map(x=>x.crop?x.crop.id:x.id);
+ const want=['taro','breadfruit','banana','coconut','ramie','rope-banana','pandan','kelp','eelgrass'];
+ ok('ARCH.registerCrops registers CROPS.BIOMES.arch with tropical coastal & cordage staples ('+list.length+' crops)',global.CROPS.BIOMES.arch===A.CROPS&&want.every(k=>ids.indexOf(k)>=0),ids.indexOf('ice-barley')>=0);}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

@@ -49,7 +49,9 @@ function qcBakeChunk(key,list){const G=new THREE.Group();G.name='chunk:'+key;sce
   x0=Math.min(x0,p.x-60);x1=Math.max(x1,p.x+60);z0=Math.min(z0,p.z-60);z1=Math.max(z1,p.z+60);y0=Math.min(y0,qcD(p.o.y,0));y1=Math.max(y1,(qcD(p.o.y,0))+qcD(p.h,12));}
  TSTAT.cur=null;kbake(G);xaDoorsBind();QC_INST+=qcD(window._instances,0);for(const n in KIT.items)KIT.items[n].length=0;
  const e={G,key,sphere:new THREE.Sphere(new THREE.Vector3((x0+x1)/2,(y0+y1)/2,(z0+z1)/2),Math.hypot(x1-x0,y1-y0,z1-z0)/2+20),range:key==='landmark'||key==='walls'?1e9:2200,n:list.length};QC_GROUPS.push(e);return e;}
+const QC_BANNERS=[];QB_BANNER_SINK=QC_BANNERS;   /* the spoke banners' cloths, waved by 91l-qc-life.js */
 for(const k of Object.keys(QC_CHUNKS).sort())qcBakeChunk(k,QC_CHUNKS[k]);
+QB_BANNER_SINK=null;
 window._instances=QC_INST;
 // the runtime LOD: a chunk is drawn while it is in the view and within its range
 const qcFr=new THREE.Frustum(),qcPm=new THREE.Matrix4();

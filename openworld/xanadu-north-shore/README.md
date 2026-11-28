@@ -4,7 +4,7 @@ The fifth region of the open world (the owner, 2026-11-16, `settlements/pher/PLA
 the erewhon that also contains thalaba"*, *"have it reach east but don't take the long isle"*). It is step P2 of the Phēr
 plan: the ground Phēr's town (step P3, `settlements/pher`) will stand on, its farming ring and the road to Thalaba.
 
-On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model/edit_517_pher.py`), at 1:1 on `core/world`:
+On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model/edit_517_pher.py`, `edit_517_pher_rim.py`), at 1:1 on `core/world`:
 
 - **The cut** (`openworld/SITES.json`, region `xanadu-north-shore`; `tools/scale-model/cut_site.py`): px 808-884 by 1446-1514,
   500 m cells.
@@ -17,8 +17,15 @@ On map 5.1 with edit 7 re-run (5f659c054) and Phēr's polish (`tools/scale-model
 - **The landforms:** Phēr's headland (two `island` records) and the cove's east point (an `islet`), stamped by
   `core/world/41l-world-landforms.js` from `region.json`'s `landforms`.
 - **The rivers:** the Qol Siṭrīm and the Swīṭ Siṭrīm (Phēr's stream, `r_pher_swit`), named rivers of the model.
+- **The towns' own ground** (`openworld/SITES.json`'s `towns`, `core/world/bake_towns.py`): Phēr's (`settlements/pher`, step P7)
+  and the lake towns' (`settlements/xanadu-lake`: Qōqō, Nēṭ, Malbari and Hāibh west of Phēr, Māuṭh, Ōlḍ-Thalaba and Ḍāiyar
+  east of it) inside their footprints, the band easing back to the region's.
 - **The sites** (`src/48-world-site.js`, baked by `core/world/bake_sites.py` to `plan/sites.json`):
   - Phēr's ring: six farming villages on the rim plain, on core/hamlet's `xanadu` row, drawn with the Xanadu kit (XAK).
+  - **The countryside sample** (`core/world/48v-world-sample.js`, `88r-world-sample.js`; `WORLD_SAMPLE` in `src/48-world-site.js`;
+    settlements/xanadu/HAMLETS-PLAN.md section 3, step H2): the province's bulk villages laid at load near nothing named, one at
+    most to a 6 km cell kept with the chance of its farmland, refused on the places, the roads and the water; drawn and checked
+    by 88s as the plan's own; never counted by the sim (`window._sample`; verify "the countryside sample").
   - The Thalaba road up the Qol valley: 104.8 km, with a han every 25 km, bridged where it crosses a named river.
 
 ## Build and verify

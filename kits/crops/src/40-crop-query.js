@@ -12,7 +12,11 @@ CROPS.isGroup = function (c, group) {
   for (let i = 0; i < c.also.length; i++) if (CROPS.BUCKETS[c.also[i]].group === group) return true;
   return false;
 };
-CROPS.index = function (v, list) { return typeof v === 'number' ? v : list.indexOf(v); };
+CROPS.index = function (v, list) {
+  if (typeof v === 'number') return v;
+  if (list === CROPS.ATM && CROPS.ATM_ALIASES && CROPS.ATM_ALIASES[v] != null) return CROPS.ATM_ALIASES[v];
+  return list.indexOf(v);
+};
 
 /* how crop c does in one zone ({warmth:[lo,hi], arid:[lo,hi], wet, salt, heated}) under atm (an index) */
 CROPS.fitZone = function (c, z, atm, biomeId, opts) {

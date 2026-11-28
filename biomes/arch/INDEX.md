@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/arch-barrens.html`, `dist/arch-coast.html`, `dist/arch-dome.html`, `dist/arch-sound.html`, `dist/arch.html`
+Built output (never open it; edit `src/` and rebuild): `dist/arch-barrens.html`, `dist/arch-coast.html`, `dist/arch-cove.html`, `dist/arch-dome.html`, `dist/arch-sound.html`, `dist/arch.html`
 
 Build: `cd biomes/arch && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -26,23 +26,23 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-biome-arch-chem.js` | 9 |  |
+| `40-biome-arch-chem.js` | 10 |  |
 | `41-biome-arch-sites.js` | 8 |  |
 | `42-biome-arch-meeting.js` | 4 |  |
-| `45-host-stage.js` | 24 | the land (33); the climate fields (the field contract's units:  (210); the host binding (237) |
+| `45-host-stage.js` | 33 **big** | the land (33); the climate fields (the field contract's units:  (297); the host binding (324) |
 | `48-host-therm.js` | 3 |  |
-| `50-biome-arch-species.js` | 16 | palettes (sRGB hex) (16); the species (25); textures and materials (procedural cards; the pa (81); the items (97) |
-| `60-biome-arch-place.js` | 14 |  |
+| `50-biome-arch-species.js` | 88 **big** | palettes (sRGB hex) (17); the species (39 total: 7 native, 28 Earth terres (44); High-detail procedural bark & unclipped botanica (188); the items (732); Structural multi-limbed tree builders (BIO.tree  (810) |
+| `60-biome-arch-place.js` | 27 |  |
 | `70-biome-arch.js` | <1 |  |
-| `84-host-ground.js` | 14 |  |
+| `84-host-ground.js` | 18 |  |
 | `85-host-far.js` | 5 |  |
 | `88-host-place.js` | 1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 3 |  |
-| `89b-host-steam.js` | 3 |  |
+| `89b-host-steam.js` | 4 |  |
 | `89w-host-water.js` | 10 |  |
 | `89z-host-build.js` | 5 |  |
-| `99-host-take.js` | 18 |  |
+| `99-host-take.js` | 31 **big** |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -53,5 +53,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | barrens | 44z-host-site.js | <1 |
 | coast | 44z-host-site.js | <1 |
+| cove | 44z-host-site.js, 89v-host-cove.js | 34 |
 | dome | 44z-host-site.js | <1 |
 | sound | 44z-host-site.js | <1 |

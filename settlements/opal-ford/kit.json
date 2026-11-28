@@ -1,0 +1,93 @@
+{
+ "targets": {
+  "town": "opal-ford.html"
+ },
+ "external": [
+  "settlements/opal-ford/gen/69p-kcity-bundle.js",
+  "settlements/opal-ford/gen/69m-of-tune.js",
+  "settlements/opal-ford/gen/86-bio-31b-core-leafset.js",
+  "kits/xanadu/extra/88j-xa-crossing.js",
+  "core/drawn/10-core-drawn.js"
+ ],
+ "scoped": [
+  "69p-kcity-bundle.js"
+ ],
+ "deterministic": [
+  "69p-kcity-bundle.js",
+  "69m-of-tune.js",
+  "10-core-drawn.js",
+  "89zp-of-site.js",
+  "90q-of-world.js",
+  "90r-of-build.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "88j-xa-crossing.js",
+  "89q8-of-order-pieces.js",
+  "90w-of-river.js",
+  "90s-of-interiors.js",
+  "87k-xa-lake-trades.js",
+  "89-atmos-0-core.js",
+  "89-atmos-0p-presets.js",
+  "89-atmos-a-waves.js",
+  "89-atmos-b-skylight.js",
+  "20-core-water.js",
+  "21-core-water-shore.js",
+  "22-core-water-flow.js",
+  "50-core-water-draw.js",
+  "51-core-water-kinds.js",
+  "56-core-water-breakup.js"
+ ],
+ "interiors": [
+  "town"
+ ],
+ "furniture": [
+  "xanadu",
+  "eastabyss",
+  "generic",
+  "generic-goods",
+  "jobs"
+ ],
+ "furnitureTex": true,
+ "sidePacks": true,
+ "interiorSets": [
+  "xanadu"
+ ],
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "pack": "qiblai",
+ "packFrom": "kits/qiblai",
+ "files": {
+  "town": [
+   [
+    "core/atmos",
+    [
+     "89-atmos-0-core.js",
+     "89-atmos-0p-presets.js",
+     "89-atmos-a-waves.js",
+     "89-atmos-b-skylight.js"
+    ]
+   ],
+   [
+    "core/water",
+    [
+     "20-core-water.js",
+     "21-core-water-shore.js",
+     "22-core-water-flow.js",
+     "50-core-water-draw.js",
+     "51-core-water-kinds.js"
+    ]
+   ],
+   [
+    "core/water/ext",
+    [
+     "56-core-water-breakup.js"
+    ]
+   ]
+  ]
+ }
+}

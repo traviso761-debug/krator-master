@@ -1,18 +1,26 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "The Fluted Monoclines (station 2): the gradual transition ramp, stepped basalt benches, scree aprons, fortified waystation on the caravan road, windbreak palisades",
-  "out": "loom-monocline.html",
-  "site": {
-    "name": "monocline",
-    "title": "The Fluted Monoclines",
-    "px": 1575,
-    "py": 1163,
-    "base": 1479.0,
-    "atm": 1.44,
-    "mean": 15.0,
-    "rain": 125,
-    "cls": "BSk",
-    "lat": -27.3
-  },
-  "water": []
+ "canvas": "5.1 (1821x1723)",
+ "note": "Station 2, the Weave-Step (PLAN.md section 7; built 2026-11-11 at the plan's site, 1575,1163: PLAN.md 7b). The monocline's ramp falls east from the Cradle's fans to the chasms: the model draws it 1,740 m at the page's west edge, 1,479 m at the site, 1,236 m at the east edge, and a box canyon opening east-south-east past the page (993 m 6 km out, 723 m 14 km). kin: the Great Chasm's kit for the cold-desert ground cover (BSk, 125 mm), as on the Loom. The site record below is the plan's data, corrected (atm); build.py reads only kin, core and base.",
+ "name": "The Weave-Step (station 2): the monocline's stepped basalt benches with box canyons cut into them, talus skirting the risers, a fortified Yuni waystation with windbreak palisades on the road down to the chasms",
+ "out": "loom-chasms-monocline.html",
+ "site": {
+  "name": "monocline",
+  "title": "The Weave-Step",
+  "px": 1575,
+  "py": 1163,
+  "base": 1479.0,
+  "atm": 1.33,
+  "mean": 15.0,
+  "rain": 125,
+  "cls": "BSk",
+  "lat": -27.3
+ },
+ "water": [],
+ "kin": {
+  "greatchasm": [
+   ["src/50-biome-greatchasm-species.js", "src/60-biome-greatchasm-floor.js", "src/70-biome-greatchasm.js"],
+   "GCH",
+   "*"
+  ]
+ }
 }

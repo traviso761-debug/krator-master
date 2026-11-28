@@ -1,0 +1,16 @@
+{
+  "id": "eastflank",
+  "out": "thedome-eastflank.html",
+  "title": "The Dome — East Flank Carnelian Sky-Island, Perimeter Kill-Line & Active Mist-Pylon",
+  "px": [1384, 142],
+  "inDomeVerified": true,
+  "elevM": 2361.1,
+  "pAtm": 1.19,
+  "koppen": "Cfa",
+  "rainMmYr": 1067,
+  "domeApexPx": [1328, 150],
+  "strataStack": "laccolith-shell",
+  "kin": {},
+  "reserves": [],
+  "modes": ["Vernal-Brim", "Sun-Baked Dry", "Crown-Mist"]
+}

@@ -61,13 +61,13 @@ function faDsCone(A, fam, a, b, r0, r1, col, seg, rd) {
    vertical, which pinched and gapped the bent hocks): J the joints, R[i] a radius or [lateral, fore-aft] at each joint,
    bulge[i] a muscle swell along segment i (a fraction of its start radius), colf(y) the colour by height */
 function faDsLimb(A, fam, J, R, colf, o) {
-  o = o || {}; const ns = o.ns || 9, bulge = o.bulge || [], knob = o.knob == null ? 1.04 : o.knob;
+  o = o || {}; const ns = o.ns == null ? 9 : o.ns, bulge = o.bulge || [], knob = o.knob == null ? 1.04 : o.knob;
   const rr = i => Array.isArray(R[i]) ? R[i] : [R[i], R[i]];
   for (let i = 0; i < J.length - 1; i++) {
     const a = J[i], b = J[i + 1], r0 = rr(i), r1 = rr(i + 1), g = bulge[i] || 0;
     faDsTube(A, fam, t => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t],
       t => { const k = 1 + g * Math.sin(Math.PI * Math.min(1, t * 1.25)); return [(r0[0] + (r1[0] - r0[0]) * t) * k, (r0[1] + (r1[1] - r0[1]) * t) * k]; },
-      o.nt || 4, ns, null, { caps: true, round: [0.5, 0.5], colf: t => colf(a[1] + (b[1] - a[1]) * t) });
+      (o.nt == null ? 4 : o.nt), ns, null, { caps: true, round: [0.5, 0.5], colf: t => colf(a[1] + (b[1] - a[1]) * t) });
     if (i > 0 && knob) { const r = rr(i); A.ellip(fam, a[0], a[1], a[2], r[0] * knob, Math.max(r[0], r[1]) * knob, r[1] * knob, colf(a[1]), { seg: 8 }); }
   }
 }
@@ -83,7 +83,7 @@ function faDsWing(A, s, pv, W) {
     for (const sd of [1, -1]) A.sheet('feather', (u, v) => {
       const c = 2 * v - 1, hc = W.hc(u), th = W.th(u) * Math.sqrt(Math.max(0, 1 - c * c)) * Math.min(1, (1 - u) * 10);
       return [pv[0] + s * W.xs(u), pv[1] + W.dy(u) + cam * hc * (1 - c * c) + sd * th, pv[2] + W.zc(u) - hc * c];
-    }, W.nt || 12, W.nv || 8, null, { colf: (u) => sd > 0 ? (W.topf ? W.topf(u) : W.top) : W.under });
+    }, W.nt == null ? 12 : W.nt, W.nv == null ? 8 : W.nv, null, { colf: (u) => sd > 0 ? (W.topf ? W.topf(u) : W.top) : W.under });
     for (const F of (W.fingers || [])) {
       const b = [pv[0] + s * F.x, pv[1] + F.y, pv[2] + F.z], d = [s * Math.cos(F.a), -0.04, Math.sin(F.a)];
       faDsTube(A, 'feather', t => [b[0] + d[0] * F.len * t, b[1] + d[1] * F.len * t * t, b[2] + d[2] * F.len * t], t => [F.w * (1 - 0.55 * t), F.th * (1 - 0.5 * t)], 3, 6, null,

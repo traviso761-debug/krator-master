@@ -19,6 +19,9 @@ roads between the towns. The towns themselves are their pages' (settlements/xana
   python3 build.py
   python3 build.py --no-checks
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, importlib.util, json, os, re, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -52,7 +55,7 @@ SIDE = None if '--inline-packs' in sys.argv else {}
 def _fams(path):
     pj = os.path.join(path, 'tex', 'pack.json')
     return sorted(json.load(open(pj, encoding='utf8')).get('families', {})) if os.path.isfile(pj) else []
-_DROP = lambda k: k.startswith('tower') or k.startswith('jetty') or k.startswith('ground')
+_DROP = lambda k: k.startswith('tower') or k.startswith('jetty')   # the ground sets stay: the near ground's S4 layers (core/world/81-world-terrain.js)
 PACK_EXCL = {k: [f for f in _fams(os.path.join(ROOT, 'biomes', k)) if _DROP(f)] for k in PACK_KITS}
 # the Twins kit's pack: only the titanium basalt's face (rock.basalt.titanium), the lava tubes' rock (core/world 88k)
 PACK_EXCL['twins'] = [f for f in _fams(os.path.join(ROOT, 'biomes', 'twins')) if f != 'rockFace']
@@ -62,7 +65,10 @@ XA = os.path.join(ROOT, 'settlements', 'xanadu')
 XA_FAMS = ('cloth', 'clothR', 'corrugate', 'plaster', 'stone', 'tarp', 'thatch', 'white', 'wood', 'woodV', 'xBandC', 'xEarth', 'xMosC',
            'xMosD', 'xPenbey', 'xRubble', 'xSun', 'xTiles', 'xValance', 'xWash')
 LDF = lambda *fs: [('ld', f) for f in fs]
-CORE_BIOME = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
+# the pitched camps' registrations on core/world's KWCAMPS and what they read (from the repo root): the page's list and
+# core/world/bake_sites.py (camps_js) both take this constant, so the bake and the page plan the camps on one set of files
+CAMPS_JS = ['core/region/data/xan-tune.js', 'openworld/xanadu-oidong-highrift/src/48c-camps-xanadu.js']
+CORE_BIOME =['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31b-core-leafset.js', '31j-core-joint.js',
               '32-core-variants.js', '33-core-fungoid.js', '34-core-impostor.js', '35-core-anim.js', '36-core-walker.js', '38-core-fire.js',
               '39-core-lean.js']
 # the region's resources (core/world/world_data.py: the geology cropped to the box; kits/resources' field, read in place)
@@ -73,18 +79,29 @@ RES_FRAGS = _WD.RES_FRAGS
 ORDER = (
     LDF('00-head.html') + [('gen', '05-world-data.js'),
      ('core/shader', '06-core-khook.js'), ('core/shader', '06b-core-kcolor.js'),
-     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js')]
+     ('core/rand', '08-core-rand.js'), ('core/clock', '20-core-clock.js'), ('core/terrain', '38-core-relief.js'),
+     ('core/shadow', '10-core-shadow.js'), ('core/shadow/host', '12-core-shadow-host.js'),
+     ('core/terrain', '45-core-horizon.js'), ('core/terrain/host', '45-core-horizon-shade.js'), ('core/terrain', '43-core-ground.js')]
     + [('core/biome', f) for f in CORE_BIOME]
     + [('core/space', '20-core-space.js'), ('core/biome', '40-core-place.js'), ('core/biome', '41-core-env.js'),
        ('core/tags', '50-core-tags.js'), ('core/tags', '52-core-tags-vocab.js'),
        ('core/atmos', '89-atmos-0-core.js'), ('core/atmos', '89-atmos-0p-presets.js'), ('core/atmos', '89-atmos-a-waves.js'),
        ('core/atmos', '89-atmos-b-skylight.js'), ('core/atmos', '89-atmos-8-export.js'),
+       # the weather (Stage 8 V9, G-weather W2): core/world's HOST.weather() binds it; the region starts clear, ?weather=<mode>
+       ('core/atmos', '89-atmos-4-weather.js'), ('core/atmos', '89-atmos-9-host.js'), ('core/atmos/host', '89-atmos-e-weatherhost.js'),
+       ('core/atmos/fx', '89-atmos-fx-raincover.js'),
+       # the shared sky (W8, STAGE-8/G-weather.md section 6): core/world's SKY_SHARED (80) draws it, with the moving cells (W5: the
+       # region opens 'live'), their lightning and the volumetric clouds (W6)
+       ('core/atmos/sky', '89-atmos-e-skymodel.js'), ('core/atmos/sky', '89-atmos-f-skypresets.js'), ('core/atmos/sky', '89-atmos-g-sky.js'),
+       ('core/atmos/host', '89-atmos-h-skyhost.js'), ('core/atmos/sky', '89-atmos-m-volclouds.js'), ('core/atmos/host', '89-atmos-m-volhost.js'),
+       ('core/atmos/wx', '89-atmos-wx-cells.js'), ('core/atmos/wx', '89-atmos-wx-host.js'), ('core/atmos/fx', '89-atmos-fx-lightning.js'),
        ('core/water', '20-core-water.js'), ('core/water', '21-core-water-shore.js'), ('core/water', '22-core-water-flow.js'),
        ('core/water', '50-core-water-draw.js'), ('core/water', '51-core-water-kinds.js'), ('core/water/farbed', '53-core-water-farbed.js'),
        ('core/materials/record', '23-mat-record.js'), ('core/materials/record', '24-tex-def.js'), ('core/materials/record', '25-matlib-host.js'),
        ('core/materials/record', '26-matlib-bind.js'),
        ('biomes/sedesert/src', '35-core-strata.js')]
     + [('core/mask', '25-core-mask.js'), ('core/mask', '27-core-mask-distance.js'), ('core/coast', '30-core-coast.js')]   # core/coast (KCOAST): the natural coasts; core/mask's distance under it
+    + LDF('40-world-smooth.js', '43-world-relief.js', '43m-world-micro.js', '44-world-streams.js') + [('core/terrain', '37-core-stacks.js')] + LDF('43b-world-landforms.js')   # relief P8: smoothed, relief, streams, landforms (SITES.json)
     + LDF('41-world-fields.js', '42-world-roads.js', '42b-world-bridges.js')   # 42b: the roads bridged over the rivers (Thalaba's Bridj, 2026-11-16)
     # the caverns (core/world 42k: WTUBES, the tubes as records on core/terrain's KCAVERN; 88k draws them): Route A's tubes, src/48k
     + [('core/terrain', '39-core-cavern.js'), ('core/terrain/host', '39e-core-cavern-draw.js'), ('ld', '42k-world-caverns.js')]
@@ -101,10 +118,14 @@ ORDER = (
        ('core/hamlet', '10-hamlet-wood.js'), ('core/hamlet', '12-hamlet-gather.js'),
        ('core/hamlet', '14-hamlet-farmland.js'), ('core/hamlet', '16-hamlet-names.js'), ('core/hamlet', '18-hamlet-names.js'),
        ('core/hamlet', '20-hamlet-cultures.js'), ('core/hamlet', '30-hamlet-village.js'),
-       ('ld', '48s-world-sites.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js')]
-    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '84-world-nursery.js',
+       ('ld', '48s-world-sites.js'), ('src', '47g-site-gihon-landing.js'), ('src', '48-world-site.js'), ('src', '48k-world-tubes.js'), ('src', '49-world-xanadu.js'),
+       # the pitched camps (settlements/xanadu/WORKS-PLAN.md W2): core/camp, the Tents kit's boxes, core/world's KWCAMPS (48w,
+       # Stage 8 T26) and the Sultanate's registrations on it (CAMPS_JS, which core/world/bake_sites.py reads too); 88s draws them
+       ('core/camp', '10-camp-cultures.js'), ('core/camp', '20-camp-census.js'), ('core/camp', '30-camp-pitch.js'), ('core/camp', '50-camp-tents.js'),
+       ('kits/tents/src', '33-tn-table.js'), ('ld', '48w-world-camps.js')] + [tuple(p.rsplit('/', 1)) for p in CAMPS_JS]
+    + LDF('80-world-sky.js', '81-world-terrain.js', '83-world-water.js', '83w-world-seas.js', '83s-world-streams.js', '84-world-nursery.js',
           '85-world-flora.js', '86-world-floor.js', '87-world-places.js', '88-world-towns.js', '88s-world-sites.js', '88b-world-bridges.js',
-          '88k-world-caverns.js')
+          '88k-world-caverns.js', '88l-world-landforms.js')
     + [('resgeo', 'geology')] + RES_FRAGS + [('ld', '49r-world-resources.js'), ('ld', '89r-world-resources-map.js')]   # the resources: census, layers, markers
     + LDF('90-world-camera.js', '91-world-probe.js', '93-world-propose.js', '98-world-start.js', '99-tail.html')   # 93: proposing a site
 )
@@ -134,6 +155,9 @@ def data_fragment():
     # not laid yet: they cross the rivers' carved channels, and the world has no bridge, so their fill would bury the rivers
     # (KNOWN_ISSUES.md)
     roads = [dict(r, town=r['to']) for S in P['sites'] for r in S['roads']]
+    # the ways (core/world 48s `ways`: a town's road to a point, bridged like the villages' roads) are laid too: Thalaba's
+    # expedition road up Godshearth's gorge toward the Spillway (2026-11-16, the owner: "Grow the cut up the gorge")
+    roads += [dict(w, town=w['from']) for w in P.get('ways', [])]
     # the scale model's sub-cell landforms inside the cut (edit 5.1-512's islands), stamped by src/44-world-landforms.js
     bx = meta['frame']['box_px']
     lf = [r for r in json.load(open(LANDFORMS, encoding='utf-8'))['landforms'] if bx[0] <= r['px'] <= bx[2] and bx[1] <= r['py'] <= bx[3]]
@@ -142,6 +166,13 @@ def data_fragment():
             + ',sites:' + json.dumps(P, separators=(',', ':'), ensure_ascii=False)
             + ',roads:' + json.dumps({'format': 'krator-openworld-roads', 'version': 1, 'roads': roads}, separators=(',', ':'))
             + ',landforms:' + json.dumps(lf, separators=(',', ':'), ensure_ascii=False) + '};\n')
+
+
+# Gihon's villages (2026-11-22) draw the lake trades (87k: the Xanadu row by name's fermentary and tea factory, and the
+# Landing's serai), the lake craft and the harbour (88d, 88f: the Landing's mole runs, lights, barges and waterfront
+# warehouses). Until Stage 8 B9 (2026-11-24) this build added them to its XAK by name (XAK_EXTRA); they are in the kit's
+# FILES now (kits/xanadu/xanadu.py), so every XAK has them, 88g's works with them: the bake sizes every src file (core/world/
+# bake_sites.py), so the baked plan and the page's still agree
 
 
 def xak_bundle():

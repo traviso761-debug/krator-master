@@ -73,11 +73,14 @@ const LAND={name:'The Headwall (greatchasm station 4)',title:'Krator biome — t
     out.push({name:'The channel\'s rim (a fall of 400 m: '+c.name.toLowerCase()+')',kind:'fall',x:mx+nx*sd*e,z:mz+nz*sd*e,r:Math.min(400,L*.4),h:30,danger:.95,tell:{sign:'the plateau\'s edge: a sheer stepped wall'}});}}});
   return out.concat(ROCKS.map(B=>({name:'Rockfall under a knob',kind:'crush',x:B.x,z:B.z,r:B.R*1.2,h:B.top-B.y0+4,danger:.4,tell:{sign:'fresh spalls at its foot'}})));},
  hazardMin:4,
- views:H=>{const {look}=H,S=STATION,B=ROCKS[0]||{x:1000,z:-1000,R:20,top:1300,y0:1220};
+ views:H=>{const {look}=H,S=STATION,B=ROCKS.find(r=>r.kind==='butte')||ROCKS[0]||{x:1000,z:-1000,R:20,top:1300,y0:1220};
+  /* the west channel's south rim, over its middle reach: the line's third segment, its normal, the cut's half-width (the floor's plus the steps') */
+  const P0=S.CH[0].pts[2],P1=S.CH[0].pts[3],ux=(P1[0]-P0[0])/Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),uz=(P1[1]-P0[1])/Math.hypot(P1[0]-P0[0],P1[1]-P0[1]),mx=(P0[0]+P1[0])/2,mz=(P0[1]+P1[1])/2,half=200+S.CUTS[0].edge;
+  const rimV=[mx-uz*(half+25),0,mz+ux*(half+25)],farV=[mx+uz*(half-30)+ux*250,mz-ux*(half-30)+uz*250];
   return{
-  'Down the west channel from its rim':look(-1300,-1650,3,-300,-1800,-120),
+  'Down the west channel from its rim':look(rimV[0],rimV[2],2,farV[0],farV[1],-60),   /* from the south rim across to the far wall's foot: the 400 m drop in the frame */
   'On the channel\'s floor':look(1500,-1000,1.7,2900,-1000,30),
-  'A butte on the floor':look(B.x+B.R*3,B.z+B.R*1.5,2,B.x,B.z,(B.top-B.y0)*.5),
+  'A butte on the floor':look(B.x+(B.R*2.6+40)*.83,B.z+(B.R*2.6+40)*.55,2,B.x,B.z,(B.top-B.y0)*.4),   /* far enough out to frame it whole (a butte, not a spire)*/
   'The mesas\' plateau':look(-1500,1400,2,1500,1800,4),
   'A Hum milestone':look(HEAD_SITE.R[0]?HEAD_SITE.R[0].x+6:0,HEAD_SITE.R[0]?HEAD_SITE.R[0].z+4:0,1.7,HEAD_SITE.R[0]?HEAD_SITE.R[0].x:0,HEAD_SITE.R[0]?HEAD_SITE.R[0].z:0,1.2),
   'North toward the Outlands\' lip':look(300,2400,25,0,-90000,2400),

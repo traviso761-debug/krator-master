@@ -59,12 +59,14 @@
   }
 
   /* the hyperjungle's three lands (PLAN-LANDS.md sections 1-3). The savage land's beasts are the Riders' (tagged domestic,
-     ridden: included here as wild), at 1.2 to 1.4; longcrawler, wingclaw and nightwing are named by the plan and not drawn by
-     the kit yet, so a plan lists them as missing. The kit's own striders, rays and sloths stay, rarer. */
+     ridden: included here as wild), at 1.2 to 1.4. The plan's longcrawler, wingclaw and nightwing are the kit's
+     draught-millipede, giant-archaeopteryx and giant-bat (Stage 8 D20, 2026-11-24: the Beast Riders' tribes name those beasts,
+     kits/beast-riders/src/55-br-rockcut.js BRR_TRIBE); until then a plan listed them as missing. The kit's own striders, rays
+     and sloths stay, rarer. */
   land('hyperjungle.pure', { scale: [1, 1] });
   land('hyperjungle.savage', { scale: [1.2, 1.4],
     include: ['threehorn', 'hardshell', 'jungle-mammoth', 'riding-raptor', 'staghorn-beetle', 'giant-spider', 'quetzalcoatlus',
-      'giant-dragonfly', 'longcrawler', 'wingclaw', 'nightwing'],
+      'giant-dragonfly', 'draught-millipede', 'giant-archaeopteryx', 'giant-bat'],
     weight: { threehorn: 3, hardshell: 3, 'jungle-mammoth': 2, 'riding-raptor': 2, 'hyperjungle-strider': 0.4, 'sky-ray': 0.4, 'bough-sloth': 0.4 },
     density: { grazer: 0.7, predator: 0.15, flyer: 0.25 }, maxGroup: 10,
     note: 'the Riders\' beasts, wild, at savage size; the herds in the bais, mammoths on the trails, raptor packs' });

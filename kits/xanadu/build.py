@@ -14,6 +14,9 @@ set kits/interiors/sets/xanadu-citadel.js, bundled alone as 69d-interiors-bundle
 is placed on the sheet). No settlement is read; Xanadu's `xanadu` target stays (README.md, "Its own sheet"). kit_bundle.py (XAK,
 for another world's page) is a separate product and does not change.
 Core modules taken: core/rand, core/tags, core/walk, core/door, core/host, core/atmos (placeholder), core/materials."""
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +39,17 @@ paths.update({f: os.path.join(VERN, f) for f in kxa.VERNACULAR + kxa.OPENINGS_VE
 paths.update(kxa.paths(kxa.CITADEL))   # Erewhon's citadel (2026-11-10, settlements/xanadu/KNOWN_ISSUES.md): its buildings on the sheet
 # the Golden Way (2026-11-10, src/78o-xa-golden-way.js): with the citadel, named here and not in xanadu.py, which Longsong's build reads
 paths.update(kxa.paths(['78o-xa-golden-way.js']))
-generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
+# the Xanadui fort (2026-11-16, settlements/strongwall/PLAN.md section 5): its plan as data (80f, [G data]: XFORT) and its drawing (80g),
+# named here and not in xanadu.py, so XAK (Longsong, kits/construction) and Xanadu's own pages are unchanged; its damaged and ruined
+# states take core/terrain's rubble heaps (KRUBBLE) and core/ruins (KRUINS: targets/sheet/91u-xasheet-ruins.js watches them), read in place
+FORT = ['80f-xa-fort-data.js', '80g-xa-fort.js']
+paths.update(kxa.paths(FORT))
+paths.update({'37c-core-rubble.js': os.path.join(ROOT, 'core', 'terrain', '37c-core-rubble.js'),
+              '20-core-ruins.js': os.path.join(ROOT, 'core', 'ruins', '20-core-ruins.js'),
+              '21-core-ruins-host.js': os.path.join(ROOT, 'core', 'ruins', '21-core-ruins-host.js'),
+              # the beacon fort's lamp head (the Beacon's B5, 2026-11-23): the Ancients' piece, three.js only, read in place; 80g mounts it
+              '89p-anc-beacon-lamp.js': os.path.join(ROOT, 'kits', 'ancients', 'pieces', '89p-anc-beacon-lamp.js')})
+generative = [f for f in kxa.BUILDINGS if f != '86b-xa-plants.js'] + ['78n-xa-citadel.js', '80g-xa-fort.js']   # the plant shim draws no rnd() (Xanadu's DETERMINISTIC); 78l, 78m draw none
 
 
 def interiors_bundle():

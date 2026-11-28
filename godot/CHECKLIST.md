@@ -86,3 +86,83 @@ the fixed table; the copy committed so far was written headless (its header says
       numbers (the ROADMAP's LOD work above all), and paste the deltas into the change's note.
 - [ ] Optional: the older spike cases (`--cases=hyperjungle,rift,girder`) for a row against the eye readings. The poses are
       relative to each case's focus, so they fit any case the spike loads.
+
+## 8. The look (GODOT-LOOK-PLAN.md steps 1 to 3, 2026-11-23): what only a real GPU can say
+
+Steps 1 to 3 were built and tested in a cloud container on a software renderer: the counts and the pictures are real,
+no time is. `README.md`, "The look", says what each piece is. In order:
+
+- [ ] **The baseline, then the tiers, on each lane** (`KRATOR_GL=gpu`, the lane lock as usual). Three runs a lane, the
+      same four stops and three hours:
+      `python tools/harness.py lock --lane rtx -- <godot> --path godot --script res://tests/perf/route_harness.gd -- --look=legacy --out=res://PERF-route-rtx-legacy.json --md=res://PERF-route-rtx-legacy.md`
+      then `--look=high` on the RTX and `--look=low` on the Arc (`--gpu-index 1`), each with its own `--out` and `--md`
+      and `--shots=shots/route-<lane>-<tier>`. Read the GPU and CPU columns, and whether a stop is marked **over** its cap.
+- [ ] **What a place costs to open with cells on.** `stream_build_ms` in the route's JSON against a run with
+      `--no-cells`. Cutting reads each item's instance buffer back, which on a GPU waits for the device; if that shows,
+      the cut belongs in the cook (the plan's N2).
+- [ ] **Nodes.** The town ends at about ten thousand nodes with cells on. Watch the CPU column, and the frame time while
+      turning on the spot.
+- [ ] **Occlusion culling**: walk the avenue and the monastery's terraces watching for anything that pops in late at a
+      crest (`--no-occlusion` for the A/B). The occluders sit under the ground and should hide only what the ground
+      hides. It starts a few frames after a place opens. The route's CPU column says what the culling itself costs.
+- [ ] **The roads.** The stream's road ribbons were wound face down and their shader culls back faces, so none drew
+      from above until this change. They draw now: look for z-fighting with the ground and for the shoulders' fit.
+- [ ] **Back faces.** Single-sided records now cull their back faces (`library.gdshader`). Walk the monastery and the
+      town looking for a wall or a roof that is missing from one side. A place's import report counts them
+      (`get_meta("report")["faces"]`: culled, two_sided, cutout, and `moved`, the nodes put back on both faces because
+      their triangles wound against their normals). A record three draws from inside only (`BackSide`: none in the
+      cases exported so far) would be culled: the export does not carry it (the plan's section 13).
+- [ ] **Shadows.** The first split's texel is 1.2 cm (high) or 1.8 cm (low): window reveals and beams should cast a
+      shape. Look for the far edge at 250 or 400 m, for the blend between splits, and for peter-panning under eaves.
+- [ ] **The weathering**, in the look lab: `godot --path godot res://look_lab.tscn -- --look=high`, keys W (the stack),
+      R (wet), H / J (the hour). The amounts a class are `krator/kweather.gd` `CLASSES`: tune them against reference
+      photographs, family by family (`--only=plaster,stone`). Then the same in the walk, where vertex tints are on.
+      What it costs: the route's GPU column with and without `--no-weather --no-detail` (five texture fetches a pixel
+      of every library surface; the low tier may want fewer).
+- [ ] **Detail and tangents** (keys D and N in the lab): within three metres a flat face should have a grain; turning
+      the mesh's tangents off should change nothing on flat faces and steady the lighting on round ones.
+- [ ] **The sky on the Arc**: `--look=low` draws the clouds at half resolution. Look at cloud edges against the sun and
+      at the horizon; `--no-sky-half` for the A/B, and the GPU column for what it saved.
+- [ ] **Indoors**: with SSAO on, corners and the feet of furniture should darken (`--no-room-ambient` for the A/B).
+      Gilt and bronze now take a tinted reflection of the room where they took a quarter of the diffuse light.
+- [ ] **AA** (the plan's L6): MSAA against `--aa=taa`, `--aa=fsr2` and `--aa=smaa` on swaying cards and thin rails.
+- [ ] `xvfb-run` is not needed on a real machine: `godot --path godot --script res://tests/shaders/look_gpu_check.gd`
+      should print `all passed` on both lanes (it reads every shader change back from pixels).
+
+## 9. The look, steps 4, 6, 7 and 9 (2026-11-24): what only a real GPU can say
+
+Built and tested as section 8's were: a cloud container, a software renderer. Counts and pictures are real; no time is.
+`README.md`, "The look", has what each piece is; `GODOT-LOOK-PLAN.md` section 14.4 what was measured.
+
+- [ ] **Cook the case first**, once a machine: `godot --headless --path godot --script res://tools/cook.gd -- res://data/world-oidong-highrift`
+      (about a minute a place the first time; `-- --stat` says what the folder holds, about 250 MB for Longsong's town
+      and monastery). Then time a place opening in the walk, cooked against `KRATOR_COOK=0`: `stream_build_ms` in the
+      route's JSON. Headless here: 47 s without, 7 s from the cache.
+- [ ] **The same frame.** At `--lod-px=0` a cooked place drew the parsed place's frame to the bit here. On the GPU, look
+      once for shadow acne or flicker on plain walls (a shadow mesh that did not land on its surface's depth would show
+      there), with `KRATOR_SHADOW_MESH=0` for the A/B (it cooks a second entry).
+- [ ] **Levels of detail by eye.** Walk the avenue, the east village and one forest village (Tsomo) at the tier's own
+      threshold and at `--lod-px=0`: watch tree crowns and roof edges for a pop as you approach, and thin canopies far
+      off. Here the frames differed by under a tenth of a per cent of their pixels. The low tier's 2 px is the one to
+      judge.
+- [ ] **What it buys in time**: the route's GPU column with `--lod-px=0` against the tier's. Shadow meshes cut vertex
+      work in the depth and shadow passes, not primitives: only a timing shows them.
+- [ ] **The air by the hour**, in the walk: dawn (hour 4 at Longsong), noon, 16:20, dusk (20.5), from the overlook, the
+      avenue and under the trees. Is the dawn mist a layer in the low ground, and gone from your feet? Does noon keep
+      its contrast (the volumetric fog is thin by day on purpose)? **Shafts were not seen here**: look toward the sun
+      through the avenue's galleries and through trees at 16:20 and at dawn, and raise `vfog_sun_energy` or the day's
+      share of `vfog_density` (`KratorAir.keys`) until they read. `--no-air`, `--no-mist`, `--no-vfog` for the A/Bs.
+- [ ] **Volumetric fog's cost** (high tier only): the GPU column with and without `--no-vfog`. And the mist pass's
+      (one full-screen pass with a depth read): with and without `--no-mist` at dawn.
+- [ ] **Fog volumes and emitters**: the Garden of Held Water at dawn (mist on the ponds), the stream by the town, a
+      vent on the High Rift (steam). Emitters were not judged by eye here at all.
+- [ ] **A wet world**: `--wet=1` (or the weather's rain): the avenue court and a village road. Is the standing water
+      too much or too little (`fill` in `terrain.gdshader`), does it mirror, does SSR (high tier, wet only) pay for
+      itself? Puddle decals on the roads stand only when wet.
+- [ ] **The dressing**: the east village's lawn and road with and without `--no-dress`. Do the bare patches read as
+      wear or as holes; are the stones and litter the right size and number; do the ruts sit on the road (they follow
+      the road record's line, and the drawn ribbon may not)? `VISUAL-BAR.md`'s bare-ground gate is the owner's to call.
+- [ ] **Godot 4.8**: install it beside 4.7.2 and run every test (`python3 tools/test_all.py --nightly` with it on the
+      path), then the route with `--contact-shadows --ao-multibounce` against without. `look_test` prints which
+      properties `KratorLook.newer` found: if it names none on 4.8, the words in `NEWER_WORDS` are wrong (they were not
+      read from a 4.8 build) and want the real names from the class reference.

@@ -2,7 +2,7 @@
 
 World content that belongs to no culture (owner, 2026-10-15). So far it holds the **resource nodes** the building kits'
 works draw on.
-- **The kinds:** twenty-seven since 2026-11-16 (the mined goods of Gemini's trade model, below); first twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
+- **The kinds:** twenty-six since 2026-11-16 (the mined goods of Gemini's trade model, below); first twelve: iron, copper, gold, tin, silver, rare earth, coal, sulfur, saltpeter, potash, alkali salts and oil.
   Potash and alkali salts (soda and its kin, borates and lithium folded in: no finer than these two, the owner, 2026-10-23)
   are the Catch's salt field (`biomes/catch/PLAN.md` section 6a); elsewhere on Krator they are traces.
 - **The grades:** each kind comes in a low, a medium and a high grade, visible and placeable.
@@ -39,13 +39,14 @@ python3 ../../tools/textures/pack.py kits/resources       # (from the repo root)
 | turquoise | `turquoise` | mine | Nishapur's: pale bleached altered rock netted with blue-green veinlets (`rock.turquoise.vein`), nodules where they swell (2026-11-16) |
 
 **The mined goods of Gemini's trade model** (2026-11-16, the owner: "build nodes for mineable resources from the Gemini trade
-docs, that do not already have one"): eleven more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
+docs, that do not already have one"): ten more kinds, in `42s-res-ore-mined.js` (the kinds, [G data]) and three drawing
 fragments, `44s` (metals), `44t` (gems) and `44u` (dug from the ground). Each kind names the Gemini good it feeds (`good`).
-Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). All are dug by a mine.
+Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). Zinc already had its node on the rift battery's branch
+(`origin/claude/rift-battery-biome` 79d3a4500, the owner, 2026-11-12: `42r`/`44r`, `node-zinc-*`, with its geology layer), so it is not
+here. All are dug by a mine.
 
 | Kind | Item | Gemini good | Looks like |
 |---|---|---|---|
-| zinc | `zinc_ore` | `zinc` | the dark outcrop banded with resinous black sphalerite, honey-yellow where thin, a galena streak, pale calamine crust on top |
 | lodestone | `lodestone` | `magnets` | a crest of rounded black magnetite boulders, iron filings bristling in tufts, a fulgurite where the lightning struck |
 | peat | `peat` | `peat` | a bog cut: the sphagnum top over a dark bank cut in spade-deep steps, black water below, turves stacked to dry |
 | silica | `silica_sand` | `silica-sand` | a sand pit in a white quartz-sand rise, the washed sand heaped, a washing trough |
@@ -57,8 +58,8 @@ Emeralds and turquoise are the Coyote Men kit's (`kits/coyote`). All are dug by 
 | jade | `jade` | `frost-coral` (Verdigris Jade) | a serpentinite contact, a stream below with water-rounded jade boulders, one sawn open |
 | amber | `amber` | `ria-amber`, `abyss-lac` (swamp amber) | a cut bank of blue-grey clay under lignite and sand, amber nodules in the face, the dug clay heaped |
 
-None has a geology layer yet, so the node field places none: they are owner nodes until a bake gives them one (`GEOLOGY.md`, "The
-mined goods' kinds"). Building kits that read `42r` and `44r` in place do not see them unless they also read `42s` and `44s`-`44u`.
+Their geology layers are baked into `data/geology.json` (2026-11-16; `tools/scale-model/geology.py` `mined()`, the `--mined`
+pass), so the node field places them on a page that loads `42s` (`GEOLOGY.md`, "The mined goods' kinds"). Building kits that read `42r` and `44r` in place do not see them unless they also read `42s` and `44s`-`44u`.
 
 Each kind has a def per grade:
 - **Keys:** `node-<kind>-<grade>`, for example `node-coal-high` or `node-rare-earth-low`.

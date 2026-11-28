@@ -10,7 +10,7 @@
 // build's painted ground canvas over it, cut to the footprint's circle (or the build's own ground mesh, as drawn).
 var TOWNS_DRAW;LATE.push(()=>{TOWNS_DRAW=(function(){'use strict';
 const scene=HOST.scene,camera=HOST.camera;
-const RECS=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).filter(r=>r.tile);   /* a town with no tile: the world draws its ground (41t) */
+const RECS=((WORLD_DATA.towns&&WORLD_DATA.towns.towns)||[]).filter(r=>r.tile);   /* a town with no tile: the world draws its ground (41's WTOWN) */
 const NEAR=30000,FAR=38000;
 const S={towns:RECS.length,loaded:0,loading:0,meshes:0,tris:0,instances:0,failed:[],ms:0};
 const live=new Map();   // name -> {group|null, promise}
@@ -81,7 +81,7 @@ function build(rec,town,T){const t0=performance.now(),head=T.head,tex=textures(h
   else o=new THREE.Mesh(G,M);
   o.renderOrder=r.water?1:(r.ro||0);o.userData.inspectLabel=label+' · '+r.name;o.userData.town=rec.name;o.matrixAutoUpdate=true;
   o.userData.tris=(r.g.idx?r.g.idx.n/3:r.g.tri||0)*(r.count||1);grp.add(o);S.meshes++;S.tris+=o.userData.tris;}
- scene.add(grp);S.ms+=performance.now()-t0;return grp;}
+ if(HOST.shadow)HOST.shadow.cast(grp);scene.add(grp);S.ms+=performance.now()-t0;return grp;}
 
 function load(rec){const town=WORLD.towns.find(t=>t.name===rec.name);if(!town)return Promise.resolve(null);
  const L={group:null,promise:null};live.set(rec.name,L);S.loading++;

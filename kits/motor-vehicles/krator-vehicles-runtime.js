@@ -465,6 +465,17 @@ const KV_API = (function () {
         budget: vehicleBudget(A) };
     });
   };
+  /* the core/tags record of a placed vehicle (Stage 8 B9, T9, 2026-11-24): class 'vehicle' (core/tags/52-core-tags-vocab.js), the
+     kit's tags in core/tags' keys (culture; types from type; drive, seats, fuel), the box its size. o: {at: [x, y, z] (or x, y, z),
+     ry, name}. A host registers what it places, before it is drawn: KratorVehicles.register(KTAGS.page, key, o) -> the stored
+     record. The kit's own terrain list and data stay the kit's (KratorVehicles.dataOf) */
+  API.record = function (key, o) {
+    const A = VEHICLE_BY_KEY[key]; if (!A) return null; o = o || {};
+    const T = A.tags || {}, at = o.at ? o.at.slice() : [o.x == null ? 0 : o.x, o.y == null ? 0 : o.y, o.z == null ? 0 : o.z], tags = { culture: A.culture };
+    if (T.type) tags.types = T.type.slice(); if (T.drive) tags.drive = T.drive; if (T.seats != null) tags.seats = T.seats; if (T.fuel) tags.fuel = T.fuel;
+    return { 'class': VEHICLE_CLASSES[0], kind: 'vehicle', key: A.key, name: o.name || A.name, at: at, ry: o.ry == null ? 0 : o.ry, size: [A.w, A.d, A.h], tags: tags };
+  };
+  API.register = function (T, key, o) { const r = API.record(key, o); return r && T ? T.add(r) : null; };
   API.has = function (key) { return !!VEHICLE_BY_KEY[key]; };
   API.get = function (key) { return VEHICLE_BY_KEY[key] || null; };
   API.dataOf = function (key, v) { const A = VEHICLE_BY_KEY[key]; return A ? vehicleData(A, v) : null; };
@@ -486,7 +497,7 @@ const KV_API = (function () {
     o = o || {};
     const A = VEHICLE_BY_KEY[key];
     if (!A) { console.error('KratorVehicles: no such vehicle', key); return null; }
-    const v = Math.max(0, Math.min(A.variants - 1, (o.variant | 0))), seed = o.seed || 1, linear = o.linear !== false;
+    const v = Math.max(0, Math.min(A.variants - 1, (o.variant | 0))), seed = o.seed == null ? 1 : o.seed, linear = o.linear !== false;
     const tex = VEHICLE_DETAIL.on() && o.textures !== false;
     const data = vehicleData(A, v);
     const state = VEHICLE_STATES.indexOf(o.state) > 0 ? o.state : 'intact', R = vehicleRuin(state, seed, key, !!data.airframe), ruined = state !== 'intact';

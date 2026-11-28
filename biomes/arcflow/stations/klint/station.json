@@ -1,0 +1,20 @@
+{
+ "id": "klint",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arcflow — Kulaneva-Klint 55 m Horseshoe Waterfall & Kukersite Gorge",
+ "out": "arcflow.html",
+ "px": [638, 136],
+ "sky": [366, -194],
+ "elevM": 121.0,
+ "pAtm": 1.57,
+ "koppen": "Cfa",
+ "rainMmYr": 1882,
+ "riverId": 9107,
+ "riverName": "Suur-Neva",
+ "dischargeM3s": 1066.0,
+ "strataStack": "klint-foredeep+klint-kukersite+arch-rift-basalt",
+ "reserves": [
+  { "id": "site:kulanewa-karum-bridge", "x": 118, "z": -78, "r": 48 }
+ ],
+ "modes": ["Day", "Low-Sun Carnelian Glow"]
+}

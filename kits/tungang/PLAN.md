@@ -5,6 +5,12 @@ and a third people this plan proposes, **the Glaziers**, the eastern loj of Opal
 foundation, as `kits/highlands` carries the Republican, Rustic and Tribal sets (the owner, 2026-11-10).
 
 **Status (2026-11-16):** the Fellgang set (section 3.3.1) and the Glazier set (sections 1.4, 3.4) are built on this branch; the Tungang set is on Loj Twenny's branch. **Originally a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
+**Built since (2026-11-11, branch `claude/loj-twenny-059a5e`):** the cavern setting of section 5.6 (`core/city/cavern/`:
+`KCITY.cavern`, its line-hold strategy, its node test; Dhelv's port written up in its `PLAN.md`); the Tungang set's carved defs
+for Loj Twenny (section 3.2: `src/44`-`56`, the sheet's test hold in three states); **Loj Twenny** (`settlements/loj-twenny`: the
+hold on the setting and on the simulation layer, at station 3 under the great shaft: the owner's answer, 2026-11-11).
+
+**Status: a proposal.** No code is written. Every fact not already in `LORE.md` or a biome plan is marked *proposed* and
 waits on the owner; `LORE.md` is not edited until the owner confirms. Section 10 holds the numbered questions.
 
 **The owner's brief** (2026-11-10, in brief): start the Tungang and Fellgang kits; propose underground settlements with
@@ -68,6 +74,7 @@ them all out.
      carriage houses (8), the Big Meeting (10), shine for rank (11), the 0.94 scale (12);
    - the core extensions (question 14), each planned with its module's owner, and the eight owed textures (question
      16), now in `core/materials/PROMPTS-NEEDED.md` section 59.
+     16), now in `core/materials/PROMPTS-NEEDED.md` section 58.
    Written into `LORE.md` where they are lore.
 
 ## The owner's answers, round 4 (2026-11-11)
@@ -98,6 +105,24 @@ them all out.
 6. **"Agree with proposals above"**: the dark clan as written and its name, the Kradz; the power plant on the deep
    middle's heat, rare earths as the exotic and the recharged cells; the hidden heads' forms and the strike's raids; the
    Travellers' Fair and their cant. Written into `LORE.md`.
+
+## The owner's answers, round 6 (2026-11-11): Wildcat
+
+1. **Wildcat is ONE great house complex**, the size of a Chaco Canyon great house (Pueblo Bonito's scale): about 1,000 to
+   2,000 people at most; optionally one or two small scrap-pueblo hamlets. It stays in the Fellgang set, about 50% Kimr,
+   capital-H heroism and south-western pueblo culture, and it raids.
+2. **Its dwellings are pueblo-like**: stacked, terraced, stepped room blocks round plazas, roof entry by ladders, round
+   sunk kivas, of the rim's drystone and salvage (Ancient plate, rusted sheet, cable, tyres), the edges left raw.
+3. **The pueblo builder is a core module, `core/pueblo`** ("yes go with core/pueblo, we'll need it again for kimr"): plain
+   records first (cells by stable ids, storeys and setbacks, terraces, plazas, kivas, ladders, a D or an L footprint), no
+   three.js on the data side, then the kit's drawing. Built: section 1.3.1, "Built".
+
+## The owner's answers, round 7 (2026-11-11): Barricade, interiors, furniture
+
+1. **"Make a 2nd, unique great house style pueblo for the new village of Barricade."** Its form: **a wall across a pass**,
+   "except instead of the road it's one of the major passes into Firebliss" (section 1.3.2).
+2. **Interiors for both great houses** (Wildcat's and Barricade's): every room hollow and furnished.
+3. **New catalog pieces** for the pueblo's rooms, in the Fellgang culture file.
 
 ## 0. What the kit is
 
@@ -570,6 +595,100 @@ south-western pueblo culture**.
 - **Not the Zeijani's pueblo.** Dhelv took the kiva into carved rock with katsina-style spirits (`kits/zeijani/PLAN.md`
   6.2). Wildcat's pueblo is built above ground and holds no spirits at all: its walls carry heroes, deeds and trophies.
 
+**Built (2026-11-11, round 6).** The plan is `core/pueblo` (`KPUEBLO.house`, `core/pueblo/README.md`); the specs, the dress
+and the drawing are the kit's (`src/44-fg-wc-plan.js`, `src/46-fg-wc-draw.js`, the host API `src/82-wc-host.js`):
+
+- **The great house** (`fg-wc-greathouse`, `TG.fg.wildcat()`): a **D** 148 x 83 m (Pueblo Bonito is about 160 x 95). An arc of
+  five rows of room cells (4.2 x 4.6 m) stepping up from the plaza a storey a row to **five storeys** at the back, tapering
+  to two at the arc's ends; a two-row front of one and two storeys closing the plaza; a **spine** of two back-to-back rows
+  (two storeys in the middle) splitting it into **two plazas**. 328 columns, **805 rooms** (328 stores at the ground, 477
+  dwellings above, 8 the hero's under the horned crest), **1,145 people** at 2.4 a dwelling room. No door at the ground:
+  185 T-doors open onto terraces, 328 roof hatches, **98 ladders** (from the plazas up the row-0 faces, terrace to terrace,
+  and five up the front's outer face from outside: the plaza is closed, the way in is over the roofs, and the ladders to the
+  ground are the ones pulled up at night). **The round room** (the great kiva, r 8.5 m) in the west plaza at its most open
+  point, the Boast's stand on its roof, six trophy poles, drums and braziers round it; three small kivas. **The stockade**
+  24 m out from the footprint, at the knoll's foot, its gate on the front under an aurochs skull.
+- **The scrap**: a third of the exposed faces left raw drystone (a third of the columns rammed earth), the rest faced storey
+  by storey in corrugated sheet, rusted plate, the Ancients' white plate with its rivets, wrecked cars' shells cut open
+  (68) and container panels, each ragged and tilted; fir vigas and scrap rail ends in rows under every storey's roof; earth
+  roofs, parapets, some capped with sheet; hatches of rusted plate and plank; ladders of pipe and fir.
+- **The dress** (records, `fgWcDress`): aurochs skulls along the hero's parapets and the horned crest; **the Deeds** on two
+  front-row faces of the east plaza (18 boasts, a mark each, a white square where it was made good, a red cross where not,
+  tallies under); NO SKABS, ALL OUT, HOLD FAST, DEEDS NOT WORDS man-high on the outer walls, a painted aurochs beside some;
+  glyptodont shells as cisterns on low terraces and in the plazas.
+- **Two hamlets** (`fg-wc-hamlet`, `TG.fg.wildcatHamlets()`): the ford's **U** (68 rooms, 60 people, an 8 m stockade) and the
+  pens' **L** (85 rooms, 82 people) beside two Fellgang pens and a smokehouse.
+- **On the sheet**: the great house on a knoll east of the villages (its top flattened at 6 m under the house, falling to
+  the stockade's ring), the hamlets on the flat below; rows of one room block alone (`fg-wc-block`, five seeds), the round
+  room and two kivas (`fg-wc-round-room`, `fg-wc-kiva`), the stockade (`fg-wc-stockade`); eight Wildcat views.
+
+The proposed keys of section 3.3 map so: `fg-wc-block` is a def (one block alone); `fg-wc-ladder`, `fg-wc-court` (the
+plazas) are core/pueblo records; `fg-wc-crest` and `fg-wc-deeds-wall` are dress records; `fg-wc-round-room` and
+`fg-wc-stockade` are defs. Interiors and furniture came in round 7 (section 1.3.5). Still owed: the Kimr's own pueblo (raised
+on platforms: a core/pueblo spec field), the walk records on the roofs and ladders, the daub sheet for the painted words.
+
+### 1.3.2 Barricade: the picket line made stone
+
+**The owner (2026-11-11, round 7):** a second great house, unique, for the new village of Barricade: a wall across one of the
+major passes into Firebliss.
+
+*Proposed* from there (the owner to confirm; nothing here is in `LORE.md` yet):
+
+- **Where** (the owner placed it, 2026-11-11). The Firebliss Range has no settlement, and its rivers' gorges are "the only easy
+  ways in from the Labyrinth" (`biomes/firebliss/PLAN.md` 1, 3). Barricade walls the **Weyt Warra's gorge**, the hunters'
+  usual way up from the Labyrinth into East Bliss Vale, at **5.1 px 283,1341**, 46 km below the vale. Surveyed on Firebliss as
+  on `claude/firebliss-80cc25` 9e61080d7 (5.1 edit 3; the later patera edit is unchecked):
+  - **The site.** The bed at 1,905 m; at +150 m the gorge is 2.0 km wide, the narrowest of the Weyt's trench. The walls rise
+    448 and 429 m within 2 km either side (2,353 and 2,334 m one cell out; about 3.5-4 km within 8 km). The floor cell slopes
+    0.8°. Inside the Firebliss polygon, 14 km above the Labyrinth's edge.
+  - **Climate.** Csb, +11 °C (20 / +2), 925 mm, 1.26 atm.
+  - **Its outlook.** The outer face looks down the gorge toward Lake 6 (154 km); the vale's hunting lies behind the plaza. The
+    trail follows the river: a least-cost walk from Lake 6 to the vale stays within 4 km of it for all 210 km, never above
+    1,960 m, so it passes the gate.
+  - **Distances.** Blakhed (the Fellgang market town, 441,1400) 337 km, Wildcat 365 km, Ledge 309 km.
+  - **The floor.** Edit 3 carves each Warra as one 2 km cell, so the 176 m wall's floor cannot be measured on the model: the
+    page carves the gully floor itself (as the sheet's gorge does).
+  - **The other passes** the owner passed over: the Tlahn Warra (243,1353: wider, 2.5-3 km) and the Yan Warra (166-176,
+    1385-1395: the strongest ground, but in the Labyrinth polygon, the coldest valley and 520 km from Fellgang country).
+- **Who.** Fellgangs who hold the gorge, and with it the range's richest hunting, against the Kimr coming up from below. Where
+  Wildcat married into the Kimr, Barricade shut them out: the answer the Firebliss plan leaves open ("a truce, a border, or a
+  feud?") is, at this gorge, a border. Some Travellers winter there: the toll trade is theirs to carry.
+- **The picket line made stone.** The union's oldest rule kept as law: **nobody crosses uncounted.** Every crossing is tallied
+  on the gate's walls and on the count boards; the Kimr pay their toll in meat and hides or turn back, and a crossing
+  unpaid is a skab's. The count room (the great kiva) is where the tolls are reckoned and the gate's captain elected by
+  show of hands. Its words on the outer face: NOBODY CROSSES, THE LINE HOLDS, PAY OR GO BACK.
+- **The wall.** One block four rows deep and 176 m across the gorge's floor, its outer face (toward the Labyrinth) sheer,
+  five storeys, and **bastions of six** where it meets the gorge's walls, crow's nests on their roofs; on the inner side it
+  steps down a storey a row to **a long plaza open upstream toward Firebliss**, between two wings up the gorge's walls. **The
+  barricade**: the Ancients' wrecked cars, vans and carriages stacked two high along the whole outer face. **The gate
+  tunnel** for the trail (two cells wide, two storeys clear) under the rooms, its portcullis of rail and plate leaves, the
+  tallies of the crossings painted down its walls; **the culvert** for the river (three cells wide, one storey clear) under
+  the rooms, grated with rail at both mouths. Red picket banners along the outer parapet.
+- **Inside.** 620 rooms (192 stores, 425 dwellings, the captain's 3), **1,027 people**; the count room's count boards and
+  toll chests; three small kivas; the yards' meat racks, tanning frames and braziers in the plaza.
+
+**Built (2026-11-11).** `core/pueblo` gained the `bar` shape, passages (a gate or culvert under a block's rooms, the rooms from
+its clear storey up), bastions (`endRise`) and keep-out strips (kivas off the trail and the river); the kit's
+`src/47-fg-bc-plan.js` (the spec, the dress) and `src/48-fg-bc-draw.js` (the wrecks, gate, grates, lookouts, pickets; def
+`fg-bc-greathouse`), drawn by Wildcat's `fgWcBuild`. On the sheet: the gorge at (-480, -170), its floor 5 m up, rock walls
+rising 70 m, a rock bed for the river (the water is the world's: `core/water` where Barricade is placed).
+
+### 1.3.5 The pueblos' interiors (both great houses)
+
+Every room is hollow: walls 0.5 m thick inside the cell's edges (two rooms side by side share a metre of wall, as a pueblo's
+do), earth plaster on the back wall, the T-door or the window as a real opening, a ceiling slab that is the next room's
+floor, the column's hatch marked through it and a ladder up to it. Over a passage the column starts on a ceiling of beams.
+The kivas are dug: the pit's floor, its plastered wall, the bench, the pilasters, the hearth and the deflector, the ladder
+from the floor out through the roof. The plaza is packed earth (the house draws it), with the pits open in it.
+
+**The furniture** is core/pueblo's records (`KPUEBLO.furnish`: each room by its use, against the walls, clear of the door, the
+hatch and its ladder; `KPUEBLO.furnishKivas`: a ring before the bench), the pieces the catalog's (`src/45-fg-wc-furn.js`):
+twelve new Fellgang pieces for the pueblo (2026-11-11): the sleeping platform, the mealing bins, the corner hearth, the wall
+shelves, the grain bin, the storage jars, the water jar, the felting frame, the hero's horned seat, the spear rack, the count
+board, the salvage bin. A dwelling holds its platform, hearth, shelves, jars and stools (a mealing bin or a felting frame in
+some); a store its bins, jars and sacks; the hero's (or the captain's) rooms the horned seat, the spear rack, a war drum.
+Wildcat 3,343 pieces, Barricade 2,629; drawn in 40 m chunks shown near the camera, opened by **the storey section** (K
+on the sheet, `TG.fg.section(level)`): every house clipped at a storey, or at the plaza's level to open the kivas.
 ### 1.3.3 Blakhed: the rim's market town at the Blak Riba head (the owner, 2026-11-11: the site; the rest *proposed*)
 
 The owner asked for a non-raiding Fellgang settlement of 1,000-2,000, related to the Fowlers and the Ice-cutters and
@@ -1331,6 +1450,7 @@ station); `metal.ancient`, `metal.ancient.white` (plate, Fellgang armour), `meta
 `ancients/glyph-band`, `xanadu/*` (lozenge, zigzag, star, sun-emblem), `order/*` (prayer-wheel, mani-stone, book-spines).
 
 **Owed** (agreed 2026-11-11; the paste-ready prompts are in `core/materials/PROMPTS-NEEDED.md` section 59, ten blocks for
+**Owed** (agreed 2026-11-11; the paste-ready prompts are in `core/materials/PROMPTS-NEEDED.md` section 58, ten blocks for
 these eight sets, the banner in three variants):
 
 | Id | What | Why no library set does it |
@@ -1365,6 +1485,7 @@ of lights to the halos nearest the camera).
 | `core/materials/record` | yes | `materials.json` on the library and the owed sets |
 | `core/catalog`, `core/furnish`, `kits/catalog`, `kits/interiors` | yes | the culture files, `ROOM()` and the placer for the sets and halls, the 0.94 scale through `core/furnish` (as the Khaayken's 1.15) |
 | `core/sockets` | yes | signs, lamps and banners on doors |
+| `core/pueblo` (`KPUEBLO`) | yes (new, 2026-11-11) | Wildcat's great house and hamlets: room cells, terraces, plazas, kivas, ladders, the stockade's ring, as records; the Kimr's pueblos next |
 | `core/hamlet` | yes | the Fellgang villages: the riftrim row moves into `core/hamlet` as the `fellgang` profile (agreed with the riftrim session), with fowling and ice-cutting as focuses instead of borrowing `ranch` and `quarry` |
 | `core/camp` (`KCAMP`) | yes | the bands' war camps and Firebliss's hunting camps: the `fellgang` row `core/camp/PLAN.md` lists as a gap |
 | `core/city` | yes: **the cavern setting** (the owner, 2026-11-10) | every hold's layout (spine, sidings, sets, decks; shelves; the Glaziers' scarp), built with the city-layout work and proven on Dhelv first (section 5.6) |
@@ -1391,7 +1512,7 @@ The owner's order (2026-11-10): **the biome first, then the cavern layout, then 
 | T4 | the kit's scaffold: `kits/tungang` on `core/engine`, the carved-def layer in core (agreed), `materials.json`, the salvage foundation (lining segment, carriage, plate, pipe, rivets, enamel, cable, the three rules of fitting), the sheet | the ring house and the carriage house build in three states and `--assert` passes |
 | T5 | the Tungang set: every def of section 3.2; **the test hold in a Line station and at a gap** of the biome, laid by the cavern setting | the owner's walk through the hold; the camera checks of section 6.7 pass |
 | T6 | the Hearth hold furnished: the kit's defs dropped into `CAVE.HOLD`'s volumes on hearths' pages (the hearths session places, the kit publishes); the crystal storey as the loj's shrine | the hold reads as a loj at eye level |
-| T7 | the Fellgang set: the riftrim keys made real (same boxes), the wall, the ice road, the bands, **Wildcat** (with the Kimr kit's plan, question 24); the `fellgang` profile in `core/hamlet` and the row in `core/camp` | riftrim's Fowlers and Ice-cutters stations swap stand-ins for the kit with no layout change; Wildcat's pueblo reads |
+| T7 | the Fellgang set: the riftrim keys made real (same boxes), the wall, the ice road, the bands, **Wildcat** (with the Kimr kit's plan, question 24; built 2026-11-11 on `core/pueblo`, section 1.3.1); the `fellgang` profile in `core/hamlet` and the row in `core/camp` | riftrim's Fowlers and Ice-cutters stations swap stand-ins for the kit with no layout change; Wildcat's pueblo reads |
 | T8 | the Glaziers: their defs and culture file; the scarp hold laid by the cavern setting on `biomes/opalvalley` once that biome is built (it is a draft plan today) | the scarp's fronts, adits and register read |
 | T9 | the new catalog pieces (section 4) and the Glaziers' culture registered: one all-builds rebuild, ridden with `TODO.md`'s waiting items | the catalog page passes; the baseline rewritten once |
 | T10 | `verify.py --assert` in full, the Godot export and its case, the index tools, the gallery; then the settlements on the cavern setting (a gap loj, Loj Twenny, Loj Fower at Ledge), each its own plan | the sheet exports and passes; Krator Worlds carries the page |

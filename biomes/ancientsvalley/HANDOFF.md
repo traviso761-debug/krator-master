@@ -74,6 +74,10 @@ asserts, the worst view "A park gone feral" at 1,179 calls. Building the near fo
 
 ## Smaller items
 
+- `kits/ancient-transit` is on origin/main at 0908aee8d (2026-11-11): `KTRANSIT.join`/`joinRamps`, kerb-line junctions, blockades. When this
+  branch next takes main, the kit reads the catalog core from `core/catalog` (its `transit_bundle.py`), its PROMPTS-NEEDED section is 42 and
+  its page is in PORT-BASELINE.json: resolve those hunks toward main, then rebuild and verify the valley's three pages.
+
 - `core/atmos/fx/89-atmos-fx-radiation.js` carries one CAMPOS and three RAWTEX findings (the sky shell's `cameraPosition` in a ShaderMaterial,
   the haze pass reading its own render target): benign, locked in `tools/check_source_baseline.json` on 2026-11-10; tell the atmos session.
 - On software GL the page shows shader errors the GPU does not (KNOWN_ISSUES, last item): judge on the GPU.

@@ -14,12 +14,13 @@ Godot (the clock it owns is `core/clock`, which is). A build's other fragments r
 
 | File | What | From |
 |---|---|---|
-| `90-host-camera.js` | `KHOST.camera`: orbit (drag), pan (right-drag), fly (W A S D, Q / E, Shift, Ctrl), zoom (wheel), walk (F) with the feet on the ground or on a `KWALK` floor and a ledge guard, the pin (double-click; G flies to it, F walks from it, Esc lifts it), click to inspect, the depth range (opt-in), `setView` | `kits/catalog/krator-asset-engine.js` 85-207, `settlements/voth/targets/voth-city/58-vc-tools.js` (the pin, the walker), `core/city/50-city-host-streets.js` 13-19 (the depth range), the biome kits' `90-host-camera.js` (the spherical orbit their presets are written in) |
+| `90-host-camera.js` | `KHOST.camera`: orbit (drag), pan (right-drag), fly (W A S D, Q / E, Shift, Ctrl), zoom (wheel), walk (F, on the floor under the eye) with the feet on the ground or on a `KWALK` floor (the ground over the head is a roof, not a floor), a ledge guard and a swept step (a key step over 0.3 m stops at the first walk block: `KHOST.feet`, pure, `node core/host/test-feet.js`), the pin (double-click: the ground where the scene draws it, else the first mesh under the pointer; G flies to it, F walks from it, Esc lifts it), `C.drawn(hit)` (visible up the tree, not clipped by a cut), click to inspect, the depth range (opt-in), `setView` | `kits/catalog/krator-asset-engine.js` 85-207, `settlements/voth/targets/voth-city/58-vc-tools.js` (the pin, the walker), `core/city/50-city-host-streets.js` 13-19 (the depth range), the biome kits' `90-host-camera.js` (the spherical orbit their presets are written in) |
 | `91-host-loop.js` | `KHOST.take`, the frame loop, the world clock (`KCLOCK`), `KHOST.on` subscribers with per-subscriber error isolation, the `TICKS` / hour-ticks / `_frameHooks` shims, `window._ready` | the biome kits' loops; `settlements/voth/.../55-vc-host.js` `VC.dayNight` (the clock) and `98-start.js` (the loading flow) |
 | `92-host-panel.js` | the bar (`#bar`: title, hint, `#ui` with the view select and the hidden preset buttons, layers, time controls, export, legend), `#stats`, the inspector `#insp`, the error panel `#errs`, the loading note, foldable panels remembered per browser, `?chrome=0` | `settlements/voth/.../00-head.html` and `55-vc-host.js` (`VC.ui`, `VC.panels`, `VC.clockUI`), the biome kits' heads |
 | `94-host-polytool.js` | opt-in (`khost.SHELL+['94-host-polytool.js']`): the authoring tools, Inspect, Polygon and Path, as buttons in the inspector panel; clicks reach it through `KHOST.clickHooks`; the sky (`sky.objects()`) is never a corner; `window.POLYTOOL` | seven biome kits' identical `src/93-host-polytool.js` (from `settlements/screamers/src/93-polytool.js`); the seed of 94 marks |
 | `95-host-probe.js` | `window._api` for `verify.py --assert`: `BUDGET`, `REG`, `regOccupancy` (the volumes indexed by circle on `core/space` when the page has it, so `o.regHas` must stay inside the circle or pass `o.regHasWide`; a merged mesh's `userData.probePoints` sampled, one point a piece; a volume flagged `ground` or `far` counts as occupied without sampling; `test-probe.js`), `nanSweep`, `typeStats`, `setView`, `views`, `go`, plus the build's own fields | the biome kits' `91-host-probe.js` |
 | `95b-host-seat.js` | opt-in (`host.SEAT`, with `core/terrain/38a-core-seat.js`): the seat sweeps on `_api`: `contactSweep` (every record carrying a `foot` against the meshes marked `userData.seat`, with a negative control), `clearSweep` (record boxes, classes apart), `doorSweep`, `stairSweep` (against every solid drawn mesh), `seatSweeps` (all four); `KHOST.seatScene`. `test-seat-probe.js`; `core/terrain/SEAT.md` | Yuni's box tests, the catalog's `ANCHOR_AUDIT`, Pinnacle Rock's `ROCKRAY` |
+| (`core/walk/frame/95-walk-frame-host.js`) | riding's host fragment, kept with the frames (as core/city's host fragments are), not here: every build importing `host.py` records this folder's listing, so a file added here marks ~90 builds stale. Opt-in: listed by a page with frames, then `KHOST.ride(H, {walk, t, seats})`: each frame, before the walker stands, the floor under it carries it (`KWALKFRAME.carry`) and turns the view with the car; E by a seat sits, E again stands; `_api.ride` says where it is. `core/simulation/PLAN-RIDING.md`; its page is the ride lab (`core/simulation/ride/lab`) | new (2026-11-11) |
 | `93-host-inspect.js` | the inspector, record-driven: the smallest core/tags record holding the point under the pointer (indexed in `core/space`), worded by `KTAGS.label` or the build's `o.inspect` (plain text, or `{html, rec}`: the card as HTML and the record it is about); `o.inspectRay(ray)` for a build that picks by its own tests (no raycast of the scene); I for the hover tip, a click for the card, a mark round it; `KHOST.recordAt`, `KHOST.selected`, `KHOST.hoverOn` | `55-vc-host.js` 413-501 (the tip on I), but reading core/tags, not a build's lots |
 | `93-host-stocks.js` | **what things hold and the settlement's stocks, Voth's interface as the standard** (the owner, 2026-10-15): the inspector's contents (a place's store, what it makes from what, its household's food, what it sells; a container's place; a citizen's things) and the stocks panel (O): total, at the site, in transit, in storage, owned, change per day, days of cover, low / out / wanting, flows, the twelve holding most, a holder flown to; `KHOST.simHolds(SIM)` makes `o.holds` from core/simulation | `56e-vc-stocks-host.js`, `56d-vc-inspect-host.js` (`VC.thingsHTML`), `00-head.html` (the panel's look) |
 | `94-host-marks.js` | marks: areas, lines and points, named, noted, measured, each point on the surface it was clicked (P); kept in the browser and saved to `<build>/marks.json` through `tools/edits/serve.py`; a point stored as `[x, z]` is put on the ground as it loads | `57-vc-marks.js` |
@@ -63,8 +64,17 @@ const H = KHOST.take({
   api: {hostChecks, hostNegatives, get totals() {...}, biome: () => ...},   // the build's own window._api fields
 });
 // H = {clock, camera, renderer, scene, ctl, cam, setView, go, err, on}
-KHOST.on((dt, clock) => {...});          // a new subscriber: phase 'tick' (default), 'view' (after the camera), 'after'
+KHOST.on((dt, clock) => {...});          // a new subscriber: phase 'tick' (default), 'view' (after the camera), 'after',
+                                         // 'restore' (once when a lost WebGL context comes back)
 ```
+
+**WebGL context loss** (S3-76a). three r128 prevents the default on `webglcontextlost`, skips `render()` while the context is
+gone and rebuilds every program and texture from the scene on `webglcontextrestored`. The loop (91) pauses while it is gone (no
+tick runs against a dead context) and resumes on restore, after the `'restore'` subscribers: a page that rendered into a render
+target once (an impostor atlas, a baked map) re-bakes there, since that target comes back empty. `H.contextLost`, `H.glLost`,
+`H.glRestored` say what happened. Check it in a browser with `KHOST.host.renderer.forceContextLoss()`, then, a second later,
+`KHOST.host.renderer.forceContextRestore()`: the frame count stops, then moves again and the scene draws as before. `node core/host/test-loop.js`
+checks the loop's side.
 
 A build without a piece of data loses only that feature: no `views`, no view select; no `registry`, the inspector names the
 mesh and the probe has no volumes; no `sky.hour`, no hour slider; no `exporters`, no export row.
@@ -118,7 +128,10 @@ minimap, O stocks; with the camera's W A S D, Q / E, F, G, Esc. A build's own `k
 `KHOST.on` tick subscribers as `fn(clock.dt, clock)`; the camera is placed and clamped; `sky.follow(camera)` and the view
 subscribers (a runtime LOD); the hidden layers are hidden; the draw; then the after subscribers and the panel. A subscriber
 that throws is reported once to `#errs` with its stack and skipped from then on; the rest run. `window._ready` is set right
-after the first frame, as the biome kits' loops did.
+after the first frame, as the biome kits' loops did. A page that builds on after that frame (meshes it streams a frame budget
+at a time: `settlements/lightwall`'s carved rock, 2026-11-17) raises `window._hostPending` while that work is queued and lowers
+it when it is done; the verify harness (`tools/harness.py` `READY_JS`) waits for it to be back to 0 after `_ready`. A page
+that never sets it is unchanged.
 
 **The `TICKS` shim's second argument is motion time.** The biome kits' loops passed `performance.now()/1000`: seconds
 since the page was opened, the build included. The host passes the clock's `t`, seconds of motion since its loop began,
@@ -334,6 +347,17 @@ take that lists the probe must sort after `95-host-probe.js`, which is why the t
 `verify.py --assert` unchanged, chrome-hidden shots identical to the old pages' (bar the night's flicker and Islanders'
 animated sea), the hash baseline moved for those seven pages only. What the engine had and the host lacks:
 `kits/scyvoi/KNOWN_ISSUES.md`, "Host port".
+
+**Naming a kit's own host files** (S3-84b, Stage 8). Fragments run in filename order, and `KHOST.take` (from the take,
+`99-host-take.js`) makes `window._api` afresh (`95-host-probe.js`: `root._api = api`): whatever a kit put on `window._api`
+before the take is gone. So:
+- `99-host-take.js` is the last of the host's own files, and a kit never names a file `99-host-<kit>.js`: it sorts before the
+  take whenever the kit's name sorts before `take` (`99-host-dasri.js`, `99-host-kimr.js`), and its probe fields are lost.
+- What the take reads, or what must stand before it (a kit's own panel, map or controls), goes in a `98x-` file:
+  `98r-host-geomap.js` (`kits/resources`).
+- A kit's probe fields (`verify.py --assert`), added onto `window._api`, go in a file that sorts after the take:
+  `99-host-tz-<kit>.js` (`kits/hueru-kuran`, `kulanewa`, `molu-che`, `ria`, `spider-lake`, `dasri`, `coyote`; the Throne's
+  `99-host-tz-core.js`). Such a file adds onto the take's `window._api`, never replaces it.
 
 **Voth's city plan** (2026-10-15 and 2026-10-16, steps 6a and 6b) takes the whole interface, its tools included: the
 cantons and the lot buildings in view in the cutaway, its own ray picks in the inspector (`o.inspectRay`), its painted

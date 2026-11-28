@@ -1,0 +1,8 @@
+# Shroudhills (`biomes/shroudhills`) — Known Issues & Notes
+
+## Resolved / Verified Design Notes
+
+- [x] **100% genuine library textures (`0` untextured lit meshes):** Every ground layer (`KGROUND`), `KFAR` vista mesh, `Yonni` `YC1` watch-drum plinth, coal-seam outcrop, tree bark, foliage card, Sister-Cup bromeliad tank, Root-Hammock peat turf, Myrmecophyte Drum-Gall, `saltpeter` crust, weeping amber-resin stalactite, and bronze-black *Khrōma-Mīra* Shroud-Ant carapace binds to packed library textures in `tex/` (`materials.json` via `tools/textures/pack.py`).
+- [x] **Elevated `WATER.still` Sister-Cup Sky-Ponds (`Twist A`):** Dual mirror-rosette rainwater disks (`18–26 m` up in canopy forks) are drawn in a single batched `WATER.drawPools` call with sky reflections and amber-tannin radial gradients, while keeping `BIO.waterH` bound strictly to ground-level water (cove, stream, summit tarn) so understorey masking under host crowns stays accurate.
+- [x] **Full settlement massing deferred to `kits/yonni/`:** Per `PLAN.md`, Station 3 (`cloaktor`) places and tags a `Yonni` Spear-Queen `YC1` round battered-stone & hydraulic sea-lime watch-drum plinth with a telescoping `7.5 m` cobble root-skirt (zero flat rectangular pad) and smoking *myrtle-smudge* brazier; full multi-tower `YC1–YC3` Spear-Queen citadels belong to `kits/yonni/`.
+- [x] **Skinned walking animation for *Khrōma-Mīra* Shroud-Ants:** Sentries on Drum-Galls and foraging worker columns along overhead Root-Hammocks use articulated 3D chitin meshes with `ATMOS.U.time` antennal/mandible alertness motion; full path-following `kits/fauna` gait integration can attach to `SHROUDHILLS.HAMMOCKS` splines when `kits/fauna` adds an arthropod hexapod walker.

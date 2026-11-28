@@ -1,0 +1,14 @@
+{
+ "id": "plug",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Battered Isle — Exhumed +868.8 m Columnar Olivine-Basalt Volcanic Neck and Radial Dike Hogbacks",
+ "name": "Exhumed +868.8 m Columnar Olivine-Basalt Volcanic Neck and Cloud-Cinder Spine (Station 4, 474,248, +868.8 m summit, 1.44 atm): solid columnar basalt plug, radial feeder-dike hogbacks, nickel=180 garnierite seams, biomes/arch hyperaccumulators, and site:seamount-beacon",
+ "out": "batteredisle-plug.html",
+ "px": [474, 248],
+ "skyOffsetPx": [202, -82],
+ "lithology": "ultramafic",
+ "strataStack": "olivine-plug-basalt",
+ "pAtm": 1.44,
+ "trimElevM": 58.0,
+ "modes": ["Calm", "Gale", "Tsunami Drawdown"]
+}

@@ -113,9 +113,47 @@ function _ring(n, r, x, y0, y1, z, ry) {
 /* a sphere's rows follow its count round, in the default's proportion (rows of n0 x m0 for n round) */
 function _rows(n0, m0, n, min) { return _seg(Math.max(min, Math.round(m0 * n / n0)), min); }
 function _add(m) { (_target || scene).add(m); return m; }
+/* THE EXPORT FORM (GODOT-LOOK-PLAN.md section 13; core/engine/30-geo.js has the building kits' twin of it). Geometry a
+   game engine wants and a page does not: off unless a host calls KF.setForm() before pieces are built, so no page's
+   furniture moves.
+     chamfer  mkBox and mkBeam make the chamfered box: its own 24 vertices, each moved a bevel in along its face, with
+              twelve edge strips and eight corner triangles: 44 triangles and no new vertex, the faces' normals kept.
+              chamfer(family) -> the bevel in metres (a number: every family); a part thinner than four bevels stays plain
+     grain    a box or a beam names the way its grain runs (userData.grain, in the part's own frame: a beam's length, a
+              box's longest side), and an indexed batch writes it a vertex, turned into the world, as aGrain: a triplanar
+              detail map can then run along the wood on every face (M12) */
+const _FORM = { chamfer: null, grain: false };
+function kfSetForm(o) { o = o || {}; _FORM.chamfer = typeof o.chamfer === 'number' ? (() => o.chamfer) : typeof o.chamfer === 'function' ? o.chamfer : null; _FORM.grain = !!o.grain; return _FORM; }
+function _chamferBox(w, h, d, bv) {
+  const src = new THREE.BoxGeometry(w, h, d), P = src.attributes.position.array.slice(), N = src.attributes.normal.array, n = 24;
+  const corner = new Int8Array(n * 3);
+  for (let i = 0; i < n; i++) for (let k = 0; k < 3; k++) { const sg = P[i * 3 + k] > 0 ? 1 : -1; corner[i * 3 + k] = sg; if (Math.abs(N[i * 3 + k]) < 0.5) P[i * 3 + k] -= sg * bv; }
+  const idx = Array.from(src.index.array);
+  const at = (sx, sy, sz, axis) => { for (let i = 0; i < n; i++) if (corner[i * 3] === sx && corner[i * 3 + 1] === sy && corner[i * 3 + 2] === sz && Math.abs(N[i * 3 + axis]) > 0.5) return i; return -1; };
+  const tri = (a, b, c, ox, oy, oz) => {
+    const ux = P[b * 3] - P[a * 3], uy = P[b * 3 + 1] - P[a * 3 + 1], uz = P[b * 3 + 2] - P[a * 3 + 2], vx = P[c * 3] - P[a * 3], vy = P[c * 3 + 1] - P[a * 3 + 1], vz = P[c * 3 + 2] - P[a * 3 + 2];
+    if ((uy * vz - uz * vy) * ox + (uz * vx - ux * vz) * oy + (ux * vy - uy * vx) * oz >= 0) idx.push(a, b, c); else idx.push(a, c, b); };
+  const S = [-1, 1];
+  for (let ax = 0; ax < 3; ax++) { const b1 = (ax + 1) % 3, b2 = (ax + 2) % 3; for (const s1 of S) for (const s2 of S) {
+    const sg = t => { const q = [0, 0, 0]; q[ax] = t; q[b1] = s1; q[b2] = s2; return q; };
+    const a0 = at(...sg(-1), b1), a1 = at(...sg(1), b1), c0 = at(...sg(-1), b2), c1 = at(...sg(1), b2), o = [0, 0, 0]; o[b1] = s1; o[b2] = s2;
+    tri(a0, a1, c1, o[0], o[1], o[2]); tri(a0, c1, c0, o[0], o[1], o[2]); } }
+  for (const sx of S) for (const sy of S) for (const sz of S) tri(at(sx, sy, sz, 0), at(sx, sy, sz, 1), at(sx, sy, sz, 2), sx, sy, sz);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('normal', new THREE.Float32BufferAttribute(N.slice(), 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(src.attributes.uv.array.slice(), 2)); g.setIndex(idx);
+  return g;
+}
+/* a box's geometry: chamfered when the form asks and the part is thick enough, else the plain one, as before */
+function _boxGeo(w, h, d, family) {
+  const bv = _FORM.chamfer ? +_FORM.chamfer(family) : 0;
+  return bv > 0 && Math.min(w, h, d) >= bv * 4 ? _chamferBox(w, h, d, bv) : new THREE.BoxGeometry(w, h, d);
+}
 function mkBox(x, y, z, w, h, d, ry, color, family) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), Math.max(h, 0.02), Math.max(d, 0.02)), mat(color, family));
+  const W = Math.max(w, 0.02), H = Math.max(h, 0.02), D = Math.max(d, 0.02);
+  const m = new THREE.Mesh(_boxGeo(W, H, D, family), mat(color, family));
   m.position.set(x, y + h / 2, z); m.rotation.y = ry || 0;
+  if (_FORM.grain) m.userData.grain = W >= H && W >= D ? [1, 0, 0] : H >= D ? [0, 1, 0] : [0, 0, 1];
   return _add(m);
 }
 function mkCyl(x, y, z, r, h, ry, color, family) {
@@ -155,7 +193,8 @@ function mkBall(x, y, z, r, color, family) {
 function mkBeam(ax, ay, az, bx, by, bz, w, d, color, family) {
   const dx = bx - ax, dy = by - ay, dz = bz - az;
   const len = Math.max(Math.hypot(dx, dy, dz), 0.02);
-  const m = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, 0.02), len, Math.max(d, 0.02)), mat(color, family));
+  const m = new THREE.Mesh(_boxGeo(Math.max(w, 0.02), len, Math.max(d, 0.02), family), mat(color, family));
+  if (_FORM.grain) m.userData.grain = [0, 1, 0];
   m.position.set((ax + bx) / 2, (ay + by) / 2, (az + bz) / 2);
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), new THREE.Vector3(dx, dy, dz).normalize());
   return _add(m);
@@ -344,8 +383,38 @@ function mkFrustum(x, y, z, rBottom, rTop, h, ry, color, family, sides) {
 /* a painted panel: a plane of w by h facing +z (turned by ry), bottom-centre at (x, y, z), with a
    canvas texture painted ONCE per key by paint(ctx, W, H) and cached. Canvas pixels map 128 per metre
    (clamped 32..512), so an emblem stays round on a tall banner and a wide frieze alike. The material
-   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is. */
+   carries `family` like any other (cloth, hide, plaster ...). Deterministic as long as paint() is.
+   A DELIVERED IMAGE: when the key is a library texture id (patterns/xanadu/hanging-pleasure-dome) and the page carries
+   that image (FURN_DECAL_IMG, filled by the furniture bundle from a build's materials.json "decals": tools/textures/pack.py
+   packs them; or a page global KF_DECALS { id: url }), the painting is the stand-in until the image loads, then the image
+   is drawn over the same canvas texture (so a batch's shared material shows it too) at the image's own resolution and
+   the PANEL'S aspect: an image of another shape is cropped about its centre, never stretched. Without the image (not
+   delivered, not packed, a page-less context) the painting stays. The material's userData.decal holds the id; Godot
+   takes the id as the panel's texture and the painting as its fallback. */
 const _texCache = new Map();
+const FURN_DECAL_IMG = {}, _decalSt = { pending: 0, loaded: [], failed: [] };
+function furnDecalSrc(key) {
+  return FURN_DECAL_IMG[key] || (typeof KF_DECALS !== 'undefined' && KF_DECALS && KF_DECALS[key]) || null;
+}
+function _decalImage(t, key, src, aspect) {
+  if (typeof Image === 'undefined') return;
+  const img = new Image();
+  _decalSt.pending++;
+  img.onload = function () {
+    _decalSt.pending--;
+    const iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    if (!iw || !ih) { _decalSt.failed.push(key); return; }
+    /* the largest crop of the image at the panel's aspect, about its centre, at the image's own pixels (2048 at most) */
+    const sw = Math.min(iw, ih * aspect), sh = sw / aspect, k = Math.min(1, 2048 / Math.max(sw, sh));
+    const c = document.createElement('canvas');
+    c.width = Math.max(1, Math.round(sw * k)); c.height = Math.max(1, Math.round(sh * k));
+    c.getContext('2d').drawImage(img, (iw - sw) / 2, (ih - sh) / 2, sw, sh, 0, 0, c.width, c.height);
+    t.image = c; t.needsUpdate = true;
+    _decalSt.loaded.push(key);
+  };
+  img.onerror = function () { _decalSt.pending--; _decalSt.failed.push(key); };
+  img.src = src;
+}
 function mkDecal(x, y, z, w, h, ry, key, paint, family) {
   let m = _texCache.get(key);
   if (!m) {
@@ -358,6 +427,8 @@ function mkDecal(x, y, z, w, h, ry, key, paint, family) {
     const rough = family === 'metal' || family === 'gold' ? 0.45 : 0.92;
     m = new THREE.MeshStandardMaterial({ map: t, roughness: rough, metalness: family === 'gold' ? 0.6 : 0, side: THREE.DoubleSide });
     m.userData.family = family || '';
+    const src = furnDecalSrc(key);
+    if (src) { m.userData.decal = key; _decalImage(t, key, src, w / h); }
     _texCache.set(key, m);
   }
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
@@ -416,7 +487,7 @@ function mkHipRoof(x, y, z, w, h, d, ry, color, family) {
    'scrap' are the poor-tier sets any culture's poor buildings pull from. */
 const FURN_CULTURES = ['ancient', 'ancients-salvage', 'yuni-court', 'yuni-common', 'yuni-poor', 'sahelian', 'order', 'nomad', 'voth', 'iziz', 'beast-rider',
   'generic', 'scrap', 'lizardmen', 'eastabyss', 'xanadu', 'screamer', 'islander', 'republican', 'rustic', 'painted', 'reedlake', 'post-apoc', 'hykkousoi', 'scyvoi', 'zeijani', 'ashnomad', 'eternian',
-  'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia'];   // the shared culture rebuild (kits/yeti/PLAN.md section 11, 2026-11-03)
+  'khaayken', 'tungang', 'fellgang', 'talovolci', 'jimjam', 'dalab', 'pylon', 'talia', 'shumari'];   // the shared culture rebuild (kits/yeti/PLAN.md section 11, 2026-11-03); Shumari's file (Stage 8, D14)
 /* FURN_CULTURE_INFO[culture] = { name, pack, influences, materials }: pack is the core/sockets
    culture pack (core/sockets/80-cultures.js mkCulture key) whose banner cloth the culture's
    tapestries and hangings share, so a dressed building and its furniture match; null = none yet. */
@@ -518,10 +589,20 @@ function FURN(o) {
    friezes and pennant strings near the top of the wall, and the cloths hung from a rod or hook (scrolls, banners,
    tapestries, wall rugs: the kit draws them from y 0, rod at the top) with their top there too, so in a room taller
    than the cloth they leave the floor; a low room keeps them down to the floor. Everything else on a wall stands on
-   the floor (the painted hanging stands on its own poles). */
-const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top' };
+   the floor. The painted hanging (a hide laced in a frame of two poles) stood on the floor until 2026-11-17; the owner asked
+   for it raised too, so its frame hangs like a cloth.
+   THE HEM RULE (the owner, 2026-11-16: "make sure wall hangings dont wind up near ground, this has been a recurring
+   issue"): a hung cloth's top is at 2.7 m OR high enough that its hem is FURN_HEM over the floor, whichever is higher,
+   never above the ceiling less 0.15; wall art's lower edge is at least FURN_HEM up too. So a 2.4 m banner in a 4 m hall
+   ends 1.1 m up (it ended 0.3 m up when every top-hung cloth stopped at 2.7 m); only a room too low for the cloth brings
+   it nearer the floor. core/catalog/test-hems.js checks every hung piece of the catalog against it. */
+const FURN_WALL_HUNG = { art: 'eye', frieze: 'top', pennants: 'top', scroll: 'top', banner: 'top', tapestry: 'top', wall_rug: 'top', painted_hanging: 'top' };
+const FURN_HEM = 1.1;
+/* A piece can say so itself: `hung: 'top'` (a cloth drawn from y 0 with its rod at the top, whatever its role: a culture
+   file's sadu, felt or temple banner), `hung: 'eye'`, or `hung: false` (it stands on the floor although its role hangs) */
 function furnWallHung(A) {
   if (!A || A.anchor !== 'wall') return null;
+  if (A.hung != null) return A.hung || null;
   if (A.role && FURN_WALL_HUNG[A.role]) return FURN_WALL_HUNG[A.role];
   return A.type === 'art' ? 'eye' : null;
 }
@@ -532,7 +613,7 @@ function furnAnchorY(A, variant, at) {
   const hung = furnWallHung(A);
   if (hung) {
     const h = entryDims(A, variant).h, top = at.ceilingY != null ? at.ceilingY - 0.15 : floorY + 2.6;
-    const y = hung === 'eye' ? floorY + 1.6 - h / 2 : Math.min(top, floorY + 2.7) - h;
+    const y = floorY + (hung === 'eye' ? Math.max(1.6 - h / 2, FURN_HEM) : Math.max(2.7, h + FURN_HEM) - h);
     return Math.max(floorY, Math.min(y, top - h));
   }
   if (A.anchor === 'ceiling' && at.ceilingY != null) return at.ceilingY - entryDims(A, variant).h;
@@ -844,8 +925,26 @@ function furnCol(culture, key) {
    set of its own gets a texture family on top of the family its builder passed, so a host can map it (f_<texFamily>,
    falling back to f_<family>). The render family, the look, the batch's grouping by family and the declared
    `materials` are unchanged. [key pattern, families it applies to, texture family]. A part splits only when every key
-   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split. */
+   of the culture that has its colour matches, so a hex two keys share never splits; shaded colours do not split.
+   An optional fourth element names the cultures a rule is for (a key name another culture also uses keeps its own set);
+   culture-scoped rules come first. */
 const FAMILY_SPLITS = [
+  /* the Tungangs' fitted salvage (kits/tungang/PLAN.md section 7, the library sets it reuses; 2026-11-11) */
+  [/^enamel(Cream|Red|Green|Blue|Chip)$/, ['ceramic', 'metal'], 'tgEnamel', ['tungang']],
+  [/^paint(Red|Rose|Cream)$/, ['metal'], 'tgPainted', ['tungang']],
+  [/^(plate|plateDark|rivet|hood|cellCase)$/, ['metal'], 'tgPlate', ['tungang']],
+  [/^(rust|rustDeep)$/, ['rust', 'metal'], 'tgRust', ['tungang']],
+  [/^(blanketGrey|blanketRed|blanketBrown|seatBlue|seatWhite)$/, ['cloth'], 'tgWool', ['tungang']],
+  [/^felt$/, ['cloth'], 'tgFelt', ['tungang']],
+  [/^(canvasRaw|bannerRed)$/, ['cloth'], 'tgCanvas', ['tungang']],
+  [/^(plasterWhite|plasterRule)$/, ['plaster', 'stone'], 'tgPlaster', ['tungang']],
+  [/^concrete$/, ['concrete'], 'tgConcrete', ['tungang']],
+  [/^(wax|waxDark)$/, ['food'], 'tallow', ['tungang']],
+  [/^(timberOld|timberDark)$/, ['wood'], 'tgTimber', ['tungang']],
+  [/^ice$/, ['glass'], 'tgIce', ['tungang']],
+  [/^crystal$/, ['glass'], 'tgCrystal', ['tungang']],
+  [/^leather$/, ['leather', 'hide'], 'tgLeather', ['tungang']],
+  [/^oreCopper$/, ['stone'], 'tgOre', ['tungang']],
   /* the library's variants and extras (2026-10-19): candle and tallow wax, twisted rope, linen and patched canvas, red brick,
      the second and olive scale skins, the second plumage, and the shell sets: abalone, soft abalone and the pearls on a nacre
      part, conch on the shell family (a part on the shell family keeps the conch; its whites take the second nacre) */
@@ -914,7 +1013,7 @@ function furnFamily(culture, color, family) {
   let keys = rev.get(color);
   if (!keys && family === 'food') keys = _nearFruitKeys(rev, color);
   if (!keys) return family;
-  for (const [re, from, to] of FAMILY_SPLITS) if (from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
+  for (const [re, from, to, cults] of FAMILY_SPLITS) if ((!cults || cults.indexOf(culture) >= 0) && from.indexOf(family) >= 0 && keys.every(k => re.test(k))) return to + '/' + family;
   return family;
 }
 
@@ -1217,5 +1316,27 @@ function measureInstance(g) {
   if (!meshes || box.isEmpty()) return { empty: true, meshes: 0, tris: 0, w: 0, d: 0, h: 0, box: box };
   const size = box.getSize(new THREE.Vector3());
   return { empty: false, meshes: meshes, tris: Math.round(tris), w: size.x, d: size.z, h: size.y, box: box, min: box.min.clone(), max: box.max.clone() };
+}
+
+/* ---------------------------------------------------------- the lamp cap (S3-72)
+   Every lamp a piece holds (F.lamp) is a live PointLight, and a page of them overflows a lit material's shader
+   (MAX_FRAGMENT_UNIFORM_VECTORS 1024 on both GPU lanes: the catalog sheet once the Tungang and Fellgang lamps came in,
+   2026-11-11; the Beast Riders' sheet with 185, 2026-11-12). furnLampCap(root, max) gathers the PointLights under root
+   (they stand still) and keeps at most max of them on (FURN_LAMP_MAX, 24, by default): pick(p) turns on the nearest p (the
+   camera) and turns off the rest, always exactly max, so the programs never recompile as the camera moves. A host calls
+   pick at the start and again every half second or so; under max lights it changes nothing. */
+const FURN_LAMP_MAX = 24;
+function furnLampCap(root, max) {
+  max = max == null ? FURN_LAMP_MAX : max;
+  const L = [], w = new THREE.Vector3();
+  root.updateMatrixWorld(true);
+  root.traverse(function (o) { if (o.isPointLight) { o.getWorldPosition(w); L.push({ l: o, p: w.clone() }); } });
+  return { total: L.length, max: max, lights: L,
+    pick: function (p) {
+      if (L.length <= max) return L.length;
+      L.sort(function (a, b) { return a.p.distanceToSquared(p) - b.p.distanceToSquared(p); });
+      L.forEach(function (q, i) { q.l.visible = i < max; });
+      return max;
+    } };
 }
 

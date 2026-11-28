@@ -43,19 +43,28 @@ a `gl-context` line counts the context losses: "What a shader failure was", belo
 GPU when KRATOR_GL=gpu; no NaN geometry and no empty registered volume (when the page has the probe, `_api`); no
 instanced item past the instance cap (3c); the eye of every view is not inside geometry (10a); the budget in the
 build's BUDGETS.json; BIO.capReport and _api.seatSweeps when the page has them; a winding report (item 15, never a
-failure). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
+failure); `universal-time`, a report of how long they took and their slowest reads (a read of a second or more also prints
+"harness: universal <step> took N s" as it ends, so a slow one shows in the log before the watchdog's 25 minutes: Stage 8,
+2026-11-24, when leaf-stems' BIO.attachAudit held the open-world pages for over half an hour with no card to audit). `await V.sheet(out)` or `harness.py sheet <page>` draws every BIO item alone on a grid. A page that fails one today is listed in tools/verify_ratchet.json and only warns; anything not
 listed fails. `python3 tools/harness.py ratchet <pages>` reruns the universal asserts and lists a page's failures
 (--write records them; a page is taken out of the ratchet at its own rebuild turn).
 
 What a shader failure was (2026-11-11). r128's "THREE.WebGLProgram: shader error" names no material, and a burst of link
 failures with empty logs is also what a lost WebGL context or a driver under load gives a page with nothing wrong in it.
-Two records tell them apart; neither changes what passes or fails (tools/tests/test_gl_diagnosis.py has a case each):
+Two records tell them apart (tools/tests/test_gl_diagnosis.py has a case each):
   1. The context. From before the page loads (GL_HOOK_JS, window.__kgl), every canvas that takes a WebGL context is
      watched: each `webglcontextlost` and `webglcontextrestored` event is kept with its time and canvas, and each program
      as it fails to link with its time, canvas, three's SHADER_NAME and whether its log was empty. The line `gl-context`
-     (a report, never a failure) gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
+     gives the count: "no WebGL context lost (1 canvas watched)", or "the WebGL context was
      lost 1 time and restored 1 time: canvas 1 (1280x800) lost at 41.2 s, canvas 1 restored at 42.2 s". Headless
      Chromium on software GL often loses the first context by itself as its GPU process starts; that is counted too.
+     The line is where a real loss shows (Chromium's "loseContext: context lost" console line is left out of
+     shader-errors, real loss or not: BUGS-2026-11-15.md T1): a loss the page did not ask for (WEBGL_lose_context,
+     forceContextLoss) and that is not that start-up loss (in the first 3 s, back within 2 s) makes it a WARN, and a
+     renderer still lost at the end of the run after one makes it a FAIL.
+  The `shader-programs` line: KHOOK.checkPrograms on the page's own renderers and scene (it read only the renderers a
+     KHOOK layer compiled on, so a page with no layer passed with programs that never linked: T2); on a page with no
+     KHOOK, the programs drawn now whose LINK_STATUS is false.
   2. The program. A failing `shader-errors` line ends, after " || ", with "programs that do not link now (N): ..." (each
      renderer.info.programs entry whose LINK_STATUS is false at the end of the run: its shader type, the start of its
      cache key, the materials and meshes that draw with it, found as KHOOK.checkPrograms finds them, and its log), or
@@ -82,7 +91,8 @@ The cloud lanes (2026-11-10; tools/CLOUD-LANE.md, tools/cloud_lane.py): vast0, v
 on when %LOCALAPPDATA%/krator-cloud.json says so (`harness.py cloud on|off|status|setup`). Then a verify.py run on the GPU
 queues for arc, rtx and the cloud lanes that answer (auto), or for one by name (KRATOR_GPU_LANE=vast0, or cloud for
 either); its wrapper takes the lane and, on a cloud lane, sends a snapshot of the working tree and the LFS files it needs
-over SSH, streams the run, and brings back what it wrote and a verify cache entry. Timing runs and `lock` stay local. With
+over SSH, streams the run, and brings back what it wrote and a verify cache entry; the machine's own watchdog takes
+the run's KRATOR_GPU_STALL_MIN. Timing runs and `lock` stay local. With
 no config the harness behaves exactly as before.
 
 The stall watchdog: `lock` runs its command, and a verify.py that imports this harness at its top re-runs itself as a
@@ -114,8 +124,10 @@ LOAD_MS = 900000
 # they were merged; they still work.
 CHROME_ENV = ("KRATOR_CHROME", "PW_CHROME", "PW_CHROMIUM", "CHROME_PATH", "VERIFY_CHROME", "CHROMIUM")
 # ready: the world is built (`window._ready`; the open world says it as `WORLD.ready`, Voth's city plan and site
-# editor as `_vc.ready` and `_site.ready`), or the error panel has filled
-READY_JS = ("window._ready===true || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
+# editor as `_vc.ready` and `_site.ready`), or the error panel has filled. A page that builds on after its first frame
+# (core/host 91: `window._hostPending`, a count it raises while that work is queued and lowers when it is done) is ready
+# when the count is back to 0; a page that never sets it is ready as before
+READY_JS = ("(window._ready===true&&!(window._hostPending>0)) || (window.WORLD&&window.WORLD.ready===true) || (window._vc&&window._vc.ready) || "
             "(window._site&&window._site.ready) || (document.getElementById('errs')&&"
             "document.getElementById('errs').textContent.length>0)")
 STATS_JS = """()=>{const w={};for(const k of Object.keys(window)){if(!k.startsWith('_')||k==='__THREE__')continue;
@@ -979,15 +991,16 @@ EYE_NEAR = 1.0             # item 10a: a view nearer than this to a solid surfac
 FIND_JS = """const __kfind=()=>{ let sc=null,cam=null;
  try{ if(typeof scene!=='undefined'&&scene&&scene.isScene) sc=scene; }catch(e){}
  try{ if(typeof camera!=='undefined'&&camera&&camera.isCamera) cam=camera; }catch(e){}
- const A=window._api||{}; sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null);
- cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null);
+ const A=window._api||{}, H=(typeof HOST!=='undefined'&&HOST)||window.HOST||{};
+ sc=sc||(window.scene&&window.scene.isScene?window.scene:null)||(A.scene&&A.scene.isScene?A.scene:null)||(H.scene&&H.scene.isScene?H.scene:null);
+ cam=cam||(window.camera&&window.camera.isCamera?window.camera:null)||(A.camera&&A.camera.isCamera?A.camera:null)||(H.camera&&H.camera.isCamera?H.camera:null);
  if(!sc||!cam){ for(const k of Object.keys(window)){ let v; try{ v=window[k]; }catch(e){ continue; }
    if(!v||typeof v!=='object') continue; if(!sc&&v.isScene) sc=v; if(!cam&&v.isPerspectiveCamera) cam=v; } }
  return {sc,cam}; };"""
 # Item 27: the samplers each LINKED program really has (getActiveUniform: what the GPU kept after #ifdef pruning and dead-code
 # removal), not a count of declared maps; the worst first. `samplersOf` in biomes/throne guessed from the shader text and
 # overcounted (ringisles).
-SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer); }catch(e){}
+SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer)||(window.HOST&&window.HOST.renderer); }catch(e){}
  if(!R||!R.info||!R.info.programs||!R.getContext) return null; const gl=R.getContext();
  const S=new Set([0x8B5E,0x8B60,0x8B5F,0x8DC1,0x8B62,0x8DC4,0x8DC5,0x8DCA,0x8DCB,0x8DCC,0x8DCF,0x8DD2,0x8DD3,0x8DD4,0x8DD7]);
  const out=[]; for(const p of R.info.programs){ const g=p.program; if(!g||!gl.getProgramParameter(g,gl.LINK_STATUS)) continue;
@@ -995,6 +1008,151 @@ SAMPLERS_JS = """()=>{ let R=null; try{ R=(typeof renderer!=='undefined'&&render
   for(let i=0;i<n;i++){ const u=gl.getActiveUniform(g,i); if(u&&S.has(u.type)){ k+=u.size; names.push(u.name.replace(/\\[0\\]$/,'')); } }
   out.push({name:p.name||'program '+p.id, n:k, names:names.slice(0,20)}); }
  out.sort((a,b)=>b.n-a.n); return {programs:out.length, max:out.length?out[0].n:0, top:out.slice(0,5), units:gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)}; }"""
+WATER_MOUTHS_JS = """()=>{
+ let W=null; try{ W=(typeof WATER!=='undefined'&&WATER)||window.WATER; }catch(e){}
+ if(!W||!Array.isArray(W.surfaces)) return null;
+ const opens=W.surfaces.filter(s=>s&&s.kind==='open'&&typeof s.contains==='function');
+ const flows=W.surfaces.filter(s=>s&&s.kind==='flow'&&Array.isArray(s.pts)&&s.pts.length>=2);
+ if(!opens.length||!flows.length) return {opens:opens.length, flows:flows.length, bad:[]};
+ let G=null;
+ try{ if(typeof terrainH==='function') G=terrainH; }catch(e){}
+ if(!G){ try{ if(typeof landH==='function') G=landH; }catch(e){} }
+ if(!G){ try{ if(typeof DRAWN_H==='function') G=DRAWN_H; }catch(e){} }
+ if(!G&&window._api&&typeof window._api.ground==='function') G=window._api.ground;
+ /* what the check spent where (its line reports it): samples along the flows, ground reads, outline tests, keep lookups */
+ const PF={samples:0, gN:0, gMs:0, cN:0, cMs:0, kfN:0, kfMs:0, kfBuildMs:0, rings:0}, T0=performance.now();
+ if(G){ const G0=G; G=(x,z)=>{ const t=performance.now(), v=G0(x,z); PF.gMs+=performance.now()-t; PF.gN++; return v; }; }
+ const has=(O,x,z)=>{ const t=performance.now(), v=O.contains(x,z); PF.cMs+=performance.now()-t; PF.cN++; return v; };
+ const lvlOf=O=>typeof O.levelAt==='function'?O.levelAt(0):(O.level||0);
+ const inBounds=(O,x,z)=>{ const b=O.bounds; return !b||(x>=b[0]&&z>=b[1]&&x<=b[2]&&z<=b[3]); };
+ const drawnList=Array.isArray(W.drawn)?W.drawn:[];
+ const keepFnOf=F=>{
+  if(typeof F.keepAt==='function') return F.keepAt;
+  const D=drawnList.find(d=>d&&d.S===F);
+  const ka=D&&D.mesh&&D.mesh.geometry&&D.mesh.geometry.attributes&&D.mesh.geometry.attributes.wtrKeep;
+  const pos=D&&D.ribbon&&D.ribbon.pos;
+  if(ka&&pos&&ka.array){
+   /* the nearest ribbon vertex's keep value, found on a grid of the vertices (the same vertex the full scan finds: rings of
+      cells are searched until no nearer cell can hold a nearer vertex), not by scanning every vertex for every sample */
+   /* D.ribbon.pos is in world space: core/water samples the keep there (51-core-water-kinds.js, o.keep(R.pos...)) and then moves the
+      mesh to its origin `org` for float precision. Adding mesh.position read every keep from a vertex 26 to 52 km away on the open
+      world (2026-11-24, Stage 8): both wrong and, searched from there, the slowest part of the check */
+   const K=ka.array, n=K.length, ox=0, oz=0;
+   if(!n) return null;
+   let x0=1e18,z0=1e18,x1=-1e18,z1=-1e18;
+   for(let i=0;i<n;i++){ const x=pos[i*3]+ox, z=pos[i*3+2]+oz; if(x<x0)x0=x; if(x>x1)x1=x; if(z<z0)z0=z; if(z>z1)z1=z; }
+   const C=Math.max(1,Math.sqrt(Math.max(1,(x1-x0)*(z1-z0))/n)*2), nx=Math.max(1,Math.ceil((x1-x0)/C)+1), nz=Math.max(1,Math.ceil((z1-z0)/C)+1);
+   const cell=new Map();
+   for(let i=0;i<n;i++){ const k=Math.floor((pos[i*3]+ox-x0)/C)*nz+Math.floor((pos[i*3+2]+oz-z0)/C); const a=cell.get(k); if(a) a.push(i); else cell.set(k,[i]); }
+   return (x,z)=>{
+    const t0=performance.now();
+    const cx=Math.min(nx-1,Math.max(0,Math.floor((x-x0)/C))), cz=Math.min(nz-1,Math.max(0,Math.floor((z-z0)/C)));
+    let best=1e18, bi=-1, kv=1;
+    const look=(i,j)=>{ if(i<0||i>=nx||j<0||j>=nz) return; const a=cell.get(i*nz+j); if(!a) return;
+     for(const q of a){ const dx=(pos[q*3]+ox)-x, dz=(pos[q*3+2]+oz)-z, d2=dx*dx+dz*dz; if(d2<best||(d2===best&&q<bi)){ best=d2; bi=q; kv=K[q]; } } };
+    for(let r=0;r<Math.max(nx,nz)+1;r++){
+     /* every cell on ring r lies at least (r-1) cells from the sample (outside the grid, from its nearest point on the
+        grid's box, which is nearer still: the box is convex); only the ring's border is walked */
+     const lim=(r-1)*C; if(bi>=0&&lim>0&&lim*lim>best) break;
+     PF.rings++;
+     if(!r){ look(cx,cz); continue; }
+     for(let i=cx-r;i<=cx+r;i++){ look(i,cz-r); look(i,cz+r); }
+     for(let j=cz-r+1;j<=cz+r-1;j++){ look(cx-r,j); look(cx+r,j); }
+    }
+    PF.kfN++; PF.kfMs+=performance.now()-t0;
+    return kv;
+   };
+  }
+  return null;
+ };
+ const bad=[], step=4;
+ for(const F of flows){
+  const P=F.pts.map(p=>Array.isArray(p)?{x:p[0],z:p[1],y:p[2]||0,w:F.width||10}:{x:p.x,z:p.z,y:p.y||0,w:p.w||F.width||10});
+  const tb=performance.now(), kf=keepFnOf(F); PF.kfBuildMs+=performance.now()-tb;
+  let overM=0, maxOver=0, ox=0, oz=0, oName='';
+  let subM=0, maxSub=0, sx=0, sz=0, sName='';
+  for(let i=0;i+1<P.length;i++){
+   const a=P[i], b=P[i+1], L=Math.hypot(b.x-a.x,b.z-a.z);
+   if(L<1e-6) continue;
+   const n=Math.max(1,Math.ceil(L/step)), ds=L/n, tx=(b.x-a.x)/L, tz=(b.z-a.z)/L, nx=-tz, nz=tx;
+   for(let k=0;k<(i+2===P.length?n+1:n);k++){
+    const u=k/n, x=a.x+(b.x-a.x)*u, z=a.z+(b.z-a.z)*u, w=(a.w+(b.w-a.w)*u)||10; PF.samples++;
+    if(kf&&kf(x,z)<0.25){ overM=0; subM=0; continue; }
+    /* the ground heights only where an open water's outline holds the point: an open world's ground is noise and erosion, and
+       three reads at every 4 m of every river made this a minute and more (Stage 8, 2026-11-24); the same tests in the same order */
+    let g, gL, gR;
+    const gAt=()=>g===undefined?(g=G?G(x,z):null):g;
+    let hitOpen=null;
+    /* the tests are pure, so the cheap one goes first: the ground height (read once per point) against the level, then the outline
+       (an open water with a shore reads the ground in its own contains: the region's sea holds every river point in its box) */
+    for(const O of opens){
+     if(!inBounds(O,x,z)) continue;
+     const lv=lvlOf(O), gg=gAt();
+     if(gg!==null&&!(gg<lv-0.02)) continue;
+     if(has(O,x,z)){ hitOpen=O; break; }
+    }
+    if(hitOpen){ overM+=ds; if(overM>maxOver){ maxOver=overM; ox=x; oz=z; oName=hitOpen.name||'open water'; } }
+    else overM=0;
+    let hitSub=null;
+    if(G){
+     const dOut=w*0.5+Math.max(8,w*0.35);
+     const xl=x+nx*dOut, zl=z+nz*dOut, xr=x-nx*dOut, zr=z-nz*dOut;
+     for(const O of opens){
+      if(!inBounds(O,x,z)) continue;
+      const lv=lvlOf(O);
+      if(!(gAt()<lv+0.15)) continue;
+      if(gL===undefined) gL=G(xl,zl);
+      if(!(gL<lv-0.20)) continue;
+      if(gR===undefined) gR=G(xr,zr);
+      if(!(gR<lv-0.20)) continue;
+      if(has(O,xl,zl)&&has(O,xr,zr)){ hitSub=O; break; }
+     }
+    }
+    if(hitSub){ subM+=ds; if(subM>maxSub){ maxSub=subM; sx=x; sz=z; sName=hitSub.name||'open water'; } }
+    else subM=0;
+   }
+  }
+  if(maxOver>24) bad.push((F.name||'flow')+' runs '+maxOver.toFixed(0)+' m unfaded inside '+oName+' near ('+ox.toFixed(0)+','+oz.toFixed(0)+')');
+  else if(maxSub>28) bad.push((F.name||'flow')+' runs '+maxSub.toFixed(0)+' m unbanked through submerged bed of '+sName+' near ('+sx.toFixed(0)+','+sz.toFixed(0)+')');
+ }
+ for(const k in PF) PF[k]=Math.round(PF[k]); PF.ms=Math.round(performance.now()-T0);
+ return {opens:opens.length, flows:flows.length, bad, perf:PF};
+}"""
+# Item 33: foliage card sheet cuts and stem-origin attachment: refuses any single-plant library card cut as a multi-cell
+# sheet ("sheet": "geometry" or BIO.geo.cells), and runs BIO.attachAudit with tight stem tolerances (kStem 0.16, pad 0.30 m).
+LEAF_STEMS_JS = """()=>{
+ if(typeof BIO==='undefined'||!BIO||!BIO.kits) return {defs:0, audited:0, floating:0, bad:[]};
+ const bad=[]; let defs=0;
+ for(const K of Object.values(BIO.kits)){
+  for(const [nm,df] of Object.entries((K&&K.defs)||{})){
+   const lc=df&&df.mat&&df.mat.userData&&df.mat.userData.libCard, raw=df&&df.raw;
+   if(!lc||!lc.lib) continue;
+   defs++;
+   const cut=!!(raw&&raw.userData&&raw.userData.cells)||lc.sheet==='geometry';
+   if(lc.plants===1&&cut){
+    bad.push('item '+nm+' ('+(lc.slot||lc.lib)+') cuts single-plant '+lc.lib+' as a multi-cell sheet');
+   }
+  }
+ }
+ let audited=0, floating=0, cards=0;
+ const G=(BIO.host&&BIO.host.terrainH)||(typeof terrainH==='function'?terrainH:null)||(window._api&&typeof window._api.terrainH==='function'?window._api.terrainH:null);
+ /* the cards BIO.attachAudit would audit (its own selection: a biome item's instanced leaf or hang). With none (the open world draws its
+    flora otherwise) the audit has nothing to find, and a page built before core/biome's fix of 2026-11-24 still walks every ground
+    triangle cell by cell: pinnacle's far terrain made that over half an hour for nothing. So it is not called */
+ const sc=BIO.host&&BIO.host.scene;
+ if(sc) sc.traverse(m=>{ if(!m.isInstancedMesh) return; const u=m.userData||{}; if(u.probeSkip||!u.biome) return;
+  const k=m.material&&m.material.userData&&m.material.userData.bio&&m.material.userData.bio.kind; if(k==='leaf'||k==='hang') cards+=m.count; });
+ if(typeof BIO.attachAudit==='function'&&G&&(!sc||cards>0)){   /* no scene to count in: the audit says itself what it can read */
+  const a=BIO.attachAudit({ground:G, kStem:0.16, pad:0.30, max:6000});
+  if(!a.note){
+   audited=a.audited||0; floating=a.floating||0;
+   if(audited>0&&a.share>0.015){
+    bad.push(floating+' of '+audited+' foliage cards float under tight stem audit ('+(100*a.share).toFixed(2)+'% > 1.50%)');
+   }
+  }
+ }
+ return {defs, audited, floating, bad, cards};
+}"""
 # Item 28: the eye against the ground as drawn (core/drawn, KDRAWN.h): the page's own KDRAWN sources when it registers them,
 # else its ground meshes (userData.ground, or named ground / terrain), read triangle by triangle. The ray rule misses an eye
 # under the ground when something solid lies below it (a seabed, a cave floor); this does not.
@@ -1008,40 +1166,78 @@ DRAWN_EYE_JS = "(src)=>{" + FIND_JS + """
  cam.updateMatrixWorld(); const e=cam.matrixWorld.elements, x=e[12], y=e[13], z=e[14]; let h=null;
  for(const s of srcs){ const v=s.h(x,z); if(v!==null&&(h===null||v>h)) h=v; }
  return {from, h, eye:[+x.toFixed(2),+y.toFixed(2),+z.toFixed(2)], under:h!==null&&y<h}; }"""
-SAMPLE_JS = "()=>{ try{ return {calls:renderer.info.render.calls, tris:renderer.info.render.triangles}; }catch(e){ return null; } }"
+SAMPLE_JS = "()=>{ try{ const R=(typeof renderer!=='undefined'&&renderer)||window.renderer||(window._api&&window._api.renderer)||((typeof HOST!=='undefined'&&HOST)&&HOST.renderer); return R?{calls:R.info.render.calls, tris:R.info.render.triangles}:null; }catch(e){ return null; } }"
+VRAM_JS = "()=>{" + FIND_JS + """
+ const {sc}=__kfind(); if(!sc) return null;
+ const seenT=new Set(), seenG=new Set(), seenB=new Set(); let texB=0, geomB=0;
+ const bppOf=(t)=>{ if(t.type===1015||t.type===1016) return t.type===1015?16:8; return 4; };
+ const addTex=(t)=>{ if(!t||!t.isTexture||seenT.has(t)) return; seenT.add(t);
+  const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+  if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+  if((t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D)&&t.image){
+   const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); return; }
+  const ims=t.isCubeTexture?(t.image||[]):[t.image];
+  for(const im of ims){ if(!im) continue; const w=im.naturalWidth||im.width||0, h=im.naturalHeight||im.height||0, dp=im.depth||1;
+   texB+=Math.round(w*h*dp*bppOf(t)*mips); } };
+ const scanM=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) addTex(v); }
+  if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
+   if(v&&v.isTexture) addTex(v); else if(Array.isArray(v)) v.forEach(x=>{ if(x&&x.isTexture) addTex(x); }); } };
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
+ sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scanM(m);
+  if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+  if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
+ if(sc.background&&sc.background.isTexture) addTex(sc.background);
+ if(sc.environment&&sc.environment.isTexture) addTex(sc.environment);
+ return {totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:seenT.size, geomN:seenG.size}; }"""
 UNIVERSAL_JS = "(cap)=>{" + FIND_JS + """
  const {sc}=__kfind(); const A=window._api||null; const R={scene:!!sc};
+ const MS={}; let T0=performance.now(); const lap=k=>{ const t=performance.now(); MS[k]=Math.round(t-T0); T0=t; };
  R.panel=document.getElementById('errs')?document.getElementById('errs').textContent:null;
  R.imgErr=(window.__kimgErr||[]).slice(0,8); R.imgErrN=(window.__kimgErr||[]).length;
- const bad=[]; let n=0;
+ const bad=[]; let n=0, texB=0, geomB=0; const seenG=new Set(), seenB=new Set();
+ const addArr=(a)=>{ if(!a) return; const buf=a.data&&a.data.array?a.data.array:a.array; if(buf&&buf.byteLength&&!seenB.has(buf)){ seenB.add(buf); geomB+=buf.byteLength; } };
  if(sc){ const seen=new Set();
+  const bppOf=(t)=>(t.type===1015?16:t.type===1016?8:4);
   const chk=(t,where)=>{ if(!t||!t.isTexture||seen.has(t)) return; seen.add(t); n++;
-   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture) return;
+   const mips=t.generateMipmaps!==false&&t.minFilter!==1003&&t.minFilter!==1006?1.3333333:1;
+   if(t.isCompressedTexture&&Array.isArray(t.mipmaps)){ for(const m of t.mipmaps) if(m&&m.data) texB+=m.data.byteLength||0; return; }
+   if(t.isDataTexture||t.isDataTexture2DArray||t.isDataTexture3D||t.isDepthTexture||t.isCompressedTexture||t.isVideoTexture){
+    if(t.image){ const d=t.image.data; texB+=Math.round((d&&d.byteLength?d.byteLength:(t.image.width||0)*(t.image.height||0)*(t.image.depth||1)*bppOf(t))*mips); }
+    return; }
    const ims=t.isCubeTexture?(t.image||[]):[t.image];
    if(t.isCubeTexture&&!ims.length){ bad.push(where+' (cube, no faces)'); return; }
    for(const im of ims){ if(!im){ bad.push(where+' (no image)'); return; }
     let w=im.width,h=im.height;
     if(typeof HTMLImageElement!=='undefined'&&im instanceof HTMLImageElement){ if(!im.complete){ bad.push(where+' (still loading)'); return; } w=im.naturalWidth; h=im.naturalHeight; }
-    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; } } };
+    if(!(w>=2&&h>=2)){ bad.push(where+' '+w+'x'+h); return; }
+    texB+=Math.round(w*h*(im.depth||1)*bppOf(t)*mips); } };
   const scan=(m)=>{ for(const k in m){ let v; try{ v=m[k]; }catch(e){ continue; } if(v&&v.isTexture) chk(v,(m.name||m.type)+'.'+k); }
    if(m.uniforms) for(const k in m.uniforms){ const v=m.uniforms[k]&&m.uniforms[k].value;
     if(v&&v.isTexture) chk(v,(m.name||m.type)+'.uniforms.'+k); else if(Array.isArray(v)) v.forEach((x,i)=>{ if(x&&x.isTexture) chk(x,(m.name||m.type)+'.uniforms.'+k+'['+i+']'); }); } };
-  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m); });
+  sc.traverse(o=>{ const ms=Array.isArray(o.material)?o.material:(o.material?[o.material]:[]); for(const m of ms) scan(m);
+   if(o.geometry&&!seenG.has(o.geometry)){ seenG.add(o.geometry); const at=o.geometry.attributes||{}; for(const k in at) addArr(at[k]); if(o.geometry.index) addArr(o.geometry.index); }
+   if(o.isInstancedMesh){ addArr(o.instanceMatrix); addArr(o.instanceColor); } });
   if(sc.background&&sc.background.isTexture) chk(sc.background,'scene.background');
   if(sc.environment&&sc.environment.isTexture) chk(sc.environment,'scene.environment'); }
  R.tex={n, bad:bad.slice(0,8), badN:bad.length};
+ R.vram=sc?{totalMB:+((texB+geomB)/1048576).toFixed(2), texMB:+(texB/1048576).toFixed(2), geomMB:+(geomB/1048576).toFixed(2), texN:n, geomN:seenG.size}:null;
+ lap('traverse');
  R.nan=(A&&typeof A.nanSweep==='function')?(()=>{ try{ const s=A.nanSweep(); return {meshes:s.meshes, instances:s.instances,
    first:JSON.stringify((s.firstInstances||[]).concat(s.first||[])).slice(0,300)}; }catch(e){ return {error:String(e)}; } })():null;
+ lap('nanSweep');
  R.occ=(A&&typeof A.regOccupancy==='function')?(()=>{ try{ const o=A.regOccupancy(); const e=o.filter(x=>x.n===0);
    return {n:o.length, empty:e.length, names:e.slice(0,6).map(x=>x.name)}; }catch(e){ return {error:String(e)}; } })():null;
+ lap('regOccupancy');
  R.ruins=(typeof KRUINS!=='undefined'&&typeof KRUINS.report==='function'&&KRUINS.watched&&KRUINS.watched.length)?(()=>{ try{ return {rep:KRUINS.report(), neg:KRUINS.selfTest()}; }catch(e){ return {error:String(e)}; } })():null;
+ lap('ruins');
  const over=[]; let src=null; const B=(typeof BIO!=='undefined')?BIO:(window.BIO||null);
  if(B&&typeof B.capReport==='function'){ src='BIO.capReport'; try{ for(const r of (B.capReport()||[])) over.push((r.kit?r.kit+'/':'')+(r.item||'?')+' '+r.count+' > '+r.cap+(r.why?' ('+r.why+')':' (no capWhy)')); }catch(e){ over.push('capReport threw: '+e); } }
  else if(sc){ src='scene scan, cap '+cap; sc.traverse(o=>{ if(o.isInstancedMesh&&o.count>cap&&!(o.userData&&o.userData.capOk))
    over.push((o.name||(o.userData&&(o.userData.item||o.userData.tag))||o.geometry.type)+' '+o.count); }); }
- R.cap={src, over:over.slice(0,8), overN:over.length};
+ R.cap={src, over:over.slice(0,8), overN:over.length}; lap('cap');
  R.seat=(A&&typeof A.seatSweeps==='function')?(()=>{ try{ const S=A.seatSweeps(), o={}; for(const k of ['contact','clear','doors','stairs']){ const x=S[k]||{};
    o[k]={n:x.n, nFails:x.nFails||0, first:JSON.stringify((x.fails||[]).slice(0,2)).slice(0,160)}; } o.neg=!S.contact||S.contact.neg===true; return o; }catch(e){ return {error:String(e)}; } })():null;
+ lap('seatSweeps'); R.ms=MS;
  try{ R.sceneTris=(A&&A.totals&&A.totals.tris!=null)?A.totals.tris:null; }catch(e){ R.sceneTris=null; }
  return R; }"""
 # The programs that do not link at the end of the run, named: r128's "THREE.WebGLProgram: shader error" carries no material.
@@ -1072,7 +1268,50 @@ PROGRAMS_JS = "()=>{" + FIND_JS + """
     if(pr.programs&&typeof pr.programs.forEach==='function') pr.programs.forEach((x)=>{ const h=by.get(x); if(h&&h!==rec) put(h.held,mn,4); }); } });
   by.forEach((rec)=>{ if(!rec.meshN&&rec.held.length){ out.heldN++; if(out.bad.length<8) out.bad.push(rec); return; } out.badN++; if(out.bad.length<8) out.bad.push(rec); }); }
  return out; }"""
+# KHOOK.checkPrograms on the page's own renderers and scene (T2, BUGS-2026-11-15.md): with no renderer it reads only
+# KHOOK.renderers, the ones a layer was compiled on, so a page whose materials carry no KHOOK layer passed with programs
+# that never linked. The renderers are found as PROGRAMS_JS finds them; each record once, however many renderers name it.
+# null when the page has no KHOOK (shader-programs then reads PROGRAMS_JS's LINK_STATUS sweep).
+KHOOK_PROGRAMS_JS = "()=>{" + FIND_JS + """
+ if(typeof KHOOK==='undefined'||!KHOOK||typeof KHOOK.checkPrograms!=='function') return null;
+ const {sc}=__kfind(); const rs=[];
+ const add=(r)=>{ try{ if(r&&r.info&&Array.isArray(r.info.programs)&&rs.indexOf(r)<0) rs.push(r); }catch(e){} };
+ try{ if(typeof renderer!=='undefined') add(renderer); }catch(e){}
+ add(window.renderer); add((window._api||{}).renderer);
+ try{ (KHOOK.renderers||[]).forEach(add); }catch(e){}
+ const seen=new Set(), out=[];
+ const take=(list)=>{ for(const r of (list||[])){ const k=r.kind==='anchor'?'a|'+r.layer+'|'+r.anchor:'p|'+r.name+'|'+r.key; if(seen.has(k)) continue; seen.add(k);
+   out.push(r.kind==='anchor'?r.layer+': '+r.anchor:'program '+r.name+': '+String(r.programLog||r.fragmentLog||r.vertexLog||'').replace(/\\s+/g,' ').slice(0,120)); } };
+ if(rs.length) for(const R of rs) take(KHOOK.checkPrograms(R,sc||null)); else take(KHOOK.checkPrograms());
+ return {bad:out, renderers:rs.length}; }"""
 LINK_ERR = re.compile(r"THREE\.WebGLProgram: shader error", re.I)
+# A context loss the page did not ask for in its first START_LOSS_MS, back within START_BACK_MS, is headless software GL
+# losing its first context by itself as its GPU process starts (T3): reported, not warned.
+START_LOSS_MS, START_BACK_MS = 3000, 2000
+
+
+def gl_context_verdict(P):
+    """(ok, prefix) for the `gl-context` line (T1). SHADER_IGNORE keeps Chromium's "loseContext: context lost" console line
+    out of shader-errors, for a real loss too, so this line is where a real loss shows: a loss the page did not ask for
+    (WEBGL_lose_context, forceContextLoss) warns, and fails when a renderer is still lost at the end (nothing draws)."""
+    if not P or not P.get("hooked"):
+        return True, ""
+    ev = P.get("ev") or []
+    real = []
+    for i, e in enumerate(ev):
+        if e["e"] != "lost" or e.get("asked"):
+            continue
+        back = next((x["t"] for x in ev[i + 1:] if x["e"] == "restored" and x["canvas"] == e["canvas"]), None)
+        if e["t"] < START_LOSS_MS and back is not None and back - e["t"] <= START_BACK_MS:
+            continue   # software GL's start-up loss
+        real.append(e)
+    if not real:
+        return True, ""
+    if P.get("lostNow"):
+        return False, "%s the page did not ask for, and a renderer still lost at the end: nothing draws. " % (
+            "a context loss" if len(real) == 1 else "%d context losses" % len(real))
+    return True, "WARN: %s the page did not ask for (a GPU reset or a driver fault; rerun with --no-cache). " % (
+        "a context loss" if len(real) == 1 else "%d context losses" % len(real))
 # A context loss explains a link failure on its canvas from LOSS_LEAD_S before the lost event (the GPU side is gone before
 # the page is told: links fail with empty logs) until LOSS_LAG_S after the context is restored.
 LOSS_LEAD_S, LOSS_LAG_S = 10.0, 1.0
@@ -1302,8 +1541,9 @@ def load_budget(here, html):
 
 
 def survey_checks(here, checks=None):
-    """The survey's opt-in checks (SURVEY) this verify runs: `checks` (SURVEY, a name, or names), plus those the build is
-    listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    """The survey's opt-in checks (SURVEY + OPTIN_CHECKS) this verify runs: `checks` (SURVEY, a name, or names), plus those
+    the build is listed for in tools/checks_optin.json, plus KRATOR_CHECKS."""
+    optin_all = SURVEY + ("water-mouths", "leaf-stems")
     want = set()
     if checks:
         want.update([checks] if isinstance(checks, str) else checks)
@@ -1311,10 +1551,10 @@ def survey_checks(here, checks=None):
     try:
         import buildlib
         b = os.path.relpath(os.path.abspath(here or "."), ROOT).replace(os.sep, "/")
-        want.update(c for c in SURVEY if buildlib.opted_in(c, None if b.startswith("..") else b))
+        want.update(c for c in optin_all if buildlib.opted_in(c, None if b.startswith("..") else b))
     except Exception:
         pass
-    return {c for c in want if c in SURVEY}
+    return {c for c in want if c in optin_all}
 
 
 def page_sources(html):
@@ -1372,6 +1612,25 @@ class VerifyPage:
         self.errs, self.fails, self.ready = [], [], False
         self.samples, self.eyes, self.universal = [], [], []   # (view, calls, tris); (view, result); (name, ok, detail)
         self.winding = self.gl = None   # the winding sweep; the WebGL record (PROGRAMS_JS: context events, link failures, programs)
+        self.utimes = []   # (step, seconds) of the universal asserts' page reads: the `universal-time` report line
+
+    async def _timed(self, name, js, *arg):
+        """page.evaluate(js, *arg), its time kept under `name`; a read of a second or more says so as it ends, so a slow
+        step shows in the log (and feeds the stall watchdog) before the next one starts."""
+        t = time.time()
+
+        async def still():   # once, so a run the watchdog stops names the step that held it (and the watchdog still stops it)
+            await asyncio.sleep(60)
+            print("harness: universal %s still running after 60 s" % name, flush=True)
+        w = asyncio.ensure_future(still())
+        try:
+            return await self.page.evaluate(js, *arg)
+        finally:
+            w.cancel()
+            dt = time.time() - t
+            self.utimes.append((name, dt))
+            if dt >= 1:
+                print("harness: universal %s took %.1f s" % (name, dt), flush=True)
 
     async def sample(self, view):
         s = await self.page.evaluate(SAMPLE_JS)
@@ -1383,7 +1642,7 @@ class VerifyPage:
         """The eye check (item 10a) at the camera as it is now, under the view's name; with the drawn-ground check
         (item 28) the eye is also measured against the ground as drawn (core/drawn)."""
         try:
-            r = await self.page.evaluate(EYE_JS, {"near": EYE_NEAR, "far": 50})
+            r = await self._timed("eye " + view, EYE_JS, {"near": EYE_NEAR, "far": 50})
         except Exception as e:
             r = {"skipped": "eye check threw: " + str(e).splitlines()[0][:200]}
         if "drawn-ground" in self.checks and not r.get("skipped"):
@@ -1424,6 +1683,8 @@ class VerifyPage:
 
     async def run_universal(self):
         U, pg = self.universal, self.page
+        t_univ = time.time()
+        print("harness: universal asserts", flush=True)
         U.append(("page-ready", self.ready, "ready" if self.ready else "never set window._ready (and the error panel stayed empty)"))
         try:
             await pg.wait_for_function("!window._texPending", timeout=120000)
@@ -1431,27 +1692,35 @@ class VerifyPage:
             U.append(("textures-decoded", False, "window._texPending still set after 120 s"))
         try:
             await self.sample("final")
-            R = await pg.evaluate(UNIVERSAL_JS, INSTANCE_CAP)
+            R = await self._timed("scene scan", UNIVERSAL_JS, INSTANCE_CAP)
         except Exception as e:
             U.append(("page-alive", False, "the page could not be read: " + str(e).splitlines()[0][:200]))
             R = None
         cons = getattr(pg, "krator_console", [])
         sh, ncons = gl_errors(cons), len(cons)
         try:   # after the console is read: what this evaluate itself logs is not the page's
-            P = await pg.evaluate(PROGRAMS_JS)
+            P = await self._timed("programs", PROGRAMS_JS)
         except Exception:
             P = None
         self.gl = P
         ctx, pre, post = gl_diagnosis(P, sh)
-        U.append(("gl-context", True, ctx))   # a report: it never fails, and says why shader-errors may have
+        cok, cpre = gl_context_verdict(P)
+        U.append(("gl-context", cok, cpre + ctx))   # says why shader-errors may have; a loss the page did not ask for warns (T1)
         U.append(("shader-errors", not sh, pre + "%d shader or WebGL errors in the console: %s" % (len(sh), " | ".join(t[:160] for t in sh[:3])) + post
                   if sh else "console clean of shader and WebGL errors (%d other errors or warnings)" % ncons))
         try:
-            bad = await pg.evaluate("() => typeof KHOOK === 'undefined' ? null : KHOOK.checkPrograms().map(r => r.kind === 'anchor' ? r.layer + ': ' + r.anchor : 'program ' + r.name + ': ' + (r.programLog || r.fragmentLog || r.vertexLog).slice(0, 120))")
+            K = await self._timed("khook programs", KHOOK_PROGRAMS_JS)
         except Exception:
-            bad = None
-        if bad is not None:
-            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else "every program linked, no anchor missed (KHOOK.checkPrograms)"))
+            K = None
+        if K is not None:
+            bad = K["bad"]
+            U.append(("shader-programs", not bad, "; ".join(bad[:3])[:300] if bad else
+                      "every program linked, no anchor missed (KHOOK.checkPrograms on %d renderer%s and the scene)" % (K["renderers"], "" if K["renderers"] == 1 else "s")))
+        elif P and P.get("hooked") and P.get("renderers"):   # no KHOOK: the LINK_STATUS sweep of every program drawn now
+            n = P.get("badN", 0)
+            U.append(("shader-programs", not n, ("%d program%s drawn now did not link: %s" % (n, "" if n == 1 else "s", "; ".join(
+                      "%s on %s" % (b["name"], ", ".join(b["meshes"][:3]) or "no mesh named") for b in (P.get("bad") or []) if b["meshN"] or not b["held"])[:240]))
+                      if n else "every program drawn now linked (%d programs, renderer.info.programs; the page has no KHOOK)" % P.get("programs", 0)))
         U.append(("page-errors", not self.errs, "; ".join(self.errs[:3])[:300] if self.errs else "none"))
         if R:
             panel = R["panel"]
@@ -1491,7 +1760,7 @@ class VerifyPage:
                 U.append(("instance-cap", not c["overN"], ("%d items past the cap (%s): %s" % (c["overN"], c["src"], ", ".join(c["over"])))
                           if c["overN"] else "none past the cap (%s)" % c["src"]))
         try:
-            w = await pg.evaluate(WINDING_JS, {})
+            w = await self._timed("winding", WINDING_JS, {})
         except Exception as e:
             w = {"error": str(e).splitlines()[0][:200]}
         self.winding = w
@@ -1500,7 +1769,7 @@ class VerifyPage:
                 "%s out %.2f up %.2f, %d tris" % (x["name"], x["out"], x["up"], x["tris"]) for x in w["suspects"][:6]))
                 if w["suspectN"] else "%d geometries, none inside-out" % w["n"])))
         try:   # the one key map and the one walk mode (core/host/92k-host-keys.js), on a page that takes them
-            kw = await pg.evaluate("() => (typeof KHOST === 'undefined' || !KHOST.keysCheck) ? null : "
+            kw = await self._timed("one-key-map", "() => (typeof KHOST === 'undefined' || !KHOST.keysCheck) ? null : "
                                    "{keys: KHOST.keysCheck(), walk: KHOST.walkCheck ? KHOST.walkCheck() : null}")
         except Exception as e:
             kw = {"error": str(e).splitlines()[0][:200]}
@@ -1541,7 +1810,7 @@ class VerifyPage:
                 U.append(("gpu-renderer", "swiftshader" not in rn.lower() and lane_vendor(ln) in rn.lower(), "lane %s: %s" % (ln or "-", rn)))
             _touched({"lane": ln, "renderer": rn})
         try:   # item 27
-            sm = await pg.evaluate(SAMPLERS_JS)
+            sm = await self._timed("samplers", SAMPLERS_JS)
         except Exception as e:
             sm = {"error": str(e).splitlines()[0][:200]}
         if sm is not None:
@@ -1559,6 +1828,48 @@ class VerifyPage:
                     U.append(("samplers", False, msg))
                 else:
                     U.append(("samplers", True, ("WARN: " if sm["max"] >= SAMPLER_WARN else "") + msg))
+        try:
+            wm = await self._timed("water-mouths", WATER_MOUTHS_JS)
+        except Exception as e:
+            wm = {"error": str(e).splitlines()[0][:200]}
+        if wm is not None:
+            on = "water-mouths" in self.checks
+            if wm.get("error"):
+                U.append(("water-mouths", not on, ("" if on else "report: ") + "could not inspect WATER surfaces: " + wm["error"]))
+            else:
+                bad = wm.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d flow(s), %d open water surface(s): all mouths terminate or cross-fade cleanly" % (wm["flows"], wm["opens"]))
+                pf = wm.get("perf")
+                if pf and pf.get("ms", 0) >= 1000:   # where a slow one spent its time
+                    msg += " (%.1f s: %d points; ground %d reads %.1f s; outlines %d tests %.1f s; keep %d lookups %.1f s, %d rings, built in %.1f s)" % (
+                        pf["ms"] / 1000.0, pf["samples"], pf["gN"], pf["gMs"] / 1000.0, pf["cN"], pf["cMs"] / 1000.0, pf["kfN"], pf["kfMs"] / 1000.0,
+                        pf["rings"], pf["kfBuildMs"] / 1000.0)
+                if not on:
+                    U.append(("water-mouths", True, "report: " + msg + ' (opt in: tools/checks_optin.json "water-mouths")'))
+                else:
+                    U.append(("water-mouths", not bad, msg))
+        try:
+            ls = await self._timed("leaf-stems", LEAF_STEMS_JS)
+        except Exception as e:
+            ls = {"error": str(e).splitlines()[0][:200]}
+        if ls is not None:
+            on = "leaf-stems" in self.checks
+            if ls.get("error"):
+                U.append(("leaf-stems", not on, ("" if on else "report: ") + "could not inspect BIO foliage cards: " + ls["error"]))
+            else:
+                bad = ls.get("bad") or []
+                msg = ("; ".join(bad[:3])[:320] if bad else
+                       "%d card def(s), %d/%d floating under tight stem audit: all cards cleanly cut and stem-anchored"
+                       % (ls["defs"], ls["floating"], ls["audited"]))
+                if not on:
+                    U.append(("leaf-stems", True, "report: " + msg + ' (opt in: tools/checks_optin.json "leaf-stems")'))
+                else:
+                    U.append(("leaf-stems", not bad, msg))
+        if R and R.get("vram"):
+            vr = R["vram"]
+            U.append(("vram", True, "report: %.1f MB estimated VRAM (%.1f MB in %d textures, %.1f MB in %d geometries)"
+                      % (vr["totalMB"], vr["texMB"], vr["texN"], vr["geomMB"], vr["geomN"])))
         if not self.eyes:
             await self.eye("as loaded")
         for v, r in self.eyes:
@@ -1568,6 +1879,11 @@ class VerifyPage:
             bad = [k + " " + r[k] for k in ("inside", "under", "foliage", "near", "drawn") if r.get(k)]
             U.append(("eye:" + v, not bad, ("eye %s: %s" % (r["eye"], "; ".join(bad))) if bad else "clear at %s%s" % (
                 r["eye"], "; " + r["drawnNote"] if r.get("drawnNote") else "")))
+        slow = sorted((x for x in self.utimes if x[1] >= 0.5), key=lambda x: -x[1])
+        parts = R.get("ms") if R else None
+        U.append(("universal-time", True, "report: %.1f s for the universal asserts%s%s" % (
+            time.time() - t_univ, "; the slowest reads: " + ", ".join("%s %.1f s" % x for x in slow[:6]) if slow else "",
+            "; the scene scan's parts (ms): " + ", ".join("%s %s" % kv for kv in sorted(parts.items(), key=lambda kv: -kv[1])) if parts else "")))
         b, src = load_budget(self.here, self.html)
         if b is None:
             U.append(("budget", True, src))
@@ -1576,8 +1892,10 @@ class VerifyPage:
             wc = max(self.samples, key=lambda s: s[1] or 0) if self.samples else None
             wt = max(self.samples, key=lambda s: s[2] or 0) if self.samples else None
             vals = {"calls": (wc[1], wc[0]) if wc else None, "tris": (wt[2], wt[0]) if wt else None,
-                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None}
-            for k in ("tris", "calls", "bytes", "scene_tris"):
+                    "bytes": (os.path.getsize(self.html), "page"), "scene_tris": (R.get("sceneTris"), "probe") if R else None,
+                    "samplers": (sm["max"], "programs") if sm and not sm.get("error") else None,
+                    "vram_mb": (R["vram"]["totalMB"], "scene") if R and R.get("vram") else None}
+            for k in ("tris", "calls", "bytes", "scene_tris", "samplers", "vram_mb"):
                 lim = b.get(k)
                 if lim is None or not vals.get(k) or vals[k][0] is None:
                     continue
@@ -1858,13 +2176,17 @@ async def walk_main(argv):
 EXPORT_FILES = [os.path.join(ROOT, 'core', 'export', f) for f in ('07-core-export.js', '09-core-export-adapters.js')]
 STAGE_HOOK = os.path.join(ROOT, 'godot', 'tools', 'stage_hook.js')
 STAGE_JS = os.path.join(ROOT, 'core', 'biome', '44-core-stage.js')
-EXPORT_JS = """([opt, split]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile: opt.profile || null });
+# the uid the check recomputes from an item's matrix: a case written about its own origin (core/export README, "origin")
+# has its translations less it, so the check adds it back
+KUID_JS = """const KUID = w => (typeof KTAGS === 'undefined' || !KTAGS) ? null : !w.origin ? KTAGS.uid
+  : (c, k, at) => KTAGS.uid(c, k, [at[0] + w.origin[0], at[1] + w.origin[1], at[2] + w.origin[2]]);"""
+EXPORT_JS = """([opt, split]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile: opt.profile || null });
   if (!split) return { world: w, check: chk };
   const g = EXPORT.glb(w);
   return { world: g.json, glb: EXPORT.pack(g.glb).b64, glbStats: g.stats, check: chk }; }"""
-PROFILE_JS = """([opt, profile]) => { const w = EXPORT.world(opt);
-  const chk = EXPORT.check(w, { uid: (typeof KTAGS !== 'undefined' && KTAGS) ? KTAGS.uid : null, profile });
+PROFILE_JS = """([opt, profile]) => { """ + KUID_JS + """ const w = EXPORT.world(opt);
+  const chk = EXPORT.check(w, { uid: KUID(w), profile });
   const sections = {}; for (const k in w.sections) sections[k] = w.sections[k].status;
   return { sections, errors: w.errors, stats: w.stats, check: chk }; }"""
 
@@ -1930,24 +2252,30 @@ async def check_profile(pg, box, profile, opt=None, inject=False):
     return ok, lines
 
 
-def _pack_dir(name, page):
-    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first)."""
+def _pack_dir(name, page, families=None):
+    """The build folder whose tex/pack.json is the library pack `name` (the page's own build first). Two packs can share a
+    name (2026-11-16: biomes/xanadu's flora pack and kits/xanadu's building pack are both 'xanadu', and an open-world
+    region carries both): with `families` (the ones the export's textures name), the pack that holds them all wins."""
     d = os.path.dirname(os.path.abspath(page))
     if os.path.basename(d) == 'dist':
         d = os.path.dirname(d)
     cands = [d] + sorted(os.path.dirname(os.path.dirname(p)) for p in glob.glob(os.path.join(ROOT, '*', '*', 'tex', 'pack.json')))
+    first = None
     for c in cands:
         pj = os.path.join(c, 'tex', 'pack.json')
         if os.path.isfile(pj):
             with open(pj, encoding='utf-8') as f:
-                if json.load(f).get('build') == name:
+                j = json.load(f)
+            if j.get('build') == name:
+                if not families or set(families) <= set(j.get('families', {})):
                     return os.path.join(c, 'tex')
-    return None
+                first = first or os.path.join(c, 'tex')
+    return first
 
 
 async def export_main(argv):
     """python3 tools/harness.py export <page> --out godot/data/<case>/ [--box x0,z0,x1,z1] [--sections a,b] [--sky 1024]
-                                             [--json] [--query ?..]
+                                             [--json] [--query ?..] [--before <js>]
     The krator-world container (core/export/README.md) written headless: load the page, wait for it and its library
     textures, call EXPORT.world({box, sections}) and EXPORT.check, and write <out>/world.json (everything but the meshes)
     and <out>/world.glb (the meshes: EXT_mesh_gpu_instancing), or one world.json with the meshes inline (--json); the
@@ -1960,6 +2288,12 @@ async def export_main(argv):
     ap.add_argument('html'); ap.add_argument('--out', required=True); ap.add_argument('--box'); ap.add_argument('--sections')
     ap.add_argument('--sky', type=int); ap.add_argument('--json', action='store_true'); ap.add_argument('--query', default='')
     ap.add_argument('--profile', help='the sections the case must fill (core/export/README.md, "Profiles"): a,b,c=field,d?')
+    ap.add_argument('--before', help='a JS expression the page awaits before the export: a case\'s own preparation, '
+                    'e.g. placing an open world\'s camera at the box and settling its flora (openworld/<region>/tools/godot_case.py)')
+    ap.add_argument('--root', help='the folder served (default the repo): a page built in another worktree is served from its own '
+                    '(openworld/oidong-highrift/tools/godot_case.py exports Strongbow\'s page from its branch\'s worktree)')
+    ap.add_argument('--inject', action='append', default=[], help='a script added to the page after core/export, before --before: '
+                    'a case\'s own contributor (repeatable; core/export 10 where the page lacks the scene reader)')
     a = ap.parse_args(argv)
     opt = {}
     if a.box:
@@ -1972,11 +2306,12 @@ async def export_main(argv):
         opt['sky'] = a.sky
     out = os.path.abspath(a.out)
     os.makedirs(out, exist_ok=True)
+    root = os.path.abspath(a.root) if a.root else ROOT
     fails, t0 = [], time.time()
     async with async_playwright() as p:
         b = await launch_chromium(p)
-        with serve(ROOT) as port:
-            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=ROOT, query=a.query, init=[STAGE_HOOK])
+        with serve(root) as port:
+            pg, errs, ready = await open_page(b, a.html, port, size='960x600', root=root, query=a.query, init=[STAGE_HOOK])
             if not ready:
                 fails.append('page never ready')
             print('%s: built in %.0f s (%d page errors)' % (a.html, time.time() - t0, len(errs)), flush=True)
@@ -1985,6 +2320,11 @@ async def export_main(argv):
             except Exception:
                 fails.append('library textures still decoding after 180 s')
             injected = await inject_export(pg)
+            for f in a.inject:
+                await pg.add_script_tag(path=os.path.abspath(f))
+                injected.append(os.path.relpath(os.path.abspath(f), ROOT).replace(os.sep, '/'))
+            if a.before:
+                print('before: %s' % json.dumps(await pg.evaluate(a.before))[:300], flush=True)
             await pg.wait_for_timeout(1500)   # a few frames, so the stage hook has seen what the page renders
             t1 = time.time()
             res = await evaluate_big(pg, EXPORT_JS, [opt, not a.json])
@@ -2011,7 +2351,7 @@ async def export_main(argv):
         os.makedirs(dst)
         copied = {}
         for name in packs:
-            src = _pack_dir(name, a.html)
+            src = _pack_dir(name, a.html, {t['family'] for t in w['textures'] if t.get('pack') == name})
             if not src:
                 fails.append('no tex/pack.json for library pack %s' % name)
                 continue
@@ -2279,7 +2619,8 @@ def _verify_routed(script, args, cacheable):
                 if not is_cloud_lane(got):
                     return _run_child(script, args, cacheable)
                 print("harness: on the %s lane (the cloud machine)" % got, flush=True)
-                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched)
+                # the machine's own watchdog takes this run's limit (KRATOR_GPU_STALL_MIN), not its default of 25 minutes
+                code, info = cl.run_job(got, script, args, cwd=os.getcwd(), run_watched=run_watched, stall_min=STALL_MIN)
         except GpuLockTimeout as e:
             print("FAILED: " + str(e), flush=True)
             return 3
@@ -2386,7 +2727,8 @@ def _watch_parent(spec):
             print("harness: the verify wrapper (pid %s) is gone: stopping this run" % pid, flush=True)
         with contextlib.suppress(Exception):
             _forget_browsers(kill=True)
-        for lk in all_locks():
+        for lk in all_locks():   # the lane is held under the wrapper's pid (it took the lock), or under this child's own
+            _release(lk, int(pid))
             _release(lk)
         os._exit(130)
     with contextlib.suppress(ValueError):

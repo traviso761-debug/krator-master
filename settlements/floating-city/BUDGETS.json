@@ -1,0 +1,15 @@
+{
+  "what": "The Floating City of Ria Sound (44,000-citizen Voth-scale imperial regional capital at [635, 138])",
+  "pages": {
+    "floating-city.html": {
+      "tris": 24000000,
+      "scene_tris": 24000000,
+      "calls": 750,
+      "bytes": 6291456,
+      "samplers": 13,
+      "vram_mb": 420,
+      "why": "Scaled 3.2x to a Voth-class 44,000-citizen imperial capital with 2,698 full-detail Suudme + Lower/Upper Ria lots across a 2,040 m Sea-Ring, 4-tier Sumeru Mandala, 4 multi-row Boulevard-Dykes, 30 multi-shape neighborhood floating platforms, 20 Chinampa floating gardens, 9-avenue Bluff Metropolis with 16 upland terraced farms, 134 watercraft, and 3,200+ instanced citizens while cutting draw calls from 1,104 to 680 (<750) via DataTexture2DArray & InstancedMesh batching.",
+      "raised": "2026-11-26"
+    }
+  }
+}

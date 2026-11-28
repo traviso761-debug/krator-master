@@ -236,7 +236,10 @@ BIO.def('stubble',G.tuft(),M.stubble,{label:'Burnt stubble'});
 BIO.def('ash',BIO.geo.mat(),M.mat,{label:'Ash and char'});
 BIO.def('samphire',G.tuft(),M.samphire,{label:'Glasswort and samphire'});
 BIO.def('saltbush',BIO.geo.clump(),M.saltbush,{attrs:['aN'],label:'Saltbush'});
-BIO.def('crust',G.crust(),M.solid,{label:'Salt-crust plates'});
+/* the salt crust on core/biome's fungoid parts (BIO.fung.crust: a flat lobed plate, as ebadlands' crusts; Stage 8 D27, O6); ?fung=0, or
+   a page without BIO.fung, keeps the old dished hexagon (G.crust). 60's crust() places it as before (the same draws) */
+RINGISLES.FUNG=!!(BIO.fung&&BIO.fung.crust)&&!(typeof location!=='undefined'&&new URLSearchParams(location.search).get('fung')==='0');
+BIO.def('crust',RINGISLES.FUNG?BIO.fung.crust({lobes:6,lobeA:.28,seg:14,rings:2,crustK:.88,seed:7101}):G.crust(),M.solid,{label:'Salt-crust plates'});
 BIO.def('wrack',G.pad(),M.wrack,{label:'Wrack (cast-up seaweed)'});
 BIO.def('drift',BIO.geo.rod(6),M.wood,{label:'Driftwood'});
 BIO.def('brain',G.brain(),M.coral,{label:'Brain coral heads'});

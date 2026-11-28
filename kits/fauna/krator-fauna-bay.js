@@ -102,7 +102,7 @@ function faByBird(A, o) {
       { caps: true, colf: t => t > 0.85 ? faByShade(o.beak, 0.7) : o.beak });
     const ke = K(0.7);
     for (const s of [-1, 1]) {
-      faByE(A, 'eye', X([s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S]), [0.016 * S, 0.016 * S, 0.016 * S], o.eye || 0x0c0a08, { seg: 8 });
+      faByE(A, 'eye', X([s * ke[2] * 0.8 * S, y0 + (ke[1] + ke[3] * 0.38) * S, ke[0] * S]), [0.016 * S, 0.016 * S, 0.016 * S], o.eye == null ? 0x0c0a08 : o.eye, { seg: 8 });
       faByE(A, 'eye', X([s * ke[2] * 0.93 * S, y0 + (ke[1] + ke[3] * 0.42) * S, (ke[0] + 0.006) * S]), [0.005 * S, 0.006 * S, 0.005 * S], 0x020202, { seg: 6 });
     }
   });
@@ -594,3 +594,165 @@ ANIMAL({
   /* hovering: its abdomen is the glint (the runtime has no emissive family: drawn bright) */
   build: function (A) { faByGlint(A, { y0: 0.06, col: FA_BY_SP.glint.col }); }
 });
+
+/* ---------------------------------------------------------------- the cathedral mound-termite
+   Giant (cat-to-wolf-sized in ~1.9-2.0 atm air) eusocial cathedral-mound termites of SW Bay's upland Aw savanna
+   (biomes/swbay) and northern Crater Drylands' savanna edge (biomes/crater-drylands station `edge`). Three castes:
+     variant 0: worker, amber-ivory (cat-sized, 0.68 m long, 7 kg) — blind pale-amber hexapod stripping grass, standing
+                grain/cotton crops, and timber to inoculate subterranean `hive-comb` gardens;
+     variant 1: mandibulate soldier, rust-chitin (wolf-sized, 1.34 m long, 24 kg) — hypertrophied rust-chestnut
+                cephalothorax with crossed black scythe-mandibles; attacks cattle, raids crops, and swarms desperate
+                or dry-season passers-by;
+     variant 2: nasute glue-soldier, dark ochre (1.18 m long, 19 kg) — bulbous bronze-ochre head drawn into a conical
+                frontal fontanelle nozzle squirting corrosive terpenoid resin-acid. */
+function faByTermite(A) {
+  const v = A.variant % 3;
+  /* caste scale & proportions: worker (cat-sized), mandibulate soldier (wolf-sized), nasute soldier (medium-large) */
+  const L = v === 0 ? 0.68 : v === 1 ? 1.34 : 1.18;
+  const H = v === 0 ? 0.31 : v === 1 ? 0.60 : 0.54;
+  const abdCol = v === 0 ? 0xd9be8a : v === 1 ? 0xb8864e : 0xa87c44;
+  const thxCol = v === 0 ? 0xc69c62 : v === 1 ? 0x8e3b1c : 0x7e481e;
+  const hdCol  = v === 0 ? 0xb58344 : v === 1 ? 0x7c2812 : 0x683814;
+  const dark   = 0x221510, jawCol = 0x160e0a, belly = faByMix(abdCol, 0xf2e4c8, 0.45);
+  const yBody  = H * 0.52;
+
+  /* segmented tergite abdomen (-z) + constricted waist + armored pronotum/thorax (around z = 0) */
+  const AB = faByCurve([
+    [-L * 0.48, yBody - H * 0.06, L * 0.04, H * 0.05],
+    [-L * 0.38, yBody + H * 0.03, L * 0.14, H * 0.19],
+    [-L * 0.24, yBody + H * 0.07, L * 0.18, H * 0.24],
+    [-L * 0.10, yBody + H * 0.03, L * 0.13, H * 0.18],
+    [-L * 0.01, yBody - H * 0.02, L * 0.08, H * 0.12],
+    [ L * 0.09, yBody + H * 0.04, L * 0.13, H * 0.18],
+    [ L * 0.18, yBody + H * 0.02, L * 0.10, H * 0.14]
+  ]);
+  A.tube('chitin', t => { const k = AB(t); return [0, k[1], k[0]]; }, t => { const k = AB(t); return [k[2], k[3]]; }, 16, 14, null, {
+    caps: true,
+    colf: (t, a) => {
+      const band = Math.sin(t * Math.PI * 14) > 0.55 ? 0.84 : 1.0;
+      const base = t < 0.66 ? abdCol : thxCol;
+      const lo = faBySmooth(0.25, 0.85, -Math.cos(a));
+      return faByMix(faByShade(base, band * (0.92 + 0.12 * faNoise(t * 9 + v, a * 2, 1.7))), belly, 0.55 * lo);
+    }
+  });
+  /* saddle-shaped pronotum shield over thorax */
+  faByE(A, 'chitin', [0, yBody + H * 0.12, L * 0.09], [L * 0.145, H * 0.13, L * 0.11], thxCol, { rx: 0.12, seg: 12 });
+  /* short cerci sensory prongs at abdomen tip */
+  for (const s of [-1, 1]) {
+    A.cone('chitin', [s * L * 0.035, yBody - H * 0.05, -L * 0.45], [s * L * 0.065, yBody - H * 0.08, -L * 0.50], H * 0.022, H * 0.006, dark, 5);
+  }
+
+  /* head capsule (+z): modest on worker, massive bulbous armored shield on soldier, piriform turret on nasute */
+  const hz0 = L * 0.17, hy0 = yBody + H * 0.04;
+  A.part('head', [0, hy0, hz0], () => {
+    const hLen = v === 0 ? L * 0.18 : v === 1 ? L * 0.25 : L * 0.22;
+    const hW   = v === 0 ? L * 0.11 : v === 1 ? L * 0.185 : L * 0.15;
+    const hH   = v === 0 ? H * 0.18 : v === 1 ? H * 0.29 : H * 0.25;
+    const HD = faByCurve([
+      [hz0 - L * 0.02, hy0 + hH * 0.1, hW * 0.62, hH * 0.62],
+      [hz0 + hLen * 0.38, hy0 + hH * 0.22, hW, hH],
+      [hz0 + hLen * 0.78, hy0 + hH * 0.02, hW * 0.82, hH * 0.78],
+      [hz0 + hLen * 1.02, hy0 - hH * 0.14, hW * 0.42, hH * 0.42]
+    ]);
+    A.tube('chitin', t => { const k = HD(t); return [0, k[1], k[0]]; }, t => { const k = HD(t); return [k[2], k[3]]; }, 12, 14, null, {
+      caps: true,
+      colf: (t, a) => faByShade(hdCol, (Math.cos(a) > 0.2 ? 1.06 : 0.88) * (1 - 0.18 * t))
+    });
+
+    if (v === 1) {
+      /* wolf-sized mandibulate soldier: heavy crossed black-chitin scythe mandibles with inner serrations */
+      for (const s of [-1, 1]) {
+        const j0 = [s * hW * 0.52, hy0 - hH * 0.16, hz0 + hLen * 0.86];
+        const j1 = [s * hW * 0.64, hy0 - hH * 0.20, hz0 + hLen * 1.24];
+        const j2 = [-s * hW * 0.18, hy0 - hH * 0.18, hz0 + hLen * 1.56];
+        A.cone('horn', j0, j1, hH * 0.22, hH * 0.15, jawCol, 8);
+        A.cone('horn', j1, j2, hH * 0.15, hH * 0.025, jawCol, 8);
+        /* inner shearing tooth */
+        A.cone('horn', [s * hW * 0.34, hy0 - hH * 0.19, hz0 + hLen * 1.28], [s * hW * 0.04, hy0 - hH * 0.19, hz0 + hLen * 1.34], hH * 0.06, hH * 0.015, jawCol, 5);
+      }
+    } else if (v === 2) {
+      /* nasute glue-soldier: elongated frontal fontanelle acid-cannon rostrum + reduced mandibles */
+      const n0 = [0, hy0 + hH * 0.16, hz0 + hLen * 0.72];
+      const n1 = [0, hy0 + hH * 0.10, hz0 + hLen * 1.62];
+      A.cone('chitin', n0, n1, hW * 0.36, hW * 0.065, faByShade(hdCol, 0.78), 10);
+      faByE(A, 'mouth', n1, [hW * 0.075, hW * 0.075, hW * 0.05], 0xc8a030, { seg: 8 });
+      for (const s of [-1, 1]) {
+        A.cone('horn', [s * hW * 0.30, hy0 - hH * 0.22, hz0 + hLen * 0.88], [s * hW * 0.12, hy0 - hH * 0.25, hz0 + hLen * 1.08], hH * 0.10, hH * 0.025, jawCol, 6);
+      }
+    } else {
+      /* cat-sized worker: stout chewing mandibles for shearing grass and crop stalks */
+      for (const s of [-1, 1]) {
+        A.cone('horn', [s * hW * 0.42, hy0 - hH * 0.18, hz0 + hLen * 0.86], [s * hW * 0.06, hy0 - hH * 0.22, hz0 + hLen * 1.18], hH * 0.16, hH * 0.045, jawCol, 7);
+      }
+    }
+
+    /* moniliform beaded antennae sweeping forward and outward */
+    for (const s of [-1, 1]) {
+      const a0 = [s * hW * 0.56, hy0 + hH * 0.04, hz0 + hLen * 0.68];
+      const a1 = [s * (hW * 1.15), hy0 + hH * 0.22, hz0 + hLen * 1.18];
+      const a2 = [s * (hW * 1.48), hy0 + hH * 0.02, hz0 + hLen * 1.46];
+      A.cone('chitin', a0, a1, H * 0.024, H * 0.018, dark, 6);
+      A.cone('chitin', a1, a2, H * 0.018, H * 0.008, dark, 6);
+      if (v > 0) faByE(A, 'eye', [s * hW * 0.78, hy0 + hH * 0.08, hz0 + hLen * 0.52], [H * 0.028, H * 0.032, H * 0.038], 0x140d0a, { seg: 8 });
+    }
+  });
+
+  /* 6 jointed hexapod legs (leg0..leg5: front, mid, hind pairs), femora arched wide and tarsi planted cleanly at y = 0 */
+  const legPairs = [
+    [L * 0.14,  L * 0.22,  0.34],
+    [L * 0.01,  0.00,      1.00],
+    [-L * 0.13, -L * 0.22, 0.92]
+  ];
+  for (let p = 0; p < 3; p++) {
+    const [zRoot, zFoot, reachK] = legPairs[p];
+    for (let si = 0; si < 2; si++) {
+      const s = si === 0 ? 1 : -1, li = p * 2 + si;
+      const xRoot = s * L * 0.105, yRoot = yBody - H * 0.06;
+      const xKnee = s * (L * (0.24 + 0.05 * reachK)), yKnee = yBody + H * 0.14, zKnee = (zRoot + zFoot) * 0.5;
+      const xFoot = s * (L * (0.29 + 0.06 * reachK));
+      A.part('leg' + li, [xRoot, yRoot, zRoot], () => {
+        A.cone('chitin', [xRoot, yRoot, zRoot], [xKnee, yKnee, zKnee], H * 0.058, H * 0.044, thxCol, 7);
+        faByE(A, 'chitin', [xKnee, yKnee, zKnee], [H * 0.048, H * 0.048, H * 0.048], dark, { seg: 7 });
+        A.cone('chitin', [xKnee, yKnee, zKnee], [xFoot, H * 0.05, zFoot], H * 0.042, H * 0.024, faByMix(thxCol, dark, 0.45), 7);
+        A.cone('horn', [xFoot, H * 0.05, zFoot], [xFoot + s * H * 0.03, 0.004, zFoot + L * 0.02], H * 0.024, H * 0.007, jawCol, 5);
+      });
+    }
+  }
+  A.anchor('lead', [0, hy0, hz0 + L * 0.22]);
+  A.anchor('back', [0, yBody + H * 0.18, 0]);
+}
+
+ANIMAL({
+  key: 'mound-termite', name: 'Cathedral mound-termite', group: 'bay',
+  tags: {
+    biomes: ['swbay', 'crater-drylands'], koppen: ['Aw', 'BSh'], aridity: ['semiarid', 'subhumid'], climate: ['tropic'],
+    riparian: 'non', abyssal: false, domestic: false, herdedBy: [],
+    diet: 'omnivore', feeding: 'mixed', activity: 'cathemeral', temperament: 'aggressive',
+    habitat: ['ground', 'burrow'], locomotion: ['walks', 'runs', 'burrows']
+  },
+  size: { length: 1.34, height: 0.64 },
+  source: [
+    { build: 'biomes/swbay', file: 'src/76-biome-swbay-termites.js', lines: '1-145', note: 'cat-sized workers on radial foraging trails and wolf-sized mandibulate/nasute soldiers guarding 3.5-9 m red-clay cathedral mounds and Termitomyces hive-fungus crops across the Aw upland savanna' },
+    { build: 'biomes/crater-drylands', file: 'stations/edge/86-host-edge.js', lines: '18-55', note: 'northern Crater Drylands savanna edge (`crater-drylands-edge.html`), inhabiting the 2.5-7 m fluted clay termite spires' }
+  ],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: {
+    meat: { amount: 2.8, note: 'rich nutty thorax and alate fat roasted during monsoon nuptial swarms; workers and soldiers taste of terpenoid resin' },
+    chitin: { amount: 3.4, note: 'cured rust-red soldier head-shields and scythe-mandibles used for bucklers, laminated greaves, and sickle-hooks' }
+  },
+  life: { maturity: 0.5, lifespan: 4, litter: 80, gestation: 28, note: 'brood chambers deep under a 25-year queen\'s clay cathedral; colonies cultivate monoculture hive-comb and fruiting mound-caps' },
+  variants: 3,
+  variantNames: ['worker, amber-ivory (cat-sized)', 'mandibulate soldier, rust-chitin (wolf-sized)', 'nasute glue-soldier, dark ochre'],
+  variantDims: [{ w: 0.44, d: 0.72, h: 0.34 }, { w: 0.86, d: 1.46, h: 0.64 }, { w: 0.74, d: 1.32, h: 0.58 }],
+  w: 0.44, d: 0.72, h: 0.34,
+  data: {
+    mass: 24, legs: 6, sizeRange: [0.85, 1.15],
+    speed: { walk: 1.1, run: 5.8 }, gait: { type: 'hexapod', freq: 2.4, stride: 0.42 },
+    feeds: 'savanna grass, standing grain and fibre crops, dead wood, and straying or mired livestock to feed subterranean hive-comb fungus gardens',
+    herd: 'foraging columns of 16 to 40 workers escorted by 6 to 12 wolf-sized mandibulate and nasute soldiers round an earthen cathedral mound',
+    fleeDistance: 0, aggression: 0.85,
+    schedule: ['PATROL', 'PATROL', 'HUNT', 'HUNT', 'GRAZE', 'GRAZE', 'GRAZE', 'PATROL', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'REST', 'PATROL', 'GRAZE', 'GRAZE', 'GRAZE', 'HUNT', 'HUNT', 'PATROL', 'PATROL', 'PATROL']
+  },
+  build: function (A) { faByTermite(A); }
+});
+

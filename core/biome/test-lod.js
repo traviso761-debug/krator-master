@@ -169,7 +169,8 @@ function lathe(rep) { const P = page(), { BIO } = P; BIO.bucket('b', new THREE.M
 
 // ---------------------------------------------------------------- BIO.INDEX_ITEMS: welded item geometry (2026-10-26)
 { const P = page(), B = P.BIO, m = new THREE.MeshLambertMaterial();
-  B.def('plain', new THREE.PlaneGeometry(1, 1, 2, 1), m, { label: 'p' });
+  ok(B.INDEX_ITEMS === true, 'INDEX_ITEMS is on by default (B4, 2026-11-23)');
+  B.INDEX_ITEMS = false; B.def('plain', new THREE.PlaneGeometry(1, 1, 2, 1), m, { label: 'p' });
   B.INDEX_ITEMS = true; B.def('welded', new THREE.PlaneGeometry(1, 1, 2, 1), m, { label: 'w' }); B.INDEX_ITEMS = false;
   const a = B.defs.plain, b = B.defs.welded, ga = a.geo, gb = b.geo;
   ok(!ga.index && ga.attributes.position.count === 12, 'INDEX_ITEMS off: the item is triangle soup as before (12 vertices for 4 triangles)');

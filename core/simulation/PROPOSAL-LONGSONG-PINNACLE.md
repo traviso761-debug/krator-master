@@ -316,6 +316,92 @@ Longsong can be on the sim after S0-S3. Pinnacle Rock needs S0-S7.
   resources (no work draws on a site with an amount, so mines and fields never run down). Longsong's grain store still
   grows ~7 t a year, and its books and paper pile up (the library).
 
+**Done (2026-11-12): S4 to S7, Pinnacle Rock on the sim** (branch `claude/sim-s4-s7-fdaeba`, not pushed).
+- **S4:** `core/camp/50-camp-beasts.js` (`KCAMP.appetite`, `beastNeeds`, `packCap`, `pace`, `bandBeasts`, `meatPlan`) and the
+  Beast Riders' table `settlements/pinnacle-rock/src/15-pr-tune.js` (`PR_TUNE.beasts`: a row for every `BR_CAMP` mount and
+  the kept herd). Every appetite is cut by a third (`lowG` 2/3): a raptor eats ~2.6 kg of meat a day. The meat-eaters
+  eat from both the hunt and their kept herds, half each. Each band keeps a pack train of a millipede per tent. Tested in
+  `core/camp/test-beasts.js`.
+- **S5:** `core/world/48t-world-travel.js` (`KTRAVEL`), built on the baked links:
+  - each stretch between stops has its own minutes, from its climbs and descents at the column's pace;
+  - the column sleeps at the inns and rest stops, or camps where the day runs out;
+  - journeys go multi-hop, and each stretch counts the bridges it crosses.
+
+  Tested on the Oidong and Iziz cluster plans (`core/world/test-travel.js`).
+
+  Pinnacle's partners are 170-830 km out by road, beyond its 60 km cut. By the owner's answer (B, 2026-11-12), their legs
+  are **planned legs from the scale model**:
+  - `settlements/pinnacle-rock/tools/bake_legs.py` reads the rock's and each partner's pin from the model's own settlement
+    list, so a moved pin moves its leg (Shade is to move north);
+  - each leg is the straight line x 1.3, with its climbs and descents from the model's heights every 2 km, baked to
+    `src/14-pr-legs.js`;
+  - core/camp reads the legs as `KTRAVEL.graph` `extra` edges keyed by the model's ids, marked `planned`; a band joins
+    them at the rock (the world's `hub`).
+
+  The corridor region that will lay the real links is its own session (`claude/pinnacle-corridors`); its baked links
+  replace these edges.
+- **S6:** core/camp's world level, its world tick and hand-over (C3, C4) in `60-camp-world.js`:
+  - the bands eat, forage, strike spent sites and come home in time;
+  - at home they are handed over to the sim (`core/region` `H.valleyHost`), their books balanced across every hand-over;
+  - the op log, and each band's place as a pure function of the minute.
+
+  The ventures:
+  - **caravans (C6)**, `65-camp-trade.js`: a barter at the market's prices, within the beasts' load, paid with goods and
+    escort fees;
+  - **raids (C7)**, `66-camp-raid.js`: parties that muster at the target, and the PLAN's balance caps.
+
+  Tests: `test-world.js`, and `test-raids.js`, the ten-year balance proof from three seeds with its caps-off negatives.
+- **S7:** the year test, `settlements/pinnacle-rock/tests/test-pr-economy.js`, on the valley host. Its pieces:
+  - the town of 3,000, the floor ring, and **four clearings** (core/hamlet's `beast-rider` row) laid on openworld/pinnacle's
+    plan at 6-8 km, 229 people each;
+  - the **eighteen bands** (every `BR_CAMP` ground, 714 people in all), home every day of the wet season (year days
+    120-300) and ranging in the dry. The twelve floor and flyer bands are 42-51 each. The six ground tribes' upper grounds on the
+    mesa keep their laid five tents (23-27 people): more tents do not fit the mesa's margin;
+  - their caravans to Talon, Fort Kreia, Mav's Refuge, Fort Ordo and Girder, the long roads to the coyotemen (Coyote
+    Canyon) and the Dasri (Shade), and raids on Goto and Nusidi;
+  - the intermediaries off the map for the rest.
+
+  A spin-up year starts the bands mid-season; the second year balances. The town goes without nothing of its 561 t of
+  grain-equivalent, and its stores grow (265 t to 299 t). With no haul it would go without 122 t. The four streams come
+  out ring 19 %, clearings 16 %, bands at home 12 %, the dry-season haul 53 %, against this proposal's estimated
+  20/20/20/40.
+- **Section 5's Pinnacle items:**
+  - LORE's entry is corrected to the open-world site (about 1,500 mm, the knoll ~110 m over its round).
+  - **The page has not moved.** A re-cut of its `region/` at 5.1 px 1007,686 built, but the page did not finish loading in 16
+    minutes (GPU verify: two timeouts at 15). It keeps its old cut, which loads in ~6.5 minutes; the cause is not diagnosed
+    (`settlements/pinnacle-rock/KNOWN_ISSUES.md`).
+  - Mammoth, Dragonfly, Quetzal and Nightwing gained a double dome each: those four bands are now 40-70, and the census test
+    checks all eighteen grounds (`test-pr-economy.js` check 1). The six ground tribes' upper grounds took more tents too,
+    but on the page's mesa two of them no longer fit (Raptor 6 of 8 pitched, Longcrawler 7 of 8), so they are back to their
+    five tents.
+
+**Done (2026-11-12): eighteen bands, and Pinnacle Rock's full sim** (the owner: "18 bands"; "implement full sim to the level
+of isle demo including needs and happiness and see what happens").
+- **Eighteen bands of 40-70:** the six ground tribes' upper grounds are widened on the mesa and pitch their seven tents.
+- **The full sim** (`settlements/pinnacle-rock/tests/test-pr-sim.js`; `--year` for the whole year):
+  - the town's 2,934 people on core/region's host, read from the page's exported plan (`tools/export_plan.py`), with needs,
+    happiness, loyalty, items, the economy and unrest;
+  - the valley attached: the clearings, the bands, the markets and the targets;
+  - the bands on core/camp's world tick.
+- **What happened:** the first year starved with a full granary. A meal is two foods, and households buying by the
+  warehouses' stock bought nearly all grain. **Fixed in core** (the owner): the balanced basket, `77-sim-6-items.js`.
+  The year now runs fed (hunger 17-18) and calm (happiness 74) every day.
+- **The caravans to the granary town** (the owner's suggestion): Talon's and Fort Kreia's pack trains (`PR_TUNE.caravans`)
+  top Pinnacle Rock's stores up whenever they fall under 40 days of its use. They stay idle while the bands' haul keeps the
+  granary full. With no haul they carry the town, which then goes without only 0.2 t (`test-pr-economy.js` check 11).
+  In the full sim the year ends with 390,000 servings in store, over a month of food (`test-pr-sim.js --year`).
+  About half the town is "uneasy", on material wants.
+
+**Still open after S7:**
+- **For the owner:** the proposal counts eighteen bands, but the six ground tribes' upper grounds hold 23-27 people each,
+  under core/camp's 40-person floor. Are they bands of their own, needing room on the mesa for two more tents each? Or are
+  they each tribe's riders posted up top, so a ground tribe is one band on two grounds, twelve bands in all?
+- The long legs' real roads: the corridor region (`claude/pinnacle-corridors`) lays them; until then they are planned.
+- The Dasri's nearer northern village, which is not on the model: they trade at Shade until it is placed.
+- Shares nearer the proposal's estimate would need more from the clearings or the bands at home.
+- Spoilage in the town's stores.
+- Famine consequences (S8).
+
 ## 5. Things to fix on the way
 
 **Longsong:**

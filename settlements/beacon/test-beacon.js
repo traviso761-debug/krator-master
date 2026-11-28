@@ -29,6 +29,10 @@ const NEG = [
   ['the cable runs from the engines to the plinth, into the fort only through its gate', M => { M.cable.pts[M.cable.pts.length - 1] = [-20, -1.5]; }],
   ['the lamp sees every place the order must reach, by 10 m or more', M => { M.lamp.sights.find(s => s.id === 'tempest').clear = -5; }],
   ["the lamp's year fits the oil the tune sends", M => { M.lamp.kw = 1.2; }],
+  ["the lamp stands on the plinth's roof, the plinth in the keep's place", M => { M.draw.plinth.chapel = 6; }],
+  ["the lamp stands on the plinth's roof, the plinth in the keep's place", M => { M.draw.mount.yoke = 6; }],
+  ['a station the lamp cannot see is reached through a relay or a station it sees', M => { M.lamp.relays[0].seeFar = -20; }],
+  ['a station the lamp cannot see is reached through a relay or a station it sees', M => { M.lamp.sights.find(s => s.id === 'eye').via = 'nowhere'; }],
   ['gold only on the gate pavilion, the chapel and the holy crown', M => { part(M, 'labrang').gold = 'crown'; }],
   ['everyone has a bed: the census sleeps where the parts say', M => { delete part(M, 'school').sleeps; }],
   ['everyone has a bed: the census sleeps where the parts say', M => { M.census.novices = 80; part(M, 'novrange').sleeps.novices = 80; }]];
@@ -36,6 +40,22 @@ NEG.forEach(([name, brk], i) => {
   const bad = clone(); brk(bad);
   T.neg(name + ' [negative ' + (i + 1) + ']', rule(name), bad, clone());
 });
+
+/* ---- the fort snapshot is the asset's plan, turned half round (ry = pi) about the keep: v = -x, u = -z - 6.6 */
+const XFORT = require('../../kits/xanadu/src/80f-xa-fort-data.js');
+const r2 = v => Math.round(v * 100) / 100;
+const fortMatches = M => {
+  const P = XFORT.plan({ size: 'watch' }), keep = P.buildings.find(b => b.kind === 'keep'), U = z => r2(-z + keep.at[1]), V = x => r2(-x + keep.at[0]);
+  const box = b => [U(b.at[1] + b.d / 2), U(b.at[1] - b.d / 2), V(b.at[0] + b.w / 2), V(b.at[0] - b.w / 2)];
+  const bad = [];
+  M.parts.filter(p => p.xfort).forEach(p => { const b = P.buildings.find(q => q.id === p.xfort); if (!b || JSON.stringify(box(b)) !== JSON.stringify(p.box.map(r2))) bad.push(p.id); });
+  P.towers.forEach(t => { const s = M.fort.towers.find(q => Math.abs(q.at[0] - U(t.ctr[1])) < .01 && Math.abs(q.at[1] - V(t.ctr[0])) < .01); if (!s || s.w !== t.w) bad.push('tower ' + t.id); });
+  const w = P.wards[0].poly, us = w.map(p => U(p[1])), vs = w.map(p => V(p[0]));
+  if (JSON.stringify([Math.min(...us), Math.max(...us), Math.min(...vs), Math.max(...vs)]) !== JSON.stringify(M.fort.ward)) bad.push('the ward');
+  return bad;
+};
+T.ok('the layout\'s fort is XFORT\'s watch plan turned half round about the keep (its buildings, towers and ward)', fortMatches(L).length === 0, fortMatches(L).join(', '));
+T.neg('a fort snapshot left mirrored (the barracks east) is caught', M => fortMatches(M).length === 0, (M => { part(M, 'barracks').box = [-21.6, 4.4, 17.6, 25.6]; return M; })(clone()), clone());
 
 /* ---- the numbers the plan quotes */
 T.ok('the frame stands on the east shoulder, 14 km east of the tune pin', L.frame.px[0] === 853 && L.frame.px[1] === 1540, L.frame.px.join(','));

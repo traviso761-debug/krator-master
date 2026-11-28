@@ -162,9 +162,15 @@ species fit has not been checked yet.
   lead into the Stalker Peaks, and nobody takes them (section 6c). At 0.64-0.76 atm the passes are breathable but
   bitterly cold, and the floor between them is a furnace. The hazards: **the Stalkers** above all (section 6c), the black
   storms and their caustic dust, an oasis found dry, the beasts' water running out between stages.
-- ~~**The Ancients' road** to Stair ran through a tunnel~~ **Dropped (the owner, 2026-11-11):** no Ancient tunnel crosses
-  the north walls; the road came over the surface by the Godsgate highway (`LORE.md`, `openworld/ANCIENT-NETWORK.md` section 8).
-  **The southern bore from Theodiga stays** (the owner, 2026-11-16): its Stair mouth is station 2's portal.
+- **The Ancients' road and bore to Stair come from PARABOLA, not Arcbeam** (the owner, 2026-11-11 dropping the Arcbeam
+  tunnel; 2026-11-24: *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam"*). The **ruined
+  Parabola-Stair bore** runs 580 km from the Bowl arcology at px 970,1186, its line straight down the Godsgate, 115 km of
+  it under the SE outer wall with up to 6.6 km of rock over it; above it the **Godsgate highway**, 30 m wide at a 4 %
+  ruling grade, carried what would not fit the bore (`openworld/ANCIENT-NETWORK.md` section 8;
+  `openworld/catch-bowl/PLAN-TERRAIN.md` P17). It is **sealed halfway**, Yuni stripped the northern half long ago, and
+  the southern half from Stair is the divers' prospect — the passage below is true again with Parabola's name on it.
+  **The southern bore from Theodiga stays too** (the owner, 2026-11-16): its Stair mouth is station 2's portal, so Stair
+  is a junction of two bores. Nothing runs under Arcbeam.
   The passage as first settled: the Ancients' road to Stair (`openworld/ANCIENT-ROADS.md`: Arcbeam to Stair) ran through a tunnel under the walls,
   **closed by seismic activity since about the time of the Cataclysm** [the owner, 2026-10-23]. It is **sealed halfway
   through**: both halves are open from their own ends, and both offer salvage. **Yuni stripped the northern half bare a

@@ -14,15 +14,17 @@ sys.path.insert(0, os.path.join(HERE, '..'))
 import harness   # noqa: E402
 
 FIXTURE = os.path.join(HERE, 'verify_page', 'fixture.html')
-# case -> the universal assert it must fail (None: every assert passes)
-CASES = {'clean': None, 'broken-shader': 'shader-errors', 'lfs-texture': 'textures-decoded', 'eye-inside': 'eye:as loaded',
+# case -> the universal assert(s) it must fail (None: every assert passes); a program that never links fails shader-programs
+# too since it reads the page's own renderer (BUGS-2026-11-15.md T2)
+CASES = {'clean': None, 'broken-shader': ('shader-errors', 'shader-programs'), 'lfs-texture': 'textures-decoded', 'eye-inside': 'eye:as loaded',
          'eye-under': 'eye:as loaded', 'nan': 'no-nan-geometry', 'instance-cap': 'instance-cap',
          'error-panel': 'error-panel', 'empty-volume': 'registered-volumes-non-empty'}
 
 
-# the survey's opt-in checks (items 27, 28): case -> (checks, the assert it must fail with them on; off, the case passes)
+# the survey's opt-in checks (items 27, 28, 32, 33): case -> (checks, the assert it must fail with them on; off, the case passes)
 OPTIN = {'eye-under-drawn': (('drawn-ground',), 'eye:as loaded'), 'samplers-16': (('samplers',), 'samplers'),
-         'samplers-15': (('samplers',), None)}
+         'samplers-15': (('samplers',), None), 'flow-in-ocean': (('water-mouths',), 'water-mouths'),
+         'sheet-on-one': (('leaf-stems',), 'leaf-stems'), 'stem-float': (('leaf-stems',), 'leaf-stems')}
 
 
 async def one(case, checks=None):
@@ -36,7 +38,7 @@ async def main():
     bad = 0
     for case, want in CASES.items():
         failed, V = await one(case)
-        ok = failed == ({want} if want else set())
+        ok = failed == (set(want) if isinstance(want, tuple) else {want} if want else set())
         bad += not ok
         print('%s  %-14s fails %s%s' % ('ok  ' if ok else 'FAIL', case, sorted(failed) or 'nothing',
                                         '' if ok else '   (expected %s)' % (want or 'nothing')), flush=True)

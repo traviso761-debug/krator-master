@@ -37,6 +37,9 @@ Usage:  python3 build.py [--no-checks] [--vendor-check]
                                                     dist/interiors-sets.NAME.html (no manifest: a working copy
                                                     for one set's author; verify.py --sets takes its path)
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -67,6 +70,9 @@ SETS_DIR = os.path.join(HERE, 'sets')
 SRC_SETS = os.path.join(HERE, 'src-sets')
 SRC_WALK = os.path.join(HERE, 'src-walk')
 SETS_SHARED = ['72-hover.js', '78-polytool.js', '80-sky-hash.js', '81-sky.js']   # src/ fragments both pages use
+# the sets sheet takes core/furnish's placement record and its opt-in per-culture scale (a Tungang room's furniture at 0.94:
+# core/furnish/scale/54-core-furnish-scale.js), read in place
+FURNISH = ['core/furnish/50-core-furnish.js', 'core/furnish/scale/54-core-furnish-scale.js']
 # the catalog files the page loads by path (00-head.html): our names must not clash with theirs
 CATALOG_LOADED = ['krator-furniture-core.js', 'krator-asset-engine.js', 'krator-symbols.js', 'krator-furniture-kit.js', 'krator-master-furniture.js', 'inspector.js'] + sorted(
     f for f in os.listdir(CATALOG) if f.startswith('krator-master-furniture-') and f.endswith('.js'))
@@ -77,6 +83,11 @@ VENDORED = {}
 sys.path.insert(0, os.path.join(ROOT, 'core', 'atmos', 'placeholder'))
 import placeholder as psky  # noqa: E402
 SKY = psky.paths(psky.SKY_H3)
+# KROOMLIGHT (core/interiors/10-core-roomlight.js), read in place ahead of the core (K2, GRAPHICS-TERRAIN-PROPOSAL.md 12d):
+# 49-exports.js builds the room table, the light pool and the v2 export on it, 50-shell.js bakes its corner AO
+SKY['05-roomlight.js'] = os.path.join(ROOT, 'core', 'interiors', '10-core-roomlight.js')
+# KRLHOST, the room table on the web (the demo lights its shells from it), with the views: read in place from core/interiors
+SKY['50a-roomlight-host.js'] = os.path.join(ROOT, 'core', 'interiors', '20-core-roomlight-host.js')
 
 
 def src_path(f):
@@ -179,6 +190,7 @@ def main():
     sets_js = sorted(f for f in os.listdir(SRC_SETS) if f.endswith('.js'))
     sets_parts = (core_parts + [(a, read(os.path.join(HERE, a))) for a in ADAPTERS] +
                   [('src/' + f, read(src_path(f))) for f in view if f < '70'] +
+                  [(f, read(os.path.join(ROOT, f))) for f in FURNISH] +
                   [('sets/' + f, read(os.path.join(SETS_DIR, f))) for f in set_files] +
                   [('src-sets/' + f, read(os.path.join(SRC_SETS, f))) for f in sets_js] +
                   [('src/' + f, read(src_path(f))) for f in SETS_SHARED])

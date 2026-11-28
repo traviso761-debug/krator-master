@@ -20,8 +20,10 @@
 //            grey, cover, wet: the sky greys, clouds over and dims the sun and the giantshine itself) and runs its fog law on
 //            the hour's fog (ATMOS.wxFog), instead of scaling values the sky would overwrite. A sky given its own o.weather
 //            (a page that writes its weather into the colour script) keeps it, and this binding leaves its fog alone
+//   cells    o.cells (true, or ATMOS.weatherCells' options): the moving weather (core/atmos/wx/, W5): the mode 'live' joins the
+//            selector, and the cells drift over the page on this climate (with o.cells.biome, the crops kit's axes too)
 //   ATMOS.bindWeather({climate: {wet, cold, frozen, ash, dry, dust}, sun, hemi, fog: scene.fog, grounds: [materials], mode,
-//                      snowBase, wet: {wetGround's options}, ui: element}) -> ATMOS.W
+//                      snowBase, wet: {wetGround's options}, ui: element, cells}) -> ATMOS.W
 // Needs ATMOS.init (core/atmos/host/89-atmos-c-hostbind.js: ATMOS.bindHost) first, and 89-atmos-4-weather.js and
 // 89-atmos-9-host.js (the selector) listed by the build. In the SUBFOLDER core/atmos/host/ (builds that pool core/atmos's top
 // level are unchanged): a build lists it by path.
@@ -39,7 +41,9 @@
   const sky=()=>A.skyDrives||null,skyFog=()=>{const d=sky();return !!(d&&d.fog&&fog&&scene&&fog===scene.fog);},skyLight=()=>{const d=sky();return !!(d&&d.light&&!d.own);};
   A.wxFog=f=>{const d=sky();if(A.W&&d&&!d.own&&skyFog()&&f===fog)fogLaw(f,A.W);};
   A.wxLook=()=>{const W=A.W;if(!W)return null;const cl=x=>Math.max(0,Math.min(1,x));
-   return{grey:cl(.8*(W.rain||0)+.85*(W.snow||0)+.9*(W.ash||0)+.45*(W.fog||0)),cover:cl(.6*(W.rain||0)+.75*(W.snow||0)+.2*(W.fog||0)+.3*(W.ash||0)),wet:W.wet||0};};
+   /* live (the weather cells): the coverage map clouds the sky where the cells are, so the eye's own weather adds no cover */
+   const live=W.mode==='live'&&A.wxOn;
+   return{grey:cl(.8*(W.rain||0)+.85*(W.snow||0)+.9*(W.ash||0)+.45*(W.fog||0)),cover:live?0:cl(.6*(W.rain||0)+.75*(W.snow||0)+.2*(W.fog||0)+.3*(W.ash||0)),wet:W.wet||0};};
   const tFogD=fog&&fog.density!=null?track(()=>fog.density,v=>{fog.density=v;}):null,tFogF=fog&&fog.far!=null&&fog.density==null?track(()=>fog.far,v=>{fog.far=v;}):null;
   const tSun=sun?track(()=>sun.intensity,v=>{sun.intensity=v;}):null,tHemi=hemi?track(()=>hemi.intensity,v=>{hemi.intensity=v;}):null;
   const W=A.weather({mode:o.mode||'clear',snow:!!C.cold,ash:!!C.ash,apply:W=>{
@@ -53,6 +57,8 @@
    if(tHemi&&!sl)tHemi(b=>b*(1-.2*k+.1*s));
    if(o.apply)o.apply(W);}});
   if(C.wet!==false&&!C.dry&&typeof WATER!=='undefined'&&WATER.wetGround&&o.grounds)o.grounds.forEach(m=>{if(m)WATER.wetGround(m,Object.assign({rain:true},o.wet||{}));});   /* o.wet: wetGround's options (porosity, puddles, ripples) */
+  /* the weather cells (W5, core/atmos/wx/): o.cells true or the cells' options ({biome, seed, mode...}); the climate is this one */
+  if(o.cells&&A.weatherCells)A.weatherCells(Object.assign({climate:C},o.cells===true?{}:o.cells));
   if(C.cold&&A.snowCover&&!A.snow){A.snowCover({frozen:!!C.frozen,base:o.snowBase||0});if(scene)A.snowOnScene(scene);}
   const ui=()=>{if(document.getElementById('atmosWeather'))return true;const el=o.ui||(typeof KHOST!=='undefined'&&KHOST.ui)||document.getElementById('ui');
    if(!el||!A.weatherUI)return false;A.weatherUI(el);return true;};

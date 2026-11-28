@@ -15,6 +15,9 @@ its pixel (2 km a pixel), each named region its own polygon, and each corridor (
   - then extract_region.py reads the model's data (model/data, always the 5.1 canvas, never a saved page) with
     `model` for the settlements, so they keep their ids and current pixels.
 
+A region row may pin its frame's origin (`origin_px`: [px, py]) so a cut that grows keeps its frame (the world's relief and
+every coordinate are laid in it); otherwise the origin is the polygons' middle.
+
 region.json then gains `sites`: [{id, name, type, culture, px, py, x, z, reach_km, page}], in the cut's frame (metres, x
 east, z south, the origin at the box's centre pixel). Deterministic: the same SITES.json and model data give the same cut.
 """
@@ -31,6 +34,12 @@ M_PER_PX = 2000.0
 
 def load():
     return json.load(open(SITES, encoding='utf-8'))
+
+
+def reach(row, region):
+    """a site's reach in one region: its row's `reach_km_by` for that region (a site two regions list, each its own square),
+    else its `reach_km`"""
+    return (row.get('reach_km_by') or {}).get(region, row['reach_km'])
 
 
 def square(px, py, reach_km):
@@ -54,7 +63,7 @@ def polygons(S, region):
         if sid not in sett:
             sys.exit('cut_site: site %s is not in the model\'s settlement list (model/src/60-settlements.js)' % sid)
         s, row = sett[sid], S['sites'][sid]
-        out.append({'name': 'site %s (%s)' % (s['name'], sid), 'map_px': square(s['px'], s['py'], row['reach_km']),
+        out.append({'name': 'site %s (%s)' % (s['name'], sid), 'map_px': square(s['px'], s['py'], reach(row, region)),
                     'kind': 'site', 'ref': sid})
     for rid in G.get('polygons', []):
         if rid not in regs:
@@ -97,6 +106,13 @@ def cut(region, dry=False):
            os.path.join(src, 'regions.json'), 'model', name, data, '--upsample', str(G.get('upsample', 'auto'))]
     if added:
         cmd += ['--add', os.path.join(src, 'added-areas.json')]
+    if G.get('smooth'):   # the region opts into core/world's smoothing (core/world/README.md, "Smoothing")
+        cmd += ['--smooth']
+    if G.get('relief'):   # and into its relief (core/world/PLAN-RELIEF.md)
+        cmd += ['--relief']
+    if G.get('origin_px'):   # the region row pins its frame's origin: a region that grows keeps its frame (the world's relief is
+        cmd += ['--origin', '%d,%d' % tuple(G['origin_px'])]   # laid in it), its sites and towns where they were
+
     for p in P:
         xs = [q[0] for q in p['map_px']]; ys = [q[1] for q in p['map_px']]
         print('  %-56s px %7.1f..%7.1f x %7.1f..%7.1f' % (p['name'][:56], min(xs), max(xs), min(ys), max(ys)))
@@ -118,12 +134,16 @@ def cut(region, dry=False):
         s, row = sett[sid], S['sites'][sid]
         M['sites'].append({'id': sid, 'name': s['name'], 'type': s['type'], 'culture': row.get('culture'),
                            'px': s['px'], 'py': s['py'], 'x': (s['px'] - cx) * M_PER_PX, 'z': (s['py'] - cy) * M_PER_PX,
-                           'reach_km': row['reach_km'], 'page': row.get('page')})
+                           'reach_km': reach(row, region), 'page': row.get('page')})
     M['cut'] = {'by': 'tools/scale-model/cut_site.py', 'sites_json': 'openworld/SITES.json', 'region': region,
                 'map': S['map'], 'polygons': [{'name': p['name'], 'kind': p['kind'], 'ref': p['ref']} for p in P]}
     with open(rj, 'w', encoding='utf-8', newline='\n') as f:
         json.dump(M, f, ensure_ascii=False, indent=1)
     print('cut %s: %d sites, origin px %s, box px %s' % (region, len(M['sites']), M['frame']['origin_px'], M['frame']['box_px']))
+    if G.get('relief'):   # its small streams, traced on the land the page draws (core/world/bake_streams.py; PLAN-RELIEF.md P3)
+        r = subprocess.call([sys.executable, os.path.join(ROOT, 'core', 'world', 'bake_streams.py'), region])
+        if r:
+            sys.exit('cut_site: core/world/bake_streams.py failed (%d)' % r)
 
 
 def main():

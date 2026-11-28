@@ -264,8 +264,10 @@ function xaRoom(x,z){const c=VERN.cur;if(!c||!c.D||!(c.D.w>0)||!(c.D.d>0))return
 // leaf balls reach 2.1 m from its trunk and a cypress's cones h*.2, both shrunk to the crown room
 function xnTree(x,z,h,c,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('tree',x,y,z,h))return;const k=Math.min(1,xaRoom(x,z)/2.1);vPst('vPostB',x,y,z,.14,h*.5,xC(0x5a4632));c=c||xC(xPick(XPAL.leaf));for(let i=0;i<5;i++)kput('xLeaf',[x+rr(-.7,.7)*k,y+h*.62+rr(-.3,.5),z+rr(-.7,.7)*k],qEuler(rng(),rng(),0),[rr(.9,1.4)*k,rr(.8,1.1)*k,rr(.9,1.4)*k],c.clone().multiplyScalar(rr(.85,1.1)));}
 function xnCypress(x,z,h,y){y=y||0;if(typeof xaPlant==='function'&&xaPlant('cypress',x,y,z,h))return;const k=Math.min(1,xaRoom(x,z)/(h*.2)),c=xC(xPick(XPAL.cypress));vPst('vPostB',x,y,z,.08,.6,xC(0x3a2a20));kput('xConeL',[x,y+.4,z],null,[h*.16*k,h,h*.16*k],c);kput('xConeL',[x,y+.3,z],null,[h*.2*k,h*.5,h*.2*k],c.clone().multiplyScalar(.9));}
-// townsfolk at a given height (vnFolk stands them on y=0)
-function xnFolk(x,y,z,n,spread){for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread);kput('figB',[px,y,pz],qEuler(0,rng()*TAU,0),1,xC(xPick([0xe8d9b8,0xa8382a,0x2aa5a0,0x6e2a2a,0xe8a030,0x1e3f8a,0xf4efe4])));kput('figH',[px,y,pz],null,1,xC(0xc9a17e));}}
+// townsfolk at a given height (vnFolk stands them on y=0). A page whose life layer draws the people sets XA_NO_FOLK = true
+// (a global, before the kit draws; Stage 8 D19, S3-79a): the static figures stand down. Their draws are made all the same,
+// so every builder's stream, and every other piece it draws, stays as it was
+function xnFolk(x,y,z,n,spread){const off=typeof XA_NO_FOLK!=='undefined'&&XA_NO_FOLK===true;for(let i=0;i<n;i++){const px=x+rr(-spread,spread),pz=z+rr(-spread,spread),ry=rng()*TAU,c=xPick([0xe8d9b8,0xa8382a,0x2aa5a0,0x6e2a2a,0xe8a030,0x1e3f8a,0xf4efe4]);if(off)continue;kput('figB',[px,y,pz],qEuler(0,ry,0),1,xC(c));kput('figH',[px,y,pz],null,1,xC(0xc9a17e));}}
 // a stone-edged pool of water (y = ground); the rim sits proud, the water a little below the rim
 function xnPool(x,y,z,w,d,ry,c){c=c||xC(xPick(XPAL.stone));vB('vStone',x,y,z,w+.6,.35,d+.6,ry,c);vB('xWaterB',x,y+.08,z,w,.2,d,ry,xC(XPAL.water));}
 // a water channel from a to b (local [x,z]), w wide, stone edges (the chahar bagh rill)

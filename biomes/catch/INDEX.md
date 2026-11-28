@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`, `README.md`, `SKILL-LESSONS.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/catch-fan.html`, `dist/catch-lake.html`, `dist/catch-oasis.html`, `dist/catch.html`
+Built output (never open it; edit `src/` and rebuild): `dist/catch-fan.html`, `dist/catch-gills-candles.html`, `dist/catch-lake.html`, `dist/catch-oasis.html`, `dist/catch.html`
 
 Build: `cd biomes/catch && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -26,7 +26,7 @@ From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `40-co
 | `60-biome-catch-floor.js` | 4 |  |
 | `70-biome-catch.js` | <1 |  |
 | `80-host-stalkers.js` | 2 |  |
-| `88-host-build.js` | 4 |  |
+| `88-host-build.js` | 5 |  |
 | `89a-host-atmos.js` | 1 |  |
 | `89s-host-sky.js` | 3 |  |
 | `89w-host-water.js` | 2 |  |
@@ -34,7 +34,7 @@ From `core/terrain/` (shared; see `core/README.md`): `37-core-stacks.js`, `40-co
 | `89y-host-storm.js` | 2 |  |
 | `89zz-host-core.js` | 7 |  |
 | `98z-host-mirror.js` | 1 |  |
-| `99-host-take.js` | 10 | the inspector's words (7); the probe's budgets and the kit's own checks (ve (23); the page, handed to the host (74) |
+| `99-host-take.js` | 10 | the inspector's words (7); the probe's budgets and the kit's own checks (ve (23); the page, handed to the host (77) |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -44,5 +44,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | Station | Fragments | KB |
 |---|---|---|
 | fan | 00-head.html, 45b-host-stage.js | 9 |
+| gills-candles | 00-head.html, 45b-host-stage.js, 87-host-gills.js, 89y2-host-gills-late.js | 43 |
 | lake | 00-head.html, 45b-host-stage.js | 13 |
-| oasis | 00-head.html, 45b-host-stage.js | 14 |
+| oasis | 00-head.html, 45b-host-stage.js | 15 |

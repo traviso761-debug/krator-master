@@ -17,8 +17,8 @@ const ARCH_SAMPLES=(function(){const pts=[];scene.traverse(o=>{if(!o.isMesh||o.i
  im.visible=false;im.layers.set(31);im.userData.probeSamples=true;scene.add(im);return {mesh:im,count:n};})();
 (function(){
  const t0=performance.now();
- const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
- if(!Q.has('noflora')){try{window._biome=OIDONG.build({R:TERR.R-120,quality:q});}catch(e){reportErr('oidong: '+e.stack);}}
+ const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1,fR=Q.has('floraR')?+Q.get('floraR'):TERR.R-120;
+ if(!Q.has('noflora')){try{window._biome=OIDONG.build({R:fR,quality:q});}catch(e){reportErr('oidong: '+e.stack);}}
  _mark('flora');
  if(Q.has('nobake')){window._stats=JSON.parse(JSON.stringify(BIO.stats));window._instances=0;window._bakeCalls=0;return;}
  const b=BIO.bake();

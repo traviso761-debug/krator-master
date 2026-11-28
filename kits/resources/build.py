@@ -19,6 +19,9 @@ Building kits read 42r-res-ore.js and 44r-res-nodes.js in place the same way (ki
 Checks (fragments share one JS scope), as kits/islanders: unique column-0 names, `// prefix: xx` on 4x-7x fragments, a
 unique numeric seed per defBuilding, `node --check` when node exists.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import base64, hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

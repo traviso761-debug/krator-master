@@ -1,0 +1,99 @@
+{
+ "edit": "5.1 edit 31: the catch-bowl queue's four non-blocking records",
+ "date": "2026-11-24",
+ "batches": {
+  "salt_works_added": "5.1e10",
+  "moved_and_retyped": "5.1e28"
+ },
+ "ranger_hq": {
+  "id": "sz85a8i5js",
+  "kept": true,
+  "people": 500,
+  "populations_before": {
+   "cur_pop": 350,
+   "on_screen_pop": 129,
+   "sim_urban_pop": 259,
+   "pop_known": false
+  },
+  "populations_after": {
+   "cur_pop": 500,
+   "on_screen_pop": 500,
+   "sim_urban_pop": 500,
+   "pop_known": true
+  },
+  "why": "the owner, 2026-11-24: 500, \"paid a salary and also a small cut of an expeditions profits\""
+ },
+ "salt_works": [
+  {
+   "id": "svhmyhf33w",
+   "name": "Ṣalṭ al-Bān",
+   "px": [
+    1080,
+    1428
+   ],
+   "stage": "outpost",
+   "ground_m": 457.8,
+   "sites_json_model_flag": "false -> true"
+  },
+  {
+   "id": "s0zgu7u6yb",
+   "name": "Solta",
+   "px": [
+    1169,
+    1150
+   ],
+   "stage": "outpost",
+   "ground_m": -1114.9,
+   "sites_json_model_flag": "false -> true"
+  }
+ ],
+ "salt_works_batch_reserved": "core/simulation/PROPOSAL-CATCH.md names 5.1e10 for these two; no SETT_* table held that version, so it is used as reserved",
+ "esper": {
+  "id": "sq11desertw7",
+  "from": "Izani-Dasri village (to be named)",
+  "to": "Esper"
+ },
+ "parabola": {
+  "id": "scyeauyek7",
+  "type_from": "inhabited ruin",
+  "type_to": "arcology",
+  "network_node_already_arcology": true
+ },
+ "bore": {
+  "id": "rift.bowl.parabola-stair",
+  "from_px": [
+   970,
+   1186
+  ],
+  "to_px": [
+   1106,
+   1442
+  ],
+  "km": 580,
+  "tunnel_km": 425,
+  "points": 291,
+  "portals_m": [
+   1716.0,
+   1379.0
+  ],
+  "max_cover_m": 6776,
+  "median_cover_m": 2932,
+  "at_45_pct_px": [
+   1031.0,
+   1300.8
+  ],
+  "at_50_pct_px": [
+   1038.0,
+   1314.0
+  ],
+  "form_counts": {
+   "open": 78,
+   "tunnel": 213
+  },
+  "beside": "rift.bowl.theodiga-stair",
+  "line": "rift.bowl",
+  "up": "decayed"
+ },
+ "arcbeam_stair_tunnels_in_network_layer": "none: its Arcbeam routes are surface trunks, which the owner kept",
+ "raster_changed": false
+}

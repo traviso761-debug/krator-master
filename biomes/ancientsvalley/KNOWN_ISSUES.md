@@ -22,9 +22,12 @@
   without a kerb (about one in twenty, left on their nodes by `AV.kerbPlace`) have no door; an open tower is set plumb (its lean cleared), so the
   ruin shares' lean count falls by the open ones; the approach's steps are solid blocks on a ground that takes their plane, but the ground mesh is
   coarser than a tread, so its triangles can show between the cheeks on a steep flight; a rise over 6.3 m has a rubble ramp, not steps, and its
-  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0). A flight down to a sunk plinth (the
-  open Spindle nearest the Overlook, 3.6 m down) still reads poorly from the street on the GPU even with its cheeks held at the pavement's level as
-  retaining walls (2026-11-10): the plinth's eased bowl around it dominates; a retaining wall round the whole sunk plinth would read better.
+  tower is never open; a plinth more than 6.3 m under its street has no approach (29 of 444 on station 0). A plinth sunk below the ground round it
+  sat in a smooth bowl that read as steps lost in a hollow (the open Spindle by the Overlook). A retaining wall was tried and set aside: the
+  ground mesh is a 14 m grid (47), so no sharp step can be drawn under it. Since 2026-11-15 the bowl round every door tower's plinth is paved in
+  tiers that hug the drawn ground (76 `AVL.drawCourt`, `GROUND.meshH`, 0.4 m risers), which reads as a stepped sunken court at eye level; from
+  high above it reads less. The tiers are drawn, not walked: the walker stands on terrainH there as everywhere, up to about a metre off the drawn
+  mesh (a page-wide matter of the 14 m grid). The cure for both is a finer ground mesh near the plinths (47).
 
 - [ ] **The tiers, after the owner's six passes on them (2026-11-07 to 09; `70-host-city.js`, "THE TIERS, plainly"):** every family and every look
   has a box shell (KSHELL box mode, the test bed's prototype, 66 looks in two 2048 atlases baked at the boot from the rusted heroes), so one rule
@@ -202,7 +205,15 @@
   south-western trees' drawing is about 13 s of what is left, the rest is placement (one rng stream through the floor, and the north-western
   kit's trees draw without reseeding), so a deferred far draw would save about 5 s for a second bake. Left: the first frame's shader compiles
   (20 s on software GL), the transit's drawing (11 s), the take (11 s). The core/biome change reaches 72 builds: the all-builds integration
-  rebuilds them.
+  rebuilds them. Then (2026-11-11, the owner: station 0 and the Yards "still seem to get stuck on 'building the valley'"): the page showed
+  nothing at all while 47 (the land) filled the ground's lattice, 12 s on software GL and nearly 40 s in a slow browser, and nothing between the
+  bake and the first frame. The page now loads in parts (46y, `AV_PARTS`; build.py splits it before 47): the lattice is filled in quarter-second
+  slices with the share done on the note, every build stage says which of five and the seconds so far, and the last stage (the towers, the
+  streets, the sky) has a note of its own; each yield waits for a painted frame. The Yards' pools are read by cell (`AV.bucket`: 13.5 s of a
+  build, the same heights). A load still takes minutes in a hidden or throttled tab, or on a machine busy with other jobs. A hidden tab takes no turns (the browser holds
+  its timers to a second each, so the slices crawled there). The oily rain (the owner, 2026-11-11: "may be lagging the page") measured no
+  dearer than clear on either lane, in the render or the whole frame, inside the field and looking across it (Arc, 2880 x 1620: 48-90 ms both);
+  the page is that heavy at that size on the Arc whatever the weather, with stalls of 200-470 ms a frame now and then in every mode.
 - [ ] **The ground's detail map is sampled raw** (`47-host-land.js`, the lint's one RAWTEX on this build, locked in the baseline): the library's
   `groundDetail` albedo multiplies the ground's colour without an sRGB decode, as the two lowlands' pages do (the valley copies their ground). A
   decode darkens the ground a fifth; do it with the lowlands together and retune the gain, not here alone.

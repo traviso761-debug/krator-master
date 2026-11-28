@@ -1,0 +1,101 @@
+// ================================================================= GRĒṬ-ĀIL — the ground at 1:1 and the placement, every page's
+// Every target of the build (the isle's cove and precinct; the summit and its High Kora) stands on the scale model's cut through
+// the open world's fields, with the cove's headlands stamped and its own pads and terraces cut and filled. A target sets
+// AD_SITE in its 89z-rows.js before this runs: {id, PX: the page's origin in scale-model px, BOX: the near ground (whole 400 m
+// cells of the far ground's grid), bio: {origin, center} for the flora}. Its own 89zad-site.js then places its records with
+// adPut / adPad / adZigzag and gives AD_WAYS and AD_PAVED (the flora's mask reads them when the biome grows, in 90ae).
+//   the ground   the scale model's cut (region/data, gen/39ad-world-data.js) through the open world's fields (WORLD.H,
+//                core/world/41-world-fields.js, read in place), in world metres x = (px - origin)*2000, z likewise
+//   the cove     the two headland records of edit_517_azure.py (lf_azure_cove_west, lf_azure_cove_east), stamped through
+//                WORLD.landHook with core/world's island profile (41l-world-landforms.js, which this branch does not have: the
+//                same records, the same profile, without the waterline's noise wobble; KNOWN_ISSUES.md)
+//   the pads     AD_PADS: a level each (the mean of the ground under it, cut and filled), blended over a skirt by terrainH;
+//                90ae draws the retaining faces where one stands off the ground
+// Nothing here draws. [G data]: no THREE, no DOM.
+reseed(34156);
+// the region's frame: world metres x = (px - origin)*2000, z likewise (WORLD_DATA.meta.frame.origin_px, the cut's own centre)
+const AD_O=WORLD_DATA.meta.frame.origin_px,adWx=px=>(px-AD_O[0])*2000,adWz=py=>(py-AD_O[1])*2000;
+const AD={PX:AD_SITE.PX,LAKE:-520,BOX:AD_SITE.BOX};   /* the near ground: whole 400 m cells of the far ground's grid (90ad) */
+AD.WX=adWx(AD.PX[0]);AD.WZ=adWz(AD.PX[1]);   /* the page's origin in world metres */
+const AD_P=(u,v)=>[v,-u];
+const adSm=(a,b,x)=>{let t=(x-a)/(b-a);t=t<0?0:t>1?1:t;return t*t*(3-2*t);};
+// ---------------------------------------------------------------- the cove's headlands (world metres)
+const AD_ARMS=[{id:'lf_azure_cove_west',x:adWx(845.91),z:adWz(1508.568),r:220,crest:-490},
+ {id:'lf_azure_cove_east',x:adWx(846.24),z:adWz(1508.568),r:220,crest:-486}];
+WORLD.landHook=(x,z,h)=>{for(const L of AD_ARMS){const d=Math.hypot(x-L.x,z-L.z);if(d>=L.r*1.8*1.15)continue;   /* 41l: the first record in reach stamps */
+  const u=d/L.r;if(u>=1.8)return h;const rise=L.crest-AD.LAKE,cap=1-adSm(.15,1,u),t=AD.LAKE+rise*cap-8*adSm(1,1.6,u);return Math.max(h,h+(t-h)*(1-adSm(1.3,1.8,u)));}
+ return h;};
+WORLD.init(WORLD_R);
+const adBase=(x,z,mw)=>WORLD.H(x+AD.WX,z+AD.WZ,mw||0)-AD.LAKE;
+// ---------------------------------------------------------------- the pads and terraces
+const AD_PADS=[];
+function adLevel(x0,z0,x1,z1){let s=0,n=0;for(let i=0;i<=4;i++)for(let j=0;j<=4;j++){s+=adBase(x0+(x1-x0)*i/4,z0+(z1-z0)*j/4);n++;}return Math.round(s/n*2)/2;}
+function adPad(id,x0,z0,x1,z1,y,skirt){const P={id,x0:Math.min(x0,x1),z0:Math.min(z0,z1),x1:Math.max(x0,x1),z1:Math.max(z0,z1),skirt:skirt==null?5:skirt};P.y=y==null?adLevel(P.x0,P.z0,P.x1,P.z1):y;AD_PADS.push(P);return P;}
+function adPadAt(x,z){for(let i=AD_PADS.length-1;i>=0;i--){const p=AD_PADS[i];if(x>=p.x0&&x<=p.x1&&z>=p.z0&&z<=p.z1)return p;}return null;}
+const _adT={x:NaN,z:NaN,h:0};
+terrainH=function(x,z){if(x===_adT.x&&z===_adT.z)return _adT.h;let h=adBase(x,z);
+ for(const p of AD_PADS){const dx=Math.max(p.x0-x,0,x-p.x1),dz=Math.max(p.z0-z,0,z-p.z1);if(dx>=p.skirt||dz>=p.skirt)continue;const d=Math.hypot(dx,dz);if(d>=p.skirt)continue;h+=(p.y-h)*(1-adSm(0,p.skirt,d));}
+ _adT.x=x;_adT.z=z;_adT.h=h;return h;};
+
+const AD_PLACE=[];
+const AD_CLEAR=[];   /* boxes the flora keeps off, unpainted ({x, z, hw, hd}): a village's green (89zac) */
+// a building's pad: the box round its footprint turned by ry, plus 3 m all round; half sizes [x, z]
+function adPadBox(w,d,ry){const ca=Math.abs(Math.cos(ry)),sa=Math.abs(Math.sin(ry));return[(ca*w+sa*d)/2+3,(sa*w+ca*d)/2+3];}
+// a building at the plan's (u, v), its front turned by ry (0: toward the lake, south; PI/2: east; -PI/2: west; PI: uphill), o its
+// options; pad: its own pad (its footprint turned, plus 3 m, at the mean under it) unless it stands on a terrace or the water
+function adPut(key,u,v,ry,o,kind,id,pad){const c=AD_P(u,v),D=VERN.defs[key];if(!D)throw new Error('azure-dream: no def '+key);
+ const q={key,x:c[0],z:c[1],ry,o:Object.assign({v:0},o||{}),kind,id:id||kind+':'+key+':'+u+','+v,h:D.h==null?10:D.h,w:o&&o.w!=null?o.w:D.fw==null?D.w:D.fw,d:o&&o.d!=null?o.d:D.fd==null?D.d:D.fd};   /* a size the caller gives (the racks) wins */
+ {const sc=o&&o.scale!=null?o.scale:1;if(sc!==1){q.w*=sc;q.d*=sc;q.h*=sc;}}   /* VERN.place scales the whole building by o.scale (the Summit Chorten) */
+ if(pad&&q.o.y==null){const b=adPadBox(q.w,q.d,ry);q.pad=adPad('pad:'+q.id,q.x-b[0],q.z-b[1],q.x+b[0],q.z+b[1],null,6);q.o.y=q.pad.y;}
+ AD_PLACE.push(q);return q;}
+const adAt=(key,x,z,ry,o,kind,id,pad)=>adPut(key,-z,x,ry,o,kind,id,pad);   /* by page x, z (x = v, z = -u) */
+const adPx=P=>[adWx(P[0])-AD.WX,adWz(P[1])-AD.WZ];   /* scale-model px to page metres */
+
+// a zigzag stair: n runs across a slope or a terrace's face, each a qb_terrace_stair along v centred on vc, turning on a landing
+// pad at each foot, from (uTop, yTop) down to yFoot, each run S m further down the slope (south) than the last
+function adZigzag(id,uTop,vc,yTop,yFoot,n,S){const r=(yTop-yFoot)/n,L=qnStairPlan(r).len,runs=[];let y=yTop;
+ for(let k=0;k<n;k++){const u=uTop-S*k,east=k%2===0;runs.push({u,v0:vc+(east?-L/2:L/2),v1:vc+(east?L/2:-L/2),ry:east?Math.PI/2:-Math.PI/2,y,r});y-=r;}
+ for(const R of runs){adPut('qb_terrace_stair',R.u,R.v0,R.ry,{v:0,rise:R.r,w:5.6,y:R.y},'way',id+':'+R.u.toFixed(1));
+  const c=AD_P(R.u-3.6,R.v1);adPad('landing:'+id+':'+R.u.toFixed(1),c[0]-4.5,c[1]-6.2,c[0]+4.5,c[1]+6.2,R.y-R.r,2);}   /* the landing: under this run's foot and the next run's head */
+ const h=AD_P(uTop+11,runs[0].v0-3.6),g=AD_P(uTop-1.5,runs[0].v0+3.6);adPad('landing:'+id+':head',h[0],h[1],g[0],g[1],yTop,1.5);   /* the head: from the edge above, over its face, to the first run */
+ return{yTop,yFoot,rise:yTop-yFoot,r,len:L,n,runs,footU:uTop-S*n};}
+
+// ---------------------------------------------------------------- the Station's signal line (PLAN.md Q15)
+// At 1:1 the isle's dome hides the summit from the monastery, so the Station Watch's lamp (on the summit's page) is answered
+// by the relay lamp by the Dream Road's first chorten (on the isle's page), which the Hall of Dreaming's lantern roof sees. In
+// scale-model px and metres over the lake, the same on every page: each page places its own end against these and its verify
+// checks both sight lines over the 1:1 ground. The Dream Road runs straight from the monastery's back gate (the isle page's u
+// 484 on its axis) to the summit's crest; its first chorten 1 km up on the east side, the relay opposite it on the west.
+const AD_SIGNAL=(function(){const S=[845.05,1504.35],G=[846.075,1508.493-484/2000],dx=S[0]-G[0],dy=S[1]-G[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,
+  px=-uy,py=ux,on=(s,off)=>[G[0]+(ux*s+px*off)/2000,G[1]+(uy*s+py*off)/2000];
+ return{summit:S,gate:G,len:L*2000,dir:[ux,uy],ry:Math.atan2(px,py),on,chorten:on(1000,9),relay:on(1000,-9),
+  watch:[845.05-76.2/2000,1504.35+13.8/2000,322.4],   /* the Station Watch's lamp: its tower's roof (89qc), the summit page's (-76.2, 13.8) */
+  hall:[846.075,1508.493-440.4/2000,133.5]};})();   /* the Hall of Dreaming's lantern roof (89qa: its head, 24.4 m behind its centre; the terrace +13) */
+// the relay lamp's height over the lake: its pad's level (adPut's rule: its footprint turned to the road, plus 3 m) and the lamp
+function adRelayY(){const x=adWx(AD_SIGNAL.relay[0])-AD.WX,z=adWz(AD_SIGNAL.relay[1])-AD.WZ,D=VERN.defs.qb_ad_relay_lamp,b=adPadBox(D.fw,D.fd,AD_SIGNAL.ry);
+ return adLevel(x-b[0],z-b[1],x+b[0],z+b[1])+AD_RELAY_LAMP_H;}
+// the least clearance of a sight line over the 1:1 ground (adBase: no page's pads), a and b [px, py, y]
+function adSight(a,b){const ax=adWx(a[0])-AD.WX,az=adWz(a[1])-AD.WZ,bx=adWx(b[0])-AD.WX,bz=adWz(b[1])-AD.WZ;let w=1e9;
+ for(let i=1;i<400;i++){const t=i/400;w=Math.min(w,a[2]+(b[2]-a[2])*t-adBase(ax+(bx-ax)*t,az+(bz-az)*t));}return w;}
+
+// ---------------------------------------------------------------- the flora's mask and fields (the Vale of Xanadu's biome, the page's own)
+// the isle's woods on the open slopes (1), the shore zone by the water (.8: the dawn redwoods, frost willows and reeds stand
+// there), the odd tree on a terrace's open ground; nothing on the water, a pad, a way or a building's footprint, or off the near
+// ground (the far ground is coarser and dropped under it). The biome zones itself from the fields: wet near the lake, upland by
+// height. Bound as Qiblai's city binds it (Object.assign on BIO.host); grown and baked in 90ae.
+const adSegD=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;let t=l?((x-a[0])*dx+(z-a[1])*dz)/l:0;t=t<0?0:t>1?1:t;return Math.hypot(a[0]+dx*t-x,a[1]+dz*t-z);};
+function adBioMask(x,z){const B=AD.BOX;if(x<B[0]+20||x>B[2]-20||z<B[1]+20||z>B[3]-20)return 0;const h=terrainH(x,z);if(h<1.4)return 0;
+ for(const p of AD_PLACE){if(p.kind==='wall'){if(adSegD(x,z,loc(p.x,p.z,-p.o.len/2,0,p.ry),loc(p.x,p.z,p.o.len/2,0,p.ry))<6)return 0;continue;}
+  const r=Math.hypot(p.w==null?10:p.w,p.d==null?10:p.d)/2+(/^village:/.test(p.kind)?10:2);   /* a village's yards: 10 m cleared round each building */if(Math.abs(x-p.x)<r&&Math.abs(z-p.z)<r&&Math.hypot(x-p.x,z-p.z)<r)return 0;}
+ for(const c of AD_CLEAR)if(Math.abs(x-c.x)<c.hw&&Math.abs(z-c.z)<c.hd)return 0;   /* kept open: a village's green */
+ for(const b of AD_PAVED)if(x>=Math.min(b[0][0],b[1][0])-2&&x<=Math.max(b[0][0],b[1][0])+2&&z>=Math.min(b[0][1],b[1][1])-2&&z<=Math.max(b[0][1],b[1][1])+2)return 0;
+ const pd=adPadAt(x,z);if(pd)return pd.id.startsWith('terrace:')?.22:0;   /* the terraces' grass: trees here and there between the buildings */
+ for(const [k,w,P] of AD_WAYS)for(let i=0;i+1<P.length;i++)if(adSegD(x,z,P[i],P[i+1])<w/2+2)return 0;
+ return h<12?.8:1;}
+// The fields as the biome reads them (biomes/xanadu 55's zones): 'upland' is the vale's mountain flank, and its forest, parkland and
+// shore all fade out above upland .22, so the isle (a low island, +308 m at its crest) reads as lowland throughout (its height
+// over 5 km); 'wet' sets forest (over .64, full at .78) against open parkland (under .80, full at .62), so a slow noise over 600 m
+// gives the isle woods with glades in them, and the shore's band is wetter still
+const AD_WOODN=KRELIEF.noise(34158);
+if(typeof BIO!=='undefined'&&BIO.host)Object.assign(BIO.host,{mask:adBioMask,origin:AD_SITE.bio.origin,center:AD_SITE.bio.center,
+ fields:{wet:(x,z)=>Math.min(1,.56+.42*AD_WOODN.fbm(x/600+3.1,z/600-7.7,3)+.3*adSm(14,1.5,terrainH(x,z))),salt:()=>0,upland:(x,z)=>Math.max(0,Math.min(1,terrainH(x,z)/5000)),flow:()=>0,mist:(x,z)=>Math.max(0,Math.min(.4,(terrainH(x,z)-90)/200))}});

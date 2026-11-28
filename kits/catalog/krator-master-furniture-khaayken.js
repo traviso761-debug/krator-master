@@ -243,7 +243,7 @@ FURN({
 });
 FURN({
   key: 'khaayken_court_hanging', name: 'Appliqué hanging', culture: 'khaayken', tier: 'court', type: 'banner', setting: 'indoor',
-  rooms: ['hall', 'court', 'living'], anchor: 'wall', clearance: { front: 0.3 },
+  rooms: ['hall', 'court', 'living'], anchor: 'wall', hung: 'top', clearance: { front: 0.3 },
   materials: ['cloth', 'timber'], w: 1.8, d: 0.06, h: 1.6, variants: 1,
   build: function (F) {
     F.rod(-0.95, 1.6, 0, 0.95, 1.6, 0, 0.025, F.col('larchDark'), 'wood');

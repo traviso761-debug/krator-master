@@ -257,15 +257,15 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
     focusJobs: { ranch: 48, quarry: 48 }, reach: { ranch: 260, quarry: 260 }, pending: {} };
   const BOX = { 'fg-hut': [6, 5, 4.2], 'fg-house': [9, 6, 4.8], 'fg-longhouse': [15, 6.5, 5.2], 'fg-headhouse': [13, 8, 5.8], 'fg-meethall': [18, 10, 7], 'fg-cairnhall': [7, 7, 6],
     'fg-store': [8, 6, 4.5], 'fg-smokehouse': [6, 5, 4.5], 'fg-barn': [12, 7, 5.5], 'fg-ropehouse': [20, 5, 4], 'fg-eggstore': [6, 6, 4.5], 'fg-pens': [14, 12, 1.4],
-    'fg-icehouse': [12, 9, 4.5], 'fg-sledgeshed': [16, 7, 4.2] };
+    'fg-icehouse': [12, 9, 4.5], 'fg-sledgeshed': [16, 7, 4.2], 'fg-granary': [11, 7.5, 5.2], 'fg-smithy': [11, 8, 5], 'fg-halting-house': [18, 9.5, 5.8] };
   const fdims = k => BOX[k] ? { w: BOX[k][0], d: BOX[k][1], h: BOX[k][2] } : null;
   const fspec = (culture, focus, o) => Object.assign({ id: 'fowlers', world: 8310, culture, focus, site: { x: 0, z: 0 }, link: { x: 30, z: -200 },
     resource: { x: 0, z: 300, workers: 44 }, popMax: 150, dims: fdims }, o || {});
   const fw = H.village(fspec('fellgang', 'fowling')), ic = H.village(fspec('fellgang', 'ice', { id: 'icecut', world: 8410, resource: { x: 0, z: 300, workers: 40 }, popMax: 120 }));
   const worksOf = v => (v.records || []).filter(r => r.role === 'works').map(r => r.key);
   const hasWorks = (v, keys) => !v.error && keys.every(k => worksOf(v).includes(k)) && worksOf(v).every(k => keys.includes(k));
-  ok('the fellgang row registers the fowling and ice focuses at load, after the seven it found (' + H.FOCI.join(', ') + ')',
-    !!H.CULTURES.fellgang && H.FOCI.join() === foci0.concat(['fowling', 'ice']).join(), foci0.indexOf('fowling') < 0 && !H.village(fspec('fellgang', 'skating')).records);
+  ok('the fellgang row registers the West Rift Fellgang focuses at load, after the seven it found (' + H.FOCI.join(', ') + ')',
+    !!H.CULTURES.fellgang && H.FOCI.join() === foci0.concat(['fowling', 'ice', 'stair', 'copper', 'gold', 'pass']).join(), foci0.indexOf('fowling') < 0 && !H.village(fspec('fellgang', 'skating')).records);
   ok('a fowling village works the rope house, the egg store and the pens; an ice village the ice houses and the sledge shed (' + fw.records.length + ' and ' + ic.records.length + ' buildings)',
     hasWorks(fw, ['fg-ropehouse', 'fg-eggstore', 'fg-pens']) && hasWorks(ic, ['fg-icehouse', 'fg-sledgeshed']),
     !hasWorks(H.village(fspec('islander_east', 'fowling', { dims })), ['fg-ropehouse', 'fg-eggstore', 'fg-pens']) && !hasWorks(ic, ['fg-ropehouse', 'fg-eggstore', 'fg-pens']));
@@ -273,10 +273,45 @@ ok('a key the host has no box for is placed as its declared box and marked pendi
   ok('the focuses move no building: fowling lays the village ranch laid on the stand-ins\' row, ice the one quarry laid',
     same(fw, H.village(fspec(OLD, 'ranch'))) && same(ic, H.village(fspec(OLD, 'quarry', { id: 'icecut', world: 8410, resource: { x: 0, z: 300, workers: 40 }, popMax: 120 }))),
     !same(fw, H.village(fspec(OLD, 'quarry'))));
+  const cp = H.village(fspec('fellgang', 'copper', { id: 'coppersmiths', world: 8510 })), gd = H.village(fspec('fellgang', 'gold', { id: 'goldcamp', world: 8610 })),
+    ps = H.village(fspec('fellgang', 'pass', { id: 'passkeepers', world: 8710 })), st = H.village(fspec('fellgang', 'stair', { id: 'stairhead', world: 8810 }));
+  ok('stair, copper, gold and pass Fellgang villages lay out cleanly with their focus works',
+    hasWorks(cp, ['fg-smithy', 'fg-store', 'fg-barn']) && hasWorks(gd, ['fg-smithy', 'fg-store', 'fg-pens']) &&
+    hasWorks(ps, ['fg-halting-house', 'fg-ropehouse', 'fg-smokehouse', 'fg-store']) && hasWorks(st, ['fg-ropehouse', 'fg-sledgeshed', 'fg-smithy', 'fg-store']),
+    !hasWorks(H.village(fspec('islander_east', 'copper', { dims })), ['fg-smithy', 'fg-store', 'fg-barn']));
   ok('the meeting hall, the cairn house, the store, the smokehouse and a barn in each (the row\'s services)',
     [fw, ic].every(v => ['fg-meethall', 'fg-cairnhall', 'fg-store', 'fg-smokehouse', 'fg-barn'].every(k => v.records.some(r => r.key === k))),
     !['fg-meethall'].every(k => fw.records.filter(r => r.key !== 'fg-meethall').some(r => r.key === k)));
 }
 
+// ---- the Marr culture row (22-hamlet-marr.js): every focus, coastal landing and Marr Creole names
+{
+  const mrow = H.CULTURES.marr, MDIMS = mrow.pending || {};
+  const mspec = (focus, o) => Object.assign({ id: 'marr-' + focus, world: 19, culture: 'marr', focus, site: { x: 0, z: 0 }, link: { x: 480, z: 60 },
+    resource: { x: -160, z: 50 }, dims: k => MDIMS[k] || null }, o || {});
+  /* the focuses the Marr row works (the Fellgang file above registers fowling and ice, which it has no works for) */
+  const MF = H.FOCI.filter(f => mrow.works && mrow.works[f]);
+  const MV = {}; MF.forEach(f => { MV[f] = H.village(mspec(f)); });
+  const mStaffed = v => { const C = v.census, hh = v.records.filter(r => r.role === 'house').reduce((a, r) => a + r.households, 0);
+    const wj = v.records.filter(r => r.role === 'works').reduce((a, r) => a + (mrow.works[v.focus].find(w => w.key === r.key) || { jobs: 0 }).jobs, 0);
+    return C.pop <= 500 && hh * mrow.household >= C.pop && wj >= C.focusJobs && v.records.every(r => /^mar_/.test(r.key) && !r.pending); };
+  const mOv = MF.map(f => overlaps(MV[f])).flat();
+  ok('Marr culture row: every focus makes a purely mar_* village with no error or overlap (' + MF.map(f => f + ' ' + MV[f].records.length).join(', ') + ')',
+    MF.every(f => !MV[f].error && mStaffed(MV[f])) && mOv.length === 0,
+    !!H.village(mspec('salt', { culture: 'nonesuch' })).error, MF.filter(f => MV[f].error).map(f => f + ': ' + MV[f].error).join('; '));
+  const MLv = H.village(mspec('fishing', { landing: { x: 460, z: 240, ux: 0.8, uz: 0.6 } })), mq = MLv.records.find(r => r.role === 'landing');
+  const ML = H.NAMES.marr || [], mIds = ['marr-0', 'marr-1', 'marr-2', 'marr-3', 'marr-4', 'marr-5', 'marr-6', 'marr-7'];
+  const MD = H.dealNames('marr', 19, mIds);
+  ok('Marr coastal landing places mar_canal_quay and KHAMLET.NAMES.marr deals 100+ unique Izani-Marr names (' + ML.length + ')',
+    !MLv.error && !!mq && mq.key === 'mar_canal_quay' && ML.length >= 100 && new Set(ML.map(r => r.name)).size === ML.length && new Set(mIds.map(i => MD[i].name)).size === mIds.length,
+    !MV.fishing.landing);
+}
+// ---- the work camp's census (in 30-hamlet-village.js since Stage 8 B8): its own file on tools/ktest.js (each negative a
+// fault and its fix), run here so this test covers it; test_all.py also runs it by name
+{ const r = require('child_process').spawnSync(process.execPath, [path.join(__dirname, 'test-hamlet-camp.js')], { encoding: 'utf8' });
+  const tail = (r.stdout || '').trim().split('\n').pop();
+  ok('the work camp\'s census: test-hamlet-camp.js passes', r.status === 0, true, tail + (r.status ? '\n' + (r.stdout || '') + (r.stderr || '') : '')); }
+
 console.log(bad ? '\n' + bad + ' FAILED' : '\nOK');
 process.exit(bad ? 1 : 0);
+

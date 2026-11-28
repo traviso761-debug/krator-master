@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""Headless verification of the House of the Tempest's page (PLAN.md, step 1). The page is built on Xanadu's (build.py), so its
+probe (window._api), invariants and views are Xanadu's, and settlements/xanadu/verify.py runs it (on tools/harness.py), with the
+House's own:
+
+  tempest-laid       both wards (src/80u: xa_tempest_outer, xa_tempest_inner 4 m up) and the violet great monastery (kits/qiblai
+                     qb_monastery, o.v 6) placed and baked, both wards drawn, each ward's walks registered
+  tempest-rules      the plan the page drew keeps the fort asset's rules and the concentric house's (TEMPEST.check: none broken)
+  on-the-model       the ground is the scale model's: at the pin the model's bicubic height within 1 m of the cell's own, and the
+                     drawn ground 300 m beyond the pad's ease the model's to 0.5 m
+  house-on-its-pad   the ground under the lot's corners and middle level at the pad's height to 5 cm, the cut and fill under 12 m
+  tempest-life       step 4b: every herd at its count by day and by night, all drawn (stills and the live ones), on the drawn ground, the
+                     live ones moving; by night the horses in the walled paddock and the three fires lit, by day out; the mirror's code
+                     flashing; the brow lookout on its pin, seated on the far land (TP_LIFE's rules kept)
+  house-walks        every wall walk and tower stair of both wards reached from its stairs' feet (core/walk, xfReach)
+
+    KRATOR_GL=gpu python3 verify.py dist/tempest.html --assert --views "Overview,The Main Gate"
+"""
+import importlib.util, os, sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+XV = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'settlements', 'xanadu', 'verify.py')
+_spec = importlib.util.spec_from_file_location('xanadu_verify', XV)
+xv = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(xv)   # its argparse block is under __main__: nothing runs on import
+
+HOUSE_JS = r"""
+if(typeof TPS!=="undefined"){const Q=window._tempest||{},D=Q.drawn||{};
+ R.push({name:'tempest-laid',ok:!!Q.placed&&!!Q.hosted&&!!D.outer&&!!D.inner&&(window._instances|0)>1000&&Q.forts===2,
+  detail:(Q.placed?'both wards placed':'a ward NOT placed')+', the violet monastery '+(Q.hosted?'placed':'NOT placed')+'; drawn: outer '+!!D.outer+', inner '+!!D.inner+'; '+(window._instances|0)+' instances, '+(Q.forts|0)+' wards with walks; '+Q.towers+' towers, '+Q.buildings+' buildings'});
+ R.push({name:'tempest-rules',ok:Array.isArray(Q.rules)&&!Q.rules.length,detail:Q.rules&&Q.rules.length?Q.rules.slice(0,4).join('; '):'the fort asset\'s rules and the concentric ones all kept'});
+ {const P=Q.pin||{},ox=TPS.box[2]+6+TPS.EASE+300,oz=TPS.z,dr=terrainH(ox,oz),mo=tpModel(ox,oz);
+  R.push({name:'on-the-model',ok:Math.abs((P.model||0)-(P.cell||0))<1&&Math.abs(dr-mo)<.5,
+   detail:'at the pin the model gives '+P.model+' m against the cell\'s '+P.cell+' m; 300 m past the pad\'s ease the page draws '+dr.toFixed(2)+' m, the model '+mo.toFixed(2)+' m'});}
+ {const L=Q.lotGround||[],off=L.map(h=>Math.abs(h-Q.pad)),bad=off.filter(d=>d>.05).length;
+  R.push({name:'house-on-its-pad',ok:L.length===5&&!bad&&Q.cut<12&&Q.fill<12,detail:'the pad at '+Q.pad+' m; under the lot\'s corners and middle '+L.join(', ')+' m'+(bad?' ('+bad+' OFF the pad)':'')+'; cut '+Q.cut+' m, fill '+Q.fill+' m'});}
+ {const F=(typeof xfReach==='function'?xfReach():null)||[],bad=F.filter(q=>!q.floors||q.unreached.length||q.capped);
+  {const g=Q.grounds||{};R.push({name:'tempest-grounds',ok:g.placed===g.of&&g.of>0&&g.seat<.05&&Array.isArray(g.rules)&&!g.rules.length,
+   detail:(g.placed|0)+' of '+(g.of|0)+' pieces of the crest placed ('+(g.offPad|0)+' off the pad, on the crest\'s own ground), each within '+(+(g.seat||0)).toFixed(3)+' m of the drawn ground; '+(g.fields|0)+' fields and '+(g.tracks|0)+' tracks on the ground\'s colour; '+(g.rules&&g.rules.length?'rules BROKEN: '+g.rules.slice(0,3).join('; '):'the grounds\' rules kept')});}
+  if(typeof TP_LIFE_DRAWN!=='undefined'){const D=TP_LIFE_DRAWN,l=Q.life||{},H=l.herds||{},st=D.stats(),tot=TP_LIFE.herds.reduce((s,h)=>s+h.n,0);
+   const counts=TP_LIFE.herds.every(h=>H[h.id]&&H[h.id].day===h.n&&H[h.id].night===h.n),Lk=l.lookout||{},lkOk=!!Lk.placed&&Lk.y<=Math.min(...Lk.corners)+1e-6&&Math.min(...Lk.corners)-Lk.y<.5;
+   const g=D.live[0]&&D.live[0].g,hd=g&&g.userData.parts.head,r0=hd?(KratorFauna.animate(g,0,'graze'),hd.rotation.x):0,r1=hd?(KratorFauna.animate(g,.7,'graze'),hd.rotation.x):0;
+   const seatDay=D.seat,flash=[0,1,2,3,4,5,6,7].map(t=>TP_LIFE.lit(TP_LIFE.signals.code,t*.9));
+   D.tick(0,true);const rm=REG.find(r=>r.type==='xa_tempest_life'&&r.key==='horse'),pb=TP_GROUNDS.fields.find(f=>f.id==='paddock').box,pc=TPS.toPage((pb[0]+pb[2])/2,(pb[1]+pb[3])/2);
+   const nightOk=D.when==='night'&&D.seat<.05&&D.fires.every(f=>f.g.visible)&&!!rm&&Math.hypot(rm.x-pc[0],rm.z-pc[1])<1;D.tick(0,false);
+   const dayOk=D.when==='day'&&D.fires.every(f=>!f.g.visible);
+   R.push({name:'tempest-life',ok:counts&&Array.isArray(l.rules)&&!l.rules.length&&st.instanced+st.live===tot&&seatDay<.05&&lkOk&&l.beacon===true&&D.fires.length===3&&D.mirrors.length===2&&nightOk&&dayOk&&Math.abs(r1-r0)>1e-4&&flash.includes(true)&&flash.includes(false),
+    detail:TP_LIFE.herds.map(h=>h.id+' '+(H[h.id]?H[h.id].day+'/'+H[h.id].night:'?')+' of '+h.n).join(', ')+' (day/night); '+st.instanced+' stills in '+st.looks+' looks and '+st.live+' alive'+(Math.abs(r1-r0)>1e-4?'':' (NOT moving)')+
+     ', each within '+seatDay.toFixed(3)+' m of the drawn ground'+(l.rules&&l.rules.length?'; RULES: '+l.rules.slice(0,3).join('; '):'; the rules kept')+'; by night '+(nightOk?'the horses in the paddock, the fires lit':'NOT switched')+
+     '; the brow lookout '+(lkOk?'on its pin, seated on the far land':'NOT seated')+', fires '+D.fires.length+' (the utse\'s beacon '+(l.beacon?'found':'MISSING')+'), mirrors '+D.mirrors.length+'; the relay waits on step 5'});}
+  R.push({name:'house-walks',ok:F.length===2&&!bad.length,detail:F.map(q=>q.reached+' of '+q.floors+' walks and stairs reached'+(q.unreached.length?', NOT '+q.unreached.slice(0,4).join(', '):'')).join('; ')||'no walks registered (core/walk not on the page?)'});}}
+if(typeof TP_STATES!=="undefined"){const Q=window._tempestStates||{},S=Q.sites||[],D=Q.damage||[],o=D.find(d=>d.key==='xa_tempest_outer')||{},i=D.find(d=>d.key==='xa_tempest_inner')||{};
+ const all=['xa_tempest_outer','xa_tempest_inner'].every(k=>[0,1,2].every(v=>S.some(s=>s.key===k&&s.v===v)));
+ R.push({name:'tempest-states',ok:all&&S.length===6&&Q.watched>=4&&o.breaches>=1&&o.burnt>=1&&i.breaches>=1&&o.stubs===TP_OUTER.curtains.length&&i.stubs===TP_INNER.curtains.length&&o.heaps>0,
+  detail:S.length+' sites ('+S.map(s=>s.key.replace('xa_tempest_','')+' '+s.state).join(', ')+'); '+Q.watched+' watched by core/ruins; damaged: outer '+o.breaches+' breach, '+o.fallen+' tower tops fallen, '+o.burnt+' gate burnt; inner '+i.breaches+' breach; ruined: '+o.stubs+' + '+i.stubs+' curtains in stubs, '+o.heaps+' heaps'});}
+return R;}"""
+xv.ASSERT_JS = xv.ASSERT_JS.rstrip()[:-len('return R;}')] + HOUSE_JS
+assert xv.ASSERT_JS.endswith('return R;}'), 'settlements/xanadu/verify.py ASSERT_JS no longer ends with return R;}'
+xv._voth_trades = lambda: {'name': 'voth-trades', 'ok': True, 'detail': 'the Xanadu kit\'s table (kits/xanadu): checked on its own sheet'}
+# step 3: the interiors are on by default on the House's page (targets/house/89xs): the audit runs unless --no-interiors, and every
+# floor of both wards' stacks (the set xanadu-tempest, src/80v) must be reached from their doors (interiors-hollow-and-reach). The
+# states sheet has no interiors (a damaged or ruined House is not furnished): run it with --no-interiors.
+xv.INTERIORS_MUST = ['xa_tempest_outer', 'xa_tempest_inner']
+
+if __name__ == '__main__':
+    import argparse, asyncio
+    ap = argparse.ArgumentParser()
+    ap.add_argument("html")
+    ap.add_argument("--views", default="")
+    ap.add_argument("--all-views", action="store_true")
+    ap.add_argument("--assert", dest="assert_", action="store_true")
+    ap.add_argument("--strict-budget", dest="strict_budget", action="store_true")
+    ap.add_argument("--baseline", default="")
+    ap.add_argument("--save-baseline", default="")
+    ap.add_argument("--out", default="./shots")
+    ap.add_argument("--cam", action="append")
+    ap.add_argument("--cam-name", default="cam")
+    ap.add_argument("--eval", action="append")
+    ap.add_argument("--size", default="1280x800")
+    ap.add_argument("--no-cache", action="store_true")
+    ap.add_argument("--interiors", action="store_true")   # settlements/xanadu/verify.py reads it (the hollow-wall audit): on by default here
+    ap.add_argument("--no-interiors", action="store_true")
+    a = ap.parse_args([os.path.abspath(x) if x.endswith('.html') and os.path.exists(x) else x for x in sys.argv[1:]])
+    a.interiors = not a.no_interiors and 'states' not in os.path.basename(a.html)
+    sys.exit(asyncio.run(xv.run(a)))

@@ -1,0 +1,103 @@
+{
+ "what": "tools/verify_all.py's data: the targets tools/build.py --all skips, the pages a rule or a doc cannot argue, the known failures the owner accepted (STAGE-8/PLAN.md D30 and section 5), the proven no-look core items the tiering trusts, and first-run time guesses. Edit this file, not the script, when a page's command or the known list changes.",
+
+ "extra_targets": {
+  "what": "STAGE-8/A-runbook.md step 21 (C15): what tools/build.py --all skips; each folder's pages are verified with its own verify.py or check.py, or reported as having none. sockets-example and the Span preview are pages port_baseline.py lists already (kits/post-apoc/sockets-example, biomes/swhighlands/dist/swhighlands-pillars-span.html).",
+  "targets": [
+   {"dir": "biomes/swhighlands", "page": "dist/swhighlands-pillars-span.html", "note": "the Span preview (build.py --station pillars --preview span, after freeze_span.py)"},
+   {"dir": "kits/post-apoc/sockets-example", "verify": "kits/post-apoc", "note": "the socket sheet, verified by kits/post-apoc/verify.py"},
+   {"dir": "core/materials/demo", "note": "the material library demo"},
+   {"dir": "core/atmos/demo", "note": "the sky demo"},
+   {"dir": "core/atmos/fxdemo", "note": "the effects demo"},
+   {"dir": "core/cavelight/demo", "note": "the cave light demo"},
+   {"dir": "core/host/example", "note": "the host example: check.py"},
+   {"dir": "core/host/underground", "note": "the underground host example: check.py"},
+   {"dir": "core/simulation/example", "note": "the simulation example: check.py"},
+   {"dir": "core/simulation/ride/lab", "note": "the ride lab"},
+   {"dir": "openworld/network-proposal/testbed", "note": "the network testbed"},
+   {"dir": "tools/scale-model/model", "note": "the scale model page (test_smodel.py is its check, a test_all step)"},
+   {"dir": "core/charactermodels", "note": "the Cosmetic and Animation Labs (Longsong needs dist/pieces first: Phase C step 20)"},
+   {"dir": "gallery", "list_pages": false, "note": "owner-gated (D32): the gallery builds wait for Phase F green; no verify"}
+  ]
+ },
+
+ "skip": {
+  "what": "pages listed but never verified, with why (globs on the repo path)",
+  "*.artifact.html": "an artifact copy of the page beside it; not checked (HANDOFF-REBUILD.md:126)",
+  "*/publish/*.html": "a publish copy of a page verified at its build path",
+  "kits/sw-arcology/dist/*.html": "kits/sw-arcology has no verify.py yet (found by verify_all.py, 2026-11-23): owed by its build"
+ },
+
+ "pages": {
+  "what": "a page's verify arguments when neither the rules below nor its build's README and verify.py say them; each with why",
+  "settlements/xanadu/dist/erewhon.html": {"args": ["--assert", "--interiors"], "why": "STAGE-8/PLAN.md step 29 and HANDOFF-REBUILD.md:112: Erewhon --interiors (882 s on the Arc)"},
+  "kits/interiors/dist/interiors-sets.html": {"args": ["--sets", "--assert", "--seeds", "2"], "why": "kits/interiors/README.md: the sets' gate (TODO.md 155)"},
+  "settlements/voth/dist/voth-city.html": {"args": ["--assert"], "why": "settlements/voth/README.md: the city plan (about 40 min: tools/test_all.py:51-52)"}
+ },
+
+ "rules": {
+  "what": "applied before the docs: a page matching `match` (a regex on its repo path) takes `args`",
+  "list": [
+   {"match": "^biomes/", "args": ["--assert", "--all-views"], "why": "STAGE-8/PLAN.md step 29: biome and station pages --all-views"}
+  ]
+ },
+
+ "generic_failed": {
+  "what": "a FAILED: line part that only sums up the FAIL lines above it (regexes): left out of a run's items when FAIL lines name the checks",
+  "list": ["^kit checks \\(", "^\\d+ assertion failures?$", "^checks? failed$", "^see above$"]
+ },
+
+ "main_tier_drops": {
+  "what": "the flags the main tier takes out of a page's full command (a flag that takes a value takes its value with it): main view only, PERF-PLAN.md 4 item 5",
+  "flags": ["--all-views", "--views", "--interiors", "--rooms"]
+ },
+
+ "no_look": {
+  "what": "shared files whose change is PROVEN not to change a look (PERF-PLAN.md 2.2 and 4 item 5; D5: tiering yes). A page whose changed inputs are all listed here takes the main tier under --tier auto. Each entry needs its proof (the node test or fingerprint that shows it) and is added only once that proof has run on the Stage 8 tip. Empty: every page takes its full command.",
+  "items": []
+ },
+
+ "stall": {
+  "what": "a page's stall watchdog in minutes (KRATOR_GPU_STALL_MIN for its job, local or cloud: the harness passes it to the machine) when 25 is too short for a page that is slow but moving; globs on the repo path, the first that matches. Empty: every page takes the harness's 25",
+  "pages": {}
+ },
+
+ "long": {
+  "what": "first-run time guesses in seconds (a run's own times replace them: %LOCALAPPDATA%/krator-verify-all/durations.json); longest first",
+  "settlements/voth/dist/voth-city.html": 2400,
+  "settlements/xanadu/dist/erewhon.html": 900,
+  "openworld/isle-demo/dist/isle-demo.html": 1500,
+  "settlements/isle-demo/dist/isle-city.html": 900,
+  "kits/interiors/dist/interiors-sets.html": 900,
+  "kits/catalog/dist/catalog.html": 600
+ },
+
+ "known": {
+  "what": "failures to carry, not fix. `pages`: globs; `match`: regexes (case-insensitive) on a failed item (a FAILED: line's '; ' parts); `gl`: 'software' when the failure is software GL's only; `page_verify`: false for an entry that is a node, Python or Godot test (listed in the report, never matched). `source` D30 is the owner's list (STAGE-8/PLAN.md section 5); HR is HANDOFF-REBUILD.md:120-126's carried list (A step 28), outside D30: the report shows it apart so the owner can rule on it.",
+  "list": [
+   {"id": "D30-1", "source": "D30", "what": "Voth city: the embassies drawn short and the Arena canton's flight", "pages": ["settlements/voth/dist/voth-city.html"], "match": ["^embassies", "arena"]},
+   {"id": "D30-2", "source": "D30", "what": "Longsong: draw-call OVER and the stale interiors bake", "pages": ["settlements/longsong/dist/longsong.html"], "match": ["budget", "draw", "interiors", "bake"]},
+   {"id": "D30-3", "source": "D30", "what": "the Xanadu sheet's triangle budget and Iziz Overview's 923 draw calls (warnings)", "pages": ["settlements/xanadu/dist/xanadu.html", "kits/xanadu/dist/xanadu.html", "settlements/iziz/dist/iziz.html"], "match": ["budget", "draw calls"]},
+   {"id": "D30-4", "source": "D30", "what": "Dalab's instance-cap (swlowlands/glossy)", "pages": ["settlements/dalab/dist/*.html"], "match": ["instance-cap"]},
+   {"id": "D30-5", "source": "D30", "what": "crater-drylands' instance-cap (craterdry/bloom)", "pages": ["biomes/crater-drylands/dist/*.html"], "match": ["instance-cap"]},
+   {"id": "D30-6", "source": "D30", "what": "Mav's Refuge walk-and-reach (86 floors)", "pages": ["settlements/mavs-refuge/mavs-refuge.html"], "match": ["walk-and-reach"]},
+   {"id": "D30-7", "source": "D30", "what": "Ys's kit sheet: the conch house hall spots", "pages": ["settlements/ys/dist/kit.html"], "match": ["conch", "hall"]},
+   {"id": "D30-8", "source": "D30", "what": "Locus's sheets: one-key-map (unless B14 takes the small fix)", "pages": ["settlements/locus/*.html"], "match": ["one-key-map", "key map"]},
+   {"id": "D30-9", "source": "D30", "what": "Ancient's Valley: the shell bake on software GL (GPU lanes pass)", "pages": ["biomes/ancientsvalley/dist/*.html"], "match": [".*"], "gl": "software"},
+   {"id": "D30-10", "source": "D30", "what": "the isle demo on SwiftShader here", "pages": ["openworld/isle-demo/dist/isle-demo.html"], "match": [".*"], "gl": "software"},
+   {"id": "D30-11", "source": "D30", "what": "xanadu-oidong-highrift's small islands until P8 lands", "pages": ["openworld/xanadu-oidong-highrift/dist/xanadu-oidong-highrift.html"], "match": ["small islands"]},
+   {"id": "D30-12", "source": "D30", "what": "kits/interiors --sets: the residences (the tents WIP set) and the xa_workshop counter", "pages": ["kits/interiors/dist/interiors-sets.html"], "match": ["residence", "xa_workshop"]},
+   {"id": "D30-13", "source": "D30", "what": "kchar_test.gd's giant on the ladder (Godot)", "page_verify": false},
+   {"id": "D30-14", "source": "D30", "what": "test_smodel.py's NE wall bases (unless D23 restates them)", "page_verify": false},
+   {"id": "D30-15", "source": "D30", "what": "test-lava.js, test-scarp.js goldens; test-gaps.js 'neutral by default' (B14 fixes them, D30)", "page_verify": false},
+   {"id": "D30-16", "source": "D30", "what": "Godthrone's card negative on a page with no cards (a check gap)", "pages": ["biomes/godthrone/dist/*.html"], "match": ["card"]},
+   {"id": "D30-17", "source": "D30", "what": "the isle demo's hamlet-clay-k ships nothing by sea (an economy item)", "pages": ["openworld/isle-demo/dist/*.html", "settlements/isle-demo/dist/*.html"], "match": ["hamlet-clay-k", "by sea"]},
+   {"id": "D30-18", "source": "D30", "what": "test-east-rift.js and test-xan-economy.js timing under load (node)", "page_verify": false},
+   {"id": "HR-1", "source": "HR", "what": "guilin (frozen)", "pages": ["biomes/guilin/dist/guilin.html"], "match": [".*"]},
+   {"id": "HR-2", "source": "HR", "what": "Yuni's three pages on the one key map (the not-yet-adopted list)", "pages": ["settlements/yuni/*.html"], "match": ["one-key-map", "key map"]},
+   {"id": "HR-3", "source": "HR", "what": "yuni-plants' streamed doors", "pages": ["settlements/yuni/yuni-plants.html"], "match": ["door"]},
+   {"id": "HR-4", "source": "HR", "what": "Pinnacle Rock's attach audit (1.87%, limit 1%)", "pages": ["settlements/pinnacle-rock/dist/pinnacle-rock.html"], "match": ["attach"]},
+   {"id": "HR-5", "source": "HR", "what": "sockets-example's demo def has no declared door", "pages": ["kits/post-apoc/sockets-example/*.html"], "match": ["front-door-not-default", "door"]}
+  ]
+ }
+}

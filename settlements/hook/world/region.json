@@ -1,0 +1,1771 @@
+{
+ "format": "krator-openworld-region",
+ "version": 1,
+ "source": "Krator Scale Model ?",
+ "region": {
+  "name": "Hook cut",
+  "doc": "cut-hook",
+  "points_px": [
+   [
+    799,
+    913
+   ],
+   [
+    819,
+    913
+   ],
+   [
+    819,
+    933
+   ],
+   [
+    799,
+    933
+   ]
+  ],
+  "points_m": [
+   [
+    -20000.0,
+    -20000.0
+   ],
+   [
+    20000.0,
+    -20000.0
+   ],
+   [
+    20000.0,
+    20000.0
+   ],
+   [
+    -20000.0,
+    20000.0
+   ]
+  ],
+  "area_km2": 1600,
+  "union_km2": 1764,
+  "added": []
+ },
+ "frame": {
+  "units": "m",
+  "x": "east",
+  "z": "south",
+  "m_per_px": 2000.0,
+  "origin_px": [
+   809,
+   923
+  ],
+  "box_px": [
+   788,
+   902,
+   830,
+   944
+  ],
+  "size_px": [
+   43,
+   43
+  ]
+ },
+ "heights": {
+  "grid": [
+   185,
+   185
+  ],
+  "origin_cell": [
+   3144,
+   3600
+  ],
+  "su": 4.0,
+  "sv": 4.0,
+  "lo": -2600.0,
+  "hi": 27000.0,
+  "cell_m": 500.0,
+  "upsample": 4.0,
+  "option_c_synth": true,
+  "note": "cell (i,j) sits at full px ((i+i0)/su, (j+j0)/sv); elev.png and wlev.png are this grid"
+ },
+ "rain": {
+  "scale_mm": 15.686274509803921
+ },
+ "temp": {
+  "offset": -90
+ },
+ "pressure": {
+  "atm0": 1.6,
+  "scale_m": 8000
+ },
+ "classes": [
+  {
+   "code": "Af",
+   "name": "tropical rainforest",
+   "color": "#0000ff",
+   "group": "A"
+  },
+  {
+   "code": "Am",
+   "name": "tropical monsoon",
+   "color": "#0078ff",
+   "group": "A"
+  },
+  {
+   "code": "Aw",
+   "name": "tropical savanna",
+   "color": "#46aafa",
+   "group": "A"
+  },
+  {
+   "code": "BWh",
+   "name": "hot desert",
+   "color": "#ff0000",
+   "group": "B"
+  },
+  {
+   "code": "BWk",
+   "name": "cold desert",
+   "color": "#ff9696",
+   "group": "B"
+  },
+  {
+   "code": "BSh",
+   "name": "hot steppe",
+   "color": "#f5a500",
+   "group": "B"
+  },
+  {
+   "code": "BSk",
+   "name": "cold steppe",
+   "color": "#ffdc64",
+   "group": "B"
+  },
+  {
+   "code": "Csa",
+   "name": "hot-summer Mediterranean",
+   "color": "#ffff00",
+   "group": "C"
+  },
+  {
+   "code": "Csb",
+   "name": "warm-summer Mediterranean",
+   "color": "#c8c800",
+   "group": "C"
+  },
+  {
+   "code": "Csc",
+   "name": "cold-summer Mediterranean",
+   "color": "#969600",
+   "group": "C"
+  },
+  {
+   "code": "Cwa",
+   "name": "monsoon subtropical",
+   "color": "#96ff96",
+   "group": "C"
+  },
+  {
+   "code": "Cwb",
+   "name": "subtropical highland",
+   "color": "#64c864",
+   "group": "C"
+  },
+  {
+   "code": "Cwc",
+   "name": "cold subtropical highland",
+   "color": "#329632",
+   "group": "C"
+  },
+  {
+   "code": "Cfa",
+   "name": "humid subtropical",
+   "color": "#c8ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfb",
+   "name": "oceanic",
+   "color": "#64ff50",
+   "group": "C"
+  },
+  {
+   "code": "Cfc",
+   "name": "subpolar oceanic",
+   "color": "#32c800",
+   "group": "C"
+  },
+  {
+   "code": "Dsa",
+   "name": "dry-summer hot continental",
+   "color": "#ff00ff",
+   "group": "D"
+  },
+  {
+   "code": "Dsb",
+   "name": "dry-summer warm continental",
+   "color": "#c800c8",
+   "group": "D"
+  },
+  {
+   "code": "Dsc",
+   "name": "dry-summer subarctic",
+   "color": "#963296",
+   "group": "D"
+  },
+  {
+   "code": "Dwa",
+   "name": "dry-winter hot continental",
+   "color": "#aaafff",
+   "group": "D"
+  },
+  {
+   "code": "Dwb",
+   "name": "dry-winter warm continental",
+   "color": "#5a78dc",
+   "group": "D"
+  },
+  {
+   "code": "Dwc",
+   "name": "dry-winter subarctic",
+   "color": "#4b50b4",
+   "group": "D"
+  },
+  {
+   "code": "Dfa",
+   "name": "hot-summer continental",
+   "color": "#00ffff",
+   "group": "D"
+  },
+  {
+   "code": "Dfb",
+   "name": "warm-summer continental",
+   "color": "#37c8ff",
+   "group": "D"
+  },
+  {
+   "code": "Dfc",
+   "name": "subarctic (boreal)",
+   "color": "#007d7d",
+   "group": "D"
+  },
+  {
+   "code": "Dfd",
+   "name": "extreme subarctic",
+   "color": "#00465f",
+   "group": "D"
+  },
+  {
+   "code": "ET",
+   "name": "tundra",
+   "color": "#b2b2b2",
+   "group": "E"
+  },
+  {
+   "code": "EF",
+   "name": "ice cap",
+   "color": "#666666",
+   "group": "E"
+  },
+  {
+   "code": "XA",
+   "name": "hypertropic jungle (abyssal, >1.85 atm)",
+   "color": "#3d0070",
+   "group": "X"
+  },
+  {
+   "code": "XV",
+   "name": "abyssal savanna",
+   "color": "#8a3ca8",
+   "group": "X"
+  },
+  {
+   "code": "XS",
+   "name": "abyssal salt steppe",
+   "color": "#b8542a",
+   "group": "X"
+  },
+  {
+   "code": "XW",
+   "name": "abyssal desert",
+   "color": "#5c0000",
+   "group": "X"
+  },
+  {
+   "code": "HT",
+   "name": "hyperalpine tundra (<0.6 atm)",
+   "color": "#d8dbe8",
+   "group": "H"
+  },
+  {
+   "code": "HF",
+   "name": "hyperalpine ice",
+   "color": "#eef0f7",
+   "group": "H"
+  },
+  {
+   "code": "O",
+   "name": "airless rim",
+   "color": "#f6f3ec",
+   "group": "O"
+  },
+  {
+   "code": "WS",
+   "name": "sea / lake",
+   "color": "#3b6fb0",
+   "group": "W"
+  },
+  {
+   "code": "WX",
+   "name": "abyssal salt lake",
+   "color": "#8c6a3a",
+   "group": "W"
+  },
+  {
+   "code": "WH",
+   "name": "highland lake",
+   "color": "#5c9ea8",
+   "group": "W"
+  }
+ ],
+ "biomes": [
+  {
+   "id": 0,
+   "name": "Ring Sea",
+   "doc": "rmuql5r2ryukf",
+   "kind": "biome",
+   "colour": "#d9c14a",
+   "kit": null,
+   "water": true,
+   "drawn_px": 692,
+   "notes": "",
+   "px": 711,
+   "px_in_region": 200,
+   "dist_band": 0
+  },
+  {
+   "id": 1,
+   "name": "SW Bay",
+   "doc": "rmuqlcsh77jkf",
+   "kind": "biome",
+   "colour": "#d9c14a",
+   "kit": "swbay",
+   "water": false,
+   "drawn_px": 969,
+   "notes": "",
+   "px": 1039,
+   "px_in_region": 241,
+   "dist_band": 1
+  },
+  {
+   "id": 2,
+   "name": "Throne/Volcano",
+   "doc": "rmuqlbqhl6ozk",
+   "kind": "biome",
+   "colour": "#c95a6a",
+   "kit": "throne",
+   "water": false,
+   "drawn_px": 46,
+   "notes": "",
+   "px": 46,
+   "px_in_region": 0,
+   "dist_band": 2
+  },
+  {
+   "id": 3,
+   "name": "s highlands",
+   "doc": "rmvk9dowcuhbl",
+   "kind": "biome",
+   "colour": "#7c8a5e",
+   "kit": "shighlands",
+   "water": false,
+   "drawn_px": 12,
+   "notes": "",
+   "px": 12,
+   "px_in_region": 0,
+   "dist_band": 3
+  },
+  {
+   "id": 4,
+   "name": "crater drylands S",
+   "doc": "rmuqlgonah5tp",
+   "kind": "biome",
+   "colour": "#8a6fc9",
+   "kit": "crater-drylands",
+   "water": false,
+   "drawn_px": 41,
+   "notes": "",
+   "px": 41,
+   "px_in_region": 0,
+   "dist_band": 4
+  }
+ ],
+ "biome_fill_px": 200,
+ "dist": {
+  "file": "dist.png",
+  "bands": 5,
+  "band_px": [
+   43,
+   43
+  ],
+  "encoding": "R<<16 | G<<8 | B",
+  "value": "squared distance in map pixels to the biome's drawn polygon (pixel centres; 0 inside)",
+  "pad_px": 128,
+  "note": "exact up to pad_px; metres = sqrt(value) * m_per_px (core/mask KMASK.distance)"
+ },
+ "drainage": {
+  "min_accum": 30000.0,
+  "lines": [
+   [
+    [
+     -34000.0,
+     30000.0,
+     38318.0,
+     -621.0
+    ],
+    [
+     -36000.0,
+     30000.0,
+     38929.0,
+     -683.9
+    ],
+    [
+     -38000.0,
+     30000.0,
+     46494.0,
+     -730.1
+    ],
+    [
+     -40000.0,
+     30000.0,
+     50812.0,
+     -761.2
+    ],
+    [
+     -42000.0,
+     30000.0,
+     54906.0,
+     -793.3
+    ],
+    [
+     -44000.0,
+     30000.0,
+     55514.0,
+     -860.8
+    ],
+    [
+     -46000.0,
+     30000.0,
+     62576.0,
+     -1023.6
+    ]
+   ],
+   [
+    [
+     -2000.0,
+     14000.0,
+     31722.0,
+     -692.3
+    ],
+    [
+     -4000.0,
+     12000.0,
+     44267.0,
+     -762.2
+    ],
+    [
+     -4000.0,
+     10000.0,
+     45071.0,
+     -984.8
+    ],
+    [
+     -4000.0,
+     8000.0,
+     45071.0,
+     -1502.4
+    ]
+   ],
+   [
+    [
+     -6000.0,
+     12000.0,
+     33180.0,
+     -752.8
+    ],
+    [
+     -6000.0,
+     10000.0,
+     34349.0,
+     -972.2
+    ],
+    [
+     -6000.0,
+     8000.0,
+     34349.0,
+     -1502.0
+    ]
+   ],
+   [
+    [
+     12000.0,
+     8000.0,
+     33196.0,
+     -904.4
+    ],
+    [
+     14000.0,
+     6000.0,
+     33588.0,
+     -913.6
+    ],
+    [
+     16000.0,
+     4000.0,
+     36133.0,
+     -1041.0
+    ],
+    [
+     18000.0,
+     2000.0,
+     36682.0,
+     -982.6
+    ],
+    [
+     18000.0,
+     0.0,
+     36682.0,
+     -1502.9
+    ]
+   ]
+  ]
+ },
+ "rivers": [],
+ "valleys": [],
+ "water": {
+  "spilled_cells": 0,
+  "note": "lake levels above their lowest shore cell were lowered to it"
+ },
+ "settlements": [
+  {
+   "name": "Hook",
+   "type": "city",
+   "doc": "sm3ft5vrof",
+   "px": 809,
+   "py": 923,
+   "x": 0.0,
+   "z": 0.0,
+   "biome": "Ring Sea",
+   "notes": "moved to the 1:1 shoreline 2026-10-19 (was py 596: 592 m up, 6.7 km inland of the shore the open world's rule gives)"
+  }
+ ],
+ "canyon_candidates": {},
+ "volcano": {
+  "px": [
+   846.98,
+   834.22
+  ],
+  "peak": 10916.0,
+  "floor": 10260.0
+ },
+ "vents": [
+  {
+   "px": [
+    805.0,
+    905.0
+   ],
+   "floor": -567.751484055247,
+   "scale": 0.1,
+   "radius": 0.9,
+   "kind": "geyser"
+  }
+ ],
+ "tubes": [
+  {
+   "id": "tube_qarnu_03",
+   "name": "Qarnu-Tūbu (Horn-Well) Southern Shoulder Tube",
+   "region": "rmuqlbqhl6ozk",
+   "culture": "zeijani",
+   "state": "habitable",
+   "rock": "tuff_and_basalt",
+   "width_m": 20.0,
+   "height_m": 13.0,
+   "depth_m": 32.0,
+   "km": 88,
+   "px": [
+    [
+     841.5,
+     856.0
+    ],
+    [
+     839.0,
+     865.0
+    ],
+    [
+     836.5,
+     874.0
+    ],
+    [
+     834.0,
+     882.0
+    ],
+    [
+     830.5,
+     893.0
+    ],
+    [
+     826.0,
+     904.0
+    ]
+   ],
+   "branches": [
+    {
+     "name": "Savanna Lahar-Fan Stepwell Branch",
+     "state": "habitable",
+     "width_m": 11.0,
+     "px": [
+      [
+       836.5,
+       874.0
+      ],
+      [
+       844.0,
+       879.5
+      ],
+      [
+       851.0,
+       886.0
+      ]
+     ],
+     "m": [
+      [
+       55000.0,
+       -98000.0
+      ],
+      [
+       70000.0,
+       -87000.0
+      ],
+      [
+       84000.0,
+       -74000.0
+      ]
+     ]
+    }
+   ],
+   "caverns": [
+    {
+     "id": "cav_qarnu_vil",
+     "name": "Qarnu-Tūbu (Horn-Well Village)",
+     "kind": "skylight_well",
+     "settlement_id": "szjqarnu02",
+     "px": [
+      834.0,
+      882.0
+     ],
+     "span_m": [
+      175,
+      140
+     ],
+     "height_m": 42,
+     "skylight_m": 65,
+     "notes": "Second canonical Zeijani cave/tuff village: Moray-style terraced collapse pits and a Chand Baori stepwell cistern trading with the southern Ash Nomads.",
+     "m": [
+      50000.0,
+      -82000.0
+     ]
+    }
+   ],
+   "m": [
+    [
+     65000.0,
+     -134000.0
+    ],
+    [
+     60000.0,
+     -116000.0
+    ],
+    [
+     55000.0,
+     -98000.0
+    ],
+    [
+     50000.0,
+     -82000.0
+    ],
+    [
+     43000.0,
+     -60000.0
+    ],
+    [
+     34000.0,
+     -38000.0
+    ]
+   ]
+  }
+ ],
+ "landforms": [
+  {
+   "id": "lf_hook_sunk",
+   "kind": "bench",
+   "px": 808.7877,
+   "py": 924.5173,
+   "l_m": 5368,
+   "w_m": 3858,
+   "rotation": 0,
+   "outline_px": [
+    [
+     807.4457,
+     923.629
+    ],
+    [
+     807.5085,
+     923.6314
+    ],
+    [
+     807.548,
+     923.5986
+    ],
+    [
+     807.6322,
+     923.6129
+    ],
+    [
+     807.7716,
+     923.5927
+    ],
+    [
+     807.8852,
+     923.5529
+    ],
+    [
+     807.9535,
+     923.557
+    ],
+    [
+     808.2212,
+     923.7292
+    ],
+    [
+     808.3104,
+     923.845
+    ],
+    [
+     808.504,
+     923.8914
+    ],
+    [
+     808.6727,
+     924.1382
+    ],
+    [
+     808.7156,
+     924.1622
+    ],
+    [
+     808.8249,
+     924.1637
+    ],
+    [
+     808.9681,
+     924.1026
+    ],
+    [
+     809.0899,
+     923.8776
+    ],
+    [
+     809.188,
+     923.8012
+    ],
+    [
+     809.325,
+     923.7835
+    ],
+    [
+     809.51,
+     923.7195
+    ],
+    [
+     809.7614,
+     923.73
+    ],
+    [
+     809.8664,
+     923.8002
+    ],
+    [
+     810.0076,
+     923.8465
+    ],
+    [
+     810.1177,
+     923.9834
+    ],
+    [
+     810.1298,
+     924.0803
+    ],
+    [
+     810.048,
+     924.2222
+    ],
+    [
+     809.9003,
+     924.5835
+    ],
+    [
+     809.695,
+     924.7487
+    ],
+    [
+     809.5707,
+     924.746
+    ],
+    [
+     809.4628,
+     924.8339
+    ],
+    [
+     809.3316,
+     924.8869
+    ],
+    [
+     809.2915,
+     925.0837
+    ],
+    [
+     809.0839,
+     925.2123
+    ],
+    [
+     809.0423,
+     925.2945
+    ],
+    [
+     809.0054,
+     925.4497
+    ],
+    [
+     808.8954,
+     925.4818
+    ],
+    [
+     808.6001,
+     925.3679
+    ],
+    [
+     808.4185,
+     925.2436
+    ],
+    [
+     808.3397,
+     925.1209
+    ],
+    [
+     808.3055,
+     924.9335
+    ],
+    [
+     808.2586,
+     924.8334
+    ],
+    [
+     808.1748,
+     924.7491
+    ],
+    [
+     807.9736,
+     924.6114
+    ],
+    [
+     807.8033,
+     924.3832
+    ],
+    [
+     807.788,
+     924.2884
+    ],
+    [
+     807.7963,
+     924.0991
+    ],
+    [
+     807.7748,
+     924.0521
+    ],
+    [
+     807.7432,
+     924.0206
+    ],
+    [
+     807.6187,
+     923.9895
+    ],
+    [
+     807.555,
+     923.953
+    ],
+    [
+     807.4742,
+     923.8492
+    ],
+    [
+     807.4495,
+     923.7693
+    ]
+   ],
+   "cut_only": true,
+   "wobble_m": 40,
+   "level_m": -1503.19,
+   "batter_deg": 20,
+   "skirt_m": 60,
+   "reach_m": 600,
+   "note": "The drowned downtown (the owner's site plan, 2026-11-24, placement B): the half of the Ancient downtown that sank, its floor at least 3 m under the sea; it only lowers the ground, so the lagoon keeps its own deeper water. Today's shank and the spit's south-west lie in it. settlements/hook/world/landforms.json",
+   "x": -424.6,
+   "z": 3034.6,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.008417434511167577
+  },
+  {
+   "id": "lf_hook_plain",
+   "kind": "bench",
+   "px": 810.4258,
+   "py": 923.0177,
+   "l_m": 2762,
+   "w_m": 5863,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6284,
+     921.622
+    ],
+    [
+     811.1164,
+     921.5518
+    ],
+    [
+     811.0036,
+     922.1603
+    ],
+    [
+     810.8406,
+     922.3762
+    ],
+    [
+     810.6756,
+     922.4967
+    ],
+    [
+     810.37,
+     922.5636
+    ],
+    [
+     810.2112,
+     922.6672
+    ],
+    [
+     810.0928,
+     922.8796
+    ],
+    [
+     810.0393,
+     923.0465
+    ],
+    [
+     810.0583,
+     923.1651
+    ],
+    [
+     810.1408,
+     923.2853
+    ],
+    [
+     810.4399,
+     923.3275
+    ],
+    [
+     810.5581,
+     923.3756
+    ],
+    [
+     810.6865,
+     923.4566
+    ],
+    [
+     810.7853,
+     923.6186
+    ],
+    [
+     810.6438,
+     923.6739
+    ],
+    [
+     810.5267,
+     923.761
+    ],
+    [
+     810.2476,
+     924.1973
+    ],
+    [
+     810.0526,
+     924.4308
+    ],
+    [
+     809.971,
+     924.4834
+    ],
+    [
+     809.9848,
+     924.3692
+    ],
+    [
+     810.131,
+     924.0533
+    ],
+    [
+     810.1177,
+     923.9834
+    ],
+    [
+     810.0333,
+     923.8644
+    ],
+    [
+     809.8664,
+     923.8002
+    ],
+    [
+     809.7352,
+     923.7123
+    ],
+    [
+     809.8444,
+     922.7033
+    ],
+    [
+     809.828,
+     922.6354
+    ],
+    [
+     809.9054,
+     922.4704
+    ],
+    [
+     810.3979,
+     921.9601
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json",
+   "x": 2851.6,
+   "z": 35.4,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.008243996363655316
+  },
+  {
+   "id": "lf_hook_plain_2",
+   "kind": "bench",
+   "px": 809.3055,
+   "py": 925.3423,
+   "l_m": 1384,
+   "w_m": 2385,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3262,
+     924.8919
+    ],
+    [
+     809.4628,
+     924.8339
+    ],
+    [
+     809.5707,
+     924.746
+    ],
+    [
+     809.6516,
+     924.7657
+    ],
+    [
+     809.6244,
+     924.985
+    ],
+    [
+     809.5619,
+     925.1544
+    ],
+    [
+     809.5802,
+     925.3005
+    ],
+    [
+     809.554,
+     925.4455
+    ],
+    [
+     809.3259,
+     925.8398
+    ],
+    [
+     809.1552,
+     925.9387
+    ],
+    [
+     809.0463,
+     925.8679
+    ],
+    [
+     808.9594,
+     925.7595
+    ],
+    [
+     809.0127,
+     925.4002
+    ],
+    [
+     809.0839,
+     925.2123
+    ],
+    [
+     809.2939,
+     925.0803
+    ]
+   ],
+   "wobble_m": 35,
+   "level_m": -1496.19,
+   "batter_deg": 35,
+   "skirt_m": 60,
+   "reach_m": 800,
+   "note": "The coastal plain (the owner, 2026-11-24: \"levelling out into a coastal plain / mangrove swamp\"): the low ground outside the wall in the owner's site plan where the model's own ground is under 30 m (along the bay's east shore and down the plateau's west foot), levelled to 4 m over the sea, cut and filled; it meets the plateau at the plateau's own foot on a short steep rise (35 degrees: the plateau's slopes are steeper than a gentler batter could meet), and its water edges lie under the swamp. Past the city limits it narrows to a point over the water. settlements/hook/world/landforms.json",
+   "x": 611.0,
+   "z": 4684.6,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007692430597082009
+  },
+  {
+   "id": "lf_hook_swamp",
+   "kind": "bench",
+   "px": 810.2719,
+   "py": 922.2273,
+   "l_m": 1779,
+   "w_m": 2400,
+   "rotation": 0,
+   "outline_px": [
+    [
+     810.6264,
+     921.6322
+    ],
+    [
+     810.6604,
+     921.6272
+    ],
+    [
+     810.7166,
+     921.7212
+    ],
+    [
+     810.6939,
+     921.8129
+    ],
+    [
+     810.4816,
+     922.0992
+    ],
+    [
+     809.9946,
+     922.6046
+    ],
+    [
+     809.9013,
+     922.8198
+    ],
+    [
+     809.845,
+     922.8273
+    ],
+    [
+     809.8273,
+     922.6425
+    ],
+    [
+     809.9013,
+     922.4773
+    ],
+    [
+     810.3978,
+     921.96
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
+   "x": 2543.8,
+   "z": -1545.4,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007261431570905299
+  },
+  {
+   "id": "lf_hook_swamp_2",
+   "kind": "bench",
+   "px": 809.2691,
+   "py": 925.279,
+   "l_m": 1179,
+   "w_m": 1952,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.3329,
+     924.8887
+    ],
+    [
+     809.5305,
+     924.7911
+    ],
+    [
+     809.5639,
+     924.8065
+    ],
+    [
+     809.5208,
+     924.9739
+    ],
+    [
+     809.4339,
+     925.0276
+    ],
+    [
+     809.3774,
+     925.2192
+    ],
+    [
+     809.1645,
+     925.3599
+    ],
+    [
+     809.0851,
+     925.7277
+    ],
+    [
+     809.0313,
+     925.7654
+    ],
+    [
+     808.9745,
+     925.7669
+    ],
+    [
+     809.0133,
+     925.3998
+    ],
+    [
+     809.0456,
+     925.2862
+    ],
+    [
+     809.0905,
+     925.2088
+    ],
+    [
+     809.2887,
+     925.0856
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
+   "x": 538.2,
+   "z": 4558.0,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007956561227009445
+  },
+  {
+   "id": "lf_hook_swamp_3",
+   "kind": "bench",
+   "px": 809.9835,
+   "py": 923.8037,
+   "l_m": 951,
+   "w_m": 710,
+   "rotation": 0,
+   "outline_px": [
+    [
+     809.7456,
+     923.6263
+    ],
+    [
+     809.8868,
+     923.6379
+    ],
+    [
+     810.1666,
+     923.7758
+    ],
+    [
+     810.2214,
+     923.862
+    ],
+    [
+     810.1587,
+     923.9713
+    ],
+    [
+     810.1209,
+     923.9812
+    ],
+    [
+     810.0073,
+     923.8466
+    ],
+    [
+     809.8595,
+     923.7961
+    ],
+    [
+     809.7467,
+     923.7223
+    ]
+   ],
+   "wobble_m": 60,
+   "level_m": -1499.59,
+   "batter_deg": 25,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The mangrove swamp: the plain's ground within about 300 m of the water (the drowned downtown and the bay) where the model's own ground is under 6 m, levelled to 0.6 m over the sea, where the mangroves stand; a short step up to the plain. settlements/hook/world/landforms.json",
+   "x": 1967.0,
+   "z": 1607.4,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007587836488702335
+  },
+  {
+   "id": "lf_hook_spit",
+   "kind": "bench",
+   "px": 808.4864,
+   "py": 922.6591,
+   "l_m": 5555,
+   "w_m": 6018,
+   "rotation": 0,
+   "outline_px": [
+    [
+     808.15,
+     922.7
+    ],
+    [
+     809.875,
+     922.7
+    ],
+    [
+     809.7208,
+     923.7206
+    ],
+    [
+     809.5018,
+     923.7203
+    ],
+    [
+     809.325,
+     923.7835
+    ],
+    [
+     809.1946,
+     923.798
+    ],
+    [
+     809.0946,
+     923.8714
+    ],
+    [
+     808.9681,
+     924.1026
+    ],
+    [
+     808.8249,
+     924.1637
+    ],
+    [
+     808.7192,
+     924.1627
+    ],
+    [
+     808.6727,
+     924.1382
+    ],
+    [
+     808.5039,
+     923.8916
+    ],
+    [
+     808.3104,
+     923.845
+    ],
+    [
+     808.2212,
+     923.7292
+    ],
+    [
+     807.9601,
+     923.5613
+    ],
+    [
+     807.8931,
+     923.5516
+    ],
+    [
+     807.6322,
+     923.6129
+    ],
+    [
+     807.5489,
+     923.6
+    ],
+    [
+     807.4911,
+     923.6315
+    ],
+    [
+     807.3641,
+     923.6073
+    ],
+    [
+     807.2936,
+     923.514
+    ],
+    [
+     807.1861,
+     923.4542
+    ],
+    [
+     807.1015,
+     923.3266
+    ],
+    [
+     807.0977,
+     923.2766
+    ],
+    [
+     807.1448,
+     923.163
+    ],
+    [
+     807.2555,
+     923.0492
+    ],
+    [
+     807.2883,
+     922.7299
+    ],
+    [
+     807.1919,
+     922.5051
+    ],
+    [
+     807.1814,
+     922.4071
+    ],
+    [
+     807.2343,
+     922.1793
+    ],
+    [
+     807.1613,
+     922.044
+    ],
+    [
+     807.1586,
+     921.9719
+    ],
+    [
+     807.2287,
+     921.7611
+    ],
+    [
+     807.4035,
+     921.5368
+    ],
+    [
+     807.4353,
+     921.374
+    ],
+    [
+     807.5217,
+     921.3063
+    ],
+    [
+     807.5923,
+     921.2151
+    ],
+    [
+     807.6523,
+     921.1737
+    ],
+    [
+     807.802,
+     921.1545
+    ],
+    [
+     807.8592,
+     921.2215
+    ],
+    [
+     807.9464,
+     921.2605
+    ],
+    [
+     807.9829,
+     921.3143
+    ],
+    [
+     808.019,
+     921.4304
+    ],
+    [
+     808.0012,
+     921.6436
+    ],
+    [
+     808.0897,
+     921.9261
+    ],
+    [
+     808.1439,
+     922.2428
+    ],
+    [
+     808.189,
+     922.359
+    ],
+    [
+     808.1489,
+     922.552
+    ]
+   ],
+   "keep_edges": [
+    0
+   ],
+   "wobble_m": 70,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 1700,
+   "note": "The walled peninsula (the owner's site plan, placement B): Port Hook's ground, 5 m over the sea, with the north ridge running about 3 km out into deep water and the downtown's dry half; its first edge is the quay line (world x -1700 to +1750 m at z -600), held straight; its east edge is the wall's line. The id is the spit's, which the frame and the town read. settlements/hook/world/landforms.json",
+   "x": -1027.2,
+   "z": -681.8,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.006886301470628488
+  },
+  {
+   "id": "lf_hook_ridge_hill",
+   "kind": "bench",
+   "px": 807.705,
+   "py": 922.7533,
+   "l_m": 961,
+   "w_m": 1755,
+   "rotation": 0,
+   "outline_px": [
+    [
+     807.4964,
+     922.3354
+    ],
+    [
+     807.5263,
+     922.3146
+    ],
+    [
+     807.5622,
+     922.3291
+    ],
+    [
+     807.7912,
+     922.5883
+    ],
+    [
+     807.8515,
+     922.6883
+    ],
+    [
+     807.8758,
+     922.8647
+    ],
+    [
+     807.9453,
+     922.9847
+    ],
+    [
+     807.912,
+     923.1058
+    ],
+    [
+     807.7632,
+     923.1849
+    ],
+    [
+     807.663,
+     923.192
+    ],
+    [
+     807.6123,
+     923.1622
+    ],
+    [
+     807.5868,
+     923.0217
+    ],
+    [
+     807.4666,
+     922.7952
+    ],
+    [
+     807.4647,
+     922.7089
+    ],
+    [
+     807.4954,
+     922.601
+    ],
+    [
+     807.4701,
+     922.4165
+    ]
+   ],
+   "fill_only": true,
+   "dome_m": 45,
+   "dome_run_m": 350,
+   "wobble_m": 40,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The north ridge's hill (Signal Hill): rising about 45 m over the ridge, domed, not terraced. settlements/hook/world/landforms.json",
+   "x": -2590.0,
+   "z": -493.4,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.007685965542998733
+  },
+  {
+   "id": "lf_hook_crown_hill",
+   "kind": "bench",
+   "px": 808.7777,
+   "py": 923.3334,
+   "l_m": 2185,
+   "w_m": 748,
+   "rotation": 0,
+   "outline_px": [
+    [
+     808.2375,
+     923.2269
+    ],
+    [
+     808.3038,
+     923.2082
+    ],
+    [
+     808.4737,
+     923.2532
+    ],
+    [
+     808.6293,
+     923.1843
+    ],
+    [
+     808.8604,
+     923.1764
+    ],
+    [
+     809.0243,
+     923.1465
+    ],
+    [
+     809.1535,
+     923.1798
+    ],
+    [
+     809.3039,
+     923.2461
+    ],
+    [
+     809.3238,
+     923.2767
+    ],
+    [
+     809.2583,
+     923.3803
+    ],
+    [
+     809.1635,
+     923.4351
+    ],
+    [
+     809.0509,
+     923.4632
+    ],
+    [
+     808.802,
+     923.4705
+    ],
+    [
+     808.5987,
+     923.5203
+    ],
+    [
+     808.5552,
+     923.5073
+    ],
+    [
+     808.4873,
+     923.4299
+    ],
+    [
+     808.3589,
+     923.4096
+    ],
+    [
+     808.2867,
+     923.3619
+    ],
+    [
+     808.2315,
+     923.2848
+    ]
+   ],
+   "fill_only": true,
+   "dome_m": 28,
+   "dome_run_m": 300,
+   "wobble_m": 30,
+   "level_m": -1495.19,
+   "batter_deg": 15,
+   "skirt_m": 60,
+   "reach_m": 300,
+   "note": "The downtown's hill, where the Crown stands: rising about 28 m over the dry half of the downtown, domed. settlements/hook/world/landforms.json",
+   "x": -444.6,
+   "z": 666.8,
+   "source": "settlements/hook/world/landforms.json",
+   "wg_n": 0.006751597298945116
+  }
+ ],
+ "cut": {
+  "by": "settlements/hook/world/cut.py",
+  "pin": "sm3ft5vrof",
+  "px": [
+   809,
+   923
+  ],
+  "box_px": 10,
+  "own_landforms": [
+   "lf_hook_sunk",
+   "lf_hook_plain",
+   "lf_hook_plain_2",
+   "lf_hook_swamp",
+   "lf_hook_swamp_2",
+   "lf_hook_swamp_3",
+   "lf_hook_spit",
+   "lf_hook_ridge_hill",
+   "lf_hook_crown_hill"
+  ]
+ }
+}

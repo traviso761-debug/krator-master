@@ -77,7 +77,7 @@ function pickWorld(e){
    by default, a 72-minute day when it runs (the project's rule since Oct 2026; Locus's sky ran a 2-minute day of its
    own before). #hour=9 and #time=run in the URL; an hour set from the sky panel's own slider (skySetHour) is taken
    back into the clock. */
-var LCLOCK = KCLOCK.make({ hour:10, running:false }), LCLOCK_SET = null;
+var LCLOCK = KCLOCK.make({ hour:6, running:false }), LCLOCK_SET = null;   /* opens at 06:00 (SKY-PLAN.md 2.1; W7) */
 (function(){
   var q=new URLSearchParams((location.hash||'').replace(/^#/,'')); var h=parseFloat(q.get('hour')); if(isFinite(h)) LCLOCK.set(h); if(q.get('time')==='run') LCLOCK.run(true);
   skySetHour(LCLOCK.hour); LCLOCK_SET = skyHour();

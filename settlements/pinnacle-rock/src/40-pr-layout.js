@@ -83,10 +83,11 @@ const PR = (function () {
     south: E(0, 330, 140, 80, 'the south quarter (inns, the caravan market)'),
     precinct: E(-215, -205, 82, 66, 'the Deep Root precinct (the cavern; nothing built inside the stones)'),
     // moved in from the diagram's places onto the usable cap (P3c, 2026-10-19: each ground 90% or more on the cap 12 m in
-    // from the rim and 6 m off the rock standing on it; the Hardshell's had stood over the rim)
+    // from the rim and 6 m off the rock standing on it; the Hardshell's had stood over the rim). The six ground tribes'
+    // grounds widened 2026-11-12 (eighteen bands, the owner): each band's two more domes; the south pair 10-15 m in from the rim
     camps: [['wingclaw', 145, -415, 62, 44], ['quetzal', 250, -225, 52, 58], ['nightwing', -300, 235, 50, 62],
-      ['threehorn', -153, -430, 44, 36], ['hardshell', 244, 220, 42, 40], ['staghorn', -190, 382, 42, 36],
-      ['longcrawler', -92, 480, 40, 34], ['raptor', 95, 495, 40, 34], ['tiger', 180, 370, 42, 36]]
+      ['threehorn', -153, -430, 54, 44], ['hardshell', 244, 220, 52, 48], ['staghorn', -190, 382, 52, 44],
+      ['longcrawler', -92, 470, 52, 42], ['raptor', 95, 480, 52, 42], ['tiger', 180, 370, 52, 44]]
       .map(c => Object.assign(E(c[1], c[2], c[3], c[4], 'the ' + c[0] + ' band\'s ground (the top)'), { tribe: c[0] })),
     barracks: [{ wing: 'wingclaw', x: 0, z: -476, w: 70, d: 22, ry: 0 }, { wing: 'quetzal', x: 301, z: -50, w: 70, d: 22, ry: Math.PI / 2 },
       { wing: 'nightwing', x: -301, z: 20, w: 70, d: 22, ry: Math.PI / 2 }],

@@ -1,0 +1,10 @@
+{
+ "what": "openworld/east-abyss (East Abyss basin, Yuni Valley, and East Rim near-environs: e abysss + Yuni Valley + east rim, 16 settlements, 4x super-sampled 500 m cells) ceilings.",
+ "pages": {
+  "east-abyss.html": {
+   "bytes": 52428800,
+   "why": "300 x 1,000 km regional cut upsampled 4x (500 m/cell) with --smooth and --relief plus biomes/eastabyss and geology layers for biome-polish and Godot native export.",
+   "raised": "2026-11-25"
+  }
+ }
+}

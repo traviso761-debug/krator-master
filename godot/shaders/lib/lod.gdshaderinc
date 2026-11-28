@@ -5,6 +5,15 @@
 // or, when no tree owns any of the node's rows (the export's lod.loose), from its own origin (mode 2); past its range it
 // collapses to a point and is never rasterized, and over the last `fade` of the range it dithers out. Mode 0 (the default:
 // a node the importer did not set, every unchunked mesh) draws as before.
+// K_LOD_OFF (krator/cells.gd: a cell of an item that has no rows of its own): no instance uniforms and nothing culled.
+// A node on a shader that declares instance uniforms takes 16 slots of the buffer for them whether it sets one or not
+// (4,096 nodes at the project's buffer size; far fewer on the Compatibility renderer), and a place cut into cells is
+// thousands of nodes.
+#ifdef K_LOD_OFF
+float klod(vec3 origin, vec3 cam, int row) {
+	return 0.0;
+}
+#else
 instance uniform vec4 lod_box = vec4(0.0);    // x0, z0, x1, z1 of the chunk, world metres
 instance uniform vec4 lod_y = vec4(0.0);      // y0, y1 (the rows' heights), fade (a fraction of the range), mode
 instance uniform vec4 lod_r = vec4(1e9);      // the ranges, longest first
@@ -29,6 +38,7 @@ float klod(vec3 origin, vec3 cam, int row) {
 	}
 	return lod_y.z > 0.0 ? smoothstep(r * (1.0 - lod_y.z), r, d) : 0.0;
 }
+#endif
 
 // three's interleaved-gradient dither (fragmentMain of BIO.LODFADE_GLSL): true where a pixel of a fading row is dropped
 bool klod_drop(float k, vec2 frag) {

@@ -1,0 +1,46 @@
+{
+ "targets": {
+  "sheet": "viridian-sheet.html",
+  "estate": "viridian.html"
+ },
+ "externalDirs": [
+  "kits/qiblai/src"
+ ],
+ "scoped": [
+  "41-world-fields.js",
+  "39vt-world-data.js"
+ ],
+ "pack": "qiblai",
+ "packSide": true,
+ "packFrom": "kits/qiblai",
+ "files": {
+  "sheet": [
+   ["core/atmos", ["89-atmos-0-core.js", "89-atmos-0p-presets.js", "89-atmos-a-waves.js", "89-atmos-b-skylight.js"]],
+   ["core/water", ["20-core-water.js", "21-core-water-shore.js", "22-core-water-flow.js", "50-core-water-draw.js", "51-core-water-kinds.js"]],
+   ["settlements/xanadu/targets/xanadu", ["90-xa-still.js"]]
+  ],
+  "estate": [
+   ["core/terrain", ["38-core-relief.js", "38c-core-landforms.js"]],
+   ["core/world", ["41-world-fields.js"]],
+   ["settlements/viridian/gen", ["39vt-world-data.js"]]
+  ]
+ },
+ "deterministic": [
+  "38-core-relief.js",
+  "38c-core-landforms.js",
+  "39vt-world-data.js",
+  "40-vt-estate.js",
+  "41-world-fields.js",
+  "89q0-qb-helpers.js",
+  "89q0x-qb-xanadui.js",
+  "89q0y-qb-script.js",
+  "89q0z-qb-matlib.js",
+  "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "89zva-vt-ground.js",
+  "89zvb-vt-site.js",
+  "90va-vt-world.js",
+  "90vb-vt-build.js"
+ ],
+ "interiorSets": []
+}

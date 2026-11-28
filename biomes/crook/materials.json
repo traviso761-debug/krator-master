@@ -1,0 +1,1451 @@
+{
+ "build": "crook",
+ "note": "The Crook biome kit's adapter onto the material library (biomes/crook/PLAN.md section 6.3; CROOK-RIA-DECISIONS.md section 1.6). Covers 100% of ground KGROUND layers (basalt spray-bench, conifer needles, sphagnum bog, river/moraine gravel, iron-jade travertine, lichen crust, periglacial turf, late-spring snowpack, and malachite-ochre cryo-snow algae), barks (spruce, redcedar, red-cypress, moss-maple, silver fir, larch, burnished metallic skarn-cedar scales, chambered bamboo, bone-white seed-chimney, gnarled wood), PBR sponges/rimstone/cushions/rocks (porous chimney-sponge, surf cushion-sponge, celadon/amber canopy cup-sponge, rust-terrace rimstone dam, mineral-rind cushion-heath, columnar basalt, ejecta breccia, banded gneiss, emerald nephrite-skarn, malachite, gossan, alpine granite), and foliage cards. Run python3 tools/textures/pack.py biomes/crook after any change, then python3 tools/build.py biomes/crook --all.",
+ "size": 512,
+ "families": {
+  "ground.basalt": {
+   "lib": "ground.sand.black",
+   "scale": [
+    2.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.needles": {
+   "lib": "ground.needles",
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.sphagnum": {
+   "lib": "ground.sphagnum",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.gravel": {
+   "lib": "ground.gravel042",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.7,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "ground.travertine": {
+   "lib": "ground.travertine.acid",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.22,
+   "specular": 0.32,
+   "mapOnly": true
+  },
+  "ground.lichen": {
+   "lib": "ground.lichen.crust",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 0.9,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "specular": 0.22,
+   "mapOnly": true
+  },
+  "ground.turf": {
+   "lib": "ground.turf.polygon",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.8,
+    "mean": null
+   },
+   "roughLift": 0.35,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "ground.snow": {
+   "lib": "ground.snow011",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 1.0,
+    "mean": null
+   },
+   "roughLift": 0.28,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "ground.algae": {
+   "lib": "ground.snow.algae",
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.72
+   },
+   "roughLift": 0.28,
+   "specular": 0.25,
+   "mapOnly": true
+  },
+  "bark.spruce": {
+   "lib": "bark.ponderosa",
+   "size": 256,
+   "scale": [
+    2.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.cedar": {
+   "lib": "bark.cedar.red",
+   "size": 256,
+   "scale": [
+    2.2,
+    3.4
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.cypress": {
+   "lib": "bark.juniper",
+   "size": 256,
+   "scale": [
+    2.0,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.64
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.maple": {
+   "lib": "bark.alder.lichen",
+   "size": 256,
+   "scale": [
+    2.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.fir": {
+   "lib": "bark.smooth",
+   "size": 256,
+   "scale": [
+    2.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.66
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.larch": {
+   "lib": "bark.larch",
+   "size": 256,
+   "scale": [
+    1.8,
+    2.8
+   ],
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.64
+   },
+   "roughLift": 0.3,
+   "mapOnly": true
+  },
+  "bark.rust": {
+   "lib": "bark.armored",
+   "size": 256,
+   "scale": [
+    1.6,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   },
+   "roughLift": 0.15,
+   "specular": 0.45
+  },
+  "bark.bamboo": {
+   "lib": "bark.bamboo.jade",
+   "size": 256,
+   "scale": [
+    1.2,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.72
+   },
+   "roughLift": 0.2,
+   "mapOnly": true
+  },
+  "bark.bone": {
+   "lib": "bone.ivory",
+   "size": 256,
+   "scale": [
+    1.2,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.82
+   },
+   "roughLift": 0.22,
+   "mapOnly": true
+  },
+  "wood.log": {
+   "lib": "wood.gnarled",
+   "size": 256,
+   "scale": [
+    2.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 0.4,
+    "mean": 0.6
+   },
+   "roughLift": 0.32,
+   "mapOnly": true
+  },
+  "sponge.chimney": {
+   "lib": "organic.cap.porous",
+   "size": 256,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.68
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "sponge.cushion": {
+   "lib": "organic.sponge",
+   "size": 256,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.7
+   },
+   "roughLift": 0.25,
+   "specular": 0.25
+  },
+  "sponge.cup": {
+   "lib": "organic.chalicecap",
+   "size": 256,
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.74
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "rimstone.lip": {
+   "lib": "ground.rust.terrace",
+   "size": 256,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.68
+   },
+   "roughLift": 0.15,
+   "specular": 0.4
+  },
+  "cushion.rind": {
+   "lib": "surface.cushion",
+   "size": 256,
+   "scale": [
+    1.2,
+    1.2
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.7
+   },
+   "roughLift": 0.25,
+   "specular": 0.25
+  },
+  "rock.basalt": {
+   "lib": "rock.columnar",
+   "size": 256,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.52
+   },
+   "roughLift": 0.25,
+   "specular": 0.3
+  },
+  "rock.breccia": {
+   "lib": "rock.tuff",
+   "size": 256,
+   "scale": [
+    2.6,
+    2.6
+   ],
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "rock.gneiss": {
+   "lib": "rock.gneiss.banded",
+   "size": 256,
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.62
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "rock.nephrite": {
+   "lib": "rock.schist.emerald",
+   "size": 256,
+   "scale": [
+    1.8,
+    1.8
+   ],
+   "tint": {
+    "keep": 0.75,
+    "mean": 0.64
+   },
+   "roughLift": 0.12,
+   "specular": 0.45
+  },
+  "rock.malachite": {
+   "lib": "rock.malachite",
+   "size": 256,
+   "scale": [
+    1.6,
+    1.6
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.15,
+   "specular": 0.35
+  },
+  "rock.gossan": {
+   "lib": "rock.gossan",
+   "size": 256,
+   "scale": [
+    2.0,
+    2.0
+   ],
+   "tint": {
+    "keep": 0.85,
+    "mean": null
+   },
+   "roughLift": 0.2,
+   "specular": 0.3
+  },
+  "rock.granite": {
+   "lib": "rock.granite.tor",
+   "size": 256,
+   "scale": [
+    3.0,
+    3.0
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "roughLift": 0.3,
+   "specular": 0.25
+  },
+  "spruce": {
+   "lib": "card.spruce",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.016,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.032,
+      0.025
+     ],
+     "tip": [
+      0.3008,
+      0.3225
+     ],
+     "w": [
+      -0.1086,
+      0.1019
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.335,
+      0.653,
+      0.671
+     ],
+     "stem": [
+      0.508,
+      0.344
+     ],
+     "tip": [
+      0.5154,
+      0.6693
+     ],
+     "w": [
+      -0.1149,
+      0.1324
+     ]
+    },
+    {
+     "cell": [
+      0.684,
+      0.661,
+      0.968,
+      0.974
+     ],
+     "stem": [
+      0.968,
+      0.656
+     ],
+     "tip": [
+      0.7043,
+      0.9696
+     ],
+     "w": [
+      -0.0986,
+      0.1166
+     ]
+    }
+   ],
+   "rise": -0.25
+  },
+  "cedar": {
+   "lib": "card.pine",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.018,
+      0.03,
+      0.329,
+      0.339
+     ],
+     "stem": [
+      0.042,
+      0.315
+     ],
+     "tip": [
+      0.2896,
+      0.0752
+     ],
+     "w": [
+      -0.1068,
+      0.1195
+     ]
+    },
+    {
+     "cell": [
+      0.016,
+      0.343,
+      0.327,
+      0.671
+     ],
+     "stem": [
+      0.048,
+      0.618
+     ],
+     "tip": [
+      0.2896,
+      0.3907
+     ],
+     "w": [
+      -0.1238,
+      0.1264
+     ]
+    },
+    {
+     "cell": [
+      0.686,
+      0.661,
+      0.985,
+      0.97
+     ],
+     "stem": [
+      0.698,
+      0.945
+     ],
+     "tip": [
+      0.9595,
+      0.6957
+     ],
+     "w": [
+      -0.1102,
+      0.1207
+     ]
+    }
+   ],
+   "rise": 0.28
+  },
+  "larch": {
+   "lib": "card.larch",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.059,
+      0.0,
+      0.284,
+      0.325
+     ],
+     "stem": [
+      0.165,
+      0.006
+     ],
+     "tip": [
+      0.1549,
+      0.3215
+     ],
+     "w": [
+      -0.1002,
+      0.0776
+     ]
+    },
+    {
+     "cell": [
+      0.417,
+      0.329,
+      0.618,
+      0.651
+     ],
+     "stem": [
+      0.502,
+      0.338
+     ],
+     "tip": [
+      0.502,
+      0.6494
+     ],
+     "w": [
+      -0.0927,
+      0.0674
+     ]
+    },
+    {
+     "cell": [
+      0.716,
+      0.663,
+      0.931,
+      0.987
+     ],
+     "stem": [
+      0.822,
+      0.672
+     ],
+     "tip": [
+      0.8422,
+      0.9831
+     ],
+     "w": [
+      -0.0806,
+      0.0887
+     ]
+    }
+   ],
+   "rise": -0.35
+  },
+  "maple": {
+   "lib": "card.lobed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.038,
+      0.026,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.2686,
+      0.3389
+     ],
+     "tip": [
+      0.1221,
+      0.0548
+     ],
+     "w": [
+      -0.1367,
+      0.1587
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.329,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.542,
+      0.6709
+     ],
+     "tip": [
+      0.5082,
+      0.3259
+     ],
+     "w": [
+      -0.1477,
+      0.1281
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.984,
+      0.982
+     ],
+     "stem": [
+      0.7549,
+      0.9756
+     ],
+     "tip": [
+      0.9188,
+      0.6455
+     ],
+     "w": [
+      -0.1514,
+      0.1446
+     ]
+    }
+   ]
+  },
+  "rhodo": {
+   "lib": "card.broadleaf.cloud",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.015,
+      0.02,
+      0.331,
+      0.337
+     ],
+     "stem": [
+      0.1729,
+      0.3311
+     ],
+     "tip": [
+      0.1843,
+      0.0211
+     ],
+     "w": [
+      -0.1304,
+      0.1193
+     ]
+    },
+    {
+     "cell": [
+      0.343,
+      0.335,
+      0.661,
+      0.663
+     ],
+     "stem": [
+      0.4854,
+      0.6572
+     ],
+     "tip": [
+      0.5257,
+      0.3387
+     ],
+     "w": [
+      -0.1413,
+      0.1316
+     ]
+    },
+    {
+     "cell": [
+      0.673,
+      0.669,
+      0.993,
+      0.991
+     ],
+     "stem": [
+      0.8115,
+      0.9854
+     ],
+     "tip": [
+      0.8588,
+      0.6711
+     ],
+     "w": [
+      -0.1386,
+      0.1329
+     ]
+    }
+   ]
+  },
+  "blossom": {
+   "lib": "card.blossom",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.78
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.663,
+    0.022,
+    0.987,
+    0.329
+   ],
+   "base": "top"
+  },
+  "palmate": {
+   "lib": "card.crop.palmate",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.02,
+      0.015,
+      0.321,
+      0.329
+     ],
+     "stem": [
+      0.1787,
+      0.3232
+     ],
+     "tip": [
+      0.1629,
+      0.0205
+     ],
+     "w": [
+      -0.1231,
+      0.1274
+     ]
+    },
+    {
+     "cell": [
+      0.358,
+      0.343,
+      0.667,
+      0.671
+     ],
+     "stem": [
+      0.585,
+      0.6709
+     ],
+     "tip": [
+      0.4481,
+      0.34
+     ],
+     "w": [
+      -0.1197,
+      0.1286
+     ]
+    },
+    {
+     "cell": [
+      0.671,
+      0.661,
+      0.982,
+      0.985
+     ],
+     "stem": [
+      0.8369,
+      0.9795
+     ],
+     "tip": [
+      0.819,
+      0.6597
+     ],
+     "w": [
+      -0.1246,
+      0.1274
+     ]
+    }
+   ]
+  },
+  "treefern": {
+   "lib": "card.fern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "skarnfern": {
+   "lib": "card.fern",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "floorfern": {
+   "lib": "card.fern.green",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.034,
+      0.028,
+      0.319,
+      0.339
+     ],
+     "stem": [
+      0.2764,
+      0.3311
+     ],
+     "tip": [
+      0.0878,
+      0.0154
+     ],
+     "w": [
+      -0.0789,
+      0.077
+     ]
+    },
+    {
+     "cell": [
+      0.345,
+      0.329,
+      0.648,
+      0.671
+     ],
+     "stem": [
+      0.4111,
+      0.6709
+     ],
+     "tip": [
+      0.5863,
+      0.3547
+     ],
+     "w": [
+      -0.1574,
+      0.1434
+     ]
+    },
+    {
+     "cell": [
+      0.682,
+      0.661,
+      0.956,
+      0.98
+     ],
+     "stem": [
+      0.9248,
+      0.9736
+     ],
+     "tip": [
+      0.7464,
+      0.6459
+     ],
+     "w": [
+      -0.0774,
+      0.0813
+     ]
+    }
+   ]
+  },
+  "beard": {
+   "lib": "card.beard",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "cell": [
+    0.372,
+    0.337,
+    0.628,
+    0.661
+   ],
+   "base": "top"
+  },
+  "bamboo": {
+   "lib": "card.bamboo.giant",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "sheet": "geometry"
+  },
+  "horsetail": {
+   "lib": "card.reed",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.7
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.329,
+      0.022,
+      0.663,
+      0.339
+     ],
+     "stem": [
+      0.3291,
+      0.3389
+     ],
+     "tip": [
+      0.6748,
+      0.091
+     ],
+     "w": [
+      -0.1496,
+      0.125
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.329,
+      0.667,
+      0.671
+     ],
+     "stem": [
+      0.3291,
+      0.333
+     ],
+     "tip": [
+      0.6149,
+      0.6561
+     ],
+     "w": [
+      -0.1624,
+      0.1313
+     ]
+    },
+    {
+     "cell": [
+      0.665,
+      0.667,
+      0.98,
+      0.98
+     ],
+     "stem": [
+      0.9521,
+      0.9717
+     ],
+     "tip": [
+      0.6807,
+      0.702
+     ],
+     "w": [
+      -0.1279,
+      0.158
+     ]
+    }
+   ]
+  },
+  "sedge": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.72
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.028,
+      0.016,
+      0.327,
+      0.335
+     ],
+     "stem": [
+      0.0283,
+      0.2861
+     ],
+     "tip": [
+      0.3227,
+      0.1382
+     ],
+     "w": [
+      -0.141,
+      0.1016
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.343,
+      0.651,
+      0.671
+     ],
+     "stem": [
+      0.3311,
+      0.6045
+     ],
+     "tip": [
+      0.6634,
+      0.4715
+     ],
+     "w": [
+      -0.1418,
+      0.1023
+     ]
+    },
+    {
+     "cell": [
+      0.681,
+      0.665,
+      0.966,
+      0.976
+     ],
+     "stem": [
+      0.6865,
+      0.9482
+     ],
+     "tip": [
+      0.9768,
+      0.7536
+     ],
+     "w": [
+      -0.1408,
+      0.1031
+     ]
+    }
+   ]
+  },
+  "frostsedge": {
+   "lib": "card.grass.dry",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.76
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.028,
+      0.016,
+      0.327,
+      0.335
+     ],
+     "stem": [
+      0.0283,
+      0.2861
+     ],
+     "tip": [
+      0.3227,
+      0.1382
+     ],
+     "w": [
+      -0.141,
+      0.1016
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.343,
+      0.651,
+      0.671
+     ],
+     "stem": [
+      0.3311,
+      0.6045
+     ],
+     "tip": [
+      0.6634,
+      0.4715
+     ],
+     "w": [
+      -0.1418,
+      0.1023
+     ]
+    },
+    {
+     "cell": [
+      0.681,
+      0.665,
+      0.966,
+      0.976
+     ],
+     "stem": [
+      0.6865,
+      0.9482
+     ],
+     "tip": [
+      0.9768,
+      0.7536
+     ],
+     "w": [
+      -0.1408,
+      0.1031
+     ]
+    }
+   ]
+  },
+  "cotton": {
+   "lib": "card.cottongrass",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.74
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.073,
+      0.03,
+      0.253,
+      0.321
+     ],
+     "stem": [
+      0.0732,
+      0.2549
+     ],
+     "tip": [
+      0.2641,
+      0.1493
+     ],
+     "w": [
+      -0.1365,
+      0.099
+     ]
+    },
+    {
+     "cell": [
+      0.393,
+      0.349,
+      0.609,
+      0.648
+     ],
+     "stem": [
+      0.4307,
+      0.6416
+     ],
+     "tip": [
+      0.5677,
+      0.3838
+     ],
+     "w": [
+      -0.1028,
+      0.0865
+     ]
+    },
+    {
+     "cell": [
+      0.69,
+      0.677,
+      0.956,
+      0.98
+     ],
+     "stem": [
+      0.7451,
+      0.9521
+     ],
+     "tip": [
+      0.9194,
+      0.7201
+     ],
+     "w": [
+      -0.1286,
+      0.1027
+     ]
+    }
+   ]
+  },
+  "rosette": {
+   "lib": "card.crop.rosette",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "roughLift": 0,
+   "specular": 0.2,
+   "stems": [
+    {
+     "cell": [
+      0.016,
+      0.034,
+      0.316,
+      0.302
+     ],
+     "stem": [
+      0.0225,
+      0.2705
+     ],
+     "tip": [
+      0.2796,
+      0.1488
+     ],
+     "w": [
+      -0.1466,
+      0.1057
+     ]
+    },
+    {
+     "cell": [
+      0.352,
+      0.36,
+      0.65,
+      0.638
+     ],
+     "stem": [
+      0.3623,
+      0.5967
+     ],
+     "tip": [
+      0.6105,
+      0.4615
+     ],
+     "w": [
+      -0.1431,
+      0.1085
+     ]
+    },
+    {
+     "cell": [
+      0.679,
+      0.681,
+      0.985,
+      0.962
+     ],
+     "stem": [
+      0.6846,
+      0.9014
+     ],
+     "tip": [
+      0.9622,
+      0.8112
+     ],
+     "w": [
+      -0.1353,
+      0.1042
+     ]
+    }
+   ]
+  },
+  "moss": {
+   "lib": "card.moss",
+   "scale": [
+    1.0,
+    1.0
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.64
+   },
+   "roughLift": 0,
+   "specular": 0.2
+  }
+ }
+}

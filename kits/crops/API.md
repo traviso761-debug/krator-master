@@ -32,3 +32,8 @@ Picks are deterministic: the same results, name, `seed` and `salt` give the same
 
 List `kits/crops/src/10-crop-core.js`, `20-crop-records.js`, `22-crop-material.js`, `40-crop-query.js` and `core/rand/08-core-rand.js`
 (in that order) in the build, as `kits/islanders/build.py` lists `RESOURCES`. Do not copy them.
+
+**Opt-in:** `24-crop-vale-wild.js` adds the Vale of Xanadu's six wild medicinal plants (ginkgo leaf, cloud-pine resin,
+frost-willow bark, beard moss, whorl-olive leaf, silverscrub; the owner, 2026-11-16, for `settlements/viridian`'s physic and
+dry gardens). List it after `22-crop-material.js` to take them. The builds that name the four files above do not see it;
+the kit's own sheet and its test read every fragment.

@@ -38,6 +38,14 @@ baked keeps its coordinates. The grown part:
   - the whole Twins massif;
   - both candidate sites of the Hermitage (section 6);
   - the Catch's south toe: Lasso 1083,1474, Bitta 1088,1455 and Stair's campground at 1106,1442, at the edge.
+> **The seam, 2026-11-24.** `openworld/catch-bowl/PLAN.md` scopes the Catch and the Bowl as a region of their own and
+> proposes that this grow-north stop at the top of the Catch descent: region 2 keeps the Twins, both routes, the five
+> geothermal oases, the Hall and the descent as far as Catch-Lookout (1056,1462) and the arch (1038,1452); the floor,
+> Stair and the White Gills Hermitage (which lies inside the `the catch` polygon, not the Twins') go to `catch-bowl`;
+> Lasso and Bitta are cut by both through `reach_km_by`. Until the owner rules (that plan's question 2), the toe below
+> is this plan's as written. W2's `trail` kind and W5's hazards are **confirmed core gaps** and are shared with that
+> region: `openworld/catch-bowl/PLAN-TERRAIN.md` P4 and P3.
+
 - **Recut, not a new region:** `tools/scale-model/cut_site.py xanadu-oidong-highrift` with the larger box
   (`openworld/PLAN-SITES.md`). The region's SITES.json row gains the Brotherhood's waystations, the Hall, the Hermitage and
   Strongbow's caravanserai. Strongbow's own page and Lasso and Bitta stay their kits'.
@@ -58,7 +66,7 @@ They are drawn by the region's roads code where they run on the ground, and by W
 | Way | Kind | Line (5.1 px) | Notes |
 |---|---|---|---|
 | **Route A, the Dark-Tube Road** | 4 tubes, 3 sprints | A1 938,1496 > 952,1489 > 966,1479 > 978,1468; Sprint 1 > 982,1466; A2 > 994,1467 > 1002,1469; Sprint 2 > 1006,1468; A3 > 1014,1464 > 1020,1461; Sprint 3 > 1024,1459; A4 > 1038,1452 | `biomes/twins/PLAN.md` 3.1: 12-22 m tubes with 3.5 m chokes, +8 to +16 °C inside, the three Breaths outside in the wind. The 18 m basalt arch at 1038,1452 opens onto the fan 65 km south-west of Stair. Pack mules and yaks only |
-| **Route A's south feeder** | tube | 1010,1517 > 1028,1506 > 1024,1485 > the Hall 1014,1464 | The lower galleries of `tube_xanadu_se_10`, from near Strongbow into either route: a gasp up onto Route B under the SE Twin (1028,1506), then the model's Saddle dike conduit to the Hall, where it joins A3 underground (the owner, 2026-11-16: "Join the branch to the main line") |
+| **Route A's south feeder** | tube | 1010,1517 > 1028,1506.5 > 1024,1485 > the Hall 1014,1464 | The lower galleries of `tube_xanadu_se_10`, from near Strongbow into either route: a gasp up onto Route B under the SE Twin (1028,1506.5; 1028,1506 until the 2026-11-23 re-run's ground put that point on a flank too steep for its ramp), then the model's Saddle dike conduit to the Hall, where it joins A3 underground (the owner, 2026-11-16: "Join the branch to the main line") |
 | **Route B, the Steaming-Stone Dash** | trail | Strongbow 1001,1596 > Sinter-Gate 996,1504 > Mud-Kettle 1005,1489 > the Brazier 1016,1479 > Brimstone-Tarn 1031,1473 > Catch-Lookout 1056,1462 | `biomes/twins/PLAN.md` 3.2: outdoors over the col, a day between oases, for wagons and herds. A trail, not a highway: wider, steeper grades than the Sultan's roads (proposed: 4 m, 18 %) |
 | **The Catch descent** | trail | Catch-Lookout 1056,1462 > Lasso 1083,1474; Route A's arch 1038,1452 > Bitta 1088,1455 | down the faulted basalt ledges onto the salt and sand |
 | **The Hermitage path** | path | from the nearer route to the Hermitage (section 6) | the monks' and the caravans' turn-off |
@@ -153,7 +161,3 @@ The questions as they were put:
 3. **Route A's start:** the Vale's portal at the Alph's chasm (938,1496, the Twins plan), with the Strongbow feeder as a branch, or Strongbow only? The sim's rounds follow the answer.
 4. **The region:** a new `openworld/twins-crossing` (this plan), or grow `xanadu-oidong-highrift` north over the Twins?
 5. **Route A's tubes:** build the open world's caverns now (W3, core work), or draw Route A on the surface first, with the tubes' portals as closed doors?
-</content>
-</invoke>
-<invoke name="Bash">
-<parameter name="command">cd "C:/Users/travi/Documents/krator-master/.claude/worktrees/openworld-sites-24defd" && M="C:/Users/travi/AppData/Local/Temp/claude/fb90a45e00650bd0/3c8541e4-a2b4-461b-b662-31b858516b6a/scratchpad/msg-tw.txt" && printf 'openworld/twins-crossing/PLAN.md: the Twins crossing and the White Gills Hermitage in the open world (proposal; the owner, 2026-11-16)\n\nBoth routes as ways on the ground (Route A by lava tube and sprint, Route B by\ntrail between the five oases), the Brotherhood'"'"'s waystations and the guides'"'"' traps,\nand the History Monks'"'"' hermitage at the White Gills. Cut after the Twins'"'"' sculpt\nlands; Route A needs caverns in the open world (W3, core work). Five questions\nfor the owner, among them where the Hermitage stands (the pipe field at\n1015,1430 or the pin at 1035,1535).\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n' > "$M" && git add openworld/twins-crossing/PLAN.md && python tools/commit.py -F "$M" 2>&1 | tail -1

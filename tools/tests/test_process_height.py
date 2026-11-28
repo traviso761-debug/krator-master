@@ -38,6 +38,12 @@ def main():
               "height 'lum' is the default, byte for byte, meta.json included")
         meta = json.load(open(os.path.join(tmp, 'default', 'meta.json'), encoding='utf-8'))
         check('height' not in meta['processing']['options'], "meta.json of a 'lum' set has no height key (as before the option)")
+        mb = read('default', 'meta.json')   # T17 (BUGS-2026-11-15.md): CRLF on Windows before newline='\n'
+        check(b'\n' in mb and b'\r\n' not in mb, 'meta.json is written with LF line ends, on Windows too')
+        with open(os.path.join(tmp, 'old.json'), 'w') as fh:   # the old call, as the negative control
+            json.dump(meta, fh, indent=1)
+        check((b'\r\n' in open(os.path.join(tmp, 'old.json'), 'rb').read()) == (os.name == 'nt'),
+              'negative control: the old open() writes CRLF on Windows (and the check above would see it)')
 
         # a stand-in depth: the window's own luminance, so the windowing and the torus can be checked without the model
         a = np.asarray(Image.open(src).convert('RGB').resize((200, 200))).astype(np.float64) / 255

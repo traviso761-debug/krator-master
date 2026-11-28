@@ -30,7 +30,7 @@ function faWdAnimal(d) {
     variants: d.variants.length, variantNames: d.variants.map(v => v[0]),
     w: d.dim[0], d: d.dim[1], h: d.dim[2],
     data: Object.assign({ mass: d.mass, legs: d.legs == null ? 4 : d.legs, sizeRange: [0.8, 1.2], speed: d.speed || { walk: 1, run: 6 }, gait: d.gait || { type: 'quadruped', freq: 1.4, stride: 0.5 }, grazePitch: d.grazePitch == null ? 0.7 : d.grazePitch,
-      herd: d.herd, fleeDistance: d.flee || 8, aggression: d.aggr == null ? 0.1 : d.aggr, schedule: FA_WD_SCH[d.sch || 'graze'] }, d.data || {}),
+      herd: d.herd, fleeDistance: d.flee == null ? 8 : d.flee, aggression: d.aggr == null ? 0.1 : d.aggr, schedule: FA_WD_SCH[d.sch || 'graze'] }, d.data || {}),
     build: function (A) { d.kind(A, Object.assign({}, d.spec, { c: d.variants[A.variant][1] })); }
   });
 }
@@ -39,7 +39,7 @@ const faWdM = faHiMix;
    nk {len, rise}, hd {len, hh, hw, sn, drop}, tl {kind: whip|brush|stub|long|flat|none, len, w}, ear {kind: round|long|point|none, s},
    hn {kind: curve|antlers|straight|three|frill|fork|none, s}, lt leg thickness, foot hoof|paw|claw, stance upright|sprawl, biped, shell, hump, fam */
 function faWdQuad(A, o) {
-  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'coat', L = o.L, bh = o.bh, bw = o.bw, yc = o.legH + bh, lt = o.lt || 0.05, sp = o.stance === 'sprawl';
+  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'coat', L = o.L, bh = o.bh, bw = o.bw, yc = o.legH + bh, lt = o.lt == null ? 0.05 : o.lt, sp = o.stance === 'sprawl';
   const R = rows => rows.map(r => r.map(x => x * S)), e = (x, y, z, rx, ry, rz, col, op) => A.ellip(fam, x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 10 });
   const co = (a, b, r0, r1, col, f) => A.cone(f || fam, [a[0] * S, a[1] * S, a[2] * S], [b[0] * S, b[1] * S, b[2] * S], r0 * S, r1 * S, col, 6);
   const colf = (t, a, q) => { const z = q[2] / S, up = Math.cos(a), p = o.pat ? o.pat(z, a, q, t) : null; return p || mix(c.a, c.b, faHjSm(0.1, -0.6, up)); };
@@ -47,7 +47,7 @@ function faWdQuad(A, o) {
   const nb = [0, yc + bh * 0.5, L / 2 - 0.05], hb = [0, nb[1] + nk.rise, nb[2] + nk.len];      /* the neck's root and the head's base */
   const hump = o.hump || 0;
   faHjRows(A, fam, R([[0, yc + 0.02, -L / 2, bw * 0.7, bh * 0.75], [0, yc + 0.02 + hump * 0.3, -L * 0.3, bw * 0.95, bh * 0.98], [0, yc + 0.03 + hump, L * 0.12, bw, bh * 1.05], [0, yc + hump * 0.5, L * 0.4, bw * 0.92, bh], [0, yc - 0.01, L / 2, bw * 0.8, bh * 0.9]]), 14, 16, null, { round: [0.06, 0.12], colf: colf });
-  faHjRows(A, fam, R([[0, nb[1], nb[2] - 0.12, bw * 0.75 * (o.nkw || 1), bh * 0.85 * (o.nkw || 1)], [0, (nb[1] + hb[1]) / 2, (nb[2] + hb[2]) / 2, bw * 0.5 * (o.nkw || 1), bh * 0.6 * (o.nkw || 1)], [0, hb[1], hb[2], hd.hw * 1.1, hd.hh * 1.15]]), 8, 12, null, { colf: colf });
+  faHjRows(A, fam, R([[0, nb[1], nb[2] - 0.12, bw * 0.75 * (o.nkw == null ? 1 : o.nkw), bh * 0.85 * (o.nkw == null ? 1 : o.nkw)], [0, (nb[1] + hb[1]) / 2, (nb[2] + hb[2]) / 2, bw * 0.5 * (o.nkw == null ? 1 : o.nkw), bh * 0.6 * (o.nkw == null ? 1 : o.nkw)], [0, hb[1], hb[2], hd.hw * 1.1, hd.hh * 1.15]]), 8, 12, null, { colf: colf });
   if (o.humps) for (const h of o.humps) e(0, yc + bh * 0.9 + h[1] * 0.5, h[0] * L, bw * 0.6, h[1], bw * 0.65, mix(c.a, c.d, 0.15), { seg: 10 });
   if (o.shell) e(0, yc + bh * 0.55, 0, bw * 1.25, bh * 1.05, L * 0.52, null, { seg: 18, colf: (x, y, z) => { const g = Math.sin(x / S * 22) * Math.sin(z / S * 18) > 0.1; return g ? mix(c.d, c.b, 0.18) : c.d; } });
   A.part('head', [0, hb[1] * S, hb[2] * S], () => {
@@ -58,7 +58,7 @@ function faWdQuad(A, o) {
     for (const s of [-1, 1]) { e(s * hd.hw * 0.95, hy + hd.hh * 0.3, hz + hd.len * 0.3, 0.018, 0.02, 0.018, 0x0a0806, { seg: 6 }); if (o.eyeC) e(s * hd.hw * 0.99, hy + hd.hh * 0.3, hz + hd.len * 0.3, 0.012, 0.014, 0.012, o.eyeC, { seg: 5 }); }
     const hn = o.hn || { kind: 'none' };
     for (const s of [-1, 1]) {
-      const bx = s * hd.hw * 0.7, by = hy + hd.hh * 0.8, bz = hz + hd.len * 0.1, sz = hn.s || 1;
+      const bx = s * hd.hw * 0.7, by = hy + hd.hh * 0.8, bz = hz + hd.len * 0.1, sz = hn.s == null ? 1 : hn.s;
       if (hn.kind === 'curve') faHjRows(A, 'horn', R([[bx, by, bz, .03 * sz, .03 * sz], [bx + s * .1 * sz, by + .1 * sz, bz - .02, .024 * sz, .024 * sz], [bx + s * .16 * sz, by + .2 * sz, bz + .08 * sz, .014 * sz, .014 * sz], [bx + s * .1 * sz, by + .26 * sz, bz + .2 * sz, .004 * sz, .004 * sz]]), 10, 8, c.h, { round: [0, 0.1] });
       else if (hn.kind === 'curl') faHjRows(A, 'horn', R([[bx, by, bz, .04 * sz, .04 * sz], [bx + s * .12 * sz, by + .1 * sz, bz - .06, .035 * sz, .035 * sz], [bx + s * .2 * sz, by - .02 * sz, bz - .04 * sz, .026 * sz, .026 * sz], [bx + s * .17 * sz, by - .12 * sz, bz + .08 * sz, .014 * sz, .014 * sz], [bx + s * .08 * sz, by - .08 * sz, bz + .12 * sz, .004 * sz, .004 * sz]]), 12, 10, c.h, { round: [0, 0.1] });
       else if (hn.kind === 'straight') co([bx, by, bz], [bx + s * .03 * sz, by + .32 * sz, bz - .06 * sz], .022 * sz, .004, c.h, 'horn');
@@ -74,7 +74,7 @@ function faWdQuad(A, o) {
     if (o.bill) faHjPlate(A, fam, (u, w) => { const a = 2 * u - 1; return [a * (hd.hw * 0.7 + 0.04 * w) * S, (hy - hd.drop - 0.02) * S, (hz + hd.len * 0.9 + 0.2 * w) * S]; }, () => [0.02 * S, 0.012 * S], 8, 4, (u, w) => mix(c.a, c.m || c.d, 0.5 * w));   /* a duck-bill */
   });
   if (o.ear && o.ear.kind !== 'none') for (const s of [-1, 1]) A.part(s > 0 ? 'earL' : 'earR', [s * hd.hw * 0.7 * S, (hb[1] + hd.hh * 0.9) * S, (hb[2] + hd.len * 0.05) * S], () => {
-    const es = o.ear.s || 1, k = o.ear.kind;
+    const es = o.ear.s == null ? 1 : o.ear.s, k = o.ear.kind;
     e(s * hd.hw * (k === 'long' ? 0.8 : 1.0), hb[1] + hd.hh * 0.9 + (k === 'long' ? 0.1 : 0.04) * es, hb[2] + hd.len * 0.05, (k === 'long' ? 0.025 : 0.04) * es, (k === 'long' ? 0.12 : k === 'point' ? 0.07 : 0.045) * es, 0.016 * es, mix(c.a, c.b, 0.3), { seg: 8, rz: s * (k === 'long' ? 0.35 : 0.2) });
   });
   const tl = o.tl || { kind: 'stub', len: 0.2, w: 0.04 }, tb = [0, yc + 0.02, -L / 2 + 0.02];
@@ -97,7 +97,7 @@ function faWdQuad(A, o) {
     A.part('leg' + i, [pts[0][0] * S, pts[0][1] * S, pts[0][2] * S], () => {
       const rs = (hind ? [lt * 1.4, lt * 1.0, lt * 0.7, lt * 0.55] : [lt * 1.2, lt * 0.8, lt * 0.55]).map(x => x * 1.35);
       for (let k = 0; k < pts.length - 1; k++) { co(pts[k], pts[k + 1], rs[k], rs[k + 1], k === pts.length - 2 && o.footC ? o.footC : mix(c.a, c.d, k * 0.18)); if (k) e(pts[k][0], pts[k][1], pts[k][2], rs[k] * 1.1, rs[k] * 1.1, rs[k] * 1.1, c.a, { seg: 6 }); }
-      const f = pts[pts.length - 1], fc = c.f || 0x1c1814;
+      const f = pts[pts.length - 1], fc = c.f == null ? 0x1c1814 : c.f;
       if (o.foot === 'paw') e(f[0], 0.025, f[2] + 0.03, lt * 0.9, 0.03, lt * 1.3, mix(c.a, c.d, 0.3), { seg: 8 });
       else if (o.foot === 'claw') for (let d = -1; d <= 1; d++) co([f[0] + d * lt * 0.5, 0.02, f[2] + 0.01], [f[0] + d * lt * 0.9, 0.006, f[2] + 0.1 + lt * 0.5], lt * 0.35, lt * 0.12, fc, 'horn');
       else for (let d = -1; d <= 1; d += 2) e(f[0] + d * lt * 0.4, 0.02, f[2] + 0.025, lt * 0.5, 0.025, lt * 0.8, fc, { seg: 6 });
@@ -120,27 +120,27 @@ function faWdFish(A, o) {
     A.ellip('eye', 0.3 * hw * S * 1.0, hh * 0.35 * S, L * 0.4 * S, 0.02 * L * S, 0.02 * L * S, 0.02 * L * S, 0x0a0806, { seg: 6 }); A.ellip('eye', -0.3 * hw * S, hh * 0.35 * S, L * 0.4 * S, 0.02 * L * S, 0.02 * L * S, 0.02 * L * S, 0x0a0806, { seg: 6 });
     A.ellip('sleek', 0, -hh * 0.2 * S, L * 0.46 * S, hw * 0.5 * S, hh * 0.25 * S, L * 0.05 * S, c.d, { seg: 8 }); });
   if (o.fluke) A.part('tail', [0, 0, -L * 0.36 * S], () => faHjPlate(A, 'sleek', (u, w) => { const a = 2 * u - 1; return [a * hh * (0.4 + 1.8 * w) * S, 0, (-L * 0.36 - L * 0.1 * w - 0.3 * L * 0.12 * Math.abs(a) * w) * S]; }, (u, w) => [0.04 * S, 0.04 * S], 8, 4, (u, w) => mix(c.a, c.d, w)));   /* a whale's flukes lie flat */
-  else A.part('tail', [0, 0, -L * 0.36 * S], () => faHjPlate(A, 'membrane', (u, w) => { const a = 2 * u - 1, fork = o.fork == null ? 0.4 : o.fork; return [0, a * hh * (0.3 + 1.5 * w) * S * (o.tailH || 1), (-L * 0.36 - L * 0.16 * w - fork * L * 0.12 * Math.abs(a) * w) * S]; }, () => [0.004 * S, 0.004 * S], 8, 4, (u, w) => mix(c.m || c.a, c.d, w)));
+  else A.part('tail', [0, 0, -L * 0.36 * S], () => faHjPlate(A, 'membrane', (u, w) => { const a = 2 * u - 1, fork = o.fork == null ? 0.4 : o.fork; return [0, a * hh * (0.3 + 1.5 * w) * S * (o.tailH == null ? 1 : o.tailH), (-L * 0.36 - L * 0.16 * w - fork * L * 0.12 * Math.abs(a) * w) * S]; }, () => [0.004 * S, 0.004 * S], 8, 4, (u, w) => mix(c.m || c.a, c.d, w)));
   for (const s of [-1, 1]) faHjPlate(A, 'membrane', (u, w) => [s * (hw * 0.9 + L * 0.12 * u) * S, (-hh * 0.3 - L * 0.05 * u) * S, (L * 0.2 - L * 0.12 * w - L * 0.1 * u) * S], () => [0.004 * S, 0.004 * S], 6, 3, () => mix(c.m || c.a, c.b, 0.4));
   faHjPlate(A, 'membrane', (u, w) => [0, (hh * 0.85 + o.fin * hh * Math.sin(Math.PI * u) * w) * S, (L * 0.12 - L * 0.28 * u) * S], () => [0.004 * S, 0.004 * S], 8, 3, (u, w) => mix(c.d, c.m || c.a, w));
   A.anchor('lead', [0, 0, L * 0.5 * S]); A.anchor('headRoot', [0, 0, L * 0.38 * S]); A.anchor('tailRoot', [0, 0, -L * 0.36 * S]);
 }
 /* a chain of segments with a head: an eel, a slug, a snake. o L length, rmax, kind eel|slug, c {a b m d}, stalks (eyes on stalks), fin */
 function faWdSerpent(A, o) {
-  const S = A.S, c = o.c, mix = faWdM, N = o.N || 12, Z0 = -o.L * 0.55, Z1 = o.L * 0.45, L = (Z1 - Z0) / N, rm = o.rmax, y0 = o.y0 == null ? rm : o.y0;
+  const S = A.S, c = o.c, mix = faWdM, N = o.N == null ? 12 : o.N, Z0 = -o.L * 0.55, Z1 = o.L * 0.45, L = (Z1 - Z0) / N, rm = o.rmax, y0 = o.y0 == null ? rm : o.y0;
   const r = z => { const t = (z - Z0) / (Z1 - Z0); return Math.max(0.012, rm * Math.pow(Math.sin(Math.PI * Math.min(1, 0.05 + t * 0.95)), o.kind === 'slug' ? 0.4 : 0.5) * (t > 0.88 ? 1 - (t - 0.88) * 1.6 : 1)); };
   for (let k = 0; k < N; k++) {
     const z0 = Z0 + k * L, z1 = z0 + L, zm = (z0 + z1) / 2;
-    A.part('seg' + k, [0, y0 * S, zm * S], () => faHjRows(A, o.fam || 'scale', [z0, zm, z1].map(z => [0, y0 * S, z * S, r(z) * S * (o.wide || 1), r(z) * S * (o.kind === 'slug' ? 0.75 : 0.9)]), 4, 14, null,
+    A.part('seg' + k, [0, y0 * S, zm * S], () => faHjRows(A, o.fam || 'scale', [z0, zm, z1].map(z => [0, y0 * S, z * S, r(z) * S * (o.wide == null ? 1 : o.wide), r(z) * S * (o.kind === 'slug' ? 0.75 : 0.9)]), 4, 14, null,
       { round: [k === 0 ? 0.6 : 0, 0], colf: (t, a, q) => { const z = q[2] / S, p = o.pat ? o.pat(z, a, k) : null; return p || (Math.cos(a) < -0.5 ? c.b : mix(c.a, c.d, 0.15 * faNoise(z * 8, a, 3))); } }));
     if (o.fin && k > 0 && k < N - 1) A.part('seg' + k, [0, y0 * S, zm * S], () => A.cone('membrane', [0, (y0 + r(zm) * 0.8) * S, z0 * S], [0, (y0 + r(zm) * 0.8 + o.fin) * S, zm * S], 0.006 * S, 0.002 * S, c.m || c.d, 4));
   }
   const hz = Z1;
   A.part('head', [0, y0 * S, (hz - 0.04) * S], () => {
-    if (o.kind === 'slug') { A.ellip('skin', 0, y0 * S, (hz + 0.04) * S, rm * 0.7 * S * (o.wide || 1), rm * 0.6 * S, 0.1 * S, c.a, { seg: 10 });
-      for (const s of [-1, 1]) { A.cone('skin', [s * rm * 0.3 * S, (y0 + rm * 0.4) * S, (hz + 0.05) * S], [s * rm * 0.45 * S, (y0 + rm * 1.3) * S, (hz + 0.12) * S], 0.012 * S, 0.006 * S, c.a, 5); A.ellip('eye', s * rm * 0.45 * S, (y0 + rm * 1.35) * S, (hz + 0.12) * S, 0.02 * S, 0.02 * S, 0.02 * S, o.eyeC || 0xe8e8a0, { seg: 6 }); } }
+    if (o.kind === 'slug') { A.ellip('skin', 0, y0 * S, (hz + 0.04) * S, rm * 0.7 * S * (o.wide == null ? 1 : o.wide), rm * 0.6 * S, 0.1 * S, c.a, { seg: 10 });
+      for (const s of [-1, 1]) { A.cone('skin', [s * rm * 0.3 * S, (y0 + rm * 0.4) * S, (hz + 0.05) * S], [s * rm * 0.45 * S, (y0 + rm * 1.3) * S, (hz + 0.12) * S], 0.012 * S, 0.006 * S, c.a, 5); A.ellip('eye', s * rm * 0.45 * S, (y0 + rm * 1.35) * S, (hz + 0.12) * S, 0.02 * S, 0.02 * S, 0.02 * S, o.eyeC == null ? 0xe8e8a0 : o.eyeC, { seg: 6 }); } }
     else { faHjRows(A, 'scale', [[0, y0, hz - 0.04, rm * 0.7, rm * 0.65], [0, y0, hz + 0.05, rm * 0.75, rm * 0.65], [0, y0 - 0.005, hz + 0.16, rm * 0.5, rm * 0.4], [0, y0 - 0.01, hz + 0.24, rm * 0.3, rm * 0.25]].map(q => q.map(x => x * S)), 8, 12, c.a, { round: [0, 0.2] });
-      for (const s of [-1, 1]) A.ellip('eye', s * rm * 0.6 * S, (y0 + rm * 0.25) * S, (hz + 0.1) * S, 0.012 * S, 0.014 * S, 0.014 * S, o.eyeC || 0xe8b81a, { seg: 6 }); }
+      for (const s of [-1, 1]) A.ellip('eye', s * rm * 0.6 * S, (y0 + rm * 0.25) * S, (hz + 0.1) * S, 0.012 * S, 0.014 * S, 0.014 * S, o.eyeC == null ? 0xe8b81a : o.eyeC, { seg: 6 }); }
   });
   A.ellip('skin', 0, 0.004 * S, 0, 0.002 * S, 0.002 * S, 0.002 * S, c.a, { seg: 4 });
   A.anchor('lead', [0, y0 * S, (hz + 0.2) * S]); A.anchor('headRoot', [0, y0 * S, (hz - 0.04) * S]); A.anchor('tailRoot', [0, y0 * S, Z0 * S]);
@@ -363,7 +363,7 @@ faWdAnimal(Object.assign({}, FA_WD_EHI, { key: 'altiplano-lake-frog', name: 'Alt
 
 /* a crab: a wide carapace, eyes on stalks, two great claws held forward (static), four walking legs a side. o W half-width, D half-depth, c {a b m d} */
 function faWdCrab(A, o) {
-  const S = A.S, c = o.c, mix = faWdM, W = o.W, D = o.D, y0 = o.y0 || 0.2, e = (x, y, z, rx, ry, rz, col, op) => A.ellip('chitin', x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 12 }), co = (a, b, r0, r1, col) => A.cone('chitin', [a[0] * S, a[1] * S, a[2] * S], [b[0] * S, b[1] * S, b[2] * S], r0 * S, r1 * S, col, 6);
+  const S = A.S, c = o.c, mix = faWdM, W = o.W, D = o.D, y0 = o.y0 == null ? 0.2 : o.y0, e = (x, y, z, rx, ry, rz, col, op) => A.ellip('chitin', x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 12 }), co = (a, b, r0, r1, col) => A.cone('chitin', [a[0] * S, a[1] * S, a[2] * S], [b[0] * S, b[1] * S, b[2] * S], r0 * S, r1 * S, col, 6);
   e(0, y0, 0, W, y0 * 0.55, D, null, { seg: 18, colf: (x, y, z) => (y < 0 ? c.b : (o.pat ? o.pat(x, y, z) || mix(c.a, c.m || c.a, 0.3 * faNoise(x * 9, y * 9, z * 9)) : c.a)) });
   A.part('head', [0, y0 * S, D * 0.8 * S], () => { for (const s of [-1, 1]) { co([s * W * 0.25, y0 * 1.2, D * 0.85], [s * W * 0.3, y0 * 1.9, D * 0.95], 0.015, 0.012, c.d); e(s * W * 0.3, y0 * 1.95, D * 0.97, 0.028, 0.028, 0.028, 0x0a0806, { seg: 6 }); } e(0, y0 * 0.8, D * 0.95, W * 0.2, 0.03, 0.04, c.d, { seg: 8 }); });
   for (const s of [-1, 1]) { const sh = [s * W * 0.7, y0 * 1.0, D * 0.7], el = [s * W * 1.1, y0 * 1.1, D * 1.1], wr = [s * W * 0.9, y0 * 0.9, D * 1.6];
@@ -626,9 +626,9 @@ faWdAnimal(Object.assign({}, FA_WD_LAKE, { dom: false, key: 'lake-diver', name: 
    One hexapod builder, faWdHex: a head, a thorax, an abdomen, six jointed legs (a tripod walk), with options for elytra, a rostrum or mandibles,
    antennae, a jumping hind pair, spade fore-legs, a furred or plated coat, a pattern. Eight animals, each fitted to its country. */
 function faWdHex(A, o) {
-  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'chitin', k = faHiKit(A, S), kS = o.stock || 1, sc = q => { const r = {}; for (const a in q) r[a] = q[a] * kS; return r; };
+  const S = A.S, c = o.c, mix = faWdM, fam = o.fam || 'chitin', k = faHiKit(A, S), kS = o.stock == null ? 1 : o.stock, sc = q => { const r = {}; for (const a in q) r[a] = q[a] * kS; return r; };
   /* `stock` k: a sturdier build, the body and limbs thicker by k and the legs shorter by it (the cure for spindliness) */
-  const yb = o.yb / kS, th = sc(o.th), ab = sc(o.ab), R = o.R / kS, Hh = o.Hh / kS, lt = (o.lt || 0.03) * kS, hb = sc(o.hd);
+  const yb = o.yb / kS, th = sc(o.th), ab = sc(o.ab), R = o.R / kS, Hh = o.Hh / kS, lt = (o.lt == null ? 0.03 : o.lt) * kS, hb = sc(o.hd);
   const el = (x, y, z, rx, ry, rz, col, op) => A.ellip(fam, x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 12 });
   const rr = (rows, nt, ns, col, op) => faHjRows(A, fam, rows.map(r => r.map(x => x * S)), nt, ns, col, op);
   const colf = (x, y, z) => { const p = o.pat ? o.pat(x / S, y / S, z / S) : null; return p || mix(c.a, c.d, 0.25 * faNoise(x / S * 9, y / S * 9, z / S * 9)); };
@@ -640,7 +640,7 @@ function faWdHex(A, o) {
     el(0, yb - ab.dy, -ab.z, ab.w, ab.h, ab.l, null, { seg: 16, colf: colf });
     el(0, yb, 0, th.w, th.h, th.l, null, { seg: 14, colf: colf });
   }
-  if (o.elytra) for (const s of [-1, 1]) el(s * th.w * 0.55, yb + th.h * 0.5, -ab.z * 0.55, ab.w * 0.62, ab.h * (o.elytra.h || 0.8), ab.l * (o.elytra.l || 1.05), mix(c.a, c.m || c.a, 0.3), { seg: 12, rz: s * 0.06 });
+  if (o.elytra) for (const s of [-1, 1]) el(s * th.w * 0.55, yb + th.h * 0.5, -ab.z * 0.55, ab.w * 0.62, ab.h * (o.elytra.h == null ? 0.8 : o.elytra.h), ab.l * (o.elytra.l == null ? 1.05 : o.elytra.l), mix(c.a, c.m || c.a, 0.3), { seg: 12, rz: s * 0.06 });
   if (o.shellDome) el(0, yb + th.h * (o.shellDome === true ? 0.2 : o.shellDome), -ab.z * 0.3, (th.w + ab.w) * 0.55, th.h * 1.1, (th.l + ab.l) * 0.9, null, { seg: 18, colf: colf });
   /* the neck, if long: from the thorax up and forward to the head */
   const nk = o.neck, hy = yb + (nk ? nk.rise : 0), hz = th.l + (nk ? nk.len : 0) + hb.l * 0.7;
@@ -668,7 +668,7 @@ function faWdHex(A, o) {
     }
   }
   if (o.patagia) for (const s of [1, -1]) A.part(s > 0 ? 'wingL' : 'wingR', [s * th.w * 0.9 * S, (yb + th.h * 0.2) * S, th.l * 0.3 * S], () => {      /* a gliding membrane along the flank, stretched on fanned ribs, scalloped between them */
-    const W = o.patagia.w, nr = o.patagia.ribs || 6, zf = th.l * 0.85, zb = -ab.z - ab.l * 0.4, ys = yb + th.h * 0.2;
+    const W = o.patagia.w, nr = o.patagia.ribs == null ? 6 : o.patagia.ribs, zf = th.l * 0.85, zb = -ab.z - ab.l * 0.4, ys = yb + th.h * 0.2;
     const reach = v => W * (0.32 + 0.68 * Math.pow(Math.sin(Math.PI * (0.06 + 0.88 * v)), 0.7)) * (0.86 + 0.14 * Math.abs(Math.cos(v * nr * Math.PI)));
     const P = (u, v) => [s * (th.w * 0.9 + u * reach(v)) * S, (ys + u * 0.06 * W - 0.1 * Math.sin(Math.PI * v) * u * W) * S, (zf + (zb - zf) * v) * S];
     A.sheet('membrane', P, 10, 36, null, { colf: (u, v) => { const rib = Math.abs(Math.sin(v * nr * Math.PI)) < 0.03, band = Math.sin(u * 14 + v * 5) > 0.55; return rib ? mix(c.d, c.a, 0.3) : (u > 0.9 ? mix(c.b || c.a, c.m || c.a, 0.5) : mix(mix(c.m || c.a, c.b || c.a, 0.35 + 0.4 * v), c.d, band ? 0.5 : 0.1 * u)); } });
@@ -690,7 +690,7 @@ function faWdHex(A, o) {
     }
     for (const s of [-1, 1]) {
       if (o.primate) { /* forward-set eyes, below */ }
-      else if (o.amb) { el(s * hb.w * 0.92, hy + hb.h * 0.25, hz + hb.l * 0.25, hb.w * 0.15, hb.w * 0.15, hb.w * 0.15, 0x140a06, { seg: 8 }); el(s * hb.w * 0.99, hy + hb.h * 0.27, hz + hb.l * 0.27, hb.w * 0.07, hb.w * 0.07, hb.w * 0.07, o.eyeC || 0xc8a030, { seg: 6 }); }
+      else if (o.amb) { el(s * hb.w * 0.92, hy + hb.h * 0.25, hz + hb.l * 0.25, hb.w * 0.15, hb.w * 0.15, hb.w * 0.15, 0x140a06, { seg: 8 }); el(s * hb.w * 0.99, hy + hb.h * 0.27, hz + hb.l * 0.27, hb.w * 0.07, hb.w * 0.07, hb.w * 0.07, o.eyeC == null ? 0xc8a030 : o.eyeC, { seg: 6 }); }
       else el(s * hb.w * 0.85, hy + hb.h * 0.3, hz + hb.l * 0.3, hb.w * 0.4, hb.h * 0.5, hb.w * 0.45, 0x120a06, { seg: 8 });
       if (o.mand) k.co([s * hb.w * 0.4, hy - hb.h * 0.4, hz + hb.l * 0.8], [s * hb.w * 0.3, hy - hb.h * 0.7, hz + hb.l * 0.8 + o.mand], hb.w * 0.3, hb.w * 0.05, c.m || c.d, 5);
       if (o.trunks) rr([[s * hb.w * 0.5, hy - hb.h * 0.4, hz + hb.l * 0.7, o.trunks * 0.25, o.trunks * 0.22], [s * hb.w * 0.8, hy - o.trunks, hz + hb.l * 0.9 + o.trunks * 0.4, o.trunks * 0.18, o.trunks * 0.16], [s * hb.w * 0.5, hy - o.trunks * 1.6, hz + hb.l * 0.8 + o.trunks * 0.9, o.trunks * 0.06, o.trunks * 0.06]], 8, 8, mix(c.a, c.d, 0.3), { round: [0, 0.2] });
@@ -701,15 +701,15 @@ function faWdHex(A, o) {
       el(0, hy + hb.h * 0.38, hz + hb.l * 0.5, hb.w * 1.05, hb.h * 0.2, hb.l * 0.32, mix(c.a, c.d, 0.45), { seg: 10 });
       el(0, hy - hb.h * 0.32, hz + hb.l * 0.95, hb.w * 0.55, hb.h * 0.42, hb.l * 0.4, mix(c.b || c.a, c.a, 0.3), { seg: 10 });
       el(0, hy - hb.h * 0.45, hz + hb.l * 1.3, hb.w * 0.22, hb.h * 0.12, 0.04, 0x1a1410, { seg: 6 });
-      for (const s of [-1, 1]) { el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.82, hb.w * 0.2, hb.w * 0.2, hb.w * 0.16, 0xe8dcc0, { seg: 8 }); el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.9, hb.w * 0.11, hb.w * 0.11, hb.w * 0.08, o.eyeC || 0x6a3a14, { seg: 6 }); el(s * hb.w * 0.43, hy + hb.h * 0.16, hz + hb.l * 0.95, hb.w * 0.05, hb.w * 0.05, hb.w * 0.04, 0x0a0806, { seg: 5 }); el(s * hb.w * 1.02, hy + hb.h * 0.05, hz - hb.l * 0.1, hb.w * 0.1, hb.w * 0.28, hb.w * 0.22, mix(c.a, c.d, 0.3), { seg: 8 }); }
+      for (const s of [-1, 1]) { el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.82, hb.w * 0.2, hb.w * 0.2, hb.w * 0.16, 0xe8dcc0, { seg: 8 }); el(s * hb.w * 0.42, hy + hb.h * 0.15, hz + hb.l * 0.9, hb.w * 0.11, hb.w * 0.11, hb.w * 0.08, o.eyeC == null ? 0x6a3a14 : o.eyeC, { seg: 6 }); el(s * hb.w * 0.43, hy + hb.h * 0.16, hz + hb.l * 0.95, hb.w * 0.05, hb.w * 0.05, hb.w * 0.04, 0x0a0806, { seg: 5 }); el(s * hb.w * 1.02, hy + hb.h * 0.05, hz - hb.l * 0.1, hb.w * 0.1, hb.w * 0.28, hb.w * 0.22, mix(c.a, c.d, 0.3), { seg: 8 }); }
     }
-    if (o.lure) { rr([[0, hy + hb.h * 0.7, hz + hb.l * 0.2, 0.012, 0.012], [0, hy + hb.h * 0.7 + o.lure * 0.5, hz + hb.l * 0.9 + o.lure * 0.3, 0.008, 0.008], [0, hy + hb.h * 0.5 + o.lure * 0.3, hz + hb.l * 1.1 + o.lure, 0.005, 0.005]], 8, 5, mix(c.d, c.a, 0.3), { round: [0, 0.2] }); A.ellip('glow', 0, (hy + hb.h * 0.5 + o.lure * 0.3) * S, (hz + hb.l * 1.1 + o.lure) * S, 0.035 * S, 0.035 * S, 0.035 * S, o.glowC || 0x6aff9a, { seg: 8 }); }      /* a glowing lure on a stalk */
+    if (o.lure) { rr([[0, hy + hb.h * 0.7, hz + hb.l * 0.2, 0.012, 0.012], [0, hy + hb.h * 0.7 + o.lure * 0.5, hz + hb.l * 0.9 + o.lure * 0.3, 0.008, 0.008], [0, hy + hb.h * 0.5 + o.lure * 0.3, hz + hb.l * 1.1 + o.lure, 0.005, 0.005]], 8, 5, mix(c.d, c.a, 0.3), { round: [0, 0.2] }); A.ellip('glow', 0, (hy + hb.h * 0.5 + o.lure * 0.3) * S, (hz + hb.l * 1.1 + o.lure) * S, 0.035 * S, 0.035 * S, 0.035 * S, o.glowC == null ? 0x6aff9a : o.glowC, { seg: 8 }); }      /* a glowing lure on a stalk */
     if (o.dewlap) A.sheet('membrane', (u, v) => [(2 * u - 1) * hb.w * 1.1 * (1 - 0.3 * v) * S, (hy - hb.h * 0.5 - v * o.dewlap * (1 - 0.35 * Math.pow(2 * u - 1, 2))) * S, (hz - hb.l * 0.25 + v * 0.08 + 0.03 * Math.pow(2 * u - 1, 2)) * S], 8, 6, null, { colf: (u, v) => mix(mix(c.m || c.a, c.b || c.a, 0.3), c.d, 0.3 * Math.abs(Math.sin(u * 14))) });
     if (o.browHorns) for (const s of [-1, 1]) A.cone('horn', [s * hb.w * 0.55 * S, (hy + hb.h * 0.6) * S, (hz + hb.l * 0.35) * S], [s * hb.w * 0.8 * S, (hy + hb.h * 0.6 + o.browHorns) * S, (hz + hb.l * 0.5 + o.browHorns * 0.4) * S], hb.w * 0.2 * S, 0.008 * S, mix(c.m || c.d, c.d, 0.3), 6);
     if (o.cheeks) for (const s of [-1, 1]) for (let q = 0; q < 3; q++) el(s * hb.w * 0.95, hy - hb.h * 0.2 + q * 0.03, hz + hb.l * (0.2 + q * 0.2), hb.w * 0.16, hb.w * 0.14, hb.w * 0.14, mix(c.a, c.m || c.d, 0.5), { seg: 6 });
     if (o.tusks) for (const s of [-1, 1]) rr([[s * hb.w * 0.55, hy - hb.h * 0.9, hz + hb.l * 0.7, o.tusks * 0.07, o.tusks * 0.07], [s * hb.w * 0.75, hy - hb.h * 0.6, hz + hb.l * 0.95 + o.tusks * 0.25, o.tusks * 0.055, o.tusks * 0.055], [s * hb.w * 0.6, hy + o.tusks * 0.1, hz + hb.l * 1.05 + o.tusks * 0.55, o.tusks * 0.02, o.tusks * 0.02]], 10, 7, 0xe0d8c0, { round: [0, 0.2] });
     if (o.slab) { A.ellip('horn', 0, (hy + hb.h * 1.6) * S, (hz - hb.l * 0.2) * S, o.slab.w * S, o.slab.t * S, o.slab.l * S, mix(c.m || c.d, c.a, 0.4), { seg: 14 }); for (const s of [-1, 1]) A.ellip('horn', s * o.slab.w * 0.85 * S, (hy + hb.h * 1.6 + o.slab.t * 0.8) * S, (hz - hb.l * 0.2) * S, o.slab.w * 0.28 * S, o.slab.t * 1.2 * S, o.slab.l * 1.1 * S, mix(c.m || c.d, c.a, 0.55), { seg: 10 }); }
-    if (o.cap) A.ellip('skin', 0, (hy + hb.h * 1.4) * S, (hz + hb.l * 0.2) * S, o.cap.w * S, o.cap.t * S, o.cap.l * S, null, { seg: 18, rx: o.cap.tilt || 0.3, colf: (x, y, z) => (faNoise(x * 8, y * 8, z * 8) > 0.6 ? mix(c.m || c.d, c.d, 0.5) : mix(c.a, c.b || c.a, 0.2)) });
+    if (o.cap) A.ellip('skin', 0, (hy + hb.h * 1.4) * S, (hz + hb.l * 0.2) * S, o.cap.w * S, o.cap.t * S, o.cap.l * S, null, { seg: 18, rx: o.cap.tilt == null ? 0.3 : o.cap.tilt, colf: (x, y, z) => (faNoise(x * 8, y * 8, z * 8) > 0.6 ? mix(c.m || c.d, c.d, 0.5) : mix(c.a, c.b || c.a, 0.2)) });
     if (o.beak) { rr([[0, hy + hb.h * 0.2, hz + hb.l * 0.5, hb.w * 0.55, hb.h * 0.35], [0, hy - hb.h * 0.1, hz + hb.l * 1.1 + o.beak * 0.4, hb.w * 0.4, hb.h * 0.3], [0, hy - hb.h * 0.9, hz + hb.l * 1.15 + o.beak * 0.9, hb.w * 0.05, hb.h * 0.06]], 10, 10, mix(c.m || c.d, 0xd8a838, 0.4), { round: [0, 0.2] }); el(0, hy - hb.h * 0.55, hz + hb.l * 0.9, hb.w * 0.7, hb.h * 0.3, hb.l * 0.5, 0x2a5ac8, { seg: 10 }); for (let q = 0; q < 6; q++) for (const s of [-1, 1]) k.co([s * hb.w * 0.5, hy - hb.h * 0.35, hz + hb.l * (0.5 + q * 0.12)], [s * hb.w * 0.5, hy - hb.h * 0.6, hz + hb.l * (0.52 + q * 0.12)], 0.025, 0.004, 0xe8e0c8, 4); }
     if (o.maw) {      /* a great gaping jaw: the lower jaw hung open, teeth along both */
       el(0, hy - hb.h * 1.2, hz + hb.l * 0.2, hb.w * 0.9, hb.h * 0.45, hb.l * 0.85, mix(c.a, c.d, 0.3), { seg: 12, rx: 0.25 });
@@ -898,7 +898,7 @@ function faWdGlider(A, o) {
       co([s * 0.045, yb + 0.02, 0.97], [s * 0.05, yb - 0.13, 1.0], 0.016, 0.002, 0xf6f0e0, 'horn');                       /* the long upper canines */
       co([s * 0.04, yb + 0.0, 1.0], [s * 0.045, yb + 0.12, 1.02], 0.011, 0.002, 0xf6f0e0, 'horn');                         /* the lower canines, closing outside the lip */
       for (let q = 0; q < 4; q++) co([s * 0.05, yb + 0.02, 0.76 + q * 0.05], [s * 0.05, yb - 0.025, 0.77 + q * 0.05], 0.007, 0.001, 0xe8e0c8, 'horn');
-      el(s * 0.075, yb + 0.17, 0.74, 0.04, 0.04, 0.04, 0x16100a, { seg: 8 }); el(s * 0.08, yb + 0.175, 0.77, 0.022, 0.022, 0.016, o.eyeC || 0xe8c030, { seg: 6 });
+      el(s * 0.075, yb + 0.17, 0.74, 0.04, 0.04, 0.04, 0x16100a, { seg: 8 }); el(s * 0.08, yb + 0.175, 0.77, 0.022, 0.022, 0.016, o.eyeC == null ? 0xe8c030 : o.eyeC, { seg: 6 });
       el(s * 0.02, yb + 0.1, 1.04, 0.012, 0.01, 0.01, 0x120c0a, { seg: 5 });
     }
     for (let q = 0; q < 3; q++) co([0, yb + 0.2, 0.58 - q * 0.08], [0, yb + 0.32 - q * 0.04, 0.52 - q * 0.1], 0.02, 0.003, mix(c.m || c.d, c.a, 0.4), 'horn');   /* a low crest */

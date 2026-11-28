@@ -22,9 +22,14 @@ function waterRings(pt,Lv,cols,label,mat){const PN=64,R=cols.length-1,pos=[],col
  for(let r=1;r<R;r++){const a=1+(r-1)*PN,b=1+r*PN;for(let k=0;k<PN;k++){const k1=(k+1)%PN;idx.push(a+k,a+k1,b+k,a+k1,b+k1,b+k);}}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
  const m=new THREE.Mesh(g,mat);m.userData.probeSkip=true;m.userData.inspectLabel=label;m.renderOrder=1;scene.add(m);return m;}
-// the pools: the hotter, the bluer and the deeper its blue; a cool one green, its rim orange
-const HOT_SPRINGS=POOLS.map((P,i)=>{const S=WATER.spring({key:'pool'+i,name:P.hot>.6?'A hot pool (the hottest are the bluest)':'A cooler hot pool (its mats grow into it)',
-  x:P.x,z:P.z,r:P.r*1.45,level:POOLL[i],temp:P.hot,boil:P.hot>.9?1:0,steam:0});
+// the pools: BRINE (the owner, 2026-11-24): core/water's brine look (ext/54) as each spring's ramp, deep red-brown (the halophiles' bloom) at the
+// middle to turquoise to the white of the salt at the rim; the hotter pools still band further out (the spring's own bands by temp). It
+// replaces the heat-graded blues (sinter); recorded on each surface (WATER.withLook) for the export. ?brine=0 the blues as before
+const BRINE_RAMP=(typeof WATER.rampAt!=='function'||new URLSearchParams(location.search).get('brine')==='0')?null:
+ {deep:WATER.rampAt('brine',0),blue:WATER.rampAt('brine',.3),green:WATER.rampAt('brine',.58),yel:WATER.rampAt('brine',.72),ora:WATER.rampAt('brine',.86),rust:WATER.rampAt('brine',1)};
+const HOT_SPRINGS=POOLS.map((P,i)=>{const S=WATER.spring({key:'pool'+i,name:BRINE_RAMP?(P.hot>.6?'A hot brine pool (red-brown in its depths, salt at its rim)':'A cooler brine pool (its mats grow into it)'):P.hot>.6?'A hot pool (the hottest are the bluest)':'A cooler hot pool (its mats grow into it)',
+  x:P.x,z:P.z,r:P.r*1.45,level:POOLL[i],temp:P.hot,boil:P.hot>.9?1:0,steam:0,mineral:BRINE_RAMP||undefined});
+ if(BRINE_RAMP)WATER.withLook(S,'brine');
  const d=WATER.drawSpring(S,{THREE,scene,uniforms:SPRINGU,fog:scene.fog,mats:SPRING_MATS,renderOrder:1});d.mesh.userData.probeSkip=true;return S;});
 
 // ---------------------------------------------------------------- the mud pots

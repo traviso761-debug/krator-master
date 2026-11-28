@@ -31,6 +31,7 @@ Xanadu's page as Erewhon is, with the Qiblai kit's fragments read in place (`kit
 | `targets/city/90u-qc-lot-interiors.js` | every lot building's interior, on demand: the shell each building's storey stacks gave while 90r drew it (kits/qiblai `89q5s`, `QB_SHELLREC`), its programme from its tags (a dwelling, a shop, a workshop, a tavern, a temple, a civic hall, a store); each type (key and shell, every storey) planned (kits/interiors `planBuilding`: its rooms, a stair between storeys), drawn with the kit's textured items (floors and their stair wells, ceilings, walls, stairs) and furnished once, then cloned onto every lot of it within 34 m. The street door is the drawn one (core/door's record), unlocked when the lot takes its clone, with a doorway drawn through the wall and a depth-only pane on the face; the plan's floors, walls, stairs and entry flight go into core/walk at the lot's pose. The monasteries', gate markets' and caravanserai's ranges are lots here too, on their programmes (kits/qiblai `QB_IX_MONKS`, `QB_IX_MARKET`, `QB_IX_INN`; a market's front and back ranges in two halves either side of its passage), entered from the court; `window._qiblaiLix` (`buildTypes(n)`, `walkIn(n)` for the verify); views inside (one upstairs, the monks' quarters) and at an open front door |
 | `targets/city/90q-qc-world.js` | the Krator sky and its light, the ground mesh (8 m cells) wearing a canvas painted from the plan's records (never read back), the river |
 | `targets/city/90r-qc-build.js` | the walls (each segment a `qb_wall` run of its length on an ashlar retaining face), gates and towers; the kora's arcades and its chortens; the ghat way, the ghats, the caravanserai; every building, chunk by chunk (400 m), each chunk baked into its own group and drawn while in view and range |
+| `targets/city/91l-qc-life.js` | the city's life (Q7e): pilgrims on the kora (clockwise, round the chortens), monks in their monastery's colour, townsfolk on the lay streets and avenues, the gate markets, a camel caravan to the oilfield, all on Verge's instanced rigs (`settlements/verge/src/77-verge-rigs.js`, read in place, `scoped` in kit.json) walked as functions of the clock; the prayer wheels turn (the Song drum's texture scrolls); `window._qiblaiLife` (verify `life`) |
 | `targets/city/91z-views.js` | the views; the city as one budget (as Erewhon's) |
 | `verify.py` | Xanadu's verify plus the city's invariants: the site laid, the monasteries on their spokes' bearings, the people by ring and the Xanadu share (reported) |
 
@@ -40,5 +41,5 @@ unturned, so the banners face true bearings.
 
 ## What is not here yet (`KNOWN_ISSUES.md`)
 
-The biome's flora, the river's cataracts as core/water flow, life (Q7e), the open world (Q7f), the Godot export and the
+The biome's flora, the river's cataracts as core/water flow, the moving banners and the people on core/simulation (Q7e), the open world (Q7f), the Godot export and the
 gallery (Q7g).

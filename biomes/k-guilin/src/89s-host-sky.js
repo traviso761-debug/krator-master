@@ -19,10 +19,7 @@ const SKY=ATMOS.sky(ATMOS.skyPreset('standard',{site:SKY_SITE,air:{pressure:1.89
 const SKY_FILL=fill.intensity;
 function skyView(dt){SKY.update(dt);const L=SKY.look;fill.intensity=SKY_FILL*Math.min(1,L.sunI/2);BIO.setSun(SKY.state.sunDir);}   /* each frame once the camera is placed: 99-host-take.js subscribes it */
 // the clouds' shadows and the rain's darkening on the ground, the rock, the plants (SKY-PLAN.md 11.1): every lit material, once
-{const seen=new Set();scene.traverse(o=>{if(!o.isMesh||!o.material)return;for(const m of(Array.isArray(o.material)?o.material:[o.material])){
-  if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
-  const k=m.customProgramCacheKey!==THREE.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(/^biofauna|^bioanim/.test(k))continue;
-  ATMOS.cloudShade(m,{porosity:o.userData.biome?.4:o.userData.host?.6:1});}});}
+ATMOS.cloudShadeScene(scene);   /* the core's pass (Stage 8 V8, 2026-11-24) */
 // THE WEATHER (core/atmos/host/89-atmos-e-weatherhost.js): a wet, warm climate (the base five: auto, clear, rain, storm, fog);
 // the ground wets in the rain. It starts clear, so the page looks as it is; the Weather selector in the panel picks the rest.
 // The shared sky draws the weather's light and air from its colour script (its o.weather), so the binding is given no sun,

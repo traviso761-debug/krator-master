@@ -45,4 +45,10 @@ const shore=x=>{const t=Math.min(1,Math.max(0,(x-70)/60));return 1-t*t*(3-2*t);}
  ok('...the long reach where keep is constant keeps its 30 m rows (rows past x 150: '+x1.filter(x=>x>150).length+'), and the record keeps tol and min, not the function',
   x1.filter(x=>x>150).length===x0.filter(x=>x>150).length&&JSON.stringify(R1.S.ribbonOpt.refine)==='{"tol":0.08,"min":2}',false);
  const R2=W.drawFlow(coarse(),{keep:keepR,step:30});ok('...negative: without refine the ribbon is the old one (same rows as before)',JSON.stringify(R2.ribbon.pos)===JSON.stringify(R0.ribbon.pos)&&!R2.S.ribbonOpt.refine,false);}
+// ---- the colours key the program (2026-11-24, T37; arch's streams, 2026-11-12): shallow and deep are baked into the text, so two flows of different
+// colours must not share a program (three.js reuses one by its key: every stream drew the first one's colours); the same colours still share one
+{const a=compiled(W.drawFlow(mk(),{shallow:0x88ccdd,deep:0x2266aa}).material),b=compiled(W.drawFlow(mk(),{shallow:0x8a5a3a,deep:0x3a4a3a}).material),
+  a2=compiled(W.drawFlow(mk(),{shallow:0x88ccdd,deep:0x2266aa}).material),c=compiled(W.drawFlow(mk(),{shallow:0x88ccdd,deep:0x2266aa,color:0x777777}).material);
+ ok('two flows of different shallow and deep colours have different texts and different program keys; the same colours the same key; o.color keys it too',
+  a.fs!==b.fs&&a.key!==b.key&&a.key===a2.key&&a.fs===a2.fs&&c.key!==a.key,a.fs!==b.fs&&a.key===b.key);}
 console.log(bad?'\n'+bad+' FAILED':'\nall passed');process.exit(bad?1:0);

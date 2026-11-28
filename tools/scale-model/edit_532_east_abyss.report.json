@@ -1,0 +1,135 @@
+{
+ "edit": "5.1 edit 32: East Abyss Phase 3 settlements, renames, and graded highways",
+ "date": "2026-11-25",
+ "batch": "5.1e32",
+ "renames": [
+  {
+   "id": "sr72acbono",
+   "from": "Sista Riba Village",
+   "to": "Sista Riba"
+  },
+  {
+   "id": "syuninrth1",
+   "from": "Yuni North",
+   "to": "Bissa"
+  }
+ ],
+ "added": [
+  {
+   "id": "stafidda01",
+   "name": "Tafidda",
+   "type": "city",
+   "px": [
+    1293,
+    882
+   ],
+   "polity": "Tabisti: Tafidda",
+   "ground_m": -1979.0,
+   "pop": 4800
+  },
+  {
+   "id": "sslice0001",
+   "name": "Slice",
+   "type": "inhabited ruin",
+   "px": [
+    1309,
+    949
+   ],
+   "polity": "Tabisti: Liikofi",
+   "ground_m": -985.7,
+   "pop": 1800
+  },
+  {
+   "id": "sarcades01",
+   "name": "The Arcades",
+   "type": "ruined arcology",
+   "px": [
+    1253,
+    628
+   ],
+   "polity": "Uninhabited",
+   "ground_m": -967.7,
+   "pop": 0
+  },
+  {
+   "id": "sdownback1",
+   "name": "Downback",
+   "type": "village",
+   "px": [
+    1250,
+    1065
+   ],
+   "polity": "Yuni Emirate",
+   "ground_m": -753.1,
+   "pop": 420
+  },
+  {
+   "id": "supspring1",
+   "name": "Upsprings",
+   "type": "village",
+   "px": [
+    1280,
+    1106
+   ],
+   "polity": "Yuni Emirate",
+   "ground_m": 1184.5,
+   "pop": 380
+  },
+  {
+   "id": "sbirsakhr1",
+   "name": "Bir-Sakhr Reed",
+   "type": "village",
+   "px": [
+    1293,
+    727
+   ],
+   "polity": "Reed-Lake: Independent",
+   "ground_m": -1616.3,
+   "pop": 360
+  },
+  {
+   "id": "sbraitard1",
+   "name": "Braita Reed",
+   "type": "village",
+   "px": [
+    1288,
+    969
+   ],
+   "polity": "Reed-Lake: Independent",
+   "ground_m": -2341.6,
+   "pop": 410
+  }
+ ],
+ "routes_added": [
+  {
+   "id": "abyss.trunk.arcades-verge",
+   "class": "trunk",
+   "from": "The Arcades",
+   "to": "Verge",
+   "km": 697
+  },
+  {
+   "id": "abyss.trunk.quintagon-slice-verge",
+   "class": "trunk",
+   "from": "Quintagon",
+   "to": "Verge",
+   "km": 273
+  },
+  {
+   "id": "abyss.yuni.verge-yuni",
+   "class": "yuni",
+   "from": "Verge",
+   "to": "Yuni",
+   "km": 507
+  },
+  {
+   "id": "abyss.medium.reed-spurs",
+   "class": "dirt",
+   "from": "Bir-Sakhr Reed",
+   "to": "Braita Reed",
+   "km": 207
+  }
+ ],
+ "arcades_to_trickster_ew_highway": false,
+ "raster_changed": false
+}

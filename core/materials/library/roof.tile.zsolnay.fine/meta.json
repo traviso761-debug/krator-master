@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.372,
+    1.453
+   ],
+   "seam_before": [
+    2.069,
+    1.045
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.035,
+   "dark_gloss": 0.06,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.1,
+   "pattern": false,
+   "rough": 0.25,
+   "rough_var": 0.16,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.tile.zsolnay.fine",
+  "metal": 0,
+  "roughness": 0.25,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "roof.tile.zsolnay.fine.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px, fine-scale take), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on pitched roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright sun reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hungarian Secessionist Zsolnay pyrogranite glazed ceramic beaver-tail roof tiles laid in neat overlapping imbricated horizontal courses (eight courses per tile), predominantly rich alkaline turquoise-teal (#158780) and deep emerald-jade (#1b7a6e) with subtle tile-to-tile kiln variation into seafoam teal (#32a69c), deep peacock blue-green (#0f5c60), and an occasional warm honey-amber (#c9872e) accent tile; thick pooled vitreous glaze along the rounded lower drip edge of each scale, fine ceramic crazing, and subtle weathering in the overlaps. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Fine-course Zsolnay glazed beaver-tail roof variant for domes, oriels and kiosks (kits/tabisti, zsolnay_fine, 1.5 m)",
+  "sha1": "582d20e10df4cd0141fdcbe201ca22df0367bf20"
+ }
+}

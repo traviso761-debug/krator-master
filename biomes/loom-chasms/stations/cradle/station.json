@@ -1,30 +1,68 @@
 {
-  "canvas": "5.1 (1821x1723)",
-  "name": "Weavers' Cradle (station 1): the fertile western arable piedmont, glacial meltwater rivers from Stalker canyons, loess crop terraces, domestic ghaunt-ox teams, turf-roofed stone longhouses",
-  "out": "loom-cradle.html",
-  "site": {
-    "name": "cradle",
-    "title": "Weavers' Cradle",
-    "px": 1555,
-    "py": 1142,
-    "base": 2180.0,
-    "atm": 1.31,
-    "mean": 11.0,
-    "rain": 439,
-    "cls": "Cwb",
-    "lat": -27.1
+ "canvas": "5.1 (1821x1723)",
+ "note": "Station 1, the Weavers' Cradle (PLAN.md section 7; built 2026-11-11 at 1558,1140, Aina Bruk's spring: PLAN.md 7b). kin: the Great Chasm's kit for the unterraced fan's ground cover (the cold-desert stand-ins, thin here), nsemiarid's golden poplar (windbreaks) and wild apricot (orchards). core: core/hamlet with the Yuni row (ext/21) and core/city's frontage cursor it reads; kits/crops' records and queries (its src, read in place). The site record below is the plan's data, corrected; build.py reads only kin, core and base.",
+ "name": "The Weavers' Cradle (station 1): Aina Bruk's spring where two wadis meet on the fan, the Yuni farms and their terraced fields, the road setting out east",
+ "out": "loom-chasms-cradle.html",
+ "site": {
+  "name": "cradle",
+  "title": "The Weavers' Cradle",
+  "px": 1558,
+  "py": 1140,
+  "base": 2168.0,
+  "atm": 1.22,
+  "mean": 11.0,
+  "rain": 439,
+  "cls": "Cwb"
+ },
+ "water": [
+  {
+   "kind": "spring",
+   "name": "The spring of Aina Bruk",
+   "px": 1557.7,
+   "py": 1139.2
   },
-  "water": [
-    {
-      "kind": "flow",
-      "name": "Stalker Melt Torrents",
-      "q_m3s": 45.0,
-      "temp_c": 3.5
-    }
+  {
+   "kind": "flow",
+   "name": "Aina Bruk",
+   "river": "r174",
+   "q_m3s": 26.9
+  }
+ ],
+ "crops_v2": [
+  "cold_rye",
+  "mountain_flax",
+  "lichen_spelt"
+ ],
+ "crops": "kits/crops: CROPS.at({warmth: temperate, atm: standard, arid: semiarid}), one per field (86-host-farms.js)",
+ "kin": {
+  "greatchasm": [
+   [
+    "src/50-biome-greatchasm-species.js",
+    "src/60-biome-greatchasm-floor.js",
+    "src/70-biome-greatchasm.js"
+   ],
+   "GCH",
+   "*"
   ],
-  "crops": [
-    "cold_rye",
-    "mountain_flax",
-    "lichen_spelt"
+  "nsemiarid": [
+   [
+    "src/50-biome-nsemiarid-species.js",
+    "src/55-biome-nsemiarid-trees.js"
+   ],
+   "NSEMIARID",
+   "*"
   ]
+ },
+ "core": {
+  "10-hamlet-wood.js": "core/hamlet/10-hamlet-wood.js",
+  "12-hamlet-gather.js": "core/hamlet/12-hamlet-gather.js",
+  "20-hamlet-cultures.js": "core/hamlet/20-hamlet-cultures.js",
+  "21-hamlet-yuni.js": "core/hamlet/ext/21-hamlet-yuni.js",
+  "30-hamlet-village.js": "core/hamlet/30-hamlet-village.js",
+  "33-city-strategies.js": "core/city/33-city-strategies.js",
+  "10-crop-core.js": "kits/crops/src/10-crop-core.js",
+  "20-crop-records.js": "kits/crops/src/20-crop-records.js",
+  "22-crop-material.js": "kits/crops/src/22-crop-material.js",
+  "40-crop-query.js": "kits/crops/src/40-crop-query.js"
+ }
 }

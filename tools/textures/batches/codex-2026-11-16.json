@@ -1,0 +1,619 @@
+[
+ {
+  "src": "ceiling.coffer.mandala.png",
+  "out": "core/materials/library/ceiling.coffer.mandala",
+  "record": {
+   "id": "ceiling.coffer.mandala",
+   "family": "ceiling",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-0b84-7e22-a0e0-f041b2c3613c)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (kits/qiblai, 2026-11-11)' (id ceiling.coffer.mandala)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8c88f7be-c51f-44a0-b788-da9c091d4656.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "ceiling.night.stars.png",
+  "out": "core/materials/library/ceiling.night.stars",
+  "record": {
+   "id": "ceiling.night.stars",
+   "family": "ceiling",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-77da-7912-b066-97a92cbfe2d6)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '56. Grēṭ-Āil, the Azure Dream's Hall of Dreaming (settlements/azure-dream, 2026-11-16)' (id ceiling.night.stars)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-049698b0-e700-486e-98d2-317cd1eae4a2.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "cloth.blanket.azure.png",
+  "out": "core/materials/library/cloth.blanket.azure",
+  "record": {
+   "id": "cloth.blanket.azure",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-b6f0-7461-b37d-743075c4a037)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '56. Grēṭ-Āil, the Azure Dream's Hall of Dreaming (settlements/azure-dream, 2026-11-16)' (id cloth.blanket.azure)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-22f71604-edf9-440c-9cee-cd1eeaae00f6.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "cloth.rug.temple.png",
+  "out": "core/materials/library/cloth.rug.temple",
+  "record": {
+   "id": "cloth.rug.temple",
+   "family": "cloth",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-2c5f-7750-94d9-def038ce7357)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (kits/qiblai, 2026-11-11)' (id cloth.rug.temple)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ec765ada-b717-422c-99b1-a825d727a9e5.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "foliage.tea.clipped.png",
+  "out": "core/materials/library/foliage.tea.clipped",
+  "record": {
+   "id": "foliage.tea.clipped",
+   "family": "foliage",
+   "colour": "#ffffff",
+   "roughness": 0.6,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-d80e-7cb2-8d18-f4d9fcb2c201)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Viridian estate's tea (settlements/viridian, 2026-11-16)' (id foliage.tea.clipped)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-481c4354-fef6-457f-84de-c85b915e2720.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.6,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "glass.moonglass.png",
+  "out": "core/materials/library/glass.moonglass",
+  "record": {
+   "id": "glass.moonglass",
+   "family": "glass",
+   "colour": "#ffffff",
+   "roughness": 0.1,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-3905-7ac1-8d83-e416de0af9a4)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (kits/tungang, 2026-11-11)' (id glass.moonglass)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8fc73976-88aa-4b73-8fd0-ec7d47c3432d.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.1,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "ground.asphalt.lanes.png",
+  "out": "core/materials/library/ground.asphalt.lanes",
+  "record": {
+   "id": "ground.asphalt.lanes",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f7-90d6-7131-a9a3-09d00408801a)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Ancient Transit kit (kits/ancient-transit, 2026-11-08)' (id ground.asphalt.lanes)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-d559c590-689b-4896-a856-1990740ceaab.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "ground.ballast.rail.png",
+  "out": "core/materials/library/ground.ballast.rail",
+  "record": {
+   "id": "ground.ballast.rail",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f7-b5dd-7621-b675-abaf6d78f7cb)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Ancient Transit kit (kits/ancient-transit, 2026-11-08)' (id ground.ballast.rail)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-3ce08d66-4cc8-4d2f-a9a4-56e73da8902f.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "ground.snow.ash.png",
+  "out": "core/materials/library/ground.snow.ash",
+  "record": {
+   "id": "ground.snow.ash",
+   "family": "ground",
+   "colour": "#ffffff",
+   "roughness": 0.9,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f8-1612-7350-b8d9-f8382e14afed)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '47. The Firebliss Range (biomes/firebliss, 2026-11-10)' (id ground.snow.ash)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-c93631b0-18db-4d86-85c8-c11bd00f182d.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.9,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "metal.rail.rusted.png",
+  "out": "core/materials/library/metal.rail.rusted",
+  "record": {
+   "id": "metal.rail.rusted",
+   "family": "metal",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 1,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6f7-ef26-7681-9c9f-bc0dfde22d2b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '46. The Ancient Transit kit (kits/ancient-transit, 2026-11-08)' (id metal.rail.rusted)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b9b3600a-cefe-446a-97f6-b71e3ede55e8.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "organic.reef.galvanic.png",
+  "out": "core/materials/library/organic.reef.galvanic",
+  "record": {
+   "id": "organic.reef.galvanic",
+   "family": "organic",
+   "colour": "#ffffff",
+   "roughness": 0.7,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fa-8663-7aa3-99ee-bd2629e09f2e)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '51. The Rift battery (biomes/galvanic, 2026-11-11)' (id organic.reef.galvanic)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-ee55b795-62ec-4588-aa7f-fc140341602f.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.7,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "patterns__tungang__crew-mosaic.png",
+  "out": "core/materials/patterns/tungang/crew-mosaic",
+  "record": {
+   "id": "patterns/tungang/crew-mosaic",
+   "family": "patterns",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-0575-7d20-b71d-6cf240956738)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (kits/tungang, 2026-11-11)' (id patterns/tungang/crew-mosaic)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-e26d7fb5-3a55-41e8-9aa5-14f4d94a375e.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "patterns__tungang__loj-banner.c.png",
+  "out": "core/materials/patterns/tungang/loj-banner.c",
+  "record": {
+   "id": "patterns/tungang/loj-banner.c",
+   "family": "patterns",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fe-ac40-7391-98f1-aef3fe4b221c)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Tungang kit (kits/tungang, 2026-11-11)' (id patterns/tungang/loj-banner.c)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-01153fbf-c60e-4798-85fc-4332a2b1d5a4.png"
+   }
+  },
+  "options": {
+   "pattern": true,
+   "keep_aspect": true,
+   "delight": 0.0,
+   "lift": 0.0,
+   "rough": 0.8,
+   "rough_var": 0.1,
+   "normal_strength": 0.3
+  }
+ },
+ {
+  "src": "rock.amber.blueearth.png",
+  "out": "core/materials/library/rock.amber.blueearth",
+  "record": {
+   "id": "rock.amber.blueearth",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-fb34-7950-95fb-592fa4832a9a)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '53. The mined goods' resource nodes (kits/resources, 2026-11-16)' (id rock.amber.blueearth)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-65723e37-07d6-4f03-b86d-ead5fe466c9e.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.hyaloclastite.png",
+  "out": "core/materials/library/rock.hyaloclastite",
+  "record": {
+   "id": "rock.hyaloclastite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fb-31c5-7f11-a07b-4af11ad6ec94)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '52. The Arch (biomes/arch, 2026-11-11)' (id rock.hyaloclastite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-e0874376-4faf-42ba-af17-a96409cdbefb.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "rock.magnetite.png",
+  "out": "core/materials/library/rock.magnetite",
+  "record": {
+   "id": "rock.magnetite",
+   "family": "rock",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-c0db-7342-ba57-b11a8f1fdfde)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '53. The mined goods' resource nodes (kits/resources, 2026-11-16)' (id rock.magnetite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-087ba710-f3ed-4a51-8376-141ce468c88a.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "stone.nephrite.png",
+  "out": "core/materials/library/stone.nephrite",
+  "record": {
+   "id": "stone.nephrite",
+   "family": "stone",
+   "colour": "#ffffff",
+   "roughness": 0.5,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fc-de84-7790-b5fa-d0adb1d27a48)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '53. The mined goods' resource nodes (kits/resources, 2026-11-16)' (id stone.nephrite)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-290ff4a6-8eaf-4f73-aa8f-cc7313a11815.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.5,
+   "rough_var": 0.2
+  }
+ },
+ {
+  "src": "wall.limewash.scorched.png",
+  "out": "core/materials/library/wall.limewash.scorched",
+  "record": {
+   "id": "wall.limewash.scorched",
+   "family": "wall",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-50b3-77d1-9741-66ecf34a9c9b)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '54. The Xanadui fort (kits/xanadu, the fort asset of settlements/strongwall/PLAN.md section 5, 2026-11-16)' (id wall.limewash.scorched)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-8bf501b1-3d17-4755-a697-93be04cb1217.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "wall.mural.dream.png",
+  "out": "core/materials/library/wall.mural.dream",
+  "record": {
+   "id": "wall.mural.dream",
+   "family": "wall",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-9bc1-71e1-b07d-fca93850adcc)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '56. Grēṭ-Āil, the Azure Dream's Hall of Dreaming (settlements/azure-dream, 2026-11-16)' (id wall.mural.dream)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-b0ec64c7-601a-4b0f-8fda-e3005cd25861.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "wall.mural.temple.png",
+  "out": "core/materials/library/wall.mural.temple",
+  "record": {
+   "id": "wall.mural.temple",
+   "family": "wall",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fb-eb20-7bb0-8e29-bff87c01f35d)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '43. The Qiblai kit (kits/qiblai, 2026-11-11)' (id wall.mural.temple)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-9715c3d9-c15d-421e-8376-a8b7310da1c9.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ },
+ {
+  "src": "wall.rubble.limewash.png",
+  "out": "core/materials/library/wall.rubble.limewash",
+  "record": {
+   "id": "wall.rubble.limewash",
+   "family": "wall",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-1888-7f33-985c-182bffe91b2d)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '54. The Xanadui fort (kits/xanadu, the fort asset of settlements/strongwall/PLAN.md section 5, 2026-11-16)' (id wall.rubble.limewash)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-cd03f047-3837-491c-ac1f-9c8c7b8cf7ba.png"
+   }
+  },
+  "options": {
+   "lift": 0.12,
+   "rough": 0.85,
+   "rough_var": 0.2,
+   "mute": 0.6
+  }
+ },
+ {
+  "src": "wood.gate.studded.png",
+  "out": "core/materials/library/wood.gate.studded",
+  "record": {
+   "id": "wood.gate.studded",
+   "family": "wood",
+   "colour": "#ffffff",
+   "roughness": 0.75,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-16 (~/.codex/generated_images/01a1e6fd-3738-72c2-80ba-5f75a844c1ea)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '54. The Xanadui fort (kits/xanadu, the fort asset of settlements/strongwall/PLAN.md section 5, 2026-11-16)' (id wood.gate.studded)",
+    "licence": "generated for this project by its owner",
+    "original_title": "exec-36f83378-abbe-475f-ae7d-8e40542a59e8.png"
+   }
+  },
+  "options": {
+   "lift": 0.0,
+   "rough": 0.75,
+   "rough_var": 0.2,
+   "delight": 0.0
+  }
+ }
+]

@@ -8,6 +8,12 @@
       animal from 3.2 of its size, under 1 m away, which the eye check (1 m) fails (bloom glint, wadi swift, rock lizard, hen,
       salt, char and boring beetles, sparkle hummer, lantern fly, homing pigeon: the animals under about 0.6 m): the camera stands at least 1.15 m beyond the animal's bounding radius and the lens
       narrows to keep its size in the frame (`gotoRow` puts the 48 degree lens back; walking straight from a view keeps the narrow one).
+- [ ] The Outlands' birds (2026-11-16, Tripo models). The **runner bird** has no wing-fan: `rig/qmodel.py` cuts a walker into
+      head, tail and legs only, so its wings ride the torso; the lore's fast run with the wings fanned wants a `wingL`/`wingR` cut
+      (the flyer scripts' rule) and a run clip. The **golden bird** was generated standing with its wings raised in a V, and perch
+      and walk keep them there (folding a raised wing tears the shoulder open past `tests/test-models.js`'s closure limit); its flap
+      is shallow (0.20 / 0.15 rad) for the same reason. Both want a wrist joint, or a skinned wing (PLAN-MESHY.md section 12). The
+      **ostrich**'s model is one plumage (the cock): the hen draws the procedural build.
 - [ ] Every animal is here (48 species, 2026-10-06), but the builds still draw their own copies (each entry's `source` says
       where): point the biome kits and settlements at the bundle, one build at a time, and check each still reads the same.
 - [ ] Wings are rigid: a perched bird's wing is turned back, shortened and rolled down the flank (`flap.sweep`, `foldScale`,
@@ -16,7 +22,7 @@
       joint (a `hand` sub-part per wing) would fold every bird the same way.
 - [ ] Parts turn rigidly: no skinning, so knees do not move (legs turn at the hip, the bend is built in), and a rigid neck stops
       a horse's or grazer's muzzle about 0.4 m above the ground. The octopod and hexapod walks swing whole legs, so feet slide
-      (Mav's spiders plant theirs by IK). A Godot port takes each part as a bone; a skinned version could follow kits/mechs.
+      (Mav's spiders plant theirs by IK). A Godot port takes each part as a bone; a skinned version could follow kits/mechs. A model variant can now be skinned (`M.skin`, `rig/pack_skinned.py`: the giant bat), with no Godot import yet.
 - [ ] `A.tube` turns its section's 'up' from +y to +z where a curve passes near vertical, which can pinch a leg at a bend; the
       species files build legs from straight segments with joint knobs (`faFmChain`, `faAbLimb`). Its end caps faced inward
       until 2026-10-06 (fixed in the core; some species files close their ends themselves).
@@ -43,7 +49,7 @@
       are Meshy's baked maps, not library sets (the dragonfly's wings are the library's `wing.dragonfly`); a perched wing is a rigid fold (the membrane cannot gather); the bat's and
       quetzal's perched wings are scaled shorter instead. Their sheet-pose builds (`pose: 'fly'`) are not model-driven: the model
       flies by `animate(g, t, 'fly')`. Rebuilding one means re-running `rig/` (read `rig/README.md`: working code from one session, tuned by eye per model); `models_pack.py` only repacks a finished GLB.
-- [ ] Every Meshy model but the millipede, dragonfly and hen opens at a join in some clip: the necks when grazing, the shoulders of the flyers, the bellies and leg roots of the horse and ox (`tests/test-models.js`, C4; `PLAN-MESHY.md` section 2). Their numbers are held in `tests/models-waivers.json`. Fixing them means regenerating, since the source GLBs are gone. Rigid parts suit an exoskeleton; a membrane flyer wants skinning.
+- [ ] Every Meshy model but the millipede, dragonfly and hen opens at a join in some clip: the necks when grazing, the shoulders of the flyers, the bellies and leg roots of the horse and ox (`tests/test-models.js`, C4; `PLAN-MESHY.md` section 2). Their numbers are held in `tests/models-waivers.json`. Fixing them means regenerating, since the source GLBs are gone. Rigid parts suit an exoskeleton; a membrane flyer wants skinning: the giant bat's model is skinned since 2026-11-10 (Tripo's rig, `rig/pack_skinned.py`, `PLAN-MESHY.md` section 14) and shuts.
 - [ ] A model variant ignores breeds and `pose: 'fly'`, and one model is one colour.
 - [ ] The spider family: the tarantula body breaks up seen close, so it is used only small (funnel-web, trapdoor); a long-bodied spider keeps a small flap and sliver behind its rear knee, seen from below at close range; the rear legs' femurs are copies of the pair in front. The riding spider's saddle fits on the abdomen, not the chest, and no real saddle has been tried on it. `spiderlake` is a biome only on `gemini-loom-chasms`. The parked `rig/sources/roach-giant` model does not stand.
 - [ ] The Bowl mantis is in the `hyperjungle` file for the builder, so a page that bundles only `desert`, as biomes/sedesert does, does not have it. Its size is this kit's choice, 2.4 m tall. Its strike swings the forelegs up and open; it could reach further forward.

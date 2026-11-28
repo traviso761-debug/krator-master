@@ -29,7 +29,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # core/city in one closure (settlements/qiblai/build.py's kcity_bundle, the nested-squares file left out: the bench is laid by
 # this town's own site steps). Raster and OCC go out on KCITY.lib with SL, PLAN and KSPACE
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 DIST = os.path.join(HERE, 'dist')
@@ -54,7 +55,7 @@ def kcity_bundle():
 def tungang_bundle():
     sys.path.insert(0, os.path.join(ROOT, 'kits', 'tungang'))
     import tungang_bundle as tb
-    js, files = tb.bundle(tex='glazier', furniture=True, with_files=True, side=SIDE)   # the maps beside the page (the 16 MB cap)
+    js, files = tb.bundle(tex='glazier', furniture=True, with_files=True, side=SIDE, res=True)   # the maps beside the page (the 16 MB cap); res: the Resources kit's opal nodes (TG.res)
     BSRC.note(*files)
     return js
 
@@ -87,8 +88,34 @@ def flora_bundle():
             'return { BIO: BIO, reseed: reseed, kits: { xanadu: XANADU, opalvalley: OPAL } };\n})(Object.create(window));\n')
 
 
+# the open world's ground round the town (KNOWN_ISSUES.md: "the town's page and its open-world site are two grounds"; the owner,
+# 2026-11-23: the page reads the world's ground, its own relief seated on it): core/world/bake_ground.py runs the region's own
+# land chain in node (its rasters, roads, coasts, hooks) and samples WORLD.H round the site, a 16 m grid over 6 km and a 64 m
+# one over 24 km (at minWave 96, as the region's far chunks ask); targets/town/89zl-lw-site.js stands the page on it. The node run (~30 s: the
+# region's coasts at init) is skipped when the key (every input's bytes) is the one in the generated file
+REGION, SITE_ID = 'xanadu-oidong-highrift', 'slaitwal0001'
+WORLD_LEVELS = [(3000, 3000, 3000, 16), (12000, 12000, 12000, 64, 96)]   # minWave 96: 1.5 of the cell, as core/world 81's chunks ask
+WORLD_PROBES = [(0, 6000), (-2000, 6000), (2000, 6000)]   # the great lake 6 km south: the world's water there
+sys.path.insert(0, os.path.join(ROOT, 'core', 'world')); import bake_ground   # noqa: E402
+BSRC.note(*bake_ground.inputs(REGION))
+
+
+def world_ground():
+    out = os.path.join(GEN, '41w-lw-world-ground.js')
+    k = bake_ground.key(REGION, SITE_ID, WORLD_LEVELS, WORLD_PROBES)
+    if os.path.exists(out):
+        with io.open(out, encoding='utf-8') as fh:
+            if ('key %s)' % k) in fh.readline():
+                return None   # current: write_gen leaves it
+    return bake_ground.fragment(bake_ground.bake(REGION, SITE_ID, WORLD_LEVELS, WORLD_PROBES), '41w-lw-world-ground.js', 'LW_WORLD')
+
+
 def write_gen():
     os.makedirs(GEN, exist_ok=True)
+    wg = world_ground()
+    if wg is not None:
+        with io.open(os.path.join(GEN, '41w-lw-world-ground.js'), 'w', encoding='utf-8', newline='\n') as fh:
+            fh.write(wg)
     for name, make in (('69l-kcity-bundle.js', kcity_bundle), ('69t-tungang-bundle.js', tungang_bundle), ('69r-lw-flora-bundle.js', flora_bundle)):
         out = os.path.join(GEN, name)
         new = make()

@@ -31,7 +31,10 @@ function roots(p,len,w){const q=qEuler(0,rng()*TAU,0),c=vcol();
 // BRACKET FUNGUS on the side of something
 function bracket(p,n,s){for(let b=0,nb=2+Math.floor(rng()*3);b<nb;b++){const sb=s*rr(.4,1);
  BIO.put('fungus',[p[0]+n[0]*.2+rr(-.6,.6)*s*(1-Math.abs(n[0])),p[1]+rr(0,2.2)*s,p[2]+n[2]*.2+rr(-.6,.6)*s*(1-Math.abs(n[2]))],
-  qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
+  NWLOW.FUNG_SHELF?shelfQ(n,rr(-.3,.3),rng()*TAU,rr(-.3,.3)):qEuler(rr(-.3,.3),rng()*TAU,rr(-.3,.3)),NWLOW.FUNG_SHELF?[sb,sb*.8,sb*.75]:[sb,sb*.4,sb],C(pick(PAL.fungus)));}}
+// a shelf (BIO.fung.bracket, out along +z) turned to face out of its wall, a little tilt, as nwbay's; the draws are the old dome's
+// (the same stream, so nothing placed after it moves). NWLOW.FUNG_SHELF is set by 50 where the def is the shelf (Stage 8 D27, O6)
+function shelfQ(n,ax,ay,az){const h=Math.hypot(n[0],n[2]);return qEuler(ax*.4,h>.2?Math.atan2(n[0],n[2]):ay,az*.4);}
 // a PLANT on a ledge: fern rosette, tuft or small bush
 function plant(p,s){const k=rng();const y=p[1];
  if(k<.16){const c=C(pick(PAL.pen)),h=s*rr(.8,1.6);BIO.put('pen',[p[0],y,p[2]],qEuler(rr(-.08,.08),rng()*TAU,rr(-.08,.08)),[h*.42,h,h*.42],c);}   // a sea pen in the joint

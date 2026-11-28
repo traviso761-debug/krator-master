@@ -1,0 +1,1903 @@
+{
+  "format": "krator-golden-world-plan",
+  "version": 1,
+  "plan": {
+    "hazards": [
+      {
+        "id": "pan-crust",
+        "name": "Soda Pan Crust",
+        "kind": "sink",
+        "at": [
+          1200,
+          290.99,
+          800
+        ],
+        "ry": 0,
+        "hazard": {
+          "kind": "sink",
+          "danger": 0.6,
+          "dose": 4,
+          "shape": {
+            "type": "cyl",
+            "r": 45,
+            "h": 3
+          },
+          "crust": {
+            "mass": 60,
+            "heal": 180
+          },
+          "trigger": {
+            "by": "weight",
+            "mass": 60
+          },
+          "tell": {
+            "colour": "#e8e4d8",
+            "fx": "shimmer",
+            "sign": "hollow salt crust"
+          },
+          "stateFn": "KHAZ.crust"
+        }
+      },
+      {
+        "id": "pan-crust/below",
+        "name": "Soda Pan Crust (below)",
+        "kind": "acid",
+        "at": [
+          1200,
+          289.19,
+          800
+        ],
+        "ry": 0,
+        "hazard": {
+          "kind": "acid",
+          "effect": "corrode",
+          "danger": 0.9,
+          "dose": 15,
+          "shape": {
+            "type": "cyl",
+            "r": 45,
+            "h": 3
+          },
+          "stateFn": "KHAZ.under",
+          "under": {
+            "crust": "pan-crust"
+          }
+        }
+      },
+      {
+        "id": "decoy-lava-1",
+        "name": "Decoy Pool L1",
+        "kind": "heat",
+        "at": [
+          -1600,
+          413.27,
+          -2400
+        ],
+        "ry": 0,
+        "hazard": {
+          "kind": "heat",
+          "danger": 0.95,
+          "dose": 22,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -30,
+                -20
+              ],
+              [
+                35,
+                -20
+              ],
+              [
+                30,
+                28
+              ],
+              [
+                -28,
+                25
+              ]
+            ],
+            "h": 6,
+            "edge": 4
+          },
+          "falloff": "smooth",
+          "tell": {
+            "colour": "#ff5218",
+            "fx": "glow",
+            "sign": "false beacon lava pool"
+          }
+        }
+      },
+      {
+        "id": "oasis-night-cold",
+        "name": "oasis-night-cold",
+        "kind": "cold",
+        "at": [
+          -250,
+          310.28,
+          220
+        ],
+        "ry": 0,
+        "hazard": {
+          "kind": "cold",
+          "danger": 0.65,
+          "dose": 6,
+          "shape": {
+            "type": "cyl",
+            "r": 60,
+            "h": 8,
+            "pool": 3
+          },
+          "night": {
+            "from": 20,
+            "to": 6,
+            "ramp": 2
+          },
+          "stateFn": "KHAZ.night"
+        }
+      },
+      {
+        "id": "catch-stalkers/-3_0",
+        "name": "catch-stalkers/-3_0",
+        "kind": "hunter",
+        "at": [
+          -5732.11,
+          291.04,
+          666.15
+        ],
+        "ry": 2.1379,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -30.63,
+                -11.42
+              ],
+              [
+                20.73,
+                -25.27
+              ],
+              [
+                38.96,
+                13.11
+              ],
+              [
+                9.9,
+                36.69
+              ],
+              [
+                -27.08,
+                30.92
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-2_0",
+        "name": "catch-stalkers/-2_0",
+        "kind": "hunter",
+        "at": [
+          -2606.37,
+          260.72,
+          1490.79
+        ],
+        "ry": 4.6525,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                30.96,
+                -10.48
+              ],
+              [
+                -0.13,
+                32.69
+              ],
+              [
+                -38.49,
+                14.42
+              ],
+              [
+                -30.83,
+                -22.21
+              ],
+              [
+                1.49,
+                -41.08
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade",
+              "st_blade"
+            ],
+            "count": 3,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/2_0",
+        "name": "catch-stalkers/2_0",
+        "kind": "hunter",
+        "at": [
+          4942.75,
+          267.36,
+          1308.27
+        ],
+        "ry": 3.7344,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                32.68,
+                -0.54
+              ],
+              [
+                -10.09,
+                31.09
+              ],
+              [
+                -41.05,
+                2
+              ],
+              [
+                -22.59,
+                -30.55
+              ],
+              [
+                13.94,
+                -38.67
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-3_1",
+        "name": "catch-stalkers/-3_1",
+        "kind": "hunter",
+        "at": [
+          -5550.27,
+          188.31,
+          3246.6
+        ],
+        "ry": 4.7062,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -28.88,
+                15.32
+              ],
+              [
+                -5.13,
+                -32.28
+              ],
+              [
+                35.67,
+                -20.43
+              ],
+              [
+                34,
+                16.96
+              ],
+              [
+                5.14,
+                40.78
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-2_1",
+        "name": "catch-stalkers/-2_1",
+        "kind": "hunter",
+        "at": [
+          -3326.62,
+          206.71,
+          2895.97
+        ],
+        "ry": 1.4922,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -14.59,
+                29.25
+              ],
+              [
+                -22.94,
+                -23.29
+              ],
+              [
+                17.15,
+                -37.36
+              ],
+              [
+                37.53,
+                -5.97
+              ],
+              [
+                27.89,
+                30.2
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-1_1",
+        "name": "catch-stalkers/-1_1",
+        "kind": "hunter",
+        "at": [
+          -1287.48,
+          224.51,
+          2312.4
+        ],
+        "ry": 2.5688,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -1.38,
+                32.66
+              ],
+              [
+                -30.45,
+                -11.9
+              ],
+              [
+                0.41,
+                -41.1
+              ],
+              [
+                31.83,
+                -20.76
+              ],
+              [
+                37.78,
+                16.19
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/0_1",
+        "name": "catch-stalkers/0_1",
+        "kind": "hunter",
+        "at": [
+          753.81,
+          208.06,
+          2859.15
+        ],
+        "ry": 2.1924,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                9.29,
+                -31.34
+              ],
+              [
+                26.63,
+                18.95
+              ],
+              [
+                -10.41,
+                39.76
+              ],
+              [
+                -35.92,
+                12.39
+              ],
+              [
+                -32.7,
+                -24.9
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/2_1",
+        "name": "catch-stalkers/2_1",
+        "kind": "hunter",
+        "at": [
+          5392.1,
+          213.9,
+          2685.7
+        ],
+        "ry": 0.489,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -32.05,
+                6.41
+              ],
+              [
+                4.33,
+                -32.4
+              ],
+              [
+                40.02,
+                -9.36
+              ],
+              [
+                27.73,
+                25.99
+              ],
+              [
+                -6.75,
+                40.54
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade",
+              "st_blade"
+            ],
+            "count": 3,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-3_2",
+        "name": "catch-stalkers/-3_2",
+        "kind": "hunter",
+        "at": [
+          -4792.08,
+          112.94,
+          5198.2
+        ],
+        "ry": 0.2307,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -1.79,
+                32.64
+              ],
+              [
+                -30.3,
+                -12.28
+              ],
+              [
+                0.92,
+                -41.09
+              ],
+              [
+                32.08,
+                -20.36
+              ],
+              [
+                37.58,
+                16.66
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/-1_2",
+        "name": "catch-stalkers/-1_2",
+        "kind": "hunter",
+        "at": [
+          -1084.8,
+          85.37,
+          5792.59
+        ],
+        "ry": 6.1814,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -16.95,
+                27.95
+              ],
+              [
+                -20.94,
+                -25.1
+              ],
+              [
+                20.18,
+                -35.81
+              ],
+              [
+                37.89,
+                -2.85
+              ],
+              [
+                25.3,
+                32.4
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "catch-stalkers/0_2",
+        "name": "catch-stalkers/0_2",
+        "kind": "hunter",
+        "at": [
+          1238.02,
+          137.36,
+          4640.86
+        ],
+        "ry": 5.2338,
+        "hazard": {
+          "kind": "hunter",
+          "effect": "bleed",
+          "danger": 0.92,
+          "dose": 14,
+          "shape": {
+            "type": "poly",
+            "pts": [
+              [
+                -5.29,
+                -32.26
+              ],
+              [
+                32.23,
+                5.46
+              ],
+              [
+                7.96,
+                40.33
+              ],
+              [
+                -26.94,
+                26.8
+              ],
+              [
+                -40.28,
+                -8.16
+              ]
+            ],
+            "y0": -1,
+            "y1": 6,
+            "edge": 4
+          },
+          "falloff": "none",
+          "trigger": {
+            "by": "near",
+            "reset": 600
+          },
+          "cycle": {
+            "period": 240,
+            "warn": 90,
+            "ramp": 0.5,
+            "on": 18,
+            "after": 12,
+            "afterK": 0.2
+          },
+          "nav": {
+            "travel": 1,
+            "enter": 0,
+            "avoid": false
+          },
+          "tell": {
+            "colour": "#000000",
+            "fx": null,
+            "sound": null,
+            "sign": null
+          },
+          "hunter": {
+            "fauna": [
+              "st_harpooner",
+              "st_blade"
+            ],
+            "count": 2,
+            "note": "quiet sand ambush"
+          }
+        }
+      },
+      {
+        "id": "wall-death-zone/1_-3",
+        "name": "wall-death-zone/1_-3",
+        "kind": "gas",
+        "at": [
+          2913.11,
+          8450,
+          -5081.77
+        ],
+        "ry": 1.0846,
+        "hazard": {
+          "kind": "gas",
+          "effect": "suffocate",
+          "danger": 0.80625,
+          "dose": 0.48,
+          "shape": {
+            "type": "box",
+            "w": 2000,
+            "d": 2000,
+            "h": 400,
+            "y0": -20,
+            "y1": 380
+          },
+          "falloff": "none",
+          "nav": {
+            "travel": 20,
+            "enter": 50,
+            "avoid": true
+          },
+          "tell": {
+            "colour": "#9bb8e8",
+            "fx": null,
+            "sound": null,
+            "sign": "death zone: thin air above 8000 m"
+          }
+        }
+      },
+      {
+        "id": "wall-death-zone/2_-3",
+        "name": "wall-death-zone/2_-3",
+        "kind": "gas",
+        "at": [
+          5603.56,
+          8450,
+          -5598.84
+        ],
+        "ry": 3.1197,
+        "hazard": {
+          "kind": "gas",
+          "effect": "suffocate",
+          "danger": 0.80625,
+          "dose": 0.48,
+          "shape": {
+            "type": "box",
+            "w": 2000,
+            "d": 2000,
+            "h": 400,
+            "y0": -20,
+            "y1": 380
+          },
+          "falloff": "none",
+          "nav": {
+            "travel": 20,
+            "enter": 50,
+            "avoid": true
+          },
+          "tell": {
+            "colour": "#9bb8e8",
+            "fx": null,
+            "sound": null,
+            "sign": "death zone: thin air above 8000 m"
+          }
+        }
+      },
+      {
+        "id": "wall-death-zone/1_-2",
+        "name": "wall-death-zone/1_-2",
+        "kind": "gas",
+        "at": [
+          2635.05,
+          8450,
+          -3627.3
+        ],
+        "ry": 0.9816,
+        "hazard": {
+          "kind": "gas",
+          "effect": "suffocate",
+          "danger": 0.80625,
+          "dose": 0.48,
+          "shape": {
+            "type": "box",
+            "w": 2000,
+            "d": 2000,
+            "h": 400,
+            "y0": -20,
+            "y1": 380
+          },
+          "falloff": "none",
+          "nav": {
+            "travel": 20,
+            "enter": 50,
+            "avoid": true
+          },
+          "tell": {
+            "colour": "#9bb8e8",
+            "fx": null,
+            "sound": null,
+            "sign": "death zone: thin air above 8000 m"
+          }
+        }
+      },
+      {
+        "id": "wall-death-zone/2_-2",
+        "name": "wall-death-zone/2_-2",
+        "kind": "gas",
+        "at": [
+          4328.02,
+          8450,
+          -2771.56
+        ],
+        "ry": 4.5919,
+        "hazard": {
+          "kind": "gas",
+          "effect": "suffocate",
+          "danger": 0.80625,
+          "dose": 0.48,
+          "shape": {
+            "type": "box",
+            "w": 2000,
+            "d": 2000,
+            "h": 400,
+            "y0": -20,
+            "y1": 380
+          },
+          "falloff": "none",
+          "nav": {
+            "travel": 20,
+            "enter": 50,
+            "avoid": true
+          },
+          "tell": {
+            "colour": "#9bb8e8",
+            "fx": null,
+            "sound": null,
+            "sign": "death zone: thin air above 8000 m"
+          }
+        }
+      },
+      {
+        "id": "karaburan-front",
+        "name": "karaburan-front",
+        "kind": "acid",
+        "at": [
+          0,
+          220,
+          2500
+        ],
+        "ry": 0,
+        "hazard": {
+          "kind": "acid",
+          "danger": 0.85,
+          "shape": {
+            "type": "box",
+            "w": 6804,
+            "d": 804,
+            "h": 400,
+            "y0": -20,
+            "y1": 380
+          },
+          "falloff": "smooth",
+          "stateFn": "KHAZ.front",
+          "front": {
+            "path": [
+              [
+                -3000,
+                221.71,
+                2500
+              ],
+              [
+                3000,
+                218.29,
+                2500
+              ]
+            ],
+            "w": 400,
+            "speed": 15,
+            "start": 0,
+            "edge": 10,
+            "period": 3600,
+            "rise": 120,
+            "hold": 600,
+            "fall": 180,
+            "depth": 120,
+            "base": 0
+          }
+        },
+        "season": {
+          "days": [
+            [
+              70,
+              112
+            ]
+          ],
+          "name": "black-storms"
+        }
+      }
+    ],
+    "hazardWays": [
+      {
+        "id": "close-floor-storm",
+        "way": "stair/way/route-b",
+        "kind": "storm",
+        "danger": 0.85,
+        "why": "spring black soda storms",
+        "season": {
+          "days": [
+            [
+              70,
+              112
+            ]
+          ],
+          "name": "black-storms"
+        }
+      },
+      {
+        "id": "close-col-winter",
+        "way": "brazier/way/short-seam",
+        "kind": "cold",
+        "danger": 0.85,
+        "why": "winter col freeze",
+        "season": {
+          "days": [
+            [
+              310,
+              365
+            ],
+            [
+              0,
+              55
+            ]
+          ],
+          "name": "twins-winter"
+        }
+      }
+    ],
+    "fixtures": [
+      {
+        "id": "sinter-gate",
+        "kind": "toll-gate",
+        "name": "Sinter-Gate Toll House",
+        "culture": "xanadu",
+        "on": "ground",
+        "anchor": {
+          "x": 0,
+          "y": 403.75,
+          "z": -2093.7
+        },
+        "ry": 3.1416,
+        "R": 28,
+        "ruin": false,
+        "slots": [
+          {
+            "id": "sinter-gate/pier_l",
+            "key": "gate_pier",
+            "v": 0,
+            "kind": "building",
+            "role": "gate",
+            "x": 4.1,
+            "y": 403.76,
+            "z": -2093.7,
+            "ry": 3.1416,
+            "w": 2.2,
+            "d": 2.2,
+            "h": 4.5
+          },
+          {
+            "id": "sinter-gate/pier_r",
+            "key": "gate_pier",
+            "v": 0,
+            "kind": "building",
+            "role": "gate",
+            "x": -4.1,
+            "y": 403.73,
+            "z": -2093.7,
+            "ry": 3.1416,
+            "w": 2.2,
+            "d": 2.2,
+            "h": 4.5
+          },
+          {
+            "id": "sinter-gate/house",
+            "key": "xa_guardhouse",
+            "v": 0,
+            "kind": "building",
+            "role": "toll-house",
+            "x": -9,
+            "y": 403.77,
+            "z": -2095.2,
+            "ry": 1.5708,
+            "w": 7,
+            "d": 5.5,
+            "h": 4.8
+          },
+          {
+            "id": "sinter-gate/tally",
+            "key": "tally_board",
+            "v": 0,
+            "kind": "building",
+            "role": "tally",
+            "x": 5.9,
+            "y": 403.91,
+            "z": -2097.2,
+            "ry": 3.927,
+            "w": 1.8,
+            "d": 0.6,
+            "h": 2.2
+          },
+          {
+            "id": "sinter-gate/corral",
+            "key": "stone_corral",
+            "v": 0,
+            "kind": "pen",
+            "role": "corral",
+            "x": -17.5,
+            "y": 403.36,
+            "z": -2085.7,
+            "ry": 1.5708,
+            "w": 12,
+            "d": 10,
+            "h": 1.6
+          }
+        ],
+        "way": {
+          "id": "stair/way/route-b",
+          "s": 1200,
+          "hw": 2
+        },
+        "mark": true
+      },
+      {
+        "id": "brazier-shrine",
+        "kind": "waystation-oasis",
+        "name": "Shrine of the Split Horn",
+        "culture": "xanadu",
+        "on": "ground",
+        "anchor": {
+          "x": 140,
+          "y": 457.32,
+          "z": -3420
+        },
+        "ry": 0,
+        "R": 26,
+        "ruin": false,
+        "slots": [
+          {
+            "id": "brazier-shrine/shelter",
+            "key": "xa_inn_small",
+            "v": 0,
+            "kind": "building",
+            "role": "waystation",
+            "x": 149,
+            "y": 457.36,
+            "z": -3420,
+            "ry": -1.5708,
+            "w": 8,
+            "d": 6,
+            "h": 4.5
+          },
+          {
+            "id": "brazier-shrine/basin",
+            "key": "stone_trough_run",
+            "v": 0,
+            "kind": "infrastructure",
+            "role": "basin",
+            "x": 131,
+            "y": 457.21,
+            "z": -3418,
+            "ry": 1.5708,
+            "w": 6,
+            "d": 2.4,
+            "h": 1.2
+          },
+          {
+            "id": "brazier-shrine/shrine",
+            "key": "split_horn_shrine",
+            "v": 0,
+            "kind": "monument",
+            "role": "shrine",
+            "x": 127,
+            "y": 457.47,
+            "z": -3425,
+            "ry": 0,
+            "w": 3.2,
+            "d": 3.2,
+            "h": 4.6
+          },
+          {
+            "id": "brazier-shrine/corral",
+            "key": "stone_corral",
+            "v": 0,
+            "kind": "pen",
+            "role": "corral",
+            "x": 159,
+            "y": 457.67,
+            "z": -3427,
+            "ry": -1.5708,
+            "w": 11,
+            "d": 9,
+            "h": 1.5
+          }
+        ],
+        "mark": true
+      },
+      {
+        "id": "rangers-last-cairn",
+        "kind": "cairn",
+        "name": "The Rangers' Last Cairn",
+        "culture": "generic",
+        "on": "ground",
+        "anchor": {
+          "x": 2400,
+          "y": 284.42,
+          "z": 900
+        },
+        "ry": 0,
+        "R": 8,
+        "ruin": false,
+        "slots": [
+          {
+            "id": "rangers-last-cairn/cairn",
+            "key": "cairn_stack",
+            "v": 0,
+            "kind": "monument",
+            "role": "cairn",
+            "x": 2400,
+            "y": 284.42,
+            "z": 900,
+            "ry": 0,
+            "w": 2.4,
+            "d": 2.4,
+            "h": 3.2,
+            "pending": true
+          },
+          {
+            "id": "rangers-last-cairn/board",
+            "key": "tally_stone",
+            "v": 0,
+            "kind": "sign",
+            "role": "tally",
+            "x": 2402.6,
+            "y": 284.38,
+            "z": 900.8,
+            "ry": 0.25,
+            "w": 1.2,
+            "d": 0.6,
+            "h": 1.8,
+            "pending": true
+          }
+        ],
+        "mark": true
+      },
+      {
+        "id": "ambush-wreck",
+        "kind": "wreck-aftermath",
+        "name": "Shattered Train",
+        "culture": "generic",
+        "on": "ground",
+        "anchor": {
+          "x": -1800,
+          "y": 213.67,
+          "z": 2600
+        },
+        "ry": 0,
+        "R": 14,
+        "ruin": true,
+        "slots": [
+          {
+            "id": "ambush-wreck/hull",
+            "key": "wrecked_wagon",
+            "v": 0,
+            "kind": "ruin",
+            "role": "main-wreck",
+            "x": -1800,
+            "y": 213.67,
+            "z": 2600,
+            "ry": 0.5352,
+            "w": 3.2,
+            "d": 6.4,
+            "h": 2.4,
+            "ruin": true,
+            "pending": true
+          },
+          {
+            "id": "ambush-wreck/debris_1",
+            "key": "broken_axle",
+            "v": 0,
+            "kind": "ruin",
+            "role": "wreck",
+            "x": -1794.4,
+            "y": 213.54,
+            "z": 2602.8,
+            "ry": 0.5154,
+            "w": 1.6,
+            "d": 2.2,
+            "h": 0.8,
+            "ruin": true,
+            "pending": true
+          },
+          {
+            "id": "ambush-wreck/debris_2",
+            "key": "scattered_bones",
+            "v": 0,
+            "kind": "ruin",
+            "role": "wreck",
+            "x": -1805.4,
+            "y": 213.78,
+            "z": 2597.4,
+            "ry": 0.9236,
+            "w": 1.8,
+            "d": 1.8,
+            "h": 0.6,
+            "ruin": true,
+            "pending": true
+          }
+        ],
+        "mark": true
+      },
+      {
+        "id": "hall-tally-marks",
+        "kind": "tube-hall",
+        "name": "Hall of the Tally-Marks",
+        "culture": "xanadu",
+        "on": "tube",
+        "anchor": {
+          "x": 0,
+          "y": 315,
+          "z": -2000
+        },
+        "ry": 3.1416,
+        "R": 18,
+        "ruin": false,
+        "slots": [
+          {
+            "id": "hall-tally-marks/cistern",
+            "key": "rock_cistern",
+            "v": 0,
+            "kind": "infrastructure",
+            "role": "cistern",
+            "x": 0,
+            "y": 315,
+            "z": -2000,
+            "ry": 3.1416,
+            "w": 4.5,
+            "d": 4.5,
+            "h": 1.3,
+            "pending": true
+          },
+          {
+            "id": "hall-tally-marks/ledge_w",
+            "key": "cut_ledge",
+            "v": 0,
+            "kind": "furniture",
+            "role": "sleeping-ledge",
+            "x": 6.84,
+            "y": 315.4,
+            "z": -1996,
+            "ry": 4.7124,
+            "w": 2.2,
+            "d": 6.5,
+            "h": 0.8,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/ledge_e",
+            "key": "cut_ledge",
+            "v": 0,
+            "kind": "furniture",
+            "role": "sleeping-ledge",
+            "x": -6.84,
+            "y": 315.4,
+            "z": -1996,
+            "ry": 1.5708,
+            "w": 2.2,
+            "d": 6.5,
+            "h": 0.8,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/tally_wall",
+            "key": "tally_wall_marks",
+            "v": 0,
+            "kind": "monument",
+            "role": "tally",
+            "x": 7.56,
+            "y": 316.8,
+            "z": -2005,
+            "ry": 4.7124,
+            "w": 0.5,
+            "d": 8,
+            "h": 2.4,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/torch_0",
+            "key": "torch_bracket",
+            "v": 0,
+            "kind": "light",
+            "role": "torch",
+            "x": 7.92,
+            "y": 317.1,
+            "z": -1990,
+            "ry": 4.7124,
+            "w": 0.4,
+            "d": 0.4,
+            "h": 0.7,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/torch_1",
+            "key": "torch_bracket",
+            "v": 0,
+            "kind": "light",
+            "role": "torch",
+            "x": -7.92,
+            "y": 317.1,
+            "z": -1996.5,
+            "ry": 1.5708,
+            "w": 0.4,
+            "d": 0.4,
+            "h": 0.7,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/torch_2",
+            "key": "torch_bracket",
+            "v": 0,
+            "kind": "light",
+            "role": "torch",
+            "x": 7.92,
+            "y": 317.1,
+            "z": -2003,
+            "ry": 4.7124,
+            "w": 0.4,
+            "d": 0.4,
+            "h": 0.7,
+            "pending": true,
+            "wall": true
+          },
+          {
+            "id": "hall-tally-marks/torch_3",
+            "key": "torch_bracket",
+            "v": 0,
+            "kind": "light",
+            "role": "torch",
+            "x": -7.92,
+            "y": 317.1,
+            "z": -2009.5,
+            "ry": 1.5708,
+            "w": 0.4,
+            "d": 0.4,
+            "h": 0.7,
+            "pending": true,
+            "wall": true
+          }
+        ],
+        "tube": {
+          "id": "routeA_3",
+          "s": 1000,
+          "ceiling": 329,
+          "ground": 398
+        },
+        "mark": true
+      }
+    ]
+  },
+  "wayChecks": [
+    {
+      "way": "stair/way/route-b",
+      "yearDay": 90,
+      "open": false
+    },
+    {
+      "way": "stair/way/route-b",
+      "yearDay": 200,
+      "open": true
+    },
+    {
+      "way": "brazier/way/short-seam",
+      "yearDay": 15,
+      "open": false
+    },
+    {
+      "way": "brazier/way/short-seam",
+      "yearDay": 180,
+      "open": true
+    }
+  ],
+  "atChecks": [
+    {
+      "name": "crust_intact",
+      "x": 1200,
+      "z": 800,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "pan-crust",
+          "kind": "sink",
+          "effDanger": 0,
+          "dose": 0,
+          "f": 0,
+          "state": "intact"
+        },
+        {
+          "id": "pan-crust/below",
+          "kind": "acid",
+          "effDanger": 0,
+          "dose": 0,
+          "f": 0,
+          "state": "held"
+        }
+      ]
+    },
+    {
+      "name": "crust_broken",
+      "x": 1200,
+      "z": 800,
+      "yearDay": 200,
+      "broken": [
+        "pan-crust"
+      ],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "pan-crust/below",
+          "kind": "acid",
+          "effDanger": 0.9,
+          "dose": 15,
+          "f": 0,
+          "state": "on"
+        },
+        {
+          "id": "pan-crust",
+          "kind": "sink",
+          "effDanger": 0.6,
+          "dose": 4,
+          "f": 0,
+          "state": "broken"
+        }
+      ]
+    },
+    {
+      "name": "decoy_core",
+      "x": -1600,
+      "z": -2400,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "decoy-lava-1",
+          "kind": "heat",
+          "effDanger": 0.95,
+          "dose": 22,
+          "f": 0,
+          "state": "on"
+        }
+      ]
+    },
+    {
+      "name": "decoy_edge",
+      "x": -1570,
+      "z": -2400,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "decoy-lava-1",
+          "kind": "heat",
+          "effDanger": 0.7743,
+          "dose": 17.9302,
+          "f": 0.2748,
+          "state": "on"
+        }
+      ]
+    },
+    {
+      "name": "stalker_gameplay",
+      "x": -5732.11,
+      "z": 666.15,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "catch-stalkers/-3_0",
+          "kind": "hunter",
+          "effDanger": 0.92,
+          "dose": 14,
+          "f": 0,
+          "state": "on"
+        }
+      ]
+    },
+    {
+      "name": "stalker_ui_hidden",
+      "x": -5732.11,
+      "z": 666.15,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": true,
+      "hits": []
+    },
+    {
+      "name": "storm_active",
+      "x": 0,
+      "z": 2500,
+      "yearDay": 90,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": [
+        {
+          "id": "karaburan-front",
+          "kind": "acid",
+          "effDanger": 0.85,
+          "dose": 1,
+          "f": 0,
+          "state": "on"
+        }
+      ]
+    },
+    {
+      "name": "storm_inactive",
+      "x": 0,
+      "z": 2500,
+      "yearDay": 200,
+      "broken": [],
+      "excludeHunter": false,
+      "hits": []
+    }
+  ],
+  "overlapChecks": [
+    {
+      "a": {
+        "id": "sinter-gate/pier_l",
+        "key": "gate_pier",
+        "v": 0,
+        "kind": "building",
+        "role": "gate",
+        "x": 4.1,
+        "y": 403.76,
+        "z": -2093.7,
+        "ry": 3.1416,
+        "w": 2.2,
+        "d": 2.2,
+        "h": 4.5
+      },
+      "b": {
+        "id": "sinter-gate/pier_r",
+        "key": "gate_pier",
+        "v": 0,
+        "kind": "building",
+        "role": "gate",
+        "x": -4.1,
+        "y": 403.73,
+        "z": -2093.7,
+        "ry": 3.1416,
+        "w": 2.2,
+        "d": 2.2,
+        "h": 4.5
+      },
+      "gap": 0.05,
+      "overlap": false
+    },
+    {
+      "a": {
+        "id": "sinter-gate/pier_l",
+        "key": "gate_pier",
+        "v": 0,
+        "kind": "building",
+        "role": "gate",
+        "x": 4.1,
+        "y": 403.76,
+        "z": -2093.7,
+        "ry": 3.1416,
+        "w": 2.2,
+        "d": 2.2,
+        "h": 4.5
+      },
+      "b": {
+        "id": "sinter-gate/pier_r",
+        "key": "gate_pier",
+        "v": 0,
+        "kind": "building",
+        "role": "gate",
+        "x": 5.1,
+        "y": 403.73,
+        "z": -2093.7,
+        "ry": 3.1416,
+        "w": 2.2,
+        "d": 2.2,
+        "h": 4.5
+      },
+      "gap": 0.05,
+      "overlap": true
+    }
+  ]
+}

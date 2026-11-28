@@ -18,13 +18,12 @@ From `core/biome/` (shared; see `core/README.md`): `10-core-head.js`, `20-core-k
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `35t-godthrone-strata.js` | 2 |  |
 | `44a-host-station.js` | 2 |  |
 | `45-host-stage.js` | 5 | the frame (47) |
 | `45a5-host-region.js` | 1 |  |
 | `45b-host-model.js` | 13 | the vent (60); the rock (KSTRATA, the tibasalt recipe; PLAN.md  (78); the ground (baked once: KFIELD) (85); the portal (PLAN.md section 6) (128) |
 | `45c-host-field.js` | 8 | the fields (cached on a 20 m lattice) (32); the host binding (68) |
-| `50-biome-godthrone-species.js` | 7 | the ground classes (sRGB; PLAN.md sections 3-4) (13); the items (40) |
+| `50-biome-godthrone-species.js` | 10 | the ground classes (sRGB; PLAN.md sections 3-4) (13); the items (40) |
 | `60-biome-godthrone-ground.js` | 6 |  |
 | `70-biome-godthrone.js` | 1 |  |
 | `82-host-sky.js` | 4 | light modes (35) |
@@ -48,10 +47,10 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | blood | 44a-host-station.js, 89w-host-water.js, 98-host-blood.js | 12 |
 | flank | 44a-host-station.js, 45b-host-model.js, 98-host-flank.js | 18 |
-| gills | 44a-host-station.js, 45b-host-model.js, 87-host-gills.js, 89y-host-gills-late.js, 98-host-gills.js | 34 |
+| gills | 44a-host-station.js, 45b-host-model.js, 87-host-gills.js, 89y-host-gills-late.js, 98-host-gills.js | 36 |
 | gills-ladder | 44a-host-station.js, 45b-host-model.js, 98-host-ladder.js | 9 |
-| orange | 44a-host-station.js, 45b-host-model.js, 98-host-orange.js | 17 |
+| orange | 44a-host-station.js, 45b-host-model.js, 98-host-orange.js | 19 |
 | rim | 44a-host-station.js, 45b-host-model.js, 98-host-rim.js | 14 |
 | scarp | 44a-host-station.js, 45b-host-model.js, 98-host-scarp.js | 10 |
-| tube | 44a-host-station.js, 45b-host-model.js, 87-host-tube.js, 98-host-tube.js | 15 |
+| tube | 44a-host-station.js, 45b-host-model.js, 87-host-tube.js, 98-host-tube.js | 18 |
 | wall | 44a-host-station.js | 2 |

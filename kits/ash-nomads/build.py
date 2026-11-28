@@ -15,7 +15,9 @@ The page is one <script> made of, in filename order:
   core/atmos            89-atmos-*.js (ATMOS: the sky's light on the library materials, ATMOS.skylight)
   core/door             10-core-door.js, 20-core-glass.js, 90-core-door-host.js (KDOOR, KGLASS, KDOORHOST: doors that open, real glass;
                         core/engine/36o-open.js draws them)
-  26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs
+  26-matlib-pack.js     GENERATED from tex/ (tools/textures/pack.py from materials.json): the library maps as data URLs, in
+                        dist/ash-nomads.tex.ash-nomads.js beside the page (tools/textures/matlib_pack.py write_sidecar, as
+                        kits/scyvoi does: the gallery takes no file over 16 MB); --inline-packs puts them back in the page
   38-furniture-bundle.js GENERATED (kits/catalog/furniture_bundle.py): the catalog as one closure, KratorFurniture
   39-fauna-bundle.js    GENERATED (kits/fauna/fauna_bundle.py): the animals as one closure, KratorFauna
 A src/ file with a core file's name overrides it (record why in KNOWN_ISSUES.md). 81-sky.js (KratorSky) is the
@@ -28,7 +30,10 @@ Checks (fragments share one JS scope):
   4. `node --check` on the script when node exists (otherwise the build says the syntax was NOT checked:
      verify.py's error panel is then the only syntax check).
 """
-import base64, hashlib, json, os, re, subprocess, sys
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
+import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
 import os as _os, subprocess as _sp, sys as _sys
@@ -92,26 +97,18 @@ BUNDLE_GLOBALS = ('KratorFurniture', 'KratorFauna')
 FAUNA_GROUPS = ['crawlers', 'voth', 'ash']   # kits/fauna: millipedes; the staghorn beetle; the ash runner
 
 
+# the library pack beside the page (dist/ash-nomads.tex.ash-nomads.js, split under 15 MB a file: the gallery takes no file
+# over 16 MB; Stage 8 B10); --inline-packs puts it back in the page
+SIDE = None if '--inline-packs' in sys.argv else {}
+sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
+import matlib_pack as _mp
+
+
 def matlib_pack():
-    """The library textures materials.json names, as data URLs (KMAT.pack). It reads the committed tex/ files
-    only, never the library or an image encoder, so the build stays deterministic."""
-    pj = os.path.join(TEX_DIR, 'pack.json')
-    if not os.path.isfile(pj):
-        return "/* no tex/pack.json: the kit runs on vertex colours only */\nKMAT.pack('ash-nomads', {});\n"
-    pack = json.load(open(pj, encoding='utf-8'))
-    out = []
-    for fam in sorted(pack['families']):
-        e = pack['families'][fam]
-        f = {'lib': e['lib'], 'scale': e['scale'], 'metal': e['metal'], 'normalScale': e['normalScale'],
-             'specular': e.get('specular', 0.5), 'breakup': e.get('breakup'),
-             'tint': e['tint']['keep'], 'mean': e['tint']['mean']}
-        for k, name in sorted(e['files'].items()):
-            f[k] = 'data:image/webp;base64,' + base64.b64encode(open(os.path.join(TEX_DIR, name), 'rb').read()).decode()
-        out.append(' %s: %s' % (json.dumps(fam), json.dumps(f, sort_keys=True)))
-    return ('/* ============================== LIBRARY PACK (generated) ==============================\n'
-            '   build.py writes this from tex/ (tools/textures/pack.py from materials.json): per family the library set\n'
-            '   and its processed maps. Do not edit; edit materials.json and repack. */\n'
-            "KMAT.pack('" + KIT_ID + "', {\n" + ',\n'.join(out) + '\n});\n')
+    """The library textures materials.json names, as data URLs (KMAT.pack): tools/textures/matlib_pack.py fragment(), which
+    reads the committed tex/ files only, never the library or an image encoder, so the build stays deterministic. The kit
+    is the pack's own page (own=True: every family)."""
+    return _mp.fragment(HERE, KIT_ID, side=SIDE, own=True)
 
 
 def virtual_bodies():
@@ -178,6 +175,8 @@ def main():
         print('BUILD RULES FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     html = ''.join(bodies[f] for f in files)
     os.makedirs(DIST, exist_ok=True)
+    if SIDE:   # the pack beside the page, under the gallery's 16 MB a file
+        html = _mp.write_sidecar(SIDE, html, DIST, KIT_ID + '.tex.js')
     open(OUT, 'w', encoding='utf-8', newline='').write(html)
     json.dump({f: hashlib.sha1(bodies[f].encode()).hexdigest()[:12] for f in files}, open(os.path.join(HERE, 'build-manifest.json'), 'w', encoding='utf-8', newline='\n'), indent=1, sort_keys=True)
     body = html.rsplit('<script>', 1)[1].rsplit('</script>', 1)[0]
@@ -190,7 +189,9 @@ def main():
         syn = '  syntax OK'
     else:
         syn = '  syntax NOT CHECKED (no node: verify.py is the check)'
-    print('built dist/' + KIT_ID + '.html (%d fragments, %.0f KB)%s' % (len(files), os.path.getsize(OUT) / 1024, syn))
+    side = sorted(f for f in os.listdir(DIST) if f.startswith(KIT_ID + '.tex.') and f.endswith('.js')) if SIDE else []
+    print('built dist/' + KIT_ID + '.html (%d fragments, %.0f KB%s)%s' % (len(files), os.path.getsize(OUT) / 1024, ''.join(
+        '; %s %.0f KB' % (f, os.path.getsize(os.path.join(DIST, f)) / 1024) for f in side), syn))
     ki = os.path.join(HERE, 'KNOWN_ISSUES.md')
     if os.path.exists(ki):
         op = [l.rstrip() for l in open(ki, encoding='utf-8') if l.startswith('- [ ]')]

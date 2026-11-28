@@ -328,7 +328,8 @@
   //     amphitheatre's rounding, the bowl's radius as a share of the outline's half-width: 1 a box-canyon bowl as wide as the
   //     cut, 0 the walls closing to a point), wall (0: the share of the depth the bowl's headwall keeps at the tip; .4 a
   //     sapped headwall)}: over its last len the outline narrows to the bowl (a tapered capsule, its distance exact), the walls
-  //     and their steps wrap round it, and the depth falls to wall x depth at the tip. A record without head is unchanged.})
+  //     and their steps wrap round it, and the depth falls to wall x depth at the tip. A record without head is unchanged. The Loom-Chasms' first form, {len, minW} (2026-11-11, their own
+  //     branch), reads as {at:'both', len, amph:minW, wall:0}.})
   //   -> {kind:'stepcut', form:'line' | 'disc' | 'ell', line | disc | ell, depth, floor, treads:[w], drops:[share], riser, rim,
   //       warp, edge (the outline's distance from the floor's edge: the treads and risers summed), seed, head? {at, len, amph,
   //       wall, rb (the bowl's radius)}}
@@ -339,7 +340,8 @@
     var n=d(o.steps,3),tw=d(o.tread,12),rr=d(o.riser,1.5),sh=o.share||[.7,1.3];if(!(n>=1)||!(rr>0))throw new Error('KRELIEF.stepcut: steps >= 1 and riser > 0');
     var R={kind:'stepcut',seed:seed,form:form,depth:o.floor!=null?null:d(o.depth,60),floor:o.floor!=null?o.floor:null,riser:rr,rim:d(o.rim,0),
       warp:Object.assign({amp:0,scale:1/200},o.warp||{}),treads:[],drops:[]};
-    if(form==='line'){var Ln=pts2(o.line.pts,'stepcut');R.line={pts:Ln.pts,S:Ln.S,w:d(o.line.w,40)};}
+    if(form==='line'){var Ln=pts2(o.line.pts,'stepcut');R.line={pts:Ln.pts,S:Ln.S,w:d(o.line.w,40)};
+}
     else if(form==='disc'){if(!(o.disc.r>0))throw new Error('KRELIEF.stepcut: a disc needs r');R.disc={c:[o.disc.c[0],o.disc.c[1]],r:o.disc.r};}
     else{if(!(o.ell.rx>0&&o.ell.rz>0))throw new Error('KRELIEF.stepcut: an ell needs rx and rz');R.ell={c:[o.ell.c[0],o.ell.c[1]],rx:o.ell.rx,rz:o.ell.rz,ry:d(o.ell.ry,0)};}
     var tot=0,i;for(i=0;i<n;i++){R.drops.push(lerp(sh[0],sh[1],u01(K,seed,i,0,0x55A)));tot+=R.drops[i];if(i<n-1)R.treads.push(tw*(.7+.6*u01(K,seed,i,1,0x55A)));}
@@ -350,6 +352,7 @@
     return R;}
   // the chasm head's record: the bowl's radius rb is amph x Wo, held where the taper's sides stay under 64 deg off the line
   function scHeadRec(h,R,L){if(R.form!=='line')throw new Error('KRELIEF.stepcut: a head needs a line (a graben), not a pit');
+    if(h.minW!=null&&h.at==null&&h.amph==null)h={at:'both',len:h.len,amph:h.minW,wall:0};   /* the Loom-Chasms' first form */
     var at=d(h.at,'end'),Wo=R.line.w+R.edge,len=d(h.len,4*Wo),amph=d(h.amph,.6),wall=d(h.wall,0);
     if(at!=='end'&&at!=='start'&&at!=='both')throw new Error('KRELIEF.stepcut: head.at is end, start or both');
     if(!(len>0)||len>(at==='both'?L/2:L))throw new Error('KRELIEF.stepcut: head.len ('+len+' m) must be over 0 and within the line ('+(at==='both'?'half of ':'')+L.toFixed(0)+' m)');

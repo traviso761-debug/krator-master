@@ -5,6 +5,7 @@
  "families": {
   "wood": {
    "lib": "wood.siding",
+   "class": "relief",
    "scale": [
     2.0,
     1.7
@@ -23,6 +24,7 @@
   },
   "woodV": {
    "lib": "wood.lamppost",
+   "class": "flat",
    "scale": [
     0.8,
     1.0
@@ -40,7 +42,10 @@
    }
   },
   "stone": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.cut",
+   "class": "relief",
    "scale": [
     2.0,
     1.92
@@ -58,7 +63,9 @@
    }
   },
   "plaster": {
+   "m4": true,
    "lib": "plaster",
+   "class": "flat",
    "scale": [
     2.0,
     2.0
@@ -77,6 +84,7 @@
   },
   "thatch": {
    "lib": "roof.thatch.neutral",
+   "class": "relief",
    "scale": [
     2.5,
     2.5
@@ -95,6 +103,7 @@
   },
   "shingle": {
    "lib": "roof.shingle.neutral",
+   "class": "relief",
    "scale": [
     2.0,
     2.0
@@ -113,6 +122,7 @@
   },
   "cloth": {
    "lib": "cloth.canvas.striped",
+   "class": "flat",
    "scale": [
     1.2,
     1.18
@@ -132,6 +142,7 @@
   },
   "white": {
    "lib": "metal.ancient.white",
+   "class": "flat",
    "scale": [
     4.0,
     4.0
@@ -151,6 +162,7 @@
   },
   "verdigris": {
    "lib": "metal.bronze.verdigris",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -170,6 +182,7 @@
   },
   "concrete": {
    "lib": "concrete.ancient",
+   "class": "flat",
    "scale": [
     1.95,
     1.8
@@ -189,6 +202,7 @@
   },
   "concreteR": {
    "lib": "concrete.ancient",
+   "class": "flat",
    "scale": [
     1.95,
     1.8
@@ -208,6 +222,7 @@
   },
   "paving": {
    "lib": "concrete.ancient.b",
+   "class": "relief",
    "scale": [
     3.25,
     3.07
@@ -226,7 +241,10 @@
    }
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.red",
+   "class": "relief",
    "scale": [
     1.2,
     1.21
@@ -246,6 +264,7 @@
   },
   "corrugate": {
    "lib": "metal.corrugated_iron_02",
+   "class": "flat",
    "scale": [
     1.2,
     1.2
@@ -265,6 +284,7 @@
   },
   "timber": {
    "lib": "wood.weathered_brown_planks",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -284,6 +304,7 @@
   },
   "tarp": {
    "lib": "cloth.tarp",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -303,6 +324,7 @@
   },
   "rubbleK": {
    "lib": "rock.rocks013",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -322,6 +344,7 @@
   },
   "whiteWorn": {
    "lib": "metal.worn",
+   "class": "flat",
    "scale": [
     2.4,
     2.4
@@ -341,6 +364,7 @@
   },
   "xEarth": {
    "lib": "earth.rammed",
+   "class": "relief",
    "scale": [
     3,
     3
@@ -360,6 +384,7 @@
   },
   "xWash": {
    "lib": "plaster.white_stucco_02",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -379,6 +404,7 @@
   },
   "xTiles": {
    "lib": "paving.tiles144",
+   "class": "glazed",
    "scale": [
     2,
     2
@@ -397,6 +423,7 @@
   },
   "xRubble": {
    "lib": "rock.old_stone_wall",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -415,6 +442,7 @@
   },
   "xRock": {
    "lib": "rock.rock_face",
+   "class": "relief",
    "scale": [
     3,
     3
@@ -434,6 +462,7 @@
   },
   "xPenbey": {
    "lib": "band.xanadu.twig",
+   "class": "flat",
    "scale": [
     1,
     1
@@ -453,6 +482,7 @@
   },
   "xBTile": {
    "lib": "tile.bath.lens",
+   "class": "glazed",
    "scale": [
     1.43,
     1.43
@@ -466,6 +496,7 @@
   },
   "icewall": {
    "lib": "ice.clear",
+   "class": "flat",
    "scale": [
     4.0,
     4.0
@@ -478,6 +509,7 @@
   },
   "icefloor": {
    "lib": "ice.glacier",
+   "class": "flat",
    "scale": [
     3.0,
     3.0
@@ -490,6 +522,8 @@
   },
   "xMosC": {
    "lib": "patterns/common/mosaic-star-lapis",
+   "class": "glazed",
+   "roughScale": 0.78,
    "scale": [
     1.2,
     1.2
@@ -503,6 +537,8 @@
   },
   "xMosD": {
    "lib": "patterns/common/mosaic-arabesque-lapis",
+   "class": "glazed",
+   "roughScale": 0.85,
    "scale": [
     1.2,
     0.8
@@ -516,6 +552,8 @@
   },
   "xBandC": {
    "lib": "patterns/common/frieze-star-maroon",
+   "class": "glazed",
+   "roughScale": 0.7,
    "scale": [
     1.5,
     1.5
@@ -529,6 +567,8 @@
   },
   "xSun": {
    "lib": "patterns/xanadu/sun-emblem",
+   "class": "cutout",
+   "cutout": true,
    "scale": [
     1,
     1
@@ -542,6 +582,7 @@
   },
   "clothR": {
    "lib": "patterns/canvas/stripe-red",
+   "class": "flat",
    "scale": [
     2,
     2
@@ -556,6 +597,8 @@
   },
   "xValance": {
    "lib": "patterns/common/valance-scallop",
+   "class": "cutout",
+   "cutout": true,
    "scale": [
     1.0,
     1.0
@@ -569,6 +612,7 @@
   },
   "xZel": {
    "lib": "patterns/xanadu/zellige-star",
+   "class": "glazed",
    "scale": [
     1.6,
     1.6
@@ -582,6 +626,7 @@
   },
   "xHaft": {
    "lib": "patterns/xanadu/haft-rangi",
+   "class": "glazed",
    "scale": [
     1.2,
     0.8
@@ -595,6 +640,8 @@
   },
   "xGiltC": {
    "lib": "patterns/xanadu/mughal-gilt-ceiling",
+   "class": "glazed",
+   "roughScale": 0.54,
    "scale": [
     1.2,
     1.2
@@ -608,6 +655,7 @@
   },
   "xYes": {
    "lib": "stone.stucco.yeseria",
+   "class": "relief",
    "scale": [
     1.5,
     1.5
@@ -621,6 +669,7 @@
   },
   "xMuqT": {
    "lib": "tile.muqarnas.turquoise",
+   "class": "glazed",
    "scale": [
     1.2,
     1.2
@@ -634,6 +683,8 @@
   },
   "xBandR": {
    "lib": "patterns/xanadu/peacock-band",
+   "class": "glazed",
+   "roughScale": 0.37,
    "scale": [
     1.5,
     1.5
@@ -647,6 +698,7 @@
   },
   "xPietra": {
    "lib": "stone.pietra-dura",
+   "class": "glazed",
    "scale": [
     1.2,
     1.2
@@ -660,6 +712,7 @@
   },
   "xSandR": {
    "lib": "rock.sandstone.red",
+   "class": "relief",
    "scale": [
     2,
     2
@@ -673,6 +726,7 @@
   },
   "xMarW": {
    "lib": "stone.marble.calacatta",
+   "class": "glazed",
    "scale": [
     2,
     2
@@ -686,6 +740,7 @@
   },
   "xMarK": {
    "lib": "stone.marble.black",
+   "class": "glazed",
    "scale": [
     2,
     2
@@ -699,6 +754,7 @@
   },
   "xJaliC": {
    "lib": "patterns/xanadu/jali",
+   "class": "card",
    "owed": "patterns/xanadu/jali",
    "optional": true,
    "scale": [
@@ -714,6 +770,7 @@
   },
   "xMarble": {
    "lib": "rock.marble012",
+   "class": "flat",
    "scale": [
     3.2,
     3.2
@@ -728,6 +785,7 @@
   },
   "xMarbleB": {
    "lib": "stone.marble.black",
+   "class": "flat",
    "scale": [
     3.2,
     3.2
@@ -742,6 +800,7 @@
   },
   "xMarbleW": {
    "lib": "stone.marble.calacatta",
+   "class": "flat",
    "scale": [
     3.2,
     3.2
@@ -756,6 +815,7 @@
   },
   "xOpArt": {
    "lib": "patterns/xanadu/op-art-arcs",
+   "class": "flat",
    "scale": [
     2.2,
     2.2

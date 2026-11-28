@@ -3,7 +3,7 @@
 First pass, 2026-11-11; the open issues worked 2026-11-12. Built in the cloud: checked under software GL (SwiftShader) only. The GPU look
 pass is owed.
 
-## Stand-ins (procedural, until a library set comes: `core/materials/PROMPTS-NEEDED.md` section 53)
+## Stand-ins (procedural, until a library set comes: `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet)
 
 - [ ] **The opaline sinter's play-of-colour** is the ground shader's sheen (`src/84-host-ground.js`, `aOp`, `?sheen=`) over the
   library's plain `ground.sinter`: a **procedural stand-in** for `ground.sinter.opaline` (owed).
@@ -25,8 +25,8 @@ pass is owed.
 - [ ] **No `tintFlow` plume** of rock flour: the lakes are drawn on `WATER.terraces`' pools, whose material takes a gradient, not a
   moving tint; the milky water is the gradient's.
 - [ ] **No sound**: `OPAL.SOUND` is data for a `core/audio` that does not exist (High Rift's records are the model).
-- [ ] The `KSTRATA` opal recipes are handed to `KSTRATA.add` by the kit (`src/84-host-ground.js`) rather than written into core's
-  `RECIPES`: adding them there changes every page that loads `35-core-strata.js`. Move them on the next all-builds rebuild (`TODO.md`).
+- [x] The `KSTRATA` opal recipes (`opal-rhyolite`, `opal-firetuff`) are core's `RECIPES` since Stage 8 (D13: every kit's recipes folded
+  into `core/terrain/35-core-strata.js`); `OPAL_STRATA` names them, and `src/84-host-ground.js` adds nothing.
 
 ## The look (judged in the software-GL shots, 2026-11-11; the GPU pass is owed)
 

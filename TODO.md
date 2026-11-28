@@ -21,6 +21,128 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## One arid-and-mountain region of six provinces in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+
+The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
+and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is drawn.
+
+> **A NEW SCALE MODEL IS BEING MADE** (the owner, 2026-11-25: *"i am having gemini make a new model"*), and it changes
+> the order of this work: **do not cut the region, and do not apply the map-edit queue, until it lands.** Every
+> measurement below and in these plans is against model 5.1. `openworld/catch-bowl/PLAN.md` **section 13** is the full
+> account — what does not depend on the model (every census and sim ruling, the hazards, the setpieces, the raids, the
+> kit assignments, the lore corrections), what must be re-measured (thirteen rows), that the **reissued pin ids are the
+> sharper risk than the heights** and break loudly at `load()` rather than drifting, the four commands that re-measure
+> it all in one run each, which of the twenty-two pitfalls can move and which cannot (**P18, P19 and P22, added
+> 2026-11-25, survive any model: the rescale breaks 6.4's river beds unless they are guarded; the Catch's authored ridge
+> amplitudes are three times what the ground subtends, on all four stations, two still uncorrected; and `STAGE.site` is
+> in the 4.22 legacy frame, not the model's**). **Ask Gemini for a rename table
+> from old pin id to new**: `SITES.json`, both region tunes and both region tests key on 5.1 ids, and a mapping turns
+> the migration into a single pass. `openworld/catch-bowl/MAP-EDITS.md` carries the same warning, edit by edit.
+
+Four things block the build, and each is small:
+
+- **A `trail` way kind** in `ROADS` [G data]. `core/world/42-world-roads.js` fixes `const G=.08, HW=4` (the ruling grade
+  and the half-carriageway) as module constants. Every way the Catch wants is a trail: the north road over a 5.3 km
+  saddle, the floor's track between the oases, the Twins' Route B. `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`
+  W2 is waiting on the same change, so it belongs in core, not in either region.
+- **A hazard binding for a region page** [G data] + [web]. `core/hazard` is built and rich — records (`KHAZ.front`,
+  `KHAZ.crust`, `KHAZ.night`) **and an ambient bridge** (`KHAZ.provide`, with `VOCAB.ambientKinds` carrying `thin-air`,
+  `cold`, `hot`, `dust` and `caustic-dust` whose row names the Catch's black storms, plus `KHAZ.sight` / `seen` / `aim`
+  on real aerosol optics) — and `core/atmos/fx` already supplies its fields (`ATMOS.airLoad`, named for the karaburan;
+  `ATMOS.gale`, built for the SE outer wall's God-Bore; `ATMOS.dustSeason`). **No fragment of `core/world` mentions
+  `KHAZ`.** Proposed: `48h`/`88h` on the shape `48w`/`88s` set for `KWCAMPS`, including the `KHAZ.provide` calls
+  (`openworld/catch-bowl/PLAN-HAZARDS.md` sections 4 and 5). Region 2's guides' traps want it too.
+- **A fixture binding** [G data] + [web]: one authored thing in one authored place on streamed ground, registered,
+  seated on the drawn mesh, streaming with its tile. Proposed `48f`/`88f` (`PLAN-SETPIECES.md` section 1). This is what
+  `PLAN-TWINS-CROSSING.md` means by "the Hall's cistern and the guides' torch brackets as fixtures".
+- ~~**`biomes/catch`'s stale records**~~ **DONE (2026-11-24)**: all five `CATCH.OASES` records are on their 5.1 pins
+  with `people` and `keeper` each, four pages rebuilt and verified headless, the baseline updated. The sand-sea and
+  north-fan station sites standing on 4.9 km and 7.0 km of mountainside (`PLAN-TERRAIN.md` P1, P2) are the map
+  session's, and wait on the new model like the rest of the queue.
+
+**The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): **six provinces in one
+region** — the Catch, the Bowl, the SE outer wall, the Stalker Range, the Stalker Gate and the **Twins** — 751,000 km²
+filled in a 1,280 x 1,052 km box, on the rule *"keep from splitting biome polygons between open world builds as much as
+we can help it"*, to be perfected as one build **before** it joins XOH. Consequences: `PLAN-TWINS-CROSSING.md` W1-W6
+move out of region 2 and into this region, **region 2's built tube spec (`src/48k-world-tubes.js`) migrates with the
+polygon** (its own README admits only A1's first 15 km were inside its cut) and region 2 is recut without the 1,424 px of
+`twins` its site squares hold, so its baked hash changes. Also: the **16 MB page cap lifted**, because the region is to
+be Godot-native; Bab al-Hawa and Ranger HQ kept and the Twins fort dropped; the SE
+outer wall rescaled at the Godsgate's frame and a disc at each tarn, the rest left high and airless; Ranger HQ at 500 on
+a salary and a cut of expeditions; **no trail toward Hub 01** and its function a Ranger surmise rather than anyone's
+knowledge; Hub 01 endable by a real expedition but not by attrition; `biomes/catch`'s stale records to be corrected; the
+Bowl's unnamed village named **Esper**; and **two biome kits owed**, `biomes/stalker-gate` (new) and `biomes/gills`
+(which has one source fragment and no build). Eleven map and kit edits follow (that plan's section 11). **No questions
+remain open.**
+
+**The canon rename is DONE (2026-11-24)** — `LORE.md` §4 (including Hub 01's three tiers of knowledge),
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 (with `rift.bowl.parabola-stair`
+joining the route list) and `ANCIENT-ROADS.md`. The background, kept because it is the reason the files disagreed:
+`openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
+2026-11-11) dropped the Arcbeam-Stair tunnel outright and named the files it breaks without rewriting them. On
+2026-11-24 the owner **gave a ruined bore from Stair to Parabola in its place**, which turns a demolition into a rename
+and restores `LORE.md` §4's oldest Catch passage word for word (sealed halfway, the northern half stripped by Yuni, the
+southern the divers' prospect). The bore's line runs straight down the Godsgate corridor with up to 6.6 km of rock over
+it, and Bab al-Hawa's 1,400 m shaft reaches its summit section exactly. **To rename:** `LORE.md` §4,
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 and `ANCIENT-ROADS.md`. `LORE.md`
+§4 also wants one narrowing: nobody has **reached** Hub 01 and returned, but foolhardy rangers got near enough to see an
+Ancient facility and come home, and that it is the Stalkers' source is their **surmise**.
+
+The earlier background, both measured:
+
+- **The SE outer wall's cordillera rescale never landed.** Its `PLAN.md` step 6.1 would give the province a 4,850 m
+  median with **zero cells over 6,500 m**; the map reads **7,962 m median, 83 % over 6,500 m, max 11,707 m** — while
+  step 6.2's Godsgate corridor and step 6.3's five tarns landed **to the metre** (the thalweg runs 2,284-3,739 m at a
+  1.1 % median grade; the saddle is 3,620 m exactly). So the pass works and the matrix is an un-rescaled 8-11 km wall
+  that the kit's six stations were not designed to stand in. P13; proposed: apply it to the western lobe only.
+- **Gemini's three pins.** The owner dropped the Godsgate caravanserai and the Twins fort on 2026-11-16 as "Gemini's
+  pin, with no lore" — but `biomes/seouterwall/PLAN.md` 3.3 had given **Bāb al-Hawa** a page of lore on 2026-11-10 (the
+  Vent-Shaft Caravanserai: a 40 m Ancient shaft collar still drafting +16 °C air from the collapsed Arcbeam-Stair
+  tunnel, the pass's only safe overnight camp), and the owner **accepted** that shaft in the Ancient network on
+  2026-11-11. **Ranger HQ** (Yuni's Stalker-watch, the Stalkers' only counterparty) is the same provenance and was
+  never put to the owner at all. P6.
+
+Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still held off the map (P5); Bāb al-Hawa's pin is
+1,205 m up the Godsgate's east wall, 12 km off its own plan's floor (P14); the Tharn crater reads 671 m above its plan
+and holds a 6,910 m lake (P15); the Stalkers have no buried pose and no line on the harpoon (P12,
+`kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `STALKER_TUNE` (S3) and the `EAST_RIFT` join (S4/C6)
+are designed in `PLAN-SIM.md` and not written. **S2 is DONE** (2026-11-25): `core/region/data/bowl-tune.js` with its
+five trade roads and `BOWL_TUNE.join`, `core/region/tests/test-bowl.js` (29 passed) and
+`core/region/tests/test-bowl-join.js` (16 passed) — the Bowl's six places and two hinterlands, the Train of Jabal
+re-homed from its off-map pool onto Jabal itself, and 120 days of Xanadu + the Catch + the Bowl as one valley: **281
+settlements, 450,619 people, no problems, the books balanced over all three tunes**. One question for the owner falls
+out of it (`PLAN-SIM.md` 3c): **the Bowl is ~15 % short of its own grain and grows no tea at all, and Jabal has 15,000
+people with no hinterland** — should Jabal have one, or does it eat Xanadu's bread for good?
+
+**What this session owes, as of 2026-11-25:**
+
+- **A GPU-lane `verify.py --assert` on the owner's machine** for the four rebuilt `biomes/catch` pages and for the
+  fourteen builds rebuilt when `core/simulation/77-sim-6-trade.js` gained `offset`. This container has no lane, so the
+  pages are proven *reproducible* (deterministic builds, baseline updated) and not proven *right*: no render check has
+  been run on any of them. Those fourteen were **already** behind `core/` before that change — Mungo's page by 1.17 MB,
+  Shade's by 714 KB, and Drum demonstrably so — which is the 2026-10-08 failure mode recurring.
+- **Arcbeam has moved** (the owner, 2026-11-25) to px 1120,190 in the arachnoid canyons, 10 km off the
+  Shell-Silkhead-Ria route: 332 m of trench at its own 4 km span with rims level to 1-9 m on all four axes, the best
+  bridge-city site on the planet. Its carve, its 70 m of deepening (or a drop of its rims from 400 m to 330), the
+  road's 10 km dog-leg and its re-dress for a wet canyon are **deferred**, and they belong to whichever region holds
+  that pin, not to this one. px 1016,1058 keeps the settlement as *"an arcology TBD of about 10k + hinterlands"* —
+  only its **name** is unknown. `PLAN-SITES.md` section 7c (SETTLED).
+- **`test-xan-economy.js`'s performance budget** reads 623 s against its 240 s line (393,159 people, 1,299 actors), but
+  it was measured against three concurrent node runs and fourteen python builds. To be re-timed on a quiet machine
+  before anything is concluded; the other 73 checks pass.
+- **Jimjam is 8.2 km from where the model now puts it** (`openworld/north-basin/data/region.json`, measured 2026-11-25).
+  The region was cut with Jimjam at px 474,220; the model has since moved it 4 px north, to 745,546 (473,216 after
+  `legacy_shift`). It is **the only live drift of this kind**: of the five paired places in the two live regions
+  (`isle-demo`, `north-basin`), Jimjam is the one that moved. Not corrected here, because moving a settlement 8.2 km in
+  another region's cut is that region's call — either `north-basin` is re-cut, or its `region.json` takes the model's
+  pixel. `openworld/outposts/tests/test-outposts.js` now names it and nothing else.
+  - **Why it was invisible**: that check measured all three regions' drift together against a one-in-ten tolerance and
+    failed at nine of thirty-two — but **eight of the nine are `archive/little-demo`'s**, where the drift runs to 496 km
+    (Shade) and means nothing, since nothing is built from `archive/`. The archive is now reported beside the check
+    rather than counted in it, so the one finding that matters is legible. A ratio was never the right test for five
+    pairs anyway: one in ten of five demands zero.
+
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
 - **`|| <number>` in core/audio** (check_source ORNUM, 147 findings, recorded in `tools/check_source_baseline.json` when
@@ -48,6 +170,9 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 - ~~**Reroute the Ostrukh Riba south into Lake Ostrukh.**~~ **Done in scale model 5.1 edit 4** (`tools/scale-model/edit_514.py`, 2026-11-10, re-run on the merged model 2026-11-11): a travertine sill at 2,050 m closes the flagship maar's north breach, and the river runs 262 km south into Lake Ostrukh (1,850 m), 0.9 m³/s of the model's runoff. Reed, Nazar and Mungo's plans were corrected with 5.1 edit 3 (`biomes/loom-chasms`, `biomes/godshearth`).
 - **Reroute the Ostrukh Riba south into Lake Ostrukh.** The owner agreed that the Slabfields' springs and Lake Ostrukh share one aquifer, fed by the Stalker Range's snow (`biomes/slabfields/PLAN.md`). Today the river runs north from the flagship pool (2,040 m) into Region 99 and ends at 334 m, although its note says it feeds the lake (1,850 m). A southern course needs a carve about 70-80 m deep; its highest point is 2,082 m at 1588,1392. Retrace the river downhill and fix its note. The scale-model edits session (`claude/dreamy-davinci-30f3c1`, edit 5.1.1 at f1d1501cf, artifact version 92) has the details. Held for the next map edit, not done alone.
 - **Reed, Nazar and Mungo:** the biome plans' coordinates for them add the canvas shift twice (Reed really stands at 1277,676). Correct the plans when the next edit lands.
+- ~~**Merge `Crook / Farside / Shroudhills` & apply `Ria Valley` hydrology, `22`-Canal Continental Network, and `4` `[D]` settlement-fit edits.**~~ **Done in scale model `5.1e22` + `5.1e23`** (`tools/scale-model/edit_522_ria_hydrology.py --in-place` & `tools/scale-model/edit_523_canals_and_settlements.py --in-place`, 2026-11-23):
+  - `5.1e22` (`Sphere 27` exterior): `39` sinuous dendritic Ria & Shroudhills rivers (`sin = 1.29–1.51`) with stream-power valley erosion, `x ≈ 702` `"Iron Gates"` hogback sill & `4,210 m³/s` water-gap (`Heartland` `BSk`/`Csa` rain-shadow), `Farside` `55–96 km` seaward foreland (`Farport` at `(248, 585)` `+212 m` above `(243, 586)` harbour), `Crook` `4` drowned calderas + `18` gorge rivers (`9111–9128`), and `Sphere 27` polygons/pins.
+  - `5.1e23` (`DATA.canals` / `canals.json` + interactive `Canals` layer + settlement fit): `22` engineered lock, boat-lift, summit-pound & polder canals (`3,171.1 km`, `203` locks) across Eternal State (`8`), Ria Civilization (`7`), Empire of Iziz (`2`), Hykkousoi League (`2`), and Kingdom of Voth (`3`); `4` disjoint `[D]` micro-surgeries (`Almua` spit + `r863 Dip Rivrh`, `The Beacon` `+868 m` knoll, `Dalab` `Wind Bruk` delta grading, `Locus` `r_locus_delta` scarp stream); `7` `[B]`/`[D]` pin relocations; and `13` newly registered settlement pins in `60-settlements.js`. (`359` checks pass in `test_smodel.py`; downstream `biomes/firebliss`, `settlements/strongwall` & `settlements/thalaba` ride along with the all-builds rebuild.)
 
 ## With the native-crop rule *(the owner, 2026-11-12; `openworld/TRADE-SCOPE.md` section 2.5)*
 
@@ -70,25 +195,207 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
   `biomes/twins/PLAN.md:90` already has Xanadui lacquerware as caravan cargo.
 
+## Post-merge graphics expansion: build out Xanadu on the Stages 3–7 stack *(the owner, 2026-11-22; `GRAPHICS-TERRAIN-PROPOSAL.md` §12c)*
+
+Once the other collected sessions are merged into `main` and Stage 8's all-builds rebuild (below) is green, the next graphics & terrain expansion builds out **Xanadu** (`settlements/xanadu` / Erewhon, `kits/xanadu` & `XAK`, `biomes/xanadu`, `openworld/xanadu-lake-shore`, `openworld/xanadu-north-shore`, `openworld/xanadu-oidong-highrift`, `settlements/pher`, `settlements/kirstabal`) on the vertical-stack upgrades:
+- **Terrain, Alpine Crags, `40 km` Horizon Light & 3D Grass (`S1`–`S5` + `alpine: 2`):** Land `core/world`'s lush `xanadu` biome style on `"relief": {"micro": 2, "alpine": 2}` (`WRELIEF` v2 Pythagorean-rotated arête peaks without negative collar moats, `WRELIEF.crags` strike/dip cliff buttresses & couloirs, and `WLAND.KINDS_V2` crest-gated `alpine`/`volcanic` `KSTACKS` gendarmes), export rugged cordillera chunks (`>= 2,400 m` relief) with `--alpine=2 --alpine-step=16`, bake `40 km` `S1` horizon & Dozier–Frew sky-visibility maps (`core/world/bake_horizon.py`), enable `S3` `32 m` sub-grid chunk normals, pack Xanadu's alpine/lake-shore/courtyard `S4` hex-tiled PBR ground `Texture2DArray`s (with `terrain.gdshader`'s unstretched `ZY`/`XY` wall-plane cliff granite, `px_3d` cliff AA, conjugate rock fractures, and `> 4,150 m` smoothed-couloir alpine snow), and tune `KratorWorldGrass` 3D grass swards across Xanadu's valleys, orchards, and lake margins.
+- **Glazed Tile, Masonry & Lacquer Surfaces (`M1`–`M4`):** Apply `hemi-oct8` + `mipVariance` specular AA (`v4_arrays_two_maps` / `v2_two_maps_oct8` in Godot; `8-bit` `xy8` smooth-surface promotion + `v3` arrays on Web) to Xanadu's glazed domes, Persian/Turkish tilework, carved timber, and lacquerware so curved specular highlights show zero 6-bit banding; enable `M3` planar POM on hero ashlar/brick walls and `M4` concave cavity + base grounding.
+- **Sultanate & Erewhon Interiors (`I1`–`I4`, Gate 5):** Export `interiors.json` v2 (`KROOMLIGHT.buildTable` + doorway `portals` + `vertexCornerAO`) for Erewhon and `kits/xanadu` interiors (`89y-xa-interiors.js`, `kits/interiors/sets/xanadu.js`), wire native Godot `KInteriorsLight` (`INDOOR_LAYER = 2` sun/sky mask, discrete room-table daylight/lamp bounce, room-gated `OmniLight3D` pool with 2 shadowed hero lamps, baked corner AO), and add a `xanadu` deterministic route + Gate 5 Sun-Leak Probe.
+
 ## Ride along with the next all-builds rebuild
+
+- **Promote macrotidal, floating-ward & multikit skirt-stripping extensions** (2026-11-27, Floating City V3 & Arcoforte P0–P7):
+  - Fold `{stripBelowGrade: 0.045}` (`stripBelowGradeFaces` from `settlements/floating-city/src/85-fc-world-scene.js`: strips
+    horizontal `max(y0,y1,y2) <= 0.045 m` foundation skirt/bottom caps that z-fight flat pontoon decks, stone dykes and plinths)
+    and `maxVariants` / `v=0` prototype deduplication (`1,104 -> <= 680` draw calls at `2,630` lots) into
+    `core/city/53-city-host-multikit.js` (`KCITY.flattenProto` / `KCITY.hostMultikit`).
+  - Wire `core/hazard/23-core-hazard-tide.js` (`KHAZ.TIDE`, `KHAZ.STATES['KHAZ.tide']` & `'KHAZ.race'`),
+    `core/city/float/{44-city-float,55-city-host-float}.js` (`KCITY.floatPose`, `KCITY.basculePose`, `KCITY.auditFloatFleet`),
+    and `core/water/ext/{63-core-water-tide,63b-core-water-tide-draw}.js` (`WATER.tideBasins`) into `core/PORT.md` + `godot/tools/sync_core.py`,
+    and connect `KHAZ.TIDE` to `settlements/fleetborn-cove`'s `-11 m` sill & `-6.0 m` causeway, `settlements/arcodiga`, and `settlements/hook`.
+  - Guard `if (!window.onerror)` (or omit `window.onerror=`) inside `core/engine` `kit_bundle.py`, `kits/port`, `kits/ringsea`, and
+    `kits/arcoforte` so multi-kit settlement builds need no `window.onerror=` regex shims (`check_assembly` `CLASH onerror`).
+  - Note on `peoples.json`: `"shore_kin"` is now landed alongside `"cflit_qbon"` (`7dcd33de0`, synced to `godot/data/characters/`);
+    finish `"yonni"` & `"hush_kin"` + rebuild `settlements/longsong` (5 pages) in the all-builds pass.
+  - **All-builds execution order & gotchas (from 13-builder postmortem)**: (1) `git lfs pull` (`tools/lfs_needs.py --pull`) first;
+    never run `port_baseline.py --write --prune` in a partially-pulled tree; (2) apply scale-model edits (`edit_528`) ->
+    `tools/scale-model/model/build.py` -> `tools/scale-model/tides/bake_tides.py` -> `node godot/tools/tide_golden.js`;
+    (3) build producers before consumers (`kits/crops` -> `kits/catalog` -> `kits/interiors` BEFORE `kits/ancients-interiors` ->
+    `core/engine` kits + `fingerprint.py` -> `kits/ancients` targets & `kits/arcoforte` -> `biomes/*` WITH `--all` / `--station` ->
+    `settlements/*` incl. `girder/build_hero.py` & `openworld/*`); (4) run `python3 tools/check_botany.py --update` after biome flora
+    changes, `python3 tools/audit_port.py` after `core/` additions, `make-golden.js` + `godot/tools/sync_core.py`, and
+    `godot --headless --path godot --import` once before `--script` tests when a new `class_name` (`KratorTide`) lands.
+- **Fold `core/hamlet/shorekin/26-hamlet-shorekin.js` into `core/hamlet/20-hamlet-cultures.js`** (2026-11-26, Arcoforte P4;
+  `20-hamlet-cultures.js` reaches ~56 builds): register `KHAMLET.shorekinRow()` on `KHAMLET.CULTURES['shore-kin']` alongside
+  `shumariRow()` (`core/hamlet/shumari/25-hamlet-shumari.js`), and fold `core/camp/fleet/58-camp-fleet.js` into `core/camp/` once
+  all `core/camp` consumers rebuild together.
+- **Move `CROPS.BIOMES.arch` into `kits/crops/src/`** (2026-11-26, Arcoforte P3b; `kits/crops` reaches 61 builds / 150 pages): copy
+  `ARCH.CROPS` (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) from `biomes/arch/src/40-biome-arch-chem.js`
+  into `kits/crops/src/10-crop-core.js` (`BIOMES.arch`), add `'arch'` to `home` on `taro`, `breadfruit`, `banana`, `coconut`,
+  `ramie`, `rope-banana`, `pandan`, `kelp`, `kelp-ash` and `eelgrass` in `kits/crops/src/20-crop-records.js` / `22-crop-material.js`,
+  and drop the runtime `ARCH.registerCrops()` shim in `biomes/arch/src/40-biome-arch-chem.js`.
+- **The skylight recaptures at once on a clock jump** (2026-11-25; `core/atmos/89-atmos-b-skylight.js`, 949 pages): its hook waits
+  `every` (30) frames after the hour moves, and `capture()` does not record the hour, so after a jump to night the water and metal
+  reflected the old hour's sky (in the Arch cove, the noon sky and the giant's unlit noon face as a dark disc). Fix in the hook:
+  when the hour moved 1 h or more (or `clock.day` changed), update sky uniforms first (`SKY.update(0)`, since `ticks` run before `SUBS.view` in `91-host-loop.js`!) and capture now regardless of `every`; and set `S.hour` in `capture()`. Then drop the Arch's
+  stopgap tick in `biomes/arch/src/89w-host-water.js`.
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
+- **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
+  `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
+  kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:
+  - **Lava steps: a core addition.** KRELIEF has no step form (a flow's front frozen in a terrace down a slope). Add one to
+    `core/terrain/38b-core-relief-lava.js` (with `test-relief-lava.js`, a negative), then take it on the kipuka's and the vents' flow fronts
+    (the KLAVA deposits' margins: `shared/46k-host-klava-flows.js`). Changes every page that inlines `38b` (Godstep, the Godthrone flank, the kipuka).
+  - **The tube station's surface flows.** Not taken: station 11 is underground and its surface shows only through the skylights, so a flow
+    over it would move the skylights' rims and every check on them for nothing seen. Take it only if the tube gets a surface view.
+  - **KSTRATA's core shader on the Throne's walls.** The caldera's and the blast's beds are drawn in one texture unit
+    (`shared/84s-host-strata-band.js`: colour by bed height, no per-pixel warp, cross-bedding, varnish or colonnade joints), as both grounds read
+    15 of 16 units and the core path (`KSTRATA.shade`) takes five. If the ground's layers are packed (two layers to a map, KNOWN_ISSUES
+    "Sixteen texture units"), switch the walls to `KSTRATA.shade`.
+  - **The kipuka's "nothing rooted under the water" check** now skips a moss skirt on a hyperjungle giant's buttress (one skirt 1.1 m under a
+    stream, 85 m from a 205 m tree, after the KLAVA flows moved the streams' lines). The cause is the hyperjungle kit's: it hangs its skirts
+    from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
+    under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
+    hyperjungle kit.
+  - **core/water: the pan's `levelAt`, and the glacier's hand-set line.** `WATER.fields` (ext/60) reads every surface's `levelAt`.
+    Ice has had one in core since Stage 8 B5 (91f152c34, `ext/54`: `S.levelAt=()=>S.level`), so the Throne's glacier no longer needs to
+    set it by hand (`stations/glacier/89w-host-water.js`): drop that line. The pan still has none (its water is only its film): give it one,
+    or let `fields` skip it, with a test.
+- **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
+  `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
+  `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page
+  that takes the Xanadu interiors gains them (only `settlements/xanadu-lake` and `settlements/kirstabal` read them in place now).
+- **The countryside sample to the other Xanadu regions** (2026-11-23, BUILD-PLAN A9, HAMLETS-PLAN H2): `core/world/48v` and `88r`
+  are opt-in (`WORLD_SAMPLE` in a region's `src/48-world-site.js`); only `xanadu-lake-shore` and `xanadu-north-shore` set it. The
+  other province regions (HAMLETS-PLAN section 3's table) set theirs at the rebuild, and their pages then lay their samples.
+
+- **The balanced basket into Voth, Mungo and Dhelv** (2026-11-12, `core/simulation/77-sim-6-items.js`, branch
+  `claude/sim-s4-s7-fdaeba`). The change reaches `settlements/voth` (city and site), `settlements/mungo` and
+  `settlements/dhelv`. Their committed pages were built on 2026-11-08, before core/biome's e983ec13d and e6543a3a9. Rebuilt
+  now, they fail their GPU verifies on the biome side: Mungo's error panel has `ReferenceError: bk is not defined` at
+  `BIO.geo.stemClump`; Voth's city fails on page errors, flora (swbay), embassies, the Arena canton not walkable, and the
+  flora editor; Dhelv gave no result. Their pages were left as committed. Rebuild them with the biome rebuild. The basket
+  itself is tested in node: `test-sim.js` (Dhelv's trace), the isle demo's 15 tests, Godot's isle books.
+- **Wire the Codex sets of 2026-11-12** (the collection for main, 2026-11-22): `claude/textures-2026-11-12` put 63 sets in the library,
+  none wired. Their prompts are in `core/materials/PROMPTS-archived.md` ("Delivered 2026-11-12" and "Delivered 2026-11-12 for prompts that
+  lived on other branches"): High Rift's `rock.hematite.mirror`; Opal Valley's three; the Siphon Pits' three; the Rift line's five; five of
+  the Tungang kit's (and the Glaziers' `cholet-front`); the Kimr's nine; the Labyrinth's flora's two; and the batch's own sections 37, 40, 41,
+  43-45, 48-50 and parts of 51-52. Each build's `materials.json` slot, then `python3 tools/textures/pack.py <build>`, then judge it in
+  the demo kit before it stands (memory: demo before commit); each build's KNOWN_ISSUES.md names its stand-ins.
+  With them, the later deliveries, also unwired: the 2026-11-16 and 2026-11-17 batches' sets the step-4 merge found (`PROMPTS-archived.md`,
+  the two "found at step 4" sections: the Xanadui fort's three, the Qiblai kit's five, the Azure Dream's three, the mined goods' three, the
+  Cliff Lungs' four and the rest), and the 2026-11-23 batch's 13 (`core/materials/PLAN.md` "Delivered 2026-11-23": `kits/coyote` five,
+  `kits/marr` three, `settlements/kirstabal` `wall.slate.coursed`, `kits/xanadu` 88g's two, `biomes/copperglacier` `rock.azurite`,
+  `biomes/ehighlands` `card.beech.southern`).
 
 **Taken by the second integration pass** (`claude/integration-2`, 2026-11-10 and 11; HANDOFF-REBUILD.md): the `dalab` sockets pack,
 water breakup on by default, the catalog's `tile` detail family, the Highlands great-building room kinds in `30-programs.js`, the fauna
 runtime and bison table, and the `tools/` listing staleness (every build rebuilt): all rebuilt and GPU-verified, items deleted.
+- **Execute the All-51-Settlements (`60`-Target) Rebuild & Continental-Scope Quality Pass** (`2026-11-22`, `settlements/ALL-BUILDS-REBUILD-PLAN.md`): port remaining bespoke layouts onto `WORLD.H` + `KCITY`, re-anchor stale cuts (`Erewhon` `841,1517`, `Pinnacle Rock` `1007,686`, `Longsong` `1228.88,1621.23`), apply frame turns (`Verge` `-10°`, `Ys` `-55°`, `Dalab` `+45°`, `Hook` `-9.2°`, `Dhelv` `+90°`, `Noah's Regret` `+90°`, `Ledge` `180°`), and place the locked systemic buildings (`10` Mercenary Bourses, `19` Order Chapterhouses + hidden Whisper-Cell radios + *Tzintzun*'s lab at `Voth`, Geomancer Dual HQs & `Verge` `856 m` oil cableway, Colonization Crier/`styleBooks` halls, Prohibition/Thieves' smuggling cellars, and `Rulings #1–101` workshop I/O chains).
+- **Wire multi-kit fragments & sidecars into settlement & regional builds** (2026-11-22, `core/region/MULTI-KIT-SCOPE.md` Phases 1–4, Rulings #99–101; held for the all-builds rebuild by owner's choice): include `core/kits/10-core-kits.js`, `core/city/42-city-multikit.js`, `core/city/53-city-host-multikit.js` (with `tools/kit_pack.py --sidecars` for cosmopolitan multi-kit pages) and `core/region/47s-region-styles.js` in settlement `CITY_JS` / `CITY_DATA_JS` / `REGION_JS` lists when rebuilding all settlements.
+- **Add `Sphere 27` (`Crook` / `Shroudhills`) biological lineages to `peoples.json`** (`2026-11-22`, `core/region/CROOK-RIA-SCOPE.md` §3.1; held here because `core/charactermodels/data/peoples.json` reaches `settlements/longsong`'s 5 pages): add `"cflit_qbon"` (*cFlīt-qBōn* pelagic `25-min` free-dive lineage), `"yonni"` (*Sfīra-Kandētæ* reverse-dimorphic `90%`-twin Spear-Queens), and `"hush_kin"` (*Silent Vales* *Handspeak* sanctuary tribes) to `core/charactermodels/data/peoples.json`, run `node core/charactermodels/test-rig.js` and `python3 godot/tools/sync_core.py`, and rebuild `settlements/longsong` inside the all-builds pass.
+- **The Orders' catalog pieces and kits/qiblai's interiors options** (2026-11-23, settlements/flashing-eye's interiors):
+  `kits/catalog/krator-master-furniture-xanadu.js` takes the Flashing Eye's seven pieces (the heliograph, the fire basket, the Ember's
+  hearth, the Book's lectern, the mirror bench, the crimson banner, the veil rack) beside the Beacon's eleven (its B8, 94ffe4aae,
+  taken here verbatim so the two merge clean); `kits/qiblai/src/89q5s-qb-shells.js` `qnIxType` takes `prog.doors`, `prog.bulbs`
+  and `prog.stair` (unused by every page but the Flashing Eye's, which behave as before). The catalog file reaches 57 build
+  commands (`python3 tools/reach.py kits/catalog/krator-master-furniture-xanadu.js`), the shells six (Azure Dream, Lightwall,
+  Qiblai's city, Viridian, kits/qiblai, the Flashing Eye); only kits/catalog and settlements/flashing-eye were rebuilt and
+  GPU-verified with the change. The rest ride with the rebuild.
+- **core/terrain's ground shader under an environment map** (2026-11-17, found on the Glaziers' sheet): `43-core-ground.js` names
+  `kgTri`'s and the hex sampler's locals `v1 v2 v3` and `r1 r2 r3`, which three r128's `cube_uv_reflection_fragment` `#define`s as
+  numbers whenever the scene or the material has an environment map (a skylight): the fragment fails ("'0.276' : syntax error").
+  Rename them (`kgV1`..., `kgR1`...) and drop the `#undef` guard in `core/terrain/host/39i-core-cavern-rock.js`; 199 builds read it.
+- **The catalog's hem rule and decal pictures** (2026-11-17, branch `claude/dreamy-turing-3902d7`, which also carries the unmerged
+  `claude/citadel-furnishing-cb5e01`; the owner: "make sure wall hangings dont wind up near ground, this has been a recurring issue",
+  and "fold into the all-build rebuild"). `core/catalog/krator-furniture-core.js`: `furnAnchorY` hangs a top-hung cloth with its hem
+  `FURN_HEM` (1.1 m) up when the ceiling allows (wall art's lower edge too), a piece may say `hung: 'top' | 'eye' | false`, and
+  `mkDecal` shows a delivered picture (`FURN_DECAL_IMG` / `KF_DECALS`, a key that is a texture id) over its painted stand-in; eight
+  culture cloths take `hung: 'top'`, `br_h_hung_hide`'s hide is 1.6-2.0 m, and the kit's painted hanging (a hide in a frame of two poles)
+  hangs instead of standing on the floor (the owner, 2026-11-17: "Raise it too"; every culture's `*_court_painted_hanging` moves).
+  Hangings a kit places by hand take the same rule through the engine's new `FURNISH_WALL(key, x, floorY, z, ry, ceilY, o)`
+  (`core/engine/91f-furnish.js`; a stub in `settlements/isle-demo/bundles.py`): the Islanders palace, gallery and shrine banners and
+  painted hangings, `isFurnRoom`'s art and extras (the residence's banners), the Scyvoi chief's tapestries, the Lizardmen Interpreters'
+  scroll. Those three kits' pages move: `python3 core/engine/fingerprint.py` will say so for them, on purpose. Not built yet. `python3 tools/reach.py core/catalog/krator-furniture-core.js`
+  reaches 66 build commands: none is rebuilt on the branch, so every catalog-taking page moves in the rebuild. Then
+  `python3 core/furnish/fingerprint.py` and `python3 core/engine/fingerprint.py` (hung cloths in furnished rooms move on purpose: read
+  which, do not re-baseline blind), `kits/catalog` and `kits/interiors` `verify.py --assert` on a lane with `KRATOR_GL=gpu`, the
+  hash baseline. Checked headless already: `node core/catalog/test-hangings.js` (every wall hanging of the catalog, 458 variants, hem
+  at least 1 m in a room tall enough), `node core/tags/test-tags.js`, `node core/furnish/test-furnish.js`, the citadel census.
+  The pictures: `kits/catalog/materials.json` "decals" lists the ten owed in `core/materials/PROMPTS-archived.md` section 57 (delivered); once one
+  is delivered, `python3 tools/textures/pack.py kits/catalog` packs it and Erewhon (`furniture_bundle.bundle(..., decals=True)`) and
+  the catalog's sheet show it (about 150 KB each inline).
+- **Agreed 2026-11-24, source and tests first (`GODOT-LOOK-HANDOFF.md` says what this rebuild must do for it; `GODOT-LOOK-PLAN.md` section 13's table where each addition stands): the pages that take `core/engine`, `core/export`, `core/catalog` and `core/biome` are behind their sources and want this rebuild.** Built: a material's `side`, mirrored triangles, `closed`; in `core/engine` the chamfered box, out of true, a height field and the smoke and sill marks; in `core/catalog` the chamfered box and a grain axis; in `core/biome` wind stiffness and phase; each off until its `setForm()`. Still to write: baked occlusion and edge, the opening's mark, the Godot packs, an exporter that turns the forms on, and Godot's readers. The first note: eleven small export additions for the Godot look: a chamfered box on the box's own 24 vertices, three per-vertex fields (height above the plot, occlusion, edge), an opening's mark on its wall, out-of-true jitter, a furniture grain axis, wind stiffness and phase on plants, and Godot packs that keep colour and roughness; and three in the scene export that the back-face culling of 2026-11-23 turned up: a material's `side` (front, back or double), a mirrored mesh's triangles turned over when its matrix is baked, and `closed: true` on a closed solid; and one the air and the decals of 2026-11-24 need: where smoke rises and where a wall stains (a chimney's outlet, an opening's sill) as registry records. They touch `core/engine`, `core/catalog`, `core/biome`, `core/export` and `tools/textures/pack.py`, so they are cheap only inside this rebuild. The plan's steps 1 to 3 are built (its section 14.3), and 4, 6, 7 and 9, which are Godot-only (14.4); of step 5, the colour cards (P1) and the trunk's flare (P3) change the library and `core/biome` and so ride along too.
+- **Graphics & Terrain Stage 8 (the stack's own list; `STAGE-8/PLAN.md` supersedes it: its corrections A C4-C12, and the owner's D1 puts B1-B5/K1-K5 in their own sessions before Stage 8) (`GRAPHICS-TERRAIN-PROPOSAL.md` §11 & §12c–12d; `INTEGRATION-AND-REMAINING-SURVEY.md`, `BIOME-REBUILD-SURVEY.md`, `KIT-REBUILD-SURVEY.md`, `STAGE-5-REPORT.md`, `STAGE-6-7-REPORT.md`, from `claude/vertical-stack`)** — run in this exact order once the other collected sessions merge:
+  1. **Turn `relief.micro: 2` and `relief.alpine: 2` on across every open-world region:** Set `"relief": {"micro": 2, "alpine": 2}` in every `openworld/*/data/region.json` (merging into existing `relief` dicts on `oidong-highrift` & `pinnacle`), re-run the world-tile stream bake, re-bake each region's `plan/sites.json` and resources, export cordillera Godot cases with `--micro=2 --alpine=2 --alpine-step=16`, and bake `40 km` `S1` horizon + sky-visibility maps (`python3 core/world/bake_horizon.py <export_dir>`) for every Godot open-world export. Verify `wrelief_test.gd` v2 goldens (`peaks2`, `crags2`, `records_alpine2`, `land_alpine2`) and `python3 tools/check_godot_exports.py`.
+  2. **Roll out the Stage 5 (`M1`) engine-split material packing (`STAGE-5-REPORT.md` §4):**
+     - **Godot exports (`godot/tools/export_spike.py`, `packFormat: 2`):** Emit `v4_arrays_two_maps` (`hemi-oct8` normals + `mipVariance` in `pack.json`) for multi-layer ground/town atlases and `v2_two_maps_oct8` (`library.gdshader` `use_nrc = true`, `normal_enc = 1`) for standalone kits (`-33.3%` `BC7` VRAM, `2` samplers). Never pack height into alpha on `alphaTest > 0` cut-out cards (Gate 1).
+     - **Web builds (`tools/textures/pack.py`):** Keep `v1` 3-map WebPs on inline HTML pages (preserving the `16 MB` page cap), promote smooth/glazed materials (`specular >= 0.45`, `roughness < 0.35`) to `8-bit` `xy8` normals, and build `v3_arrays_three_maps` at runtime (`ISLE_ATLAS` pattern) on pages approaching the 16-sampler WebGL2 cap. Verify Gate 1 (`pack.py`) and Gate 3 (`m1_slice_test.gd` / `tools/textures/m1_slice.py --web`).
+  3. **Land the shared all-biome (`B1`–`B5`, `540` pages) and all-kit (`K1`–`K5`, up to `758` pages) core upgrades (`GRAPHICS-TERRAIN-PROPOSAL.md` §12d):**
+     - **All-biome (`core/biome`, `godot/shaders/foliage.gdshader` — individualized 64-biome checklist in `BIOME-REBUILD-SURVEY.md`):** `B1` normal-gated leaf backlight (`M5`); `B2` baked crown self-occlusion in `_COLOR` + `0.35 m` trunk/rock base AO (`M4`/`M5`); `B3` uniform-keyed foliage/irid-bark shader deduplication (`50–90 -> 3–6` programs); `B4` default-on `BIO.INDEX_ITEMS`, `BIO.setA2C`, station `LOD.merge`/`cull`, and `BIO.libSwap` `willReadFrequently` alpha-fringe dilation; `B5` `KDRAWN.h` audits + `S6` chromatic crease/lift/aspect tinting; plus split `.tex` sidecars on `biomes/xanadu` (`12.07 MB` inline `xanadu-floor.html`) and `10+ MB` inline biomes before `8-bit` normal promotion per `BIOME-REBUILD-SURVEY.md`.
+     - **All-kit (`core/materials`, `core/engine`, `core/catalog`, `kits/interiors`, `godot/shaders/library.gdshader` — individualized per-kit checklist in `KIT-REBUILD-SURVEY.md`):** `K1` uniform-keyed `KMAT` specular/breakup/world-UV dedup + sine-free breakup hash + `pack.json` `mipVariance` specular AA (`M2`); `K2` `core/engine` plot-base AO, hero `boxBevel()`, and universal `KROOMLIGHT` (`I1`–`I4`) wired into `91i-interiors.js` & `kits/interiors`; `K3` `8-bit`/`hemi-oct8` promotion on smooth catalog families (`lacquer`, `ceramic`, `gold`, `metal`, `nacre`, `obsidian`, `tile`) + batched `0.18 m` foot-contact AO in `KF.batch`; `K4` shared `20-core-roomlight-host.js` replacing pasted `nlvTex` copies; `K5` split Godot `library.gdshader` (strictly opaque — Early-Z & vertex-only shadows) from `library_cutout.gdshader`; plus **split sidecars first** on `ash-nomads` (`95%` cap), `desert-nomads` (`98%` cap), `voth-city` (`94%` cap), `screamers` (`87%` cap), `beast-riders`, and `krator-fauna.js` (`94%` cap) per `KIT-REBUILD-SURVEY.md` & `INTEGRATION-AND-REMAINING-SURVEY.md`.
+  4. **Merge, rebuild all reached pages (including non-`build_dirs()` targets) & verify nightly gates (`INTEGRATION-AND-REMAINING-SURVEY.md` Part II):** Fix `landshade.py` insulation (`--osm-json`), resolve `origin/main` scale-model conflict by renumbering branch `edit_517*.py` -> `edit_519*.py` on top of `main`'s edit-8 rasters, sweep parked items below, build producer kits (`kits/interiors` before `kits/ancients-interiors`), run `python3 tools/build.py --all` **plus** the explicit non-`build_dirs()` targets (`biomes/swhighlands --station pillars --preview span`, `core/charactermodels`, the 7 `core/*` demos, `openworld/network-proposal/testbed`, `tools/scale-model/model/build.py`, `godot/tools/sync_core.py`, and `godot/tools/export_spike.py`); verify `core/engine/fingerprint.py`, `core/furnish/fingerprint.py`, `tools/route_harness.py`, and Godot `stage7_interiors_test.gd` on `arc`/`rtx`; update `PORT-BASELINE.json` (`--write --prune`) only for verified pages; finish with `python3 tools/test_all.py --nightly` green on Web and Godot 4.7.2.
+- **Eleven Xanadu furniture pieces for the Order of the Beacon** (2026-11-23, `claude/beacon-monastery-d509f5`; settlements/beacon B8):
+  `kits/catalog/krator-master-furniture-xanadu.js` gains the switchboard, cable drum, signal lectern, signal mirror, Register of
+  Lights, gold banner, relic lamp, engine set, lens bench, hour drum and reader's seat, and two palette colours. The catalog's page
+  and the Beacon are rebuilt and verified; every other page that bundles the catalog (`python3 tools/reach.py
+  kits/catalog/krator-master-furniture-xanadu.js`: 49 builds) is behind until the rebuild. The pieces are appended to the file;
+  a Xanadu room whose kind and piece type they match may now take one, so furnished pages' hashes will move.
+- **Stage 8: switch the per-page packs on** (2026-11-23, `settlements/xanadu/XS1-CLASSES.md` "Fixes after XS0"): after the re-pack, re-record each Xanadu page's lists (`python3 tools/textures/page_pack.py record <page> --queries ?interiors=1` on a GPU lane, into `settlements/xanadu/page-packs.json`), then make `--page-packs` the default in `settlements/xanadu/build.py` (its `'--page-packs' in sys.argv` test) and rebuild every page built on Xanadu's page; publish each page's renamed sidecars (`<page>.tex.<key>.js`) with it.
+- **Stage 8: glaze the five pattern sheets** (the owner, 2026-11-23: "Glaze at Stage 8"; `settlements/xanadu/XS1-CLASSES.md` "Fixes after XS0"): `xMosC`, `xMosD`, `xBandC`, `xGiltC` and `xBandR` (in `kits/xanadu` and `settlements/xanadu`) stay classed flat until then. At Stage 8 lower their roughness below 0.35 (their materials or their packed roughness maps; packed means now 0.381, 0.354, 0.423, 0.558, 0.809), re-pack, rerun `python3 tools/textures/mclass.py --measure`, class them glazed in both `materials.json` (they then derive glazed and take 8-bit normals, +119 to +198 KB each), and drop their entries from `core/materials/classes/m1-classes.json` "pending" (`test-class.js` fails until both are done).
 - **The Xanadu kit's opt-in pieces into `src/`** (2026-11-16, `kits/xanadu/README.md` "Opt-in pieces"): `extra/88c-xa-caravanserai.js`,
-  `extra/88d-xa-lakecraft.js` and `extra/88e-xa-stall.js` into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
+  `extra/88d-xa-lakecraft.js`, `extra/88e-xa-stall.js` and `extra/88f-xa-harbour.js` (2026-11-17, Kirstabal's harbour), `extra/88l-xa-mine-works.js`
+  (2026-11-23, the stamp mill and the sorting shed: `settlements/xanadu-works` takes it) into `kits/xanadu/src/`, `extra/69dz-ix-xanadu-extra.js`'s item into `kits/interiors/sets/xanadu.js`;
   the kit's sheet takes rows for them; `settlements/pher/kit.json` drops them from `"external"`. Every page of the kit (and `XAK`) changes.
 - **Register the `coyote` culture** (the owner, 2026-11-16, `kits/coyote/PLAN.md` sections 7 and 12): `'coyote': 'Coyote Men'` in
   `core/tags/52-core-tags-vocab.js` `CULTURE_NAMES` (and `test-tags.js`'s digest), with the catalog's `coyote` culture file in
   `FURN_CULTURES` once the kit's C8 has written it. Until then `kits/coyote`'s `tags-vocabulary` assert fails (its `KNOWN_ISSUES.md`).
-- **KSTRATA recipe `obsidian`** (`scoria` has since landed) (2026-11-09, `biomes/twins/PLAN.md` section 0.1): the Twins' plan names them for its coulees and
-  spatter cones; `core/terrain/35-core-strata.js` has `tibasalt` as the nearest. Adding a recipe changes every page that inlines the file, so
-  it waits here; station 1 draws its faces as `tibasalt` and its obsidian as items and a ground class until then.
+- **core/tags' `vessel` and `vehicle` classes** (2026-11-17, the owner: "make sure boats are properly tagged as ships, see ring sea
+  vessels", "we should add a vehicle tag as well", "barges and boats need to take the vessels tag which will be fully implemented in
+  next all build rebuild"; ride along by the owner's choice): `core/tags/52-core-tags-vocab.js` has them (ids
+  `ves_`, `veh_`; keys `propulsion`, `hull`, `crew`, `drive`, `seats`, `fuel`; the vessels' and vehicles' types), and
+  `kits/lizardmen`'s `lz-barge` (`settlements/komodo`, `settlements/basilisk/basilisk_plan.json`) already registers as
+  `class: 'vessel'` (`ves_*`), but every older page
+  that inlines core/tags is behind it (`tools/check_stale_baseline.json` records them). The rebuild clears them. With it: the Ring Sea
+  (`kits/ringsea`, its REG already says `cls:'vessel'`), Xanadu's lake craft (`extra/88d-xa-lakecraft.js` / `88f-xa-harbour.js`),
+  `core/engine`'s walkable deck/stair hooks (`36s-stair.js` / `37-wk-rec.js` for `cls === 'vessel'`), the Motor Vehicles kit and the
+  Mechs register through core/tags as `vessel` and `vehicle` (the vehicles' own `class:'motor vehicle'` tag is a core/tags problem key:
+  drop it for the class).
+- **The Qiblai kit's cell range and college range** (2026-11-23, `settlements/opal-ford/src/89q8-of-order-pieces.js`): `of_cell_range`
+  and `of_college_range` (`_m`, `_s`) are written on the kit's contract for Ōpal-Phōrḍ's Iridescent house only; move them into
+  `kits/qiblai/src/89q3-qb-sacred.js` (as `qb_cell_range`, `qb_college_range`, the keys renamed in opal-ford's `89zp` and its test)
+  and rebuild every page that takes the kit (Qiblai's, Lightwall's, Ōpal-Phōrḍ's).
+- **The Iridescent Order's five furniture pieces into the catalog** (2026-11-23, `settlements/opal-ford/iridescent/FURNITURE.md`, NEW):
+  the prism stand, the moonglass screen, the colour-chart rack, the lens-grinding wheel and the Order's banner are Ōpal-Phōrḍ's own
+  props (`targets/town/90s-of-interiors.js` `ofPropMesh`) until they are catalog pieces in `kits/catalog/krator-master-furniture-xanadu.js`
+  (it reaches 61 builds); then the hall's programme can furnish with them and the page's props go.
+- **core/hamlet: a village whose link is on its own green** (2026-11-23, `openworld/xanadu-lake-shore`, HAMLETS-PLAN.md 3d):
+  `KHAMLET.village` takes its frame from `spec.link - spec.site`; KSITES passes the site as the link, so a village laid at its site's
+  own point (`near: [0, 0]`) gets a zero frame (`ux = uz = 0`), every lane collapses onto the green and its houses fail as "could not
+  place: N houses", which reads like bad ground. The Lake Shore's two west villages pass `link` in their spec meanwhile. Fall back to
+  `[1, 0]` when the link is nearer than the green in `core/hamlet/30-hamlet-village.js` (or in KSITES), or report it as its own error.
 - **core/hamlet's Xanadu row: its fishing works** (2026-11-16, `settlements/kirstabal`): `KS_RING.fishingRow` (`src/42-ks-ring.js`) passes
   `KHAMLET.CULTURES.xanadu` with `works.fishing` (`xa_boatshed`, `xa_fish_racks`), `focusJobs.fishing` 90, `reach.fishing` 260, `landing`
   (`xa_quay`) and the racks' pending box; move them into the row itself (`core/hamlet/20-hamlet-cultures.js` reaches ten builds) and
   `kits/xanadu/src/87k-xa-lake-trades.js` into `xanadu.py` FILES (if every Xanadu page should have the lake's trades), then let
   Kirstabal pass the row by name.
+- **core/hamlet's Xanadu row passed by name folds into the row** (2026-11-17, `settlements/xanadu/BUILD-OUT.md` wave 0.2):
+  `core/hamlet/xanadu/23-hamlet-xanadu-row.js` (`KHAMLET.xanaduRow(opts)`: fishing as Kirstabal's `fishingRow` has it, the foci
+  orchard, tea, saffron, estate, placer, pottery and quarry, the wayside shrine, the mine head, the reeling house, `shallows`, the
+  `camp` overrides) folds into `20-hamlet-cultures.js` then, and the subfolder goes. This takes the fishing item above with it.
+  Decide whether the shared row takes the shrine and the mine head (they move every Xanadu village: the switch with them off moves
+  none, `node core/hamlet/test-hamlet-xanadu-row.js`); give `KHAMLET.census` the camp option from the row's `camp` and drop
+  `openworld/oidong-highrift`'s `xanadu-camp` row (the work-camp item below). Its new keys are pending until
+  `kits/xanadu/extra/88g-xa-works.js` is in the kit's `src/`.
+- **The lake's trades' interior set** (2026-11-16, `settlements/kirstabal` K5): `kits/xanadu/src/87k1-xa-lake-rooms.js` adds the set
+  `xanadu-lake` at run time; move it to `kits/interiors/sets/xanadu-lake.js` (the interiors sheet inlines every set, so it stales
+  `kits/interiors`'s sets page: rebuild and `verify.py --sets --assert` it) and let Kirstabal take it through kit.json "interiorSets".
 - **Any new file in `tools/` stales eight builds** (kits/catalog, crops, interiors, mechs, motor-vehicles, port; settlements/isle-demo,
   longsong record `tools/` as a listing input, likely Python's importer reading it): a rebuild clears it; worth a fix in `build_sources`.
 - **Switch on checks 22-31 everywhere** (the survey of 2026-11-11, CORE-IMPROVEMENTS.md items 22-31; landed opt-in on
@@ -136,22 +443,86 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
     read `KDRAWN.h` when the page lists `core/drawn/10-core-drawn.js` and registers its ground; cameras stand on it.
   - Already done before the survey closed (no row needed): `kits/fauna/src/90-sheet.js`'s `_texPending` is a getter (15ca3363);
     hyperjungle's harvest-wood phrases parse (`node core/hamlet/test-hamlet.js` passes).
+- **core/host's walker and pick underground** (2026-11-15, BUGS-2026-11-15.md C5-C8; branch `claude/host-walker-underground-main`):
+  `core/host/90-host-camera.js` and `93-host-inspect.js` are edited; rebuilt so far only the underground test page
+  (`core/host/underground`), the Hearths' camera station and Dhelv. `tools/reach.py core/host/90-host-camera.js` gives the rest (545
+  pages on 2026-11-15); each grows by about 7 KB. What it changes, so a verify that moves can be read:
+  - **F** stands on the floor under the eye (`KHOST.feet.under`: a KWALK floor at or below the camera, or the ground where it is not
+    over the head), no longer the highest floor at x, z. On a surface page the same answer unless the camera was under a raised floor.
+  - **The stand** no longer lifts a walker to a ground more than the walker's height over its feet (a roof: the surface over a tunnel,
+    a cellar under the terrain); with no floor under it, the ground as before.
+  - **The swept step**: a key step over 0.3 m is walked in 0.1 m samples against the walk blocks (`walker.sweep`; 0 turns it off).
+    Normal walking at 60 fps (0.15 m a frame) is not swept; a sprint or a slow frame stops at a wall instead of being pushed through.
+    `core/walk/frame/95-walk-frame-host.js`'s own sweep (riding, on `claude/clever-rhodes-cb3fec`) is then redundant and can go.
+  - **The pin**: the ground's hit stays the pin where the scene draws something near it (every surface page with a terrain mesh: no
+    change); where nothing is drawn there (a constant fallback ground, Loj Twenny's -60) or the camera is under the ground, the first
+    mesh under the pointer, on the floor under it, or no pin. `o.pickScene: false` keeps the old pick. A double-click now raycasts the
+    scene once (meshes only; instanced crowds over 2000 skipped).
+  - **The inspector** skips hits on hidden parents and on points a cut's clipping planes cut away (`C.drawn`; 99-host-section's
+    `KHOST.section.clipped` for its planes), and hits on rock KCAVERN's rock cut has opened (`KCAVERN.cut.discards` on the hit's
+    own floor).
+  - Leaving a walk (F off) puts the orbit's target 6 m over the floor under the walker, not over `ground()`.
+  Checks: `node core/host/test-feet.js`, `python3 core/host/underground/check.py` (the C5-C8 checks with their negatives).
 - **core/world: fold 41t into 41** (2026-11-11, PLAN-VOTH V2): `core/world/41t-world-town-water.js` wraps WORLD's water calls
   (`lakeWater`, `riverWater`, `water`, `waterBodies`, `waterBodyAt`, `riverLines`) and `init` from outside, because 41 reaches eight
   builds. At the next all-builds rebuild, take a town's water into 41 itself: `buildTowns` reads `drawn`, `water`, `river`;
   `W.water` calls the wrapped `riverWater` (today it calls 41's local one, so 41t replaces `W.water` too); the joined river's cut
   happens in `buildChannels`. `node core/world/test-town-water.js` must pass unchanged.
+- **core/water: the flow's foam without blocks** (2026-11-16, the owner: "work on blocky ripple pattern; core update will be
+  applied more broadly at next all-builds rebuild"). COMMITTED on `claude/exciting-curie-1c0022` (relief P3): `drawFlow`'s
+  breakup is gradient noise (`wtrBreak`, twin `WATER.breakNoise`), and the ribbon shades by the slope over 24 m (`slopeV`,
+  `PRESETS.flow.slopeWin`). Rebuilt and GPU-verified so far only in the eight pages `core/world/41` reaches (the open-world
+  regions, Longsong, the isle demo's two city pages); every other page that draws core/water (`tools/reach.py
+  core/water/51-core-water-kinds.js`: 149 build commands) is stale until the next all-builds rebuild takes it. Port both to the
+  Godot twin (`KWater.ribbon`'s slope, the breakup in its flow shader).
 - **core/hamlet: a work camp** (2026-11-11, the oidong-highrift region's Vein Camp; the owner: "mostly miners"). A camp's people
   are nearly all at work (no families), so `openworld/oidong-highrift/src/48-world-site.js` defines a row of its own,
   `KHAMLET.CULTURES['xanadu-camp']` (the `xanadu` row with workShare .9, household 4, a cookhouse, store and tally house for
   services). Give `KHAMLET.census` a `camp` option (or a row's `camp` overrides, taken when `spec.camp`) and pass it through
   `core/world/48s-world-sites.js` from a hamlet's spec, then drop that row. core/hamlet reaches 56 pages (`tools/reach.py`).
+  The overrides exist since 2026-11-17 as `KHAMLET.xanaduRow().camp`, and `xanaduRow({camp: true})` is the row a region can pass
+  today (`core/hamlet/xanadu/`; with `shrine` and `mineHead` false it lays the Vein Camp unchanged). **The census side is built,
+  opt-in** (2026-11-23, `settlements/xanadu/WORKS-PLAN.md` W1): `core/hamlet/camp/26-hamlet-camp.js` wraps `KHAMLET.census` and
+  `KHAMLET.village` (`spec.camp`: the row's overrides; `spec.share`: one record over several camps; a spec with neither goes to the
+  old functions bit for bit), tested by `core/hamlet/test-hamlet-camp.js` (run by `test-hamlet.js`); `settlements/xanadu-works`
+  takes it. At the next all-builds rebuild fold it into `30-hamlet-village.js`, pass `camp` through 48s, drop `xanadu-camp`.
 
 - **core/world: a kit on several biome overlays** (2026-11-11, the Iziz cluster's open-world region): `core/world/41-world-fields.js`
   matches a `WORLD_KITS` entry's `overlay` to one biome name (`k.overlay===name`). Let it take a list (`Array.isArray(k.overlay)?
   k.overlay.indexOf(name)>=0:...`), then drop the shim in `openworld/iziz-cluster/src/47-world-kits.js` (`WORLD_KITS.findIndex`, which
   tries each name of a list). It moves every page that reads core/world (the isle demo's two city pages, Longsong, Pinnacle Rock and the
   open-world regions) without changing what they draw.
+
+- **The foliage guards' gaps closed** (2026-11-15, `core/biome/20-core-kit.js`, `tools/textures/check_cells.py`; the owner asked why
+  ehighlands' cut-up beech, unattached fir needles and black fumarole passed the guards). Committed on `claude/objective-gagarin-623fb5`;
+  only ehighlands' six pages are rebuilt on it. Every biome page takes them at its rebuild, and some will start failing their verify:
+  - *The card guard refuses ONE plant cut into cells* (`plants 1` with `BIO.geo.cells` or `"sheet": "geometry"`). Measured on rift
+    jungle and nhighlands montane: none. `check_cells.py` reports the same as `ONE CUT`: none outside ehighlands (fixed).
+  - *"Library cards described by the page's pack" fails a page whose pack has no `plants`* (`BIO.cardMute`): the card guard has been
+    judging none of those slots. Fifteen biome packs predate `plants` and will fail until `python3 tools/textures/pack.py <build>`
+    reruns (it needs the library sets: `git lfs pull --include="core/materials/library/..."`): catch, crater-drylands, eastabyss,
+    ebadlands, guilin, korona, necanyons, nsemiarid, nwouterwall, rift, sedesert (and its stations bowl, mantis, steppe), swbay,
+    swhighlands. nsemiarid and the Throne write their pages' packs with their own code, as ehighlands did: check they copy `cell`,
+    `base`, `stems`, `rise`, `plants`, `anchor`, `sheet` (or call `tools/textures/matlib_pack.py`). Once the packs say what each card
+    is, the card guard may refuse some of their slots for the first time.
+  - *The attach audit measures rods point to segment* (it sampled every 2 m): rift jungle 4 of 14,576 floating before and after;
+    nhighlands montane unchanged for centred cards. *Stem-held crowns must sit within 0.15 m of a structure*: nhighlands montane's
+    `lance` (card.prismgum, hanging, stems) has 151 of 207 stems more than 0.15 m off a twig, 35 more than 0.5 m (some with no
+    structure near at all), which takes that page from 0.32% to 1.45% floating, over the 1% limit: hang each lance clump from its
+    twig end as the ehighlands fir does (the clump's origin on the rod's axis).
+  - *`BIO.insideOut` fails a mesh wound toward the ground*: none on rift jungle or nhighlands montane; the ehighlands vent cones were it.
+  - *`check_cells.py` reads every geometry an expression names*: `BIO.geo.cells(BIO.geo.clump())` is a crown cut into cells, which it
+    read as `cells` alone, so it never asked such a crown for its stems (the fir's needles). Fourteen crowns of sprigs centred on their
+    twigs, written into `tools/check_cells_baseline.json` as known: ehighlands `laurel`, `epi`; nhighlands `birch`, `larch`, `maple`,
+    `needle`, `pinnate`, `small`; rift `broadcloud`, `croton`, `leaflet`, `lobeleaf`, `needle`, `spray`. Each wants its sprigs' stems
+    measured (by hand in `card-bases.json` where the automatic pick is wrong, as card.spruce's was) and `check_cells.py --fix`.
+  - *Two more gaps, proposed, not written* (2026-11-15, the geyser/Godthrone looks session, `claude/geyser-godthrone-looks-793e2e`, which
+    fixed both in its kits with station checks): (1) **albedo under soot**: the geyser Stills' sails (`biomes/hearths` 57, `ssail*`) were
+    tinted sRGB 0x161618 (0.8% linear albedo) on an unmapped Lambert and drew as solid black cut-outs; fail a lit baked item with no map
+    and no emissive whose instance colour x vertex colour is under ~0.02-0.03 linear luminance (negative: 0x161618). (2) **a packed
+    texture nothing samples**: Godthrone station 9 packs `rockColumns` (station.json "tex") but the vault's lamp ShaderMaterial had only
+    a flat uniform; fail a family the page's pack adds that no live material's map or uniform takes. Both belong beside
+    `BIO.insideOut` in `BIO.guardChecks`, each with its negative.
 - **core/world: a `xanadu` style** (2026-11-11, the owner: "Xanadu should be lush where moisture allows"). `41-world-fields.js`
   `BIOME_STYLE` has no entry for the 'xanadu' overlay, so it takes `desert`: the red sandstone palette and desert shaping (terraces .75
   at 55 m steps). Add a `xanadu` style and palette (green by wetness, as `openworld/xanadu-oidong-highrift/src/43-world-xoh.js`'s
@@ -175,6 +546,18 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   brief), which `core/tags/52-core-tags-vocab.js` does not list yet, so the kit's page counts it as an unknown value in `T.audit()`
   (counted, never thrown). Add `'qiblai': 'Qiblai'` to `CULTURE_NAMES` and `'qiblai'` to `NO_CATALOG` (it has no catalog culture file:
   its interiors take the Xanadu pieces), as Pylon and Talia were added on 2026-11-03. It moves every page that takes core/tags.
+- **`BIO.attachAudit` measures a thin instanced item at points, not to its segment** (2026-11-11, found on the Labyrinth's station 1):
+  `core/biome/20-core-kit.js:646-650` samples an instanced structure (a rod, a beam) at points CELL/4 (2 m) apart along its axis, less its
+  radius, not point-to-segment as `core/biome/README.md` ("What held means") says. A card beside the middle of a long thin rod reads as
+  floating. The case: the NW lowlands grass trees' flower-spike blooms (`biomes/nwlowlands/src/55-biome-nwlowlands-trees.js`,
+  `B.grasstree`), 0.1 m off a 2.5-4.5 m rod, read 0.85-0.89 m off against a 0.57 m tolerance. It put `biomes/labyrinth` at 1.30%
+  (90 of 930 blooms) while that read the NW lowlands in place (no longer: its own flora, 2026-11-12, draws no grass trees). The fix: for each near sample, the distance to
+  the segment A-B less r (query KSPACE round the segment's box), and a case in `core/biome/test-attach.js` (a card beside a rod's
+  middle holds; lifted off it, floats). It moves every biome page (the owner's call). Do not split the rods in a kit to pass the audit.
+- **core/tags: the culture `kimr`** (2026-11-11, `kits/kimr`): add `'kimr'` to `CULTURES` and `'kimr': 'Kimr'` to `CULTURE_NAMES` in
+  `core/tags/52-core-tags-vocab.js` (every page carries the vocabulary). Until then `kits/kimr/src/89-rows.js` adds it to its own page at
+  load; drop those two lines when the vocabulary has it.
+
 - **Opal Valley's strata recipes into `KSTRATA`'s own table** (2026-11-11, `biomes/opalvalley`): `opal-rhyolite` and `opal-firetuff` are
   data in `biomes/opalvalley/src/40-biome-opal-sites.js` (`OPAL_STRATA`), handed to `KSTRATA.add` by its ground; written into
   `core/terrain/35-core-strata.js`'s `RECIPES` they change every page that loads it, so they ride along. Then drop the kit's `KSTRATA.add`.
@@ -182,11 +565,6 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
   `core/tags/glazier/52g-tags-glazier.js`, which only the Tungang kit loads. Move `'glazier': 'Glaziers'` into `CULTURE_NAMES` in
   `core/tags/52-core-tags-vocab.js` (and `NO_CATALOG` until a Glazier catalog culture file exists), delete `core/tags/glazier/`,
   and drop it from `kits/tungang/build.py`. It moves every page that takes core/tags.
-- **`WATER.drawFlow`'s program cache key leaves out its colours** (2026-11-12, found by `biomes/arch`): `core/water/51-core-water-kinds.js`
-  bakes `o.shallow` and `o.deep` into the fragment shader text but builds `customProgramCacheKey` from the common chunk and the flags only, so
-  every flow on a page after the first draws the first one's colours (three.js reuses the program). Add the two colours (and `o.color`) to the
-  key. `biomes/arch/src/89w-host-water.js` works round it by extending the key itself; drop that once core has it. It moves every page that
-  draws a flow (147 build commands, `python3 tools/reach.py core/water/51-core-water-kinds.js`).
 
 - **Owed from the merge of `ccr-a96f22b6-0hy616` into main (2026-11-18)**, each checked against this line before the merge (a
   worktree at a4ac64ebc builds the same findings), so none is the merge's own; the ratcheted lints' new keys baselined with this entry:
@@ -242,6 +620,13 @@ runtime and bison table, and the `tools/` listing staleness (every build rebuilt
 Fixes to shared code that reach every build (or most of them), parked until a change that rebuilds them all anyway comes
 along: do them in that change, rebuild once, rewrite the baseline once. Take an item out when it is done.
 
+- **The fauna runtime and the bison's size table** (2026-11-01, `kits/fauna/PLAN-MESHY.md`): the runtime gained `M.mats`, fitted
+  anchors and `userData.anchorOn`, `krator-fauna-farm.js` the bison's variant 3 size, and the catalog a Bowl mantis and new model variants of the
+  ant and the staghorn (a page without models draws those variants procedurally; check a page that picks a staghorn's variant at random). Since then: skinned model variants (`M.skin`, `rig/pack_skinned.py`, 2026-11-10: the giant bat's), family models (`spider#gilded`, `rig/family.py`), six new entries and model variants on four more, all with procedural fallbacks: the variant counts of those entries changed, so a page that draws a variant at random will draw them. The pages that bundle the kit (Voth,
+  isle-demo, ash-nomads, desert-nomads, islanders, lizardmen, scyvoi, ringisles, sedesert and its stations, longsong) were not
+  rebuilt: none takes a model that uses them, and on `claude/biome-rebuild` those pages were already behind their sources by
+  far more than this (Voth 96 KB, the isle plan 52 KB). `settlements/longsong` does not build at all there: its `build.py` reads
+  `openworld/little-demo/src/41-world-fields.js`, which d848c1577 moved to the isle demo.
 - **A `dalab` culture pack for the Post-Apoc kit's sockets** (sources done, awaiting the all-builds rebuild; 2026-10-27, `settlements/span`): one `mkCulture({key:'dalab', ...})`
   in `core/sockets/80-cultures.js` (red ochre field `#a8382a`, earth edge, the God's single eye as the symbol, a new entry in
   `38-symbols.js`), so the barricade, the arena and anything Dalab raises from salvage fly its red. `mkCulture` draws from the
@@ -314,6 +699,32 @@ along: do them in that change, rebuild once, rewrite the baseline once. Take an 
     `godot/krator/kdoor.gd`; `godot/tests/door/door_test.gd` passes on 4.7.2. The isle demo's export does not carry its doors yet.
 
 ## With the final biome rebuild *(the owner, 2026-10-26)*
+- **Place the garrison's arms** (the owner, 2026-10-22: not before a round that rebuilds the builds anyway, such as
+  placing towns in the open world or adding a new core module). `kits/catalog/krator-master-furniture-arms.js` gives all
+  30 catalog cultures a weapon rack (`<prefix>_<tier>_weapon_rack`, wall) and an armour stand (`_armour_stand`, floor)
+  for `armoury`, `barracks`, `guardroom` and `watch` rooms (`kits/catalog/README.md`, "The garrison's arms"); no build
+  bundles them yet. Per build: add `'arms'` to its `FURN_CULTURES` (the list it passes to `furniture_bundle.bundle`), then
+  place the pair in its military rooms: the interiors sets' `armoury` rooms (`kits/interiors/sets/highlands.js`,
+  `iziz.js`), Zeijani's `guardroom` program (`sets/zeijani.js` asks for types `rack`/`weapon`, so it finds them once
+  bundled), the Iziz palace (`pal_armoury`, `pal_guard`), the Eternian fort's armoury and barracks
+  (`kits/eternian/src/61-et-defence.js` draws its glaive racks as geometry; the Eternians' armour stand is in the file),
+  and each settlement's barracks, gatehouses, forts and war camps in its furnish lists. Rebuild each page, run its
+  `verify.py --assert`, then `tools/port_baseline.py`.
+
+- **Real doors and glass across the kits** (the owner, 2026-10-20; for the next wide sweep over the building kits).
+  Iziz's `settlements/iziz/src/69e5-iziz-openings.js` (2026-10-19) wraps the Vernacular's `vnDoor`, `vnWin` and `vnStrip`:
+  a shut leaf registered in `IZDOOR` instead of a dark recess, see-through glass instead of an opaque plate, and the
+  `vnPlate`, `vnHole`, `vnOpening` and `IZ_ROOMC` the vernacular fragments now call. Where it stands:
+  - Iziz, Pylon and Talia build on Iziz's own fragment order (`--kit`), so they take 69e5 and `95j-iziz-doors.js`
+    (walk blocks for shut leaves, the E key in `99-start.js`). Talia's branch (`claude/vassal-kits`) predates 69e5:
+    rebuild and verify Talia when it merges main.
+  - Verge (`build.py` `izv_files`, 2026-10-20) and the isle demo (`bundles.py` `izv_files`, c135f802a) take 69e5 only:
+    their doors are drawn shut and never open, and a shut leaf blocks no walker. Ys vendors pre-69e5 copies of 70 and 71
+    and takes none of it.
+  - The kits' own doorway shapes cut a hole (`vnHole`) but hang no leaf: Pylon's `pylDoorway` (`69q-pyl-helpers.js`),
+    Talia's arches (`69u-tal-helpers.js`). Give them a leaf in `IZDOOR`.
+  - The other building kits (Ancients, Islanders, Lizardmen, the nomads, Scyvoi, Zeijani, Eternian ...) still draw
+    doorways as dark voids and windows as opaque plates. Take them onto the door module below, not onto 69e5's wrappers.
 
 Work parked for the coming rebuild of every biome kit: do it there, rebuild each page once, rewrite each baseline once and on
 purpose. Take an item out when it is done.

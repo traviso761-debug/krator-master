@@ -5,6 +5,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "qAshlar.cw.webp",
     "map": "qAshlar.albedo.webp",
     "normalMap": "qAshlar.normal.webp",
     "roughnessMap": "qAshlar.rough.webp"
@@ -12,6 +13,7 @@
    "lib": "stone.sandstone.ashlar",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.15,
    "scale": [
     3,
@@ -35,6 +37,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "qCobble.cw.webp",
     "map": "qCobble.albedo.webp",
     "normalMap": "qCobble.normal.webp",
     "roughnessMap": "qCobble.rough.webp"
@@ -42,6 +45,7 @@
    "lib": "paving.cobblestone_01",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.1,
    "scale": [
     2.4,
@@ -95,6 +99,7 @@
    "breakup": null,
    "card": false,
    "files": {
+    "cwMap": "qFlag.cw.webp",
     "map": "qFlag.albedo.webp",
     "normalMap": "qFlag.normal.webp",
     "roughnessMap": "qFlag.rough.webp"
@@ -102,6 +107,7 @@
    "lib": "paving.flagstone",
    "metal": 0,
    "normalScale": 1.0,
+   "pomDepth": 0.02,
    "roughLift": 0.1,
    "scale": [
     3.2,

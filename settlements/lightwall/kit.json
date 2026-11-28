@@ -6,14 +6,15 @@
   "kits/qiblai/src"
  ],
  "external": [
+  "settlements/lightwall/gen/41w-lw-world-ground.js",
   "settlements/lightwall/gen/69l-kcity-bundle.js",
   "settlements/lightwall/gen/69t-tungang-bundle.js",
   "settlements/lightwall/gen/69r-lw-flora-bundle.js",
-  "core/tags/glazier/52g-tags-glazier.js",
   "core/terrain/37c-core-rubble.js",
   "core/terrain/39-core-cavern.js",
   "core/terrain/host/39e-core-cavern-draw.js",
   "core/terrain/host/39h-core-cavern-cut.js",
+  "core/terrain/host/39i-core-cavern-rock.js",
   "core/terrain/43-core-ground.js",
   "core/walk/box/24-core-walk-box.js"
  ],
@@ -21,11 +22,11 @@
   "69l-kcity-bundle.js",
   "69t-tungang-bundle.js",
   "69r-lw-flora-bundle.js",
-  "52g-tags-glazier.js",
   "37c-core-rubble.js",
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
   "39h-core-cavern-cut.js",
+  "39i-core-cavern-rock.js",
   "43-core-ground.js",
   "24-core-walk-box.js"
  ],
@@ -37,9 +38,10 @@
   "89q0y-qb-script.js",
   "89q0z-qb-matlib.js",
   "89q5f-qb-furnish.js",
+  "89q5s-qb-shells.js",
+  "41w-lw-world-ground.js",
   "69l-kcity-bundle.js",
   "69t-tungang-bundle.js",
-  "52g-tags-glazier.js",
   "39-core-cavern.js",
   "39e-core-cavern-draw.js",
   "39h-core-cavern-cut.js",
@@ -63,7 +65,10 @@
   "69r-lw-flora-bundle.js",
   "90s-lw-flora.js",
   "37c-core-rubble.js",
-  "90n-lw-scree.js"
+  "90n-lw-scree.js",
+  "89q5s-qb-shells.js",
+  "39i-core-cavern-rock.js",
+  "90o-lw-opal.js"
  ],
  "interiors": [
   "town"

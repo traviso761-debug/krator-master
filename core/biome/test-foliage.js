@@ -24,9 +24,17 @@ const sha=s=>crypto.createHash('sha1').update(s).digest('hex').slice(0,16);
 // the option sets the frozen hashes were measured on (every kind of hook, the options the kits pass)
 const LEAF=[{},{aN:true},{irid:true},{aN:true,irid:true,swayW:'(position.x)',swayA:.05},{swayW:'(-position.y)',swayA:.10,axis:1,alphaTest:.35},
  {swayW:'0.0',swayA:0,alphaTest:0,vertexColors:true},{swayW:'(position.y)',swayA:.10,alphaTest:.4}];
+// B3 (2026-11-23): the numbers that were GLSL literals are uniforms (uSwayA, uIridA/B, uHangA). legacy() puts the uniform's value
+// back as the literal it was and drops its declaration: what is left must be, character for character, the frozen text. So the
+// defaults are still proven unchanged, and the only change B3 made is the literal's place (the same value: the same pixels).
+function legacy(s,U){if(!U)return s;let t=s;
+ if(U.uSwayA)t=t.replace('\nuniform float uSwayA;','').replace('* uSwayA;','* '+U.uSwayA.value.toFixed(3)+';');
+ if(U.uIridA){const v=x=>'vec3('+[x.x,x.y,x.z].map(c=>c.toFixed(3)).join(',')+')';t=t.replace('uniform vec3 uIridA,uIridB;','').replace('mix(uIridA,uIridB,k)','mix('+v(U.uIridA.value)+','+v(U.uIridB.value)+',k)');}
+ if(U.uHangA){const a=U.uHangA.value.toFixed(4);t=t.replace('uniform float uHangA;','').split('*uHangA*').join('*'+a+'*');}
+ return t;}
 function shaders(B){const T=B.host.THREE,tex=new T.Texture();tex.biomeMean=.5;const out={};
- LEAF.forEach((o,i)=>{const s=compile(B,B.leafMat(tex,'k'+i,o));out['leaf'+i]=s.vertexShader+'\n----\n'+s.fragmentShader;});
- const put=(k,m)=>{const s=compile(B,m);out[k]=s.vertexShader+'\n----\n'+s.fragmentShader;};
+ LEAF.forEach((o,i)=>{const s=compile(B,B.leafMat(tex,'k'+i,o));out['leaf'+i]=legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);});
+ const put=(k,m)=>{const s=compile(B,m);out[k]=legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);};
  put('gloss',B.glossBarkMat(tex,'g',{alt:0x6a8a70,gloss:.06}));put('irid',B.iridBarkMat(tex,'i'));
  put('farIrid',B.farMat({rule:'irid'}));put('farGloss',B.farMat({}));put('hang',B.hangMat(new T.MeshLambertMaterial(),'h',{swayA:.05}));
  put('bark',B.barkMat(tex));put('solid',B.solidMat(tex));return out;}
@@ -74,6 +82,30 @@ const SRC=read('30-core-foliage.js');
  const s=compile(B,B.leafMat(new T.Texture(),'g',{}));
  check('a leaf compiled after the bind takes atmGust at its root and swells the sway and lean by it',/float atmGust/.test(s.vertexShader)&&/atmGust\(uGustT, _gi\.xz, uAtmW\)/.test(s.vertexShader)&&s.uniforms.uAtmW===A.U.wind);
  check('the program key says so (no program shared with an unbound page)',B.leafMat(null,'x',{}).customProgramCacheKey().endsWith('|gust'));}
+// ---------------------------------------------------------------- 4b. one wind field by default (V10, Stage 8 G-weather W3, 2026-11-24)
+// A page on the shared sky with core/atmos initialised and no bindAtmosWind call: the first program key binds the gusts, so the
+// key and the text agree; with no core/atmos, no shared sky, or BIO.WIND_AUTO false, the leaf is the frozen text (section 1).
+{const atm=(B,noSky)=>{vm.runInContext('var ATMOS={};',B.__ctx);return Object.assign(B.__ctx.ATMOS,{U:{wind:{value:new B.host.THREE.Vector2(.6,-.2)},gustAmp:{value:.4}},PRESETS:{wind:{base:[.6,-.2]}},clock:{t:3},
+  GLSL_WIND:'float atmGust(float t,vec2 xz,vec2 w){return 0.0;}\nvec2 atmWind(float t,vec2 xz,vec2 w,float amp){return w;}'},noSky?{}:{skyUniforms:{uCloud:{value:null}}});};
+ const B=load(SRC),T=B.host.THREE,A=atm(B),m=B.leafMat(new T.Texture(),'k0',{});
+ check('  before any program key: nothing bound yet (the page may still call bindAtmosWind with its gain)',B.GUST===null);
+ const k=m.customProgramCacheKey(),s=compile(B,m);
+ check('the first key binds core/atmos\'s gusts by itself: the key ends |gust, the text takes atmGust at the root, the uniforms are atmos\'s',
+  k.endsWith('|gust')&&/atmGust\(uGustT, _gi\.xz, uAtmW\)/.test(s.vertexShader)&&s.uniforms.uAtmW===A.U.wind&&s.uniforms.uGustAmp===A.U.gustAmp&&B.GUST.k.value===1);
+ const w=B.host.wind();check('...and BIO.WIND follows atmos\'s base wind (the lean and the strength)',Math.abs(Math.hypot(w[0],w[1])-1)<1e-9&&Math.abs(w[0]-.6/Math.hypot(.6,.2))<1e-9);
+ B.__ticks.forEach(f=>f(1/60));check('...and its clock (the gust fronts travel on ATMOS.clock.t)',B.GUST.t.value===3&&B.WIND.on.value===1);
+ const B2=load(SRC);atm(B2);B2.bindAtmosWind({gain:1.3});const m2=B2.leafMat(new B2.host.THREE.Texture(),'k0',{});m2.customProgramCacheKey();
+ check('a page\'s own bindAtmosWind({gain}) before the first frame stands',B2.GUST.k.value===1.3);
+ const g0=B.GUST,u0=s.uniforms.uGustK;B.bindAtmosWind({gain:.7});
+ check('a page that binds after the default keeps the same uniforms (a material compiled on them follows its gain)',B.GUST===g0&&u0===g0.k&&u0.value===.7);
+ const B3=load(SRC);atm(B3);B3.WIND_AUTO=false;const T3=B3.host.THREE,m3=B3.leafMat(new T3.Texture(),'k0',{}),k3=m3.customProgramCacheKey(),s3=compile(B3,m3);
+ check('  negative: BIO.WIND_AUTO false binds nothing; the leaf is the frozen text',B3.GUST===null&&!k3.endsWith('|gust')&&sha(legacy(s3.vertexShader+'\n----\n'+s3.fragmentShader,s3.uniforms))===FROZEN.leaf0);
+ const B4=load(SRC),m4=B4.leafMat(new B4.host.THREE.Texture(),'k0',{}),k4=m4.customProgramCacheKey(),s4=compile(B4,m4);
+ check('  negative: no core/atmos on the page: nothing bound, the frozen text, no BIO.err',B4.GUST===null&&!k4.endsWith('|gust')&&sha(legacy(s4.vertexShader+'\n----\n'+s4.fragmentShader,s4.uniforms))===FROZEN.leaf0&&!(B4.__errs||[]).length);
+ const B5=load(SRC);vm.runInContext('var ATMOS={};',B5.__ctx);B5.leafMat(null,'x',{}).customProgramCacheKey();
+ check('  negative: core/atmos on the page but not initialised (no ATMOS.init yet): nothing bound, silently',B5.GUST===null&&!(B5.__errs||[]).length);
+ const B6=load(SRC);atm(B6,true);const m6=B6.leafMat(new B6.host.THREE.Texture(),'k0',{}),k6=m6.customProgramCacheKey(),s6=compile(B6,m6);
+ check('  negative: core/atmos initialised but no shared sky (a settlement on its own sky): nothing bound, the frozen text',B6.GUST===null&&!k6.endsWith('|gust')&&sha(legacy(s6.vertexShader+'\n----\n'+s6.fragmentShader,s6.uniforms))===FROZEN.leaf0);}
 // ---------------------------------------------------------------- 5. alpha-to-coverage
 {const B=load(SRC),T=B.host.THREE,tex=new T.Texture();
  const a=B.leafMat(tex,'a',{alphaTest:.42}),z=B.leafMat(null,'z',{alphaTest:0}),n=B.leafMat(tex,'n',{alphaTest:0});
@@ -116,7 +148,7 @@ const SRC=read('30-core-foliage.js');
  const a=B.ditherCell(.3,.2,1.9),b=B.ditherCell(.3+1.9,.2,1.9);check('  negative: a point one cell over is in a different cell',a.v[0][0]!==b.v[0][0]||a.v[0][1]!==b.v[0][1]);}
 // ---------------------------------------------------------------- 10. the season (H7): leaf drop and the dry colour
 {const B=load(SRC),T=B.host.THREE,tex=new T.Texture();
- const pick=s=>s.vertexShader+'\n----\n'+s.fragmentShader;
+ const pick=s=>legacy(s.vertexShader+'\n----\n'+s.fragmentShader,s.uniforms);
  check('  negative: season false or null writes the default shader',sha(pick(compile(B,B.leafMat(tex,'k0',{season:false}))))===FROZEN.leaf0&&sha(pick(compile(B,B.leafMat(tex,'k0',{season:null}))))===FROZEN.leaf0);
  const s=compile(B,B.leafMat(tex,'dry',{vertexColors:true,ground:true,season:{drop:.8,colour:0xc8a860,k:.9}}));
  const u=s.uniforms.uSnK.value;

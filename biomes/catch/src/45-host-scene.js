@@ -65,6 +65,9 @@ function bindStage(o){const FCc=fieldCache(o.R,o.N||420,o.terrainH,o.fieldsAt,FN
  BIO.init({tags:'catch',THREE:THREE,scene:scene,terrainH:o.terrainH,waterH:o.waterH,mask:(x,z)=>MASK(x,z),
   obstacles:OBSTACLES,ticks:tick,seed:o.seed,origin:o.spine,center:[0,0],fields:FIELD,register:REGISTER,err:reportErr,
   lod:Object.assign({hero:600,mid:1400,far:3000,floor:[420,1000]},o.lod||{}),windows:{water:[-o.R,-o.R,o.R,o.R]}});
+ {const q=new URLSearchParams(location.search);
+  BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+  BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';}
  BIO.setSun([-900,1300,-500]);
  return{FC:FCc,FIELD,waterMask};}
 // a preset view: the camera h metres over the ground at (cx,cz), looking at a point th metres over the ground at (tx,tz)

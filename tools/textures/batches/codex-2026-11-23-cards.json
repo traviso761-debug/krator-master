@@ -1,0 +1,97 @@
+[
+ {
+  "src": "card.feather.ostrich.png",
+  "out": "core/materials/library/card.feather.ostrich",
+  "record": {
+   "id": "card.feather.ostrich",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20706-f4ec-7810-9244-4c1c87efb38b; the finished copy Codex saved after its seam pass, ostrich-plumes-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '57. The Coyote kit (`kits/coyote`, planned 2026-11-16)' on claude/integration-4 (id card.feather.ostrich)",
+    "licence": "generated for this project by its owner",
+    "original_title": "ostrich-plumes-2048.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "patterns_marr_iron-scrollwork.png",
+  "out": "core/materials/patterns/marr/iron-scrollwork",
+  "record": {
+   "id": "patterns/marr/iron-scrollwork",
+   "family": "iron",
+   "colour": "#ffffff",
+   "roughness": 0.8,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": false,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-315f-7d91-9ab5-28d1fb20891f; the finished copy Codex saved after its seam pass, balcony-railing-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '65. The Marr kit (`kits/marr`, 2026-11-18)' on claude/integration-4 (id patterns/marr/iron-scrollwork)",
+    "licence": "generated for this project by its owner",
+    "original_title": "balcony-railing-2048.png"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ },
+ {
+  "src": "card.beech.southern.png",
+  "out": "core/materials/library/card.beech.southern",
+  "record": {
+   "id": "card.beech.southern",
+   "family": "leaf",
+   "colour": "#ffffff",
+   "roughness": 0.85,
+   "metal": 0,
+   "scale": [
+    1,
+    1
+   ],
+   "tint": true,
+   "_source": {
+    "generator": "ChatGPT image generation through Codex, 2026-11-23 (~/.codex/generated_images/01a20707-badb-7ca1-88e9-4581e125974f; the finished copy Codex saved after its seam pass, nothofagus-sprays-2048.png)",
+    "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md, section '64. The eastern highlands' combed beech (`biomes/ehighlands`, stations 5 and 6, 2026-11-15)' on claude/integration-4 (id card.beech.southern)",
+    "licence": "generated for this project by its owner",
+    "original_title": "nothofagus-sprays-2048.png",
+    "note": "a sheet: hosts show one cell"
+   }
+  },
+  "options": {
+   "size": 1024,
+   "anchor": "none",
+   "pad": 0.02,
+   "key": "#ff00ff",
+   "spill": "all",
+   "key_lo": 60,
+   "key_hi": 170
+  }
+ }
+]

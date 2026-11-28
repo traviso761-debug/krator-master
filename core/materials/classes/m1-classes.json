@@ -1,0 +1,80 @@
+{
+ "what": "The M1 material classes (settlements/xanadu/STACK-PLAN.md section 5; GRAPHICS-TERRAIN-PROPOSAL.md M1; STAGE-5-REPORT.md section 4). A build's materials.json names one per family (\"class\"); tools/textures/pack.py reads this table through tools/textures/mclass.py to pack each family (Stage 8 B11: glazed packs 8-bit web normals, a height 'never' class never takes a height in its alpha, the others pack as a family with no class); core/materials/classes/10-mat-class.js checks the names (test-class.js). Until B11 pack.py ignored the field (the owner, 2026-11-22: data now, looks after); Phase C re-packs the classed builds.",
+ "version": 2,
+ "rule": {
+  "what": "the stack's glazed rule (STAGE-5-REPORT.md section 4): a lit family whose specular is at least specularMin and whose roughness is under roughnessMax. The roughness is the mean of the family's packed roughness map (what the pages draw: m1-measured.json, written by tools/textures/mclass.py --measure from the committed tex/), or, for a family with no packed map, the library record's lifted by the family's roughLift as pack.py lifts the map. Since XS0 (settlements/xanadu/XS1-CLASSES.md, 'Fixes after XS0') every family's class is DERIVED from these values and its cut-out flag (10-mat-class.js derive(): a library card is card; a materials.json \"cutout\" is cutout; the rule's hits are glazed; the rest relief or flat, a patterns/ sheet flat), and test-class.js fails on any disagreement not listed under exceptions.",
+  "specularMin": 0.45,
+  "roughnessMax": 0.35,
+  "specularDefault": 0.5
+ },
+ "exceptions": {
+  "what": "families whose class is a decision, not the rule's: each names the class it keeps, who decided and why. The drift test passes these, and fails on one the rule has come to agree with (stale) or one whose materials.json class differs from it.",
+  "kits/xanadu": {
+   "xTiles": {"class": "glazed", "by": "the owner, 2026-11-23 (XS1's choice 1, kept)", "why": "the tile of Erewhon's domes, bulbs and drums (kits/xanadu/src/71-xa-mat.js xDomeT, xBulbT, xDrumT): the curved glazed case M1 exists for, though its packed roughness map measures 0.876 (XS1 read the record's 0.375)"},
+   "icewall": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "the rule takes ice.clear (packed roughness 0.272): not promoted. Drawn on Erewhon, the kit sheet and Blakhed (XS0's GPU run, 2026-11-23), not only the scrap target"}
+  },
+  "settlements/xanadu": {
+   "xTiles": {"class": "glazed", "by": "the owner, 2026-11-23 (XS1's choice 1, kept)", "why": "as kits/xanadu"},
+   "icewall": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "as kits/xanadu"}
+  },
+  "kits/tungang": {
+   "ice": {"class": "flat", "by": "the owner, 2026-11-23 (XS1's choice 2, kept)", "why": "the rule takes ice.clear (packed roughness 0.192, specular 0.6): not promoted. Drawn on Blakhed (XS0's GPU run) and in the Fellgang set"}
+  },
+  "kits/qiblai": {
+   "qGilt": {"class": "glazed", "by": "XS1's call, kept (the coordinator, 2026-11-23)", "why": "metal.gold with roughLift 0.1: its packed roughness 0.411 fails the rule, but the gilts stay glazed (STACK-PLAN.md section 5 had the metals flat; XS1 classed them glazed, and that call stands). Tungang's gilt (the same set, no lift, 0.345) is glazed by the rule"}
+  },
+  "settlements/flashing-eye": {
+   "qGilt": {"class": "glazed", "by": "XS1's call, kept (the coordinator, 2026-11-23)", "why": "as kits/qiblai"}
+  }
+ },
+ "pending": {
+  "what": "decided class changes that wait for Stage 8 (the owner: data now, looks after). Each family keeps its class today and must still derive it; once Stage 8 changes its values (and mclass.py --measure is rerun) it derives the pending class, the drift test fails until the materials.json takes it, and then asks for the entry to be dropped. Stage 8 B11 (2026-11-24) glazed the five pattern sheets (xMosC, xMosD, xBandC, xGiltC, xBandR in kits/xanadu and settlements/xanadu: class glazed, a roughScale taking the packed roughness under 0.35) and dropped their entries; none is pending now."
+ },
+ "classes": {
+  "glazed": {
+   "what": "smooth, specular, often curved: glazed tile, mosaic, polished marble, gilt, lacquer. The one class whose normals the web packs at 8 bits (the owner, 2026-11-22: glazed families only), so curved highlights do not band",
+   "web": {"normal": "xy8"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": false,
+   "height": "yes",
+   "pom": false,
+   "cavity": true
+  },
+  "relief": {
+   "what": "masonry, rubble, paving, timber, thatch and the ground sets: the height carries the look. M3 planar POM where hero, M4 concave cavity",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": false,
+   "height": "yes",
+   "pom": "hero",
+   "cavity": true
+  },
+  "flat": {
+   "what": "no relief worth a height channel: plaster and washes, cloth, metals, painted pattern sheets, detail maps, mapOnly sheets. Gate 1 demands no height range (pack.py's \"flat\": true)",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": true,
+   "height": "optional",
+   "pom": false,
+   "cavity": false
+  },
+  "cutout": {
+   "what": "a lit sheet the page draws as an alpha cut-out (alphaTest; materials.json \"cutout\": true, which test-class.js checks against the kits' MAT definitions): normal and roughness as flat's, but NEVER a height in its colour map's alpha (Gate 1), which alphaTest reads. The stack's packFormat 2 writes a Poisson height into every lit family's alpha: Stage 8 must pack this class with alphaMode none (settlements/xanadu/XS1-CLASSES.md section 4)",
+   "web": {"normal": "xy6"},
+   "godot": {"normal": "oct8", "mipVariance": true},
+   "flat": true,
+   "height": "never",
+   "pom": false,
+   "cavity": false
+  },
+  "card": {
+   "what": "an alpha cut-out (a jali, a leaf card): RGBA colour and alpha, no normal or roughness map, and never a height in the alpha (Gate 1)",
+   "web": {"normal": null},
+   "godot": {"normal": null},
+   "flat": true,
+   "height": "never",
+   "pom": false,
+   "cavity": false
+  }
+ }
+}

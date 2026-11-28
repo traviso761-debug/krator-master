@@ -40,6 +40,8 @@
    }
   },
   "stone": {
+   "m4": true,
+   "pom": 0.02,
    "lib": "stone.cut",
    "scale": [
     2.0,
@@ -226,6 +228,8 @@
    }
   },
   "brick": {
+   "m4": true,
+   "pom": 0.015,
    "lib": "brick.red",
    "scale": [
     1.2,
@@ -572,19 +576,6 @@
     167
    ]
   },
-  "formF": {
-   "lib": "patterns/tribal/formline",
-   "scale": [
-    0.5,
-    0.5
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "metal": 0,
-   "normalScale": 0.5
-  },
   "meadow": {
    "lib": "ground.ground013",
    "scale": [
@@ -693,34 +684,8 @@
    "metal": 0,
    "normalScale": 0.5
   },
-  "hFrzA": {
-   "lib": "patterns/highlands/frieze-asian-nw",
-   "scale": [
-    2.25,
-    0.5
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "metal": 0,
-   "normalScale": 0.5
-  },
   "hFrzL": {
    "lib": "patterns/highlands/frieze-cloud-lotus",
-   "scale": [
-    2.25,
-    0.5
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "metal": 0,
-   "normalScale": 0.5
-  },
-  "hFrzT": {
-   "lib": "patterns/highlands/frieze-nw-totemic",
    "scale": [
     2.25,
     0.5
@@ -747,32 +712,6 @@
   },
   "hM_d_crane": {
    "lib": "patterns/highlands/crane-floral",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "metal": 0,
-   "normalScale": 0.5
-  },
-  "hM_w_folkA": {
-   "lib": "patterns/republic/folk-formline-a",
-   "scale": [
-    1,
-    1
-   ],
-   "tint": {
-    "keep": 1,
-    "mean": null
-   },
-   "metal": 0,
-   "normalScale": 0.5
-  },
-  "hM_w_folkB": {
-   "lib": "patterns/republic/folk-formline-b",
    "scale": [
     1,
     1

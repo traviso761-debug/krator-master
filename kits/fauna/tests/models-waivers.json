@@ -62,12 +62,6 @@
    "lossyNormal": 1,
    "sourceLost": 1
   },
-  "giant-bat": {
-   "closure": 0.0391,
-   "density": 105.2681,
-   "lossyNormal": 1,
-   "sourceLost": 1
-  },
   "giant-dragonfly": {
    "lossyNormal": 1,
    "sourceLost": 1
@@ -103,7 +97,6 @@
   },
   "quetzalcoatlus": {
    "closure": 0.0893,
-   "density": 118.7595,
    "lossyNormal": 1,
    "sourceLost": 1
   },

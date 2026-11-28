@@ -4,8 +4,9 @@
 // Frame: world metres, y up; a heading `yaw` is three's rotation.y (the front, +z, turns to (sin yaw, cos yaw)); a `side` of +1 is
 // toward (cos yaw, -sin yaw), -1 the other way. Every choice is a KRAND hash of a stable id and an index, never a draw count.
 //
-//   KTRANSIT.STATES, KTRANSIT.SPAN_STATES, KTRANSIT.RAIL_STATES, KTRANSIT.STATION_STATES   the vocabularies
-//   KTRANSIT.RUIN                     the default shares (span, furniture, rail, station); a host passes its own as o.ruin
+//   KTRANSIT.STATES, KTRANSIT.SPAN_STATES, KTRANSIT.RAIL_STATES, KTRANSIT.STATION_STATES   the vocabularies (and the line's: LINE_FORMS,
+//                                     LINE_SECTION_STATES, LINE_COND_STATES, CROSSOVER_STATES, LINE_STATION_STATES)
+//   KTRANSIT.RUIN                     the default shares (span, furniture, rail, station, line); a host passes its own as o.ruin
 //   KTRANSIT.KINDS                    the furniture kinds: footprint, variants, the states each can have, where it stands, its ruin numbers
 //   KTRANSIT.shares(spec, allowed)    -> pick(u): a cumulative pick over shares that must sum to 1 (restricted to `allowed`, renormalised)
 //   KTRANSIT.pick(seed, kind, state)  -> {kind, state, variant, seed}: a piece to build; state null draws one by the shares
@@ -22,11 +23,19 @@ KTRANSIT.RAIL_STATES = ['intact', 'bent', 'gone'];
 KTRANSIT.STATION_STATES = ['intact', 'ruined', 'collapsed'];
 KTRANSIT.PIER_STATES = ['standing', 'bare', 'stub', 'fill', 'none'];
 KTRANSIT.CAR_STATES = ['ok', 'derailed', 'overturned', 'fallen'];
+/* the deep line's (43c-tr-line.js): its forms, a 20 m section's lining, a track's run (built: as the Ancients left it; kept: by a loj; worn; blocked;
+   cut: broken through; flooded: by depth), a crossover's, a station's */
+KTRANSIT.LINE_FORMS = ['gallery', 'twin', 'junction', 'shallow', 'open', 'elevated'];
+KTRANSIT.LINE_SECTION_STATES = ['intact', 'spalled', 'fallen', 'flooded'];
+KTRANSIT.LINE_COND_STATES = ['built', 'kept', 'worn', 'blocked', 'cut', 'flooded'];
+KTRANSIT.CROSSOVER_STATES = ['built', 'kept', 'frozen', 'gone'];
+KTRANSIT.LINE_STATION_STATES = ['built', 'kept', 'abandoned', 'sealed'];
 KTRANSIT.RUIN = {
   span: { intact: 0.45, cracked: 0.3, collapsed: 0.15, gone: 0.1 },
   furniture: { intact: 0.12, bent: 0.26, fallen: 0.27, burnt: 0.2, crushed: 0.15 },   /* the owner, 2026-11-08: even more ruined */
   rail: { intact: 0.6, bent: 0.25, gone: 0.15 },
-  station: { intact: 0.4, ruined: 0.4, collapsed: 0.2 }
+  station: { intact: 0.4, ruined: 0.4, collapsed: 0.2 },
+  line: { intact: 0.88, spalled: 0.12, fallen: 0, flooded: 0 }   /* the deep line's sections where the def gives none: the Ancients built it to last */
 };
 
 /* THE FURNITURE KINDS (the brief's list, 2026-11-08). w, d, h: the intact piece's box (x across, z along, y up), its origin at the

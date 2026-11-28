@@ -27,16 +27,28 @@ const dampK=(x,z)=>fbm(x*.0062+21,z*.0062+13,777,2);
 function card(x,y,z,s,sy,col,tilt){BIO.put('ucard',[x,y,z],qEuler(rr(-(tilt||.2),tilt||.2),rr(0,TAU),rr(-(tilt||.2),tilt||.2)),[s,sy==null?s:sy,s],col);}
 function tuft(item,x,y,z,h,w,col){BIO.put(item,[x,y-.05,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),[w||h*.8,h,w||h*.8],col);}
 function groundMoss(x,y,z,r,set){BIO.put('mossmat',[x,y+.06,z],qEuler(rr(-.06,.06),rr(0,TAU),rr(-.06,.06)),r,leafCol(set||PAL.moss,.95,.03));}
-function blooms(x,y,z,r,n,set,sz,h){const c=bright(vary(pick(set),.03,.1,.08),1.15);
- for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(.16,.34);BIO.put('bloom',[x+Math.cos(a)*d,y+rr(.05,h==null?.4:h),z+Math.sin(a)*d],qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),s,c);}}
+/* blooms round (x, z). o.ground: each on the ground at its own spot (a carpet on a slope; y is ignored); o.crown: the shrub's
+   drawn leaf cards ([x,y,z,w,h] each), each bloom held by BIO.holdTo inside the body of the card nearest it, where the attach
+   audit's {onLeaf:true} finds it (core/biome/README.md, "What held means"). The draws are the same either way */
+function blooms(x,y,z,r,n,set,sz,h,o){const c=bright(vary(pick(set),.03,.1,.08),1.15),G=o&&o.ground,K=o&&o.crown;
+ for(let i=0;i<n;i++){const a=rr(0,TAU),d=r*Math.sqrt(rng()),s=sz?rr(sz[0],sz[1]):rr(.16,.34),bx=x+Math.cos(a)*d,bz=z+Math.sin(a)*d,dy=rr(.05,h==null?.4:h);
+  let p=[bx,(G?Y(bx,bz):y)+dy,bz];if(K&&K.length)p=holdCrown(K,p);
+  BIO.put('bloom',p,qEuler(rr(-.4,.4),rr(0,TAU),rr(-.4,.4)),s,c);}}
+/* a point brought into the body of the nearest crown card: half its width round it, and its height (a centred card: half each
+   way; a stem card, fit to its sprig: up from the stem), as BIO.attachAudit reads an onLeaf item's hold */
+function holdCrown(K,p){const fit=!!(BIO.defs.ucard&&BIO.defs.ucard.fit);let best=null,bd=1e9;
+ for(const k of K){const cy=k[1]+(fit?.45*k[4]:0),dd=Math.hypot(p[0]-k[0],p[1]-cy,p[2]-k[2]);if(dd<bd){bd=dd;best=[k[0],cy,k[2],.85*Math.min(.5*k[3],.5*k[4])];}}
+ return BIO.holdTo([best[0],best[1],best[2]],p,best[3]);}
 function frondCrown(x,y,z,Rf,n,p0,p1,col,item){const a0=rr(0,TAU);
  for(let k=0;k<n;k++){const a=a0+k/n*TAU+rr(-.25,.25),L=Rf*rr(.8,1.1);BIO.put(item||'frond',[x,y,z],qEuler(rr(-.18,.18),-a,rr(p0,p1)),[L,L*rr(.85,1.05),L*rr(1.1,1.5)],bright(col,rr(.86,1.1)));}}
 function fern(x,y,z,lv,item){const hc=vary(pick(PAL.fern),.06,.14,.07);frondCrown(x,y-.1,z,rr(1.6,3.2)*(item==='forkfern'?1.3:1),lv===2?ri(5,7):lv===1?4:3,.1,.55,bright(hc,1.7),item);}
 function giantFern(x,y,z,lv){const hc=vary(pick(PAL.fern),.05,.14,.07);frondCrown(x,y-.1,z,rr(3,5),lv===2?ri(6,8):4,.1,.6,bright(hc,1.6),'bigfrond');}
-function shrub(x,y,z,lv,set,k){const hc=vary(pick(set||PAL.shrub),.07,.14,.07),Rs=rr(1.1,2.4)*(k||1);
+/* a shrub's crown cards, [x,y,z,w,h] each, are left in shrub.crown for what is drawn in it (a rhododendron's blooms) */
+function shrub(x,y,z,lv,set,k){const hc=vary(pick(set||PAL.shrub),.07,.14,.07),Rs=rr(1.1,2.4)*(k||1),K=shrub.crown=[];
  if(lv===2){BIO.put('lobe',[x,y-.3,z],qEuler(0,rr(0,TAU),0),[Rs*.8,Rs*rr(.8,1.1),Rs*.8],shade(vary(hc,.03,.1,.05),-.2));
-  for(let i=0;i<2;i++){const a=rr(0,TAU),d=i?Rs*rr(.3,.6):0;card(x+Math.cos(a)*d,y+Rs*rr(.6,.9),z+Math.sin(a)*d,Rs*rr(1.3,1.7),Rs*rr(1.3,1.7),bright(vary(hc,.04,.1,.06),1.45),.2);}}
- else card(x,y+Rs*.7,z,Rs*1.6,Rs*1.5,bright(hc,1.4));
+  for(let i=0;i<2;i++){const a=rr(0,TAU),d=i?Rs*rr(.3,.6):0,cx=x+Math.cos(a)*d,cy=y+Rs*rr(.6,.9),cz=z+Math.sin(a)*d,w=Rs*rr(1.3,1.7),ch=Rs*rr(1.3,1.7);
+   card(cx,cy,cz,w,ch,bright(vary(hc,.04,.1,.06),1.45),.2);K.push([cx,cy,cz,w,ch]);}}
+ else{card(x,y+Rs*.7,z,Rs*1.6,Rs*1.5,bright(hc,1.4));K.push([x,y+Rs*.7,z,Rs*1.6,Rs*1.5]);}
  return Rs;}
 // a SEA PEN: one to five upright fronds -- feather pens, club pens, the odd whip pen
 function seaPen(x,y,z,lv,st,big){const t=rng(),n=lv===2?ri(2,6):ri(1,3),set=rng()<.8?PAL.pen:PAL.penDeep,base=rr(1,2.6)*(big||1);
@@ -51,10 +63,10 @@ function aroid(x,y,z,lv,st){const n=lv===2?ri(3,6):2,hc=vary(pick(PAL.aroid),.03
   BIO.put('heart',[px+Math.cos(a)*.3,y+stem,pz+Math.sin(a)*.3],qEuler(rr(.4,.9),Math.atan2(Math.cos(a),Math.sin(a)),rr(-.2,.2)),[L*.8,L,1],bright(vary(hc,.02,.08,.06),1.45));}st.aroids++;}
 function ginger(x,y,z,lv,st){const h=rr(1.4,2.8);tuft('spike',x,y,z,h,h*.7,leafCol(PAL.fern,1.35));
  if(lv>=1){const col=C(pick(PAL.ginger)),sh=rr(.8,1.4);BIO.beam('rod',[x+.2,y,z],[x+.2,y+sh,z],.02,.015,rodCol(0x4a6a3a));BIO.put('pompom',[x+.2,y+sh+.1,z],qEuler(0,rr(0,TAU),0),[.14,.22,.14],bright(col,.85));}st.ginger++;}
-function rhodo(x,y,z,lv,st){const Rs=shrub(x,y,z,lv,PAL.shrub,1.1);if(lv>=1)blooms(x,y+Rs*.9,z,Rs*.8,lv===2?ri(10,18):5,PAL.rhodo,[.22,.36],Rs*.6);st.rhodo++;}
+function rhodo(x,y,z,lv,st){const Rs=shrub(x,y,z,lv,PAL.shrub,1.1);if(lv>=1)blooms(x,y+Rs*.9,z,Rs*.8,lv===2?ri(10,18):5,PAL.rhodo,[.22,.36],Rs*.6,{crown:shrub.crown});st.rhodo++;}
 function lilies(x,y,z,lv,st){const n=lv===2?ri(3,7):2,col=C(pick(PAL.lily));
  for(let k=0;k<n;k++){const px=x+rr(-.8,.8),pz=z+rr(-.8,.8),h=rr(.6,1.2);tuft('spike',px,y,pz,h*.8,h*.4,leafCol(PAL.grassGreen,1.3));BIO.put('bloom',[px,y+h,pz],qEuler(rr(.8,1.2),rr(0,TAU),0),rr(.18,.28),bright(col,1.1));}st.lilies++;}
-function bluebells(x,y,z,lv,st){blooms(x,y,z,rr(1.2,2.4),lv===2?ri(14,26):ri(6,10),PAL.bluebell,[.07,.13],.35);st.bells++;}
+function bluebells(x,y,z,lv,st){blooms(x,y,z,rr(1.2,2.4),lv===2?ri(14,26):ri(6,10),PAL.bluebell,[.07,.13],.35,{ground:true});st.bells++;}
 function reed(x,y,z,lv){const h=rr(1.4,2.8)*(lv===0?1.5:1);for(let k=0,n=lv===2?ri(2,4):1;k<n;k++){const a=rr(0,TAU),d=k?rr(.6,2):0;tuft('reed',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.75,1.1),h*rr(.7,1.1),leafCol(PAL.reed,1.35,.025));}}
 function grassTuft(x,y,z,lv,set,hk,k){const h=rr(.5,1.1)*(hk||1)*(lv===0?1.6:1),n=lv===2?(k||ri(2,4)):1;
  for(let i=0;i<n;i++){const a=rr(0,TAU),d=i?rr(.5,1.8):0;tuft('grass',x+Math.cos(a)*d,y,z+Math.sin(a)*d,h*rr(.8,1.1),h*1.4,leafCol(set,1.3,.03));}}
@@ -92,7 +104,7 @@ function plantRain(x,y,z,Z,lv,st){const t=rng();
  else if(t<.66)seaPen(x,y,z,lv,st,1.6);
  else if(t<.78){shrub(x,y,z,lv,PAL.aroid);st.shrubs++;}
  else if(t<.9){if(lv>=1){groundMoss(x,y,z,rr(1.2,2.6));st.moss++;}else{fern(x,y,z,lv);st.ferns++;}}
- else blooms(x,y,z,rr(.8,1.6),ri(3,7),PAL.ginger);}
+ else blooms(x,y,z,rr(.8,1.6),ri(3,7),PAL.ginger,null,null,{ground:true});}
 function plantShore(x,y,z,Z,lv,st){const t=rng();
  if(t<.4){reed(x,y,z,lv);st.tufts++;}
  else if(t<.6){grassTuft(x,y,z,lv,PAL.reed,.9);st.tufts++;}
@@ -117,7 +129,7 @@ function plantMed(x,y,z,Z,lv,st){const t=rng();
  else if(t<.72)saltbush(x,y,z,lv,st);
  else if(t<.8){fern(x,y,z,lv);st.ferns++;}
  else if(t<.88){BIO.put('rosette',[x,y-.02,z],qEuler(rr(-.05,.05),rr(0,TAU),rr(-.05,.05)),[rr(.5,1),rr(.4,.8),rr(.5,1)],bright(vary(pick(PAL.saltbush),.02,.08,.05),1.05));st.shrubs++;}
- else if(t<.93)blooms(x,y,z,rr(.8,1.8),ri(3,8),PAL.wattleGold,[.1,.18]);
+ else if(t<.93)blooms(x,y,z,rr(.8,1.8),ri(3,8),PAL.wattleGold,[.1,.18],null,{ground:true});
  else boulder(x,y,z,lv,rng()<.4?PAL.rockRed:PAL.rock,st);}
 function plantRip(x,y,z,Z,lv,st){const t=rng();
  if(t<.4){reed(x,y,z,lv);st.tufts++;}else if(t<.6){fern(x,y,z,lv);st.ferns++;}else if(t<.8)seaPen(x,y,z,lv,st,1.2);else{shrub(x,y,z,lv,PAL.shrub,.8);st.shrubs++;}}

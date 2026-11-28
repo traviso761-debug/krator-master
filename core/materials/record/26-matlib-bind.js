@@ -15,11 +15,16 @@
    onBeforeCompile but drops customProgramCacheKey (core/materials/opt/69a-world-uv.js). So the wrapper is built with
    Function() and carries the material's id (build, key, world-UV K, library key) in its SOURCE TEXT; it reaches the
    material's old hook and its pack entry through KMAT.bound[id], which a clone shares (userData would not keep a
-   function: clone() JSON-copies it). */
+   function: clone() JSON-copies it). The library's numbers are uniforms (K1, 25-matlib-host.js), so the program key
+   (customProgramCacheKey, and the wrapper's _pck for a clone: 69a-world-uv.js) names the hooks' kind, not this material. */
 (function(){
   'use strict';
   if(typeof KMAT === 'undefined') throw new Error('26-matlib-bind: load 23-mat-record.js and 25-matlib-host.js first');
   var BOUND = KMAT.bound = KMAT.bound || {};
+  /* three.js's default program key reads a hook's own key (fn._pck), so a clone that carries the hook shares the program
+     (the same guarded install as 69a-world-uv.js kmPckInstall) */
+  function pckInstall(){ var P = THREE.Material.prototype; if(P._kmPck) return; var o = P.customProgramCacheKey;
+    P.customProgramCacheKey = function(){ var f = this.onBeforeCompile; return f && f._pck ? f._pck : o.call(this); }; P._kmPck = 1; }
   /* the Ancients lineage's MAT (core/materials 22-materials.js, kits/ancients 54, 69, 69w, 34): metres per UV unit, so a set
      keeps the procedural map's feature size (the panel sheet is 4 x 8 panels of 2 x 1 m, the concrete 12 boards of 0.65 m).
      A material with a world-UV K (vWorldUV) uses that instead. */
@@ -42,12 +47,19 @@
       if(T.normalMap){ m.normalMap = T.normalMap; m.normalScale = new THREE.Vector2(L.normalScale || 1, L.normalScale || 1); }
       if(T.roughnessMap){ m.roughnessMap = T.roughnessMap; m.roughness = 1; }
       m.metalnessMap = null; m.metalness = L.metal || 0;
-      var id = build + '|' + key + '|' + (m.userData.uvK || 0).toFixed(4) + KMAT.libKey(L);
-      BOUND[id] = { prev: m.onBeforeCompile || null, lib: L };   /* by id, not on userData: clone() JSON-copies userData */
+      var id = build + '|' + key + '|' + (m.userData.uvK || 0).toFixed(4) + KMAT.libId(L);
+      var prev = m.onBeforeCompile && m.onBeforeCompile !== THREE.Material.prototype.onBeforeCompile ? m.onBeforeCompile : null;
+      /* the old key, read before the wrapper replaces the hook (vWorldUV's key names a hook wrapped after it) */
+      var prevKey = m.customProgramCacheKey && m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? m.customProgramCacheKey() : '';
+      BOUND[id] = { prev: prev, lib: L };   /* by id, not on userData: clone() JSON-copies userData */
       m.onBeforeCompile = new Function('sh', 'r', 'var b = KMAT.bound[' + JSON.stringify(id) + '];\n' +
         'if(b.prev) b.prev.call(this, sh, r); KMAT.libHooks(sh, b.lib);');
-      var prevKey = m.customProgramCacheKey && m.customProgramCacheKey !== THREE.Material.prototype.customProgramCacheKey ? m.customProgramCacheKey() : '';
-      m.customProgramCacheKey = function(){ return prevKey + '|km|' + id; };
+      /* K1: the program is shared by every bound material whose old hook writes the same text: none, or one that keys
+         itself on its text alone (fn._pck: vWorldUV's, 69a-world-uv.js). Any other old hook keeps a program of its own. */
+      var pck = prevKey + '|km|' + (!prev || prev._pck ? (prev ? prev._pck : '') + KMAT.libKey(L) : id);
+      var w = m.onBeforeCompile; w._pck = pck; pckInstall();
+      /* a hook wrapped round this one later keeps a program of its own (the key names the wrapper's text) */
+      m.customProgramCacheKey = function(){ var f = this && this.onBeforeCompile; return !f || f === w ? pck : prevKey + '|km|' + id + '|' + f.toString(); };
       m.userData.lib = L.lib;
       m.needsUpdate = true;
       out[key] = L.lib;

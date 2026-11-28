@@ -1,13 +1,15 @@
 {
  "build": "kirstabal",
- "note": "Kirstabal's ground (settlements/kirstabal/targets/town/90k-ks-world.js samples their maps in world metres, blended by a zone mask painted from the town's records; no kit piece draws them). The buildings are the Xanadu kit's, on Xanadu's own pack. Reused sets, none new: ksGrass (ground.grass.lush, the apron's Af country, as Qiblai's qGrass), ksDirt (ground.dirt, the quarters' made ground), ksCobble (paving.cobblestone_01, the streets), ksFlag (paving.flagstone, the avenues, the quays and the bazaar), ksSand (ground.damp_beach_sand, the lake's beach and the river's banks), ksTilled (ground.tilled, the ring's fields); keep 1: the sets' own colours.",
+ "note": "Kirstabal's ground (settlements/kirstabal/targets/town/90k-ks-world.js samples their maps in world metres, blended by a zone mask painted from the town's records; no kit piece draws them). The buildings are the Xanadu kit's, on Xanadu's own pack. Reused sets, none new: ksGrass (ground.grass.lush, the apron's Af country, as Qiblai's qGrass), ksDirt (ground.dirt, the quarters' made ground), ksCobble (paving.cobblestone_01, the streets), ksFlag (paving.flagstone, the avenues, the quays and the bazaar), ksSand (ground.damp_beach_sand, the lake's beach and the river's banks), ksTilled (ground.tilled, the ring's fields); xSlate and xSlateD (brick.dark: the town wall, kits/xanadu 87k2, its thin courses kept as a grey detail map coloured slate (tint keep 0.06, colour #5f6974; the base course #4c545e), a stand-in until a coursed-slate set is made: core/materials/PROMPTS-NEEDED.md); keep 1: the sets' own colours.",
  "size": 512,
  "families": {
-  "ksGrass": {"lib": "ground.grass.lush", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "ksDirt": {"lib": "ground.dirt", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "ksCobble": {"lib": "paving.cobblestone_01", "scale": [2.4, 2.4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "ksFlag": {"lib": "paving.flagstone", "scale": [3.2, 3.2], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "ksSand": {"lib": "ground.damp_beach_sand", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
-  "ksTilled": {"lib": "ground.tilled", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1}
+  "ksGrass": {"lib": "ground.grass.lush", "class": "relief", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "ksDirt": {"lib": "ground.dirt", "class": "relief", "scale": [3, 3], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "ksCobble": {"lib": "paving.cobblestone_01", "class": "relief", "scale": [2.4, 2.4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "ksFlag": {"lib": "paving.flagstone", "class": "relief", "scale": [3.2, 3.2], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "ksSand": {"lib": "ground.damp_beach_sand", "class": "relief", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "ksTilled": {"lib": "ground.tilled", "class": "relief", "scale": [4, 4], "tint": {"keep": 1, "mean": 0.5}, "metal": 0, "roughLift": 0.1},
+  "xSlate": {"lib": "brick.dark", "class": "relief", "scale": [2, 2], "tint": {"keep": 0.06, "mean": 0.46, "contrast": 1.35, "colour": "#5f6974"}, "metal": 0, "roughLift": 0.12},
+  "xSlateD": {"lib": "brick.dark", "class": "relief", "scale": [2, 2], "tint": {"keep": 0.06, "mean": 0.34, "contrast": 1.35, "colour": "#4c545e"}, "metal": 0, "roughLift": 0.12}
  }
 }

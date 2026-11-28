@@ -23,8 +23,8 @@ const LZ_CASTE=[null,
  {n:4,h:2.41,name:'Line warriors',role:'the line'},
  {n:5,h:3.03,name:'Interpreters',role:'seers and strategists: spiral pupils'},
  {n:6,h:3.80,name:'Bulwarks',role:'shock troops, heavy labour'}];
-const LZ_RATIO=1.25;
-function lzDoorH(c){return +(LZ_CASTE[c].h*1.15).toFixed(2);}
+const LZ_RATIO=1.25,LZ_DW=.74;
+function lzDoorH(c){return +Math.max(LZ_CASTE[c].h*1.15,LZ_CASTE[c].h+.34).toFixed(2);}
 /* the library families (materials.json) */
 const SV_LIB={reed:'reed',thatch:'thatch',mat:'mat',cane:'cane',lacq:'lacq',lacqR:'lacqR',irid:'irid',
  bones:'bones',ivory:'ivory',horn:'horn',skull:'skull',ossuary:'ossuary',bronze:'bronze',bronzeC:'bronzeC',

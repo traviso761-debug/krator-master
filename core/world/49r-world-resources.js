@@ -35,7 +35,7 @@ const FAM=[['iron','metal','iron ore',1],['copper','metal','copper',1.15],['tin'
 const ORES=FAM.filter(F=>F.group==='metal'||F.group==='fuel'||F.group==='mineral');
 const has=f=>!!(typeof RES_GEODATA!=='undefined'&&RES_GEODATA.layers&&RES_GEODATA.layers[f]);
 function byte(f,x,z){return KR&&has(f)?KR.prospect(f,x+OX,z+OZ):0;}
-function farm(x,z){if(!WORLD.inside(x,z))return 0;const A=WORLD.at(x,z);if(WORLD.water(x,z)>A.h-.5)return 0;
+function farm(x,z){if(!WORLD.inside(x,z))return 0;const A=WORLD.atShared(x,z);if(WORLD.water(x,z)>A.h-.5)return 0;
  const warm=sm(2,9,A.temp)*sm(38,29,A.temp);
  const water=Math.max(sm(200,800,A.rain)*sm(4500,2600,A.rain)*.95+.05,A.flow*.9);   /* rain-fed, or watered from a river */
  const flat=sm(.2,.04,A.slope),soil=(1-A.rock)*(1-A.dune)*(1-A.salt)*(1-.85*A.cold)*(1-.8*A.canyon);

@@ -2,7 +2,7 @@
 
 Built 2026-11-11 in the cloud (station 14, 2026-11-16, too): every check ran on software GL (SwiftShader), none on the two GPU lanes yet.
 
-## Stand-ins (owed: `core/materials/PROMPTS-NEEDED.md` section 55)
+## Stand-ins (owed: `core/materials/PROMPTS-archived.md`: delivered 2026-11-12, in the library, not wired yet)
 
 - [ ] **The woolly siphon's pelt** draws `wool.fleece` (slot `fleece`, tinted amber by the vertex colours): a sheep's fleece standing in for
   the machine-wax pelt (`surface.fleece.machinewax` owed). Its hanging fleece (`spfringe`) is a **procedural** strand card (`TX.strand`,
@@ -12,13 +12,13 @@ Built 2026-11-11 in the cloud (station 14, 2026-11-16, too): every check ran on 
 
 ## The look and the physics
 
-- [ ] **The deck's amber is the page's.** `core/atmos`'s height fog mist takes the fog colour (`sky/89-atmos-j-fog.js`: `cM = fc`), so the page
-  tints the fog colour toward amber, and dims the sun, each frame after the sky sets them, by how deep the eye is under the lid (`89b`:
-  `deckView`). A mist colour of its own in the chunk (`atmFogMistC`, compiled only on a page that asks, as the belt is) would be the core fix; it
-  was not made here because the chunk's text is in every biome page and each would have to be rebuilt: it is parked in the root `TODO.md`,
-  "Ride along with the next all-builds rebuild" (the owner, 2026-11-11). The lid (a sheet at 2,580 m) stands in
-  for the deck's underside, since the sky dome takes no fog. From the rim the lid reads pale cream, not amber: the air's haze over it
-  (the view 'Down from the rim'); only the top 117 m of the 420 m walls stand above the deck, as the numbers say.
+- [x] **The deck's amber is the mist's own** (fixed 2026-11-24, Stage 8 B5, T41). It was the page's: `core/atmos`'s height fog mist took the
+  fog colour (`sky/89-atmos-j-fog.js`: `cM = fc`), so the page tinted the fog colour toward amber each frame. The mist now takes a colour of its
+  own (`heightFog({mist:{colour, mix}})`, the chunk's `atmFogMistC`, compiled only on a page that asks), `89a` gives it the deck's amber (share
+  .85 on the floor, .35 on the Arete, the old tint's), and `89b`'s `deckView` only dims the sun and tints the sky's light. Not yet judged on a GPU:
+  from the rim the deck may now read amber where the old page drew it pale cream. The lid (a sheet at 2,580 m) stands in
+  for the deck's underside, since the sky dome takes no fog (the view 'Down from the rim'); only the top 117 m of the 420 m walls stand above
+  the deck, as the numbers say.
 - [ ] **The road on the Scarp is a pack track**: 16 switchbacks on the ravine's scree climb ~1,500 m in ~4.4 km, a grade near 30%. A wagon
   road would need ten times the length; the plan's "freight exchange for pack beasts" fits a track. The road is drawn as a gravel surface on its bench with a dry-stone
   parapet on the downhill side (2026-11-11, second pass).
@@ -45,9 +45,8 @@ Built 2026-11-11 in the cloud (station 14, 2026-11-16, too): every check ran on 
     it flowing in at 0.9 m3/s (`r_mb_siphon_breach`, mouth 1528,1459).
 - [ ] **The shore is an ideal type**: the model's 2 km cells put the waterline somewhere between the pin's cell and the lake's; the page draws it 0.9 km
   east of the pin with a 100 m wobble, the bluff's shape its own.
-- [ ] **The ice record has no `levelAt`**: core/water's `WATER.fields` (ext/60) reads `S.levelAt(0)` from every surface but a flow or a still, and
-  ext/54's `WATER.ice` makes none, so the page gives each ice record `I.levelAt = () => I.level` (`stations/polynya/89wp-host-polynya.js`). A core fix
-  (ext/54 or ext/60) would drop it (root `TODO.md`).
+- [x] **The ice record has no `levelAt`** (fixed 2026-11-24, Stage 8 B5, T43): core/water's ext/54 `WATER.ice` now answers `I.levelAt()` (its
+  level), which `WATER.fields` (ext/60) reads, so the polynya's own `I.levelAt = () => I.level` is gone.
 - [ ] **The village is placeholders**: Ostrukh-on-Water (Yuni) has no settlement kit; its edge (the quay, the granaries, the wax-caravan yard, the
   qanat mouths, nine houses) is site records tagged with its id and `culture: 'yuni'`, drawn as boxes and cones.
 - [ ] **The fault springs' bench** (`tibasalt-ponded` under the loess) lies under the water and is not drawn; the page's KSTRATA is `loess` alone.

@@ -3,6 +3,7 @@
 // The kit's flow model (46) runs them down the fall line and round the old hills; what no flow has covered for ~1,700
 // years is KIPUKA: old forest, the hyperjungle kit's ground (the 'owned' field). Then the tube's skylights, the fields,
 // and BIO.init with a mask the build swaps per kit (88).
+/*FLOWS-SRC-BEGIN (bake-flows.js reads this block too) */
 const FLOW_SRC=(function(){const S=(key,name,x,z,o)=>Object.assign({key,name,x,z},o);
  return[
   S('oldflow','An old flow, long since forest',2560,1950,{age:2600,len:5600,w:[360,620],th:[6,9],veer:.15,wander:.45,seed:9201}),
@@ -10,8 +11,12 @@ const FLOW_SRC=(function(){const S=(key,name,x,z,o)=>Object.assign({key,name,x,z
   S('young2','A flow of a hundred and thirty years',2560,950,{age:130,len:5400,w:[260,480],th:[5,8],veer:.25,wander:.5,seed:9203}),
   S('young1','A flow of thirty-five years',2560,-1750,{age:35,len:5200,w:[220,420],th:[5,7],veer:-.3,wander:.45,seed:9204}),
   S('new','The new flow (three years old)',2560,180,{age:3,len:4700,w:[160,320],th:[6,9],veer:.2,wander:.4,seed:9205}),
- ];})();
-const FLOWS=THRONE.flowHistory({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD});
+ ].map(F=>Object.assign(F,{klava:{baked:true}}));})();
+/*FLOWS-SRC-END*/
+/* THE FLOWS (2026-11-24, PLAN.md "the row's terrain"): each frozen by core/terrain's lava-flow module at build time (bake-flows.js: KLAVA.bake,
+   breakouts along the kit's own path, as a tube-fed flow advances; kipuka-flows.json, inlined as KIPUKA_FLOWS) and laid into the kit's mosaic
+   (shared/46k); the paths stay the kit's (the tube, the streams' lines, the views read them). ?klava=0 the kit's sheets */
+const FLOWS=THRONE_KLAVA_FLOWS({R:TERR.R+260,cell:8,baseH:landH0,flows:FLOW_SRC,old:THRONE.OLD,baked:typeof KIPUKA_FLOWS!=='undefined'?KIPUKA_FLOWS:null});window._klava=FLOWS.klava;
 const ageLabel=a=>a<1.5?Math.round(a*12)+' months':a<THRONE.OLD?Math.round(a)+' years':'no flow in the record';
 const KIPUKA_AGE=1700;   // ground this long without a flow is forest again: the kipuka
 // how old the ground is round a point (0 young lava .. 1 kipuka), smoothed over the flow grid's 8 m cells
@@ -30,6 +35,14 @@ const TUBE=(function(){const F=FLOWS.flows.find(f=>f.key==='mature'),P=F.path,a=
  reseed(4711);const sky=[];let acc=0;
  for(let i=1;i<pts.length;i++){acc+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);if(acc>rr(240,380)){acc=0;sky.push({x:pts[i][0],z:pts[i][1],r:rr(10,22),d:rr(10,16)});}}
  return{pts,sky};})();
+// THE RILLE (core/terrain KRELIEF.tube and KRELIEF.tubeRille; PLAN.md "the row's terrain", 2026-11-24): over the tube's middle and lower reach
+// its roof has fallen in, leaving a trench down to the tube's floor (a U section, talus at its walls' feet) between the skylights above and
+// below: the tube's own line (the kit's mature flow's path), its floor under the lowest ground across it (KRELIEF.tube: r 9 m, 5 m of roof).
+// ?rille=0 none
+const RILLE=(function(){if(typeof KRELIEF==='undefined'||!KRELIEF.tubeRille||new URLSearchParams(location.search).get('rille')==='0')return null;
+ const g0=(x,z)=>landH0(x,z)+FLOWS.thickAt(x,z),P=TUBE.pts;let L=0;for(let i=1;i<P.length;i++)L+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]);
+ const Tb=KRELIEF.tube({pts:P,ground:g0,r:9,roof:5,ridge:0,every:1e6,p:0,seed:KRAND.hash(571,2,0x7B1)});
+ const R=KRELIEF.tubeRille(Tb,{ground:g0,spans:[[L*.52,L*.7]],skylight:false,id:'kipuka-rille',seed:KRAND.hash(571,2,0x7B2)});R.len=L;return R;})();
 function skyCut(x,z){let c=0;for(const S of TUBE.sky){const d=Math.hypot(x-S.x,z-S.z);if(d<S.r*1.6)c=Math.max(c,S.d*smooth(S.r*1.15,S.r*.7,d)+1.5*smooth(S.r*1.5,S.r*1.1,d));}return c;}
 const ridged=(x,z,s)=>1-Math.abs(fbm(x,z,s,3)*2-1);
 const _tm={x:NaN,z:NaN,h:0};
@@ -37,6 +50,7 @@ function terrainH(x,z){if(x===_tm.x&&z===_tm.z)return _tm.h;const h=terrainH0(x,
 function terrainH0(x,z){let h=landH0(x,z);const th=FLOWS.thickAt(x,z);h+=th;h-=streamCut(x,z).cut;
  // the lava's skin: aa rubble and pressure ridges, sharper the younger (the wet weathers it fast)
  const fl=smooth(.4,2.2,th);if(fl>0){const a=FLOWS.ageAt(x,z),k=fl*(1-.75*smooth(150,1500,a));h+=k*(1.5*ridged(x*.045,z*.045,4711)+.6*(fbm(x*.17,z*.17,4712,2)-.5)-.6);}
+ if(RILLE)h=KRELIEF.shape(RILLE,x,z,h);
  return h-skyCut(x,z);}
 // THE STREAMS' WATER: a ribbon on the stream's bed, half a metre deep, where no flow has buried the bed
 const streamLevel=(S,s)=>{const p=streamPt(S,s);return terrainH0(p[0],p[1])+.55;};

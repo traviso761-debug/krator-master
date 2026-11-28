@@ -1,0 +1,8 @@
+{
+ "out": "ancientsvalley-stilled.html",
+ "region": "stilled",
+ "note": "The Stilled Ground (PLAN.md section 17; PLAN-ANOMALIES.md 6, station 1): the time weapon's basin at px 398,966, the page on its north slope. Read in place: core/anomaly (KANOM, the hold's record, before the stage that makes it).",
+ "kits": {
+  "41a-core-anomaly.js": "../../core/anomaly/20-core-anomaly.js"
+ }
+}

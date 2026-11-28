@@ -15,7 +15,8 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 
 | Fragment | KB | Sections (line) |
 |---|---|---|
+| `43p-world-rock.js` | 4 |  |
 | `46-world-config.js` | 1 |  |
-| `47-world-kits.js` | 2 |  |
-| `48-world-site.js` | 1 |  |
+| `47-world-kits.js` | 3 |  |
+| `48-world-site.js` | 3 |  |
 | `49-world-absav.js` | 2 |  |

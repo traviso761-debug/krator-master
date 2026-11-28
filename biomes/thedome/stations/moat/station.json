@@ -1,0 +1,22 @@
+{
+  "id": "moat",
+  "out": "thedome-moat.html",
+  "title": "The Dome — Concentric Ring-Dike Hogback & Annular Seepage Fen",
+  "px": [1317, 117],
+  "inDomeVerified": true,
+  "elevM": 1749.1,
+  "pAtm": 1.29,
+  "koppen": "Cfa",
+  "rainMmYr": 1098,
+  "domeApexPx": [1328, 150],
+  "strataStack": "laccolith-shell",
+  "kin": {
+    "swlowlands": [
+      ["src/50-biome-swlowlands-species.js", "src/55-biome-swlowlands-trees.js"],
+      "SWLOW",
+      ["bk_cork", "bk_furrow", "oakleaf", "veil", "moss", "beard"]
+    ]
+  },
+  "reserves": ["site:moat-waystation"],
+  "modes": ["Vernal-Brim", "Sun-Baked Dry", "Crown-Mist"]
+}

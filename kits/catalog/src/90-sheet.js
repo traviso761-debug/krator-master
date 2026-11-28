@@ -166,6 +166,14 @@
     z -= 12;
   }
 
+  /* --- the pieces' lamps: every lamp a piece holds is a PointLight, and a page of them all overflows a shader's uniforms.
+     The catalog's lamp cap (core/catalog/krator-furniture-core.js furnLampCap) keeps the 24 nearest the camera on,
+     re-picked every half second */
+  const LAMPS = furnLampCap(scene);
+  LAMPS.pick(camera.position);
+  let lightTick = 0;
+  (window._frameHooks = window._frameHooks || []).push(function () { if (++lightTick % 30 === 0) LAMPS.pick(camera.position); });
+
   /* --- the standard Krator sky (vendored 81-sky.js), fixed at mid-morning */
   if (window.KratorSky) {
     KratorSky.attach(scene, 4200);

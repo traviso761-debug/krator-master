@@ -25,6 +25,9 @@ const VIEWS={
  'Wild Ranj on the warm ground':(function(){const T=nearTree('spice',CAMP.x,CAMP.z,4);return atTree(T,T.crownR*2.4,rr(0,TAU),2.2,.45);})(),
  'The resin-tappers\' camp':toward(CAMP.x+14,CAMP.z+10,CAMP.x,CAMP.z,18,3.5,.5),
  'The landing':toward(DOME.cx,DOME.cz,LANDING.x,LANDING.z,-40,4,.5),
+ /* the Ring Sea isles' strand pandanus (88p): the near one nearest the landing, from the sea side, a little above the sand */
+ 'Strand pandanus on the beach':(function(){let b=null,bd=1e9;for(const T of PANDAN.trees){if(T.lv<2)continue;const d=Math.hypot(T.x-LANDING.x,T.z-LANDING.z);if(d<bd){bd=d;b=T;}}
+  if(!b)b=nearTree('coconut',LANDING.x,LANDING.z,8);const a=Math.atan2(b.z-DOME.cz,b.x-DOME.cx);return atTree(b,(b.crownR==null?3:b.crownR)*3.2+6,a,1.6,.55);})(),
  'Coconut palms on the beach':(function(){const T=nearTree('coconut',LANDING.x,LANDING.z,8);const a=Math.atan2(T.z-DOME.cz,T.x-DOME.cx);return atTree(T,22,a,1.8,.65);})(),
  'A palm frill tree':(function(){const T=nearTree('palmfrill',CAMP.x,CAMP.z,12);return atTree(T,T.H*1.15,rr(0,TAU),2,.8);})(),
  'Hyper-mangroves in the lagoon':(function(){const T=nearTree('mangrove',LAGOON.x,LAGOON.z,10);const a=Math.atan2(T.z-LAGOON.z,T.x-LAGOON.x)+Math.PI;return[T.x+Math.cos(a)*T.crownR*2.4,SEA+2.2,T.z+Math.sin(a)*T.crownR*2.4,T.x,T.y0+T.H*.35,T.z];})(),
@@ -100,6 +103,9 @@ const HCHK={
  camerasOut(C){const bad=C.filter(c=>c.y<Math.max(terrainH(c.x,c.z),waterH(c.x,c.z))+.5);return{ok:!bad.length,detail:bad.length?'under the ground or the water: '+bad.map(c=>c.view).join(', '):C.length+' cameras clear'};}};
 const plantList=()=>Object.keys(THRONE.PLANTS).map(k=>Object.assign({key:k},THRONE.PLANTS[k]));
 const resinPts=P=>P.filter(p=>p[3]==='biome:resin');
+/* THE STRAND PANDANUS (88p, biomes/ringisles read in place): at least min of them, each on the strand at the high-tide line (1.3-3.4 m above the sea) */
+function pandanCheck(L,min){if(!L)return{ok:false,detail:'no pandanus (88p)'};const bad=L.filter(T=>{const ab=terrainH(T.x,T.z)-SEA;return ab<1.2||ab>3.5||waterH(T.x,T.z)>terrainH(T.x,T.z)-.2;});
+ return{ok:L.length>=min&&!bad.length,detail:L.length+' strand pandanus on the beaches'+(bad.length?', '+bad.length+' off the strand (first at '+Math.round(bad[0].x)+','+Math.round(bad[0].z)+')':'')};}
 function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P=instPoints();
  add('the geysers keep their schedules, on the sinter',HCHK.geysers(GEYSERS));
  add('nothing grows in a spring or on the cone',HCHK.springs(P));
@@ -111,6 +117,7 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing grows on the trail',HCHK.paths(THRONE.TREES));
  add('every species of the isle placed',HCHK.placed(THRONE.TREES.reduce((C,t)=>{C[t.sp]=(C[t.sp]||0)+1;return C;},THRONE.SPECIES.map(()=>0))));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
+ add('the strand pandanus at the high-tide line',pandanCheck(PANDAN.trees,40));
  add('nothing rooted under the water',HCHK.dry(P));
  add('preset cameras clear of ground and sea',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -124,6 +131,7 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a mangrove on the crown',HCHK.mangroves(THRONE.TREES.concat([{sp:SPK('mangrove'),x:BASIN.x,z:BASIN.z}])));
  {const C=THRONE.SPECIES.map(()=>1);C[SPK('coconut')]=0;add('a species of the isle never placed',HCHK.placed(C));}
  {const p=TRAILS[0].pts[Math.floor(TRAILS[0].pts.length/2)];add('a tree on the trail',HCHK.paths([{x:p[0],z:p[1]}]));}
+ add('a pandanus on the crown',pandanCheck(PANDAN.trees.concat([{x:BASIN.x,z:BASIN.z}]),40));
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  {const a=1.0,d=isleR(a)*1.2;add('a plant on the sea floor',HCHK.dry([[DOME.cx+Math.cos(a)*d,SEA-8,DOME.cz+Math.sin(a)*d,'biome:fern']]));}
  add('a camera under the sea',HCHK.camerasOut([{view:'under',x:LAGOON.x,y:SEA-1.5,z:LAGOON.z}]));

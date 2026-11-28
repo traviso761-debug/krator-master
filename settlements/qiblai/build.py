@@ -11,6 +11,9 @@ core/space through the bundle (CORE_TAKEN names them for tools/check_core_use.py
     python3 build.py                 # dist/qiblai.html: the city
     KRATOR_GL=gpu python3 verify.py dist/qiblai.html --assert --views "Overview,From the south gate"
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import io, os, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -23,7 +26,8 @@ CORE_TAKEN = ('core/rand', 'core/tags', 'core/host', 'core/city', 'core/space', 
 # (Object.create(window): reads reach the page, writes stay inside), because Xanadu's page keeps core/space out (its vendored
 # biome's scatter takes another path when KSPACE is global). The nested-squares site (35-city-squares.js) joins the list.
 CITY_JS = ['10-city-core.js', '12-city-index.js', '15-city-ground.js', '20-city-plan.js', '25-city-site.js', '31-city-steps-b.js',
-           '32-city-steps-c.js', '33-city-strategies.js', '35-city-squares.js', '40-city-kcity.js']
+           '32-city-steps-c.js', '33-city-strategies.js', '35-city-squares.js', '40-city-kcity.js',
+           '../kits/10-core-kits.js', '42-city-multikit.js', '53-city-host-multikit.js']   # the multi-kit host (Stage 8 D8): inert until called
 SPACE = 'core/space/20-core-space.js'
 GEN = os.path.join(HERE, 'gen')
 

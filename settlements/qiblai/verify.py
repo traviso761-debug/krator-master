@@ -57,6 +57,9 @@ CITY_JS = r"""
  const FI=OIL&&OIL.buildInteriors?OIL.buildInteriors():null;
  R.push({name:'oilfield-interiors',ok:!!(FI&&FI.built>=30&&FI.rooms>=60&&FI.pieces>=300&&FI.fails.length<=8),
   detail:!FI?'buildInteriors missing (targets/city/90v-qc-oilfield.js)':FI.built+' interiors (kits/interiors sets locus and yuni-town, the mission school and bathhouse), '+FI.rooms+' rooms, '+FI.pieces+' pieces; '+FI.fails.length+' rooms short of a required piece (KNOWN_ISSUES.md)'});
+ const LF=window._qiblaiLife,LK=LF?LF.kinds:{};
+ R.push({name:'life',ok:!!(LF&&!LF.errors.length&&LF.people>=400&&LF.frames>0&&LF.wheels&&LF.banners>=8&&LK.pilgrim>=80&&LK.monk>=8*10&&LK.townsfolk>=200&&LK.market>=40&&LK.driver===2&&LF.camels===6),
+  detail:!LF?'window._qiblaiLife missing (targets/city/91l-qc-life.js)':LF.people+' people ('+Object.keys(LK).map(k=>k+' '+LK[k]).join(', ')+'), '+LF.camels+' camels; '+LF.shown+' shown near the eye, '+LF.moved+' walking, '+LF.frameMs+' ms a frame; the ways '+JSON.stringify(LF.paths)+' m; the wheels '+(LF.wheels?'turn':'still')+'; '+LF.banners+' banners in the wind ('+LF.bannerTris+' tris)'+(LF.errors.length?'; ERRORS '+LF.errors.join(' | '):'')});
  const J0=window._qiblaiLix,J=J0&&J0.buildTypes?J0.buildTypes(8):J0,share=J?J.lots/Math.max(1,J.lots+J.noShell+J.noProgram):0;
  R.push({name:'interiors-every-building',ok:!!(J&&share>=.85&&J.built>=6&&!J.fails.length&&J.tex.meshes&&J.tex.mapped===J.tex.meshes),
   detail:J?(J.lots+' lots with an interior ('+(share*100).toFixed(0)+' %; '+J.noShell+' without a shell, '+J.noProgram+' without a programme), '+J.types+' types; the 8 commonest built in '+J.ms+' ms ('+JSON.stringify(J.byProgram)+'), textured '+J.tex.mapped+'/'+J.tex.meshes+(J.fails.length?'; FAILS '+J.fails.join(' | '):'')):'window._qiblaiLix missing (targets/city/90u-qc-lot-interiors.js)'});

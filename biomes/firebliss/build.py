@@ -21,6 +21,9 @@ fx/ashplume) are on origin/claude/core-plan-features-229d2a, not yet on main. Th
 the branch is merged, else from the branch by `git show`. Nothing is copied into this kit. A checkout that has neither stops
 the build with a message naming the branch (KNOWN_ISSUES.md).
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.

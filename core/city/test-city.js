@@ -110,12 +110,15 @@ function obbSegDist(o, a, b) { const C = obbCorners(o); let d = Infinity;
     const den = (q[0] - p[0]) * (b[1] - a[1]) - (q[1] - p[1]) * (b[0] - a[0]);
     if (den) { const t = ((a[0] - p[0]) * (b[1] - a[1]) - (a[1] - p[1]) * (b[0] - a[0])) / den, u = ((a[0] - p[0]) * (q[1] - p[1]) - (a[1] - p[1]) * (q[0] - p[0])) / den; if (t >= 0 && t <= 1 && u >= 0 && u <= 1) return 0; } }
   return d; }
-// on a street: a footprint reaching into a street's carriageway (the exact-streets rule, TUNE.exact: 5 cm), or an
-// alley's centreline running through a footprint (alleys are routed on the raster's cells round the lots after them:
-// a 3 m alley may brush a wall, never cross a house)
+// on a street: a footprint reaching into a way's carriageway (the exact-streets rule, TUNE.exact: 5 cm). Alleys too since
+// 2026-11-24 (Stage 8 D8, S3-86a): step 12's alleys yield to the buildings standing; until then an alley counted only when
+// its centreline crossed a footprint, a test that could never fail (obbSegDist is 0 there, never below it)
 function onStreets(P, brush) { let n = 0; standing(P).forEach(L => { if (L.cls === 'landmark') return;
-  if (P.ways.some(w => { const tol = w.cls === 'alley' ? w.w / 2 : 0.05; let d = Infinity; for (let i = 1; i < w.pts.length; i++) d = Math.min(d, obbSegDist(L.bo, w.pts[i - 1], w.pts[i]));
-    if (brush && d < w.w / 2 - 0.05) brush.n++; return d < w.w / 2 - tol; })) n++; }); return n; }
+  if (P.ways.some(w => { let d = Infinity; for (let i = 1; i < w.pts.length; i++) d = Math.min(d, obbSegDist(L.bo, w.pts[i - 1], w.pts[i]));
+    if (brush && w.cls === 'alley' && d < w.w / 2 - 0.05) brush.n++; return d < w.w / 2 - 0.05; })) n++; }); return n; }
+// S3-86a: the standing buildings (any: civic ones and landmarks too) that a step-12 alley's carriageway reaches
+const alleyGrazes = P => standing(P).filter(L => P.ways.some(w => w.cls === 'alley' && w.died == null && w.born === 12 &&
+  w.pts.some((p, i) => i > 0 && obbSegDist(L.bo, w.pts[i - 1], p) < w.w / 2 - 0.05))).length;
 const onWall = P => standing(P).filter(L => (P.wallRec ? P.wallRec.segs : []).some(sg => obbSegDist(L.bo, [sg.ax, sg.az], [sg.bx, sg.bz]) < 3.5)).length;
 const inWater = P => standing(P).filter(L => obbCorners(L.bo).concat([L.bo.c]).some(p => ground(p[0], p[1]) < 0)).length;
 
@@ -139,9 +142,16 @@ ok('nothing stands on the wall or in water', onWall(P) === 0 && inWater(P) === 0
 // ---------------------------------------------------------------- 2. the golden hash, the KRAND city, two cities on a page
 const K = city({ rand: 'krand', seed: 2026 }), PK = K.run(), HK = placeHash(PK);
 const gold = { note: 'core/city: test-city.js writes these (--write); a change that moves a lot or a way changes them', sl: H1, krand: HK, lots: S1.length, krandLots: standing(PK).length };
+// 2026-11-24, Stage 8 D8, S3-86a: step 12's alleys yield to the buildings standing (32-city-steps-c.js SL.clearAlley,
+// SL.alleyRoom); the pins moved sl 88830e85 -> 7a0e8af5 (805 -> 806 lots, 31 alleys, 1 stopped short) and krand 6ffe1a15
+// -> 89ea9cdb (811 -> 798 lots, 44 -> 41 alleys, 1 stopped short)
 const GOLD = path.join(__dirname, 'golden.json');
 const G = fs.existsSync(GOLD) ? JSON.parse(fs.readFileSync(GOLD, 'utf8')) : {};
 ok('the placement hash is golden.json\'s (SL streams and KRAND streams)', G.sl === H1 && G.krand === HK, HK !== H1, 'sl ' + H1 + ', krand ' + HK + (G.sl === H1 && G.krand === HK ? '' : '; golden ' + G.sl + ', ' + G.krand));
+{ const g = alleyGrazes(P), gk = alleyGrazes(PK), house = S1.find(L => L.cls !== 'landmark'),
+    fake = { lots: [house], ways: [{ cls: 'alley', w: 3, born: 12, died: null, pts: [-30, 30].map(t => V.add(house.bo.c, V.add(V.mul(house.bo.u, t), V.mul(house.bo.v, house.bo.hd + 1)))) }] };   /* an alley 1 m off a house's long side */
+  ok('S3-86a: no step-12 alley reaches a building standing (the alleys yield; the SL and the KRAND city)', g === 0 && gk === 0, alleyGrazes(fake) === 1,
+    g + ' and ' + gk + ' buildings an alley reaches; ' + P.ways.filter(w => w.cls === 'alley').length + ' and ' + PK.ways.filter(w => w.cls === 'alley').length + ' alleys'); }
 { const H2 = placeHash(city().run()), HK2 = placeHash(city({ rand: 'krand', seed: 2026 }).run()), HK3 = placeHash(city({ rand: 'krand', seed: 2027 }).run());
   ok('deterministic: a rerun gives the same hash; another KRAND seed another city', H2 === H1 && HK2 === HK, HK3 !== HK, 'seed 2027 ' + HK3); }
 { const one = city(), two = city({ rand: 'krand', seed: 2026 }); one.run(); two.run(); const h1 = placeHash(one.plan), h2 = placeHash(two.plan);

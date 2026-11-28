@@ -10,8 +10,9 @@ const AVW_R=450,AVW_MAX=48,AVW_BUILDS=3,AVW_PROTOS=72;
 const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicles:null,out={records:[],live:new Map(),protos:new Map(),byId:new Map(),evicted:0,built:0,buildMs:0,drawn:0,ok:!!kit,tick(){}};
  if(!kit){reportErr('wrecks: KratorVehicles is not on the page (39v-mp-vehicles-bundle.js)');return out;}
  const sizes={};kit.list().forEach(v=>{sizes[v.key]={w:v.w,d:v.d,h:v.h,name:v.name};});
+ const gH=(typeof GROUND!=='undefined'&&GROUND.meshH)?GROUND.meshH:terrainH;
  /* where none may stand: the lake, a plinth, a crater's bowl and rim, the viaduct's corridor, an engine's pad, the scar, off the page */
- const ok=(x,z)=>{if(Math.hypot(x,z)>STAGE.R-30)return false;const g=terrainH(x,z);if(g<STAGE.lakeY+1.5)return false;if(STAGE.built(x,z)>.05||STAGE.F.scar(x,z)>.5||STAGE.viaduct.d(x,z)<14)return false;
+ const ok=(x,z)=>{if(Math.hypot(x,z)>STAGE.R-30)return false;const g=gH(x,z);if(g<STAGE.lakeY+1.5)return false;if(STAGE.built(x,z)>.05||STAGE.F.scar(x,z)>.5||STAGE.viaduct.d(x,z)<14)return false;
   for(const c of STAGE.craters)if(Math.hypot(x-c.x,z-c.z)<c.r*1.3+6)return false;for(const E of STAGE.engines)if(Math.hypot(x-E.x,z-E.z)<E.r+30)return false;return true;};
  /* the plazas for the helicopters: the lattice's nodes round the eye's start where no tower stands (the city's plan left the lot empty) */
  const LT=STAGE.lattice,p=LT.pitch,plazas=[],pq=[];for(let i=-6;i<=6;i++)for(let j=-6;j<=6;j++){const lx=i*p,lz=j*p,x=lx*LT.c-lz*LT.s,z=lx*LT.s+lz*LT.c;if(Math.hypot(x-STAGE.near.x,z-STAGE.near.z)>900)continue;
@@ -26,8 +27,8 @@ const AVW=(function(){const kit=typeof KratorVehicles!=='undefined'?KratorVehicl
  /* each record on the ground: y at its centre, pitched by the slope under nose and tail, rolled by the slope across (the roadbed is level, the kerbs
     are not); registered as kind 'wreck' with the inspector's words */
  const SP=KSPACE.create({cell:150});
- W.forEach(r=>{const fx=Math.sin(r.yaw),fz=Math.cos(r.yaw),hd=r.d*.4,hw=r.w*.4,yn=terrainH(r.x+fx*hd,r.z+fz*hd),yt=terrainH(r.x-fx*hd,r.z-fz*hd),yl=terrainH(r.x+fz*hw,r.z-fx*hw),yr=terrainH(r.x-fz*hw,r.z+fx*hw);
-  r.y=Math.min(yn,yt,yl,yr,terrainH(r.x,r.z))+.02;r.pitch=Math.atan2(yt-yn,hd*2)*.8;r.roll=Math.atan2(yl-yr,hw*2)*.8;   /* +x about the heading is the left kerb (yl); a nose on higher ground pitches the group's +z up: a negative x rotation */
+ W.forEach(r=>{const fx=Math.sin(r.yaw),fz=Math.cos(r.yaw),hd=r.d*.4,hw=r.w*.4,yn=gH(r.x+fx*hd,r.z+fz*hd),yt=gH(r.x-fx*hd,r.z-fz*hd),yl=gH(r.x+fz*hw,r.z-fx*hw),yr=gH(r.x-fz*hw,r.z+fx*hw);
+  r.y=Math.min(yn,yt,yl,yr,gH(r.x,r.z))+.02;r.pitch=Math.atan2(yt-yn,hd*2)*.8;r.roll=Math.atan2(yl-yr,hw*2)*.8;   /* +x about the heading is the left kerb (yl); a nose on higher ground pitches the group's +z up: a negative x rotation */
   const nm=(sizes[r.key]||{}).name||r.name;r.label='a ruined '+nm+' ('+r.state+(r.form?', '+r.form:'')+')';
   SP.insert(r,r.x,r.z,Math.max(r.w,r.d)/2);});
  /* the registry takes the wrecks by 600 m cell, not one a wreck: only the nearest 48 are drawn, so a wreck's own volume reads empty to the probe

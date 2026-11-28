@@ -11,7 +11,10 @@ module is plain functions on those records (`[G data]`: no THREE, no DOM), porte
 | `test-hazard.js` | `node core/hazard/test-hazard.js`: every function, each check with a negative |
 | `21-core-hazard-flow.js` | opt-in: `KHAZ.moveAt`, `drift`, `poolK`: a hazard's `move` read (`move.pull` toward the core) and gas pooled on a band's floor (`shape.pool`); `test-hazard-flow.js` |
 | `22-core-hazard-env.js` | opt-in: crusts that break underfoot (`KHAZ.crust`, `KHAZ.under`, `load`, `mend`, `saveCrusts`), air that pools at night and in still air (`KHAZ.night`, `bindClock`, `bindWind`), fronts that travel a path (`KHAZ.front`: the gorge flood and the charge; `frontAt`, `floodLevel`, `bindHerd`), `KHAZ.ENV` builders; `test-hazard-env.js` |
+| `22-core-hazard-bore.js` | opt-in: `KHAZ.rockburst`, `inrush`, `seal`: a bore's hazards (openworld/ANCIENT-TUNNELS.md section 4) as presets on kinds core/tags has (`crush` and `drown` on a cycle, `gas` on the state function `KHAZ.seal`); no vocabulary edited; `test-hazard-bore.js` |
 | `22-core-hazard-tunnel.js` | opt-in: the tunnels' kinds `rockburst`, `inrush`, `seal` (their rows added to the vocabulary at first use), `KHAZ.TUNNEL`, `burstAt`, `spalls`, `flood`, `pressure`, `breach`, `reseal`, `bindDoor`, `sealStep`, `tunnelAudit`; `test-hazard-tunnel.js` |
+| `23-core-hazard-tide.js` | opt-in: 2D macrotidal submergence & Ghost-Tsunami drawdown warning (`KHAZ.tide`, `bindTide`, `tideSample`), reversing flood/ebb sluice & narrows currents (`KHAZ.race`, directional `drift`), `KHAZ.TIDE` (`bench`, `race`); no vocabulary edited; `test-hazard-tide.js` |
+| `24-core-hazard-tsunami.js` | opt-in: tsunami wave-train inundation, breaking bore impact, backwash scour & trimline safe refuge (`KHAZ.tsunami`, `bindTsunami`, `tsunamiSample`, directional surge/backwash `drift`, `KHAZ.TSUNAMI.zone`); uses existing vocabulary (`drown`, `crush`, `grab`); `test-hazard-tsunami.js` |
 | `GODOT.md` | the Area3D, navigation and status mapping for the port |
 
 What else it touches (all in this workstream, 2026-10-26):
@@ -382,6 +385,18 @@ without 21.
 ## Tests
 
 `node core/hazard/test-hazard.js`, `node core/hazard/test-hazard-flow.js` (the pull and the pool), `node core/hazard/test-hazard-env.js` (crusts, night, fronts: on 20 + 22 and on 20 + 21 + 22, with broken variants of the laws), `node core/biome/test-traps.js` (the clock), `node core/walk/test-walk.js` (zones),
+## A bore's hazards (`22-core-hazard-bore.js`, opt-in, 2026-11-11)
+
+The three owed by `openworld/ANCIENT-TUNNELS.md` section 4, added for the Line (`biomes/line/PLAN.md` section 6; the owner, 2026-11-11). Each is
+a preset on a kind the vocabulary already has, so no page that does not list the file changes and `KHAZ.make` checks each like any record:
+
+- `KHAZ.rockburst(o)`: a `crush` on a cycle (a tell of dust and ticking, the burst, a settling spall, idle the rest of the period).
+- `KHAZ.inrush(o)`: a `drown` on a cycle (the drains roar, the gallery fills on its ramp, stays flooded, drains), dry between (`base` 0).
+- `KHAZ.seal(o)`: a `gas` (suffocate) on the state function `KHAZ.seal`: harmless while its door holds, airless when it fails; a page calls
+  `KHAZ.setSeal(doorId, sealed)` when the door opens or breaks.
+
+A build lists `core/hazard/22-core-hazard-bore.js` after `20-core-hazard.js`.
+
 ## The tunnels' kinds (`22-core-hazard-tunnel.js`, opt-in, 2026-11-11)
 
 The Line (`biomes/line/PLAN.md` section 6, the owner's answer 13; `openworld/ANCIENT-TUNNELS.md` section 4). **Opt-in by

@@ -1,4 +1,4 @@
-# Ring Sea watercraft: API
+# Boats, Ships, and Vessels Kit: API
 
 **Units** metres. **World** x east, z south (north is -z), y up, sea surface y=0.
 **Vessel frame**: origin amidships on the waterline, bow +x, starboard +z. A builder never
@@ -9,10 +9,10 @@ knows where its vessel is placed.
 `build()` opens with `reseed(N)` (checked by `build.py`) and returns `{group, anims, deckY}`.
 `L/B/H` are length, beam (incl. oars/outriggers) and air draught; `verify.py` checks them against the built box.
 
-Seeds: 71000 + 100·n per vessel (71000 trireme … 73700 Voth dhow); 79001 is the far shore. Next free: 74100 (73800-74000 are the Islander drua, kora-kora and lanong).
+Seeds: 71000 + 100·n per vessel (71000 trireme … 75000 Ria noble salon barge); 79001 is the far shore. Next free: 75100.
 
 ## Building blocks (all write into a bucket `B = rsBucket()`, baked once by `rsBake(B, group)`)
-- Materials by key: `wood paint metal rope cloth thatch tile hex chitin glow foam ancient bronze rust`, all vertex-coloured; `rsDefMat` adds one.
+- Materials by key: `wood paint hullpaint metal paktong rope cloth silk thatch tile hex chitin tarwood jade brick hide bone stone glaze glow foam foamT ember ancient bronze rust`, all vertex-coloured; `rsDefMat` adds one.
 - Primitives: `rsBox rsCyl rsSphere rsCone rsLink(a,b,r) rsTube(pts,r|fn) rsGrid rsRoof rsFigure`.
 - Hull: `H = rsHull({L,B,fb,dr,sheerF,sheerA,pb,pa,q,n,flare,rakeF,rakeA,transom,keelEnd,z0})`;
   `H.pt(u,s,h)`, `H.nrm`, `H.hb`, `H.ys`, `H.halfAt(u,y)`, `H.xAt`, `H.uAt(x)`.

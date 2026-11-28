@@ -237,18 +237,30 @@ sprig's mass, a tie going to the lower end); `core/materials/library/card-bases.
 
 - **The card guard.** `BIO.def` (and `BIO.libSwap`, for items defined before it) reports through `BIO.err` a library card it
   cannot draw right: a sheet drawn whole (no cell, stems, `BIO.geo.cells`, `"sheet": "geometry"` or a uv cut by the kit's own
-  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`.
+  code), a library plant on a frond, ribbon or hang with no `base`, a crown on the clump with no `stems` or `base`, and (2026-11-15,
+  ehighlands' beech) ONE plant (`plants 1`) cut into a sheet's cells by `BIO.geo.cells` or `"sheet": "geometry"`.
   `BIO.cardFaults` lists them. It reads `plants` and `anchor` from the pack entry (`tools/textures/pack.py`): a pack written
-  before them is never refused.
+  before them is never refused, but since 2026-11-15 it is reported: `BIO.cardMute` lists the slots whose pack says nothing of
+  the image, and `guardChecks` fails them ("library cards described by the page's pack"). It found the guard silent on fifteen
+  biome packs written before `plants`, and on ehighlands, whose own pack writer dropped `cell`, `base` and `stems` as well: rerun
+  `tools/textures/pack.py <build>`, and write a page's pack with `tools/textures/matlib_pack.py`.
+- **Inside out.** `BIO.insideOut({ground})` (2026-11-15, ehighlands' fumarole: a lathe written lip to foot) lists the opaque,
+  front-sided, non-instanced meshes whose area is mostly faces turned down that stand above the ground: from above such a mesh
+  shows its unlit underside through a culled near side, a flat black shape. A cave's roof or a carved overhang lies under the
+  heightfield and is not counted.
 - **One box a chunk.** At bake every chunk mesh takes the height range (so the distance and the cull sphere) of every mesh
   sharing its square and minRange: a tree's bark, rods and cards switch at one distance. `BIO.LOD.ownBox = true`: as before.
 - **The attachment audit.** `BIO.attachAudit({ground})` reads the baked scene: each leaf or hang card above the ground
-  (sampled, 20,000 at most) against the nearest structure (instanced non-card items along their long axes; every other mesh's
-  triangle edges, on KSPACE near the samples): floating, in another chunk, or reaching past its structure's range. An item
-  defined with `{free: true}` is skipped.
+  (sampled, 20,000 at most) against the nearest structure (instanced non-card items as segments along their long axes, point to
+  segment since 2026-11-15 (it sampled them every 2 m); every other mesh's triangles, on KSPACE near the samples): floating, in
+  another chunk, or reaching past its structure's range. An item defined with `{free: true}` is skipped. A crown held by its
+  stems (a clump whose slot gives `stems`: its sprigs' stem ends are its origin) must have that origin within `o.stemTol` (.15 m)
+  of a structure, not a share of its size (2026-11-15, ehighlands' fir: `.25 x size + .5` passed a sprig 60 cm off its twig);
+  `stemmed` and `stemFloat` count them.
 - **The checks.** `BIO.guardChecks(o)` and `BIO.guardNegatives(o)` (each with controls that must fail: a made-up fern with no
-  base, every card lifted 6 m, every card reaching four times its range) are appended by the host probe to every build's
-  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, pad, max}})` turns them off or
+  base, a made-up one-plant card in cells, a made-up disc wound toward the ground, every card lifted 6 m, every stem-held clump
+  lifted 0.4 m, every card reaching four times its range) are appended by the host probe to every build's
+  `hostChecks` and `hostNegatives`; `KHOST.take({guards: false | {maxShare, minUp, k, kStem, stemTol, pad, max}})` turns them off or
   tunes them (maxShare .01 by default). `HANDOFF-REBUILD.md`, "the foliage guards", has the rule for a build that fails.
   Test: `test-guards.js`.
 
@@ -275,6 +287,17 @@ Adopting it: list `'33-core-fungoid.js'` after `30-core-foliage.js` in `CORE_BIO
 `BIO.def(item, BIO.fung.cap({...}), mat, {label})` where the kit built its own. Keep the kit's placement as it was (its
 `rng()` draws), so nothing placed after it moves; a new pass can use the layouts. nhighlands' mushroom and disc stalk are the
 first (2026-10-26: `G.mushroom`, `G.disc` in its `50`); the rest of `TODO.md`'s list follows in the final rebuild.
+
+Two options added 2026-11-24 (the owner's choices for the two kits the fungoid pass skipped), both off by default; with
+neither, every part is the same byte for byte (`test-fungoid.js` hashes 18 parts and every literal `BIO.fung` call the kits
+made that day, `test-fungoid-calls.json`):
+- **Ring colours** (`cap`, `bracket`): `o.ringCol [[r, [R,G,B]], ...]` root to rim, `r` a fraction of the radius. The top is
+  resampled at each ring's radius and each vertex's colour is the rings' RGB blended linearly by radius, in place of its grey
+  shade; `bracket`'s `o.underCol [R,G,B]` colours its underside. Oidong's rainbow brackets (`G.bracket`) are the first.
+- **Halves** (`cap`): `o.only 'top'` or `'under'` draws one half of the same cap (the underside: gills or pores, and the stem),
+  and `o.gillRoof` closes the gills' roof along their top edges, facing down (`roofK`). A kit that skins the top and colours
+  the gills apart defs the two halves from one `o`, so the gills hang below the top everywhere: the Throne's parasols
+  (`G.disc`, `G.gills`).
 
 ## Bamboo parts (`33b-core-bamboo.js`, `BIO.bamboo`; opt-in)
 
@@ -410,7 +433,8 @@ sets, gloss, irid, both far kinds, hang, plain bark, solid) as `de751ca46` wrote
 | B9 spin | `BIO.leafMat(tex,key,{spin:true})` (or `spin:{value}` of the host's own): turns about the instance origin by `BIO.SPIN.value` | per material |
 | R5 floor cover takes the ground's colour | `BIO.setGround(tex,[x0,z0,x1,z1],{linear})` or `BIO.setGround(BIO.groundTex(fn,box,128),box)`; leafMat `{ground:{k,gain,tip,fade:[d0,d1]}}` | page + material |
 | R7 alpha-to-coverage | `BIO.setA2C(renderer)` after the kits are built: MSAA on WebGL2 only, the alpha test kept otherwise | page |
-| R8 one wind field | `BIO.bindAtmosWind({gain})` after `ATMOS.init`/`bindHost`: the sway and lean ride `atmGust` at each root | page |
+| R8 one wind field | `BIO.bindAtmosWind({gain})` after `ATMOS.init`/`bindHost`: the sway and lean ride `atmGust` at each root. Since Stage 8 V10 (2026-11-24) a page with core/atmos initialised binds it by itself at the first program key (gain 1; the leaves and the sward both); the call is still how a page sets its gain. `BIO.WIND_AUTO=false` turns the default off | page |
+| V8 cloud shade | every lit material the core makes (leaf, bark, irid, gloss, far, hang, solid, sward) calls `BIO.cloudShade(m)`: queued, then hooked once (`ATMOS.cloudShade`, porosity `BIO.CLOUD.porosity`, .4) when the page shades its lit materials (`ATMOS.cloudShadeScene`: `skyBiome` runs it unless `o.shade` is false; a page on `ATMOS.sky` calls it after its build), made before it or after. No core/atmos, no shared sky, or no scene pass: the text is what it was. `BIO.CLOUD.on=false`: none | page |
 | item 6 back-light | leafMat `{backlit:0..1}` | per material |
 | the cross-fade hook | `BIO.FADE={uniforms,vertexPars,vertex,fragmentPars,fragment}` or `function(sh,kind)`, set before the kits build | page (for the kit workstream's dithered LOD cross-fade) |
 | X4 the ground dither | list `31-core-dither.js`; `BIO.DITHER` is the GLSL (kdither, kditherW, kmacro), `BIO.ditherCell` its JS twin | fragment |

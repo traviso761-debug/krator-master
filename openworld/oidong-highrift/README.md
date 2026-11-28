@@ -5,6 +5,15 @@ The fourth region of sites cut off the scale model into the open world (`openwor
 PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 
 - **The cut:** two model regions on map 5.1, cut by `tools/scale-model/cut_site.py oidong-highrift`.
+  - **Smoothed** (`"smooth": true` in SITES.json, 2026-11-12, the owner; `core/world/README.md`, "Smoothing"):
+    - no pixel staircases on the scarps, and no row streaks;
+    - the rivers follow curves through the model's vertices;
+    - the page lists `core/world/40-world-smooth.js`.
+    Longsong's pin is still on the Bīruk al-Ghaym's south bank: the river as the page draws it runs 401 m north (502 m
+    before), and the pin's ground stands 12 m over the river's water.
+  - **Relief** (`"relief": 1`, 2026-11-15; `core/world/PLAN-RELIEF.md`, P1): the High Rift and Xanadu fell back to the
+    `desert` style, whose terraces ringed every hill like a contour map. They are `highland` now, with terraces only on
+    caprock. The page lists `core/world/43-world-relief.js`. Re-baked: 23 hamlets and 937 records stand, 15 bridges.
   - the Oidong Valley (17,257 px inside the cut);
   - the High Rift (21,261 px);
   - four sites' squares.
@@ -37,7 +46,8 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
     floor, under 2,700 m: `guide`), with a han every 25 km. It is the only way along the valley: the Rift line does not run in it
     (the owner, 2026-11-11).
   - **Bridges** (core/world 42b, 88b; `SITE_SPEC.bridges`): every link is laid on the ground and bridged where it
-    crosses a named river. That is 14 bridges and 127 piers, so the rivers run on under them.
+    crosses a named river. That is 15 bridges and 125 piers, so the rivers run on under them (since the smoothing of
+    2026-11-12, the rivers' curves cross three fewer roads than their straight runs did).
 - **The flora:**
   - the Oidong kit on the valley (its own `OIDONG.PASSES`);
   - the High Rift kit's floor on the rift (`src/49-world-highrift.js`): tussock, steam heath, opal cane, bead caps and
@@ -49,7 +59,7 @@ PROPOSAL-LONGSONG-PINNACLE.md` holds the economy it is planned for.
 - **Built output:** `dist/oidong-highrift.html` (about 9 MB, the rasters as PNGs), with its texture sidecars.
 
 ```
-python3 tools/scale-model/cut_site.py oidong-highrift     # the cut (data/, source/): about 30 s
+python3 tools/scale-model/cut_site.py oidong-highrift     # the cut (data/, source/): about 55 s with the smoothing
 python3 core/world/bake_sites.py oidong-highrift          # the plan (plan/sites.json); --check fails on a stale bake
 python3 core/world/bake_sites.py oidong-highrift --resources
 python3 build.py                                          # dist/oidong-highrift.html
@@ -58,6 +68,35 @@ python3 verify.py dist/oidong-highrift.html --assert --views 1,3,6
 
 On the GPU, set `KRATOR_GL=gpu`; a verify takes a harness lane itself. A fresh worktree needs the packs from LFS:
 `git lfs pull --include="biomes/highrift/tex/*,biomes/oidong/tex/*,settlements/xanadu/tex/*"`.
+
+**Godot's one-world case (GODOT-PLAN.md M7; the owner, 2026-11-16).** The page carries core/export and core/world 94, and
+two tools write `godot/data/world-oidong-highrift`, which `godot/tests/export/oidong_world_test.gd` reads:
+
+```
+KRATOR_GL=gpu python3 tools/harness.py lock -- python3 openworld/oidong-highrift/tools/godot_case.py   # index.json, chunks/ (46), places/ (5): ~10 min
+node openworld/oidong-highrift/tools/export-sim.js                                       # sim.json, golden.json: the valley's week
+godot --headless --path godot --script res://tests/export/oidong_world_test.gd           # the stream, the places, the roads, the books
+```
+
+The places are each a 1.6 km square round a site's pin. Longsong's villages are in full (about 40 MB of glb, in LFS)
+and the Order's houses' in massing: the page draws a village in full within 4 km of the camera and its flora within
+2.5 km, and the High Rift's houses grow none round them. Rebake, rebuild and re-export after the plan moves.
+
+Each case is written about its own origin (the box's centre: a floating origin, core/export README "origin"), so a
+building 600 km out keeps its millimetres in Godot; the stream moves its own origin with the camera. The flora's plants
+carry uids (each pool a core/tags item set in the `flora` part). The export needs the GPU (`KRATOR_GL=gpu`): under
+SwiftShader the page's start fails on a shader.
+
+**Strongbow's arcology** (the owner, 2026-11-16: "far detail"): `godot_case.py --only arcology` exports `kits/ancients`'
+`strongbow-today` page from `settlements/strongbow`'s branch's worktree (`KRATOR_STRONGBOW`, default the sibling
+`keen-swanson-68a311`, built) through `tools/strongbow-export.js` (injected: `tools/harness.py export --root --inject`):
+what the page draws from 3.5 km, written about its anchor (the lip at the bay's centre). Strongbow's place in `index.json`
+gains `arcology` (its case, branch, commit, `at` and `ry`); `KratorWorldStream.open_place` seats it under the place, turned
+to face west. The region's ground is cut to the page's face (`src/48-world-site.js` OHR_CUT, in the sites' spec so the bake
+reads it too; the owner, 2026-11-16: "carve it", "make sure this doesn't result in water flowing uphill"): a pad under the
+page's plateau (Strongbow's top: the page draws no plateau of its own there; at the lip's level, falling 0.5 m to the lip), the 900 m step behind the page's cliff, its floor and a gorge falling 0.4 % west to
+where the scarp meets it, only ever lowering and keeping off the rivers. `python3 tests/test_cut.py` proves it drains, each
+check with a negative.
 
 ## Fragments
 

@@ -39,6 +39,9 @@ claim the file is syntactically valid — the only thing that actually catches a
 syntax error here is verify.py, which loads the page and reads the on-screen
 error panel. Do not read a green build as "the JavaScript parses".
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import hashlib, json, os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -106,7 +109,7 @@ CORE_OPT_FILES = ['69a-world-uv.js']   # vWorldUV, the world-unit UV hook (core/
 # A target listed here gets the GENERATED 8zy-interiors-bundle.js (the catalog's Ancient furniture, kits/interiors'
 # core with the arcology's set, kits/ancients-interiors' core) and the shared core/rand, core/tags and core/furnish;
 # every other target builds exactly as before (the interior fragments do nothing without the bundle).
-INTERIOR_TARGETS = {'interiors', 'theodiga-today'}   # theodiga-today: the arcology's inhabited levels (settlements/theodiga T-arc-1)
+INTERIOR_TARGETS = {'interiors', 'theodiga-today', 'stonebow', 'arcodiga', 'arckibuz'}   # theodiga-today, stonebow, arcodiga, arckibuz: arcology interiors & culture sockets
 INTERIOR_BUNDLE = '8zy-interiors-bundle.js'
 CORE_RAND = os.path.join(ROOT, 'core', 'rand')
 CORE_TAGS = os.path.join(ROOT, 'core', 'tags')
@@ -116,22 +119,111 @@ INTERIOR_CORE = [(CORE_RAND, '08-core-rand.js'), (CORE_TAGS, '50-core-tags.js'),
                  (CORE_FURNISH, '53-core-furnish-host.js')]
 # A target listed here takes the shared core/rand and core/tags (no interiors): its placement draws from KRAND and it
 # registers what it places with KTAGS before drawing it (CLAUDE.md, "Write code that is the same on every machine").
-TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'theodiga', 'theodiga-today'}   # theodiga: the Dome on the Water (2026-11-11)
+TAGS_TARGETS = {'podium', 'sanctum', 'span', 'arcpile', 'strongbow', 'strongbow-today', 'theodiga', 'theodiga-today', 'gatearc', 'parabola', 'stonebow', 'arcoindian3', 'slice', 'tethis', 'arcodiga', 'arckibuz'}
 TAGS_CORE = INTERIOR_CORE[:4]
+_WATER_RUINS_READS = ([(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                      + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                      + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')])
 # fragments a target reads in place from another kit: the Sanctum's statuary is the Eternian kit's head generator
 # (kits/eternian/src/42-et-head.js, [G data]: one generator for every build that carries the Eternians' faces)
+PB_ATMOS = ['89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js']
+PB_WATER = ['20-core-water.js', '21-core-water-shore.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js']
+SB_TODAY_READS = ([(os.path.join(HERE, 'targets', 'strongbow'), f) for f in ('8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw2-strongbow-draw.js', '8aw3-strongbow-foot.js')]
+                  + [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), f) for f in ('20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js')])
+# Strongbow's town (SB3): its drawing and the isle demo's kit-piece flattener (isleFlatten), read in place; two GENERATED
+# bodies, each sealed in its own closure so its globals meet none of the kit's (core/city's clamp and segDist are the
+# kit's names too): SB_CITY, core/space + core/city's [G data] fragments + the settlement's town plan (src/40-sb-town.js) as
+# SBCITY; SB_XAK, the Xanadu kit with the scrap set as XAK (kits/xanadu/kit_bundle.py). Every file is read live, never copied.
+SB_TOWN_READS = [(os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax1-sb-town.js'),
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '32-sb-walk.js'),   # the walk up (2026-11-12): its records and walker
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax3-sb-walk.js'),   # ... drawn, checked and replayed on the page
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '33-sb-rooms.js'),   # ... the rooms, storeys, stairs and solid walls as records
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax4-sb-rooms.js'),   # ... drawn near the eye
+                 (os.path.join(ROOT, 'core', 'walk'), '20-core-walk.js'),
+                 (os.path.join(ROOT, 'settlements', 'strongbow', 'src'), '8ax2-sb-cutaway.js'),
+                 (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')]
+SB_CITY, SB_XAK, SB_XPACK = '8ax8-sb-city.js', '8ax9-sb-xak.js', '8ax7-sb-xanadu-pack.js'
+# the interiors' plates (kits/ancients-interiors 10-ai-core.js, 35-ai-plates.js), GENERATED sealed as SB_AI: loose, the global
+# KratorAncientsInteriors would switch on the kit's own interiors pass (src/8zz-interiors.js), which wants the whole bundle
+SB_AI = '8ax5-sb-ai.js'
+SB_AI_FILES = [(os.path.join(ROOT, 'kits', 'ancients-interiors', 'src'), f) for f in ('10-ai-core.js', '35-ai-plates.js')]
+
+
+def sb_ai():
+    parts = []
+    for d, f in SB_AI_FILES:
+        with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
+            parts.append(fh.read())
+    return ('/* GENERATED by build.py (sb_ai): the core and plates of kits/ancients-interiors, read live, sealed. Do not edit. */\n'
+            'var SB_AI = (function () {\n' + '\n'.join(parts) + '\nreturn KratorAncientsInteriors;\n})();\n')
+
+
+def sb_city_files():
+    city = os.path.join(ROOT, 'core', 'city')
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js'), os.path.join(ROOT, 'core', 'kits', '10-core-kits.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f)
+               and ('host' not in f or f == '53-city-host-multikit.js')]   # with 42 and core/kits, the multi-kit host (Stage 8 D8): inert until called
+            # kits/crops (plain data): what the foot's fields grow, from the Xanadu vale's crops (kits/crops/API.md, 'Reading it from a build')
+            + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
+            + [os.path.join(ROOT, 'settlements', 'strongbow', 'src', '40-sb-town.js')])
+
+
+def sb_city():
+    """core/city and the town plan in one closure: var SBCITY = {KCITY, town: SB_TOWN} (settlements/strongbow/src/40-sb-town.js)"""
+    body = ''
+    for f in sb_city_files():
+        with open(f, encoding='utf-8', newline='') as fh:
+            body += '/* ---- %s ---- */\n%s\n;\n' % (os.path.relpath(f, ROOT).replace(os.sep, '/'), fh.read())
+    return ('/* SBCITY: core/space, core/city and Strongbow\'s town plan sealed in one closure (kits/ancients/build.py sb_city). '
+            'GENERATED: edit core/city or settlements/strongbow/src. */\nvar SBCITY = (function(){\n' + body
+            + 'return { KCITY: KCITY, KSPACE: KSPACE, town: SB_TOWN };\n})();\n')
+
+
+def sb_xak():
+    """the Xanadu kit and its scrap set for Strongbow's town, sealed as XAK (kits/xanadu/kit_bundle.py, read live)"""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('sb_xanadu_kit_bundle', os.path.join(ROOT, 'kits', 'xanadu', 'kit_bundle.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    js, _ = mod.bundle('XAK', scrap=True)
+    return js
+
+
 TARGET_READS = {'podium': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js')],
+                # Strongbow today (settlements/strongbow, SB2): the arcology's fragments and the settlement's layout and reclamation, read in place
+                'strongbow-today': SB_TODAY_READS + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')] + SB_TOWN_READS,
+                # Strongbow's rubble is core/terrain's KRUBBLE heaps (the Ancient's Valley's method), read in place
+                'strongbow': [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js')],
                 # the engines' industrial set is watched by core/ruins (targets/engines/91y; the owner, 2026-11-10)
                 'engines': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')],
                 # Theodiga (the owner, 2026-11-15: "make sure this build is on core/water and all other relevant core modules"):
                 # its lake, outlets, cascade and river on core/water, bound to core/atmos as kits/port binds it (targets/theodiga
                 # 77c, 90w), and its ruin watched by core/ruins
-                'theodiga': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
-                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
-                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'theodiga': list(_WATER_RUINS_READS),
+                'arcodiga': list(_WATER_RUINS_READS),
+                'arckibuz': list(_WATER_RUINS_READS),
                 # the Sanctum (2026-10-22) shares the Podium's skins and materials (MAT.sn*), read in place
                 'sanctum': [(os.path.join(ROOT, 'kits', 'eternian', 'src'), '42-et-head.js'),
-                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')]}
+                            (os.path.join(HERE, 'targets', 'podium'), '8aq2-podium-skins.js')],
+                # the Hall of Heroes' stacks (2026-11-11) are core/terrain's KSTACKS rock bodies, read in place
+                'gatearc': [(os.path.join(ROOT, 'core', 'terrain'), '37-core-stacks.js')],
+                # Parabola (2026-11-11): its rain lake is core/water still water, on core/atmos's clock and skylight, read in place
+                # as Xanadu's kit page reads them (settlements/xanadu/build.py TARGET_FILES; targets/parabola/90p-parabola-lake.js)
+                'parabola': [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER],
+                # Stonebow (targets/stonebow): stratified porphyry/dolomite canyon on core/terrain's KSTRATA, river & cataract on core/water + core/atmos, ruin watched by core/ruins
+                'stonebow': [(os.path.join(ROOT, 'core', 'terrain'), '35-core-strata.js'),
+                             (os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                            + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                            + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'arcoindian3': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                               + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                               + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                'slice': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                         + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in ('89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js')]
+                         + [(os.path.join(ROOT, 'core', 'water'), f) for f in ('20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js')],
+                # Tethis (2026-11-24): the pelagic saucer arcology in the shallow sea on core/water + core/atmos, watched by core/ruins
+                'tethis': [(os.path.join(ROOT, 'core', 'ruins'), '20-core-ruins.js'), (os.path.join(ROOT, 'core', 'ruins'), '21-core-ruins-host.js')]
+                          + [(os.path.join(ROOT, 'core', 'atmos'), f) for f in PB_ATMOS] + [(os.path.join(ROOT, 'core', 'water'), f) for f in PB_WATER]}
 # THEODIGA TODAY (settlements/theodiga, T-town-2, 2026-11-16): the ruined dam, its Dome and its water as the theodiga target
 # draws them (its fragments read in place from targets/theodiga), and the town on the east rim: its drawer from the settlement
 # (src/8ay1-th-town.js) and the isle demo's flattener (58-isle-protos.js), read in place; and three generated bodies, the first
@@ -143,22 +235,24 @@ THEO_TARGET = os.path.join(HERE, 'targets', 'theodiga')
 # core/simulation (SIM), read in place for theodiga-today's census (settlements/theodiga src/47-th-sim.js; Longsong's set)
 TH_SIM_FILES = ('77-sim-0-core.js', '77-sim-1-world.js', '77-sim-2-places.js', '77-sim-3-actors.js', '77-sim-4-nav.js', '77-sim-5-motion.js',
                 '77-sim-5r-routes.js', '77-sim-6-economy.js', '77-sim-6-govern.js', '77-sim-6-items.js', '77-sim-6-needs.js', '77-sim-6-population.js', '77-sim-6-trade.js',
-                '77-sim-7-ledger.js', '77-sim-7-lod.js', '77-sim-7-stocks.js', '77-sim-8-export.js', '77-sim-9-debug.js')   # govern + ledger: T-econ-1
+                '77-sim-6-money.js', '77-sim-7-ledger.js', '77-sim-7-lod.js', '77-sim-7-stocks.js', '77-sim-8-export.js', '77-sim-9-debug.js')   # govern + ledger: T-econ-1; money: T-money-1
 TARGET_READS['theodiga-today'] = (TARGET_READS['theodiga']
                                   + [(THEO_TARGET, f) for f in ('77-dam.js', '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',
                                                                 '77c-theodiga-water.js', '90w-theodiga-water.js')]
-                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '46-th-town-rooms.js', '47-th-sim.js', '48-th-walk.js', '49-th-econ.js', '8ay9-th-walkers.js', '8zz1-th-arc-host.js', '8zz2-th-town-rooms.js')]
+                                  + [(os.path.join(ROOT, 'settlements', 'theodiga', 'src'), f) for f in ('41-th-descent.js', '42-th-works.js', '43-th-arc-program.js', '43-th-arc.js', '8ay1-th-town.js', '8ay2-th-descent.js', '8ay3-th-works.js', '44-th-dome-today.js', '8ay4-th-dome-today.js', '45-th-life.js', '8ay5-th-life.js', '46-th-town-rooms.js', '47-th-sim.js', '48-th-walk.js', '49-th-econ.js', '49m-th-money.js', '8ay9-th-walkers.js', '8zz1-th-arc-host.js', '8zz2-th-town-rooms.js')]
                                   + [(os.path.join(ROOT, 'core', 'simulation'), f) for f in TH_SIM_FILES]   # the census on core/simulation (T-sim-1)
                                   + [(os.path.join(ROOT, 'core', 'terrain'), '37c-core-rubble.js'),   # the works' salvage heaps (KRUBBLE)
                                      (os.path.join(ROOT, 'settlements', 'isle-demo', 'src'), '58-isle-protos.js')])
 TH_CITY, TH_XAK, TH_XPACK, TH_QPACK = '8ay8-th-city.js', '8ay9-th-xak.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js'
 SEALED = {TH_CITY, TH_XAK}   # generated closures: the build rules' scans do not reach inside them
+SEALED |= {SB_CITY, SB_XAK, SB_AI}   # Strongbow today's sealed bodies (core/city with the town, the Xanadu kit, the interiors' plates)
 
 
 def th_city_files():
     city = os.path.join(ROOT, 'core', 'city')
-    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js')]
-            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f) and 'host' not in f]
+    return ([os.path.join(ROOT, 'core', 'space', '20-core-space.js'), os.path.join(ROOT, 'core', 'kits', '10-core-kits.js')]
+            + [os.path.join(city, f) for f in sorted(os.listdir(city)) if re.match(r'^\d\d-city-.*\.js$', f)
+               and ('host' not in f or f == '53-city-host-multikit.js')]   # with 42 and core/kits, the multi-kit host (Stage 8 D8): inert until called
             + [os.path.join(ROOT, 'kits', 'crops', 'src', f) for f in ('10-crop-core.js', '20-crop-records.js', '40-crop-query.js')]
             + [os.path.join(ROOT, 'settlements', 'theodiga', 'src', '40-th-town.js')])
 
@@ -185,7 +279,12 @@ def th_xak():
 INTERIOR_FURN = ['generic-goods']
 # a target's own furniture cultures beside them: Theodiga's inhabited levels are furnished as Xanadu's clergy would (T-arc-1)
 INTERIOR_SETS_TARGET = {'theodiga-today': ['xanadu-scrap']}   # kits/interiors sets a target's own buildings take (theodiga-today: the town, T-town-7)
-INTERIOR_FURN_TARGET = {'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap']}   # the arcology's and the town's (T-town-7) furniture
+INTERIOR_FURN_TARGET = {
+    'theodiga-today': ['xanadu', 'generic', 'eastabyss', 'scrap'],   # the arcology's and the town's (T-town-7) furniture
+    'stonebow': ['post-apoc', 'generic', 'scrap'],                   # stonebow: ancient + generic-goods + scrap + post-apoc/generic socket options
+    'arcodiga': ['post-apoc', 'scrap', 'generic', 'pylon', 'iziz', 'republican', 'eternian', 'xanadu'],
+    'arckibuz': ['post-apoc', 'scrap', 'generic', 'pylon', 'iziz', 'nomad', 'eastabyss', 'xanadu'],
+}
 
 
 def interior_bundle(target=None):
@@ -236,13 +335,16 @@ TARGET_OUT = {
     'arcube': 'arcube.html',                 # the 1 km cube on its diagonal
     'lozenge': 'lozenge.html',               # the cube at a quarter height, its upper faces terraced (targets/lozenge)
     'arcpile': 'arcpile.html',               # the pile of blocks, the Rift's ruin (targets/arcpile)
+    'strongbow': 'strongbow.html',           # the cliff arcology hung down the High Rift's escarpment at Oidong (targets/strongbow)
+    'strongbow-today': 'strongbow-today.html',   # Strongbow as it stands now, with the settlement's reclamation (settlements/strongbow)
+    'parabola': 'parabola.html',             # the Bowl's arcology, a terraced paraboloid dish (targets/parabola)
     'wing': 'wing.html',                     # memorial group: the Wing
     'drum': 'drum.html',                     # memorial group: the Drum
     'blades': 'blades.html',                 # memorial group: the Blades
     'trigon': 'trigon.html',                 # the triangular pyramid, 3:1
     'monolith': 'monolith.html',             # the slab with the arch and the oculi
     'crescent': 'crescent.html',             # the terraced crescent moon
-    'ledge': 'ledge.html',                   # terraced slabs cantilevered off a cliff
+    'shelf': 'shelf.html',                   # terraced slabs cantilevered off a cliff (built as the Ledge; designated for Shelf, renamed 2026-11-22)
     'wheel': 'wheel.html',                   # ring plate of parkland on eight towers
     'interiors': 'interiors.html',           # the original kit's buildings with their rooms (kits/ancients-interiors)
     'skyi': 'skyi.html',                     # Skyscraper I on its own (joins the kit rows)
@@ -266,6 +368,13 @@ TARGET_OUT = {
     'span': 'span.html',                       # Span's pieces (targets/span; settlements/span PLAN.md SP2): gallery, range, dome, pad, Cross, weir, portal
     'kept': 'kept.html',                       # the Wing and Arcoindian as the True Heirs keep them (targets/kept; kits/eternian P5)                 # the Eternians' capital arcology, as built and as the Heirs keep it (targets/sanctum)
     'quintagon': 'quintagon.html',             # the pentagonal star arcology (src/8au-quintagon.js, targets/quintagon)
+    'gatearc': 'gatearc.html',                 # the Hall of Heroes at the Labyrinth's mouth and its five stacks (targets/gatearc)
+    'stonebow': 'stonebow.html',               # Soleri's 21. Stonebow canyon-bridge arcology in the Ching-Ma Shut-In (targets/stonebow)
+    'arcoindian3': 'arcoindian3.html',         # the sheer cliff-niche arcology over a gorge river (targets/arcoindian3)
+    'slice': 'slice.html',                     # Slice (after Soleri's Theology): lenticular cliff eye, learning shaft, side specimen caves, sunken park & dwellings wall (targets/slice)
+    'tethis': 'tethis.html',                   # the pelagic saucer arcology in the shallow sea (targets/tethis)
+    'arcodiga': 'arcodiga.html',               # Soleri's Arcodiga dam arcology: intact, ruined, refurbished centerpiece with socketed interiors (targets/arcodiga)
+    'arckibuz': 'arckibuz.html',               # Soleri's Arckibuz desert arcology: intact, ruined, refurbished centerpiece with socketed interiors (targets/arckibuz)
 }
 
 # Fragments with no builder in them: helpers, materials, the scene, the shell.
@@ -292,8 +401,20 @@ DETERMINISTIC = {
     '42-et-head.js',                                   # kits/eternian's head generator, read by the Sanctum: seeded by KRAND
     '8aq5-kept-pass.js',                               # targets/kept: a material pass, no placement
     '8at0-arcpile-plan.js',                            # targets/arcpile: KRAND-hashed records, no rng()
+    '8aw0-strongbow-plan.js', '8aw1-strongbow-parts.js', '8aw3-strongbow-foot.js',   # targets/strongbow: KRAND-hashed records; the drawing's parts and the foot, hashed, no rng()
+    '37c-core-rubble.js',                              # core/terrain's KRUBBLE heaps, read by targets/strongbow: KRAND-hashed, no rng()
+    '20-sb-census.js', '30-sb-layout.js', '31-sb-rules.js', '8ax0-sb-reclaim.js',   # settlements/strongbow, read by strongbow-today: records and a hashed drawing, no rng()
+    '8ax1-sb-town.js', '8ax2-sb-cutaway.js', '32-sb-walk.js', '8ax3-sb-walk.js', '33-sb-rooms.js', '8ax4-sb-rooms.js', '8ax5-sb-ai.js', '20-core-walk.js', '8ax7-sb-xanadu-pack.js', '58-isle-protos.js', '8ax8-sb-city.js', '8ax9-sb-xak.js',   # Strongbow's town (SB3): drawn from core/city's records (core/rand streams), the isle demo's flattener, the two sealed bundles
+    '8av0-arcodiga-plan.js', '8av1-arcodiga-interiors.js', '8av2-arcodiga-water.js', '8av2b-arcodiga-parts.js', '8zz3-arcodiga-host.js', '90w-arcodiga-water.js',   # targets/arcodiga
+    '8aw0-arckibuz-plan.js', '8aw1-arckibuz-interiors.js', '8aw2-arckibuz-water.js', '8aw2b-arckibuz-parts.js', '8zz4-arckibuz-host.js', '90w-arckibuz-water.js',   # targets/arckibuz
     '77a-theodiga-dome-plan.js', '77b-theodiga-dome-draw.js',   # targets/theodiga: the Dome on the Water, KRAND records, no rng()
+    '8av0-gatearc-plan.js', '8av2-gatestacks-plan.js', # targets/gatearc: KRAND-hashed records, no rng()
+    '37-core-stacks.js',                               # core/terrain's KSTACKS (gatearc): KRAND-hashed, no rng()
     '77c-theodiga-water.js', '90w-theodiga-water.js',           # targets/theodiga: the water's records and their drawing (core/water)
+    '8av0-stonebow-plan.js', '8av1-stonebow-interiors.js', '8av2-stonebow-water.js',
+    '8zz3-stonebow-int-host.js', '90w-stonebow-water.js', '92z1-stonebow-api.js', '35-core-strata.js',   # targets/stonebow (KRAND, no rng())
+    '8au0-arcoindian3-plan.js', '8au2-arcoindian3-water.js', '90w-arcoindian3-water.js',   # targets/arcoindian3: KRAND plan, core/water records and host
+    '8av0-slice-plan.js', '8av2-slice-water.js', '90w-slice-water.js',                     # targets/slice: KRAND plan, core/water records and host
     '89-atmos-0-core.js', '89-atmos-0p-presets.js', '89-atmos-a-waves.js', '89-atmos-b-skylight.js',   # core/atmos (IIFE, no rnd())
     '20-core-water.js', '22-core-water-flow.js', '50-core-water-draw.js', '51-core-water-kinds.js',      # core/water (IIFE, no rnd())
     '8ay1-th-town.js', '58-isle-protos.js', '8ay7-th-xanadu-pack.js', '8ay6-th-qiblai-pack.js',   # theodiga-today: the town drawn from core/city's records (KRAND), the flattener, the packs
@@ -306,9 +427,14 @@ DETERMINISTIC = {
     '47-th-sim.js',                                    # theodiga-today: the census on core/simulation (SIM's own seeded stream)
     '48-th-walk.js', '8ay9-th-walkers.js',             # theodiga-today: the walk graph (the geometry's) and the walkers (SIM.pose)
     '49-th-econ.js',                                   # theodiga-today: the economy on core/simulation (KRAND by place, no rng())
+    '49m-th-money.js',                                 # theodiga-today: the qud's accounts, wages and prices (no rng())
+    '8av0-parabola-plan.js', '90p-parabola-lake.js',   # targets/parabola: KRAND-hashed records; the lake's still record
+    '8az0-tethis-plan.js', '8az1-tethis-water.js',     # targets/tethis: KRAND plan & shallow-sea records, no rng()
+    '8az2-tethis-mats.js', '8az3-tethis-towers.js', '90w-tethis-water.js',   # targets/tethis: materials, tower helpers, core/water & KRUINS
 }
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
 DETERMINISTIC |= set(TH_SIM_FILES)   # core/simulation (its own seeded stream, SIM.rng)
+DETERMINISTIC |= set(PB_ATMOS) | set(PB_WATER)   # core/atmos and core/water, read by targets/parabola: nothing placed
 
 # PARTS: a fragment cut at its section markers so it can be read (ROADMAP 3.4: none over 80 KB) -> the fragment it
 # continues. A part may open in the middle of a builder: the rules read it joined to the fragment it continues, as one
@@ -692,6 +818,14 @@ def build_one(target, do_checks, assert_origin):
             with open(os.path.join(d, f), encoding='utf-8', newline='') as fh:
                 bodies[f] = fh.read()
             extra.append(f)
+        if target == 'strongbow-today':
+            bodies[SB_CITY] = sb_city()
+            bodies[SB_XAK] = sb_xak()
+            # the Xanadu kit's library pack (settlements/xanadu/tex, 11 MB of maps): beside the page as dist/ancients.tex.xanadu.js
+            # (a sidecar, as the Ancients pack is; inline it put the page over its cap), XAK.bind(KMAT) binds it onto the kit's MAT
+            bodies[SB_XPACK] = matlib_pack.fragment(os.path.join(ROOT, 'settlements', 'xanadu'), 'xanadu', side=side)
+            bodies[SB_AI] = sb_ai()
+            extra += [SB_CITY, SB_XAK, SB_XPACK, SB_AI]
         order = sorted(order + extra)
     if target == 'theodiga-today':   # the town's sealed bodies and the packs its kits' maps come from (THEODIGA TODAY above)
         bodies[TH_CITY] = th_city()

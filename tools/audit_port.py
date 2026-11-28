@@ -5,6 +5,8 @@
     python3 tools/audit_port.py settlements/voth --index   # the same, and PORT-INDEX.md
     python3 tools/audit_port.py --all      # refresh every PORT.md and PORT-INDEX.md
     python3 tools/audit_port.py --all --reset    # throw away hand-edited tags, retag everything
+    python3 tools/audit_port.py core/shader      # core/PORT.md, refreshing core/shader's rows only (every other
+                                                 # module's row is kept as it is: BUGS-2026-11-15.md T13)
 
 Scoped to what it is asked (CORE-IMPROVEMENTS.md 5c): a build named writes that build's PORT.md only; every file in
 the repo takes --all, and with no argument at all it prints this and writes nothing (three sessions rewrote about 80
@@ -48,8 +50,11 @@ FAMILIES = [
     ('DOM',    r'\bdocument\.|innerHTML|getElementById|querySelector|\.style\.[a-zA-Z]+\s*='),
     ('events', r'addEventListener|\bon(click|keydown|keyup|mousemove|mousedown|wheel)\s*=|[pP]ointer[lL]ock'),
     ('loop',   r'requestAnimationFrame|performance\.now'),
+    # a frame's queries (F.at, F.surf: where a point is, how high a surface stands) place and measure; they draw nothing,
+    # so a [G data] plan that calls them is not [draw] (T13: kits/ancients targets/parabola/8av0)
     ('geom',   r'\b(BOX|CYL|CONE|DOME|SPH|SLAB|LATHE|TUBE|RING|QUAD|PLANE|ROOF|WALL|kdef|kbake|pbFlush|'
-               r'box|cyl|cone|lathe|rod|slab|prism|tube|mk[A-Z][A-Za-z0-9]*|[FB]\.[a-z][A-Za-z0-9]*)\(|'
+               r'box|cyl|cone|lathe|rod|slab|prism|tube|mk[A-Z][A-Za-z0-9]*|'
+               r'[FB]\.(?!(?:at|surf|pt|lo|hi|h|y|up|dir|norm|normal|frame|pos|uv|len|span|seed|rng|rand|ok|has|get)\()[a-z][A-Za-z0-9]*)\(|'
                r'\b[A-Za-z]+Geometry\b|\bnew Mesh\b'),
     ('shader', r'onBeforeCompile|ShaderMaterial|gl_FragColor|gl_Position|#include <'),
     ('inst',   r'InstancedMesh|InstancedBufferAttribute'),
@@ -182,16 +187,22 @@ def builds():
 ROW = re.compile(r'^\|\s*`([^`]+)`\s*\|\s*([0-9.]+)\s*\|\s*(\[[^\]]+\])\s*\|(.*)\|\s*(.*?)\s*\|$')
 
 
-def read_port(path):
-    """Existing tags and notes per fragment, and the text under ## Notes."""
+def read_port(path, rows=None):
+    """Existing tags and notes per fragment, and the text under ## Notes. `rows`, a dict, also gets each row as it stands
+    ({name: {kb, counts, tag, note}}), for the rows a scoped run keeps."""
     tags, notes_text = {}, ''
     if not os.path.isfile(path):
         return tags, notes_text
-    text = open(path, encoding='utf-8').read()
+    with open(path, encoding='utf-8') as fh:
+        text = fh.read().replace('\r\n', '\n')
     for ln in text.split('\n'):
         m = ROW.match(ln)
         if m and m.group(3) in TAGS:
             tags[m.group(1)] = (m.group(3), m.group(5))
+            cells = [c.strip() for c in m.group(4).split('|')]
+            if rows is not None and len(cells) == len(COLS) and all(c.isdigit() for c in cells):
+                rows[m.group(1)] = {'kb': float(m.group(2)), 'counts': dict(zip(COLS, map(int, cells))),
+                                    'tag': m.group(3), 'note': m.group(5)}
     if '\n## Notes' in text:
         notes_text = text[text.index('\n## Notes'):].lstrip('\n')
     return tags, notes_text
@@ -264,14 +275,23 @@ def write_port(build, rows, notes_text, write=True):
     lines.append('')
     lines.append(notes_text if notes_text else '## Notes\n\n(none yet: the split lists and the overrides go here)\n')
     if write:
-        open(path, 'w', encoding='utf-8').write('\n'.join(lines))
+        with open(path, 'w', encoding='utf-8', newline='\n') as fh:   # LF on Windows too (T13)
+            fh.write('\n'.join(lines))
     return kb
 
 
-def audit(build, reset, write=True):
-    tags, notes_text = read_port(os.path.join(ROOT, build, 'PORT.md'))
+def audit(build, reset, write=True, scope=None):
+    """Tag and count a build's fragments and write its PORT.md. `scope` (core only): the module prefixes ('shader/') whose
+    rows are refreshed; every other row is written back as it stood, and a fragment outside them not yet listed stays
+    out (its module's own run adds it)."""
+    old = {}
+    tags, notes_text = read_port(os.path.join(ROOT, build, 'PORT.md'), old)
     rows = []
     for name, p in fragments(build):
+        if scope and not name.startswith(tuple(scope)):
+            if name in old:
+                rows.append(dict(old[name], name=name, sha='', family=family(name)))
+            continue
         s = scan(p)
         if s is None:
             continue
@@ -323,7 +343,8 @@ def write_index(results):
         v = fams[fam]
         lines.append('| `%s` | %d | %d | %.0f |' % (fam, len(v), len(set(s for _, s, _ in v)), sum(k for _, _, k in v)))
     lines.append('')
-    open(path, 'w', encoding='utf-8').write('\n'.join(lines))
+    with open(path, 'w', encoding='utf-8', newline='\n') as fh:   # LF on Windows too (T13)
+        fh.write('\n'.join(lines))
 
 
 def main(argv):
@@ -333,6 +354,10 @@ def main(argv):
         print(__doc__)
         return
     index = not only or '--index' in argv
+    # a core module named (core/shader) is core/PORT.md with only that module's rows refreshed
+    scope = [a[len('core/'):] + '/' for a in only if a.startswith('core/') and a not in CORE_BUILDS]
+    if scope:
+        only = [a for a in only if not (a.startswith('core/') and a not in CORE_BUILDS)] + ['core']
     todo = ['core'] + builds()
     results = []
     for build in todo:
@@ -342,7 +367,7 @@ def main(argv):
             if not tags:
                 continue
         mine = not only or build in only
-        rows, kb = audit(build, reset and mine, mine)
+        rows, kb = audit(build, reset and mine, mine, scope if build == 'core' and scope else None)
         results.append((build, rows, kb, build_meta(build)))
         if not mine:
             continue

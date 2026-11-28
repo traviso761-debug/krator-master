@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.576,
+    0.365
+   ],
+   "seam_before": [
+    0.999,
+    4.028
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.03,
+   "dark_gloss": 0.08,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.15,
+   "pattern": false,
+   "rough": 0.3,
+   "rough_var": 0.18,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "wood",
+  "id": "wood.kundal.abysslac",
+  "metal": 0.06,
+  "roughness": 0.3,
+  "scale": [
+   1.2,
+   1.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "wood.kundal.abysslac.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on decorative wooden ceiling panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no specular hot-spots, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Central Asian kundal polychrome painted and lacquered cedar ceiling coffers finished in rich Liikofi abyss-lac resin: a repeating geometric grid of shallow recessed octagonal and star coffers framed by moulded timber ribs, the recessed panels coated in deep lustrous vermilion-crimson lacquer (#8e2226 to #ad312d) alternating with deep alkaline Prussian-teal panels (#155d62), richly ornamented with fine raised gesso-and-gold-leaf (#d4a642) scrolling lotus vines, central gilded rosettes and thin ivory (#ece2cc) outline fillets, subtle aged lacquer craquelure and wood grain beneath. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti kundal coffered ayvan and hall ceilings in Liikofi abyss-lac (kits/tabisti, kundal, 1.2 m)",
+  "sha1": "25ed10b5706d61d41f6d279289771ac04307a5b7"
+ }
+}

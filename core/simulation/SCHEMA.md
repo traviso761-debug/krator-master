@@ -155,6 +155,24 @@ of schedule falls due over the hour's first minutes instead of all at :00 (the h
 stay consistent (nothing waits). A world may add an actor's own `lagBase` minutes (the Voth city's trades in two
 buckets, half of them a half-hour later).
 
+**Riding** (opt-in: the page lists `ride/78-sim-ride.js`, and `ride/79-sim-ride-porters.js` for porters; PLAN-RIDING.md).
+A **ride source** (`SIM.rideSource`) is one train: a track (`{pts, cum, len}`), a `KSCHED.timeline` of its fixed A end along
+it (dwells named `stop:<id>:<side>` or `stop:<id>`), cars `{off, b, cap: {seats, stand}, seats: [{id, at, yaw}], stand, doors:
+[{id, side, at}]}` in their own frame (car k's middle at s - off), stops `{place, side, gap, wait: [[x, y, z]...]}`; a gap's
+recorded walk between two stops by `SIM.rideFootpath({from, to, pts})`. A task's leg may carry `frame: {source, k}`: its route is
+in car k's frame and `SIM.pose` poses it through the car. `SIM.journey(a, {to})` plans (a connection scan over the runs,
+the walks between stops among the footpaths) and bakes walk, wait, board, ride, alight, walk; the actor is `driven` until
+it arrives. Occupancy is counted per run and car; `SIM.RIDE.log` holds every door crossing; `SIM.rideAudit()` checks them
+against the door windows and the room. `SIM.vehiclePose` answers a ride source, so `SIM.trade({line: <source>})` carries
+goods on a train; `SIM.porters({route, crew})` walks a crew in step with a timer route's carrier (a gap between two
+segments). `SIM.rideExportMotion` is `SIM.exportMotion` with each leg's frame and the sources (`ride/kride.gd` replays it).
+R6 (PLAN-RIDING.md section 8c): `SIM.lineEconomy({id, goods, lojes: [{id, stop, pop, makes, uses, stock}], links: [{from, to,
+rail | porters}]})` (`ride/80-sim-ride-line.js`) declares a line's settlements as books only (a store at each station, making
+and using by the hour from the population, no actors), its routes on the trains and porters, and the through-demand (each
+hop's `expect` = the net deficit beyond it, each good one way a hop); a role or actor with `ride: true` takes the train when
+the resolver's walk is impossible or slower (`ride/81-sim-ride-choose.js` wraps `SIM.plan`); `SIM.rideFromTransport(route,
+{car, stops})` turns a non-exclusive `SIM.transport` into one ride source a vessel.
+
 ## Settlements and their economies (P7a, 2026-10-19)
 
 A page may hold several settlements, each with its own economy (`settlements/isle-demo/PLAN.md` section 9). It is
@@ -192,6 +210,38 @@ A page may hold several settlements, each with its own economy (`settlements/isl
   `SIM.trades(a, b)` gates it: one faction, or each faction's relation to the other not shut (`trade` false, `'none'`
   or `'closed'`; without `trade`, a stance of wary or better). `SIM.tradeReport(id?)`: voyages, refused, what went
   each way, landed, each carrier's load.
+
+## A caravan's stops: every one of them feeds the beasts (2026-11-25)
+
+`SIM.trade`'s `provision` draws the beasts' water and fodder **at every stop on the road**, not only at the stops named
+in `halts` -- `77-sim-6-trade.js`'s own words, where it does it: *"the beasts water and feed whether or not the stop
+trades."* So **a settlement put on a caravan's road needs a water number and a fodder number, or it is a sink that can
+never be filled**, and the shortfall is paid by every train that passes rather than reported against the stop.
+
+It is worth stating because the failure does not look like its cause. A caravanserai added to the Catch's Godsgate pass
+with a well and no fodder work (the reasoning being that nothing is cut at 3,590 m, so the trains would carry its
+fodder as freight through `forHalts`) ended its first simulated year 321,624 kg short of fodder. What showed in the
+tests was not a hungry serai: it was that **one of the two rival houses loading at the shared Iziz pool stopped
+carrying any trade cargo at all** -- its round still ran, still crossed, still came home full, but it never landed iron
+at its destination, because the grain and fodder the halts needed had taken the capacity, and the house that loads
+second got what was left. It read exactly like two rivals contending for one warehouse, and was misdiagnosed as that
+for a day. `openworld/catch-bowl/PLAN-SIM.md` section 2y has the probe that settled it.
+
+Two things follow for any new stop: give it both numbers, and when a trade route goes quiet, check the stops' shortfalls
+before the carriers' schedules.
+
+**A footnote on how that was found, because the second lesson is the more useful one.** The quiet route turned out *not*
+to be caused by the hungry serai — it was caused by the two rival houses sharing one pool and leaving on the same
+minute, and the `offset` written to stagger them was **silently dropped by `core/region/50-region-valley.js`**, which
+builds each `SIM.trade` call from an explicit field list that carried `stagger` but not `offset`. The tune wrote
+`offset: 24018`, a probe read it straight back off the road spec, and the sim was handed `offset: undefined`. So the
+output was byte-identical before and after the stagger, and that was read as "the stagger is not the lever" when it
+meant "the stagger never arrived".
+
+**When a change produces byte-identical output, check that the change arrived before concluding it does not matter.** A
+spec field that a loader forwards by name is exactly where one gets lost, and `50-region-valley.js`'s own doc comment
+did not list `offset` either, so nothing contradicted the wrong reading. Both are fixed; the fodder rule above is real
+and was a second bug found on the way.
 
 ## The books (the accounting contract; PLAN-ECONOMY.md Phase 0)
 
@@ -292,6 +342,22 @@ report giving `reason`) until the minute `until`; `SIM.recipeSite(place, site)` 
 site grown back while nobody worked it and books it `regrown` (as the nightly `regen` now is), which the ledger allows. A site feeding a batch
 recipe has its take booked when the batch starts and its out made when it ends: the ledger holds the take less the batches in hand (`wip`) to
 what was made.
+
+**Sea-nomad `fleet` bands (`core/camp/fleet/58-camp-fleet.js`, 2026-11-26; opt-in `[G data]`).** A pelagic band of kind `fleet`
+(`KCAMP.CULTURES.fleetborn` and `KCAMP.CULTURES['fleetborn-whaler']`, `KCAMP.DEFAULT_FLEETS`) carries `{id, kind: 'fleet', name, culture,
+homePort, people, kmPerDay, hulls: [{id, key, name, draft_m, deepCareen, pop, cargoCap, careenInterval_d, daysSinceCareen, careenCount,
+lastCareenDay}], route: [portId, ...], tradeProfile: {brings: [good], takes: [good]}, state: 'moored' | 'sailing', port, leg:
+{from, to, d0, d1, dist_km, why}}`. Scale-model roadsteads live in `KCAMP.PORTS` (`{id, name, settlementId?, px: [x, y], tideRange_m,
+diurnal?, canCareenDeep, role}`): `deep_ward` (`px [148, 492]`, ~530 km SSW at `199°`, `1.9 m` diurnal `D1` tide, `canCareenDeep: false`)
+is the calm storm roadstead; `arcoforte` (`px [236, 242]`, `11.0 m` mean / `14.3 m` spring tide, `canCareenDeep: true`) is the tidal
+drydock and moot. `KCAMP.fleetWorld({world, ports, fleets, caretakerPop, tideGate})` stepped by `KCAMP.fleetTick(W, day)` /
+`KCAMP.fleetRun(W, d0, d1)` enforces three laws: (1) non-careening ports (`canCareenDeep: false`) cannot careen deep hulls (`draft_m > 2.2`),
+sending overdue fleets to `arcoforte`; (2) at `arcoforte`, deep hulls careen only when `tideGate(day).deepCradleOpen === true`
+(`dayHighest >= 5.6 m` on springs), stretching neap arrivals until the next spring window and logging `{day, fleetId, hullId, draft_m,
+dayHighest, dayRange}` in `W.careenLog`; (3) `tideGate(day).isMoot` around the Double Dark (`0..2`, `89..91`) and Double Full (`43..46`)
+converges all 5 fleets into `arcoforte` (`KCAMP.fleetsAt(W, 'arcoforte', day)`). In harbour, `KCAMP.fleetMooring({world, fleets, center,
+rx, rz, minClear_m, avoidFn})` pitches deterministic non-overlapping berths (`{berths: [{fleetId, hullId, key, x, z, rot, draft_m, pop}],
+totalHulls, totalPop}`) with `89g` Chained Ark-Wards in inner calm water and tenders/trimarans outerward.
 
 **Better tools (an item kind's `prefer` and `base`, 77-sim-6-items.js).** A tool kind's `prefer: [kinds]` are bought in its place when its
 seller sells one and the buyer's settlement holds that kind's good (declared in its economy and in stock); a miss is booked `short` of the better

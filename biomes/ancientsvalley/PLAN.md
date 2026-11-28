@@ -397,6 +397,10 @@ records until the streets want lots), `core/mask` (every field is a function), `
    under broadleaf and fern clumps set on the drawn dome by rays; the roads as the transit kit's network (kerbs, pavements, junctions, dead
    furniture, a riot's war at most) with weeds through the cracks and the wild wood let onto them. Waiting on the owner's eye.
 3. `core/anomaly`, then **the Stilled Ground and the Press** (cheap, as `PLAN-ANOMALIES.md` 11 has it), each as a district with its basin.
+   *Planned 2026-11-15* (section 17): the Stilled Ground first, its core a frozen moment inside rings of decay, the page on the basin's inner
+   slope looking in; `core/anomaly` and the effects are on origin/main since 2026-11-10 (`PLAN-ANOMALIES.md` 14).
+   *S0-S1 built 2026-11-15* (README, "Station 1"): main merged in, the site and region, the stage, the hold and the rings of decay; verified (58
+   asserts). Waiting on the owner's eye.
 4. **The House at Babel**, with the subway.
 5. The Lake That Falls, the Fast Water, the Bend; radiation and portals as they come.
 6. The Broken Country.
@@ -570,3 +574,86 @@ them yet.*
 
 The Yards' smog and oily rain are the Overlook's (`89v`, `89x`) with the Yards' defaults; the stations place these records on their own
 ground (the tank farms' pools, the stacks of the twelve industrial buildings, the aqueduct's breaks, the farm pods' crops).
+
+## 17. Station 1, the Stilled Ground: the plan (the owner, 2026-11-15)
+
+The owner, 2026-11-15: "let's plan the next station", then three choices: **the Stilled Ground first** (the Press follows on the same machinery);
+**its core a frozen moment inside rings of decay**; **the page on the basin's inner slope, looking in**. The effects it needs are on origin/main
+since 2026-11-10 (`PLAN-ANOMALIES.md` 14: `KANOM`, the walk, `ATMOS.localFx`); this branch takes main before the station starts.
+
+### The idea
+
+The basin is a time weapon's crater. Toward its core time runs slower, so less of the thousands of years since the war has passed there, and the
+ruin is a measure of elapsed time. At the rim the city is the valley's: stumps, skeletons, the feral forest over everything. Walking in, each ring
+has seen less: towers gutted rather than fallen, then whole but dirty, then clean; the growth thinner, then young saplings, then the Ancients' own
+planting, kept. At the core, time stopped at the instant of the strike, and the moment is held: towers mid-fall, slabs and glass in the air, a
+vehicle in flight, rain and dust hanging, an Engine mid-explosion, birds mid-beat. The gradient is the approach and the warning (`PLAN-ANOMALIES.md` 2:
+graded, legible); the walk slows with it, never to a stop (`KANOM.walk`'s floor), and leaving owes the world its time, at most a day.
+
+### The site (measured on the 5.1 model, 2026-11-15)
+
+The basin at **px 398,966** (Necropolis about 47 km; Csa, 1,051 mm, mean 21 C): a dry glass floor at -26 m out to half its 5.5 km radius, a
+slope to the rim at 104-123 m, the land beyond climbing to 300-670 m within 11 km. It is twice a page across, so the page stands on the
+north slope: **its centre 2 km north of the basin's** (px 398,965, a whole pixel, as the model's climate lookup wants; `region/site.py`'s row `stilled`),
+the page from 800 m past the core out to 4.8 km, just inside the rim. The centre is still on the glass floor (-26 m), and the valley lake's level
+(17.4 m) stands 43 m over it: the stage sets the lake far under the page, or the dry basin would flood. The rim's crest and the land beyond are the far ground. The view looks south, the sun (in the north at this
+latitude) behind the eye, so the held things are lit from the front.
+
+### What is built
+
+1. **The stage** (`stations/stilled/`, from the Overlook's, on the ground lattices): the basin's ground from the model; the floor as glass (the
+   scar field, the Overlook's melt sheet), the old centre's foundations under it; the slope and the rim as the city's residential and core rings
+   (`AV.plan`), its towers and streets (`kits/metropolis`, `kits/ancient-transit`) by the usual passes.
+2. **The time field.** One `KANOM` `time` record at the basin's centre: a held core of about 300 m (rate 0), its rim ramp out to 3.6 km (built
+   2026-11-15: r 3.6 km, ramped over 3.3 km; the anomalies' rule of a zone under 2 km gives way here, since the rings are the station),
+   registered in `core/tags` before anything is drawn, with its `time` hazard (`core/hazard`). One function of it, **elapsed(x, z)**, the share
+   of the war's age that has passed there (1 outside, 0 at the core), is one minus the record's strength (its smooth ramp; the rate itself falls
+   on a log scale and would crowd the rings into the field's edge), and drives everything below; it is a record's function, not a page's choice.
+   The basin was a centre of the city, so its old centre stands as a settlement of its own (Necropolis is 44 km off, out of the city's reach).
+3. **The rings of decay, by elapsed.** Each tower's ruin state from elapsed (`MP.RUINS` in order of age: fallen and stump outside, broken and
+   crown, gutted, then intact and clean), weathering and stain from it (the metropolis kit's stain, the overgrowth's sockets); the feral wrap's
+   depth and the forest's density from it, so the wild wood thins inward to saplings, then to the Ancients' gardens as they were planted (the
+   swbay and lowland kits' species, clipped and in rows); the debris and wrecks thinning with it. One rule, so the rings are concentric and
+   monotone, and a check says so.
+4. **The held moment** (the core, inside the stopped radius): about a dozen towers caught in the strike, each a hero with a part in the air:
+   a crown sheared and tipping, slabs and facade panels spread along the blast's outward line, glass as a field of shards; an Ancient vehicle
+   (`kits/motor-vehicles` culture `ancient`) mid-flight and one mid-crash; an Engine (`kits/ancients` engines) mid-explosion (`localFx` burst);
+   the strike's light held as a pale shell over the core, if it reads (by eye: a rendering bug if it does not). All static instances: the
+   cheapest thing on the page, no tick.
+5. **The effects** (`ATMOS.localFx` on the rate field): hanging drops where the weather's rain reaches the zone and stops, dust motes held,
+   steam from a broken main standing still, a waterfall from a broken aqueduct span stopped in the air (`ATMOS.spillRec`), birds slowing at the
+   rim and held at the core; the sky's clouds unchanged (one clock; a local cloud time is not attempted).
+6. **The walk and the time owed.** `KANOM.bindWalker` on the host camera (the walk slows inward, the eye steadies); `KANOM.owed` counted while
+   inside, and **the jump on leaving** (new, host-side, the plan's open piece): out of the zone, `core/clock` moves the world on by the time owed,
+   capped at a day, so the sun and the weather have moved on.
+7. **Who is here:** the valley's keepers working on as if nothing were wrong (time does not matter to them; `kits/mechs` culture `ancient`), at
+   the rim and in the slow rings; salvagers are for when the people's kits exist (`PLAN-ANOMALIES.md` 7).
+8. **Views:** the rim looking in (the whole gradient in one frame); the slow rings at street level; the edge of the hold (the moving world and the
+   held one in one view); inside the core among the held debris; the core looking out. Sound (silence deepening inward, `core/audio` cue names)
+   named, not wired.
+
+### Core adoption
+
+As the other stations (section 11), plus `core/anomaly` (`KANOM`, `host/90-anomaly-walker.js`), `core/atmos/fx/89-atmos-fx-localtime.js` and
+`89-atmos-fx-spill.js`, and `core/clock` for the jump. New code goes in the station's host fragments; elapsed and the held moment's layout are
+records (`[G data]`), so Godot takes the same rings and the same moment. `tools/check_core_use.py` before it is called done.
+
+### Checks (`verify.py`)
+
+The time record in `core/tags` before anything is drawn; strength and the effects zero outside its shape; elapsed monotone outward along rays,
+and the towers' mean ruin severity rising band by band outward (each tower keeps its own draw, so the rings are monotone by band, not tower by tower); the held things never move (pixels across a second, as the effects demo measured);
+a walker can always leave (the walk's floor); the jump on leaving moves the clock by the owed time and no more than a day; the usual budgets on
+every view, the worst on the Arc 140T named.
+
+### Order
+
+S0 take main into the branch; the site row and the region; the stage skeleton on the slope. S1 the time record, elapsed and the rings of decay.
+**Stop for the owner's eye** (the gradient is the station). S2 the held moment. S3 the effects, the walk and the jump. S4 the views, the
+checks, the GPU verify, the docs. The Press (station 2) after, on the same records: `KANOM.squash` for the towers and the flora, the pall,
+the heavy walk, fatal at the core.
+
+### Open
+
+- The strike's held light over the core: kept only if it reads as an event, not a fault.
+- How far the gardens go: the Ancients' planting at the core needs a short list of species and a layout (proposed: the lowland kits' trees in
+  rows and clipped hedges, the swbay kit's ornamentals), settled at S1's stop.

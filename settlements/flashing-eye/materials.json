@@ -1,0 +1,216 @@
+{
+ "build": "flashing-eye",
+ "note": "The Flashing Eye's page (settlements/flashing-eye/targets/cone): the Qiblai kit's families (kits/qiblai/materials.json, copied so one pack holds both: the page's pack is bound as 'qiblai' by kits/qiblai's 89q0z, which binds the q* keys) and the cone's own: feColumnar (rock.columnar: the band's colonnade, the face of the coulee), feAsh (ground.ash: the cap's ash soil and the rim), feScoria (ground.scoria: the crater's walls and the spatter rampart), feCinder (ground.cinder: the crater's floor and the talus). The ground shader samples them in world metres (90fe-world.js). Reused sets, none new (PLAN.md question 13). feRoof (roof.tile: barrel tiles, a grey detail map coloured red by each roof: the revamp's red tiled roofs, the owner 2026-11-23).",
+ "size": 512,
+ "families": {
+  "qAshlar": {
+   "lib": "stone.sandstone.ashlar",
+   "class": "relief",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.72
+   },
+   "metal": 0,
+   "roughLift": 0.15
+  },
+  "qGrass": {
+   "lib": "ground.grass.lush",
+   "class": "relief",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qDirt": {
+   "lib": "ground.dirt",
+   "class": "relief",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qCobble": {
+   "lib": "paving.cobblestone_01",
+   "class": "relief",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qFlag": {
+   "lib": "paving.flagstone",
+   "class": "relief",
+   "scale": [
+    3.2,
+    3.2
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qGilt": {
+   "lib": "metal.gold",
+   "class": "glazed",
+   "scale": [
+    1.5,
+    1.5
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.78
+   },
+   "metal": 0.0,
+   "roughLift": 0.1
+  },
+  "qLacq": {
+   "lib": "wood.lacquer",
+   "class": "glazed",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qMarble": {
+   "lib": "paving.marble_mosaic_tiles",
+   "class": "relief",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qPlank": {
+   "lib": "wood.old_wooden_floor_02",
+   "class": "relief",
+   "scale": [
+    2.5,
+    2.5
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.5
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "qRug": {
+   "lib": "cloth.rug.wool",
+   "class": "flat",
+   "scale": [
+    2,
+    2
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.6
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "feColumnar": {
+   "lib": "rock.columnar",
+   "class": "relief",
+   "scale": [
+    6,
+    6
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.42
+   },
+   "metal": 0,
+   "roughLift": 0.15
+  },
+  "feAsh": {
+   "lib": "ground.ash",
+   "class": "relief",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.38
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "feScoria": {
+   "lib": "ground.scoria",
+   "class": "relief",
+   "scale": [
+    4,
+    4
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.4
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "feCinder": {
+   "lib": "ground.cinder",
+   "class": "relief",
+   "scale": [
+    3,
+    3
+   ],
+   "tint": {
+    "keep": 1,
+    "mean": 0.36
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  },
+  "feRoof": {
+   "lib": "roof.tile",
+   "scale": [
+    2.4,
+    2.4
+   ],
+   "tint": {
+    "keep": 0,
+    "mean": 0.62
+   },
+   "metal": 0,
+   "roughLift": 0.1
+  }
+ }
+}

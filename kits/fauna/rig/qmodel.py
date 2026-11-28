@@ -16,6 +16,7 @@ from common import load, weld_ids, face_components, coo_matrix, connected_compon
 
 # belly: y below which a face is leg; legx: |x| a leg face must exceed; head: (z, y) the head/neck cut; tail: (z, ymin); zmid: front/hind split
 # stride: walk stride (model units); tris: decimation target; kneefrac: knee height as a fraction down the leg
+# legz: (zmin, zmax) window for leg faces; knee: (lo, hi) knee hinge limits (rad), default (-0.5, 2.0); hipband: the torso-thigh overlap band (default 0.035); level: plant every foot on the common ground; headband: the torso-head overlap band (default 0.03)
 CFG = {
  'dalab': dict(sprawl=dict(xc=0.17, hw=0.21, zf=0.20, ztail=-0.30, tsplit=-0.12, fh=0.05), head_line=(0.60, 0.05, 0.85, -0.10), belly=-0.2, legx=0.0, head=(0.7, 0.0), tail=(-0.3, -0.6), zmid=0.2, stride=0.30, lift=0.05, tris=8000),
  'cow':   dict(belly=-0.26, legx=0.06, head=(0.58, 0.02), tail=(-0.86, -0.7), zmid=-0.05, stride=0.30, tris=8000),
@@ -31,6 +32,9 @@ CFG = {
  'bison': dict(head_all=0.62, tymax=0.0, belly=-0.30, legx=0.03, head=(0.55, -0.25), tail=(-0.85, -0.7), zmid=-0.05, stride=0.24, tris=8000),
  'duck':  dict(tymax=0.2, belly=-0.50, legx=0.03, head=(0.30, 0.30), tail=(-0.55, -0.30), zmid=None, stride=0.18, tris=7000, foot_h=0.12),
  'hen':   dict(belly=-0.46, legx=0.03, head=(0.18, 0.38), tail=(-0.42, -0.10), zmid=None, stride=0.20, tris=7000, foot_h=0.12),
+ # Tripo models (rig/tripo_gen.py); common.load scales every model to 1 unit tall
+ 'ostrich': dict(belly=-0.14, legx=0.02, head=(0.15, 0.02), tail=(-0.32, -0.12), zmid=None, stride=0.32, tris=9000, foot_h=0.04, knee=(-1.6, 1.6)),
+ 'runnerbird': dict(legz=(-0.12, 0.30), belly=-0.27, legx=0.02, head=(0.12, 0.02), tail=(-0.14, -0.05), zmid=None, stride=0.30, tris=8000, hipband=0.06, level=True, headband=0.08, foot_h=0.04, knee=(-0.4, 2.4)),
 }
 
 
@@ -59,6 +63,7 @@ def classify(C, c):
     xc = float(np.median(x[(y > c['belly']) & (np.abs(z) < 0.4)]))
     tz, tymin = c['tail']; part[(z < tz) & (y > tymin) & (y < c.get('tymax', 9.0)) & (np.abs(x - xc) < c.get('tailx', 0.16)) & (part == 'torso')] = 'tail'
     leg = (y < c['belly']) & (part == 'torso')
+    if 'legz' in c: leg &= (z > c['legz'][0]) & (z < c['legz'][1])      # a bird's folded wingtips and rear plumage hang below the belly line: only faces in this z window are leg
     gy = y[leg].min() if leg.any() else y.min(); fh = c.get('foot_h', 0.07)
     pairs = [np.ones(n, bool)] if c['zmid'] is None else [z > c['zmid'], z <= c['zmid']]
     for pi, pm in enumerate(pairs):
@@ -139,6 +144,8 @@ def main():
         sole = ft[np.argmin(ft[:, 1])]; GY[l] = float(sole[1])      # this leg's own ground: Meshy draws the four feet a little differently
         LEG[l] = dict(ka=ka, gy=GY[l], hip=hip, f=kn - hip, a=an - hip, cf=sole - an, vf=np.vstack([V2[F2[FACES[l]]].reshape(-1, 3)]) - hip,
                       vt=V2[F2[FACES[l + 't']]].reshape(-1, 3) - hip, vo=V2[F2[FACES[l + 'f']]].reshape(-1, 3) - hip)
+    if c.get('level'):      # a foot the generator drew lower than the other: the walk plants every foot on the common ground (the knee takes it up)
+        for l in legs: GY[l] = ground; LEG[l]['gy'] = ground
     if 'head' in FACES:
         h = vp('head'); PIV['head'] = h[h[:, 2] <= np.quantile(h[:, 2], 0.06)].mean(0); PAR['head'] = 'torso'
     if 'tail' in FACES:
@@ -150,8 +157,8 @@ def main():
         fp, fq = SNAP[p], SNAP[q]; tp, tq = cKDTree(Cc[fp]), cKDTree(Cc[fq])
         if into_q: ADD.setdefault(q, []).append(fp[tq.query(Cc[fp])[0] < band])      # p's band rides in q (it shows through when q turns)
         ADD.setdefault(p, []).append(fq[tp.query(Cc[fq])[0] < band])
-    for l in legs: overlap('torso', l, 0.035); overlap(l, l + 't', 0.03); overlap(l + 't', l + 'f', 0.025)
-    overlap('torso', 'head', 0.03, c.get('head_dup', True)); overlap('torso', 'tail', 0.03)
+    for l in legs: overlap('torso', l, c.get('hipband', 0.035)); overlap(l, l + 't', 0.03); overlap(l + 't', l + 'f', 0.025)
+    overlap('torso', 'head', c.get('headband', 0.03), c.get('head_dup', True)); overlap('torso', 'tail', 0.03)
     for k, v in ADD.items(): FACES[k] = np.unique(np.concatenate([FACES[k]] + v))
     ORDER = ['torso'] + [n for n in ('head', 'tail') if n in FACES] + [x for l in legs for x in (l, l + 't', l + 'f')]
     # the head's own yaw: Meshy often turns it a little; the clips carry the correction so it faces +z at rest
@@ -169,7 +176,7 @@ def main():
     def KR(g, th): return Rax(g['ka'], th[3]) if SPR else Rax(X, th[2])                  # the knee hinges about the leg-plane normal (a sprawl) or x
     def fk(g, th): return HR(g, th) @ (g['f'] + KR(g, th) @ (g['a'] - g['f']))
     NP = 4 if SPR else 3
-    LO, HI = (np.array([-1.0, -1.0, -1.0, -1.6]), np.array([1.0, 1.0, 1.0, 1.6])) if SPR else (np.array([-0.7, -0.3, -0.5]), np.array([0.7, 0.3, 2.0]))      # a hock may straighten (a bent hind leg at rest)
+    LO, HI = (np.array([-1.0, -1.0, -1.0, -1.6]), np.array([1.0, 1.0, 1.0, 1.6])) if SPR else (np.array([-0.7, -0.3, c.get('knee', (-0.5, 2.0))[0]]), np.array([0.7, 0.3, c.get('knee', (-0.5, 2.0))[1]]))      # a hock may straighten (a bent hind leg at rest)
     def solve1(g, tgt, th):
         for _ in range(40):
             err = tgt - fk(g, th)
@@ -315,7 +322,7 @@ def main():
                   extras={'speed': SPEED, 'stride': STRIDE, 'duty': DUTY, 'ground': float(ground), 'legGround': {k: v for k, v in GY.items()}, 'crouch': float(CROUCH), 'note': 'walk in place; drive the root forward at "speed" units per second'})]
     tris = sum(len(FACES[n]) for n in ORDER)
     out = {'asset': {'version': '2.0', 'generator': 'meshy + qmodel.py'}, 'scene': 0, 'scenes': [{'nodes': [0]}], 'nodes': nodes, 'meshes': meshes, 'materials': J['materials'],
-           'textures': J['textures'], 'images': imgs, 'samplers': J['samplers'], 'bufferViews': BV, 'accessors': AC, 'animations': anims, 'buffers': [{'byteLength': len(blob)}]}
+           'textures': J['textures'], 'images': imgs, 'samplers': J.get('samplers', [{}]), 'bufferViews': BV, 'accessors': AC, 'animations': anims, 'buffers': [{'byteLength': len(blob)}]}
     js = json.dumps(out, separators=(',', ':')).encode()
     while len(js) % 4: js += b' '
     while len(blob) % 4: blob.append(0)

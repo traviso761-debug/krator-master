@@ -1,0 +1,51 @@
+[
+ {
+  "step": "image",
+  "task_id": "24f88a7f-e2cd-400a-975e-2c709406901d",
+  "settings": {
+   "prompt": "A single adult male common ostrich standing on flat ground, full body, seen from the side in three-quarter view, head up on a long straight neck. Exactly two long bare pinkish-grey legs, each ending in a foot with two toes, the large inner toe with a thick nail. Black body plumage, white wing plumes and white tail plumes, bare pinkish neck and thighs, large eyes, flat broad beak. Realistic wildlife photograph style, even studio lighting, plain pure white background, the whole bird in frame with margin. --no rider, saddle, harness, extra legs, extra heads, shadow, ground texture, text, cropping",
+   "model": "seedream_v4",
+   "size": "2048x2048",
+   "output_format": "png"
+  },
+  "credits": 5.0,
+  "at": "2026-11-16 00:35"
+ },
+ {
+  "step": "multiview",
+  "task_id": "e7c259e3-972c-4698-845f-9bbb8dc6f677",
+  "settings": {},
+  "credits": 10.0,
+  "at": "2026-11-16 00:36"
+ },
+ {
+  "step": "model",
+  "task_id": "48468db2-09a0-44ed-909c-4823ba56cde2",
+  "settings": {
+   "inputs": [
+    {
+     "task_id": "e7c259e3-972c-4698-845f-9bbb8dc6f677"
+    }
+   ],
+   "model": "v3.1-20260211",
+   "texture": true,
+   "pbr": true,
+   "texture_quality": "standard",
+   "auto_size": true
+  },
+  "credits": 30.0,
+  "at": "2026-11-16 00:38"
+ },
+ {
+  "step": "rig",
+  "task_id": "52b44541-4cd4-4fec-9f3b-70abff1ac657",
+  "settings": {
+   "input": "48468db2-09a0-44ed-909c-4823ba56cde2",
+   "model": "v3.0-20260909",
+   "rig_type": "avian",
+   "spec": "tripo"
+  },
+  "credits": 25.0,
+  "at": "2026-11-16 00:42"
+ }
+]

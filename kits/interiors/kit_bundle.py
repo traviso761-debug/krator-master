@@ -28,7 +28,9 @@ def safe(js):
 
 
 def files(sets=None):
-    core = ['src/' + f for f in sorted(os.listdir(os.path.join(HERE, 'src'))) if f[0].isdigit() and f.endswith('.js') and f < '50']
+    # KROOMLIGHT first (core/interiors, read in place as build.py does: its src/05-roomlight.js)
+    core = ['../../core/interiors/10-core-roomlight.js'] + [
+        'src/' + f for f in sorted(os.listdir(os.path.join(HERE, 'src'))) if f[0].isdigit() and f.endswith('.js') and f < '50']
     ss = ['sets/' + f for f in sorted(os.listdir(os.path.join(HERE, 'sets'))) if f.endswith('.js') and (sets is None or f[:-3] in sets)]
     return core + ['adapters/runtime-adapter.js'] + ss
 

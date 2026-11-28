@@ -1,0 +1,14 @@
+{
+ "what": "ceilings past the defaults, each with why and raised (tools/check_budgets.py lints it; harness.verify_page reads tris, calls, bytes, samplers and vram_mb; GRAPHICS-TERRAIN-PROPOSAL.md Stage 1). A raise needs a new why.",
+ "pages": {
+  "tabisti.html": {
+   "tris": 3600000,
+   "calls": 240,
+   "bytes": 18874368,
+   "samplers": 15,
+   "vram_mb": 340,
+   "why": "50 Urban Tabisti buildings (all 6 dwelling classes, souq/lac/kashi/potash works, Salt-Crystal Altar temple, Tafalast palace, ventilated city walls and peri-urban estates) across five rows with furnished interiors, core/water shadirvan basins, Stage 5 M1-M4 glazes/embossed masonry and Stage 7 KROOMLIGHT",
+   "raised": "2026-11-25"
+  }
+ }
+}

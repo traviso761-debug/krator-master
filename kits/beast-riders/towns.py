@@ -36,7 +36,8 @@ GIRDER = {
     'files': [_src('girder', '05-palette.js'), 'core/rand/08-core-rand.js', _src('girder', '10-core.js'), 'core/space/20-core-space.js',
               'core/materials/record/23-mat-record.js', 'core/materials/record/24-tex-def.js', 'core/materials/record/25-matlib-host.js',
               'core/materials/record/26-matlib-bind.js', _src('girder', '30-layout.js'), _src('girder', '32-branches.js'),
-              'core/ports/44-core-ports.js', _src('girder', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK', _src('girder', '47-texture.js'),
+              'core/ports/44-core-ports.js', 'core/interiors/20-core-roomlight-host.js',   # KNLV: the night light volume 45-kit.js makes (K4)
+              _src('girder', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK', _src('girder', '47-texture.js'),
               _src('girder', '48-detail.js'), 'core/furnish/50-core-furnish.js', 'core/tags/50-core-tags.js', _src('girder', '50-structure.js'),
               'BUNDLE', 'core/furnish/52-core-furnish-draw.js', 'core/tags/52-core-tags-vocab.js', 'core/furnish/53-core-furnish-host.js',
               'core/tags/53-core-tags-host.js', _src('girder', '53-furnish.js'), _src('girder', '54-openings.js'), _src('girder', '55-arch.js')],
@@ -51,7 +52,8 @@ MAVS = {
     'cultures': ['beast-rider', 'lizardmen', 'generic'], 'harvested': True,
     'files': [_src('mavs-refuge', '05-palette.js'), 'core/rand/08-core-rand.js', _src('mavs-refuge', '10-core.js'), 'core/space/20-core-space.js',
               'core/materials/record/23-mat-record.js', 'core/materials/record/25-matlib-host.js', _src('mavs-refuge', '30-layout.js'),
-              _src('mavs-refuge', '32-branches.js'), 'core/ports/44-core-ports.js', _src('mavs-refuge', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK',
+              _src('mavs-refuge', '32-branches.js'), 'core/ports/44-core-ports.js', 'core/interiors/20-core-roomlight-host.js',   # KNLV (K4)
+              _src('mavs-refuge', '45-kit.js'), 'DOOR', 'HOOK', 'PORTS', 'PACK',
               _src('mavs-refuge', '47-texture.js'), 'core/furnish/50-core-furnish.js', 'core/tags/50-core-tags.js',
               _src('mavs-refuge', '50-structure.js'), 'core/furnish/52-core-furnish-draw.js', 'core/tags/52-core-tags-vocab.js', 'BUNDLE',
               'core/furnish/53-core-furnish-host.js', 'core/tags/53-core-tags-host.js', _src('mavs-refuge', '53-furnish.js'),

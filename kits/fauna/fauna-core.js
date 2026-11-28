@@ -73,7 +73,7 @@ const FAUNA_VOCAB = {
   locomotion: ['walks', 'runs', 'climbs', 'flies', 'glides', 'swims', 'wades', 'burrows', 'leaps'],
   gait: ['quadruped', 'sprawl', 'biped', 'hexapod', 'centaur', 'octopod', 'multipede', 'flyer', 'insect', 'swimmer', 'climber', 'none'],
   traits: ['edible', 'milkable', 'tameable', 'rideable', 'draught', 'eggs'],
-  koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cfa', 'Cfb', 'Cfc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
+  koppen: ['Af', 'Am', 'Aw', 'BWh', 'BWk', 'BSh', 'BSk', 'Csa', 'Csb', 'Cwb', 'Cfa', 'Cfb', 'Cfc', 'Dsc', 'Dfa', 'Dfb', 'Dfc', 'ET', 'EF', 'X', 'H']
 };
 /* the yields and their units (per adult animal) */
 const FAUNA_YIELDS = { meat: 'kg', milk: 'L/day', eggs: '/year', hide: 'count', hair: 'kg/year', wool: 'kg/year', feathers: 'kg/year', ivory: 'kg', horn: 'kg', silk: 'kg/year', chitin: 'kg' };
@@ -102,8 +102,8 @@ function faunaFrame(entry, opt) {
   opt = opt || {};
   const parts = {}, anchors = {}, A = { entry: entry, variant: opt.variant | 0, breed: opt.breed || null, pose: opt.pose || 'stand',
     S: 1, parts: parts, anchors: anchors, profileFn: null };
-  if (entry.breeds && opt.breed && entry.breeds[opt.breed]) A.S = entry.breeds[opt.breed].scale || 1;
-  let st = ((opt.seed || 1) * 2654435761) >>> 0;
+  if (entry.breeds && opt.breed && entry.breeds[opt.breed]) A.S = entry.breeds[opt.breed].scale == null ? 1 : entry.breeds[opt.breed].scale;
+  let st = ((opt.seed == null ? 1 : opt.seed) * 2654435761) >>> 0;
   A.rnd = () => { st = (Math.imul(st, 1664525) + 1013904223) >>> 0; return st / 4294967296; };
   A.rr = (a, b) => a + (b - a) * A.rnd();
   let cur = null;
@@ -182,7 +182,7 @@ function faunaFrame(entry, opt) {
     }
   }
   A.ellip = function (fam, x, y, z, rx, ry, rz, col, o) {
-    o = o || {}; const nu = o.seg || 12, nv = Math.max(6, (nu * 2 / 3) | 0), P = [], C = [], cc = o.colf ? null : linCol(col);
+    o = o || {}; const nu = o.seg == null ? 12 : o.seg, nv = Math.max(6, (nu * 2 / 3) | 0), P = [], C = [], cc = o.colf ? null : linCol(col);
     const m = new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(o.rx || 0, o.ry || 0, o.rz || 0, 'YXZ')), v = new THREE.Vector3();
     for (let j = 0; j <= nv; j++) { const ph = Math.PI * j / nv; for (let i = 0; i <= nu; i++) { const th = TAU * i / nu;
       v.set(Math.sin(ph) * Math.cos(th) * rx, Math.cos(ph) * ry, Math.sin(ph) * Math.sin(th) * rz).applyMatrix4(m);
@@ -206,7 +206,7 @@ function faunaFrame(entry, opt) {
       if (side.lengthSq() < 1e-6) side.set(1, 0, 0); side.normalize();
       const cc = linCol(L.col), dk = [cc[0] * 0.55, cc[1] * 0.55, cc[2] * 0.55], P = [], C = [];
       for (let j = 0; j <= 3; j++) {
-        const t = j / 3, w = L.w * (1 - 0.75 * t), droop = t * t * (L.curl || 0.12) * L.len;
+        const t = j / 3, w = L.w * (1 - 0.75 * t), droop = t * t * (L.curl == null ? 0.12 : L.curl) * L.len;
         const cx = L.at[0] + d.x * L.len * t, cy = L.at[1] + d.y * L.len * t - droop, cz = L.at[2] + d.z * L.len * t;
         P.push([cx - side.x * w / 2, cy, cz - side.z * w / 2], [cx + side.x * w / 2, cy, cz + side.z * w / 2]);
         C.push(j === 0 ? dk : cc, j === 0 ? dk : cc);

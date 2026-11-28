@@ -14,9 +14,8 @@ const PILLARS=[];
 let STRATA=null;
 function crestStrata(){if(STRATA||!BRECCIA_ON||!BIO.strata||typeof KSTRATA==='undefined')return STRATA;
  /* the recipe at the crags' scale: its blocks are 60 m (a crest's), so a pillar 10-25 m across stood inside one; 8 m blocks with a nested generation of
-    1.4 m, the same rocks and matrix, so a pillar shows a dozen (a page recipe: KSTRATA.add; the Godthrone's crest keeps the 60 m one) */
- try{const R0=KSTRATA.recipe('megabreccia');if(R0&&!KSTRATA.RECIPES['nhl-crag-breccia'])KSTRATA.add(Object.assign({},R0,{name:'nhl-crag-breccia',blocks:Object.assign({},R0.blocks,{size:8,nest:{kind:'fine',size:1.4}})}));}catch(e){reportErr('strata recipe: '+e.stack);}
- try{STRATA=BIO.strata({recipe:KSTRATA.RECIPES['nhl-crag-breccia']?'nhl-crag-breccia':'megabreccia',seed:86077,range:[-400,2800],dip:[.55,.83,.006],warp:[7,2],dust:0x8a8676,res:.25,private:true});}catch(e){reportErr('strata: '+e.stack);STRATA=null;}
+    1.4 m, the same rocks and matrix, so a pillar shows a dozen (core's `nhl-crag-breccia`; the Godthrone's crest keeps the 60 m one) */
+ try{STRATA=BIO.strata({recipe:'nhl-crag-breccia',seed:86077,range:[-400,2800],dip:[.55,.83,.006],warp:[7,2],dust:0x8a8676,res:.25,private:true});}catch(e){reportErr('strata: '+e.stack);STRATA=null;}
  return STRATA;}
 function buildPillars(){const geos=[],rock=[],pal=[0x8a8c86,0x7a7c76,0x9a9a92,0x6e706a];reseed(86031);
  // the spots: just under each scarp's foot, away from the stream, where the step is tall

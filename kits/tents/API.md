@@ -74,3 +74,16 @@ cottage is a residence). Regenerate the items from the table with `node kits/ten
 `tents()`, `stakes()`, `interiors()` (the kit's own: it replaces the engine's, which this kit does not opt into), `camps()`,
 `doorsAudit()`, `reachAudit()`, `combos()` (every culture row x role furnished off the sheet), `fingerprint()`, `rebuild()`;
 with the engine's `footprints()`, `doors()`, `furniture()`, `tags()`, `materials()`, `kitCoverage()`, `nanSweep()`.
+
+## Sealed for another world (`tents_bundle.py`, TNK; Stage 8 B9, 2026-11-24)
+
+`tents_bundle.bundle('TNK')` -> `(js, files)`: core/engine's geometry and registry, the tent toolkit and the kit's table, dresses,
+parts, forms, roles and defs in one closure (`var TNK = ...`), as `XAK` seals the Xanadu kit. The page loads three.js, core/rand,
+core/materials/record, core/tags and core/door first. `TNK.proto(key, {dress, role, trade, wear, world, cell, index, v})` builds the
+def at the origin, dry (the host registers its tent with core/tags: `TNK.tags(role, trade, TNK.dress(culture), form)`); no gear,
+no interior and plain-cloth pennants (no catalog, no canvas in the closure). `TNK.dims()`, `TNK.KEYS`, `TNK.DRESS`, `TNK.dress`,
+`TNK.roleOf`, `TNK.spec`, `TNK.errors`. `TNK.box(key)` is the table's `tnDims(key)` itself (unrounded, where `TNK.dims()` holds
+the defs' centimetre-rounded boxes): core/world's pitched camps (`core/world/48w-world-camps.js`, KWCAMPS, Stage 8 T26) take their
+boxes from it when a page carries the bundle, so the page and `core/world/bake_sites.py` (which reads the table) lay one camp, and
+88s draws each tent with `TNK.proto`. Tested by `tests/test-bundle.js`. The dress is the host's choice: a caravan of a people
+the kit has no dress for (the Dalab's Great Caravan) pitches in `generic` until one is drawn.

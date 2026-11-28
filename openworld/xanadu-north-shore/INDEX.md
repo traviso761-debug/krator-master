@@ -6,6 +6,8 @@ The north shore of Erewhon's lake: the fifth region of sites (settlements/pher/P
 
 Docs: `KNOWN_ISSUES.md`, `PORT.md`, `README.md`
 
+Built output (never open it; edit `src/` and rebuild): `dist/xanadu-north-shore.html`
+
 Build: `cd openworld/xanadu-north-shore && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
 
@@ -15,4 +17,4 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `46-world-config.js` | 2 |  |
 | `47-world-kits.js` | <1 |  |
-| `48-world-site.js` | 3 |  |
+| `48-world-site.js` | 5 |  |

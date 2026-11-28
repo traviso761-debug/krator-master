@@ -1,0 +1,1120 @@
+{
+ "builds": {
+  "biomes/oidong": {},
+  "kits/ancient-transit": {
+   "asphalt": {
+    "roughLift": 0.1,
+    "roughMean": 0.9265,
+    "source": "538ac44d8ccae7c58e45b4268138e8fd4f56a1a8"
+   },
+   "ballast": {
+    "roughLift": 0.1,
+    "roughMean": 0.9152,
+    "source": "61e6857381ccfe61df9ee2f3134e391e109d7b0b"
+   },
+   "concrete": {
+    "roughLift": 0.1,
+    "roughMean": 0.8421,
+    "source": "7dc768bd34259dec74b100aacc72be819fe8b8da"
+   },
+   "corrugated": {
+    "roughLift": 0.05,
+    "roughMean": 0.8506,
+    "source": "7a6788700c423ad94bfbf78ed3e04e275f615941"
+   },
+   "paint": {
+    "roughLift": 0.05,
+    "roughMean": 0.7076,
+    "source": "73e265369ebfcc33f9b550c266d65992be24f56e"
+   },
+   "pave": {
+    "roughLift": 0.15,
+    "roughMean": 0.877,
+    "source": "9f16f6c1ea8f962bc931e09a535690d24aedfabf"
+   },
+   "rubble": {
+    "roughLift": 0.05,
+    "roughMean": 0.9294,
+    "source": "c7b8c5222325cdd6d1d046637a27cae7df7b5d81"
+   },
+   "rust": {
+    "roughLift": 0.05,
+    "roughMean": 0.935,
+    "source": "8fb50d64d5118d0250c406d123bcd1c33fdfb013"
+   },
+   "steel": {
+    "roughLift": 0.0,
+    "roughMean": 0.395,
+    "source": "8103e0fdb3d502ae2f613cd76369b34cbd9ec037"
+   },
+   "white": {
+    "roughLift": 0.1,
+    "roughMean": 0.4583,
+    "source": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+   }
+  },
+  "kits/catalog": {},
+  "kits/qiblai": {
+   "qAshlar": {
+    "roughLift": 0.15,
+    "roughMean": 0.6936,
+    "source": "dfcecf9cccabda1f833b2af2ffda9e99eed25ef8"
+   },
+   "qCobble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9685,
+    "source": "c587b513d4b5704e8d6691f8c23f84fb1c3fe950"
+   },
+   "qDirt": {
+    "roughLift": 0.1,
+    "roughMean": 0.992,
+    "source": "1401865b87f24e4fdced1c0edae68d59d42a0813"
+   },
+   "qFlag": {
+    "roughLift": 0.1,
+    "roughMean": 0.9152,
+    "source": "62707d6a3dbc7c091b16729f9e44235c17ef9294"
+   },
+   "qGilt": {
+    "roughLift": 0.1,
+    "roughMean": 0.4106,
+    "source": "8d1da247889f8a0cc55f0297881452c84be67e4a"
+   },
+   "qGrass": {
+    "roughLift": 0.1,
+    "roughMean": 0.9529,
+    "source": "ecb96eb5a4c1efdda9e9c1cca66345625c242ba0"
+   },
+   "qLacq": {
+    "roughLift": 0.1,
+    "roughMean": 0.3126,
+    "source": "adb42238109d5c177218eea38c4b6128541fc7c8"
+   },
+   "qMarble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9519,
+    "source": "f3c3f8f8c67d7f8423ec49df5f0402a33c6e110a"
+   },
+   "qPlank": {
+    "roughLift": 0.1,
+    "roughMean": 0.909,
+    "source": "8c60e94b15a4ee9348e69efee44e17291e2f3bad"
+   },
+   "qRug": {
+    "roughLift": 0.1,
+    "roughMean": 0.9478,
+    "source": "9b680d8253af3d250b11a88fd57fad3195db4a8f"
+   }
+  },
+  "kits/tungang": {
+   "carpet": {
+    "roughLift": 0.4,
+    "roughMean": 0.9656,
+    "source": "9b680d8253af3d250b11a88fd57fad3195db4a8f"
+   },
+   "carved": {
+    "roughLift": 0.3,
+    "roughMean": 0.7787,
+    "source": "1ffda3ab7d989b1c02a5ef18cbd3d104b43502a9"
+   },
+   "celadon": {
+    "roughLift": 0.0,
+    "roughMean": 0.2334,
+    "source": "df763c1dbeb74f0b68dcd5011f96b272960659e3"
+   },
+   "cord": {
+    "roughLift": 0.4,
+    "roughMean": 0.9001,
+    "source": "c031f9fa618bec9f21d3ca8afc9ccdfcbc637caa"
+   },
+   "enamel": {
+    "roughLift": 0.1,
+    "roughMean": 0.4574,
+    "source": "c624ace8a8d3eaf71f336ae96bf86a24320f1293"
+   },
+   "f_bone": {
+    "roughLift": 0.2,
+    "roughMean": 0.4045,
+    "source": "69609279a5491234c2b50bb35c1bf5426a88cf35"
+   },
+   "f_cloth": {
+    "roughLift": 0.4,
+    "roughMean": 0.9838,
+    "source": "4a003a5089dec92d0323b9da5e4de274cb97a2f8"
+   },
+   "f_food": {
+    "roughLift": 0.3,
+    "roughMean": 0.8175,
+    "source": "4dcbbb4dfe3e8c9bdb46f3be593efcbf4069917e"
+   },
+   "f_hide": {
+    "roughLift": 0.3,
+    "roughMean": 0.7109,
+    "source": "1b2a38ff0ba619f553859d9fc650ec2d8e98c06a"
+   },
+   "f_metal": {
+    "roughLift": 0.2,
+    "roughMean": 0.822,
+    "source": "752df4db2e8026c59521a1965b16204ed95bd217"
+   },
+   "f_rope": {
+    "roughLift": 0.4,
+    "roughMean": 0.9015,
+    "source": "6567d9bf5777749e7fb4a965158714d072fd1fec"
+   },
+   "f_stone": {
+    "roughLift": 0.3,
+    "roughMean": 0.9922,
+    "source": "98b98e3bbaa5c16f290304b35c3e9984161abe1c"
+   },
+   "f_wicker": {
+    "roughLift": 0.4,
+    "roughMean": 0.8473,
+    "source": "85b768ea6e701be3677f4efb51f5d1aefc290fc9"
+   },
+   "f_wood": {
+    "roughLift": 0.3,
+    "roughMean": 0.7787,
+    "source": "1ffda3ab7d989b1c02a5ef18cbd3d104b43502a9"
+   },
+   "fur": {
+    "roughLift": 0.4,
+    "roughMean": 0.943,
+    "source": "ade05088e5e94802a5eeda1dbe3e911d9bb2937a"
+   },
+   "gilt": {
+    "roughLift": 0.0,
+    "roughMean": 0.3448,
+    "source": "8d1da247889f8a0cc55f0297881452c84be67e4a"
+   },
+   "ground": {
+    "roughLift": 0.4,
+    "roughMean": 0.949,
+    "source": "11c9b1428af82a2614afcdfcd200f934bd75eb2a"
+   },
+   "hewn": {
+    "roughLift": 0.2,
+    "roughMean": 0.9358,
+    "source": "163b7729aee5c2e46451790293d443b306013faa"
+   },
+   "hide": {
+    "roughLift": 0.3,
+    "roughMean": 0.7109,
+    "source": "1b2a38ff0ba619f553859d9fc650ec2d8e98c06a"
+   },
+   "horn": {
+    "roughLift": 0.2,
+    "roughMean": 0.4046,
+    "source": "69609279a5491234c2b50bb35c1bf5426a88cf35"
+   },
+   "ice": {
+    "roughLift": 0.0,
+    "roughMean": 0.1915,
+    "source": "6c69a4f1dc1e2d5708568b21257bd91b4df5aa49"
+   },
+   "iron": {
+    "roughLift": 0.15,
+    "roughMean": 0.6435,
+    "source": "f0eeead10d14fecb2924bab279d0c570697ba172"
+   },
+   "paint": {
+    "roughLift": 0.2,
+    "roughMean": 0.7539,
+    "source": "73e265369ebfcc33f9b550c266d65992be24f56e"
+   },
+   "plate": {
+    "roughLift": 0.15,
+    "roughMean": 0.4885,
+    "source": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+   },
+   "pole": {
+    "roughLift": 0.3,
+    "roughMean": 0.9343,
+    "source": "42c327eabe3c61a36d11fccdbc1ad0f68bf54fb0"
+   },
+   "potch": {
+    "roughLift": 0.1,
+    "roughMean": 0.6402,
+    "source": "b28b298cd99171095bb5581e6990f9d300278e2c"
+   },
+   "rockface": {
+    "roughLift": 0.0,
+    "roughMean": 0.968,
+    "source": "6a79e0bad6f9ef8efa542edfce608e5701576391"
+   },
+   "rope": {
+    "roughLift": 0.4,
+    "roughMean": 0.9016,
+    "source": "6567d9bf5777749e7fb4a965158714d072fd1fec"
+   },
+   "rust": {
+    "roughLift": 0.2,
+    "roughMean": 0.822,
+    "source": "752df4db2e8026c59521a1965b16204ed95bd217"
+   },
+   "scrap": {
+    "roughLift": 0.2,
+    "roughMean": 0.6363,
+    "source": "5a3625cdeed6001c4e01648ca58a280ee4d17ae8"
+   },
+   "silk": {
+    "roughLift": 0.2,
+    "roughMean": 0.5768,
+    "source": "3ea9f40edd1ec64f28cf14439d35d032b213463f"
+   },
+   "skull": {
+    "roughLift": 0.2,
+    "roughMean": 0.6331,
+    "source": "4072445a67d510a0cbc274644f9f3cdc2e33e5dc"
+   },
+   "stone": {
+    "roughLift": 0.3,
+    "roughMean": 0.9922,
+    "source": "98b98e3bbaa5c16f290304b35c3e9984161abe1c"
+   },
+   "straw": {
+    "roughLift": 0.4,
+    "roughMean": 0.9288,
+    "source": "2a4a644262a088a8b6db84153396024bcd6cd660"
+   },
+   "tin": {
+    "roughLift": 0.2,
+    "roughMean": 0.8742,
+    "source": "7a6788700c423ad94bfbf78ed3e04e275f615941"
+   },
+   "turf": {
+    "roughLift": 0.4,
+    "roughMean": 0.9943,
+    "source": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "tyre": {
+    "roughLift": 0.2,
+    "roughMean": 0.8922,
+    "source": "cb8c7122ae9a9749a7ceee4f883930d56903dc6a"
+   },
+   "wash": {
+    "roughLift": 0.3,
+    "roughMean": 0.9843,
+    "source": "dccfc0d0f0f9e17a45054744cb193821c83bac0c"
+   },
+   "wood": {
+    "roughLift": 0.3,
+    "roughMean": 0.9526,
+    "source": "5c384eb918f588bae25fca9d573cf415b59cbc62"
+   }
+  },
+  "kits/xanadu": {
+   "brick": {
+    "roughLift": 0.2,
+    "roughMean": 0.9422,
+    "source": "2f20910f6fa2e84b3b4184ca5759d735ca54fc8f"
+   },
+   "cloth": {
+    "roughLift": 0.2,
+    "roughMean": 0.9042,
+    "source": "9691c352308cbbf49d7c1fddf6a1f9a58b3035e5"
+   },
+   "clothR": {
+    "roughLift": 0.2,
+    "roughMean": 0.9168,
+    "source": "3979ad96d1eb95759523f19c0715b7f2a1aee6f6"
+   },
+   "concrete": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "concreteR": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "corrugate": {
+    "roughLift": 0.2,
+    "roughMean": 0.6174,
+    "source": "d1dccf06e761b141148f68b2eb25ebd70383b7b3"
+   },
+   "icefloor": {
+    "roughLift": 0.25,
+    "roughMean": 0.4654,
+    "source": "fd64da737f1b3cbd00075ee20029a85f642816bc"
+   },
+   "icewall": {
+    "roughLift": 0.1,
+    "roughMean": 0.2723,
+    "source": "6c69a4f1dc1e2d5708568b21257bd91b4df5aa49"
+   },
+   "paving": {
+    "roughLift": 0.3,
+    "roughMean": 0.9068,
+    "source": "4d30a2a2a164834aa00f5067de09f5a6b6fa50cd"
+   },
+   "plaster": {
+    "roughLift": 0.4,
+    "roughMean": 0.9158,
+    "source": "2fb36100bc1a45d112e43120f77370cf3867734c"
+   },
+   "rubbleK": {
+    "roughLift": 0.4,
+    "roughMean": 0.9702,
+    "source": "edc953d69572eb37a44eb2092b87961babb4b0fd"
+   },
+   "shingle": {
+    "roughLift": 0.3,
+    "roughMean": 0.9073,
+    "source": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
+   },
+   "stone": {
+    "roughLift": 0.4,
+    "roughMean": 0.8924,
+    "source": "639f8fc891da638cff9062226bdee03f52e5d3f5"
+   },
+   "tarp": {
+    "roughLift": 0.2,
+    "roughMean": 0.8274,
+    "source": "76aa09165cbff0f3066a0f3d0cbe943fe1b29a10"
+   },
+   "thatch": {
+    "roughLift": 0.2,
+    "roughMean": 0.9183,
+    "source": "2d40eab458010148d59f91e054cbb5874204dd76"
+   },
+   "timber": {
+    "roughLift": 0.3,
+    "roughMean": 0.9526,
+    "source": "5c384eb918f588bae25fca9d573cf415b59cbc62"
+   },
+   "verdigris": {
+    "roughLift": 0.1,
+    "roughMean": 0.4357,
+    "source": "662527a09943ce1e99e7a6ccc13be61618dd734c"
+   },
+   "white": {
+    "roughLift": 0.1,
+    "roughMean": 0.4583,
+    "source": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+   },
+   "whiteWorn": {
+    "roughLift": 0.1,
+    "roughMean": 0.565,
+    "source": "2d7516e67b5073468a1b9122a5bf68937a7f3f18"
+   },
+   "wood": {
+    "roughLift": 0.3,
+    "roughMean": 0.8404,
+    "source": "f4970eb4f4008f3680b8ece18f9a6dc8093ef229"
+   },
+   "woodV": {
+    "roughLift": 0.3,
+    "roughMean": 0.9147,
+    "source": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
+   },
+   "xBTile": {
+    "roughLift": 0.0,
+    "roughMean": 0.24,
+    "source": "fd7b8b8111e513d4184849c120627aa819b48c2e"
+   },
+   "xBandC": {
+    "roughLift": 0.0,
+    "roughMean": 0.4231,
+    "source": "307488b050f80c71bd72b51e23bb836fdcad1919"
+   },
+   "xBandR": {
+    "roughLift": 0.0,
+    "roughMean": 0.8088,
+    "source": "c95f02eec500f29dbe7712dc4d69b90736c6ccf4"
+   },
+   "xEarth": {
+    "roughLift": 0.0,
+    "roughMean": 0.9229,
+    "source": "1027bebff6000ad62b31b34c57acff9747ef44c1"
+   },
+   "xGiltC": {
+    "roughLift": 0.0,
+    "roughMean": 0.5582,
+    "source": "35bf39747c6d9be343cb3340de5b8577ec7a99b4"
+   },
+   "xHaft": {
+    "roughLift": 0.0,
+    "roughMean": 0.308,
+    "source": "05f09dcbc7b39d169c1a1b4fdd52f8604495ed34"
+   },
+   "xMarK": {
+    "roughLift": 0.0,
+    "roughMean": 0.1039,
+    "source": "c847c05cbe77c37790690c9b259788571aca952d"
+   },
+   "xMarW": {
+    "roughLift": 0.0,
+    "roughMean": 0.2313,
+    "source": "615560421ebd76885adc1699bf67c4bbac2ec7cb"
+   },
+   "xMosC": {
+    "roughLift": 0.0,
+    "roughMean": 0.3812,
+    "source": "237b45b8852bca69b248a32ebc12ef08c073b50d"
+   },
+   "xMosD": {
+    "roughLift": 0.0,
+    "roughMean": 0.3541,
+    "source": "22aa087cb36ae825f67215ce5910977a3cd40293"
+   },
+   "xMuqT": {
+    "roughLift": 0.0,
+    "roughMean": 0.3028,
+    "source": "49efb34561fba423bae62da315feaade299910f4"
+   },
+   "xPenbey": {
+    "roughLift": 0.0,
+    "roughMean": 0.8676,
+    "source": "a2722d06a16ad402573aee898ded4c51d953e37f"
+   },
+   "xPietra": {
+    "roughLift": 0.0,
+    "roughMean": 0.2857,
+    "source": "4cba8b8d562c0d3d0b8aa6a15e654c594b2698d8"
+   },
+   "xRock": {
+    "roughLift": 0.0,
+    "roughMean": 0.968,
+    "source": "6a79e0bad6f9ef8efa542edfce608e5701576391"
+   },
+   "xRubble": {
+    "roughLift": 0.0,
+    "roughMean": 0.9919,
+    "source": "98b98e3bbaa5c16f290304b35c3e9984161abe1c"
+   },
+   "xSandR": {
+    "roughLift": 0.0,
+    "roughMean": 0.8848,
+    "source": "e7729a397cee8ee8228dd7ab9af52f57f758843f"
+   },
+   "xSun": {
+    "roughLift": 0.0,
+    "roughMean": 0.4036,
+    "source": "c727a51d8271d0679d5ecc2379b7966b6f0b649c"
+   },
+   "xTiles": {
+    "roughLift": 0.0,
+    "roughMean": 0.876,
+    "source": "ccc0b365f878cf20fe73cb1117884a91eac6397b"
+   },
+   "xValance": {
+    "roughLift": 0.0,
+    "roughMean": 0.8541,
+    "source": "2d5bfd3ea609e78f24da02168065b46efb478c5b"
+   },
+   "xWash": {
+    "roughLift": 0.0,
+    "roughMean": 0.9776,
+    "source": "dccfc0d0f0f9e17a45054744cb193821c83bac0c"
+   },
+   "xYes": {
+    "roughLift": 0.0,
+    "roughMean": 0.8207,
+    "source": "085936a2113b32ba636c35f6dc0b72878253e0e4"
+   },
+   "xZel": {
+    "roughLift": 0.0,
+    "roughMean": 0.3006,
+    "source": "7200112152e8625bc212cc4bccae7147135d66fa"
+   }
+  },
+  "settlements/dalab": {
+   "bamboo": {
+    "roughLift": 0.0,
+    "roughMean": 0.9428,
+    "source": "2f9954a0d9f1e0b8243d71d494581110609969a3"
+   },
+   "bmat": {
+    "roughLift": 0.0,
+    "roughMean": 0.811,
+    "source": "51dcc3b8b5572cc230443dd26be92cbf46032857"
+   },
+   "brick": {
+    "roughLift": 0.2,
+    "roughMean": 0.9422,
+    "source": "2f20910f6fa2e84b3b4184ca5759d735ca54fc8f"
+   },
+   "cloth": {
+    "roughLift": 0.2,
+    "roughMean": 0.9042,
+    "source": "9691c352308cbbf49d7c1fddf6a1f9a58b3035e5"
+   },
+   "concrete": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "concreteR": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "corrugate": {
+    "roughLift": 0.2,
+    "roughMean": 0.6174,
+    "source": "d1dccf06e761b141148f68b2eb25ebd70383b7b3"
+   },
+   "dBancoE": {
+    "roughLift": 0.4,
+    "roughMean": 0.931,
+    "source": "01834a9c9c567b11697e007e81f3b58f010932b9"
+   },
+   "dBlock": {
+    "roughLift": 0.4,
+    "roughMean": 0.9864,
+    "source": "58c7b0747e17811f6f67f842ab9c2ff94b88d097"
+   },
+   "dChecker": {
+    "roughLift": 0.0,
+    "roughMean": 0.5767,
+    "source": "32722d2a868b5d45838b9258ce5a62ece78ced20"
+   },
+   "dDecoPanel": {
+    "roughLift": 0.0,
+    "roughMean": 0.6077,
+    "source": "dc2745052ad382e84f8e7938c92d6cb5d2ad092a"
+   },
+   "dDecoPanelB": {
+    "roughLift": 0.0,
+    "roughMean": 0.6061,
+    "source": "4bed390952e0501b740c0553b10d80b92c3e5470"
+   },
+   "dMosaic": {
+    "roughLift": 0.0,
+    "roughMean": 0.3802,
+    "source": "84228a3106e3be04174257660f40e8ee62760700"
+   },
+   "dMural": {
+    "roughLift": 0.0,
+    "roughMean": 0.8403,
+    "source": "f59414b331749e4dc68356090fffaceca4665606"
+   },
+   "dMural1": {
+    "roughLift": 0.0,
+    "roughMean": 0.5739,
+    "source": "a1e504549fb8caa51ce6028a47ee053ab432a297"
+   },
+   "dMural2": {
+    "roughLift": 0.0,
+    "roughMean": 0.5769,
+    "source": "e76576a13297699bcea0d1caee424c19d02237ef"
+   },
+   "dMural3": {
+    "roughLift": 0.0,
+    "roughMean": 0.8407,
+    "source": "af0b57205381b0383c2b969f71514c83379958c9"
+   },
+   "dMural4": {
+    "roughLift": 0.0,
+    "roughMean": 0.5839,
+    "source": "38535460f76a93323e631580cbdc6bcbb033ed16"
+   },
+   "dMural5": {
+    "roughLift": 0.0,
+    "roughMean": 0.575,
+    "source": "d9fc21bab40816f8d802e6b3e4bc5ab1faa795ce"
+   },
+   "dMural6": {
+    "roughLift": 0.0,
+    "roughMean": 0.5829,
+    "source": "3c59dcf60f6db5d343df847642c7e057d81d66e1"
+   },
+   "dMural7": {
+    "roughLift": 0.0,
+    "roughMean": 0.5828,
+    "source": "0ec94e8e5f31cc939ada24ca12906f329c216635"
+   },
+   "dRammed": {
+    "roughLift": 0.0,
+    "roughMean": 0.9229,
+    "source": "1027bebff6000ad62b31b34c57acff9747ef44c1"
+   },
+   "dRelief": {
+    "roughLift": 0.0,
+    "roughMean": 0.5986,
+    "source": "07dc3a5c38c9564c226662f1a9a5de67980dcd40"
+   },
+   "dReliefCh": {
+    "roughLift": 0.0,
+    "roughMean": 0.5999,
+    "source": "ce061ec380d8d4eccedcc388293ad717b4afacc7"
+   },
+   "dReliefRd": {
+    "roughLift": 0.0,
+    "roughMean": 0.5979,
+    "source": "a1608b850f7459a2e9ff6ad4c323ca38236aabae"
+   },
+   "dReliefTq": {
+    "roughLift": 0.0,
+    "roughMean": 0.5854,
+    "source": "5289849fbcc515f5abfc25b2ff684f9bf77f46c7"
+   },
+   "dRender": {
+    "roughLift": 0.4,
+    "roughMean": 0.9252,
+    "source": "6dc5d9b4c8435b805b7aaa5d0b207df98031ed28"
+   },
+   "dRenderR": {
+    "roughLift": 0.4,
+    "roughMean": 0.9209,
+    "source": "545682768ed13b93adacf16ead721892bb9e3176"
+   },
+   "dTurf": {
+    "roughLift": 0.0,
+    "roughMean": 0.9898,
+    "source": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "logs": {
+    "roughLift": 0.0,
+    "roughMean": 0.8239,
+    "source": "8e4295721ac2f91d08908857379bccf729186965"
+   },
+   "paving": {
+    "roughLift": 0.3,
+    "roughMean": 0.9068,
+    "source": "4d30a2a2a164834aa00f5067de09f5a6b6fa50cd"
+   },
+   "plaster": {
+    "roughLift": 0.4,
+    "roughMean": 0.9158,
+    "source": "2fb36100bc1a45d112e43120f77370cf3867734c"
+   },
+   "rubbleK": {
+    "roughLift": 0.4,
+    "roughMean": 0.9702,
+    "source": "edc953d69572eb37a44eb2092b87961babb4b0fd"
+   },
+   "rubbleW": {
+    "roughLift": 0.0,
+    "roughMean": 0.9919,
+    "source": "98b98e3bbaa5c16f290304b35c3e9984161abe1c"
+   },
+   "scale": {
+    "roughLift": 0.0,
+    "roughMean": 0.6056,
+    "source": "f08de36a2a53b2c234fd8b55f8589a10def735ce"
+   },
+   "shingle": {
+    "roughLift": 0.3,
+    "roughMean": 0.9073,
+    "source": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
+   },
+   "stone": {
+    "roughLift": 0.4,
+    "roughMean": 0.8924,
+    "source": "639f8fc891da638cff9062226bdee03f52e5d3f5"
+   },
+   "tarp": {
+    "roughLift": 0.2,
+    "roughMean": 0.8274,
+    "source": "76aa09165cbff0f3066a0f3d0cbe943fe1b29a10"
+   },
+   "thatch": {
+    "roughLift": 0.2,
+    "roughMean": 0.9183,
+    "source": "2d40eab458010148d59f91e054cbb5874204dd76"
+   },
+   "timber": {
+    "roughLift": 0.3,
+    "roughMean": 0.9526,
+    "source": "5c384eb918f588bae25fca9d573cf415b59cbc62"
+   },
+   "turf": {
+    "roughLift": 0.0,
+    "roughMean": 0.9898,
+    "source": "018fe1a6ca71a2c15adf9665d7d8e9443a34bc50"
+   },
+   "verdigris": {
+    "roughLift": 0.1,
+    "roughMean": 0.4357,
+    "source": "662527a09943ce1e99e7a6ccc13be61618dd734c"
+   },
+   "vpBanco": {
+    "roughLift": 0.0,
+    "roughMean": 0.8594,
+    "source": "df172b558a26ce875a3ddb45ac27cf40f072eb16"
+   },
+   "vpTile": {
+    "roughLift": 0.0,
+    "roughMean": 0.7768,
+    "source": "5aa83257cab4d5f10257a72ed30508a218a0deca"
+   },
+   "white": {
+    "roughLift": 0.1,
+    "roughMean": 0.4583,
+    "source": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+   },
+   "whiteWorn": {
+    "roughLift": 0.1,
+    "roughMean": 0.565,
+    "source": "2d7516e67b5073468a1b9122a5bf68937a7f3f18"
+   },
+   "wood": {
+    "roughLift": 0.3,
+    "roughMean": 0.8404,
+    "source": "f4970eb4f4008f3680b8ece18f9a6dc8093ef229"
+   },
+   "woodV": {
+    "roughLift": 0.3,
+    "roughMean": 0.9147,
+    "source": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
+   }
+  },
+  "settlements/flashing-eye": {
+   "feAsh": {
+    "roughLift": 0.1,
+    "roughMean": 0.9486,
+    "source": "99cd9d53d7a5c4594bfadb10edfb31306dd27f3a"
+   },
+   "feCinder": {
+    "roughLift": 0.1,
+    "roughMean": 0.9605,
+    "source": "0ef07445150d4489988033f27b321ebd378ff62e"
+   },
+   "feColumnar": {
+    "roughLift": 0.15,
+    "roughMean": 0.9118,
+    "source": "ba161c35beefd0a18729386f27ea0ed9093a56d9"
+   },
+   "feScoria": {
+    "roughLift": 0.1,
+    "roughMean": 0.9638,
+    "source": "b146ad975ae28be4d25aca97a759093721569584"
+   },
+   "qAshlar": {
+    "roughLift": 0.15,
+    "roughMean": 0.6936,
+    "source": "dfcecf9cccabda1f833b2af2ffda9e99eed25ef8"
+   },
+   "qCobble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9685,
+    "source": "c587b513d4b5704e8d6691f8c23f84fb1c3fe950"
+   },
+   "qDirt": {
+    "roughLift": 0.1,
+    "roughMean": 0.992,
+    "source": "1401865b87f24e4fdced1c0edae68d59d42a0813"
+   },
+   "qFlag": {
+    "roughLift": 0.1,
+    "roughMean": 0.9152,
+    "source": "62707d6a3dbc7c091b16729f9e44235c17ef9294"
+   },
+   "qGilt": {
+    "roughLift": 0.1,
+    "roughMean": 0.4106,
+    "source": "8d1da247889f8a0cc55f0297881452c84be67e4a"
+   },
+   "qGrass": {
+    "roughLift": 0.1,
+    "roughMean": 0.9529,
+    "source": "ecb96eb5a4c1efdda9e9c1cca66345625c242ba0"
+   },
+   "qLacq": {
+    "roughLift": 0.1,
+    "roughMean": 0.3126,
+    "source": "adb42238109d5c177218eea38c4b6128541fc7c8"
+   },
+   "qMarble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9519,
+    "source": "f3c3f8f8c67d7f8423ec49df5f0402a33c6e110a"
+   },
+   "qPlank": {
+    "roughLift": 0.1,
+    "roughMean": 0.909,
+    "source": "8c60e94b15a4ee9348e69efee44e17291e2f3bad"
+   },
+   "qRug": {
+    "roughLift": 0.1,
+    "roughMean": 0.9478,
+    "source": "9b680d8253af3d250b11a88fd57fad3195db4a8f"
+   }
+  },
+  "settlements/kirstabal": {
+   "ksCobble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9685,
+    "source": "c587b513d4b5704e8d6691f8c23f84fb1c3fe950"
+   },
+   "ksDirt": {
+    "roughLift": 0.1,
+    "roughMean": 0.992,
+    "source": "1401865b87f24e4fdced1c0edae68d59d42a0813"
+   },
+   "ksFlag": {
+    "roughLift": 0.1,
+    "roughMean": 0.9152,
+    "source": "62707d6a3dbc7c091b16729f9e44235c17ef9294"
+   },
+   "ksGrass": {
+    "roughLift": 0.1,
+    "roughMean": 0.9529,
+    "source": "ecb96eb5a4c1efdda9e9c1cca66345625c242ba0"
+   },
+   "ksSand": {
+    "roughLift": 0.1,
+    "roughMean": 0.9917,
+    "source": "0f76d4a765a9f16b07c7b3585572b8f244132966"
+   },
+   "ksTilled": {
+    "roughLift": 0.1,
+    "roughMean": 0.9726,
+    "source": "82d3aedd87563937bce309146a36b46a4bd77925"
+   },
+   "xSlate": {
+    "roughLift": 0.12,
+    "roughMean": 0.947,
+    "source": "1f66e339939204aa68ed56094bfbcf511a021207"
+   },
+   "xSlateD": {
+    "roughLift": 0.12,
+    "roughMean": 0.947,
+    "source": "1f66e339939204aa68ed56094bfbcf511a021207"
+   }
+  },
+  "settlements/thalaba": {
+   "tCobble": {
+    "roughLift": 0.1,
+    "roughMean": 0.9685,
+    "source": "c587b513d4b5704e8d6691f8c23f84fb1c3fe950"
+   },
+   "tDirt": {
+    "roughLift": 0.1,
+    "roughMean": 0.992,
+    "source": "1401865b87f24e4fdced1c0edae68d59d42a0813"
+   },
+   "tField": {
+    "roughLift": 0.1,
+    "roughMean": 0.9838,
+    "source": "190c0adaef407ca88c43e1e75121fee87cf20786"
+   },
+   "tGrass": {
+    "roughLift": 0.1,
+    "roughMean": 0.9922,
+    "source": "705b4f92076304fd8b3c73b6e49d2123456014a9"
+   }
+  },
+  "settlements/xanadu": {
+   "brick": {
+    "roughLift": 0.2,
+    "roughMean": 0.9422,
+    "source": "2f20910f6fa2e84b3b4184ca5759d735ca54fc8f"
+   },
+   "cloth": {
+    "roughLift": 0.2,
+    "roughMean": 0.9042,
+    "source": "9691c352308cbbf49d7c1fddf6a1f9a58b3035e5"
+   },
+   "clothR": {
+    "roughLift": 0.2,
+    "roughMean": 0.9168,
+    "source": "3979ad96d1eb95759523f19c0715b7f2a1aee6f6"
+   },
+   "concrete": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "concreteR": {
+    "roughLift": 0.3,
+    "roughMean": 0.9106,
+    "source": "cfe34f0e85b169652acf9faec8d1e1f0fb8b3cca"
+   },
+   "corrugate": {
+    "roughLift": 0.2,
+    "roughMean": 0.6174,
+    "source": "d1dccf06e761b141148f68b2eb25ebd70383b7b3"
+   },
+   "icefloor": {
+    "roughLift": 0.25,
+    "roughMean": 0.4654,
+    "source": "fd64da737f1b3cbd00075ee20029a85f642816bc"
+   },
+   "icewall": {
+    "roughLift": 0.1,
+    "roughMean": 0.2723,
+    "source": "6c69a4f1dc1e2d5708568b21257bd91b4df5aa49"
+   },
+   "paving": {
+    "roughLift": 0.3,
+    "roughMean": 0.9068,
+    "source": "4d30a2a2a164834aa00f5067de09f5a6b6fa50cd"
+   },
+   "plaster": {
+    "roughLift": 0.4,
+    "roughMean": 0.9158,
+    "source": "2fb36100bc1a45d112e43120f77370cf3867734c"
+   },
+   "rubbleK": {
+    "roughLift": 0.4,
+    "roughMean": 0.9702,
+    "source": "edc953d69572eb37a44eb2092b87961babb4b0fd"
+   },
+   "shingle": {
+    "roughLift": 0.3,
+    "roughMean": 0.9073,
+    "source": "dd07121049f9cb4514a0f3e1f76dceabe2f8fc2e"
+   },
+   "stone": {
+    "roughLift": 0.4,
+    "roughMean": 0.8924,
+    "source": "639f8fc891da638cff9062226bdee03f52e5d3f5"
+   },
+   "tarp": {
+    "roughLift": 0.2,
+    "roughMean": 0.8274,
+    "source": "76aa09165cbff0f3066a0f3d0cbe943fe1b29a10"
+   },
+   "thatch": {
+    "roughLift": 0.2,
+    "roughMean": 0.9183,
+    "source": "2d40eab458010148d59f91e054cbb5874204dd76"
+   },
+   "timber": {
+    "roughLift": 0.3,
+    "roughMean": 0.9526,
+    "source": "5c384eb918f588bae25fca9d573cf415b59cbc62"
+   },
+   "verdigris": {
+    "roughLift": 0.1,
+    "roughMean": 0.4357,
+    "source": "662527a09943ce1e99e7a6ccc13be61618dd734c"
+   },
+   "white": {
+    "roughLift": 0.1,
+    "roughMean": 0.4583,
+    "source": "82c9030d3e336f7c5ae0d1f93380275fff621693"
+   },
+   "whiteWorn": {
+    "roughLift": 0.1,
+    "roughMean": 0.565,
+    "source": "2d7516e67b5073468a1b9122a5bf68937a7f3f18"
+   },
+   "wood": {
+    "roughLift": 0.3,
+    "roughMean": 0.8404,
+    "source": "f4970eb4f4008f3680b8ece18f9a6dc8093ef229"
+   },
+   "woodV": {
+    "roughLift": 0.3,
+    "roughMean": 0.9147,
+    "source": "39292b3392b5fa13d75d9c114975068e7f79b3b4"
+   },
+   "xBTile": {
+    "roughLift": 0.0,
+    "roughMean": 0.24,
+    "source": "fd7b8b8111e513d4184849c120627aa819b48c2e"
+   },
+   "xBandC": {
+    "roughLift": 0.0,
+    "roughMean": 0.4231,
+    "source": "307488b050f80c71bd72b51e23bb836fdcad1919"
+   },
+   "xBandR": {
+    "roughLift": 0.0,
+    "roughMean": 0.8088,
+    "source": "c95f02eec500f29dbe7712dc4d69b90736c6ccf4"
+   },
+   "xEarth": {
+    "roughLift": 0.0,
+    "roughMean": 0.9229,
+    "source": "1027bebff6000ad62b31b34c57acff9747ef44c1"
+   },
+   "xGiltC": {
+    "roughLift": 0.0,
+    "roughMean": 0.5582,
+    "source": "35bf39747c6d9be343cb3340de5b8577ec7a99b4"
+   },
+   "xHaft": {
+    "roughLift": 0.0,
+    "roughMean": 0.308,
+    "source": "05f09dcbc7b39d169c1a1b4fdd52f8604495ed34"
+   },
+   "xMarK": {
+    "roughLift": 0.0,
+    "roughMean": 0.1039,
+    "source": "c847c05cbe77c37790690c9b259788571aca952d"
+   },
+   "xMarW": {
+    "roughLift": 0.0,
+    "roughMean": 0.2313,
+    "source": "615560421ebd76885adc1699bf67c4bbac2ec7cb"
+   },
+   "xMosC": {
+    "roughLift": 0.0,
+    "roughMean": 0.3812,
+    "source": "237b45b8852bca69b248a32ebc12ef08c073b50d"
+   },
+   "xMosD": {
+    "roughLift": 0.0,
+    "roughMean": 0.3541,
+    "source": "22aa087cb36ae825f67215ce5910977a3cd40293"
+   },
+   "xMuqT": {
+    "roughLift": 0.0,
+    "roughMean": 0.3028,
+    "source": "49efb34561fba423bae62da315feaade299910f4"
+   },
+   "xPenbey": {
+    "roughLift": 0.0,
+    "roughMean": 0.8676,
+    "source": "a2722d06a16ad402573aee898ded4c51d953e37f"
+   },
+   "xPietra": {
+    "roughLift": 0.0,
+    "roughMean": 0.2857,
+    "source": "4cba8b8d562c0d3d0b8aa6a15e654c594b2698d8"
+   },
+   "xRock": {
+    "roughLift": 0.0,
+    "roughMean": 0.968,
+    "source": "6a79e0bad6f9ef8efa542edfce608e5701576391"
+   },
+   "xRubble": {
+    "roughLift": 0.0,
+    "roughMean": 0.9919,
+    "source": "98b98e3bbaa5c16f290304b35c3e9984161abe1c"
+   },
+   "xSandR": {
+    "roughLift": 0.0,
+    "roughMean": 0.8848,
+    "source": "e7729a397cee8ee8228dd7ab9af52f57f758843f"
+   },
+   "xSun": {
+    "roughLift": 0.0,
+    "roughMean": 0.4036,
+    "source": "c727a51d8271d0679d5ecc2379b7966b6f0b649c"
+   },
+   "xTiles": {
+    "roughLift": 0.0,
+    "roughMean": 0.876,
+    "source": "ccc0b365f878cf20fe73cb1117884a91eac6397b"
+   },
+   "xValance": {
+    "roughLift": 0.0,
+    "roughMean": 0.8541,
+    "source": "2d5bfd3ea609e78f24da02168065b46efb478c5b"
+   },
+   "xWash": {
+    "roughLift": 0.0,
+    "roughMean": 0.9776,
+    "source": "dccfc0d0f0f9e17a45054744cb193821c83bac0c"
+   },
+   "xYes": {
+    "roughLift": 0.0,
+    "roughMean": 0.8207,
+    "source": "085936a2113b32ba636c35f6dc0b72878253e0e4"
+   },
+   "xZel": {
+    "roughLift": 0.0,
+    "roughMean": 0.3006,
+    "source": "7200112152e8625bc212cc4bccae7147135d66fa"
+   }
+  }
+ },
+ "what": "the packed roughness map mean of every classed family (tools/textures/mclass.py --measure, from the committed tex/): the roughness the stack's glazed rule is judged on (m1-classes.json \"rule\"). Each row keeps the pack entry it was measured on (its roughness source sha1 and roughLift); core/materials/classes/test-class.js fails when tex/pack.json has moved past it. Rerun after a re-pack."
+}

@@ -81,7 +81,7 @@ const MECHS = [], MECH_BY_KEY = {};
 function MECH(o) {
   if (MECH_BY_KEY[o.key]) { console.error('duplicate mech key', o.key); return; }
   if (!MECH_CULTURES[o.culture]) { console.error('mech ' + o.key + ': unregistered culture ' + o.culture); return; }
-  o.variants = o.variants || 1;
+  o.variants = o.variants == null ? 1 : o.variants;
   o.variantNames = o.variantNames || [];
   o.variantData = o.variantData || [];
   o.variantTags = o.variantTags || [];
@@ -136,7 +136,7 @@ function mechRig() {
     R.bone(name + '_hip', name + '_yaw', 0, 0, 0);
     R.bone(name + '_knee', name + '_hip', 0, -o.L1, 0);
     R.bone(name + '_ankle', name + '_knee', 0, -o.L2, 0);
-    const L = { name: name, L1: o.L1, L2: o.L2, knee: o.knee || 1, splay: !!o.splay, ankleH: o.ankleH || 0.3,
+    const L = { name: name, L1: o.L1, L2: o.L2, knee: o.knee == null ? 1 : o.knee, splay: !!o.splay, ankleH: o.ankleH == null ? 0.3 : o.ankleH,
       rest: [o.rest[0], o.rest[1]], phase: o.phase || 0, toe: o.toe == null ? 0.28 : o.toe,
       footYaw: o.footYaw == null ? (o.splay ? 0.6 : 0) : o.footYaw, hip: o.hip.slice() };
     R.legs.push(L);
@@ -353,7 +353,7 @@ function mechMerge(R, linear) {
    Returns [{ bone, a, b, n, at }] grouped by bone and colour pair (a, b: hex colour and bucket), worst first. */
 function mechAudit(R, o) {
   o = o || {};
-  const tol = o.tol || 0.004, pen = o.pen || 0.004, T = [], v = new THREE.Vector3();
+  const tol = o.tol == null ? 0.004 : o.tol, pen = o.pen == null ? 0.004 : o.pen, T = [], v = new THREE.Vector3();
   function collect(g, bone, mats) {
     g.updateMatrixWorld(true);
     let id = 0;

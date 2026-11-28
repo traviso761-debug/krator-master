@@ -69,6 +69,8 @@ function inspect(e){const p=pick(e),el=$('insp');if(!p){el.textContent='inspecto
   'kits here: '+kits+(A.inside?'':' · outside the region')+'\n'+
   'fields: wet '+f1(A.wet)+' flow '+f1(A.flow)+' canyon '+f1(A.canyon)+' rim '+f1(A.rim)+' rock '+f1(A.rock)+' dune '+f1(A.dune)+' upland '+f1(A.upland)+' salt '+f1(A.salt)+' slope '+f1(A.slope)+'\n'+
   'at x '+Math.round(p.x)+' z '+Math.round(p.z)+' · map px '+f1(WORLD.px(p.x))+', '+f1(WORLD.py(p.z));
+ /* a landform record (a relief region's: 43b-world-landforms.js), its name and how it lies here */
+ {const L=WORLD.landformAt?WORLD.landformAt(p.x,p.z):null;if(L)t+='\nlandform · '+(L.S.name||L.S.kind)+(L.S.pinned?' (pinned)':'')+' · '+(L.cut!=null?'cut '+f1(L.cut)+' m':L.wall?'its wall':'its top, '+Math.round(-L.d)+' m in from the edge');}
  if(fl){const g=fl.tags;t+='\n\nflora · '+fl.name+' ('+fl.kit+')  '+Math.round(fl.rec.Ht)+' m tall, '+Math.round(fl.dist)+' m from the cursor'+
   (g?'\ntags: '+Object.keys(g).map(k=>k+' '+g[k]).join(' · '):'');}
  el.textContent=t;}

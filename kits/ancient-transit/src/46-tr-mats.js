@@ -22,6 +22,8 @@
 //     B.mesh(fam, mesh, m, o)                a built mesh (a furniture piece's) copied into the bucket, through matrix m, its own colours and
 //                                            UVs kept (o.col overrides the colour, o.mul multiplies it)
 //     B.finish(name, o) -> Group             one THREE.Mesh a family (a family of 3000 triangles or more: one a 400 m chunk, o.chunk; 0 none), KTRANSIT.mats() by family (o.mats overrides); userData.tris
+//   KTRANSIT.draw.frames(R, s0, s1, step, up, offFn)   frames along any line record (path, L, deckAt), offset by offFn(s, t)
+//   KTRANSIT.draw.lining(B, profile, frames, col, o)  a section's profile swept facing inward on the two-sided tunnel family (o.u0, o.open)
 (function () {
   const T = KTRANSIT;
   const lin = c => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
@@ -138,4 +140,19 @@
     return B;
   };
   T.draw = T.draw || {};
+  /* frames along a line (any record with path, L and deckAt: a rail, a subway, a deep line) from s0 to s1 every `step`, at its deck plus `up`,
+     off its axis by offFn(s, t) (t the share of the way); each pitched by the deck's slope over the next 2 m */
+  T.draw.frames = function (R, s0, s1, step, up, offFn) {
+    const out = [], n = Math.max(1, Math.round((s1 - s0) / step));
+    for (let i = 0; i <= n; i++) { const s = s0 + (s1 - s0) * i / n, p = R.path.at(s), y = R.deckAt(s), s2 = Math.min(R.L, s + 2), pitch = s2 > s ? Math.atan2(R.deckAt(s2) - y, 2) : 0, off = offFn ? offFn(s, i / n) : 0;
+      out.push(T.frame(p.x + Math.cos(p.yaw) * off, y + up, p.z - Math.sin(p.yaw) * off, p.yaw, pitch, 0)); }
+    return out;
+  };
+  /* a section's lining: profile [[lat, up], ...] (as KTRANSIT.lineProfile gives it, west foot over the vault to the east foot) swept along frames
+     facing inward, on the two-sided `tunnel` family (made at draw from the concrete); o.u0, o.open (default true: no floor across), o.fam */
+  T.draw.tunnelMat = function () { const M = T.mats(); if (!M.tunnel) { M.tunnel = M.concrete.clone(); M.tunnel.side = THREE.DoubleSide; M.tunnel.name = 'tr.tunnel'; } return M.tunnel; };
+  T.draw.lining = function (B, profile, frames, col, o) {
+    o = o || {}; T.draw.tunnelMat();
+    B.sweep(o.fam == null ? 'tunnel' : o.fam, typeof profile === 'function' ? function (i) { return profile(i).slice().reverse(); } : profile.slice().reverse(), frames, col, { u0: o.u0, open: o.open == null ? true : o.open, caps: !!o.caps });
+  };
 })();

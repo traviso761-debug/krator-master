@@ -3,6 +3,7 @@
 const fs=require('fs'),path=require('path'),ROOT=path.join(__dirname,'..','..','..');
 global.window=global;
 eval(fs.readFileSync(path.join(ROOT,'core','rand','08-core-rand.js'),'utf8')+';global.KRAND=KRAND;');
+eval(fs.readFileSync(path.join(ROOT,'core','space','20-core-space.js'),'utf8')+';global.KSPACE=KSPACE;');   /* GILLS.life keeps its pipes clear on KSPACE (PLAN.md section 13), so the test loads it as a page does */
 const AT=path.join(ROOT,'core','atmos'),FR=['89-atmos-0-core.js','89-atmos-0p-presets.js'].map(f=>path.join(AT,f))
  .concat(fs.readdirSync(path.join(AT,'sky')).filter(f=>/^89-atmos-.*\.js$/.test(f)).sort().map(f=>path.join(AT,'sky',f)));
 eval(FR.map(f=>fs.readFileSync(f,'utf8')).join('\n')+';global.ATMOS=ATMOS;');
@@ -44,4 +45,17 @@ const iceOk=(P,h)=>P.every(p=>!p.ice||p.y0>h)&&P.every(p=>p.ice||p.y0<=h);
 ok('ice pipes stand over the ice line and only there ('+R1.pipes.filter(p=>p.ice).length+' iced)',iceOk(R1.pipes,6000),iceOk(R1.pipes.map((p,i)=>i?p:Object.assign({},p,{ice:!p.ice})),6000));
 {const gi=L1.gills[0],a=(gi.a0+gi.a1)/2,x=gi.c[0]+Math.cos(a)*gi.r,z=gi.c[1]+Math.sin(a)*gi.r,h=G.gillAt(L1,x,z),f=G.gillAt(L1,x+Math.cos(a)*gi.w*2,z+Math.sin(a)*gi.w*2);
  ok('gillAt finds a crack\'s floor on its line and nothing two widths off',h&&h.k>.9&&h.g===gi&&!f,!h);}
+// ---- the mouth's life fitted to the drawn pipes (GILLS.fitMouths, 2026-11-15: the collars floated off their pipes). Both hosts' forms on KSTACKS
+// chimneys (core/terrain 37): the White's (from y0 - .6, flared, up to three mouths) and the Red's (1.7x as tall, .72x as wide, one mouth)
+{eval(fs.readFileSync(path.join(ROOT,'core','terrain','37-core-stacks.js'),'utf8')+';global.KSTACKS=KSTACKS;');
+ const forms={white:p=>({H:p.H,r:p.r,y0:p.y0-.6,taper:1.05,lobes:.12,flare:{from:.55,k:1.55,p:1.5},mouths:p.mouths}),
+  red:p=>({H:Math.min(85,p.H*1.7+8),r:Math.max(1.2,p.r*.72),y0:p.y0-.6,taper:1.1,lobes:.06,flare:{from:.8,k:1.35,p:1.5},mouths:1})};
+ for(const k in forms){const R=life(),recs=[];R.pipes.forEach(p=>{if(p.state!=='standing'||p.ice)return;const f=forms[k](p);
+   recs.push({p,B:KSTACKS.make(Object.assign({kind:'chimney',id:p.id,x:p.x,z:p.z,seed:p.seed,form:'pipe',fork:.62,spread:.38,lean:p.lean,toward:p.toward,state:p.state},f))});});
+  const C0=R.collars.map(c=>Object.assign({},c)),out=G.fitMouths(R,recs,KSTACKS.ring),F=G.collarFit(R.collars,recs,KSTACKS.ring),F0=G.collarFit(C0,recs,KSTACKS.ring);
+  const multi=recs.filter(q=>q.B.cols>1).length,pass=f=>f.n>20&&!f.gap&&!f.deep&&!f.off;
+  ok('the '+k+' form: '+F.n+' collars on '+recs.length+' pipes ('+multi+' forked) bear on their mouths, the worst '+F.worst.toFixed(3)+' m; the life\'s own '+F0.gap+' clear',
+   pass(F)&&F.n===R.collars.length&&(k!=='white'||F.n>recs.length),pass(F0));
+  ok('the '+k+' form: the fringes on a lip, the steam over a mouth ('+out.fringes+' of '+R.fringes.length+', '+out.steam+' of '+R.steam.length+')',
+   out.fringes===R.fringes.length&&out.steam===R.steam.length&&R.steam.every(s=>{const q=recs.find(o=>o.p.id===s.pipe);return q&&Math.abs(s.y-q.B.top-1)<1e-6;}),false);}}
 console.log(bad?bad+' FAILED':'all passed');process.exit(bad?1:0);

@@ -22,6 +22,9 @@ An entry whose source folder is missing is skipped with a note. The maps are red
 (JPEG) and embedded, so the page works offline and its size is about 200 KB per set.
 Needs numpy-free Pillow only. Deterministic. three.js r128 is inlined from a local copy.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import argparse, base64, io, json, os, sys
 from PIL import Image, ImageFile
 ImageFile.MAXBLOCK = 1 << 24       # optimize=True with subsampling=0 overflows the default buffer when saving to memory

@@ -1,0 +1,9 @@
+{
+ "prompt": "a giant bat, wings spread (generated in Tripo's web app by the owner; the prompt was not kept)",
+ "reference": "the owner's download, 'flying bat 3d model.glb' (2026-11-10)",
+ "task_ids": [],
+ "ai_model": "Tripo web app: generation and auto-rig (82 bones). No animation: Tripo animates only humanoids",
+ "credits": "the owner's Tripo web-app credits (not the API wallet)",
+ "raw": "raw-tripo.glb",
+ "made_by": "rig/skin_tripo.py (decimated to 13000 tris, the kit's clips) then rig/pack_skinned.py"
+}

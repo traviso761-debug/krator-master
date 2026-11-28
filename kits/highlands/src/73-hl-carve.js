@@ -6,34 +6,25 @@
 //                painted gable crests, a totem or two at the hall;
 //   Tribal     — totems everywhere, whole painted house-fronts, wings, bamboo, raw logs.
 
-// ---------------------------------------------------------------- totems and painted posts
-// Totem pole: a free-standing pole is FURNITURE, placed from the catalog (FURNISH, 89y): the tribes' totem nearest in
-// height and dress (wings, painted ground, potlatch rings), crest to the front when ry is the front direction; the
-// Rustic villages' carved column with its roundel. The Republic's still draws its carved column (hnPillar) until its
-// builders are converted.
+// ---------------------------------------------------------------- Slavic stolbtsy, kapliczka shrine posts & kubyshka columns
 function hnTotem(x,y,z,r,h,ry,o){o=o||{};const br=VERN.cur&&VERN.cur.D.branch;
  if(br==='republican')return hnPillar(x,y,z,Math.max(.2,r*1.1),h,ry,{free:true});
- if(br==='rustic'){hlRngSkip(5);return FURNISH('hl_rus_carved_pillar',x,y,z,ry,{v:0});}   // hnPillar drew 5 numbers
+ if(br==='rustic')return hnPillar(x,y,z,Math.max(.18,r),h,ry,{free:true});
  const [key,v,dz]=h>=8?['hl_tri_great_totem',o.painted?0:1,o.painted?.27:.204]:o.wings?(o.painted?['hl_tri_totem',1,.168]:h>=6?['hl_tri_great_totem',1,.204]:['hl_tri_totem',0,.18])
-  :(o.hat||r>=.3)?['hl_tri_totem',2,.216]:['hl_tri_totem_post',o.painted?1:0,0];   // dz: the catalog piece is centred on its footprint, not on its pole
+  :(o.hat||r>=.3)?['hl_tri_totem',2,.216]:['hl_tri_totem_post',o.painted?1:0,0];
  return hnFurn(key,x,y,z,ry,{v},0,dz);}
-// A porch post carved as a short totem (the colonnades of civic fronts, the tribal houses).
+// Porch / gallery column: turned Slavic kubyshka post on Republican/Rustic buildings
 function hnTotemPost(x,y,z,r,h,ry,painted){if(hlNonTribal())return hnPillar(x,y,z,Math.max(.16,r),h,ry,{});
  kput(painted?'hTotemP':'hTotem',[x,y,z],qEuler(0,ry+Math.PI,0),[r,h,r],null);
  vB('hPaint',x,y+h-.02,z,r*2.6,.2,r*2.6,ry,hC(HPAL.black));vB('vStone',x,y-.1,z,r*2.4,.22,r*2.4,ry,hC(vPick(HPAL.rubble)));}
-// Formline board on a face: item hFormA (crest, 2:1) | hFormW (on white) | hFormV (tall board) | hFormT (gable bird).
-// Republican and Rustic builders get the wider repertoire (round 2): the item is swapped for a pick from HMOTIF of the
-// same shape — formline animals stay in the pool — and the first wide crest on a Republican CIVIC building is the
-// Republic's emblem.
-function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal()){const C=VERN.cur;(C.murals||(C.murals=[])).push({item:hnMotifPick(item),x,y,z,ry,w,h});return;}   // fitted after the building (hlFlush)
+// Carved & painted rospis' / rozetka board on a face
+function hnForm(item,x,y,z,ry,w,h){if(hlNonTribal()){const C=VERN.cur;(C.murals||(C.murals=[])).push({item:hnMotifPick(item),x,y,z,ry,w,h});return;}
  const p=loc(x,z,0,.07,ry);kput(item,[p[0],y+h/2,p[1]],qEuler(0,ry,0),[w,h,1],null);}
-// Frieze band (hFormF) along a face — eave boards, lintels, the belt between storeys.
-/* the library's four painted friezes (a 2.25 m x 0.5 m sheet each) share the belt courses with the formline board: which one a face gets is a hash of its own position */
-const HFRIEZE=['hFormF','hFrzA','hFrzL','hFrzT','hFrzG'];
-function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB(HFRIEZE[(Math.abs(Math.round(p[0]*3)*7+Math.round(p[1]*3)*13+Math.round(y*5)*3))%HFRIEZE.length],p[0],y,p[1],w,h||.5,.1,ry);}
+// Slavic pletenka & rozetka belt frieze
+const HFRIEZE=['hFormF','hFrzL','hFrzG'];
+function hnFrieze(x,y,z,ry,w,h){const p=loc(x,z,0,.05,ry);vB(HFRIEZE[(Math.abs(Math.round(p[0]*3)*7+Math.round(p[1]*3)*13+Math.round(y*5)*3))%HFRIEZE.length],p[0],y,p[1],w,h==null?.5:h,.1,ry);}
 
-// ---------------------------------------------------------------- round 2: branch rules, pillars, signs, emblem
-// Totems belong to the tribes only; the Republic and the Rustic villages carve PILLARS with the same stacked motifs.
+// ---------------------------------------------------------------- round 2: branch rules, kapliczka pillars, signs, emblem
 const hlNonTribal=()=>{const c=VERN.cur;return !!(c&&c.D.branch&&c.D.branch!=='tribal');};
 const hlRepCivic=()=>{const c=VERN.cur;return !!(c&&c.D.branch==='republican'&&c.D.tags.wealth==='civic');};
 function hnMotifPick(item){const c=VERN.cur,rus=c.D.branch==='rustic';
@@ -41,17 +32,27 @@ function hnMotifPick(item){const c=VERN.cur,rus=c.D.branch==='rustic';
  if(item==='hFormV')return vPick(HMOTIF.tall.concat(['hFormV']));
  if(hlRepCivic()&&!c.emblemDone){c.emblemDone=true;return HMOTIF.emblemWide;}
  return vPick(HMOTIF.wide.filter(k=>!(rus&&k==='hM_w_rocket')).concat(['hFormA','hFormW','hFormB']));}
-// Carved pillar: a square timber shaft whose four faces carry a stacked motif column (like a totem, but a column),
-// on a stone plinth, under a painted capital (necking, echinus, abacus). {free:true} stands it alone with a painted
-// roundel as finial; {item} forces a pillar map (hM_p_0..3). r = half the shaft width.
+// Carved Slavic stolbets / kubyshka column; {free:true} crowns it with a pitched shingle kapliczka wayside shrine hood,
+// pierced prichelina eaves, solar rozetka icon, and okhlupen' finial (draws exact same 4 or 5 rng() numbers).
 function hnPillar(x,y,z,r,h,ry,o){o=o||{};const s=r*2,stone=hC(vPick(HPAL.ashlar)),wood=hC(vPick(HPAL.tar));
- const bh=Math.min(.42,h*.1),ch=Math.min(.55,h*.13),sh=h-bh-.1-ch;
+ const pItem=o.item||vPick(HMOTIF.pillar),accC=hC(vPick([HPAL.red,HPAL.ochre,HPAL.blue]));
+ const bh=Math.min(.42,h*.1),ch=Math.min(.55,h*.13),sh=Math.max(.4,h-bh-.1-ch);
  vB('vStone',x,y,z,s*1.55,bh,s*1.55,ry,stone);vB('vStone',x,y+bh,z,s*1.25,.1,s*1.25,ry,stone);
- kput(o.item||vPick(HMOTIF.pillar),[x,y+bh+.1+sh/2,z],qEuler(0,ry,0),[s,sh,s],null);
- const cy=y+h-ch;vB('hPaint',x,cy,z,s*1.08,ch*.28,s*1.08,ry,hC(HPAL.black));vB('hPaint',x,cy+ch*.28,z,s*1.3,ch*.34,s*1.3,ry,hC(vPick([HPAL.red,HPAL.teal])));
+ kput(pItem,[x,y+bh+.1+sh/2,z],qEuler(0,ry,0),[s,sh,s],null);
+ /* turned kubyshka melon-bulb collar on shaft */
+ kput('hPaintBall',[x,y+bh+.1+sh*.32,z],null,[s*.68,Math.min(.26,sh*.12),s*.68],accC);
+ const cy=y+h-ch;vB('hPaint',x,cy,z,s*1.12,ch*.28,s*1.12,ry,hC(HPAL.ochre));vB('hPaint',x,cy+ch*.28,z,s*1.32,ch*.34,s*1.32,ry,accC);
  vB('vWood',x,cy+ch*.62,z,s*1.6,ch*.38,s*1.6,ry,wood);
- if(o.free){const k=o.disc||vPick(HMOTIF.disc),R=Math.max(.7,s*1.6);vPst('vIron',x,y+h,z,.04,R*.35,hC(0x2e2a26));
-  kput(k,[x,y+h+R*.35+R/2,z],qEuler(0,ry,0),[R,R,1],null);vB('hGoldB',x,y+h+R*.35-.04,z,R*.36,.08,.12,ry,hC(HPAL.gold[0]));}}
+ if(o.free){const k=o.disc||vPick(HMOTIF.disc),hw=Math.max(.95,s*2.1),nh=Math.max(.85,s*1.85),ny=y+h;
+  /* kapliczka lantern shrine niche + solar icon plaque + pitched shingle hood + prichelina lace */
+  vB('vWood',x,ny,z,hw*.88,.1,hw*.88,ry,wood);
+  for(const sx of[-1,1])for(const sz of[-1,1]){const p=loc(x,z,sx*hw*.34,sz*hw*.34,ry);vPst('vPost',p[0],ny+.1,p[1],Math.max(.04,r*.18),nh,wood);}
+  vB('vWood',x,ny+.1,z,hw*.58,nh*.88,.08,ry,wood);
+  for(const sz of[-1,1]){const ip=loc(x,z,0,sz*.07,ry);kput(k,[ip[0],ny+.1+nh*.46,ip[1]],qEuler(0,ry+(sz>0?0:Math.PI),0),[nh*.72,nh*.72,1],null);}
+  const ry0=ny+.1+nh,rise=hw*.62;
+  vnGableRoof(x,ry0,z,hw*1.08,hw*1.12,rise,ry,'vShingleB',wood.clone().multiplyScalar(1.15),.18,'vGableW',accC);
+  for(const sz of[-1,1]){const lp=loc(x,z,0,sz*(hw*.56+.16),ry);kput('hLaceV',[lp[0],ry0+rise*.35,lp[1]],qEuler(0,ry+(sz>0?0:Math.PI),0),[hw*1.1,.28,1],hC(HPAL.white));}
+  vPst('vIron',x,ry0+rise-.04,z,.03,.48,hC(0x2e2a26));vBall('hGold',x,ry0+rise+.44,z,.09,hC(HPAL.gold[0]));}}
 // The Republic's emblem (three arms, three swords) as a painted roundel on a face, d across.
 function hnEmblem(x,y,z,ry,d){const p=loc(x,z,0,.09,ry);kput(HMOTIF.emblem,[p[0],y,p[1]],qEuler(0,ry,0),[d,d,1],null);}
 // Banners: on a Republican civic building every banner pole flies the Republic's banner.
@@ -64,6 +65,7 @@ const HTRADE={hl_rep_tavern_a:'tankard',hl_rep_tavern_b:'tankard',hl_rep_tavern_
  hl_rep_market_hall:'scales',hl_rep_workshop_a:'wheel',hl_rep_workshop_b:'barrel',hl_rep_smithy_small:'anvil',hl_rep_smithy_large:'anvil',hl_rep_stables:'horse',
  hl_rep_warehouse_a:'sack',hl_rep_warehouse_b:'sack',hl_rep_guild_merc:'swords',hl_rep_guild_alch:'flask',hl_rep_guild_farm:'sheaf',hl_rep_guild_smith:'hammer',
  hl_rep_guild_mech:'gear',hl_rep_guild_astro:'star',hl_rep_guild_scav:'salvage',hl_rep_hospital:'mortar',hl_rep_school:'book',hl_rep_forgehouse:'anvil',hl_rep_granary:'sheaf',hl_rep_windmill:'sheaf',hl_rep_watermill:'sheaf',
+ hl_rep_hydro_forge:'anvil',hl_rep_hydro_sawmill:'axe',hl_rep_hydro_stampmill:'hammer',hl_rep_hydro_gristmill:'sheaf',
  hl_rus_shops:['bread','scales','fish'],hl_rus_tavern:'tankard',hl_rus_smithy:'anvil',hl_rus_mill:'sheaf',hl_rus_granary:'sheaf'};
 function hlTradeSym(sym){if(sym)return sym;const c=VERN.cur;const t=c&&HTRADE[c.D.baseKey||c.D.key];if(!t)return 'scales';if(!Array.isArray(t))return t;c.signN=(c.signN||0);return t[c.signN++%t.length];}
 // Hanging sign: an iron bracket out of the wall at (x,y,z) (ry = outward), a painted roundel hung across it.
@@ -71,67 +73,66 @@ function hnSign(x,y,z,ry,sym,s){s=s||1;const I=hC(0x2e2a26),k=HMOTIF.sign[hlTrad
  beam('vIron',[a[0],y,a[1]],[b[0],y,b[1]],.06,.06,I);beam('vIron',[a[0],y-.62*s,a[1]],[m[0],y,m[1]],.04,.04,I);vBall('hGold',b[0],y,b[1],.06,hC(HPAL.gold[0]));
  const p=loc(x,z,0,.72*s,ry),R=.9*s;for(const u of[-.25,.25]){const q=loc(x,z,0,(.72+u)*s,ry);vB('vIron',q[0],y-.14,q[1],.02,.14,.02,0,I);}
  kput(k,[p[0],y-.14-R/2,p[1]],qEuler(0,ry+Math.PI/2,0),[R,R,1],null);}
-// Flat sign on a wall: a painted board with the trade roundel between two knotwork panels (y = bottom).
+// Flat sign on a wall: a painted board with the trade roundel between two Slavic pletenka/rospis panels (y = bottom).
 function hnSignBoard(x,y,z,ry,w,h,sym,bgC){const f=loc(x,z,0,.04,ry);vB('hPaint',f[0],y,f[1],w+.14,h+.14,.08,ry,hC(HPAL.black));const b=loc(x,z,0,.09,ry);vB('hPaint',b[0],y+.07,b[1],w,h,.03,ry,bgC||hC(HPAL.ochre));
  const d=Math.min(h*1.35,w*.5),c=loc(x,z,0,.12,ry);kput(HMOTIF.sign[hlTradeSym(sym)]||HMOTIF.sign.scales,[c[0],y+.07+h/2,c[1]],qEuler(0,ry,0),[d,d,1],null);
  const kw=(w-d)/2-.12;if(kw>.25)for(const s2 of[-1,1]){const p=loc(x,z,s2*(d/2+.06+kw/2),.115,ry);kput(vPick(['hM_w_knot','hM_w_knotRed']),[p[0],y+.07+h/2,p[1]],qEuler(0,ry,0),[kw,Math.min(h*.8,kw/2),1],null);}}
 
-// ---------------------------------------------------------------- dougong (painted bracket sets under eaves)
-// One set on a post head at (x,y,z): a dou block, a crossed pair of arms (one along the face, one projecting
-// out toward ry), smaller blocks at the arm ends, a second longer arm and a purlin block. `s` scales the set
-// (1 ≈ a 1.6 m-wide set for a civic eave). Teal arms, red blocks, white arrises — the East-Asian note in the kit.
-function hnDougong(x,y,z,ry,s,armC,blockC){s=s||1;armC=armC||hC(HPAL.teal);blockC=blockC||hC(HPAL.red);const W=hC(HPAL.white);
+// ---------------------------------------------------------------- dougong / carved console brackets under civic eaves
+function hnDougong(x,y,z,ry,s,armC,blockC){s=s||1;armC=armC||hC(HPAL.ochre);blockC=blockC||hC(HPAL.red);const W=hC(HPAL.white);
  const P=(u,yy,o)=>{const p=loc(x,z,u*s,o*s,ry);return[p[0],y+yy*s,p[1]];};const q=qEuler(0,ry,0),qo=qEuler(0,ry+Math.PI/2,0);
  let p=P(0,.13,0);kput('hPaint',p,q,[.38*s,.26*s,.38*s],blockC);
- p=P(0,.36,0);kput('hPaint',p,q,[1.0*s,.2*s,.22*s],armC);kput('hPaint',P(0,.36,.12),q,[1.0*s,.03*s,.02*s],W);           // arm along the face
- p=P(0,.36,.3);kput('hArm',p,qo,[.2*s,.2*s,.95*s],armC);                                                                // projecting arm, curved nose
+ p=P(0,.36,0);kput('hPaint',p,q,[1.0*s,.2*s,.22*s],armC);kput('hPaint',P(0,.36,.12),q,[1.0*s,.03*s,.02*s],W);
+ p=P(0,.36,.3);kput('hArm',p,qo,[.2*s,.2*s,.95*s],armC);
  for(const u of[-.44,.44,0])kput('hPaint',P(u,.54,0),q,[.22*s,.16*s,.24*s],blockC);kput('hPaint',P(0,.54,.66),q,[.22*s,.16*s,.24*s],blockC);
  kput('hPaint',P(0,.72,0),q,[1.6*s,.2*s,.22*s],armC);kput('hPaint',P(0,.72,.12),q,[1.6*s,.03*s,.02*s],W);
  p=P(0,.72,.55);kput('hArm',p,qo,[.2*s,.2*s,1.3*s],armC);
  kput('hPaint',P(0,.9,.4),q,[1.8*s,.16*s,1.2*s],blockC);}
-// A row of sets along a face (between x0..x1 in the face frame), each on a painted post head / wall plate.
-function hnBracketRow(x,y,z,ry,w,n,s,armC,blockC){const C=VERN.cur;if(C&&!C.flushing){(C.brows||(C.brows=[])).push([x,y,z,ry,w,n,s,armC,blockC]);return;}   // laid out round the windows after the building (hlFlush)
+function hnBracketRow(x,y,z,ry,w,n,s,armC,blockC){const C=VERN.cur;if(C&&!C.flushing){(C.brows||(C.brows=[])).push([x,y,z,ry,w,n,s,armC,blockC]);return;}
  hnBracketRowNow(x,y,z,ry,w,n,s,armC,blockC,[]);}
 function hnBracketRowNow(x,y,z,ry,w,n,s,armC,blockC,gaps){const inGap=u=>gaps.some(g=>u>g[0]&&u<g[1]);for(let i=0;i<n;i++){const u=-w/2+w*(i+.5)/n;if(inGap(u))continue;const p=loc(x,z,u,0,ry);hnDougong(p[0],y,p[1],ry,s,armC,blockC);}
  const cuts=[-w/2];for(const g of gaps.slice().sort((a,b)=>a[0]-b[0])){cuts.push(Math.max(-w/2,g[0]),Math.min(w/2,g[1]));}cuts.push(w/2);
- for(let i=0;i+1<cuts.length;i+=2){const a=cuts[i],b=cuts[i+1];if(b-a<.25)continue;const p=loc(x,z,(a+b)/2,.08,ry);vB('hPaint',p[0],y-.18,p[1],b-a,.18,.3,ry,armC||hC(HPAL.teal));}}                                  // painted wall plate
+ for(let i=0;i+1<cuts.length;i+=2){const a=cuts[i],b=cuts[i+1];if(b-a<.25)continue;const p=loc(x,z,(a+b)/2,.08,ry);vB('hPaint',p[0],y-.18,p[1],b-a,.18,.3,ry,armC||hC(HPAL.ochre));}}
 
-// ---------------------------------------------------------------- bargeboards, gable finials, horns
-// For a gable roof laid with vnGableRoof/hnGable at (x,y,z,w,d,rise,ry,over): carved lace bargeboards down both
-// rakes at both gable ends, a hanging "towel" board at the apex, and a finial by style:
-//   'lace'   Russian: lace bargeboards + towel + small spike
-//   'horns'  Norse: the rake boards run on past the ridge and cross, ending in curled horns
-//   'dragon' Norse, grander: crossed boards ending in carved heads with open jaws
-//   'bird'   Tribal: a thunderbird (wing plane + beak) standing on the apex
+// ---------------------------------------------------------------- Slavic prichelina bargeboards, polotentse towel-drops & okhlupen'/konyok ridge finials
 function hnBarge(x,y,z,w,d,rise,ry,over,c,style,endOver){over=over===undefined?.9:over;c=c||hC(HPAL.white);style=style||'lace';const eo=endOver===undefined?over:endOver;
  const run=d/2+over,drop=over*rise/(d/2);
  for(const sx of[-1,1]){const gx=sx*(w/2+eo+.04);const N=hRot(ry,[sx,0,0]);
   const apex=[...loc(x,z,gx,0,ry)];const A=[apex[0],y+rise+.05,apex[1]];
   for(const sz of[-1,1]){const e=loc(x,z,gx,sz*run,ry);const E=[e[0],y-drop,e[1]];
    const mid=[(A[0]+E[0])/2,(A[1]+E[1])/2-.26,(A[2]+E[2])/2];const L=Math.hypot(E[0]-A[0],E[1]-A[1],E[2]-A[2]);
-   if(style==='lace'||style==='bird'){let X=[E[0]-A[0],E[1]-A[1],E[2]-A[2]];if(hCross(N,hNorm(X))[1]<0)X=X.map(v=>-v);hnOri('hLaceV',mid,X,N,[L,.55,1],c);}   // keep the scallops hanging DOWN on both rakes
-   else hnMember('hPaint',[A[0],A[1]-.12,A[2]],[E[0],E[1]-.12,E[2]],.34,.08,N,c);
-   if(style==='horns'||style==='dragon'){   // the board carries on past the apex, crossing its twin
-    const dir=hNorm([A[0]-E[0],A[1]-E[1],A[2]-E[2]]);const T=hAdd(A,dir,1.1);hnMember('hPaint',[A[0],A[1]-.12,A[2]],T,.3,.08,N,c);
-    const up=hAdd(T,[dir[0]*.25,.6,dir[2]*.25]);hnMember('hPaint',T,up,.24,.08,N,c);
-    if(style==='dragon'){const H=hAdd(up,[dir[0]*.3,.1,dir[2]*.3]);hnOri('hPaint',H,[dir[0],.3,dir[2]],N,[.7,.34,.14],c);
-     kput('vConeI',hAdd(H,[dir[0]*.35,-.04,dir[2]*.35]),qFacing([dir[0],0,dir[2]]).multiply(qEuler(Math.PI/2,0,0)),[.1,.3,.1],hC(HPAL.red));}}}
-  if(style==='lace'){hnOri('hPaint',[A[0],A[1]-.7,A[2]],hRot(ry,[0,0,1]),N,[.28,1.2,.08],c);hnOri('hLaceV',[A[0],A[1]-1.45,A[2]],hRot(ry,[0,0,1]),N,[.5,.3,1],c);
-   vPst('vIron',A[0],A[1],A[2],.03,.9,hC(0x2e2a26));vBall('hGold',A[0],A[1]+.9,A[2],.1,hC(HPAL.gold[0]));}
-  if(style==='bird'){const p=[A[0],A[1]+.55,A[2]];for(const s of[-1,1]){const q=loc(A[0],A[2],0,s*.8,ry);kput('hWing',[q[0],A[1]+.6,q[1]],qEuler(0,ry+sx*Math.PI/2,0),[s*1.6,.8,1],null);}
-   kput('hPaintBall',p,null,[.22,.26,.22],hC(HPAL.black));kput('vConeI',hAdd(p,N,.28),qFacing(N).multiply(qEuler(Math.PI/2,0,0)),[.07,.3,.07],hC(HPAL.red));}}}
+   if(style==='lace'||style==='bird'){let X=[E[0]-A[0],E[1]-A[1],E[2]-A[2]];if(hCross(N,hNorm(X))[1]<0)X=X.map(v=>-v);hnOri('hLaceV',mid,X,N,[L,.55,1],c);}
+   else{hnMember('hPaint',[A[0],A[1]-.12,A[2]],[E[0],E[1]-.12,E[2]],.34,.08,N,c);
+    let X=[E[0]-A[0],E[1]-A[1],E[2]-A[2]];if(hCross(N,hNorm(X))[1]<0)X=X.map(v=>-v);hnOri('hLaceV',mid,X,N,[L,.36,1],c);}
+   if(style==='horns'||style==='dragon'){   /* crossed Slavic konyok horse-head bargeboards */
+    const dir=hNorm([A[0]-E[0],A[1]-E[1],A[2]-E[2]]);const T=hAdd(A,dir,.95);hnMember('hPaint',[A[0],A[1]-.12,A[2]],T,.3,.08,N,c);
+    const up=hAdd(T,[dir[0]*.22,.58,dir[2]*.22]);hnMember('hPaint',T,up,.26,.08,N,c);
+    const H=hAdd(up,[dir[0]*.28,.08,dir[2]*.28]);hnOri('hPaint',H,[dir[0],.26,dir[2]],N,[.56,.28,.12],hC(HPAL.ochre));}}
+  /* central hanging polotentse gable-towel board with carved solar rozetka disc */
+  hnOri('hPaint',[A[0],A[1]-.68,A[2]],hRot(ry,[0,0,1]),N,[.3,1.18,.08],c);
+  hnOri('hLaceV',[A[0],A[1]-1.42,A[2]],hRot(ry,[0,0,1]),N,[.52,.32,1],c);
+  if(KIT.defs.hM_d_sun){const rp=hAdd([A[0],A[1]-.58,A[2]],N,.06);kput('hM_d_sun',rp,qEuler(0,ry+sx*Math.PI/2,0),[.38,.38,1],null);}
+  if(style==='lace'){
+   /* Slavic okhlupen' / konyok horse-head or solar spire finial */
+   const qk=loc(A[0],A[2],0,0,ry);kput('hWing',[qk[0],A[1]+.42,qk[1]],qEuler(0,ry+(sx>0?0:Math.PI),0),[.95,.62,1],null);
+   vPst('vIron',A[0],A[1],A[2],.03,.82,hC(0x2e2a26));vBall('hGold',A[0],A[1]+.82,A[2],.1,hC(HPAL.gold[0]));}
+  if(style==='bird'){const p=[A[0],A[1]+.5,A[2]];for(const s of[-1,1]){const q=loc(A[0],A[2],0,s*.68,ry);kput('hWing',[q[0],A[1]+.52,q[1]],qEuler(0,ry+sx*Math.PI/2,0),[s*1.3,.68,1],null);}
+   kput('hPaintBall',p,null,[.2,.24,.2],hC(HPAL.red));}}}
 
 // ---------------------------------------------------------------- windows, porches, balconies
-// Nalichnik: a window in a wide painted surround — side boards, a pediment (keel or small gable), a lace
-// valance under the sill and painted shutters. The Russian/Republican window; the Rustic uses it plainer.
+// Slavic Nalichnik: pierced scalloped side casings with ear-scrolls, kokoshnik / ogee pediment with central solar
+// rozetka boss, lacy podzor sill apron, and painted shutters.
 function hnNal(x,y,z,ry,w,h,kind,trimC,o){o=o||{};trimC=trimC||hC(HPAL.white);vnWin(x,y,z,ry,w,h,kind||'glass','hPaint',trimC,o.shutters?true:false);
  const f=(u,oo)=>loc(x,z,u,oo,ry);
- for(const s of[-1,1]){const p=f(s*(w/2+.2),.12);vB('hPaint',p[0],y-.2,p[1],.22,h+.45,.06,ry,trimC);}
- const pe=f(0,.14);if(o.keel)kput('hKeelW',[pe[0],y+h+.1,pe[1]],qEuler(0,ry,0),[w+.7,.7,.12],trimC);
- else{for(const s of[-1,1]){const a=hnOn(x,y+h+.12,z,ry,s*(w/2+.35),.14),b=hnOn(x,y+h+.52,z,ry,0,.14);hnMember('hPaint',a,b,.16,.08,hRot(ry,[0,0,1]),trimC);}
-  vB('hPaint',pe[0],y+h+.08,pe[1],w+.7,.1,.14,ry,trimC);}
- const v=f(0,.12);kput('hLaceV',[v[0],y-.42,v[1]],qEuler(0,ry,0),[w+.4,.4,1],trimC);
- if(o.accent){const a=f(0,.16);vB('hPaint',a[0],y+h+.2,a[1],.3,.18,.04,ry,o.accent);}}
+ for(const s of[-1,1]){const p=f(s*(w/2+.2),.12);vB('hPaint',p[0],y-.22,p[1],.24,h+.48,.06,ry,trimC);
+  const ear=f(s*(w/2+.34),.13);vB('hPaint',ear[0],y+h-.1,ear[1],.14,.28,.05,ry,o.accent||hC(HPAL.ochre));}
+ const pe=f(0,.14);if(o.keel)kput('hKeelW',[pe[0],y+h+.08,pe[1]],qEuler(0,ry,0),[w+.76,.74,.12],trimC);
+ else{for(const s of[-1,1]){const a=hnOn(x,y+h+.12,z,ry,s*(w/2+.38),.14),b=hnOn(x,y+h+.54,z,ry,0,.14);hnMember('hPaint',a,b,.17,.08,hRot(ry,[0,0,1]),trimC);}
+  vB('hPaint',pe[0],y+h+.08,pe[1],w+.76,.11,.14,ry,trimC);
+  const cr=f(0,.16);kput('hLaceV',[cr[0],y+h+.26,cr[1]],qEuler(0,ry+Math.PI,Math.PI),[w+.66,.26,1],trimC);}
+ const v=f(0,.12);kput('hLaceV',[v[0],y-.42,v[1]],qEuler(0,ry,0),[w+.48,.42,1],trimC);
+ const rz=f(0,.21);if(KIT.defs.hM_d_sun)kput('hM_d_sun',[rz[0],y+h+.32,rz[1]],qEuler(0,ry,0),[.32,.32,1],null);
+ else if(o.accent)vB('hPaint',rz[0],y+h+.2,rz[1],.3,.18,.04,ry,o.accent);}
 // Russian porch (kryltso): a stair to a raised door under a bochka roof on bulbous posts.
 function hnKryltso(x,y,z,ry,w,rise,roofItem,roofC,postC){const steps=Math.max(3,Math.round(rise/.2)),sr=steps*.32,run=Math.max(1.6,sr);   // round 10: the run is the treads' own (vnStairs lays steps*.32), foot at `run`, top at the wall
  const s=loc(x,z,0,run-sr/2,ry);vnStairs(s[0],y,s[1],ry,w,rise,steps,'vWood',postC);
@@ -233,8 +234,16 @@ function hnStoneChimney(x,y,z,h,w){vB('hRubB',x,y,z,w,h,w,0,hC(vPick(HPAL.rubble
 function hnFirepit(x,y,z,r){hlRngSkip(9);return FURNISH('hl_tri_firepit',x,y,z,0,{v:r>=.75?1:0});}
 // A standing stone (circles, boundary marks, the tribal sacred sites); `carved` paints a face on it.
 function hnMenhir(x,y,z,ry,h,c,carved){hlRngSkip(c?2:3);return FURNISH('hl_tri_menhir',x,y,z,ry,{v:carved?1:h<2?2:0});}
-// A free-standing carved post (by a door, a ladder, a deck corner), not one that carries a roof (hnTotemPost)
-function hnTotemPole(x,y,z,r,h,ry,painted){hlRngSkip(1);return FURNISH('hl_tri_totem_post',x,y,z,ry,{v:h>=4.5?2:painted?1:0});}
+// A free-standing carved post: hooded Slavic wayside kapliczka on Republican/Rustic plots (exact 1 rng() draw preserved)
+function hnTotemPole(x,y,z,r,h,ry,painted){if(hlNonTribal()){hlRngSkip(1);
+ const s=Math.max(.22,r*1.8),wood=hC(HPAL.tar[0]),acc=painted?hC(HPAL.red):hC(HPAL.ochre),stone=hC(HPAL.rubble[0]);
+ vB('vStone',x,y,z,s*1.5,.24,s*1.5,ry,stone);
+ kput(painted?'hTotemP':'hTotem',[x,y+.24,z],qEuler(0,ry+Math.PI,0),[r,Math.max(.6,h-.65),r],null);
+ const hy=y+Math.max(.84,h-.42),hw=s*2.1;
+ vnGableRoof(x,hy,z,hw,hw,hw*.55,ry,'vShingleB',wood,.12,'vGableW',acc);
+ if(KIT.defs.hM_d_sun){const fp=loc(x,z,0,hw*.32,ry);kput('hM_d_sun',[fp[0],hy-.16,fp[1]],qEuler(0,ry,0),[hw*.55,hw*.55,1],null);}
+ return null;}
+ hlRngSkip(1);return FURNISH('hl_tri_totem_post',x,y,z,ry,{v:h>=4.5?2:painted?1:0});}
 // The Iziz Vernacular yard kit (vendored 69c draws them), placed instead: same arguments as vnBarrel, vnWaterButt,
 // vnCrate, vnSacks, vnDryingRack, vnPlanter, vnLampPost, vnLamp
 function hnBarrel(x,y,z,r,h){return FURNISH('iziz_vern_barrel',x,y,z,0,{v:r>.37?1:0});}

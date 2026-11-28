@@ -33,6 +33,12 @@
   if(!A.skyNoiseTex){const n=64,t=new T.DataTexture3D(A.skyNoiseVolume(n),n,n,n);t.format=T.RGBAFormat;t.type=T.UnsignedByteType;
    t.wrapS=t.wrapT=t.wrapR=T.RepeatWrapping;t.minFilter=t.magFilter=T.LinearFilter;t.generateMipmaps=false;t.unpackAlignment=1;t.needsUpdate=true;A.skyNoiseTex=t;}
   U.uNoise={value:A.skyNoiseTex};
+  // the weather cells' coverage map (wx/89-atmos-wx-cells.js, on a page that lists it): shared objects, set by the cells' host
+  if(A.wxOn||A.volOn)A.U=A.U||{};   /* a page may draw its sky before ATMOS.init (skyBiome first): init keeps these */
+  if(A.wxOn){A.U.wxMap=A.U.wxMap||{value:null};A.U.wxBox=A.U.wxBox||{value:new T.Vector4()};A.U.wxMean=A.U.wxMean||{value:new T.Vector4()};U.uWxMap=A.U.wxMap;U.uWxBox=A.U.wxBox;U.uWxMean=A.U.wxMean;}
+  // the volumetric clouds (sky/89-atmos-m-volclouds.js, on a page that lists it): the flat cumulus steps aside while they draw
+  // (uVolOn), and the ground's shadows meet the field at the layer's middle (uVolMidH); set by the volumes' host each frame
+  if(A.volOn){A.U.volOn=A.U.volOn||{value:0};A.U.volMidH=A.U.volMidH||{value:0};U.uVolOn=A.U.volOn;U.uVolMidH=A.U.volMidH;}
   // the clouds' mood (sky/89-atmos-g-sky.js): a preset that asks for it (clouds.dark / tint / turbulence / glow, or clouds.mood) gets
   // the chunk with its lines, written here before the material compiles; every other page's chunk is the text it was
   if(A.skyMoodWanted(P)&&!A.skyMoodOn){A.skyMoodOn=true;T.ShaderChunk.atmos_sky=A.skyGLSL();}
@@ -43,7 +49,7 @@
   const mesh=new T.Mesh(new T.SphereGeometry(100,48,24),mat);mesh.frustumCulled=false;mesh.userData.probeSkip=true;mesh.name='atmos:sky';
   const sscene=new T.Scene();sscene.add(mesh);const scam=new T.PerspectiveCamera(50,1,1,1000);
   const shine=o.shine||(()=>{const l=new T.DirectionalLight(0x9cbad6,0);l.name='atmos:giantshine';scene.add(l);scene.add(l.target);return l;})();
-  const S={scene:sscene,mesh,uniforms:U,clock,preset:P,state:null,look:null,shine};
+  const S={scene:sscene,mesh,uniforms:U,clock,preset:P,state:null,look:null,shine,renderer:r,camera:cam,worldScene:scene};A.skyCur=S;   /* the page's sky (the weather cells read its cloud base) */
   // what this sky drives each frame (ATMOS.bindWeather reads it live, so either may bind first): the fog, and the sun and the
   // hemisphere. A page that passes o.weather composes the weather into the colour script itself; otherwise the binding's look
   // (A.wxLook: grey, cover, wet) goes in and its fog law (A.wxFog) runs on the hour's fog
@@ -153,9 +159,12 @@
  // update a frame moves every shadow. porosity: how much the wet darkens it (soil 1, rock 0.6, leaves 0.4, metal 0).
  // Under cover (the rain occlusion map, fx/89-atmos-fx-raincover.js, when the page takes it) the ground stays dry.
  // Call it after ATMOS.sky; on a page with no shared sky it does nothing. Any order with wetGround, snowOn, heightFog.
+ // Once a material: a second call is a no-op, whatever its porosity (the first caller's stands; V8, 2026-11-24: the biome
+ // core's makers and a page's scene pass both reach a plant's material, and two porosities were two layers, the shade twice).
  A.cloudShade=function(mat,o){o=o||{};const U=A.skyUniforms;if(!U||!mat)return mat;const por=o.porosity==null?1:o.porosity;
-  const K=A.KH();return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
-   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
+  const K=A.KH();if(K.names(mat).some(n=>n.indexOf('atmos-cloudshade-')===0))return mat;
+   return A.shaderHook(mat,'atmos-cloudshade-'+por,function(sh){
+   for(const k of['uNoise','uCloud','uCloudH','uWind','uTime','uWet'].concat(A.skyMoodOn?['uCloudX','uCloudY','uCloudZ']:[],A.wxOn?['uWxMap','uWxBox','uWxMean']:[],A.volOn?['uVolMidH']:[]))sh.uniforms[k]=U[k];sh.uniforms.uPorosity={value:por};   /* the shade's field reads uCloudY (the kind, the ripple's epicentre) */
    const occ=A.rainCoverGLSL&&A.U&&A.U.rainOcc?A.rainCoverGLSL():null;if(occ)A.rainCoverUniforms(sh.uniforms);
    const head=A.cloudShadeGLSL()+'\nuniform float uPorosity;\n',wp='vec4 atmWP=vec4(transformed,1.0);\n#ifdef USE_INSTANCING\natmWP=instanceMatrix*atmWP;\n#endif\natmWP=modelMatrix*atmWP;\n';
    const shade='directLight.color*=atmCloudShade(atmWPos,normalize((vec4(directLight.direction,0.0)*viewMatrix).xyz));';
@@ -177,4 +186,23 @@
    const wet=wetHere+'\ndiffuseColor.rgb*=1.0-0.38*atmWetHere*uPorosity;';
    sh.fragmentShader=(/uniform float uWet;/.test(sh.fragmentShader)?'':'uniform float uWet;\nuniform float uPorosity;\n')+(occ?(lambert?'varying vec3 atmWPosF;\n':'')+occ+'\n':'')
     +K.inject(sh.fragmentShader,{at:'map_fragment',after:wet,fallback:{at:'alphamap_fragment',before:wet}});});};
+ // ATMOS.cloudShadeScene(scene, o): the clouds' shadows and the rain's darkening on every lit material in the scene, once
+ // (SKY-PLAN.md 11.1). ATMOS.skyBiome runs it (o.shade false: not); a page on ATMOS.sky calls it itself, after its build. Plants
+ // (userData.biome) take porosity o.biome (default BIO.CLOUD.porosity, .4), structures (userData.host) o.host (.6), the rest
+ // o.other (1). The animated fauna are left out (their place comes from their own pose, not the instance matrix): the program
+ // keys o.leave matches (/^biofauna|^bioanim/; null leaves none out). o.skip(mesh, material) -> true leaves one out (a water).
+ // It also turns on the biome core's own call (V8, G-weather W1, 2026-11-24): every material core/biome's makers made, before
+ // this or after it, in the scene or not (the sward, a swapped LOD), takes ATMOS.cloudShade once at o.biome
+ // (core/biome/30-core-foliage.js, BIO.cloudShade). Moved here from host/89-atmos-i-skybiome.js so a page on ATMOS.sky has it.
+ const bioOf=()=>{try{return typeof BIO!=='undefined'&&BIO?BIO:null;}catch(e){return null;}};   /* BIO's const may come later in the script */
+ A.cloudShadeScene=function(scene,o){o=o||{};const T=A.T,seen=new Set(),B=bioOf();
+  const pb=o.biome!=null?+o.biome:B&&B.CLOUD&&B.CLOUD.porosity!=null?B.CLOUD.porosity:.4,ph=o.host==null?.6:+o.host,po=o.other==null?1:+o.other;
+  const lv=o.leave===undefined?/^biofauna|^bioanim/:o.leave;
+  scene.traverse(ob=>{if(!ob.isMesh||!ob.material)return;
+   for(const m of(Array.isArray(ob.material)?ob.material:[ob.material])){
+    if(seen.has(m)||!(m.isMeshLambertMaterial||m.isMeshStandardMaterial||m.isMeshPhongMaterial))continue;seen.add(m);
+    if(o.skip&&o.skip(ob,m))continue;
+    if(lv){const k=m.customProgramCacheKey!==T.Material.prototype.customProgramCacheKey?String(m.customProgramCacheKey()):'';if(lv.test(k))continue;}
+    A.cloudShade(m,{porosity:ob.userData.biome?pb:ob.userData.host?ph:po});}});
+  A.skyShadeOn=true;if(B&&B.cloudShadeFlush)B.cloudShadeFlush(pb);};
 })();

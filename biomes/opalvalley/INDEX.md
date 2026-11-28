@@ -26,7 +26,7 @@ From `core/space/` (shared; see `core/README.md`): `20-core-space.js`
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `40-biome-opal-sites.js` | 15 |  |
+| `40-biome-opal-sites.js` | 14 |  |
 | `45-host-stage.js` | 24 | the land (42); the diggings (40: OPAL_DIGGINGS), put on this gr (170); the heat (the middle bed's seeps; KTHERM in 48): (196); the climate fields (the field contract's units:  (199); the host binding (240) |
 | `48-host-therm.js` | 2 |  |
 | `50-biome-opal-species.js` | 12 | palettes (sRGB hex). c2: the second colour, at g (18); the Xanadu kin (data: the source, the delta, whe (25); the kit's own species (54); textures and materials (the procedural map is th (72); the items (94) |

@@ -197,7 +197,7 @@ const GROUND=(function(){const N=ST_GROUND_N(),S=TERR.R*2.2,cs=S/N,nx=N+1;
    /* a shared layer's weight joins its host's slot; its share of the two (aGS) turns the host's colour to its own */
    GL_SHARED.forEach((q,si)=>{const v=clamp(q.w(F),0,1)*(1-F.char),hi=shIdx[si];if(hi<0)return;gs[k*2+q.slot]=v/Math.max(1e-4,v+w[hi]);w[hi]+=v;s+=v;});
    const k1=s>1?1/s:1;
-   for(let q=0;q<4;q++){g0[k*4+q]=w[q]*k1;g1[k*4+q]=w[q+4]*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
+   for(let q=0;q<4;q++){g0[k*4+q]=(w[q]||0)*k1;g1[k*4+q]=(w[q+4]||0)*k1;g2[k*4+q]=(w[q+8]||0)*k1;}}}
  const idx=new Uint32Array(N*N*6);let t=0;
  /* a cavern's openings (STATION.hole: a skylight, a tube's portal) are the cavern's to draw: the quads whose centre is within them are left out (the
     station's wells reach past them by their rim, so the cavern's own ground overlaps the cut's edge) */

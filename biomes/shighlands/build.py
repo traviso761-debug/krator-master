@@ -15,6 +15,9 @@ The core and the biome leaf never reference a host global except through
 BIO.host (see BIOME-API.md); build.py greps for the forbidden names so a
 biome fragment cannot quietly grow a dependency on one world's engine.
 """
+import os, sys                                   # item 25 (the survey): a plain run goes through tools/build.py
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'tools')); import buildlib; sys.path.pop(0)
+buildlib.through_tools_build(__file__)           # build-inputs.json is always written (KRATOR_ALLOW_PLAIN_BUILD=1 skips it)
 import os, re, subprocess, sys
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -131,6 +134,7 @@ for f in VIRTUAL: PATH[f]=None
 CORE_ATMOS=['89-atmos-0-core.js','89-atmos-0p-presets.js','89-atmos-8-export.js','89-atmos-a-waves.js','89-atmos-b-skylight.js','89-atmos-4-weather.js','89-atmos-9-host.js','89-atmos-d-clouddeck.js']
 for f in CORE_ATMOS: PATH.setdefault(f,J('core','atmos',f))
 for f in ['89-atmos-e-skymodel.js','89-atmos-f-skypresets.js','89-atmos-g-sky.js','89-atmos-j-fog.js']: PATH[f]=J('core','atmos','sky',f)
+PATH['89-atmos-m-volclouds.js']=J('core','atmos','sky','89-atmos-m-volclouds.js'); PATH['89-atmos-m-volhost.js']=J('core','atmos','host','89-atmos-m-volhost.js')   # W6, the volumetric clouds (STAGE-8/G-weather.md; the owner's pairs, 2026-11-24: volumes, the layer above the cloud sea)
 for f in ['89-atmos-h-skyhost.js','89-atmos-i-skybiome.js','89-atmos-e-weatherhost.js','89-atmos-j-heightfog.js']: PATH[f]=J('core','atmos','host',f)
 for f in ['89-atmos-fx-raincover.js','89-atmos-fx-lightning.js']+SJ.get('fx',[]): PATH[f]=J('core','atmos','fx',f)
 # core/water (core/water/README.md; 2026-10-25, migration phase 4): the tarn and the bog pools WATER.still, the ravine streams WATER.flow (records

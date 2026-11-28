@@ -10,25 +10,25 @@
 //    black / red / teal of the carving is what it is, like salvage in the vernacular set.
 // Canvas sizes are chosen at 64 px per metre for the world-UV maps (vWorldUV K = tiles per metre).
 
-// ---------------------------------------------------------------- formline palette (NW-coast inspired)
-const HFORM={black:'#171311',red:'#b3322a',teal:'#2e9488',tealD:'#1f6f68',white:'#efe7d6',cedar:'#b27a4c',cedarD:'#8a5634',ochre:'#d19a3a'};
+// ---------------------------------------------------------------- Slavic rospis' & Carpathian woodcarving palette
+const HFORM={black:'#221814',red:'#b83224',teal:'#2f6d4c',tealD:'#1f4e36',blue:'#2d5894',white:'#f3ead8',cedar:'#b8824c',cedarD:'#7e4e2c',ochre:'#d89e32'};
 
 // ---------------------------------------------------------------- wood: round logs (horizontal), 2 m tile, 6 courses
-TEX.logs=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const LH=w/6;   // ~0.33 m logs
+TEX.logs=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const LH=w/6;   /* ~0.33 m logs */
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const row=Math.floor(y/LH),fy=(y%LH)/LH;
-  const round=Math.sin(Math.PI*fy);                                        // rounded log: lit crown, dark top/bottom
+  const round=Math.sin(Math.PI*fy);                                        /* rounded log: lit crown, dark top/bottom */
   let v=112+round*92+(h3(row*3.1,0,2.2)-.5)*30;
-  v+=(fbm(x/26,y/2.2,row*1.7,2)-.5)*30;                                    // grain along the log
-  if(fy<.08||fy>.94)v=58+(fbm(x/4,y/4,1,1)-.5)*16;                          // chinking (moss/clay) between courses
-  const check=fbm(x/40,y/1.2,row*3.3,2);if(check>.7&&fy>.3&&fy<.6)v-=(check-.7)*140;   // drying checks
+  v+=(fbm(x/26,y/2.2,row*1.7,2)-.5)*30;                                    /* grain along the log */
+  if(fy<.08||fy>.94)v=58+(fbm(x/4,y/4,1,1)-.5)*16;                          /* chinking (moss/clay) between courses */
+  const check=fbm(x/40,y/1.2,row*3.3,2);if(check>.7&&fy>.3&&fy<.6)v-=(check-.7)*140;   /* drying checks */
   d[i]=v;d[i+1]=v*.9;d[i+2]=v*.78;d[i+3]=255;}
  g.putImageData(id,0,0);});
 // ---------------------------------------------------------------- fish-scale shingle / slate: 2 m tile, 0.25 m scales
 TEX.scale=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=16;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const row=Math.floor(y/S),off=(row%2)*S/2;const sx=Math.floor((x+off)/S);
-  const fx=((x+off)%S)/S-.5,fy=(y%S)/S;const r=Math.hypot(fx,(fy-.35)*1.1);   // round bottom of each scale
+  const fx=((x+off)%S)/S-.5,fy=(y%S)/S;const r=Math.hypot(fx,(fy-.35)*1.1);   /* round bottom of each scale */
   let v=176+(h3(sx*2.3,row*1.9,4.1)-.5)*48+(fbm(x/4,y/4,2.2,1)-.5)*14;
-  if(r>.46&&fy>.45)v-=70;else if(r>.4&&fy>.4)v-=26;                          // the shadowed rim of the scale above
+  if(r>.46&&fy>.45)v-=70;else if(r>.4&&fy>.4)v-=26;                          /* the shadowed rim of the scale above */
   if(fy<.08)v-=30;
   d[i]=v;d[i+1]=v;d[i+2]=v*1.02;d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -38,7 +38,7 @@ TEX.rubble=canvasTex(256,256,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;let d1=1e9,d2=1e9,id1=0;
   for(const p of pts){const dx=(x-p[0])*.8,dy=y-p[1];const dd=dx*dx+dy*dy;if(dd<d1){d2=d1;d1=dd;id1=p[2];}else if(dd<d2)d2=dd;}
   const edge=Math.sqrt(d2)-Math.sqrt(d1);let v;
-  if(edge<3.2)v=92+(fbm(x/3,y/3,2,1)-.5)*20;                                 // deep mortar
+  if(edge<3.2)v=92+(fbm(x/3,y/3,2,1)-.5)*20;                                 /* deep mortar */
   else{v=150+(h3(id1,7.7,1.1)-.5)*70+Math.min(20,edge*2)+(fbm(x/9,y/9,id1,2)-.5)*26;}
   const tint=h3(id1,2.2,9.9);d[i]=v*(1+(tint-.5)*.12);d[i+1]=v*.97;d[i+2]=v*(.92-(tint-.5)*.08);d[i+3]=255;}
  g.putImageData(id,0,0);});
@@ -54,204 +54,210 @@ TEX.turf=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
 TEX.bambooV=canvasTex(64,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const fy=(y%29)/29;
   let v=196+(fbm(x/2,y/30,1.3,2)-.5)*30+Math.sin(x/w*TAU*4)*6;
-  if(fy<.07)v=120;else if(fy<.14)v=222;                                      // node ring + its lit swelling
+  if(fy<.07)v=120;else if(fy<.14)v=222;                                      /* node ring + its lit swelling */
   d[i]=v*.96;d[i+1]=v*.93;d[i+2]=v*.66;d[i+3]=255;}
  g.putImageData(id,0,0);});
-TEX.bmat=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=16;   // 0.25 m weave
+TEX.bmat=canvasTex(128,128,(g,w,h)=>{const id=g.createImageData(w,h),d=id.data;const S=16;   /* 0.25 m weave */
  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const cx=Math.floor(x/S),cy=Math.floor(y/S);const over=(cx+cy)%2;
   const f=over?(x%S)/S:(y%S)/S;let v=180+Math.sin(f*Math.PI)*40+(fbm(x/3,y/3,5,1)-.5)*20;
   const e=over?(y%S):(x%S);if(e<1||e>S-2)v-=60;
   d[i]=v;d[i+1]=v*.9;d[i+2]=v*.66;d[i+3]=255;}
  g.putImageData(id,0,0);});
 
-// ---------------------------------------------------------------- the painted carving: formline primitives
-// A formline design is built from a few units — OVOID, U-FORM, SPLIT-U, TRIGON negative spaces — joined by a
-// heavy black primary line that swells and tapers, with red secondary and teal tertiary fills. These helpers draw
-// them on a 2D canvas in canvas units (y down). Everything is symmetric: draw the left half, then hlMirror().
-function hlOvoidPath(g,cx,cy,w,h){g.beginPath();
- g.moveTo(cx-w/2,cy+h*.1);
- g.bezierCurveTo(cx-w/2,cy-h*.62,cx+w/2,cy-h*.62,cx+w/2,cy+h*.1);             // domed top
- g.bezierCurveTo(cx+w/2,cy+h*.55,cx+w*.22,cy+h*.52,cx,cy+h*.36);             // concave underside rises to the centre
- g.bezierCurveTo(cx-w*.22,cy+h*.52,cx-w/2,cy+h*.55,cx-w/2,cy+h*.1);g.closePath();}
-function hlOvoid(g,cx,cy,w,h,line,fill,lw){hlOvoidPath(g,cx,cy,w,h);if(fill){g.fillStyle=fill;g.fill();}if(line){g.lineWidth=lw||Math.max(2,w*.14);g.strokeStyle=line;g.stroke();}}
-function hlUForm(g,cx,cy,w,h,col,lw){g.beginPath();g.moveTo(cx-w/2,cy-h/2);g.bezierCurveTo(cx-w/2,cy+h*.7,cx+w/2,cy+h*.7,cx+w/2,cy-h/2);
- g.lineWidth=lw||w*.22;g.strokeStyle=col;g.lineCap='round';g.stroke();g.lineCap='butt';}
-function hlSplitU(g,cx,cy,w,h,col,lw){hlUForm(g,cx,cy,w,h,col,lw);g.beginPath();g.moveTo(cx,cy-h/2);g.lineTo(cx,cy+h*.12);g.lineWidth=(lw||w*.22)*.7;g.strokeStyle=HFORM.white;g.stroke();}
-function hlEye(g,cx,cy,w,h,socket){   // eye socket (teal or red), lid ovoid in black, white eyeball, black pupil ovoid
- hlOvoid(g,cx,cy,w,h,HFORM.black,socket||HFORM.teal,w*.12);
- hlOvoid(g,cx,cy+h*.06,w*.64,h*.5,HFORM.black,HFORM.white,w*.07);
- hlOvoid(g,cx,cy+h*.08,w*.34,h*.3,null,HFORM.black);}
-function hlSwoop(g,pts,col,lw){g.beginPath();g.moveTo(pts[0][0],pts[0][1]);for(let i=1;i+2<pts.length+1;i+=3)g.bezierCurveTo(pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1],pts[i+2][0],pts[i+2][1]);
- g.lineWidth=lw;g.strokeStyle=col;g.lineCap='round';g.stroke();g.lineCap='butt';}
-function hlTrigon(g,x,y,s,col){g.beginPath();g.moveTo(x,y);g.quadraticCurveTo(x+s*.5,y+s*.1,x+s,y);g.quadraticCurveTo(x+s*.6,y+s*.4,x+s*.5,y+s);g.quadraticCurveTo(x+s*.4,y+s*.4,x,y);g.fillStyle=col;g.fill();}
-// draw fn(g) on the left half, then mirror it onto the right half
+// ---------------------------------------------------------------- Slavic / Rus' / Carpathian woodcarving & rospis' primitives
 function hlMirror(g,w,h,cx,fn){g.save();fn(g);g.restore();g.save();g.translate(2*cx,0);g.scale(-1,1);fn(g);g.restore();}
-// wood grain under a painted design (cedar), vertical or horizontal
-function hlCedar(g,w,h,base,vert){g.fillStyle=base||HFORM.cedar;g.fillRect(0,0,w,h);const id=g.getImageData(0,0,w,h),d=id.data;
- for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;const n=vert?fbm(x/2.5,y/40,3.3,2):fbm(x/40,y/2.5,3.3,2);const k=.82+n*.34;d[i]*=k;d[i+1]*=k;d[i+2]*=k;}
- g.putImageData(id,0,0);}
-// A crest face (human/spirit). NOT used by default (Travis: too creepy) — kept for specific buildings later. o: {beak, teeth, ears, tongue, socket, brow, cheek}
-function hlFace(g,cx,cy,W,H,o){o=o||{};const S=W/2;
- hlMirror(g,W,H,cx,g=>{
-  // head outline: heavy black formline around the face, open at the chin
-  hlSwoop(g,[[cx,cy-H*.5],[cx-S*.55,cy-H*.52],[cx-S*.98,cy-H*.36],[cx-S*.96,cy-H*.02],[cx-S*.95,cy+H*.25],[cx-S*.78,cy+H*.44],[cx-S*.5,cy+H*.48]],HFORM.black,W*.05);
-  if(o.ears!==false){hlUForm(g,cx-S*.7,cy-H*.46,S*.36,H*.18,HFORM.red,S*.08);hlOvoid(g,cx-S*.7,cy-H*.5,S*.16,H*.08,null,HFORM.black);}
-  // brow: a thick black arch over the eye
-  hlSwoop(g,[[cx-S*.08,cy-H*.2],[cx-S*.22,cy-H*.34],[cx-S*.62,cy-H*.36],[cx-S*.8,cy-H*.18]],HFORM.black,H*.06);
-  hlEye(g,cx-S*.43,cy-H*.1,S*.56,H*.2,o.socket);
-  // cheek: red U-form under the eye, teal trigon in the cheek
-  hlUForm(g,cx-S*.46,cy+H*.08,S*.5,H*.12,o.cheek||HFORM.red,S*.08);
-  hlTrigon(g,cx-S*.82,cy+H*.02,S*.18,HFORM.teal);
-  // flank: a small ovoid joint in the outer cheek
-  hlOvoid(g,cx-S*.8,cy+H*.24,S*.2,H*.12,HFORM.black,HFORM.red,S*.04);
- });
- // nose / beak (on the axis)
- if(o.beak){g.beginPath();g.moveTo(cx-S*.16,cy-H*.12);g.quadraticCurveTo(cx+S*.02,cy+H*.02,cx+S*.02,cy+H*.4);g.quadraticCurveTo(cx-S*.02,cy+H*.46,cx-S*.08,cy+H*.38);
-  g.quadraticCurveTo(cx,cy+H*.1,cx-S*.16,cy-H*.12);g.fillStyle=HFORM.black;g.fill();
-  g.beginPath();g.moveTo(cx+S*.16,cy-H*.12);g.quadraticCurveTo(cx+S*.02,cy+H*.02,cx+S*.02,cy+H*.4);g.lineWidth=S*.05;g.strokeStyle=HFORM.black;g.stroke();
-  hlSplitU(g,cx,cy-H*.02,S*.22,H*.14,HFORM.red,S*.06);}
- else{hlSplitU(g,cx,cy+H*.02,S*.3,H*.16,HFORM.red,S*.09);
-  hlOvoid(g,cx-S*.1,cy+H*.14,S*.12,H*.07,null,HFORM.black);hlOvoid(g,cx+S*.1,cy+H*.14,S*.12,H*.07,null,HFORM.black);}
- // mouth: red lips around a black mouth, white teeth
- const mw=S*(o.beak?.6:.95),my=cy+H*.32;
- g.beginPath();g.ellipse(cx,my,mw*.62,H*.09,0,0,TAU);g.fillStyle=HFORM.red;g.fill();
- g.beginPath();g.ellipse(cx,my,mw*.5,H*.055,0,0,TAU);g.fillStyle=HFORM.black;g.fill();
- if(o.teeth!==false){g.fillStyle=HFORM.white;const n=6;for(let k=0;k<n;k++){const tx=cx-mw*.42+mw*.84*(k+.5)/n;g.fillRect(tx-mw*.05,my-H*.045,mw*.1,H*.03);g.fillRect(tx-mw*.05,my+H*.015,mw*.1,H*.03);}}
- if(o.tongue){g.beginPath();g.moveTo(cx-S*.06,my);g.quadraticCurveTo(cx,my+H*.22,cx+S*.06,my);g.fillStyle=HFORM.red;g.fill();}}
-
-// ---------------------------------------------------------------- the animals (the kit's default subjects)
-// Travis, round 1: the crest FACE (hlFace) read as creepy; the default carving is naturalistic animals in
-// formline — salmon, orca, thunderbird, and on the poles eagle, bear and frog. hlFace stays in the kit for
-// buildings that later ask for a specific (human/spirit) depiction; nothing uses it by default.
-// Each animal draws in its own unit box (the numbers below), placed with hlIn(g,x,y,w,h, fn).
+function hlCedar(g,w,h,base,vert){
+ g.fillStyle=base||HFORM.cedar;g.fillRect(0,0,w,h);
+ const n=vert?Math.max(16,w>>2):Math.max(16,h>>2);
+ for(let i=0;i<n;i++){
+  const t=(i+.5)/n,v=h3(i*1.7,vert?1:2,5.3);
+  g.fillStyle=v>.5?'rgba(255,235,200,'+(0.04+(v-.5)*.14).toFixed(3)+')':'rgba(38,20,10,'+(0.05+(.5-v)*.18).toFixed(3)+')';
+  if(vert)g.fillRect(t*w-1.5,0,2.5,h);else g.fillRect(0,t*h-1.5,w,2.5);
+ }
+ const planks=vert?4:5;g.fillStyle='rgba(26,14,8,0.22)';
+ for(let k=1;k<planks;k++){if(vert)g.fillRect(Math.round(w*k/planks),0,1.5,h);else g.fillRect(0,Math.round(h*k/planks),w,1.5);}
+}
+function hlGround(g,w,h,white){if(white){g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);}else hlCedar(g,w,h,HFORM.cedar,false);}
 function hlIn(g,x,y,w,h,uw,uh,fn){g.save();g.translate(x,y);g.scale(w/uw,h/uh);fn(g);g.restore();}
 function hlFill(g,col){g.fillStyle=col;g.fill();}
 function hlLine(g,col,lw){g.lineWidth=lw;g.strokeStyle=col;g.lineJoin='round';g.stroke();}
-// SALMON in profile facing +x, box 200 x 80: red body, black formline, teal gill ovoid
-function hlSalmon(g){g.beginPath();g.moveTo(192,40);g.bezierCurveTo(172,14,96,8,44,28);g.lineTo(10,12);g.quadraticCurveTo(20,40,10,68);g.lineTo(44,52);g.bezierCurveTo(96,72,172,66,192,40);g.closePath();
- hlFill(g,HFORM.red);hlLine(g,HFORM.black,5);
- g.beginPath();g.moveTo(96,16);g.quadraticCurveTo(104,2,122,6);g.quadraticCurveTo(116,12,118,17);hlFill(g,HFORM.black);          // dorsal fin
- g.beginPath();g.moveTo(104,62);g.quadraticCurveTo(110,76,126,74);g.quadraticCurveTo(120,68,122,61);hlFill(g,HFORM.black);        // ventral fin
- hlOvoid(g,160,40,34,34,HFORM.black,HFORM.teal,5);hlOvoid(g,168,34,14,11,HFORM.black,HFORM.white,3);hlOvoid(g,169,35,6,5,null,HFORM.black);   // gill + eye
- g.beginPath();g.moveTo(192,40);g.lineTo(178,44);hlLine(g,HFORM.black,3);                                                          // mouth
- hlUForm(g,120,34,22,22,HFORM.black,5);hlUForm(g,90,36,20,20,HFORM.black,5);hlOvoid(g,62,40,16,12,HFORM.black,HFORM.teal,3);    // body formline
- hlSplitU(g,26,40,14,30,HFORM.black,5);}                                                                                           // tail
-// ORCA in profile facing +x, box 200 x 100: black body, white belly and eye patch, tall dorsal fin, red formline
-function hlOrca(g){g.beginPath();g.moveTo(196,58);g.bezierCurveTo(186,36,150,30,110,32);g.bezierCurveTo(76,34,46,40,30,50);
- g.quadraticCurveTo(16,40,4,30);g.quadraticCurveTo(12,52,6,74);g.quadraticCurveTo(18,64,32,58);g.bezierCurveTo(62,72,120,80,160,72);g.bezierCurveTo(180,68,192,64,196,58);g.closePath();hlFill(g,HFORM.black);
- g.beginPath();g.moveTo(98,34);g.quadraticCurveTo(90,16,84,2);g.quadraticCurveTo(108,12,122,32);hlFill(g,HFORM.black);          // dorsal fin
- g.beginPath();g.ellipse(142,68,32,6,.05,0,TAU);hlFill(g,HFORM.white);g.beginPath();g.ellipse(160,45,10,4,-.1,0,TAU);hlFill(g,HFORM.white);
- hlOvoid(g,176,49,10,8,null,HFORM.white);hlOvoid(g,177,50,5,4,null,HFORM.black);                                                   // eye
- g.beginPath();g.moveTo(196,58);g.quadraticCurveTo(186,62,172,60);hlLine(g,HFORM.red,3);                                          // mouth
- g.beginPath();g.moveTo(140,68);g.quadraticCurveTo(128,84,122,96);g.quadraticCurveTo(142,90,152,70);hlFill(g,HFORM.black);       // pectoral fin
- hlUForm(g,137,82,10,12,HFORM.red,3);hlOvoid(g,146,62,16,12,HFORM.red,HFORM.teal,3);                                                // fin joint
- hlUForm(g,100,48,22,18,HFORM.red,4);hlUForm(g,70,50,18,16,HFORM.red,4);hlSplitU(g,97,26,8,12,HFORM.red,3);hlSplitU(g,16,52,8,24,HFORM.red,3);}
-// THUNDERBIRD, frontal with wings spread and the head turned in profile, box 200 x 100
-function hlThunderbird(g){
- hlMirror(g,200,100,100,g=>{for(let k=0;k<5;k++){const x=12+k*15,y=64-k*5;hlUForm(g,x,y,13,34,k%2?HFORM.red:HFORM.black,3.6);}   // wing feathers
-  hlSwoop(g,[[4,82],[16,34],[52,22],[86,38]],HFORM.black,7);hlOvoid(g,62,40,16,12,HFORM.black,HFORM.teal,3);                       // wing edge + shoulder joint
-  hlUForm(g,90,90,8,16,HFORM.black,3);});                                                                                          // tail feathers
- hlOvoid(g,100,58,30,52,HFORM.black,HFORM.red,5);hlUForm(g,100,52,14,12,HFORM.black,4);hlUForm(g,100,68,12,10,HFORM.black,4);      // body
- for(const s of[-1,1]){g.beginPath();g.moveTo(100+s*6,82);g.lineTo(100+s*12,96);hlLine(g,HFORM.black,3);}                          // legs
- hlOvoid(g,100,22,26,22,HFORM.black,HFORM.white,4);hlOvoid(g,96,21,9,7,null,HFORM.black);                                          // head
- g.beginPath();g.moveTo(90,18);g.quadraticCurveTo(70,16,66,28);g.quadraticCurveTo(74,24,80,30);g.quadraticCurveTo(84,26,90,27);hlFill(g,HFORM.black);   // hooked beak (profile, to -x)
- g.beginPath();g.moveTo(104,12);g.quadraticCurveTo(112,0,122,4);g.quadraticCurveTo(114,8,110,14);hlFill(g,HFORM.red);}              // crest plume
-// BEAR walking in profile facing +x, box 200 x 100
-function hlBear(g){g.beginPath();g.moveTo(40,40);g.bezierCurveTo(60,20,120,18,150,30);g.quadraticCurveTo(160,24,172,30);g.lineTo(196,44);g.quadraticCurveTo(190,54,176,54);
- g.quadraticCurveTo(160,56,152,60);g.lineTo(156,94);g.lineTo(138,94);g.lineTo(134,68);g.quadraticCurveTo(100,74,70,68);g.lineTo(66,94);g.lineTo(48,94);g.lineTo(44,64);g.quadraticCurveTo(28,56,40,40);g.closePath();
- hlFill(g,HFORM.black);
- g.beginPath();g.arc(160,26,7,0,TAU);hlFill(g,HFORM.black);g.beginPath();g.arc(160,26,3.5,0,TAU);hlFill(g,HFORM.red);             // ear
- hlOvoid(g,172,38,10,8,null,HFORM.white);hlOvoid(g,173,39,5,4,null,HFORM.black);g.beginPath();g.arc(195,45,3,0,TAU);hlFill(g,HFORM.red);   // eye, nose
- hlOvoid(g,140,48,22,18,HFORM.red,HFORM.teal,3);hlOvoid(g,62,48,22,18,HFORM.red,HFORM.teal,3);                                     // shoulder and hip joints
- hlUForm(g,146,80,10,16,HFORM.red,3);hlUForm(g,57,80,10,16,HFORM.red,3);hlUForm(g,100,44,26,14,HFORM.red,4);
- for(const x of[138,48])for(let k=0;k<3;k++){g.beginPath();g.moveTo(x+4+k*5,94);g.lineTo(x+6+k*5,99);hlLine(g,HFORM.white,2);}}   // claws
-function hlGround(g,w,h,white){if(white){g.fillStyle=HFORM.white;g.fillRect(0,0,w,h);}else hlCedar(g,w,h,HFORM.cedar,false);}
 
-// ---------------------------------------------------------------- crest panels (colour-carrying, plane UV 0..1)
-// FORM_A: two salmon nose to nose round a teal ovoid, on cedar — façades, lintels, door boards.
+/* 6- or 8-petal Slavic compass-rose solar rosette (rozetka / gromovoy znak thunder-wheel) with chip-carved notched rim */
+function hlRozetka(g,cx,cy,R,petals,col1,col2,bgCol){
+ const n=petals==null?6:petals,c1=col1||HFORM.red,c2=col2||HFORM.ochre;
+ g.beginPath();g.arc(cx,cy,R,0,TAU);hlFill(g,bgCol||HFORM.white);hlLine(g,HFORM.black,Math.max(1.6,R*.07));
+ for(let k=0;k<24;k++){const a=k/24*TAU,a2=(k+.5)/24*TAU;
+  g.beginPath();g.moveTo(cx+Math.cos(a)*R*.97,cy+Math.sin(a)*R*.97);
+  g.lineTo(cx+Math.cos((a+a2)/2)*R*.84,cy+Math.sin((a+a2)/2)*R*.84);
+  g.lineTo(cx+Math.cos(a2)*R*.97,cy+Math.sin(a2)*R*.97);g.closePath();
+  hlFill(g,k%2?c1:c2);}
+ g.beginPath();g.arc(cx,cy,R*.82,0,TAU);hlFill(g,bgCol||HFORM.white);hlLine(g,HFORM.black,Math.max(1.4,R*.05));
+ for(let k=0;k<n;k++){const a=k/n*TAU-Math.PI/2,b=a+Math.PI/n;
+  g.save();g.translate(cx,cy);g.rotate(b);
+  g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(R*.24,-R*.36,0,-R*.76);g.quadraticCurveTo(-R*.24,-R*.36,0,0);
+  hlFill(g,c2);hlLine(g,HFORM.black,Math.max(1,R*.035));g.restore();}
+ for(let k=0;k<n;k++){const a=k/n*TAU-Math.PI/2;
+  g.save();g.translate(cx,cy);g.rotate(a);
+  g.beginPath();g.moveTo(0,0);g.bezierCurveTo(R*.3,-R*.28,R*.28,-R*.66,0,-R*.8);g.bezierCurveTo(-R*.28,-R*.66,-R*.3,-R*.28,0,0);
+  hlFill(g,c1);hlLine(g,HFORM.black,Math.max(1.2,R*.04));g.restore();}
+ g.beginPath();g.arc(cx,cy,R*.16,0,TAU);hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,Math.max(1.2,R*.04));
+ g.beginPath();g.arc(cx,cy,R*.06,0,TAU);hlFill(g,HFORM.white);
+}
+
+/* 8-arm curved Slavic solar kolovrat wheel */
+function hlKolovrat(g,cx,cy,R,arms,col){
+ const n=arms==null?8:arms,c=col||HFORM.red;
+ g.beginPath();g.arc(cx,cy,R,0,TAU);hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,Math.max(1.8,R*.07));
+ g.beginPath();g.arc(cx,cy,R*.84,0,TAU);hlFill(g,HFORM.white);hlLine(g,HFORM.black,Math.max(1.4,R*.05));
+ for(let k=0;k<n;k++){const a=k/n*TAU;g.save();g.translate(cx,cy);g.rotate(a);
+  g.beginPath();g.moveTo(0,0);g.bezierCurveTo(R*.12,-R*.38,R*.42,-R*.68,R*.68,-R*.52);
+  g.quadraticCurveTo(R*.48,-R*.78,R*.14,-R*.78);g.quadraticCurveTo(-R*.04,-R*.44,0,0);
+  hlFill(g,k%2?HFORM.ochre:c);hlLine(g,HFORM.black,Math.max(1,R*.035));g.restore();}
+ g.beginPath();g.arc(cx,cy,R*.18,0,TAU);hlFill(g,c);hlLine(g,HFORM.black,Math.max(1.2,R*.045));
+}
+
+/* Novgorodian two-strand braided pletenka interlace band */
+function hlPletenka(g,x0,y0,w,h,c1,c2){
+ const N=Math.max(4,Math.round(w/(h*.9))),A=h*.3,cy=y0+h/2,lw=Math.max(2,h*.22);
+ for(const k of[0,1]){
+  g.beginPath();
+  for(let i=0;i<=N*12;i++){const t=i/(N*12),x=x0+t*w,y=cy+Math.sin(t*N*Math.PI+k*Math.PI)*A;i?g.lineTo(x,y):g.moveTo(x,y);}
+  g.lineWidth=lw+Math.max(2,lw*.45);g.strokeStyle=HFORM.black;g.lineCap='round';g.stroke();
+  g.lineWidth=lw;g.strokeStyle=k?(c2||HFORM.ochre):(c1||HFORM.red);g.stroke();
+ }
+ for(let m=0;m<N;m++){const xm=x0+(m+.5)*w/N;g.beginPath();g.arc(xm,cy,h*.09,0,TAU);hlFill(g,HFORM.white);hlLine(g,HFORM.black,1.2);}
+}
+
+/* Gorodets / Boretskaya rospis' floral berry-and-leaf S-scrollwork */
+function hlRospisVine(g,x0,y0,w,h){
+ g.save();g.translate(x0,y0);
+ g.beginPath();g.moveTo(w*.04,h*.72);g.bezierCurveTo(w*.28,h*.12,w*.68,h*.88,w*.94,h*.26);
+ g.lineWidth=Math.max(2.5,h*.07);g.strokeStyle=HFORM.teal;g.lineCap='round';g.stroke();
+ for(const [lx,ly,ang,s] of[[.22,.36,-.6,1],[.46,.54,.7,.95],[.72,.44,-.5,1],[.34,.68,.9,.8],[.82,.64,.5,.85]]){
+  g.save();g.translate(w*lx,h*ly);g.rotate(ang);
+  g.beginPath();g.moveTo(0,0);g.quadraticCurveTo(h*.22*s,-h*.14*s,h*.36*s,0);g.quadraticCurveTo(h*.22*s,h*.14*s,0,0);
+  hlFill(g,HFORM.teal);hlLine(g,HFORM.black,1.5);
+  g.beginPath();g.moveTo(h*.05*s,0);g.lineTo(h*.28*s,0);hlLine(g,HFORM.white,1.1);g.restore();}
+ for(const [bx,by,r,c] of[[.28,.3,.18,HFORM.red],[.58,.62,.2,HFORM.ochre],[.84,.28,.16,HFORM.red],[.14,.62,.13,HFORM.blue]]){
+  const R=h*r;g.beginPath();g.arc(w*bx,h*by,R,0,TAU);hlFill(g,c);hlLine(g,HFORM.black,1.8);
+  g.beginPath();g.arc(w*bx-R*.24,h*by-R*.24,R*.34,0,TAU);hlFill(g,HFORM.white);
+  for(let k=0;k<5;k++){const a=k/5*TAU;g.beginPath();g.arc(w*bx+Math.cos(a)*R*.52,h*by+Math.sin(a)*R*.52,R*.14,0,TAU);hlFill(g,c===HFORM.red?HFORM.ochre:HFORM.red);}}
+ g.restore();
+}
+
+/* Heraldic Rus' solar horse (kon'), box 200 x 100, facing +x */
+function hlSlavicHorse(g){
+ g.beginPath();g.moveTo(46,72);g.bezierCurveTo(38,52,52,36,84,36);g.bezierCurveTo(108,36,126,32,136,18);
+ g.quadraticCurveTo(144,6,158,10);g.lineTo(178,20);g.quadraticCurveTo(182,28,170,30);g.lineTo(156,28);
+ g.quadraticCurveTo(150,42,144,54);g.lineTo(164,84);g.lineTo(154,90);g.lineTo(134,62);
+ g.quadraticCurveTo(106,66,76,62);g.lineTo(60,90);g.lineTo(48,88);g.lineTo(58,64);g.closePath();
+ hlFill(g,HFORM.red);hlLine(g,HFORM.black,3.5);
+ g.beginPath();g.moveTo(46,48);g.bezierCurveTo(22,34,8,54,18,78);g.bezierCurveTo(26,64,32,56,48,56);
+ hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,2.8);
+ for(let k=0;k<5;k++){const t=k/4,mx=lerp(126,148,t),my=lerp(32,10,t);
+  g.beginPath();g.arc(mx-6,my-4,5,0,TAU);hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,1.6);}
+ hlRozetka(g,106,49,12,6,HFORM.ochre,HFORM.white,HFORM.blue);
+ g.beginPath();g.arc(158,17,3.2,0,TAU);hlFill(g,HFORM.white);g.beginPath();g.arc(159,17,1.5,0,TAU);hlFill(g,HFORM.black);
+}
+
+/* Slavic Firebird / Petushok solar rooster, frontal, box 200 x 100 */
+function hlFirebird(g){
+ hlMirror(g,200,100,100,g2=>{
+  for(let k=0;k<6;k++){const a=-.22-k*.19,L=78-k*5;g2.save();g2.translate(100,58);g2.rotate(a);
+   g2.beginPath();g2.moveTo(-8,0);g2.quadraticCurveTo(-L*.55,-22,-L,-6);g2.quadraticCurveTo(-L*.6,12,-8,6);g2.closePath();
+   hlFill(g2,k%2?HFORM.ochre:HFORM.red);hlLine(g2,HFORM.black,2.4);
+   g2.beginPath();g2.arc(-L*.82,-3,4.2,0,TAU);hlFill(g2,HFORM.white);g2.restore();}
+  g2.beginPath();g2.moveTo(92,76);g2.lineTo(82,94);hlLine(g2,HFORM.ochre,3.2);});
+ g.beginPath();g.ellipse(100,56,22,26,0,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,3.4);
+ hlRozetka(g,100,58,15,8,HFORM.ochre,HFORM.white,HFORM.blue);
+ g.beginPath();g.arc(100,24,12,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,3);
+ for(let k=-2;k<=2;k++){const a=k*.32-Math.PI/2;g.beginPath();g.arc(100+Math.cos(a)*15,24+Math.sin(a)*15,4.2,0,TAU);hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,1.5);}
+ g.beginPath();g.moveTo(88,22);g.lineTo(74,26);g.lineTo(88,30);g.closePath();hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,2);
+ g.beginPath();g.arc(96,23,3,0,TAU);hlFill(g,HFORM.white);g.beginPath();g.arc(95.5,23,1.4,0,TAU);hlFill(g,HFORM.black);
+}
+
+/* Novgorodian woodland bear (medved') with oak-leaf scroll, box 200 x 100 */
+function hlBear(g){
+ g.beginPath();g.moveTo(38,44);g.bezierCurveTo(58,20,118,18,148,30);g.quadraticCurveTo(158,24,170,30);g.lineTo(192,42);
+ g.quadraticCurveTo(188,52,174,52);g.quadraticCurveTo(158,54,150,60);g.lineTo(154,92);g.lineTo(136,92);g.lineTo(132,68);
+ g.quadraticCurveTo(100,74,68,68);g.lineTo(64,92);g.lineTo(46,92);g.lineTo(42,64);g.quadraticCurveTo(28,56,38,44);g.closePath();
+ hlFill(g,HFORM.cedarD);hlLine(g,HFORM.black,3.6);
+ g.beginPath();g.arc(158,26,6.5,0,TAU);hlFill(g,HFORM.cedarD);hlLine(g,HFORM.black,2);
+ hlRozetka(g,102,48,15,6,HFORM.ochre,HFORM.red,HFORM.white);
+ for(const x of[60,138]){g.beginPath();g.arc(x,48,7,0,TAU);hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,1.8);}
+ g.beginPath();g.arc(170,38,3.6,0,TAU);hlFill(g,HFORM.white);g.beginPath();g.arc(171,38,1.6,0,TAU);hlFill(g,HFORM.black);
+}
+
+// ---------------------------------------------------------------- Slavic carved & painted boards (plane UV 0..1)
+// FORM_A: twin Rus' solar horses flanking an 8-petal gromovoy znak rosette on warm larch boards
 TEX.formA=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);
- hlMirror(g,w,h,w/2,g=>hlIn(g,w*.03,h*.2,w*.44,h*.6,200,80,hlSalmon));hlOvoid(g,w/2,h*.52,h*.22,h*.2,HFORM.black,HFORM.teal,6);
+ hlMirror(g,w,h,w/2,g2=>hlIn(g2,w*.02,h*.16,w*.38,h*.68,200,100,hlSlavicHorse));
+ hlRozetka(g,w/2,h*.5,h*.34,8,HFORM.red,HFORM.ochre,HFORM.white);
+ hlPletenka(g,h*.04,h*.04,w-h*.08,h*.1,HFORM.red,HFORM.ochre);hlPletenka(g,h*.04,h*.86,w-h*.08,h*.1,HFORM.ochre,HFORM.red);
  g.lineWidth=h*.03;g.strokeStyle=HFORM.black;g.strokeRect(h*.015,h*.015,w-h*.03,h-h*.03);});
-// FORM_W: an orca on white over a band of waves — the bold painted house-fronts and the guild boards.
-TEX.formW=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,true);hlIn(g,w*.08,h*.08,w*.84,h*.72,200,100,hlOrca);
- for(let k=0;k<8;k++){const cx=w*(k+.5)/8;hlUForm(g,cx,h*.86,w*.1,h*.12,k%2?HFORM.teal:HFORM.black,h*.03);}});
-// FORM_V: a tall board (1:4) — a stack of ovoids and U-forms (abstract), for pilasters, jambs, menhirs
+// FORM_W: Gorodets / Khokhloma floral rospis' & 6-petal solar rozetka on birch-white ground
+TEX.formW=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,true);
+ hlMirror(g,w,h,w/2,g2=>hlRospisVine(g2,w*.03,h*.1,w*.36,h*.68));
+ hlRozetka(g,w/2,h*.44,h*.32,6,HFORM.red,HFORM.blue,HFORM.ochre);
+ hlPletenka(g,w*.03,h*.8,w*.94,h*.15,HFORM.red,HFORM.teal);
+ g.lineWidth=h*.03;g.strokeStyle=HFORM.red;g.strokeRect(h*.015,h*.015,w-h*.03,h-h*.03);});
+// FORM_V: tall Slavic pilaster board (1:4) — stacked 6/8-petal solar rozetki & braided pletenka links
 TEX.formV=canvasTex(128,512,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,true);
  for(let k=0;k<4;k++){const cy=h*(k+.5)/4;
-  hlOvoid(g,w/2,cy-h*.03,w*.78,h*.12,HFORM.black,k%2?HFORM.teal:HFORM.red,w*.08);
-  hlOvoid(g,w/2,cy-h*.02,w*.4,h*.06,HFORM.black,HFORM.white,w*.05);
-  hlUForm(g,w/2,cy+h*.075,w*.7,h*.05,k%2?HFORM.red:HFORM.black,w*.08);}});
-// FORM_T: the thunderbird, wings spread across the gable (2:1)
-TEX.formT=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.02,h*.04,w*.96,h*.92,200,100,hlThunderbird);});
-// FORM_B: a bear on cedar (2:1) — for the Republic's guild boards and the tribes' hunters
-TEX.formB=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.06,h*.06,w*.88,h*.84,200,100,hlBear);});
-// FORM_F: frieze (4:1, repeats along x) — alternating ovoid and split-U, for eave boards and lintels
+  hlRozetka(g,w/2,cy-h*.02,w*.38,k%2?8:6,k%2?HFORM.ochre:HFORM.red,HFORM.white,k%2?HFORM.blue:HFORM.teal);
+  hlPletenka(g,w*.08,cy+h*.075,w*.84,h*.04,HFORM.ochre,HFORM.red);}
+ g.lineWidth=4;g.strokeStyle=HFORM.black;g.strokeRect(2,2,w-4,h-4);});
+// FORM_T: gable tympanum Slavic Firebird (Zhar-Ptitsa) & solar kolovrat sun-crest
+TEX.formT=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.04,h*.04,w*.92,h*.88,200,100,hlFirebird);
+ hlPletenka(g,w*.04,h*.86,w*.92,h*.1,HFORM.red,HFORM.ochre);});
+// FORM_B: Novgorodian woodland bear & solar rozetki guild board
+TEX.formB=canvasTex(512,256,(g,w,h)=>{hlGround(g,w,h,false);hlIn(g,w*.12,h*.08,w*.76,h*.82,200,100,hlBear);
+ hlRozetka(g,w*.1,h*.5,h*.2,6,HFORM.ochre,HFORM.red,HFORM.white);hlRozetka(g,w*.9,h*.5,h*.2,6,HFORM.ochre,HFORM.red,HFORM.white);
+ g.lineWidth=h*.03;g.strokeStyle=HFORM.black;g.strokeRect(h*.015,h*.015,w-h*.03,h-h*.03);});
+// FORM_F: carved Slavic eave & belt frieze (4:1, repeats along x) — alternating rozetka sun-wheels and pletenka braid
 TEX.formF=canvasTex(256,64,(g,w,h)=>{hlCedar(g,w,h,HFORM.cedarD,false);
- for(let k=0;k<4;k++){const cx=w*(k+.5)/4;if(k%2){hlOvoid(g,cx,h*.52,w*.18,h*.6,HFORM.black,HFORM.teal,w*.02);hlOvoid(g,cx,h*.55,w*.08,h*.26,null,HFORM.black);}
-  else{hlSplitU(g,cx,h*.4,w*.16,h*.52,HFORM.red,w*.035);}}
- g.fillStyle=HFORM.black;g.fillRect(0,0,w,h*.08);g.fillRect(0,h*.92,w,h*.08);});
+ for(let k=0;k<4;k++){const cx=w*(k+.5)/4;
+  if(k%2===0)hlRozetka(g,cx,h*.5,h*.38,6,HFORM.red,HFORM.ochre,HFORM.white);
+  else hlKolovrat(g,cx,h*.5,h*.36,8,HFORM.red);}
+ g.fillStyle=HFORM.red;g.fillRect(0,0,w,h*.1);g.fillRect(0,h*.9,w,h*.1);
+ g.fillStyle=HFORM.ochre;for(let k=0;k<16;k++)g.fillRect(k*w/16+2,h*.02,w/32,h*.06);});
 
-// ---------------------------------------------------------------- totem column (colour-carrying, wraps a cylinder)
-// u runs round the pole with u=0.5 at the FRONT (hTotem instances are yawed so this faces the street), v up.
-// Three animals stacked: EAGLE at the top (a great hooked beak, wings folded down the sides), BEAR in the
-// middle (round ears, muzzle, forepaws with claws), FROG at the foot (wide mouth, splayed legs).
-function hlTotemEagle(g,cx,cy,W,H,sock){
- hlMirror(g,W,H,cx,g=>{g.beginPath();g.moveTo(cx-W*.16,cy-H*.02);g.bezierCurveTo(cx-W*.5,cy+H*.02,cx-W*.5,cy+H*.36,cx-W*.3,cy+H*.46);g.lineTo(cx-W*.12,cy+H*.46);g.closePath();hlFill(g,HFORM.black);   // folded wing
-  for(let k=0;k<3;k++)hlUForm(g,cx-W*.34+k*W*.07,cy+H*(.22+k*.06),W*.07,H*.2,HFORM.red,W*.025);
-  hlOvoid(g,cx-W*.3,cy+H*.08,W*.12,H*.08,HFORM.black,sock,W*.015);});
- g.beginPath();g.ellipse(cx,cy-H*.2,W*.3,H*.2,0,0,TAU);hlFill(g,HFORM.black);                                                        // head
- hlMirror(g,W,H,cx,g=>{hlOvoid(g,cx-W*.15,cy-H*.24,W*.16,H*.1,null,HFORM.white);hlOvoid(g,cx-W*.14,cy-H*.235,W*.08,H*.05,null,HFORM.black);});
- g.beginPath();g.moveTo(cx-W*.1,cy-H*.14);g.quadraticCurveTo(cx,cy-H*.2,cx+W*.1,cy-H*.14);g.quadraticCurveTo(cx+W*.16,cy+H*.14,cx+W*.02,cy+H*.28);   // beak, curling to a hook
- g.quadraticCurveTo(cx-W*.06,cy+H*.3,cx-W*.04,cy+H*.2);g.quadraticCurveTo(cx+W*.04,cy+H*.2,cx+W*.02,cy+H*.12);g.quadraticCurveTo(cx-W*.12,cy+H*.04,cx-W*.1,cy-H*.14);
- hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,W*.02);g.beginPath();g.ellipse(cx,cy+H*.36,W*.12,H*.08,0,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,W*.02);}   // chest
-function hlTotemBear(g,cx,cy,W,H,sock){
- hlMirror(g,W,H,cx,g=>{g.beginPath();g.arc(cx-W*.28,cy-H*.34,W*.1,0,TAU);hlFill(g,HFORM.black);g.beginPath();g.arc(cx-W*.28,cy-H*.34,W*.05,0,TAU);hlFill(g,HFORM.red);});
- g.beginPath();g.ellipse(cx,cy-H*.1,W*.38,H*.26,0,0,TAU);hlFill(g,HFORM.black);                                                        // head
- hlMirror(g,W,H,cx,g=>{hlOvoid(g,cx-W*.17,cy-H*.17,W*.16,H*.1,HFORM.red,HFORM.white,W*.02);hlOvoid(g,cx-W*.16,cy-H*.16,W*.08,H*.05,null,HFORM.black);
-  hlUForm(g,cx-W*.28,cy-H*.02,W*.1,H*.1,HFORM.red,W*.025);
-  g.beginPath();g.ellipse(cx-W*.24,cy+H*.34,W*.13,H*.09,0,0,TAU);hlFill(g,HFORM.black);                                                // forepaws
-  for(let k=0;k<4;k++){g.beginPath();g.moveTo(cx-W*.33+k*W*.055,cy+H*.4);g.lineTo(cx-W*.34+k*W*.055,cy+H*.46);hlLine(g,HFORM.white,W*.016);}});
- g.beginPath();g.ellipse(cx,cy+H*.02,W*.15,H*.12,0,0,TAU);hlFill(g,'#d9b48a');hlLine(g,HFORM.red,W*.02);                               // muzzle
- g.beginPath();g.ellipse(cx,cy-H*.05,W*.07,H*.04,0,0,TAU);hlFill(g,HFORM.black);
- g.beginPath();g.moveTo(cx-W*.08,cy+H*.06);g.quadraticCurveTo(cx,cy+H*.11,cx+W*.08,cy+H*.06);hlLine(g,HFORM.black,W*.02);
- g.beginPath();g.ellipse(cx,cy+H*.32,W*.12,H*.1,0,0,TAU);hlFill(g,HFORM.red);hlLine(g,HFORM.black,W*.02);}                          // belly between the paws
-function hlTotemFrog(g,cx,cy,W,H,sock){
- hlMirror(g,W,H,cx,g=>{hlSwoop(g,[[cx-W*.2,cy+H*.1],[cx-W*.44,cy+H*.1],[cx-W*.46,cy+H*.34],[cx-W*.3,cy+H*.44]],HFORM.black,W*.07);    // legs
-  for(let k=0;k<3;k++){g.beginPath();g.arc(cx-W*.36+k*W*.05,cy+H*.45,W*.025,0,TAU);hlFill(g,HFORM.black);}});
- g.beginPath();g.ellipse(cx,cy+H*.06,W*.34,H*.3,0,0,TAU);hlFill(g,'#3f8f5a');hlLine(g,HFORM.black,W*.03);                              // body
- hlMirror(g,W,H,cx,g=>{g.beginPath();g.arc(cx-W*.17,cy-H*.24,W*.1,0,TAU);hlFill(g,HFORM.white);hlLine(g,HFORM.black,W*.025);
-  g.beginPath();g.arc(cx-W*.16,cy-H*.23,W*.05,0,TAU);hlFill(g,HFORM.black);hlOvoid(g,cx-W*.2,cy+H*.14,W*.1,H*.07,HFORM.black,HFORM.teal,W*.015);});
- g.beginPath();g.moveTo(cx-W*.26,cy-H*.04);g.quadraticCurveTo(cx,cy+H*.1,cx+W*.26,cy-H*.04);hlLine(g,HFORM.black,W*.035);            // the wide frog smile
- hlUForm(g,cx,cy+H*.22,W*.14,H*.1,HFORM.red,W*.03);}
-function hlTotemTex(seed,cols){return canvasTex(256,1024,(g,w,h)=>{hlCedar(g,w,h,cols.base,true);
- const figs=[hlTotemEagle,hlTotemBear,hlTotemFrog];
- for(let k=0;k<3;k++){figs[k](g,w/2,h*(k+.5)/3,w*.62,h*.3,k===1?HFORM.red:cols.socket);
-  g.fillStyle=HFORM.black;g.fillRect(0,h*(k+1)/3-h*.006,w,h*.012);}});}
-TEX.totem=hlTotemTex(0,{base:HFORM.cedar,socket:HFORM.teal});
-TEX.totemP=hlTotemTex(1,{base:'#d8cdb4',socket:HFORM.teal});   // painted ground (the Painted Men)
-// a spread wing (thunderbird) with alpha, for crossarms and gable finials
+// ---------------------------------------------------------------- Slavic turned kubyshka & stolbets column wrap (cylinder UV)
+function hlStolbetsTex(cols){return canvasTex(256,1024,(g,w,h)=>{hlCedar(g,w,h,cols.base,true);
+ for(const [y0,hh,c] of[[.03,.05,HFORM.red],[.28,.08,HFORM.ochre],[.64,.08,HFORM.red],[.92,.05,HFORM.ochre]]){
+  g.fillStyle=c;g.fillRect(0,h*y0,w,h*hh);hlPletenka(g,0,h*y0,w,h*hh,HFORM.white,cols.accent);}
+ for(const [cy,pet] of[[.18,6],[.46,8],[.79,6]]){
+  hlRozetka(g,w/2,h*cy,w*.34,pet,HFORM.red,HFORM.ochre,HFORM.white);
+  hlRozetka(g,0,h*cy,w*.2,6,cols.accent,HFORM.ochre,HFORM.white);hlRozetka(g,w,h*cy,w*.2,6,cols.accent,HFORM.ochre,HFORM.white);}});}
+TEX.totem=hlStolbetsTex({base:HFORM.cedar,accent:HFORM.teal});
+TEX.totemP=hlStolbetsTex({base:HFORM.white,accent:HFORM.blue});
+// Carved Slavic okhlupen' / konyok horse-head & solar crest finial (alpha-tested)
 TEX.wing=canvasTex(256,128,(g,w,h)=>{g.clearRect(0,0,w,h);
- g.beginPath();g.moveTo(0,h*.2);g.quadraticCurveTo(w*.5,-h*.1,w,h*.35);g.lineTo(w,h*.6);for(let k=0;k<6;k++){const x=w-(k+1)*w/6;g.quadraticCurveTo(x+w/12,h*(.95-k*.04),x,h*(.62-k*.03));}g.closePath();
- g.fillStyle=HFORM.white;g.fill();g.save();g.clip();
- for(let k=0;k<6;k++){const x=w-(k+.5)*w/6;hlUForm(g,x,h*.62,w*.13,h*.46,k%2?HFORM.red:HFORM.black,w*.03);}
- hlSwoop(g,[[0,h*.3],[w*.3,h*.05],[w*.7,h*.1],[w,h*.4]],HFORM.black,h*.1);hlEye(g,w*.16,h*.32,w*.14,h*.24,HFORM.teal);g.restore();});
+ g.beginPath();g.moveTo(0,h*.82);g.quadraticCurveTo(w*.18,h*.14,w*.56,h*.08);g.quadraticCurveTo(w*.88,h*.06,w*.98,h*.28);
+ g.quadraticCurveTo(w*.92,h*.42,w*.76,h*.38);g.quadraticCurveTo(w*.66,h*.56,w*.84,h*.78);g.lineTo(0,h*.92);g.closePath();
+ hlFill(g,HFORM.ochre);hlLine(g,HFORM.black,4);
+ g.save();g.clip();
+ for(let k=0;k<5;k++){g.beginPath();g.arc(w*(.22+k*.11),h*(.26-k*.02),h*.12,0,TAU);hlFill(g,k%2?HFORM.red:HFORM.white);hlLine(g,HFORM.black,2);}
+ hlRozetka(g,w*.34,h*.62,h*.24,6,HFORM.red,HFORM.white,HFORM.blue);g.restore();});
 
-// ---------------------------------------------------------------- fretwork lace (alpha-tested, tinted)
-// LACE_V: carved valance — the Russian prichelina / nalichnik: a band with pierced holes and scalloped drops.
-TEX.laceV=canvasTex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#fff';g.fillRect(0,0,w,h*.42);
- for(let k=0;k<8;k++){const cx=w*(k+.5)/8;g.beginPath();g.arc(cx,h*.42,w/16,0,Math.PI);g.fill();                    // scallops
-  g.beginPath();g.moveTo(cx-3,h*.5);g.lineTo(cx,h*.98);g.lineTo(cx+3,h*.5);g.fill();}                                 // drops
+// ---------------------------------------------------------------- pierced Slavic prichelina / nalichnik fretwork lace (alpha-tested)
+TEX.laceV=canvasTex(256,64,(g,w,h)=>{g.clearRect(0,0,w,h);g.fillStyle='#fff';g.fillRect(0,0,w,h*.46);
+ for(let k=0;k<8;k++){const cx=w*(k+.5)/8;g.beginPath();g.arc(cx,h*.46,w/16,0,Math.PI);g.fill();
+  g.beginPath();g.moveTo(cx-5,h*.52);g.lineTo(cx,h*.98);g.lineTo(cx+5,h*.52);g.closePath();g.fill();}
  g.globalCompositeOperation='destination-out';
- for(let k=0;k<8;k++){const cx=w*(k+.5)/8;g.beginPath();g.arc(cx,h*.22,h*.09,0,TAU);g.fill();g.beginPath();g.arc(cx,h*.5,h*.06,0,TAU);g.fill();
-  g.beginPath();g.moveTo(cx+w/16,h*.08);g.lineTo(cx+w/16+5,h*.22);g.lineTo(cx+w/16,h*.36);g.lineTo(cx+w/16-5,h*.22);g.closePath();g.fill();}
- g.globalCompositeOperation='source-over';g.fillStyle='rgba(0,0,0,.25)';g.fillRect(0,h*.02,w,2);});
-// LACE_B: alpine cut-out balustrade boards — each 0.2 m board carries a tulip/heart cut-out; repeats along x.
+ for(let k=0;k<8;k++){const cx=w*(k+.5)/8;
+  for(let p=0;p<6;p++){const a=p/6*TAU;g.beginPath();g.arc(cx+Math.cos(a)*h*.08,h*.24+Math.sin(a)*h*.08,h*.042,0,TAU);g.fill();}
+  g.beginPath();g.arc(cx,h*.24,h*.05,0,TAU);g.fill();
+  const dx=cx+w/16;g.beginPath();g.moveTo(dx,h*.08);g.lineTo(dx+6,h*.22);g.lineTo(dx,h*.36);g.lineTo(dx-6,h*.22);g.closePath();g.fill();}
+ g.globalCompositeOperation='source-over';g.fillStyle='rgba(0,0,0,.22)';g.fillRect(0,h*.02,w,2);});
+// LACE_B: Carpathian / Rus' pierced baluster boards — heart, trefoil and diamond cut-outs; repeats along x.
 TEX.laceB=canvasTex(128,64,(g,w,h)=>{g.clearRect(0,0,w,h);const n=4,bw=w/n;
- for(let k=0;k<n;k++){const x0=k*bw;g.fillStyle='#fff';g.beginPath();g.moveTo(x0+1,0);g.lineTo(x0+bw-1,0);g.lineTo(x0+bw-1,h);g.lineTo(x0+1,h);g.fill();
+ for(let k=0;k<n;k++){const x0=k*bw;g.fillStyle='#fff';g.fillRect(x0+1,0,bw-2,h);
   g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x0+bw-2,0,1,h);}
  g.globalCompositeOperation='destination-out';
- for(let k=0;k<n;k++){const cx=k*bw+bw;   // cut-outs straddle the joint, so two boards make one shape
-  g.beginPath();g.moveTo(cx,h*.22);g.bezierCurveTo(cx-bw*.5,h*.1,cx-bw*.5,h*.5,cx,h*.78);g.bezierCurveTo(cx+bw*.5,h*.5,cx+bw*.5,h*.1,cx,h*.22);g.fill();}
+ for(let k=0;k<n;k++){const cx=k*bw+bw;
+  g.beginPath();g.moveTo(cx,h*.22);g.bezierCurveTo(cx-bw*.48,h*.08,cx-bw*.48,h*.48,cx,h*.74);g.bezierCurveTo(cx+bw*.48,h*.48,cx+bw*.48,h*.08,cx,h*.22);g.fill();
+  const mx=k*bw+bw*.5;g.beginPath();g.moveTo(mx,h*.1);g.lineTo(mx+4,h*.18);g.lineTo(mx,h*.26);g.lineTo(mx-4,h*.18);g.closePath();g.fill();}
  g.globalCompositeOperation='source-over';});
 // ---------------------------------------------------------------- clock face (colour-carrying)
 TEX.clock=canvasTex(256,256,(g,w,h)=>{const c=w/2;g.fillStyle='#1c1a1c';g.fillRect(0,0,w,h);

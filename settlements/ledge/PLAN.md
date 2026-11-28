@@ -1,5 +1,9 @@
 # Ledge: the brief for its blueprint (plan, draft, 2026-11-16)
 
+**The build session (2026-11-16) settled the plan in section 9**: the shell, the levels, the lifts, the split of the 10,000,
+the ruin, the Line's arrival, Core adoption and what was assumed for each of section 5's questions. Sections 1-8 are the
+brief as written; where section 9 differs, section 9 is what is built (and section 0 wins over both).
+
 Ledge is the Realm of Dalab's arcology on the West Rift's great lake: scale model 5.1 px **437,1330** (2 km a pixel), model id
 `sxyznayzgc`, type `arcology`, polity `Dalab Council`. It stands about 1.3 km up the cliff over the lake, and the Tungangs of
 **Loj Fower** run its lifts.
@@ -10,6 +14,26 @@ the blueprint. Nothing is drawn or built yet.
 
 Marks used throughout: ***proposed*** is invented here and waits for the owner; **(est.)** is an estimate, with its basis beside it.
 Everything else is quoted from a source named in the line or in "Sources read" at the end.
+
+## 0. The owner's answers (2026-11-16 & 2026-11-19)
+
+These settle sections 3-6 where they differ; the blueprint session starts from them.
+
+- **Locked 50/50 Half-Dalab / Half-Tungang Arcology Split (`2026-11-19` — [`DALAB-SCOPE.md`](file:///home/antigravity/traviso761-debug/krator-master/core/region/DALAB-SCOPE.md), [`CONTINENTAL-SCOPE.md`](file:///home/antigravity/traviso761-debug/krator-master/core/region/CONTINENTAL-SCOPE.md)):**
+  - Like northern **`Shelf`** (`461, 1161`; `3,500` Dalab `ND3` + `3,500` Tungang `TU1` `Loj Tuu` = `7,000`), **`Ledge` (`437, 1330`, `10,000` total complex)** is a **50/50 dual-culture Dalab / Tungang arcology** (**`5,000` Dalabites/Giants/Fellgangs counted in `SD1` + `5,000` Tungangs of `Loj Fower` counted in `Tungang Union` `TU2`**; the remaining `5,000` Dalabites of `SD1` reside in `13` nearby lakeshore/terrace `KHAMLET`s, keeping `SD1 = 14,500` and `Tungang Union = 20,000` connected with `ΔPop = 0`):
+    - **Tungangs (`5,000` in `Loj Fower`, `kits/tungang`):** Inhabit the **interior of the Ancient arcology structure and the adjoining Rift-Line mountain tunnels** (maintaining subterranean water/ventilation conduits, deep mushroom/blind-fish galleries, ore/rail haulage adits, the working cliff-lifts, and structural stone/steel shoring).
+    - **Dalabites & Shore/Head Folk (`5,000` in `SD1`, `dalab_kit.py` + Fellgang quarters):** Inhabit a **surface terraced settlement surrounding the arcology base/apron (the harbour foot by the `+297 m` lake and the road-head on top) PLUS the 1–2 arcology levels closest to the main entrances**, operating **crop-to-`inferior-biogel` (`vat-biogel`) conversion vats**, irrigated hanging gardens, `#1` bronze foundries (importing `clay = 230` fireclay crucibles & potter's clay by boat from `Nulab`, since Ledge's cliff pin has `clay = 0`), customs courts, and **mixed Dalab–Tungang entrance bazaars** where surface crops & `vat-biogel` swap for Tungang iron, coal, fireclay crucibles, `rare-earth`s, and deep-vault **`ancient-biogel`**!
+- **The Line slopes down to Ledge** ("The Line must slope down to it"). It does not arrive level at the cliff top: the bore
+  descends from the table-land (~3,480 m) to its station in the face, so question 4's spiral (or a long graded descent) is the
+  shape, not a level arrival at the head.
+- **It is partly inhabited, and half ruined.** "The arcology is half ruined": the blueprint draws a shell with whole decks
+  dead or fallen, not a full one.
+- **Who lives where (updated `2026-11-19`):**
+  - **the Tungangs (`Loj Fower`, `5,000`) hold the interior of the arcology structure (middle/inner decks by the Line's station) and the nearby mountain tunnels**;
+  - **Dalabites (and resident Fellgangs, `5,000`) hold the surface terraced settlements at top (the head) and bottom (the foot/harbour) PLUS the 1–2 arcology levels closest to the entrances** (settling question 12 and question 13's 50/50 split).
+- **The elevators still work, sized for vehicles**: each car takes several pack animals at once. They are the arcology's
+  own, running; the Tungangs' lever is that they work them and hold the interior decks the cars pass through.
+- **Two-tier biogel & photosynthesis (`2026-11-19`):** Question 15 is settled (`0.92×` Dalabite caloric mult), and Ledge's lesser Hall of Reformation / Gene Bank uses scarce deep-vault **`ancient-biogel`** for masterwork gene-preservation while Dalab's entrance levels run **`dalab_biogel_vat`** fermentation courts converting `Nulab` grain/taro into **`inferior-biogel` (`vat-biogel`)** for routine healing and servitor/cold grafts.
 
 ## 1. What Ledge is
 
@@ -319,18 +343,23 @@ The scope's build order (W0-W6) and the valley spec's shapes (`50-region-valley.
 (est.):
 
 ```js
-// settlements (WR_TUNE, [G data]); the town at scale 50, the loj at 10, as the scope proposes
-{ id: 'ledge', name: 'Ledge', faction: 'dalab', people: 10000, scale: 50,
+// settlements (WR_TUNE, [G data] — locked 2026-11-19 50/50 split: 5,000 Dalab SD1 + 5,000 Tungang TU2 = 10,000)
+{ id: 'ledge', name: 'Ledge (Dalab Surface & Entrance Levels)', faction: 'dalab', people: 5000, scale: 50,
   works: [
-    { kind: 'fish',      site: 'foot', out: 'fish' },        // the census's 745, the lake's north shore
-    { kind: 'shore',     site: 'foot', out: 'lotus root, wild rice' },
-    { kind: 'terraces',  site: 'foot', out: 'mist tea, fruit, hashish' },
-    { kind: 'pasture',   site: 'slope', out: 'meat, hides' },
-    { kind: 'bronze',    site: 'decks', out: 'bronze' },     // copper 24 + tin by the Line from the north door
-    { kind: 'genecraft', site: 'decks', out: 'gene-craft, healing' },  // the census's 50
-    { kind: 'salvage',   site: 'decks', out: 'arcology scrap' } ] }
-{ id: 'loj-fower', name: 'Loj Fower', faction: 'tungang', people: 1500, scale: 10,
-  works: [ { kind: 'lifts' }, { kind: 'dark-beds', out: 'mash' }, { kind: 'line-upkeep' } ] }
+    { kind: 'fish',       site: 'foot',  out: 'fish' },        // the census's 745, the lake's north shore
+    { kind: 'shore',      site: 'foot',  out: 'lotus root, wild rice' },
+    { kind: 'terraces',   site: 'foot',  out: 'mist tea, fruit, hashish' },
+    { kind: 'pasture',    site: 'slope', out: 'meat, hides' },
+    { kind: 'biogel-vat', site: 'entrances', out: 'inferior-biogel' }, // Nulab crops + salt/sulfur/lime in clay tuns
+    { kind: 'bronze',     site: 'decks', out: 'bronze' },     // copper 24 + TU1 tin + Nulab fireclay crucibles (clay:0 on cliff)
+    { kind: 'genecraft',  site: 'decks', out: 'gene-craft, healing' }, // ancient-biogel masterworks + vat-biogel clinic
+    { kind: 'salvage',    site: 'decks', out: 'arcology scrap' } ] }
+{ id: 'loj-fower', name: 'Loj Fower (Arcology Interior & Tunnels)', faction: 'tungang', people: 5000, scale: 50,
+  works: [
+    { kind: 'lifts' },
+    { kind: 'dark-beds',    out: 'mash, blind-fish' },
+    { kind: 'line-upkeep' },
+    { kind: 'vault-salvage', out: 'ancient-biogel, rare-earth' } ] }
 
 // roads
 { from: 'ledge', to: 'ledge.foot', carriers: "Loj Fower's cages", cut: 'passage', closed: 'strike' }  // the lifts
@@ -391,3 +420,166 @@ tune's Ledge records, and the gallery when it reaches `main`.
   `openworld/TRADE-GEMINI.md` (grep)
 - The scale model 5.1 (`tools/scale-model/model/data`): `h.png`, `wl.png`, `p.png`, `c.png`, the temperature rasters, `climate.json`,
   `rivers.json`, decoded by scratch scripts on `smodel.page`'s formulas
+
+## 9. The plan as built (the Ledge session, 2026-11-16)
+
+Everything here is *proposed* unless section 0 or 9.11 (the owner's answers of 2026-11-17) fixes it; the layout (`src/30-ledge-layout.js`) is the one source of the numbers,
+`AREAS.md` and the sheets (`floors/`) are drawn from it, and `test-ledge.js` checks it.
+
+### 9.1 The Ancients' target: replaced, not reused
+
+`kits/ancients/targets/ledge` (`src/89i-ledge.js`) stays as it is, the kit's sheet of a cantilevered cliff city, and is **designated for Shelf** (the owner, 2026-11-17; `settlements/shelf/PLAN.md`). Ledge's page
+does **not** call `buildLedge`:
+- it decides everything itself: a 53 KB function of fixed numbers drawing from the kit's global stream (`reseed(9740)`), where
+  CLAUDE.md wants records drawn by a builder that decides nothing, and placement on `KRAND` by id;
+- it carries its own ground: an 850 m desert massif facing west with a plain and a town of white boxes, where Ledge is a 1,265 m face
+  over the lake facing south on its own ground with Dalab's and the Fellgangs' towns from their own kits;
+- its decks have no ids, states or holders, so nothing (the tags, the walk, the census, the strike, the ruin by part) could key on them.
+
+**What is kept** is the form, which fits the lore: pale slab layers cantilevered off the rock as an **inverted ziggurat** (each
+layer reaching further than the one below, the top flush with the cliff top), rooms set back under the soffit above, a gallery at
+each edge, ribbed soffits, lift cores up the face, a great prow; and its ruin (the prow fallen and the gash it tore, mid layers
+sheared at the rock line, a wing pancaked). Ledge redraws that form from records (`src/45`-`48`), at Ledge's size.
+
+### 9.2 The frame and the ground
+
+- **Frame**: x east along the face, z south out of it (the rock at z < 0), y metres above sea level; the origin on the face line
+  under the pin (5.1 px 437,1330). riftrim station 1's frame is the same with its z = Ledge's z - 603 (its `cliffZ(0)`).
+- **Ledge draws its own ground** (`LEDGE.groundAt`, `[G data]`): riftrim station 1 drew a stand-in cliff with benches every 110 m and
+  owes Ledge the cuts; Ledge's face is now the record riftrim reads (section 9.10, the hand-over).
+  - **The head** (the Ancients' cut bench): flat at **1,562 m** from the face 700 m north; then the upper escarpment rises at ~26 %
+    toward the tableland (3,481 m at its edge, ~10 km north: off the page, the far field).
+  - **The face**: dressed sheer by the Ancients for 1,500 m along it (|x| < 750); beyond, the natural rift-fill cliff at ~73 degrees.
+  - **The foot**: the Ancients' apron, flat at **312 m**, 180 m out to a quay wall; the lake (**297 m**) beyond, its bed falling to
+    ~150 m deep within 1 km.
+
+### 9.3 The shell (`LEDGE.stack`)
+
+| | | |
+|---|---|---|
+| Layers | **42**, floors at y = 332 + 30 k (k 0-41): the lowest 20 m over the apron, the top (k 41) flush with the head at 1,562 m | a layer: a 5 m slab, four 4.5 m storeys of rooms, a 7 m plenum under the soffit above (the target's form at a 30 m pitch) |
+| Along the face | 320 m at k 0 to 700 m at k 41 | the brief's "keep ~1 km at the top" trimmed: 700 m keeps the area near the Ancients' middling arcologies |
+| Out of the rock | 24 m at k 0 to 220 m at k 41 (as t^1.5); **the prow** (the centre wing from k 26) to 340 m | the inverted ziggurat |
+| Wings | five per layer: W2, W1, C, E1, E2 (a fifth of the width each; the outer pair at 72 % of the reach, the inner at 90 %) | the unit of state, holder and census: a **deck** is one wing of one layer, id `d.<k>.<wing>` |
+| Floor | rooms over 70 % of a deck's footprint, four storeys: **6.27 million m2** at the Ancients' peak, **~90,000 people** then (Span's rule) | `AREAS.md` (from `LEDGE.area`); the owner may trim it (question A) |
+
+### 9.4 The levels (section 0's four, as zones of layers)
+
+| Zone | Layers | Height | What | Held by |
+|---|---|---|---|---|
+| **Z0 The head** | on the bench | 1,562 m | the road head (caravan yards, stables, warehouses, inns, the market), the gate, the garrison's fort, the top lift hall and its winding house, customs, Dalab's mound facing the lab (NNE), the Dalab town, **the Fellgang quarter** (the Travellers' halting place, porters, drovers) | Dalab; the Fellgangs; Loj Fower in the lift hall |
+| **Z1 The crown** | k 37-41 | 1,442-1,587 m | the sound decks either side of the gash: **the gene bank's precinct** (W1, its cold vault in the rock behind), **the governor's house and a lesser Hall of Reformation** (E1), the priests' face core to the head | Dalab |
+| **Z2 The upper dead decks** | k 26-36 | 1,112-1,437 m | dead: the prow gone from the centre, **the pancaked wing** (E2, k 29-35 down onto k 28), the rest empty and dark | no one |
+| **Z3 The middle decks** | k 16-25 | 812-1,107 m | **the Line's station** (k 20: the bore's mouth in the face behind the C and E1 decks), **Loj Fower's** decks round it (their loj hall, dark beds, wax house, signal box: the `tg` set's keys, stand-ins until it merges), the great lifts' middle landings; the outer wings sealed by the loj | **Loj Fower** |
+| **Z4 The lower dead decks** | k 6-15 | 512-807 m | **the sheared layers** (W1 and W2, k 8-14, cut at the rock line: their outer decks lie on the apron below), the centre squatted by Fellgang salvagers, the rest dead or sealed | no one; salvagers |
+| **Z5 The foot** | k 0-5 and the apron | 312-482 m | the foot decks (Dalab west, Fellgangs east), **the foot lift hall**, the harbour and its mole, the fish market and smokehouses, the boatmen's inn, granaries for the basin's grain, the terraces on the apron's ends (tea, orchards, the gene bank's beds), the prow's wreck heaped at the water | Dalab; the Fellgangs |
+
+### 9.5 The lifts and the stairs
+
+- **Two great lifts** (G1 east at x +120, G2 west at x -120), vertical shafts 20 x 14 m in the rock 30 m behind the face, from the
+  foot lift hall (312 m) to the top lift hall (1,562 m): **1,250 m**. The Ancients' rail-car lifts (the Line's leg 4 went down the cliff
+  and over the lake to Nulab), so **a car is 16 x 10 x 7 m**: a wagon and its team, or **six pack beasts and their loads**, ~40 t.
+  **Both run** (section 0: the elevators still work): Loj Fower's, counterweighted, driven from the head's winding house.
+  Landings: the foot, k 2 (the foot decks), k 20 (the station), k 39 (the crown), the head. The dead decks' landings are sealed.
+- **Four face cores** (P1-P4, 12 m towers on the face through the decks, the target's "lift cores up the face"): P3 runs between
+  the crown and the head (the priests' lift); P1 is cut at the shear, P2 went with the prow, P4 is dead.
+- **The stairs** are in the great shafts' cores, Loj Fower's (question 7 as proposed): a strike seals Ledge but for ropes down the face.
+- **Power**: the Geit Riba's fall 6 km west (an Ancient penstock and plant, a record, off the page) (question 8 as proposed).
+
+### 9.6 The Line's arrival (section 0: it slopes down to a station in the face)
+
+The bore comes from the tableland's south portal (3,496 m, 41 km north) and **descends inside the upper escarpment** to the
+station at **932 m** (k 20): 2,564 m of fall, at the network's 4 % ruling grade **64 km of line**: the 42 km surface run's last part and a
+**helix** of 400 m radius inside the escarpment behind Ledge (~25 turns, 63 km; with the approach 64 km: `LEDGE_LAYOUT.line`, checked at 4 % or less). The station's platforms lie in the
+rock behind the C and E1 decks; its mouth opens onto deck 20 as the concourse. So the Line reaches Ledge **in the middle**, among Loj
+Fower's decks: the Tungangs hold the station, and both the head and the foot reach it only by their lifts.
+
+### 9.7 The 10,000 (section 0 left the split open: question 13)
+
+*Proposed*: **the 10,000 are everyone living at Ledge, Loj Fower included** (the Union's 20,000 counts the loj too: one person in both
+counts). By zone (the layout gives every part its people; `test-ledge.js` holds the sums):
+
+| Zone | People | Dalab | Fellgang | Loj Fower |
+|---|---|---|---|---|
+| Z0 The head | 3,700 | 2,700 (the garrison's 1,200 with families, the terminus, officers, the town) | 1,000 (Travellers, porters, drovers) | in the lift hall, counted in Z3 |
+| Z1 The crown | 900 | 900 (genepriests and novices, the gene bank, the healers, the governor's house, the Giant guard) | | |
+| Z2 The upper dead decks | 0 | | | |
+| Z3 The middle decks | 1,600 | 100 (customs at the station) | | 1,500 |
+| Z4 The lower dead decks | 300 | | 300 (salvagers) | |
+| Z5 The foot | 3,500 | 2,000 (boatmen, fishers, the granaries, growers) | 1,500 (fishers, smokers, boat-builders) | |
+| **Total** | **10,000** | **5,700** | **2,800** | **1,500** |
+
+### 9.8 Half ruined (section 0)
+
+States of a deck: **reclaimed** (lived in by Dalab or the Fellgangs), **kept** (Loj Fower's), **squatted**, **dead** (sound, empty, dark),
+**sealed** (shut), and the broken ones: **damaged**, **sheared** (cut at the rock line: a stub), **pancaked**, **gone**. The layout's rule:
+**the broken decks are 40-60 % of the shell's floor** (the layout: **43.4 %**; lived in today 24 %) and nobody lives on one. The ruin: the prow (C, k 26-41) fell and lies heaped on the
+apron's front and in the shallows, the gash it tore sheared C k 22-25 and damaged C k 4-5; W1 and W2 k 8-14 sheared (their decks heaped on
+the apron's west); E2 k 29-35 pancaked onto k 28; the prow's fall tore W2 k 26-36, W1 k 33-36 and E1 k 34-36. Every wreck is watched (`KRUINS.watch`); every debris heap is a `KRUBBLE` heap.
+
+### 9.9 Section 5's questions: what the build assumed
+
+| Q | Assumed (*proposed* unless section 0 says) |
+|---|---|
+| 1 Start from the target? | **No** (9.1): its form, redrawn from records |
+| 2 Footprint | 320-700 m along the face, 24-220 m out, the prow 340 m (9.3); `AREAS.md` says the floor |
+| 3 Height | the whole lower face: k 0 20 m over the apron, the top flush with the head |
+| 4 The Line | section 0: slopes down; to the station in the middle (9.6), a helix inside the escarpment |
+| 5 Levels | section 0's four: head, middle, ruined (two bands), foot; plus the crown (9.4) |
+| 6 Lift shafts | two great car lifts (both run), four face cores (one runs), stairs in the great shafts (9.5) |
+| 7 Stairs in a strike | Loj Fower's: a strike seals Ledge |
+| 8 Power | the Geit Riba |
+| 9 The viaduct | fallen: its piers a line of stumps SSE toward Nulab (drawn for 1.5 km) |
+| 10 Ruin | 9.8; the gene bank's vault sealed to all but the priests |
+| 11 The gene bank | an Ancient cold vault in the rock behind the crown's W1 decks, Dalab's living collection on those decks and the foot's terraces; a lesser Hall of Reformation on E1 |
+| 12 The split | section 0: Dalab and the Fellgangs on the head, crown and foot, Loj Fower the middle and the lifts; Loj Fower lives on its decks and in the rock behind them |
+| 13 The 10,000 | 9.7: Loj Fower inside the 10,000 |
+| 14 Interiors | none in this pass (the decks are frontage); the lift halls, the station, the loj hall, the vault and the governor's house are the first rooms, next |
+| 15 Photosynthesis | not used (a W1 tune question) |
+| 16 Kits | the Dalab set, the Fellgang set (`TG.fg`), `kits/ancients`' materials; the `tg` set when Loj Twenny's branch merges. No `core/city`: Ledge does not take `core/simulation`, so needs no `SINGLE_COMPLEX` entry yet |
+
+### 9.10 The hand-over to riftrim station 1
+
+Riftrim's station 1 should read `LEDGE.groundAt` (or its face record: the dressed face |x| < 750 at z = 0, the head 1,562, the apron 312
+to z 180, the lake 297) in place of its benched stand-in within 900 m of Ledge, and keep its flora off the dressed face and the decks.
+Not done here (riftrim's files are another session's).
+
+### 9.11 Questions for the owner: settled (the owner, 2026-11-17: "A-D sounds good": each as built)
+
+- **A. The size: settled, as built.** The shell is 42 layers, 320-700 m along the face, 24-220 m out (the prow 340 m): **6.27 million m2**, ~90,000
+  people at the Ancients' peak. Keep it, or trim (a 500 m top would take it to about 4 million)?
+- **B. Loj Fower in the 10,000: settled, yes.** Built: yes (1,500 of the 10,000 live on the middle decks; Dalab 5,700, the Fellgangs 2,800). Or are
+  the 10,000 Dalab's and the Fellgangs', with the loj on top?
+- **C. The station's height: settled, as built.** Built: the middle decks at 932 m (layer 20), reached by a helix of ~25 turns (64 km of bore at 4 %). Or
+  should the Line come down the Geit Riba's gorge first (saving ~750 m of fall), or arrive higher in the face?
+- **D. The lifts: settled, as built.** Built: both great lifts run (cars 10 x 16 x 7 m, six beasts, ~40 t), four face cores of which one runs, the stairs in
+  the great shafts Loj Fower's. Right?
+
+## Core adoption (written before the first fragment, 2026-11-16)
+
+Started from **`settlements/span`** (a Dalab-held Ancient arcology: its layout-as-data, rules, test, blueprint and page are the
+pattern, file for file) and **Strongbow** (`claude/keen-swanson-68a311`: a cliff arcology with lifts, its zones and states); the page
+takes `tools/new_build/`'s defaults (recorded, samplers, drawn-ground, names: listed in `tools/checks_optin.json`).
+
+| Module | Takes | For |
+|---|---|---|
+| `core/rand` | `KRAND` | every choice: a deck's blocks and their reach, which windows are dark, the wreck's pieces, the viaduct's stumps, by `KRAND.hash` of the record's seed (`LEDGE.seed`: `KRAND.child(world, id)`) |
+| `core/tags` | `50`, `52`, `53` | every deck, lift, part and wreck registered before it is drawn (culture `ancient`, `dalab`, `fellgang`, `tungang`) |
+| `core/space` | `KSPACE` | the head's and the foot's parts disjoint (`LEDGE.checks`) |
+| `core/terrain` | `35-core-strata` (`KSTRATA` `rift`: the cliff's beds), `37c-core-rubble` (`KRUBBLE`: the prow's and the shear's heaps) | the face and the debris |
+| `core/ruins` | `KRUINS.watch` | the shell, its wreckage and the viaduct's stumps |
+| `core/water` | `WATER.still` + `stillMaterial` | the great lake |
+| `core/atmos` | `skyBiome` at px 437,1330, `bindHost` | the standard sky; the clock and the waves the water reads |
+| `core/host` | `FULL` + `KEYS` | camera, loop, panel, probe, inspector, marks, minimap, editor, cut-away |
+| `core/drawn` | `KDRAWN.grid` of the ground | the eye check on the drawn ground |
+| `core/materials` | `record` (`KMAT`), `materials.json`, `tools/textures/pack.py` | the cliff's rock and the head's turf from the library; the Ancients' panel through `kits/ancients`' pack |
+| `settlements/dalab` | the Dalab set, read in place (`VERN.place`) | every building Dalab put up on the head and the foot |
+| `kits/tungang` | `tungang_bundle.py` (`TG.fg.draw`) | the Fellgangs' quarters on the head and the foot |
+
+Not taken (one line each): `core/city` (Ledge is one Ancient complex; the head's and foot's towns are a few dozen buildings on the
+Ancients' flat benches; no `core/simulation` yet, so no exemption is needed); `core/simulation`, `core/sched`, `core/charactermodels`
+(life is the W1 tune's and a later pass); `core/walk` (the layout's links are the coarse graph; walk floors come with the interiors);
+`core/biome` and the riftrim kit's flora (owed: the W rim's dress on Ledge's ground, a later pass); `core/lod` (one site, the shell is
+merged by material; the budget is asserted); `KCARVE`, `KCAVERN`, `KKARST` (the shafts, the station and the springs' caves are inside
+the rock and drawn as their mouths only: owed with the interiors); `core/furnish`, `kits/interiors` (no rooms this pass); the
+`tg` set (on `claude/loj-twenny-059a5e`, not merged: Loj Fower's buildings are tagged stand-ins).

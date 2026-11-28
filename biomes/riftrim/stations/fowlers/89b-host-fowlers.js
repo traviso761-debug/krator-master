@@ -1,13 +1,16 @@
 // ================================================================= HOST — the Fowlers' village, ropes and nest ledges (station 8), after the atmosphere (89a) and before the build (89z)
-// THE VILLAGE: core/hamlet's KHAMLET.village on the Fellgang row (84f), focus `ranch` (the rope house, the egg store, the pens: the fowling works), ~140 people;
-// placed here, before the flora, so the glass forest keeps off it (LAND.keep) and so its records are core/tags volumes before anything is drawn. Drawn in
-// LAND.build (89z runs it before the bake) as FELLGANG's stand-ins. THE ROPES: one per household, up the lower face from the wall's foot along its fall line
-// (a ribbon 5 cm wide, pegged every 25 m, a ladder up its first 18 m), each its family's stretch: the rope is the family's vote (PLAN.md section 6).
+// THE VILLAGE: core/hamlet's KHAMLET.village on the opt-in Fellgang row (core/hamlet/fellgang/22: KHAMLET.CULTURES.fellgang), focus `fowling` (the rope house,
+// the egg store, the pens), ~100 people; placed here, before the flora, so the glass forest keeps off it (LAND.keep) and so its records are core/tags volumes
+// before anything is drawn. Drawn in LAND.build (89z runs it before the bake) by the Fellgang kit (kits/tungang's bundle, TG.fg.draw: the owner, 2026-11-11, swap
+// the stand-ins); without the bundle on the page, 84f's stand-ins on its own row (`ranch`) draw the same village (the focus name enters no seed: core/hamlet's test).
+// THE ROPES: one per household, up the lower face from the wall's foot along its fall line, each its family's stretch: the rope is the family's vote (PLAN.md
+// section 6). The kit draws each as its fixed line (Ancient cable low, bark cordage above, an iron peg every 25 m with the family's mark, a ladder up 18 m).
 // THE NEST LEDGES: the face's ledges near the ropes (slope under .6, 60-700 m up), each a cluster of nests with eggs; the flyers are kits/fauna's, owed.
 const FOWL=(function(){const S=STATION,V0=S.VIL,G=terrainH,slope=(x,z)=>{const e=3;return Math.hypot(G(x+e,z)-G(x-e,z),G(x,z+e)-G(x,z-e))/(2*e);};
  const ok=(x,z)=>{if(waterH(x,z)>G(x,z)-.5)return false;if(z<S.footZ(x)+45||z>S.shoreZ(x)-25)return false;return slope(x,z)<.22;};
- const V=KHAMLET.village({id:'fowlers',world:8310,culture:FELLGANG.ROW,focus:'ranch',site:{x:V0.x,z:V0.z},link:{x:V0.x+30,z:S.shoreZ(V0.x+30)-6},
-  resource:{x:V0.x,z:S.footZ(V0.x),workers:44},popMax:150,dims:FELLGANG.dims,ground:{ok},siteReach:500});
+ const FG=!!(KHAMLET.CULTURES&&KHAMLET.CULTURES.fellgang),KIT=typeof TG!=='undefined'&&TG.fg;
+ const V=KHAMLET.village({id:'fowlers',world:8310,culture:FG?'fellgang':FELLGANG.ROW,focus:FG?'fowling':'ranch',site:{x:V0.x,z:V0.z},link:{x:V0.x+30,z:S.shoreZ(V0.x+30)-6},
+  resource:{x:V0.x,z:S.footZ(V0.x),workers:44},popMax:150,dims:KIT?TG.fg.dims:FELLGANG.dims,ground:{ok},siteReach:500});
  const out={village:V,site:V.site,ropes:[],nests:[],error:V.error||null};
  if(V.error)reportErr('the Fowlers: '+V.error);
  /* the ropes: one per household, spread along the foot within 700 m of the village, each up its fall line */
@@ -29,31 +32,37 @@ window._fowl=FOWL;
  LAND.keep=(x,z)=>{if(Math.hypot(x-cx,z-cz)<FOWL.radius)return 0;for(const r of V.records)if(Math.abs(x-r.x)<r.w&&Math.abs(z-r.z)<r.w)return 0;return 1;};})();
 // THE DRAWING (LAND.build: 89z, before the bake): the village's stand-ins and lanes (84f), the ropes, pegs and ladders, the nests and eggs
 LAND.build=function(){const T=THREE,V=FOWL.village;if(!V.records)return{village:0};
- FELLGANG.draw(V,{scene,ground:terrainH,seed:8312,label:'The Fowlers (a Fellgang village)'});FELLGANG.lanes(V,{scene,ground:terrainH});
- const rp=[],rc=[],col=new T.Color(0x5a4630),push=(a,b,w)=>{const dx=b[0]-a[0],dz=b[2]-a[2],l=Math.hypot(dx,dz)||1,nx=-dz/l*w,nz=dx/l*w;
-  rp.push(a[0]-nx,a[1],a[2]-nz,a[0]+nx,a[1],a[2]+nz,b[0]+nx,b[1],b[2]+nz,a[0]-nx,a[1],a[2]-nz,b[0]+nx,b[1],b[2]+nz,b[0]-nx,b[1],b[2]-nz);
-  rp.push(a[0],a[1]-w,a[2],a[0],a[1]+w,a[2],b[0],b[1]+w,b[2],a[0],a[1]-w,a[2],b[0],b[1]+w,b[2],b[0],b[1]-w,b[2]);for(let k=0;k<12;k++)rc.push(col.r,col.g,col.b);};
- FOWL.ropes.forEach(r=>{for(let k=1;k<r.pts.length;k++)push(r.pts[k-1],r.pts[k],.03);
-  /* the ladder up the first 18 m: two rails a little out from the rope, rungs every 40 cm */
-  const L=r.pts.filter(p=>p[1]-r.y0<18);for(let k=1;k<L.length;k++){const a=L[k-1],b=L[k];push([a[0]-.25,a[1],a[2]],[b[0]-.25,b[1],b[2]],.035);push([a[0]+.25,a[1],a[2]],[b[0]+.25,b[1],b[2]],.035);}
-  for(let y=r.y0+.4;y<r.y0+18;y+=.4){const p=L.find(q=>q[1]>=y)||L[L.length-1];push([p[0]-.25,y,p[2]],[p[0]+.25,y,p[2]+.001],.025);}});
- const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(rp,3));g.setAttribute('color',new T.Float32BufferAttribute(rc,3));g.computeVertexNormals();
- const rm=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,roughness:1,side:T.DoubleSide}));rm.name='fowlers:ropes';rm.userData.host=true;rm.userData.probePoints=[].concat(...FOWL.ropes.map(r=>{const p=r.pts[Math.floor(r.pts.length/2)];return[p[0],p[1],p[2]];}));rm.userData.inspectLabel='The families\' ropes and ladders';scene.add(rm);
+ /* the village and the ropes: the Fellgang kit's (TG) when its bundle is on the page, else 84f's stand-ins and a ribbon for each rope */
+ const rpp=[].concat(...FOWL.ropes.map(r=>{const p=r.pts[Math.floor(r.pts.length/2)];return[p[0],p[1],p[2]];}));
+ if(typeof TG!=='undefined'&&TG.fg){FOWL.drawn=TG.fg.draw(V,{scene,ground:terrainH,seed:8312,label:'The Fowlers (a Fellgang village)'});
+  FOWL.ropeMeshes=TG.fg.ropes(FOWL.ropes,{scene,label:'The families\' ropes and ladders'});
+  if(FOWL.ropeMeshes&&FOWL.ropeMeshes[0])FOWL.ropeMeshes[0].userData.probePoints=(FOWL.ropeMeshes[0].userData.probePoints||[]).concat(rpp);}
+ else{FELLGANG.draw(V,{scene,ground:terrainH,seed:8312,label:'The Fowlers (a Fellgang village)'});
+  const rp=[],rc=[],col=new T.Color(0x5a4630),push=(a,b,w)=>{const dx=b[0]-a[0],dz=b[2]-a[2],l=Math.hypot(dx,dz)||1,nx=-dz/l*w,nz=dx/l*w;
+   rp.push(a[0]-nx,a[1],a[2]-nz,a[0]+nx,a[1],a[2]+nz,b[0]+nx,b[1],b[2]+nz,a[0]-nx,a[1],a[2]-nz,b[0]+nx,b[1],b[2]+nz,b[0]-nx,b[1],b[2]-nz);
+   rp.push(a[0],a[1]-w,a[2],a[0],a[1]+w,a[2],b[0],b[1]+w,b[2],a[0],a[1]-w,a[2],b[0],b[1]+w,b[2],b[0],b[1]-w,b[2]);for(let k=0;k<12;k++)rc.push(col.r,col.g,col.b);};
+  FOWL.ropes.forEach(r=>{for(let k=1;k<r.pts.length;k++)push(r.pts[k-1],r.pts[k],.03);});
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(rp,3));g.setAttribute('color',new T.Float32BufferAttribute(rc,3));g.computeVertexNormals();
+  const rm=new T.Mesh(g,new T.MeshStandardMaterial({vertexColors:true,roughness:1,side:T.DoubleSide}));rm.name='fowlers:ropes';rm.userData.host=true;rm.userData.probePoints=rpp;rm.userData.inspectLabel='The families\' ropes';scene.add(rm);}
+ FELLGANG.lanes(V,{scene,ground:terrainH});
  /* the nests (a shallow cup of sticks) and their eggs, instanced */
  const N=FOWL.nests,ne=N.reduce((a,n)=>a+n.eggs,0),cup=new T.Mesh(new T.CylinderGeometry(.42,.28,.18,10),new T.MeshStandardMaterial({color:0x4a3a28,roughness:1})),egg=new T.Mesh(new T.SphereGeometry(.07,8,6),new T.MeshStandardMaterial({color:0xd8d0bc,roughness:.6}));
  const IC=new T.InstancedMesh(cup.geometry,cup.material,Math.max(1,N.length)),IE=new T.InstancedMesh(egg.geometry,egg.material,Math.max(1,ne)),m=new T.Matrix4(),q=new T.Quaternion(),s=new T.Vector3(1,1,1),sE=new T.Vector3(1,1.3,1);let e=0;
  N.forEach((n,i)=>{IC.setMatrixAt(i,m.compose(new T.Vector3(n.x,n.y+.06,n.z),q,s));for(let k=0;k<n.eggs;k++){const a=k*2.2;IE.setMatrixAt(e++,m.compose(new T.Vector3(n.x+Math.cos(a)*.12,n.y+.2,n.z+Math.sin(a)*.12),q,sE));}});
  IC.count=N.length;IE.count=e;[IC,IE].forEach(o=>{o.userData.host=true;o.userData.inspectLabel='A nest on a ledge of the wall';scene.add(o);});
- return{village:V.records.length,pop:V.census&&V.census.pop,ropes:FOWL.ropes.length,nests:N.length};};
+ return{village:V.records.length,pop:V.census&&V.census.pop,ropes:FOWL.ropes.length,nests:N.length,kit:FOWL.drawn?{tris:FOWL.drawn.tris,missing:FOWL.drawn.missing}:'stand-ins'};};
 // THE STATION'S CHECKS (99: LAND.checks / LAND.negatives), each with a broken input that must fail
 const FC8={village:V=>{const n=V&&V.records?V.records.length:0,keys=n?new Set(V.records.map(r=>r.key)):new Set(),need=['fg-meethall','fg-ropehouse','fg-eggstore'],miss=need.filter(k=>!keys.has(k));
   return{ok:!!V&&!V.error&&n>=8&&!miss.length,detail:V&&V.error?V.error:n+' buildings, '+((V&&V.census&&V.census.pop)||0)+' people'+(miss.length?'; missing '+miss.join(', '):'')};},
  dry:V=>{const bad=(V.records||[]).filter(r=>waterH(r.x,r.z)>terrainH(r.x,r.z)-.3||r.z<STATION.footZ(r.x)+30);return{ok:(V.records||[]).length>0&&!bad.length,detail:bad.length?bad.length+' buildings in the water or on the wall':'every building on the bench, dry'};},
  ropes:R=>{const bad=R.filter(r=>r.top-r.y0<120||Math.abs(r.pts[0][2]-STATION.footZ(r.x))>12);return{ok:R.length>=6&&!bad.length,detail:R.length+' ropes'+(bad.length?', '+bad.length+' short or off the foot':', each from the foot 120 m and more up the face')};},
+ kit:D=>{if(typeof TG==='undefined')return{ok:true,detail:'no Fellgang kit on the page: the stand-ins drew the village'};const miss=D&&D.missing?Object.keys(D.missing):['(nothing drawn)'],err=(TG.errors||[]).length;
+  return{ok:!!D&&!miss.length&&!err,detail:(miss.length?'missing: '+miss.join(', '):D.recs.length+' buildings drawn by the kit, '+D.tris+' triangles')+(err?'; TG errors: '+TG.errors[0]:'')};},
  forest:T=>{const V=FOWL.village,bad=T.filter(t=>(V.records||[]).some(r=>Math.abs(t.x-r.x)<r.w*.6&&Math.abs(t.z-r.z)<r.w*.6));return{ok:!bad.length,detail:bad.length?bad.length+' trees in the village\'s buildings':'no tree stands in a building'};}};
 LAND.checks=(add,P)=>{add('the Fowlers\' village placed on its bench (core/hamlet, the Fellgang row)',FC8.village(FOWL.village));add('the village dry and off the wall',FC8.dry(FOWL.village));
- add('the families\' ropes up the face',FC8.ropes(FOWL.ropes));add('the glass forest keeps out of the village',FC8.forest(RRIM.TREES||[]));};
+ add('the families\' ropes up the face',FC8.ropes(FOWL.ropes));add('the Fellgang kit draws every building (TG.fg.draw: none missing, no error)',FC8.kit(FOWL.drawn));add('the glass forest keeps out of the village',FC8.forest(RRIM.TREES||[]));};
 LAND.negatives=(add,P)=>{add('a village with no meeting hall',FC8.village({records:(FOWL.village.records||[]).filter(r=>r.key!=='fg-meethall'),census:FOWL.village.census}));
  add('a building on the wall',FC8.dry({records:[{x:STATION.VIL.x,z:STATION.footZ(STATION.VIL.x)-200}]}));
  add('a rope that stops at the foot',FC8.ropes([{x:0,z:STATION.footZ(0),y0:2400,top:2410,pts:[[0,2400,STATION.footZ(0)]]}]));
+ if(typeof TG!=='undefined')add('a building the kit lacks',FC8.kit({missing:{'fg-unknown':1},recs:[],tris:0}));
  add('a tree in the meeting hall',(function(){const r=(FOWL.village.records||[])[0]||{x:0,z:0,w:10};return FC8.forest([{x:r.x,z:r.z}]);})());};

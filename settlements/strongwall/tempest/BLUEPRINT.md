@@ -41,6 +41,7 @@ the order and the fort asset are in `settlements/strongwall/PLAN.md` sections 3a
 | `floors/section.png` | along the axis from the barbican to the Storm Tower |
 | `FURNITURE.md` | the manifest from the same data, the pieces the catalog lacks at the end |
 | `tempest_blueprint.py` | the rooms as data; runs on the shared generator with Longsong's Xanadu key map and programmes |
+| `tempest_plan.json` | the blueprint as data for the builders (V2 the fort asset round the monastery, F4 the interiors, V3 the open world): the curtains, talus, 28 towers, five gates, the hosted `qb_monastery` and its frame, every sheet's rooms with its floor level, the utse's floors put back in place, the stairs, the people, the horses and the fodder rota. Written by `export_tempest.py`; rerun it after changing the rooms |
 
 **Frame.** u runs from the Main Gate (east, toward Strongwall, drawn on the left) west along the axis toward
 Komodo's side; v across, v > 0 north (up the sheet); metres. The outer curtain's line is u -130..130, v -95..95 (260 x
@@ -145,7 +146,7 @@ and in the walled paddock by night; the milking herd at the byres.
 | M1 | monastery, ground | the Gate of the Song, the porter's lodge, the Blade Room, the sacristy; the cloister court and the Wheel of the Storm; the kora ring (the cloister walks, the court's arms beside the hall, the passage behind it); the porch, the Assembly Hall, the Shrine of the Storm; the Library of the Song, the scriptorium, the tea kitchen; the old brothers' ten cells; the chapter house, the treasury, the store, the latrines |
 | M2 | monastery, upper | the Drum of the Hours; 39 cells drawn one by one (front ranges on a corridor, side ranges on the gallery over the cloister roof); the Prior, the chant-master, the daughter house's guests on the gallery over the kora; the Masters' Gallery round the hall's void |
 | MR | monastery, top | the Hall of Vigil round the light well under the gilt crown (the crown's pavilion is the hall's lantern); the Protectors' Chapel behind it, windowless; the lookout; the roofs with their stair heads, the prayer-flag masts and the incense altar (sang) |
-| U | the utse | U0 the inner gate, its keepers, the runners; U1 the War Room and the raid ledger; U2 the Hall of the Banner and the balcony; U3 the audience room, the Prismarch's cell, his secretary; U4 his chapel, the roof terrace, the beacon |
+| U | the utse | U0 the inner gate passage, its keepers, the runners, the stair's lobby; U1 the War Room, the murder gallery over the passage, the raid ledger's clerks, the landing where the runners' hoist arrives; U2 the Hall of the Banner and the balcony over the muster court; U3 the audience room, the Prismarch's cell, his secretary, his attendant and garderobe; U4 his chapel, the roof terrace, the beacon |
 
 ## Finishes and the dress (*proposed*)
 
@@ -179,12 +180,13 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
   at least 6 m".
 - A **west front** toward the enemy with one great tower (the Storm Tower) and no gate.
 
-## Lore (*proposed*, for the owner)
+## Lore
 
-- **The Decree forbids war-making by its clergy** (`kits/qiblai/PLAN.md` 2a, "The Fall"). The Violet Storm's answer,
-  *proposed*: it **makes no war; it keeps the Vale**. It never rides beyond the Rift's rim except in pursuit of a raid,
-  and it takes no spoil but arms, which go to the Protectors' Chapel. The council can therefore keep a martial order
-  without breaking the Song, and the order's founding is a story (the first raid the Vale could not bear).
+- **The Decree forbids war-making by its clergy** (`kits/qiblai/PLAN.md` 2a, "The Fall"). The Violet Storm **makes no
+  war; it keeps the Vale: its riders go out only to chase a raid** (the owner, 2026-11-16: "they ride out to chase a
+  raid"; `LORE.md` 6.13). *Proposed* round it: it takes no spoil but arms, which go to the Protectors' Chapel; the
+  council can therefore keep a martial order without breaking the Song; the order's founding is a story (the first raid
+  the Vale could not bear).
 - The **eight companies named for the eight winds** echo the eight spokes; the banner is the eight-spoked wheel struck
   through by lightning.
 - The **oath stone** in the inner court: the vows are taken on it, and the companies touch it before a sally.
@@ -199,12 +201,19 @@ The owner's concentric answer means the fourth size is **two curtains**, not a w
 - Water: no stream on the crest (the Kruk Warra's head is 16-18 km south). Roof water into the cisterns under the
   inner ward and the muster court; the great tank for the herds. About 25,000 m2 of roof at 990 mm gives some 20,000 m3
   a year against about 10,000 for the people and the horses.
-- **Fodder is not in the sim yet** (an open point for `xan.tempest`). 327 stabled horses eat about 1,000 t of hay a
-  year at 8 kg a day, and some 240 t of barley at 2 kg, which is more than the House's own grain (about 107 t). Two ways
-  out, both *proposed*: keep only the duty companies' horses stabled and the rest on grass by rota (the barley falls to
-  about a third); or give the House a fodder line in the tune (hay from the crest's meadows, barley up from Strongwall).
-  Pasture: 600-odd horses and the milking herd want several hundred hectares; the West Arm (some 24 x 18 km) has them,
-  so T0 draws only the commons' near corner.
+- **Fodder: the duty rota**, in the sim (the owner, 2026-11-16: "add fodder"; the rota and its numbers are the plan's
+  recommended answer, *proposed*). All 327 stabled would eat about 1,000 t of hay a year at 8 kg a day and some 240 t of barley at 2 kg,
+  more than the House's own grain (about 107 t). So four companies' horses and the gate stable are stabled at a time
+  (about 181), the other four companies' at grass on the crest with the remounts, changing over with the companies'
+  duty; every stall is kept for the wet months and the alarm. Barley goes only to the stabled horses in the raiding
+  season (about 182 days). That makes **about 530 t of hay a year, from the crest's meadows** (no trade), and **about
+  66 t of barley, up the Strongwall road with the grain**. In the tune (`core/region/data/xan-tune.js`, `T.tempest.horses`):
+  a new good, `fodder`; the House's work `tp.meadows` (60 crew, the summer-pasture window) cuts the hay; the House eats
+  the stabled horses' hay, kept in the barns from one cut to the next (the tune's year opens some 230 days before the cut,
+  so it starts with 250 days of hay); the barley is added to its grain, and
+  Strongwall passes it on. `test-xan-economy.js` section 29 checks the horses are fed (with a negative). Pasture: 600-odd horses
+  and the milking herd want several hundred hectares; the West Arm (some 24 x 18 km) has them, so T0 draws only the
+  commons' near corner.
 - The brow lookout (879,1618) and its relay are 14 km west, off T0; they are fort-asset watch posts, sited at 1:1.
 - The counts (eight companies of forty, the chapter of about 65, 292 + 35 stabled horses) are a starting point; the
   sim holds the House as one settlement of 600 (`xan.tempest`).

@@ -110,12 +110,13 @@ is the Glaziers'; the bench is the Sultan's.
 
 | Step | What | Test |
 |---|---|---|
-| **L0** | The pin: a scale-model edit through the scale-model session's queue (a `defSetts` pin and its key), and the Great Potch Line as a lode record (`kits/resources/data/lodes.json` needs an `opal` family first) | the pin's ground is the bench; the lode's field is under the wall |
+| **L0** | The pin: a scale-model edit through the scale-model session's queue (a `defSetts` pin and its key), and the Great Potch Line as a lode record (`kits/resources/data/lodes.json` needs an `opal` family first) (**done 2026-11-17**: the pin `slaitwal0001`, model edit 5.1e12; the lode stamped, 36f68df9c on `claude/resource-nodes-7ec053`) | the pin's ground is the bench; the lode's field is under the wall |
 | **L1** | The town in `XAN_TUNE`: the settlement, its works, the field, the roads; the province's seat question settled (**done 2026-11-16**: `slaitwal0001` in `core/region/data/xan-tune.js`, the seat of P6; the Great Potch Line's adits on a field of veins, the glass shops' moonglass (a new good), the dugouts, the bench terraces; the Sultan's mines its works village over the lake by the ferry; the Fifth in opals from the assay house; opal and moonglass down by Kirstabal to Qiblai and Yuni's caravans; its grain up the same road. The id is the pin's, `slaitwal0001`) | `test-xan-economy.js`: fed, the Fifth, the field |
 | **L2** | The bench town on `core/city` with the Xanadu kit (a target on Xanadu's page, as Qiblai is) | its city tests; the GPU verify |
 | **L3** | The wall: the `gz-*` fronts and the hold's plan cut into a scarp on the page | the set's checks: walkable, no clipping, the voids inside the rock |
 | **L4** | Interiors for both halves (**done 2026-11-16**: the bench's houses round the Stair Foot with the Xanadu kit's interiors, the carved homes walked from their fronts) | the interiors' checks: `ix-bench`, `ix-glazier` |
-| **L5** | The site in the open world (**done 2026-11-16**: `slaitwal0001` in `openworld/SITES.json` (the pin's id: model edit 5.1e12 on `claude/gemini-trade-reconcile`; `model: false` until it merges here), a site of `openworld/xanadu-oidong-highrift`: its square in the cut, three farming villages and a ranch on the shore's bench, the plan baked; the town's own page stays this one) | the region's verify: its new check, Lāiṭwāl on its bench under the wall, the lake at its feet |
+| **L5** | The site in the open world (**done 2026-11-16**: `slaitwal0001` in `openworld/SITES.json` (the pin's id, model edit 5.1e12), a site of `openworld/xanadu-oidong-highrift`: its square in the cut, three farming villages and a ranch on the shore's bench, the plan baked; the town's own page stays this one) | the region's verify: its new check, Lāiṭwāl on its bench under the wall, the lake at its feet |
+| **L6** | The page on the open world's ground (**the page side done 2026-11-23**; the owner: "change the world"): the page reads the region's `WORLD.H` (`core/world/bake_ground.py`, baked at build into `gen/41w-lw-world-ground.js`), its y the world's less 1,345.05 m so the world's lake (1,315.05 m) is its -30; the bench, the foot street and the band block are the page's own inside a patch eased into the world; the world's ground under them. **Owed: the scale-model edit** (section 10): until it runs, the page carries the bay and the scarp it asks for as one layer over the world's ground (`lwPending`, a min and a max, so the edit makes it a no-op) | `world-ground`: the page's edge is the world's, its lake the world's water, the bake holds `WORLD.H`; what the owed edit still moves, reported (zero once the model has it) |
 
 ## 7. Questions for the owner
 
@@ -146,8 +147,9 @@ is the Glaziers'; the bench is the Sultan's.
 `settlements/lightwall`: a target on Xanadu's page, as Qiblai is (`settlements/xanadu/build.py --kit settlements/lightwall`),
 `dist/lightwall.html`.
 
-**The frame.** Metres; x east along the shore, z south toward the lake; the origin is the Stair Foot on the bench. Heights are
-the model's less 1,330 m: the lake at -30 (1,300 m), the bench from the shore (-28) up to the wall's foot (+90, 1,420 m).
+**The frame.** Metres; x east along the shore, z south toward the lake; the origin is the Stair Foot on the bench, at the pin
+(the open world's x, z moved there, no turn). Heights are the open world's less 1,345.05 m (since L6; it was the model's less
+1,330): the lake at -30 (the world's water, 1,315.05 m), the bench from the shore (-28) up to the wall's foot (+90, 1,435 m).
 
 | Part | Where | What |
 |---|---|---|
@@ -182,6 +184,31 @@ galleries, the dark adits in the oldest workings, lotus ponds stepped to the sho
 | `core/charactermodels` | not yet | its people |
 | `kits/interiors` | yes, through the Xanadu kit's interiors (`89y-xa-interiors.js`, the `xanadu` set) | L4: the bench's houses within 260 m of the Stair Foot planned and furnished; the carved rooms furnished from the catalog by the Tungang kit's builders |
 
-**Not taken, and why.** No new PRNG, noise, sky or camera: Xanadu's page and the modules above. The ground is the page's own
-`terrainH` (a function of the site's numbers, written as records: the bench's profile, the wall's bands), never read back from
-pixels; `core/mask` is not needed (the bench's blocks are polygons, the city raster is core/city's).
+**Not taken, and why.** No new PRNG, noise, sky or camera: Xanadu's page and the modules above. The ground is the open world's
+(`core/world`, since L6: the region's own `WORLD.H` baked at build by `core/world/bake_ground.py`, the region's land chain run in
+node), the town's own `terrainH` seated on it (the bench's profile, the wall's bands, written as records), never read back from
+pixels; `core/mask` is not needed on the page (the bench's blocks are polygons, the city raster is core/city's; the bake runs the
+region's core/mask and core/coast in node).
+
+## 10. The scale-model edit owed (L6; the owner, 2026-11-23: "change the world")
+
+Measured on the region's ground (`openworld/xanadu-oidong-highrift`, its whole land chain) at the pin: the ground 1,412 m, the
+lake's shore 4-5 km south (the lake at 1,315.05 m), no cliff north (the ground climbs about 15 % for 3 km and steepens near
+800 m/km only 6-9 km north: 2,573 m at 6 km, 5,124 m at 9 km). Along 24 km of the north shore either side no place has the lake
+and a steep wall together (the nearest, east of the pin: the shore to 1,000 m higher in about 7 km). The page has the shore
+430 m from the Stair Foot and the fault's face rising behind the bands. The owner chose the world to give way. The edit, in the
+model's pixels (2 km; the pin 1028,1653; py = 1653 + z / 2000, px = 1028 + x / 2000 of the page's metres):
+
+- **The bay**: the lake's north shore brought up to the bench, at py ~1653.22 (the page's shore, 430 m south of the pin) over px
+  ~1027.1-1028.9 (eased out to ~1026.75-1029.25), its bed falling from the shingle to ~16 m under the lake's level (1,299 m) and
+  joining the lake's own floor by py ~1655.6. In the model's terms: the cells round (1027-1029, 1653.5-1655) lowered to the lake
+  and flooded, or a `water` landform record (core/world 41l) if the region takes 41l.
+- **The scarp**: the north boundary fault's face at the bands, its toe at py ~1652.84 (the bands' top, 320 m north of the pin,
+  ~1,482 m), rising to ~2,600 m by py ~1652.29 (about 1.1 km north), the upthrown block behind it rising ~6 % into the existing
+  range by py ~1649.7; full over px ~1026-1030, fading by ~1024.75-1031.25. In the model's terms: the cells at py 1652 raised
+  to the block's ~2,600-2,800 m and an escarpment marked on that edge (`scarpw.png`, L ~1,440 m, U ~2,600 m: core/world 41
+  gathers the rise into a cliff).
+- **Then**: the region re-cut (`cut_site.py xanadu-oidong-highrift`), the Lightwall page rebuilt (its bake re-runs on the new
+  data by itself), and `world-ground` reads what the page's layer still moves; when it reads ~0, `lwPending` and `LW_PEND` in
+  `targets/town/89zl-lw-site.js` come out. The region's check "Lāiṭwāl on its bench under the wall" should then read the lake
+  within 1 km south and the wall over 1,000 m higher within 2 km.
