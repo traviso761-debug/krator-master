@@ -1066,6 +1066,38 @@ check request here, with its negative control.
   without keeping at least one sampled surface triggers `packUnsampled > 0` across downstream in-place consumers (`PACK_KEY = 'hayrant'`).
   Warn when a geometry batch on a `keep >= 0.90` family carries mean vertex colour luma `< 0.35`.
 
+## Survey of 2026-11-28b: Jimjam 1:1 Metropolis P0–P5, Pilgrimage/Decrees & 27-Settlement Coupled Regional Economy (tips, pitfalls & bugs)
+
+- **`SIM.stepHooks` module-load vs per-world split (`core/simulation/77-sim-0-core.js`, `77-sim-6-season.js`, `77-sim-6p-pilgrims.js`):**
+  `77-sim-6-season.js` (`line 78`) and `77-sim-6p-pilgrims.js` (`line 720`) push their listeners onto `SIM.stepHooks` **once at script
+  load**, whereas `SIM.init(...)` leaves `SIM.stepHooks` untouched. Any settlement or multi-run test helper that clears `SIM.stepHooks = []`
+  on re-init silently kills `SIM.onSeason`, liturgical observances (`77-sim-6d-decrees.js`), and pilgrim cohort arrivals (`peakPilgrims === 0`
+  on `jimjam` until fixed via a delegating slot `S._jjPulseTick`). Split `SIM.coreStepHooks` (module-load, never wiped) from
+  `SIM.worldStepHooks` (cleared automatically inside `SIM.init`).
+- **`SIM.economy` default `SIM.ECON = prev || E` ordering (`core/simulation/77-sim-6-economy.js:368`):** The **first** settlement passed
+  to `SIM.economy(..., { settlement })` stays bound as the global default `SIM.ECON` read by `KHOST.simHolds(SIM)` (`SIM.stocks()`).
+  Declaring an alphabetical regional town table before the presented city displays an off-screen village's warehouses in the viewer's
+  `stocks (o)` panel. Always declare the presented city at index `0`, and add an explicit `{ primary: true }` option to `SIM.economy`.
+- **`SIM.blockedReport` midnight `'no workers'` trap vs `'missing'` input stalls (`core/simulation/77-sim-6-economy.js`):** Stepping a
+  whole number of 24-hour days (`H.valleyRun(365 * 1440, 60)`) leaves the clock at `00:00` midnight (`SIM.hour() === 0`), when worker
+  roles are `SLEEP`ing, so `SIM.blockedReport(s)[workId]` reports `{ reason: 'no workers' }` on every healthy workshop (`ar.armourer`,
+  `kp.great_distillery`, `jj.glassworks`). Assertions checking raw-material stalls must test `blk && blk.reason === 'missing'`, never
+  `!blk`. Meanwhile, on hourly schedule boundaries (`50-region-valley.js`), setting `SIM.ABSTRACT_STEP = 60` cuts 27-settlement 365-day
+  `SIM.needsAbstract` / `SIM.unrest` runtime ~4x without changing hourly schedule outcomes.
+- **`SIM.trade` entrepôt transshipment & opening-stock masking (`core/simulation/77-sim-6-trade.js:151`):** `loadFor(R, a, b)` ships only
+  when `need = Math.ceil(want * wb - have) > 0` (`wb = Math.max(rate(EB, g), R.expect[b][g] || 0)`). If an entrepôt (`sr.serai`) starts
+  with an opening buffer larger than `want * expect` (`680 t > 52 * 2.1 t`), upstream feeders (`jj.jimjam -> sr.serai`) see `need <= 0`
+  and haul `0 t` all year even while downstream barges (`sr.serai -> sh.silkhead`) drain `450 t`. Keep entrepôt opening buffers to
+  `8–12` days (`< want * expect`) and stagger multi-corridor `offset`s so inbound and outbound legs stay locked; on multi-stop loops
+  (`[A, B, C, B, D, B]`), note that `SIM.trade` loads only for the immediately next stop unless `halts`/`sells` (`C3`) are declared.
+- **`SIM.pilgrimage` streams from `'abstract'` hinterlands (`core/simulation/77-sim-6p-pilgrims.js`):** Lowering off-screen hinterland
+  towns via `SIM.level(id, 'abstract')` cleans up embodied pilgrim groups tied to them; bind local hinterland streams arriving at a
+  `presented` city to the city's arrival `fromPort` (`port_lotus_cove`, `port_cut_dilihan`) so embodied cohorts spawn cleanly.
+- **`KWALK.floor` axis-aligned `rect` vs rotated cutaway polygons & `krator-interiors` export contract (`core/walk`, `core/export`):**
+  `KWALK.floor` accepts only axis-aligned `rect: [x0, x1, z0, z1]` and throws on rotated/polygonal landmark rooms (`90-jj-interiors.js`);
+  register polygonal interior floors with `KWALK.poly({ pts: [[x, z, y], ...] })` and stairs with `KWALK.strip({ a, b, w, tag: 'stair' })`,
+  and ensure the `interiors` export contributor emits `{ format: 'krator-interiors', buildings: [{ id, storeys, links, walls }] }`.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

@@ -32,8 +32,8 @@
 - [ ] The palace's back façade is plainer than its front; the plaza's coloured rays read as tile more than inlay.
 - [ ] Farmhouses are deliberately plain; their roof stairs meet the parapet without an opening.
 - [ ] Courts, pools and planting spots are empty by design (`plantSpots`, `fountainSpot`, `poolSpot` on the defs); a settlement places furniture and biome plants there.
-- [ ] Biome: none was specified, so the two plants are placeholders (`biome:'placeholder'`).
-- [ ] Life layer: none yet. Defs carry no activity/capacity data; add it with the city phase (README project rule).
+- [x] Biome (`dist/jimjam.html`, 2026-11-28): `biomes/nwlowlands` ground (`KGROUND`, 6 layers) and flora (`1,540` curbed-park & boulevard trees, `0` structure OBB clips) are wired on the city target (`dist/jimjam-kit.html` keeps the two kit-sheet placeholder pots).
+- [x] Life layer (`dist/jimjam.html`, 2026-11-28): `520` embodied `SIM` citizens & foreign envoys (`peoples.json`), `4` driven ox-carts, `KSCHED` 25t barges/skiffs/caravans, `15`-settlement regional trade, Double-Dark observance, `6`-stream pilgrimage & Great Pilgrim's Market (`targets/city/78-jj-sim.js` & `92-jj-life.js`).
 - [ ] The coplanar-face resolver (`63-jj-zfix.js`) scans instanced boxes and flat cylinders only; a plain mesh laid flush on another surface can still z-fight. Builders should still offset details by 1–2 cm themselves; the resolver is a net, not a licence.
 - [x] Vendored `10-core.js` and `54-mat-concrete.js` had drifted behind `kits/ancients/src` (`--vendor-check`: iziz/10-core, iziz/54-mat-concrete, ancients/10-core, ancients/54-mat-concrete). — 2026-10-01: re-vendored from the kit (the exact vnoise lattice cache, the toppled-tower `bodyGroup` call); `--vendor-check`: all available upstream fragments match.
 - [ ] (2026-10-06) Library textures, first pass: the library bricks are chunkier than the procedural 0.24 x 0.08 m ones (sized
@@ -69,3 +69,11 @@ The table `JJ_TRADES` in `src/78-jj-trades.js` sets each of the Voth city's 44 c
 - [x] dairymen: `jj_dairy`
 
 The `na` rows (sea trades on a landlocked build, trades the lore does not hold) are in the table with their reasons.
+
+## Tips, pitfalls & bugs found (P0–P5 & regional economy, 2026-11-28)
+
+- **Preserve module-load `SIM.stepHooks` across `JJ_SIM.init`:** `77-sim-6-season.js` and `77-sim-6p-pilgrims.js` push their step hooks once at script load; clearing `SIM.stepHooks = []` in `clearSim` silently disables seasonal windows, Double-Dark observances, and pilgrim arrivals. Delegate per-run regional pulses through `SIM._jjPulseTick` instead.
+- **Load `77-sim-6d-decrees.js` & `77-sim-6p-pilgrims.js` after `77-sim-7-lod.js`:** Both modules wrap `SIM.level`; `build.py` maps them to `77-sim-7z1-decrees.js` and `77-sim-7z2-pilgrims.js` in the city bundle, and `jimjam` stays at index `0` of `REGIONAL_TOWNS` so `SIM.ECON` (`KHOST` `stocks (o)`) points to the presented capital.
+- **Entrepôt buffers & midnight `blockedReport`:** In `core/region/data/jj-tune.js` (`27` settlements coupling `JJ1`–`JJ4` with `FC_TUNE` `FC1`–`FC4`, `Dilihan`, `Serai`, `Silkhead`, `Korona/Shell`, `Palewharf`, and `Whitelake`), keep `sr.serai`'s opening buffers below `want * expect` (`8–12` days) so `jj.jimjam -> sr.serai` and `sr.serai -> sh.silkhead` (`lbl=54`) transship continuously; test workshop input stalls with `blk && blk.reason === 'missing'` (since midnight `00:00` reports `'no workers'` while crews sleep).
+- **Cutaway floors, shaders & `[G data]` numeric defaults:** Rotated landmark interiors (`90-jj-interiors.js`) must use `KWALK.poly` / `KWALK.strip` (never axis-aligned `KWALK.floor`), custom stage detail sampling (`45-jj-stage.js`) must wrap `texture2D` in `mapTexelToLinear` (`RAWTEX`), and `[G data]` simulation/interior files must use `x == null ? d : x` rather than `||` (`ORNUM`).
+
