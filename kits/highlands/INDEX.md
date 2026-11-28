@@ -38,10 +38,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `80-rus-dwell.js` | 25 | Rustic kit items + helpers (prefix hRU / hnRU) (7); POOR (65); MIDDLE (104); RICH (153) |
 | `81-rus-village.js` | 29 | helpers (prefix hnRU) (7); TEMPLE AND HALL (22); TRADE AND CRAFTS (111); FARMS AND MILLS (197) |
 | `81b-rus-salvage.js` | 12 | 1. the tank stue (8); 2. the container chalet (36); 3. the hull naust (59); 4. the silo stabbur (84); 5. the scrap-iron market (102) |
-| `81c-rus-trades.js` | 76 **big** | HIGHLANDS / RUSTIC — Slavic & Carpathian trades  (1); 1. FOOD AND HOSPITALITY (69); 2. CRAFTS AND WORKS (251); 3. CIVIC AND SACRED (539); 4. WALLS AND GARRISON (760); 5. ORCHARDS AND DAIRIES (891) |
+| `81c-rus-trades.js` | 76 **big** | HIGHLANDS / RUSTIC — Slavic & Carpathian trades  (1); 1. FOOD AND HOSPITALITY (70); 2. CRAFTS AND WORKS (252); 3. CIVIC AND SACRED (540); 4. WALLS AND GARRISON (761); 5. ORCHARDS AND DAIRIES (892) |
 | `81d-rus-water.js` | 21 | HIGHLANDS / RUSTIC — Lake, fjord & riverfront (8 (1); LAKE AND RIVERFRONT (45) |
+| `82-rus-baronial.js` | 65 **big** | HIGHLANDS / RUSTIC — Baronial & Caucasus clan bu (1); 1. NARROW-COBBLED BURGH DWELLINGS & TENEMENTS (211); 2. WYND TRADES, MARANI TAVERN & SILK-TRAIL FACTO (317); 3. THE NINE CLANS, TOLBOOTH BOURSE, THING-STEAD  (394) |
 | `88-hl-dress.js` | 10 | RECLAIMED variants (round 3) (25); clocks (round 5) (87); glazed roof tile, per building (round 10e) (96) |
-| `89-hl-trades.js` | 8 | HIGHLANDS — the Voth census trades [G data] (1) |
+| `89-hl-trades.js` | 9 | HIGHLANDS — the Voth census trades [G data] (1) |
 | `89y-hl-furnish.js` | 8 | furniture: PLACED from the catalog, not drawn (1) |
 | `94-hl-anim.js` | 2 | animation: orreries turn, clocks keep time (roun (1) |
 

@@ -7,6 +7,7 @@
    folk accents. No electric light anywhere in the branch. Seeds 26000-26299. */
 
 /* ---------------------------------------------------------------- Slavic / Carpathian rustic helpers (prefix hnRU) */
+if(!KIT.defs.hRusDisc)kdef('hRusDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
 const HRU_TAG=(type,wealth,extra)=>Object.assign({type,wealth,lit:false},extra||{});
 
 /* Round-log srub wall box with saddle-notched projecting log ends (v oblo) and optional carved pletenka belt frieze */
@@ -480,7 +481,7 @@ function buildHlRusQuarry(G,o){reseed(26111+(o.v|0));const QX=-3.2,QZ=-3.8;
  vPst('vPostB',cx,.45,cz,.2,7.6,tar);
  beam('vWood',[cx,1.1,cz],[cx-2.6,6.8,cz-1.4],.18,.18,log);
  beam('vWood',[cx,7.6,cz],[cx-3.1,1.2,cz+2.6],.13,.13,tar);beam('vWood',[cx,7.6,cz],[cx+3.1,1.2,cz+2.6],.13,.13,tar);
- hnCable([cx,7.8,cz],[cx-2.6,6.8,cz-1.4]);
+ beam('vRope',[cx,7.8,cz],[cx-2.6,6.8,cz-1.4],.025,.025,hC(0x2e2a26));
  vPst('vRope',cx-2.6,2.8,cz-1.4,.03,4,hC(0x3a322a));
  vB('vStone',cx-2.6,1.95,cz-1.4,1.35,.85,.95,.15,gran);
  FURNISH('hl_rep_winch',cx+1.6,0,cz+1.8,-.4);

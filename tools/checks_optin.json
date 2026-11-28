@@ -52,7 +52,8 @@
     "settlements/arcodiga",
     "settlements/floating-city",
     "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "kits/shore-kin",
+    "settlements/ardent"
    ]
   },
   "minset": {
@@ -88,7 +89,8 @@
     "settlements/mirabilis",
     "settlements/arcodiga",
     "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "settlements/fleetborn-cove",
+    "settlements/ardent"
    ]
   },
   "samplers": {
@@ -142,7 +144,8 @@
     "settlements/arcodiga",
     "settlements/floating-city",
     "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "kits/shore-kin",
+    "settlements/ardent"
    ]
   },
   "drawn-ground": {
@@ -194,7 +197,8 @@
     "settlements/mirabilis",
     "settlements/arcodiga",
     "settlements/floating-city",
-    "settlements/fleetborn-cove"
+    "settlements/fleetborn-cove",
+    "settlements/ardent"
    ]
   },
   "names": {
@@ -248,7 +252,8 @@
     "settlements/arcodiga",
     "settlements/floating-city",
     "settlements/fleetborn-cove",
-    "kits/shore-kin"
+    "kits/shore-kin",
+    "settlements/ardent"
    ]
   },
   "water-mouths": {

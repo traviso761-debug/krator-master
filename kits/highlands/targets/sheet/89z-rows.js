@@ -5,6 +5,7 @@
 const HL_BRANCHES=['republican','rustic'];
 const HL_RUSTIC_ROW_ORDER=[
  'Dwellings',
+ 'Baronial and clan burgh',
  'Temple and hall',
  'Civic and sacred',
  'Walls and garrison',
@@ -19,7 +20,7 @@ const HL_RUSTIC_ROW_ORDER=[
 const SHEET={title:'Highlands Building Kit',build:'highlands',ground:'meadow',groundRepeat:400,haze:.0005,
  owns:k=>VERN.defs[k]&&(VERN.defs[k].branch==='republican'||VERN.defs[k].branch==='rustic'),branches:{republican:'Republican',rustic:'Rustic'},
  panes:['vWinClear','vWinLit','hStainedB','hFrostedB','hKeelGlass','hArchGlass'],
- budget:{showcase:{tris:4500000,calls:480}},
+ budget:{showcase:{tris:5200000,calls:480}},
  rows:[]};
 for(const b of HL_BRANCHES){
  const fams=HL.families(b);
