@@ -331,12 +331,14 @@ def hide_full_body(entry):
     return apply_custom_hide(entry, np.arange(len(core.BT), dtype=np.int32), replace=True)
 
 
-def assemble_garment(gid, label, slot, parts, emitters=None, **kw):
+def assemble_garment(gid, label, slot, parts, emitters=None, auras=None, **kw):
     kw.setdefault('allow_floating', True)
     entry = _core_assemble(gid, label, slot, 'extraplanar', parts, **kw)
     entry['culture'] = 'extraplanar'
     if emitters:
         entry.setdefault('vfx', {})['emitters'] = emitters
+    if auras:
+        entry.setdefault('vfx', {})['auras'] = auras
     return entry
 
 
@@ -656,7 +658,10 @@ def _build_ophanim_seraph(sex):
             [0.008, 0.0015], solar_p, n=6, rigid_joint='Spine2', cap_ends=False, vfx=sig_vfx
         ))
 
-    ent_t = assemble_garment(gid_t, 'Ophanim Seraph Liturgical Vestment & Radiant Core', 'torso', parts_t)
+    ent_t = assemble_garment(
+        gid_t, 'Ophanim Seraph Liturgical Vestment & Radiant Core', 'torso', parts_t,
+        auras=[{'kind': 'seraph_glyphs', 'bone': 'Spine1', 'offset': [0.0, 0.12, 0.0], 'scale': 1.12, 'gain': 1.40}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -940,7 +945,10 @@ def _build_prism_matriarch(sex):
                 }
             ))
 
-    ent_t = assemble_garment(gid_t, 'Prism Matriarch Cathedral-Tracery Cuirass & Crystal Heart', 'torso', parts_t)
+    ent_t = assemble_garment(
+        gid_t, 'Prism Matriarch Cathedral-Tracery Cuirass & Crystal Heart', 'torso', parts_t,
+        auras=[{'kind': 'rainbow_aura', 'bone': 'Spine1', 'offset': [0.0, 0.08, 0.0], 'scale': 1.14, 'gain': 1.35}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -1217,7 +1225,10 @@ def _build_clockwork_aeon(sex):
         vfx={'kind': 'emissive_blaze', 'color': '#ffdf78', 'gain': 2.10, 'pulse': 0.10, 'kinetic': kin_hand}
     ))
 
-    ent_t = assemble_garment(gid_t, 'Clockwork Aeon Brass Gearwork Chassis & Clockface Pectoral', 'torso', parts_t)
+    ent_t = assemble_garment(
+        gid_t, 'Clockwork Aeon Brass Gearwork Chassis & Clockface Pectoral', 'torso', parts_t,
+        auras=[{'kind': 'chrono_trail', 'bone': 'Spine2'}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -1699,7 +1710,7 @@ def _build_ashen_calamity(sex):
         'bone': 'Head', 'offset': [0.0, 0.15, 0.0],
         'count': 26, 'rate': 0.38, 'size0': 0.060, 'size1': 0.220,
         'drift': [0.03, 0.42, -0.05], 'spread': 0.065, 'opacity': 0.72,
-        'ember_color': '#ff6210', 'core_color': '#0d0908', 'mist_color': '#4c403a',
+        'ember_color': '#ff1e08', 'core_color': '#220404', 'mist_color': '#4a1210',
     }]
     ent_h = assemble_garment(gid_h, 'Ashen Calamity Cracked Obsidian Skull & Ram Horns', 'head', parts_h,
                              emitters=head_cinders, covers_hair=True, covers_face=True)
@@ -1754,10 +1765,13 @@ def _build_ashen_calamity(sex):
         'bone': 'Spine2', 'offset': [0.0, 0.04, 0.14],
         'count': 22, 'rate': 0.34, 'size0': 0.050, 'size1': 0.190,
         'drift': [0.02, 0.36, 0.06], 'spread': 0.060, 'opacity': 0.64,
-        'ember_color': '#ff6812', 'core_color': '#0b0807', 'mist_color': '#4a3d38',
+        'ember_color': '#ff1e08', 'core_color': '#220404', 'mist_color': '#4a1210',
     }]
-    ent_t = assemble_garment(gid_t, 'Ashen Calamity Tectonic Obsidian Carapace & Magma Furnace', 'torso', parts_t,
-                             emitters=chest_cinders)
+    ent_t = assemble_garment(
+        gid_t, 'Ashen Calamity Tectonic Obsidian Carapace & Magma Furnace', 'torso', parts_t,
+        emitters=chest_cinders,
+        auras=[{'kind': 'brimstone_aura', 'bone': 'Spine1', 'offset': [0.0, 0.02, 0.0]}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -1792,7 +1806,7 @@ def _build_ashen_calamity(sex):
             'bone': 'Spine2', 'offset': [round(sgn * 0.245, 4), 0.22, -0.165],
             'count': 30, 'rate': 0.42, 'size0': 0.080, 'size1': 0.290,
             'drift': [sgn * 0.06, 0.56, -0.06], 'spread': 0.072, 'opacity': 0.78,
-            'ember_color': '#ff640c', 'core_color': '#0b0807', 'mist_color': '#524540',
+            'ember_color': '#ff1e08', 'core_color': '#220404', 'mist_color': '#4a1210',
         })
 
     entries.append(assemble_garment(gid_b, 'Ashen Calamity Twin Floating Basalt Monolith-Braziers', 'back', parts_b,

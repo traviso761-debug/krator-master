@@ -4054,7 +4054,7 @@
       "skin": "#384858",
       "hair": null,
       "hair_color": "#0e0e14",
-      "eye_color": "#a86bff",
+      "eye_color": "#ff2a14",
       "morph": {
         "height": 0.42,
         "muscle": 0.45,
@@ -4088,6 +4088,93 @@
         "height": 0.4,
         "muscle": 0.22,
         "weight": -0.35
+      }
+    },
+    {
+      "id": "prism_matriarch",
+      "label": "Prism Matriarch",
+      "short": "Prism Matriarch",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 75,
+        "melee_def": 76,
+        "martial_arts": 84,
+        "dodge": 84,
+        "toughness": 76,
+        "strength": 66,
+        "dexterity": 88
+      },
+      "people": "extraplanar",
+      "tier": "prism_matriarch",
+      "body": "mpfb_female",
+      "skin": "#2e3444",
+      "hair": null,
+      "hair_color": "#e8f4ff",
+      "eye_color": "#ff9cf8",
+      "morph": {
+        "height": 0.34,
+        "muscle": 0.2,
+        "weight": -0.28
+      }
+    },
+    {
+      "id": "chorus_of_masks",
+      "label": "Chorus of Seven Masks",
+      "short": "Seven Masks",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 77,
+        "melee_def": 80,
+        "martial_arts": 85,
+        "dodge": 86,
+        "toughness": 78,
+        "strength": 68,
+        "dexterity": 86
+      },
+      "people": "extraplanar",
+      "tier": "chorus_of_masks",
+      "body": "mpfb_female",
+      "skin": "#282230",
+      "hair": null,
+      "hair_color": "#1a1424",
+      "eye_color": "#ffe29a",
+      "morph": {
+        "height": 0.32,
+        "muscle": 0.2,
+        "weight": -0.25
+      }
+    },
+    {
+      "id": "clockwork_aeon",
+      "label": "Clockwork Aeon",
+      "short": "Clockwork Aeon",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 80,
+        "melee_def": 82,
+        "martial_arts": 84,
+        "dodge": 88,
+        "toughness": 86,
+        "strength": 78,
+        "dexterity": 90
+      },
+      "people": "extraplanar",
+      "tier": "clockwork_aeon",
+      "body": "mpfb_male",
+      "skin": "#242830",
+      "hair": null,
+      "hair_color": "#d8b45c",
+      "eye_color": "#ffd86b",
+      "morph": {
+        "height": 0.38,
+        "muscle": 0.34,
+        "weight": -0.2
       }
     },
     {

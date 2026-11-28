@@ -55,9 +55,10 @@
   function colOf(hex, def){ return new THREE.Color(hex || def || '#ffffff').convertSRGBToLinear(); }
 
   /* Build a custom MeshStandardMaterial (or unlit cosmic ShaderMaterial) chained after any existing vertex pushOut hook */
-  function makeZoneMaterial(srcMat, z, uTime, skinned){
+  function makeZoneMaterial(srcMat, z, uTime, skinned, uPower){
     var kind = z.kind || 'standard';
     var prevHook = skinned && srcMat && srcMat.hasOwnProperty('onBeforeCompile') ? srcMat.onBeforeCompile : null;
+    var pwrUniform = uPower || { value: 0.0 };
 
     if(kind === 'nebula_rift'){
       var cCore = colOf(z.core_color, '#fff6d8');
@@ -76,6 +77,7 @@
       matN.onBeforeCompile = function(sh, r){
         if(prevHook) prevHook(sh, r);
         sh.uniforms.kxTime = uTime;
+        sh.uniforms.kxPower = pwrUniform;
         sh.uniforms.kxCore = { value: cCore };
         sh.uniforms.kxArm1 = { value: cArm1 };
         sh.uniforms.kxArm2 = { value: cArm2 };
@@ -88,7 +90,7 @@
           sh.vertexShader.replace('#include <project_vertex>',
             '\tvKxFig = transformed;\n\tvKxWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;\n\tvKxWNrm = normalize(mat3(modelMatrix) * objectNormal);\n#include <project_vertex>');
         sh.fragmentShader = 'varying vec3 vKxFig;\nvarying vec3 vKxWorld;\nvarying vec3 vKxWNrm;\n' +
-          'uniform float kxTime, kxCenterY, kxScale, kxMirror;\nuniform vec3 kxCore, kxArm1, kxArm2, kxGold, kxVoid;\n' +
+          'uniform float kxTime, kxPower, kxCenterY, kxScale, kxMirror;\nuniform vec3 kxCore, kxArm1, kxArm2, kxGold, kxVoid;\n' +
           GLSL_NOISE +
           sh.fragmentShader.replace('#include <dithering_fragment>', [
             '\tvec3 Vw = normalize(cameraPosition - vKxWorld);',
@@ -99,12 +101,12 @@
             '\tvec2 pNear = baseP + par * 0.055;',
             '\tvec2 pMid  = baseP + par * 0.135;',
             '\tvec2 pDeep = baseP + par * 0.240;',
-            '\t// Tilted swirling spiral galaxy core',
+            '\t// Tilted swirling spiral galaxy core (accelerates & brightens during power surge)',
             '\tfloat ca = cos(0.32), sa = sin(0.32);',
-            '\tvec2 gp = mat2(ca, -sa, sa, ca) * (pDeep * kxScale);',
+            '\tvec2 gp = mat2(ca, -sa, sa, ca) * (pDeep * kxScale * (1.0 - 0.16 * kxPower));',
             '\tgp.y *= 1.32;',
             '\tfloat r = length(gp);',
-            '\tfloat th = atan(gp.y, gp.x) - kxTime * 0.38;',
+            '\tfloat th = atan(gp.y, gp.x) - kxTime * (0.38 + 0.65 * kxPower);',
             '\tfloat logR = log(max(r, 0.018));',
             '\tfloat swirl1 = cos(th * 2.0 - logR * 4.4 + kxFbm2(gp * 2.8 + kxTime * 0.08) * 2.4);',
             '\tfloat swirl2 = cos(th * 2.0 - logR * 4.4 + 1.9 + kxFbm2(gp * 4.5 - kxTime * 0.11) * 2.1);',
@@ -116,9 +118,9 @@
             '\tvec3 col = kxVoid;',
             '\tcol += kxArm2 * pow(neb1, 2.2) * 0.85;',
             '\tcol += kxGold * pow(neb2, 2.8) * 0.52 * exp(-r * 1.1);',
-            '\tcol += kxArm1 * armMask1 * (1.45 + 0.7 * neb1);',
-            '\tcol += mix(kxGold, kxArm1, 0.5) * armMask2 * 1.05;',
-            '\tcol += mix(kxGold, kxCore, smoothstep(0.25, 0.95, bulge)) * bulge * 1.55;',
+            '\tcol += kxArm1 * armMask1 * (1.45 + 0.7 * neb1) * (1.0 + 0.55 * kxPower);',
+            '\tcol += mix(kxGold, kxArm1, 0.5) * armMask2 * 1.05 * (1.0 + 0.45 * kxPower);',
+            '\tcol += mix(kxGold, kxCore, smoothstep(0.25, 0.95, bulge)) * bulge * (1.55 + 0.95 * kxPower);',
             '\t// Multi-depth parallax twinkling starfields',
             '\tfloat st1 = kxStarLayer(pDeep + vec2(1.7, 3.1), 34.0, 0.20, kxTime);',
             '\tfloat st2 = kxStarLayer(pMid  + vec2(5.3, 8.9), 21.0, 0.14, kxTime * 1.25);',
@@ -641,8 +643,904 @@
     };
   }
 
+  /* ---- Shared Blending Helpers & Procedural 3D Aura / Trail Builders (`it.vfx.auras[]`) ----
+     1. `rainbow_aura`   (Prism Matriarch): full-spectrum rainbow dispersion corona, stained-glass caustics & prism motes
+     2. `seraph_glyphs`  (Ophanim Seraph): divine solar-gold halo + 36 orbiting sacred celestial glyphs fading in & out
+     3. `shifting_masks` (Chorus of Seven Masks): 16 translucent, expression-morphing Noh/Oni/Kitsune apparition masks
+     4. `gravity_lens`   (Singularity Archon): Schwarzschild shadow, warped Einstein-arc starlight & chromatic photon ring
+                         that dynamically expands and intensifies with power use (`uPower` / `fig.triggerExtraplanarSurge`)
+     5. `chrono_trail`   (Clockwork Aeon): 4 world-space skinned-pose holographic time-echo clones + trailing clockwork gears
+     6. `brimstone_aura` (Ashen Calamity): roaring crimson-red brimstone flame corona, rising hellfire cinders & magma ring
+  */
+  var GLSL_GLYPH_AND_MASK = [
+    'float kxSeg(vec2 p, vec2 a, vec2 b){',
+    '  vec2 pa = p - a, ba = b - a;',
+    '  float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-5), 0.0, 1.0);',
+    '  return length(pa - ba * h);',
+    '}',
+    'float kxRing(vec2 p, float r){ return abs(length(p) - r); }',
+    'float kxSacredGlyph(vec2 p, float gid){',
+    '  float d = 10.0;',
+    '  vec2 ap = vec2(abs(p.x), p.y);',
+    '  if(gid < 1.0){',
+    '    // 0: Winged Solar Eye of the Ophanim',
+    '    float lid = abs(abs(p.y) - max(0.0, 0.28 - p.x * p.x * 1.15));',
+    '    d = min(lid, kxRing(p, 0.14));',
+    '    d = min(d, length(p) - 0.045);',
+    '    d = min(d, kxSeg(ap, vec2(0.32, 0.06), vec2(0.68, 0.24)));',
+    '    d = min(d, kxSeg(ap, vec2(0.30, -0.05), vec2(0.64, -0.18)));',
+    '  } else if(gid < 2.0){',
+    '    // 1: Nested Celestial Hexagram Seal',
+    '    for(int k = 0; k < 2; k++){',
+    '      float s = k == 0 ? 1.0 : -1.0;',
+    '      vec2 v0 = vec2(0.0, 0.56 * s), v1 = vec2(0.485, -0.28 * s), v2 = vec2(-0.485, -0.28 * s);',
+    '      d = min(d, min(kxSeg(p, v0, v1), min(kxSeg(p, v1, v2), kxSeg(p, v2, v0))));',
+    '    }',
+    '    d = min(d, kxRing(p, 0.62));',
+    '  } else if(gid < 3.0){',
+    '    // 2: Intersecting Ophanim Wheel-Cross',
+    '    d = min(kxRing(p, 0.56), kxRing(p, 0.32));',
+    '    d = min(d, min(kxSeg(p, vec2(-0.66, 0.0), vec2(0.66, 0.0)), kxSeg(p, vec2(0.0, -0.66), vec2(0.0, 0.66))));',
+    '    d = min(d, abs(abs(p.x) + abs(p.y) - 0.22));',
+    '  } else if(gid < 4.0){',
+    '    // 3: Sacred Tri-Arc Pillar & Crown',
+    '    d = min(d, kxSeg(p, vec2(0.0, -0.64), vec2(0.0, 0.64)));',
+    '    d = min(d, kxRing(p - vec2(0.0, 0.22), 0.26));',
+    '    d = min(d, kxRing(ap - vec2(0.22, -0.14), 0.24));',
+    '  } else if(gid < 5.0){',
+    '    // 4: Enochian Angular Celestial Rune',
+    '    d = min(d, kxSeg(p, vec2(-0.36, -0.56), vec2(-0.36, 0.52)));',
+    '    d = min(d, kxSeg(p, vec2(-0.36, 0.52), vec2(0.38, 0.52)));',
+    '    d = min(d, kxSeg(p, vec2(0.38, 0.52), vec2(-0.12, 0.02)));',
+    '    d = min(d, kxSeg(p, vec2(-0.12, 0.02), vec2(0.42, -0.54)));',
+    '    d = min(d, length(p - vec2(0.24, 0.16)) - 0.055);',
+    '  } else if(gid < 6.0){',
+    '    // 5: Eight-Pointed Melkizedek Stargram',
+    '    d = min(d, max(abs(p.x), abs(p.y)) - 0.42);',
+    '    d = abs(d);',
+    '    d = min(d, abs((abs(p.x) + abs(p.y)) * 0.7071 - 0.42));',
+    '    d = min(d, kxRing(p, 0.16));',
+    '  } else if(gid < 7.0){',
+    '    // 6: Solar Crescent & Seraphic Spire',
+    '    float c1 = kxRing(p - vec2(0.0, -0.06), 0.46);',
+    '    float c2 = kxRing(p - vec2(0.0, 0.12), 0.36);',
+    '    d = min(c1, c2);',
+    '    d = min(d, kxSeg(p, vec2(0.0, -0.58), vec2(0.0, 0.62)));',
+    '    d = min(d, kxSeg(ap, vec2(0.0, 0.42), vec2(0.26, 0.20)));',
+    '  } else {',
+    '    // 7: Vertical Sacred Script Cartouche',
+    '    d = min(d, kxRing(vec2(p.x * 1.45, p.y * 0.82), 0.56));',
+    '    d = min(d, kxSeg(p, vec2(-0.22, 0.32), vec2(0.22, 0.32)));',
+    '    d = min(d, kxSeg(p, vec2(0.0, 0.32), vec2(0.0, -0.04)));',
+    '    d = min(d, kxRing(p - vec2(0.0, -0.26), 0.14));',
+    '  }',
+    '  float stroke = smoothstep(0.052, 0.012, d);',
+    '  float glow   = exp(-max(d, 0.0) * 8.5) * 0.58;',
+    '  return stroke + glow;',
+    '}'
+  ].join('\n') + '\n';
+
+  function makePureLightMaterial(uniforms, vs, fs){
+    return new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      depthTest: true,
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneFactor,
+      blendSrcAlpha: THREE.ZeroFactor,
+      blendDstAlpha: THREE.OneFactor,
+      side: THREE.DoubleSide,
+      uniforms: uniforms,
+      vertexShader: vs,
+      fragmentShader: fs
+    });
+  }
+
+  function makePremultOverMaterial(uniforms, vs, fs){
+    return new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      depthTest: true,
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneMinusSrcAlphaFactor,
+      blendSrcAlpha: THREE.OneFactor,
+      blendDstAlpha: THREE.OneMinusSrcAlphaFactor,
+      side: THREE.DoubleSide,
+      uniforms: uniforms,
+      vertexShader: vs,
+      fragmentShader: fs
+    });
+  }
+
+  function makeBillboardCloudGeo(count, makeQuadData){
+    var pos = new Float32Array(count * 4 * 3);
+    var uv  = new Float32Array(count * 4 * 2);
+    var a0  = new Float32Array(count * 4 * 4);
+    var a1  = new Float32Array(count * 4 * 4);
+    var idx = new Uint16Array(count * 6);
+    var corners = [[0, 0], [1, 0], [1, 1], [0, 1]];
+    for(var i = 0; i < count; i++){
+      var qd = makeQuadData(i, count);
+      for(var c = 0; c < 4; c++){
+        var v = i * 4 + c;
+        pos[3 * v] = qd.p ? qd.p[0] : 0;
+        pos[3 * v + 1] = qd.p ? qd.p[1] : 0;
+        pos[3 * v + 2] = qd.p ? qd.p[2] : 0;
+        uv[2 * v] = corners[c][0];
+        uv[2 * v + 1] = corners[c][1];
+        a0[4 * v] = qd.a[0]; a0[4 * v + 1] = qd.a[1]; a0[4 * v + 2] = qd.a[2]; a0[4 * v + 3] = qd.a[3];
+        a1[4 * v] = qd.b[0]; a1[4 * v + 1] = qd.b[1]; a1[4 * v + 2] = qd.b[2]; a1[4 * v + 3] = qd.b[3];
+      }
+      idx[6 * i] = i * 4; idx[6 * i + 1] = i * 4 + 1; idx[6 * i + 2] = i * 4 + 2;
+      idx[6 * i + 3] = i * 4; idx[6 * i + 4] = i * 4 + 2; idx[6 * i + 5] = i * 4 + 3;
+    }
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    geo.setAttribute('aAura0', new THREE.BufferAttribute(a0, 4));
+    geo.setAttribute('aAura1', new THREE.BufferAttribute(a1, 4));
+    geo.setIndex(new THREE.BufferAttribute(idx, 1));
+    return geo;
+  }
+
+  function makeBackdropDiscGeo(radius){
+    var geo = new THREE.PlaneGeometry(radius * 2.0, radius * 2.0, 1, 1);
+    return geo;
+  }
+
+  var VS_VIEW_HALO = [
+    'uniform float kxScale, kxZOff;',
+    'varying vec2 vUvA;',
+    'void main(){',
+    '  vUvA = uv;',
+    '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+    '  mvOrigin.xy += (uv - 0.5) * 2.0 * kxScale;',
+    '  mvOrigin.z += kxZOff;',
+    '  gl_Position = projectionMatrix * mvOrigin;',
+    '}'
+  ].join('\n');
+
+  function buildAuraSystem(spec, state){
+    var kind = spec.kind;
+    var holder = new THREE.Group();
+    var boneName = spec.bone || 'Spine1';
+    var offset = new THREE.Vector3().fromArray(spec.offset || [0, 0, 0]);
+
+    if(kind === 'rainbow_aura'){
+      // 1a. View-aligned full-spectrum Rainbow Dispersion & Stained-Glass Caustic Corona
+      var haloMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.12 : +spec.scale },
+        kxZOff: { value: -0.14 },
+        kxGain: { value: spec.gain == null ? 1.35 : +spec.gain }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime, kxGain;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'vec3 kxSpectrum(float h){ return 0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))); }',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  p.y *= 0.84;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  float n = kxFbm2(p * 2.6 + vec2(kxTime * 0.22, -kxTime * 0.34));',
+        '  float hue = fract(ang / 6.2831853 - kxTime * 0.20 + r * 0.75 + (n - 0.5) * 0.35);',
+        '  vec3 spec = kxSpectrum(hue);',
+        '  vec3 spec2 = kxSpectrum(hue + 0.18);',
+        '  // Soft multi-band rainbow corona + 14 stained-glass prismatic God-rays + interference rings',
+        '  float rays = pow(0.5 + 0.5 * sin(ang * 14.0 - kxTime * 1.35 + n * 3.2), 3.0) * smoothstep(0.18, 0.44, r) * (1.0 - smoothstep(0.55, 0.98, r));',
+        '  float rings = (exp(-abs(r - 0.46 - 0.04 * sin(kxTime * 2.2 + ang * 3.0)) * 24.0) * 0.55',
+        '               + exp(-abs(r - 0.68 + 0.03 * cos(kxTime * 1.8 - ang * 4.0)) * 18.0) * 0.42);',
+        '  float veil = smoothstep(0.12, 0.38, r) * pow(max(0.0, 1.0 - r), 1.65) * (0.52 + 0.48 * n);',
+        '  vec3 col = (spec * (veil * 0.72 + rays * 0.92) + spec2 * rings + vec3(1.0, 0.98, 0.95) * (rays * 0.22)) * kxGain;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var haloMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), haloMat);
+      haloMesh.frustumCulled = false; haloMesh.renderOrder = 2;
+      holder.add(haloMesh);
+
+      // 1b. 28 3D-orbiting spectral prism shards & rainbow wisp ribbons wrapping front & sides
+      var wispGeo = makeBillboardCloudGeo(28, function(i, n){
+        var frac = i / n;
+        var rad = 0.34 + 0.36 * ((i * 0.618034) % 1.0);
+        var y0 = -0.68 + 1.48 * ((i * 0.381966) % 1.0);
+        var sz = 0.18 + 0.14 * ((i * 0.754877) % 1.0);
+        var spd = (i % 2 === 0 ? 1.0 : -1.0) * (0.55 + 0.45 * ((i * 0.29) % 1.0));
+        return { a: [frac * 6.2831853, rad, y0, sz], b: [spd, frac, 0, 0] };
+      });
+      var wispMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxGain: { value: 1.20 }
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvW;',
+        'varying float vHue, vLife;',
+        'void main(){',
+        '  float life = fract(aAura1.y + kxTime * 0.28);',
+        '  float ang = aAura0.x + kxTime * aAura1.x;',
+        '  float rad = aAura0.y * (0.90 + 0.20 * sin(kxTime * 1.7 + aAura0.x));',
+        '  vec3 cPos = vec3(cos(ang) * rad, aAura0.z + life * 0.38 - 0.19, sin(ang) * rad);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  float rot = kxTime * 0.8 * sign(aAura1.x) + aAura0.x;',
+        '  vec2 c = (uv - 0.5) * aAura0.w * vec2(0.72, 1.45);',
+        '  mv.xy += mat2(cos(rot), -sin(rot), sin(rot), cos(rot)) * c;',
+        '  vUvW = uv;',
+        '  vHue = fract(aAura1.y + kxTime * 0.24 + life * 0.35);',
+        '  vLife = sin(life * 3.14159265);',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxGain;',
+        'varying vec2 vUvW;',
+        'varying float vHue, vLife;',
+        'void main(){',
+        '  vec2 p = (vUvW - 0.5) * 2.0;',
+        '  float d = abs(p.x) * 1.35 + abs(p.y) * 0.85;',
+        '  float diamond = smoothstep(0.95, 0.08, d);',
+        '  float core = exp(-length(p) * 5.0);',
+        '  vec3 spec = 0.54 + 0.46 * cos(6.2831853 * (vHue + p.y * 0.25 + vec3(0.0, 0.3333, 0.6667)));',
+        '  vec3 col = (spec * diamond * 0.72 + vec3(1.0) * core * 0.42) * vLife * kxGain;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var wispMesh = new THREE.Mesh(wispGeo, wispMat);
+      wispMesh.frustumCulled = false; wispMesh.renderOrder = 5;
+      holder.add(wispMesh);
+
+    } else if(kind === 'seraph_glyphs'){
+      // 2a. Divine Solar-Gold Halo Corona (restrained inner core so Seraph's white-gold wings stay crisp)
+      var goldHaloMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.12 : +spec.scale },
+        kxZOff: { value: -0.15 },
+        kxGain: { value: spec.gain == null ? 1.05 : +spec.gain * 0.78 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime, kxGain;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  float pulse = 0.86 + 0.14 * sin(kxTime * 2.4);',
+        '  float corona = smoothstep(0.24, 0.46, r) * pow(max(0.0, 1.0 - r), 2.1) * pulse;',
+        '  float ring1 = exp(-abs(r - 0.56) * 62.0) * (0.45 + 0.55 * smoothstep(0.1, 0.6, sin(ang * 12.0 + kxTime * 0.9)));',
+        '  float ring2 = exp(-abs(r - 0.78) * 70.0) * (0.40 + 0.60 * smoothstep(0.1, 0.6, cos(ang * 18.0 - kxTime * 0.7)));',
+        '  float rays = pow(0.5 + 0.5 * cos(ang * 8.0 - kxTime * 0.5), 7.0) * smoothstep(0.32, 0.50, r) * (1.0 - smoothstep(0.66, 0.98, r));',
+        '  vec3 cGold = vec3(1.0, 0.72, 0.12);',
+        '  vec3 cCore = vec3(1.0, 0.93, 0.62);',
+        '  vec3 col = (cGold * (corona * 0.42 + rays * 0.46) + cCore * (ring1 * 0.72 + ring2 * 0.58)) * kxGain;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var goldHalo = new THREE.Mesh(makeBackdropDiscGeo(1.0), goldHaloMat);
+      goldHalo.frustumCulled = false; goldHalo.renderOrder = 2;
+      holder.add(goldHalo);
+
+      // 2b. 36 Orbiting Celestial Sacred Glyphs that smoothly fade in and out
+      var glyphGeo = makeBillboardCloudGeo(36, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var gid = i % 8;
+        var rad = 0.46 + 0.46 * ((i * 0.381966) % 1.0);
+        var y0 = -0.56 + 1.44 * ((i * 0.7548776) % 1.0);
+        var sz = 0.145 + 0.075 * ((i * 0.56984) % 1.0);
+        var rate = 0.18 + 0.14 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [gid, seed, rate, (i % 2 === 0 ? 1.0 : -1.0) * 0.28] };
+      });
+      var glyphMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxGain: { value: 1.28 }
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvG;',
+        'varying float vGid, vFade;',
+        'void main(){',
+        '  float phase = fract(aAura1.y + kxTime * aAura1.z);',
+        '  // Smooth fade-in, luminous sustain, smooth fade-out',
+        '  float fade = smoothstep(0.0, 0.28, phase) * (1.0 - smoothstep(0.58, 1.0, phase));',
+        '  float ang = aAura0.x + kxTime * aAura1.w;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + phase * 0.20 - 0.10, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  float scale = aAura0.w * (0.86 + 0.22 * sin(phase * 3.14159265));',
+        '  mv.xy += (uv - 0.5) * 2.0 * scale;',
+        '  vUvG = uv;',
+        '  vGid = aAura1.x;',
+        '  vFade = fade;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxGain;',
+        'varying vec2 vUvG;',
+        'varying float vGid, vFade;',
+        GLSL_GLYPH_AND_MASK,
+        'void main(){',
+        '  if(vFade < 0.01) discard;',
+        '  vec2 p = (vUvG - 0.5) * 2.0;',
+        '  if(length(p) > 1.0) discard;',
+        '  float g = kxSacredGlyph(p, vGid);',
+        '  float softHalo = exp(-length(p) * 3.8) * 0.045;',
+        '  vec3 cGold = vec3(1.0, 0.72, 0.10);',
+        '  vec3 cWhiteGold = vec3(1.0, 0.94, 0.70);',
+        '  vec3 col = (mix(cGold, cWhiteGold, clamp(g * 0.65, 0.0, 1.0)) * g + cGold * softHalo) * vFade * kxGain;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var glyphMesh = new THREE.Mesh(glyphGeo, glyphMat);
+      glyphMesh.frustumCulled = false; glyphMesh.renderOrder = 5;
+      holder.add(glyphMesh);
+
+    } else if(kind === 'shifting_masks'){
+      // 3. Chorus of Seven Masks: 16 orbiting, shifting translucent Noh/Oni/Kitsune apparition masks
+      var maskGeo = makeBillboardCloudGeo(16, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.42 + 0.36 * ((i * 0.381966) % 1.0);
+        var y0 = -0.38 + 1.18 * ((i * 0.7548776) % 1.0);
+        var sz = 0.145 + 0.055 * ((i * 0.56984) % 1.0);
+        var spd = (i % 2 === 0 ? 1.0 : -1.0) * (0.30 + 0.20 * seed);
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.14 + 0.10 * seed, spd, i % 3] };
+      });
+      var maskMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvM;',
+        'varying float vSeed, vFade, vPal;',
+        'void main(){',
+        '  float phase = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float fade = smoothstep(0.0, 0.24, phase) * (1.0 - smoothstep(0.68, 1.0, phase));',
+        '  float ang = aAura0.x + kxTime * aAura1.z;',
+        '  float bob = sin(kxTime * 1.8 + aAura0.x * 2.0) * 0.05;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + bob + (phase - 0.5) * 0.14, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  float tilt = sin(kxTime * 1.4 + aAura1.x * 12.0) * 0.16;',
+        '  vec2 corner = (uv - 0.5) * 2.0 * aAura0.w;',
+        '  mv.xy += mat2(cos(tilt), -sin(tilt), sin(tilt), cos(tilt)) * corner;',
+        '  vUvM = uv;',
+        '  vSeed = aAura1.x;',
+        '  vFade = fade;',
+        '  vPal = aAura1.w;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvM;',
+        'varying float vSeed, vFade, vPal;',
+        GLSL_NOISE,
+        'void main(){',
+        '  if(vFade < 0.01) discard;',
+        '  vec2 p = (vUvM - 0.5) * 2.0;',
+        '  // Tapered Noh/Oni ovoid mask silhouette',
+        '  float taper = 1.0 + 0.28 * (-p.y) + 0.14 * max(0.0, -p.y);',
+        '  vec2 mp = vec2(p.x * taper * 1.18, p.y * 0.96);',
+        '  float r2 = dot(mp, mp);',
+        '  // Optional Oni horns morphing in with expression state',
+        '  float morphT = 0.5 + 0.5 * sin(kxTime * 0.95 + vSeed * 18.85);',
+        '  float morphU = 0.5 + 0.5 * cos(kxTime * 0.67 + vSeed * 9.42);',
+        '  vec2 hp = vec2(abs(p.x) - 0.44 - (p.y - 0.55) * 0.35, p.y - 0.68);',
+        '  float horn = (p.y > 0.45 && p.y < 0.95) ? smoothstep(0.11 * (1.0 - (p.y - 0.45) * 1.6), 0.02, abs(hp.x)) * morphT : 0.0;',
+        '  float faceMask = smoothstep(0.84, 0.70, r2);',
+        '  float silhouette = clamp(faceMask + horn, 0.0, 1.0);',
+        '  if(silhouette < 0.01) discard;',
+        '  // 3D curved mask surface shading & translucent rim',
+        '  vec3 nrm = normalize(vec3(mp.x * 1.25, mp.y * 0.85, sqrt(max(0.06, 0.86 - r2))));',
+        '  float rim = pow(1.0 - nrm.z, 1.75);',
+        '  // Shifting eyes & mouth expressions (Weeping Noh <-> Fierce Oni <-> Third-Eye Oracle)',
+        '  vec2 ep = vec2(abs(p.x) - 0.28, p.y - 0.12);',
+        '  float tiltE = mix(-0.32, 0.45, morphT);',
+        '  float eyeSlit = smoothstep(0.065, 0.020, abs(ep.y - ep.x * tiltE)) * smoothstep(0.19, 0.11, abs(ep.x));',
+        '  float thirdEye = smoothstep(0.09, 0.03, length(vec2(p.x * 1.6, p.y - 0.36))) * morphU;',
+        '  float tear = (1.0 - morphT) * smoothstep(0.028, 0.008, abs(abs(p.x) - 0.27)) * smoothstep(0.10, -0.02, p.y) * smoothstep(-0.42, -0.15, p.y);',
+        '  float smileCurve = mix(-0.22, 0.28, morphT) * (p.x * p.x * 6.0);',
+        '  float mouth = smoothstep(0.065 + 0.035 * morphT, 0.022, abs(p.y + 0.34 - smileCurve)) * smoothstep(0.28, 0.16, abs(p.x));',
+        '  float fangs = morphT * mouth * step(0.55, sin(p.x * 46.0));',
+        '  // Ghostly porcelain / spectral jade / crimson lacquer tint',
+        '  vec3 baseTint = vPal < 0.5 ? vec3(0.82, 0.90, 1.0) : (vPal < 1.5 ? vec3(0.45, 0.96, 0.86) : vec3(1.0, 0.38, 0.48));',
+        '  vec3 glowCol  = vPal < 0.5 ? vec3(0.42, 0.86, 1.0) : (vPal < 1.5 ? vec3(0.30, 1.0, 0.78) : vec3(1.0, 0.22, 0.36));',
+        '  float wisp = kxFbm2(p * 2.8 + vec2(vSeed * 7.0, -kxTime * 0.5));',
+        '  vec3 col = baseTint * (0.42 + 0.52 * nrm.z + 0.45 * rim) * (0.78 + 0.32 * wisp);',
+        '  // Darken recessed eye/mouth sockets slightly or blaze with inner spirit light',
+        '  float sockets = clamp(eyeSlit + mouth - fangs, 0.0, 1.0);',
+        '  col = mix(col, glowCol * 2.1, clamp(eyeSlit * 0.85 + thirdEye + tear * 0.9 + rim * 0.55, 0.0, 1.0));',
+        '  col = mix(col, vec3(0.04, 0.02, 0.08), mouth * 0.65 * (1.0 - fangs));',
+        '  col += vec3(1.0, 0.95, 0.9) * fangs * 0.9;',
+        '  // Translucent see-through alpha (`0.22 .. 0.56`)',
+        '  float a = silhouette * vFade * clamp(0.22 + 0.32 * rim + 0.22 * sockets + 0.18 * thirdEye, 0.0, 0.62);',
+        '  if(a < 0.008) discard;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var maskMesh = new THREE.Mesh(maskGeo, maskMat);
+      maskMesh.frustumCulled = false; maskMesh.renderOrder = 5;
+      holder.add(maskMesh);
+
+    } else if(kind === 'gravity_lens'){
+      // 4a. Schwarzschild Event-Horizon Shadow & Gravitationally Lensed Background Star-Grid (`uPower` intensifies!)
+      var lensDarkMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxPower: state.uPower,
+        kxZOff: { value: -0.10 }
+      }, [
+        'uniform float kxPower, kxZOff;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vUvA = uv;',
+        '  float sc = 0.92 + 0.54 * kxPower;',
+        '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+        '  mvOrigin.xy += (uv - 0.5) * 2.0 * sc;',
+        '  mvOrigin.z += kxZOff;',
+        '  gl_Position = projectionMatrix * mvOrigin;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime, kxPower;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  // Schwarzschild deflection: rays near the Einstein radius bend strongly around the Archon!',
+        '  float rs = 0.22 + 0.14 * kxPower;',
+        '  float defl = (rs * rs) / max(r * r, 0.035);',
+        '  float swirlA = (0.35 + 0.85 * kxPower) / max(r, 0.18);',
+        '  mat2 sw = mat2(cos(swirlA), -sin(swirlA), sin(swirlA), cos(swirlA));',
+        '  vec2 pLensed = sw * (p * (1.0 - defl));',
+        '  // Warped space-time metric gridlines & lensed background Einstein star-arcs',
+        '  vec2 gp = pLensed * (5.5 + 2.0 * kxPower);',
+        '  float grid = (1.0 - smoothstep(0.02, 0.09, abs(fract(gp.x) - 0.5))) + (1.0 - smoothstep(0.02, 0.09, abs(fract(gp.y) - 0.5)));',
+        '  grid *= smoothstep(0.24, 0.48, r) * (1.0 - smoothstep(0.72, 0.98, r)) * (0.28 + 0.55 * kxPower);',
+        '  float stars = kxStarLayer(pLensed + vec2(kxTime * 0.03, -kxTime * 0.02), 8.0, 0.34, kxTime * 2.0) * smoothstep(0.26, 0.46, r) * (1.0 - smoothstep(0.78, 0.99, r));',
+        '  // Dark gravitational shadow moat framing the photon sphere',
+        '  float moat = smoothstep(0.16, 0.36, r) * (1.0 - smoothstep(0.46, 0.74, r));',
+        '  float a = clamp(moat * (0.42 + 0.34 * kxPower) + (grid * 0.35 + stars * 0.55) * (0.6 + 0.4 * kxPower), 0.0, 0.82);',
+        '  if(a < 0.006) discard;',
+        '  vec3 col = vec3(0.01, 0.005, 0.03) * moat + vec3(0.48, 0.86, 1.0) * grid + vec3(0.92, 0.96, 1.0) * stars * 1.8;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var lensDarkMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), lensDarkMat);
+      lensDarkMesh.frustumCulled = false; lensDarkMesh.renderOrder = 1;
+      holder.add(lensDarkMesh);
+
+      // 4b. Chromatically Split Relativistic Einstein Photon-Ring & Power-Surge Gravitational Waves (pure additive)
+      var lensGlowMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxPower: state.uPower,
+        kxZOff: { value: -0.09 }
+      }, [
+        'uniform float kxPower, kxZOff;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vUvA = uv;',
+        '  float sc = 0.92 + 0.54 * kxPower;',
+        '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+        '  mvOrigin.xy += (uv - 0.5) * 2.0 * sc;',
+        '  mvOrigin.z += kxZOff;',
+        '  gl_Position = projectionMatrix * mvOrigin;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime, kxPower;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  float disp = 0.012 + 0.028 * kxPower;',
+        '  float rE = 0.47 + 0.03 * sin(ang * 2.0 - kxTime * (1.8 + 3.2 * kxPower));',
+        '  // Chromatically split Einstein ring (relativistic Doppler beaming)',
+        '  float ringB = exp(-abs(r - (rE - disp)) * (48.0 - 14.0 * kxPower));',
+        '  float ringG = exp(-abs(r - rE) * (54.0 - 16.0 * kxPower));',
+        '  float ringR = exp(-abs(r - (rE + disp)) * (44.0 - 12.0 * kxPower));',
+        '  float doppler = 0.68 + 0.32 * sin(ang - kxTime * (1.5 + 2.5 * kxPower));',
+        '  vec3 einstein = vec3(ringR * 0.95, ringG * 0.88, ringB * 1.25) * doppler;',
+        '  // Infalling lensed light arcs & surge gravitational-wave ripples',
+        '  float spiral = sin(ang * 3.0 + 7.5 / max(r, 0.22) + kxTime * (2.2 + 4.5 * kxPower));',
+        '  float arcs = pow(max(0.0, spiral * 0.5 + 0.5), 5.0) * smoothstep(0.28, 0.45, r) * (1.0 - smoothstep(0.58, 0.96, r));',
+        '  float gWave = kxPower * exp(-abs(r - fract(kxTime * 1.35) * 0.95) * 32.0) * smoothstep(0.25, 0.40, r) * (1.0 - smoothstep(0.82, 0.99, r));',
+        '  float gain = 0.88 + 2.15 * kxPower;',
+        '  vec3 col = (einstein * 1.15 + vec3(0.55, 0.78, 1.0) * arcs * (0.55 + 0.85 * kxPower) + vec3(0.82, 0.62, 1.0) * gWave * 1.6) * gain;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var lensGlowMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), lensGlowMat);
+      lensGlowMesh.frustumCulled = false; lensGlowMesh.renderOrder = 3;
+      holder.add(lensGlowMesh);
+
+    } else if(kind === 'brimstone_aura'){
+      // 6a. Dark Sulfurous Crimson-Soot Brimstone Shroud (`makePremultOverMaterial`)
+      var sootGeo = makeBillboardCloudGeo(22, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.20 + 0.34 * ((i * 0.381966) % 1.0);
+        var y0 = -0.82 + 1.45 * ((i * 0.7548776) % 1.0);
+        var sz = 0.24 + 0.18 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.34 + 0.18 * seed, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+      });
+      var sootMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvB;',
+        'varying float vAge, vSeed;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float ang = aAura0.x + age * 1.2 * aAura1.z;',
+        '  vec3 cPos = vec3(cos(ang) * (aAura0.y + age * 0.14), aAura0.z + age * 0.55, sin(ang) * (aAura0.y + age * 0.14));',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * aAura0.w * (0.8 + 0.55 * age);',
+        '  vUvB = uv; vAge = age; vSeed = aAura1.x;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvB;',
+        'varying float vAge, vSeed;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvB - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float n = kxFbm2(p * 2.4 + vec2(vSeed * 11.0, -kxTime * 0.9));',
+        '  float billow = smoothstep(0.95, 0.20, r + (n - 0.5) * 0.65);',
+        '  float life = smoothstep(0.0, 0.18, vAge) * (1.0 - smoothstep(0.55, 1.0, vAge));',
+        '  float a = clamp(billow * life * 0.48, 0.0, 0.55);',
+        '  if(a < 0.008) discard;',
+        '  vec3 col = mix(vec3(0.45, 0.03, 0.02), vec3(0.09, 0.03, 0.03), smoothstep(0.2, 0.85, vAge));',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var sootMesh = new THREE.Mesh(sootGeo, sootMat);
+      sootMesh.frustumCulled = false; sootMesh.renderOrder = 2;
+      holder.add(sootMesh);
+
+      // 6b. Roaring Red Brimstone Flame Corona & Rising Hellfire Ember Vortex (`makePureLightMaterial`)
+      var fireGeo = makeBillboardCloudGeo(38, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var isCinder = i >= 22 ? 1.0 : 0.0;
+        var rad = isCinder > 0.5 ? (0.28 + 0.48 * ((i * 0.381966) % 1.0)) : (0.18 + 0.28 * ((i * 0.381966) % 1.0));
+        var y0 = -0.88 + 1.50 * ((i * 0.7548776) % 1.0);
+        var sz = isCinder > 0.5 ? (0.045 + 0.035 * seed) : (0.26 + 0.16 * seed);
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.48 + 0.32 * seed, isCinder, (i % 2 === 0 ? 1.0 : -1.0)] };
+      });
+      var fireMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxGain: { value: 1.42 }
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvF;',
+        'varying float vAge, vSeed, vCinder;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float swirl = age * (aAura1.z > 0.5 ? 2.6 : 0.9) * aAura1.w;',
+        '  float ang = aAura0.x + swirl;',
+        '  float climb = aAura1.z > 0.5 ? age * 0.95 : age * 0.52;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + climb, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  vec2 sc = aAura1.z > 0.5 ? vec2(0.55, 2.2) * aAura0.w : vec2(0.85, 1.55) * aAura0.w * (1.05 - 0.35 * age);',
+        '  mv.xy += (uv - 0.5) * 2.0 * sc;',
+        '  vUvF = uv; vAge = age; vSeed = aAura1.x; vCinder = aAura1.z;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime, kxGain;',
+        'varying vec2 vUvF;',
+        'varying float vAge, vSeed, vCinder;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvF - 0.5) * 2.0;',
+        '  float life = smoothstep(0.0, 0.14, vAge) * (1.0 - smoothstep(0.45, 1.0, vAge));',
+        '  vec3 col;',
+        '  if(vCinder > 0.5){',
+        '    float d = length(vec2(p.x * 2.2, p.y));',
+        '    float spark = exp(-d * 4.2) * life;',
+        '    col = mix(vec3(0.95, 0.03, 0.02), vec3(1.0, 0.28, 0.06), exp(-d * 6.0)) * spark * 2.1 * kxGain;',
+        '  } else {',
+        '    p.x *= 1.25 + 0.55 * (p.y * 0.5 + 0.5);',
+        '    float r = length(p);',
+        '    if(r > 1.0) discard;',
+        '    float n = kxFbm2(vec2(p.x * 2.5 + vSeed * 9.0, p.y * 2.2 - kxTime * 2.8));',
+        '    float tongue = smoothstep(0.92, 0.12, r + (n - 0.5) * 0.72) * life;',
+        '    vec3 cDeepRed = vec3(0.76, 0.01, 0.02);',
+        '    vec3 cScarlet = vec3(1.0, 0.05, 0.02);',
+        '    vec3 cHotCore = vec3(1.0, 0.22, 0.05);',
+        '    col = mix(cDeepRed, mix(cScarlet, cHotCore, clamp(tongue * 0.85, 0.0, 1.0)), clamp(tongue * 1.15, 0.0, 1.0)) * tongue * 0.85 * kxGain;',
+        '  }',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var fireMesh = new THREE.Mesh(fireGeo, fireMat);
+      fireMesh.frustumCulled = false; fireMesh.renderOrder = 4;
+      holder.add(fireMesh);
+
+      // 6c. Scorched Ground Brimstone Magma Fissure Ring beneath hooves
+      var groundGeo = new THREE.PlaneGeometry(1.55, 1.55, 1, 1);
+      groundGeo.rotateX(-Math.PI * 0.5);
+      var groundMat = makePureLightMaterial({
+        kxTime: state.uTime
+      }, [
+        'varying vec2 vUvG;',
+        'void main(){ vUvG = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvG;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvG - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float n1 = kxFbm2(p * 3.8 + vec2(kxTime * 0.18, -kxTime * 0.14));',
+        '  float cracks = exp(-abs(n1 - 0.50) * 28.0) * smoothstep(0.08, 0.25, r) * (1.0 - smoothstep(0.65, 0.98, r));',
+        '  float rim = exp(-abs(r - 0.72) * 22.0) * 0.45;',
+        '  float pulse = 0.80 + 0.20 * sin(kxTime * 3.2 - r * 5.0);',
+        '  vec3 col = (vec3(0.95, 0.03, 0.02) * (cracks * 1.35 + rim) + vec3(1.0, 0.20, 0.04) * pow(cracks, 2.0) * 1.2) * pulse;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var groundMesh = new THREE.Mesh(groundGeo, groundMat);
+      groundMesh.position.set(0, -0.90, 0);
+      groundMesh.frustumCulled = false; groundMesh.renderOrder = 1;
+      holder.add(groundMesh);
+    }
+
+    return {
+      kind: kind,
+      holder: holder,
+      boneName: boneName,
+      offset: offset,
+      groundMesh: kind === 'brimstone_aura' ? holder.children[holder.children.length - 1] : null
+    };
+  }
+
+  /* Build 4 World-Space Skinned-Pose Holographic Time-Echo Clones + Trailing Clockwork Gears (`chrono_trail`) */
+  function buildChronoTrail(fig, state){
+    var N_GHOSTS = 4;
+    var HIST_LEN = 28;
+    var lags = [4, 9, 15, 22];
+    var alphas = [0.48, 0.35, 0.24, 0.14];
+    var holder = new THREE.Group();
+    holder.matrixAutoUpdate = false;
+    fig.group.add(holder);
+
+    var nBones = (fig.bones || []).length;
+    var ring = [];
+    for(var h = 0; h < HIST_LEN; h++){
+      var snap = [];
+      for(var b = 0; b < nBones; b++) snap.push(new THREE.Matrix4());
+      ring.push({ bones: snap, rootPos: new THREE.Vector3(), ready: false });
+    }
+
+    var ghosts = [];
+    for(var g = 0; g < N_GHOSTS; g++){
+      var gFrac = g / Math.max(1, N_GHOSTS - 1);
+      var dummyBones = [];
+      for(var db = 0; db < nBones; db++){
+        var bo = new THREE.Bone();
+        bo.matrixAutoUpdate = false;
+        dummyBones.push(bo);
+      }
+      var cTint = new THREE.Color().lerpColors(colOf('#ffd264'), colOf('#48dcff'), gFrac * 0.72);
+      var matG = new THREE.MeshStandardMaterial({
+        color: 0x000000,
+        emissive: cTint,
+        emissiveIntensity: 1.55 - 0.35 * gFrac,
+        roughness: 0.25,
+        metalness: 0.85,
+        transparent: true,
+        opacity: alphas[g],
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        skinning: true
+      });
+      matG.onBeforeCompile = function(sh){
+        sh.vertexShader = 'varying vec3 vChNrm;\nvarying vec3 vChView;\n' +
+          sh.vertexShader.replace('#include <project_vertex>',
+            '#include <project_vertex>\n\tvChNrm = normalize(transformedNormal);\n\tvChView = normalize(-mvPosition.xyz);');
+        sh.fragmentShader = 'varying vec3 vChNrm;\nvarying vec3 vChView;\n' +
+          sh.fragmentShader.replace('#include <dithering_fragment>', [
+            '\tfloat fres = pow(1.0 - clamp(abs(dot(normalize(vChNrm), normalize(vChView))), 0.0, 1.0), 1.45);',
+            '\tgl_FragColor.rgb = totalEmissiveRadiance * (0.45 + 1.45 * fres);',
+            '\tgl_FragColor.a *= (0.48 + 0.90 * fres);',
+            '\t#include <dithering_fragment>'
+          ].join('\n'));
+      };
+      matG.customProgramCacheKey = function(){ return 'kx-chrono-ghost'; };
+      var gGroup = new THREE.Group();
+      holder.add(gGroup);
+      ghosts.push({ group: gGroup, dummyBones: dummyBones, skel: null, mat: matG, lag: lags[g], meshesByKey: {} });
+    }
+
+    // Trailing golden escapement gear & clock-tick motes streaming behind the Time-Warden
+    var gearGeo = makeBillboardCloudGeo(26, function(i, n){
+      var seed = ((i * 0.6180339887) % 1.0);
+      var rx = (seed - 0.5) * 0.56;
+      var ry = -0.55 + 1.35 * ((i * 0.381966) % 1.0);
+      var sz = 0.065 + 0.065 * ((i * 0.7548776) % 1.0);
+      return { a: [rx, ry, -0.08 - 0.14 * seed, sz], b: [seed, 0.42 + 0.25 * seed, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+    });
+    var gearMat = makePureLightMaterial({
+      kxTime: state.uTime
+    }, [
+      'attribute vec4 aAura0, aAura1;',
+      'uniform float kxTime;',
+      'varying vec2 vUvC;',
+      'varying float vAge, vSpin;',
+      'void main(){',
+      '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+      '  vec3 cPos = vec3(aAura0.x + sin(age * 4.0 + aAura1.x * 6.28) * 0.08, aAura0.y + age * 0.10, aAura0.z - age * 0.68);',
+      '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+      '  float rot = kxTime * 2.4 * aAura1.z + aAura1.x * 6.28;',
+      '  vec2 c = (uv - 0.5) * 2.0 * aAura0.w * (1.05 - 0.40 * age);',
+      '  mv.xy += mat2(cos(rot), -sin(rot), sin(rot), cos(rot)) * c;',
+      '  vUvC = uv; vAge = age; vSpin = aAura1.z;',
+      '  gl_Position = projectionMatrix * mv;',
+      '}'
+    ].join('\n'), [
+      'varying vec2 vUvC;',
+      'varying float vAge, vSpin;',
+      'void main(){',
+      '  vec2 p = (vUvC - 0.5) * 2.0;',
+      '  float r = length(p);',
+      '  if(r > 1.0) discard;',
+      '  float ang = atan(p.y, p.x);',
+      '  float teeth = step(0.2, cos(ang * 12.0)) * smoothstep(0.68, 0.74, r) * (1.0 - smoothstep(0.88, 0.96, r));',
+      '  float rim = exp(-abs(r - 0.68) * 32.0) + exp(-abs(r - 0.22) * 36.0);',
+      '  float spokes = exp(-abs(sin(ang * 3.0)) * 28.0 * r) * smoothstep(0.20, 0.26, r) * (1.0 - smoothstep(0.64, 0.70, r));',
+      '  float g = clamp(teeth + rim * 0.85 + spokes * 0.75, 0.0, 1.4);',
+      '  float fade = smoothstep(0.0, 0.15, vAge) * (1.0 - smoothstep(0.48, 1.0, vAge));',
+      '  vec3 col = mix(vec3(1.0, 0.80, 0.28), vec3(0.35, 0.88, 1.0), vAge * 0.65) * g * fade * 1.35;',
+      '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+      '  gl_FragColor = vec4(col, 1.0);',
+      '}'
+    ].join('\n'));
+    var gearHolder = new THREE.Group();
+    var gearMesh = new THREE.Mesh(gearGeo, gearMat);
+    gearMesh.frustumCulled = false; gearMesh.renderOrder = 4;
+    gearHolder.add(gearMesh);
+    fig.group.add(gearHolder);
+
+    return {
+      holder: holder,
+      gearHolder: gearHolder,
+      ring: ring,
+      headIdx: 0,
+      accumDt: 0,
+      ghosts: ghosts,
+      HIST_LEN: HIST_LEN
+    };
+  }
+
+  var tmpChronoSlip = new THREE.Matrix4(), tmpChronoRot = new THREE.Matrix4(), tmpRootNow = new THREE.Vector3();
+
+  function syncChronoMeshes(fig, trail){
+    if(!trail || !fig.live) return;
+    var refSkel = null;
+    Object.keys(fig.live).forEach(function(k){
+      var m = fig.live[k];
+      if(m && m.isSkinnedMesh && m.skeleton && !refSkel) refSkel = m.skeleton;
+    });
+    if(!refSkel) return;
+    for(var g = 0; g < trail.ghosts.length; g++){
+      var gh = trail.ghosts[g];
+      if(!gh.skel){
+        gh.skel = new THREE.Skeleton(gh.dummyBones, refSkel.boneInverses);
+      }
+      Object.keys(fig.live).forEach(function(k){
+        var m = fig.live[k];
+        var pt = m && m.userData && m.userData.part;
+        if(!m || !m.isSkinnedMesh || !pt || pt.role !== 'armour') return;
+        if(gh.meshesByKey[k]) return;
+        var gGeo = new THREE.BufferGeometry();
+        Object.keys(m.geometry.attributes).forEach(function(a){ gGeo.setAttribute(a, m.geometry.attributes[a]); });
+        if(m.userData.index0){
+          var i0 = m.userData.index0;
+          gGeo.setIndex((i0.isBufferAttribute || Array.isArray(i0)) ? i0 : new THREE.BufferAttribute(i0, 1));
+        } else if(m.geometry.index){
+          gGeo.setIndex(m.geometry.index);
+        }
+        var sm = new THREE.SkinnedMesh(gGeo, gh.mat);
+        sm.frustumCulled = false;
+        sm.castShadow = false;
+        sm.receiveShadow = false;
+        sm.renderOrder = 1;
+        sm.bind(gh.skel, new THREE.Matrix4());
+        gh.group.add(sm);
+        gh.meshesByKey[k] = { ghostMesh: sm, srcMesh: m };
+      });
+    }
+  }
+
+  function updateChronoTrail(fig, state, trail, dt, invGroupWorld){
+    if(!trail || !fig.bones || !fig.bones.length) return;
+    syncChronoMeshes(fig, trail);
+    var hipsIdx = state.byName['Hips'] !== undefined ? state.byName['Hips'] : 0;
+    fig.bones[hipsIdx].getWorldPosition(tmpRootNow);
+
+    trail.accumDt += dt;
+    var firstFill = !trail.ring[0].ready;
+    if(firstFill || trail.accumDt >= 0.032){
+      trail.accumDt = 0;
+      if(firstFill){
+        for(var f = 0; f < trail.HIST_LEN; f++){
+          for(var b0 = 0; b0 < fig.bones.length; b0++) trail.ring[f].bones[b0].copy(fig.bones[b0].matrixWorld);
+          trail.ring[f].rootPos.copy(tmpRootNow);
+          trail.ring[f].ready = true;
+        }
+        trail.headIdx = 0;
+      } else {
+        trail.headIdx = (trail.headIdx + 1) % trail.HIST_LEN;
+        var slot = trail.ring[trail.headIdx];
+        for(var b1 = 0; b1 < fig.bones.length; b1++) slot.bones[b1].copy(fig.bones[b1].matrixWorld);
+        slot.rootPos.copy(tmpRootNow);
+        slot.ready = true;
+      }
+    }
+
+    // Holder transforms world-space skinned vertices back into `fig.group` local space
+    trail.holder.matrix.copy(invGroupWorld);
+    trail.holder.matrixWorldNeedsUpdate = true;
+
+    // Position escapement gear stream behind Spine2
+    var sp2 = state.byName['Spine2'];
+    if(sp2 !== undefined && fig.bones[sp2]){
+      fig.bones[sp2].getWorldPosition(tmpW);
+      tmpW.applyMatrix4(invGroupWorld);
+      trail.gearHolder.position.copy(tmpW);
+    }
+
+    var t = state.uTime.value;
+    for(var g = 0; g < trail.ghosts.length; g++){
+      var gh = trail.ghosts[g];
+      if(!gh.skel) continue;
+      var sIdx = (trail.headIdx - gh.lag + trail.HIST_LEN * 2) % trail.HIST_LEN;
+      var snap = trail.ring[sIdx];
+      var movedDist = tmpRootNow.distanceTo(snap.rootPos);
+      // When stationary or slow, project a graceful backwards-fanning chronometric echo stream!
+      var slipW = Math.max(0.0, 1.0 - movedDist / 0.22);
+      var lagFrac = (g + 1) / trail.ghosts.length;
+      if(slipW > 0.001){
+        var swayX = (-0.22 - 0.05 * Math.sin(t * 1.5 + g)) * lagFrac * 2.1 * slipW;
+        var swayY = (0.030 * lagFrac) * slipW;
+        var swayZ = (-0.30 - 0.05 * Math.cos(t * 1.2)) * lagFrac * 2.0 * slipW;
+        tmpChronoSlip.makeTranslation(swayX, swayY, swayZ);
+        tmpChronoRot.makeRotationY(0.12 * lagFrac * slipW * Math.sin(t * 1.1));
+        tmpChronoSlip.multiply(tmpChronoRot);
+      }
+      for(var bj = 0; bj < gh.dummyBones.length; bj++){
+        if(slipW > 0.001){
+          gh.dummyBones[bj].matrixWorld.multiplyMatrices(tmpChronoSlip, snap.bones[bj]);
+        } else {
+          gh.dummyBones[bj].matrixWorld.copy(snap.bones[bj]);
+        }
+      }
+      Object.keys(gh.meshesByKey).forEach(function(mk){
+        var pair = gh.meshesByKey[mk];
+        pair.ghostMesh.visible = !!(pair.srcMesh && pair.srcMesh.parent && pair.srcMesh.visible);
+      });
+      gh.skel.update();
+    }
+  }
+
   /* Extract rigid bone-local geometry for a `kinetic` sub-assembly (`orbit`, `bob`, `chorus_wave`, `crystal_float`) */
-  function buildKineticSubmesh(m, z, byName, bones, uTime){
+  function buildKineticSubmesh(m, z, byName, bones, uTime, uPower){
     var kin = z.kinetic;
     var bi = byName[kin.bone || 'Head'];
     if(bi === undefined || !bones[bi]) return null;
@@ -701,7 +1599,7 @@
     }
     var localUp = new THREE.Vector3(0, 1, 0).transformDirection(ibm).normalize();
 
-    var subMat = makeZoneMaterial(m.material, z, uTime, false);
+    var subMat = makeZoneMaterial(m.material, z, uTime, false, uPower);
     var subMesh = new THREE.Mesh(subGeo, subMat);
     subMesh.frustumCulled = false;
     subMesh.castShadow = !subMat.transparent;
@@ -742,7 +1640,7 @@
         var t0 = Math.max(0, z.t0 || 0), t1 = Math.min(nTris, z.t1 || 0);
         for(var t = t0; t < t1; t++) claimed[t] = 1;
         if(z.kinetic){
-          var kn = buildKineticSubmesh(m, z, state.byName, fig.bones, state.uTime);
+          var kn = buildKineticSubmesh(m, z, state.byName, fig.bones, state.uTime, state.uPower);
           if(kn) kinetics.push(kn);
         } else {
           var subIdx = [];
@@ -751,7 +1649,7 @@
           var sGeo = new THREE.BufferGeometry();
           Object.keys(m.geometry.attributes).forEach(function(a){ sGeo.setAttribute(a, m.geometry.attributes[a]); });
           sGeo.setIndex(subIdx);
-          var sMat = makeZoneMaterial(m.material, z, state.uTime, true);
+          var sMat = makeZoneMaterial(m.material, z, state.uTime, true, state.uPower);
           var sm = new THREE.SkinnedMesh(sGeo, sMat);
           sm.name = m.name + '|kx:' + (z.name || z.kind);
           sm.frustumCulled = false;
@@ -777,7 +1675,19 @@
       return em;
     });
 
-    var rec = { mesh: m, item: it, kinetics: kinetics, subSkinned: subSkinned, emitters: emitters };
+    var auras = [], chronoTrails = [];
+    (vfx.auras || []).forEach(function(as){
+      if(!as || !as.kind) return;
+      if(as.kind === 'chrono_trail'){
+        chronoTrails.push(buildChronoTrail(fig, state));
+      } else {
+        var au = buildAuraSystem(as, state);
+        fig.group.add(au.holder);
+        auras.push(au);
+      }
+    });
+
+    var rec = { mesh: m, item: it, kinetics: kinetics, subSkinned: subSkinned, emitters: emitters, auras: auras, chronoTrails: chronoTrails };
     m.userData._kxSetup = rec;
     state.entries.push(rec);
     return rec;
@@ -804,14 +1714,44 @@
         }
       }
     });
+    for(var i = 0; i < state.entries.length; i++){
+      var ct = state.entries[i].chronoTrails;
+      if(ct && ct.length){
+        for(var j = 0; j < ct.length; j++) ct[j].synced = false;
+      }
+    }
     updateExtraplanar(fig, 0);
   }
 
   function updateExtraplanar(fig, dt){
     var state = fig._kxState;
     if(!state) return;
-    if(dt > 0) state.uTime.value += Math.min(dt, 0.1);
+    var stepDt = dt > 0 ? Math.min(dt, 0.1) : 0.0;
+    if(stepDt > 0) state.uTime.value += stepDt;
     var t = state.uTime.value;
+
+    // Update power-use intensity uniform (`uPower`, 0..1+) for Singularity Archon's gravitational lensing & galaxy core
+    if(state.pinnedPower !== null){
+      state.uPower.value = state.pinnedPower;
+    } else {
+      var clipPower = 0.0;
+      if(fig.action && fig.action.getClip){
+        var clipObj = fig.action.getClip();
+        var cname = ((clipObj && clipObj.name) || '').toLowerCase();
+        if(cname && cname.indexOf('idle') < 0 && cname.indexOf('stand') < 0 && cname.indexOf('guard') < 0 && cname.indexOf('breath') < 0){
+          clipPower = (cname.indexOf('burst') >= 0 || cname.indexOf('blast') >= 0 || cname.indexOf('cast') >= 0 || cname.indexOf('beam') >= 0 || cname.indexOf('strike') >= 0 || cname.indexOf('attack') >= 0) ? 0.95 : 0.62;
+        }
+      }
+      if(state.surgeHold > 0){
+        state.surgeHold = Math.max(0.0, state.surgeHold - stepDt);
+      } else if(stepDt > 0){
+        state.surgePeak = Math.max(0.0, state.surgePeak - stepDt * 1.15);
+      }
+      var targetPwr = Math.max(state.surgePeak, clipPower);
+      var rate = targetPwr > state.uPower.value ? 8.5 : 2.6;
+      state.uPower.value += (targetPwr - state.uPower.value) * (stepDt > 0 ? Math.min(1.0, stepDt * rate) : 1.0);
+    }
+
     if(!state.entries.length) return;
 
     fig.group.updateMatrixWorld(true);
@@ -819,13 +1759,14 @@
 
     for(var i = 0; i < state.entries.length; i++){
       var e = state.entries[i];
-      var on = !!(e.mesh && e.mesh.visible);
+      var on = !!(e.mesh && e.mesh.parent && e.mesh.visible);
+      var pwrSpeed = 1.0 + 1.15 * state.uPower.value;
       for(var k = 0; k < e.kinetics.length; k++){
         var kn = e.kinetics[k];
         kn.pivot.visible = on;
         if(!on) continue;
         if(kn.motion === 'orbit'){
-          tmpQ.setFromAxisAngle(kn.axis, t * kn.speed + kn.phase);
+          tmpQ.setFromAxisAngle(kn.axis, t * kn.speed * pwrSpeed + kn.phase);
           if(kn.precess){
             tmpQ2.setFromAxisAngle(kn.upAxis, Math.sin(t * 0.9 + kn.phase) * kn.precess);
             tmpQ.premultiply(tmpQ2);
@@ -858,6 +1799,30 @@
           fig.bones[bi].getWorldPosition(tmpW);
           tmpW.applyMatrix4(tmpG).add(em.offset);
           em.holder.position.copy(tmpW);
+        }
+      }
+      if(e.auras){
+        for(var a = 0; a < e.auras.length; a++){
+          var au = e.auras[a];
+          au.holder.visible = on;
+          if(!on) continue;
+          var abi = state.byName[au.boneName];
+          if(abi !== undefined && fig.bones[abi]){
+            fig.bones[abi].getWorldPosition(tmpW);
+            tmpW.applyMatrix4(tmpG).add(au.offset);
+            au.holder.position.copy(tmpW);
+            if(au.groundMesh){
+              au.groundMesh.position.set(-au.offset.x, 0.018 - au.holder.position.y, -au.offset.z);
+            }
+          }
+        }
+      }
+      if(e.chronoTrails){
+        for(var c = 0; c < e.chronoTrails.length; c++){
+          var tr = e.chronoTrails[c];
+          tr.holder.visible = on;
+          tr.gearHolder.visible = on;
+          if(on) updateChronoTrail(fig, state, tr, stepDt, tmpG);
         }
       }
     }
@@ -898,9 +1863,29 @@
     });
     fig._kxState = {
       uTime: { value: 0.0 },
+      uPower: { value: 0.0 },
+      pinnedPower: null,
+      surgePeak: 0.0,
+      surgeHold: 0.0,
       byName: byName,
       itemByKey: itemByKey,
       entries: []
+    };
+    fig.triggerExtraplanarSurge = function(amp, holdSec){
+      var st = fig._kxState;
+      if(!st) return;
+      st.surgePeak = Math.max(st.surgePeak, amp == null ? 1.0 : Math.max(0.0, Math.min(1.5, +amp)));
+      st.surgeHold = Math.max(st.surgeHold, holdSec == null ? 1.2 : Math.max(0.0, +holdSec));
+    };
+    fig.setExtraplanarPower = function(val){
+      var st = fig._kxState;
+      if(!st) return;
+      if(val == null){
+        st.pinnedPower = null;
+      } else {
+        st.pinnedPower = Math.max(0.0, Math.min(1.5, +val));
+        st.uPower.value = st.pinnedPower;
+      }
     };
     var origApply = fig.apply;
     fig.apply = function(rec){
@@ -920,6 +1905,11 @@
         fig._kxState.entries.forEach(function(e){
           e.kinetics.forEach(function(kn){ if(kn.pivot.parent) kn.pivot.parent.remove(kn.pivot); });
           e.emitters.forEach(function(em){ if(em.holder.parent) em.holder.parent.remove(em.holder); });
+          if(e.auras) e.auras.forEach(function(au){ if(au.holder.parent) au.holder.parent.remove(au.holder); });
+          if(e.chronoTrails) e.chronoTrails.forEach(function(tr){
+            if(tr.holder.parent) tr.holder.parent.remove(tr.holder);
+            if(tr.gearHolder.parent) tr.gearHolder.parent.remove(tr.gearHolder);
+          });
         });
         fig._kxState.entries = [];
       }

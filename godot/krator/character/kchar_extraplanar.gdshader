@@ -1,17 +1,26 @@
 // Godot 4 Spatial Shader Twin for `core/charactermodels/src/75-extraplanar.js` (`culture: "extraplanar"`).
-// Supports all 5 Extraplanar material modes over `kchar_push.gdshaderinc` (`mode` uniform or `UV.y` zone `[kxV0, kxV1]`):
-//   mode 1 (`nebula_rift`):    deep 3D view-ray parallax pocket universe, spiral galaxy arms & twinkling starfields
-//   mode 2 (`fresnel_ghost`):  translucent astral/crystal shell (`depth_draw_never` / alpha blend), Fresnel rim, prism & constellations
-//   mode 3 (`alpha_erosion`):  scrolling 3D FBM vertical-tatter & vortex smoke-dissolve with glowing ember/violet erosion edge
-//   mode 4 (`accretion_disc`): differential-swirl incandescent plasma & stardust orbital ring shader
-//   mode 5 (`emissive_blaze`): high-gain pulsing celestial starburst, lantern spirit-flame, Cyclopean eye & Noh mask gaze
-//   mode 6 (`smoke_emitter`):  camera-billboarded multi-puff FBM volumetric chimney-smoke & wisp plume
+// Supports all Extraplanar material & aura modes over `kchar_push.gdshaderinc`:
+//   mode 1 (`nebula_rift`):     deep 3D view-ray parallax pocket universe, spiral galaxy arms & twinkling starfields
+//   mode 2 (`fresnel_ghost`):   translucent astral/crystal shell (`depth_draw_never` / alpha blend), Fresnel rim, prism & constellations
+//   mode 3 (`alpha_erosion`):   scrolling 3D FBM vertical-tatter & vortex smoke-dissolve with glowing ember/violet erosion edge
+//   mode 4 (`accretion_disc`):  differential-swirl incandescent plasma & stardust orbital ring shader
+//   mode 5 (`emissive_blaze`):  high-gain pulsing celestial starburst, lantern spirit-flame, Cyclopean eye & Noh mask gaze
+//   mode 6 (`smoke_emitter`):   camera-billboarded multi-puff FBM volumetric chimney-smoke & wisp plume
+//   mode 7 (`neutrino_phase`):  quantum flavor-oscillating Neutrino Phantom phase-shell & Cherenkov Mach rim
+//   mode 8 (`light_array`):     pure-light pulsing, counter-rotating silhouette array
+//   mode 9 (`rainbow_aura`):    full-spectrum rainbow dispersion corona & stained-glass caustic rays (`prism_matriarch`)
+//   mode 10 (`seraph_glyphs`):  solar-gold halo & fading sacred celestial sigil glyphs (`ophanim_seraph`)
+//   mode 11 (`shifting_masks`): shifting translucent porcelain/jade Noh/Oni/Oracle apparition masks (`chorus_of_masks`)
+//   mode 12 (`gravity_lens`):   Schwarzschild gravitational light-bending & Doppler Einstein ring (`singularity_archon`, scaled by `kx_power_use`)
+//   mode 13 (`chrono_trail`):   chronometric golden/cyan Fresnel afterimage & escapement gear trail (`clockwork_aeon`)
+//   mode 14 (`brimstone_aura`): crimson-red brimstone flame corona, sulfurous smoke & magma fissures (`ashen_calamity`)
 shader_type spatial;
 render_mode cull_disabled, depth_prepass_alpha;
 
 uniform sampler2D tex : source_color, hint_default_white, filter_linear_mipmap, repeat_enable;
 uniform int kx_mode = 1;
 uniform float kx_time = 0.0;
+uniform float kx_power_use = 0.0;
 uniform vec3 kx_col_a : source_color = vec3(1.0, 0.96, 0.85);
 uniform vec3 kx_col_b : source_color = vec3(0.48, 0.95, 1.0);
 uniform vec3 kx_col_c : source_color = vec3(0.36, 0.17, 1.0);
@@ -104,6 +113,40 @@ float kx_star_layer(vec2 p, float scale, float density, float t) {
 	float d = length(gv - off * 0.68);
 	float tw = 0.68 + 0.32 * sin(t * (2.2 + 4.0 * fract(h * 11.7)) + h * 62.8);
 	return exp(-d * 26.0) * tw;
+}
+
+vec3 kx_spectrum(float h) {
+	return clamp(0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.33333, 0.66667))), 0.0, 1.0);
+}
+
+float kx_sd_seg(vec2 p, vec2 a, vec2 b) {
+	vec2 pa = p - a, ba = b - a;
+	float h = clamp(dot(pa, ba) / max(dot(ba, ba), 0.0001), 0.0, 1.0);
+	return length(pa - ba * h);
+}
+
+float kx_sd_glyph(vec2 p, float gid) {
+	float r = length(p);
+	float d = 10.0;
+	int g = int(mod(gid, 6.0));
+	if (g == 0) {
+		d = min(abs(r - 0.56), min(kx_sd_seg(p, vec2(-0.62, 0.0), vec2(0.62, 0.0)), kx_sd_seg(p, vec2(0.0, -0.62), vec2(0.0, 0.62))));
+	} else if (g == 1) {
+		float a1 = abs(length(p - vec2(0.0, 0.24)) - 0.50);
+		float a2 = abs(length(p + vec2(0.0, 0.24)) - 0.50);
+		d = min(max(a1, p.y - 0.26), max(a2, -p.y - 0.26));
+		d = min(d, abs(r - 0.16));
+	} else if (g == 2) {
+		d = min(abs(abs(p.x) + abs(p.y) - 0.60), abs(max(abs(p.x), abs(p.y)) - 0.42));
+	} else if (g == 3) {
+		d = min(abs(length(p - vec2(0.14, 0.0)) - 0.46), abs(r - 0.62));
+	} else if (g == 4) {
+		d = min(kx_sd_seg(p, vec2(-0.55, -0.35), vec2(0.0, 0.58)), kx_sd_seg(p, vec2(0.55, -0.35), vec2(0.0, 0.58)));
+		d = min(d, kx_sd_seg(p, vec2(-0.55, -0.35), vec2(0.55, -0.35)));
+	} else {
+		d = min(abs(r - 0.52), min(kx_sd_seg(p, vec2(-0.48, -0.48), vec2(0.48, 0.48)), kx_sd_seg(p, vec2(-0.48, 0.48), vec2(0.48, -0.48))));
+	}
+	return d;
 }
 
 void vertex() {
@@ -251,6 +294,101 @@ void fragment() {
 		ALBEDO = vec3(0.0);
 		EMISSION = col;
 		ALPHA = clamp(lum, 0.0, 1.0);
+	} else if (kx_mode == 9) {
+		// Full-spectrum rainbow dispersion corona & stained-glass caustic rays (`rainbow_aura`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float ang = atan(p.y, p.x);
+		float hue = fract(ang / 6.2831853 + r * 0.65 - kx_time * 0.24);
+		vec3 spec = kx_spectrum(hue);
+		float rays = pow(0.5 + 0.5 * sin(ang * 9.0 - kx_time * 1.6 + kx_fbm2(p * 2.4) * 2.6), 3.0);
+		float corona = exp(-abs(r - 0.52) * 5.2) * (0.55 + 0.75 * rays) * (1.0 - smoothstep(0.75, 1.0, r));
+		vec3 col = mix(spec, vec3(1.0), 0.22 * rays) * corona * kx_gain;
+		if (corona < 0.01) { discard; }
+		ALBEDO = vec3(0.0);
+		EMISSION = col;
+		ALPHA = clamp(corona, 0.0, 1.0);
+	} else if (kx_mode == 10) {
+		// Solar-gold halo & sacred celestial sigil glyphs fading in and out (`seraph_glyphs`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		vec2 gp = fract(UV * 6.0) * 2.0 - 1.0;
+		vec2 gid2 = floor(UV * 6.0);
+		float h = kx_hash12(gid2);
+		float fade = pow(0.5 + 0.5 * sin(kx_time * (1.3 + 1.4 * h) + h * 31.4), 2.8);
+		float sd = kx_sd_glyph(gp * 1.15, floor(h * 16.0));
+		float sigil = (exp(-sd * 22.0) * 1.6 + exp(-sd * 6.5) * 0.45) * fade * smoothstep(0.18, 0.35, r) * (1.0 - smoothstep(0.78, 0.98, r));
+		float halo = (exp(-abs(r - 0.58) * 32.0) * 0.85 + exp(-r * 3.0) * 0.35) * (1.0 - smoothstep(0.80, 1.0, r));
+		vec3 col = (vec3(1.0, 0.80, 0.28) * (halo + sigil) + vec3(1.0, 0.97, 0.86) * sigil * 0.75) * kx_gain;
+		float lum = max(col.r, max(col.g, col.b));
+		if (lum < 0.005) { discard; }
+		ALBEDO = vec3(0.0);
+		EMISSION = col;
+		ALPHA = clamp(lum, 0.0, 1.0);
+	} else if (kx_mode == 11) {
+		// Shifting translucent Noh / Oni / Oracle apparition masks (`shifting_masks`)
+		vec2 p = (UV - 0.5) * 2.0;
+		p.x *= 1.18;
+		float d_face = length(vec2(p.x * (1.0 + 0.24 * max(0.0, -p.y)), p.y * 0.88)) - 0.72;
+		if (d_face > 0.05) { discard; }
+		float m_blend = 0.5 + 0.5 * sin(kx_time * 1.35);
+		vec2 ep = vec2(abs(p.x) - 0.26, p.y - 0.12);
+		float d_eye = mix(length(vec2(ep.x * 0.9, ep.y * 1.7)) - 0.11, abs(ep.y - 0.08 * ep.x) - 0.035, m_blend);
+		float d_mouth = abs(p.y + 0.28 - mix(0.10, -0.10, m_blend) * (1.0 - min(1.0, p.x * p.x * 8.0))) - 0.04;
+		float shell = smoothstep(0.04, -0.04, d_face) * smoothstep(-0.02, 0.03, min(d_eye, d_mouth));
+		float rim = exp(-abs(d_face) * 26.0) * 0.9 + exp(-max(0.0, min(d_eye, d_mouth)) * 32.0) * 0.8;
+		float fade = 0.35 + 0.45 * (0.5 + 0.5 * sin(kx_time * 1.8 + kx_swirl));
+		ALBEDO = mix(vec3(0.86, 0.84, 0.92), vec3(0.56, 0.88, 0.82), m_blend) * 0.45;
+		EMISSION = (vec3(0.72, 0.90, 1.0) * shell * 0.42 + vec3(1.0, 0.84, 0.46) * rim) * kx_gain * fade;
+		ALPHA = clamp((shell * 0.46 + rim * 0.34) * fade, 0.0, 0.82);
+	} else if (kx_mode == 12) {
+		// Schwarzschild gravitational light-bending & Doppler Einstein ring (`gravity_lens`, intensifies with `kx_power_use`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float pwr = clamp(kx_power_use, 0.0, 1.5);
+		float rs = 0.22 + 0.14 * pwr;
+		float defl = (rs * rs) / max(r * r, 0.035);
+		float sw_a = (0.35 + 0.85 * pwr) / max(r, 0.18);
+		vec2 p_lens = mat2(vec2(cos(sw_a), sin(sw_a)), vec2(-sin(sw_a), cos(sw_a))) * (p * (1.0 - defl));
+		vec2 gp = p_lens * (5.5 + 2.0 * pwr);
+		float grid = ((1.0 - smoothstep(0.02, 0.09, abs(fract(gp.x) - 0.5))) + (1.0 - smoothstep(0.02, 0.09, abs(fract(gp.y) - 0.5))))
+			* smoothstep(0.24, 0.48, r) * (1.0 - smoothstep(0.72, 0.98, r)) * (0.28 + 0.55 * pwr);
+		float ang = atan(p.y, p.x);
+		float disp = 0.012 + 0.028 * pwr;
+		float r_e = 0.47 + 0.03 * sin(ang * 2.0 - kx_time * (1.8 + 3.2 * pwr));
+		vec3 einstein = vec3(
+			exp(-abs(r - (r_e + disp)) * (44.0 - 12.0 * pwr)) * 0.95,
+			exp(-abs(r - r_e) * (54.0 - 16.0 * pwr)) * 0.88,
+			exp(-abs(r - (r_e - disp)) * (48.0 - 14.0 * pwr)) * 1.25
+		) * (0.68 + 0.32 * sin(ang - kx_time * (1.5 + 2.5 * pwr)));
+		float moat = smoothstep(0.16, 0.36, r) * (1.0 - smoothstep(0.46, 0.74, r));
+		float gain_p = (0.88 + 2.15 * pwr) * kx_gain;
+		ALBEDO = vec3(0.01, 0.005, 0.03) * moat;
+		EMISSION = (einstein * 1.15 + vec3(0.48, 0.86, 1.0) * grid) * gain_p;
+		ALPHA = clamp(moat * (0.42 + 0.34 * pwr) + max(einstein.b, grid), 0.0, 0.92);
+	} else if (kx_mode == 13) {
+		// Chronometric golden/cyan Fresnel afterimage trail (`chrono_trail`)
+		float fres = pow(1.0 - ndv, 1.55);
+		vec3 tint = mix(vec3(1.0, 0.82, 0.39), vec3(0.28, 0.86, 1.0), clamp(kx_prism, 0.0, 1.0));
+		ALBEDO = vec3(0.0);
+		EMISSION = tint * (0.35 + 1.35 * fres) * kx_gain;
+		ALPHA = clamp(kx_opacity * (0.38 + 0.85 * fres), 0.04, 0.85);
+	} else if (kx_mode == 14) {
+		// Roaring crimson-red brimstone flame corona & sulfurous smoke (`brimstone_aura`)
+		vec2 p = (UV - 0.5) * 2.0;
+		p.x *= 1.25 + 0.55 * (p.y * 0.5 + 0.5);
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float n = kx_fbm2(vec2(p.x * 2.5, p.y * 2.2 - kx_time * 2.8));
+		float tongue = smoothstep(0.92, 0.12, r + (n - 0.5) * 0.72);
+		if (tongue < 0.01) { discard; }
+		vec3 col = mix(vec3(0.88, 0.02, 0.01), mix(vec3(1.0, 0.16, 0.03), vec3(1.0, 0.58, 0.08), clamp(tongue * 0.9, 0.0, 1.0)), clamp(tongue * 1.2, 0.0, 1.0)) * tongue * kx_gain;
+		ALBEDO = vec3(0.08, 0.01, 0.01);
+		EMISSION = col;
+		ALPHA = clamp(tongue * 0.92, 0.0, 0.96);
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)
 		float p = 1.0 + 0.18 * sin(kx_time * 3.6 + UV.x * 6.283);

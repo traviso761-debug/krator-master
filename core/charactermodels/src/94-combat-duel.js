@@ -2951,7 +2951,11 @@
     else if(link.attack === 'gun_shot') playSfx('gun_shot');
     else playSfx('windup_whoosh');
 
-    // Windup Charge VFX (0 -> hit_t) for Singularity Energy Burst!
+    // Windup Charge VFX (0 -> hit_t) for Singularity Energy Burst & Extraplanar power-use intensification!
+    if(F[atk] && F[atk].fig && F[atk].fig.triggerExtraplanarSurge){
+      var surgeAmp = (link.vfx === 'energy_burst' || link.vfx === 'lightning_blast' || link.style === 'arcane') ? 1.0 : 0.78;
+      F[atk].fig.triggerExtraplanarSurge(surgeAmp, Math.max(1.4, atkDur));
+    }
     if(link.vfx === 'energy_burst'){
       spawnEnergyBurstChargeVfx(F[atk], contactT);
     }
@@ -4366,6 +4370,8 @@
       startExtraplanarDemo: startExtraplanarDemo,
       startFourArmDemo: startFourArmDemo,
       startArthropodDemo: startArthropodDemo,
+      setExtraplanarPower: function(slot, val){ var s = F[slot || 0]; if(s && s.fig && s.fig.setExtraplanarPower) s.fig.setExtraplanarPower(val); },
+      triggerSurge: function(slot, amp, dur){ var s = F[slot || 0]; if(s && s.fig && s.fig.triggerExtraplanarSurge) s.fig.triggerExtraplanarSurge(amp, dur); },
       playSfx: playSfx,
       setSfxEnabled: setSfxEnabled
     };

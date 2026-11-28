@@ -376,12 +376,14 @@ def hide_full_body(entry):
     return apply_custom_hide(entry, np.arange(len(core.BT), dtype=np.int32), replace=True)
 
 
-def assemble_garment(gid, label, slot, parts, emitters=None, **kw):
+def assemble_garment(gid, label, slot, parts, emitters=None, auras=None, **kw):
     kw.setdefault('allow_floating', True)
     entry = _core_assemble(gid, label, slot, 'extraplanar', parts, **kw)
     entry['culture'] = 'extraplanar'
     if emitters:
         entry.setdefault('vfx', {})['emitters'] = emitters
+    if auras:
+        entry.setdefault('vfx', {})['auras'] = auras
     return entry
 
 
@@ -816,7 +818,10 @@ def _build_singularity_archon(sex):
                 rigid_joint='Spine1', arc=(-0.65 * math.pi, 0.65 * math.pi), n_major=16, n_minor=6, closed_loop=False
             ))
 
-    ent_t = assemble_garment(gid_t, 'Singularity Archon Cosmic Galaxy-Rift Robes', 'torso', parts_t, open_torso=True)
+    ent_t = assemble_garment(
+        gid_t, 'Singularity Archon Cosmic Galaxy-Rift Robes', 'torso', parts_t, open_torso=True,
+        auras=[{'kind': 'gravity_lens', 'bone': 'Spine2', 'offset': [0.0, -0.04, 0.0]}]
+    )
     ent_t['hide_parts'] = ['Human.nipple', 'Human.toenails']
     # Hide entire torso, hips, legs, and feet so ONLY the infinite galaxy void exists inside the robes!
     body_non_arm = select_body_tris(
@@ -2100,7 +2105,10 @@ def _build_chorus_of_masks(sex):
         slv_h.no_conform = True
         parts_t.append(slv_h)
 
-    ent_t = assemble_garment(gid_t, 'Chorus of Masks Astral Constellation Body & White Haori', 'torso', parts_t)
+    ent_t = assemble_garment(
+        gid_t, 'Chorus of Masks Astral Constellation Body & White Haori', 'torso', parts_t,
+        auras=[{'kind': 'shifting_masks', 'bone': 'Spine1', 'offset': [0.0, 0.12, 0.0]}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 

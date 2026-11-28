@@ -383282,6 +383282,17 @@
       "v0": 0.0,
       "v1": 0.05957
      }
+    ],
+    "auras": [
+     {
+      "kind": "gravity_lens",
+      "bone": "Spine2",
+      "offset": [
+       0.0,
+       -0.04,
+       0.0
+      ]
+     }
     ]
    },
    "cloth": {
@@ -397018,6 +397029,17 @@
       "t1": 1512,
       "v0": 0.0,
       "v1": 0.18555
+     }
+    ],
+    "auras": [
+     {
+      "kind": "shifting_masks",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.12,
+       0.0
+      ]
      }
     ]
    },
@@ -640124,6 +640146,19 @@
       "v0": 0.99609,
       "v1": 1.0
      }
+    ],
+    "auras": [
+     {
+      "kind": "seraph_glyphs",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.12,
+       0.0
+      ],
+      "scale": 1.12,
+      "gain": 1.4
+     }
     ]
    },
    "tucks": true,
@@ -640987,6 +641022,19 @@
       "t1": 2680,
       "v0": 0.98145,
       "v1": 1.0
+     }
+    ],
+    "auras": [
+     {
+      "kind": "rainbow_aura",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.08,
+       0.0
+      ],
+      "scale": 1.14,
+      "gain": 1.35
      }
     ]
    },
@@ -642272,6 +642320,12 @@
       "t1": 4768,
       "v0": 0.99316,
       "v1": 1.0
+     }
+    ],
+    "auras": [
+     {
+      "kind": "chrono_trail",
+      "bone": "Spine2"
      }
     ]
    },
@@ -645471,9 +645525,9 @@
       ],
       "spread": 0.065,
       "opacity": 0.72,
-      "ember_color": "#ff6210",
-      "core_color": "#0d0908",
-      "mist_color": "#4c403a"
+      "ember_color": "#ff1e08",
+      "core_color": "#220404",
+      "mist_color": "#4a1210"
      }
     ]
    },
@@ -645521,9 +645575,20 @@
       ],
       "spread": 0.06,
       "opacity": 0.64,
-      "ember_color": "#ff6812",
-      "core_color": "#0b0807",
-      "mist_color": "#4a3d38"
+      "ember_color": "#ff1e08",
+      "core_color": "#220404",
+      "mist_color": "#4a1210"
+     }
+    ],
+    "auras": [
+     {
+      "kind": "brimstone_aura",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.02,
+       0.0
+      ]
      }
     ]
    },
@@ -645700,9 +645765,9 @@
       ],
       "spread": 0.072,
       "opacity": 0.78,
-      "ember_color": "#ff640c",
-      "core_color": "#0b0807",
-      "mist_color": "#524540"
+      "ember_color": "#ff1e08",
+      "core_color": "#220404",
+      "mist_color": "#4a1210"
      },
      {
       "bone": "Spine2",
@@ -645722,9 +645787,9 @@
       ],
       "spread": 0.072,
       "opacity": 0.78,
-      "ember_color": "#ff640c",
-      "core_color": "#0b0807",
-      "mist_color": "#524540"
+      "ember_color": "#ff1e08",
+      "core_color": "#220404",
+      "mist_color": "#4a1210"
      }
     ]
    }
