@@ -19,6 +19,12 @@ const SKY_HALF := preload("res://shaders/sky_half.gdshader")
 @export var pressure := -1.0                   # atm; < 0 takes the preset's
 @export var cover := -1.0                      # cloud cover 0..1; < 0 takes the preset's
 @export var weather := {}                      # {cover, grey, fog}
+@export var cloud_quality := "layers"           # "off", "layers" (the flat cumulus) or "volumes" (W6: the raymarched clouds)
+# Desert storm / karaburan browning (89y-host-storm.js, driven by KratorAtmosFx; 0 leaves the sky untouched)
+@export var storm_murk := 0.0                  # 0..1: horizon-first dust wall & optical extinction of giant/moons/stars
+@export var storm_colour := Color(0.54, 0.39, 0.22)
+@export var storm_sun_dim := 1.0               # 1 clear .. 0.22 black storm
+@export var storm_sky_lit := 1.0               # ceiling brightness in storm/deadheat
 # the cloud layers in the sky's half-resolution pass (shaders/sky_half.gdshader; GODOT-LOOK-PLAN.md C9): the light rig's
 # low tier sets it (krator/look.gd). The material keeps its uniforms across the swap. The Compatibility renderer has no
 # such pass (checked on 4.7.2: the sky comes out wrong), so there the sky stays whole whatever is asked
@@ -79,6 +85,15 @@ func _textures() -> void:
 	vol.create(Image.FORMAT_RGBA8, 64, 64, 64, false, layers)
 	mat.set_shader_parameter("uNoise", vol)
 	RenderingServer.global_shader_parameter_set("atm_sky_noise", vol)   # the cloud shade on the ground (atmos_cloudshade.gdshaderinc)
+	# the volumes' detail (core/atmos's ATMOS.skyDetailVolume(32), shipped as data/sky/detail32.bin by godot/tools/atmos_sky.js)
+	var db := FileAccess.get_file_as_bytes("res://data/sky/detail32.bin")
+	if db.size() == 32 * 32 * 32 * 4:
+		var dl: Array[Image] = []
+		for z in 32:
+			dl.append(Image.create_from_data(32, 32, false, Image.FORMAT_RGBA8, db.slice(z * 32 * 32 * 4, (z + 1) * 32 * 32 * 4)))
+		var dv := ImageTexture3D.new()
+		dv.create(Image.FORMAT_RGBA8, 32, 32, 32, false, dl)
+		mat.set_shader_parameter("uDetail", dv)
 	var W := 512
 	var atlas := Image.create(W, W / 2 * MOONS.size(), false, Image.FORMAT_RGB8)
 	var ok := true
@@ -148,6 +163,8 @@ func _process(dt: float) -> void:
 
 
 func _update() -> void:
+	if model == null or mat == null:
+		return
 	if pressure >= 0.0:
 		preset["air"]["pressure"] = pressure
 	if cover >= 0.0:
@@ -165,20 +182,46 @@ func _update() -> void:
 	m.set_shader_parameter("uRingT", s["ringLine"])
 	var W: Array = s["eq"]   # the shader's uEq takes the world to the stars' sphere: the transpose of W
 	m.set_shader_parameter("uEq", Basis(W[0], W[1], W[2]).transposed())
-	for k in [["uZen", "zen"], ["uHor", "hor"], ["uSunHor", "sunHor"], ["uSunC", "sunC"], ["uShineC", "shineC"], ["uFogC", "fogC"]]:
-		m.set_shader_parameter(k[0], _v(L[k[1]]))
-	m.set_shader_parameter("uExt", _v(L["ext"]))
-	m.set_shader_parameter("uSunI", L["sunI"])
-	m.set_shader_parameter("uHazeFloor", L["hazeFloor"])
-	m.set_shader_parameter("uDayStars", L["dayStars"])
+	var murk := clampf(storm_murk, 0.0, 1.0)
+	if murk <= 0.0001:
+		for k in [["uZen", "zen"], ["uHor", "hor"], ["uSunHor", "sunHor"], ["uSunC", "sunC"], ["uShineC", "shineC"], ["uFogC", "fogC"]]:
+			m.set_shader_parameter(k[0], _v(L[k[1]]))
+		m.set_shader_parameter("uExt", _v(L["ext"]))
+		m.set_shader_parameter("uSunI", L["sunI"])
+		m.set_shader_parameter("uHazeFloor", L["hazeFloor"])
+		m.set_shader_parameter("uFogD", L["fogD"])
+		m.set_shader_parameter("uDustMurk", Vector4.ZERO)
+	else:
+		# Port of biomes/catch/src/89y-host-storm.js: horizon walls go brown first, airmass extinction swallows giant & moons
+		var dc := Vector3(storm_colour.r, storm_colour.g, storm_colour.b)
+		var dc_zen := dc * 0.78
+		var lit_k := maxf(storm_sky_lit, 0.62)
+		var zen_v := _v(L["zen"]).lerp(dc_zen, murk * 0.85) * lit_k
+		var hor_v := _v(L["hor"]).lerp(dc, minf(1.0, murk * 1.55)) * lit_k
+		var shor_v := _v(L["sunHor"]).lerp(dc * 1.08, minf(1.0, murk * 1.35)) * lit_k
+		var fog_v := _v(L["fogC"]).lerp(dc, minf(1.0, murk * 1.55)) * lit_k
+		m.set_shader_parameter("uZen", zen_v)
+		m.set_shader_parameter("uHor", hor_v)
+		m.set_shader_parameter("uSunHor", shor_v)
+		m.set_shader_parameter("uSunC", _v(L["sunC"]).lerp(dc * 1.35, murk * 0.45))
+		m.set_shader_parameter("uShineC", _v(L["shineC"]))
+		m.set_shader_parameter("uFogC", fog_v)
+		m.set_shader_parameter("uExt", _v(L["ext"]) * (1.0 + 18.0 * murk * murk + 4.0 * murk))
+		m.set_shader_parameter("uSunI", float(L["sunI"]) * clampf(storm_sun_dim, 0.12, 1.5))
+		m.set_shader_parameter("uHazeFloor", lerpf(float(L["hazeFloor"]), 0.96, murk))
+		m.set_shader_parameter("uFogD", float(L["fogD"]) * (1.0 + 36.0 * murk))
+		var aureole := sin(murk * PI * 0.82) * clampf(float(L["sunI"]), 0.0, 1.2)
+		m.set_shader_parameter("uDustMurk", Vector4(murk, aureole, 1.0, lit_k))
+		m.set_shader_parameter("uDustCol", dc)
+	m.set_shader_parameter("uDayStars", L["dayStars"] * (1.0 - murk))
 	m.set_shader_parameter("uNight", L["night"])
 	m.set_shader_parameter("uEclipse", s["eclipse"])
-	m.set_shader_parameter("uShineI", L["shineI"])
+	m.set_shader_parameter("uShineI", L["shineI"] * (1.0 - 0.85 * murk))
 	m.set_shader_parameter("uSpin", s["spin"])
-	m.set_shader_parameter("uFogD", L["fogD"])
 	m.set_shader_parameter("uTime", _t)
 	var cam3 := get_viewport().get_camera_3d() if get_viewport() else null
-	m.set_shader_parameter("uCamPos", cam3.global_position if cam3 else Vector3(0, 1.7, 0))
+	var cpos := cam3.global_position if cam3 else Vector3(0, 1.7, 0)
+	m.set_shader_parameter("uCamPos", Vector3(cpos.x, maxf(cpos.y, 1.7), cpos.z))
 	m.set_shader_parameter("uMoonT", s["t"] * 24.0)
 	var md := PackedVector3Array(); var ml := PackedVector3Array(); var mv := PackedVector3Array(); var mg := PackedVector3Array(); var mc := PackedVector3Array()
 	var mr := PackedFloat32Array(); var mk := PackedFloat32Array(); var mf := PackedFloat32Array(); var mlp := PackedFloat32Array()
@@ -203,6 +246,18 @@ func _update() -> void:
 	RenderingServer.global_shader_parameter_set("atm_cloud_wind", Vector2(1.0, 0.3))
 	RenderingServer.global_shader_parameter_set("atm_time", _t)
 	RenderingServer.global_shader_parameter_set("atm_wet", float(weather.get("wet", 0.0)))
+	# the volumetric clouds (W6): PRESETS.volclouds from data/sky/sky.json, as the pages' host sets them (host/89-atmos-m-volhost.js)
+	var VC: Dictionary = model.volclouds
+	var vol_on := cloud_quality == "volumes" and not VC.is_empty()
+	m.set_shader_parameter("uVolOn", 1.0 if (vol_on or cloud_quality == "off") else 0.0)
+	if vol_on:
+		m.set_shader_parameter("uVolT", Vector4(VC["thin"], VC["thick"], VC["storm"], VC["density"]))
+		m.set_shader_parameter("uVolS", Vector4(VC["base"], VC["detail"], VC["erode"], VC["steps"] + 100.0 * VC["lightSteps"]))
+		m.set_shader_parameter("uVolP", Vector4(VC["maxDist"], fmod(Engine.get_frames_drawn() * 0.6180339887, 1.0), VC["ambient"], VC["forward"]))
+		m.set_shader_parameter("uVolC", Vector4(VC["key"], VC["amb"], VC["haze"], VC["maxDist"]))
+		m.set_shader_parameter("uBolt", Vector4(0, 0, 1800, 0))
+		m.set_shader_parameter("uFlashC", Vector3(0.82, 0.86, 1.0))
+	RenderingServer.global_shader_parameter_set("atm_vol_mid_h", 0.5 * (float(VC.get("thin", 0.0)) + float(VC.get("thick", 0.0))) * 0.5 if vol_on else 0.0)
 	var vp := get_viewport()
 	var cam := vp.get_camera_3d() if vp else null
 	var fov := deg_to_rad(cam.fov) if cam else deg_to_rad(62.0)
@@ -218,4 +273,6 @@ func _update() -> void:
 	env.tonemap_exposure = L["exp"]
 	env.fog_light_color = _c(L["fogC"])
 	env.fog_density = L["fogD"] * 0.8326   # one exponential matched to three's squared one (stage.gd)
+	env.fog_sky_affect = 0.0
+	env.volumetric_fog_sky_affect = 0.0
 	env.fog_sun_scatter = clampf(0.26 * float(L["sunI"]), 0.0, 0.34)

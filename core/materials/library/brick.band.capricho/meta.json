@@ -1,0 +1,62 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.756,
+    0.573
+   ],
+   "seam_before": [
+    1.232,
+    0.978
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.025,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.2,
+   "pattern": false,
+   "rough": 0.68,
+   "rough_var": 0.24,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "brick",
+  "id": "brick.band.capricho",
+  "metal": 0,
+  "roughness": 0.68,
+  "scale": [
+   1.5,
+   1.5
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "brick.band.capricho.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on masonry wall filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Gaud\u00ed El Capricho polychrome banded brick and relief-tile masonry in strict horizontal courses continuing cleanly across left and right edges: three courses of warm sun-baked sandy buff brick (#d6bc94) alternating with two courses of rich rose-terracotta brick (#b4523d) and one narrow horizontal frieze course of square moulded ceramic relief tiles glazed in deep alkaline emerald-teal (#1b867e) embossed with raised stylized golden-ochre rosette bosses (#d49b35), thin pale cream lime mortar joints (#dfd5c2), crisp fired clay texture and fine glaze crazing on the tile band. Full colour, do not mute.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti banded masonry (kits/tabisti, bandbrick, 1.5 m); polychrome Moorish-Modernisme brick courses",
+  "sha1": "2e62a0e5603ddc08fc2fdd00ad85586621b1935a"
+ }
+}

@@ -28,26 +28,41 @@ const spec = (px, py, o) => Object.assign({ name: 'Camp', kind: 'hunt', size: 'c
 const fresh = () => K.create();
 
 // ---- coordinates: the regions' frames against the scale model's own pixels
-/* the little demo was retired to archive/ (2026-10-20); its region file is read there */
+/* the little demo was retired to archive/ (2026-10-20); its region file is read there.
+   AND ITS DRIFT IS NOT COUNTED (2026-11-25). This check used to measure the model's drift over all three regions
+   together against a one-in-ten tolerance, and failed at nine of thirty-two -- but EIGHT OF THE NINE are the retired
+   region's, where the drift runs to 496 km (Shade) and means nothing, because nothing is built from `archive/` and
+   nobody will re-cut it. Counting it buried the one finding that matters: of the five paired places in the two LIVE
+   regions, exactly one has moved -- JIMJAM, in openworld/north-basin, 8.2 km (the model put it 4 px north after that
+   region was cut). So the live regions carry the pass condition and the archive is reported beside it. With five live
+   pairs a ratio is meaningless anyway: one in ten of five demands zero. */
 const REGIONS = ['archive/little-demo', 'openworld/isle-demo', 'openworld/north-basin'].map(n => readJ(n + '/data/region.json'));
+REGIONS[0].archived = true;
 /* a region's own pixels (the old canvas, map '4') give its x, z exactly; the model's 5.1 pixels give them too, but for a
-   place moved on the model since the region was cut (reported, not failed) */
-let pairs = 0, off = 0, offOld = 0, own = 0, ownOff = 0;
-const moved = [];
+   place moved on the model since the region was cut */
+let pairs = 0, off = 0, offOld = 0, own = 0, ownOff = 0, livePairs = 0;
+const moved = [], liveMoved = [];
 for (const j of REGIONS) for (const s of j.settlements) {
   own++;
   const q = K.toRegion(K.place(s.px, s.py, '4'), j.frame);
   if (Math.abs(q.x - s.x) > 1e-6 || Math.abs(q.z - s.z) > 1e-6) ownOff++;
   const m = NPC.find(n => n.id === s.doc); if (!m) continue;
   pairs++;
+  if (!j.archived) livePairs++;
   const p = K.toRegion(K.place(m.px, m.py, '5.1'), j.frame), w = K.toRegion(K.place(m.px, m.py, '4'), j.frame);
-  if (Math.abs(p.x - s.x) > 1e-6 || Math.abs(p.z - s.z) > 1e-6) { off++; moved.push(s.name); }
+  if (Math.abs(p.x - s.x) > 1e-6 || Math.abs(p.z - s.z) > 1e-6) {
+    off++; moved.push(s.name);
+    if (!j.archived) liveMoved.push(s.name + ' ' + (Math.hypot(p.x - s.x, p.z - s.z) / 1000).toFixed(1) + ' km');
+  }
   if (Math.abs(w.x - s.x) > 1e-6 || Math.abs(w.z - s.z) > 1e-6) offOld++;
 }
 ok('the regions\' own pixels land on their region.json x, z', own >= 30 && ownOff === 0,
   REGIONS.every(j => j.settlements.every(s => J(K.toRegion(K.place(s.px, s.py, '5.1'), j.frame)) !== J({ x: s.x, z: s.z }))), own + ' places');
-ok('the model\'s 5.1 pixels less 272, 330 land there too, but for places moved since the cut', pairs >= 20 && off <= pairs / 10,
-  offOld === pairs, pairs + ' places; moved since: ' + (moved.join(', ') || 'none'));
+ok('the model\'s 5.1 pixels less 272, 330 land on the LIVE regions\' x, z, bar places the model moved since the cut',
+  pairs >= 20 && livePairs >= 4 && liveMoved.length === 0,
+  offOld === pairs,
+  livePairs + ' live pairs of ' + pairs + '; live drift: ' + (liveMoved.join(', ') || 'none')
+  + '; the retired little-demo\'s ' + (off - liveMoved.length) + ' (up to 496 km, not counted)');
 const fr = REGIONS[0].frame, p0 = K.fromRegion(-12000, 34000, fr, '5.1'), back = K.toRegion(p0, fr);
 const onOld = K.toMap(p0, '4');
 ok('fromRegion and toRegion invert; toMap moves the pixel and keeps the place',

@@ -39,6 +39,8 @@ const WORKS=(function(){
    regHaz('spiderlake:broodguard','Arachneapolita Brood-Pavilion Guard Drum (< 2.5 m without Hum/smudge)',12,-28,28,16,{kind:'hunter',effect:'bleed',danger:0.30,dose:0.12,falloff:'smooth'});
   }else if(SKEY==='fen'){
    regHaz('spiderlake:thermalbath','Hot Alkaline Carbonate Vent Throat (+44.2 C scald center)',78,58,9.5,4,{kind:'heat',effect:'burn',danger:0.52,dose:0.24,falloff:'smooth'});
+  }else if(SKEY==='haugel'){
+   regHaz('spiderlake:thermalbath','Hau-Gel Upper Scalding Sinter Terrace Vent (+45.6 C scald center)',44,58,12.5,4,{kind:'heat',effect:'burn',danger:0.58,dose:0.28,falloff:'smooth'});
   }
  }
 
@@ -127,6 +129,10 @@ const WORKS=(function(){
    const frames=[[-12,-34,0.20],[38,-46,-0.35]];
    frames.forEach((f,i)=>addWeirFrame(f[0],f[1],f[2],i));
    [[8,-30],[26,-28]].forEach((p,i)=>addCocoonLantern(p[0],p[1],i));
+  }else if(SKEY==='haugel'){
+   const frames=[[-14,-82,0.12],[18,-82,-0.10],[-18,46,0.24]];
+   frames.forEach((f,i)=>addWeirFrame(f[0],f[1],f[2],i));
+   [[-4,-78],[28,42],[-38,-42]].forEach((p,i)=>addCocoonLantern(p[0],p[1],i));
   }else{
    // Station 6 (rampart): Ria hydrological divide cairns in secondary-ejecta & imperial porphyry (0 silk weirs above midge line!)
    [[-42,0],[0,4],[44,-2]].forEach((p,i)=>{

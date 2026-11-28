@@ -32,7 +32,14 @@ const VIEWS=SKEY==='spring'?{
  'Ancient bleach belt':look(-148,112,11.0,-112,92,0.5),
  'Strangler front':look(-98,74,6.5,-124,96,1.2),
  'Hydro-arcology site':look(118,-98,14.0,156,-138,2.0)
-}:{};
+}:{
+ 'Overview':look(-118,-112,38,12,8,14),
+ 'Carnelian porphyry crown':look(-34,-46,12.5,12,8,18),
+ 'Organpipe sky-island':look(56,48,10.5,16,10,16),
+ 'Inert mist-pylon':look(-92,22,8.5,-62,24,7.5),
+ 'Contact spring tarn':look(-58,-32,7.5,-88,-24,0.2),
+ 'Porphyry quarry site':look(-96,-72,11.0,-124,-104,2.0)
+};
 
 function statusSummary(){
  const pAtm=HOLLOW_PHYS.pressureAtElev(SITE.baseElevM);
@@ -175,10 +182,10 @@ const HCHK={
  },
  mvtAndCavern(skey,cav,depthM){
   const mvt=HOLLOW_PHYS.mvtCrystalAt({dikeDistM:8.0,spiderSeepShare01:0.56,depthBelowTableM:depthM,gKrator:7.4});
-  const cavOk=(skey==='shutin')?(cav===null):(!!cav&&cav.crystals>=6&&(skey!=='fenestre'||cav.maxBeamLenM>=10.0));
+  const cavOk=(skey==='shutin'||skey==='porphyryrelict')?(cav===null):(!!cav&&cav.crystals>=6&&(skey!=='fenestre'||cav.maxBeamLenM>=10.0));
   return{
    ok:mvt.speleoPreset==='CALCITE'&&mvt.maxBeamLenM>=14.0&&cavOk,
-   detail:'0.75 g maxBeam='+mvt.maxBeamLenM+' m, station cavern='+(cav?cav.crystals+' speleothems (maxBeam '+cav.maxBeamLenM+' m)':'none on shutin')
+   detail:'0.75 g maxBeam='+mvt.maxBeamLenM+' m, station cavern='+(cav?cav.crystals+' speleothems (maxBeam '+cav.maxBeamLenM+' m)':'none on '+skey)
   };
  },
  tufabryumConfinement(placed,overrideSkyOpen){
@@ -188,7 +195,7 @@ const HCHK={
   }
   const tufas=(placed||[]).filter(r=>r[0]==='tufabryum'&&(!r[6]||!r[6].darkFungus));
   const bad=tufas.filter(r=>!r[6]||r[6].skyOpenness01<0.04||r[6].skyOpenness01>0.42);
-  const needTufa=SKEY!=='shutin';
+  const needTufa=(SKEY!=='shutin'&&SKEY!=='porphyryrelict');
   const ok=(!needTufa||tufas.length>=12)&&bad.length===0;
   return{
    ok:ok,
@@ -203,10 +210,12 @@ const HCHK={
   const tagRecs=(typeof KTAGS!=='undefined'&&KTAGS.page&&KTAGS.page.records)?KTAGS.page.records:[];
   const blds=extraBuilding?1:tagRecs.filter(r=>r&&r.class==='building').length;
   const stepOk=(waterOut.poolStepMinM==null?0.10:waterOut.poolStepMinM)>=0.06;
-  const ok=pines.length>0&&badPine.length===0&&oaks.length>0&&badOak.length===0&&blds===0&&stepOk;
+  const carnN=(placed||[]).filter(r=>r[6]&&r[6].biosphere==='carnelian').length;
+  const pylonOk=SKEY!=='porphyryrelict'||(carnN>=10&&tagRecs.some(r=>r&&r.id==='springhollows:ecof-mist-pylon'&&r.class==='infrastructure'));
+  const ok=pines.length>0&&badPine.length===0&&oaks.length>0&&badOak.length===0&&blds===0&&stepOk&&pylonOk;
   return{
    ok:ok,
-   detail:'porphyrypine='+pines.length+' (off-dike '+badPine.length+'), oak='+oaks.length+' (in-bleach '+badOak.length+'), buildings='+blds+', poolStep='+waterOut.poolStepMinM+' m'
+   detail:'porphyrypine='+pines.length+' (off-dike '+badPine.length+'), oak='+oaks.length+' (in-bleach '+badOak.length+'), carnelian='+carnN+', buildings='+blds+', poolStep='+waterOut.poolStepMinM+' m'
   };
  },
  vstackGraphics(vs,forceShadowOn){
@@ -249,6 +258,8 @@ const HINT=SKEY==='spring'
  ?'Tlila-Wada Red-Porphyry Shut-In Gorge (1224, 158, +1,480 m, 1.33 atm): flat cream carbonate-shelf dolostone sliced by a strike-aligned purple-red rhyolite porphyry dike, pinching the river into a foaming 16 m whitewater chute beside the reserved Eastern Dynasty counterweight boat-lift bench.'
  :SKEY==='fenestre'
  ?'Sinkhole Fern-Fenestre & Cathedral of the Red Porphyry Vein (1212, 174, +1,257 m, 1.37 atm): collapsed 18 m daylight skylight dropping via a walk-in breccia ramp into tube_ozarks_15, lined with 10-14 m pale-blue celestine megabeams, honey calcite druse, banded onyx, and zinc=90 galena ore.'
+ :SKEY==='porphyryrelict'
+ ?'High Red-Porphyry Carnelian Relict Knob & Inert Mist-Pylon (1268, 142, +2,570 m, 1.16 atm): high acidic purple-red rhyolite porphyry sky-island crowned in crimson Carnelian organ-pipes & chalcedony window-domes above green chinkapin-oak dolomite hollows and a derelict Ancient ecof_mist_pylon.'
  :'Cherty-Dolomite & Red-Porphyry Glade (1176, 184, +1,107 m, 1.39 atm): sunny igneous glades, terraced High-Ria saffron & whorl-olive benches, suspended chert natural bridge over 20 m banded cave-onyx columns, and the western plateau Ancient defoliant bleach-belt scar.';
 
 const FNAMES=['rock','wet','porphyry','bleach','terrace'];

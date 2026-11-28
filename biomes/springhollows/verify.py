@@ -26,6 +26,7 @@ STATIONS = [
     ('shutin', 'springhollows-shutin.html'),
     ('fenestre', 'springhollows-fenestre.html'),
     ('glade', 'springhollows-glade.html'),
+    ('porphyryrelict', 'springhollows-porphyryrelict.html'),
 ]
 
 try:

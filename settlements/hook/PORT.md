@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 48 (43%) | 0 (0%) | 0 (0%) | 57 (51%) | 6 (6%) |
+| KB | 108 (52%) | 0 (0%) | 0 (0%) | 78 (38%) | 21 (10%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -14,14 +14,21 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | `src/75d-hook-world.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/76-hook-ground.js` | 3.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/76b-hook-strokes.js` | 3.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/76b-hook-strokes.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/77-hook-ruin.js` | 31.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/77k-hook-paint.js` | 3.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `src/77m-hook-places.js` | 22.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/79-hook-ancient.js` | 6.2 | [draw] | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 |  |
 | `src/88-hook-programme.js` | 9.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/90a-hook-city.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `src/90b-hook-city-draw.js` | 18.1 | [web] | 30 | 0 | 0 | 1 | 4 | 6 | 1 | 6 | 0 | 0 | 0 |  |
-| `targets/hook/89z-rows.js` | 10.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/hook/91z-views.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
-| `targets/hook-site/94-hook-site-adapter.js` | 11.9 | [web] | 8 | 6 | 0 | 4 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
+| `src/90b-hook-city-draw.js` | 18.3 | [web] | 30 | 0 | 0 | 1 | 4 | 6 | 1 | 6 | 0 | 0 | 0 |  |
+| `src/90c-hook-ruin-draw.js` | 12.4 | [draw] | 10 | 0 | 0 | 0 | 0 | 4 | 0 | 1 | 0 | 0 | 0 |  |
+| `src/90d-hook-ruin-heroes.js` | 8.6 | [web] | 6 | 0 | 0 | 0 | 4 | 0 | 0 | 4 | 0 | 0 | 0 |  |
+| `src/90e-hook-flora.js` | 12.3 | [web] | 1 | 0 | 0 | 0 | 3 | 5 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/90f-hook-roads.js` | 2.8 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `targets/hook/89z-rows.js` | 10.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/hook/91z-views.js` | 5.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `targets/hook-site/94-hook-site-adapter.js` | 12.5 | [web] | 8 | 6 | 0 | 4 | 0 | 1 | 0 | 0 | 2 | 0 | 0 |  |
 | `targets/hook-site/96-hook-site-model.js` | 24.3 | [web] | 1 | 2 | 13 | 3 | 0 | 1 | 0 | 0 | 0 | 1 | 1 |  |
 | `targets/hook-site/98-hook-site-start.js` | 2.3 | [web] | 1 | 2 | 2 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
 

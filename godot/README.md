@@ -10,12 +10,64 @@ Run on Windows with **Godot 4.7.2-stable** too (2026-10-08: the dhelv case and i
 `core/rand` test, and the Compatibility renderer (OpenGL on Mesa llvmpipe, under Xvfb) for the screenshots in
 `godot/shots/` (gitignored). Forward+ on a real GPU has **not** been run yet: that, and the look, is tomorrow's job (`CHECKLIST.md`).
 
+## The Catch and the Bowl, and its weather (2026-11-25)
+
+The one scene here that is not a spike case. `catch_bowl.tscn` opens the **catch-bowl region** at the scale model's own
+2 km a sample -- a 1,284 x 1,058 km box, heights -2,595 to 15,527 m, the sixteen sites as markers -- and gives it a
+panel of the region's own weather: the Catch's black storm, the God-Bore, the rime whiteout, the dust season, the dead
+heat and Mantis's monsoon, with the visibility, wind and sun of each, and whether it hides a Stalker.
+
+```
+python3 openworld/catch-bowl/tools/export_godot.py        # writes godot/data/catch-bowl from the model's rasters
+godot --path godot catch_bowl.tscn                        # fly it: WASD/QE, drag to look, 1-7 switch weather
+godot --path godot catch_bowl.tscn -- --at=jabal --weather=dust --up=60000 --back=95000
+godot --headless --path godot --script res://tests/catchbowl/catch_bowl_test.gd   # 8 checks, exits 0
+```
+
+**It is the region's true shape, not the region.** catch-bowl is not cut yet -- it waits on three map edits and on the
+owner's new scale model (`openworld/catch-bowl/PLAN.md` section 13) -- so there is no flora, no settlement drawn, no
+road, and the ground is a 2 km grid rather than the metre-scale heightfield `krator/world_stream.gd` streams. When the
+region is cut, the usual path replaces this and `krator/catch_bowl.gd` goes.
+
+**The weather, optics and desert surface stack (`krator/atmos_fx.gd`, `krator/grit_fx.gd`, `krator/shimmer_fx.gd`)**:
+`catch_bowl.gd` now runs on `KratorSky` (`krator/sky.gd`, 1.23 atm high-desert sky with the gas giant, rings, six moons
+and AgX; `[` and `]` step the hour), with `89y-host-storm.js` horizon-first storm browning and Mie dust sun-aureole
+(`shaders/sky.gdshader`), a ray-integrated height-bounded karaburan dust slab (`shaders/dust_slab.gdshader`), thermal
+boil and grazing-angle inferior mirage (`shaders/shimmer.gdshader`, `H` toggles), Mie forward-scattered sand saltation
+ribbons plus wandering helical dust devils (`shaders/saltation.gdshader`), brink-split stoss/slipface dunes with salt
+pressure-ridge polygons and mineral quartz/halite glints (`shaders/catch_bowl_ground.gdshader`, `shaders/water_pan.gdshader`),
+stratigraphic rock/landform shaders with per-instance sand/talus ground skirts (`shaders/desert_rock.gdshader`), and an
+arid weathering mode (`k_weather.z = aridity`, `--aridity=<0..1>`, `A` in `look_lab.tscn`) in `shaders/lib/weather.gdshaderinc`.
+Test: `godot --headless --path godot --script res://tests/desert/desert_graphics_test.gd`.
+
+## The Gallery and the Host's minimap (2026-11-25)
+
+**`godot --path godot` opens the Gallery** (`gallery.tscn`, `gallery.gd`; the list is `krator/gallery_nav.gd`): every
+ported build, by section, as a card. A card whose data is here opens in Godot ("Open in Godot"). A card whose data is
+not here (an LFS pointer, or the character pieces) shows the command that fetches it ("Copy fetch command"), and "Try
+anyway" opens the host, which reports the gap instead of crashing. Search box, section toggles, "Ready only"; Enter
+opens the first ready match, Esc clears the search. The world cases come from `spike.gd`'s `all_cases()`: `CASES`,
+then any `data/` folder holding a `world.json`, `biome.json` or `region.glb`, then the oidong places.
+
+**Every host has a way back**: the `<< Gallery` button in its overlay, or F2 (spike, `walk.tscn`, `catch_bowl.tscn`,
+`look_lab.tscn`, `character_lab.tscn`). **M, or the Map button, opens the minimap** (`krator/minimap.gd`,
+`KratorMinimap`): relief, roads and sites, your dot and view wedge, the pin, moving carts (walk) or trains (catch-bowl),
+hover names, wheel zoom, drag pan, Follow, Large/Small. A click flies the camera there (Shift-click in walk mode walks
+there). The spike's other keys: H/F1 hides the chrome, C is the pin tool (or double-click), G flies to the pin, F4
+prints the gap report (that key was F2 before the Gallery).
+
+`--spike` keeps the old start (hyperjungle) and skips the Gallery. `--check`, `--case=... --shot=...`, `--nohud` and
+the `driven` mode `perf_capture.gd` uses do not mount the UI and run as before. The Character Lab needs the character
+pieces, which are built locally and not in Git (`python3 core/charactermodels/tools/make_mpfb.py && python3
+godot/tools/sync_core.py`); without them its card says so. Test: `godot --headless --path godot --script
+res://tests/gallery/gallery_minimap_test.gd` (22 checks, each with a negative).
+
 ## Run it
 
 Godot 4.3 or later (4.5 tested). From the repo root:
 
 ```
-godot --path godot                                # the window: keys 1-9 switch case
+godot --path godot                                # the Gallery (pick a build); -- --spike for the old 1-9 case window
 godot --path godot -- --case=rift                 # start on one case
 godot --headless --path godot -- --check          # import every case, print the gap lists, write spike-report.json
 godot --headless --path godot --script res://tests/rand/krand_test.gd   # core/rand's golden vectors (exits 0 on pass)

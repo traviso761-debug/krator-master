@@ -186,3 +186,23 @@ local and always reported "no core/walk"). It fails honestly: 1764 units walled,
 from any unlocked door (mostly `mix.N.store.floor.0`, the mixed-use buildings' ground-floor stores; 284 units have no
 unlocked door). Open: find whether those stores' doors are locked, missing, or their doorway blocks not cleared
 (`83-mr-walk.js`, from WIP 5d10c87b).
+
+## The shared sky (W7, 2026-11-24)
+
+Mav's Refuge's sky moved onto core/atmos's shared sky, as Girder's did (STAGE-8/G-weather.md W7; core/atmos/SKY-PLAN.md section 9).
+core/atmos is new on this page: `90-atmos-host.js` (ATMOS.init, the frame hook mavFrame runs), `90s-host-sky.js` (ATMOS.sky at the
+site: the moved pin 1049, 841 on the Beesh Baatar's valley floor, -1,463 m, 1.92 atm; the skylight; the cloud shade; the night fill
+raised partway as Girder's). `region/site.py` (tools/site_cast.py) casts the site and the horizon bands; build.py embeds it as
+`09-mr-site.js` (MR_SITE). `21-sky.js` keeps the clock and SKY_STATE; `82-daynight.js` the lamps' night factor and the ambient;
+`20-stage.js` lost its baked dome. Before and after: `shots-before-12/21`, `shots-after-12/21`.
+- [ ] **The far land is the model's own ground** (the owner: "real terrain only"): the valley floor's horizon is low all round
+      (under 1.5 deg near, 2.5 deg far). **The painted volcano is gone** (the old dome's, SW; the "Canopy & volcano" view now
+      looks at the canopy and the sky). The flyers' sorties still fly toward its old bearing.
+- [ ] **The light is the model's** at the site, darker in the shade than the old tuned fill; the night fill raised partway.
+      Game start's day has a total eclipse here from 08:00 to 09:30 (the lamps come on).
+- [x] **One clock**: the host's clock mirrors the page's; the page opens at 06:00 (SKY-PLAN.md 2.1).
+- [ ] **The river on the map**: the page's river is 72 m wide; the Beesh Baatar at the moved pin is 43 m wide and 90 m3/s
+      (openworld/iziz-cluster/data/region.json). openworld/PLAN-SETTLEMENTS.md's grade C predates the move.
+- [ ] **No weather yet** on this page (no bindWeather); the cells, the mist and the volumes are a later step if wanted.
+- [ ] **`verify.py --assert` fails `walk-and-reach`** (86 of 2,089 floors unreached from the doors: mix.313, mix.327... apartments'
+      floor 0) on the committed page as well, with the same counts: not from the sky. Every other assert passes on the rtx lane.

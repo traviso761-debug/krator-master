@@ -61,7 +61,7 @@ def find_node():
     return None
 
 
-STATIONS = ['spillway', 'narrows', 'pavilion', 'fen', 'dolomite', 'rampart']
+STATIONS = ['spillway', 'narrows', 'pavilion', 'fen', 'dolomite', 'rampart', 'haugel']
 BSRC.variants([['--station', _s] for _s in STATIONS[1:]])
 if '--stations' in sys.argv or '--all' in sys.argv:
     _rest = [a for a in sys.argv[1:] if a not in ('--stations', '--all')]
@@ -96,7 +96,7 @@ for _st in ([SJ['base']] if SJ.get('base') else []) + [STATION]:
         if re.match(r'\d', f):
             PATH[f] = os.path.join(_d, f)
 
-# 1. core/shader, core/export, core/rand, core/drawn, core/shadow, core/space, core/hazard, core/tags
+# 1. core/shader, core/export, core/rand, core/drawn, core/shadow, core/space, core/hazard, core/tags, core/frontier
 PATH.setdefault('06-core-khook.js', P('core', 'shader', '06-core-khook.js'))
 PATH.setdefault('06b-core-kcolor.js', P('core', 'shader', '06b-core-kcolor.js'))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
@@ -105,9 +105,11 @@ PATH.setdefault('08-core-rand.js', P('core', 'rand', '08-core-rand.js'))
 PATH.setdefault('10-core-drawn.js', P('core', 'drawn', '10-core-drawn.js'))
 PATH.setdefault('10-core-shadow.js', P('core', 'shadow', '10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js', P('core', 'shadow', 'host', '12-core-shadow-host.js'))
+PATH.setdefault('18-core-frontier.js', P('core', 'frontier', '18-core-frontier.js'))
 PATH.setdefault('20-core-space.js', P('core', 'space', '20-core-space.js'))
 PATH.setdefault('20-core-hazard.js', P('core', 'hazard', '20-core-hazard.js'))
 PATH.setdefault('21-core-hazard-flow.js', P('core', 'hazard', '21-core-hazard-flow.js'))
+PATH.setdefault('48-core-frontier-draw.js', P('core', 'frontier', '52-core-frontier-draw.js'))
 for f in ('50-core-tags.js', '52-core-tags-vocab.js', '53-core-tags-host.js'):
     PATH.setdefault(f, P('core', 'tags', f))
 

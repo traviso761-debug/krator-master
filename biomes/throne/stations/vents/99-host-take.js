@@ -113,6 +113,11 @@ function bismuthCheck(R,lift){const bad=[];for(const r of R){const y=r.y+(lift||
   else if(waterH(r.x,r.z)>-1e8)bad.push(r.id+' in water');}
  return{ok:R.length>=20&&!bad.length,detail:R.length+' bismuth pockets at '+new Set(R.map(r=>r.source)).size+' fumaroles'+(bad.length?'; '+bad.length+' wrong (first '+bad[0]+')':', each on the ground by its vent')};}
 /* THE RHEOLITHS (89y, biomes/rheolith read in place): every living guild where RHEO_PHYS.windowAt says it can live, and the dead byproducts round it */
+/* THE FISSURE'S FLOW (shared/46k, KLAVA.bake): it froze whole (frozen within 1% of what the vents poured, nothing drained off the map) and covers
+   the graben's floor round the fissure as the four-year-old ground (the mosaic's age 4 under at least min cells) */
+function klavaCheck(K,min){const r=K&&K.find(k=>k.key==='fissure');if(!r)return{ok:false,detail:'no KLAVA flow (shared/46k)'};
+ const ok=r.volume>0&&r.frozen>=r.volume*.99&&r.lost<=r.volume*.01&&r.cells>=min;
+ return{ok,detail:(r.volume/1e6).toFixed(2)+' Mm3 poured, '+(r.frozen/1e6).toFixed(2)+' frozen, '+Math.round(r.lost)+' m3 lost; '+r.cells+' cells of the mosaic; baked in '+r.ms+' ms'};}
 function rheoCheck(L){if(!RHEO_SITE||!L)return{ok:false,detail:'no rheoliths (89y)'};const live=L.filter(p=>p[4]===1),dead=L.length-live.length,
  bad=live.filter(p=>!RHEO_PHYS.windowAt({tempC:p[5],waterActivity:p[6],acidPh:p[7]}).viable);
  return{ok:live.length>=10&&dead>=40&&!bad.length,detail:live.length+' living in the throat and its mouths, '+dead+' dead byproducts round them'+(bad.length?', '+bad.length+' living outside the window (first '+bad[0][0]+' at '+Math.round(bad[0][5])+' degC)':'')};}
@@ -122,11 +127,13 @@ function hostChecks(){const R=[],add=(name,r)=>R.push(Object.assign({name},r)),P
  add('nothing lives on the fissure or its cones',HCHK.hot(THRONE.TREES,P));
  add('sulphur rosettes in the marsh',HCHK.marsh(P));
  add('vent coral and brain caps round the hot pools',HCHK.pools(P));
+ add('the hot pools are brine',(function(L){const n=L.filter(S=>S.look&&S.look.preset==='brine').length;return{ok:n===POOLS.length,detail:n+' of '+POOLS.length+' pools brine (core/water ext/54)'};})(HOT_SPRINGS));
  add('the sulphur life: reeds, acid pads, gas bladders',HCHK.sulphur(P));
  add('the acid fog and the ash (core/atmos) are here',HCHK.weather(ATMOS.W,ATMOS.U));
  add('every species of vent country placed',HCHK.placed(counts(THRONE.TREES)));
  add('every species and plant tagged',HCHK.tagged(THRONE.SPECIES.concat(plantList())));
  add('bismuth hoppers in pockets at the fumaroles (KGEODE.around)',bismuthCheck(BISMUTH.records));
+ add('the fissure\'s flow frozen by the lava-flow module',klavaCheck(FLOWS.klava,1500));
  add('the Rheoliths live only in the hot dry acid throat',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED:null));
  add('preset cameras clear of the ground',HCHK.camerasOut(Object.keys(VIEWS).map(k=>({view:k,x:VIEWS[k][0],y:VIEWS[k][1],z:VIEWS[k][2]}))));
  return R;}
@@ -136,11 +143,13 @@ function hostNegatives(){const R=[],add=(name,r)=>R.push({name,failed:!r.ok,deta
  add('a marsh with no rosettes',HCHK.marsh([]));
  {const c=fissPt(1200);add('a plant on the fissure',HCHK.hot(THRONE.TREES,[[c[0],terrainH(c[0],c[1]),c[1],'biome:fern']]));}
  add('pools with nothing round them',HCHK.pools([]));
+ add('a pool still blue',(function(L){const n=L.filter(S=>S.look&&S.look.preset==='brine').length;return{ok:n===POOLS.length,detail:n+' of '+POOLS.length+' pools brine (core/water ext/54)'};})(HOT_SPRINGS.slice(1).concat([{}])));
  add('no sulphur life',HCHK.sulphur([]));
  add('a weather without the ash',HCHK.weather(Object.assign({},ATMOS.W,{MODES:ATMOS.MODES.filter(m=>m!=='fog')}),ATMOS.U));
  {const C=counts(THRONE.TREES);C[SPK('brimstone')]=0;add('a species never placed',HCHK.placed(C));}
  add('a species with no origin',HCHK.tagged(THRONE.SPECIES.map((S,i)=>i===0?Object.assign({},S,{tags:Object.assign({},S.tags,{origin:null})}):S)));
  add('the bismuth lifted 5 m off the ground',bismuthCheck(BISMUTH.records,5));
+ add('a flow that drained off the map',klavaCheck(FLOWS.klava.map(k=>Object.assign({},k,{lost:k.volume*.2})),1500));
  add('a living guild in the cool ground',rheoCheck(typeof RHEO!=='undefined'?RHEO.PLACED.concat([['chokecoral',0,terrainH(0,0),0,1,40,.5,5.5]]):null));
  add('a camera under the ground',HCHK.camerasOut([{view:'under',x:0,y:terrainH(0,0)-2,z:0}]));
  return R;}

@@ -54,6 +54,8 @@ Fragments only some stations take, each listed in that station's `station.json` 
 | Fragment | KB | What |
 |---|---|---|
 | `44r-host-breach.js` | 1 | `THRONE_BREACH`: the Rheoliths' breached throat cut into a station's ground (the kit's own profile, from the local ground); vents and caldera |
+| `46k-host-klava-flows.js` | 3 | `THRONE_KLAVA_FLOWS`: the kit's flow mosaic with the flows marked `klava` frozen by `KLAVA.bake` instead of the kit's sheet; vents |
+| `84s-host-strata-band.js` | 2 | `THRONE_STRATA_BAND`, `_HOOK`, `_ATTR`: a wall's KSTRATA beds on a station's ground in one texture unit; caldera, blast |
 | `83r-host-breach-ground.js` | 2 | the breach's ground eight times finer than the 6.5 m mesh, its coarse cells left out (`THRONE_BREACH_CELLS`, `breachSkip`, `THRONE_BREACH_MESH`); vents and caldera |
 
 ## stations/
@@ -69,6 +71,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 | delta | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-delta.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 51 |
 | frontier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-frontier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-sea.js, 89z-host-build.js, 99-host-take.js | 60 |
 | glacier | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-glacier.js, 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 63 |
+| kipuka (bake) | `bake-flows.js` (node, run by build.py when its inputs change): the five flows' KLAVA breakouts -> `kipuka-flows.json` | |
 | isle | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 85-host-springs.js, 86-host-isle.js, 48p9-host-ri-close.js, 88p-host-pandan.js (ringisles' strand pandanus, read in place), 89-host-atmos.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 91 |
 | kipuka | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 89-host-sky.js, 89w-host-water.js, 89z-host-build.js, 99-host-take.js | 50 |
 | penitentes | 00-head.html, 45-host-stage.js, 47-host-land.js, 82-host-sky.js, 84-host-ground.js, 86-host-pen.js, 89-host-atmos.js, 89-host-sky.js, 89z-host-build.js, 99-host-take.js | 40 |

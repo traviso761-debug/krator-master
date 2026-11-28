@@ -104,12 +104,12 @@ function highways(eF){const R=(WORLD_DATA.roads&&WORLD_DATA.roads.roads)||[],G=(
  /* a station on a bridge's deck (a road's `spans`, 42b-world-bridges.js) stands over the water, not on the ground: its
     grade is judged, its height over the ground is the bridge's own check (88b) */
  const onDeck=(r,i)=>(r.spans||[]).some(S=>i>=S[0]&&i<=S[1]);
- for(let ri=0;ri<R.length;ri++){const r=R[ri];for(let i=0;i<r.pts.length;i+=5){const p=r.pts[i];
+ for(let ri=0;ri<R.length;ri++){const r=R[ri],rg=r.grade==null?G:r.grade;for(let i=0;i<r.pts.length;i+=5){const p=r.pts[i];
   if(nearOther(ri,p[0],p[1],i)||i<2||i>r.pts.length-3){junc++;continue;}   /* a road's ends meet a pad (a camp's gate, the rock's ring): its ground is shared there */
-  if(onDeck(r,i)){deck++;if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}continue;}
+  if(onDeck(r,i)){deck++;if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>rg+.005)steep++;}continue;}
   const h=WORLD.H(p[0],p[1]),d=Math.abs(h-eF(p));n++;if(d>worst){worst=d;at=[Math.round(p[0]),Math.round(p[1])];}if(d>.3)off++;
-  if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>G+.005)steep++;}}}
- return{ok:R.length>0&&off===0&&steep===0,detail:R.length+' roads, '+n+' stations (+'+junc+' at junctions'+(deck?', '+deck+' on bridges':'')+'); '+off+' off the ground by over 0.3 m (worst '+worst.toFixed(2)+' m at '+JSON.stringify(at)+'), '+steep+' steeper than '+(G*100)+' % (steepest '+(mg*100).toFixed(1)+' %)'};}
+  if(i+1<r.pts.length){const q=r.pts[i+1],g=Math.abs(eF(q)-eF(p))/Math.hypot(q[0]-p[0],q[1]-p[1]);if(g>mg)mg=g;if(g>rg+.005)steep++;}}}
+ return{ok:R.length>0&&off===0&&steep===0,detail:R.length+' roads, '+n+' stations (+'+junc+' at junctions'+(deck?', '+deck+' on bridges':'')+'); '+off+' off the ground by over 0.3 m (worst '+worst.toFixed(2)+' m at '+JSON.stringify(at)+'), '+steep+' steeper than its ruling grade (steepest '+(mg*100).toFixed(1)+' %)'};}
 // nothing grows on a carriageway or on a town's ground
 function clearOf(recs){let road=0,town=0,first=null;
  for(const r of recs){if(WORLD.roadD(r.x,r.z)<.5){road++;first=first||r;}if(WORLD.townW(r.x,r.z)>0){town++;first=first||r;}}
@@ -183,7 +183,7 @@ return{ready:()=>START.ready,hostChecks,hostNegatives,
  view:(x,z,agl,yaw,pitch)=>CAM.setView(x,z,agl,yaw,pitch),
  // draw one frame now (a screenshot after settle): the sky, the labels, the map, then the scene
  render:()=>{document.getElementById('load').style.display='none';{const P=HOST.camera.position;HOST.scene.fog.density=1/(90000+Math.max(0,P.y-WORLD.H(P.x,P.z,400))*12);}SKY.follow();PLACES.update();CAM.drawMap();for(const f of HOST.TICKS)f(.016,1);
-  HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
+  if(SKY.render)SKY.render();else HOST.renderer.render(HOST.scene,HOST.camera);return{calls:HOST.renderer.info.render.calls,triangles:HOST.renderer.info.render.triangles};},
  // stream until the view is complete (headless screenshots): every queue drained or ms spent
  settle:(ms)=>{const t0=performance.now();ms=ms||60000;let k=0;
   while(performance.now()-t0<ms){START.pump(true);FLORA.draw();k++;if(TERRAIN.pending()===0&&NURSERY.queued()===0&&FLOOR.stats.waiting===0&&FLORA.stats.queue===0&&SEAS.pending()===0&&(typeof STREAMW==='undefined'||!STREAMW||STREAMW.pending()===0)&&k>3)break;}

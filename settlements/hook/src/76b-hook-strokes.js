@@ -1,7 +1,7 @@
 /* ============================== HOOK: THE EDITOR'S GROUND STROKES ON THE PAGE ([G data]) ============================== */
 /* The site editor's brushes (raise, lower, smooth: settlements/voth/targets/voth-site/10-site-model.js TERR) are saved as
    strokes in site/hook-site.json `terrain` ({m, r, s, pts}, in the kit's frame). Here they are replayed in order onto a
-   height-delta grid over the same square, with the editor's own arithmetic (cell 6 m, square 3,900 m each way, a cosine
+   height-delta grid over the same square, with the editor's own arithmetic (cell 8 m, square 7,200 m each way, a cosine
    dab, smooth by a summed-area mean), and added to the natural ground the kit's terrain is built on (PORT.natH): every
    stamp, pad and lot then stands on the edited ground, as the editor showed it. Built once, at the first height asked
    for, and only when there are strokes; nothing changes without them. On the editor's own page (HOOK_EDITOR, set by
@@ -10,7 +10,9 @@
    No three.js, no DOM. */
 const HOOK_STROKES=(()=>{
  const strokes=(typeof HOOK_SITE!=='undefined'&&HOOK_SITE.terrain)||[],editor=typeof HOOK_EDITOR!=='undefined'&&HOOK_EDITOR;
- const T={cell:6,ext:3900,D:null,base:null,count:strokes.length,applied:!editor&&strokes.length>0};
+ /* the square: 7.2 km each way at 8 m (2026-11-24: the whole city's ground, its plain, lagoon and strait, as the editor's
+    ?ext= square reaches; it was 3.9 km at 6 m, the town alone) */
+ const T={cell:8,ext:7200,D:null,base:null,count:strokes.length,applied:!editor&&strokes.length>0};
  T.N=Math.ceil(2*T.ext/T.cell)+1;
  if(!T.applied)return T;
  const nat=PORT.natH;

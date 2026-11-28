@@ -100,3 +100,41 @@
   lake town's sources, so refitting one town marks all nineteen stale though their own rows are unchanged: re-bake them all
   and rebuild both lake regions after any refit (`bake_towns.py <key> --check` says which). Owed: hash each town's own row.
 - **GPU.** The page was first verified on SwiftShader in a cloud session with no GPU lane; the `KRATOR_GL=gpu` run is owed (the north shore's seven by the master session; the south-east round's six from step L3).
+- **Qōqō, Hāibh and Nēṭ stand on their old fits** (2026-11-24, the Stage 8 refit). On the re-run's model their shores are cliffs:
+  the land rises 127 m (Qōqō), 280 m (Hāibh) and 257 m (Nēṭ) in the first 430 m from the water, where it rose 17-32 m before,
+  and each pin stands 170-510 m above the lake, a kilometre or more from it. A lake town's terraces cannot stand on that
+  (refitted, Hāibh lays 47 houses of 218, Nēṭ 18 of 255; landmarks in the lake, benches 190 m out of level), so their rows stay
+  the line's and read STALE (`tools/fit_lake_town.py <key> --check`). Owed, a choice for the map: a gentle foreshore kept at the
+  three towns (the model's relief spared under their footprints), or the towns moved along the shore to where one is.
+- **Māuṭh, Ālph-Hēḍ and Malbari refitted on the re-run's model** (2026-11-24). Malbari's pin now stands 951 m inland of its
+  landing, so its footprint is R 2000 (was 1400; the rest no longer fades in at its west waterfront), and its benches stop at
+  x ±640 (was 760: the shore bends 57 degrees at x -700, past where a bench's works and plots can stand). The plan
+  (`89zq`): a host in a block and a bench's works and plots turn fully with the contour rows (the 20-degree cap held them askew
+  on a bent shore: Ālph-Hēḍ's drying floors reached a row); a landmark above the shore road clears the road at each of its
+  corners, not only at its middle (Malbari's han). `tests/test-xl-towns.js` judges a bridge by its corners, not its middle over
+  the stream's bed (Māuṭh's, where the bed meets the lake).
+- **Seven south-shore towns re-tuned to the vale ring's moved shore** (2026-11-24, after the map session moved twelve; the owner's
+  go-ahead). `tools/fit_lake_town.py` takes three new settings in a town's `world`, each off unless set: `islet` (m: a crossing
+  counts as the shore only where the land runs dry that far inland, so the low banks and islets the new model put in the
+  shallows are passed), `brg` (the frame's bearing, where the plane's fall points at a bay or a corner of the shore) and `at`
+  ([dx, dz] world metres from the pin where the march to the water starts: a landing on a straight stretch beside the pin's).
+  Boṭ-Yārḍ lands 700 m east of the shore's corner, facing north, R 2200; Saphran (`islet` 500) and Gārḍan (150) on their
+  straight shores behind the banks, Saphran's lots allowed to a slope of 0.4 (`layout.maxSlope`: the wall behind it now rises a
+  third; the planner's default stays 0.3); Ōrcharḍ faces east (90, was 45) on the kilometre of straight shore between a bay and
+  a headland, its waterfront 420 m (was 520), its core 540, its benches deeper and 440 long; Phīsh-Mārkiṭ faces north (0, was 45)
+  past its sandbar; Siṭāq lands on the east-west stretch of the stack's new arm, 1.4 km east of its pin, facing north (0, was
+  45), R 2600 on a 12.5 m grid (the arm west of the pin, 50-100 m wide, stays open to the lake). **Siṭāq's landing is no longer in
+  the stack's lee** (its plan's idea): the stack (lf_west_stack) stands 6.6 km north-east; a lee landing waits for the plan to
+  be redrawn on the new arm. The site test's two negatives now dig a pit 5 m under the level wherever they dig and tilt a
+  bench's band 5 % (a cliff shore and a plateau had made them prove nothing).
+- **Pāṭari is held on its row from before the move** (STALE). On the re-run's model every landing within 2.5 km either side
+  of its new pin is a cliff: the ground rises 33-76 m in the first 100 m from the water (it rose 7 before), 174-481 m at 430 m.
+  The town lays 28 houses of 273 there. Owed, as for Qōqō, Hāibh and Nēṭ: a site with a foreshore (the map's).
+- **Hāibh re-tuned at its second-move pin** (2026-11-24; the map session moved it 4 km west to a gentle foreshore). The pin
+  stands beside a narrow channel (about 100 m wide) running north from the lake, 300 m east of it; the fitted bearing (146) put the
+  landing at the channel's mouth. Its frame now faces south (180, its plan's), landing 500 m west of the pin (`world.at`) so the
+  waterfront stays west of the channel, past the shallows' flats (`islet` 150); its core 600 m with a 200 m fade (was 740, 300),
+  benches 560 long, its shore road and rows 6 m further up (road 36) on the flat new beach. The plan (`89zq` xlBeachFit): a beach
+  work's front stands as far up the beach as it takes to be 0.3 m over the level (4 m at least, 10 at most): Hāibh's beach is
+  0.13 m up at 4 m, and its honey houses' fronts stood in the lake.
+

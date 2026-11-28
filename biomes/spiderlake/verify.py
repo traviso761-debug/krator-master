@@ -23,6 +23,7 @@ STATIONS = [
     ('fen', 'spiderlake-fen.html'),
     ('dolomite', 'spiderlake-dolomite.html'),
     ('rampart', 'spiderlake-rampart.html'),
+    ('haugel', 'spiderlake-haugel.html'),
 ]
 
 try:

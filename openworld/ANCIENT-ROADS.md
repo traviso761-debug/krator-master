@@ -120,7 +120,7 @@ its length, partly kept 7%, lapsed since the Empire 24%, badly decayed 38%). Wha
   the Valley of the Ancients (Babel, Necropolis, Dorado, Blade) to Dalab; Iziz east by Arcbeam to Yuni and Verge.
 - **Roketstad** joins by Corpus and Trigon; **Verge** by Yuni; **Strongbow** ends Xanadu's short line at Theodiga.
 - **Over the Outer Wall**: Dalab to Ledge (the Rift line, 535 km, only 33 km in tunnel in the draft: it is to run
-  ~340-420 km underground, section 3); Arcbeam to Stair in the Catch (its tunnel **closed by seismic activity since about the Cataclysm**, sealed halfway: the northern half
+  ~340-420 km underground, section 3); **Parabola** to Stair in the Catch (the owner, 2026-11-24, in place of Arcbeam: *"there can be a (ruined) tunnel from stair to parabola, but not to arcbeam"*; its bore **closed by seismic activity since about the Cataclysm**, sealed halfway: the northern half
   stripped by Yuni long ago, the southern half open from Stair; the owner, 2026-10-23: `biomes/catch/PLAN.md`. **Dropped
   by the owner, 2026-11-11**: there is no Ancient tunnel to Stair; the Godsgate highway reaches it over the surface,
   `ANCIENT-NETWORK.md` section 8);

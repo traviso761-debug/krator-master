@@ -395,10 +395,30 @@
         var ra=Rf(a),rb=Rf(b),t=iceW(a),t2=iceW(b),th=I?(I.thick==null?.3:I.thick):0,oa=Math.max(ra-step,wall*.5+.02)+th*t,ob=Math.max(rb-step,wall*.5+.02)+th*t2,off=Math.tan(ln)*H,y=y0+(a-u0)*H,h=(b-a)*H;
         var B=bed(beds.length,y,h,x0+Math.cos(az)*off*(a-u0),z0+Math.sin(az)*off*(a-u0),oa*se,oa/se,ry,0,0,lob,ns,tier);B.tp=ob/oa;B.tx=Math.cos(az)*off*(b-a);B.tz=Math.sin(az)*off*(b-a);
         B.col=col;B.rg=.12;B.ot=1;B.bo=Math.max(ra-wall,.05);B.bt=Math.max(rb-wall,.05);beds.push(B);}}
-    var u1=mouths>1?fork:cut;column(0,x,z,gC,0,u1,radAt,lean,la,0);
-    if(mouths>1){var yF=gC+fork*H,ox=Math.cos(la)*Math.tan(lean)*fork*H,oz=Math.sin(la)*Math.tan(lean)*fork*H,sp=p('spread',.3),base=KR.unit(KR.hash(seed,0,842))*TAU;
-      for(var m=0;m<mouths;m++){(function(m){var az=base+m*TAU/mouths,rf=radAt(fork)*(mouths===2?.68:.58),q=radAt(fork)*.42,RF=function(u){return Math.max(rf*(radAt(u)/radAt(fork)),wall+.05);};
-        column(m+1,x+ox+Math.cos(az)*q,z+oz+Math.sin(az)*q,yF,fork,cut,RF,sp*(.8+.4*KR.unit(KR.hash(seed,m,843))),az,m+1);})(m);}}
+    /* when it divides, the TRUNK NECKS IN before the fork, so the boughs spring from a narrowing instead of standing on a wide flat shelf.
+       A single-mouthed pipe is untouched.
+       WHY A WAIST, and how deep. The boughs sit at q = .42 of the radius off the axis with their own radius rf (.58 of it for three, .68 for two),
+       so q + rf = r: they are TANGENT to the trunk's outline, which is why they never used to bulge. What showed was the trunk's flat top annulus
+       through the gaps BETWEEN them near the rim. Three boughs of .58r at .42r cover a disc of only .659r in the worst direction (solve
+       R^2 - .42rR - .16r^2 = 0), two of .68r cover .602r; so the fix is to close the trunk to under that before it divides, and the boughs bury the
+       disc from every side with no bulge and no shelf. NECK is set per mouth count from those numbers, with margin. The neck runs over NBLEND -
+       about a third of the trunk, three or four beds - so it reads as a waist and not as the kink a short neck left. */
+    var FBLEND=Math.min(.12,Math.max(.03,(cut-fork)*.45)),NECK=mouths===2?.52:.64,NBLEND=Math.min(.3,fork*.6);
+    var radTrunk=mouths>1?function(u){return radAt(u)*(1-(1-NECK)*sm(fork-NBLEND,fork,u));}:radAt;
+    var u1=mouths>1?fork:cut;column(0,x,z,gC,0,u1,radTrunk,lean,la,0);
+    /* THE BOUGHS (the owner, 2026-11-25: "quality pass at the cylinder joins"). A branch used to START at the fork, so the trunk's last bed
+       showed its flat top annulus between the mouths and each branch was a cylinder butt-joined onto it at a hard corner - stuck-on tubes.
+       Now each bough SINKS into the trunk by `blend` and its foot carries a slight fillet (`swell`, near 1 on purpose: more than that and the
+       bough bulges past the tangent and reads as a knuckle), so the shoulder is rounded rather than a step. The boughs' bases already overlap
+       one another at q, so the three together read as one dividing mass - the plan's "bulbous, branching" White pipe. No new draw is taken:
+       the seeded stream is unchanged. */
+    if(mouths>1){var blend=FBLEND,u0b=Math.max(0,fork-blend),
+        yF=gC+u0b*H,ox=Math.cos(la)*Math.tan(lean)*u0b*H,oz=Math.sin(la)*Math.tan(lean)*u0b*H,sp=p('spread',.3),base=KR.unit(KR.hash(seed,0,842))*TAU;
+      for(var m=0;m<mouths;m++){(function(m){var az=base+m*TAU/mouths,rf=radAt(fork)*(mouths===2?.68:.58),q=radAt(fork)*.42,
+          swell=1.08,   /* the foot only ROUNDS the shoulder; it must stay near 1 or the bough bulges past the trunk and reads as a knuckle */
+          RF=function(u){var t=clamp((u-u0b)/Math.max(1e-6,blend*1.8),0,1),sw=1+(swell-1)*(1-t)*(1-t);
+            return Math.max(rf*(radAt(u)/radAt(fork))*sw,wall+.05);};
+        column(m+1,x+ox+Math.cos(az)*q,z+oz+Math.sin(az)*q,yF,u0b,cut,RF,sp*(.8+.4*KR.unit(KR.hash(seed,m,843))),az,m+1);})(m);}}
     var feet=[0];if(gr&&state!=='fallen')setFoot(beds[0],gr,sink,beds[0].y+beds[0].h);
     var HF=p('holdfasts',null);
     if(state==='broken'||state==='rubble'){beds.forEach(function(b){var c=beds[b.k+1];if(!c||c.col!==b.col)b.jag=Math.min(b.h*.9,Math.max(.3,R0*.7));});}

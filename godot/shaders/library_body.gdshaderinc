@@ -108,7 +108,7 @@ void fragment() {
 	vec2 dy_uv = dFdy(uv);
 	vec3 q0 = dFdx(VERTEX), q1 = dFdy(VERTEX);
 	vec2 st0 = dx_uv, st1 = dy_uv;
-	vec3 N_geom = normalize(NORMAL);
+	vec3 N_geom = length(NORMAL) > 1e-5 ? normalize(NORMAL) : vec3(0.0, 0.0, 1.0);
 	vec3 q1perp = cross(q1, N_geom), q0perp = cross(N_geom, q0);
 	vec3 T_vs = q1perp * st0.x + q0perp * st1.x;
 	vec3 B_vs = q1perp * st0.y + q0perp * st1.y;
@@ -183,19 +183,22 @@ void fragment() {
 		if (mesh_tangents && k_surface.y > 0.5 && !triplanar) {
 			// M10: the mesh's own tangent frame (the engine's path). BINORMAL runs against the uv's v (measured on 4.7.2:
 			// it is minus the derivative frame's B), and flip_v turns the map's v over
-			NORMAL = normalize(TANGENT * n_ts.x + BINORMAL * (flip_v ? -n_ts.y : n_ts.y) + N_geom * n_ts.z);
+			vec3 n_comb = TANGENT * n_ts.x + BINORMAL * (flip_v ? -n_ts.y : n_ts.y) + N_geom * n_ts.z;
+			NORMAL = length(n_comb) > 1e-5 ? normalize(n_comb) : N_geom;
 		} else {
-			NORMAL = normalize(T_vs * (n_ts.x * sc) - B_vs * (n_ts.y * sc) + N_geom * n_ts.z);
+			vec3 n_comb = T_vs * (n_ts.x * sc) - B_vs * (n_ts.y * sc) + N_geom * n_ts.z;
+			NORMAL = length(n_comb) > 1e-5 ? normalize(n_comb) : N_geom;
 		}
 	}
 	// the weathering stack (M7; lib/weather.gdshaderinc), on the colour and the roughness the maps gave. Off (k_weather.x
 	// is 0) it returns at once, and the surface is as it was
 	if (!unlit) {
 		float r_w = ROUGHNESS;
-		kw_weather(v_wp, normalize(v_wn), weather_k, c, r_w);
-		kw_foot(v_form.x, v_wp, normalize(v_wn), weather_k, c, r_w);
-		ALBEDO = k_albedo(c);
-		ROUGHNESS = r_w;
+		vec3 wn_safe = length(v_wn) > 1e-5 ? normalize(v_wn) : vec3(0.0, 1.0, 0.0);
+		kw_weather(v_wp, wn_safe, weather_k, c, r_w);
+		kw_foot(v_form.x, v_wp, wn_safe, weather_k, c, r_w);
+		ALBEDO = k_albedo(max(c, vec3(0.0)));
+		ROUGHNESS = clamp(r_w, 0.04, 1.0);
 	}
 	METALLIC = metal;
 	SPECULAR = specular_k;

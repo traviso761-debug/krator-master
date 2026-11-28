@@ -21,6 +21,128 @@ terrain splat texture and the placement input; (3) the minimap drawn from export
 
 **Counts:** tags used: about 52 [G data], 27 [G shader], 17 [G native] and 18 [web] (some items carry two, and the legend above uses one of each).
 
+## One arid-and-mountain region of six provinces in the open world *(scoped 2026-11-24; `openworld/catch-bowl/`)*
+
+The owner's eight-item brief plus *"Include se outer wall and stalker range in the Sim as well"*, scoped into six plans
+and a reproducible survey (`openworld/catch-bowl/README.md`). Nothing is cut and nothing is drawn.
+
+> **A NEW SCALE MODEL IS BEING MADE** (the owner, 2026-11-25: *"i am having gemini make a new model"*), and it changes
+> the order of this work: **do not cut the region, and do not apply the map-edit queue, until it lands.** Every
+> measurement below and in these plans is against model 5.1. `openworld/catch-bowl/PLAN.md` **section 13** is the full
+> account — what does not depend on the model (every census and sim ruling, the hazards, the setpieces, the raids, the
+> kit assignments, the lore corrections), what must be re-measured (thirteen rows), that the **reissued pin ids are the
+> sharper risk than the heights** and break loudly at `load()` rather than drifting, the four commands that re-measure
+> it all in one run each, which of the twenty-two pitfalls can move and which cannot (**P18, P19 and P22, added
+> 2026-11-25, survive any model: the rescale breaks 6.4's river beds unless they are guarded; the Catch's authored ridge
+> amplitudes are three times what the ground subtends, on all four stations, two still uncorrected; and `STAGE.site` is
+> in the 4.22 legacy frame, not the model's**). **Ask Gemini for a rename table
+> from old pin id to new**: `SITES.json`, both region tunes and both region tests key on 5.1 ids, and a mapping turns
+> the migration into a single pass. `openworld/catch-bowl/MAP-EDITS.md` carries the same warning, edit by edit.
+
+Four things block the build, and each is small:
+
+- **A `trail` way kind** in `ROADS` [G data]. `core/world/42-world-roads.js` fixes `const G=.08, HW=4` (the ruling grade
+  and the half-carriageway) as module constants. Every way the Catch wants is a trail: the north road over a 5.3 km
+  saddle, the floor's track between the oases, the Twins' Route B. `openworld/xanadu-oidong-highrift/PLAN-TWINS-CROSSING.md`
+  W2 is waiting on the same change, so it belongs in core, not in either region.
+- **A hazard binding for a region page** [G data] + [web]. `core/hazard` is built and rich — records (`KHAZ.front`,
+  `KHAZ.crust`, `KHAZ.night`) **and an ambient bridge** (`KHAZ.provide`, with `VOCAB.ambientKinds` carrying `thin-air`,
+  `cold`, `hot`, `dust` and `caustic-dust` whose row names the Catch's black storms, plus `KHAZ.sight` / `seen` / `aim`
+  on real aerosol optics) — and `core/atmos/fx` already supplies its fields (`ATMOS.airLoad`, named for the karaburan;
+  `ATMOS.gale`, built for the SE outer wall's God-Bore; `ATMOS.dustSeason`). **No fragment of `core/world` mentions
+  `KHAZ`.** Proposed: `48h`/`88h` on the shape `48w`/`88s` set for `KWCAMPS`, including the `KHAZ.provide` calls
+  (`openworld/catch-bowl/PLAN-HAZARDS.md` sections 4 and 5). Region 2's guides' traps want it too.
+- **A fixture binding** [G data] + [web]: one authored thing in one authored place on streamed ground, registered,
+  seated on the drawn mesh, streaming with its tile. Proposed `48f`/`88f` (`PLAN-SETPIECES.md` section 1). This is what
+  `PLAN-TWINS-CROSSING.md` means by "the Hall's cistern and the guides' torch brackets as fixtures".
+- ~~**`biomes/catch`'s stale records**~~ **DONE (2026-11-24)**: all five `CATCH.OASES` records are on their 5.1 pins
+  with `people` and `keeper` each, four pages rebuilt and verified headless, the baseline updated. The sand-sea and
+  north-fan station sites standing on 4.9 km and 7.0 km of mountainside (`PLAN-TERRAIN.md` P1, P2) are the map
+  session's, and wait on the new model like the rest of the queue.
+
+**The owner answered every question on 2026-11-24** (`openworld/catch-bowl/PLAN.md` section 12): **six provinces in one
+region** — the Catch, the Bowl, the SE outer wall, the Stalker Range, the Stalker Gate and the **Twins** — 751,000 km²
+filled in a 1,280 x 1,052 km box, on the rule *"keep from splitting biome polygons between open world builds as much as
+we can help it"*, to be perfected as one build **before** it joins XOH. Consequences: `PLAN-TWINS-CROSSING.md` W1-W6
+move out of region 2 and into this region, **region 2's built tube spec (`src/48k-world-tubes.js`) migrates with the
+polygon** (its own README admits only A1's first 15 km were inside its cut) and region 2 is recut without the 1,424 px of
+`twins` its site squares hold, so its baked hash changes. Also: the **16 MB page cap lifted**, because the region is to
+be Godot-native; Bab al-Hawa and Ranger HQ kept and the Twins fort dropped; the SE
+outer wall rescaled at the Godsgate's frame and a disc at each tarn, the rest left high and airless; Ranger HQ at 500 on
+a salary and a cut of expeditions; **no trail toward Hub 01** and its function a Ranger surmise rather than anyone's
+knowledge; Hub 01 endable by a real expedition but not by attrition; `biomes/catch`'s stale records to be corrected; the
+Bowl's unnamed village named **Esper**; and **two biome kits owed**, `biomes/stalker-gate` (new) and `biomes/gills`
+(which has one source fragment and no build). Eleven map and kit edits follow (that plan's section 11). **No questions
+remain open.**
+
+**The canon rename is DONE (2026-11-24)** — `LORE.md` §4 (including Hub 01's three tiers of knowledge),
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 (with `rift.bowl.parabola-stair`
+joining the route list) and `ANCIENT-ROADS.md`. The background, kept because it is the reason the files disagreed:
+`openworld/ANCIENT-NETWORK.md` section 8.8 (the owner,
+2026-11-11) dropped the Arcbeam-Stair tunnel outright and named the files it breaks without rewriting them. On
+2026-11-24 the owner **gave a ruined bore from Stair to Parabola in its place**, which turns a demolition into a rename
+and restores `LORE.md` §4's oldest Catch passage word for word (sealed halfway, the northern half stripped by Yuni, the
+southern the divers' prospect). The bore's line runs straight down the Godsgate corridor with up to 6.6 km of rock over
+it, and Bab al-Hawa's 1,400 m shaft reaches its summit section exactly. **To rename:** `LORE.md` §4,
+`biomes/catch/PLAN.md`, `biomes/seouterwall/PLAN.md` §3.3, `ANCIENT-NETWORK.md` §8.8 and `ANCIENT-ROADS.md`. `LORE.md`
+§4 also wants one narrowing: nobody has **reached** Hub 01 and returned, but foolhardy rangers got near enough to see an
+Ancient facility and come home, and that it is the Stalkers' source is their **surmise**.
+
+The earlier background, both measured:
+
+- **The SE outer wall's cordillera rescale never landed.** Its `PLAN.md` step 6.1 would give the province a 4,850 m
+  median with **zero cells over 6,500 m**; the map reads **7,962 m median, 83 % over 6,500 m, max 11,707 m** — while
+  step 6.2's Godsgate corridor and step 6.3's five tarns landed **to the metre** (the thalweg runs 2,284-3,739 m at a
+  1.1 % median grade; the saddle is 3,620 m exactly). So the pass works and the matrix is an un-rescaled 8-11 km wall
+  that the kit's six stations were not designed to stand in. P13; proposed: apply it to the western lobe only.
+- **Gemini's three pins.** The owner dropped the Godsgate caravanserai and the Twins fort on 2026-11-16 as "Gemini's
+  pin, with no lore" — but `biomes/seouterwall/PLAN.md` 3.3 had given **Bāb al-Hawa** a page of lore on 2026-11-10 (the
+  Vent-Shaft Caravanserai: a 40 m Ancient shaft collar still drafting +16 °C air from the collapsed Arcbeam-Stair
+  tunnel, the pass's only safe overnight camp), and the owner **accepted** that shaft in the Ancient network on
+  2026-11-11. **Ranger HQ** (Yuni's Stalker-watch, the Stalkers' only counterparty) is the same provenance and was
+  never put to the owner at all. P6.
+
+Also parked here: the two salt-works pins (Ṣalṭ al-Bān, Solta) are still held off the map (P5); Bāb al-Hawa's pin is
+1,205 m up the Godsgate's east wall, 12 km off its own plan's floor (P14); the Tharn crater reads 671 m above its plan
+and holds a 6,910 m lake (P15); the Stalkers have no buried pose and no line on the harpoon (P12,
+`kits/mechs/KNOWN_ISSUES.md`); `SIM.outlaws` and `SIM.bounty` are approved in
+`core/region/BANDITS-PIRATES-BOUNTIES-SCOPE.md` and not built; and `STALKER_TUNE` (S3) and the `EAST_RIFT` join (S4/C6)
+are designed in `PLAN-SIM.md` and not written. **S2 is DONE** (2026-11-25): `core/region/data/bowl-tune.js` with its
+five trade roads and `BOWL_TUNE.join`, `core/region/tests/test-bowl.js` (29 passed) and
+`core/region/tests/test-bowl-join.js` (16 passed) — the Bowl's six places and two hinterlands, the Train of Jabal
+re-homed from its off-map pool onto Jabal itself, and 120 days of Xanadu + the Catch + the Bowl as one valley: **281
+settlements, 450,619 people, no problems, the books balanced over all three tunes**. One question for the owner falls
+out of it (`PLAN-SIM.md` 3c): **the Bowl is ~15 % short of its own grain and grows no tea at all, and Jabal has 15,000
+people with no hinterland** — should Jabal have one, or does it eat Xanadu's bread for good?
+
+**What this session owes, as of 2026-11-25:**
+
+- **A GPU-lane `verify.py --assert` on the owner's machine** for the four rebuilt `biomes/catch` pages and for the
+  fourteen builds rebuilt when `core/simulation/77-sim-6-trade.js` gained `offset`. This container has no lane, so the
+  pages are proven *reproducible* (deterministic builds, baseline updated) and not proven *right*: no render check has
+  been run on any of them. Those fourteen were **already** behind `core/` before that change — Mungo's page by 1.17 MB,
+  Shade's by 714 KB, and Drum demonstrably so — which is the 2026-10-08 failure mode recurring.
+- **Arcbeam has moved** (the owner, 2026-11-25) to px 1120,190 in the arachnoid canyons, 10 km off the
+  Shell-Silkhead-Ria route: 332 m of trench at its own 4 km span with rims level to 1-9 m on all four axes, the best
+  bridge-city site on the planet. Its carve, its 70 m of deepening (or a drop of its rims from 400 m to 330), the
+  road's 10 km dog-leg and its re-dress for a wet canyon are **deferred**, and they belong to whichever region holds
+  that pin, not to this one. px 1016,1058 keeps the settlement as *"an arcology TBD of about 10k + hinterlands"* —
+  only its **name** is unknown. `PLAN-SITES.md` section 7c (SETTLED).
+- **`test-xan-economy.js`'s performance budget** reads 623 s against its 240 s line (393,159 people, 1,299 actors), but
+  it was measured against three concurrent node runs and fourteen python builds. To be re-timed on a quiet machine
+  before anything is concluded; the other 73 checks pass.
+- **Jimjam is 8.2 km from where the model now puts it** (`openworld/north-basin/data/region.json`, measured 2026-11-25).
+  The region was cut with Jimjam at px 474,220; the model has since moved it 4 px north, to 745,546 (473,216 after
+  `legacy_shift`). It is **the only live drift of this kind**: of the five paired places in the two live regions
+  (`isle-demo`, `north-basin`), Jimjam is the one that moved. Not corrected here, because moving a settlement 8.2 km in
+  another region's cut is that region's call — either `north-basin` is re-cut, or its `region.json` takes the model's
+  pixel. `openworld/outposts/tests/test-outposts.js` now names it and nothing else.
+  - **Why it was invisible**: that check measured all three regions' drift together against a one-in-ten tolerance and
+    failed at nine of thirty-two — but **eight of the nine are `archive/little-demo`'s**, where the drift runs to 496 km
+    (Shade) and means nothing, since nothing is built from `archive/`. The archive is now reported beside the check
+    rather than counted in it, so the one finding that matters is legible. A ratio was never the right test for five
+    pairs anyway: one in ten of five demands zero.
+
 ## The Audio Lab's numeric defaults *(2026-11-10, the second integration pass)*
 
 - **`|| <number>` in core/audio** (check_source ORNUM, 147 findings, recorded in `tools/check_source_baseline.json` when
@@ -117,6 +239,34 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
   reflected the old hour's sky (in the Arch cove, the noon sky and the giant's unlit noon face as a dark disc). Fix in the hook:
   when the hour moved 1 h or more (or `clock.day` changed), update sky uniforms first (`SKY.update(0)`, since `ticks` run before `SUBS.view` in `91-host-loop.js`!) and capture now regardless of `every`; and set `S.hour` in `capture()`. Then drop the Arch's
   stopgap tick in `biomes/arch/src/89w-host-water.js`.
+- **The Iziz Vernacular's hamlet pieces into its src/** (2026-11-24, settlements/hook S5): `kits/iziz-vernacular/extra/75-vern-hamlet-extra.js`
+  (`vern_shrine`, the village shrine core/hamlet's iziz row has as pending; `vern_sawpit`, the settlers' timber works) joins
+  `src/72-vern-civic.js` and `src/73b-vern-works.js` and `vernacular.py`'s FILES, and `core/hamlet/21-hamlet-iziz.js` drops the shrine
+  from `pending` and takes the lumber works (`vern_sawpit`) settlements/hook's `77m` row adds (`SETTLERS`). Only Hook reads the file now
+  (`build.py` IZV_EXTRA). Every page that takes the Vernacular gains the two pieces.
+- **core/hamlet: a resource on the village point** (2026-11-24, settlements/hook KNOWN_ISSUES.md): `KHAMLET.village` faces its works from the
+  point to the resource, and with the two equal the works' box is zero (later houses overlap it). Guard it in `30-hamlet-village.js`.
+- **The Throne's row's terrain, what is left** (2026-11-24, `biomes/throne/PLAN.md` "Dropped or owed", "The row's terrain"; branch
+  `claude/throne-owed-1122`, b040e655a). Taken so far: KSTRATA walls (caldera `tibasalt`, blast `obsidian-pancake`), KLAVA flows (vents at load,
+  kipuka at build time, the caldera's overflow), the kipuka's rille. Left for the rebuild:
+  - **Lava steps: a core addition.** KRELIEF has no step form (a flow's front frozen in a terrace down a slope). Add one to
+    `core/terrain/38b-core-relief-lava.js` (with `test-relief-lava.js`, a negative), then take it on the kipuka's and the vents' flow fronts
+    (the KLAVA deposits' margins: `shared/46k-host-klava-flows.js`). Changes every page that inlines `38b` (Godstep, the Godthrone flank, the kipuka).
+  - **The tube station's surface flows.** Not taken: station 11 is underground and its surface shows only through the skylights, so a flow
+    over it would move the skylights' rims and every check on them for nothing seen. Take it only if the tube gets a surface view.
+  - **KSTRATA's core shader on the Throne's walls.** The caldera's and the blast's beds are drawn in one texture unit
+    (`shared/84s-host-strata-band.js`: colour by bed height, no per-pixel warp, cross-bedding, varnish or colonnade joints), as both grounds read
+    15 of 16 units and the core path (`KSTRATA.shade`) takes five. If the ground's layers are packed (two layers to a map, KNOWN_ISSUES
+    "Sixteen texture units"), switch the walls to `KSTRATA.shade`.
+  - **The kipuka's "nothing rooted under the water" check** now skips a moss skirt on a hyperjungle giant's buttress (one skirt 1.1 m under a
+    stream, 85 m from a 205 m tree, after the KLAVA flows moved the streams' lines). The cause is the hyperjungle kit's: it hangs its skirts
+    from the ground at the trunk (`biomes/hyperjungle/src/60-biome-hyperjungle-floor.js`, the hero boles' moss). Seat each skirt on the ground
+    under it instead, then drop the exemption (`stations/kipuka/99-host-take.js`, `HCHK.onButtress`). Changes every page that reads the
+    hyperjungle kit.
+  - **core/water: the pan's `levelAt`, and the glacier's hand-set line.** `WATER.fields` (ext/60) reads every surface's `levelAt`.
+    Ice has had one in core since Stage 8 B5 (91f152c34, `ext/54`: `S.levelAt=()=>S.level`), so the Throne's glacier no longer needs to
+    set it by hand (`stations/glacier/89w-host-water.js`): drop that line. The pan still has none (its water is only its film): give it one,
+    or let `fields` skip it, with a test.
 - **The lake towns' room sets into kits/interiors** (2026-11-23, BUILD-PLAN A6): `kits/xanadu/extra/69dy-ix-lake-works.js` (the set
   `xanadu-lake-works`: the governor's house, the dye store, the loom hall, the saffron floor, the honey house, the net loft) and
   `kits/xanadu/src/87k1-xa-lake-rooms.js` join `kits/interiors/sets/xanadu.js` when their pieces join the kit's src/; every page

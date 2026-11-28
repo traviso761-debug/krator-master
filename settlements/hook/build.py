@@ -95,7 +95,13 @@ def own_src():
 
 # ---------------------------------------------------------------- P1: the placement core, the city builder, the site, the hosts
 # core/rand, core/space and core/tags, read in place under their own names (each one global: KRAND, KSPACE, KTAGS)
-CORE_PLACE = [('08-core-rand.js', 'core/rand/08-core-rand.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
+CORE_PLACE = [('08-core-rand.js', 'core/rand/08-core-rand.js'),
+              # core/hamlet (S5: the environs' hamlets and camps, 77m-hook-places.js), read in place after core/city's closure (76)
+              # and the kits' boxes (77f): its fragments in its own order (the work camp is in 30 since Stage 8)
+              ('77j0-hamlet-wood.js', 'core/hamlet/10-hamlet-wood.js'), ('77j1-hamlet-gather.js', 'core/hamlet/12-hamlet-gather.js'),
+              ('77j2-hamlet-farmland.js', 'core/hamlet/14-hamlet-farmland.js'), ('77j3-hamlet-names.js', 'core/hamlet/16-hamlet-names.js'),
+              ('77j4-hamlet-names.js', 'core/hamlet/18-hamlet-names.js'), ('77j5-hamlet-cultures.js', 'core/hamlet/20-hamlet-cultures.js'),
+              ('77j6-hamlet-iziz.js', 'core/hamlet/21-hamlet-iziz.js'), ('77j7-hamlet-village.js', 'core/hamlet/30-hamlet-village.js'), ('20-core-space.js', 'core/space/20-core-space.js'),
               ('50-core-tags.js', 'core/tags/50-core-tags.js'), ('52-core-tags-vocab.js', 'core/tags/52-core-tags-vocab.js'),
               # the ground: core/terrain's relief noise (KRELIEF, which 41 grows its detail from) and core/world's fields
               # (41-world-fields.js: WORLD, the open world's land at 1:1), read in place as settlements/pinnacle-rock reads
@@ -127,8 +133,9 @@ HOST_FILES = [('78a-host-0-lib.js', '8ap-host-0-lib.js'), ('78b-host-a-facet.js'
 HOST_SUBST = {'78f-host-e-bellhall.js': [(r'\bHBH\b', 'HBLH')]}
 SKY_FRAG = '78-sky-helpers.js'   # the skyscraper helpers the hosts call (skyPlinth, skyRooms, skyHoist...): 52-sky-abc.js before its builders
 ANCIENTS_SRC = os.path.join(ROOT, 'kits', 'ancients', 'src')
-P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG, WORLD_FRAG, '78a-host-0-lib.js', '75d-hook-world.js', '76-hook-ground.js',
-                                                 '76b-hook-strokes.js', '90a-hook-city.js', '90b-hook-city-draw.js'}
+P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, '77i-hook-net.js', SKY_FRAG, WORLD_FRAG, '78a-host-0-lib.js', '75d-hook-world.js', '76-hook-ground.js',
+                                                 '76b-hook-strokes.js', '77-hook-ruin.js', '90a-hook-city.js', '90b-hook-city-draw.js',
+                                                 '90c-hook-ruin-draw.js', '90d-hook-ruin-heroes.js', '90e-hook-flora.js', '77k-hook-paint.js', '77m-hook-places.js', '90f-hook-roads.js'}
 
 
 # ---------------------------------------------------------------- P2: the kits the town draws with, each sealed in a closure
@@ -141,7 +148,65 @@ P1_DETERMINISTIC = {n for n, _ in CORE_PLACE} | {KCITY_FRAG, SITE_FRAG, SKY_FRAG
 # the Islanders and the Vernacular bind come first (77-hook-packs.js), beside the page as sidecars.
 PACKS_FRAG = '77-hook-packs.js'
 DIMS_FRAG = '77f-hook-dims.js'
-BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc'}
+BUNDLE_FRAGS = {'77a-isk-bundle.js': 'isk', '77b-izv-bundle.js': 'izv', '77c-vcat-bundle.js': 'vcat', '77d-hyk-bundle.js': 'hyk', '77e-apoc-bundle.js': 'apoc',
+                '77g-kmp-bundle.js': 'kmp', '77h-hkf-bundle.js': 'hkf'}
+# KMP: the metropolis kit's heroes (kits/metropolis, read in place as the Ancient's Valley reads them: its records, plans and designs
+# [G data], the hero kit and the hero builders, the ruin states and the rubble), for the Ancient city's towers near the camera
+# (90d-hook-ruin-heroes.js). Its plans draw their storeys from the interiors kits (kits/interiors, kits/ancients-interiors, each
+# by its own bundle), sealed in the same closure; KRUBBLE (core/terrain 37c) is a core module and stays global. Not the kit's
+# stage, land, sky, shells, impostors, interiors' drawing, flora or overgrowth: a wild look draws its plain state.
+MP_DIR = os.path.join(ROOT, 'kits', 'metropolis')
+MP_FRAGS = ['40-mp-records.js', '41-mp-plans.js', '42-mp-facade.js', '43-mp-shell.js', '44-mp-audit.js', '46-mp-designs.js', '46c-mp-planned.js',
+            '46d-mp-gridplan.js', '46f-mp-farm.js', '50-mp-kit.js', '52-mp-hero-spindle.js', '53-mp-hero-ledger.js', '54-mp-hero-designs.js',
+            '54f-mp-hero-farm.js', '57-mp-debris.js', '59-mp-floors.js', '59b-mp-ruin-design.js']
+MP_PACK_EXCLUDE = ['pave']   # the kit's stage ground; no hero draws it
+# HK_FLORA: the Ancient city's mangroves and jungle (S4 of the owner's site plan; 90e-hook-flora.js binds it to the page):
+# core/biome and the Ring Sea isles kit (biomes/ringisles: the Ring Sea's own flora) with the two kits it borrows the
+# forest and the mangal from (the Throne: lehua, tree fern, the palms, the mangrove; the East Abyss: the stilt and knee
+# trees), each kit in its own scope and the whole on its own window, as Lightwall seals its flora (settlements/lightwall/
+# build.py flora_bundle). Not the savanna's and the steppe's lenders (swbay, sedesert: Hook is wet), the geyser isle or the
+# hyperjungle's small palms: Ring Isles skips a borrow whose kit is not loaded. The packs as the isle demo trims them.
+FLORA_CORE = ['10-core-head.js', '20-core-kit.js', '30-core-foliage.js', '30s-core-season-flush.js', '31-core-dither.js',
+              '31b-core-leafset.js', '31j-core-joint.js', '32-core-variants.js', '33-core-fungoid.js', '33b-core-bamboo.js',
+              '34-core-impostor.js', '35-core-anim.js', '35b-core-anim-turn.js', '40-core-place.js']
+FLORA_KITS = [('throne', 'THRONE', ['46-biome-throne-flows.js', '50-biome-throne-species.js', '55-biome-throne-trees.js',
+                                    '60-biome-throne-floor.js', '70-biome-throne.js']),
+              ('eastabyss', 'EASTABYSS', ['50-biome-eastabyss-species.js', '55-biome-eastabyss-trees.js', '60-biome-eastabyss-floor.js',
+                                          '65-biome-eastabyss-dress.js', '70-biome-eastabyss.js', '75-biome-eastabyss-fauna.js']),
+              ('ringisles', 'RINGISLES', ['50-biome-ringisles-species.js', '52-biome-ringisles-look.js', '55-biome-ringisles-trees.js',
+                                          '56-biome-ringisles-crops.js', '57-biome-ringisles-gather.js', '60-biome-ringisles-floor.js',
+                                          '62-biome-ringisles-gardens.js', '66-biome-ringisles-world.js', '70-biome-ringisles.js'])]
+THRONE_KEEP = {'bark.armored', 'bark.palm', 'bark.mangrove', 'bark.twisted', 'bark.coir', 'card.frond.coconut', 'card.fractal',
+               'card.treefern', 'card.aloeflower', 'card.ferngreen', 'card.bromeliad', 'card.mossclump', 'leaf.fern', 'cap.disc', 'cap.tier'}
+
+
+def flora_packs(side):
+    """the three kits' library packs (core/materials/record), trimmed as the isle demo trims them: the Throne's isle and
+    forest species only, no lender's towers, jetties or ground layers (the page paints its own ground)"""
+    import matlib_pack
+    fams = lambda k: sorted(json.load(open(os.path.join(ROOT, 'biomes', k, 'tex', 'pack.json'), encoding='utf-8')).get('families', {}))
+    drop = lambda f: f.startswith(('tower', 'jetty', 'ground'))
+    excl = {'throne': [f for f in fams('throne') if f not in THRONE_KEEP], 'eastabyss': [f for f in fams('eastabyss') if drop(f)],
+            'ringisles': [f for f in fams('ringisles') if drop(f)]}
+    return ''.join(matlib_pack.fragment(os.path.join(ROOT, 'biomes', k), k, exclude=excl[k], side=side) for k, g, fs in FLORA_KITS)
+
+
+def hkf_bundle():
+    part = lambda rel: '/* ---- %s ---- */\n%s\n' % (rel, rd(os.path.join(ROOT, *rel.split('/'))))
+    boot = ('/* the bootstrap: THREE before the kits load (their species fragments make textures); 90e-hook-flora.js binds '
+            'the page\'s scene, ground and fields */\n'
+            'BIO.init({ THREE: THREE, scene: null, terrainH: function () { return 0; }, mask: function () { return 0; }, obstacles: [],\n'
+            '  ticks: function () {}, seed: 4170, origin: [[0, 0]], center: [0, 0], fields: {} });\n')
+    kits = ''.join('var %s = (function () {\n%s\nreturn %s;\n})();\n' % (g, ''.join(part('biomes/%s/src/%s' % (k, f)) for f in fs), g)
+                   for k, g, fs in FLORA_KITS)
+    return ('/* HK_FLORA: core/biome, the Ring Sea isles kit and its two lenders in one closure (settlements/hook/build.py). '
+            'GENERATED: edit core/biome and biomes/. */\n'
+            'var HK_FLORA = (function (window) {\n'
+            "Object.defineProperty(window, 'BIO', { get: function () { return BIO; } });   /* the closure's own BIO, on its own window */\n"
+            "/* the page's one count of textures still loading (core/materials/record 25: the harness waits on it): the kits' cards count on it too */\n"
+            "Object.defineProperty(window, '_texPending', { get: function () { return Object.getPrototypeOf(window)._texPending || 0; }, set: function (v) { Object.getPrototypeOf(window)._texPending = v; } });\n" +
+            ''.join(part('core/biome/' + f) for f in FLORA_CORE) + boot + kits +
+            'return { BIO: BIO, reseed: reseed, kits: { throne: THRONE, eastabyss: EASTABYSS, ringisles: RINGISLES } };\n})(Object.create(window));\n')
 VOTH_CAT = os.path.join(ROOT, 'settlements', 'voth', 'catalog', 'registry')
 VCAT_FILES = [os.path.join(ROOT, 'core', 'catalog', 'krator-furniture-core.js'), os.path.join(ROOT, 'kits', 'catalog', 'krator-master-buildings-voth.js')] + \
              [os.path.join(VOTH_CAT, f) for f in ('voth-housing.js', 'voth-manors.js', 'voth-shops.js', 'voth-taverns.js', 'voth-warehouses.js', 'voth-civic.js', 'voth-military.js')]
@@ -231,7 +296,7 @@ def dims_fragment():
             if re.search(r"cls\s*:\s*'(life|flora)'", b) or not num(b, 'w'):
                 continue
             out[m.group(1)] = rec(b, 'isk')
-    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))):
+    for f in sorted(glob.glob(os.path.join(ROOT, 'kits', 'iziz-vernacular', 'src', '7*-vern-*.js'))) + IZV_EXTRA:
         for m in re.finditer(r"VERN\.def\(\{key:'([^']+)'(.*?)build:", rd(f)):
             out[m.group(1)] = rec(m.group(2), 'izv', 8)
     for f in marr_files():   # Marr's vassal kit (VERN.def records, written over several lines), drawn in the IZV closure
@@ -269,6 +334,11 @@ def marr_files():
     return [os.path.join(MARR_SRC, f) for f in sorted(os.listdir(MARR_SRC)) if f[0].isdigit() and f.endswith('.js')]
 
 
+# the Iziz Vernacular's opt-in pieces the settlers' hamlets want (S5, 77m: the village shrine, the saw pit), from the kit's
+# extra/ folder, which its own FILES do not list: only this page takes them until they fold into the kit's src/
+IZV_EXTRA = [os.path.join(ROOT, 'kits', 'iziz-vernacular', 'extra', '75-vern-hamlet-extra.js')]
+
+
 def izv_marr_bundle(bundles):
     """IZV: the isle demo's Vernacular closure (settlements/isle-demo/bundles.py: its head, files and tail, so izvProto and
     the door hand-out are the same code) with Marr's vassal kit after the Vernacular's files, inside the same closure:
@@ -279,10 +349,23 @@ def izv_marr_bundle(bundles):
     # Iziz's page (build.py --kit) merges them in filename order, where 69m comes before 88y the same way
     base = bundles.izv_files()
     assert os.path.basename(base[-1]) == '88y-iziz-matlib.js', 'izv_files() no longer ends with Iziz\'s library bind: ' + base[-1]
-    fs = base[:-1] + marr_files() + base[-1:]
+    fs = base[:-1] + marr_files() + IZV_EXTRA + base[-1:]   # the Vernacular's opt-in hamlet pieces (IZV_EXTRA) with them
     return bundles.safe('/* IZV: the Iziz Vernacular, its Ancients core and Marr\'s vassal kit (kits/marr) in one closure (settlements/hook/build.py on '
                         'settlements/isle-demo/bundles.py). GENERATED: edit kits/iziz-vernacular, kits/marr or core/materials. */\n'
                         'var IZV = (function(){\n' + bundles.IZV_HEAD + bundles.body(fs) + bundles.IZV_TAIL + '})();\n')
+
+
+def kmp_bundle():
+    def load(name, path):
+        spec = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m); return m
+    ib = load('hook_ix_bundle', os.path.join(ROOT, 'kits', 'interiors', 'kit_bundle.py'))
+    ab = load('hook_ai_bundle', os.path.join(ROOT, 'kits', 'ancients-interiors', 'kit_bundle.py'))
+    rub = os.path.join(ROOT, 'core', 'terrain', '37c-core-rubble.js')
+    body = ''.join('/* ---- %s ---- */\n%s\n;\n' % ('kits/metropolis/src/' + f, rd(os.path.join(MP_DIR, 'src', f))) for f in MP_FRAGS)
+    return ('/* KRUBBLE (core/terrain/37c-core-rubble.js), a core module: global. GENERATED: edit core/terrain. */\n' + rd(rub) + '\n;\n'
+            '/* KMP: the metropolis kit\'s heroes and the interiors kits their plans read, one closure (settlements/hook/build.py). GENERATED: edit kits/metropolis, kits/interiors or kits/ancients-interiors. */\n'
+            'var KMP = (function(){\n' + ib.bundle(['noahs-regret']) + '\n;\n' + ab.bundle() + '\n;\n' + body +
+            'return { MP: MP, hero: function (family, look, lite) { return MP.hero(family, look, lite); } };\n})();\n')
 
 
 def p2_bodies(bodies, side):
@@ -293,12 +376,15 @@ def p2_bodies(bodies, side):
     izfams = json.load(open(os.path.join(izp, 'tex', 'pack.json'), encoding='utf-8')).get('families', {})
     bodies[PACKS_FRAG] = (matlib_pack.fragment(os.path.join(ROOT, 'kits', 'islanders'), 'islanders', side=side) +
                           matlib_pack.fragment(izp, 'iziz', exclude=[k for k in izfams if k.startswith(('fauna', 'city'))], side=side) +
-                          matlib_pack.fragment(os.path.join(ROOT, 'kits', 'marr'), 'marr', side=side))
+                          matlib_pack.fragment(os.path.join(ROOT, 'kits', 'marr'), 'marr', side=side) +
+                          matlib_pack.fragment(MP_DIR, 'metropolis', exclude=MP_PACK_EXCLUDE, side=side) + flora_packs(side))
     bodies['77a-isk-bundle.js'] = closure(bundles.isk_bundle()[0])
     bodies['77b-izv-bundle.js'] = closure(izv_marr_bundle(bundles))
     bodies['77c-vcat-bundle.js'] = closure(vcat_bundle())
     bodies['77d-hyk-bundle.js'] = closure(hyk_bundle())
     bodies['77e-apoc-bundle.js'] = closure(apoc_bundle())
+    bodies['77g-kmp-bundle.js'] = closure(kmp_bundle())
+    bodies['77h-hkf-bundle.js'] = closure(hkf_bundle())
     bodies[DIMS_FRAG] = dims_fragment()
 
 
@@ -359,6 +445,20 @@ def kcity_bundle():
             'return KCITY;\n})();\n')
 
 
+NET_FRAG = '77i-hook-net.js'
+NET_JSON = os.path.join(ROOT, 'openworld', 'network-proposal', 'net51.json')
+
+
+def net_fragment():
+    """HOOK_NET: the map's network routes out of Hook (openworld/network-proposal/net51.json, the Ancient network session's:
+    every route from or to Hook's pin, in 5.1 px), as data the plan (77m) routes from the city's edge to its road net"""
+    N = json.load(open(NET_JSON, encoding='utf-8'))
+    out = [{'id': r['id'], 'cls': r.get('class'), 'from': r.get('from'), 'to': r.get('to'), 'name': r.get('name'), 'form': r.get('form'), 'px': r['px']}
+           for r in N['routes'] if (r.get('from') == 'Hook' or r.get('to') == 'Hook') and r.get('px')]
+    return ('/* GENERATED by build.py (net_fragment) from openworld/network-proposal/net51.json: the routes out of Hook, 5.1 px */\n'
+            'var HOOK_NET = ' + json.dumps(out, separators=(',', ':')) + ';\n')
+
+
 def site_fragment():
     data = rd(SITE_JSON) if os.path.isfile(SITE_JSON) else '{"site": "hook", "districts": [], "markers": [], "avenues": [], "hosts": []}'
     return '/* GENERATED by build.py from site/hook-site.json (the site editor saves there) */\nvar HOOK_SITE = ' + data.strip() + ';\n'
@@ -397,6 +497,7 @@ def p1_bodies(paths, bodies):
     bodies[WORLD_FRAG] = world_fragment()
     bodies[KCITY_FRAG] = kcity_bundle()
     bodies[SITE_FRAG] = site_fragment()
+    bodies[NET_FRAG] = net_fragment()
     bodies[SKY_FRAG] = sky_helpers()
     for name, src in HOST_FILES:
         t = rd(os.path.join(ANCIENTS_SRC, src))

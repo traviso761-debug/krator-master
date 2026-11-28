@@ -115,7 +115,9 @@ func update(env: Environment, sun_light: DirectionalLight3D, sky_state: Dictiona
 	_open = move_toward(_open, 0.0 if indoors else 1.0, clampf(dt * 1.5, 0.0, 1.0))
 	# F6: one number for the weathering stack and the ground; reflections of what stands by the water where the tier has them
 	wet = clampf(maxf(float(spec.get("wet", 0.0)), float(weather.get("wet", 0.0))), 0.0, 1.0)
-	KratorWeather.set_wet(float(spec.get("weather", 0.0)), wet)
+	var A_node := get_node_or_null("/root/Atmos")
+	var w_vec: Vector2 = A_node.wind_now() if (A_node and A_node.has_method("wind_now")) else Vector2(1.0, 0.3)
+	KratorWeather.set_climate(float(spec.get("weather", 0.0)), wet, float(spec.get("aridity", 0.0)), w_vec)
 	RenderingServer.global_shader_parameter_set("atm_wet", wet)
 	env.ssr_enabled = bool(spec.get("ssr", false)) and wet > 0.05
 	var origin_y := 0.0

@@ -44,7 +44,7 @@ function plan(road,o){o=Object.assign({},D,o||{});const P=road.pts.map(p=>p.slic
  const spans=[];for(const R of runs){let a=R[0],b=R[1];while(a>0&&cum[R[0]]-cum[a]<o.approach)a--;while(b<n-1&&cum[b]-cum[R[1]]<o.approach)b++;
   if(a===b){if(b<n-1)b++;else if(a>0)a--;}
   const L=spans[spans.length-1];if(L&&a<=L[1])L[1]=Math.max(L[1],b);else spans.push([a,b]);}
- const HB=(x,z)=>WORLD.Hbare?WORLD.Hbare(x,z):WORLD.H(x,z),E0=P.map(p=>p[2]),G=o.grade;
+ const HB=(x,z)=>WORLD.Hbare?WORLD.Hbare(x,z):WORLD.H(x,z),E0=P.map(p=>p[2]),G=road.grade==null?o.grade:road.grade;
  /* each deck: the line between its abutments' heights, lifted to clear the water; then the approaches re-held to the
     grade (only ever raised: a lifted deck needs a ramp up to it). An abutment stands far enough from the water that the
     ground's bank off the road before it (41: BANK 0.8 m a metre past the shoulder) cannot reach down into the channel:
@@ -80,10 +80,10 @@ function plan(road,o){o=Object.assign({},D,o||{});const P=road.pts.map(p=>p.slic
  return{road:Object.assign({},road,{pts:P.map(p=>[r2(p[0]),r2(p[1]),r2(p[2])]),spans:spans.map(s=>s.slice())}),spans,bridges,errors};}
 function check(roads,bridges,o){o=Object.assign({},D,o||{});const problems=[],counts={roads:0,spans:0,bridges:bridges.length,piers:0};
  const byRoad={};bridges.forEach(B=>(byRoad[B.road]||(byRoad[B.road]=[])).push(B));
- for(const r of roads){counts.roads++;const P=r.pts,cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
+ for(const r of roads){counts.roads++;const P=r.pts,rg=r.grade==null?o.grade:r.grade,cum=[0];for(let i=1;i<P.length;i++)cum.push(cum[i-1]+Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]));
   for(const S of r.spans||[]){counts.spans++;const B=(byRoad[r.id]||[]).find(b=>b.i0===S[0]&&b.i1===S[1]);if(!B){problems.push(r.id+': a span '+S+' with no bridge');continue;}
    if(B.water>-1e8&&B.clearance<o.clear-.05)problems.push(B.id+': clears the water by '+B.clearance+' m');
-   for(let i=Math.max(1,S[0]-30);i<=Math.min(P.length-1,S[1]+30);i++){const L=cum[i]-cum[i-1];if(L>.5&&Math.abs(P[i][2]-P[i-1][2])/L>o.grade+.005){problems.push(B.id+': steeper than the grade at point '+i);break;}}
+   for(let i=Math.max(1,S[0]-30);i<=Math.min(P.length-1,S[1]+30);i++){const L=cum[i]-cum[i-1];if(L>.5&&Math.abs(P[i][2]-P[i-1][2])/L>rg+.005){problems.push(B.id+': steeper than the grade at point '+i);break;}}
    for(const q of B.piers){counts.piers++;const g=WORLD.Hbare?WORLD.Hbare(q.x,q.z):WORLD.H(q.x,q.z);if(Math.abs(g-q.yBase)>.5)problems.push(B.id+': a pier off the ground by '+(g-q.yBase).toFixed(2)+' m');}}}
  return{ok:!problems.length,problems,counts};}
 return{plan,check,wetAt,DEFAULTS:D};})();

@@ -329,6 +329,10 @@ var SPIDERLAKE={
  BIO.def('sl_rock_porphyry',makeRockGeo(58203,0.76,true),M.rockPorphyry,{label:'Imperial red-porphyry dike block'});
  BIO.def('sl_rock_travertine',makeRockGeo(58204,0.48,false),M.rockTravertine,{label:'Alkaline degumming travertine sinter slab'});
  BIO.def('sl_crystal_celestine',BIO.fung.stalk({r0:0.16,r1:0.04,bend:0.0,ribs:4,ribA:0.18,seg:4,rings:3}),M.crystalCelestine,{label:'Hydrothermal pale-blue celestine crystal prism'});
+ BIO.bucket('sl_chitin',M.rockPorphyry,{label:'Carnelian Erythrophyll fluted silica-chitin tubes & tendons'});
+ if(typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.defCladeItems==='function'){
+  KFRONTIER.defCladeItems(BIO,{chitin:M.rockPorphyry,ruby:M.organicPitcher,chalcedony:M.crystalCalcite,bleach:M.rockTravertine},'sl_kf');
+ }
 
  // ---------------------------------------------------------------- procedural tree builders (BIO.flareJoin + cypress knees + anchor forks)
  const TREE_CFG={

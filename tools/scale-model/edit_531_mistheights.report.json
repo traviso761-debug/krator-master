@@ -1,0 +1,38 @@
+{
+ "edit": "5.1 edit 31: Mistheights",
+ "date": "2026-11-25",
+ "junction_m": 3900,
+ "basin_m": 4300,
+ "east_col_m": 5118,
+ "west_tip_m": 3000,
+ "land_moved_cells": 4962,
+ "lowered_m_max": 5594,
+ "floor_cells": 1320,
+ "side_coves": 53,
+ "airless_cells_given_air": 1385,
+ "floor_temps_C": {
+  "tm": -1.1,
+  "th": 17.7,
+  "tl": -20.6,
+  "tw": 9.6,
+  "tc": -12.1
+ },
+ "class_O_let_go": 2000,
+ "reclimate": {
+  "cells": 5112,
+  "class_changed": 3593,
+  "rain_mean_before_mm": 696.0,
+  "rain_mean_after_mm": 1129.0,
+  "classes_now": {
+   "BSk": 3,
+   "Cfa": 75,
+   "Dsc": 13,
+   "Dfb": 250,
+   "Dfc": 974,
+   "ET": 1755,
+   "EF": 945,
+   "HT": 710,
+   "HF": 387
+  }
+ }
+}

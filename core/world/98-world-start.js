@@ -66,7 +66,7 @@ function frame(){requestAnimationFrame(frame);
   {const agl=Math.max(0,P.y-WORLD.H(P.x,P.z,400));scene.fog.density=1/(90000+agl*12);}
   for(const f of HOST.TICKS)f(dt,now/1000);
   SKY.follow();PLACES.update();TOWNS_DRAW.update();if(START.frames%8===0)CAM.drawMap();
-  renderer.render(scene,camera);}
+  if(SKY.render)SKY.render();else renderer.render(scene,camera);}   /* the shared sky (80, W8) draws its pass, the volumes and the world */
  catch(e){reportErr('frame: '+(e.stack||e));throw e;}
  fpsN++;if(now-fpsT>1000){fps=fpsN*1000/(now-fpsT);fpsN=0;fpsT=now;hud();}
  if(!START.ready&&(TERRAIN.pending()===0&&NURSERY.queued()===0||now-START.t0>45000)){START.ready=true;$('load').style.display='none';}

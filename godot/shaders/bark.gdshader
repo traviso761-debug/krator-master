@@ -65,7 +65,8 @@ void vertex() {
 		VERTEX = vec3(0.0);   // past its range: every vertex at the origin, nothing rasterized (lib/lod.gdshaderinc)
 	}
 	v_wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	v_wn = normalize(mat3(MODEL_MATRIX) * NORMAL);
+	vec3 raw_wn = mat3(MODEL_MATRIX) * NORMAL;
+	v_wn = length(raw_wn) > 1e-5 ? normalize(raw_wn) : vec3(0.0, 1.0, 0.0);
 }
 
 void fragment() {
@@ -88,7 +89,8 @@ void fragment() {
 	float depth = length(to_cam);
 	vec3 V = to_cam / max(depth, 1e-4);
 	bool is_impostor = (mode == 3 || mode == 4);
-	vec3 N = bark_furrow_normal(normalize(v_wn), dpdx, dpdy, dlx, dly, depth, has_tex && !is_impostor && mode != 5);
+	vec3 base_wn = length(v_wn) > 1e-5 ? normalize(v_wn) : vec3(0.0, 1.0, 0.0);
+	vec3 N = bark_furrow_normal(base_wn, dpdx, dpdy, dlx, dly, depth, has_tex && !is_impostor && mode != 5);
 	vec3 bar = bark_ao_rough(luma, v_local_y, is_impostor || mode == 5);
 	if (mode == 1) {
 		c *= bark_irid(N, V, v_wp, atm_time, irid_a, irid_b);

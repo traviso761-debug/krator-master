@@ -14,7 +14,8 @@
                                season?, seasonRate?, batch?: {in, out, hours}, herd?: {out, rate, animals, seasonRate?},
                                pasture?: {id, window} (a summer pasture the herd moves to while `window` is open)}]}],
        food?: {good: grain-equivalent of a unit} (S7: a food short is made up from the others by value; else it is hungry),
-       roads: [{id, from, to, minutes, cap, carriers?, stagger?, want? (days of use a load fills the far end to: SIM.trade's
+       roads: [{id, from, to, minutes, cap, carriers?, stagger?, offset? (minutes before the FIRST carrier's first
+                sailing, beside `stagger` between carriers: two rounds loading at one pool leave in turn), want? (days of use a load fills the far end to: SIM.trade's
                 `want`; a long road's carriers come seldom, so its want must cover the gap), most?, share?: {settlement: {good: fraction}} (a tithe),
                 goods?: {settlement: [goods]}, expect?: {settlement: {good: a day}}, keep?}],
        transfers: [SIM.transfer's spec] (the grant of fealty, the grants of esteem)
@@ -115,7 +116,7 @@ H.simValley = function (V) {
     var ids = Rd.stops || [Rd.from, Rd.to], stops = ids.map(stopOf), miss = ids.filter(function (k, i) { return !stops[i]; });
     if (miss.length) { S.problems.push('road ' + Rd.id + ': no settlement ' + miss[0]); return; }
     SIM.trade({ id: Rd.id, stops: stops, cap: Rd.cap, carriers: Rd.carriers,
-      minutes: Rd.minutes, stagger: Rd.stagger, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most,
+      minutes: Rd.minutes, stagger: Rd.stagger, offset: Rd.offset, mins: Rd.mins == null ? 60 : Rd.mins, goods: Rd.goods, expect: Rd.expect, share: Rd.share, keep: Rd.keep, want: Rd.want, most: Rd.most,
       legs: Rd.legs, provision: Rd.provision, halts: Rd.halts, sells: Rd.sells, forHalts: Rd.forHalts, closed: Rd.closed });
   });
   /* C4-C5: a caravan's losses on the way, as data: on a road's leg (from stop `leg`), of every `every` passages a carrier

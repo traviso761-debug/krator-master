@@ -1394,7 +1394,159 @@ model data did not) replayed on this model by river id, its names only, none of 
   region cut (9105, 9110; page rebuilt), `openworld/resources-settlements.json` (r074) and the globe's
   `gallery/krator-globe/globe_data.json` (38; not republished).
 
-## 5.1 edit 28: `edit_528_ria_sound.py` (2026-11-24): Ria Sound's dendritic ria and East Bluff
+## 5.1 edits 28 to 33 (2026-11-24 and 2026-11-25): the owner's map pass
+
+The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35, 36 (followed by `edit_528_ria_sound.py` on the coastal Ria Sound mouth, below). Each refuses to run twice;
+to change one, check `tools/scale-model/model` out at b6b57c130 and run the chain again. Each writes a
+`<script>.report.json` beside it.
+- **28a, `edit_528a_dome_shield.py`: the Dome as the shield volcano its record describes** (the owner: "im not sure the
+  Dome biome got rendered on map correctly"; the polygon held uneven upland). A convex shield round the polygon's
+  centre (1351,146; ~100 km across) replaces the upland:
+  - It rises 1,450 m over the highland round it, its foot read by bearing 3-10 px outside, from ~2.2 km to a 3.6 km
+    summit. A first cut set it 1,440-2,925 m, under that highland ("it should stand out / rise immediately").
+  - A ~220 m step of lava-flow fronts stands at its edge.
+  - An 8 km summit caldera, 160 m deep.
+  - Radial lava ribbing, a quarter of the land's fine texture.
+  It never cuts the land past the polygon, and keeps the shores only where it moved the land. It runs before 28, so the
+  Ria's headwaters route off it (Cfa).
+- **28, `edit_528_ria_network.py`: the Ria basin as one river system** (the owner wanted "an extended
+  mississippi/missouri system" instead of squiggles, laid in valleys that respect continental-scope's Ria country). The
+  basin's 30 rivers (9107, 9103 and 9104 aside) are re-routed by least cost over the land. The waypoints are their towns,
+  canal ends and old courses. Every laid course absorbs the next, so a river joins the first river it meets and none
+  cross. On the Dome's shield, old-course guide points are dropped. A river rising on the shield (9204 Dōma-Nōrta,
+  9205 Dōma-Sūtha) rises halfway up the flank facing where it goes, so it runs down off the volcano rather than over it.
+  9102 Hām-Tsēk keeps the Web-Cleaver Gorge cut for it ("ham tsek river fell out of the canyon carved for it"):
+  - where its old course runs over 300 m under the land round it for 8 points or more, that stretch is locked;
+  - its ends are fixed, and the stretch is spliced back as it was, unmeandered (`GORGE_RIVERS`).
+  The courses
+  are smoothed, then given a two-scale meander (retried flatter where it would cross). The channels
+  and floors are cut, walls capped at 250/120 m. The old courses' grooves are filled where no new course runs. The beds
+  and the ground along every course run downhill. Flow is re-accumulated, and each `to` names the river joined.
+- **28b, `edit_528b_ria_threads.py`: the old courses' painted threads** painted out of the satellite and relief (within
+  12 px of an old basin course, over 2 px from any new one).
+- **29, `edit_529_arch_reaches.py`: the Arch's graben river in reaches** (the owner: "one river that feeds into multiple
+  lakes"). The one-cell water line over the lakes became dry ground. Vai Ahi (islanderw tongue, `r_arch_1`-`7`) rises on
+  the mainland past the north-east lake and runs lake to lake to the sea.
+- **30, `edit_530_white_pass.py`: White Pass, White Lake, Matron's Coast, Arkerum** (the owner's polygons and pin,
+  `edit_530_live.json`):
+  - Matron's Coast is raised from the sea (32,012 km2), Cfb rainforest. It slopes from its high points to the new
+    shore: a harmonic surface between the hills round it and the sea, flattened toward the sea, hills growing with the
+    height. The old coastal strip within 8 px is graded into it (only raised). Then it is weathered ("apply realistic
+    weathering"): 24 rounds of stream-power erosion, each filling the depressions (priority flood), draining every cell
+    to its steepest neighbour, and cutting by K x area^0.5 x slope. Slope creep (diffusion) follows each round, so the
+    valleys branch down the slope and the ridges between them round off. 23 rivers run on across it, their channels cut
+    to the running low.
+  - Arkerum's ejecta crater is the Spear-Queens' city: floor 400 m under the plain round it, rim 300 m over it, and a
+    breach valley falling to the sea.
+  - White Pass is a U-trough over a 5,400 m summit.
+  - White Lake is a natural glacial lake, with the Yeti town of Whitelake on its shore, which tolls the pass ("make white
+    lake a more natural mountain lake landform"). Its trough follows its own low ground, winding, its width breathing.
+    Its floor is overdeepened in the middle, held by a moraine lip at the outlet end, and lumpy with till. The lake (WH)
+    is the water the basin holds, so its shore follows the floor.
+  - The cut cells get the nearby land's air and classes (edit 32's helpers, below).
+- **31, `edit_531_mistheights.py`: Mistheights** (polygon `edit_531_live.json`). The cut through the W outer wall:
+  - Two entry valleys funnel warm damp north-westerly air up to 3,900 m.
+  - A misty high country runs at 3,900-4,300 m: Cfc under 4,800 m, 3,500 mm.
+  - The way out west is easy (3,000 m). The way east crosses a 5,400 m col, as hard as White Pass.
+  - Its edge is ragged like the Silent Vale's ("more irregularly bordered"). Each valley is routed through its waypoints
+    over the land's own low ground and cut winding (edit 32's `route`, `valley`). Short side coves and hanging valleys
+    (3-7 px, their heads 300-900 m over the floor) branch off every ~6 px on alternating sides.
+- **32, `edit_532_sw_wall_trigemini.py`: the SW outer wall and the Trigemini Pass** (the owner: "a few small vales to
+  break up the complete airlessness, but most prominently ... the Trigemini Pass region which contains a Cold Lake type
+  lake at its center and provides one of Dalab's backup routes to the Rift"; polygons `edit_532_live.json`):
+  - Three U-troughs meet at a basin round 279,1120. Its half-frozen tarn is like Cold Lake: level 5,680 m, WH.
+  - Each trough is routed, not ruled (`route`, `valley`): least cost over the land (height-weighted, with a smooth noise,
+    kept to the polygon). It is smoothed into a winding course whose col stands at its own saddle. The width breathes
+    0.7-1.3x, and the walls rise unevenly. The vales are routed the same way.
+  - NE over a 6,350 m col to Dalab's side (4,870 m).
+  - S over a 6,250 m col to the w rift highland (4,630 m): Dalab's back way to the Rift.
+  - W over a 6,450 m col to the copper glacier's head (5,130 m).
+  - Three vales cut into the crest (heads at 410,1213, 568,1292 and 628,1362; 5.9-6.2 km), each opening onto the
+    breathable flank nearest it.
+  - SW outer wall (biome) and Trigemini Pass become default regions, key 5.1e28.
+- **33, `edit_533_ricochet_craters.py`: Ricochet Peaks' ejecta craters** (the owner: "a few ejecta craters leading to a
+  few semi-habitable pockets"):
+  - Four craters sunk into the 9-15 km peaks: West 1215,1535 (5,400 m), North 1295,1515 (5,800 m), South 1335,1592
+    (5,600 m) and East 1450,1558 (5,300 m). Each is 28-32 km across, with a 250 m ejecta rim and an apron.
+  - Winding cols (6.3-7 km, routed as in 32) chain them with the old 6.9 km ice-tarn crater at 1375,1525. The chain runs
+    from the southern flank by Longsong to the southern flank by the High Rift.
+  - The pockets are dry tundra and ice (ET/EF): the range gets ~75 mm.
+  - The East crater is the semi-habitable one, a hydrothermal field ("cryofumarole type ecology"). The impact fractured
+    the crust, and the High Rift's heat drives water through it, as at Haughton:
+    - six fumaroles (`vents.json`, kind `fumarole`, steam on the page), their steam freezing into ice towers;
+    - a hot-spring pool at 5,292 m;
+    - warm ground up to +13 C, the warm ring round the vents Dfc (moss, microbial mats, scrub), the rest ET, ~380 mm of
+      fog-drip.
+  - Ricochet Peaks becomes a default biome region, key 5.1e29.
+
+- **34, `edit_534_half_dome.py`: the half-dome shield** (the owner asked whether a shield forming at the edge of the
+  Tharn Uplands' continental rock would be a "half dome" since lava cannot run uphill, and chose site A, the west face).
+  It is the analogue of Kīlauea against Mauna Loa, or Etna against the Peloritani. The vent is at the scarp's foot
+  (1520,128):
+  - the shield falls from a ~6.4 km summit to its foot over a 240 km reach (twice the first cut's, "make the new
+    volcano twice as wide"), its west foot meeting the Dome's;
+  - the land takes the higher of the two, so the shield only adds; westward it spreads the full reach, and eastward it
+    buries the scarp's lower ramp and meets the rising upland ~50 km in;
+  - a rift zone runs along the scarp as a wandering, broken chain of cones, and a 12 km summit caldera holds a lava
+    vent (`vents.json`);
+  - on the free west flank, a landslide amphitheatre (~540 m deep, like Etna's Valle del Bove): rounded head upslope,
+    ragged sides widening downslope, open to the toe; and its hummocky debris apron;
+  - young lava is painted basalt-dark toward the summit;
+  - region "the half-dome (to be named)", biome, key 5.1e30.
+  It runs after 33 (no river crosses it).
+- **35, `edit_535_veiled_mountains.py`: the Veiled Mountains, Matron's Coast's islands, the north-west's climate audit**
+  (2026-11-26; polygons `edit_535_live.json`). It runs after 34.
+  - **The Veiled Mountains** become one highland biome, the homeland of another of the Hayrants' cousins. Regions 174
+    and 175 are cut as U-valleys that follow their polygons: each floor rises from its mouth toward the tsunami coast up
+    its own fingers, walls rising ~1,400 m to the edge. The floors (2,600-3,050 m, the Veilpass's lowered alike) are
+    set in the band where the land round them is cool temperate by height alone: warm month under 22 C above
+    ~2,400 m, cold month over -3 C below ~3,150 m. The rest of the polygon is megabreccia
+    mountains: up to ~2.6 km above the nearest valley floor, in blocks (Voronoi cells ~6 px, 12 km across) each offset
+    and tilted, their edges softened as talus. They are faded into the land round the polygon over ~12 px along a
+    ragged line. The Veilpass (was Mistheights) keeps its valleys. The valley floors are megabreccia too, worn down
+    (the same blocks, a quarter of their relief, softened). The whole highland is then weathered with edit 30's
+    `weather`: 20 rounds of stream power and creep, draining out of the polygon.
+  - **The valleys' climate** is not forced: temperatures from their height, rain and classes from the winds (edit 36).
+  - **Matron's Coast's temperatures** came from the old sea's raster values (a -22 C cold month under Cfb). Its plain
+    (under 1,800 m) now takes them from the nearest coastal land of the same height outside the polygon; the old
+    highlands inside it keep theirs. That land is hot (a ~29 C warm month), so the coast is hot and humid, and the
+    temperate rainforest stands higher up the slopes where the height cools it ("no cool current and the rainforest is
+    just higher up the slopes"). The classes come from edit 36's winds.
+  - **Matron's Coast's fringe of islands:** the coast within 8 px of the open sea (away from Arkerum and every pin) is
+    drowned where a two-scale noise falls under a threshold rising toward the sea. Rivers that crossed it end at the
+    first water.
+  - **The north-west's audit** (`x < 700, y < 1000`):
+    - the straight temperature seams of old stamps (the worst down column 271) are smoothed: the local fit on height
+      plus the smoothed residual, within 6 px;
+    - the rain seams and lone spikes take the 7 px median;
+    - land under 6,800 m still classed airless takes the air of the land round it;
+    - only the plain contradictions are re-lettered, the model's own subtype thresholds left alone. These are A where
+      the cold month is under 18 C; EF with a warm month over 0 C; ET whose warm month reaches 10 C; C with a cold
+      month under -3 C, or D with one over 0 C; and C or D with a warm month under 10 C.
+
+- **36, `edit_536_wind_climate.py`: the rain and climate of the north-west, the Ria and the Crook from the winds**
+  ("let the rain and climate in the northwestern lands fall out natural from prevailing winds, evaporation, and
+  elevation/rain shadow effect"; "do similarly for ria and crook"). A moisture budget is carried by five winds, each a
+  pass downwind cell by cell, their rain summed by weight: north-westerlies 0.40, westerlies 0.20 and northerlies 0.15
+  off the ocean; south-westerlies 0.15 and southerlies 0.10 off the interior seas.
+  - Water evaporates toward 85 % of saturation at its temperature.
+  - Over land the air holds 95 % of saturation at the cell's mean temperature (its height); half the excess rains out
+    (orographic rain), 0.8 % of the rest falls anyway, and the land gives 70 % back.
+  - The lee of a ridge stays dry while the air descends and warms: the rain shadow. The air mixes sideways (3 px), so it
+    works round the crater walls.
+  - The pattern is calibrated as a P^0.5 to the region's median rain, at most 4,000 mm.
+  - Then every A-E class in the region follows from its rain and temperatures (Köppen; the season letter kept, B at
+    20 tm + 140 mm); the hyperalpine, airless and water classes are left.
+  - The region is x < 700, y < 1000, plus the Ria (x 480-1460, y < 330) and the Crook (x < 280, y 540-1290), faded
+    over 30 px into the rest of the map. Tuning: `W36_*` environment variables.
+
+Cuts into an airless crest (30-33): a cut cell keeps its -90 C airless temperatures through a lapse and its class O
+through the reclimate. So the cells moved under 7.2 km take the temperatures of the nearby land of their new height.
+Every moved land cell gets the hottest afternoon over its warm month and the coldest night under its cold one. The O
+class is let go, so the reclimate classes the cell from its climate. Biome kits for Matron's Coast, Mistheights, the
+SW outer wall and Ricochet Peaks are a follow-up.
+
+## 5.1 coastal reshape: `edit_528_ria_sound.py` (2026-11-24): Ria Sound's dendritic ria and East Bluff
 
 The owner flagged Ria Sound's synthetic axis-aligned bay (`615..624 x 140..142` at -14 m + 1-px +78 m spike at 626,140 from
 continental-scope's settlement fit, separated by a 44 km +6 m plug from the -49 m eastern box `648..671 x 133..141` sliced at
@@ -1402,10 +1554,9 @@ Step 3's `x <= 648` paste seam) and approved reshaping `px 598..677 x 123..160` 
 dendritic ria with East Bluff as the southernmost assimilated Kuruneva town (`settlements/floating-city/PLAN.md` section 8):
 - **The sound**: S-bend rock-jawed tidal narrows at `622,141` (-38 m) opening into **the Floating City's** sheltered central
   bay at `635,138` (-49 m), 4-connected to the NW Ocean (`w_lbl4 == 1`) and branching into three drowned river-mouth arms;
-- **The three rivers & canal**: `9101` *Rīwa-Wāta* (`645.08,154.21`), `9107` *Suur-Neva* (`672.60,129.31`) and `9108`
-  *Musta-Jõgi* (`649.54,130.18`) each descend with 0.0 m climb into open sea water at 0 m (`to: {sea: 'ocean'}`);
-  `cn_ria_tongqu` locks directly into *Musta-Jõgi* Cove (`649,130`);
-- **East Bluff (`sriasound1` moved to `649,141`, `5.1e25`)**: +82 m tsunami-safe promontory dividing the *Rīwa-Wāta* and
+- **The three rivers & canal**: `9101` *Rīwa-Wāta*, `9107` *Suur-Neva* and `9108` *Musta-Jõgi* each descend with 0.0 m climb
+  into open sea water at 0 m (`to: {sea: 'ocean'}`); `cn_ria_tongqu` locks directly into *Musta-Jõgi* Cove (`649,130`);
+- **East Bluff (`sriasound1` moved to `649,141`, `5.1e35`)**: +82 m tsunami-safe promontory dividing the *Rīwa-Wāta* and
   *Suur-Neva* arms, 1 cell south of -28 m harbor water, inside `r27arcflow1` (*Arcflow Republics* / Kulanewa Free-Towns) as
   *Suudme-Kuluuna* (`tests/test_smodel.py` section 27).
 

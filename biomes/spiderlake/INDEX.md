@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/spiderlake-dolomite.html`, `dist/spiderlake-fen.html`, `dist/spiderlake-narrows.html`, `dist/spiderlake-pavilion.html`, `dist/spiderlake-rampart.html`, `dist/spiderlake.html`
+Built output (never open it; edit `src/` and rebuild): `dist/spiderlake-dolomite.html`, `dist/spiderlake-fen.html`, `dist/spiderlake-haugel.html`, `dist/spiderlake-narrows.html`, `dist/spiderlake-pavilion.html`, `dist/spiderlake-rampart.html`, `dist/spiderlake.html`
 
 Build: `cd biomes/spiderlake && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -16,11 +16,11 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `00-head.html` | 1 |  |
 | `28-vstack-mipvar.js` | 2 |  |
 | `40-biome-spider-phys.js` | 13 |  |
-| `41-biome-spider-sites.js` | 8 |  |
-| `45-host-stage.js` | 25 | station heightfields & hydrological channels (66); pure SPIDER_PHYS field evaluation & raster cache (405); KSPACE spatial keep-clear & KHAZ data-driven haz (473); BIO.init host binding (539) |
+| `41-biome-spider-sites.js` | 9 |  |
+| `45-host-stage.js` | 27 | station heightfields & hydrological channels (66); pure SPIDER_PHYS field evaluation & raster cache (462); KSPACE spatial keep-clear & KHAZ data-driven haz (530); BIO.init host binding (598) |
 | `46-vstack.js` | <1 |  |
-| `50-biome-spider-species.js` | 37 **big** |  |
-| `60-biome-spider-place.js` | 21 |  |
+| `50-biome-spider-species.js` | 38 **big** |  |
+| `60-biome-spider-place.js` | 22 |  |
 | `70-biome-spider.js` | <1 |  |
 | `84-host-ground.js` | 19 | Station 5 (dolomite): Walk-in KCAVERN + KSPELEO. (197) |
 | `85-host-far.js` | 4 |  |
@@ -31,7 +31,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89w-host-water.js` | 5 |  |
 | `89z-host-build.js` | 3 |  |
 | `89z9-vstack-post.js` | 6 |  |
-| `99-host-take.js` | 20 |  |
+| `99-host-take.js` | 21 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -42,6 +42,7 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | dolomite | 44z-host-site.js | <1 |
 | fen | 44z-host-site.js | <1 |
+| haugel | 44z-host-site.js | <1 |
 | narrows | 44z-host-site.js | <1 |
 | pavilion | 44z-host-site.js | <1 |
 | rampart | 44z-host-site.js | <1 |

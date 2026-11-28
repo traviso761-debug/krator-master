@@ -137,9 +137,9 @@ var water = (function(){
   if(SHEET) return null;
   var L=[]; (function(){ var half=[0], c=18, x=0; while(x < 2900){ x+=c; half.push(x); } while(x < 13000){ c*=1.18; x+=c; half.push(x); } for(var i=half.length-1;i>0;i--) L.push(-half[i]); L=L.concat(half); })();
   var N=L.length, pos=new Float32Array(N*N*3), col=new Float32Array(N*N*3), H=new Float32Array(N*N), OPN=new Float32Array(N*N), idx=[], c=new THREE.Color();
-  for(var j=0;j<N;j++) for(var i=0;i<N;i++){ var x=L[i], z=L[j], o=j*N+i, h = Math.abs(x)>HW*1.05||Math.abs(z)>HW*1.05 ? (lakeDist(x,z)<0 ? -10 : 5) : terrainH(x,z); H[o]=h;
+  for(var j=0;j<N;j++) for(var i=0;i<N;i++){ var x=L[i], z=L[j], o=j*N+i, far = Math.abs(x)>HW*1.05||Math.abs(z)>HW*1.05, sw = far ? siteWet(x,z) : null, h = far ? ((sw==null ? lakeDist(x,z)<0 : sw) ? -10 : 5) : terrainH(x,z); H[o]=h;   /* past the page: the model's water (W7), else the page's own shore */
     pos[o*3]=x; pos[o*3+1]=0; pos[o*3+2]=z; waterColorAt(Math.max(-HW,Math.min(HW,x)), Math.max(-HW,Math.min(HW,z)), c).convertSRGBToLinear(); col[o*3]=c.r; col[o*3+1]=c.g; col[o*3+2]=c.b;
-    OPN[o] = Math.abs(x)>HW||Math.abs(z)>HW ? (lakeDist(x,z)<0 ? 1 : 0) : waterOpenAt(x,z); }
+    OPN[o] = Math.abs(x)>HW||Math.abs(z)>HW ? ((function(){ var w = siteWet(x,z); return w==null ? lakeDist(x,z)<0 : w; })() ? 1 : 0) : waterOpenAt(x,z); }
   /* only the quads where the ground actually dips under the plane */
   for(j=0;j<N-1;j++) for(i=0;i<N-1;i++){ var a=j*N+i, b=a+1, d=a+N, e=d+1; if(Math.min(H[a],H[b],H[d],H[e]) > 0.35) continue; idx.push(a,d,b, b,d,e); }
   var g=new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos,3)); g.setAttribute('color', new THREE.BufferAttribute(col,3)); g.setAttribute('aOpen', new THREE.BufferAttribute(OPN,1)); g.setIndex(idx); g.computeBoundingSphere();

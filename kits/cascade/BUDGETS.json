@@ -1,0 +1,13 @@
+{
+ "what": "Budget ceilings for kits/cascade (tools/check_budgets.py, tools/harness.py).",
+ "pages": {
+  "cascade.html": {
+   "bytes": 12582912,
+   "tris": 2500000,
+   "calls": 320,
+   "scene_tris": 3000000,
+   "why": "Three 220 m Cascade arcology megastructures (refurbished, intact, ruined), elevated headrace aqueduct, central cataracts, twin circular gardens, and multi-deck furnished cross-section interiors.",
+   "raised": "2026-11-24"
+  }
+ }
+}

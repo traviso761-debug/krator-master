@@ -1,0 +1,182 @@
+{
+ "format": "krator-flora-protos",
+ "version": 1,
+ "protos": [
+  {
+   "key": "mantis_fig|0",
+   "species": "mantis_fig",
+   "name": "Mantis fig",
+   "H": 21.116,
+   "crownR": 24.627,
+   "tris": 13446
+  },
+  {
+   "key": "mantis_fig|1",
+   "species": "mantis_fig",
+   "name": "Mantis fig",
+   "H": 24.39,
+   "crownR": 21.751,
+   "tris": 11282
+  },
+  {
+   "key": "dragon_blood|0",
+   "species": "dragon_blood",
+   "name": "Dragon tree",
+   "H": 11.844,
+   "crownR": 13.808,
+   "tris": 9988
+  },
+  {
+   "key": "dragon_blood|1",
+   "species": "dragon_blood",
+   "name": "Dragon tree",
+   "H": 13.179,
+   "crownR": 19.399,
+   "tris": 9989
+  },
+  {
+   "key": "frankincense|0",
+   "species": "frankincense",
+   "name": "Socotran frankincense",
+   "H": 6.782,
+   "crownR": 3.42,
+   "tris": 2582
+  },
+  {
+   "key": "frankincense|1",
+   "species": "frankincense",
+   "name": "Socotran frankincense",
+   "H": 5.606,
+   "crownR": 3.178,
+   "tris": 1302
+  },
+  {
+   "key": "cucumber_tree|0",
+   "species": "cucumber_tree",
+   "name": "Cucumber tree",
+   "H": 4.334,
+   "crownR": 2.355,
+   "tris": 624
+  },
+  {
+   "key": "cucumber_tree|1",
+   "species": "cucumber_tree",
+   "name": "Cucumber tree",
+   "H": 5.536,
+   "crownR": 2.233,
+   "tris": 624
+  },
+  {
+   "key": "sterculia|0",
+   "species": "sterculia",
+   "name": "Socotran sterculia",
+   "H": 7.213,
+   "crownR": 6.07,
+   "tris": 2476
+  },
+  {
+   "key": "sterculia|1",
+   "species": "sterculia",
+   "name": "Socotran sterculia",
+   "H": 8.879,
+   "crownR": 4.183,
+   "tris": 1876
+  },
+  {
+   "key": "pomegranate|0",
+   "species": "pomegranate",
+   "name": "Socotran pomegranate",
+   "H": 5.023,
+   "crownR": 3.145,
+   "tris": 2456
+  },
+  {
+   "key": "pomegranate|1",
+   "species": "pomegranate",
+   "name": "Socotran pomegranate",
+   "H": 3.246,
+   "crownR": 3.509,
+   "tris": 3358
+  },
+  {
+   "key": "date_palm|0",
+   "species": "date_palm",
+   "name": "Wadi palm",
+   "H": 10.207,
+   "crownR": 8.567,
+   "tris": 236
+  },
+  {
+   "key": "date_palm|1",
+   "species": "date_palm",
+   "name": "Wadi palm",
+   "H": 16.818,
+   "crownR": 9.06,
+   "tris": 274
+  },
+  {
+   "key": "mesquite|0",
+   "species": "mesquite",
+   "name": "Mesquite",
+   "H": 8.29,
+   "crownR": 8.049,
+   "tris": 1440
+  },
+  {
+   "key": "mesquite|1",
+   "species": "mesquite",
+   "name": "Mesquite",
+   "H": 6.719,
+   "crownR": 11.077,
+   "tris": 700
+  },
+  {
+   "key": "bottle_tree|0",
+   "species": "bottle_tree",
+   "name": "Bottle tree",
+   "H": 13.086,
+   "crownR": 6.191,
+   "tris": 414
+  },
+  {
+   "key": "candelabra|0",
+   "species": "candelabra",
+   "name": "Giant candelabra",
+   "H": 15.15,
+   "crownR": 21.231,
+   "tris": 6114
+  },
+  {
+   "key": "desert_rose|0",
+   "species": "desert_rose",
+   "name": "Desert rose",
+   "H": 5.672,
+   "crownR": 3.578,
+   "tris": 660
+  },
+  {
+   "key": "mantis_fern|0",
+   "species": "mantis_fern",
+   "name": "Socotran spring ferns",
+   "H": 1.609,
+   "crownR": 1.401,
+   "tris": 30
+  },
+  {
+   "key": "mantis_aloe|0",
+   "species": "mantis_aloe",
+   "name": "Socotran aloe & kalanchoe",
+   "H": 0.9,
+   "crownR": 1.1,
+   "tris": 90
+  },
+  {
+   "key": "mantis_croton|0",
+   "species": "mantis_croton",
+   "name": "Croton & monsoon savanna grass",
+   "H": 1.467,
+   "crownR": 1.79,
+   "tris": 34
+  }
+ ]
+}

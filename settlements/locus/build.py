@@ -102,6 +102,10 @@ MANIFEST = os.path.join(HERE, 'build-manifest.json')
 DETERMINISTIC = {'00-head.html', '05-palette.js', '09-lod.js', '97-lod-auto.js', '10-core.js', '80-camera.js', '81-glow.js',
                  '85-probe.js', '86-inspect.js', '69z-locus-flora.js', '84-life.js', '76-locus-anim.js', '69b-locus-biohost.js', '87-pathviz.js', '88-underview.js', '89-sheetui.js', '53-assets.js', '71-catalog.js', '98-start.js', '99-tail.html', '66-locus-furnish.js', '67-lo-trades.js'}
 DETERMINISTIC |= {'06-core-khook.js', '06b-core-kcolor.js'}   # core/shader (no rnd())
+DETERMINISTIC.add('09-locus-site.js')   # the real site's data (region/site.json; W7)
+DETERMINISTIC |= {'89-atmos-e-weatherhost.js', '89-atmos-j-heightfog.js', '89-atmos-j-fog.js', '89-atmos-fx-raincover.js', '89-atmos-fx-lightning.js', '89-atmos-fx-plumes.js', '89-atmos-fx-slopewind.js', '89-atmos-wx-cells.js', '89-atmos-wx-host.js', '89-atmos-m-volclouds.js', '89-atmos-m-volhost.js', '90t-locus-air.js'}   # the weather, the air, the refinery's smoke, the volumes (W7)
+DETERMINISTIC |= {'90s-host-sky.js', '89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js', '89-atmos-h-skyhost.js'}   # the shared sky (W7)
+DETERMINISTIC |= {'76f-locus-far.js', '35-core-strata.js', '35s-core-strata-shade.js', '44-core-farfield.js', '44-core-farfield-draw.js', '45-core-horizon.js', '45-core-horizon-shade.js'}   # the far field (W7): no rnd()
 DETERMINISTIC.add('20-core-roomlight-host.js')   # core/interiors KNLV, the night light volume (no rnd())
 DETERMINISTIC.add('66r-locus-roomlight.js')   # the room light's adapter (KRLHOST.wirePage; no rnd())
 DETERMINISTIC |= {'50-core-furnish.js', '52-core-furnish-draw.js', '53-core-furnish-host.js'}   # core/furnish (no rnd())
@@ -123,8 +127,8 @@ CONTINUES = {f: '59-civic.js' for f in ('59a-civic-park.js', '59b-civic-library.
 # KratorInteriors, ROOM, furnishRoom). Inserted after the kit builders (65-abyss-*) and before the glue
 # 66-locus-furnish.js (FURNISH, the interiors hook). Both generators' own text is exempt from the rules below.
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal')]
-import locuskit, abysskit   # the Locus kit and the Eastern Abyssal kit, read in place (MODULARITY-PLAN.md step 4)
+sys.path[:0] = [os.path.join(ROOT, 'kits', 'locus'), os.path.join(ROOT, 'kits', 'eastern-abyssal'), os.path.join(ROOT, 'kits', 'abyss-salvage')]
+import locuskit, abysskit, abysssalvage   # Locus, Eastern Abyssal, and Kenshi-swamp Abyssal Salvage kits, read in place
 sys.path.insert(0, os.path.join(ROOT, 'kits', 'yuni'))
 import yunikit              # the Yuni kit: its buildings (55-59c), read in place on Locus's frame (53-assets.js; MODULARITY-PLAN.md step 4b)
 
@@ -138,14 +142,14 @@ def vendor_check():
           % (('; MISSING ' + ', '.join(missing)) if missing else ''))
 FURN_CULTURES = ['eastabyss', 'nomad', 'reedlake', 'generic', 'scrap', 'jobs']   # scrap: pa_drum, the standing oil drum; jobs: the work items (kits/catalog/krator-master-furniture-jobs.js)
 INTERIOR_SETS = ['locus', 'abyss']
-VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
+VIRTUAL = {'65z-furniture-bundle.js', '65y-vehicles-bundle.js', '46-matlib-pack.js', '69a0-bio-matlib-pack.js', khost.EDITS_JS, '09-locus-site.js', '65t-tabisti-bundle.js', '46t-tabisti-matlib-pack.js'}   # 39-host-edits.js: edits.json as KHOST_EDITS (core/host/host.py)
 DETERMINISTIC |= set(CORE_HOST)        # core/host and the modules it reads: IIFE-scoped or plain data (no rnd())
 # the material records (core/materials/record: KMAT and the browser loader; not 24-tex-def.js, Locus has no TEX.def
 # painters) and the library pack (materials.json -> tools/textures/pack.py -> tex/ -> generated 46-matlib-pack.js)
 RECORD_DIR = os.path.join(ROOT, 'core', 'materials', 'record')
 RECORD_FILES = ['23-mat-record.js', '25-matlib-host.js']
 TEX_DIR = os.path.join(HERE, 'tex')
-DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '69a0-bio-matlib-pack.js'}
+DETERMINISTIC |= set(RECORD_FILES) | {'46-matlib-pack.js', '46t-tabisti-matlib-pack.js', '65u-locus-tabisti.js', '69a0-bio-matlib-pack.js'}
 
 
 # the library pack beside the pages (<build>.tex.<key>.js), one file every page of the build shares; --inline-packs puts
@@ -198,10 +202,19 @@ def virtual_bodies():
             print('NOTE: kits/motor-vehicles bundle failed (%s): the buggies are left out' % e)
     vb.setdefault('65y-vehicles-bundle.js', '/* kits/motor-vehicles: not built; KratorVehicles absent */\nvar KratorVehicles = null;\n')
     vb['46-matlib-pack.js'] = matlib_pack(SIDE)
-    # the eastern-abyss biome (read in place, BIO_CANON): its library pack, before the biome code (69a1-...)
+    # the real site (W7; PLAN-ONMAP.md): region/site.json, cast from the scale model by region/site.py, as LOCUS_SITE before
+    # 10-core.js (its terrainH lifts the east and south edge into the wall's foot from it; the sky and the far field read it)
+    with open(os.path.join(HERE, 'region', 'site.json'), encoding='utf-8') as fh:
+        vb['09-locus-site.js'] = '/* ==================== the real site, cast from the scale model (region/site.py) */\nvar LOCUS_SITE = ' + fh.read().strip() + ';\n'
+    # the eastern-abyss biome (read in place, BIO_CANON) and kits/tabisti (TBK): their library packs
     sys.path.insert(0, os.path.join(ROOT, 'tools', 'textures'))
     import matlib_pack as _mp
+    vb['46t-tabisti-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'kits', 'tabisti'), 'tabisti', side=SIDE)
     vb['69a0-bio-matlib-pack.js'] = _mp.fragment(os.path.join(ROOT, 'biomes', 'eastabyss'), 'eastabyss')
+    import importlib.util as _ilu
+    _tb_spec = _ilu.spec_from_file_location('tabisti_kit_bundle', os.path.join(ROOT, 'kits', 'tabisti', 'kit_bundle.py'))
+    _tb_mod = _ilu.module_from_spec(_tb_spec); _tb_spec.loader.exec_module(_tb_mod)
+    vb['65t-tabisti-bundle.js'] = _tb_mod.bundle('TBK')[0]
     vb[khost.EDITS_JS] = khost.edits_js(HERE, 'locus')   # the world page's edits (a kit sheet ignores them: 66-locus-furnish.js)
     return vb
 
@@ -305,7 +318,7 @@ def main():
     do_checks = '--no-checks' not in sys.argv
     vb = virtual_bodies()
     paths = {f: os.path.join(SRC, f) for f in os.listdir(SRC) if f[0].isdigit()}
-    for kit in (yunikit, locuskit, abysskit):   # the Yuni kit and Locus's two (a src/ copy with the same name would win: none)
+    for kit in (yunikit, locuskit, abysskit, abysssalvage):
         for f, p in kit.paths().items():
             paths.setdefault(f, p)
     for f in RECORD_FILES:
@@ -317,6 +330,28 @@ def main():
     for f, p in BIO_CANON.items():                               # the biome, in place (a src/ copy would override)
         paths.setdefault(f, p)
     khost.resolve(paths, CORE_HOST)        # core/host (core/clock and core/minimap are already in from their folders)
+    # the shared sky (W7, PLAN-ONMAP.md; 90s-host-sky.js calls ATMOS.sky): its model, presets, shader and host
+    for _f in ('89-atmos-e-skymodel.js', '89-atmos-f-skypresets.js', '89-atmos-g-sky.js'):
+        paths.setdefault(_f, os.path.join(ATMOS_DIR, 'sky', _f))
+    paths.setdefault('89-atmos-h-skyhost.js', os.path.join(ATMOS_DIR, 'host', '89-atmos-h-skyhost.js'))
+    # the weather, the basin's air and the refinery's smoke (W7, PLAN-ONMAP.md items 4-6; 90t-locus-air.js) and the volumetric clouds (W6)
+    paths.setdefault('89-atmos-e-weatherhost.js', os.path.join(ROOT, 'core', 'atmos', 'host', '89-atmos-e-weatherhost.js'))
+    paths.setdefault('89-atmos-j-heightfog.js', os.path.join(ROOT, 'core', 'atmos', 'host', '89-atmos-j-heightfog.js'))
+    paths.setdefault('89-atmos-j-fog.js', os.path.join(ROOT, 'core', 'atmos', 'sky', '89-atmos-j-fog.js'))
+    paths.setdefault('89-atmos-fx-raincover.js', os.path.join(ROOT, 'core', 'atmos', 'fx', '89-atmos-fx-raincover.js'))
+    paths.setdefault('89-atmos-fx-lightning.js', os.path.join(ROOT, 'core', 'atmos', 'fx', '89-atmos-fx-lightning.js'))
+    paths.setdefault('89-atmos-fx-plumes.js', os.path.join(ROOT, 'core', 'atmos', 'fx', '89-atmos-fx-plumes.js'))
+    paths.setdefault('89-atmos-fx-slopewind.js', os.path.join(ROOT, 'core', 'atmos', 'fx', '89-atmos-fx-slopewind.js'))
+    paths.setdefault('89-atmos-wx-cells.js', os.path.join(ROOT, 'core', 'atmos', 'wx', '89-atmos-wx-cells.js'))
+    paths.setdefault('89-atmos-wx-host.js', os.path.join(ROOT, 'core', 'atmos', 'wx', '89-atmos-wx-host.js'))
+    paths.setdefault('89-atmos-m-volclouds.js', os.path.join(ROOT, 'core', 'atmos', 'sky', '89-atmos-m-volclouds.js'))
+    paths.setdefault('89-atmos-m-volhost.js', os.path.join(ROOT, 'core', 'atmos', 'host', '89-atmos-m-volhost.js'))
+    # the far field on the real site (W7, PLAN-ONMAP.md; 76f-locus-far.js): core/terrain's far field, horizon and strata
+    _ct = os.path.join(ROOT, 'core', 'terrain')
+    for _f, _p in (('35-core-strata.js', '35-core-strata.js'), ('35s-core-strata-shade.js', os.path.join('host', '35-core-strata-shade.js')),
+                   ('44-core-farfield.js', '44-core-farfield.js'), ('44-core-farfield-draw.js', os.path.join('host', '44-core-farfield-draw.js')),
+                   ('45-core-horizon.js', '45-core-horizon.js'), ('45-core-horizon-shade.js', os.path.join('host', '45-core-horizon-shade.js'))):
+        paths.setdefault(_f, os.path.join(_ct, _p))
     # the night light volume, one shared copy (core/interiors/20-core-roomlight-host.js KNLV, K4 of GRAPHICS-TERRAIN-PROPOSAL.md 12d)
     paths.setdefault('20-core-roomlight-host.js', os.path.join(os.path.dirname(os.path.dirname(HERE)), 'core', 'interiors', '20-core-roomlight-host.js'))
     order = sorted(list(paths) + list(vb))

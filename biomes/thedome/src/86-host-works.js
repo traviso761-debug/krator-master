@@ -4,7 +4,7 @@
    and carved vernal rain-gauges (class: 'furniture'), 100% textured from materials.json.
 */
 const WORKS=(function(){
- const out={reserves:0,dishes:0,harps:0,gauges:0,group:null};
+ const out={reserves:0,dishes:0,harps:0,gauges:0,machine:null,group:null};
 
  /* 1. Always register KTAGS sanctuary reserves (0 buildings!) */
  if(SITE.reserves&&SITE.reserves.length){
@@ -20,6 +20,32 @@ const WORKS=(function(){
    });
    out.reserves++;
   }
+ }
+
+ /* 1b. Station 5 (eastflank): Active solar Ancient Atmospheric Defoliant Mist-Pylon (registered BEFORE drawing!) */
+ if(SITE.mistPylon&&typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.placeMachine==='function'){
+  out.machine=KFRONTIER.placeMachine({
+   THREE:THREE,
+   scene:scene,
+   tagPage:(typeof KTAGS!=='undefined'&&KTAGS.page)?KTAGS.page:null,
+   register:REGISTER,
+   space:SPACE,
+   hazards:HAZARDS,
+   groundH:DRAWN_H,
+   mats:{
+    hull:THEDOME.M.rockPorphyry,
+    ceramic:THEDOME.M.worksStone,
+    bronze:THEDOME.M.worksBronze
+   }
+  },{
+   id:'thedome:ecof-mist-pylon',
+   kind:'ecof_mist_pylon',
+   x:SITE.mistPylon.x,
+   z:SITE.mistPylon.z,
+   rotY:0.34,
+   state:'active',
+   hour:7.5
+  });
  }
 
  if(new URLSearchParams(location.search).get('works')==='0')return out;
@@ -168,6 +194,9 @@ const WORKS=(function(){
  }else if(SKEY==='cleft'){
   addWindHarp(-28,16,-0.2,'cleft-rim','Kluft Rim Barometric Breathing Wind-Harp');
   addRainGauge(-34,15,'cleft-gauge');
+ }else if(SKEY==='eastflank'){
+  addWindHarp(36,-44,0.4,'eastflank-warn','Kill-Line Perimeter Warning Wind-Harp');
+  addRainGauge(42,-48,'eastflank-gauge');
  }
 
  scene.add(grp);

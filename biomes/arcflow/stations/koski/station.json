@@ -1,0 +1,20 @@
+{
+ "id": "koski",
+ "canvas": "5.1 (1821x1723)",
+ "title": "Arcflow — Helme-Koski Zebra-Cumulate Rapids & Hiidenkirnu Swirl-Kettles",
+ "out": "arcflow-koski.html",
+ "px": [556, 96],
+ "sky": [284, -234],
+ "elevM": 458.2,
+ "pAtm": 1.51,
+ "koppen": "Cfa",
+ "rainMmYr": 1820,
+ "riverId": 9104,
+ "riverName": "Helme-Koski",
+ "dischargeM3s": 433.0,
+ "strataStack": "arch-ophiolite",
+ "reserves": [
+  { "id": "site:kulanewa-sampo-forge", "x": -18, "z": -108, "r": 46 }
+ ],
+ "modes": ["Day", "Low-Sun Carnelian Glow"]
+}

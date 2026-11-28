@@ -61,11 +61,16 @@ MAT_GROUND.onBeforeCompile=sh=>{sh.uniforms.uDetail={value:TEX_DETAIL};sh.unifor
   // and GLINTS on the snow: a random facet normal per 14 cm cell, a tight highlight of the sun on it (near the camera only)
   .replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n {vec2 gc=floor(vGWP.xz*7.0);vec3 rn=fract(sin(vec3(dot(gc,vec2(12.9,78.2)),dot(gc,vec2(39.3,11.1)),dot(gc,vec2(73.1,52.7))))*43758.5)-0.5;'+
    'vec3 fn=normalize(vec3(rn.x*0.6,1.0,rn.z*0.6)),V=normalize(kEye()-vGWP),Hh=normalize(uSunDir+V);float gl=pow(max(dot(fn,Hh),0.0),900.0)*step(0.55,rn.y+0.5);'+
-   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(kEye()-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');};
+   'totalEmissiveRadiance+=vec3(1.0,0.98,0.94)*gl*4.0*vL0.x*(1.0-uNight)*smoothstep(260.0,30.0,length(kEye()-vGWP));}\n totalEmissiveRadiance+=(0.15+uNight)*vL1.x*max(_E_veins*smoothstep(0.05,0.25,_E_veins.r-_E_veins.b)*2.4,vec3(0.5,0.12,0.02)*vL1.x);');
+ THRONE_STRATA_HOOK(STRATA_BAND,sh,{normal:'vGN',cover:'vL0.x+vL0.y+vL2.x'});};
+// THE SCAR'S BEDS (47's STRATA, KSTRATA's obsidian-pancake; 2026-11-24): each bed's colour on the steep of the horseshoe's walls, under the snow, in
+// one texture unit (shared/84s-host-strata-band.js). ?strata=0 none (the shader as before)
+const STRATA_BAND=THRONE_STRATA_BAND(STRATA);
+const strataMask=(x,z)=>{const d=Math.hypot(x-BLAST.x,z-BLAST.z);if(d>BLAST.r*1.55)return 0;return smooth(BLAST.r*1.55,BLAST.r*1.3,d)*(1-smooth(.55,.85,scarAt(x,z).open));};
 const GW={snow:'vL0.x',snow2:'vL0.y',cliff:'vL0.z',lava:'vL0.w',veins:'vL1.x',scoria:'vL1.y',sulphur:'vL1.z',ash:'vL1.w',ice:'vL2.x',obsidian:'vL2.y',cinder:'vL2.z',rock037:'vL2.w'};
 KGI=THRONE.kgGround(MAT_GROUND,{key:'throne-blast',keys:GL_KEYS,W:GW,GLAY,gain:{cliff:2.2,rock037:1.7},tint:{cliff:'diffuseColor.rgb'},tri:true});
 const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=paintTex(2048,-S/2,-S/2,S);
- const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4);
+ const pos=new Float32Array(nx*nx*3),uv=new Float32Array(nx*nx*2),L0=new Float32Array(nx*nx*4),L1=new Float32Array(nx*nx*4),L2=new Float32Array(nx*nx*4),SY=STRATA_BAND?new Float32Array(nx*nx*2):null;
  for(let j=0;j<nx;j++)for(let i=0;i<nx;i++){const k=j*nx+i,x=-S/2+i*cs,z=-S/2+j*cs,y=terrainH(x,z);pos[k*3]=x;pos[k*3+1]=y;pos[k*3+2]=z;uv[k*2]=x/S+.5;uv[k*2+1]=.5-z/S;
   const at=n=>FC.at(FC.a[n],x,z),sn=smooth(.2,.65,at('snow')),n1=fbm(x*.008,z*.008,5022,2),sl=at('slope'),fl=at('floor'),wl=at('wall'),rimK=at('rim'),out=at('out');
   const hot=0;
@@ -73,11 +78,11 @@ const GROUND=(function(){const N=880,S=TERR.R*2.2,cs=S/N,nx=N+1;MAT_GROUND.map=p
   L1[k*4]=hot*fl*.9;L1[k*4+1]=0;L1[k*4+2]=smooth(.25,.7,at('warm'))*.8;L1[k*4+3]=Math.max(wl*(1-smooth(.5,.8,sl))*.75,fl*.5);   /* the blasted ground's ash, the plain's too */
   L2[k*4]=out*rimK*smooth(.35,.6,sl)*(1-smooth(.3,.6,at('warm')))*.75;
   /* the library's volcanic set: glassy obsidian on the floor round the lake's hot ring, cinder on the cones' tops, black veined rock on the steepest faces */
-  L2[k*4+1]=0;L2[k*4+2]=0;L2[k*4+3]=smooth(.72,.95,sl)*(1-sn*.8)*.7;}
+  L2[k*4+1]=0;L2[k*4+2]=0;L2[k*4+3]=smooth(.72,.95,sl)*(1-sn*.8)*.7;if(SY)THRONE_STRATA_ATTR(STRATA,strataMask,x,y,z,k,SY);}
  const idx=new Uint32Array(N*N*6);let t=0;
  for(let j=0;j<N;j++)for(let i=0;i<N;i++){const a=j*nx+i,b=a+nx,c=b+1,d=a+1;idx[t++]=a;idx[t++]=b;idx[t++]=d;idx[t++]=b;idx[t++]=c;idx[t++]=d;}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));
- g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));
+ g.setAttribute('aL0',new THREE.BufferAttribute(L0,4));g.setAttribute('aL1',new THREE.BufferAttribute(L1,4));g.setAttribute('aL2',new THREE.BufferAttribute(L2,4));if(SY)g.setAttribute('aSY',new THREE.BufferAttribute(SY,2));
  g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();const m=new THREE.Mesh(g,MAT_GROUND);m.userData.probeSkip=true;m.userData.inspectLabel='The Throne\'s north-north-east flank: the blast zone, ~2.5 km up';scene.add(m);return m;})();
 THRONE.kgCavity(GROUND);   /* the mesh's hollows for the relief (KGROUND.cavityMesh) */
 _onLight.push(m=>{GROUNDU.uNight.value=m==='night'?1:0;});

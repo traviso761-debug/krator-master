@@ -57,7 +57,7 @@ const TIERS := {
 		"vfog": false, "vfog_density": 0.0006, "vfog_length": 200.0, "vfog_anisotropy": 0.7, "vfog_sun_energy": 1.0, "vfog_volume": 48, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 2, "emitter_amount": 24, "leaves": 60, "ssr": false, "dress": true, "decals": 8,
 		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": true,
-		"msaa": 2, "aa": "none", "scale": 0.77, "upscale": "fsr1", "aniso": 8, "lod_px": 2.0, "weather": 1.0, "wet": 0.0, "detail": 0.5, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 6.0,
+		"msaa": 2, "aa": "none", "scale": 0.77, "upscale": "fsr1", "aniso": 8, "lod_px": 2.0, "weather": 1.0, "wet": 0.0, "aridity": 0.0, "shimmer": 0.0, "detail": 0.5, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 6.0,
 	},
 	"high": {
 		"shadow_max": 400.0, "shadow_splits": [0.05, 0.15, 0.40], "shadow_blend": true, "shadow_fade": 0.85,
@@ -69,7 +69,7 @@ const TIERS := {
 		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 16, "emitters": 6, "emitter_amount": 48, "leaves": 160, "ssr": true, "dress": true, "decals": 20,
 		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
-		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 1.0, "weather": 1.0, "wet": 0.0, "detail": 0.6, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 4.0,
+		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 1.0, "weather": 1.0, "wet": 0.0, "aridity": 0.0, "shimmer": 0.0, "detail": 0.6, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": true, "cells": true, "cull_px": 4.0,
 	},
 	"photo": {
 		"shadow_max": 500.0, "shadow_splits": [0.04, 0.12, 0.36], "shadow_blend": true, "shadow_fade": 0.9,
@@ -81,7 +81,7 @@ const TIERS := {
 		"vfog": true, "vfog_density": 0.0006, "vfog_length": 300.0, "vfog_anisotropy": 0.75, "vfog_sun_energy": 1.0, "vfog_volume": 96, "vfog_sky": 0.0, "aerial": 0.5,
 		"mist": 1.0, "fog_volumes": true, "fog_volume_max": 24, "emitters": 8, "emitter_amount": 64, "leaves": 240, "ssr": true, "dress": true, "decals": 32,
 		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": true, "sky_half": false,
-		"msaa": 4, "aa": "smaa", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 0.5, "weather": 1.0, "wet": 0.0, "detail": 0.7, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": false, "cells": true, "cull_px": 2.0,
+		"msaa": 4, "aa": "smaa", "scale": 1.0, "upscale": "bilinear", "aniso": 16, "lod_px": 0.5, "weather": 1.0, "wet": 0.0, "aridity": 0.0, "shimmer": 0.0, "detail": 0.7, "tangents": true, "room_ambient": true, "auto_exposure": false, "occlusion": false, "cells": true, "cull_px": 2.0,
 	},
 	# the rig as walk.gd and the route harness set it until 2026-11-23 (GODOT-LOOK-PLAN.md 3.2): the project's 4x MSAA
 	"legacy": {
@@ -94,7 +94,7 @@ const TIERS := {
 		"vfog": false, "vfog_density": 0.0, "vfog_length": 64.0, "vfog_anisotropy": 0.2, "vfog_sun_energy": 1.0, "vfog_volume": 64, "vfog_sky": 0.0, "aerial": 0.0,
 		"mist": 0.0, "fog_volumes": false, "fog_volume_max": 0, "emitters": 0, "emitter_amount": 0, "leaves": 0, "ssr": false, "dress": false, "decals": 0,
 		"contact_shadows": false, "ao_multibounce": false, "tonemap": Environment.TONE_MAPPER_AGX, "agx_contrast": 1.25, "agx_white": 16.29, "deband": false, "sky_half": false,
-		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 4, "lod_px": 1.0, "weather": 0.0, "wet": 0.0, "detail": 0.0, "tangents": false, "room_ambient": false, "auto_exposure": false, "occlusion": false, "cells": false, "cull_px": 4.0,
+		"msaa": 4, "aa": "none", "scale": 1.0, "upscale": "bilinear", "aniso": 4, "lod_px": 1.0, "weather": 0.0, "wet": 0.0, "aridity": 0.0, "shimmer": 0.0, "detail": 0.0, "tangents": false, "room_ambient": false, "auto_exposure": false, "occlusion": false, "cells": false, "cull_px": 4.0,
 	},
 }
 
@@ -211,6 +211,14 @@ static func from_args(args: PackedStringArray, default_tier := "auto") -> Dictio
 			s["weather"] = clampf(float(a.trim_prefix("--weather=")), 0.0, 1.5)
 		elif a.begins_with("--wet="):
 			s["wet"] = clampf(float(a.trim_prefix("--wet=")), 0.0, 1.0)
+		elif a.begins_with("--aridity="):
+			s["aridity"] = clampf(float(a.trim_prefix("--aridity=")), 0.0, 1.0)
+		elif a == "--no-shimmer":
+			s["shimmer"] = 0.0
+		elif a == "--shimmer":
+			s["shimmer"] = 1.0
+		elif a.begins_with("--shimmer="):
+			s["shimmer"] = clampf(float(a.trim_prefix("--shimmer=")), 0.0, 1.5)
 		elif a == "--no-detail":
 			s["detail"] = 0.0
 		elif a.begins_with("--detail="):

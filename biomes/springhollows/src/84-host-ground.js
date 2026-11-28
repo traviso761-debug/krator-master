@@ -48,7 +48,7 @@ function masksAt(x,z,h,out){
   out[0]=chert;out[1]=moss;out[2]=litter;out[3]=porph;
   return out;
  }
- if(SKEY==='shutin'){
+ if(SKEY==='shutin'||SKEY==='porphyryrelict'){
   // [0] water-polished purple-red porphyry grus, [1] cream cherty-dolomite karst bench, [2] sunny glade grass & oak duff
   const pW=clamp(porph*0.92,0,1);
   const dW=clamp(Math.max(rock*0.75,0.28)*(1-pW*0.85),0,1);
@@ -85,7 +85,7 @@ const TEX_GROUND=BIO.canvasTex(1024,1024,(g,w,h)=>{
   masksAt(wx,wz,hh,m);
   if(SKEY==='spring'){
    c.copy(LITTER).lerp(MOSS,m[1]*0.68).lerp(CHERT,m[0]*0.72).lerp(PORPH,m[3]*0.62);
-  }else if(SKEY==='shutin'){
+  }else if(SKEY==='shutin'||SKEY==='porphyryrelict'){
    c.copy(LITTER).lerp(DOL,m[1]*0.66).lerp(GLADE,m[2]*0.42).lerp(PORPH,m[0]*0.82);
   }else if(SKEY==='fenestre'){
    c.copy(LITTER).lerp(DOL,m[0]*0.68).lerp(MOSS,m[2]*0.64).lerp(PORPH,m[3]*0.72);
@@ -123,7 +123,7 @@ if(USE_KG){
   KGROUND.layer('springhollows','ground.chert',{w:'vGL.x',amt:0.84,gain:1.0,tint:'_gT',h:hOpt,name:'white chert spring-bar gravel'}),
   KGROUND.layer('springhollows','ground.moss',{w:'vGL.y',amt:0.85,gain:1.0,tint:'_gT',h:hOpt,name:'sapphire spring-margin sphagnum'}),
   KGROUND.layer('springhollows','ground.litter',{w:'vGL.z',amt:0.84,gain:1.0,tint:'_gT',h:hOpt,name:'bald-cypress & chinkapin-oak litter'})
- ]:SKEY==='shutin'?[
+ ]:(SKEY==='shutin'||SKEY==='porphyryrelict')?[
   KGROUND.layer('springhollows','ground.porphyry',{w:'vGL.x',amt:0.88,gain:1.0,tint:'_gT',h:hOpt,name:'polished purple-red rhyolite porphyry'}),
   KGROUND.layer('springhollows','ground.dolomite',{w:'vGL.y',amt:0.85,gain:1.0,tint:'_gT',h:hOpt,name:'cream cherty-dolomite karst bench'}),
   KGROUND.layer('springhollows','ground.glade',{w:'vGL.z',amt:0.82,gain:1.0,tint:'_gT',h:hOpt,name:'igneous glade bluestem & oak duff'})

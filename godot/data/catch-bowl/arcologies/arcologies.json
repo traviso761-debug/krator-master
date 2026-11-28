@@ -1,0 +1,96 @@
+{
+ "format": "krator-catch-bowl-arcologies",
+ "version": 1,
+ "arcologies": [
+  {
+   "key": "parabola",
+   "site_id": "scyeauyek7",
+   "site_name": "Parabola",
+   "glb": "parabola.glb",
+   "bytes": 7038632,
+   "half_m": 1220.0,
+   "ruined": true,
+   "unlabelled": false,
+   "yaw_deg": 0.0,
+   "stats": {
+    "meshes": 26,
+    "triangles": 484644,
+    "materials": 24,
+    "instancedMeshes": 13,
+    "instances": 26162,
+    "records": {
+     "nodes": 0,
+     "instances": 0
+    }
+   }
+  },
+  {
+   "key": "arckibuz",
+   "site_id": "skz25tuq0w",
+   "site_name": "Arcbeam",
+   "glb": "arckibuz.glb",
+   "bytes": 9212208,
+   "half_m": 470.0,
+   "ruined": false,
+   "unlabelled": false,
+   "yaw_deg": 24.0,
+   "stats": {
+    "meshes": 50,
+    "triangles": 136872,
+    "materials": 49,
+    "instancedMeshes": 28,
+    "instances": 5524,
+    "records": {
+     "nodes": 0,
+     "instances": 0
+    }
+   }
+  },
+  {
+   "key": "hill",
+   "site_id": "s2o8f4p123",
+   "site_name": "Stair",
+   "glb": "hill.glb",
+   "bytes": 20426208,
+   "half_m": 2150.0,
+   "ruined": true,
+   "unlabelled": false,
+   "yaw_deg": -35.0,
+   "stats": {
+    "meshes": 121,
+    "triangles": 857553,
+    "materials": 60,
+    "instancedMeshes": 45,
+    "instances": 38528,
+    "records": {
+     "nodes": 0,
+     "instances": 0
+    }
+   }
+  },
+  {
+   "key": "monolith",
+   "site_id": "sodpa02bfv",
+   "site_name": "Unmarked Ancient Ruin",
+   "glb": "monolith.glb",
+   "bytes": 3524812,
+   "half_m": 1150.0,
+   "ruined": true,
+   "unlabelled": true,
+   "yaw_deg": 18.0,
+   "stats": {
+    "meshes": 21,
+    "triangles": 395882,
+    "materials": 21,
+    "instancedMeshes": 16,
+    "instances": 34830,
+    "records": {
+     "nodes": 0,
+     "instances": 0
+    }
+   }
+  }
+ ],
+ "tex_families": 9,
+ "tex_bytes": 4013174
+}

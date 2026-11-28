@@ -20,18 +20,24 @@ signal gi_toggled(on: bool)
 signal hour_changed(hour_val: float)
 signal clock_rate_selected(rate_val: float)
 signal poly_action(action: String)
+signal gallery_requested()
+signal minimap_picked(world_xz: Vector2, shift_pressed: bool, picked_record: Dictionary)
 
 var cases: Array = []          # [{label, path}]
 var pois: Array = []           # [{label, kind, eye: Vector3, target: Vector3, walk: bool}]
 var active_tool := ""          # "", "pin", "inspect", "poly"
 var chrome_visible := true
+var minimap_open := true
+var _minimap_big := false
 
 var left_panel: PanelContainer
 var left_body: VBoxContainer
+var btn_gallery: Button
 var btn_fold_left: Button
 var title_lbl: Label
 var case_opt: OptionButton
 var poi_opt: OptionButton
+var row_cam: HBoxContainer
 var btn_walk: Button
 var btn_fp: Button
 var btn_ride: Button
@@ -44,6 +50,7 @@ var btn_poly: Button
 var btn_flora: Button
 var btn_builds: Button
 var btn_gi: Button
+var btn_map: Button
 var hour_slider: HSlider
 var clock_lbl: Label
 var speed_btns := {}
@@ -61,6 +68,12 @@ var detail_title: Label
 var detail_lbl: Label
 var poly_bar: HBoxContainer
 
+var minimap_panel: PanelContainer
+var minimap_title: Label
+var btn_map_follow: Button
+var btn_map_size: Button
+var minimap: KratorMinimap
+
 var show_pill: Button
 var _syncing := false
 var _copy_flash := 0.0
@@ -69,6 +82,8 @@ var _copy_flash := 0.0
 func _ready() -> void:
 	layer = 10
 	_build_ui()
+	if get_viewport() != null:
+		get_viewport().size_changed.connect(_place_minimap)
 
 
 func _process(dt: float) -> void:
@@ -138,6 +153,16 @@ func _build_ui() -> void:
 	hdr.add_theme_constant_override("separation", 6)
 	lv.add_child(hdr)
 
+	btn_gallery = _make_btn("<< Gallery (F2)", "Return to the Godot Krator Worlds Gallery navigation screen (F2)")
+	btn_gallery.add_theme_color_override("font_color", Color(1.0, 0.88, 0.56))
+	btn_gallery.add_theme_stylebox_override("normal", _box_style(Color(0.26, 0.18, 0.08, 0.96), Color(0.76, 0.56, 0.24, 0.95), 4, 8, 4))
+	btn_gallery.pressed.connect(func():
+		gallery_requested.emit()
+		if get_signal_connection_list("gallery_requested").is_empty() and get_tree() != null:
+			KratorGalleryNav.return_to_gallery(get_tree())
+	)
+	hdr.add_child(btn_gallery)
+
 	title_lbl = Label.new()
 	title_lbl.text = "KRATOR HOST"
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -146,7 +171,7 @@ func _build_ui() -> void:
 	hdr.add_child(title_lbl)
 
 	case_opt = OptionButton.new()
-	case_opt.tooltip_text = "Switch streamed open-world case (res://data/*/index.json)"
+	case_opt.tooltip_text = "Switch build / streamed open-world case"
 	case_opt.custom_minimum_size = Vector2(155, 0)
 	_style_btn(case_opt)
 	case_opt.item_selected.connect(_on_case_idx)
@@ -191,6 +216,7 @@ func _build_ui() -> void:
 
 	# Row 2: Camera & Movement Mode
 	var r_cam := HBoxContainer.new()
+	row_cam = r_cam
 	r_cam.add_theme_constant_override("separation", 4)
 	left_body.add_child(r_cam)
 	r_cam.add_child(_tag_lbl("Camera:"))
@@ -302,6 +328,14 @@ func _build_ui() -> void:
 			gi_toggled.emit(on)
 	)
 	r_lay.add_child(btn_gi)
+
+	btn_map = _make_btn("Map (M)", "Show / hide the 2D minimap (M)", true)
+	btn_map.button_pressed = true
+	btn_map.toggled.connect(func(on: bool):
+		if not _syncing:
+			set_minimap_open(on)
+	)
+	r_lay.add_child(btn_map)
 
 	# Row 5: Sun Clock & Time-of-Day Slider
 	var r_clk := HBoxContainer.new()
@@ -434,6 +468,70 @@ func _build_ui() -> void:
 	b_cp.pressed.connect(func(): poly_action.emit("copy"))
 	poly_bar.add_child(b_cp)
 
+	# ---------------- Bottom-right Minimap dock (core/minimap twin)
+	minimap_panel = PanelContainer.new()
+	minimap_panel.name = "MinimapPanel"
+	minimap_panel.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	minimap_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	minimap_panel.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	minimap_panel.add_theme_stylebox_override("panel", _box_style(Color(0.094, 0.082, 0.059, 0.92), Color(0.44, 0.31, 0.21, 0.85), 6, 6, 6))
+	add_child(minimap_panel)
+
+	var mv := VBoxContainer.new()
+	mv.add_theme_constant_override("separation", 4)
+	minimap_panel.add_child(mv)
+
+	var mh := HBoxContainer.new()
+	mh.add_theme_constant_override("separation", 3)
+	mv.add_child(mh)
+	minimap_title = Label.new()
+	minimap_title.text = "MAP"
+	minimap_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	minimap_title.add_theme_font_size_override("font_size", 11)
+	minimap_title.add_theme_color_override("font_color", Color(0.90, 0.79, 0.52))
+	mh.add_child(minimap_title)
+
+	btn_map_follow = _make_btn("Follow", "Keep the map centred on the viewer (drag to pan stops following)", true)
+	btn_map_follow.button_pressed = true
+	btn_map_follow.toggled.connect(func(on: bool):
+		if minimap != null:
+			minimap.follow_viewer = on
+			minimap.queue_redraw()
+	)
+	mh.add_child(btn_map_follow)
+	var b_zo := _make_btn("-", "Zoom out")
+	b_zo.pressed.connect(func(): minimap.zoom_by(0.8))
+	mh.add_child(b_zo)
+	var b_zi := _make_btn("+", "Zoom in (or mouse wheel on the map)")
+	b_zi.pressed.connect(func(): minimap.zoom_by(1.25))
+	mh.add_child(b_zi)
+	var b_zr := _make_btn("1:1", "Reset zoom and pan")
+	b_zr.pressed.connect(func():
+		minimap.reset_view()
+		_syncing = true
+		btn_map_follow.button_pressed = minimap.follow_viewer
+		_syncing = false
+	)
+	mh.add_child(b_zr)
+	btn_map_size = _make_btn("Large", "Toggle map size 256 / 384 px")
+	btn_map_size.pressed.connect(func(): set_minimap_big(not _minimap_big))
+	mh.add_child(btn_map_size)
+	var b_mx := _make_btn("x", "Close map (M)")
+	b_mx.pressed.connect(func(): set_minimap_open(false))
+	mh.add_child(b_mx)
+
+	minimap = KratorMinimap.new(256.0)
+	minimap.map_clicked.connect(func(xz: Vector2, shift: bool, rec: Dictionary):
+		minimap_picked.emit(xz, shift, rec)
+	)
+	mv.add_child(minimap)
+
+	var mhint := _tag_lbl("Click: go there | Shift+click: walk | Wheel: zoom | Right drag: pan")
+	mhint.add_theme_font_size_override("font_size", 9)
+	mhint.add_theme_color_override("font_color", Color(0.64, 0.58, 0.46))
+	mv.add_child(mhint)
+	call_deferred("_place_minimap")
+
 	# ---------------- Minimized pill when chrome is hidden (H / F1)
 	show_pill = _make_btn("UI (H)", "Restore Krator Host UI (H or F1)")
 	show_pill.position = Vector2(10, 10)
@@ -442,12 +540,95 @@ func _build_ui() -> void:
 	add_child(show_pill)
 
 
+func _place_minimap() -> void:
+	if minimap_panel == null:
+		return
+	minimap_panel.reset_size()
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var vs := vp.get_visible_rect().size
+	minimap_panel.position = vs - minimap_panel.size - Vector2(12, 12)
+
+
+func set_minimap_open(on: bool) -> void:
+	minimap_open = on
+	if minimap_panel != null:
+		minimap_panel.visible = chrome_visible and on
+		call_deferred("_place_minimap")
+	if btn_map != null:
+		_syncing = true
+		btn_map.button_pressed = on
+		_syncing = false
+
+
+func toggle_minimap() -> void:
+	set_minimap_open(not minimap_open)
+
+
+func set_minimap_big(big: bool) -> void:
+	_minimap_big = big
+	var s := 384.0 if big else 256.0
+	minimap.custom_minimum_size = Vector2(s, s)
+	minimap.size = Vector2(s, s)
+	btn_map_size.text = "Small" if big else "Large"
+	minimap.queue_redraw()
+	call_deferred("_place_minimap")
+
+
 func set_chrome_visible(vis: bool) -> void:
 	chrome_visible = vis
 	left_panel.visible = vis
 	right_panel.visible = vis
 	detail_panel.visible = vis and (active_tool == "inspect" or active_tool == "poly")
+	if minimap_panel != null:
+		minimap_panel.visible = vis and minimap_open
 	show_pill.visible = not vis
+
+
+# Fly-only scenes (spike.gd, catch_bowl.gd): hide the walker's buttons.
+func set_standalone_mode(is_standalone: bool) -> void:
+	btn_walk.visible = not is_standalone
+	btn_fp.visible = not is_standalone
+	btn_ride.visible = not is_standalone
+	btn_walk_pin.visible = not is_standalone
+	for c in row_cam.get_children():
+		if c is Button and c.text == "Drop Ground":
+			c.visible = not is_standalone
+
+
+func sync_standalone_state(title: String, hour_val: float, rate_val: float, gi_on: bool, has_pin: bool) -> void:
+	_syncing = true
+	title_lbl.text = "KRATOR HOST — %s" % title.to_upper()
+	btn_gi.button_pressed = gi_on
+	btn_fly_pin.disabled = not has_pin
+	btn_clr_pin.disabled = not has_pin
+	var hr := fposmod(hour_val, 24.0)
+	if not hour_slider.has_focus():
+		hour_slider.value = hr
+	clock_lbl.text = "%02d:%02d" % [int(hr), int(fmod(hr * 60.0, 60.0))]
+	_select_rate_btn(rate_val)
+	_syncing = false
+
+
+static func format_standalone_coords(cam: Camera3D, ground_y: float, pin_pos: Variant, extra_line := "") -> String:
+	var p := cam.global_position
+	var f := -cam.global_transform.basis.z
+	var yaw_deg := fposmod(rad_to_deg(atan2(f.x, -f.z)), 360.0)
+	var pitch_deg := rad_to_deg(asin(clampf(f.y, -1.0, 1.0)))
+	var lines := PackedStringArray()
+	lines.append("Cam:    x %8.1f   y %7.1f   z %8.1f  (AGL %s m)" % [p.x, p.y, p.z, "%.1f" % (p.y - ground_y) if is_finite(ground_y) else "?"])
+	lines.append("Look:   heading %5.1f°   pitch %+5.1f°" % [yaw_deg, pitch_deg])
+	lines.append("Ground: %s m" % ("%.1f" % ground_y if is_finite(ground_y) else "?"))
+	if pin_pos is Vector3:
+		var pv: Vector3 = pin_pos
+		lines.append("Pin:    x %8.1f   y %7.1f   z %8.1f  (%.0f m away)" % [pv.x, pv.y, pv.z, p.distance_to(pv)])
+	var draws := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_DRAW_CALLS_IN_FRAME)
+	var prims := RenderingServer.get_rendering_info(RenderingServer.RENDERING_INFO_TOTAL_PRIMITIVES_IN_FRAME)
+	lines.append("Perf:   %d FPS | %d draws | %.2fM tris" % [Engine.get_frames_per_second(), draws, float(prims) / 1000000.0])
+	if extra_line != "":
+		lines.append(extra_line)
+	return "\n".join(lines)
 
 
 func _set_tool_ui(t: String, emit_sig := true) -> void:
@@ -538,6 +719,33 @@ func _on_case_idx(idx: int) -> void:
 	if _syncing or idx < 0 or idx >= cases.size():
 		return
 	case_selected.emit(str(cases[idx]["path"]))
+
+
+# A host without index.json cases (spike.gd): its own [{label, path}] list; `path` is what case_selected carries.
+func set_custom_cases(list: Array, current_path: String) -> void:
+	cases = list.duplicate()
+	_syncing = true
+	case_opt.clear()
+	var sel := 0
+	for i in cases.size():
+		case_opt.add_item(str(cases[i]["label"]), i)
+		if str(cases[i]["path"]) == current_path:
+			sel = i
+	if cases.size() > 0:
+		case_opt.select(sel)
+	_syncing = false
+
+
+# A host's own views: [{label, eye: Vector3, target: Vector3}]; poi_selected carries the chosen one.
+func set_custom_pois(list: Array) -> void:
+	pois = list.duplicate()
+	_syncing = true
+	poi_opt.clear()
+	poi_opt.add_item("— Select View (%d) —" % pois.size(), 0)
+	for i in pois.size():
+		poi_opt.add_item(str(pois[i]["label"]), i + 1)
+	poi_opt.select(0)
+	_syncing = false
 
 
 static func _pretty_id(raw: String) -> String:

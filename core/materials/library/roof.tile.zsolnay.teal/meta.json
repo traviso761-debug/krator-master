@@ -1,0 +1,66 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1016,
+    1007
+   ],
+   "seam_after": [
+    1.113,
+    1.018
+   ],
+   "seam_before": [
+    1.74,
+    1.1
+   ],
+   "source_size": [
+    1024,
+    1024
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.06,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.1,
+   "mute": 0.0,
+   "normal_strength": 1.15,
+   "pattern": true,
+   "rough": 0.25,
+   "rough_var": 0.16,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "roof",
+  "id": "roof.tile.zsolnay.teal",
+  "metal": 0,
+  "roughness": 0.25,
+  "scale": [
+   1.25,
+   1.25
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "roof.tile.zsolnay.teal.png",
+  "generator": "supplied by the owner (Codex batch, 2026-11-25, 1024 px, bold 8-course take), generated from kits/tabisti/PROMPTS.md",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic view of a flat, front-on pitched roof surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no bright sun reflections, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Hungarian Secessionist Zsolnay pyrogranite glazed ceramic beaver-tail roof tiles laid in neat overlapping imbricated horizontal courses (eight courses per tile), predominantly rich alkaline turquoise-teal (#158780) and deep emerald-jade (#1b7a6e) with subtle tile-to-tile kiln variation into seafoam teal (#32a69c), deep peacock blue-green (#0f5c60), and an occasional warm honey-amber (#c9872e) accent tile; thick pooled vitreous glaze along the rounded lower drip edge of each scale, fine ceramic crazing, and subtle weathering in the overlaps. Full colour.",
+  "prompt_where": "kits/tabisti/PROMPTS.md",
+  "reuse": "Urban Tabisti monsoon-shedding glazed roofs (kits/tabisti, zsolnay, 1.25 m); Secessionist Zsolnay pyrogranite roofs",
+  "sha1": "9ea625ceaf5848c232e3f8bb60fdd712a25aa063"
+ }
+}

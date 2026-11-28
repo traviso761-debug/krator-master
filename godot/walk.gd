@@ -68,6 +68,9 @@ var _poly_imm: ImmediateMesh
 var _poly_pts: Array = []    # Array of Vector3 in region metres
 var _inspect_locked := false
 var _hover_timer := 0.0
+var _map_events_n := -1      # stream events seen when the minimap's relief was last redrawn
+var _map_relief_t := 0.0
+var _map_tt := 0.0
 
 
 func _parse_args() -> void:
@@ -112,6 +115,11 @@ func _ready() -> void:
 	add_child(air)
 	decals = KratorDecals.make(look)   # ruts, puddles and worn patches from the road records (M11)
 	add_child(decals)
+	if float(look.get("shimmer", 0.0)) > 0.0:
+		var shim := KratorShimmerFx.new()
+		shim.master_scale = float(look["shimmer"])
+		shim.sun = sun
+		add_child(shim)
 
 	ui = KratorHostUI.new()
 	ui.name = "HostUI"
@@ -120,11 +128,16 @@ func _ready() -> void:
 	if _no_ui:
 		ui.set_chrome_visible(false)
 
+	var pend := KratorGalleryNav.pending_entry
+	if not pend.is_empty() and str(pend.get("case_path", "")) != "":
+		case_index = str(pend["case_path"])
 	_load_case(case_index, true)
 	_update_sun_and_ambience(0.0, true)
 
 
 func _wire_ui() -> void:
+	ui.gallery_requested.connect(func(): KratorGalleryNav.return_to_gallery(get_tree()))
+	ui.minimap_picked.connect(_on_minimap_picked)
 	ui.case_selected.connect(func(p: String): _load_case(p, false))
 	ui.poi_selected.connect(_go_to_poi)
 	ui.walk_toggled.connect(func(on: bool): W.set_walk_mode(on))
@@ -215,6 +228,10 @@ func _load_case(index_path: String, use_cmdline_at: bool) -> void:
 
 	ui.populate_cases(case_index)
 	ui.refresh_pois(W.stream, null)
+	ui.minimap.populate_from_stream(W.stream)
+	ui.minimap_title.text = "MAP — %s" % str(W.stream.index.get("region", "")).to_upper()
+	_map_events_n = -1
+	_map_relief_t = 0.0
 	_apply_layers()
 	_update_sun_and_ambience(0.0, true)
 
@@ -427,6 +444,17 @@ func _on_pin_action(act: String) -> void:
 		W.walk_at(_pin_reg.x, _pin_reg.z)
 	elif act == "clear":
 		_clear_pin()
+
+
+func _on_minimap_picked(xz: Vector2, shift: bool, _rec: Dictionary) -> void:
+	if W == null:
+		return
+	if shift or W.walk_mode:
+		W.walk_at(xz.x, xz.y)
+	else:
+		var gh := W.stream.height_at(xz.x, xz.y)
+		W.fly_to_point(Vector3(xz.x, gh if is_finite(gh) else W.cam_region().y - 100.0, xz.y), 140.0)
+	_last_event_n = -1
 
 
 func _on_tool_changed(t: String) -> void:
@@ -983,6 +1011,10 @@ func _unhandled_input(ev: InputEvent) -> void:
 		var kc := (ev as InputEventKey).keycode
 		if kc == KEY_H or kc == KEY_F1:
 			ui.set_chrome_visible(not ui.chrome_visible)
+		elif kc == KEY_M:
+			ui.toggle_minimap()
+		elif kc == KEY_F2:
+			KratorGalleryNav.return_to_gallery(get_tree())
 		elif kc == KEY_F:
 			if ev.shift_pressed and _has_pin:
 				W.walk_at(_pin_reg.x, _pin_reg.z)
@@ -1089,3 +1121,26 @@ func _process(dt: float) -> void:
 	var reg := str(W.stream.index.get("region", "?"))
 	ui.sync_state(W, reg, minute, rate, _gi_on, _has_pin)
 	ui.coords_lbl.text = KratorHostUI.format_coords(W, _indoors, _pin_reg if _has_pin else null, _shown)
+	_update_minimap(dt)
+
+
+func _update_minimap(dt: float) -> void:
+	if not (ui.minimap_open and ui.chrome_visible):
+		return
+	var fwd := -W.cam.global_transform.basis.z
+	ui.minimap.set_viewer(W.focus_region_xz(), Vector2(fwd.x, fwd.z))
+	ui.minimap.set_pin(_has_pin, Vector2(_pin_reg.x, _pin_reg.z))
+	_map_tt += dt
+	if _map_tt >= 0.1:
+		_map_tt = 0.0
+		var dots: Array = []
+		if traffic != null:
+			for p in traffic.carriers_at(minute):
+				if bool(p.get("on_map", false)):
+					dots.append({"x": float(p["x"]), "z": float(p["z"]), "col": Color(1.0, 0.78, 0.30), "r": 2.5})
+		ui.minimap.dynamic_dots = dots
+	_map_relief_t += dt
+	if W.stream.events.size() != _map_events_n and _map_relief_t >= 2.0:
+		_map_relief_t = 0.0
+		_map_events_n = W.stream.events.size()
+		ui.minimap.refresh_stream_relief(W.stream)

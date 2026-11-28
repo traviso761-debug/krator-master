@@ -96,6 +96,19 @@ const MAIN_STILL=(function(){
   W_OUT.stills++;
   return D;
  }
+ if(SKEY==='porphyryrelict'){
+  const poly=makeOvalPoly(-88,-24,15.5,14.5,20,7465);
+  const S=WATER.still({
+   name:'Porphyry Sky-Island Dolomite Contact Spring Tarn',
+   level:1.85,
+   poly:poly,
+   fountain:[-88,-24],
+   gradient:{centre:0x0f4488,rim:0x3cb2a6,power:1.15,at:[-88,-24],radius:15}
+  });
+  const D=WATER.drawStill(S,{roughness:0.06,metalness:0.08,envMapIntensity:0.50,opacity:0.92,renderOrder:1,pick:true});
+  W_OUT.stills++;
+  return D;
+ }
  // Station 4 (glade): Onyx kipuka sapphire karst sump pool
  const poly=makeOvalPoly(-38,-6,14,12,18,7464);
  const S=WATER.still({

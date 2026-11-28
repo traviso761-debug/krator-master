@@ -213,7 +213,7 @@ def update_src_pins_and_borders(east_bluff_m):
     if m_add:
         s_txt = s_txt[:m_add.start()] + m_add.group(1) + _patch_sett_json(m_add.group(2)) + m_add.group(3) + s_txt[m_add.end():]
 
-    if "'5.1e25':" not in s_txt:
+    if "'5.1e35':" not in s_txt:
         moved_entry = json.dumps([{
             'id': 'sriasound1',
             'name': 'Ria Sound',
@@ -226,7 +226,7 @@ def update_src_pins_and_borders(east_bluff_m):
         }], ensure_ascii=False)
         s_txt = s_txt.replace(
             '  const SETT_MOVED={\n',
-            '  const SETT_MOVED={\n      \'5.1e25\':' + moved_entry + ',\n',
+            '  const SETT_MOVED={\n      \'5.1e35\':' + moved_entry + ',\n',
             1,
         )
 
@@ -392,9 +392,10 @@ def main():
 
         k_tail = min(6, len(new_beds) - 1)
         top_b = new_beds[-k_tail - 1]
-        for m_i in range(1, k_tail + 1):
-            u_t = m_i / float(k_tail)
-            new_beds[-k_tail - 1 + m_i] = round(top_b * (1.0 - u_t), 2)
+        if top_b > 0.0:
+            for m_i in range(1, k_tail + 1):
+                u_t = m_i / float(k_tail)
+                new_beds[-k_tail - 1 + m_i] = round(top_b * (1.0 - u_t), 2)
 
         # Preserve full mouth discharge on final vertex
         orig_q_mouth = float(r.get('q_mouth_m3s') or new_qs[-1])

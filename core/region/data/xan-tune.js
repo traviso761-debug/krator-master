@@ -59,17 +59,31 @@ T.provinces=[
    belongs to and its hub (Erehwon in the south, Phēr in the north). The lake as the owner re-made it (scale model 5.1 edit 7
    re-run, 5f659c054, 2026-11-16: "a little narrower and ... more toward the center of the valley? settlements can move with
    it"): 66 x 25 px round 845,1504 (was 60 x 32 round 810,1499.5), its level -520 m; every shore cell below is dry with the
-   lake beside it on that model, every isle dry with the lake round it */
+   lake beside it on that model, every isle dry with the lake round it. The vale ring (2026-11-17, edit_517_vale_ring.py: the
+   lake longer and thinner) brought the south shore north by up to 10 px: the twelve south-shore towns moved with it
+   (2026-11-24, the owner: "Map session moves them"), eleven by the ring's own warp (its report's Warp.forward), Pāṭari by
+   hand to 861,1510.6, the west foot of the spur that now stands on its old shore, then (every landing within 2.5 km
+   of it a cliff, its strand a low bar) along the shore to the nearest stretch with a foreshore wide enough for its 3 km
+   footprint clear of Hoṭ-Bāṭh's: the lake's east end, 880.98,1507.35 (the owner, 2026-11-24, "Move along the shore"); Hoṭ-Bāṭh, Lōṭas and Wībhar then
+   500 m inland of their fitted landings (the warp left them 1.6-5.4 km off the water), and Siṭāq on the south shore of the
+   ring's new west arm (813.5,1498.2: the arm now runs round its stack, lf_west_stack, about 6.6 km north-east).
+   On the north shore the ring's rise left Qōqō, Hāibh and Nēṭ on cliffs (127-280 m in the first 430 m from the water,
+   was 17-32 m): each moved along the shore to the nearest stretch of gentle foreshore with room for a town (the owner,
+   2026-11-24, "Move along the shore"), its pin on the region's own land, dry, 300-500 m from the water, 5-40 m over it,
+   its shore rising under 40 m in the first 430 m: Nēṭ 828.2,1487.9 and Qōqō 829.9,1488.26 side by side on the one wide
+   strand between Malbari and Phēr (Nēṭ's own is a low bar with no foreshore behind it, Qōqō's 1 km wide, its footprint
+   reaching Phēr's headland), Hāibh 812.84,1490.09
+   (4 km west: the notch at its old pin is 1.5 km across) */
 T.lake=[
- ['alph-head','Ālph-Hēḍ',358,876,1503,4000,{grain:900000},'p1'],['hot-bath','Hoṭ-Bāṭh',16,876,1513,1800,{sulfur:40000},'p1'],
- ['tea-terraces','Ṭī-Ṭeras',26,872,1517,2000,{tea:45000},'p1'],['pottery','Pāṭari',35,865,1518,1500,{pottery:120000},'p1'],
- ['saffron','Saphran',51,857,1519,1800,{saffron:900},'p1'],['weaver','Wībhar',65,852,1519,2500,{brocade:0},'p1'],
- ['boatyard','Boṭ-Yārḍ',86,846,1519,2000,{},'p1'],['garden','Gārḍan',125,836,1517,1800,{fruit:300000},'p1'],
- ['quarry','Qorī',137,832,1516,1500,{},'p1'],['orchard','Ōrcharḍ',156,827,1512,1600,{fruit:420000},'p1'],
- ['lotus','Lōṭas',173,822,1507,1500,{mats:60000,fruit:120000},'p1'],['fish-market','Phish-Mārkiṭ',186,815,1501,4000,{},'p1'],
- ['stack','Siṭāq',195,812,1495,900,{},'p1'],['hive','Hāibh',207,817,1490,1200,{honey:24000},'p7'],
- ['mulberry','Malbari',219,825,1488,2200,{silk:16000},'p7'],['net','Nēṭ',233,833,1488,1400,{},'p7'],
- ['cocoa','Qōqō',245,838,1489,1800,{cacao:50000},'p7'],['pher','Phēr',261,843,1491,6000,{},'p7'],
+ ['alph-head','Ālph-Hēḍ',358,876,1503,4000,{grain:900000},'p1'],['hot-bath','Hoṭ-Bāṭh',16,876,1507.98,1800,{sulfur:40000},'p1'],
+ ['tea-terraces','Ṭī-Ṭeras',26,872,1511.96,2000,{tea:45000},'p1'],['pottery','Pāṭari',35,880.98,1507.35,1500,{pottery:120000},'p1'],
+ ['saffron','Saphran',51,857,1510.78,1800,{saffron:900},'p1'],['weaver','Wībhar',65,851.8,1509.76,2500,{brocade:0},'p1'],
+ ['boatyard','Boṭ-Yārḍ',86,846,1509.88,2000,{},'p1'],['garden','Gārḍan',125,836,1506.91,1800,{fruit:300000},'p1'],
+ ['quarry','Qorī',137,832,1505.94,1500,{},'p1'],['orchard','Ōrcharḍ',156,827,1503.79,1600,{fruit:420000},'p1'],
+ ['lotus','Lōṭas',173,822.46,1500.9,1500,{mats:60000,fruit:120000},'p1'],['fish-market','Phish-Mārkiṭ',186,815,1497.88,4000,{},'p1'],
+ ['stack','Siṭāq',195,813.5,1498.2,900,{},'p1'],['hive','Hāibh',207,812.84,1490.09,1200,{honey:24000},'p7'],
+ ['mulberry','Malbari',219,825,1488,2200,{silk:16000},'p7'],['net','Nēṭ',233,828.2,1487.9,1400,{},'p7'],
+ ['cocoa','Qōqō',245,829.9,1488.26,1800,{cacao:50000},'p7'],['pher','Phēr',261,843,1491,6000,{},'p7'],
  ['mouth','Māuṭh',305,852,1494,1500,{},'p7'],['old-thalaba','Ōlḍ-Thalaba (the fishing village left on Thalaba\'s shore)',332,860,1496,600,{},'p7'],
  ['dyer','Ḍāiyar',351,870,1500,1400,{},'p7']]
  .map(([key,name,brg,px,py,people,make,prov])=>({key,name,brg,px,py,people,make,prov,hub:prov==='p7'?'xan.pher':'s57bkv9741'}));

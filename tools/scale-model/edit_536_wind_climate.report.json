@@ -1,0 +1,69 @@
+{
+ "edit": "5.1 edit 36: the rain and climate of the north-west, the Ria and the Crook from the winds",
+ "date": "2026-11-26",
+ "scale_k": 4503.83,
+ "region_land_rain_mm": {
+  "before_median": 941,
+  "after_median": 934,
+  "after_p10": 454,
+  "after_p90": 2858
+ },
+ "classes_changed": 198383,
+ "samples": {
+  "Veiled Mountains": {
+   "rain_median_mm": 761,
+   "classes": {
+    "ET": 11542,
+    "Dfb": 6737,
+    "Dfc": 6256,
+    "EF": 3960,
+    "Cfb": 3601,
+    "Cfa": 2902
+   }
+  },
+  "Matron's Coast": {
+   "rain_median_mm": 3462,
+   "classes": {
+    "Af": 7350,
+    "Cfa": 4409,
+    "ET": 3683,
+    "Dfc": 2822,
+    "HF": 2229,
+    "Dfb": 1912
+   }
+  },
+  "Ria basin": {
+   "rain_median_mm": 794,
+   "classes": {
+    "Cfa": 93897,
+    "Csa": 36496,
+    "Aw": 10343,
+    "Cfb": 8448,
+    "Am": 6320,
+    "ET": 3374
+   }
+  },
+  "Crook": {
+   "rain_median_mm": 705,
+   "classes": {
+    "Cfa": 25864,
+    "ET": 19713,
+    "Cfb": 14664,
+    "Dfb": 12692,
+    "EF": 10141,
+    "Dfc": 8048
+   }
+  },
+  "tsunami coast": {
+   "rain_median_mm": 2200,
+   "classes": {
+    "Af": 11427,
+    "Cfa": 4499,
+    "Am": 4490,
+    "Dfb": 1423,
+    "Cfb": 1352,
+    "ET": 1012
+   }
+  }
+ }
+}

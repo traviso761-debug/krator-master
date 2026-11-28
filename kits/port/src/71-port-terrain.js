@@ -96,8 +96,11 @@ terrainH=function(x,z){const C=portCands(x);if(!C)return portNatH(x,z);
  return Math.min(portHCore(x+e,z,portCands(x+e)),portHCore(x-e,z,portCands(x-e)),
                  portHCore(x,z+e,C),portHCore(x,z-e,C));};
 // The paint at a point: the last stamp with a paint whose shape contains it.
-function portPaint(x,z){const C=portCands(x);if(!C)return null;let p=null;
- for(const s of C)if(s.paint&&portSD(s,x,z)<-PORT_ST.EPS)p=s.paint;return p;}
+// A build may paint its own ground where no stamp does: PORT.paint = (x,z) => a PK_GC key or null, set before the terrain is
+// built (read at the grid's nodes; PORT_ST.grid holds their heights by then). Hook's mangrove mud and jungle floor:
+// settlements/hook/src/77k-hook-paint.js. Unset, nothing changes.
+function portPaint(x,z){const C=portCands(x);let p=null;
+ if(C)for(const s of C)if(s.paint&&portSD(s,x,z)<-PORT_ST.EPS)p=s.paint;return p||(PORT.paint?PORT.paint(x,z):null);}
 function portDry(x,z){const C=portCands(x);if(!C)return false;
  for(const s of C)if(s.dry&&portSD(s,x,z)<PORT_ST.EPS)return true;return false;}
 

@@ -37,6 +37,15 @@
    "why": "Station 4 (glade): Cherty-dolomite & red-porphyry glade, saffron/whorl-olive terraces, onyx chert-bridge hollow & Ancient bleach-scar with sidecar textures.",
    "raised": "2026-11-23"
   },
+  "springhollows-porphyryrelict.html": {
+   "bytes": 2097152,
+   "tris": 6500000,
+   "calls": 135,
+   "samplers": 15,
+   "vram_mb": 380,
+   "why": "Station 5 (porphyryrelict): +2,570 m purple-red rhyolite porphyry knob crowned in Carnelian Erythrophyll clades above chinkapin-oak dolomite hollows & inert ecof_mist_pylon.",
+   "raised": "2026-11-24"
+  },
   "*": {
    "bytes": 12582912,
    "tris": 7000000,
