@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1247,
+    1130
+   ],
+   "seam_after": [
+    0.858,
+    1.185
+   ],
+   "seam_before": [
+    2.138,
+    3.326
+   ],
+   "source_size": [
+    1254,
+    1254
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.25,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.34,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "beast-riders/quetzal-saurian-lamellar",
+  "metal": 0.1,
+  "pattern": true,
+  "roughness": 0.34,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__beast-riders__quetzal-saurian-lamellar.png",
+  "generator": "Codex image generation, Nov 2026 (exec-118df198-5602-4dec-b99a-c05b717b78cb.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of royal K'etsaal Sky-Cataphract armour: six staggered horizontal courses alternating iridescent emerald-and-turquoise quetzal carapace/feather-sheath scales (#2f7a5a, #249688, with central golden-saffron quill ridges #d89a28) and carved ivory saurian-bone lames (#e8e0cc) incised with green three-talon Claw glyphs, cross-laced with crest-vermilion (#d86a3a) and maroon (#6e1c20) spider-silk cords, whole scale rows across seams. Full colour.",
+  "sha1": "f92a217adc9c7e86bc0a9099e15cf0d5efe2ab82"
+ }
+}

@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 3956 (56%) | 588 (8%) | 128 (2%) | 1409 (20%) | 1030 (14%) |
+| KB | 4064 (56%) | 588 (8%) | 128 (2%) | 1412 (19%) | 1067 (15%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -154,6 +154,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `camp/66-camp-raid.js` | 9.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `camp/world-fixture.js` | 7.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `camp/fellgang/52-camp-fellgang.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `camp/fleet/58-camp-fleet.js` | 38.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `catalog/catalog-files.js` | 0.6 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | node tools only: a catalog name to its file (files.json) |
 | `catalog/inspector.js` | 19.0 | [web] | 11 | 0 | 19 | 6 | 0 | 2 | 0 | 0 | 2 | 0 | 0 |  |
 | `catalog/krator-asset-engine.js` | 11.5 | [web] | 22 | 3 | 1 | 9 | 4 | 5 | 0 | 0 | 0 | 0 | 0 |  |
@@ -183,6 +184,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `city/53-city-host-multikit.js` | 44.8 | [web] | 49 | 2 | 3 | 0 | 1 | 7 | 12 | 7 | 0 | 0 | 0 |  |
 | `city/54-city-host-construct.js` | 7.6 | [draw] | 4 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |  |
 | `city/cavern/10-city-cavern.js` | 41.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `city/float/44-city-float.js` | 3.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): KCITY.floatPose, basculePose, auditFloatFleet |
+| `city/float/55-city-host-float.js` | 2.0 | [web] | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | opt-in (subfolder): KCITY.hostFloat pontoon & bascule Three.js updater |
 | `clock/20-core-clock.js` | 5.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the world clock (GODOT-PLAN.md Phase 1); becomes WorldClock.gd, tested by test-clock.js |
 | `clock/opt/21-core-clock-flush.js` | 2.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): KCLOCK.flush, the copper flush's pulse at the rains' onset; KSeason.flush in kseason.gd (golden-flush.json) |
 | `coast/30-core-coast.js` | 29.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
@@ -233,12 +236,15 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `hamlet/ext/21-hamlet-yuni.js` | 3.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/fellgang/22-hamlet-fellgang.js` | 4.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/lizardmen/23-hamlet-lizardmen.js` | 3.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `hamlet/shorekin/26-hamlet-shorekin.js` | 13.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hamlet/shumari/25-hamlet-shumari.js` | 12.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/20-core-hazard.js` | 48.8 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `hazard/21-core-hazard-flow.js` | 6.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.moveAt, drift, poolK: a hazard's move read (move.pull toward its core) and gas pooled on a band's floor (shape.pool); test-hazard-flow.js; core/hazard/GODOT.md "Moving and pooling" |
 | `hazard/22-core-hazard-bore.js` | 4.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `hazard/22-core-hazard-env.js` | 28.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.crust/under, KHAZ.night (bindClock, bindWind), KHAZ.front (flood, charge, bindHerd), KHAZ.ENV builders; test-hazard-env.js; GODOT.md "Crusts, night and fronts" |
 | `hazard/22-core-hazard-tunnel.js` | 20.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
+| `hazard/23-core-hazard-tide.js` | 11.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.bindTide, tideSample, KHAZ.tide (macrotidal bench submergence & Ghost-Tsunami drawdown warning), KHAZ.race (reversing flood/ebb sluice & narrows race), KHAZ.TIDE builders; test-hazard-tide.js |
+| `hazard/24-core-hazard-tsunami.js` | 13.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: KHAZ.bindTsunami, tsunamiSample, KHAZ.tsunami (seismic/drawdown warning, bore_impact, inundated, backwash_scour, safe_refuge above trimlineM), directional surge/backwash drift, KHAZ.TSUNAMI.zone; test-hazard-tsunami.js |
 | `host/90-host-camera.js` | 19.5 | [web] | 10 | 0 | 0 | 10 | 0 | 2 | 1 | 1 | 3 | 0 | 0 |  |
 | `host/91-host-loop.js` | 9.9 | [web] | 3 | 0 | 1 | 3 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `host/91b-host-follow.js` | 13.1 | [web] | 5 | 0 | 1 | 3 | 1 | 8 | 0 | 0 | 0 | 0 | 0 |  |
@@ -449,11 +455,16 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `water/ext/61-core-water-plume.js` | 6.9 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/ext/62-core-water-flood.js` | 11.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in: WATER.flood on the KHAZ.front law (level, wet, hazard record); test-flood.js, test-flood-front.js |
 | `water/ext/62b-core-water-flood-draw.js` | 8.0 | [G shader] | 0 | 0 | 0 | 0 | 0 | 1 | 7 | 0 | 0 | 0 | 0 | the flood ribbon lifted to the level in the vertex shader, on drawFlow's look; GLSL checked against the twin, not judged on a GPU |
+| `water/ext/63-core-water-tide.js` | 4.3 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.tide two-basin tidal weir & turbine head solver |
+| `water/ext/63b-core-water-tide-draw.js` | 1.3 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.bindTideMeshes live tidal surface updater |
+| `water/ext/64-core-water-tsunami.js` | 24.5 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.tsunami seamount & ghost tsunami wave-train solver (tremor, drawdown, bore, runup, backwash, seiche); ktsunami.gd twin (golden-tsunami.json); test-tsunami.js |
+| `water/ext/64b-core-water-tsunami-draw.js` | 24.8 | [draw] | 0 | 0 | 10 | 1 | 3 | 6 | 0 | 0 | 0 | 0 | 0 | opt-in (subfolder): WATER.drawTsunami (seaMesh drawdown, 3D curling boreMesh, terrain-conforming surgeMesh, mistGroup) & WATER.mountTsunamiUI |
 | `water/farbed/53-core-water-farbed.js` | 5.8 | [G shader] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the water shader's far bed (a baked depth texture past the shore window); the bake is data, the GLSL Godot's water shader rewrites |
 | `water/geyser/52-core-water-geyser.js` | 16.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52b-core-water-geyser-draw.js` | 13.5 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 12 | 0 | 0 | 0 | 0 |  |
 | `water/geyser/52c-core-water-thermal.js` | 28.0 | [G data] | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `water/geyser/52d-core-water-thermal-draw.js` | 7.7 | [G shader] | 0 | 0 | 0 | 0 | 0 | 3 | 10 | 0 | 0 | 0 | 0 |  |
+| `water/tide/23-core-water-tide.js` | 12.4 | [draw] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/40-world-smooth.js` | 14.2 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | the smoothing: plain functions on arrays (heights at the cut; river curves on the page) |
 | `world/41-world-fields.js` | 115.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |  |
 | `world/41l-world-landforms.js` | 32.1 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |

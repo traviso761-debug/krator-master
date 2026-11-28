@@ -16,6 +16,7 @@ page is written from it.
 | `tests/test_smodel.py` | smodel against the scripts it was lifted from, on the live data, plus vent-peak and weather checks |
 | `extract_region.py`, `build_425_master.py` | the live tools: they read a saved page or `model/data`, through smodel |
 | `history/` | every past edit's script and report (4.11 to 4.24), frozen as the record (`history/README.md`) |
+| `tides/` | the tidal calculator: `bake_tides.py` solves the tide over each sea basin and writes `model/data/tides.json`, which `core/water/tide` (`KTIDE`) reads. Rerun it after an edit that moves the coast or the sea floor (`tides/README.md`) |
 
 The data's rasters and how each map mode on the page draws from them are in `BRIEF-GEMINI.md` ("The grids and the
 rasters", "How each map mode gets its picture").
@@ -1395,7 +1396,7 @@ model data did not) replayed on this model by river id, its names only, none of 
 
 ## 5.1 edits 28 to 33 (2026-11-24 and 2026-11-25): the owner's map pass
 
-The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35, 36. Each refuses to run twice;
+The edits run in this order on b6b57c130 (the page fix): 28a, 28, 28b, 29, 30, 31, 32, 33, 34, 35, 36 (followed by `edit_528_ria_sound.py` on the coastal Ria Sound mouth, below). Each refuses to run twice;
 to change one, check `tools/scale-model/model` out at b6b57c130 and run the chain again. Each writes a
 `<script>.report.json` beside it.
 - **28a, `edit_528a_dome_shield.py`: the Dome as the shield volcano its record describes** (the owner: "im not sure the
@@ -1544,6 +1545,20 @@ through the reclimate. So the cells moved under 7.2 km take the temperatures of 
 Every moved land cell gets the hottest afternoon over its warm month and the coldest night under its cold one. The O
 class is let go, so the reclimate classes the cell from its climate. Biome kits for Matron's Coast, Mistheights, the
 SW outer wall and Ricochet Peaks are a follow-up.
+
+## 5.1 coastal reshape: `edit_528_ria_sound.py` (2026-11-24): Ria Sound's dendritic ria and East Bluff
+
+The owner flagged Ria Sound's synthetic axis-aligned bay (`615..624 x 140..142` at -14 m + 1-px +78 m spike at 626,140 from
+continental-scope's settlement fit, separated by a 44 km +6 m plug from the -49 m eastern box `648..671 x 133..141` sliced at
+Step 3's `x <= 648` paste seam) and approved reshaping `px 598..677 x 123..160` into a continuous 70 km S-curving drowned
+dendritic ria with East Bluff as the southernmost assimilated Kuruneva town (`settlements/floating-city/PLAN.md` section 8):
+- **The sound**: S-bend rock-jawed tidal narrows at `622,141` (-38 m) opening into **the Floating City's** sheltered central
+  bay at `635,138` (-49 m), 4-connected to the NW Ocean (`w_lbl4 == 1`) and branching into three drowned river-mouth arms;
+- **The three rivers & canal**: `9101` *Rīwa-Wāta*, `9107` *Suur-Neva* and `9108` *Musta-Jõgi* each descend with 0.0 m climb
+  into open sea water at 0 m (`to: {sea: 'ocean'}`); `cn_ria_tongqu` locks directly into *Musta-Jõgi* Cove (`649,130`);
+- **East Bluff (`sriasound1` moved to `649,141`, `5.1e35`)**: +82 m tsunami-safe promontory dividing the *Rīwa-Wāta* and
+  *Suur-Neva* arms, 1 cell south of -28 m harbor water, inside `r27arcflow1` (*Arcflow Republics* / Kulanewa Free-Towns) as
+  *Suudme-Kuluuna* (`tests/test_smodel.py` section 27).
 
 ## Cutting a region out for the open world
 

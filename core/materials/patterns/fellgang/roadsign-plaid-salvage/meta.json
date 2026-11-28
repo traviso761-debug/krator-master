@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    2041
+   ],
+   "seam_after": [
+    0.569,
+    0.618
+   ],
+   "seam_before": [
+    1.971,
+    2.217
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "fellgang/roadsign-plaid-salvage",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__fellgang__roadsign-plaid-salvage.png",
+  "generator": "Codex image generation, Nov 2026 (fellgang_sign_armoured_plaid_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Fellgang surface-clan shepherd plaid armoured with sheared Ancient highway signs: coarse Northern 2/2 woollen maud check in slate-grey (#383e46), unbleached oat fleece (#b6ae9c), and peat-umber (#443428) overlaid with overlapping hand-sheared aluminium road-sign plates in scratched amber-yellow (#d89b24), hazard-red (#9e3026), black chevron stripes (#222224), and crazed prismatic reflective white (#cfd2cc) riveted with hammered malachite-copper rivets over tyre-rubber strips (zero readable letters). Full colour.",
+  "sha1": "11b7bffe0409a2499f028f582687624b679b0bcd"
+ }
+}

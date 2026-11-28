@@ -3,9 +3,33 @@
 // harbour bench, NW marina, sheltered central park, and inland plateau into AF_GROUND (registered with KDRAWN and KWALK),
 // and sets up the merged geometry accumulator AF_ACC so the whole megastructure draws in ~8 draw calls.
 const AF_PARAMS = new URLSearchParams(typeof location !== 'undefined' ? location.search : '');
-const AF_STATE = ARCOFORTE.STATES.indexOf(AF_PARAMS.get('state')) >= 0 ? AF_PARAMS.get('state') : 'refurbished';
-const AF_CULTURE_INIT = AF_INT.SOCKETS[AF_PARAMS.get('culture')] ? AF_PARAMS.get('culture') : (AF_STATE === 'intact' ? 'ancient' : 'refurbished');
-const AF_PLAN = ARCOFORTE.plan({ seed: 14800, state: AF_STATE });
+const AF_BOOT_OPTS = (typeof window !== 'undefined' && window.ARCOFORTE_OPTS) ? window.ARCOFORTE_OPTS : {};
+const AF_STATE_SPEC = (function resolveBootState() {
+  const qs = AF_PARAMS.get('state');
+  if (qs && ARCOFORTE.STATES.indexOf(qs) >= 0) return qs;
+  if (AF_BOOT_OPTS.state != null) return AF_BOOT_OPTS.state;
+  return 'refurbished';
+})();
+ARCOFORTE.state(AF_STATE_SPEC);
+const AF_PLAN = ARCOFORTE.plan({ seed: 14800, state: AF_STATE_SPEC });
+const AF_STATE = AF_PLAN.state;
+const AF_CULTURE_INIT = (function resolveBootSocket() {
+  const raw = AF_PARAMS.get('socket') || AF_PARAMS.get('culture');
+  if (raw) {
+    if (raw.indexOf(':') >= 0) {
+      const m = {};
+      raw.split(',').forEach(pair => {
+        const kv = pair.split(':');
+        if (kv.length === 2 && kv[0] && kv[1]) m[kv[0].trim()] = kv[1].trim();
+      });
+      if (Object.keys(m).length) return m;
+    }
+    if (AF_INT.SOCKETS[raw]) return raw;
+  }
+  if (AF_BOOT_OPTS.socket != null) return AF_BOOT_OPTS.socket;
+  return AF_STATE === 'intact' ? 'ancient' : 'refurbished';
+})();
+ARCOFORTE.socket(AF_CULTURE_INIT);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 {
@@ -86,7 +110,8 @@ const AF_STAGE = {
     emissive: isIntact ? 0x1d4e60 : isRuin ? 0x050608 : 0x523c22,
     roughness: isIntact ? 0.18 : 0.36, metalness: isIntact ? 0.25 : 0.18, side: THREE.DoubleSide
   });
-  if (AF_STATE === 'refurbished' && typeof KHOOK !== 'undefined') {
+  const hasRefurb = ARCOFORTE.ZONES.some(z => ARCOFORTE.zoneState(z) === 'refurbished');
+  if (hasRefurb && typeof KHOOK !== 'undefined') {
     KHOOK.add(MAT.afGlaze, 'af-refurb-tracery', {
       vertex: {
         head: 'varying vec3 vAfW;\n',
@@ -229,6 +254,11 @@ AF_STAGE.hull = AF_PLAN.hull;
 const AF_ACC = (function makeAfAcc() {
   const buckets = {};
   const probePts = [];
+  const ruinCache = {};
+  function ruinMat(kind, opts) {
+    if (!ruinCache[kind]) ruinCache[kind] = new THREE.MeshStandardMaterial(Object.assign({ side: THREE.DoubleSide }, opts));
+    return ruinCache[kind];
+  }
   const MATS = {
     SHELL: () => MAT.afShell,
     CONC: () => MAT.afConc,
@@ -238,8 +268,20 @@ const AF_ACC = (function makeAfAcc() {
     TURF: () => MAT.afTurf,
     GLAZE: () => MAT.afGlaze,
     ACCENT: () => MAT.afAccent,
-    TIMBER: () => MAT.afTimber
+    TIMBER: () => MAT.afTimber,
+    RUIN_SHELL: () => ruinMat('SHELL', { map: TEX.concrete, roughnessMap: TEX.concreteRM, color: 0x7c7369, roughness: 0.92, metalness: 0.03 }),
+    RUIN_CONC: () => ruinMat('CONC', { map: TEX.concrete, roughnessMap: TEX.concreteRM, color: 0x5f5850, roughness: 0.96, metalness: 0.02 }),
+    RUIN_SOFF: () => ruinMat('SOFF', { map: TEX.concrete, roughnessMap: TEX.concreteRM, color: 0x70685e, emissive: 0x141210, emissiveMap: TEX.concrete, roughness: 0.94, metalness: 0.0 }),
+    RUIN_BRONZE: () => ruinMat('BRONZE', { color: 0x4f8474, roughness: 0.64, metalness: 0.34 }),
+    RUIN_PAVE: () => ruinMat('PAVE', { map: TEX.concrete, roughnessMap: TEX.concreteRM, color: 0x6e6860, roughness: 0.94, metalness: 0.02 }),
+    RUIN_TURF: () => ruinMat('TURF', { map: TEX.concrete, color: 0x525c39, roughness: 0.97, metalness: 0.0 }),
+    RUIN_GLAZE: () => ruinMat('GLAZE', { color: 0x2a3034, emissive: 0x030405, roughness: 0.42, metalness: 0.14 })
   };
+  const uniformMode = AF_STATE === 'refurbished' || AF_STATE === 'intact' || AF_STATE === 'ruined';
+  function keyFor(base, zState) {
+    if (uniformMode || zState !== 'ruined') return base;
+    return MATS['RUIN_' + base] ? ('RUIN_' + base) : base;
+  }
 
   function mark(x, y, z) {
     probePts.push(x, y, z);
@@ -376,5 +418,5 @@ const AF_ACC = (function makeAfAcc() {
     return { group: group, tris: totalTris, meshes: meshCount };
   }
 
-  return { mark, quad, wall, polyH, box, prism, frustum, archBay, flush };
+  return { key: keyFor, mark, quad, wall, polyH, box, prism, frustum, archBay, flush };
 })();

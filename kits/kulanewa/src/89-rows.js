@@ -1,4 +1,4 @@
-// ================================================================= THE SHEET: four Kulanewa rows ([G data])
+// ================================================================= THE SHEET: six Kulanewa rows ([G data])
 // Row names are preset view names (core/engine/90-scene.js autoViews): zero apostrophes, zero colons, zero slashes.
 const TITLE=KIT.title;
 const FAMILIES=[
@@ -51,5 +51,30 @@ const FAMILIES=[
   'kl_ikki_commune_row',
   'kl_ikki_smelter_hut',
   'kl_ikki_foundry_tenement'
+ ]},
+ {name:'Suudme-Kaarum Bourses Shrines Treaty Pontoons and Glaze Works - Estuary Towns',keys:[
+  'kl_suudme_amber_bourse',
+  'kl_suudme_sauna_thermae',
+  'kl_suudme_uktena_bell_shrine',
+  'kl_suudme_pontoon_factor',
+  'kl_suudme_covered_bazaar',
+  'kl_suudme_paktong_braziery',
+  'kl_suudme_glaze_kilnworks',
+  'kl_suudme_compass_atelier',
+  'kl_suudme_silk_dyeworks',
+  'kl_suudme_ziggurat_granary'
+ ]},
+ {name:'Suudme-Kaarum Tidal Quays Water-Gates Bastions and All Dwellings - Estuary Towns',keys:[
+  'kl_suudme_tidal_wharf',
+  'kl_suudme_ishtar_watergate',
+  'kl_suudme_caravanserai',
+  'kl_suudme_strategion_keep',
+  'kl_suudme_beacon_frustum',
+  'kl_suudme_mandarin_court',
+  'kl_suudme_patrician_palazzo',
+  'kl_suudme_sanjhya_villa',
+  'kl_suudme_arcade_insula',
+  'kl_suudme_trestle_cottage',
+  'kl_suudme_quay_tenement'
  ]}
 ];

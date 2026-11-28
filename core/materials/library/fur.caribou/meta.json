@@ -7,31 +7,31 @@
  "processing": {
   "log": {
    "seam_after": [
-    0.709,
-    1.048
+    1.337,
+    1.267
    ],
    "seam_before": [
-    1.231,
-    0.896
+    1.816,
+    1.66
    ],
    "source_size": [
-    1254,
-    1254
+    2048,
+    2048
    ]
   },
   "options": {
-   "band": 0.02,
+   "band": 0.06,
    "dark_gloss": 0.0,
    "delight": 0.6,
    "height_soften": 0.8,
    "invert_height": false,
    "keep_aspect": false,
    "lift": 0.15,
-   "mute": 0.0,
-   "normal_strength": 1.0,
+   "mute": 0.92,
+   "normal_strength": 0.9,
    "pattern": false,
-   "rough": 0.9,
-   "rough_var": 0.1,
+   "rough": 0.84,
+   "rough_var": 0.2,
    "seam_axes": "xy",
    "size": 1024
   },
@@ -40,23 +40,21 @@
  },
  "record": {
   "colour": "#ffffff",
-  "family": "fur",
+  "family": "hide",
   "id": "fur.caribou",
-  "metal": 0,
-  "roughness": 0.9,
+  "metal": 0.0,
+  "roughness": 0.84,
   "scale": [
-   1,
-   1
+   0.22,
+   0.22
   ],
-  "tint": false
+  "tint": true
  },
  "source": {
-  "file": "fur.caribou.png",
-  "generator": "ChatGPT image generation, Oct 2026 (pasted into the chat 2026-10-25 as WebP; converted to PNG)",
+  "file": "caribou-winter-hide-2048.png",
+  "generator": "Codex image generation, Nov 2026 (caribou-winter-hide-2048.png)",
   "licence": "generated for this project by its owner",
-  "original_title": "(pasted image 9)",
-  "prompt": "Prompt from core/materials/PROMPTS-NEEDED.md section 15 (id fur.caribou).",
-  "reuse": "caribou winter hide, hair on: robes, saddles; any reindeer, elk or deer hide",
-  "sha1": "5983cf4369522255ab13c4c63281426fa1f7dcef"
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Arctic caribou winter hide coat at 22 cm square garment scale, extremely dense, crisp hollow tubular hairs packed tightly together and lying flat in one clean direction, creating a smooth weather-tight arctic pelage with subtle hair-parting lines. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "642088d86cdbbafbf229616212bffdf29a70bd83"
  }
 }

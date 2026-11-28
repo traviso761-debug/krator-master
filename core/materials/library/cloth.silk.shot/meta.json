@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.102,
+    2.0
+   ],
+   "seam_before": [
+    1.769,
+    2.029
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.25,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 0.5,
+   "pattern": false,
+   "rough": 0.36,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "cloth.silk.shot",
+  "metal": 0.0,
+  "roughness": 0.36,
+  "scale": [
+   0.18,
+   0.18
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "cross-woven-shot-silk-taffeta-2048.png",
+  "generator": "Codex image generation, Nov 2026 (cross-woven-shot-silk-taffeta-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Crisp cross-woven shot-silk taffeta at 18 cm square garment scale, woven with contrasting light-value warp filaments and darker-value weft filaments in a razor-sharp 1/1 plain silk weave, producing a shimmering two-tone micro-checkerboard interference grain and taut papery silk crispness. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "53c32e6f299efe0cc5e9bb2caa8aaf4e008afc34"
+ }
+}

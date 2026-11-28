@@ -240,6 +240,31 @@ var BATTER_PHYS = (function(){
   };
  }
 
+ /* 6. Drift-sown coconut (Cocos nucifera) strand establishment in ESE/SSE wave-shadow coves (+3..+45 m, 0 on WNW rampart or summit plug) */
+ function coconutStrandAt(o){
+  o = o || {};
+  var exposedWNW = o.exposedWNW == null ? false : !!o.exposedWNW;
+  var hasSea = o.hasSea == null ? true : !!o.hasSea;
+  var elevASL = o.elevASL == null ? 10.0 : o.elevASL;
+  var seaClearM = o.seaClearM == null ? elevASL : o.seaClearM;
+  var slope = o.slope == null ? 0.18 : o.slope;
+  var dikeRib01 = o.dikeRib01 == null ? 0 : o.dikeRib01;
+  var azDeg = wrapDeg(o.azFromCenterDeg == null ? 135 : o.azFromCenterDeg);
+  var waveShadow01 = clamp(1 - smooth(48, 125, angDiffDeg(azDeg, 132)), 0, 1);
+
+  var strandOk = !exposedWNW && hasSea && seaClearM >= 2.6 && elevASL >= 2.6 && elevASL <= 48.0 && slope <= 0.68 && dikeRib01 < 0.68;
+  var elevSuit = smooth(2.2, 6.0, elevASL) * (1 - smooth(32.0, 49.0, elevASL));
+  var slopeSuit = 1 - smooth(0.28, 0.70, slope);
+  var suitability01 = strandOk ? +clamp((0.56 + 0.44 * waveShadow01) * elevSuit * slopeSuit * (1 - 0.55 * dikeRib01), 0, 1).toFixed(4) : 0;
+
+  return {
+   strandOk: strandOk,
+   suitability01: suitability01,
+   waveShadow01: +waveShadow01.toFixed(4),
+   elevASL: +elevASL.toFixed(2)
+  };
+ }
+
  return {
   SEED: SEED,
   PLUG_PX: PLUG_PX,
@@ -248,7 +273,8 @@ var BATTER_PHYS = (function(){
   tsunamiShadowAt: tsunamiShadowAt,
   blowholeAt: blowholeAt,
   springLineAt: springLineAt,
-  windShearAt: windShearAt
+  windShearAt: windShearAt,
+  coconutStrandAt: coconutStrandAt
  };
 })();
 
@@ -263,6 +289,9 @@ if (typeof CROPS !== 'undefined' && CROPS && CROPS.BIOMES) {
    plugcrest:   { warmth: [3, 3], arid: [3, 4], atm: 1 }
   }
  };
+ if (CROPS.BY_ID && CROPS.BY_ID.coconut && Array.isArray(CROPS.BY_ID.coconut.home) && CROPS.BY_ID.coconut.home.indexOf('batteredisle') < 0) {
+  CROPS.BY_ID.coconut.home.push('batteredisle');
+ }
 }
 
 /* 6 Canonical Coastal Rookery, Kelp-Sound & Cinder-Burrowing Fauna Records ([G data], PLAN.md section 5) */

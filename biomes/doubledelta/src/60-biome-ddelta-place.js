@@ -45,15 +45,15 @@
    chimneysponge:0,brainsponge:0,glassbasket:0,tarfelt:0,
    seapen:0,whippen:0,snaphydroid:0,penshell:0,visoroyster:0,
    bellowsreed:0,bamboorice:0,tetherpad:0,wildrice:0,brimreed:0,fensedge:0,
-   driftwrack:0,driftwood:0,riaamber:0,
+   driftwrack:0,driftwood:0,riaamber:0,coconut:0,
    bluffoak:0,bluffcedar:0,bluffcypress:0,bluffpine:0,bluffbamboo:0
   };
   const seed=KRAND.child(1000511,'doubledelta/life');
   const Lv=BIO.LOD(),c0=BIO.center();
 
-  const log=(item,species,x,y,z,woody)=>{
+  const log=(item,species,x,y,z,woody,clearM)=>{
    DOUBLEDELTA.LOG.push({
-    item,species,x,y,z,woody:!!woody,
+    item,species,x,y,z,woody:!!woody,clearM:clearM==null?0:+clearM,
     psu:psuAt(x,z),silicaMgL:silicaAt(x,z),amberLag01:amberAt(x,z),bitumen01:bitAt(x,z)
    });
   };
@@ -413,6 +413,135 @@
     }
     log('ddbluffculm','bluffbamboo',x,y,z,true);
     st.bluffbamboo++;
+   }
+  });
+
+  // 11. DRIFT-SOWN COCONUT PALMS (Cocos nucifera): elevated shell-and-sand chenier ridges, natural levee crests & strand pockets (> water + 1.2 m)
+  const EYES=[
+   [-1850,1450],[-285,-265],[-1180,-320],[690,-760],[-1580,520],[-980,-360],
+   [-1750,1380],[-48,-248],[-215,48],[515,-160],[210,380],[-218,-76],
+   [-1850,1520],[1060,-180],[-120,-420],[335,-195],[1020,-310],[-1680,-480]
+  ];
+  const nearEye=(x,z)=>EYES.some(e=>Math.hypot(x-e[0],z-e[1])<14);
+  const chanDistAt=o.chanDist||(typeof L!=='undefined'&&L.chanDist?L.chanDist:null);
+  cellPass(24.0,19,Lv.far,false,(x,y,z,wy,lv)=>{
+   if(wy>-1e8||y<2.55||y>22.0||inReserveCore(x,z)||nearEye(x,z))return;
+   let refW=SKEY==='bitumen'?0.75:SKEY==='throat'?1.20:1.45;
+   let subNear=false;
+   for(let k=0;k<8;k++){
+    const a=k/8*TAU,wn=W(x+Math.cos(a)*14,z+Math.sin(a)*14);
+    if(wn>-1e8){
+     if(y<=wn+1.22){subNear=true;break;}
+     if(wn>refW)refW=wn;
+    }
+   }
+   if(subNear)return;
+   const chBank=chanDistAt?smooth(85,18,Math.max(0,chanDistAt(x,z)))*0.48:0;
+   const chenier=clamp(Math.max(lagAt(x,z),wrackAt(x,z)*0.92,blueAt(x,z)*0.85*smooth(2.6,3.6,y),chBank),0,1);
+   const slope=BIO.field('slope',x,z);
+   const cs=DDELTA_PHYS.coconutStrandAt({
+    elevM:y,waterM:wy,nearWaterM:refW,chenier01:chenier,
+    bitumen01:bitAt(x,z),mire01:mireAt(x,z),slope:slope,psu:psuAt(x,z)
+   });
+   if(!cs.strandOk||cs.clearM<=1.22||bitAt(x,z)>=0.09||!free(x,z,3.6))return;
+   if(rng()>(0.38+0.44*cs.suitability01)*q)return;
+   const H=rr(7.0,13.8),yaw=rr(0,TAU),lean=rr(0.14,0.32);
+   claim('coconut',x,z,3.4);
+   DOUBLEDELTA.growCoconut(x,y,z,H,yaw,lean,KRAND.hash(seed+191,Math.round(x*10),Math.round(z*10)),lv);
+   log('ddpalmtrunk','coconut',x,y,z,false,cs.clearM);
+   st.coconut++;
+  });
+
+  // 12. CHENIER SCREWPINE, PALMETTO FAN-PALM, BAYOU SEA-HIBISCUS & BUTTRESSED KNEE-TUPELO
+  st.chenierpandan=0;st.bayouhibiscus=0;st.bayoufanpalm=0;st.bayoutupelo=0;
+  st.bayoulily=0;st.chenierglory=0;st.deltalotus=0;st.redwaterfern=0;st.bayoucattail=0;st.silicarush=0;
+
+  cellPass(28.0,20,Lv.far,false,(x,y,z,wy,lv)=>{
+   if(wy>-1e8||y<1.85||y>21.0||inReserveCore(x,z)||nearEye(x,z))return;
+   if(bitAt(x,z)>0.12||mireAt(x,z)>0.26||BIO.field('slope',x,z)>0.42||!free(x,z,3.0))return;
+   if(rng()>0.42*q)return;
+   const u=rng(),cSeed=KRAND.hash(seed+201,Math.round(x*10),Math.round(z*10)),sc=rr(0.82,1.18);
+   if(y<3.2&&u<0.34){
+    claim('bayoutupelo',x,z,2.8);
+    DOUBLEDELTA.growBayouTupelo(x,y,z,cSeed,sc);
+    log('dd_tupelo_fol','bayoutupelo',x,y,z,false);
+    st.bayoutupelo++;
+   }else if(u<0.62){
+    claim('bayoufanpalm',x,z,2.6);
+    DOUBLEDELTA.growFanPalm(x,y,z,cSeed,sc);
+    log('dd_fanpalm_frond','bayoufanpalm',x,y,z,false);
+    st.bayoufanpalm++;
+   }else if(u<0.82){
+    claim('chenierpandan',x,z,2.0);
+    DOUBLEDELTA.growChenierWoody('chenierpandan',x,y,z,cSeed,sc);
+    log('dd_pandan_fol','chenierpandan',x,y,z,false);
+    st.chenierpandan++;
+   }else{
+    claim('bayouhibiscus',x,z,2.0);
+    DOUBLEDELTA.growChenierWoody('bayouhibiscus',x,y,z,cSeed,sc);
+    log('dd_hibiscus_fol','bayouhibiscus',x,y,z,false);
+    st.bayouhibiscus++;
+   }
+  });
+
+  // 13. LEVEE SPIDER-LILY, SHELL-RIDGE MORNING-GLORY, GIANT CATTAIL & HIGH-SILICA SCOUR-RUSH
+  cellPass(13.5,21,Lv.floor[1],false,(x,y,z,wy,lv)=>{
+   if(wy>-1e8||y<0.35||y>14.0||bitAt(x,z)>0.16||mireAt(x,z)>0.28)return;
+   if(rng()>0.36*q)return;
+   const u=rng(),yaw=rr(0,TAU);
+   if(y<2.4&&u<0.34){
+    const hc=rr(1.6,2.9);
+    BIO.tree(x,z,()=>{
+     BIO.beam('ddpalmtrunk',[x,y-0.10,z],[x,y+hc,z],0.032,0.020,C(0x6e7e42));
+     BIO.put('dd_cattail_blade',[x,y-0.04,z],qEuler(0,yaw,0),[hc*0.42,hc*0.86,hc*0.42],C(0x688844));
+     BIO.put('dd_cattail_spike',[x,y+hc-0.22,z],qEuler(0,yaw,0),[0.9,0.34,0.9],C(0x4c3422));
+    });
+    log('dd_cattail_blade','bayoucattail',x,y,z,false);
+    st.bayoucattail++;
+   }else if(silicaAt(x,z)>=14.0&&y<3.6&&u<0.62){
+    const sr=rr(0.85,1.65);
+    BIO.put('dd_silicarush',[x,y-0.04,z],qEuler(0,yaw,0),[sr*0.55,sr,sr*0.55],C(0x528858));
+    log('dd_silicarush','silicarush',x,y,z,false);
+    st.silicarush++;
+   }else if(y>=2.2&&SKEY!=='bitumen'&&u<0.82){
+    const gz=rr(0.75,1.25);
+    BIO.put('dd_glory_mat',[x,y-0.01,z],qEuler(0,yaw,0),[gz,0.45,gz],C(0x529244));
+    BIO.put('dd_glory_bloom',[x,y+0.03,z],qEuler(0,yaw+0.8,0),[gz*0.65,0.45,gz*0.65],C(0xd674b8));
+    log('dd_glory_mat','chenierglory',x,y,z,false);
+    st.chenierglory++;
+   }else{
+    const lz=rr(0.55,0.95);
+    BIO.put('dd_lily_fol',[x,y-0.03,z],qEuler(0,yaw,0),[lz,lz*0.82,lz],C(0x4e8846));
+    BIO.put('dd_lily_bloom',[x,y+0.16,z],qEuler(0,yaw+0.5,0),[lz*0.58,0.45,lz*0.58],C(0xf6f8f2));
+    log('dd_lily_fol','bayoulily',x,y,z,false);
+    st.bayoulily++;
+   }
+  });
+
+  // 14. CALM SLACKWATER SACRED PINK DELTA-LOTUS & VELVET FLOATING AZOLLA-MATS
+  cellPass(15.0,22,Lv.floor[1],true,(x,y,z,wy,lv)=>{
+   if(wy<=-1e8)return;
+   const depth=wy-y;
+   if(depth<0.15||depth>2.4||psuAt(x,z)>16.0||bitAt(x,z)>0.12)return;
+   if(rng()>0.38*q)return;
+   const yaw=rr(0,TAU);
+   if(rng()<0.48){
+    const hl=rr(0.35,0.85);
+    BIO.tree(x,z,()=>{
+     BIO.beam('ddpalmtrunk',[x,y-0.08,z],[x,wy+hl,z],0.025,0.018,C(0x527a48));
+     BIO.put('dd_lotus_leaf',[x,wy+hl-0.02,z],qEuler(0,yaw,0),[0.68,0.45,0.68],C(0x4a825c));
+     BIO.put('dd_lotus_bloom',[x,wy+hl+0.02,z],qEuler(0,yaw+0.7,0),[0.34,0.32,0.34],C(0xf088a8));
+    });
+    log('dd_lotus_bloom','deltalotus',x,y,z,false);
+    st.deltalotus++;
+   }else{
+    const az=rr(0.85,1.55);
+    BIO.tree(x,z,()=>{
+     BIO.beam('ddpalmtrunk',[x,y-0.05,z],[x,wy+0.02,z],0.016,0.012,C(0x5a3632));
+     BIO.put('dd_azolla_mat',[x,wy+0.02,z],qEuler(0,yaw,0),[az,0.35,az],C(0x9a363c));
+    });
+    log('dd_azolla_mat','redwaterfern',x,y,z,false);
+    st.redwaterfern++;
    }
   });
 

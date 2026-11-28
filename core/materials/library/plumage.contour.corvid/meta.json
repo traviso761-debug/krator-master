@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    0.946,
+    1.235
+   ],
+   "seam_before": [
+    2.129,
+    2.887
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": false,
+   "rough": 0.56,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "plumage",
+  "id": "plumage.contour.corvid",
+  "metal": 0.0,
+  "roughness": 0.56,
+  "scale": [
+   0.2,
+   0.2
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "plumage_contour_corvid.png",
+  "generator": "Codex image generation, Nov 2026 (feather-texture-2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Overlapping small avian contour body feathers at 20 cm scale, sleek charcoal-black (#1c2028) and iridescent slate-indigo (#28364e) imbricated feather vanes with fine central rachis shafts and uniform downward shingle lay. Full colour.",
+  "sha1": "ed672039a77ff3f893b944fb8b0fa1cbf4b61c04"
+ }
+}

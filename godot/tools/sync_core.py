@@ -35,13 +35,17 @@ PAIRS += [("kits/resources/data/geology.json", "godot/tests/resources/geology.js
 # core/kits: multi-kit manifest, KratorKits GDScript twin and golden vectors (MULTI-KIT-SCOPE.md Phase 4)
 PAIRS += [(f"core/kits/{f}", f"godot/tests/kits/{f}") for f in ("kkit.gd", "kkit_test.gd", "golden-kits.json")]
 PAIRS += [("kits/kits-manifest.json", "godot/data/kits/kits-manifest.json")]
+# core/water/tide: KratorTide (KTIDE) GDScript 4.7.2 twin, headless test and 92-day golden vectors
+PAIRS += [(f"core/water/tide/{f}", f"godot/tests/water/{f}") for f in ("ktide.gd", "ktide_test.gd", "golden-tide.json")]
+# core/water/ext: KratorTsunami (WATER.tsunami) GDScript 4.7.2 twin, headless test and golden vectors
+PAIRS += [(f"core/water/ext/{f}", f"godot/tests/water/{f}") for f in ("ktsunami.gd", "ktsunami_test.gd", "golden-tsunami.json")]
 # core/charactermodels: the MakeHuman bodies' data, the peoples and the golden (tracked), and their pieces (GLBs and GSH1
 # blend-shape files, gitignored: ~200 MB; make_mpfb.py writes them), read at runtime by krator/character/ (res:// cannot reach
 # the kit). tests/make-golden.js writes the golden.
 _CH = "core/charactermodels"
 _BODIES = sorted(b for b in os.listdir(os.path.join(REPO, _CH, "data")) if b.startswith("mpfb_"))
 PAIRS += [(f"{_CH}/data/{b}/{f}.json", f"godot/data/characters/{b}/{f}.json") for b in _BODIES for f in ("skeleton", "kit")]
-PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props", "posture", "fur")]
+PAIRS += [(f"{_CH}/data/{f}.json", f"godot/data/characters/{f}.json") for f in ("peoples", "clips", "props", "posture", "fur", "activities")]
 _PP = os.path.join(REPO, _CH, "pieces", "props")   # gitignored: absent on CI, so the props are copied only where built
 PAIRS += [(f"{_CH}/pieces/props/{f}", f"godot/data/characters/pieces/props/{f}")
           for f in (sorted(os.listdir(_PP)) if os.path.isdir(_PP) else []) if f.endswith(".glb")]

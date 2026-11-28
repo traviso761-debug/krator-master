@@ -289,18 +289,54 @@
   return{spray:sp,talweg:tw,climate:ac,biomineral:bm,zone:ac.zoneBand};
  }
 
+ // 10. Drift-sown & Hueru-Kuran-tended coastal coconut niche (strictly shore/crater, >= +65 m trimline, frost-free <= +118 m)
+ function coconutAt(o){
+  o=o||{};
+  var st=o.station==null?'shore':o.station;
+  var elevM=nz(o.elevM,0);
+  var slope=Math.max(0,nz(o.slope,0));
+  var shelter=clamp(nz(o.calderaShelter01,0),0,1);
+  var resNear=clamp(nz(o.reserveNear01,0),0,1);
+  if(st!=='shore'&&st!=='crater'){
+   return{ok:false,reason:'cold-inland-station',trimElevM:0,effTempC:aspectClimateAt(o).effTempC};
+  }
+  var sp=sprayTrimAt(o);
+  var ac=aspectClimateAt(o);
+  var nicheOk=(shelter>=0.32||ac.sunny01>=0.46||resNear>=0.25);
+  var ok=sp.woodyOk&&elevM>=65.5&&elevM<=118.0&&slope<=0.56&&ac.effTempC>=22.0&&nicheOk;
+  return{
+   ok:ok,
+   reason:ok?'ok':(!sp.woodyOk||elevM<65.5)?'below-trimline':elevM>118.0?'above-littoral':'steep-or-shaded',
+   trimElevM:sp.trimElevM,
+   effTempC:ac.effTempC,
+   sunny01:ac.sunny01
+  };
+ }
+
  // Crop zone specification matching kits/crops (CROPS.fitZone)
  var CROOK_CROPS={
   atm:1,
+  staples:['coconut'],
   zones:{
    spraybench:{warmth:[3,4],arid:[3,4],wet:true,salt:true,atm:2},
-   cloudforest:{warmth:[2,3],arid:[3,4],atm:2},
+   cloudforest:{warmth:[2,4],arid:[3,4],atm:2},
    gorge:{warmth:[1,2],arid:[2,3],wet:true,atm:1},
    leeslope:{warmth:[2,3],arid:[1,2],atm:1},
    tarn:{warmth:[0,1],arid:[2,3],wet:true,atm:1},
    fellpass:{warmth:[0,0],arid:[2,3],atm:1}
   }
  };
+
+ function registerCrops(C){
+  var K=C||(typeof CROPS!=='undefined'?CROPS:null);
+  if(!K)return null;
+  if(K.BIOMES){
+   var prev=K.BIOMES.crook||{atm:1,zones:{}};
+   var z=Object.assign({},prev.zones||{},CROOK_CROPS.zones);
+   K.BIOMES.crook=Object.assign({},prev,{atm:1,zones:z});
+  }
+  return K.forBiome?K.forBiome('crook'):CROOK_CROPS;
+ }
 
  // Fauna & pollinator records ([G data], vertebrate-grade hexapods + montane birds, amphibians, ungulates; 24h schedules)
  var CROOK_FAUNA=[
@@ -338,6 +374,8 @@
   thermogenicWellAt:thermogenicWellAt,
   hushAt:hushAt,
   ecotoneAt:ecotoneAt,
+  coconutAt:coconutAt,
+  registerCrops:registerCrops,
   CROPS:CROOK_CROPS,
   FAUNA:CROOK_FAUNA
  };

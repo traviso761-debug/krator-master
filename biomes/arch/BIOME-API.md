@@ -16,15 +16,17 @@ Two objects. `ARCH` is the data (`[G data]`: no THREE, no DOM; runs in node), `A
 | `ARCH.syndrome(soil)`, `ARCH.stunt(soil)` | the serpentine syndrome and the height it leaves |
 | `ARCH.lifeAt(c)`, `ARCH.earthOk(c)` | `none` / `native` / `earth`; whether Earth life may grow |
 | `ARCH.episode(seg, year, world)` | the rifting clock: state, since, next, recur, dur, opening |
-| `ARCH_SITES` | the five stations' numbers on scale model 5.1 |
+| `ARCH.CROPS`, `ARCH.registerCrops(C)` | runtime `CROPS.BIOMES.arch` profile (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) |
+| `ARCH_SITES` | the stations' numbers on scale model 5.1 (`confluence`, `dome`, `barrens`, `sound`, `coast`; `cove` added by `stations/cove/44z-host-site.js`) |
 | `ARCH.uOf`, `ARCH.profile(site, u)`, `ARCH.vOf(slope)`, `ARCH.meeting(site, o)` | the confluence's land and its meeting's samples |
 
 ## ARCHB (src/50, 60, 70)
 
 | Call | What |
 |---|---|
-| `ARCHB.SPECIES`, `ARCHB.PAL`, `ARCHB.HARVEST`, `ARCHB.TRAP` | the species records (tags: climate, aridity, riparian, Koppen, `ph`, `native`, `partner`, `nickel`) |
-| `ARCHB.buildArch(R, q, {heat, ph, soil, keep, lava, mud, strand, sand})` | the life on the ground, every plant checked against `ARCH.lifeAt` / `ARCH.earthOk` (with `lavaAge` from `lava(x, z)`); the serpentine maquis off the lava, the mud and the strand; the lava pioneers (ohia, uluhe) on flows past their lag; mangroves on the tidal mud; the strand (beach she-oak, naupaka, beach glory, drift palms) where `strand` is given. Logs each plant to `ARCHB.LOG`, the hoarders to `ARCHB.HOARD` |
+| `ARCHB.SPECIES`, `ARCHB.PAL`, `ARCHB.HARVEST`, `ARCHB.HARVEST_TAGS`, `ARCHB.CROPS`, `ARCHB.TRAP`, `ARCHB.SUNDEW_TRAP` | 39 species records (7 native + 28 Earth terrestrial/coastal + 4 marine/intertidal), with `harvest.tags` (`timber`, `gum`, `pitch`, `fibre`, `bast`, `thatch`, `knees`, `tannin`, `ash`, `lime`, `byssus`, `caulking`) |
+| `ARCHB.buildArch(R, q, {heat, ph, soil, keep, lava, mud, strand, sand, cove})` | the life on the ground, every plant checked against `ARCH.lifeAt` / `ARCH.earthOk` (with `lavaAge` from `lava(x, z)`, `cove.westBasalt` and `cove.treeKeep`); logs each plant to `ARCHB.LOG`, hoarders to `ARCHB.HOARD` |
+| `ARCHB.intertidal(cove, R, q)` | the 14 m macrotidal zonation (`[-7, +7 m]`): shoal kombu kelp (`arkelp`), ribbon seagrass (`arseagrass`), giant sea-byssus mussel beds (`arbyssus`), coralline-oyster visors (`aroyster`), and upper-littoral barnacles (`arbarnacle`) |
 | `ARCHB.curtains(meet, line, level, q)` | the curtain field along a meeting's dividing line; returns the placed curtains' records |
 | `ARCHB.combs(list, q)` | the seep combs round the flames |
 | `ARCHB.build(opt)` | `buildArch` in the kit's registry |

@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    2041,
+    1881
+   ],
+   "seam_after": [
+    0.646,
+    1.204
+   ],
+   "seam_before": [
+    2.208,
+    19.318
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.9,
+   "pattern": true,
+   "rough": 0.45,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "stone",
+  "id": "khaayken/amur-scroll-fur-mosaic",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.45,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__khaayken__amur-scroll-fur-mosaic.png",
+  "generator": "Codex image generation, Nov 2026 (khaayken_arctic_yeti_trim_2048.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Khaayken Arctic Yeti garment trim uniting Nanai Amur-River spiral scrollwork with Chukchi-Inuit fur mosaic and looted Eternian porcelain: central band of larch-bark red-brown (#8e4228) and silverthorn-yellow (#d8b438) felted qiviut appliqued with bilateral Amur spiral hooks in pale snow-caribou skin (#eceae4) and birch-tar black (#1e1c1a), bordered above by a Khanty-Mansi geometric antler fur-mosaic checker of dark musk-ox (#362a22) and white caribou fur, and studded below with drilled shards of looted Eternian blue-and-white celadon porcelain (#487898, #eceae4); four scrolls across, seam-safe. Full colour.",
+  "sha1": "8b1f31d5ac00fa16faa12af0d7fa3c066df35e8a"
+ }
+}

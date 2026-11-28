@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1223,
+    1197
+   ],
+   "seam_after": [
+    0.937,
+    0.845
+   ],
+   "seam_before": [
+    4.538,
+    1.019
+   ],
+   "source_size": [
+    1241,
+    1204
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.85,
+   "pattern": true,
+   "rough": 0.8,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "painted-men/tlingit-formline-slats",
+  "metal": 0.0,
+  "pattern": true,
+  "roughness": 0.8,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__painted-men__tlingit-formline-slats.png",
+  "generator": "Codex image generation, Nov 2026 (exec-0d0ccded-6f4f-4593-81d5-17220113a09a.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of Tlingit rod-and-slat red-cedar clack-armour: sixteen vertical adze-planed red-cedar wooden slats (#b27a4c, #6e4226) tightly bound side by side with four horizontal rows of twined cream rawhide and sinew cordage (#efe7d6), boldly painted across the slats in matte mineral pigments\u2014lignite-black (#141619) primary formlines, falu-red (#b63124) secondary split-U feathers, and celadonite-teal (#1f6e6c, #2e9488) avian ovoids forming strictly zoomorphic Raven and Bear crests with zero human faces or human mouths anywhere; slight edge battle-wear, exact 16-slat repeat. Full colour.",
+  "sha1": "b1a574b467ec278d7407714a5ca7ba68042301d1"
+ }
+}

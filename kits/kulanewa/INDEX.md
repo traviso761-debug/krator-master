@@ -20,13 +20,14 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `26k-kit.js` | 9 |  |
+| `26k-kit.js` | 10 |  |
 | `27v-kl-vstack.js` | 9 |  |
 | `27z-kl-matfix.js` | 2 |  |
 | `31-alt-takes.js` | <1 |  |
-| `39-kl-furn.js` | 12 |  |
+| `39-kl-furn.js` | 14 |  |
 | `40-kl-kit.js` | 27 |  |
 | `42-kl-crowns.js` | 20 |  |
+| `44-kl-suudme.js` | 34 **big** | COMBINATOR 6: BIMETALLIC PAKTONG-GILT UKTENA SER (125); COMBINATOR 1: ISHTAR-KURA GROUND VAULT & GLAZED  (204); COMBINATOR 2: CLASSICAL TRAVERTINE ARCADE + KIYO (323); COMBINATOR 3: RUAN-THAI TEAK & SANJHYA COUNTING  (390); COMBINATOR 4: GLAZED PAKTONG-HOOPED PYLON & PYAT (412); COMBINATOR 5: BELL-MONDOP CROWN (OWNER-CONFIRMED (590) |
 | `52-kl-karum-civic.js` | 17 |  |
 | `54-kl-karum-trades.js` | 14 |  |
 | `56-kl-karum-mil-log.js` | 14 |  |
@@ -35,8 +36,12 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | `64-kl-ikki-works.js` | 14 |  |
 | `66-kl-ikki-mil-log.js` | 14 |  |
 | `68-kl-ikki-dwellings.js` | 17 |  |
-| `72-kl-trades.js` | 9 |  |
-| `89-rows.js` | 2 |  |
+| `70-kl-suudme-civic.js` | 19 |  |
+| `71-kl-suudme-works.js` | 16 |  |
+| `71d-kl-suudme-dwellings.js` | 20 |  |
+| `71m-kl-suudme-mil-log.js` | 16 |  |
+| `72-kl-trades.js` | 12 |  |
+| `89-rows.js` | 3 |  |
 | `91r-kl-roomlight.js` | 7 |  |
 | `91z-kl-world.js` | 3 |  |
-| `99-host-tz-kl.js` | 19 |  |
+| `99-host-tz-kl.js` | 21 |  |

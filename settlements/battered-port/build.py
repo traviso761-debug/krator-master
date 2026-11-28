@@ -78,7 +78,6 @@ PATH.setdefault('08-core-rand.js', P('core', 'rand', '08-core-rand.js'))
 PATH.setdefault('10-core-drawn.js', P('core', 'drawn', '10-core-drawn.js'))
 PATH.setdefault('10-core-shadow.js', P('core', 'shadow', '10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js', P('core', 'shadow', 'host', '12-core-shadow-host.js'))
-PATH.setdefault('10-core-roomlight.js', P('core', 'interiors', '10-core-roomlight.js'))
 for f in ('10-core-door.js', '20-core-glass.js', '90-core-door-host.js'):
     PATH.setdefault(f, P('core', 'door', f))
 PATH.setdefault('20-core-walk.js', P('core', 'walk', '20-core-walk.js'))

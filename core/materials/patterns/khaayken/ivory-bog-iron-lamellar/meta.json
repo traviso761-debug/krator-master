@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1645,
+    2010
+   ],
+   "seam_after": [
+    0.607,
+    0.586
+   ],
+   "seam_before": [
+    5.099,
+    3.223
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 1.05,
+   "pattern": true,
+   "rough": 0.42,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "armor",
+  "id": "khaayken/ivory-bog-iron-lamellar",
+  "metal": 0.65,
+  "pattern": true,
+  "roughness": 0.42,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__khaayken__ivory-bog-iron-lamellar.png",
+  "generator": "Codex image generation, Nov 2026 (chukchi-koryak-laminar-armour-tile.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Chukchi and Koryak Arctic laminar armour: five overlapping horizontal courses alternating carved cream walrus-ivory slats (#ebe4d2, etched with fine soot-blackened geometric harpoon and raven lines) and dark hammered sub-arctic bog-iron rectangular lames (#34363a), bound together in tight rows with smoked rawhide thongs (#6e4e32), seamless across all four edges. Full colour.",
+  "sha1": "8675095008b1278e2c7845bd99e3cec2d370491d"
+ }
+}

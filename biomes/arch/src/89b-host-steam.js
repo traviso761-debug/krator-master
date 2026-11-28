@@ -6,18 +6,23 @@ const STEAM=(function(){const G={};if(SITE.solfatara){const V=SITE.solfatara,E=[
  if(L.WARM)G.warm={emitters:L.WARM.map(v=>[v.x,terrainH(v.x,v.z)+.3,v.z,'steam']),n:10,k:.45};
  if(SITE.steam){const E=[];for(let k=0;k<12;k++){const p=L.XZ(lerp(SITE.steam.al[0],SITE.steam.al[1],k/11),SITE.steam.w+40*Math.sin(k*1.7));E.push([p[0],.6,p[1],'steam']);}G.caldera={emitters:E,n:28,k:1.2};}
  if(SITE.springs)G.springs={emitters:SITE.springs.map(sp=>[sp.x,terrainH(sp.x,sp.z)+.3,sp.z,'steam']),n:8,k:.25};
+ if(SKEY==='cove'){const E=[];for(let k=0;k<8;k++){const s=lerp(-890,-690,k/7),p=L.XZ(s,L.centerA(s)+(k%2?28:-28));E.push([p[0],.5,p[1],'steam']);}
+  G.sillRace={emitters:E,n:14,k:.55};G.weeps={emitters:L.WEEPS.map(w=>[w.x,terrainH(w.x,w.z)+.35,w.z,'steam']),n:8,k:.3};}
  try{return ATMOS.smokeGroups?ATMOS.smokeGroups(G):null;}catch(e){reportErr('steam: '+e.stack);return null;}})();
 // THE ETERNAL FLAMES (PLAN.md 3.7, Chimaera's): hydrogen and methane from the serpentinite burning in a cleft on the dome's flank. Each flame a few small
 // additive cones that flicker on the host clock; methane's flame is yellow-orange and seen, the hydrogen's pale blue and nearly invisible by day (a
 // faint blue core at the root). No core module draws a flame yet (core/atmos has only the brazier's cone): KNOWN_ISSUES.md. Each is a record with its heat.
 const FLAMES=(function(){const out={list:[],meshes:[]};if(!SITE.flames)return out;const C=SITE.flames;
  const gOuter=new THREE.ConeGeometry(.35,1,8,1,true);gOuter.translate(0,.5,0);const gCore=new THREE.ConeGeometry(.18,1,8,1,true);gCore.translate(0,.5,0);
- const mOuter=new THREE.MeshBasicMaterial({color:0xff8a28,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide});   /* normal blending: additive saturates to white against the bright day */
- const mCore=new THREE.MeshBasicMaterial({color:0x6a9aff,transparent:true,opacity:.55,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
- for(let i=0;i<C.n;i++){reseed(KRAND.hash(SITE.seed,i,77));const s=(i+.5)/C.n*C.len,x=C.x+C.dir[0]*s+rr(-.6,.6),z=C.z+C.dir[1]*s+rr(-.6,.6),y=terrainH(x,z)+.05,h=rr(1,2.6);
-  const g=new THREE.Group();g.position.set(x,y,z);const o=new THREE.Mesh(gOuter,mOuter),c=new THREE.Mesh(gCore,mCore);o.scale.set(1,h,1);c.scale.set(1,h*.45,1);g.add(o);g.add(c);
+ const gHalo=SKEY==='cove'?new THREE.CircleGeometry(1.6,12):null;if(gHalo)gHalo.rotateX(-Math.PI/2);
+ const mOuter=new THREE.MeshBasicMaterial({color:SKEY==='cove'?0xffa448:0xff8a28,transparent:true,opacity:SKEY==='cove'?.68:.62,depthWrite:false,side:THREE.DoubleSide});   /* normal blending: additive saturates to white against the bright day */
+ const mCore=new THREE.MeshBasicMaterial({color:SKEY==='cove'?0x74b8ff:0x6a9aff,transparent:true,opacity:SKEY==='cove'?.72:.55,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+ const mHalo=gHalo?new THREE.MeshBasicMaterial({color:0x5898ff,transparent:true,opacity:.28,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide}):null;
+ for(let i=0;i<C.n;i++){reseed(KRAND.hash(SITE.seed,i,77));const s=(i+.5)/C.n*C.len,x=C.x+C.dir[0]*s+rr(-.6,.6),z=C.z+C.dir[1]*s+rr(-.6,.6),y=terrainH(x,z)+.05,h=rr(SKEY==='cove'?1.3:1,SKEY==='cove'?3.2:2.6);
+  const g=new THREE.Group();g.position.set(x,y,z);const o=new THREE.Mesh(gOuter,mOuter),c=new THREE.Mesh(gCore,mCore);o.scale.set(1,h,1);c.scale.set(1,h*(SKEY==='cove'?.62:.45),1);g.add(o);g.add(c);
+  if(gHalo){const hl=new THREE.Mesh(gHalo,mHalo);hl.position.y=.08;g.add(hl);}
   g.userData.inspectLabel='An eternal flame (hydrogen and methane from the serpentinite)';g.userData.probeSkip=true;scene.add(g);out.meshes.push({g,o,c,h,ph:rr(0,TAU)});
   out.list.push({x,z,h});
-  REGISTER({name:'An eternal flame (H2 + CH4 from the serpentinite; the hydrogen\'s flame is nearly invisible by day)',x,z,y:y-.5,r:1.4,h:h+1.5,tags:{hazard:{kind:'fire',danger:.7,shape:{type:'cyl',r:.8,h:h+.5}}}});}
- tick(()=>{const t=performance.now()/1000;for(const m of out.meshes){const f=1+.18*Math.sin(t*7.3+m.ph)+.1*Math.sin(t*13.1+m.ph*2);m.o.scale.y=m.h*f;m.c.scale.y=m.h*.45*(2-f);}});
+  REGISTER({name:SKEY==='cove'?'An eternal flame (H2 + CH4 from the serpentinite; natural beacon over the sill)':'An eternal flame (H2 + CH4 from the serpentinite; the hydrogen\'s flame is nearly invisible by day)',x,z,y:y-.5,r:SKEY==='cove'?1.6:1.4,h:h+1.5,tags:{hazard:{kind:'fire',danger:.7,shape:{type:'cyl',r:.8,h:h+.5}}}});}
+ tick(()=>{const t=performance.now()/1000;for(const m of out.meshes){const f=1+.18*Math.sin(t*7.3+m.ph)+.1*Math.sin(t*13.1+m.ph*2);m.o.scale.y=m.h*f;m.c.scale.y=m.h*(SKEY==='cove'?.62:.45)*(2-f);}});
  return out;})();

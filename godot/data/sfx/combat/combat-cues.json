@@ -1,0 +1,568 @@
+{
+  "windup_whoosh": {
+    "id": "sfx.combat.windup-whoosh",
+    "name": "Combat: windup_whoosh",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-72191",
+        "start": 0.02,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Whip Swoosh Variation",
+        "file": "audio/fs-72191.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-19312",
+        "start": 0.03,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Double Sword Swoosh",
+        "file": "audio/fs-19312.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-877976",
+        "start": 0.02,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Swish Swipe",
+        "file": "audio/fs-877976.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      3
+    ],
+    "gainDb": [
+      -4,
+      -1
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.04,
+    "maxVoices": 6,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Fast martial arts / blade swing whoosh on exchange start"
+  },
+  "hit_blunt": {
+    "id": "sfx.combat.hit-blunt",
+    "name": "Combat: hit_blunt",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-244513",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Realistic Punch",
+        "file": "audio/fs-244513.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-118513",
+        "start": 0.03,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Punch Hit",
+        "file": "audio/fs-118513.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-423526",
+        "start": 0.02,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Karate Chop Hit",
+        "file": "audio/fs-423526.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      2
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.03,
+    "maxVoices": 6,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Unarmed punch/kick or blunt mace flesh/body impact"
+  },
+  "hit_cut": {
+    "id": "sfx.combat.hit-cut",
+    "name": "Combat: hit_cut",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-118792",
+        "start": 0.07,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Knife Slash",
+        "file": "audio/fs-118792.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-388028",
+        "start": 0.22,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Flesh Cleave Impact",
+        "file": "audio/fs-388028.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      2
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.03,
+    "maxVoices": 6,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Sword/axe/spear slash & flesh cleave impact"
+  },
+  "block_shield": {
+    "id": "sfx.combat.block-shield",
+    "name": "Combat: block_shield",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-332668",
+        "start": 0.02,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Big Heavy Shield Thud",
+        "file": "audio/fs-332668.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-244983",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Metal Shield Impact",
+        "file": "audio/fs-244983.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      1
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.04,
+    "maxVoices": 4,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Heavy wooden scutum or steel shield block thud"
+  },
+  "parry_ring": {
+    "id": "sfx.combat.parry-ring",
+    "name": "Combat: parry_ring",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-37596",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Sword Metal Clash",
+        "file": "audio/fs-37596.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-529019",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Perfect Parry Sword Shing",
+        "file": "audio/fs-529019.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      2
+    ],
+    "gainDb": [
+      -1,
+      1
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.04,
+    "maxVoices": 4,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Crisp steel-on-steel Perfect Parry clash & ring"
+  },
+  "dodge_step": {
+    "id": "sfx.combat.dodge-step",
+    "name": "Combat: dodge_step",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-778503",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Evasive Step & Cloth Snap",
+        "file": "audio/fs-778503.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-384878",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Gravel Pivot Dodge Step",
+        "file": "audio/fs-384878.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      2
+    ],
+    "gainDb": [
+      -3,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.05,
+    "maxVoices": 4,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Quick evasive pivot footstep & cloth snap"
+  },
+  "guard_break": {
+    "id": "sfx.combat.guard-break",
+    "name": "Combat: guard_break",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-151624",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Armor Posture Shatter Crash",
+        "file": "audio/fs-151624.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      0
+    ],
+    "gainDb": [
+      0,
+      2
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.1,
+    "maxVoices": 2,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Poise depleted — heavy armor/posture shatter crunch"
+  },
+  "sever_limb": {
+    "id": "sfx.combat.sever-limb",
+    "name": "Combat: sever_limb",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-578874",
+        "start": 0.03,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Limb Sever Bone Snap",
+        "file": "audio/fs-578874.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      1
+    ],
+    "gainDb": [
+      0,
+      2
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.1,
+    "maxVoices": 2,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Limb HP <= -100% — visceral bone snap & sever crunch"
+  },
+  "lightning_blast": {
+    "id": "sfx.combat.lightning-blast",
+    "name": "Combat: lightning_blast",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-155790",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Arcane Lightning Rail Blast",
+        "file": "audio/fs-155790.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-136542",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "High-Voltage Electric Zap",
+        "file": "audio/fs-136542.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      2
+    ],
+    "gainDb": [
+      -1,
+      1
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.06,
+    "maxVoices": 3,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Extraplanar Arcane Lightning Blast — electric arc & thunder concussion"
+  },
+  "energy_burst_charge": {
+    "id": "sfx.combat.energy-burst-charge",
+    "name": "Combat: energy_burst_charge",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-511863",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Singularity Implosion Riser",
+        "file": "audio/fs-511863.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      1
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.1,
+    "maxVoices": 2,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Singularity Energy Burst windup — implosion riser charge"
+  },
+  "energy_burst_boom": {
+    "id": "sfx.combat.energy-burst-boom",
+    "name": "Combat: energy_burst_boom",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-814053",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Singularity Shockwave Boom",
+        "file": "audio/fs-814053.mp3"
+      },
+      {
+        "clip": "lotsofsounds-fs-873747",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Void Sub-Bass Burst",
+        "file": "audio/fs-873747.mp3"
+      }
+    ],
+    "pitch": [
+      -2,
+      1
+    ],
+    "gainDb": [
+      0,
+      2
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.08,
+    "maxVoices": 2,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Singularity Energy Burst contact — cosmic sub-bass shockwave boom"
+  },
+  "gun_shot": {
+    "id": "sfx.combat.gun-shot",
+    "name": "Combat: gun_shot",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-149177",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Rifle Shot & Bolt Reload",
+        "file": "audio/fs-149177.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      1
+    ],
+    "gainDb": [
+      -1,
+      1
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.05,
+    "maxVoices": 4,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Voltigeur carbine/flintlock crack + metallic bolt reload"
+  },
+  "bow_shot": {
+    "id": "sfx.combat.bow-shot",
+    "name": "Combat: bow_shot",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-205938",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Arrow Flight & Target Hit",
+        "file": "audio/fs-205938.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      2
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.05,
+    "maxVoices": 4,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Recurve bow release zip & arrow target thwack"
+  },
+  "gun_reload": {
+    "id": "sfx.combat.gun-reload",
+    "name": "Combat: gun_reload",
+    "category": "sfx.combat",
+    "bus": "sfx",
+    "variants": [
+      {
+        "clip": "lotsofsounds-fs-153560",
+        "start": 0,
+        "end": 0,
+        "weight": 1,
+        "fx": {},
+        "name": "Carbine Lever Cock Reload",
+        "file": "audio/fs-153560.mp3"
+      }
+    ],
+    "pitch": [
+      -1,
+      1
+    ],
+    "gainDb": [
+      -2,
+      0
+    ],
+    "noRepeat": 1,
+    "cooldown": 0.1,
+    "maxVoices": 2,
+    "priority": 5,
+    "distance": {
+      "min": 2,
+      "max": 40
+    },
+    "notes": "Standalone Winchester/carbine lever-bolt chambering for reloadTimer"
+  }
+}

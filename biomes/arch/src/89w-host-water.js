@@ -6,7 +6,12 @@
 // CPU twins: WATER.heightAt, WATER.flowAt; BIO.waterH is the stage's.
 {const env=new THREE.Scene(),WENV={environment:null};
  env.add(new THREE.Mesh(sky.geometry,sky.material));{const g=giant.clone(),r=giantRing.clone();env.add(g);env.add(r);}
- ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x7a5a44)});}
+ const SL=ATMOS.skylight({renderer,sky:env,scene:WENV,ground:()=>new THREE.Color(0x7a5a44)});
+ // a clock jump (the hour slider, a view's or the tide panel's jump to night) recaptures at once: the skylight's own hook waits
+ // `every` frames, and until then the water showed the old hour's sky (at night the noon sky, and the giant's unlit noon face
+ // as a dark disc; seen 2026-11-25). The core fix is parked in TODO.md, "Ride along with the next all-builds rebuild".
+ let slDay=null;tick(()=>{const c=typeof KHOST!=='undefined'&&KHOST.host?KHOST.host.clock:null;if(!c||SL.hour==null)return;
+  let d=Math.abs(c.hour-SL.hour);d=Math.min(d,24-d);if(d>=1||slDay!==c.day){if(typeof SKY!=='undefined'&&SKY.update)SKY.update(0);SL.capture();SL.hour=c.hour;slDay=c.day;SL.age=0;}});}
 const lin=c=>new THREE.Color(c).convertSRGBToLinear();
 const SPRING_MATS=new Map();
 const ALK_RAMP={deep:[.04,.42,.52],blue:[.22,.66,.72],green:[.62,.84,.86],yel:[.86,.93,.93],ora:[.92,.95,.94],rust:[.95,.96,.95]};   /* turquoise to milk-white */
@@ -16,7 +21,7 @@ function ribbon(name,pts,width,speed,shallow,deep,rapids){const F=WATER.flow({na
  const D=WATER.drawFlow(F,{shallow:lin(shallow),deep:lin(deep),color:0xffffff,roughness:.14,metalness:.05,envMapIntensity:.4,step:6,across:4,margin:.6,depthBias:1.5,renderOrder:2,pick:true});
  D.mesh.userData.inspectLabel=name;return F;}
 let BIGW=null,BIG_DRAW=null;const W_OUT={};
-if(SITE.springs){const S=SITE;
+if(SITE.springs&&SKEY!=='lakes'){const S=SITE;
  // THE SPRINGS: hyperalkaline, warm, milky turquoise with a white rim
  S.springs.forEach((sp,i)=>spring('spring'+i,'Type II spring '+(i+1)+' (pH ~11.5, '+sp.flow+' L/s, hydrogen)',sp.x,sp.z,sp.r,L.prof(sp.x,sp.z)-.6,.45,ALK_RAMP,{milky:.7}));
  if(S.pool)spring('pool','The alkaline pool (pH ~11)',S.pool.x,S.pool.z,S.pool.r,L.POOL_LV,.3,ALK_RAMP,{milky:.8});
@@ -78,5 +83,7 @@ if(SKEY==='sound'){const S=SITE,lin2=lin;
  {const g=new THREE.CircleGeometry(S.hollow.r*.55,20);g.rotateX(-Math.PI/2);const m=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xb8b2a4,roughness:1,metalness:0,polygonOffset:true,polygonOffsetFactor:-2}));
   m.position.set(L.HP[0],terrainH(L.HP[0],L.HP[1])+.08,L.HP[1]);m.userData.host=true;m.userData.inspectLabel='The gas hollow\'s bare floor';scene.add(m);}
  Object.assign(W_OUT,{sound:true,gjar:L.GJ.length,stacks:L.STACKS.length});}
+if(SKEY==='cove'&&typeof COVE_BUILD_WATER==='function')COVE_BUILD_WATER({spring,ribbon,lin,alkRamp:ALK_RAMP,out:W_OUT});
+if(SKEY==='lakes'&&typeof LAKES_BUILD_WATER==='function')LAKES_BUILD_WATER({spring,ribbon,lin,alkRamp:ALK_RAMP,out:W_OUT});
 if(WATER.breakupFlows)WATER.breakupFlows();   /* core/water ext/56: the streams' glint broken up */
 window._water=Object.assign({station:SKEY,surfaces:WATER.surfaces.length},W_OUT);

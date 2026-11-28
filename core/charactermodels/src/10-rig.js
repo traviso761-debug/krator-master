@@ -158,7 +158,8 @@ var KCHAR = (function(){
       // beard or headgear: they are fitted to the human head it hides
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        if(beast && slot === 'head' && it && !it.fits_beast) it = null;
         if(it && !(slot === 'hair' && hat && hat.covers_hair)) out.push({ key:key(it.glb), mesh:'*', role:(slot === 'hair' || slot === 'beard') ? slot : 'armour', slot:slot });
         if(it && it.sleeves2 && !bare) out.push({ key:key(it.sleeves2), mesh:'*', role:'armour', slot:slot });
       });
@@ -195,7 +196,9 @@ var KCHAR = (function(){
       var o = new Uint8Array(kit.base_tris);
       var beast = replacesHead(rec, kit);
       MPFB_SLOTS.forEach(function(slot){
-        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'head' || slot === 'implant') ? null : mpfbItem(rec, kit, slot); if(!it || !it.hide) return;
+        var it = beast && (slot === 'hair' || slot === 'beard' || slot === 'implant') ? null : mpfbItem(rec, kit, slot);
+        if(beast && slot === 'head' && it && !it.fits_beast) it = null;
+        if(!it || !it.hide) return;
         var b = unbits(it.hide, kit.base_tris);
         for(var i=0;i<b.length;i++) o[i] |= b[i];
       });
@@ -368,6 +371,7 @@ var KCHAR = (function(){
     rec.eye_color = pick(P.eyes || ['#3b2414', '#5a3a22', '#6e5a2e', '#4a5a3a', '#4e6a80']);
     // a furred people's coat (data/fur.json coats): no draw of its own, so other peoples draw as they did
     if(P.coat) rec.coat = P.coat;
+    if(outfit && outfit.hold) rec.hold = JSON.parse(JSON.stringify(outfit.hold));
     rec.people = P.id || null;
     return rec;
   }
@@ -399,8 +403,33 @@ var KCHAR = (function(){
     return out;
   }
 
+  /* activity(table, act, ctx): what a simulated person doing act looks like (data/activities.json; ACTIVITIES-PLAN.md).
+     ctx: { seed, furniture, trade, role }. The entry's override by the furniture the sim put them at wins, then by
+     trade, then by role; an override may be a clip key alone. One clip of the list per person: KRAND.hash(seed, salt
+     of the id), so a crowd is not in step and the same person always does it the same way. Returns { act (the entry's
+     own id, after aliases), clip, prop ({R, L} or null), enter, exit, gap, mapped (false: no entry, the fallback's) } */
+  function actSalt(id){
+    var h = 0;
+    for(var i = 0; i < id.length; i++) h = (Math.imul(h, 31) + id.charCodeAt(i)) & 0x7fffffff;
+    return h;
+  }
+  function activity(table, act, ctx){
+    ctx = ctx || {};
+    var A = (table && table.activities) || {}, id = act || '', e = A[id], n = 0;
+    while(e && e.alias && n++ < 8){ id = e.alias; e = A[id]; }
+    var mapped = !!e;
+    if(!e){ id = (table && table.fallback) || 'IDLE'; e = A[id] || { clips:['idle'] }; }
+    var pickO = function(m, k){ var o = k != null && m && m[k]; return typeof o === 'string' ? { clips:[o] } : o || null; };
+    var o = pickO(e.by_furniture, ctx.furniture) || pickO(e.by_trade, ctx.trade) || pickO(e.by_role, ctx.role) || {};
+    var clips = o.clips || e.clips || ['idle'];
+    var seed = ctx.seed == null ? 0 : ctx.seed;
+    var clip = clips.length > 1 ? clips[Math.floor(KRAND.unit(KRAND.hash(seed, actSalt(id))) * clips.length)] : clips[0];
+    var f = function(k){ return k in o ? o[k] : k in e ? e[k] : null; };
+    return { act:id, clip:clip, prop:f('prop'), enter:f('enter'), exit:f('exit'), gap:e.gap || null, mapped:mapped };
+  }
+
   return { pose:pose, parts:parts, hidden:hidden, hiddenParts:hiddenParts, replacesHead:replacesHead, replacesFeet:replacesFeet, mods:modsOf, arms:arms, fits:fits, unbits:unbits, headOf:headOf, takesHair:takesHair, key:key,
            random:random, blank:blank, fk:fk, morphWeights:morphWeights, morphJoints:morphJoints, stranger:stranger,
-           along:along, crowd:crowd, colliders:colliders };
+           along:along, crowd:crowd, colliders:colliders, activity:activity };
 })();
 if(typeof module !== 'undefined') module.exports = KCHAR;

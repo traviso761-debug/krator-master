@@ -49,6 +49,7 @@
   }
 
   BATTER.TREES.length = 0;
+  if (BATTER.PALMS) BATTER.PALMS.length = 0;
   BATTER.ROCKS.length = 0;
   BATTER.FAUNA_INST.length = 0;
   BATTER.LOG = [];
@@ -61,6 +62,23 @@
    scoriathrift: 0,
    cindersedge: 0,
    covepandan: 0,
+   coconut: 0,
+   seatamanu: 0,
+   seahibiscus: 0,
+   craterfern: 0,
+   beachsheoak: 0,
+   saltnaupaka: 0,
+   cinderglory: 0,
+   archfern: 0,
+   olivinesheoak: 0,
+   nickelphyllanthus: 0,
+   springsundew: 0,
+   coalhorsetail: 0,
+   rampartpalm: 0,
+   corallineturf: 0,
+   cliffsamphire: 0,
+   plugohia: 0,
+   plugcushion: 0,
    tuffcress: 0,
    soundkelp: 0,
    boulders: 0,
@@ -184,35 +202,173 @@
    });
   }
 
-  /* ----------------------------------------------------------------
-     PASS 3: Ground Flora & Submarine Sound-Kelp (scoriathrift, cindersedge, tuffcress, soundkelp)
-     ---------------------------------------------------------------- */
-  BIO.cur = 'batteredisle/floor';
-
-  /* 3a. Scoriathrift cushions on wave-scoured basalt benches (+2.5..+56 m, strongest on WNW rampart) */
-  if (seaLevel != null) {
-   cellLoop(7.5, 0x3301, Lv.floor[1], function(x, z, hCell){
+  /* 2c. Drift-Sown Coconut Palms (Cocos nucifera): sheltered ESE/SSE wave-shadow coves (+2.6..+48 m, ZERO on WNW rampart or +868 m plug) */
+  if (!exposedWNW && seaLevel != null) {
+   cellLoop(12.0, 0x2203, Lv.far, function(x, z, hCell, ld){
+    if (inReserveCore(x, z)) return;
     var y = Y(x, z), asl = elevOffset + y;
-    if (y < seaLevel + 1.8 || asl > 56.0 || slopeAt(x, z) > 0.75) return;
-    var p = (exposedWNW ? 0.48 : 0.22) * q;
-    if (KRAND.unit(KRAND.hash(hCell, 3, 0x3301)) > p) return;
-    var sz = 0.42 + 0.44 * KRAND.unit(KRAND.hash(hCell, 4, 0x3301));
-    BIO.put('bt_scoriathrift', [x, y - 0.02, z], qEuler(0, KRAND.unit(KRAND.hash(hCell, 5, 0x3301)) * TAU, 0), [sz, sz * 0.75, sz], 0x86a87c);
-    counts.scoriathrift++;
+    var sl = slopeAt(x, z);
+    var dike01 = BIO.field('dike', x, z);
+    var cs = BATTER_PHYS.coconutStrandAt({
+     exposedWNW: exposedWNW,
+     hasSea: seaLevel != null,
+     elevASL: asl,
+     seaClearM: y - seaLevel,
+     slope: sl,
+     dikeRib01: dike01,
+     azFromCenterDeg: site.azFromPlugDeg
+    });
+    if (!cs.strandOk) return;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2203)) > (0.58 + 0.36 * cs.suitability01) * q) return;
+    if (S.some(x, z, 3.6, function(o){ return Math.hypot(x - o.x, z - o.z) < 3.6 + o.r; })) return;
+    var H0 = 7.0 + 6.4 * KRAND.unit(KRAND.hash(hCell, 4, 0x2203));
+    var lean = 0.15 + 0.17 * KRAND.unit(KRAND.hash(hCell, 5, 0x2203));
+    var yaw = KRAND.unit(KRAND.hash(hCell, 6, 0x2203)) * TAU;
+    var dx = -Math.cos(yaw) * Math.sin(lean) * H0, dz = Math.sin(yaw) * Math.sin(lean) * H0;
+    /* Register in KTAGS strictly before drawing */
+    BIO.host.register({
+     name: BATTER.byKey.coconut.name,
+     key: 'coconut',
+     kind: 'tree',
+     x: x, y: y, z: z,
+     r: Math.max(3.6, Math.hypot(dx, dz) + 2.0),
+     h: H0 + 2.4,
+     tags: BATTER.byKey.coconut.tags
+    });
+    var P = BATTER.growCoconut(x, y, z, H0, yaw, lean, KRAND.hash(hCell, 7, 0x2203), ld < Lv.floor[1] ? 2 : 0);
+    P.elevASL = +asl.toFixed(2);
+    S.insert({ x: x, z: z, r: 3.4 }, x, z, 3.4);
+    BATTER.PALMS.push(P);
+    BATTER.LOG.push({ key: 'coconut', station: stKey, exposedWNW: exposedWNW, x: x, z: z, elevASL: P.elevASL });
+    counts.coconut++;
+   });
+
+   /* 2d. Leeward Sea-Tamanu, Strand Ironwood, Sea-Hibiscus, Salt-Naupaka & Ravine Tree-Ferns */
+   cellLoop(17.5, 0x2204, Lv.far, function(x, z, hCell){
+    if (inReserveCore(x, z)) return;
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (y < seaLevel + 3.2 || asl > 46.0 || sl > 0.62) return;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2204)) > 0.34 * q) return;
+    if (S.some(x, z, 3.8, function(o){ return Math.hypot(x - o.x, z - o.z) < 3.8 + o.r; })) return;
+    var kind = KRAND.unit(KRAND.hash(hCell, 4, 0x2204)) < 0.52 ? 'seatamanu' : 'beachsheoak';
+    var sc = 0.80 + 0.36 * KRAND.unit(KRAND.hash(hCell, 5, 0x2204));
+    BIO.host.register({ name: BATTER.byKey[kind].name, key: kind, kind: 'tree', x: x, y: y, z: z, r: 3.6 * sc, h: 10.5 * sc, tags: BATTER.byKey[kind].tags });
+    var T = BATTER.growStrandTree(kind, x, y, z, KRAND.hash(hCell, 6, 0x2204), sc);
+    T.elevASL = +asl.toFixed(2);
+    S.insert({ x: x, z: z, r: 3.6 * sc }, x, z, 3.6 * sc);
+    BATTER.PALMS.push(T);
+    BATTER.LOG.push({ key: kind, station: stKey, x: x, z: z, elevASL: T.elevASL });
+    counts[kind]++;
+   });
+
+   cellLoop(13.5, 0x2205, Lv.mid, function(x, z, hCell){
+    if (inReserveCore(x, z)) return;
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (y < seaLevel + 2.2 || asl > 38.0 || sl > 0.65) return;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2205)) > 0.38 * q) return;
+    if (S.some(x, z, 2.2, function(o){ return Math.hypot(x - o.x, z - o.z) < 2.2 + o.r; })) return;
+    var kind = (asl < 18.0 && KRAND.unit(KRAND.hash(hCell, 4, 0x2205)) < 0.46) ? 'saltnaupaka' : 'seahibiscus';
+    var sc = 0.82 + 0.36 * KRAND.unit(KRAND.hash(hCell, 5, 0x2205));
+    BIO.host.register({ name: BATTER.byKey[kind].name, key: kind, kind: 'shrub', x: x, y: y, z: z, r: 1.8 * sc, h: 3.2 * sc, tags: BATTER.byKey[kind].tags });
+    BATTER.growBloomShrub(kind, x, y, z, KRAND.hash(hCell, 6, 0x2205), sc);
+    S.insert({ x: x, z: z, r: 1.8 * sc }, x, z, 1.8 * sc);
+    BATTER.LOG.push({ key: kind, station: stKey, x: x, z: z, elevASL: +asl.toFixed(2) });
+    counts[kind]++;
+   });
+
+   cellLoop(15.0, 0x2206, Lv.mid, function(x, z, hCell){
+    if (inReserveCore(x, z)) return;
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (asl < 14.0 || asl > 165.0 || (seaLevel != null && y < seaLevel + 5.0) || sl > 0.68) return;
+    var damp = (hostInfo.streamDistAt && stKey === 'cove') ? clamp(1 - hostInfo.streamDistAt(x, z) / 55.0, 0, 1) : 0.35;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2206)) > (0.20 + 0.42 * damp) * q) return;
+    if (S.some(x, z, 2.4, function(o){ return Math.hypot(x - o.x, z - o.z) < 2.4 + o.r; })) return;
+    var sc = 0.82 + 0.38 * KRAND.unit(KRAND.hash(hCell, 4, 0x2206));
+    BIO.host.register({ name: BATTER.byKey.craterfern.name, key: 'craterfern', kind: 'tree', x: x, y: y, z: z, r: 2.2 * sc, h: 4.0 * sc, tags: BATTER.byKey.craterfern.tags });
+    var TF = BATTER.growTreeFern(x, y, z, KRAND.hash(hCell, 5, 0x2206), sc);
+    TF.elevASL = +asl.toFixed(2);
+    S.insert({ x: x, z: z, r: 2.2 * sc }, x, z, 2.2 * sc);
+    BATTER.PALMS.push(TF);
+    counts.craterfern++;
    });
   }
 
-  /* 3b. Cindersedge tussocks binding loose scoria rills (+16..+820 m) */
+  /* 2e. Ultramafic Olivine She-Oak, Emerald-Sap Nickel Phyllanthus & Summit Cloud-Moss Ohia */
+  if (lithology === 'ultramafic') {
+   cellLoop(14.5, 0x2207, Lv.mid, function(x, z, hCell){
+    if (inReserveCore(x, z)) return;
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (asl < (exposedWNW ? 53.5 : 22.0) || asl > 855.0 || (seaLevel != null && y < seaLevel + 4.0) || sl > 0.72) return;
+    var garn = BIO.field('garnierite', x, z);
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2207)) > (0.22 + 0.36 * garn) * q) return;
+    if (S.some(x, z, 2.0, function(o){ return Math.hypot(x - o.x, z - o.z) < 2.0 + o.r; })) return;
+    var kind = garn > 0.25 && KRAND.unit(KRAND.hash(hCell, 4, 0x2207)) < 0.55 ? 'nickelphyllanthus' : 'olivinesheoak';
+    var sc = 0.80 + 0.40 * KRAND.unit(KRAND.hash(hCell, 5, 0x2207));
+    BIO.host.register({ name: BATTER.byKey[kind].name, key: kind, kind: 'shrub', x: x, y: y, z: z, r: 1.6 * sc, h: 2.8 * sc, tags: BATTER.byKey[kind].tags });
+    BATTER.growBloomShrub(kind, x, y, z, KRAND.hash(hCell, 6, 0x2207), sc);
+    S.insert({ x: x, z: z, r: 1.6 * sc }, x, z, 1.6 * sc);
+    BATTER.LOG.push({ key: kind, lithology: lithology, x: x, z: z, elevASL: +asl.toFixed(2) });
+    counts[kind]++;
+   });
+  }
+
+  if (stKey === 'plug') {
+   cellLoop(16.5, 0x2208, Lv.far, function(x, z, hCell){
+    if (inReserveCore(x, z)) return;
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (asl < 645.0 || asl > 856.0 || sl > 0.72) return;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x2208)) > 0.36 * q) return;
+    if (S.some(x, z, 2.8, function(o){ return Math.hypot(x - o.x, z - o.z) < 2.8 + o.r; })) return;
+    var sc = 0.78 + 0.38 * KRAND.unit(KRAND.hash(hCell, 4, 0x2208));
+    BIO.host.register({ name: BATTER.byKey.plugohia.name, key: 'plugohia', kind: 'tree', x: x, y: y, z: z, r: 2.6 * sc, h: 5.2 * sc, tags: BATTER.byKey.plugohia.tags });
+    var TO = BATTER.growStrandTree('plugohia', x, y, z, KRAND.hash(hCell, 5, 0x2208), sc);
+    TO.elevASL = +asl.toFixed(2);
+    S.insert({ x: x, z: z, r: 2.6 * sc }, x, z, 2.6 * sc);
+    BATTER.TREES.push(TO);
+    counts.plugohia++;
+   });
+  }
+
+  /* ----------------------------------------------------------------
+     PASS 3: Ground Flora & Submarine Sound-Kelp (scoriathrift, cindersedge, tuffcress, soundkelp + 8 specialist ground/intertidal species)
+     ---------------------------------------------------------------- */
+  BIO.cur = 'batteredisle/floor';
+
+  /* 3a. Scoriathrift cushions & spray-cliff sea-fennel on wave-scoured basalt benches (+2.5..+56 m) */
+  if (seaLevel != null) {
+   cellLoop(7.5, 0x3301, Lv.floor[1], function(x, z, hCell){
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    if (y < seaLevel + 1.8 || asl > 56.0 || sl > 0.75) return;
+    var p = (exposedWNW ? 0.48 : 0.22) * q;
+    if (KRAND.unit(KRAND.hash(hCell, 3, 0x3301)) > p) return;
+    var sz = 0.42 + 0.44 * KRAND.unit(KRAND.hash(hCell, 4, 0x3301)), yaw = KRAND.unit(KRAND.hash(hCell, 5, 0x3301)) * TAU;
+    if (sl > 0.24 && KRAND.unit(KRAND.hash(hCell, 6, 0x3301)) < 0.36) {
+     BIO.put('bt_cliffsamphire', [x, y - 0.02, z], qEuler(0, yaw, 0), [sz, sz * 0.85, sz], 0x76a288);
+     BIO.put('bt_samphire_umbel', [x, y + sz * 0.24, z], qEuler(0, yaw + 0.6, 0), [sz * 0.68, sz * 0.45, sz * 0.68], 0xd8dc58);
+     counts.cliffsamphire++;
+    } else {
+     BIO.put('bt_scoriathrift', [x, y - 0.02, z], qEuler(0, yaw, 0), [sz, sz * 0.75, sz], 0x86a87c);
+     counts.scoriathrift++;
+    }
+   });
+  }
+
+  /* 3b. Cindersedge tussocks (+16..+835 m) & Summit Cloud-Cistern Cushions (+675..+866 m on plug) */
   cellLoop(6.5, 0x3302, Lv.floor[1], function(x, z, hCell){
    var y = Y(x, z), asl = elevOffset + y;
-   if ((seaLevel != null && y < seaLevel + 6.0) || asl < 16.0 || asl > 835.0 || slopeAt(x, z) > 0.72) return;
+   if ((seaLevel != null && y < seaLevel + 6.0) || asl < 16.0 || asl > 866.0 || slopeAt(x, z) > 0.72) return;
    if (KRAND.unit(KRAND.hash(hCell, 3, 0x3302)) > 0.38 * q) return;
-   var sz = 0.55 + 0.55 * KRAND.unit(KRAND.hash(hCell, 4, 0x3302));
-   BIO.put('bt_cindersedge', [x, y - 0.03, z], qEuler(0, KRAND.unit(KRAND.hash(hCell, 5, 0x3302)) * TAU, 0), [sz, sz * 0.9, sz], 0x9c8e58);
-   counts.cindersedge++;
+   var sz = 0.55 + 0.55 * KRAND.unit(KRAND.hash(hCell, 4, 0x3302)), yaw = KRAND.unit(KRAND.hash(hCell, 5, 0x3302)) * TAU;
+   if (stKey === 'plug' && asl >= 675.0 && KRAND.unit(KRAND.hash(hCell, 6, 0x3302)) < 0.42) {
+    BIO.put('bt_plugcushion', [x, y - 0.02, z], qEuler(0, yaw, 0), [sz * 0.85, sz * 0.65, sz * 0.85], 0x9ab29e);
+    counts.plugcushion++;
+   } else if (asl <= 835.0) {
+    BIO.put('bt_cindersedge', [x, y - 0.03, z], qEuler(0, yaw, 0), [sz, sz * 0.9, sz], 0x9c8e58);
+    counts.cindersedge++;
+   }
   });
 
-  /* 3c. Tuffcress strictly within <= 11.5 m of active basal palagonite spring lines (seepFlowLs > 0.5) */
+  /* 3c. Tuffcress & Basal-Spring Sundew strictly within <= 11.5 m of active basal palagonite spring lines (seepFlowLs > 0.5) */
   if (hostInfo.streamDistAt && stKey === 'cove') {
    cellLoop(4.2, 0x3303, Lv.floor[1], function(x, z, hCell){
     var sd = hostInfo.streamDistAt(x, z);
@@ -222,10 +378,15 @@
     var sp = BATTER_PHYS.springLineAt({ elevM: Math.max(24, asl), scoriaDepthM: 2.4, palagonite01: 0.78, upslopeCatchKm2: 2.2 });
     if (!(sp.seepFlowLs > 0.5)) return;
     if (KRAND.unit(KRAND.hash(hCell, 3, 0x3303)) > 0.68 * q) return;
-    var sz = 0.52 + 0.45 * KRAND.unit(KRAND.hash(hCell, 4, 0x3303));
-    BIO.put('bt_tuffcress', [x, y - 0.03, z], qEuler(0, KRAND.unit(KRAND.hash(hCell, 5, 0x3303)) * TAU, 0), [sz, sz * 0.85, sz], 0x5ea65a);
-    BATTER.LOG.push({ key: 'tuffcress', springDistM: +sd.toFixed(2), seepFlowLs: sp.seepFlowLs, x: x, z: z });
-    counts.tuffcress++;
+    var sz = 0.52 + 0.45 * KRAND.unit(KRAND.hash(hCell, 4, 0x3303)), yaw = KRAND.unit(KRAND.hash(hCell, 5, 0x3303)) * TAU;
+    if (KRAND.unit(KRAND.hash(hCell, 6, 0x3303)) < 0.34) {
+     BIO.put('bt_springsundew', [x, y - 0.01, z], qEuler(0, yaw, 0), [sz * 0.72, sz * 0.45, sz * 0.72], 0xc83832);
+     counts.springsundew++;
+    } else {
+     BIO.put('bt_tuffcress', [x, y - 0.03, z], qEuler(0, yaw, 0), [sz, sz * 0.85, sz], 0x5ea65a);
+     BATTER.LOG.push({ key: 'tuffcress', springDistM: +sd.toFixed(2), seepFlowLs: sp.seepFlowLs, x: x, z: z });
+     counts.tuffcress++;
+    }
    });
   }
 
@@ -238,7 +399,6 @@
     if (KRAND.unit(KRAND.hash(hCell, 3, 0x3304)) > p) return;
     var depth = Math.max(0.8, seaLevel - bedY);
     var kh = Math.min(depth * 0.82, 3.0 + 6.5 * KRAND.unit(KRAND.hash(hCell, 4, 0x3304)));
-    /* Anchor holdfast at bedY + stipe up to topY so hang geometry (v=0 at top, hanging down -y) is held by its stipe and stays 100% underwater! */
     var topY = Math.min(seaLevel - 0.35, bedY + kh);
     var span = Math.max(0.5, topY - bedY);
     var kyaw = KRAND.unit(KRAND.hash(hCell, 5, 0x3304)) * TAU;
@@ -248,6 +408,35 @@
     }, { range: 520 });
     BATTER.LOG.push({ key: 'soundkelp', bedElevM: +bedY.toFixed(2), x: x, z: z });
     counts.soundkelp++;
+   });
+
+   /* 3e. Leeward Cinder Beach-Glory, Palagonite Sea-Arch Spleenwort, Collar Scour-Horsetail & Intertidal Sea-Palm / Coralline Crust */
+   cellLoop(8.5, 0x3305, Lv.floor[1], function(x, z, hCell){
+    var y = Y(x, z), asl = elevOffset + y, sl = slopeAt(x, z);
+    var u0 = KRAND.unit(KRAND.hash(hCell, 3, 0x3305)), yaw = KRAND.unit(KRAND.hash(hCell, 4, 0x3305)) * TAU;
+    if (y >= seaLevel - 0.35 && y <= seaLevel + 4.2 && sl < 0.78 && u0 < 0.36 * q) {
+     if (exposedWNW && y >= seaLevel + 0.25 && KRAND.unit(KRAND.hash(hCell, 5, 0x3305)) < 0.45) {
+      BATTER.growSeaPalm(x, y, z, KRAND.hash(hCell, 6, 0x3305), 0.85 + 0.35 * u0);
+      counts.rampartpalm++;
+     } else {
+      var csz = 0.55 + 0.55 * KRAND.unit(KRAND.hash(hCell, 5, 0x3305));
+      BIO.put('bt_coralline_crust', [x, y + 0.01, z], qEuler(0, yaw, 0), [csz, 0.35, csz], 0xd88ca4);
+      counts.corallineturf++;
+     }
+    } else if (!exposedWNW && y >= seaLevel + 2.0 && asl <= 18.0 && sl < 0.42 && u0 < 0.32 * q) {
+     var gsz = 0.75 + 0.55 * KRAND.unit(KRAND.hash(hCell, 5, 0x3305));
+     BIO.put('bt_cinderglory', [x, y - 0.01, z], qEuler(0, yaw, 0), [gsz, 0.45, gsz], 0x529442);
+     BIO.put('bt_glory_bloom', [x, y + 0.03, z], qEuler(0, yaw + 0.9, 0), [gsz * 0.65, 0.45, gsz * 0.65], 0xd668b8);
+     counts.cinderglory++;
+    } else if (hasCollar && BIO.field('coal', x, z) >= 0.16 && y >= seaLevel + 1.6 && asl <= 50.0 && u0 < 0.38 * q) {
+     var hsz = 0.62 + 0.48 * KRAND.unit(KRAND.hash(hCell, 5, 0x3305));
+     BIO.put('bt_coalhorsetail', [x, y - 0.02, z], qEuler(0, yaw, 0), [hsz * 0.7, hsz * 1.15, hsz * 0.7], 0x4c8a56);
+     counts.coalhorsetail++;
+    } else if (BIO.field('palagonite', x, z) > 0.25 && y >= seaLevel + 3.2 && asl <= 64.0 && u0 < 0.30 * q) {
+     var fsz = 0.52 + 0.42 * KRAND.unit(KRAND.hash(hCell, 5, 0x3305));
+     BIO.put('bt_archfern', [x, y - 0.02, z], qEuler(0, yaw, 0), [fsz, fsz * 0.85, fsz], 0x569644);
+     counts.archfern++;
+    }
    });
   }
 

@@ -34,34 +34,34 @@ TILE = 0.2                 # metres of skin per repeat of the scale texture
 RIGID = (-1, 1.0, 'Head', 0.0, np.zeros(3))      # a recipe: the Head joint's morph delta (the face sliders do nothing)
 
 # the man's head, metres from the Head joint (scaled by mods.head_scale): z forward, y up
+# sinuous festooned varanid/archosaurian jaw line: upturned rictus -> sub-orbital dip -> mid-snout maxillary festoon lobe
+# -> premaxillary notch -> hooked rostral tip
 UPPER = np.array([  # z      half width  top    mouth
     (-0.118, 0.026, 0.098, 0.062),
-    (-0.104, 0.052, 0.128, 0.046),
-    (-0.082, 0.066, 0.150, 0.036),
-    (-0.052, 0.074, 0.164, 0.032),
-    (-0.015, 0.078, 0.170, 0.034),
-    (0.025, 0.074, 0.168, 0.037),
-    (0.065, 0.064, 0.157, 0.040),
-    (0.105, 0.055, 0.140, 0.042),
-    (0.145, 0.049, 0.125, 0.044),
-    (0.185, 0.045, 0.113, 0.045),
-    (0.215, 0.041, 0.105, 0.046),
-    (0.240, 0.035, 0.097, 0.047),
-    (0.257, 0.025, 0.088, 0.048),
-    (0.267, 0.010, 0.076, 0.050)])
-LOWER = np.array([  # z      half width  top    bottom
-    (-0.060, 0.044, 0.026, -0.020),
-    (-0.042, 0.062, 0.030, -0.042),
-    (-0.020, 0.071, 0.036, -0.052),
-    (0.025, 0.067, 0.036, -0.047),
-    (0.065, 0.059, 0.038, -0.036),
-    (0.105, 0.051, 0.040, -0.022),
-    (0.145, 0.045, 0.042, -0.008),
-    (0.185, 0.041, 0.043, 0.004),
-    (0.215, 0.037, 0.044, 0.012),
-    (0.238, 0.031, 0.045, 0.020),
-    (0.253, 0.021, 0.046, 0.026),
-    (0.262, 0.008, 0.047, 0.032)])
+    (-0.104, 0.052, 0.128, 0.048),
+    (-0.082, 0.066, 0.150, 0.044),
+    (-0.052, 0.074, 0.164, 0.043),
+    (-0.020, 0.078, 0.170, 0.040),
+    (0.025, 0.074, 0.168, 0.028),
+    (0.068, 0.064, 0.157, 0.038),
+    (0.115, 0.056, 0.141, 0.031),
+    (0.165, 0.048, 0.124, 0.045),
+    (0.208, 0.043, 0.108, 0.041),
+    (0.238, 0.036, 0.098, 0.048),
+    (0.256, 0.025, 0.088, 0.045),
+    (0.268, 0.011, 0.074, 0.039)])
+LOWER = np.array([  # z      half width  top    bottom (muscular angular belly -> concave waist -> symphyseal chin boss)
+    (-0.062, 0.044, 0.034, -0.022),
+    (-0.042, 0.063, 0.038, -0.046),
+    (-0.020, 0.072, 0.041, -0.058),
+    (0.025, 0.068, 0.029, -0.053),
+    (0.068, 0.059, 0.038, -0.034),
+    (0.115, 0.052, 0.032, -0.014),
+    (0.165, 0.044, 0.045, 0.005),
+    (0.208, 0.039, 0.041, 0.007),
+    (0.238, 0.032, 0.047, 0.015),
+    (0.254, 0.021, 0.044, 0.024),
+    (0.264, 0.009, 0.040, 0.032)])
 PALATE = 0.009             # how far the upper head reaches under the mouth's line (inside the lower jaw)
 RICTUS = -0.035            # the mouth's corner: behind it, no mouth
 HINGE = (-0.048, 0.042)    # z, y of the jaw's hinge
@@ -119,15 +119,26 @@ class Lizard:
             self.eyes.append({'c': e - g * self.eye_r * 0.55, 'open': e + g * self.eye_r * 0.1, 'axes': axes, 'side': sd})
         self.lids = (1.05, 0.82, 1.25)             # the opening's half-length, half-height and depth, of the eye's radius
         s = k
-        self.brows = [(np.array([sd * 0.054, 0.150, -0.008]) * s, np.array([sd * 0.05, 0.143, 0.075]) * s, 0.009 * s, 0.007 * s)
+        self.brows = [(np.array([sd * 0.056, 0.153, -0.010]) * s, np.array([sd * 0.048, 0.145, 0.082]) * s, 0.0115 * s, 0.0085 * s)
                       for sd in (-1, 1)]
+        # canthus rostralis ridges from the anterior brow down to each nostril boss, giving a flat-topped monitor snout
+        self.canthi = [(np.array([sd * 0.045, 0.138, 0.080]) * s, np.array([sd * 0.031, 0.090, 0.205]) * s, 0.0075 * s, 0.0055 * s)
+                       for sd in (-1, 1)]
+        # subocular jugal cheek ridges framing the lower orbit back toward the jaw hinge
+        self.jugals = [(np.array([sd * 0.061, 0.096, 0.058]) * s, np.array([sd * 0.068, 0.088, -0.022]) * s, 0.0068 * s, 0.0078 * s)
+                       for sd in (-1, 1)]
         self.temples = [(np.array([sd * 0.056, 0.104, -0.064]) * s, np.array([0.032, 0.048, 0.06]) * s) for sd in (-1, 1)]
-        self.bosses = [(np.array([sd * 0.029, 0.083, 0.212]) * s, np.array([0.012, 0.010, 0.016]) * s) for sd in (-1, 1)]
-        self.nostrils = [(np.array([sd * 0.037, 0.084, 0.217]) * s, np.array([0.0035, 0.003, 0.0055]) * s) for sd in (-1, 1)]
-        self.nape = (np.array([0.0, 0.118, -0.082]) * s, np.array([0.0, -0.035, -0.024]) * s, 0.054 * s, 0.05 * s)
-        self.ridge = (np.array([0.0, 0.16, 0.02]) * s, np.array([0.0, 0.12, -0.08]) * s, 0.012 * s, 0.014 * s)   # under the crest
-        self.jowls = [(np.array([sd * 0.048, 0.004, -0.018]) * s, np.array([0.03, 0.04, 0.044]) * s) for sd in (-1, 1)]
-        self.throat = (np.array([0.0, -0.028, 0.035]) * s, np.array([0.0, -0.064, -0.012]) * s, 0.044 * s, 0.046 * s)
+        # recessed oval tympanum (ear membrane) behind the orbit & above the jaw hinge, with an anterior scale rim
+        self.tympana = [(np.array([sd * 0.068, 0.089, -0.056]) * s, sd) for sd in (-1, 1)]
+        self.tymp_r = (0.007 * s, 0.0145 * s, 0.0105 * s)
+        self.pre_tymp = [(np.array([sd * 0.069, 0.100, -0.043]) * s, np.array([sd * 0.067, 0.076, -0.045]) * s, 0.0042 * s, 0.0038 * s)
+                         for sd in (-1, 1)]
+        self.bosses = [(np.array([sd * 0.030, 0.084, 0.213]) * s, np.array([0.0125, 0.0105, 0.0165]) * s) for sd in (-1, 1)]
+        self.nostrils = [(np.array([sd * 0.038, 0.085, 0.218]) * s, np.array([0.0038, 0.0032, 0.0060]) * s) for sd in (-1, 1)]
+        self.nape = (np.array([0.0, 0.116, -0.080]) * s, np.array([0.0, -0.054, -0.032]) * s, 0.058 * s, 0.052 * s)
+        self.ridge = (np.array([0.0, 0.162, 0.032]) * s, np.array([0.0, 0.118, -0.084]) * s, 0.012 * s, 0.014 * s)   # under the crest
+        self.jowls = [(np.array([sd * 0.050, 0.006, -0.018]) * s, np.array([0.032, 0.042, 0.046]) * s) for sd in (-1, 1)]
+        self.throat = (np.array([0.0, -0.028, 0.035]) * s, np.array([0.0, -0.068, -0.016]) * s, 0.045 * s, 0.048 * s)
 
     def upper(self, P):
         k = self.k
@@ -135,18 +146,31 @@ class Lizard:
         for c, r in self.temples:
             d = HD.smin(d, HD.ellipsoid(P, c, r), 0.03 * k)
         for a, b, ra, rb in self.brows:
-            d = HD.smin(d, HD.round_cone(P, a, b, ra, rb), 0.022 * k)
+            d = HD.smin(d, HD.round_cone(P, a, b, ra, rb), 0.014 * k)
+        for a, b, ra, rb in self.canthi:
+            d = HD.smin(d, HD.round_cone(P, a, b, ra, rb), 0.011 * k)
+        for a, b, ra, rb in self.jugals:
+            d = HD.smin(d, HD.round_cone(P, a, b, ra, rb), 0.012 * k)
+        for a, b, ra, rb in self.pre_tymp:
+            d = HD.smin(d, HD.round_cone(P, a, b, ra, rb), 0.005 * k)
         for c, r in self.bosses:
-            d = HD.smin(d, HD.ellipsoid(P, c, r), 0.012 * k)
-        d = HD.smin(d, HD.round_cone(P, *self.nape), 0.04 * k)
-        d = HD.smin(d, HD.round_cone(P, *self.ridge), 0.02 * k)
-        for c, r in self.nostrils:                   # a shallow pit in each boss (the dark nostril inside it)
-            d = HD.smax(d, -HD.ellipsoid(P, c, r * 1.4), 0.002 * k)
+            d = HD.smin(d, HD.ellipsoid(P, c, r), 0.011 * k)
+        d = HD.smin(d, HD.round_cone(P, *self.nape), 0.046 * k)
+        d = HD.smin(d, HD.round_cone(P, *self.ridge), 0.018 * k)
+        for c, sd in self.tympana:                   # oval recessed ear drum behind the eye
+            dish = HD.ellipsoid(P, c + np.array([sd * 0.004 * k, 0, 0]), np.asarray(self.tymp_r))
+            d = HD.smax(d, -dish, 0.0022 * k)
+        for c, r in self.nostrils:                   # a sculpted pit in each boss (the dark nostril inside it)
+            d = HD.smax(d, -HD.ellipsoid(P, c, r * 1.45), 0.0018 * k)
         for e in self.eyes:                          # the lid's thick rim round the opening, the opening, the eyeball behind
             rim = HD.socket(P, e['open'], e['axes'], np.array(self.lids) * self.eye_r * np.array([1.5, 1.7, 0.8]))
             d = HD.smin(d, rim, 0.005 * k)
             d = HD.smax(d, -HD.socket(P, e['open'], e['axes'], np.array(self.lids) * self.eye_r), 0.002 * k)
-        return np.maximum(d, -0.06 * k - P[:, 1])
+        # tactile labial scute scallops along the upper lip margin
+        lip_y = _lerp(UPPER, 3, P[:, 2] / k) * k
+        near_lip = np.exp(-((P[:, 1] - (lip_y + 0.005 * k)) / (0.007 * k)) ** 2) * np.clip((P[:, 2] - RICTUS * k) / (0.025 * k), 0, 1)
+        d = d - 0.00075 * k * near_lip * (0.5 + 0.5 * np.cos(2 * np.pi * P[:, 2] / (0.014 * k)))
+        return np.maximum(d, -0.068 * k - P[:, 1])
 
     def lower(self, P):
         k = self.k
@@ -156,16 +180,24 @@ class Lizard:
             # kept under the mouth's line: blended into the jaw's top they spread it into a ledge wider than the upper
             # lip (a tab at the corner)
             d = HD.smin(d, HD.smax(HD.ellipsoid(P, c, r), P[:, 1] - (line - 0.012 * k), 0.008 * k), 0.028 * k)
-        d = HD.smin(d, HD.round_cone(P, *self.throat), 0.03 * k)
+        d = HD.smin(d, HD.round_cone(P, *self.throat), 0.032 * k)
         # near the mouth's line no wider than the upper lip over it (the lip overhangs the jaw), widening below
         lim = 0.9 * _lerp(UPPER, 1, P[:, 2] / k) * k + 0.5 * np.maximum(line - 0.01 * k - P[:, 1], 0)
         d = HD.smax(d, np.abs(P[:, 0]) - lim, 0.004 * k)
-        # the throat's loose folds: shallow grooves across it, running back and down
+        # concave lingual trough along the oral floor between the tooth-bearing alveolar ridges, so the mouth has depth
+        # and the forked monitor tongue rises cleanly out of a real lingual sheath
         y, z = P[:, 1], P[:, 2]
-        under = np.clip((-0.01 * k - y) / (0.02 * k), 0, 1) * np.clip((0.09 * k - z) / (0.04 * k), 0, 1)
+        wj = np.maximum(_lerp(LOWER, 1, z / k) * k, 0.006 * k)
+        in_trough = np.clip(1.0 - (P[:, 0] / (0.66 * wj)) ** 2, 0, 1) * np.clip((z + 0.01 * k) / (0.025 * k), 0, 1) * np.clip((0.235 * k - z) / (0.025 * k), 0, 1)
+        trough_y = line - 0.008 * k * in_trough
+        d = np.where((in_trough > 0.05) & (y > line - 0.018 * k), np.maximum(d, y - (line + 0.004 * k - 0.012 * k * in_trough)), d)
+        # tactile labial scutes along the lower jaw margin + throat's loose gular folds
+        near_lip = np.exp(-((y - (line - 0.005 * k)) / (0.007 * k)) ** 2) * np.clip((z - RICTUS * k) / (0.025 * k), 0, 1)
+        d = d - 0.00085 * k * near_lip * (0.5 + 0.5 * np.cos(2 * np.pi * (z + 0.007 * k) / (0.014 * k)))
+        under = np.clip((-0.01 * k - y) / (0.02 * k), 0, 1) * np.clip((0.10 * k - z) / (0.045 * k), 0, 1)
         fold = 0.5 + 0.5 * np.cos(2 * np.pi * (z * 0.8 - y * 0.6) / (0.014 * k))
-        d = d + 0.0016 * k * under * fold ** 3
-        return np.maximum(d, -0.075 * k - P[:, 1])
+        d = d + 0.0020 * k * under * fold ** 3
+        return np.maximum(d, -0.078 * k - P[:, 1])
 
 
 def _mesh(f, lo, hi, cell):
@@ -211,33 +243,37 @@ def paint(lz, V, N, upper):
     sm = lambda a, b, v: (lambda t: t * t * (3 - 2 * t))(np.clip((v - a) / (b - a), 0, 1))
     col = np.ones((len(V), 3))
     n1, n2 = _noise(V, 0.016 * k, 3), _noise(V, 0.006 * k, 5)
-    mott = 0.78 + 0.3 * sm(0.25, 0.75, n1) + 0.12 * (n2 - 0.5)
+    mott = 0.74 + 0.34 * sm(0.22, 0.78, n1) + 0.14 * (n2 - 0.5)
     col *= mott[:, None]
-    top = sm(0.2, 0.8, N[:, 1]) * (1 if upper else 0)
-    col *= (1 - 0.1 * top)[:, None]
+    top = sm(0.18, 0.82, N[:, 1]) * (1 if upper else 0)
+    col *= (1 - 0.16 * top)[:, None]
     lip_y = (_lerp(UPPER, 3, z / k) if upper else _lerp(LOWER, 2, z / k)) * k
-    lip = (1 - sm(0.004 * k, 0.012 * k, np.abs(y - lip_y))) * sm(RICTUS * k, (RICTUS + 0.03) * k, z)
-    col = col * (1 - 0.55 * lip[:, None]) + lip[:, None] * np.array([1.16, 1.12, 0.98]) * 0.55 * (0.9 + 0.2 * n2[:, None])
+    lip = (1 - sm(0.004 * k, 0.013 * k, np.abs(y - lip_y))) * sm(RICTUS * k, (RICTUS + 0.03) * k, z)
+    col = col * (1 - 0.62 * lip[:, None]) + lip[:, None] * np.array([1.24, 1.16, 0.94]) * 0.62 * (0.88 + 0.24 * n2[:, None])
     if not upper:
-        pale = sm(0.0, -0.6, N[:, 1]) * sm(0.03 * k, -0.02 * k, y)
-        col = col * (1 - 0.4 * pale[:, None]) + pale[:, None] * np.array([1.12, 1.06, 0.9]) * 0.4 * mott[:, None]
+        pale = sm(0.08, -0.58, N[:, 1]) * sm(0.032 * k, -0.022 * k, y)
+        col = col * (1 - 0.48 * pale[:, None]) + pale[:, None] * np.array([1.20, 1.12, 0.88]) * 0.48 * mott[:, None]
+    if upper:
+        for c_t, _ in lz.tympana:                    # dark glossy recessed ear-drum membrane
+            dt = np.linalg.norm((V - c_t) / np.asarray(lz.tymp_r), axis=1)
+            col *= (0.42 + 0.58 * sm(0.68, 1.15, dt))[:, None]
     for e in lz.eyes:
         rad = np.array(lz.lids) * lz.eye_r
         g, hh, v = e['axes']
         q = V - e['open']
         qn = np.sqrt(((q @ hh) / rad[0]) ** 2 + ((q @ v) / rad[1]) ** 2 + ((q @ g) / (rad[2] * 2)) ** 2)
-        ring = (1 - sm(1.25, 2.1, qn)) * sm(0.9, 1.15, qn)
-        col = col * (1 - 0.85 * ring[:, None]) + ring[:, None] * np.array([1.38, 1.24, 0.78]) * 0.85
-        col *= (1 - 0.6 * (1 - sm(0.95, 1.12, qn)))[:, None]          # the lids' edge dark
+        ring = (1 - sm(1.25, 2.15, qn)) * sm(0.9, 1.15, qn)
+        col = col * (1 - 0.85 * ring[:, None]) + ring[:, None] * np.array([1.40, 1.25, 0.78]) * 0.85
+        col *= (1 - 0.68 * (1 - sm(0.95, 1.14, qn)))[:, None]          # the lids' edge dark
     for c, r in lz.nostrils:
-        dn = np.linalg.norm((V - c) / (r * 1.8), axis=1)
-        col *= (0.25 + 0.75 * sm(0.7, 1.3, dn))[:, None]
-    # the mouth's inside: under the upper's line (over the lower's), well inside the lips, ahead of the corner
+        dn = np.linalg.norm((V - c) / (r * 1.85), axis=1)
+        col *= (0.22 + 0.78 * sm(0.7, 1.3, dn))[:, None]
+    # the mouth's inside: under the upper's line (over the lower's trough), well inside the lips, ahead of the corner
     if upper:
-        mouth = (y < (_lerp(UPPER, 3, z / k) - 0.002) * k) & (N[:, 1] < -0.3)
+        mouth = (y < (_lerp(UPPER, 3, z / k) - 0.002) * k) & (N[:, 1] < -0.25)
     else:
-        mouth = (y > (_lerp(LOWER, 2, z / k) + 0.001) * k) & (N[:, 1] > 0.3)
-    mouth &= (z > (RICTUS + 0.02) * k) & (np.abs(x) < 0.8 * _lerp(LOWER, 1, z / k) * k)
+        mouth = (y > (_lerp(LOWER, 2, z / k) - 0.009) * k) & (N[:, 1] > 0.22) & (np.abs(x) < 0.82 * _lerp(LOWER, 1, z / k) * k)
+    mouth &= (z > (RICTUS + 0.015) * k) & (np.abs(x) < 0.84 * _lerp(LOWER, 1, z / k) * k)
     return np.clip(col, 0, 1.4), mouth
 
 
@@ -252,7 +288,7 @@ def scale_map(mean_rgb, px=512, library=LIBRARY):
     except (OSError, ValueError):
         return None
     lum = np.asarray(im, float)
-    lum = 1.0 + 0.85 * (lum / lum.mean() - 1.0)
+    lum = 1.0 + 0.96 * (lum / lum.mean() - 1.0)
     img = np.clip(np.asarray(mean_rgb, float)[None, None, :] * lum[:, :, None], 0, 255).astype(np.uint8)
     out = []
     for x, kw in ((Image.fromarray(img, 'RGB'), {'quality': 88}), (nm, {'quality': 90})):
@@ -361,16 +397,16 @@ def crest(lz, body, H, hide):
     shown[np.unique(B['T'][hide])] = False
     mid = shown & (np.abs(BP[:, 0]) < 0.012) & (BP[:, 2] < 0.0)
     neck = []
-    for y in np.arange(pts[-1][1] - 0.012 * k, -CREST_NECK * k, -0.004 * k):
+    for y in np.arange(pts[-1][1] - 0.006 * k, -CREST_NECK * k, -0.004 * k):
         band = np.nonzero(mid & (np.abs(BP[:, 1] - y) < 0.004 * k))[0]
         if len(band):
             nb = band[np.argmin(BP[band, 2])]
             neck.append((BP[nb] + np.array([0.0, 0.0, -0.002]), nb))
-    path = [(p, None) for p in pts if p[2] < 0.025 * k] + neck
+    path = [(p, None) for p in pts if p[2] < 0.042 * k] + neck
     P = np.array([p for p, _ in path])
     arc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
     rows, last = [], -1
-    for s_ in np.arange(0.0, arc[-1], 0.0135 * k):
+    for s_ in np.arange(0.0, arc[-1], 0.0125 * k):
         i = int(np.searchsorted(arc, s_))
         i = min(max(i, 1), len(P) - 1)
         if i == last:                  # a long step (the nape onto the neck's skin): one spine there, not several stacked
@@ -383,38 +419,41 @@ def crest(lz, body, H, hide):
         if out[1] + (-out[2]) < 0:
             out = -out
         # raised toward straight up (on the nape and the neck the skin faces back: an iguana's spines stand up and back)
-        out = out + np.array([0.0, 1.6, 0.0])
+        out = out + np.array([0.0, 1.5, 0.0])
         out /= np.linalg.norm(out)
         along = along - out * (along @ out)
         along /= np.linalg.norm(along)
         rows.append([p, out, along, nb, s_ / arc[-1]])
-    # heights: short on the crown, rising to the nape, tallest down the neck's upper half, then tapering
+    # heights: distinct crown comb rising strongly to the nape, tallest down the neck's upper half, then tapering
     out_ = []
     for p, o, along, nb, u in rows:
-        h = 0.01 + 0.05 * min(u / 0.45, 1.0) ** 1.4 if u < 0.7 else 0.06 - 0.028 * (u - 0.7) / 0.3
+        h = 0.016 + 0.054 * min(u / 0.42, 1.0) ** 1.3 if u < 0.68 else 0.070 - 0.036 * (u - 0.68) / 0.32
         out_.append((p, o, along, h * k, nb))
     return out_
 
 
-def blade(m, C, root, up, back, h, length, thick, jw, recipe, rings=5):
-    """a flat spine: a lens-shaped section narrowing to a point, leaning back along back, its root sunk 4 mm"""
+def blade(m, C, root, up, back, h, length, thick, jw, recipe, rings=6):
+    """a flat falcate spine: a lens-shaped section narrowing to a point, sweeping back along back, its root sunk 5 mm"""
     side = np.cross(up, back)
     side /= np.linalg.norm(side)
+    c_root = np.array([0.62, 0.58, 0.46])
+    c_tip = np.array([1.24, 1.12, 0.84])
     rows = []
     for r in range(rings):
         t = r / (rings - 1)
-        cen = root - up * 0.004 + up * (h * t) + back * (0.3 * h * t ** 1.5)
-        L = length * (1 - t) ** 0.9 + 0.0008
+        cen = root - up * 0.005 + up * (h * t) + back * (0.36 * h * t ** 1.6)
+        L = length * (1 - t) ** 0.85 + 0.0008
         th = thick * (1 - t) + 0.0004
         ring = []
+        col_r = c_root * (1 - t ** 0.85) + c_tip * (t ** 0.85)
         for kq, (a, b) in enumerate(((-0.5, 0), (-0.15, 1), (0.25, 1), (0.5, 0), (0.25, -1), (-0.15, -1))):
             ring.append(m.v(cen + back * (a * L) + side * (b * th * 0.5), (kq / 6, t), jw, recipe))
-            C.append(np.array([0.5, 0.5, 0.52]) * (1 - t) + np.array([0.85, 0.83, 0.78]) * t)
+            C.append(col_r)
         ring.append(m.v(m.P[ring[0]], (1.0, t), jw, None, vid=m.VID[ring[0]]))
-        C.append(C[-6])
+        C.append(col_r)
         rows.append(ring)
     m.grid(rows)
-    tip = m.v(root - up * 0.004 + up * h * 1.04 + back * (0.33 * h), (0.5, 1.0), jw, recipe)
-    C.append(np.array([0.85, 0.83, 0.78]))
+    tip = m.v(root - up * 0.005 + up * h * 1.05 + back * (0.40 * h), (0.5, 1.0), jw, recipe)
+    C.append(c_tip)
     m.fan(rows[-1], tip)
     return tip

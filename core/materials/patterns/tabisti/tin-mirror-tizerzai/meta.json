@@ -1,0 +1,65 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "pattern_crop": [
+    1793,
+    1794
+   ],
+   "seam_after": [
+    1.069,
+    0.83
+   ],
+   "seam_before": [
+    2.553,
+    3.739
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.0,
+   "normal_strength": 0.95,
+   "pattern": true,
+   "rough": 0.36,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "metal",
+  "id": "tabisti/tin-mirror-tizerzai",
+  "metal": 0.85,
+  "pattern": true,
+  "roughness": 0.36,
+  "scale": [
+   0.28,
+   0.28
+  ],
+  "tint": false
+ },
+ "source": {
+  "file": "patterns__tabisti__tin-mirror-tizerzai.png",
+  "generator": "Codex image generation, Nov 2026 (ibisen-tabisti-seamless-texture.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, a flat, front-on decorative panel filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Flat, front-on decorative panel of proud Ibisen-Tabisti upcycled tin-mirror scale corslet and Amazigh silver ornament over Chefchaouen-indigo wool (#162654): six overlapping rows of diamond-cut flattened polished tin-mirror scales (#d6dbe0) stamped with Berber geometric rosettes and angular Tifinagh yaz (\u2d63) marks, interspersed with triangular silver tizerzai fibula plaques (#c8cdd2), crimped brass bottle-cap suns (#c79832), abyss-lac crimson lacquer (#941720), and glowing cerulean Altar-crystal cabochons (#2889d4), seamless across all edges. Full colour.",
+  "sha1": "737b4edf60bf3a9fb2e43968c6dc0c80917f226d"
+ }
+}

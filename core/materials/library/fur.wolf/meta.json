@@ -1,0 +1,60 @@
+{
+ "maps": {
+  "map": "albedo.jpg",
+  "normalMap": "normal.jpg",
+  "roughnessMap": "roughness.png"
+ },
+ "processing": {
+  "log": {
+   "seam_after": [
+    1.344,
+    1.353
+   ],
+   "seam_before": [
+    2.125,
+    4.034
+   ],
+   "source_size": [
+    2048,
+    2048
+   ]
+  },
+  "options": {
+   "band": 0.06,
+   "dark_gloss": 0.0,
+   "delight": 0.6,
+   "height_soften": 0.8,
+   "invert_height": false,
+   "keep_aspect": false,
+   "lift": 0.15,
+   "mute": 0.92,
+   "normal_strength": 1.05,
+   "pattern": false,
+   "rough": 0.82,
+   "rough_var": 0.2,
+   "seam_axes": "xy",
+   "size": 1024
+  },
+  "script": "tools/textures/process.py",
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "hide",
+  "id": "fur.wolf",
+  "metal": 0.0,
+  "roughness": 0.82,
+  "scale": [
+   0.26,
+   0.26
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "timber-wolf-pelt-seamless-2048-v2.png",
+  "generator": "Codex image generation, Nov 2026 (timber-wolf-pelt-seamless-2048-v2.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "Seamless tileable texture, square, 2048x2048. Orthographic top-down view, perfectly flat surface filling the whole frame edge to edge. Flat, even, shadowless lighting, as if scanned: no highlights, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The left edge must continue into the right edge and the top into the bottom. Material: Coarse northern timber-wolf winter pelt at 26 cm square mantle scale, layered agouti-banded stiff guard hairs 4 to 6 cm long clumping in rugged V-shaped locks over thick woolly undercoat, all flowing downward with natural wild-fur variation. Neutral mid-grey (#8a8a8a), fully desaturated: no brown, tan or warm cast; only the light and dark relief of the weave so it can be tinted to any palette colour.",
+  "sha1": "5eab69be08a3fac464c49af130f89ba92490e6df"
+ }
+}

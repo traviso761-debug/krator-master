@@ -5,19 +5,40 @@
 // build lazily on cutaway open and rebuild live when `ARCOFORTE_HOST.socket(culture)` switches the occupying culture.
 const AF_INT_HOST = (function initAfInteriorsHost() {
   const IX = KratorInteriors, AI = KratorAncientsInteriors, KF = KratorFurniture;
+  if (typeof KTAGS !== 'undefined' && KTAGS.VOCAB && KTAGS.VOCAB.cultureAlias) {
+    const V = KTAGS.VOCAB;
+    if (V.cultures.indexOf('fleetborn') < 0 && !V.cultureAlias.fleetborn) {
+      V.cultureAlias.fleetborn = { culture: 'islander', style: 'fleetborn' };
+    }
+    if (V.cultures.indexOf('shorekin') < 0 && !V.cultureAlias.shorekin) {
+      V.cultureAlias.shorekin = { culture: 'islander', style: 'shorekin' };
+    }
+  }
   AI.install(IX);
   const adapter = IX.runtimeAdapter(KF, KF.batch({ indexed: true }));
-  const built = AF_INT.buildPlans(AI, AF_STATE, AF_PLAN);
+  AF_INT.installPieces(KF, adapter);
+  const built = AF_INT.buildPlans(AI, AF_PLAN.zones, AF_PLAN);
   const area = AF_INT.areaSummary(AF_PLAN, built);
+  const zHarbour = ARCOFORTE.zoneState('harbour', AF_PLAN);
+  const zBastions = ARCOFORTE.zoneState('bastions', AF_PLAN);
+  const zRing = ARCOFORTE.zoneState('ring', AF_PLAN);
+  const zVaults = ARCOFORTE.zoneState('vaults', AF_PLAN);
 
   const intRoot = new THREE.Group();
   intRoot.name = 'arcoforte:interiors';
   scene.add(intRoot);
 
-  const wallMat = new THREE.MeshStandardMaterial({
+  const wallMatKept = new THREE.MeshStandardMaterial({
     map: TEX.concrete,
-    color: AF_STATE === 'ruined' ? 0x7d766d : 0xe2dcd0,
+    color: 0xe2dcd0,
     roughness: 0.88,
+    metalness: 0.02,
+    side: THREE.DoubleSide
+  });
+  const wallMatRuin = new THREE.MeshStandardMaterial({
+    map: TEX.concrete,
+    color: 0x7d766d,
+    roughness: 0.94,
     metalness: 0.02,
     side: THREE.DoubleSide
   });
@@ -45,13 +66,16 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
         culture: 'ancient',
         types: u.types || ['civic'],
         state: u.kept ? 'intact' : 'ruined',
+        zone: u.zone || 'ring',
         sector: undefined
       },
-      note: u.sector.toUpperCase() + ' cutaway zone (' + u.storeys.length + ' storeys)'
+      note: u.sector.toUpperCase() + ' cutaway zone (' + u.storeys.length + ' storeys, zone ' + (u.zone || 'ring') + ')'
     }, u.r != null ? { r: u.r } : { size: [u.w == null ? 40 : u.w, u.d == null ? 40 : u.d, hTot] }));
     delete uRec.tags.sector;
 
     u.storeys.forEach(st => {
+      const stKept = st.kept != null ? st.kept : u.kept;
+      const stZone = st.zone || u.zone || 'ring';
       st.rooms.forEach(R => {
         let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
         (R.poly || []).forEach(p => {
@@ -72,7 +96,8 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
           tags: {
             culture: 'ancient',
             types: u.types || ['civic'],
-            state: u.kept ? 'intact' : 'ruined',
+            state: stKept ? 'intact' : 'ruined',
+            zone: stZone,
             room: R.kind
           }
         });
@@ -82,12 +107,12 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
 
   /* 2. Complex-wide exterior portal doors on core/door + KDOORHOST (interactive via E key!) */
   const extDoors = [
-    { id: 'af.door.rotunda_south', at: [0, 70.0, -68.2], yaw: 0, w: 4.4, h: 4.2, pair: true, locked: AF_STATE === 'ruined' },
-    { id: 'af.door.harbour_works', at: [0, 5.5, -242.5], yaw: Math.PI, w: 4.0, h: 3.6, pair: true, locked: AF_STATE === 'ruined' },
-    { id: 'af.door.auto_vault_gate', at: [0, 5.5, -206.4], yaw: Math.PI, w: 5.2, h: 4.4, pair: true, locked: true },
-    { id: 'af.door.city_west_park', at: [-146.2, 84.0, 10.0], yaw: Math.PI / 2, w: 3.6, h: 3.6, pair: true, locked: AF_STATE === 'ruined' },
-    { id: 'af.door.city_east_park', at: [146.2, 84.0, 10.0], yaw: -Math.PI / 2, w: 3.6, h: 3.6, pair: true, locked: AF_STATE === 'ruined' },
-    { id: 'af.door.linear_customs', at: [0, 84.0, 230.0], yaw: 0, w: 3.8, h: 3.6, pair: true, locked: AF_STATE === 'ruined' }
+    { id: 'af.door.rotunda_south', at: [0, 70.0, -68.2], yaw: 0, w: 4.4, h: 4.2, pair: true, locked: zRing === 'ruined' },
+    { id: 'af.door.harbour_works', at: [0, 5.5, -242.5], yaw: Math.PI, w: 4.0, h: 3.6, pair: true, locked: zHarbour === 'ruined' },
+    { id: 'af.door.auto_vault_gate', at: [0, 5.5, -206.4], yaw: Math.PI, w: 5.2, h: 4.4, pair: true, locked: zVaults !== 'intact' },
+    { id: 'af.door.city_west_park', at: [-146.2, 84.0, 10.0], yaw: Math.PI / 2, w: 3.6, h: 3.6, pair: true, locked: zRing === 'ruined' },
+    { id: 'af.door.city_east_park', at: [146.2, 84.0, 10.0], yaw: -Math.PI / 2, w: 3.6, h: 3.6, pair: true, locked: zRing === 'ruined' },
+    { id: 'af.door.linear_customs', at: [0, 84.0, 230.0], yaw: 0, w: 3.8, h: 3.6, pair: true, locked: zBastions === 'ruined' }
   ];
   const doorRoot = new THREE.Group();
   doorRoot.name = 'arcoforte:doors';
@@ -113,15 +138,29 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
     mountDoorMesh(rec, doorRoot);
   });
 
-  /* 3. Furniture registry (KFURN) & live culture socket */
+  /* 3. Furniture registry (KFURN) & live culture socket (string or per-zone map) */
+  function serializeSocket(spec) {
+    if (typeof spec === 'string') return spec;
+    if (!spec || typeof spec !== 'object') return 'refurbished';
+    return Object.keys(spec).sort().map(k => k + ':' + spec[k]).join(',');
+  }
+
+  function formatSocket(spec) {
+    if (typeof spec === 'string') return spec;
+    if (!spec || typeof spec !== 'object') return 'refurbished';
+    return Object.keys(spec).map(k => k + ':' + spec[k]).join(', ');
+  }
+
   let currentSocket = AF_CULTURE_INIT;
+  let currentSocketKey = serializeSocket(AF_CULTURE_INIT);
   let socketEpoch = 0;
   let furnished = null;
   let furnReg = null;
   let prevFurnIds = [];
 
-  function runFurnishPass(sockKey) {
-    const skKey = AF_INT.SOCKETS[sockKey] ? sockKey : 'refurbished';
+  function runFurnishPass(sockSpec) {
+    const specUse = (sockSpec && typeof sockSpec === 'object') ? Object.assign({}, sockSpec)
+      : (AF_INT.SOCKETS[sockSpec] ? sockSpec : 'refurbished');
     prevFurnIds.forEach(id => AF_TAGS.remove(id));
     prevFurnIds = [];
     const prefix = socketEpoch === 0 ? 'furn' : ('furn' + socketEpoch);
@@ -137,14 +176,16 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
       draw: null
     });
 
-    furnished = AF_INT.furnishAll(AI, built, adapter, skKey, 11);
-    currentSocket = skKey;
+    furnished = AF_INT.furnishAll(AI, built, adapter, specUse, 11);
+    currentSocket = specUse;
+    currentSocketKey = serializeSocket(specUse);
 
     (furnished.full.rooms || []).forEach(r => {
       const roomRec = r.R;
       const bldId = roomRec && roomRec.building ? ('int.' + roomRec.building) : AF_DRAWN.rootId;
       const rmId = roomRec ? roomRec.id : null;
       const baseSeed = KTAGS.str32(rmId || 'room') & 0xffff;
+      const rWealth = r.wealth != null ? r.wealth : furnished.profile.wealth;
       (r.placements || []).forEach((p, idx) => {
         const variant = (p.variant != null ? p.variant : p.v) | 0;
         const pSeed = p.seed != null ? p.seed : ((baseSeed + idx * 37) & 0xffff);
@@ -156,7 +197,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
         }, null, {
           building: bldId,
           room: rmId,
-          wealth: furnished.profile.wealth
+          wealth: rWealth
         });
         if (rec && rec.id) prevFurnIds.push(rec.id);
       });
@@ -199,13 +240,14 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
       unitFurn.rooms.forEach(r => {
         if (!r.R || r.R.level !== st.level) return;
         const baseSeed = KTAGS.str32(r.R.id || 'room') & 0xffff;
+        const rWealth = r.wealth != null ? r.wealth : furnished.profile.wealth;
         (r.placements || []).forEach((p, idx) => {
           const variant = (p.variant != null ? p.variant : p.v) | 0;
           const pSeed = p.seed != null ? p.seed : ((baseSeed + idx * 37) & 0xffff);
           Bf.place(p.key, p.x, p.y + 0.03, p.z, p.ry || 0, {
             variant: variant,
             seed: pSeed || 1,
-            wealth: furnished.profile.wealth,
+            wealth: rWealth,
             setting: 'indoor'
           });
           count++;
@@ -229,7 +271,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
   function ensureUnitView(u) {
     let uv = unitViews[u.id];
     if (uv) {
-      if (uv.builtSocket !== currentSocket) {
+      if (uv.builtSocketKey !== currentSocketKey) {
         u.storeys.forEach((st, idx) => {
           const stGrp = uv.storeys[idx];
           if (uv.furnGroups[idx]) {
@@ -240,7 +282,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
           stGrp.add(nfg);
           uv.furnGroups[idx] = nfg;
         });
-        uv.builtSocket = currentSocket;
+        uv.builtSocketKey = currentSocketKey;
       }
       return uv;
     }
@@ -254,6 +296,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
       const sg = new THREE.Group();
       sg.name = 'af:storey:' + st.id;
       sg.userData.probeSkip = true;
+      const stKept = st.kept != null ? st.kept : u.kept;
 
       /* Floor plate slab (with sunlit central atrium cutout on Rotunda levels 1..4) */
       if (st.outline && st.outline.length >= 3) {
@@ -325,7 +368,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
             w: Math.min(dw, 1.8),
             h: DH,
             open: 0.35, /* Slightly ajar so cutaway views show open sightlines between rooms */
-            locked: !u.kept
+            locked: !stKept
           });
           mountDoorMesh(dRec, sg);
         }
@@ -337,7 +380,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
         wg.setAttribute('normal', new THREE.Float32BufferAttribute(buf.N, 3));
         wg.setAttribute('uv', new THREE.Float32BufferAttribute(buf.U, 2));
         wg.setIndex(buf.I);
-        const wm = new THREE.Mesh(wg, wallMat);
+        const wm = new THREE.Mesh(wg, stKept ? wallMatKept : wallMatRuin);
         wm.name = 'af:walls:' + st.id;
         wm.userData.probeSkip = true;
         sg.add(wm);
@@ -351,7 +394,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
       fGroups.push(fg);
     });
 
-    uv = unitViews[u.id] = { group: grp, storeys: stGroups, furnGroups: fGroups, builtSocket: currentSocket };
+    uv = unitViews[u.id] = { group: grp, storeys: stGroups, furnGroups: fGroups, builtSocketKey: currentSocketKey };
     return uv;
   }
 
@@ -362,6 +405,7 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
   const cutawayUnits = built.units.map(u => Object.assign({
     id: u.id,
     name: u.name,
+    zone: u.zone,
     x: u.x,
     z: u.z,
     levels: u.storeys.map(st => ({
@@ -369,6 +413,8 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
       h: st.h,
       name: st.levelName,
       sector: st.sector,
+      zone: st.zone || u.zone,
+      kept: st.kept != null ? st.kept : u.kept,
       rooms: st.rooms.length
     }))
   }, u.r != null ? { r: u.r } : { w: u.w, d: u.d }));
@@ -390,19 +436,21 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
 
   function barText(cutU, storeyIdx) {
     const u = byId[cutU.id], L = cutU.levels[storeyIdx];
-    const sk = AF_INT.SOCKETS[currentSocket] || AF_INT.SOCKETS.refurbished;
+    const zn = L.zone || (u && u.zone) || 'ring';
+    const zSkKey = (furnished && furnished.zones && furnished.zones[zn]) || null;
+    const skLabel = !L.kept ? 'Ruined / Unfurnished'
+      : (zSkKey && AF_INT.SOCKETS[zSkKey] ? AF_INT.SOCKETS[zSkKey].label : 'Unfurnished');
     const secBadge = L.sector === 'living' ? '#e8c488' : L.sector === 'work' ? '#8cc4e8' : L.sector === 'rec' ? '#98dc90' : '#c49a94';
     const uv = unitViews[cutU.id];
     const pcs = (uv && uv.furnGroups[storeyIdx]) ? uv.furnGroups[storeyIdx].userData.pieceCount : 0;
     return ' storey <b>' + (storeyIdx + 1) + '</b>/' + cutU.levels.length +
       ' · <span style="color:' + secBadge + ';font-weight:bold">' + (L.sector || 'work').toUpperCase() + '</span>' +
       ' — ' + L.name +
-      ' <span style="opacity:.75">(y ' + L.y.toFixed(1) + ' m · ' + L.rooms + ' rooms · ' + pcs + ' pcs · ' + sk.label + ')</span> ';
+      ' <span style="opacity:.75">(y ' + L.y.toFixed(1) + ' m · zone ' + zn + ' · ' + L.rooms + ' rooms · ' + pcs + ' pcs · ' + skLabel + ')</span> ';
   }
 
-  function socket(sockKey) {
-    if (!AF_INT.SOCKETS[sockKey]) return false;
-    runFurnishPass(sockKey);
+  function applyHostSocket(sockSpec, resolvedZones) {
+    runFurnishPass(sockSpec);
     /* If a cutaway unit is currently open, refresh its meshes & cutaway bar immediately */
     if (typeof KHOST !== 'undefined' && KHOST.cut && KHOST.cut.on && KHOST.cut.unit) {
       const u = byId[KHOST.cut.unit.id];
@@ -414,9 +462,17 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
     }
     return {
       socket: currentSocket,
+      zones: resolvedZones || furnished.zones,
       placed: furnReg.placed.length,
       missing: Object.keys(furnReg.missing).length
     };
+  }
+
+  ARCOFORTE._bindHostSocket(applyHostSocket);
+
+  function socket(sockSpec) {
+    if (arguments.length === 0) return currentSocket;
+    return ARCOFORTE.socket(sockSpec);
   }
 
   if (typeof KWALK !== 'undefined') KDOOR.walk(KWALK);
@@ -429,6 +485,8 @@ const AF_INT_HOST = (function initAfInteriorsHost() {
     barText: barText,
     socket: socket,
     getSocket: () => currentSocket,
+    formatSocket: () => formatSocket(currentSocket),
+    zoneSockets: () => Object.assign({}, furnished ? furnished.zones : {}),
     furnSummary: () => furnReg.summary(),
     simPlaces: () => AF_INT.simPlaces(AF_PLAN, built, currentSocket),
     doorsAudit: () => {

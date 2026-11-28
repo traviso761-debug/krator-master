@@ -9385,6 +9385,28 @@
    "origFile": "lotsofsounds-fs-104320.mp3"
   },
   {
+   "id": "lotsofsounds-fs-118513",
+   "title": "Punch Hit",
+   "creator": "thefsoundman",
+   "source": "https://freesound.org/s/118513/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "blunt",
+    "combat",
+    "hit",
+    "kick",
+    "punch"
+   ],
+   "notes": "Combat event [hit_blunt] — onset 40ms, -20 LUFS. SHA256: 3843df72e4433db9cf6ebc68314494ad843b6ab97c2f16df33728cb4488504a3",
+   "duration": 0.63,
+   "file": "library/fs-118513.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Punch Hit\" by thefsoundman, https://freesound.org/s/118513/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-118792",
    "title": "Knife Slash Metal Slide",
    "creator": "Lots of Sounds / Freesound #118792",
@@ -9433,6 +9455,28 @@
    "origFile": "131304.mp3"
   },
   {
+   "id": "lotsofsounds-fs-136542",
+   "title": "High-Voltage Electric Zap",
+   "creator": "JoelAudio",
+   "source": "https://freesound.org/s/136542/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "arc",
+    "combat",
+    "electric",
+    "lightning",
+    "zap"
+   ],
+   "notes": "Combat event [lightning_blast] — onset 0ms, -15.8 LUFS. SHA256: 5efa941ecead3f4d6efe8b034a36554eae3001c27d1cd06c6f6e99d300975737",
+   "duration": 0.75,
+   "file": "library/fs-136542.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"High-Voltage Electric Zap\" by JoelAudio, https://freesound.org/s/136542/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-145786",
    "title": "Rope Cracking Tension",
    "creator": "Lots of Sounds / Freesound #145786",
@@ -9455,6 +9499,94 @@
    "status": "approved",
    "attribution": "\"Rope Cracking Tension\" via Lots of Sounds / Freesound #145786, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "lotsofsounds-fs-145786.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-149177",
+   "title": "Rifle Shot & Bolt Reload",
+   "creator": "deathnsorrow",
+   "source": "https://freesound.org/s/149177/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "combat",
+    "gunshot",
+    "ranged",
+    "reload",
+    "rifle"
+   ],
+   "notes": "Combat event [gun_shot] — onset 20ms, -19.6 LUFS. SHA256: 96585014a22c40de14235374686f4717059adae936c2b0ca42369affe8e76225",
+   "duration": 1.53,
+   "file": "library/fs-149177.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Rifle Shot & Bolt Reload\" by deathnsorrow, https://freesound.org/s/149177/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-151624",
+   "title": "Armor Posture Shatter Crash",
+   "creator": "qubodup",
+   "source": "https://freesound.org/s/151624/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "armor",
+    "combat",
+    "crash",
+    "guard-break",
+    "poise"
+   ],
+   "notes": "Combat event [guard_break] — onset 0ms, -11.8 LUFS. SHA256: bdd232131b376d6b674e9a4c008eef9e94b1e65d797296b3bd06448b8b3a5944",
+   "duration": 0.54,
+   "file": "library/fs-151624.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Armor Posture Shatter Crash\" by qubodup, https://freesound.org/s/151624/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-153560",
+   "title": "Carbine Lever Cock Reload",
+   "creator": "SpliceSound",
+   "source": "https://freesound.org/s/153560/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "cock",
+    "combat",
+    "ranged",
+    "reload",
+    "rifle"
+   ],
+   "notes": "Combat event [gun_shot] — onset 0ms, -16.3 LUFS. SHA256: 86908ef3f16186250c8e6af514900772a30ab909557378933e27a8eeb2e36509",
+   "duration": 0.67,
+   "file": "library/fs-153560.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Carbine Lever Cock Reload\" by SpliceSound, https://freesound.org/s/153560/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-155790",
+   "title": "Arcane Lightning Rail Blast",
+   "creator": "deleted_user_1941307",
+   "source": "https://freesound.org/s/155790/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "arc",
+    "arcane",
+    "combat",
+    "lightning",
+    "thunder"
+   ],
+   "notes": "Combat event [lightning_blast] — onset 0ms, -8.6 LUFS. SHA256: f138db18563853f993081d6b649ece597247fdfa44b353a9b57eaf8e24e781b5",
+   "duration": 2,
+   "file": "library/fs-155790.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Arcane Lightning Rail Blast\" by deleted_user_1941307, https://freesound.org/s/155790/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-164764",
@@ -9650,6 +9782,28 @@
    "biome": "NW Lowlands"
   },
   {
+   "id": "lotsofsounds-fs-19312",
+   "title": "Double Sword Swoosh",
+   "creator": "martian",
+   "source": "https://freesound.org/s/19312/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "blade",
+    "combat",
+    "martial-arts",
+    "sword",
+    "whoosh"
+   ],
+   "notes": "Combat event [windup_whoosh] — onset 40ms, -18.1 LUFS. SHA256: f22490566ff3cc26eae60e81b1457e4eaace38a1bdc3ce08830641f01954d064",
+   "duration": 0.57,
+   "file": "library/fs-19312.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Double Sword Swoosh\" by martian, https://freesound.org/s/19312/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-197302",
    "title": "Bowed Metal Drone (Dissonant Screech)",
    "creator": "Lots of Sounds / Freesound #197302",
@@ -9695,6 +9849,28 @@
    "status": "approved",
    "attribution": "\"Singing Bowl Tone\" via Lots of Sounds / Freesound #204915, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "204915.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-205938",
+   "title": "Arrow Flight & Target Hit",
+   "creator": "Twisted_Euphoria",
+   "source": "https://freesound.org/s/205938/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "arrow",
+    "bow",
+    "combat",
+    "flight",
+    "ranged"
+   ],
+   "notes": "Combat event [bow_shot] — onset 10ms, -21.7 LUFS. SHA256: 06461ca4d33d78c9651a5c4e13dbc2b6f2cba4c543f0d6cefdabf6f2546a60e9",
+   "duration": 0.61,
+   "file": "library/fs-205938.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Arrow Flight & Target Hit\" by Twisted_Euphoria, https://freesound.org/s/205938/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-213914",
@@ -9959,6 +10135,50 @@
    "status": "approved",
    "attribution": "\"Scary Violin Loop\" via Lots of Sounds / Freesound #244417, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "244417.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-244513",
+   "title": "Realistic Punch",
+   "creator": "JewTwinz",
+   "source": "https://freesound.org/s/244513/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "blunt",
+    "combat",
+    "hit",
+    "punch",
+    "unarmed"
+   ],
+   "notes": "Combat event [hit_blunt] — onset 20ms, -15.3 LUFS. SHA256: 98a8e3bfe4fc1d739799703eb906759c862a6435592510f199e09a17d5f2338d",
+   "duration": 0.4,
+   "file": "library/fs-244513.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Realistic Punch\" by JewTwinz, https://freesound.org/s/244513/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-244983",
+   "title": "Metal Shield Impact",
+   "creator": "ani_music",
+   "source": "https://freesound.org/s/244983/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "armor",
+    "block",
+    "combat",
+    "metal",
+    "shield"
+   ],
+   "notes": "Combat event [block_shield] — onset 0ms, -19 LUFS. SHA256: ff93844c194107290b677462bcda2c0c7fc972975a3e747a3d6fae75b181e740",
+   "duration": 1,
+   "file": "library/fs-244983.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Metal Shield Impact\" by ani_music, https://freesound.org/s/244983/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-260873",
@@ -10248,6 +10468,28 @@
    "origFile": "326869.mp3"
   },
   {
+   "id": "lotsofsounds-fs-332668",
+   "title": "Big Heavy Shield Thud",
+   "creator": "Reitanna",
+   "source": "https://freesound.org/s/332668/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "block",
+    "combat",
+    "heavy",
+    "shield",
+    "thud"
+   ],
+   "notes": "Combat event [block_shield] — onset 30ms, -19.2 LUFS. SHA256: 8403186aa1c0f667101ba7e430f439f0e5a0b2fed121169fe6529c9d0f6295f7",
+   "duration": 0.51,
+   "file": "library/fs-332668.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Big Heavy Shield Thud\" by Reitanna, https://freesound.org/s/332668/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-332722",
    "title": "Night in Costa Rican Cloud Forest",
    "creator": "Lots of Sounds / Freesound #332722",
@@ -10492,6 +10734,28 @@
    "origFile": "366159.mp3"
   },
   {
+   "id": "lotsofsounds-fs-37596",
+   "title": "Sword Metal Clash",
+   "creator": "hello_flowers",
+   "source": "https://freesound.org/s/37596/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "clash",
+    "combat",
+    "metal",
+    "parry",
+    "sword"
+   ],
+   "notes": "Combat event [parry_ring] — onset 10ms, -17.8 LUFS. SHA256: 5f14ad7d43ea813a63804f277e6ad127d66b7fba26ca3d716778c7f7059d73d1",
+   "duration": 0.93,
+   "file": "library/fs-37596.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Sword Metal Clash\" by hello_flowers, https://freesound.org/s/37596/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-378429",
    "title": "Koshi Wind Chimes Bamboo Resonance",
    "creator": "Lots of Sounds / Freesound #378429",
@@ -10562,6 +10826,50 @@
    "status": "approved",
    "attribution": "\"Electricity Crackling\" via Lots of Sounds / Freesound #383654, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "lotsofsounds-fs-383654.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-384878",
+   "title": "Gravel Pivot Dodge Step",
+   "creator": "Ali_6868",
+   "source": "https://freesound.org/s/384878/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "combat",
+    "dodge",
+    "footstep",
+    "gravel",
+    "pivot"
+   ],
+   "notes": "Combat event [dodge_step] — onset 10ms, -25.7 LUFS. SHA256: 3d389e3266ce2698bdc68c40af38f70f1d28acd59432548f859ac995df60a72b",
+   "duration": 0.57,
+   "file": "library/fs-384878.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Gravel Pivot Dodge Step\" by Ali_6868, https://freesound.org/s/384878/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-388028",
+   "title": "Flesh Cleave Impact",
+   "creator": "saturdaysoundguy",
+   "source": "https://freesound.org/s/388028/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "cleave",
+    "combat",
+    "cut",
+    "flesh",
+    "impact"
+   ],
+   "notes": "Combat event [hit_cut] — onset 230ms, -27.3 LUFS. SHA256: a113d9fa124173bdff0c6901f7201df1b62217ac6f846cb7043501708da559cf",
+   "duration": 1.13,
+   "file": "library/fs-388028.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Flesh Cleave Impact\" by saturdaysoundguy, https://freesound.org/s/388028/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-389634",
@@ -10752,6 +11060,28 @@
    "status": "approved",
    "attribution": "\"Beep Machine Sounds (Telemetry & Chirps)\" via Lots of Sounds / Freesound #414402, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "414402.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-423526",
+   "title": "Karate Chop Hit",
+   "creator": "ccolbert70Eagles23",
+   "source": "https://freesound.org/s/423526/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "blunt",
+    "combat",
+    "hit",
+    "karate-chop",
+    "martial-arts"
+   ],
+   "notes": "Combat event [hit_blunt] — onset 30ms, -15.6 LUFS. SHA256: d4ac685208fbf3bc141b450f772c14fe48b8e1bf48433de6ee6e57a4b8a72c2b",
+   "duration": 0.53,
+   "file": "library/fs-423526.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Karate Chop Hit\" by ccolbert70Eagles23, https://freesound.org/s/423526/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-437337",
@@ -11098,6 +11428,28 @@
    "origFile": "476663.mp3"
   },
   {
+   "id": "lotsofsounds-fs-511863",
+   "title": "Singularity Implosion Riser",
+   "creator": "AudioPapkin",
+   "source": "https://freesound.org/s/511863/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "charge",
+    "combat",
+    "implosion",
+    "riser",
+    "singularity"
+   ],
+   "notes": "Combat event [energy_burst_charge] — onset 20ms, -8.7 LUFS. SHA256: a0fe8ae9448763e79231b429547710191b92c8ca3a83ddbf2a46ddce76fb2a99",
+   "duration": 2.01,
+   "file": "library/fs-511863.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Singularity Implosion Riser\" by AudioPapkin, https://freesound.org/s/511863/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-520148",
    "title": "Celtic Whistle Tune",
    "creator": "Lots of Sounds / Freesound #520148",
@@ -11120,6 +11472,28 @@
    "status": "approved",
    "attribution": "\"Celtic Whistle Tune\" via Lots of Sounds / Freesound #520148, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "520148.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-529019",
+   "title": "Perfect Parry Sword Shing",
+   "creator": "Euphrosyyn",
+   "source": "https://freesound.org/s/529019/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "combat",
+    "parry",
+    "ring",
+    "shing",
+    "steel"
+   ],
+   "notes": "Combat event [parry_ring] — onset 0ms, -11.6 LUFS. SHA256: a8278823afb4c25a06d55ec2adfdeb7993bb738b1077310555be1e592063d02f",
+   "duration": 1.42,
+   "file": "library/fs-529019.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Perfect Parry Sword Shing\" by Euphrosyyn, https://freesound.org/s/529019/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-535541",
@@ -11338,6 +11712,28 @@
    "status": "approved",
    "attribution": "\"Men Shouting Hey\" via Lots of Sounds / Freesound #57204, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "57204.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-578874",
+   "title": "Limb Sever Bone Snap",
+   "creator": "samueleunimancer",
+   "source": "https://freesound.org/s/578874/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "bone",
+    "combat",
+    "crunch",
+    "limb",
+    "sever"
+   ],
+   "notes": "Combat event [sever_limb] — onset 40ms, -25.8 LUFS. SHA256: dba678bec14fdc6ab74babc8c16f9595cb761793f9a00f22f5247f2263196de2",
+   "duration": 0.74,
+   "file": "library/fs-578874.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Limb Sever Bone Snap\" by samueleunimancer, https://freesound.org/s/578874/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-615447",
@@ -11582,6 +11978,28 @@
    "origFile": "703642.mp3"
   },
   {
+   "id": "lotsofsounds-fs-72191",
+   "title": "Whip Swoosh Variation",
+   "creator": "snowflakes",
+   "source": "https://freesound.org/s/72191/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "combat",
+    "martial-arts",
+    "swing",
+    "unarmed",
+    "whoosh"
+   ],
+   "notes": "Combat event [windup_whoosh] — onset 30ms, -16 LUFS. SHA256: 6a7022b6839b13c01f379fac8021b00b6d815dccfc25ae85f7033e41b08927c0",
+   "duration": 0.42,
+   "file": "library/fs-72191.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Whip Swoosh Variation\" by snowflakes, https://freesound.org/s/72191/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-722399",
    "title": "Luminous Mystical Music (Vocal Pad & Synth)",
    "creator": "Lots of Sounds / Freesound #722399",
@@ -11726,6 +12144,28 @@
    "origFile": "754461.mp3"
   },
   {
+   "id": "lotsofsounds-fs-778503",
+   "title": "Evasive Step & Cloth Snap",
+   "creator": "BlondPanda",
+   "source": "https://freesound.org/s/778503/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "cloth",
+    "combat",
+    "dodge",
+    "evade",
+    "step"
+   ],
+   "notes": "Combat event [dodge_step] — onset 10ms, -29 LUFS. SHA256: e3d35128a55993beaa30e4579d168f53355abacdf1b0c4afbb0626207aa072d6",
+   "duration": 0.6,
+   "file": "library/fs-778503.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Evasive Step & Cloth Snap\" by BlondPanda, https://freesound.org/s/778503/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
    "id": "lotsofsounds-fs-8067",
    "title": "Low Vocal Drone",
    "creator": "Lots of Sounds / Freesound #8067",
@@ -11748,6 +12188,28 @@
    "status": "approved",
    "attribution": "\"Low Vocal Drone\" via Lots of Sounds / Freesound #8067, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "8067.mp3"
+  },
+  {
+   "id": "lotsofsounds-fs-814053",
+   "title": "Singularity Shockwave Boom",
+   "creator": "qubodup",
+   "source": "https://freesound.org/s/814053/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "black-hole",
+    "boom",
+    "combat",
+    "shockwave",
+    "singularity"
+   ],
+   "notes": "Combat event [energy_burst_boom] — onset 0ms, -18 LUFS. SHA256: ab12c94200983a26d0614ec1a3ead2f692cfa07b7f20406e2d6d61da83f3b2a0",
+   "duration": 7.38,
+   "file": "library/fs-814053.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Singularity Shockwave Boom\" by qubodup, https://freesound.org/s/814053/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-814710",
@@ -11869,6 +12331,50 @@
    "attribution": "\"Fountain Drain Gurgle\" via Lots of Sounds / Freesound #863562, dedicated to the Public Domain under CC0 1.0 Universal.",
    "origFile": "lotsofsounds-fs-863562.mp3",
    "biome": "Siphon Pits"
+  },
+  {
+   "id": "lotsofsounds-fs-873747",
+   "title": "Void Sub-Bass Burst",
+   "creator": "The_Elementus",
+   "source": "https://freesound.org/s/873747/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "boom",
+    "combat",
+    "energy",
+    "sub-bass",
+    "void"
+   ],
+   "notes": "Combat event [energy_burst_boom] — onset 20ms, -23.1 LUFS. SHA256: e83b47f413bec8846c475cb89d906563609a0595d32028906d603a59fa534699",
+   "duration": 0.82,
+   "file": "library/fs-873747.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Void Sub-Bass Burst\" by The_Elementus, https://freesound.org/s/873747/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
+  },
+  {
+   "id": "lotsofsounds-fs-877976",
+   "title": "Swish Swipe",
+   "creator": "Qvantor",
+   "source": "https://freesound.org/s/877976/",
+   "license": "cc0",
+   "licenseText": "Creative Commons 0 (CC0 1.0 Universal)",
+   "category": "sfx.combat",
+   "tags": [
+    "blade",
+    "combat",
+    "fast",
+    "swish",
+    "whoosh"
+   ],
+   "notes": "Combat event [windup_whoosh] — onset 30ms, -16.2 LUFS. SHA256: 5418599c6bb129bb6029a063c7b1ff84abd365b3829555d7db8fc9269785753b",
+   "duration": 0.87,
+   "file": "library/fs-877976.mp3",
+   "share": true,
+   "status": "candidate",
+   "attribution": "\"Swish Swipe\" by Qvantor, https://freesound.org/s/877976/, CC0 1.0 Universal (public-domain dedication) (https://creativecommons.org/publicdomain/zero/1.0/)"
   },
   {
    "id": "lotsofsounds-fs-87980",

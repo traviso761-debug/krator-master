@@ -12,7 +12,8 @@ vm.createContext(ctx);
 for (const rel of [
  'core/rand/08-core-rand.js',
  'core/space/20-core-space.js',
- 'biomes/shroudhills/src/20-shroudhills-defs.js'
+ 'biomes/shroudhills/src/20-shroudhills-defs.js',
+ 'biomes/shroudhills/src/21-shroudhills-species.js'
 ]) {
  const code = fs.readFileSync(path.join(ROOT, rel), 'utf8');
  vm.runInContext(code, ctx, { filename: rel });
@@ -40,15 +41,26 @@ ok('three stations match 5.1 survey pixels and pressures',
  S.SITES.cloaktor.px51[0] === 505 && S.SITES.cloaktor.px51[1] === 302 && S.SITES.cloaktor.atm === 1.36,
  S.SITES.cove.atm === 1.0);
 
-// 2. All 9 canonical species & harvest/gather/hazard contracts
-ok('9 canonical species registered', S.SPECIES.length === 9, S.SPECIES.length === 0);
+// 2. All 23 canonical species & harvest/gather/hazard contracts
+ok('23 canonical species registered with HV harvest records',
+ S.SPECIES.length === 23 && S.SPECIES.every(sp => sp.tags && sp.tags.harvest && S.HARVEST[sp.key]),
+ S.SPECIES.length < 22);
 ok('every species has harvest object and expected gather keys',
  S.byKey.shroud_amber_kauri.tags.harvest.gather === 'amber' &&
+ S.byKey.amberpodocarp.tags.harvest.gather === 'rimu-gum' &&
  S.byKey.shroud_drum_gall.tags.harvest.gather === 'saltpeter' &&
  S.byKey.shroud_drum_gall.tags.hazard.role === 'shroud-ants' &&
  S.byKey.shroud_myrtle_smudge.tags.harvest.gather === 'smudge-resin' &&
  S.byKey.shroud_cloak_bromeliad.tags.harvest.gather === 'crimson-dye' &&
- S.byKey.shroud_dew_strand.tags.harvest.gather === 'mucilage',
+ S.byKey.saffroncloak.tags.harvest.gather === 'saffron-lake' &&
+ S.byKey.torcushion.tags.harvest.gather === 'silver-felt' &&
+ S.byKey.torbutterwort.tags.harvest.gather === 'curd-rennet' &&
+ S.byKey.shroud_dew_strand.tags.harvest.gather === 'mucilage' &&
+ S.byKey.coconut.tags.harvest.gather === 'coir' &&
+ S.byKey.coconut.tags.harvest.edible.indexOf('coconuts') >= 0 &&
+ S.byKey.covepandan.tags.harvest.gather === 'pandan-plaits' &&
+ S.byKey.covehibiscus.tags.harvest.gather === 'bast-cordage' &&
+ S.byKey.shroudnikau.tags.harvest.gather === 'palm-sheath',
  false);
 
 // 3. Twist A: Paired Sister-Cup Cistern Sky-Ponds deterministic & in 1.8-3.2 m / 90-320 L bounds
@@ -115,6 +127,35 @@ ok('every species has harvest object and expected gather keys',
   Math.abs(zCove.shroud_cove + zCove.canopy_sea + zCove.cloak_tor + zCove.mist_divide - 1) < 1e-6 &&
   zCove.shroud_cove > 0.5 && zCan.canopy_sea > 0.8 && zTor.cloak_tor > 0.7 && zDiv.mist_divide > 0.8,
   zTor.canopy_sea > zTor.cloak_tor);
+}
+
+// 7. Spear-Queen littoral strand palm gating & CROPS integration
+{
+ const cctx = { globalThis: null };
+ cctx.globalThis = cctx;
+ vm.createContext(cctx);
+ for (const rel of [
+  'core/rand/08-core-rand.js',
+  'kits/crops/src/10-crop-core.js',
+  'kits/crops/src/20-crop-records.js',
+  'kits/crops/src/21-crop-termites.js',
+  'kits/crops/src/22-crop-material.js',
+  'kits/crops/src/24-crop-vale-wild.js',
+  'kits/crops/src/40-crop-query.js'
+ ]) {
+  vm.runInContext(fs.readFileSync(path.join(ROOT, rel), 'utf8'), cctx, { filename: rel });
+ }
+ const fits = S.registerCrops(cctx.CROPS) || [];
+ const hasCoco = fits.some(r => r.crop && r.crop.id === 'coconut');
+ const hasPandan = fits.some(r => r.crop && r.crop.id === 'pandan');
+ ok('SHROUDHILLS.registerCrops enables coconut and pandan in warm shroud_cove zone', hasCoco && hasPandan, false);
+
+ ok('coveStrandPalmOk accepts sheltered Spear-Queen raid-cove strand above high water and rejects wave-wash, tors, and high montane stations',
+  S.coveStrandPalmOk({ coast: 0.9, elevASL: 64, y: 4.5, seaLevel: 0, tor: 0.05, granite: 0.2, path: 0, slope: 0.22 }) === true &&
+  S.coveStrandPalmOk({ coast: 0.95, elevASL: 50.4, y: 0.4, seaLevel: 0, tor: 0, granite: 0.1, path: 0, slope: 0.1 }) === false &&
+  S.coveStrandPalmOk({ coast: 0.0, elevASL: 686, y: 20, seaLevel: 0, tor: 0, granite: 0.1, path: 0, slope: 0.15 }) === false &&
+  S.coveStrandPalmOk({ coast: 0.12, elevASL: 1180, y: 128, seaLevel: 0, tor: 0.85, granite: 0.9, path: 0, slope: 0.2 }) === false,
+  S.coveStrandPalmOk({ coast: 0.12, elevASL: 1180, y: 128, seaLevel: 0, tor: 0.85, granite: 0.9, path: 0, slope: 0.2 }));
 }
 
 console.log('test-shroudhills: %d passed, %d failed', pass, fail);

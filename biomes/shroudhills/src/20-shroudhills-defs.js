@@ -102,179 +102,7 @@ var SHROUDHILLS = (function(){
   };
  };
 
- // ---- Palettes (sRGB hex integers)
- S.PAL = {
-  mahoganyBark: [0x583c2c, 0x664634, 0x4c3426, 0x6e4e3a],
-  kauriBark: [0x827466, 0x928272, 0x746658, 0x9c8c7a],
-  rataBark: [0x684838, 0x5c3e30, 0x765240],
-  fernBark: [0x3c2e24, 0x48382c, 0x32261e],
-  koheLeaf: [0x3c6e34, 0x487c3c, 0x32602c, 0x548842],
-  kauriLeaf: [0x385e38, 0x466c40, 0x2e5030, 0x567844],
-  fernLeaf: [0x467e36, 0x548e40, 0x3a6e2e, 0x689444],
-  amber: [0xe69c24, 0xf2b032, 0xd48418, 0xffc448],
-  sisterTank: [0x6e7c36, 0x846432, 0x5c7230, 0x964834],
-  sisterBract: [0xc8382c, 0xd84c32, 0xb42e26, 0xe26838],
-  turfMoss: [0x4c7832, 0x5a883a, 0x3e682a, 0x689242],
-  skyOrchid: [0xd62848, 0xe83858, 0xc4203c, 0xf06078],
-  torCloakScarlet: [0xd83228, 0xe6482c, 0xc42622],
-  torCloakSaffron: [0xe89c24, 0xf2b42e, 0xd4841c],
-  torCloakSilver: [0xc8d0cc, 0xd8dedc, 0xb6c0bc],
-  dewStrand: [0xdce8e6, 0xeef6f4, 0xc8dad8],
-  drumGall: [0x74442e, 0x845038, 0x643a28, 0x8c6248],
-  saltpeter: [0xebe8df, 0xf4f2ea, 0xdcd8ce],
-  antChitin: [0x2a2018, 0x38281c, 0x221a14, 0x463222],
-  myrtleLeaf: [0x6c8c6e, 0x7c9c7c, 0x5e7e62],
-  mossHang: [0x6a8448, 0x7a9454, 0x5c743e]
- };
-
- // ---- Harvest helper (5-arg HV signature synced with tools/check_botany.py + gather/extra)
- var HV = function(wood, edible, medicinal, notes, fruit, gather, extra){
-  return Object.assign({
-   wood: wood || 'none',
-   edible: edible || [],
-   medicinal: !!medicinal,
-   notes: notes || '',
-   fruit: fruit || null,
-   gather: gather || null
-  }, extra || {});
- };
-
- var TG = function(climate, zone, riparian, o){
-  return Object.assign({
-   climate: climate,
-   aridity: 'humid',
-   abyssal: false,
-   riparian: riparian || 'no',
-   zone: zone
-  }, o || {});
- };
-
- // ---- Canonical 9 Botanical Species (PLAN.md section 5)
- S.SPECIES = [
-  {
-   key: 'shroud_kohekohe',
-   name: 'Buttressed Shroud-Mahogany',
-   model: 'Dysoxylum spectabile (kohekohe) and Entandrophragma buttressed cloud-mahogany',
-   habit: 'tree',
-   H: [24, 36],
-   gather: null,
-   what: 'Fluted plank-buttress canopy hardwood with wide horizontal flare-joined bough-forks carrying Sister-Cups and Drum-Galls',
-   tags: TG('subtropic..temperate', 'canopy_sea', 'both', {
-    harvest: HV('hardwood', [], false, 'dense water-resistant cabinet and spear-shaft hardwood timber', null, null)
-   })
-  },
-  {
-   key: 'shroud_amber_kauri',
-   name: 'Weeping Amber-Podocarp',
-   model: 'Agathis australis (kauri) and Dacrydium cupressinum (rimu)',
-   habit: 'emergent',
-   H: [30, 44],
-   gather: 'amber',
-   what: 'Columnar silver-bronze emergent conifer weeping golden resin stalactites from upper bough-crotches (amber = 120)',
-   tags: TG('subtropic..temperate', 'shroud_cove', 'no', {
-    harvest: HV('timber', [], false, 'spar timber and golden weeping amber resin stalactites for caulking and varnish', 'reagent', 'amber')
-   })
-  },
-  {
-   key: 'shroud_rata_bridge',
-   name: 'Bridge-Rata and Sky-Turf Span',
-   model: 'Metrosideros robusta hemi-epiphytic rata and suspended Astelia peat mat',
-   habit: 'bridge',
-   H: [6, 15],
-   gather: 'peat-fibre',
-   what: 'Self-grafting horizontal aerial roots spanning 6-15 m neighbor crown gaps, topped by 50 cm suspended peat turf and crimson sky-orchids',
-   tags: TG('subtropic..temperate', 'canopy_sea', 'no', {
-    harvest: HV('none', [], false, 'springy peat-fibre cordage, quilt stuffing and aerial turf insulation', null, 'peat-fibre')
-   })
-  },
-  {
-   key: 'shroud_sister_cups',
-   name: 'Paired Sister-Cup Cistern',
-   model: 'Glomeropitcairnia and Vriesea imperialis giant tank-bromeliads',
-   habit: 'cistern',
-   H: [1.8, 3.2],
-   gather: 'reed-wax',
-   what: 'Mirror-paired spiral rosette tank-epiphytes sharing an overflow weir and holding 90-320 L of specular amber rainwater in canopy forks',
-   tags: TG('subtropic..temperate', 'shroud_cove', 'no', {
-    harvest: HV('none', [], false, 'sacred twin rainwater cistern reservoir and waterproof leaf reed-wax', null, 'reed-wax')
-   })
-  },
-  {
-   key: 'shroud_drum_gall',
-   name: 'Myrmecophyte Drum-Gall',
-   model: 'Myrmecodia tuberosa ant-plant amplified at 0.75 g with cat-sized Formica shrouda (Khroma-Mira)',
-   habit: 'gall',
-   H: [1.3, 2.6],
-   gather: 'saltpeter',
-   hazardKey: 'shroud-ants',
-   what: 'Ribbed chambered trunk tuber with 6 Hz slit-drum ostioles, basal white saltpeter nitrate crusts, and cat-sized bronze-black Shroud-Ant sentries',
-   tags: TG('subtropic..temperate', 'canopy_sea', 'no', {
-    harvest: HV('none', [], false, 'alchemical saltpeter reagent crust precipitated below ant-colony refuse vaults and tannin gall rind', 'reagent', 'saltpeter'),
-    hazard: {
-     kind: 'hunter',
-     role: 'shroud-ants',
-     danger: 0.78,
-     effect: 'corrode',
-     dose: 0.85,
-     falloff: 'smooth',
-     tell: { colour: '#a86420', fx: 'swarm', sound: 'drum-rattle' }
-    }
-   })
-  },
-  {
-   key: 'shroud_myrtle_smudge',
-   name: 'Calming Smudge-Myrtle',
-   model: 'Lophomyrtus and Leptospermum aromatic cloud-myrtle',
-   habit: 'shrub',
-   H: [1.5, 3.0],
-   gather: 'smudge-resin',
-   what: 'Aromatic silver-green trail shrub planted by Yonni Spear-Queens along granite footpaths; its resin pacifies nearby Shroud-Ant colonies',
-   tags: TG('subtropic..temperate', 'canopy_sea', 'both', {
-    harvest: HV('none', [], true, 'medicinal balm and aromatic insect-calming smudge-resin burned in Yonni trail braziers', 'reagent', 'smudge-resin')
-   })
-  },
-  {
-   key: 'shroud_cloak_bromeliad',
-   name: 'Scarlet and Saffron Tor-Cloak',
-   model: 'Pitcairnia, Puya and saxicolous Tillandsia lithophyte mats',
-   habit: 'lithophyte',
-   H: [0.8, 2.4],
-   gather: 'crimson-dye',
-   what: 'Tight jewel-toned scarlet, saffron and silver-velvet rosette tapestries clothing treeless storm-washed granite Cloak-Tors',
-   tags: TG('temperate..montane', 'cloak_tor', 'no', {
-    harvest: HV('none', [], false, 'fast crimson-dye and saffron pigment lake boiled from outer rock-rosette bracts', null, 'crimson-dye')
-   })
-  },
-  {
-   key: 'shroud_dew_strand',
-   name: 'Silver Mist-Sundew Curtain',
-   model: 'Drosera binata and Drosophyllum ridge-squall mucilage strands',
-   habit: 'carnivore',
-   H: [0.6, 1.8],
-   gather: 'mucilage',
-   what: 'Glistening pearl-tipped carnivorous threads streaming across windward granite Cloak-Tors to snare sea-fog midges',
-   tags: TG('temperate..montane', 'cloak_tor', 'no', {
-    harvest: HV('none', [], true, 'wound-sealing mucilage sizing and surgical glue', 'reagent', 'mucilage')
-   })
-  },
-  {
-   key: 'shroud_tree_fern',
-   name: 'Ironstone Ravine Tree-Fern',
-   model: 'Cyathea medullaris (mamaku) black tree-fern',
-   habit: 'treefern',
-   H: [3.5, 7.5],
-   gather: 'fiddlehead',
-   what: 'Dark scaly-boled shade tree-fern spreading wide emerald-bronze fronds across 8%-light ironstone and coal ravine bottoms',
-   tags: TG('subtropic..temperate', 'canopy_sea', 'yes', {
-    harvest: HV('none', ['fiddlehead', 'pith'], false, 'edible steamed fiddlehead crosiers and baked starchy trunk pith', null, 'fiddlehead')
-   })
-  }
- ];
-
- S.byKey = {};
- for (var i = 0; i < S.SPECIES.length; i++) {
-  S.byKey[S.SPECIES[i].key] = S.SPECIES[i];
- }
+ // Species, palettes and HV harvest records live in 21-shroudhills-species.js ([G data], scanned by tools/check_botany.py).
 
  // ---- Twist A: Paired Sister-Cup Cistern Sky-Pond spec (KRAND seeded)
  S.sisterCupSpec = function(seed){
@@ -432,6 +260,37 @@ var SHROUDHILLS = (function(){
   }
   if (distM <= r * 0.35 && !opt.onStonePath) return { state: 'drum-rattle', danger: 0.35, hz: 6.0 };
   return { state: 'peaceful', danger: 0, hz: 0 };
+ };
+
+ // ---- CROPS profile (Matron's Coast / Yonni Spear-Queen littoral & cloud forest) + littoral strand palm gating
+ S.CROPS = {
+  atm: 2,
+  staples: ['coconut', 'pandan'],
+  zones: {
+   shroud_cove: { warmth: [3, 4], arid: [3, 4], wet: true, salt: true, atm: 2 },
+   canopy_sea: { warmth: [2, 3], arid: [3, 4], atm: 2 },
+   cloak_tor: { warmth: [1, 2], arid: [3, 4], atm: 2 }
+  }
+ };
+
+ S.registerCrops = function(C){
+  var K = C || (typeof CROPS !== 'undefined' ? CROPS : null);
+  if (!K) return null;
+  if (K.BIOMES) K.BIOMES.shroudhills = S.CROPS;
+  return K.forBiome ? K.forBiome('shroudhills') : S.CROPS;
+ };
+
+ S.coveStrandPalmOk = function(o){
+  o = o || {};
+  var coast = o.coast == null ? 0 : o.coast;
+  var elevASL = o.elevASL == null ? 999 : o.elevASL;
+  var y = o.y == null ? 0 : o.y;
+  var sea = o.seaLevel == null ? 0 : o.seaLevel;
+  var tor = o.tor == null ? 0 : o.tor;
+  var granite = o.granite == null ? 0 : o.granite;
+  var path = o.path == null ? 0 : o.path;
+  var slope = o.slope == null ? 0 : o.slope;
+  return coast >= 0.72 && elevASL <= 108 && y > sea + 1.25 && tor <= 0.25 && granite <= 0.48 && path <= 0.22 && slope <= 0.56;
  };
 
  root.SHROUDHILLS = S;

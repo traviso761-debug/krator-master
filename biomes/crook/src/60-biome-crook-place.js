@@ -121,7 +121,7 @@ BIO.kit('crook');
     if(!claim('tree',x,z,2.1))continue;
 
     const uSp=H(seed,cx,cz,3,0x420);
-    const kind=uSp<0.34?'coastspruce':uSp<0.62?'westernredcedar':uSp<0.84?'redcypress':'bigleafmaple';
+    const kind=uSp<0.31?'coastspruce':uSp<0.57?'westernredcedar':uSp<0.76?'redcypress':uSp<0.90?'bigleafmaple':'gorgealder';
     const tSeed=KRAND.hash(seed,cx*131+cz,4,0x421);
     const sc=0.84+0.32*H(seed,cx,cz,5,0x420);
     if(dist0<=heroR){
@@ -135,36 +135,113 @@ BIO.kit('crook');
      recPlace(kind,x,y,z,asl,'cloudforest',{impostor:1});
     }
 
-    // Rainforest understory around hero trees (tree-ferns, chasm rhododendron, devil's club, sword-ferns, nurse logs)
+    // Rainforest understory around hero trees (tree-ferns, chasm rhododendron, salmonberry, swamp-lantern, devil's club, sword-ferns, nurse logs)
     if(dist0<=heroR+65){
      const uAng=H(seed,cx,cz,7,0x422)*TAU,uRad=4.4+4.8*H(seed,cx,cz,8,0x422);
      const ux=x+Math.cos(uAng)*uRad,uz=z+Math.sin(uAng)*uRad;
      const uy=tH(ux,uz),uasl=SITE.baseElevM+uy;
      if(isDry(ux,uz,0.4)&&uasl>=65.5&&slopeOf(ux,uz).slope<0.68){
       const uU=H(seed,cx,cz,9,0x422);
-      if(uU<0.32&&claim('shrub',ux,uz,1.1)){
+      if(uU<0.26&&claim('shrub',ux,uz,1.1)){
        CROOK.growTreeFern(ux,uy,uz,KRAND.hash(seed,cx,cz,0x423),0.85+0.3*H(seed,cx,cz,10,0x422));
        recPlace('cloudtreefern',ux,uy,uz,uasl,'cloudforest');
-      }else if(uU<0.62&&claim('shrub',ux,uz,1.2)){
+      }else if(uU<0.50&&claim('shrub',ux,uz,1.2)){
        CROOK.growRhodo(ux,uy,uz,KRAND.hash(seed,cx,cz,0x424),0.8+0.3*H(seed,cx,cz,10,0x422));
        recPlace('gorgerhodo',ux,uy,uz,uasl,'cloudforest');
-      }else if(uU<0.88&&claim('herb',ux,uz,0.85)){
+      }else if(uU<0.66&&claim('shrub',ux,uz,1.0)){
+       CROOK.growSalmonberry(ux,uy,uz,KRAND.hash(seed,cx,cz,0x425),0.85+0.3*H(seed,cx,cz,10,0x422));
+       recPlace('salmonberry',ux,uy,uz,uasl,'cloudforest');
+      }else if(uU<0.82&&claim('herb',ux,uz,0.85)){
        const ps=1.3+0.8*H(seed,cx,cz,11,0x422);
        BIO.put('ck_palmate',[ux,uy,uz],qEuler(0,H(seed,cx,cz,12,0x422)*TAU,0),[ps,ps*1.1,ps],PAL.palmate[Math.abs(cx+cz)%3]);
        recPlace('devilsclub',ux,uy,uz,uasl,'cloudforest');
+      }else if(uU<0.93&&claim('herb',ux,uz,0.75)){
+       const ls=0.75+0.45*H(seed,cx,cz,11,0x422);
+       BIO.put('ck_lantern_leaf',[ux,uy,uz],qEuler(0,H(seed,cx,cz,12,0x422)*TAU,0),[ls*1.2,ls*0.85,ls*1.2],PAL.lanternLeaf[Math.abs(cx+cz)%3]);
+       BIO.put('ck_lantern_spathe',[ux,uy+0.04,uz],qEuler(0,H(seed,cx,cz,13,0x422)*TAU,0),[0.28*ls,0.52*ls,0.28*ls],PAL.lanternSpathe[Math.abs(cx)%3]);
+       recPlace('swamplantern',ux,uy,uz,uasl,'cloudforest');
       }else if(claim('log',ux,uz,1.4)){
        BIO.put('ck_nurselog',[ux,uy+0.22,uz],qEuler(1.52,H(seed,cx,cz,13,0x422)*TAU,0),[1.4,5.5,1.4],0x5c4a3a);
        BIO.put('ck_mossmat',[ux,uy+0.48,uz],qEuler(0,0,0),[1.6,1.0,1.6],PAL.moss[0]);
       }
-      // Floor sword-ferns & moss
+      // Floor sword-ferns & tuft-sedge
       const fAng=uAng+2.2,fx=x+Math.cos(fAng)*5.2,fz=z+Math.sin(fAng)*5.2,fy=tH(fx,fz);
       if(SITE.baseElevM+fy>=65.5&&isDry(fx,fz,0.3)){
        const fs=1.1+0.7*H(seed,cx,cz,16,0x422);
-       BIO.put('ck_floorfern',[fx,fy,fz],qEuler(0,H(seed,cx,cz,17,0x422)*TAU,0),[fs,fs*0.85,fs],PAL.fern[Math.abs(cx*3+cz)%4]);
-       recPlace('morainesedge',fx,fy,fz,SITE.baseElevM+fy,'cloudforest');
+       const isSw=(Math.abs(cx+cz)%2===0);
+       BIO.put(isSw?'ck_swordfern':'ck_floorfern',[fx,fy,fz],qEuler(0,H(seed,cx,cz,17,0x422)*TAU,0),[fs,fs*0.85,fs],PAL.fern[Math.abs(cx*3+cz)%4]);
+       recPlace(isSw?'gorgeswordfern':'morainesedge',fx,fy,fz,SITE.baseElevM+fy,'cloudforest');
       }
      }
     }
+   }
+
+   // 1C. Warm frost-free +65.5..+116 m coastal sun-benches & Cascade-Caldera lagoon rim: Drift-Sown Coconut Palms & Cabbage-Palms
+   const pcs=22,pnc=Math.ceil((R*0.72)/pcs);
+   const spCoco=CROOK.byKey.coconut,spCab=CROOK.byKey.calderapalm,spSea=CROOK.byKey.calderaseagrass;
+   for(let cz=-pnc;cz<=pnc;cz++)for(let cx=-pnc;cx<=pnc;cx++){
+    const bx=cx*pcs,bz=cz*pcs;
+    if(bx<42||bx>365||Math.hypot(bx,bz)>R*0.74)continue;
+    if(H(seed,cx,cz,3,0x428)>0.82*q)continue;
+    const x=bx+(H(seed,cx,cz,1,0x428)-0.5)*pcs*0.84;
+    const z=bz+(H(seed,cx,cz,2,0x428)-0.5)*pcs*0.84;
+    if(!isDry(x,z,0.7))continue;
+    const resD=Math.hypot(x-SITE.reserve.x,z-SITE.reserve.z);
+    if(resD<SITE.reserve.r*0.55)continue;
+    const y=tH(x,z),asl=SITE.baseElevM+y,sl=slopeOf(x,z);
+    const C=SITE.caldera,cd=Math.hypot((x-C.x)/C.rx,(z-C.z)/C.rz);
+    const shelter=smooth(1.55,0.88,cd);
+    const resNear=smooth(SITE.reserve.r+52,SITE.reserve.r+4,resD);
+    const ck=CROOK_PHYS.coconutAt({
+     station:SKEY,elevM:asl,slope:sl.slope,nx:sl.nx,nz:sl.nz,rainMm:SITE.rainMm,
+     coastDistKm:Math.max(0,(x+95)/1000),wnwExposure01:1-0.75*shelter,
+     calderaShelter01:shelter,silicaByte:SITE.minerals.silica,reserveNear01:resNear
+    });
+    if(ck.ok&&asl>=65.5&&asl<=116.0&&H(seed,cx,cz,6,0x428)<0.74){
+     if(!claim('palm',x,z,2.8))continue;
+     const tSeed=KRAND.hash(seed,cx*163+cz,4,0x429);
+     const sc=0.86+0.28*H(seed,cx,cz,5,0x428);
+     const leanAz=shelter>0.35?Math.atan2(C.z-z,C.x-x):Math.atan2(sl.nz,sl.nx);
+     if(spCoco){
+      reg({
+       tagId:'crook:coconut-'+cx+'-'+cz,tagClass:'flora',
+       name:spCoco.name,key:'coconut',kind:'tree',
+       x:x,y:y,z:z,r:3.6,h:12.5*sc,
+       tags:{biome:'crook',zone:'cloudforest',strand:true,harvest:spCoco.tags.harvest}
+      });
+     }
+     const res=CROOK.growCoconut(x,y,z,tSeed,sc,leanAz);
+     recPlace('coconut',x,y,z,asl,'cloudforest',{H:res.H,shelter:+shelter.toFixed(3)});
+    }else if(asl>=66.0&&asl<=142.0&&sl.slope<=0.58&&(shelter>0.28||resNear>0.25)){
+     if(!claim('palm',x,z,2.2))continue;
+     const tSeed=KRAND.hash(seed,cx*167+cz,7,0x429),sc=0.85+0.3*H(seed,cx,cz,8,0x428);
+     if(spCab){
+      reg({
+       tagId:'crook:calderapalm-'+cx+'-'+cz,tagClass:'flora',
+       name:spCab.name,key:'calderapalm',kind:'tree',
+       x:x,y:y,z:z,r:2.6,h:7.0*sc,
+       tags:{biome:'crook',zone:'cloudforest',harvest:spCab.tags.harvest}
+      });
+     }
+     const resC=CROOK.growCalderaPalm(x,y,z,tSeed,sc);
+     recPlace('calderapalm',x,y,z,asl,'cloudforest',{H:resC.H});
+    }
+   }
+
+   // 1D. Caldera Nursery Eelgrass (calderaseagrass) in shallow Whale-Haven / Cascade-Caldera shoals
+   const ecs=14,enc=12;
+   for(let cz=-enc;cz<=enc;cz++)for(let cx=-enc;cx<=enc;cx++){
+    const x=SITE.caldera.x+cx*ecs+(H(seed,cx,cz,1,0x42c)-0.5)*ecs*0.8;
+    const z=SITE.caldera.z+cz*ecs+(H(seed,cx,cz,2,0x42c)-0.5)*ecs*0.8;
+    const y=tH(x,z),w=wH(x,z);
+    if(!(w>-1e8&&y<w-0.22&&y>w-3.8))continue;
+    if(H(seed,cx,cz,3,0x42c)>0.68*q)continue;
+    const es=0.75+0.55*H(seed,cx,cz,4,0x42c);
+    if(spSea&&(counts.calderaseagrass%4===0)){
+     reg({tagId:'crook:eelgrass-'+cx+'-'+cz,tagClass:'flora',name:spSea.name,key:'calderaseagrass',kind:'flora',x:x,y:y,z:z,r:1.6,h:es,tags:{biome:'crook',zone:'spraybench',harvest:spSea.tags.harvest}});
+    }
+    BIO.put('ck_eelgrass',[x,y-0.04,z],qEuler(0,H(seed,cx,cz,5,0x42c)*TAU,0),[es*1.3,es,es*1.3],PAL.eelgrass[Math.abs(cx+cz)%3]);
+    recPlace('calderaseagrass',x,y,z,SITE.baseElevM+y,'spraybench');
    }
 
    reg({tagId:'crook:spray-sponge-bench',name:'Lithistid Basalt Spray-Sponge Apron (< +65 m)',x:-22,z:18,y:0,r:72,h:64,tags:{biome:'crook',zone:'spraybench'}});
@@ -174,7 +251,7 @@ BIO.kit('crook');
 
   // ================================================================ STATION 2: CROOKWASH (wash)
   else if(SKEY==='wash'){
-   // 2A. Stepped Terracotta / Ochre / Celadon Iron-Jade Rimstone Pools (D: RIM_POOLS)
+   // 2A. Stepped Terracotta / Ochre / Celadon Iron-Jade Rimstone Pools (D: RIM_POOLS) + Iron-Seep Golden Saxifrage
    for(let i=0;i<RIM_POOLS.length;i++){
     const P=RIM_POOLS[i];
     const pal=PAL.rimstone[P.stain]||PAL.rimstone.ochre;
@@ -189,6 +266,11 @@ BIO.kit('crook');
       BIO.put('ck_rimstone_shelf',[rx,P.level-0.06,rz],qEuler(0,ang+Math.PI*0.5,0),[1.15,0.85,1.15],col);
      }
      recPlace('rimstonemoss',rx,ry,rz,SITE.baseElevM+ry,'gorge',{step:i,stain:P.stain});
+     if(s%4===1){
+      const sx=P.x+Math.cos(ang)*(P.r*1.22),sz=P.z+Math.sin(ang)*(P.r*1.22),sy=tH(sx,sz);
+      BIO.put('ck_ironsax',[sx,sy+0.01,sz],qEuler(0,ang*1.7,0),[0.55,0.38,0.55],PAL.ironsax[(i+s)%3]);
+      recPlace('ironsaxifrage',sx,sy,sz,SITE.baseElevM+sy,'gorge');
+     }
     }
    }
 
@@ -211,14 +293,13 @@ BIO.kit('crook');
     });
     const ac=CROOK_PHYS.aspectClimateAt({elevM:asl,nx:sl.nx,nz:sl.nz,rainMm:SITE.rainMm,leeShelter01:smooth(20,130,z)*0.55,gorgeMist01:0.55*(1-smooth(30,140,z))});
 
-    // Sunny north-facing Csa/Dsb rain-shadow slope (z > 95): sparser trees, golden sedges & gossan/nephrite boulders
     const treeKeep=(ac.zoneBand==='leeslope')?0.36:0.88;
     if(H(seed,cx,cz,3,0x520)<treeKeep*q&&claim('tree',x,z,2.1)){
      const uSp=H(seed,cx,cz,4,0x520);
      let kind='redcypress';
-     if(bm.rustScale01>=0.48&&uSp<0.36)kind='rustcedar';
+     if(bm.rustScale01>=0.48&&uSp<0.34)kind='rustcedar';
      else if(ac.zoneBand==='leeslope')kind=uSp<0.65?'silverfir':'westernredcedar';
-     else kind=uSp<0.36?'redcypress':uSp<0.66?'silverfir':uSp<0.84?'westernredcedar':'bigleafmaple';
+     else kind=uSp<0.30?'redcypress':uSp<0.55?'silverfir':uSp<0.72?'westernredcedar':uSp<0.84?'canyonyew':uSp<0.93?'gorgealder':'bigleafmaple';
 
      const tSeed=KRAND.hash(seed,cx*137+cz,5,0x521),sc=0.82+0.34*H(seed,cx,cz,6,0x520);
      if(dist0<=heroR){
@@ -231,33 +312,34 @@ BIO.kit('crook');
      }
     }
 
-    // Understory: Chasm Rhododendron, Porcelain-Margin Skarn-Ferns (B), Opalescent Horsetails, Devil's Club & Boulders
+    // Understory: Chasm Rhododendron, Porcelain-Margin Skarn-Ferns (B), Salmonberry, Nephrite Sword-Ferns & Boulders
     if(dist0<=heroR+65){
      const uAng=H(seed,cx,cz,8,0x522)*TAU,uRad=4.2+4.8*H(seed,cx,cz,9,0x522);
      const ux=x+Math.cos(uAng)*uRad,uz=z+Math.sin(uAng)*uRad;
      if(isDry(ux,uz,0.35)&&slopeOf(ux,uz).slope<0.74){
       const uy=tH(ux,uz),uasl=SITE.baseElevM+uy;
-      if(bm.silicaGlaze01>=0.42&&H(seed,cx,cz,10,0x522)<0.78&&claim('skarnfern',ux,uz,0.85)){
-       // Porcelain-margin jade-fern rosette (5 arching fronds with opalescent jade-white margins)
+      if(bm.silicaGlaze01>=0.42&&H(seed,cx,cz,10,0x522)<0.72&&claim('skarnfern',ux,uz,0.85)){
        for(let f=0;f<5;f++){
         const fa=(f/5)*TAU+0.25*H(seed,cx,cz,20+f,0x522),fl=0.85+0.55*H(seed,cx,cz,26+f,0x522);
         BIO.put('ck_skarnfern',[ux,uy+0.04,uz],qEuler(0,fa,-0.24),[fl,fl*0.85,fl*0.85],PAL.skarnFern[f%3],{c2:0xdcf2e6});
        }
        recPlace('skarnfern',ux,uy,uz,uasl,'gorge',{silicaGlaze:bm.silicaGlaze01});
-      }else if(ac.zoneBand!=='leeslope'&&H(seed,cx,cz,11,0x522)<0.52&&claim('rhodo',ux,uz,1.15)){
+      }else if(ac.zoneBand!=='leeslope'&&H(seed,cx,cz,11,0x522)<0.42&&claim('rhodo',ux,uz,1.15)){
        CROOK.growRhodo(ux,uy,uz,KRAND.hash(seed,cx,cz,0x523),0.85+0.3*H(seed,cx,cz,12,0x522));
        recPlace('gorgerhodo',ux,uy,uz,uasl,'gorge');
+      }else if(ac.zoneBand!=='leeslope'&&H(seed,cx,cz,11,0x522)<0.62&&claim('salmon',ux,uz,1.0)){
+       CROOK.growSalmonberry(ux,uy,uz,KRAND.hash(seed,cx,cz,0x525),0.82+0.28*H(seed,cx,cz,12,0x522));
+       recPlace('salmonberry',ux,uy,uz,uasl,'gorge');
       }else if(ac.zoneBand==='leeslope'&&claim('sedge',ux,uz,0.75)){
        const ss=0.9+0.6*H(seed,cx,cz,13,0x522);
        BIO.put('ck_sedge',[ux,uy,uz],qEuler(0,H(seed,cx,cz,14,0x522)*TAU,0),[ss,ss*0.85,ss],PAL.sedge[Math.abs(cx+cz)%4]);
        recPlace('morainesedge',ux,uy,uz,uasl,'leeslope');
       }else if(claim('fern',ux,uz,0.75)){
        const fs=1.0+0.65*H(seed,cx,cz,13,0x522);
-       BIO.put('ck_floorfern',[ux,uy,uz],qEuler(0,H(seed,cx,cz,14,0x522)*TAU,0),[fs,fs*0.85,fs],PAL.fern[Math.abs(cx+cz)%4]);
-       recPlace('morainesedge',ux,uy,uz,uasl,'gorge');
+       BIO.put('ck_swordfern',[ux,uy,uz],qEuler(0,H(seed,cx,cz,14,0x522)*TAU,0),[fs,fs*0.85,fs],PAL.fern[Math.abs(cx+cz)%4]);
+       recPlace('gorgeswordfern',ux,uy,uz,uasl,'gorge');
       }
      }
-     // Nephrite-jade float boulders & banded gneiss / gossan blocks
      if(H(seed,cx,cz,15,0x524)<0.35*q){
       const rx=bx+(H(seed,cx,cz,16,0x524)-0.5)*tcs,rz=bz+(H(seed,cx,cz,17,0x524)-0.5)*tcs;
       if(isDry(rx,rz,0.05)&&claim('rock',rx,rz,1.5)){
@@ -287,7 +369,6 @@ BIO.kit('crook');
       const c=canes[ci],holed=(ci%2===0);
       const col=PAL.bamboo[(ci+Math.abs(cx+cz))%PAL.bamboo.length];
       B.put(holed?'ck_bamboo_holed':'ck_bamboo_plain',[c],col);
-      // Crown leaf sprays
       for(let sk=0;sk<3;sk++){
        const sy=c.p[1]+c.h*(0.58+0.16*sk),saz=c.az+sk*2.1;
        BIO.put('ck_bamboo_leaf'+(sk%3),[c.p[0],sy,c.p[2]],qEuler(0,saz,0),[2.4,2.4,2.4],col);
@@ -318,7 +399,6 @@ BIO.kit('crook');
    const W=SITE.meltWells||[];
    for(let i=0;i<W.length;i++){
     const mw=W[i],wy=tH(mw.x,mw.z),wasl=SITE.baseElevM+wy;
-    // Clonal ring of fleshy burgundy-bronze & jade bracts at the bottom of the melted 1.2..2.0 m snow-well
     const nBr=6;
     for(let b=0;b<nBr;b++){
      const ang=(b/nBr)*TAU+0.15*H(seed,i,b,0x610);
@@ -327,12 +407,10 @@ BIO.kit('crook');
      const bs=0.46+0.24*H(seed,i,10+b,0x610);
      BIO.put('ck_hearth_bract',[bx,by+0.02,bz],qEuler(0,ang,0),[bs,bs*0.72,bs],PAL.hearthBract[(i+b)%PAL.hearthBract.length]);
     }
-    // Central warm +15 degC starch-burning spadix cones
     const spH=0.38+0.26*H(seed,i,20,0x610);
     BIO.put('ck_hearth_spadix',[mw.x,wy+0.02,mw.z],qEuler(0,i*1.1,0),[0.18,spH,0.18],PAL.hearthSpadix[i%PAL.hearthSpadix.length]);
     recPlace('hearthring',mw.x,wy,mw.z,wasl,'tarn',{coreTempC:mw.coreTempC,wellDiamM:mw.diamM});
 
-    // Ring of malachite-teal & rust-ochre cryo-snow algae along the snow-well's bevelled rim collar
     const nAlg=5;
     for(let a=0;a<nAlg;a++){
      const ang=(a/nAlg)*TAU+0.4*H(seed,i,30+a,0x610);
@@ -344,7 +422,7 @@ BIO.kit('crook');
     recPlace('cryosnow',mw.x+mw.r*1.35,tH(mw.x+mw.r*1.35,mw.z),mw.z,wasl,'tarn');
    }
 
-   // 3B. Subalpine Krummholz Larch, Malachite Cushion-Heaths (B), Frost-Glass Sedges (B) & Moraine Boulders
+   // 3B. Subalpine Krummholz Larch, Malachite Cushion-Heaths (B), Frost-Glass Sedges (B), Plume-Cottongrass & Cobalt Snow-Gentians
    const acs=16,anc=Math.ceil(R/acs);
    for(let cz=-anc;cz<=anc;cz++)for(let cx=-anc;cx<=anc;cx++){
     const bx=cx*acs,bz=cz*acs,dist0=Math.hypot(bx,bz);
@@ -355,7 +433,6 @@ BIO.kit('crook');
     const y=tH(x,z),asl=SITE.baseElevM+y,sl=slopeOf(x,z);
     if(sl.slope>0.76)continue;
 
-    // Subalpine krummholz larch stands near the moraine tarn shore (x < 35, y < 34)
     if(x<38&&y<34&&H(seed,cx,cz,3,0x620)<0.46*q&&claim('larch',x,z,3.4)){
      const tSeed=KRAND.hash(seed,cx*149+cz,4,0x621),sc=0.75+0.4*H(seed,cx,cz,5,0x620);
      if(dist0<=heroR){
@@ -368,7 +445,6 @@ BIO.kit('crook');
      }
     }
 
-    // Malachite-teal & rust-ochre mineral-rind cushion-heaths + spun frost-glass silica sedges + tarn cottongrass
     if(dist0<=heroR+85){
      const ux=x+(H(seed,cx,cz,7,0x622)-0.5)*11,uz=z+(H(seed,cx,cz,8,0x622)-0.5)*11;
      if(isDry(ux,uz,0.22)&&slopeOf(ux,uz).slope<0.68){
@@ -378,23 +454,29 @@ BIO.kit('crook');
       if(td<1.26&&uM<0.55&&claim('cotton',ux,uz,0.85)){
        const cs2=0.65+0.45*H(seed,cx,cz,10,0x622);
        BIO.put('ck_cotton',[ux,uy,uz],qEuler(0,H(seed,cx,cz,11,0x622)*TAU,0),[cs2,cs2*0.95,cs2],PAL.cotton[Math.abs(cx+cz)%3]);
-       recPlace('morainesedge',ux,uy,uz,uasl,'tarn');
-      }else if(uM<0.44&&claim('cushion',ux,uz,1.05)){
+       recPlace('tarncottongrass',ux,uy,uz,uasl,'tarn');
+      }else if(uM<0.38&&claim('cushion',ux,uz,1.05)){
        const cr=0.38+0.62*H(seed,cx,cz,10,0x622),ch=0.26+0.36*H(seed,cx,cz,11,0x622);
        const ccol=PAL.malachiteCushion[(Math.abs(cx*5+cz*9))%PAL.malachiteCushion.length];
        BIO.put('ck_malachite_dome',[ux,uy-0.03,uz],qEuler(0,H(seed,cx,cz,12,0x622)*TAU,0),[cr,ch,cr],ccol);
        recPlace('malachitecushion',ux,uy,uz,uasl,'tarn');
-       // Ring cushion with spun frost-glass silica sedge
        const fs=0.52+0.38*H(seed,cx,cz,13,0x622);
        BIO.put('ck_frostsedge',[ux+cr*0.92,tH(ux+cr*0.92,uz),uz],qEuler(0,cx*1.3,0),[fs,fs*0.9,fs],PAL.frostSedge[Math.abs(cx)%4],{c2:0xeef8fc});
        recPlace('frostsedge',ux+cr*0.92,uy,uz,uasl,'tarn');
+      }else if(uM<0.56&&claim('gentian',ux,uz,0.65)){
+       const gs=0.32+0.22*H(seed,cx,cz,14,0x622);
+       BIO.put('ck_gentian',[ux,uy+0.02,uz],qEuler(0,H(seed,cx,cz,15,0x622)*TAU,0),[gs*1.35,gs,gs*1.35],PAL.gentian[Math.abs(cx+cz)%3]);
+       recPlace('cobaltgentian',ux,uy,uz,uasl,'tarn');
       }else if(uM<0.78&&claim('frostsedge',ux,uz,0.8)){
        const fs=0.55+0.42*H(seed,cx,cz,14,0x622);
        BIO.put('ck_frostsedge',[ux,uy,uz],qEuler(0,H(seed,cx,cz,15,0x622)*TAU,0),[fs,fs*0.92,fs],PAL.frostSedge[Math.abs(cx+cz)%4],{c2:0xeef8fc});
        recPlace('frostsedge',ux,uy,uz,uasl,'tarn');
+      }else if(claim('sedge',ux,uz,0.75)){
+       const ss=0.6+0.4*H(seed,cx,cz,14,0x622);
+       BIO.put('ck_sedge',[ux,uy,uz],qEuler(0,H(seed,cx,cz,15,0x622)*TAU,0),[ss,ss*0.85,ss],PAL.sedge[Math.abs(cx+cz)%4]);
+       recPlace('morainesedge',ux,uy,uz,uasl,'tarn');
       }
      }
-     // Granite tors & malachite moraine boulders
      if(H(seed,cx,cz,16,0x623)<0.34*q){
       const rx=bx+(H(seed,cx,cz,17,0x623)-0.5)*acs,rz=bz+(H(seed,cx,cz,18,0x623)-0.5)*acs;
       if(isDry(rx,rz,0.15)&&claim('rock',rx,rz,1.6)){

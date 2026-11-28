@@ -34,14 +34,14 @@ Read by `build.py` in its own order (`SOURCES`), and loaded by path by other bui
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | <1 |  |
-| `30-af-plan.js` | 36 **big** | ARCOFORTE — the unified plan ([G data]) (1) |
-| `31-af-interiors.js` | 28 | ARCOFORTE — interiors: living, work, and recreat (1) |
-| `32-af-rules.js` | 7 | ARCOFORTE — invariants & rules ([G data]) (1) |
-| `45-host-stage.js` | 17 | ARCHITECTURAL MATERIALS (PBR + library maps; low (41); COASTAL STRATA & TERRAIN MESH (isolated PRNG + o (131); MERGED GEOMETRY ACCUMULATOR (1 mesh per material (228) |
-| `60-af-draw-base.js` | 16 |  |
+| `30-af-plan.js` | 44 **big** | ARCOFORTE — the unified plan ([G data]) (1) |
+| `31-af-interiors.js` | 71 **big** | ARCOFORTE — interiors: living, work, and recreat (1) |
+| `32-af-rules.js` | 8 | ARCOFORTE — invariants & rules ([G data]) (1) |
+| `45-host-stage.js` | 19 | ARCHITECTURAL MATERIALS (PBR + library maps; low (65); COASTAL STRATA & TERRAIN MESH (isolated PRNG + o (156); MERGED GEOMETRY ACCUMULATOR (1 mesh per material (253) |
+| `60-af-draw-base.js` | 17 |  |
 | `62-af-draw-ring.js` | 9 |  |
-| `64-af-draw-crown.js` | 12 |  |
-| `75-af-interiors-host.js` | 17 |  |
+| `64-af-draw-crown.js` | 14 |  |
+| `75-af-interiors-host.js` | 19 |  |
 | `89z-host-water-sky.js` | 5 |  |
-| `99-host-take.js` | 10 |  |
+| `99-host-take.js` | 12 |  |
 | `99-tail.html` | <1 |  |

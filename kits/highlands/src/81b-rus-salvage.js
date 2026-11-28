@@ -85,7 +85,7 @@ function buildHlRusHullNaust(G,o){reseed(25021+(o.v|0));const L=16,R=4.6,arc=Mat
 // A corrugated grain silo, its roof long gone, stood on a fieldstone ring: the village crowned it with a log loft
 // that oversails it on corbels (as a stabbur oversails its posts), under a steep shingle gable with dragon heads;
 // a door cut at the foot, a ladder to the loft, the hay racks and the cart of a farm around it.
-kdef('hRusDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
+if(!KIT.defs.hRusDisc)kdef('hRusDisc',new THREE.CylinderGeometry(1,1,1,14).translate(0,.5,0),MAT.woodV);
 function buildHlRusSiloStabbur(G,o){reseed(25031+(o.v|0));const R=2.3,SH=7.2,W=5.8,H=2.3;
  const corr=hC(vPick(HSV.corr)).lerp(hC(vPick(HSV.rust)),rr(.1,.45)),rub=hC(vPick(HPAL.rubble)),log=hC(vPick(HPAL.pine)).multiplyScalar(.9),tar=hC(vPick(HPAL.tar)),sh=hC(vPick(HPAL.shingle));
  vnReg('Silo stabbur',0,0,6,SH+H+4.5);

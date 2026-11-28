@@ -371,6 +371,147 @@
    if(isJade)st.jadeNodes++;else st.boulders++;
   });
 
+  /* 11. DRIFT-SOWN COCONUT PALMS (Cocos nucifera): sheltered leeward strand pockets, lagoon levee benches & high skerry shoulders (pH 5.0-8.8) */
+  const EYES=[
+   [-355,285],[-16,-30],[-106,22],[-146,84],[84,-60],[-126,116],
+   [-330,-285],[-68,-192],[-56,-24],[102,184],[12,-92],[68,62],
+   [-315,-275],[-96,-74],[30,-22],[-122,-68],[86,-82],[116,-8],
+   [-385,285],[-46,52],[-185,88],[74,-62],[-195,150]
+  ];
+  const nearEye=(x,z)=>EYES.some(e=>Math.hypot(x-e[0],z-e[1])<13);
+  const bruciteAt=o.brucite||(typeof L!=='undefined'&&L.BRUCITE?L.BRUCITE:()=>0);
+  st.coconut=0;
+  cellPass(18.5,14,Lv.far,(x,y,z,lv)=>{
+   if(y<2.25||inPool(x,z,1.55)||nearEye(x,z))return;
+   if(SKEY==='shoal'&&x<-95)return;
+   if(SKEY==='drowned'&&coalAt(x,z)>0.55)return;
+   const br=DROWN_PHYS.bruciteStackAt({
+    ultramaficByte:ultraByte,
+    faultDistM:typeof L!=='undefined'&&L.faultDist?L.faultDist(x,z):faultDistAt(x),
+    waterDepthM:y,
+    tidalRangeM:site.tideRangeM,
+    waveShearPa:shearAt(x,z)
+   });
+   const slope=BIO.field('slope',x,z);
+   const cs=DROWN_PHYS.coconutStrandAt({
+    elevM:y,
+    ultramaficByte:ultraByte,
+    tidalRangeM:site.tideRangeM,
+    brucite01:bruciteAt(x,z),
+    bruciteActive:br.active,
+    waveShearPa:shearAt(x,z),
+    shelter01:shelterAt(x,z),
+    slope:slope,
+    trimElevM:trimY,
+    isHorstSkerry:SKEY==='skerry'
+   });
+   if(!cs.strandOk||!free(x,z,3.2))return;
+   if(rng()>(0.36+0.44*cs.suitability01)*q)return;
+   const H0=rr(6.8,13.6),yaw=rr(0,TAU),lean=rr(0.14,0.32);
+   claim('coconut',x,z,3.0);
+   DROWN.growCoconut(x,y,z,H0,yaw,lean,KRAND.hash(seed,Math.round(x*10),Math.round(z*10),141),lv);
+   log({species:'coconut',x,y,z,H:H0,pH:cs.pH,clearHighM:cs.clearHighM,ultramaficByte:ultraByte,woodyRefuge:false});
+   st.coconut++;
+  });
+
+  /* 12. REFUGE KAURI (>= +48 m on skerry), LATERITE SEDGE & SEEP PITCHER-VINES */
+  st.refugekauri=0;st.skerrypaperbark=0;st.skerryphyllanthus=0;st.skerrysedge=0;st.skerrypitcher=0;
+  st.skerrycasuarina=0;st.skerrypandan=0;st.skerryhibiscus=0;st.skerrynaupaka=0;
+  st.greymangrove=0;st.byssusmussel=0;st.skerryoyster=0;st.halimedaturf=0;
+
+  if(SKEY==='skerry'){
+   cellPass(19.5,15,Lv.far,(x,y,z,lv)=>{
+    if(y<trimY||nearEye(x,z)||BIO.field('slope',x,z)>0.56||!free(x,z,3.6))return;
+    if(rng()>0.44*q)return;
+    const sc=rr(0.85,1.20);
+    claim('refugekauri',x,z,3.4);
+    const g=DROWN.growRefugeKauri(x,y,z,KRAND.hash(seed,Math.round(x*10),Math.round(z*10),151),sc);
+    log({species:'refugekauri',x,y,z,H:g.H,ultramaficByte:ultraByte,woodyRefuge:true});
+    st.refugekauri++;
+   });
+
+   cellPass(9.0,16,Lv.floor[1],(x,y,z,lv)=>{
+    if(y<trimY*0.65||inPool(x,z,1.4)||BIO.field('slope',x,z)>0.62)return;
+    if(rng()>0.42*q)return;
+    if(y>=trimY&&rng()<0.28){
+     const psz=rr(0.65,1.05),pyaw=rr(0,TAU);
+     BIO.tree(x,z,()=>{
+      BIO.beam('dl_palmtrunk',[x,y-0.06,z],[x+0.14*psz,y+0.36*psz,z],0.025,0.018,C(0x6e5c44));
+      BIO.put('dl_pitcher_rosette',[x,y-0.01,z],qEuler(0,pyaw,0),[psz,psz*0.55,psz],C(0x5c8a3c));
+      BIO.put('dl_pitcher_cup',[x+0.14*psz,y+0.26*psz,z],qEuler(0,pyaw+0.8,0),[0.24*psz,0.34*psz,0.24*psz],C(0xa43e2c));
+     },{range:420});
+     log({species:'skerrypitcher',x,y,z,ultramaficByte:ultraByte,woodyRefuge:false});
+     st.skerrypitcher++;
+    }else{
+     const ssz=rr(0.62,1.18);
+     BIO.put('dl_skerrysedge',[x,y-0.03,z],qEuler(0,rr(0,TAU),0),[ssz,ssz*0.92,ssz],C(0x888c4e));
+     log({species:'skerrysedge',x,y,z,ultramaficByte:ultraByte,woodyRefuge:false});
+     st.skerrysedge++;
+    }
+   });
+  }
+
+  /* 13. SKERRY & STRAND TREES/SHRUBS (casuarina, pandan, paperbark, hibiscus, naupaka, ultramafic phyllanthus; pH 5.0-8.8) */
+  cellPass(15.5,17,Lv.far,(x,y,z,lv)=>{
+   if(y<1.95||inPool(x,z,1.55)||nearEye(x,z))return;
+   if(bruciteAt(x,z)>0.08)return;
+   const slope=BIO.field('slope',x,z);
+   if(slope>0.58||!free(x,z,2.4))return;
+   if(rng()>0.42*q)return;
+   const u=rng(),cSeed=KRAND.hash(seed,Math.round(x*10),Math.round(z*10),171);
+   let kind='skerrypandan';
+   if(ultraByte>=128&&u<0.24){
+    kind='skerryphyllanthus';
+   }else if(y>=2.8&&u<0.46){
+    kind=SKEY==='drowned'||SKEY==='skerry'?'skerrypaperbark':'skerrycasuarina';
+   }else if(y>=2.5&&u<0.68){
+    kind='skerrycasuarina';
+   }else if(u<0.84){
+    kind=SKEY==='bar'?'skerrynaupaka':'skerryhibiscus';
+   }else{
+    kind=rng()<0.5?'skerrypandan':'skerrynaupaka';
+   }
+   claim(kind,x,z,2.2);
+   const g=DROWN.growStrandWoody(kind,x,y,z,cSeed,rr(0.82,1.18));
+   log({species:kind,x,y,z,H:g.H,ultramaficByte:ultraByte,woodyRefuge:false});
+   st[kind]++;
+  });
+
+  /* 14. PNEUMATOPHORE GREY-MANGROVE (-0.5..+2.1 m sheltered tidal margins) & INTERTIDAL ROCK-OYSTER (-0.8..+1.75 m) */
+  cellPass(14.5,18,Lv.mid,(x,y,z,lv)=>{
+   if(inPool(x,z,1.4)||nearEye(x,z)||bruciteAt(x,z)>0.08)return;
+   if(y>=-0.5&&y<=2.1&&shelterAt(x,z)>0.38&&SKEY!=='bar'&&free(x,z,2.5)&&rng()<0.38*q){
+    claim('greymangrove',x,z,2.3);
+    const g=DROWN.growGreyMangrove(x,y,z,KRAND.hash(seed,Math.round(x*10),Math.round(z*10),181),rr(0.82,1.18));
+    log({species:'greymangrove',x,y,z,H:g.H,ultramaficByte:ultraByte,woodyRefuge:false});
+    st.greymangrove++;
+   }else if(y>=-0.8&&y<=1.72&&ultraByte>=128&&rng()<0.36*q){
+    const osz=rr(0.48,0.95);
+    BIO.put('dl_rock_oyster',[x,y+0.01,z],qEuler(0,rr(0,TAU),0),[osz,0.32,osz],pickC(PAL.oyster,0.02));
+    log({species:'skerryoyster',x,y,z,woodyRefuge:false});
+    st.skerryoyster++;
+   }
+  });
+
+  /* 15. SUBTIDAL SEA-BYSSUS FAN-MUSSELS (-11.5..-0.6 m) & CALCIFYING HALIMEDA COIN-ALGA TURF (-9.5..-0.4 m) */
+  cellPass(11.5,19,Lv.floor[1],(x,y,z,lv)=>{
+   if(y>-0.45||y<-11.5||inPool(x,z,1.1))return;
+   if(rng()>0.44*q)return;
+   const yaw=rr(0,TAU);
+   if(y<=-0.65&&sandAt(x,z)>0.22&&rng()<0.42){
+    const mh=rr(0.55,1.05);
+    BIO.put('dl_byssus_shell',[x,y-0.08,z],qEuler(rr(-0.10,0.10),yaw,rr(-0.10,0.10)),[1.0,mh,0.55],C(0x523c44));
+    BIO.put('dl_byssus_beard',[x,y+0.02,z],qEuler(0,yaw+0.5,0),[0.38,0.32,0.38],C(0xdcb244));
+    log({species:'byssusmussel',x,y,z,bedElevM:y,woodyRefuge:false});
+    st.byssusmussel++;
+   }else if(y>=-9.5){
+    const hz=rr(0.38,0.75);
+    BIO.put('dl_halimeda',[x,y-0.03,z],qEuler(0,yaw,0),[hz,hz*0.78,hz],C(0x429864));
+    log({species:'halimedaturf',x,y,z,bedElevM:y,woodyRefuge:false});
+    st.halimedaturf++;
+   }
+  });
+
   return st;
  };
 })();

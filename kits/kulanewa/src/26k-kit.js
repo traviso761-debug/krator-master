@@ -26,6 +26,13 @@ const KL_FACTIONS={
   polity:'Elected Vanemad parish lay-elder assemblies of Ilma-Kuluuna Kell (The Uncrowned Bell)',
   emblem:'The Uncrowned Cast-Bronze Kellakoda Bell and Valge-Vask Nickel Pavise Shield',
   institutions:['zero-usury Talku-Ait mutual-aid granaries','debtor sanctuary cloisters','sampo hydro-trip-hammer valge-vask forges','pirtis parish steam-infirmaries','Maleva pike-and-crossbow levies']
+ },
+ suudme:{
+  style:'suudme',name:'Suudme-Kaarum Assimilated Estuary Towns',
+  zone:'Ria Sound Estuary Shore (East Bluff Suudme-Kuluuna px [648, 141] and Floating City Tooka-Hoov Treaty Wards px [635, 138])',
+  polity:'Bilingual Tooka-Vanemad (Mandarin-Elder) patrician councils intermarried with Lower-Ria lineages',
+  emblem:'Glazed Rian Bell-Mondop (Pyatthat Crown Housing the Cast-Bronze Kellakoda Bell) and Bimetallic Paktong-Gilt Uktena Serpent',
+  institutions:['bilingual Finnic-Rian 64-sign ampala-kiri ledgers','Tooka-Hoov amphibious pontoon clearing-houses','Saunakoda-Sala lotus steam-brokerage courts','Uktena-Kell syncretic river-serpent and bell covenants','Bell-Mondop crowned kivi-ait bullion vaults']
  }
 };
 const KL_LEXICON={
@@ -53,6 +60,14 @@ const KL_LEXICON={
   'lotja':{lowRia:'loca',highRia:'lotsa',gloss:'flat-bottomed river cargo barge'},
   'maleva':{lowRia:'malewa',highRia:'walewa',gloss:'commoner pike, pavise and crossbow levy host'},
   'talku-ait':{lowRia:'talaka-ganali',highRia:'talaka-ganali',gloss:'communal zero-usury mutual-aid granary-vault'}
+ },
+ suudmeTerms:{
+  'suudme-kaarum':{lowRia:'sumi-karum',gloss:'Rian-assimilated estuary clearing-town along Ria Sound'},
+  'suudme-kuluuna':{lowRia:'sumi-kuluna',gloss:'Sound-Mouth Crown (East Bluff px [648, 141], southernmost Kuruneva town)'},
+  'tooka-vanemad':{lowRia:'toka-wanema',gloss:'Mandarin-Elders (bilingual estuary patricians intermarried with Lower-Ria houses)'},
+  'kell-mondop':{lowRia:'kela-mandapa',gloss:'telescopic glazed Rian Pyatthat/Mondop roof opening into an octagonal bronze Kellakoda bell-lantern'},
+  'saunakoda-sala':{lowRia:'sawna-sala',gloss:'vaulted Kuruneva steam-brokerage opening onto a Classical travertine lotus peristyle'},
+  'uktena-kell':{lowRia:'uktena-kela',gloss:'dual estuary covenant sworn upon the 5-headed Rian Uktena serpent and the Syndicate bell'}
  },
  civicTerms:{
   suurgild:'great shareholding merchant-banker syndicate',
@@ -120,5 +135,12 @@ const SVPAL={
  foliage:[0x3e784a,0x346a40,0x488454],
  bone:[0xebe3d0,0xe0d8c4],plain:[0xd4ccb8,0xc8c0ac],brass:[0xa67c3e,0x987034],
  stone:[0x7e7a72,0x726e66],earth:[0x6e5842,0x624e3a],sand:[0xc8ba98,0xbcae8c],
+ saffron:[0xe6a828,0xda9c20,0xf0b636],
+ emerald:[0x28926c,0x208460,0x34a27a],
+ gilt:[0xe8ba3c,0xdcae32,0xf2c648],
+ travertine:[0xded3ba,0xd3c7ae,0xe8dec6],
+ teak:[0x5a361e,0x4e2e18,0x664026],
+ crimson:[0xa4201e,0x941a18,0xb22a26],
+ lotusPink:[0xe47ca0,0xd86e92],
  water:[0x2a6872,0x225a64],flame:[0xffbc58]};
 function P(k){return jc(pick(SVPAL[k]),.035);}

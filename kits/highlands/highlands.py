@@ -24,7 +24,7 @@ SETS = {
     'republican': ['74-rep-dwell.js', '75-rep-trade.js', '76-rep-civic.js', '76c-rep-capital.js', '77-rep-guild.js',
                    '77b-rep-guild2.js', '77c-rep-hydro.js', '78-rep-grand.js', '79-rep-land.js', '79b-rep-salvage.js', '79c-rep-apoc.js',
                    '79d-rep-scrap2.js', '79e-rep-arco.js', '79f-rep-shipbreak.js'],
-    'rustic': ['80-rus-dwell.js', '81-rus-village.js', '81b-rus-salvage.js', '81c-rus-trades.js', '81d-rus-water.js'],
+    'rustic': ['80-rus-dwell.js', '81-rus-village.js', '81b-rus-salvage.js', '81c-rus-trades.js', '81d-rus-water.js', '82-rus-baronial.js'],
 }
 FILES = sorted(FOUNDATION + [f for s in SETS.values() for f in s])
 

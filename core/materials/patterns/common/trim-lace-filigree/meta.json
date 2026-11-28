@@ -1,0 +1,42 @@
+{
+ "maps": {
+  "map": "albedo.png"
+ },
+ "processing": {
+  "options": {
+   "anchor": "none",
+   "key": "#ff00ff",
+   "key_hi": 150,
+   "key_lo": 50,
+   "pad": 0.0,
+   "size": 1024,
+   "spill": "all"
+  },
+  "script": "tools/textures/cards.py",
+  "source_size": [
+   1254,
+   1254
+  ],
+  "version": 1
+ },
+ "record": {
+  "colour": "#ffffff",
+  "family": "cloth",
+  "id": "common/trim-lace-filigree",
+  "kind": "card",
+  "metal": 0.0,
+  "roughness": 0.72,
+  "scale": [
+   0.24,
+   0.24
+  ],
+  "tint": true
+ },
+ "source": {
+  "file": "common-trim-lace-filigree-codex.png",
+  "generator": "Codex image generation, Nov 2026 (exec-9963304e-00aa-4cd5-aff7-f7b18402352f.png)",
+  "licence": "generated for this project by its owner",
+  "prompt": "A flat, front-on decorative panel, square, 2048x2048, on a solid flat bright magenta background (#ff00ff). Orthographic, flat, even, shadowless lighting, as if scanned: no highlights, no cast shadows, no vignette, no shading gradient across the image. No perspective, no objects, no text, no border, no watermark. The pattern must repeat: the left edge continues into the right edge and the top into the bottom. Material: Three horizontal registers of ornate bobbin-lace and metallic-thread passementerie trim bands running seamlessly from left to right, woven with scalloped floral rosettes, diamond guipure brides, and picot-loop lower edges; every openwork aperture and gap between registers shows only the solid flat bright magenta background (#ff00ff) through it. Neutral mid-grey (#8a8a8a), fully desaturated, so the lace can be tinted gold, silver, cream or black. Hard clean edges against the magenta (#ff00ff), no anti-aliased fringe of other colours. No magenta, pink or purple anywhere in the subject.",
+  "sha1": "2714786bcd87c994fb14d8d2497097da683a57e2"
+ }
+}

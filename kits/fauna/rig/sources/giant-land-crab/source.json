@@ -1,0 +1,11 @@
+{
+ "prompt": "Giant armored terrestrial coconut land crab monster standing horizontally on flat ground, seen at eye level like a tall walking animal, not a top-down pinned specimen. Body raised high on eight arched jointed walking legs, four per side with wide gaps between every leg, knees high and all eight pointed leg tips standing on one flat floor plane. Wide domed terracotta-crimson and dark bronze carapace with stalked eyes. Two massive forward jointed cheliped arms held out front with wide-open serrated pincer claws (open V-gap between claw jaws). Standalone creature only, no base.",
+ "task_ids": [
+  "01a22032-98ec-7036-9096-0aefab824edd",
+  "01a22035-0369-75f2-9bd6-6722e5dcee54"
+ ],
+ "ai_model": "standard",
+ "credits": 30,
+ "raw": "raw-meshy.glb",
+ "rights": "generated on the owner's Meshy account"
+}
