@@ -191,14 +191,19 @@
             '\t  rimC = mix(rimC, mix(kxRim, kxAcc, spec.r) * (0.75 + 0.75 * spec), kxPrism);',
             '\t}',
             '\tvec3 baseOut = mix(gl_FragColor.rgb * 0.45, kxCore, 0.72);',
+            '\tif(kxConst > 1.5){',
+            '\t  float texLum = max(gl_FragColor.r, max(gl_FragColor.g, gl_FragColor.b));',
+            '\t  baseOut = mix(mix(gl_FragColor.rgb * 0.85, kxCore, 0.55), vec3(1.05, 1.08, 1.15), smoothstep(0.26, 0.62, texLum));',
+            '\t}',
             '\tif(kxConst > 0.01){',
             '\t  vec2 cp = vec2(atan(vKxFig.x, vKxFig.z) * 2.4, vKxFig.y * 7.5);',
             '\t  float swirlLine = 1.0 - smoothstep(0.035, 0.095, abs(sin(cp.x * 3.0 + kxFbm2(cp * 1.4) * 4.2)));',
             '\t  float stars = kxStarLayer(cp, 3.2, 0.28, kxTime);',
-            '\t  baseOut += (kxAcc * swirlLine * 0.55 + kxRim * stars * 1.35) * kxConst;',
+            '\t  float cAmt = min(kxConst, 1.0);',
+            '\t  baseOut += (kxAcc * swirlLine * 0.55 + kxRim * stars * 1.35) * cAmt;',
             '\t}',
             '\tvec3 finalRgb = baseOut + rimC * fres * kxGain * shimmer;',
-            '\tfloat finalA = clamp(mix(kxOp, min(1.0, kxOp + 0.52), fres), 0.08, 0.99);',
+            '\tfloat finalA = clamp(mix(kxOp, min(1.0, kxOp + 0.52), fres), 0.08, 0.99) * opacity;',
             '\tgl_FragColor = vec4(finalRgb, finalA);',
             '#include <dithering_fragment>'
           ].join('\n'));
@@ -261,7 +266,9 @@
             '\t  vec3 baseC = mix(gl_FragColor.rgb, kxSmoke, smoothstep(0.15, 0.85, prog) * 0.78);',
             '\t  baseC += kxEdge * edgeBand * 1.65 * smoothstep(0.05, 0.35, prog);',
             '\t  float alphaE = smoothstep(-0.02, 0.16, er) * (1.0 - 0.52 * prog * prog);',
-            '\t  gl_FragColor = vec4(baseC, clamp(alphaE, 0.0, 1.0));',
+            '\t  gl_FragColor = vec4(baseC, clamp(alphaE, 0.0, 1.0) * opacity);',
+            '\t} else {',
+            '\t  gl_FragColor.a *= opacity;',
             '\t}',
             '#include <dithering_fragment>'
           ].join('\n'));
@@ -299,7 +306,7 @@
             '\tfloat plasma = pow(max(0.0, band * 0.5 + 0.5), 2.4) * (0.28 + 0.72 * track);',
             '\tfloat sparks = kxStarLayer(vec2(vUv.x * 6.0 - kxTime * 0.18, vUv.y * 2.0), 14.0, 0.25, kxTime * 2.0);',
             '\tvec3 glow = mix(kxMid, kxOut, fres) * (0.18 + 0.95 * plasma + 0.35 * fres) + kxIn * (sparks * 1.35 + pow(plasma, 3.2) * 0.85 * track);',
-            '\tgl_FragColor = vec4(gl_FragColor.rgb * 0.82 + glow, 1.0);',
+            '\tgl_FragColor = vec4(gl_FragColor.rgb * 0.82 + glow, opacity);',
             '#include <dithering_fragment>'
           ].join('\n'));
       };
@@ -329,7 +336,7 @@
         sh.fragmentShader = 'uniform float kxTime, kxGain, kxPulse;\nuniform vec3 kxCol;\n' +
           sh.fragmentShader.replace('#include <dithering_fragment>', [
             '\tfloat p = 1.0 + kxPulse * sin(kxTime * 3.6 + vUv.x * 6.283);',
-            '\tgl_FragColor = vec4(mix(gl_FragColor.rgb, kxCol, 0.78) * kxGain * p, 1.0);',
+            '\tgl_FragColor = vec4(mix(gl_FragColor.rgb, kxCol, 0.78) * kxGain * p, opacity);',
             '#include <dithering_fragment>'
           ].join('\n'));
       };
@@ -810,6 +817,7 @@
     var boneName = spec.bone || 'Spine1';
     var offset = new THREE.Vector3().fromArray(spec.offset || [0, 0, 0]);
 
+    var groundMeshRef = null;
     if(kind === 'rainbow_aura'){
       // 1a. View-aligned full-spectrum Rainbow Dispersion & Stained-Glass Caustic Corona
       var haloMat = makePureLightMaterial({
@@ -1068,46 +1076,60 @@
       holder.add(maskMesh);
 
     } else if(kind === 'gravity_lens'){
+      var lensBaseScale = spec.scale == null ? 1.0 : +spec.scale;
+      var isAccretion = spec.tint === 'accretion';
+      var cGridVec = isAccretion ? new THREE.Vector3(0.72, 0.56, 1.0) : new THREE.Vector3(0.48, 0.86, 1.0);
+      var cArcVec  = isAccretion ? new THREE.Vector3(1.0, 0.72, 0.36) : new THREE.Vector3(0.55, 0.78, 1.0);
+      var cWaveVec = isAccretion ? new THREE.Vector3(0.42, 0.92, 1.0) : new THREE.Vector3(0.82, 0.62, 1.0);
+
       // 4a. Schwarzschild Event-Horizon Shadow & Gravitationally Lensed Background Star-Grid (`uPower` intensifies!)
       var lensDarkMat = makePremultOverMaterial({
         kxTime: state.uTime,
         kxPower: state.uPower,
-        kxZOff: { value: -0.10 }
+        kxBaseSc: { value: lensBaseScale },
+        kxGridC: { value: cGridVec },
+        kxZOff: { value: -0.11 }
       }, [
-        'uniform float kxPower, kxZOff;',
+        'uniform float kxPower, kxBaseSc, kxZOff;',
         'varying vec2 vUvA;',
+        'varying float vFloorFade;',
         'void main(){',
         '  vUvA = uv;',
-        '  float sc = 0.92 + 0.54 * kxPower;',
+        '  float sc = kxBaseSc * (0.94 + 0.56 * kxPower);',
+        '  vec2 off = (uv - 0.5) * 2.0 * sc;',
         '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
-        '  mvOrigin.xy += (uv - 0.5) * 2.0 * sc;',
+        '  mvOrigin.xy += off;',
         '  mvOrigin.z += kxZOff;',
+        '  vec3 wApprox = (modelMatrix * vec4(0.0, off.y, 0.0, 1.0)).xyz;',
+        '  vFloorFade = smoothstep(0.02, 0.28, wApprox.y);',
         '  gl_Position = projectionMatrix * mvOrigin;',
         '}'
       ].join('\n'), [
         'uniform float kxTime, kxPower;',
+        'uniform vec3 kxGridC;',
         'varying vec2 vUvA;',
+        'varying float vFloorFade;',
         GLSL_NOISE,
         'void main(){',
         '  vec2 p = (vUvA - 0.5) * 2.0;',
         '  float r = length(p);',
         '  if(r > 1.0) discard;',
-        '  // Schwarzschild deflection: rays near the Einstein radius bend strongly around the Archon!',
+        '  // Schwarzschild deflection: rays near the Einstein radius bend strongly around the singularity!',
         '  float rs = 0.22 + 0.14 * kxPower;',
         '  float defl = (rs * rs) / max(r * r, 0.035);',
-        '  float swirlA = (0.35 + 0.85 * kxPower) / max(r, 0.18);',
+        '  float swirlA = (0.38 + 0.88 * kxPower) / max(r, 0.18);',
         '  mat2 sw = mat2(cos(swirlA), -sin(swirlA), sin(swirlA), cos(swirlA));',
         '  vec2 pLensed = sw * (p * (1.0 - defl));',
         '  // Warped space-time metric gridlines & lensed background Einstein star-arcs',
-        '  vec2 gp = pLensed * (5.5 + 2.0 * kxPower);',
-        '  float grid = (1.0 - smoothstep(0.02, 0.09, abs(fract(gp.x) - 0.5))) + (1.0 - smoothstep(0.02, 0.09, abs(fract(gp.y) - 0.5)));',
-        '  grid *= smoothstep(0.24, 0.48, r) * (1.0 - smoothstep(0.72, 0.98, r)) * (0.28 + 0.55 * kxPower);',
-        '  float stars = kxStarLayer(pLensed + vec2(kxTime * 0.03, -kxTime * 0.02), 8.0, 0.34, kxTime * 2.0) * smoothstep(0.26, 0.46, r) * (1.0 - smoothstep(0.78, 0.99, r));',
+        '  vec2 gp = pLensed * (5.8 + 2.2 * kxPower);',
+        '  float grid = (1.0 - smoothstep(0.02, 0.085, abs(fract(gp.x) - 0.5))) + (1.0 - smoothstep(0.02, 0.085, abs(fract(gp.y) - 0.5)));',
+        '  grid *= smoothstep(0.20, 0.44, r) * (1.0 - smoothstep(0.72, 0.98, r)) * (0.32 + 0.58 * kxPower);',
+        '  float stars = kxStarLayer(pLensed + vec2(kxTime * 0.03, -kxTime * 0.02), 8.5, 0.36, kxTime * 2.0) * smoothstep(0.22, 0.44, r) * (1.0 - smoothstep(0.78, 0.99, r));',
         '  // Dark gravitational shadow moat framing the photon sphere',
-        '  float moat = smoothstep(0.16, 0.36, r) * (1.0 - smoothstep(0.46, 0.74, r));',
-        '  float a = clamp(moat * (0.42 + 0.34 * kxPower) + (grid * 0.35 + stars * 0.55) * (0.6 + 0.4 * kxPower), 0.0, 0.82);',
+        '  float moat = smoothstep(0.14, 0.34, r) * (1.0 - smoothstep(0.46, 0.76, r));',
+        '  float a = clamp(moat * (0.46 + 0.34 * kxPower) + (grid * 0.38 + stars * 0.58) * (0.65 + 0.40 * kxPower), 0.0, 0.85) * vFloorFade;',
         '  if(a < 0.006) discard;',
-        '  vec3 col = vec3(0.01, 0.005, 0.03) * moat + vec3(0.48, 0.86, 1.0) * grid + vec3(0.92, 0.96, 1.0) * stars * 1.8;',
+        '  vec3 col = vec3(0.008, 0.004, 0.024) * moat + kxGridC * grid + vec3(0.94, 0.97, 1.0) * stars * 1.85;',
         '  gl_FragColor = vec4(col * a, a);',
         '}'
       ].join('\n'));
@@ -1119,13 +1141,16 @@
       var lensGlowMat = makePureLightMaterial({
         kxTime: state.uTime,
         kxPower: state.uPower,
+        kxBaseSc: { value: lensBaseScale },
+        kxArcC: { value: cArcVec },
+        kxWaveC: { value: cWaveVec },
         kxZOff: { value: -0.09 }
       }, [
-        'uniform float kxPower, kxZOff;',
+        'uniform float kxPower, kxBaseSc, kxZOff;',
         'varying vec2 vUvA;',
         'void main(){',
         '  vUvA = uv;',
-        '  float sc = 0.92 + 0.54 * kxPower;',
+        '  float sc = kxBaseSc * (0.94 + 0.56 * kxPower);',
         '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
         '  mvOrigin.xy += (uv - 0.5) * 2.0 * sc;',
         '  mvOrigin.z += kxZOff;',
@@ -1133,6 +1158,7 @@
         '}'
       ].join('\n'), [
         'uniform float kxTime, kxPower;',
+        'uniform vec3 kxArcC, kxWaveC;',
         'varying vec2 vUvA;',
         GLSL_NOISE,
         'void main(){',
@@ -1150,10 +1176,10 @@
         '  vec3 einstein = vec3(ringR * 0.95, ringG * 0.88, ringB * 1.25) * doppler;',
         '  // Infalling lensed light arcs & surge gravitational-wave ripples',
         '  float spiral = sin(ang * 3.0 + 7.5 / max(r, 0.22) + kxTime * (2.2 + 4.5 * kxPower));',
-        '  float arcs = pow(max(0.0, spiral * 0.5 + 0.5), 5.0) * smoothstep(0.28, 0.45, r) * (1.0 - smoothstep(0.58, 0.96, r));',
-        '  float gWave = kxPower * exp(-abs(r - fract(kxTime * 1.35) * 0.95) * 32.0) * smoothstep(0.25, 0.40, r) * (1.0 - smoothstep(0.82, 0.99, r));',
-        '  float gain = 0.88 + 2.15 * kxPower;',
-        '  vec3 col = (einstein * 1.15 + vec3(0.55, 0.78, 1.0) * arcs * (0.55 + 0.85 * kxPower) + vec3(0.82, 0.62, 1.0) * gWave * 1.6) * gain;',
+        '  float arcs = pow(max(0.0, spiral * 0.5 + 0.5), 5.0) * smoothstep(0.24, 0.44, r) * (1.0 - smoothstep(0.58, 0.96, r));',
+        '  float gWave = kxPower * exp(-abs(r - fract(kxTime * 1.35) * 0.95) * 32.0) * smoothstep(0.22, 0.40, r) * (1.0 - smoothstep(0.82, 0.99, r));',
+        '  float gain = 0.92 + 2.15 * kxPower;',
+        '  vec3 col = (einstein * 1.15 + kxArcC * arcs * (0.60 + 0.85 * kxPower) + kxWaveC * gWave * 1.6) * gain;',
         '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
         '  gl_FragColor = vec4(col, 1.0);',
         '}'
@@ -1161,6 +1187,435 @@
       var lensGlowMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), lensGlowMat);
       lensGlowMesh.frustumCulled = false; lensGlowMesh.renderOrder = 3;
       holder.add(lensGlowMesh);
+
+      // 4c. Foreground Abdominal/Core Singularity Micro-Lens (`kxZOff = +0.16` right over the singularity core!)
+      var coreLensMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxPower: state.uPower,
+        kxArcC: { value: cArcVec },
+        kxZOff: { value: 0.16 }
+      }, [
+        'uniform float kxPower, kxZOff;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vUvA = uv;',
+        '  float sc = 0.28 + 0.16 * kxPower;',
+        '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+        '  mvOrigin.xy += (uv - 0.5) * 2.0 * sc;',
+        '  mvOrigin.z += kxZOff;',
+        '  gl_Position = projectionMatrix * mvOrigin;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime, kxPower;',
+        'uniform vec3 kxArcC;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  float ring = exp(-abs(r - 0.42) * 52.0) * (0.72 + 0.28 * sin(ang * 2.0 - kxTime * 4.2));',
+        '  float jet = exp(-abs(p.y) * 24.0) * smoothstep(0.18, 0.42, abs(p.x)) * (1.0 - smoothstep(0.55, 0.98, abs(p.x)));',
+        '  vec3 col = (vec3(1.0, 0.94, 0.80) * ring * 1.15 + kxArcC * (ring * 0.65 + jet * 0.85)) * (0.85 + 1.35 * kxPower);',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var coreLensMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), coreLensMat);
+      coreLensMesh.frustumCulled = false; coreLensMesh.renderOrder = 6;
+      holder.add(coreLensMesh);
+
+    } else if(kind === 'vox_shimmer'){
+      // 7. Vox Solus: Iridescent Prismatic Mirage Halo + 30 Phase-Refraction Glints (brightens as body fades out of view!)
+      var mirageMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxPhase: state.uPhase,
+        kxScale: { value: spec.scale == null ? 1.16 : +spec.scale },
+        kxZOff: { value: -0.06 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime, kxPhase;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'vec3 kxSpectrum(float h){ return 0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))); }',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  p.x *= 1.55;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  // Soft holographic phase-interference scanlines & shimmering vertical refraction veil (no hard circle)!',
+        '  float n = kxFbm2(vec2(p.x * 3.2, p.y * 4.5 - kxTime * 1.8));',
+        '  float scan = pow(0.5 + 0.5 * sin(p.y * 46.0 - kxTime * 11.0 + n * 5.0), 2.2);',
+        '  float streaks = pow(0.5 + 0.5 * sin(p.x * 22.0 + n * 6.0), 4.0) * exp(-abs(p.x) * 2.4);',
+        '  float mirage = (exp(-r * 2.4) * (0.38 * scan + 0.52 * streaks)) * (1.0 - smoothstep(0.58, 0.98, r));',
+        '  float vanishBoost = 0.48 + 1.35 * (1.0 - kxPhase);',
+        '  vec3 specC = kxSpectrum(fract(p.y * 0.85 - kxTime * 0.35 + n * 0.5));',
+        '  vec3 col = mix(vec3(0.62, 0.95, 1.0), specC, 0.62) * mirage * vanishBoost;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var mirageMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), mirageMat);
+      mirageMesh.frustumCulled = false; mirageMesh.renderOrder = 3;
+      holder.add(mirageMesh);
+
+      var glintGeo = makeBillboardCloudGeo(30, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rx = (seed - 0.5) * 0.68;
+        var ry = -0.78 + 1.56 * ((i * 0.381966) % 1.0);
+        var rz = (((i * 0.7548776) % 1.0) - 0.5) * 0.42;
+        var sz = 0.08 + 0.09 * seed;
+        return { a: [rx, ry, rz, sz], b: [seed, 1.4 + 1.6 * seed, (i / n), 0] };
+      });
+      var glintMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxPhase: state.uPhase
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvS;',
+        'varying float vTwinkle, vHue;',
+        'void main(){',
+        '  float tw = pow(0.5 + 0.5 * sin(kxTime * aAura1.y * 2.8 + aAura1.x * 18.0), 3.0);',
+        '  vec3 cPos = aAura0.xyz + vec3(sin(kxTime * 2.2 + aAura1.x * 9.0) * 0.04, cos(kxTime * 1.7 + aAura1.x * 7.0) * 0.04, 0.0);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * vec2(0.45, 1.85) * aAura0.w * (0.65 + 0.55 * tw);',
+        '  vUvS = uv; vTwinkle = tw; vHue = fract(aAura1.z + kxTime * 0.18);',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxPhase;',
+        'varying vec2 vUvS;',
+        'varying float vTwinkle, vHue;',
+        GLSL_NOISE,
+        'vec3 kxSpectrum(float h){ return 0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))); }',
+        'void main(){',
+        '  vec2 p = (vUvS - 0.5) * 2.0;',
+        '  float flare = exp(-abs(p.x) * 9.5) * exp(-abs(p.y) * 2.8) + exp(-abs(p.y) * 11.0) * exp(-abs(p.x) * 3.2);',
+        '  float boost = 0.55 + 1.15 * (1.0 - kxPhase);',
+        '  vec3 col = mix(kxSpectrum(vHue), vec3(1.0), 0.45) * flare * vTwinkle * boost * 0.95;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var glintMesh = new THREE.Mesh(glintGeo, glintMat);
+      glintMesh.frustumCulled = false; glintMesh.renderOrder = 5;
+      holder.add(glintMesh);
+
+    } else if(kind === 'obscuring_fog'){
+      // 8. Censer Revenant: Wide Area-Projecting Obscuring Dark Miasma Fog (`makePremultOverMaterial` light-absorbing!)
+      var fogCarpetGeo = new THREE.PlaneGeometry(3.4, 3.4, 1, 1);
+      fogCarpetGeo.rotateX(-Math.PI * 0.5);
+      var fogCarpetMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'varying vec2 vUvG;',
+        'void main(){ vUvG = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvG;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvG - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float n1 = kxFbm2(p * 2.6 + vec2(kxTime * 0.14, -kxTime * 0.11));',
+        '  float n2 = kxFbm2(p * 4.8 - vec2(kxTime * 0.09, kxTime * 0.13));',
+        '  float density = smoothstep(1.0, 0.15, r + (n1 - 0.5) * 0.48) * (0.65 + 0.35 * n2);',
+        '  float a = clamp(density * 0.78, 0.0, 0.82);',
+        '  if(a < 0.006) discard;',
+        '  vec3 col = mix(vec3(0.018, 0.016, 0.028), vec3(0.075, 0.068, 0.115), n2 * 0.65);',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var fogCarpetMesh = new THREE.Mesh(fogCarpetGeo, fogCarpetMat);
+      fogCarpetMesh.position.set(0, -0.90, 0);
+      fogCarpetMesh.frustumCulled = false; fogCarpetMesh.renderOrder = 1;
+      holder.add(fogCarpetMesh);
+      groundMeshRef = fogCarpetMesh;
+
+      var fogCloudGeo = makeBillboardCloudGeo(36, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var isLow = i < 22 ? 1.0 : 0.0;
+        var rad = isLow > 0.5 ? (0.28 + 1.18 * ((i * 0.381966) % 1.0)) : (0.22 + 0.68 * ((i * 0.381966) % 1.0));
+        var y0 = isLow > 0.5 ? (-0.92 + 0.62 * ((i * 0.7548776) % 1.0)) : (-0.35 + 0.95 * ((i * 0.7548776) % 1.0));
+        var sz = isLow > 0.5 ? (0.48 + 0.28 * seed) : (0.36 + 0.22 * seed);
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.12 + 0.08 * seed, (i % 2 === 0 ? 1.0 : -1.0), isLow] };
+      });
+      var fogCloudMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvF;',
+        'varying float vAge, vSeed, vLow;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float ang = aAura0.x + age * 0.55 * aAura1.z;',
+        '  float rOut = aAura0.y + age * (aAura1.w > 0.5 ? 0.35 : 0.16);',
+        '  vec3 cPos = vec3(cos(ang) * rOut, aAura0.z + age * 0.18, sin(ang) * rOut);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  vec2 sc = vec2(1.45, 0.85) * aAura0.w * (0.85 + 0.45 * age);',
+        '  mv.xy += (uv - 0.5) * 2.0 * sc;',
+        '  vUvF = uv; vAge = age; vSeed = aAura1.x; vLow = aAura1.w;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvF;',
+        'varying float vAge, vSeed, vLow;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvF - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float n = kxFbm2(p * 2.2 + vec2(vSeed * 13.0 + kxTime * 0.22, -kxTime * 0.18));',
+        '  float billow = smoothstep(0.96, 0.18, r + (n - 0.5) * 0.62);',
+        '  float life = smoothstep(0.0, 0.22, vAge) * (1.0 - smoothstep(0.58, 1.0, vAge));',
+        '  float a = clamp(billow * life * (vLow > 0.5 ? 0.62 : 0.48), 0.0, 0.68);',
+        '  if(a < 0.006) discard;',
+        '  // Heavy charcoal-slate graveyard fog with subtle eerie lantern-violet scatter at billow rims',
+        '  vec3 darkCore = vec3(0.022, 0.020, 0.032);',
+        '  vec3 mistRim  = vec3(0.095, 0.088, 0.145);',
+        '  vec3 col = mix(darkCore, mistRim, clamp((1.0 - billow) * 0.85 + n * 0.25, 0.0, 1.0));',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var fogCloudMesh = new THREE.Mesh(fogCloudGeo, fogCloudMat);
+      fogCloudMesh.frustumCulled = false; fogCloudMesh.renderOrder = 4;
+      holder.add(fogCloudMesh);
+
+    } else if(kind === 'shadow_swarm'){
+      // 9. Ocular Umbra (Image 1): Light-Devouring Pitch-Black Ink-Shadow Monolith Shroud + Swirling Crow/Fleck Swarm
+      var inkHaloMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.38 : +spec.scale },
+        kxZOff: { value: -0.10 }
+      }, [
+        'uniform float kxScale, kxZOff;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vUvA = uv;',
+        '  vec4 mvOrigin = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);',
+        '  mvOrigin.xy += (uv - 0.5) * 2.0 * vec2(kxScale * 0.85, kxScale * 1.18);',
+        '  mvOrigin.z += kxZOff;',
+        '  gl_Position = projectionMatrix * mvOrigin;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(vec2(p.x * 1.28, p.y * 1.08));',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  float tendrils = pow(0.5 + 0.5 * sin(ang * 19.0 + kxFbm2(p * 3.6 - kxTime * 0.7) * 5.2), 2.4) * (1.0 - smoothstep(0.68, 0.98, r));',
+        '  float splatter = kxStarLayer(p * 0.75 + vec2(0.0, -kxTime * 0.08), 16.0, 0.45, kxTime * 1.8);',
+        '  float shroud = smoothstep(0.95, 0.22, r - tendrils * 0.22) + splatter * smoothstep(0.95, 0.40, r) * 0.65;',
+        '  float a = clamp(shroud * 0.86, 0.0, 0.90) * (1.0 - smoothstep(0.84, 1.0, r));',
+        '  if(a < 0.008) discard;',
+        '  vec3 col = vec3(0.005, 0.004, 0.008);',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var inkHaloMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), inkHaloMat);
+      inkHaloMesh.frustumCulled = false; inkHaloMesh.renderOrder = 2;
+      holder.add(inkHaloMesh);
+
+      // 44 Swirling Pitch-Black Crow Silhouettes & Ink-Shard Flecks bursting from the shadow
+      var crowGeo = makeBillboardCloudGeo(44, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.24 + 0.58 * ((i * 0.381966) % 1.0);
+        var y0 = -0.82 + 1.68 * ((i * 0.7548776) % 1.0);
+        var sz = 0.085 + 0.075 * seed;
+        var isCrow = i < 26 ? 1.0 : 0.0;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.28 + 0.22 * seed, isCrow, (i % 2 === 0 ? 1.0 : -1.0)] };
+      });
+      var crowMat = makePremultOverMaterial({
+        kxTime: state.uTime
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvC;',
+        'varying float vAge, vFlap, vCrow;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float ang = aAura0.x + age * 1.15 * aAura1.w;',
+        '  float rOut = aAura0.y + age * 0.42;',
+        '  vec3 cPos = vec3(cos(ang) * rOut, aAura0.z + age * 0.26 - 0.08, sin(ang) * rOut);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  float rot = atan(sin(ang), cos(ang)) * 0.35 + sin(kxTime * 2.5 + aAura1.x * 6.28) * 0.25;',
+        '  vec2 c = (uv - 0.5) * 2.0 * aAura0.w * (1.1 - 0.35 * age);',
+        '  mv.xy += mat2(cos(rot), -sin(rot), sin(rot), cos(rot)) * c;',
+        '  vUvC = uv; vAge = age; vFlap = sin(kxTime * 9.5 + aAura1.x * 25.0); vCrow = aAura1.z;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'varying vec2 vUvC;',
+        'varying float vAge, vFlap, vCrow;',
+        'void main(){',
+        '  vec2 p = (vUvC - 0.5) * 2.0;',
+        '  float life = smoothstep(0.0, 0.15, vAge) * (1.0 - smoothstep(0.65, 1.0, vAge));',
+        '  float mask;',
+        '  if(vCrow > 0.5){',
+        '    // Crisp winged crow/raven silhouette SDF',
+        '    float ax = abs(p.x);',
+        '    float wingY = 0.28 * vFlap * ax - 0.22 * ax * ax;',
+        '    float wing = smoothstep(0.22 * (1.0 - 0.75 * ax), 0.02, abs(p.y - wingY)) * (1.0 - smoothstep(0.85, 1.0, ax));',
+        '    float body = smoothstep(0.18, 0.04, length(vec2(p.x * 2.2, p.y * 0.9)));',
+        '    mask = max(wing, body);',
+        '  } else {',
+        '    // Jagged ink-splatter & barbed arrow-tendril shard',
+        '    mask = smoothstep(0.55, 0.10, abs(p.x) * 1.8 + abs(p.y) * 0.85);',
+        '  }',
+        '  float a = clamp(mask * life * 0.90, 0.0, 0.92);',
+        '  if(a < 0.01) discard;',
+        '  vec3 col = vec3(0.008, 0.006, 0.012);',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var crowMesh = new THREE.Mesh(crowGeo, crowMat);
+      crowMesh.frustumCulled = false; crowMesh.renderOrder = 5;
+      holder.add(crowMesh);
+
+    } else if(kind === 'white_tendril_flame'){
+      // 10. Astral Pyre (Image 2): Crisp Sinuous Kalligraphic White Flame/Smoke Tendrils + Ultramarine-White Ground Pool
+      var wfGeo = makeBillboardCloudGeo(32, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var isSpark = i >= 20 ? 1.0 : 0.0;
+        var rad = isSpark > 0.5 ? (0.24 + 0.48 * ((i * 0.381966) % 1.0)) : (0.20 + 0.34 * ((i * 0.381966) % 1.0));
+        var y0 = isSpark > 0.5 ? (-0.05 + 0.95 * ((i * 0.7548776) % 1.0)) : (0.06 + 0.62 * ((i * 0.7548776) % 1.0));
+        var sz = isSpark > 0.5 ? (0.040 + 0.030 * seed) : (0.22 + 0.14 * seed);
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.34 + 0.22 * seed, isSpark, (i % 2 === 0 ? 1.0 : -1.0)] };
+      });
+      var wfMat = makePureLightMaterial({
+        kxTime: state.uTime,
+        kxGain: { value: spec.gain == null ? 0.58 : +spec.gain * 0.48 }
+      }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvW;',
+        'varying float vAge, vSeed, vSpark, vDir;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float ang = aAura0.x + age * 0.55 * aAura1.w;',
+        '  float climb = aAura1.z > 0.5 ? age * 0.85 : age * 0.62;',
+        '  vec3 cPos = vec3(cos(ang) * (aAura0.y + age * 0.14), aAura0.z + climb, sin(ang) * (aAura0.y + age * 0.14));',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  vec2 sc = aAura1.z > 0.5 ? vec2(0.65, 1.6) * aAura0.w : vec2(0.70, 2.05) * aAura0.w * (1.06 - 0.26 * age);',
+        '  mv.xy += (uv - 0.5) * 2.0 * sc;',
+        '  vUvW = uv; vAge = age; vSeed = aAura1.x; vSpark = aAura1.z; vDir = aAura1.w;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'uniform float kxTime, kxGain;',
+        'varying vec2 vUvW;',
+        'varying float vAge, vSeed, vSpark, vDir;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvW - 0.5) * 2.0;',
+        '  float life = smoothstep(0.0, 0.18, vAge) * (1.0 - smoothstep(0.50, 1.0, vAge));',
+        '  vec3 col;',
+        '  if(vSpark > 0.5){',
+        '    float d = length(vec2(p.x * 1.8, p.y));',
+        '    float sp = exp(-d * 4.8) * life;',
+        '    col = mix(vec3(0.65, 0.80, 1.0), vec3(1.0, 1.0, 1.0), exp(-d * 6.0)) * sp * 1.8 * kxGain;',
+        '  } else {',
+        '    // Narrow, whip-curling kalligraphic S-curl white flame tendril!',
+        '    float uUp = p.y * 0.5 + 0.5;',
+        '    float curl = sin(uUp * 5.8 - kxTime * 2.8 + vSeed * 6.28) * 0.48 * uUp * vDir;',
+        '    float taper = 0.19 * (1.0 - 0.78 * uUp * uUp);',
+        '    float dx = abs(p.x - curl) / max(taper, 0.035);',
+        '    float n = kxFbm2(vec2(p.x * 2.8 + vSeed * 7.0, p.y * 2.6 - kxTime * 2.4));',
+        '    float wisp = smoothstep(1.05, 0.12, dx + (n - 0.5) * 0.42) * smoothstep(-1.0, -0.55, p.y) * (1.0 - smoothstep(0.65, 1.0, p.y)) * life;',
+        '    vec3 cSilverBlue = vec3(0.68, 0.78, 0.98);',
+        '    vec3 cPureWhite  = vec3(1.0, 1.0, 1.0);',
+        '    col = mix(cSilverBlue, cPureWhite, clamp(wisp * 1.4, 0.0, 1.0)) * wisp * kxGain;',
+        '  }',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var wfMesh = new THREE.Mesh(wfGeo, wfMat);
+      wfMesh.frustumCulled = false; wfMesh.renderOrder = 5;
+      holder.add(wfMesh);
+
+      // Ultramarine-Cobalt & White Starlit Nebula Reflection Pool at feet (Image 2!)
+      var pyrePoolGeo = new THREE.PlaneGeometry(1.85, 1.85, 1, 1);
+      pyrePoolGeo.rotateX(-Math.PI * 0.5);
+      var pyrePoolMat = makePureLightMaterial({
+        kxTime: state.uTime
+      }, [
+        'varying vec2 vUvG;',
+        'void main(){ vUvG = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }'
+      ].join('\n'), [
+        'uniform float kxTime;',
+        'varying vec2 vUvG;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvG - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float n = kxFbm2(p * 3.4 + vec2(kxTime * 0.12, -kxTime * 0.16));',
+        '  float pool = smoothstep(0.96, 0.18, r + (n - 0.5) * 0.45);',
+        '  float stars = kxStarLayer(p + vec2(kxTime * 0.02, 0.0), 10.0, 0.35, kxTime * 2.0) * pool;',
+        '  vec3 col = vec3(0.14, 0.34, 0.98) * pool * 0.65 + vec3(0.95, 0.98, 1.0) * (pow(pool, 2.4) * 0.55 + stars * 1.4);',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var pyrePoolMesh = new THREE.Mesh(pyrePoolGeo, pyrePoolMat);
+      pyrePoolMesh.position.set(0, -0.90, 0);
+      pyrePoolMesh.frustumCulled = false; pyrePoolMesh.renderOrder = 1;
+      holder.add(pyrePoolMesh);
+      groundMeshRef = pyrePoolMesh;
+
+    } else if(kind === 'spiky_dark_array'){
+      // 11. Nightmare Urchin (Image 3): Razor-Sharp Pitch-Black Needle Starburst Corona around Head + Crimson Dread Bleed
+      var spikeDarkMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 0.82 : +spec.scale },
+        kxZOff: { value: -0.05 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        GLSL_NOISE,
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  // Layer 1: 32 primary long razor-sharp uneven black sea-urchin needles',
+        '  float twitch1 = sin(kxTime * 4.8 + sin(ang * 7.0) * 3.0) * 0.014;',
+        '  float a1 = ang + twitch1 + kxTime * 0.08;',
+        '  float id1 = floor((a1 + 3.14159265) / 6.2831853 * 32.0);',
+        '  float h1 = kxHash12(vec2(id1, 3.7));',
+        '  float maxR1 = 0.62 + 0.36 * h1;',
+        '  float sec1 = abs(fract((a1 + 3.14159265) / 6.2831853 * 32.0) - 0.5) * 2.0;',
+        '  float width1 = max(0.02, 0.34 * (1.0 - r / maxR1));',
+        '  float spikes1 = smoothstep(width1, width1 * 0.15, sec1) * step(r, maxR1) * smoothstep(0.10, 0.22, r);',
+        '  // Layer 2: 46 secondary counter-twitching fine black quills',
+        '  float a2 = ang - kxTime * 0.11 + cos(kxTime * 6.2 + ang * 5.0) * 0.012;',
+        '  float id2 = floor((a2 + 3.14159265) / 6.2831853 * 46.0);',
+        '  float h2 = kxHash12(vec2(id2, 9.1));',
+        '  float maxR2 = 0.44 + 0.38 * h2;',
+        '  float sec2 = abs(fract((a2 + 3.14159265) / 6.2831853 * 46.0) - 0.5) * 2.0;',
+        '  float width2 = max(0.018, 0.26 * (1.0 - r / maxR2));',
+        '  float spikes2 = smoothstep(width2, width2 * 0.12, sec2) * step(r, maxR2) * smoothstep(0.10, 0.20, r);',
+        '  // Dark dread vignette halo behind the needles',
+        '  float dread = exp(-r * 2.8) * 0.58 * (1.0 - smoothstep(0.65, 1.0, r));',
+        '  float needle = max(spikes1, spikes2 * 0.92);',
+        '  float a = clamp(max(needle * 0.96, dread), 0.0, 0.96);',
+        '  if(a < 0.008) discard;',
+        '  // Pitch-black needles with sinister faint blood-crimson inner root bleed',
+        '  float redRoot = needle * exp(-max(0.0, r - 0.18) * 7.5) * (0.65 + 0.35 * sin(kxTime * 3.5 + id1));',
+        '  vec3 col = mix(vec3(0.006, 0.004, 0.008), vec3(0.62, 0.05, 0.08), redRoot * 0.55);',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var spikeDarkMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), spikeDarkMat);
+      spikeDarkMesh.frustumCulled = false; spikeDarkMesh.renderOrder = 5;
+      holder.add(spikeDarkMesh);
 
     } else if(kind === 'brimstone_aura'){
       // 6a. Dark Sulfurous Crimson-Soot Brimstone Shroud (`makePremultOverMaterial`)
@@ -1299,6 +1754,7 @@
       groundMesh.position.set(0, -0.90, 0);
       groundMesh.frustumCulled = false; groundMesh.renderOrder = 1;
       holder.add(groundMesh);
+      groundMeshRef = groundMesh;
     }
 
     return {
@@ -1306,7 +1762,7 @@
       holder: holder,
       boneName: boneName,
       offset: offset,
-      groundMesh: kind === 'brimstone_aura' ? holder.children[holder.children.length - 1] : null
+      groundMesh: groundMeshRef
     };
   }
 
@@ -1752,10 +2208,71 @@
       state.uPower.value += (targetPwr - state.uPower.value) * (stepDt > 0 ? Math.min(1.0, stepDt * rate) : 1.0);
     }
 
+    // Update `uPhase` (0.05 .. 1.0) for `vox_shimmer` so Vox Solus shimmers and fades all the way out and back in!
+    if(state.pinnedPhase !== null){
+      state.uPhase.value = state.pinnedPhase;
+    } else {
+      var rawWave = 0.5 + 0.5 * Math.sin(t * 1.85);
+      var smoothVis = rawWave * rawWave * (3.0 - 2.0 * rawWave);
+      var ripple = 0.07 * Math.sin(t * 16.0) * (1.0 - Math.abs(smoothVis * 2.0 - 1.0));
+      state.uPhase.value = Math.max(0.05, Math.min(1.0, 0.05 + 0.95 * smoothVis + ripple));
+    }
+
     if(!state.entries.length) return;
 
     fig.group.updateMatrixWorld(true);
     tmpG.copy(fig.group.matrixWorld).invert();
+
+    var hasPhaseFade = false;
+    for(var i0 = 0; i0 < state.entries.length; i0++){
+      var e0 = state.entries[i0];
+      if(e0.mesh && e0.mesh.parent && e0.mesh.visible && e0.auras){
+        for(var a0 = 0; a0 < e0.auras.length; a0++){
+          if(e0.auras[a0].kind === 'vox_shimmer') hasPhaseFade = true;
+        }
+      }
+    }
+
+    // Apply (or cleanly restore) full-figure phase-fade across all armour, subSkinned, and kinetic meshes!
+    if(hasPhaseFade || state.wasPhaseFaded){
+      var visAlpha = hasPhaseFade ? state.uPhase.value : 1.0;
+      var applyMatFade = function(meshObj){
+        if(!meshObj || !meshObj.material) return;
+        var mats = Array.isArray(meshObj.material) ? meshObj.material : [meshObj.material];
+        for(var mi = 0; mi < mats.length; mi++){
+          var mt = mats[mi];
+          if(!mt) continue;
+          if(mt.userData._kxOrigTrans === undefined){
+            mt.userData._kxOrigTrans = !!mt.transparent;
+            mt.userData._kxOrigDepth = mt.depthWrite !== false;
+            mt.userData._kxOrigOp = mt.opacity == null ? 1.0 : mt.opacity;
+          }
+          if(hasPhaseFade){
+            if(!mt.transparent){ mt.transparent = true; mt.needsUpdate = true; }
+            mt.depthWrite = visAlpha > 0.72 ? mt.userData._kxOrigDepth : false;
+            mt.opacity = mt.userData._kxOrigOp * visAlpha;
+          } else {
+            if(mt.transparent !== mt.userData._kxOrigTrans){ mt.transparent = mt.userData._kxOrigTrans; mt.needsUpdate = true; }
+            mt.depthWrite = mt.userData._kxOrigDepth;
+            mt.opacity = mt.userData._kxOrigOp;
+          }
+        }
+      };
+      if(fig.live){
+        Object.keys(fig.live).forEach(function(lk){
+          var lm = fig.live[lk];
+          if(lm && lm.userData && lm.userData.part && lm.userData.part.role === 'armour'){
+            applyMatFade(lm);
+          }
+        });
+      }
+      for(var ip = 0; ip < state.entries.length; ip++){
+        var ep = state.entries[ip];
+        for(var sp = 0; sp < ep.subSkinned.length; sp++) applyMatFade(ep.subSkinned[sp]);
+        for(var kp = 0; kp < ep.kinetics.length; kp++) applyMatFade(ep.kinetics[kp].mesh);
+      }
+      state.wasPhaseFaded = hasPhaseFade;
+    }
 
     for(var i = 0; i < state.entries.length; i++){
       var e = state.entries[i];
@@ -1831,9 +2348,10 @@
     // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon, ophanim_seraph, abyssal_medusa)
     var rec = fig.record || {};
     var torsoId = (rec.armour && rec.armour.torso) || '';
-    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0 || torsoId.indexOf('ext3_') === 0) && (
+    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0 || torsoId.indexOf('ext3_') === 0 || torsoId.indexOf('ext4_') === 0) && (
       torsoId.indexOf('revenant') >= 0 || torsoId.indexOf('djinn') >= 0 || torsoId.indexOf('archon') >= 0
       || torsoId.indexOf('seraph') >= 0 || torsoId.indexOf('medusa') >= 0 || torsoId.indexOf('neutrino') >= 0
+      || torsoId.indexOf('umbra') >= 0 || torsoId.indexOf('urchin') >= 0
     ));
     if(isFloatEntity && fig.bones){
       var hiF = state.byName['Hips'];
@@ -1864,12 +2382,25 @@
     fig._kxState = {
       uTime: { value: 0.0 },
       uPower: { value: 0.0 },
+      uPhase: { value: 1.0 },
       pinnedPower: null,
+      pinnedPhase: null,
+      wasPhaseFaded: false,
       surgePeak: 0.0,
       surgeHold: 0.0,
       byName: byName,
       itemByKey: itemByKey,
       entries: []
+    };
+    fig.setExtraplanarPhase = function(val){
+      var st = fig._kxState;
+      if(!st) return;
+      if(val == null){
+        st.pinnedPhase = null;
+      } else {
+        st.pinnedPhase = Math.max(0.04, Math.min(1.0, +val));
+        st.uPhase.value = st.pinnedPhase;
+      }
     };
     fig.triggerExtraplanarSurge = function(amp, holdSec){
       var st = fig._kxState;

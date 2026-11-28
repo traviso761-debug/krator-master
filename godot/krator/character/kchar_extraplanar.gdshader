@@ -389,6 +389,82 @@ void fragment() {
 		ALBEDO = vec3(0.08, 0.01, 0.01);
 		EMISSION = col;
 		ALPHA = clamp(tongue * 0.92, 0.0, 0.96);
+	} else if (kx_mode == 15) {
+		// Vox Solus shimmering interference mirage & phase-fade (`vox_shimmer`)
+		vec2 p = (UV - 0.5) * 2.0;
+		p.x *= 1.35;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float phase_vis = 0.09 + 0.91 * (0.5 + 0.5 * sin(kx_time * 1.55) * cos(kx_time * 0.42));
+		float scan = 0.5 + 0.5 * sin(p.y * 42.0 - kx_time * 9.5 + kx_noise2(p * 4.0 + kx_time) * 4.0);
+		float ripple = exp(-abs(r - (0.36 + 0.38 * fract(kx_time * 0.55))) * 26.0);
+		float mirage = (exp(-r * 2.6) * 0.42 * scan * scan + ripple * 0.85) * (1.0 - smoothstep(0.68, 1.0, r));
+		vec3 spec_c = kx_spectrum(fract(p.y * 0.85 - kx_time * 0.35 + r * 0.4));
+		vec3 col = mix(vec3(0.55, 0.94, 1.0), spec_c, 0.58) * mirage * (0.55 + 1.15 * (1.0 - phase_vis)) * kx_gain;
+		if (mirage < 0.01) { discard; }
+		ALBEDO = vec3(0.0);
+		EMISSION = col;
+		ALPHA = clamp(mirage, 0.0, 0.92);
+	} else if (kx_mode == 16) {
+		// Censer Revenant area-projecting obscuring dark fog (`obscuring_fog`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float n1 = kx_fbm2(p * 2.6 + vec2(kx_time * 0.14, -kx_time * 0.11));
+		float n2 = kx_fbm2(p * 4.8 - vec2(kx_time * 0.09, kx_time * 0.13));
+		float dens = smoothstep(1.0, 0.15, r + (n1 - 0.5) * 0.48) * (0.65 + 0.35 * n2);
+		float a = clamp(dens * 0.78, 0.0, 0.82);
+		if (a < 0.008) { discard; }
+		ALBEDO = mix(vec3(0.018, 0.016, 0.028), vec3(0.075, 0.068, 0.115), n2 * 0.65);
+		EMISSION = vec3(0.0);
+		ALPHA = a;
+	} else if (kx_mode == 17) {
+		// Ocular Umbra light-devouring ink-shadow & crow/fleck swarm (`shadow_swarm`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(vec2(p.x * 1.35, p.y * 0.92));
+		if (r > 1.0) { discard; }
+		float ang = atan(p.y, p.x);
+		float tendrils = pow(0.5 + 0.5 * sin(ang * 19.0 + kx_fbm2(p * 3.6 - kx_time * 0.7) * 5.2), 2.4);
+		float splatter = kx_star_layer(p * 0.75 + vec2(0.0, -kx_time * 0.08), 16.0, 0.45, kx_time * 1.8);
+		float shroud = smoothstep(0.96, 0.24, r - tendrils * 0.24) + splatter * smoothstep(0.98, 0.42, r) * 0.65;
+		float a = clamp(shroud * 0.85, 0.0, 0.90);
+		if (a < 0.008) { discard; }
+		ALBEDO = vec3(0.006, 0.005, 0.010);
+		EMISSION = vec3(0.0);
+		ALPHA = a;
+	} else if (kx_mode == 18) {
+		// Astral Pyre whip-curling pure incandescent white flame/smoke tendrils (`white_tendril_flame`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float u_up = p.y * 0.5 + 0.5;
+		float curl = sin(u_up * 5.2 - kx_time * 2.8) * 0.42 * u_up;
+		float taper = max(0.05, 0.38 * (1.0 - 0.78 * u_up * u_up));
+		float dx = abs(p.x - curl) / taper;
+		float n = kx_fbm2(vec2(p.x * 2.5, p.y * 2.4 - kx_time * 2.4));
+		float wisp = smoothstep(1.15, 0.15, dx + (n - 0.5) * 0.55) * smoothstep(-1.0, -0.55, p.y) * (1.0 - smoothstep(0.65, 1.0, p.y));
+		if (wisp < 0.01) { discard; }
+		vec3 col = mix(vec3(0.68, 0.78, 0.98), vec3(1.0), clamp(wisp * 1.35, 0.0, 1.0)) * wisp * kx_gain;
+		ALBEDO = vec3(1.0);
+		EMISSION = col;
+		ALPHA = clamp(wisp, 0.0, 0.96);
+	} else if (kx_mode == 19) {
+		// Nightmare Urchin razor-sharp pitch-black needle corona around Head (`spiky_dark_array`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float ang = atan(p.y, p.x) + sin(kx_time * 4.8 + sin(atan(p.y, p.x) * 7.0) * 3.0) * 0.014 + kx_time * 0.08;
+		float id1 = floor((ang + 3.14159265) / 6.2831853 * 32.0);
+		float h1 = kx_hash12(vec2(id1, 3.7));
+		float max_r1 = 0.62 + 0.36 * h1;
+		float sec1 = abs(fract((ang + 3.14159265) / 6.2831853 * 32.0) - 0.5) * 2.0;
+		float w1 = max(0.02, 0.34 * (1.0 - r / max_r1));
+		float spikes1 = smoothstep(w1, w1 * 0.15, sec1) * step(r, max_r1) * smoothstep(0.10, 0.22, r);
+		float dread = exp(-r * 2.8) * 0.58 * (1.0 - smoothstep(0.65, 1.0, r));
+		float a = clamp(max(spikes1 * 0.96, dread), 0.0, 0.96);
+		if (a < 0.008) { discard; }
+		float red_root = spikes1 * exp(-max(0.0, r - 0.18) * 7.5);
+		ALBEDO = mix(vec3(0.006, 0.004, 0.008), vec3(0.62, 0.05, 0.08), red_root * 0.55);
+		EMISSION = vec3(0.35, 0.02, 0.04) * red_root;
+		ALPHA = a;
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)
 		float p = 1.0 + 0.18 * sin(kx_time * 3.6 + UV.x * 6.283);

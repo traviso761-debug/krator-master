@@ -820,7 +820,12 @@ def _build_singularity_archon(sex):
 
     ent_t = assemble_garment(
         gid_t, 'Singularity Archon Cosmic Galaxy-Rift Robes', 'torso', parts_t, open_torso=True,
-        auras=[{'kind': 'gravity_lens', 'bone': 'Spine2', 'offset': [0.0, -0.04, 0.0]}]
+        auras=[{
+            'kind': 'gravity_lens',
+            'bone': 'Hips',
+            'offset': [0.0, -0.044 if sex == 'm' else 0.098, 0.02],
+            'scale': 1.56,
+        }]
     )
     ent_t['hide_parts'] = ['Human.nipple', 'Human.toenails']
     # Hide entire torso, hips, legs, and feet so ONLY the infinite galaxy void exists inside the robes!
@@ -1066,7 +1071,10 @@ def _build_censer_revenant(sex):
         np.array([0.0, -0.026, -0.055]), 8, 0.010, 0.0035, iron_p, rigid_joint='Spine2'
     ))
 
-    ent_t = assemble_garment(gid_t, 'Censer Revenant Gothic Half-Plate & Eroding Shroud', 'torso', parts_t)
+    ent_t = assemble_garment(
+        gid_t, 'Censer Revenant Gothic Half-Plate & Eroding Shroud', 'torso', parts_t,
+        auras=[{'kind': 'obscuring_fog', 'bone': 'Spine1', 'offset': [0.0, -0.05, 0.0]}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -1352,7 +1360,10 @@ def _build_vox_solus(sex):
             0.0045, tether_p, n=6, rigid_joint='Spine2', vfx=tether_vfx
         ))
 
-    ent_t = assemble_garment(gid_t, 'Vox Solus Spiral Shard Ribcage & Polychrome Crystals', 'torso', parts_t, open_torso=True)
+    ent_t = assemble_garment(
+        gid_t, 'Vox Solus Spiral Shard Ribcage & Polychrome Crystals', 'torso', parts_t, open_torso=True,
+        auras=[{'kind': 'vox_shimmer', 'bone': 'Spine1', 'offset': [0.0, 0.04, 0.0], 'scale': 1.18}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 
@@ -1615,7 +1626,10 @@ def _build_accretion_djinn(sex):
             'ember_color': '#4c38c8', 'core_color': '#090710', 'mist_color': '#5c586c',
         },
     ]
-    ent_t = assemble_garment(gid_t, 'Accretion Djinn Astral Carapace & Bronze Gorget', 'torso', parts_t, emitters=djinn_sh_smoke)
+    ent_t = assemble_garment(
+        gid_t, 'Accretion Djinn Astral Carapace & Bronze Gorget', 'torso', parts_t, emitters=djinn_sh_smoke,
+        auras=[{'kind': 'gravity_lens', 'bone': 'Spine1', 'offset': [0.0, 0.04, 0.0], 'scale': 1.28, 'tint': 'accretion'}]
+    )
     hide_full_body(ent_t)
     entries.append(ent_t)
 

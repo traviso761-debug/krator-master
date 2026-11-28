@@ -4178,6 +4178,180 @@
       }
     },
     {
+      "id": "accretion_djinn",
+      "label": "Accretion Djinn",
+      "short": "Accretion Djinn",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 79,
+        "melee_def": 76,
+        "martial_arts": 84,
+        "dodge": 82,
+        "toughness": 84,
+        "strength": 76,
+        "dexterity": 84
+      },
+      "people": "extraplanar",
+      "tier": "accretion_djinn",
+      "body": "mpfb_male",
+      "skin": "#1a1428",
+      "hair": null,
+      "hair_color": "#6c52ff",
+      "eye_color": "#6cf0ff",
+      "morph": {
+        "height": 0.38,
+        "muscle": 0.32,
+        "weight": -0.24
+      }
+    },
+    {
+      "id": "vox_solus",
+      "label": "Vox Solus",
+      "short": "Vox Solus",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 76,
+        "melee_def": 80,
+        "martial_arts": 86,
+        "dodge": 94,
+        "toughness": 76,
+        "strength": 68,
+        "dexterity": 92
+      },
+      "people": "extraplanar",
+      "tier": "vox_solus",
+      "body": "mpfb_female",
+      "skin": "#182030",
+      "hair": null,
+      "hair_color": "#78ecff",
+      "eye_color": "#ffbe48",
+      "morph": {
+        "height": 0.34,
+        "muscle": 0.2,
+        "weight": -0.32
+      }
+    },
+    {
+      "id": "censer_revenant",
+      "label": "Censer Revenant",
+      "short": "Censer Revenant",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 80,
+        "melee_def": 82,
+        "martial_arts": 80,
+        "dodge": 78,
+        "toughness": 90,
+        "strength": 82,
+        "dexterity": 76
+      },
+      "people": "extraplanar",
+      "tier": "censer_revenant",
+      "body": "mpfb_male",
+      "skin": "#16141e",
+      "hair": null,
+      "hair_color": "#0e0c14",
+      "eye_color": "#98b8ff",
+      "morph": {
+        "height": 0.4,
+        "muscle": 0.36,
+        "weight": -0.18
+      }
+    },
+    {
+      "id": "ocular_umbra",
+      "label": "Ocular Umbra",
+      "short": "Ocular Umbra",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 82,
+        "melee_def": 78,
+        "martial_arts": 86,
+        "dodge": 86,
+        "toughness": 88,
+        "strength": 78,
+        "dexterity": 84
+      },
+      "people": "extraplanar",
+      "tier": "ocular_umbra",
+      "body": "mpfb_male",
+      "skin": "#09080d",
+      "hair": null,
+      "hair_color": "#050408",
+      "eye_color": "#e8a828",
+      "morph": {
+        "height": 0.44,
+        "muscle": 0.28,
+        "weight": -0.22
+      }
+    },
+    {
+      "id": "astral_pyre",
+      "label": "Astral Pyre",
+      "short": "Astral Pyre",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 86,
+        "melee_def": 76,
+        "martial_arts": 84,
+        "dodge": 74,
+        "toughness": 92,
+        "strength": 94,
+        "dexterity": 76
+      },
+      "people": "extraplanar",
+      "tier": "astral_pyre",
+      "body": "mpfb_male",
+      "skin": "#0b1026",
+      "hair": null,
+      "hair_color": "#ffffff",
+      "eye_color": "#ffffff",
+      "morph": {
+        "height": 0.45,
+        "muscle": 0.55,
+        "weight": 0.12
+      }
+    },
+    {
+      "id": "nightmare_urchin",
+      "label": "Nightmare Urchin",
+      "short": "Nightmare Urchin",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 84,
+        "melee_def": 74,
+        "martial_arts": 88,
+        "dodge": 92,
+        "toughness": 80,
+        "strength": 74,
+        "dexterity": 94
+      },
+      "people": "extraplanar",
+      "tier": "nightmare_urchin",
+      "body": "mpfb_male",
+      "skin": "#09070c",
+      "hair": null,
+      "hair_color": "#050408",
+      "eye_color": "#ff4852",
+      "morph": {
+        "height": 0.4,
+        "muscle": 0.12,
+        "weight": -0.45
+      }
+    },
+    {
       "id": "spider_matriarch",
       "label": "Crimson Matriarch Giant Spider",
       "short": "Spider Matriarch",
