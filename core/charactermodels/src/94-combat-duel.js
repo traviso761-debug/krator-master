@@ -1656,6 +1656,96 @@
       return;
     }
 
+    if(vfxKind === 'arthro_pincer_crush'){
+      var pcx = dPos.x + (sPos.x - dPos.x) * 0.24;
+      var pcz = dPos.z + (sPos.z - dPos.z) * 0.24;
+      g.position.set(pcx, (dPos.y || 0) + hy, pcz);
+      g.lookAt(sPos.x, (dPos.y || 0) + hy, sPos.z);
+
+      [-1, 1].forEach(function(sg){
+        var jawArcGeo = new THREE.TorusGeometry(0.50, 0.032, 8, 30, Math.PI * 0.88);
+        var jawArcMat = new THREE.MeshBasicMaterial({ color:sg < 0 ? 0xef4444 : 0xf97316, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+        var jawArc = new THREE.Mesh(jawArcGeo, jawArcMat);
+        jawArc.rotation.set(sg * 0.22, 0.18, sg > 0 ? 0.42 : (Math.PI - 0.42));
+        jawArc.userData.sg = sg;
+        g.add(addPart(jawArc, jawArcGeo, jawArcMat, 'pc_jaw'));
+
+        var jawCoreGeo = new THREE.TorusGeometry(0.48, 0.014, 6, 26, Math.PI * 0.80);
+        var jawCoreMat = new THREE.MeshBasicMaterial({ color:0xfef08a, transparent:true, opacity:0.98, blending:addBlend, depthWrite:false });
+        var jawCore = new THREE.Mesh(jawCoreGeo, jawCoreMat);
+        jawCore.rotation.copy(jawArc.rotation);
+        jawCore.userData.sg = sg;
+        g.add(addPart(jawCore, jawCoreGeo, jawCoreMat, 'pc_jaw'));
+      });
+
+      var pcHubGeo = new THREE.SphereGeometry(0.14, 14, 12);
+      var pcHubMat = new THREE.MeshBasicMaterial({ color:0xffedd5, transparent:true, opacity:0.96, blending:addBlend, depthWrite:false });
+      g.add(addPart(new THREE.Mesh(pcHubGeo, pcHubMat), pcHubGeo, pcHubMat, 'pc_hub'));
+
+      var pcRingGeo = new THREE.RingGeometry(0.18, 0.34, 32);
+      var pcRingMat = new THREE.MeshBasicMaterial({ color:0xfb923c, transparent:true, opacity:0.90, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      g.add(addPart(new THREE.Mesh(pcRingGeo, pcRingMat), pcRingGeo, pcRingMat, 'pc_ring'));
+
+      for(var pci = 0; pci < 10; pci++){
+        var pcA = (pci / 10) * Math.PI * 2 + 0.15;
+        var pcSpkGeo = new THREE.CylinderGeometry(0.016, 0.003, 0.44, 5);
+        var pcSpkMat = new THREE.MeshBasicMaterial({ color:pci % 2 === 0 ? 0xfca5a5 : 0xfdba74, transparent:true, opacity:0.94, blending:addBlend, depthWrite:false });
+        var pcSpk = new THREE.Mesh(pcSpkGeo, pcSpkMat);
+        var pcDir = new THREE.Vector3(Math.cos(pcA), Math.sin(pcA), 0.18).normalize();
+        pcSpk.quaternion.setFromUnitVectors(V_UP, pcDir);
+        pcSpk.userData.dir = pcDir;
+        g.add(addPart(pcSpk, pcSpkGeo, pcSpkMat, 'pc_spark'));
+      }
+
+      vfxGroup.add(g);
+      activeCues.push({ vfxKind:'arthro_pincer_crush', group:g, parts:parts, t:0, dur:0.54 });
+      return;
+    }
+
+    if(vfxKind === 'arthro_vice_slam'){
+      g.position.set(dPos.x, 0, dPos.z);
+
+      var vsRing1Geo = new THREE.RingGeometry(0.30, 0.52, 48);
+      var vsRing1Mat = new THREE.MeshBasicMaterial({ color:0xea580c, transparent:true, opacity:0.94, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      var vsRing1 = new THREE.Mesh(vsRing1Geo, vsRing1Mat);
+      vsRing1.rotation.x = -Math.PI / 2;
+      vsRing1.position.y = 0.022;
+      g.add(addPart(vsRing1, vsRing1Geo, vsRing1Mat, 'vs_shock1'));
+
+      var vsRing2Geo = new THREE.RingGeometry(0.16, 0.30, 36);
+      var vsRing2Mat = new THREE.MeshBasicMaterial({ color:0xfef08a, transparent:true, opacity:0.90, blending:addBlend, side:THREE.DoubleSide, depthWrite:false });
+      var vsRing2 = new THREE.Mesh(vsRing2Geo, vsRing2Mat);
+      vsRing2.rotation.x = -Math.PI / 2;
+      vsRing2.position.y = 0.028;
+      g.add(addPart(vsRing2, vsRing2Geo, vsRing2Mat, 'vs_shock2'));
+
+      [-1, 1].forEach(function(sg){
+        var clampGeo = new THREE.TorusGeometry(0.58, 0.030, 8, 30, Math.PI * 0.86);
+        var clampMat = new THREE.MeshBasicMaterial({ color:sg < 0 ? 0xdc2626 : 0xf59e0b, transparent:true, opacity:0.95, blending:addBlend, depthWrite:false });
+        var clampArc = new THREE.Mesh(clampGeo, clampMat);
+        clampArc.position.y = hy;
+        clampArc.rotation.set(Math.PI / 2, 0, sg > 0 ? -0.35 : (Math.PI - 0.55));
+        clampArc.userData.sg = sg;
+        g.add(addPart(clampArc, clampGeo, clampMat, 'vs_clamp'));
+      });
+
+      for(var vsi = 0; vsi < 12; vsi++){
+        var vsA = (vsi / 12) * Math.PI * 2 + 0.25;
+        var vsShdGeo = new THREE.OctahedronGeometry(0.058, 0);
+        var vsShdMat = new THREE.MeshBasicMaterial({ color:vsi % 3 === 0 ? 0xfed7aa : vsi % 3 === 1 ? 0xc2410c : 0x7c2d12, transparent:true, opacity:0.95, depthWrite:false });
+        var vsShd = new THREE.Mesh(vsShdGeo, vsShdMat);
+        vsShd.userData.vx = Math.cos(vsA) * 1.20;
+        vsShd.userData.vy = 1.15 + (vsi % 4) * 0.30;
+        vsShd.userData.vz = Math.sin(vsA) * 1.20;
+        vsShd.position.set(Math.cos(vsA) * 0.20, 0.28, Math.sin(vsA) * 0.20);
+        g.add(addPart(vsShd, vsShdGeo, vsShdMat, 'vs_shard'));
+      }
+
+      vfxGroup.add(g);
+      activeCues.push({ vfxKind:'arthro_vice_slam', group:g, parts:parts, t:0, dur:0.64 });
+      return;
+    }
+
     if(vfxKind === 'arthro_horn_gore' || vfxKind === 'arthro_ram_shock'){
       var isGore = (vfxKind === 'arthro_horn_gore');
       g.position.set(dPos.x, 0, dPos.z);
@@ -2002,6 +2092,48 @@
             p.mat.opacity = p.baseOpacity * (1 - u);
           } else if(p.kind === 'xc_spark'){
             p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.14 + ease * 0.52);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'arthro_pincer_crush'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'pc_jaw'){
+            p.mesh.rotation.z -= p.mesh.userData.sg * dt * 7.2;
+            p.mesh.scale.setScalar(1.18 - ease * 0.26);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'pc_hub'){
+            p.mesh.scale.setScalar(1.45 - u * 0.92);
+            p.mat.opacity = p.baseOpacity * (1 - u);
+          } else if(p.kind === 'pc_ring'){
+            p.mesh.scale.setScalar(0.65 + ease * 2.35);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'pc_spark'){
+            p.mesh.position.copy(p.mesh.userData.dir).multiplyScalar(0.16 + ease * 0.58);
+            p.mat.opacity = p.baseOpacity * fade;
+          }
+        });
+      } else if(c.vfxKind === 'arthro_vice_slam'){
+        c.parts.forEach(function(p){
+          if(p.kind === 'vs_shock1'){
+            p.mesh.scale.setScalar(0.55 + ease * 3.25);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'vs_shock2'){
+            p.mesh.scale.setScalar(0.45 + ease * 2.55);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'vs_clamp'){
+            p.mesh.rotation.z += p.mesh.userData.sg * dt * 6.5;
+            p.mesh.position.y = Math.max(0.25, 1.18 - ease * 0.48);
+            p.mesh.scale.setScalar(1.15 - ease * 0.22);
+            p.mat.opacity = p.baseOpacity * fade;
+          } else if(p.kind === 'vs_shard'){
+            var vst = c.t;
+            p.mesh.position.set(
+              p.mesh.userData.vx * vst,
+              Math.max(0.03, 0.24 + p.mesh.userData.vy * vst - 3.4 * vst * vst),
+              p.mesh.userData.vz * vst
+            );
+            p.mesh.rotation.x += dt * 8.5;
+            p.mesh.rotation.z += dt * 7.0;
             p.mat.opacity = p.baseOpacity * fade;
           }
         });
@@ -3094,6 +3226,10 @@
             showCallout('🪲 STAGHORN SKYWARD GORE-TOSS!', 'parry');
           } else if(ex.link.vfx === 'arthro_sting_lance' && ex.outcome === 'hit'){
             showCallout('🐝 AERIAL STINGER JACKHAMMER!', 'sever');
+          } else if(ex.link.vfx === 'arthro_pincer_crush' && ex.outcome === 'hit'){
+            showCallout('🦀 CRUSHING PINCER GUILLOTINE!', 'sever');
+          } else if(ex.link.vfx === 'arthro_vice_slam' && ex.outcome === 'hit'){
+            showCallout('🦀 TWIN CHELIPED VICE-SLAM!', 'break');
           } else {
             spawnCue(ex.outcome, ex.link.hit_y || 1.18, cuePos);
           }
@@ -3802,7 +3938,7 @@
         '  <div class="dhud-pill-grp" role="group" aria-label="Extraplanar Boss Demo">',
         '    <button id="dhud-extraplanar-btn" aria-pressed="false" title="Launch Singularity Archon vs Crimson Monk Extraplanar Boss Demo">⚡ Extraplanar Demo</button>',
         '    <button id="dhud-fourarm-btn" aria-pressed="false" title="Launch Loader-Rig Thorax Brawler vs Reliquary Cyber-Lich 4-Limb Showcase">🦾 4-Limb Demo</button>',
-        '    <button id="dhud-arthropod-btn" aria-pressed="false" title="Launch Rigged Giant Arthropod Combat Trial (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet)">🐛 Arthropod Trial</button>',
+        '    <button id="dhud-arthropod-btn" aria-pressed="false" title="Launch Rigged Giant Arthropod Combat Trial (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet, Giant Land Crab)">🐛 Arthropod Trial</button>',
         '  </div>',
         '  <div class="dhud-pill-grp" role="group" aria-label="Attack Slots">',
         '    <button data-atk-slots="1" aria-pressed="false" title="Kenshi Vanilla: Strict 1-by-1 turn queue">Slots: 1</button>',

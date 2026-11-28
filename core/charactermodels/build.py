@@ -30,7 +30,7 @@ DIST = os.path.join(HERE, 'dist')
 RAND = os.path.join(ROOT, 'core', 'rand', '08-core-rand.js')
 AUDIO_CUES = os.path.join(ROOT, 'core', 'audio', '22-core-audio-cues.js')
 FAUNA_DIR = os.path.join(ROOT, 'kits', 'fauna')
-ARTHRO_MODELS = ('spider', 'staghorn-beetle', 'bowl-mantis', 'hornet', 'beetle')
+ARTHRO_MODELS = ('spider', 'staghorn-beetle', 'bowl-mantis', 'hornet', 'beetle', 'giant-land-crab')
 CHECKS = '--no-checks' not in sys.argv
 
 # Port lint (GODOT-PLAN.md, Phase 0): a fragment PORT.md tags [G data] must not touch the browser.
@@ -102,8 +102,8 @@ def main():
     if os.path.isdir(FAUNA_DIR):
         sys.path.insert(0, FAUNA_DIR)
         import fauna_bundle
-        fauna_js = fauna_bundle.bundle(['crawlers', 'hyperjungle', 'voth'], tex=False,
-                                       mdl=['crawlers', 'hyperjungle', 'voth'], side={})
+        fauna_js = fauna_bundle.bundle(['crawlers', 'hyperjungle', 'ringsea', 'voth'], tex=False,
+                                       mdl=['crawlers', 'hyperjungle', 'ringsea', 'voth'], side={})
         for mk in ARTHRO_MODELS:
             mp = os.path.join(FAUNA_DIR, 'models', mk + '.json')
             if os.path.isfile(mp):
@@ -252,10 +252,10 @@ def main():
             inputs['core/audio/22-core-audio-cues.js'] = audio_cues_t.encode()
             combat_js = ['/* core/audio/22-core-audio-cues.js */', audio_cues_t]
             if fauna_js:
-                inputs['kits/fauna/bundle(crawlers,hyperjungle,voth)'] = fauna_js.encode()
+                inputs['kits/fauna/bundle(crawlers,hyperjungle,ringsea,voth)'] = fauna_js.encode()
                 combat_js.extend([
                     'var FA_MODELS_SIDE = window.FA_MODELS_SIDE = window.FA_MODELS_SIDE || {};',
-                    '/* kits/fauna (crawlers, hyperjungle, voth) */',
+                    '/* kits/fauna (crawlers, hyperjungle, ringsea, voth) */',
                     fauna_js,
                 ])
             arthro_f = '95-arthropod-combat.js'

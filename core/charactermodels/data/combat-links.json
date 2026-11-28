@@ -2943,6 +2943,116 @@
           "followup": null
         }
       }
+    },
+    {
+      "attack": "crab_pincer_guillotine",
+      "clip": "crab_pincer_guillotine",
+      "label": "Crushing Pincer Guillotine",
+      "short": "Pincer Guillotine",
+      "style": "arthropod",
+      "archetype": "crab",
+      "skill_min": 0,
+      "base_dmg": 50,
+      "poise_dmg": 46,
+      "dmg_type": "cut",
+      "sever_bonus": true,
+      "target_zone": "right_arm",
+      "hit_t": 0.42,
+      "hit_y": 1.24,
+      "dist_m": 1.88,
+      "sfx": "hit_cut",
+      "vfx": "arthro_pincer_crush",
+      "outcomes": {
+        "parry": {
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
+          "lead_s": 0.12,
+          "riposte": "ual_sword_a",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
+          "lead_s": 0.14,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
+          "lead_s": 0.12,
+          "counter": null
+        },
+        "hit": {
+          "clips": [
+            "ual_hit_chest",
+            "hit_body",
+            "ual_knockback"
+          ],
+          "lead_s": 0.04,
+          "followup": null
+        }
+      }
+    },
+    {
+      "attack": "crab_twin_vice_slam",
+      "clip": "crab_twin_vice_slam",
+      "label": "Twin Cheliped Vice-Clamp & Slam",
+      "short": "Twin Vice-Slam",
+      "style": "arthropod",
+      "archetype": "crab",
+      "skill_min": 10,
+      "base_dmg": 44,
+      "poise_dmg": 62,
+      "dmg_type": "blunt",
+      "heavy": true,
+      "target_zone": "chest",
+      "hit_t": 0.48,
+      "hit_y": 1.18,
+      "dist_m": 1.84,
+      "sfx": "block_shield",
+      "vfx": "arthro_vice_slam",
+      "outcomes": {
+        "parry": {
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
+          "lead_s": 0.13,
+          "riposte": "counterstrike",
+          "counter": "counterstrike"
+        },
+        "dodge": {
+          "clips": [
+            "dodge_roll",
+            "dodge_back"
+          ],
+          "lead_s": 0.15,
+          "counter": "counterstrike"
+        },
+        "block": {
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
+          "lead_s": 0.13,
+          "counter": null
+        },
+        "hit": {
+          "clips": [
+            "knock_down"
+          ],
+          "lead_s": 0.05,
+          "followup": "ual_get_up"
+        }
+      }
     }
   ],
   "fighters": [
@@ -4049,6 +4159,31 @@
         "toughness": 58,
         "strength": 62,
         "dexterity": 86
+      }
+    },
+    {
+      "id": "giant_land_crab",
+      "label": "Ring-Sea Giant Land Crab",
+      "short": "Giant Land Crab",
+      "style": "arthropod",
+      "arthropod": true,
+      "archetype": "crab",
+      "bonus_slots": 1,
+      "hold": {},
+      "fauna": {
+        "species": "giant-land-crab",
+        "variant": 1,
+        "scale": 0.92,
+        "z_offset": 0.08
+      },
+      "stats": {
+        "melee_atk": 80,
+        "melee_def": 84,
+        "martial_arts": 78,
+        "dodge": 56,
+        "toughness": 92,
+        "strength": 94,
+        "dexterity": 64
       }
     }
   ],

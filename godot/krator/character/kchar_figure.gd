@@ -2640,33 +2640,64 @@ func _rigid(ch: Dictionary) -> Transform3D:
 		if tot > 0.0:
 			tw[k] = v / tot
 	var F := M
+	var hi := skeleton.find_bone("Hips")
+	var HT: Transform3D = _gp(hi) * (binds[hi] as Transform3D)
+	var hs := HT.basis.z.length()
+	if hs <= 1e-6:
+		hs = 1.0
+	var hu_y := HT.basis.y.y / hs
+	var hm0: Vector3 = (binds[hi] as Transform3D).affine_inverse().origin
+	var hip_r := (_gp(hi).origin.y + skeleton.position.y / size) / maxf(hm0.y, 0.3)
+	var upright := smoothstep(0.20, 0.65, hu_y) * smoothstep(0.25, 0.50, hip_r)
 	# a loose chain above the hips hangs: its fitted shape from its top point, turned with the hips' heading only, by how
 	# loose it is (rigidTargets in 50-figure.js: the Chichani tilma's front stood off like a shelf in the idle's lean)
-	var gw := clampf((0.3 - float(ch["stiff"])) / 0.2, 0.0, 1.0)
+	var gw := clampf((0.3 - float(ch["stiff"])) / 0.2, 0.0, 1.0) * upright
 	if ch["whole"] and gw > 0.0:
-		var hz: Vector3 = (_gp(skeleton.find_bone("Hips")) * (binds[skeleton.find_bone("Hips")] as Transform3D)).basis.z
-		var hb := Basis(Vector3.UP, atan2(hz.x, hz.z)).scaled(Vector3.ONE * hz.length())
+		var hz: Vector3 = HT.basis.z
+		var hx0: Vector3 = HT.basis.x
+		var ux := hz.x * upright + 0.5 * (hz.x - hx0.z) * (1.0 - upright)
+		var uz := hz.z * upright + 0.5 * (hz.z + hx0.x) * (1.0 - upright)
+		var hb := Basis(Vector3.UP, atan2(ux, uz)).scaled(Vector3.ONE * hs)
 		var g: Vector3 = tw[0]
 		for k in range(1, tw.size()):
 			g += hb * ((ch["p"][k] as Vector3) - (ch["p"][k - 1] as Vector3))
 			tw[k] = (tw[k] as Vector3).lerp(g, gw)
 	if not ch["whole"]:
-		# the shape it was fitted in, turned with the hips, from its top point (turned with the spine joint it hangs
-		# from, which the clips pitch hard, a cape's hem swung 0.7 m off the body: the fold; rigidTargets in 50-figure.js)
-		var hi := skeleton.find_bone("Hips")
-		F = _gp(hi) * (binds[hi] as Transform3D)
-		# placed by the hips, turned with their heading only; the top point's own offset (the chest leans ahead of the
-		# hips) fades out down to the hip joint (rigidTargets in 50-figure.js: a back panel sank into the buttocks and the
-		# layering threw it out in front, through the body)
-		var fz: Vector3 = F.basis.z
-		var hb := Basis(Vector3.UP, atan2(fz.x, fz.z)).scaled(Vector3.ONE * fz.length())
-		var hm: Vector3 = (binds[hi] as Transform3D).affine_inverse().origin
-		F = Transform3D(hb, _gp(hi).origin - hb * hm)
+		# the shape it was fitted in, turned with the hips when upright, and smoothly aligned with the 3D pelvis & thighs
+		# when knocked down or rising from the floor (rigidTargets in 50-figure.js)
+		var hb: Basis
+		if upright >= 0.9999:
+			var fz: Vector3 = HT.basis.z
+			hb = Basis(Vector3.UP, atan2(fz.x, fz.z)).scaled(Vector3.ONE * hs)
+		else:
+			var fz2: Vector3 = HT.basis.z
+			var fx2: Vector3 = HT.basis.x
+			var ux2 := fz2.x * upright + 0.5 * (fz2.x - fx2.z) * (1.0 - upright)
+			var uz2 := fz2.z * upright + 0.5 * (fz2.z + fx2.x) * (1.0 - upright)
+			var q_pelvis := HT.basis.orthonormalized().get_rotation_quaternion()
+			var lul := skeleton.find_bone("LeftUpLeg")
+			var ll := skeleton.find_bone("LeftLeg")
+			var rul := skeleton.find_bone("RightUpLeg")
+			var rl := skeleton.find_bone("RightLeg")
+			if lul >= 0 and ll >= 0 and rul >= 0 and rl >= 0:
+				var p_down := q_pelvis * Vector3.DOWN
+				var th_dir := (_gp(ll).origin - _gp(lul).origin).normalized() + (_gp(rl).origin - _gp(rul).origin).normalized()
+				if th_dir.length_squared() > 0.04:
+					th_dir = th_dir.normalized()
+					if p_down.dot(th_dir) > -0.85:
+						var want_down := p_down.lerp(th_dir, 0.72).normalized()
+						if p_down.dot(want_down) < 0.99999:
+							q_pelvis = (Quaternion(p_down, want_down) * q_pelvis).normalized()
+			var q_yaw := Quaternion(Vector3.UP, atan2(ux2, uz2))
+			if upright > 0.0:
+				q_pelvis = q_pelvis.slerp(q_yaw, upright)
+			hb = Basis(q_pelvis).scaled(Vector3.ONE * hs)
+		F = Transform3D(hb, _gp(hi).origin - hb * hm0)
 		var off: Vector3 = (tw[0] as Vector3) - F * (ch["p"][0] as Vector3)
 		var y0: float = (ch["p"][0] as Vector3).y
 		# (the fade runs to the hips whatever the offset's size: rigidTargets in 50-figure.js)
 		for k in range(1, tw.size()):
-			var fk := clampf(((ch["p"][k] as Vector3).y - hm.y) / maxf(1e-4, y0 - hm.y), 0.0, 1.0)
+			var fk := clampf(((ch["p"][k] as Vector3).y - hm0.y) / maxf(1e-4, y0 - hm0.y), 0.0, 1.0)
 			tw[k] = F * (ch["p"][k] as Vector3) + off * fk
 	ch["tw"] = tw
 	# the root joint where its point is
@@ -2758,6 +2789,13 @@ func _cloth_step(dt: float) -> void:
 				ch["x"] = ch["tw"].duplicate()
 				ch["xp"] = ch["tw"].duplicate()
 		c["reset"] = false
+	var ht_up: Transform3D = _gp(_hips) * (_binds[_hips] as Transform3D) if _binds.has(_hips) else _gp(_hips)
+	var hs_up := maxf(ht_up.basis.z.length(), 1e-6)
+	var hu_y_up := ht_up.basis.y.y / hs_up
+	var hm_up: float = ((_binds[_hips] as Transform3D).affine_inverse().origin.y if _binds.has(_hips) else skeleton.get_bone_global_rest(_hips).origin.y)
+	var hip_r_up := (_gp(_hips).origin.y + skeleton.position.y / size) / maxf(hm_up, 0.3)
+	var up_body := hu_y_up > 0.55 and hip_r_up > 0.60
+	var max_step := 0.07 / size
 	# cloth off: no swing; each frame starts from the rigid rest and only the collisions move the chains
 	_cacc = minf(_cacc + dt, 4 * C_STEP) if cloth else C_STEP
 	var h := C_STEP
@@ -2777,13 +2815,17 @@ func _cloth_step(dt: float) -> void:
 				xp[0] = ch["tw"][0]
 				for k in range(1, x.size()):
 					var v: Vector3 = x[k] - xp[k]
+					var vl := v.length()
+					if vl > max_step:
+						v *= max_step / vl
 					var acc: Vector3 = (wind * h - v) * (C_DRAG * h) + grav * h * h
 					xp[k] = x[k]
 					var nx: Vector3 = x[k] + v * (1.0 - C_DAMP) + acc
 					x[k] = nx.lerp(ch["tw"][k], kS)
 		for c in items:
 			for it in 2:
-				_layered(c, items)
+				if up_body:
+					_layered(c, items)
 				for ch in c["chains"]:
 					_keep_len(ch)
 				for r in c["ring"]:
@@ -2799,17 +2841,20 @@ func _cloth_step(dt: float) -> void:
 						xa[k] += mv
 						xb[k] -= mv
 				for ch in c["chains"]:
-					_collide(ch, W, ground)
+					_collide(ch, W, ground, up_body)
 			for ch in c["chains"]:
 				_keep_len(ch)
-				_collide(ch, W, ground)
+				_collide(ch, W, ground, up_body)
 				var x: Array = ch["x"]
-				for k in range(x.size() - 2, 0, -1):
-					if (x[k] as Vector3).y < (x[k + 1] as Vector3).y + 0.015:
-						var p: Vector3 = x[k]
-						p.y = minf((x[k - 1] as Vector3).y - 0.01, (x[k + 1] as Vector3).y + 0.015)
-						x[k] = p
-				_collide(ch, W, ground)
+				var tw_arr: Array = ch["tw"]
+				var p_arr: Array = ch["p"]
+				if tw_arr.size() > 1 and ((tw_arr[0] as Vector3).y - (tw_arr[tw_arr.size() - 1] as Vector3).y) > 0.45 * (p_arr[0] as Vector3).distance_to(p_arr[p_arr.size() - 1]):
+					for k in range(x.size() - 2, 0, -1):
+						if (x[k] as Vector3).y < (x[k + 1] as Vector3).y + 0.015:
+							var p: Vector3 = x[k]
+							p.y = minf((x[k - 1] as Vector3).y - 0.01, (x[k + 1] as Vector3).y + 0.015)
+							x[k] = p
+				_collide(ch, W, ground, up_body)
 			for r in c["ring"]:
 				var xa: Array = r[0]["x"]
 				var xb: Array = r[1]["x"]
@@ -2822,7 +2867,8 @@ func _cloth_step(dt: float) -> void:
 					var mv: Vector3 = (xb[k] - xa[k]) * ((d - want) / d * 0.5)
 					xa[k] += mv
 					xb[k] -= mv
-			_layered(c, items)
+			if up_body:
+				_layered(c, items)
 	for c in items:
 		for ch in c["chains"]:
 			var M := _rigid(ch)
@@ -2847,7 +2893,7 @@ func _cloth_step(dt: float) -> void:
 				prev = wq
 
 
-func _collide(ch: Dictionary, W: Array, ground: float) -> void:
+func _collide(ch: Dictionary, W: Array, ground: float, up_body := true) -> void:
 	var x: Array = ch["x"]
 	var hip := _gp(_hips).origin
 	# across the hips, level: the side a leg's capsule lies on
@@ -2882,7 +2928,7 @@ func _collide(ch: Dictionary, W: Array, ground: float) -> void:
 					var sd := d.dot(o)
 					if sd < 0.0:
 						d -= 2.0 * sd * o
-				if cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
+				if up_body and cp.get("leg", false) and (rw - q).dot(lat) * signf((q - hip).dot(lat)) > -0.5 * float(cp["r"]):
 					# the legs only (on the trunk's, the chest leaning forward of the hips, it threw a mantle's points at
 					# the back of the neck through the body to the front), and not for a point whose rest lies on the
 					# thigh's inner side, between the legs (a skirt's back centre, thrown out through the thigh: the fold)
@@ -3458,6 +3504,13 @@ func _leg_caps() -> void:
 		var r1 := (_gp(sp).origin - hip).normalized()
 		if r0.dot(r1) < 0.99999:
 			up = Quaternion(r0, r1) * Vector3.UP
+	var q0 := skeleton.get_bone_global_rest(_hips).basis.get_rotation_quaternion()
+	var q1 := _gp(_hips).basis.get_rotation_quaternion()
+	var q_delta := q1 * q0.inverse()
+	var hu_y0 := (q_delta * Vector3.UP).y
+	var rest_hip_y := float((morph["t"][_hips] as Vector3).y) if morph.has("t") else skeleton.get_bone_global_rest(_hips).origin.y
+	var hip_r0 := (hip.y + skeleton.position.y / size) / maxf(rest_hip_y, 0.3)
+	var hull_up := smoothstep(0.45, 0.65, hu_y0) * smoothstep(0.76, 0.88, hip_r0)
 	# the hull's points, six a leg: mid-thigh, knee, mid-shin, lower-shin/ankle, heel, toes
 	var E := []
 	for e in 2:
@@ -3465,14 +3518,12 @@ func _leg_caps() -> void:
 			var ea: Vector4 = A[q[0]]
 			var eb: Vector4 = Bv[q[0]]
 			var ep := Vector3(ea.x, ea.y, ea.z).lerp(Vector3(eb.x, eb.y, eb.z), q[1])
-			E.append(Vector4(ep.x, ep.y, ep.z, lerpf(ea.w, R[q[0]], q[1]) if ea.w > 0.0 else 0.0))
+			E.append(Vector4(ep.x, ep.y, ep.z, (lerpf(ea.w, R[q[0]], q[1]) if ea.w > 0.0 else 0.0) * hull_up))
 	# what hangs a piece with no chains straight below the pelvis (kcTl, legCaps in 50-figure.js): the hips' whole turn from their
 	# rest undone, then turned the way the feet face (from a vector it read posture as a tilt, or missed a wide stance's roll)
-	var q0 := skeleton.get_bone_global_rest(_hips).basis.get_rotation_quaternion()
-	var q1 := _gp(_hips).basis.get_rotation_quaternion()
 	var f0 := _foot_face(true)
 	var f1 := _foot_face(false)
-	var tq := Quaternion(Vector3.UP, atan2(f1.x, f1.z) - atan2(f0.x, f0.z)) * (q1 * q0.inverse()).inverse()
+	var tq := Quaternion(Vector3.UP, atan2(f1.x, f1.z) - atan2(f0.x, f0.z)) * q_delta.inverse()
 	var ta := tq.get_angle()
 	if ta > TILT_MAX:          # a run's lean undone in full folded the cloth over itself across the band it turns in
 		tq = Quaternion.IDENTITY.slerp(tq, TILT_MAX / ta)
@@ -3490,6 +3541,8 @@ func _leg_caps() -> void:
 			var eb: Vector4 = Bv[k]
 			sw += (-1.0 if k == 1 else 1.0) * Vector3(eb.x - ea.x, eb.y - ea.y, eb.z - ea.z).normalized().dot(f1)
 		tq = tq.slerp(tv, smoothstep(0.2, 0.5, absf(sw)))
+	if hull_up < 1.0:
+		tq = tq.slerp(Quaternion.IDENTITY, 1.0 - hull_up)
 	var tilt := Basis(tq)
 	for pm in _push_mats:
 		pm.set_shader_parameter("kcA", A)
@@ -3497,7 +3550,7 @@ func _leg_caps() -> void:
 		pm.set_shader_parameter("kcR", R)
 		pm.set_shader_parameter("kcH", hip)
 		pm.set_shader_parameter("kcU", up)
-		pm.set_shader_parameter("kcM", smoothstep(0.02, 0.1, stride))
+		pm.set_shader_parameter("kcM", smoothstep(0.02, 0.1, stride) * hull_up)
 		pm.set_shader_parameter("kcK", skeleton.get_bone_global_rest(skeleton.find_bone("LeftLeg")).origin.y)
 		pm.set_shader_parameter("kcE", E)
 		pm.set_shader_parameter("kcHm", _hem_low)

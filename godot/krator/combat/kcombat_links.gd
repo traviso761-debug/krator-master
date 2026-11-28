@@ -94,6 +94,8 @@ const CLIP_FALLBACKS := {
 	"mantis_flurry_reap": ["combo", "slash_left", "attack"],
 	"hornet_dive_sting": ["spear_thrust", "thrust", "attack"],
 	"hornet_mandible_maul": ["claw_swipe", "slash_right", "attack"],
+	"crab_pincer_guillotine": ["axe_chop", "slash_charged", "ual_sword_heavy", "attack"],
+	"crab_twin_vice_slam": ["ual_shield_bash", "blunt_swing", "ual_sword_heavy", "attack"],
 }
 
 # Martial Arts move skill thresholds matching Proposal Section 2:

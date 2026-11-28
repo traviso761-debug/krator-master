@@ -51,3 +51,59 @@ ANIMAL({
     A.anchor('lead', [0, 1.47 * S, 2.0 * S]); A.anchor('headRoot', [0, 1.45 * S, 1.4 * S]); A.anchor('tailRoot', [0, .5 * S, -1.5 * S]);
   }
 });
+
+/* ---- the Ring-Sea giant land crab: an armoured terrestrial coconut-crab monster of the Ring Sea shingle, palm groves and
+   sea-cliffs, standing chest-high on eight arched bronze-and-crimson legs with twin serrated crushing chelipeds. Variant 1 is
+   the Meshy 2K PBR model cut and rigged by rig/crab_rig.py (articulated pincerL / pincerR dactyl jaws). */
+const FA_RS_CRAB = { shell: 0xa6321c, bronze: 0x3a2820, belly: 0x6e3a28, claw: 0xc25428, tip: 0x8c1e14 };
+ANIMAL({
+  key: 'giant-land-crab', name: 'Giant land crab', group: 'ringsea',
+  tags: { biomes: ['ringsea'], koppen: ['Af', 'Am', 'Aw'], aridity: ['humid', 'subhumid'], climate: ['tropic', 'hypertropic'], riparian: 'riparian', abyssal: false,
+    domestic: false, herdedBy: [], diet: 'omnivore', feeding: 'predator', activity: 'cathemeral', temperament: 'aggressive',
+    habitat: ['ground', 'rock', 'shallows'], locomotion: ['walks', 'climbs'] },
+  size: { length: 1.50, height: 1.45 },
+  source: [{ build: 'kits/fauna', file: 'krator-fauna-ringsea.js', lines: '-', note: 'procedural fallback for the Ring-Sea giant land crab: eight arched walking legs, domed terracotta-bronze carapace, stalked eyes and twin raised pincers' },
+    { build: 'kits/fauna', file: 'models/giant-land-crab.json', lines: '-', note: 'the Meshy 2K PBR model variant, cut and rigged by rig/crab_rig.py with 8 grounded legs and articulated pincerL/pincerR dactyl jaws' }],
+  traits: { edible: true, milkable: false, tameable: false, rideable: false, draught: false, eggs: false },
+  yields: { meat: { amount: 45, note: 'dense white claw and leg meat, steamed in kelp by coastal islanders' },
+    chitin: { amount: 14, note: 'thick calcified terracotta carapace and serrated pincer shells, worked into shields and greaves' } },
+  life: { maturity: 5, lifespan: 60, litter: 2000, gestation: 35, note: 'releases larvae into the Ring Sea surf on spring tides, then lives ashore among the coastal groves and cliffs for decades' },
+  variants: 2, variantNames: ['terracotta and bronze', 'terracotta and bronze (Meshy model)'],
+  w: 2.12, d: 1.54, h: 1.46,
+  variantDims: [{ w: 2.12, d: 1.54, h: 1.46 }, { w: 1.90, d: 1.44, h: 1.45 }], models: { 1: 'giant-land-crab' }, modelData: { 1: { budget: 9000 } },
+  data: { mass: 180, legs: 8, speed: { walk: 0.9, run: 4.2 }, gait: { type: 'octopod', freq: 1.3, stride: 0.28 }, grazePitch: 0.1,
+    herd: 'solitary ashore; half a dozen gather at a washed-up carcass or grove', fleeDistance: 2, aggression: 0.85,
+    idle: { headYaw: 0.15, headPitch: 0.05, tailYaw: 0.04 },
+    schedule: ['HUNT', 'HUNT', 'HUNT', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'IDLE', 'REST', 'REST', 'REST', 'REST', 'REST', 'IDLE', 'HUNT', 'HUNT', 'HUNT', 'HUNT', 'IDLE', 'HUNT', 'HUNT', 'HUNT'] },
+  build: function (A) {
+    const C = FA_RS_CRAB, S = A.S, mix = faHiMix;
+    const e = (fam, x, y, z, rx, ry, rz, col, op) => A.ellip(fam, x * S, y * S, z * S, rx * S, ry * S, rz * S, col, op || { seg: 12 });
+    const co = (a, b, r0, r1, col) => A.cone('chitin', [a[0] * S, a[1] * S, a[2] * S], [b[0] * S, b[1] * S, b[2] * S], r0 * S, r1 * S, col, 7);
+    e('chitin', 0, 0.78, -0.04, 0.52, 0.34, 0.48, null, { seg: 18, colf: (x, y, z) => (y < -0.1 ? C.belly : (Math.abs(x) < 0.09 ? C.bronze : mix(C.shell, C.bronze, 0.25))) });
+    A.part('tail', [0, 0.54 * S, -0.46 * S], () => e('chitin', 0, 0.50, -0.50, 0.22, 0.12, 0.12, C.bronze, { seg: 10 }));
+    A.part('head', [0, 0.78 * S, 0.38 * S], () => {
+      e('chitin', 0, 0.72, 0.42, 0.20, 0.10, 0.08, C.bronze, { seg: 10 });
+      for (const s of [-1, 1]) {
+        co([s * 0.14, 0.88, 0.38], [s * 0.18, 1.02, 0.44], 0.022, 0.016, C.shell);
+        e('eye', s * 0.18, 1.03, 0.45, 0.028, 0.028, 0.028, 0x0a0806, { seg: 8 });
+      }
+    });
+    for (const s of [-1, 1]) {
+      co([s * 0.36, 0.84, 0.12], [s * 0.66, 1.02, 0.24], 0.085, 0.075, C.shell);
+      co([s * 0.66, 1.02, 0.24], [s * 0.44, 1.18, 0.46], 0.08, 0.10, C.claw);
+      co([s * 0.42, 1.14, 0.46], [s * 0.16, 1.16, 0.68], 0.055, 0.012, C.claw);
+      co([s * 0.40, 1.24, 0.44], [s * 0.14, 1.20, 0.68], 0.05, 0.010, C.tip);
+    }
+    const ZP = [0.34, 0.12, -0.12, -0.36], XP = [0.68, 0.88, 0.96, 0.76];
+    for (let i = 0; i < 8; i++) {
+      const s = (i & 1) ? -1 : 1, p = i >> 1, z = ZP[p], xw = XP[p];
+      A.part('leg' + i, [s * 0.40 * S, 0.64 * S, z * S], () => {
+        const hip = [s * 0.40, 0.64, z], knee = [s * (xw * 0.82), 0.72, z * 1.05], foot = [s * xw, 0.01, z * 1.12];
+        co(hip, knee, 0.055, 0.048, C.bronze);
+        co(knee, foot, 0.046, 0.014, mix(C.bronze, C.tip, 0.45));
+        e('chitin', knee[0], knee[1], knee[2], 0.052, 0.052, 0.052, C.shell, { seg: 8 });
+      });
+    }
+    A.anchor('lead', [0, 0.80 * S, 0.44 * S]); A.anchor('headRoot', [0, 0.78 * S, 0.38 * S]); A.anchor('tailRoot', [0, 0.54 * S, -0.46 * S]);
+  }
+});

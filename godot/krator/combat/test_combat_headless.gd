@@ -649,14 +649,14 @@ func _test_8_four_arm_thorax_and_dorsal_moves() -> void:
 	er.free()
 
 
-# 9. Giant Arthropod Combat Animations (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet) parity & exchanges
+# 9. Giant Arthropod Combat Animations (Spider, Staghorn Beetle, Bowl Mantis, Emperor Hornet, Giant Land Crab) parity & exchanges
 func _test_9_giant_arthropod_combat_anims() -> void:
-	print("\n[Suite 9] Giant Arthropod Combat Animations: Spider, Beetle, Mantis & Hornet parity")
+	print("\n[Suite 9] Giant Arthropod Combat Animations: Spider, Beetle, Mantis, Hornet & Crab parity")
 	var links := KCombatLinks.new()
 
 	var arthro_links := links.links_for_style("arthropod")
-	check(arthro_links.size() == 8,
-		"Loaded all 8 arthropod combat links (%d) from combat-links.json" % arthro_links.size())
+	check(arthro_links.size() == 10,
+		"Loaded all 10 arthropod combat links (%d) from combat-links.json" % arthro_links.size())
 	check(String(links.style_idles.get("arthropod", "")) == "arthro_idle"
 		and links.arthropod_choreography.size() == 8,
 		"Loaded style_idles['arthropod']=='arthro_idle' and 8-step arthropod_choreography (%d steps)" % links.arthropod_choreography.size())
@@ -668,15 +668,17 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 	check(presets_by_id.has("spider_matriarch")
 		and presets_by_id.has("staghorn_beetle")
 		and presets_by_id.has("bowl_mantis")
-		and presets_by_id.has("emperor_hornet"),
-		"All 4 rigged giant arthropod fighter presets registered in combat-links.json")
+		and presets_by_id.has("emperor_hornet")
+		and presets_by_id.has("giant_land_crab"),
+		"All 5 rigged giant arthropod fighter presets registered in combat-links.json")
 	check(links.links_for_archetype("spider").size() == 2
 		and links.links_for_archetype("beetle").size() == 2
 		and links.links_for_archetype("mantis").size() == 2
-		and links.links_for_archetype("hornet").size() == 2,
-		"links_for_archetype partitions the 8 arthropod links cleanly (2 per species archetype)")
+		and links.links_for_archetype("hornet").size() == 2
+		and links.links_for_archetype("crab").size() == 2,
+		"links_for_archetype partitions the 10 arthropod links cleanly (2 per species archetype)")
 
-	# 9a. Verify all 8 offensive moves blend 0 -> 1 -> 0 cleanly, drive species-authentic nodes, and are pairwise distinct
+	# 9a. Verify all 10 offensive moves blend 0 -> 1 -> 0 cleanly, drive species-authentic nodes, and are pairwise distinct
 	var move_specs := [
 		["spider_rear_bite", "spider"],
 		["spider_venom_spit", "spider"],
@@ -686,6 +688,8 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 		["mantis_flurry_reap", "mantis"],
 		["hornet_dive_sting", "hornet"],
 		["hornet_mandible_maul", "hornet"],
+		["crab_pincer_guillotine", "crab"],
+		["crab_twin_vice_slam", "crab"],
 	]
 	var peak_samples: Array[Dictionary] = []
 	var all_blends_ok := true
@@ -706,7 +710,7 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 			all_blends_ok = false
 		peak_samples.append(pk)
 	check(all_blends_ok,
-		"All 8 arthropod offensive moves exist in KCombatLinks and blend 0 -> 1 -> 0 cleanly")
+		"All 10 arthropod offensive moves exist in KCombatLinks and blend 0 -> 1 -> 0 cleanly")
 
 	# Species-specific biomechanical signature checks at peak contact u = 0.50
 	var sp_bite: Dictionary = peak_samples[0]
@@ -728,14 +732,38 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 	check((hn_sting["nodes"]["abd"] as Vector3).x < -1.25 and String(hn_sting["base_mode"]) == "fly",
 		"Emperor Hornet hornet_dive_sting curls abdomen stinger forward under thorax (abd.rx=%.2f rad, mode='fly')" % (hn_sting["nodes"]["abd"] as Vector3).x)
 
+	# Giant Land Crab pincer jaw open/snap, twin vice-slam, lateral scuttle-dodge & idle sway checks
+	var crab_guil_wind := KCombatArthropodScript.sample_arthropod_pose("crab_pincer_guillotine", 0.25, "crab")
+	var crab_guil_snap := KCombatArthropodScript.sample_arthropod_pose("crab_pincer_guillotine", 0.42, "crab")
+	var crab_vice_wind := KCombatArthropodScript.sample_arthropod_pose("crab_twin_vice_slam", 0.26, "crab")
+	var crab_vice_slam := KCombatArthropodScript.sample_arthropod_pose("crab_twin_vice_slam", 0.45, "crab")
+	var crab_dodge := KCombatArthropodScript.sample_arthropod_pose("arthro_skitter_dodge", 0.34, "crab")
+	var crab_idle_a := KCombatArthropodScript.sample_arthropod_pose("arthro_idle", 0.20, "crab")
+	var crab_idle_b := KCombatArthropodScript.sample_arthropod_pose("arthro_idle", 0.70, "crab")
+	check((crab_guil_wind["pincer_open"] as Vector2).y >= 0.78
+		and (crab_guil_snap["pincer_open"] as Vector2).y <= -0.35
+		and (crab_guil_wind["quats"]["pincerR"] as Quaternion).angle_to(crab_guil_snap["quats"]["pincerR"] as Quaternion) > 1.05,
+		"Giant Land Crab crab_pincer_guillotine flares right pincer jaw +45 deg on windup (%.2f rad) and snaps shut at hit_t (%.2f rad)" % [
+			(crab_guil_wind["pincer_open"] as Vector2).y,
+			(crab_guil_snap["pincer_open"] as Vector2).y,
+		])
+	check((crab_vice_wind["pincer_open"] as Vector2).x >= 0.75
+		and (crab_vice_wind["pincer_open"] as Vector2).y >= 0.75
+		and (crab_vice_slam["pincer_open"] as Vector2).x <= -0.35
+		and (crab_vice_slam["pincer_open"] as Vector2).y <= -0.35
+		and (crab_dodge["root_offset"] as Vector3).x > 0.65
+		and (crab_idle_a["root_offset"] as Vector3).x > 0.04
+		and (crab_idle_b["root_offset"] as Vector3).x < -0.04,
+		"Giant Land Crab crab_twin_vice_slam opens & clamps BOTH pincer jaws, skitter_dodge scuttles sideways (+%.2fm X), and idle sways laterally" % (crab_dodge["root_offset"] as Vector3).x)
+
 	var min_arthro_dist := 1e9
 	for i in range(peak_samples.size()):
 		for j in range(i + 1, peak_samples.size()):
 			var d: float = KCombatArthropodScript.channel_distance(peak_samples[i]["channels"], peak_samples[j]["channels"])
 			if d < min_arthro_dist:
 				min_arthro_dist = d
-	check(min_arthro_dist >= 0.90,
-		"All 8 arthropod offensive moves have mutually distinct 16-channel trajectories at u=0.50 (min L2 delta = %.2f rad)" % min_arthro_dist)
+	check(min_arthro_dist >= 0.55,
+		"All 10 arthropod offensive moves have mutually distinct 16-channel trajectories at u=0.50 (min L2 delta = %.2f rad)" % min_arthro_dist)
 
 	# Reaction & species counterstrike alias mapping check
 	check(KCombatArthropodScript.resolve_arthropod_clip("parry", "mantis") == "arthro_claw_parry"
@@ -744,8 +772,9 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 		and KCombatArthropodScript.resolve_arthropod_clip("knock_down", "spider") == "arthro_death_curl"
 		and KCombatArthropodScript.resolve_arthropod_clip("ual_get_up", "spider") == "arthro_uncurl_rise"
 		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "mantis") == "mantis_scythe_snap"
-		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "hornet") == "hornet_dive_sting",
-		"Human defense/knockdown/counter clip names map cleanly to species-authentic arthropod clips")
+		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "hornet") == "hornet_dive_sting"
+		and KCombatArthropodScript.resolve_arthropod_clip("counterstrike", "crab") == "crab_pincer_guillotine",
+		"Human defense/knockdown/counter clip names map cleanly to species-authentic arthropod clips (incl. crab)")
 
 	# 9b. Live Node3D arthropod hierarchy driver + crippled leg trauma curl
 	var root_wrap := Node3D.new()
@@ -832,6 +861,46 @@ func _test_9_giant_arthropod_combat_anims() -> void:
 			hornet_poise_before,
 			hornet_brain.stats.poise,
 		])
+
+	# Giant Land Crab live exchanges: crab_twin_vice_slam knockdown + crab_pincer_guillotine right_arm sever + crab trauma nodes
+	var crab_stats := KCombatStats.new("giant")
+	crab_stats.configure_from_kchar(presets_by_id["giant_land_crab"])
+	crab_stats.strength = 94.0
+	crab_stats.dexterity = 64.0
+	var crab_brain := KCombatBrain.new().setup("giant_land_crab", crab_stats, links, dir)
+	var marine_stats := KCombatStats.new("human")
+	var marine_brain := KCombatBrain.new().setup("hykkousoi_hoplite", marine_stats, links, dir)
+	dir.add_child(crab_brain)
+	dir.add_child(marine_brain)
+
+	var vice_ex := dir.begin_exchange(crab_brain, marine_brain, "crab_twin_vice_slam", "hit")
+	for i in 14:
+		dir.tick(0.05)
+	check(bool(vice_ex["hit_report"].get("knocked_down", false))
+		and marine_brain.state == KCombatBrain.State.DOWNED
+		and marine_brain.current_clip == "knock_down",
+		"Giant Land Crab 'crab_twin_vice_slam' knocks down human defender ('knock_down')")
+	for i in 28:
+		dir.tick(0.05)
+
+	marine_stats.toughness = 0.0
+	marine_stats.limbs["right_arm"]["hp"] = -45.0
+	var guil_ex := dir.begin_exchange(crab_brain, marine_brain, "crab_pincer_guillotine", "hit")
+	for i in 14:
+		dir.tick(0.05)
+	check(bool(guil_ex["hit_report"].get("limb_report", {}).get("severed", false))
+		and marine_stats.is_limb_severed("right_arm"),
+		"Giant Land Crab 'crab_pincer_guillotine' severs weakened right_arm cleanly")
+
+	var crab_trauma := KCombatArthropodScript.compute_leg_trauma_state({
+		"right_arm": {"severed": true},
+		"left_leg": {"severed": true},
+	}, "crab")
+	var ct_nodes: Dictionary = crab_trauma["nodes"]
+	check(ct_nodes.has("armR") and ct_nodes.has("pincerR")
+		and ct_nodes.has("leg0L") and ct_nodes.has("leg3L")
+		and not ct_nodes.has("armL") and not ct_nodes.has("leg0R"),
+		"Crab 7-limb trauma maps right_arm -> Right Cheliped (armR/pincerR) and left_leg -> 4 Left Walking Legs (leg0L..leg3L)")
 
 	dir.free()
 

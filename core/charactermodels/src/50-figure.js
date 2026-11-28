@@ -2138,7 +2138,24 @@ function KCharFigure(body, sliders, load){
     for(var k in live) if(live[k].userData.part && live[k].userData.part.role === 'base') return live[k];
     return null;
   }
-  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), rtH = new THREE.Matrix4(), rtN = new THREE.Matrix3(), rtW = new THREE.Vector3(), rtU = new THREE.Vector3(), rtX = new THREE.Vector3(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
+  var rtS = new THREE.Matrix4(), rtV = new THREE.Vector3(), rtM = new THREE.Matrix4(), rtH = new THREE.Matrix4(), rtN = new THREE.Matrix3(), rtW = new THREE.Vector3(), rtU = new THREE.Vector3(), rtX = new THREE.Vector3(), rtQ1 = new THREE.Quaternion(), rtQ2 = new THREE.Quaternion(), rtD1 = new THREE.Vector3(), rtD2 = new THREE.Vector3(), LEGJ = /UpLeg|Leg$|LegTwist|Foot|Toe/;
+  function poseUpright(){
+    var inv = baseMesh() ? baseMesh().skeleton.boneInverses : null;
+    var hi = byName.Hips;
+    if(hi === undefined) return { huY:1, hipR:1, up:1 };
+    var bh = bones[hi];
+    if(!inv || !inv[hi]){
+      var k0 = Object.keys(clothItems)[0];
+      if(k0 && clothItems[k0].meshes[0]) inv = clothItems[k0].meshes[0].skeleton.boneInverses;
+    }
+    if(!inv || !inv[hi]) return { huY:1, hipR:1, up:1 };
+    var He = rtH.multiplyMatrices(bh.matrixWorld, inv[hi]).elements;
+    var hs = Math.hypot(He[8], He[9], He[10]) || 1, huY = He[5] / hs;
+    var restY = rtW.setFromMatrixPosition(rtS.copy(inv[hi]).invert()).y;
+    var hipR = (bh.matrixWorld.elements[13] - self.group.matrixWorld.elements[13]) / Math.max(hs * Math.max(restY, 0.3), 1e-4);
+    var up = THREE.MathUtils.smoothstep(huY, 0.20, 0.65) * THREE.MathUtils.smoothstep(hipR, 0.25, 0.50);
+    return { huY:huY, hipR:hipR, up:up, hs:hs };
+  }
   function rigidTargets(c, ch){
     var pb = bones[ch.parent], inv = c.meshes[0].skeleton.boneInverses;
     cM.multiplyMatrices(pb.matrixWorld, inv[ch.parent]);   // model -> world, riding the joint
@@ -2169,14 +2186,19 @@ function KCharFigure(body, sliders, load){
       if(tot > 0) t.divideScalar(tot); else t.copy(ch.rest[k]).applyMatrix4(cM);
     }
     var F = cM;
+    var He = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]).elements;
+    var hs = Math.hypot(He[8], He[9], He[10]) || 1, huY = He[5] / hs;
+    var Hm = rtW.setFromMatrixPosition(rtS.copy(inv[byName.Hips]).invert()), Hw = rtU.setFromMatrixPosition(bones[byName.Hips].matrixWorld);
+    var hipR = (Hw.y - self.group.matrixWorld.elements[13]) / Math.max(hs * Math.max(Hm.y, 0.3), 1e-4);
+    var upright = THREE.MathUtils.smoothstep(huY, 0.20, 0.65) * THREE.MathUtils.smoothstep(hipR, 0.25, 0.50);
     // a loose chain above the hips hangs: its fitted shape from its top point, turned with the hips' heading only, by
     // how loose it is (stiffness 0.1 and under wholly, 0.3 and over not at all: a mantle that lies on the shoulders
     // follows the body, or it tore at the shoulder blades). Followed point by point, the Chichani tilma's front tilted
     // out 45 degrees with the idle's forward lean and stood off like a shelf (its fitted shape hangs within 5)
-    var GW = (ch.parent === byName.Head || ch.upCrest) ? 0 : THREE.MathUtils.clamp((0.3 - ch.stiff) / 0.2, 0, 1);
+    var GW = ((ch.parent === byName.Head || ch.upCrest) ? 0 : THREE.MathUtils.clamp((0.3 - ch.stiff) / 0.2, 0, 1)) * upright;
     if(ch.whole && GW > 0){
-      var He = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]).elements;
-      var hs = Math.hypot(He[8], He[9], He[10]), hh = Math.hypot(He[8], He[10]) || 1, hx = He[8] / hh * hs, hz = He[10] / hh * hs;
+      var ux = He[8] * upright + 0.5 * (He[8] - He[2]) * (1 - upright), uz = He[10] * upright + 0.5 * (He[10] + He[0]) * (1 - upright);
+      var hh = Math.hypot(ux, uz) || 1, hx = ux / hh * hs, hz = uz / hh * hs;
       rtN.set(hz, 0, hx, 0, hs, 0, -hx, 0, hz);
       rtX.copy(ch.tw[0]);
       for(var k = 1; k < ch.p.length; k++){
@@ -2185,16 +2207,37 @@ function KCharFigure(body, sliders, load){
       }
     }
     if(!ch.whole){
-      F = rtH.multiplyMatrices(bones[byName.Hips].matrixWorld, inv[byName.Hips]);
-      // placed by the hips, turned with their heading only (keeping their scale): cloth below them hangs, and turned
-      // with the whole pelvis, the idle's tilt of it swung a panel hanging 1 m from the chest into the legs. The top
-      // point's own offset (the chest leans 10 cm ahead of the hips in an idle) fades out down to the hip joint: carried
-      // whole, a back panel's lower points sank into the buttocks and the layering threw them out in front, through
-      // the body, wide as a wing (the court robes, the chief's apron)
-      var fe = F.elements, fs = Math.hypot(fe[8], fe[9], fe[10]), fh = Math.hypot(fe[8], fe[10]) || 1;
-      var fx = fe[8] / fh * fs, fz = fe[10] / fh * fs;
-      var Hm = rtW.setFromMatrixPosition(rtS.copy(inv[byName.Hips]).invert()), Hw = rtU.setFromMatrixPosition(bones[byName.Hips].matrixWorld);
-      F.set(fz, 0, fx, 0, 0, fs, 0, 0, -fx, 0, fz, 0, 0, 0, 0, 1);
+      // placed by the hips, turned with their heading only when upright; when knocked down, rolling or rising from the
+      // floor (upright < 1), smoothly aligned with the 3D pelvis & thighs so the robe follows the horizontal legs
+      // instead of plunging underground beneath the hips or flipping 180 degrees across 90-degree pitch
+      if(upright >= 0.9999){
+        var fh = Math.hypot(He[8], He[10]) || 1, fx = He[8] / fh * hs, fz = He[10] / fh * hs;
+        F = rtH;
+        F.set(fz, 0, fx, 0, 0, hs, 0, 0, -fx, 0, fz, 0, 0, 0, 0, 1);
+      } else {
+        var ux2 = He[8] * upright + 0.5 * (He[8] - He[2]) * (1 - upright), uz2 = He[10] * upright + 0.5 * (He[10] + He[0]) * (1 - upright);
+        var fh2 = Math.hypot(ux2, uz2) || 1, fx2 = ux2 / fh2, fz2 = uz2 / fh2;
+        rtM.extractRotation(rtH);
+        rtQ1.setFromRotationMatrix(rtM);
+        if(byName.LeftUpLeg !== undefined && byName.LeftLeg !== undefined && byName.RightUpLeg !== undefined && byName.RightLeg !== undefined){
+          rtD1.set(0, -1, 0).applyQuaternion(rtQ1);
+          bones[byName.LeftLeg].getWorldPosition(rtD2).sub(bones[byName.LeftUpLeg].getWorldPosition(rtV)).normalize();
+          rtX.copy(bones[byName.RightLeg].getWorldPosition(rtV)).sub(bones[byName.RightUpLeg].getWorldPosition(cV3)).normalize();
+          rtD2.add(rtX);
+          if(rtD2.lengthSq() > 0.04){
+            rtD2.normalize();
+            if(rtD1.dot(rtD2) > -0.85){
+              rtX.copy(rtD1).lerp(rtD2, 0.72).normalize();
+              rtQ2.setFromUnitVectors(rtD1, rtX);
+              rtQ1.premultiply(rtQ2);
+            }
+          }
+        }
+        rtM.set(fz2, 0, fx2, 0, 0, 1, 0, 0, -fx2, 0, fz2, 0, 0, 0, 0, 1);
+        rtQ2.setFromRotationMatrix(rtM);
+        if(upright > 0) rtQ1.slerp(rtQ2, upright);
+        F = rtH.makeRotationFromQuaternion(rtQ1).scale(rtV.set(hs, hs, hs));
+      }
       rtX.copy(Hm).applyMatrix4(F); F.setPosition(Hw.x - rtX.x, Hw.y - rtX.y, Hw.z - rtX.z);
       // (the fade runs to the hips whatever the offset's size: widened to 3.5 x the offset, the rows below the hips
       // carried a far-flung root's offset too and a robe's lower rows swept through the legs; the bisection in
@@ -2349,6 +2392,7 @@ function KCharFigure(body, sliders, load){
       c.reset = false;
     });
     clothAcc = dyn ? Math.min(clothAcc + dt, 4 * STEP) : STEP;
+    var pUp = poseUpright(), upBody = pUp.huY > 0.55 && pUp.hipR > 0.60, maxStep = 0.07 * sc;
     var h = STEP;
     while(clothAcc >= h){
       clothAcc -= h;
@@ -2361,6 +2405,7 @@ function KCharFigure(body, sliders, load){
           for(var k = 1; k < ch.x.length; k++){
             var x = ch.x[k], xp = ch.xp[k];
             cV.subVectors(x, xp);                                     // velocity x h
+            var vl = cV.length(); if(vl > maxStep) cV.multiplyScalar(maxStep / vl);
             cV2.copy(wind).multiplyScalar(h).sub(cV).multiplyScalar(dragK * h);  // drag toward the air's motion
             if(upCrest){
               var fl = (k / ch.x.length) * h * h;
@@ -2382,17 +2427,17 @@ function KCharFigure(body, sliders, load){
               cV.subVectors(b, a).multiplyScalar(f); a.add(cV); b.sub(cV);
             }
           });
-          c.chains.forEach(function(ch){ collide(ch, W); });
+          c.chains.forEach(function(ch){ collide(ch, W, upBody); });
         }
         c.chains.forEach(function(ch){
           for(var k = 1; k < ch.x.length; k++) keepLen(ch, k);
-          collide(ch, W);
-          if(!ch.upCrest){
+          collide(ch, W, upBody);
+          if(!ch.upCrest && ch.tw.length > 1 && (ch.tw[0].y - ch.tw[ch.tw.length - 1].y) > 0.45 * ch.p[0].distanceTo(ch.p[ch.p.length - 1]) * sc){
             for(var k2 = ch.x.length - 2; k2 > 0; k2--){
               if(ch.x[k2].y < ch.x[k2 + 1].y + 0.015) ch.x[k2].y = Math.min(ch.x[k2 - 1].y - 0.01, ch.x[k2 + 1].y + 0.015);
             }
           }
-          collide(ch, W);
+          collide(ch, W, upBody);
         });
         c.ring.forEach(function(r){
           var a = r[0].x[r[2]], b = r[1].x[r[2]], d = a.distanceTo(b), lo = r[3] * 0.6, hi = r[3] * 1.2;
@@ -2401,7 +2446,7 @@ function KCharFigure(body, sliders, load){
             cV.subVectors(b, a).multiplyScalar(f); a.add(cV); b.sub(cV);
           }
         });
-        layered(c, items);
+        if(upBody) layered(c, items);
       });
     }
     // the bones turn to the particles
@@ -2432,7 +2477,7 @@ function KCharFigure(body, sliders, load){
   }
   // out of the capsules and above the floor (last: a point may stretch its bone a little rather than sink in)
   var hipW = new THREE.Vector3(), cO = new THREE.Vector3(), cAx = new THREE.Vector3(), cLat = new THREE.Vector3();
-  function collide(ch, W){
+  function collide(ch, W, upBody){
     bones[byName.Hips].getWorldPosition(hipW);
     // across the hips, level: the side a leg's capsule lies on
     bones[byName.LeftUpLeg].getWorldPosition(cLat); bones[byName.RightUpLeg].getWorldPosition(cO);
@@ -2463,7 +2508,7 @@ function KCharFigure(body, sliders, load){
           cO.subVectors(up, cV2); cO.addScaledVector(cAx, -cO.dot(cAx));
           var ol = Math.abs(cAx.y) < 0.7 && cO.y > 0 ? cO.length() : 0, cs = 0;
           if(ol > 1e-4){ cO.divideScalar(ol); cs = cV.dot(cO); if(cs < 0) cV.addScaledVector(cO, -2 * cs); }
-          if(cp.leg && cO.subVectors(rw, cV2).dot(cLat) * Math.sign((cV2.x - hipW.x) * cLat.x + (cV2.z - hipW.z) * cLat.z) > -0.5 * cp.r){
+          if(upBody !== false && cp.leg && cO.subVectors(rw, cV2).dot(cLat) * Math.sign((cV2.x - hipW.x) * cLat.x + (cV2.z - hipW.z) * cLat.z) > -0.5 * cp.r){
             // (the legs only: on the trunk's capsules, the chest leaning forward of the hips in a clip, it threw a
             // mantle's points at the back of the neck through the body to the front; and not for a point whose rest
             // lies on the thigh's inner side, between the legs: a skirt's back centre, thrown out through the thigh)
@@ -2560,7 +2605,7 @@ function KCharFigure(body, sliders, load){
       // so cloth that already lies right barely moves; the 4 cm shell outside it moved everything within 4 cm of a
       // capsule out by up to 3 cm, and a loincloth's flaps, a kilt's seat and a robe's back crumpled at rest
       sh.vertexShader = 'uniform vec4 kcA[' + NCAP + '];\nuniform vec4 kcB[' + NCAP + '];\nuniform vec4 kcE[' + NHULL + '];\nuniform float kcHm;\nuniform float kcEO;\nuniform mat3 kcTl;\nuniform float kcR[' + NCAP + '];\nuniform vec3 kcH;\nuniform vec3 kcU;\nuniform float kcP;\nuniform float kcPO;\nuniform float kcM;\nuniform float kcK;\nuniform float kcSl;\nuniform float kcL;\nuniform float kcT;\nuniform float kcS;\nuniform float kcSH;\n' + sh.vertexShader.replace('#include <skinning_vertex>',
-        '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk.y = 0.0; cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0; vec3 clat = vec3(cbk.z, 0.0, -cbk.x);\n' +
+        '#include <skinning_vertex>\n\tvec3 cbk = (kcA[14].xyz + kcA[15].xyz) * 0.5 - kcH; cbk -= kcU * dot(cbk, kcU); cbk *= kcA[14].w > 0.0 ? 1.0 / max(length(cbk), 1e-5) : 0.0; vec3 clat = cross(kcU, cbk);\n' +
         '\tfloat cflap = kcL > 0.1 && kcL < 0.5 && kcS > 0.0 && kcSH < 1.0 && length(position.xz) > 0.142 && position.y > 0.45 && abs(dot(transformed - kcH, cbk)) > abs(dot(transformed - kcH, clat)) * 1.1 ? 1.0 : 0.0;\n' +
         '\tfloat cloose = (kcL > 0.5 && !(kcS > 0.0 && kcSH > 10.0)) || cflap > 0.5 ? 1.0 : 0.0, ceo = kcEO > 0.5 && cloose > 0.5 && (abs(position.x) < 0.22 || position.y < 0.88) ? 1.0 : 0.0, cstr = smoothstep(0.35, 0.85, kcM), cshort = smoothstep(0.32, 0.44, kcHm);\n' +
         '\tfloat crr = length(position.xz), ctier = clamp(crr - (0.24 - 0.12 * clamp(position.y, 0.0, 0.80)), 0.0, 0.16) * smoothstep(0.15, 0.32, position.y) * (1.0 - smoothstep(0.82, 1.04, position.y));\n' +
@@ -2580,6 +2625,7 @@ function KCharFigure(body, sliders, load){
         '\t\t\tcup = max(cup, smoothstep(0.3, 0.4, ct)); if(cup <= 0.0) continue; }\n\t\tct = clamp(ct, 0.0, 1.0);\n' +
         '\t\tvec3 cq = ca + cab * ct, cd = transformed - cq; float cl = length(cd);\n' +
         '\t\tfloat ccr = ci < 2 ? smoothstep(0.42, 0.68, 1.0 - abs(cab.y) / max(length(cab), 1e-5)) * smoothstep(-0.04, 0.03, cd.y) : (ci >= 10 && kcB[ci].w < 0.5 ? smoothstep(-0.02, 0.04, position.y - 0.88) : 0.0);\n' +
+        '\t\tfloat csup = ci < 4 ? smoothstep(0.42, 0.68, 1.0 - abs(cab.y) / max(length(cab), 1e-5)) * smoothstep(-0.04, 0.03, cd.y) : ccr;\n' +
         // how far the limb has left hanging (a shin takes its thigh's too: in a crouch it stands upright, the knee well forward).
         // Cloth round a hanging limb has not been passed through. And standing still the fit already clears the trousers, so
         // PAD_OVER (kcPO) comes in with the stride (kcM, legCaps), on both legs: at full strength at rest it held an open robe's
@@ -2595,7 +2641,7 @@ function KCharFigure(body, sliders, load){
         '\t\tfloat cR = cr + csh;\n' +
         '\t\tif(cl < cR && cl > 1e-5){\n' +
         '\t\t\tfloat cmid = ci < 6 ? 1.0 - smoothstep(0.03, 0.11, abs(dot(transformed - kcH, clat))) : 0.0;\n' +
-        '\t\t\tvec3 co = vec3(cq.x - kcH.x, 0.0, cq.z - kcH.z); co -= clat * dot(co, clat) * cmid * 0.85; float col = length(co);\n' +
+        '\t\t\tvec3 co = (cq - kcH) - kcU * dot(cq - kcH, kcU); co -= cab * (dot(co, cab) / max(dot(cab, cab), 1e-8)); co -= clat * dot(co, clat) * cmid * 0.85; float col = length(co);\n' +
         // and the deeper it lies the more it goes straight out that side: near the bone the way out from it is noise, and a
         // robe's front, left inside a raised thigh in a run, split left and right round the knee and showed it. The side
         // is the one the cloth faces (objectNormal, skinned): a leg swung back has the body's axis in front of it, and
@@ -2604,7 +2650,7 @@ function KCharFigure(body, sliders, load){
         // deep, and the mirror folded the tube's inner half onto its outer, baring a calf through a court skirt and a
         // thigh through a coat in a walk)
         '\t\t\tfloat cr0 = cr - cpd * (1.0 - clf);\n' +
-        '\t\t\tif(cl < cr0 && csh > 0.0 && col > 1e-4){ co = normalize(mix(co / col, vec3(0.0, 1.0, 0.0), ccr)); if(ci < 14 && dot(objectNormal, co) < 0.0 && ccr < 0.5) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
+        '\t\t\tif(cl < cr0 && csh > 0.0 && col > 1e-4){ co = normalize(mix(co / col, vec3(0.0, 1.0, 0.0), csup)); if(ci < 14 && dot(objectNormal, co) < 0.0 && csup < 0.5) co = -co; float cs = dot(cd, co); if(cs < 0.0) cd -= 2.0 * cs * co;\n' +
         '\t\t\t\tfloat cw = 1.0 - cl / cr0; cw *= cw; cd = normalize(cd) * (1.0 - cw) + co * cw; }\n' +
         // (the legs' capsules hand over to the hull in a stride: the two together tore the cloth where they disagreed)
         // (held at full strength in a stride beside the hull, 2026-11-02 to 06, the two together put the trade skirt's shin
@@ -2637,7 +2683,7 @@ function KCharFigure(body, sliders, load){
         '\t\t\tif(ew > 0.0){ float elayer = clamp(length(position.xz) - 0.165, -0.045, 0.045) * 0.25;\n' +
         '\t\t\t\tfloat ed = (ew + elayer) - er;\n' +
         '\t\t\t\ttransformed.xz = kcH.xz + eu * (er + 0.5 * (ed + sqrt(ed * ed + 0.00025))); }\n\t\t}\n\t}\n' +
-        '\tif(kcS > 0.0 && cflap < 0.5 && transformed.y < max(kcH.y + 0.08, max(kcB[0].y, kcB[1].y) + 0.08)){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +
+        '\tif(kcS > 0.0 && cflap < 0.5 && min(transformed.y - kcH.y, dot(transformed - kcH, kcU)) < max(0.08, max(kcB[0].y, kcB[1].y) - kcH.y + 0.08)){\n\t\tfloat sb = 1e9; vec3 sbq = vec3(0.0); float sbr = 0.0, sbt = 0.0; int sbi = 0;\n' +
         '\t\tfor(int ci = 0; ci < 6; ci++){\n\t\t\tif(kcA[ci].w <= 0.0) continue;\n' +
         '\t\t\tvec3 sa = kcA[ci].xyz, sab = kcB[ci].xyz - sa; float st = clamp(dot(transformed - sa, sab) / max(dot(sab, sab), 1e-8), 0.0, 1.0);\n' +
         '\t\t\tfloat sr = (mix(kcA[ci].w, kcR[ci] > 0.0 ? kcR[ci] : kcA[ci].w, st) - (kcSH > 10.0 ? 0.01 : 0.0)) * (ci >= 4 && kcSH > 10.0 && kcM > 0.3 ? 0.72 : (kcSH > 10.0 ? 0.92 : 1.0)) + kcS;\n' +
@@ -2718,7 +2764,22 @@ function KCharFigure(body, sliders, load){
       pushU.kcR.value[i] = rb + 0.01;
       if(i < 4) stride = Math.max(stride, 1 - Math.abs(cV2.y - cV.y) / Math.max(cV.distanceTo(cV2), 1e-5));
     });
-    pushU.kcM.value = THREE.MathUtils.smoothstep(stride, 0.02, 0.1);
+    bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
+    if(!tiltRest || tiltRest.pose !== self.pose){
+      var tF = KCHAR.fk(skel, self.pose.t), tL = tF.P[byName.LeftUpLeg], tR = tF.P[byName.RightUpLeg], tS = tF.P[byName.Hips];
+      tiltRest = { pose:self.pose, hipY:tS[1], q:new THREE.Quaternion().fromArray(tF.R[byName.Hips]),
+                   v:new THREE.Vector3((tL[0] + tR[0]) / 2 - tS[0], (tL[1] + tR[1]) / 2 - tS[1], (tL[2] + tR[2]) / 2 - tS[2]).normalize(),
+                   f:footFace(function(n){ return new THREE.Vector3().fromArray(tF.P[byName[n]]); }) };
+    }
+    self.inner.getWorldQuaternion(tuckQ).invert();
+    bones[byName.Hips].getWorldQuaternion(tiltQ).premultiply(tuckQ).multiply(tuckQ.copy(tiltRest.q).invert());
+    var huY0 = cV.set(0, 1, 0).applyQuaternion(tiltQ).y;
+    var hipR0 = pushU.kcH.value.y / Math.max(tiltRest.hipY, 0.3);
+    // the 2D upright XZ hull (kcE) and capsule-to-hull handover (kcM) apply only while standing/striding upright;
+    // knocked down or getting up from the floor, hullUp -> 0 keeps the 3D leg capsules active and stops kcE projecting
+    // horizontal legs into a 1 m slab across the ground
+    var hullUp = THREE.MathUtils.smoothstep(huY0, 0.45, 0.65) * THREE.MathUtils.smoothstep(hipR0, 0.76, 0.88);
+    pushU.kcM.value = THREE.MathUtils.smoothstep(stride, 0.02, 0.1) * hullUp;
     // the hull's points (the shader, the hull), six a leg: mid-thigh, knee, mid-shin, ankle, heel, toes (the fourth
     // moved up the shin to 0.8, 2026-11-02 to 06, the hull stopped short of a kicked-back ankle and the shin came through
     // the trade skirt in a run: back at the ankle)
@@ -2727,7 +2788,7 @@ function KCharFigure(body, sliders, load){
       eT.forEach(function(q, j){
         var ca = pushU.kcA.value[q[0]], cb = pushU.kcB.value[q[0]], o = pushU.kcE.value[e * 6 + j];
         o.set(ca.x + (cb.x - ca.x) * q[1], ca.y + (cb.y - ca.y) * q[1], ca.z + (cb.z - ca.z) * q[1],
-              ca.w > 0 ? ca.w + (pushU.kcR.value[q[0]] - ca.w) * q[1] : 0);
+              (ca.w > 0 ? ca.w + (pushU.kcR.value[q[0]] - ca.w) * q[1] : 0) * hullUp);
       });
     }
     // the seat: the buttocks, which neither the thighs' nor the trunk's capsule covers (a robe's back went through)
@@ -2739,21 +2800,13 @@ function KCharFigure(body, sliders, load){
       pushU.kcA.value[14 + q].set(cV.x, cV.y, cV.z, sp.r + 0.01); pushU.kcB.value[14 + q].set(cV2.x, cV2.y, cV2.z, 0);
       pushU.kcR.value[14 + q] = sp.r + 0.01;
     }
-    bones[byName.Hips].getWorldPosition(pushU.kcH.value).applyMatrix4(legInv);
     // what hangs a piece with no chains straight below the pelvis (kcTl). Standing: the hips' whole turn from their rest
     // undone, then turned the way the feet face, at most TILT_MAX; hung on the hips, a wide stance's roll lifted a kimono's
     // back off the calves and an idle's twist swung its hem round the legs. In a stride (kcM) it eases to the turn from
     // the way down between the hip joints now to its rest's: undone in full, a run's lean folded the cloth over itself
     // across the band it turns in, and capped, it drew the front back off the leading knee
-    if(!tiltRest || tiltRest.pose !== self.pose){
-      var tF = KCHAR.fk(skel, self.pose.t), tL = tF.P[byName.LeftUpLeg], tR = tF.P[byName.RightUpLeg], tS = tF.P[byName.Hips];
-      tiltRest = { pose:self.pose, q:new THREE.Quaternion().fromArray(tF.R[byName.Hips]),
-                   v:new THREE.Vector3((tL[0] + tR[0]) / 2 - tS[0], (tL[1] + tR[1]) / 2 - tS[1], (tL[2] + tR[2]) / 2 - tS[2]).normalize(),
-                   f:footFace(function(n){ return new THREE.Vector3().fromArray(tF.P[byName[n]]); }) };
-    }
     var fNow = footFace(function(n){ return bones[byName[n]].getWorldPosition(new THREE.Vector3()).applyMatrix4(legInv); });
-    self.inner.getWorldQuaternion(tuckQ).invert();
-    bones[byName.Hips].getWorldQuaternion(tiltQ).premultiply(tuckQ).multiply(tuckQ.copy(tiltRest.q).invert()).invert();
+    tiltQ.invert();
     tuckQ.setFromAxisAngle(tiltY, Math.atan2(fNow.x, fNow.z) - Math.atan2(tiltRest.f.x, tiltRest.f.z));
     tiltQ.premultiply(tuckQ);
     var tA = 2 * Math.acos(Math.min(1, Math.abs(tiltQ.w)));
@@ -2768,6 +2821,7 @@ function KCharFigure(body, sliders, load){
       tSw += (tk ? -1 : 1) * cV2.set(tb.x - ta.x, tb.y - ta.y, tb.z - ta.z).normalize().dot(fNow);
     }
     tiltQ.slerp(tuckQ.setFromUnitVectors(cV, tiltRest.v), THREE.MathUtils.smoothstep(Math.abs(tSw), 0.2, 0.5));
+    if(hullUp < 1) tiltQ.slerp(tuckQ.identity(), 1 - hullUp);
     pushU.kcTl.value.setFromMatrix4(tiltM.makeRotationFromQuaternion(tiltQ));
     // the trunk's up (kcU, for the tuck): the way from the hips to TUCK_UP, turned from its rest way, applied to +y; so
     // standing as at rest it is +y (the tuck as it was), and in a bend it leans with the small of the back

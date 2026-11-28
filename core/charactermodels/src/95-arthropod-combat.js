@@ -7,6 +7,7 @@
      - Voth Staghorn War-Beetle (6-leg skyward horn-gore toss + carapace bulldozer charge)
      - Hyperjungle Bowl Mantis (twin raptorial scythe-snap + alternating raptorial reap)
      - Emperor Giant Hornet (4-wing hover aerial stinger jackhammer + buzzing mandible blitz)
+     - Ring-Sea Giant Land Crab (8-leg sideways scuttle + articulated pincer guillotine & twin vice-slam)
 */
 (function(){
   'use strict';
@@ -78,14 +79,17 @@
     mantis_scythe_snap:   0.96,
     mantis_flurry_reap:   1.06,
     hornet_dive_sting:    1.04,
-    hornet_mandible_maul: 0.94
+    hornet_mandible_maul: 0.94,
+    crab_pincer_guillotine: 1.04,
+    crab_twin_vice_slam:    1.12
   };
 
   var COUNTER_BY_ARCHETYPE = {
     spider: 'spider_rear_bite',
     beetle: 'beetle_horn_gore',
     mantis: 'mantis_scythe_snap',
-    hornet: 'hornet_dive_sting'
+    hornet: 'hornet_dive_sting',
+    crab:   'crab_pincer_guillotine'
   };
 
   function counterForArchetype(archetype){
@@ -189,6 +193,22 @@
       [0.84, [ 0.00,  0.02,  0.08,  0.00,  0.08,  0.00,  0.08,  0.00,  0.10,  0.08,  0.04,  0.08,  0.04,  0.10,  0.08, -0.04]],
       [1.00, [ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00]]
     ],
+    crab_pincer_guillotine: [
+      [0.00, [ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00]],
+      [0.24, [-0.16,  0.05, -0.12,  0.06, -0.18, -0.16, -0.14, -0.14,  0.14,  0.22,  0.30, -0.56,  0.06, -0.30,  0.28, -0.18]],
+      [0.40, [ 0.14, -0.04,  0.56, -0.05,  0.26,  0.34,  0.20,  0.22, -0.14, -0.26, -0.20,  0.62,  0.32,  0.44, -0.24,  0.18]],
+      [0.54, [ 0.12, -0.04,  0.50, -0.05,  0.22,  0.30,  0.18,  0.18, -0.12, -0.24, -0.18,  0.56,  0.28,  0.38, -0.20,  0.16]],
+      [0.84, [ 0.00,  0.00,  0.08,  0.00,  0.04,  0.05,  0.04,  0.04,  0.00, -0.04, -0.03,  0.10,  0.05,  0.06, -0.04,  0.02]],
+      [1.00, [ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00]]
+    ],
+    crab_twin_vice_slam: [
+      [0.00, [ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00]],
+      [0.25, [ 0.00,  0.12, -0.16,  0.14, -0.44,  0.00, -0.30,  0.00,  0.24, -0.52, -0.26, -0.52, -0.26,  0.38,  0.46, -0.26]],
+      [0.43, [ 0.00, -0.08,  0.58, -0.10,  0.44,  0.00,  0.30,  0.00, -0.22,  0.58,  0.34,  0.58,  0.34,  0.52, -0.36,  0.24]],
+      [0.56, [ 0.00, -0.07,  0.52, -0.09,  0.40,  0.00,  0.26,  0.00, -0.20,  0.54,  0.32,  0.54,  0.32,  0.46, -0.32,  0.20]],
+      [0.84, [ 0.00,  0.00,  0.08, -0.01,  0.06,  0.00,  0.05,  0.00,  0.00,  0.08,  0.05,  0.08,  0.05,  0.06, -0.04,  0.02]],
+      [1.00, [ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00]]
+    ],
     arthro_hunker_block: [
       [0.00, ZERO16],
       [0.22, [ 0.00, -0.09, -0.08, -0.07,  0.22,  0.00,  0.42,  0.00, -0.18,  0.38,  0.52,  0.38,  0.52,  0.42, -0.46, -0.28]],
@@ -273,7 +293,8 @@
       return moveKey === 'arthro_death_curl' ? 'idle' : 'fly';
     }
     if(moveKey === 'beetle_ram_charge' || moveKey === 'arthro_skitter_dodge' ||
-       moveKey === 'mantis_flurry_reap' || moveKey === 'spider_rear_bite' || moveKey === 'beetle_horn_gore'){
+       moveKey === 'mantis_flurry_reap' || moveKey === 'spider_rear_bite' || moveKey === 'beetle_horn_gore' ||
+       moveKey === 'crab_pincer_guillotine' || moveKey === 'crab_twin_vice_slam'){
       return 'walk';
     }
     return 'idle';
@@ -285,9 +306,54 @@
       if(moveKey === 'arthro_death_curl') return 0.3;
       return 1.35;
     }
+    if(archetype === 'crab' && moveKey === 'arthro_skitter_dodge') return 2.5;
     if(moveKey === 'beetle_ram_charge' || moveKey === 'arthro_skitter_dodge') return 2.2;
-    if(moveKey === 'mantis_flurry_reap' || moveKey === 'spider_rear_bite' || moveKey === 'beetle_horn_gore') return 1.45;
+    if(moveKey === 'mantis_flurry_reap' || moveKey === 'spider_rear_bite' || moveKey === 'beetle_horn_gore' ||
+       moveKey === 'crab_pincer_guillotine' || moveKey === 'crab_twin_vice_slam') return 1.5;
     return 1.0;
+  }
+
+  function evalPincerJaws(moveKey, uc, env, arch){
+    if(arch !== 'crab') return [0, 0];
+    if(moveKey === 'arthro_idle'){
+      var ph = uc * Math.PI * 2;
+      var sL = Math.sin(ph), sR = Math.sin(ph + 2.1);
+      return [
+        0.12 + (sL > 0 ? 0.26 * sL : 0.20 * sL),
+        0.12 + (sR > 0 ? 0.30 * sR : 0.22 * sR)
+      ];
+    }
+    if(moveKey === 'crab_pincer_guillotine'){
+      var openR;
+      if(uc <= 0.26){
+        openR = 0.80 * hermite01(uc / 0.26);
+      } else if(uc <= 0.40){
+        openR = 0.80 + (-0.38 - 0.80) * hermite01((uc - 0.26) / 0.14);
+      } else {
+        openR = -0.38 * env;
+      }
+      var openL = (uc <= 0.26 ? 0.18 * hermite01(uc / 0.26) : (0.18 - 0.34 * hermite01(Math.min(1, (uc - 0.26) / 0.16))) * env);
+      return [openL, openR];
+    }
+    if(moveKey === 'crab_twin_vice_slam'){
+      var both;
+      if(uc <= 0.27){
+        both = 0.7854 * hermite01(uc / 0.27);
+      } else if(uc <= 0.43){
+        both = 0.7854 + (-0.38 - 0.7854) * hermite01((uc - 0.27) / 0.16);
+      } else {
+        both = -0.38 * env;
+      }
+      return [both, both];
+    }
+    if(moveKey === 'arthro_hunker_block') return [-0.34 * env, -0.34 * env];
+    if(moveKey === 'arthro_claw_parry'){
+      return [-0.24 * env, (uc < 0.32 ? 0.52 : -0.30) * env];
+    }
+    if(moveKey === 'arthro_skitter_dodge') return [0.28 * env, 0.28 * env];
+    if(moveKey === 'arthro_hit_flinch' || moveKey === 'arthro_knockback') return [0.40 * env, 0.40 * env];
+    if(moveKey === 'arthro_death_curl' || moveKey === 'arthro_uncurl_rise') return [-0.28 * env, -0.28 * env];
+    return [0, 0];
   }
 
   function sampleArthropodPose(moveKey, u, archetype){
@@ -299,23 +365,55 @@
     var ch = new Array(16);
     for(var i = 0; i < 16; i++) ch[i] = raw[i] * env;
 
+    if(arch === 'crab' && key === 'arthro_idle'){
+      var ph = uc * Math.PI * 2;
+      ch[0]  = 0.065 * Math.sin(ph);
+      ch[3]  = -0.018 + 0.012 * Math.cos(ph * 2);
+      ch[4]  = -0.04;
+      ch[5]  = -0.05 * Math.sin(ph);
+      ch[6]  = 0.02 * Math.cos(ph);
+      ch[7]  = 0.06 * Math.sin(ph);
+      ch[9]  = -0.14 + 0.05 * Math.sin(ph);
+      ch[10] = -0.10;
+      ch[11] = -0.14 - 0.05 * Math.sin(ph);
+      ch[12] = -0.10;
+      ch[13] = 0.08 * Math.sin(ph);
+      ch[14] = 0.05 * Math.sin(ph);
+      ch[15] = -0.05 * Math.sin(ph);
+    } else if(arch === 'crab' && key === 'arthro_skitter_dodge'){
+      // True sideways crab-scuttle along X!
+      ch[0] *= 1.85;
+      ch[2] *= 0.35;
+    } else if(arch === 'crab' && key === 'arthro_hunker_block'){
+      // Carapace drops low & broad chelipeds fold flat across face like an armored shield wall!
+      ch[1]  *= 1.30;
+      ch[3]  *= 1.35;
+      ch[10] *= 1.35;
+      ch[12] *= 1.35;
+    }
+
     var rootDx = ch[0], rootDy = ch[1], rootDz = ch[2], thoraxDy = ch[3];
     var thxRx = ch[4], thxRy = ch[5], hdRx = ch[6], hdRy = ch[7], abdRx = ch[8];
     var armLRx = ch[9], armLIn = ch[10], armRRx = ch[11], armRIn = ch[12];
     var foreSw = ch[13], foreLf = ch[14], hindBr = ch[15];
 
     var rootRoll = (key === 'arthro_death_curl' || key === 'arthro_uncurl_rise') ? (0.28 * env)
-                 : (key === 'arthro_skitter_dodge' ? (0.14 * env) : 0);
+                 : (key === 'arthro_skitter_dodge' ? ((arch === 'crab' ? -0.16 : 0.14) * env) : 0);
+
+    var jaws = evalPincerJaws(key, uc, env, arch);
+    var openL = jaws[0], openR = jaws[1];
 
     var nodes = {
-      thorax: [thxRx, thxRy, 0],
-      head:   [hdRx, hdRy, 0],
-      jaw:    [hdRx, hdRy, 0],
-      abd:    [abdRx, -thxRy * 0.45, 0],
-      armL:   [armLRx, armLIn, -armLIn * 0.85],
-      armLt:  [armLRx * 0.78, 0, -armLIn * 0.35],
-      armR:   [armRRx, -armRIn, armRIn * 0.85],
-      armRt:  [armRRx * 0.78, 0, armRIn * 0.35]
+      thorax:  [thxRx, thxRy, 0],
+      head:    [hdRx, hdRy, 0],
+      jaw:     [hdRx, hdRy, 0],
+      abd:     [abdRx, -thxRy * 0.45, 0],
+      armL:    arch === 'crab' ? [armLRx * 0.58, -armLIn * 0.85,  armLIn * 0.45] : [armLRx, armLIn, -armLIn * 0.85],
+      armLt:   arch === 'crab' ? [armLRx * 0.42, -armLIn * 0.52, 0]              : [armLRx * 0.78, 0, -armLIn * 0.35],
+      armR:    arch === 'crab' ? [armRRx * 0.58,  armRIn * 0.85, -armRIn * 0.45] : [armRRx, -armRIn, armRIn * 0.85],
+      armRt:   arch === 'crab' ? [armRRx * 0.42,  armRIn * 0.52, 0]              : [armRRx * 0.78, 0, armRIn * 0.35],
+      pincerL: [-0.65 * openL, 0, -0.76 * openL],
+      pincerR: [-0.65 * openR, 0,  0.76 * openR]
     };
 
     for(var p = 0; p < 4; p++){
@@ -342,6 +440,7 @@
       rootOffset: [rootDx, rootDy, rootDz],
       rootRot: [0, thxRy * 0.35, rootRoll],
       thoraxPos: [0, thoraxDy, 0],
+      pincerOpen: [openL, openR],
       channels: ch,
       nodes: nodes
     };
@@ -379,7 +478,20 @@
       nodes[prefix + 'f'] = [0, 0, -sg * 0.50 * w];
     }
 
-    if(arch === 'mantis'){
+    if(arch === 'crab'){
+      if(wFL > 0){
+        nodes.armL    = [0.64 * wFL,  0.36 * wFL, -0.32 * wFL];
+        nodes.armLt   = [0.52 * wFL,  0.24 * wFL,  0];
+        nodes.pincerL = [0.22 * wFL,  0,           0.26 * wFL];
+      }
+      if(wFR > 0){
+        nodes.armR    = [0.64 * wFR, -0.36 * wFR,  0.32 * wFR];
+        nodes.armRt   = [0.52 * wFR, -0.24 * wFR,  0];
+        nodes.pincerR = [0.22 * wFR,  0,          -0.26 * wFR];
+      }
+      curlLeg('leg0L',  1, wHL); curlLeg('leg1L',  1, wHL); curlLeg('leg2L',  1, wHL); curlLeg('leg3L',  1, wHL);
+      curlLeg('leg0R', -1, wHR); curlLeg('leg1R', -1, wHR); curlLeg('leg2R', -1, wHR); curlLeg('leg3R', -1, wHR);
+    } else if(arch === 'mantis'){
       if(wFL > 0){
         nodes.armL  = [0.58 * wFL,  0.46 * wFL, -0.44 * wFL];
         nodes.armLt = [0.68 * wFL,  0,          -0.28 * wFL];
@@ -562,7 +674,9 @@
     }
     if(!this.faunaRoot || !window.KratorFauna) return;
 
-    var u = this.isLoopClip ? 0 : (this.clipDuration > 1e-6 ? Math.min(1, this.clipElapsed / this.clipDuration) : 1);
+    var u = this.isLoopClip
+      ? (this.archetype === 'crab' ? ((this.clockT / Math.max(1e-6, this.clipDuration)) % 1.0) : 0)
+      : (this.clipDuration > 1e-6 ? Math.min(1, this.clipElapsed / this.clipDuration) : 1);
     var pose = sampleArthropodPose(this.activeClip, u, this.archetype);
 
     // Reset all rig nodes to rest position & identity rotation before mixer sample so untracked nodes never accumulate deltas

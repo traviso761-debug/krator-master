@@ -4,6 +4,7 @@
 #   - Voth Staghorn War-Beetle (beetle_horn_gore, beetle_ram_charge)
 #   - Hyperjungle Bowl Mantis (mantis_scythe_snap, mantis_flurry_reap)
 #   - Emperor Giant Hornet (hornet_dive_sting, hornet_mandible_maul)
+#   - Ring-Sea Giant Land Crab (crab_pincer_guillotine, crab_twin_vice_slam + pincerL/pincerR jaws)
 # Plus reactive/idle clips (arthro_idle, arthro_hunker_block, arthro_claw_parry, arthro_skitter_dodge,
 # arthro_hit_flinch, arthro_knockback, arthro_death_curl, arthro_uncurl_rise) and crippled-leg curl.
 class_name KCombatArthropod
@@ -28,6 +29,8 @@ const CLIP_DURATIONS := {
 	"mantis_flurry_reap": 1.06,
 	"hornet_dive_sting": 1.04,
 	"hornet_mandible_maul": 0.94,
+	"crab_pincer_guillotine": 1.04,
+	"crab_twin_vice_slam": 1.12,
 }
 
 const COUNTER_BY_ARCHETYPE := {
@@ -35,6 +38,7 @@ const COUNTER_BY_ARCHETYPE := {
 	"beetle": "beetle_horn_gore",
 	"mantis": "mantis_scythe_snap",
 	"hornet": "hornet_dive_sting",
+	"crab": "crab_pincer_guillotine",
 }
 
 const ARTHRO_KEYFRAMES := {
@@ -100,6 +104,22 @@ const ARTHRO_KEYFRAMES := {
 		[0.36, [-0.06, 0.06, 0.58, -0.04, 0.52, -0.22, 0.48, 0.28, 0.56, 0.64, 0.30, 0.64, 0.30, 0.64, 0.48, -0.20]],
 		[0.54, [0.05, 0.08, 0.50, -0.03, 0.48, 0.20, 0.44, -0.24, 0.52, 0.58, 0.26, 0.58, 0.26, 0.58, 0.44, -0.18]],
 		[0.84, [0.00, 0.02, 0.08, 0.00, 0.08, 0.00, 0.08, 0.00, 0.10, 0.08, 0.04, 0.08, 0.04, 0.10, 0.08, -0.04]],
+		[1.00, [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]],
+	],
+	"crab_pincer_guillotine": [
+		[0.00, [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]],
+		[0.24, [-0.16, 0.05, -0.12, 0.06, -0.18, -0.16, -0.14, -0.14, 0.14, 0.22, 0.30, -0.56, 0.06, -0.30, 0.28, -0.18]],
+		[0.40, [0.14, -0.04, 0.56, -0.05, 0.26, 0.34, 0.20, 0.22, -0.14, -0.26, -0.20, 0.62, 0.32, 0.44, -0.24, 0.18]],
+		[0.54, [0.12, -0.04, 0.50, -0.05, 0.22, 0.30, 0.18, 0.18, -0.12, -0.24, -0.18, 0.56, 0.28, 0.38, -0.20, 0.16]],
+		[0.84, [0.00, 0.00, 0.08, 0.00, 0.04, 0.05, 0.04, 0.04, 0.00, -0.04, -0.03, 0.10, 0.05, 0.06, -0.04, 0.02]],
+		[1.00, [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]],
+	],
+	"crab_twin_vice_slam": [
+		[0.00, [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]],
+		[0.25, [0.00, 0.12, -0.16, 0.14, -0.44, 0.00, -0.30, 0.00, 0.24, -0.52, -0.26, -0.52, -0.26, 0.38, 0.46, -0.26]],
+		[0.43, [0.00, -0.08, 0.58, -0.10, 0.44, 0.00, 0.30, 0.00, -0.22, 0.58, 0.34, 0.58, 0.34, 0.52, -0.36, 0.24]],
+		[0.56, [0.00, -0.07, 0.52, -0.09, 0.40, 0.00, 0.26, 0.00, -0.20, 0.54, 0.32, 0.54, 0.32, 0.46, -0.32, 0.20]],
+		[0.84, [0.00, 0.00, 0.08, -0.01, 0.06, 0.00, 0.05, 0.00, 0.00, 0.08, 0.05, 0.08, 0.05, 0.06, -0.04, 0.02]],
 		[1.00, [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00]],
 	],
 	"arthro_hunker_block": [
@@ -246,7 +266,7 @@ static func _eval_track16(kfs: Array, u: float) -> PackedFloat64Array:
 static func base_mode_for(move_key: String, arch: String) -> String:
 	if arch == "hornet":
 		return "idle" if move_key == "arthro_death_curl" else "fly"
-	if move_key in ["beetle_ram_charge", "arthro_skitter_dodge", "mantis_flurry_reap", "spider_rear_bite", "beetle_horn_gore"]:
+	if move_key in ["beetle_ram_charge", "arthro_skitter_dodge", "mantis_flurry_reap", "spider_rear_bite", "beetle_horn_gore", "crab_pincer_guillotine", "crab_twin_vice_slam"]:
 		return "walk"
 	return "idle"
 
@@ -258,11 +278,56 @@ static func base_rate_for(move_key: String, arch: String) -> float:
 		if move_key == "arthro_death_curl":
 			return 0.3
 		return 1.35
+	if arch == "crab" and move_key == "arthro_skitter_dodge":
+		return 2.5
 	if move_key in ["beetle_ram_charge", "arthro_skitter_dodge"]:
 		return 2.2
-	if move_key in ["mantis_flurry_reap", "spider_rear_bite", "beetle_horn_gore"]:
-		return 1.45
+	if move_key in ["mantis_flurry_reap", "spider_rear_bite", "beetle_horn_gore", "crab_pincer_guillotine", "crab_twin_vice_slam"]:
+		return 1.5
 	return 1.0
+
+
+static func eval_pincer_jaws(move_key: String, uc: float, env: float, arch: String) -> Vector2:
+	if arch != "crab":
+		return Vector2.ZERO
+	if move_key == "arthro_idle":
+		var ph := uc * TAU
+		var s_l := sin(ph)
+		var s_r := sin(ph + 2.1)
+		return Vector2(
+			0.12 + (0.26 * s_l if s_l > 0.0 else 0.20 * s_l),
+			0.12 + (0.30 * s_r if s_r > 0.0 else 0.22 * s_r)
+		)
+	if move_key == "crab_pincer_guillotine":
+		var open_r: float
+		if uc <= 0.26:
+			open_r = 0.80 * hermite01(uc / 0.26)
+		elif uc <= 0.40:
+			open_r = 0.80 + (-0.38 - 0.80) * hermite01((uc - 0.26) / 0.14)
+		else:
+			open_r = -0.38 * env
+		var open_l := (0.18 * hermite01(uc / 0.26)) if uc <= 0.26 else ((0.18 - 0.34 * hermite01(minf(1.0, (uc - 0.26) / 0.16))) * env)
+		return Vector2(open_l, open_r)
+	if move_key == "crab_twin_vice_slam":
+		var both: float
+		if uc <= 0.27:
+			both = 0.7854 * hermite01(uc / 0.27)
+		elif uc <= 0.43:
+			both = 0.7854 + (-0.38 - 0.7854) * hermite01((uc - 0.27) / 0.16)
+		else:
+			both = -0.38 * env
+		return Vector2(both, both)
+	if move_key == "arthro_hunker_block":
+		return Vector2(-0.34 * env, -0.34 * env)
+	if move_key == "arthro_claw_parry":
+		return Vector2(-0.24 * env, (0.52 if uc < 0.32 else -0.30) * env)
+	if move_key == "arthro_skitter_dodge":
+		return Vector2(0.28 * env, 0.28 * env)
+	if move_key in ["arthro_hit_flinch", "arthro_knockback"]:
+		return Vector2(0.40 * env, 0.40 * env)
+	if move_key in ["arthro_death_curl", "arthro_uncurl_rise"]:
+		return Vector2(-0.28 * env, -0.28 * env)
+	return Vector2.ZERO
 
 
 static func quat_xyz(rx: float, ry: float, rz: float) -> Quaternion:
@@ -293,6 +358,30 @@ static func sample_arthropod_pose(move_key: String, u: float, arch: String = "sp
 	for i in range(16):
 		ch.append(raw[i] * env)
 
+	if eff_arch == "crab" and key == "arthro_idle":
+		var ph := uc * TAU
+		ch[0] = 0.065 * sin(ph)
+		ch[3] = -0.018 + 0.012 * cos(ph * 2.0)
+		ch[4] = -0.04
+		ch[5] = -0.05 * sin(ph)
+		ch[6] = 0.02 * cos(ph)
+		ch[7] = 0.06 * sin(ph)
+		ch[9] = -0.14 + 0.05 * sin(ph)
+		ch[10] = -0.10
+		ch[11] = -0.14 - 0.05 * sin(ph)
+		ch[12] = -0.10
+		ch[13] = 0.08 * sin(ph)
+		ch[14] = 0.05 * sin(ph)
+		ch[15] = -0.05 * sin(ph)
+	elif eff_arch == "crab" and key == "arthro_skitter_dodge":
+		ch[0] *= 1.85
+		ch[2] *= 0.35
+	elif eff_arch == "crab" and key == "arthro_hunker_block":
+		ch[1] *= 1.30
+		ch[3] *= 1.35
+		ch[10] *= 1.35
+		ch[12] *= 1.35
+
 	var root_dx := ch[0]
 	var root_dy := ch[1]
 	var root_dz := ch[2]
@@ -310,17 +399,22 @@ static func sample_arthropod_pose(move_key: String, u: float, arch: String = "sp
 	var fore_lf := ch[14]
 	var hind_br := ch[15]
 
-	var root_roll := (0.28 * env) if (key in ["arthro_death_curl", "arthro_uncurl_rise"]) else ((0.14 * env) if key == "arthro_skitter_dodge" else 0.0)
+	var root_roll := (0.28 * env) if (key in ["arthro_death_curl", "arthro_uncurl_rise"]) else (((-0.16 if eff_arch == "crab" else 0.14) * env) if key == "arthro_skitter_dodge" else 0.0)
+	var jaws := eval_pincer_jaws(key, uc, env, eff_arch)
+	var open_l := jaws.x
+	var open_r := jaws.y
 
 	var nodes := {
 		"thorax": Vector3(thx_rx, thx_ry, 0.0),
 		"head": Vector3(hd_rx, hd_ry, 0.0),
 		"jaw": Vector3(hd_rx, hd_ry, 0.0),
 		"abd": Vector3(abd_rx, -thx_ry * 0.45, 0.0),
-		"armL": Vector3(arm_l_rx, arm_l_in, -arm_l_in * 0.85),
-		"armLt": Vector3(arm_l_rx * 0.78, 0.0, -arm_l_in * 0.35),
-		"armR": Vector3(arm_r_rx, -arm_r_in, arm_r_in * 0.85),
-		"armRt": Vector3(arm_r_rx * 0.78, 0.0, arm_r_in * 0.35),
+		"armL": Vector3(arm_l_rx * 0.58, -arm_l_in * 0.85, arm_l_in * 0.45) if eff_arch == "crab" else Vector3(arm_l_rx, arm_l_in, -arm_l_in * 0.85),
+		"armLt": Vector3(arm_l_rx * 0.42, -arm_l_in * 0.52, 0.0) if eff_arch == "crab" else Vector3(arm_l_rx * 0.78, 0.0, -arm_l_in * 0.35),
+		"armR": Vector3(arm_r_rx * 0.58, arm_r_in * 0.85, -arm_r_in * 0.45) if eff_arch == "crab" else Vector3(arm_r_rx, -arm_r_in, arm_r_in * 0.85),
+		"armRt": Vector3(arm_r_rx * 0.42, arm_r_in * 0.52, 0.0) if eff_arch == "crab" else Vector3(arm_r_rx * 0.78, 0.0, arm_r_in * 0.35),
+		"pincerL": Vector3(-0.65 * open_l, 0.0, -0.76 * open_l),
+		"pincerR": Vector3(-0.65 * open_r, 0.0, 0.76 * open_r),
 	}
 
 	for p in range(4):
@@ -351,6 +445,7 @@ static func sample_arthropod_pose(move_key: String, u: float, arch: String = "sp
 		"root_offset": Vector3(root_dx, root_dy, root_dz),
 		"root_rot": Vector3(0.0, thx_ry * 0.35, root_roll),
 		"thorax_pos": Vector3(0.0, thorax_dy, 0.0),
+		"pincer_open": jaws,
 		"channels": ch,
 		"nodes": nodes,
 		"quats": quats,
@@ -384,7 +479,24 @@ static func compute_leg_trauma_state(limbs: Dictionary, arch: String = "spider")
 	var w_hr := _limb_damaged_weight(limbs.get("right_leg"))
 	var nodes := {}
 
-	if eff_arch == "mantis":
+	if eff_arch == "crab":
+		if w_fl > 0.0:
+			nodes["armL"] = Vector3(0.64 * w_fl, 0.36 * w_fl, -0.32 * w_fl)
+			nodes["armLt"] = Vector3(0.52 * w_fl, 0.24 * w_fl, 0.0)
+			nodes["pincerL"] = Vector3(0.22 * w_fl, 0.0, 0.26 * w_fl)
+		if w_fr > 0.0:
+			nodes["armR"] = Vector3(0.64 * w_fr, -0.36 * w_fr, 0.32 * w_fr)
+			nodes["armRt"] = Vector3(0.52 * w_fr, -0.24 * w_fr, 0.0)
+			nodes["pincerR"] = Vector3(0.22 * w_fr, 0.0, -0.26 * w_fr)
+		_curl_leg_into(nodes, "leg0L", 1.0, w_hl)
+		_curl_leg_into(nodes, "leg1L", 1.0, w_hl)
+		_curl_leg_into(nodes, "leg2L", 1.0, w_hl)
+		_curl_leg_into(nodes, "leg3L", 1.0, w_hl)
+		_curl_leg_into(nodes, "leg0R", -1.0, w_hr)
+		_curl_leg_into(nodes, "leg1R", -1.0, w_hr)
+		_curl_leg_into(nodes, "leg2R", -1.0, w_hr)
+		_curl_leg_into(nodes, "leg3R", -1.0, w_hr)
+	elif eff_arch == "mantis":
 		if w_fl > 0.0:
 			nodes["armL"] = Vector3(0.58 * w_fl, 0.46 * w_fl, -0.44 * w_fl)
 			nodes["armLt"] = Vector3(0.68 * w_fl, 0.0, -0.28 * w_fl)
@@ -448,7 +560,11 @@ func set_limb_state(limbs: Dictionary) -> void:
 
 
 func tick(dt: float) -> void:
-	if dt <= 0.0 or is_loop_clip:
+	if dt <= 0.0:
+		return
+	if is_loop_clip:
+		if archetype == "crab" and duration > 1e-6:
+			elapsed = fposmod(elapsed + dt, duration)
 		return
 	elapsed = minf(duration, elapsed + dt)
 	if elapsed >= duration and active_clip != "arthro_death_curl":
@@ -458,8 +574,10 @@ func tick(dt: float) -> void:
 
 
 func normalized_u() -> float:
-	if is_loop_clip or duration <= 1e-6:
+	if duration <= 1e-6:
 		return 0.0
+	if is_loop_clip:
+		return clampf(elapsed / duration, 0.0, 1.0) if archetype == "crab" else 0.0
 	return clampf(elapsed / duration, 0.0, 1.0)
 
 
