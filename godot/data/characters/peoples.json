@@ -10984,47 +10984,59 @@
    "tiers": [
     [
      "singularity_archon",
-     0.0909
+     0.0714
     ],
     [
      "censer_revenant",
-     0.0909
+     0.0714
     ],
     [
      "vox_solus",
-     0.0909
+     0.0714
     ],
     [
      "accretion_djinn",
-     0.0909
+     0.0714
     ],
     [
      "chorus_of_masks",
-     0.0909
+     0.0714
     ],
     [
      "ophanim_seraph",
-     0.0909
+     0.0714
     ],
     [
      "prism_matriarch",
-     0.0909
+     0.0714
     ],
     [
      "clockwork_aeon",
-     0.0909
+     0.0714
     ],
     [
      "abyssal_medusa",
-     0.0909
+     0.0714
     ],
     [
      "ashen_calamity",
-     0.0909
+     0.0714
     ],
     [
      "neutrino_phantom",
-     0.091
+     0.0714
+    ],
+    [
+     "ocular_umbra",
+     0.0714
+    ],
+    [
+     "astral_pyre",
+     0.0714
+    ],
+    [
+     "nightmare_urchin",
+     0.0718
     ]
    ],
    "tier_labels": {
@@ -11038,7 +11050,10 @@
     "clockwork_aeon": "Clockwork Aeon (Brass Orrery & Hourglass Time-Warden)",
     "abyssal_medusa": "Abyssal Medusa (Bioluminescent Jellyfish & Coral Sovereign)",
     "ashen_calamity": "Ashen Calamity (Volcanic Obsidian-Magma & Cinder-Brazier Demon)",
-    "neutrino_phantom": "Neutrino Phantom (Cherenkov Shock-Cone, PMT Array & Quantum Phase-Wake)"
+    "neutrino_phantom": "Neutrino Phantom (Cherenkov Shock-Cone, PMT Array & Quantum Phase-Wake)",
+    "ocular_umbra": "Ocular Umbra (Many-Eyed Shadow Monolith & Obscuring Crow Swarm)",
+    "astral_pyre": "Astral Pyre (Constellation Void-Colossus & Curling White Flame)",
+    "nightmare_urchin": "Nightmare Urchin (Spiked Shadow-Orb, Red Needle-Grin & Stalker Claws)"
    },
    "outfits": {
     "male": {
@@ -11151,6 +11166,36 @@
       "feet": null,
       "hair": null,
       "beard": null
+     },
+     "ocular_umbra": {
+      "head": "ext4_m_umbra_peaks",
+      "torso": "ext4_m_umbra_monolith",
+      "back": "ext4_m_umbra_flock",
+      "gloves": "ext4_m_umbra_grasps",
+      "legs": "ext4_m_umbra_tatter",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "astral_pyre": {
+      "head": "ext4_m_pyre_visage",
+      "torso": "ext4_m_pyre_constellation",
+      "back": "ext4_m_pyre_plumes",
+      "gloves": "ext4_m_pyre_claws",
+      "legs": "ext4_m_pyre_legs",
+      "feet": "ext4_m_pyre_steps",
+      "hair": null,
+      "beard": null
+     },
+     "nightmare_urchin": {
+      "head": "ext4_m_urchin_head",
+      "torso": "ext4_m_urchin_shroud",
+      "back": "ext4_m_urchin_stalkers",
+      "gloves": "ext4_m_urchin_claws",
+      "legs": "ext4_m_urchin_wisps",
+      "feet": null,
+      "hair": null,
+      "beard": null
      }
     },
     "female": {
@@ -11260,6 +11305,36 @@
       "back": "ext3_f_neutrino_rings",
       "gloves": "ext3_f_neutrino_traces",
       "legs": "ext3_f_neutrino_wake",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "ocular_umbra": {
+      "head": "ext4_f_umbra_peaks",
+      "torso": "ext4_f_umbra_monolith",
+      "back": "ext4_f_umbra_flock",
+      "gloves": "ext4_f_umbra_grasps",
+      "legs": "ext4_f_umbra_tatter",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "astral_pyre": {
+      "head": "ext4_f_pyre_visage",
+      "torso": "ext4_f_pyre_constellation",
+      "back": "ext4_f_pyre_plumes",
+      "gloves": "ext4_f_pyre_claws",
+      "legs": "ext4_f_pyre_legs",
+      "feet": "ext4_f_pyre_steps",
+      "hair": null,
+      "beard": null
+     },
+     "nightmare_urchin": {
+      "head": "ext4_f_urchin_head",
+      "torso": "ext4_f_urchin_shroud",
+      "back": "ext4_f_urchin_stalkers",
+      "gloves": "ext4_f_urchin_claws",
+      "legs": "ext4_f_urchin_wisps",
       "feet": null,
       "hair": null,
       "beard": null

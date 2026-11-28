@@ -308652,12 +308652,13 @@
     "auras": [
      {
       "kind": "gravity_lens",
-      "bone": "Spine2",
+      "bone": "Hips",
       "offset": [
        0.0,
-       -0.04,
-       0.0
-      ]
+       0.098,
+       0.02
+      ],
+      "scale": 1.56
      }
     ]
    },
@@ -312577,7 +312578,20 @@
     "Human.fingernails",
     "Human.toenails"
    ],
-   "made_by": "garments"
+   "made_by": "garments",
+   "vfx": {
+    "auras": [
+     {
+      "kind": "obscuring_fog",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       -0.05,
+       0.0
+      ]
+     }
+    ]
+   }
   },
   {
    "id": "ext_f_revenant_lanterns",
@@ -320537,6 +320551,18 @@
       "v0": 0.99609,
       "v1": 1.0
      }
+    ],
+    "auras": [
+     {
+      "kind": "vox_shimmer",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.04,
+       0.0
+      ],
+      "scale": 1.18
+     }
     ]
    },
    "tucks": true,
@@ -320772,6 +320798,19 @@
       "ember_color": "#4c38c8",
       "core_color": "#090710",
       "mist_color": "#5c586c"
+     }
+    ],
+    "auras": [
+     {
+      "kind": "gravity_lens",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.04,
+       0.0
+      ],
+      "scale": 1.28,
+      "tint": "accretion"
      }
     ]
    },
@@ -548480,6 +548519,3931 @@
       "ember_color": "#38f6ff",
       "core_color": "#04102c",
       "mist_color": "#2064d8"
+     }
+    ]
+   },
+   "loose": true,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_umbra_peaks",
+   "name": "Ocular Umbra Twin Shadow-Spires & Staring Eyes",
+   "slot": "head",
+   "glb": "pieces/mpfb_female/ext4_f_umbra_peaks.glb",
+   "culture": "extraplanar",
+   "covers_hair": true,
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly"
+   ],
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_monolith_cranium",
+      "t0": 0,
+      "t1": 360,
+      "v0": 0.0,
+      "v1": 0.23535
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_spire_R",
+      "t0": 360,
+      "t1": 522,
+      "v0": 0.23535,
+      "v1": 0.39258
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_spire_L",
+      "t0": 522,
+      "t1": 684,
+      "v0": 0.39258,
+      "v1": 0.5332
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_head_barb_0",
+      "t0": 684,
+      "t1": 708,
+      "v0": 0.5332,
+      "v1": 0.64941
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_head_barb_1",
+      "t0": 708,
+      "t1": 732,
+      "v0": 0.64941,
+      "v1": 0.77148
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_head_barb_2",
+      "t0": 732,
+      "t1": 756,
+      "v0": 0.77148,
+      "v1": 0.87598
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_peaks_head_barb_3",
+      "t0": 756,
+      "t1": 780,
+      "v0": 0.87598,
+      "v1": 0.97461
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_peaks_eye_top_sclera",
+      "t0": 780,
+      "t1": 924,
+      "v0": 0.97461,
+      "v1": 0.97852
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_peaks_eye_top_iris",
+      "t0": 924,
+      "t1": 1024,
+      "v0": 0.97852,
+      "v1": 0.98242
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_peaks_eye_brow_sclera",
+      "t0": 1088,
+      "t1": 1232,
+      "v0": 0.98633,
+      "v1": 0.99023
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_peaks_eye_brow_iris",
+      "t0": 1232,
+      "t1": 1332,
+      "v0": 0.99023,
+      "v1": 0.99414
+     }
+    ]
+   },
+   "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//9wAAAMAwADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//+wAAAPAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
+   "hides": 6768,
+   "hide_by": "extraplanar_custom"
+  },
+  {
+   "id": "ext4_f_umbra_monolith",
+   "name": "Ocular Umbra Many-Eyed Shadow Monolith",
+   "slot": "torso",
+   "glb": "pieces/mpfb_female/ext4_f_umbra_monolith.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_void_slab",
+      "t0": 0,
+      "t1": 1584,
+      "v0": 0.0,
+      "v1": 0.14648
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shadow_arms_sleeve_L",
+      "t0": 1584,
+      "t1": 1808,
+      "v0": 0.14648,
+      "v1": 0.2334
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shadow_arms_sleeve_R",
+      "t0": 1808,
+      "t1": 2032,
+      "v0": 0.2334,
+      "v1": 0.32031
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_0_sclera",
+      "t0": 2032,
+      "t1": 2176,
+      "v0": 0.32031,
+      "v1": 0.32422
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_0_iris",
+      "t0": 2176,
+      "t1": 2276,
+      "v0": 0.32422,
+      "v1": 0.32812
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_1_sclera",
+      "t0": 2340,
+      "t1": 2484,
+      "v0": 0.33203,
+      "v1": 0.33594
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_1_iris",
+      "t0": 2484,
+      "t1": 2584,
+      "v0": 0.33594,
+      "v1": 0.33984
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_2_sclera",
+      "t0": 2648,
+      "t1": 2792,
+      "v0": 0.34375,
+      "v1": 0.34766
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_2_iris",
+      "t0": 2792,
+      "t1": 2892,
+      "v0": 0.34766,
+      "v1": 0.35156
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_3_sclera",
+      "t0": 2956,
+      "t1": 3100,
+      "v0": 0.35547,
+      "v1": 0.35938
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_3_iris",
+      "t0": 3100,
+      "t1": 3200,
+      "v0": 0.35938,
+      "v1": 0.36328
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_4_sclera",
+      "t0": 3264,
+      "t1": 3408,
+      "v0": 0.36719,
+      "v1": 0.37109
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_4_iris",
+      "t0": 3408,
+      "t1": 3508,
+      "v0": 0.37109,
+      "v1": 0.375
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_monolith_eye_5_sclera",
+      "t0": 3572,
+      "t1": 3716,
+      "v0": 0.37891,
+      "v1": 0.38281
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_monolith_eye_5_iris",
+      "t0": 3716,
+      "t1": 3816,
+      "v0": 0.38281,
+      "v1": 0.38672
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_R_0",
+      "t0": 3880,
+      "t1": 3964,
+      "v0": 0.39062,
+      "v1": 0.46582
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_R_1",
+      "t0": 3964,
+      "t1": 4048,
+      "v0": 0.46582,
+      "v1": 0.53906
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_R_0",
+      "t0": 4048,
+      "t1": 4068,
+      "v0": 0.53906,
+      "v1": 0.57129
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_R_1",
+      "t0": 4068,
+      "t1": 4088,
+      "v0": 0.57129,
+      "v1": 0.60352
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_R_2",
+      "t0": 4088,
+      "t1": 4108,
+      "v0": 0.60352,
+      "v1": 0.63574
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_R_2",
+      "t0": 4108,
+      "t1": 4192,
+      "v0": 0.63574,
+      "v1": 0.70996
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_L_0",
+      "t0": 4192,
+      "t1": 4276,
+      "v0": 0.70996,
+      "v1": 0.78516
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_L_1",
+      "t0": 4276,
+      "t1": 4360,
+      "v0": 0.78516,
+      "v1": 0.8584
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_L_0",
+      "t0": 4360,
+      "t1": 4380,
+      "v0": 0.8584,
+      "v1": 0.89062
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_L_1",
+      "t0": 4380,
+      "t1": 4400,
+      "v0": 0.89062,
+      "v1": 0.92285
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_shhand_L_2",
+      "t0": 4400,
+      "t1": 4420,
+      "v0": 0.92285,
+      "v1": 0.95508
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_monolith_tendril_L_2",
+      "t0": 4420,
+      "t1": 4504,
+      "v0": 0.95508,
+      "v1": 1.0
+     }
+    ],
+    "auras": [
+     {
+      "kind": "shadow_swarm",
+      "bone": "Spine1",
+      "offset": [
+       0.0,
+       0.04,
+       0.0
+      ],
+      "scale": 1.42
+     }
+    ]
+   },
+   "tucks": true,
+   "hem": 0.0,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_umbra_flock",
+   "name": "Ocular Umbra Darting Black Crow Flock",
+   "slot": "back",
+   "glb": "pieces/mpfb_female/ext4_f_umbra_flock.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 0.0,
+       "center_gl": [
+        0.27325,
+        1.31476,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_0",
+      "t0": 0,
+      "t1": 72,
+      "v0": 0.0,
+      "v1": 0.0957
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 0.0,
+       "center_gl": [
+        0.27325,
+        1.31476,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_0",
+      "t0": 72,
+      "t1": 96,
+      "v0": 0.0957,
+      "v1": 0.10059
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 0.68,
+       "center_gl": [
+        0.25127,
+        1.59819,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_1",
+      "t0": 96,
+      "t1": 168,
+      "v0": 0.10059,
+      "v1": 0.19629
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 0.68,
+       "center_gl": [
+        0.25127,
+        1.59819,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_1",
+      "t0": 168,
+      "t1": 192,
+      "v0": 0.19629,
+      "v1": 0.20117
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 1.36,
+       "center_gl": [
+        0.04513,
+        1.5616,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_2",
+      "t0": 192,
+      "t1": 264,
+      "v0": 0.20117,
+      "v1": 0.29688
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 1.36,
+       "center_gl": [
+        0.04513,
+        1.5616,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_2",
+      "t0": 264,
+      "t1": 288,
+      "v0": 0.29688,
+      "v1": 0.30176
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 2.04,
+       "center_gl": [
+        -0.14255,
+        1.5846,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_3",
+      "t0": 288,
+      "t1": 360,
+      "v0": 0.30176,
+      "v1": 0.39746
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 2.04,
+       "center_gl": [
+        -0.14255,
+        1.5846,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_3",
+      "t0": 360,
+      "t1": 384,
+      "v0": 0.39746,
+      "v1": 0.40234
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 2.72,
+       "center_gl": [
+        -0.34876,
+        1.42164,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_4",
+      "t0": 384,
+      "t1": 456,
+      "v0": 0.40234,
+      "v1": 0.49805
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 2.72,
+       "center_gl": [
+        -0.34876,
+        1.42164,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_4",
+      "t0": 456,
+      "t1": 480,
+      "v0": 0.49805,
+      "v1": 0.50293
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 3.4000000000000004,
+       "center_gl": [
+        -0.46843,
+        1.14891,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_5",
+      "t0": 480,
+      "t1": 552,
+      "v0": 0.50293,
+      "v1": 0.59863
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 3.4000000000000004,
+       "center_gl": [
+        -0.46843,
+        1.14891,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_5",
+      "t0": 552,
+      "t1": 576,
+      "v0": 0.59863,
+      "v1": 0.60352
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 4.08,
+       "center_gl": [
+        -0.18515,
+        0.90803,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_6",
+      "t0": 576,
+      "t1": 648,
+      "v0": 0.60352,
+      "v1": 0.69922
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 4.08,
+       "center_gl": [
+        -0.18515,
+        0.90803,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_6",
+      "t0": 648,
+      "t1": 672,
+      "v0": 0.69922,
+      "v1": 0.7041
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 4.760000000000001,
+       "center_gl": [
+        -0.03573,
+        0.72532,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_7",
+      "t0": 672,
+      "t1": 744,
+      "v0": 0.7041,
+      "v1": 0.7998
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.4000000000000004,
+       "amp": 0.024,
+       "phase": 4.760000000000001,
+       "center_gl": [
+        -0.03573,
+        0.72532,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_7",
+      "t0": 744,
+      "t1": 768,
+      "v0": 0.7998,
+      "v1": 0.80469
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 5.44,
+       "center_gl": [
+        0.24438,
+        0.93047,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_8",
+      "t0": 768,
+      "t1": 840,
+      "v0": 0.80469,
+      "v1": 0.90039
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.6,
+       "amp": 0.024,
+       "phase": 5.44,
+       "center_gl": [
+        0.24438,
+        0.93047,
+        -0.19
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_8",
+      "t0": 840,
+      "t1": 864,
+      "v0": 0.90039,
+      "v1": 0.90527
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 6.12,
+       "center_gl": [
+        0.25698,
+        1.05634,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_wing_9",
+      "t0": 864,
+      "t1": 936,
+      "v0": 0.90527,
+      "v1": 1.0
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 2.2,
+       "amp": 0.024,
+       "phase": 6.12,
+       "center_gl": [
+        0.25698,
+        1.05634,
+        -0.22
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_umbra_flock_crow_body_9",
+      "t0": 936,
+      "t1": 960,
+      "v0": 0.99902,
+      "v1": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "ext4_f_umbra_grasps",
+   "name": "Ocular Umbra Reaching Shadow-Claws",
+   "slot": "gloves",
+   "glb": "pieces/mpfb_female/ext4_f_umbra_grasps.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_cuff_L",
+      "t0": 0,
+      "t1": 240,
+      "v0": 0.0,
+      "v1": 0.18262
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_palm_L",
+      "t0": 240,
+      "t1": 440,
+      "v0": 0.18262,
+      "v1": 0.24902
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_L_Thumb",
+      "t0": 440,
+      "t1": 560,
+      "v0": 0.24902,
+      "v1": 0.25586
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_L_Index",
+      "t0": 560,
+      "t1": 680,
+      "v0": 0.25586,
+      "v1": 0.26074
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_L_Middle",
+      "t0": 680,
+      "t1": 800,
+      "v0": 0.26074,
+      "v1": 0.2666
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_L_Ring",
+      "t0": 800,
+      "t1": 920,
+      "v0": 0.2666,
+      "v1": 0.27246
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_L_Pinky",
+      "t0": 920,
+      "t1": 1040,
+      "v0": 0.27246,
+      "v1": 0.27637
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_cuff_R",
+      "t0": 1040,
+      "t1": 1280,
+      "v0": 0.27637,
+      "v1": 0.45898
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_palm_R",
+      "t0": 1280,
+      "t1": 1480,
+      "v0": 0.45898,
+      "v1": 0.52539
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_R_Thumb",
+      "t0": 1480,
+      "t1": 1600,
+      "v0": 0.52539,
+      "v1": 0.53223
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_R_Index",
+      "t0": 1600,
+      "t1": 1720,
+      "v0": 0.53223,
+      "v1": 0.53711
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_R_Middle",
+      "t0": 1720,
+      "t1": 1840,
+      "v0": 0.53711,
+      "v1": 0.54297
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_R_Ring",
+      "t0": 1840,
+      "t1": 1960,
+      "v0": 0.54297,
+      "v1": 0.54883
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_finger_R_Pinky",
+      "t0": 1960,
+      "t1": 2080,
+      "v0": 0.54883,
+      "v1": 0.55273
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Left_0",
+      "t0": 2080,
+      "t1": 2104,
+      "v0": 0.55273,
+      "v1": 0.6084
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Left_1",
+      "t0": 2104,
+      "t1": 2128,
+      "v0": 0.6084,
+      "v1": 0.66406
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Left_2",
+      "t0": 2128,
+      "t1": 2152,
+      "v0": 0.66406,
+      "v1": 0.71973
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Left_3",
+      "t0": 2152,
+      "t1": 2176,
+      "v0": 0.71973,
+      "v1": 0.77539
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Right_0",
+      "t0": 2176,
+      "t1": 2200,
+      "v0": 0.77539,
+      "v1": 0.83105
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Right_1",
+      "t0": 2200,
+      "t1": 2224,
+      "v0": 0.83105,
+      "v1": 0.88672
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Right_2",
+      "t0": 2224,
+      "t1": 2248,
+      "v0": 0.88672,
+      "v1": 0.94238
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#020104",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_umbra_grasps_claw_Right_3",
+      "t0": 2248,
+      "t1": 2272,
+      "v0": 0.94238,
+      "v1": 1.0
+     }
+    ]
+   },
+   "hide_parts": [
+    "Human.fingernails"
+   ],
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwABwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/DwDP8fA88wPPMz8Pz/w8/M8zf8///H//////////////////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAMD///////////////////////////////////8AAAAAA/////////f//9z//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zAPAsD88zP/A88/PwzM/D/zzz+/zP//v/////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAAP///////////////////////////////////wMAAAAM/P//////7///s///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 7324,
+   "hide_by": "rays"
+  },
+  {
+   "id": "ext4_f_umbra_tatter",
+   "name": "Ocular Umbra Tapering Eye-Studded Shadow Root",
+   "slot": "legs",
+   "glb": "pieces/mpfb_female/ext4_f_umbra_tatter.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.42,
+      "y_bot": 0.03,
+      "edge_color": "#100306",
+      "smoke_color": "#020104",
+      "swirl": 0.45,
+      "name": "ext4_f_umbra_tatter_monolith_root",
+      "t0": 0,
+      "t1": 1140,
+      "v0": 0.0,
+      "v1": 0.92578
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_tatter_low_eye_0_sclera",
+      "t0": 1140,
+      "t1": 1284,
+      "v0": 0.92578,
+      "v1": 0.93164
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_tatter_low_eye_0_iris",
+      "t0": 1284,
+      "t1": 1384,
+      "v0": 0.93164,
+      "v1": 0.9375
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_tatter_low_eye_1_sclera",
+      "t0": 1448,
+      "t1": 1592,
+      "v0": 0.94336,
+      "v1": 0.94922
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_tatter_low_eye_1_iris",
+      "t0": 1592,
+      "t1": 1692,
+      "v0": 0.94922,
+      "v1": 0.95508
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_tatter_low_eye_2_sclera",
+      "t0": 1756,
+      "t1": 1900,
+      "v0": 0.96094,
+      "v1": 0.9668
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_tatter_low_eye_2_iris",
+      "t0": 1900,
+      "t1": 2000,
+      "v0": 0.9668,
+      "v1": 0.97266
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffbe3c",
+      "gain": 1.85,
+      "pulse": 0.14,
+      "name": "ext4_f_umbra_tatter_low_eye_3_sclera",
+      "t0": 2064,
+      "t1": 2208,
+      "v0": 0.97852,
+      "v1": 0.98438
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ee1c18",
+      "gain": 2.05,
+      "pulse": 0.18,
+      "name": "ext4_f_umbra_tatter_low_eye_3_iris",
+      "t0": 2208,
+      "t1": 2308,
+      "v0": 0.98438,
+      "v1": 0.99023
+     }
+    ]
+   },
+   "loose": true,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_pyre_visage",
+   "name": "Astral Pyre White-Flame Visage & Void Aperture",
+   "slot": "head",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_visage.glb",
+   "culture": "extraplanar",
+   "covers_hair": true,
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly"
+   ],
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_visage_white_cowl",
+      "t0": 0,
+      "t1": 572,
+      "v0": 0.0,
+      "v1": 0.11328
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#010103",
+      "gain": 0.01,
+      "pulse": 0.0,
+      "name": "ext4_f_pyre_visage_void_aperture",
+      "t0": 572,
+      "t1": 860,
+      "v0": 0.11328,
+      "v1": 0.16211
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Head",
+       "motion": "chorus_wave",
+       "speed": 1.95,
+       "amp": 0.014,
+       "phase": 0.0,
+       "center_gl": [
+        0.0,
+        1.58819,
+        0.02815
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_visage_crown_plume_0",
+      "t0": 860,
+      "t1": 1036,
+      "v0": 0.16211,
+      "v1": 0.35254
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Head",
+       "motion": "chorus_wave",
+       "speed": 1.95,
+       "amp": 0.014,
+       "phase": 0.85,
+       "center_gl": [
+        -0.05,
+        1.58819,
+        0.02815
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_visage_crown_plume_1",
+      "t0": 1036,
+      "t1": 1212,
+      "v0": 0.35254,
+      "v1": 0.51953
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Head",
+       "motion": "chorus_wave",
+       "speed": 1.95,
+       "amp": 0.014,
+       "phase": 1.7,
+       "center_gl": [
+        0.06,
+        1.58819,
+        0.02815
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_visage_crown_plume_2",
+      "t0": 1212,
+      "t1": 1388,
+      "v0": 0.51953,
+      "v1": 0.69238
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Head",
+       "motion": "chorus_wave",
+       "speed": 1.95,
+       "amp": 0.014,
+       "phase": 2.55,
+       "center_gl": [
+        -0.09,
+        1.58819,
+        0.02815
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_visage_crown_plume_3",
+      "t0": 1388,
+      "t1": 1564,
+      "v0": 0.69238,
+      "v1": 0.84375
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Head",
+       "motion": "chorus_wave",
+       "speed": 1.95,
+       "amp": 0.014,
+       "phase": 3.4,
+       "center_gl": [
+        0.09,
+        1.58819,
+        0.02815
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_visage_crown_plume_4",
+      "t0": 1564,
+      "t1": 1740,
+      "v0": 0.84375,
+      "v1": 1.0
+     }
+    ]
+   },
+   "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//9wAAAMAwADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//+wAAAPAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
+   "hides": 6768,
+   "hide_by": "extraplanar_custom"
+  },
+  {
+   "id": "ext4_f_pyre_constellation",
+   "name": "Astral Pyre Constellation Body & White-Flame Mantle",
+   "slot": "torso",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_constellation.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_constellation_star_body",
+      "t0": 0,
+      "t1": 1440,
+      "v0": 0.0,
+      "v1": 0.39551
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_constellation_star_arms_sleeve_L",
+      "t0": 1440,
+      "t1": 1728,
+      "v0": 0.39551,
+      "v1": 0.65723
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_constellation_star_arms_sleeve_R",
+      "t0": 1728,
+      "t1": 2016,
+      "v0": 0.65723,
+      "v1": 0.91895
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_constellation_white_mantle",
+      "t0": 2016,
+      "t1": 3024,
+      "v0": 0.91895,
+      "v1": 0.94434
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_constellation_sh_flame_L",
+      "t0": 3024,
+      "t1": 3184,
+      "v0": 0.94434,
+      "v1": 0.97168
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_constellation_sh_flame_R",
+      "t0": 3184,
+      "t1": 3344,
+      "v0": 0.97168,
+      "v1": 1.0
+     }
+    ],
+    "auras": [
+     {
+      "kind": "white_tendril_flame",
+      "bone": "Spine2",
+      "offset": [
+       0.0,
+       0.06,
+       0.0
+      ],
+      "gain": 1.28
+     }
+    ]
+   },
+   "tucks": true,
+   "hem": 0.0,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_pyre_plumes",
+   "name": "Astral Pyre Curling White-Flame Plumes",
+   "slot": "back",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_plumes.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 0.0,
+       "center_gl": [
+        0.19387,
+        1.30331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_L_0",
+      "t0": 0,
+      "t1": 176,
+      "v0": 0.0,
+      "v1": 0.11719
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 0.9,
+       "center_gl": [
+        0.19387,
+        1.24331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_L_1",
+      "t0": 176,
+      "t1": 352,
+      "v0": 0.11719,
+      "v1": 0.23242
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#dce8ff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 1.8,
+       "center_gl": [
+        0.19387,
+        1.18331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_L_2",
+      "t0": 352,
+      "t1": 528,
+      "v0": 0.23242,
+      "v1": 0.3584
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#dce8ff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 2.7,
+       "center_gl": [
+        0.19387,
+        1.12331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_L_3",
+      "t0": 528,
+      "t1": 704,
+      "v0": 0.3584,
+      "v1": 0.5
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 1.4,
+       "center_gl": [
+        -0.19387,
+        1.30331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_R_0",
+      "t0": 704,
+      "t1": 880,
+      "v0": 0.5,
+      "v1": 0.61719
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 2.3,
+       "center_gl": [
+        -0.19387,
+        1.24331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_R_1",
+      "t0": 880,
+      "t1": 1056,
+      "v0": 0.61719,
+      "v1": 0.73242
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#dce8ff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 3.2,
+       "center_gl": [
+        -0.19387,
+        1.18331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_R_2",
+      "t0": 1056,
+      "t1": 1232,
+      "v0": 0.73242,
+      "v1": 0.8584
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#dce8ff",
+      "gain": 1.65,
+      "pulse": 0.08,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.75,
+       "amp": 0.016,
+       "phase": 4.1,
+       "center_gl": [
+        -0.19387,
+        1.12331,
+        -0.03933
+       ],
+       "axis_gl": [
+        0.0,
+        0.0,
+        1.0
+       ]
+      },
+      "name": "ext4_f_pyre_plumes_curl_R_3",
+      "t0": 1232,
+      "t1": 1408,
+      "v0": 0.8584,
+      "v1": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "ext4_f_pyre_claws",
+   "name": "Astral Pyre Constellation Forearms & Hooked Claws",
+   "slot": "gloves",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_claws.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_cuff_L",
+      "t0": 0,
+      "t1": 240,
+      "v0": 0.0,
+      "v1": 0.37695
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_palm_L",
+      "t0": 240,
+      "t1": 440,
+      "v0": 0.37695,
+      "v1": 0.39258
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_L_Thumb",
+      "t0": 440,
+      "t1": 560,
+      "v0": 0.39258,
+      "v1": 0.40625
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_L_Index",
+      "t0": 560,
+      "t1": 680,
+      "v0": 0.40625,
+      "v1": 0.41602
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_L_Middle",
+      "t0": 680,
+      "t1": 800,
+      "v0": 0.41602,
+      "v1": 0.42871
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_L_Ring",
+      "t0": 800,
+      "t1": 920,
+      "v0": 0.42871,
+      "v1": 0.43945
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_L_Pinky",
+      "t0": 920,
+      "t1": 1040,
+      "v0": 0.43945,
+      "v1": 0.44727
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_cuff_R",
+      "t0": 1040,
+      "t1": 1280,
+      "v0": 0.44727,
+      "v1": 0.82422
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_palm_R",
+      "t0": 1280,
+      "t1": 1480,
+      "v0": 0.82422,
+      "v1": 0.83984
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_R_Thumb",
+      "t0": 1480,
+      "t1": 1600,
+      "v0": 0.83984,
+      "v1": 0.85352
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_R_Index",
+      "t0": 1600,
+      "t1": 1720,
+      "v0": 0.85352,
+      "v1": 0.86328
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_R_Middle",
+      "t0": 1720,
+      "t1": 1840,
+      "v0": 0.86328,
+      "v1": 0.87598
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_R_Ring",
+      "t0": 1840,
+      "t1": 1960,
+      "v0": 0.87598,
+      "v1": 0.88672
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_claws_finger_R_Pinky",
+      "t0": 1960,
+      "t1": 2080,
+      "v0": 0.88672,
+      "v1": 0.89453
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Left_0",
+      "t0": 2080,
+      "t1": 2104,
+      "v0": 0.89453,
+      "v1": 0.90332
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Left_1",
+      "t0": 2104,
+      "t1": 2128,
+      "v0": 0.90332,
+      "v1": 0.91211
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Left_2",
+      "t0": 2128,
+      "t1": 2152,
+      "v0": 0.91211,
+      "v1": 0.9209
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Left_3",
+      "t0": 2152,
+      "t1": 2176,
+      "v0": 0.9209,
+      "v1": 0.92969
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_claws_elbow_wisp_Left",
+      "t0": 2176,
+      "t1": 2204,
+      "v0": 0.92969,
+      "v1": 0.94531
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Right_0",
+      "t0": 2204,
+      "t1": 2228,
+      "v0": 0.94531,
+      "v1": 0.9541
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Right_1",
+      "t0": 2228,
+      "t1": 2252,
+      "v0": 0.9541,
+      "v1": 0.96289
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Right_2",
+      "t0": 2252,
+      "t1": 2276,
+      "v0": 0.96289,
+      "v1": 0.97168
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#4c88ff",
+      "gain": 1.65,
+      "pulse": 0.14,
+      "name": "ext4_f_pyre_claws_claw_Right_3",
+      "t0": 2276,
+      "t1": 2300,
+      "v0": 0.97168,
+      "v1": 0.98047
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffffff",
+      "gain": 1.06,
+      "pulse": 0.08,
+      "name": "ext4_f_pyre_claws_elbow_wisp_Right",
+      "t0": 2300,
+      "t1": 2328,
+      "v0": 0.98047,
+      "v1": 1.0
+     }
+    ]
+   },
+   "hide_parts": [
+    "Human.fingernails"
+   ],
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwABwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/DwDP8fA88wPPMz8Pz/w8/M8zf8///H//////////////////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAMD///////////////////////////////////8AAAAAA/////////f//9z//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zAPAsD88zP/A88/PwzM/D/zzz+/zP//v/////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAAP///////////////////////////////////wMAAAAM/P//////7///s///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 7324,
+   "hide_by": "rays"
+  },
+  {
+   "id": "ext4_f_pyre_legs",
+   "name": "Astral Pyre Constellation Cosmic Legs",
+   "slot": "legs",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_legs.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_legs_star_legs_seat",
+      "t0": 0,
+      "t1": 360,
+      "v0": 0.0,
+      "v1": 0.13086
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_legs_star_legs_leg_L",
+      "t0": 360,
+      "t1": 932,
+      "v0": 0.13086,
+      "v1": 0.56543
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#02040e",
+      "rim_color": "#1e4ee8",
+      "accent_color": "#ffffff",
+      "opacity": 0.99,
+      "power": 2.5,
+      "rim_gain": 0.55,
+      "constellation": 2.0,
+      "depth_write": true,
+      "name": "ext4_f_pyre_legs_star_legs_leg_R",
+      "t0": 932,
+      "t1": 1504,
+      "v0": 0.56543,
+      "v1": 1.0
+     }
+    ]
+   },
+   "legged": true,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_pyre_steps",
+   "name": "Astral Pyre Starlit Ultramarine Feet",
+   "slot": "feet",
+   "glb": "pieces/mpfb_female/ext4_f_pyre_steps.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_sole_L",
+      "t0": 0,
+      "t1": 440,
+      "v0": 0.0,
+      "v1": 0.21191
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_shaft_L",
+      "t0": 440,
+      "t1": 760,
+      "v0": 0.21191,
+      "v1": 0.32129
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_foot_L",
+      "t0": 760,
+      "t1": 1120,
+      "v0": 0.32129,
+      "v1": 0.5
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_sole_R",
+      "t0": 1120,
+      "t1": 1560,
+      "v0": 0.5,
+      "v1": 0.71191
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_shaft_R",
+      "t0": 1560,
+      "t1": 1880,
+      "v0": 0.71191,
+      "v1": 0.82129
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#0b2478",
+      "rim_color": "#5294ff",
+      "accent_color": "#ffffff",
+      "opacity": 0.96,
+      "power": 1.7,
+      "rim_gain": 2.05,
+      "depth_write": true,
+      "name": "ext4_f_pyre_steps_foot_R",
+      "t0": 1880,
+      "t1": 2240,
+      "v0": 0.82129,
+      "v1": 1.0
+     }
+    ]
+   },
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/38w8/8T/P8AAAAAAAAAAAAAAPD///////////////8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPz/////////////////////////////////////////////////////////////////////////////////////////////////////D/z/////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAA/P////////////////////////////////////////////////////////////////////////////////////////8DAAAAAAAAAAAAAAAA/P//////////AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8/8IAAADA/P8I/z8AAAAAAAAAAAAAAPz/////////////P/8PAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////z8//////////////////////////////////////////////P//////////////////////////////8////////////A///////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAA//////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAP///////////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 4100,
+   "hide_by": "rays"
+  },
+  {
+   "id": "ext4_f_urchin_head",
+   "name": "Nightmare Urchin Spiked Shadow-Orb & Red Needle-Grin",
+   "slot": "head",
+   "glb": "pieces/mpfb_female/ext4_f_urchin_head.glb",
+   "culture": "extraplanar",
+   "covers_hair": true,
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly"
+   ],
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_orb_head",
+      "t0": 0,
+      "t1": 572,
+      "v0": 0.0,
+      "v1": 0.03516
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_socket_R",
+      "t0": 572,
+      "t1": 768,
+      "v0": 0.03516,
+      "v1": 0.03906
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffd0d8",
+      "gain": 2.75,
+      "pulse": 0.16,
+      "name": "ext4_f_urchin_head_pinpoint_R",
+      "t0": 768,
+      "t1": 848,
+      "v0": 0.03906,
+      "v1": 0.04297
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_socket_L",
+      "t0": 848,
+      "t1": 1044,
+      "v0": 0.04297,
+      "v1": 0.04688
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ffd0d8",
+      "gain": 2.75,
+      "pulse": 0.16,
+      "name": "ext4_f_urchin_head_pinpoint_L",
+      "t0": 1044,
+      "t1": 1124,
+      "v0": 0.04688,
+      "v1": 0.05078
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_0",
+      "t0": 1124,
+      "t1": 1144,
+      "v0": 0.05078,
+      "v1": 0.05469
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_1",
+      "t0": 1144,
+      "t1": 1164,
+      "v0": 0.05469,
+      "v1": 0.05859
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_2",
+      "t0": 1164,
+      "t1": 1184,
+      "v0": 0.05859,
+      "v1": 0.0625
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_3",
+      "t0": 1184,
+      "t1": 1204,
+      "v0": 0.0625,
+      "v1": 0.06641
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_4",
+      "t0": 1204,
+      "t1": 1224,
+      "v0": 0.06641,
+      "v1": 0.07031
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_5",
+      "t0": 1224,
+      "t1": 1244,
+      "v0": 0.07031,
+      "v1": 0.07422
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_6",
+      "t0": 1244,
+      "t1": 1264,
+      "v0": 0.07422,
+      "v1": 0.07812
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_7",
+      "t0": 1264,
+      "t1": 1284,
+      "v0": 0.07812,
+      "v1": 0.08203
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_8",
+      "t0": 1284,
+      "t1": 1304,
+      "v0": 0.08203,
+      "v1": 0.08594
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_9",
+      "t0": 1304,
+      "t1": 1324,
+      "v0": 0.08594,
+      "v1": 0.08984
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_10",
+      "t0": 1324,
+      "t1": 1344,
+      "v0": 0.08984,
+      "v1": 0.09375
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_11",
+      "t0": 1344,
+      "t1": 1364,
+      "v0": 0.09375,
+      "v1": 0.09766
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_12",
+      "t0": 1364,
+      "t1": 1384,
+      "v0": 0.09766,
+      "v1": 0.10156
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_13",
+      "t0": 1384,
+      "t1": 1404,
+      "v0": 0.10156,
+      "v1": 0.10547
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#ff4852",
+      "gain": 2.35,
+      "pulse": 0.22,
+      "name": "ext4_f_urchin_head_tooth_14",
+      "t0": 1404,
+      "t1": 1424,
+      "v0": 0.10547,
+      "v1": 0.10938
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_0",
+      "t0": 1424,
+      "t1": 1448,
+      "v0": 0.10938,
+      "v1": 0.13574
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_1",
+      "t0": 1448,
+      "t1": 1472,
+      "v0": 0.13574,
+      "v1": 0.17188
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_2",
+      "t0": 1472,
+      "t1": 1496,
+      "v0": 0.17188,
+      "v1": 0.20215
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_3",
+      "t0": 1496,
+      "t1": 1520,
+      "v0": 0.20215,
+      "v1": 0.24219
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_4",
+      "t0": 1520,
+      "t1": 1544,
+      "v0": 0.24219,
+      "v1": 0.27539
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_5",
+      "t0": 1544,
+      "t1": 1568,
+      "v0": 0.27539,
+      "v1": 0.30273
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_6",
+      "t0": 1568,
+      "t1": 1592,
+      "v0": 0.30273,
+      "v1": 0.33984
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_7",
+      "t0": 1592,
+      "t1": 1616,
+      "v0": 0.33984,
+      "v1": 0.37109
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_8",
+      "t0": 1616,
+      "t1": 1640,
+      "v0": 0.37109,
+      "v1": 0.41211
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_9",
+      "t0": 1640,
+      "t1": 1664,
+      "v0": 0.41211,
+      "v1": 0.44727
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_10",
+      "t0": 1664,
+      "t1": 1688,
+      "v0": 0.44727,
+      "v1": 0.47656
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_11",
+      "t0": 1688,
+      "t1": 1712,
+      "v0": 0.47656,
+      "v1": 0.51562
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_12",
+      "t0": 1712,
+      "t1": 1736,
+      "v0": 0.51562,
+      "v1": 0.54883
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_13",
+      "t0": 1736,
+      "t1": 1760,
+      "v0": 0.54883,
+      "v1": 0.5752
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_14",
+      "t0": 1760,
+      "t1": 1784,
+      "v0": 0.5752,
+      "v1": 0.61133
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_15",
+      "t0": 1784,
+      "t1": 1808,
+      "v0": 0.61133,
+      "v1": 0.6416
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_16",
+      "t0": 1808,
+      "t1": 1832,
+      "v0": 0.6416,
+      "v1": 0.68164
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_17",
+      "t0": 1832,
+      "t1": 1856,
+      "v0": 0.68164,
+      "v1": 0.71582
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_18",
+      "t0": 1856,
+      "t1": 1880,
+      "v0": 0.71582,
+      "v1": 0.74414
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_19",
+      "t0": 1880,
+      "t1": 1904,
+      "v0": 0.74414,
+      "v1": 0.78223
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_20",
+      "t0": 1904,
+      "t1": 1928,
+      "v0": 0.78223,
+      "v1": 0.81445
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_21",
+      "t0": 1928,
+      "t1": 1952,
+      "v0": 0.81445,
+      "v1": 0.85645
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_22",
+      "t0": 1952,
+      "t1": 1976,
+      "v0": 0.85645,
+      "v1": 0.89258
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_23",
+      "t0": 1976,
+      "t1": 2000,
+      "v0": 0.89258,
+      "v1": 0.92188
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_24",
+      "t0": 2000,
+      "t1": 2024,
+      "v0": 0.92188,
+      "v1": 0.96094
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_25",
+      "t0": 2024,
+      "t1": 2048,
+      "v0": 0.96094,
+      "v1": 0.99414
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_26",
+      "t0": 2048,
+      "t1": 2072,
+      "v0": 0.99414,
+      "v1": 1.0
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_head_quill_27",
+      "t0": 2072,
+      "t1": 2096,
+      "v0": 0.99902,
+      "v1": 1.0
+     }
+    ],
+    "auras": [
+     {
+      "kind": "spiky_dark_array",
+      "bone": "Head",
+      "offset": [
+       0.0,
+       0.04,
+       0.0
+      ],
+      "scale": 1.06
+     }
+    ]
+   },
+   "hide": "////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//9wAAAMAwADwAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwP///////////wAAAADA//////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//////////////w8AAAAAAAAAAAAAAADw/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAAAAAADAAAAAAD///P//+wAAAPAMAA8AAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/P//////////DwAAAAD8/////////////wMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD//////////////wMAAAAAAAAAAAAAAADw////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//////////8PDA==",
+   "hides": 6768,
+   "hide_by": "extraplanar_custom"
+  },
+  {
+   "id": "ext4_f_urchin_shroud",
+   "name": "Nightmare Urchin Gaunt Shadow-Tendril Shroud",
+   "slot": "torso",
+   "glb": "pieces/mpfb_female/ext4_f_urchin_shroud.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_shroud_shadow_ribcage",
+      "t0": 0,
+      "t1": 1280,
+      "v0": 0.0,
+      "v1": 0.42676
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_shroud_spindly_arms_sleeve_L",
+      "t0": 1280,
+      "t1": 1476,
+      "v0": 0.42676,
+      "v1": 0.71289
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_shroud_spindly_arms_sleeve_R",
+      "t0": 1476,
+      "t1": 1672,
+      "v0": 0.71289,
+      "v1": 1.0
+     }
+    ]
+   },
+   "tucks": true,
+   "hem": 0.0,
+   "hide": "/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////w==",
+   "hides": 24056,
+   "hide_by": "extraplanar_custom",
+   "hide_parts": [
+    "Human.lips",
+    "Human.ears",
+    "Human.eyebrow001",
+    "Human.eyebrow002",
+    "Human.eyelashes01",
+    "Human.eyelashes02",
+    "Human.low-poly",
+    "Human.nipple",
+    "Human.fingernails",
+    "Human.toenails"
+   ]
+  },
+  {
+   "id": "ext4_f_urchin_stalkers",
+   "name": "Nightmare Urchin Dorsal Shadow-Claw Stalker Arms",
+   "slot": "back",
+   "glb": "pieces/mpfb_female/ext4_f_urchin_stalkers.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 0.0,
+       "center_gl": [
+        0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_arm_L",
+      "t0": 0,
+      "t1": 176,
+      "v0": 0.0,
+      "v1": 0.23047
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 0.0,
+       "center_gl": [
+        0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_L_0",
+      "t0": 176,
+      "t1": 260,
+      "v0": 0.23047,
+      "v1": 0.29492
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 0.0,
+       "center_gl": [
+        0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_L_1",
+      "t0": 260,
+      "t1": 344,
+      "v0": 0.29492,
+      "v1": 0.36035
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 0.0,
+       "center_gl": [
+        0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_L_2",
+      "t0": 344,
+      "t1": 428,
+      "v0": 0.36035,
+      "v1": 0.42871
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 0.0,
+       "center_gl": [
+        0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_L_3",
+      "t0": 428,
+      "t1": 512,
+      "v0": 0.42871,
+      "v1": 0.5
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 2.2,
+       "center_gl": [
+        -0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_arm_R",
+      "t0": 512,
+      "t1": 688,
+      "v0": 0.5,
+      "v1": 0.73047
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 2.2,
+       "center_gl": [
+        -0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_R_0",
+      "t0": 688,
+      "t1": 772,
+      "v0": 0.73047,
+      "v1": 0.80176
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 2.2,
+       "center_gl": [
+        -0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_R_1",
+      "t0": 772,
+      "t1": 856,
+      "v0": 0.80176,
+      "v1": 0.87012
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 2.2,
+       "center_gl": [
+        -0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_R_2",
+      "t0": 856,
+      "t1": 940,
+      "v0": 0.87012,
+      "v1": 0.93555
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "kinetic": {
+       "bone": "Spine2",
+       "motion": "chorus_wave",
+       "speed": 1.45,
+       "amp": 0.018,
+       "phase": 2.2,
+       "center_gl": [
+        -0.12387,
+        1.28331,
+        -0.06433
+       ],
+       "axis_gl": [
+        1.0,
+        0.0,
+        0.0
+       ]
+      },
+      "name": "ext4_f_urchin_stalkers_stalk_talon_R_3",
+      "t0": 940,
+      "t1": 1024,
+      "v0": 0.93555,
+      "v1": 1.0
+     }
+    ]
+   }
+  },
+  {
+   "id": "ext4_f_urchin_claws",
+   "name": "Nightmare Urchin Wicked Shadow-Talons",
+   "slot": "gloves",
+   "glb": "pieces/mpfb_female/ext4_f_urchin_claws.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_cuff_L",
+      "t0": 0,
+      "t1": 240,
+      "v0": 0.0,
+      "v1": 0.14453
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_palm_L",
+      "t0": 240,
+      "t1": 440,
+      "v0": 0.14453,
+      "v1": 0.19531
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_L_Thumb",
+      "t0": 440,
+      "t1": 560,
+      "v0": 0.19531,
+      "v1": 0.2002
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_L_Index",
+      "t0": 560,
+      "t1": 680,
+      "v0": 0.2002,
+      "v1": 0.2041
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_L_Middle",
+      "t0": 680,
+      "t1": 800,
+      "v0": 0.2041,
+      "v1": 0.20898
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_L_Ring",
+      "t0": 800,
+      "t1": 920,
+      "v0": 0.20898,
+      "v1": 0.21289
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_L_Pinky",
+      "t0": 920,
+      "t1": 1040,
+      "v0": 0.21289,
+      "v1": 0.2168
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_cuff_R",
+      "t0": 1040,
+      "t1": 1280,
+      "v0": 0.2168,
+      "v1": 0.36133
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_palm_R",
+      "t0": 1280,
+      "t1": 1480,
+      "v0": 0.36133,
+      "v1": 0.41211
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_R_Thumb",
+      "t0": 1480,
+      "t1": 1600,
+      "v0": 0.41211,
+      "v1": 0.41699
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_R_Index",
+      "t0": 1600,
+      "t1": 1720,
+      "v0": 0.41699,
+      "v1": 0.4209
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_R_Middle",
+      "t0": 1720,
+      "t1": 1840,
+      "v0": 0.4209,
+      "v1": 0.42578
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_R_Ring",
+      "t0": 1840,
+      "t1": 1960,
+      "v0": 0.42578,
+      "v1": 0.42969
+     },
+     {
+      "kind": "fresnel_ghost",
+      "core_color": "#030205",
+      "rim_color": "#4c0610",
+      "accent_color": "#120206",
+      "opacity": 0.98,
+      "power": 2.8,
+      "rim_gain": 0.85,
+      "depth_write": true,
+      "name": "ext4_f_urchin_claws_finger_R_Pinky",
+      "t0": 1960,
+      "t1": 2080,
+      "v0": 0.42969,
+      "v1": 0.43359
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Left_0",
+      "t0": 2080,
+      "t1": 2164,
+      "v0": 0.43359,
+      "v1": 0.50391
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Left_1",
+      "t0": 2164,
+      "t1": 2248,
+      "v0": 0.50391,
+      "v1": 0.57422
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Left_2",
+      "t0": 2248,
+      "t1": 2332,
+      "v0": 0.57422,
+      "v1": 0.64453
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Left_3",
+      "t0": 2332,
+      "t1": 2416,
+      "v0": 0.64453,
+      "v1": 0.71484
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Right_0",
+      "t0": 2416,
+      "t1": 2500,
+      "v0": 0.71484,
+      "v1": 0.78516
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Right_1",
+      "t0": 2500,
+      "t1": 2584,
+      "v0": 0.78516,
+      "v1": 0.85547
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Right_2",
+      "t0": 2584,
+      "t1": 2668,
+      "v0": 0.85547,
+      "v1": 0.92578
+     },
+     {
+      "kind": "emissive_blaze",
+      "color": "#030205",
+      "gain": 0.03,
+      "pulse": 0.0,
+      "name": "ext4_f_urchin_claws_talon_Right_3",
+      "t0": 2668,
+      "t1": 2752,
+      "v0": 0.92578,
+      "v1": 1.0
+     }
+    ]
+   },
+   "hide_parts": [
+    "Human.fingernails"
+   ],
+   "hide": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwABwDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8/DwDP8fA88wPPMz8Pz/w8/M8zf8///H//////////////////////////////////////////////////////////////////////////////////////////////////////PwAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAA/P//AAAAAMD///////////////////////////////////8AAAAAA/////////f//9z//////////////////w8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADADLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8P/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////zAPAsD88zP/A88/PwzM/D/zzz+/zP//v/////////////////////////////////////////////////////////////////////////////////////////////////////AwAAAAAAAAAAAAAAAMADAAAAAAAAAAAAAAAAAADw//8DAAAAAP///////////////////////////////////wMAAAAM/P//////7///s///////////////////PwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+   "hides": 7324,
+   "hide_by": "rays"
+  },
+  {
+   "id": "ext4_f_urchin_wisps",
+   "name": "Nightmare Urchin Writhing Shadow-Hair Tendril Trail",
+   "slot": "legs",
+   "glb": "pieces/mpfb_female/ext4_f_urchin_wisps.glb",
+   "culture": "extraplanar",
+   "allow_floating": true,
+   "vfx": {
+    "zones": [
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_shadow_funnel",
+      "t0": 0,
+      "t1": 884,
+      "v0": 0.0,
+      "v1": 0.11035
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_0",
+      "t0": 884,
+      "t1": 1040,
+      "v0": 0.11035,
+      "v1": 0.2207
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_1",
+      "t0": 1040,
+      "t1": 1196,
+      "v0": 0.2207,
+      "v1": 0.33203
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_2",
+      "t0": 1196,
+      "t1": 1352,
+      "v0": 0.33203,
+      "v1": 0.44336
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_3",
+      "t0": 1352,
+      "t1": 1508,
+      "v0": 0.44336,
+      "v1": 0.55371
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_4",
+      "t0": 1508,
+      "t1": 1664,
+      "v0": 0.55371,
+      "v1": 0.66504
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_5",
+      "t0": 1664,
+      "t1": 1820,
+      "v0": 0.66504,
+      "v1": 0.77637
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_6",
+      "t0": 1820,
+      "t1": 1976,
+      "v0": 0.77637,
+      "v1": 0.88672
+     },
+     {
+      "kind": "alpha_erosion",
+      "no_push": true,
+      "y_top": 0.55,
+      "y_bot": 0.06,
+      "edge_color": "#2a0408",
+      "smoke_color": "#020104",
+      "swirl": 1.55,
+      "name": "ext4_f_urchin_wisps_strand_7",
+      "t0": 1976,
+      "t1": 2132,
+      "v0": 0.88672,
+      "v1": 1.0
      }
     ]
    },
