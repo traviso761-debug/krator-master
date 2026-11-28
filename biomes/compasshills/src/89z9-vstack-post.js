@@ -36,6 +36,7 @@
   bx.globalCompositeOperation = "destination-in";
   bx.drawImage(mask, 0, 0, w, h);
   bx.globalCompositeOperation = "source-over";
+  bleed.src = img.currentSrc || img.src || "";
   dilatedSeen.set(img, bleed);
   vStats.dilatedCards++;
   return bleed;

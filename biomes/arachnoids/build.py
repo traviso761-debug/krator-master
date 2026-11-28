@@ -181,8 +181,33 @@ if miss:
 
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
+STATION_EXCLUDE = {
+    'nexus': ('bark.fern', 'bulbheath', 'cladonia', 'crystal.smoky', 'cushion.frost', 'dwarfbirch',
+              'edelweiss', 'ground.frost', 'ground.grass', 'ground.lichen', 'ground.needles',
+              'ground.sinter', 'ground.snow', 'ground.therm', 'moss', 'rock.granite', 'rock.sinter',
+              'rock.tuff', 'sedge'),
+    'fumarole': ('bark.amber', 'bark.juniper', 'bark.oak', 'bulbheath', 'cladonia', 'crystal.nitre',
+                 'crystal.smoky', 'cushion.frost', 'dwarfbirch', 'edelweiss', 'ground.frost',
+                 'ground.grass', 'ground.lichen', 'ground.needles', 'ground.nitre', 'ground.snow',
+                 'ground.vitrophyre', 'hangivy', 'juniper', 'moss', 'oak', 'pine', 'pistache',
+                 'rock.bolus', 'rock.granite', 'rock.sandstone', 'rock.tuff', 'rock.vitrophyre',
+                 'saffron', 'sedge', 'silk.cable', 'silk.sheet', 'vine'),
+    'ledges': ('bamboo', 'bark.bamboo', 'bark.fern', 'bark.willow', 'bulbheath', 'cladonia',
+               'crystal.nitre', 'cushion.frost', 'dwarfbirch', 'edelweiss', 'floorfern',
+               'ground.frost', 'ground.moss', 'ground.nitre', 'ground.sand', 'ground.sinter',
+               'ground.snow', 'ground.therm', 'hangmoss', 'hemlock', 'moss', 'mulberry', 'orchid',
+               'rock.bolus', 'rock.sandstone', 'rock.sinter', 'rock.vitrophyre', 'silk.sheet',
+               'taro', 'tea', 'wood.plank'),
+    'frostrim': ('bamboo', 'bark.amber', 'bark.bamboo', 'bark.fern', 'bark.oak', 'bark.pine',
+                 'bark.willow', 'bromeliad', 'crystal.nitre', 'crystal.smoky', 'dikeclaw', 'fern',
+                 'floorfern', 'ground.grass', 'ground.moss', 'ground.needles', 'ground.nitre',
+                 'ground.sand', 'ground.sinter', 'ground.therm', 'hangivy', 'hangmoss', 'hemlock',
+                 'juniper', 'moss', 'mulberry', 'oak', 'orchid', 'organic.sinter', 'pistache',
+                 'rock.basalt', 'rock.bolus', 'rock.sandstone', 'rock.sinter', 'rock.tuff',
+                 'saffron', 'silk.cable', 'silk.sheet', 'taro', 'tea', 'vine', 'wood.plank'),
+}
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'arachnoids', own=True),
+    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'arachnoids', own=True, exclude=STATION_EXCLUDE.get(STATION, ())),
     khost.EDITS_JS: khost.edits_js(HERE, 'arachnoids')
 }
 for f in VIRTUAL:

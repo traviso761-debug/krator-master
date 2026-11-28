@@ -1,0 +1,163 @@
+{
+ "build": "swbay-own",
+ "note": "The southwest bay's own-page endemic botanical cards (53-biome-swbay-endemic-species.js, 72-biome-swbay-endemics.js), kept in own/ so biomes/swbay/tex/pack.json stays unchanged for external builds that vendor SWBAY's 14 tree species.",
+ "size": 512,
+ "families": {
+  "beachvine": {
+   "cell": [
+    0.345,
+    0.347,
+    0.655,
+    0.655
+   ],
+   "lib": "card.creeper.beach",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.3,
+    "mean": 0.66
+   }
+  },
+  "bromeliad": {
+   "lib": "card.bromeliad",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.68
+   }
+  },
+  "dripveil": {
+   "cell": [
+    0.366,
+    0.343,
+    0.648,
+    0.659
+   ],
+   "lib": "card.fungus.drip",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.35,
+    "mean": 0.68
+   }
+  },
+  "orchid": {
+   "cell": [
+    0.378,
+    0.339,
+    0.573,
+    0.653
+   ],
+   "lib": "card.orchid.dendrobium",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.72
+   }
+  },
+  "samphire": {
+   "cell": [
+    0.376,
+    0.354,
+    0.614,
+    0.657
+   ],
+   "lib": "card.samphire",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   }
+  },
+  "seagrape": {
+   "cell": [
+    0.347,
+    0.349,
+    0.646,
+    0.659
+   ],
+   "lib": "card.seagrape",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   }
+  },
+  "spiderlily": {
+   "cell": [
+    0.329,
+    0.329,
+    0.671,
+    0.669
+   ],
+   "lib": "card.flower.spiderlily",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.55,
+    "mean": 0.76
+   }
+  },
+  "springgrass": {
+   "cell": [
+    0.362,
+    0.347,
+    0.618,
+    0.653
+   ],
+   "lib": "card.seagrass",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.66
+   }
+  },
+  "staraloe": {
+   "cell": [
+    0.349,
+    0.661,
+    0.671,
+    0.978
+   ],
+   "lib": "card.flower.staraloe",
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "tint": {
+    "keep": 0.5,
+    "mean": 0.72
+   }
+  }
+ }
+}

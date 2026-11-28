@@ -31,7 +31,15 @@ const PAL=TIERS.PAL={
  rock:[0x2e2c2a,0x3a3633,0x46423e,0x34302c],rockGrey:[0x8a867e,0x7a766e,0x96918a,0x6e6a64],   /* the Grey Steps' tuffs and limestones (station 4) */
  pagoda:[0x8a9284,0x7e8878,0x96a090,0x76806e],sageLeaf:[0x8a9476,0x96a082,0x7e8a6c],sageFlower:[0xe8c23a,0xf0cc48,0xdcb432],sageLilac:[0xb894c8,0xa888bc,0xc4a2d2],
  soil:[0x7a5e44,0x86684a,0x6e543e,0x8e7252],soilGrey:[0x76695c,0x6a5e52,0x807466],   /* the terracettes' trampled soil */
-pagodaStem:[0x5a5248,0x4e463e],cushion:[0x6e7a4a,0x7a8452,0x627044,0x8a8a5a],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36]};
+pagodaStem:[0x5a5248,0x4e463e],cushion:[0x6e7a4a,0x7a8452,0x627044,0x8a8a5a],rockRed:[0x5a3c30,0x664436,0x4e362c],far:[0x46602e,0x3e5a2a,0x506a36],
+ cornelLeaf:[0x325228,0x3c5c2e,0x2a4822,0x446634],cornelBark:[0x68504a,0x5c4640,0x745a52],cornelBract:[0xf4f0e4,0xebe4d4,0xf8f4ec],
+ juniperLeaf:[0x385844,0x42644e,0x2f4e3c,0x4a6c54],juniperBark:[0x7e523c,0x6e4632,0x8c5e46],
+ agaveLeaf:[0x5c7a72,0x68867e,0x506e66,0x729088],umbelGold:[0xe6c83c,0xf0d44a,0xd8b832],umbelGreen:[0x5e7c3e,0x6a8846,0x527036],
+ sumacLeaf:[0x4e6c32,0x5c7838,0x8c4228,0xa04a2c],sumacCone:[0x982420,0xa82c26,0x821c1a],
+ fernGreen:[0x467234,0x527e3c,0x3c662c,0x6c5432],tufaCup:[0x84a844,0x92b44e,0x789c3c],houseleek:[0x6e8268,0x82584c,0x5e745a,0x906454],
+ irisLeaf:[0x4c6e42,0x587a4c,0x42623a],irisBloom:[0x6e4498,0x7c50a8,0xdca834],
+ astragalus:[0x7c8870,0x88947c,0x707c66],rheumLeaf:[0x58683a,0x685038,0x4c5e32],rheumBract:[0xf0e8cc,0xe8d8be,0xf4ece0,0xe2c4b8],
+ bistortPink:[0xdca4b4,0xe6b2c0,0xcf94a6]};
 
 // ---------------------------------------------------------------- the plants and their tags
 const HV=(wood,edible,med,note,gather)=>({wood:wood||'none',edible:edible||[],medicinal:!!med,fruit:null,note:note||'',gather:gather||null});
@@ -63,6 +71,31 @@ TIERS.PLANTS={
  pagodabush:PK('Pagoda bush',K('cool','arid','no',['BWk','BSk','Dsc']),['pagoda','pdisc'],HV('none',[],false,'A grey shrub of stacked flat discs, each a season\'s flush. Fodder. 0.5-1.2 m (station 4).','pasture'),{station:4}),
  stackcushion:PK('Stack cushion',K('cold','arid','no',['Dsc','ET','BWk']),['cushion'],HV('fuel (dried)',[],false,'A cushion that grows in terraced mounds, a step a decade. Winter fodder. 0.2-1 m (station 4).','pasture'),{station:4}),
  whorlpine:PK('Whorl pine',K('cool','semiarid','no',['Dsb','Csb','Dfc']),['pinespray'],HV('timber, resin',['pine nut'],false,'A conifer with widely spaced level whorls and bare trunk between: the tiers\' silhouette on the skyline. 10-25 m (station 2).','nut'),{station:2}),
+ /* the staircase botany pass (2026-11-28): twelve tiered natives across the four steps, every one built of whorls, collars, discs or rim-rows */
+ pagodacornel:PK('Pagoda cornel',K('temperate','semiarid..subhumid','both',['Csa','Cfa','Csb','BSh']),['cornelplate','cornelbract'],
+  HV('turnery, loom shuttles, tool hafts; fuel',['drupe (tart red berry, simmered into syrup)'],true,'A slender plum-barked wedding-cake tree of seep margins and moist woodland edges: four to six horizontal branch tables lit above by flat ivory flower-bracts. Hard close-grained wood; astringent bark tea. 6-12 m.','fruit'),{station:1}),
+ stepjuniper:PK('Step-bark juniper',K('temperate..cool','arid..semiarid','no',['BSk','BSh','Csa','Csb','Dsb']),['juniperpad'],
+  HV('rot-proof posts, bow-staves, aromatic chests; fuel',['cone-berry (resinous blue spice for game)'],true,'A wind-planed juniper of riser rims and canyon shoulders whose branches flatten into three to six cloud-pruned green tables up a twisted red-bronze bole. Pitch tar and incense. 4-9 m.','nut'),{station:2}),
+ collaredagave:PK('Collared century-rosette',K('temperate','arid..semiarid','no',['BSh','BSk','Csa']),['agaveblade'],
+  HV('flower-mast poles (light dry rafters)',['heart (pit-roasted sweet crown)','sap (fermented aguamiel)'],false,'A monocarpic succulent of sunny basalt benches: three to four stacked collars of spiny blue-grey blades and, in its final summer, a tall mast bearing horizontal bars of golden bloom. Leaf fibre for cordage and sandals; soap root. 1.2-3.5 m.','fibre'),{station:2}),
+ whorlferula:PK('Wheel-umbel',K('temperate','semiarid','no',['Csa','BSh','BSk','Csb']),['umbelleaf','umbelplate'],
+  HV('dry pith stalks (tinder-boxes, splints)',['young shoot (charred)','seed (bitter-fennel spice)'],true,'A stout hollow stalk of the lake meadows ringed at three to five nodes by flat wheel-spoked plates of sulphur-yellow umbels. Yields pungent gum-resin and spice seed; dry pith holds an ember all day. 1.0-2.0 m.','herb'),{station:1}),
+ terracesumac:PK('Terrace sumac',K('temperate','semiarid..subhumid','no',['Csa','Cfa','BSh','BSk','Csb']),['sumacplate'],
+  HV('fuel; yellow heartwood dye',['berry (sour crimson spice, ground over flatbread)'],true,'A flat-topped shrub of talus aprons and gully toes that spreads in three to five horizontal tables of pinnate leaves, lit in late summer by upright cones of sour crimson berries. Tannin-rich galls and bark for currying leather. 1.2-2.8 m.','dye'),{station:1}),
+ miststepfern:PK('Spray-step fern',K('temperate..warm','subhumid..humid','yes',['Cfa','Csa','Am','Aw','BSh','Csb']),['stepfern'],
+  HV('thatch bedding',['fiddlehead (steamed spring crosiers)'],true,'A shuttlecock fern of waterfall spray and spring-heads that keeps last season\'s russet frond ring beneath two stepped green crowns. Cooling burn poultice. 0.5-1.4 m.','herb'),{station:3}),
+ tufarosette:PK('Rimstone butterwort',K('temperate','subhumid','yes',['Csa','Cfa','BSh','Csb','Dsb']),['rosettecup'],
+  HV('none',[],true,'A sticky chartreuse rosette of the step-moss tufa dams, stacked three crowns high in lime-rimmed cups that trap midges and curdle warm milk into junket. Wound-salve and rennet reagent. 0.12-0.3 m.','reagent'),{station:1}),
+ beddinghouseleek:PK('Bedding-line houseleek',K('temperate..polar','arid..semiarid','no',['Csa','BSh','BSk','Csb','Dsb','Dsc','ET']),['houseleek'],
+  HV('none',['leaf (sour thirst-quencher on climbs)'],true,'Tight bronze-and-sage succulent rosettes that bud concentric stepped rings of daughter offsets along horizontal rock cracks from the Black Step to the Grey Steps. Crushed juice cools sun-scald. 0.1-0.25 m.','herb'),{station:2}),
+ saffroniris:PK('Riser tier-iris',K('temperate','semiarid','no',['Csa','BSh','BSk','Csb']),['irisblade','irisbloom'],
+  HV('none',['stigma (golden saffron spice)'],true,'An equitant sword-leaved iris of sunny riser benches whose scape opens three stepped whorls of royal-violet and saffron-gold falls. Dried rhizome yields violet-scented orris fixative; stigmas dye festival rice. 0.35-0.75 m.','herb'),{station:1}),
+ stepastragalus:PK('Spiny tier-milkvetch',K('cool..cold','arid..semiarid','no',['BWk','BSk','Dsc','Dsb']),['whorlheath'],
+  HV('fuel (resinous spiny crown burns hot in wind)',[],true,'A thorny dome of the Great Tread and dry shoulders built of three to four flat spiny tables. Slit stems weep ribbons of white tragacanth gum used to stiffen felt, bind pigments and glaze leather; winter browse. 0.3-0.75 m.','pasture'),{station:4}),
+ pagodarhubarb:PK('Pagoda bract-rhubarb',K('cold','arid..semiarid','no',['Dsc','ET','Dsb','BSk']),['rheumleaf','rheumbract'],
+  HV('none',['stalk (tart crimson petiole, stewed or dried)'],true,'A thermal pagoda of the Grey Steps\' cold treads: five to eight overlapping cream-and-rose bract hoods stacked over a ring of broad basal leaves to warm the flowers inside against night frost. Tart stalks prevent scurvy; yellow root dyes wool. 0.7-1.5 m.','herb'),{station:4}),
+ treadbistort:PK('Terracette whorl-bistort',K('cool..cold','arid..semiarid','no',['Dsc','ET','BSk','Dsb','Dfc']),['whorlheath','sagewhorl'],
+  HV('none',['seed (nutty three-sided achene, parched)','rhizome (soaked and roasted)'],true,'A hardy knotweed of the Great Tread\'s hollows and terracette toes whose jointed red stems wear three to five spaced cuffs of pale pink bloom. Starchy twisted rootstock and parched seed feed summer camps; tannin astringent. 0.2-0.5 m.','tuber'),{station:4}),
 };
 TIERS.plantOfItem=item=>{for(const k in TIERS.PLANTS)if(TIERS.PLANTS[k].items.indexOf(item)>=0)return TIERS.PLANTS[k];return null;};
 TIERS.FRUIT_KEYS=['palmfruit'];
@@ -74,7 +107,9 @@ TIERS.SPECIES=[
  {key:'steppalm',name:'Step palm',H:[6,14],rb:[.18,.28],crownR:[2.5,3.6],tiers:[3,8],bark:PAL.palmBark,leaf:PAL.palmLeaf},
  {key:'candelabra',name:'Tier candelabra',H:[3,9],rb:[.16,.3],crownR:[1.2,2.4],tiers:[2,5],bark:PAL.cactus,leaf:PAL.cactus},
  {key:'ladderreed',name:'Ladder reed',H:[2,5],rb:[.6,1.1],crownR:[.9,1.5],tiers:[3,7],bark:PAL.reedCane,leaf:PAL.reedLeaf},
- {key:'whorlpine',name:'Whorl pine',H:[10,25],rb:[.22,.45],crownR:[2.4,4.2],tiers:[5,9],bark:PAL.pineBark,leaf:PAL.pineLeaf}];
+ {key:'whorlpine',name:'Whorl pine',H:[10,25],rb:[.22,.45],crownR:[2.4,4.2],tiers:[5,9],bark:PAL.pineBark,leaf:PAL.pineLeaf},
+ {key:'pagodacornel',name:'Pagoda cornel',H:[6,12],rb:[.14,.26],crownR:[2.6,4.4],tiers:[4,6],bark:PAL.cornelBark,leaf:PAL.cornelLeaf},
+ {key:'stepjuniper',name:'Step-bark juniper',H:[4,9],rb:[.16,.32],crownR:[1.8,3.2],tiers:[3,6],bark:PAL.juniperBark,leaf:PAL.juniperLeaf}];
 TIERS.SPECIES.forEach((S,i)=>{S.i=i;S.tags=TIERS.PLANTS[S.key].tags;});
 TIERS.byKey={};TIERS.SPECIES.forEach(S=>TIERS.byKey[S.key]=S);
 TIERS.TREES=[];TIERS.COUNTS=[];
@@ -136,9 +171,12 @@ TIERS.G=G;
 // ---------------------------------------------------------------- materials (the slots are materials.json's families: BIO.libSwap)
 const lf=(tex,key,o)=>BIO.leafMat(tex,key,Object.assign({swayW:'(position.y)',swayA:.05,alphaTest:.4},o||{}));
 const M=TIERS.MAT={
- bark:{oak:BIO.barkMat(TX.barkOak),palm:BIO.barkMat(TX.barkPalm),skirt:BIO.barkMat(TX.skirt),cactus:BIO.barkMat(TX.cactus),pine:BIO.barkMat(TX.barkOak)},
+ bark:{oak:BIO.barkMat(TX.barkOak),palm:BIO.barkMat(TX.barkPalm),skirt:BIO.barkMat(TX.skirt),cactus:BIO.barkMat(TX.cactus),pine:BIO.barkMat(TX.barkOak),cornel:BIO.barkMat(TX.barkOak),juniper:BIO.barkMat(TX.barkOak)},
  oakplate:BIO.leafMat(TX.plate,'oakplate',{aN:true,swayW:'1.0',swayA:.04,backlit:.3}),
  pinespray:BIO.leafMat(TX.plate,'pinespray',{aN:true,swayW:'1.0',swayA:.05,backlit:.2}),   /* the whorl pine's level needle sprays (card.pine) */
+ juniperpad:BIO.leafMat(TX.plate,'juniperpad',{aN:true,swayW:'1.0',swayA:.03,backlit:.2}),
+ cornelplate:lf(TX.blob,'cornelplate',{swayW:'0.0',swayA:.03,alphaTest:.35,backlit:.28}),
+ cornelbract:lf(TX.blob,'cornelbract',{swayW:'0.0',swayA:.03,alphaTest:.35,backlit:.35}),
  palmfan:lf(TX.fan,'palmfan',{swayA:.08,backlit:.3}),
  whorl:lf(TX.strap,'whorl',{swayW:'(position.x+position.z)',swayA:.05,alphaTest:.35}),
  reed:lf(TX.tuft,'reed',{swayA:.1}),
@@ -148,6 +186,15 @@ const M=TIERS.MAT={
  moss:lf(TX.blob,'moss',{swayW:'0.0',swayA:0,alphaTest:.3}),
  lichen:lf(TX.blob,'lichen',{swayW:'0.0',swayA:0,alphaTest:.3}),
  pagoda:lf(TX.blob,'pagoda',{swayW:'0.0',swayA:0,alphaTest:.35}),   /* the disc's leaf top (card.saltbush: the plan's stand-in) */
+ agaveblade:lf(TX.fan,'agaveblade',{swayA:.01,alphaTest:.35,backlit:.15}),
+ umbelleaf:lf(TX.tuft,'umbelleaf',{swayA:.04,alphaTest:.35,backlit:.25}),
+ sumacplate:lf(TX.blob,'sumacplate',{swayW:'0.0',swayA:.03,alphaTest:.35,backlit:.25}),
+ stepfern:lf(TX.fan,'stepfern',{swayA:.05,alphaTest:.35,backlit:.3}),
+ rosettecup:lf(TX.blob,'rosettecup',{swayW:'0.0',swayA:0,alphaTest:.35}),
+ irisblade:lf(TX.tuft,'irisblade',{swayA:.04,alphaTest:.35}),
+ irisbloom:lf(TX.tuft,'irisbloom',{swayA:.04,alphaTest:.35,backlit:.3}),
+ whorlheath:lf(TX.tuft,'whorlheath',{swayA:.02,alphaTest:.35}),
+ rheumleaf:lf(TX.fan,'rheumleaf',{swayA:.02,alphaTest:.35,backlit:.3}),
  cushion:BIO.solidMat(null,0xffffff),   /* the cushion's packed rosettes (surface.cushion) */
  solid:BIO.solidMat(null,0xffffff),
  rock:BIO.solidMat(null)};
@@ -155,15 +202,19 @@ TIERS.LIB=BIO.libSwap('tiers',M);   /* every slot materials.json names takes its
 /* the library's mean brightness of the barks (materials.json tint.mean): a keep-0 bark's colour is divided by it, so the species' colour holds */
 TIERS.LIBMEAN={};
 {const P=n=>(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('tiers',n):null;
- ['bark.oak','bark.palm','bark.skirt','bark.cactus','bark.pine'].forEach(k=>{const L=P(k);if(L&&L.tint&&L.tint.mean>0)TIERS.LIBMEAN[k]=L.tint.mean;});}
+ ['bark.oak','bark.palm','bark.skirt','bark.cactus','bark.pine','bark.cornel','bark.juniper'].forEach(k=>{const L=P(k);if(L&&L.tint&&L.tint.mean>0)TIERS.LIBMEAN[k]=L.tint.mean;});}
 
 [['oak','Shelf oak boles and tiers (bark.tiered owed: bark.smooth stands in)',[2,4]],['palm','Step palm trunks',[2,3]],['skirt','Step palm collar skirts (the dead crowns kept)',[2,2]],
- ['cactus','Tier candelabra stems and arm rings',[2,3]],['pine','Whorl pine boles and whorl branches',[2,4]]].forEach(([k,lab,uv])=>BIO.bucket('bark.'+k,M.bark[k],{label:lab,uvScale:uv}));
-BIO.bucket('far',BIO.barkMat(null),{label:'Far trees (the tiers in silhouette)'});
+ ['cactus','Tier candelabra stems and arm rings',[2,3]],['pine','Whorl pine boles and whorl branches',[2,4]],
+ ['cornel','Pagoda cornel boles and horizontal branch tables',[2,4]],['juniper','Step-bark juniper twisted boles and cloud-pad limbs',[2,4]]].forEach(([k,lab,uv])=>BIO.bucket('bark.'+k,M.bark[k],{label:lab,uvScale:uv}));
+BIO.bucket('far',BIO.barkMat(TX.barkOak),{label:'Far trees (the tiers in silhouette)'});
 
 // ---------------------------------------------------------------- instanced items
 BIO.def('pinespray',BIO.geo.clump(),M.pinespray,{attrs:['aN'],label:'Whorl pine needle sprays (level, on the whorls; card.pine)'});
 BIO.def('oakplate',BIO.geo.clump(),M.oakplate,{attrs:['aN'],label:'Shelf oak tier plates (card.shelfoak owed: card.broadleaf.dry stands in, tinted)'});
+BIO.def('juniperpad',BIO.geo.clump(),M.juniperpad,{attrs:['aN'],label:'Step-bark juniper cloud-pruned scale pads (card.juniper)'});
+BIO.def('cornelplate',G.flat(),M.cornelplate,{label:'Pagoda cornel horizontal leaf tables (card.umbrella.plate)'});
+BIO.def('cornelbract',G.flat(),M.cornelbract,{label:'Pagoda cornel ivory flower-bract tables (card.blossom.cherry)'});
 BIO.def('palmfan',G.fan(),M.palmfan,{label:'Step palm fronds'});
 BIO.def('palmfruit',new T3.IcosahedronGeometry(1,1),M.solid,{label:'Step palm fruit (date-like)'});
 BIO.def('cane',BIO.geo.rod(5),M.solid,{label:'Ladder reed canes'});
@@ -180,6 +231,18 @@ BIO.def('boulder',new T3.IcosahedronGeometry(1,1),M.rock,{label:'Boulders (basal
 BIO.def('stone',new T3.IcosahedronGeometry(1,0),M.rock,{label:'Stones (basalt cobbles)'});
 BIO.def('column',G.column(),M.rock,{label:'Fallen basalt columns'});
 BIO.def('pagoda',G.flat(),M.pagoda,{label:'Pagoda bush discs (the leaf tops; card.saltbush)'});
+BIO.def('agaveblade',G.fan(),M.agaveblade,{label:'Collared century-rosette spiny succulent collars (card.puya)'});
+BIO.def('umbelleaf',G.tuft(),M.umbelleaf,{label:'Wheel-umbel feathery basal leaves (card.crop.umbrella)'});
+BIO.def('umbelplate',G.flat(),M.umbelleaf,{label:'Wheel-umbel stacked golden umbel wheels (card.crop.umbrella)'});
+BIO.def('sumacplate',G.flat(),M.sumacplate,{label:'Terrace sumac horizontal pinnate leaf tables (card.shelfoak)'});
+BIO.def('stepfern',G.fan(),M.stepfern,{label:'Spray-step fern tiered shuttlecock fronds (card.fern)'});
+BIO.def('rosettecup',G.flat(),M.rosettecup,{label:'Rimstone butterwort stacked tufa rosettes (card.scarp.succulents)'});
+BIO.def('houseleek',G.flat(),M.rosettecup,{label:'Bedding-line houseleek concentric rosette steps (card.scarp.succulents)',cliff:true});
+BIO.def('irisblade',G.tuft(),M.irisblade,{label:'Riser tier-iris equitant sword fans (card.sword)'});
+BIO.def('irisbloom',G.tuft(),M.irisbloom,{label:'Riser tier-iris stepped violet-and-gold whorls (card.crop.saffron)'});
+BIO.def('whorlheath',G.tuft(),M.whorlheath,{label:'Spiny tier-milkvetch and whorl-bistort tiered foliage (card.heath.whorl)'});
+BIO.def('rheumleaf',G.fan(),M.rheumleaf,{label:'Pagoda bract-rhubarb basal leaves (card.rheumleaf)'});
+BIO.def('rheumbract',G.flat(),M.rheumleaf,{label:'Pagoda bract-rhubarb stacked thermal bract hoods (card.rheumleaf)'});
 /* a tier sage's whorl: a ring of flowers round the stem (a flattened torus) */
 BIO.def('sagewhorl',new T3.TorusGeometry(.5,.28,3,6).rotateX(Math.PI/2),M.solid,{label:'Tier sage flower whorls (stacked up the stem)'});
 BIO.def('tlip',G.tlip(),M.rock,{label:'Terracettes (the soil steps on the grazed slopes: their lips)'});

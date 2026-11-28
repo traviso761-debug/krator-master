@@ -69,10 +69,14 @@ async def run_one(html_path, out_dir, a):
         if not V.ready:
             print('timed out waiting for the kit to build')
             fails.append('build timeout')
+        try:
+            await pg.wait_for_function("(window._texPending||0)===0", timeout=120000)
+        except Exception:
+            print('textures still decoding after 120 s')
         if sw:
             await pg.evaluate("()=>{if(!window.__origRAF){const _r=window.__origRAF=window.requestAnimationFrame.bind(window);"
-                              "window.__drawNow=()=>{if(window.__frameFn)window.__frameFn(performance.now());};"
-                              "window.requestAnimationFrame=cb=>{window.__frameFn=cb;return setTimeout(()=>_r(cb),1200);};}}")
+                              "window.__drawNow=()=>new Promise(res=>_r(t=>{if(window.__frameFn)window.__frameFn(t);_r(()=>res());}));"
+                              "window.requestAnimationFrame=cb=>{window.__frameFn=cb;return 0;};}}")
             await pg.evaluate("()=>window.__drawNow()")
         try:
             st = await pg.evaluate(STATS_JS)

@@ -7,7 +7,7 @@
     "src/55-biome-ebadlands-trees.js"
    ],
    "EBADLANDS",
-   "*"
+   ["bark.alien", "bark.juniper", "bark.ponderosa", "leaf.needle", "leaf.round", "leaf.scale"]
   ]
  },
  "core": {

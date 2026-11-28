@@ -182,8 +182,30 @@ if miss:
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
 SIDE = None if '--inline-packs' in sys.argv else {}
+STATION_EXCLUDE = {
+    'spring': ('fireweed', 'ground.bleach', 'ground.dolomite', 'ground.glade', 'ground.porphyry',
+               'ground.terrace', 'organic.strangler', 'wood.log'),
+    'shutin': ('alecap', 'fireweed', 'glowmush', 'ground.bleach', 'ground.chert', 'ground.litter',
+               'ground.moss', 'ground.terrace', 'organic.sponge', 'stone.onyx', 'stone.tufa', 'watercress'),
+    'fenestre': ('bark.cypress', 'bark.plane', 'cypress', 'fireweed', 'ground.bleach', 'ground.chert',
+                 'ground.glade', 'ground.porphyry', 'ground.terrace', 'heartleaf', 'moss',
+                 'organic.strangler', 'watercress', 'wood.cypress', 'wood.log'),
+    'glade': ('bark.cypress', 'bark.plane', 'cypress', 'ground.chert', 'ground.dolomite', 'ground.glade',
+              'ground.litter', 'ground.moss', 'heartleaf', 'moss', 'watercress', 'wood.cypress', 'wood.log'),
+    'porphyryrelict': ('alecap', 'bark.cypress', 'bark.plane', 'cypress', 'glowmush', 'ground.bleach',
+                       'ground.chert', 'ground.litter', 'ground.moss', 'ground.terrace', 'heartleaf',
+                       'maidenhair', 'moss', 'stone.onyx', 'stone.tufa', 'watercress', 'wood.cypress',
+                       'wood.log'),
+}
+_st_exc = STATION_EXCLUDE.get(STATION, ())
+_pack_frag = matlib_pack.fragment(HERE, 'springhollows', side=SIDE, own=True, exclude=_st_exc if SIDE is None else ())
+if SIDE is not None and _st_exc:
+    _pack_frag += ('if (typeof KMAT !== "undefined" && KMAT.packs && KMAT.packs.springhollows) {\n'
+                   '  KMAT.packs.springhollows = Object.assign({}, KMAT.packs.springhollows);\n'
+                   '  %s.forEach(function(k){ delete KMAT.packs.springhollows[k]; });\n}\n'
+                   % json.dumps(list(_st_exc)))
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'springhollows', side=SIDE, own=True),
+    '44-host-matlib-pack.js': _pack_frag,
     khost.EDITS_JS: khost.edits_js(HERE, 'springhollows')
 }
 for f in VIRTUAL:

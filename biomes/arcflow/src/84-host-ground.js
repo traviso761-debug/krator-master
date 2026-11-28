@@ -154,6 +154,7 @@ if(USE_KG){
   relief:KG_RELIEF?{bump:0.06,cavity:0.75,mesh:1}:null,
   layers:layers
  });
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 
 let SURF_DRAWN_SRC=null;

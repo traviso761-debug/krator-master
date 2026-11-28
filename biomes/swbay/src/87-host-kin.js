@@ -51,7 +51,6 @@ function growKin(){if(!SWBAY_KIN)return null;const out={trees:{},floor:{},bridge
  const LT=SWBAY.LOD.tree,grow=(K,ref,x,z,salt,extra)=>{const y=terrainH(x,z);if(y<.4)return null;
   reseed(KRAND.hash(KIN_W,Math.round(x),Math.round(z),salt));const T=K.make(x,y,z);if(extra)Object.assign(T,extra);const lv=BIO.lodD(x,z)<700?2:1;
   BIO.owner=[x,z];BIO.range=LT;BIO.minRange=0;K.grow(T,lv);
-  if(ref.startsWith('nwbay.')){BIO.range=1e9;BIO.minRange=LT;K.grow(Object.assign({},T),0);}   /* the nwbay pair's own far blob past the heroes' range */
   BIO.owner=null;BIO.range=null;BIO.minRange=0;
   if(lv===2&&!ref.startsWith('nwbay.'))REGISTER({name:K.name,kind:'tree',label:K.name,x,z,y:T.y0,r:Math.max(2,T.crownR||3),h:T.H});   /* nwbay's builders register their own */
   out.trees[K.key]=(out.trees[K.key]||0)+1;return T;};

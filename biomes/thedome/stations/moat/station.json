@@ -14,7 +14,7 @@
     "swlowlands": [
       ["src/50-biome-swlowlands-species.js", "src/55-biome-swlowlands-trees.js"],
       "SWLOW",
-      ["bk_cork", "bk_furrow", "oakleaf", "veil", "moss", "beard"]
+      ["bk_cork", "bk_furrow", "oakleaf", "veil"]
     ]
   },
   "reserves": ["site:moat-waystation"],

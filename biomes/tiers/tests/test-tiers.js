@@ -84,4 +84,24 @@ T.neg('a candidate on the lake town is caught', c => clear(c), {place: {px: 1272
 ctx.KOUTPOST.clearCandidates();
 T.neg('a candidate with an unknown kind is refused', c => ctx.KOUTPOST.offer('tiers', [c]).errors.length === 0,
   Object.assign({}, OP.candidates[0], {id: 'tiers:test', suits: ['castle']}), Object.assign({}, OP.candidates[0], {id: 'tiers:test2'}));
+
+// ---- the 25 native plants (src/50): every one tiered, tagged inside the region's Koppen classes, and carrying a harvest record
+{
+  const spSrc = fs.readFileSync(path.join(ROOT, 'biomes/tiers/src/50-biome-tiers-species.js'), 'utf8');
+  const dataEnd = spSrc.indexOf('// ---------------------------------------------------------------- procedural textures');
+  const bctx = {console, Math, JSON}; bctx.globalThis = bctx; vm.createContext(bctx);
+  vm.runInContext('var BIO={kit:function(){},fn:{TAU:Math.PI*2,clamp:function(v,a,b){return v<a?a:v>b?b:v;}},host:{THREE:{}}};', bctx);
+  vm.runInContext(spSrc.slice(0, dataEnd) + '\n})();', bctx, {filename: '50-biome-tiers-species.js'});
+  const PL = bctx.TIERS.PLANTS, SP = bctx.TIERS.SPECIES, KP = Object.keys(bctx.TIERS.KOPPEN), BAR = bctx.TIERS.BARREN;
+  const pkeys = Object.keys(PL);
+  T.ok('TIERS.PLANTS defines 25 native tiered species (7 tree-scale + 18 floor)', pkeys.length === 25 && SP.length === 7, 'plants ' + pkeys.length + ', trees ' + SP.length);
+  const allTiered = P => Object.keys(P).every(k => P[k].tags && P[k].tags.tiered === true && P[k].tags.harvest && P[k].tags.harvest.note.length > 10 &&
+    Array.isArray(P[k].tags.koppen) && P[k].tags.koppen.length > 0 && P[k].tags.koppen.every(c => KP.indexOf(c) >= 0 && BAR.indexOf(c) < 0));
+  T.ok('every native species obeys the tiers rule, carries harvest notes, and stays within non-barren Koppen classes', allTiered(PL), pkeys.join(', '));
+  T.neg('an untiered or EF-tagged plant is caught', allTiered,
+    Object.assign({}, PL, {bad: {tags: {tiered: false, koppen: ['EF'], harvest: {note: 'bad'}}}}), PL);
+  const treeTiersOK = A => A.every(s => Array.isArray(s.tiers) && s.tiers.length === 2 && s.tiers[0] >= 2 && s.tiers[1] >= s.tiers[0] && PL[s.key]);
+  T.ok('all 7 tree-scale species declare valid whorl/tier counts and link to TIERS.PLANTS', treeTiersOK(SP), SP.map(s => s.key + ':' + s.tiers.join('-')).join(' '));
+  T.neg('a tree species with fewer than 2 tiers is caught', treeTiersOK, SP.concat([{key: 'shelfoak', tiers: [1, 1]}]), SP);
+}
 T.done();

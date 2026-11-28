@@ -212,6 +212,7 @@
    bMagMt:+c0.mag.toFixed(4),
    bHorizMt:+bHoriz.toFixed(4),
    azimuthRad:+az.toFixed(5),
+   declinationRad:+az.toFixed(5),
    dipRad:+dip.toFixed(5),
    gradB2:+gradB2.toFixed(7),
    inversionSeam01:+seam.toFixed(4)
@@ -445,6 +446,7 @@
 
  var API={
   fieldAt:fieldAt,
+  fluxAt:fieldAt,
   leafAzimuthAt:leafAzimuthAt,
   sandStreamAt:sandStreamAt,
   ferrousPullAt:ferrousPullAt,

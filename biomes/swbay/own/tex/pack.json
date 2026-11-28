@@ -1,0 +1,307 @@
+{
+ "build": "swbay-own",
+ "families": {
+  "beachvine": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.345,
+    0.347,
+    0.655,
+    0.655
+   ],
+   "files": {
+    "map": "beachvine.albedo.webp"
+   },
+   "lib": "card.creeper.beach",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "ce2d5133a98743796aac2ef7bdc519afe05ad71e"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.3,
+    "mean": 0.66,
+    "sourceMean": 0.4547
+   }
+  },
+  "bromeliad": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "files": {
+    "map": "bromeliad.albedo.webp"
+   },
+   "lib": "card.bromeliad",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 1,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "e6f7bea9c0ff3aeae435781c3eca76ec82f7d879"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.45,
+    "mean": 0.68,
+    "sourceMean": 0.413
+   }
+  },
+  "dripveil": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.366,
+    0.343,
+    0.648,
+    0.659
+   ],
+   "files": {
+    "map": "dripveil.albedo.webp"
+   },
+   "lib": "card.fungus.drip",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "25325804cf925db58e50f4d14622d9ce44b125da"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.35,
+    "mean": 0.68,
+    "sourceMean": 0.1619
+   }
+  },
+  "orchid": {
+   "anchor": "none",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.378,
+    0.339,
+    0.573,
+    0.653
+   ],
+   "files": {
+    "map": "orchid.albedo.webp"
+   },
+   "lib": "card.orchid.dendrobium",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "09e8c57aff7c1ad028fb69677b11b2cbd491a91a"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.45,
+    "mean": 0.72,
+    "sourceMean": 0.5345
+   }
+  },
+  "samphire": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.376,
+    0.354,
+    0.614,
+    0.657
+   ],
+   "files": {
+    "map": "samphire.albedo.webp"
+   },
+   "lib": "card.samphire",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "90851eec956069a14d43869490e900b67ca93290"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.25,
+    "mean": 0.66,
+    "sourceMean": 0.5378
+   }
+  },
+  "seagrape": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.347,
+    0.349,
+    0.646,
+    0.659
+   ],
+   "files": {
+    "map": "seagrape.albedo.webp"
+   },
+   "lib": "card.seagrape",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "2c4c89e8ae7d683ff6b311cff94dd99a6a71252c"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.25,
+    "mean": 0.66,
+    "sourceMean": 0.3667
+   }
+  },
+  "spiderlily": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.329,
+    0.329,
+    0.671,
+    0.669
+   ],
+   "files": {
+    "map": "spiderlily.albedo.webp"
+   },
+   "lib": "card.flower.spiderlily",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8735cd52436b5315b9075abe19c00db991df0c46"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.55,
+    "mean": 0.76,
+    "sourceMean": 0.209
+   }
+  },
+  "springgrass": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.362,
+    0.347,
+    0.618,
+    0.653
+   ],
+   "files": {
+    "map": "springgrass.albedo.webp"
+   },
+   "lib": "card.seagrass",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "8152c1edbb697afe3e666e05b0dcd246ca696598"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.25,
+    "mean": 0.66,
+    "sourceMean": 0.4001
+   }
+  },
+  "staraloe": {
+   "anchor": "center",
+   "breakup": null,
+   "card": true,
+   "cell": [
+    0.349,
+    0.661,
+    0.671,
+    0.978
+   ],
+   "files": {
+    "map": "staraloe.albedo.webp"
+   },
+   "lib": "card.flower.staraloe",
+   "metal": 0,
+   "normalScale": 1.0,
+   "plants": 9,
+   "roughLift": 0.0,
+   "scale": [
+    1,
+    1
+   ],
+   "size": 512,
+   "source": {
+    "albedo": "594a9030210e8f65dbc50937c688e46870389203"
+   },
+   "specular": 0.5,
+   "tint": {
+    "contrast": 1.0,
+    "keep": 0.5,
+    "mean": 0.72,
+    "sourceMean": 0.3532
+   }
+  }
+ },
+ "size": 512,
+ "what": "generated by tools/textures/pack.py from materials.json; do not edit"
+}

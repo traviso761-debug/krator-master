@@ -1,13 +1,10 @@
-/* ================================================================= THE DOME — species, library materials & 3D botanical builders ([draw])
-   Registers BIO.kit('thedome') -> THEDOME: 7 signature laccolith/bornhardt species (PLAN.md section 4):
-     1. gnammamoss       — Resurrection Mirror-Mat (hydroperiod-tinted copper-crimson -> emerald velvet around gnamma rims)
-     2. panbonsai        — Gnamma-Island Twisted Pine (1.2-3.8 m ancient wind-sculpted conifer with BIO.flareJoin root-plates)
-     3. cloudgarlandpine — Contour-Riser Cloud Pine (4.5-11.5 m montane conifer ribbons along shellStep01 >= 0.70 risers; 34 impostor)
-     4. crownrosette     — Silver Crown-Chalice (0.65-1.85 m parabolic mirror-silver fog-combing rosette + 2.2 m golden spike)
-     5. moatpitcher      — Ring-Moat Amber Pitcher (0.35-0.95 m honey-gold & ruby hooded tubular pitcher leaves in seepage fens)
-     6. cleftfilmyfern   — Barometric Breath-Fern (0.25-0.85 m translucent jade frond curtains fluttering in radial Kluft exhalations)
-     7. ringlichen       — Bullseye Exfoliation Lichen (concentric saffron-gold, celadon & slate-violet crustose rings)
-   Every tree branch uses BIO.flareJoin and places leaf stems at 0.00 m offset from branch vertices (0 floating stems under kStem 0.16),
+/* ================================================================= THE DOME — 24 native species, library materials & 3D builders ([draw])
+   Registers BIO.kit('thedome') -> THEDOME: 24 native laccolith, vernal-pan, cleft, moat, Ria-amber & Carnelian sky-island species:
+     1..7:   gnammamoss, panbonsai, cloudgarlandpine, crownrosette, moatpitcher, cleftfilmyfern, ringlichen
+     8..13:  moatcedar + 5 KFRONTIER Carnelian clades (carnelian_organpipe, erythra_veil, bladder_tether, agate_window, blood_strangler)
+     14..24: weepingamberlarch, moatpaperbirch, cleftrowan, summitdwarfjuniper, cloudrhododendron, gnammaquillwort,
+             pansundew, cleftghostpipe, crownpasque, staghornclubmoss, bleachfireweed
+   Every tree/shrub branch uses BIO.flareJoin and places leaf stems at 0.00 m offset from branch/ground vertices (0 floating stems under kStem 0.16),
    with B2 radial-and-height crown self-occlusion and 0.72..1.00 trunk base grounding. Also exports make & grow for BIO.kin!
 */
 BIO.kit('thedome');
@@ -29,12 +26,25 @@ var THEDOME={
  const K=(clim,arid,rip,kp,zone,o)=>Object.assign({
   climate:clim,aridity:arid,abyssal:false,riparian:rip,koppen:kp,zone:zone,holy:false,shared:null,alien:false,native:true
  },o||{});
- const HV=(wood,edible,medicinal,notes)=>({wood:wood||'none',edible:edible||[],medicinal:!!medicinal,notes:notes||''});
+ const HV=(wood,edible,medicinal,notes,fruit)=>({
+  wood:wood||'none',edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||'',reagent:fruit==='reagent'?'reagent':'none'
+ });
 
  const PAL=THEDOME.PAL={
   pine:[0x2a543c,0x346246,0x234a34,0x3e6c4e],
   bonsai:[0x325842,0x3c664c,0x2a4c38,0x487054],
   juniper:[0x3a5c44,0x466a4e,0x2f503a],
+  dwarfJuniper:[0x35563e,0x42644a,0x2c4a35],
+  larch:[0xc8962e,0xd8a838,0xa69c36,0xb88626],
+  birch:[0x5e8c42,0x6e9a4c,0x86a648,0x4e7c38],
+  rowan:[0xb8bcb4,0xc8ccc4,0xa8b0a4],
+  rhododendron:[0x849684,0x98a496,0x788a78],
+  quillwort:[0x326a48,0x3e7854,0x285c3e],
+  sundew:[0xefe8e4,0xf8f0ec,0xe4dcd8],
+  ghostpipe:[0xf2eef6,0xe8e2f0,0xf8f4fa],
+  pasque:[0xf4f0f6,0xebe4f0,0xfaf6fc],
+  clubmoss:[0x7e9648,0x8ea654,0x6e863e],
+  fireweed:[0xf4ecf2,0xeee4ec,0xf8f2f6],
   rosette:[0xcad4d8,0xd8e2e6,0xbcc8ce,0xe2eaee],
   spike:[0xe8b838,0xf2c648,0xd8a62c],
   pitcher:[0xc88828,0xa8323e,0xd69a34,0xb83c46],
@@ -62,7 +72,7 @@ var THEDOME={
   {key:'cloudgarlandpine',name:'Contour-Riser Cloud Pine (Pinus coronaria)',
    H:[5.2,11.2],rb:[0.22,0.44],crownR:[2.4,4.8],
    how:'Dense long-needled montane conifer growing strictly in arcuate contour-line ribbons along onion-skin exfoliation step-risers to comb fog-drip.',
-   items:['td_pine_fol','td_juniper_fol','td_veilbeard'],tags:K('temperate..montane','humid','no',['Cfa','Cfb'],'garland')},
+   items:['td_pine_fol','td_veilbeard'],tags:K('temperate..montane','humid','no',['Cfa','Cfb'],'garland')},
   {key:'crownrosette',name:'Silver Crown-Chalice (Argyroxiphium tholiformis)',
    H:[0.75,1.85],rb:[0.18,0.34],crownR:[0.65,1.25],
    how:'Parabolic summit rosette of mirror-silvery pubescent leaves focusing diffuse cap-cloud light onto its apical bud beneath a 2.2 m golden flower spike.',
@@ -78,7 +88,75 @@ var THEDOME={
   {key:'ringlichen',name:'Bullseye Exfoliation Lichen (Parmelia concentrica)',
    H:[0.01,0.05],rb:[0.2,0.8],crownR:[0.4,1.8],
    how:'Concentric radial rings of saffron-gold, celadon, and slate-violet crustose thalli dating granite exfoliation spall-scars to the decade.',
-   items:['td_ringlichen'],tags:K('subtropic..montane','subhumid..humid','no',['Cfa','Cfb'],'apron_bench')}
+   items:['td_ringlichen'],tags:K('subtropic..montane','subhumid..humid','no',['Cfa','Cfb'],'apron_bench')},
+  {key:'moatcedar',name:'Ring-Moat Twisted Red-Cedar (Juniperus annularis)',
+   H:[6.0,11.8],rb:[0.22,0.46],crownR:[2.2,4.4],
+   how:'Aromatic fluted red-cedar colonizing upturned ring-dike hogback benches and dry peat-collar margins around the outer dome moat.',
+   items:['td_juniper_fol'],tags:K('subtropic..temperate','subhumid..humid','no',['Cfa'],'ringmoat')},
+  {key:'carnelian_organpipe',name:'Sanguine Flute-Colony (Sanguinitubus organum)',
+   H:[3.0,10.5],rb:[0.18,0.42],crownR:[0.9,2.2],
+   how:'Clustered crimson-and-ivory fluted biogenic silica-chitin chimneys exhaling warm spore plumes across the east-flank Carnelian sky-island.',
+   items:['td_kf_flute_collar','td_kf_bleach_skel'],tags:K('subtropic..montane','subhumid','no',['Cfa','Cfb'],'carnelian_sky_island',{alien:true,biosphere:'carnelian'})},
+  {key:'erythra_veil',name:'Pleated Carnelian Lattice-Fan (Erythraveila fenestrata)',
+   H:[1.4,3.8],rb:[0.10,0.22],crownR:[0.8,2.0],
+   how:'Perforated scarlet Erythrophyll solar sails oriented perpendicular to high Rayleigh-scatter sky tracks on sun-baked porphyry shells.',
+   items:['td_kf_veil_lobe'],tags:K('subtropic..montane','subhumid','no',['Cfa','Cfb'],'carnelian_sky_island',{alien:true,biosphere:'carnelian'})},
+  {key:'bladder_tether',name:'Pneumatophore Ruby Tether-Vine (Pneumatocystis rubra)',
+   H:[2.2,8.0],rb:[0.09,0.18],crownR:[0.8,1.9],
+   how:'Buoyant translucent ruby gas-bladders suspended under 0.75 g and 1.19 atm upslope air on sinewy rust-black chitinous tendons.',
+   items:['td_kf_ruby_bladder'],tags:K('subtropic..temperate','subhumid','no',['Cfa'],'carnelian_sky_island',{alien:true,biosphere:'carnelian'})},
+  {key:'agate_window',name:'Chalcedony Window-Dome (Agatocactus vitreus)',
+   H:[0.20,0.95],rb:[0.16,0.48],crownR:[0.35,0.95],
+   how:'Armoured crimson-plum Erythrophyll cushion rosette capped by clear biogenic chalcedony skylight lenses on high Rayleigh-scatter dome slabs.',
+   items:['td_kf_agate_rosette','td_kf_agate_lens'],tags:K('subtropic..montane','arid..subhumid','no',['Cfa','Cfb'],'carnelian_sky_island',{alien:true,biosphere:'carnelian'})},
+  {key:'blood_strangler',name:'Reactive Chitin-Web (Myceliophaga sanguinea)',
+   H:[0.45,3.0],rb:[0.14,0.36],crownR:[0.6,1.6],
+   how:'Arterial-red calcifying chitinous mycelium armouring Kill-Line defoliant seams and sun-exposed exfoliation crevices against invading Earth roots.',
+   items:['td_kf_strangler_rib'],tags:K('subtropic..montane','subhumid','no',['Cfa','Cfb'],'carnelian_sky_island',{alien:true,biosphere:'carnelian'})},
+  {key:'weepingamberlarch',name:'Weeping Ria-Amber Larch (Larix succinifera)',
+   H:[5.4,10.0],rb:[0.20,0.40],crownR:[2.2,4.2],
+   how:'Pendulous golden-needled conifer along moat collar benches and sheltered Kluft risers exuding prized amber resin.',
+   items:['td_larch_fol'],tags:K('temperate','humid','no',['Cfa','Cfb'],'ringmoat')},
+  {key:'moatpaperbirch',name:'Moat Lichen-Paper Birch (Betula papyrifera var. riana)',
+   H:[4.8,8.8],rb:[0.16,0.32],crownR:[2.0,3.8],
+   how:'Chalk-white lichen-banded pioneer birch colonizing outer ring-moat peat margins and neutralized soil below the east-flank Kill-Line.',
+   items:['td_birch_fol'],tags:K('temperate','humid','yes',['Cfa'],'ringmoat')},
+  {key:'cleftrowan',name:'Kluft Starberry Rowan (Sorbus chasmatica)',
+   H:[2.1,3.7],rb:[0.10,0.22],crownR:[1.3,2.5],
+   how:'Tough cherry-barked grus treelet bearing scarlet starberry clusters along radial Kluft fissure rims and ring-dike ledges.',
+   items:['td_rowan_fol'],tags:K('temperate..montane','humid','no',['Cfa','Cfb'],'kluft_cleft')},
+  {key:'summitdwarfjuniper',name:'Krummholz Prostrate Juniper (Juniperus prostrata)',
+   H:[0.65,1.85],rb:[0.10,0.24],crownR:[0.9,2.1],
+   how:'Wind-sheared prostrate conifer shrub hugging fractured crown and Kluft exfoliation rims well below 2.0 m.',
+   items:['td_juniper_fol'],tags:K('montane','subhumid..humid','no',['Cfa','Cfb'],'crown')},
+  {key:'cloudrhododendron',name:'Crown-Mist Whorl Rhododendron (Rhododendron nebulosum)',
+   H:[0.85,2.20],rb:[0.09,0.20],crownR:[0.85,1.85],
+   how:'Leathery whorl-leaved evergreen shrub thriving in misty acid feldspar-grus pockets along the Crown-Veil and radial Kluft shoulders.',
+   items:['td_rhodo_fol'],tags:K('montane','humid','no',['Cfa','Cfb'],'crown')},
+  {key:'gnammaquillwort',name:'Vernal Mirror-Quillwort (Isoetes speculorum)',
+   H:[0.12,0.36],rb:[0.04,0.09],crownR:[0.18,0.42],
+   how:'Amphibious rosetted lycophyte forming submerged-to-emergent needle rings inside seasonal gnamma solution-pan sky-mirrors.',
+   items:['td_quillwort'],tags:K('subtropic..montane','humid','yes',['Cfa','Cfb'],'gnammapan')},
+  {key:'pansundew',name:'Great Gnamma-Rim Sundew (Drosera pelta-magna)',
+   H:[0.08,0.26],rb:[0.04,0.08],crownR:[0.14,0.34],
+   how:'Ruby-tentacled carnivorous rosette glistening along nutrient-starved gnamma rims and golden sphagnum moat hummocks.',
+   items:['td_sundew'],tags:K('subtropic..montane','humid','yes',['Cfa','Cfb'],'gnammapan')},
+  {key:'cleftghostpipe',name:'Smoky-Kluft Ghost-Pipe (Monotropa pneumatica)',
+   H:[0.14,0.34],rb:[0.03,0.07],crownR:[0.12,0.28],
+   how:'Porcelain-white chlorophyll-free myco-heterotroph emerging in deep shaded Kluft recesses, A-tent soffits, and cedar litter.',
+   items:['td_ghostpipe'],tags:K('temperate','humid','no',['Cfa','Cfb'],'kluft_cleft')},
+  {key:'crownpasque',name:'Apex Frost-Bell Pasqueflower (Pulsatilla coronata)',
+   H:[0.12,0.32],rb:[0.04,0.09],crownR:[0.16,0.36],
+   how:'Silky silver-violet bell flower opening in frost-heaved feldspar-grus cushions across the Cfb lenticular summit crown.',
+   items:['td_pasque'],tags:K('montane','subhumid..humid','no',['Cfb'],'crown')},
+  {key:'staghornclubmoss',name:'Singing-Slab Staghorn Clubmoss (Lycopodium lithophonicum)',
+   H:[0.10,0.30],rb:[0.05,0.12],crownR:[0.22,0.52],
+   how:'Forking golden-green lycophyte creeping along cloud-wet exfoliation step-notches and mossy moat boulders.',
+   items:['td_clubmoss'],tags:K('temperate..montane','humid','no',['Cfa','Cfb'],'garland')},
+  {key:'bleachfireweed',name:'Kill-Line Vanguard Fireweed (Chamaenerion calciphilum)',
+   H:[0.48,1.28],rb:[0.04,0.09],crownR:[0.24,0.54],
+   how:'Tall magenta-spiked pioneer herb spearheading Earth recolonization along the downslope vanguard edge of the east-flank Kill-Line and moat clearings.',
+   items:['td_fireweed'],tags:K('temperate','subhumid..humid','no',['Cfa','Cfb'],'apron_bench')}
  ];
  SPECIES.forEach((S,i)=>{S.i=i;});
 
@@ -89,7 +167,24 @@ var THEDOME={
   crownrosette:HV('fibre',[],true,'Silvery leaf-wool spun into warm, mist-repellent cloaks by dome watchers; soothing throat balm.'),
   moatpitcher:HV('none',[],true,'Digestive pitcher nectar fermented into a sharp tonic; ruby hoods yield amber-rose linen dye.'),
   cleftfilmyfern:HV('none',[],true,'Delicate cooling poultice leaf gathered sparingly by crystal prospectors.'),
-  ringlichen:HV('none',[],false,'Boiled with alum for fast saffron-gold and violet-ochre liturgical dyes.')
+  ringlichen:HV('none',[],false,'Boiled with alum for fast saffron-gold and violet-ochre liturgical dyes.'),
+  moatcedar:HV('timber, resin',['juniper cone'],true,'Rot-proof aromatic collar heartwood used for Upper Ria waystation posts, moth-repellent chests, and smudge-incense.','juniper-berry'),
+  carnelian_organpipe:HV('none',[],false,'Calcified crimson silica-chitin flute tubes sawn by Pioneer Sap-Breakers into acid-proof condensers; spore ash used as ceramic flux.','reagent'),
+  erythra_veil:HV('none',[],false,'Fenestrated carnelian Erythrophyll lattice ground into lightfast vermilion-crimson mineral lake pigment and optical filter plates.','reagent'),
+  bladder_tether:HV('cordage',[],false,'Sinewy rust-black chitinous tether tendons cured into high-tensile hoist cordage; ruby bladders varnished for survey floats.','reagent'),
+  agate_window:HV('none',[],true,'Biogenic clear chalcedony skylight caps polished by Upper Ria technicians into magnifier lenses; sub-lens Erythrophyll gel salves windburn.','reagent'),
+  blood_strangler:HV('fibre',[],false,'Calcifying arterial-red mycelial cables boiled with potash by Sap-Breakers for waterproof dielectric coil-varnish and sealant.','reagent'),
+  weepingamberlarch:HV('timber, resin',[],true,'Exudes golden ria-amber resin prized by the Court of the Amber Seal for seal-lacquer, dielectric coil-varnish, and wound balsam.','reagent'),
+  moatpaperbirch:HV('timber, bark',['birch sap'],true,'Waterproof lichen-silvered bark peeled in scroll sheets and tar-distilled for leather currying; spring sap fermented into Upper Ria tonic.'),
+  cleftrowan:HV('woodcraft',['rowan starberry'],true,'Tough cherry-red wood carved into survey instrument tripods and tool hafts; tart scarlet berries cooked into antiscorbutic jelly.','starberry'),
+  summitdwarfjuniper:HV('fuel, resin',['mountain juniper cone'],true,'Resinous twisted krummholz burned sparingly as aromatic smudge-fuel and distilled into warming joint liniment.','juniper-berry'),
+  cloudrhododendron:HV('firewood',[],true,'Leathery fog-combing leaves steeped in measured doses for mountain heart-tonic; dense root-burls turned into Upper Ria tea bowls.'),
+  gnammaquillwort:HV('none',['quillwort corm'],false,'Starchy submerged corms roasted after vernal storms; CAM-photosynthetic needle fronds oxygenate perched gnamma sky-mirror pools.'),
+  pansundew:HV('none',[],true,'Mucilaginous ruby dew-glands harvested for soothing antispasmodic cough tincture and bright gold-crimson silk dye.'),
+  cleftghostpipe:HV('none',[],true,'Chlorophyll-free porcelain stalks tinctured by Ria physicians as a potent nerve-calming analgesic for quarry and delve injuries.'),
+  crownpasque:HV('none',[],true,'Silky plumed seed-heads mark frost-heave grus pockets; dried violet petals yield soft lilac ink and mild sedative tea.'),
+  staghornclubmoss:HV('none',[],true,'Golden flash-spores dusted across hollow A-tent lithophone slabs by Ria acousticians to trace Chladni resonance nodes, and used as waterproof powder.','reagent'),
+  bleachfireweed:HV('fibre',['fireweed shoot','fireweed honey-tea'],true,'Pioneer herb colonizing neutralized Bleach-Scars; fermented leaves yield Ria willow-herb tea, stem bast twists into cordage, and down stuffs quilts.')
  };
  SPECIES.forEach(S=>{S.tags.harvest=THEDOME.HARVEST[S.key];});
 
@@ -102,11 +197,14 @@ var THEDOME={
   byKey.moatpitcher.tags.trap=KTRAPS.make({
    kind:'pitfall',mouth:0.08,preyMax:'small',cycle:{wait:10,shut:0.0,digest:64,reopen:0},lure:'nectar',danger:0.02
   });
+  byKey.pansundew.tags.trap=KTRAPS.make({
+   kind:'flypaper',mouth:0.04,preyMax:'insect',cycle:{wait:600,shut:12,digest:3600,reopen:180},lure:'dew',danger:0.0
+  });
  }
 
  THEDOME.GATHER={
-  pasture:{ringmoat:0.42,apron_bench:0.12,gnammapan:0.18,garland:0.28,crown:0.16,kluft_cleft:0.04},
-  fish:{ringmoat:0.08,apron_bench:0.0,gnammapan:0.0,garland:0.0,crown:0.0,kluft_cleft:0.0}
+  pasture:{ringmoat:0.42,apron_bench:0.12,gnammapan:0.18,garland:0.28,crown:0.16,kluft_cleft:0.04,carnelian_sky_island:0.02},
+  fish:{ringmoat:0.08,apron_bench:0.0,gnammapan:0.0,garland:0.0,crown:0.0,kluft_cleft:0.0,carnelian_sky_island:0.0}
  };
  THEDOME.gatherOf=function(Z){
   let p=0,f=0;
@@ -167,6 +265,9 @@ var THEDOME={
   'bark.cedar':BIO.barkMat(grey(128,12)),
   'bark.oak':BIO.barkMat(grey(128,13)),
   'wood.gnarled':BIO.barkMat(grey(128,14)),
+  'bark.amber':BIO.barkMat(grey(128,15)),
+  'bark.birch':BIO.barkMat(grey(128,16)),
+  'bark.cherry':BIO.barkMat(grey(128,17)),
 
   rockShell:pbrMat('rock.shell',21,{roughness:0.52,metalness:0.04,color:0xd8c8c0}),
   rockPorphyry:pbrMat('rock.porphyry',22,{roughness:0.44,metalness:0.06,color:0xb87e80}),
@@ -178,9 +279,21 @@ var THEDOME={
   organicLichen:pbrMat('organic.lichen',28,{roughness:0.78,metalness:0.02}),
   worksBronze:pbrMat('works.bronze',29,{roughness:0.24,metalness:0.82,vertexColors:false,color:0xd8ae62}),
   worksStone:pbrMat('works.stone',30,{roughness:0.58,metalness:0.04,vertexColors:false,color:0xd6c4bc}),
+  carnelianChitin:pbrMat('carnelian.chitin',31,{roughness:0.42,metalness:0.04,color:0xd8382c}),
+  carnelianRuby:pbrMat('carnelian.ruby',32,{roughness:0.32,metalness:0.04,color:0xe84228}),
 
   pine:BIO.leafMat(cardFallback(41),'td-pine',{aN:true,swayW:'0.52',swayA:0.045}),
   juniper:BIO.leafMat(cardFallback(42),'td-juniper',{aN:true,swayW:'0.46',swayA:0.04}),
+  larch:BIO.leafMat(cardFallback(51),'td-larch',{aN:true,swayW:'0.58',swayA:0.065}),
+  birch:BIO.leafMat(cardFallback(52),'td-birch',{aN:true,swayW:'0.62',swayA:0.07}),
+  rowan:BIO.leafMat(cardFallback(53),'td-rowan',{aN:true,swayW:'0.48',swayA:0.05}),
+  rhododendron:BIO.leafMat(cardFallback(54),'td-rhodo',{aN:true,swayW:'0.36',swayA:0.035}),
+  quillwort:BIO.leafMat(cardFallback(55),'td-quillwort',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  sundew:BIO.leafMat(cardFallback(56),'td-sundew',{aN:false,swayW:'(position.y)',swayA:0.02}),
+  ghostpipe:BIO.leafMat(cardFallback(57),'td-ghostpipe',{aN:false,swayW:'(position.y)',swayA:0.025}),
+  pasque:BIO.leafMat(cardFallback(58),'td-pasque',{aN:false,swayW:'(position.y)',swayA:0.05}),
+  clubmoss:BIO.leafMat(cardFallback(59),'td-clubmoss',{aN:false,swayW:'(position.y)',swayA:0.03}),
+  fireweed:BIO.leafMat(cardFallback(60),'td-fireweed',{aN:false,swayW:'(position.y)',swayA:0.075}),
   rosette:BIO.leafMat(cardFallback(43),'td-rosette',{aN:false,swayW:'(position.y)',swayA:0.03}),
   spike:BIO.leafMat(cardFallback(44),'td-spike',{aN:false,swayW:'(position.y)',swayA:0.05}),
   sedge:BIO.leafMat(cardFallback(45),'td-sedge',{aN:false,swayW:'(position.y)',swayA:0.08}),
@@ -215,8 +328,11 @@ var THEDOME={
  };
 
  BIO.bucket('td_pine',M['bark.pine'],{label:'Cloud-garland & pan-bonsai ponderosa trunks'});
- BIO.bucket('td_cedar',M['bark.cedar'],{label:'Moat & riser twisted red-cedar trunks'});
- BIO.bucket('td_gnarled',M['wood.gnarled'],{label:'Ancient wind-sculpted bonsai root-plates'});
+ BIO.bucket('td_cedar',M['bark.cedar'],{label:'Moat red-cedar & prostrate summit juniper trunks'});
+ BIO.bucket('td_gnarled',M['wood.gnarled'],{label:'Ancient wind-sculpted bonsai & cloud-rhododendron stems'});
+ BIO.bucket('td_amber',M['bark.amber'],{label:'Weeping Ria-amber larch resinous trunks'});
+ BIO.bucket('td_birch',M['bark.birch'],{label:'Moat & vanguard lichen-paper birch trunks'});
+ BIO.bucket('td_cherry',M['bark.cherry'],{label:'Kluft starberry rowan cherry-red stems'});
 
  function makeRockGeo(seed,flatY){
   const g=new T3.IcosahedronGeometry(1,1),p=g.attributes.position,J={},c=[];
@@ -236,7 +352,17 @@ var THEDOME={
 
  /* Single-line BIO.def cutout items (100% check_cells.py & leaf-stems compliant) */
  BIO.def('td_pine_fol',BIO.geo.clump(),M.pine,{attrs:['aN'],label:'Contour-riser cloud pine & bonsai sprays'});
- BIO.def('td_juniper_fol',BIO.geo.clump(),M.juniper,{attrs:['aN'],label:'Ring-moat & collar red-cedar sprays'});
+ BIO.def('td_juniper_fol',BIO.geo.clump(),M.juniper,{attrs:['aN'],label:'Ring-moat red-cedar & summit dwarf-juniper sprays'});
+ BIO.def('td_larch_fol',BIO.geo.clump(),M.larch,{attrs:['aN'],label:'Weeping Ria-amber larch golden sprays'});
+ BIO.def('td_birch_fol',BIO.geo.clump(),M.birch,{attrs:['aN'],label:'Moat lichen-paper birch sprays'});
+ BIO.def('td_rowan_fol',BIO.geo.clump(),M.rowan,{attrs:['aN'],label:'Kluft starberry rowan berry-sprays'});
+ BIO.def('td_rhodo_fol',BIO.geo.clump(),M.rhododendron,{attrs:['aN'],label:'Crown-mist whorl rhododendron sprays'});
+ BIO.def('td_quillwort',BIO.geo.clump(),M.quillwort,{label:'Vernal mirror-quillwort pan rosette'});
+ BIO.def('td_sundew',BIO.geo.clump(),M.sundew,{label:'Great gnamma-rim sundew ruby rosette'});
+ BIO.def('td_ghostpipe',BIO.geo.clump(),M.ghostpipe,{label:'Smoky-Kluft porcelain ghost-pipe'});
+ BIO.def('td_pasque',BIO.geo.clump(),M.pasque,{label:'Apex frost-bell pasqueflower tuft'});
+ BIO.def('td_clubmoss',BIO.geo.clump(),M.clubmoss,{label:'Singing-slab staghorn clubmoss'});
+ BIO.def('td_fireweed',BIO.geo.clump(),M.fireweed,{label:'Kill-Line vanguard magenta fireweed'});
  BIO.def('td_rosette_leaf',BIO.geo.clump(),M.rosette,{label:'Silver crown-chalice fog-combing rosette'});
  BIO.def('td_rosette_spike',BIO.geo.clump(),M.spike,{onLeaf:true,label:'Silver crown-chalice golden flower spike'});
  BIO.def('td_sedge',BIO.geo.clump(),M.sedge,{label:'Pan-rim & moat tussock sedge'});
@@ -254,28 +380,31 @@ var THEDOME={
  BIO.def('td_dike_block',makeRockGeo(61202,0.82),M.rockPorphyry,{label:'Purple-rose porphyry ring-dike block'});
  BIO.def('td_smoky_prism',BIO.fung.stalk({r0:0.15,r1:0.03,bend:0.0,ribs:6,ribA:0.16,seg:6,rings:3}),M.crystalSmoky,{label:'Hydrothermal smoky-quartz prism'});
 
+ /* Genuine ground.mycelium.crimson (chitin) & organic.funnel.trumpet (ruby) Carnelian clades */
  if(typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.defCladeItems==='function'){
-  const eryMat=pbrMat('organic.pitcher',31,{roughness:0.38,metalness:0.04,color:0xe2422c});
-  M.erythroCarnelian=eryMat;
-  BIO.bucket('td_chitin',eryMat,{label:'Carnelian sky-island silica-chitin spires'});
+  BIO.bucket('td_chitin',M.carnelianChitin,{label:'Carnelian sky-island crimson silica-chitin spires & tendons'});
   BIO.bucket('td_skel',M.rockPegmatite,{label:'Bleach-hardpan petrified chitin skeletons'});
-  KFRONTIER.defCladeItems(BIO,{chitin:eryMat,ruby:eryMat,chalcedony:M.rockPegmatite,bleach:M.rockPegmatite},'td_kf');
+  KFRONTIER.defCladeItems(BIO,{chitin:M.carnelianChitin,ruby:M.carnelianRuby,chalcedony:M.crystalDruse,bleach:M.rockPegmatite},'td_kf');
  }
 
  const TREE_CFG={
   cloudgarlandpine:{bucket:'td_pine',fol:'td_pine_fol',pal:PAL.pine,barkCol:0x785644,H:[5.5,11.0],rK:0.028,tiers:4,droop:0.06,flatCrown:true,beard:true},
   panbonsai:{bucket:'td_gnarled',fol:'td_pine_fol',pal:PAL.bonsai,barkCol:0x7e7268,H:[1.5,3.5],rK:0.052,tiers:3,droop:0.04,bonsai:true,flatCrown:true},
-  moatcedar:{bucket:'td_cedar',fol:'td_juniper_fol',pal:PAL.juniper,barkCol:0x7a5442,H:[6.0,11.8],rK:0.030,tiers:4,droop:0.08,flatCrown:false}
+  moatcedar:{bucket:'td_cedar',fol:'td_juniper_fol',pal:PAL.juniper,barkCol:0x7a5442,H:[6.0,11.8],rK:0.030,tiers:4,droop:0.08,flatCrown:false},
+  weepingamberlarch:{bucket:'td_amber',fol:'td_larch_fol',pal:PAL.larch,barkCol:0xb87838,H:[5.4,10.0],rK:0.028,tiers:4,droop:0.22,flatCrown:false,beard:true},
+  moatpaperbirch:{bucket:'td_birch',fol:'td_birch_fol',pal:PAL.birch,barkCol:0xdad6ce,H:[4.8,8.8],rK:0.024,tiers:4,droop:0.12,flatCrown:false},
+  cleftrowan:{bucket:'td_cherry',fol:'td_rowan_fol',pal:PAL.rowan,barkCol:0x6e3a36,H:[2.1,3.7],rK:0.036,tiers:3,droop:0.08,bonsai:true,flatCrown:false},
+  summitdwarfjuniper:{bucket:'td_cedar',fol:'td_juniper_fol',pal:PAL.dwarfJuniper,barkCol:0x6e5242,H:[0.65,1.80],rK:0.068,tiers:2,droop:0.02,bonsai:true,flatCrown:true}
  };
 
- /* Procedural tree & bonsai builder: BIO.flareJoin limbs + 0.00 m stem-to-branch socket + B2 crown & base AO */
+ /* Procedural tree, bonsai & krummholz builder: BIO.flareJoin limbs + 0.00 m stem-to-branch socket + B2 crown & base AO */
  THEDOME.growTree=function(kind,x,y,z,seed,scale,opt){
   const cfg=TREE_CFG[kind];
   if(!cfg)return{tris:0,H:0,r0:0};
   opt=opt||{};
   const sc=scale==null?1:scale;
   const H0=lerp(cfg.H[0],cfg.H[1],H(seed,1,0,0x301))*sc;
-  const r0=Math.max(0.09,H0*cfg.rK*(0.88+0.26*H(seed,2,0,0x301)));
+  const r0=Math.max(0.06,H0*cfg.rK*(0.88+0.26*H(seed,2,0,0x301)));
   const leanX=(opt.windLeanX==null?0:opt.windLeanX)+(cfg.bonsai?0.22:0.04)*(H(seed,3,0,0x301)-0.5);
   const leanZ=(opt.windLeanZ==null?0:opt.windLeanZ)+(cfg.bonsai?0.22:0.04)*(H(seed,4,0,0x301)-0.5);
   let tris=0,clumps=0;
@@ -283,30 +412,30 @@ var THEDOME={
   const ownPrev=BIO.owner;
   BIO.owner=[x,z];
   try{
-   const nSeg=cfg.bonsai?6:5,trunk=[];
+   const nSeg=cfg.bonsai?5:5,trunk=[];
    for(let i=0;i<=nSeg;i++){
     const t=i/nSeg;
-    const twist=cfg.bonsai?0.16*H0*Math.sin(t*4.6+seed*0.9):0.02*H0*Math.sin(t*3.2+seed*0.7);
+    const twist=cfg.bonsai?0.15*H0*Math.sin(t*4.6+seed*0.9):0.02*H0*Math.sin(t*3.2+seed*0.7);
     const tx=x+leanX*H0*t*t+twist*Math.cos(seed);
     const tz=z+leanZ*H0*t*t+twist*Math.sin(seed);
-    const ty=y-0.45+(H0+0.45)*t;
-    const flare=1+(cfg.bonsai?0.85:0.36)*Math.pow(Math.max(0,1-t/0.22),2);
-    const rad=Math.max(0.04,r0*(1-0.78*Math.pow(t,0.86))*flare);
+    const ty=y-0.38+(H0+0.38)*t;
+    const flare=1+(cfg.bonsai?0.80:0.36)*Math.pow(Math.max(0,1-t/0.22),2);
+    const rad=Math.max(0.035,r0*(1-0.78*Math.pow(t,0.86))*flare);
     trunk.push({x:tx,y:ty,z:tz,r:rad});
    }
    /* B2 base grounding tint on lower trunk */
    const bkCol=C(cfg.barkCol).multiplyScalar(0.92);
-   tris+=BIO.tube(cfg.bucket,trunk,bkCol.getHex(),{seg:r0>0.28?6:5});
+   tris+=BIO.tube(cfg.bucket,trunk,bkCol.getHex(),{seg:r0>0.26?6:5});
 
    /* Contorted BIO.flareJoin root-plates clasping granite exfoliation lips */
-   const nRoots=cfg.bonsai?4:3;
+   const nRoots=cfg.bonsai?3:3;
    for(let k=0;k<nRoots;k++){
     const az=(k/nRoots)*TAU+0.42*H(seed,10+k,1,0x302);
-    const rSpan=r0*(cfg.bonsai?(3.2+1.6*H(seed,10+k,2,0x302)):(2.1+0.9*H(seed,10+k,2,0x302)));
+    const rSpan=r0*(cfg.bonsai?(3.0+1.4*H(seed,10+k,2,0x302)):(2.1+0.9*H(seed,10+k,2,0x302)));
     const rootPts=BIO.flareJoin([
-     {x:x+Math.cos(az)*r0*0.45,y:y+r0*1.35,z:z+Math.sin(az)*r0*0.45,r:r0*0.46},
-     {x:x+Math.cos(az)*rSpan*0.62,y:y+r0*0.24,z:z+Math.sin(az)*rSpan*0.62,r:r0*0.28},
-     {x:x+Math.cos(az)*rSpan,y:y-0.48,z:z+Math.sin(az)*rSpan,r:r0*0.14}
+     {x:x+Math.cos(az)*r0*0.45,y:y+r0*1.25,z:z+Math.sin(az)*r0*0.45,r:r0*0.46},
+     {x:x+Math.cos(az)*rSpan*0.62,y:y+r0*0.20,z:z+Math.sin(az)*rSpan*0.62,r:r0*0.28},
+     {x:x+Math.cos(az)*rSpan,y:y-0.42,z:z+Math.sin(az)*rSpan,r:r0*0.14}
     ],{parentR:r0,k:1.55,sink:0.55,len:1.6});
     tris+=BIO.tube(cfg.bucket,rootPts,C(cfg.barkCol).multiplyScalar(0.80).getHex(),{seg:4});
    }
@@ -315,39 +444,37 @@ var THEDOME={
    const nTiers=cfg.tiers;
    for(let ti=0;ti<nTiers;ti++){
     const tf=(ti+0.5)/nTiers;
-    const baseT=cfg.bonsai?(0.36+0.56*tf):(0.44+0.50*tf);
-    const nBr=cfg.bonsai?3:3;
+    const baseT=cfg.bonsai?(0.34+0.56*tf):(0.44+0.50*tf);
+    const nBr=3;
     for(let b=0;b<nBr;b++){
      const az=(b/nBr)*TAU+ti*1.22+0.38*H(seed,30+ti*4+b,1,0x304);
-     const reach=H0*(cfg.bonsai?(0.38+0.14*(1-tf)):(0.20+0.16*Math.sin(tf*Math.PI*0.88)));
+     const reach=H0*(cfg.bonsai?(0.40+0.14*(1-tf)):(0.20+0.16*Math.sin(tf*Math.PI*0.88)));
      const uIdx=Math.min(nSeg,Math.max(1,Math.round(baseT*nSeg)));
      const tp=trunk[uIdx];
      const bx0=tp.x,by0=tp.y,bz0=tp.z;
-     const pR=Math.max(0.06,tp.r);
+     const pR=Math.max(0.05,tp.r);
      const lift=cfg.flatCrown?0.05:0.16;
      const ex=bx0+Math.cos(az)*reach,ez=bz0+Math.sin(az)*reach,ey=by0+reach*(lift-cfg.droop*0.5);
      const mx=lerp(bx0,ex,0.52),my=lerp(by0,ey,0.56)+reach*0.05,mz=lerp(bz0,ez,0.52);
      const brPts=BIO.flareJoin([
-      {x:bx0,y:by0,z:bz0,r:Math.max(0.04,pR*0.52)},
-      {x:mx,y:my,z:mz,r:Math.max(0.035,pR*0.32)},
-      {x:ex,y:ey,z:ez,r:Math.max(0.028,pR*0.18)}
+      {x:bx0,y:by0,z:bz0,r:Math.max(0.035,pR*0.52)},
+      {x:mx,y:my,z:mz,r:Math.max(0.03,pR*0.32)},
+      {x:ex,y:ey,z:ez,r:Math.max(0.024,pR*0.18)}
      ],{parentR:pR,k:1.6,sink:0.6,len:1.8});
      tris+=BIO.tube(cfg.bucket,brPts,cfg.barkCol,{seg:4});
 
-     /* B2 under-crown self-occlusion: lower/inner tiers darker (0.66), upper/outer sunlit canopy bright (1.00) */
+     /* B2 under-crown self-occlusion: lower/inner tiers darker, upper/outer sunlit canopy bright */
      const crownOccOuter=lerp(0.72,1.00,tf);
      const crownOccInner=lerp(0.62,0.90,tf);
      const fCol=C(cfg.pal[Math.floor(H(seed,60+ti*5+b,2,0x305)*cfg.pal.length)%cfg.pal.length]).multiplyScalar(crownOccOuter);
      const padW=reach*(cfg.bonsai?1.12:1.02),padH=padW*(cfg.flatCrown?0.46:0.68);
-     /* Socket directly on [ex,ey,ez] and [mx,my,mz] -> 0.00 m gap to bark tube! */
      BIO.put(cfg.fol,[ex,ey,ez],qEuler(0.05*(H(seed,ti,b,0x306)-0.5),az,0),[padW,padH,padW],fCol);
      clumps++;
-     if(reach>1.4){
+     if(reach>1.2){
       const fCol2=C(cfg.pal[Math.floor(H(seed,70+ti*5+b,3,0x305)*cfg.pal.length)%cfg.pal.length]).multiplyScalar(crownOccInner);
       BIO.put(cfg.fol,[mx,my,mz],qEuler(0,az+1.0,0),[padW*0.76,padH*0.78,padW*0.76],fCol2);
       clumps++;
      }
-     /* Mist-combing veilbeard drapes anchored directly to [mx,my,mz] branch node on Crown-Veil pines */
      if(cfg.beard&&opt.misty&&ti<=1&&b===0&&H(seed,80+ti,b,0x308)<0.55){
       BIO.put('td_veilbeard',[mx,my,mz],qEuler(0,az,0),[0.42,0.85+0.45*H(seed,85+ti,b,0x308),0.42],C(0xdce6dc));
      }
@@ -362,6 +489,34 @@ var THEDOME={
    BIO.owner=ownPrev;
   }
   return{tris:tris,H:H0,r0:r0,crownR:H0*0.36};
+ };
+
+ /* Misty acid-grus Whorl Rhododendron shrub builder (<= 2.2 m, shares td_gnarled stems + 0.00 m socketed td_rhodo_fol) */
+ THEDOME.growRhododendron=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const H0=lerp(0.85,2.05,H(seed,1,0,0x421))*sc;
+  let tris=0;
+  const ownPrev=BIO.owner;
+  BIO.owner=[x,z];
+  try{
+   const nSt=3;
+   for(let k=0;k<nSt;k++){
+    const az=(k/nSt)*TAU+0.55*H(seed,5+k,1,0x422);
+    const sp=H0*(0.38+0.18*H(seed,5+k,2,0x422));
+    const ex=x+Math.cos(az)*sp,ez=z+Math.sin(az)*sp,ey=y+H0*(0.78+0.20*H(seed,5+k,3,0x422));
+    const mx=lerp(x,ex,0.5),my=lerp(y,ey,0.54),mz=lerp(z,ez,0.5);
+    tris+=BIO.tube('td_gnarled',[
+     {x:x,y:y-0.24,z:z,r:0.055*sc},
+     {x:mx,y:my,z:mz,r:0.036*sc},
+     {x:ex,y:ey,z:ez,r:0.022*sc}
+    ],0x6c5e52,{seg:4});
+    const rCol=C(PAL.rhododendron[k%PAL.rhododendron.length]);
+    BIO.put('td_rhodo_fol',[ex,ey,ez],qEuler(0.08,az,0),[H0*0.64,H0*0.56,H0*0.64],rCol);
+   }
+  }finally{
+   BIO.owner=ownPrev;
+  }
+  return{tris:tris,H:H0};
  };
 
  /* Silver Crown-Chalice parabolic rosette + flower stalk builder (0 floating cards) */
@@ -384,7 +539,7 @@ var THEDOME={
   }
  };
 
- /* Register octahedral impostor for >= 7 m cloudgarlandpine & moatcedar (34-core-impostor.js) */
+ /* Register octahedral impostor ONLY for dominant >= 7 m cloudgarlandpine & moatcedar (avoids impostor proliferation) */
  if(typeof BIO.impostor==='function'){
   ['cloudgarlandpine','moatcedar'].forEach((tk,idx)=>{
    try{
@@ -395,7 +550,7 @@ var THEDOME={
   });
  }
 
- /* BIO.kin source contract (make + grow) so neighbor kits and openworld/ can borrow cloudgarlandpine & panbonsai */
+ /* BIO.kin source contract (make + grow) so neighbor kits and openworld/ can borrow dome species */
  THEDOME.make=function(sp,x,y,z){
   const S=SPECIES[sp]||SPECIES[2];
   const s=KRAND.hash(6199,Math.round(x*2),Math.round(z*2),sp);
@@ -409,12 +564,15 @@ var THEDOME={
  };
  THEDOME.grow=function(T,lv){
   const S=SPECIES[T.sp]||SPECIES[2];
-  if(S.key==='cloudgarlandpine'||S.key==='panbonsai'){
-   if(lv===0&&S.key==='cloudgarlandpine'&&BIO.defs['td_imp_cloudgarlandpine']){
-    BIO.put('td_imp_cloudgarlandpine',[T.x,T.y0,T.z],qEuler(0,(T.seed%628)*0.01,0),[T.crownR*2,T.H,T.crownR*2],C(0xffffff));
+  if(TREE_CFG[S.key]){
+   if(lv===0&&BIO.defs['td_imp_'+S.key]){
+    BIO.put('td_imp_'+S.key,[T.x,T.y0,T.z],qEuler(0,(T.seed%628)*0.01,0),[T.crownR*2,T.H,T.crownR*2],C(0xffffff));
     return{far:1};
    }
    return THEDOME.growTree(S.key,T.x,T.y0,T.z,T.seed,1.0,{misty:false});
+  }
+  if(S.key==='cloudrhododendron'){
+   return THEDOME.growRhododendron(T.x,T.y0,T.z,T.seed,1.0);
   }
   if(S.key==='crownrosette'){
    THEDOME.growRosette(T.x,T.y0,T.z,T.seed,1.0,true);

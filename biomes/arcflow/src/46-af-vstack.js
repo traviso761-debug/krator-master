@@ -59,6 +59,7 @@ const AF_VSTACK=(function(){
   bx.drawImage(mask,0,0,w,h);
   bx.globalCompositeOperation='source-over';
 
+  bleed.src=img.currentSrc||img.src||'';
   dilatedSeen.set(img,bleed);
   stats.dilatedCards++;
   return bleed;

@@ -179,8 +179,36 @@ if miss:
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
 SIDE = None if '--inline-packs' in sys.argv else {}
+STATION_EXCLUDE = {
+    'klint': ('ancient.ceramic', 'bark.willow', 'ground.bleach', 'ground.cumulate', 'ground.limed',
+              'ground.peat', 'ground.serpentinite', 'ground.travertine', 'mineral.bogore', 'reed',
+              'stone.tufa', 'willow', 'wood.log'),
+    'koski': ('ancient.ceramic', 'ground.bleach', 'ground.kukersite', 'ground.limed', 'ground.moss',
+              'ground.peat', 'ground.travertine', 'reed', 'rock.basalt', 'stone.tufa', 'wood.log'),
+    'seep': ('alder', 'ancient.ceramic', 'bark.alder', 'bark.linden', 'bark.rowan', 'bark.willow',
+             'cottongrass', 'cranberry', 'ground.bleach', 'ground.cumulate', 'ground.kukersite',
+             'ground.limed', 'ground.litter', 'ground.peat', 'hepatica', 'linden', 'mineral.amber',
+             'mineral.bogore', 'moss', 'reed', 'rock.basalt', 'rowan', 'sedge', 'sundew', 'sweetgale',
+             'willow', 'wood.log'),
+    'neva': ('ancient.ceramic', 'bark.juniper', 'bark.linden', 'bark.rowan', 'clover', 'fern',
+             'fireweed', 'ground.bleach', 'ground.cumulate', 'ground.kukersite', 'ground.limed',
+             'ground.litter', 'ground.travertine', 'hepatica', 'juniper', 'linden', 'rock.basalt',
+             'rowan', 'stone.tufa', 'woad', 'wood.log'),
+    'auger': ('alder', 'bark.alder', 'bark.linden', 'bark.rowan', 'bark.spruce', 'bark.willow',
+              'cottongrass', 'cranberry', 'fern', 'ground.cumulate', 'ground.kukersite', 'ground.litter',
+              'ground.moss', 'ground.peat', 'ground.travertine', 'hepatica', 'linden', 'mineral.amber',
+              'mineral.bogore', 'moss', 'reed', 'rowan', 'sedge', 'spruce', 'sundew', 'sweetgale',
+              'willow', 'wood.log'),
+}
+_st_exc = STATION_EXCLUDE.get(STATION, ())
+_pack_frag = matlib_pack.fragment(HERE, 'arcflow', side=SIDE, own=True, exclude=_st_exc if SIDE is None else ())
+if SIDE is not None and _st_exc:
+    _pack_frag += ('if (typeof KMAT !== "undefined" && KMAT.packs && KMAT.packs.arcflow) {\n'
+                   '  KMAT.packs.arcflow = Object.assign({}, KMAT.packs.arcflow);\n'
+                   '  %s.forEach(function(k){ delete KMAT.packs.arcflow[k]; });\n}\n'
+                   % json.dumps(list(_st_exc)))
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'arcflow', side=SIDE, own=True),
+    '44-host-matlib-pack.js': _pack_frag,
     khost.EDITS_JS: khost.edits_js(HERE, 'arcflow')
 }
 for f in VIRTUAL:

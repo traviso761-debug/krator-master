@@ -137,6 +137,7 @@ if(USE_KG){
   KGROUND.layer('arachnoids','ground.snow',{w:'vGL.w',amt:0.92,gain:1.0,tint:'vec3(1.0)',name:'leeward rime & snow patches'})
  ];
  KGROUND.hook(MAT_GROUND,{key:'arachnoids-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:0.06,cavity:0.75,mesh:1}:null,layers:layers});
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 
 let DRAWN_SRC=null;

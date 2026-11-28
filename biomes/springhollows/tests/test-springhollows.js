@@ -1,4 +1,4 @@
-/* Node unit tests for biomes/springhollows (HOLLOW_PHYS, HOLLOW_SITES, CROPS, FAUNA, KHAZ & KKARST/KSPELEO) on tools/ktest.js. */
+/* Node unit tests for biomes/springhollows (HOLLOW_PHYS, HOLLOW_SITES, 25-species roster & placement, CROPS, FAUNA, KHAZ & KKARST/KSPELEO) on tools/ktest.js. */
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -12,6 +12,7 @@ function loadInGlobal(relPath) {
 }
 
 loadInGlobal('core/rand/08-core-rand.js');
+loadInGlobal('core/space/20-core-space.js');
 loadInGlobal('core/frontier/18-core-frontier.js');
 loadInGlobal('core/tags/50-core-tags.js');
 loadInGlobal('core/tags/52-core-tags-vocab.js');
@@ -79,7 +80,6 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
     { dikeDistM: 8.0, spiderSeepShare01: 0.56, depthBelowTableM: 52.0, gKrator: 7.4 });
   if (surfaceRock.speleoPreset !== 'NONE') throw new Error('expected NONE speleoPreset on surface');
 
-  // Verify KCAVERN + KSPELEO.CALCITE + KCAVERN.floorFn in pure [G data] Node
   const cav = globalThis.KCAVERN.create({ ground: () => 0, cell: 1.0, chunk: 16, seed: 7403 });
   cav.hall({ id: 'test-fenestre-hall', c: [0, -26, 0], rx: 28, rz: 24, h: 22 });
   cav.opening({ id: 'test-fenestre-mouth', c: [0, 0], r: 8, rim: 5, kind: 'well' });
@@ -142,13 +142,14 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
     { works: [] },
     { works: ['dark-beds'] });
 
-  T.ok('all 6 Springhollows fauna species register valid 24h schedules across stations',
+  T.ok('all 6 Springhollows fauna species register valid 24h schedules across all 5 stations',
     SH_FAUNA.SPECIES.length === 6 &&
     SH_FAUNA.stateAt('alabastercraw', 3.0) === 'FORAGE_SUMP' &&
     SH_FAUNA.stateAt('fenestregnat', 21.0) === 'SWARM_GLOW' &&
     SH_FAUNA.stateAt('porphyrylizard', 9.0) === 'BASK_DIKE' &&
     SH_FAUNA.forStation('spring').length >= 3 &&
-    SH_FAUNA.forStation('glade').length >= 3);
+    SH_FAUNA.forStation('glade').length >= 3 &&
+    SH_FAUNA.forStation('porphyryrelict').length >= 3);
 
   const hazKeys = ['shutin', 'fenestre', 'sump', 'crystal'];
   const builtHaz = hazKeys.map(k => globalThis.KHAZ.make(PHYS.hazardSpec(k)));
@@ -159,17 +160,304 @@ const SH_FAUNA = require('../src/24-springhollows-fauna.js');
     { kind: 'nonexistent-rapid', danger: 0.5 },
     PHYS.hazardSpec('shutin'));
 
-  // Verify KMAT_M1 M2 roughness variance AA math
   const rBase = 0.14;
   const rAA = globalThis.KMAT_M1.roughnessWithVariance(rBase, 3.0, [0.002, 0.008, 0.022, 0.055, 0.095, 0.14, 0.18, 0.22]);
   T.ok('KMAT_M1 M2 roughnessWithVariance widens grazing/far crystal and wet-porphyry roughness cleanly',
     rAA > rBase && rAA < 0.65 && globalThis.KMAT_M1.GLSL_COMMON.indexOf('km1RoughAA') >= 0);
-  // Verify Station 5 (porphyryrelict) Carnelian porphyry knob vs dolomite hollow partition
+
   const prKnob = PHYS.porphyryRelictQuiltAt(12, 8, 28.0, SITES.porphyryrelict);
   const prHollow = PHYS.porphyryRelictQuiltAt(-90, 20, 4.5, SITES.porphyryrelict);
   T.ok('Station 5 (porphyryrelict) crowns high purple-red porphyry knob in Carnelian clades while keeping dolomite hollows Earthlike',
     prKnob.inDike === true && prKnob.biosphere === 'carnelian' && prKnob.redDominance01 > 0.70 &&
     prHollow.inDike === false && prHollow.biosphere === 'earth');
+}
+
+// 7. Ria Dynasty culture ('ria', zero 'xanadu') & materials.json library fidelity
+{
+  const vocabCultures = globalThis.KTAGS.VOCAB.cultures;
+  const riaReserves = ['spring', 'shutin', 'fenestre', 'porphyryrelict'].map(k => SITES[k].reserves[0]);
+  const physSrc = fs.readFileSync(path.join(__dirname, '..', 'src', '15-springhollows-phys.js'), 'utf8');
+  const worksSrc = fs.readFileSync(path.join(__dirname, '..', 'src', '86-host-works.js'), 'utf8');
+  const matJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'materials.json'), 'utf8'));
+  const fams = matJson.families || {};
+  const groundKeys = Object.keys(fams).filter(k => k.indexOf('ground.') === 0);
+
+  T.ok('High-Ria reserves & stelae use KTAGS vocab culture = ria (Sikwingi-Khaloyi) with zero leftover xanadu strings',
+    vocabCultures.indexOf('ria') >= 0 &&
+    riaReserves.every(r => r && r.culture === 'ria') &&
+    SITES.glade.reserves[0].culture === 'ancient' &&
+    physSrc.indexOf('xanadu') === -1 &&
+    worksSrc.indexOf('xanadu') === -1 &&
+    worksSrc.indexOf("culture:'ria'") >= 0);
+
+  const wantLibs = {
+    pine: 'card.pine.b',
+    saffron: 'card.crop.saffron',
+    glowmush: 'card.mushroom.glow',
+    alecap: 'card.mushroom.alecap',
+    'bark.amber': 'bark.amber',
+    samara: 'card.samara.maple',
+    'bark.mossy': 'bark.mossy',
+    broadleaf: 'card.broadleaf',
+    'bark.plane': 'bark.plane',
+    heartleaf: 'card.heartleaf',
+    spicebush: 'card.orchard.broad',
+    watercress: 'card.wingreed',
+    maidenhair: 'card.fan.lace',
+    zincviolet: 'card.cushion.anemone',
+    wildtea: 'card.crop.tea',
+    fireweed: 'card.fireweed'
+  };
+  const allLibsMatch = Object.keys(wantLibs).every(k => fams[k] && fams[k].lib === wantLibs[k]);
+  T.ok('materials.json binds genuine packed library sets for all 16 new/fixed bark & foliage slots without adding KGROUND layers',
+    allLibsMatch && groundKeys.length === 8);
+}
+
+// 8. 25-Species Roster, HV Harvest Tags & Multi-Station Placement Invariants (spring, shutin, fenestre, glade, porphyryrelict)
+{
+  const TAU = Math.PI * 2;
+  const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+
+  class MockColor {
+    constructor(h) { this.hex = h == null ? 0xffffff : h; }
+    offsetHSL() { return this; }
+    setHex(h) { this.hex = h; return this; }
+  }
+  class MockGeo {
+    constructor() {
+      this.attributes = { position: { count: 3, getX: () => 0, getY: () => 0, getZ: () => 0, setXYZ: () => {} } };
+      this.userData = {};
+    }
+    setAttribute() {}
+    computeVertexNormals() {}
+  }
+  const mockTHREE = {
+    Color: MockColor,
+    DoubleSide: 2,
+    IcosahedronGeometry: MockGeo,
+    Float32BufferAttribute: function () {},
+    MeshStandardMaterial: function (o) { Object.assign(this, o || {}); this.userData = {}; }
+  };
+
+  let rngSeed = 1;
+  const reseed = s => { rngSeed = (s >>> 0) || 1; };
+  const rng = () => { rngSeed = (Math.imul(rngSeed, 1664525) + 1013904223) >>> 0; return rngSeed / 4294967296; };
+  const rr = (a, b) => a + (b - a) * rng();
+
+  const buckets = {}, defs = {};
+  const mockBIO = {
+    cur: null,
+    owner: null,
+    host: { THREE: mockTHREE, terrainH: () => 10, waterH: () => -1e9 },
+    fn: { TAU, clamp, lerp, smooth, reseed, rng, rr, qEuler: () => [0, 0, 0, 1] },
+    kit: () => {},
+    kitEnd: () => {},
+    canvasTex: () => ({ repeat: { set: () => {} } }),
+    alphaTex: () => ({ repeat: { set: () => {} } }),
+    barkMat: () => ({ userData: {} }),
+    leafMat: (_t, key, o) => ({ key, opts: o, userData: {} }),
+    libSwap: () => ({}),
+    bucket: (k, mat, o) => { buckets[k] = { mat, o }; },
+    def: (k, geo, mat, o) => {
+      if (defs[k]) throw new Error('duplicate BIO.def: ' + k);
+      defs[k] = { geo, mat, o, count: 0 };
+    },
+    geo: { clump: () => new MockGeo(), frond: () => new MockGeo(), mat: () => new MockGeo() },
+    fung: { stalk: () => new MockGeo(), pod: () => new MockGeo(), crust: () => new MockGeo(), cap: () => new MockGeo() },
+    flareJoin: pts => pts,
+    tube: () => 12,
+    put: k => {
+      if (!defs[k]) throw new Error('BIO.put unknown item: ' + k);
+      defs[k].count++;
+    },
+    lodD: (x, z) => Math.hypot(x, z),
+    impostorSet: () => ({ slots: 9 }),
+    impostor: k => ({ key: k }),
+    impostorItem: k => { defs[k] = { count: 0 }; },
+    impostorPut: k => { defs[k].count++; }
+  };
+
+  const sandbox = {
+    console, Math, Object, Array, Number, String, Boolean, Error,
+    KRAND: globalThis.KRAND,
+    KSPACE: globalThis.KSPACE,
+    KFRONTIER: Object.assign({}, globalThis.KFRONTIER),
+    HOLLOW_PHYS: PHYS,
+    HOLLOW_SITES: SITES,
+    SPRINGHOLLOWS_CROPS: SH_CROPS,
+    SPRINGHOLLOWS_FAUNA: SH_FAUNA,
+    BIO: mockBIO,
+    INIT_DUSK: false
+  };
+  sandbox.window = sandbox;
+  sandbox.globalThis = sandbox;
+  vm.createContext(sandbox);
+
+  for (const rel of [
+    'core/frontier/52-core-frontier-draw.js',
+    'biomes/springhollows/src/50-springhollows-species.js',
+    'biomes/springhollows/src/60-springhollows-place.js',
+    'biomes/springhollows/src/70-springhollows.js'
+  ]) {
+    vm.runInContext(fs.readFileSync(path.join(ROOT, rel), 'utf8'), sandbox, { filename: rel });
+  }
+
+  const SH = sandbox.SPRINGHOLLOWS;
+  const EXPECTED_25 = [
+    'springcypress', 'chinkapinoak', 'porphyrypine', 'redbudkarst',
+    'tufabryum', 'calaminefern', 'springsponge', 'stranglervine',
+    'whorlolive', 'karstsaffron', 'fenestreglowmush', 'karstalecap',
+    'carnelian_organpipe', 'erythra_veil', 'agate_window', 'blood_strangler',
+    'weepingamberstorax', 'dolomitehornbeam', 'springtupelo', 'fenestrespicebush',
+    'artesianwatercress', 'travertinemaidenhair', 'zincviolet', 'karstwildtea', 'bleachfireweed'
+  ];
+
+  const gotKeys = SH.SPECIES.map(s => s.key);
+  const allHaveHV = SH.SPECIES.every(s => s.tags && s.tags.harvest && typeof s.tags.harvest.wood === 'string' && s.tags.harvest.notes.length > 8);
+  const pineUsesOwnCard = defs.sh_pine_fol && defs.sh_pine_fol.mat === SH.M.pine && SH.M.pine !== SH.M.cypress;
+  const saffronUsesOwnCard = defs.sh_saffron_tuft && defs.sh_saffron_tuft.mat === SH.M.saffron && SH.M.saffron !== SH.M.gladegrass;
+
+  T.ok('SPRINGHOLLOWS.SPECIES registers all 25 native/karst/Carnelian species with valid HV tags and dedicated pine & saffron cards',
+    SH.SPECIES.length === 25 &&
+    EXPECTED_25.every(k => gotKeys.indexOf(k) >= 0) &&
+    allHaveHV &&
+    pineUsesOwnCard &&
+    saffronUsesOwnCard);
+
+  // Representative station terrain & water models matching 45-host-stage.js
+  function stationEnv(skey) {
+    const site = SITES[skey];
+    const terrainH = (x, z) => {
+      const dk = PHYS.porphyryDikeAt(x, z, site);
+      if (skey === 'spring') {
+        if (x < -88) return 28.0;
+        const dBoil = Math.hypot((x + 36) / 54, z / 27);
+        if (dBoil < 0.95) return -4.2;
+        const u = clamp((x - 16) / 430, 0, 1);
+        const zm = 18 * Math.sin(u * 4.6);
+        const dz = Math.abs(z - (x > 16 ? zm : 0));
+        const wy = 0.04 - 2.85 * u;
+        if (dz < 14) return wy - 0.85;
+        if (dz < 22) return wy + 0.35;
+        return wy + 2.5 + 0.08 * dz + (dk.inDike ? 6.0 : 0);
+      }
+      if (skey === 'shutin') {
+        const zR = 6 * Math.sin(x * 0.012);
+        const dz = Math.abs(z - zR);
+        const halfC = dk.inDike ? 9.2 : 42.0;
+        const wy = x < -66 ? 6.25 : (x <= 76 ? 3.2 : 0.20);
+        if (dz < halfC - 2) return wy - 1.5;
+        if (dz < halfC + 4) return wy + 0.8;
+        return wy + 6.0 + (dk.inDike ? 21.0 * smooth(halfC, 65, dz) : 12.0 * smooth(halfC, 120, dz));
+      }
+      if (skey === 'fenestre') {
+        return 8.5 + (dk.inDike ? 11.0 : 0) + 4.0 * smooth(20, 180, Math.hypot(x, z));
+      }
+      if (skey === 'porphyryrelict') {
+        const dTarn = Math.hypot(x + 88, z + 24);
+        if (dTarn < 11) return 1.25;
+        if (dTarn < 17) return 2.05;
+        const knob = dk.inDike ? 26.5 * smooth(148, 18, Math.hypot((x - 12) * 0.82, (z - 8) * 0.95)) : 0;
+        return 5.2 + knob;
+      }
+      // glade
+      const knob = dk.inDike ? 16.5 * smooth(250, 50, Math.hypot(x - 68, z + 42)) : 0;
+      return 8.5 + knob;
+    };
+    const waterH = (x, z) => {
+      if (skey === 'spring') {
+        if (Math.hypot((x + 36) / 54, z / 27) < 1.05) return 0.14;
+        if (x >= 12 && x <= 450) {
+          const u = clamp((x - 16) / 430, 0, 1);
+          if (Math.abs(z - 18 * Math.sin(u * 4.6)) < 20.0) return 0.04 - 2.85 * u;
+        }
+        return -1e9;
+      }
+      if (skey === 'shutin') {
+        const dk = PHYS.porphyryDikeAt(x, z, site);
+        const halfW = dk.inDike ? 9.5 : 43.0;
+        if (Math.abs(z - 6 * Math.sin(x * 0.012)) > halfW) return -1e9;
+        return x < -66 ? 6.25 : (x <= 76 ? 3.2 : 0.20);
+      }
+      if (skey === 'porphyryrelict') {
+        return Math.hypot(x + 88, z + 24) < 16.5 ? 1.85 : -1e9;
+      }
+      return -1e9;
+    };
+    return { terrainH, waterH };
+  }
+
+  const totalBySpecies = {};
+  EXPECTED_25.forEach(k => { totalBySpecies[k] = 0; });
+  const stationPlaced = {};
+
+  const UPLAND_TREES = new Set([
+    'chinkapinoak', 'porphyrypine', 'redbudkarst', 'whorlolive',
+    'weepingamberstorax', 'dolomitehornbeam', 'springtupelo', 'fenestrespicebush', 'karstwildtea'
+  ]);
+  const CALCIPHILE_TREES = new Set([
+    'chinkapinoak', 'dolomitehornbeam', 'weepingamberstorax', 'redbudkarst', 'whorlolive', 'karstwildtea', 'fenestrespicebush'
+  ]);
+
+  let badKeys = 0, badPines = 0, badBleachTrees = 0, badTufa = 0, badWaterTrees = 0;
+
+  for (const skey of ['spring', 'shutin', 'fenestre', 'glade', 'porphyryrelict']) {
+    const env = stationEnv(skey);
+    mockBIO.host.terrainH = env.terrainH;
+    mockBIO.host.waterH = env.waterH;
+    SH.build({
+      station: skey,
+      quality: 1,
+      R: 580,
+      seed: 7417,
+      terrainH: env.terrainH,
+      waterH: env.waterH,
+      space: globalThis.KSPACE.create({ cell: 12 })
+    });
+    const placed = SH.PLACED.slice();
+    stationPlaced[skey] = placed;
+
+    for (const r of placed) {
+      const spKey = r[0], px = r[1], py = r[2], pz = r[3], meta = r[6] || {};
+      if (!SH.byKey[spKey]) badKeys++;
+      totalBySpecies[spKey] = (totalBySpecies[spKey] || 0) + 1;
+
+      if (spKey === 'porphyrypine') {
+        if (!PHYS.porphyryDikeAt(px, pz, SITES[skey]).inDike || meta.inDike !== true) badPines++;
+      }
+      if (CALCIPHILE_TREES.has(spKey)) {
+        if (PHYS.ecocideScarAt(px, pz, SITES[skey]).inBleachBelt || meta.inBleachBelt === true) badBleachTrees++;
+      }
+      if (spKey === 'tufabryum') {
+        if (!(meta.skyOpenness01 >= 0.04 && meta.skyOpenness01 <= 0.42)) badTufa++;
+      }
+      if (UPLAND_TREES.has(spKey)) {
+        const wy = env.waterH(px, pz);
+        if (wy > -1e5 && py <= wy + 0.42) badWaterTrees++;
+      }
+    }
+  }
+
+  const unplaced = EXPECTED_25.filter(k => !(totalBySpecies[k] > 0));
+  T.ok('all 25 species place across the 5 stations using their genuine species keys (' + EXPECTED_25.map(k => k + ':' + totalBySpecies[k]).join(', ') + ')',
+    unplaced.length === 0 && badKeys === 0);
+
+  T.ok('ecological invariants hold 100% across all 5 stations (porphyrypine inDike, calciphiles outside bleach core, tufabryum 0.04..0.42, upland trees > wy + 0.42 m)',
+    badPines === 0 && badBleachTrees === 0 && badTufa === 0 && badWaterTrees === 0);
+
+  const countOn = (skey, key) => stationPlaced[skey].filter(r => r[0] === key).length;
+  const carnKeys = ['carnelian_organpipe', 'erythra_veil', 'agate_window', 'blood_strangler'];
+
+  T.ok('25% Red Carnelian crazy-quilt crowns porphyryrelict in all 4 clades, places relicts on shutin & glade porphyry knobs, and contests glade Bleach-Scar with blood_strangler & bleachfireweed',
+    carnKeys.every(k => countOn('porphyryrelict', k) > 0) &&
+    countOn('shutin', 'agate_window') > 0 &&
+    (countOn('shutin', 'carnelian_organpipe') + countOn('shutin', 'erythra_veil')) > 0 &&
+    countOn('glade', 'agate_window') > 0 &&
+    countOn('glade', 'blood_strangler') > 0 &&
+    countOn('glade', 'bleachfireweed') > 0 &&
+    countOn('glade', 'stranglervine') > 0);
 }
 
 T.done();

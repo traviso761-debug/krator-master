@@ -35,6 +35,7 @@ var SPIDER_SITES=(function(){
    outflowM3s:380.0,
    shoreDistBaseM:45.0,
    seepProximity01:0.72,
+   carnelianStacks:true,
    strata:{recipe:'secondary-ejecta',range:[-85,220],lateral:'carbonate-shelf',dir:[0.82,-0.57],d0:-120,d1:95,tongue:18},
    stacks:[
     {id:'sp-stack-n',x:-28,z:-76,r:34,top:26.5,rock:'ejecta'},
@@ -221,6 +222,8 @@ var SPIDER_SITES=(function(){
    outflowM3s:0.0,
    shoreDistBaseM:3600.0,
    seepProximity01:0.0,
+   carnelianEjecta:true,
+   baselineRed01:0.30,
    strata:{recipe:'secondary-ejecta',range:[-160,180]},
    stacks:[],
    curtainSpans:[],
@@ -248,6 +251,17 @@ var SPIDER_SITES=(function(){
    shoreDistBaseM:38.0,
    seepProximity01:0.88,
    carnelianWalls:true,
+   bleachSwath:{
+    id:'haugel-bleach-seam',
+    x0:88.0,
+    z0:118.0,
+    dx:0.86,
+    dz:0.51,
+    halfWidthM:16.0,
+    vanguardWidthM:14.0,
+    lengthM:260.0,
+    mode:'swath'
+   },
    strata:{recipe:'secondary-ejecta',range:[-25,220],lateral:'carbonate-shelf',dir:[-0.85,0.52],d0:-85,d1:120,tongue:16},
    stacks:[
     {id:'hg-stack-n',x:-58,z:-64,r:32,top:24.5,rock:'ejecta'},

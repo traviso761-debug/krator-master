@@ -143,6 +143,7 @@ if(USE_KG){
   relief:KG_RELIEF?{bump:0.06,cavity:0.75,mesh:1}:null,
   layers:layers
  });
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 
 let SURF_DRAWN_SRC=null;
@@ -693,6 +694,7 @@ const CAVERN=(function(){
    scene.add(hm);
 
    // Flanking colonnade of 8 monumental 23 m fluted Banded Honey-Onyx Cathedral Columns framing the central nave!
+   BIO.kit('springhollows');
    const naveAxisX=0.76,naveAxisZ=0.65,perpX=-0.65,perpZ=0.76;
    for(let row=0;row<4;row++){
     for(let side=-1;side<=1;side+=2){
@@ -714,6 +716,7 @@ const CAVERN=(function(){
     const osc=0.58+0.42*(k%3)*0.5;
     BIO.put('sh_ore_galena',[ox,oy,oz],qEuler(0.2*k,0.7*k,0.1),[osc*1.2,osc,osc],SPRINGHOLLOWS.C(0x788292));
    }
+   BIO.kit('');
    // Dual theatrical subterranean crystal lights (zero shadow maps = 0 sampler cost!):
    //   1) Cool cobalt-cyan crystal & sump bounce deep in the nave
    //   2) Warm amber-gold onyx & calcite bounce along the colonnade
@@ -724,12 +727,14 @@ const CAVERN=(function(){
    naveLight.position.set(12,G.floorY+10.5,10);
    scene.add(naveLight);
   }else{
+   BIO.kit('springhollows');
    for(let k=0;k<8;k++){
     const ang=(k/8)*TAU+0.4,rad=14.0;
     const ox=hx+Math.cos(ang)*rad,oz=hz+Math.sin(ang)*rad,oy=floorH(ox,oz);
     BIO.put('sh_pillar_onyx',[ox,oy-0.4,oz],qEuler(0,ang,0),[1.85,18.5,1.85],SPRINGHOLLOWS.C(0xead8b8));
     SPACE.insert({kind:'onyx-pillar',x:ox,z:oz,r:1.6},ox,oz,1.6);
    }
+   BIO.kit('');
    const hallLight=new THREE.PointLight(0xb8f0e8,1.75,85,1.5);
    hallLight.position.set(hx,G.floorY+G.hallH*0.48,hz);
    scene.add(hallLight);

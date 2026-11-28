@@ -44,15 +44,69 @@ const WORKS=(function(){
   }
  }
 
+ const byMat=new Map();
  const addPart=(geo,mat,x,y,z,rx,ry,rz,label)=>{
-  const m=new THREE.Mesh(geo,mat);
-  m.position.set(x,y,z);
-  m.rotation.set(rx,ry,rz);
-  m.castShadow=true;m.receiveShadow=true;
-  m.userData.host=true;m.userData.inspectLabel=label;
-  group.add(m);
-  items.push(m);
-  return m;
+  const m4=new THREE.Matrix4().compose(
+   new THREE.Vector3(x,y,z),
+   new THREE.Quaternion().setFromEuler(new THREE.Euler(rx,ry,rz)),
+   new THREE.Vector3(1,1,1)
+  );
+  geo.applyMatrix4(m4);
+  if(mat&&mat.vertexColors&&!geo.attributes.color){
+   const vc=new Float32Array(geo.attributes.position.count*3);
+   vc.fill(1.0);
+   geo.setAttribute('color',new THREE.BufferAttribute(vc,3));
+  }
+  let bucket=byMat.get(mat);
+  if(!bucket){bucket=[];byMat.set(mat,bucket);}
+  bucket.push({geo:geo,label:label});
+ };
+ const flushParts=()=>{
+  byMat.forEach((parts,mat)=>{
+   if(!parts.length)return;
+   let vTot=0,iTot=0;
+   const wantCol=!!(mat&&mat.vertexColors);
+   for(let i=0;i<parts.length;i++){
+    const g=parts[i].geo;
+    vTot+=g.attributes.position.count;
+    iTot+=g.index?g.index.count:g.attributes.position.count;
+   }
+   const pos=new Float32Array(vTot*3),nrm=new Float32Array(vTot*3),uv=new Float32Array(vTot*2);
+   const col=wantCol?new Float32Array(vTot*3):null;
+   const idx=new Uint32Array(iTot);
+   let vOff=0,iOff=0;
+   for(let i=0;i<parts.length;i++){
+    const g=parts[i].geo,P=g.attributes.position,N=g.attributes.normal,U=g.attributes.uv,C=g.attributes.color;
+    const cnt=P.count;
+    pos.set(P.array,vOff*3);
+    if(N)nrm.set(N.array,vOff*3);
+    if(U)uv.set(U.array,vOff*2);
+    if(col){
+     if(C)col.set(C.array,vOff*3);
+     else col.fill(1.0,vOff*3,(vOff+cnt)*3);
+    }
+    if(g.index){
+     const ia=g.index.array;
+     for(let k=0;k<ia.length;k++)idx[iOff++]=ia[k]+vOff;
+    }else{
+     for(let k=0;k<cnt;k++)idx[iOff++]=vOff+k;
+    }
+    vOff+=cnt;
+    g.dispose();
+   }
+   const mg=new THREE.BufferGeometry();
+   mg.setAttribute('position',new THREE.BufferAttribute(pos,3));
+   mg.setAttribute('normal',new THREE.BufferAttribute(nrm,3));
+   mg.setAttribute('uv',new THREE.BufferAttribute(uv,2));
+   if(col)mg.setAttribute('color',new THREE.BufferAttribute(col,3));
+   mg.setIndex(new THREE.BufferAttribute(idx,1));
+   mg.computeBoundingSphere();
+   const m=new THREE.Mesh(mg,mat);
+   m.castShadow=true;m.receiveShadow=true;
+   m.userData.host=true;m.userData.inspectLabel=parts[0].label;
+   group.add(m);
+   items.push(m);
+  });
  };
 
  // Build one removable cedar-and-porphyry Silk-Weir reeling frame (clear opening 3.20 x 2.22 m; silk inset 0.06 m on all 4 sides)
@@ -148,6 +202,7 @@ const WORKS=(function(){
     }
    });
   }
+  flushParts();
  }
 
  return{group:group,items:items,smudgePots:smudgePots,lanterns:lanterns};

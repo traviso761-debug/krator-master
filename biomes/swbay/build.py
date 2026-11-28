@@ -119,7 +119,24 @@ for f in ('23-mat-record.js','25-matlib-host.js'):
     if f not in PATH: PATH[f]=os.path.normpath(os.path.join(HERE,'..','..','core','materials','record',f))
 sys.path.insert(0,os.path.normpath(os.path.join(HERE,'..','..','tools','textures')))
 import matlib_pack
-VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'swbay',own=True)}
+STATION_EXCLUDE = {
+    None: ('gill', 'rock'),
+    'skarn': ('beard', 'gill', 'grass', 'groundAsh', 'groundDetail', 'groundSand', 'hang1', 'jettyStone', 'leaflet', 'reed', 'sword', 'towerConcrete', 'towerRust'),
+}
+STATION_OWN_EXCLUDE = {}
+VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'swbay',own=True,exclude=STATION_EXCLUDE.get(STATION,())),
+         '44o-host-matlib-pack-own.js':matlib_pack.fragment(os.path.join(HERE,'own'),'swbay-own',own=True,exclude=STATION_OWN_EXCLUDE.get(STATION,())),
+         '44p-host-matlib-plants.js':"""/* Legacy pack card descriptors for core card guard (swbay & swhighlands tex/pack.json predate pack.py's plants field) */
+(function(){if(typeof KMAT==='undefined'||!KMAT.packs)return;
+ const S=KMAT.packs.swbay||{},P={beard:9,bigfrond:1,bloom:2,clubmoss:1,frond:1,grass:9,hang:1,hang1:1,leaflet:9,moss:1,needle:9,paddle:9,palmate:9,prism:1,reed:9,sword:9,under:1,under1:1,under2:1};
+ for(const k in P)if(S[k]&&S[k].plants==null)S[k].plants=P[k];
+ if(S.bloom&&!S.bloom.cell)S.bloom.cell=[0.495,0.022,0.97,0.976];
+ if(S.sword&&!S.sword.base)S.sword.base='centre';
+ const H=KMAT.packs.swhighlands||{};
+ if(H.eggs&&H.eggs.plants==null){H.eggs.plants=1;H.eggs.base='top';}
+ if(H.heath&&H.heath.plants==null)H.heath.plants=9;
+})();
+"""}
 # THE NEIGHBOURS' COUSINS, read in place (the final rebuild, 2026-10-27; src/87-host-kin.js grows them by BIO.kin): the SW highlands'
 # fungoid lineage come down to the bay (PLAN-FLORA.md: the stilt pod tree, the weeping wisp, the bead cone, the shelf coral, the coral
 # melon, the fishing bridge and the floor's glow tubes, bearded triplets, bulb heath, arrowheads and blue-berry bracts) and nwbay's cinder
@@ -129,7 +146,7 @@ VIRTUAL={'44-host-matlib-pack.js':matlib_pack.fragment(HERE,'swbay',own=True)}
 import json as _json
 NEIGH={'nwbay':(['50-biome-nwbay-species.js','55-biome-nwbay-trees.js','56-biome-nwbay-variants.js'],'NWBAY',['bark3','bark7','fernleaf','cneedle','bloom','moss']),
        'swhighlands':(['50-biome-swhighlands-species.js','55-biome-swhighlands-trees.js','57-biome-swhighlands-pillars.js','58-biome-swhighlands-rainwall.js',
-                       '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath','crust','moss','coral'])}
+                       '59-biome-swhighlands-tableland.js','59c-biome-swhighlands-coast.js'],'SWHI',['coneCap','coneStalk','eggs','heath'])}
 if STATION and SJ.get('neigh',True) is False: NEIGH={}   # a station whose host grows no cousins (no 87-host-kin.js) reads no neighbour
 if STATION and SJ.get('region'):
     with open(os.path.join(_sd,SJ['region']),encoding='utf-8') as _fh:

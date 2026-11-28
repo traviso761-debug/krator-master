@@ -3,7 +3,7 @@
 
 Usage:
   python3 biomes/springhollows/verify.py --assert --no-cache
-      Runs tests/test-springhollows.js + verifies all 4 stations (spring, shutin, fenestre, glade).
+      Runs tests/test-springhollows.js + verifies all 5 stations (spring, shutin, fenestre, glade, porphyryrelict).
   python3 biomes/springhollows/verify.py dist/springhollows.html --assert [--all-views]
   python3 biomes/springhollows/verify.py --station fenestre --assert
 """
@@ -63,7 +63,7 @@ const R=[];
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT: ')+n.detail}); }
-{ R.push({name:'window-springhollows-api', ok:!!(window.SPRINGHOLLOWS&&window.SPRINGHOLLOWS.SPECIES&&window.SPRINGHOLLOWS.SPECIES.length===8),
+{ R.push({name:'window-springhollows-api', ok:!!(window.SPRINGHOLLOWS&&window.SPRINGHOLLOWS.SPECIES&&window.SPRINGHOLLOWS.SPECIES.length===25),
           detail:window.SPRINGHOLLOWS?('SPRINGHOLLOWS.SPECIES='+window.SPRINGHOLLOWS.SPECIES.length):'missing window.SPRINGHOLLOWS'}); }
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }

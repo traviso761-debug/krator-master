@@ -207,10 +207,11 @@ function collectUntexturedLitMeshes(extraList){
 
 const HCHK={
  stationSpecies(st,skey){
-  const req=(skey==='apron'||skey==='eastflank')?['gnammamoss','panbonsai','cloudgarlandpine','cleftfilmyfern','ringlichen']
-   :skey==='moat'?['moatpitcher','ringlichen','moatcedar']
-   :skey==='crown'?['gnammamoss','cloudgarlandpine','crownrosette','ringlichen']
-   :['cloudgarlandpine','crownrosette','cleftfilmyfern','ringlichen'];
+  const req=skey==='apron'?['gnammamoss','gnammaquillwort','pansundew','panbonsai','cloudgarlandpine','cleftfilmyfern','ringlichen','agate_window']
+   :skey==='eastflank'?['gnammamoss','panbonsai','cloudgarlandpine','ringlichen','carnelian_organpipe','erythra_veil','bladder_tether','agate_window','blood_strangler','bleachfireweed']
+   :skey==='moat'?['moatpitcher','pansundew','ringlichen','moatcedar','weepingamberlarch','moatpaperbirch']
+   :skey==='crown'?['gnammamoss','cloudgarlandpine','crownrosette','crownpasque','staghornclubmoss','summitdwarfjuniper','agate_window','erythra_veil','ringlichen']
+   :['cloudgarlandpine','weepingamberlarch','cleftrowan','crownrosette','cleftfilmyfern','cleftghostpipe','agate_window','ringlichen'];
   const miss=req.filter(k=>!(st&&st[k]>0));
   if(skey==='eastflank'){
    if(!(st&&st.carnelianSkyIsland>=25))miss.push('carnelianSkyIsland>=25');
@@ -242,8 +243,9 @@ const HCHK={
   const list=trees||[];
   const bad=list.filter(t=>t.H>4.0&&!t.moatCollar&&t.shellStep01<0.55&&!t.inPan);
   const badGarland=list.filter(t=>t.key==='cloudgarlandpine'&&t.shellStep01<0.70);
-  const ok=bad.length===0&&badGarland.length===0;
-  return{ok:ok,detail:ok?list.length+' trees audited: 0 >4 m trees on bare aprons, 100% cloudgarlandpine on shellStep01 >= 0.70':'badApron='+bad.length+', badGarland='+badGarland.length};
+  const badCarn=(THEDOME.PLACED||[]).filter(p=>p&&p[6]&&p[6].biosphere==='carnelian'&&p[6].shellStep01!=null&&p[6].shellStep01<0.55&&p[4]>4.0);
+  const ok=bad.length===0&&badGarland.length===0&&badCarn.length===0;
+  return{ok:ok,detail:ok?list.length+' trees & Carnelian clades audited: 0 >4 m stems on bare aprons (shellStep01 < 0.55), 100% cloudgarlandpine on shellStep01 >= 0.70':'badApron='+bad.length+', badGarland='+badGarland.length+', badCarn='+badCarn.length};
  },
  lithophoneAndKluft(site,kluft){
   const solid=DOME_PHYS.acousticsAt(180,180,site);
@@ -262,8 +264,11 @@ const HCHK={
   return{ok:ok,detail:vs?('M1='+vs.m1Loaded+', index='+vs.indexedItems+', roughAA='+vs.roughAAMats+', S6verts='+vs.chromaticGroundVerts+', KDRAWN='+vs.drawnSources+', KGROUND='+vs.groundLayers):'missing _vstack'};
  },
  reserveClean(tagsList){
-  const buildings=(tagsList||[]).filter(r=>r&&r.class==='building');
-  return{ok:!buildings.length,detail:buildings.length?buildings.length+' unexpected building records':'0 class=building records in sacred dome reserves'};
+  const list=tagsList||[];
+  const buildings=list.filter(r=>r&&r.class==='building');
+  const badYuni=list.filter(r=>r&&r.tags&&r.tags.culture==='yuni');
+  const ok=!buildings.length&&!badYuni.length;
+  return{ok:ok,detail:ok?'0 class=building records & 100% Ria/Ancient culture tags in sacred dome reserves':(buildings.length+' unexpected buildings, '+badYuni.length+' yuni tags')};
  },
  allTextured(extraList){
   const bad=collectUntexturedLitMeshes(extraList);

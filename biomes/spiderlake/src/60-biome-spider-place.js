@@ -1,6 +1,10 @@
 // ================================================================= SPIDER LAKE — deterministic cell-seeded placement ([G data])
-// Pure deterministic placement of all 12 Spider Lake species, karst/ejecta megablocks, ATMOS wind-pinned Bridge-Curtains,
-// canopy-to-canopy gossamer sheets, Cloud-Fleece Brood-Pavilions, submerged fen air-bell domes, and Spindle-Weir sheets.
+// Pure deterministic placement of all 27 Spider Lake species: trees & bamboo (crowncypress, spindlewillow, ambermulberry,
+// weepingliquidambar, chinkapinoak, porphyrypine, dolomitebamboo), Hum-Ria arachniculture & warm-seep flora (silkbogmyrtle
+// smudge-myrtle, lakelotus, nurserywildrice, dyersindigo, grottocamellia, lakesmokesedge, silkfenpitcher, fensundew,
+// porphyryfern, shorespiderlily, bleachfireweed), all 5 pre-terraforming Carnelian Erythrophyll clades + Bleach-Scar
+// petrified organ-pipe skeletons (carnelian_organpipe, erythra_veil, bladder_tether, agate_window, blood_strangler),
+// and ATMOS wind-pinned Arachneapolita silk architecture (bridgecurtain, broodpavilion, weirframe_wild, rampartgossamer).
 // Every cell is seeded independently via KRAND.cell / KRAND.hash; zero Math.random, zero THREE, zero DOM, zero || <number>.
 (function(){
  const {TAU,clamp,lerp,smooth,reseed,rng,rr,ri,qEuler}=BIO.fn;
@@ -32,9 +36,12 @@
 
   const st={
    spindlewillow:0,crowncypress:0,ambermulberry:0,chinkapinoak:0,porphyrypine:0,
-   lakesmokesedge:0,silkfenpitcher:0,porphyryfern:0,
+   weepingliquidambar:0,silkbogmyrtle:0,dolomitebamboo:0,lakelotus:0,nurserywildrice:0,
+   dyersindigo:0,grottocamellia:0,lakesmokesedge:0,silkfenpitcher:0,fensundew:0,
+   porphyryfern:0,shorespiderlily:0,bleachfireweed:0,
+   carnelian_organpipe:0,erythra_veil:0,bladder_tether:0,agate_window:0,blood_strangler:0,
    bridgecurtain:0,broodpavilion:0,weirframe_wild:0,rampartgossamer:0,
-   boulders:0,celestine:0,airbells:0
+   carnelianRelicts:0,bleachSkeletons:0,boulders:0,celestine:0,airbells:0
   };
 
   const free=(x,z,r)=>!sp||!sp.some(x,z,r,it=>Math.hypot(x-it.x,z-it.z)<it.r+r);
@@ -62,6 +69,18 @@
    const shoreD=site.hasOpenLake?(y<=0.2?0:site.shoreDistBaseM+Math.max(0,y)*6.2):site.shoreDistBaseM;
    return SPIDER_PHYS.lakeSmokeAt({
     shoreDistM:shoreD,elevAboveLakeM:elevAbove,seepProximity01:site.seepProximity01,hour24:18.5,windOnshore01:0.78
+   });
+  }
+
+  function frontierAtPoint(x,y,z){
+   return SPIDER_PHYS.frontierAt({
+    station:skey,
+    x:x,y:y,z:z,
+    rock01:BIO.field('rock',x,z),
+    slope01:BIO.field('slope',x,z),
+    wet01:BIO.field('wet',x,z),
+    swath:site.bleachSwath||null,
+    seed:seed
    });
   }
 
@@ -154,6 +173,31 @@
    }
   }
 
+  // Thermal-pool travertine sinter rims & dolomite grotto celestine floor prisms
+  if(site.thermalPools&&site.thermalPools.length){
+   for(let pi=0;pi<site.thermalPools.length;pi++){
+    const tp=site.thermalPools[pi];
+    for(let k=0;k<4;k++){
+     reseed(KRAND.hash(seed+815,pi,k));
+     const ang=(k/4)*TAU+rr(-0.2,0.2),rad=tp.r+rr(0.4,1.6);
+     const tx=tp.x+Math.cos(ang)*rad,tz=tp.z+Math.sin(ang)*rad,ty=Y(tx,tz);
+     const sc=rr(1.0,1.9);
+     BIO.put('sl_rock_travertine',[tx,ty-sc*0.18,tz],qEuler(rr(-0.08,0.08),rr(0,TAU),rr(-0.08,0.08)),[sc*1.15,sc*0.42,sc],pickC(PAL.travertine,0.02));
+     st.boulders++;
+    }
+   }
+  }
+  if(skey==='dolomite'&&site.grotto){
+   for(let k=0;k<6;k++){
+    reseed(KRAND.hash(seed+819,k,1));
+    const ang=(k/6)*TAU,rad=rr(4.5,9.5);
+    const gx=site.grotto.hall[0]+Math.cos(ang)*rad,gz=site.grotto.hall[1]+Math.sin(ang)*rad;
+    const ch=rr(0.9,2.1);
+    BIO.put('sl_crystal_celestine',[gx,site.grotto.floorY+0.25,gz],qEuler(rr(-0.28,0.28),ang,rr(-0.28,0.28)),[ch*0.42,ch,ch*0.42],C(0xcce8f8));
+    st.celestine++;
+   }
+  }
+
   // Scattered ejecta megablocks (dense on Station 6 rampart & Station 1 spillway), dolomite ribs, porphyry dike blocks & travertine sinter
   cellPass(skey==='rampart'?18:26,11,Lv.mid,false,(x,y,z,wy,lv)=>{
    if(inReserveCore(x,z)||(wy>-1e8&&y<wy-0.3))return;
@@ -161,9 +205,10 @@
    const pBase=skey==='rampart'?0.62:(0.14+0.42*rockW+0.45*porphW+0.35*travW);
    if(rng()>pBase*q||!free(x,z,2.2))return;
    let item='sl_rock_ejecta',pal=PAL.ejecta,sc=rr(1.4,skey==='rampart'?5.4:3.2),tall=0.85;
-   if(travW>0.35){item='sl_rock_travertine';pal=PAL.travertine;sc=rr(1.1,2.4);tall=0.45;}
+   if(site.thermalPools&&site.thermalPools.length&&travW>0.35){item='sl_rock_travertine';pal=PAL.travertine;sc=rr(1.1,2.4);tall=0.45;}
+   else if(skey==='dolomite'&&porphW>0.24&&rng()<0.38){item='sl_rock_galena';pal=PAL.ejecta;sc=rr(0.95,2.0);tall=0.78;}
    else if(porphW>0.35||(skey==='pavilion'&&y>16&&rng()<0.42)){item='sl_rock_porphyry';pal=PAL.porphyry;sc=rr(1.2,2.8);tall=0.82;}
-   else if(skey==='dolomite'||(skey==='fen'&&rng()<0.55)){item='sl_rock_dolomite';pal=PAL.dolomite;sc=rr(1.5,3.8);tall=1.35;}
+   else if((skey==='dolomite'&&!(y>24&&rng()<0.38))||(skey==='fen'&&rng()<0.55)){item='sl_rock_dolomite';pal=PAL.dolomite;sc=rr(1.5,3.8);tall=1.35;}
    claim('boulder',x,z,sc*0.75);
    BIO.put(item,[x,y-sc*0.26,z],qEuler(rr(-0.2,0.2),rr(0,TAU),rr(-0.2,0.2)),[sc,sc*tall,sc*rr(0.85,1.15)],pickC(pal,0.02));
    st.boulders++;
@@ -203,6 +248,7 @@
    cellPass(skey==='pavilion'?18:22,22,Lv.far,false,(x,y,z,wy,lv,hSeed)=>{
     if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.35)||y>24.0)return;
     if(BIO.field('slope',x,z)>0.50||BIO.field('travertine',x,z)>0.40)return;
+    if(frontierAtPoint(x,y,z).biosphere!=='earth')return;
     const pW=skey==='pavilion'?(y<17.5?0.68:0.28):0.42*smooth(24.0,2.0,y);
     if(rng()>pW*q||!free(x,z,3.6))return;
     claim('spindlewillow',x,z,3.6);
@@ -234,6 +280,7 @@
   if(skey!=='rampart'){
    cellPass(23,23,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
     if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.45)||y<2.8||y>38.0||BIO.field('slope',x,z)>0.46||BIO.field('travertine',x,z)>0.3)return;
+    if(frontierAtPoint(x,y,z).biosphere!=='earth')return;
     const pM=skey==='pavilion'?0.34:0.26;
     if(rng()>pM*q||!free(x,z,3.2))return;
     claim('ambermulberry',x,z,3.2);
@@ -243,29 +290,116 @@
    });
   }
 
-  // 3D-bis. Station 7 (haugel): Carnelian Erythrophyll erythra-veil fans & 0.75 g ruby bladder-kelp-land on dry secondary-ejecta gorge walls!
+  // 3C-bis. Weeping Ria-Amber Sweetgum (weepingliquidambar: bark.amber + card.samara.maple) on lakeside & bench woods bridging toward Weeping Valley
+  if(skey!=='rampart'){
+   cellPass(26,25,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.55))return;
+    if(skey==='spillway'&&x<12)return;
+    if(y<2.2||y>32.0||BIO.field('slope',x,z)>0.48||BIO.field('travertine',x,z)>0.32)return;
+    if(frontierAtPoint(x,y,z).biosphere!=='earth')return;
+    const pL=(skey==='pavilion'||skey==='haugel')?0.36:0.28;
+    if(rng()>pL*q||!free(x,z,3.8))return;
+    claim('weepingliquidambar',x,z,3.8);
+    const g=SPIDERLAKE.growTree('weepingliquidambar',x,y,z,hSeed,rr(0.86,1.14),{});
+    if(Math.hypot(x,z)<220&&g.forks.length>=2){
+     heroForks.push({x:x,y:y,z:z,kind:'weepingliquidambar',forks:g.forks,crownY:g.crownY});
+    }
+    recordPlaced('weepingliquidambar',x,y,z,'pavilion_wood',null);
+    st.weepingliquidambar++;
+   });
+  }
+
+  // 3C-ter. Karst Jade-Culm Bamboo (dolomitebamboo: bark.bamboo.jade + card.grass.panic) on narrows, dolomite & haugel karst banks
+  if(skey==='narrows'||skey==='dolomite'||skey==='haugel'){
+   cellPass(19,26,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.50))return;
+    if(y<1.4||y>26.0||BIO.field('slope',x,z)>0.54||BIO.field('travertine',x,z)>0.35)return;
+    if(frontierAtPoint(x,y,z).biosphere!=='earth')return;
+    const pB=skey==='dolomite'?0.44:(skey==='narrows'?0.38:0.32);
+    if(rng()>pB*q||!free(x,z,2.4))return;
+    claim('dolomitebamboo',x,z,2.4);
+    SPIDERLAKE.growBamboo(x,y,z,hSeed,rr(0.85,1.16));
+    recordPlaced('dolomitebamboo',x,y,z,'narrows',null);
+    st.dolomitebamboo++;
+   });
+  }
+
+  // 3D-bis. SW->NE Carnelian Frontier & Ballistic Ejecta Relicts (30% Red, Tier 1-2; docs/CARNELIAN-FRONTIER-PLAN.md):
+  //   - Station 7 haugel: all 5 Carnelian clades on dry secondary-ejecta gorge walls above green ambermulberry benches +
+  //     orbital Bleach-Scar survey seam with petrified organ-pipe skeletons (petrified: true), blood_strangler seam & bleachfireweed!
+  //   - Station 6 rampart (+2,040 m boulder-collar) & Station 1 spillway high dry ejecta stacks: edaphic agate_window, erythra_veil & carnelian_organpipe!
   if(site.carnelianWalls&&typeof KFRONTIER!=='undefined'){
-   st.carnelianRelicts=0;
-   cellPass(15,28,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+   // Orbital Bleach-Scar tri-band seam on dry SE Hau-Gel bench (x0: 88, z0: 118)
+   if(site.bleachSwath){
+    cellPass(8.5,27,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+     if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+2.0))return;
+     const fq=frontierAtPoint(x,y,z);
+     if(fq.bleachScar01>=0.42&&free(x,z,2.0)){
+      if(rng()<0.64*q){
+       claim('bleach-skel',x,z,2.0);
+       SPIDERLAKE.growCarnelian('carnelian_organpipe',x,y,z,hSeed,rr(0.72,1.06),{petrified:true,useInstSkel:lv===0});
+       recordPlaced('carnelian_organpipe',x,y,z,'bleach_scar',{biosphere:'carnelian',clade:'carnelian-organpipe',petrified:true});
+       st.carnelian_organpipe++;
+       st.bleachSkeletons++;
+       st.carnelianRelicts++;
+      }else if(rng()<0.75*q){
+       SPIDERLAKE.growCarnelian('agate_window',x,y,z,hSeed,rr(0.75,1.15),{petrified:true});
+       recordPlaced('agate_window',x,y,z,'bleach_scar',{biosphere:'carnelian',clade:'agate-window',petrified:true});
+       st.agate_window++;
+       st.carnelianRelicts++;
+      }
+     }else if(fq.stranglerEdge01>=0.16&&free(x,z,1.8)&&rng()<0.78*q){
+      claim('blood_strangler',x,z,1.8);
+      SPIDERLAKE.growCarnelian('blood_strangler',x,y,z,hSeed,rr(0.82,1.25),{});
+      recordPlaced('blood_strangler',x,y,z,'bleach_scar',{biosphere:'carnelian',clade:'blood-strangler'});
+      st.blood_strangler++;
+      st.carnelianRelicts++;
+     }
+    });
+    if(reg&&(st.bleachSkeletons>0||st.blood_strangler>0)){
+     reg({
+      tagId:'spiderlake:haugel-bleach-scar',
+      name:'Hau-Gel Orbital Survey Bleach-Scar Seam and Petrified Organ-Pipe Skeletons',
+      tagClass:'feature',
+      x:site.bleachSwath.x0,y:Y(site.bleachSwath.x0,site.bleachSwath.z0)-4,z:site.bleachSwath.z0,r:48,h:24,
+      tags:{biome:'spiderlake',biosphere:'bleach',ecocideTier:2,clades:'carnelian-organpipe,blood-strangler'}
+     });
+    }
+   }
+
+   // Dry secondary-ejecta gorge walls above green ambermulberry benches: all 5 Carnelian clades!
+   cellPass(14.5,28,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
     if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+2.0))return;
-    if(y<15.5||Math.abs(z)<44.0||!free(x,z,3.4))return;
-    if(rng()>0.68*q)return;
-    claim('carnelian',x,z,3.4);
-    const sc=rr(0.84,1.18),kfCfg={bucket:'sl_chitin',skelBucket:'sl_chitin',prefix:'sl_kf',sunAzimuthRad:0.72};
-    const roll=rng();
-    if(roll<0.42){
-     KFRONTIER.growBladderTether(BIO,kfCfg,x,y,z,hSeed,sc);
-     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'bladder-kelp-land'});
-    }else if(roll<0.82){
-     KFRONTIER.growErythraVeil(BIO,kfCfg,x,y,z,hSeed,sc);
-     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'erythra-veil'});
+    if(y<15.0||Math.abs(z)<44.0||!free(x,z,3.0))return;
+    const fq=frontierAtPoint(x,y,z);
+    if(fq.bleachScar01>=0.42)return;
+    if(rng()>0.72*q)return;
+    claim('carnelian',x,z,3.0);
+    const sc=rr(0.84,1.18),roll=rng();
+    if(y<20.5&&roll<0.18){
+     SPIDERLAKE.growCarnelian('blood_strangler',x,y,z,hSeed,sc,{});
+     recordPlaced('blood_strangler',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'blood-strangler'});
+     st.blood_strangler++;
+    }else if(roll<0.44){
+     SPIDERLAKE.growCarnelian('bladder_tether',x,y,z,hSeed,sc,{});
+     recordPlaced('bladder_tether',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'bladder-kelp-land'});
+     st.bladder_tether++;
+    }else if(roll<0.72){
+     SPIDERLAKE.growCarnelian('erythra_veil',x,y,z,hSeed,sc,{});
+     recordPlaced('erythra_veil',x,y,z, 'carnelian_ejecta',{biosphere:'carnelian',clade:'erythra-veil'});
+     st.erythra_veil++;
+    }else if(roll<0.88){
+     SPIDERLAKE.growCarnelian('carnelian_organpipe',x,y,z,hSeed,sc,{});
+     recordPlaced('carnelian_organpipe',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'carnelian-organpipe'});
+     st.carnelian_organpipe++;
     }else{
-     KFRONTIER.growOrganPipe(BIO,kfCfg,x,y,z,hSeed,sc,{});
-     recordPlaced('porphyryfern',x,y,z,'rim_rampart',{biosphere:'carnelian',clade:'carnelian-organpipe'});
+     SPIDERLAKE.growCarnelian('agate_window',x,y,z,hSeed,rr(0.88,1.32),{});
+     recordPlaced('agate_window',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'agate-window'});
+     st.agate_window++;
     }
     st.carnelianRelicts++;
    });
-   if(reg){
+   if(reg&&st.carnelianRelicts>0){
     reg({
      tagId:'spiderlake:haugel-carnelian-cliffs',
      name:'Hau-Gel Dry Secondary-Ejecta Carnelian Erythrophyll Cliff Refugia',
@@ -276,13 +410,102 @@
    }
   }
 
-  // 3D. Upland Chinkapin Oak & Porphyry Rim-Pine (Stations 1-6; dominant woody matrix on dolomite bluffs & +2,040 m rampart!)
+  // Station 6 rampart (+2,040 m dry ballistic secondary-ejecta boulder-collar): edaphic relict agate_window, erythra_veil & carnelian_organpipe
+  if(site.carnelianEjecta&&typeof KFRONTIER!=='undefined'){
+   cellPass(15.5,29,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||!free(x,z,2.6))return;
+    const fq=frontierAtPoint(x,y,z);
+    const onDryCrest=fq.biosphere==='carnelian'||(y>15.0&&BIO.field('rock',x,z)>0.28);
+    if(!onDryCrest||rng()>0.58*q)return;
+    claim('carnelian',x,z,2.6);
+    const sc=rr(0.82,1.18),roll=rng();
+    if(roll<0.45){
+     SPIDERLAKE.growCarnelian('agate_window',x,y,z,hSeed,rr(0.85,1.35),{});
+     recordPlaced('agate_window',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'agate-window'});
+     st.agate_window++;
+    }else if(roll<0.78){
+     SPIDERLAKE.growCarnelian('erythra_veil',x,y,z,hSeed,sc,{});
+     recordPlaced('erythra_veil',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'erythra-veil'});
+     st.erythra_veil++;
+    }else{
+     SPIDERLAKE.growCarnelian('carnelian_organpipe',x,y,z,hSeed,sc*0.92,{});
+     recordPlaced('carnelian_organpipe',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'carnelian-organpipe'});
+     st.carnelian_organpipe++;
+    }
+    st.carnelianRelicts++;
+   });
+   if(reg&&st.carnelianRelicts>0){
+    reg({
+     tagId:'spiderlake:rampart-carnelian-ejecta',
+     name:'North Rampart Ballistic Ejecta Carnelian Relict Colony',
+     tagClass:'flora',
+     x:12,y:Y(12,4)-4,z:4,r:64,h:28,
+     tags:{biome:'spiderlake',biosphere:'carnelian',lithology:'secondary-ejecta'}
+    });
+   }
+  }
+
+  // Station 1 spillway: edaphic Carnelian relicts on high dry secondary-ejecta stacks & dry gorge-rim crowns
+  if(site.carnelianStacks&&typeof KFRONTIER!=='undefined'){
+   if(site.stacks){
+    for(let si=0;si<site.stacks.length;si++){
+     const sk=site.stacks[si];
+     if(sk.rock!=='ejecta')continue;
+     for(let k=0;k<5;k++){
+      const hSeed=KRAND.hash(seed+295,si,k);
+      reseed(hSeed);
+      const ang=(k/5)*TAU+rr(-0.25,0.25),rad=sk.r*rr(0.18,0.52);
+      const cx=sk.x+Math.cos(ang)*rad,cz=sk.z+Math.sin(ang)*rad,cy=Y(cx,cz);
+      if(cy<13.5||!free(cx,cz,2.2))continue;
+      claim('carnelian',cx,cz,2.2);
+      if(k%3===0){
+       SPIDERLAKE.growCarnelian('agate_window',cx,cy,cz,hSeed,rr(0.85,1.25),{});
+       recordPlaced('agate_window',cx,cy,cz,'carnelian_ejecta',{biosphere:'carnelian',stack:sk.id});
+       st.agate_window++;
+      }else if(k%3===1){
+       SPIDERLAKE.growCarnelian('erythra_veil',cx,cy,cz,hSeed,rr(0.80,1.08),{});
+       recordPlaced('erythra_veil',cx,cy,cz,'carnelian_ejecta',{biosphere:'carnelian',stack:sk.id});
+       st.erythra_veil++;
+      }else{
+       SPIDERLAKE.growCarnelian('carnelian_organpipe',cx,cy,cz,hSeed,rr(0.76,1.02),{});
+       recordPlaced('carnelian_organpipe',cx,cy,cz,'carnelian_ejecta',{biosphere:'carnelian',stack:sk.id});
+       st.carnelian_organpipe++;
+      }
+      st.carnelianRelicts++;
+     }
+    }
+   }
+   cellPass(19.0,30,Lv.mid,false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||x>-32||Math.abs(z)<58||y<18.5||!free(x,z,2.8))return;
+    if(rng()>0.48*q)return;
+    claim('carnelian',x,z,2.8);
+    const roll=rng();
+    if(roll<0.46){
+     SPIDERLAKE.growCarnelian('agate_window',x,y,z,hSeed,rr(0.85,1.28),{});
+     recordPlaced('agate_window',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'agate-window'});
+     st.agate_window++;
+    }else if(roll<0.80){
+     SPIDERLAKE.growCarnelian('erythra_veil',x,y,z,hSeed,rr(0.82,1.12),{});
+     recordPlaced('erythra_veil',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'erythra-veil'});
+     st.erythra_veil++;
+    }else{
+     SPIDERLAKE.growCarnelian('carnelian_organpipe',x,y,z,hSeed,rr(0.78,1.05),{});
+     recordPlaced('carnelian_organpipe',x,y,z,'carnelian_ejecta',{biosphere:'carnelian',clade:'carnelian-organpipe'});
+     st.carnelian_organpipe++;
+    }
+    st.carnelianRelicts++;
+   });
+  }
+
+  // 3D. Upland Chinkapin Oak & Porphyry Rim-Pine (Stations 1-7; dominant woody matrix on dolomite bluffs & +2,040 m Earth pockets!)
   cellPass(skey==='rampart'?22:27,24,Lv.far,false,(x,y,z,wy,lv,hSeed)=>{
    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.60))return;
-   if(skey!=='rampart'&&y<12.0)return;
+   const minOakY=skey==='fen'?4.5:11.5;
+   if(skey!=='rampart'&&y<minOakY)return;
+   if(frontierAtPoint(x,y,z).biosphere!=='earth')return;
    const slope=BIO.field('slope',x,z);
    if(slope>0.58||!free(x,z,3.8))return;
-   const pU=skey==='rampart'?0.46:(skey==='dolomite'?0.52:0.32*smooth(12,26,y));
+   const pU=skey==='rampart'?0.48:(skey==='dolomite'?0.52:0.34*smooth(minOakY,24,y));
    if(rng()>pU*q)return;
    const isPine=rng()<(skey==='rampart'||BIO.field('porphyry',x,z)>0.3?0.56:0.38);
    const kind=isPine?'porphyrypine':'chinkapinoak';
@@ -291,6 +514,10 @@
     windLeanX:skey==='rampart'?0.08:0.02,
     windLeanZ:skey==='rampart'?0.04:0.01
    });
+   if(!isPine&&rng()<0.45){
+    const lx=x+rr(-2.4,2.4),lz=z+rr(-2.4,2.4),ly=Y(lx,lz);
+    BIO.put('sl_log',[lx,ly+0.06,lz],qEuler(Math.PI*0.5,rr(0,TAU),0),[0.85,rr(1.8,3.2),0.85],C(0x6e5c4a));
+   }
    recordPlaced(kind,x,y,z,'rim_rampart',null);
    st[kind]++;
   });
@@ -388,7 +615,7 @@
    });
   }
 
-  // ---------------------------------------------------------------- 5. TENDED SPINDLE-WEIR SHEETS (weirframe_wild)
+  // ---------------------------------------------------------------- 5. TENDED SPINDLE-WEIR SHEETS & HUM-RIA SHRUBS
   if(skey!=='rampart'){
    const slots=SPIDERLAKE.WEIR_SLOTS;
    if(slots&&slots.length){
@@ -418,9 +645,36 @@
      st.weirframe_wild++;
     }
    }
+
+   // 5B. Canonical Hum-Ria Smudge Bog-Myrtle (silkbogmyrtle: card.dwarfbirch + shared sl_willow stems) along weir benches & fen margins
+   cellPass(15.5,51,Lv.floor[1],false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.25)||y>26.0)return;
+    if(BIO.field('slope',x,z)>0.46||frontierAtPoint(x,y,z).biosphere!=='earth')return;
+    const wet=BIO.field('wet',x,z),terr=BIO.field('terrace',x,z);
+    const pMy=0.22+0.36*Math.max(wet,terr);
+    if(rng()>pMy*q||!free(x,z,1.5))return;
+    claim('silkbogmyrtle',x,z,1.5);
+    SPIDERLAKE.growShrub('silkbogmyrtle',x,y,z,hSeed,rr(0.82,1.18));
+    recordPlaced('silkbogmyrtle',x,y,z,'spindle_terrace',null);
+    st.silkbogmyrtle++;
+   });
   }
 
-  // ---------------------------------------------------------------- 6. UNDERSTORY: LAKESMOKESEDGE, SILKFENPITCHER, PORPHYRYFERN & GOSSAMER
+  // 5C. Dolomite Mist-Tea Bush (grottocamellia: card.crop.tea + shared sl_mulberry stems) on misty dolomite karst & pavilion/narrows terraces
+  if(skey==='dolomite'||skey==='pavilion'||skey==='narrows'){
+   cellPass(16.0,52,Lv.floor[1],false,(x,y,z,wy,lv,hSeed)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.80))return;
+    if(y<3.2||y>36.0||BIO.field('slope',x,z)>0.50)return;
+    const pTea=skey==='dolomite'?0.44:(skey==='pavilion'?0.36:0.28);
+    if(rng()>pTea*q||!free(x,z,1.6))return;
+    claim('grottocamellia',x,z,1.6);
+    SPIDERLAKE.growShrub('grottocamellia',x,y,z,hSeed,rr(0.85,1.16));
+    recordPlaced('grottocamellia',x,y,z,'spindle_terrace',null);
+    st.grottocamellia++;
+   });
+  }
+
+  // ---------------------------------------------------------------- 6. AQUATIC, FEN, TERRACE & VANGUARD UNDERSTORY
   // 6A. Lake-Smoke Tussock Sedge, Cottongrass & Littoral Sphagnum
   cellPass(8.2,61,Lv.floor[1],true,(x,y,z,wy,lv)=>{
    if(inReserveCore(x,z))return;
@@ -432,18 +686,55 @@
    if(rng()>pS*q)return;
    const sc=rr(0.65,1.35);
    BIO.put('sl_sedge',[x,y-0.05,z],qEuler(rr(-0.06,0.06),rr(0,TAU),rr(-0.06,0.06)),[sc*0.95,sc,sc*0.95],pickC(PAL.sedge,0.03));
-   if(lv===2&&wet>0.65&&rng()<0.42){
+   if(skey!=='rampart'&&lv===2&&wet>0.46&&rng()<0.45){
     const cs=rr(0.55,1.05);
     BIO.put('sl_cotton',[x+rr(-0.7,0.7),y-0.04,z+rr(-0.7,0.7)],qEuler(0,rr(0,TAU),0),[cs*0.7,cs,cs*0.7],pickC(PAL.cotton,0.02));
    }
-   if(lv>=1&&wet>0.55&&rng()<0.35){
+   if(skey!=='rampart'&&lv>=1&&wet>0.42&&rng()<0.38){
     const ms=rr(0.8,1.6);
     BIO.put('sl_moss',[x,y+0.02,z],qEuler(0,rr(0,TAU),0),[ms,1,ms],pickC(PAL.moss,0.03));
    }
    st.lakesmokesedge++;
   });
 
-  // 6B. Carnivorous Snare-Mouth Fen Pitcher (silkfenpitcher) around warm seeps & moist littoral fens (Stations 1-5)
+  // 6A-bis. Warm-Seep Sacred Lotus (lakelotus: card.lotus.bloom + floating peltate pad) in calm pavilion, fen & narrows backwaters
+  if(skey==='pavilion'||skey==='fen'||skey==='narrows'){
+   cellPass(9.5,65,Lv.floor[1],true,(x,y,z,wy,lv)=>{
+    if(inReserveCore(x,z)||wy<-1e8||BIO.field('river',x,z)>0)return;
+    const depth=wy-y;
+    if(depth<0.14||depth>1.35)return;
+    const pLo=skey==='fen'?0.52:(skey==='pavilion'?0.48:0.34);
+    if(rng()>pLo*q)return;
+    const nL=lv===2?ri(2,3):1;
+    for(let k=0;k<nL;k++){
+     const lx=x+rr(-1.2,1.2),lz=z+rr(-1.2,1.2),lw=W(lx,lz),ly=Y(lx,lz);
+     if(lw<-1e8||lw-ly<0.10||lw-ly>1.5)continue;
+     const padS=rr(0.65,1.15),blS=rr(0.42,0.72);
+     BIO.put('sl_moss',[lx,lw+0.03,lz],qEuler(0,rr(0,TAU),0),[padS,1,padS],pickC(PAL.lotusPad,0.02));
+     BIO.put('sl_lotus_bloom',[lx,lw+0.05,lz],qEuler(rr(-0.05,0.05),rr(0,TAU),rr(-0.05,0.05)),[blS,blS*0.92,blS],pickC(PAL.lotus,0.02));
+    }
+    recordPlaced('lakelotus',x,wy,z,'fumarole_fen',null);
+    st.lakelotus++;
+   });
+  }
+
+  // 6A-ter. Lake-Smoke Nursery Wild-Rice (nurserywildrice: card.crop.rice) in shallow emergent chironomid-nursery belts
+  if(skey==='spillway'||skey==='narrows'||skey==='pavilion'||skey==='fen'||skey==='haugel'){
+   cellPass(9.0,66,Lv.floor[1],true,(x,y,z,wy,lv)=>{
+    if(inReserveCore(x,z)||wy<-1e8||BIO.field('river',x,z)>0)return;
+    if(skey==='spillway'&&x<16)return;
+    const depth=wy-y;
+    if(depth<-0.06||depth>0.72)return;
+    const pWr=skey==='fen'?0.56:0.42;
+    if(rng()>pWr*q)return;
+    const sc=rr(0.78,1.38);
+    BIO.put('sl_wildrice',[x,Math.min(y,wy-0.08),z],qEuler(rr(-0.05,0.05),rr(0,TAU),rr(-0.05,0.05)),[sc*0.88,sc*1.12,sc*0.88],pickC(PAL.wildrice,0.03));
+    recordPlaced('nurserywildrice',x,wy,z,'fumarole_fen',null);
+    st.nurserywildrice++;
+   });
+  }
+
+  // 6B. Carnivorous Snare-Mouth Fen Pitcher (silkfenpitcher) & Warm-Seep Great Sundew (fensundew) around warm seeps & fens
   if(skey!=='rampart'){
    cellPass(skey==='fen'?6.8:10.5,62,Lv.floor[1],false,(x,y,z,wy,lv)=>{
     if(inReserveCore(x,z)||(wy>-1e8&&y<wy-0.05)||y>9.5)return;
@@ -457,6 +748,27 @@
     }
     recordPlaced('silkfenpitcher',x,y,z,'fumarole_fen',null);
     st.silkfenpitcher++;
+    if((skey==='fen'||skey==='haugel'||skey==='spillway')&&rng()<0.62){
+     const sx=x+rr(-0.85,0.85),sz=z+rr(-0.85,0.85),sy=Y(sx,sz),sSc=rr(0.26,0.48);
+     BIO.put('sl_sundew',[sx,sy-0.02,sz],qEuler(0,rr(0,TAU),0),[sSc*1.15,sSc*0.78,sSc*1.15],pickC(PAL.sundew,0.03));
+     recordPlaced('fensundew',sx,sy,sz,'fumarole_fen',null);
+     st.fensundew++;
+    }
+   });
+  }
+
+  // 6B-bis. Liwa-Toga Canal Indigo (dyersindigo: card.crop.indigo) on sunny cut-stone terraces & lakeshore dye-gardens
+  if(skey==='spillway'||skey==='narrows'||skey==='pavilion'||skey==='dolomite'||skey==='haugel'){
+   cellPass(12.5,67,Lv.floor[1],false,(x,y,z,wy,lv)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.45))return;
+    if(y<2.0||y>34.0||BIO.field('slope',x,z)>0.44||frontierAtPoint(x,y,z).biosphere!=='earth')return;
+    const terr=BIO.field('terrace',x,z);
+    const pIn=(skey==='pavilion'?0.38:0.26)+0.28*terr;
+    if(rng()>pIn*q)return;
+    const sc=rr(0.68,1.22);
+    BIO.put('sl_indigo',[x,y-0.04,z],qEuler(0,rr(0,TAU),0),[sc*0.92,sc,sc*0.92],pickC(PAL.indigo,0.03));
+    recordPlaced('dyersindigo',x,y,z,'spindle_terrace',null);
+    st.dyersindigo++;
    });
   }
 
@@ -478,6 +790,37 @@
    }
    st.porphyryfern++;
   });
+
+  // 6C-bis. Golden-Filament Shore Spider-Lily (shorespiderlily: card.flower.spiderlily) along spillway, narrows, pavilion & dolomite shores
+  if(site.hasOpenLake&&(skey==='spillway'||skey==='narrows'||skey==='pavilion'||skey==='dolomite')){
+   cellPass(10.2,68,Lv.floor[1],false,(x,y,z,wy,lv)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.08))return;
+    if(skey==='spillway'&&x<-6)return;
+    const aboveW=y-site.lakeLevelLocal;
+    if(aboveW<0.10||aboveW>4.2||BIO.field('slope',x,z)>0.54)return;
+    if(rng()>0.58*q)return;
+    const sc=rr(0.46,0.82);
+    BIO.put('sl_spiderlily',[x,y-0.03,z],qEuler(rr(-0.06,0.06),rr(0,TAU),rr(-0.06,0.06)),[sc*0.95,sc,sc*0.95],pickC(PAL.spiderlily,0.02));
+    recordPlaced('shorespiderlily',x,y,z,'narrows',null);
+    st.shorespiderlily++;
+   });
+  }
+
+  // 6C-ter. Bleach-Scar Vanguard Fireweed (bleachfireweed: card.fireweed) along Hau-Gel Bleach-Scar seam & North Rampart gravel pockets
+  if(skey==='haugel'||skey==='rampart'){
+   cellPass(9.6,69,Lv.floor[1],false,(x,y,z,wy,lv)=>{
+    if(inReserveCore(x,z)||BIO.field('river',x,z)>0||(wy>-1e8&&y<wy+0.8))return;
+    const fq=frontierAtPoint(x,y,z);
+    const pFw=skey==='haugel'
+     ?Math.max(fq.vanguard01*0.92,fq.bleachScar01*0.55)
+     :(fq.biosphere==='earth'?0.34*(1-BIO.field('slope',x,z)):0.0);
+    if(pFw<0.08||rng()>pFw*q)return;
+    const sc=rr(0.68,1.32);
+    BIO.put('sl_fireweed',[x,y-0.04,z],qEuler(rr(-0.05,0.05),rr(0,TAU),rr(-0.05,0.05)),[sc*0.65,sc*1.12,sc*0.65],pickC(PAL.fireweed,0.02));
+    recordPlaced('bleachfireweed',x,y,z,'bleach_scar',{vanguard:skey==='haugel'});
+    st.bleachfireweed++;
+   });
+  }
 
   // 6D. Ballooning Spiderling Gossamer Skeins (rampartgossamer) anchored directly to tree forks & ground boulders
   for(let hi=0;hi<heroForks.length;hi++){

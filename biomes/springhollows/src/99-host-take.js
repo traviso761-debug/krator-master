@@ -193,7 +193,7 @@ const HCHK={
    const g=HOLLOW_PHYS.caveMouthGlowAt({skyOpenness01:overrideSkyOpen,springHumidity01:0.90,isNight:true});
    return{ok:g.bryoCover01>0.05,detail:'skyOpen='+overrideSkyOpen+' -> bryoCover='+g.bryoCover01};
   }
-  const tufas=(placed||[]).filter(r=>r[0]==='tufabryum'&&(!r[6]||!r[6].darkFungus));
+  const tufas=(placed||[]).filter(r=>r[0]==='tufabryum');
   const bad=tufas.filter(r=>!r[6]||r[6].skyOpenness01<0.04||r[6].skyOpenness01>0.42);
   const needTufa=(SKEY!=='shutin'&&SKEY!=='porphyryrelict');
   const ok=(!needTufa||tufas.length>=12)&&bad.length===0;
@@ -205,17 +205,21 @@ const HCHK={
  lithologyAndReserves(placed,waterOut,extraBuilding){
   const pines=(placed||[]).filter(r=>r[0]==='porphyrypine');
   const badPine=pines.filter(r=>!r[6]||r[6].inDike!==true);
-  const oaks=(placed||[]).filter(r=>r[0]==='chinkapinoak');
+  const calcSet={chinkapinoak:1,dolomitehornbeam:1,weepingamberstorax:1,redbudkarst:1,whorlolive:1,karstwildtea:1};
+  const oaks=(placed||[]).filter(r=>calcSet[r[0]]===1);
   const badOak=oaks.filter(r=>r[6]&&r[6].inBleachBelt===true);
   const tagRecs=(typeof KTAGS!=='undefined'&&KTAGS.page&&KTAGS.page.records)?KTAGS.page.records:[];
   const blds=extraBuilding?1:tagRecs.filter(r=>r&&r.class==='building').length;
+  const badXanadu=tagRecs.filter(r=>r&&r.tags&&r.tags.culture==='xanadu').length;
   const stepOk=(waterOut.poolStepMinM==null?0.10:waterOut.poolStepMinM)>=0.06;
-  const carnN=(placed||[]).filter(r=>r[6]&&r[6].biosphere==='carnelian').length;
-  const pylonOk=SKEY!=='porphyryrelict'||(carnN>=10&&tagRecs.some(r=>r&&r.id==='springhollows:ecof-mist-pylon'&&r.class==='infrastructure'));
-  const ok=pines.length>0&&badPine.length===0&&oaks.length>0&&badOak.length===0&&blds===0&&stepOk&&pylonOk;
+  const carnSet={carnelian_organpipe:1,erythra_veil:1,agate_window:1,blood_strangler:1};
+  const carnN=(placed||[]).filter(r=>carnSet[r[0]]===1).length;
+  const carnOk=SKEY==='porphyryrelict'?carnN>=10:((SKEY==='shutin'||SKEY==='glade')?carnN>=2:true);
+  const pylonOk=SKEY!=='porphyryrelict'||tagRecs.some(r=>r&&r.id==='springhollows:ecof-mist-pylon'&&r.class==='infrastructure');
+  const ok=pines.length>0&&badPine.length===0&&oaks.length>0&&badOak.length===0&&blds===0&&badXanadu===0&&stepOk&&carnOk&&pylonOk;
   return{
    ok:ok,
-   detail:'porphyrypine='+pines.length+' (off-dike '+badPine.length+'), oak='+oaks.length+' (in-bleach '+badOak.length+'), carnelian='+carnN+', buildings='+blds+', poolStep='+waterOut.poolStepMinM+' m'
+   detail:'porphyrypine='+pines.length+' (off-dike '+badPine.length+'), calciphile='+oaks.length+' (in-bleach '+badOak.length+'), carnelian='+carnN+', buildings='+blds+', xanadu='+badXanadu+', poolStep='+waterOut.poolStepMinM+' m'
   };
  },
  vstackGraphics(vs,forceShadowOn){

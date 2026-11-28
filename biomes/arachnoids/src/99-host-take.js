@@ -129,6 +129,9 @@ function collectUntexturedLitMeshes(extraList){
  return bad;
 }
 
+const WARM_TROUGH_SET={bridgeweb:1,fumarolefern:1,sintermat:1,slotmulberry:1,steambedtaro:1,mistcanyontea:1,plumeorchid:1,seepcurtainmoss:1,canyonbamboo:1};
+const FROSTRIM_PROSTRATE_SET={snowbeddwarfbirch:1.10,rimcladonia:1.40,rimedelweiss:1.40,wildfrostroot:1.40,frostcushion:1.40};
+
 const HCHK={
  ownPolygon(pxPt){
   const ok=ARACH_SITES.inOwnPolygon(pxPt[0],pxPt[1])===true&&ARACH_SITES.inOwnPolygon(1055,219)===false;
@@ -139,12 +142,12 @@ const HCHK={
  },
  stationSpecies(st,skey){
   const req=skey==='nexus'
-   ?['bridgeweb','dikeclaw','webanchorvine','columnarpine','gorgehemlock','canyonbamboo','alpinesedge']
+   ?['bridgeweb','slotmulberry','steambedtaro','mistcanyontea','plumeorchid','seepcurtainmoss','dikeclaw','webanchorvine','columnarpine','gorgehemlock','canyonbamboo','alpinesedge']
    :skey==='fumarole'
-   ?['fumarolefern','sintermat','dikeclaw','gorgehemlock','canyonbamboo','alpinesedge']
+   ?['fumarolefern','sintermat','slotmulberry','steambedtaro','mistcanyontea','plumeorchid','seepcurtainmoss','dikeclaw','gorgehemlock','canyonbamboo','alpinesedge']
    :skey==='ledges'
-   ?['columnarpine','ledgeoak','dikeclaw','webanchorvine','alpinesedge']
-   :['rimkrummholz','frostcushion','alpinesedge'];
+   ?['columnarpine','ledgeoak','amberpistache','spokedikejuniper','gompasaffron','vitrophyrelipfern','entablatureivy','dikeclaw','webanchorvine','alpinesedge']
+   :['rimkrummholz','frostcushion','snowbeddwarfbirch','rimcladonia','rimedelweiss','wildfrostroot','alpinesedge'];
   const miss=req.filter(k=>!(st&&st[k]>0));
   return{
    ok:!miss.length,
@@ -152,11 +155,11 @@ const HCHK={
   };
  },
  inversionGuard(placed,skey,site){
-  const badHigh=(placed||[]).filter(r=>(r[0]==='bridgeweb'||r[0]==='fumarolefern')&&(r[4]>1450.0||(r[6]&&r[6].frost01>0)));
+  const badHigh=(placed||[]).filter(r=>WARM_TROUGH_SET[r[0]]&&(r[4]>1450.0||(r[6]&&r[6].frost01>0)));
   if(skey==='frostrim'){
    const lip=ARACH_PHYS.inversionAt(0,85,site.rimY,site);
    const ok=!badHigh.length&&lip.frost01>=0.70;
-   return{ok:ok,detail:ok?'frostrim frost01='+lip.frost01+', 0 bridgeweb/fumarolefern above +1450 m':'badHigh='+badHigh.length+', frost01='+lip.frost01};
+   return{ok:ok,detail:ok?'frostrim frost01='+lip.frost01+', 0 warm-trough species above +1450 m':'badHigh='+badHigh.length+', frost01='+lip.frost01};
   }
   const bed=ARACH_PHYS.inversionAt(0,0,site.bedY+5.0,site);
   const rim=ARACH_PHYS.inversionAt(160,140,site.rimY,site);
@@ -164,7 +167,7 @@ const HCHK={
   const ok=!badHigh.length&&dT>=8.5&&dRh>0.30&&bed.frost01===0;
   return{
    ok:ok,
-   detail:ok?'slot inversion +'+dT+' C & +'+dRh+' RH over rim, 0 frozen/high bridgeweb or fumarolefern':'dT='+dT+', dRh='+dRh+', badHigh='+badHigh.length
+   detail:ok?'slot inversion +'+dT+' C & +'+dRh+' RH over rim, 0 frozen/high warm-trough species':'dT='+dT+', dRh='+dRh+', badHigh='+badHigh.length
   };
  },
  bridgeWebAudit(audit,skey){
@@ -186,9 +189,10 @@ const HCHK={
    return{ok:ok,detail:ok?pools.length+' monotone basalt-weir step-pools & KTHERM fumarole aprons':'bad pool step: '+bad};
   }
   if(skey==='frostrim'){
-   const kr=(placed||[]).filter(r=>r[0]==='rimkrummholz'&&r[6]&&r[6].prostrateH<=1.95&&r[6].bannerLenM>=1.55);
-   const ok=kr.length>=15;
-   return{ok:ok,detail:ok?kr.length+' 0.88 atm updraft-sheared prostrate rimkrummholz banners':'krummholz count='+kr.length};
+   const kr=(placed||[]).filter(r=>r[0]==='rimkrummholz'&&r[6]&&r[6].prostrateH<=1.90&&r[6].bannerLenM>=1.80);
+   const tall=(placed||[]).filter(r=>FROSTRIM_PROSTRATE_SET[r[0]]&&r[6]&&r[6].H>FROSTRIM_PROSTRATE_SET[r[0]]);
+   const ok=kr.length>=15&&!tall.length;
+   return{ok:ok,detail:ok?kr.length+' 0.88 atm prostrate rimkrummholz (<=1.9m, banner>=1.8m) & 0 over-tall ET mats':'krummholz='+kr.length+', overTall='+tall.length};
   }
   if(skey==='ledges'){
    const ok=!!ALCOVE&&ALCOVE.crystals>=5;
@@ -227,7 +231,7 @@ function hostChecks(){
  const qShadow=new URLSearchParams(location.search).get('shadow')==='1';
  add('station pixel strictly inside Core own polygon',HCHK.ownPolygon(SITE.px));
  add('signature and matrix species placed on station',HCHK.stationSpecies(window._station,SKEY));
- add('inverted canyon microclimate and frost-free bridgeweb/fern ceiling',HCHK.inversionGuard(ARACHNOIDS.PLACED,SKEY,SITE));
+ add('inverted canyon microclimate and frost-free warm-trough ceiling',HCHK.inversionGuard(ARACHNOIDS.PLACED,SKEY,SITE));
  add('0.75g catenary bridge-web rock anchoring and 0.000 m ATMOS pin drift',HCHK.bridgeWebAudit(ARACHNOIDS.WEB_AUDIT,SKEY));
  add('station speleothems, monotone step-pools and 0.88 atm krummholz shear',HCHK.stepPoolsAndShear(STEP_POOLS,ARACHNOIDS.PLACED,SKEY));
  add('100 percent of lit scene meshes carry real library textures',HCHK.allTextured(null));
@@ -242,7 +246,7 @@ function hostNegatives(){
  const R=[],add=(name,r)=>R.push({name:name,failed:!r.ok,detail:r.detail});
  add('Compass Hills overlap pixel (1055, 219) fails own-polygon check',HCHK.ownPolygon([1055,219]));
  add('missing signature species fails station check',HCHK.stationSpecies({},SKEY));
- add('fumarolefern placed at +3200 m or frost01 > 0 fails inversion ceiling',HCHK.inversionGuard([['fumarolefern',0,20,0,3200,'frostrim',{frost01:0.75}]],SKEY,SITE));
+ add('warm-trough fumarolefern or slotmulberry placed at +3200 m or frost01 > 0 fails inversion ceiling',HCHK.inversionGuard([['slotmulberry',0,20,0,3200,'frostrim',{frost01:0.75}]],SKEY,SITE));
  add('sky-floating or drifting bridge-web anchor fails web audit',HCHK.bridgeWebAudit({spans:4,anchors:8,pinnedZero:6,maxAnchorDrift:0.35,minWaterClearM:18,maxAnchorGapM:0.45,minBellyDisp:0.5},'nexus'));
  add('uphill non-monotone basalt step-pool fails',HCHK.stepPoolsAndShear([{level:10},{level:10.5},1,2,3,4,5,6],[],'fumarole'));
  add('untextured lit MeshStandardMaterial is caught',HCHK.allTextured([new THREE.MeshStandardMaterial({color:0x888888})]));
@@ -257,12 +261,12 @@ KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 
 const HINT=SKEY==='nexus'
- ?'Ham-Tsek Radial Dike Nexus (998, 290; +660.6 m, 1.47 atm): 9102 Ham-Tsek (1,295 m3/s) breaching a 3-spoke arch-rift-basalt dike star-junction beneath 35-85 m multi-tier catenary Tsek-Ma communal Bridge-Webs, KSPELEO.HYPOGENE saltpeter overhangs, and Hum silk-hawser toll capstans.'
+ ?'Ham-Tsek Radial Dike Nexus (998, 290; +660.6 m, 1.47 atm): 9102 Ham-Tsek (1,295 m3/s) breaching a 3-spoke arch-rift-basalt dike star-junction beneath 35-85 m multi-tier catenary Tsek-Ma communal Bridge-Webs, Tsek-Gompa silk-mulberry & canyon tea benches, KSPELEO.HYPOGENE saltpeter overhangs, and Hum silk-hawser toll capstans.'
  :SKEY==='fumarole'
- ?'Cauldron-Slot Fumaroles & Step-Pools (1097, 331; +912.6 m, 1.43 atm, +28 C trough): 9 monotone turquoise basalt-sill plunge pools, KTHERM +68 C sulfur-steam fumaroles, Steam-Plume Tree-Ferns (fumarolefern), thermophilic sintermat cushions, and Hum cassiterite/gold placer riffle-bars below sheer dry cauldron cliffs.'
+ ?'Cauldron-Slot Fumaroles & Step-Pools (1097, 331; +912.6 m, 1.43 atm, +28 C trough): 9 monotone turquoise basalt-sill plunge pools, KTHERM +68 C sulfur-steam fumaroles, Steam-Plume Tree-Ferns (fumarolefern), steambed taro, dendrobium orchids, thermophilic sintermat cushions, and Hum cassiterite/gold placer riffle-bars.'
  :SKEY==='ledges'
- ?'Mid-Wall Columnar Basalt & Tuff Ledge Forest (984, 283; +1,629.0 m, 1.31 atm, Csa): KRELIEF.slab horizontal colonnade and outland-tuff benches with root-clawed columnarpine and evergreen canyon oaks, carmine-silver dikeclaw cliff rosettes, and a walkable KSPELEO.SMOKY smoky-quartz Kluft above a 970 m mist abyss.'
- :'High Alpine Frost-Rim & Updraft Krummholz (919, 281; +4,784.3 m, 0.88 atm, ET -2 C): KFROST sorted stone polygons and clinking jet-black obsidian-vitrophyre dike hogbacks overlooking a 2,000 m cloud-filled radial chasm, with horizontal rimkrummholz banners sheared radially away from rising canyon updrafts.';
+ ?'Mid-Wall Columnar Basalt & Tuff Ledge Forest (984, 283; +1,629.0 m, 1.31 atm, Csa): KRELIEF.slab horizontal colonnade and outland-tuff benches with root-clawed columnarpine, amber-bark pistache, radial spoke-dike juniper, Tsek-Gompa saffron terraces, and a walkable KSPELEO.SMOKY smoky-quartz Kluft above a 970 m mist abyss.'
+ :'High Alpine Frost-Rim & Updraft Krummholz (919, 281; +4,784.3 m, 0.88 atm, ET -2 C): KFROST sorted stone polygons, clinking jet-black obsidian-vitrophyre dike hogbacks, snowbed dwarf-birch, cladonia, edelweiss, wild frostroot, and horizontal rimkrummholz banners sheared radially away from rising canyon updrafts.';
 
 const EXPORT_BOX_BY_STATION=SKEY==='nexus'?[-125,-95,115,95]:SKEY==='fumarole'?[-140,-125,135,75]:SKEY==='ledges'?[-115,-85,95,85]:[-125,-75,95,135];
 
@@ -296,7 +300,7 @@ KHOST.take({
   placed:()=>ARACHNOIDS.PLACED,
   webSpans:()=>ARACHNOIDS.WEB_SPANS,
   state:()=>ARACH_STATE,
-  exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','water'],
+  exportProfile:SKEY==='frostrim'?['registry','items','buckets','materials','textures','terrain','stage','atmos']:['registry','items','buckets','materials','textures','terrain','stage','atmos','water'],
   exportBox:EXPORT_BOX_BY_STATION,
   at:(x,z)=>{
    const y=DRAWN_H(x,z),o={h:y,asl:SITE.elevM+(y-SITE.bedY),water:waterH(x,z)};

@@ -65,6 +65,14 @@ var ARCFLOW_PHYS=(function(root){
     serp=Math.max(serp,smooth(36,8,dLip)*0.72);
    }
   }
+  if(S.swath&&root.KFRONTIER&&typeof root.KFRONTIER.bleachSwathAt==='function'){
+   /* Neutralized vanguard soil pockets along orbital Bleach-Swath edge where chelators leached surface Mg/Ni */
+   var swB=root.KFRONTIER.bleachSwathAt(px,pz,S.swath);
+   if(swB.vanguard01>0.15&&swB.bleach01<0.35){
+    var vanPatch=smooth(0.42,0.66,K?K.fbm(px*0.024,0.5,pz*0.024,2,8115):0.0);
+    serp=serp*(1-0.74*swB.vanguard01*vanPatch);
+   }
+  }
 
   /* Zebra-cumulate rhythmic chromitite-pyroxenite-anorthosite striping across tilted layered sills */
   var phase=(px*0.86+pz*0.51)*0.18+(K?(K.fbm(px*0.02,0.5,pz*0.02,2,8112)-0.5)*1.4:0);
@@ -165,6 +173,7 @@ var ARCFLOW_PHYS=(function(root){
   var xeric=clamp(nz(S.xericBase,0.22)+oph.serpentinite01*0.38+seep.ceruleanTufa01*0.25,0,1);
   var skyEx=clamp(nz(S.skyExposureBase,0.28)+oph.serpentinite01*0.32,0,1);
   if(KF&&typeof KF.quiltAt==='function'){
+   var swInfo=S.swath&&typeof KF.bleachSwathAt==='function'?KF.bleachSwathAt(x,z,S.swath):null;
    var q=KF.quiltAt(x,z,{
     seed:nz(S.seed,8101),
     edaphicToxicity01:edaph,
@@ -181,6 +190,7 @@ var ARCFLOW_PHYS=(function(root){
     bleachScar01:+q.bleachScar01.toFixed(4),
     augerOasis01:+q.augerOasis01.toFixed(4),
     stranglerEdge01:+q.stranglerEdge01.toFixed(4),
+    vanguard01:+(swInfo?swInfo.vanguard01:0).toFixed(4),
     skeleton01:+q.skeleton01.toFixed(4),
     mgCaRatio:oph.mgCaRatio,
     niPpm:oph.niPpm
@@ -193,6 +203,7 @@ var ARCFLOW_PHYS=(function(root){
    bleachScar01:0,
    augerOasis01:0,
    stranglerEdge01:0,
+   vanguard01:0,
    skeleton01:0,
    mgCaRatio:oph.mgCaRatio,
    niPpm:oph.niPpm

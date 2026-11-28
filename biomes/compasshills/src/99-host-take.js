@@ -40,6 +40,7 @@ const VIEWS=(function(){
   'overview':look(-195,165,62,15,5,6),
   'magnetite-river-narrows':look(-95,68,18,15,-12,2),
   'black-sand-placer':look(-42,58,4.6,12,18,0.6),
+  'weeping-amber-grove':look(-54,-78,9.0,-86,-108,4.5),
   'ham-tsek-post-site':look(88,82,16,138,112,3),
   'mulberry-terrace':look(36,118,6.5,72,118,3.5)
  };
@@ -216,11 +217,17 @@ function collectUntexturedLitMeshes(extraList){
  return bad;
 }
 
+const FERRO_KEYS=COMPASS.FERRO_KEYS||{
+ compassbush:1,fluxgrass:1,fluxlichen:1,ferrotuft:1,lodestonespire:1,magnetitespleenwort:1,gossanwhorlheath:1
+};
+
 const HCHK={
  stationSpecies(st,skey){
   const req=skey==='gorge'
-   ?['compassbush','lodestonespire','fluxlichen','ferrotuft','fluxgrass','gorgeplane','silkmulberry','stonepine','corkoak','ironpistache','macchiasage']
-   :['compassbush','lodestonespire','fluxlichen','ferrotuft','fluxgrass','stonepine','corkoak','ironpistache','whorlolive','cuestajuniper','macchiasage'];
+   ?['compassbush','lodestonespire','fluxlichen','ferrotuft','fluxgrass','magnetitespleenwort','gossanwhorlheath','gorgeplane','silkmulberry','amberstorax','gorgeoleander','canyongrape','seepmaidenhair','stonepine','corkoak','ironpistache','macchiasage']
+   :skey==='cuesta'
+   ?['compassbush','lodestonespire','fluxlichen','ferrotuft','fluxgrass','magnetitespleenwort','gossanwhorlheath','stonepine','corkoak','ironpistache','whorlolive','sunnycarob','cuestaarbutus','goldenbroom','cistusrockrose','cuestaasphodel','saffroncrocus','macchiasage']
+   :['compassbush','lodestonespire','fluxlichen','ferrotuft','fluxgrass','magnetitespleenwort','gossanwhorlheath','stonepine','corkoak','ironpistache','amberstorax','cuestaarbutus','goldenbroom','cuestajuniper','macchiasage'];
   const miss=req.filter(k=>!(st&&st[k]>0));
   return{
    ok:!miss.length,
@@ -249,10 +256,19 @@ const HCHK={
  },
  matrixBalance(st){
   const sh=st&&st.earthShare!=null?st.earthShare:0;
-  const ok=sh>=0.78&&sh<=0.90;
+  let tallyOk=true;
+  if(st&&st.compassbush!=null&&COMPASS&&COMPASS.SPECIES){
+   let eSum=0,fSum=0;
+   COMPASS.SPECIES.forEach(sp=>{
+    const n=st[sp.key]||0;
+    if(FERRO_KEYS[sp.key])fSum+=n;else eSum+=n;
+   });
+   tallyOk=(COMPASS.SPECIES.length===25&&eSum===st.earthlike&&fSum===st.ferromagnetic);
+  }
+  const ok=tallyOk&&sh>=0.78&&sh<=0.90;
   return{
    ok:ok,
-   detail:'Earthlike matrix '+(sh*100).toFixed(1)+'% ('+(st?st.earthlike:0)+' Earthlike / '+(st?st.ferromagnetic:0)+' ferromagnetic; target 78-90%)'
+   detail:'Earthlike matrix '+(sh*100).toFixed(1)+'% ('+(st?st.earthlike:0)+' Earthlike / '+(st?st.ferromagnetic:0)+' ferromagnetic across 25 species; target 78-90%)'
   };
  },
  zeroIronAndReserves(worksRecs,placed,reserve){
@@ -325,12 +341,12 @@ KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTic
 KHOST.on(function hudViewTick(){if(COMPASS_HUD&&COMPASS_HUD.update)COMPASS_HUD.update();},'view');
 
 const HINT=SKEY==='foundry'
- ?'Compass Hills — Lodestone Quench-Ring (1058, 224, +876.5 m, 1.43 atm Cfa): arcuate subsided cryo-magnet ring trench around the Lodestone arcology reserve, 360-deg swirling compassbush leaf streamlines, tangent-steered black Fe3O4 sand ripples, and zero-iron nephrite & tin-bronze delver stelae.'
+ ?'Compass Hills — Lodestone Quench-Ring (1058, 224, +876.5 m, 1.43 atm Cfa): arcuate subsided cryo-magnet ring trench around the Lodestone superconductor reserve, 360-deg swirling compassbush leaf streamlines, gossan whorl-heath, north-dip amberstorax resin stands, and zero-iron nephrite & tin-bronze delver stelae.'
  :SKEY==='tors'
- ?'Compass Hills — Eastern Magnetite Tors (1128, 248, +1,392.3 m, 1.34 atm Cfa): 60 m banded-ironstone cuesta scarp crowned by lightning-struck magnetite spires laced with glassy fulgurite veins, concentric fluxlichen isogauss rings, and tin-bronze quarry wedges.'
+ ?'Compass Hills — Eastern Magnetite Tors (1128, 248, +1,392.3 m, 1.34 atm Cfa): 60 m banded-ironstone cuesta scarp crowned by lightning-struck magnetite spires laced with glassy fulgurite veins, concentric fluxlichen isogauss rings, crevice spleenwort, and tin-bronze quarry wedges.'
  :SKEY==='cuesta'
- ?'Compass Hills — Dry-Summer Csa Dip-Slope (1046, 258, +987.6 m, 1.42 atm Csa): umbrella stone pine, cork oak, iron-pistache, whorl-olive & saffron woodland crossed by a crisp 180-deg magnetic domain-wall saddle where compassbush bearings flip across 40 m.'
- :'Compass Hills — Ham-Tsek Magnetite Narrows (1055, 219, +846.7 m, 1.44 atm Cfa): 9102 Web-Cleaver River (1,080 m^3/s) carving 90 m banded-ironstone palisades with black magnetite-amber placer bars, mulberry groves, and bronze ferry bollards.';
+ ?'Compass Hills — Dry-Summer Csa Dip-Slope (1046, 258, +987.6 m, 1.42 atm Csa): stone pine, cork oak, carob, iron-pistache, whorl-olive, cistus, saffron & asphodel woodland crossed by a crisp 180-deg magnetic domain-wall saddle where compassbush bearings flip across 40 m.'
+ :'Compass Hills — Ham-Tsek Magnetite Narrows (1055, 219, +846.7 m, 1.44 atm Cfa): 9102 Web-Cleaver River (1,080 m^3/s) carving 90 m banded-ironstone palisades with black magnetite-amber placer bars, northern Weeping-Amber storax (amber = 120 Pioneers coil-varnish) & mulberry groves, oleander, wild canyon grape, and bronze ferry bollards.';
 
 const EXPORT_BOX_BY_STATION=SKEY==='foundry'?[-195,-195,195,195]:SKEY==='tors'?[-165,-110,165,125]:SKEY==='cuesta'?[-145,-125,155,125]:[-155,-95,175,145];
 

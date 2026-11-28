@@ -63,7 +63,7 @@ const R=[];
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT: ')+n.detail}); }
-{ R.push({name:'window-arcflow-api', ok:!!(window.ARCFLOW&&window.ARCFLOW.SPECIES&&window.ARCFLOW.SPECIES.length===9),
+{ R.push({name:'window-arcflow-api', ok:!!(window.ARCFLOW&&window.ARCFLOW.SPECIES&&window.ARCFLOW.SPECIES.length===25),
           detail:window.ARCFLOW?('ARCFLOW.SPECIES='+window.ARCFLOW.SPECIES.length):'missing window.ARCFLOW'}); }
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }

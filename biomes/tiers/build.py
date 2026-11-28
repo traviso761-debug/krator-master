@@ -174,7 +174,13 @@ if miss: print('NO BIOME CORE: ' + ', '.join(miss)); sys.exit(1)
 # the library pack (tools/textures/matlib_pack.py): the packs of the library textures materials.json names, from the committed tex/
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
-VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'tiers', own=True), khost.EDITS_JS: khost.edits_js(HERE, 'tiers')}
+STATION_EXCLUDE = {
+    'lake': ('bark.pine', 'cushion', 'ground.gravel', 'ground.litter', 'ground.pave', 'ground.reed', 'ground.tufa', 'pagoda', 'pinespray', 'rheumleaf'),
+    'canyon': ('cushion', 'ground.gravel', 'ground.litter', 'ground.pave', 'ground.reed', 'ground.tufa', 'pad', 'pagoda'),
+    'lip': ('bark.pine', 'cushion', 'ground.gravel', 'ground.pave', 'ground.reed', 'ground.terrace', 'ground.tufa', 'pagoda', 'pinespray', 'rheumleaf'),
+    'tread': ('agaveblade', 'bark.cactus', 'bark.cornel', 'bark.juniper', 'bark.oak', 'bark.palm', 'bark.pine', 'bark.skirt', 'cornelbract', 'cornelplate', 'ground.litter', 'ground.meadow', 'ground.reed', 'ground.terrace', 'ground.tufa', 'irisblade', 'irisbloom', 'juniperpad', 'oakplate', 'pad', 'palmfan', 'pinespray', 'reed', 'stepfern', 'sumacplate', 'umbelleaf'),
+}
+VIRTUAL = {'44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'tiers', own=True, exclude=STATION_EXCLUDE.get(STATION, ())), khost.EDITS_JS: khost.edits_js(HERE, 'tiers')}
 # THE NEIGHBOURS' SPECIES, read in place (riftrim's form, the Great Chasm's 87-host-kin.js): each kit's fragments slot after the host stage (45)
 # and before this kit (50), in their own registry, closed by a one-line kitEnd; its pack carries only the families those builders draw with
 NEIGH = {k: tuple(v) for k, v in SJ.get('kin', {}).items()}

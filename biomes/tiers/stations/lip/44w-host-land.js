@@ -88,12 +88,12 @@ function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 const LAND={name:'The Lip (tiers station 3)',title:'Krator biome — the Tiers: the Lip',build_id:'tiers-lip',
  hint:'Station 3 of the Tiers: the Lip, the upper lake\'s one outlet (scale model 5.1 px 1246,531): the lake held at 1,150 m behind a sill of black basalt, the notch, and the fall of about 900 m over the Black Step to the floor\'s rainforest; the lake tread\'s Csa above, the floor\'s Am below (the sill drawn by this kit until the map edit)',
  region:{name:'The Lip (station 3)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(700),cloud:.3,
- fog:{falloff:1/600,sun:.3,sky:.35},climate:{},wet:false,groundN:780,
+ fog:{falloff:1/600,sun:.3,sky:.35},climate:{},wet:false,groundN:560,
  /* THE HOUR: 11:00, the sun north-north-east and high (core/atmos at the site): the face (it looks west) in its own shade, the fall's curtain against
     it lit from the side, the floor in sun; the opening day's eclipse is 09:00-10:00 */
  hour:11,
  groundLayers:['meadow','steppe','litter','lichen'],   /* no terraced fields here: the floor's leaf litter takes their unit */
- plants:['tiergrass','heath','lichen','boulder'],
+ plants:['tiergrass','heath','lichen','boulder','collaredagave','whorlferula','terracesumac','miststepfern','beddinghouseleek','saffroniris','stepastragalus'],
  modelTol:60,
  /* the station's sculpts, out of the model check: the sill (the plan's, on the far field until the map edit), the lake's bed: the lip's side of the rim */
  sculpt:(x,z)=>STATION.sideOf(x,z).s<0,   /* the floor's cells (the face's foot and beyond) are the model's own; the lip and the lake are sculpted */
@@ -109,6 +109,10 @@ const LAND={name:'The Lip (tiers station 3)',title:'Krator biome — the Tiers: 
   {ref:'nwlowlands.paperbark',key:'paperbark',name:'Pale paperbark (the north-western lowlands\', read in place)',cell:24,minR:5,accept:(Z,x,z)=>STATION.lowK(x,z)*(Z.seep*.4+.14)*(1-Z.cliff)*smooth(.6,.35,Z.slope)},
   {ref:'nwlowlands.meranti',key:'meranti',name:'Sky meranti (the north-western lowlands\', read in place)',cell:52,minR:14,accept:(Z,x,z)=>STATION.lowK(x,z)*(1-STATION.sprayK(x,z))*.55*(1-Z.cliff)*smooth(.5,.3,Z.slope)}],
  exportBox:null,exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','hazards','water'],
+ build:()=>{const wTex=BIO.canvasTex(2,2,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect(0,0,w,h);});
+  for(const k in BIO.kits){const D=BIO.kits[k]&&BIO.kits[k].defs;for(const d in D){const mt=D[d]&&D[d].mat;
+   if(mt&&!mt.map&&!mt.emissiveMap&&mt.userData&&mt.userData.bio){mt.map=wTex;mt.color.setRGB(1,1,1);mt.needsUpdate=true;}}}
+  return null;},
  hazards:()=>{const S=STATION,out=[];
   /* the Lip's edge (fall), every 400 m along the rim on the page; rockfall under it (crush) */
   {const R=S.RIM,Lc=[0];for(let i=1;i<R.length;i++)Lc.push(Lc[i-1]+Math.hypot(R[i][0]-R[i-1][0],R[i][1]-R[i-1][1]));

@@ -21,9 +21,9 @@ const WORKS=(function(){
     at:[R.x,ry,R.z],
     r:R.r,
     h:22,
-    tags:{biome:'springhollows',culture:R.culture||'xanadu',role:'reserve'}
+    tags:{biome:'springhollows',culture:R.culture||'ria',role:'reserve'}
    });
-   REGISTER({tagId:R.id+':bench',tagClass:'landmark',name:R.name,x:R.x,y:ry-2,z:R.z,r:R.r,h:20,tags:{culture:R.culture||'xanadu'}});
+   REGISTER({tagId:R.id+':bench',tagClass:'landmark',name:R.name,x:R.x,y:ry-2,z:R.z,r:R.r,h:20,tags:{culture:R.culture||'ria'}});
   }
  }
 
@@ -110,7 +110,7 @@ const WORKS=(function(){
     at:[x,y0,z],
     r:1.0,
     h:3.4,
-    tags:{culture:'xanadu',setting:'outdoor',style:'high-ria'}
+    tags:{culture:'ria',setting:'outdoor',style:'high-ria'}
    });
   }
  }
@@ -135,7 +135,7 @@ const WORKS=(function(){
     at:[x,y0,z],
     r:2.1,
     h:0.5,
-    tags:{culture:'xanadu',setting:'outdoor',style:'high-ria'}
+    tags:{culture:'ria',setting:'outdoor',style:'high-ria'}
    });
   }
  }

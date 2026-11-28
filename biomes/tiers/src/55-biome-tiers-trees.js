@@ -135,6 +135,38 @@ B.ladderreed=function(T,st,lv){const S=SP[T.sp],nC=lv===2?ri(9,16):ri(5,8),lc=C(
   T.tierYs.push(...use);}
  regTree(T,S,T.rb+.8,top-T.y0+.3);};
 
+ // THE PAGODA CORNEL (moist benches, seep margins and woodland edges): a slender plum-brown bole with four to six crisp horizontal tables of dark
+ // leaves lit from above by flat ivory flower-bract stars (the wedding-cake habit of Cornus controversa)
+ B.pagodacornel=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,bc=barkCol(S.bark,'bark.cornel'),lc=C(pick(S.leaf)),fc=C(pick(PAL.cornelBract));
+  const nT=lv===2?T.tiers:Math.max(3,T.tiers-1),bole=grow({x:T.x,y:T.y0-.25,z:T.z},dirOf(rr(0,TAU),rr(1.48,1.56)),H,T.rb,T.rb*.22,lv===2?6:3,.01);
+  limb('bark.cornel',bole,bc,lv,st,lv===2?7:4);
+  let top=T.y0,rim=R*.35;T.tierYs=[];
+  for(let t=0;t<nT;t++){const u=.32+.64*t/Math.max(1,nT-1),c=along(bole,u),Rt=R*(1-.58*t/Math.max(1,nT-1))*rr(.88,1.06),m=lv===2?ri(5,7):4,a0=rr(0,TAU);T.tierYs.push(c.y);
+   for(let b=0;b<m;b++){const a=a0+b/m*TAU+rr(-.22,.22),L=Rt*rr(.84,1.04),P=grow(c,dirOf(a,rr(-.02,.08)),L,c.r*.48,.02,lv===2?3:2,-.03);
+    const PF=FLARE&&P[0].r>.03?BIO.flareJoin(P,{parentR:c.r}):P;st.trunk+=BIO.tube('bark.cornel',PF,bc,{seg:lv===2?5:3,cap:true});
+    const sz=lv===2?rr(.95,1.35):rr(1.4,1.9),n=Math.max(1,Math.round(L*.74/sz*(lv===2?1.35:1)));
+    for(let k=0;k<n;k++){const p=along(PF,.26+.72*(k+.5)/n),yaw=rr(0,TAU);
+     BIO.put('cornelplate',[p.x,p.y+.02,p.z],qEuler(rr(-.04,.04),yaw,rr(-.04,.04)),[sz*1.15,1,sz*1.15],bright(vary(lc,.02,.08,.06),rr(.92,1.08)));st.clumps++;
+     if(lv===2&&(k===n-1||rng()<.45)){BIO.put('cornelbract',[p.x,p.y+.055,p.z],qEuler(rr(-.03,.03),yaw+1.1,rr(-.03,.03)),[sz*.68,1,sz*.68],bright(fc,rr(.95,1.06)));st.blooms++;}}
+    const e=tip(PF);rim=Math.max(rim,Math.hypot(e.x-T.x,e.z-T.z));}
+   top=Math.max(top,c.y);}
+  T.tiersDrawn=nT;regTree(T,S,rim+.5,Math.max(H,top-T.y0+.6));};
+ // THE STEP-BARK JUNIPER (riser rims, canyon shoulders and dry treads): a twisted red-bronze trunk carrying three to six flat cloud-pruned green
+ // foliage tables stepping up the bole
+ B.stepjuniper=function(T,st,lv){const S=SP[T.sp],H=T.H,R=T.crownR,bc=barkCol(S.bark,'bark.juniper'),lc=C(pick(S.leaf));
+  const nT=lv===2?T.tiers:Math.max(2,T.tiers-1),bole=grow({x:T.x,y:T.y0-.25,z:T.z},dirOf(rr(0,TAU),rr(1.36,1.52)),H,T.rb,T.rb*.24,lv===2?6:3,.03);
+  limb('bark.juniper',bole,bc,lv,st,lv===2?7:4);
+  let top=T.y0,rim=R*.35;T.tierYs=[];
+  for(let t=0;t<nT;t++){const u=.28+.66*t/Math.max(1,nT-1),c=along(bole,u),Rt=R*(1-.5*t/Math.max(1,nT-1))*rr(.86,1.08),m=lv===2?ri(3,5):3,a0=rr(0,TAU);T.tierYs.push(c.y);
+   for(let b=0;b<m;b++){const a=a0+b/m*TAU+rr(-.35,.35),L=Rt*rr(.8,1.05),P=grow(c,dirOf(a,rr(-.04,.1)),L,c.r*.5,.022,lv===2?3:2,.02);
+    const PF=FLARE&&P[0].r>.03?BIO.flareJoin(P,{parentR:c.r}):P;st.trunk+=BIO.tube('bark.juniper',PF,bc,{seg:lv===2?5:3,cap:true});
+    const sz=lv===2?rr(.95,1.3):rr(1.45,1.85),n=Math.max(1,Math.round(L*.68/sz*(lv===2?1.45:1)));
+    for(let k=0;k<n;k++){const p=along(PF,.3+.68*(k+.5)/n),yaw=a+rr(-.8,.8),q=qEuler(rr(-.05,.05),-yaw+Math.PI/2,rr(-.05,.05));
+     BIO.put('juniperpad',[p.x,p.y+.02,p.z],q,[sz,sz*.72,sz],bright(vary(lc,.02,.07,.06),rr(.9,1.08)),{n:[0,1,0]});st.clumps++;}
+    const e=tip(PF);rim=Math.max(rim,Math.hypot(e.x-T.x,e.z-T.z));}
+   top=Math.max(top,c.y);}
+  T.tiersDrawn=nT;regTree(T,S,rim+.45,Math.max(H,top-T.y0+.6));};
+
 // ---------------------------------------------------------------- the far level: the tiers in silhouette (a flattened disc a tier, the bole)
 let ICO=null;
 function buildFar(T,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.IcosahedronGeometry(1,1).attributes.position.array;let tris=0;
@@ -143,12 +175,12 @@ function buildFar(T,st){const S=SP[T.sp],K=BIO.bucket('far');if(!ICO)ICO=new T3.
  function disc(x,y,z,rx,ry){const ip=ICO;for(let i=0;i<ip.length;i+=3){const dx=ip[i],dy=ip[i+1],dz=ip[i+2],ny=dy*.8+.4,nl=Math.hypot(dx,ny,dz)||1,c=dc.clone().lerp(lc,smooth(-.6,.6,dy));
    vtx(x+dx*rx,y+dy*ry,z+dz*rx,dx/nl,ny/nl,dz/nl,c);}tris+=ip.length/9;}
  st.far+=BIO.lathe('far',[{x:T.x,y:T.y0-.3,z:T.z,yy:0,col:[bc.r,bc.g,bc.b]},{x:T.x,y:T.y0+T.H*.95,z:T.z,yy:1,col:[bc.r,bc.g,bc.b]}],4,1,1,Rg=>Math.max(.12,T.rb*(1-.6*Rg.yy)),null);
- if(S.key==='shelfoak'){const n=Math.max(3,T.tiers-1);for(let t=0;t<n;t++){const u=.34+.6*t/Math.max(1,n-1),Rt=T.crownR*(1-.55*t/Math.max(1,n-1));disc(T.x,T.y0+T.H*u,T.z,Rt,.45);}}
- else if(S.key==='whorlpine'){const n=Math.max(3,T.tiers-2);for(let t=0;t<n;t++){const u=.3+.62*t/Math.max(1,n-1);disc(T.x,T.y0+T.H*u,T.z,T.crownR*(1-.72*t/Math.max(1,n-1)),.35);}}
+ if(S.key==='shelfoak'||S.key==='pagodacornel'){const n=Math.max(3,T.tiers-1);for(let t=0;t<n;t++){const u=.34+.6*t/Math.max(1,n-1),Rt=T.crownR*(1-.55*t/Math.max(1,n-1));disc(T.x,T.y0+T.H*u,T.z,Rt,.38);}}
+ else if(S.key==='whorlpine'||S.key==='stepjuniper'){const n=Math.max(3,T.tiers-1);for(let t=0;t<n;t++){const u=.3+.62*t/Math.max(1,n-1);disc(T.x,T.y0+T.H*u,T.z,T.crownR*(1-.62*t/Math.max(1,n-1)),.34);}}
  else if(S.key==='steppalm'){for(let k=0;k<3;k++)disc(T.x,T.y0+T.H*(.3+.2*k),T.z,T.rb*2.2,.4);disc(T.x,T.y0+T.H+.3,T.z,T.crownR*.9,T.crownR*.35);}
  for(let i=0;i<tris;i++)K.k.push(kk);K.tris+=tris;BIO.tally(tris,0,0);st.far+=tris;}
-const FAR_OK={shelfoak:true,steppalm:true,whorlpine:true};
-const YOUNG={shelfoak:true,whorlpine:true,candelabra:true};
+const FAR_OK={shelfoak:true,steppalm:true,whorlpine:true,pagodacornel:true,stepjuniper:true};
+const YOUNG={shelfoak:true,whorlpine:true,candelabra:true,pagodacornel:true,stepjuniper:true};
 
 // ---------------------------------------------------------------- keep-clear between trees (core/space)
 let SPACE=null;
@@ -170,7 +202,9 @@ TIERS.PASSES=[
  {key:'shelfoak',cell:26,accept:Z=>Z.wood*.42,opt:{pad:3,patch:.55,patchScale:.005},k:Z=>.85+.3*smooth(.45,.7,Z.wet)},
  {key:'candelabra',cell:24,accept:Z=>Z.dry*.16+Z.ledge*.1*Z.temperate,opt:{pad:1.6,patch:.6,patchScale:.01}},
  /* last, so the passes before it draw as they did: the whorl pine on the cool upper ground (the canyon's rims and benches, ~2.7-4 km) */
- {key:'whorlpine',cell:22,accept:Z=>Z.cool*(.3*Z.gentle+.2*Z.ledge)*(1-Z.rock*.7),opt:{pad:2,patch:.55,patchScale:.008},k:Z=>.8+.35*smooth(.15,.3,Z.wet)}];
+ {key:'whorlpine',cell:22,accept:Z=>Z.cool*(.3*Z.gentle+.2*Z.ledge)*(1-Z.rock*.7),opt:{pad:2,patch:.55,patchScale:.008},k:Z=>.8+.35*smooth(.15,.3,Z.wet)},
+ {key:'pagodacornel',cell:34,accept:Z=>Z.temperate*Z.land*Z.live*(1-Z.farm)*(Z.seep*.38+Z.wood*.24+Z.shore*.14)*(1-Z.rock*.7),opt:{pad:1.8,patch:.5,patchScale:.01},k:Z=>.85+.25*smooth(.4,.7,Z.wet)},
+ {key:'stepjuniper',cell:34,accept:Z=>(Z.cool*(.26*Z.ledge+.22*Z.talus+.18*Z.gentle)+Z.temperate*(Z.tread*.18+Z.ledge*.2+Z.dry*.06))*Z.land*Z.live*(1-Z.farm)*(1-Z.rock*.65),opt:{pad:1.6,patch:.52,patchScale:.01}}];
 TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;
  SP.forEach(S=>{if(typeof B[S.key]!=='function')BIO.err('tiers: no builder for species '+S.key);});
  const st=newStats(),TREES=TIERS.TREES;TREES.length=0;SPACE=KSPACE.create({cell:30});
@@ -184,7 +218,7 @@ TIERS.buildTrees=function(R,q){reseed(551201);q=q==null?1:q;R=R||2500;
     /* THE YOUNG (the flora pass, 2026-11-16): about a fifth of the oaks, pines and candelabras are saplings and poles, chosen by a hash of the
        spot (no draw moves): a third to two thirds the height, two or three tiers */
     if(YOUNG[S.key]){const yu=KRAND.unit(KRAND.hash(551203,Math.round(x*10),Math.round(z*10)));if(yu<.2){T.young=true;T.H*=.3+yu*1.8;T.crownR*=.45+yu*1.5;T.rb*=.4+yu;T.tiers=Math.max(2,Math.round(T.tiers*(.35+yu)));}}
-    TREES.push(T);SPACE.insert({x,z,r:(S.key==='shelfoak'||S.key==='whorlpine'?T.crownR*.55:S.key==='steppalm'?T.crownR*.6:T.rb*1.6+.4)},x,z,T.crownR+2);
+    TREES.push(T);SPACE.insert({x,z,r:(S.key==='shelfoak'||S.key==='whorlpine'||S.key==='pagodacornel'?T.crownR*.55:S.key==='steppalm'||S.key==='stepjuniper'?T.crownR*.6:T.rb*1.6+.4)},x,z,T.crownR+2);
     BIO.owner=[x,z];try{if(lv===0){buildFar(T,st);st.fars++;}else{B[S.key](T,st,lv);st.heroes++;}}finally{BIO.owner=null;}st.byS[S.i]++;},
    {box:[-R,-R,R,R],patch:opt.patch==null?.5:opt.patch,patchScale:opt.patchScale==null?.012:opt.patchScale,pad:1,noMask:!!P.water});});
  TIERS.COUNTS=SP.map((S,i)=>st.byS[i]);BIO.cur=null;

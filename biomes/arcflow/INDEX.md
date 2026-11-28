@@ -14,15 +14,15 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `15-arcflow-phys.js` | 13 |  |
+| `15-arcflow-phys.js` | 14 |  |
 | `22-arcflow-crops.js` | 2 |  |
 | `24-arcflow-fauna.js` | 4 |  |
 | `45-host-stage.js` | 16 | 5-station heightfields & hydrological channels (74) |
-| `46-af-vstack.js` | 8 |  |
-| `50-arcflow-species.js` | 23 |  |
-| `60-arcflow-place.js` | 15 |  |
+| `46-af-vstack.js` | 9 |  |
+| `50-arcflow-species.js` | 39 **big** |  |
+| `60-arcflow-place.js` | 26 |  |
 | `70-arcflow.js` | <1 |  |
-| `84-host-ground.js` | 16 |  |
+| `84-host-ground.js` | 17 |  |
 | `85-host-far.js` | 4 |  |
 | `86-host-works.js` | 9 |  |
 | `88-host-place.js` | <1 |  |
@@ -30,7 +30,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89a-host-atmos.js` | 2 |  |
 | `89w-host-water.js` | 9 |  |
 | `89z-host-build.js` | 3 |  |
-| `99-host-take.js` | 13 |  |
+| `99-host-take.js` | 14 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

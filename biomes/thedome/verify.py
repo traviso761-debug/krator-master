@@ -3,7 +3,7 @@
 
 Usage:
   python3 biomes/thedome/verify.py --assert --no-cache
-      Runs tests/test-thedome.js + verifies all 4 stations (apron, moat, crown, cleft).
+      Runs tests/test-thedome.js + verifies all 5 stations (apron, moat, crown, cleft, eastflank).
   python3 biomes/thedome/verify.py dist/thedome.html --assert [--all-views]
   python3 biomes/thedome/verify.py --station crown --assert
 """
@@ -61,7 +61,7 @@ if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, d
 { const vs=window._vstack;
   R.push({name:'vstack-graphics', ok:!!(vs&&vs.m1Loaded&&vs.indexedItems&&vs.lodMerge&&vs.roughAAMats>=3&&vs.drawnSources>=1&&vs.groundLayers<=3),
           detail:vs?('M1='+vs.m1Loaded+', roughAA='+vs.roughAAMats+', KDRAWN='+vs.drawnSources+', KGROUND='+vs.groundLayers):'missing window._vstack'}); }
-{ R.push({name:'window-thedome-api', ok:!!(window.THEDOME&&window.THEDOME.SPECIES&&window.THEDOME.SPECIES.length===7&&window.DOME_PHYS),
+{ R.push({name:'window-thedome-api', ok:!!(window.THEDOME&&window.THEDOME.SPECIES&&window.THEDOME.SPECIES.length===24&&window.DOME_PHYS),
           detail:window.THEDOME?('THEDOME.SPECIES='+window.THEDOME.SPECIES.length):'missing window.THEDOME'}); }
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }

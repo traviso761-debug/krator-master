@@ -100,14 +100,14 @@ function fieldsAt(x,z,h,slope){return STATION.fieldsAt(x,z,h,slope);}
 const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the Tiers: Coyote Canyon',build_id:'tiers-canyon',
  hint:'Station 2 of the Tiers: Coyote Canyon, the capital of the Coyote Kingdom (scale model 5.1 px 1265,500; 1,560-2,900 m, 1.31 atm, BSh): a box canyon cut back into the riser as a stair of nine treads, the king\'s spring at its head, the step moss\'s pools down the stair, irrigated terraces on its floor, the ledge heath striping its walls (the seat\'s buildings as records until kits/coyote and the layout)',
  region:{name:'Coyote Canyon (station 2)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(SITE.h),cloud:.15,
- fog:{falloff:1/900,sun:.3,sky:.3},climate:{},wet:false,groundN:780,
+ fog:{falloff:1/900,sun:.3,sky:.3},climate:{},wet:false,groundN:560,
  /* THE HOUR THE PAGE OPENS: 11:00, when the sun (59 degrees, azimuth 30: core/atmos's sky at the site) runs nearly down the canyon's axis and lights
     its floor; at the shared 14:00 it crosses the north-west wall and the whole floor is in its shade (src/84-host-horizon.js, hzSky below). The opening day's
     eclipse at this longitude is 09:00-10:00 */
  hour:11,
  hzSky:.45,   /* the head's bowl in its own shade: the horizon shade's sky term eased (src/84-host-horizon.js) */
  groundLayers:['meadow','steppe','terrace','lichen'],
- plants:['tiergrass','heath','moss','lichen','boulder','tlip','tiersage'],
+ plants:['tiergrass','heath','moss','lichen','boulder','tlip','tiersage','collaredagave','whorlferula','terracesumac','miststepfern','tufarosette','beddinghouseleek','saffroniris','stepastragalus','pagodarhubarb','treadbistort'],
  modelTol:45,
  /* the station's sculpts, out of the model check: the canyon (its filled cells and the cut) */
  sculpt:(x,z)=>!!STATION.partAt(x,z)||STATION.CAN.has(Math.round(x/MODEL.cell)+','+Math.round(z/MODEL.cell)),
@@ -123,6 +123,10 @@ const LAND={name:'Coyote Canyon (tiers station 2)',title:'Krator biome — the T
   {ref:'ebadlands.ponderosa',key:'ponderosa',name:'Ponderosa pine (the eastern badlands\', read in place)',cell:46,minR:6,accept:Z=>Z.cool*.16*Z.gentle*(1-Z.cliff)}],
  exportBox:null,exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','hazards','water'],
  prebuild:()=>typeof SEAT!=='undefined'?SEAT.build():null,
+ build:()=>{const wTex=BIO.canvasTex(2,2,(g,w,h)=>{g.fillStyle='#ffffff';g.fillRect(0,0,w,h);});
+  for(const k in BIO.kits){const D=BIO.kits[k]&&BIO.kits[k].defs;for(const d in D){const mt=D[d]&&D[d].mat;
+   if(mt&&!mt.map&&!mt.emissiveMap&&mt.userData&&mt.userData.bio){mt.map=wTex;mt.color.setRGB(1,1,1);mt.needsUpdate=true;}}}
+  return null;},
  hazards:()=>{const out=[],S=STATION;
   /* along the stair: the rims' falls (both walls), rockfall under the walls (crush), the dry falls' wet tufa (slip); the flash flood's segments
      (drown on a cycle, the current's pull) at the end */

@@ -1,11 +1,13 @@
-// ================================================================= SPIDER LAKE — species, library materials, trees & ATMOS silk builders ([draw])
-// Registers BIO.kit('spiderlake') -> SPIDERLAKE: 12 botanical & colonial arachnid species (PLAN.md section 5):
-//   - Trees & Woody Flora: spindlewillow, crowncypress (with submerged knees), ambermulberry (extrafloral nectar),
-//     chinkapinoak, porphyrypine (all using BIO.flareJoin + octahedral impostors >= 7 m)
-//   - Littoral, Fen & Cliff Understory: lakesmokesedge, silkfenpitcher, porphyryfern, rampartgossamer
-//   - Eusocial Arachneapolita Silk Architecture: bridgecurtain (50-220 m Golden Cable catenaries), broodpavilion
-//     (2-6 m insulated Cloud-Fleece canopy domes + littoral/fen diving-bell air-bell silk domes), weirframe_wild
-// 100% of bark, foliage, silk, organic, crystal, wood, and rock surfaces bind packed library textures (materials.json).
+// ================================================================= SPIDER LAKE — species, library materials, trees, Carnelian clades & ATMOS silk builders ([draw])
+// Registers BIO.kit('spiderlake') -> SPIDERLAKE: 27 botanical, Carnelian Erythrophyll & colonial arachnid species (PLAN.md section 5):
+//   - Trees & Woody Flora: spindlewillow, crowncypress (submerged knees), ambermulberry (extrafloral nectar),
+//     chinkapinoak, porphyrypine, weepingliquidambar (bark.amber + card.samara.maple ria-amber tree), dolomitebamboo
+//   - Hum-Ria Arachniculture, Warm-Seep, Karst & Vanguard Understory: silkbogmyrtle (canonical smudge-myrtle),
+//     lakelotus, nurserywildrice, dyersindigo, grottocamellia, lakesmokesedge, silkfenpitcher, fensundew,
+//     porphyryfern, shorespiderlily, bleachfireweed
+//   - Pre-Terraforming Carnelian Erythrophyll Clades (30% Red, Tier 1-2): carnelian_organpipe, erythra_veil,
+//     bladder_tether, agate_window, blood_strangler (via core/frontier KFRONTIER)
+//   - Eusocial Arachneapolita Silk Architecture: bridgecurtain, broodpavilion, weirframe_wild, rampartgossamer
 BIO.kit('spiderlake');
 var SPIDERLAKE={
  PHYS:SPIDER_PHYS,
@@ -35,6 +37,18 @@ var SPIDERLAKE={
   mulberry:[0x4e7c3a,0x5c8a44,0x436e32,0x6a964e],
   oak:[0x3f6836,0x4c7640,0x355c2e,0x588248],
   pine:[0x2c5238,0x365e42,0x254830,0x3e684a],
+  liquidambar:[0xc8842e,0xd69638,0x9e6228,0x728436],
+  myrtle:[0x56764c,0x648458,0x4a6842,0x728e64],
+  bamboo:[0x467e48,0x548e54,0x3c703e,0x629a5e],
+  bambooCulm:[0x5a8c4e,0x689a58,0x4e7e44],
+  lotus:[0xf4d8e2,0xf8e4ec,0xecbed0,0xfaf0e6],
+  lotusPad:[0x3c763a,0x488444,0x326832],
+  wildrice:[0x849448,0x98a454,0x72843e,0xb8a24e],
+  indigo:[0x3e6e52,0x4a7c5e,0x365e48,0x546888],
+  camellia:[0x2f6038,0x3a6e42,0x285430,0x467a4c],
+  sundew:[0xc43844,0xd64852,0xa82e3a,0xde6258],
+  spiderlily:[0xe64838,0xf26444,0xd8382c,0xf4b238],
+  fireweed:[0xd84e88,0xe66298,0xc43e78,0xeca2be],
   sedge:[0x748848,0x849652,0x667a3e,0x92a25e],
   cotton:[0xebe8dc,0xf4f1e6,0xdedbd0],
   pfern:[0x6e7838,0x7e8642,0x5e6830,0x8e9248],
@@ -54,7 +68,7 @@ var SPIDERLAKE={
   travertine:[0xe4dccb,0xede5d6,0xd8cfc0]
  };
 
- // ---------------------------------------------------------------- 12 species roster (verified by tools/check_botany.py)
+ // ---------------------------------------------------------------- 27 species roster (verified by tools/check_botany.py)
  const SPECIES=SPIDERLAKE.SPECIES=[
   {key:'spindlewillow',name:'Spindle-Willow (Salix arachnophila)',
    how:'Supple 12-19 m smooth-barked bench tree with horizontal whorled limbs (BIO.flareJoin) bearing heavy colonial silk pavilions and guy-lines without snapping.',
@@ -71,15 +85,60 @@ var SPIDERLAKE={
   {key:'porphyrypine',name:'Porphyry Rim-Pine (Pinus porphyritica)',
    how:'Wind-firm 11-22 m conifer rooted in purple-red porphyry dikes and +2,040 m North Rampart megabreccia.',
    items:['sl_pine_fol'],tags:K('temperate','humid','no',['Cfa','Cfb'],'rim_rampart',{kin:'springhollows'})},
+  {key:'weepingliquidambar',name:'Weeping Ria-Amber Sweetgum (Liquidambar lacrymans)',
+   how:'Resinous 11-20 m golden-samara bench tree exuding fragrant ria-amber tears along fissured bark, bridging Spider Lake woods toward the Weeping Valley frontier.',
+   items:['sl_liquidambar_fol'],tags:K('subtropic..temperate','humid','both',['Cfa'],'pavilion_wood',{kin:'riavalley'})},
+  {key:'silkbogmyrtle',name:'Hum-Ria Smudge Bog-Myrtle (Myrica sericifera)',
+   how:'Aromatic 0.8-2.1 m wax-resinous littoral and fen shrub burned by Hum-Ria silk-tenders to calm Arachneapolita colonies peacefully during live 6-day reeling.',
+   items:['sl_myrtle_fol'],tags:K('subtropic','humid','yes',['Cfa','Cfb'],'spindle_terrace')},
+  {key:'dolomitebamboo',name:'Karst Jade-Culm Bamboo (Phyllostachys dolomitica)',
+   how:'Segmented 4.5-9.5 m jade-green clumping bamboo rooted in fractured carbonate-shelf dolomite banks along the Golden Narrows, NW grotto rim, and Hau-Gel gorge.',
+   items:['sl_bamboo_fol'],tags:K('subtropic','humid','both',['Cfa'],'narrows')},
+  {key:'lakelotus',name:'Warm-Seep Sacred Lotus (Nelumbo thermophila)',
+   how:'Floating peltate pads and luminous rose-ivory blossoms thriving in +24-34 C calm pavilion coves and alkaline fen backwaters.',
+   items:['sl_lotus_bloom'],tags:K('subtropic','humid','yes',['Cfa'],'fumarole_fen',{crop:'lotus-root'})},
+  {key:'nurserywildrice',name:'Lake-Smoke Nursery Wild-Rice (Zizania chironomi)',
+   how:'Emergent 0.8-1.7 m aquatic grass belt in 0.15-0.85 m warm shallows whose submerged stalks shelter emerging chironomid lake-smoke midge pupae.',
+   items:['sl_wildrice'],tags:K('subtropic','humid','yes',['Cfa'],'fumarole_fen',{crop:'wild-rice'})},
+  {key:'dyersindigo',name:'Liwa-Toga Canal Indigo (Indigofera liwatoga)',
+   how:'Pinnate 0.6-1.3 m Silk Principality terrace subshrub fermented in warm alkaline spring vats to dye 19.2 m Lake-Sheen Gossamer canal bolts.',
+   items:['sl_indigo'],tags:K('subtropic','humid','no',['Cfa'],'spindle_terrace',{crop:'indigo'})},
+  {key:'grottocamellia',name:'Dolomite Mist-Tea Bush (Camellia spelea)',
+   how:'Glossy 0.9-2.2 m evergreen tea shrub combing warm lake-mist across NW dolomite karst ledges, grotto portals, and upper spindle-terraces.',
+   items:['sl_camellia'],tags:K('subtropic','humid','no',['Cfa','Cfb'],'spindle_terrace',{crop:'tea'})},
   {key:'lakesmokesedge',name:'Lake-Smoke Tussock Sedge (Carex nebulosa)',
    how:'Buoyant 0.5-1.4 m littoral sedge and fen cottongrass tussocks whose submerged root-curtains shelter trillions of hydrothermal midge and mayfly larvae.',
    items:['sl_sedge','sl_cotton','sl_moss'],tags:N('subtropic','humid','yes',['Cfa'],'fumarole_fen')},
   {key:'silkfenpitcher',name:'Snare-Mouth Fen Pitcher (Sarracenia sericea)',
    how:'Fluted 0.35-0.85 m crimson-and-chartreuse bog trumpets around warm degumming seeps co-inhabited by juvenile Arachneapolita spinning dew-snare rims.',
    items:['sl_pitcher'],tags:N('subtropic','humid','yes',['Cfa'],'fumarole_fen',{mutualist:true})},
+  {key:'fensundew',name:'Warm-Seep Great Sundew (Drosera thermarum)',
+   how:'Glistening 0.15-0.42 m ruby mucilage-tentacle carnivorous rosettes carpeting warm travertine-edge sphagnum beside snare-mouth fen pitchers.',
+   items:['sl_sundew'],tags:N('subtropic','humid','yes',['Cfa'],'fumarole_fen')},
   {key:'porphyryfern',name:'Calming Smudge Cliff-Fern (Polypodium porphyriticum)',
    how:'Leathery bronze-green fern on dolomite, porphyry, and ejecta boulders bearing heavy golden sporangia burned in smudge-pots for zero-kill silk reeling.',
    items:['sl_pfern','sl_floorfern'],tags:N('temperate','humid','no',['Cfa','Cfb'],'rim_rampart')},
+  {key:'shorespiderlily',name:'Golden-Filament Shore Spider-Lily (Lycoris arachnoides)',
+   how:'Arching 0.35-0.75 m crimson-and-gold long-stamened littoral geophyte framing spillway, narrows, and pavilion waterline ledges.',
+   items:['sl_spiderlily'],tags:K('subtropic','humid','yes',['Cfa'],'narrows')},
+  {key:'bleachfireweed',name:'Bleach-Scar Vanguard Fireweed (Chamaenerion calciphilum)',
+   how:'Tall 0.6-1.45 m magenta-rose pioneer spikes colonizing mineralized Ancient Bleach-Scar seams on Hau-Gel benches and wind-scoured North Rampart gravel.',
+   items:['sl_fireweed'],tags:K('temperate','subhumid..humid','no',['Cfa','Cfb'],'bleach_scar')},
+  {key:'carnelian_organpipe',name:'Sanguine Flute-Colony (Sanguinitubus ejecticus)',
+   how:'Clustered 3.0-10.5 m fluted crimson-and-ivory silica-chitin chimneys holding dry ballistic secondary-ejecta cliffs on Hau-Gel, Spillway stacks, and North Rampart.',
+   items:['sl_kf_flute_collar','sl_kf_bleach_skel'],tags:N('subtropic..temperate','subhumid','no',['Cfa','Cfb'],'carnelian_ejecta',{biosphere:'carnelian',clade:'carnelian-organpipe'})},
+  {key:'erythra_veil',name:'Pleated Carnelian Lattice-Fan (Erythrophyllum flabellatum)',
+   how:'Perforated 1.5-4.4 m scarlet Erythrophyll solar-fan sails oriented perpendicular to sun-tracks on dry secondary-ejecta gorge walls and boulder collars.',
+   items:['sl_kf_veil_lobe'],tags:N('subtropic..temperate','subhumid','no',['Cfa','Cfb'],'carnelian_ejecta',{biosphere:'carnelian',clade:'erythra-veil'})},
+  {key:'bladder_tether',name:'Pneumatophore Ruby Tether-Vine (Physophora rubra)',
+   how:'Buoyant 2.2-8.2 m translucent ruby H2/CH4-filled spheres tethered on rust-black chitinous tendons swaying in 1.33 atm / 0.75 g Hau-Gel updrafts.',
+   items:['sl_kf_ruby_bladder'],tags:N('subtropic','humid','both',['Cfa'],'carnelian_ejecta',{biosphere:'carnelian',clade:'bladder-kelp-land'})},
+  {key:'agate_window',name:'Chalcedony Window-Dome (Fenestraria carneliana)',
+   how:'Hemispherical 0.2-1.1 m armoured crimson rosettes capped by clear biogenic chalcedony skylight windows on dry ballistic secondary-ejecta crests.',
+   items:['sl_kf_agate_rosette','sl_kf_agate_lens'],tags:N('subtropic..temperate','subhumid','no',['Cfa','Cfb'],'carnelian_ejecta',{biosphere:'carnelian',clade:'agate-window'})},
+  {key:'blood_strangler',name:'Reactive Chitin-Web (Myceliophaga sanguinea)',
+   how:'Arterial-red calcifying chitin-mycelium cable-mats armoring Carnelian colonies against invading Earth roots along orbital Bleach-Scar seams.',
+   items:['sl_kf_strangler_rib'],tags:N('subtropic..temperate','subhumid','no',['Cfa','Cfb'],'bleach_scar',{biosphere:'carnelian',clade:'blood-strangler'})},
   {key:'bridgecurtain',name:'Golden Dragline Bridge-Curtain (Arachneapolita span work)',
    how:'Multi-tier 15-40 m tall by 50-220 m wide 1.3 GPa golden suspension curtain pinned to karst stacks and crown-cypress pylons above +6.5 m skiff arches.',
    items:['sl_curtain_node','sl_rigger'],gather:'spider-silk-cable',tags:N('subtropic','humid','yes',['Cfa'],'narrows',{silkGrade:'spider-silk-cable'})},
@@ -101,9 +160,24 @@ var SPIDERLAKE={
   ambermulberry:HV('timber, weaving',['amber mulberry'],false,'Sweet berries; inner bast beaten into crisp treaty-parchment stitched with gossamer.'),
   chinkapinoak:HV('timber, tannin',['chinkapin acorn'],false,'Sweet roasted acorns; dense joinery timber and tanbark for skiff cordage.'),
   porphyrypine:HV('timber, resin',['pine nut'],false,'Straight rampart spar timber and aromatic waterproof caulking pitch.'),
+  weepingliquidambar:HV('timber, resin',[],true,'Tapped golden ria-amber resin seals Cloud-Fleece palace roofs, varnishes Pioneer telegraph coils, and scents Court of the Amber Seal wax; alchemical reagent.','reagent'),
+  silkbogmyrtle:HV('fuel',[],true,'Canonical Hum-Ria smudge-myrtle burned with cliff-fern spores to calm Arachneapolita spiders during live 6-day silk harvest; anoints northern scouts against shroud-ants.','reagent'),
+  dolomitebamboo:HV('timber, weaving',['bamboo shoot'],false,'Tender spring shoots eaten braised; split jade culms woven into cocoon-drying racks, skiff punting poles, and Hum wind-pipes.'),
+  lakelotus:HV('fiber',['lotus rhizome','lotus seed'],true,'Crisp starchy rhizomes and seeds simmered in Silk Principality banquets; stem fibers spun into sacred lamp-wicks.'),
+  nurserywildrice:HV('thatch',['lake wild-rice'],false,'Nutty aquatic grain beat gently into skiffs while leaving submerged stalks intact for emerging chironomid midge larvae.'),
+  dyersindigo:HV('none',[],true,'Fermented in warm alkaline spring water to yield fast royal-indigo dye for SL4 19.2 m Lake-Sheen Gossamer canal bolts.'),
+  grottocamellia:HV('fuel',['mist-tea leaf'],true,'Steeped by silk-reelers and Pioneer surveyors into brisk focus-sharpening mist tea; cold-pressed seed oil lubricates bronze bobbin sheaves.'),
   lakesmokesedge:HV('thatch, weaving',[],false,'Woven into airy cocoon-drying baskets, skiff cushions, and reed mats.'),
   silkfenpitcher:HV('none',[],true,'Enzymatic pitcher fluid used as a mild spot-cleanser for raw gossamer bolts; alchemical reagent.','reagent'),
-  porphyryfern:HV('none',[],true,'Dried golden spore-fronds burned with bog-myrtle in silk-wright smudge-pots to calm colonies peacefully into brood-domes; alchemical reagent.','reagent'),
+  fensundew:HV('none',[],true,'Mucilaginous ruby dew-drops boiled into soothing cough-balm and luminous sizing glaze for fine gossamer warp threads; alchemical reagent.','reagent'),
+  porphyryfern:HV('none',[],true,'Dried golden spore-fronds burned with smudge-myrtle in silk-wright smudge-pots to calm colonies peacefully into brood-domes; alchemical reagent.','reagent'),
+  shorespiderlily:HV('none',[],true,'Alkaloid-rich bulbs yield insect-proof starch paste for binding Amber-Seal silk-parchment ledgers and treaty scrolls.'),
+  bleachfireweed:HV('fiber',['fireweed shoot'],true,'Spring shoots steamed as greens; silky seed-down twisted into lantern wicks and blossoms steeped as soothing anti-inflammatory tea.'),
+  carnelian_organpipe:HV('none',[],false,'Calcined silica-chitin chimney tubes ground into refractory porcelain kiln grog and high-heat assay crucibles; alchemical reagent.','reagent'),
+  erythra_veil:HV('none',[],false,'Ashed scarlet Erythrophyll fan lattice yields brilliant carnelian-vermilion ceramic glaze pigment and seal-wax colorant.'),
+  bladder_tether:HV('cordage',[],true,'Cured ruby float-bladders serve as waterproof net-buoys and warm lantern shades; sinewy chitinous tendons twisted into bowstrings.'),
+  agate_window:HV('none',[],true,'Clear biogenic chalcedony skylight lenses polished into silk-thread inspection loupes; cooling sub-lens gel treats sinter burns.','reagent'),
+  blood_strangler:HV('none',[],true,'Calcified arterial-red chitin-web cables boiled with alum into rot-proof piling wash and dielectric coil-varnish flux; alchemical reagent.','reagent'),
   bridgecurtain:HV('cordage',[],false,'Outer structural cables harvested rotationally without harming spiders as 1.3 GPa Golden Cable rigging.'),
   broodpavilion:HV('fiber, padding',[],true,'Shed seasonal outer weather-shells carded into waterproof Cloud-Fleece parkas and sterile surgical dressings.'),
   weirframe_wild:HV('spinning, textile',[],false,'Reeled every 6 days under 132 Hz Hum resonance and degummed in +38 C alkaline springs into iridescent Lake-Sheen Gossamer.'),
@@ -122,12 +196,15 @@ var SPIDERLAKE={
   byKey.silkfenpitcher.tags.trap=KTRAPS.make({
    kind:'pitfall',mouth:0.09,preyMax:'small',cycle:{wait:12,shut:0.0,digest:72,reopen:0},lure:'nectar',danger:0.02
   });
+  byKey.fensundew.tags.trap=KTRAPS.make({
+   kind:'flypaper',mouth:0.06,preyMax:'insect',cycle:{wait:3600,shut:900,digest:129600,reopen:3600},lure:'dew',danger:0.0
+  });
  }
 
  // core/hamlet gather contract
  SPIDERLAKE.GATHER={
-  pasture:{narrows:0.15,fumarole_fen:0.28,pavilion_wood:0.32,spindle_terrace:0.55,rim_rampart:0.42},
-  fish:{narrows:0.92,fumarole_fen:0.88,pavilion_wood:0.45,spindle_terrace:0.15,rim_rampart:0.0}
+  pasture:{narrows:0.15,fumarole_fen:0.28,pavilion_wood:0.32,spindle_terrace:0.55,rim_rampart:0.42,carnelian_ejecta:0.0,bleach_scar:0.08},
+  fish:{narrows:0.92,fumarole_fen:0.88,pavilion_wood:0.45,spindle_terrace:0.15,rim_rampart:0.0,carnelian_ejecta:0.0,bleach_scar:0.0}
  };
  SPIDERLAKE.gatherOf=function(Z){
   let p=0,f=0;
@@ -191,6 +268,8 @@ var SPIDERLAKE={
   'bark.oak':BIO.barkMat(grey(128,14)),
   'bark.pine':BIO.barkMat(grey(128,15)),
   'wood.log':BIO.barkMat(grey(128,16)),
+  'bark.amber':BIO.barkMat(grey(128,18)),
+  'bark.bamboo':BIO.barkMat(grey(128,19)),
   woodCedar:pbrMat('wood.cedar',17,{roughness:0.68,metalness:0.02,vertexColors:false,color:0xd8bea0}),
 
   // Luminous woven gossamer & architectural silk materials
@@ -220,6 +299,16 @@ var SPIDERLAKE={
   cypress:BIO.leafMat(cardFallback(52),'sl-cypress',{aN:true,swayW:'0.55',swayA:0.04}),
   mulberry:BIO.leafMat(cardFallback(53),'sl-mulberry',{aN:true,swayW:'0.65',swayA:0.06}),
   oak:BIO.leafMat(cardFallback(54),'sl-oak',{aN:true,swayW:'0.55',swayA:0.05}),
+  liquidambar:BIO.leafMat(cardFallback(61),'sl-liquidambar',{aN:true,swayW:'0.65',swayA:0.06}),
+  myrtle:BIO.leafMat(cardFallback(62),'sl-myrtle',{aN:true,swayW:'0.55',swayA:0.05}),
+  bambooleaf:BIO.leafMat(cardFallback(63),'sl-bambooleaf',{aN:true,swayW:'0.75',swayA:0.08}),
+  lotus:BIO.leafMat(cardFallback(64),'sl-lotus',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  wildrice:BIO.leafMat(cardFallback(65),'sl-wildrice',{aN:false,swayW:'(position.y)',swayA:0.09}),
+  indigo:BIO.leafMat(cardFallback(66),'sl-indigo',{aN:false,swayW:'(position.y)',swayA:0.05}),
+  camellia:BIO.leafMat(cardFallback(67),'sl-camellia',{aN:true,swayW:'0.55',swayA:0.04}),
+  sundew:BIO.leafMat(cardFallback(68),'sl-sundew',{aN:false,swayW:'(position.y)',swayA:0.03}),
+  spiderlily:BIO.leafMat(cardFallback(69),'sl-spiderlily',{aN:false,swayW:'(position.y)',swayA:0.06}),
+  fireweed:BIO.leafMat(cardFallback(70),'sl-fireweed',{aN:false,swayW:'(position.y)',swayA:0.07}),
   sedge:BIO.leafMat(cardFallback(55),'sl-sedge',{aN:false,swayW:'(position.y)',swayA:0.08}),
   cotton:BIO.leafMat(cardFallback(56),'sl-cotton',{aN:false,swayW:'(position.y)',swayA:0.09}),
   pfern:BIO.leafMat(cardFallback(57),'sl-pfern',{aN:false,swayW:'(position.x)',swayA:0.05}),
@@ -272,11 +361,13 @@ var SPIDERLAKE={
  };
 
  // ---------------------------------------------------------------- merged bark & timber buckets
- BIO.bucket('sl_willow',M['bark.willow'],{label:'Spindle-willow smooth silver-celadon limbs'});
+ BIO.bucket('sl_willow',M['bark.willow'],{label:'Spindle-willow & smudge-myrtle limbs'});
  BIO.bucket('sl_cypress',M['bark.cypress'],{label:'Buttressed crown-cypress fluted trunks & knees'});
- BIO.bucket('sl_mulberry',M['bark.mulberry'],{label:'Nectar amber-mulberry terrace trunks'});
+ BIO.bucket('sl_mulberry',M['bark.mulberry'],{label:'Nectar amber-mulberry & mist-camellia trunks'});
  BIO.bucket('sl_oak',M['bark.oak'],{label:'Dolomite chinkapin oak trunks'});
  BIO.bucket('sl_pine',M['bark.pine'],{label:'Porphyry rim-pine trunks'});
+ BIO.bucket('sl_amber',M['bark.amber'],{label:'Weeping ria-amber liquidambar resinous trunks'});
+ BIO.bucket('sl_bamboo',M['bark.bamboo'],{label:'Karst jade-culm bamboo segmented culms'});
 
  function makeRockGeo(seed,flatY,angular){
   const g=new T3.IcosahedronGeometry(1,angular?1:2),p=g.attributes.position,J={},c=[];
@@ -304,16 +395,26 @@ var SPIDERLAKE={
  BIO.def('sl_pine_fol',BIO.geo.clump(),M.cypress,{attrs:['aN'],label:'Porphyry rim-pine needle sprays'});
  BIO.def('sl_mulberry_fol',BIO.geo.clump(),M.mulberry,{attrs:['aN'],label:'Nectar amber-mulberry broad leaves'});
  BIO.def('sl_oak_fol',BIO.geo.clump(),M.oak,{attrs:['aN'],label:'Chinkapin oak foliage'});
+ BIO.def('sl_liquidambar_fol',BIO.geo.clump(),M.liquidambar,{attrs:['aN'],label:'Weeping ria-amber sweetgum golden samara sprays'});
+ BIO.def('sl_myrtle_fol',BIO.geo.clump(),M.myrtle,{attrs:['aN'],label:'Hum-Ria aromatic smudge bog-myrtle foliage'});
+ BIO.def('sl_bamboo_fol',BIO.geo.clump(),M.bambooleaf,{attrs:['aN'],sward:false,label:'Karst jade-culm bamboo crown sprays'});
+ BIO.def('sl_lotus_bloom',BIO.geo.clump(),M.lotus,{sward:false,label:'Warm-seep sacred lotus blossom'});
+ BIO.def('sl_wildrice',BIO.geo.clump(),M.wildrice,{sward:false,label:'Emergent chironomid-nursery lake wild-rice'});
+ BIO.def('sl_indigo',BIO.geo.clump(),M.indigo,{sward:false,label:'Liwa-Toga silk-dyers indigo subshrub'});
+ BIO.def('sl_camellia',BIO.geo.clump(),M.camellia,{attrs:['aN'],sward:false,label:'Dolomite mist-tea camellia bush'});
+ BIO.def('sl_sundew',BIO.geo.clump(),M.sundew,{sward:false,label:'Warm-seep great mucilage sundew rosette'});
+ BIO.def('sl_spiderlily',BIO.geo.clump(),M.spiderlily,{sward:false,label:'Golden-filament shore spider-lily'});
+ BIO.def('sl_fireweed',BIO.geo.clump(),M.fireweed,{sward:false,label:'Bleach-Scar vanguard magenta fireweed spike'});
  BIO.def('sl_sedge',BIO.geo.clump(),M.sedge,{label:'Lake-smoke tussock sedge'});
  BIO.def('sl_cotton',BIO.geo.clump(),M.cotton,{label:'Fen cottongrass tuft'});
  BIO.def('sl_floorfern',BIO.geo.clump(),M.floorfern,{label:'Bench understory sword-fern'});
  BIO.def('sl_pfern',BIO.geo.frond(4),M.pfern,{label:'Calming smudge porphyry cliff-fern'});
  BIO.def('sl_gossamer',BIO.geo.hang(),M.gossamer,{label:'Ballooning spiderling gossamer skein'});
- BIO.def('sl_moss',BIO.geo.mat(),M.moss,{label:'Littoral & spray sphagnum mat'});
+ BIO.def('sl_moss',BIO.geo.mat(),M.moss,{label:'Littoral sphagnum & floating lotus-pad mat'});
 
  // 3D fungoid, silk, pitcher, cypress-knee, spider-rigger & karst boulder items
  BIO.def('sl_cypress_knee',BIO.fung.stalk({r0:0.24,r1:0.06,bend:0.04,ribs:7,ribA:0.12,seg:8,rings:5}),M['bark.cypress'],{label:'Emergent bald-cypress pneumatophore knee'});
- BIO.def('sl_nectar',BIO.fung.pod({tip:0.42,h:1.1,seg:8,rings:4,seed:58101}),M.organicNectar,{label:'Amber extrafloral mulberry nectar droplet'});
+ BIO.def('sl_nectar',BIO.fung.pod({tip:0.42,h:1.1,seg:8,rings:4,seed:58101}),M.organicNectar,{label:'Amber extrafloral mulberry nectar & ria-amber resin tear'});
  BIO.def('sl_pitcher',BIO.fung.bladder({swell:0.55,neck:0.68,h:1.45,pleats:9,pleatA:0.08,seg:10,rings:5,seed:58102}),M.organicPitcher,{label:'Snare-mouth fen pitcher trumpet'});
  BIO.def('sl_pavilion_dome',BIO.fung.cap({form:'dome',h:0.68,seg:14,rings:5,lump:0.26,wav:7,wavA:0.06,under:'pores',uv:'planar',seed:58103}),M.silkPavilion,{label:'Communal Cloud-Fleece Brood-Pavilion dome'});
  BIO.def('sl_pavilion_lobe',BIO.fung.bladder({swell:0.72,neck:0.42,h:1.05,pleats:8,pleatA:0.06,seg:10,rings:4,seed:58104}),M.silkPavilion,{label:'Brood-Pavilion insulated nursery chamber'});
@@ -328,17 +429,20 @@ var SPIDERLAKE={
  BIO.def('sl_rock_dolomite',makeRockGeo(58202,0.88,true),M.rockDolomite,{label:'Cream carbonate-shelf dolomite pinnacle block'});
  BIO.def('sl_rock_porphyry',makeRockGeo(58203,0.76,true),M.rockPorphyry,{label:'Imperial red-porphyry dike block'});
  BIO.def('sl_rock_travertine',makeRockGeo(58204,0.48,false),M.rockTravertine,{label:'Alkaline degumming travertine sinter slab'});
+ BIO.def('sl_rock_galena',makeRockGeo(58205,0.72,true),M.rockGalena,{label:'MVT silver-grey galena ore vein clast'});
  BIO.def('sl_crystal_celestine',BIO.fung.stalk({r0:0.16,r1:0.04,bend:0.0,ribs:4,ribA:0.18,seg:4,rings:3}),M.crystalCelestine,{label:'Hydrothermal pale-blue celestine crystal prism'});
  BIO.bucket('sl_chitin',M.rockPorphyry,{label:'Carnelian Erythrophyll fluted silica-chitin tubes & tendons'});
+ BIO.bucket('sl_bleach_skel',M.rockTravertine,{label:'Petrified bone-white chitin-silica Bleach-Scar skeletons'});
  if(typeof KFRONTIER!=='undefined'&&typeof KFRONTIER.defCladeItems==='function'){
   KFRONTIER.defCladeItems(BIO,{chitin:M.rockPorphyry,ruby:M.organicPitcher,chalcedony:M.crystalCalcite,bleach:M.rockTravertine},'sl_kf');
  }
 
- // ---------------------------------------------------------------- procedural tree builders (BIO.flareJoin + cypress knees + anchor forks)
+ // ---------------------------------------------------------------- procedural tree, bamboo, shrub & Carnelian builders
  const TREE_CFG={
   crowncypress:{bucket:'sl_cypress',fol:'sl_cypress_fol',pal:PAL.cypress,barkCol:0x785846,H:[24,36],rK:0.030,tiers:5,droop:0.04,buttress:true,flatCrown:true,knees:true},
   spindlewillow:{bucket:'sl_willow',fol:'sl_willow_fol',pal:PAL.willow,barkCol:0x8c9484,H:[12,18.5],rK:0.028,tiers:4,droop:0.14,whorled:true},
   ambermulberry:{bucket:'sl_mulberry',fol:'sl_mulberry_fol',pal:PAL.mulberry,barkCol:0x86684e,H:[6.5,12.5],rK:0.032,tiers:4,droop:0.08,broad:true,nectar:true},
+  weepingliquidambar:{bucket:'sl_amber',fol:'sl_liquidambar_fol',pal:PAL.liquidambar,barkCol:0x78543a,H:[11.5,19.5],rK:0.030,tiers:4,droop:0.12,broad:true,nectar:true},
   chinkapinoak:{bucket:'sl_oak',fol:'sl_oak_fol',pal:PAL.oak,barkCol:0x6e665c,H:[10,19],rK:0.029,tiers:4,droop:0.07,broad:true},
   porphyrypine:{bucket:'sl_pine',fol:'sl_pine_fol',pal:PAL.pine,barkCol:0x7a5644,H:[11,21],rK:0.024,tiers:4,droop:0.09,flatCrown:true}
  };
@@ -400,48 +504,139 @@ var SPIDERLAKE={
    for(let ti=0;ti<nTiers;ti++){
     const tf=(ti+0.5)/nTiers;
     const baseT=cfg.flatCrown?(0.52+0.44*tf):(0.32+0.62*tf);
+    const wobB=0.018*H0*Math.sin(baseT*3.4+seed*0.7);
     const nBr=cfg.whorled?4:3;
     for(let b=0;b<nBr;b++){
      const az=(b/nBr)*TAU+ti*1.18+0.35*H(seed,30+ti*4+b,1,0x304);
      const reach=H0*(cfg.flatCrown?(0.18+0.18*Math.sin(tf*Math.PI*0.85)):cfg.whorled?(0.26*(1-0.45*tf)):(0.24*Math.sin(tf*Math.PI*0.9+0.25)));
-     const bx0=x+leanX*H0*baseT*baseT,bz0=z+leanZ*H0*baseT*baseT,by0=y+H0*baseT;
+     const bx0=x+leanX*H0*baseT*baseT+wobB*Math.cos(seed),bz0=z+leanZ*H0*baseT*baseT+wobB*Math.sin(seed),by0=y-0.55+(H0+0.55)*baseT;
      const pR=Math.max(0.07,r0*(1-0.76*baseT));
      const lift=cfg.flatCrown?0.06:cfg.whorled?0.04:0.18;
      const ex=bx0+Math.cos(az)*reach,ez=bz0+Math.sin(az)*reach,ey=by0+reach*(lift-cfg.droop*0.5);
-     const mx=lerp(bx0,ex,0.52),my=lerp(by0,ey,0.58)+reach*0.06,mz=lerp(bz0,ez,0.52);
+     const mx=lerp(bx0,ex,0.54),my=lerp(by0,ey,0.58)+reach*0.06,mz=lerp(bz0,ez,0.54);
      const brPts=BIO.flareJoin([
       {x:bx0,y:by0,z:bz0,r:Math.max(0.05,pR*0.48)},
       {x:mx,y:my,z:mz,r:Math.max(0.04,pR*0.30)},
       {x:ex,y:ey,z:ez,r:Math.max(0.03,pR*0.16)}
-     ],{parentR:pR,k:1.65,sink:0.65,len:2.2});
+     ],{parentR:pR,k:1.65,sink:0.65,len:Math.min(1.6,reach*0.36)});
      tris+=BIO.tube(cfg.bucket,brPts,cfg.barkCol,{seg:4});
 
+     const endPt=brPts[brPts.length-1],midPt=brPts[Math.max(1,brPts.length-2)];
      if(ti>=1&&ti<=nTiers-2&&b===0){
-      forks.push([lerp(bx0,ex,0.58),lerp(by0,ey,0.58),lerp(bz0,ez,0.58)]);
+      forks.push([midPt.x,midPt.y,midPt.z]);
      }
      const fCol=C(cfg.pal[Math.floor(H(seed,60+ti*5+b,2,0x305)*cfg.pal.length)%cfg.pal.length]);
      const padW=reach*(cfg.flatCrown?1.08:0.92),padH=padW*(cfg.flatCrown?0.46:0.72);
-     BIO.put(cfg.fol,[ex,ey,ez],qEuler(0.06*(H(seed,ti,b,0x306)-0.5),az,0),[padW,padH,padW],fCol);
+     BIO.put(cfg.fol,[endPt.x,endPt.y,endPt.z],qEuler(0.06*(H(seed,ti,b,0x306)-0.5),az,0),[padW,padH,padW],fCol);
      if(reach>2.2){
       const fCol2=C(cfg.pal[Math.floor(H(seed,70+ti*5+b,3,0x305)*cfg.pal.length)%cfg.pal.length]);
-      BIO.put(cfg.fol,[mx,my,mz],qEuler(0,az+1.05,0),[padW*0.76,padH*0.80,padW*0.76],fCol2);
+      BIO.put(cfg.fol,[midPt.x,midPt.y,midPt.z],qEuler(0,az+1.05,0),[padW*0.76,padH*0.80,padW*0.76],fCol2);
      }
 
      if(cfg.nectar&&ti===1&&b===0&&H(seed,90+ti*3+b,1,0x307)<0.65){
-      const nx0=lerp(bx0,ex,0.72),ny0=lerp(by0,ey,0.72)-0.12,nz0=lerp(bz0,ez,0.72);
+      const nx0=lerp(midPt.x,endPt.x,0.5),ny0=lerp(midPt.y,endPt.y,0.5)-0.12,nz0=lerp(midPt.z,endPt.z,0.5);
       BIO.put('sl_nectar',[nx0,ny0,nz0],qEuler(0,az,0),[0.12,0.18,0.12],C(PAL.nectar[(ti+b)%PAL.nectar.length]));
      }
     }
    }
-   // Apical crown pad socketed onto trunk tip
-   const topX=x+leanX*H0,topZ=z+leanZ*H0,topY=y+H0;
+   // Apical crown pad socketed directly onto exact trunk tip vertex
+   const topPt=trunk[trunk.length-1];
    const topW=H0*(cfg.flatCrown?0.28:0.22),topH=topW*(cfg.flatCrown?0.42:0.68);
-   BIO.put(cfg.fol,[topX,topY,topZ],qEuler(0,seed*1.3,0),[topW,topH,topW],C(cfg.pal[0]));
-   forks.push([topX,topY-topH*0.25,topZ]);
+   BIO.put(cfg.fol,[topPt.x,topPt.y,topPt.z],qEuler(0,seed*1.3,0),[topW,topH,topW],C(cfg.pal[0]));
+   forks.push([topPt.x,topPt.y-topH*0.25,topPt.z]);
   }finally{
    BIO.owner=ownPrev;
   }
   return{tris:tris,H:H0,r0:r0,forks:forks,crownY:y+H0*0.82,knees:knees};
+ };
+
+ // Multi-culm arching karst jade-culm bamboo clump (dolomitebamboo: bark.bamboo.jade + card.grass.panic)
+ SPIDERLAKE.growBamboo=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const nCulms=3+Math.floor(H(seed,1,0,0x341)*4);
+  let tris=0,maxH=4.5;
+  const ownPrev=BIO.owner;
+  BIO.owner=[x,z];
+  try{
+   for(let c=0;c<nCulms;c++){
+    const az=(c/nCulms)*TAU+0.45*H(seed,10+c,1,0x342);
+    const dist=(0.14+0.42*H(seed,10+c,2,0x342))*sc;
+    const cx=x+Math.cos(az)*dist,cz=z+Math.sin(az)*dist;
+    const cy=BIO.host.terrainH?BIO.host.terrainH(cx,cz):y;
+    const hC=lerp(4.6,8.8,H(seed,20+c,3,0x342))*sc;
+    if(hC>maxH)maxH=hC;
+    const arch=(0.55+0.65*H(seed,30+c,4,0x342))*sc;
+    const r0=0.042+0.022*H(seed,40+c,5,0x342);
+    const pts=[];
+    for(let s=0;s<=4;s++){
+     const t=s/4,bow=t*t*arch;
+     const nodeFlare=(s>0&&s<4)?1.08:1.0;
+     pts.push({x:cx+Math.cos(az)*bow,y:cy-0.30+(hC+0.30)*t,z:cz+Math.sin(az)*bow,r:Math.max(0.018,r0*(1-0.55*t)*nodeFlare)});
+    }
+    const culmHex=PAL.bambooCulm[c%PAL.bambooCulm.length];
+    tris+=BIO.tube('sl_bamboo',pts,culmHex,{seg:4});
+    for(let k=2;k<=4;k++){
+     const p=pts[k],fScale=(0.95+0.45*(4-k)*0.3)*sc;
+     const fCol=C(PAL.bamboo[(c+k)%PAL.bamboo.length]);
+     BIO.put('sl_bamboo_fol',[p.x,p.y,p.z],qEuler(0.16,az+k*1.1,0),[fScale*1.15,fScale*0.82,fScale*1.15],fCol);
+    }
+   }
+  }finally{
+   BIO.owner=ownPrev;
+  }
+  return{tris:tris,H:maxH};
+ };
+
+ // Woody multi-stem shrub builder sharing existing bark buckets (silkbogmyrtle -> sl_willow, grottocamellia -> sl_mulberry)
+ SPIDERLAKE.growShrub=function(kind,x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const isTea=kind==='grottocamellia';
+  const bucket=isTea?'sl_mulberry':'sl_willow';
+  const fol=isTea?'sl_camellia':'sl_myrtle_fol';
+  const pal=isTea?PAL.camellia:PAL.myrtle;
+  const barkCol=isTea?0x6c5440:0x726c58;
+  const hBase=lerp(isTea?1.05:0.85,isTea?2.15:1.95,H(seed,1,0,0x361))*sc;
+  let tris=0;
+  const ownPrev=BIO.owner;
+  BIO.owner=[x,z];
+  try{
+   for(let k=0;k<3;k++){
+    const az=(k/3)*TAU+0.5*H(seed,10+k,1,0x362);
+    const reach=hBase*(0.38+0.22*H(seed,10+k,2,0x362));
+    const ex=x+Math.cos(az)*reach,ez=z+Math.sin(az)*reach,ey=y+hBase*(0.76+0.22*H(seed,10+k,3,0x362));
+    tris+=BIO.tube(bucket,[
+     {x:x,y:y-0.22,z:z,r:0.045*sc},
+     {x:lerp(x,ex,0.5),y:lerp(y,ey,0.55),z:lerp(z,ez,0.5),r:0.030*sc},
+     {x:ex,y:ey,z:ez,r:0.018*sc}
+    ],barkCol,{seg:3});
+    const fCol=C(pal[(k+Math.floor(H(seed,20+k,4,0x362)*pal.length))%pal.length]);
+    const pw=hBase*0.72;
+    BIO.put(fol,[ex,ey,ez],qEuler(0.08,az,0),[pw,pw*0.74,pw],fCol);
+   }
+   tris+=BIO.tube(bucket,[
+    {x:x,y:y-0.22,z:z,r:0.042*sc},
+    {x:x,y:y+hBase*0.92,z:z,r:0.018*sc}
+   ],barkCol,{seg:3});
+   BIO.put(fol,[x,y+hBase*0.92,z],qEuler(0,seed*0.9,0),[hBase*0.82,hBase*0.66,hBase*0.82],C(pal[0]));
+  }finally{
+   BIO.owner=ownPrev;
+  }
+  return{tris:tris,H:hBase};
+ };
+
+ // First-class Carnelian Erythrophyll clade builders delegating to core/frontier KFRONTIER
+ SPIDERLAKE.growCarnelian=function(kind,x,y,z,seed,scale,opt){
+  if(typeof KFRONTIER==='undefined')return{tris:0,H:1.0};
+  const cfg={bucket:'sl_chitin',skelBucket:'sl_bleach_skel',prefix:'sl_kf',sunAzimuthRad:0.72};
+  if(kind==='carnelian_organpipe')return KFRONTIER.growOrganPipe(BIO,cfg,x,y,z,seed,scale,opt||{});
+  if(kind==='erythra_veil')return KFRONTIER.growErythraVeil(BIO,cfg,x,y,z,seed,scale);
+  if(kind==='bladder_tether')return KFRONTIER.growBladderTether(BIO,cfg,x,y,z,seed,scale);
+  if(kind==='blood_strangler'){
+   KFRONTIER.putBloodStrangler(BIO,'sl_kf',x,y,z,seed,scale);
+   return{tris:0,H:1.6};
+  }
+  KFRONTIER.putAgateWindow(BIO,'sl_kf',x,y,z,seed,scale,!!(opt&&opt.petrified));
+  return{tris:0,H:0.75};
  };
 
  // ---------------------------------------------------------------- world-space ATMOS wind-pinned catenary silk batch builder

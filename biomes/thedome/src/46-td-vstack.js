@@ -75,6 +75,7 @@ const TD_VSTACK=(function(){
    ctx.globalCompositeOperation='source-over';
    ctx.drawImage(img,0,0,w,h);
 
+   cv.src=img.currentSrc||img.src||'';
    tex.image=cv;
    tex.needsUpdate=true;
    tex.userData=tex.userData||{};

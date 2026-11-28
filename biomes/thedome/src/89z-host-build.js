@@ -43,7 +43,7 @@ function toggleDomeShadow(){
 
  /* B2 base contact grounding on merged bark buckets + bind library bark texture to any BIO.kin far-LOD mesh */
  scene.traverse(o=>{
-  if(o.isMesh&&!o.isInstancedMesh&&o.userData&&o.userData.biome&&o.name&&/td_pine|td_cedar|td_gnarled/.test(o.name)){
+  if(o.isMesh&&!o.isInstancedMesh&&o.userData&&o.userData.biome&&o.name&&/td_pine|td_cedar|td_gnarled|td_amber|td_birch|td_cherry|td_chitin/.test(o.name)){
    if(typeof TD_VSTACK!=='undefined')TD_VSTACK.groundMeshBase(o.geometry,DRAWN_H);
   }
   if(o.isMesh&&o.name==='biome:far'&&o.material&&!o.material.map&&THEDOME.M['bark.cedar']&&THEDOME.M['bark.cedar'].map){

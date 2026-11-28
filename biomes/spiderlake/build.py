@@ -180,8 +180,28 @@ if miss:
 
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
+STATION_EXCLUDE = {
+    'spillway': ('ground.mat', 'ground.dolomite', 'ground.lichen', 'bark.bamboo', 'bambooleaf',
+                 'lotus', 'camellia', 'fireweed', 'rock.galena'),
+    'narrows': ('ground.mat', 'ground.dolomite', 'ground.lichen', 'fireweed',
+                'sundew', 'crystal.calcite', 'rock.travertine', 'rock.galena'),
+    'pavilion': ('ground.mat', 'ground.dolomite', 'ground.lichen', 'bark.bamboo', 'bambooleaf',
+                 'sundew', 'fireweed', 'crystal.calcite', 'crystal.celestine', 'rock.dolomite',
+                 'rock.travertine', 'rock.galena'),
+    'fen': ('ground.needles', 'ground.dolomite', 'ground.lichen', 'bark.bamboo', 'bambooleaf',
+            'indigo', 'camellia', 'spiderlily', 'fireweed', 'crystal.calcite', 'rock.galena'),
+    'dolomite': ('ground.gravel', 'ground.sphagnum', 'ground.mat', 'lotus', 'wildrice', 'sundew', 'fireweed'),
+    'rampart': ('ground.travertine', 'ground.sphagnum', 'ground.mat', 'bark.willow', 'bark.cypress',
+                'bark.mulberry', 'bark.amber', 'bark.bamboo', 'wood.cedar', 'silk.curtain', 'silk.weir',
+                'silk.pavilion', 'silk.cocoon', 'silk.cable', 'works.lacquer', 'works.bronze',
+                'works.terracotta', 'organic.nectar', 'willow', 'mulberry', 'liquidambar', 'myrtle',
+                'bambooleaf', 'lotus', 'wildrice', 'indigo', 'camellia', 'cotton', 'moss', 'floorfern',
+                'sundew', 'spiderlily', 'crystal.celestine', 'rock.dolomite', 'rock.travertine', 'rock.galena'),
+    'haugel': ('ground.mat', 'ground.dolomite', 'ground.lichen', 'lotus', 'camellia', 'spiderlily',
+               'crystal.celestine', 'rock.dolomite', 'rock.galena'),
+}
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'spiderlake', own=True),
+    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'spiderlake', own=True, exclude=STATION_EXCLUDE.get(STATION, ())),
     khost.EDITS_JS: khost.edits_js(HERE, 'spiderlake')
 }
 for f in VIRTUAL:

@@ -468,6 +468,297 @@
     }
    ],
    "rise": 0.12
+  },
+  "bark.cornel": {
+   "lib": "bark.cherry",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.52
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "bark.juniper": {
+   "lib": "bark.juniper",
+   "scale": [
+    1.0,
+    1.4
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.52
+   },
+   "roughLift": 0.3,
+   "specular": 0.2,
+   "mapOnly": true
+  },
+  "cornelplate": {
+   "lib": "card.umbrella.plate",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512
+  },
+  "cornelbract": {
+   "lib": "card.blossom.cherry",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.78
+   },
+   "size": 512
+  },
+  "juniperpad": {
+   "lib": "card.juniper",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.64
+   },
+   "size": 512,
+   "stems": [
+    {
+     "cell": [
+      0.022,
+      0.03,
+      0.339,
+      0.339
+     ],
+     "stem": [
+      0.035,
+      0.278
+     ],
+     "tip": [
+      0.307,
+      0.0376
+     ],
+     "w": [
+      -0.119,
+      0.132
+     ]
+    },
+    {
+     "cell": [
+      0.329,
+      0.331,
+      0.671,
+      0.671
+     ],
+     "stem": [
+      0.491,
+      0.662
+     ],
+     "tip": [
+      0.511,
+      0.341
+     ],
+     "w": [
+      -0.145,
+      0.142
+     ]
+    },
+    {
+     "cell": [
+      0.661,
+      0.661,
+      0.984,
+      0.97
+     ],
+     "stem": [
+      0.969,
+      0.923
+     ],
+     "tip": [
+      0.686,
+      0.686
+     ],
+     "w": [
+      -0.128,
+      0.126
+     ]
+    }
+   ],
+   "rise": 0.1
+  },
+  "agaveblade": {
+   "lib": "card.puya",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.354,
+    0.329,
+    0.651,
+    0.671
+   ]
+  },
+  "umbelleaf": {
+   "lib": "card.crop.umbrella",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.671,
+    0.671
+   ]
+  },
+  "sumacplate": {
+   "lib": "card.shelfoak",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.62
+   },
+   "size": 512,
+   "cell": [
+    0.347,
+    0.35,
+    0.653,
+    0.638
+   ]
+  },
+  "stepfern": {
+   "lib": "card.fern",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.64
+   },
+   "size": 512,
+   "cell": [
+    0.089,
+    0.046,
+    0.911,
+    0.995
+   ],
+   "base": "bottom"
+  },
+  "rosettecup": {
+   "lib": "card.scarp.succulents",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.2,
+    "mean": 0.64
+   },
+   "size": 512,
+   "cell": [
+    0.349,
+    0.343,
+    0.663,
+    0.671
+   ]
+  },
+  "irisblade": {
+   "lib": "card.sword",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.0,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.345,
+    0.337,
+    0.659,
+    0.659
+   ]
+  },
+  "irisbloom": {
+   "lib": "card.crop.saffron",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.45,
+    "mean": 0.74
+   },
+   "size": 512,
+   "cell": [
+    0.368,
+    0.358,
+    0.638,
+    0.646
+   ]
+  },
+  "whorlheath": {
+   "lib": "card.heath.whorl",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.25,
+    "mean": 0.68
+   },
+   "size": 512,
+   "cell": [
+    0.407,
+    0.352,
+    0.589,
+    0.63
+   ]
+  },
+  "rheumleaf": {
+   "lib": "card.rheumleaf",
+   "scale": [
+    1,
+    1
+   ],
+   "tint": {
+    "keep": 0.15,
+    "mean": 0.66
+   },
+   "size": 512,
+   "cell": [
+    0.329,
+    0.329,
+    0.657,
+    0.671
+   ]
   }
  }
 }
+

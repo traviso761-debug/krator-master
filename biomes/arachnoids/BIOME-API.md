@@ -26,9 +26,11 @@ A host world or open-world region reads its fragments in place (`src/40-biome-ar
 | `silkPinWeight(kind, u, v)` & `displaceSilk(...)` | `0.000 m` rock-wall anchor pin weight (`u=0, 1`) and deterministic `ATMOS` sway mirror |
 | `fumaroleAt(x, z, site)` | `{groundTempC, steam01, sinterRim01, sulfurCrust01, hazardScald}` |
 | `krummholzShearAt(x, z, site)` | `{updraftMs, pAtm, shear01, prostrateH, bannerLenM, yawRad, flaggedOk}` |
+| `ARACHNOIDS.canopyH(x, z, opt)` | `number` (`[G data]` canopy stand height in m: `22.5 m` in `1.43–1.47 atm` `Cfa` `slotfloor` jungles / `5.4..0.25 m` on fumarole aprons & throats; `14.5 m` on `1.31 atm` `Csa` `ledges` / `9.5 m` on chilled vitrophyre ribs; strictly prostrate `<= 1.40 m` on `0.88 atm` `ET` `frostrim`) |
 
-## Species registry (`ARACHNOIDS.SPECIES`, `11` species + `bridgeweb`)
+## Species registry (`ARACHNOIDS.SPECIES`, `25` species + `bridgeweb`)
 
-- **Signature Arachnoid Canyons Guilds (`7`):** `fumarolefern`, `sintermat`, `dikeclaw`, `webanchorvine`, `columnarpine`, `rimkrummholz`, `frostcushion`.
-- **Montane-Gorge Vascular Matrix (`4`):** `gorgehemlock`, `ledgeoak`, `canyonbamboo`, `alpinesedge`.
+- **Zone 1 — `+660–1,250 m` Frost-Free `1.43–1.47 atm` `Cfa` Slot Trough (`fumarole` & `nexus`; strictly `frost01 === 0 && aslM <= 1450`, `9` species):** `fumarolefern`, `sintermat`, `gorgehemlock`, `canyonbamboo`, `slotmulberry` (*Tsēk-Gompa* silk-guild canopy tree), `steambedtaro`, `mistcanyontea`, `plumeorchid`, `seepcurtainmoss`.
+- **Zone 2 — `+1,150–2,400 m` Warm-Dry `Csa` Basalt Benches & Radial Vitrophyre Dikes (`ledges` & upper `nexus`; `aslM <= 2600`, `9` species):** `columnarpine`, `ledgeoak`, `dikeclaw`, `webanchorvine`, `amberpistache` (*Hām-Tsēk* / Ria *Amber Seal* resin tree), `spokedikejuniper`, `gompasaffron`, `vitrophyrelipfern` (`vitrophyre01 > 0.35`), `entablatureivy`.
+- **Zone 3 — `+3,800–4,800 m` Thin-Air `0.88 atm` `ET` Frost-Rim (`frostrim`; strictly prostrate `<= 1.4 m` mats & `<= 1.9 m` flagged `rimkrummholz`, `7` species):** `rimkrummholz`, `frostcushion`, `snowbeddwarfbirch` (`<= 1.1 m`), `rimcladonia`, `rimedelweiss`, `wildfrostroot`, `alpinesedge`.
 - **Placement entry point:** `ARACHNOIDS.build({station, terrainH, waterH, space, register, webBatch, quality, seed, R})` -> per-species counts; populates `ARACHNOIDS.PLACED` and `ARACHNOIDS.WEB_SPANS`.

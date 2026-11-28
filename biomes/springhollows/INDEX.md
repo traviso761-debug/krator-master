@@ -4,7 +4,7 @@
 
 Docs: `BIOME-API.md`, `KNOWN_ISSUES.md`, `NOTES.md`, `PLAN.md`, `PORT.md`
 
-Built output (never open it; edit `src/` and rebuild): `dist/springhollows-fenestre.html`, `dist/springhollows-glade.html`, `dist/springhollows-shutin.html`, `dist/springhollows.html`
+Built output (never open it; edit `src/` and rebuild): `dist/springhollows-fenestre.html`, `dist/springhollows-glade.html`, `dist/springhollows-porphyryrelict.html`, `dist/springhollows-shutin.html`, `dist/springhollows.html`
 
 Build: `cd biomes/springhollows && python3 build.py`. Fragments are concatenated in filename order.
 Fragments marked **big** are over 30 KB: find the section below and read only that range.
@@ -14,23 +14,23 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `15-springhollows-phys.js` | 14 |  |
+| `15-springhollows-phys.js` | 16 |  |
 | `22-springhollows-crops.js` | 2 |  |
 | `24-springhollows-fauna.js` | 5 |  |
-| `45-host-stage.js` | 14 | 4-station heightfields & hydrological channels (75) |
+| `45-host-stage.js` | 15 | 4-station heightfields & hydrological channels (75) |
 | `46-sh-vstack.js` | 10 |  |
-| `50-springhollows-species.js` | 25 |  |
-| `60-springhollows-place.js` | 16 |  |
+| `50-springhollows-species.js` | 37 **big** |  |
+| `60-springhollows-place.js` | 27 |  |
 | `70-springhollows.js` | <1 |  |
-| `84-host-ground.js` | 36 **big** | Walk-in KKARST + KCAVERN + KCAVERN.cutLayer + KS (318) |
+| `84-host-ground.js` | 36 **big** | Walk-in KKARST + KCAVERN + KCAVERN.cutLayer + KS (319) |
 | `85-host-far.js` | 4 |  |
-| `86-host-works.js` | 6 |  |
+| `86-host-works.js` | 7 |  |
 | `88-host-place.js` | <1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 4 |  |
 | `89w-host-water.js` | 7 |  |
 | `89z-host-build.js` | 3 |  |
-| `99-host-take.js` | 15 |  |
+| `99-host-take.js` | 16 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/
@@ -41,5 +41,6 @@ Each station builds one page (`build.py --station <name>`) from its own fragment
 |---|---|---|
 | fenestre | 44z-host-site.js | <1 |
 | glade | 44z-host-site.js | <1 |
+| porphyryrelict | 44z-host-site.js | <1 |
 | shutin | 44z-host-site.js | <1 |
 | spring | 44z-host-site.js | <1 |

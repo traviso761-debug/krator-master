@@ -96,7 +96,7 @@ const LAND={name:'The Lake of the Tiers (tiers station 1)',title:'Krator biome â
  region:{name:'The Lake of the Tiers (station 1)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(1180),cloud:.22,
  fog:{falloff:1/700,sun:.3,sky:.3},climate:{},wet:false,groundN:780,
  groundLayers:['meadow','steppe','terrace','lichen'],
- plants:['tiergrass','heath','reed','pad','moss','lichen','boulder','tlip','tiersage'],
+ plants:['tiergrass','heath','reed','pad','moss','lichen','boulder','tlip','tiersage','collaredagave','whorlferula','terracesumac','miststepfern','tufarosette','beddinghouseleek','saffroniris','stepastragalus'],
  modelTol:40,
  /* the station's sculpts, out of the model check: the Black Step and its tread (within 1.6 km behind the rim, 250 m before it), the lake's bed
     (deepened), the fields' treads */

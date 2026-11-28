@@ -131,7 +131,7 @@ BIO.setSun([-1200,900,-600]);
 // index (BIO.INDEX_ITEMS; ?index=0 for the soup), the merge and the cross-fade as before (?lodmerge=0, ?lodfade=0), and loose instances
 // culled past their own range (?lodcull=0). INDEX_ITEMS is read as the kits define their items (47, 50): it is set here, before them
 {const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
- BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=1500;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
+ BIO.LOD.chunk=600;BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=600;BIO.LOD.fade=BIO.LOD.merge&&q.get('lodfade')!=='0'?.15:0;
  BIO.LOD.cull=BIO.LOD.fade>0&&q.get('lodcull')!=='0';
  // the looks the kit takes on this page only (50-biome-swbay-species.js and 65, SWBAY_LOOK; a world that reads the kit in place, Voth, the
  // isle demo, ringisles, gets none of them): the broadleaf back-light (?backlit=0), the floor cover's root in the ground's colour (?rootcol=0;
@@ -199,6 +199,8 @@ if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('swbay',slot,{w,amt,gain,tint
     meshes' own hollows (KGROUND.cavityMesh on the floor and the river's strip, below) lose sky light. No side planes: no flank here is steep and near.
     ?kgrelief=0 the ground before it, for judging */
  KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'swbay-ground',relief:KG_RELIEF?{bump:.075,cavity:.8,mesh:1}:null});}
+MAT_GROUND.uniforms=Object.assign(MAT_GROUND.uniforms||{},{uDetail:{value:hostGroundLib('groundDetail',TEX_DETAIL)}});
+if(GL_ON)['groundLitter','groundSand','groundSav','groundAsh'].forEach((s,i)=>{const pk=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('swbay',s):null;if(pk)MAT_GROUND.uniforms['uKGL_'+i]={value:KMAT.textures(pk,{aniso:8}).map};});
 const KG_CAV=m=>{if(KG_RELIEF)KGROUND.cavityMesh(m,{rings:[3,18],depth:[.5,4]});return m;};
 // THE RIVER STRIP (2026-10-26, the waterfall risers): the 13.75 m cells chord over a cataract's 1.5 m riser, so the channel is drawn again
 // as a fine strip along the river's line (u from the delta's head to the highlands, 36 m either side; rows every 8 m on the treads and

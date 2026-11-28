@@ -4,7 +4,7 @@
   "nwlowlands": [
    ["src/50-biome-nwlowlands-species.js", "src/55-biome-nwlowlands-trees.js"],
    "NWLOW",
-   "*"
+   ["bigfrond", "bk.fern", "bk.paper", "bk.ring", "bk.smooth", "glossy", "hang", "lance", "palmfrond", "spike"]
   ]
  }
 }

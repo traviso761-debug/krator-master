@@ -83,7 +83,7 @@ const LAND={name:'The Great Tread (tiers station 4)',title:'Krator biome — the
  region:{name:'The Great Tread (station 4)',x:0,z:0,r:TERR.R},sky:{px:SITE.sky[0],py:SITE.sky[1]},atm:atmAt(4637),cloud:.12,
  fog:{falloff:1/1400,sun:.25,sky:.25},climate:{},wet:false,groundN:780,
  groundLayers:['steppe','pave','lichen','gravel'],
- plants:['tiergrass','pagoda','cushion','lichen','boulder','stone','tlip'],
+ plants:['tiergrass','pagoda','cushion','lichen','boulder','stone','tlip','beddinghouseleek','stepastragalus','pagodarhubarb','treadbistort'],
  modelTol:40,
  /* THE HOUR: 16:30, the sun low in the north-west: the risers' faces (they look south-west) lit along their strike, the tread's stones long-shadowed */
  hour:16.5,

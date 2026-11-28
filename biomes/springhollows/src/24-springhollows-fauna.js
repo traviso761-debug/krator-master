@@ -40,7 +40,7 @@ var SPRINGHOLLOWS_FAUNA=(function(){
    riparian:'yes',
    koppen:['Cfa'],
    diet:'carnivore',
-   stations:['spring','shutin'],
+   stations:['spring','shutin','porphyryrelict'],
    zone:'springrun',
    yields:['amphibian-meat','mucus-salve'],
    schedule:[
@@ -80,7 +80,7 @@ var SPRINGHOLLOWS_FAUNA=(function(){
    riparian:'no',
    koppen:['Cfa'],
    diet:'insectivore',
-   stations:['shutin','glade'],
+   stations:['shutin','glade','porphyryrelict'],
    zone:'porphyryglade',
    yields:['reptile-skin','small-meat'],
    schedule:[
@@ -121,7 +121,7 @@ var SPRINGHOLLOWS_FAUNA=(function(){
    riparian:'no',
    koppen:['Cfa'],
    diet:'granivore',
-   stations:['shutin','fenestre','glade'],
+   stations:['shutin','fenestre','glade','porphyryrelict'],
    zone:'dolomitebench',
    yields:['fowl','feathers','eggs'],
    schedule:[

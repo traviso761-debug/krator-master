@@ -24,7 +24,7 @@ const SHADOW_Q=new URLSearchParams(location.search).get('shadow');
 (function(){
  const t0=performance.now();
  // ?q=0.5 builds at a lower quality; ?nobake=1 measures the build without drawing it (for budgeting)
- const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):1;
+ const Q=new URLSearchParams(location.search),q=Q.has('q')?+Q.get('q'):.55;
  window._variants=false;
  if(LAND.prebuild){try{window._prebuild=LAND.prebuild();}catch(e){reportErr('station (before the kit): '+e.stack);}}   /* a station's structures first (the post: its records and volumes) */
  try{window._biome=TIERS.build({R:TERR.R-150,quality:q});}catch(e){reportErr('biome: '+e.stack);}

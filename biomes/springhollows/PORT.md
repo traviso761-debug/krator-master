@@ -6,7 +6,7 @@ Tags: `[G data]` engine-neutral, port or export · `[G shader]` rewrite once as 
 
 | | [G data] | [G shader] | [G native] | [web] | [draw] |
 |---|---|---|---|---|---|
-| KB | 42 (24%) | 4 (2%) | 1 (1%) | 24 (14%) | 100 (59%) |
+| KB | 50 (26%) | 4 (2%) | 1 (1%) | 24 (12%) | 113 (59%) |
 
 Columns: matching lines per API family. `canvas` is canvas 2D (texture painters), `DOM` and `events` and `loop` are the browser, `shader` is GLSL and shader hooks, `inst` is InstancedMesh, `ray` is Raycaster, `geom` is geometry-kit calls (BOX, F.box, kdef, *Geometry). `store` and `net` should stay 0.
 
@@ -18,8 +18,8 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/24-springhollows-fauna.js` | 4.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/45-host-stage.js` | 15.2 | [web] | 10 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/46-sh-vstack.js` | 9.6 | [draw] | 4 | 4 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | canvas painters: TEX.def or bake |
-| `src/50-springhollows-species.js` | 25.0 | [draw] | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
-| `src/60-springhollows-place.js` | 18.4 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
+| `src/50-springhollows-species.js` | 37.4 | [draw] | 0 | 1 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | split: data candidate that also draws |
+| `src/60-springhollows-place.js` | 26.7 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/70-springhollows.js` | 0.6 | [G data] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | no three.js, no geometry, no DOM |
 | `src/84-host-ground.js` | 35.9 | [draw] | 62 | 1 | 0 | 0 | 0 | 15 | 6 | 0 | 0 | 0 | 0 |  |
 | `src/85-host-far.js` | 3.9 | [web] | 4 | 1 | 0 | 0 | 2 | 0 | 1 | 0 | 0 | 0 | 0 |  |
@@ -29,7 +29,7 @@ Columns: matching lines per API family. `canvas` is canvas 2D (texture painters)
 | `src/89a-host-atmos.js` | 4.1 | [G shader] | 6 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 |  |
 | `src/89w-host-water.js` | 7.1 | [draw] | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |  |
 | `src/89z-host-build.js` | 3.4 | [web] | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | split: data inside host code |
-| `src/99-host-take.js` | 15.8 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 |  |
+| `src/99-host-take.js` | 16.2 | [draw] | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 |  |
 | `src/99-tail.html` | 0.0 | [web] | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | page shell |
 
 ## Notes

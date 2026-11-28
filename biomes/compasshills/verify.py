@@ -54,7 +54,7 @@ const R=[];
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT: ')+n.detail}); }
-{ R.push({name:'window-compass-api', ok:!!(window.COMPASS&&window.COMPASS.SPECIES&&window.COMPASS.SPECIES.length>=14&&window.COMPASS_PHYS),
+{ R.push({name:'window-compass-api', ok:!!(window.COMPASS&&window.COMPASS.SPECIES&&window.COMPASS.SPECIES.length===25&&window.COMPASS_PHYS),
           detail:window.COMPASS?('COMPASS.SPECIES='+window.COMPASS.SPECIES.length):'missing window.COMPASS'}); }
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }
@@ -72,10 +72,14 @@ async def run_one(html_path, out_dir, a):
         if not V.ready:
             print('timed out waiting for the kit to build', flush=True)
             fails.append('build timeout')
+        try:
+            await pg.wait_for_function("(window._texPending||0)===0", timeout=120000)
+        except Exception:
+            print('textures still decoding after 120 s', flush=True)
         if sw:
             await pg.evaluate("()=>{if(!window.__origRAF){const _r=window.__origRAF=window.requestAnimationFrame.bind(window);"
-                              "window.__drawNow=()=>{if(window.__frameFn)window.__frameFn(performance.now());};"
-                              "window.requestAnimationFrame=cb=>{window.__frameFn=cb;return setTimeout(()=>_r(cb),1200);};}}")
+                              "window.__drawNow=()=>new Promise(res=>_r(t=>{if(window.__frameFn)window.__frameFn(t);_r(()=>res());}));"
+                              "window.requestAnimationFrame=cb=>{window.__frameFn=cb;return 0;};}}")
             await pg.evaluate("()=>window.__drawNow()")
         try:
             st = await pg.evaluate(STATS_JS)

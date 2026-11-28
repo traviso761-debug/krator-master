@@ -122,6 +122,8 @@ const GL_ON=Q.get('kground')!=='0'&&typeof KGROUND!=='undefined';
 if(GL_ON){const L=(slot,w,amt,gain)=>KGROUND.layer('swbay',slot,{w,amt,gain,tint:'diffuse'});
  const LY=[L('groundLitter','vGL.x',.6,1.15),L('groundSav','vGL.z',.55,1.1)];
  KGROUND.hook(MAT_GROUND,{layers:LY.every(Boolean)?LY:[],key:'swbay-skarn-ground',relief:null});}
+MAT_GROUND.uniforms=Object.assign(MAT_GROUND.uniforms||{},{uRG:{value:GRAIN.map}});
+if(GL_ON)['groundLitter','groundSav'].forEach((s,i)=>{const pk=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('swbay',s):null;if(pk)MAT_GROUND.uniforms['uKGL_'+i]={value:KMAT.textures(pk,{aniso:8}).map};});
 
 // ---------------------------------------------------------------- the ground's meshes: TERR at 8 m with NEAR left out, NEAR at 2 m
 // The inset's rim takes the 8 m lattice's heights between its vertices (no crack); every vertex is a lattice point of HL (its height is

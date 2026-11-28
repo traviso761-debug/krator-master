@@ -36,6 +36,7 @@
   bx.globalCompositeOperation = "destination-in";
   bx.drawImage(mask, 0, 0, w, h);
   bx.globalCompositeOperation = "source-over";
+  bleed.src = img.currentSrc || img.src || "";
   dilatedSeen.set(img, bleed);
   vStats.dilatedCards++;
   return bleed;
@@ -101,6 +102,12 @@
        else if (!hookedTex.has(rootTex)) {
         hookedTex.add(rootTex);
         (rootTex._onImage = rootTex._onImage || []).push(applyImg);
+       } else if (m.map !== rootTex) {
+        (rootTex._onImage = rootTex._onImage || []).push(function(rawImg){
+         const dilated = buildDilatedCardCanvas(rawImg, L.mean);
+         m.map.image = dilated;
+         m.map.needsUpdate = true;
+        });
        }
       }
      }

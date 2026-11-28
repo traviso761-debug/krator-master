@@ -125,6 +125,7 @@ if(USE_KG){
   KGROUND.layer('spiderlake','ground.sphagnum',{w:'vGL.w',amt:0.82,gain:1.0,tint:'_gT',name:'littoral spray & cove sphagnum'})
  ];
  KGROUND.hook(MAT_GROUND,{key:'spiderlake-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:0.06,cavity:0.75,mesh:1}:null,layers:layers});
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 
 let DRAWN_SRC=null;
@@ -201,7 +202,7 @@ const GROTTO=(function(){
   const G=SITE.grotto,px=G.portal[0],pz=G.portal[1],hx=G.hall[0],hz=G.hall[1];
   const C=KCAVERN.create({
    ground:DRAWN_H,
-   cell:0.65,
+   cell:0.8,
    chunk:16,
    seed:KRAND.child(5841,'spiderlake/dolomite/grotto'),
    minRock:0.8,

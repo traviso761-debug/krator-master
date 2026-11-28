@@ -240,14 +240,78 @@ var SPIDER_PHYS=(function(root){
   };
  }
 
- // 6. Three export silk grades (PLAN.md section 5.2)
+ // 6. SW->NE Carnelian Ecological Frontier partition (30% Red, Tier 1-2; docs/CARNELIAN-FRONTIER-PLAN.md sections 2 & 3)
+ // Deterministic crazy-quilt partition on dry ballistic secondary-ejecta walls/collars vs green Earth river-benches + Bleach-Scar seam.
+ function frontierAt(o){
+  o=o||{};
+  var stKey=o.station==null?'haugel':o.station;
+  var x=nz(o.x,0),y=nz(o.y,0),z=nz(o.z,0);
+  var rock01=clamp(nz(o.rock01,0.5),0,1);
+  var slope01=clamp(nz(o.slope01,0.3),0,1);
+  var wet01=clamp(nz(o.wet01,0.2),0,1);
+  var seed=nz(o.seed,5813)>>>0;
+  var KF=root.KFRONTIER;
+  var swath=o.swath||null;
+  var sw=KF&&KF.bleachSwathAt?KF.bleachSwathAt(x,z,swath):{band:'outside',bleach01:0,skeletonProb01:0,strangler01:0,vanguard01:0};
+
+  var isHaugel=stKey==='haugel';
+  var isRampart=stKey==='rampart';
+  var isSpillway=stKey==='spillway';
+  if(!isHaugel&&!isRampart&&!isSpillway){
+   return{biosphere:'earth',redDominance01:0,bleachScar01:0,stranglerEdge01:0,skeleton01:0,vanguard01:0,band:'outside'};
+  }
+
+  var edaph=isHaugel
+   ?clamp(smooth(13.5,23.5,y)*smooth(38.0,62.0,Math.abs(z))*(1-wet01*0.65)*(0.68+0.32*rock01),0,1)
+   :isRampart
+   ?clamp((0.42+0.58*rock01)*smooth(4.0,21.0,y)*(1-wet01*0.7),0,1)
+   :clamp(smooth(14.0,22.5,y)*(0.50+0.50*rock01)*(1-wet01*0.8),0,1);
+  var xeric=clamp((0.45+0.55*slope01)*(1-wet01),0,1);
+  var skyEx=isRampart?0.82:clamp(smooth(8.0,28.0,y),0,1);
+  var baseRed=isHaugel?0.34:isRampart?0.30:0.24;
+
+  if(KF&&KF.quiltAt){
+   var q=KF.quiltAt(x,z,{
+    seed:seed,
+    edaphicToxicity01:edaph,
+    xericExposure01:xeric,
+    skyExposure01:skyEx,
+    baselineRed01:baseRed,
+    swath:swath,
+    elevM:y
+   });
+   return{
+    biosphere:q.biosphere,
+    redDominance01:+q.redDominance01.toFixed(4),
+    bleachScar01:+q.bleachScar01.toFixed(4),
+    stranglerEdge01:+q.stranglerEdge01.toFixed(4),
+    skeleton01:+q.skeleton01.toFixed(4),
+    vanguard01:+sw.vanguard01.toFixed(4),
+    band:sw.band
+   };
+  }
+  var score=0.52*edaph+0.22*xeric+0.18*skyEx+0.16*(baseRed-0.25);
+  var red01=clamp(smooth(0.36,0.58,score)*(1-sw.bleach01),0,1);
+  var bio=sw.bleach01>=0.48?'bleach':(red01>=0.5?'carnelian':'earth');
+  return{
+   biosphere:bio,
+   redDominance01:+red01.toFixed(4),
+   bleachScar01:+sw.bleach01.toFixed(4),
+   stranglerEdge01:+sw.strangler01.toFixed(4),
+   skeleton01:+sw.skeletonProb01.toFixed(4),
+   vanguard01:+sw.vanguard01.toFixed(4),
+   band:sw.band
+  };
+ }
+
+ // 7. Three export silk grades (PLAN.md section 5.2 & CROOK-RIA-SCOPE.md section 3.2)
  var SILK_GRADES=[
-  {id:'spider-silk-cable',name:'Golden Cable',source:'bridgecurtain',tensileGPa:1.3,strainMax:0.30,kitUses:['slMastObelisk','slHyparCanopy','riaPalaceBarges']},
+  {id:'spider-silk-cable',name:'Golden Cable',source:'bridgecurtain',tensileGPa:1.3,strainMax:0.30,kitUses:['slMastObelisk','slHyparCanopy','riaPalaceBarges','slCaravanseraiSilkhead']},
   {id:'spider-silk-fleece',name:'Cloud-Fleece',source:'broodpavilion',hydrophobic:true,thermalR:4.2,kitUses:['slPalacePavilion','expeditionParkas','surgicalDressings']},
-  {id:'spider-silk',name:'Lake-Sheen Gossamer',source:'weirframe_wild',iridescent:true,degumTempC:38.5,kitUses:['slShamiyana','slWindVeils','slDyehouseCanal']}
+  {id:'spider-silk',name:'Lake-Sheen Gossamer',source:'weirframe_wild',iridescent:true,degumTempC:38.5,kitUses:['slShamiyana','slWindVeils','slDyehouseCanal','pioneerTelegraphWire']}
  ];
 
- // 7. kits/crops registration (PLAN.md section 5.3)
+ // 8. kits/crops registration (PLAN.md section 5.3)
  var CROPS_SPEC={
   atm:2,
   zones:{
@@ -262,20 +326,21 @@ var SPIDER_PHYS=(function(root){
   root.CROPS.BIOMES.spiderlake={atm:CROPS_SPEC.atm,zones:CROPS_SPEC.zones};
  }
 
- // 8. kits/fauna [G data] records (PLAN.md section 6.1)
+ // 9. kits/fauna [G data] records (PLAN.md section 6.1 & CARNELIAN-FRONTIER-PLAN.md section 1.3)
  var FAUNA=[
   {key:'arachneapolita',name:'Arachneapolita sericifera',castes:['Matriarch','Rigger','Packer'],scale:[0.04,0.09],colonyPop:[20000,250000],liveYield:['spider-silk','spider-silk-cable','spider-silk-fleece'],killYield:[],aggression:0.05,schedule:[[0,6,'SPIN_REPAIR'],[6,17,'SHADE_DOME'],[17,24,'SWARM_LAKE_SMOKE']]},
   {key:'lakesmokemidge',name:'Plume Chironomid and Giant Lake-Mayfly',scale:[0.02,0.06],pillarHeightM:300,fluxGm2Day:[15,40],yields:['fish-bait'],schedule:[[5,8,'DAWN_EMERGE'],[8,17,'BENTHIC_NYMPH'],[17,21,'DUSK_PILLAR']]},
   {key:'gossamerfinch',name:'Velvet-Footed Silk-Gleaner',scale:[0.18,0.18],protectedByLaw:true,aggression:0,schedule:[[6,18,'GLEAN_CURTAIN'],[18,24,'ROOST_WILLOW'],[0,6,'ROOST_WILLOW']]},
   {key:'ventbarbel',name:'Warm-Seep Diatom Carp',scale:[0.45,0.45],yields:['fish','fish-glue'],schedule:[[5,19,'SCHOOL_SEEP'],[19,24,'REST_WEED'],[0,5,'REST_WEED']]},
-  {key:'dewgecko',name:'Porphyry Nectar-Skink',scale:[0.24,0.24],yields:['small-hide'],humTapHz:3.0,schedule:[[7,18,'LICK_NECTAR'],[18,24,'HIDE_TERRACE'],[0,7,'HIDE_TERRACE']]}
+  {key:'dewgecko',name:'Porphyry Nectar-Skink',scale:[0.24,0.24],yields:['small-hide'],humTapHz:3.0,schedule:[[7,18,'LICK_NECTAR'],[18,24,'HIDE_TERRACE'],[0,7,'HIDE_TERRACE']]},
+  {key:'belldrifter',name:'Carnelian Bell-Drifter',biosphere:'carnelian',scale:[0.35,0.70],yields:[],aggression:0,schedule:[[6,19,'DRIFT_SINTER_UPDRAFT'],[19,24,'TETHER_CLIFF'],[0,6,'TETHER_CLIFF']]}
  ];
 
- // 9. Data-driven hazards (core/hazard, PLAN.md section 6.3)
+ // 10. Data-driven hazards (core/hazard, PLAN.md section 6.3)
  var HAZARDS=[
   {id:'spiderlake:snarecurtain',kind:'mire',slowFrac:0.65,lethal:false,stations:['spillway','narrows','pavilion']},
   {id:'spiderlake:broodguard',kind:'swarm',triggerDistM:2.5,lethal:false,stations:['pavilion']},
-  {id:'spiderlake:thermalbath',kind:'heat',triggerTempC:43.0,stations:['fen']},
+  {id:'spiderlake:thermalbath',kind:'heat',triggerTempC:43.0,stations:['fen','haugel']},
   {id:'spiderlake:spillway',kind:'current',dischargeM3s:380.0,stations:['spillway']}
  ];
 
@@ -288,6 +353,7 @@ var SPIDER_PHYS=(function(root){
   displaceSilk:displaceSilk,
   harvestCycleAt:harvestCycleAt,
   mvtBrineAt:mvtBrineAt,
+  frontierAt:frontierAt,
   SILK_GRADES:SILK_GRADES,
   CROPS:CROPS_SPEC,
   FAUNA:FAUNA,

@@ -23,10 +23,11 @@ Registers 6 native karst & shut-in species (`alabastercraw`, `springhellbender`,
 
 ## 2. Kit & Station Pages (`BIO.kit('springhollows')`)
 
-- `SPRINGHOLLOWS.SPECIES` (`8` species): `springcypress`, `chinkapinoak`, `porphyrypine`, `redbudkarst`, `tufabryum`, `calaminefern`, `springsponge`, `stranglervine`.
+- `SPRINGHOLLOWS.SPECIES` (`25` species): `springcypress`, `chinkapinoak`, `porphyrypine`, `redbudkarst`, `tufabryum`, `calaminefern`, `springsponge`, `stranglervine`, `whorlolive`, `karstsaffron`, `fenestreglowmush`, `karstalecap`, `carnelian_organpipe`, `erythra_veil`, `agate_window`, `blood_strangler`, `weepingamberstorax`, `dolomitehornbeam`, `springtupelo`, `fenestrespicebush`, `artesianwatercress`, `travertinemaidenhair`, `zincviolet`, `karstwildtea`, `bleachfireweed`.
 - `SPRINGHOLLOWS.placeAll(opt)` — deterministic cell-seeded placement (`src/60-springhollows-place.js`).
-- **4 Built Stations (`dist/springhollows*.html` + shared `dist/springhollows.tex.springhollows.js` sidecar):**
-  1. `spring` (`dist/springhollows.html`) — `(1144, 168)` `cav_ozarks_resurgence` `24 m` cave mouth, sapphire boil, bald-cypress knees & `tufabryum` curtains.
-  2. `shutin` (`dist/springhollows-shutin.html`) — `(1224, 158)` `Tlīla-Wāda` purple-red rhyolite porphyry shut-in gorge & `site:high-ria-boatlift`.
-  3. `fenestre` (`dist/springhollows-fenestre.html`) — `(1212, 174)` collapsed `18 m` sinkhole skylight & walk-in `KSPELEO.CALCITE` `10–14 m` celestine/calcite/onyx cavern.
-  4. `glade` (`dist/springhollows-glade.html`) — `(1176, 184)` cherty-dolomite & porphyry glade, `saffron`/`whorl-olive` terraces, onyx chert-bridge hollow & Ancient bleach-scar.
+- **5 Built Stations (`dist/springhollows*.html` + shared `dist/springhollows.tex.js` sidecar, `culture: 'ria'`):**
+  1. `spring` (`dist/springhollows.html`) — `(1144, 168)` `cav_ozarks_resurgence` `24 m` cave mouth, sapphire boil, bald-cypress knees, `springtupelo`, `artesianwatercress` & `tufabryum` curtains (`site:high-ria-springworks`).
+  2. `shutin` (`dist/springhollows-shutin.html`) — `(1224, 158)` `Tlīla-Wāda` purple-red rhyolite porphyry shut-in gorge, edaphic Carnelian porphyry knobs & `site:high-ria-boatlift`.
+  3. `fenestre` (`dist/springhollows-fenestre.html`) — `(1212, 174)` collapsed `18 m` sinkhole skylight & walk-in `KSPELEO.CALCITE` `10–14 m` celestine/calcite/onyx cavern (`site:high-ria-calamine-assay`).
+  4. `glade` (`dist/springhollows-glade.html`) — `(1176, 184)` cherty-dolomite & porphyry glade, `karstsaffron`/`whorlolive`/`karstwildtea` terraces, onyx chert-bridge hollow, Bleach-Scar (`stranglervine`, `blood_strangler`, `bleachfireweed`) & `site:karst-arcology`.
+  5. `porphyryrelict` (`dist/springhollows-porphyryrelict.html`) — `(1268, 142)` `+2,570.2 m` purple-red rhyolite porphyry sky-island crowned in `carnelian_organpipe`, `erythra_veil`, `agate_window` & `blood_strangler` above `chinkapinoak` dolomite hollows, inert `ecof_mist_pylon` & `site:high-ria-porphyry-quarry`.

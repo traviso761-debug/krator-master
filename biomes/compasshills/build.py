@@ -88,8 +88,9 @@ PATH.setdefault('45-core-horizon-shade.js', P('core', 'terrain', 'host', '45-cor
 # 2. core/biome: CORE_BIOME_MIN + joint, variants, fungoid, anim, lean, env, export, stage (PLAN.md section 8.1)
 CORE_BIOME = list(buildlib.CORE_BIOME_MIN) + [
     'core/biome/31j-core-joint.js', 'core/biome/32-core-variants.js', 'core/biome/33-core-fungoid.js',
-    'core/biome/35-core-anim.js', 'core/biome/39-core-lean.js', 'core/biome/41-core-env.js',
-    'core/biome/42-core-export.js', 'core/biome/43-core-export-host.js', 'core/biome/44-core-stage.js'
+    'core/biome/35-core-anim.js', 'core/biome/37-core-traps.js', 'core/biome/39-core-lean.js',
+    'core/biome/41-core-env.js', 'core/biome/42-core-export.js', 'core/biome/43-core-export-host.js',
+    'core/biome/44-core-stage.js'
 ]
 for p in CORE_BIOME:
     PATH.setdefault(os.path.basename(p), P(*p.split('/')))
@@ -149,8 +150,17 @@ if miss:
 
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
+STATION_EXCLUDE = {
+    'foundry': ('ground.gravel', 'ground.lichen', 'moss', 'rock.granite'),
+    'tors': ('bark.juniper', 'ground.gossan', 'ground.gravel', 'moss', 'olive', 'rock.gossan',
+             'rock.nephrite', 'wood.gnarled'),
+    'cuesta': ('ground.gossan', 'ground.gravel', 'metal.copper', 'moss', 'rock.fulgurite',
+               'rock.gossan', 'wood.gnarled'),
+    'gorge': ('bark.juniper', 'ground.gossan', 'ground.lichen', 'moss', 'olive', 'rock.gossan',
+              'rock.granite', 'wood.gnarled'),
+}
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'compasshills', own=True),
+    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'compasshills', own=True, exclude=STATION_EXCLUDE.get(STATION, ())),
     khost.EDITS_JS: khost.edits_js(HERE, 'compasshills')
 }
 

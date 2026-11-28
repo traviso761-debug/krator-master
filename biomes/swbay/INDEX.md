@@ -22,22 +22,24 @@ From `core/host/` (shared; see `core/README.md`): `90-host-camera.js`, `91-host-
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `45-host-stage.js` | 31 **big** | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (229); the far country (262) |
+| `45-host-stage.js` | 32 **big** | the bay, the river, the rise (56); terrain (89); the host binding (116); the ground (140); the water (231); the far country (264) |
 | `50-biome-swbay-species.js` | 41 **big** | THE CANOPY CEILING (20); THE BAY COLOUR (26); the tree species (77); harvest (biomes/FRUIT.md) (128); leaf textures (153); bark textures (252); geometries local to this biome (318); an iridescent foliage (370); materials (374); instanced items (423) |
 | `52-biome-swbay-library.js` | 2 |  |
+| `53-biome-swbay-endemic-species.js` | 7 |  |
 | `55-biome-swbay-trees.js` | 58 **big** | zones from the fields (25); colour (46); polyline helpers (Girder's) (60); keep-clear between trees (69); epiphytes (76); foliage helpers (91); the builders (113); impostors (the far canopy) (409); the pass (452); one tree where a world puts it (519) |
 | `60-biome-swbay-floor.js` | 16 | fields local to the floor (28); small plants (33); the zone planters (98); the pass (127); one plant where a world puts it (149) |
 | `65-biome-swbay-dress.js` | 9 |  |
 | `70-biome-swbay.js` | <1 |  |
+| `72-biome-swbay-endemics.js` | 23 |  |
 | `75-biome-swbay-fauna.js` | 19 | geometries (vertex-coloured, unit-sized) (39); the animated materials (77); the pass (82) |
 | `76-biome-swbay-termites.js` | 14 |  |
 | `85-host-tower.js` | 5 |  |
 | `86-host-jetty.js` | 5 |  |
-| `86t-host-termites.js` | 3 |  |
+| `86t-host-termites.js` | 4 |  |
 | `87-host-kin.js` | 8 |  |
 | `88-host-build.js` | 4 |  |
 | `89a-host-atmos.js` | 2 |  |
-| `89s-host-sky.js` | 5 |  |
+| `89s-host-sky.js` | 4 |  |
 | `89w-host-water.js` | 7 |  |
 | `99-host-take.js` | 11 | the inspector's words (49); the probe's budgets and the kit's own checks (ve (60); the page, handed to the host (101) |
 | `99-tail.html` | <1 |  |

@@ -1,8 +1,8 @@
-// ================================================================= ARACHNOID CANYONS — species, packed materials & catenary bridge-web builder ([draw])
-// Registers BIO.kit('arachnoids') -> ARACHNOIDS: 7 signature Arachnoid Canyons species (fumarolefern, sintermat, dikeclaw,
-// webanchorvine, columnarpine, rimkrummholz, frostcushion) + 4 montane-gorge vascular matrix species (gorgehemlock, ledgeoak,
-// canyonbamboo, alpinesedge), plus the 0.75 g ATMOS wind-pinned communal Tsek-Ma Bridge-Web catenary & horizontal-sheet batcher.
-// 100% of surfaces bind genuine packed library textures from materials.json / tex/pack.json (0 untextured lit meshes).
+// ================================================================= ARACHNOID CANYONS — 25 species, packed materials & catenary bridge-web builder ([draw])
+// Registers BIO.kit('arachnoids') -> ARACHNOIDS: 25 native/regional species across the 4.1 km vertical inversion gradient
+// (+660-1,250 m 1.43-1.47 atm Cfa slot-jungle & Tsek-Gompa silk/fumarole corridor -> +1,150-2,400 m Csa basalt benches &
+// radial vitrophyre dikes -> +3,800-4,800 m 0.88 atm ET prostrate frost-rim), plus the 0.75 g ATMOS wind-pinned communal
+// Tsek-Ma Bridge-Web catenary & horizontal-sheet batcher. 100% packed library textures (materials.json / tex/pack.json).
 BIO.kit('arachnoids');
 var ARACHNOIDS={
  PHYS:ARACH_PHYS,
@@ -23,7 +23,7 @@ var ARACHNOIDS={
   climate:clim,aridity:arid,abyssal:false,riparian:rip,koppen:kp,zone:zone,holy:false,shared:null,alien:false,native:false
  },o||{});
  const N=(clim,arid,rip,kp,zone,o)=>K(clim,arid,rip,kp,zone,Object.assign({alien:true,native:true},o||{}));
- const HV=(wood,edible,medicinal,notes)=>({wood:wood||'none',edible:edible||[],medicinal:!!medicinal,notes:notes||''});
+ const HV=(wood,edible,medicinal,notes,fruit)=>({wood:wood||'none',edible:edible||[],medicinal:!!medicinal,notes:notes||'',fruit:fruit||''});
 
  // ---------------------------------------------------------------- palettes (sRGB hex)
  const PAL=ARACHNOIDS.PAL={
@@ -43,6 +43,20 @@ var ARACHNOIDS={
   frostCushion:[0x7ea292,0x8eb0a0,0x6e9282,0x9abca8],
   sedge:[0x84864c,0x949458,0x747842,0xa2a064],
   moss:[0x486e32,0x567c3a,0x3e602a],
+  mulberry:[0x467834,0x54883e,0x3c6a2c,0x629448],
+  taro:[0x3c7638,0x4a8642,0x326830],
+  tea:[0x386630,0x44743a,0x2e5828],
+  orchid:[0xf4eef2,0xecdce8,0xf8e6f0],
+  seepMoss:[0x467638,0x548442,0x3a662e],
+  pistache:[0x4c6e38,0x627c3e,0x8a5838,0x567640],
+  juniper:[0x38583c,0x446646,0x2e4c32],
+  saffron:[0x9258be,0xa268ce,0x824cae,0xd44c3c],
+  lipFern:[0x587248,0x688054,0x4c643e],
+  hangIvy:[0x385e36,0x446a40,0x2e502c],
+  dwarfBirch:[0x586e38,0x687c42,0x866838,0x4c6030],
+  cladonia:[0xdadcd2,0xe4e6dc,0xcacdc2],
+  edelweiss:[0xf0efe8,0xe6e5dc,0xf6f5ee],
+  frostroot:[0xe6d8de,0xdccad2,0xf0e2e8],
   basalt:[0x343840,0x3e424c,0x2c3038],
   vitrophyre:[0x1e2228,0x262a32,0x181c22],
   bolus:[0x8e3c2e,0x9c4636,0x7c3428],
@@ -52,9 +66,9 @@ var ARACHNOIDS={
   sinterRock:[0xe4dfd4,0xede8de,0xd6d0c4]
  };
 
- // ---------------------------------------------------------------- species registry (7 signature + 4 vascular matrix = 11)
+ // ---------------------------------------------------------------- species registry (25 species across 3 vertical inversion zones)
  const SPECIES=ARACHNOIDS.SPECIES=[
-  // A. 7 Signature Arachnoid Canyons Species (PLAN.md section 4)
+  // A. Original 7 Signature Arachnoid Canyons Species (PLAN.md section 4)
   {key:'fumarolefern',name:'Steam-Plume Tree-Fern',
    how:'Frost-free 3.2-7.0 m silica-armoured tree-fern crowning 1.43 atm +28 C fumarole and basalt step-pool terraces with arching bronze-emerald fronds.',
    items:['ar_fern_trunk','ar_fern_frond'],
@@ -62,7 +76,7 @@ var ARACHNOIDS={
   {key:'sintermat',name:'Thermophilic Sinter-Cushion',
    how:'Terraced 0.03-0.16 m copper-orange, ochre-gold, and jade gelatinous biofilm cushions precipitating porous silica-travertine micro-rims around +34-62 C step-pools.',
    items:['ar_sinter_crust','ar_sinter_dome'],
-   tags:N('subtropic','humid','yes',['Cfa'],'slotfloor',{thermal:true,travertine:true})},
+   tags:N('subtropic','humid','yes',['Cfa'],'slotfloor',{thermal:true,travertine:true,frostFree:true})},
   {key:'dikeclaw',name:'Hex-Joint Cliff Lithophyte',
    how:'Spiky 0.45-1.40 m silver-pruinose and carmine cliff rosette wedging velamen anchor-roots into horizontal cooling cracks of radial basalt colonnades.',
    items:['ar_dikeclaw_rosette','ar_dikeclaw_spike'],
@@ -78,13 +92,13 @@ var ARACHNOIDS={
   {key:'rimkrummholz',name:'Updraft-Flagged Rim Pine-Juniper',
    how:'Prostrate 0.45-1.90 m streamlined alpine conifer banner on 0.88 atm ET chasm lips, sheared strictly radially away from rising canyon updrafts.',
    items:['ar_krumm_fol'],
-   tags:N('cold','semiarid','no',['ET','Dfc'],'frostrim',{windVane:true})},
+   tags:N('cold','semiarid','no',['ET','Dfc'],'frostrim',{windVane:true,prostrate:true})},
   {key:'frostcushion',name:'Vitrophyre Glass-Wort Cushion',
    how:'Hemispherical 0.08-0.32 m silver-emerald wooly cushion dome hugging solar-warmed jet-black obsidian-vitrophyre dike selvages on -2 C frost-polygon rims.',
    items:['ar_frost_dome'],
-   tags:N('cold','semiarid','no',['ET'],'frostrim',{substrate:'vitrophyre'})},
+   tags:N('cold','semiarid','no',['ET'],'frostrim',{substrate:'vitrophyre',prostrate:true})},
 
-  // B. 85% Montane-Gorge Vascular Matrix (kin guilds of nwlowlands, swlowlands & korona)
+  // B. Montane-Gorge Vascular Matrix (kin guilds of nwlowlands, swlowlands & korona)
   {key:'gorgehemlock',name:'Mist-Slot Gorge Hemlock',
    how:'Shade-tolerant 16-32 m humid canyon-bench conifer sheltering beneath radial basalt dike walls in the warm 1.43-1.47 atm mist belt.',
    items:['ar_hemlock_fol'],
@@ -96,26 +110,102 @@ var ARACHNOIDS={
   {key:'canyonbamboo',name:'Ham-Tsek Mist-Slot Bamboo',
    how:'Dense 6-11 m hollow culm thickets thriving in frost-free river spray and warm hydrothermal canyon-floor hollows.',
    items:['ar_bamboo_culm','ar_bamboo_leaf0','ar_bamboo_leaf1','ar_bamboo_shoot'],
-   tags:K('subtropic','humid','yes',['Cfa'],'slotfloor',{kin:'swlowlands'})},
+   tags:K('subtropic','humid','yes',['Cfa'],'slotfloor',{kin:'swlowlands',frostFree:true})},
   {key:'alpinesedge',name:'Gorge Sword-Fern and Rim Cushion-Sedge',
    how:'Mist-fed gorge floor sword-ferns and moss mats grading upward into Csa bunch-sedge and ET periglacial polygon tussocks.',
    items:['ar_floorfern','ar_sedge','ar_mossmat'],
-   tags:K('cold','subhumid','both',['Cfa','Csa','Dfc','ET'],'frostrim',{kin:'korona'})}
+   tags:K('cold','subhumid','both',['Cfa','Csa','Dfc','ET'],'frostrim',{kin:'korona'})},
+
+  // C. Zone 1 Expansion (+660-1,250 m Frost-Free 1.43-1.47 atm Cfa Slot Trough: fumarole & nexus; frost01 === 0 && aslM <= 1450)
+  {key:'slotmulberry',name:'Tsek-Gompa Canyon Silk-Mulberry',
+   how:'Frost-free 5.5-10.5 m spreading heartleaf canopy tree along warm 9102 Ham-Tsek river benches feeding Tsek-Gompa silk-guild broods along the Spider Lake to Silkhead corridor.',
+   items:['ar_mulberry_fol'],
+   tags:K('subtropic','humid','yes',['Cfa'],'slotfloor',{frostFree:true,silkGuild:true})},
+  {key:'steambedtaro',name:'Steambed Megaphyll Taro',
+   how:'Lush 0.75-1.35 m broad-bladed aroid rosettes lining +24-38 C turquoise basalt-weir step-pools and mist-drenched Ham-Tsek eddy bars.',
+   items:['ar_taro_leaf'],
+   tags:K('subtropic','humid','yes',['Cfa'],'slotfloor',{thermal:true,frostFree:true})},
+  {key:'mistcanyontea',name:'Mist-Bench Canyon Tea',
+   how:'Compact 0.95-1.65 m glossy evergreen tea shrub thriving on diffuse-lit, mist-saturated lower basalt benches inside the inverted Cfa canyon lid.',
+   items:['ar_tea_fol'],
+   tags:K('subtropic','humid','no',['Cfa'],'slotfloor',{frostFree:true})},
+  {key:'plumeorchid',name:'Steam-Mist Dendrobium Orchid',
+   how:'Fragrant 0.28-0.62 m ivory-magenta epiphytic dendrobium sprays perched on warm wet basalt dike faces and mossy gorgehemlock and slotmulberry trunks.',
+   items:['ar_orchid_spray'],
+   tags:N('subtropic','humid','no',['Cfa'],'slotfloor',{epiphyte:true,frostFree:true})},
+  {key:'seepcurtainmoss',name:'Dripping Slot-Seep Curtain-Moss',
+   how:'Trailing 0.85-2.30 m emerald-jade bryophyte curtains streaming from weeping basalt dike overhangs, step-pool lips, and lower gorgehemlock boughs.',
+   items:['ar_seep_moss'],
+   tags:K('subtropic','humid','yes',['Cfa'],'slotfloor',{frostFree:true})},
+
+  // D. Zone 2 Expansion (+1,150-2,400 m Warm-Dry Csa Basalt Benches & Radial Vitrophyre Dikes: ledges & upper nexus; aslM <= 2600)
+  {key:'amberpistache',name:'Ham-Tsek Amber-Bark Pistache',
+   how:'Crooked 5.5-11.5 m resin-gleaming amber-barked broadleaf tree on sun-baked Csa tuff and colonnade benches linking down-gorge to the Silkhead and Ria amber-lacquer trade.',
+   items:['ar_pistache_fol'],
+   tags:K('temperate','subhumid','no',['Csa','Cfa'],'ledgewood',{resin:'amber'})},
+  {key:'spokedikejuniper',name:'Radial Spoke-Dike Juniper',
+   how:'Twisted 4.2-9.5 m scale-needled aromatic conifer anchoring into chilled radial obsidian-vitrophyre dike ribs alongside columnarpine.',
+   items:['ar_juniper_fol'],
+   tags:K('temperate','semiarid','no',['Csa','Cfa'],'dryrim',{substrate:'vitrophyre'})},
+  {key:'gompasaffron',name:'Tsek-Gompa Basalt-Terrace Saffron',
+   how:'Sunny 0.18-0.36 m violet-petalled, crimson-stigma geophyte clumps carpeting dry-summer Csa welded-tuff and columnar-basalt terraces.',
+   items:['ar_saffron_clump'],
+   tags:K('temperate','semiarid','no',['Csa','Cfa'],'dryrim',{dye:'saffron'})},
+  {key:'vitrophyrelipfern',name:'Vitrophyre Glass-Dike Lip-Fern',
+   how:'Compact 0.32-0.65 m xeric resurrection-fern rosettes wedged into glassy chilled basalt-dike contact crevices where vitrophyre01 > 0.35.',
+   items:['ar_lipfern'],
+   tags:N('temperate','semiarid','no',['Csa','Cfa'],'dryrim',{lithophyte:true,substrate:'vitrophyre'})},
+  {key:'entablatureivy',name:'Basalt-Entablature Cliff Ivy',
+   how:'Trailing 1.8-5.2 m evergreen cliff liana draping horizontal-hex columnar-basalt entablature risers and outland-tuff scarps.',
+   items:['ar_entab_ivy'],
+   tags:K('temperate','subhumid','no',['Csa','Cfa'],'ledgewood',{lithophyte:true})},
+
+  // E. Zone 3 Expansion (+3,800-4,800 m Thin-Air 0.88 atm ET Frost-Rim: frostrim; strictly prostrate <= 1.4 m)
+  {key:'snowbeddwarfbirch',name:'Snowbed Prostrate Dwarf-Birch',
+   how:'Strictly prostrate 0.32-1.05 m creeping micro-leaved shrub sheltering in leeward snowbed hollows behind updraft-sheared rimkrummholz.',
+   items:['ar_dwarfbirch_fol'],
+   tags:K('cold','semiarid','no',['ET','Dfc'],'frostrim',{prostrate:true})},
+  {key:'rimcladonia',name:'Polygon-Rim Cladonia Lichen',
+   how:'Low 0.04-0.14 m silver-cream fruticose lichen mats colonising wind-scoured KFROST basalt-vitrophyre and diapir-granite stone polygons.',
+   items:['ar_cladonia_mat'],
+   tags:K('cold','semiarid','no',['ET'],'frostrim',{prostrate:true})},
+  {key:'rimedelweiss',name:'Chasm-Lip Alpine Wool-Star',
+   how:'Compact 0.10-0.26 m UV-shielded white-felted wool-star rosettes tucked into sheltered lee-pockets beside frostcushion domes.',
+   items:['ar_edelweiss_bloom'],
+   tags:K('cold','semiarid','no',['ET'],'frostrim',{prostrate:true})},
+  {key:'wildfrostroot',name:'Polygon-Crack Wild Frostroot',
+   how:'Hardy 0.14-0.38 m bell-flowered taproot geophyte wedged along periglacial polygon seams on the 0.88 atm frost-rim, wild ancestor of cultivated frostroot.',
+   items:['ar_frostroot_tuft'],
+   tags:N('cold','semiarid','no',['ET','Dfc'],'frostrim',{prostrate:true,cropAncestor:'frostroot'})}
  ];
  SPECIES.forEach((S,i)=>{S.i=i;});
 
  ARACHNOIDS.HARVEST={
-  fumarolefern:HV('none',['steamed crosier pith'],true,'Silica-rich trunk fibre braided into heat-proof tongs by Hum sulfur and placer crews; mucilage salve for steam burns.'),
-  sintermat:HV('none',[],true,'Dried ochre-orange mineral crust ground for antiseptic poultices and warm saffron-ochre pottery slip.'),
-  dikeclaw:HV('none',['nectar spike'],false,'Crushed carmine bracts yield fast gorge-red silk dye; rosette tanks hold clean drinking water on sheer climbs.'),
-  webanchorvine:HV('cordage',[],false,'Boiled adhesive pads yield waterproof caulking pitch for Hum river-barges and cable bindings.'),
-  columnarpine:HV('timber, resin',['ledge pinyon nut'],true,'Resinous rot-proof bridge-deck planking and pitch torches.'),
-  rimkrummholz:HV('fuel',['rime-berry'],true,'Dense twisted root-wood burned in high-pass cairn braziers; aromatic juniper-like berries.'),
-  frostcushion:HV('fuel',[],true,'Dried resinous turf blocks burned on treeless alpine portages; febrifuge tea.'),
-  gorgehemlock:HV('timber, tannin',[],false,'Straight gorge-bridge stringer timber and tannin-rich bark for curing silk-rigging leather.'),
-  ledgeoak:HV('timber, fuel',['canyon acorn'],false,'Hard pulley-block and capstan-pawls heartwood; leached sweet acorns.'),
-  canyonbamboo:HV('weaving, cordage',['bamboo shoot'],false,'Light scaffolding poles, sulfur-condenser baskets, and woven silk-reeling trays.'),
-  alpinesedge:HV('thatch, weaving',[],false,'Boot-insulation hay and pack-frame padding.')
+  fumarolefern:HV('none',['steamed crosier pith'],true,'Silica-rich trunk fibre braided into heat-proof tongs by Hum sulfur and placer crews; mucilage salve for steam burns.',''),
+  sintermat:HV('none',[],true,'Dried ochre-orange mineral crust ground for antiseptic poultices and warm saffron-ochre pottery slip.','reagent'),
+  dikeclaw:HV('none',['nectar spike'],false,'Crushed carmine bracts yield fast gorge-red silk dye; rosette tanks hold clean drinking water on sheer climbs.',''),
+  webanchorvine:HV('cordage',[],false,'Boiled adhesive pads yield waterproof caulking pitch for Hum river-barges and cable bindings.',''),
+  columnarpine:HV('timber, resin',['ledge pinyon nut'],true,'Resinous rot-proof bridge-deck planking and pitch torches.','cone'),
+  rimkrummholz:HV('fuel',['rime-berry'],true,'Dense twisted root-wood burned in high-pass cairn braziers; aromatic juniper-like berries.','berry'),
+  frostcushion:HV('fuel',[],true,'Dried resinous turf blocks burned on treeless alpine portages; febrifuge tea.',''),
+  gorgehemlock:HV('timber, tannin',[],false,'Straight gorge-bridge stringer timber and tannin-rich bark for curing silk-rigging leather.','cone'),
+  ledgeoak:HV('timber, fuel',['canyon acorn'],false,'Hard pulley-block and capstan-pawls heartwood; leached sweet acorns.','acorn'),
+  canyonbamboo:HV('weaving, cordage',['bamboo shoot'],false,'Light scaffolding poles, sulfur-condenser baskets, and woven silk-reeling trays.',''),
+  alpinesedge:HV('thatch, weaving',[],false,'Boot-insulation hay and pack-frame padding.',''),
+  slotmulberry:HV('carving, bast',['mulberry'],false,'Tender heart-shaped leaves feed Tsek-Gompa canyon silk-moth broods along the Spider Lake to Silkhead and Ria corridor; inner bast beaten into Amber-Seal toll ledger paper.','mulberry'),
+  steambedtaro:HV('none',['taro corm','steambed-yam'],false,'Starchy corms steamed in warm basalt-weir step-pools by Hum gorge wardens and placer crews; broad waxy blades wrap degummed silk skeins.',''),
+  mistcanyontea:HV('fuel',['tea flush'],true,'Shade-sweetened canyon-mist leaf flushes bricked into Hum caravan tea for the Ham-Tsek to Silkhead and Upper Ria silk road; astringent wash.',''),
+  plumeorchid:HV('none',[],true,'Mucilaginous pseudobulbs steeped into throat-soothing demulcent tonic against sulfur-fumarole mist; fragrant sizing extract for gossamer silk.','reagent'),
+  seepcurtainmoss:HV('padding, weaving',[],true,'Absorbent antiseptic seep-moss wrung clean for wound dressings, live-spider transport humidifiers, and cushioned silk-bale packing.',''),
+  amberpistache:HV('timber, resin',['pistache kernel'],true,'Fissured golden-amber bark bleeds clear mastic-amber lacquer traded down Ham-Tsek to Silkhead and the Court of the Amber Seal in Ria Sound for sealing silk chests and Pioneer dielectric coils.','drupe'),
+  spokedikejuniper:HV('carving, fuel',['juniper cone'],true,'Rot-proof aromatic heartwood carved into Hum cliff-stair pegs and cable cleats; resinous smudge-smoke calms Tsek-Ma bridge-spiders during hawser maintenance.','berry'),
+  gompasaffron:HV('none',['saffron stigma'],true,'Crimson stigmas plucked on sunny Tsek-Gompa basalt benches to dye top-grade Golden-Cable and Hum ceremonial silk sashes traded toward Silkhead and Ria.','reagent'),
+  vitrophyrelipfern:HV('none',[],true,'Poikilohydric glass-dike resurrection fronds brewed by cliff-stair crews for altitude headache tea; crisp silica ash polishes nephrite and bronze sheaves.',''),
+  entablatureivy:HV('cordage, weaving',[],false,'Tough pliant cliff-liana runners plaited into rock-climbing slings, tool lanyards, and basket rims along mid-wall colonnade stairs.',''),
+  snowbeddwarfbirch:HV('fuel, tannin',[],true,'Oil-rich papery bark curls ignite even in thin 0.88 atm sleet at high-rim cairn braziers; astringent twig decoction.',''),
+  rimcladonia:HV('none',['boiled lichen jelly'],true,'Leached and boiled emergency famine starch for high-rim portage crews; yields warm lichen-gold wool and silk mordant dye.','reagent'),
+  rimedelweiss:HV('none',[],true,'UV-shielding white-felted bracts infused into alpine windburn balm and worn as a high-pass token by Hum gorge guides.',''),
+  wildfrostroot:HV('none',['frostroot taproot'],true,'Antifreeze-sweetened taproot dug from frost-polygon seams as high-calorie trail rations; wild progenitor of Krator alpine frostroot.','')
  };
  SPECIES.forEach(S=>{S.tags.harvest=ARACHNOIDS.HARVEST[S.key];});
  const byKey={};SPECIES.forEach(S=>{byKey[S.key]=S;});
@@ -175,6 +265,8 @@ var ARACHNOIDS={
   'bark.fern':BIO.barkMat(grey(128,14)),
   'bark.bamboo':BIO.barkMat(grey(128,15)),
   'wood.plank':BIO.barkMat(grey(128,16)),
+  'bark.willow':BIO.barkMat(grey(128,17)),
+  'bark.amber':BIO.barkMat(grey(128,18)),
 
   // World-space ATMOS-swaying golden-gunmetal silk sheet & guy-cable materials + instanced anchor-collar/spider material
   silkSheet:pbrMat('silk.sheet',21,{roughness:0.28,metalness:0.24,transparent:true,opacity:0.84,depthWrite:false,skipLibHook:true}),
@@ -207,7 +299,20 @@ var ARACHNOIDS={
   bromeliad:BIO.leafMat(cardFallback(48),'ar-bromeliad',{aN:false,swayW:'(position.y)',swayA:0.03}),
   vine:BIO.leafMat(cardFallback(49),'ar-vine',{aN:false,swayW:'0.35',swayA:0.03}),
   sedge:BIO.leafMat(cardFallback(50),'ar-sedge',{aN:false,swayW:'(position.y)',swayA:0.07}),
-  moss:BIO.leafMat(cardFallback(51),'ar-moss',{aN:false,swayW:'0.0',swayA:0.0,alphaTest:0.32})
+  moss:BIO.leafMat(cardFallback(51),'ar-moss',{aN:false,swayW:'0.0',swayA:0.0,alphaTest:0.32}),
+  mulberry:BIO.leafMat(cardFallback(52),'ar-mulberry',{aN:true,swayW:'0.55',swayA:0.05}),
+  taro:BIO.leafMat(cardFallback(53),'ar-taro',{aN:false,swayW:'(position.y)',swayA:0.06}),
+  tea:BIO.leafMat(cardFallback(54),'ar-tea',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  orchid:BIO.leafMat(cardFallback(55),'ar-orchid',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  hangmoss:BIO.leafMat(cardFallback(56),'ar-hangmoss',{aN:false,swayW:'(-position.y)',swayA:0.07,axis:1}),
+  pistache:BIO.leafMat(cardFallback(57),'ar-pistache',{aN:true,swayW:'0.55',swayA:0.05}),
+  juniper:BIO.leafMat(cardFallback(58),'ar-juniper',{aN:true,swayW:'0.42',swayA:0.03}),
+  saffron:BIO.leafMat(cardFallback(59),'ar-saffron',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  hangivy:BIO.leafMat(cardFallback(60),'ar-hangivy',{aN:false,swayW:'(-position.y)',swayA:0.06,axis:1}),
+  dwarfbirch:BIO.leafMat(cardFallback(61),'ar-dwarfbirch',{aN:true,swayW:'0.35',swayA:0.03}),
+  cladonia:BIO.leafMat(cardFallback(62),'ar-cladonia',{aN:false,swayW:'0.0',swayA:0.0,alphaTest:0.32}),
+  edelweiss:BIO.leafMat(cardFallback(63),'ar-edelweiss',{aN:false,swayW:'(position.y)',swayA:0.02}),
+  bulbheath:BIO.leafMat(cardFallback(64),'ar-bulbheath',{aN:false,swayW:'(position.y)',swayA:0.03})
  };
 
  ARACHNOIDS.SWAP=BIO.libSwap('arachnoids',M);
@@ -249,11 +354,13 @@ var ARACHNOIDS={
   return true;
  };
 
- // ---------------------------------------------------------------- merged bark & wood buckets
+ // ---------------------------------------------------------------- merged bark & wood buckets (shared per zone -> low draw calls)
  BIO.bucket('ar_pine',M['bark.pine'],{label:'Columnar-pine & gorge-hemlock furrowed trunks'});
- BIO.bucket('ar_juniper',M['bark.juniper'],{label:'Updraft-sheared rim-krummholz & chasm-vine stems'});
+ BIO.bucket('ar_juniper',M['bark.juniper'],{label:'Spoke-dike juniper, rim-krummholz, dwarf-birch & chasm-vine stems'});
  BIO.bucket('ar_oak',M['bark.oak'],{label:'Colonnade evergreen canyon oak trunks'});
  BIO.bucket('ar_wood',M['wood.plank'],{label:'Seasoned canyon timber & root-claws'});
+ BIO.bucket('ar_willow',M['bark.willow'],{label:'Tsek-Gompa silk-mulberry & canyon tea stems'});
+ BIO.bucket('ar_amber',M['bark.amber'],{label:'Ham-Tsek amber-pistache resinous trunks'});
 
  // ---------------------------------------------------------------- rock & column geometries
  function makeRockGeo(seed,flatY,angular){
@@ -301,6 +408,20 @@ var ARACHNOIDS={
  BIO.def('ar_floorfern',BIO.geo.clump(),M.floorfern,{label:'Slot-gorge mist sword-fern'});
  BIO.def('ar_sedge',BIO.geo.clump(),M.sedge,{label:'Ledge & frost-polygon tuft-sedge'});
  BIO.def('ar_mossmat',BIO.geo.mat(),M.moss,{label:'Canyon spray moss mat'});
+ BIO.def('ar_mulberry_fol',BIO.geo.clump(),M.mulberry,{attrs:['aN'],label:'Tsek-Gompa canyon silk-mulberry heartleaf crown'});
+ BIO.def('ar_taro_leaf',BIO.geo.bloom(),M.taro,{label:'Steambed taro megaphyll rosette'});
+ BIO.def('ar_tea_fol',BIO.geo.bloom(),M.tea,{label:'Mist-bench canyon tea shrub foliage'});
+ BIO.def('ar_orchid_spray',BIO.geo.bloom(),M.orchid,{label:'Steam-mist dendrobium plume-orchid spray'});
+ BIO.def('ar_seep_moss',BIO.geo.ribbon(4,0.55,0.16),M.hangmoss,{label:'Dripping slot-gorge seep moss curtain'});
+ BIO.def('ar_pistache_fol',BIO.geo.clump(),M.pistache,{attrs:['aN'],label:'Ham-Tsek amber-pistache resinous crown'});
+ BIO.def('ar_juniper_fol',BIO.geo.clump(),M.juniper,{attrs:['aN'],label:'Radial spoke-dike juniper foliage'});
+ BIO.def('ar_saffron_clump',BIO.geo.clump(),M.saffron,{label:'Tsek-Gompa basalt-terrace saffron crocus clump'});
+ BIO.def('ar_lipfern',BIO.geo.frond(3),M.fern,{label:'Vitrophyre glass-dike xeric lip-fern frond'});
+ BIO.def('ar_entab_ivy',BIO.geo.ribbon(4,0.52,0.16),M.hangivy,{label:'Columnar-basalt entablature hanging ivy'});
+ BIO.def('ar_dwarfbirch_fol',BIO.geo.clump(),M.dwarfbirch,{attrs:['aN'],label:'Snowbed prostrate dwarf-birch spray'});
+ BIO.def('ar_cladonia_mat',BIO.geo.mat(),M.cladonia,{label:'Wind-scoured polygon-rim cladonia lichen mat'});
+ BIO.def('ar_edelweiss_bloom',BIO.geo.bloom(),M.edelweiss,{label:'Chasm-lip alpine edelweiss wool-star'});
+ BIO.def('ar_frostroot_tuft',BIO.geo.bloom(),M.bulbheath,{label:'Polygon-crack wild frostroot heath tuft'});
 
  // Silk anchor collars & Tsek-Ma spider colony cocoons/bodies on instanced PBR silkCollar
  BIO.def('ar_web_collar',BIO.fung.crust({lobes:6,lobeA:0.22,seg:12,rings:2,seed:59105}),M.silkCollar,{label:'Tsek-Ma braided silk basalt-anchor pad'});
@@ -332,7 +453,10 @@ var ARACHNOIDS={
  const TREE_CFG={
   columnarpine:{bucket:'ar_pine',fol:'ar_pine_fol',pal:PAL.pine,barkCol:0x785c48,H:[10,20],rK:0.028,tiers:6,droop:0.06,buttress:true,flatCrown:true,conifer:true},
   gorgehemlock:{bucket:'ar_pine',fol:'ar_hemlock_fol',pal:PAL.hemlock,barkCol:0x5e544c,H:[17,30],rK:0.021,tiers:8,droop:0.18,buttress:true,flatCrown:false,conifer:true},
-  ledgeoak:{bucket:'ar_oak',fol:'ar_oak_fol',pal:PAL.oak,barkCol:0x6a5c50,H:[7,14],rK:0.032,tiers:5,droop:0.08,buttress:true,flatCrown:false,conifer:false}
+  ledgeoak:{bucket:'ar_oak',fol:'ar_oak_fol',pal:PAL.oak,barkCol:0x6a5c50,H:[7,14],rK:0.032,tiers:5,droop:0.08,buttress:true,flatCrown:false,conifer:false},
+  slotmulberry:{bucket:'ar_willow',fol:'ar_mulberry_fol',pal:PAL.mulberry,barkCol:0x6e6254,H:[5.6,10.2],rK:0.030,tiers:4,droop:0.04,buttress:false,flatCrown:false,conifer:false},
+  amberpistache:{bucket:'ar_amber',fol:'ar_pistache_fol',pal:PAL.pistache,barkCol:0x8a5e3c,H:[5.5,11.0],rK:0.033,tiers:4,droop:0.06,buttress:true,flatCrown:false,conifer:false},
+  spokedikejuniper:{bucket:'ar_juniper',fol:'ar_juniper_fol',pal:PAL.juniper,barkCol:0x68584a,H:[4.4,9.2],rK:0.034,tiers:5,droop:0.05,buttress:true,flatCrown:false,conifer:true}
  };
 
  ARACHNOIDS.growTree=function(kind,x,y,z,seed,scale,opt){
@@ -426,7 +550,7 @@ var ARACHNOIDS={
   const yaw=shear.yawRad==null?Math.PI:shear.yawRad;
   const dx=Math.sin(yaw),dz=Math.cos(yaw);
   const H0=clamp(shear.prostrateH*(0.82+0.36*H(seed,1,0,0x311)),0.45,1.90);
-  const bLen=clamp(shear.bannerLenM*(0.85+0.30*H(seed,2,0,0x311)),1.55,3.85);
+  const bLen=clamp(shear.bannerLenM*(0.88+0.28*H(seed,2,0,0x311)),1.80,3.85);
   const ownPrev=BIO.owner;BIO.owner=[x,z];
   try{
    const pts=BIO.flareJoin([
@@ -436,14 +560,83 @@ var ARACHNOIDS={
    ],{parentR:0.18,k:1.4,sink:0.4,len:1.4});
    BIO.tube('ar_juniper',pts,0x645448,{seg:5});
    for(let k=0;k<4;k++){
-    const f=0.25+0.24*k;
-    const px=x+dx*bLen*f,py=y+H0*(0.48+0.12*k),pz=z+dz*bLen*f;
+    const u=0.35+0.20*k,segF=u*(pts.length-1),si=Math.min(pts.length-2,Math.floor(segF)),sf=segF-si;
+    const pa=pts[si],pb=pts[si+1];
+    const px=lerp(pa.x,pb.x,sf),py=lerp(pa.y,pb.y,sf),pz=lerp(pa.z,pb.z,sf);
     const w=0.85+0.42*(1.0-0.18*k);
     const col=PAL.krummholz[(seed+k)%PAL.krummholz.length];
     BIO.put('ar_krumm_fol',[px,py,pz],qEuler(0,yaw,0),[w*0.85,H0*0.42,w*1.35],col,{n:[dx*0.35,0.9,dz*0.35]});
    }
   }finally{BIO.owner=ownPrev;}
   return{H:H0,bannerLenM:bLen,yawRad:yaw};
+ };
+
+ // Station 4 (frostrim): Snowbed Prostrate Dwarf-Birch (strictly <= 1.10 m height!)
+ ARACHNOIDS.growDwarfBirch=function(x,y,z,seed,yawRad){
+  const yaw=yawRad==null?0:yawRad;
+  const dx=Math.sin(yaw),dz=Math.cos(yaw);
+  const H0=clamp(0.34+0.68*H(seed,1,0,0x314),0.32,1.05);
+  const span=0.85+0.95*H(seed,2,0,0x314);
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   for(let b=0;b<3;b++){
+    const az=yaw+(b-1)*0.68+0.20*(H(seed,b,3,0x314)-0.5);
+    const bx=Math.sin(az),bz=Math.cos(az);
+    const pts=[
+     {x:x,y:y-0.12,z:z,r:0.048},
+     {x:x+bx*span*0.48,y:y+H0*0.52,z:z+bz*span*0.48,r:0.032},
+     {x:x+bx*span,y:y+H0*0.76,z:z+bz*span,r:0.018}
+    ];
+    BIO.tube('ar_juniper',pts,0x5a4c42,{seg:4});
+    const w=0.62+0.34*H(seed,b,4,0x314);
+    const pmx=0.5*(pts[1].x+pts[2].x),pmy=0.5*(pts[1].y+pts[2].y),pmz=0.5*(pts[1].z+pts[2].z);
+    BIO.put('ar_dwarfbirch_fol',[pmx,pmy,pmz],qEuler(0,az,0),[w,H0*0.56,w],PAL.dwarfBirch[(seed+b)%PAL.dwarfBirch.length],{n:[dx*0.2,0.96,dz*0.2]});
+   }
+  }finally{BIO.owner=ownPrev;}
+  return{H:H0};
+ };
+
+ // Zone 1 (nexus & fumarole): Steambed Megaphyll Taro (steambedtaro, 0.75-1.35 m) & Mist-Bench Canyon Tea (mistcanyontea, 0.95-1.65 m)
+ ARACHNOIDS.growTaroClump=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const H0=(0.78+0.52*H(seed,1,0,0x316))*sc;
+  for(let k=0;k<3;k++){
+   const az=(k/3)*TAU+0.35*H(seed,k,2,0x316);
+   const rOff=0.14+0.12*H(seed,k,3,0x316);
+   const bs=H0*(0.78+0.22*H(seed,k,4,0x316));
+   BIO.put('ar_taro_leaf',[x+Math.cos(az)*rOff,y+bs*0.44,z+Math.sin(az)*rOff],qEuler(0.22,az,0),[bs*0.95,bs,bs*0.95],PAL.taro[(seed+k)%PAL.taro.length]);
+  }
+  return{H:H0};
+ };
+
+ ARACHNOIDS.growTeaShrub=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const H0=(0.96+0.64*H(seed,1,0,0x318))*sc;
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   for(let b=0;b<3;b++){
+    const az=(b/3)*TAU+0.4*H(seed,b,2,0x318);
+    const sp=0.36+0.24*H(seed,b,3,0x318);
+    BIO.tube('ar_willow',[
+     {x:x,y:y-0.14,z:z,r:0.052},
+     {x:x+Math.cos(az)*sp,y:y+H0*0.62,z:z+Math.sin(az)*sp,r:0.024}
+    ],0x5c5044,{seg:4});
+    const ls=H0*(0.62+0.18*H(seed,b,4,0x318));
+    BIO.put('ar_tea_fol',[x+Math.cos(az)*sp*0.85,y+H0*0.64,z+Math.sin(az)*sp*0.85],qEuler(0,az,0),[ls,ls*0.82,ls],PAL.tea[(seed+b)%PAL.tea.length]);
+   }
+  }finally{BIO.owner=ownPrev;}
+  return{H:H0};
+ };
+
+ // Zone 2 (ledges & upper nexus): Vitrophyre Glass-Dike Lip-Fern (vitrophyrelipfern, 0.32-0.65 m rosette)
+ ARACHNOIDS.growLipFern=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const fl=(0.34+0.28*H(seed,1,0,0x319))*sc;
+  for(let k=0;k<6;k++){
+   const az=(k/6)*TAU+0.22*H(seed,k,2,0x319);
+   BIO.put('ar_lipfern',[x,y+0.04,z],qEuler(0,az,-0.18+0.12*H(seed,k,3,0x319)),[fl,fl*0.84,fl*0.80],PAL.lipFern[(seed+k)%PAL.lipFern.length]);
+  }
+  return{H:fl*0.82};
  };
 
  // Station 2 (fumarole): Steam-Plume Tree-Fern (fumarolefern, 3.2-7.0 m)
@@ -556,7 +749,7 @@ var ARACHNOIDS={
    const aPt=[ax,ay,az],bPt=[bx,by,bz];
    const midX=0.5*(ax+bx),midZ=0.5*(az+bz);
    const waterMid=Math.max(wH(midX,midZ),-14.0);
-   const invMid=ARACH_PHYS.inversionAt(midX,midZ,0.5*(ay+by),SITE);
+   const invMid=ARACH_PHYS.inversionAt(midX,midZ,0.5*(ay+by),typeof SITE!=='undefined'?SITE:ARACH_SITES.nexus);
    const gapA=Math.max(0,ay-rockYA),gapB=Math.max(0,by-rockYB);
 
    const ws=ARACH_PHYS.webSpanAt(aPt,bPt,7.4,{
@@ -695,9 +888,9 @@ var ARACHNOIDS={
   return{addBridgeWeb:addBridgeWeb,pushCable:pushCable,finalize:finalize};
  };
 
- // ---------------------------------------------------------------- octahedral impostors (34-core-impostor.js) for >= 7 m trees
+ // ---------------------------------------------------------------- octahedral impostors (34-core-impostor.js) for >= 5 m trees
  if(BIO.impostorSet&&BIO.impostor&&BIO.impostorItem){
-  const impKeys=['columnarpine','gorgehemlock','ledgeoak'];
+  const impKeys=['columnarpine','gorgehemlock','ledgeoak','slotmulberry','amberpistache','spokedikejuniper'];
   const IMP_SET=ARACHNOIDS.IMP_SET=BIO.impostorSet('arachnoids-trees',{grid:4,cell:48,slots:impKeys.length});
   ARACHNOIDS.IMP={};
   impKeys.forEach(tk=>{

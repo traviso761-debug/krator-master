@@ -17,7 +17,8 @@ function growKin(){
   const cell=row.cell==null?30:row.cell,N=Math.ceil(R/cell),salt=0x6e00+ri;let n=0;
   for(let j=-N;j<=N;j++)for(let i=-N;i<=N;i++){const h=KRAND.hash(W,i,j,salt),u=k=>KRAND.unit(KRAND.hash(h,k,0,salt)),x=(i+u(1))*cell,z=(j+u(2))*cell;
    if(Math.abs(x)>R||Math.abs(z)>R||BIO.lodD(x,z)>BIO.LOD().hero*1.25)continue;const a=row.accept(TIERS.zones(x,z),x,z);if(!(u(3)<a)||!clear(x,z,row.minR==null?3:row.minR))continue;
-   reseed(h);const T=K.make(x,terrainH(x,z),z);K.grow(T,2);   /* the hero always, and only within the hero range (ebadlands' finding, and this kit's attach audit, 2026-11-03: past it the vendors' builders draw lite crowns with no boughs, and they float); past it none */
+   reseed(h);const T=K.make(x,terrainH(x,z),z);BIO.owner=[x,z];try{K.grow(T,2);}finally{BIO.owner=null;}   /* the hero always, and only within the hero range (ebadlands' finding, and this kit's attach audit, 2026-11-03: past it the vendors' builders draw lite crowns with no boughs, and they float); past it none */
    S.insert(T,x,z,(T.rb==null?1:T.rb)*1.4+2);REGISTER({name:K.name,key:row.key,kind:'tree',label:K.name+' (read in place: '+row.ref+')',x,z,y:T.y0,r:T.crownR==null?3:T.crownR,h:T.H});n++;}
   out[row.key]=n;});
+ if(BIO.kits&&BIO.kits.ebadlands&&BIO.kits.ebadlands.defs&&BIO.kits.ebadlands.defs.grapes){const gm=BIO.kits.ebadlands.defs.grapes.mat;if(gm&&gm.color)gm.color.setRGB(2.2,2.2,2.4);}
  BIO.cur=null;if(missing.length)out.missing=missing;return out;}

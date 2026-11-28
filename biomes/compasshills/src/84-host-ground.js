@@ -112,6 +112,7 @@ if(USE_KG){
   KGROUND.layer('compasshills',fourthSlot,{w:'vGL.w',amt:0.84,gain:1.0,tint:'_gT',name:fourthName})
  ];
  KGROUND.hook(MAT_GROUND,{key:'compasshills-'+SKEY+'-ground',at:'/*KGROUND*/',relief:KG_RELIEF?{bump:0.06,cavity:0.72,mesh:1}:null,layers:layers});
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 
 let DRAWN_SRC=null;

@@ -161,16 +161,27 @@ const HCHK={
   if(forceEarthOnToxic){
    return{ok:false,detail:'chlorophyll Earth tree placed on unlimed Mg/Ca > 8 serpentinite'};
   }
-  const earthKeys={nevabirch:1,klintspruce:1,mustaalder:1,klintlinden:1,cloudberryfen:1};
-  const carnKeys={carnelian_organpipe:1,erythra_veil:1,bladder_tether:1,agate_window:1};
+  const earthKeys={
+   nevabirch:1,klintspruce:1,mustaalder:1,klintlinden:1,klintrowan:1,
+   tremblingaspen:1,goatwillow:1,klintjuniper:1,sweetgale:1,cloudberryfen:1,
+   augerclover:1,fencottongrass:1,bleachfireweed:1,nevasundew:1,bogcranberry:1,
+   koskireed:1,serpentinespleenwort:1,klinthepatica:1,spraycliffpolypody:1,kulanewawoad:1
+  };
+  const carnKeys={carnelian_organpipe:1,erythra_veil:1,bladder_tether:1,agate_window:1,blood_strangler:1};
   let earthN=0,carnN=0,badEarth=0;
   for(let i=0;i<(placed||[]).length;i++){
    const r=placed[i],k=r[0],m=r[6]||{};
+   const mgCa=m.mgCaRatio==null?m.mgCa:m.mgCaRatio;
+   const oasis=m.augerOasis01==null?0:m.augerOasis01;
+   const bleach=m.bleachScar01==null?0:m.bleachScar01;
    if(earthKeys[k]){
     earthN++;
-    if(m.biosphere==='carnelian'||m.biosphere==='bleach')badEarth++;
+    if(m.biosphere!=='earth'||bleach>0.55||(mgCa!=null&&mgCa>8.0&&!(oasis>0.35)))badEarth++;
    }else if(carnKeys[k]){
     carnN++;
+    if(m.biosphere!=='carnelian')badEarth++;
+   }else{
+    badEarth++;
    }
   }
   const ok=earthN>=15&&carnN>=8&&badEarth===0;

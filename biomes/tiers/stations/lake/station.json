@@ -4,7 +4,7 @@
   "ebadlands": [
    ["src/50-biome-ebadlands-species.js", "src/55-biome-ebadlands-trees.js"],
    "EBADLANDS",
-   "*"
+   ["bark.juniper", "leaf.needle", "leaf.round", "leaf.scale"]
   ]
  }
 }

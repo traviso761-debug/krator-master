@@ -265,7 +265,7 @@ var HOLLOW_PHYS=(function(root){
   var dk=porphyryDikeAt(x,z,S);
   var el=elevRelM==null?0:elevRelM;
   var knob01=dk.inDike?clamp((el-11.0)/11.0,0,1):0;
-  var KF=(typeof window!=='undefined'?window:globalThis).KFRONTIER;
+  var KF=root.KFRONTIER;
   if(KF&&typeof KF.quiltAt==='function'){
    var q=KF.quiltAt(x,z,{
     seed:7405,
@@ -342,7 +342,7 @@ var HOLLOW_SITES=(function(){
     speleo:'CALCITE'
    },
    reserves:[
-    {id:'site:high-ria-springworks',name:'High-Ria Spring-Mill & Barge Landing Reserve',x:88,z:-78,r:42,culture:'xanadu'}
+    {id:'site:high-ria-springworks',name:'High-Ria Spring-Mill & Barge Landing Reserve',x:88,z:-78,r:42,culture:'ria'}
    ]
   },
   shutin:{
@@ -366,7 +366,7 @@ var HOLLOW_SITES=(function(){
    cavern:null,
    terraces:[{x:-155,z:112,r:56},{x:-145,z:-118,r:52}],
    reserves:[
-    {id:'site:high-ria-boatlift',name:'Eastern Dynasty Counterweight Boat-Lift Bypass Reserve',x:8,z:-108,r:48,culture:'xanadu'}
+    {id:'site:high-ria-boatlift',name:'Eastern Dynasty Counterweight Boat-Lift Bypass Reserve',x:8,z:-108,r:48,culture:'ria'}
    ]
   },
   fenestre:{
@@ -400,7 +400,7 @@ var HOLLOW_SITES=(function(){
     speleo:'CALCITE'
    },
    reserves:[
-    {id:'site:high-ria-calamine-assay',name:'High-Ria Calamine & Optical Celestine Assay Reserve',x:-118,z:-96,r:38,culture:'xanadu'}
+    {id:'site:high-ria-calamine-assay',name:'High-Ria Calamine & Optical Celestine Assay Reserve',x:-118,z:-96,r:38,culture:'ria'}
    ]
   },
   glade:{
@@ -461,7 +461,7 @@ var HOLLOW_SITES=(function(){
    cavern:null,
    terraces:[{x:-132,z:98,r:52}],
    reserves:[
-    {id:'site:high-ria-porphyry-quarry',name:'High-Ria Imperial Porphyry & Carnelian Assay Reserve',x:-124,z:-104,r:42,culture:'xanadu'}
+    {id:'site:high-ria-porphyry-quarry',name:'High-Ria Imperial Porphyry & Carnelian Assay Reserve',x:-124,z:-104,r:42,culture:'ria'}
    ]
   }
  };

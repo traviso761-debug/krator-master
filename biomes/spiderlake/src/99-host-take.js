@@ -98,12 +98,12 @@ const CONTROLS=(function(){
   },
   {
    button:'Smudge Harvest',id:'btn-smudge',
-   title:'Apply 132 Hz Hum harp cadence + porphyryfern smudge-smoke: workers retreat peacefully into brood-domes for zero-kill reeling',
+   title:'Apply 132 Hz Hum harp cadence + silkbogmyrtle & porphyryfern smudge-smoke: workers retreat peacefully into brood-domes for zero-kill reeling',
    on(){
     const next=SPIDER_STATE.smudgeActive01>0.5?0.0:0.95;
     SPIDER_STATE.smudgeActive01=next;
     SPIDER_STATE.humFreqHz=next>0.5?132.0:0.0;
-    KHOST.inspector((next>0.5?'Zero-kill Hum & smudge active':'Returned to wild spinning')+' -> '+statusSummary());
+    KHOST.inspector((next>0.5?'Zero-kill Hum & smudge-myrtle active':'Returned to wild spinning')+' -> '+statusSummary());
    }
   },
   {
@@ -209,15 +209,30 @@ function collectUntexturedLitMeshes(extraList){
 
 const HCHK={
  stationSpecies(st,skey){
+  const baseLake=['spindlewillow','crowncypress','ambermulberry','weepingliquidambar','silkbogmyrtle','lakesmokesedge','silkfenpitcher','porphyryfern','bridgecurtain','broodpavilion','weirframe_wild','rampartgossamer'];
   const req=skey==='rampart'
-   ?['chinkapinoak','porphyrypine','lakesmokesedge','porphyryfern','rampartgossamer']
-   :['spindlewillow','crowncypress','ambermulberry','lakesmokesedge','silkfenpitcher','porphyryfern','bridgecurtain','broodpavilion','weirframe_wild','rampartgossamer'];
+   ?['chinkapinoak','porphyrypine','lakesmokesedge','porphyryfern','bleachfireweed','rampartgossamer','carnelian_organpipe','erythra_veil','agate_window']
+   :skey==='haugel'
+   ?baseLake.concat(['dolomitebamboo','nurserywildrice','dyersindigo','fensundew','bleachfireweed','carnelian_organpipe','erythra_veil','bladder_tether','agate_window','blood_strangler'])
+   :skey==='spillway'
+   ?baseLake.concat(['nurserywildrice','dyersindigo','fensundew','shorespiderlily','carnelian_organpipe','erythra_veil','agate_window'])
+   :skey==='narrows'
+   ?baseLake.concat(['dolomitebamboo','lakelotus','nurserywildrice','dyersindigo','grottocamellia','shorespiderlily'])
+   :skey==='pavilion'
+   ?baseLake.concat(['lakelotus','nurserywildrice','dyersindigo','grottocamellia','shorespiderlily'])
+   :skey==='fen'
+   ?baseLake.concat(['lakelotus','nurserywildrice','fensundew'])
+   :baseLake.concat(['dolomitebamboo','dyersindigo','grottocamellia','shorespiderlily']);
   const miss=req.filter(k=>!(st&&st[k]>0));
-  const carnOk=skey!=='haugel'||Boolean(st&&st.carnelianRelicts>=10);
-  if(!carnOk)miss.push('carnelianRelicts>=10');
+  if(skey==='haugel'){
+   if(!(st&&st.carnelianRelicts>=10))miss.push('carnelianRelicts>=10');
+   if(!(st&&st.bleachSkeletons>=1))miss.push('bleachSkeletons>=1');
+  }else if(skey==='rampart'||skey==='spillway'){
+   if(!(st&&st.carnelianRelicts>=6))miss.push('carnelianRelicts>=6');
+  }
   return{
    ok:!miss.length,
-   detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')+(skey==='haugel'?', carnelianRelicts '+st.carnelianRelicts:'')
+   detail:miss.length?'missing on '+skey+': '+miss.join(', '):req.map(k=>k+' '+st[k]).join(', ')+(st&&st.carnelianRelicts?', carnelianRelicts '+st.carnelianRelicts:'')
   };
  },
  lakeDatumPhysics(elevM){
@@ -290,7 +305,7 @@ const HCHK={
   return{ok:ok,detail:ok?'exposure '+info.exp.toFixed(3)+', sunAlt '+info.sunAlt.toFixed(1)+' deg, sunI '+info.sunI.toFixed(2):'non-finite sky/exposure'};
  },
  treesClearOfRivers(placed,checkFn){
-  const woody={spindlewillow:1,crowncypress:1,ambermulberry:1,chinkapinoak:1,porphyrypine:1};
+  const woody={spindlewillow:1,crowncypress:1,ambermulberry:1,chinkapinoak:1,porphyrypine:1,weepingliquidambar:1,dolomitebamboo:1};
   const trees=(placed||[]).filter(r=>woody[r[0]]);
   const inRiv=trees.filter(r=>checkFn(r[1],r[3],1.5));
   return{
@@ -340,18 +355,18 @@ KHOST.on(SKY.view,'view');
 KHOST.on(function lodTick(){camera.updateMatrixWorld();if(BIO.lodTick)BIO.lodTick(camera);},'view');
 
 const HINT=SKEY==='spillway'
- ?'Arachnoid Spillway (1272, 193, +1,460 m, 1.33 atm / 0.28 atm O2): sole 380 m3/s surface outlet of Spider Lake plunging into 9102 Ham-Tsek beneath 170 m wind-billowing Golden Cable Bridge-Curtains, removable cedar Silk-Weir frames, and warm alkaline degumming vats.'
+ ?'Arachnoid Spillway (1272, 193, +1,460 m, 1.33 atm / 0.28 atm O2): sole 380 m3/s surface outlet of Spider Lake plunging into 9102 Ham-Tsek beneath 170 m wind-billowing Golden Cable Bridge-Curtains, removable cedar Silk-Weir frames, smudge-myrtle & indigo terraces, and Carnelian ejecta stack relicts.'
  :SKEY==='narrows'
- ?'Golden Narrows (1288, 220, +1,460 m, 1.33 atm): emergent dolomite and secondary-ejecta stacks crowned by buttressed bald-cypress knees and multi-tier golden Bridge-Curtains over +7.5 m skiff arches, beside the reserved Ham-Spi Principality terrace.'
+ ?'Golden Narrows (1288, 220, +1,460 m, 1.33 atm): emergent dolomite and secondary-ejecta stacks crowned by buttressed bald-cypress knees, jade-culm bamboo, and multi-tier golden Bridge-Curtains over +7.5 m skiff arches, beside the reserved Ham-Spi Principality terrace.'
  :SKEY==='pavilion'
- ?'Brood-Pavilion Grove (1308, 224, +1,463 m, 1.33 atm): mist-drenched spindle-willow and crown-cypress woods linked canopy-to-canopy by insulated ivory-gold Cloud-Fleece Brood-Pavilions and gossamer sheets, stepped upslope into cut-stone amber-mulberry terraces.'
+ ?'Brood-Pavilion Grove (1308, 224, +1,463 m, 1.33 atm): mist-drenched spindle-willow, crown-cypress, and weeping ria-amber woods linked canopy-to-canopy by Cloud-Fleece Brood-Pavilions above lotus coves and cut-stone mulberry, smudge-myrtle, tea, and indigo terraces.'
  :SKEY==='fen'
- ?'Hydrothermal Lake-Smoke Midge-Fen (1328, 228, +1,460 m, 1.33 atm): 640 m3/s Hau-Gel inflow delta with steaming +37-44 C alkaline carbonate sericin-degumming springs, golden diatom mats, snare-mouth pitchers, submerged air-bell silk domes, and 300 m dusk midge pillars.'
+ ?'Hydrothermal Lake-Smoke Midge-Fen (1328, 228, +1,460 m, 1.33 atm): 640 m3/s Hau-Gel inflow delta with +37-44 C alkaline carbonate sericin-degumming springs, sacred lotus & wild-rice nurseries, snare-mouth pitchers & ruby sundews, submerged air-bell domes, and 300 m dusk midge pillars.'
  :SKEY==='dolomite'
- ?'Dolomite Rim & Crystal Grotto (1256, 184, +1,460 m, 1.33 atm): cream carbonate-shelf bluffs sliced by an imperial red-porphyry dike above the sub-escarpment tube_ozarks_15 conduit, opening into a walk-in KSPELEO.CALCITE celestine-and-calcite crystal chamber.'
+ ?'Dolomite Rim & Crystal Grotto (1256, 184, +1,460 m, 1.33 atm): cream carbonate-shelf bluffs with jade-culm bamboo and mist-tea bushes sliced by an imperial red-porphyry dike above tube_ozarks_15, opening into a walk-in KSPELEO.CALCITE celestine-and-calcite crystal chamber.'
  :SKEY==='haugel'
- ?'Hau-Gel Inflow Gorge & Carnelian Ejecta Cliffs (1354, 238, +1,460..+1,505 m, 1.33 atm): 585 m3/s NE 9106 Hau-Gel canyon rushing past +41-46 C scalding sinter terraces and Golden Cable curtains below dry secondary-ejecta cliffs crowned with crimson Erythrophyll fans and 0.75 g ruby bladder-tethers.'
- :'North Ejecta Rampart (1278, 166, +2,040 m, 1.24 atm): unbroken ballistic secondary-ejecta boulder-collar sealing +1,460 m Spider Lake (south) cleanly from Ria Valley headwaters (north), carpeted in calming porphyry smudge-ferns and spiderling gossamer.';
+ ?'Hau-Gel Inflow Gorge & Carnelian Ejecta Cliffs (1354, 238, +1,460..+1,505 m, 1.33 atm): 585 m3/s NE 9106 Hau-Gel canyon rushing past scalding sinter terraces and green mulberry benches below dry secondary-ejecta cliffs holding all 5 Carnelian Erythrophyll clades and an orbital Bleach-Scar seam.'
+ :'North Ejecta Rampart (1278, 166, +2,040 m, 1.24 atm): unbroken ballistic secondary-ejecta boulder-collar sealing +1,460 m Spider Lake (south) from Ria Valley headwaters (north), holding edaphic Carnelian agate-window, erythra-veil & organ-pipe relicts alongside chinkapin oak, porphyry pine & spiderling gossamer.';
 
 const EXPORT_BOX_BY_STATION=SKEY==='narrows'?[-120,-95,140,135]:SKEY==='dolomite'?[-80,-110,135,95]:[-130,-110,130,130];
 
@@ -385,7 +400,7 @@ KHOST.take({
   site:()=>SITE,
   placed:()=>SPIDERLAKE.PLACED,
   state:()=>SPIDER_STATE,
-  exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos','water'],
+  exportProfile:['registry','items','buckets','materials','textures','terrain','stage','atmos'].concat(SITE.hasOpenLake?['water']:[]),
   exportBox:EXPORT_BOX_BY_STATION,
   at:(x,z)=>{
    const y=DRAWN_H(x,z),o={h:y,asl:SITE.baseElevM+y,water:waterH(x,z)};

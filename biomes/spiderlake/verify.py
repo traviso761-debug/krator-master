@@ -3,7 +3,7 @@
 
 Usage:
   python3 biomes/spiderlake/verify.py --assert --no-cache
-      Runs tests/test-spiderlake.js + verifies all 6 stations (spillway, narrows, pavilion, fen, dolomite, rampart).
+      Runs tests/test-spiderlake.js + verifies all 7 stations (spillway, narrows, pavilion, fen, dolomite, rampart, haugel).
   python3 biomes/spiderlake/verify.py dist/spiderlake.html --assert [--all-views]
   python3 biomes/spiderlake/verify.py --station narrows --assert
 """
@@ -60,7 +60,7 @@ const R=[];
 if(A.hostChecks){ for(const c of A.hostChecks()) R.push({name:c.name, ok:c.ok, detail:c.detail});
   for(const n of A.hostNegatives()) R.push({name:'negative: '+n.name, ok:n.failed,
     detail:(n.failed?'fails as it must: ':'PASSED A BROKEN INPUT: ')+n.detail}); }
-{ R.push({name:'window-spiderlake-api', ok:!!(window.SPIDERLAKE&&window.SPIDERLAKE.SPECIES&&window.SPIDERLAKE.SPECIES.length>=9),
+{ R.push({name:'window-spiderlake-api', ok:!!(window.SPIDERLAKE&&window.SPIDERLAKE.SPECIES&&window.SPIDERLAKE.SPECIES.length>=26),
           detail:window.SPIDERLAKE?('SPIDERLAKE.SPECIES='+window.SPIDERLAKE.SPECIES.length):'missing window.SPIDERLAKE'}); }
 { R.push({name:'registry-and-bake-ran', ok:window._registered>0&&window._instances>0,
           detail:window._registered+' registered volumes, '+window._instances+' baked instances'}); }

@@ -16,7 +16,7 @@ const WORKS=(function(){
     tagClass:'feature',
     ground:true,
     x:R0.x,y:ry,z:R0.z,r:R0.r,h:14,
-    tags:{biome:'thedome',reserve:R0.id,culture:'yuni',sacred:true}
+    tags:{biome:'thedome',reserve:R0.id,culture:'ria',sacred:true}
    });
    out.reserves++;
   }
@@ -102,7 +102,7 @@ const WORKS=(function(){
     name:label,
     class:'furniture',
     at:[x,y,z],r:2.8,h:3.1,
-    tags:{biome:'thedome',culture:'yuni',setting:'outdoor',role:'acoustic-dish'}
+    tags:{biome:'thedome',culture:'ria',setting:'outdoor',role:'acoustic-dish'}
    });
   }
   out.dishes++;
@@ -147,7 +147,7 @@ const WORKS=(function(){
     name:label,
     class:'furniture',
     at:[x,y,z],r:1.8,h:3.6,
-    tags:{biome:'thedome',culture:'yuni',setting:'outdoor',role:'barometric-harp'}
+    tags:{biome:'thedome',culture:'ria',setting:'outdoor',role:'barometric-harp'}
    });
   }
   out.harps++;
@@ -174,7 +174,7 @@ const WORKS=(function(){
     name:'Upper Ria Vernal Rain-Gauge',
     class:'furniture',
     at:[x,y,z],r:0.9,h:1.7,
-    tags:{biome:'thedome',culture:'yuni',setting:'outdoor',role:'rain-gauge'}
+    tags:{biome:'thedome',culture:'ria',setting:'outdoor',role:'rain-gauge'}
    });
   }
   out.gauges++;

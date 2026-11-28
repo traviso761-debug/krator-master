@@ -330,9 +330,9 @@ var DOME_PHYS = (function () {
   function eastFlankFrontierAt(x, z, elevRelM, site) {
     var s = site || {};
     if (!s.killLine) {
-      return { biosphere: 'earth', bleach01: 0, upslopeRed01: 0, strangler01: 0, skeletonProb01: 0, mistPool01: 0 };
+      return { biosphere: 'earth', bleach01: 0, upslopeRed01: 0, strangler01: 0, skeletonProb01: 0, vanguard01: 0, mistPool01: 0, signedDistM: 0 };
     }
-    var KF = (typeof window !== 'undefined' ? window : globalThis).KFRONTIER;
+    var KF = typeof KFRONTIER !== 'undefined' ? KFRONTIER : (typeof globalThis !== 'undefined' ? globalThis.KFRONTIER : null);
     var el = def(elevRelM, 0);
     if (KF && typeof KF.bleachSwathAt === 'function') {
       var sw = KF.bleachSwathAt(x, z, s.killLine);
@@ -344,7 +344,9 @@ var DOME_PHYS = (function () {
         upslopeRed01: +sw.upslopeRed01.toFixed(4),
         strangler01: +sw.strangler01.toFixed(4),
         skeletonProb01: +sw.skeletonProb01.toFixed(4),
-        mistPool01: +def(mp.mistPool01, 0).toFixed(4)
+        vanguard01: +def(sw.vanguard01, 0).toFixed(4),
+        mistPool01: +def(mp.mistPool01, 0).toFixed(4),
+        signedDistM: +def(sw.signedDistM, 0).toFixed(2)
       };
     }
     var kl = s.killLine;
@@ -365,7 +367,90 @@ var DOME_PHYS = (function () {
       upslopeRed01: +upRed.toFixed(4),
       strangler01: +(signedDistM > 0 ? edgeBell : edgeBell * 0.35).toFixed(4),
       skeletonProb01: +(bleach01 * 0.65).toFixed(4),
-      mistPool01: 0
+      vanguard01: +(signedDistM < 0 ? edgeBell : 0).toFixed(4),
+      mistPool01: 0,
+      signedDistM: +signedDistM.toFixed(2)
+    };
+  }
+
+  /* 6. 55% Red Sky-Island Inversion across The Dome (wraps KFRONTIER.quiltAt on crown, apron, cleft & eastflank; shellStep01 safe) */
+  function skyIslandQuiltAt(x, z, elevRelM, hydroperiod01, site) {
+    var s = site || {};
+    var id = s.id || 'apron';
+    var seed = def(s.seed, 6101) >>> 0;
+    var sh = shellAt(x, z, s);
+    var gn = gnammaAt(x, z, hydroperiod01, s);
+    /* Strictly enforce <= 3.0 m height ceiling (< 4.0 m) wherever shellStep01 < 0.55 */
+    var maxH = sh.shellStep01 >= 0.55 ? 10.5 : 3.0;
+
+    if (id === 'eastflank' && s.killLine) {
+      var ef = eastFlankFrontierAt(x, z, elevRelM, s);
+      return {
+        biosphere: ef.biosphere,
+        redDominance01: ef.upslopeRed01,
+        bleachScar01: ef.bleach01,
+        stranglerEdge01: ef.strangler01,
+        vanguard01: ef.vanguard01,
+        shellStep01: sh.shellStep01,
+        maxAllowedHeightM: maxH
+      };
+    }
+
+    /* Sheltered wet habitats (gnamma bowls/rims, radial Kluft chasm, moat seepage fen, deep garland trenches, scour flutes) stay Earth */
+    var inCleftSlot = id === 'cleft' && Math.abs(z) < 22.0;
+    var inMoatWet = id === 'moat' && z < def(s.apronToeZ, 42.0) + 12.0;
+    if (gn.inPan || gn.rimGrit01 > 0.22 || sh.hollowGapM > 0.05 || inCleftSlot || inMoatWet || sh.shellStep01 >= 0.66 || sh.slickFlute01 >= 0.42) {
+      return {
+        biosphere: 'earth',
+        redDominance01: 0,
+        bleachScar01: 0,
+        stranglerEdge01: 0,
+        vanguard01: 0,
+        shellStep01: sh.shellStep01,
+        maxAllowedHeightM: maxH
+      };
+    }
+
+    var KF = typeof KFRONTIER !== 'undefined' ? KFRONTIER : (typeof globalThis !== 'undefined' ? globalThis.KFRONTIER : null);
+    var hydro = clamp(def(hydroperiod01, 0.65), 0, 1);
+    var edaph = clamp((0.78 - 0.72 * sh.shellStep01) * (1.0 - sh.slickFlute01 * 0.90), 0, 1);
+    var sunAspect = id === 'crown'
+      ? clamp(0.58 + 0.28 * clamp((x * 0.65 - z * 0.35) / 180.0, -1, 1), 0, 1)
+      : clamp(0.36 + 0.56 * clamp((x * 0.75 + z * 0.25) / 220.0, -1, 1), 0, 1);
+    var xeric = clamp(sunAspect * (1.0 - sh.slickFlute01 * 0.85) * (1.0 - hydro * 0.14), 0, 1);
+    var skyEx = id === 'crown' ? 0.95 : (id === 'cleft' ? 0.80 : (id === 'apron' ? 0.72 : 0.32));
+
+    if (KF && typeof KF.quiltAt === 'function') {
+      var q = KF.quiltAt(x, z, {
+        seed: seed,
+        edaphicToxicity01: edaph,
+        xericExposure01: xeric,
+        skyExposure01: skyEx,
+        baselineRed01: 0.55,
+        elevM: def(s.elevM, 2300.0) + def(elevRelM, 0)
+      });
+      var seam01 = clamp(1.0 - Math.abs(q.redDominance01 - 0.50) / 0.18, 0, 1);
+      return {
+        biosphere: q.biosphere,
+        redDominance01: +q.redDominance01.toFixed(4),
+        bleachScar01: +q.bleachScar01.toFixed(4),
+        stranglerEdge01: +Math.max(q.stranglerEdge01, seam01 * 0.72).toFixed(4),
+        vanguard01: 0,
+        shellStep01: sh.shellStep01,
+        maxAllowedHeightM: maxH
+      };
+    }
+
+    var score = 0.52 * edaph + 0.22 * xeric + 0.18 * skyEx + 0.048;
+    var red01 = smooth(0.36, 0.58, score);
+    return {
+      biosphere: red01 >= 0.5 ? 'carnelian' : 'earth',
+      redDominance01: +red01.toFixed(4),
+      bleachScar01: 0,
+      stranglerEdge01: +clamp(1.0 - Math.abs(red01 - 0.5) / 0.18, 0, 1).toFixed(4),
+      vanguard01: 0,
+      shellStep01: sh.shellStep01,
+      maxAllowedHeightM: maxH
     };
   }
 
@@ -379,7 +464,8 @@ var DOME_PHYS = (function () {
     barometricAt: barometricAt,
     acousticsAt: acousticsAt,
     canRootFullTree: canRootFullTree,
-    eastFlankFrontierAt: eastFlankFrontierAt
+    eastFlankFrontierAt: eastFlankFrontierAt,
+    skyIslandQuiltAt: skyIslandQuiltAt
   };
 })();
 

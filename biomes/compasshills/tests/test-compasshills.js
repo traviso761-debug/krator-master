@@ -192,4 +192,192 @@ function angleDiffDeg(a, b) {
   T.ok('all 6 Compass Hills fauna species carry continuous 0..24h schedules and resource yields', faunaOk);
 }
 
+/* 7. 25-Species Roster, Genuine Stand-In Card Fixes, Weeping-Amber Pioneers Lore & FERRO_KEYS */
+{
+  loadGlobal('core/space/20-core-space.js');
+
+  function MockAttr(arr, sz) {
+    this.array = Float32Array.from(arr);
+    this.itemSize = sz;
+    this.count = (this.array.length / sz) | 0;
+  }
+  MockAttr.prototype.getX = function (i) { return this.array[i * this.itemSize]; };
+  MockAttr.prototype.getY = function (i) { return this.array[i * this.itemSize + 1]; };
+  MockAttr.prototype.getZ = function (i) { return this.array[i * this.itemSize + 2]; };
+  MockAttr.prototype.setXYZ = function (i, x, y, z) {
+    const o = i * this.itemSize;
+    this.array[o] = x; this.array[o + 1] = y; this.array[o + 2] = z;
+  };
+  function makeMockGeo() {
+    return {
+      attributes: { position: new MockAttr([0, 0, 0, 1, 0, 0, 0, 1, 0], 3) },
+      userData: {},
+      translate() { return this; },
+      setAttribute(k, a) { this.attributes[k] = a; return this; },
+      setIndex() { return this; },
+      computeVertexNormals() { return this; }
+    };
+  }
+  const MockTHREE = {
+    DoubleSide: 2,
+    Color: function (h) { this.hex = h; },
+    BufferGeometry: makeMockGeo,
+    CylinderGeometry: makeMockGeo,
+    IcosahedronGeometry: makeMockGeo,
+    Float32BufferAttribute: MockAttr,
+    MeshStandardMaterial: function (o) { Object.assign(this, o || {}); this.isMeshStandardMaterial = true; this.userData = {}; }
+  };
+
+  const defs = {}, buckets = {};
+  global.BIO = {
+    owner: null,
+    fn: {
+      TAU: Math.PI * 2,
+      clamp: (x, a, b) => (x < a ? a : x > b ? b : x),
+      lerp: (a, b, t) => a + (b - a) * t,
+      smooth: (a, b, x) => { let t = (x - a) / (b - a); t = t < 0 ? 0 : t > 1 ? 1 : t; return t * t * (3 - 2 * t); },
+      qEuler: (x, y, z) => [x, y, z, 1],
+      qUp: () => [0, 0, 0, 1]
+    },
+    host: { THREE: MockTHREE, terrainH: () => 12, waterH: () => -1e9, register: () => {} },
+    kit() {},
+    kitEnd(api) { return api; },
+    canvasTex: () => ({ isTexture: true }),
+    alphaTex: () => ({ isTexture: true }),
+    barkMat: m => ({ map: m, isMeshStandardMaterial: true }),
+    leafMat: (m, k) => ({ map: m, key: k, isMeshStandardMaterial: true }),
+    libSwap: () => ({}),
+    bucket(k, m, o) { buckets[k] = { mat: m, opt: o }; },
+    def(k, g, m, o) { defs[k] = { geo: g, mat: m, opt: o }; },
+    put() {},
+    tube: (b, pts) => Math.max(0, (pts.length - 1) * 14),
+    flareJoin: pts => pts,
+    geo: { clump: makeMockGeo, bloom: makeMockGeo, hang: makeMockGeo, mat: makeMockGeo },
+    fung: { crust: makeMockGeo },
+    impostorSet: (n, o) => ({ name: n, opt: o }),
+    impostor: k => ({ key: k }),
+    impostorItem() {},
+    impostorPut() {}
+  };
+
+  loadGlobal('biomes/compasshills/src/50-biome-compass-species.js');
+  loadGlobal('biomes/compasshills/src/60-biome-compass-place.js');
+  loadGlobal('biomes/compasshills/src/70-biome-compass.js');
+
+  const spKeys = COMPASS.SPECIES.map(s => s.key);
+  const expectedNew = [
+    'amberstorax', 'cuestaarbutus', 'sunnycarob', 'gorgeoleander', 'goldenbroom',
+    'cistusrockrose', 'canyongrape', 'seepmaidenhair', 'cuestaasphodel',
+    'magnetitespleenwort', 'gossanwhorlheath'
+  ];
+  const all25Present = COMPASS.SPECIES.length === 25 &&
+    new Set(spKeys).size === 25 &&
+    expectedNew.every(k => spKeys.indexOf(k) >= 0);
+
+  const allHvValid = COMPASS.SPECIES.every(s => {
+    const h = s.tags && s.tags.harvest;
+    return h && typeof h.wood === 'string' && Array.isArray(h.edible) &&
+      typeof h.medicinal === 'boolean' && typeof h.notes === 'string' && h.notes.length >= 20;
+  });
+
+  T.ok('COMPASS.SPECIES registers 25 distinct species with complete HV harvest tags and Pioneers ria-amber storax lore',
+    all25Present && allHvValid &&
+    COMPASS.byKey.amberstorax.tags.resin === 'ria-amber' &&
+    /coil-varnish/i.test(COMPASS.HARVEST.amberstorax.notes),
+    'count=' + COMPASS.SPECIES.length);
+
+  const ferroKeys = Object.keys(COMPASS.FERRO_KEYS).sort();
+  T.ok('FERRO_KEYS registers all 7 ferromagnetic/gossan specialists including magnetitespleenwort & gossanwhorlheath',
+    ferroKeys.length === 7 &&
+    COMPASS.FERRO_KEYS.magnetitespleenwort === 1 &&
+    COMPASS.FERRO_KEYS.gossanwhorlheath === 1 &&
+    Object.keys(buckets).length <= 7,
+    'ferroKeys=' + ferroKeys.join(',') + ' buckets=' + Object.keys(buckets).length);
+
+  const matJson = JSON.parse(fs.readFileSync(path.join(ROOT, 'biomes/compasshills/materials.json'), 'utf8')).families;
+  const standInsFixed = defs.ch_plane_fol.mat === COMPASS.M.plane &&
+    defs.ch_plane_fol.mat !== COMPASS.M.oak &&
+    defs.ch_plane_samara.mat === COMPASS.M.samara &&
+    defs.ch_mulberry_fol.mat === COMPASS.M.mulberry &&
+    defs.ch_mulberry_fol.mat !== COMPASS.M.pistache &&
+    matJson.plane.lib === 'card.broadleaf' &&
+    matJson.samara.lib === 'card.samara.maple' &&
+    matJson.mulberry.lib === 'card.heartleaf' &&
+    matJson['bark.amber'].lib === 'bark.amber' &&
+    matJson.storax.lib === 'card.lobed' &&
+    matJson.arbutus.lib === 'card.starberry' &&
+    matJson.carob.lib === 'card.orchard.broad' &&
+    matJson.oleander.lib === 'card.petal.coral' &&
+    matJson.broom.lib === 'card.broom' &&
+    matJson.cistus.lib === 'card.cupflower' &&
+    matJson.canyongrape.lib === 'card.vine.hanging.2' &&
+    matJson.maidenhair.lib === 'card.fan.lace' &&
+    matJson.asphodel.lib === 'card.firelily' &&
+    matJson.spleenwort.lib === 'card.frond.needle' &&
+    matJson.whorlheath.lib === 'card.heath.whorl';
+  T.ok('gorgeplane & silkmulberry stand-in cards fixed and all 25 species bound to genuine library cards', standInsFixed);
+
+  /* 8. Full 4-Station Placement Audit: earthShare in [0.78, 0.90], <= 0.21 rad fluxAt alignment, reserves & 0 iron works */
+  const totalAcross = {};
+  COMPASS.SPECIES.forEach(s => { totalAcross[s.key] = 0; });
+  let balanceOk = true, alignRadOk = true, reserveClean = true, stationReqOk = true;
+  const shareSummary = [];
+
+  for (const st of ['foundry', 'tors', 'cuesta', 'gorge']) {
+    const site = S[st];
+    const space = KSPACE.create({ cell: 16 });
+    if (site.reserve) space.insert({ kind: 'reserve' }, site.reserve.x, site.reserve.z, site.reserve.r);
+    const tH = (x, z) => 14.0 + 6.5 * Math.sin(x * 0.012) + 5.5 * Math.cos(z * 0.011);
+    const wH = (x, z) => (st === 'gorge' && Math.abs(z - 0.08 * x) < 34 ? 20.0 : -1e9);
+    const fields = {
+      wet: (x, z) => (st === 'gorge' && Math.abs(z - 0.08 * x) < 74 ? 0.78 : 0.28),
+      sand: (x, z) => (st === 'foundry' && Math.abs(Math.hypot(x, z) - 225) < 24 ? 0.65 : 0.08),
+      gossan: (x, z) => (st === 'foundry' && Math.abs(Math.hypot(x, z) - 225) < 30 ? 0.72 : 0.04),
+      trail: () => 0.0
+    };
+    const c = COMPASS.build({ station: st, terrainH: tH, waterH: wH, space: space, fields: fields, seed: 910220 });
+    shareSummary.push(st + '=' + c.earthShare);
+    if (!(c.earthShare >= 0.78 && c.earthShare <= 0.90)) balanceOk = false;
+
+    const req = st === 'gorge'
+      ? ['compassbush', 'lodestonespire', 'fluxlichen', 'ferrotuft', 'fluxgrass', 'magnetitespleenwort', 'gossanwhorlheath', 'gorgeplane', 'silkmulberry', 'amberstorax', 'gorgeoleander', 'canyongrape', 'seepmaidenhair', 'stonepine', 'corkoak', 'ironpistache', 'macchiasage']
+      : st === 'cuesta'
+      ? ['compassbush', 'lodestonespire', 'fluxlichen', 'ferrotuft', 'fluxgrass', 'magnetitespleenwort', 'gossanwhorlheath', 'stonepine', 'corkoak', 'ironpistache', 'whorlolive', 'sunnycarob', 'cuestaarbutus', 'goldenbroom', 'cistusrockrose', 'cuestaasphodel', 'saffroncrocus', 'macchiasage']
+      : ['compassbush', 'lodestonespire', 'fluxlichen', 'ferrotuft', 'fluxgrass', 'magnetitespleenwort', 'gossanwhorlheath', 'stonepine', 'corkoak', 'ironpistache', 'amberstorax', 'cuestaarbutus', 'goldenbroom', 'cuestajuniper', 'macchiasage'];
+    if (req.some(k => !(c[k] > 0))) stationReqOk = false;
+
+    COMPASS.SPECIES.forEach(sp => { totalAcross[sp.key] += (c[sp.key] || 0); });
+
+    for (const rec of COMPASS.PLACED) {
+      if (site.reserve && Math.hypot(rec[1] - site.reserve.x, rec[3] - site.reserve.z) < site.reserve.r) {
+        reserveClean = false;
+      }
+      if (rec[0] === 'compassbush' && rec[6] && rec[6].bHorizMt >= 0.5) {
+        const decl = P.fluxAt(rec[1], rec[3], st).declinationRad;
+        let diff = Math.abs(rec[6].bladeYawRad - decl);
+        while (diff > Math.PI) diff = Math.abs(diff - Math.PI * 2);
+        if (diff > 0.21) alignRadOk = false;
+      }
+    }
+  }
+
+  const unplaced = Object.keys(totalAcross).filter(k => totalAcross[k] <= 0);
+  T.ok('COMPASS.build keeps earthShare strictly inside [0.78, 0.90] on all 4 stations and places all 25 species & station signatures',
+    balanceOk && stationReqOk && unplaced.length === 0 && reserveClean,
+    shareSummary.join(', ') + (unplaced.length ? ' unplaced=' + unplaced.join(',') : ''));
+
+  T.ok('every placed compassbush (B_horiz >= 0.5 mT) aligns blade yaw within <= 0.21 rad (12 deg) of fluxAt(x, z).declinationRad',
+    alignRadOk);
+
+  const worksSrc = fs.readFileSync(path.join(ROOT, 'biomes/compasshills/src/86-host-works.js'), 'utf8');
+  const regWorkMats = [...worksSrc.matchAll(/regWork\([^\n]*,\s*'([^']+)'\s*,\s*'[^']+'\s*\)/g)].map(m => m[1]);
+  const addPartMats = [...worksSrc.matchAll(/addPart\([^\n]*,\s*'([^']+)'\s*\)/g)].map(m => m[1]);
+  const groundSrc = fs.readFileSync(path.join(ROOT, 'biomes/compasshills/src/84-host-ground.js'), 'utf8');
+  const kgroundLayers = (groundSrc.match(/KGROUND\.layer\(/g) || []).length;
+  T.ok('86-host-works.js places 0 ferrous iron/steel props and 84-host-ground.js keeps <= 4 KGROUND layers (samplers <= 14)',
+    regWorkMats.length === 9 && addPartMats.length >= 16 &&
+    regWorkMats.concat(addPartMats).every(m => !/^(iron|steel)$/i.test(m)) && kgroundLayers <= 4,
+    'mats=' + regWorkMats.join(',') + ' kgroundLayers=' + kgroundLayers);
+}
+
 T.done();

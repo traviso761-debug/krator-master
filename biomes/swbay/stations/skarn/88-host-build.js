@@ -8,6 +8,7 @@ window._biome=null;
  try{window._biome=SWBAY.build({R:TERR.R-100,quality:1});}catch(e){reportErr('biome: '+e.stack);}
  try{window._ledgeTrees=ledgeTrees();}catch(e){reportErr('ledge trees: '+e.stack);}
  const b=BIO.bake();
+ if(SWBAY.postBakeOwn)SWBAY.postBakeOwn(scene,terrainH);
  if(BIO.impostorLook)BIO.impostorLook({gain:+(Q.get('impgain')||2.2),wrap:+(Q.get('impwrap')||1)});   /* the bay page's measured gain (src/88) */
  if(BIO.bakeImpostors){try{BIO.bakeImpostors(renderer);}catch(e){reportErr('impostors: '+e.stack);}}
  if(SWBAY_LOOK.ground)BIO.setGround(MAT_GROUND.map,[TERR.X0,TERR.Z1,TERR.X1,TERR.Z0]);   /* R5: the floor cover's root colour (the paint spans TERR; a canvas's v runs z1..z0) */

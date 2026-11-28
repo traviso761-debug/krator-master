@@ -57,6 +57,8 @@ BIO.init({tags:'tiers',THREE:THREE,scene:scene,terrainH:terrainH,waterH:waterH,m
  lod:{hero:400,mid:1000,far:2600,floor:[360,880]},
  windows:{water:[-TERR.R,-TERR.R,TERR.R,TERR.R]}});
 BIO.setSun([-1000,1150,-560]);
+{const q=new URLSearchParams(location.search);BIO.INDEX_ITEMS=q.get('index')!=='0';
+ BIO.LOD.chunk=600;BIO.LOD.merge=q.get('lodmerge')!=='0';BIO.LOD.minTris=600;if(BIO.LOD.merge)BIO.range=1400;}
 
 // ---------------------------------------------------------------- the ground
 // One mesh, painted by zone from the field cache: the lake tread's Csa ground (tawny dry grass on red-brown soil, greener where the rain and
@@ -130,7 +132,7 @@ const GLW=(function(){
    The Tiers' lake tread takes no wet-ground maps (LAND.wet false: 4 layers, not 2). */
 const GL_USE=(LAND.groundLayers||['meadow','steppe','terrace','lichen']);
 const GL=(function(){if(typeof KMAT==='undefined'||KMAT.mode!=='lib')return null;
- const P=n=>KMAT.packed('tiers','ground.'+n);if(GLW.some(l=>!P(l[0])))return null;
+ const P=n=>KMAT.packed('tiers','ground.'+n);if(GLW.some(l=>GL_USE.indexOf(l[0])>=0&&!P(l[0])))return null;
  return GLW.filter(l=>GL_USE.indexOf(l[0])>=0).map(l=>{const e=P(l[0]);return{name:l[0],w:l[1],tex:KMAT.textures(e,{aniso:8}).map,scale:e.scale[0],keep:e.tint,mean:e.mean};});})();
 /* Standard under KGROUND (roughness high, as dry ground is): the rain's gloss and the puddles show on it, as they cannot on Lambert; ?kground=0 for the old floor */
 const MAT_GROUND=USE_KG?new THREE.MeshStandardMaterial({map:TEX_GROUND,color:0xa8a29a,roughness:.96,metalness:0}):new THREE.MeshLambertMaterial({map:TEX_GROUND,color:0xa8a29a});
@@ -162,6 +164,8 @@ if(USE_KG)KGROUND.hook(MAT_GROUND,{key:'tiers-ground'+(KG_PAVE?'p':'')+(KG_POLY?
   palette:[0x2a1e18,0x3e2a20,0x553828,0x1e1814,0x4a3226,0x6a4a34],seed:311,name:'pavement'}:null,
  KG_POLY?{kind:'polygon',w:'vGM.y*(1.0-vRock)',amt:.85,size:3.2,width:.05,edgeTint:'vec3(0.62,0.56,0.5)',warp:.14,seed:312,name:'mud polygons'}:null,
  {kind:'clast',w:'vGM.w',amt:.8,proj:'tri',size:.7,matrix:.12,matrixColor:LAND.talusMatrix==null?0x8a6650:LAND.talusMatrix,sub:.2,fleck:0,jitter:.9,vary:.35,palette:LAND.talusPalette||[0x2e2c2a,0x3a3633,0x5a3c30,0x46423e,0x6a4a3a],seed:313,name:'talus'}])});
+MAT_GROUND.uniforms=Object.assign(MAT_GROUND.uniforms||{},{uDetail:{value:hostGroundLib('groundDetail',TEX_DETAIL)}});
+if(GL)GL.forEach((l,i)=>{const pk=(typeof KMAT!=='undefined'&&KMAT.mode==='lib'&&KMAT.packed)?KMAT.packed('tiers','ground.'+l.name):null;if(pk)MAT_GROUND.uniforms['uKGL_'+i]={value:KMAT.textures(pk,{aniso:8}).map};});
 /* THE GROUND MESH: N x N cells of TERR.R*2.2/N metres on terrainH, its zone weights per vertex. THE GROUND'S MASKS (the review's first line: each layer
    on a documented mask, no layer on a bare noise): aGL0..2 the ten library layers' zone weights (GLW above: the strata field, slope, the vents' geo,
    the pools' banks, cold, wet; normalised to sum 1 at most), aCrack the paint's mud cracks, aRock the strata's share (bedded rock showing), and aGM:

@@ -3,6 +3,12 @@
 const T = require('../../../tools/ktest.js')(__filename);
 
 require('../../../core/rand/08-core-rand.js');
+require('../../../core/frontier/18-core-frontier.js');
+require('../../../kits/crops/src/10-crop-core.js');
+require('../../../kits/crops/src/20-crop-records.js');
+require('../../../kits/crops/src/40-crop-query.js');
+const fs = require('fs');
+const path = require('path');
 const PHYS = require('../src/40-biome-spider-phys.js');
 const SITES = require('../src/41-biome-spider-sites.js');
 
@@ -20,7 +26,7 @@ const SITES = require('../src/41-biome-spider-sites.js');
   T.ok('+1,460 m dense hyperoxic air supports maxCastSpanM >= 220 m and boatClearanceM >= 6.5 m',
     lake.maxCastSpanM >= 220.0 && lake.boatClearanceM >= 6.5 && lake.tensileGPa === 1.3);
   T.ok('+2,040 m North Rampart crest drops barometric pressure to ~1.24 atm',
-    Math.abs(rampart.pAtm - 1.240) <= 0.01);
+    Math.abs(rampart.pAtm - 1.240) <= 0.01 && thinAlpine.maxCastSpanM < 90.0);
   T.neg('thin < 0.75 atm alpine air with heavy thread fails 220 m bridge-casting threshold (< 90 m)',
     inp => PHYS.aerodynamicsAt(inp).maxCastSpanM >= 90.0,
     {elevM: 6400.0, windSpeedMs: 1.5, threadDiaUm: 8.5, spanM: 180.0},
@@ -72,13 +78,13 @@ const SITES = require('../src/41-biome-spider-sites.js');
     {shoreDistM: 80, elevAboveLakeM: 12, seepProximity01: 0.75, hour24: 19.0});
 }
 
-// 4. Zero-Kill Hum & Smudge 6-day rotational harvest covenant (PLAN.md section 2.4 & CROOK-RIA-DECISIONS.md section 2.5.5)
+// 4. Zero-Kill Hum & Smudge-Myrtle 6-day rotational harvest covenant (PLAN.md section 2.4 & CROOK-RIA-SCOPE.md section 3.2)
 {
   const calmDay6 = PHYS.harvestCycleAt({dayMod6: 5, smudgeActive01: 0.95, humFreqHz: 132.0, strikingBrood: false});
   const uncalmed = PHYS.harvestCycleAt({dayMod6: 5, smudgeActive01: 0.0, humFreqHz: 40.0, strikingBrood: false});
   const taboo = PHYS.harvestCycleAt({dayMod6: 5, smudgeActive01: 1.0, humFreqHz: 132.0, strikingBrood: true});
 
-  T.ok('132 Hz Hum resonance + porphyryfern smudge peacefully retreats workers for zero-kill reeling',
+  T.ok('132 Hz Hum resonance + silkbogmyrtle/porphyryfern smudge peacefully retreats workers for zero-kill reeling',
     calmDay6.workersRetreated === true && calmDay6.reelReady === true && calmDay6.broodUnharmed === true && calmDay6.killYield === 0);
   T.ok('uncalmed frames hold active riggers while keeping broodUnharmed === true',
     uncalmed.workersRetreated === false && uncalmed.broodUnharmed === true);
@@ -110,4 +116,63 @@ const SITES = require('../src/41-biome-spider-sites.js');
     inp => PHYS.mvtBrineAt(inp).degumSafeOk === true,
     {ventDistM: 0.2, depthBelowRimM: 28.0, zincByte: 190, limestoneByte: 255},
     {ventDistM: 10.0, depthBelowRimM: 28.0, zincByte: 190, limestoneByte: 255});
+}
+
+// 6. SW->NE Carnelian Frontier (30% Red, Tier 1-2) & Hau-Gel Bleach-Scar Partition (docs/CARNELIAN-FRONTIER-PLAN.md)
+{
+  const sw = SITES.haugel.bleachSwath;
+  const haugelCliff = PHYS.frontierAt({station: 'haugel', x: 68, y: 26.0, z: 74, rock01: 0.85, slope01: 0.62, wet01: 0.05, swath: sw, seed: 5813});
+  const haugelBench = PHYS.frontierAt({station: 'haugel', x: 0, y: 12.5, z: -96, rock01: 0.15, slope01: 0.08, wet01: 0.48, swath: sw, seed: 5813});
+  const bleachCore = PHYS.frontierAt({station: 'haugel', x: sw.x0, y: 22.0, z: sw.z0, rock01: 0.75, slope01: 0.35, wet01: 0.08, swath: sw, seed: 5813});
+  const nx = -sw.dz, nz = sw.dx;
+  const seamDist = sw.halfWidthM + 2.0;
+  const bleachSeam = PHYS.frontierAt({station: 'haugel', x: sw.x0 + nx * seamDist, y: 22.0, z: sw.z0 + nz * seamDist, rock01: 0.75, slope01: 0.35, wet01: 0.08, swath: sw, seed: 5813});
+  const rampartCrest = PHYS.frontierAt({station: 'rampart', x: 12, y: 24.0, z: 4, rock01: 0.86, slope01: 0.58, wet01: 0.04, seed: 5813});
+  const spillwayStack = PHYS.frontierAt({station: 'spillway', x: -28, y: 25.0, z: -76, rock01: 0.88, slope01: 0.64, wet01: 0.04, seed: 5813});
+
+  T.ok('dry secondary-ejecta cliffs on Hau-Gel, North Rampart crests & Spillway stacks partition to Carnelian Erythrophyll while green mulberry benches stay Earth',
+    haugelCliff.biosphere === 'carnelian' && haugelCliff.redDominance01 >= 0.7 &&
+    rampartCrest.biosphere === 'carnelian' && spillwayStack.biosphere === 'carnelian' &&
+    haugelBench.biosphere === 'earth' && haugelBench.redDominance01 === 0);
+  T.ok('Hau-Gel orbital Bleach-Scar swath produces bone-white skeleton core plus reactive blood-strangler & fireweed vanguard seam',
+    bleachCore.biosphere === 'bleach' && bleachCore.bleachScar01 >= 0.85 && bleachCore.skeleton01 >= 0.5 &&
+    bleachSeam.stranglerEdge01 > 0.3 && bleachSeam.vanguard01 > 0.3);
+  T.neg('moist irrigated mulberry terrace never partitions to Carnelian or Bleach-Scar hardpan',
+    inp => PHYS.frontierAt(inp).biosphere !== 'earth',
+    {station: 'haugel', x: 0, y: 12.5, z: -96, rock01: 0.15, slope01: 0.08, wet01: 0.48, swath: sw, seed: 5813},
+    {station: 'haugel', x: 68, y: 26.0, z: 74, rock01: 0.85, slope01: 0.62, wet01: 0.05, swath: sw, seed: 5813});
+}
+
+// 7. Expanded 27-Species Roster, All 5 Carnelian Clades, Hum-Ria Flora & CROPS.BIOMES.spiderlake Audit
+{
+  const spSrc = fs.readFileSync(path.join(__dirname, '..', 'src', '50-biome-spider-species.js'), 'utf8');
+  const spBlock = spSrc.slice(spSrc.indexOf('const SPECIES=SPIDERLAKE.SPECIES='), spSrc.indexOf('SPECIES.forEach((S,i)=>'));
+  const hvBlock = spSrc.slice(spSrc.indexOf('SPIDERLAKE.HARVEST={'), spSrc.indexOf('SPECIES.forEach(S=>{'));
+  const keys = [...spBlock.matchAll(/\{key:'([a-z0-9_]+)',name:'([^']+)'/g)].map(m => m[1]);
+  const hvKeys = new Set([...hvBlock.matchAll(/^\s*([a-z0-9_]+):HV\(/gm)].map(m => m[1]));
+
+  const requiredSpecies = [
+    'spindlewillow', 'crowncypress', 'ambermulberry', 'chinkapinoak', 'porphyrypine',
+    'weepingliquidambar', 'silkbogmyrtle', 'dolomitebamboo', 'lakelotus', 'nurserywildrice',
+    'dyersindigo', 'grottocamellia', 'lakesmokesedge', 'silkfenpitcher', 'fensundew',
+    'porphyryfern', 'shorespiderlily', 'bleachfireweed',
+    'carnelian_organpipe', 'erythra_veil', 'bladder_tether', 'agate_window', 'blood_strangler',
+    'bridgecurtain', 'broodpavilion', 'weirframe_wild', 'rampartgossamer'
+  ];
+  const allPresent = requiredSpecies.every(k => keys.includes(k) && hvKeys.has(k));
+  const cropsBio = globalThis.CROPS && globalThis.CROPS.BIOMES && globalThis.CROPS.BIOMES.spiderlake;
+  const cropIds = globalThis.CROPS && typeof globalThis.CROPS.forBiome === 'function'
+    ? globalThis.CROPS.forBiome('spiderlake').map(c => c.crop ? c.crop.id : c.id)
+    : [];
+
+  T.ok('SPIDERLAKE.SPECIES registers all 27 species (23 botanical/Carnelian clades + 4 silk) with 100% HV harvest tags',
+    keys.length >= 26 && allPresent && keys.every(k => hvKeys.has(k)));
+  T.ok('CROPS.BIOMES.spiderlake registers 1.33 atm littoral/terrace/fen/rampart zones matching tea, rice & wild-rice plus mulberry/indigo/lotus palette',
+    !!cropsBio && cropsBio.atm === 2 &&
+    cropIds.includes('rice') && cropIds.includes('wild-rice') && cropIds.includes('tea') &&
+    PHYS.CROPS.palette.includes('mulberry') && PHYS.CROPS.palette.includes('indigo') && PHYS.CROPS.palette.includes('lotus-root'));
+  T.neg('any species missing from SPIDERLAKE.HARVEST is rejected by roster check',
+    setArr => setArr.every(k => hvKeys.has(k)),
+    ['spindlewillow', 'missing_unharvested_plant'],
+    requiredSpecies);
 }

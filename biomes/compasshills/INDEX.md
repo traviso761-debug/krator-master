@@ -21,8 +21,8 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `38-co
 | `41-biome-compass-sites.js` | 7 |  |
 | `45-host-stage.js` | 17 | station landforms (KRELIEF + analytical cuesta/q (61); pure COMPASS_PHYS raster cache & field functions (304); KSPACE non-overlap & KHAZ data-driven magnetic/l (371); BIO.init host binding (383) |
 | `46-vstack.js` | <1 |  |
-| `50-biome-compass-species.js` | 29 |  |
-| `60-biome-compass-place.js` | 16 |  |
+| `50-biome-compass-species.js` | 41 **big** |  |
+| `60-biome-compass-place.js` | 23 |  |
 | `70-biome-compass.js` | <1 |  |
 | `84-host-ground.js` | 10 |  |
 | `85-host-far.js` | 4 |  |
@@ -33,7 +33,7 @@ From `core/terrain/` (shared; see `core/README.md`): `35-core-strata.js`, `38-co
 | `89w-host-water.js` | 2 |  |
 | `89z-host-build.js` | 3 |  |
 | `89z9-vstack-post.js` | 6 |  |
-| `99-host-take.js` | 19 | Live Bronze-Bezel HUD Compass-Needle Widget (48) |
+| `99-host-take.js` | 20 | Live Bronze-Bezel HUD Compass-Needle Widget (49) |
 | `99-tail.html` | <1 |  |
 
 ## stations/

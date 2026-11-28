@@ -269,8 +269,8 @@
    },
    minerals:{iron:120,tin:200,saltpeter:0,coal:0,rareEarth:160,sulfur:0,gold:40},
    dikes:[
-    {id:'vitrophyre-hogback-1',a:[-320,-48],b:[310,64],thickM:7.5,heightM:18.5,strike:0.18},
-    {id:'vitrophyre-hogback-2',a:[-145,-280],b:[125,260],thickM:6.8,heightM:15.0,strike:1.10},
+    {id:'vitrophyre-hogback-1',a:[-320,-72],b:[310,36],thickM:7.5,heightM:18.5,strike:0.18},
+    {id:'vitrophyre-hogback-2',a:[-165,-280],b:[105,260],thickM:6.8,heightM:15.0,strike:1.10},
     {id:'chasm-lip-spur',a:[-340,128],b:[340,148],thickM:10.0,heightM:22.0,strike:0.03}
    ],
    rings:[

@@ -15,23 +15,23 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 |---|---|---|
 | `00-head.html` | 1 |  |
 | `28-vstack-mipvar.js` | 2 |  |
-| `40-biome-spider-phys.js` | 13 |  |
-| `41-biome-spider-sites.js` | 9 |  |
+| `40-biome-spider-phys.js` | 15 |  |
+| `41-biome-spider-sites.js` | 10 |  |
 | `45-host-stage.js` | 27 | station heightfields & hydrological channels (66); pure SPIDER_PHYS field evaluation & raster cache (462); KSPACE spatial keep-clear & KHAZ data-driven haz (530); BIO.init host binding (598) |
 | `46-vstack.js` | <1 |  |
-| `50-biome-spider-species.js` | 38 **big** |  |
-| `60-biome-spider-place.js` | 22 |  |
+| `50-biome-spider-species.js` | 53 **big** |  |
+| `60-biome-spider-place.js` | 40 **big** |  |
 | `70-biome-spider.js` | <1 |  |
-| `84-host-ground.js` | 19 | Station 5 (dolomite): Walk-in KCAVERN + KSPELEO. (197) |
+| `84-host-ground.js` | 19 | Station 5 (dolomite): Walk-in KCAVERN + KSPELEO. (198) |
 | `85-host-far.js` | 4 |  |
-| `86-host-works.js` | 8 |  |
+| `86-host-works.js` | 10 |  |
 | `88-host-place.js` | <1 |  |
 | `89-host-sky.js` | 1 |  |
 | `89a-host-atmos.js` | 5 |  |
 | `89w-host-water.js` | 5 |  |
 | `89z-host-build.js` | 3 |  |
 | `89z9-vstack-post.js` | 6 |  |
-| `99-host-take.js` | 21 |  |
+| `99-host-take.js` | 22 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

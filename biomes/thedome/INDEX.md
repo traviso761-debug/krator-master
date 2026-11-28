@@ -14,14 +14,14 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | Fragment | KB | Sections (line) |
 |---|---|---|
 | `00-head.html` | 1 |  |
-| `15-thedome-phys.js` | 17 | THE DOME — laccolith physics & acoustics (DOME_P (1) |
+| `15-thedome-phys.js` | 20 | THE DOME — laccolith physics & acoustics (DOME_P (1) |
 | `22-thedome-crops.js` | 2 | THE DOME — crops registration (CROPS.BIOMES.thed (1) |
 | `24-thedome-fauna.js` | 6 | THE DOME — endemic bornhardt, vernal-pan & cloud (1) |
-| `41-biome-dome-sites.js` | 15 | THE DOME — verified Scale-Model 5.1 stations & K (1) |
+| `41-biome-dome-sites.js` | 14 | THE DOME — verified Scale-Model 5.1 stations & K (1) |
 | `45-host-stage.js` | 22 | HOST — stage: 4-station laccolith dome heightfie (1) |
 | `46-td-vstack.js` | 11 | HOST — native vertical-stack graphics (B1-B5, S1 (1) |
-| `50-biome-dome-species.js` | 23 | THE DOME — species, library materials & 3D botan (1) |
-| `60-biome-dome-place.js` | 17 | THE DOME — deterministic KRAND.cell placement ([ (1) |
+| `50-biome-dome-species.js` | 37 **big** | THE DOME — 24 native species, library materials  (1) |
+| `60-biome-dome-place.js` | 29 | THE DOME — deterministic KRAND.cell placement fo (1) |
 | `70-biome-dome.js` | <1 | THE DOME — BIOME-API build entry & canopy query  (1) |
 | `84-host-ground.js` | 26 | HOST — ground, KSTRATA, <=3-layer KGROUND, KDRAW (1) |
 | `85-host-far.js` | 4 | HOST — 14 km far field & S1 horizon occlusion (K (1) |

@@ -165,4 +165,257 @@ const PHYS = require('../src/40-biome-arach-phys.js');
     faunaOk && frostOnly.some(r => r.crop.id === 'frostroot'));
 }
 
+// 7 & 8. BIOME-API ARACHNOIDS.canopyH, 25-species packed material bindings & 3-zone 4-station elevation zoning
+{
+  loadGlobal('core/space/20-core-space.js');
+  const matJson = JSON.parse(fs.readFileSync(path.join(HERE_BIO(), 'materials.json'), 'utf8'));
+  const packJson = JSON.parse(fs.readFileSync(path.join(HERE_BIO(), 'tex', 'pack.json'), 'utf8'));
+
+  function HERE_BIO() { return path.join(__dirname, '..'); }
+
+  // Minimal deterministic BIO + THREE test harness for [draw] species/placement audit in Node
+  const mockAttr = () => ({count: 6, getX: () => 0.2, getY: () => 0.3, getZ: () => 0.1, setXYZ() {}});
+  const mockGeo = () => ({attributes: {position: mockAttr()}, rotateZ() {}, translate() {}, computeVertexNormals() {}, setAttribute() {}, setIndex() {}, computeBoundingSphere() {}});
+  const T3Mock = {
+    DoubleSide: 2,
+    Color: function(h) { this.hex = h; },
+    MeshStandardMaterial: function(o) { Object.assign(this, o, {isMeshStandardMaterial: true, userData: {}}); },
+    IcosahedronGeometry: function() { return mockGeo(); },
+    CylinderGeometry: function() { return mockGeo(); },
+    BufferGeometry: function() { return mockGeo(); },
+    Float32BufferAttribute: function(a) { this.array = a; },
+    Uint16BufferAttribute: function(a) { this.array = a; },
+    Uint32BufferAttribute: function(a) { this.array = a; },
+    Mesh: function(g, m) { this.geometry = g; this.material = m; this.userData = {}; }
+  };
+  const defs = {}, buckets = {};
+  global.BIO = {
+    fn: {
+      TAU: Math.PI * 2,
+      clamp: (v, a, b) => (v < a ? a : v > b ? b : v),
+      lerp: (a, b, t) => a + (b - a) * t,
+      smooth: (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); },
+      qEuler: () => [0, 0, 0, 1],
+      qUp: () => [0, 0, 0, 1]
+    },
+    host: {THREE: T3Mock, terrainH: () => 0, waterH: () => -1e9, register: () => {}},
+    owner: null,
+    kit() {},
+    kitEnd(api) { return api; },
+    canvasTex: () => ({isTexture: true}),
+    alphaTex: () => ({isTexture: true}),
+    barkMat: tex => ({isMeshLambertMaterial: true, map: tex, userData: {}}),
+    leafMat: (tex, name) => ({isMeshLambertMaterial: true, name, map: tex, userData: {}}),
+    libSwap: (kitName, M) => {
+      const swapped = [];
+      Object.keys(M).forEach(k => {
+        if (packJson.families && packJson.families[k]) {
+          M[k].map = {isTexture: true, packedSlot: k};
+          swapped.push(k);
+        }
+      });
+      return swapped;
+    },
+    bucket: (k, m, o) => { buckets[k] = {mat: m, opt: o, tris: 0}; },
+    def: (k, g, m, o) => { defs[k] = {geo: g, mat: m, opt: o || {}, puts: 0}; },
+    put: k => { if (defs[k]) defs[k].puts++; },
+    tube: k => { if (buckets[k]) buckets[k].tris += 10; return 10; },
+    flareJoin: pts => pts,
+    fung: {stalk: () => mockGeo(), crust: () => mockGeo(), cap: () => mockGeo(), pod: () => mockGeo()},
+    geo: {clump: () => mockGeo(), frond: () => mockGeo(), bloom: () => mockGeo(), mat: () => mockGeo(), ribbon: () => mockGeo()},
+    bamboo: {
+      culm: () => mockGeo(),
+      spray: () => mockGeo(),
+      shoot: () => mockGeo(),
+      clump: o => [{p: o.at, h: o.H, az: 0.5}, {p: o.at, h: o.H * 0.9, az: 2.1}],
+      put: k => { if (defs[k]) defs[k].puts++; }
+    },
+    impostorSet: (nm, o) => ({nm, o}),
+    impostor: (nm, fn) => { fn(); return {nm}; },
+    impostorItem: k => { defs[k] = {mat: {map: {isTexture: true}}, puts: 0}; },
+    impostorPut: k => { if (defs[k]) defs[k].puts++; }
+  };
+
+  loadGlobal('biomes/arachnoids/src/50-biome-arach-species.js');
+  loadGlobal('biomes/arachnoids/src/60-biome-arach-place.js');
+  loadGlobal('biomes/arachnoids/src/70-biome-arachnoids.js');
+
+  const AR = global.ARACHNOIDS;
+
+  // 7. ARACHNOIDS.canopyH vertical inversion contract
+  const cNexusSlot = AR.canopyH(0, 0, {station: 'nexus', y: SITES.nexus.bedY + 6.0});
+  const cFumSlot = AR.canopyH(0, -10, {station: 'fumarole', y: SITES.fumarole.bedY + 6.0});
+  const cFumScald = AR.canopyH(-52, 46, {station: 'fumarole', y: SITES.fumarole.bedY + 12.0});
+  const cLedgeWoods = AR.canopyH(-95, 25, {station: 'ledges', y: 18.0});
+  const cLedgeDike = AR.canopyH(0, -56, {station: 'ledges', y: 24.0});
+  const cFrostrim = AR.canopyH(0, 85, {station: 'frostrim', y: SITES.frostrim.rimY});
+
+  T.ok('ARACHNOIDS.canopyH steps from 22.5 m Cfa slot-jungle down to 14.5/9.5 m Csa benches/dikes and <= 1.40 m ET frostrim',
+    typeof AR.canopyH === 'function' &&
+    cNexusSlot >= 20.0 && cFumSlot >= 20.0 && cFumScald <= 0.5 &&
+    cLedgeWoods === 14.5 && cLedgeDike === 9.5 &&
+    cFrostrim > 0.3 && cFrostrim <= 1.40);
+  T.neg('0.88 atm ET frostrim rejects tall (> 1.4 m) woodland canopy height',
+    st => AR.canopyH(0, 85, {station: st, y: SITES[st].rimY}) > 1.40,
+    'frostrim',
+    'nexus');
+
+  // 8. 25-species registry, HV harvest completeness, packed materials & 4-station elevation zoning
+  const expected25 = [
+    'fumarolefern', 'sintermat', 'dikeclaw', 'webanchorvine', 'columnarpine', 'rimkrummholz', 'frostcushion',
+    'gorgehemlock', 'ledgeoak', 'canyonbamboo', 'alpinesedge',
+    'slotmulberry', 'steambedtaro', 'mistcanyontea', 'plumeorchid', 'seepcurtainmoss',
+    'amberpistache', 'spokedikejuniper', 'gompasaffron', 'vitrophyrelipfern', 'entablatureivy',
+    'snowbeddwarfbirch', 'rimcladonia', 'rimedelweiss', 'wildfrostroot'
+  ];
+  const regKeys = AR.SPECIES.map(s => s.key);
+  const all25Present = AR.SPECIES.length === 25 && expected25.every(k => regKeys.indexOf(k) >= 0);
+  const allHvValid = AR.SPECIES.every(s => {
+    const h = s.tags && s.tags.harvest;
+    return h && typeof h.wood === 'string' && Array.isArray(h.edible) &&
+      typeof h.medicinal === 'boolean' && typeof h.notes === 'string' && h.notes.length >= 12 &&
+      typeof h.fruit === 'string' && s.items.length >= 1 && AR.speciesOfItem(s.items[0]) === s;
+  });
+  const requiredLibs = [
+    'bark.bark_willow_02', 'card.heartleaf', 'card.rheumleaf', 'card.crop.tea', 'card.orchid.dendrobium',
+    'card.moss.hanging', 'bark.amber', 'card.orchard.small', 'bark.juniper', 'card.juniper',
+    'card.crop.saffron', 'card.fern', 'card.vine.hanging.4', 'card.dwarfbirch', 'card.cladonia',
+    'card.edelweiss', 'card.bulbheath'
+  ];
+  const matLibs = Object.values(matJson.families).map(f => f.lib);
+  const packLibs = Object.values(packJson.families).map(f => f.lib);
+  const libsBound = requiredLibs.every(l => matLibs.indexOf(l) >= 0 && packLibs.indexOf(l) >= 0);
+  const zeroUntexturedDefs = Object.keys(defs).every(k => !!(defs[k].mat && defs[k].mat.map));
+
+  T.ok('ARACHNOIDS.SPECIES registers all 25 species with complete HV harvest tags, item lookups, and 100% packed library sets',
+    all25Present && allHvValid && libsBound && zeroUntexturedDefs && Object.keys(buckets).length <= 6);
+
+  // Representative 4-station terrain mocks faithful to 45-host-stage.js for full placement & elevation audit
+  const segDist2 = (ax, az, bx, bz, x, z) => {
+    const dx = bx - ax, dz = bz - az, l2 = dx * dx + dz * dz;
+    const t = l2 > 1e-6 ? Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / l2)) : 0;
+    return Math.hypot(ax + dx * t - x, az + dz * t - z);
+  };
+  const stationTerrain = {
+    nexus: {
+      tH: (x, z) => {
+        const dRiv = Math.abs(z - 0.12 * x);
+        let h = -13.0 + 150.0 * Math.pow(BIO.fn.smooth(19.0, 165.0, dRiv), 0.82);
+        SITES.nexus.dikes.forEach(dk => {
+          const dd = segDist2(dk.a[0], dk.a[1], dk.b[0], dk.b[1], x, z);
+          if (dd < 22.0 && dRiv > 21.0) h = Math.max(h, 38.0 + 52.0 * BIO.fn.smooth(22.0, 3.0, dd));
+        });
+        if (Math.hypot(x + 95, z - 60) < 42) h = 28.0;
+        return h;
+      },
+      wH: (x, z) => (Math.abs(z - 0.12 * x) < 18.0 ? -12.5 : -1e9)
+    },
+    fumarole: {
+      tH: (x, z) => {
+        let h = 6.0 + 205.0 * BIO.fn.smooth(-145.0, -305.0, z) + 205.0 * BIO.fn.smooth(130.0, 300.0, z);
+        if (Math.abs(z + 116) < 28) h = -6.5;
+        for (let i = 0; i < SITES.fumarole.stepPools.length; i++) {
+          const P = SITES.fumarole.stepPools[i], d = Math.hypot(x - P.x, z - P.z) / P.r;
+          if (d < 1.35) h = d < 0.92 ? P.floor : P.crest;
+        }
+        return h;
+      },
+      wH: (x, z) => {
+        if (Math.abs(z + 116) < 22) return -5.0;
+        for (let i = 0; i < SITES.fumarole.stepPools.length; i++) {
+          const P = SITES.fumarole.stepPools[i];
+          if (Math.hypot(x - P.x, z - P.z) < P.r * 0.98) return P.level;
+        }
+        return -1e9;
+      }
+    },
+    ledges: {
+      tH: (x, z) => {
+        let h = -165.0 + 245.0 * BIO.fn.smooth(175.0, -75.0, z);
+        if (h > -20 && h < 90) h = Math.floor(h / 8.0) * 8.0 + 1.2 + 0.08 * z;
+        SITES.ledges.dikes.forEach(dk => {
+          const dd = segDist2(dk.a[0], dk.a[1], dk.b[0], dk.b[1], x, z);
+          if (dd < 16.0 && z < 130) h += 14.0 * BIO.fn.smooth(16.0, 3.0, dd);
+        });
+        return h;
+      },
+      wH: (x, z) => (z > 195 ? -163.0 : -1e9)
+    },
+    frostrim: {
+      tH: (x, z) => (z > 136 ? -185.0 : 16.5 + 0.03 * Math.max(0, -z)),
+      wH: () => -1e9
+    }
+  };
+
+  const warmTroughSet = {
+    bridgeweb: 1, fumarolefern: 1, sintermat: 1, slotmulberry: 1,
+    steambedtaro: 1, mistcanyontea: 1, plumeorchid: 1, seepcurtainmoss: 1, canyonbamboo: 1
+  };
+  const zone2Set = {
+    amberpistache: 1, spokedikejuniper: 1, gompasaffron: 1, vitrophyrelipfern: 1, entablatureivy: 1
+  };
+  const prostrateCap = {
+    snowbeddwarfbirch: 1.10, rimcladonia: 1.40, rimedelweiss: 1.40, wildfrostroot: 1.40, frostcushion: 1.40
+  };
+
+  const grandCounts = {};
+  expected25.forEach(k => { grandCounts[k] = 0; });
+  const stationCounts = {};
+  const allPlacedByStation = {};
+
+  ['nexus', 'fumarole', 'ledges', 'frostrim'].forEach(sk => {
+    const sp = global.KSPACE.create({cell: 16});
+    const mockScene = {add() {}};
+    const wb = sk === 'nexus' ? AR.createBridgeWebBatch(mockScene) : null;
+    const cnt = AR.build({
+      station: sk,
+      terrainH: stationTerrain[sk].tH,
+      waterH: stationTerrain[sk].wH,
+      space: sp,
+      register: () => {},
+      webBatch: wb,
+      quality: 1,
+      seed: 5907,
+      R: 640
+    });
+    if (wb) wb.finalize();
+    stationCounts[sk] = cnt;
+    allPlacedByStation[sk] = AR.PLACED.slice();
+    expected25.forEach(k => { grandCounts[k] += (cnt[k] || 0); });
+  });
+
+  const missingAny25 = expected25.filter(k => grandCounts[k] <= 0);
+  const allStationReqsOk =
+    ['bridgeweb', 'slotmulberry', 'steambedtaro', 'mistcanyontea', 'plumeorchid', 'seepcurtainmoss', 'dikeclaw', 'webanchorvine', 'columnarpine', 'gorgehemlock', 'canyonbamboo', 'alpinesedge']
+      .every(k => stationCounts.nexus[k] > 0) &&
+    ['fumarolefern', 'sintermat', 'slotmulberry', 'steambedtaro', 'mistcanyontea', 'plumeorchid', 'seepcurtainmoss', 'dikeclaw', 'gorgehemlock', 'canyonbamboo', 'alpinesedge']
+      .every(k => stationCounts.fumarole[k] > 0) &&
+    ['columnarpine', 'ledgeoak', 'amberpistache', 'spokedikejuniper', 'gompasaffron', 'vitrophyrelipfern', 'entablatureivy', 'dikeclaw', 'webanchorvine', 'alpinesedge']
+      .every(k => stationCounts.ledges[k] > 0) &&
+    ['rimkrummholz', 'frostcushion', 'snowbeddwarfbirch', 'rimcladonia', 'rimedelweiss', 'wildfrostroot', 'alpinesedge']
+      .every(k => stationCounts.frostrim[k] > 0);
+
+  const allPlaced = [].concat(
+    allPlacedByStation.nexus, allPlacedByStation.fumarole,
+    allPlacedByStation.ledges, allPlacedByStation.frostrim
+  );
+  const badWarmHigh = allPlaced.filter(r => warmTroughSet[r[0]] && (r[4] > 1450.0 || (r[6] && r[6].frost01 > 0)));
+  const badZone2High = allPlaced.filter(r => zone2Set[r[0]] && r[4] > 2600.0);
+  const badLipFern = allPlaced.filter(r => r[0] === 'vitrophyrelipfern' && !(r[6] && r[6].vitro01 > 0.35));
+  const frostPlaced = allPlacedByStation.frostrim;
+  const badFrostKrumm = frostPlaced.filter(r => r[0] === 'rimkrummholz' && !(r[6] && r[6].prostrateH <= 1.90 && r[6].bannerLenM >= 1.80));
+  const badFrostTall = frostPlaced.filter(r => prostrateCap[r[0]] && !(r[6] && r[6].H <= prostrateCap[r[0]]));
+
+  T.ok('all 25 species place deterministically across the 4 stations in their target Zone 1 / Zone 2 / Zone 3 guilds',
+    missingAny25.length === 0 && allStationReqsOk);
+  T.ok('Zone 1 warm-trough species have 0 placements above +1,450 m or frost01 > 0, and Zone 2 species stay <= +2,600 m with vitrophyrelipfern on vitrophyre > 0.35',
+    badWarmHigh.length === 0 && badZone2High.length === 0 && badLipFern.length === 0);
+  T.ok('Zone 3 frostrim keeps rimkrummholz <= 1.90 m (banner >= 1.80 m), snowbeddwarfbirch <= 1.10 m, and all alpine mats <= 1.40 m',
+    badFrostKrumm.length === 0 && badFrostTall.length === 0 && stationCounts.frostrim.rimkrummholz >= 15);
+  T.neg('warm-trough slotmulberry or steambedtaro is absent from mid-wall Csa ledges (+1,629 m) and ET frostrim (+4,784 m)',
+    sk => (stationCounts[sk].slotmulberry || 0) + (stationCounts[sk].steambedtaro || 0) > 0,
+    'frostrim',
+    'fumarole');
+}
+
 T.done();

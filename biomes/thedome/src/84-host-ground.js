@@ -145,6 +145,7 @@ if(USE_KG){
   relief:KG_RELIEF?{bump:0.05,cavity:0.68,mesh:1}:null,
   layers:layers
  });
+ MAT_GROUND.uniforms={};layers.forEach((l,i)=>{if(l&&l.map)MAT_GROUND.uniforms['uKG'+i]={value:l.map};});
 }
 if(typeof TD_VSTACK!=='undefined'&&USE_KG){
  TD_VSTACK.applyRoughAA(MAT_GROUND,'ground-'+SKEY,[0.002,0.005,0.012,0.026,0.046,0.072,0.108,0.150],512.0);

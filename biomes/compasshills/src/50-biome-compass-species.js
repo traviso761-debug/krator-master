@@ -1,8 +1,10 @@
 // ================================================================= COMPASS HILLS — species, library materials & builders ([draw])
-// Registers BIO.kit('compasshills') -> COMPASS: 14 species pairing the 85% Earthlike Mediterranean-continental cuesta woodland
-// matrix (stone pine, cork oak, iron-pistache, wild whorl-olive, cuesta juniper, riparian plane, white mulberry, saffron & macchia)
-// with the 15% grounded ferromagnetic biota & landmarks (meridian-aligned compassbush, magnetite-awn fluxgrass, concentric
-// isogauss fluxlichen, bristling ferrotuft, and fulgurite-veined lodestonespire crags). 100% library-textured (materials.json).
+// Registers BIO.kit('compasshills') -> COMPASS: 25 species pairing the 85% Earthlike Mediterranean-continental cuesta, garrigue,
+// northern Weeping-Amber seam & riparian Ham-Tsek woodland matrix (18 species: stone pine, cork oak, iron-pistache, whorl-olive,
+// cuesta juniper, riparian plane, white mulberry, weeping-amber storax, cuesta strawberry-tree, sunny carob, gorge oleander,
+// golden broom, labdanum cistus, wild canyon grape, seep maidenhair, cuesta asphodel, saffron & macchia) with the 15% grounded
+// ferromagnetic & gossan biota (7 species: meridian-aligned compassbush, magnetite-awn fluxgrass, concentric isogauss fluxlichen,
+// bristling ferrotuft, fulgurite-veined lodestonespire, magnetite-crevice spleenwort & gossan whorl-heath). 100% library-textured.
 BIO.kit('compasshills');
 var COMPASS={PHYS:COMPASS_PHYS,SITES:COMPASS_SITES,FAUNA:COMPASS_PHYS.FAUNA,CROPS:COMPASS_PHYS.CROPS_BIOME,PLACED:[],SPIRES:[]};
 var COMPASSHILLS=COMPASS;
@@ -27,9 +29,21 @@ var COMPASSHILLS=COMPASS;
   olive:[0x788868,0x869676,0x6c7c5e,0x92a082],
   juniper:[0x3b583c,0x466446,0x324c34],
   plane:[0x4f763a,0x5d8442,0x446a32,0x6b904c],
+  samara:[0xa8924c,0xb8a258,0x968042],
   mulberry:[0x487836,0x568840,0x3f6c2f],
+  storax:[0x6e8238,0x9e8436,0x5c7634,0xb48e3c],
+  arbutus:[0x48683a,0x547642,0x3e5c32,0x62824c],
+  carob:[0x3a5a30,0x466638,0x324e28,0x507240],
+  oleander:[0x6e8c68,0x7c9874,0x607e5c],
+  broom:[0xc8a638,0xd6b444,0xb49430,0xdec050],
+  cistus:[0xd8d2c8,0xe4ded4,0xcac2b6],
+  canyongrape:[0x4a7236,0x588040,0x6c5838,0x3e642e],
+  maidenhair:[0x4e8648,0x5c9454,0x42783e],
+  asphodel:[0xd6ccb4,0xe2d8c2,0xc8bea6],
   compassLeaf:[0x8c9e7e,0x9aa88a,0x7e9072,0xa6b496],
   fluxGrass:[0xb4944e,0xc2a25a,0x9e8042,0xceb066],
+  spleenwort:[0x3e5638,0x4a6242,0x344a30,0x566c48],
+  whorlheath:[0x8a5868,0x9c6474,0x744c5c,0x687a52],
   dryGrass:[0xb89e5c,0xc6ac68,0xa68e50,0xd0b874],
   macchia:[0x5e7248,0x6c8054,0x52643e,0x7a8c60],
   saffron:[0x8c52b8,0x9e62c8,0x7c44a8,0xd44838],
@@ -41,9 +55,9 @@ var COMPASSHILLS=COMPASS;
   gossan:[0x7c463c,0x683a38,0x8e5242]
  };
 
- // ---------------------------------------------------------------- 14 botanical & geological-landmark species (check_botany.py)
+ // ---------------------------------------------------------------- 25 botanical & geological-landmark species (check_botany.py)
  const SPECIES=COMPASS.SPECIES=[
-  // A. 6 Signature Ferromagnetic & Cuesta Species (PLAN.md section 4)
+  // A. 7 Ferromagnetic, Gossan & Magnetotropic Specialists (~15% of instances; FERRO_KEYS) + ironpistache cuesta co-dominant
   {key:'compassbush',name:'Flux-Leaf Compass-Shrub',how:'0.9-2.6 m woody Mediterranean sclerophyll shrub whose biogenic Fe3O4 magnetosome petioles torque every vertical silver-olive leaf blade parallel to local horizontal magnetic flux lines to shed +32 degC noon sun.',
    items:['ch_compass_blade'],tags:N('temperate','subhumid','no',['Cfa','Csa'],'cuestawood',{magnetotropic:true,ferromagnetic:true})},
   {key:'ironpistache',name:'Cuesta Terebinth Iron-Pistache',how:'4.5-11.0 m crooked, fluted resinous broadleaf tree with coppery spring shoots and crimson-to-turquoise drupe clusters prying into fractured ironstone-sandstone cuesta joints.',
@@ -56,8 +70,12 @@ var COMPASSHILLS=COMPASS;
    items:['ch_ferrotuft'],tags:N('temperate','subhumid','no',['Cfa','Csa'],'magnetor',{metallophyte:true,ferromagnetic:true})},
   {key:'lodestonespire',name:'Fulgurite-Veined Magnetite Crag',how:'4.0-18.0 m angular column of jet-black banded-ironstone and specular hematite laced with glassy teal-black lightning fulgurite melt-veins.',
    items:['ch_spire_col','ch_spire_rib','ch_fulgurite_vein'],tags:N('temperate','subhumid','no',['Cfa','Csa'],'magnetor',{landmark:true,resource:'lodestone'})},
+  {key:'magnetitespleenwort',name:'Magnetite-Crevice Spleenwort',how:'0.18-0.48 m xerophytic ironstone-crevice metallophyte fern with stiff dark bronze-olive needle pinnae hyperaccumulating Fe3O4 in high-bFieldMt banded-ironstone fissures.',
+   items:['ch_spleenwort'],tags:N('temperate','subhumid','no',['Cfa','Csa'],'magnetor',{metallophyte:true,ferromagnetic:true,indicator:'lodestone'})},
+  {key:'gossanwhorlheath',name:'Gossan Copper-Magnetite Whorl-Heath',how:'0.30-0.85 m ericoid metallophyte subshrub bearing rust-violet bell whorls along oxidized copper-magnetite gossan veins, Lodestone quench-trench rims, and eastern tin-ironstone scarps.',
+   items:['ch_whorlheath'],tags:N('temperate','subhumid','no',['Cfa','Csa'],'quenchscar',{metallophyte:true,ferromagnetic:true,indicator:'copper-magnetite'})},
 
-  // B. 8 Earthlike Mediterranean-Continental Cuesta & Riparian Matrix Species (85% of instances; PLAN.md sections 1, 2 & 4)
+  // B. 17 Additional Earthlike Mediterranean-Continental Cuesta, Weeping-Amber Seam, Garrigue & Ham-Tsek Riparian Species (85% matrix)
   {key:'stonepine',name:'Umbrella Cuesta Stone Pine',how:'9-20 m flat-crowned Mediterranean umbrella pine clothing warm golden-buff ferruginous sandstone dip-slopes.',
    items:['ch_pine_fol'],tags:K('temperate','subhumid','no',['Cfa','Csa'],'cuestawood',{shared:'swlowlands'})},
   {key:'corkoak',name:'Cuesta Cork and Pubescent Oak',how:'7-15 m thick-barked gnarled evergreen and semi-deciduous oak forming open sunlit savanna-woodland across Compass Hills.',
@@ -66,10 +84,28 @@ var COMPASSHILLS=COMPASS;
    items:['ch_olive_fol'],tags:K('temperate','dry','no',['Csa','Cfa'],'dipslope')},
   {key:'cuestajuniper',name:'Red-Berry Cuesta Juniper',how:'1.6-4.2 m aromatic resinous juniper gripping rocky sandstone scarps and domain-wall saddles.',
    items:['ch_juniper_fol'],tags:K('temperate','dry','no',['Csa','Cfa'],'cuestawood',{shared:'wouterwall'})},
-  {key:'gorgeplane',name:'Web-Cleaver Riparian Plane',how:'12-22 m mottled-bark oriental plane shading the 1,080 m^3/s Ham-Tsek magnetite river narrows and cuesta brooks.',
-   items:['ch_plane_fol'],tags:K('temperate','humid','yes',['Cfa'],'irongorge')},
-  {key:'silkmulberry',name:'Ham-Tsek White Mulberry',how:'4.5-8.5 m lush broadleaf mulberry planted and naturalized along river terraces near Ham-Tsek Silk Post.',
+  {key:'gorgeplane',name:'Web-Cleaver Riparian Plane',how:'12-22 m mottled-bark oriental plane with broad palmately-lobed crowns and pendulous samara seed balls shading the 1,080 m^3/s Ham-Tsek magnetite river narrows.',
+   items:['ch_plane_fol','ch_plane_samara'],tags:K('temperate','humid','yes',['Cfa'],'irongorge')},
+  {key:'silkmulberry',name:'Ham-Tsek White Mulberry',how:'4.5-8.5 m lush heart-leaved mulberry planted and naturalized along river terraces near Ham-Tsek Silk Post.',
    items:['ch_mulberry_fol'],tags:K('temperate','subhumid','yes',['Cfa'],'irongorge')},
+  {key:'amberstorax',name:'Weeping-Amber Storax',how:'6.5-14.0 m resin-streaked lobed broadleaf tree extending south from the Weeping Valley (amber = 120) border seam up the Ham-Tsek gorge and sheltered north cuesta dips, weeping golden ria-amber tears.',
+   items:['ch_storax_fol'],tags:K('temperate','subhumid','yes',['Cfa','Csa'],'irongorge',{resin:'ria-amber',shared:'riavalley'})},
+  {key:'cuestaarbutus',name:'Cuesta Strawberry-Tree',how:'2.8-6.2 m cinnamon-flaking madrone-barked sclerophyll macchia treelet bearing glossy serrated leaves, ivory urn-bells, and warty crimson-orange berries.',
+   items:['ch_arbutus_fol'],tags:K('temperate','subhumid','no',['Cfa','Csa'],'cuestawood')},
+  {key:'sunnycarob',name:'Dip-Slope Carob',how:'4.5-9.5 m broad-domed evergreen leguminous tree with leathery pinnate leaves and sweet dark pods anchoring dry-summer Csa sandstone dip-slopes.',
+   items:['ch_carob_fol'],tags:K('temperate','dry','no',['Csa','Cfa'],'dipslope')},
+  {key:'gorgeoleander',name:'Web-Cleaver Canyon Oleander',how:'1.4-3.2 m deep-rooted canyon-wash phreatophyte shrub with lance-shaped foliage and coral-rose flower clusters lining rocky Ham-Tsek floodbars and cuesta brooks.',
+   items:['ch_oleander_fol'],tags:K('temperate','subhumid','yes',['Cfa','Csa'],'irongorge')},
+  {key:'goldenbroom',name:'Cuesta Golden Broom',how:'0.8-2.1 m whip-stemmed nitrogen-fixing garrigue shrub ablaze with golden-yellow blossoms across sunny cuesta scarps and delver trail shoulders.',
+   items:['ch_broom_fol'],tags:K('temperate','dry','no',['Csa','Cfa'],'cuestawood')},
+  {key:'cistusrockrose',name:'Labdanum Cistus Rock-Rose',how:'0.45-1.10 m pyrophytic resinous Mediterranean subshrub with sticky aromatic foliage and crinkled white-and-crimson cup-blossoms on dry sandstone benches.',
+   items:['ch_cistus_fol'],tags:K('temperate','dry','no',['Csa','Cfa'],'dipslope')},
+  {key:'canyongrape',name:'Wild Ham-Tsek Canyon Grape',how:'1.6-4.5 m woody tendril-climbing wild vine draping banded-ironstone gorge walls and riparian boulders with tart blue-black grape clusters.',
+   items:['ch_canyongrape'],tags:K('temperate','subhumid','yes',['Cfa','Csa'],'irongorge')},
+  {key:'seepmaidenhair',name:'Iron-Seep Maidenhair Fern',how:'0.22-0.55 m delicate black-stemmed fan-frond fern clinging to shaded wet seep walls, spring alcoves, and Ham-Tsek canyon drips.',
+   items:['ch_maidenhair'],tags:K('temperate','humid','yes',['Cfa'],'irongorge')},
+  {key:'cuestaasphodel',name:'Limestone Hollow-Stem Asphodel',how:'0.45-1.05 m starry pale-gold and pearl-pink spiked Mediterranean geophyte blooming across N-lip carbonate and ferruginous sandstone dip-slopes beside saffron.',
+   items:['ch_asphodel'],tags:K('temperate','dry','no',['Csa','Cfa'],'dipslope')},
   {key:'saffroncrocus',name:'Cuesta Autumn Saffron',how:'0.18-0.35 m violet-petalled, crimson-stigma crocus carpets blooming across sunny Csa limestone-sandstone benches.',
    items:['ch_saffron'],tags:K('temperate','dry','no',['Csa','Cfa'],'dipslope')},
   {key:'macchiasage',name:'Rosemary and Cuesta Bunchgrass Macchia',how:'0.35-0.85 m aromatic Mediterranean rosemary-sage scrub and warm golden bunchgrass carpeting sunlit dip-slopes.',
@@ -84,12 +120,23 @@ var COMPASSHILLS=COMPASS;
   fluxlichen:HV('none',[],false,'Scraped for rust-gold and gunmetal wool dye; prospectors read tight isogauss ring spacing as a high-grade lodestone ore indicator.'),
   ferrotuft:HV('none',[],false,'Brushed with tin-bronze combs to harvest pure single-domain magnetite sand for hourglasses and compass fluid reagent.'),
   lodestonespire:HV('none',[],false,'Split with non-sparking tin-bronze plug-and-feather wedges into Krator natural permanent magnets; lightning marker.'),
+  magnetitespleenwort:HV('none',[],true,'Calcined iron-chelating frond ash yields fine magnetic rouge reagent for polishing bronze mirrors and Pioneer compass jewel-bearings; high-field lodestone indicator.'),
+  gossanwhorlheath:HV('fuel',[],false,'Metallophyte ore indicator whose rust-violet bell whorls mark oxidized copper-magnetite gossan veins and quench-slag pockets; dense root-burl turnery.'),
   stonepine:HV('timber, resin',['pine nut'],false,'Straight structural timber for river barges and oil-rich edible pine kernels.'),
   corkoak:HV('timber, tannin',['roasted acorn'],false,'Thick insulating outer cork stripped for non-magnetic tool sheaths, floats, and tanbark.'),
   whorlolive:HV('carving, fuel',['whorl-olive'],true,'Pressed for golden culinary and lamp oil, soap, and tunnel-leather dressing.'),
   cuestajuniper:HV('carving, fuel',['juniper berry'],true,'Fragrant rot-proof survey-stake wood and spiced berry extract.'),
   gorgeplane:HV('timber, carving',[],false,'Tough cross-grained ferry-deck planking and bronze-capstan blocks along Ham-Tsek.'),
-  silkmulberry:HV('carving, bast',['mulberry'],false,'Tender leaves feed silk-moth broods along the Spider Lake to Korona silk road; fibrous inner bast paper.'),
+  silkmulberry:HV('carving, bast',['mulberry'],false,'Tender heart-leaves feed silk-moth broods along the Spider Lake to Korona silk road; fibrous inner bast paper.'),
+  amberstorax:HV('timber, resin',[],true,'Weeping golden ria-amber balsam tapped along the northern Weeping Valley seam by Pioneers engineers and Sap-Breakers to boil dielectric coil-varnish for hydro-dynamos and silk-wrapped telegraph coils.'),
+  cuestaarbutus:HV('carving, charcoal, tannin',['arbutus berry'],true,'Close-grained madrone turnery wood for non-magnetic Pioneer instrument cases; fermented crimson fruit cordial and astringent bark tan.'),
+  sunnycarob:HV('timber, carving, fuel',['carob pod'],false,'Sweet drought-hardy pods ground into trail flour for Lodestone delver cantons; uniform seeds used by Court of the Amber Seal factors as carat bullion weights.'),
+  gorgeoleander:HV('fuel',[],true,'Bitter leaf decoction boiled as insect-repellent timber wash for Ham-Tsek ferry barges and silk-bale warehouses.'),
+  goldenbroom:HV('fiber, weaving, fuel',[],false,'Retted green whip-shoots spun into rot-resistant non-ferrous haulage cordage, quarry baskets, and golden-yellow dye.'),
+  cistusrockrose:HV('fuel, resin',[],true,'Sticky fragrant labdanum oleoresin combed from summer shoots with bronze rakes for waterproof leather sealant, incense, and tinder.'),
+  canyongrape:HV('cordage',['canyon-grape'],false,'Tart wild canyon-grape clusters pressed into sharp wine and vinegar for de-scaling copper stills; pliant vine stems twisted into ferry lashing.'),
+  seepmaidenhair:HV('none',[],true,'Demulcent pectoral frond syrup brewed by delvers and river boatmen against fine magnetite-sand dust cough.'),
+  cuestaasphodel:HV('none',['roasted asphodel tuber'],true,'Dried root-tubers ground into cobbler and bookbinder paste glue for Pioneer geodetic ledgers; soothing skin balm.'),
   saffroncrocus:HV('none',['saffron stigma'],true,'Hand-plucked crimson stigmas traded down Ham-Tsek as high-value golden dye and spice.'),
   macchiasage:HV('fuel, thatch',['rosemary herb'],true,'Distilled essential oil rub and dry kindling tinder.')
  };
@@ -147,6 +194,7 @@ var COMPASSHILLS=COMPASS;
   'bark.pistache':BIO.barkMat(grey(128,13)),
   'bark.juniper':BIO.barkMat(grey(128,14)),
   'bark.plane':BIO.barkMat(grey(128,15)),
+  'bark.amber':BIO.barkMat(grey(128,17)),
   'wood.gnarled':BIO.barkMat(grey(128,16)),
 
   // PBR rocks, minerals, lichens & non-ferrous bronze/nephrite/copper works
@@ -162,12 +210,26 @@ var COMPASSHILLS=COMPASS;
   isogauss:pbrMat('organic.isogauss',30,{roughness:0.54,metalness:0.22}),
   ferrotuft:pbrMat('organic.ferrotuft',31,{roughness:0.24,metalness:0.62}),
 
-  // Foliage & card cutouts
+  // Foliage & card cutouts (all 25 species backed by dedicated library cards)
   pine:BIO.leafMat(cardFallback(41),'ch-pine',{aN:true,swayW:'0.50',swayA:0.04}),
   oak:BIO.leafMat(cardFallback(42),'ch-oak',{aN:true,swayW:'0.60',swayA:0.05}),
   pistache:BIO.leafMat(cardFallback(43),'ch-pistache',{aN:true,swayW:'0.65',swayA:0.05}),
   olive:BIO.leafMat(cardFallback(44),'ch-olive',{aN:true,swayW:'0.55',swayA:0.04}),
   juniper:BIO.leafMat(cardFallback(45),'ch-juniper',{aN:true,swayW:'0.40',swayA:0.03}),
+  plane:BIO.leafMat(cardFallback(53),'ch-plane',{aN:true,swayW:'0.62',swayA:0.05}),
+  samara:BIO.leafMat(cardFallback(54),'ch-samara',{aN:false,swayW:'0.52',swayA:0.05}),
+  mulberry:BIO.leafMat(cardFallback(55),'ch-mulberry',{aN:true,swayW:'0.60',swayA:0.05}),
+  storax:BIO.leafMat(cardFallback(56),'ch-storax',{aN:true,swayW:'0.62',swayA:0.05}),
+  arbutus:BIO.leafMat(cardFallback(57),'ch-arbutus',{aN:true,swayW:'0.48',swayA:0.04}),
+  carob:BIO.leafMat(cardFallback(58),'ch-carob',{aN:true,swayW:'0.52',swayA:0.04}),
+  oleander:BIO.leafMat(cardFallback(59),'ch-oleander',{aN:false,swayW:'(position.y)',swayA:0.05}),
+  broom:BIO.leafMat(cardFallback(60),'ch-broom',{aN:false,swayW:'(position.y)',swayA:0.06}),
+  cistus:BIO.leafMat(cardFallback(61),'ch-cistus',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  canyongrape:BIO.leafMat(cardFallback(62),'ch-canyongrape',{aN:false,swayW:'(-position.y)',swayA:0.06}),
+  maidenhair:BIO.leafMat(cardFallback(63),'ch-maidenhair',{aN:false,swayW:'(position.y)',swayA:0.04}),
+  asphodel:BIO.leafMat(cardFallback(64),'ch-asphodel',{aN:false,swayW:'(position.y)',swayA:0.05}),
+  spleenwort:BIO.leafMat(cardFallback(65),'ch-spleenwort',{aN:false,swayW:'(position.y)',swayA:0.03}),
+  whorlheath:BIO.leafMat(cardFallback(66),'ch-whorlheath',{aN:false,swayW:'(position.y)',swayA:0.04}),
   macchia:BIO.leafMat(cardFallback(52),'ch-macchia',{aN:false,swayW:'(position.y)',swayA:0.04}),
   compassleaf:BIO.leafMat(cardFallback(46),'ch-compassleaf',{aN:false,swayW:'(position.y)',swayA:0.03,alphaTest:0.36}),
   fluxgrass:BIO.leafMat(cardFallback(47),'ch-fluxgrass',{aN:false,swayW:'(position.y)',swayA:0.08}),
@@ -179,12 +241,13 @@ var COMPASSHILLS=COMPASS;
 
  COMPASS.SWAP=BIO.libSwap('compasshills',M);
 
- // ---------------------------------------------------------------- merged bark & timber buckets
+ // ---------------------------------------------------------------- merged bark & timber buckets (shared cleanly to keep calls << 120)
  BIO.bucket('ch_pine',M['bark.pine'],{label:'Umbrella stone pine trunks & boughs'});
- BIO.bucket('ch_cork',M['bark.cork'],{label:'Cuesta cork & pubescent oak trunks'});
- BIO.bucket('ch_pistache',M['bark.pistache'],{label:'Iron-pistache & compass-shrub stems'});
+ BIO.bucket('ch_cork',M['bark.cork'],{label:'Cuesta cork oak & dip-slope carob trunks'});
+ BIO.bucket('ch_pistache',M['bark.pistache'],{label:'Iron-pistache, arbutus madrone & shrub stems'});
  BIO.bucket('ch_juniper',M['bark.juniper'],{label:'Whorl-olive & cuesta juniper trunks'});
- BIO.bucket('ch_plane',M['bark.plane'],{label:'Ham-Tsek riparian plane & mulberry trunks'});
+ BIO.bucket('ch_plane',M['bark.plane'],{label:'Ham-Tsek riparian plane, mulberry & canyon-grape stems'});
+ BIO.bucket('ch_amber',M['bark.amber'],{label:'Weeping-amber storax resin-streaked trunks'});
  BIO.bucket('ch_wood',M['wood.gnarled'],{label:'Sun-bleached cuesta deadwood'});
 
  // ---------------------------------------------------------------- custom geometries
@@ -307,10 +370,22 @@ var COMPASSHILLS=COMPASS;
  BIO.def('ch_pistache_drupe',BIO.geo.bloom(),M.drupe,{label:'Iron-pistache crimson & turquoise drupe panicles'});
  BIO.def('ch_olive_fol',BIO.geo.clump(),M.olive,{attrs:['aN'],label:'Wild whorl-olive silver-backed foliage'});
  BIO.def('ch_juniper_fol',BIO.geo.clump(),M.juniper,{attrs:['aN'],label:'Red-berry cuesta juniper sprays'});
- BIO.def('ch_plane_fol',BIO.geo.clump(),M.oak,{attrs:['aN'],label:'Web-Cleaver riparian plane canopy'});
- BIO.def('ch_mulberry_fol',BIO.geo.clump(),M.pistache,{attrs:['aN'],label:'Ham-Tsek white mulberry foliage'});
+ BIO.def('ch_plane_fol',BIO.geo.clump(),M.plane,{attrs:['aN'],label:'Web-Cleaver riparian plane broadleaf canopy'});
+ BIO.def('ch_plane_samara',BIO.geo.bloom(),M.samara,{label:'Riparian plane hanging samara seed clusters'});
+ BIO.def('ch_mulberry_fol',BIO.geo.clump(),M.mulberry,{attrs:['aN'],label:'Ham-Tsek white mulberry heartleaf foliage'});
+ BIO.def('ch_storax_fol',BIO.geo.clump(),M.storax,{attrs:['aN'],label:'Weeping-amber storax golden-lobed canopy'});
+ BIO.def('ch_arbutus_fol',BIO.geo.clump(),M.arbutus,{attrs:['aN'],label:'Cuesta strawberry-tree glossy foliage & crimson fruit'});
+ BIO.def('ch_carob_fol',BIO.geo.clump(),M.carob,{attrs:['aN'],label:'Dip-slope carob leathery compound crown'});
+ BIO.def('ch_oleander_fol',BIO.geo.clump(),M.oleander,{label:'Web-Cleaver canyon oleander coral-blossom sprays'});
+ BIO.def('ch_broom_fol',BIO.geo.clump(),M.broom,{label:'Cuesta golden broom garrigue sprays'});
+ BIO.def('ch_cistus_fol',BIO.geo.clump(),M.cistus,{label:'Labdanum cistus rock-rose blossoms & resinous scrub'});
+ BIO.def('ch_canyongrape',BIO.geo.hang(),M.canyongrape,{label:'Wild Ham-Tsek canyon grape scrambling vine'});
+ BIO.def('ch_maidenhair',BIO.geo.clump(),M.maidenhair,{label:'Iron-seep maidenhair lacy fern fronds'});
+ BIO.def('ch_asphodel',BIO.geo.clump(),M.asphodel,{label:'Limestone dip-slope starry asphodel spikes'});
  BIO.def('ch_compass_blade',makeCompassBladeGeo() /* geo.cells( */,M.compassleaf,{label:'Compass-shrub vertical flux-aligned sclerophyll blades'});
  BIO.def('ch_fluxgrass',BIO.geo.clump(),M.fluxgrass,{label:'Magnetite-awn plume-grass tussock'});
+ BIO.def('ch_spleenwort',BIO.geo.clump(),M.spleenwort,{label:'Magnetite-crevice metallophyte spleenwort fern'});
+ BIO.def('ch_whorlheath',BIO.geo.clump(),M.whorlheath,{label:'Gossan copper-magnetite indicator whorl-heath'});
  BIO.def('ch_drygrass',BIO.geo.clump(),M.drygrass,{label:'Mediterranean cuesta bunchgrass'});
  BIO.def('ch_macchia',BIO.geo.clump(),M.macchia,{label:'Rosemary & aromatic cuesta macchia'});
  BIO.def('ch_saffron',BIO.geo.clump(),M.saffron,{label:'Cuesta autumn saffron crocus'});
@@ -326,14 +401,17 @@ var COMPASSHILLS=COMPASS;
  BIO.def('ch_rock_sandstone',makeRockGeo(91107,0.68),M.rockSandstone,{label:'Warm ferruginous cuesta sandstone boulder'});
  BIO.def('ch_rock_gossan',makeRockGeo(91108,0.74),M.rockGossan,{label:'Vitrified quench-trench slag block'});
 
- // ---------------------------------------------------------------- tree & shrub builders (BIO.flareJoin + direct twig-tip stemClump socketing)
- const TREE_CFG={
+ // ---------------------------------------------------------------- tree, shrub & liana builders (BIO.flareJoin + direct twig-tip socketing)
+ const TREE_CFG=COMPASS.TREE_CFG={
   stonepine:{bucket:'ch_pine',fol:'ch_pine_fol',pal:PAL.pine,barkCol:0x785844,H:[10,19],rK:0.024,tiers:4,umbrella:true},
   corkoak:{bucket:'ch_cork',fol:'ch_oak_fol',pal:PAL.oak,barkCol:0x6e6256,H:[7.5,14.5],rK:0.032,tiers:5,gnarled:true},
   ironpistache:{bucket:'ch_pistache',fol:'ch_pistache_fol',pal:PAL.pistache,barkCol:0x7c5442,H:[5.0,10.5],rK:0.029,tiers:4,gnarled:true,drupes:true},
   whorlolive:{bucket:'ch_juniper',fol:'ch_olive_fol',pal:PAL.olive,barkCol:0x827e74,H:[3.8,7.2],rK:0.036,tiers:4,gnarled:true},
-  gorgeplane:{bucket:'ch_plane',fol:'ch_plane_fol',pal:PAL.plane,barkCol:0xa8a496,H:[12,21],rK:0.028,tiers:6,gnarled:false},
-  silkmulberry:{bucket:'ch_plane',fol:'ch_mulberry_fol',pal:PAL.mulberry,barkCol:0x867c6c,H:[4.8,8.2],rK:0.030,tiers:4,gnarled:true}
+  gorgeplane:{bucket:'ch_plane',fol:'ch_plane_fol',pal:PAL.plane,barkCol:0xa8a496,H:[12,21],rK:0.028,tiers:6,gnarled:false,samaras:true},
+  silkmulberry:{bucket:'ch_plane',fol:'ch_mulberry_fol',pal:PAL.mulberry,barkCol:0x867c6c,H:[4.8,8.2],rK:0.030,tiers:4,gnarled:true},
+  amberstorax:{bucket:'ch_amber',fol:'ch_storax_fol',pal:PAL.storax,barkCol:0x9c7238,H:[6.8,13.5],rK:0.029,tiers:5,gnarled:true},
+  cuestaarbutus:{bucket:'ch_pistache',fol:'ch_arbutus_fol',pal:PAL.arbutus,barkCol:0x8e4c3a,H:[3.0,6.0],rK:0.034,tiers:3,gnarled:true},
+  sunnycarob:{bucket:'ch_cork',fol:'ch_carob_fol',pal:PAL.carob,barkCol:0x66584c,H:[4.6,9.2],rK:0.035,tiers:4,gnarled:true}
  };
 
  COMPASS.growTree=function(kind,x,y,z,seed,scale){
@@ -341,7 +419,7 @@ var COMPASSHILLS=COMPASS;
   if(!cfg)return{tris:0,H:0};
   const sc=scale==null?1:scale;
   const H0=lerp(cfg.H[0],cfg.H[1],H(seed,1,0,0x301))*sc;
-  const r0=Math.max(0.12,H0*cfg.rK*(0.88+0.24*H(seed,2,0,0x301)));
+  const r0=Math.max(0.10,H0*cfg.rK*(0.88+0.24*H(seed,2,0,0x301)));
   let tris=0;
 
   const ownPrev=BIO.owner;
@@ -355,7 +433,7 @@ var COMPASSHILLS=COMPASS;
     const tx=x+wob*Math.cos(seed),tz=z+wob*Math.sin(seed);
     const ty=y-0.40+(H0*(cfg.umbrella?0.78:0.84)+0.40)*t;
     const flare=1+0.38*Math.pow(Math.max(0,1-t/0.16),2);
-    trunk.push({x:tx,y:ty,z:tz,r:Math.max(0.05,r0*(1-0.72*t)*flare)});
+    trunk.push({x:tx,y:ty,z:tz,r:Math.max(0.045,r0*(1-0.72*t)*flare)});
    }
    tris+=BIO.tube(cfg.bucket,trunk,cfg.barkCol,{seg:7});
 
@@ -376,7 +454,7 @@ var COMPASSHILLS=COMPASS;
      const rise=cfg.umbrella?0.38*span:0.28*span;
      const mx=bx+Math.cos(az)*span*0.52,my=by+rise*0.55,mz=bz+Math.sin(az)*span*0.52;
      const ex=bx+Math.cos(az)*span,ey=by+rise,ez=bz+Math.sin(az)*span;
-     const br0=Math.max(0.04,pR*0.48);
+     const br0=Math.max(0.038,pR*0.48);
      const limb=BIO.flareJoin([
       {x:bx,y:by,z:bz,r:br0},
       {x:mx,y:my,z:mz,r:br0*0.68},
@@ -399,7 +477,7 @@ var COMPASSHILLS=COMPASS;
        BIO.put(cfg.fol,[fx,fy,fz],qEuler(0,faz,0),[fPad,fPad*0.46,fPad],fCol,{n:[Math.cos(faz)*0.28,0.94,Math.sin(faz)*0.28]});
       }
      }else{
-      const padS=clamp(span*0.92,1.3,5.2);
+      const padS=clamp(span*0.92,1.15,5.2);
       const col1=cfg.pal[(sIdx+seed)%cfg.pal.length];
       BIO.put(cfg.fol,[ex,ey,ez],qEuler(0,az,0),[padS,padS*0.68,padS],col1,{n:[Math.cos(az)*0.3,0.92,Math.sin(az)*0.3]});
       if(span>1.8){
@@ -411,18 +489,67 @@ var COMPASSHILLS=COMPASS;
        const ds=0.38+0.24*H(seed,sIdx,5,0x303);
        BIO.put('ch_pistache_drupe',[ex,ey+0.08*padS,ez],qEuler(0,az*1.4,0),[ds,ds,ds],PAL.drupe[(sIdx+seed)%PAL.drupe.length]);
       }
+      if(cfg.samaras&&H(seed,sIdx,7,0x303)<0.52){
+       const ss2=0.44+0.28*H(seed,sIdx,8,0x303);
+       BIO.put('ch_plane_samara',[ex,ey-0.12*padS,ez],qEuler(0,az*1.3,0),[ss2,ss2,ss2],PAL.samara[(sIdx+seed)%PAL.samara.length]);
+      }
      }
     }
    }
    const topPt=trunk[trunk.length-1];
    const leadTopY=topPt.y+H0*(cfg.umbrella?0.12:0.08);
-   tris+=BIO.tube(cfg.bucket,[{x:topPt.x,y:topPt.y,z:topPt.z,r:topPt.r*0.85},{x:topPt.x,y:leadTopY,z:topPt.z,r:Math.max(0.035,topPt.r*0.38)}],cfg.barkCol,{seg:5});
-   const topS=clamp(H0*(cfg.umbrella?0.28:0.22),1.5,5.0);
+   tris+=BIO.tube(cfg.bucket,[{x:topPt.x,y:topPt.y,z:topPt.z,r:topPt.r*0.85},{x:topPt.x,y:leadTopY,z:topPt.z,r:Math.max(0.032,topPt.r*0.38)}],cfg.barkCol,{seg:5});
+   const topS=clamp(H0*(cfg.umbrella?0.28:0.22),1.25,5.0);
    BIO.put(cfg.fol,[topPt.x,leadTopY,topPt.z],qEuler(0,H(seed,77,1,0x304)*TAU,0),[topS,topS*(cfg.umbrella?0.42:0.66),topS],cfg.pal[seed%cfg.pal.length],{n:[0,1,0]});
   }finally{
    BIO.owner=ownPrev;
   }
   return{tris:tris,H:H0};
+ };
+
+ // Multi-stemmed woody riparian / garrigue shrub builder (gorgeoleander & goldenbroom)
+ COMPASS.growWoodyShrub=function(kind,x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const isOlea=(kind==='gorgeoleander');
+  const hShrub=(isOlea?(1.45+1.45*H(seed,1,0,0x321)):(0.95+1.05*H(seed,1,0,0x321)))*sc;
+  const fol=isOlea?'ch_oleander_fol':'ch_broom_fol';
+  const pal=isOlea?PAL.oleander:PAL.broom;
+  const barkCol=isOlea?0x6c6452:0x686e42;
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   const nStems=3;
+   for(let s=0;s<nStems;s++){
+    const az=(s/nStems)*TAU+H(seed,s,2,0x321)*0.9;
+    const rad=hShrub*(0.28+0.14*H(seed,s,3,0x321));
+    const tx=x+Math.cos(az)*rad,ty=y+hShrub*(0.62+0.24*H(seed,s,4,0x321)),tz=z+Math.sin(az)*rad;
+    BIO.tube('ch_pistache',[{x:x,y:y-0.16,z:z,r:0.042*sc},{x:tx,y:ty,z:tz,r:0.018*sc}],barkCol,{seg:4});
+    const cs=hShrub*(isOlea?0.64:0.58);
+    BIO.put(fol,[tx,ty,tz],qEuler(0,az,0),[cs,cs*0.85,cs],pal[(seed+s)%pal.length]);
+   }
+  }finally{BIO.owner=ownPrev;}
+  return{H:hShrub};
+ };
+
+ // Scrambling & draping wild canyon grape vine (canyongrape: woody runner + hanging foliage curtains above ground)
+ COMPASS.growCanyonGrape=function(x,y,z,seed,scale){
+  const sc=scale==null?1:scale;
+  const hVine=(1.55+1.35*H(seed,1,0,0x325))*sc;
+  const az=H(seed,2,0,0x325)*TAU;
+  const ownPrev=BIO.owner;BIO.owner=[x,z];
+  try{
+   const topX=x+Math.cos(az)*0.38*sc,topY=y+hVine,topZ=z+Math.sin(az)*0.38*sc;
+   BIO.tube('ch_plane',[
+    {x:x-Math.cos(az)*0.28*sc,y:y-0.15,z:z-Math.sin(az)*0.28*sc,r:0.046*sc},
+    {x:x,y:y+hVine*0.58,z:z,r:0.032*sc},
+    {x:topX,y:topY,z:topZ,r:0.020*sc}
+   ],0x6e5c48,{seg:4});
+   for(let k=0;k<2;k++){
+    const ox=(k===0?0:-0.28*sc*Math.cos(az+1.2)),oz=(k===0?0:-0.28*sc*Math.sin(az+1.2));
+    const hs=hVine*(k===0?0.92:0.74),ws=0.78*sc*(0.9+0.2*H(seed,k,4,0x325));
+    BIO.put('ch_canyongrape',[topX+ox,topY,topZ+oz],qEuler(0,az+k*1.1,0),[ws,hs,ws],PAL.canyongrape[(seed+k)%PAL.canyongrape.length]);
+   }
+  }finally{BIO.owner=ownPrev;}
+  return{H:hVine};
  };
 
  // Signature Flux-Leaf Compass-Shrub: woody Mediterranean base + vertical meridian-aligned sclerophyll leaf fins
@@ -487,11 +614,9 @@ var COMPASSHILLS=COMPASS;
   return{rBase:rBase,hM:hM,veins:veins};
  };
 
- // Octahedral impostors (34-core-impostor.js) for >= 7 m cuesta & gorge trees
+ // Octahedral impostors (34-core-impostor.js) for all 9 woody cuesta, dip-slope & gorge trees (9 slots <= 16 in 4x4 atlas)
  if(BIO.impostorSet&&BIO.impostor&&BIO.impostorItem){
-  const impKeys=SKEY==='gorge'
-   ?['gorgeplane','stonepine','corkoak','ironpistache','silkmulberry']
-   :['stonepine','corkoak','ironpistache','whorlolive'];
+  const impKeys=['stonepine','corkoak','ironpistache','whorlolive','gorgeplane','silkmulberry','amberstorax','cuestaarbutus','sunnycarob'];
   const IMP_SET=COMPASS.IMP_SET=BIO.impostorSet('compass-trees',{grid:4,cell:48,slots:impKeys.length});
   COMPASS.IMP={};
   impKeys.forEach(tk=>{

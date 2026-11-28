@@ -19,10 +19,10 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `41-biome-arach-sites.js` | 10 |  |
 | `45-host-stage.js` | 22 | core/terrain helpers: KTHERM, KRELIEF.slab, KFRO (60); 4-station analytical canyon & radial-dike height (161); ARACH_PHYS raster field cache (422); KSPACE spatial index & KHAZ data-driven hazards (490); BIO.init host binding (528) |
 | `46-vstack.js` | <1 |  |
-| `50-biome-arach-species.js` | 36 **big** |  |
-| `60-biome-arach-place.js` | 22 |  |
-| `70-biome-arachnoids.js` | <1 |  |
-| `84-host-ground.js` | 20 | KSTACKS standing radial arch-rift-basalt & vitro (209); KCAVERN + KSPELEO Alcoves (Station 1 HYPOGENE sa (243) |
+| `50-biome-arach-species.js` | 51 **big** |  |
+| `60-biome-arach-place.js` | 31 **big** |  |
+| `70-biome-arachnoids.js` | 2 |  |
+| `84-host-ground.js` | 21 | KSTACKS standing radial arch-rift-basalt & vitro (210); KCAVERN + KSPELEO Alcoves (Station 1 HYPOGENE sa (244) |
 | `85-host-far.js` | 4 |  |
 | `86-host-works.js` | 7 |  |
 | `88-host-place.js` | <1 |  |
@@ -31,7 +31,7 @@ Fragments marked **big** are over 30 KB: find the section below and read only th
 | `89w-host-water.js` | 3 |  |
 | `89z-host-build.js` | 3 |  |
 | `89z9-vstack-post.js` | 6 |  |
-| `99-host-take.js` | 16 |  |
+| `99-host-take.js` | 17 |  |
 | `99-tail.html` | <1 |  |
 
 ## stations/

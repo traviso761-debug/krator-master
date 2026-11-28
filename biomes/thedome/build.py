@@ -79,15 +79,14 @@ for f in sorted(os.listdir(_sd)):
     if re.match(r'\d', f):
         PATH[f] = os.path.join(_sd, f)
 
-# 1. core/shader, core/export, core/rand, core/drawn, core/shadow, core/space, core/hazard, core/mask, core/tags (+ core/frontier on eastflank)
+# 1. core/shader, core/export, core/rand, core/frontier, core/drawn, core/shadow, core/space, core/hazard, core/mask, core/tags
 PATH.setdefault('06-core-khook.js', P('core', 'shader', '06-core-khook.js'))
 PATH.setdefault('06b-core-kcolor.js', P('core', 'shader', '06b-core-kcolor.js'))
 for f in ('07-core-export.js', '09-core-export-adapters.js'):
     PATH.setdefault(f, P('core', 'export', f))
 PATH.setdefault('08-core-rand.js', P('core', 'rand', '08-core-rand.js'))
-if STATION == 'eastflank':
-    PATH.setdefault('18-core-frontier.js', P('core', 'frontier', '18-core-frontier.js'))
-    PATH.setdefault('48-core-frontier-draw.js', P('core', 'frontier', '52-core-frontier-draw.js'))
+PATH.setdefault('18-core-frontier.js', P('core', 'frontier', '18-core-frontier.js'))
+PATH.setdefault('48-core-frontier-draw.js', P('core', 'frontier', '52-core-frontier-draw.js'))
 PATH.setdefault('10-core-drawn.js', P('core', 'drawn', '10-core-drawn.js'))
 PATH.setdefault('10-core-shadow.js', P('core', 'shadow', '10-core-shadow.js'))
 PATH.setdefault('12-core-shadow-host.js', P('core', 'shadow', 'host', '12-core-shadow-host.js'))
@@ -163,8 +162,27 @@ if miss:
 sys.path.insert(0, P('tools', 'textures'))
 import matlib_pack  # noqa: E402
 SIDE = None if '--inline-packs' in sys.argv else {}
+STATION_EXCLUDE = {
+    'apron': ('bark.amber', 'bark.birch', 'bark.cherry', 'bark.oak', 'birch', 'cleftfern', 'cotton',
+              'crystal.smoky', 'fireweed', 'ground.lichen', 'ground.moss', 'ground.sphagnum', 'larch',
+              'organic.pitcher', 'pasque', 'rhododendron', 'rock.pegmatite', 'rock.sandstone', 'rosette',
+              'rowan', 'spike', 'veilbeard'),
+    'moat': ('bark.oak', 'carnelian.chitin', 'carnelian.ruby', 'cleftfern', 'crystal.druse', 'crystal.smoky',
+             'ground.lichen', 'ground.moss', 'ground.scour', 'panmoss', 'pasque', 'quillwort',
+             'rock.pegmatite', 'rosette', 'shadefern', 'spike', 'veilbeard'),
+    'crown': ('bark.amber', 'bark.birch', 'bark.cherry', 'bark.oak', 'birch', 'cleftfern', 'cotton',
+              'crystal.smoky', 'fireweed', 'ghostpipe', 'ground.moss', 'ground.scour', 'ground.sphagnum',
+              'larch', 'organic.pitcher', 'rock.pegmatite', 'rock.sandstone', 'rowan', 'shadefern'),
+    'cleft': ('bark.birch', 'bark.oak', 'birch', 'cotton', 'fireweed', 'ground.moss', 'ground.scour',
+              'ground.sphagnum', 'organic.pitcher', 'panmoss', 'quillwort', 'rock.porphyry',
+              'rock.sandstone', 'sedge', 'sundew'),
+    'eastflank': ('bark.amber', 'bark.cedar', 'bark.cherry', 'bark.oak', 'cleftfern', 'clubmoss', 'cotton',
+                  'crystal.smoky', 'ground.moss', 'ground.scour', 'ground.sphagnum', 'juniper', 'larch',
+                  'organic.pitcher', 'pasque', 'rhododendron', 'rock.sandstone', 'rosette', 'rowan',
+                  'spike', 'veilbeard'),
+}
 VIRTUAL = {
-    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'thedome', own=True, side=SIDE),
+    '44-host-matlib-pack.js': matlib_pack.fragment(HERE, 'thedome', own=True, side=SIDE, exclude=STATION_EXCLUDE.get(STATION, ())),
     khost.EDITS_JS: khost.edits_js(HERE, 'thedome'),
 }
 
