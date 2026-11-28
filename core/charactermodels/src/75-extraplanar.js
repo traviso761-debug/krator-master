@@ -347,6 +347,73 @@
       return matB;
     }
 
+    if(kind === 'psychedelic_surface'){
+      var subMode = z.sub_mode == null ? 0.0 : +z.sub_mode;
+      var psGain  = z.gain == null ? 1.35 : +z.gain;
+      var psScale = z.scale == null ? 1.0 : +z.scale;
+      var cTrim   = colOf(z.trim_color, '#ffd258');
+      var matPS = new THREE.MeshStandardMaterial({
+        map: srcMat ? srcMat.map : null,
+        color: 0xffffff,
+        roughness: 0.22,
+        metalness: subMode < 0.5 ? 0.65 : 0.15,
+        side: THREE.DoubleSide,
+        skinning: !!skinned
+      });
+      if(!matPS.map) matPS.defines = { USE_UV: '' };
+      matPS.onBeforeCompile = function(sh, r){
+        if(prevHook) prevHook(sh, r);
+        sh.uniforms.kxTime  = uTime;
+        sh.uniforms.kxSub   = { value: subMode };
+        sh.uniforms.kxGain  = { value: psGain };
+        sh.uniforms.kxSc    = { value: psScale };
+        sh.uniforms.kxTrim  = { value: cTrim };
+        sh.vertexShader = 'varying vec3 vKxFig;\n' +
+          sh.vertexShader.replace('#include <project_vertex>', '\tvKxFig = transformed;\n#include <project_vertex>');
+        sh.fragmentShader = 'varying vec3 vKxFig;\nuniform float kxTime, kxSub, kxGain, kxSc;\nuniform vec3 kxTrim;\n' +
+          GLSL_NOISE +
+          'vec3 kxPsySpec(float h){ return clamp(0.55 + 0.45 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))), 0.0, 1.0); }\n' +
+          sh.fragmentShader.replace('#include <dithering_fragment>', [
+            '\tvec3 Vf = normalize(vViewPosition);',
+            '\tvec3 Nf = normalize(normal) * (gl_FrontFacing ? 1.0 : -1.0);',
+            '\tfloat ndv = clamp(abs(dot(Nf, Vf)), 0.0, 1.0);',
+            '\tvec3 outC = gl_FragColor.rgb;',
+            '\tif(kxSub < 0.5){',
+            '\t  // Sub 0: Baroque Golden Filigree & Liquid Thin-Film Soap-Bubble Rainbow (Image 15)',
+            '\t  float swirl = kxFbm2(vUv * (6.5 * kxSc) + vec2(kxTime * 0.12, -kxTime * 0.09));',
+            '\t  float hue = fract((1.0 - ndv) * 1.65 + vKxFig.y * 2.2 + swirl * 1.35 - kxTime * 0.22);',
+            '\t  vec3 film = kxPsySpec(hue);',
+            '\t  float filigree = smoothstep(0.08, 0.015, abs(sin((vUv.x * 18.0 + swirl * 5.0) * kxSc) * cos((vUv.y * 18.0 - swirl * 4.0) * kxSc)));',
+            '\t  float fres = pow(1.0 - ndv, 1.8);',
+            '\t  outC = mix(film * (0.75 + 0.65 * fres) * kxGain, kxTrim * (1.25 + 0.55 * fres), clamp(filigree * 0.85, 0.0, 1.0));',
+            '\t} else if(kxSub < 1.5){',
+            '\t  // Sub 1: Neon Rainbow Hex-Cell Endoskeleton under Dark Carbon Struts (Images 9 & 10)',
+            '\t  vec2 hp = vec2(atan(vKxFig.x, vKxFig.z) * 5.5, vKxFig.y * 26.0) * kxSc;',
+            '\t  vec2 rowOff = mod(floor(hp.y), 2.0) > 0.5 ? vec2(0.5, 0.0) : vec2(0.0);',
+            '\t  vec2 gv = fract(hp + rowOff) - 0.5;',
+            '\t  vec2 cid = floor(hp + rowOff);',
+            '\t  float dCell = length(gv);',
+            '\t  float cellMask = smoothstep(0.44, 0.28, dCell);',
+            '\t  float hCell = kxHash12(cid);',
+            '\t  float hueC = fract(hCell + vKxFig.y * 1.4 - kxTime * 0.32);',
+            '\t  vec3 neon = kxPsySpec(hueC) * (1.15 + 0.35 * sin(kxTime * 3.8 + hCell * 12.0)) * kxGain;',
+            '\t  outC = mix(vec3(0.015, 0.012, 0.022), neon, cellMask);',
+            '\t} else {',
+            '\t  // Sub 2: UV Blacklight Kaleidoscope Mandala Tapestry (Images 3 & 7)',
+            '\t  float w1 = sin(vUv.x * 37.7 * kxSc + sin(vUv.y * 24.0 - kxTime * 1.8) * 2.5);',
+            '\t  float w2 = cos(vUv.y * 31.4 * kxSc - cos(vUv.x * 18.0 + kxTime * 1.4) * 2.5);',
+            '\t  float hueM = fract((w1 * w2) * 0.45 + vKxFig.y * 1.6 - kxTime * 0.25);',
+            '\t  vec3 uvCol = kxPsySpec(hueM) * kxGain;',
+            '\t  outC = mix(outC * 0.55 + uvCol * 0.65, uvCol * 1.25, pow(1.0 - ndv, 1.6));',
+            '\t}',
+            '\tgl_FragColor = vec4(outC, opacity);',
+            '#include <dithering_fragment>'
+          ].join('\n'));
+      };
+      matPS.customProgramCacheKey = function(){ return 'kx-psy-' + subMode + '-' + (skinned ? 'sk' : 'rg'); };
+      return matPS;
+    }
+
     if(kind === 'neutrino_phase'){
       var cNuCore = colOf(z.core_color, '#061538');
       var cNuCher = colOf(z.cherenkov_color, '#38f6ff');
@@ -1705,6 +1772,331 @@
       uwMesh.frustumCulled = false; uwMesh.renderOrder = 4;
       holder.add(uwMesh);
 
+    } else if(kind === 'dmt_chrysanthemum'){
+      // 12. Chrysanthemum Godhead (Image 10): Kitaoka-Style Counter-Phased Concentric Rainbow Petal Pinwheel Optical Illusion!
+      var chrysMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.52 : +spec.scale },
+        kxZOff: { value: -0.14 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        'vec3 kxSpecDmt(float h){ return clamp(0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))), 0.0, 1.0); }',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  // 14 concentric petal shells with alternating opposing angular sawtooth drift -> apparent-motion optical illusion!',
+        '  float rScaled = r * 13.5 - kxTime * 0.45;',
+        '  float shell = floor(rScaled);',
+        '  float fShell = fract(rScaled);',
+        '  float altDir = mod(shell, 2.0) > 0.5 ? 1.0 : -1.0;',
+        '  float nPetals = 28.0;',
+        '  float uAng = (ang / 6.2831853) * nPetals + altDir * (0.28 * sin(fShell * 3.14159265) + kxTime * 0.22);',
+        '  float fAng = fract(uAng);',
+        '  // Sharp petal cusp & asymmetric luminance ramp (Kitaoka peripheral-drift profile)',
+        '  float petalShape = sin(fAng * 3.14159265) * sin(fShell * 3.14159265);',
+        '  float vein = smoothstep(0.02, 0.22, petalShape);',
+        '  float asymStep = fract(fAng + fShell * 0.5 * altDir);',
+        '  float hue = fract(shell * 0.14 + asymStep * 0.85 - kxTime * 0.16);',
+        '  vec3 rainbow = kxSpecDmt(hue);',
+        '  // Boost high-contrast black-to-white-to-neon edges inside each petal for maximum retinal shimmer',
+        '  float hiLobe = smoothstep(0.68, 0.96, petalShape);',
+        '  vec3 col = mix(vec3(0.02, 0.01, 0.05), mix(rainbow * 1.22, vec3(1.0, 0.99, 0.92), hiLobe * 0.55), vein);',
+        '  float vig = smoothstep(0.08, 0.24, r) * (1.0 - smoothstep(0.76, 1.0, r));',
+        '  float a = clamp(vig * 0.90, 0.0, 0.92);',
+        '  if(a < 0.008) discard;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var chrysMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), chrysMat);
+      chrysMesh.frustumCulled = false; chrysMesh.renderOrder = 2;
+      holder.add(chrysMesh);
+
+      // Floating kaleidoscope prism-eye motes around the Godhead
+      var eyeMoteGeo = makeBillboardCloudGeo(22, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.42 + 0.52 * ((i * 0.381966) % 1.0);
+        var y0 = -0.65 + 1.45 * ((i * 0.7548776) % 1.0);
+        var sz = 0.085 + 0.055 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.25 + 0.18 * seed, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+      });
+      var eyeMoteMat = makePureLightMaterial({ kxTime: state.uTime }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvM;',
+        'varying float vHue;',
+        'void main(){',
+        '  float ang = aAura0.x + kxTime * 0.32 * aAura1.z;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + sin(kxTime * 1.8 + aAura1.x * 6.28) * 0.08, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * aAura0.w;',
+        '  vUvM = uv; vHue = fract(aAura1.x + kxTime * 0.28);',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'varying vec2 vUvM;',
+        'varying float vHue;',
+        'vec3 kxSpecM(float h){ return clamp(0.55 + 0.45 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))), 0.0, 1.0); }',
+        'void main(){',
+        '  vec2 p = (vUvM - 0.5) * 2.0;',
+        '  float d = length(vec2(p.x * 0.85, p.y * 1.45));',
+        '  if(d > 1.0) discard;',
+        '  float iris = exp(-abs(d - 0.42) * 14.0) + exp(-d * 6.0);',
+        '  vec3 col = kxSpecM(vHue + d * 0.5) * iris * 1.15;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var eyeMoteMesh = new THREE.Mesh(eyeMoteGeo, eyeMoteMat);
+      eyeMoteMesh.frustumCulled = false; eyeMoteMesh.renderOrder = 5;
+      holder.add(eyeMoteMesh);
+
+    } else if(kind === 'op_art_starburst'){
+      // 13. Compound-Eye Lotus Deva (Images 11 & 3): Tessellated Black/White/Violet Op-Art Starburst Grid + UV Blacklight Spheres!
+      var opGridMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.46 : +spec.scale },
+        kxZOff: { value: -0.14 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  // 5x5 Tessellated Op-Art Starburst Squares (Image 11)!',
+        '  vec2 gp = p * 2.35;',
+        '  vec2 cellId = floor(gp + 0.5);',
+        '  vec2 gv = fract(gp + 0.5) - 0.5;',
+        '  float cheb = max(abs(gv.x), abs(gv.y)) * 2.0;',
+        '  float cAng = atan(gv.y, gv.x);',
+        '  float parity = mod(cellId.x + cellId.y, 2.0) > 0.5 ? 1.0 : -1.0;',
+        '  // 28 high-contrast black & stark-white radial wedges meeting at chevron borders -> scintillating op-art shimmer!',
+        '  float rays = cos(cAng * 14.0 + kxTime * 1.15 * parity + cheb * 2.2 * parity);',
+        '  float bw = smoothstep(-0.14, 0.14, rays);',
+        '  // Crisp white crosshairs at tile borders + glowing ultraviolet/magenta starburst hubs!',
+        '  float borderCross = smoothstep(0.92, 0.98, cheb);',
+        '  float hubDist = length(gv) * 2.0;',
+        '  float violetHub = exp(-hubDist * 4.2);',
+        '  float violetWash = exp(-hubDist * 1.9) * (0.55 + 0.45 * sin(kxTime * 2.4 + cellId.x * 1.7 + cellId.y * 2.3));',
+        '  vec3 cWhite = mix(vec3(0.98, 0.98, 1.0), vec3(0.86, 0.44, 1.0), violetWash * 0.78);',
+        '  vec3 cBlack = mix(vec3(0.015, 0.010, 0.030), vec3(0.45, 0.12, 0.78), violetHub * 0.65);',
+        '  vec3 col = mix(cBlack, cWhite, max(bw, borderCross));',
+        '  col = mix(col, vec3(0.76, 0.34, 1.0), smoothstep(0.24, 0.04, hubDist) * 0.90);',
+        '  float vig = smoothstep(0.06, 0.22, r) * (1.0 - smoothstep(0.76, 1.0, r));',
+        '  float a = clamp(vig * 0.88, 0.0, 0.90);',
+        '  if(a < 0.008) discard;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var opGridMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), opGridMat);
+      opGridMesh.frustumCulled = false; opGridMesh.renderOrder = 2;
+      holder.add(opGridMesh);
+
+      // 26 Orbiting UV-Blacklight Split-Horizon Neon Spheres (Image 3!)
+      var uvOrbGeo = makeBillboardCloudGeo(26, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.48 + 0.56 * ((i * 0.381966) % 1.0);
+        var y0 = -0.72 + 1.52 * ((i * 0.7548776) % 1.0);
+        var sz = 0.068 + 0.062 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, i % 3, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+      });
+      var uvOrbMat = makePremultOverMaterial({ kxTime: state.uTime }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvO;',
+        'varying float vKind;',
+        'void main(){',
+        '  float ang = aAura0.x + kxTime * 0.28 * aAura1.z;',
+        '  float bob = sin(kxTime * 2.1 + aAura1.x * 6.28) * 0.07;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + bob, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * aAura0.w;',
+        '  vUvO = uv; vKind = aAura1.y;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'varying vec2 vUvO;',
+        'varying float vKind;',
+        'void main(){',
+        '  vec2 p = (vUvO - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float z = sqrt(max(0.0, 1.0 - r * r));',
+        '  // UV-Blacklight split-horizon neon sphere (lime/magenta, magenta/blue, gold/red — Image 3!)',
+        '  vec3 cTop = vKind < 0.5 ? vec3(0.15, 1.0, 0.25) : (vKind < 1.5 ? vec3(1.0, 0.12, 0.88) : vec3(1.0, 0.82, 0.12));',
+        '  vec3 cBot = vKind < 0.5 ? vec3(1.0, 0.12, 0.55) : (vKind < 1.5 ? vec3(0.12, 0.32, 1.0) : vec3(1.0, 0.16, 0.08));',
+        '  vec3 col = mix(cBot, cTop, smoothstep(-0.18, 0.22, p.y + 0.15 * p.x * p.x));',
+        '  col *= (0.55 + 0.65 * z);',
+        '  col += vec3(1.0) * pow(max(0.0, dot(normalize(vec3(p, z)), normalize(vec3(-0.35, 0.55, 0.75)))), 14.0) * 0.85;',
+        '  float a = smoothstep(1.0, 0.86, r) * 0.94;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var uvOrbMesh = new THREE.Mesh(uvOrbGeo, uvOrbMat);
+      uvOrbMesh.frustumCulled = false; uvOrbMesh.renderOrder = 5;
+      holder.add(uvOrbMesh);
+
+    } else if(kind === 'hyperspace_tunnel'){
+      // 14. Hyperspace Hierophant (Images 13 & 15): Infinite 3D Rectilinear/Hexagonal Perspective Corridor Optical Illusion!
+      var tunnelMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.50 : +spec.scale },
+        kxZOff: { value: -0.14 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        'vec3 kxSpecTun(float h){ return clamp(0.54 + 0.46 * cos(6.2831853 * (h + vec3(0.0, 0.3333, 0.6667))), 0.0, 1.0); }',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  // Chebyshev 3D perspective box-corridor projection (`zDepth = 1 / max(|x|, |y|)` — Image 13!)',
+        '  vec2 bp = vec2(p.x * 1.06, p.y * 0.94);',
+        '  float boxD = max(abs(bp.x), abs(bp.y));',
+        '  float zDepth = 0.34 / max(boxD, 0.028) - kxTime * 0.72;',
+        '  // Map wall coordinate alongwhichever wall (left/right vs ceiling/floor) the view ray hits',
+        '  float wallU = abs(bp.x) > abs(bp.y) ? (bp.y / max(abs(bp.x), 0.028)) : (bp.x / max(abs(bp.y), 0.028));',
+        '  // Nested hexagonal/polygonal panel contours along walls, ceiling & floor!',
+        '  vec2 panelUv = vec2(fract(wallU * 1.5 + 0.5) - 0.5, fract(zDepth) - 0.5) * 2.0;',
+        '  float hexD = max(abs(panelUv.x) * 0.866 + abs(panelUv.y) * 0.5, abs(panelUv.y));',
+        '  float contourWave = sin(hexD * 22.0 - kxTime * 2.6);',
+        '  float frameRib = smoothstep(0.86, 0.98, max(abs(panelUv.x), abs(panelUv.y)));',
+        '  float ridge = max(smoothstep(-0.15, 0.25, contourWave), frameRib);',
+        '  float hue = fract(hexD * 1.35 + floor(zDepth) * 0.19 - wallU * 0.25 - kxTime * 0.14);',
+        '  vec3 neon = kxSpecTun(hue);',
+        '  // Deep corridor perspective shading + blazing cyan infinity vanishing-point core!',
+        '  float fogDepth = exp(-0.14 / max(boxD, 0.02));',
+        '  vec3 wallCol = mix(vec3(0.015, 0.012, 0.025), neon * 1.18, ridge) * fogDepth;',
+        '  float infCore = exp(-boxD * 11.0);',
+        '  vec3 col = mix(wallCol, vec3(0.25, 0.92, 1.0) * 1.35, clamp(infCore * 1.25, 0.0, 1.0));',
+        '  float vig = (1.0 - smoothstep(0.76, 1.0, r));',
+        '  float a = clamp(vig * 0.90, 0.0, 0.92);',
+        '  if(a < 0.008) discard;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var tunnelMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), tunnelMat);
+      tunnelMesh.frustumCulled = false; tunnelMesh.renderOrder = 2;
+      holder.add(tunnelMesh);
+
+      // 18 Orbiting Golden-Filigree & Sapphire Starburst Mandalas (Image 15!)
+      var mandGeo = makeBillboardCloudGeo(18, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.46 + 0.50 * ((i * 0.381966) % 1.0);
+        var y0 = -0.60 + 1.38 * ((i * 0.7548776) % 1.0);
+        var sz = 0.11 + 0.07 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.35 + 0.25 * seed, (i % 2 === 0 ? 1.0 : -1.0), 0] };
+      });
+      var mandMat = makePureLightMaterial({ kxTime: state.uTime }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvK;',
+        'varying float vRot;',
+        'void main(){',
+        '  float ang = aAura0.x + kxTime * 0.24 * aAura1.z;',
+        '  vec3 cPos = vec3(cos(ang) * aAura0.y, aAura0.z + sin(kxTime * 1.5 + aAura1.x * 6.28) * 0.06, sin(ang) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * aAura0.w;',
+        '  vUvK = uv; vRot = kxTime * 1.2 * aAura1.z + aAura1.x * 6.28;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'varying vec2 vUvK;',
+        'varying float vRot;',
+        'void main(){',
+        '  vec2 p = (vUvK - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float a = atan(p.y, p.x) + vRot;',
+        '  float fil = exp(-r * 5.0) * (0.7 + 0.5 * cos(a * 8.0)) + pow(0.5 + 0.5 * cos(a * 16.0), 6.0) * exp(-r * 2.8);',
+        '  vec3 col = mix(vec3(0.22, 0.62, 1.0), vec3(1.0, 0.78, 0.28), exp(-r * 3.5)) * fil * 0.95;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var mandMesh = new THREE.Mesh(mandGeo, mandMat);
+      mandMesh.frustumCulled = false; mandMesh.renderOrder = 5;
+      holder.add(mandMesh);
+
+    } else if(kind === 'op_art_wave_star'){
+      // 15. Weeping Third-Eye Oracle (Images 12 & 14): Hypnotic Black & Gold/Magenta Op-Art Warped-Stripe 6-Star Optical Illusion!
+      var waveStarMat = makePremultOverMaterial({
+        kxTime: state.uTime,
+        kxScale: { value: spec.scale == null ? 1.50 : +spec.scale },
+        kxZOff: { value: -0.14 }
+      }, VS_VIEW_HALO, [
+        'uniform float kxTime;',
+        'varying vec2 vUvA;',
+        'void main(){',
+        '  vec2 p = (vUvA - 0.5) * 2.0;',
+        '  float r = length(p);',
+        '  if(r > 1.0) discard;',
+        '  float ang = atan(p.y, p.x);',
+        '  // 6-pointed hyperbolic star-saddle contour warp (`Image 12` exact geometry!) -> intense retinal moiré shimmer!',
+        '  float starCrease = cos(ang * 6.0);',
+        '  float starWarp = r * (1.0 - 0.32 * starCrease * smoothstep(0.04, 0.55, r));',
+        '  float wavePhase = starWarp * 24.0 - kxTime * 2.1;',
+        '  float stripe = smoothstep(-0.16, 0.16, sin(wavePhase * 3.14159265));',
+        '  // 3D bevel crease illusion along the 6 diagonal star ridges (just like Image 12!)',
+        '  float ridge3d = 0.78 + 0.32 * sin(ang * 6.0 + 1.1);',
+        '  // Golden-amber op-art bands shifting subtly toward psychic hot-magenta at outer crests (Image 14 tie-in!)',
+        '  vec3 cGold = vec3(1.0, 0.76, 0.18);',
+        '  vec3 cMag  = vec3(1.0, 0.12, 0.74);',
+        '  float magMix = 0.25 * pow(0.5 + 0.5 * sin(ang * 3.0 - kxTime * 0.8), 3.0) * smoothstep(0.35, 0.85, r);',
+        '  vec3 litBand = mix(cGold, cMag, magMix) * ridge3d * 1.15;',
+        '  vec3 col = mix(vec3(0.012, 0.008, 0.018), litBand, stripe);',
+        '  float vig = smoothstep(0.06, 0.20, r) * (1.0 - smoothstep(0.76, 1.0, r));',
+        '  float a = clamp(vig * 0.90, 0.0, 0.92);',
+        '  if(a < 0.008) discard;',
+        '  gl_FragColor = vec4(col * a, a);',
+        '}'
+      ].join('\n'));
+      var waveStarMesh = new THREE.Mesh(makeBackdropDiscGeo(1.0), waveStarMat);
+      waveStarMesh.frustumCulled = false; waveStarMesh.renderOrder = 2;
+      holder.add(waveStarMesh);
+
+      // 24 Dripping Liquid-Gold & Psychic-Magenta Visionary Droplets (Image 14!)
+      var tearGeo = makeBillboardCloudGeo(24, function(i, n){
+        var seed = ((i * 0.6180339887) % 1.0);
+        var rad = 0.30 + 0.52 * ((i * 0.381966) % 1.0);
+        var y0 = -0.68 + 1.48 * ((i * 0.7548776) % 1.0);
+        var sz = 0.065 + 0.055 * seed;
+        return { a: [(i / n) * 6.2831853, rad, y0, sz], b: [seed, 0.28 + 0.20 * seed, i % 2, 0] };
+      });
+      var tearMat = makePureLightMaterial({ kxTime: state.uTime }, [
+        'attribute vec4 aAura0, aAura1;',
+        'uniform float kxTime;',
+        'varying vec2 vUvT;',
+        'varying float vAge, vIsMag;',
+        'void main(){',
+        '  float age = fract(aAura1.x + kxTime * aAura1.y);',
+        '  float yOff = aAura1.z > 0.5 ? age * 0.45 : -age * 0.45;',
+        '  vec3 cPos = vec3(cos(aAura0.x) * aAura0.y, aAura0.z + yOff, sin(aAura0.x) * aAura0.y);',
+        '  vec4 mv = modelViewMatrix * vec4(cPos, 1.0);',
+        '  mv.xy += (uv - 0.5) * 2.0 * vec2(0.55, 1.85) * aAura0.w;',
+        '  vUvT = uv; vAge = age; vIsMag = aAura1.z;',
+        '  gl_Position = projectionMatrix * mv;',
+        '}'
+      ].join('\n'), [
+        'varying vec2 vUvT;',
+        'varying float vAge, vIsMag;',
+        'void main(){',
+        '  vec2 p = (vUvT - 0.5) * 2.0;',
+        '  float d = length(vec2(p.x * 1.8, p.y * (p.y > 0.0 ? 1.4 : 0.85)));',
+        '  float life = smoothstep(0.0, 0.18, vAge) * (1.0 - smoothstep(0.65, 1.0, vAge));',
+        '  float drop = exp(-d * 4.2) * life;',
+        '  vec3 col = (vIsMag > 0.5 ? vec3(1.0, 0.14, 0.78) : vec3(1.0, 0.82, 0.22)) * drop * 1.55;',
+        '  if(max(col.r, max(col.g, col.b)) < 0.004) discard;',
+        '  gl_FragColor = vec4(col, 1.0);',
+        '}'
+      ].join('\n'));
+      var tearMesh = new THREE.Mesh(tearGeo, tearMat);
+      tearMesh.frustumCulled = false; tearMesh.renderOrder = 5;
+      holder.add(tearMesh);
+
     } else if(kind === 'brimstone_aura'){
       // 6a. Dark Sulfurous Crimson-Soot Brimstone Shroud (`makePremultOverMaterial`)
       var sootGeo = makeBillboardCloudGeo(22, function(i, n){
@@ -2436,10 +2828,11 @@
     // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon, ophanim_seraph, abyssal_medusa)
     var rec = fig.record || {};
     var torsoId = (rec.armour && rec.armour.torso) || '';
-    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0 || torsoId.indexOf('ext3_') === 0 || torsoId.indexOf('ext4_') === 0) && (
+    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0 || torsoId.indexOf('ext3_') === 0 || torsoId.indexOf('ext4_') === 0 || torsoId.indexOf('ext5_') === 0) && (
       torsoId.indexOf('revenant') >= 0 || torsoId.indexOf('djinn') >= 0 || torsoId.indexOf('archon') >= 0
       || torsoId.indexOf('seraph') >= 0 || torsoId.indexOf('medusa') >= 0 || torsoId.indexOf('neutrino') >= 0
       || torsoId.indexOf('umbra') >= 0 || torsoId.indexOf('urchin') >= 0
+      || torsoId.indexOf('lotus') >= 0 || torsoId.indexOf('oracle') >= 0
     ));
     if(isFloatEntity && fig.bones){
       var hiF = state.byName['Hips'];

@@ -473,6 +473,87 @@ void fragment() {
 		ALBEDO = mix(bg_col, vec3(0.003, 0.002, 0.005), spikes);
 		EMISSION = vec3(0.42, 0.03, 0.06) * red_glow * (1.0 - spikes);
 		ALPHA = a;
+	} else if (kx_mode == 20) {
+		// DMT Chrysanthemum counter-phased rainbow petal pinwheel optical illusion (`dmt_chrysanthemum`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float ang = atan(p.y, p.x);
+		float r_sc = r * 13.5 - kx_time * 0.45;
+		float shell = floor(r_sc);
+		float f_sh = fract(r_sc);
+		float alt = mod(shell, 2.0) > 0.5 ? 1.0 : -1.0;
+		float u_ang = (ang / 6.2831853) * 28.0 + alt * (0.28 * sin(f_sh * 3.14159265) + kx_time * 0.22);
+		float petal = sin(fract(u_ang) * 3.14159265) * sin(f_sh * 3.14159265);
+		float hue = fract(shell * 0.14 + fract(fract(u_ang) + f_sh * 0.5 * alt) * 0.85 - kx_time * 0.16);
+		vec3 col = mix(vec3(0.02, 0.01, 0.05), kx_spectrum(hue) * 1.22, smoothstep(0.02, 0.22, petal));
+		float a = clamp(smoothstep(0.08, 0.24, r) * (1.0 - smoothstep(0.76, 1.0, r)) * 0.90, 0.0, 0.92);
+		if (a < 0.008) { discard; }
+		ALBEDO = col;
+		EMISSION = col * 0.75;
+		ALPHA = a;
+	} else if (kx_mode == 21) {
+		// Op-Art tessellated geometric starburst lattice illusion (`op_art_starburst`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		vec2 gp = p * 2.35;
+		vec2 cid = floor(gp + 0.5);
+		vec2 gv = fract(gp + 0.5) - 0.5;
+		float cheb = max(abs(gv.x), abs(gv.y)) * 2.0;
+		float par = mod(cid.x + cid.y, 2.0) > 0.5 ? 1.0 : -1.0;
+		float bw = smoothstep(-0.14, 0.14, cos(atan(gv.y, gv.x) * 14.0 + kx_time * 1.15 * par + cheb * 2.2 * par));
+		float hub = length(gv) * 2.0;
+		vec3 col = mix(vec3(0.015, 0.010, 0.030), mix(vec3(0.98), vec3(0.86, 0.44, 1.0), exp(-hub * 1.9) * 0.75), max(bw, smoothstep(0.92, 0.98, cheb)));
+		col = mix(col, vec3(0.76, 0.34, 1.0), smoothstep(0.24, 0.04, hub) * 0.90);
+		float a = clamp(smoothstep(0.06, 0.22, r) * (1.0 - smoothstep(0.76, 1.0, r)) * 0.88, 0.0, 0.90);
+		if (a < 0.008) { discard; }
+		ALBEDO = col;
+		EMISSION = col * 0.55;
+		ALPHA = a;
+	} else if (kx_mode == 22) {
+		// Infinite 3D Chebyshev perspective hyperspace corridor illusion (`hyperspace_tunnel`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		vec2 bp = vec2(p.x * 1.06, p.y * 0.94);
+		float box_d = max(abs(bp.x), abs(bp.y));
+		float z_dep = 0.34 / max(box_d, 0.028) - kx_time * 0.72;
+		float wall_u = abs(bp.x) > abs(bp.y) ? (bp.y / max(abs(bp.x), 0.028)) : (bp.x / max(abs(bp.y), 0.028));
+		vec2 p_uv = vec2(fract(wall_u * 1.5 + 0.5) - 0.5, fract(z_dep) - 0.5) * 2.0;
+		float hex_d = max(abs(p_uv.x) * 0.866 + abs(p_uv.y) * 0.5, abs(p_uv.y));
+		float ridge = max(smoothstep(-0.15, 0.25, sin(hex_d * 22.0 - kx_time * 2.6)), smoothstep(0.86, 0.98, max(abs(p_uv.x), abs(p_uv.y))));
+		vec3 col = mix(vec3(0.015, 0.012, 0.025), kx_spectrum(fract(hex_d * 1.35 + floor(z_dep) * 0.19 - kx_time * 0.14)) * 1.18, ridge) * exp(-0.14 / max(box_d, 0.02));
+		col = mix(col, vec3(0.25, 0.92, 1.0) * 1.35, clamp(exp(-box_d * 11.0) * 1.25, 0.0, 1.0));
+		float a = clamp((1.0 - smoothstep(0.76, 1.0, r)) * 0.90, 0.0, 0.92);
+		if (a < 0.008) { discard; }
+		ALBEDO = col;
+		EMISSION = col * 0.72;
+		ALPHA = a;
+	} else if (kx_mode == 23) {
+		// Hypnotic black & gold/magenta 6-star op-art warped-stripe illusion (`op_art_wave_star`)
+		vec2 p = (UV - 0.5) * 2.0;
+		float r = length(p);
+		if (r > 1.0) { discard; }
+		float ang = atan(p.y, p.x);
+		float star_w = r * (1.0 - 0.32 * cos(ang * 6.0) * smoothstep(0.04, 0.55, r));
+		float stripe = smoothstep(-0.16, 0.16, sin((star_w * 24.0 - kx_time * 2.1) * 3.14159265));
+		vec3 lit = mix(vec3(1.0, 0.76, 0.18), vec3(1.0, 0.12, 0.74), 0.25 * smoothstep(0.35, 0.85, r)) * (0.78 + 0.32 * sin(ang * 6.0 + 1.1)) * 1.15;
+		vec3 col = mix(vec3(0.012, 0.008, 0.018), lit, stripe);
+		float a = clamp(smoothstep(0.06, 0.20, r) * (1.0 - smoothstep(0.76, 1.0, r)) * 0.90, 0.0, 0.92);
+		if (a < 0.008) { discard; }
+		ALBEDO = col;
+		EMISSION = col * 0.65;
+		ALPHA = a;
+	} else if (kx_mode == 24) {
+		// Thin-film liquid rainbow & baroque gold filigree / neon hex endoskeleton (`psychedelic_surface`)
+		float swirl = kx_fbm2(UV * 6.5 + vec2(kx_time * 0.12, -kx_time * 0.09));
+		vec3 film = kx_spectrum(fract((1.0 - ndv) * 1.65 + v_kx_fig.y * 2.2 + swirl * 1.35 - kx_time * 0.22));
+		float fil = smoothstep(0.08, 0.015, abs(sin(UV.x * 18.0 + swirl * 5.0) * cos(UV.y * 18.0 - swirl * 4.0)));
+		ALBEDO = mix(film * 0.4, kx_col_d, fil * 0.85);
+		EMISSION = mix(film * kx_gain, kx_col_d * 1.2, fil * 0.85);
+		METALLIC = 0.65;
+		ROUGHNESS = 0.22;
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)
 		float p = 1.0 + 0.18 * sin(kx_time * 3.6 + UV.x * 6.283);

@@ -10984,59 +10984,75 @@
    "tiers": [
     [
      "singularity_archon",
-     0.0714
+     0.0556
     ],
     [
      "censer_revenant",
-     0.0714
+     0.0556
     ],
     [
      "vox_solus",
-     0.0714
+     0.0556
     ],
     [
      "accretion_djinn",
-     0.0714
+     0.0556
     ],
     [
      "chorus_of_masks",
-     0.0714
+     0.0556
     ],
     [
      "ophanim_seraph",
-     0.0714
+     0.0556
     ],
     [
      "prism_matriarch",
-     0.0714
+     0.0556
     ],
     [
      "clockwork_aeon",
-     0.0714
+     0.0556
     ],
     [
      "abyssal_medusa",
-     0.0714
+     0.0556
     ],
     [
      "ashen_calamity",
-     0.0714
+     0.0556
     ],
     [
      "neutrino_phantom",
-     0.0714
+     0.0556
     ],
     [
      "ocular_umbra",
-     0.0714
+     0.0556
     ],
     [
      "astral_pyre",
-     0.0714
+     0.0556
     ],
     [
      "nightmare_urchin",
-     0.0718
+     0.0556
+    ],
+    [
+     "chrysanthemum_lattice",
+     0.0556
+    ],
+    [
+     "ocular_lotus",
+     0.0556
+    ],
+    [
+     "hyperspace_hierophant",
+     0.0556
+    ],
+    [
+     "weeping_oracle",
+     0.0548
     ]
    ],
    "tier_labels": {
@@ -11053,7 +11069,11 @@
     "neutrino_phantom": "Neutrino Phantom (Cherenkov Shock-Cone, PMT Array & Quantum Phase-Wake)",
     "ocular_umbra": "Ocular Umbra (Many-Eyed Shadow Monolith & Obscuring Crow Swarm)",
     "astral_pyre": "Astral Pyre (Constellation Void-Colossus & Curling White Flame)",
-    "nightmare_urchin": "Nightmare Urchin (Spiked Shadow-Orb, Red Needle-Grin & Stalker Claws)"
+    "nightmare_urchin": "Nightmare Urchin (Spiked Shadow-Orb, Red Needle-Grin & Stalker Claws)",
+    "chrysanthemum_lattice": "Chrysanthemum Godhead (Polycephalic Porcelain Lattice & Counter-Phased Pinwheel)",
+    "ocular_lotus": "Compound-Eye Lotus Deva (25-Eye Tessellated Dome, Six Mudra Arms & Op-Art Grid)",
+    "hyperspace_hierophant": "Hyperspace Hierophant (Iridescent Filigree Visage, Aztec Glyphs & Tunnel Illusion)",
+    "weeping_oracle": "Weeping Third-Eye Oracle (Molten-Gold Tears, All-Seeing Oculus & Hyperbolic Wave)"
    },
    "outfits": {
     "male": {
@@ -11196,6 +11216,46 @@
       "feet": null,
       "hair": null,
       "beard": null
+     },
+     "chrysanthemum_lattice": {
+      "head": "ext5_m_chrys_polyhead",
+      "torso": "ext5_m_chrys_exo",
+      "back": "ext5_m_chrys_mandala",
+      "gloves": "ext5_m_chrys_hands",
+      "legs": "ext5_m_chrys_legs",
+      "feet": "ext5_m_chrys_boots",
+      "hair": null,
+      "beard": null
+     },
+     "ocular_lotus": {
+      "head": "ext5_m_lotus_dome",
+      "torso": "ext5_m_lotus_vestment",
+      "back": "ext5_m_lotus_arms",
+      "gloves": "ext5_m_lotus_mudra",
+      "legs": "ext5_m_lotus_throne",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "hyperspace_hierophant": {
+      "head": "ext5_m_hiero_crown",
+      "torso": "ext5_m_hiero_palace",
+      "back": "ext5_m_hiero_astrolabe",
+      "gloves": "ext5_m_hiero_gauntlets",
+      "legs": "ext5_m_hiero_greaves",
+      "feet": "ext5_m_hiero_sabatons",
+      "hair": null,
+      "beard": null
+     },
+     "weeping_oracle": {
+      "head": "ext5_m_oracle_oculus",
+      "torso": "ext5_m_oracle_regalia",
+      "back": "ext5_m_oracle_flames",
+      "gloves": "ext5_m_oracle_bangles",
+      "legs": "ext5_m_oracle_shroud",
+      "feet": null,
+      "hair": null,
+      "beard": null
      }
     },
     "female": {
@@ -11335,6 +11395,46 @@
       "back": "ext4_f_urchin_stalkers",
       "gloves": "ext4_f_urchin_claws",
       "legs": "ext4_f_urchin_wisps",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "chrysanthemum_lattice": {
+      "head": "ext5_f_chrys_polyhead",
+      "torso": "ext5_f_chrys_exo",
+      "back": "ext5_f_chrys_mandala",
+      "gloves": "ext5_f_chrys_hands",
+      "legs": "ext5_f_chrys_legs",
+      "feet": "ext5_f_chrys_boots",
+      "hair": null,
+      "beard": null
+     },
+     "ocular_lotus": {
+      "head": "ext5_f_lotus_dome",
+      "torso": "ext5_f_lotus_vestment",
+      "back": "ext5_f_lotus_arms",
+      "gloves": "ext5_f_lotus_mudra",
+      "legs": "ext5_f_lotus_throne",
+      "feet": null,
+      "hair": null,
+      "beard": null
+     },
+     "hyperspace_hierophant": {
+      "head": "ext5_f_hiero_crown",
+      "torso": "ext5_f_hiero_palace",
+      "back": "ext5_f_hiero_astrolabe",
+      "gloves": "ext5_f_hiero_gauntlets",
+      "legs": "ext5_f_hiero_greaves",
+      "feet": "ext5_f_hiero_sabatons",
+      "hair": null,
+      "beard": null
+     },
+     "weeping_oracle": {
+      "head": "ext5_f_oracle_oculus",
+      "torso": "ext5_f_oracle_regalia",
+      "back": "ext5_f_oracle_flames",
+      "gloves": "ext5_f_oracle_bangles",
+      "legs": "ext5_f_oracle_shroud",
       "feet": null,
       "hair": null,
       "beard": null

@@ -4475,6 +4475,122 @@
         "strength": 94,
         "dexterity": 64
       }
+    },
+    {
+      "id": "chrysanthemum_lattice",
+      "label": "Chrysanthemum Godhead",
+      "short": "Chrysanthemum",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 86,
+        "melee_def": 82,
+        "martial_arts": 90,
+        "dodge": 84,
+        "toughness": 88,
+        "strength": 82,
+        "dexterity": 88
+      },
+      "people": "extraplanar",
+      "tier": "chrysanthemum_lattice",
+      "body": "mpfb_male",
+      "skin": "#eceaf2",
+      "hair": null,
+      "hair_color": "#ffffff",
+      "eye_color": "#00f6ff",
+      "morph": {
+        "height": 0.46,
+        "muscle": 0.34,
+        "weight": -0.25
+      }
+    },
+    {
+      "id": "ocular_lotus",
+      "label": "Compound-Eye Lotus Deva",
+      "short": "Ocular Lotus",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 84,
+        "melee_def": 86,
+        "martial_arts": 92,
+        "dodge": 90,
+        "toughness": 84,
+        "strength": 76,
+        "dexterity": 92
+      },
+      "people": "extraplanar",
+      "tier": "ocular_lotus",
+      "body": "mpfb_female",
+      "skin": "#2b1668",
+      "hair": null,
+      "hair_color": "#ff14b8",
+      "eye_color": "#39ff14",
+      "morph": {
+        "height": 0.35,
+        "muscle": 0.18,
+        "weight": -0.2
+      }
+    },
+    {
+      "id": "hyperspace_hierophant",
+      "label": "Hyperspace Hierophant",
+      "short": "Hierophant",
+      "style": "arcane",
+      "hover": false,
+      "hold": {},
+      "stats": {
+        "melee_atk": 88,
+        "melee_def": 84,
+        "martial_arts": 88,
+        "dodge": 82,
+        "toughness": 90,
+        "strength": 86,
+        "dexterity": 86
+      },
+      "people": "extraplanar",
+      "tier": "hyperspace_hierophant",
+      "body": "mpfb_male",
+      "skin": "#123836",
+      "hair": null,
+      "hair_color": "#ffd24a",
+      "eye_color": "#ffd84d",
+      "morph": {
+        "height": 0.5,
+        "muscle": 0.38,
+        "weight": -0.15
+      }
+    },
+    {
+      "id": "weeping_oracle",
+      "label": "Weeping Third-Eye Oracle",
+      "short": "Weeping Oracle",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 85,
+        "melee_def": 80,
+        "martial_arts": 90,
+        "dodge": 92,
+        "toughness": 82,
+        "strength": 74,
+        "dexterity": 92
+      },
+      "people": "extraplanar",
+      "tier": "weeping_oracle",
+      "body": "mpfb_female",
+      "skin": "#0d7488",
+      "hair": null,
+      "hair_color": "#ff2aa8",
+      "eye_color": "#ffd24a",
+      "morph": {
+        "height": 0.42,
+        "muscle": 0.16,
+        "weight": -0.28
+      }
     }
   ],
   "choreography": [
