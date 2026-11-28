@@ -1878,8 +1878,48 @@ var _hang_w := Vector3.ZERO              # the deepest point
 var _hang_n := Vector3.ZERO              # the way out: each point inside, off its leg, weighted by its depth
 
 
+func _eval_hang_aim(keys: Array, u: float) -> Array:
+	if keys.is_empty():
+		return []
+	if u <= float(keys[0][0]):
+		return keys[0]
+	var last: Array = keys[keys.size() - 1]
+	if u >= float(last[0]):
+		return last
+	for i in keys.size() - 1:
+		var a: Array = keys[i]
+		var b: Array = keys[i + 1]
+		if u <= float(b[0]):
+			var s := clampf((u - float(a[0])) / maxf(1e-6, float(b[0]) - float(a[0])), 0.0, 1.0)
+			var sm := s * s * (3.0 - 2.0 * s)
+			var fa := float(a[4]) if a.size() > 4 else 1.0
+			var fb := float(b[4]) if b.size() > 4 else 1.0
+			return [u, float(a[1]) + (float(b[1]) - float(a[1])) * sm, float(a[2]) + (float(b[2]) - float(a[2])) * sm,
+				float(a[3]) + (float(b[3]) - float(a[3])) * sm, fa + (fb - fa) * sm]
+	return last
+
+
 func _hang_turn(side: String, h: Dictionary, first: bool) -> void:
 	var hs: Dictionary = skel["hands"][side]
+	var pv := h["pivot"] as Node3D
+	var ax: Vector3 = h["axis"]
+	var ci := _clip_info()
+	var aim_keys = ci.get("hang_aim")
+	if aim_keys is Array and not (aim_keys as Array).is_empty() and player != null and player.current_animation != "" and player.current_animation_length > 1e-4:
+		var dur := player.current_animation_length
+		var pos := player.current_animation_position
+		var u := clampf(fmod(pos, dur) / dur, 0.0, 1.0)
+		if not bool(ci.get("loop", false)) and pos >= dur - 1e-4:
+			u = 1.0
+		var ak := _eval_hang_aim(aim_keys, u)
+		var fl := float(ak[4]) if ak.size() > 4 else 1.0
+		var aim_dir := Vector3(float(ak[1]), float(ak[2]), float(ak[3])).normalized()
+		var D_aim := ((_gp(int(hs["bone"])) * _grip_t(side)).basis.get_rotation_quaternion().inverse() * aim_dir).normalized()
+		pv.quaternion = Quaternion(ax, D_aim)
+		pv.scale = Vector3(1.0 + (fl - 1.0) * (1.0 - absf(ax.x)), 1.0 + (fl - 1.0) * (1.0 - absf(ax.y)), 1.0 + (fl - 1.0) * (1.0 - absf(ax.z)))
+		h["tot"] = 0.0
+		return
+	pv.scale = Vector3.ONE
 	if hs.has("arm"):
 		var arm: Array = hs["arm"]
 		var fore := int(arm[1])
@@ -1921,8 +1961,7 @@ func _hang_turn(side: String, h: Dictionary, first: bool) -> void:
 			if ka.length_squared() > 1e-10:
 				_turn(int(arm[2]), Quaternion(ka.normalized(), minf(HANG_WRIST, asin(minf(1.0, absf(Y2.y))))))
 	var D :=(_gp(int(hs["bone"])) * _grip_t(side)).basis.get_rotation_quaternion().inverse() * Vector3(0, -1, 0)
-	var ax: Vector3 = h["axis"]
-	(h["pivot"] as Node3D).quaternion = Quaternion(Vector3.UP, atan2(D.x, D.z) - atan2(ax.x, ax.z))
+	pv.quaternion = Quaternion(Vector3.UP, atan2(D.x, D.z) - atan2(ax.x, ax.z))
 
 
 func _hang_depth(side: String, h: Dictionary) -> float:

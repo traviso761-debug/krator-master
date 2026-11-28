@@ -77,11 +77,14 @@ def main():
     peoples_raw = J('peoples.json')
     comments_file = os.path.join(HERE, 'data', 'comments.json')
     saved_state = json.loads(read(comments_file)) if os.path.isfile(comments_file) else {}
+    anim_rev_file = os.path.join(HERE, 'data', 'anim_reviews.json')
+    anim_rev_state = json.loads(read(anim_rev_file)) if os.path.isfile(anim_rev_file) else {}
     data = {'sliders': J('sliders.json'), 'peoples': peoples_raw['peoples'],
             'named_characters': peoples_raw.get('named_characters', []),
             'geomancers': peoples_raw.get('geomancers', {}),
             'comments': saved_state.get('comments', {}),
             'baked_models': saved_state.get('baked', {}),
+            'anim_reviews': anim_rev_state.get('reviews', {}),
             'clips': J('clips.json'),
             'combat_links': J('combat-links.json'),
             'combat_cues': J('combat-cues.json'),

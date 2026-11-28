@@ -81,7 +81,9 @@ select { font: 500 13px/1 var(--body); color: var(--ink); background: var(--chip
 .who button { font-size: 12px; padding: 5px 8px; border: 1px solid var(--line); background: var(--chip); }
 .who button[aria-pressed="true"] { background: var(--bad); color: #fff; border-color: var(--bad); }
 #rv-note { width: 100%; box-sizing: border-box; min-height: 58px; font: 13px/1.4 var(--body); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; resize: vertical; }
+.rv-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 #rv-status { font-size: 12px; color: var(--muted); min-height: 1.2em; }
+#rv-copy { font-size: 12px; padding: 4px 8px; border: 1px solid var(--line); background: var(--chip); white-space: nowrap; }
 #pose-box { border-bottom: 1px solid var(--line); }
 #pose-box summary { padding: 10px 16px; cursor: pointer; font: 700 14px/1 var(--display); letter-spacing: .04em; color: var(--muted); }
 #pose-box[open] summary { color: var(--ink); }
@@ -218,7 +220,7 @@ kbd { font: 11px var(--mono); border: 1px solid var(--line); border-radius: 3px;
       <div class="who" id="rv-who" role="group" aria-label="Looks wrong on"><span>Wrong on:</span></div>
       <label class="sr" for="rv-note">Note</label>
       <textarea id="rv-note" placeholder="What looks off: a hand through the hip, feet sliding, the spear through the head…"></textarea>
-      <div id="rv-status" role="status"></div>
+      <div class="rv-foot"><div id="rv-status" role="status"></div><button id="rv-copy" type="button" title="Copy all clip reviews as JSON">Copy Reviews</button></div>
     </section>
     <details id="pose-box">
       <summary>Posture</summary>

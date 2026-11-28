@@ -1942,7 +1942,36 @@ function KCharFigure(body, sliders, load){
   var hQ = Q(), hQ2 = Q(), hD = V(), hY = V(), hF = V(), hA = V(), hB = V(), hS = V(), hT = V(), hW = V(), hO = V(),
       hOut = V(), hN = V(), hUp = V(), hSide = V(), HANG_RATE = 6, HANG_RELAX = 0.3, HANG_TURN = 1.6, HANG_WRIST = 0.5, HANG_CLEAR = 0.045, HANG_OUT = 0.6;
   function wrapA(a){ return Math.atan2(Math.sin(a), Math.cos(a)); }
+  function evalHangAim(keys, u){
+    if(!keys || !keys.length) return null;
+    if(u <= keys[0][0]) return keys[0];
+    var last = keys[keys.length - 1];
+    if(u >= last[0]) return last;
+    for(var i = 0; i < keys.length - 1; i++){
+      var a = keys[i], b = keys[i + 1];
+      if(u <= b[0]){
+        var s = THREE.MathUtils.clamp((u - a[0]) / Math.max(1e-6, b[0] - a[0]), 0, 1), sm = s * s * (3 - 2 * s);
+        return [u, a[1] + (b[1] - a[1]) * sm, a[2] + (b[2] - a[2]) * sm, a[3] + (b[3] - a[3]) * sm,
+          (a[4] || 1) + ((b[4] || 1) - (a[4] || 1)) * sm];
+      }
+    }
+    return last;
+  }
   function hangTurn(side, h, g, first){
+    var cn = clipNow(), aimKeys = cn && cn.info && cn.info.hang_aim;
+    if(aimKeys && aimKeys.length && cn.dur > 1e-4){
+      var u = THREE.MathUtils.clamp((cn.t % cn.dur) / cn.dur, 0, 1);
+      if(!cn.info.loop && cn.t >= cn.dur - 1e-4) u = 1;
+      var ak = evalHangAim(aimKeys, u), fl = ak[4] || 1;
+      hD.set(ak[1], ak[2], ak[3]).normalize().applyQuaternion(self.group.getWorldQuaternion(hQ));
+      hD.applyQuaternion(g.getWorldQuaternion(hQ2).invert()).normalize();
+      h.pivot.quaternion.setFromUnitVectors(h.axis, hD);
+      h.pivot.scale.set(1 + (fl - 1) * (1 - Math.abs(h.axis.x)), 1 + (fl - 1) * (1 - Math.abs(h.axis.y)), 1 + (fl - 1) * (1 - Math.abs(h.axis.z)));
+      h.pivot.updateMatrixWorld(true);
+      h.tot = 0;
+      return;
+    }
+    h.pivot.scale.set(1, 1, 1);
     var arm = skel.hands[side] && skel.hands[side].arm;
     if(arm){
       var fore = bones[arm[1]];

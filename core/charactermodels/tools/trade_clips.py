@@ -250,21 +250,38 @@ def row(c, clip, cycle=2.2):
 
 def paddle(c, clip, cycle=1.8):
     """paddling a canoe on the right side, seated: the lower (right) hand low on the shaft drawn back along the boat's
-    side, the upper (left) hand over it at the shoulders' height pushing forward, the body turning into the stroke"""
+    side outside the gunwale, the upper (left) hand held well ahead of the chest pushing the T-grip forward, the body
+    angled slightly toward the stroke side so the shaft clears the chest on every build"""
     p = _Pose(c, clip)
     sd = p.sd
-    y0, z0 = p.chest[1] - 0.35, p.chest[2]
-    keys = [(0.0, [z0 + 0.50, 0.30, 0.10], ''), (cycle * 0.55, [z0 - 0.12, 0.05, -0.25], 'io'), (cycle, [z0 + 0.50, 0.30, 0.10], 'io')]
+    J = c.J
+    armL = float(np.linalg.norm(c.jpos[J['LeftForeArm']] - c.jpos[J['LeftArm']])
+                 + np.linalg.norm(c.jpos[J['LeftHand']] - c.jpos[J['LeftForeArm']]))
+    k = armL / 0.537
+    T = lambda f: f * cycle
+    # [rz, ry, rx, lz, ly, lx, rot, lean]:
+    # catch (0.0) -> deep power pull (0.28) -> stroke finish beside right hip (0.54) -> feathered lift & return (0.78)
+    keys = [
+        (0.0,     [0.52,  0.06, 0.36, 0.35, -0.01, 0.04, 0.10, 0.14], ''),
+        (T(0.28), [0.30, -0.03, 0.40, 0.39, -0.05, 0.12, 0.18, 0.16], 'io'),
+        (T(0.54), [0.08,  0.00, 0.42, 0.38, -0.08, 0.15, 0.25, 0.10], 'io'),
+        (T(0.78), [0.32,  0.11, 0.39, 0.36,  0.03, 0.08, 0.16, 0.09], 'io'),
+        (cycle,   [0.52,  0.06, 0.36, 0.35, -0.01, 0.04, 0.10, 0.14], 'io'),
+    ]
     times, out = _loop(cycle), {nm: [] for nm in p.rig.names}
     for t in times:
         loc = list(p.rig.loc0)
-        z, up, rot = _k(keys, t)
-        p.turn(loc, 'Spine', mp._Ry(sd * rot) @ mp._Rx(0.12))
-        p.turn(loc, 'Head', mp._Ry(-sd * rot * 0.6))
-        R = np.array([sd * 0.32, y0 + up * 0.3, z])
-        L = np.array([sd * 0.10, p.shL[1] + 0.02, z + 0.12])
+        rz, ry, rx, lz, ly, lx, rot, lean = _k(keys, t)
+        p.turn(loc, 'Spine', mp._Ry(sd * rot * 0.65) @ mp._Rx(lean * 0.6))
+        p.turn(loc, 'Spine1', mp._Ry(sd * rot * 0.35) @ mp._Rx(lean * 0.4))
+        p.turn(loc, 'Head', mp._Ry(-sd * rot * 0.7))
+        _, P = p.rig.fk(loc)
+        sp2, shL = P[J['Spine2']], P[J['LeftArm']]
+        y_water = sp2[1] - 0.34 * k
+        R = np.array([sd * rx * k, y_water + ry * k, sp2[2] + rz * k])
+        L = np.array([sd * lx * k, shL[1] + ly * k, sp2[2] + lz * k])
         p.grip(loc, 'Right', R, L - R, [-sd * 1.0, 0.0, 0.3], p.poleR(1.0, -0.8, -0.3))   # the shaft up to the top hand
-        p.reach(loc, 'Left', L, p.poleL(0.6, -1.0, -0.3))
+        p.reach(loc, 'Left', L, p.poleL(0.6, -1.0, 0.2))
         p.rig.quats(loc, out)
     return _done(p, times, out)
 
@@ -335,13 +352,19 @@ def weave(c, clip, cycle=3.2):
 
 def cast_net(c, clip, cycle=3.4):
     """casting a net (one-shot): the net gathered at the right hip, the body wound back to the right, swung through
-    with both arms flung out forward and up as it opens, then hauled back hand over hand"""
+    with both arms flung out forward and up as the net whips upward and billows open, then hauled back hand over hand"""
     p = _Pose(c, clip)
     sd, hy = p.sd, p.hy
     T = lambda f: f * cycle
-    keys = [(0.0, [0.24, 0.06, 0.10, 0.10, 0.10, 0.18, 0.0], ''), (T(0.33), [0.32, 0.02, -0.05, 0.16, 0.12, 0.05, 0.55], 'io'),
-            (T(0.48), [-0.10, 0.60, 0.60, -0.40, 0.55, 0.55, -0.30], 'in'), (T(0.60), [-0.05, 0.50, 0.55, -0.35, 0.45, 0.50, -0.20], 'out'),
-            (T(0.80), [0.10, 0.20, 0.30, -0.05, 0.25, 0.35, 0.0], 'io'), (cycle, [0.24, 0.06, 0.10, 0.10, 0.10, 0.18, 0.0], 'io')]
+    keys = [
+        (0.0,     [ 0.24,  0.06,  0.12,  0.10, 0.10, 0.20,  0.00], ''),
+        (T(0.30), [ 0.34, -0.02, -0.08,  0.18, 0.08, 0.04,  0.60], 'io'),
+        (T(0.39), [ 0.16,  0.34,  0.44, -0.14, 0.28, 0.34, -0.08], 'in'),
+        (T(0.47), [ 0.04,  0.62,  0.70, -0.32, 0.38, 0.42, -0.36], 'out'),
+        (T(0.58), [ 0.06,  0.50,  0.64, -0.26, 0.32, 0.38, -0.24], 'io'),
+        (T(0.80), [ 0.12,  0.18,  0.28, -0.05, 0.22, 0.34,  0.00], 'io'),
+        (cycle,   [ 0.24,  0.06,  0.12,  0.10, 0.10, 0.20,  0.00], 'io'),
+    ]
     times, out = _loop(cycle), {nm: [] for nm in p.rig.names}
     for t in times:
         loc = list(p.rig.loc0)

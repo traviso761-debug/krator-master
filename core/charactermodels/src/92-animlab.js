@@ -520,13 +520,14 @@
      fig.postureClips) and gives it back as JSON to paste into that file: 'bodies', the angles every clip takes, and
      'clips', per clip and body the degrees added on top. In "This clip" the sliders show the sum for the clip playing
      and keep the difference. Kept in this browser until Reset, or until posture.json itself changes ---- */
+  var ANIM_SYNC_URL = 'http://127.0.0.1:18924/reviews';
   var POSE_KEY = 'kchar.animlab.posture', POSE_BODIES = ['mpfb_male', 'mpfb_female'];
   var POSE_ROWS = [['lean', 'Lean at hips', -45, 30], ['pelvis', 'Pelvis tilt', -60, 40], ['Spine', 'Spine · lumbar', -60, 60], ['Spine1', 'Spine1 · low T', -60, 60],
     ['Spine2', 'Spine2 · high T', -60, 60], ['Neck', 'Neck', -60, 60], ['nTurn', 'Neck turn', -60, 60], ['nSide', 'Neck side tilt', -40, 40], ['Head', 'Head', -40, 40], ['drop', 'Shoulder drop', -30, 60],
     ['back', 'Shoulder back', -45, 45], ['fSpine', 'Lumbar fwd cm', -8, 8],
     ['fSpine1', 'Low T fwd cm', -8, 8], ['fSpine2', 'High T fwd cm', -8, 8], ['fNeck', 'Neck fwd cm', -8, 8],
     ['fHead', 'Head fwd cm', -8, 8], ['uHead', 'Head up cm', -6, 6]];
-  var POSE = { bodies:{}, clips:{} };
+  var POSE = { bodies:{}, clips:{} }, _poseSyncTimer = null;
   function poseFile(){ return JSON.parse(JSON.stringify({ bodies:(D.posture && D.posture.bodies) || {}, clips:(D.posture && D.posture.clips) || {} })); }
   function half(v){ v = +v; return isFinite(v) ? Math.round(v * 2) / 2 : 0; }
   // the clips with a change of their own (the ledger marks them)
@@ -552,15 +553,54 @@
       });
       return out;
     }
-    var file = clean(poseFile()), stamp = JSON.stringify(file);
+    var file = clean(poseFile()), stamp = JSON.stringify(file), hasDirtyLocal = false;
     POSE = file;
     try {
-      // edits kept in this browser, unless posture.json has changed under them since (new numbers pasted in)
       var kept = JSON.parse(localStorage.getItem(POSE_KEY) || 'null');
-      if(kept && kept.file === stamp && kept.pose) POSE = clean(kept.pose);
-      else if(kept) localStorage.removeItem(POSE_KEY);
+      if(kept && kept.pose){
+        var cleanedKept = clean(kept.pose);
+        if(kept.file === stamp || kept.dirty !== false){
+          POSE = cleanedKept;
+          if(JSON.stringify(POSE) !== stamp) hasDirtyLocal = true;
+        }
+      }
     } catch(e){}
-    function save(){ try { localStorage.setItem(POSE_KEY, JSON.stringify({ file:stamp, pose:POSE })); } catch(e){} }
+    function writeLocal(dirtyFlag){
+      try { localStorage.setItem(POSE_KEY, JSON.stringify({ file:stamp, pose:POSE, dirty:!!dirtyFlag, at:new Date().toISOString() })); } catch(e){}
+    }
+    function syncPostureToDisk(doneMsg){
+      if(_poseSyncTimer) clearTimeout(_poseSyncTimer);
+      _poseSyncTimer = setTimeout(function(){
+        var bodyStr = JSON.stringify({ posture_save:{ bodies:POSE.bodies, clips:POSE.clips } });
+        var onDone = function(ok){
+          if(ok){
+            stamp = JSON.stringify(POSE);
+            hasDirtyLocal = false;
+            writeLocal(false);
+            status(doneMsg || '✓ Saved to data/posture.json.');
+          }
+        };
+        var beaconFallback = function(){
+          try {
+            if(typeof Image !== 'undefined' && bodyStr.length < 180000){
+              var im = new Image();
+              im.onload = function(){ onDone(true); };
+              im.src = ANIM_SYNC_URL + '?push=' + encodeURIComponent(bodyStr) + '&_t=' + Date.now();
+            }
+          } catch(e){}
+        };
+        if(typeof fetch === 'function'){
+          fetch(ANIM_SYNC_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:bodyStr })
+            .then(function(r){ if(r && r.ok) onDone(true); else beaconFallback(); })
+            .catch(beaconFallback);
+        } else beaconFallback();
+      }, 180);
+    }
+    function save(doneMsg){
+      hasDirtyLocal = true;
+      writeLocal(true);
+      syncPostureToDisk(doneMsg);
+    }
     function show(){ txt.value = JSON.stringify(POSE, null, 1); ledger(); }
     function apply(){
       figs.forEach(function(s){
@@ -601,7 +641,7 @@
           if(!Object.keys(o).length) delete c[b];
           if(!Object.keys(c).length) delete POSE.clips[current];
         } else POSE.bodies[b][r[0]] = v;
-        apply(); fill(); show(); save(); status('');
+        apply(); fill(); show(); save();
       }
       range.addEventListener('input', function(){ set(range.value); });
       num.addEventListener('change', function(){ set(num.value); });
@@ -614,25 +654,41 @@
     $('pose-clear').addEventListener('click', function(){
       var c = POSE.clips[current];
       if(c){ delete c[body.value]; if(!Object.keys(c).length) delete POSE.clips[current]; }
-      apply(); fill(); show(); save(); status(label(current) + ' takes the body\'s posture again.');
+      apply(); fill(); show(); save('✓ ' + label(current) + ' cleared & saved to data/posture.json.');
     });
     $('pose-copy').addEventListener('click', function(){
       show();
-      var done = function(){ status('Copied: paste it to Claude, or over data/posture.json\'s "bodies" and "clips".'); };
+      var done = function(){ status('Copied (and already auto-saved to data/posture.json).'); };
       if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt.value).then(done, function(){ txt.select(); status('Selected: copy it with Ctrl+C.'); });
       else { txt.select(); status('Selected: copy it with Ctrl+C.'); }
     });
     $('pose-apply').addEventListener('click', function(){
       try {
         POSE = clean(JSON.parse(txt.value));
-        fill(); apply(); show(); save(); status('Applied.');
+        fill(); apply(); show(); save('✓ Applied & saved to data/posture.json.');
       } catch(e){ status('Not valid JSON: ' + e.message); }
     });
     $('pose-reset').addEventListener('click', function(){
       POSE = clean(poseFile());
-      try { localStorage.removeItem(POSE_KEY); } catch(e){}
-      fill(); apply(); show(); status('Back to data/posture.json.');
+      fill(); apply(); show(); save('✓ Reset & saved to data/posture.json.');
     });
+    // Flush any unsynced localStorage posture edits straight to disk, or load newer posture.json from disk
+    if(hasDirtyLocal){
+      syncPostureToDisk('✓ Synced local posture edits to data/posture.json.');
+    } else if(typeof fetch === 'function'){
+      fetch(ANIM_SYNC_URL, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(st){
+        if(!st || !st.posture || hasDirtyLocal) return;
+        var diskPose = clean(st.posture);
+        var diskStamp = JSON.stringify(diskPose);
+        if(diskStamp !== JSON.stringify(POSE)){
+          POSE = diskPose;
+          stamp = diskStamp;
+          writeLocal(false);
+          fill(); show(); apply();
+          status('✓ Loaded latest data/posture.json from disk.');
+        }
+      }).catch(function(){});
+    }
     // a new clip: the sliders follow it in "This clip"
     poseClip = fill; poseApply = apply;
     fill(); show(); apply();
@@ -641,12 +697,86 @@
 
   /* ---- reviews ---- */
   var reviews = {}, db = null, local = true, KEY = 'kchar.animlab.reviews';
-  try { reviews = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ reviews = {}; }
-  function status(t){ $('rv-status').textContent = t; }
+  var _deletedReviews = [], _rvSyncTimer = null;
+  var bakedReviews = (D.anim_reviews && typeof D.anim_reviews === 'object') ? D.anim_reviews : {};
+  Object.keys(bakedReviews).forEach(function(k){ if(bakedReviews[k]) reviews[k] = JSON.parse(JSON.stringify(bakedReviews[k])); });
+  try {
+    var lsRev = JSON.parse(localStorage.getItem(KEY) || '{}') || {};
+    Object.keys(lsRev).forEach(function(k){
+      var v = lsRev[k];
+      if(!v || typeof v !== 'object') return;
+      var cur = reviews[k];
+      if(!cur || !cur.at || !v.at || v.at >= cur.at) reviews[k] = v;
+    });
+  } catch(e){}
+  function status(t){ if($('rv-status')) $('rv-status').textContent = t; }
+  function syncReviewsToDisk(deletedKey){
+    if(deletedKey && _deletedReviews.indexOf(deletedKey) < 0) _deletedReviews.push(deletedKey);
+    if(_rvSyncTimer) clearTimeout(_rvSyncTimer);
+    _rvSyncTimer = setTimeout(function(){
+      var activeMap = {};
+      Object.keys(reviews || {}).forEach(function(k){
+        var r = reviews[k];
+        if(r && (r.verdict || (r.note && r.note.trim()) || (r.bodies && r.bodies.length))){
+          activeMap[k] = { clip:r.clip || k, label:r.label || label(k), verdict:r.verdict || null, note:r.note || '', bodies:r.bodies || [], dress:r.dress || dress || null, prop:r.prop || null, at:r.at || '' };
+        }
+      });
+      var payloadObj = { reviews:activeMap, deleted:_deletedReviews.slice(), posture_clips:(POSE && POSE.clips) || {} };
+      var bodyStr = JSON.stringify(payloadObj);
+      var cnt = Object.keys(activeMap).length;
+      var done = function(ok){
+        if(ok){ _deletedReviews = []; status('✓ Synced to disk (' + cnt + ' review' + (cnt === 1 ? '' : 's') + ').'); }
+      };
+      var beaconFallback = function(){
+        try {
+          if(typeof Image !== 'undefined' && bodyStr.length < 180000){
+            var im = new Image();
+            im.onload = function(){ done(true); };
+            im.src = ANIM_SYNC_URL + '?push=' + encodeURIComponent(bodyStr) + '&_t=' + Date.now();
+          }
+        } catch(e){}
+      };
+      if(typeof fetch === 'function'){
+        fetch(ANIM_SYNC_URL, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:bodyStr })
+          .then(function(r){ if(r && r.ok) done(true); else beaconFallback(); })
+          .catch(beaconFallback);
+      } else beaconFallback();
+    }, 180);
+  }
   function connect(){
-    if(!(window.claude && window.claude.use)){ status('Marks are kept in this browser only.'); return; }
+    if($('rv-copy')) $('rv-copy').addEventListener('click', function(){
+      flushNote();
+      var activeMap = {};
+      Object.keys(reviews || {}).forEach(function(k){
+        var r = reviews[k];
+        if(r && (r.verdict || (r.note && r.note.trim()) || (r.bodies && r.bodies.length))) activeMap[k] = r;
+      });
+      var txt = JSON.stringify(activeMap, null, 2);
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(txt).then(function(){ status('Copied ' + Object.keys(activeMap).length + ' review(s) to clipboard!'); });
+      }
+    });
+    // Push any reviews already in this browser's localStorage straight to disk on boot, and pull any disk-saved ones
+    if(Object.keys(reviews).length) syncReviewsToDisk();
+    if(typeof fetch === 'function'){
+      fetch(ANIM_SYNC_URL, { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).then(function(st){
+        if(!st || !st.reviews) return;
+        var merged = false;
+        Object.keys(st.reviews).forEach(function(k){
+          var sv = st.reviews[k], lv = reviews[k];
+          if(!lv || (sv.at && (!lv.at || sv.at > lv.at))){ reviews[k] = sv; merged = true; }
+        });
+        if(merged){
+          try { localStorage.setItem(KEY, JSON.stringify(reviews)); } catch(e){}
+          ledger(); showCurrent(true);
+        }
+        var cnt = Object.keys(reviews).filter(function(k){ var r = reviews[k]; return r && (r.verdict || (r.note && r.note.trim()) || (r.bodies && r.bodies.length)); }).length;
+        status('✓ Disk sync connected (' + cnt + ' review' + (cnt === 1 ? '' : 's') + ').');
+      }).catch(function(){});
+    }
+    if(!(window.claude && window.claude.use)){ if(!Object.keys(reviews).length) status('Marks sync to disk when open.'); return; }
     window.claude.use('db').then(function(d){
-      if(!d){ status('Marks are kept in this browser only (sign in to share them).'); return; }
+      if(!d){ status('Marks are kept in this browser & disk sync.'); return; }
       db = d; local = false;
       d.collection('reviews').onSnapshot(function(snap){
         var next = {};
@@ -654,26 +784,30 @@
         Object.keys(pending).forEach(function(k){ if(pending[k]) next[k] = reviews[k]; });   // keep a note being typed
         reviews = next;
         ledger(); showCurrent(true);
+        syncReviewsToDisk();
         status('Marks are shared: anyone who opens this lab sees them.');
       }, function(e){ status('The shared marks did not load (' + e.code + '); new marks stay in this browser.'); db = null; local = true; });
-    }, function(){ status('Marks are kept in this browser only.'); });
+    }, function(){ status('Marks are kept in this browser & disk sync.'); });
   }
   var pending = {};
   function save(clip){
     var r = reviews[clip];
+    var empty = !(r && (r.verdict || (r.note && r.note.trim()) || (r.bodies && r.bodies.length)));
+    if(empty) delete reviews[clip];
     if(local || !db){
-      try { localStorage.setItem(KEY, JSON.stringify(reviews)); status('Saved in this browser.'); } catch(e){ status('Not saved: this browser blocks storage here.'); }
+      try { localStorage.setItem(KEY, JSON.stringify(reviews)); status('Saving…'); } catch(e){ status('Not saved: this browser blocks storage here.'); }
+      syncReviewsToDisk(empty ? clip : null);
       return;
     }
     pending[clip] = true;
-    var body = JSON.parse(JSON.stringify(r));
-    (r && (r.verdict || r.note || (r.bodies && r.bodies.length)) ? db.collection('reviews').doc(clip).set(body) : db.collection('reviews').doc(clip).delete())
-      .then(function(){ pending[clip] = false; status('Saved.'); },
+    var body = r ? JSON.parse(JSON.stringify(r)) : null;
+    (!empty ? db.collection('reviews').doc(clip).set(body) : db.collection('reviews').doc(clip).delete())
+      .then(function(){ pending[clip] = false; status('Saved.'); syncReviewsToDisk(empty ? clip : null); },
             function(e){ pending[clip] = false; status(e.code === 'invalid_argument' ? 'Not saved: this lab is view-only for you.' : 'Not saved (' + e.code + '). Try again in a moment.'); });
   }
   function mark(patch){
     var r = Object.assign({ verdict:null, note:'', bodies:[] }, reviews[current] || {}, patch);
-    r.clip = current; r.label = label(current); r.prop = held.R || held.L || null; r.at = new Date().toISOString();
+    r.clip = current; r.label = label(current); r.dress = dress || null; r.prop = held.R || held.L || null; r.at = new Date().toISOString();
     reviews[current] = r;
     save(current);
     ledger(); showCurrent(true);
