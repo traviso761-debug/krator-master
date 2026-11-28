@@ -403,10 +403,38 @@
     pick.innerHTML = '';
     var none = document.createElement('option'); none.value = ''; none.textContent = side ? 'Empty hands' : 'Nothing to hold';
     pick.appendChild(none);
-    (side ? h[side] : []).forEach(function(id){
+    var baseList = side ? h[side].slice() : [];
+    var allowedKinds = {};
+    baseList.forEach(function(id){
+      var kp = PROP[id] && PROP[id].kind;
+      if(kp){
+        allowedKinds[kp] = 1;
+        if(kp === 'sword') allowedKinds.scimitar = 1;
+        if(kp === 'spear') allowedKinds.staff = 1;
+        if(kp === 'rifle') allowedKinds.crossbow = 1;
+      }
       var o = document.createElement('option'); o.value = id; o.textContent = (PROP[id] || { label:id }).label; pick.appendChild(o);
     });
-    var p = side && holdChoice !== '' ? (h[side].indexOf(holdChoice) >= 0 ? holdChoice : h[side][0]) : '';
+    var allChoices = baseList.slice();
+    if(side && Object.keys(allowedKinds).length){
+      var byCult = {};
+      (D.props || []).forEach(function(pr){
+        if(!pr || pr.hand !== side || pr.kind === 'sheath' || pr.kind === 'arrow') return;
+        if(baseList.indexOf(pr.id) >= 0) return;
+        if(!allowedKinds[pr.kind]) return;
+        var ck = pr.culture_label || pr.people || 'Cultural';
+        (byCult[ck] = byCult[ck] || []).push(pr);
+      });
+      Object.keys(byCult).sort().forEach(function(ck){
+        var og = document.createElement('optgroup'); og.label = ck;
+        byCult[ck].forEach(function(pr){
+          var o = document.createElement('option'); o.value = pr.id; o.textContent = pr.label; og.appendChild(o);
+          allChoices.push(pr.id);
+        });
+        pick.appendChild(og);
+      });
+    }
+    var p = side && holdChoice !== '' ? (allChoices.indexOf(holdChoice) >= 0 ? holdChoice : baseList[0]) : '';
     pick.value = p || '';
     pick.disabled = !side;
     var want = { R:null, L:null };
@@ -415,7 +443,17 @@
     if(p !== '' && side){
       if(h.R) want.R = side === 'R' ? p : h.R[0];
       if(h.L) want.L = side === 'L' ? p : h.L[0];
-      want.both = !!(want.R && INFO[name].two_hands && INFO[name].two_hands.indexOf(want.R) >= 0);
+      if(want.L && PROP[want.L] && PROP[want.L].kind === 'bow' && (!want.R || want.R === 'arrow')){
+        want.R = PROP[want.L].arrow || 'arrow';
+      }
+      var rKind = want.R && PROP[want.R] && PROP[want.R].kind;
+      var th = INFO[name] && INFO[name].two_hands;
+      want.both = !!(want.R && !want.L && th && (
+        th.indexOf(want.R) >= 0 ||
+        (rKind && th.indexOf(rKind) >= 0) ||
+        (rKind === 'scimitar' && th.indexOf('sword') >= 0) ||
+        (rKind === 'crossbow' && th.indexOf('rifle') >= 0)
+      ));
     }
     held = want;
     return Promise.all(figs.map(function(s){ return s.f.hold(want); }));

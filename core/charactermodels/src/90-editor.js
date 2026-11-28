@@ -1033,27 +1033,54 @@
   /* what the hands hold (data/props.json, fig.hold): a prop per hand, kept in the record as hold {R, L}. A named
      character's own props (props.json owner: Tzintzun's weapons, tools/import_props.py) come first when it is that
      character; the Animation Lab picks props by clip instead (data/clips.json hold) */
-  var HAND_LABEL = { R:'Right hand', L:'Left hand' }, showAllProps = false;
+  var HAND_LABEL = { R:'Right hand', L:'Left hand', R2:'Lower right hand', L2:'Lower left hand' }, showAllProps = false;
+  var WARDROBE_PROP_CULTURES = {
+    rustic_clansmen: ['talovolci', 'dalabites'],
+    painted_men: ['talovolci'],
+    kimr: ['talovolci', 'eternian'],
+    fellgangs: ['talovolci'],
+    giants: ['dalabites', 'izani'],
+    free_giants: ['dalabites', 'talovolci'],
+    voth_arcologies: ['chichani', 'scyvoi', 'hykkousoi'],
+    beast_riders: ['scyvoi', 'xanadu', 'chichani'],
+    dasri: ['xanadu', 'tabisti'],
+    xanadu_expats: ['xanadu', 'coyote_men', 'yuni'],
+    frogmen: ['lizardmen', 'chichani', 'tabisti'],
+    screamers: ['chichani', 'eternian', 'khaayken'],
+    islanders: ['hykkousoi', 'tabisti', 'chichani'],
+    ring_sea_mariners: ['hykkousoi', 'izani', 'xanadu'],
+    captives_and_arena: ['izani', 'dalabites', 'chichani']
+  };
   function handChips(gear){
     var all = D.props || [];
     if(!all.length) return;
     var hold = rec.hold || {};
-    ['R', 'L'].forEach(function(side){
-      var full = all.filter(function(p){ return p.hand === side && p.kind !== 'sheath'; });
+    var kitNow = D.bodies[body] && D.bodies[body].kit;
+    var sides = (kitNow && KCHAR.arms(rec, kitNow) >= 4) ? ['R', 'L', 'R2', 'L2'] : ['R', 'L'];
+    var mappedCults = (wardrobe && WARDROBE_PROP_CULTURES[wardrobe]) || [];
+    sides.forEach(function(side){
+      var baseSide = side.charAt(0);
+      var full = all.filter(function(p){ return p.hand === baseSide && p.kind !== 'sheath' && p.kind !== 'arrow'; });
       var list = full;
       var canCollapse = !showAllProps && !wardrobe && full.length > 32;
       if(wardrobe && wardrobe !== 'library'){
-        list = full.filter(function(p){ return !p.src || p.people === wardrobe || p.owner === rec.id || p.id === hold[side]; });
+        list = full.filter(function(p){
+          return !p.src || p.people === wardrobe || mappedCults.indexOf(p.people) >= 0 || p.owner === rec.id || p.id === hold[side];
+        });
       } else if(canCollapse){
         list = full.filter(function(p){ return !p.src || p.owner === rec.id || p.id === hold[side]; });
       }
-      list = list.slice().sort(function(a, b){ return (b.owner === rec.id ? 1 : 0) - (a.owner === rec.id ? 1 : 0); });
+      list = list.slice().sort(function(a, b){
+        var ao = (a.owner === rec.id ? 4 : 0) + (a.people === wardrobe ? 2 : mappedCults.indexOf(a.people) >= 0 ? 1 : 0);
+        var bo = (b.owner === rec.id ? 4 : 0) + (b.people === wardrobe ? 2 : mappedCults.indexOf(b.people) >= 0 ? 1 : 0);
+        return bo - ao;
+      });
       var cur = full.filter(function(p){ return p.id === hold[side]; })[0];
-      var s = section(gear, HAND_LABEL[side], cur ? cur.label : 'Empty');
+      var s = section(gear, HAND_LABEL[side], cur ? (cur.label + (cur.sheath ? ' + Scabbard' : '')) : 'Empty');
       var items = [{ id:null, name:'Empty', domId:'chip-hold-' + side + '-none' }].concat(list.map(function(p){
-        return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:p.owner ? 'Made for ' + p.owner : '' };
+        return { id:p.id, name:p.label, domId:'chip-hold-' + side + '-' + p.id, title:(p.culture_label ? p.culture_label + ' · ' : '') + (p.kind || '') + (p.sheath ? ' (+ hip scabbard)' : '') };
       }));
-      if(canCollapse && list.length < full.length){
+      if(list.length < full.length){
         items.push({ id:'__expand__', name:'+' + (full.length - list.length) + ' cultural arms…', domId:'chip-hold-' + side + '-more' });
       }
       chips(s, items, hold[side] || null, function(id){
@@ -1393,6 +1420,7 @@
       if(def.facepaint) r.facepaint = JSON.parse(JSON.stringify(def.facepaint));
       if(def.makeup) r.makeup = JSON.parse(JSON.stringify(def.makeup));
       if(def.hold) r.hold = JSON.parse(JSON.stringify(def.hold));
+      else if(set.hold) r.hold = JSON.parse(JSON.stringify(set.hold));
       r.id = def.id; r.name = def.name; r.char_type = def.char_type;
       r.tier = def.tier; r.outfit_id = def.people + '.' + def.tier;
       seen[def.id] = 1;
@@ -1598,6 +1626,7 @@
               if(xo.set.hair !== undefined) copy.hair = xo.set.hair && hasItem(xo.set.hair) ? xo.set.hair : null;
               copy.facepaint = xo.set.facepaint ? JSON.parse(JSON.stringify(xo.set.facepaint)) : null;
               copy.makeup = xo.set.makeup ? JSON.parse(JSON.stringify(xo.set.makeup)) : null;
+              copy.hold = xo.set.hold ? JSON.parse(JSON.stringify(xo.set.hold)) : {};
               copy.outfit_id = xo.id;
               copy.outfit_name = xo.name;
               delete copy.id;
@@ -1876,6 +1905,7 @@
       if(x.set.hair !== undefined) rec.hair = x.set.hair && has(x.set.hair) ? x.set.hair : null;
       rec.facepaint = x.set.facepaint ? JSON.parse(JSON.stringify(x.set.facepaint)) : null;
       rec.makeup = x.set.makeup ? JSON.parse(JSON.stringify(x.set.makeup)) : null;
+      rec.hold = x.set.hold ? JSON.parse(JSON.stringify(x.set.hold)) : {};
       rec.outfit_id = x.id;
       rec.outfit_name = x.name;
       var matchNamed = getNamedModels().filter(function(m){ return m.outfit_id === x.id && m.body === curBody; })[0];
@@ -2243,17 +2273,29 @@
     syncPanel();
     return fig.apply(rec).then(function(){
       $('loading').hidden = true;
-      var h = rec.hold || {};
-      fig.hold({ R:h.R || null, L:h.L || null });
-      var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
-      if(p.stature){
-        var who = rec.people && PEOPLE[rec.people];
-        $('stats').innerHTML = 'Height <b>' + Math.round(p.stature * 100) + ' cm</b>' + (who ? ' · <b>' + who.name + '</b>' : '') + '<br>Meshes <b>' + n + '</b>';
-        return;
+      var h = rec.hold || {}, propsById = KCharFigure.props || {};
+      var rPropId = h.R || null, lPropId = h.L || null;
+      if(lPropId && propsById[lPropId] && propsById[lPropId].kind === 'bow' && !rPropId){
+        rPropId = propsById[lPropId].arrow || 'arrow';
       }
-      var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
-      $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
-        'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
+      var rKind = rPropId && propsById[rPropId] && propsById[rPropId].kind;
+      return fig.hold({
+        R: rPropId,
+        L: lPropId,
+        R2: h.R2 || null,
+        L2: h.L2 || null,
+        both: !!(rPropId && !lPropId && (rKind === 'rifle' || rKind === 'crossbow'))
+      }).then(function(){
+        var p = fig.pose, n = Object.keys(fig.live).filter(function(k){ return fig.live[k].visible; }).length;
+        if(p.stature){
+          var who = rec.people && PEOPLE[rec.people];
+          $('stats').innerHTML = 'Height <b>' + Math.round(p.stature * 100) + ' cm</b>' + (who ? ' · <b>' + who.name + '</b>' : '') + '<br>Meshes <b>' + n + '</b>';
+          return;
+        }
+        var cm = Math.round(BASE_HEIGHT[body] * p.root * 100 + p.lift * 100 * p.root);
+        $('stats').innerHTML = 'Height <b>' + cm + ' cm</b> · Leg lift <b>' + (p.lift >= 0 ? '+' : '−') + Math.abs(p.lift * 100).toFixed(1) + ' cm</b><br>' +
+          'Pieces <b>' + n + '</b> (base body, head, hair, armour)';
+      });
     }).catch(function(e){
       $('loading').hidden = true;
       note('A piece failed to load: ' + e.message);

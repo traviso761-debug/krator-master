@@ -130,7 +130,8 @@
     tabisti: 'tabisti',
     coyote_men: 'coyote_men',
     khaayken: 'khaayken',
-    lizardmen: 'tabisti',
+    lizardmen: 'lizardmen',
+    scyvoi: 'voth_arcologies',
     islanders: 'islanders',
     xanadu: 'xanadu',
     tungang: 'tungang',
@@ -233,8 +234,8 @@
   var renderer, scene, camera, clock = new THREE.Clock(), fig = null, currentBody = 'mpfb_male';
   var cam = { yaw:0.28, pitch:0.12, dist:3.3, x:0, ty:0.95, want:{ yaw:0.28, pitch:0.12, dist:3.3, x:0, ty:0.95 } };
   var currentClip = 'combat_idle', paused = false, speed = 1, scrubbing = false;
-  var held = { R:'voth_orn_w1_scimitar', L:'voth_orn_s1_shield', both:false };
-  var inspectedId = 'voth_orn_w1_scimitar', inspectedSide = 'R';
+  var held = { R:'msh_xanadu_shamshir', L:'msh_xanadu_sipar', both:false };
+  var inspectedId = 'msh_xanadu_shamshir', inspectedSide = 'R';
 
   function spawnFigure(bodyId){
     if(!D.bodies[bodyId]) bodyId = Object.keys(D.bodies)[0];

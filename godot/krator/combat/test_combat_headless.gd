@@ -93,6 +93,18 @@ func _test_1_links_and_ma_tiers() -> void:
 	check(links.links_for_style("arcane").size() >= 4 and links.extraplanar_choreography.size() >= 8,
 		"Arcane style links (%d) and extraplanar_choreography (%d steps) loaded cleanly" % [links.links_for_style("arcane").size(), links.extraplanar_choreography.size()])
 
+	# Cultural Meshy Arms Fighter Panoply check
+	var f_by_id := {}
+	for f_entry in links.fighters:
+		if f_entry is Dictionary and f_entry.has("id"):
+			f_by_id[String(f_entry["id"])] = f_entry
+	check(links.fighters.size() >= 37
+		and f_by_id.has("xanadu_askari") and String(f_by_id["xanadu_askari"]["hold"].get("R", "")) == "msh_xanadu_shamshir"
+		and f_by_id.has("khaayken_skirmisher") and String(f_by_id["khaayken_skirmisher"]["hold"].get("R", "")) == "msh_khaayken_axe"
+		and f_by_id.has("scyvoi_outrider") and String(f_by_id["scyvoi_outrider"]["hold"].get("L", "")) == "msh_scyvoi_round_shield"
+		and f_by_id.has("iziz_legionary") and String(f_by_id["iziz_legionary"]["hold"].get("R", "")) == "msh_izani_legion_gladius",
+		"Loaded %d fighter presets with cultural Meshy arms (Xanadu, Khaayken, Scyvoi, Izani, Voth, Lizardmen)" % links.fighters.size())
+
 
 # 2. KCombatDirector 2-slot cap (3rd attacker queued until slot frees!)
 func _test_2_director_attack_slots() -> void:

@@ -371,6 +371,7 @@ var KCHAR = (function(){
     rec.eye_color = pick(P.eyes || ['#3b2414', '#5a3a22', '#6e5a2e', '#4a5a3a', '#4e6a80']);
     // a furred people's coat (data/fur.json coats): no draw of its own, so other peoples draw as they did
     if(P.coat) rec.coat = P.coat;
+    if(outfit && outfit.hold) rec.hold = JSON.parse(JSON.stringify(outfit.hold));
     rec.people = P.id || null;
     return rec;
   }

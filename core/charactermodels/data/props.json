@@ -18,7 +18,11 @@
    "blade": [
     0.1,
     0.91
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "sword"
   },
   {
    "id": "dagger",
@@ -29,7 +33,11 @@
    "blade": [
     0.07,
     0.32
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "dagger"
   },
   {
    "id": "axe",
@@ -48,7 +56,11 @@
    "blade": [
     0.4,
     0.68
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "axe"
   },
   {
    "id": "mace",
@@ -67,7 +79,11 @@
    "blade": [
     0.42,
     0.65
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "mace"
   },
   {
    "id": "warhammer",
@@ -86,7 +102,11 @@
    "blade": [
     0.5,
     0.65
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "spear",
@@ -101,7 +121,11 @@
     0,
     1.0,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "spear"
   },
   {
    "id": "shield",
@@ -109,7 +133,11 @@
    "hand": "L",
    "glb": "pieces/props/shield.glb",
    "grip": "fist",
-   "low_turn": 90
+   "low_turn": 90,
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "shield"
   },
   {
    "id": "bow",
@@ -126,7 +154,11 @@
     -0.72,
     -0.09
    ],
-   "arrow": "arrow"
+   "arrow": "arrow",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "bow"
   },
   {
    "id": "crossbow",
@@ -152,7 +184,11 @@
     0.035,
     0.0175,
     0.045
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "crossbow"
   },
   {
    "id": "rifle",
@@ -178,7 +214,11 @@
     0.045,
     0.02,
     0.06
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "rifle"
   },
   {
    "id": "pistol",
@@ -193,7 +233,11 @@
     0.04,
     -0.03,
     0.02
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "pistol"
   },
   {
    "id": "pickaxe",
@@ -208,7 +252,11 @@
     0,
     0.5,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "hoe",
@@ -223,14 +271,22 @@
     0,
     0.9,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "hammer",
    "label": "Hammer",
    "hand": "R",
    "glb": "pieces/props/hammer.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "bucket",
@@ -247,7 +303,11 @@
     0.12,
     0.13,
     0.36
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "cup",
@@ -259,7 +319,11 @@
     0,
     1,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "lantern",
@@ -276,14 +340,22 @@
     0.07,
     0.05,
     0.21
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "torch",
    "label": "Torch",
    "hand": "L",
    "glb": "pieces/props/torch.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "arrow",
@@ -291,7 +363,11 @@
    "hand": "R",
    "glb": "pieces/props/arrow.glb",
    "grip": "fist",
-   "length": 0.78
+   "length": 0.78,
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "arrow"
   },
   {
    "id": "bowl",
@@ -308,14 +384,22 @@
     -0.12,
     0.02,
     0.26
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "bread",
    "label": "Bread",
    "hand": "L",
    "glb": "pieces/props/bread.glb",
-   "grip": "wide"
+   "grip": "wide",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "basket",
@@ -327,7 +411,11 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "cart",
@@ -355,14 +443,22 @@
      -0.25,
      1
     ]
-   }
+   },
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "ladle",
    "label": "Ladle",
    "hand": "R",
    "glb": "pieces/props/ladle.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "sack",
@@ -374,14 +470,22 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "quill",
    "label": "Quill",
    "hand": "R",
    "glb": "pieces/props/quill.glb",
-   "grip": "trigger"
+   "grip": "trigger",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "book",
@@ -393,14 +497,22 @@
     1,
     0,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "oar",
    "label": "Oar",
    "hand": "R",
    "glb": "pieces/props/oar.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "paddle",
@@ -415,7 +527,11 @@
     0,
     0.86,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "broom",
@@ -430,14 +546,22 @@
     0,
     0.58,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "saw",
    "label": "Saw",
    "hand": "R",
    "glb": "pieces/props/saw.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "net",
@@ -449,7 +573,11 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "feedbag",
@@ -461,7 +589,11 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "lead",
@@ -473,14 +605,22 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "shuttle",
    "label": "Shuttle",
    "hand": "R",
    "glb": "pieces/props/shuttle.glb",
-   "grip": "wide"
+   "grip": "wide",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "purse",
@@ -492,14 +632,22 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "sickle",
    "label": "Sickle",
    "hand": "R",
    "glb": "pieces/props/sickle.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "censer",
@@ -511,28 +659,44 @@
     0,
     0,
     1
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "rod",
    "label": "Fishing rod",
    "hand": "R",
    "glb": "pieces/props/rod.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "goad",
    "label": "Goad",
    "hand": "R",
    "glb": "pieces/props/goad.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "beater",
    "label": "Rug beater",
    "hand": "R",
    "glb": "pieces/props/beater.glb",
-   "grip": "fist"
+   "grip": "fist",
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "scroll",
@@ -544,7 +708,11 @@
     1,
     0,
     0
-   ]
+   ],
+   "people": "general",
+   "culture_label": "General (Built-In)",
+   "subset": "Base Props",
+   "kind": "tool"
   },
   {
    "id": "iziz_ornate_sword",
@@ -634,6 +802,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -654,6 +833,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -674,6 +864,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -694,6 +895,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -714,6 +926,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -734,6 +957,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -754,6 +988,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -770,19 +1015,6 @@
    "low_turn": 90
   },
   {
-   "id": "msh_khaayken_narrow_shield",
-   "label": "Khaayken Narrow Shield",
-   "hand": "L",
-   "kind": "shield",
-   "glb": "pieces/props/msh_khaayken_narrow_shield.glb",
-   "grip": "fist",
-   "people": "khaayken",
-   "culture_label": "Khaayken",
-   "subset": "Khaayken Shields",
-   "src": "Meshy_AI_khaayken_narrow_shield_20261106_texture_remesh_tri_30e89f15",
-   "low_turn": 90
-  },
-  {
    "id": "msh_khaayken_oval_shield",
    "label": "Khaayken Oval Shield",
    "hand": "L",
@@ -793,19 +1025,6 @@
    "culture_label": "Khaayken",
    "subset": "Khaayken Shields",
    "src": "Meshy_AI_khaayken_oval_shield_20261106_texture_remesh_tri_35ca18ff",
-   "low_turn": 90
-  },
-  {
-   "id": "msh_khaayken_round_shield",
-   "label": "Khaayken Round Shield",
-   "hand": "L",
-   "kind": "shield",
-   "glb": "pieces/props/msh_khaayken_round_shield.glb",
-   "grip": "fist",
-   "people": "khaayken",
-   "culture_label": "Khaayken",
-   "subset": "Khaayken Shields",
-   "src": "Meshy_AI_khaayken_round_shield_20261106_texture_remesh_tri_f4de58a3",
    "low_turn": 90
   },
   {
@@ -1830,6 +2049,17 @@
     0.0,
     0.075,
     0.3
+   ],
+   "stock": [
+    0.0,
+    0.04,
+    -0.13,
+    0.0,
+    0.04,
+    -0.27,
+    0.035,
+    0.0175,
+    0.045
    ]
   },
   {
@@ -2398,6 +2628,17 @@
     0.0,
     0.06,
     0.42
+   ],
+   "stock": [
+    0.0,
+    0.0,
+    -0.08,
+    0.0,
+    0.0,
+    -0.39,
+    0.045,
+    0.02,
+    0.06
    ]
   },
   {
@@ -2574,6 +2815,367 @@
    ]
   },
   {
+   "id": "msh_xanadu_shamshir",
+   "label": "Xanadu Shamshir",
+   "hand": "R",
+   "kind": "scimitar",
+   "glb": "pieces/props/msh_xanadu_shamshir.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_shamshir.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.058,
+    0.87
+   ],
+   "sheath": "msh_xanadu_shamshir_scabbard"
+  },
+  {
+   "id": "msh_xanadu_shamshir_scabbard",
+   "label": "Xanadu Shamshir Scabbard",
+   "hand": "L",
+   "kind": "sheath",
+   "glb": "pieces/props/msh_xanadu_shamshir_scabbard.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_shamshir_scabb.glb",
+   "for_weapon": "msh_xanadu_shamshir"
+  },
+  {
+   "id": "msh_xanadu_straight_sword",
+   "label": "Xanadu Straight Sword",
+   "hand": "R",
+   "kind": "sword",
+   "glb": "pieces/props/msh_xanadu_straight_sword.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_straight_sword.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    -0.1,
+    0.0
+   ],
+   "blade": [
+    0.059,
+    0.875
+   ],
+   "sheath": "msh_xanadu_shamshir_scabbard"
+  },
+  {
+   "id": "msh_xanadu_spear",
+   "label": "Xanadu Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_xanadu_spear.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_spear.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.988,
+    0.0
+   ],
+   "blade": [
+    1.163,
+    1.267
+   ]
+  },
+  {
+   "id": "msh_xanadu_mace",
+   "label": "Xanadu Flanged Mace",
+   "hand": "R",
+   "kind": "mace",
+   "glb": "pieces/props/msh_xanadu_mace.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_mace.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.422,
+    0.0
+   ],
+   "blade": [
+    0.528,
+    0.708
+   ]
+  },
+  {
+   "id": "msh_xanadu_composite_bow",
+   "label": "Xanadu Composite Bow",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_xanadu_composite_bow.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_composite_bow.glb",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.639,
+    -0.09,
+    0.0,
+    -0.639,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_xanadu_sipar",
+   "label": "Xanadu Sipar Buckler",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_xanadu_sipar.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_sipar (1).glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_xanadu_oval_shield",
+   "label": "Xanadu Oval Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_xanadu_oval_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_oval_shield (1).glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_xanadu_round_shield",
+   "label": "Xanadu Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_xanadu_round_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_round_shield (1).glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_xanadu_rectangular_shield",
+   "label": "Xanadu Rectangular Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_xanadu_rectangular_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_rectangular_sh (1).glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_xanadu_tall_shield",
+   "label": "Xanadu Tall Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_xanadu_tall_shield.glb",
+   "grip": "fist",
+   "people": "xanadu",
+   "culture_label": "Xanadu",
+   "subset": "Xanadu Arms",
+   "src": "xanadu_tall_shield (1).glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_spear",
+   "label": "Khaayken Hunting Spear",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_khaayken_spear.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Arms",
+   "src": "khaayken_spear.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.746,
+    0.0
+   ],
+   "blade": [
+    0.877,
+    1.268
+   ]
+  },
+  {
+   "id": "msh_khaayken_bow",
+   "label": "Khaayken Sinew Bow",
+   "hand": "L",
+   "kind": "bow",
+   "glb": "pieces/props/msh_khaayken_bow.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Arms",
+   "src": "khaayken_bow.glb",
+   "arrow_arm": 1.65,
+   "string": [
+    0.0,
+    0.652,
+    -0.09,
+    0.0,
+    -0.652,
+    -0.09
+   ],
+   "arrow": "arrow"
+  },
+  {
+   "id": "msh_khaayken_axe",
+   "label": "Khaayken Hand Axe",
+   "hand": "R",
+   "kind": "axe",
+   "glb": "pieces/props/msh_khaayken_axe.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Arms",
+   "src": "Meshy_AI_khaayken_axe_20261124_texture.glb",
+   "support": [
+    0.0,
+    -0.1,
+    0.0,
+    0.0,
+    0.468,
+    0.0
+   ],
+   "blade": [
+    0.584,
+    0.734
+   ]
+  },
+  {
+   "id": "msh_khaayken_knife",
+   "label": "Khaayken Bone-Hilt Knife",
+   "hand": "R",
+   "kind": "dagger",
+   "glb": "pieces/props/msh_khaayken_knife.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Arms",
+   "src": "Meshy_AI_khaayken_knife_20261124_texture.glb",
+   "blade": [
+    0.05,
+    0.432
+   ],
+   "sheath": "msh_khaayken_knife_sheath"
+  },
+  {
+   "id": "msh_khaayken_knife_sheath",
+   "label": "Khaayken Knife Sheath",
+   "hand": "L",
+   "kind": "sheath",
+   "glb": "pieces/props/msh_khaayken_knife_sheath.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Arms",
+   "src": "Meshy_AI_khaayken_knife_sheath_20261124_texture.glb",
+   "for_weapon": "msh_khaayken_knife"
+  },
+  {
+   "id": "msh_khaayken_narrow_shield",
+   "label": "Khaayken Narrow Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_narrow_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "khaayken_narrow_shiel.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_khaayken_round_shield",
+   "label": "Khaayken Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_khaayken_round_shield.glb",
+   "grip": "fist",
+   "people": "khaayken",
+   "culture_label": "Khaayken",
+   "subset": "Khaayken Shields",
+   "src": "khaayken_round_shield.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_scyvoi_round_shield",
+   "label": "Scyvoi Round Shield",
+   "hand": "L",
+   "kind": "shield",
+   "glb": "pieces/props/msh_scyvoi_round_shield.glb",
+   "grip": "fist",
+   "people": "scyvoi",
+   "culture_label": "Scyvoi",
+   "subset": "Scyvoi Arms",
+   "src": "scyvoi_round_shield.glb",
+   "low_turn": 90
+  },
+  {
+   "id": "msh_izani_hasta",
+   "label": "Izani Hasta",
+   "hand": "R",
+   "kind": "spear",
+   "glb": "pieces/props/msh_izani_hasta.glb",
+   "grip": "fist",
+   "people": "izani",
+   "culture_label": "Izani (Iziz)",
+   "subset": "Izani Legion",
+   "src": "Meshy_AI_Izani_Hasta_20261106_texture.glb",
+   "support": [
+    0.0,
+    0.25,
+    0.0,
+    0.0,
+    0.835,
+    0.0
+   ],
+   "blade": [
+    0.983,
+    1.267
+   ]
+  },
+  {
    "id": "tz_scepter",
    "label": "Sunforged Scepter (Tzintzun's staff of power)",
    "hand": "R",
@@ -2593,7 +3195,10 @@
    "blade": [
     0.632,
     0.952
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "staff"
   },
   {
    "id": "tz_scimitar",
@@ -2607,7 +3212,10 @@
    "blade": [
     0.158,
     0.86
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "scimitar"
   },
   {
    "id": "tz_sword",
@@ -2621,7 +3229,10 @@
    "blade": [
     0.202,
     0.885
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "sword"
   },
   {
    "id": "tz_axe",
@@ -2643,7 +3254,10 @@
    "blade": [
     0.49,
     0.76
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "axe"
   },
   {
    "id": "tz_spear",
@@ -2665,7 +3279,10 @@
    "blade": [
     0.72,
     1.365
-   ]
+   ],
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "spear"
   },
   {
    "id": "tz_shield",
@@ -2676,7 +3293,10 @@
    "people": "chichani",
    "owner": "tzintzun",
    "src": "Meshy_AI_Shield_Low_Poly_1106030822_texture.glb",
-   "low_turn": 90
+   "low_turn": 90,
+   "culture_label": "Chichani (Voth)",
+   "subset": "Tzintzun",
+   "kind": "shield"
   }
  ]
 }

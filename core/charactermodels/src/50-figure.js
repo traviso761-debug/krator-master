@@ -1260,7 +1260,7 @@ function KCharFigure(body, sliders, load){
      trigger, wide): their local rotation becomes the rest one times the curl, every frame after the clip (a clip's own
      finger motion gives way to the grip). With both, the left hand takes hold of the right's prop too (twoHands); a
      prop with a string (the bow) gets it drawn live, and an arrow while the right hand draws it (bowString) */
-  var held = { R:null, L:null, R2:null, L2:null, both:false }, holders = {}, hangs = {}, propCache = {}, curlQ = new THREE.Quaternion();
+  var held = { R:null, L:null, R2:null, L2:null, sheath:null, both:false }, holders = {}, sheathHolder = null, hangs = {}, propCache = {}, curlQ = new THREE.Quaternion();
   // every hand the skeleton has a grip for: R and L, and a giant's lower pair R2 and L2 (hidden with its arms)
   var HANDS = ['R', 'L', 'R2', 'L2'].filter(function(sd){ return skel.hands && skel.hands[sd]; });
   function prop(id){ return (id && KCharFigure.props[id]) || {}; }
@@ -1273,6 +1273,16 @@ function KCharFigure(body, sliders, load){
     }
     return holders[side];
   }
+  function hipSheathGroup(){
+    if(!sheathHolder && byName.Hips !== undefined){
+      var g = new THREE.Group();
+      g.position.set(0.168, -0.045, 0.035);
+      g.rotation.set(0.68, 0.08, -0.16);
+      bones[byName.Hips].add(g);
+      sheathHolder = g;
+    }
+    return sheathHolder;
+  }
   function propScene(id){
     if(!propCache[id]) propCache[id] = load('props/' + id).then(function(gl){ return gl.scene; });
     return propCache[id];
@@ -1280,7 +1290,9 @@ function KCharFigure(body, sliders, load){
   this.hold = function(want){
     if(!skel.hands) return Promise.resolve();
     held.both = !!(want && want.both);
-    return Promise.all(HANDS.map(function(side){
+    var rId = (want && want.R) || null;
+    var sId = want && want.sheath !== undefined ? (want.sheath || null) : ((rId && prop(rId).sheath) || null);
+    var tasks = HANDS.map(function(side){
       var id = (want && want[side]) || null;
       if(held[side] === id) return null;
       held[side] = id;
@@ -1308,8 +1320,27 @@ function KCharFigure(body, sliders, load){
         if(side.length > 1 && p.low_turn) m.rotation.y = (side.charAt(0) === 'L' ? 1 : -1) * p.low_turn * Math.PI / 180;
         if(side === 'L' && p.string) return makeBow(g, p);
       });
-    }));
+    });
+    if(held.sheath !== sId){
+      held.sheath = sId;
+      var sg = hipSheathGroup();
+      if(sg){
+        while(sg.children.length) sg.remove(sg.children[0]);
+        if(sId && KCharFigure.props[sId]){
+          tasks.push(propScene(sId).then(function(scene){
+            if(held.sheath !== sId) return;
+            var sm = scene.clone(true);
+            sm.traverse(function(o){ if(o.isMesh){ o.castShadow = true; o.frustumCulled = false; } });
+            sg.add(sm);
+          }));
+        }
+      }
+    }
+    return Promise.all(tasks).then(function(){
+      if(!self.action) self.restPose();
+    });
   };
+  this.holders = holders;
   this.held = held;
   // the playing clip's data/clips.json entry (KCharFigure.clipData, the page fills it) and its time
   function clipNow(){ var a = self.action; return a ? { info:KCharFigure.clipData[a.getClip().name] || {}, t:a.time, dur:a.getClip().duration } : null; }

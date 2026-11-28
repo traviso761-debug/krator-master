@@ -15,9 +15,16 @@
   },
   "rules": {
     "default_attack_slots": 2,
-    "attack_slot_options": [1, 2, 3],
+    "attack_slot_options": [
+      1,
+      2,
+      3
+    ],
     "poise_base": 100,
-    "parry_window_ms": [80, 220],
+    "parry_window_ms": [
+      80,
+      220
+    ],
     "input_buffer_ms": 150,
     "sever_threshold": -1.0,
     "limb_severing": true,
@@ -64,28 +71,105 @@
       "right_leg"
     ],
     "zone_weights": {
-      "head": 0.10,
+      "head": 0.1,
       "chest": 0.25,
-      "stomach": 0.20,
+      "stomach": 0.2,
       "left_arm": 0.12,
       "right_arm": 0.13,
-      "left_leg": 0.10,
-      "right_leg": 0.10
+      "left_leg": 0.1,
+      "right_leg": 0.1
     },
     "zone_meta": {
-      "head":      { "short": "HD", "label": "Head",      "hp": 100, "weight": 0.10, "vital": true,  "severable": false },
-      "chest":     { "short": "CH", "label": "Chest",     "hp": 100, "weight": 0.25, "vital": true,  "severable": false },
-      "stomach":   { "short": "ST", "label": "Stomach",   "hp": 100, "weight": 0.20, "vital": true,  "severable": false },
-      "left_arm":  { "short": "LA", "label": "Left Arm",  "hp": 100, "weight": 0.12, "vital": false, "severable": true  },
-      "right_arm": { "short": "RA", "label": "Right Arm", "hp": 100, "weight": 0.13, "vital": false, "severable": true  },
-      "left_leg":  { "short": "LL", "label": "Left Leg",  "hp": 100, "weight": 0.10, "vital": false, "severable": true  },
-      "right_leg": { "short": "RL", "label": "Right Leg", "hp": 100, "weight": 0.10, "vital": false, "severable": true  }
+      "head": {
+        "short": "HD",
+        "label": "Head",
+        "hp": 100,
+        "weight": 0.1,
+        "vital": true,
+        "severable": false
+      },
+      "chest": {
+        "short": "CH",
+        "label": "Chest",
+        "hp": 100,
+        "weight": 0.25,
+        "vital": true,
+        "severable": false
+      },
+      "stomach": {
+        "short": "ST",
+        "label": "Stomach",
+        "hp": 100,
+        "weight": 0.2,
+        "vital": true,
+        "severable": false
+      },
+      "left_arm": {
+        "short": "LA",
+        "label": "Left Arm",
+        "hp": 100,
+        "weight": 0.12,
+        "vital": false,
+        "severable": true
+      },
+      "right_arm": {
+        "short": "RA",
+        "label": "Right Arm",
+        "hp": 100,
+        "weight": 0.13,
+        "vital": false,
+        "severable": true
+      },
+      "left_leg": {
+        "short": "LL",
+        "label": "Left Leg",
+        "hp": 100,
+        "weight": 0.1,
+        "vital": false,
+        "severable": true
+      },
+      "right_leg": {
+        "short": "RL",
+        "label": "Right Leg",
+        "hp": 100,
+        "weight": 0.1,
+        "vital": false,
+        "severable": true
+      }
     },
     "damage_types": {
-      "cut":    { "label": "Cut",    "bleed": 0.35, "poise_mult": 0.85, "scale_stat": "dexterity",    "armor_pen": 0.45, "sever_capable": true  },
-      "blunt":  { "label": "Blunt",  "bleed": 0.05, "poise_mult": 1.35, "scale_stat": "strength",     "armor_pen": 0.80, "sever_capable": false },
-      "pierce": { "label": "Pierce", "bleed": 0.25, "poise_mult": 0.95, "scale_stat": "dexterity",    "armor_pen": 0.65, "sever_capable": true  },
-      "arcane": { "label": "Arcane", "bleed": 0.08, "poise_mult": 1.30, "scale_stat": "martial_arts", "armor_pen": 0.85, "sever_capable": false }
+      "cut": {
+        "label": "Cut",
+        "bleed": 0.35,
+        "poise_mult": 0.85,
+        "scale_stat": "dexterity",
+        "armor_pen": 0.45,
+        "sever_capable": true
+      },
+      "blunt": {
+        "label": "Blunt",
+        "bleed": 0.05,
+        "poise_mult": 1.35,
+        "scale_stat": "strength",
+        "armor_pen": 0.8,
+        "sever_capable": false
+      },
+      "pierce": {
+        "label": "Pierce",
+        "bleed": 0.25,
+        "poise_mult": 0.95,
+        "scale_stat": "dexterity",
+        "armor_pen": 0.65,
+        "sever_capable": true
+      },
+      "arcane": {
+        "label": "Arcane",
+        "bleed": 0.08,
+        "poise_mult": 1.3,
+        "scale_stat": "martial_arts",
+        "armor_pen": 0.85,
+        "sever_capable": false
+      }
     }
   },
   "links": [
@@ -104,23 +188,37 @@
       "dist_m": 1.06,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back", "dodge_spin"],
+          "clips": [
+            "dodge_step",
+            "dodge_back",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_1", "guard_block_2"],
+          "clips": [
+            "guard_block_1",
+            "guard_block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "clips": [
+            "ual_hit_head",
+            "hit_face",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -141,23 +239,38 @@
       "dist_m": 1.08,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_back",
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.15,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_2", "guard_block_1", "guard_block_3"],
+          "clips": [
+            "guard_block_2",
+            "guard_block_1",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "ual_hit_head", "hit_2"],
+          "clips": [
+            "hit_face",
+            "ual_hit_head",
+            "hit_2"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -178,23 +291,37 @@
       "dist_m": 1.02,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_spin", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_spin",
+            "dodge_step"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_1", "guard_block_3"],
+          "clips": [
+            "guard_block_1",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "ual_hit_head", "hit_2"],
+          "clips": [
+            "hit_face",
+            "ual_hit_head",
+            "hit_2"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -215,23 +342,36 @@
       "dist_m": 0.96,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_2"],
-          "lead_s": 0.10,
+          "clips": [
+            "parry",
+            "guard_block_2"
+          ],
+          "lead_s": 0.1,
           "riposte": "jab_r",
           "counter": "jab_r"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_2", "guard_block_1"],
+          "clips": [
+            "guard_block_2",
+            "guard_block_1"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_2", "hit_body"],
+          "clips": [
+            "ual_hit_head",
+            "hit_2",
+            "hit_body"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -252,23 +392,36 @@
       "dist_m": 0.96,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_2"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "ual_knockback", "ual_hit_head"],
+          "clips": [
+            "hit_face",
+            "ual_knockback",
+            "ual_hit_head"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -289,23 +442,36 @@
       "dist_m": 0.96,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "jab_r",
           "counter": "jab_r"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_spin"],
+          "clips": [
+            "dodge_back",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_1", "guard_block_3"],
+          "clips": [
+            "guard_block_1",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_face", "ual_knockback"],
+          "clips": [
+            "ual_hit_head",
+            "hit_face",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -322,27 +488,41 @@
       "dmg_type": "blunt",
       "target_zone": "chest",
       "hit_t": 0.56,
-      "hit_y": 1.30,
+      "hit_y": 1.3,
       "dist_m": 0.92,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_spin", "dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_spin",
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.15,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_2", "guard_block_3"],
+          "clips": [
+            "guard_block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "hit_body", "ual_hit_chest"],
+          "clips": [
+            "hit_face",
+            "hit_body",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -363,23 +543,36 @@
       "dist_m": 0.94,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "jab_r",
           "counter": "jab_r"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.15,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_1"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_1"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "ual_hit_chest", "ual_knockback"],
+          "clips": [
+            "hit_body",
+            "ual_hit_chest",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -400,23 +593,37 @@
       "dist_m": 1.22,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_spin", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_spin",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_2", "guard_block_3"],
+          "clips": [
+            "guard_block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "hit_body", "ual_hit_chest"],
+          "clips": [
+            "ual_knockback",
+            "hit_body",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -437,23 +644,38 @@
       "dist_m": 1.24,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.13,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_spin", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_spin",
+            "dodge_step"
+          ],
           "lead_s": 0.16,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_1", "guard_block_2"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_1",
+            "guard_block_2"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "ual_knockback", "hit_body"],
+          "clips": [
+            "hit_face",
+            "ual_knockback",
+            "hit_body"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -474,23 +696,34 @@
       "dist_m": 1.18,
       "outcomes": {
         "parry": {
-          "clips": ["dodge_step", "parry"],
+          "clips": [
+            "dodge_step",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "kick_front",
           "counter": "kick_front"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_spin"],
+          "clips": [
+            "dodge_back",
+            "dodge_spin"
+          ],
           "lead_s": 0.16,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_2"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_2"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down"],
+          "clips": [
+            "knock_down"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -511,23 +744,38 @@
       "dist_m": 1.06,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_back",
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_1", "guard_block_2"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_1",
+            "guard_block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "hit_face", "ual_hit_chest"],
+          "clips": [
+            "hit_body",
+            "hit_face",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -548,23 +796,36 @@
       "dist_m": 1.08,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.13,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_spin", "dodge_back"],
+          "clips": [
+            "dodge_spin",
+            "dodge_back"
+          ],
           "lead_s": 0.15,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_2"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_2"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "hit_2", "ual_knockback"],
+          "clips": [
+            "hit_body",
+            "hit_2",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -582,26 +843,39 @@
       "target_zone": "left_arm",
       "hit_t": 0.54,
       "hit_y": 1.28,
-      "dist_m": 1.00,
+      "dist_m": 1.0,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_3", "guard_block_1"],
+          "clips": [
+            "guard_block_3",
+            "guard_block_1"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_face", "hit_body", "ual_hit_head"],
+          "clips": [
+            "hit_face",
+            "hit_body",
+            "ual_hit_head"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -622,23 +896,35 @@
       "dist_m": 1.12,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "jab_r",
           "counter": "jab_r"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_roll"],
+          "clips": [
+            "dodge_back",
+            "dodge_roll"
+          ],
           "lead_s": 0.15,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_3", "ual_sword_block"],
+          "clips": [
+            "guard_block_3",
+            "ual_sword_block"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "knock_down"],
+          "clips": [
+            "ual_knockback",
+            "knock_down"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -659,23 +945,37 @@
       "dist_m": 1.32,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["ual_sword_block", "block", "block_2"],
+          "clips": [
+            "ual_sword_block",
+            "block",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit", "ual_hit_chest", "hit_body"],
+          "clips": [
+            "hit",
+            "ual_hit_chest",
+            "hit_body"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -691,28 +991,41 @@
       "poise_dmg": 22,
       "dmg_type": "cut",
       "target_zone": "right_arm",
-      "hit_t": 0.50,
+      "hit_t": 0.5,
       "hit_y": 1.22,
       "dist_m": 1.34,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "slash_right",
           "counter": "slash_right"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.15,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["ual_sword_block", "block"],
+          "clips": [
+            "ual_sword_block",
+            "block"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit", "ual_hit_chest", "hit_2"],
+          "clips": [
+            "hit",
+            "ual_hit_chest",
+            "hit_2"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -733,23 +1046,36 @@
       "dist_m": 1.32,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.14,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit", "hit_2"],
+          "clips": [
+            "ual_hit_chest",
+            "hit",
+            "hit_2"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -770,23 +1096,37 @@
       "dist_m": 1.38,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "ual_sword_combo",
           "counter": "ual_sword_combo"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_back", "ual_roll"],
+          "clips": [
+            "dodge_roll",
+            "dodge_back",
+            "ual_roll"
+          ],
           "lead_s": 0.16,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "hit", "ual_hit_chest"],
+          "clips": [
+            "ual_knockback",
+            "hit",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -804,26 +1144,39 @@
       "target_zone": "chest",
       "hit_t": 0.52,
       "hit_y": 1.24,
-      "dist_m": 1.30,
+      "dist_m": 1.3,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.15,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["ual_sword_block", "block_2"],
+          "clips": [
+            "ual_sword_block",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -844,23 +1197,35 @@
       "dist_m": 1.26,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "ual_sword_block"],
-          "lead_s": 0.10,
+          "clips": [
+            "parry",
+            "ual_sword_block"
+          ],
+          "lead_s": 0.1,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "block": {
-          "clips": ["ual_sword_block", "block"],
-          "lead_s": 0.10,
+          "clips": [
+            "ual_sword_block",
+            "block"
+          ],
+          "lead_s": 0.1,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit"],
+          "clips": [
+            "ual_hit_chest",
+            "hit"
+          ],
           "lead_s": 0.03,
           "followup": null
         }
@@ -881,23 +1246,36 @@
       "dist_m": 1.32,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.13,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_spin"],
+          "clips": [
+            "dodge_back",
+            "dodge_spin"
+          ],
           "lead_s": 0.15,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["ual_sword_block", "block_2"],
+          "clips": [
+            "ual_sword_block",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_2",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -918,23 +1296,35 @@
       "dist_m": 1.56,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.13,
           "riposte": "slash_right",
           "counter": "slash_right"
         },
         "dodge": {
-          "clips": ["dodge_step", "ual_roll"],
+          "clips": [
+            "dodge_step",
+            "ual_roll"
+          ],
           "lead_s": 0.15,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["ual_sword_block", "block"],
+          "clips": [
+            "ual_sword_block",
+            "block"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "ual_hit_chest"],
+          "clips": [
+            "ual_knockback",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -955,23 +1345,36 @@
       "dist_m": 1.42,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.15,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_step", "ual_roll"],
+          "clips": [
+            "dodge_roll",
+            "dodge_step",
+            "ual_roll"
+          ],
           "lead_s": 0.17,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "knock_down"],
+          "clips": [
+            "ual_knockback",
+            "knock_down"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -992,23 +1395,35 @@
       "dist_m": 1.46,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.15,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_back", "ual_roll"],
+          "clips": [
+            "dodge_back",
+            "ual_roll"
+          ],
           "lead_s": 0.17,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down", "ual_knockback"],
+          "clips": [
+            "knock_down",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -1024,28 +1439,40 @@
       "poise_dmg": 58,
       "dmg_type": "blunt",
       "target_zone": "chest",
-      "hit_t": 0.60,
+      "hit_t": 0.6,
       "hit_y": 1.24,
       "dist_m": 1.36,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.16,
           "counter": "jab_r"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "knock_down"],
+          "clips": [
+            "ual_knockback",
+            "knock_down"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -1066,23 +1493,36 @@
       "dist_m": 1.44,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.15,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["ual_roll", "dodge_roll", "dodge_back"],
+          "clips": [
+            "ual_roll",
+            "dodge_roll",
+            "dodge_back"
+          ],
           "lead_s": 0.17,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["block_2", "ual_sword_block"],
+          "clips": [
+            "block_2",
+            "ual_sword_block"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down", "ual_knockback"],
+          "clips": [
+            "knock_down",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -1103,23 +1543,37 @@
       "dist_m": 1.78,
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.13,
           "riposte": "thrust",
           "counter": "thrust"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.15,
           "counter": "ual_sword_dash"
         },
         "block": {
-          "clips": ["ual_shield_up", "ual_sword_block", "block"],
+          "clips": [
+            "ual_shield_up",
+            "ual_sword_block",
+            "block"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "ual_knockback", "hit_body"],
+          "clips": [
+            "ual_hit_chest",
+            "ual_knockback",
+            "hit_body"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1140,23 +1594,35 @@
       "dist_m": 1.48,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["ual_sword_block", "block"],
+          "clips": [
+            "ual_sword_block",
+            "block"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "ual_hit_chest"],
+          "clips": [
+            "hit_body",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1177,23 +1643,35 @@
       "dist_m": 1.06,
       "outcomes": {
         "parry": {
-          "clips": ["dodge_step", "parry"],
+          "clips": [
+            "dodge_step",
+            "parry"
+          ],
           "lead_s": 0.13,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.15,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["block_2", "guard_block_3"],
+          "clips": [
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "knock_down"],
+          "clips": [
+            "ual_knockback",
+            "knock_down"
+          ],
           "lead_s": 0.04,
           "followup": "ual_get_up"
         }
@@ -1214,23 +1692,35 @@
       "dist_m": 1.04,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "dodge_step"],
+          "clips": [
+            "parry",
+            "dodge_step"
+          ],
           "lead_s": 0.11,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.13,
           "counter": "ual_sword_a"
         },
         "block": {
-          "clips": ["ual_sword_block", "block_2"],
+          "clips": [
+            "ual_sword_block",
+            "block_2"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "ual_hit_head"],
+          "clips": [
+            "ual_knockback",
+            "ual_hit_head"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1247,27 +1737,40 @@
       "dmg_type": "pierce",
       "target_zone": "chest",
       "hit_t": 1.05,
-      "hit_y": 1.30,
-      "dist_m": 3.20,
+      "hit_y": 1.3,
+      "dist_m": 3.2,
       "outcomes": {
         "parry": {
-          "clips": ["ual_shield_up", "parry"],
+          "clips": [
+            "ual_shield_up",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": null,
           "counter": null
         },
         "dodge": {
-          "clips": ["ual_roll", "dodge_roll", "dodge_step"],
+          "clips": [
+            "ual_roll",
+            "dodge_roll",
+            "dodge_step"
+          ],
           "lead_s": 0.18,
           "counter": null
         },
         "block": {
-          "clips": ["ual_shield_up", "ual_sword_block"],
+          "clips": [
+            "ual_shield_up",
+            "ual_sword_block"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_body"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_body"
+          ],
           "lead_s": 0.03,
           "followup": null
         }
@@ -1285,28 +1788,41 @@
       "target_zone": "left_arm",
       "hit_t": 0.62,
       "hit_y": 1.28,
-      "dist_m": 3.40,
+      "dist_m": 3.4,
       "attacker_followup": "reload_kneel",
-      "vuln_window_s": 1.80,
+      "vuln_window_s": 1.8,
       "outcomes": {
         "parry": {
-          "clips": ["ual_shield_up", "dodge_roll"],
+          "clips": [
+            "ual_shield_up",
+            "dodge_roll"
+          ],
           "lead_s": 0.12,
           "riposte": null,
           "counter": null
         },
         "dodge": {
-          "clips": ["ual_roll", "dodge_roll", "dodge_step"],
+          "clips": [
+            "ual_roll",
+            "dodge_roll",
+            "dodge_step"
+          ],
           "lead_s": 0.16,
           "counter": null
         },
         "block": {
-          "clips": ["ual_shield_up", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "ual_hit_chest"],
+          "clips": [
+            "ual_knockback",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.02,
           "followup": null
         }
@@ -1324,26 +1840,38 @@
       "target_zone": "head",
       "hit_t": 0.36,
       "hit_y": 1.34,
-      "dist_m": 2.80,
+      "dist_m": 2.8,
       "outcomes": {
         "parry": {
-          "clips": ["parry", "ual_shield_up"],
+          "clips": [
+            "parry",
+            "ual_shield_up"
+          ],
           "lead_s": 0.12,
           "riposte": null,
           "counter": null
         },
         "dodge": {
-          "clips": ["dodge_step", "ual_roll"],
+          "clips": [
+            "dodge_step",
+            "ual_roll"
+          ],
           "lead_s": 0.15,
           "counter": null
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "ual_knockback"],
+          "clips": [
+            "ual_hit_head",
+            "ual_knockback"
+          ],
           "lead_s": 0.03,
           "followup": null
         }
@@ -1366,23 +1894,35 @@
       "vfx": "lightning_blast",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "block_2"],
+          "clips": [
+            "parry_2h",
+            "block_2"
+          ],
           "lead_s": 0.13,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_step"],
+          "clips": [
+            "dodge_roll",
+            "dodge_step"
+          ],
           "lead_s": 0.15,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "ual_knockback"
+          ],
           "lead_s": 0.03,
           "followup": null
         }
@@ -1399,30 +1939,40 @@
       "poise_dmg": 68,
       "dmg_type": "arcane",
       "target_zone": "chest",
-      "hit_t": 0.50,
+      "hit_t": 0.5,
       "hit_y": 1.15,
       "dist_m": 1.55,
       "aoe": true,
       "vfx": "energy_burst",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h"],
+          "clips": [
+            "parry_2h"
+          ],
           "lead_s": 0.14,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_roll"],
+          "clips": [
+            "dodge_back",
+            "dodge_roll"
+          ],
           "lead_s": 0.16,
           "counter": null
         },
         "block": {
-          "clips": ["block_2", "guard_block_3"],
+          "clips": [
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down"],
+          "clips": [
+            "knock_down"
+          ],
           "lead_s": 0.04,
           "followup": "ual_get_up"
         }
@@ -1445,23 +1995,37 @@
       "vfx": "astral_lance",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_body",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1485,23 +2049,36 @@
       "vfx": "rift_claw",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.13,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_2", "block_2"],
+          "clips": [
+            "guard_block_2",
+            "block_2"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_2",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1525,23 +2102,36 @@
       "sfx": "hit_blunt",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "dorsal_canopy_parry",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_3", "block_2"],
+          "clips": [
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "ual_hit_chest", "ual_knockback"],
+          "clips": [
+            "hit_body",
+            "ual_hit_chest",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1561,28 +2151,40 @@
       "target_zone": "right_arm",
       "sever_bonus": true,
       "hit_t": 0.62,
-      "hit_y": 1.30,
+      "hit_y": 1.3,
       "dist_m": 1.14,
       "sfx": "hit_cut",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_back"],
+          "clips": [
+            "dodge_roll",
+            "dodge_back"
+          ],
           "lead_s": 0.16,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["block_2", "guard_block_3"],
+          "clips": [
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "ual_hit_chest"],
+          "clips": [
+            "ual_knockback",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -1602,27 +2204,39 @@
       "target_zone": "stomach",
       "hit_t": 0.44,
       "hit_y": 1.12,
-      "dist_m": 1.10,
+      "dist_m": 1.1,
       "sfx": "hit_blunt",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_spin"],
+          "clips": [
+            "dodge_step",
+            "dodge_spin"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["guard_block_2", "block_2"],
+          "clips": [
+            "guard_block_2",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["hit_body", "ual_hit_chest"],
+          "clips": [
+            "hit_body",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1647,23 +2261,35 @@
       "sfx": "guard_break",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_back"],
+          "clips": [
+            "dodge_roll",
+            "dodge_back"
+          ],
           "lead_s": 0.16,
           "counter": null
         },
         "block": {
-          "clips": ["block_2", "guard_block_3"],
+          "clips": [
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down", "ual_knockback"],
+          "clips": [
+            "knock_down",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -1688,23 +2314,35 @@
       "sfx": "hit_cut",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.12,
           "riposte": "thorax_aegis_viper",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["block_2", "guard_block_3"],
+          "clips": [
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1730,23 +2368,36 @@
       "sfx": "hit_cut",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "ual_sword_a"
         },
         "dodge": {
-          "clips": ["dodge_spin", "dodge_step"],
+          "clips": [
+            "dodge_spin",
+            "dodge_step"
+          ],
           "lead_s": 0.14,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["ual_sword_block", "block_2"],
+          "clips": [
+            "ual_sword_block",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_2", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_2",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1770,23 +2421,36 @@
       "sfx": "parry_ring",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.13,
           "counter": null
         },
         "block": {
-          "clips": ["guard_block_3", "block_2"],
+          "clips": [
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_face", "ual_knockback"],
+          "clips": [
+            "ual_hit_head",
+            "hit_face",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1811,23 +2475,36 @@
       "sfx": "lightning_blast",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "block_2"],
+          "clips": [
+            "parry_2h",
+            "block_2"
+          ],
           "lead_s": 0.13,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_step"],
+          "clips": [
+            "dodge_roll",
+            "dodge_step"
+          ],
           "lead_s": 0.15,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "ual_knockback"
+          ],
           "lead_s": 0.03,
           "followup": null
         }
@@ -1852,23 +2529,37 @@
       "vfx": "arthro_fang_bite",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "ual_sword_a",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_body",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1893,23 +2584,37 @@
       "vfx": "arthro_venom_spit",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_roll",
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.15,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "clips": [
+            "ual_hit_head",
+            "hit_face",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -1934,23 +2639,36 @@
       "vfx": "arthro_horn_gore",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "ual_sword_a",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_back"],
+          "clips": [
+            "dodge_roll",
+            "dodge_back"
+          ],
           "lead_s": 0.16,
           "counter": "slash_right"
         },
         "block": {
-          "clips": ["ual_shield_up", "block_2", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "block_2",
+            "guard_block_3"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["knock_down", "ual_knockback"],
+          "clips": [
+            "knock_down",
+            "ual_knockback"
+          ],
           "lead_s": 0.05,
           "followup": "ual_get_up"
         }
@@ -1968,30 +2686,43 @@
       "poise_dmg": 64,
       "dmg_type": "blunt",
       "target_zone": "chest",
-      "hit_t": 0.50,
+      "hit_t": 0.5,
       "hit_y": 1.04,
       "dist_m": 1.92,
       "sfx": "block_shield",
       "vfx": "arthro_ram_shock",
       "outcomes": {
         "parry": {
-          "clips": ["parry_2h", "parry"],
+          "clips": [
+            "parry_2h",
+            "parry"
+          ],
           "lead_s": 0.14,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_roll", "dodge_step"],
+          "clips": [
+            "dodge_roll",
+            "dodge_step"
+          ],
           "lead_s": 0.16,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.14,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_knockback", "knock_down"],
+          "clips": [
+            "ual_knockback",
+            "knock_down"
+          ],
           "lead_s": 0.05,
           "followup": null
         }
@@ -2017,23 +2748,37 @@
       "vfx": "arthro_scythe_cross",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.11,
           "riposte": "ual_sword_a",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_back"],
+          "clips": [
+            "dodge_step",
+            "dodge_back"
+          ],
           "lead_s": 0.13,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3", "block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3",
+            "block_2"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_body", "ual_knockback"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_body",
+            "ual_knockback"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -2057,23 +2802,36 @@
       "sfx": "hit_cut",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "riposte": "slash_right",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_spin", "dodge_step"],
+          "clips": [
+            "dodge_spin",
+            "dodge_step"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_2"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_2"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "hit_2", "hit_body"],
+          "clips": [
+            "ual_hit_chest",
+            "hit_2",
+            "hit_body"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -2098,23 +2856,36 @@
       "vfx": "arthro_sting_lance",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "parry_2h"],
+          "clips": [
+            "parry",
+            "parry_2h"
+          ],
           "lead_s": 0.12,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_step", "dodge_roll"],
+          "clips": [
+            "dodge_step",
+            "dodge_roll"
+          ],
           "lead_s": 0.14,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3"
+          ],
           "lead_s": 0.12,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_chest", "ual_knockback", "hit_body"],
+          "clips": [
+            "ual_hit_chest",
+            "ual_knockback",
+            "hit_body"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -2134,27 +2905,40 @@
       "target_zone": "head",
       "hit_t": 0.36,
       "hit_y": 1.36,
-      "dist_m": 1.80,
+      "dist_m": 1.8,
       "sfx": "hit_cut",
       "outcomes": {
         "parry": {
-          "clips": ["parry", "guard_block_3"],
+          "clips": [
+            "parry",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "riposte": "counterstrike",
           "counter": "counterstrike"
         },
         "dodge": {
-          "clips": ["dodge_back", "dodge_step"],
+          "clips": [
+            "dodge_back",
+            "dodge_step"
+          ],
           "lead_s": 0.13,
           "counter": "counterstrike"
         },
         "block": {
-          "clips": ["ual_shield_up", "guard_block_3"],
+          "clips": [
+            "ual_shield_up",
+            "guard_block_3"
+          ],
           "lead_s": 0.11,
           "counter": null
         },
         "hit": {
-          "clips": ["ual_hit_head", "hit_face", "ual_hit_chest"],
+          "clips": [
+            "ual_hit_head",
+            "hit_face",
+            "ual_hit_chest"
+          ],
           "lead_s": 0.04,
           "followup": null
         }
@@ -2168,7 +2952,15 @@
       "short": "Crimson Monk",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 58, "melee_def": 54, "martial_arts": 68, "dodge": 64, "toughness": 52, "strength": 55, "dexterity": 66 },
+      "stats": {
+        "melee_atk": 58,
+        "melee_def": 54,
+        "martial_arts": 68,
+        "dodge": 64,
+        "toughness": 52,
+        "strength": 55,
+        "dexterity": 66
+      },
       "people": "xanadu",
       "tier": "monk_crimson",
       "body": "mpfb_male",
@@ -2176,7 +2968,10 @@
       "hair": "short02",
       "hair_color": "#1e1712",
       "eye_color": "#7a3b1e",
-      "morph": { "muscle": 0.35, "weight": -0.05 }
+      "morph": {
+        "muscle": 0.35,
+        "weight": -0.05
+      }
     },
     {
       "id": "violet_monk",
@@ -2184,7 +2979,15 @@
       "short": "Violet Monk",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 60, "melee_def": 56, "martial_arts": 72, "dodge": 74, "toughness": 48, "strength": 48, "dexterity": 74 },
+      "stats": {
+        "melee_atk": 60,
+        "melee_def": 56,
+        "martial_arts": 72,
+        "dodge": 74,
+        "toughness": 48,
+        "strength": 48,
+        "dexterity": 74
+      },
       "people": "xanadu",
       "tier": "monk_violet_storm",
       "body": "mpfb_female",
@@ -2192,15 +2995,29 @@
       "hair": "braid01",
       "hair_color": "#221a28",
       "eye_color": "#5c4a82",
-      "morph": { "muscle": 0.3, "weight": -0.1 }
+      "morph": {
+        "muscle": 0.3,
+        "weight": -0.1
+      }
     },
     {
       "id": "iziz_legionary",
       "label": "Iziz Imperial Legionary",
       "short": "Iziz Legionary",
       "style": "sword",
-      "hold": { "R": "sword", "L": "shield" },
-      "stats": { "melee_atk": 64, "melee_def": 70, "martial_arts": 30, "dodge": 38, "toughness": 68, "strength": 62, "dexterity": 58 },
+      "hold": {
+        "R": "msh_izani_legion_gladius",
+        "L": "msh_izani_legion_scutum"
+      },
+      "stats": {
+        "melee_atk": 64,
+        "melee_def": 70,
+        "martial_arts": 30,
+        "dodge": 38,
+        "toughness": 68,
+        "strength": 62,
+        "dexterity": 58
+      },
       "people": "izani",
       "tier": "legionary",
       "body": "mpfb_male",
@@ -2208,15 +3025,28 @@
       "hair": "short02",
       "hair_color": "#241b15",
       "eye_color": "#4f3a24",
-      "morph": { "muscle": 0.4, "weight": 0.05 }
+      "morph": {
+        "muscle": 0.4,
+        "weight": 0.05
+      }
     },
     {
       "id": "shell_siege_guard",
       "label": "Shell Uruk Siege-Guard",
       "short": "Siege-Guard",
       "style": "heavy",
-      "hold": { "R": "axe" },
-      "stats": { "melee_atk": 68, "melee_def": 52, "martial_arts": 35, "dodge": 28, "toughness": 78, "strength": 82, "dexterity": 44 },
+      "hold": {
+        "R": "msh_dalab_axe"
+      },
+      "stats": {
+        "melee_atk": 68,
+        "melee_def": 52,
+        "martial_arts": 35,
+        "dodge": 28,
+        "toughness": 78,
+        "strength": 82,
+        "dexterity": 44
+      },
       "people": "izani",
       "tier": "shl_siege_guard",
       "body": "mpfb_male",
@@ -2224,15 +3054,30 @@
       "hair": "short04",
       "hair_color": "#1a1614",
       "eye_color": "#6e3820",
-      "morph": { "height": 0.25, "muscle": 0.65, "weight": 0.25 }
+      "morph": {
+        "height": 0.25,
+        "muscle": 0.65,
+        "weight": 0.25
+      }
     },
     {
       "id": "talia_pass_guard",
       "label": "Talia Damascened Guard",
       "short": "Talia Guard",
       "style": "polearm",
-      "hold": { "R": "spear" },
-      "stats": { "melee_atk": 66, "melee_def": 66, "martial_arts": 34, "dodge": 50, "toughness": 62, "strength": 58, "dexterity": 68 },
+      "hold": {
+        "R": "msh_izani_legion_hasta",
+        "L": "msh_izani_legion_parma"
+      },
+      "stats": {
+        "melee_atk": 66,
+        "melee_def": 66,
+        "martial_arts": 34,
+        "dodge": 50,
+        "toughness": 62,
+        "strength": 58,
+        "dexterity": 68
+      },
       "people": "izani",
       "tier": "tal_pass_guard",
       "body": "mpfb_female",
@@ -2240,15 +3085,29 @@
       "hair": "ponytail01",
       "hair_color": "#241c17",
       "eye_color": "#486258",
-      "morph": { "height": 0.1, "muscle": 0.35, "weight": -0.05 }
+      "morph": {
+        "height": 0.1,
+        "muscle": 0.35,
+        "weight": -0.05
+      }
     },
     {
       "id": "aidol_voltigeur",
       "label": "Dilihan Aidol Voltigeur",
       "short": "Aidol Voltigeur",
       "style": "ranged",
-      "hold": { "R": "rifle" },
-      "stats": { "melee_atk": 46, "melee_def": 48, "martial_arts": 28, "dodge": 58, "toughness": 50, "strength": 48, "dexterity": 76 },
+      "hold": {
+        "R": "msh_coyoteman_trade_rifle"
+      },
+      "stats": {
+        "melee_atk": 46,
+        "melee_def": 48,
+        "martial_arts": 28,
+        "dodge": 58,
+        "toughness": 50,
+        "strength": 48,
+        "dexterity": 76
+      },
       "people": "izani",
       "tier": "dil_aidol_voltigeur",
       "body": "mpfb_male",
@@ -2256,18 +3115,429 @@
       "hair": "short01",
       "hair_color": "#2f241c",
       "eye_color": "#445a6c",
-      "morph": { "muscle": 0.25, "weight": -0.05 }
+      "morph": {
+        "muscle": 0.25,
+        "weight": -0.05
+      }
+    },
+    {
+      "id": "xanadu_askari",
+      "label": "Xanadu Dzong Citadel Askari",
+      "short": "Xanadu Askari",
+      "style": "sword",
+      "hold": {
+        "R": "msh_xanadu_shamshir",
+        "L": "msh_xanadu_sipar"
+      },
+      "stats": {
+        "melee_atk": 68,
+        "melee_def": 70,
+        "martial_arts": 38,
+        "dodge": 54,
+        "toughness": 66,
+        "strength": 60,
+        "dexterity": 70
+      },
+      "people": "xanadu",
+      "tier": "askari",
+      "body": "mpfb_male",
+      "skin": "#b8865f",
+      "hair": "short02",
+      "hair_color": "#1e1714",
+      "eye_color": "#4b3826",
+      "morph": {
+        "muscle": 0.42,
+        "weight": 0.02
+      }
+    },
+    {
+      "id": "xanadu_horse_archer",
+      "label": "Xanadu Composite-Bow Warden",
+      "short": "Xanadu Archer",
+      "style": "ranged",
+      "hold": {
+        "L": "msh_xanadu_composite_bow"
+      },
+      "stats": {
+        "melee_atk": 50,
+        "melee_def": 52,
+        "martial_arts": 36,
+        "dodge": 66,
+        "toughness": 54,
+        "strength": 54,
+        "dexterity": 78
+      },
+      "people": "xanadu",
+      "tier": "house_two_horns",
+      "body": "mpfb_female",
+      "skin": "#c59570",
+      "hair": "braid01",
+      "hair_color": "#201815",
+      "eye_color": "#4f3b28",
+      "morph": {
+        "muscle": 0.3,
+        "weight": -0.06
+      }
+    },
+    {
+      "id": "voth_janissary",
+      "label": "Voth Chosen Solar Janissary",
+      "short": "Voth Janissary",
+      "style": "polearm",
+      "hold": {
+        "R": "msh_voth_sun_eater_glaive",
+        "L": "msh_voth_sunstep_tower_shield"
+      },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 72,
+        "martial_arts": 36,
+        "dodge": 46,
+        "toughness": 72,
+        "strength": 68,
+        "dexterity": 64
+      },
+      "people": "chichani",
+      "tier": "chosen_janissary",
+      "body": "mpfb_male",
+      "skin": "#9c6b49",
+      "hair": "ponytail01",
+      "hair_color": "#181412",
+      "eye_color": "#54361f",
+      "morph": {
+        "muscle": 0.48,
+        "weight": 0.05
+      }
+    },
+    {
+      "id": "voth_march_warden",
+      "label": "Voth Jaguar-Claw Warden",
+      "short": "Jaguar Warden",
+      "style": "heavy",
+      "hold": {
+        "R": "msh_voth_jaguar_claw_axe",
+        "L": "msh_voth_jaguar_fang_shield"
+      },
+      "stats": {
+        "melee_atk": 70,
+        "melee_def": 64,
+        "martial_arts": 40,
+        "dodge": 52,
+        "toughness": 68,
+        "strength": 74,
+        "dexterity": 60
+      },
+      "people": "chichani",
+      "tier": "azoth_march_warden",
+      "body": "mpfb_female",
+      "skin": "#a57350",
+      "hair": "braid01",
+      "hair_color": "#191513",
+      "eye_color": "#583920",
+      "morph": {
+        "muscle": 0.44,
+        "weight": 0.0
+      }
+    },
+    {
+      "id": "lizard_juggernaut",
+      "label": "Lizardman Bronze Juggernaut",
+      "short": "Lizard Juggernaut",
+      "style": "heavy",
+      "hold": {
+        "R": "msh_lizardman_ge_dagger_axe",
+        "L": "msh_lizardman_standing_shield"
+      },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 70,
+        "martial_arts": 44,
+        "dodge": 42,
+        "toughness": 82,
+        "strength": 80,
+        "dexterity": 56
+      },
+      "people": "lizardmen",
+      "tier": "komodo_juggernaut",
+      "body": "mpfb_male",
+      "skin": "#4d663c",
+      "hair": null,
+      "hair_color": "#1d2418",
+      "eye_color": "#d49b28",
+      "morph": {
+        "height": 0.18,
+        "muscle": 0.62,
+        "weight": 0.15
+      }
+    },
+    {
+      "id": "khaayken_skirmisher",
+      "label": "Khaayken Antler-Lamellar Raider",
+      "short": "Khaayken Raider",
+      "style": "heavy",
+      "hold": {
+        "R": "msh_khaayken_axe",
+        "L": "msh_khaayken_narrow_shield"
+      },
+      "stats": {
+        "melee_atk": 68,
+        "melee_def": 62,
+        "martial_arts": 42,
+        "dodge": 56,
+        "toughness": 70,
+        "strength": 72,
+        "dexterity": 62
+      },
+      "people": "khaayken",
+      "tier": "antler_lamellar_skirmisher",
+      "body": "mpfb_male",
+      "skin": "#c29572",
+      "hair": "braid01",
+      "hair_color": "#201915",
+      "eye_color": "#453322",
+      "morph": {
+        "muscle": 0.46,
+        "weight": 0.08
+      }
+    },
+    {
+      "id": "scyvoi_outrider",
+      "label": "Scyvoi Frontier Shield-Outrider",
+      "short": "Scyvoi Outrider",
+      "style": "sword",
+      "hold": {
+        "R": "msh_xanadu_shamshir",
+        "L": "msh_scyvoi_round_shield"
+      },
+      "stats": {
+        "melee_atk": 66,
+        "melee_def": 66,
+        "martial_arts": 36,
+        "dodge": 62,
+        "toughness": 62,
+        "strength": 60,
+        "dexterity": 72
+      },
+      "people": "voth_arcologies",
+      "tier": "aux_scyvoi_outrider",
+      "body": "mpfb_female",
+      "skin": "#c99b78",
+      "hair": "ponytail01",
+      "hair_color": "#3b281c",
+      "eye_color": "#4e6456",
+      "morph": {
+        "muscle": 0.36,
+        "weight": -0.04
+      }
+    },
+    {
+      "id": "eternian_cuirassier",
+      "label": "Eternian Sanctum Cuirassier",
+      "short": "Eternian Warden",
+      "style": "sword",
+      "hold": {
+        "R": "msh_eternian_katana",
+        "L": "msh_eternian_rectangular_tate"
+      },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 74,
+        "martial_arts": 44,
+        "dodge": 54,
+        "toughness": 70,
+        "strength": 64,
+        "dexterity": 74
+      },
+      "people": "eternian",
+      "tier": "warden",
+      "body": "mpfb_male",
+      "skin": "#cfb299",
+      "hair": "ponytail01",
+      "hair_color": "#18161a",
+      "eye_color": "#3e342e",
+      "morph": {
+        "height": 0.14,
+        "muscle": 0.38,
+        "weight": -0.04
+      }
+    },
+    {
+      "id": "hykkousoi_hoplite",
+      "label": "Hykkousoi Aspis Marine",
+      "short": "Hykkousoi Marine",
+      "style": "sword",
+      "hold": {
+        "R": "msh_hykkousoi_xiphos",
+        "L": "msh_hykkousoi_aspis_shield"
+      },
+      "stats": {
+        "melee_atk": 66,
+        "melee_def": 72,
+        "martial_arts": 34,
+        "dodge": 48,
+        "toughness": 68,
+        "strength": 64,
+        "dexterity": 64
+      },
+      "people": "hykkousoi",
+      "tier": "trade",
+      "body": "mpfb_male",
+      "skin": "#b98a68",
+      "hair": "short04",
+      "hair_color": "#261d16",
+      "eye_color": "#3f5f72",
+      "morph": {
+        "muscle": 0.45,
+        "weight": 0.02
+      }
+    },
+    {
+      "id": "tabisti_lancer",
+      "label": "Tabisti Takouba & Arer Lancer",
+      "short": "Tabisti Lancer",
+      "style": "sword",
+      "hold": {
+        "R": "msh_tabisti_takouba_sword",
+        "L": "msh_tabisti_tuareg_arer"
+      },
+      "stats": {
+        "melee_atk": 67,
+        "melee_def": 68,
+        "martial_arts": 36,
+        "dodge": 58,
+        "toughness": 64,
+        "strength": 60,
+        "dexterity": 70
+      },
+      "people": "tabisti",
+      "tier": "lizard_lancer",
+      "body": "mpfb_male",
+      "skin": "#7c5238",
+      "hair": "short02",
+      "hair_color": "#181310",
+      "eye_color": "#422d1d",
+      "morph": {
+        "height": 0.12,
+        "muscle": 0.38,
+        "weight": -0.06
+      }
+    },
+    {
+      "id": "talovolci_woad_champ",
+      "label": "Free-Clan La Tène Woad Champion",
+      "short": "Woad Champion",
+      "style": "sword",
+      "hold": {
+        "R": "msh_talovolci_la_tene_long_sword",
+        "L": "msh_talovolci_hexagonal_shield"
+      },
+      "stats": {
+        "melee_atk": 70,
+        "melee_def": 64,
+        "martial_arts": 38,
+        "dodge": 52,
+        "toughness": 72,
+        "strength": 72,
+        "dexterity": 62
+      },
+      "people": "painted_men",
+      "tier": "woad_champion",
+      "body": "mpfb_male",
+      "skin": "#d6ad8e",
+      "hair": "braid01",
+      "hair_color": "#8c4220",
+      "eye_color": "#466878",
+      "morph": {
+        "height": 0.15,
+        "muscle": 0.54,
+        "weight": 0.08
+      }
+    },
+    {
+      "id": "coyote_lance_scout",
+      "label": "Coyote Men Prairie Lance Scout",
+      "short": "Coyote Lancer",
+      "style": "polearm",
+      "hold": {
+        "R": "msh_coyoteman_lance",
+        "L": "msh_coyoteman_painted_rawhide_shield"
+      },
+      "stats": {
+        "melee_atk": 66,
+        "melee_def": 64,
+        "martial_arts": 42,
+        "dodge": 66,
+        "toughness": 62,
+        "strength": 60,
+        "dexterity": 74
+      },
+      "people": "coyote_men",
+      "tier": "prairie_lance_skirmisher",
+      "body": "mpfb_male",
+      "skin": "#9c7456",
+      "hair": null,
+      "hair_color": "#5c422c",
+      "eye_color": "#c98b2c",
+      "morph": {
+        "height": 0.1,
+        "muscle": 0.4,
+        "weight": -0.05
+      }
+    },
+    {
+      "id": "yuni_relic_sentinel",
+      "label": "Yuni Relic-Rifle Sentinel",
+      "short": "Yuni Sentinel",
+      "style": "ranged",
+      "hold": {
+        "R": "relic_ornate_assault_rifle"
+      },
+      "stats": {
+        "melee_atk": 50,
+        "melee_def": 54,
+        "martial_arts": 34,
+        "dodge": 60,
+        "toughness": 62,
+        "strength": 56,
+        "dexterity": 78
+      },
+      "people": "yuni",
+      "tier": "sentinel",
+      "body": "mpfb_female",
+      "skin": "#c2926e",
+      "hair": "short01",
+      "hair_color": "#3a281c",
+      "eye_color": "#4c6678",
+      "morph": {
+        "muscle": 0.32,
+        "weight": -0.04
+      }
     },
     {
       "id": "dalab_giant",
       "label": "Four-Armed Dalab Giant",
       "short": "Dalab Giant",
       "style": "thorax_4arm",
-      "hold": { "R": "axe", "L": "shield", "R2": "sword", "L2": "shield" },
-      "mods": ["mod_arms_flesh"],
+      "hold": {
+        "R": "msh_dalab_axe",
+        "L": "msh_izani_legion_clipeus",
+        "R2": "msh_dalab_falx",
+        "L2": "msh_izani_legion_parma"
+      },
+      "mods": [
+        "mod_arms_flesh"
+      ],
       "bonus_slots": 1,
       "four_arms": true,
-      "stats": { "melee_atk": 76, "melee_def": 74, "martial_arts": 62, "dodge": 34, "toughness": 90, "strength": 92, "dexterity": 52 },
+      "stats": {
+        "melee_atk": 76,
+        "melee_def": 74,
+        "martial_arts": 62,
+        "dodge": 34,
+        "toughness": 90,
+        "strength": 92,
+        "dexterity": 52
+      },
       "people": "giants",
       "tier": "temple",
       "body": "mpfb_giant",
@@ -2275,7 +3545,10 @@
       "hair": "short04",
       "hair_color": "#1a1712",
       "eye_color": "#6e5a2e",
-      "morph": { "muscle": 0.7, "weight": 0.25 }
+      "morph": {
+        "muscle": 0.7,
+        "weight": 0.25
+      }
     },
     {
       "id": "loader_enforcer",
@@ -2283,11 +3556,26 @@
       "short": "Loader Brawler",
       "style": "thorax_4arm",
       "hold": {},
-      "mods": ["mod_arms_loader"],
+      "mods": [
+        "mod_arms_loader"
+      ],
       "bonus_slots": 1,
       "four_arms": true,
-      "armour": { "head": null, "torso": null, "gloves": null, "back": null },
-      "stats": { "melee_atk": 74, "melee_def": 70, "martial_arts": 78, "dodge": 54, "toughness": 84, "strength": 88, "dexterity": 62 },
+      "armour": {
+        "head": null,
+        "torso": null,
+        "gloves": null,
+        "back": null
+      },
+      "stats": {
+        "melee_atk": 74,
+        "melee_def": 70,
+        "martial_arts": 78,
+        "dodge": 54,
+        "toughness": 84,
+        "strength": 88,
+        "dexterity": 62
+      },
       "people": "izani",
       "tier": "forgemaster_pilot",
       "body": "mpfb_male",
@@ -2295,7 +3583,11 @@
       "hair": "short04",
       "hair_color": "#1c1612",
       "eye_color": "#5e4328",
-      "morph": { "height": 0.14, "muscle": 0.72, "weight": 0.10 }
+      "morph": {
+        "height": 0.14,
+        "muscle": 0.72,
+        "weight": 0.1
+      }
     },
     {
       "id": "surgical_monk",
@@ -2303,11 +3595,25 @@
       "short": "Surgical Monk",
       "style": "thorax_4arm",
       "hold": {},
-      "mods": ["mod_arms_surgical"],
+      "mods": [
+        "mod_arms_surgical"
+      ],
       "bonus_slots": 1,
       "four_arms": true,
-      "armour": { "torso": null, "gloves": null, "back": null },
-      "stats": { "melee_atk": 72, "melee_def": 78, "martial_arts": 84, "dodge": 76, "toughness": 68, "strength": 66, "dexterity": 86 },
+      "armour": {
+        "torso": null,
+        "gloves": null,
+        "back": null
+      },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 78,
+        "martial_arts": 84,
+        "dodge": 76,
+        "toughness": 68,
+        "strength": 66,
+        "dexterity": 86
+      },
       "people": "xanadu",
       "tier": "monk_crimson",
       "body": "mpfb_male",
@@ -2315,18 +3621,32 @@
       "hair": "ponytail01",
       "hair_color": "#1a1512",
       "eye_color": "#4ad6e8",
-      "morph": { "height": 0.08, "muscle": 0.42, "weight": -0.08 }
+      "morph": {
+        "height": 0.08,
+        "muscle": 0.42,
+        "weight": -0.08
+      }
     },
     {
       "id": "reliquary_lich",
       "label": "Reliquary Cyber-Lich",
       "short": "Cyber-Lich",
       "style": "dorsal_4arm",
-      "hold": { "R": "sword" },
+      "hold": {
+        "R": "msh_voth_obsidian_moonblade"
+      },
       "bonus_slots": 1,
       "dorsal_4arm": true,
       "cyber_arms": true,
-      "stats": { "melee_atk": 76, "melee_def": 74, "martial_arts": 74, "dodge": 58, "toughness": 86, "strength": 76, "dexterity": 74 },
+      "stats": {
+        "melee_atk": 76,
+        "melee_def": 74,
+        "martial_arts": 74,
+        "dodge": 58,
+        "toughness": 86,
+        "strength": 76,
+        "dexterity": 74
+      },
       "people": "cyber_liches",
       "tier": "reliquary_lich",
       "body": "mpfb_male",
@@ -2334,19 +3654,35 @@
       "hair": null,
       "hair_color": "#1c1c1e",
       "eye_color": "#5ad4e6",
-      "morph": { "height": 0.18, "muscle": 0.25, "weight": -0.2 }
+      "morph": {
+        "height": 0.18,
+        "muscle": 0.25,
+        "weight": -0.2
+      }
     },
     {
       "id": "mantis_stalker",
       "label": "Carcosa Dorsal Mantis-Stalker",
       "short": "Mantis-Stalker",
       "style": "dorsal_4arm",
-      "hold": { "R": "sword" },
+      "hold": {
+        "R": "msh_eternian_katana"
+      },
       "bonus_slots": 1,
       "dorsal_4arm": true,
       "dorsal_rig": "mantis",
-      "armour": { "back": null },
-      "stats": { "melee_atk": 78, "melee_def": 72, "martial_arts": 76, "dodge": 74, "toughness": 74, "strength": 72, "dexterity": 84 },
+      "armour": {
+        "back": null
+      },
+      "stats": {
+        "melee_atk": 78,
+        "melee_def": 72,
+        "martial_arts": 76,
+        "dodge": 74,
+        "toughness": 74,
+        "strength": 72,
+        "dexterity": 84
+      },
       "people": "yusar",
       "tier": "electromonk",
       "body": "mpfb_male",
@@ -2354,7 +3690,11 @@
       "hair": "short02",
       "hair_color": "#182028",
       "eye_color": "#4ef4ff",
-      "morph": { "height": 0.16, "muscle": 0.44, "weight": -0.10 }
+      "morph": {
+        "height": 0.16,
+        "muscle": 0.44,
+        "weight": -0.1
+      }
     },
     {
       "id": "lu_tze",
@@ -2362,7 +3702,15 @@
       "short": "Lu-Tze",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 78, "melee_def": 86, "martial_arts": 90, "dodge": 88, "toughness": 72, "strength": 58, "dexterity": 84 },
+      "stats": {
+        "melee_atk": 78,
+        "melee_def": 86,
+        "martial_arts": 90,
+        "dodge": 88,
+        "toughness": 72,
+        "strength": 58,
+        "dexterity": 84
+      },
       "people": "historians",
       "tier": "lu_tze_melon_monk",
       "body": "mpfb_male",
@@ -2370,7 +3718,11 @@
       "hair": "short01",
       "hair_color": "#8f8d88",
       "eye_color": "#4a3c2a",
-      "morph": { "height": -0.25, "muscle": 0.25, "weight": -0.15 }
+      "morph": {
+        "height": -0.25,
+        "muscle": 0.25,
+        "weight": -0.15
+      }
     },
     {
       "id": "azure_monk",
@@ -2378,7 +3730,15 @@
       "short": "Azure Monk",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 56, "melee_def": 64, "martial_arts": 66, "dodge": 70, "toughness": 54, "strength": 50, "dexterity": 68 },
+      "stats": {
+        "melee_atk": 56,
+        "melee_def": 64,
+        "martial_arts": 66,
+        "dodge": 70,
+        "toughness": 54,
+        "strength": 50,
+        "dexterity": 68
+      },
       "people": "xanadu",
       "tier": "monk_azure",
       "body": "mpfb_male",
@@ -2386,7 +3746,11 @@
       "hair": "ponytail01",
       "hair_color": "#181a22",
       "eye_color": "#3e5c78",
-      "morph": { "height": 0.15, "muscle": 0.25, "weight": -0.1 }
+      "morph": {
+        "height": 0.15,
+        "muscle": 0.25,
+        "weight": -0.1
+      }
     },
     {
       "id": "viridian_monk",
@@ -2394,7 +3758,15 @@
       "short": "Viridian Monk",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 52, "melee_def": 62, "martial_arts": 64, "dodge": 68, "toughness": 50, "strength": 46, "dexterity": 66 },
+      "stats": {
+        "melee_atk": 52,
+        "melee_def": 62,
+        "martial_arts": 64,
+        "dodge": 68,
+        "toughness": 50,
+        "strength": 46,
+        "dexterity": 66
+      },
       "people": "xanadu",
       "tier": "monk_viridian",
       "body": "mpfb_female",
@@ -2402,7 +3774,10 @@
       "hair": "ponytail01",
       "hair_color": "#241d18",
       "eye_color": "#3f6a4e",
-      "morph": { "muscle": 0.2, "weight": -0.15 }
+      "morph": {
+        "muscle": 0.2,
+        "weight": -0.15
+      }
     },
     {
       "id": "chronomonk",
@@ -2410,7 +3785,15 @@
       "short": "Chrono-Monk",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 72, "melee_def": 74, "martial_arts": 82, "dodge": 76, "toughness": 68, "strength": 66, "dexterity": 75 },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 74,
+        "martial_arts": 82,
+        "dodge": 76,
+        "toughness": 68,
+        "strength": 66,
+        "dexterity": 75
+      },
       "people": "historians",
       "tier": "chronomonk",
       "body": "mpfb_male",
@@ -2418,7 +3801,10 @@
       "hair": "short04",
       "hair_color": "#2c221b",
       "eye_color": "#52402b",
-      "morph": { "muscle": 0.45, "weight": 0.05 }
+      "morph": {
+        "muscle": 0.45,
+        "weight": 0.05
+      }
     },
     {
       "id": "electromonk",
@@ -2426,9 +3812,19 @@
       "short": "Electro-Monk",
       "style": "unarmed",
       "hold": {},
-      "mods": ["mod_arms_cyber_up"],
+      "mods": [
+        "mod_arms_cyber_up"
+      ],
       "cyber_arms": true,
-      "stats": { "melee_atk": 68, "melee_def": 62, "martial_arts": 76, "dodge": 66, "toughness": 70, "strength": 72, "dexterity": 68 },
+      "stats": {
+        "melee_atk": 68,
+        "melee_def": 62,
+        "martial_arts": 76,
+        "dodge": 66,
+        "toughness": 70,
+        "strength": 72,
+        "dexterity": 68
+      },
       "people": "yusar",
       "tier": "electromonk",
       "body": "mpfb_male",
@@ -2436,7 +3832,10 @@
       "hair": "short02",
       "hair_color": "#1c2026",
       "eye_color": "#4da6c8",
-      "morph": { "muscle": 0.4, "weight": 0.0 }
+      "morph": {
+        "muscle": 0.4,
+        "weight": 0.0
+      }
     },
     {
       "id": "white_lily_monk",
@@ -2444,7 +3843,15 @@
       "short": "White Lily",
       "style": "unarmed",
       "hold": {},
-      "stats": { "melee_atk": 50, "melee_def": 60, "martial_arts": 60, "dodge": 72, "toughness": 48, "strength": 44, "dexterity": 70 },
+      "stats": {
+        "melee_atk": 50,
+        "melee_def": 60,
+        "martial_arts": 60,
+        "dodge": 72,
+        "toughness": 48,
+        "strength": 44,
+        "dexterity": 70
+      },
       "people": "xanadu",
       "tier": "monk_white_lily",
       "body": "mpfb_female",
@@ -2452,7 +3859,10 @@
       "hair": "bob02",
       "hair_color": "#2a201a",
       "eye_color": "#5a4a38",
-      "morph": { "muscle": 0.2, "weight": -0.1 }
+      "morph": {
+        "muscle": 0.2,
+        "weight": -0.1
+      }
     },
     {
       "id": "singularity_archon",
@@ -2461,7 +3871,15 @@
       "style": "arcane",
       "hover": true,
       "hold": {},
-      "stats": { "melee_atk": 78, "melee_def": 72, "martial_arts": 82, "dodge": 76, "toughness": 85, "strength": 75, "dexterity": 80 },
+      "stats": {
+        "melee_atk": 78,
+        "melee_def": 72,
+        "martial_arts": 82,
+        "dodge": 76,
+        "toughness": 85,
+        "strength": 75,
+        "dexterity": 80
+      },
       "people": "extraplanar",
       "tier": "singularity_archon",
       "body": "mpfb_male",
@@ -2469,7 +3887,11 @@
       "hair": null,
       "hair_color": "#0e0e14",
       "eye_color": "#8efcff",
-      "morph": { "height": 0.38, "muscle": 0.30, "weight": -0.28 }
+      "morph": {
+        "height": 0.38,
+        "muscle": 0.3,
+        "weight": -0.28
+      }
     },
     {
       "id": "ophanim_seraph",
@@ -2478,7 +3900,15 @@
       "style": "arcane",
       "hover": true,
       "hold": {},
-      "stats": { "melee_atk": 74, "melee_def": 78, "martial_arts": 84, "dodge": 82, "toughness": 80, "strength": 68, "dexterity": 84 },
+      "stats": {
+        "melee_atk": 74,
+        "melee_def": 78,
+        "martial_arts": 84,
+        "dodge": 82,
+        "toughness": 80,
+        "strength": 68,
+        "dexterity": 84
+      },
       "people": "extraplanar",
       "tier": "ophanim_seraph",
       "body": "mpfb_female",
@@ -2486,7 +3916,11 @@
       "hair": null,
       "hair_color": "#d8dcff",
       "eye_color": "#ffd86b",
-      "morph": { "height": 0.34, "muscle": 0.24, "weight": -0.30 }
+      "morph": {
+        "height": 0.34,
+        "muscle": 0.24,
+        "weight": -0.3
+      }
     },
     {
       "id": "ashen_calamity",
@@ -2495,7 +3929,15 @@
       "style": "arcane",
       "hover": false,
       "hold": {},
-      "stats": { "melee_atk": 82, "melee_def": 68, "martial_arts": 78, "dodge": 62, "toughness": 88, "strength": 86, "dexterity": 72 },
+      "stats": {
+        "melee_atk": 82,
+        "melee_def": 68,
+        "martial_arts": 78,
+        "dodge": 62,
+        "toughness": 88,
+        "strength": 86,
+        "dexterity": 72
+      },
       "people": "extraplanar",
       "tier": "ashen_calamity",
       "body": "mpfb_male",
@@ -2503,7 +3945,11 @@
       "hair": null,
       "hair_color": "#0e0e14",
       "eye_color": "#a86bff",
-      "morph": { "height": 0.42, "muscle": 0.45, "weight": -0.15 }
+      "morph": {
+        "height": 0.42,
+        "muscle": 0.45,
+        "weight": -0.15
+      }
     },
     {
       "id": "spider_matriarch",
@@ -2514,8 +3960,21 @@
       "archetype": "spider",
       "bonus_slots": 1,
       "hold": {},
-      "fauna": { "species": "gilded-orb-spider", "variant": 5, "scale": 1.38, "z_offset": 0.14 },
-      "stats": { "melee_atk": 72, "melee_def": 64, "martial_arts": 74, "dodge": 72, "toughness": 74, "strength": 70, "dexterity": 78 }
+      "fauna": {
+        "species": "gilded-orb-spider",
+        "variant": 5,
+        "scale": 1.38,
+        "z_offset": 0.14
+      },
+      "stats": {
+        "melee_atk": 72,
+        "melee_def": 64,
+        "martial_arts": 74,
+        "dodge": 72,
+        "toughness": 74,
+        "strength": 70,
+        "dexterity": 78
+      }
     },
     {
       "id": "staghorn_beetle",
@@ -2526,8 +3985,21 @@
       "archetype": "beetle",
       "bonus_slots": 1,
       "hold": {},
-      "fauna": { "species": "staghorn-beetle", "variant": 4, "scale": 0.58, "z_offset": 0.18 },
-      "stats": { "melee_atk": 76, "melee_def": 82, "martial_arts": 68, "dodge": 32, "toughness": 94, "strength": 96, "dexterity": 48 }
+      "fauna": {
+        "species": "staghorn-beetle",
+        "variant": 4,
+        "scale": 0.58,
+        "z_offset": 0.18
+      },
+      "stats": {
+        "melee_atk": 76,
+        "melee_def": 82,
+        "martial_arts": 68,
+        "dodge": 32,
+        "toughness": 94,
+        "strength": 96,
+        "dexterity": 48
+      }
     },
     {
       "id": "bowl_mantis",
@@ -2538,8 +4010,21 @@
       "archetype": "mantis",
       "bonus_slots": 1,
       "hold": {},
-      "fauna": { "species": "bowl-mantis", "variant": 1, "scale": 0.88, "z_offset": -0.10 },
-      "stats": { "melee_atk": 80, "melee_def": 74, "martial_arts": 82, "dodge": 76, "toughness": 66, "strength": 72, "dexterity": 88 }
+      "fauna": {
+        "species": "bowl-mantis",
+        "variant": 1,
+        "scale": 0.88,
+        "z_offset": -0.1
+      },
+      "stats": {
+        "melee_atk": 80,
+        "melee_def": 74,
+        "martial_arts": 82,
+        "dodge": 76,
+        "toughness": 66,
+        "strength": 72,
+        "dexterity": 88
+      }
     },
     {
       "id": "emperor_hornet",
@@ -2550,50 +4035,256 @@
       "archetype": "hornet",
       "hover": true,
       "hold": {},
-      "fauna": { "species": "emperor-hornet", "variant": 3, "scale": 1.32, "y_offset": 0.34 },
-      "stats": { "melee_atk": 74, "melee_def": 60, "martial_arts": 76, "dodge": 84, "toughness": 58, "strength": 62, "dexterity": 86 }
+      "fauna": {
+        "species": "emperor-hornet",
+        "variant": 3,
+        "scale": 1.32,
+        "y_offset": 0.34
+      },
+      "stats": {
+        "melee_atk": 74,
+        "melee_def": 60,
+        "martial_arts": 76,
+        "dodge": 84,
+        "toughness": 58,
+        "strength": 62,
+        "dexterity": 86
+      }
     }
   ],
   "choreography": [
-    { "attacker": 0, "attack": "jab_l", "outcome": "block", "note": "Opening probe met with a tight guard" },
-    { "attacker": 1, "attack": "kick_front", "outcome": "dodge", "counter": true, "note": "Sidestepped kick into a crisp counterstrike" },
-    { "attacker": 0, "attack": "hook_l", "outcome": "parry", "note": "Timed deflection drains attacker poise" },
-    { "attacker": 1, "attack": "punch_combo_1", "outcome": "block", "note": "Flurry absorbed on the forearms" },
-    { "attacker": 0, "attack": "kick_roundhouse", "outcome": "dodge", "counter": false, "note": "High roundhouse evaded with a spin" },
-    { "attacker": 1, "attack": "elbow_strike", "outcome": "hit", "note": "Close-quarters strike breaks the rhythm" },
-    { "attacker": 0, "attack": "knee_strike", "outcome": "block", "note": "Rising strike checked at the midsection" },
-    { "attacker": 1, "attack": "uppercut_r", "outcome": "dodge", "counter": true, "note": "Slip back from the uppercut and answer" },
-    { "attacker": 0, "attack": "punch_combo_3", "outcome": "hit", "note": "Combination lands cleanly on the arm" },
-    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low sweep scores a knockdown -> kip-up recovery" }
+    {
+      "attacker": 0,
+      "attack": "jab_l",
+      "outcome": "block",
+      "note": "Opening probe met with a tight guard"
+    },
+    {
+      "attacker": 1,
+      "attack": "kick_front",
+      "outcome": "dodge",
+      "counter": true,
+      "note": "Sidestepped kick into a crisp counterstrike"
+    },
+    {
+      "attacker": 0,
+      "attack": "hook_l",
+      "outcome": "parry",
+      "note": "Timed deflection drains attacker poise"
+    },
+    {
+      "attacker": 1,
+      "attack": "punch_combo_1",
+      "outcome": "block",
+      "note": "Flurry absorbed on the forearms"
+    },
+    {
+      "attacker": 0,
+      "attack": "kick_roundhouse",
+      "outcome": "dodge",
+      "counter": false,
+      "note": "High roundhouse evaded with a spin"
+    },
+    {
+      "attacker": 1,
+      "attack": "elbow_strike",
+      "outcome": "hit",
+      "note": "Close-quarters strike breaks the rhythm"
+    },
+    {
+      "attacker": 0,
+      "attack": "knee_strike",
+      "outcome": "block",
+      "note": "Rising strike checked at the midsection"
+    },
+    {
+      "attacker": 1,
+      "attack": "uppercut_r",
+      "outcome": "dodge",
+      "counter": true,
+      "note": "Slip back from the uppercut and answer"
+    },
+    {
+      "attacker": 0,
+      "attack": "punch_combo_3",
+      "outcome": "hit",
+      "note": "Combination lands cleanly on the arm"
+    },
+    {
+      "attacker": 1,
+      "attack": "leg_sweep",
+      "outcome": "hit",
+      "note": "Low sweep scores a knockdown -> kip-up recovery"
+    }
   ],
   "extraplanar_choreography": [
-    { "attacker": 0, "attack": "lightning_blast", "outcome": "hit", "note": "Astral Lightning Blast arcs across the arena into the chest" },
-    { "attacker": 1, "attack": "kick_roundhouse", "outcome": "dodge", "counter": false, "note": "Monk rushes in with a high roundhouse — Archon phases aside" },
-    { "attacker": 0, "attack": "lightning_blast", "outcome": "block", "note": "Second Astral Lightning Blast grounded on raised forearm guard" },
-    { "attacker": 1, "attack": "leg_sweep", "outcome": "hit", "note": "Low sweep passes beneath levitating Archon — Hover Immunity!" },
-    { "attacker": 0, "attack": "energy_burst", "outcome": "hit", "note": "Singularity Energy Burst implodes & detonates — knockdown into kip-up!" },
-    { "attacker": 0, "attack": "astral_lance", "outcome": "parry", "counter": true, "note": "Monk lands Timed Perfect Parry on Starlight Rift-Lance -> instant Riposte!" },
-    { "attacker": 0, "attack": "rift_claw", "outcome": "hit", "note": "Void-Talon Rend rakes across the guard at close quarters" },
-    { "attacker": 0, "attack": "lightning_blast", "outcome": "parry", "counter": true, "note": "Monk grounds the Astral Lightning Bolt with a two-hand deflection!" }
+    {
+      "attacker": 0,
+      "attack": "lightning_blast",
+      "outcome": "hit",
+      "note": "Astral Lightning Blast arcs across the arena into the chest"
+    },
+    {
+      "attacker": 1,
+      "attack": "kick_roundhouse",
+      "outcome": "dodge",
+      "counter": false,
+      "note": "Monk rushes in with a high roundhouse — Archon phases aside"
+    },
+    {
+      "attacker": 0,
+      "attack": "lightning_blast",
+      "outcome": "block",
+      "note": "Second Astral Lightning Blast grounded on raised forearm guard"
+    },
+    {
+      "attacker": 1,
+      "attack": "leg_sweep",
+      "outcome": "hit",
+      "note": "Low sweep passes beneath levitating Archon — Hover Immunity!"
+    },
+    {
+      "attacker": 0,
+      "attack": "energy_burst",
+      "outcome": "hit",
+      "note": "Singularity Energy Burst implodes & detonates — knockdown into kip-up!"
+    },
+    {
+      "attacker": 0,
+      "attack": "astral_lance",
+      "outcome": "parry",
+      "counter": true,
+      "note": "Monk lands Timed Perfect Parry on Starlight Rift-Lance -> instant Riposte!"
+    },
+    {
+      "attacker": 0,
+      "attack": "rift_claw",
+      "outcome": "hit",
+      "note": "Void-Talon Rend rakes across the guard at close quarters"
+    },
+    {
+      "attacker": 0,
+      "attack": "lightning_blast",
+      "outcome": "parry",
+      "counter": true,
+      "note": "Monk grounds the Astral Lightning Bolt with a two-hand deflection!"
+    }
   ],
   "fourarm_choreography": [
-    { "attacker": 0, "attack": "thorax_quad_flurry", "outcome": "hit", "note": "Loader Brawler fires 4-beat counter-phased rib piston punches & uppercut!" },
-    { "attacker": 1, "attack": "dorsal_mantis_impale", "outcome": "parry", "counter": true, "note": "Cyber-Lich rears twin dorsal claws overhead — Brawler cross-parries mid-level!" },
-    { "attacker": 0, "attack": "thorax_aegis_viper", "outcome": "hit", "note": "Upper arms lock high Aegis guard while twin lower hydraulic fists spear under!" },
-    { "attacker": 1, "attack": "dorsal_scissor_shear", "outcome": "hit", "note": "Articulated Djed servo-arms unfold ±72° and snap across in a scissor-shear!" },
-    { "attacker": 0, "attack": "thorax_pin_cleave", "outcome": "block", "note": "Lower arms sweep & clamp ribs while Lich intercepts with Dorsal Canopy guard!" },
-    { "attacker": 1, "attack": "dorsal_canopy_parry", "outcome": "hit", "note": "Left dorsal claw forms canopy shield while Right dorsal claw spears over-shoulder!" },
-    { "attacker": 0, "attack": "thorax_x_crusher", "outcome": "hit", "note": "4-Quadrant X-Crusher flares wide then slams inward — knockdown into kip-up!" },
-    { "attacker": 1, "attack": "dorsal_tri_beam", "outcome": "hit", "note": "Both dorsal servo-palms aim over the shoulders firing Triple Converging Plasma Lances!" }
+    {
+      "attacker": 0,
+      "attack": "thorax_quad_flurry",
+      "outcome": "hit",
+      "note": "Loader Brawler fires 4-beat counter-phased rib piston punches & uppercut!"
+    },
+    {
+      "attacker": 1,
+      "attack": "dorsal_mantis_impale",
+      "outcome": "parry",
+      "counter": true,
+      "note": "Cyber-Lich rears twin dorsal claws overhead — Brawler cross-parries mid-level!"
+    },
+    {
+      "attacker": 0,
+      "attack": "thorax_aegis_viper",
+      "outcome": "hit",
+      "note": "Upper arms lock high Aegis guard while twin lower hydraulic fists spear under!"
+    },
+    {
+      "attacker": 1,
+      "attack": "dorsal_scissor_shear",
+      "outcome": "hit",
+      "note": "Articulated Djed servo-arms unfold ±72° and snap across in a scissor-shear!"
+    },
+    {
+      "attacker": 0,
+      "attack": "thorax_pin_cleave",
+      "outcome": "block",
+      "note": "Lower arms sweep & clamp ribs while Lich intercepts with Dorsal Canopy guard!"
+    },
+    {
+      "attacker": 1,
+      "attack": "dorsal_canopy_parry",
+      "outcome": "hit",
+      "note": "Left dorsal claw forms canopy shield while Right dorsal claw spears over-shoulder!"
+    },
+    {
+      "attacker": 0,
+      "attack": "thorax_x_crusher",
+      "outcome": "hit",
+      "note": "4-Quadrant X-Crusher flares wide then slams inward — knockdown into kip-up!"
+    },
+    {
+      "attacker": 1,
+      "attack": "dorsal_tri_beam",
+      "outcome": "hit",
+      "note": "Both dorsal servo-palms aim over the shoulders firing Triple Converging Plasma Lances!"
+    }
   ],
   "arthropod_choreography": [
-    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "mantis_scythe_snap", "outcome": "hit", "note": "Twin raptorial scythe-arms flare high and snap shut across the guard!" },
-    { "attacker": 0, "role": "challenger", "attack": "slash_left", "outcome": "parry", "counter": true, "note": "Fore-claws deflect the steel slash -> instant species counter-lunge!" },
-    { "attacker": 1, "role": "arthropod", "slot": 1, "attack": "spider_venom_spit", "outcome": "block", "note": "Secondary species volley (Venom Spit / Ram / Reap / Blitz) braced on raised shield!" },
-    { "attacker": 0, "role": "challenger", "attack": "slash_charged", "outcome": "dodge", "counter": true, "note": "Rapid lateral skitter-dodge evades charged cleave -> counterstrike!" },
-    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "beetle_horn_gore", "outcome": "parry", "counter": true, "note": "Defender lands Timed Perfect Parry on apex lunge -> 0-Poise Riposte!" },
-    { "attacker": 0, "role": "challenger", "attack": "attack", "outcome": "block", "note": "Counter-cut absorbed on hunched chitin carapace guard!" },
-    { "attacker": 1, "role": "arthropod", "slot": 0, "attack": "hornet_dive_sting", "outcome": "hit", "note": "Aerial stinger jackhammer / skyward horn-gore lands cleanly!" },
-    { "attacker": 1, "role": "arthropod", "slot": 1, "attack": "spider_rear_bite", "outcome": "hit", "note": "Finishing tarantula rear & chitin slam drives home!" }
+    {
+      "attacker": 1,
+      "role": "arthropod",
+      "slot": 0,
+      "attack": "mantis_scythe_snap",
+      "outcome": "hit",
+      "note": "Twin raptorial scythe-arms flare high and snap shut across the guard!"
+    },
+    {
+      "attacker": 0,
+      "role": "challenger",
+      "attack": "slash_left",
+      "outcome": "parry",
+      "counter": true,
+      "note": "Fore-claws deflect the steel slash -> instant species counter-lunge!"
+    },
+    {
+      "attacker": 1,
+      "role": "arthropod",
+      "slot": 1,
+      "attack": "spider_venom_spit",
+      "outcome": "block",
+      "note": "Secondary species volley (Venom Spit / Ram / Reap / Blitz) braced on raised shield!"
+    },
+    {
+      "attacker": 0,
+      "role": "challenger",
+      "attack": "slash_charged",
+      "outcome": "dodge",
+      "counter": true,
+      "note": "Rapid lateral skitter-dodge evades charged cleave -> counterstrike!"
+    },
+    {
+      "attacker": 1,
+      "role": "arthropod",
+      "slot": 0,
+      "attack": "beetle_horn_gore",
+      "outcome": "parry",
+      "counter": true,
+      "note": "Defender lands Timed Perfect Parry on apex lunge -> 0-Poise Riposte!"
+    },
+    {
+      "attacker": 0,
+      "role": "challenger",
+      "attack": "attack",
+      "outcome": "block",
+      "note": "Counter-cut absorbed on hunched chitin carapace guard!"
+    },
+    {
+      "attacker": 1,
+      "role": "arthropod",
+      "slot": 0,
+      "attack": "hornet_dive_sting",
+      "outcome": "hit",
+      "note": "Aerial stinger jackhammer / skyward horn-gore lands cleanly!"
+    },
+    {
+      "attacker": 1,
+      "role": "arthropod",
+      "slot": 1,
+      "attack": "spider_rear_bite",
+      "outcome": "hit",
+      "note": "Finishing tarantula rear & chitin slam drives home!"
+    }
   ]
 }

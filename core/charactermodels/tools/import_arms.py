@@ -517,13 +517,13 @@ def orient_and_place(P, N, UV, T, kind, length, is_spliced_shield=False):
                 P = P @ R.T; N = N @ R.T
         span = max(1e-4, max(np.ptp(P[:, 1]), np.ptp(P[:, 2])))
         P *= length / span
+        board_back = float(np.percentile(P[:, 0], 88))
         if not is_spliced_shield and np.ptp(P[:, 0]) < 0.14 * length:
-            x_back = np.percentile(P[:, 0], 88)
-            Ph, Nh, UVh, Th = make_handle_strap_mesh(np.ptp(P[:, 1]), np.ptp(P[:, 2]), x_back, UV.mean(axis=0))
+            Ph, Nh, UVh, Th = make_handle_strap_mesh(np.ptp(P[:, 1]), np.ptp(P[:, 2]), board_back, UV.mean(axis=0))
             n_prev = len(P)
             P = np.vstack([P, Ph]); N = np.vstack([N, Nh]); UV = np.vstack([UV, UVh]); T = np.vstack([T, Th + n_prev])
-        back = np.percentile(P[:, 0], 88)
-        grip = np.array([back - 0.022, 0.5 * (P[:, 1].min() + P[:, 1].max()), 0.5 * (P[:, 2].min() + P[:, 2].max())])
+        # Match make_props.py shield(): board back at x = -0.042, rear handle bar at x = -0.010, front boss toward -X
+        grip = np.array([board_back + 0.042, 0.5 * (P[:, 1].min() + P[:, 1].max()), 0.5 * (P[:, 2].min() + P[:, 2].max())])
         P -= grip
         return P, N, UV, T, None, None
 
@@ -1131,6 +1131,8 @@ MESHY_SHEATH_PAIRS = {
     'msh_dalab_sica_sheath': 'msh_dalab_sica_dagger',
     'msh_lizardman_dao_scabbard': 'msh_lizardman_dao_sword',
     'msh_lizardman_jian_scabbard': 'msh_lizardman_jian_sword',
+    'msh_xanadu_shamshir_scabbard': 'msh_xanadu_shamshir',
+    'msh_khaayken_knife_sheath': 'msh_khaayken_knife',
 }
 
 
@@ -1141,6 +1143,8 @@ def import_all():
     entry_by_id = {}
 
     def add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, culture_label, subset, src_name, is_spliced_shield=False, sheath_id=None, for_weapon=None):
+        if pid in entry_by_id:
+            new_entries[:] = [x for x in new_entries if x['id'] != pid]
         P_d, N_d, UV_d, T_d = decimate_uv_preserving(P, N, UV, T, target_tris=4200)
         P_f, N_f, UV_f, T_f, blade, support = orient_and_place(P_d, N_d, UV_d, T_d, kind, length, is_spliced_shield=is_spliced_shield)
         glb_path = os.path.join(OUT_PROPS, f"{pid}.glb")
@@ -1170,6 +1174,10 @@ def import_all():
             e['support'] = [round(float(x), 3) for x in support]
         if blade:
             e['blade'] = [round(float(x), 3) for x in blade]
+        if kind == 'rifle':
+            e['stock'] = [0.0, 0.0, -0.08, 0.0, 0.0, -0.39, 0.045, 0.02, 0.06]
+        elif kind == 'crossbow':
+            e['stock'] = [0.0, 0.04, -0.13, 0.0, 0.04, -0.27, 0.035, 0.0175, 0.045]
         if kind == 'shield':
             e['low_turn'] = 90
         if kind == 'bow':
@@ -1410,6 +1418,65 @@ def import_all():
             bow_entry['arrow'] = a_stem
             meshy_count += 1
 
+    # 3b. Process standalone / refreshed Meshy GLBs downloaded directly to Downloads
+    print("=== 3b. Processing New & Refreshed Meshy Arms from Downloads ===")
+    dl_meshy_glbs = [
+        # Xanadu full Meshy panoply
+        (['xanadu_shamshir.glb'], 'msh_xanadu_shamshir', 'Xanadu Shamshir', 'scimitar', 0.96, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_shamshir_scabb.glb'], 'msh_xanadu_shamshir_scabbard', 'Xanadu Shamshir Scabbard', 'sheath', 0.78, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_straight_sword.glb'], 'msh_xanadu_straight_sword', 'Xanadu Straight Sword', 'sword', 0.98, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_spear.glb'], 'msh_xanadu_spear', 'Xanadu Spear', 'spear', 1.95, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_mace.glb'], 'msh_xanadu_mace', 'Xanadu Flanged Mace', 'mace', 0.90, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_composite_bow.glb'], 'msh_xanadu_composite_bow', 'Xanadu Composite Bow', 'bow', 1.42, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_sipar (1).glb', 'xanadu_sipar.glb'], 'msh_xanadu_sipar', 'Xanadu Sipar Buckler', 'shield', 0.72, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_oval_shield (1).glb', 'xanadu_oval_shield.glb'], 'msh_xanadu_oval_shield', 'Xanadu Oval Shield', 'shield', 0.90, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_round_shield (1).glb', 'xanadu_round_shield.glb'], 'msh_xanadu_round_shield', 'Xanadu Round Shield', 'shield', 0.85, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_rectangular_sh (1).glb', 'xanadu_rectangular_sh.glb'], 'msh_xanadu_rectangular_shield', 'Xanadu Rectangular Shield', 'shield', 0.96, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        (['xanadu_tall_shield (1).glb', 'xanadu_tall_shield.glb'], 'msh_xanadu_tall_shield', 'Xanadu Tall Shield', 'shield', 1.04, 'xanadu', 'Xanadu', 'Xanadu Arms'),
+        # Khaayken new Meshy weapons, sheath & refreshed shields
+        (['khaayken_spear.glb'], 'msh_khaayken_spear', 'Khaayken Hunting Spear', 'spear', 1.95, 'khaayken', 'Khaayken', 'Khaayken Arms'),
+        (['khaayken_bow.glb'], 'msh_khaayken_bow', 'Khaayken Sinew Bow', 'bow', 1.45, 'khaayken', 'Khaayken', 'Khaayken Arms'),
+        (['Meshy_AI_khaayken_axe_20261124_texture.glb'], 'msh_khaayken_axe', 'Khaayken Hand Axe', 'axe', 0.92, 'khaayken', 'Khaayken', 'Khaayken Arms'),
+        (['Meshy_AI_khaayken_knife_20261124_texture.glb'], 'msh_khaayken_knife', 'Khaayken Bone-Hilt Knife', 'dagger', 0.46, 'khaayken', 'Khaayken', 'Khaayken Arms'),
+        (['Meshy_AI_khaayken_knife_sheath_20261124_texture.glb'], 'msh_khaayken_knife_sheath', 'Khaayken Knife Sheath', 'sheath', 0.40, 'khaayken', 'Khaayken', 'Khaayken Arms'),
+        (['khaayken_narrow_shiel.glb'], 'msh_khaayken_narrow_shield', 'Khaayken Narrow Shield', 'shield', 0.96, 'khaayken', 'Khaayken', 'Khaayken Shields'),
+        (['khaayken_round_shield.glb'], 'msh_khaayken_round_shield', 'Khaayken Round Shield', 'shield', 0.85, 'khaayken', 'Khaayken', 'Khaayken Shields'),
+        # Scyvoi Meshy shield
+        (['scyvoi_round_shield.glb'], 'msh_scyvoi_round_shield', 'Scyvoi Round Shield', 'shield', 0.85, 'scyvoi', 'Scyvoi', 'Scyvoi Arms'),
+        # Izani standalone Hasta
+        (['Meshy_AI_Izani_Hasta_20261106_texture.glb'], 'msh_izani_hasta', 'Izani Hasta', 'spear', 1.95, 'izani', 'Izani (Iziz)', 'Izani Legion'),
+    ]
+    dl_meshy_count = 0
+    for fnames, pid, label, kind, length, people, clabel, subset in dl_meshy_glbs:
+        chosen = next((fn for fn in fnames if os.path.isfile(os.path.join(DL, fn))), None)
+        if not chosen:
+            continue
+        r = glbio.read_mesh(os.path.join(DL, chosen))
+        tex_blobs = encode_textures_from_rig(r)
+        P, N, UV, T = r.pos, r.nrm, r.uv, r.tri
+        extracted_arrow = None
+        if kind == 'bow':
+            comps = connected_components_tris(P, T)
+            if len(comps) > 1:
+                comps.sort(key=lambda c: -len(c))
+                if len(comps[1]) >= 200:
+                    amask = np.zeros(len(T), dtype=bool)
+                    amask[comps[1]] = True
+                    extracted_arrow = submesh(P, N, UV, T, amask)
+                tmask = np.zeros(len(T), dtype=bool)
+                tmask[comps[0]] = True
+                P, N, UV, T = submesh(P, N, UV, T, tmask)
+        bow_entry = add_item(pid, label, kind, length, P, N, UV, T, tex_blobs, people, clabel, subset, chosen)
+        dl_meshy_count += 1
+        print(f"  {chosen:52s} -> {pid} ({kind})")
+        if extracted_arrow is not None:
+            Pa, Na, UVa, Ta = extracted_arrow
+            a_stem = re.sub(r'_bow(_arrows?)?$', '_arrow', pid)
+            a_label = re.sub(r'\s+Bow$', ' Arrow', label)
+            add_item(a_stem, a_label, 'arrow', 0.78, Pa, Na, UVa, Ta, tex_blobs, people, clabel, subset, chosen, for_weapon=pid)
+            bow_entry['arrow'] = a_stem
+            dl_meshy_count += 1
+
     # Link Meshy weapons and sheaths
     for s_pid, w_pid in MESHY_SHEATH_PAIRS.items():
         if s_pid in entry_by_id and w_pid in entry_by_id:
@@ -1417,8 +1484,10 @@ def import_all():
             entry_by_id[s_pid]['for_weapon'] = w_pid
     if 'msh_dalab_falx' in entry_by_id and 'msh_dalab_sica_sheath' in entry_by_id:
         entry_by_id['msh_dalab_falx']['sheath'] = 'msh_dalab_sica_sheath'
+    if 'msh_xanadu_straight_sword' in entry_by_id and 'msh_xanadu_shamshir_scabbard' in entry_by_id:
+        entry_by_id['msh_xanadu_straight_sword'].setdefault('sheath', 'msh_xanadu_shamshir_scabbard')
 
-    print(f"  Imported {meshy_count} unique Meshy weapons, shields & sheaths")
+    print(f"  Imported {meshy_count} archive Meshy + {dl_meshy_count} Downloads Meshy weapons, shields & sheaths")
 
     # 4. Update data/props.json and render thumbnails for existing built-in props too
     pj = os.path.join(HERE, 'data', 'props.json')
@@ -1426,7 +1495,7 @@ def import_all():
     new_ids = {e['id'] for e in new_entries}
     kept_props = []
     for p in props_doc['props']:
-        if p['id'] in new_ids or p.get('src'):
+        if p['id'] in new_ids or (p.get('src') and not p['id'].startswith('tz_')):
             continue
         # Enrich existing built-in props with kind, people, culture_label, subset for the Arms Lab
         pid = p['id']

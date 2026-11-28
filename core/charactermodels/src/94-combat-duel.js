@@ -44,6 +44,57 @@
   var LINK_BY_KEY = {};
   LINKS.forEach(function(l){ LINK_BY_KEY[l.attack] = l; });
   var FIGHTERS = SPEC.fighters || [];
+  var ALL_PROPS = (D.props || []).slice();
+  var PROP_BY_ID = {};
+  ALL_PROPS.forEach(function(p){ PROP_BY_ID[p.id] = p; });
+  var loadoutSlotIdx = 0;
+
+  function propKind(id){
+    if(!id) return null;
+    var p = PROP_BY_ID[id];
+    if(p && p.kind) return p.kind;
+    if(id === 'sword' || id === 'dagger' || id === 'axe' || id === 'mace' || id === 'spear' || id === 'shield' || id === 'bow' || id === 'crossbow' || id === 'rifle' || id === 'pistol' || id === 'arrow') return id;
+    return null;
+  }
+
+  function slotHold(slot){
+    if(!slot) return {};
+    if(slot.holdOverride) return slot.holdOverride;
+    return (slot.preset && slot.preset.hold) || {};
+  }
+
+  function inferStyleFromHold(hold, baseStyle){
+    if(baseStyle === 'arthropod' || baseStyle === 'arcane' || baseStyle === 'thorax_4arm' || baseStyle === 'dorsal_4arm') return baseStyle;
+    var h = hold || {};
+    var rk = propKind(h.R), lk = propKind(h.L);
+    if(lk === 'bow' || rk === 'rifle' || rk === 'crossbow' || rk === 'pistol' || rk === 'sling') return 'ranged';
+    if(rk === 'spear' || rk === 'staff' || rk === 'dart') return 'polearm';
+    if(rk === 'axe' || rk === 'mace') return 'heavy';
+    if(rk === 'sword' || rk === 'scimitar' || rk === 'dagger') return 'sword';
+    if(lk === 'shield') return 'shield';
+    return 'unarmed';
+  }
+
+  function slotStyle(slot){
+    var p = (slot && slot.preset) || {};
+    var base = p.style || 'unarmed';
+    if(slot && slot.holdOverride) return inferStyleFromHold(slot.holdOverride, base);
+    return base;
+  }
+
+  function shortWeaponTag(hold){
+    var h = hold || {};
+    var id = h.R || h.L;
+    if(!id) return 'MA';
+    var pr = PROP_BY_ID[id];
+    if(pr && pr.label){
+      var words = pr.label.replace(/\([^)]*\)/g, '').trim().split(/\s+/);
+      var last = words[words.length - 1] || id;
+      if(last.toLowerCase() === 'shield' && words.length >= 2) last = words[words.length - 2];
+      return last.slice(0, 10).toUpperCase();
+    }
+    return String(propKind(id) || id).slice(0, 10).toUpperCase();
+  }
   var CHOREO = SPEC.choreography || [];
   var EXTRA_CHOREO = SPEC.extraplanar_choreography || [];
   var FOURARM_CHOREO = SPEC.fourarm_choreography || [];
@@ -352,6 +403,7 @@
       maxPoise: 100,
       guardBreakFlash: 0,
       reloadTimer: 0,
+      holdOverride: null,
       graftedMods: [],
       limbs: {},
       tag: null
@@ -737,15 +789,19 @@
     var set = people && people.outfits && people.outfits[sexKey] && people.outfits[sexKey][preset.tier];
 
     var mods = [];
+    if(people && Array.isArray(people.mods)) people.mods.forEach(function(m){ if(mods.indexOf(m) < 0) mods.push(m); });
     if(set && Array.isArray(set.mods)) set.mods.forEach(function(m){ if(mods.indexOf(m) < 0) mods.push(m); });
     if(Array.isArray(preset.mods)) preset.mods.forEach(function(m){ if(mods.indexOf(m) < 0) mods.push(m); });
     if(slot && Array.isArray(slot.graftedMods)) slot.graftedMods.forEach(function(m){ if(mods.indexOf(m) < 0) mods.push(m); });
     r.mods = mods.filter(function(m){ return kit.items.some(function(it){ return it.id === m; }); });
+    if(people && people.coat) r.coat = people.coat;
 
     if(set){
-      ['head', 'torso', 'back', 'gloves', 'legs', 'feet'].forEach(function(sl){
+      ['head', 'implant', 'torso', 'back', 'gloves', 'legs', 'feet'].forEach(function(sl){
         r.armour[sl] = (set[sl] && kit.items.some(function(it){ return it.id === set[sl]; })) ? set[sl] : null;
       });
+      if(set.facepaint) r.facepaint = JSON.parse(JSON.stringify(set.facepaint));
+      if(set.makeup) r.makeup = JSON.parse(JSON.stringify(set.makeup));
     }
     if(preset && preset.armour){
       Object.keys(preset.armour).forEach(function(sl){
@@ -763,34 +819,46 @@
 
   function fighterIdleClip(slot){
     var p = (slot && slot.preset) || {};
-    if(p.style === 'arthropod' || p.arthropod) return STYLE_IDLES.arthropod || 'arthro_idle';
-    var hold = p.hold || {};
-    if(slot.stance === 'guard' && (hold.L === 'shield' || p.style === 'shield')) return 'ual_shield_up';
-    if(p.style === 'sword') return STYLE_IDLES.sword || 'ual_sword_idle';
-    if(p.style === 'heavy' || p.style === 'polearm') return 'combat_idle';
-    if(p.style === 'thorax_4arm' || p.style === 'dorsal_4arm') return STYLE_IDLES[p.style] || 'combat_idle';
-    if(p.style === 'arcane') return STYLE_IDLES.arcane || 'combat_idle';
-    if(p.style === 'ranged') return hold.L === 'bow' ? 'bow_scan' : 'combat_idle';
-    return STYLE_IDLES[p.style] || IDLE_CLIP;
+    var st = slotStyle(slot);
+    if(st === 'arthropod' || p.arthropod) return STYLE_IDLES.arthropod || 'arthro_idle';
+    var hold = slotHold(slot);
+    var lk = propKind(hold.L);
+    if(slot.stance === 'guard' && (lk === 'shield' || st === 'shield')) return 'ual_shield_up';
+    if(st === 'sword') return STYLE_IDLES.sword || 'ual_sword_idle';
+    if(st === 'heavy' || st === 'polearm') return 'combat_idle';
+    if(st === 'thorax_4arm' || st === 'dorsal_4arm') return STYLE_IDLES[st] || 'combat_idle';
+    if(st === 'arcane') return STYLE_IDLES.arcane || 'combat_idle';
+    if(st === 'ranged') return lk === 'bow' ? 'bow_scan' : 'combat_idle';
+    return STYLE_IDLES[st] || IDLE_CLIP;
   }
 
   function wantTwoHands(hold, clipName){
     if(!hold || !hold.R || hold.L) return false;
     if(clipName === 'reload' || clipName === 'reload_kneel' || clipName === 'ual_pistol_reload') return false;
+    var rk = propKind(hold.R);
     var cInfo = KCharFigure.clipData && KCharFigure.clipData[clipName];
-    if(cInfo && cInfo.two_hands && cInfo.two_hands.indexOf(hold.R) >= 0) return true;
-    if((hold.R === 'spear' || hold.R === 'rifle') && (clipName === 'combat_idle' || clipName === 'idle')) return true;
+    if(cInfo && cInfo.two_hands){
+      var th = cInfo.two_hands;
+      if(th.indexOf(hold.R) >= 0 || (rk && th.indexOf(rk) >= 0) || (rk === 'scimitar' && th.indexOf('sword') >= 0) || (rk === 'crossbow' && th.indexOf('rifle') >= 0)){
+        return true;
+      }
+    }
+    if((rk === 'spear' || rk === 'staff' || rk === 'rifle' || rk === 'crossbow') && (clipName === 'combat_idle' || clipName === 'idle' || clipName === 'walk_shoot')) return true;
     return false;
   }
 
   function buildHoldSpec(slot, clipName){
-    var h = (slot && slot.preset && slot.preset.hold) || {};
+    var h = slotHold(slot);
+    var rId = h.R || null, lId = h.L || null;
+    if(lId && propKind(lId) === 'bow' && !rId){
+      rId = (PROP_BY_ID[lId] && PROP_BY_ID[lId].arrow) || 'arrow';
+    }
     return {
-      R: h.R || null,
-      L: h.L || null,
+      R: rId,
+      L: lId,
       R2: h.R2 || null,
       L2: h.L2 || null,
-      both: wantTwoHands(h, clipName)
+      both: wantTwoHands({ R:rId, L:lId }, clipName)
     };
   }
 
@@ -2099,7 +2167,7 @@
     }
     fighter.clip = clipName;
     var initial = resolveClip(fighter, clipName);
-    var h = (fighter.preset && fighter.preset.hold) || {};
+    var h = slotHold(fighter);
     if(fighter.fig.held){
       fighter.fig.held.both = wantTwoHands(h, initial);
     }
@@ -2264,7 +2332,7 @@
 
   function linksForFighter(slot){
     var p = (slot && slot.preset) || {};
-    var style = p.style || 'unarmed';
+    var style = slotStyle(slot);
     if(style === 'arthropod'){
       var arch = p.archetype || null;
       var aList = LINKS.filter(function(l){
@@ -2272,12 +2340,18 @@
       });
       if(aList.length) return aList;
     }
-    var hold = p.hold || {};
+    var hold = slotHold(slot);
+    var rk = propKind(hold.R), lk = propKind(hold.L);
     var list = LINKS.filter(function(l){
+      if(style === 'ranged'){
+        if(lk === 'bow') return l.attack === 'bow_shot';
+        if(rk === 'rifle' || rk === 'crossbow' || rk === 'pistol') return l.attack === 'gun_shot';
+        return l.style === 'ranged';
+      }
       if(l.style === style) return true;
-      if(style === 'thorax_4arm' && hold.R === 'axe' && l.attack === 'axe_chop') return true;
-      if(style === 'dorsal_4arm' && hold.R === 'sword' && l.attack === 'slash_left') return true;
-      if(hold.L === 'shield' && l.style === 'shield') return true;
+      if(style === 'thorax_4arm' && (rk === 'axe' || rk === 'mace') && l.attack === 'axe_chop') return true;
+      if(style === 'dorsal_4arm' && (rk === 'sword' || rk === 'scimitar') && l.attack === 'slash_left') return true;
+      if(lk === 'shield' && l.style === 'shield') return true;
       if(style === 'sword' && l.attack === 'thrust') return true;
       return false;
     });
@@ -2423,14 +2497,18 @@
     var p = slot.preset || {};
     var stObj = STANCES[slot.stance] || STANCES.balanced;
     var pPct = Math.max(0, Math.min(100, Math.round((slot.poise / Math.max(1, slot.maxPoise)) * 100)));
+    var curHold = slotHold(slot);
+    var rPropObj = curHold.R && PROP_BY_ID[curHold.R];
+    var lPropObj = curHold.L && PROP_BY_ID[curHold.L];
+    var holdTitle = [rPropObj ? ('R: ' + rPropObj.label) : '', lPropObj ? ('L: ' + lPropObj.label) : ''].filter(Boolean).join(' · ') || 'Martial Arts (Unarmed)';
     var modLabel = p.arthropod
       ? ((p.archetype ? p.archetype.toUpperCase() : 'ARTHRO') + (p.hover ? ' · FLY' : ''))
       : p.dorsal_4arm ? 'DORSAL 4A'
       : p.four_arms ? 'THORAX 4A'
       : (slot.graftedMods.indexOf(CYBER_MOD) >= 0 || p.cyber_arms) ? 'CYBER'
       : p.hover ? 'HOVER'
-      : p.style === 'arcane' ? 'ARCANE'
-      : (p.hold && p.hold.R ? p.hold.R.toUpperCase() : 'MA');
+      : slotStyle(slot) === 'arcane' ? 'ARCANE'
+      : shortWeaponTag(curHold);
     var limbsHtml = ZONES.map(function(z){
       var zm = zoneMetaFor(slot, z);
       var info = limbClassAndTag(slot.limbs[z]);
@@ -2442,9 +2520,9 @@
       : '';
     return '<div class="df-card' + (slot.guardBreakFlash > 0 ? ' guard-break' : '') + '" data-card="' + slot.idx + '">' +
       '<div class="df-head">' +
-        '<span class="df-name">' + slot.side + ' · ' + (p.short || p.label) + '</span>' +
+        '<span class="df-name" title="' + holdTitle + '">' + slot.side + ' · ' + (p.short || p.label) + '</span>' +
         '<span class="df-pills">' +
-          '<span class="df-mod-pill">' + modLabel + '</span>' +
+          '<span class="df-mod-pill" title="' + holdTitle + '">' + modLabel + '</span>' +
           '<button class="df-stance-pill" data-cycle-stance="' + slot.idx + '" title="Click to cycle Active Stance">' + stObj.short + '</button>' +
         '</span>' +
       '</div>' +
@@ -2827,7 +2905,7 @@
       trigger(chosen.attack, out, atkIdx);
       return;
     }
-    var bothUnarmed = (F[0].preset.style === 'unarmed' && F[1].preset.style === 'unarmed');
+    var bothUnarmed = (slotStyle(F[0]) === 'unarmed' && slotStyle(F[1]) === 'unarmed');
     if(bothUnarmed && CHOREO.length && outcomeMode === 'choreo'){
       var step = CHOREO[choreoIdx % CHOREO.length];
       choreoIdx++;
@@ -3180,6 +3258,9 @@
     var fcWrap = $('duel-fc-wrap'), fGrid = $('duel-fgrid');
     if(fcWrap) fcWrap.hidden = (sandboxMode !== '2v1');
     if(fGrid) fGrid.classList.toggle('three', sandboxMode === '2v1');
+    var armCBtn = $('duel-arm-slot-2');
+    if(armCBtn) armCBtn.hidden = (sandboxMode !== '2v1');
+    if(sandboxMode !== '2v1' && loadoutSlotIdx === 2){ loadoutSlotIdx = 0; syncLoadoutUI(); }
 
     if(!active || !host){
       refreshHudCards();
@@ -3237,11 +3318,64 @@
     return tacticalPause;
   }
 
+  function syncLoadoutUI(){
+    var slot = F[loadoutSlotIdx] || F[0];
+    var h = slotHold(slot);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-arm-slot]'), function(b){
+      b.setAttribute('aria-pressed', +b.dataset.armSlot === loadoutSlotIdx);
+    });
+    var rSel = $('duel-arm-r'), lSel = $('duel-arm-l'), rst = $('duel-arm-reset');
+    var isArthro = isArthropodFighter(slot);
+    if(rSel){ rSel.disabled = isArthro; rSel.value = h.R || ''; }
+    if(lSel){ lSel.disabled = isArthro; lSel.value = h.L || ''; }
+    if(rst) rst.disabled = !slot.holdOverride;
+  }
+
+  function equipFighterArms(slotIdx, holdPatch){
+    var slot = F[slotIdx];
+    if(!slot || isArthropodFighter(slot)) return Promise.resolve(false);
+    if(holdPatch === null){
+      slot.holdOverride = null;
+    } else {
+      var cur = Object.assign({}, slotHold(slot));
+      if(holdPatch && typeof holdPatch === 'object'){
+        ['R', 'L', 'R2', 'L2'].forEach(function(sd){
+          if(sd in holdPatch) cur[sd] = holdPatch[sd] || null;
+        });
+        // If equipping a bow in L and R holds a melee/gun weapon, clear R so bow arrow nocks cleanly
+        if(cur.L && propKind(cur.L) === 'bow' && cur.R && propKind(cur.R) !== 'arrow'){
+          cur.R = null;
+        }
+        // If equipping a 2H firearm/crossbow in R while L held a bow, clear the bow
+        if(cur.R && propKind(cur.R) !== 'arrow' && cur.L && propKind(cur.L) === 'bow'){
+          cur.L = null;
+        }
+      }
+      slot.holdOverride = cur;
+    }
+    syncLoadoutUI();
+    populateAttackButtons();
+    refreshHudCards();
+    if(!active || !host || !slot.fig || slot.fig.isArthropod) return Promise.resolve(true);
+    var idle = fighterIdleClip(slot);
+    return slot.fig.hold(buildHoldSpec(slot, idle)).then(function(){
+      slot.fig.looping = resolveClip(slot, idle);
+      if(slot.state === 'GUARD'){
+        return playFighterClip(slot, idle, 0.10);
+      }
+    }).then(function(){
+      if(slot.fig) slot.fig.update(0);
+      updateHud(activeExchanges[0] || null);
+      return true;
+    });
+  }
+
   function setFighterPreset(slotIdx, id){
     var slot = F[slotIdx];
     var p = FIGHTERS.filter(function(x){ return x.id === id; })[0];
     if(!slot || !p) return Promise.resolve(false);
     slot.preset = p;
+    slot.holdOverride = null;
     slot.graftedMods = [];
     initFighterStats(slot);
     var selId = slotIdx === 0 ? 'duel-fa' : slotIdx === 1 ? 'duel-fb' : 'duel-fc';
@@ -3252,6 +3386,7 @@
     if($('dhud-extraplanar-btn')) $('dhud-extraplanar-btn').setAttribute('aria-pressed', extraplanarDemo);
     if($('dhud-fourarm-btn')) $('dhud-fourarm-btn').setAttribute('aria-pressed', fourArmDemo);
     if($('dhud-arthropod-btn')) $('dhud-arthropod-btn').setAttribute('aria-pressed', arthropodDemo);
+    syncLoadoutUI();
     populateAttackButtons();
     if(!active || !host){
       refreshHudCards();
@@ -3335,6 +3470,7 @@
 
     var pArchon = findPreset('singularity_archon', 0);
     var pMonk = findPreset('crimson_monk', 0);
+    F.forEach(function(s){ s.holdOverride = null; });
     if(pArchon){
       F[0].preset = pArchon;
       F[0].graftedMods = [];
@@ -3391,6 +3527,7 @@
         host.cam.want.dist = sandboxMode === '2v1' ? 4.75 : 4.35;
         host.cam.want.ty = 1.02;
       }
+      syncLoadoutUI();
       populateAttackButtons();
       refreshHudCards();
       showCallout('⚡ EXTRAPLANAR BOSS DEMO · SINGULARITY ARCHON', 'arcane');
@@ -3420,6 +3557,7 @@
 
     var pThorax = findPreset((opts && opts.fighterA) || 'loader_enforcer', 0);
     var pDorsal = findPreset((opts && opts.fighterB) || 'reliquary_lich', 1);
+    F.forEach(function(s){ s.holdOverride = null; });
     if(pThorax){
       F[0].preset = pThorax;
       F[0].graftedMods = [];
@@ -3481,6 +3619,7 @@
         host.cam.want.dist = sandboxMode === '2v1' ? 4.65 : 3.95;
         host.cam.want.ty = 1.00;
       }
+      syncLoadoutUI();
       populateAttackButtons();
       refreshHudCards();
       showCallout('🦾 4-LIMB SHOWCASE · THORAX vs DORSAL', 'parry');
@@ -3510,6 +3649,7 @@
 
     var pLead = findPreset((opts && opts.fighterA) || 'iziz_legionary', 0);
     var pArthro = findPreset((opts && opts.fighterB) || 'bowl_mantis', 1);
+    F.forEach(function(s){ s.holdOverride = null; });
     if(pLead){
       F[0].preset = pLead;
       F[0].graftedMods = [];
@@ -3571,6 +3711,7 @@
         host.cam.want.dist = sandboxMode === '2v1' ? 5.15 : 4.55;
         host.cam.want.ty = 1.00;
       }
+      syncLoadoutUI();
       populateAttackButtons();
       refreshHudCards();
       showCallout('🐛 GIANT ARTHROPOD TRIAL · ' + (F[1].preset.short || 'ARTHROPOD').toUpperCase(), 'dodge');
@@ -3725,6 +3866,19 @@
       '    <label class="duel-fbox"><b>B · Defender</b><select id="duel-fb"></select></label>',
       '    <label class="duel-fbox" id="duel-fc-wrap" hidden><b>C · Flanker</b><select id="duel-fc"></select></label>',
       '  </div>',
+      '  <div class="duel-row" style="justify-content:space-between;margin-top:2px">',
+      '    <span style="font:700 10.5px/1 var(--display);letter-spacing:.04em;color:var(--muted)">CULTURAL ARMS</span>',
+      '    <span style="display:flex;gap:3px;align-items:center">',
+      '      <button type="button" class="duel-btn" data-arm-slot="0" aria-pressed="true" style="padding:2px 6px;font-size:10.5px">A</button>',
+      '      <button type="button" class="duel-btn" data-arm-slot="1" aria-pressed="false" style="padding:2px 6px;font-size:10.5px">B</button>',
+      '      <button type="button" class="duel-btn" id="duel-arm-slot-2" data-arm-slot="2" aria-pressed="false" hidden style="padding:2px 6px;font-size:10.5px">C</button>',
+      '      <button type="button" class="duel-btn" id="duel-arm-reset" title="Restore preset default arms" style="padding:2px 6px;font-size:10px">↺ Preset</button>',
+      '    </span>',
+      '  </div>',
+      '  <div class="duel-fighters">',
+      '    <label class="duel-fbox"><b>R · Weapon</b><select id="duel-arm-r"></select></label>',
+      '    <label class="duel-fbox"><b>L · Shield / Bow</b><select id="duel-arm-l"></select></label>',
+      '  </div>',
       '</section>',
       '<section class="duel-sec">',
       '  <h3>Active Stance (A) & RTWPBout</h3>',
@@ -3804,9 +3958,59 @@
     if(F[1].preset) fb.value = F[1].preset.id;
     if(F[2].preset) fc.value = F[2].preset.id;
 
-    fa.addEventListener('change', function(){ setFighterPreset(0, fa.value); });
-    fb.addEventListener('change', function(){ setFighterPreset(1, fb.value); });
-    fc.addEventListener('change', function(){ setFighterPreset(2, fc.value); });
+    fa.addEventListener('change', function(){ loadoutSlotIdx = 0; setFighterPreset(0, fa.value); });
+    fb.addEventListener('change', function(){ loadoutSlotIdx = 1; setFighterPreset(1, fb.value); });
+    fc.addEventListener('change', function(){ loadoutSlotIdx = 2; setFighterPreset(2, fc.value); });
+
+    // Populate Cultural Arms Loadout dropdowns (R-hand weapons & L-hand shields/bows grouped by culture)
+    (function populateArmsDropdowns(){
+      var rSel = $('duel-arm-r'), lSel = $('duel-arm-l');
+      if(!rSel || !lSel) return;
+      [['R', rSel, 'Unarmed (Empty R)'], ['L', lSel, 'Empty L (2H / Free)']].forEach(function(pair){
+        var side = pair[0], sel = pair[1], emptyLbl = pair[2];
+        var emptyOpt = document.createElement('option');
+        emptyOpt.value = ''; emptyOpt.textContent = emptyLbl;
+        sel.appendChild(emptyOpt);
+        var groups = {};
+        ALL_PROPS.forEach(function(pr){
+          if(!pr || pr.hand !== side) return;
+          if(pr.kind === 'sheath' || pr.kind === 'arrow' || pr.kind === 'tool') return;
+          var ck = pr.culture_label || pr.people || 'General';
+          (groups[ck] = groups[ck] || []).push(pr);
+        });
+        Object.keys(groups).sort(function(a, b){
+          if(a.indexOf('General') === 0) return 1;
+          if(b.indexOf('General') === 0) return -1;
+          return a.localeCompare(b);
+        }).forEach(function(ck){
+          var og = document.createElement('optgroup');
+          og.label = ck + ' (' + groups[ck].length + ')';
+          groups[ck].forEach(function(pr){
+            var o = document.createElement('option');
+            o.value = pr.id;
+            o.textContent = pr.label + (pr.sheath ? ' (+Scabbard)' : '');
+            og.appendChild(o);
+          });
+          sel.appendChild(og);
+        });
+      });
+      Array.prototype.forEach.call(dp.querySelectorAll('[data-arm-slot]'), function(b){
+        b.addEventListener('click', function(){
+          loadoutSlotIdx = +b.dataset.armSlot || 0;
+          syncLoadoutUI();
+        });
+      });
+      rSel.addEventListener('change', function(){
+        equipFighterArms(loadoutSlotIdx, { R: rSel.value || null });
+      });
+      lSel.addEventListener('change', function(){
+        equipFighterArms(loadoutSlotIdx, { L: lSel.value || null });
+      });
+      $('duel-arm-reset').addEventListener('click', function(){
+        equipFighterArms(loadoutSlotIdx, null);
+      });
+      syncLoadoutUI();
+    })();
 
     Array.prototype.forEach.call(dp.querySelectorAll('#duel-stances [data-stance]'), function(b){
       b.addEventListener('click', function(){ setStance(0, b.dataset.stance); });
@@ -3964,7 +4168,7 @@
           side: s.side,
           id: s.preset && s.preset.id,
           label: s.preset && s.preset.label,
-          style: s.preset && s.preset.style,
+          style: slotStyle(s),
           fourArms: !!(s.fig && s.fig.fourArms),
           hasDorsalArms: !!(s.fig && s.fig.hasDorsalArms),
           fourArmMove: (s.fig && s.fig._faMove && s.fig._faMove.key) || null,
@@ -3972,7 +4176,8 @@
           arthropodArchetype: (s.preset && s.preset.archetype) || null,
           arthropodClip: (s.fig && s.fig.activeClip) || null,
           hover: !!(s.preset && s.preset.hover),
-          hold: (s.preset && s.preset.hold) || {},
+          hold: slotHold(s),
+          sheath: (s.fig && s.fig.held && s.fig.held.sheath) || null,
           stance: s.stance,
           poise: Math.round(s.poise),
           maxPoise: s.maxPoise,
@@ -4016,6 +4221,7 @@
       setStance: setStance,
       setPaused: setTacticalPause,
       setFighter: setFighterPreset,
+      equipArms: equipFighterArms,
       triggerParry: triggerParry,
       triggerDodge: triggerDodge,
       resetHP: resetAllHP,
