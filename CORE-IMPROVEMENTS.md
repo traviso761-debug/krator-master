@@ -1098,6 +1098,36 @@ check request here, with its negative control.
   register polygonal interior floors with `KWALK.poly({ pts: [[x, z, y], ...] })` and stairs with `KWALK.strip({ a, b, w, tag: 'stair' })`,
   and ensure the `interiors` export contributor emits `{ format: 'krator-interiors', buildings: [{ id, storeys, links, walls }] }`.
 
+## Survey of 2026-11-28c: Priority 1 8-Biome Flora Expansion (Ria Corridor, Southwest Bay & The Tiers) — 6-subagent pitfalls, tips & bugs
+
+- **`BIO.packUnsampled` false positives on `KGROUND.hook`, Canvas2D card-bleed dilation & `STATION_EXCLUDE` (`core/terrain/43-core-ground.js`, `core/biome/20-core-kit.js`):**
+  1. `KGROUND.hook(MAT_GROUND, ...)` binds `uKG0..uKGN` inside `onBeforeCompile` (`sh.uniforms`) rather than `MAT_GROUND.uniforms` on
+     `MeshStandardMaterial`, causing `BIO.packUnsampled` to fail on live ground layers (`spiderlake`, `swbay`) unless every host mirrors
+     `uKG*` onto `MAT_GROUND.uniforms`. Have `KGROUND.hook` register its layer maps in `KMAT.imaged` (or `mat.userData.kgroundMaps`).
+  2. Replacing `rootTex.image = dilatedCanvas` in Canvas2D card fringe-bleed passes (`spiderlake` `89z9-vstack-post.js`) strips `.src`/`.currentSrc`
+     and skips `m.map !== rootTex` clones, flagging placed cards as unsampled; preserve `bleed.src = img.currentSrc || img.src` and update clones.
+  3. Multi-station kits (`spiderlake`, `swbay`, `tiers`) need per-station `STATION_EXCLUDE[STATION]` in `matlib_pack.fragment(...)`, and ground
+     completeness checks (`tiers/src/45-host-stage.js` `GLW.some(...)`) must filter by `GL_USE` so excluded station layers do not null out `KGROUND`.
+- **`BIO.sootItems` on pre-linearized vertex-coloured `bio` meshes (`core/biome/20-core-kit.js`):** Unmapped (`!mt.map && !mt.emissiveMap`)
+  `mt.userData.bio` materials carrying pre-linearized dark vertex colours (`ebadlands` `G.grapes()` read via `BIO.kin` on `tiers-canyon`, or
+  unmapped `far`/walker meshes on `swbay`) fail `BIO.sootItems` (`< 2%` linear albedo) even if `mt.color` is boosted. Either multiply by `mt.color`
+  or skip `mt.userData.preLinearVertexColors` in `BIO.sootItems` (until then, a neutral `2x2` `#ffffff` `BIO.canvasTex` with `0` `rng()` draws clears it).
+- **`tools/textures/pack.py` incremental per-family SHA1 cache & unbuffered progress (`tools/textures/pack.py`):** Both `pack.py <build>` and
+  `pack.py <build> --check` currently re-run Pillow Lanczos, FFT height reconstruction, and lossless WebP `method=6` encoding in memory for
+  every family from scratch (~4–5 CPU-min per biome with silent buffered stdout, hitting 10-min timeouts when parallel subagents pack at once).
+  Reuse existing `tex/<fam>.*.webp` whenever `(source sha1, family config JSON)` matches `tex/pack.json` (unless `--force`), and flush `[i/N]` lines.
+- **`tools/build.py --no-census` & `check_botany.py` duplicate-`items` / `KFRONTIER` metadata (`tools/build.py`, `tools/check_botany.py`, `core/frontier/18-core-frontier.js`):**
+  Running any biome's `build.py` re-enters `tools/build.py` and mutates shared `biomes/botany_census.json`, creating merge races across parallel
+  biome subagents; add `--no-census` for isolated builds. In `check_botany.py`, warn when two `SPECIES`/`PLANTS` records share an item name in
+  `items: [...]` (which shadows `speciesOfItem` inspector lookups: `springhollows`, `arcflow`) or push uncatalogued alias keys to `PLACED`, and
+  export canonical `KFRONTIER.SPECIES_META` (`HV` harvest tags, heights, display names) for the 5 Carnelian clades.
+- **Headless fallback in `BIO.canvasTex` / `BIO.alphaTex` & shared `BIO.dryRun` Node stub (`core/biome/30-core-foliage.js`):** Returning a `1x1`
+  `THREE.Texture` / `THREE.DataTexture` when `typeof document === 'undefined'` lets any biome's `tests/test-*.js` load `50`–`70` + `tex/pack.json`
+  directly in Node (`< 1 s` multi-station placement, `cardCheck`, substrate/lithology, and `KSPACE` squeeze-out checks without a custom DOM shim).
+- **`BIO.range` vs `BIO.grid({lod})` runtime chunk culling (`core/biome/40-core-place.js`):** Passing `{lod: midR}` to `BIO.grid` gates build-time
+  placement by `BIO.lodD` but leaves `BIO.range == null`, baking all instances into `key = ''` (`frustumCulled = false`, `1.1M` unculled triangles on
+  `swbay`). Warn or optionally bind `BIO.range` when `BIO.grid` receives `{range}` / `{lod}` with `BIO.LOD.chunk > 0`.
+
 ## Order of work this suggests
 
 1. **Now, tools only, no page moves** (an afternoon or two each):

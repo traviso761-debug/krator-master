@@ -48,25 +48,41 @@
    "bytes": 2167083,
    "sha256": "ce8c031d049e9372e65bda9b5839124cc92790d7e1afe22fe47853b27de09297"
   },
+  "biomes/arachnoids/dist/arachnoids-frostrim.html": {
+   "bytes": 3919694,
+   "sha256": "9fa6efac8c0b6bee855166190fd45ca0d7d0dd0b0b9963db55f49856ec83435c"
+  },
+  "biomes/arachnoids/dist/arachnoids-fumarole.html": {
+   "bytes": 4609326,
+   "sha256": "77a5314235abe7463defd869c25b78fc9cb17e4406ae50efca81dccb278230cf"
+  },
+  "biomes/arachnoids/dist/arachnoids-ledges.html": {
+   "bytes": 5152310,
+   "sha256": "c24404405aa454ce40c5af88cabeaebe198e1d06b33a9bcb98c402d0503e5cd0"
+  },
+  "biomes/arachnoids/dist/arachnoids.html": {
+   "bytes": 6273743,
+   "sha256": "029b61da810e374cee2d753448ac840e2ca350e33056cbc3d0a41ecc1c7a29da"
+  },
   "biomes/arcflow/dist/arcflow-auger.html": {
-   "bytes": 1596359,
-   "sha256": "312d422feadc70f59b58e2cf8f0c5bd88ee679686593c08347a526e7530d8302"
+   "bytes": 1773006,
+   "sha256": "424508549de2834d85ad6508e14b3376e88dcd2e3d9c12964e873fdef7a94076"
   },
   "biomes/arcflow/dist/arcflow-koski.html": {
-   "bytes": 1596360,
-   "sha256": "44704754360213847048f552bd3527f5daa6d87dc438992106ae649cfeb03254"
+   "bytes": 1772808,
+   "sha256": "7ecb26c82bba97f246d19dbb3a7eb4eb07c90ae874fb2d6856e13feb2f98d7e0"
   },
   "biomes/arcflow/dist/arcflow-neva.html": {
-   "bytes": 1596367,
-   "sha256": "75d2912492dfb5db815b6eed7b749b499aa842e85ee73e6854abbfffd3571910"
+   "bytes": 1772938,
+   "sha256": "8f1287f0f4ff321cbd101a25f960e129bdaec95d1c1aca34f7c0a445cfd809d5"
   },
   "biomes/arcflow/dist/arcflow-seep.html": {
-   "bytes": 1596361,
-   "sha256": "c3b0674f91f36f8f9ea90c6d9d68ec243ba8df42d3b555f7392275d26a54dc19"
+   "bytes": 1773006,
+   "sha256": "a262e2ffe24ee7022d12e482ca2efb2805d2e9c861b978075073900802bfe1ff"
   },
   "biomes/arcflow/dist/arcflow.html": {
-   "bytes": 1596367,
-   "sha256": "9c204387fe009a2cb74c8c19f6046978e19481ef5badd4a46665c321d4ed7f03"
+   "bytes": 1772850,
+   "sha256": "bb98dd74933c6049d955d03f756c81b4bb18899f2a828c02712d4f6afe7c2e1e"
   },
   "biomes/arch/dist/arch-barrens.html": {
    "bytes": 2315042,
@@ -139,6 +155,22 @@
   "biomes/clivobredos/dist/clivobredos.html": {
    "bytes": 7381873,
    "sha256": "850678c02dcf06a5d9ccb81f77c2126502dcc2a076ae92bc83a231b699e3937b"
+  },
+  "biomes/compasshills/dist/compasshills-cuesta.html": {
+   "bytes": 7309239,
+   "sha256": "f0c7bbd69225b6cf5ff1a2c9eb8bdf43337f03d76f6eb523cb72480a075c7e1b"
+  },
+  "biomes/compasshills/dist/compasshills-gorge.html": {
+   "bytes": 7173504,
+   "sha256": "4a410a9b32a46ef1494ae964ed69601901696e5fb9670a0d3f11c0f60d7ef56f"
+  },
+  "biomes/compasshills/dist/compasshills-tors.html": {
+   "bytes": 7205314,
+   "sha256": "d9d46af6548868fe17ba3ad94405b5d520c7ac21cbe419604a884801cf499898"
+  },
+  "biomes/compasshills/dist/compasshills.html": {
+   "bytes": 7528911,
+   "sha256": "972c4bd5c96e9bd0b60af7f9ad6f22429928a0f1697b873e97383ca485fa192b"
   },
   "biomes/copperglacier/dist/copperglacier-azurite.html": {
    "bytes": 5246698,
@@ -969,60 +1001,60 @@
    "sha256": "0d3000d74b5d64f32f34bc31a7debe8fad1f814df16ab7146a4c85a50a855bf0"
   },
   "biomes/spiderlake/dist/spiderlake-dolomite.html": {
-   "bytes": 6628938,
-   "sha256": "f43886a801cbd89a80f9c206d1e673b895c8c980eeb495af9e6adb956b16228c"
+   "bytes": 7277577,
+   "sha256": "54a953a7391b7aca3e266486f06b23a8a6d1e5579472cabd0dfcdd08f5f3a984"
   },
   "biomes/spiderlake/dist/spiderlake-fen.html": {
-   "bytes": 6628924,
-   "sha256": "385eb4464c8ec552759311095ea7417c52743b1f355ebff4fc5d0c3cb382a50d"
+   "bytes": 6750427,
+   "sha256": "ebe67091b439db2691aa4b85d095e1b4f64fface79fce97d475d10609163e312"
   },
   "biomes/spiderlake/dist/spiderlake-haugel.html": {
-   "bytes": 6628891,
-   "sha256": "0208b7dad424a0dd49c7183c22542fd1898ebad930e3e371a3d9bdd4f6a2ab94"
+   "bytes": 7183748,
+   "sha256": "513ea5aa502c0e9f408cde9836bc5857266c0df8350e590539ecefc6c0494005"
   },
   "biomes/spiderlake/dist/spiderlake-narrows.html": {
-   "bytes": 6628931,
-   "sha256": "e1cdb4942a2adfa706056db43d77b8c6bed0fffa0581197f75716f3fe6df38ea"
+   "bytes": 7154921,
+   "sha256": "2ceeb58cc2cad96a6ac53ef2f5665a372a0118c27c54146ffb541ca91203b6eb"
   },
   "biomes/spiderlake/dist/spiderlake-pavilion.html": {
-   "bytes": 6628933,
-   "sha256": "c4ce6ddad489f7587716f2fccf7c26d8b4354f23d59bbf18584b836e5186b1c3"
+   "bytes": 6843691,
+   "sha256": "d5b66ab5d20cb5ee4cbf3b0cf17d0f062925aec0f02cd2c1bfa676e8207c2ebd"
   },
   "biomes/spiderlake/dist/spiderlake-rampart.html": {
-   "bytes": 6628931,
-   "sha256": "1e4c131734d1d4e67f6e88040403c2f4e9a4309deb2b9953fdccd25e80d5d0a7"
+   "bytes": 4165416,
+   "sha256": "ce101173fc1785a3c673f9e6b034ca54e4a54d4400259f3acbcddc42d860ab44"
   },
   "biomes/spiderlake/dist/spiderlake.html": {
-   "bytes": 6628949,
-   "sha256": "466cd33cfd3075009636f7b477f0b0566b891ce62c763e6dc45836b9ce8e29e0"
+   "bytes": 7147120,
+   "sha256": "ca90e5d6249ee72c8caae975f1e1a0ef8b278c282945f157c82468e6d985e4f4"
   },
   "biomes/springhollows/dist/springhollows-fenestre.html": {
-   "bytes": 1706011,
-   "sha256": "4ea6227d766119f9e1ff15081cb3f6a9ca89e06a8dd5eb49eb1f87555ac7d838"
+   "bytes": 1873955,
+   "sha256": "ad7c17ba840749b294074d845100dea1fec81bac08a13504ff80227aec65b0d3"
   },
   "biomes/springhollows/dist/springhollows-glade.html": {
-   "bytes": 1706013,
-   "sha256": "aafcdbb317ccfeaa47accd1d265e713daf0e796a920b742e17236f2924c3f74b"
+   "bytes": 1873921,
+   "sha256": "33eb7a04c0fbbb167944f949a33cf307ccd195d9fd5ff947f4cfea4ab4f99974"
   },
   "biomes/springhollows/dist/springhollows-porphyryrelict.html": {
-   "bytes": 1706010,
-   "sha256": "ffe84b962cef016bad6d0b02b96ba2cc165bb9ac4c38e42482cabfc6559fd0ac"
+   "bytes": 1873982,
+   "sha256": "9e6ccafdc76b47a904dfdea039cd03cdf170163e7657d2e453ff1ad36e4b1e7c"
   },
   "biomes/springhollows/dist/springhollows-shutin.html": {
-   "bytes": 1706002,
-   "sha256": "2857eb3adb35d175ed66530c8a03fde36972016d589bd7a85cb71f4b7fe8bb7f"
+   "bytes": 1873900,
+   "sha256": "7b0f68e369e3d9d696f09c10629773b1a35954a018eef7e59283ec484a55e333"
   },
   "biomes/springhollows/dist/springhollows.html": {
-   "bytes": 1705999,
-   "sha256": "194fd93797da30a33945514a90fbeb9abe7eef46882cce5144a5b24acb3245d2"
+   "bytes": 1873854,
+   "sha256": "366841c906a0926aa61ee27c04bfbde4499076e1f9dd9f8284163d2f4837edaa"
   },
   "biomes/swbay/dist/swbay-skarn.html": {
-   "bytes": 7184109,
-   "sha256": "7528a250a84ee75c40e278d58e7055acee2b1f0c12c040acbb18ba305f3e0851"
+   "bytes": 6163120,
+   "sha256": "001d180f3b89f19a5e828e30e07a515e7f24fd21d6dd81065f955a70984d3cfd"
   },
   "biomes/swbay/dist/swbay.html": {
-   "bytes": 8889448,
-   "sha256": "b4f0b23be11874165bc4b585d9b2e0659b062b8cb3c0083d2881e3a849f5b793"
+   "bytes": 10083666,
+   "sha256": "f431ee84d7e4104985994075656056f625ff890258d7d5e3f3843739c5311fef"
   },
   "biomes/swhighlands/dist/swhighlands-caverns.html": {
    "bytes": 5533856,
@@ -1069,24 +1101,24 @@
    "sha256": "bf66a83e0b9f0cf141af74f9be6bec6bd90f70132f5b10dac7a4683702f39951"
   },
   "biomes/thedome/dist/thedome-cleft.html": {
-   "bytes": 1795064,
-   "sha256": "ee77267e727fd3957dc8ac9a57d4ef3848299a7d55f592c4495e74f80a6bb490"
+   "bytes": 2003222,
+   "sha256": "c06791595c236047931d38d3ab3a4fabdde483c3e334c36e818d9e7334ef858e"
   },
   "biomes/thedome/dist/thedome-crown.html": {
-   "bytes": 1795064,
-   "sha256": "e37390c87d1d0f5c70bd6487aecb63d588c0dd494ede42e57ad08299ca089b0e"
+   "bytes": 2003222,
+   "sha256": "f8058806cfa0993441f6f6adf8c8e61a857771170e77201acdec39b7545adc60"
   },
   "biomes/thedome/dist/thedome-eastflank.html": {
-   "bytes": 1827633,
-   "sha256": "996064fcfbb20bb2dbce901d64acedaedcbc3335f39e13b0ac68c60c48755a99"
+   "bytes": 2003230,
+   "sha256": "fcbcb9ed5e2fea01857d8d5857c976e014b4c22892904caffcc66d098a8e5929"
   },
   "biomes/thedome/dist/thedome-moat.html": {
-   "bytes": 1922957,
-   "sha256": "12fe9e76c1f9b824b21f81ec5d231575ad647410fde7b9e61e59e2fa65ecb30f"
+   "bytes": 2131598,
+   "sha256": "34e2bfeb0e5b3976cd76010d3325f4b9d0b697f5937613a70a2897857cbbb46f"
   },
   "biomes/thedome/dist/thedome.html": {
-   "bytes": 1922948,
-   "sha256": "69b3d231f1f134401a311ae9cefd6249171d3510dd3f36e4281f209611741e8f"
+   "bytes": 2131589,
+   "sha256": "ba812a2e6abdd71ba16cb27f9502f05d802a303d87df21204db08a769cbd9661"
   },
   "biomes/throne/dist/throne-ash.html": {
    "bytes": 1118695,
@@ -1145,20 +1177,20 @@
    "sha256": "43c961a9b766c9288c13ab286d89665d4ae90a5771fd32faed7a43b478220a8a"
   },
   "biomes/tiers/dist/tiers-canyon.html": {
-   "bytes": 9927038,
-   "sha256": "653a4c7cfd4865fcdc8232b5b2068dde68f75838bcbdf83164cfb7a75ba8b4c5"
+   "bytes": 7296251,
+   "sha256": "44cdb7874019094e16ee707410979ca1288fd6b4651ea1a0ea9f5ab314be6834"
   },
   "biomes/tiers/dist/tiers-lip.html": {
-   "bytes": 12042616,
-   "sha256": "e3dd2cb268accc47aeb9a208cb1661ba411462d7d5d958b381c0a41a750f2d28"
+   "bytes": 6924347,
+   "sha256": "c1df3d657644130c40d63f5fe0fcd9e6e772bd700679b4b054605f61e0dfdcbf"
   },
   "biomes/tiers/dist/tiers-tread.html": {
-   "bytes": 9950994,
-   "sha256": "974a0e5db9da7cac329b04ff1128755c113853ea30f9308b464017bc57fde679"
+   "bytes": 5125014,
+   "sha256": "fd3570dc49bfe25a78ba7f13092613d9d82e8b4ac8e3af6f415b5440366b9cfa"
   },
   "biomes/tiers/dist/tiers.html": {
-   "bytes": 9880550,
-   "sha256": "91f88f009ff022585caae6fbc07db7b58af51456b9838ff9ba53d3ca2330f172"
+   "bytes": 6631262,
+   "sha256": "3a54e471538eeab317c50e9629acac7fbcaae91499b65e506298904914b7c476"
   },
   "biomes/twins/dist/twins-brazier.html": {
    "bytes": 2883366,

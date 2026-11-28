@@ -240,6 +240,13 @@ Once the other collected sessions are merged into `main` and Stage 8's all-build
   `core/simulation/77-sim-6p-pilgrims.js` (`SIM.pilgrimage`, `SIM.pilgrimMarket`) in `core/PORT.md` + `godot/tools/sync_core.py` (noting
   that both must load *after* `77-sim-7-lod.js` so `SIM.level` is wrapped, and callers must never wipe module-load `SIM.stepHooks = []`);
   re-cut `openworld/north-basin` to `Jimjam`'s Scale Model 5.1 pin `(745, 546, +486.2 m)` when `north-basin` rebuilds.
+- **Fold `KGROUND` pack-sampling registration, headless `30-core-foliage.js` texture fallbacks & `KFRONTIER.SPECIES_META` in the all-builds pass**
+  (2026-11-28, Priority 1 8-biome flora revamp across `thedome`, `springhollows`, `arcflow`, `spiderlake`, `compasshills`, `arachnoids`, `swbay`,
+  `tiers`): have `KGROUND.hook` (`core/terrain/43-core-ground.js`) record its layer maps in `KMAT.imaged` so `MeshStandardMaterial` grounds need
+  no manual `MAT_GROUND.uniforms` mirror for `BIO.packUnsampled`; add `typeof document === 'undefined'` `1x1` texture fallbacks in
+  `core/biome/30-core-foliage.js` (`BIO.canvasTex` / `BIO.alphaTex`) for Node biome tests; expose canonical `KFRONTIER.SPECIES_META` in
+  `core/frontier/18-core-frontier.js`; and when all `swbay` vendors rebuild together (`settlements/voth`, `openworld/isle-demo`, `biomes/ringisles`),
+  optionally merge `biomes/swbay/own/materials.json` (`swbay-own`) and `44p-host-matlib-plants.js` into `biomes/swbay/materials.json`.
 - **Move `CROPS.BIOMES.arch` into `kits/crops/src/`** (2026-11-26, Arcoforte P3b; `kits/crops` reaches 61 builds / 150 pages): copy
   `ARCH.CROPS` (`atm: 2`, zones `coast`, `headland`, `gully`, `barrens`, `warmground`) from `biomes/arch/src/40-biome-arch-chem.js`
   into `kits/crops/src/10-crop-core.js` (`BIOMES.arch`), add `'arch'` to `home` on `taro`, `breadfruit`, `banana`, `coconut`,
