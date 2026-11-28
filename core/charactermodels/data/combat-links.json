@@ -1881,7 +1881,7 @@
       "attack": "lightning_blast",
       "clip": "spell_cast",
       "label": "Astral Lightning Blast",
-      "short": "⚡ Lightning",
+      "short": "\u26a1 Lightning",
       "style": "arcane",
       "skill_min": 0,
       "base_dmg": 44,
@@ -1932,7 +1932,7 @@
       "attack": "energy_burst",
       "clip": "taunt_chest",
       "label": "Singularity Energy Burst",
-      "short": "💥 Energy Burst",
+      "short": "\ud83d\udca5 Energy Burst",
       "style": "arcane",
       "skill_min": 15,
       "base_dmg": 56,
@@ -2089,7 +2089,7 @@
       "clip": "punch_combo_2",
       "four_arm_move": "thorax_quad_flurry",
       "label": "Thorax 4-Beat Piston Flurry",
-      "short": "🦾 Quad Flurry",
+      "short": "\ud83e\uddbe Quad Flurry",
       "style": "thorax_4arm",
       "skill_min": 0,
       "base_dmg": 38,
@@ -2142,7 +2142,7 @@
       "clip": "axe_chop",
       "four_arm_move": "thorax_pin_cleave",
       "label": "Rib-Pin Overhead Cleave",
-      "short": "🦾 Pin & Cleave",
+      "short": "\ud83e\uddbe Pin & Cleave",
       "style": "thorax_4arm",
       "skill_min": 15,
       "base_dmg": 52,
@@ -2195,7 +2195,7 @@
       "clip": "block_2",
       "four_arm_move": "thorax_aegis_viper",
       "label": "Aegis Guard Viper-Thrust",
-      "short": "🦾 Aegis Viper",
+      "short": "\ud83e\uddbe Aegis Viper",
       "style": "thorax_4arm",
       "skill_min": 10,
       "base_dmg": 34,
@@ -2247,7 +2247,7 @@
       "clip": "slash_charged",
       "four_arm_move": "thorax_x_crusher",
       "label": "4-Quadrant X-Crusher Slam",
-      "short": "💥 X-Crusher",
+      "short": "\ud83d\udca5 X-Crusher",
       "style": "thorax_4arm",
       "skill_min": 25,
       "base_dmg": 58,
@@ -2300,7 +2300,7 @@
       "clip": "spear_thrust",
       "four_arm_move": "dorsal_mantis_impale",
       "label": "Over-Shoulder Mantis Impale",
-      "short": "🦂 Mantis Impale",
+      "short": "\ud83e\udd82 Mantis Impale",
       "style": "dorsal_4arm",
       "skill_min": 0,
       "base_dmg": 46,
@@ -2353,7 +2353,7 @@
       "clip": "slash_right",
       "four_arm_move": "dorsal_scissor_shear",
       "label": "Dorsal Scissor-Shear",
-      "short": "✂ Scissor Shear",
+      "short": "\u2702 Scissor Shear",
       "style": "dorsal_4arm",
       "skill_min": 10,
       "base_dmg": 50,
@@ -2408,7 +2408,7 @@
       "clip": "parry",
       "four_arm_move": "dorsal_canopy_parry",
       "label": "Canopy Intercept & Riposte",
-      "short": "🛡 Canopy Riposte",
+      "short": "\ud83d\udee1 Canopy Riposte",
       "style": "dorsal_4arm",
       "skill_min": 15,
       "base_dmg": 38,
@@ -2461,7 +2461,7 @@
       "clip": "spell_cast",
       "four_arm_move": "dorsal_tri_beam",
       "label": "Reliquary Tri-Beam Convergence",
-      "short": "⚡ Tri-Beam",
+      "short": "\u26a1 Tri-Beam",
       "style": "dorsal_4arm",
       "skill_min": 20,
       "base_dmg": 54,
@@ -3534,7 +3534,7 @@
     },
     {
       "id": "talovolci_woad_champ",
-      "label": "Free-Clan La Tène Woad Champion",
+      "label": "Free-Clan La T\u00e8ne Woad Champion",
       "short": "Woad Champion",
       "style": "sword",
       "hold": {
@@ -4062,6 +4062,35 @@
       }
     },
     {
+      "id": "neutrino_phantom",
+      "label": "Neutrino Phantom",
+      "short": "Neutrino Phantom",
+      "style": "arcane",
+      "hover": true,
+      "hold": {},
+      "stats": {
+        "melee_atk": 76,
+        "melee_def": 78,
+        "martial_arts": 86,
+        "dodge": 92,
+        "toughness": 78,
+        "strength": 70,
+        "dexterity": 90
+      },
+      "people": "extraplanar",
+      "tier": "neutrino_phantom",
+      "body": "mpfb_male",
+      "skin": "#1e2430",
+      "hair": null,
+      "hair_color": "#8ef4ff",
+      "eye_color": "#8efcff",
+      "morph": {
+        "height": 0.4,
+        "muscle": 0.22,
+        "weight": -0.35
+      }
+    },
+    {
       "id": "spider_matriarch",
       "label": "Crimson Matriarch Giant Spider",
       "short": "Spider Matriarch",
@@ -4264,7 +4293,7 @@
       "attack": "kick_roundhouse",
       "outcome": "dodge",
       "counter": false,
-      "note": "Monk rushes in with a high roundhouse — Archon phases aside"
+      "note": "Monk rushes in with a high roundhouse \u2014 Archon phases aside"
     },
     {
       "attacker": 0,
@@ -4276,13 +4305,13 @@
       "attacker": 1,
       "attack": "leg_sweep",
       "outcome": "hit",
-      "note": "Low sweep passes beneath levitating Archon — Hover Immunity!"
+      "note": "Low sweep passes beneath levitating Archon \u2014 Hover Immunity!"
     },
     {
       "attacker": 0,
       "attack": "energy_burst",
       "outcome": "hit",
-      "note": "Singularity Energy Burst implodes & detonates — knockdown into kip-up!"
+      "note": "Singularity Energy Burst implodes & detonates \u2014 knockdown into kip-up!"
     },
     {
       "attacker": 0,
@@ -4317,7 +4346,7 @@
       "attack": "dorsal_mantis_impale",
       "outcome": "parry",
       "counter": true,
-      "note": "Cyber-Lich rears twin dorsal claws overhead — Brawler cross-parries mid-level!"
+      "note": "Cyber-Lich rears twin dorsal claws overhead \u2014 Brawler cross-parries mid-level!"
     },
     {
       "attacker": 0,
@@ -4329,7 +4358,7 @@
       "attacker": 1,
       "attack": "dorsal_scissor_shear",
       "outcome": "hit",
-      "note": "Articulated Djed servo-arms unfold ±72° and snap across in a scissor-shear!"
+      "note": "Articulated Djed servo-arms unfold \u00b172\u00b0 and snap across in a scissor-shear!"
     },
     {
       "attacker": 0,
@@ -4347,7 +4376,7 @@
       "attacker": 0,
       "attack": "thorax_x_crusher",
       "outcome": "hit",
-      "note": "4-Quadrant X-Crusher flares wide then slams inward — knockdown into kip-up!"
+      "note": "4-Quadrant X-Crusher flares wide then slams inward \u2014 knockdown into kip-up!"
     },
     {
       "attacker": 1,

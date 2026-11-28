@@ -335,6 +335,72 @@
       return matB;
     }
 
+    if(kind === 'neutrino_phase'){
+      var cNuCore = colOf(z.core_color, '#061538');
+      var cNuCher = colOf(z.cherenkov_color, '#38f6ff');
+      var cNuMuon = colOf(z.muon_color, '#2068ff');
+      var cNuTau  = colOf(z.tau_color, '#b04cff');
+      var nuOp    = z.opacity == null ? 0.56 : +z.opacity;
+      var nuPow   = z.power == null ? 2.05 : +z.power;
+      var nuGain  = z.rim_gain == null ? 2.35 : +z.rim_gain;
+      var matNP = new THREE.MeshStandardMaterial({
+        map: srcMat ? srcMat.map : null,
+        color: 0xffffff,
+        roughness: 0.16,
+        metalness: 0.20,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        skinning: !!skinned
+      });
+      if(!matNP.map) matNP.defines = { USE_UV: '' };
+      matNP.onBeforeCompile = function(sh, r){
+        if(prevHook) prevHook(sh, r);
+        sh.uniforms.kxTime = uTime;
+        sh.uniforms.kxCore = { value: cNuCore };
+        sh.uniforms.kxCher = { value: cNuCher };
+        sh.uniforms.kxMuon = { value: cNuMuon };
+        sh.uniforms.kxTau  = { value: cNuTau };
+        sh.uniforms.kxOp   = { value: nuOp };
+        sh.uniforms.kxPow  = { value: nuPow };
+        sh.uniforms.kxGain = { value: nuGain };
+        sh.vertexShader = 'varying vec3 vKxFig;\n' +
+          sh.vertexShader.replace('#include <project_vertex>', '\tvKxFig = transformed;\n#include <project_vertex>');
+        sh.fragmentShader = 'varying vec3 vKxFig;\nuniform float kxTime, kxOp, kxPow, kxGain;\n' +
+          'uniform vec3 kxCore, kxCher, kxMuon, kxTau;\n' + GLSL_NOISE +
+          sh.fragmentShader.replace('#include <dithering_fragment>', [
+            '\tvec3 Vf = normalize(vViewPosition);',
+            '\tvec3 Nf = normalize(normal) * (gl_FrontFacing ? 1.0 : -1.0);',
+            '\tfloat ndv = clamp(abs(dot(Nf, Vf)), 0.0, 1.0);',
+            '\tfloat fres = pow(1.0 - ndv, kxPow);',
+            '\t// 3-flavor quantum oscillation wave interference (nu_e <-> nu_mu <-> nu_tau)',
+            '\tfloat az = atan(vKxFig.x, vKxFig.z);',
+            '\tfloat wE  = 0.5 + 0.5 * sin(vKxFig.y * 14.0 - kxTime * 3.8 + az * 2.0);',
+            '\tfloat wMu = 0.5 + 0.5 * sin(vKxFig.y * 19.5 - kxTime * 5.1 - az * 3.0 + 2.094);',
+            '\tfloat wTa = 0.5 + 0.5 * sin(vKxFig.y * 11.0 + kxTime * 2.9 + kxFbm2(vec2(az * 2.2, vKxFig.y * 5.5 - kxTime * 0.9)) * 4.2);',
+            '\tvec3 flavorC = normalize(vec3(0.001) + kxCher * (0.45 + wE) + kxMuon * (0.35 + wMu) + kxTau * (0.35 * wTa * wTa));',
+            '\tflavorC *= (0.85 + 0.55 * wE);',
+            '\t// Relativistic ballistic neutrino/lepton ionization tracks streaming through volume',
+            '\tvec2 trkUv = vec2(az * 7.64, vKxFig.y * 3.4 - kxTime * 3.6);',
+            '\tfloat trkId = floor(trkUv.x);',
+            '\tfloat trkH = kxHash12(vec2(trkId, floor(trkUv.y)));',
+            '\tfloat trkX = abs(fract(trkUv.x) - (0.2 + 0.6 * fract(trkH * 17.3)));',
+            '\tfloat trkY = smoothstep(0.95, 0.15, fract(trkUv.y + fract(trkH * 31.7)));',
+            '\tfloat streak = (trkH > 0.58 ? exp(-trkX * 36.0) * trkY : 0.0);',
+            '\tfloat vertexSpark = kxStarLayer(vec2(az * 2.2, vKxFig.y * 6.0 - kxTime * 0.5), 4.0, 0.30, kxTime * 3.2);',
+            '\t// Quantum tunneling phase-band modulation',
+            '\tfloat tunnel = 0.72 + 0.28 * sin(vKxFig.y * 24.0 - kxTime * 6.2 + kxNoise2(vec2(az * 3.0, kxTime * 1.8)) * 3.5);',
+            '\tvec3 bodyRgb = mix(gl_FragColor.rgb * 0.30, kxCore, 0.76) + flavorC * 0.32 + kxCher * (streak * 1.85 + vertexSpark * 1.55);',
+            '\tvec3 rimRgb = mix(kxCher, flavorC, 0.38) * fres * kxGain * (0.88 + 0.22 * wE);',
+            '\tfloat alphaOut = clamp(mix(kxOp * tunnel, min(0.98, kxOp + 0.54), fres) + streak * 0.35, 0.12, 0.98);',
+            '\tgl_FragColor = vec4(bodyRgb + rimRgb, alphaOut);',
+            '#include <dithering_fragment>'
+          ].join('\n'));
+      };
+      matNP.customProgramCacheKey = function(){ return 'kx-neutrino-' + (skinned ? 'sk' : 'rg'); };
+      return matNP;
+    }
+
     var clone = srcMat ? srcMat.clone() : new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, skinning: !!skinned });
     clone.skinning = !!skinned;
     return clone;
@@ -697,9 +763,9 @@
     // Ethereal hover/float locomotion for legless Extraplanar entities (censer_revenant, accretion_djinn, singularity_archon, ophanim_seraph, abyssal_medusa)
     var rec = fig.record || {};
     var torsoId = (rec.armour && rec.armour.torso) || '';
-    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0) && (
+    var isFloatEntity = ((torsoId.indexOf('ext_') === 0 || torsoId.indexOf('ext2_') === 0 || torsoId.indexOf('ext3_') === 0) && (
       torsoId.indexOf('revenant') >= 0 || torsoId.indexOf('djinn') >= 0 || torsoId.indexOf('archon') >= 0
-      || torsoId.indexOf('seraph') >= 0 || torsoId.indexOf('medusa') >= 0
+      || torsoId.indexOf('seraph') >= 0 || torsoId.indexOf('medusa') >= 0 || torsoId.indexOf('neutrino') >= 0
     ));
     if(isFloatEntity && fig.bones){
       var hiF = state.byName['Hips'];

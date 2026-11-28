@@ -194,6 +194,25 @@ void fragment() {
 		EMISSION = mix(kx_col_d, kx_col_c, fres) * (0.45 + 0.85 * plasma) + kx_col_a * pow(plasma, 4.0) * 0.75;
 		METALLIC = 0.72;
 		ROUGHNESS = 0.26;
+	} else if (kx_mode == 7) {
+		// Quantum flavor-oscillating Neutrino Phantom phase-shell & Cherenkov Mach rim (`neutrino_phase`)
+		float fres = pow(1.0 - ndv, kx_power);
+		float az = atan(v_kx_fig.x, v_kx_fig.z);
+		float w_e  = 0.5 + 0.5 * sin(v_kx_fig.y * 14.0 - kx_time * 3.8 + az * 2.0);
+		float w_mu = 0.5 + 0.5 * sin(v_kx_fig.y * 19.5 - kx_time * 5.1 - az * 3.0 + 2.094);
+		float w_ta = 0.5 + 0.5 * sin(v_kx_fig.y * 11.0 + kx_time * 2.9 + kx_fbm2(vec2(az * 2.2, v_kx_fig.y * 5.5 - kx_time * 0.9)) * 4.2);
+		vec3 flavor_c = normalize(vec3(0.001) + kx_col_b * (0.45 + w_e) + kx_col_c * (0.35 + w_mu) + kx_col_d * (0.35 * w_ta * w_ta)) * (0.85 + 0.55 * w_e);
+		vec2 trk_uv = vec2(az * 7.64, v_kx_fig.y * 3.4 - kx_time * 3.6);
+		float trk_h = kx_hash12(vec2(floor(trk_uv.x), floor(trk_uv.y)));
+		float trk_x = abs(fract(trk_uv.x) - (0.2 + 0.6 * fract(trk_h * 17.3)));
+		float trk_y = smoothstep(0.95, 0.15, fract(trk_uv.y + fract(trk_h * 31.7)));
+		float streak = trk_h > 0.58 ? exp(-trk_x * 36.0) * trk_y : 0.0;
+		float v_spark = kx_star_layer(vec2(az * 2.2, v_kx_fig.y * 6.0 - kx_time * 0.5), 4.0, 0.30, kx_time * 3.2);
+		float tunnel = 0.72 + 0.28 * sin(v_kx_fig.y * 24.0 - kx_time * 6.2 + kx_noise2(vec2(az * 3.0, kx_time * 1.8)) * 3.5);
+		ALBEDO = mix(base_tex * 0.30, kx_col_a, 0.76) + flavor_c * 0.32;
+		EMISSION = mix(kx_col_b, flavor_c, 0.38) * fres * kx_gain * (0.88 + 0.22 * w_e) + kx_col_b * (streak * 1.85 + v_spark * 1.55);
+		ROUGHNESS = 0.16;
+		ALPHA = clamp(mix(kx_opacity * tunnel, min(0.98, kx_opacity + 0.54), fres) + streak * 0.35, 0.12, 0.98);
 	} else {
 		// Pulsing celestial starburst / Cyclopean eye / lantern core (`emissive_blaze`)
 		float p = 1.0 + 0.18 * sin(kx_time * 3.6 + UV.x * 6.283);

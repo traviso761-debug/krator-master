@@ -10927,7 +10927,7 @@
   {
    "id": "extraplanar",
    "name": "Extraplanar Entities",
-   "note": "Otherworldly astral archons, decapitated smoke-plume revenants, fragmented floating-shard constructs (Vox Solus), cosmic accretion-ring djinn, and seven-mask demon choruses powered by custom WebGL/Godot parallax-galaxy, Fresnel-ghost, alpha-erosion, kinetic-orbit, and live volumetric smoke shaders at 100% mpfb_male & mpfb_female parity (tools/garments/cultures/extraplanar.py, src/75-extraplanar.js).",
+   "note": "Otherworldly astral archons, decapitated smoke-plume revenants, fragmented floating-shard constructs (Vox Solus), cosmic accretion-ring djinn, and seven-mask demon choruses powered by custom WebGL/Godot parallax-galaxy, Fresnel-ghost, alpha-erosion, kinetic-orbit, and live volumetric smoke shaders at 100% mpfb_male & mpfb_female parity (tools/garments/cultures/extraplanar.py, src/75-extraplanar.js), and Cherenkov quantum-phasing Neutrino Phantoms (extraplanar_neutrino.py).",
    "ancestry": {
     "african": [
      0.2,
@@ -10984,43 +10984,47 @@
    "tiers": [
     [
      "singularity_archon",
-     0.1333
+     0.0909
     ],
     [
      "censer_revenant",
-     0.1333
+     0.0909
     ],
     [
      "vox_solus",
-     0.1333
+     0.0909
     ],
     [
      "accretion_djinn",
-     0.1333
+     0.0909
     ],
     [
      "chorus_of_masks",
-     0.1333
+     0.0909
     ],
     [
      "ophanim_seraph",
-     0.0667
+     0.0909
     ],
     [
      "prism_matriarch",
-     0.0667
+     0.0909
     ],
     [
      "clockwork_aeon",
-     0.0667
+     0.0909
     ],
     [
      "abyssal_medusa",
-     0.0667
+     0.0909
     ],
     [
      "ashen_calamity",
-     0.0667
+     0.0909
+    ],
+    [
+     "neutrino_phantom",
+     0.091
     ]
    ],
    "tier_labels": {
@@ -11033,7 +11037,8 @@
     "prism_matriarch": "Prism Matriarch (Stained-Glass Automaton & Rose-Window Mandala)",
     "clockwork_aeon": "Clockwork Aeon (Brass Orrery & Hourglass Time-Warden)",
     "abyssal_medusa": "Abyssal Medusa (Bioluminescent Jellyfish & Coral Sovereign)",
-    "ashen_calamity": "Ashen Calamity (Volcanic Obsidian-Magma & Cinder-Brazier Demon)"
+    "ashen_calamity": "Ashen Calamity (Volcanic Obsidian-Magma & Cinder-Brazier Demon)",
+    "neutrino_phantom": "Neutrino Phantom (Cherenkov Shock-Cone, PMT Array & Quantum Phase-Wake)"
    },
    "outfits": {
     "male": {
@@ -11136,6 +11141,16 @@
       "feet": "ext2_m_calamity_hooves",
       "hair": null,
       "beard": null
+     },
+     "neutrino_phantom": {
+      "head": "ext3_m_neutrino_cherenkov",
+      "torso": "ext3_m_neutrino_shroud",
+      "back": "ext3_m_neutrino_rings",
+      "gloves": "ext3_m_neutrino_traces",
+      "legs": "ext3_m_neutrino_wake",
+      "feet": null,
+      "hair": null,
+      "beard": null
      }
     },
     "female": {
@@ -11236,6 +11251,16 @@
       "gloves": "ext2_f_calamity_claws",
       "legs": "ext2_f_calamity_greaves",
       "feet": "ext2_f_calamity_hooves",
+      "hair": null,
+      "beard": null
+     },
+     "neutrino_phantom": {
+      "head": "ext3_f_neutrino_cherenkov",
+      "torso": "ext3_f_neutrino_shroud",
+      "back": "ext3_f_neutrino_rings",
+      "gloves": "ext3_f_neutrino_traces",
+      "legs": "ext3_f_neutrino_wake",
+      "feet": null,
       "hair": null,
       "beard": null
      }
